@@ -41,8 +41,8 @@ namespace ReportGenerator{
 		private System.Windows.Forms.TextBox txtSqlString;
 		private System.Windows.Forms.DataGrid grdQuery;
 		
-		private ReportGenerator generator = null;
-		private Properties customizer    = null;
+		private ReportGenerator generator;
+		private Properties customizer;
 		
 		private SharpQuerySchemaClassCollection parametersClass;
 		
@@ -110,8 +110,8 @@ namespace ReportGenerator{
 					try {
 						// Stored Proc without Parameters
 						resultDataSet = (DataSet) proc.Execute(0,proc.GetSchemaParameters());
-					} catch (Exception) {
-						throw;
+					} catch (Exception e) {
+						throw e;
 					}
 					
 				}

@@ -124,7 +124,8 @@ namespace SharpReportCore{
 		public BaseReportObject Find (string columnName) {
 			for (int i = 0;i < this.Count ; i ++) {
 				BaseReportObject col = this[i];
-				if (String.Compare(col.Name,columnName)== 0){
+				if (String.Compare(col.Name.ToLower(CultureInfo.CurrentCulture),
+				                   columnName.ToLower(CultureInfo.CurrentCulture))== 0){
 					return col;
 				}
 			}
@@ -149,7 +150,8 @@ namespace SharpReportCore{
 		public AbstractColumn Find (string columnName) {
 			for (int i = 0;i < this.Count ; i ++) {
 				AbstractColumn col = (AbstractColumn)this[i];
-				if (String.Compare(col.ColumnName,columnName)== 0){
+				if (String.Compare(col.ColumnName.ToLower(CultureInfo.CurrentCulture),
+				                   columnName.ToLower(CultureInfo.CurrentCulture))== 0){
 					return col;
 				}
 			}

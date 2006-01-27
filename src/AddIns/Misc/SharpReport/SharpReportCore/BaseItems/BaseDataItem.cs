@@ -48,7 +48,7 @@ namespace SharpReportCore {
 			string formattedString = base.FireFormatOutput(this.dbValue,this.FormatString,"");
 			RectangleF rect = base.PrepareRectangle (e,formattedString);
 			base.PrintTheStuff (e,formattedString,rect);
-			base.OnAfterPrint (e.LocationAfterDraw);
+			base.NotiyfyAfterPrint (e.LocationAfterDraw);
 		}
 		
 		public override string ToString() {

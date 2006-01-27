@@ -8,10 +8,11 @@
  */
 
 using System;
-using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
+//using System.ComponentModel;
+
 using System.Windows.Forms;
-//using System.Windows.Forms.Design;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -42,10 +43,10 @@ namespace ReportGenerator{
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.RadioButton radioFormSheet;
 		
-		ReportGenerator generator = null;
-		Properties customizer        = null;
+		ReportGenerator generator;
+		Properties customizer;
 	
-		bool initDone = false;
+		bool initDone;
 		
 		public BaseSettingsPanel(){	
 			InitializeComponent();
@@ -121,10 +122,10 @@ namespace ReportGenerator{
 				generator.ReportName = txtReportName.Text;
 				generator.FileName = txtFileName.Text;
 				generator.Path = this.txtPath.Text;
-
 				generator.GraphicsUnit = (GraphicsUnit)Enum.Parse(typeof(GraphicsUnit),this.cboGraphicsUnit.Text);
 				SetSuccessor (this,new EventArgs());
 			}
+			
 		}
 		
 		
@@ -159,11 +160,19 @@ namespace ReportGenerator{
 			try {
 				ICSharpCode.SharpDevelop.Gui.FolderDialog ff = new ICSharpCode.SharpDevelop.Gui.FolderDialog();
 				ff.DisplayDialog("");
-				if (ff.Path.Length > 0) {
-//					this.txtPath.Text = FileUtility.GetDirectoryNameWithSeparator(ff.Path.Trim());
-					MessageBox.Show("BaseSettingPanel path : " +ff.Path);
-					this.txtPath.Text = ff.Path;
+				if (!String.IsNullOrEmpty(ff.Path)) {
+					if (!ff.Path.EndsWith(@"\")){
+					                    
+						this.txtPath.Text = ff.Path + @"\";
+						System.Console.WriteLine("added slash");
+					} else {
+						
+						this.txtPath.Text = ff.Path;
+						System.Console.WriteLine("no slash added");
+					}
+					generator.Path = this.txtPath.Text;
 				}
+				
 			} catch (Exception ) {
 				throw ;
 			}

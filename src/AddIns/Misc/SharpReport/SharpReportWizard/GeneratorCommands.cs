@@ -39,7 +39,7 @@ namespace ReportGenerator{
 	public class CreateReport : AbstractMenuCommand {
 		const string WizardPath = "/ReportGenerator/ReportGeneratorWizard";
 		
-		private ReportModel reportModel = null;
+		private ReportModel reportModel;
 
 		private Properties customizer = new Properties();
 		
@@ -77,7 +77,7 @@ namespace ReportGenerator{
 		
 		void DoCreate (ReportModel model) {
 			GlobalEnums.enmPushPullModel dataModel;
-			dataModel = model.ReportSettings.DataModel;
+			dataModel = model.DataModel;
 			switch (dataModel) {
 				case GlobalEnums.enmPushPullModel.PullData:
 					GeneratePullReport (model);
@@ -101,7 +101,6 @@ namespace ReportGenerator{
 		void GeneratePullReport (ReportModel model) {
 			
 			try {
-				ReportGenerator reportGenerator = (ReportGenerator)customizer.Get("Generator");
 				GeneratePullDataReport generator = new GeneratePullDataReport(customizer,model);
 				if (generator != null) {
 					generator.GenerateReport();
@@ -119,17 +118,15 @@ namespace ReportGenerator{
 		/// </summary>
 		/// <param name="model">ReportModel</param> 
 		void GeneratePushReport (ReportModel model) {
-			
 			try {
-				ReportGenerator reportGenerator = (ReportGenerator)customizer.Get("Generator");
 				GeneratePushDataReport generator = new GeneratePushDataReport(customizer,model);
 				if (generator != null) {
 					generator.GenerateReport();
 				} else {
 					throw new NullReferenceException ("GeneratePullDataReport");
 				}
-			} catch (Exception) {
-				throw;
+			} catch (Exception e) {
+				throw e;
 			}
 		}
 		
@@ -142,7 +139,6 @@ namespace ReportGenerator{
 			
 			try {
 				model.ReportSettings.ReportType = GlobalEnums.enmReportType.FormSheet;
-				SharpReportManager manager = new SharpReportManager();
 			} catch (Exception e) {
 				throw e;
 			}

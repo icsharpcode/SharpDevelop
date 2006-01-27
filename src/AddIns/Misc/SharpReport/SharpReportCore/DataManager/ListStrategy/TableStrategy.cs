@@ -12,7 +12,7 @@ using System.Text;
 using System.Collections;
 using System.Data;
 using System.ComponentModel;
-using System.Windows.Forms;
+
 using SharpReportCore;
 
 namespace SharpReportCore {
@@ -40,7 +40,8 @@ namespace SharpReportCore {
 //			System.Console.WriteLine("called from view");
 //			MessageBox.Show ("On List Change");
 //		}
-
+		
+		/*
 		private string a_BuildSort(ColumnCollection sortCollection){
 			System.Console.WriteLine("BuildSort");
 			StringBuilder sb = new StringBuilder();	
@@ -61,6 +62,7 @@ namespace SharpReportCore {
 			System.Console.WriteLine("\tsort by {0}",sb.ToString());
 			return sb.ToString();
 		}
+		*/
 		#region Building the Index list
 		
 		// if we have no sorting, we build the indexlist as well, so we don't need to

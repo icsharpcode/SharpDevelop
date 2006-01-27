@@ -35,10 +35,10 @@ namespace ReportGenerator
 		private System.Windows.Forms.CheckedListBox checkedListBox;
 		private System.Windows.Forms.TextBox txtPath;
 		
-		private ReportGenerator generator = null;
-		private Properties customizer    = null;
+		private ReportGenerator generator;
+		private Properties customizer;
 		
-		private ReportItemCollection colDetail = null;
+		private ReportItemCollection colDetail;
 		
 		public PushModelPanel(){
 			InitializeComponent();

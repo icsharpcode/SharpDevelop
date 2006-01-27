@@ -46,7 +46,7 @@ namespace SharpReportCore {
 			                                         fmt);
 			
 			// goon 
-			base.OnAfterPrint (e.LocationAfterDraw);
+			base.NotiyfyAfterPrint (e.LocationAfterDraw);
 		}
 		
 		public override string ToString() {

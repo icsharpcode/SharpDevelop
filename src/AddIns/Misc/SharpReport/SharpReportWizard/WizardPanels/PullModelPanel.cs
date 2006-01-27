@@ -56,15 +56,15 @@ namespace ReportGenerator
 			nodeError
 		}
 		
-		private bool firstDrag = true;
-		private string connectionString = String.Empty;
-		private string catalogName = String.Empty;
+		private bool firstDrag;
+		private string connectionString;
+
 		private CommandType commandType;
 		
-		private ReportGenerator generator = null;
-		private Properties customizer = null;
+		private ReportGenerator generator;
+		private Properties customizer;
 		
-		private ISharpQueryNode currentNode = null;
+		private ISharpQueryNode currentNode;
 		
 		
 		public PullModelPanel()
@@ -74,6 +74,7 @@ namespace ReportGenerator
 			base.EnableFinish = false;
 			base.EnableNext = false;
 			base.EnableCancel = true;
+			this.firstDrag = true;
 			commandType = CommandType.Text;
 			this.txtSqlString.Enabled = false;
 			Localise();
@@ -134,8 +135,6 @@ namespace ReportGenerator
 		}
 		
 		void TxtSqlStringDragDrop(object sender, System.Windows.Forms.DragEventArgs e){
-			string strDrag = (string)e.Data.GetData(typeof(string));
-			
 			if (firstDrag == true) {
 				this.txtSqlString.Text = "";
 				firstDrag = false;
@@ -204,7 +203,6 @@ namespace ReportGenerator
 						
 						if (node.Connection.ConnectionString.Length > 0) {
 							this.connectionString = node.Connection.ConnectionString;
-							this.catalogName = node.Connection.CatalogName;
 							this.txtSqlString.Enabled = true;
 							
 							if (this.firstDrag) {

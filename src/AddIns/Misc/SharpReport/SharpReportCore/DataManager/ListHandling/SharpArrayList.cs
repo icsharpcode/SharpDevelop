@@ -4,10 +4,10 @@ using System.Reflection;
 using System.Collections;
 using System.ComponentModel;
 
+
+using System.Collections.Generic;
 namespace SharpReportCore
 {
-	/// <summary>
-	/// This Class is the BaseClass for all Lists witch handles sorting,grouping etc.
 	
 	/// </summary>
 	public class SharpArrayList : ArrayList, IBindingList ,ITypedList,IExtendedList

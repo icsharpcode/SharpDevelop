@@ -14,16 +14,15 @@ using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
 
-using SharpReportCore;	
-using System.Windows.Forms;
+//using SharpReportCore;	
 
-	/// <summary>
-	/// This Class is used as a wrapper around Databinding
-	/// </summary>
-	/// <remarks>
-	/// 	created by - Forstmeier Peter
-	/// 	created on - 16.10.2005 14:49:43
-	/// </remarks>
+/// <summary>
+/// This Class is used as a wrapper around Databinding
+/// </summary>
+/// <remarks>
+/// 	created by - Forstmeier Peter
+/// 	created on - 16.10.2005 14:49:43
+/// </remarks>
 namespace SharpReportCore {	
 	
 		public class DataManager : IDataContainer,IEnumerator,IDisposable {
@@ -47,7 +46,7 @@ namespace SharpReportCore {
 		IDataViewStrategy dataViewStrategy;
 		
 		 
-//		private ListChangedEventArgs resetList = new ListChangedEventArgs(ListChangedType.Reset,-1,-1);
+		private ListChangedEventArgs resetList = new ListChangedEventArgs(ListChangedType.Reset,-1,-1);
 		
 		public event ListChangedEventHandler ListChanged;
 		public event EventHandler <GroupChangedEventArgs> GroupChanged;
@@ -71,7 +70,7 @@ namespace SharpReportCore {
 				
 				this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
 				                                          reportSettings);
-				this.dataViewStrategy.ListChanged += new ListChangedEventHandler (OnListChanged);
+				this.dataViewStrategy.ListChanged += new ListChangedEventHandler (NotifyListChanged);
 			} catch (Exception) {
 				throw;
 			}
@@ -80,12 +79,11 @@ namespace SharpReportCore {
 		
 		public DataManager(DataTable dataSource, ReportSettings reportSettings){
 			try {
-				System.Console.WriteLine("DataManager (table,model");
 				CheckAndSetReportSettings(reportSettings);
 				CheckAndSetSource(dataSource);
 				this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
 				                                          reportSettings);
-				this.dataViewStrategy.ListChanged += new ListChangedEventHandler (OnListChanged);
+				this.dataViewStrategy.ListChanged += new ListChangedEventHandler (NotifyListChanged);
 			} catch (Exception) {
 				throw ;
 			}
@@ -105,7 +103,7 @@ namespace SharpReportCore {
 				CheckAndSetSource(dataSource);
 				this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
 				                                         reportSettings);
-				this.dataViewStrategy.ListChanged += new ListChangedEventHandler (OnListChanged);
+				this.dataViewStrategy.ListChanged += new ListChangedEventHandler (NotifyListChanged);
 			} catch (Exception ) {
 				throw ;
 			}
@@ -118,7 +116,7 @@ namespace SharpReportCore {
 				this.dataViewStrategy = new CollectionStrategy ((IList)this.dataSource,
 				                                                this.dataMember,
 				                                               reportSettings);
-				this.dataViewStrategy.ListChanged += new ListChangedEventHandler (OnListChanged);
+				this.dataViewStrategy.ListChanged += new ListChangedEventHandler (NotifyListChanged);
 			} catch (Exception) {
 				throw;
 			}
@@ -132,17 +130,14 @@ namespace SharpReportCore {
 			if (settings == null) {
 				throw new ArgumentNullException("DataManager:ReportSettings");
 			}
-System.Console.WriteLine("CheckAndSetReportSettings");
 			try {
-	System.Console.WriteLine("\t {0}",settings.DataModel.ToString());
 				if (settings.DataModel != GlobalEnums.enmPushPullModel.PushData) {
 					SqlQueryCkecker check = new SqlQueryCkecker();
 					check.Check(settings.CommandText);
 				}
 				
-			} catch (Exception e) {
-				MessageBox.Show (e.Message);
-				throw ;
+			} catch (Exception) {
+				throw;
 			}
 			
 			this.reportSettings = settings;
@@ -150,11 +145,10 @@ System.Console.WriteLine("CheckAndSetReportSettings");
 		
 		
 		void CheckAndSetSource(object source) {
-			System.Console.WriteLine("CheckAndSetSource");
 			if (source == null) {
 				throw new MissingDataSourceException();
-				
 			}
+			
 			if (source is IList ||source is IListSource || source is IBindingList) {
 				//DataTable
 				this.dataSource = source;
@@ -202,9 +196,7 @@ System.Console.WriteLine("CheckAndSetReportSettings");
 		}
 		
 		void CheckConnection (ConnectionObject connectionObject) {
-			System.Console.WriteLine("CheckOnnection");
 			try {
-				
 				connection = connectionObject.Connection;
 				if (connection.State == ConnectionState.Open) {
 					connection.Close();
@@ -217,7 +209,6 @@ System.Console.WriteLine("CheckAndSetReportSettings");
 		}
 		
 		private DataSet FillDataSet() {
-			System.Console.WriteLine("FillDataSet");
 			try {
 				if (this.connection.State == ConnectionState.Closed) {
 					this.connection.Open();
@@ -234,7 +225,7 @@ System.Console.WriteLine("CheckAndSetReportSettings");
 				DataSet ds = new DataSet();
 				ds.Locale = CultureInfo.CurrentCulture;
 				adapter.Fill (ds);
-				System.Console.WriteLine("\t {0} in Table",ds.Tables[0].Rows.Count);
+//				System.Console.WriteLine("\t {0} in Table",ds.Tables[0].Rows.Count);
 				return ds;
 			} catch (Exception) {
 				throw;
@@ -276,7 +267,7 @@ System.Console.WriteLine("CheckAndSetReportSettings");
 				if (this.dataViewStrategy.AvailableFields.Count > 0) {
 					foreach (SortColumn col in this.reportSettings.SortColumnCollection) {
 						string colName = col.ColumnName;
-						AbstractColumn c = this.dataViewStrategy.AvailableFields.Find (colName);
+						AbstractColumn c = this.dataViewStrategy.AvailableFields.Find (colName);						
 						if (c == null) {
 							string str = String.Format (CultureInfo.CurrentCulture,
 							                            "<{0}> is not a member of <{1}>",colName,this.reportSettings.ReportName);
@@ -289,13 +280,13 @@ System.Console.WriteLine("CheckAndSetReportSettings");
 		
 		
 		#region Event Handling
-		private void OnListChanged (object sender, ListChangedEventArgs e) {
+		private void NotifyListChanged (object sender, ListChangedEventArgs e) {
 			if (this.ListChanged != null) {
 				this.ListChanged (this,e);
 			}
 		}
 		
-		private void OnGroupChange (object sender,GroupChangedEventArgs e) {
+		private void NotifyGroupChange (object sender,GroupChangedEventArgs e) {
 			
 			if (this.GroupChanged != null) {
 				this.GroupChanged (this,e);
@@ -398,8 +389,9 @@ System.Console.WriteLine("CheckAndSetReportSettings");
 		
 		public bool DataBind() {
 			this.dataViewStrategy.Bind();
-			this.dataViewStrategy.GroupChanged += new EventHandler <GroupChangedEventArgs>(OnGroupChange);
+			this.dataViewStrategy.GroupChanged += new EventHandler <GroupChangedEventArgs>(NotifyGroupChange);
 			CheckReportColumns();
+//			this.NotifyListChanged (this,this.resetList);
 			return true;
 		}
 		

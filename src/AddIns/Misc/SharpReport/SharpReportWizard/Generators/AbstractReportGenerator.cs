@@ -45,7 +45,7 @@ namespace ReportGenerator {
 			this.customizer = customizer;
 			this.reportModel = reportModel;
 			if (reportModel == null) {
-				throw new ArgumentNullException("GeneratePullDataReport: <reportModel");
+				throw new ArgumentNullException("reportModel");
 			}
 			reportGenerator = (ReportGenerator)customizer.Get("Generator");
 			manager = new SharpReportManager();
@@ -63,7 +63,7 @@ namespace ReportGenerator {
 		//TODO Change these function to using SharpQuery
 		protected DataTable GenerateFieldsTable(ReportModel reportModel) {
 			if (reportModel == null) {
-				throw new ArgumentNullException("AbstractReportGenerator:GenerateFieldsTable No reportModel");
+				throw new ArgumentNullException("reportModel");
 			}
 			if (reportModel.ReportSettings.ConnectionString.Length == 0) {
 				throw new ArgumentException("CreateOLEDB Connection : No ConnectionString");
@@ -108,8 +108,8 @@ namespace ReportGenerator {
 						
 					}
 				}
-			} catch (Exception) {
-				throw;
+			} catch (Exception e) {
+				throw e;
 			}
 			OleDbDataReader reader = null;
 			DataTable schemaTable = null;

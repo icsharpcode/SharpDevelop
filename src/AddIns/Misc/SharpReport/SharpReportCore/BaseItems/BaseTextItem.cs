@@ -37,7 +37,7 @@ namespace SharpReportCore {
 			base.Render(rpea);
 			RectangleF rect = PrepareRectangle (rpea,this.Text);
 			PrintTheStuff (rpea,this.Text,rect);
-			base.OnAfterPrint (rpea.LocationAfterDraw);
+			base.NotiyfyAfterPrint (rpea.LocationAfterDraw);
 		}
 		
 		public override string ToString() {

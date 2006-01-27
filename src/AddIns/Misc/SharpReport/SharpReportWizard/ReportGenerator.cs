@@ -46,13 +46,13 @@ namespace ReportGenerator {
 		//Database
 		private GlobalEnums.enmPushPullModel dataModel;
 
-		private string connectionString = String.Empty;
-		private string catalogName = String.Empty;
-		private string sqlString = String.Empty;
+		private string connectionString;
+		private string catalogName;
+		private string sqlString;
 		
 		private CommandType commandType;
-		private SharpQueryProcedure sharpQueryProcedure = null;
-		private ReportItemCollection reportItemCollection = null;
+		private SharpQueryProcedure sharpQueryProcedure;
+		private ReportItemCollection reportItemCollection;
 		
 		private SharpQuerySchemaClassCollection queryParameters;
 		public ReportGenerator() {	
@@ -62,16 +62,15 @@ namespace ReportGenerator {
 			
 			model.ReportSettings.ReportName = this.reportName;
 			model.ReportSettings.FileName = this.path + this.fileName;
-		
-			model.ReportSettings.GraphicsUnit = this.graphicsUnit;
 			
+			
+			model.ReportSettings.GraphicsUnit = this.graphicsUnit;
 			model.ReportSettings.ReportType = this.reportType;
 
 			model.ReportSettings.ConnectionString = this.connectionString;
-
-			model.ReportSettings.CommandText = sqlString;
-			model.ReportSettings.CommandType = commandType;
-			model.ReportSettings.DataModel = dataModel;
+			model.ReportSettings.CommandText = this.sqlString;
+			model.ReportSettings.CommandType = this.commandType;
+			model.ReportSettings.DataModel = this.dataModel;
 			return model;
 		}
 		

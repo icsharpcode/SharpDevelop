@@ -167,7 +167,6 @@ namespace SharpReportCore {
 			}
 			set {
 				size = value;
-//				NotifyPropertyChanged ("Size",true);
 				NotifyPropertyChanged ("Size");
 			}
 		}
@@ -192,14 +191,14 @@ namespace SharpReportCore {
 			}
 		}
 		
-		public void OnAfterPrint (PointF afterPrint) {
+		public void NotiyfyAfterPrint (PointF afterPrintLocation) {
 			if (this.AfterPrinting != null) {
-				AfterPrintEventArgs rea = new AfterPrintEventArgs (afterPrint);
+				AfterPrintEventArgs rea = new AfterPrintEventArgs (afterPrintLocation);
 				AfterPrinting(this, rea);
 			}
 		}
 		
-		public void OnBeforePrint () {
+		public void NotifyBeforePrint () {
 			if (this.BeforePrinting != null) {
 				BeforePrinting (this,EventArgs.Empty);
 			}

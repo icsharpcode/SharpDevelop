@@ -14,13 +14,13 @@ using System.ComponentModel;
 	
 using SharpReportCore;
 /// <summary>
-/// TODO - Add class summary
+/// This class build a TableLayout
 /// </summary>
 
 namespace ReportGenerator {	
 	public class TableLayout : AbstractLayout  {
 		
-		int colWidth = 0;
+		int colWidth;
 		Font defaultFont;
 		
 		public TableLayout(ReportModel reportModel):base(reportModel) {
