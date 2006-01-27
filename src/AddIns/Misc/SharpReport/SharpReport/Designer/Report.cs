@@ -53,7 +53,7 @@ namespace SharpReport.Designer{
 		[EditorBrowsable(EditorBrowsableState.Always), Browsable(true)]
 		
 		public event SelectedEventHandler ObjectSelected;
-		public event  SectionChangedEventHandler SectionChanged;
+		public event EventHandler <SectionChangedEventArgs> SectionChanged;
 		public event  ItemDragDropEventHandler DesignViewChanged;
 
 		public Report(){
@@ -325,7 +325,7 @@ namespace SharpReport.Designer{
 			this.visualDetail.Size = new System.Drawing.Size(400, 72);
 			this.visualDetail.StringAlignment = System.Drawing.StringAlignment.Near;
 			this.visualDetail.TabIndex = 3;
-			this.visualDetail.SectionChanged += new SharpReport.Designer.SectionChangedEventHandler(this.SectionSizeChanged);
+			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 
 			// visualPageFooter
 			// 
@@ -337,7 +337,7 @@ namespace SharpReport.Designer{
 			this.visualPageFooter.Size = new System.Drawing.Size(400, 68);
 			this.visualPageFooter.StringAlignment = System.Drawing.StringAlignment.Near;
 			this.visualPageFooter.TabIndex = 6;
-			this.visualPageFooter.SectionChanged += new SharpReport.Designer.SectionChangedEventHandler(this.SectionSizeChanged);
+			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 
 			// visualFooter
 			// 
@@ -349,7 +349,7 @@ namespace SharpReport.Designer{
 			this.visualFooter.Size = new System.Drawing.Size(400, 76);
 			this.visualFooter.StringAlignment = System.Drawing.StringAlignment.Near;
 			this.visualFooter.TabIndex = 7;
-			this.visualFooter.SectionChanged += new SharpReport.Designer.SectionChangedEventHandler(this.SectionSizeChanged);
+			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 
 			// visualPageHeader
 			// 
@@ -361,7 +361,7 @@ namespace SharpReport.Designer{
 			this.visualPageHeader.Size = new System.Drawing.Size(400, 84);
 			this.visualPageHeader.StringAlignment = System.Drawing.StringAlignment.Near;
 			this.visualPageHeader.TabIndex = 1;
-			this.visualPageHeader.SectionChanged += new SharpReport.Designer.SectionChangedEventHandler(this.SectionSizeChanged);
+			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 
 			// visualReportHeader
 			// 
@@ -373,7 +373,7 @@ namespace SharpReport.Designer{
 			this.visualReportHeader.Size = new System.Drawing.Size(400, 56);
 			this.visualReportHeader.StringAlignment = System.Drawing.StringAlignment.Near;
 			this.visualReportHeader.TabIndex = 0;
-			this.visualReportHeader.SectionChanged += new SharpReport.Designer.SectionChangedEventHandler(this.SectionSizeChanged);
+			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 
 			// Report
 			// 

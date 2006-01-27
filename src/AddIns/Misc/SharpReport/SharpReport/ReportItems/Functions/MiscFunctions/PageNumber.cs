@@ -10,9 +10,10 @@
 
 
 using System;
-using System.ComponentModel;
 using System.Drawing;
+using System.ComponentModel;
 using System.Drawing.Printing;
+
 using SharpReportCore;	
 using SharpReport.Designer;
 	/// <summary>
@@ -28,7 +29,7 @@ namespace SharpReport.ReportItems.Functions {
 		public class PageNumber : SharpReportCore.BasePageNumber,SharpReport.Designer.IDesignable {
 		private string functionName = "PageNumber";
 		private FunctionControl visualControl;
-		private bool initDone = false;
+		private bool initDone;
 		
 		public new event PropertyChangedEventHandler PropertyChanged;
 		
@@ -68,7 +69,7 @@ namespace SharpReport.ReportItems.Functions {
 
 		private void OnControlChanged (object sender, EventArgs e) {
 			ItemsHelper.UpdateTextControl (this.visualControl,this);
-			this.FirePropertyChanged("OnControlChanged");
+			this.HandlePropertyChanged("OnControlChanged");
 		}
 		
 		public void OnControlSelect(object sender, EventArgs e){
@@ -81,7 +82,7 @@ namespace SharpReport.ReportItems.Functions {
 		/// to set the View's 'IsDirtyFlag' to true
 		/// </summary>
 		
-		protected void FirePropertyChanged(string info) {
+		protected void HandlePropertyChanged(string info) {
 			if ( !base.Suspend) {
 				if (PropertyChanged != null) {
 					PropertyChanged (this,new PropertyChangedEventArgs(info));
@@ -99,7 +100,7 @@ namespace SharpReport.ReportItems.Functions {
 				if (this.visualControl != null) {
 					this.visualControl.Size = value;
 				}
-				this.FirePropertyChanged("Size");
+				this.HandlePropertyChanged("Size");
 			}
 		}
 		
@@ -112,7 +113,7 @@ namespace SharpReport.ReportItems.Functions {
 				if (this.visualControl != null) {
 					this.visualControl.Location = value;
 				}
-				this.FirePropertyChanged("Location");
+				this.HandlePropertyChanged("Location");
 			}
 		}
 		
@@ -125,7 +126,7 @@ namespace SharpReport.ReportItems.Functions {
 				if (this.visualControl != null) {
 					this.visualControl.Font = value;
 				}
-				this.FirePropertyChanged("Font");
+				this.HandlePropertyChanged("Font");
 			}
 		}
 		///<summary>
@@ -142,7 +143,7 @@ namespace SharpReport.ReportItems.Functions {
 					this.visualControl.Text = value;
 					this.visualControl.Refresh();
 				}
-				this.FirePropertyChanged("Text");
+				this.HandlePropertyChanged("Text");
 			}
 		}
 		

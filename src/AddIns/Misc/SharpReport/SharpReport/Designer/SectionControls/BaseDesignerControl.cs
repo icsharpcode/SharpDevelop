@@ -11,6 +11,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+
 using SharpReport;
 using SharpReportCore;
 
@@ -28,7 +29,7 @@ namespace SharpReport.Designer
 
 		private System.Drawing.GraphicsUnit graphicsUnit = GraphicsUnit.Point;
 		
-		private ReportModel reportModel = null;
+		private ReportModel reportModel;
 		
 		public event PropertyChangedEventHandler DesignerDirty;
 		
@@ -193,7 +194,7 @@ namespace SharpReport.Designer
 			this.reportControl.Name = "reportControl";
 			this.reportControl.Size = new System.Drawing.Size(592, 400);
 			this.reportControl.TabIndex = 1;
-			this.reportControl.SectionChanged += new SharpReport.Designer.SectionChangedEventHandler(this.ReportControlSectionChanged);
+			this.reportControl.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.ReportControlSectionChanged);
 			this.reportControl.SizeChanged += new System.EventHandler(this.ReportControlSizeChanged);
 			this.reportControl.DesignViewChanged += new SharpReport.Designer.ItemDragDropEventHandler(this.ReportControlDesignViewChanged);
 			// 

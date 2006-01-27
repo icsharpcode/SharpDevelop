@@ -55,7 +55,6 @@ namespace SharpReportCore {
 			}
 			set {
 				thickness = value;
-//				base.NotifyPropertyChanged("FormatString",true);
 				base.NotifyPropertyChanged("FormatString");
 			}
 		}

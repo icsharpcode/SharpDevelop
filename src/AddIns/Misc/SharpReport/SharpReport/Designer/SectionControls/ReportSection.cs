@@ -58,9 +58,7 @@ namespace SharpReport{
 		#endregion
 		
 		private void Initialize(){
-//			base.Items.Added += new ItemCollectionEventHandler(OnItemAddeded);
-//			base.Items.Removed += new ItemCollectionEventHandler(OnItemRemoveded);
-				base.Items.Added += OnItemAddeded;
+			base.Items.Added += OnItemAddeded;
 			base.Items.Removed += OnItemRemoveded;
 		}
 		
@@ -144,10 +142,6 @@ namespace SharpReport{
 			XmlAttribute attPropValue;
 			
 			foreach (PropertyInfo p in prop) {
-				
-				AttributeCollection attributes = TypeDescriptor.GetProperties(this)[p.Name].Attributes;
-				XmlIgnoreAttribute xmlIgnoreAttribute = (XmlIgnoreAttribute)attributes[typeof(XmlIgnoreAttribute)];
-				
 				if (this.CheckForXmlIgnore(p) == null ) {
 					if (p.CanWrite) {
 						xmlProperty = xmlSection.OwnerDocument.CreateElement (p.Name);

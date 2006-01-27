@@ -38,10 +38,8 @@ namespace SharpReport{
 	/// Description of SharpReportManager.
 	/// </summary>
 	public class SharpReportManager :SharpReportEngine {
-		private BaseDesignerControl baseDesignerControl = null;
 		
-		private GraphicsUnit graphicsUnit;
-		
+		private BaseDesignerControl baseDesignerControl;
 		private ReportModel reportModel;
 		
 		//TODO Move this to reportSettings
@@ -489,17 +487,6 @@ namespace SharpReport{
 			}
 		}
 		
-		public GraphicsUnit a_GraphicsUnit {
-			get {
-				return graphicsUnit;
-			}
-			set {
-				graphicsUnit = value;
-				if (this.baseDesignerControl != null) {
-					this.baseDesignerControl.GraphicsUnit = this.graphicsUnit;
-				}
-			}
-		}
 		#endregion
 	}
 	

@@ -9,6 +9,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Data;
@@ -157,7 +158,7 @@ namespace ReportGenerator
 						this.txtSqlString.AppendText ("SELECT ");
 						this.txtSqlString.AppendText (colName);
 						
-					} else if (this.txtSqlString.Text.ToLower().IndexOf("where") > 0){
+					} else if (this.txtSqlString.Text.ToLower(CultureInfo.InvariantCulture).IndexOf("where") > 0){
 						this.txtSqlString.AppendText (colName + " = ?");
 					}
 					else {

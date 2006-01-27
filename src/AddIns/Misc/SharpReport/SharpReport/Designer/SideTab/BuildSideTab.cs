@@ -24,7 +24,7 @@ namespace SharpReport
 	/// </summary>
 	public class BuildSideTab{
 		SharpDevelopSideBar	sideBar;
-		AxSideTab sideTab = null;	
+		AxSideTab sideTab;	
 		AxSideTab sideTabFunctions;
 		
 		public BuildSideTab(SharpDevelopSideBar sideBar){

@@ -29,7 +29,7 @@ namespace SharpReport.ReportItems {
 		
 		
 		private ReportTextControl visualControl;
-		bool initDone = false;
+		bool initDone;
 		
 		#region Constructor
 		public ReportTextItem() : base(){
@@ -79,7 +79,7 @@ namespace SharpReport.ReportItems {
 
 		private void OnControlChanged (object sender, EventArgs e) {
 			ItemsHelper.UpdateTextControl (this.visualControl,this);
-			this.FirePropertyChanged("OnControlSelected");
+			this.HandlePropertyChanged("OnControlSelected");
 		}
 		
 		public void OnControlSelect(object sender, EventArgs e){
@@ -92,7 +92,7 @@ namespace SharpReport.ReportItems {
 		/// to set the View's 'IsDirtyFlag' to true
 		/// </summary>
 		
-		protected void FirePropertyChanged(string info) {
+		protected void HandlePropertyChanged(string info) {
 			if ( !base.Suspend) {
 				if (PropertyChanged != null) {
 					PropertyChanged (this,new PropertyChangedEventArgs(info));
@@ -110,7 +110,7 @@ namespace SharpReport.ReportItems {
 				if (this.visualControl != null) {
 					this.visualControl.Size = value;
 				}
-				this.FirePropertyChanged("Size");
+				this.HandlePropertyChanged("Size");
 			}
 		}
 		
@@ -123,7 +123,7 @@ namespace SharpReport.ReportItems {
 				if (this.visualControl != null) {
 					this.visualControl.Location = value;
 				}
-				this.FirePropertyChanged("Location");
+				this.HandlePropertyChanged("Location");
 			}
 		}
 		
@@ -136,7 +136,7 @@ namespace SharpReport.ReportItems {
 				if (this.visualControl != null) {
 					this.visualControl.Font = value;
 				}
-				this.FirePropertyChanged("Font");
+				this.HandlePropertyChanged("Font");
 			}
 		}
 		///<summary>
@@ -153,7 +153,7 @@ namespace SharpReport.ReportItems {
 					this.visualControl.Text = value;
 					this.visualControl.Refresh();
 				}
-				this.FirePropertyChanged("Text");
+				this.HandlePropertyChanged("Text");
 			}
 		}
 		

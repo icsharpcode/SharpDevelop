@@ -23,8 +23,7 @@ namespace SharpReport.Designer {
 	/// </remarks>
 	
 	public delegate void SelectedEventHandler(object sender, EventArgs e);
-	public delegate void SectionChangedEventHandler (object sender, SectionChangedEventArgs e);
-	
+
 	public class SectionChangedEventArgs : System.EventArgs {
 		
 		ReportSection section;

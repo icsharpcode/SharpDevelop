@@ -10,11 +10,10 @@
 
 
 using System;
-using System.Diagnostics;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.Data;
-	
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
@@ -115,7 +114,6 @@ namespace SharpReport {
 					ReportDataItem newItem = new ReportDataItem();
 					oldItem = (ReportDataItem)col[i];
 					newItem.VisualControl.Text = oldItem.ColumnName;
-//					newItem.Name =	this.CreateName (itemCol,"ReportDataItem");
 					newItem.ColumnName = oldItem.ColumnName;
 					newItem.DbValue = oldItem.DbValue;
 					newItem.BaseTableName = oldItem.BaseTableName;
@@ -137,7 +135,6 @@ namespace SharpReport {
 					ReportTextItem newItem = new ReportTextItem();
 					oldItem = (ReportDataItem)col[i];
 					newItem.VisualControl.Text = oldItem.ColumnName;
-//					newItem.Name =	this.CreateName (itemCol,"ReportTextItem");
 					newItem.Text =	oldItem.ColumnName;
 					newItem.Location = new Point (i * 30,5);
 					itemCol.Add(newItem);
@@ -177,39 +174,8 @@ namespace SharpReport {
 			}
 			return itemCol;
 		}
-			
-		/// <summary>
-		/// Build Headerline from a *.xsd File
-		/// </summary>
-		/// <param name="model">the ReportModel</param>
-		/// <param name="section">location of the Headerlines</param>
-		/// <param name="schemaTable">the Schematable with ColumnInrofmations</param>
-		/// <param name="setOnTop">Locate the Columns of Top or an Bottom of the Section</param>
-		/// <returns>a Collection of BaseTextItems</returns>
-		public ReportItemCollection old_AutoHeaderFromSchema (ReportModel model,BaseSection section,DataSet dataSet,bool setOnTop) {
-			if (dataSet.Tables.Count > 1) {
-				MessageService.ShowError ("AutoBuildFromDataSet : at this time no more than one table is allowed " + dataSet.Tables.Count.ToString());
-				throw new ArgumentException ("Too much Tables in DataSet");
-			}
-				
-			ReportItemCollection itemCol = new ReportItemCollection();
-			foreach (DataTable tbl in dataSet.Tables) {
-				int i = 0;
-				foreach (DataColumn col in tbl.Columns) {
-					BaseTextItem rItem = (BaseTextItem)iDesignableFactory.Create("ReportTextItem");
-					rItem.Text = col.ColumnName;
-					if (setOnTop) {
-						rItem.Location = new Point (i * 30,1);
-					} else {
-						int y = section.Size.Height - rItem.Size.Height - 5;
-						rItem.Location = new Point (i * 30,y);
-					}
-					i ++;
-					itemCol.Add (rItem);
-				}
-			}
-			return itemCol;
-		}
+		
+		
 		#endregion
 	}
 }

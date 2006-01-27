@@ -38,8 +38,7 @@ namespace SharpReport.Designer{
 		
 		public event SelectedEventHandler ItemSelected;
 		public event ItemDragDropEventHandler ItemDragDrop;
-		public event SectionChangedEventHandler SectionChanged;
-		
+		public event EventHandler <SectionChangedEventArgs> SectionChanged;
 		
 		internal ReportSectionControlBase()
 		{

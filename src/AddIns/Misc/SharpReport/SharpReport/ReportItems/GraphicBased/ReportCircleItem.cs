@@ -56,7 +56,7 @@ namespace SharpReport.ReportItems{
 		
 		private void OnControlChanged (object sender, EventArgs e) {
 			ItemsHelper.UpdateGraphicControl (this.visualControl,this);
-			this.FirePropertyChanged("OnControlChanged");
+			this.HandlePropertyChanged("OnControlChanged");
 		}
 		
 		private void OnControlSelect(object sender, EventArgs e){
@@ -69,7 +69,7 @@ namespace SharpReport.ReportItems{
 		/// to set the View's 'IsDirtyFlag' to true
 		/// </summary>
 		
-		protected void FirePropertyChanged(string info) {
+		protected void HandlePropertyChanged(string info) {
 			if ( !base.Suspend) {
 				if (PropertyChanged != null) {
 					PropertyChanged (this,new PropertyChangedEventArgs(info));
@@ -104,7 +104,7 @@ namespace SharpReport.ReportItems{
 				if (this.visualControl != null) {
 					this.visualControl.Size = value;
 				}
-				this.FirePropertyChanged("Size");
+				this.HandlePropertyChanged("Size");
 			}
 		}
 		
@@ -117,7 +117,7 @@ namespace SharpReport.ReportItems{
 				if (this.visualControl != null) {
 					this.visualControl.Location = value;
 				}
-				this.FirePropertyChanged("Location");
+				this.HandlePropertyChanged("Location");
 			}
 		}
 
