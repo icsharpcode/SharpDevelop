@@ -401,7 +401,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public void ParseInformationUpdated(ParseInformation parseInfo)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(this, "UpdateFolding");
+			WorkbenchSingleton.SafeThreadAsyncCall((MethodInvoker)UpdateFolding);
 		}
 		
 		#endregion
@@ -512,8 +512,8 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void RefreshMargin()
 		{
-			RefreshDelegate refreshDelegate = new RefreshDelegate(xmlEditor.ActiveTextAreaControl.TextArea.Refresh);
-			xmlEditor.ActiveTextAreaControl.TextArea.Invoke(refreshDelegate, new object[] { xmlEditor.ActiveTextAreaControl.TextArea.FoldMargin});
+			WorkbenchSingleton.SafeThreadAsyncCall((RefreshDelegate)xmlEditor.ActiveTextAreaControl.TextArea.Refresh,
+			                                       xmlEditor.ActiveTextAreaControl.TextArea.FoldMargin);
 		}
 		
 		/// <summary>

@@ -97,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Description of STAThreadCaller.
 		/// </summary>
-		public class STAThreadCaller
+		private class STAThreadCaller
 		{
 			delegate object PerformCallDelegate(object target, string methodName, object[] arguments);
 			
@@ -114,6 +114,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				performCallDelegate = new PerformCallDelegate(DoPerformCall);
 			}
 			
+			public object Call(Delegate method, object[] arguments)
+			{
+				return ctl.Invoke(method, arguments);
+			}
+			
 			public object Call(object target, string methodName, object[] arguments)
 			{
 				if (target == null) {
@@ -125,6 +130,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				#endif
 				
 				return ctl.Invoke(performCallDelegate, new object[] {target, methodName, arguments});
+			}
+			
+			public void BeginCall(Delegate method, object[] arguments)
+			{
+				ctl.BeginInvoke(method, arguments);
 			}
 			
 			public void BeginCall(object target, string methodName, object[] arguments)
@@ -180,12 +190,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		/// <summary>
 		/// Makes a call GUI threadsafe. WARNING: This method waits for the result of the
-		/// operation, which can result in a dead-lock when the main thread waits for this
-		/// thread to exit!
+		/// operation, which can result in a dead-lock when the main thread waits for a lock
+		/// held by this thread!
 		/// </summary>
 		public static object SafeThreadCall(object target, string methodName, params object[] arguments)
 		{
 			return caller.Call(target, methodName, arguments);
+		}
+		
+		/// <summary>
+		/// Makes a call GUI threadsafe. WARNING: This method waits for the result of the
+		/// operation, which can result in a dead-lock when the main thread waits for a lock
+		/// held by this thread!
+		/// </summary>
+		public static object SafeThreadCall(Delegate method, params object[] arguments)
+		{
+			return caller.Call(method, arguments);
 		}
 		
 		/// <summary>
@@ -194,6 +214,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static void SafeThreadAsyncCall(object target, string methodName, params object[] arguments)
 		{
 			caller.BeginCall(target, methodName, arguments);
+		}
+		
+		/// <summary>
+		/// Makes a call GUI threadsafe without waiting for the returned value.
+		/// </summary>
+		public static void SafeThreadAsyncCall(Delegate method, params object[] arguments)
+		{
+			caller.BeginCall(method, arguments);
 		}
 		#endregion
 		

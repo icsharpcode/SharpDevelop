@@ -285,7 +285,7 @@ namespace ICSharpCode.NAntAddIn.Commands
 			// Update task list.
 			TaskCollection tasks = NAntOutputParser.Parse(outputText);
 			foreach (Task task in tasks) {
-				WorkbenchSingleton.SafeThreadCall(typeof(TaskService), "Add", new object[] {task});
+				WorkbenchSingleton.SafeThreadAsyncCall(typeof(TaskService), "Add", new object[] {task});
 			}
 			
 			// Bring task list to front.

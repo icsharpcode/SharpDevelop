@@ -170,6 +170,7 @@ namespace ICSharpCode.FormsDesigner
 			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(designSurface);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
+			serviceContainer.AddService(typeof(IDesignerHost), Host); // required for SD2-484
 			designerResourceService.Host = Host;
 			
 			DesignerLoader designerLoader = loaderProvider.CreateLoader(generator);
