@@ -91,7 +91,11 @@ namespace HtmlHelp2.Environment
 				xmldoc.Load(PropertyService.ConfigDirectory + help2EnvironmentFile);
 
 				XmlNode node = xmldoc.SelectSingleNode("/help2environment/collection");
-				if(node != null) DefaultNamespaceName = node.InnerText;
+				if (node != null) {
+					if (!string.IsNullOrEmpty(node.InnerText)) {
+						DefaultNamespaceName = node.InnerText;
+					}
+				}
 
 				LoggingService.Info("Help 2.0: using last configuration");
 			}
