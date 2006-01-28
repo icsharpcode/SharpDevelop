@@ -196,10 +196,11 @@ namespace ICSharpCode.FormsDesigner
 					removedFields.Add(field.Name);
 				}
 			}
-			// removing fields is done in two steps because 
+			// removing fields is done in two steps because
 			// we must not modify the c.Fields collection while it is enumerated
 			removedFields.ForEach(RemoveField);
 			
+			ParserService.EnqueueForParsing(designerFile, document.TextContent);
 		}
 		
 		/// <summary>
@@ -240,6 +241,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		IDocument document;
 		string saveDocumentToFile; // only set when InitializeComponent was loaded from code-behind file that was not opened
+		string designerFile; // file that contains InitializeComponents
 		
 		void SaveDocument()
 		{
@@ -265,7 +267,7 @@ namespace ICSharpCode.FormsDesigner
 				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
 					initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
 					if (initializeComponents != null) {
-						string designerFile = initializeComponents.DeclaringType.CompilationUnit.FileName;
+						designerFile = initializeComponents.DeclaringType.CompilationUnit.FileName;
 						string designerContent;
 						if (FileUtility.IsEqualFileName(viewContent.TextEditorControl.FileName, designerFile)) {
 							designerContent = content;

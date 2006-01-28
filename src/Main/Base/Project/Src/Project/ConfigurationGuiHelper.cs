@@ -248,6 +248,56 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
+		#region Bind int to NumericUpDown
+		public ConfigurationGuiBinding BindInt(string control, string property, int defaultValue)
+		{
+			return BindInt(controlDictionary[control], property, defaultValue);
+		}
+
+		public ConfigurationGuiBinding BindInt(Control control, string property, int defaultValue)
+		{
+			if (control is NumericUpDown) {
+				SimpleIntBinding binding = new SimpleIntBinding((NumericUpDown)control, defaultValue);
+				AddBinding(property, binding);
+				control.TextChanged += ControlValueChanged;
+				return binding;
+			} else {
+				throw new ApplicationException("Cannot bind " + control.GetType().Name + " to int property.");
+			}
+		}
+
+		class SimpleIntBinding : ConfigurationGuiBinding
+		{
+			NumericUpDown control;
+			int           defaultValue;
+			
+			public SimpleIntBinding(NumericUpDown control, int defaultValue)
+			{
+				this.control = control;
+				this.defaultValue = defaultValue;
+			}
+			
+			public override void Load()
+			{
+				int val;
+				if (!int.TryParse(Get(defaultValue.ToString(NumberFormatInfo.InvariantInfo)), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out val)) {
+					val = defaultValue;
+				}
+				control.Text = val.ToString();
+			}
+			
+			public override bool Save()
+			{
+				string txt = control.Text.Trim();
+				NumberStyles style = NumberStyles.Integer;
+				int val;
+				val = int.Parse(txt, style, NumberFormatInfo.InvariantInfo);
+				Set(val.ToString(NumberFormatInfo.InvariantInfo));
+				return true;
+			}
+		}
+		#endregion
+		
 		#region Bind hex number to TextBox
 		public ConfigurationGuiBinding BindHexadecimal(TextBoxBase textBox, string property, int defaultValue)
 		{
