@@ -192,6 +192,7 @@ namespace SharpReportAddin{
 			ctrl.Dock = DockStyle.Fill;
 			
 			ctrl.ReportControl.ObjectSelected += new SelectedEventHandler (OnObjectSelected);
+			
 			ctrl.ReportControl.DesignViewChanged += new ItemDragDropEventHandler (OnItemDragDrop);
 			ctrl.DesignerDirty += new System.ComponentModel.PropertyChangedEventHandler (OnPropertyChanged);
 			return ctrl;

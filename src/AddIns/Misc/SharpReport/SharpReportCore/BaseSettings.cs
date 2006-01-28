@@ -60,7 +60,7 @@ namespace SharpReportCore {
 		
 		public BaseSettings(PageSettings pageSettings , string reportName,string fileName){
 			if (pageSettings == null) {
-				throw new ArgumentException("BaseSettings:PageSettings");
+				throw new ArgumentNullException("pageSettings");
 			}
 			
 			if (String.IsNullOrEmpty(reportName)) {

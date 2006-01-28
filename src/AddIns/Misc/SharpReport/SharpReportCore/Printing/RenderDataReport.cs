@@ -47,7 +47,7 @@ namespace SharpReportCore {
 		}
 
 		public RenderDataReport(ReportModel model,DataManager dataManager):base (model){
-			System.Console.WriteLine("RenderDataReport".ToUpper());
+//			System.Console.WriteLine("RenderDataReport".ToUpper());
 			this.dataManager = dataManager;
 		}
 		
@@ -171,7 +171,8 @@ namespace SharpReportCore {
 		
 		
 		protected override void PrintPageEnd(object sender, ReportPageEventArgs e) {
-			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageFooter);
+			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageFooter,
+			                                   CultureInfo.InvariantCulture);
 			base.PrintPageEnd (sender,e);
 			base.DetailEnds = new Point (0,base.CurrentSection.SectionOffset);
 		}

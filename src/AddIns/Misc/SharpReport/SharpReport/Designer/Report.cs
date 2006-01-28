@@ -53,6 +53,7 @@ namespace SharpReport.Designer{
 		[EditorBrowsable(EditorBrowsableState.Always), Browsable(true)]
 		
 		public event SelectedEventHandler ObjectSelected;
+		
 		public event EventHandler <SectionChangedEventArgs> SectionChanged;
 		public event  ItemDragDropEventHandler DesignViewChanged;
 
@@ -281,11 +282,8 @@ namespace SharpReport.Designer{
 		/// </summary>
 		/// <param name="sender">this</param>
 		/// <param name="e">SharpReport.Designer.SectionChangedEventArgs</param>
-		void SectionSizeChanged(object sender, SharpReport.Designer.SectionChangedEventArgs e)
-		{
+		void SectionSizeChanged(object sender, SharpReport.Designer.SectionChangedEventArgs e){
 			if (SectionChanged != null) {
-	//ToDo Better Idea???????			
-				//Fill Array of Section rectangles
 				Rectangle [] rects = new Rectangle[5];
 				rects[0] = SectionClientArea (this.visualReportHeader);
 				rects[1] = SectionClientArea (this.visualPageHeader);

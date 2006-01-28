@@ -41,7 +41,12 @@ namespace SharpReportCore {
 		}
 
 		public GenericFactory(Assembly ass, Type assignableType, string nameSpace){
-			Type at = typeof(object);
+			if (ass == null) {
+				throw new ArgumentNullException("ass");
+			}
+			if (assignableType == null) {
+				throw new ArgumentNullException("assignableType");
+			}
 			foreach (Type t in ass.GetTypes())
 			{
 				if (t.IsAbstract)

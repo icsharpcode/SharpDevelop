@@ -32,6 +32,9 @@ namespace SharpReportCore {
 		                              typeof(BaseReportItem)){
 		}
 		public new BaseReportItem Create (string name){
+			if (String.IsNullOrEmpty(name)) {
+				throw new ArgumentNullException("name");
+			}
 			if (name.LastIndexOf('.') > 0) {
 				StringBuilder b = new StringBuilder (name);
 				b.Remove (0,name.LastIndexOf('.') +1);

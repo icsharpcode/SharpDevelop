@@ -22,13 +22,13 @@
 using System;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Drawing.Printing;
 using System.Windows.Forms;
 using System.Xml;
 	
 using SharpReportCore;
-//	using SharpReport.Printing;
-//using SharpReport.ReportItems;
+
 	/// <summary>
 	/// Runs the Report
 	/// </summary>
@@ -41,17 +41,15 @@ namespace SharpReportCore {
 	public class RenderFormSheetReport : AbstractRenderer {
 
 		private PointF currentPoint = new PointF (0,0);
-		private PointF pageFooterStart = new PointF (0,0);
-		
-	
+
 		public RenderFormSheetReport (ReportModel model):base( model){
 		                             
 		}
 		
 		
 		#region event's
-		protected override  void ReportQueryPage (object sender,QueryPageSettingsEventArgs qpe) {
-			base.ReportQueryPage (sender,qpe);
+		protected override  void ReportQueryPage (object sender,QueryPageSettingsEventArgs e) {
+			base.ReportQueryPage (sender,e);
 		}
 		
 		
@@ -90,7 +88,8 @@ namespace SharpReportCore {
 		protected override void PrintBodyStart (object sender,ReportPageEventArgs e) {
 			base.PrintBodyStart (sender,e);
 			
-			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail);
+			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail,
+			                                   CultureInfo.InvariantCulture);
 			BaseSection section = base.CurrentSection;
 			section.SectionOffset = (int)this.currentPoint.Y + base.Gap;
 			
@@ -114,7 +113,8 @@ namespace SharpReportCore {
 		protected override void PrintPageEnd (object sender,ReportPageEventArgs e) {
 		
 			//PageFooter
-			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageFooter);
+			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageFooter,
+			                                   CultureInfo.InvariantCulture);
 			base.PrintPageEnd (sender,e);
 			
 			
@@ -126,7 +126,8 @@ namespace SharpReportCore {
 			
 			int off = base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height + base.Gap;
 			//ReportFooter
-			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportFooter);
+			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportFooter,
+			                                   CultureInfo.InvariantCulture);
 			BaseSection section = base.CurrentSection;
 	
 			section.SectionOffset = off;
