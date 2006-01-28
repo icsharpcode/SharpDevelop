@@ -21,21 +21,7 @@
 		${ClassName}                -> Class name (generally FileNameWithoutExtension w/o 'bad' characters)
 	 -->
 	<Files>
-		<File name="${FullName}" language="Boo"><![CDATA[namespace ${StandardNamespace}
-
-import System
-import System.Collections
-import System.Drawing
-import System.Windows.Forms
-
-partial class ${ClassName}:
-"""Description of ${ClassName}."""
-	def constructor():
-		// The InitializeComponent() call is required for Windows Forms designer support.
-		InitializeComponent()
-		// TODO: Add constructor code after the InitializeComponent() call.
-
-]]></File>
+		<!-- Designer file must come first, so the design tab is shown correctly -->
 		<File name="${Path}/${FileNameWithoutExtension}.Designer.boo" language="Boo"><![CDATA[namespace ${StandardNamespace}
 
 partial class ${ClassName}(System.Windows.Forms.Form):
@@ -55,6 +41,21 @@ partial class ${ClassName}(System.Windows.Forms.Form):
 		self.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
 		self.Text = '${ClassName}'
 		self.Name = '${ClassName}'
+
+]]></File>
+		<File name="${FullName}" language="Boo"><![CDATA[namespace ${StandardNamespace}
+
+import System
+import System.Collections
+import System.Drawing
+import System.Windows.Forms
+
+partial class ${ClassName}:
+"""Description of ${ClassName}."""
+	def constructor():
+		// The InitializeComponent() call is required for Windows Forms designer support.
+		InitializeComponent()
+		// TODO: Add constructor code after the InitializeComponent() call.
 
 ]]></File>
 	</Files>

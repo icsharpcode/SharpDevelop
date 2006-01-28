@@ -370,12 +370,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void SaveFile(FileDescriptionTemplate newfile, string content)
 		{
 			string parsedFileName = StringParser.Parse(newfile.Name);
+			string parsedContent = StringParser.Parse(content);
 			if (parsedFileName.StartsWith("/") || parsedFileName.StartsWith("\\"))
 				parsedFileName = parsedFileName.Substring(1);
 			if (newfile.IsDependentFile && Path.IsPathRooted(parsedFileName)) {
-				File.WriteAllText(parsedFileName, StringParser.Parse(content), ParserService.DefaultFileEncoding);
+				File.WriteAllText(parsedFileName, parsedContent, ParserService.DefaultFileEncoding);
+				ParserService.ParseFile(parsedFileName, parsedContent);
 			} else {
-				IWorkbenchWindow window = FileService.NewFile(Path.GetFileName(parsedFileName), StringParser.Parse(newfile.Language), StringParser.Parse(content));
+				IWorkbenchWindow window = FileService.NewFile(Path.GetFileName(parsedFileName), StringParser.Parse(newfile.Language), parsedContent);
 				if (window == null) {
 					return;
 				}

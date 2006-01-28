@@ -21,18 +21,6 @@
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
-Public Partial Class ${ClassName}
-	Public Sub New()
-		' The Me.InitializeComponent call is required for Windows Forms designer support.
-		Me.InitializeComponent()
-		
-		'
-		' TODO : Add constructor code after InitializeComponents
-		'
-	End Sub
-End Class
-]]></File>
 <File name="${Path}/${FileNameWithoutExtension}.Designer.vb" dependentUpon="${FileName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
 Partial Class ${ClassName}
 	Inherits System.Windows.Forms.UserControl
@@ -66,6 +54,18 @@ Partial Class ${ClassName}
 		'
 		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
 		Me.Name = "${ClassName}"
+	End Sub
+End Class
+]]></File>
+		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
+Public Partial Class ${ClassName}
+	Public Sub New()
+		' The Me.InitializeComponent call is required for Windows Forms designer support.
+		Me.InitializeComponent()
+		
+		'
+		' TODO : Add constructor code after InitializeComponents
+		'
 	End Sub
 End Class
 ]]></File>

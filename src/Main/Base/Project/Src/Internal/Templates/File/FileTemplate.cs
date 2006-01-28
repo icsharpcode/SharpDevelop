@@ -309,8 +309,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			// load the files
 			XmlElement files  = doc.DocumentElement["Files"];
 			XmlNodeList nodes = files.ChildNodes;
-			foreach (XmlElement filenode in nodes) {
-				this.files.Add(new FileDescriptionTemplate(filenode));
+			foreach (XmlNode filenode in nodes) {
+				if (filenode is XmlElement) {
+					this.files.Add(new FileDescriptionTemplate((XmlElement)filenode));
+				}
 			}
 			
 			// load scripts (if any)

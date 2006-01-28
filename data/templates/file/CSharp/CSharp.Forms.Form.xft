@@ -22,33 +22,7 @@
 		${ClassName}                -> Class name (generally FileNameWithoutExtension w/o 'bad' characters)
 	 -->
 	<Files>
-		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
-
-using System;
-using System.Drawing;
-using System.Windows.Forms;
-
-namespace ${StandardNamespace}
-{
-	/// <summary>
-	/// Description of ${ClassName}.
-	/// </summary>
-	public partial class ${ClassName}
-	{
-		public ${ClassName}()
-		{
-			//
-			// The InitializeComponent() call is required for Windows Forms designer support.
-			//
-			InitializeComponent();
-			
-			//
-			// TODO: Add constructor code after the InitializeComponent() call.
-			//
-		}
-	}
-}
-]]></File>
+		<!-- Designer file must come first, so the design tab is shown correctly -->
 <File name="${Path}/${FileNameWithoutExtension}.Designer.cs" dependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
 namespace ${StandardNamespace}
 {
@@ -86,6 +60,33 @@ namespace ${StandardNamespace}
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Text = "${ClassName}";
 			this.Name = "${ClassName}";
+		}
+	}
+}
+]]></File>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of ${ClassName}.
+	/// </summary>
+	public partial class ${ClassName}
+	{
+		public ${ClassName}()
+		{
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
+			
+			//
+			// TODO: Add constructor code after the InitializeComponent() call.
+			//
 		}
 	}
 }
