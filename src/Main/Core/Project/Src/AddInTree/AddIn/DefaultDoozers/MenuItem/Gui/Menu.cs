@@ -20,6 +20,7 @@ namespace ICSharpCode.Core
 		Codon  codon;
 		object caller;
 		ArrayList subItems;
+		bool isInitialized;
 		
 		public Menu(Codon codon, object caller, ArrayList subItems)
 		{
@@ -29,10 +30,6 @@ namespace ICSharpCode.Core
 			this.RightToLeft = RightToLeft.Inherit;
 			
 			UpdateText();
-			CreateDropDownItems(); // must be created to support shortcuts
-			if (DropDownItems.Count == 0 && subItems.Count > 0) {
-				DropDownItems.Add(new ToolStripMenuItem());
-			}
 		}
 		
 		public Menu(string text, params ToolStripItem[] subItems)
@@ -80,6 +77,13 @@ namespace ICSharpCode.Core
 			if (codon != null) {
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
 				this.Visible = failedAction != ConditionFailedAction.Exclude;
+				if (!isInitialized && failedAction != ConditionFailedAction.Exclude) {
+					isInitialized = true;
+					CreateDropDownItems(); // must be created to support shortcuts
+					if (DropDownItems.Count == 0 && subItems.Count > 0) {
+						DropDownItems.Add(new ToolStripMenuItem());
+					}
+				}
 			}
 		}
 		

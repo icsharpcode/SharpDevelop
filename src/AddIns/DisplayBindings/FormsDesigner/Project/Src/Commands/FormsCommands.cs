@@ -447,11 +447,6 @@ namespace ICSharpCode.FormsDesigner.Commands
 	{
 		public override bool IsChecked {
 			get {
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-				if (window == null) {
-					return false;
-				}
-				
 				FormsDesignerViewContent formDesigner = FormDesigner;
 				if (formDesigner != null) {
 					return formDesigner.IsTabOrderMode;
@@ -474,11 +469,6 @@ namespace ICSharpCode.FormsDesigner.Commands
 		
 		void SetTabOrder(bool show)
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window == null) {
-				return;
-			}
-			
 			FormsDesignerViewContent formDesigner = FormDesigner;
 			if (formDesigner != null) {
 				if (show) {
@@ -488,12 +478,6 @@ namespace ICSharpCode.FormsDesigner.Commands
 				}
 			}
 		}
-		
-		public override void Run()
-		{
-			 SetTabOrder(!IsChecked);
-		}
 	}
 #endregion
-
 }

@@ -41,6 +41,7 @@
 		          class       = "ICSharpCode.FormsDesigner.Commands.AlignToGrid"/>
 		<MenuItem id = "AlignSeparator" type = "Separator"/>
 		<MenuItem id          = "ViewTabOrder"
+		          type        = "CheckBox"
 		          label       = "${res:XML.MainMenu.FormatMenu.ShowTabOrder}"
 		          class       = "ICSharpCode.FormsDesigner.Commands.ViewTabOrder"/>
 		<MenuItem id          = "Lock"
@@ -79,6 +80,7 @@
 		          class       = "ICSharpCode.FormsDesigner.Commands.ViewCode"/>
 		<MenuItem id = "ViewCodeSeparator" type = "Separator"/>
 		<MenuItem id          = "ViewTabOrder"
+		          type        = "CheckBox"
 		          label       = "${res:XML.MainMenu.FormatMenu.ShowTabOrder}"
 		          class       = "ICSharpCode.FormsDesigner.Commands.ViewTabOrder"/>
 		<MenuItem id          = "Lock"
@@ -274,6 +276,7 @@
 				</MenuItem>
 				<MenuItem id = "OrderSeparator" type = "Separator"/>
 				<MenuItem id          = "ViewTabOrder"
+				          type        = "CheckBox"
 				          label       = "${res:XML.MainMenu.FormatMenu.ShowTabOrder}"
 				          class       = "ICSharpCode.FormsDesigner.Commands.ViewTabOrder"/>
 				<MenuItem id          = "Lock"

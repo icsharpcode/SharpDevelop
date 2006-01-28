@@ -80,7 +80,9 @@ namespace ICSharpCode.Core
 			if (codon != null) {
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
 				this.Visible = failedAction != ConditionFailedAction.Exclude;
-				Checked = MenuCommand.IsChecked;
+				if (MenuCommand != null) {
+					Checked = MenuCommand.IsChecked;
+				}
 			}
 		}
 		
