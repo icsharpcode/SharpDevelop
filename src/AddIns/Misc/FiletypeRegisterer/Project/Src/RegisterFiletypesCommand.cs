@@ -6,11 +6,10 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Drawing;
-using System.Windows.Forms;
+using System.Text;
 using System.Reflection;
-using System.Xml;
 
 using Microsoft.Win32;
 
@@ -31,78 +30,67 @@ namespace ICSharpCode.FiletypeRegisterer {
 		const int SHCNE_ASSOCCHANGED = 0x08000000;
 		const int SHCNF_IDLIST		 = 0x0;
 		
-		public static string DefaultExtensions = "sln|csproj|vbproj|booproj";
-		
-		public static string[,] GetFileTypes()
+		public static string GetDefaultExtensions(List<FiletypeAssociation> list)
 		{
-			try {
-				
-				XmlDocument doc = new XmlDocument();
-				
-				doc.Load(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "filetypes\\Filetypes.xml"));
-				
-				XmlNodeList nodes = doc.DocumentElement.ChildNodes;
-				string[,] ret = new string[doc.DocumentElement.ChildNodes.Count, 3];
-				
-				for(int i = 0; i < nodes.Count; ++i) {
-					if (nodes[i].NodeType == XmlNodeType.Comment)
-						continue;
-					XmlElement el = (XmlElement)nodes[i];
-					ret[i, 0] = el.InnerText;
-					ret[i, 1] = el.Attributes["ext"].InnerText;
-					ret[i, 2] = el.Attributes["icon"].InnerText;
+			StringBuilder b = new StringBuilder();
+			foreach (FiletypeAssociation a in list) {
+				if (a.IsDefault) {
+					if (b.Length > 0)
+						b.Append('|');
+					b.Append(a.Extension);
 				}
-				return ret;
-			} catch (Exception ex) {
-				MessageService.ShowError(ex);
-				return new string[0, 0];
 			}
+			return b.ToString();
 		}
 		
 		public override void Run()
 		{
-			// register Combine and Project by default
-			RegisterFiletypes(PropertyService.Get(uiFiletypesProperty, DefaultExtensions));
+			List<FiletypeAssociation> list = FiletypeAssociationDoozer.GetList();
 			
-			RegisterUnknownFiletypes();
+			// register Combine and Project by default
+			RegisterFiletypes(list, PropertyService.Get(uiFiletypesProperty, GetDefaultExtensions(list)));
+			
+			RegisterUnknownFiletypes(list);
 		}
 		
-		public static void RegisterFiletypes(string types)
+		public static void RegisterFiletypes(List<FiletypeAssociation> allTypes, string types)
 		{
 			string[] singleTypes = types.Split('|');
 			string mainExe  = Assembly.GetEntryAssembly().Location;
-			string[,] FileTypes = GetFileTypes();
 			
-			string resPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "filetypes") + Path.DirectorySeparatorChar;
-			foreach(string type in singleTypes) {
-				for(int i = 0; i < FileTypes.GetLength(0); ++i) {
-					if(FileTypes[i, 1] == type) {
-						RegisterFiletype(type, FileTypes[i, 0], '"' + Path.GetFullPath(mainExe) + '"' + " \"%1\"", Path.GetFullPath(resPath + FileTypes[i, 2]));
-					}
+			foreach (FiletypeAssociation type in allTypes) {
+				if (Array.IndexOf(singleTypes, type.Extension) >= 0) {
+					RegisterFiletype(type.Extension,
+					                 type.Text,
+					                 '"' + Path.GetFullPath(mainExe) + '"' + " \"%1\"",
+					                 Path.GetFullPath(type.Icon));
 				}
 			}
 		}
 		
-		public static void RegisterUnknownFiletypes()
+		public static void RegisterUnknownFiletypes(List<FiletypeAssociation> allTypes)
 		{
 			string mainExe  = Assembly.GetEntryAssembly().Location;
-			string[,] FileTypes = GetFileTypes();
 			string resPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "filetypes") + Path.DirectorySeparatorChar;
-			for(int i = 0; i < FileTypes.GetLength(0); ++i) {
-				if (FileTypes[i, 0] == null) continue;
-				if (!IsRegisteredFileType(FileTypes[i, 1])) {
-					RegisterFiletype(FileTypes[i, 1], FileTypes[i, 0], '"' + Path.GetFullPath(mainExe) + '"' + " \"%1\"", Path.GetFullPath(resPath + FileTypes[i, 2]));
+			foreach (FiletypeAssociation type in allTypes) {
+				if (!IsRegisteredFileType(type.Extension)) {
+					RegisterFiletype(type.Extension,
+					                 type.Text,
+					                 '"' + Path.GetFullPath(mainExe) + '"' + " \"%1\"",
+					                 Path.GetFullPath(type.Icon));
 				}
 			}
 		}
 		
 		public static bool IsRegisteredFileType(string extension)
 		{
-			RegistryKey key = Registry.ClassesRoot.OpenSubKey("." + extension);
-			if (key == null)
-				return false;
-			key.Close();
-			return true;
+			using (RegistryKey key = Registry.ClassesRoot.OpenSubKey("." + extension)) {
+				if (key != null)
+					return true;
+			}
+			using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\Classes\\." + extension)) {
+				return key != null;
+			}
 		}
 		
 		public static void RegisterFiletype(string extension, string description, string command, string icon)

@@ -195,20 +195,28 @@ namespace ICSharpCode.Core
 			if (k <= 0)
 				return null;
 			string prefix = propertyName.Substring(0, k);
+			propertyName = propertyName.Substring(k + 1);
 			switch (prefix.ToUpperInvariant()) {
+				case "ADDINPATH":
+					foreach (AddIn addIn in AddInTree.AddIns) {
+						if (addIn.Manifest.Identities.ContainsKey(propertyName)) {
+							return System.IO.Path.GetDirectoryName(addIn.FileName);
+						}
+					}
+					return null;
 				case "ENV":
-					return Environment.GetEnvironmentVariable(propertyName.Substring(k + 1));
+					return Environment.GetEnvironmentVariable(propertyName);
 				case "RES":
 					try {
-						return Parse(ResourceService.GetString(propertyName.Substring(k + 1)), customTags);
+						return Parse(ResourceService.GetString(propertyName), customTags);
 					} catch (ResourceNotFoundException) {
 						return null;
 					}
 				case "PROPERTY":
-					return PropertyService.Get(propertyName.Substring(k + 1));
+					return PropertyService.Get(propertyName);
 				default:
 					if (propertyObjects.ContainsKey(prefix)) {
-						return Get(propertyObjects[prefix], propertyName.Substring(k + 1));
+						return Get(propertyObjects[prefix], propertyName);
 					} else {
 						return null;
 					}

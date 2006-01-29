@@ -142,6 +142,7 @@
     <Compile Include="Src\AddInTree\AddIn\AddInReference.cs" />
     <Compile Include="Src\AddInTree\CoreStartup.cs" />
     <Compile Include="Src\AddInTree\AddInManager.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\StringDoozer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Services\LoggingService" />

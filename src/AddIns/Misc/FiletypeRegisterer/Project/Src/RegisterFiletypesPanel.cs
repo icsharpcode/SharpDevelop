@@ -11,6 +11,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections;
+using System.Collections.Generic;
 
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.Core;
@@ -28,13 +29,17 @@ namespace ICSharpCode.FiletypeRegisterer
 		
 		Hashtable wasChecked = new Hashtable();
 		
+		List<FiletypeAssociation> allTypes;
+		
 		public RegisterFiletypesPanel()
 		{
+			allTypes = FiletypeAssociationDoozer.GetList();
+			
 			// Initialize dialog controls
 			InitializeComponent();
 			
 			// Set previous values
-			SelectFiletypes(PropertyService.Get(RegisterFiletypesCommand.uiFiletypesProperty, RegisterFiletypesCommand.DefaultExtensions));
+			SelectFiletypes(PropertyService.Get(RegisterFiletypesCommand.uiFiletypesProperty, RegisterFiletypesCommand.GetDefaultExtensions(allTypes)));
 			regChk.Checked = PropertyService.Get(RegisterFiletypesCommand.uiRegisterStartupProperty, true);
 		}
 		
@@ -42,7 +47,7 @@ namespace ICSharpCode.FiletypeRegisterer
 		{
 			if (message == DialogMessage.OK) {
 				UnRegisterFiletypes();
-				RegisterFiletypesCommand.RegisterFiletypes(SelectedFiletypes);
+				RegisterFiletypesCommand.RegisterFiletypes(allTypes, SelectedFiletypes);
 				PropertyService.Set(RegisterFiletypesCommand.uiFiletypesProperty, SelectedFiletypes);
 				PropertyService.Set(RegisterFiletypesCommand.uiRegisterStartupProperty, regChk.Checked);
 			}
@@ -112,13 +117,10 @@ namespace ICSharpCode.FiletypeRegisterer
 		
 		void FillList(ListView list)
 		{
-			string[,] Items = RegisterFiletypesCommand.GetFileTypes();
-			
-			for(int i = 0; i < Items.GetLength(0); ++i) {
-				if (Items[i, 0] == null) continue;
+			foreach (FiletypeAssociation type in allTypes) {
 				ListViewItem lv;
-				lv = new ListViewItem(StringParser.Parse(Items[i, 0]) + " (." + Items[i, 1] + ")");
-				lv.Tag = Items[i, 1];
+				lv = new ListViewItem(type.Text + " (." + type.Extension + ")");
+				lv.Tag = type.Extension;
 				list.Items.Add(lv);
 			}
 		}

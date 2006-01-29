@@ -317,9 +317,9 @@ namespace ICSharpCode.Core
 			/// A signed integer indicating the relative sort ranking
 			/// of item <paramref name="x"/> relative to item
 			/// <paramref name="y"/>.
-			/// Return value greater than zero: x > y.
+			/// Return value greater than zero: x &gt; y.
 			/// Return value is zero: x == y.
-			/// Return value is less than zero: x \< y.
+			/// Return value is less than zero: x &lt; y.
 			/// </returns>
 			public int Compare(object x, object y) {
 				ListViewItem a = (ListViewItem)x;   // List item a

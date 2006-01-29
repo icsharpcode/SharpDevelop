@@ -23,14 +23,27 @@ namespace ICSharpCode.Core
 	/// <attribute name="equals">
 	/// The second string.
 	/// </attribute>
-	/// <example title="Test if the browser is showing a HtmlHelp page">
+	/// <attribute name="comparisonType">
+	/// The mode of the comparison: a field of the System.StringComparison enumeration. The default is
+	/// 'InvariantCultureIgnoreCase'.
+	/// </attribute>
+	/// <example title="Check the value of a property in the PropertyService">
 	/// &lt;Condition name = "Compare" string = "${property:SharpDevelop.FiletypesRegisterStartup}" equals = "True"&gt;
 	/// </example>
 	public class CompareConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			return StringParser.Parse(condition.Properties["string"]) == StringParser.Parse(condition.Properties["equals"]);
+			string comparisonTypeText = condition.Properties["comparisonType"];
+			StringComparison comparisonType;
+			if (string.IsNullOrEmpty(comparisonTypeText))
+				comparisonType = StringComparison.InvariantCultureIgnoreCase;
+			else
+				comparisonType = (StringComparison)Enum.Parse(typeof(StringComparison), comparisonTypeText);
+			
+			return string.Equals(StringParser.Parse(condition.Properties["string"]),
+			                     StringParser.Parse(condition.Properties["equals"]),
+			                     comparisonType);
 		}
 	}
 }

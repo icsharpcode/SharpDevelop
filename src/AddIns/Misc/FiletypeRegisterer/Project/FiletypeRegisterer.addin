@@ -8,8 +8,70 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "ICSharpCode.FiletypeRegisterer.dll"/>
+		<Import assembly = "ICSharpCode.FiletypeRegisterer.dll">
+			<Doozer name = "FiletypeAssociation"
+			        class = "ICSharpCode.FiletypeRegisterer.FiletypeAssociationDoozer"/>
+		</Import>
 	</Runtime>
+	
+	<Path name = "/AddIns/FileTypeRegisterer/FileTypes">
+		<FiletypeAssociation
+			id = "sln"
+			autoRegister = "True"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/cmbx.ico"
+			text = "${res:ICSharpCode.FiletypeRegisterer.SolutionFileAssozisation}"/>
+		<FiletypeAssociation
+			id = "csproj"
+			autoRegister = "True"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/prjx.ico"
+			text = "C# ${res:ICSharpCode.FiletypeRegisterer.Project}"/>
+		<FiletypeAssociation
+			id = "vbproj"
+			autoRegister = "True"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/prjx.ico"
+			text = "VB ${res:ICSharpCode.FiletypeRegisterer.Project}"/>
+		<FiletypeAssociation
+			id = "sdaddin"
+			autoRegister = "True"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/addin.ico"
+			text = "SharpDevelop ${res:AddInManager.FileAssociation}"/>
+		<FiletypeAssociation
+			id = "cs"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/cs.ico"
+			text = "${res:ICSharpCode.FiletypeRegisterer.CSharpSourceFileAssozisation}"/>
+		<FiletypeAssociation
+			id = "vb"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/vb.ico"
+			text = "${res:ICSharpCode.FiletypeRegisterer.VBNetSourceFileAssozisation}"/>
+		<!--<FiletypeAssociation
+			id = "java"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/java.ico"
+			text = "${res:ICSharpCode.FiletypeRegisterer.JavaSourceFileAssozisation}"/>-->
+		<FiletypeAssociation
+			id = "xfrm"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/xfrm.ico"
+			text = "${res:ICSharpCode.FiletypeRegisterer.XMLFormFileAssozisation}"/>
+		<FiletypeAssociation
+			id = "resx"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/resx.ico"
+			text = "${res:ICSharpCode.FiletypeRegisterer.ResXResourceFilesFileAssozisation}"/>
+		<FiletypeAssociation
+			id = "resources"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/resx.ico"
+			text = "${res:ICSharpCode.FiletypeRegisterer.BinaryResourceFilesFileAssozisation}"/>
+		<FiletypeAssociation
+			id = "xml"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/xml.ico"
+			text = "${res:ICSharpCode.FiletypeRegisterer.XmlFileAssozisation}"/>
+		<FiletypeAssociation
+			id = "cmbx"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/cmbx.ico"
+			text = "SharpDevelop 1.x Combine"/>
+		<FiletypeAssociation
+			id = "prjx"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/prjx.ico"
+			text = "SharpDevelop 1.x ${res:ICSharpCode.FiletypeRegisterer.Project}"/>
+	</Path>
 	
 	<Path name = "/Workspace/Autostart">
 		<Condition name = "Compare" string = "${property:SharpDevelop.FiletypesRegisterStartup}" equals = "True">

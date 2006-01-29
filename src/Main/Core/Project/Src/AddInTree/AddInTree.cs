@@ -28,6 +28,7 @@ namespace ICSharpCode.Core
 		{
 			doozers.Add("Class", new ClassDoozer());
 			doozers.Add("FileFilter", new FileFilterDoozer());
+			doozers.Add("String", new StringDoozer());
 			doozers.Add("Icon", new IconDoozer());
 			doozers.Add("MenuItem", new MenuItemDoozer());
 			doozers.Add("ToolbarItem", new ToolbarItemDoozer());

@@ -22,6 +22,16 @@
 		            extensions = "*.boo"/>
 	</Path>
 	
+	<Path name = "/AddIns/FileTypeRegisterer/FileTypes">
+		<FiletypeAssociation
+			id = "booproj"
+			insertafter = "sln"
+			insertbefore = "sdaddin"
+			autoRegister = "True"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/prjx.ico"
+			text = "Boo ${res:ICSharpCode.FiletypeRegisterer.Project}"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert">
 		<Condition name = "ProjectActive" activeproject="VBNet">
 			<MenuItem id = "VBToBooConverter"
