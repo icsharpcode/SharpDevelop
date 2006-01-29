@@ -28,7 +28,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		IDesignerHost host;
 		
 		string FileName  = String.Empty;
-	
+		
 		#region ResourceStorage
 		public class ResourceStorage
 		{
@@ -37,7 +37,7 @@ namespace ICSharpCode.FormsDesigner.Services
 
 			public IProject     project = null;
 			string fileName;
-			byte[] buffer;		
+			byte[] buffer;
 			
 			/// <summary>
 			/// true, if the currently stored resource is not empty.
@@ -257,7 +257,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				resourceFileName = new StringBuilder(Path.GetTempPath());
 			}
 			resourceFileName.Append(Path.DirectorySeparatorChar);
-			resourceFileName.Append(host.RootComponent.Site.Name);
+			resourceFileName.Append(Path.GetFileNameWithoutExtension(FileName));
 			
 			if (info != null && info.Name.Length > 0) {
 				resourceFileName.Append('.');

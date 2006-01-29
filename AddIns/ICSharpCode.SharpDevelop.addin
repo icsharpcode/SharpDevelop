@@ -2043,4 +2043,7 @@
 		<Class id="EqualsCodeGenerator"
 		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.EqualsCodeGenerator"/>
 	</Path>
+	<!--
+	<Path name = "/SharpDevelop/Workbench/DependentFileExtensions">
+	</Path>-->
 </AddIn>

@@ -137,12 +137,32 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!FileService.CheckFileName(newName)) {
 				return;
 			}
-			Text = newName;
-			if (FileName != null) {
-				string newFileName = Path.Combine(Path.GetDirectoryName(FileName), newName);
-				FileService.RenameFile(FileName, newFileName, false);
-				this.fileName = newFileName;
-				ProjectService.SaveSolution();
+			string oldFileName = FileName;
+			if (oldFileName != null) {
+				string newFileName = Path.Combine(Path.GetDirectoryName(oldFileName), newName);
+				if (FileService.RenameFile(oldFileName, newFileName, false)) {
+					Text = newName;
+					this.fileName = newFileName;
+					
+					string oldPrefix = Path.GetFileNameWithoutExtension(oldFileName) + ".";
+					string newPrefix = Path.GetFileNameWithoutExtension(newFileName) + ".";
+					foreach (TreeNode node in Nodes) {
+						FileNode fileNode = node as FileNode;
+						if (fileNode != null) {
+							FileProjectItem fileItem = fileNode.ProjectItem as FileProjectItem;
+							if (fileItem != null && string.Equals(fileItem.DependentUpon, Path.GetFileName(oldFileName), StringComparison.OrdinalIgnoreCase)) {
+								fileItem.DependentUpon = newName;
+							}
+							if (fileNode.Text.StartsWith(oldPrefix)) {
+								fileNode.AfterLabelEdit(newPrefix + fileNode.Text.Substring(oldPrefix.Length));
+							}
+						} else {
+							LoggingService.Warn("FileNode.AfterLabelEdit. Child is not a FileNode.");
+						}
+					}
+					
+					Project.Save();
+				}
 			}
 		}
 		public override object AcceptVisitor(ProjectBrowserTreeNodeVisitor visitor, object data)
@@ -232,7 +252,6 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		/// <summary>
 		/// Deletes all dependent child nodes and their associated files.
-		/// Does not delete recursively - not required as yet.
 		/// </summary>
 		void DeleteChildNodes()
 		{
@@ -241,6 +260,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (TreeNode node in Nodes) {
 				FileNode fileNode = node as FileNode;
 				if (fileNode != null) {
+					fileNode.DeleteChildNodes(); // delete recursively
 					FileService.RemoveFile(fileNode.FileName, false);
 				} else {
 					LoggingService.Warn("FileNode.DeleteChildren. Child is not a FileNode.");

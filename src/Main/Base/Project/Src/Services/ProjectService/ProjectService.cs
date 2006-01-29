@@ -116,7 +116,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					foreach (ProjectItem item in project.Items) {
 						++y;
 						if (FileUtility.IsBaseDirectory(oldName, item.FileName)) {
+							OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
 							item.FileName = FileUtility.RenameBaseDirectory(item.FileName, oldName, newName);
+							OnProjectItemAdded(new ProjectItemEventArgs(project, item));
 						}
 					}
 				}

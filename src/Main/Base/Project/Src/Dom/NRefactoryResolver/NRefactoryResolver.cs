@@ -876,6 +876,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public IReturnType DynamicLookup(string identifier)
 		{
 			ResolveResult rr = ResolveIdentifierInternal(identifier);
+			if (rr is NamespaceResolveResult) {
+				return new TypeVisitor.NamespaceReturnType((rr as NamespaceResolveResult).Name);
+			}
 			return (rr != null) ? rr.ResolvedType : null;
 		}
 		

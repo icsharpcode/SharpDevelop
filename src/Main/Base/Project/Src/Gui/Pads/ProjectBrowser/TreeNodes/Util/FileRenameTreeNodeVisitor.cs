@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override object Visit(FileNode fileNode, object data)
 		{
 			if (FileUtility.IsEqualFileName(oldName, fileNode.FileName)) {
-				fileNode.FileName = FileUtility.RenameBaseDirectory(fileNode.FileName, oldName, newName);
+				fileNode.FileName = newName;
 			} else if (FileUtility.IsBaseDirectory(oldName, fileNode.FileName)) {
 				fileNode.FileName = FileUtility.RenameBaseDirectory(fileNode.FileName, oldName, newName);
 			}

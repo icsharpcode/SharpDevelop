@@ -794,5 +794,64 @@ class B {
 			return false;
 		}
 		#endregion
+		
+		#region MixedType tests
+		const string mixedTypeTestProgram = @"using System;
+class A {
+	void TestMethod() {
+		
+	}
+	public Project Project { get { return new Project(); } }
+	public Project OtherName { get { return new Project(); } }
+}
+class Project {
+  public static string Static;
+  public int Instance;
+}
+namespace OtherName { class Bla { } }
+";
+		
+		[Test]
+		public void MixedResolveResultTest()
+		{
+			ResolveResult result = Resolve(mixedTypeTestProgram, "Project", 4);
+			Assert.IsInstanceOfType(typeof(MixedResolveResult), result);
+			MixedResolveResult mrr = (MixedResolveResult)result;
+			Assert.IsInstanceOfType(typeof(MemberResolveResult), mrr.PrimaryResult);
+			Assert.AreEqual("Project", mrr.TypeResult.ResolvedClass.Name);
+		}
+		
+		[Test]
+		public void MixedStaticAccessTest()
+		{
+			ResolveResult result = Resolve(mixedTypeTestProgram, "Project.Static", 4);
+			Assert.IsInstanceOfType(typeof(MemberResolveResult), result);
+			Assert.AreEqual("Static", (result as MemberResolveResult).ResolvedMember.Name);
+		}
+		
+		[Test]
+		public void MixedInstanceAccessTest()
+		{
+			ResolveResult result = Resolve(mixedTypeTestProgram, "Project.Instance", 4);
+			Assert.IsInstanceOfType(typeof(MemberResolveResult), result);
+			Assert.AreEqual("Instance", (result as MemberResolveResult).ResolvedMember.Name);
+		}
+		
+		[Test]
+		public void NamespaceMixResolveResultTest()
+		{
+			ResolveResult result = Resolve(mixedTypeTestProgram, "OtherName", 4);
+			Assert.IsInstanceOfType(typeof(MemberResolveResult), result);
+			Assert.AreEqual("OtherName", (result as MemberResolveResult).ResolvedMember.Name);
+		}
+		
+		[Test]
+		public void NamespaceMixMemberAccessTest()
+		{
+			ResolveResult result = Resolve(mixedTypeTestProgram, "OtherName.Instance", 4);
+			Assert.IsInstanceOfType(typeof(MemberResolveResult), result);
+			Assert.AreEqual("Instance", (result as MemberResolveResult).ResolvedMember.Name);
+		}
+		#endregion
 	}
 }

@@ -313,10 +313,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (identifierExpression == null) {
 				return null;
 			}
-			string name = resolver.SearchNamespace(identifierExpression.Identifier);
-			if (name != null && name.Length > 0) {
-				return new NamespaceReturnType(name);
-			}
 			IClass c = resolver.SearchClass(identifierExpression.Identifier);
 			if (c != null) {
 				return c.DefaultReturnType;

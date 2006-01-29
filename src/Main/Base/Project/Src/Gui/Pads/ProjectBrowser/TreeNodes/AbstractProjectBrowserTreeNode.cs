@@ -28,16 +28,9 @@ namespace ICSharpCode.SharpDevelop.Project
 	public abstract class AbstractProjectBrowserTreeNode : ExtTreeNode, IDisposable
 	{
 		string                  toolbarAddinTreePath     = null;
-		ProjectItem             item;
 		
 		protected bool autoClearNodes = true;
 		protected bool canLabelEdited = true;
-		
-		public ProjectItem Item {
-			get {
-				return item;
-			}
-		}
 		
 		/// <returns>
 		/// True, if this node can be label edited, false otherwise.
@@ -85,11 +78,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				return null;
 			}
-		}
-		
-		public AbstractProjectBrowserTreeNode()
-		{
-			item = null;
 		}
 		
 		public static bool ShowAll {
