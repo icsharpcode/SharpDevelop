@@ -21,93 +21,17 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
-	class MenuCommandService : IMenuCommandService
+	class MenuCommandService : System.ComponentModel.Design.MenuCommandService
 	{
-		IServiceContainer serviceContainer;
-			
-		ArrayList     commands = new ArrayList();
-		ArrayList     verbs    = new ArrayList();
 		
 		Control panel;
-		DesignSurface designSurface;
 		
-		public DesignerVerbCollection Verbs {
-			get {
-				DesignerVerbCollection verbCollection = CreateDesignerVerbCollection();
-				verbCollection.AddRange((DesignerVerb[])verbs.ToArray(typeof(DesignerVerb)));
-				return verbCollection;
-			}
-		}
-		
-		public MenuCommandService(Control panel, DesignSurface designSurface, IServiceContainer serviceContainer)
+		public MenuCommandService(Control panel, IServiceProvider serviceProvider) : base(serviceProvider)
 		{
-			this.panel            = panel;
-			this.designSurface = designSurface;
-			this.serviceContainer = serviceContainer;			
+			this.panel = panel;
 		}
 		
-		public void AddCommand(System.ComponentModel.Design.MenuCommand command)
-		{
-			if (command != null && command.CommandID != null) {
-				if (!commands.Contains(command)) {
-					this.commands.Add(command);
-				}
-			}
-		}
-		
-		public void AddVerb(DesignerVerb verb)
-		{
-			if (verb != null) {
-				this.verbs.Add(verb);
-			}
-		}
-		
-		public void RemoveCommand(System.ComponentModel.Design.MenuCommand command)
-		{
-			if (command != null) {
-				commands.Remove(command.CommandID);
-			}
-		}
-		
-		public void RemoveVerb(DesignerVerb verb)
-		{
-			if (verb != null) {
-				verbs.Remove(verb);
-			}
-		}
-		
-		public bool GlobalInvoke(CommandID commandID)
-		{
-			System.ComponentModel.Design.MenuCommand menuCommand = FindCommand(commandID);
-			if (menuCommand == null) {
-				return false;
-			}
-			
-			menuCommand.Invoke();
-			return true;
-		}
-		
-		public System.ComponentModel.Design.MenuCommand FindCommand(CommandID commandID)
-		{
-//			if (StringType.StrCmp(MenuUtilities.GetCommandNameFromCommandID(commandID), "", false) == 0 && StringType.StrCmp(commandID.ToString(), "74d21313-2aee-11d1-8bfb-00a0c90f26f7 : 12288", false) == 0) {
-//				return MenuUtilities.gPropertyGridResetCommand;
-//			}
-			
-			foreach (System.ComponentModel.Design.MenuCommand menuCommand in commands) {
-				if (menuCommand.CommandID == commandID) {
-					return menuCommand;
-				}
-			}
-			
-			foreach (DesignerVerb verb in Verbs) {
-				if (verb.CommandID == commandID) {
-					return verb;
-				}
-			}
-			return null;
-		}
-		
-		public void ShowContextMenu(CommandID menuID, int x, int y)
+		public override void ShowContextMenu(CommandID menuID, int x, int y)
 		{
 			string contextMenuPath = "/SharpDevelop/FormsDesigner/ContextMenus/";
 			
@@ -128,26 +52,5 @@ namespace ICSharpCode.FormsDesigner.Services
 			MenuService.ShowContextMenu(this, contextMenuPath, panel, p.X, p.Y);
 		}
 		
-		public DesignerVerbCollection CreateDesignerVerbCollection()
-		{
-			DesignerVerbCollection designerVerbCollection = new DesignerVerbCollection();
-			
-			ISelectionService selectionService = (ISelectionService)designSurface.GetService(typeof(ISelectionService));
-			IDesignerHost host = (IDesignerHost)serviceContainer.GetService(typeof(IDesignerHost));
-			if (host != null && selectionService != null && selectionService.SelectionCount == 1) {
-				IComponent selectedComponent = selectionService.PrimarySelection as IComponent;
-				if (selectedComponent != null) {
-					IDesigner designer = host.GetDesigner(selectedComponent);
-					if (designer != null) {
-						designerVerbCollection.AddRange(designer.Verbs);
-					}
-				}
-				
-				if (selectedComponent == host.RootComponent) {
-					designerVerbCollection.AddRange((DesignerVerb[])this.verbs.ToArray(typeof(DesignerVerb)));
-				}
-			}
-			return designerVerbCollection;
-		}
 	}
 }

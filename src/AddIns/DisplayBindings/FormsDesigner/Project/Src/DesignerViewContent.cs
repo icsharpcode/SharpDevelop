@@ -166,11 +166,10 @@ namespace ICSharpCode.FormsDesigner
 			
 			designSurface = new DesignSurface(serviceContainer);
 			
-			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(p, designSurface, serviceContainer));
+			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(p, designSurface));
 			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(designSurface);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
-			serviceContainer.AddService(typeof(IDesignerHost), Host); // required for SD2-484
 			designerResourceService.Host = Host;
 			
 			DesignerLoader designerLoader = loaderProvider.CreateLoader(generator);
