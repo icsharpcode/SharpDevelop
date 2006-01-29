@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return;
 			}
 			Text = folder.Location = folder.Name = newName;
-			ProjectService.SaveSolution();
+			solution.Save();
 		}
 		
 		public void AddItem(string fileName)
@@ -123,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Delete()
 		{
 			ProjectService.RemoveSolutionFolder(folder.IdGuid);
-			ProjectService.SaveSolution();
+			solution.Save();
 		}
 		
 		public override bool EnableCopy {

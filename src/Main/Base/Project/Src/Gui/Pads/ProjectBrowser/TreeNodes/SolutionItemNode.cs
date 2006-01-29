@@ -128,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			string newFileName = Path.Combine(Path.GetDirectoryName(this.FileName), newName);
 			FileService.RenameFile(this.FileName, newFileName, false);
-			ProjectService.SaveSolution();
+			solution.Save();
 		}
 		public override object AcceptVisitor(ProjectBrowserTreeNodeVisitor visitor, object data)
 		{

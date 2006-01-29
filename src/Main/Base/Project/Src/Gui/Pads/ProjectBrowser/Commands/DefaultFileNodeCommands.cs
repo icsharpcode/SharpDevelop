@@ -52,6 +52,14 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		void ExcludeFileNode(FileNode fileNode)
 		{
+			List<FileNode> dependentNodes = new List<FileNode>();
+			foreach (TreeNode subNode in fileNode.Nodes) {
+				// exclude dependent files
+				if (subNode is FileNode)
+					dependentNodes.Add((FileNode)subNode);
+			}
+			dependentNodes.ForEach(ExcludeFileNode);
+			
 			ProjectService.RemoveProjectItem(fileNode.Project, fileNode.ProjectItem);
 			fileNode.ProjectItem = null;
 			fileNode.FileNodeStatus = FileNodeStatus.None;

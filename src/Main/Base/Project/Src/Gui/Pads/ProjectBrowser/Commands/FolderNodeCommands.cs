@@ -121,6 +121,18 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			return null;
 		}
 		
+		public static IEnumerable<string> FindAdditionalFiles(string fileName)
+		{
+			List<string> list = new List<string>();
+			StringParser.Properties["Extension"] = Path.GetExtension(fileName);
+			string prefix = Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileNameWithoutExtension(fileName));
+			foreach (string ext in AddInTree.BuildItems("/SharpDevelop/Workbench/DependentFileExtensions", null, true)) {
+				if (File.Exists(prefix + ext))
+					list.Add(prefix + ext);
+			}
+			return list;
+		}
+		
 		public override void Run()
 		{
 			TreeNode selectedNode = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
@@ -145,35 +157,63 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				fdiag.Title = StringParser.Parse("${res:ProjectComponent.ContextMenu.AddExistingFiles}");
 				
 				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-					string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(fdiag.FileNames[0]));
-					if (!FileUtility.IsEqualFileName(fdiag.FileNames[0], copiedFileName)) {
+					List<KeyValuePair<string, string>> fileNames = new List<KeyValuePair<string, string>>(fdiag.FileNames.Length);
+					foreach (string fileName in fdiag.FileNames) {
+						fileNames.Add(new KeyValuePair<string, string>(fileName, ""));
+					}
+					bool addedDependentFiles = false;
+					foreach (string fileName in fdiag.FileNames) {
+						foreach (string additionalFile in FindAdditionalFiles(fileName)) {
+							if (!fileNames.Exists(delegate(KeyValuePair<string, string> pair) {
+							                      	return FileUtility.IsEqualFileName(pair.Key, additionalFile);
+							                      }))
+							{
+								addedDependentFiles = true;
+								fileNames.Add(new KeyValuePair<string, string>(additionalFile, Path.GetFileName(fileName)));
+							}
+						}
+					}
+					
+					
+					
+					string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(fileNames[0].Key));
+					if (!FileUtility.IsEqualFileName(fileNames[0].Key, copiedFileName)) {
 						int res = MessageService.ShowCustomDialog(fdiag.Title, "${res:ProjectComponent.ContextMenu.AddExistingFiles.Question}",
 						                                          0, 2,
 						                                          "${res:ProjectComponent.ContextMenu.AddExistingFiles.Copy}",
 						                                          "${res:ProjectComponent.ContextMenu.AddExistingFiles.Link}",
 						                                          "${res:Global.CancelButtonText}");
 						if (res == 1) {
-							foreach (string fileName in fdiag.FileNames) {
+							foreach (KeyValuePair<string, string> pair in fileNames) {
+								string fileName = pair.Key;
 								string relFileName = FileUtility.GetRelativePath(node.Project.Directory, fileName);
 								FileNode fileNode = new FileNode(fileName, FileNodeStatus.InProject);
 								FileProjectItem fileProjectItem = new FileProjectItem(node.Project, IncludeFileInProject.GetDefaultItemType(node.Project, fileName));
 								fileProjectItem.Include = relFileName;
 								fileProjectItem.Properties.Set("Link", Path.Combine(node.RelativePath, Path.GetFileName(fileName)));
+								fileProjectItem.DependentUpon = pair.Value;
 								fileNode.ProjectItem = fileProjectItem;
 								fileNode.AddTo(node);
 								ProjectService.AddProjectItem(node.Project, fileProjectItem);
 							}
 							node.Project.Save();
+							if (addedDependentFiles)
+								node.RecreateSubNodes();
 							return;
 						}
 						if (res == 2) {
 							return;
 						}
 					}
-					foreach (string fileName in fdiag.FileNames) {
-						CopyFile(fileName, node, true);
+					foreach (KeyValuePair<string, string> pair in fileNames) {
+						FileProjectItem item = CopyFile(pair.Key, node, true);
+						if (item != null) {
+							item.DependentUpon = pair.Value;
+						}
 					}
 					node.Project.Save();
+					if (addedDependentFiles)
+						node.RecreateSubNodes();
 				}
 			}
 		}

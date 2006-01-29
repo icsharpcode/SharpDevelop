@@ -494,7 +494,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				
 				this.directory = newPath;
-				ProjectService.SaveSolution();
+				Project.Save();
 			}
 		}
 		public override object AcceptVisitor(ProjectBrowserTreeNodeVisitor visitor, object data)

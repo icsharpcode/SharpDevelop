@@ -199,18 +199,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (FileNodeStatus == FileNodeStatus.Missing) {
 				FileService.RemoveFile(FileName, false);
-				ProjectService.SaveSolution();
+				Project.Save();
 			} else {
 				if (Nodes.Count > 0) {
 					if (MessageService.AskQuestion(GetQuestionText("${res:ProjectComponent.ContextMenu.DeleteWithDependentFiles.Question}"))) {
 						DeleteChildNodes();
 						FileService.RemoveFile(FileName, false);
-						ProjectService.SaveSolution();
+						Project.Save();
 					}
-				}
-				else if (MessageService.AskQuestion(GetQuestionText("${res:ProjectComponent.ContextMenu.Delete.Question}"))) {
+				} else if (MessageService.AskQuestion(GetQuestionText("${res:ProjectComponent.ContextMenu.Delete.Question}"))) {
 					FileService.RemoveFile(FileName, false);
-					ProjectService.SaveSolution();
+					Project.Save();
 				}
 			}
 		}
