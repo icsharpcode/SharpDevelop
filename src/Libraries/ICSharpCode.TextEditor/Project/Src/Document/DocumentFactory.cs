@@ -24,14 +24,25 @@ namespace ICSharpCode.TextEditor.Document
 		public IDocument CreateDocument()
 		{
 			DefaultDocument doc = new DefaultDocument();
-			doc.TextBufferStrategy    = new GapTextBufferStrategy();
-			doc.FormattingStrategy    = new DefaultFormattingStrategy();
-			doc.LineManager          = new DefaultLineManager(doc, null);
-			doc.FoldingManager        = new FoldingManager(doc, doc.LineManager);
+			doc.TextBufferStrategy  = new GapTextBufferStrategy();
+			doc.FormattingStrategy  = new DefaultFormattingStrategy();
+			doc.LineManager         = new DefaultLineManager(doc, null);
+			doc.FoldingManager      = new FoldingManager(doc, doc.LineManager);
 			doc.FoldingManager.FoldingStrategy       = null; //new ParserFoldingStrategy();
-			doc.MarkerStrategy       = new MarkerStrategy(doc);
-			doc.BookmarkManager      = new BookmarkManager(doc, doc.LineManager);
-			doc.CustomLineManager      = new CustomLineManager(doc.LineManager);
+			doc.MarkerStrategy      = new MarkerStrategy(doc);
+			doc.BookmarkManager     = new BookmarkManager(doc, doc.LineManager);
+			doc.CustomLineManager   = new CustomLineManager(doc.LineManager);
+			return doc;
+		}
+		
+		/// <summary>
+		/// Creates a new document and loads the given file
+		/// </summary>
+		public IDocument CreateFromTextBuffer(ITextBufferStrategy textBuffer)
+		{
+			DefaultDocument doc = (DefaultDocument)CreateDocument();
+			doc.TextContent = textBuffer.GetText(0, textBuffer.Length);
+			doc.TextBufferStrategy = textBuffer;
 			return doc;
 		}
 		

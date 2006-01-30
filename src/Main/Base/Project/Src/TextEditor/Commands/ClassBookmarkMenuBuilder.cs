@@ -138,9 +138,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IClass c = (IClass)item.Tag;
-			c = c.DefaultReturnType.GetUnderlyingClass(); // get compound class if class is partial
 			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameClassText}", c.Name);
 			if (!FindReferencesAndRenameHelper.CheckName(newName, c.Name)) return;
+			
+			RenameClass(c, newName);
+		}
+		
+		public static void RenameClass(IClass c, string newName)
+		{
+			c = c.DefaultReturnType.GetUnderlyingClass(); // get compound class if class is partial
 			
 			List<Reference> list = RefactoringService.FindReferences(c, null);
 			if (list == null) return;
@@ -160,12 +166,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			FindReferencesAndRenameHelper.RenameReferences(list, newName);
 		}
 		
-		void AddDeclarationAsReference(List<Reference> list, string fileName, DomRegion region, string name)
+		static void AddDeclarationAsReference(List<Reference> list, string fileName, DomRegion region, string name)
 		{
 			if (fileName == null)
 				return;
 			ProvidedDocumentInformation documentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(fileName);
-			int offset = documentInformation.Document.PositionToOffset(new Point(region.BeginColumn - 1, region.BeginLine - 1));
+			int offset = documentInformation.CreateDocument().PositionToOffset(new Point(region.BeginColumn - 1, region.BeginLine - 1));
 			string text = documentInformation.TextBuffer.GetText(offset, Math.Min(name.Length + 30, documentInformation.TextBuffer.Length - offset - 1));
 			int offsetChange = text.IndexOf(name);
 			if (offsetChange < 0)
@@ -178,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			list.Add(new Reference(fileName, offset, name.Length, name, null));
 		}
 		
-		List<IClass> GetClassParts(IClass c)
+		static List<IClass> GetClassParts(IClass c)
 		{
 			List<IClass> list;
 			CompoundClass cc = c as CompoundClass;

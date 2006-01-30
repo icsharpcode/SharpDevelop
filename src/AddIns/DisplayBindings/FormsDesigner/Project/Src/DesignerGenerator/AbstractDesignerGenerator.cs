@@ -153,6 +153,12 @@ namespace ICSharpCode.FormsDesigner
 				throw new InvalidOperationException("InitializeComponent method not found in framework-generated CodeDom.");
 			}
 			
+			if (formClass.Name != this.formClass.Name) {
+				LoggingService.Info("Renaming form to " + formClass.Name);
+				ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassBookmarkMenuBuilder.RenameClass(this.formClass, formClass.Name);
+				Reparse();
+			}
+			
 			// generate file and get initialize components string
 			StringWriter writer = new StringWriter();
 			CodeDOMGenerator domGenerator = new CodeDOMGenerator(this.CodeDomProvider, tabs + '\t');

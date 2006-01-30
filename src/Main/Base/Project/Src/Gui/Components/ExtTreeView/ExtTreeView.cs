@@ -132,13 +132,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void ActivateSelectedItem()
-		{
-			ExtTreeNode node = SelectedNode as ExtTreeNode;
-			if (node != null) {
-				node.ActivateItem();
-			}
-		}
 		#region label editing
 		
 		public void StartLabelEdit(ExtTreeNode node)
@@ -226,15 +219,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnKeyPress(e);
 			if (e.KeyChar == '\r') {
-				ActivateSelectedItem();
+				ExtTreeNode node = SelectedNode as ExtTreeNode;
+				if (node != null) {
+					node.ActivateItem();
+				}
 				e.Handled = true;
 			}
 		}
 		
-		protected override void OnDoubleClick(EventArgs e)
+		protected override void OnMouseDoubleClick(MouseEventArgs e)
 		{
-			base.OnDoubleClick(e);
-			ActivateSelectedItem();
+			base.OnMouseDoubleClick(e);
+			ExtTreeNode node = GetNodeAt(e.Location) as ExtTreeNode;
+			if (node != null) {
+				node.ActivateItem();
+			}
 		}
 		
 		protected override void OnMouseDown(MouseEventArgs e)

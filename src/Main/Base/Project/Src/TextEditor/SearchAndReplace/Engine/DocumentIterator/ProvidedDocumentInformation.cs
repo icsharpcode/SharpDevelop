@@ -88,7 +88,7 @@ namespace SearchAndReplace
 			if (document != null) {
 				return document;
 			}
-			return new DocumentFactory().CreateFromFile(fileName);
+			return new DocumentFactory().CreateFromTextBuffer(textBuffer);
 		}		
 		
 		public ProvidedDocumentInformation(IDocument document, string fileName, int currentOffset)
