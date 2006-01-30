@@ -11,7 +11,7 @@
 using System;
 using System.Drawing;
 /// <summary>
-/// TODO - Add class summary
+///This class drwas a Circle
 /// </summary>
 /// <remarks>
 /// 	created by - Forstmeier Peter

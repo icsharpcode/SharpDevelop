@@ -73,38 +73,35 @@ namespace SharpReport{
 		/// <returns><see cref="ColumnCollection"</returns>
 	
 		private ColumnCollection ReadColumnCollection() {
-		
-			DataManager dataManager = null;
-			if (baseDesignerControl == null) {
-				return new ColumnCollection();
-			}
-			//FormSheet report = no available Fileds
-			if (baseDesignerControl.ReportModel.ReportSettings.ReportType == GlobalEnums.enmReportType.FormSheet) {
-				return new ColumnCollection();
-			}
-	
-			if (baseDesignerControl.ReportModel.DataModel.Equals(GlobalEnums.enmPushPullModel.PushData)) {
-				return new ColumnCollection();
-			}
-			// PullData, query the Datasource and ask for the available Fields
-			if (base.ConnectionObject == null) {
-				base.ConnectionObject = this.BuildConnectionObject(baseDesignerControl.ReportModel.ReportSettings);
-			}
 			
-			if (this.baseDesignerControl.ReportModel.DataModel.Equals(GlobalEnums.enmPushPullModel.PullData)){
-				
-				using (dataManager = new DataManager(base.ConnectionObject,
-				                                     baseDesignerControl.ReportModel.ReportSettings)) {
-					dataManager.DataBind();
-					return dataManager.AvailableFields;
-				}
+			ColumnCollection columnCollecion = new ColumnCollection();
+			switch (baseDesignerControl.ReportModel.DataModel) {
+				case GlobalEnums.enmPushPullModel.FormSheet:
+					//Plain FormSheet we do nothing for the moment
+					break;
+				case GlobalEnums.enmPushPullModel.PushData:
+					//PushData
+					columnCollecion = base.CollectFieldsFromModel(this.baseDesignerControl.ReportModel);
+					break;
+				case GlobalEnums.enmPushPullModel.PullData:
+					// PullData, query the Datasource and ask for the available Fields
+					if (base.ConnectionObject == null) {
+						base.ConnectionObject = this.BuildConnectionObject(baseDesignerControl.ReportModel.ReportSettings);
+					}
+					
+					if (this.baseDesignerControl.ReportModel.DataModel.Equals(GlobalEnums.enmPushPullModel.PullData)){
+						
+						using (DataManager dataManager = new DataManager(base.ConnectionObject,
+						                                                 baseDesignerControl.ReportModel.ReportSettings)) {
+							dataManager.DataBind();
+							columnCollecion = dataManager.AvailableFields;
+						}
+					}
+					break;
+				default:
+					break;
 			}
-			
-			//Pushdata, we walk thru all sections and collect the ReportDataItems
-			if (this.baseDesignerControl.ReportModel.DataModel == GlobalEnums.enmPushPullModel.PushData) {
-				return base.CollectFieldsFromModel(this.baseDesignerControl.ReportModel);
-			}
-			throw new ArgumentOutOfRangeException("SharpReportManager:ReadColumnCollection");
+			return columnCollecion;
 		}
 		
 		
@@ -114,7 +111,10 @@ namespace SharpReport{
 		private void AddItemsToSection (BaseSection section,ReportItemCollection collection) {
 			
 			if ((section == null)|| (collection == null) ) {
-				throw new ArgumentNullException ("Sharpreportmanager:AddItemsToSection");
+				throw new ArgumentNullException ("section");
+			}
+			if (collection == null) {
+				throw new ArgumentNullException("collection");
 			}
 			// if there are already items in the section,
 			// the we have to append the Items, means whe have to enlarge the section

@@ -20,8 +20,9 @@ using System.Globalization;
 	
 namespace SharpReportCore {
 	public class BaseToday : BaseFunction {
-		
-		public BaseToday() {
+		static string fnName = "Date";
+		public BaseToday():base(fnName) {
+			
 		}
 		
 		public override void Render(ReportPageEventArgs e) {
@@ -50,7 +51,7 @@ namespace SharpReportCore {
 		}
 		
 		public override string ToString() {
-			return "BaseToday";
+			return "Today";
 		}
 			
 			

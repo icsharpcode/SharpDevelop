@@ -87,7 +87,7 @@ namespace SharpReportCore {
 			this.graphicsUnit = GraphicsUnit.Millimeter;
 		}
 		
-		private string MakePoperFilename (string file) {
+		private static string MakePoperFilename (string file) {
 
 			if (file.EndsWith (GlobalValues.SharpReportExtension)) {
 				return file;
@@ -112,13 +112,13 @@ namespace SharpReportCore {
 		}
 		
 		#region Properties
-		protected string DefaultReportName {
+		protected static string DefaultReportName {
 			get {
 				return defaultReportName;
 			}
 		}
 		
-		protected string DefaultFileName {
+		protected static string DefaultFileName {
 			get {
 				return GlobalValues.SharpReportPlainFileName;
 			}

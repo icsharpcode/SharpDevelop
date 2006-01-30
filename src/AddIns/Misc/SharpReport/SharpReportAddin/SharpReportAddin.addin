@@ -33,12 +33,11 @@
 	</Path>
 	
 	<!-- FieldsExplorer -->
-	<!--label="${res:SharpReport.FieldsExplorer.Title}"-->
 	<Path name ="/SharpDevelop/Workbench/Pads">
 			<Pad id="fieldsexplorer"
-			     category = "Tools"
+			     category = "Invisible"
 			     icon="Icons.16x16.SharpQuery.Refresh"
-			     title = "FieldsExplorer"
+			     title = "${res:SharpReport.FieldsExplorer.Title}"
 			     shortcut = "Control|Alt|F"
 			     class="SharpReportAddin.FieldsExplorer"/>
 	</Path>

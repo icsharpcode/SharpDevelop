@@ -17,19 +17,27 @@ namespace SharpReportCore {
 	/// BaseClass for all Functions
 	/// </summary>
 	/// <remarks>
-	/// 	created by - Forstmeier Helmut
+	/// 	created by - Forstmeier Peter
 	/// 	created on - 05.09.2005 22:25:18
 	/// </remarks>
 	public class BaseFunction : SharpReportCore.BaseTextItem {
-		
-//		private string formatString = String.Empty;
+		string friendlyName;
 
-		
 		public BaseFunction():base() {
 			
 		}
+		public BaseFunction(string friendlyName)
+		{
+			this.friendlyName = friendlyName;
+		}
 		
 		#region properties
+		
+		public virtual string FriendlyName {
+			get {
+				return friendlyName;
+			}
+		}
 		
 		#endregion
 	}

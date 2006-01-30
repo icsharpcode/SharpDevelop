@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.Globalization;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
@@ -42,7 +43,8 @@ namespace SharpReportCore {
 				this.image = null;
 				this.image = Image.FromFile (fName);
 				if (image == null) {
-					string str = String.Format("Unable to Load {0}",fName);
+					string str = String.Format(CultureInfo.InvariantCulture,
+					                           "Unable to Load {0}",fName);
 					throw new ApplicationException(str);
 				}
 			} catch (Exception) {

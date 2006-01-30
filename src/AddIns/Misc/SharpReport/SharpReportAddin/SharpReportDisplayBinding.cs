@@ -21,6 +21,8 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
+using ICSharpCode.Core;
+
 using SharpReportCore;
 	/// <summary>
 	/// Displaybinding for SharpReport
@@ -42,7 +44,6 @@ namespace SharpReportAddin {
 						cmd.Run();
 						view.FileName = view.DesignerControl.ReportModel.ReportSettings.FileName;
 						view.UpdateView(true);
-						view.UpdateFieldsExplorer();
 						view.Selected();
 						return view;
 					} catch (SharpReportException) {
@@ -75,9 +76,9 @@ namespace SharpReportAddin {
 			if (GlobalValues.IsValidPrinter() == true) {
 				SharpReportView view = new SharpReportView();
 				try {
+					StatusBarService.SetMessage (String.Format("File : {0}",fileName));
 					view.Load (fileName);
 					view.UpdateView (false);
-					view.UpdateFieldsExplorer();
 					view.Selected();
 					return view;
 				} catch (Exception) {

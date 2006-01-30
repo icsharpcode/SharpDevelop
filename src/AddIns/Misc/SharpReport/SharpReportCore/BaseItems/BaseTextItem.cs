@@ -34,6 +34,9 @@ namespace SharpReportCore {
 		}
 		
 		public override void Render(ReportPageEventArgs rpea) {
+			if (rpea == null) {
+				throw new ArgumentNullException("rpea","BasetextItem:Render");
+			}
 			base.Render(rpea);
 			RectangleF rect = PrepareRectangle (rpea,this.Text);
 			PrintTheStuff (rpea,this.Text,rect);

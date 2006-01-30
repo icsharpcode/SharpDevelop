@@ -34,8 +34,9 @@ namespace SharpReportCore {
 		
 		protected  SizeF MeasureReportItem (SharpReportCore.ReportPageEventArgs rpea,IItemRenderer item) {
 			if (item == null) {
-				throw new ArgumentException(this.Name);
+				throw new ArgumentNullException("item","BaseGraphicItem");
 			}
+			
 			return new SizeF (item.Size.Width,item.Size.Height);
 		}
 		
@@ -68,7 +69,6 @@ namespace SharpReportCore {
 			}
 			set {
 				dashStyle = value;
-//				base.NotifyPropertyChanged("FormatString",true);
 				base.NotifyPropertyChanged("FormatString");
 			}
 		}

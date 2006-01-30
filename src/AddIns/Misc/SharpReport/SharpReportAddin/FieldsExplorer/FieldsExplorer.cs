@@ -46,25 +46,10 @@ namespace SharpReportAddin {
 		private TreeNode nodeFunction;
 		private TreeNode nodeParams;
 		
-		private ReportSettings reportSettings;
-		private bool isFilled = false;
+		private ReportModel reportModel;
+		private bool isFilled ;
 		
 		#region Publics
-		
-		public void Fill (ReportSettings reportSettings) {
-			
-			if (reportSettings == null) {
-				throw new ArgumentException("FieldsExplorer:Fill 'ReportSettings'");
-			}
-			this.reportSettings = reportSettings;
-			this.Nodes.Clear();
-			InitImageList();
-			BuildNodes();
-			this.FillTree();
-			this.ExpandAll();
-			isFilled = true;
-		}
-		
 		
 		///<summary>
 		/// Clear the selected Section
@@ -83,7 +68,6 @@ namespace SharpReportAddin {
 		/// Remove the selected Node from Sorting or Grouping Collection
 		/// </summary>
 		public void ClearSelectedNode() {
-			System.Console.WriteLine("ClearSelectedNode");
 			if (this.SelectedNode != null) {
 				TreeNode parent = this.SelectedNode.Parent;
 				this.SelectedNode.Remove();
@@ -96,7 +80,6 @@ namespace SharpReportAddin {
 		/// Toggle the SortDirection
 		/// </summary>
 		public void ToogleSortDirection () {
-			System.Console.WriteLine("Toggle SortDirection");
 			if (this.SelectedNode is ColumnsTreeNode) {
 				ColumnsTreeNode cn = (ColumnsTreeNode)this.SelectedNode;
 				if (cn.SortDirection ==  ListSortDirection.Ascending) {
@@ -148,7 +131,6 @@ namespace SharpReportAddin {
 		
 		
 		void TreeViewDragDrop (object sender,DragEventArgs e) {
-			System.Console.WriteLine("DragDrop");
 			if(e.Data.GetDataPresent("SharpReportAddin.ColumnsTreeNode", false)){
 				
 				Point pt = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
@@ -168,11 +150,21 @@ namespace SharpReportAddin {
 						CheckNode (dest);
 						node.Nodes.Add(dest);
 						NotifyReportView();
+						this.OnViewSaving(this,EventArgs.Empty);
 					}
 				}
 			}
 		}
 		
+		
+		private void Fill () {
+			this.Nodes.Clear();
+			InitImageList();
+			BuildNodes();
+			this.FillTree();
+			this.ExpandAll();
+			isFilled = true;
+		}
 		
 		private bool CheckForExist (SectionTreeNode sec,ColumnsTreeNode col) {
 			if (sec.Nodes.Count > 0) {
@@ -228,7 +220,6 @@ namespace SharpReportAddin {
 		private void NotifyReportView() {
 			if (this.isFilled) {
 				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is SharpReportView) {
-					System.Console.WriteLine("NotifyReportView");
 					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.IsDirty = true;
 				}
 			}
@@ -240,13 +231,29 @@ namespace SharpReportAddin {
 				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent == null) {
 					return;
 				}
-
-				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is SharpReportView) {
-					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving -= new EventHandler (OnViewSaving);
-					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving += new EventHandler (OnViewSaving);
-				}
-			} catch (Exception) {
+				WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving -= OnViewSaving;
+				WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving += OnViewSaving;
 				
+				PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(FieldsExplorer));
+				
+				SharpReportView v =
+					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent
+					as SharpReportView;
+				
+				if (v != null) {
+					this.reportModel = v.ReportManager.BaseDesignControl.ReportModel;
+					if (this.reportModel != null) {
+						this.Fill();
+						WorkbenchSingleton.Workbench.ShowPad(pad);
+						pad.BringPadToFront();
+					}
+					
+				} else {
+					WorkbenchSingleton.Workbench.WorkbenchLayout.HidePad(pad);
+				}
+				
+			} catch (Exception er) {
+				System.Console.WriteLine("\t{0}",er.Message);
 			}
 		}
 		
@@ -263,13 +270,13 @@ namespace SharpReportAddin {
 		#region Build TreeControl
 		
 		private void UpdateSorting () {
-			this.reportSettings.SortColumnCollection.Clear();
+			this.reportModel.ReportSettings.SortColumnCollection.Clear();
 			if (this.nodeSorting.Nodes.Count > 0) {
 				SortColumn sc;
 				AbstractColumn af;
 				for (int i = 0;i < this.nodeSorting.Nodes.Count ;i++ ) {
 					ColumnsTreeNode cn = (ColumnsTreeNode)this.nodeSorting.Nodes[i];
-					af = reportSettings.AvailableFieldsCollection.Find(cn.Text);
+					af = this.reportModel.ReportSettings.AvailableFieldsCollection.Find(cn.Text);
 					if (af != null) {
 						sc = new SortColumn (cn.Text,
 						                     cn.SortDirection,
@@ -279,35 +286,35 @@ namespace SharpReportAddin {
 						                     cn.SortDirection,
 						                     typeof(System.String));
 					}
-					reportSettings.SortColumnCollection.Add(sc);
+					this.reportModel.ReportSettings.SortColumnCollection.Add(sc);
 				}
 			}
 		}
 		
 		
 		private void UpdateGrouping () {
-			reportSettings.GroupColumnsCollection.Clear();
+			this.reportModel.ReportSettings.GroupColumnsCollection.Clear();
 			if (this.nodeGrouping.Nodes.Count > 0) {
 				GroupColumn gc;
 				for (int i = 0;i < this.nodeGrouping.Nodes.Count ;i++ ) {
 					ColumnsTreeNode cn = (ColumnsTreeNode)this.nodeGrouping.Nodes[i];
 					gc = new GroupColumn (cn.Text,i,cn.SortDirection);
-					reportSettings.GroupColumnsCollection.Add(gc);
+					this.reportModel.ReportSettings.GroupColumnsCollection.Add(gc);
 				}
 			}
 		}
 		
 		void SetAvailableFields () {
 			try {
-				int avCount = reportSettings.AvailableFieldsCollection.Count;
+				int avCount = this.reportModel.ReportSettings.AvailableFieldsCollection.Count;
 				for (int i = 0;i < avCount ;i++ ) {
-					AbstractColumn af = reportSettings.AvailableFieldsCollection[i];
+					AbstractColumn af = this.reportModel.ReportSettings.AvailableFieldsCollection[i];
 					ColumnsTreeNode n = new ColumnsTreeNode(af.ColumnName);
 					n.Tag = this.nodeAvailableFields;
 					
 					//we don't like ContextMenu here
 					n.ContextmenuAddinTreePath = "";
-					switch (this.reportSettings.CommandType) {
+					switch (this.reportModel.ReportSettings.CommandType) {
 							case CommandType.Text:{
 								n.ImageIndex = 6;
 								n.SelectedImageIndex = 6;
@@ -336,8 +343,8 @@ namespace SharpReportAddin {
 		void SetSortFields(){
 			try {
 				ColumnsTreeNode node;
-				int scCount = reportSettings.SortColumnCollection.Count;
-				foreach (SortColumn sc in reportSettings.SortColumnCollection) {
+				int scCount = this.reportModel.ReportSettings.SortColumnCollection.Count;
+				foreach (SortColumn sc in this.reportModel.ReportSettings.SortColumnCollection) {
 					node = new ColumnsTreeNode(sc.ColumnName,sc.SortDirection);
 					if (node.SortDirection == ListSortDirection.Ascending) {
 						node.ImageIndex = 4;
@@ -355,9 +362,9 @@ namespace SharpReportAddin {
 		void SetGroupFields(){
 			try {
 				ColumnsTreeNode node;
-				int gcCount = reportSettings.GroupColumnsCollection.Count;
+				int gcCount = this.reportModel.ReportSettings.GroupColumnsCollection.Count;
 				for (int i = 0;i < gcCount ;i++ ) {
-					GroupColumn gc = (GroupColumn)reportSettings.GroupColumnsCollection[i];
+					GroupColumn gc = (GroupColumn)this.reportModel.ReportSettings.GroupColumnsCollection[i];
 					node = new ColumnsTreeNode(gc.ColumnName);
 					if (node.SortDirection == ListSortDirection.Ascending) {
 						node.ImageIndex = 4;
@@ -373,43 +380,43 @@ namespace SharpReportAddin {
 			}
 		}
 		
-		/*
-		void SetParamFields (SharpReportManager reportManager){
-			try {
-				ColumnsTreeNode node;
-				int parCount = reportManager.SqlParametersCollection.Count;
+		void SetParamFields (){
+			
+			ColumnsTreeNode node;
+			int parCount = this.reportModel.ReportSettings.SqlParametersCollection.Count;
+			if (parCount > 0) {
 				for (int i = 0;i < parCount ;i++ ) {
-					SqlParameter par = (SqlParameter)reportManager.SqlParametersCollection[i];
+					SqlParameter par = (SqlParameter)this.reportModel.ReportSettings.SqlParametersCollection[i];
 					node = new ColumnsTreeNode(par.ParameterName);
 					node.Tag = par;
 					node.SelectedImageIndex = 9;
 					node.ImageIndex = 9;
 					this.nodeParams.Nodes.Add (node);
 				}
-			} catch (Exception) {
-				
-			}
+			} 
 		}
-		*/
+		
 		void SetFunctions(){
-			try {
-				
-			} catch (Exception) {
-				
+			ColumnsTreeNode node;
+			foreach (ReportSection section in this.reportModel.SectionCollection) {
+				foreach (BaseReportObject item in section.Items) {
+					BaseFunction func = item as BaseFunction;
+					if (func != null) {
+						node = new ColumnsTreeNode(func.Name);
+						this.nodeFunction.Nodes.Add(func.FriendlyName);
+					}				
+				}
 			}
 		}
+		
 		private void FillTree () {
-			if (this.reportSettings != null) {
-				BeginUpdate();
-				SetAvailableFields();
-				SetGroupFields();
-				SetSortFields();
-//				SetParamFields ();
-//				SetFunctions();
-				EndUpdate();
-			} else {
-				throw new SharpReportException("FiekldsExplorer:FillTree() No valid ReportSettings");
-			}
+			this.BeginUpdate();
+			SetAvailableFields();
+			SetGroupFields();
+			SetSortFields();
+			SetParamFields ();
+			SetFunctions();
+			this.EndUpdate();
 		}
 		
 		private const int folderClosed = 0;
@@ -546,18 +553,19 @@ namespace SharpReportAddin {
 		
 		
 		public FieldsExplorer() {
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += new EventHandler(OnWindowChange);
 
+			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += OnWindowChange;
+			
 			LabelEdit     = true;
 			AllowDrop     = true;
 			HideSelection = false;
 			Dock          = DockStyle.Fill;
 			Scrollable = true;
 			LabelEdit = false;
-			MouseDown += new System.Windows.Forms.MouseEventHandler(this.TreeMouseDown);
-			this.ItemDrag += new ItemDragEventHandler (TreeViewItemDrag);
-			this.DragDrop += new DragEventHandler (TreeViewDragDrop);
-			this.DragOver += new DragEventHandler (TreeViewDragOver);
+			this.MouseDown += TreeMouseDown;
+			this.ItemDrag += TreeViewItemDrag;
+			this.DragDrop += TreeViewDragDrop;
+			this.DragOver += TreeViewDragOver;
 			contentPanel.Controls.Add(this);
 		}
 	}

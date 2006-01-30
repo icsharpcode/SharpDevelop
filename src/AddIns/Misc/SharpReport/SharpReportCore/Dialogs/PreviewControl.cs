@@ -33,11 +33,14 @@ namespace SharpReportCore{
 		}
 		
 		public void ShowPreview (AbstractRenderer renderer,double zoomFaktor,bool standAlone) {
+			if (renderer == null) {
+				throw new ArgumentNullException("renderer");
+			}
 			if (renderer.Cancel == false) {
 				if (standAlone) {
-					this.ShowPreviewWithUserControl (renderer,1.5);
+					this.ShowPreviewWithUserControl (renderer,zoomFaktor);
 				} else {
-					ShowPreviewWithDialog(renderer,1.5);
+					ShowPreviewWithDialog(renderer,zoomFaktor);
 				}
 			}
 		}
@@ -46,20 +49,6 @@ namespace SharpReportCore{
 			
 			System.Drawing.Printing.PrintDocument  doc = renderer.ReportDocument;
 			
-			/*
-			System.Drawing.Printing.PrintDocument  doc =
-				new System.Drawing.Printing.PrintDocument();
-
-			doc.BeginPrint += 
-				new PrintEventHandler (renderer.ReportDocument.ReportDocumentBeginPrint);
-			doc.PrintPage += 
-				new System.Drawing.Printing.PrintPageEventHandler(renderer.ReportDocument.ReportDocumentPrintPage);
-			doc.EndPrint += 
-				new PrintEventHandler	(renderer.ReportDocument.ReportDocumentEndPrint);
-			doc.QueryPageSettings += 
-				new QueryPageSettingsEventHandler (renderer.ReportDocument.ReportDocumentQueryPage);
-			System.Console.WriteLine("\t All events are set");
-			*/
 			printPreviewControl1.Document = null;
 			printPreviewControl1.Document = doc;
 
@@ -69,7 +58,7 @@ namespace SharpReportCore{
 		}
 		
 		private void ShowPreviewWithDialog (AbstractRenderer renderer,double zoomFaktor) {
-			System.Console.WriteLine("PaintArea:WithDialog");
+			
 			System.Drawing.Printing.PrintDocument  doc = renderer.ReportDocument;
 		
 			previewDlg.Document = doc;

@@ -16,7 +16,7 @@ using System.ComponentModel;
 using System.Drawing;	
 	
 /// <summary>
-/// TODO - Add class summary
+/// This class draws a Rectangle
 /// </summary>
 /// <remarks>
 /// 	created by - Forstmeier Peter

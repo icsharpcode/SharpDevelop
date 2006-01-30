@@ -21,6 +21,7 @@
 
 
 using System;
+using System.Globalization;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -89,7 +90,7 @@ namespace SharpReportCore {
 			int to = rpea.PrintPageEventArgs.MarginBounds.Height ;
 
 			if (rpea.PageNumber ==1) {
-				to -= sections[Convert.ToInt16(GlobalEnums.enmSection.ReportHeader)].Size.Height;
+				to -= sections[Convert.ToInt16(GlobalEnums.enmSection.ReportHeader,CultureInfo.InvariantCulture)].Size.Height;
 			}
 			
 			to -= sections[Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader)].Size.Height;
@@ -111,7 +112,7 @@ namespace SharpReportCore {
 		/// </summary>
 		/// <returns></returns>
 		protected Rectangle DetailRectangle (ReportPageEventArgs e) {
-			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail);
+			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail,CultureInfo.InvariantCulture);
 			
 			Rectangle rect = new Rectangle (e.PrintPageEventArgs.MarginBounds.Left,
 			                                CurrentSection.SectionOffset ,
@@ -130,7 +131,7 @@ namespace SharpReportCore {
 			float offset = 0;
 			BaseSection section = null;
 			if (e.PageNumber == 1) {
-				sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportHeader);
+				sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportHeader,CultureInfo.InvariantCulture);
 				
 				section = CurrentSection;
 				section.SectionOffset = reportSettings.DefaultMargins.Top;
@@ -150,7 +151,7 @@ namespace SharpReportCore {
 		protected PointF DrawPageheader (PointF startat,ReportPageEventArgs e) {
 			float offset = 0F;
 			BaseSection section = null;
-			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader);
+			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader,CultureInfo.InvariantCulture);
 			section = CurrentSection;
 
 			if (e.PageNumber == 1) {
@@ -168,8 +169,6 @@ namespace SharpReportCore {
 		protected int RenderSection (BaseSection section,ReportPageEventArgs e) {
 			Point drawPoint	= new Point(0,0);
 			if (section.Visible){
-
-//				section.Render (reportSettings,e);
 				section.Render (e);
 				
 				foreach (BaseReportItem rItem in section.Items) {
@@ -306,7 +305,7 @@ namespace SharpReportCore {
 		}
 		
 		protected virtual void  BeginPrintPage (object sender,ReportPageEventArgs e) {
-			SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader);
+			SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader,CultureInfo.InvariantCulture);
 		}
 		
 		protected virtual void  PrintBodyStart (object sender,ReportPageEventArgs e) {

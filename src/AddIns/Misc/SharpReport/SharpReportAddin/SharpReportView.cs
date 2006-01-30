@@ -55,8 +55,6 @@ namespace SharpReportAddin{
 				panel.AutoScroll = true;
 				CreateTabControl();
 				BuildToolBarItems();
-				base.UntitledName = GlobalValues.SharpReportPlainFileName;
-				base.FileName = GlobalValues.SharpReportPlainFileName;
 				PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
 				PropertyPad.Grid.Refresh();
 			} catch (Exception e) {
@@ -306,10 +304,17 @@ namespace SharpReportAddin{
 		
 		
 		private void OnTabPageChanged (object sender, EventArgs e) {
-			string name = Path.GetFileName (base.FileName);
-			base.TitleName = name + "[" + tabControl.SelectedTab.Text + "]";
-			System.Console.WriteLine("");
-			System.Console.WriteLine("!! OnTabPageChange !!");
+			
+			string name;
+			if (String.IsNullOrEmpty(base.FileName)) {
+				base.UntitledName = GlobalValues.SharpReportPlainFileName;
+				base.TitleName = GlobalValues.SharpReportPlainFileName;
+				base.FileName = GlobalValues.SharpReportPlainFileName;
+				name = base.TitleName;
+			} else {
+				name = Path.GetFileName (base.FileName);
+			}
+			base.TitleName = String.Format("{0} [{1}]",name,this.tabControl.SelectedTab.Text);
 			switch (tabControl.SelectedIndex) {
 				case 0 :
 					break;
@@ -329,24 +334,18 @@ namespace SharpReportAddin{
 		
 		//Something was dropped on the designer
 		private void OnItemDragDrop (object sender,ItemDragDropEventArgs e) {
-			System.Console.WriteLine("View:DragDrop");
 			base.IsDirty = true;
-			SharpReportAddin.Commands.SetFieldsExplorer uf = new SharpReportAddin.Commands.SetFieldsExplorer();
-			uf.Run();
 		}
 		
 		public void OnPropertyChanged (object sender,
 		                               System.ComponentModel.PropertyChangedEventArgs e) {
-			System.Console.WriteLine("View:PorpChange");
 			base.IsDirty = true;
 		}
 		
 		private void OnSettingsChanged (object sender,EventArgs e) {
-			System.Console.WriteLine("View.SettingsChange");
 			base.IsDirty = true;
 		}
 		private void OnModelFileNameChanged (object sender,EventArgs e) {
-			System.Console.WriteLine("View:filenamechange");
 			base.FileName = designerControl.ReportModel.ReportSettings.FileName;
 			base.IsDirty = true;
 			this.OnFileNameChanged(e);
@@ -355,6 +354,12 @@ namespace SharpReportAddin{
 		
 		private void OnObjectSelected (object sender,EventArgs e) {
 			if (designerControl.ReportControl.SelectedObject != null) {
+//				BaseReportObject bro = designerControl.ReportControl.SelectedObject as BaseReportObject;
+//				
+//				if (bro != null) {
+//					string s = "{" + bro.Name + "}";
+//					StatusBarService.SetMessage(s);
+//				}
 				PropertyPad.Grid.SelectedObject = designerControl.ReportControl.SelectedObject;
 			}
 		}
@@ -396,7 +401,6 @@ namespace SharpReportAddin{
 		/// </summary>
 		/// <param name="setViewDirty">If true, set the DirtyFlag and Fire the PropertyChanged Event</param>
 		public void UpdateView(bool setViewDirty) {
-			System.Console.WriteLine("UpdateView with {0}",setViewDirty);
 			this.tabControl.SelectedIndex = 0;
 			this.OnTabPageChanged(this,EventArgs.Empty);
 			SetOnPropertyChangedEvents();
@@ -405,26 +409,6 @@ namespace SharpReportAddin{
 			}
 		}
 		
-		///<summary>
-		/// We have to tell the FieldsdsExplorer that we have loaded or created a new report
-		/// </summary>
-		/// 
-		public void UpdateFieldsExplorer() {
-			try {
-				Type type = typeof(FieldsExplorer);
-				SharpReportAddin.FieldsExplorer fe = (SharpReportAddin.FieldsExplorer)WorkbenchSingleton.Workbench.GetPad(type).PadContent;
-				
-				if (fe != null) {
-					this.designerControl.ReportModel.ReportSettings.AvailableFieldsCollection = reportManager.AvailableFieldsCollection;
-					fe.Fill(designerControl.ReportModel.ReportSettings);
-				} else {
-					MessageService.ShowError ("SharpReportView:SetFieldExplorer Unable to create FieldsExplorer");
-				}
-				
-			} catch (Exception e) {
-				MessageService.ShowError (e);
-			}
-		}
 		
 		#endregion
 		
@@ -489,16 +473,6 @@ namespace SharpReportAddin{
 			}
 		}
 		
-		public override void Deselected(){
-			base.Deselected();
-			System.Console.WriteLine("Deselected");
-		}
-		
-		public override void Selected(){
-			base.Selected();
-			System.Console.WriteLine("Selected");
-		}
-		
 		
 		public override void Save() {
 			this.Save (designerControl.ReportModel.ReportSettings.FileName);
@@ -522,12 +496,15 @@ namespace SharpReportAddin{
 		public override void Load(string fileName){
 			try {
 				designerControl.ReportControl.ObjectSelected -= new SelectedEventHandler (OnObjectSelected);
+				
 				reportManager.LoadFromFile (fileName);
 				base.FileName = fileName;
 				designerControl.ReportModel.ReportSettings.FileName = fileName;
 				designerControl.ReportControl.ObjectSelected += new SelectedEventHandler (OnObjectSelected);
 				PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
 				PropertyPad.Grid.Refresh();
+				this.designerControl.ReportModel.ReportSettings.AvailableFieldsCollection = reportManager.AvailableFieldsCollection;
+			
 			} catch (Exception e) {
 				MessageService.ShowError(e.Message);
 				throw ;
@@ -555,8 +532,6 @@ namespace SharpReportAddin{
 		#region ICSharpCode.SharpDevelop.Gui.IPrintable interface implementation
 		public System.Drawing.Printing.PrintDocument PrintDocument {
 			get {
-				System.Console.WriteLine("");
-				System.Console.WriteLine("!! PrintDocument  !!");
 				AbstractRenderer renderer;
 				if (this.designerControl.ReportModel.DataModel == GlobalEnums.enmPushPullModel.PushData) {
 					renderer = reportManager.GetRendererForPushDataReports(this.designerControl.ReportModel,

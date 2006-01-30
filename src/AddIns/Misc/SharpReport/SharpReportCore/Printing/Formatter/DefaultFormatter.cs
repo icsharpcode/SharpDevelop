@@ -18,19 +18,19 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Peter Forstmeier (Peter.Forstmeier@t-online.de)
+using System;
+using System.Globalization;
+//using System.Windows.Forms;
 
+/// <summary>
+/// This Class handles the formatting of Output Values depending on there
+/// Type and DbValue
+/// </summary>
+/// <remarks>
+/// 	created by - Forstmeier Peter
+/// 	created on - 30.03.2005 09:14:20
+/// </remarks>
 namespace SharpReportCore{
-	using System;
-	using System.Globalization;
-	using System.Windows.Forms;
-	/// <summary>
-	/// This Class handles the formatting of Output Values depending on there
-	/// Type and DbValue
-	/// </summary>
-	/// <remarks>
-	/// 	created by - Forstmeier Peter
-	/// 	created on - 30.03.2005 09:14:20
-	/// </remarks>
 	public class DefaultFormatter : AbstractFormatter {
 		
 		
@@ -44,35 +44,31 @@ namespace SharpReportCore{
 		/// 
 		public string FormatItem (BaseDataItem item) {
 			string retValue = String.Empty;
-			try {
-				switch (item.DataType) {
+			
+			switch (item.DataType) {
 					
-					case "System.DateTime" :
-						retValue = DateValues(item.DbValue,item.FormatString);
-						break;
-						
-					case "System.Int16":	
-						retValue = IntegerValues ("16",item.DbValue,item.FormatString);
-						break;
-						
-					case "System.Int32" :
-						retValue = IntegerValues ("32",item.DbValue,item.FormatString);
-						break;	
-					case "System.Decimal":
-						retValue = DecimalValues (item.DbValue,item.FormatString);
-						break;
+				case "System.DateTime" :
+					retValue = DateValues(item.DbValue,item.FormatString);
+					break;
+					
+				case "System.Int16":
+					retValue = IntegerValues ("16",item.DbValue,item.FormatString);
+					break;
+					
+				case "System.Int32" :
+					retValue = IntegerValues ("32",item.DbValue,item.FormatString);
+					break;
+				case "System.Decimal":
+					retValue = DecimalValues (item.DbValue,item.FormatString);
+					break;
 
-					case "System.Boolean":
-						retValue = BoolValue (item.DbValue,item.FormatString);
-						break;
-					default:
-						retValue = item.DbValue;
-						break;
-				}
-			} catch (Exception) {
-				throw ;
+				case "System.Boolean":
+					retValue = BoolValue (item.DbValue,item.FormatString);
+					break;
+				default:
+					retValue = item.DbValue;
+					break;
 			}
-
 			return retValue;
 		}
 		
@@ -83,12 +79,11 @@ namespace SharpReportCore{
 				if (base.CheckValue (toFormat)) {
 					try {
 						bool b = bool.Parse (toFormat);
-//						bool b = Convert.ToBoolean(toFormat,CultureInfo.CurrentCulture);
 						str = b.ToString (CultureInfo.CurrentCulture);
 						
-					} catch (Exception e) {
-						string s = String.Format("\tBool Value < {0} > {1}",toFormat,e.Message);
-					System.Console.WriteLine("\t\t{0}",s);
+					} catch (System.FormatException) {
+//						string s = String.Format("\tBool Value < {0} > {1}",toFormat,e.Message);
+//					System.Console.WriteLine("\t\t{0}",s);
 					}
 				}
 			} else {
@@ -108,28 +103,25 @@ namespace SharpReportCore{
 								number = Int16.Parse (toFormat,
 								                      System.Globalization.NumberStyles.Any,
 								                      CultureInfo.CurrentCulture.NumberFormat);
-//								number = Convert.ToInt16 (toFormat,NumberFormatInfo.CurrentInfo);
 								break;
 							case "32" :
 								number = Int32.Parse (toFormat,
 								                      System.Globalization.NumberStyles.Any,
 								                      CultureInfo.CurrentCulture.NumberFormat);
-								
-//								number = Convert.ToInt32 (toFormat,NumberFormatInfo.CurrentInfo);
 								break;
 							default:
 								throw new ArgumentException("DefaultFormater:IntegerValues Unknown intType ");
 								
 						}
-						str = number.ToString (format);
+						str = number.ToString (format,CultureInfo.CurrentCulture);
 						
-					} catch (Exception e) {
-						string s = String.Format("\tDecimalValue < {0} > {1}",toFormat,e.Message);
-						System.Console.WriteLine("\t{0}",s);
+					} catch (System.FormatException) {
+//						string s = String.Format("\tDecimalValue < {0} > {1}",toFormat,e.Message);
+//						System.Console.WriteLine("\t{0}",s);
 					}
 					return str;
 				} else {
-					str = (0.0M).ToString();
+					str = (0.0M).ToString(CultureInfo.CurrentCulture);
 				}
 				
 			} else {
@@ -147,17 +139,15 @@ namespace SharpReportCore{
 						decimal dec =	Decimal.Parse(toFormat,
 						                            System.Globalization.NumberStyles.Any,
 						                            CultureInfo.CurrentCulture.NumberFormat);
+						str = dec.ToString (format,CultureInfo.CurrentCulture);
 						
-//						decimal dec = Convert.ToDecimal (toFormat,NumberFormatInfo.InvariantInfo);
-						str = dec.ToString (format);
-						
-					} catch (Exception e) {
-						string s = String.Format("\tDecimalValue < {0} > {1}",toFormat,e.Message);
-						System.Console.WriteLine("\t{0}",s);
+					} catch (System.FormatException) {
+//						string s = String.Format("\tDecimalValue < {0} > {1}",toFormat,e.Message);
+//						System.Console.WriteLine("\t{0}",s);
 					}
 					return str;
 				} else {
-					str = (0.0M).ToString();
+					str = (0.0M).ToString(CultureInfo.CurrentCulture);
 				}
 				
 			} else {
@@ -176,9 +166,9 @@ namespace SharpReportCore{
 					                           DateTimeFormatInfo.CurrentInfo);
 					
 					return str.Trim();
-				} catch (Exception e) {
-					string s = String.Format("< {0} > {1}",toFormat,e.Message);
-					System.Console.WriteLine("\t\tDateValue {0}",s);
+				} catch (System.FormatException) {
+//					string s = String.Format("< {0} > {1}",toFormat,e.Message);
+//					System.Console.WriteLine("\t\tDateValue {0}",s);
 				}
 			} else {
 				return toFormat.Trim();

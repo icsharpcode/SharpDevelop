@@ -10,27 +10,30 @@
 
 
 using System;
+using System.Globalization;
 using System.ComponentModel;
 using System.Drawing;	
 	
-	/// <summary>
-	/// BaseClass for PageNumbers
-	/// </summary>
-	/// <remarks>
-	/// 	created by - Forstmeier Peter
-	/// 	created on - 12.09.2005 22:34:54
-	/// </remarks>
+/// <summary>
+/// BaseClass for PageNumbers
+/// </summary>
+/// <remarks>
+/// 	created by - Forstmeier Peter
+/// 	created on - 12.09.2005 22:34:54
+/// </remarks>
+
 namespace SharpReportCore {
 		public class BasePageNumber : BaseFunction {
+			static string fnName = "PageNumber";
 			
-			public BasePageNumber():base() {
+			public BasePageNumber():base(fnName) {
 				
 			}
 			
 			public override void Render(ReportPageEventArgs e) {
 				base.Render(e);
 				
-				string formattedString = base.FireFormatOutput(e.PageNumber.ToString(),
+				string formattedString = base.FireFormatOutput(e.PageNumber.ToString(CultureInfo.InvariantCulture),
 				                                               base.FormatString,"");
 				
 
@@ -42,7 +45,7 @@ namespace SharpReportCore {
 
 				fmt.Alignment = StringAlignment.Far;
 				fmt.LineAlignment = StringAlignment.Near;
-				e.PrintPageEventArgs.Graphics.DrawString(e.PageNumber.ToString(),
+				e.PrintPageEventArgs.Graphics.DrawString(e.PageNumber.ToString(CultureInfo.InvariantCulture),
 				                                         this.Font,
 				                                         Brushes.Black,
 				                                         rect,
@@ -52,8 +55,15 @@ namespace SharpReportCore {
 			}
 			
 			public override string ToString() {
-				return "BasePageNumber";
+				return "PageNumber";
 			}
+			
+			public override string FriendlyName {
+				get {
+					return base.FriendlyName;
+				}
+			}
+			
 			
 			
 		}

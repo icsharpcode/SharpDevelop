@@ -29,27 +29,7 @@ namespace SharpReportAddin.Commands{
 				} else {
 					MessageService.ShowError(ResourceService.GetString("Sharpreport.Error.NoPrinter"));
 				}
-				
 			}
 		}
 	}
-	
-	/// <summary>
-	/// Let the <see cref="SharpReportView"></see> update or fill
-	/// the <see cref="FieldsExplorer"></see>
-	/// </summary>
-	
-	public class SetFieldsExplorer : AbstractSharpReportCommand{
- 		public SetFieldsExplorer() {
- 			
- 		}
- 		public override void Run() {
- 			try {
- 				base.View.UpdateFieldsExplorer();
- 			} catch (Exception) {
- 				throw;
- 			}
- 		}
- 		
- 	} 
 }
