@@ -284,6 +284,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		// derived from FindFileNode
 		ProjectNode FindProjectNodeByName(TreeNodeCollection nodes, string projectName)
 		{
+			if (nodes == null) {
+				return null;
+			}
 			ProjectNode pn;
 			foreach (TreeNode node in nodes) {
 				pn = node as ProjectNode;
