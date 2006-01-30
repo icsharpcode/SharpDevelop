@@ -333,7 +333,73 @@ namespace ICSharpCode.Core
 			FileAttributes attr = File.GetAttributes(filename);
 			return (attr & FileAttributes.Directory) != 0;
 		}
-		
+
+		//TODO This code is Windows specific
+		static bool MatchN (string src, int srcidx, string pattern, int patidx)
+		{
+			int patlen = pattern.Length;
+			int srclen = src.Length;
+			char next_char;
+
+			for (;;) {
+				if (patidx == patlen)
+					return (srcidx == srclen);
+				next_char = pattern[patidx++];
+				if (next_char == '?') {
+					if (srcidx == src.Length)
+						return false;
+					srcidx++;
+				}
+				else if (next_char != '*') {
+					if ((srcidx == src.Length) || (src[srcidx] != next_char))
+						return false;
+					srcidx++;
+				}
+				else {
+					if (patidx == pattern.Length)
+						return true;
+					while (srcidx < srclen) {
+						if (MatchN(src, srcidx, pattern, patidx))
+							return true;
+						srcidx++;
+					}
+					return false;
+				}
+			}
+		}
+
+		static bool Match(string src, string pattern)
+		{
+			if (pattern[0] == '*') {
+				// common case optimization
+				int i = pattern.Length;
+				int j = src.Length;
+				while (--i > 0) {
+					if (pattern[i] == '*')
+						return MatchN(src, 0, pattern, 0);
+					if (j-- == 0)
+						return false;
+					if ((pattern[i] != src[j]) && (pattern[i] != '?'))
+						return false;
+				}
+				return true;
+			}
+			return MatchN(src, 0, pattern, 0);
+		}
+
+		public static bool MatchesPattern(string filename, string pattern)
+		{
+			filename = filename.ToUpper();
+			pattern = pattern.ToUpper();
+			string[] patterns = pattern.Split(';');
+			foreach (string p in patterns) {
+				if (Match(filename, p)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		// Observe SAVE functions
 		public static FileOperationResult ObservedSave(FileOperationDelegate saveFile, string fileName, string message, FileErrorPolicy policy)
 		{

@@ -15,6 +15,14 @@
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	
+	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
+		<FileFilter id         = "BooProject"
+		            insertbefore="AllFiles"
+		            name       = "${res:SharpDevelop.FileFilter.BooPrjFiles}"
+		            class      = "ICSharpCode.SharpDevelop.Project.LoadProject"
+		            extensions = "*.booproj"/>
+	</Path>
+
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "Boo"
 		            insertbefore="AllFiles"

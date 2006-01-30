@@ -109,15 +109,23 @@
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id         = "Solution"
 		            name       = "Solutions (*.sln)"
+		            class      = "ICSharpCode.SharpDevelop.Project.LoadSolution"
 		            extensions = "*.sln"/>
 		
 		<FileFilter id         = "Combine"
 		            name       = "${res:SharpDevelop.FileFilter.CombineFiles}"
+		            class      = "ICSharpCode.SharpDevelop.Project.LoadSolution"
 		            extensions = "*.cmbx"/>
+		
+		<FileFilter id         = "Prjx"
+		            name       = "${res:SharpDevelop.FileFilter.PrjxFiles}"
+		            class      = "ICSharpCode.SharpDevelop.Project.LoadSolution"
+		            extensions = "*.prjx"/>
 		
 		<FileFilter id         = "Project"
 		            name       = "${res:SharpDevelop.FileFilter.ProjectFiles}"
-		            extensions = "*.prjx;*.vbproj;*.csproj"/>
+		            class      = "ICSharpCode.SharpDevelop.Project.LoadProject"
+		            extensions = "*.vbproj;*.csproj"/>
 		
 		<FileFilter id         = "AllFiles"
 		            name       = "${res:SharpDevelop.FileFilter.AllFiles}"

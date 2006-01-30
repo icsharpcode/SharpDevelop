@@ -474,10 +474,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void FileSelected(object sender, EventArgs e)
 		{
 			foreach (FileList.FileListItem item in filelister.SelectedItems) {
-				if (ProjectService.IsSolutionExtension(Path.GetExtension(item.FullName))) {
-					ProjectService.LoadSolution(item.FullName);
-				} else if (ProjectService.IsProjectExtension(Path.GetExtension(item.FullName))) {
-					ProjectService.LoadProject(item.FullName);
+				IProjectLoader loader = ProjectService.GetProjectLoader(item.FullName);
+				if (loader != null) {
+					loader.Load(item.FullName);
 				} else {
 					FileService.OpenFile(item.FullName);
 				}

@@ -109,11 +109,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 			foreach (string file in fileList) {
 				didLoadCombineOrFile = true;
 				try {
-					string ext = Path.GetExtension(file);
-					if (ProjectService.IsSolutionExtension(ext)) {
-						FileUtility.ObservedLoad(new NamedFileOperationDelegate(ProjectService.LoadSolution), file);
-					} else if (ProjectService.IsProjectExtension(ext)) {
-						FileUtility.ObservedLoad(new NamedFileOperationDelegate(ProjectService.LoadProject), file);
+					IProjectLoader loader = ProjectService.GetProjectLoader(file);
+					if (loader != null) {
+						FileUtility.ObservedLoad(new NamedFileOperationDelegate(loader.Load), file);
 					} else {
 						FileService.OpenFile(file);
 					}

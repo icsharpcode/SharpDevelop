@@ -63,32 +63,28 @@ namespace ICSharpCode.SharpDevelop.Project
 			FileService.FileRenamed += FileServiceFileRenamed;
 			FileService.FileRemoved += FileServiceFileRemoved;
 		}
-		
-		public static bool IsSolutionExtension(string ext)
+
+		public static IProjectLoader GetProjectLoader(string fileName)
 		{
-			return ext.Equals(".SLN", StringComparison.OrdinalIgnoreCase)
-				|| ext.Equals(".CMBX", StringComparison.OrdinalIgnoreCase)
-				|| ext.Equals(".PRJX", StringComparison.OrdinalIgnoreCase);
-			// prjx converter is called by Solution.Load, so treat prjx as solution
+			AddInTreeNode addinTreeNode = AddInTree.GetTreeNode("/SharpDevelop/Workbench/Combine/FileFilter");
+			foreach (Codon codon in addinTreeNode.Codons) {
+				string pattern = codon.Properties.Get("extensions", "");
+				if (FileUtility.MatchesPattern(fileName, pattern) && codon.Properties.Contains("class")) {
+					object binding = codon.AddIn.CreateObject(codon.Properties["class"]);
+					return binding as IProjectLoader;
+				}
+			}
+			return null;
 		}
-		
-		public static bool IsProjectExtension(string ext)
-		{
-			return ext.Equals(".CSPROJ", StringComparison.OrdinalIgnoreCase)
-				|| ext.Equals(".VBPROJ", StringComparison.OrdinalIgnoreCase)
-				|| ext.Equals(".BOOPROJ", StringComparison.OrdinalIgnoreCase)
-				|| ext.Equals(".ILPROJ", StringComparison.OrdinalIgnoreCase);
-		}
-		
+
 		public static void LoadSolutionOrProject(string fileName)
 		{
-			string ext = Path.GetExtension(fileName);
-			if (ProjectService.IsSolutionExtension(ext))
-				ProjectService.LoadSolution(fileName);
-			else if (ProjectService.IsProjectExtension(ext))
-				ProjectService.LoadProject(fileName);
-			else
+			IProjectLoader loader = GetProjectLoader(fileName);
+			if (loader != null)	{
+				loader.Load(fileName);
+			} else {
 				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new string[,] {{"FileName", fileName}}));
+			}
 		}
 		
 		static void FileServiceFileRenamed(object sender, FileRenameEventArgs e)

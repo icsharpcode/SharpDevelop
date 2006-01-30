@@ -196,7 +196,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void LoadSolutionProjectsThreadEndedEvent(object sender, EventArgs e)
 		{
-			this.BeginInvoke(new MethodInvoker(this.RefreshSecondaryViewContents));
+			// do not invoke on this: it's possible that "this" is disposed while this method is executing
+			WorkbenchSingleton.SafeThreadAsyncCall(new MethodInvoker(this.RefreshSecondaryViewContents));
 		}
 		
 		void LeaveTabPage(object sender, EventArgs e)
