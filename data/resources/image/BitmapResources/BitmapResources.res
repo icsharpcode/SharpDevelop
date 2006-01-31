@@ -479,4 +479,7 @@ NAntAddIn.Icons.16x16.RunNAnt            = NAntIcons\NAntAddIn.Icons.16x16.RunNA
 NAntAddIn.Icons.16x16.RunNAntClean       = NAntIcons\NAntAddIn.Icons.16x16.RunNAntClean.png
 NAntAddIn.Icons.16x16.StopNAnt           = NAntIcons\NAntAddIn.Icons.16x16.StopNAnt.png
 
+CodeCoverage.Icons.16x16.Pad             = CodeCoverageIcons\CodeCoverage.Icons.16x16.Pad.png
+CodeCoverage.Icons.16x16.File            = CodeCoverageIcons\CodeCoverage.Icons.16x16.File.png
+CodeCoverage.Icons.16x16.Run             = CodeCoverageIcons\CodeCoverage.Icons.16x16.Run.png
 

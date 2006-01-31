@@ -1,0 +1,23 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="CodeCoverageProjectOptionsPanel" />
+    <ClientSize value="{Width=342, Height=266}" />
+    <Controls>
+      <System.Windows.Forms.TextBox>
+        <Name value="assemblyListTextBox" />
+        <TabIndex value="1" />
+        <Size value="{Width=317, Height=21}" />
+        <Location value="{X=12,Y=36}" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="assemblyListLabel" />
+        <Location value="{X=12,Y=12}" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="&amp;Assemblies to watch:" />
+        <Size value="{Width=114, Height=21}" />
+        <TabIndex value="0" />
+      </System.Windows.Forms.Label>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

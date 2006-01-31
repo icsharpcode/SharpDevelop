@@ -1,0 +1,11 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+	<PrepareForRunDependsOn>$(PrepareForRunDependsOn);MyPostBuildTarget</PrepareForRunDependsOn>
+  </PropertyGroup>
+  <Target Name="MyPostBuildTarget">
+	<!-- Delete the MbUnitPad.addin file that gets copied to the CodeCoverage AddIn output
+         folder due to an MSBuild bug.  Otherwise the MbUnitPad.addin file will be
+         loaded twice by SharpDevelop -->
+ 	<Delete Files="$(OutputPath)\MbUnitPad.addin" ContinueOnError="True"/>
+  </Target>
+</Project>

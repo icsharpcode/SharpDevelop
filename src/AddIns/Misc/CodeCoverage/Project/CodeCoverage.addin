@@ -1,0 +1,106 @@
+<AddIn name        = "CodeCoverageAddIn"
+       author      = "Matt Ward"
+       url         = "http://ncover.org"
+       description = "Code Coverage AddIn for SharpDevelop using NCover">
+	
+	<Manifest> 
+		<Identity   name  = "ICSharpCode.CodeCoverage"/>
+		<Dependency addin = "ICSharpCode.MbUnitPad"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "CodeCoverage.dll"/>
+		<Import assembly = "MbUnitPad.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id           = "CodeCoveragePad" 
+		     category     = "Tools"
+		     title        = "Code Coverage"
+		     insertafter  = "Bookmarks"
+		     insertbefore = "DefinitionView"
+		     icon         = "CodeCoverage.Icons.16x16.Pad"
+		     class        = "ICSharpCode.CodeCoverage.CodeCoveragePad"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Pads/CodeCoveragePad/Toolbar">
+		<Condition name = "SolutionOpen" action = "Disable">
+			<ToolbarItem id      = "ToggleCodeCoverage"
+			             icon    = "CodeCoverage.Icons.16x16.File"
+			             tooltip = "Toggle Code Coverage"
+			             type    = "CheckBox"
+			             class   = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<DialogPanel id          = "CodeCoverageOptionsPanel"
+		       	     label       = "Code Coverage"
+		             insertafter = "NAnt"
+		       	     class       = "ICSharpCode.CodeCoverage.CodeCoverageOptionsPanel"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/MbUnitPad/ContextMenu">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name = "Ownerstate" ownerstate = "TestItemSelected"/>
+				<Not>
+					<Condition name = "MbUnitRunningTests"/>
+				</Not>
+			</And>
+			<MenuItem id           = "RunWithCodeCoverage"
+			          icon         = "CodeCoverage.Icons.16x16.Run"
+			          insertafter  = "Run"
+			          insertbefore = "Stop"
+			          label        = "Run tests with code coverage"
+			          class        = "ICSharpCode.CodeCoverage.RunMbUnitPadTestsWithCodeCoverageCommand"/>
+		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu/MbUnitTestMenu">
+		<Condition name = "MbUnitTestable">
+			<MenuItem id          = "RunWithCodeCoverage"
+			          insertafter = "RunWithDebugger"
+			          label       = "Run with code coverage"
+			          icon        = "CodeCoverage.Icons.16x16.Run"
+			          class       = "ICSharpCode.CodeCoverage.RunTestWithCodeCoverageCommand"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu/MbUnitTestMenu">
+		<Condition name = "MbUnitTestable">
+			<MenuItem id          = "RunWithCodeCoverage"
+			          insertafter = "RunWithDebugger"
+			          label       = "Run with code coverage"
+			          icon        = "CodeCoverage.Icons.16x16.Run"
+			          class       = "ICSharpCode.CodeCoverage.RunTestFixtureWithCodeCoverageCommand"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/ClassContextMenu/MbUnitTestMenu">
+		<Condition name = "MbUnitTestable">
+			<MenuItem id          = "RunWithCodeCoverage"
+			          insertafter = "RunWithDebugger"
+			          label       = "Run with code coverage"
+			          icon        = "CodeCoverage.Icons.16x16.Run"
+			          class       = "ICSharpCode.CodeCoverage.RunTestFixtureWithCodeCoverageCommand"/>
+		</Condition>
+	</Path>
+
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/MemberContextMenu/MbUnitTestMenu">
+		<Condition name = "MbUnitTestable">
+			<MenuItem id          = "RunWithCodeCoverage"
+			          insertafter = "RunWithDebugger"
+			          label       = "Run with code coverage"
+			          icon        = "CodeCoverage.Icons.16x16.Run"
+			          class       = "ICSharpCode.CodeCoverage.RunTestWithCodeCoverageCommand"/>
+		</Condition>
+	</Path>
+	
+	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
+		<DialogPanel id          = "CodeCoverage"
+		             label       = "Code Coverage"
+		             insertafter = "Publish"
+		             class       = "ICSharpCode.CodeCoverage.CodeCoverageProjectOptionsPanel"/>
+	</Path>
+</AddIn>

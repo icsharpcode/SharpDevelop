@@ -61,6 +61,20 @@ namespace ICSharpCode.MbUnitPad
 			}
 		}
 		
+		public string SelectedAssemblyFileName {
+			get {
+				UnitTreeNode node = SelectedNode as UnitTreeNode;
+				if (node != null) {
+					foreach (TreeTestDomain d in this.TestDomains) {
+						if (d.Identifier == node.DomainIdentifier) {
+							return d.TestFilePath;
+						}
+					}
+				}
+				return String.Empty;
+			}
+		}			
+		
 		public bool IsPopulated {
 			get {
 				return TypeTree.Nodes.Count > 0;

@@ -78,6 +78,12 @@ namespace ICSharpCode.MbUnitPad
 			}
 		}
 		
+		public string SelectedAssemblyFileName {
+			get {
+				return treeView.SelectedAssemblyFileName;
+			}
+		}
+		
 		void OnSolutionLoaded(object sender, EventArgs e)
 		{
 			UpdateToolbar();
