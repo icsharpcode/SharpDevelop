@@ -299,6 +299,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			ProjectNode pn;
 			foreach (TreeNode node in nodes) {
+				if (node == null) {
+					// can happen while parent node is being expanded
+					continue;
+				}
 				pn = node as ProjectNode;
 				if (pn != null) {
 					if (pn.Text == projectName) {
