@@ -1,0 +1,26 @@
+﻿Imports System.Reflection
+Imports System.Runtime.CompilerServices
+
+' Information about this assembly is defined by the following
+' attributes.
+' 
+' Change them to the information which is associated with the assembly
+' you compile.
+
+<assembly: AssemblyTitle("Java Script Globals Helper")>
+<assembly: AssemblyDescription("Persists JavaScript variables used by the .NET Framework documentation")>
+<assembly: AssemblyConfiguration("")>
+<assembly: AssemblyCompany("ic#code")>
+<assembly: AssemblyProduct("SharpDevelop")>
+<assembly: AssemblyCopyright("2006 AlphaSierraPapa")>
+<assembly: AssemblyTrademark("")>
+<assembly: AssemblyCulture("")>
+
+' The assembly version has following format :
+'
+' Major.Minor.Build.Revision
+'
+' You can specify all values by your own or you can build default build and revision
+' numbers with the '*' character (the default):
+
+<assembly: AssemblyVersion("1.0.0.1")>

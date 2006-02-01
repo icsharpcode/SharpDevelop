@@ -104,6 +104,10 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\JScriptGlobals\HtmlHelp2JScriptGlobals.vbproj">
+      <Project>{E54A5AD2-418D-4A85-BA5E-CD803DE38715}</Project>
+      <Name>HtmlHelp2JScriptGlobals</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
