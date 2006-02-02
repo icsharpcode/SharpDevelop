@@ -61,7 +61,7 @@ namespace SharpReport {
 		/// <param name="schemaTable">SchemaDefinition Datatable</param>
 		/// <returns>Collection of BaseDataItems</returns>
 			
-		public ReportItemCollection AutoColumnsFromTable (ReportModel model,DataTable schemaTable) {
+		public ReportItemCollection ReportItemsFromTable (ReportModel model,DataTable schemaTable) {
 			ReportItemCollection itemCol = new ReportItemCollection();
 				
 			for (int i = 0;i < schemaTable.Rows.Count;i++){
@@ -84,7 +84,7 @@ namespace SharpReport {
 		/// <param name="dataSet">DataSet from *.xsd File</param>
 		/// <returns> Collection of BaseDataItems</returns>
 			
-		public ReportItemCollection AutoColumnsFromSchema (ReportModel model,DataSet dataSet) {
+		public ReportItemCollection ReportItemsFromSchema (ReportModel model,DataSet dataSet) {
 			if (dataSet.Tables.Count > 1) {
 				MessageService.ShowError ("AutoBuildFromDataSet : at this time no more than one table is allowed " + dataSet.Tables.Count.ToString());
 				throw new ArgumentException ("Too much Tables in DataSet");
@@ -126,25 +126,9 @@ namespace SharpReport {
 				throw new ArgumentNullException ("AutoReport:ReportItemCollection");
 			}
 		}
+		#endregion
 		
-		public ReportItemCollection AutoHeaderColumns(ReportItemCollection col) {
-			if (col != null) {
-				ReportItemCollection itemCol = new ReportItemCollection();
-				ReportDataItem oldItem = null;
-				for (int i = 0;i < col.Count ;i++ ){
-					ReportTextItem newItem = new ReportTextItem();
-					oldItem = (ReportDataItem)col[i];
-					newItem.VisualControl.Text = oldItem.ColumnName;
-					newItem.Text =	oldItem.ColumnName;
-					newItem.Location = new Point (i * 30,5);
-					itemCol.Add(newItem);
-				}
-				return itemCol;
-			}else {
-				throw new ArgumentNullException ("AutoReport:ReportItemCollection");
-			}
-		}
-		
+		#region HeaderColumns
 		/// <summary>
 		/// Build Headerline from a schemaDataTable
 		/// </summary>
@@ -154,7 +138,7 @@ namespace SharpReport {
 		/// <param name="setOnTop">Locate the Columns of Top or an Bottom of the Section</param>
 		/// <returns>a Collection of BaseTextItems</returns>
 			
-		public  ReportItemCollection AutoHeaderFromTable (ReportModel model,BaseSection section,DataTable schemaTable,bool setOnTop) {
+		public  ReportItemCollection AutoHeaderFromTable (BaseSection section,DataTable schemaTable,bool setOnTop) {
 			ReportItemCollection itemCol = new ReportItemCollection();
 			for (int i = 0;i < schemaTable.Rows.Count;i++){
 				DataRow r = schemaTable.Rows[i];
@@ -175,6 +159,32 @@ namespace SharpReport {
 			return itemCol;
 		}
 		
+		
+		public ReportItemCollection AutoHeaderFromReportItems(ReportItemCollection col,BaseSection section,bool setOnTop) {
+			if (col != null) {
+				ReportItemCollection itemCol = new ReportItemCollection();
+				ReportDataItem sourceItem = null;
+				for (int i = 0;i < col.Count ;i++ ){
+					BaseTextItem rItem = (BaseTextItem)iDesignableFactory.Create("ReportTextItem");
+					if (rItem != null) {
+						sourceItem = (ReportDataItem)col[i];
+						
+						rItem.Text = sourceItem.ColumnName;
+						rItem.Text = sourceItem.ColumnName;
+						if (setOnTop) {
+							rItem.Location = new Point (i * 30,1);
+						} else {
+							int y = section.Size.Height - rItem.Size.Height - 5;
+							rItem.Location = new Point (i * 30,y);
+						}
+						itemCol.Add(rItem);
+					}
+				}
+				return itemCol;
+			}else {
+				throw new ArgumentNullException ("AutoReport:ReportItemCollection");
+			}
+		}
 		
 		#endregion
 	}

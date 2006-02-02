@@ -105,7 +105,6 @@ namespace SharpReportCore {
 			                             section.Size.Height);
 			DebugRectangle (e,detailRect);
 			
-			float offset = 0F;
 			// no loop if there is no data
 			if (! dataManager.HasMoreData ) {
 				e.PrintPageEventArgs.HasMorePages = false;
@@ -120,8 +119,8 @@ namespace SharpReportCore {
 					if (dataManager.HasMoreData) {
 						
 						dataManager.FetchData (base.CurrentSection.Items);
-						offset = base.RenderSection (section,e);
-						
+//						offset = base.RenderSection (section,e);
+						base.RenderSection (section,e);
 						section.SectionOffset = section.SectionOffset + section.Size.Height  + 2 * base.Gap;
 						base.FitSectionToItems (base.CurrentSection,e);
 						

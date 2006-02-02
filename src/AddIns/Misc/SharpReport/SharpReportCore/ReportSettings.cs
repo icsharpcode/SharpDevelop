@@ -650,32 +650,32 @@ namespace SharpReportCore{
 				}
 			}
 		}
-		/*
-		[Browsable(true), Category("Output Settings")]
-		public System.Drawing.Printing.Margins DefaultMargins {
-			get {
-				return defaultMargins;
-				
-			}
-			set {
-				if (defaultMargins != value) {
-					defaultMargins = value;
-					PageSettings.Margins = defaultMargins;
-					this.FirePropertyChanged();
-				}
-				
-			}
-		}
-		 */
+		
 		#endregion
 		
 		#region IDisposable
 		public void Dispose(){
-			if (this.defaultFont != null) {
-				this.defaultFont.Dispose();
-			}
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		
+		~ReportSettings()
+		{
+			Dispose(false);
+		}
+		
+		protected virtual void Dispose(bool disposing){
+			if (disposing) {
+				// Free other state (managed objects).
+				if (this.defaultFont != null) {
+					this.defaultFont.Dispose();
+				}
+			}
+			
+			// Release unmanaged resources.
+			// Set large fields to null.
+			// Call Dispose on your base class.
+		}
 		#endregion
 		
 	}

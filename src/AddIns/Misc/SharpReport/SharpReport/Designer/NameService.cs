@@ -35,10 +35,11 @@ namespace SharpReport {
 		public string CreateName (ReportItemCollection collection,
 		                          string typeName) {
 			
-			string name = Char.ToLower(typeName[0],CultureInfo.InvariantCulture) + typeName.Substring(1);
+			string name = Char.ToLower(typeName[0],
+			                           CultureInfo.InvariantCulture) + typeName.Substring(1);
 			int number = 1;
 			
-			while (collection.Find(name + number.ToString()) != null) {
+			while (collection.Find(name + number.ToString(CultureInfo.InvariantCulture)) != null) {
 				++number;
 			}
 			
@@ -61,7 +62,7 @@ namespace SharpReport {
 		public void ValidateName(ReportItemCollection collection,
 		                         string name) {
 			if (!IsValidName(collection,name)) {
-				throw new System.Exception("Invalid name " + name);
+				throw new SharpReportException("Invalid name " + name);
 			}
 		}
 		#endregion

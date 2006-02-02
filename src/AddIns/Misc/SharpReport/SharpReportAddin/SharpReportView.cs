@@ -32,7 +32,7 @@ namespace SharpReportAddin{
 	/// <summary>
 	/// Description of the view content
 	/// </summary>
-	public class SharpReportView : AbstractViewContent,IPrintable
+	public class SharpReportView : AbstractViewContent,IPrintable,IDisposable
 	{
 		
 		private SharpReportManager reportManager = null;
@@ -57,6 +57,11 @@ namespace SharpReportAddin{
 				BuildToolBarItems();
 				PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
 				PropertyPad.Grid.Refresh();
+				//Activate the FieldsExplorer - Pad
+				PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(FieldsExplorer));
+				if (pad != null) {
+					pad.CreatePad();
+				}
 			} catch (Exception e) {
 				MessageService.ShowError(e,e.Message);
 				throw e;
@@ -82,7 +87,6 @@ namespace SharpReportAddin{
 				throw;
 			}
 		}
-		
 		
 		#endregion
 		
@@ -189,7 +193,7 @@ namespace SharpReportAddin{
 			ctrl.ReportControl.AutoScroll = true;
 			ctrl.Dock = DockStyle.Fill;
 			
-			ctrl.ReportControl.ObjectSelected += new SelectedEventHandler (OnObjectSelected);
+			ctrl.ReportControl.ObjectSelected +=new EventHandler <EventArgs>(OnObjectSelected);
 			
 			ctrl.ReportControl.DesignViewChanged += new ItemDragDropEventHandler (OnItemDragDrop);
 			ctrl.DesignerDirty += new System.ComponentModel.PropertyChangedEventHandler (OnPropertyChanged);
@@ -495,12 +499,12 @@ namespace SharpReportAddin{
 		/// <param name="fileName">A valid Filename</param>
 		public override void Load(string fileName){
 			try {
-				designerControl.ReportControl.ObjectSelected -= new SelectedEventHandler (OnObjectSelected);
+				designerControl.ReportControl.ObjectSelected -= new EventHandler <EventArgs>(OnObjectSelected);
 				
 				reportManager.LoadFromFile (fileName);
 				base.FileName = fileName;
 				designerControl.ReportModel.ReportSettings.FileName = fileName;
-				designerControl.ReportControl.ObjectSelected += new SelectedEventHandler (OnObjectSelected);
+				designerControl.ReportControl.ObjectSelected += new EventHandler <EventArgs>(OnObjectSelected);
 				PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
 				PropertyPad.Grid.Refresh();
 				this.designerControl.ReportModel.ReportSettings.AvailableFieldsCollection = reportManager.AvailableFieldsCollection;
@@ -511,20 +515,7 @@ namespace SharpReportAddin{
 			}
 		}
 		
-		/// <summary>
-		/// Cleans up all used resources
-		/// </summary>
-		public override void Dispose(){
-			try {
-				PropertyPad.Grid.SelectedObject = null;
-				RemoveSideBarItem();
-				this.designerControl.Dispose();
-				this.reportManager = null;
-			} catch (Exception e){
-				MessageService.ShowError(e.Message);
-				return;
-			}
-		}
+		
 		#endregion
 		
 		
@@ -546,7 +537,38 @@ namespace SharpReportAddin{
 		
 		
 		#endregion
+		#region IDisposable
 		
+		
+		public override void Dispose(){
+			PropertyPad.Grid.SelectedObject = null;
+			RemoveSideBarItem();
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		
+		~SharpReportView(){
+			Dispose(false);
+		}
+		
+		protected  void Dispose(bool disposing){
+			if (disposing) {
+				// Free other state (managed objects).
+				if (this.reportManager != null) {
+					this.reportManager.Dispose();
+				}
+				if (this.designerControl != null) {
+					this.designerControl.Dispose();
+				}
+				this.tabControl.Dispose();
+			}
+			
+			// Release unmanaged resources.
+			// Set large fields to null.
+			// Call Dispose on your base class.
+			base.Dispose();
+		}
+		#endregion
 	}
 	
 }

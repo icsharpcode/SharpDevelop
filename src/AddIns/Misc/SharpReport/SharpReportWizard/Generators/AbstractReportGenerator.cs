@@ -12,7 +12,7 @@ using System;
 using System.Drawing;
 using System.Data;
 using System.Data.OleDb;
-using System.Windows.Forms;
+using System.Globalization;
 
 using ICSharpCode.Core;
 	
@@ -53,15 +53,33 @@ namespace ReportGenerator {
 		
 		#region ReportGenerator.IReportGenerator interface implementation
 		public virtual void GenerateReport() {
-			throw new NotImplementedException("must be overriden");
+			if (this.reportModel == null) {
+				throw new NullReferenceException("ReportModel");
+			}
+			BuildStandartSections();
+			manager.CreatePageHeader (reportModel);
+			manager.CreatePageNumber(reportModel);
 		}
 		
 		#endregion
-		
-		
-		
-		//TODO Change these function to using SharpQuery
-		protected DataTable GenerateFieldsTable(ReportModel reportModel) {
+		/*
+		protected ColumnCollection AvailableColumnsFromTable (DataTable table) {
+			
+			if (table == null) {
+				throw new ArgumentNullException("table");
+			}
+			
+			ColumnCollection collection = new ColumnCollection();
+			AbstractColumn abstr;
+			foreach (DataRow row in table.Rows) {
+				abstr = new AbstractColumn();
+				abstr.ColumnName = Convert.ToString(row["ColumnName"],CultureInfo.InvariantCulture);
+				collection.Add (abstr);
+			}
+			return collection;
+		}
+		*/
+		protected  DataTable GenerateFieldsTable(ReportModel reportModel) {
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
@@ -71,7 +89,7 @@ namespace ReportGenerator {
 			OleDbConnection connection = null;
 			OleDbCommand command = null;
 			try {
-				
+			
 				connection = new OleDbConnection(reportModel.ReportSettings.ConnectionString);
 				connection.Open();
 				
@@ -91,7 +109,7 @@ namespace ReportGenerator {
 					SqlParameter rpPar;
 					for (int i = 0;i < rpc ;i++) {
 						rpPar = (SqlParameter)reportModel.ReportSettings.SqlParametersCollection[i];
-						System.Console.WriteLine("{0} {1} {2}",rpPar.ParameterName,rpPar.DataType,rpPar.DefaultValue);
+//						System.Console.WriteLine("{0} {1} {2}",rpPar.ParameterName,rpPar.DataType,rpPar.DefaultValue);
 						
 						
 						if (rpPar.DataType != System.Data.DbType.Binary) {
@@ -99,7 +117,7 @@ namespace ReportGenerator {
 							                              rpPar.DataType);
 							oleDBPar.Value = rpPar.DefaultValue;
 						} else {
-							System.Console.WriteLine("binary");
+//							System.Console.WriteLine("binary");
 							oleDBPar = new OleDbParameter(rpPar.ParameterName,
 							                              System.Data.DbType.Binary);
 						}
@@ -108,8 +126,8 @@ namespace ReportGenerator {
 						
 					}
 				}
-			} catch (Exception e) {
-				throw e;
+			} catch (Exception) {
+				throw;
 			}
 			OleDbDataReader reader = null;
 			DataTable schemaTable = null;
@@ -138,6 +156,19 @@ namespace ReportGenerator {
 			foreach (ReportSection section in this.reportModel.SectionCollection) {
 				section.Size = new Size (section.Size.Width,
 				                         SharpReportCore.GlobalValues.DefaultSectionHeight);
+			}
+		}
+		
+		protected void AdjustAll () {
+			AdjustNames(reportModel);
+		}
+		
+		private static void AdjustNames (ReportModel model) {
+			NameService nameService = new NameService();
+			foreach (BaseSection section in model.SectionCollection) {
+				foreach (IItemRenderer item in section.Items) {
+					item.Name = nameService.CreateName(section.Items,item.Name);
+				}
 			}
 		}
 		

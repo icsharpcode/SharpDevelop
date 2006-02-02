@@ -126,9 +126,26 @@ namespace SharpReportCore {
 		
 		#region IDispoable
 		public void Dispose(){
-			if (this.reportSettings != null) {
-				this.reportSettings.Dispose();
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		
+		~ReportModel()
+		{
+			Dispose(false);
+		}
+		
+		protected virtual void Dispose(bool disposing){
+			if (disposing) {
+				// Free other state (managed objects).
+				if (this.reportSettings != null) {
+					this.reportSettings.Dispose();
+					this.reportSettings = null;
+				}
 			}
+			// Free your own state (unmanaged objects).
+			// Set large fields to null.
+
 		}
 		#endregion
 	}

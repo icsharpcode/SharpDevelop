@@ -553,7 +553,6 @@ namespace SharpReportAddin {
 		
 		
 		public FieldsExplorer() {
-
 			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += OnWindowChange;
 			
 			LabelEdit     = true;

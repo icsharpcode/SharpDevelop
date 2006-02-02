@@ -8,10 +8,11 @@
  */
 
 using System;
-
+using System.Data;
+using System.Globalization;
 using System.ComponentModel;
 using System.Collections;
-using System.Data;
+
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -71,16 +72,16 @@ namespace ReportGenerator
 		#region  ListBox
 		void FillListBox (string fileName) {
 			DataSet ds = new DataSet();
+			ds.Locale = CultureInfo.CurrentCulture;
 			ds.ReadXml (fileName);
-			AutoReport auto = new AutoReport ();
-			ReportModel model = generator.FillReportModel (new ReportModel());
-			colDetail = auto.AutoColumnsFromSchema(model,ds);
-			if (colDetail == null) {
-				throw new NullReferenceException("PushModelpanel:ColDetail");
-			} else {
+			using  (AutoReport auto = new AutoReport()){
+				ReportModel model = generator.FillReportModel (new ReportModel());
+				colDetail = auto.ReportItemsFromSchema(model,ds);
 				
-				foreach (ReportDataItem item in colDetail) {
-					this.checkedListBox.Items.Add (item.MappingName,CheckState.Checked);
+				if (colDetail != null) {
+					foreach (ReportDataItem item in colDetail) {
+						this.checkedListBox.Items.Add (item.MappingName,CheckState.Checked);
+					}
 				}
 			}
 			base.EnableNext = true;
@@ -112,7 +113,7 @@ namespace ReportGenerator
 						itemCol.Add(item);
 					}
 				}
-				//
+		
 				customizer.Set ("ReportItemCollection",itemCol);
 			}
 			return true;

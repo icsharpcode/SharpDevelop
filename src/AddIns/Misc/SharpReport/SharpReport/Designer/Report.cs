@@ -52,8 +52,8 @@ namespace SharpReport.Designer{
 		
 		[EditorBrowsable(EditorBrowsableState.Always), Browsable(true)]
 		
-		public event SelectedEventHandler ObjectSelected;
 		
+		public event EventHandler <EventArgs> ObjectSelected;
 		public event EventHandler <SectionChangedEventArgs> SectionChanged;
 		public event  ItemDragDropEventHandler DesignViewChanged;
 
@@ -111,18 +111,18 @@ namespace SharpReport.Designer{
 			sectionCollection.Add(detail);
 			sectionCollection.Add(pageFooter);
 			sectionCollection.Add(footer);
-	
-			header.Selected += new SelectedEventHandler(this.SectionSelected);
-			pageHeader.Selected += new SelectedEventHandler(this.SectionSelected);
-			detail.Selected += new SelectedEventHandler(this.SectionSelected);
-			footer.Selected += new SelectedEventHandler(this.SectionSelected);
-			pageFooter.Selected += new SelectedEventHandler(this.SectionSelected);
 			
-			header.ItemSelected += new SelectedEventHandler(this.ItemSelected);
-			pageHeader.ItemSelected += new SelectedEventHandler(this.ItemSelected);
-			detail.ItemSelected += new SelectedEventHandler(this.ItemSelected);
-			footer.ItemSelected += new SelectedEventHandler(this.ItemSelected);
-			pageFooter.ItemSelected += new SelectedEventHandler(this.ItemSelected);			
+			header.Selected += new EventHandler <EventArgs>(this.SectionSelected);
+			pageHeader.Selected += new EventHandler <EventArgs>(this.SectionSelected);
+			detail.Selected += new EventHandler <EventArgs>(this.SectionSelected);
+			footer.Selected += new EventHandler <EventArgs>(this.SectionSelected);
+			pageFooter.Selected += new EventHandler <EventArgs>(this.SectionSelected);
+			
+			header.ItemSelected += new EventHandler <EventArgs>(this.ItemSelected);
+			pageHeader.ItemSelected += new EventHandler <EventArgs>(this.ItemSelected);
+			detail.ItemSelected += new EventHandler <EventArgs>(this.ItemSelected);
+			footer.ItemSelected += new EventHandler <EventArgs>(this.ItemSelected);
+			pageFooter.ItemSelected += new EventHandler <EventArgs>(this.ItemSelected);
 			
 			//This events are from DragDropp
 			visualReportHeader.ReportItemsHandling += new ItemDragDropEventHandler (OnAddReportItem);

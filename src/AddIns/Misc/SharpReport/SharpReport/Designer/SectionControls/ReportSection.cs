@@ -34,9 +34,9 @@ namespace SharpReport{
 
 		const string contextMenuPath = "/SharpReport/ContextMenu/Section";
 		private ReportSectionControlBase visualControl;
-		public event SelectedEventHandler ItemSelected;
-		public event SelectedEventHandler Selected;
 		
+		public event EventHandler <EventArgs> ItemSelected;
+		public event EventHandler <EventArgs> Selected;
 		#region Constructors
 		
 		internal ReportSection() : base(){
@@ -247,7 +247,7 @@ namespace SharpReport{
 			SharpReport.Designer.IDesignable iDesignable = item as SharpReport.Designer.IDesignable;
 			if (iDesignable != null) {
 				if (this.VisualControl != null) {
-					iDesignable.Selected += new SelectedEventHandler(this.ReportItemSelected);
+					iDesignable.Selected += new EventHandler <EventArgs>(this.ReportItemSelected);
 					this.VisualControl.Body.Controls.Add(iDesignable.VisualControl);
 					iDesignable.VisualControl.BringToFront();
 					iDesignable.VisualControl.Focus();

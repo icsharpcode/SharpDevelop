@@ -77,7 +77,8 @@ namespace SharpReportCore{
 		public IItemRenderer Find (string itemName) {
 			for (int i = 0;i < this.Count ; i ++) {
 				IItemRenderer col = this[i];
-				if (String.Compare(col.Name,itemName)== 0){
+				if (String.Compare(col.Name.ToLower(CultureInfo.CurrentCulture),
+				                   itemName.ToLower(CultureInfo.CurrentCulture))== 0){
 					return col;
 				}
 			}
@@ -129,7 +130,6 @@ namespace SharpReportCore{
 					return col;
 				}
 			}
-			
 			return null;
 		}
 		
@@ -143,7 +143,6 @@ namespace SharpReportCore{
 		
 		public ColumnCollection(){
 			culture = CultureInfo.CurrentCulture;
-		
 		}
 		
 		
@@ -165,12 +164,12 @@ namespace SharpReportCore{
 		public CultureInfo Culture
 		{
 			get { return culture; }
-			set 
-			{
-				if (value == null)
-					value = CultureInfo.CurrentCulture;
-				culture = value; 
-			}
+//			set 
+//			{
+//				if (value == null)
+//					value = CultureInfo.CurrentCulture;
+//				culture = value; 
+//			}
 		}
 	}
 	

@@ -59,7 +59,9 @@ namespace ReportGenerator {
 		}
 		
 		public ReportModel FillReportModel (ReportModel model) {
-			
+			if (model == null) {
+				throw new ArgumentNullException("model");
+			}
 			model.ReportSettings.ReportName = this.reportName;
 			model.ReportSettings.FileName = this.path + this.fileName;
 			

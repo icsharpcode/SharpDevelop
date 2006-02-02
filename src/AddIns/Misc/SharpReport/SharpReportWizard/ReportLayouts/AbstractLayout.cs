@@ -32,10 +32,13 @@ namespace ReportGenerator {
 			this.reportModel = reportModel;
 		}
 		
-		protected void FormatSingleEntry (IItemRenderer item,
+		protected  void FormatSingleEntry (IItemRenderer item,
 		                                  int itemWidth,
 		                                  Point location,
 		                                  Font font) {
+			if (item == null) {
+				throw new ArgumentNullException("item");
+			}
 			item.Size = new Size (itemWidth,item.Size.Height + GlobalValues.EnlargeControl);
 			item.Location = new Point (location.X,location.Y);
 			item.Font =  font;

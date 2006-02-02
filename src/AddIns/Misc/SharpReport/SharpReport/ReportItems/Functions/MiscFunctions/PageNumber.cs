@@ -159,7 +159,8 @@ namespace SharpReport.ReportItems.Functions {
 			}
 		}
 		
-		public event SelectedEventHandler Selected;
+		public event EventHandler <EventArgs> Selected;
+
 		#endregion
 	}
 }

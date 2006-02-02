@@ -43,6 +43,9 @@ namespace SharpReportCore{
 		///<param name="item">A ReportDataItem</param>
 		/// 
 		public string FormatItem (BaseDataItem item) {
+			if (item == null) {
+				throw new ArgumentNullException("item");
+			}
 			string retValue = String.Empty;
 			
 			switch (item.DataType) {

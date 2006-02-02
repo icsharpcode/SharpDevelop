@@ -19,9 +19,9 @@ namespace SharpReportCore
 		bool allowNew = true;
 		bool allowEdit = true;
 		bool allowRemove = true;
-		bool supportsSearching = false;
-		bool supportsSorting = false;
-		bool isSorted = false;
+		bool supportsSearching ;
+		bool supportsSorting ;
+		bool isSorted;
 		
 		private ListChangedEventArgs resetEvent = new ListChangedEventArgs(ListChangedType.Reset, -1);
 
@@ -160,17 +160,26 @@ namespace SharpReportCore
 			get {
 				return this.supportsSearching;
 			}
+			set {
+				this.supportsSearching = value;
+			}
 		}
 		
 		public bool SupportsSorting {
 			get {
 				return this.supportsSorting;
 			}
+			set {
+				this.supportsSorting = value;
+			}
 		}
 		
 		public bool IsSorted {
 			get {
 				return this.isSorted;
+			}
+			set {
+				this.isSorted = value;
 			}
 		}
 		

@@ -12,6 +12,7 @@ using System;
 using System.Globalization;
 using System.ComponentModel;
 using System.Collections;
+using System.Collections.Generic;
 using SharpReportCore;
 	
 /// <summary>
@@ -36,14 +37,14 @@ namespace SharpReportCore {
 		
 		private ListChangedEventArgs resetList = new ListChangedEventArgs(ListChangedType.Reset,-1,-1);
 		
-		public event ListChangedEventHandler ListChanged;
+		public event EventHandler <ListChangedEventArgs> ListChanged;
 		public event EventHandler <GroupChangedEventArgs> GroupChanged;
 		
 		#region Constructor
 		
 		protected BaseListStrategy(ReportSettings reportSettings) {
 			this.reportSettings = reportSettings;
-			this.indexList = new SharpArrayList(typeof(BaseComparer),"IndexList");
+			this.indexList = new SharpArrayList(typeof(BaseComparer),"IndexList");	
 		}
 		
 		#endregion
@@ -65,14 +66,13 @@ namespace SharpReportCore {
 		
 		#endregion
 		
-		protected SharpArrayList IndexList {
+
+		public SharpArrayList IndexList {
 			get {
 				return indexList;
 			}
-			set {
-				indexList = value;
-			}
 		}
+		
 		
 		public ReportSettings ReportSettings {
 			get {
@@ -173,6 +173,7 @@ namespace SharpReportCore {
 		}
 		
 		protected virtual void Group() {
+			
 			if (this.indexList != null) {
 				this.BuildHierarchicalList (this.indexList);
 				this.isGrouped = true;
@@ -180,6 +181,7 @@ namespace SharpReportCore {
 			} else {
 				throw new SharpReportException ("BaseListStrategy:Group Sorry, no IndexList");
 			}
+		
 		}
 		
 		
@@ -296,9 +298,10 @@ namespace SharpReportCore {
 		}
 		
 		public  virtual void Fill(IItemRenderer item) {
-			
 		}
 		#endregion
 		
 	}
+	
+	
 }

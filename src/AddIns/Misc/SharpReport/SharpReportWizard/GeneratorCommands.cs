@@ -62,9 +62,10 @@ namespace ReportGenerator{
 						try {
 							gen.FillReportModel (reportModel);
 							DoCreate(reportModel);
-						} catch (Exception e) {
-							MessageService.ShowError (e,e.Message);
-							return;
+						} catch (Exception) {
+//							MessageService.ShowError (e,e.Message);
+//							return;
+							throw;
 						}
 					} else {
 						throw new SharpReportException("Chancel");
@@ -107,8 +108,8 @@ namespace ReportGenerator{
 				} else {
 					throw new NullReferenceException ("GeneratePullDataReport");
 				}
-			} catch (Exception e) {
-				throw e;
+			} catch (Exception) {
+				throw;
 			}
 		}
 		
@@ -125,22 +126,22 @@ namespace ReportGenerator{
 				} else {
 					throw new NullReferenceException ("GeneratePullDataReport");
 				}
-			} catch (Exception e) {
-				throw e;
+			} catch (Exception) {
+				throw;
 			}
 		}
 		
 		
 		
-		void GenerateFormSheet (ReportModel model) {
+		private static void GenerateFormSheet (ReportModel model) {
 			if (model.ReportSettings.DataModel != GlobalEnums.enmPushPullModel.FormSheet) {
-				throw new ArgumentException ("Wrong DataModel in GenerateFormSheet");
+				throw new ArgumentNullException ("model");
 			}
 			
 			try {
 				model.ReportSettings.ReportType = GlobalEnums.enmReportType.FormSheet;
-			} catch (Exception e) {
-				throw e;
+			} catch (Exception) {
+				throw;
 			}
 		}
 	}

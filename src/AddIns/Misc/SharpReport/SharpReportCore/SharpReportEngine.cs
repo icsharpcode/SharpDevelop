@@ -57,7 +57,7 @@ namespace SharpReportCore {
 		private bool CheckReportParameters (ReportModel model,ReportParameters reportParameters) {
 			if (model.ReportSettings.ReportType != GlobalEnums.enmReportType.FormSheet) {
 				if (this.connectionObject == null) {
-	
+					
 					if (model.ReportSettings.ConnectionString != "") {
 						this.connectionObject = new ConnectionObject (model.ReportSettings.ConnectionString,"","");
 					}
@@ -91,7 +91,7 @@ namespace SharpReportCore {
 			
 		}
 		
-	
+		
 		void SetSqlParameters (ReportModel model,AbstractParametersCollection sqlParams) {
 			if ((sqlParams == null)||(sqlParams.Count == 0)) {
 				return;
@@ -99,6 +99,8 @@ namespace SharpReportCore {
 			model.ReportSettings.SqlParametersCollection.Clear();
 			model.ReportSettings.SqlParametersCollection.AddRange(sqlParams);
 		}
+		
+		
 		
 		private static void SetCustomSorting (ReportModel model,ColumnCollection sortParams) {
 			if ((sortParams == null)||(sortParams.Count == 0)) {
@@ -130,10 +132,7 @@ namespace SharpReportCore {
 		}
 
 		private DataManager SetupDataContainer (ReportSettings settings) {
-			System.Console.WriteLine("SetupContainer");
 			
-			
-			System.Console.WriteLine("after check");
 			if (settings.ReportType == GlobalEnums.enmReportType.DataReport) {
 				if (settings.CommandText != null) {
 					try {
@@ -143,7 +142,6 @@ namespace SharpReportCore {
 							DataManager container = new DataManager(this.connectionObject,
 							                                        settings);
 							
-							System.Console.WriteLine("\t No of Records to print {0}",container.Count);
 							if (container.DataBind() == true) {
 								return container;
 							} else {
@@ -239,7 +237,7 @@ namespace SharpReportCore {
 			
 			AbstractRenderer abstr = null;
 			DataManager dataManager = new DataManager (dataTable,model.ReportSettings);
-			System.Console.WriteLine("\tDataManager ok = {0}",(dataManager != null));
+			
 			if (dataManager != null) {
 				dataManager.DataBind();
 				if (dataManager.DataSource != null) {
@@ -541,14 +539,32 @@ namespace SharpReportCore {
 		}
 		
 		#endregion
+		
 		#region IDisposable
+		
 		public void Dispose(){
-			if (this.connectionObject == null) {
-				this.connectionObject.Dispose();
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		
+		~SharpReportEngine(){
+			Dispose(false);
+		}
+		
+		protected virtual void Dispose(bool disposing){
+			if (disposing) {
+				// Free other state (managed objects).
+				if (this.connectionObject != null) {
+					this.connectionObject.Dispose();
+				}
+				if (this.previewControl != null) {
+					this.previewControl.Dispose();
+				}
 			}
-			if (this.previewControl != null) {
-				this.previewControl.Dispose();
-			}
+			
+			// Release unmanaged resources.
+			// Set large fields to null.
+			// Call Dispose on your base class.
 		}
 		#endregion
 	}

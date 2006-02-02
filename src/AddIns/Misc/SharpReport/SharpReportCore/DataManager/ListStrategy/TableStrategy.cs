@@ -212,19 +212,22 @@ namespace SharpReportCore {
 				if (base.ReportSettings.GroupColumnsCollection != null) {
 					if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
 						groupedArray =  this.BuildGroupIndex (base.ReportSettings.GroupColumnsCollection);
-						
+						System.Console.WriteLine("\t1");
 					} else {
 						groupedArray =  BuildPlainIndex (base.ReportSettings.GroupColumnsCollection);
 					}
 				}
 				
-				base.IndexList.Clear();
+				base.IndexList.Clear();				
 				base.IndexList.AddRange (InsertGroupRows(groupedArray));
 				
 				if (base.IndexList == null){
 					throw new NotSupportedException("Sortieren für die Liste nicht unterstützt.");
 				}
-			} catch (Exception) {
+				
+				
+			} catch (Exception e) {
+				System.Console.WriteLine("BuildGroup {0}",e.Message);
 				throw;
 			}
 		}
@@ -236,13 +239,14 @@ namespace SharpReportCore {
 			}
 			
 			try {
-				this.BuildGroup();
-				base.Group();
-			
+				this.BuildGroup();					
+				base.Group();					
 				if (this.IsGrouped == false) {
 					throw new SharpReportException("TableStratregy:Group Error in grouping");
 				}
-			} catch (Exception) {
+					
+			} catch (Exception e) {
+				System.Console.WriteLine("Group {0}",e.Message);
 				base.IsGrouped = false;
 				base.IsSorted = false;
 				throw;

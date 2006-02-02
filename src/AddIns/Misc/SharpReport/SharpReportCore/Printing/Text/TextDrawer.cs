@@ -38,8 +38,8 @@ namespace SharpReportCore {
 		}
 		
 		
-		public void DrawString(Graphics g,string text,Font font,Brush brush,RectangleF rectangle,StringFormat stringFormat) {
-			g.DrawString(text,
+		public void DrawString(Graphics graphics,string text,Font font,Brush brush,RectangleF rectangle,StringFormat stringFormat) {
+			graphics.DrawString(text,
 			             font,
 			             brush,
 			             rectangle,

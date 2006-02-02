@@ -43,20 +43,20 @@ namespace SharpReportCore {
 			this.baseLine = baseLine;
 		}
 		
-		public void DrawBorder (Graphics g, RectangleF rectangle) {
+		public void DrawBorder (Graphics graphics, RectangleF rectangle) {
 			using (Pen p = new Pen(baseLine.Color,baseLine.Thickness)) {
 				p.DashStyle = baseLine.DashStyle;
-				g.DrawRectangle (p,rectangle.Left,
+				graphics.DrawRectangle (p,rectangle.Left,
 				                 rectangle.Top,
 				                 rectangle.Width,
 				                 rectangle.Height);
 			}
 		}
 		
-		public void DrawBorder (Graphics g, Rectangle rectangle ) {
+		public void DrawBorder (Graphics graphics, Rectangle rectangle ) {
 			using (Pen p = new Pen(baseLine.Color,baseLine.Thickness)) {
 				p.DashStyle = baseLine.DashStyle;
-				g.DrawRectangle (p,rectangle);
+				graphics.DrawRectangle (p,rectangle);
 			}
 		}
 	}

@@ -166,10 +166,10 @@ namespace SharpReportCore {
 		}
 		
 		
-		protected int RenderSection (BaseSection section,ReportPageEventArgs e) {
+		protected int RenderSection (BaseSection section,ReportPageEventArgs rpea) {
 			Point drawPoint	= new Point(0,0);
 			if (section.Visible){
-				section.Render (e);
+				section.Render (rpea);
 				
 				foreach (BaseReportItem rItem in section.Items) {
 					rItem.SuspendLayout();
@@ -185,10 +185,10 @@ namespace SharpReportCore {
 					rItem.FormatOutput -= new EventHandler<FormatOutputEventArgs> (FormatBaseReportItem);
 					rItem.FormatOutput += new EventHandler<FormatOutputEventArgs> (FormatBaseReportItem);
 					
-					rItem.Render(e);
+					rItem.Render(rpea);
 
 					drawPoint.Y = section.SectionOffset + section.Size.Height;
-					e.LocationAfterDraw = new PointF (e.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);
+					rpea.LocationAfterDraw = new PointF (rpea.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);
 					rItem.ResumeLayout();
 				}
 				if ((section.CanGrow == false)&& (section.CanShrink == false)) {

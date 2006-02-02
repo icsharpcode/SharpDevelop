@@ -25,14 +25,12 @@ namespace SharpReportCore {
 	public class GroupSeperator : SharpReportCore.GroupComparer,IHierarchyData {
 		private string typeName = "GroupSeperator";
 		
-		int groupLevel = 0;
-//		GroupSeperator parent = null;
+		int groupLevel;
 		IHierarchicalArray childs ;
 		
 		public GroupSeperator(ColumnCollection owner, int listIndex, object[] values,int groupLevel):
 			base(owner,listIndex,values) {
 			this.groupLevel = groupLevel;
-//			this.parent = parent;
 		}
 		
 		

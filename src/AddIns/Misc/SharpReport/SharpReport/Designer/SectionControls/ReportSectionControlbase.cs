@@ -36,7 +36,8 @@ namespace SharpReport.Designer{
 		
 		private int  currentY;
 		
-		public event SelectedEventHandler ItemSelected;
+		public event EventHandler <EventArgs> ItemSelected;
+
 		public event ItemDragDropEventHandler ItemDragDrop;
 		public event EventHandler <SectionChangedEventArgs> SectionChanged;
 		
@@ -66,13 +67,6 @@ namespace SharpReport.Designer{
 		private void BodyPanelPaint(object sender, PaintEventArgs e) {
 			Graphics g = e.Graphics;
 			g.Clear(this.Body.BackColor);
-			
-			if (dragAllowed) {
-//				using (Pen p = new Pen (Color.Gray)) {
-//				    p.Width = 5;
-//				    g.DrawRectangle(p,2,2,this.Width - 4, this.Height -4);
-//				}
-			}
 			System.Windows.Forms.ControlPaint.DrawGrid (e.Graphics,
 			                                            this.Body.ClientRectangle,
 			                                            GlobalValues.GridSize,

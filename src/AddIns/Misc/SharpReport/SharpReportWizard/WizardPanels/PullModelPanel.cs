@@ -207,7 +207,7 @@ namespace ReportGenerator
 							this.txtSqlString.Enabled = true;
 							
 							if (this.firstDrag) {
-								this.txtSqlString.Text = "";
+								this.txtSqlString.Text = String.Empty;
 							}
 							
 						} else {
@@ -228,7 +228,7 @@ namespace ReportGenerator
 		///<param name="SharpQueryNodeColumn">a ColumnNode</param>
 		/// <returns>a valid ColumnName</returns>
 		/// 
-		private string MakeProperColumnName(SharpQueryNodeColumn node) {
+		private static string MakeProperColumnName(SharpQueryNodeColumn node) {
 			string colName;
 			if (node != null) {
 				if (node.SchemaClass.NormalizedName.IndexOf("-") > -1 ){
@@ -244,7 +244,7 @@ namespace ReportGenerator
 		}
 		
 		// check witch type of node we dragg
-		private  enmNodeType CheckCurrentNode (ISharpQueryNode node) {
+		private static enmNodeType CheckCurrentNode (ISharpQueryNode node) {
 			enmNodeType enm;
 			if (node == null) {
 				enm = enmNodeType.nodeError;

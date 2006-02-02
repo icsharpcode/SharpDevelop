@@ -78,8 +78,8 @@ namespace SharpReportCore{
  		bool IsGrouped {
  			get;
  		}
- 		event ListChangedEventHandler ListChanged;
- 		
+// 		event ListChangedEventHandler ListChanged;
+ 		event EventHandler <ListChangedEventArgs> ListChanged;
  		/// <summary>
  		/// Fired each tim the grouping will change, this means theGroupLevel changes up or down
  		/// </summary>

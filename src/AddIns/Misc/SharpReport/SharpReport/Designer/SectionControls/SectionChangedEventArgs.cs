@@ -22,8 +22,6 @@ namespace SharpReport.Designer {
 	/// 	created on - 20.12.2004 22:06:09
 	/// </remarks>
 	
-	public delegate void SelectedEventHandler(object sender, EventArgs e);
-
 	public class SectionChangedEventArgs : System.EventArgs {
 		
 		ReportSection section;

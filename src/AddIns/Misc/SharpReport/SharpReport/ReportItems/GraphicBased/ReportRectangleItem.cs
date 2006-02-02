@@ -148,7 +148,8 @@ namespace SharpReport.ReportItems{
 		}
 		
 		public new event PropertyChangedEventHandler PropertyChanged;
-		public event SelectedEventHandler Selected;
+		public event EventHandler <EventArgs> Selected;
+
 		#endregion
 	}
 }

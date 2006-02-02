@@ -38,25 +38,25 @@ namespace SharpReportCore {
 		}
 		
 		
-		public virtual void DrawShape (Graphics g,BaseLine baseLine,RectangleF rectangle) {
+		public virtual void DrawShape (Graphics graphics,BaseLine baseLine,RectangleF rectangle) {
 			
 		}
 
 		
-		public virtual void DrawShape (Graphics g,Pen pen,RectangleF rectangle) {
+		public virtual void DrawShape (Graphics graphics,Pen pen,RectangleF rectangle) {
 			
 		}
 		
 		
-		public virtual void FillShape (Graphics g, Brush brush,RectangleF rectangle) {
+		public virtual void FillShape (Graphics graphics, Brush brush,RectangleF rectangle) {
 			
 		}
 		
-		public virtual void FillShape (Graphics g,AbstractFillPattern fillPattern,RectangleF rectangle) {
+		public virtual void FillShape (Graphics graphics,AbstractFillPattern fillPattern,RectangleF rectangle) {
 			
 		}
 		
-		public virtual GraphicsPath CreatePath (RectangleF rectangle) {
+		public virtual GraphicsPath CreatePath (RectangleF rectangleF) {
 			return null;
 		}
 	}

@@ -37,7 +37,7 @@ namespace SharpReport{
 	/// <summary>
 	/// Description of SharpReportManager.
 	/// </summary>
-	public class SharpReportManager :SharpReportEngine {
+	public class SharpReportManager :SharpReportEngine,IDisposable {
 		
 		private BaseDesignerControl baseDesignerControl;
 		private ReportModel reportModel;
@@ -145,7 +145,9 @@ namespace SharpReport{
 		#region Standarts for all reports (Headlines etc)
 		
 		/// <summary>
-		/// Create TextItem in PageHeader with Reportmodel.ReportSettings.ReportName
+		/// Insert a <see cref="ReportTextItem"></see> in the PageHeader with
+		/// the <see cref="ReportModel.ReportSettings.ReportName"></see> as
+		/// text
 		/// </summary>
 		/// <param name="model">ReportModel</param>
 		public void CreatePageHeader (ReportModel model) {
@@ -181,40 +183,55 @@ namespace SharpReport{
 			pageNumber.ResumeLayout();
 			section.ResumeLayout();
 		}
-		
-		
-		public void AdjustNames (ReportModel model) {
-			NameService nameService = new NameService();
-			foreach (BaseSection section in model.SectionCollection) {
-				foreach (IItemRenderer item in section.Items) {
-					item.Name = nameService.CreateName(section.Items,item.Name);
-				}
-			}
-		}
 			
 		#endregion
 		
-		#region Create report from Query
+		#region HeaderColumns
 		/// <summary>
-		/// Builds ColumHeaders for report, we take the ColumnNames as Text Property
+		/// Builds ColumHeaders for Reports, we take the ColumnNames as Text Property
 		/// </summary>
 		/// <param name="model">A valid(filled) reportModel</param>
 		/// <param name="section">The Section to use for headerLines</param>
 		/// <param name="schemaTable">SchemaTable witch contains the Column Informations</param>
 		
-		public void CreateColumnHeadersFromTable (ReportModel model,BaseSection section,DataTable schemaTable) {
+		public void HeaderColumnsFromTable (BaseSection section,DataTable schemaTable) {
 			if (section == null) {
 				throw new ArgumentException("SharpReportManager:CreateColumnHeadersFromTable <section>");
 			}
 			using  (AutoReport auto = new AutoReport()){
 				try {
-					ReportItemCollection headerCol = auto.AutoHeaderFromTable (model,section,schemaTable,false);
+					ReportItemCollection headerCol = auto.AutoHeaderFromTable (section,schemaTable,false);
 					AddItemsToSection (section,headerCol);
 				} catch (Exception) {
 					throw;
 				}
 			}
 		}
+		
+		///<summary>
+		/// Create ColumHeaders for Reports
+		/// </summary>
+		/// <param name="section">A ReportSection whre to build the Hedarlines</param>
+		///<param name="collection">A <see cref="ReportitemCollection"></see>
+		/// containing the basic informations</param>
+		
+		public void HeaderColumnsFromReportItems (BaseSection section,ReportItemCollection collection) {
+			using  (AutoReport auto = new AutoReport()){
+				try {
+					ReportItemCollection colDetail = auto.AutoHeaderFromReportItems (collection,section,false);
+					section.SuspendLayout();
+					AddItemsToSection (section,colDetail);
+					section.ResumeLayout();
+				} catch(Exception) {
+					throw;
+				}
+			}
+		}
+		#endregion
+		
+		
+		#region Create report from Query
+		
 		
 		/// <summary>
 		/// Create Columns from SchemaTable
@@ -223,14 +240,14 @@ namespace SharpReport{
 		///<param name="schemaTable">DataTable witch contaisn SchemaDefinitions</param>
 		/// 
 		
-		public void CreateColumnsFromTable (ReportModel model,DataTable schemaTable) {
+		public void DataColumnsFromTable (ReportModel model,DataTable schemaTable) {
 			if ((model == null)||(schemaTable.Rows.Count == 0) ) {
 				throw new ArgumentException ("Invalid Arguments in SharpReportmanager:CreateColumnsFromFile");
 			}
 			
 			using  (AutoReport auto = new AutoReport()){
 				try {
-					ReportItemCollection colDetail = auto.AutoColumnsFromTable (model,
+					ReportItemCollection colDetail = auto.ReportItemsFromTable (model,
 					                                                            schemaTable);
 					BaseSection section = model.DetailSection;
 					section.SuspendLayout();
@@ -244,49 +261,8 @@ namespace SharpReport{
 		#endregion
 		
 		#region Create Reports from .Xsd Files
-		/*
-		/// <summary>
-		/// create Header from an .Xsd File
-		/// </summary>
-		/// <param name="model">a valid ReportModel</param>
-		/// <param name="section">Section in witch the header should be created</param>
-		/// <param name="fileName">File/Path to .Xsd file</param>
 		
-		public void a_CreateColumnHeadersFromXsd (ReportModel model,BaseSection section,string fileName){
-			Debug.Assert (fileName.Length > 0,"CreateColumnsHeadersFromScheman : No valid FileName");
-			try {
-				DataSet ds = new DataSet();
-				ds.ReadXml (fileName);
-				using  (AutoReport auto = new AutoReport()){
-					try {
-//						ReportItemCollection colDetail = auto.AutoHeaderFromSchema (model,section,ds,false);
-//						AddItemsToSection (section,colDetail);
-					} catch (Exception) {
-						throw;
-					}
-				}
-			} catch (Exception) {
-				throw;
-			}
-		}
-		*/
-		///<summary>
-		/// Create the ReportHeader
-		/// </summary>
-		/// <param name="section">A ReportSection whre to build the Hedarlines</param>
-		///<param name="collection">A reportItemcollection containing the basic informations</param>
-		public void CreateHeaderColumns (BaseSection section,ReportItemCollection collection) {
-			using  (AutoReport auto = new AutoReport()){
-				try {
-					ReportItemCollection colDetail = auto.AutoHeaderColumns (collection);
-					section.SuspendLayout();
-					AddItemsToSection (section,colDetail);
-					section.ResumeLayout();
-				} catch(Exception) {
-					throw;
-				}
-			}
-		}
+		
 		///<summary>
 		/// Create the DataColumns
 		/// </summary>
@@ -294,7 +270,7 @@ namespace SharpReport{
 		///  <see cref="ReportDataItem"></see>
 		/// DataItems</param>
 		///<param name="collection">A reportItemcollection containing the basic informations</param>
-		public void CreateDataColumns (BaseSection section,ReportItemCollection collection) {
+		public void DataColumnsFromReportItems (BaseSection section,ReportItemCollection collection) {
 			using  (AutoReport auto = new AutoReport()){
 				try {
 					ReportItemCollection colDetail = auto.AutoDataColumns (collection);
@@ -487,6 +463,35 @@ namespace SharpReport{
 			}
 		}
 		
+		#endregion
+		
+		#region IDisposable
+		
+		public new void Dispose(){
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		
+		~SharpReportManager(){
+			Dispose(false);
+		}
+		
+		protected new void Dispose(bool disposing){
+			if (disposing) {
+				// Free other state (managed objects).
+				if (this.baseDesignerControl != null) {
+					this.baseDesignerControl.Dispose();
+				}
+				if (this.reportModel != null) {
+					this.reportModel.Dispose();
+				}
+			}
+			
+			// Release unmanaged resources.
+			// Set large fields to null.
+			// Call Dispose on your base class.
+			base.Dispose();
+		}
 		#endregion
 	}
 	

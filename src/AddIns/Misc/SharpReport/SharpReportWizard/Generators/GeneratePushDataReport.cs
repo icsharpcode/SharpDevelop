@@ -14,7 +14,7 @@ using System.Data;
 using ICSharpCode.Core;
 	
 using SharpReportCore;
-	
+using System.Windows.Forms;	
 /// <summary>
 /// This class is used to generate PushDataReports
 /// (Reports, that are feed with an DataSet etc)
@@ -41,17 +41,21 @@ namespace ReportGenerator {
 		public override void GenerateReport() {
 			base.ReportModel.ReportSettings.ReportType = GlobalEnums.enmReportType.DataReport;
 			
-			BuildStandartSections();
-			base.Manager.CreatePageHeader (base.ReportModel);
+
 			ReportItemCollection col = (ReportItemCollection)base.Customizer.Get ("ReportItemCollection");
+//			MessageBox.Show (col.Count.ToString());
 			
-			base.Manager.CreateHeaderColumns (base.ReportModel.PageHeader,col);
-			base.Manager.CreateDataColumns (base.ReportModel.DetailSection,col);
-			base.Manager.CreatePageNumber(base.ReportModel);
+			base.GenerateReport();
+			
+			base.Manager.HeaderColumnsFromReportItems (base.ReportModel.PageHeader,col);
+			
+			base.Manager.DataColumnsFromReportItems (base.ReportModel.DetailSection,col);
+
+			
 			using (TableLayout layout = new TableLayout(base.ReportModel)){
 				layout.BuildLayout();
 			}
-			base.Manager.AdjustNames(base.ReportModel);
+			base.AdjustAll();
 		}
 	}
 }

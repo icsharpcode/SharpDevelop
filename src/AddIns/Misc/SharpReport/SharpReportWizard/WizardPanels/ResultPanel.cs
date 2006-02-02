@@ -8,12 +8,14 @@
  */
 
 using System;
+using System.Globalization;
+using System.Data;
+using System.Data.OleDb;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Xml;
-using System.Data;
-using System.Data.OleDb;
+
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -59,12 +61,12 @@ namespace ReportGenerator{
 		
 		#region Fill data
 		private void FillGrid() {
-			System.Console.WriteLine("FillGrid");
 			this.grdQuery.DataSource = null;
 			this.txtSqlString.Text = null;
 			ReportModel model = generator.FillReportModel(new ReportModel());
 			
 			resultDataSet = new DataSet();
+			resultDataSet.Locale = CultureInfo.CurrentCulture;
 			this.txtSqlString.Text = model.ReportSettings.CommandText;
 			
 			if (model.ReportSettings.CommandType == CommandType.StoredProcedure){
@@ -110,8 +112,8 @@ namespace ReportGenerator{
 					try {
 						// Stored Proc without Parameters
 						resultDataSet = (DataSet) proc.Execute(0,proc.GetSchemaParameters());
-					} catch (Exception e) {
-						throw e;
+					} catch (Exception) {
+						throw;
 					}
 					
 				}
@@ -142,7 +144,7 @@ namespace ReportGenerator{
 		}
 		
 		
-		DataSet BuildFromSqlString(ReportSettings settings) {
+		private static DataSet BuildFromSqlString(ReportSettings settings) {
 			OLEDBConnectionWrapper con = null;
 			DataSet ds = null;
 			if (settings.CommandText.IndexOf("?") > 0) {
