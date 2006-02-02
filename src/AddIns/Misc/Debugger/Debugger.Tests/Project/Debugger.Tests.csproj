@@ -53,6 +53,7 @@
     <Compile Include="Src\TestPrograms\PropertyVariable.cs" />
     <Compile Include="Src\TestPrograms\PropertyVariableForm.cs" />
     <Compile Include="Src\TestPrograms\SetIP.cs" />
+    <Compile Include="Src\TestPrograms\ArrayValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />

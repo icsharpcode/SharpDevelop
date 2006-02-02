@@ -46,6 +46,12 @@ namespace Debugger.Tests
 			};
 		}
 		
+		[TearDown]
+		void TearDown()
+		{
+			debugger.Terminate();
+		}
+		
 		void StartProgram(string programName)
 		{
 			StartProgram(assemblyFilename, programName);
@@ -55,6 +61,7 @@ namespace Debugger.Tests
 		{
 			log = "";
 			lastLogMessage = null;
+			debugger.Terminate();
 			debugger.Start(exeFilename, Path.GetDirectoryName(exeFilename), programName);
 		}
 		
@@ -390,6 +397,33 @@ namespace Debugger.Tests
 			Assert.AreEqual(typeof(UnavailableValue), argument.Value.GetType());
 			Assert.AreEqual(typeof(UnavailableValue), local.Value.GetType());
 			Assert.AreEqual(typeof(UnavailableValue), @class.Value.GetType());
+			
+			debugger.Continue();
+			debugger.WaitForPrecessExit();
+		}
+		
+		[Test]
+		public void ArrayValue()
+		{
+			Variable local = null;
+			List<Variable> subVars = new List<Variable>();
+			
+			StartProgram("ArrayValue");
+			WaitForPause(PausedReason.Break, null);
+			foreach(Variable var in debugger.CurrentFunction.LocalVariables) {
+				local = var; break;
+			}
+			Assert.AreEqual("array", local.Name);
+			Assert.AreEqual(true, local.MayHaveSubVariables);
+			Assert.AreEqual(typeof(ArrayValue), local.Value.GetType());
+			Assert.AreEqual("{System.Int32[5]}", local.Value.AsString);
+			foreach(Variable var in local.SubVariables) {
+				subVars.Add(var);
+			}
+			for(int i = 0; i < 5; i++) {
+				Assert.AreEqual("[" + i.ToString() + "]", subVars[i].Name);
+				Assert.AreEqual(i.ToString(), subVars[i].Value.AsString);
+			}
 			
 			debugger.Continue();
 			debugger.WaitForPrecessExit();
