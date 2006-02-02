@@ -93,8 +93,10 @@ namespace Debugger
 			}
 		}
 		
-		Variable GetItem(uint[] indices, ValueGetter getter)
+		Variable GetItem(uint[] itemIndices, ValueGetter getter)
 		{
+			uint[] indices = (uint[])itemIndices.Clone();
+			
 			if (indices.Length != rank) throw new DebuggerException("Given indicies does not match array size.");
 			
 			string elementName = "[";
