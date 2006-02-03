@@ -131,6 +131,8 @@ namespace Debugger
 			ClearThreads();
 			
 			currentProcess = null;
+			pausedHandle.Reset();
+			pausedReason = null;
 			
 			pendingEvalsCollection.Clear();
 			

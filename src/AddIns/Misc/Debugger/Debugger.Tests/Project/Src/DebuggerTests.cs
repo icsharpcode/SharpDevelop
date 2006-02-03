@@ -65,12 +65,17 @@ namespace Debugger.Tests
 			debugger.Start(exeFilename, Path.GetDirectoryName(exeFilename), programName);
 		}
 		
-		void WaitForPause(PausedReason expectedReason, string expectedLastLogMessage)
+		void WaitForPause(PausedReason expectedReason)
 		{
-			if (expectedLastLogMessage != null) expectedLastLogMessage += "\r\n";
 			debugger.WaitForPause();
 			Assert.AreEqual(true, debugger.IsPaused);
 			Assert.AreEqual(expectedReason, debugger.PausedReason);
+		}	
+		
+		void WaitForPause(PausedReason expectedReason, string expectedLastLogMessage)
+		{
+			WaitForPause(expectedReason);
+			if (expectedLastLogMessage != null) expectedLastLogMessage += "\r\n";
 			Assert.AreEqual(expectedLastLogMessage, lastLogMessage);
 		}
 		
@@ -168,6 +173,17 @@ namespace Debugger.Tests
 			} catch (System.Exception e) {
 				Assert.Fail("Symbols file not released\n" + e.ToString());
 			}
+		}
+		
+		[Test]
+		public void DebuggeeKilled()
+		{
+			StartProgram("DebuggeeKilled");
+			WaitForPause(PausedReason.Break);
+			Assert.AreNotEqual(null, lastLogMessage);
+			System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(int.Parse(lastLogMessage));
+			p.Kill();
+			debugger.WaitForPrecessExit();
 		}
 		
 		[Test]

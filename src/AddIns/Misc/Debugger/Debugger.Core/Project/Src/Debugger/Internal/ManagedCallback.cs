@@ -77,7 +77,10 @@ namespace Debugger
 		{
 			handlingCallback = true;
 			debugger.TraceMessage("Callback: " + name);
-			debugger.AssertRunning();
+			// ExitProcess may be called at any time when debuggee is killed
+			if (name != "ExitProcess") {
+				debugger.AssertRunning();
+			}
 		}
 		
 		void ExitCallback_Continue()

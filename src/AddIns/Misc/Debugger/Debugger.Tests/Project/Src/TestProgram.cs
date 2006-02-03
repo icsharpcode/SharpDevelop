@@ -23,6 +23,7 @@ namespace Debugger.Tests
 				case "Break": Progs.Break.Main(); break;
 				case "Breakpoint": Progs.Breakpoint.Main(); break;
 				case "Callstack": Progs.Callstack.Main(); break;
+				case "DebuggeeKilled": Progs.DebuggeeKilled.Main(); break;
 				case "FileRelease": Progs.FileRelease.Main(); break;
 				case "FunctionArgumentVariables": Progs.FunctionArgumentVariables.Main(); break;
 				case "FunctionLifetime": Progs.FunctionLifetime.Main(); break;
