@@ -121,6 +121,15 @@ namespace Debugger
 			
 			ICorDebugValue[] args = getArgs();
 			
+			if (args == null) {
+				error = "Can not evaluate property of property";
+				evalState = EvalState.Error;
+				if (EvalComplete != null) {
+					EvalComplete(this, new EvalEventArgs(this));
+				}
+				return false;
+			}
+			
 			// TODO: What if this thread is not suitable?
 			corEval = targetThread.CorThread.CreateEval();
 			

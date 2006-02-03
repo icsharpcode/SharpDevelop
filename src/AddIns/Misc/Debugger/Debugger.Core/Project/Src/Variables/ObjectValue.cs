@@ -185,10 +185,15 @@ namespace Debugger
 			ICorDebugFunction evalCorFunction = Module.CorModule.GetFunctionFromToken(method.Token);
 			
 			return new Eval(debugger, evalCorFunction, delegate {
-			                	if (method.IsStatic) {
-			                		return new ICorDebugValue[] {};
+			                	Value updatedVal = getter();
+			                	if (this.IsEquivalentValue(updatedVal) && ((ObjectValue)updatedVal).SoftReference != null) {
+				                	if (method.IsStatic) {
+				                		return new ICorDebugValue[] {};
+				                	} else {
+				                		return new ICorDebugValue[] {((ObjectValue)updatedVal).SoftReference.CastTo<ICorDebugValue>()};
+				                	}
 			                	} else {
-			                		return new ICorDebugValue[] {((ObjectValue)getter()).SoftReference.CastTo<ICorDebugValue>()};
+			                		return null;
 			                	}
 			                });
 		}
