@@ -316,7 +316,7 @@ namespace Debugger
 			     	realCallback.UpdateModuleSymbols(
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugAppDomain>(pAppDomain),
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugModule>(pModule),
-			     		MTA2STA.MarshalIntPtrTo<Debugger.Interop.CorDebug.IStream>(pSymbolStream)
+			     		MTA2STA.MarshalIntPtrTo<IStream>(pSymbolStream)
 			     	);
 			     });
 		}

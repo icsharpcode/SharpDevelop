@@ -251,7 +251,7 @@ namespace Debugger
 			ExitCallback_Paused(PausedReason.DebuggerError);
 		}
 
-		public void UpdateModuleSymbols(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule, Debugger.Interop.CorDebug.IStream pSymbolStream)
+		public void UpdateModuleSymbols(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule, IStream pSymbolStream)
 		{
 			EnterCallback("UpdateModuleSymbols", pAppDomain);
 
