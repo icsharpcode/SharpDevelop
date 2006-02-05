@@ -1,14 +1,13 @@
 <Components version="1.0">
   <System.Windows.Forms.UserControl>
     <Name value="CodeCoverageOptionsPanel" />
-    <Text value="CodeCoverageOptionsPanel" />
     <ClientSize value="{Width=351, Height=281}" />
     <Controls>
       <System.Windows.Forms.GroupBox>
         <Name value="codeCoverageColoursGroupBox" />
         <Location value="{X=10,Y=85}" />
         <UseCompatibleTextRendering value="True" />
-        <Text value="Code Coverage Colours" />
+        <Text value="${res:ICSharpCode.CodeCoverage.OptionsPanel.CodeCoverageColoursGroupBoxText}" />
         <Anchor value="Top, Left, Right" />
         <Size value="{Width=333, Height=159}" />
         <TabIndex value="1" />
@@ -39,7 +38,7 @@
             <Name value="sampleTextLabel" />
             <Location value="{X=6,Y=117}" />
             <UseCompatibleTextRendering value="True" />
-            <Text value="AaBbCcXxYyZz" />
+            <Text value="${res:ICSharpCode.CodeCoverage.OptionsPanel.SampleText}" />
             <Anchor value="Top, Bottom, Left, Right" />
             <TextAlign value="MiddleCenter" />
             <Size value="{Width=321, Height=39}" />
@@ -56,7 +55,7 @@
             <Name value="displayItemsLabel" />
             <Location value="{X=6,Y=29}" />
             <UseCompatibleTextRendering value="True" />
-            <Text value="&amp;Display Items:" />
+            <Text value="${res:ICSharpCode.CodeCoverage.OptionsPanel.DisplayItemsLabel}" />
             <Size value="{Width=107, Height=21}" />
             <TabIndex value="0" />
           </System.Windows.Forms.Label>
@@ -68,15 +67,15 @@
             <Anchor value="Top, Right" />
             <UseVisualStyleBackColor value="True" />
             <Size value="{Width=28, Height=22}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <TabIndex value="7" />
           </System.Windows.Forms.Button>
           <System.Windows.Forms.Label>
             <Name value="itemBackgroundColourLabel" />
             <Location value="{X=176,Y=73}" />
             <UseCompatibleTextRendering value="True" />
-            <Text value="Item bac&amp;kground:" />
-            <Size value="{Width=116, Height=21}" />
+            <Text value="${res:ICSharpCode.CodeCoverage.OptionsPanel.ItemBackgroundLabel}" />
+            <Anchor value="Top, Left, Right" />
+            <Size value="{Width=151, Height=21}" />
             <TabIndex value="5" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.Button>
@@ -87,15 +86,15 @@
             <Anchor value="Top, Right" />
             <UseVisualStyleBackColor value="True" />
             <Size value="{Width=28, Height=22}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <TabIndex value="4" />
           </System.Windows.Forms.Button>
           <System.Windows.Forms.Label>
             <Name value="itemForegroundColourLabel" />
             <Location value="{X=176,Y=29}" />
             <UseCompatibleTextRendering value="True" />
-            <Text value="Item fo&amp;reground:" />
-            <Size value="{Width=117, Height=22}" />
+            <Text value="${res:ICSharpCode.CodeCoverage.OptionsPanel.ItemForegroundLabel}" />
+            <Anchor value="Top, Left, Right" />
+            <Size value="{Width=151, Height=22}" />
             <TabIndex value="2" />
           </System.Windows.Forms.Label>
         </Controls>
@@ -104,7 +103,7 @@
         <Name value="configurationGroupBox" />
         <Location value="{X=10,Y=7}" />
         <UseCompatibleTextRendering value="True" />
-        <Text value="NCover Configuration" />
+        <Text value="${res:ICSharpCode.CodeCoverage.OptionsPanel.NCoverConfigurationGroupBoxText}" />
         <Anchor value="Top, Left, Right" />
         <Size value="{Width=334, Height=72}" />
         <TabIndex value="0" />
@@ -117,7 +116,6 @@
             <Anchor value="Top, Right" />
             <UseVisualStyleBackColor value="True" />
             <Size value="{Width=30, Height=21}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <TabIndex value="2" />
           </System.Windows.Forms.Button>
           <System.Windows.Forms.TextBox>
@@ -131,7 +129,7 @@
             <Name value="commandLabel" />
             <Location value="{X=6,Y=24}" />
             <UseCompatibleTextRendering value="True" />
-            <Text value="&amp;Command:" />
+            <Text value="${res:ICSharpCode.CodeCoverage.OptionsPanel.CommandLineLabel}" />
             <Size value="{Width=103, Height=26}" />
             <TabIndex value="0" />
           </System.Windows.Forms.Label>

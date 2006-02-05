@@ -62,7 +62,7 @@ namespace ICSharpCode.CodeCoverage
 		MessageViewCategory Category {
 			get {
 				if (category == null) {
-					category = new MessageViewCategory("Code Coverage");
+					category = new MessageViewCategory(StringParser.Parse("${res:ICSharpCode.UnitTesting.CodeCoverage}"));
 					CompilerMessageView cmv = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).PadContent;
 					cmv.AddCategory(category);
 				}
@@ -127,7 +127,7 @@ namespace ICSharpCode.CodeCoverage
 				Directory.CreateDirectory(Path.GetDirectoryName(runner.CoverageResultsFileName));
 			}
 			
-			CategoryWriteLine(StringParser.Parse("Running NCover..."));
+			CategoryWriteLine(StringParser.Parse("${res:ICSharpCode.CodeCoverage.RunningCodeCoverage}"));
 			CategoryWriteLine(runner.CommandLine);
 			
 			runner.Start();
@@ -160,7 +160,7 @@ namespace ICSharpCode.CodeCoverage
 		void DisplayCoverageResults(string fileName)
 		{
 			if (!File.Exists(fileName)) {
-				Task task = new Task(String.Empty, String.Concat("No code coverage results file generated: ", fileName), 0, 0, TaskType.Error);
+				Task task = new Task(String.Empty, String.Concat(StringParser.Parse("${res:ICSharpCode.CodeCoverage.NoCodeCoverageResultsGenerated}"), " ", fileName), 0, 0, TaskType.Error);
 				WorkbenchSingleton.SafeThreadAsyncCall(typeof(TaskService), "Add", new object[] {task});
 				return;
 			}

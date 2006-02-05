@@ -41,23 +41,23 @@ namespace ICSharpCode.CodeCoverage
 			listView.ItemActivate += ListViewItemActivate;
 			
 			visitCountColumnHeader = new ColumnHeader();
-			visitCountColumnHeader.Text = "Visit Count";
+			visitCountColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.VisitCount}");
 			visitCountColumnHeader.Width = 80;
 			
 			startLineColumnHeader = new ColumnHeader();
-			startLineColumnHeader.Text = "Line";
+			startLineColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.Line}");
 			startLineColumnHeader.Width = 80;
 				
 			startColumnColumnHeader = new ColumnHeader();
-			startColumnColumnHeader.Text = "Column";
+			startColumnColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.Column}");
 			startColumnColumnHeader.Width = 80;
 
 			endLineColumnHeader = new ColumnHeader();
-			endLineColumnHeader.Text = "End Line";
+			endLineColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.EndLine}");
 			endLineColumnHeader.Width = 80;
 
 			endColumnColumnHeader = new ColumnHeader();
-			endColumnColumnHeader.Text = "End Column";
+			endColumnColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.EndColumn}");
 			endColumnColumnHeader.Width = 80;
 
 			listView.Columns.AddRange(new ColumnHeader[] {visitCountColumnHeader,

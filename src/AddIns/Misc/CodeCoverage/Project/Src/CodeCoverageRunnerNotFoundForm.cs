@@ -20,7 +20,8 @@ namespace ICSharpCode.CodeCoverage
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.CodeCoverage.Resources.CodeCoverageRunnerNotFoundForm.xfrm"));
 		
-			((Label)ControlDictionary["messageLabel"]).Text = "Unable to locate the NCover console application.\n\nIf NCover is installed, please specify the location of the application in the Code Coverage options.";
+			((Label)ControlDictionary["messageLabel"]).Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.NCoverNotFound}");
+			((Button)ControlDictionary["okButton"]).Text = StringParser.Parse("${res:Global.OKButtonText}");
 			((PictureBox)ControlDictionary["iconPictureBox"]).Image = ResourceService.GetBitmap("Icons.32x32.Information");
 			((LinkLabel)ControlDictionary["linkLabel"]).Click += LinkLabelClicked;
 		}

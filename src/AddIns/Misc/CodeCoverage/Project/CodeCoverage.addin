@@ -29,7 +29,7 @@
 	<Path name = "/SharpDevelop/Pads/CodeCoveragePad/Toolbar">
 		<ToolbarItem id      = "ToggleCodeCoverage"
 		             icon    = "CodeCoverage.Icons.16x16.File"
-		             tooltip = "Toggle Code Coverage"
+		             tooltip = "${res:ICSharpCode.CodeCoverage.ToggleCodeCoverage}"
 		             type    = "CheckBox"
 		             class   = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
 	</Path>

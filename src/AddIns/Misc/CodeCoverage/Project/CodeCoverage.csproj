@@ -5,7 +5,7 @@
     <AssemblyName>CodeCoverage</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{08ce9972-283b-44f4-82fa-966f7dfa6b7a}</ProjectGuid>
+    <ProjectGuid>{B7F1A068-01F5-49E7-83EF-05DE281B09FD}</ProjectGuid>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <RegisterForComInterop>False</RegisterForComInterop>

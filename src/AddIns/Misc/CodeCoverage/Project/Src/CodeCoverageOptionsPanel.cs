@@ -53,8 +53,8 @@ namespace ICSharpCode.CodeCoverage
 			commandTextBox.Text = CodeCoverageOptions.NCoverFileName;
 			
 			displayItemsListBox = (ListBox)ControlDictionary[displayItemsListBoxName];
-			displayItemsListBox.Items.Add(new CodeCoverageDisplayItem("Code Covered", CodeCoverageOptions.VisitedColorProperty, CodeCoverageOptions.VisitedColor, CodeCoverageOptions.VisitedForeColorProperty, CodeCoverageOptions.VisitedForeColor));
-			displayItemsListBox.Items.Add(new CodeCoverageDisplayItem("Code Not Covered", CodeCoverageOptions.NotVisitedColorProperty, CodeCoverageOptions.NotVisitedColor, CodeCoverageOptions.NotVisitedForeColorProperty, CodeCoverageOptions.NotVisitedForeColor));
+			displayItemsListBox.Items.Add(new CodeCoverageDisplayItem(StringParser.Parse("${res:ICSharpCode.CodeCoverage.CodeCovered}"), CodeCoverageOptions.VisitedColorProperty, CodeCoverageOptions.VisitedColor, CodeCoverageOptions.VisitedForeColorProperty, CodeCoverageOptions.VisitedForeColor));
+			displayItemsListBox.Items.Add(new CodeCoverageDisplayItem(StringParser.Parse("${res:ICSharpCode.CodeCoverage.CodeNotCovered}"), CodeCoverageOptions.NotVisitedColorProperty, CodeCoverageOptions.NotVisitedColor, CodeCoverageOptions.NotVisitedForeColorProperty, CodeCoverageOptions.NotVisitedForeColor));
 			displayItemsListBox.SelectedIndexChanged += DisplayItemsListBoxSelectedIndexChanged;
 			displayItemsListBox.SelectedIndex = 0;
 		}
