@@ -257,7 +257,11 @@ namespace ICSharpCode.FormsDesigner.Services
 				resourceFileName = new StringBuilder(Path.GetTempPath());
 			}
 			resourceFileName.Append(Path.DirectorySeparatorChar);
-			resourceFileName.Append(Path.GetFileNameWithoutExtension(FileName));
+			string sourceFileName = Path.GetFileNameWithoutExtension(this.FileName);
+			if (sourceFileName.ToLowerInvariant().EndsWith(".designer")) {
+				sourceFileName = sourceFileName.Substring(0, sourceFileName.Length - 9);
+			}
+			resourceFileName.Append(sourceFileName);
 			
 			if (info != null && info.Name.Length > 0) {
 				resourceFileName.Append('.');
