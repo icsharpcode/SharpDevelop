@@ -67,6 +67,7 @@
     <Compile Include="Templates\CategorySortOrderTests.cs" />
     <Compile Include="Templates\FileTemplateCategoryComparerTests.cs" />
     <Compile Include="WebReferences\HttpAuthenticationHeaderTests.cs" />
+    <Compile Include="OutputTextLineParserTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\ICSharpCode.SharpDevelop.csproj">

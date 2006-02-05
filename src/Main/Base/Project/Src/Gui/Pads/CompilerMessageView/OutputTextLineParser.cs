@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			RegexOptions regexOptions = multiline ? RegexOptions.Multiline : RegexOptions.None;
 			
 			if (lineText != null) {
-				Match match = Regex.Match(lineText, @"^.*?\sin\s(.*?):line\s(\d*)?$", regexOptions);
+				Match match = Regex.Match(lineText, @"^.*?\sin\s(.*?):line\s(\d*)?\r?$", regexOptions);
 				
 				if (match.Success) {
 					try	{
