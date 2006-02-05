@@ -82,6 +82,9 @@
     <None Include="CodeCoverage.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="Src\CodeCoverageImageList.cs" />
+    <Compile Include="Src\GrayScaleBitmap.cs" />
+    <Compile Include="Src\NUnitResults.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

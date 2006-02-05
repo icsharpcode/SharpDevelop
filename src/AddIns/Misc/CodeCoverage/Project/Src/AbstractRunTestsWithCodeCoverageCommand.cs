@@ -134,6 +134,12 @@ namespace ICSharpCode.CodeCoverage
         	if (File.Exists(runner.CoverageResultsFileName)) {
 				File.Delete(runner.CoverageResultsFileName);
 			}
+        	
+        	// Remove existing MbUnit results file.
+        	string mbUnitResultsFileName = GetMbUnitResultsFileName();
+        	if (File.Exists(mbUnitResultsFileName)) {
+        		File.Delete(mbUnitResultsFileName);
+        	}
        		
         	// Create NCover output directory.
         	if (!Directory.Exists(Path.GetDirectoryName(runner.CoverageResultsFileName))) {
@@ -155,9 +161,7 @@ namespace ICSharpCode.CodeCoverage
 		{  
         	System.Diagnostics.Debug.Assert(e.Error.Length == 0);
 
-        	string ncoverOutputDirectory = Path.GetDirectoryName(runner.CoverageResultsFileName);
-        	string mbunitResultsFileName = Path.Combine(ncoverOutputDirectory, "mbunit.xml");
-        	DisplayMbUnitResults(mbunitResultsFileName);
+        	DisplayMbUnitResults(GetMbUnitResultsFileName());
         	DisplayCoverageResults(runner.CoverageResultsFileName);
         	
         	if (TaskService.SomethingWentWrong) {
@@ -283,5 +287,11 @@ namespace ICSharpCode.CodeCoverage
 
         	return commandLine.ToString();
         }
+		
+		string GetMbUnitResultsFileName()
+		{
+			string ncoverOutputDirectory = Path.GetDirectoryName(runner.CoverageResultsFileName);
+        	return Path.Combine(ncoverOutputDirectory, "mbunit.xml");
+		}
 	}
 }

@@ -15,26 +15,26 @@ using System.Xml;
 namespace ICSharpCode.CodeCoverage
 {
 	/// <summary>
-	/// Reads the MbUnit results file.
+	/// Reads the NUnit results file.
 	/// </summary>
-	public class MbUnitResults
+	public class NUnitResults
 	{
-		static readonly string RunElementName = "run";
+		static readonly string TestCaseElementName = "test-case";
 		static readonly string MessageElementName = "message";
 		static readonly string StackTraceElementName= "stack-trace";
 		
 		List<Task> tasks = new List<Task>();
 		
-		public MbUnitResults(string fileName) : this(new StreamReader(fileName, true))
+		public NUnitResults(string fileName) : this(new StreamReader(fileName, true))
 		{
 		}
 		
-		public MbUnitResults(XmlTextReader reader)
+		public NUnitResults(XmlTextReader reader)
 		{
 			ReadResults(reader);
 		}
 		
-		public MbUnitResults(TextReader reader) : this(new XmlTextReader(reader))
+		public NUnitResults(TextReader reader) : this(new XmlTextReader(reader))
 		{
 		}
 		
@@ -49,7 +49,7 @@ namespace ICSharpCode.CodeCoverage
 			using (reader) {
 				while (reader.Read()) {
 					if (reader.NodeType == XmlNodeType.Element) {
-						if (IsRunFailureElement(reader)) {
+						if (IsTestCaseFailureElement(reader)) {
 							ReadErrorTask(reader);
 						}
 					}
@@ -57,11 +57,11 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		bool IsRunFailureElement(XmlReader reader)
+		bool IsTestCaseFailureElement(XmlReader reader)
 		{
-			if (reader.Name == RunElementName) {
-				string result = reader.GetAttribute("result");
-				if (result == "failure") {
+			if (reader.Name == TestCaseElementName) {
+				string success = reader.GetAttribute("success");
+				if (success == "False") {
 					return true;
 				}
 			}

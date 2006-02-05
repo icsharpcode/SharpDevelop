@@ -15,10 +15,8 @@ namespace ICSharpCode.CodeCoverage
 	{
 		CodeCoverageMethod method;
 		
-		public CodeCoverageMethodTreeNode(CodeCoverageMethod method) : base(method.Name, method.VisitedSequencePointsCount, method.NotVisitedSequencePointsCount)
+		public CodeCoverageMethodTreeNode(CodeCoverageMethod method) : base(method.Name, CodeCoverageImageListIndex.Method, method.VisitedSequencePointsCount, method.NotVisitedSequencePointsCount)
 		{
-			ImageIndex = ClassBrowserIconService.MethodIndex;
-			SelectedImageIndex = ImageIndex;
 			this.method = method;
 		}
 		

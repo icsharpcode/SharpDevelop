@@ -25,10 +25,8 @@ namespace ICSharpCode.CodeCoverage
 			this.fullClassName = className;
 			
 			int index = fullClassName.LastIndexOf('.');
-			this.classNamespace = fullClassName.Substring(0, index);
-			
-			index = fullClassName.LastIndexOf('.');
 			if (index > 0) {
+				this.classNamespace = fullClassName.Substring(0, index);
 				this.className = fullClassName.Substring(index + 1);
 			} else {
 				this.className = fullClassName;
@@ -47,6 +45,9 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
+		/// <summary>
+		/// Returns the full class name including the namespace prefix.
+		/// </summary>
 		public string FullClassName {
 			get {
 				return fullClassName;

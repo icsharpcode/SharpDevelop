@@ -29,7 +29,7 @@ namespace ICSharpCode.CodeCoverage
 			// TreeView
 			treeView = new CodeCoverageTreeView();
 			treeView.Dock = DockStyle.Fill;
-			treeView.ImageList = ClassBrowserIconService.ImageList;
+			treeView.ImageList = CodeCoverageImageList.ImageList;
 			treeView.AfterSelect += CodeCoverageTreeViewAfterSelect;
 			
 			// ListView
@@ -89,7 +89,6 @@ namespace ICSharpCode.CodeCoverage
 		
 		public void AddModules(List<CodeCoverageModule> modules)
 		{
-			LoggingService.Debug("AddModules...");
 			treeView.AddModules(modules);
 		}
 		

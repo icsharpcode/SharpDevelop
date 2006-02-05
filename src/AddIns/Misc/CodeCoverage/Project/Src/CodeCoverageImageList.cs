@@ -1,0 +1,58 @@
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
+// </file>
+
+using ICSharpCode.Core;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace ICSharpCode.CodeCoverage
+{
+	public enum CodeCoverageImageListIndex
+	{
+		Module                    = 0,
+		Namespace                 = 2,
+		Class                     = 4,
+		Method                    = 6,
+		MethodWithZeroCoverage    = 7
+	}
+	
+	public class CodeCoverageImageList
+	{
+		static ImageList imageList;
+		
+		CodeCoverageImageList()
+		{
+		}
+		
+		public static ImageList ImageList {
+			get {
+				if (imageList == null) {
+					GetImageList();
+				}
+				return imageList;
+			}
+		}
+		
+		static void GetImageList()
+		{
+			imageList = new ImageList();
+			imageList.ColorDepth = ColorDepth.Depth32Bit;
+			
+			AddBitmap(ResourceService.GetBitmap("Icons.16x16.Library"), 0.2f);
+			AddBitmap(ResourceService.GetBitmap("Icons.16x16.NameSpace"), 0.4f);
+			AddBitmap(ResourceService.GetBitmap("Icons.16x16.Class"), 0.15f);
+			AddBitmap(ResourceService.GetBitmap("Icons.16x16.Method"), 0.2f);
+		}
+		
+		static void AddBitmap(Bitmap bitmap, float brightness)
+		{
+			imageList.Images.Add(bitmap);
+			imageList.Images.Add(GrayScaleBitmap.FromBitmap(bitmap, brightness));
+		}
+	}
+}

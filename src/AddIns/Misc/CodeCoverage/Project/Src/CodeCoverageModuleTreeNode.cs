@@ -14,11 +14,8 @@ namespace ICSharpCode.CodeCoverage
 {
 	public class CodeCoverageModuleTreeNode : CodeCoverageTreeNode
 	{
-		public CodeCoverageModuleTreeNode(CodeCoverageModule module) : base(module.Name, module.VisitedSequencePointsCount, module.NotVisitedSequencePointsCount)
-		{
-			ImageIndex = 2;
-			SelectedImageIndex = ImageIndex;
-			
+		public CodeCoverageModuleTreeNode(CodeCoverageModule module) : base(module.Name, CodeCoverageImageListIndex.Module, module.VisitedSequencePointsCount, module.NotVisitedSequencePointsCount)
+		{			
 			foreach (CodeCoverageMethod method in module.Methods) {
 				AddMethod(method);
 			}

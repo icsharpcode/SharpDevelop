@@ -12,10 +12,8 @@ namespace ICSharpCode.CodeCoverage
 {
 	public class CodeCoverageNamespaceTreeNode : CodeCoverageTreeNode
 	{
-		public CodeCoverageNamespaceTreeNode(string name) : base(name)
+		public CodeCoverageNamespaceTreeNode(string name) : base(name, CodeCoverageImageListIndex.Namespace)
 		{
-			ImageIndex = ClassBrowserIconService.NamespaceIndex;
-			SelectedImageIndex = ImageIndex;
 		}
 	}
 }

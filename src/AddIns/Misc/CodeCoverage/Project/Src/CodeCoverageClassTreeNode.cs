@@ -12,10 +12,8 @@ namespace ICSharpCode.CodeCoverage
 {
 	public class CodeCoverageClassTreeNode : CodeCoverageTreeNode
 	{
-		public CodeCoverageClassTreeNode(string name) : base(name)
+		public CodeCoverageClassTreeNode(string name) : base(name, CodeCoverageImageListIndex.Class)
 		{
-			ImageIndex = ClassBrowserIconService.ClassIndex;
-			SelectedImageIndex = ImageIndex;
 		}
 		
 		public override void ActivateItem()

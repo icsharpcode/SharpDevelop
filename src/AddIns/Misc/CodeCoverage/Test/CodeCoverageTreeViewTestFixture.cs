@@ -20,29 +20,29 @@ namespace ICSharpCode.CodeCoverage.Tests
 		TreeNodeCollection nodes;
 		CodeCoverageModuleTreeNode fooModuleNode;
 		CodeCoverageModuleTreeNode barModuleNode;
-		CodeCoverageClassTreeNode class1TreeNode;
-		CodeCoverageMethodTreeNode method1TreeNode;
-		CodeCoverageMethodTreeNode method2TreeNode;
-		CodeCoverageNamespaceTreeNode namespace1TreeNode;
-		CodeCoverageNamespaceTreeNode namespace2TreeNode;
+		CodeCoverageClassTreeNode fooTestFixtureTreeNode;
+		CodeCoverageMethodTreeNode fooTestMethod1TreeNode;
+		CodeCoverageMethodTreeNode fooTestMethod2TreeNode;
+		CodeCoverageNamespaceTreeNode fooNamespaceTreeNode;
+		CodeCoverageNamespaceTreeNode fooTestsNamespaceTreeNode;
 		
-		[TestFixtureSetUp]
+		[SetUp]
 		public void SetUpFixture()
 		{
 			List<CodeCoverageModule> modules = new List<CodeCoverageModule>();
-			CodeCoverageModule m1 = new CodeCoverageModule("Foo.Tests");
-			CodeCoverageMethod method1 = new CodeCoverageMethod("Test1", "Foo.Tests.TestFixture1");
-			method1.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\TestFixture1.cs", 1, 1, 0, 2, 1));
-			method1.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\TestFixture1.cs", 0, 2, 2, 3, 4));
-			CodeCoverageMethod method2 = new CodeCoverageMethod("Test2", "Foo.Tests.TestFixture1");
+			CodeCoverageModule fooModule = new CodeCoverageModule("Foo.Tests");
+			CodeCoverageMethod fooTestMethod1 = new CodeCoverageMethod("FooTest1", "Foo.Tests.FooTestFixture");
+			fooTestMethod1.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTestFixture.cs", 1, 1, 0, 2, 1));
+			fooTestMethod1.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTestFixture.cs", 0, 2, 2, 3, 4));
+			CodeCoverageMethod fooTestMethod2 = new CodeCoverageMethod("FooTest2", "Foo.Tests.FooTestFixture");
 
-			m1.Methods.Add(method1);
-			m1.Methods.Add(method2);
+			fooModule.Methods.Add(fooTestMethod1);
+			fooModule.Methods.Add(fooTestMethod2);
 			
-			CodeCoverageModule m2 = new CodeCoverageModule("Bar.Tests");
+			CodeCoverageModule barModule = new CodeCoverageModule("Bar.Tests");
 			
-			modules.Add(m1);
-			modules.Add(m2);
+			modules.Add(fooModule);
+			modules.Add(barModule);
 			
 			using (CodeCoverageTreeView treeView = new CodeCoverageTreeView()) {
 				treeView.AddModules(modules);
@@ -53,12 +53,12 @@ namespace ICSharpCode.CodeCoverage.Tests
 			fooModuleNode = (CodeCoverageModuleTreeNode)nodes[0];
 			barModuleNode = (CodeCoverageModuleTreeNode)nodes[1];
 			
-			namespace1TreeNode = (CodeCoverageNamespaceTreeNode)fooModuleNode.Nodes[0];
-			namespace2TreeNode = (CodeCoverageNamespaceTreeNode)namespace1TreeNode.Nodes[0];
+			fooNamespaceTreeNode = (CodeCoverageNamespaceTreeNode)fooModuleNode.Nodes[0];
+			fooTestsNamespaceTreeNode = (CodeCoverageNamespaceTreeNode)fooNamespaceTreeNode.Nodes[0];
 			
-			class1TreeNode = (CodeCoverageClassTreeNode)namespace2TreeNode.Nodes[0];
-			method1TreeNode = (CodeCoverageMethodTreeNode)class1TreeNode.Nodes[0];
-			method2TreeNode = (CodeCoverageMethodTreeNode)class1TreeNode.Nodes[1];
+			fooTestFixtureTreeNode = (CodeCoverageClassTreeNode)fooTestsNamespaceTreeNode.Nodes[0];
+			fooTestMethod1TreeNode = (CodeCoverageMethodTreeNode)fooTestFixtureTreeNode.Nodes[0];
+			fooTestMethod2TreeNode = (CodeCoverageMethodTreeNode)fooTestFixtureTreeNode.Nodes[1];
 		}
 		
 		[Test]
@@ -98,69 +98,81 @@ namespace ICSharpCode.CodeCoverage.Tests
 		}
 		
 		[Test]
-		public void Class1TreeNodeName()
+		public void BarModuleTreeNodeForeColor()
 		{
-			Assert.AreEqual("TestFixture1", class1TreeNode.Name);
+			Assert.AreEqual(CodeCoverageTreeNode.ZeroCoverageTextColor, barModuleNode.ForeColor);
 		}
 		
 		[Test]
-		public void Class1TreeNodeText()
+		public void FooTestFixtureTreeNodeName()
 		{
-			Assert.AreEqual("TestFixture1 (50%)", class1TreeNode.Text);
+			Assert.AreEqual("FooTestFixture", fooTestFixtureTreeNode.Name);
 		}
 		
 		[Test]
-		public void Namespace1TreeNodeName()
+		public void FooTestFixtureTreeNodeText()
 		{
-			Assert.AreEqual("Foo", namespace1TreeNode.Name);
+			Assert.AreEqual("FooTestFixture (50%)", fooTestFixtureTreeNode.Text);
 		}
 		
 		[Test]
-		public void Namespace2TreeNodeName()
+		public void FooNamespaceTreeNodeName()
 		{
-			Assert.AreEqual("Tests", namespace2TreeNode.Name);
+			Assert.AreEqual("Foo", fooNamespaceTreeNode.Name);
 		}
 		
 		[Test]
-		public void Namespace1TreeNodeText()
+		public void FooTestsNamespaceTreeNodeName()
 		{
-			Assert.AreEqual("Foo (50%)", namespace1TreeNode.Text);
+			Assert.AreEqual("Tests", fooTestsNamespaceTreeNode.Name);
 		}
 		
 		[Test]
-		public void Namespace2TreeNodeText()
+		public void FooNamespaceTreeNodeText()
 		{
-			Assert.AreEqual("Tests (50%)", namespace2TreeNode.Text);
+			Assert.AreEqual("Foo (50%)", fooNamespaceTreeNode.Text);
 		}
 		
 		[Test]
-		public void Method1TreeNodeName()
+		public void FooTestsNamespaceTreeNodeText()
 		{
-			Assert.AreEqual("Test1", method1TreeNode.Name);
+			Assert.AreEqual("Tests (50%)", fooTestsNamespaceTreeNode.Text);
 		}
 		
 		[Test]
-		public void Method1TreeNodeText()
+		public void FooTestMethod1TreeNodeName()
 		{
-			Assert.AreEqual("Test1 (50%)", method1TreeNode.Text);
+			Assert.AreEqual("FooTest1", fooTestMethod1TreeNode.Name);
 		}
 		
 		[Test]
-		public void Method2TreeNodeText()
+		public void FooTestMethod1TreeNodeText()
 		{
-			Assert.AreEqual("Test2", method2TreeNode.Name);
+			Assert.AreEqual("FooTest1 (50%)", fooTestMethod1TreeNode.Text);
 		}
 		
 		[Test]
-		public void Class1TreeNodeChildNodesCount()
+		public void FooMethod2TreeNodeText()
 		{
-			Assert.AreEqual(2, class1TreeNode.Nodes.Count);
+			Assert.AreEqual("FooTest2", fooTestMethod2TreeNode.Name);
 		}
 		
 		[Test]
-		public void Namespace2TreeNodeChildNodesCount()
+		public void FooTestFixtureTreeNodeChildNodesCount()
 		{
-			Assert.AreEqual(1, namespace2TreeNode.Nodes.Count);
+			Assert.AreEqual(2, fooTestFixtureTreeNode.Nodes.Count);
+		}
+		
+		[Test]
+		public void FooTestsNamespaceTreeNodeChildNodesCount()
+		{
+			Assert.AreEqual(1, fooTestsNamespaceTreeNode.Nodes.Count);
+		}
+		
+		[Test]
+		public void FooTestFixtureTreeNodeImageIndex()
+		{
+			Assert.AreEqual(CodeCoverageImageListIndex.Class, (CodeCoverageImageListIndex)(fooTestFixtureTreeNode.ImageIndex));
 		}
 	}
 }

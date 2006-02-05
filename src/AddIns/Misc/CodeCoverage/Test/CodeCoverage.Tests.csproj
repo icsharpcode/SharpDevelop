@@ -56,6 +56,11 @@
     <Compile Include="NCoverSettingsTestFixture.cs" />
     <Compile Include="MbUnitResultsTestFixture.cs" />
     <EmbeddedResource Include="Strings.resources" />
+    <Compile Include="ZeroCodeCoverageTreeViewTestFixture.cs" />
+    <Compile Include="InvalidSequencePointDataTestFixture.cs" />
+    <Compile Include="MethodHasNoNamespaceTestFixture.cs" />
+    <Compile Include="DisplayItemTestFixture.cs" />
+    <Compile Include="NUnitResultsTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
