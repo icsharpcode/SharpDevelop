@@ -35,19 +35,21 @@ namespace SharpReportCore {
 		public BaseImageItem():base() {
 		}
 		
-		private void LoadImage (string fName) {
-			if (fName == "") {
-				throw new ArgumentException("BaseImageItem:FileName");
+		private void LoadImage (string fileName) {
+			if (String.IsNullOrEmpty(fileName)) {
+				throw new ArgumentNullException("fileName");
 			}
 			try {
 				this.image = null;
-				this.image = Image.FromFile (fName);
+				this.image = Image.FromFile (fileName);
 				if (image == null) {
 					string str = String.Format(CultureInfo.InvariantCulture,
-					                           "Unable to Load {0}",fName);
-					throw new ApplicationException(str);
+					                           "Unable to Load {0}",fileName);
+					throw new SharpReportException(str);
 				}
-			} catch (Exception) {
+			} catch (System.OutOfMemoryException) {
+				throw;
+			} catch (System.IO.FileNotFoundException) {
 				throw;
 			}
 			

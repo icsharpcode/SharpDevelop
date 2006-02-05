@@ -187,6 +187,7 @@ namespace SharpReport{
 		#endregion
 		
 		#region HeaderColumns
+		/*
 		/// <summary>
 		/// Builds ColumHeaders for Reports, we take the ColumnNames as Text Property
 		/// </summary>
@@ -207,7 +208,7 @@ namespace SharpReport{
 				}
 			}
 		}
-		
+		*/
 		///<summary>
 		/// Create ColumHeaders for Reports
 		/// </summary>
@@ -232,7 +233,7 @@ namespace SharpReport{
 		
 		#region Create report from Query
 		
-		
+		/*
 		/// <summary>
 		/// Create Columns from SchemaTable
 		/// </summary>
@@ -258,6 +259,7 @@ namespace SharpReport{
 				}
 			}
 		}
+		*/
 		#endregion
 		
 		#region Create Reports from .Xsd Files
@@ -291,9 +293,8 @@ namespace SharpReport{
 		
 		
 		public  AbstractRenderer GetRendererForStandartReports (ReportModel model) {
-			System.Console.WriteLine("Manager.GetRenderer");
 			if (model == null) {
-				throw new ArgumentException("SharpReportManager:GetRendererForStandartReports 'ReportModel'");
+				throw new ArgumentNullException("model");
 			}
 			return this.BuildStandartRenderer (model);
 		}

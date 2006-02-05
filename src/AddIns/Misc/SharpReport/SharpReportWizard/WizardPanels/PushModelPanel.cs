@@ -16,7 +16,6 @@ using System.Collections;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 using SharpReport;
@@ -39,7 +38,8 @@ namespace ReportGenerator
 		private ReportGenerator generator;
 		private Properties customizer;
 		
-		private ReportItemCollection colDetail;
+		private ReportItemCollection reportItems;
+		private ColumnCollection columnCollection;
 		
 		public PushModelPanel(){
 			InitializeComponent();
@@ -74,47 +74,63 @@ namespace ReportGenerator
 			DataSet ds = new DataSet();
 			ds.Locale = CultureInfo.CurrentCulture;
 			ds.ReadXml (fileName);
+			base.EnableNext = true;
+			base.EnableFinish = true;
+			base.IsLastPanel = true;
 			using  (AutoReport auto = new AutoReport()){
 				ReportModel model = generator.FillReportModel (new ReportModel());
-				colDetail = auto.ReportItemsFromSchema(model,ds);
+				columnCollection  = auto.AbstractColumnsFromDataSet (ds);
+				reportItems = auto.ReportItemsFromSchema(model,ds);
 				
-				if (colDetail != null) {
-					foreach (ReportDataItem item in colDetail) {
+				if (reportItems != null) {
+					foreach (ReportDataItem item in reportItems) {
 						this.checkedListBox.Items.Add (item.MappingName,CheckState.Checked);
 					}
 				}
 			}
-			base.EnableNext = true;
-			base.EnableFinish = true;
-			base.IsLastPanel = true;
 		}
 		
 		#endregion
 		
 		#region overrides
+		
 		public override object CustomizationObject {
 			get {
 				return customizer;
 			}
 			set {
+				if (value == null) {
+					throw new ArgumentNullException("value");
+				}
 				this.customizer = (Properties)value;
 				generator = (ReportGenerator)customizer.Get("Generator");
 			}
 		}
 		
 		public override bool ReceiveDialogMessage(DialogMessage message){
-
-			if (message == DialogMessage.Finish) {
-
-				ReportItemCollection itemCol = new ReportItemCollection ();
-				if (this.colDetail != null) {
+//			base.EnableNext = true;
+//			base.EnableFinish = true;
+			if (message == DialogMessage.Activated) {
+//				base.EnableNext = true;
+//				base.EnableFinish = true;
+//				base.IsLastPanel = true;
+			}
+			else if (message == DialogMessage.Finish) {
+				
+				ReportItemCollection itemCollection = new ReportItemCollection ();
+				if (this.reportItems != null) {
 					foreach (int ind in this.checkedListBox.CheckedIndices) {
-						IItemRenderer item = this.colDetail[ind];
-						itemCol.Add(item);
+						IItemRenderer item = this.reportItems[ind];
+						itemCollection.Add(item);
 					}
 				}
-		
-				customizer.Set ("ReportItemCollection",itemCol);
+				base.EnableNext = true;
+				base.EnableFinish = true;
+				base.IsLastPanel = true;
+				//We can't use the customizer here, because Resultpanel is called later on 
+				// and null's the proerties
+				generator.ReportItemCollection = itemCollection;
+				generator.ColumnCollection = columnCollection;
 			}
 			return true;
 		}

@@ -336,11 +336,11 @@ namespace SharpReportCore {
 		/// <param name="fileName">Filename to the location of the ReportFile</param>
 		/// <param name="dataTable">a Datatable, containing the data</param>
 		public void PreviewPushDataReport (string fileName,DataTable dataTable) {
-			if (fileName.Length == 0) {
-				throw new ArgumentException("PreviewPushDataReport fileName");
+			if (String.IsNullOrEmpty(fileName)) {
+				throw new ArgumentNullException("fileName");
 			}
 			if (dataTable == null) {
-				throw new ArgumentNullException("PreviewPushDataReport dataTable");
+				throw new ArgumentNullException("dataTable");
 			}
 			ReportModel model = null;
 			AbstractRenderer renderer = null;
@@ -394,16 +394,16 @@ namespace SharpReportCore {
 		/// <param name="renderTo">Type of renderer currently only "ToText" is implemented</param>
 
 		public void PrintStandartReport (string fileName) {
-			if (fileName.Length == 0) {
-				throw new ArgumentException("PreviewPushDataReport fileName");
+			if (String.IsNullOrEmpty(fileName)) {
+				throw new ArgumentNullException("fileName");
 			}
 			PrintStandartReport (fileName,null);
 			
 		}
 		
 		public void PrintStandartReport (string fileName,ReportParameters reportParameters) {
-			if (fileName.Length == 0) {
-				throw new ArgumentException("PreviewPushDataReport fileName");
+			if (String.IsNullOrEmpty(fileName)) {
+				throw new ArgumentNullException("fileName");
 			}
 			
 			ReportModel model = null;
@@ -430,11 +430,11 @@ namespace SharpReportCore {
 		                                 DataTable dataTable,
 		                                 bool showPrintDialog) {
 			
-			if (fileName.Length == 0) {
-				throw new ArgumentException("PreviewPushDataReport fileName");
+			if (String.IsNullOrEmpty(fileName)) {
+				throw new ArgumentNullException("fileName");
 			}
 			if (dataTable == null) {
-				throw new ArgumentNullException("PreviewPushDataReport dataTable");
+				throw new ArgumentNullException("dataTable");
 			}
 			ReportModel model = null;
 			AbstractRenderer renderer = null;

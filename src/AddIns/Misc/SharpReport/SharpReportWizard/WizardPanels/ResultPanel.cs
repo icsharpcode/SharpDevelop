@@ -16,7 +16,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Xml;
 
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
@@ -45,10 +44,12 @@ namespace ReportGenerator{
 		
 		private ReportGenerator generator;
 		private Properties customizer;
-		
+		private ReportModel model;
 		private SharpQuerySchemaClassCollection parametersClass;
 		
 		private DataSet resultDataSet;
+		private ReportItemCollection colDetail;
+		private ColumnCollection abstractColumns;
 		
 		public ResultPanel(){
 			InitializeComponent();
@@ -57,16 +58,16 @@ namespace ReportGenerator{
 			base.EnableNext = true;
 			base.Refresh();
 			this.label1.Text = ResourceService.GetString("SharpReport.Wizard.PullModel.CommandText");
+			
 		}
 		
 		#region Fill data
-		private void FillGrid() {
+		private DataSet FillGrid() {
 			this.grdQuery.DataSource = null;
 			this.txtSqlString.Text = null;
-			ReportModel model = generator.FillReportModel(new ReportModel());
-			
-			resultDataSet = new DataSet();
-			resultDataSet.Locale = CultureInfo.CurrentCulture;
+	
+			DataSet dataSet = new DataSet();
+			dataSet.Locale = CultureInfo.CurrentCulture;
 			this.txtSqlString.Text = model.ReportSettings.CommandText;
 			
 			if (model.ReportSettings.CommandType == CommandType.StoredProcedure){
@@ -100,7 +101,7 @@ namespace ReportGenerator{
 							}else{
 								parametersClass	= parameters.ToBaseSchemaCollection();
 								if (parametersClass != null) {
-									resultDataSet = (DataSet) proc.Execute(0,parametersClass);
+									dataSet = (DataSet) proc.Execute(0,parametersClass);
 									generator.Parameters = parametersClass;
 								}
 							}
@@ -111,7 +112,7 @@ namespace ReportGenerator{
 					System.Console.WriteLine("\t\t No params");
 					try {
 						// Stored Proc without Parameters
-						resultDataSet = (DataSet) proc.Execute(0,proc.GetSchemaParameters());
+						dataSet = (DataSet) proc.Execute(0,proc.GetSchemaParameters());
 					} catch (Exception) {
 						throw;
 					}
@@ -125,24 +126,26 @@ namespace ReportGenerator{
 				try {
 					generator.Parameters = null;
 					this.txtSqlString.Text = model.ReportSettings.CommandText;
-					resultDataSet = BuildFromSqlString(model.ReportSettings);
+					dataSet = BuildFromSqlString(model.ReportSettings);
 					
-				} catch (OleDbException oleDbex) {
-					throw oleDbex;
+				} catch (OleDbException) {
+					throw;
 				}
-				catch (Exception e) {
-					throw e;
+				catch (Exception) {
+					throw;
 				}
 			}
-			//For now we show only the first table, but we should find a better solution?
-			if (resultDataSet != null) {
-				this.grdQuery.DataSource = resultDataSet.Tables[0];
-			} else {
-				NullReferenceException e = new NullReferenceException("ResultPanel:FillGrid");
-				throw e;
-			}
+			CreateCollections (dataSet);
+			
+			return dataSet;
 		}
 		
+		private void CreateCollections (DataSet dataSet) {
+			using  (AutoReport auto = new AutoReport()){
+				abstractColumns  = auto.AbstractColumnsFromDataSet (dataSet);
+				colDetail = auto.ReportItemsFromSchema(this.model,dataSet);
+			}
+		}
 		
 		private static DataSet BuildFromSqlString(ReportSettings settings) {
 			OLEDBConnectionWrapper con = null;
@@ -167,8 +170,8 @@ namespace ReportGenerator{
 		}
 		#endregion
 		
-		#region Create *.Xsd File
-		public void GrdQueryMouseUp(object sender, System.Windows.Forms.MouseEventArgs e){
+		#region Create a *.Xsd File
+		private void GrdQueryMouseUp(object sender, System.Windows.Forms.MouseEventArgs e){
 			if (e.Button == MouseButtons.Right) {
 				ContextMenuStrip ctMen = MenuService.CreateContextMenu (this,contextMenuPath);
 				ctMen.Show (this.grdQuery,new Point (e.X,e.Y));
@@ -196,9 +199,9 @@ namespace ReportGenerator{
 							xmlWriter.WriteStartDocument(true);
 							
 							if (schemaOnly) {
-								resultDataSet.WriteXmlSchema(xmlWriter);
+								this.resultDataSet.WriteXmlSchema(xmlWriter);
 							} else {
-								resultDataSet.WriteXml(xmlWriter,XmlWriteMode.WriteSchema);
+								this.resultDataSet.WriteXml(xmlWriter,XmlWriteMode.WriteSchema);
 							}
 							xmlWriter.Close();
 						}
@@ -212,11 +215,17 @@ namespace ReportGenerator{
 		#endregion
 		
 		#region overrides
-		public override bool ReceiveDialogMessage(DialogMessage message)
-		{
+		public override bool ReceiveDialogMessage(DialogMessage message){
 			if (message == DialogMessage.Activated) {
 				try {
-					FillGrid();
+					this.resultDataSet = new DataSet();
+					this.resultDataSet.Locale = CultureInfo.InvariantCulture;
+					this.model = generator.FillReportModel(new ReportModel());
+					this.resultDataSet =  FillGrid();
+					if (this.resultDataSet != null) {
+						this.grdQuery.DataSource = this.resultDataSet.Tables[0];
+						
+					}
 					base.EnableNext = true;
 					base.EnableFinish = true;
 				} catch (Exception e) {
@@ -224,6 +233,11 @@ namespace ReportGenerator{
 					base.EnableNext = false;
 					base.EnableFinish = false;
 				}
+			} else if (message == DialogMessage.Finish) {
+				customizer.Set ("ColumnCollection",abstractColumns);
+				customizer.Set ("ReportItemCollection",colDetail);
+				base.EnableNext = true;
+				base.EnableFinish = true;
 			}
 			return true;
 		}

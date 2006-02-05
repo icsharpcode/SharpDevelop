@@ -15,7 +15,7 @@ using System.Globalization;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
+//using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 using SharpReportCore;
@@ -80,9 +80,8 @@ namespace ReportGenerator{
 		public override bool ReceiveDialogMessage(DialogMessage message){
 			
 			if (message == DialogMessage.Finish) {
-//				System.Console.WriteLine("  resiveMessage Finish");
+
 			} else if ( message == DialogMessage.Next) {
-//				System.Console.WriteLine("  resiveMessage Next");
 				base.EnableFinish = true;
 			}
 			return true;
@@ -93,7 +92,9 @@ namespace ReportGenerator{
 				return customizer;
 			}
 			set {
-		
+				if (value == null) {
+					throw new ArgumentNullException("value");
+				}
 				this.customizer = (Properties)value;
 				generator = (ReportGenerator)customizer.Get("Generator");
 			}
@@ -159,16 +160,13 @@ namespace ReportGenerator{
 		void Button1Click(object sender, System.EventArgs e) {
 			try {
 				ICSharpCode.SharpDevelop.Gui.FolderDialog ff = new ICSharpCode.SharpDevelop.Gui.FolderDialog();
-				ff.DisplayDialog("");
+				ff.DisplayDialog(String.Empty);
 				if (!String.IsNullOrEmpty(ff.Path)) {
-					if (!ff.Path.EndsWith(@"\")){
-					                    
+					if (!ff.Path.EndsWith(@"\")){             
 						this.txtPath.Text = ff.Path + @"\";
-						System.Console.WriteLine("added slash");
 					} else {
 						
 						this.txtPath.Text = ff.Path;
-						System.Console.WriteLine("no slash added");
 					}
 					generator.Path = this.txtPath.Text;
 				}
@@ -257,7 +255,7 @@ namespace ReportGenerator{
 			this.txtPath.Name = "txtPath";
 			this.txtPath.Size = new System.Drawing.Size(224, 20);
 			this.txtPath.TabIndex = 13;
-			this.txtPath.Text = "";
+			this.txtPath.Text = String.Empty;
 			this.txtPath.TextChanged += new System.EventHandler(this.ChangedEvent);
 			// 
 			// txtFileName
@@ -266,7 +264,7 @@ namespace ReportGenerator{
 			this.txtFileName.Name = "txtFileName";
 			this.txtFileName.Size = new System.Drawing.Size(248, 20);
 			this.txtFileName.TabIndex = 11;
-			this.txtFileName.Text = "";
+			this.txtFileName.Text = String.Empty;
 			// 
 			// cboGraphicsUnit
 			// 
@@ -290,7 +288,7 @@ namespace ReportGenerator{
 			this.txtReportName.Name = "txtReportName";
 			this.txtReportName.Size = new System.Drawing.Size(248, 20);
 			this.txtReportName.TabIndex = 0;
-			this.txtReportName.Text = "";
+			this.txtReportName.Text = String.Empty;
 			this.txtReportName.TextChanged += new System.EventHandler(this.ChangedEvent);
 			// 
 			// groupBox1

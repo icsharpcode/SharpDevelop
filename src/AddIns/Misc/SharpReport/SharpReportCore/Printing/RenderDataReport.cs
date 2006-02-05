@@ -61,7 +61,6 @@ namespace SharpReportCore {
 		}
 			
 		protected override void ReportBegin(object sender, ReportPageEventArgs e) {
-			System.Console.WriteLine("\tRenderDataReport:ReportBegin");
 			base.ReportBegin (sender,e);
 			//allways reset the dataManager before printing
 			if (this.dataManager != null) {

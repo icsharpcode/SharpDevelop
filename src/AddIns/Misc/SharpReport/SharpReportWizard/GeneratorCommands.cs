@@ -13,23 +13,12 @@
 	/// </summary>
 using System;
 using System.Windows.Forms;
-using System.Drawing.Printing;
-
-using System.Data;
-using System.Data.OleDb;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 using SharpReport;
 using SharpReportCore;
-
-using SharpReport.Designer;
-
-using SharpQuery.SchemaClass;
-using SharpQuery.Collections;
-using System.Diagnostics;
 
 namespace ReportGenerator{
 	
@@ -43,11 +32,14 @@ namespace ReportGenerator{
 
 		private Properties customizer = new Properties();
 		
-		public CreateReport() {	
+		public CreateReport() {
 			
 		}
 		
 		public CreateReport(ReportModel reportModel){
+			if (reportModel == null) {
+				throw new ArgumentNullException("reportModel");
+			}
 			this.reportModel = reportModel;
 		}
 		
@@ -58,13 +50,11 @@ namespace ReportGenerator{
 				customizer.Set("Language",  ".XSD");
 				using (WizardDialog wizard = new WizardDialog("Report Wizard", customizer, WizardPath)) {
 					if (wizard.ShowDialog() == DialogResult.OK) {
-						Debug.Assert (reportModel != null,"No report model");
+						
 						try {
 							gen.FillReportModel (reportModel);
 							DoCreate(reportModel);
 						} catch (Exception) {
-//							MessageService.ShowError (e,e.Message);
-//							return;
 							throw;
 						}
 					} else {
@@ -81,90 +71,38 @@ namespace ReportGenerator{
 			dataModel = model.DataModel;
 			switch (dataModel) {
 				case GlobalEnums.enmPushPullModel.PullData:
-					GeneratePullReport (model);
+					GeneratePullDataReport generatePullDataReport = new GeneratePullDataReport(customizer,model);
+					generatePullDataReport.GenerateReport();
 					break;
 				case GlobalEnums.enmPushPullModel.PushData:
-					GeneratePushReport (model);
+					GeneratePushDataReport generatePushDataReport = new GeneratePushDataReport(customizer,model);
+					generatePushDataReport.GenerateReport();
 					break;
 				case GlobalEnums.enmPushPullModel.FormSheet:
-					GenerateFormSheet (model);
+					model.ReportSettings.ReportType = GlobalEnums.enmReportType.FormSheet;
 					break;
 			}
 		}
 		
 		
-		/// <summary>
-		/// Generate a report
-		/// Pull - Report fill's data be themselve
-		/// </summary>
-		/// <param name="model">ReportModel</param>
-		
-		void GeneratePullReport (ReportModel model) {
-			
-			try {
-				GeneratePullDataReport generator = new GeneratePullDataReport(customizer,model);
-				if (generator != null) {
-					generator.GenerateReport();
-				} else {
-					throw new NullReferenceException ("GeneratePullDataReport");
+		public class WriteXsdComplete : AbstractMenuCommand {
+			public override void Run() {
+				ResultPanel resultPanel = base.Owner as ResultPanel;
+				if (resultPanel != null) {
+					resultPanel.SaveXsdFile (false);
 				}
-			} catch (Exception) {
-				throw;
+				
 			}
 		}
 		
-		/// <summary>
-		/// Push Model Report 
-		/// Report is created by an .Xsd File 
-		/// </summary>
-		/// <param name="model">ReportModel</param> 
-		void GeneratePushReport (ReportModel model) {
-			try {
-				GeneratePushDataReport generator = new GeneratePushDataReport(customizer,model);
-				if (generator != null) {
-					generator.GenerateReport();
-				} else {
-					throw new NullReferenceException ("GeneratePullDataReport");
+		public class WriteXsdSchema : AbstractMenuCommand {
+			public override void Run() {
+				ResultPanel resultPanel = base.Owner as ResultPanel;
+				if (resultPanel != null) {
+					resultPanel.SaveXsdFile (true);
 				}
-			} catch (Exception) {
-				throw;
+				
 			}
 		}
-		
-		
-		
-		private static void GenerateFormSheet (ReportModel model) {
-			if (model.ReportSettings.DataModel != GlobalEnums.enmPushPullModel.FormSheet) {
-				throw new ArgumentNullException ("model");
-			}
-			
-			try {
-				model.ReportSettings.ReportType = GlobalEnums.enmReportType.FormSheet;
-			} catch (Exception) {
-				throw;
-			}
-		}
-	}
-	
-	public class WriteXsdComplete : AbstractMenuCommand {
-		public override void Run() {
-			ResultPanel resultPanel = base.Owner as ResultPanel;
-			if (resultPanel != null) {
-				resultPanel.SaveXsdFile (false);
-			}
-			
-		}
-	}
-	
-	public class WriteXsdSchema : AbstractMenuCommand {
-		public override void Run() {
-			ResultPanel resultPanel = base.Owner as ResultPanel;
-			if (resultPanel != null) {
-				resultPanel.SaveXsdFile (true);
-			}
-			
-		}
-	
-		
 	}
 }

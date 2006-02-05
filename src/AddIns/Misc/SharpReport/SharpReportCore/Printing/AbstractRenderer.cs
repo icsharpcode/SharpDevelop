@@ -331,7 +331,6 @@ namespace SharpReportCore {
 		#region property's
 		public ReportDocument ReportDocument {
 			get {
-				System.Console.WriteLine("Get the AbstractRenderer:ReportDocument");
 				return reportDocument;
 			}
 		}

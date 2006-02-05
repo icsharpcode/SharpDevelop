@@ -253,7 +253,7 @@ namespace SharpReportAddin {
 				}
 				
 			} catch (Exception er) {
-				System.Console.WriteLine("\t{0}",er.Message);
+				System.Console.WriteLine("\tFieldsExplorer {0}",er.Message);
 			}
 		}
 		

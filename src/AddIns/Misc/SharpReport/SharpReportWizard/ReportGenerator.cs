@@ -53,6 +53,7 @@ namespace ReportGenerator {
 		private CommandType commandType;
 		private SharpQueryProcedure sharpQueryProcedure;
 		private ReportItemCollection reportItemCollection;
+		private ColumnCollection columnCollection;
 		
 		private SharpQuerySchemaClassCollection queryParameters;
 		public ReportGenerator() {	
@@ -224,7 +225,19 @@ namespace ReportGenerator {
 		
 		#endregion
 		
-		#region PushModelpanel
+		
+		#region PushModelPanel
+		
+		public ColumnCollection ColumnCollection {
+			get {
+				return columnCollection;
+			}
+			set {
+				columnCollection = value;
+			}
+		}
+		
+		
 		public ReportItemCollection ReportItemCollection {
 			get {
 				return reportItemCollection;
@@ -235,5 +248,6 @@ namespace ReportGenerator {
 		}
 		
 		#endregion
+		
 	}
 }

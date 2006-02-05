@@ -33,7 +33,6 @@ namespace SharpReportCore {
 		
 		
 		public ReportDocument():base() {
-			System.Console.WriteLine("ReportDocument Constructor");
 			base.BeginPrint += new PrintEventHandler (ReportDocumentBeginPrint);
 			
 			base.PrintPage += new PrintPageEventHandler (ReportDocumentPrintPage);
@@ -43,7 +42,6 @@ namespace SharpReportCore {
 		}
 		
 		void GeneratePage (SharpReportCore.ReportPageEventArgs page) {		
-			System.Console.WriteLine("\tGeneratePage");
 			if (PrintPageBegin != null) {
 				PrintPageBegin (this,page);
 			}
@@ -71,7 +69,6 @@ namespace SharpReportCore {
 		#region events
 		//this events are also used by PrintPreviewControl
 		public  void ReportDocumentBeginPrint (object sender,PrintEventArgs e) {
-			System.Console.WriteLine("\tReportDocument BeginPrint");
 			pageNr = 0;
 		}
 		

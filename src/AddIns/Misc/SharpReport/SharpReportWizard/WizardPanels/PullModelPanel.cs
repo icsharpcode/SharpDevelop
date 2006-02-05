@@ -110,6 +110,9 @@ namespace ReportGenerator
 		public override object CustomizationObject {
 			get { return customizer; }
 			set {
+				if (value == null) {
+					throw new ArgumentNullException("value");
+				}
 				this.customizer = (Properties)value;
 				generator = (ReportGenerator)customizer.Get("Generator");
 			}

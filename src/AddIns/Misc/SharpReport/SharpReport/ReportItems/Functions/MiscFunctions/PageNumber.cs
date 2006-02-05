@@ -47,6 +47,7 @@ namespace SharpReport.ReportItems.Functions {
 			ItemsHelper.UpdateTextControl (this.visualControl,this);
 
 			this.Text = functionName;
+			this.visualControl.FunctionValue = String.Empty;
 			GrapFromBase();
 			this.initDone = true;
 		}
