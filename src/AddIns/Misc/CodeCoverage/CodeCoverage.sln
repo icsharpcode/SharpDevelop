@@ -1,6 +1,6 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 9.00
 # SharpDevelop 2.0.0.1056
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage", "Project\CodeCoverage.csproj", "{B7F1A068-01F5-49E7-83EF-05DE281B09FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage", "Project\CodeCoverage.csproj", "{08CE9972-283B-44F4-82FA-966F7DFA6B7A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage.Tests", "Test\CodeCoverage.Tests.csproj", "{A5C0E8F8-9D04-46ED-91D6-1DEF1575313B}"
 EndProject
@@ -22,10 +22,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B7F1A068-01F5-49E7-83EF-05DE281B09FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B7F1A068-01F5-49E7-83EF-05DE281B09FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B7F1A068-01F5-49E7-83EF-05DE281B09FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B7F1A068-01F5-49E7-83EF-05DE281B09FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08CE9972-283B-44F4-82FA-966F7DFA6B7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08CE9972-283B-44F4-82FA-966F7DFA6B7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08CE9972-283B-44F4-82FA-966F7DFA6B7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08CE9972-283B-44F4-82FA-966F7DFA6B7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5C0E8F8-9D04-46ED-91D6-1DEF1575313B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5C0E8F8-9D04-46ED-91D6-1DEF1575313B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A5C0E8F8-9D04-46ED-91D6-1DEF1575313B}.Release|Any CPU.Build.0 = Release|Any CPU

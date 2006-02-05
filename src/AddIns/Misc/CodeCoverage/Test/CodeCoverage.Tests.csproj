@@ -83,7 +83,7 @@
       <Name>ICSharpCode.TextEditor</Name>
     </ProjectReference>
     <ProjectReference Include="..\Project\CodeCoverage.csproj">
-      <Project>{B7F1A068-01F5-49E7-83EF-05DE281B09FD}</Project>
+      <Project>{08CE9972-283B-44F4-82FA-966F7DFA6B7A}</Project>
       <Name>CodeCoverage</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\UnitTesting\UnitTesting.csproj">
