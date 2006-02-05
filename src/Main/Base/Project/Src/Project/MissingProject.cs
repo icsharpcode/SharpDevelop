@@ -28,6 +28,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			Name     = Path.GetFileNameWithoutExtension(fileName);
 			FileName = fileName;
+			IdGuid = "{" + Guid.NewGuid().ToString() + "}";
 		}
 	}
 }
