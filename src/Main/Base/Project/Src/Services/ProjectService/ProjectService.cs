@@ -259,7 +259,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(fileName);
 			IProject project;
 			if (binding != null) {
-				project = binding.LoadProject(fileName, solution.Name);
+				project = LanguageBindingService.LoadProject(fileName, solution.Name);
 			} else {
 				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new string[,] {{"FileName", fileName}}));
 				return;

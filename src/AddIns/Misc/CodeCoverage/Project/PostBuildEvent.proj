@@ -3,9 +3,9 @@
 	<PrepareForRunDependsOn>$(PrepareForRunDependsOn);MyPostBuildTarget</PrepareForRunDependsOn>
   </PropertyGroup>
   <Target Name="MyPostBuildTarget">
-	<!-- Delete the MbUnitPad.addin file that gets copied to the CodeCoverage AddIn output
-         folder due to an MSBuild bug.  Otherwise the MbUnitPad.addin file will be
+	<!-- Delete the UnitTesting.addin file that gets copied to the CodeCoverage AddIn output
+         folder due to an MSBuild bug.  Otherwise the UnitTesting.addin file will be
          loaded twice by SharpDevelop -->
- 	<Delete Files="$(OutputPath)\MbUnitPad.addin" ContinueOnError="True"/>
+ 	<Delete Files="$(OutputPath)\UnitTesting.addin" ContinueOnError="True"/>
   </Target>
 </Project>

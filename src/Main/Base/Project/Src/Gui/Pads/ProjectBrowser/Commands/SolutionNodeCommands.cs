@@ -47,14 +47,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public static void AddProject(ISolutionFolderNode solutionFolderNode, string fileName)
 		{
-			IProject newProject;
-			ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(fileName);
-			if (binding != null) {
-				newProject = binding.LoadProject(fileName, Path.GetFileNameWithoutExtension(fileName));
-			} else {
-				newProject = new UnknownProject(fileName);
-				newProject.IdGuid = "{" + Guid.NewGuid().ToString() + "}";
-			}
+			IProject newProject = LanguageBindingService.LoadProject(fileName, Path.GetFileNameWithoutExtension(fileName));
 			newProject.Location = FileUtility.GetRelativePath(solutionFolderNode.Solution.Directory, fileName);
 			ParserService.CreateProjectContentForAddedProject(newProject);
 			solutionFolderNode.Container.AddFolder(newProject);

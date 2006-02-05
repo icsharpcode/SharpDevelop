@@ -93,6 +93,10 @@ namespace ICSharpCode.Core
 		
 		public void CreatePad()
 		{
+			#if DEBUG
+			if (WorkbenchSingleton.InvokeRequired)
+				throw new InvalidOperationException("This action could trigger pad creation and is only valid on the main thread!");
+			#endif
 			if (!padContentCreated) {
 				padContentCreated = true;
 				padContent = (IPadContent)codon.AddIn.CreateObject(Class);

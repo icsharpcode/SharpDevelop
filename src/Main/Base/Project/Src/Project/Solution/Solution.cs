@@ -439,19 +439,7 @@ namespace ICSharpCode.SharpDevelop.Project
 							SolutionFolder newFolder = SolutionFolder.ReadFolder(sr, title, location, guid);
 							newSolution.AddFolder(newFolder);
 						} else {
-							IProject newProject;
-							if (!File.Exists(location)) {
-								newProject = new MissingProject(location);
-								newProject.TypeGuid = projectGuid;
-							} else {
-								ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(location);
-								if (binding != null) {
-									newProject = binding.LoadProject(location, title);
-								} else {
-									newProject = new UnknownProject(location);
-									newProject.TypeGuid = projectGuid;
-								}
-							}
+							IProject newProject = LanguageBindingService.LoadProject(location, title, projectGuid);
 							newProject.IdGuid = guid;
 							newSolution.AddFolder(newProject);
 						}

@@ -142,6 +142,13 @@ namespace ICSharpCode.Core
 			OnAdded(new TaskEventArgs(task));
 		}
 		
+		public static void AddRange(IEnumerable<Task> tasks)
+		{
+			foreach (Task task in tasks) {
+				Add(task);
+			}
+		}
+		
 		public static void Remove(Task task)
 		{
 			if (tasks.Contains(task)) {

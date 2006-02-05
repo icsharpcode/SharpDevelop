@@ -31,10 +31,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		static CompilerMessageView instance;
 		
+		/// <summary>
+		/// Gets the instance of the CompilerMessageView. This property is thread-safe, but
+		/// most instance methods of the CompilerMessageView aren't.
+		/// </summary>
 		public static CompilerMessageView Instance {
 			get {
+				if (instance == null)
+					WorkbenchSingleton.SafeThreadCall((MethodInvoker)InitializeInstance);
 				return instance;
 			}
+		}
+		
+		static void InitializeInstance()
+		{
+			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).CreatePad();
 		}
 		
 		//TextEditorControl textEditorControl = new TextEditorControl();
@@ -158,8 +169,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		#region Category handling
+		/// <summary>
+		/// Adds a category to the compiler message view. This method is thread-safe.
+		/// </summary>
 		public void AddCategory(MessageViewCategory category)
 		{
+			if (WorkbenchSingleton.InvokeRequired) {
+				WorkbenchSingleton.SafeThreadAsyncCall((Action<MessageViewCategory>)AddCategory, category);
+				return;
+			}
 			messageCategories.Add(category);
 			category.Cleared      += new EventHandler(CategoryTextCleared);
 			category.TextSet      += new TextEventHandler(CategoryTextSet);
@@ -303,8 +321,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		#endregion
-		
-		delegate void StringDelegate(string text);
 		
 		/// <summary>
 		/// Makes this pad visible (usually BEFORE build or debug events)

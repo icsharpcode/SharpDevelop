@@ -11,30 +11,29 @@ using System.Reflection;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using MbUnit.Forms;
 
-namespace ICSharpCode.MbUnitPad
+namespace ICSharpCode.UnitTesting
 {
-	public class MbUnitPadContent : AbstractPadContent
+	public class PadContent : AbstractPadContent
 	{
-		public static MbUnitPadContent Instance {
+		public static PadContent Instance {
 			get {
-				PadDescriptor descriptor = WorkbenchSingleton.Workbench.GetPad(typeof(MbUnitPadContent));
-				return (MbUnitPadContent)descriptor.PadContent;
+				PadDescriptor descriptor = WorkbenchSingleton.Workbench.GetPad(typeof(PadContent));
+				return (PadContent)descriptor.PadContent;
 			}
 		}
 		
 		public static void BringToFront()
 		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(MbUnitPadContent)).BringPadToFront();
+			WorkbenchSingleton.Workbench.GetPad(typeof(PadContent)).BringPadToFront();
 		}
 		
 		TestTreeView treeView;
 		ToolStrip toolStrip;
 		Control ctl;
-		bool runningTests;
 		
 		public TestTreeView TreeView {
 			get {
@@ -45,21 +44,25 @@ namespace ICSharpCode.MbUnitPad
 		/// <summary>
 		/// Creates a new TestPad object
 		/// </summary>
-		public MbUnitPadContent()
+		public PadContent()
 		{
 			ctl = new Panel();
 			treeView = new TestTreeView();
 			treeView.Dock = DockStyle.Fill;
-			treeView.TypeTree.KeyPress += TreeViewKeyPress;
-			treeView.TypeTree.DoubleClick += TreeViewDoubleClick;
+			treeView.RunStarted  += ThreadedUpdateToolbar;
+			treeView.RunFinished += ThreadedUpdateToolbar;
+			treeView.RunFinished += delegate {
+				WorkbenchSingleton.SafeThreadAsyncCall((MethodInvoker)ShowErrorList);
+			};
 			
 			ctl.Controls.Add(treeView);
-			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/MbUnitPad/Toolbar");
+			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/UnitTestingPad/Toolbar");
 			toolStrip.GripStyle = ToolStripGripStyle.Hidden;
 			ctl.Controls.Add(toolStrip);
 			
 			ProjectService.SolutionLoaded += OnSolutionLoaded;
 			ProjectService.SolutionClosed += OnSolutionClosed;
+			ProjectService.EndBuild += OnEndBuild;
 		}
 		
 		/// <summary>
@@ -69,19 +72,8 @@ namespace ICSharpCode.MbUnitPad
 		{
 			ProjectService.SolutionLoaded -= OnSolutionLoaded;
 			ProjectService.SolutionClosed -= OnSolutionClosed;
+			ProjectService.EndBuild -= OnEndBuild;
 			ctl.Dispose();
-		}
-		
-		public bool IsRunningTests {
-			get {
-				return runningTests;
-			}
-		}
-		
-		public string SelectedAssemblyFileName {
-			get {
-				return treeView.SelectedAssemblyFileName;
-			}
 		}
 		
 		void OnSolutionLoaded(object sender, EventArgs e)
@@ -91,54 +83,62 @@ namespace ICSharpCode.MbUnitPad
 		
 		void OnSolutionClosed(object sender, EventArgs e)
 		{
+			treeView.UnloadTestAssemblies();
 			UpdateToolbar();
-			treeView.NewConfig();
 		}
+		
+		void OnEndBuild(object sender, EventArgs e)
+		{
+			if (autoLoadItems) {
+				ReloadAssemblyList(null);
+			}
+		}
+		
+		bool autoLoadItems;
 		
 		public void RunTests()
 		{
-			TaskService.ClearExceptCommentTasks();
-			if (treeView.TypeTree.Nodes.Count == 0) {
-				treeView.TreePopulated += StartTestsAfterTreePopulation;
-				treeView.FinishTests += FinishTests;
-				ReloadAssemblyList();
-			} else {
-				treeView.FinishTests += FinishTests;
-				treeView.ThreadedRunTests();
-				runningTests = true;
-				UpdateToolbar();
+			LoadAssemblyList(treeView.RunTests);
+		}
+		
+		public void UnloadTests()
+		{
+			autoLoadItems = false;
+			treeView.UnloadTestAssemblies();
+			UpdateToolbar();
+		}
+		
+		public bool IsRunningTests {
+			get {
+				return treeView.IsTestRunning;
 			}
 		}
 		
 		public void StopTests()
 		{
-			treeView.AbortWorkerThread();
-			runningTests = false;
+			treeView.StopTests();
 			UpdateToolbar();
-			ShowErrorList();
 		}
 		
-		void FinishTests(object sender, EventArgs e)
+		/// <summary>
+		/// Loads the assemblies if they are not already loaded.
+		/// </summary>
+		public void LoadAssemblyList(MethodInvoker callback)
 		{
-			treeView.FinishTests -= FinishTests;
-			runningTests = false;
-			WorkbenchSingleton.SafeThreadAsyncCall(this, "UpdateToolbar");
-			WorkbenchSingleton.SafeThreadAsyncCall(this, "ShowErrorList");
+			if (autoLoadItems) {
+				if (callback != null)
+					callback();
+			} else {
+				ReloadAssemblyList(callback);
+			}
 		}
 		
-		void StartTestsAfterTreePopulation(object sender, EventArgs e)
+		public void ReloadAssemblyList(MethodInvoker callback)
 		{
-			treeView.TreePopulated -= StartTestsAfterTreePopulation;
-			// we cannot run the tests on this thread because we have to wait for the worker thread to exit
-			WorkbenchSingleton.SafeThreadAsyncCall(treeView, "ThreadedRunTests");
-			runningTests = true;
-			WorkbenchSingleton.SafeThreadAsyncCall(this, "UpdateToolbar");
-		}
-		
-		public void ReloadAssemblyList()
-		{
-			LoggingService.Debug("ReloadAssemblyList");
-			treeView.TestDomains.Clear();
+			autoLoadItems = true;
+			treeView.UnloadTestAssemblies();
+			
+			treeView.StartAddingAssemblies();
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				bool referenceFound = false;
 				foreach (ProjectItem item in project.Items) {
@@ -155,8 +155,8 @@ namespace ICSharpCode.MbUnitPad
 							if (include.Substring(include.Length - 4).Equals(".dll", StringComparison.OrdinalIgnoreCase))
 								include = include.Substring(0, include.Length - 4);
 						}
-						if (string.Equals(include, "nunit.framework", StringComparison.OrdinalIgnoreCase)
-						    || string.Equals(include, "mbunit.framework", StringComparison.OrdinalIgnoreCase))
+						if (string.Equals(include, "nunit.framework", StringComparison.OrdinalIgnoreCase))
+							//|| string.Equals(include, "mbunit.framework", StringComparison.OrdinalIgnoreCase))
 						{
 							referenceFound = true;
 							break;
@@ -165,15 +165,13 @@ namespace ICSharpCode.MbUnitPad
 				}
 				if (referenceFound) {
 					string outputAssembly = project.OutputAssemblyFullPath;
-					LoggingService.Debug("MbUnitPad: Load " + outputAssembly);
-					try {
-						treeView.AddAssembly(outputAssembly);
-					} catch (Exception e) {
-						LoggingService.Warn("MbUnitPad load error", e);
-					}
+					LoggingService.Debug("UnitTestingPad: Load " + outputAssembly);
+					treeView.AddAssembly(project, outputAssembly);
 				}
 			}
-			treeView.ThreadedPopulateTree(true);
+			treeView.FinishAddingAssemblies();
+			if (callback != null)
+				WorkbenchSingleton.SafeThreadAsyncCall(callback);
 		}
 		
 		/// <summary>
@@ -192,23 +190,14 @@ namespace ICSharpCode.MbUnitPad
 		{
 		}
 		
+		void ThreadedUpdateToolbar(object sender, EventArgs e)
+		{
+			WorkbenchSingleton.SafeThreadAsyncCall((MethodInvoker)UpdateToolbar);
+		}
+		
 		void UpdateToolbar()
 		{
 			ToolbarService.UpdateToolbar(toolStrip);
-		}
-		
-		void TreeViewKeyPress(object sender, KeyPressEventArgs e)
-		{
-			if (e.KeyChar == '\r') {
-				treeView.GotoDefinition();
-			} else if (e.KeyChar == ' ') {
-				RunTests();
-			}
-		}
-		
-		void TreeViewDoubleClick(object sender, EventArgs e)
-		{
-			treeView.GotoDefinition();
 		}
 		
 		void ShowErrorList()
@@ -216,6 +205,14 @@ namespace ICSharpCode.MbUnitPad
 			if (TaskService.SomethingWentWrong) {
 				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
+		}
+		
+		public void RunTest(IProject project, IClass fixture, IMember test)
+		{
+			LoadAssemblyList(delegate {
+			                 	treeView.SelectTest(project, fixture, test);
+			                 	treeView.RunTests();
+			                 });
 		}
 	}
 }

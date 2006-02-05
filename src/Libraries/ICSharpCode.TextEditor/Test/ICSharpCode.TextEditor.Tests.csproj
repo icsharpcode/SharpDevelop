@@ -35,6 +35,12 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="DocumentTests.cs" />
     <Compile Include="BlockCommentTests.cs" />
@@ -44,11 +50,6 @@
       <Project>{2d18be89-d210-49eb-a9dd-2246fbb3df6d}</Project>
       <Package>{00000000-0000-0000-0000-000000000000}</Package>
       <Name>ICSharpCode.TextEditor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\NUnit.Framework\nunit.framework.dll.csproj">
-      <Project>{83DD7E12-A705-4DBA-9D71-09C8973D9382}</Project>
-      <Name>nunit.framework.dll</Name>
-      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

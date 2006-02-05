@@ -5,7 +5,7 @@
 		<WixCaFiles Include="wix\ca\*"/>
 		<WixDocFiles Include="wix\doc\*"/>
 		<WixLibFiles Include="wix\doc\*"/>
-		<MbUnitFiles Include="MbUnit\*"/>
+		<NUnitFiles Include="NUnit\*"/>
 		<HelpToolFiles Include="Help\*"/>
 		<!-- <ToolProject Include="GacUtil2\GacUtil2.csproj" /> -->
 		<ToolFiles Include="GacUtil2\GacUtil2.exe"/>
@@ -20,7 +20,7 @@
 		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc"/>
 		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib"/>
 		-->
-		<Copy SourceFiles="@(MbUnitFiles)" DestinationFolder="..\..\bin\Tools\MbUnit"/>
+		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit"/>
 		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools"/>
 		
 		<!--

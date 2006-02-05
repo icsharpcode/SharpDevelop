@@ -42,9 +42,11 @@ partial class MainForm:
 		InitializeComponent()
 		// TODO: Add constructor code after the InitializeComponent() call.
 
-Application.EnableVisualStyles()
-Application.SetCompatibleTextRenderingDefault(false)
-Application.Run(MainForm())
+[STAThread]
+def Main(argv as (string)):
+	Application.EnableVisualStyles()
+	Application.SetCompatibleTextRenderingDefault(false)
+	Application.Run(MainForm())
 
 ]]></File>
 <File name="MainForm.Designer.boo" dependentUpon="MainForm.boo"><![CDATA[namespace ${StandardNamespace}

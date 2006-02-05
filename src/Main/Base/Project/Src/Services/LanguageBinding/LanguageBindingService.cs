@@ -75,6 +75,35 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
+		public static IProject LoadProject(string location, string title)
+		{
+			return LoadProject(location, title, "{" + new Guid().ToString() + "}");
+		}
+		
+		public static IProject LoadProject(string location, string title, string projectTypeGuid)
+		{
+			IProject newProject;
+			if (!File.Exists(location)) {
+				newProject = new MissingProject(location);
+				newProject.TypeGuid = projectTypeGuid;
+			} else {
+				ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(location);
+				if (binding != null) {
+					try {
+						newProject = binding.LoadProject(location, title);
+					} catch (XmlException ex) {
+						MessageService.ShowError("Error loading " + location + ":\n" + ex.Message);
+						newProject = new UnknownProject(location);
+						newProject.TypeGuid = projectTypeGuid;
+					}
+				} else {
+					newProject = new UnknownProject(location);
+					newProject.TypeGuid = projectTypeGuid;
+				}
+			}
+			return newProject;
+		}
+		
 		static LanguageBindingService()
 		{
 			try {

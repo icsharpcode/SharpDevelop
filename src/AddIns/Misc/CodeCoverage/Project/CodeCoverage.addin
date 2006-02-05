@@ -5,93 +5,47 @@
 	
 	<Manifest> 
 		<Identity   name  = "ICSharpCode.CodeCoverage"/>
-		<Dependency addin = "ICSharpCode.MbUnitPad"/>
+		<Dependency addin = "ICSharpCode.UnitTesting"/>
 	</Manifest>
 	
 	<Runtime>
+		<!-- NUnit is not in the path, so we need to load it manually -->
+		<Import assembly = "../../../../bin/Tools/NUnit/NUnit.Util.dll"/>
+		<Import assembly = "../../../../bin/Tools/NUnit/NUnit.UIKit.dll"/>
+		<Import assembly = "$ICSharpCode.UnitTesting/UnitTesting.dll"/>
 		<Import assembly = "CodeCoverage.dll"/>
-		<Import assembly = "MbUnitPad.dll"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id           = "CodeCoveragePad" 
 		     category     = "Tools"
-		     title        = "Code Coverage"
+		     title        = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
 		     insertafter  = "Bookmarks"
 		     insertbefore = "DefinitionView"
 		     icon         = "CodeCoverage.Icons.16x16.Pad"
 		     class        = "ICSharpCode.CodeCoverage.CodeCoveragePad"/>
 	</Path>
-
+	
 	<Path name = "/SharpDevelop/Pads/CodeCoveragePad/Toolbar">
-		<Condition name = "SolutionOpen" action = "Disable">
-			<ToolbarItem id      = "ToggleCodeCoverage"
-			             icon    = "CodeCoverage.Icons.16x16.File"
-			             tooltip = "Toggle Code Coverage"
-			             type    = "CheckBox"
-			             class   = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
-		</Condition>
+		<ToolbarItem id      = "ToggleCodeCoverage"
+		             icon    = "CodeCoverage.Icons.16x16.File"
+		             tooltip = "Toggle Code Coverage"
+		             type    = "CheckBox"
+		             class   = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id          = "CodeCoverageOptionsPanel"
-		       	     label       = "Code Coverage"
+		       	     label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
 		             insertafter = "NAnt"
 		       	     class       = "ICSharpCode.CodeCoverage.CodeCoverageOptionsPanel"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Pads/MbUnitPad/ContextMenu">
-		<ComplexCondition action="Disable">
-			<And>
-				<Condition name = "Ownerstate" ownerstate = "TestItemSelected"/>
-				<Not>
-					<Condition name = "MbUnitRunningTests"/>
-				</Not>
-			</And>
-			<MenuItem id           = "RunWithCodeCoverage"
-			          icon         = "CodeCoverage.Icons.16x16.Run"
-			          insertafter  = "Run"
-			          insertbefore = "Stop"
-			          label        = "Run tests with code coverage"
-			          class        = "ICSharpCode.CodeCoverage.RunMbUnitPadTestsWithCodeCoverageCommand"/>
-		</ComplexCondition>
-	</Path>
-	
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu/MbUnitTestMenu">
-		<Condition name = "MbUnitTestable">
+	<Path name = "/SharpDevelop/Pads/UnitTestingPad/CommonTestCommands">
+		<Condition name="UnitCommonTestCommandsEnabled" action="Disable">
 			<MenuItem id          = "RunWithCodeCoverage"
 			          insertafter = "RunWithDebugger"
-			          label       = "Run with code coverage"
-			          icon        = "CodeCoverage.Icons.16x16.Run"
-			          class       = "ICSharpCode.CodeCoverage.RunTestWithCodeCoverageCommand"/>
-		</Condition>
-	</Path>
-	
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu/MbUnitTestMenu">
-		<Condition name = "MbUnitTestable">
-			<MenuItem id          = "RunWithCodeCoverage"
-			          insertafter = "RunWithDebugger"
-			          label       = "Run with code coverage"
-			          icon        = "CodeCoverage.Icons.16x16.Run"
-			          class       = "ICSharpCode.CodeCoverage.RunTestFixtureWithCodeCoverageCommand"/>
-		</Condition>
-	</Path>
-	
-	<Path name = "/SharpDevelop/Pads/ClassBrowser/ClassContextMenu/MbUnitTestMenu">
-		<Condition name = "MbUnitTestable">
-			<MenuItem id          = "RunWithCodeCoverage"
-			          insertafter = "RunWithDebugger"
-			          label       = "Run with code coverage"
-			          icon        = "CodeCoverage.Icons.16x16.Run"
-			          class       = "ICSharpCode.CodeCoverage.RunTestFixtureWithCodeCoverageCommand"/>
-		</Condition>
-	</Path>
-
-	<Path name = "/SharpDevelop/Pads/ClassBrowser/MemberContextMenu/MbUnitTestMenu">
-		<Condition name = "MbUnitTestable">
-			<MenuItem id          = "RunWithCodeCoverage"
-			          insertafter = "RunWithDebugger"
-			          label       = "Run with code coverage"
+			          label       = "${res:ICSharpCode.UnitTesting.RunWithCoverage}"
 			          icon        = "CodeCoverage.Icons.16x16.Run"
 			          class       = "ICSharpCode.CodeCoverage.RunTestWithCodeCoverageCommand"/>
 		</Condition>
@@ -99,7 +53,7 @@
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
 		<DialogPanel id          = "CodeCoverage"
-		             label       = "Code Coverage"
+		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
 		             insertafter = "Publish"
 		             class       = "ICSharpCode.CodeCoverage.CodeCoverageProjectOptionsPanel"/>
 	</Path>

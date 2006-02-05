@@ -14,15 +14,18 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.MbUnitPad
+namespace ICSharpCode.UnitTesting
 {
 	/// <summary>
 	/// Supplies a "Unit test" menu item if the class is a test fixture.
 	/// </summary>
-	public class MbUnitTestableCondition : IConditionEvaluator
+	public class TestableCondition : IConditionEvaluator
 	{
 		public static IMember GetMember(object caller)
 		{
+			if (caller is TestTreeView) {
+				return ((TestTreeView)caller).SelectedTestMethod;
+			}
 			MemberNode memberNode = caller as MemberNode;
 			if (memberNode != null) {
 				return memberNode.Member;
@@ -37,6 +40,9 @@ namespace ICSharpCode.MbUnitPad
 		
 		public static IClass GetClass(object caller)
 		{
+			if (caller is TestTreeView) {
+				return ((TestTreeView)caller).SelectedFixtureClass;
+			}
 			ClassNode classNode = caller as ClassNode;
 			if (classNode != null) {
 				return classNode.Class;
@@ -49,10 +55,22 @@ namespace ICSharpCode.MbUnitPad
 			return null;
 		}
 		
+		public static ICSharpCode.SharpDevelop.Project.IProject GetProject(object caller)
+		{
+			if (caller is TestTreeView) {
+				return ((TestTreeView)caller).SelectedProject;
+			}
+			IMember m = GetMember(caller);
+			IClass c = (m != null) ? m.DeclaringType : GetClass(caller);
+			return c.ProjectContent.Project;
+		}
+		
 		public bool IsValid(object caller, Condition condition)
 		{
 			IMember m = GetMember(caller);
 			IClass c = (m != null) ? m.DeclaringType : GetClass(caller);
+			if (c.ProjectContent.Project == null)
+				return false;
 			StringComparer nameComparer = c.ProjectContent.Language.NameComparer;
 			string attributeName = (m != null) ? "Test" : "TestFixture";
 			foreach (IAttribute attribute in (m ?? (IDecoration)c).Attributes) {

@@ -160,9 +160,15 @@ namespace Grunwald.BooBinding.CodeCompletion
 			m.TypeParameters = DefaultTypeParameter.EmptyTypeParameterList;
 		}
 		
-		void ConvertAttributes(AST.Node node, AbstractDecoration c)
+		void ConvertAttributes(AST.TypeMember node, AbstractDecoration c)
 		{
-			c.Attributes = DefaultAttribute.EmptyAttributeList;
+			if (node.Attributes.Count == 0) {
+				c.Attributes = DefaultAttribute.EmptyAttributeList;
+			} else {
+				foreach (AST.Attribute a in node.Attributes) {
+					c.Attributes.Add(new DefaultAttribute(a.Name));
+				}
+			}
 			c.Documentation = node.Documentation;
 		}
 		

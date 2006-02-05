@@ -259,8 +259,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			
 			RunConverter(fileName, convertedFileName + ".user", "CSharp_prjx2csproj_user.xsl", conversion);
 			
-			ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(convertedFileName);
-			return binding.LoadProject(convertedFileName, Conversion.GetProjectName(fileName));
+			return LanguageBindingService.LoadProject(convertedFileName, Conversion.GetProjectName(fileName));
 		}
 		
 		public static void ConvertVSNetProject(string fileName)

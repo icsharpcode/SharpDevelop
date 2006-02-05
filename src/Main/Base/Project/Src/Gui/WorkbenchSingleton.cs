@@ -116,6 +116,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			public object Call(Delegate method, object[] arguments)
 			{
+				if (method == null) {
+					throw new ArgumentNullException("method");
+				}
 				return ctl.Invoke(method, arguments);
 			}
 			
@@ -134,6 +137,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			public void BeginCall(Delegate method, object[] arguments)
 			{
+				if (method == null) {
+					throw new ArgumentNullException("method");
+				}
 				ctl.BeginInvoke(method, arguments);
 			}
 			

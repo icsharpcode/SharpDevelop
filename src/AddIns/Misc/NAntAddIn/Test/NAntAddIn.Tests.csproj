@@ -42,6 +42,10 @@
       <HintPath>..\ConsoleApp\bin\ConsoleApp.exe</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -81,11 +85,6 @@
     <ProjectReference Include="..\Project\NAntAddIn.csproj">
       <Project>{1DB3CAD2-38E8-4C5E-8E1B-0E37B1A5C006}</Project>
       <Name>NAntAddIn</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Libraries\NUnit.Framework\nunit.framework.dll.csproj">
-      <Project>{83DD7E12-A705-4DBA-9D71-09C8973D9382}</Project>
-      <Name>nunit.framework.dll</Name>
-      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

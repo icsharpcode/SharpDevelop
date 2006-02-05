@@ -5,7 +5,7 @@
     <AssemblyName>CodeCoverage</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B7F1A068-01F5-49E7-83EF-05DE281B09FD}</ProjectGuid>
+    <ProjectGuid>{08ce9972-283b-44f4-82fa-966f7dfa6b7a}</ProjectGuid>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -60,7 +60,6 @@
     <EmbeddedResource Include="Resources\CodeCoverageOptionsPanel.xfrm" />
     <Compile Include="Src\CodeCoverageDisplayItem.cs" />
     <Compile Include="Src\ColorPickerComboBox.cs" />
-    <Compile Include="Src\RunMbUnitPadTestsWithCodeCoverageCommand.cs" />
     <Compile Include="Src\OutputReader.cs" />
     <Compile Include="Src\ProcessRunner.cs" />
     <Compile Include="Src\ProcessRunnerException.cs" />
@@ -72,11 +71,8 @@
     <Compile Include="Src\CodeCoverageProjectOptionsPanel.cs" />
     <EmbeddedResource Include="Resources\CodeCoverageProjectOptionsPanel.xfrm" />
     <Compile Include="Src\NCoverSettings.cs" />
-    <Compile Include="Src\MbUnitResults.cs" />
     <Compile Include="Src\CodeCoverageService.cs" />
-    <Compile Include="Src\AbstractRunTestsWithCodeCoverageCommand.cs" />
     <Compile Include="Src\RunTestWithCodeCoverageCommand.cs" />
-    <Compile Include="Src\RunTestFixtureWithCodeCoverageCommand.cs" />
     <EmbeddedResource Include="Resources\CodeCoverageRunnerNotFoundForm.xfrm" />
     <Compile Include="Src\CodeCoverageRunnerNotFoundForm.cs" />
     <None Include="CodeCoverage.addin">
@@ -84,7 +80,6 @@
     </None>
     <Compile Include="Src\CodeCoverageImageList.cs" />
     <Compile Include="Src\GrayScaleBitmap.cs" />
-    <Compile Include="Src\NUnitResults.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -102,12 +97,12 @@
       <Name>ICSharpCode.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\MbUnitPad\Project\MbUnitPad.csproj">
-      <Project>{B1CE28A0-04E8-490D-8256-E0C4D52C93C8}</Project>
-      <Name>MbUnitPad</Name>
+    <Content Include="PostBuildEvent.proj" />
+    <ProjectReference Include="..\..\UnitTesting\UnitTesting.csproj">
+      <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
+      <Name>UnitTesting</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Content Include="PostBuildEvent.proj" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="PostBuildEvent.proj" />

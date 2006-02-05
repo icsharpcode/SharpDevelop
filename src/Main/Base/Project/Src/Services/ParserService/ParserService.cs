@@ -109,7 +109,12 @@ namespace ICSharpCode.Core
 			if (loadSolutionProjectsThread != null) {
 				if (!abortLoadSolutionProjectsThread)
 					throw new InvalidOperationException("Cannot open new combine without closing old combine!");
-				loadSolutionProjectsThread.Join();
+				if (!loadSolutionProjectsThread.Join(50)) {
+					// loadSolutionProjects might be waiting for main thread, so give it
+					// a chance to complete asynchronous calls
+					WorkbenchSingleton.SafeThreadAsyncCall((ThreadStart)OnSolutionLoaded);
+					return;
+				}
 			}
 			loadSolutionProjectsThread = new Thread(new ThreadStart(LoadSolutionProjects));
 			loadSolutionProjectsThread.Priority = ThreadPriority.BelowNormal;
