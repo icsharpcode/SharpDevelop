@@ -12,6 +12,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 {
+	/*
 	[TestFixture]
 	public class TopologicalSortTest
 	{
@@ -24,4 +25,5 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			}
 		}
 	}
+	*/
 }

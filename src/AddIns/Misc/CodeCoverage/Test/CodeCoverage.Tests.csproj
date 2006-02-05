@@ -37,6 +37,14 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="nunit.uikit">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit.uikit.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -54,7 +62,6 @@
     <Compile Include="CodeCoverageMarkersInvalidStartColumnTestFixture.cs" />
     <Compile Include="CodeCoverageMarkersInvalidEndColumnTestFixture.cs" />
     <Compile Include="NCoverSettingsTestFixture.cs" />
-    <Compile Include="MbUnitResultsTestFixture.cs" />
     <EmbeddedResource Include="Strings.resources" />
     <Compile Include="ZeroCodeCoverageTreeViewTestFixture.cs" />
     <Compile Include="InvalidSequencePointDataTestFixture.cs" />
@@ -75,14 +82,18 @@
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
       <Name>ICSharpCode.TextEditor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Libraries\NUnit.Framework\nunit.framework.dll.csproj">
-      <Project>{83DD7E12-A705-4DBA-9D71-09C8973D9382}</Project>
-      <Name>nunit.framework.dll</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Project\CodeCoverage.csproj">
-      <Project>{B7F1A068-01F5-49E7-83EF-05DE281B09FD}</Project>
-      <Name>CodeCoverageAddIn</Name>
+      <Project>{08ce9972-283b-44f4-82fa-966f7dfa6b7a}</Project>
+      <Name>CodeCoverage</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\UnitTesting\UnitTesting.csproj">
+      <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
+      <Name>UnitTesting</Name>
+    </ProjectReference>
+    <Content Include="..\..\..\..\..\AddIns\AddIns\Misc\UnitTesting\UnitTesting.dll">
+      <Link>UnitTesting.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -24,8 +24,8 @@ namespace ICSharpCode.NAntAddIn.Tests
 		}
 		
 		[Test]
-		[ExpectedException(typeof(Win32Exception), 
-		                   "The system cannot find the file specified")]
+		[ExpectedException(typeof(Win32Exception))]
+		//  "The system cannot find the file specified")] - Message depends on system language.
 		public void Run()
 		{
 			runner.Start("foo.exe");

@@ -11,6 +11,7 @@ using NUnit.Framework;
 using System;
 using System.IO;
 using System.Resources;
+using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.CodeCoverage.Tests
 {

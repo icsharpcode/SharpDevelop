@@ -70,7 +70,6 @@ namespace XmlEditor.Tests.Schema
 //		}
 //	}
 	
-	[TestFixture]
 	public abstract class SchemaTestFixtureBase
 	{		
 		XmlSchemaCompletionData schemaCompletionData;

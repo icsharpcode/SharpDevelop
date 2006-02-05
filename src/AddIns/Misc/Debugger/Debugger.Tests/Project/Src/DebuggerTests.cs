@@ -47,7 +47,7 @@ namespace Debugger.Tests
 		}
 		
 		[TearDown]
-		void TearDown()
+		public void TearDown()
 		{
 			debugger.Terminate();
 		}

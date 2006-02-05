@@ -15,7 +15,7 @@ using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {
-	[TestFixture]
+	//[TestFixture]
 	public class RefactoringTests
 	{
 		const string code = @"using System;

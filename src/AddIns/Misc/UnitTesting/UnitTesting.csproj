@@ -47,11 +47,6 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="nunit.util">
       <HintPath>..\..\..\Tools\NUnit\nunit.util.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>

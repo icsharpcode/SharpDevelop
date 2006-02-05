@@ -39,7 +39,6 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		
 		public static T ParseTypeMember<T>(string typeMember) where T : INode
 		{
-			System.Console.WriteLine("Class TestClass\n " + typeMember + "\n End Class\n");
 			TypeDeclaration td = ParseGlobal<TypeDeclaration>("Class TestClass\n " + typeMember + "\n End Class\n");
 			Assert.IsTrue(td.Children.Count > 0);
 			Type type = typeof(T);

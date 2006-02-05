@@ -16,7 +16,6 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 
 using NUnit.Core;
-using NUnit.Framework;
 using NUnit.UiKit;
 using NUnit.Util;
 
