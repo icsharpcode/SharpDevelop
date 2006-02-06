@@ -95,8 +95,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					return "float";
 				case "System.Decimal":
 					return "decimal";
-				case "System.DateTime":
-					return "System.DateTime";
 				case "System.Int64":
 					return "long";
 				case "System.Int32":
@@ -725,7 +723,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Indent();
 			OutputModifier(destructorDeclaration.Modifier);
 			outputFormatter.PrintToken(Tokens.BitwiseComplement);
-			outputFormatter.PrintIdentifier(destructorDeclaration.Name);
+			if (currentType != null)
+				outputFormatter.PrintIdentifier(currentType.Name);
+			else
+				outputFormatter.PrintIdentifier(destructorDeclaration.Name);
 			if (prettyPrintOptions.BeforeConstructorDeclarationParentheses) {
 				outputFormatter.Space();
 			}
@@ -881,15 +882,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(EraseStatement eraseStatement, object data)
 		{
-			foreach (Expression expr in eraseStatement.Expressions) {
-				outputFormatter.Indent();
-				expr.AcceptVisitor(this, data);
+			for (int i = 0; i < eraseStatement.Expressions.Count; i++) {
+				if (i > 0) {
+					outputFormatter.NewLine();
+					outputFormatter.Indent();
+				}
+				nodeTracker.TrackedVisit(eraseStatement.Expressions[i], data);
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Assign);
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Null);
 				outputFormatter.PrintToken(Tokens.Semicolon);
-				outputFormatter.NewLine();
 			}
 			return null;
 		}

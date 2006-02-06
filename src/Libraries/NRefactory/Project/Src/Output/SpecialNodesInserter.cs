@@ -22,6 +22,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			this.formatter = formatter;
 		}
 		
+		public bool ForceWriteInPreviousLine;
+		
 		public object Visit(ISpecial special, object data)
 		{
 			Console.WriteLine("Warning: SpecialOutputVisitor.Visit(ISpecial) called with " + special);
@@ -36,13 +38,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(Comment special, object data)
 		{
-			formatter.PrintComment(special);
+			formatter.PrintComment(special, ForceWriteInPreviousLine);
 			return data;
 		}
 		
 		public object Visit(PreProcessingDirective special, object data)
 		{
-			formatter.PrintPreProcessingDirective(special);
+			formatter.PrintPreProcessingDirective(special, ForceWriteInPreviousLine);
 			return data;
 		}
 	}
@@ -50,7 +52,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	/// <summary>
 	/// This class inserts specials between INodes.
 	/// </summary>
-	public class SpecialNodesInserter
+	public class SpecialNodesInserter : IDisposable
 	{
 		IEnumerator<ISpecial> enumerator;
 		SpecialOutputVisitor visitor;
@@ -84,7 +86,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		/// </summary>
 		public void AcceptNodeEnd(INode node)
 		{
+			visitor.ForceWriteInPreviousLine = true;
 			AcceptPoint(node.EndLocation);
+			visitor.ForceWriteInPreviousLine = false;
 		}
 		
 		/// <summary>
@@ -110,6 +114,24 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			while (available) {
 				WriteCurrent();
 			}
+		}
+		
+		void IDisposable.Dispose()
+		{
+			Finish();
+		}
+		
+		/// <summary>
+		/// Registers a new SpecialNodesInserter with the output visitor.
+		/// Make sure to call Finish() on the returned SpecialNodesInserter when the output
+		/// is finished.
+		/// </summary>
+		public static SpecialNodesInserter Install(IEnumerable<ISpecial> specials, IOutputASTVisitor outputVisitor)
+		{
+			SpecialNodesInserter sni = new SpecialNodesInserter(specials, new SpecialOutputVisitor(outputVisitor.OutputFormatter));
+			outputVisitor.NodeTracker.NodeVisiting += sni.AcceptNodeStart;
+			outputVisitor.NodeTracker.NodeVisited  += sni.AcceptNodeEnd;
+			return sni;
 		}
 	}
 }

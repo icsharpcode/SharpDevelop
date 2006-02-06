@@ -114,19 +114,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			PrintText(identifier);
 		}
 		
-		public override void PrintComment(Comment comment)
+		public override void PrintComment(Comment comment, bool forceWriteInPreviousBlock)
 		{
 			switch (comment.CommentType) {
-				case CommentType.Block:	
-					PrintText("/*");
-					PrintText(comment.CommentText);
-					PrintText("*/");
+				case CommentType.Block:
+					if (forceWriteInPreviousBlock) {
+						WriteInPreviousLine("/*" + comment.CommentText + "*/", forceWriteInPreviousBlock);
+					} else {
+						PrintText("/*");
+						PrintText(comment.CommentText);
+						PrintText("*/");
+					}
 					break;
 				case CommentType.Documentation:
-					WriteInPreviousLine("///" + comment.CommentText);
+					WriteInPreviousLine("///" + comment.CommentText, forceWriteInPreviousBlock);
 					break;
 				default:
-					WriteInPreviousLine("//" + comment.CommentText);
+					WriteInPreviousLine("//" + comment.CommentText, forceWriteInPreviousBlock);
 					break;
 			}
 		}

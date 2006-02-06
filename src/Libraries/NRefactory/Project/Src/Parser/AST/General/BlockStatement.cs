@@ -21,11 +21,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public static BlockStatement CheckNull(BlockStatement blockStatement)
-		{
-			return blockStatement == null ? NullBlockStatement.Instance : blockStatement;
-		}
-		
 		public override object AcceptVisitor(IAstVisitor visitor, object data)
 		{
 			return visitor.Visit(this, data);

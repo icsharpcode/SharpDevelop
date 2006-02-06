@@ -76,6 +76,23 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void ReferenceEquality()
+		{
+			TestStatement("b = a Is Nothing",
+			              "b = a == null;");
+			TestStatement("b = a IsNot Nothing",
+			              "b = a != null;");
+			TestStatement("b = Nothing Is a",
+			              "b = null == a;");
+			TestStatement("b = Nothing IsNot a",
+			              "b = null != a;");
+			TestStatement("c = a Is b",
+			              "c = object.ReferenceEquals(a, b);");
+			TestStatement("c = a IsNot b",
+			              "c = !object.ReferenceEquals(a, b);");
+		}
+		
+		[Test]
 		public void AddHandler()
 		{
 			TestStatement("AddHandler someEvent, AddressOf tmp2",
@@ -101,10 +118,24 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void EraseStatement()
+		{
+			TestStatement("Erase a, b",
+			              "a = null;\nb = null;");
+		}
+		
+		[Test]
 		public void StaticMethod()
 		{
 			TestMember("Shared Sub A()\nEnd Sub",
 			           "public static void A()\n{\n}");
+		}
+		
+		[Test]
+		public void Property()
+		{
+			TestMember("ReadOnly Property A()\nGet\nReturn Nothing\nEnd Get\nEnd Property",
+			           "public object A {\n\tget {\n\t\treturn null;\n\t}\n}");
 		}
 		
 		[Test]
@@ -120,11 +151,42 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "static extern IntPtr SendMessage(IntPtr hWnd, int Msg, UIntPtr wParam, IntPtr lParam);",
 			           "System.Runtime.InteropServices");
 			
+			TestMember("Declare Auto Function SendMessage Lib \"user32.dll\" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As UIntPtr, ByVal lParam As IntPtr) As IntPtr",
+			           "[DllImport(\"user32.dll\", CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]\n" +
+			           "static extern IntPtr SendMessage(IntPtr hWnd, int Msg, UIntPtr wParam, IntPtr lParam);",
+			           "System.Runtime.InteropServices");
+			
 			TestMember("<DllImport(\"user32.dll\", CharSet:=CharSet.Auto)> _\n" +
 			           "Shared Function MessageBox(ByVal hwnd As IntPtr, ByVal t As String, ByVal caption As String, ByVal t2 As UInt32) As Integer\n" +
 			           "End Function",
 			           "[DllImport(\"user32.dll\", CharSet = CharSet.Auto)]\n" +
 			           "public static extern int MessageBox(IntPtr hwnd, string t, string caption, UInt32 t2);");
+		}
+		
+		[Test]
+		public void Constructor()
+		{
+			TestMember("Sub New()\n\tMyBase.New(1)\nEnd Sub",
+			           "public tmp1() : base(1)\n{\n}");
+			TestMember("Public Sub New()\n\tMe.New(1)\nEnd Sub",
+			           "public tmp1() : this(1)\n{\n}");
+		}
+		
+		[Test]
+		public void Destructor()
+		{
+			TestMember("Protected Overrides Sub Finalize()\n" +
+			           "\tTry\n" +
+			           "\t\tDead()\n" +
+			           "\tFinally\n" +
+			           "\t\tMyBase.Finalize()\n" +
+			           "\tEnd Try\n" +
+			           "End Sub",
+			           
+			           "~tmp1()\n" +
+			           "{\n" +
+			           "\tDead();\n" +
+			           "}");
 		}
 	}
 }

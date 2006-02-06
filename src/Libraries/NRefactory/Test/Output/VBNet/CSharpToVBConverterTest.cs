@@ -215,5 +215,56 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, UIntPtr wParam, IntPtr lParam);",
 			           "Public Declare Auto Function SendMessage Lib \"user32.dll\" Alias \"SendMessageW\" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As UIntPtr, ByVal lParam As IntPtr) As IntPtr");
 		}
+		
+		[Test]
+		public void Constructor()
+		{
+			TestMember("public tmp1() : base(1) { }",
+			           "Public Sub New()\n\tMyBase.New(1)\nEnd Sub");
+			TestMember("public tmp1() : this(1) { }",
+			           "Public Sub New()\n\tMe.New(1)\nEnd Sub");
+		}
+		
+		[Test]
+		public void Destructor()
+		{
+			TestMember("~tmp1() { Dead(); }",
+			           "Protected Overrides Sub Finalize()\n" +
+			           "\tTry\n" +
+			           "\t\tDead()\n" +
+			           "\tFinally\n" +
+			           "\t\tMyBase.Finalize()\n" +
+			           "\tEnd Try\n" +
+			           "End Sub");
+		}
+		
+		[Test]
+		public void RenameConflictingNames()
+		{
+			TestMember("int count;" +
+			           "public int Count { get { return count; } }" +
+			           "void Test1(int count) { count = 3; }" +
+			           "void Test2() { int count; count = 3; }" +
+			           "void Test3() { foreach (int count in someList) { count = 3; } }",
+			           
+			           "Private m_count As Integer\n" +
+			           "Public ReadOnly Property Count() As Integer\n" +
+			           "\tGet\n" +
+			           "\t\tReturn m_count\n" +
+			           "\tEnd Get\n" +
+			           "End Property\n" +
+			           "Private Sub Test1(ByVal count As Integer)\n" +
+			           "\tcount = 3\n" +
+			           "End Sub\n" +
+			           "Private Sub Test2()\n" +
+			           "\tDim count As Integer\n" +
+			           "\tcount = 3\n" +
+			           "End Sub\n" +
+			           "Private Sub Test3()\n" +
+			           "\tFor Each count As Integer In someList\n" +
+			           "\t\tcount = 3\n" +
+			           "\tNext\n" +
+			           "End Sub");
+		}
 	}
 }

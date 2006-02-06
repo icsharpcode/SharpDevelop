@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			Assert.AreEqual(StripWhitespace(program), StripWhitespace(outputVisitor.Text));
 		}
 		
-		string StripWhitespace(string text)
+		internal static string StripWhitespace(string text)
 		{
 			return text.Trim().Replace("\t", "").Replace("\r", "").Replace("\n", " ").Replace("  ", " ");
 		}
@@ -52,6 +52,21 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			e.AcceptVisitor(outputVisitor, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(StripWhitespace(expression), StripWhitespace(outputVisitor.Text));
+		}
+		
+		[Test]
+		public void Namespace()
+		{
+			TestProgram("namespace System { }");
+		}
+		
+		[Test]
+		public void CustomEvent()
+		{
+			TestTypeMember("public event EventHandler Click {" +
+			               " add { obj.Click += value; }" +
+			               " remove { obj.Click -= value; } " +
+			               "}");
 		}
 		
 		[Test]
@@ -131,6 +146,69 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void UnaryOperator()
+		{
+			TestExpression("a = -b");
+		}
+		
+		[Test]
+		public void BlockStatements()
+		{
+			TestStatement("checked { }");
+			TestStatement("unchecked { }");
+			TestStatement("unsafe { }");
+		}
+		
+		[Test]
+		public void ExceptionHandling()
+		{
+			TestStatement("try { throw new Exception(); } " +
+			              "catch (FirstException e) { } " +
+			              "catch (SecondException) { } " +
+			              "catch { throw; } " +
+			              "finally { }");
+		}
+		
+		[Test]
+		public void LoopStatements()
+		{
+			TestStatement("foreach (Type var in col) { }");
+			TestStatement("while (true) { }");
+			TestStatement("do { } while (true);");
+		}
+		
+		[Test]
+		public void SizeOf()
+		{
+			TestExpression("sizeof(IntPtr)");
+		}
+		
+		[Test]
+		public void ParenthesizedExpression()
+		{
+			TestExpression("(a)");
+		}
+		
+		[Test]
+		public void MethodOnGenericClass()
+		{
+			TestExpression("Container<string>.CreateInstance()");
+		}
+		
+		[Test]
+		public void EmptyStatement()
+		{
+			TestStatement(";");
+		}
+		
+		[Test]
+		public void Yield()
+		{
+			TestStatement("yield break;");
+			TestStatement("yield return null;");
+		}
+		
+		[Test]
 		public void Integer()
 		{
 			TestExpression("12");
@@ -192,6 +270,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void InnerClassTypeReference()
+		{
+			TestExpression("typeof(List<string>.Enumerator)");
+		}
+		
+		[Test]
 		public void GenericDelegate()
 		{
 			TestProgram("public delegate void Predicate<T>(T item) where T : IDisposable, ICloneable;");
@@ -246,6 +330,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			            " void InterfaceMethod();" +
 			            " string InterfaceMethod2();\n" +
 			            "}");
+		}
+		
+		[Test]
+		public void IndexerDeclaration()
+		{
+			TestTypeMember("public string this[int index] { get { return index.ToString(); } set { } }");
+			TestTypeMember("public string IList.this[int index] { get { return index.ToString(); } set { } }");
 		}
 	}
 }

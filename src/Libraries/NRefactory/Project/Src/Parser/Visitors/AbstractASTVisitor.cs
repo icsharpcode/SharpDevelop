@@ -181,21 +181,20 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(ConstructorDeclaration constructorDeclaration, object data) {
 			Debug.Assert((constructorDeclaration != null));
+			Debug.Assert((constructorDeclaration.Attributes != null));
+			Debug.Assert((constructorDeclaration.Parameters != null));
 			Debug.Assert((constructorDeclaration.ConstructorInitializer != null));
 			Debug.Assert((constructorDeclaration.Body != null));
-			Debug.Assert((constructorDeclaration.Parameters != null));
-			Debug.Assert((constructorDeclaration.Attributes != null));
-			constructorDeclaration.ConstructorInitializer.AcceptVisitor(this, data);
-			constructorDeclaration.Body.AcceptVisitor(this, data);
-			foreach (ParameterDeclarationExpression o in constructorDeclaration.Parameters) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
 			foreach (AttributeSection o in constructorDeclaration.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			return null;
+			foreach (ParameterDeclarationExpression o in constructorDeclaration.Parameters) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			constructorDeclaration.ConstructorInitializer.AcceptVisitor(this, data);
+			return constructorDeclaration.Body.AcceptVisitor(this, data);
 		}
 		
 		public virtual object Visit(ConstructorInitializer constructorInitializer, object data) {
@@ -215,19 +214,18 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(DeclareDeclaration declareDeclaration, object data) {
 			Debug.Assert((declareDeclaration != null));
-			Debug.Assert((declareDeclaration.TypeReference != null));
-			Debug.Assert((declareDeclaration.Parameters != null));
 			Debug.Assert((declareDeclaration.Attributes != null));
-			declareDeclaration.TypeReference.AcceptVisitor(this, data);
-			foreach (ParameterDeclarationExpression o in declareDeclaration.Parameters) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
+			Debug.Assert((declareDeclaration.Parameters != null));
+			Debug.Assert((declareDeclaration.TypeReference != null));
 			foreach (AttributeSection o in declareDeclaration.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			return null;
+			foreach (ParameterDeclarationExpression o in declareDeclaration.Parameters) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			return declareDeclaration.TypeReference.AcceptVisitor(this, data);
 		}
 		
 		public virtual object Visit(DefaultValueExpression defaultValueExpression, object data) {
@@ -238,10 +236,14 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(DelegateDeclaration delegateDeclaration, object data) {
 			Debug.Assert((delegateDeclaration != null));
+			Debug.Assert((delegateDeclaration.Attributes != null));
 			Debug.Assert((delegateDeclaration.ReturnType != null));
 			Debug.Assert((delegateDeclaration.Parameters != null));
 			Debug.Assert((delegateDeclaration.Templates != null));
-			Debug.Assert((delegateDeclaration.Attributes != null));
+			foreach (AttributeSection o in delegateDeclaration.Attributes) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
 			delegateDeclaration.ReturnType.AcceptVisitor(this, data);
 			foreach (ParameterDeclarationExpression o in delegateDeclaration.Parameters) {
 				Debug.Assert(o != null);
@@ -251,23 +253,18 @@ namespace ICSharpCode.NRefactory.Parser {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			foreach (AttributeSection o in delegateDeclaration.Attributes) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
 			return null;
 		}
 		
 		public virtual object Visit(DestructorDeclaration destructorDeclaration, object data) {
 			Debug.Assert((destructorDeclaration != null));
-			Debug.Assert((destructorDeclaration.Body != null));
 			Debug.Assert((destructorDeclaration.Attributes != null));
-			destructorDeclaration.Body.AcceptVisitor(this, data);
+			Debug.Assert((destructorDeclaration.Body != null));
 			foreach (AttributeSection o in destructorDeclaration.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			return null;
+			return destructorDeclaration.Body.AcceptVisitor(this, data);
 		}
 		
 		public virtual object Visit(DirectionExpression directionExpression, object data) {
@@ -320,15 +317,15 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(EventAddRegion eventAddRegion, object data) {
 			Debug.Assert((eventAddRegion != null));
+			Debug.Assert((eventAddRegion.Attributes != null));
 			Debug.Assert((eventAddRegion.Block != null));
 			Debug.Assert((eventAddRegion.Parameters != null));
-			Debug.Assert((eventAddRegion.Attributes != null));
-			eventAddRegion.Block.AcceptVisitor(this, data);
-			foreach (ParameterDeclarationExpression o in eventAddRegion.Parameters) {
+			foreach (AttributeSection o in eventAddRegion.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			foreach (AttributeSection o in eventAddRegion.Attributes) {
+			eventAddRegion.Block.AcceptVisitor(this, data);
+			foreach (ParameterDeclarationExpression o in eventAddRegion.Parameters) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
@@ -337,13 +334,21 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(EventDeclaration eventDeclaration, object data) {
 			Debug.Assert((eventDeclaration != null));
+			Debug.Assert((eventDeclaration.Attributes != null));
+			Debug.Assert((eventDeclaration.Parameters != null));
 			Debug.Assert((eventDeclaration.TypeReference != null));
 			Debug.Assert((eventDeclaration.InterfaceImplementations != null));
 			Debug.Assert((eventDeclaration.AddRegion != null));
 			Debug.Assert((eventDeclaration.RemoveRegion != null));
 			Debug.Assert((eventDeclaration.RaiseRegion != null));
-			Debug.Assert((eventDeclaration.Parameters != null));
-			Debug.Assert((eventDeclaration.Attributes != null));
+			foreach (AttributeSection o in eventDeclaration.Attributes) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			foreach (ParameterDeclarationExpression o in eventDeclaration.Parameters) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
 			eventDeclaration.TypeReference.AcceptVisitor(this, data);
 			foreach (InterfaceImplementation o in eventDeclaration.InterfaceImplementations) {
 				Debug.Assert(o != null);
@@ -351,29 +356,20 @@ namespace ICSharpCode.NRefactory.Parser {
 			}
 			eventDeclaration.AddRegion.AcceptVisitor(this, data);
 			eventDeclaration.RemoveRegion.AcceptVisitor(this, data);
-			eventDeclaration.RaiseRegion.AcceptVisitor(this, data);
-			foreach (ParameterDeclarationExpression o in eventDeclaration.Parameters) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			foreach (AttributeSection o in eventDeclaration.Attributes) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			return null;
+			return eventDeclaration.RaiseRegion.AcceptVisitor(this, data);
 		}
 		
 		public virtual object Visit(EventRaiseRegion eventRaiseRegion, object data) {
 			Debug.Assert((eventRaiseRegion != null));
+			Debug.Assert((eventRaiseRegion.Attributes != null));
 			Debug.Assert((eventRaiseRegion.Block != null));
 			Debug.Assert((eventRaiseRegion.Parameters != null));
-			Debug.Assert((eventRaiseRegion.Attributes != null));
-			eventRaiseRegion.Block.AcceptVisitor(this, data);
-			foreach (ParameterDeclarationExpression o in eventRaiseRegion.Parameters) {
+			foreach (AttributeSection o in eventRaiseRegion.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			foreach (AttributeSection o in eventRaiseRegion.Attributes) {
+			eventRaiseRegion.Block.AcceptVisitor(this, data);
+			foreach (ParameterDeclarationExpression o in eventRaiseRegion.Parameters) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
@@ -382,15 +378,15 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(EventRemoveRegion eventRemoveRegion, object data) {
 			Debug.Assert((eventRemoveRegion != null));
+			Debug.Assert((eventRemoveRegion.Attributes != null));
 			Debug.Assert((eventRemoveRegion.Block != null));
 			Debug.Assert((eventRemoveRegion.Parameters != null));
-			Debug.Assert((eventRemoveRegion.Attributes != null));
-			eventRemoveRegion.Block.AcceptVisitor(this, data);
-			foreach (ParameterDeclarationExpression o in eventRemoveRegion.Parameters) {
+			foreach (AttributeSection o in eventRemoveRegion.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			foreach (AttributeSection o in eventRemoveRegion.Attributes) {
+			eventRemoveRegion.Block.AcceptVisitor(this, data);
+			foreach (ParameterDeclarationExpression o in eventRemoveRegion.Parameters) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
@@ -404,15 +400,15 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(FieldDeclaration fieldDeclaration, object data) {
 			Debug.Assert((fieldDeclaration != null));
+			Debug.Assert((fieldDeclaration.Attributes != null));
 			Debug.Assert((fieldDeclaration.TypeReference != null));
 			Debug.Assert((fieldDeclaration.Fields != null));
-			Debug.Assert((fieldDeclaration.Attributes != null));
-			fieldDeclaration.TypeReference.AcceptVisitor(this, data);
-			foreach (VariableDeclaration o in fieldDeclaration.Fields) {
+			foreach (AttributeSection o in fieldDeclaration.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			foreach (AttributeSection o in fieldDeclaration.Attributes) {
+			fieldDeclaration.TypeReference.AcceptVisitor(this, data);
+			foreach (VariableDeclaration o in fieldDeclaration.Fields) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
@@ -527,12 +523,16 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(IndexerDeclaration indexerDeclaration, object data) {
 			Debug.Assert((indexerDeclaration != null));
+			Debug.Assert((indexerDeclaration.Attributes != null));
 			Debug.Assert((indexerDeclaration.Parameters != null));
 			Debug.Assert((indexerDeclaration.InterfaceImplementations != null));
 			Debug.Assert((indexerDeclaration.TypeReference != null));
 			Debug.Assert((indexerDeclaration.GetRegion != null));
 			Debug.Assert((indexerDeclaration.SetRegion != null));
-			Debug.Assert((indexerDeclaration.Attributes != null));
+			foreach (AttributeSection o in indexerDeclaration.Attributes) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
 			foreach (ParameterDeclarationExpression o in indexerDeclaration.Parameters) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
@@ -543,12 +543,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			}
 			indexerDeclaration.TypeReference.AcceptVisitor(this, data);
 			indexerDeclaration.GetRegion.AcceptVisitor(this, data);
-			indexerDeclaration.SetRegion.AcceptVisitor(this, data);
-			foreach (AttributeSection o in indexerDeclaration.Attributes) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			return null;
+			return indexerDeclaration.SetRegion.AcceptVisitor(this, data);
 		}
 		
 		public virtual object Visit(IndexerExpression indexerExpression, object data) {
@@ -618,19 +613,13 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(MethodDeclaration methodDeclaration, object data) {
 			Debug.Assert((methodDeclaration != null));
+			Debug.Assert((methodDeclaration.Attributes != null));
+			Debug.Assert((methodDeclaration.Parameters != null));
 			Debug.Assert((methodDeclaration.TypeReference != null));
 			Debug.Assert((methodDeclaration.Body != null));
 			Debug.Assert((methodDeclaration.InterfaceImplementations != null));
 			Debug.Assert((methodDeclaration.Templates != null));
-			Debug.Assert((methodDeclaration.Parameters != null));
-			Debug.Assert((methodDeclaration.Attributes != null));
-			methodDeclaration.TypeReference.AcceptVisitor(this, data);
-			methodDeclaration.Body.AcceptVisitor(this, data);
-			foreach (InterfaceImplementation o in methodDeclaration.InterfaceImplementations) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			foreach (TemplateDefinition o in methodDeclaration.Templates) {
+			foreach (AttributeSection o in methodDeclaration.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
@@ -638,7 +627,13 @@ namespace ICSharpCode.NRefactory.Parser {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			foreach (AttributeSection o in methodDeclaration.Attributes) {
+			methodDeclaration.TypeReference.AcceptVisitor(this, data);
+			methodDeclaration.Body.AcceptVisitor(this, data);
+			foreach (InterfaceImplementation o in methodDeclaration.InterfaceImplementations) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			foreach (TemplateDefinition o in methodDeclaration.Templates) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
@@ -676,14 +671,18 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(OperatorDeclaration operatorDeclaration, object data) {
 			Debug.Assert((operatorDeclaration != null));
-			Debug.Assert((operatorDeclaration.ReturnTypeAttributes != null));
+			Debug.Assert((operatorDeclaration.Attributes != null));
+			Debug.Assert((operatorDeclaration.Parameters != null));
 			Debug.Assert((operatorDeclaration.TypeReference != null));
 			Debug.Assert((operatorDeclaration.Body != null));
 			Debug.Assert((operatorDeclaration.InterfaceImplementations != null));
 			Debug.Assert((operatorDeclaration.Templates != null));
-			Debug.Assert((operatorDeclaration.Parameters != null));
-			Debug.Assert((operatorDeclaration.Attributes != null));
-			foreach (AttributeSection o in operatorDeclaration.ReturnTypeAttributes) {
+			Debug.Assert((operatorDeclaration.ReturnTypeAttributes != null));
+			foreach (AttributeSection o in operatorDeclaration.Attributes) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			foreach (ParameterDeclarationExpression o in operatorDeclaration.Parameters) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
@@ -697,11 +696,7 @@ namespace ICSharpCode.NRefactory.Parser {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			foreach (ParameterDeclarationExpression o in operatorDeclaration.Parameters) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			foreach (AttributeSection o in operatorDeclaration.Attributes) {
+			foreach (AttributeSection o in operatorDeclaration.ReturnTypeAttributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
@@ -745,53 +740,51 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(PropertyDeclaration propertyDeclaration, object data) {
 			Debug.Assert((propertyDeclaration != null));
+			Debug.Assert((propertyDeclaration.Attributes != null));
+			Debug.Assert((propertyDeclaration.Parameters != null));
 			Debug.Assert((propertyDeclaration.InterfaceImplementations != null));
 			Debug.Assert((propertyDeclaration.TypeReference != null));
 			Debug.Assert((propertyDeclaration.GetRegion != null));
 			Debug.Assert((propertyDeclaration.SetRegion != null));
-			Debug.Assert((propertyDeclaration.Parameters != null));
-			Debug.Assert((propertyDeclaration.Attributes != null));
+			foreach (AttributeSection o in propertyDeclaration.Attributes) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			foreach (ParameterDeclarationExpression o in propertyDeclaration.Parameters) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
 			foreach (InterfaceImplementation o in propertyDeclaration.InterfaceImplementations) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
 			propertyDeclaration.TypeReference.AcceptVisitor(this, data);
 			propertyDeclaration.GetRegion.AcceptVisitor(this, data);
-			propertyDeclaration.SetRegion.AcceptVisitor(this, data);
-			foreach (ParameterDeclarationExpression o in propertyDeclaration.Parameters) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			foreach (AttributeSection o in propertyDeclaration.Attributes) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			return null;
+			return propertyDeclaration.SetRegion.AcceptVisitor(this, data);
 		}
 		
 		public virtual object Visit(PropertyGetRegion propertyGetRegion, object data) {
 			Debug.Assert((propertyGetRegion != null));
-			Debug.Assert((propertyGetRegion.Block != null));
 			Debug.Assert((propertyGetRegion.Attributes != null));
-			propertyGetRegion.Block.AcceptVisitor(this, data);
+			Debug.Assert((propertyGetRegion.Block != null));
 			foreach (AttributeSection o in propertyGetRegion.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			return null;
+			return propertyGetRegion.Block.AcceptVisitor(this, data);
 		}
 		
 		public virtual object Visit(PropertySetRegion propertySetRegion, object data) {
 			Debug.Assert((propertySetRegion != null));
-			Debug.Assert((propertySetRegion.Parameters != null));
-			Debug.Assert((propertySetRegion.Block != null));
 			Debug.Assert((propertySetRegion.Attributes != null));
-			foreach (ParameterDeclarationExpression o in propertySetRegion.Parameters) {
+			Debug.Assert((propertySetRegion.Block != null));
+			Debug.Assert((propertySetRegion.Parameters != null));
+			foreach (AttributeSection o in propertySetRegion.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
 			propertySetRegion.Block.AcceptVisitor(this, data);
-			foreach (AttributeSection o in propertySetRegion.Attributes) {
+			foreach (ParameterDeclarationExpression o in propertySetRegion.Parameters) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
@@ -886,13 +879,13 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(TemplateDefinition templateDefinition, object data) {
 			Debug.Assert((templateDefinition != null));
-			Debug.Assert((templateDefinition.Bases != null));
 			Debug.Assert((templateDefinition.Attributes != null));
-			foreach (TypeReference o in templateDefinition.Bases) {
+			Debug.Assert((templateDefinition.Bases != null));
+			foreach (AttributeSection o in templateDefinition.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			foreach (AttributeSection o in templateDefinition.Attributes) {
+			foreach (TypeReference o in templateDefinition.Bases) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
@@ -925,18 +918,18 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(TypeDeclaration typeDeclaration, object data) {
 			Debug.Assert((typeDeclaration != null));
+			Debug.Assert((typeDeclaration.Attributes != null));
 			Debug.Assert((typeDeclaration.BaseTypes != null));
 			Debug.Assert((typeDeclaration.Templates != null));
-			Debug.Assert((typeDeclaration.Attributes != null));
+			foreach (AttributeSection o in typeDeclaration.Attributes) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
 			foreach (TypeReference o in typeDeclaration.BaseTypes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
 			foreach (TemplateDefinition o in typeDeclaration.Templates) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			foreach (AttributeSection o in typeDeclaration.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}

@@ -223,13 +223,7 @@ namespace NRefactoryASTGenerator
 					CodeVariableReferenceExpression var = new CodeVariableReferenceExpression(GetFieldName(type.Name));
 					assertions.Add(AssertIsNotNull(var));
 					
-					Type t = type;
-					do {
-						foreach (FieldInfo field in t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic)) {
-							AddVisitCode(m, field, var, assertions, transformer);
-						}
-						t = t.BaseType;
-					} while (t != null);
+					AddFieldVisitCode(m, type, var, assertions, transformer);
 					
 					if (type.GetCustomAttributes(typeof(HasChildrenAttribute), true).Length > 0) {
 						if (transformer) {
@@ -260,6 +254,21 @@ namespace NRefactoryASTGenerator
 				}
 			}
 			return td;
+		}
+		
+		static void AddFieldVisitCode(CodeMemberMethod m, Type type, CodeVariableReferenceExpression var, List<CodeStatement> assertions, bool transformer)
+		{
+			if (type != null) {
+				if (type.BaseType != typeof(StatementWithEmbeddedStatement)) {
+					AddFieldVisitCode(m, type.BaseType, var, assertions, transformer);
+				}
+				foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic)) {
+					AddVisitCode(m, field, var, assertions, transformer);
+				}
+				if (type.BaseType == typeof(StatementWithEmbeddedStatement)) {
+					AddFieldVisitCode(m, type.BaseType, var, assertions, transformer);
+				}
+			}
 		}
 		
 		static CodeStatement AssertIsNotNull(CodeExpression expr)

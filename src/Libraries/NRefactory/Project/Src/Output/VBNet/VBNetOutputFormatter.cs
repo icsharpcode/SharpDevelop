@@ -42,17 +42,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public override void PrintComment(Comment comment)
+		public override void PrintComment(Comment comment, bool forceWriteInPreviousLine)
 		{
 			switch (comment.CommentType) {
 				case CommentType.Block:
-					WriteInPreviousLine("'" + comment.CommentText.Replace("\n", "\n'"));
+					WriteInPreviousLine("'" + comment.CommentText.Replace("\n", "\n'"), forceWriteInPreviousLine);
 					break;
 				case CommentType.Documentation:
-					WriteInPreviousLine("'''" + comment.CommentText);
+					WriteInPreviousLine("'''" + comment.CommentText, forceWriteInPreviousLine);
 					break;
 				default:
-					WriteInPreviousLine("'" + comment.CommentText);
+					WriteInPreviousLine("'" + comment.CommentText, forceWriteInPreviousLine);
 					break;
 			}
 		}

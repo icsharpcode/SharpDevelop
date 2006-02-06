@@ -92,6 +92,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		int lastLineStart = 0;
+		int lineBeforeLastStart = 0;
 		
 		public bool LastCharacterIsNewLine {
 			get {
@@ -102,6 +103,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public virtual void NewLine()
 		{
 			if (DoNewLine) {
+				if (!LastCharacterIsNewLine) {
+					lineBeforeLastStart = lastLineStart;
+				}
 				text.AppendLine();
 				lastLineStart = text.Length;
 			}
@@ -111,19 +115,31 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 		}
 		
-		protected void WriteInPreviousLine(string txt)
+		protected void WriteInPreviousLine(string txt, bool forceWriteInPreviousBlock)
 		{
-			if (LastCharacterIsNewLine) {
-				Indent();
-				text.AppendLine(txt);
+			bool lastCharacterWasNewLine = LastCharacterIsNewLine;
+			if (lastCharacterWasNewLine) {
+				if (forceWriteInPreviousBlock == false) {
+					Indent();
+					text.AppendLine(txt);
+					lineBeforeLastStart = lastLineStart;
+					lastLineStart = text.Length;
+					return;
+				}
+				lastLineStart = lineBeforeLastStart;
+			}
+			string lastLine = text.ToString(lastLineStart, text.Length - lastLineStart);
+			text.Remove(lastLineStart, text.Length - lastLineStart);
+			if (forceWriteInPreviousBlock) ++indentationLevel;
+			Indent();
+			if (forceWriteInPreviousBlock) --indentationLevel;
+			text.AppendLine(txt);
+			lineBeforeLastStart = lastLineStart;
+			lastLineStart = text.Length;
+			text.Append(lastLine);
+			if (lastCharacterWasNewLine) {
+				lineBeforeLastStart = lastLineStart;
 				lastLineStart = text.Length;
-			} else {
-				string lastLine = text.ToString(lastLineStart, text.Length - lastLineStart);
-				text.Remove(lastLineStart, text.Length - lastLineStart);
-				Indent();
-				text.AppendLine(txt);
-				lastLineStart = text.Length;
-				text.Append(lastLine);
 			}
 		}
 		
@@ -135,14 +151,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public abstract void PrintComment(Comment comment);
+		public abstract void PrintComment(Comment comment, bool forceWriteInPreviousBlock);
 		
-		public virtual void PrintPreProcessingDirective(PreProcessingDirective directive)
+		public virtual void PrintPreProcessingDirective(PreProcessingDirective directive, bool forceWriteInPreviousBlock)
 		{
 			if (string.IsNullOrEmpty(directive.Arg))
-				WriteInPreviousLine(directive.Cmd);
+				WriteInPreviousLine(directive.Cmd, forceWriteInPreviousBlock);
 			else
-				WriteInPreviousLine(directive.Cmd + " " + directive.Arg);
+				WriteInPreviousLine(directive.Cmd + " " + directive.Arg, forceWriteInPreviousBlock);
 		}
 		
 		public abstract void PrintToken(int token);

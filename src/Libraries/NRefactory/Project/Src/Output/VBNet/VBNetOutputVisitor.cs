@@ -561,7 +561,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.End);
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Property);
-				outputFormatter.Space();
 				outputFormatter.NewLine();
 			}
 			
@@ -867,7 +866,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.End);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Sub);
-			outputFormatter.Space();
 			outputFormatter.NewLine();
 			
 			return null;
@@ -939,19 +937,36 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(DestructorDeclaration destructorDeclaration, object data)
 		{
 			outputFormatter.Indent();
-			
-			outputFormatter.PrintToken(Tokens.Overrides);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.Protected);
-			outputFormatter.Space();
-			outputFormatter.PrintIdentifier("Finalize");
-			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			outputFormatter.PrintText("Protected Overrides Sub Finalize()");
 			outputFormatter.NewLine();
 			
 			++outputFormatter.IndentationLevel;
 			exitTokenStack.Push(Tokens.Sub);
+			
+			outputFormatter.Indent();
+			outputFormatter.PrintToken(Tokens.Try);
+			outputFormatter.NewLine();
+			
+			++outputFormatter.IndentationLevel;
 			nodeTracker.TrackedVisit(destructorDeclaration.Body, data);
+			--outputFormatter.IndentationLevel;
+			
+			outputFormatter.Indent();
+			outputFormatter.PrintToken(Tokens.Finally);
+			outputFormatter.NewLine();
+			
+			++outputFormatter.IndentationLevel;
+			outputFormatter.Indent();
+			outputFormatter.PrintText("MyBase.Finalize()");
+			outputFormatter.NewLine();
+			--outputFormatter.IndentationLevel;
+			
+			outputFormatter.Indent();
+			outputFormatter.PrintToken(Tokens.End);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Try);
+			outputFormatter.NewLine();
+			
 			exitTokenStack.Pop();
 			--outputFormatter.IndentationLevel;
 			
@@ -959,7 +974,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.End);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Sub);
-			outputFormatter.Space();
 			outputFormatter.NewLine();
 			
 			return null;

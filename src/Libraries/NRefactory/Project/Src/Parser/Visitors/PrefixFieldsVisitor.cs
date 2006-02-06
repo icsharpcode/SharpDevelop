@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public void Run(TypeDeclaration typeDeclaration)
 		{
-			base.Visit(typeDeclaration, null);
+			typeDeclaration.AcceptChildren(this, null);
 			foreach (VariableDeclaration decl in fields) {
 				decl.Name = prefix + decl.Name;
 			}
@@ -37,8 +37,10 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public override object Visit(TypeDeclaration typeDeclaration, object data)
 		{
-			// TODO: treat fields of base types like locals
-			return base.Visit(typeDeclaration, data);
+			Push();
+			object result = base.Visit(typeDeclaration, data);
+			Pop();
+			return result;
 		}
 		
 		public override object Visit(BlockStatement blockStatement, object data)
@@ -57,18 +59,10 @@ namespace ICSharpCode.NRefactory.Parser
 			return result;
 		}
 		
-		public override object Visit(PropertyGetRegion p, object data)
+		public override object Visit(PropertyDeclaration propertyDeclaration, object data)
 		{
 			Push();
-			object result = base.Visit(p, data);
-			Pop();
-			return result;
-		}
-		
-		public override object Visit(PropertySetRegion p, object data)
-		{
-			Push();
-			object result = base.Visit(p, data);
+			object result = base.Visit(propertyDeclaration, data);
 			Pop();
 			return result;
 		}
@@ -92,13 +86,14 @@ namespace ICSharpCode.NRefactory.Parser
 			curBlock = blocks.Pop();
 		}
 		
-		public override object Visit(LocalVariableDeclaration localVariableDeclaration, object data)
+		public override object Visit(VariableDeclaration variableDeclaration, object data)
 		{
-			foreach (VariableDeclaration decl in localVariableDeclaration.Variables) {
-				//print("add variable ${decl.Name} to block")
-				curBlock.Add(decl.Name);
+			// process local variables only
+			if (fields.Contains(variableDeclaration)) {
+				return null;
 			}
-			return base.Visit(localVariableDeclaration, data);
+			curBlock.Add(variableDeclaration.Name);
+			return base.Visit(variableDeclaration, data);
 		}
 		
 		public override object Visit(ParameterDeclarationExpression parameterDeclarationExpression, object data)
@@ -106,6 +101,12 @@ namespace ICSharpCode.NRefactory.Parser
 			curBlock.Add(parameterDeclarationExpression.ParameterName);
 			//print("add parameter ${parameterDeclarationExpression.ParameterName} to block")
 			return base.Visit(parameterDeclarationExpression, data);
+		}
+		
+		public override object Visit(ForeachStatement foreachStatement, object data)
+		{
+			curBlock.Add(foreachStatement.VariableName);
+			return base.Visit(foreachStatement, data);
 		}
 		
 		public override object Visit(IdentifierExpression identifierExpression, object data)

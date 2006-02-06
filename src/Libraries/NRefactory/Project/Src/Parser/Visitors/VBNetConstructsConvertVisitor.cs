@@ -26,6 +26,7 @@ namespace ICSharpCode.NRefactory.Parser
 		// The following conversions are implemented:
 		//   MyBase.New() and MyClass.New() calls inside the constructor are converted to :base() and :this()
 		//   Add Public Modifier to methods and properties
+		//   Override Finalize => Destructor
 		
 		// The following conversions should be implemented in the future:
 		//   Function A() \n A = SomeValue \n End Function -> convert to return statement
@@ -74,7 +75,7 @@ namespace ICSharpCode.NRefactory.Parser
 					if (ie != null) {
 						FieldReferenceExpression fre = ie.TargetObject as FieldReferenceExpression;
 						if (fre != null && "New".Equals(fre.FieldName, StringComparison.InvariantCultureIgnoreCase)) {
-							if (fre.TargetObject is BaseReferenceExpression || fre.TargetObject is ClassReferenceExpression) {
+							if (fre.TargetObject is BaseReferenceExpression || fre.TargetObject is ClassReferenceExpression || fre.TargetObject is ThisReferenceExpression) {
 								body.Children.RemoveAt(0);
 								ConstructorInitializer ci = new ConstructorInitializer();
 								ci.Arguments = ie.Arguments;
@@ -143,6 +144,36 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 			if ((methodDeclaration.Modifier & Modifier.Visibility) == 0)
 				methodDeclaration.Modifier |= Modifier.Public;
+			
+			if ("Finalize".Equals(methodDeclaration.Name, StringComparison.InvariantCultureIgnoreCase)
+			    && methodDeclaration.Parameters.Count == 0
+			    && methodDeclaration.Modifier == (Modifier.Protected | Modifier.Override)
+			    && methodDeclaration.Body.Children.Count == 1)
+			{
+				TryCatchStatement tcs = methodDeclaration.Body.Children[0] as TryCatchStatement;
+				if (tcs != null
+				    && tcs.StatementBlock is BlockStatement
+				    && tcs.CatchClauses.Count == 0
+				    && tcs.FinallyBlock is BlockStatement
+				    && tcs.FinallyBlock.Children.Count == 1)
+				{
+					StatementExpression se = tcs.FinallyBlock.Children[0] as StatementExpression;
+					if (se != null) {
+						InvocationExpression ie = se.Expression as InvocationExpression;
+						if (ie != null
+						    && ie.Arguments.Count == 0
+						    && ie.TargetObject is FieldReferenceExpression
+						    && (ie.TargetObject as FieldReferenceExpression).TargetObject is BaseReferenceExpression
+						    && "Finalize".Equals((ie.TargetObject as FieldReferenceExpression).FieldName, StringComparison.InvariantCultureIgnoreCase))
+						{
+							DestructorDeclaration des = new DestructorDeclaration("Destructor", Modifier.None, methodDeclaration.Attributes);
+							ReplaceCurrentNode(des);
+							des.Body = (BlockStatement)tcs.StatementBlock;
+							return base.Visit(des, data);
+						}
+					}
+				}
+			}
 			
 			if ((methodDeclaration.Modifier & (Modifier.Static | Modifier.Extern)) == Modifier.Static
 			    && methodDeclaration.Body.Children.Count == 0)

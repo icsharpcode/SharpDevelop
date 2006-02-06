@@ -322,27 +322,10 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(ConstructorDeclaration constructorDeclaration, object data) {
 			Debug.Assert((constructorDeclaration != null));
+			Debug.Assert((constructorDeclaration.Attributes != null));
+			Debug.Assert((constructorDeclaration.Parameters != null));
 			Debug.Assert((constructorDeclaration.ConstructorInitializer != null));
 			Debug.Assert((constructorDeclaration.Body != null));
-			Debug.Assert((constructorDeclaration.Parameters != null));
-			Debug.Assert((constructorDeclaration.Attributes != null));
-			nodeStack.Push(constructorDeclaration.ConstructorInitializer);
-			constructorDeclaration.ConstructorInitializer.AcceptVisitor(this, data);
-			constructorDeclaration.ConstructorInitializer = ((ConstructorInitializer)(nodeStack.Pop()));
-			nodeStack.Push(constructorDeclaration.Body);
-			constructorDeclaration.Body.AcceptVisitor(this, data);
-			constructorDeclaration.Body = ((BlockStatement)(nodeStack.Pop()));
-			for (int i = 0; i < constructorDeclaration.Parameters.Count; i++) {
-				ParameterDeclarationExpression o = constructorDeclaration.Parameters[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (ParameterDeclarationExpression)nodeStack.Pop();
-				if (o == null)
-					constructorDeclaration.Parameters.RemoveAt(i--);
-				else
-					constructorDeclaration.Parameters[i] = o;
-			}
 			for (int i = 0; i < constructorDeclaration.Attributes.Count; i++) {
 				AttributeSection o = constructorDeclaration.Attributes[i];
 				Debug.Assert(o != null);
@@ -354,6 +337,23 @@ namespace ICSharpCode.NRefactory.Parser {
 				else
 					constructorDeclaration.Attributes[i] = o;
 			}
+			for (int i = 0; i < constructorDeclaration.Parameters.Count; i++) {
+				ParameterDeclarationExpression o = constructorDeclaration.Parameters[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ParameterDeclarationExpression)nodeStack.Pop();
+				if (o == null)
+					constructorDeclaration.Parameters.RemoveAt(i--);
+				else
+					constructorDeclaration.Parameters[i] = o;
+			}
+			nodeStack.Push(constructorDeclaration.ConstructorInitializer);
+			constructorDeclaration.ConstructorInitializer.AcceptVisitor(this, data);
+			constructorDeclaration.ConstructorInitializer = ((ConstructorInitializer)(nodeStack.Pop()));
+			nodeStack.Push(constructorDeclaration.Body);
+			constructorDeclaration.Body.AcceptVisitor(this, data);
+			constructorDeclaration.Body = ((BlockStatement)(nodeStack.Pop()));
 			return null;
 		}
 		
@@ -381,23 +381,9 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(DeclareDeclaration declareDeclaration, object data) {
 			Debug.Assert((declareDeclaration != null));
-			Debug.Assert((declareDeclaration.TypeReference != null));
-			Debug.Assert((declareDeclaration.Parameters != null));
 			Debug.Assert((declareDeclaration.Attributes != null));
-			nodeStack.Push(declareDeclaration.TypeReference);
-			declareDeclaration.TypeReference.AcceptVisitor(this, data);
-			declareDeclaration.TypeReference = ((TypeReference)(nodeStack.Pop()));
-			for (int i = 0; i < declareDeclaration.Parameters.Count; i++) {
-				ParameterDeclarationExpression o = declareDeclaration.Parameters[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (ParameterDeclarationExpression)nodeStack.Pop();
-				if (o == null)
-					declareDeclaration.Parameters.RemoveAt(i--);
-				else
-					declareDeclaration.Parameters[i] = o;
-			}
+			Debug.Assert((declareDeclaration.Parameters != null));
+			Debug.Assert((declareDeclaration.TypeReference != null));
 			for (int i = 0; i < declareDeclaration.Attributes.Count; i++) {
 				AttributeSection o = declareDeclaration.Attributes[i];
 				Debug.Assert(o != null);
@@ -409,6 +395,20 @@ namespace ICSharpCode.NRefactory.Parser {
 				else
 					declareDeclaration.Attributes[i] = o;
 			}
+			for (int i = 0; i < declareDeclaration.Parameters.Count; i++) {
+				ParameterDeclarationExpression o = declareDeclaration.Parameters[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ParameterDeclarationExpression)nodeStack.Pop();
+				if (o == null)
+					declareDeclaration.Parameters.RemoveAt(i--);
+				else
+					declareDeclaration.Parameters[i] = o;
+			}
+			nodeStack.Push(declareDeclaration.TypeReference);
+			declareDeclaration.TypeReference.AcceptVisitor(this, data);
+			declareDeclaration.TypeReference = ((TypeReference)(nodeStack.Pop()));
 			return null;
 		}
 		
@@ -423,10 +423,21 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(DelegateDeclaration delegateDeclaration, object data) {
 			Debug.Assert((delegateDeclaration != null));
+			Debug.Assert((delegateDeclaration.Attributes != null));
 			Debug.Assert((delegateDeclaration.ReturnType != null));
 			Debug.Assert((delegateDeclaration.Parameters != null));
 			Debug.Assert((delegateDeclaration.Templates != null));
-			Debug.Assert((delegateDeclaration.Attributes != null));
+			for (int i = 0; i < delegateDeclaration.Attributes.Count; i++) {
+				AttributeSection o = delegateDeclaration.Attributes[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (AttributeSection)nodeStack.Pop();
+				if (o == null)
+					delegateDeclaration.Attributes.RemoveAt(i--);
+				else
+					delegateDeclaration.Attributes[i] = o;
+			}
 			nodeStack.Push(delegateDeclaration.ReturnType);
 			delegateDeclaration.ReturnType.AcceptVisitor(this, data);
 			delegateDeclaration.ReturnType = ((TypeReference)(nodeStack.Pop()));
@@ -452,27 +463,13 @@ namespace ICSharpCode.NRefactory.Parser {
 				else
 					delegateDeclaration.Templates[i] = o;
 			}
-			for (int i = 0; i < delegateDeclaration.Attributes.Count; i++) {
-				AttributeSection o = delegateDeclaration.Attributes[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (AttributeSection)nodeStack.Pop();
-				if (o == null)
-					delegateDeclaration.Attributes.RemoveAt(i--);
-				else
-					delegateDeclaration.Attributes[i] = o;
-			}
 			return null;
 		}
 		
 		public virtual object Visit(DestructorDeclaration destructorDeclaration, object data) {
 			Debug.Assert((destructorDeclaration != null));
-			Debug.Assert((destructorDeclaration.Body != null));
 			Debug.Assert((destructorDeclaration.Attributes != null));
-			nodeStack.Push(destructorDeclaration.Body);
-			destructorDeclaration.Body.AcceptVisitor(this, data);
-			destructorDeclaration.Body = ((BlockStatement)(nodeStack.Pop()));
+			Debug.Assert((destructorDeclaration.Body != null));
 			for (int i = 0; i < destructorDeclaration.Attributes.Count; i++) {
 				AttributeSection o = destructorDeclaration.Attributes[i];
 				Debug.Assert(o != null);
@@ -484,6 +481,9 @@ namespace ICSharpCode.NRefactory.Parser {
 				else
 					destructorDeclaration.Attributes[i] = o;
 			}
+			nodeStack.Push(destructorDeclaration.Body);
+			destructorDeclaration.Body.AcceptVisitor(this, data);
+			destructorDeclaration.Body = ((BlockStatement)(nodeStack.Pop()));
 			return null;
 		}
 		
@@ -560,9 +560,20 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(EventAddRegion eventAddRegion, object data) {
 			Debug.Assert((eventAddRegion != null));
+			Debug.Assert((eventAddRegion.Attributes != null));
 			Debug.Assert((eventAddRegion.Block != null));
 			Debug.Assert((eventAddRegion.Parameters != null));
-			Debug.Assert((eventAddRegion.Attributes != null));
+			for (int i = 0; i < eventAddRegion.Attributes.Count; i++) {
+				AttributeSection o = eventAddRegion.Attributes[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (AttributeSection)nodeStack.Pop();
+				if (o == null)
+					eventAddRegion.Attributes.RemoveAt(i--);
+				else
+					eventAddRegion.Attributes[i] = o;
+			}
 			nodeStack.Push(eventAddRegion.Block);
 			eventAddRegion.Block.AcceptVisitor(this, data);
 			eventAddRegion.Block = ((BlockStatement)(nodeStack.Pop()));
@@ -577,29 +588,40 @@ namespace ICSharpCode.NRefactory.Parser {
 				else
 					eventAddRegion.Parameters[i] = o;
 			}
-			for (int i = 0; i < eventAddRegion.Attributes.Count; i++) {
-				AttributeSection o = eventAddRegion.Attributes[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (AttributeSection)nodeStack.Pop();
-				if (o == null)
-					eventAddRegion.Attributes.RemoveAt(i--);
-				else
-					eventAddRegion.Attributes[i] = o;
-			}
 			return null;
 		}
 		
 		public virtual object Visit(EventDeclaration eventDeclaration, object data) {
 			Debug.Assert((eventDeclaration != null));
+			Debug.Assert((eventDeclaration.Attributes != null));
+			Debug.Assert((eventDeclaration.Parameters != null));
 			Debug.Assert((eventDeclaration.TypeReference != null));
 			Debug.Assert((eventDeclaration.InterfaceImplementations != null));
 			Debug.Assert((eventDeclaration.AddRegion != null));
 			Debug.Assert((eventDeclaration.RemoveRegion != null));
 			Debug.Assert((eventDeclaration.RaiseRegion != null));
-			Debug.Assert((eventDeclaration.Parameters != null));
-			Debug.Assert((eventDeclaration.Attributes != null));
+			for (int i = 0; i < eventDeclaration.Attributes.Count; i++) {
+				AttributeSection o = eventDeclaration.Attributes[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (AttributeSection)nodeStack.Pop();
+				if (o == null)
+					eventDeclaration.Attributes.RemoveAt(i--);
+				else
+					eventDeclaration.Attributes[i] = o;
+			}
+			for (int i = 0; i < eventDeclaration.Parameters.Count; i++) {
+				ParameterDeclarationExpression o = eventDeclaration.Parameters[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ParameterDeclarationExpression)nodeStack.Pop();
+				if (o == null)
+					eventDeclaration.Parameters.RemoveAt(i--);
+				else
+					eventDeclaration.Parameters[i] = o;
+			}
 			nodeStack.Push(eventDeclaration.TypeReference);
 			eventDeclaration.TypeReference.AcceptVisitor(this, data);
 			eventDeclaration.TypeReference = ((TypeReference)(nodeStack.Pop()));
@@ -623,36 +645,25 @@ namespace ICSharpCode.NRefactory.Parser {
 			nodeStack.Push(eventDeclaration.RaiseRegion);
 			eventDeclaration.RaiseRegion.AcceptVisitor(this, data);
 			eventDeclaration.RaiseRegion = ((EventRaiseRegion)(nodeStack.Pop()));
-			for (int i = 0; i < eventDeclaration.Parameters.Count; i++) {
-				ParameterDeclarationExpression o = eventDeclaration.Parameters[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (ParameterDeclarationExpression)nodeStack.Pop();
-				if (o == null)
-					eventDeclaration.Parameters.RemoveAt(i--);
-				else
-					eventDeclaration.Parameters[i] = o;
-			}
-			for (int i = 0; i < eventDeclaration.Attributes.Count; i++) {
-				AttributeSection o = eventDeclaration.Attributes[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (AttributeSection)nodeStack.Pop();
-				if (o == null)
-					eventDeclaration.Attributes.RemoveAt(i--);
-				else
-					eventDeclaration.Attributes[i] = o;
-			}
 			return null;
 		}
 		
 		public virtual object Visit(EventRaiseRegion eventRaiseRegion, object data) {
 			Debug.Assert((eventRaiseRegion != null));
+			Debug.Assert((eventRaiseRegion.Attributes != null));
 			Debug.Assert((eventRaiseRegion.Block != null));
 			Debug.Assert((eventRaiseRegion.Parameters != null));
-			Debug.Assert((eventRaiseRegion.Attributes != null));
+			for (int i = 0; i < eventRaiseRegion.Attributes.Count; i++) {
+				AttributeSection o = eventRaiseRegion.Attributes[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (AttributeSection)nodeStack.Pop();
+				if (o == null)
+					eventRaiseRegion.Attributes.RemoveAt(i--);
+				else
+					eventRaiseRegion.Attributes[i] = o;
+			}
 			nodeStack.Push(eventRaiseRegion.Block);
 			eventRaiseRegion.Block.AcceptVisitor(this, data);
 			eventRaiseRegion.Block = ((BlockStatement)(nodeStack.Pop()));
@@ -667,25 +678,25 @@ namespace ICSharpCode.NRefactory.Parser {
 				else
 					eventRaiseRegion.Parameters[i] = o;
 			}
-			for (int i = 0; i < eventRaiseRegion.Attributes.Count; i++) {
-				AttributeSection o = eventRaiseRegion.Attributes[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (AttributeSection)nodeStack.Pop();
-				if (o == null)
-					eventRaiseRegion.Attributes.RemoveAt(i--);
-				else
-					eventRaiseRegion.Attributes[i] = o;
-			}
 			return null;
 		}
 		
 		public virtual object Visit(EventRemoveRegion eventRemoveRegion, object data) {
 			Debug.Assert((eventRemoveRegion != null));
+			Debug.Assert((eventRemoveRegion.Attributes != null));
 			Debug.Assert((eventRemoveRegion.Block != null));
 			Debug.Assert((eventRemoveRegion.Parameters != null));
-			Debug.Assert((eventRemoveRegion.Attributes != null));
+			for (int i = 0; i < eventRemoveRegion.Attributes.Count; i++) {
+				AttributeSection o = eventRemoveRegion.Attributes[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (AttributeSection)nodeStack.Pop();
+				if (o == null)
+					eventRemoveRegion.Attributes.RemoveAt(i--);
+				else
+					eventRemoveRegion.Attributes[i] = o;
+			}
 			nodeStack.Push(eventRemoveRegion.Block);
 			eventRemoveRegion.Block.AcceptVisitor(this, data);
 			eventRemoveRegion.Block = ((BlockStatement)(nodeStack.Pop()));
@@ -700,17 +711,6 @@ namespace ICSharpCode.NRefactory.Parser {
 				else
 					eventRemoveRegion.Parameters[i] = o;
 			}
-			for (int i = 0; i < eventRemoveRegion.Attributes.Count; i++) {
-				AttributeSection o = eventRemoveRegion.Attributes[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (AttributeSection)nodeStack.Pop();
-				if (o == null)
-					eventRemoveRegion.Attributes.RemoveAt(i--);
-				else
-					eventRemoveRegion.Attributes[i] = o;
-			}
 			return null;
 		}
 		
@@ -721,9 +721,20 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(FieldDeclaration fieldDeclaration, object data) {
 			Debug.Assert((fieldDeclaration != null));
+			Debug.Assert((fieldDeclaration.Attributes != null));
 			Debug.Assert((fieldDeclaration.TypeReference != null));
 			Debug.Assert((fieldDeclaration.Fields != null));
-			Debug.Assert((fieldDeclaration.Attributes != null));
+			for (int i = 0; i < fieldDeclaration.Attributes.Count; i++) {
+				AttributeSection o = fieldDeclaration.Attributes[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (AttributeSection)nodeStack.Pop();
+				if (o == null)
+					fieldDeclaration.Attributes.RemoveAt(i--);
+				else
+					fieldDeclaration.Attributes[i] = o;
+			}
 			nodeStack.Push(fieldDeclaration.TypeReference);
 			fieldDeclaration.TypeReference.AcceptVisitor(this, data);
 			fieldDeclaration.TypeReference = ((TypeReference)(nodeStack.Pop()));
@@ -737,17 +748,6 @@ namespace ICSharpCode.NRefactory.Parser {
 					fieldDeclaration.Fields.RemoveAt(i--);
 				else
 					fieldDeclaration.Fields[i] = o;
-			}
-			for (int i = 0; i < fieldDeclaration.Attributes.Count; i++) {
-				AttributeSection o = fieldDeclaration.Attributes[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (AttributeSection)nodeStack.Pop();
-				if (o == null)
-					fieldDeclaration.Attributes.RemoveAt(i--);
-				else
-					fieldDeclaration.Attributes[i] = o;
 			}
 			return null;
 		}
@@ -947,12 +947,23 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(IndexerDeclaration indexerDeclaration, object data) {
 			Debug.Assert((indexerDeclaration != null));
+			Debug.Assert((indexerDeclaration.Attributes != null));
 			Debug.Assert((indexerDeclaration.Parameters != null));
 			Debug.Assert((indexerDeclaration.InterfaceImplementations != null));
 			Debug.Assert((indexerDeclaration.TypeReference != null));
 			Debug.Assert((indexerDeclaration.GetRegion != null));
 			Debug.Assert((indexerDeclaration.SetRegion != null));
-			Debug.Assert((indexerDeclaration.Attributes != null));
+			for (int i = 0; i < indexerDeclaration.Attributes.Count; i++) {
+				AttributeSection o = indexerDeclaration.Attributes[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (AttributeSection)nodeStack.Pop();
+				if (o == null)
+					indexerDeclaration.Attributes.RemoveAt(i--);
+				else
+					indexerDeclaration.Attributes[i] = o;
+			}
 			for (int i = 0; i < indexerDeclaration.Parameters.Count; i++) {
 				ParameterDeclarationExpression o = indexerDeclaration.Parameters[i];
 				Debug.Assert(o != null);
@@ -984,17 +995,6 @@ namespace ICSharpCode.NRefactory.Parser {
 			nodeStack.Push(indexerDeclaration.SetRegion);
 			indexerDeclaration.SetRegion.AcceptVisitor(this, data);
 			indexerDeclaration.SetRegion = ((PropertySetRegion)(nodeStack.Pop()));
-			for (int i = 0; i < indexerDeclaration.Attributes.Count; i++) {
-				AttributeSection o = indexerDeclaration.Attributes[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (AttributeSection)nodeStack.Pop();
-				if (o == null)
-					indexerDeclaration.Attributes.RemoveAt(i--);
-				else
-					indexerDeclaration.Attributes[i] = o;
-			}
 			return null;
 		}
 		
@@ -1107,12 +1107,34 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(MethodDeclaration methodDeclaration, object data) {
 			Debug.Assert((methodDeclaration != null));
+			Debug.Assert((methodDeclaration.Attributes != null));
+			Debug.Assert((methodDeclaration.Parameters != null));
 			Debug.Assert((methodDeclaration.TypeReference != null));
 			Debug.Assert((methodDeclaration.Body != null));
 			Debug.Assert((methodDeclaration.InterfaceImplementations != null));
 			Debug.Assert((methodDeclaration.Templates != null));
-			Debug.Assert((methodDeclaration.Parameters != null));
-			Debug.Assert((methodDeclaration.Attributes != null));
+			for (int i = 0; i < methodDeclaration.Attributes.Count; i++) {
+				AttributeSection o = methodDeclaration.Attributes[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (AttributeSection)nodeStack.Pop();
+				if (o == null)
+					methodDeclaration.Attributes.RemoveAt(i--);
+				else
+					methodDeclaration.Attributes[i] = o;
+			}
+			for (int i = 0; i < methodDeclaration.Parameters.Count; i++) {
+				ParameterDeclarationExpression o = methodDeclaration.Parameters[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ParameterDeclarationExpression)nodeStack.Pop();
+				if (o == null)
+					methodDeclaration.Parameters.RemoveAt(i--);
+				else
+					methodDeclaration.Parameters[i] = o;
+			}
 			nodeStack.Push(methodDeclaration.TypeReference);
 			methodDeclaration.TypeReference.AcceptVisitor(this, data);
 			methodDeclaration.TypeReference = ((TypeReference)(nodeStack.Pop()));
@@ -1140,28 +1162,6 @@ namespace ICSharpCode.NRefactory.Parser {
 					methodDeclaration.Templates.RemoveAt(i--);
 				else
 					methodDeclaration.Templates[i] = o;
-			}
-			for (int i = 0; i < methodDeclaration.Parameters.Count; i++) {
-				ParameterDeclarationExpression o = methodDeclaration.Parameters[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (ParameterDeclarationExpression)nodeStack.Pop();
-				if (o == null)
-					methodDeclaration.Parameters.RemoveAt(i--);
-				else
-					methodDeclaration.Parameters[i] = o;
-			}
-			for (int i = 0; i < methodDeclaration.Attributes.Count; i++) {
-				AttributeSection o = methodDeclaration.Attributes[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (AttributeSection)nodeStack.Pop();
-				if (o == null)
-					methodDeclaration.Attributes.RemoveAt(i--);
-				else
-					methodDeclaration.Attributes[i] = o;
 			}
 			return null;
 		}
@@ -1223,23 +1223,34 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(OperatorDeclaration operatorDeclaration, object data) {
 			Debug.Assert((operatorDeclaration != null));
-			Debug.Assert((operatorDeclaration.ReturnTypeAttributes != null));
+			Debug.Assert((operatorDeclaration.Attributes != null));
+			Debug.Assert((operatorDeclaration.Parameters != null));
 			Debug.Assert((operatorDeclaration.TypeReference != null));
 			Debug.Assert((operatorDeclaration.Body != null));
 			Debug.Assert((operatorDeclaration.InterfaceImplementations != null));
 			Debug.Assert((operatorDeclaration.Templates != null));
-			Debug.Assert((operatorDeclaration.Parameters != null));
-			Debug.Assert((operatorDeclaration.Attributes != null));
-			for (int i = 0; i < operatorDeclaration.ReturnTypeAttributes.Count; i++) {
-				AttributeSection o = operatorDeclaration.ReturnTypeAttributes[i];
+			Debug.Assert((operatorDeclaration.ReturnTypeAttributes != null));
+			for (int i = 0; i < operatorDeclaration.Attributes.Count; i++) {
+				AttributeSection o = operatorDeclaration.Attributes[i];
 				Debug.Assert(o != null);
 				nodeStack.Push(o);
 				o.AcceptVisitor(this, data);
 				o = (AttributeSection)nodeStack.Pop();
 				if (o == null)
-					operatorDeclaration.ReturnTypeAttributes.RemoveAt(i--);
+					operatorDeclaration.Attributes.RemoveAt(i--);
 				else
-					operatorDeclaration.ReturnTypeAttributes[i] = o;
+					operatorDeclaration.Attributes[i] = o;
+			}
+			for (int i = 0; i < operatorDeclaration.Parameters.Count; i++) {
+				ParameterDeclarationExpression o = operatorDeclaration.Parameters[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ParameterDeclarationExpression)nodeStack.Pop();
+				if (o == null)
+					operatorDeclaration.Parameters.RemoveAt(i--);
+				else
+					operatorDeclaration.Parameters[i] = o;
 			}
 			nodeStack.Push(operatorDeclaration.TypeReference);
 			operatorDeclaration.TypeReference.AcceptVisitor(this, data);
@@ -1269,27 +1280,16 @@ namespace ICSharpCode.NRefactory.Parser {
 				else
 					operatorDeclaration.Templates[i] = o;
 			}
-			for (int i = 0; i < operatorDeclaration.Parameters.Count; i++) {
-				ParameterDeclarationExpression o = operatorDeclaration.Parameters[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (ParameterDeclarationExpression)nodeStack.Pop();
-				if (o == null)
-					operatorDeclaration.Parameters.RemoveAt(i--);
-				else
-					operatorDeclaration.Parameters[i] = o;
-			}
-			for (int i = 0; i < operatorDeclaration.Attributes.Count; i++) {
-				AttributeSection o = operatorDeclaration.Attributes[i];
+			for (int i = 0; i < operatorDeclaration.ReturnTypeAttributes.Count; i++) {
+				AttributeSection o = operatorDeclaration.ReturnTypeAttributes[i];
 				Debug.Assert(o != null);
 				nodeStack.Push(o);
 				o.AcceptVisitor(this, data);
 				o = (AttributeSection)nodeStack.Pop();
 				if (o == null)
-					operatorDeclaration.Attributes.RemoveAt(i--);
+					operatorDeclaration.ReturnTypeAttributes.RemoveAt(i--);
 				else
-					operatorDeclaration.Attributes[i] = o;
+					operatorDeclaration.ReturnTypeAttributes[i] = o;
 			}
 			return null;
 		}
@@ -1349,12 +1349,34 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(PropertyDeclaration propertyDeclaration, object data) {
 			Debug.Assert((propertyDeclaration != null));
+			Debug.Assert((propertyDeclaration.Attributes != null));
+			Debug.Assert((propertyDeclaration.Parameters != null));
 			Debug.Assert((propertyDeclaration.InterfaceImplementations != null));
 			Debug.Assert((propertyDeclaration.TypeReference != null));
 			Debug.Assert((propertyDeclaration.GetRegion != null));
 			Debug.Assert((propertyDeclaration.SetRegion != null));
-			Debug.Assert((propertyDeclaration.Parameters != null));
-			Debug.Assert((propertyDeclaration.Attributes != null));
+			for (int i = 0; i < propertyDeclaration.Attributes.Count; i++) {
+				AttributeSection o = propertyDeclaration.Attributes[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (AttributeSection)nodeStack.Pop();
+				if (o == null)
+					propertyDeclaration.Attributes.RemoveAt(i--);
+				else
+					propertyDeclaration.Attributes[i] = o;
+			}
+			for (int i = 0; i < propertyDeclaration.Parameters.Count; i++) {
+				ParameterDeclarationExpression o = propertyDeclaration.Parameters[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ParameterDeclarationExpression)nodeStack.Pop();
+				if (o == null)
+					propertyDeclaration.Parameters.RemoveAt(i--);
+				else
+					propertyDeclaration.Parameters[i] = o;
+			}
 			for (int i = 0; i < propertyDeclaration.InterfaceImplementations.Count; i++) {
 				InterfaceImplementation o = propertyDeclaration.InterfaceImplementations[i];
 				Debug.Assert(o != null);
@@ -1375,38 +1397,13 @@ namespace ICSharpCode.NRefactory.Parser {
 			nodeStack.Push(propertyDeclaration.SetRegion);
 			propertyDeclaration.SetRegion.AcceptVisitor(this, data);
 			propertyDeclaration.SetRegion = ((PropertySetRegion)(nodeStack.Pop()));
-			for (int i = 0; i < propertyDeclaration.Parameters.Count; i++) {
-				ParameterDeclarationExpression o = propertyDeclaration.Parameters[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (ParameterDeclarationExpression)nodeStack.Pop();
-				if (o == null)
-					propertyDeclaration.Parameters.RemoveAt(i--);
-				else
-					propertyDeclaration.Parameters[i] = o;
-			}
-			for (int i = 0; i < propertyDeclaration.Attributes.Count; i++) {
-				AttributeSection o = propertyDeclaration.Attributes[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (AttributeSection)nodeStack.Pop();
-				if (o == null)
-					propertyDeclaration.Attributes.RemoveAt(i--);
-				else
-					propertyDeclaration.Attributes[i] = o;
-			}
 			return null;
 		}
 		
 		public virtual object Visit(PropertyGetRegion propertyGetRegion, object data) {
 			Debug.Assert((propertyGetRegion != null));
-			Debug.Assert((propertyGetRegion.Block != null));
 			Debug.Assert((propertyGetRegion.Attributes != null));
-			nodeStack.Push(propertyGetRegion.Block);
-			propertyGetRegion.Block.AcceptVisitor(this, data);
-			propertyGetRegion.Block = ((BlockStatement)(nodeStack.Pop()));
+			Debug.Assert((propertyGetRegion.Block != null));
 			for (int i = 0; i < propertyGetRegion.Attributes.Count; i++) {
 				AttributeSection o = propertyGetRegion.Attributes[i];
 				Debug.Assert(o != null);
@@ -1418,28 +1415,17 @@ namespace ICSharpCode.NRefactory.Parser {
 				else
 					propertyGetRegion.Attributes[i] = o;
 			}
+			nodeStack.Push(propertyGetRegion.Block);
+			propertyGetRegion.Block.AcceptVisitor(this, data);
+			propertyGetRegion.Block = ((BlockStatement)(nodeStack.Pop()));
 			return null;
 		}
 		
 		public virtual object Visit(PropertySetRegion propertySetRegion, object data) {
 			Debug.Assert((propertySetRegion != null));
-			Debug.Assert((propertySetRegion.Parameters != null));
-			Debug.Assert((propertySetRegion.Block != null));
 			Debug.Assert((propertySetRegion.Attributes != null));
-			for (int i = 0; i < propertySetRegion.Parameters.Count; i++) {
-				ParameterDeclarationExpression o = propertySetRegion.Parameters[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (ParameterDeclarationExpression)nodeStack.Pop();
-				if (o == null)
-					propertySetRegion.Parameters.RemoveAt(i--);
-				else
-					propertySetRegion.Parameters[i] = o;
-			}
-			nodeStack.Push(propertySetRegion.Block);
-			propertySetRegion.Block.AcceptVisitor(this, data);
-			propertySetRegion.Block = ((BlockStatement)(nodeStack.Pop()));
+			Debug.Assert((propertySetRegion.Block != null));
+			Debug.Assert((propertySetRegion.Parameters != null));
 			for (int i = 0; i < propertySetRegion.Attributes.Count; i++) {
 				AttributeSection o = propertySetRegion.Attributes[i];
 				Debug.Assert(o != null);
@@ -1450,6 +1436,20 @@ namespace ICSharpCode.NRefactory.Parser {
 					propertySetRegion.Attributes.RemoveAt(i--);
 				else
 					propertySetRegion.Attributes[i] = o;
+			}
+			nodeStack.Push(propertySetRegion.Block);
+			propertySetRegion.Block.AcceptVisitor(this, data);
+			propertySetRegion.Block = ((BlockStatement)(nodeStack.Pop()));
+			for (int i = 0; i < propertySetRegion.Parameters.Count; i++) {
+				ParameterDeclarationExpression o = propertySetRegion.Parameters[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ParameterDeclarationExpression)nodeStack.Pop();
+				if (o == null)
+					propertySetRegion.Parameters.RemoveAt(i--);
+				else
+					propertySetRegion.Parameters[i] = o;
 			}
 			return null;
 		}
@@ -1602,19 +1602,8 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(TemplateDefinition templateDefinition, object data) {
 			Debug.Assert((templateDefinition != null));
-			Debug.Assert((templateDefinition.Bases != null));
 			Debug.Assert((templateDefinition.Attributes != null));
-			for (int i = 0; i < templateDefinition.Bases.Count; i++) {
-				TypeReference o = templateDefinition.Bases[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (TypeReference)nodeStack.Pop();
-				if (o == null)
-					templateDefinition.Bases.RemoveAt(i--);
-				else
-					templateDefinition.Bases[i] = o;
-			}
+			Debug.Assert((templateDefinition.Bases != null));
 			for (int i = 0; i < templateDefinition.Attributes.Count; i++) {
 				AttributeSection o = templateDefinition.Attributes[i];
 				Debug.Assert(o != null);
@@ -1625,6 +1614,17 @@ namespace ICSharpCode.NRefactory.Parser {
 					templateDefinition.Attributes.RemoveAt(i--);
 				else
 					templateDefinition.Attributes[i] = o;
+			}
+			for (int i = 0; i < templateDefinition.Bases.Count; i++) {
+				TypeReference o = templateDefinition.Bases[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (TypeReference)nodeStack.Pop();
+				if (o == null)
+					templateDefinition.Bases.RemoveAt(i--);
+				else
+					templateDefinition.Bases[i] = o;
 			}
 			return null;
 		}
@@ -1670,9 +1670,20 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		public virtual object Visit(TypeDeclaration typeDeclaration, object data) {
 			Debug.Assert((typeDeclaration != null));
+			Debug.Assert((typeDeclaration.Attributes != null));
 			Debug.Assert((typeDeclaration.BaseTypes != null));
 			Debug.Assert((typeDeclaration.Templates != null));
-			Debug.Assert((typeDeclaration.Attributes != null));
+			for (int i = 0; i < typeDeclaration.Attributes.Count; i++) {
+				AttributeSection o = typeDeclaration.Attributes[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (AttributeSection)nodeStack.Pop();
+				if (o == null)
+					typeDeclaration.Attributes.RemoveAt(i--);
+				else
+					typeDeclaration.Attributes[i] = o;
+			}
 			for (int i = 0; i < typeDeclaration.BaseTypes.Count; i++) {
 				TypeReference o = typeDeclaration.BaseTypes[i];
 				Debug.Assert(o != null);
@@ -1694,17 +1705,6 @@ namespace ICSharpCode.NRefactory.Parser {
 					typeDeclaration.Templates.RemoveAt(i--);
 				else
 					typeDeclaration.Templates[i] = o;
-			}
-			for (int i = 0; i < typeDeclaration.Attributes.Count; i++) {
-				AttributeSection o = typeDeclaration.Attributes[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (AttributeSection)nodeStack.Pop();
-				if (o == null)
-					typeDeclaration.Attributes.RemoveAt(i--);
-				else
-					typeDeclaration.Attributes[i] = o;
 			}
 			for (int i = 0; i < typeDeclaration.Children.Count; i++) {
 				INode o = typeDeclaration.Children[i];
