@@ -141,7 +141,7 @@ namespace Debugger
 			
 			foreach (Breakpoint b in debugger.Breakpoints) {
 				if (b.Equals(pBreakpoint)) {
-					b.OnBreakpointHit();
+					b.OnHit();
 				}
 			}
 		}

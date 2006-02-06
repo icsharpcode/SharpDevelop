@@ -20,8 +20,22 @@ namespace ICSharpCode.Core
 {
 	public class BreakpointBookmark: SDMarkerBookmark
 	{
+		bool willBeHit = true;
 		object tag;
-
+		
+		public virtual bool WillBeHit {
+			get {
+				return willBeHit;
+			}
+			set {
+				willBeHit = value;
+				if (Document != null) {
+					Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, LineNumber));
+					Document.CommitUpdate();
+				}
+			}
+		}
+		
 		public object Tag {
 			get {
 				return tag;
@@ -37,7 +51,7 @@ namespace ICSharpCode.Core
 		
 		public override void Draw(IconBarMargin margin, Graphics g, Point p)
 		{
-			margin.DrawBreakpoint(g, p.Y, IsEnabled);
+			margin.DrawBreakpoint(g, p.Y, IsEnabled, WillBeHit);
 		}
 		
 		protected override TextMarker CreateMarker()

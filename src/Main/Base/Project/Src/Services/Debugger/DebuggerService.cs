@@ -178,7 +178,7 @@ namespace ICSharpCode.Core
 						breakpoints.Add(breakpoint);
 					}
 				}
-				return breakpoints;
+				return breakpoints.AsReadOnly();
 			}
 		}
 		

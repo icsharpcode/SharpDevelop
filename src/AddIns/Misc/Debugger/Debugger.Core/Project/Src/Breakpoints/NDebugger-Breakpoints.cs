@@ -73,8 +73,8 @@ namespace Debugger
 			breakpointCollection.Add(breakpoint);
 
 			breakpoint.SetBreakpoint();
-			breakpoint.BreakpointStateChanged += new EventHandler<BreakpointEventArgs>(OnBreakpointStateChanged);
-			breakpoint.BreakpointHit += new EventHandler<BreakpointEventArgs>(OnBreakpointHit);
+			breakpoint.Changed += new EventHandler<BreakpointEventArgs>(OnBreakpointStateChanged);
+			breakpoint.Hit += new EventHandler<BreakpointEventArgs>(OnBreakpointHit);
 
 			OnBreakpointAdded(breakpoint);
 
@@ -93,8 +93,8 @@ namespace Debugger
 
 		public void RemoveBreakpoint(Breakpoint breakpoint)  
 		{
-			breakpoint.BreakpointStateChanged -= new EventHandler<BreakpointEventArgs>(OnBreakpointStateChanged);
-			breakpoint.BreakpointHit -= new EventHandler<BreakpointEventArgs>(OnBreakpointHit);
+			breakpoint.Changed -= new EventHandler<BreakpointEventArgs>(OnBreakpointStateChanged);
+			breakpoint.Hit -= new EventHandler<BreakpointEventArgs>(OnBreakpointHit);
 	
             breakpoint.Enabled = false;
 			breakpointCollection.Remove( breakpoint );

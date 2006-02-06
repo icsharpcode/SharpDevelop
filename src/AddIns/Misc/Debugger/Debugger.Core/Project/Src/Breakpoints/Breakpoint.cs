@@ -43,6 +43,7 @@ namespace Debugger
 			}
 			internal set {
 				hadBeenSet = value;
+				OnChanged();
 			}
 		}
 		
@@ -58,25 +59,27 @@ namespace Debugger
 				if (HadBeenSet) {
 					corBreakpoint.Activate(enabled?1:0);
 				}
-				OnBreakpointStateChanged();
+				OnChanged();
 			}
 		}
 		
 
-		public event EventHandler<BreakpointEventArgs> BreakpointStateChanged;
+		public event EventHandler<BreakpointEventArgs> Changed;
 
-		internal void OnBreakpointStateChanged()
+		protected void OnChanged()
 		{
-			if (BreakpointStateChanged != null)
-				BreakpointStateChanged(this, new BreakpointEventArgs(this));
+			if (Changed != null) {
+				Changed(this, new BreakpointEventArgs(this));
+			}
 		}
 
-		public event EventHandler<BreakpointEventArgs> BreakpointHit;
+		public event EventHandler<BreakpointEventArgs> Hit;
 
-		internal void OnBreakpointHit()
+		internal void OnHit()
 		{
-			if (BreakpointHit != null)
-				BreakpointHit(this, new BreakpointEventArgs(this));
+			if (Hit != null) {
+				Hit(this, new BreakpointEventArgs(this));
+			}
 		}
 
 		internal Breakpoint(NDebugger debugger, SourcecodeSegment sourcecodeSegment, bool enabled)
@@ -108,8 +111,7 @@ namespace Debugger
 		
 		internal unsafe void ResetBreakpoint()
 		{
-			hadBeenSet = false;
-			OnBreakpointStateChanged();
+			HadBeenSet = false;
 		}
 		
 		
@@ -131,7 +133,7 @@ namespace Debugger
 			corBreakpoint.Activate(enabled?1:0);
 			pBreakpoint = Marshal.GetComInterfaceForObject(corBreakpoint.WrappedObject, typeof(Debugger.Interop.CorDebug.ICorDebugFunctionBreakpoint));
 			
-			OnBreakpointStateChanged();
+			OnChanged();
 			
 			return true;
 		}

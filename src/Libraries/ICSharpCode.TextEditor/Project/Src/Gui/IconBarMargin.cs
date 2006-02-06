@@ -90,7 +90,7 @@ namespace ICSharpCode.TextEditor
 		}
 		
 		#region Drawing functions
-		public void DrawBreakpoint(Graphics g, int y, bool isEnabled)
+		public void DrawBreakpoint(Graphics g, int y, bool isEnabled, bool willBeHit)
 		{
 			int diameter = Math.Min(iconBarWidth - 2, textArea.TextView.FontHeight);
 			Rectangle rect = new Rectangle(1,
@@ -104,7 +104,7 @@ namespace ICSharpCode.TextEditor
 				using (PathGradientBrush pthGrBrush = new PathGradientBrush(path)) {
 					pthGrBrush.CenterPoint = new PointF(rect.Left + rect.Width / 3 , rect.Top + rect.Height / 3);
 					pthGrBrush.CenterColor = Color.MistyRose;
-					Color[] colors = {Color.Firebrick};
+					Color[] colors = {willBeHit?Color.Firebrick:Color.Olive};
 					pthGrBrush.SurroundColors = colors;
 					
 					if (isEnabled) {
