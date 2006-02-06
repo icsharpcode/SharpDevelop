@@ -931,7 +931,10 @@
 		<MenuItem id = "SaveAs"
 		          label = "${res:OpenFileTabEventHandler.ContextMenu.SaveAs}"
 		          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.SaveFileAsTab"/>
-		
+		<MenuItem id = "SaveAll"
+		          icon = "Icons.16x16.SaveAllIcon"
+		          label = "${res:XML.MainMenu.FileMenu.SaveAll.Description}"
+		          class = "ICSharpCode.SharpDevelop.Commands.SaveAllFiles"/>
 		<MenuItem id = "SaveSeparator" type = "Separator" />
 		<ComplexCondition action="Disable">
 			<Not>
@@ -1572,7 +1575,7 @@
 		          class = "ICSharpCode.SharpDevelop.Refactoring.RenameLocalVariableCommand"/>
 		<MenuItem id = "FindReferences"
 		          label = "${res:SharpDevelop.Refactoring.FindReferencesCommand}"
-		          class = "ICSharpCode.SharpDevelop.Refactoring.FindLocalVariableReferencesCommand"/>
+		          class = "ICSharpCode.SharpDevelop.Refactoring.FindLocalVariableReferencesCommand"/>				  
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariableDefinition">
