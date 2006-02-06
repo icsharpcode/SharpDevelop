@@ -10,9 +10,6 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using System.Text;
 
-using Debugger.Interop.CorDebug;
-using Debugger.Interop.MetaData;
-
 namespace Debugger
 {        
     internal static class NativeMethods
@@ -22,7 +19,14 @@ namespace Debugger
         public static extern bool CloseHandle(IntPtr handle);
 
         [DllImport("mscoree.dll", CharSet=CharSet.Unicode, PreserveSig=false)]
-        public static extern int CreateDebuggingInterfaceFromVersion(int debuggerVersion, string debuggeeVersion, out ICorDebug cordbg);
+        public static extern int CreateDebuggingInterfaceFromVersion(int debuggerVersion, string debuggeeVersion, out Debugger.Interop.CorDebug.ICorDebug cordbg);
+        
+        public static Debugger.Wrappers.CorDebug.ICorDebug CreateDebuggingInterfaceFromVersion(int debuggerVersion, string debuggeeVersion)
+        {
+			Debugger.Interop.CorDebug.ICorDebug rawCorDebug;
+			CreateDebuggingInterfaceFromVersion(debuggerVersion, debuggeeVersion, out rawCorDebug);
+			return new Debugger.Wrappers.CorDebug.ICorDebug(rawCorDebug);
+        }
 
         [DllImport("mscoree.dll", CharSet=CharSet.Unicode)]
         public static extern int GetCORVersion([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder szName, Int32 cchBuffer, out Int32 dwLength);

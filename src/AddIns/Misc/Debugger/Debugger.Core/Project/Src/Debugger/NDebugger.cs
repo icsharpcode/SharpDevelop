@@ -97,17 +97,13 @@ namespace Debugger
 		/// If null, the version of the executing process will be used</param>
 		internal void InitDebugger(string debuggeeVersion)
 		{
-			string version;
-			if (debuggeeVersion != null) {
-				version = debuggeeVersion;
+			if (debuggeeVersion != null && debuggeeVersion.Length > 1) {
+				this.debuggeeVersion = debuggeeVersion;
 			} else {
-				version = GetDebuggerVersion();
+				this.debuggeeVersion = GetDebuggerVersion();
 			}
-			this.debuggeeVersion = version;
 			
-			Debugger.Interop.CorDebug.ICorDebug rawCorDebug;
-			NativeMethods.CreateDebuggingInterfaceFromVersion(3, version, out rawCorDebug);
-			corDebug = new ICorDebug(rawCorDebug);
+			corDebug = NativeMethods.CreateDebuggingInterfaceFromVersion(3, this.debuggeeVersion);
 			
 			managedCallback = new ManagedCallback(this);
 			managedCallbackProxy = new ManagedCallbackProxy(managedCallback);
