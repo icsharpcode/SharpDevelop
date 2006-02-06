@@ -144,12 +144,21 @@ namespace Debugger
 			fullPath = Marshal.PtrToStringUni(pString);
 			Marshal.FreeHGlobal(pString);
 			
+			string tempPath = Path.Combine(Path.GetTempPath(), Path.Combine("DebeggerPdb", new Random().Next().ToString()));
+			string pdbFilename = Path.GetFileNameWithoutExtension(FullPath) + ".pdb";
+			string oldPdbPath = Path.Combine(Path.GetDirectoryName(FullPath), pdbFilename);
+			string newPdbPath = Path.Combine(tempPath, pdbFilename);
+			if (File.Exists(oldPdbPath)) {
+				Directory.CreateDirectory(tempPath);
+				File.Move(oldPdbPath, newPdbPath);
+			}
+			fullPathPDB = newPdbPath;
 			
 			SymBinder symBinder = new SymBinder();
 			IntPtr ptr = IntPtr.Zero;
 			try {
 				ptr = Marshal.GetIUnknownForObject(metaDataInterface);
-				symReader = (SymReader)symBinder.GetReader(ptr, fullPath, string.Empty);
+				symReader = (SymReader)symBinder.GetReader(ptr, fullPath, tempPath);
 			} catch (System.Exception) {
 				symReader = null;
 			} finally {
@@ -158,17 +167,8 @@ namespace Debugger
 				}
 			}
 			
-			if (symReader != null) {
-				string tempPath = Path.Combine(Path.GetTempPath(), Path.Combine("DebeggerPdb", new Random().Next().ToString()));
-				string pdbFilename = Path.GetFileNameWithoutExtension(FullPath) + ".pdb";
-				string oldPdbPath = Path.Combine(Path.GetDirectoryName(FullPath), pdbFilename);
-				string newPdbPath = Path.Combine(tempPath, pdbFilename);
-				
-				Directory.CreateDirectory(tempPath);
-				File.Copy(oldPdbPath, newPdbPath);
-				symReader.UpdateSymbolStore(newPdbPath, IntPtr.Zero);
-				
-				fullPathPDB = newPdbPath;
+			if (File.Exists(newPdbPath)) {
+				File.Copy(newPdbPath, oldPdbPath);
 			}
 			
 			JMCStatus = SymbolsLoaded;
