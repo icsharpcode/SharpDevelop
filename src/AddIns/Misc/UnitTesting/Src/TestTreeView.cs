@@ -345,13 +345,13 @@ namespace ICSharpCode.UnitTesting
 					// solution node clicked, but has only 1 project
 					node = node.Nodes[0];
 				}
-				if (node.Level == 2 && node.Parent.Nodes.Count == 1) {
+				while (node.Level >= 2 && node.Parent.Nodes.Count == 1) {
 					// namespace node clicked, but project has only 1 namespace
 					node = node.Parent;
 				}
 				if (node.Level == 1) {
 					foreach (IProject p in ProjectService.OpenSolution.Projects) {
-						if (p.Name == node.Text) {
+						if (Path.GetFileNameWithoutExtension(p.OutputAssemblyFullPath) == node.Text) {
 							return p;
 						}
 					}

@@ -175,35 +175,45 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SortNodes((parent == null) ? Nodes : parent.Nodes, false);
 		}
 		#endregion
-		bool inRefresh = false;
+		bool inRefresh;
 		protected override void OnBeforeExpand(TreeViewCancelEventArgs e)
 		{
 			base.OnBeforeExpand(e);
 			if (e.Node == null)
 				return;
-			inRefresh = true;
-			BeginUpdate();
 			try {
 				if (e.Node is ExtTreeNode) {
+					if (((ExtTreeNode)e.Node).IsInitialized == false) {
+						if (!inRefresh) {
+							inRefresh = true;
+							BeginUpdate();
+						}
+					}
 					((ExtTreeNode)e.Node).Expanding();
 				}
-				SortNodes(e.Node.Nodes, false);
+				if (inRefresh) {
+					SortNodes(e.Node.Nodes, false);
+				}
 			} catch (Exception ex) {
 				// catch error to prevent corrupting the TreeView component
 				MessageService.ShowError(ex);
 			}
 			if (e.Node.Nodes.Count == 0) {
 				// when the node's subnodes have been removed by Expanding, AfterExpand is not called
-				inRefresh = false;
-				EndUpdate();
+				if (inRefresh) {
+					inRefresh = false;
+					EndUpdate();
+				}
 			}
 		}
 		
 		protected override void OnAfterExpand(TreeViewEventArgs e)
 		{
 			base.OnAfterExpand(e);
-			inRefresh = false;
-			EndUpdate();
+			if (inRefresh) {
+				inRefresh = false;
+				EndUpdate();
+			}
 		}
 		
 		

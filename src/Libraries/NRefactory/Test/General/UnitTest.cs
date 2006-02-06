@@ -84,21 +84,5 @@ namespace ICSharpCode.NRefactory.Tests
 				}
 			}
 		}
-		
-		[Test]
-		public void TestIfINode()
-		{
-			Type[] allTypes = typeof(INode).Assembly.GetTypes();
-			foreach (Type type in allTypes) {
-				if (!type.IsInterface &&
-				    !type.IsEnum &&
-				    (type.BaseType == typeof(System.Delegate)) &&
-				    (type.GetInterface(typeof(IAstVisitor).FullName) == null) &&
-				    (type.FullName != "ICSharpCode.NRefactory.Parser.Error") &&
-				    (type.FullName != "ICSharpCode.NRefactory.Tests.StructuralTest")) {
-					Assert.IsNotNull(type.GetInterface(typeof(INode).FullName), type.FullName + " is not INode");
-				}
-			}
-		}
 	}
 }

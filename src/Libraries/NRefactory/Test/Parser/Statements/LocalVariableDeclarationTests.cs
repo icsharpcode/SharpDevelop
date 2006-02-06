@@ -211,6 +211,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual(5, ((PrimitiveExpression)lvd.Variables[0].Initializer).Value);
 		}
 		
+		[Test]
 		public void VBNetLocalVariableNamedOverrideDeclarationTest()
 		{
 			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim override As Integer = 5");

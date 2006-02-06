@@ -20,6 +20,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected bool isInitialized    = false;
 		string  image                    = null;
 		
+		internal bool IsInitialized {
+			get {
+				return isInitialized;
+			}
+		}
+		
 		public virtual string ContextmenuAddinTreePath {
 			get {
 				return contextmenuAddinTreePath;

@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public void Initialize(IClass currentClass)
 		{
-			this.currentClass = currentClass;
+			this.currentClass = currentClass.DefaultReturnType.GetUnderlyingClass();
 			this.codeGen = currentClass.ProjectContent.Language.CodeGenerator;
 			this.classFinderContext = new ClassFinder(currentClass, currentClass.Region.BeginLine + 1, 0);
 			this.InitContent();
