@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					return base.InsertAction(textArea, ch);
 				}
 			}
-			string indentation = lineText.Substring(lineText.Length - lineText.TrimStart().Length);
+			string indentation = lineText.Substring(0, lineText.Length - lineText.TrimStart().Length);
 			
 			CodeGenerator codeGen = ParserService.CurrentProjectContent.Language.CodeGenerator;
 			
