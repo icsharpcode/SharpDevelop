@@ -21,7 +21,6 @@ namespace ICSharpCode.Core
 	public class BreakpointBookmark: SDMarkerBookmark
 	{
 		bool willBeHit = true;
-		object tag;
 		
 		public virtual bool WillBeHit {
 			get {
@@ -33,15 +32,6 @@ namespace ICSharpCode.Core
 					Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, LineNumber));
 					Document.CommitUpdate();
 				}
-			}
-		}
-		
-		public object Tag {
-			get {
-				return tag;
-			}
-			set {
-				tag = value;
 			}
 		}
 		

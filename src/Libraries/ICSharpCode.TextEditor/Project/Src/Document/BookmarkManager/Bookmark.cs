@@ -46,11 +46,23 @@ namespace ICSharpCode.TextEditor.Document
 				return isEnabled;
 			}
 			set {
-				isEnabled = value;
-				if (document != null) {
-					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, lineNumber));
-					document.CommitUpdate();
+				if (isEnabled != value) {
+					isEnabled = value;
+					if (document != null) {
+						document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, lineNumber));
+						document.CommitUpdate();
+					}
+					OnIsEnabledChanged(EventArgs.Empty);
 				}
+			}
+		}
+		
+		public event EventHandler IsEnabledChanged;
+		
+		protected virtual void OnIsEnabledChanged(EventArgs e)
+		{
+			if (IsEnabledChanged != null) {
+				IsEnabledChanged(this, e);
 			}
 		}
 		

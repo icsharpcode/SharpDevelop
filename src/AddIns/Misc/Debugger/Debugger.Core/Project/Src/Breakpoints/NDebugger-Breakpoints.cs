@@ -104,7 +104,7 @@ namespace Debugger
 		public void ResetBreakpoints()
 		{
 			foreach (Breakpoint b in breakpointCollection) {
-				b.ResetBreakpoint();
+				b.MarkUnset();
 			}
 		}
 

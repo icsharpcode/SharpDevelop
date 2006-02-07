@@ -198,23 +198,19 @@ namespace Debugger
 			} catch {
 				return false; //Not found
 			}
-			if (validLine != StartLine) {
-				if (normailize) {
-					StartLine = validLine;
-					EndLine = validLine;
-					StartColumn = 0;
-					EndColumn = 0;
-				} else {
-					return false;
-				}
+			if (validLine != StartLine && normailize) {
+				StartLine = validLine;
+				EndLine = validLine;
+				StartColumn = 0;
+				EndColumn = 0;
 			}
 			
 			ISymbolMethod symMethod;
-			symMethod = symReader.GetMethodFromDocumentPosition(symDoc, StartLine, StartColumn);
+			symMethod = symReader.GetMethodFromDocumentPosition(symDoc, validLine, StartColumn);
 			
 			function = module.CorModule.GetFunctionFromToken((uint)symMethod.Token.GetToken());
 			
-			ilOffset = symMethod.GetOffset(symDoc, StartLine, StartColumn);
+			ilOffset = symMethod.GetOffset(symDoc, validLine, StartColumn);
 			
 			return true;
 		}

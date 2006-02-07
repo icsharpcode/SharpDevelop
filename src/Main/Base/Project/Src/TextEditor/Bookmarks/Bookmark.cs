@@ -35,7 +35,19 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				return fileName;
 			}
 			set {
-				fileName = value;
+				if (fileName != value) {
+					fileName = value;
+					OnFileNameChanged(EventArgs.Empty);
+				}
+			}
+		}
+		
+		public event EventHandler FileNameChanged;
+		
+		protected virtual void OnFileNameChanged(EventArgs e)
+		{
+			if (FileNameChanged != null) {
+				FileNameChanged(this, e);
 			}
 		}
 		

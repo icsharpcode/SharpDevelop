@@ -27,6 +27,7 @@ using System.Runtime.Remoting;
 using System.Reflection;
 using System.Security.Policy;
 using System.Diagnostics;
+using BM = ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.SharpDevelop.Services
 {	
@@ -288,21 +289,13 @@ namespace ICSharpCode.SharpDevelop.Services
 			debugger.DebuggeeStateChanged    += DebuggeeStateChanged;
 			debugger.DebuggingResumed        += DebuggingResumed;
 
-			debugger.BreakpointStateChanged  += delegate (object sender, BreakpointEventArgs e) {
-				RestoreSharpdevelopBreakpoint(e.Breakpoint);
-			};
-			DebuggerService.BreakPointAdded   += delegate (object sender, BreakpointBookmarkEventArgs e) {
-				AddBreakpoint(e.BreakpointBookmark);
-			};
-			DebuggerService.BreakPointRemoved += delegate (object sender, BreakpointBookmarkEventArgs e) {
-				RemoveBreakpoint(e.BreakpointBookmark);
-			};
-			DebuggerService.BreakPointChanged += delegate (object sender, BreakpointBookmarkEventArgs e) {
-				RemoveBreakpoint(e.BreakpointBookmark);
+			DebuggerService.BreakPointAdded  += delegate (object sender, BreakpointBookmarkEventArgs e) {
 				AddBreakpoint(e.BreakpointBookmark);
 			};
 
-			RestoreNDebuggerBreakpoints();
+			foreach (BreakpointBookmark b in DebuggerService.Breakpoints) {
+				AddBreakpoint(b);
+			}
 
 			isDebuggingCache = false;
 			isProcessRunningCache = true;
@@ -314,38 +307,26 @@ namespace ICSharpCode.SharpDevelop.Services
 			serviceInitialized = true;
 		}
 
-		void AddBreakpoint(BreakpointBookmark breakpointBookmark)
+		void AddBreakpoint(BreakpointBookmark bookmark)
 		{
-			SourcecodeSegment seg = new SourcecodeSegment(breakpointBookmark.FileName, breakpointBookmark.LineNumber + 1); 
-			Breakpoint b = debugger.AddBreakpoint(seg, breakpointBookmark.IsEnabled);
-			breakpointBookmark.Tag = b;
-		}
-
-		void RemoveBreakpoint(BreakpointBookmark breakpointBookmark)
-		{
-			Breakpoint b = breakpointBookmark.Tag as Breakpoint;
-			if (b != null) {
-				debugger.RemoveBreakpoint(b);
-			}
-		}
-
-		void RestoreNDebuggerBreakpoints()
-		{
-			debugger.ClearBreakpoints();
-			foreach (BreakpointBookmark b in DebuggerService.Breakpoints) {
-				AddBreakpoint(b);
-			}
-		}
-
-		void RestoreSharpdevelopBreakpoint(Breakpoint breakpoint)
-		{
-			foreach (BreakpointBookmark sdBreakpoint in DebuggerService.Breakpoints) {
-				if (sdBreakpoint.Tag == breakpoint) {
-					sdBreakpoint.IsEnabled  = breakpoint.Enabled;
-					sdBreakpoint.FileName   = breakpoint.SourcecodeSegment.SourceFullFilename;
-					sdBreakpoint.LineNumber = breakpoint.SourcecodeSegment.StartLine - 1;
+			SourcecodeSegment seg = new SourcecodeSegment(bookmark.FileName, bookmark.LineNumber + 1); 
+			Breakpoint breakpoint = debugger.AddBreakpoint(seg, bookmark.IsEnabled);
+			MethodInvoker setBookmarkColor = delegate {
+				bookmark.WillBeHit  = breakpoint.HadBeenSet || debugger.Processes.Count == 0;
+			};
+			breakpoint.Changed += delegate { setBookmarkColor(); };
+			debugger.ProcessStarted += delegate { setBookmarkColor(); };
+			debugger.ProcessExited  += delegate { setBookmarkColor(); };
+			setBookmarkColor();
+			
+			BM.BookmarkManager.Removed += delegate (object sender, BM.BookmarkEventArgs e) {
+				if (bookmark == e.Bookmark) {
+					debugger.RemoveBreakpoint(breakpoint);
 				}
-			}
+			};
+			bookmark.IsEnabledChanged += delegate {
+				breakpoint.Enabled = bookmark.IsEnabled;
+			};
 		}
 
 		void LogMessage(object sender, MessageEventArgs e)

@@ -49,9 +49,6 @@ namespace Debugger
 		
 		public bool Enabled {
 			get {
-				if (HadBeenSet) {
-					enabled = (corBreakpoint.IsActive == 1);
-				}
 				return enabled;
 			}
 			set	{
@@ -109,13 +106,12 @@ namespace Debugger
 			return base.GetHashCode();
 		}
 		
-		internal unsafe void ResetBreakpoint()
+		internal void MarkUnset()
 		{
 			HadBeenSet = false;
 		}
 		
-		
-		internal unsafe bool SetBreakpoint()
+		public bool SetBreakpoint()
 		{
 			if (hadBeenSet) {
 				return true;
@@ -123,7 +119,7 @@ namespace Debugger
 
 			ICorDebugFunction corFunction;
 			int ilOffset;
-			if (!sourcecodeSegment.GetFunctionAndOffset(debugger, true, out corFunction, out ilOffset)) {
+			if (!sourcecodeSegment.GetFunctionAndOffset(debugger, false, out corFunction, out ilOffset)) {
 				return false;
 			}
 			
