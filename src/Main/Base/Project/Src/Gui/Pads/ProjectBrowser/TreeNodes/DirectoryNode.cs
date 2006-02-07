@@ -474,6 +474,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!FileService.CheckFileName(newName)) {
 				return;
 			}
+			if (!FileService.CheckDirectoryName(newName)) {
+				return;
+			}
 			string oldText = Text;
 			Text = newName;
 			if (Directory != null) {

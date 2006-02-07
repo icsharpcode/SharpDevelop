@@ -50,6 +50,18 @@ namespace ICSharpCode.Core
 			return false;
 		}
 		
+		/// <summary>
+		/// Checks that a single directory name is valid.
+		/// </summary>
+		/// <param name="name">A single directory name not the full path</param>
+		public static bool CheckDirectoryName(string name)
+		{
+			if (FileUtility.IsValidDirectoryName(name))
+				return true;
+			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", name}}));
+			return false;
+		}
+		
 		class LoadFileWrapper
 		{
 			IDisplayBinding binding;

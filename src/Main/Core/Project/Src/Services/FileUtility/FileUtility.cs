@@ -315,6 +315,22 @@ namespace ICSharpCode.Core
 			         Char.IsDigit(ch));
 		}
 		
+		/// <summary>
+		/// Checks that a single directory name (not the full path) is valid.
+		/// </summary>
+		public static bool IsValidDirectoryName(string name)
+		{
+			if (!IsValidFileName(name)) {
+				return false;
+			}
+			if (name.IndexOfAny(new char[]{Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar}) >= 0) {
+				return false;
+			}
+			if (name.Trim(' ').Length == 0) {
+				return false;
+			}
+			return true;
+		}
 		
 		public static bool TestFileExists(string filename)
 		{
