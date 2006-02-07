@@ -17,6 +17,8 @@ namespace ICSharpCode.Core
 	{
 		Properties    properties = new Properties();
 		List<Runtime> runtimes   = new List<Runtime>();
+		List<string> bitmapResources = new List<string>();
+		List<string> stringResources = new List<string>();
 		
 		string        addInFileName = null;
 		AddInManifest      manifest = new AddInManifest();
@@ -102,6 +104,24 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public List<string> BitmapResources {
+			get {
+				return bitmapResources;
+			}
+			set {
+				bitmapResources = value;
+			}
+		}
+		
+		public List<string> StringResources {
+			get {
+				return stringResources;
+			}
+			set {
+				stringResources = value;
+			}
+		}
+		
 		public bool Enabled {
 			get {
 				return enabled;
@@ -127,25 +147,15 @@ namespace ICSharpCode.Core
 								throw new AddInLoadException("BitmapResources requires ONE attribute.");
 							}
 							
-							if(hintPath == null) break;
-							
 							string filename = StringParser.Parse(reader.GetAttribute("file"));
-							string path = Path.Combine(hintPath, filename);
-							
-							if(! File.Exists(path))
-							{
-								throw new AddInLoadException("Resource file '" + path + "' could not be found.");
-							}
-							
-							ResourceManager resourceManager = ResourceManager.CreateFileBasedResourceManager(Path.GetFileNameWithoutExtension(path), Path.GetDirectoryName(path), null);
 							
 							if(reader.LocalName == "BitmapResources")
 							{
-								ResourceService.RegisterNeutralImages(resourceManager);
+								addIn.BitmapResources.Add(filename);
 							}
 							else
 							{
-								ResourceService.RegisterNeutralStrings(resourceManager);
+								addIn.StringResources.Add(filename);
 							}
 							break;
 						case "Runtime":

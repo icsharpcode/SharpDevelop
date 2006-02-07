@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Resources;
 using System.IO;
 using System.Reflection;
 using System.Collections;
@@ -162,6 +163,21 @@ namespace ICSharpCode.Core
 			if (addIn.Enabled) {
 				foreach (ExtensionPath path in addIn.Paths.Values) {
 					AddExtensionPath(path);
+				}
+				
+				string addInRoot = Path.GetDirectoryName(addIn.FileName);
+				foreach(string bitmapResource in addIn.BitmapResources)
+				{
+					string path = Path.Combine(addInRoot, bitmapResource);
+					ResourceManager resourceManager = ResourceManager.CreateFileBasedResourceManager(Path.GetFileNameWithoutExtension(path), Path.GetDirectoryName(path), null);
+					ResourceService.RegisterNeutralImages(resourceManager);
+				}
+				
+				foreach(string stringResource in addIn.StringResources)
+				{
+					string path = Path.Combine(addInRoot, stringResource);
+					ResourceManager resourceManager = ResourceManager.CreateFileBasedResourceManager(Path.GetFileNameWithoutExtension(path), Path.GetDirectoryName(path), null);
+					ResourceService.RegisterNeutralStrings(resourceManager);
 				}
 			}
 			addIns.Add(addIn);
