@@ -112,7 +112,7 @@ namespace Debugger
 							ref secAttr,                       // lpProcessAttributes
 							ref secAttr,                      // lpThreadAttributes
 							1,//TRUE                    // bInheritHandles
-							0,                          // dwCreationFlags
+							0x00000010 /*CREATE_NEW_CONSOLE*/,    // dwCreationFlags
 							IntPtr.Zero,                       // lpEnvironment
 							workingDirectory,                       // lpCurrentDirectory
 							(uint)pprocessStartupInfo,        // lpStartupInfo
