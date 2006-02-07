@@ -14,8 +14,13 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.CodeCoverage.Tests
 {
+	/// <summary>
+	/// Checks that the tree nodes have the correct text, images and 
+	/// text colours as we expand the tree node by node.  The tree populates
+	/// itself lazily as it is expanded.
+	/// </summary>
 	[TestFixture]
-	public class CodeCoverageTreeViewTestFixture
+	public class NewCodeCoverageTreeViewTestFixture
 	{
 		TreeNodeCollection nodes;
 		CodeCoverageModuleTreeNode fooModuleNode;
@@ -25,8 +30,9 @@ namespace ICSharpCode.CodeCoverage.Tests
 		CodeCoverageMethodTreeNode fooTestMethod2TreeNode;
 		CodeCoverageNamespaceTreeNode fooNamespaceTreeNode;
 		CodeCoverageNamespaceTreeNode fooTestsNamespaceTreeNode;
+		CodeCoverageNamespaceTreeNode fooTestsUtilNamespaceTreeNode;
 		
-		[SetUp]
+		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			List<CodeCoverageModule> modules = new List<CodeCoverageModule>();
@@ -35,28 +41,36 @@ namespace ICSharpCode.CodeCoverage.Tests
 			fooTestMethod1.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTestFixture.cs", 1, 1, 0, 2, 1));
 			fooTestMethod1.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTestFixture.cs", 0, 2, 2, 3, 4));
 			CodeCoverageMethod fooTestMethod2 = new CodeCoverageMethod("FooTest2", "Foo.Tests.FooTestFixture");
-
+			CodeCoverageMethod helperMethod = new CodeCoverageMethod("GetCoverageFile", "Foo.Tests.Util.Helper");
+				
 			fooModule.Methods.Add(fooTestMethod1);
 			fooModule.Methods.Add(fooTestMethod2);
+			fooModule.Methods.Add(helperMethod);
 			
 			CodeCoverageModule barModule = new CodeCoverageModule("Bar.Tests");
 			
-			modules.Add(fooModule);
 			modules.Add(barModule);
+			modules.Add(fooModule);
 			
 			using (CodeCoverageTreeView treeView = new CodeCoverageTreeView()) {
 				treeView.AddModules(modules);
-				treeView.ExpandAll();
 				nodes = treeView.Nodes;
 			}
 			
-			fooModuleNode = (CodeCoverageModuleTreeNode)nodes[0];
-			barModuleNode = (CodeCoverageModuleTreeNode)nodes[1];
-			
+			barModuleNode = (CodeCoverageModuleTreeNode)nodes[0];
+			fooModuleNode = (CodeCoverageModuleTreeNode)nodes[1];
+				
+			fooModuleNode.Expanding();
 			fooNamespaceTreeNode = (CodeCoverageNamespaceTreeNode)fooModuleNode.Nodes[0];
-			fooTestsNamespaceTreeNode = (CodeCoverageNamespaceTreeNode)fooNamespaceTreeNode.Nodes[0];
 			
-			fooTestFixtureTreeNode = (CodeCoverageClassTreeNode)fooTestsNamespaceTreeNode.Nodes[0];
+			fooNamespaceTreeNode.Expanding();
+			fooTestsNamespaceTreeNode = (CodeCoverageNamespaceTreeNode)fooNamespaceTreeNode.Nodes[0];
+
+			fooTestsNamespaceTreeNode.Expanding();
+			fooTestsUtilNamespaceTreeNode = (CodeCoverageNamespaceTreeNode)fooTestsNamespaceTreeNode.Nodes[0];
+			fooTestFixtureTreeNode = (CodeCoverageClassTreeNode)fooTestsNamespaceTreeNode.Nodes[1];
+
+			fooTestFixtureTreeNode.Expanding();		
 			fooTestMethod1TreeNode = (CodeCoverageMethodTreeNode)fooTestFixtureTreeNode.Nodes[0];
 			fooTestMethod2TreeNode = (CodeCoverageMethodTreeNode)fooTestFixtureTreeNode.Nodes[1];
 		}
@@ -166,7 +180,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 		[Test]
 		public void FooTestsNamespaceTreeNodeChildNodesCount()
 		{
-			Assert.AreEqual(1, fooTestsNamespaceTreeNode.Nodes.Count);
+			Assert.AreEqual(2, fooTestsNamespaceTreeNode.Nodes.Count);
 		}
 		
 		[Test]

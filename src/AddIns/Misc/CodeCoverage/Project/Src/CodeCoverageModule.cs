@@ -14,12 +14,16 @@ namespace ICSharpCode.CodeCoverage
 	{
 		string name = String.Empty;
 		List<CodeCoverageMethod> methods = new List<CodeCoverageMethod>();
+		List<string> rootNamespaces;
 		
 		public CodeCoverageModule(string name)
 		{
 			this.name = name;
 		}
 		
+		/// <summary>
+		/// The module's assembly name.
+		/// </summary>
 		public string Name {
 			get {
 				return name;
@@ -59,6 +63,32 @@ namespace ICSharpCode.CodeCoverage
 				sequencePoints.AddRange(method.GetSequencePoints(fileName));
 			}
 			return sequencePoints;
+		}
+		
+		/// <summary>
+		/// Gets the distinct root namespaces for all the methods.  
+		/// </summary>
+		/// <remarks>
+		/// If one of the namespaces is 'ICSharpCode.XmlEditor' then this 
+		/// method will return 'ICSharpCode' as one of the root namespaces.
+		/// </remarks>
+		public List<string> RootNamespaces {
+			get {
+				if (rootNamespaces == null) {
+					GetRootNamespaces();
+				}
+				return rootNamespaces;
+			}
+		}
+		
+		void GetRootNamespaces()
+		{
+			rootNamespaces = new List<string>();
+			foreach (CodeCoverageMethod method in methods) {
+				if (method.RootNamespace.Length > 0 && !rootNamespaces.Contains(method.RootNamespace)) {
+					rootNamespaces.Add(method.RootNamespace);
+				}
+			}
 		}
 	}
 }

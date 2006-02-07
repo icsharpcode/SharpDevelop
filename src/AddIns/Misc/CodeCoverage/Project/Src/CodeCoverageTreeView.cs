@@ -21,9 +21,25 @@ namespace ICSharpCode.CodeCoverage
 		
 		public void AddModules(List<CodeCoverageModule> modules)
 		{
-			foreach (CodeCoverageModule module in modules) {
-				Nodes.Add(new CodeCoverageModuleTreeNode(module));
+			BeginUpdate();
+			try {
+				foreach (CodeCoverageModule module in modules) {
+					Nodes.Add(new CodeCoverageModuleTreeNode(module));
+				}
+				Sort();
+			} finally {
+				EndUpdate();
 			}
 		}
+		
+		protected override void OnAfterSelect(TreeViewEventArgs e)
+		{
+			CodeCoverageTreeNode node = e.Node as CodeCoverageTreeNode;
+			if (node != null) {
+				node.PerformInitialization();
+			}
+			base.OnAfterSelect(e);
+		}
+		
 	}
 }

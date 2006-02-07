@@ -7,15 +7,16 @@
 
 using ICSharpCode.Core;
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.CodeCoverage
 {
-	public class CodeCoverageClassTreeNode : CodeCoverageTreeNode
+	public class CodeCoverageClassTreeNode : CodeCoverageMethodsTreeNode
 	{
-		public CodeCoverageClassTreeNode(string name) : base(name, CodeCoverageImageListIndex.Class)
+		public CodeCoverageClassTreeNode(string name, List<CodeCoverageMethod> methods) : base(name, methods, CodeCoverageImageListIndex.Class)
 		{
 		}
-		
+
 		public override void ActivateItem()
 		{
 			if (Nodes.Count > 0) {
@@ -26,5 +27,13 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
+		protected override void Initialize()
+		{
+			Nodes.Clear();
+			foreach (CodeCoverageMethod method in Methods) {
+				CodeCoverageMethodTreeNode node = new CodeCoverageMethodTreeNode(method);
+				node.AddTo(this);
+			}
+		}
 	}
 }

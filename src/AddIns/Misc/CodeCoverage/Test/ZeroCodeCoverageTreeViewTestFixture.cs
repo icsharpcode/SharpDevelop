@@ -40,15 +40,21 @@ namespace ICSharpCode.CodeCoverage.Tests
 			
 			using (CodeCoverageTreeView treeView = new CodeCoverageTreeView()) {
 				treeView.AddModules(modules);
-				treeView.ExpandAll();
 				nodes = treeView.Nodes;
 			}
 			
-			fooModuleNode = (CodeCoverageModuleTreeNode)nodes[0];			
+			fooModuleNode = (CodeCoverageModuleTreeNode)nodes[0];
+			
+			fooModuleNode.Expanding();
 			fooNamespaceTreeNode = (CodeCoverageNamespaceTreeNode)fooModuleNode.Nodes[0];
+			
+			fooNamespaceTreeNode.Expanding();
 			fooTestsNamespaceTreeNode = (CodeCoverageNamespaceTreeNode)fooNamespaceTreeNode.Nodes[0];
 			
+			fooTestsNamespaceTreeNode.Expanding();
 			fooTestFixtureTreeNode = (CodeCoverageClassTreeNode)fooTestsNamespaceTreeNode.Nodes[0];
+			
+			fooTestFixtureTreeNode.Expanding();
 			fooTestMethodTreeNode = (CodeCoverageMethodTreeNode)fooTestFixtureTreeNode.Nodes[0];
 		}
 

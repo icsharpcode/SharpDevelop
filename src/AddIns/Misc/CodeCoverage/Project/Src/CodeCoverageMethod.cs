@@ -60,6 +60,21 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
+		public string RootNamespace {
+			get {
+				return GetRootNamespace(classNamespace);
+			}
+		}
+		
+		public static string GetRootNamespace(string ns)
+		{
+			int index = ns.IndexOf('.');
+			if (index > 0) {
+				return ns.Substring(0, index);
+			}
+			return ns;
+		}
+		
 		public List<CodeCoverageSequencePoint> SequencePoints {
 			get {
 				return sequencePoints;
@@ -101,5 +116,99 @@ namespace ICSharpCode.CodeCoverage
 			return matchedSequencePoints;
 		}
 		
+		/// <summary>
+		/// Gets the next namespace level given the parent namespace.
+		/// </summary>
+		public static string GetChildNamespace(string fullNamespace, string parentNamespace)
+		{
+			string end = fullNamespace.Substring(parentNamespace.Length + 1);
+			return GetRootNamespace(end);
+		}
+		
+		/// <summary>
+		/// Adds the child namespace to the namespace prefix.
+		/// </summary>
+		public static string GetFullNamespace(string prefix, string name)
+		{
+			if (prefix.Length > 0) {
+				return String.Concat(prefix, ".", name);
+			}
+			return name;
+		}
+		
+		/// <summary>
+		/// Gets all child namespaces that starts with the specified string.
+		/// </summary>
+		/// <remarks>
+		/// If the starts with string is 'ICSharpCode' and there is a code coverage
+		/// method with a namespace of 'ICSharpCode.XmlEditor.Tests', then this
+		/// method will return 'XmlEditor' as one of its strings.
+		/// </remarks>
+		public static List<string> GetChildNamespaces(List<CodeCoverageMethod> methods, string parentNamespace) {
+			List<string> items = new List<string>();
+			foreach (CodeCoverageMethod method in methods) {
+				string classNamespace = method.ClassNamespace;
+				if (classNamespace.Length > parentNamespace.Length && classNamespace.StartsWith(parentNamespace)) {
+					string ns = CodeCoverageMethod.GetChildNamespace(method.ClassNamespace, parentNamespace);
+					if (!items.Contains(ns)) {
+						items.Add(ns);
+					}
+				}
+			}
+			return items;
+		}
+		
+		/// <summary>
+		/// Gets all methods whose namespaces starts with the specified string.
+		/// </summary>
+		public static List<CodeCoverageMethod> GetAllMethods(List<CodeCoverageMethod> methods, string namespaceStartsWith)
+		{
+			List<CodeCoverageMethod> matchedMethods = new List<CodeCoverageMethod>();
+			foreach (CodeCoverageMethod method in methods) {
+				if (method.ClassNamespace.StartsWith(namespaceStartsWith)) {
+					matchedMethods.Add(method);
+				}
+			}
+			return matchedMethods;
+		}
+		
+		/// <summary>
+		/// Gets only those methods whose namespaces exactly match the specified string.
+		/// </summary>
+		public static List<CodeCoverageMethod> GetMethods(List<CodeCoverageMethod> methods, string ns)
+		{
+			List<CodeCoverageMethod> matchedMethods = new List<CodeCoverageMethod>();
+			foreach (CodeCoverageMethod method in methods) {
+				if (method.ClassNamespace == ns) {
+					matchedMethods.Add(method);
+				}
+			}
+			return matchedMethods;
+		}
+		
+		/// <summary>
+		/// Gets only those methods for the specified class.
+		/// </summary>
+		public static List<CodeCoverageMethod> GetMethods(List<CodeCoverageMethod> methods, string ns, string className)
+		{
+			List<CodeCoverageMethod> matchedMethods = new List<CodeCoverageMethod>();
+			foreach (CodeCoverageMethod method in methods) {
+				if (method.ClassName == className && method.ClassNamespace == ns) {
+					matchedMethods.Add(method);
+				}
+			}
+			return matchedMethods;
+		}
+		
+		public static List<string> GetClassNames(List<CodeCoverageMethod> methods, string ns)
+		{
+			List<string> names = new List<string>();
+			foreach (CodeCoverageMethod method in methods) {
+				if (method.ClassNamespace == ns && !names.Contains(method.ClassName)) {
+					names.Add(method.ClassName);
+				}
+			}
+			return names;
+		}
 	}
 }

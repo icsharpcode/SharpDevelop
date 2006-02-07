@@ -7,6 +7,7 @@
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -14,110 +15,31 @@ namespace ICSharpCode.CodeCoverage
 {
 	public class CodeCoverageModuleTreeNode : CodeCoverageTreeNode
 	{
+		CodeCoverageModule module;
+		
 		public CodeCoverageModuleTreeNode(CodeCoverageModule module) : base(module.Name, CodeCoverageImageListIndex.Module, module.VisitedSequencePointsCount, module.NotVisitedSequencePointsCount)
-		{			
-			foreach (CodeCoverageMethod method in module.Methods) {
-				AddMethod(method);
+		{
+			this.module = module;
+			if (module.Methods.Count > 0) {
+				// Add dummy node.
+				Nodes.Add(new ExtTreeNode());
 			}
-			
-			// Update percentage totals for namespace nodes.
-			UpdateNamespacePercentages(Nodes);
 		}
 		
-		void AddMethod(CodeCoverageMethod method)
+		protected override void Initialize()
 		{
-			ExtTreeNode parentNode = GetParentNamespaceNode(method.ClassNamespace);
-			
-			// Add class node.
-			ExtTreeNode classNode = FindNode(parentNode.Nodes, method.ClassName);
-			if (classNode == null) {
-				classNode = new CodeCoverageClassTreeNode(method.ClassName);
-				classNode.AddTo(parentNode);
+			Nodes.Clear();
+			foreach (string namespaceName in module.RootNamespaces) {
+				CodeCoverageNamespaceTreeNode node = new CodeCoverageNamespaceTreeNode(namespaceName, CodeCoverageMethod.GetAllMethods(module.Methods, namespaceName));
+				node.AddTo(this);
 			}
 			
-			// Add method node.
-			CodeCoverageMethodTreeNode methodNode = new CodeCoverageMethodTreeNode(method);
-			methodNode.AddTo(classNode);
-		}
-		
-		ExtTreeNode GetParentNamespaceNode(string classNamespace)
-		{
-			string[] treePath = classNamespace.Split('.');
-			
-			ExtTreeNode node = this;
-			ExtTreeNode currentNode = node;
+			// Add any classes that have no namespace.
+			foreach (string className in CodeCoverageMethod.GetClassNames(module.Methods, String.Empty)) {
+				CodeCoverageClassTreeNode classNode = new CodeCoverageClassTreeNode(className, CodeCoverageMethod.GetMethods(module.Methods, String.Empty, className));
+				classNode.AddTo(this);
+			}
 
-			foreach (string path in treePath) {
-				if (currentNode != null) {
-					currentNode = FindNode(currentNode.Nodes, path);
-				} 
-				
-				if (currentNode == null) {
-					CodeCoverageNamespaceTreeNode newNode = new CodeCoverageNamespaceTreeNode(path);
-					newNode.AddTo(node);
-					node = newNode;
-				} else {
-					node = currentNode;
-				}
-			}
-			
-			return node;
-		}
-		
-		ExtTreeNode FindNode(TreeNodeCollection nodes, string name)
-		{
-			foreach (ExtTreeNode node in nodes) {
-				if (node.Text == name) {
-					return node;
-				}
-			}
-			return null;
-		}
-		
-		void UpdateNamespacePercentages(TreeNodeCollection nodes)
-		{
-			foreach (ExtTreeNode node in nodes) {
-				CodeCoverageNamespaceTreeNode namespaceNode = node as CodeCoverageNamespaceTreeNode;
-				if (namespaceNode != null) {
-					SumVisits(namespaceNode);
-				} 
-			}
-		}
-		
-		void SumVisits(CodeCoverageNamespaceTreeNode parentNode)
-		{
-			int visitedCount = 0;
-			int notVisitedCount = 0;
-			
-			foreach (CodeCoverageTreeNode node in parentNode.Nodes) {
-				CodeCoverageNamespaceTreeNode namespaceNode = node as CodeCoverageNamespaceTreeNode;
-				CodeCoverageClassTreeNode classNode = node as CodeCoverageClassTreeNode;
-				if (namespaceNode != null) {
-					SumVisits(namespaceNode);
-				} else if (classNode != null) {
-					SumVisits(classNode);
-				}
-				
-				visitedCount += node.VisitedCount;
-				notVisitedCount += node.NotVisitedCount;
-			}
-			
-			parentNode.VisitedCount = visitedCount;
-			parentNode.NotVisitedCount = notVisitedCount;
-		}
-		
-		void SumVisits(CodeCoverageClassTreeNode parentNode)
-		{
-			int visitedCount = 0;
-			int notVisitedCount = 0;
-			
-			foreach (CodeCoverageTreeNode node in parentNode.Nodes) {				
-				visitedCount += node.VisitedCount;
-				notVisitedCount += node.NotVisitedCount;
-			}
-			
-			parentNode.VisitedCount = visitedCount;
-			parentNode.NotVisitedCount = notVisitedCount;
 		}
 	}
 }
