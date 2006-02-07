@@ -11,6 +11,7 @@ using ICSharpCode.NAntAddIn.Gui;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Util;
 using System;
 using System.IO;
 using System.Windows.Forms;

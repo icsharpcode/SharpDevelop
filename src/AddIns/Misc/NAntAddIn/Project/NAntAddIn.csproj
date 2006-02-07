@@ -48,9 +48,6 @@
     <Compile Include="Src\NAntRunner.cs" />
     <Compile Include="Src\NAntExitEventArgs.cs" />
     <Compile Include="Src\Commands\RunNAntCleanTargetCommand.cs" />
-    <Compile Include="Src\OutputReader.cs" />
-    <Compile Include="Src\ProcessRunner.cs" />
-    <Compile Include="Src\ProcessRunnerException.cs" />
     <Compile Include="Src\Gui\NAntPadContent.cs" />
     <Compile Include="Src\Gui\NAntPadTreeViewImageList.cs" />
     <Compile Include="Src\Gui\NAntBuildFileTreeNode.cs" />
@@ -66,7 +63,6 @@
     <Compile Include="Src\Gui\NAntBuildFileErrorTreeNode.cs" />
     <Compile Include="Src\Commands\GoToErrorCommand.cs" />
     <Compile Include="Src\Commands\AbstractRunNAntCommand.cs" />
-    <Compile Include="Src\LineReceivedEventArgs.cs" />
     <Compile Include="Src\NAntOutputParser.cs" />
     <Compile Include="Src\TaskCollection.cs" />
     <Compile Include="Src\NAntRunnerSingleton.cs" />

@@ -10,7 +10,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace ICSharpCode.NAntAddIn
+namespace ICSharpCode.SharpDevelop.Util
 {
 	/// <summary>
 	/// Runs a process that sends output to standard output and to

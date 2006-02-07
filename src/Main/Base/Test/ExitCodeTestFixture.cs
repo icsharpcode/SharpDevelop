@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NAntAddIn;
+using ICSharpCode.SharpDevelop.Util;
 using NUnit.Framework;
 using System;
 using System.IO;
 
-namespace ICSharpCode.NAntAddIn.Tests
+namespace ICSharpCode.SharpDevelop.Tests
 {
 	/// <summary>
 	/// Tests that exit codes are read correctly by the
@@ -18,19 +18,19 @@ namespace ICSharpCode.NAntAddIn.Tests
 	/// </summary>
 	[TestFixture]
 	//[Ignore("Ignoring since need to run ConsoleApp.exe")]
-	public class ExitCodeTestFixture
+	public class ExitCodeTestFixture : ConsoleAppTestFixtureBase
 	{
 		[Test]
 		public void NonZeroExitCode()
 		{
 			ProcessRunner runner = new ProcessRunner();
-			runner.WorkingDirectory = Path.GetDirectoryName(Config.ConsoleAppFilename);
+			runner.WorkingDirectory = Path.GetDirectoryName(GetConsoleAppFileName());
 			
 			int expectedExitCode = 1;
 						
 			Assert.IsFalse(runner.IsRunning, "IsRunning should be false.");
 
-			runner.Start(Config.ConsoleAppFilename, String.Concat("-exitcode:", expectedExitCode.ToString()));
+			runner.Start(GetConsoleAppFileName(), String.Concat("-exitcode:", expectedExitCode.ToString()));
 			runner.WaitForExit();
 			
 			Assert.AreEqual(expectedExitCode, runner.ExitCode, "Exit code is incorrect.");

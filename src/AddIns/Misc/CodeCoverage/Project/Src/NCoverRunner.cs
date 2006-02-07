@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Util;
 using System;
 using System.Diagnostics;
 using System.Text;

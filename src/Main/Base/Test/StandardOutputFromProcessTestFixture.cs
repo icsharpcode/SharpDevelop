@@ -5,21 +5,21 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NAntAddIn;
+using ICSharpCode.SharpDevelop.Util;
 using NUnit.Framework;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace ICSharpCode.NAntAddIn.Tests
+namespace ICSharpCode.SharpDevelop.Tests
 {
 	/// <summary>
 	/// Runs a process that returns some text on the standard output.
 	/// </summary>
 	[TestFixture]
 	//[Ignore("Ignoring since need to run ConsoleApp.exe")]
-	public class StandardOutputFromProcessTestFixture
+	public class StandardOutputFromProcessTestFixture : ConsoleAppTestFixtureBase
 	{
 		int preTestThreadCount;
 
@@ -47,11 +47,11 @@ namespace ICSharpCode.NAntAddIn.Tests
 		public void SingleLineOfOutput()
 		{			
 			ProcessRunner runner = new ProcessRunner();
-			runner.WorkingDirectory = Path.GetDirectoryName(Config.ConsoleAppFilename);
+			runner.WorkingDirectory = Path.GetDirectoryName(GetConsoleAppFileName());
 			
 			string echoText = "Test";
 			string expectedOutput = String.Concat(echoText, "\r\n");
-			runner.Start(Config.ConsoleAppFilename, String.Concat("-echo:", echoText));
+			runner.Start(GetConsoleAppFileName(), String.Concat("-echo:", echoText));
 			runner.WaitForExit();
 			
 			Assert.IsFalse(runner.IsRunning, "IsRunning should be false.");
@@ -67,9 +67,9 @@ namespace ICSharpCode.NAntAddIn.Tests
 		public void NoOutput()
 		{
 			ProcessRunner runner = new ProcessRunner();
-			runner.WorkingDirectory = Path.GetDirectoryName(Config.ConsoleAppFilename);
+			runner.WorkingDirectory = Path.GetDirectoryName(GetConsoleAppFileName());
 			
-			runner.Start(Config.ConsoleAppFilename);
+			runner.Start(GetConsoleAppFileName());
 			runner.WaitForExit();
 			
 			Assert.IsFalse(runner.IsRunning, "IsRunning should be false.");
@@ -86,7 +86,7 @@ namespace ICSharpCode.NAntAddIn.Tests
 		public void LargeAmountOfOutput()
 		{
 			ProcessRunner runner = new ProcessRunner();
-			runner.WorkingDirectory = Path.GetDirectoryName(Config.ConsoleAppFilename);
+			runner.WorkingDirectory = Path.GetDirectoryName(GetConsoleAppFileName());
 			
 			string filename = "test.txt";
 			string fullFilename = Path.Combine(runner.WorkingDirectory, filename);
@@ -95,7 +95,7 @@ namespace ICSharpCode.NAntAddIn.Tests
 			{
 				string outputText = GetOutputText();
 				CreateTextFile(fullFilename, outputText);
-				runner.Start(Config.ConsoleAppFilename, String.Concat("-file:", filename));
+				runner.Start(GetConsoleAppFileName(), String.Concat("-file:", filename));
 				bool exited = runner.WaitForExit(500);
 				
 				Assert.IsTrue(exited, "App did not exit.");
@@ -120,7 +120,7 @@ namespace ICSharpCode.NAntAddIn.Tests
 		public void LargeAmountOfErrorOutput()
 		{
 			ProcessRunner runner = new ProcessRunner();
-			runner.WorkingDirectory = Path.GetDirectoryName(Config.ConsoleAppFilename);
+			runner.WorkingDirectory = Path.GetDirectoryName(GetConsoleAppFileName());
 			
 			string filename = "test.txt";
 			string fullFilename = Path.Combine(runner.WorkingDirectory, filename);
@@ -129,7 +129,7 @@ namespace ICSharpCode.NAntAddIn.Tests
 			{
 				string outputText = GetOutputText();
 				CreateTextFile(fullFilename, outputText);
-				runner.Start(Config.ConsoleAppFilename, String.Concat("-error.file:", filename));
+				runner.Start(GetConsoleAppFileName(), String.Concat("-error.file:", filename));
 				bool exited = runner.WaitForExit(500);
 				
 				Assert.IsTrue(exited, "App did not exit.");
@@ -154,11 +154,11 @@ namespace ICSharpCode.NAntAddIn.Tests
 		public void SingleLineOfErrorOutput()
 		{
 			ProcessRunner runner = new ProcessRunner();
-			runner.WorkingDirectory = Path.GetDirectoryName(Config.ConsoleAppFilename);
+			runner.WorkingDirectory = Path.GetDirectoryName(GetConsoleAppFileName());
 			
 			string echoText = "Test";
 			string expectedOutput = String.Concat(echoText, "\r\n");
-			runner.Start(Config.ConsoleAppFilename, String.Concat("-error.echo:", echoText));
+			runner.Start(GetConsoleAppFileName(), String.Concat("-error.echo:", echoText));
 			runner.WaitForExit();
 			
 			Assert.AreEqual(0, runner.ExitCode, "Exit code is incorrect.");

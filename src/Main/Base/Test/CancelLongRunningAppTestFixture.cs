@@ -9,13 +9,13 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
-using ICSharpCode.NAntAddIn;
+using ICSharpCode.SharpDevelop.Util;
 
-namespace ICSharpCode.NAntAddIn.Tests
+namespace ICSharpCode.SharpDevelop.Tests
 {
 	[TestFixture]
 	//[Ignore("Ignoring since need to run ConsoleApp.exe")]
-	public class CancelLongRunningAppTestFixture
+	public class CancelLongRunningAppTestFixture : ConsoleAppTestFixtureBase
 	{
 		ProcessRunner runner;
 		
@@ -23,15 +23,15 @@ namespace ICSharpCode.NAntAddIn.Tests
 		public void Init()
 		{
 			runner = new ProcessRunner();
-			runner.WorkingDirectory = Path.GetDirectoryName(Config.ConsoleAppFilename);
+			runner.WorkingDirectory = Path.GetDirectoryName(GetConsoleAppFileName());
 		}
 		
 		[Test]
 		public void Cancel()
 		{
-			runner.Start(Config.ConsoleAppFilename, "-forever");
+			runner.Start(GetConsoleAppFileName(), "-forever");
 	
-			string processName = Path.GetFileName(Config.ConsoleAppFilename);
+			string processName = Path.GetFileName(GetConsoleAppFileName());
 			processName = Path.ChangeExtension(processName, null);
 			
 			// Check console app is running.

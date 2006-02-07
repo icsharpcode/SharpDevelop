@@ -5,18 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NAntAddIn;
+using ICSharpCode.SharpDevelop.Util;
 using NUnit.Framework;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 
-namespace ICSharpCode.NAntAddIn.Tests
+namespace ICSharpCode.SharpDevelop.Tests
 {
 	[TestFixture]
 	//[Ignore("Ignoring since need to run ConsoleApp.exe")]
-	public class ProcessExitedTestFixture
+	public class ProcessExitedTestFixture : ConsoleAppTestFixtureBase
 	{		
 		/// <summary>
 		/// Stores standard output received by the ProcessExit event.
@@ -46,14 +46,14 @@ namespace ICSharpCode.NAntAddIn.Tests
 		{			
 			exitEvent = new AutoResetEvent(false);
 			ProcessRunner runner = new ProcessRunner();
-			runner.WorkingDirectory = Path.GetDirectoryName(Config.ConsoleAppFilename);
+			runner.WorkingDirectory = Path.GetDirectoryName(GetConsoleAppFileName());
 			
 			string echoText = "Test";
 			string expectedOutput = String.Concat(echoText, "\r\n");
 			
 			runner.ProcessExited += new EventHandler(OnProcessExited);
 			
-			runner.Start(Config.ConsoleAppFilename, String.Concat("-echo:", echoText));
+			runner.Start(GetConsoleAppFileName(), String.Concat("-echo:", echoText));
 			bool exited = exitEvent.WaitOne(500, true);
 			
 			Assert.IsTrue(exited, "Timed out waiting for exit event.");

@@ -748,6 +748,10 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
+    <Compile Include="Src\Util\ProcessRunnerException.cs" />
+    <Compile Include="Src\Util\LineReceivedEventArgs.cs" />
+    <Compile Include="Src\Util\OutputReader.cs" />
+    <Compile Include="Src\Util\ProcessRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
@@ -772,6 +776,7 @@
     <Content Include="..\..\..\..\AddIns\ICSharpCode.SharpDevelop.addin">
       <Link>ICSharpCode.SharpDevelop.addin</Link>
     </Content>
+    <Folder Include="Src\Util" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

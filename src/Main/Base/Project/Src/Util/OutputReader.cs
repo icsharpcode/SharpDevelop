@@ -11,7 +11,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 
-namespace ICSharpCode.CodeCoverage
+namespace ICSharpCode.SharpDevelop.Util
 {
 	/// <summary>
 	/// A threaded <see cref="Process.StandardOutput"/> or
@@ -74,7 +74,6 @@ namespace ICSharpCode.CodeCoverage
 		/// </summary>
 		void ReadOutput()
 		{
-			//output = reader.ReadToEnd();
 			output = String.Empty;
 			StringBuilder outputBuilder = new StringBuilder();
 			

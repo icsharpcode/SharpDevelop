@@ -8,9 +8,9 @@
 using System;
 using System.ComponentModel;
 using NUnit.Framework;
-using ICSharpCode.NAntAddIn;
+using ICSharpCode.SharpDevelop.Util;
 
-namespace ICSharpCode.NAntAddIn.Tests
+namespace ICSharpCode.SharpDevelop.Tests
 {
 	[TestFixture]
 	public class NoSuchExecutableTestFixture

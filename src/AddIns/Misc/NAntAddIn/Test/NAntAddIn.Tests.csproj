@@ -38,10 +38,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
-    <Reference Include="ConsoleApp">
-      <HintPath>..\ConsoleApp\bin\ConsoleApp.exe</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -49,13 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="StandardOutputFromProcessTestFixture.cs" />
-    <Compile Include="CancelLongRunningAppTestFixture.cs" />
-    <Compile Include="Config.cs" />
-    <Compile Include="ExitCodeTestFixture.cs" />
-    <Compile Include="NoSuchExecutableTestFixture.cs" />
-    <Compile Include="ProcessExitedTestFixture.cs" />
-    <Compile Include="ProcessRunnerNotStartedTestFixture.cs" />
     <Compile Include="ReadNAntBuildFileTestFixture.cs" />
     <Compile Include="InvalidNAntBuildFileTestFixture.cs" />
     <Compile Include="InvalidXmlNAntOutputTestFixture.cs" />
@@ -64,12 +53,8 @@
     <Compile Include="NAntErrorAndWarningOutputTestFixture.cs" />
     <Compile Include="VBErrorNAntOutputTestFixture.cs" />
     <Compile Include="FatalErrorNAntOutputTestFixture.cs" />
-    <Compile Include="LineReceivedFromProcessTestFixture.cs" />
     <Compile Include="ReadOnlyPropertyNAntOutputTestFixture.cs" />
     <Compile Include="NonFatalErrorNAntOutputTestFixture.cs" />
-    <None Include="NAntAddIn.Tests.dll.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

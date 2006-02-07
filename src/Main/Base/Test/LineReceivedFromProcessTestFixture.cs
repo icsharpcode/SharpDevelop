@@ -6,18 +6,18 @@
 // </file>
 
 using NUnit.Framework;
-using ICSharpCode.NAntAddIn;
+using ICSharpCode.SharpDevelop.Util;
 using System;
 using System.Collections;
 using System.IO;
 
-namespace ICSharpCode.NAntAddIn.Tests
+namespace ICSharpCode.SharpDevelop.Tests
 {
 	/// <summary>
 	/// Tests the <see cref="ProcessRunner.LineReceived"/> event.
 	/// </summary>
 	[TestFixture]
-	public class LineReceivedFromProcessTestFixture
+	public class LineReceivedFromProcessTestFixture : ConsoleAppTestFixtureBase
 	{
 		ProcessRunner runner;
 		ArrayList lines;
@@ -27,7 +27,7 @@ namespace ICSharpCode.NAntAddIn.Tests
 		{
 			lines = new ArrayList();
 			runner = new ProcessRunner();
-			runner.WorkingDirectory = Path.GetDirectoryName(Config.ConsoleAppFilename);
+			runner.WorkingDirectory = Path.GetDirectoryName(GetConsoleAppFileName());
 		}
 		
 		[Test]
@@ -38,7 +38,7 @@ namespace ICSharpCode.NAntAddIn.Tests
 			
 			runner.OutputLineReceived += new LineReceivedEventHandler(OutputLineReceived);
 			
-			runner.Start(Config.ConsoleAppFilename, String.Concat("-echo:", echoText));
+			runner.Start(GetConsoleAppFileName(), String.Concat("-echo:", echoText));
 			runner.WaitForExit();
 			
 			Assert.AreEqual(0, runner.ExitCode, "Exit code should be zero.");

@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.NAntAddIn
+namespace ICSharpCode.SharpDevelop.Util
 {
 	/// <summary>
 	/// An exception thrown by a <see cref="ProcessRunner"/>

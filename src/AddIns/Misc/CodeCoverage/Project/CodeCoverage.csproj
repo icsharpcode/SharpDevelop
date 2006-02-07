@@ -5,7 +5,7 @@
     <AssemblyName>CodeCoverage</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{08CE9972-283B-44F4-82FA-966F7DFA6B7A}</ProjectGuid>
+    <ProjectGuid>{08ce9972-283b-44f4-82fa-966f7dfa6b7a}</ProjectGuid>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -60,13 +60,9 @@
     <EmbeddedResource Include="Resources\CodeCoverageOptionsPanel.xfrm" />
     <Compile Include="Src\CodeCoverageDisplayItem.cs" />
     <Compile Include="Src\ColorPickerComboBox.cs" />
-    <Compile Include="Src\OutputReader.cs" />
-    <Compile Include="Src\ProcessRunner.cs" />
-    <Compile Include="Src\ProcessRunnerException.cs" />
     <Compile Include="Src\NCoverRunner.cs" />
     <Compile Include="Src\NCoverRunnerSingleton.cs" />
     <Compile Include="Src\NCoverExitEventArgs.cs" />
-    <Compile Include="Src\LineReceivedEventArgs.cs" />
     <Compile Include="Src\CodeCoverageException.cs" />
     <Compile Include="Src\CodeCoverageProjectOptionsPanel.cs" />
     <EmbeddedResource Include="Resources\CodeCoverageProjectOptionsPanel.xfrm" />

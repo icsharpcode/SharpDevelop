@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.CodeCoverage
+namespace ICSharpCode.SharpDevelop.Util
 {
 	public delegate void LineReceivedEventHandler(object sender, LineReceivedEventArgs e);
 	

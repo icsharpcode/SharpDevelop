@@ -7,9 +7,9 @@
 
 using System;
 using NUnit.Framework;
-using ICSharpCode.NAntAddIn;
+using ICSharpCode.SharpDevelop.Util;
 
-namespace ICSharpCode.NAntAddIn.Tests
+namespace ICSharpCode.SharpDevelop.Tests
 {
 	/// <summary>
 	/// Checks that the <see cref="ProcessRunner"/> responds

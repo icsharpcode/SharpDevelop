@@ -41,6 +41,10 @@
       <HintPath>..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="ConsoleApp">
+      <HintPath>ConsoleApp\bin\ConsoleApp.exe</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -72,6 +76,14 @@
     <Compile Include="Templates\FileTemplateCategoryComparerTests.cs" />
     <Compile Include="WebReferences\HttpAuthenticationHeaderTests.cs" />
     <Compile Include="OutputTextLineParserTestFixture.cs" />
+    <Compile Include="StandardOutputFromProcessTestFixture.cs" />
+    <Compile Include="CancelLongRunningAppTestFixture.cs" />
+    <Compile Include="ExitCodeTestFixture.cs" />
+    <Compile Include="LineReceivedFromProcessTestFixture.cs" />
+    <Compile Include="NoSuchExecutableTestFixture.cs" />
+    <Compile Include="ProcessExitedTestFixture.cs" />
+    <Compile Include="ProcessRunnerNotStartedTestFixture.cs" />
+    <Compile Include="ConsoleAppTestFixtureBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\ICSharpCode.SharpDevelop.csproj">
