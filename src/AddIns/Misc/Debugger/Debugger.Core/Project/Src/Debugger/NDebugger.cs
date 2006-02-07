@@ -86,7 +86,7 @@ namespace Debugger
 			int size;
 			NativeMethods.GetRequestedRuntimeVersion(exeFilename, null, 0, out size);
 			StringBuilder sb = new StringBuilder(size);
-			int hr = NativeMethods.GetRequestedRuntimeVersion(exeFilename, sb, sb.Capacity, out size);
+			NativeMethods.GetRequestedRuntimeVersion(exeFilename, sb, sb.Capacity, out size);
 			return sb.ToString();
 		}
 		
@@ -103,7 +103,7 @@ namespace Debugger
 				this.debuggeeVersion = GetDebuggerVersion();
 			}
 			
-			corDebug = NativeMethods.CreateDebuggingInterfaceFromVersion(3, this.debuggeeVersion);
+			corDebug = new ICorDebug(NativeMethods.CreateDebuggingInterfaceFromVersion(3, this.debuggeeVersion));
 			
 			managedCallback = new ManagedCallback(this);
 			managedCallbackProxy = new ManagedCallbackProxy(managedCallback);
