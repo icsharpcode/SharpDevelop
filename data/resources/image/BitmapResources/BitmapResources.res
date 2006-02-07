@@ -483,3 +483,12 @@ CodeCoverage.Icons.16x16.Pad             = CodeCoverageIcons\CodeCoverage.Icons.
 CodeCoverage.Icons.16x16.File            = CodeCoverageIcons\CodeCoverage.Icons.16x16.File.png
 CodeCoverage.Icons.16x16.Run             = CodeCoverageIcons\CodeCoverage.Icons.16x16.Run.png
 
+#SharpReport icons
+Icons.16x16.SharpReport.Ascending = SharpReportIcons\Icons.16x16.SharpReport.Ascending.png
+Icons.16x16.SharpReport.Descending = SharpReportIcons\Icons.16x16.SharpReport.Descending.png 
+Icons.16x16.SharpReport.Function = SharpReportIcons\Icons.16x16.SharpReport.Function.ico
+
+
+
+
+
