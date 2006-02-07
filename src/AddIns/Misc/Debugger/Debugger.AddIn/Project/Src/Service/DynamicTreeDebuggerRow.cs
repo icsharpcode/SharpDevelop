@@ -53,6 +53,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			this[1].Paint += OnIconPaint;
 			this[3].FinishLabelEdit += OnLabelEdited;
+			this[3].MouseDown += OnMouseDown;
 			
 			Update();
 		}
@@ -68,13 +69,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			this[1].Text = ""; // Icon
 			this[2].Text = variable.Name;
 			this[3].Text = variable.Value.AsString;
-			if (variable.Value is PrimitiveValue && variable.Value.ManagedType != typeof(string)) {
-				this[3].AllowLabelEdit = true;
-			}
+			this[3].AllowLabelEdit = variable.Value is PrimitiveValue &&
+			                         variable.Value.ManagedType != typeof(string) &&
+			                         !(variable is PropertyVariable);
 			
-			if (!variable.Value.MayHaveSubVariables) {
-				this.ShowPlus = false;
-			}
+			this.ShowPlus = variable.Value.MayHaveSubVariables;
 			this.ShowMinusWhileExpanded = true;
 		}
 		
@@ -93,6 +92,27 @@ namespace ICSharpCode.SharpDevelop.Services
 				val.Primitive = newValue;
 			} catch (NotSupportedException) {
 				MessageBox.Show(WorkbenchSingleton.MainForm, "Can not covert " + newValue + " to " + val.ManagedType.ToString(), "Can not set value");
+			}
+		}
+		
+		void OnMouseDown(object sender, DynamicListMouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right) {
+				ContextMenuStrip menu = new ContextMenuStrip();
+				
+				ToolStripMenuItem copyItem;
+				copyItem = new ToolStripMenuItem();
+				copyItem.Text = "Copy value to clipboard";
+				copyItem.Checked = false;
+				copyItem.Click += delegate {
+					ClipboardWrapper.SetText(((DynamicListItem)sender).Text);
+				};
+				
+				menu.Items.AddRange(new ToolStripItem[] {
+				                    	copyItem
+				                    });
+				
+				menu.Show(e.List, e.Location);
 			}
 		}
 		
