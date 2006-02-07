@@ -38,11 +38,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Dock = DockStyle.Fill;
 			FullRowSelect = true;
 			
-			ItemActivate += new EventHandler(AddReference);
+			ItemActivate += delegate { AddReference(); };
 			PopulateListView();
 		}
 		
-		public void AddReference(object sender, EventArgs e)
+		public void AddReference()
 		{
 			foreach (ListViewItem item in SelectedItems) {
 				IProject project = (IProject)item.Tag;

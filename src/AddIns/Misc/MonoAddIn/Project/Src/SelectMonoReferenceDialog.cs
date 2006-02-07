@@ -107,7 +107,7 @@ namespace ICSharpCode.MonoAddIn
 		void SelectReference(object sender, EventArgs e)
 		{
 			IReferencePanel refPanel = (IReferencePanel)referenceTabControl.SelectedTab.Controls[0];
-			refPanel.AddReference(null, null);
+			refPanel.AddReference();
 		}
 		
 		void RemoveReference(object sender, EventArgs e)

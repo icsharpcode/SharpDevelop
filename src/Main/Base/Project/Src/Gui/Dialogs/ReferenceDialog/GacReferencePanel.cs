@@ -8,7 +8,7 @@
 using System;
 using System.Text;
 using System.Drawing;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using MSjogren.GacTool.FusionNative;
@@ -18,10 +18,9 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class GacReferencePanel : ListView, IReferencePanel
+	public class GacReferencePanel : UserControl, IReferencePanel
 	{
-		
-		class ColumnSorter : IComparer
+		class ColumnSorter : System.Collections.IComparer
 		{
 			private int column = 0;
 			bool asc = true;
@@ -49,72 +48,113 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 
+		protected ListView listView;
+		CheckBox chooseSpecificVersionCheckBox;
 		ISelectReferenceDialog selectDialog;
 		ColumnSorter sorter;
 		
 		public GacReferencePanel(ISelectReferenceDialog selectDialog)
 		{
+			listView = new ListView();
 			sorter = new ColumnSorter();
-			this.ListViewItemSorter = sorter;
+			listView.ListViewItemSorter = sorter;
 			
 			this.selectDialog = selectDialog;
 			
 			ColumnHeader referenceHeader = new ColumnHeader();
 			referenceHeader.Text  = ResourceService.GetString("Dialog.SelectReferenceDialog.GacReferencePanel.ReferenceHeader");
-			referenceHeader.Width = 160;
-			Columns.Add(referenceHeader);
+			referenceHeader.Width = 180;
+			listView.Columns.Add(referenceHeader);
 			
-			Sorting = SortOrder.Ascending;
+			listView.Sorting = SortOrder.Ascending;
 			
 			ColumnHeader versionHeader = new ColumnHeader();
 			versionHeader.Text  = ResourceService.GetString("Dialog.SelectReferenceDialog.GacReferencePanel.VersionHeader");
 			versionHeader.Width = 70;
-			Columns.Add(versionHeader);
+			listView.Columns.Add(versionHeader);
 			
 			ColumnHeader pathHeader = new ColumnHeader();
 			pathHeader.Text  = ResourceService.GetString("Global.Path");
 			pathHeader.Width = 100;
-			Columns.Add(pathHeader);
+			listView.Columns.Add(pathHeader);
 			
-			View = View.Details;
-			Dock = DockStyle.Fill;
-			FullRowSelect = true;
-			ItemActivate += new EventHandler(AddReference);
-			ColumnClick += new ColumnClickEventHandler(columnClick);
+			listView.View = View.Details;
+			listView.FullRowSelect = true;
+			listView.ItemActivate += delegate { AddReference(); };
+			listView.ColumnClick += new ColumnClickEventHandler(columnClick);
+			
+			listView.Dock = DockStyle.Fill;
+			this.Dock = DockStyle.Fill;
+			this.Controls.Add(listView);
+			
+			chooseSpecificVersionCheckBox = new CheckBox();
+			chooseSpecificVersionCheckBox.Dock = DockStyle.Top;
+			chooseSpecificVersionCheckBox.Text = StringParser.Parse("${res:Dialog.SelectReferenceDialog.GacReferencePanel.ChooseSpecificAssemblyVersion}");
+			this.Controls.Add(chooseSpecificVersionCheckBox);
+			chooseSpecificVersionCheckBox.CheckedChanged += delegate {
+				listView.Items.Clear();
+				if (chooseSpecificVersionCheckBox.Checked)
+					listView.Items.AddRange(fullItemList);
+				else
+					listView.Items.AddRange(shortItemList);
+			};
+			
 			PrintCache();
 		}
 		
 		void columnClick(object sender, ColumnClickEventArgs e)
 		{
-			if(e.Column < 2)
-			{
+			if(e.Column < 2) {
 				sorter.CurrentColumn = e.Column;
-				Sort();
+				listView.Sort();
 			}
 		}
 		
-		public void AddReference(object sender, EventArgs e)
+		public void AddReference()
 		{
-			foreach (ListViewItem item in SelectedItems) {
+			foreach (ListViewItem item in listView.SelectedItems) {
 				selectDialog.AddReference(ReferenceType.Gac,
 				                          item.Text,
-				                          item.Tag.ToString(),
+				                          chooseSpecificVersionCheckBox.Checked ? item.Tag.ToString() : item.Text,
 				                          null);
 			}
-		}		
+		}
 		
-		protected virtual void PrintCache()
+		ListViewItem[] fullItemList;
+		/// <summary>
+		/// Item list where older versions are filtered out.
+		/// </summary>
+		ListViewItem[] shortItemList;
+		
+		void PrintCache()
+		{
+			List<ListViewItem> itemList = GetCacheContent();
+			
+			fullItemList = itemList.ToArray();
+			// Remove all items where a higher version exists
+			itemList.RemoveAll(delegate(ListViewItem item) {
+			                   	return itemList.Exists(delegate(ListViewItem item2) {
+			                   	                       	return string.Equals(item.Text, item2.Text, StringComparison.OrdinalIgnoreCase)
+			                   	                       		&& new Version(item.SubItems[1].Text) < new Version(item2.SubItems[1].Text);
+			                   	                       });
+			                   });
+			shortItemList = itemList.ToArray();
+			
+			listView.Items.AddRange(shortItemList);
+		}
+		
+		protected virtual List<ListViewItem> GetCacheContent()
 		{
 			IApplicationContext applicationContext = null;
 			IAssemblyEnum assemblyEnum = null;
 			IAssemblyName assemblyName = null;
 			
+			List<ListViewItem> itemList = new List<ListViewItem>();
 			Fusion.CreateAssemblyEnum(out assemblyEnum, null, null, 2, 0);
-				
 			while (assemblyEnum.GetNextAssembly(out applicationContext, out assemblyName, 0) == 0) {
 				uint nChars = 0;
 				assemblyName.GetDisplayName(null, ref nChars, 0);
-									
+				
 				StringBuilder sb = new StringBuilder((int)nChars);
 				assemblyName.GetDisplayName(sb, ref nChars, 0);
 				
@@ -124,8 +164,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				string aVersion = info[1].Substring(info[1].LastIndexOf('=') + 1);
 				ListViewItem item = new ListViewItem(new string[] {aName, aVersion});
 				item.Tag = sb.ToString();
-				Items.Add(item);
+				itemList.Add(item);
 			}
+			return itemList;
 		}
 	}
 }

@@ -18,13 +18,15 @@ namespace ICSharpCode.MonoAddIn
 		{
 		}
 		
-		protected override void PrintCache()
+		protected override List<ListViewItem> GetCacheContent()
 		{
+			List<ListViewItem> itemList = new List<ListViewItem>();
 			foreach (MonoAssemblyName assemblyName in MonoGlobalAssemblyCache.GetAssemblyNames()) {
 				ListViewItem item = new ListViewItem(new string[] {assemblyName.Name, assemblyName.Version.ToString(), assemblyName.Directory});
 				item.Tag = assemblyName.FullName;
-				Items.Add(item);
+				itemList.Add(item);
 			}
+			return itemList;
 		}
 	}
 }

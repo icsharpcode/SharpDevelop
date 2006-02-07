@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public interface IReferencePanel
 	{
-		void AddReference(object sender, EventArgs e);
+		void AddReference();
 	}
 	
 	public interface ISelectReferenceDialog
@@ -95,27 +95,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-//			foreach (ProjectReference refInfo in configureProject.ProjectReferences) {
-//				if (refInfo.ReferenceType == referenceType) {
-//					switch (referenceType) {
-//						case ReferenceType.Typelib:
-//						case ReferenceType.Gac:
-//						case ReferenceType.Assembly:
-//							if (refInfo.Reference == referenceLocation) {
-//								return;
-//							}
-//							break;
-//						case ReferenceType.Project:
-//							if (refInfo.Reference == referenceName) {
-//								return;
-//							}
-//							break;
-//						default:
-//							System.Diagnostics.Debug.Assert(false, "Unknown reference type" + referenceType);
-//							break;
-//					}
-//				}
-//			}
 			ListViewItem newItem = new ListViewItem(new string[] {referenceName, referenceType.ToString(), referenceLocation});
 			switch (referenceType) {
 				case ReferenceType.Typelib:
@@ -146,7 +125,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void SelectReference(object sender, EventArgs e)
 		{
 			IReferencePanel refPanel = (IReferencePanel)referenceTabControl.SelectedTab.Controls[0];
-			refPanel.AddReference(null, null);
+			refPanel.AddReference();
+		}
+		
+		void OkButtonClick(object sender, EventArgs e)
+		{
+			if (referencesListView.Items.Count == 0) {
+				SelectReference(sender, e);
+			}
 		}
 		
 		void RemoveReference(object sender, EventArgs e)
@@ -201,11 +187,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// referenceTabControl
 			// 
 			this.referenceTabControl.Controls.AddRange(new System.Windows.Forms.Control[] {
-																							  this.gacTabPage,
-																							  this.projectTabPage,
-																							  this.browserTabPage,
-																							  this.comTabPage
-			});
+			                                           	this.gacTabPage,
+			                                           	this.projectTabPage,
+			                                           	this.browserTabPage,
+			                                           	this.comTabPage
+			                                           });
 			this.referenceTabControl.Location = new System.Drawing.Point(8, 8);
 			this.referenceTabControl.SelectedIndex = 0;
 			this.referenceTabControl.Size = new System.Drawing.Size(472, 224);
@@ -214,9 +200,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// referencesListView
 			// 
 			this.referencesListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-																								 this.referenceHeader,
-																								 this.typeHeader,
-																								 this.locationHeader});
+			                                         	this.referenceHeader,
+			                                         	this.typeHeader,
+			                                         	this.locationHeader});
 			this.referencesListView.Location = new System.Drawing.Point(8, 256);
 			this.referencesListView.Size = new System.Drawing.Size(472, 97);
 			this.referencesListView.TabIndex = 3;
@@ -302,7 +288,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.okButton.Location = new System.Drawing.Point(312, 368);
 			this.okButton.TabIndex = 5;
 			this.okButton.Text = ResourceService.GetString("Global.OKButtonText");
-			this.okButton.FlatStyle = FlatStyle.System;
+			this.okButton.Click += OkButtonClick;
 			
 			// 
 			// cancelButton
@@ -329,14 +315,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.CancelButton = this.cancelButton;
 			this.ClientSize = new System.Drawing.Size(570, 399);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																		  this.helpButton,
-																		  this.cancelButton,
-																		  this.okButton,
-																		  this.referencesLabel,
-																		  this.removeButton,
-																		  this.selectButton,
-																		  this.referencesListView,
-																		  this.referenceTabControl});
+			                       	this.helpButton,
+			                       	this.cancelButton,
+			                       	this.okButton,
+			                       	this.referencesLabel,
+			                       	this.removeButton,
+			                       	this.selectButton,
+			                       	this.referencesListView,
+			                       	this.referenceTabControl});
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;

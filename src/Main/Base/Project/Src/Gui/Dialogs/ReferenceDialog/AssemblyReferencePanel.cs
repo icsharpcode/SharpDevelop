@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public void AddReference(object sender, EventArgs e)
+		public void AddReference()
 		{
 			SelectReferenceDialog(null, null);
 		}
