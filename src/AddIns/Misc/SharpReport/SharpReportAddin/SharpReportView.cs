@@ -55,16 +55,19 @@ namespace SharpReportAddin{
 				panel.AutoScroll = true;
 				CreateTabControl();
 				BuildToolBarItems();
-				PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
-				PropertyPad.Grid.Refresh();
+				
+				if (PropertyPad.Grid != null) {
+					PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
+					PropertyPad.Grid.Refresh();
+				}
+				
 				//Activate the FieldsExplorer - Pad
 				PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(FieldsExplorer));
 				if (pad != null) {
 					pad.CreatePad();
 				}
-			} catch (Exception e) {
-				MessageService.ShowError(e,e.Message);
-				throw e;
+			} catch (Exception) {
+				throw;
 			}
 		}
 		
@@ -358,13 +361,10 @@ namespace SharpReportAddin{
 		
 		private void OnObjectSelected (object sender,EventArgs e) {
 			if (designerControl.ReportControl.SelectedObject != null) {
-//				BaseReportObject bro = designerControl.ReportControl.SelectedObject as BaseReportObject;
-//				
-//				if (bro != null) {
-//					string s = "{" + bro.Name + "}";
-//					StatusBarService.SetMessage(s);
-//				}
-				PropertyPad.Grid.SelectedObject = designerControl.ReportControl.SelectedObject;
+				if (PropertyPad.Grid != null) {
+					PropertyPad.Grid.SelectedObject = designerControl.ReportControl.SelectedObject;
+				}
+				
 			}
 		}
 		
@@ -380,8 +380,10 @@ namespace SharpReportAddin{
 		/// Set PropertyGrid to ReportSettings
 		/// </summary>
 		public void ShowReportSettings () {
-			PropertyPad.Grid.SelectedObject = designerControl.ReportControl.ReportSettings;
-			PropertyPad.Grid.Refresh();
+			if (PropertyPad.Grid != null) {
+				PropertyPad.Grid.SelectedObject = designerControl.ReportControl.ReportSettings;
+				PropertyPad.Grid.Refresh();
+			}
 		}
 		
 		
@@ -505,12 +507,14 @@ namespace SharpReportAddin{
 				base.FileName = fileName;
 				designerControl.ReportModel.ReportSettings.FileName = fileName;
 				designerControl.ReportControl.ObjectSelected += new EventHandler <EventArgs>(OnObjectSelected);
-				PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
-				PropertyPad.Grid.Refresh();
+				if (PropertyPad.Grid != null) {
+					PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
+					PropertyPad.Grid.Refresh();
+				}
+				
 				this.designerControl.ReportModel.ReportSettings.AvailableFieldsCollection = reportManager.AvailableFieldsCollection;
-			
-			} catch (Exception e) {
-				MessageService.ShowError(e.Message);
+				
+			} catch (Exception ) {
 				throw ;
 			}
 		}
@@ -541,7 +545,10 @@ namespace SharpReportAddin{
 		
 		
 		public override void Dispose(){
-			PropertyPad.Grid.SelectedObject = null;
+			if (PropertyPad.Grid != null) {
+				PropertyPad.Grid.SelectedObject = null;
+			}
+			
 			RemoveSideBarItem();
 			this.Dispose(true);
 			GC.SuppressFinalize(this);

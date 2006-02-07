@@ -55,7 +55,6 @@
     <None Include="SharpReportAddin.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <EmbeddedResource Include="Resources\BitmapResources.resources" />
     <Compile Include="Commands\ViewCommands.cs" />
   </ItemGroup>
   <ItemGroup>
