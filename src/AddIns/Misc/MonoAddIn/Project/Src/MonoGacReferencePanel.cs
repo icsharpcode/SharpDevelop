@@ -8,6 +8,7 @@
 using ICSharpCode.Build.Tasks;
 using ICSharpCode.SharpDevelop.Gui;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace ICSharpCode.MonoAddIn

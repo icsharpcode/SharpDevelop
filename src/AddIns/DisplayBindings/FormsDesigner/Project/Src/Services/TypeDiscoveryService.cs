@@ -39,7 +39,9 @@ namespace ICSharpCode.FormsDesigner.Services
 				                     + "excludeGlobalTypes=" + excludeGlobalTypes.ToString());
 				//seek in all assemblies
 				//allow to work designers like columns editor in datagridview
-				foreach (Assembly asm in TypeResolutionService.DesignerAssemblies) {
+				// Searching types can cause additional assemblies to be loaded, so we need to use
+				// ToArray to prevent an exception if the collection changes.
+				foreach (Assembly asm in TypeResolutionService.DesignerAssemblies.ToArray()) {
 					AddDerivedTypes(baseType, asm, types);
 				}
 				LoggingService.Debug("TypeDiscoveryService returns " + types.Count + " types");
