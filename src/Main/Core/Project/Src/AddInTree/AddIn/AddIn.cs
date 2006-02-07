@@ -126,6 +126,9 @@ namespace ICSharpCode.Core
 							if (reader.AttributeCount != 1) {
 								throw new AddInLoadException("BitmapResources requires ONE attribute.");
 							}
+							
+							if(hintPath == null) break;
+							
 							string filename = StringParser.Parse(reader.GetAttribute("file"));
 							string path = Path.Combine(hintPath, filename);
 							
