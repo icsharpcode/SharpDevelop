@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Resources;
 using System.IO;
 using System.Collections.Generic;
 using System.Xml;
@@ -16,6 +17,7 @@ namespace ICSharpCode.Core
 	{
 		Properties    properties = new Properties();
 		List<Runtime> runtimes   = new List<Runtime>();
+		
 		string        addInFileName = null;
 		AddInManifest      manifest = new AddInManifest();
 		Dictionary<string, ExtensionPath> paths = new Dictionary<string, ExtensionPath>();
@@ -119,6 +121,30 @@ namespace ICSharpCode.Core
 			while (reader.Read()) {
 				if (reader.NodeType == XmlNodeType.Element && reader.IsStartElement()) {
 					switch (reader.LocalName) {
+						case "StringResources":
+						case "BitmapResources":
+							if (reader.AttributeCount != 1) {
+								throw new AddInLoadException("BitmapResources requires ONE attribute.");
+							}
+							string filename = StringParser.Parse(reader.GetAttribute("file"));
+							string path = Path.Combine(hintPath, filename);
+							
+							if(! File.Exists(path))
+							{
+								throw new AddInLoadException("Resource file '" + path + "' could not be found.");
+							}
+							
+							ResourceManager resourceManager = ResourceManager.CreateFileBasedResourceManager(Path.GetFileNameWithoutExtension(path), Path.GetDirectoryName(path), null);
+							
+							if(reader.LocalName == "BitmapResources")
+							{
+								ResourceService.RegisterNeutralImages(resourceManager);
+							}
+							else
+							{
+								ResourceService.RegisterNeutralStrings(resourceManager);
+							}
+							break;
 						case "Runtime":
 							if (!reader.IsEmptyElement) {
 								while (reader.Read()){

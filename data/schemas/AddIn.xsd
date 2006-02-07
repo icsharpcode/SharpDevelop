@@ -8,6 +8,28 @@
 		<xs:attribute name="url" type="xs:anyURI" use="optional" />
 		<xs:attribute name="description" type="xs:string" use="optional" />
 		<xs:choice minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="BitmapResources">
+				<xs:complexType>
+					<xs:choice minOccurs="1" maxOccurs="1">
+						<xs:element name="Identity">
+							<xs:complexType>
+								<xs:attribute name="file" type="xs:string" use="required" />
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="StringResources">
+				<xs:complexType>
+					<xs:choice minOccurs="1" maxOccurs="1">
+						<xs:element name="Identity">
+							<xs:complexType>
+								<xs:attribute name="file" type="xs:string" use="required" />
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="Manifest">
 				<xs:complexType>
 					<xs:choice minOccurs="0" maxOccurs="unbounded">

@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Resources;
 using System.Drawing;
@@ -56,21 +57,21 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>English strings (list of resource managers)</summary>
-		static ArrayList strings = new ArrayList();
+		static List<ResourceManager> strings = new List<ResourceManager>();
 		/// <summary>Neutral/English images (list of resource managers)</summary>
-		static ArrayList icons   = new ArrayList();
+		static List<ResourceManager> icons   = new List<ResourceManager>();
 		
 		/// <summary>Hashtable containing the local strings from the main application.</summary>
 		static Hashtable localStrings = null;
 		static Hashtable localIcons   = null;
 		
 		/// <summary>Strings resource managers for the current language</summary>
-		static ArrayList localStringsResMgrs = new ArrayList();
+		static List<ResourceManager> localStringsResMgrs = new List<ResourceManager>();
 		/// <summary>Image resource managers for the current language</summary>
-		static ArrayList localIconsResMgrs   = new ArrayList();
+		static List<ResourceManager> localIconsResMgrs   = new List<ResourceManager>();
 		
 		/// <summary>List of ResourceAssembly</summary>
-		static ArrayList resourceAssemblies = new ArrayList();
+		static List<ResourceAssembly> resourceAssemblies = new List<ResourceAssembly>();
 		
 		class ResourceAssembly
 		{
