@@ -50,15 +50,12 @@ namespace ReportGenerator{
 				customizer.Set("Language",  ".XSD");
 				using (WizardDialog wizard = new WizardDialog("Report Wizard", customizer, WizardPath)) {
 					if (wizard.ShowDialog() == DialogResult.OK) {
-						
 						try {
 							gen.FillReportModel (reportModel);
 							DoCreate(reportModel);
 						} catch (Exception) {
 							throw;
 						}
-					} else {
-						throw new SharpReportException("Chancel");
 					}
 				}
 			} else {
@@ -79,7 +76,8 @@ namespace ReportGenerator{
 					generatePushDataReport.GenerateReport();
 					break;
 				case GlobalEnums.enmPushPullModel.FormSheet:
-					model.ReportSettings.ReportType = GlobalEnums.enmReportType.FormSheet;
+					GenerateFormSheetReport generateFormSheetReport = new GenerateFormSheetReport (customizer,model);
+					generateFormSheetReport.GenerateReport();
 					break;
 			}
 		}

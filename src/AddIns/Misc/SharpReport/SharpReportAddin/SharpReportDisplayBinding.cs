@@ -18,19 +18,17 @@
 
 
 using System;
-using System.IO;
-using System.Windows.Forms;
 
 using ICSharpCode.Core;
 
 using SharpReportCore;
-	/// <summary>
-	/// Displaybinding for SharpReport
-	/// </summary>
-	/// <remarks>
-	/// 	created by - Forstmeier Peter
-	/// 	created on - 11.04.2005 23:36:45
-	/// </remarks>
+/// <summary>
+/// Displaybinding for SharpReport
+/// </summary>
+/// <remarks>
+/// 	created by - Forstmeier Peter
+/// 	created on - 11.04.2005 23:36:45
+/// </remarks>
 namespace SharpReportAddin {	
 	public class SharpReportDisplayBinding : object, ICSharpCode.Core.IDisplayBinding {
 		
@@ -41,10 +39,11 @@ namespace SharpReportAddin {
 				if (view != null) {
 					try {
 						ReportGenerator.CreateReport cmd = new ReportGenerator.CreateReport(view.DesignerControl.ReportModel);
-						cmd.Run();
-						view.FileName = view.DesignerControl.ReportModel.ReportSettings.FileName;
-						view.UpdateView(true);
-						view.Selected();
+						cmd.Run();							
+						view.FileName = view.DesignerControl.ReportModel.ReportSettings.FileName;							
+						view.UpdateView(true);							
+						view.Selected();							
+						view.ShowReportSettings();							
 						return view;
 					} catch (SharpReportException) {
 						if (view != null) {

@@ -10,12 +10,9 @@
 using System;
 using System.Drawing;
 using System.Globalization;
-//using System.ComponentModel;
-
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-//using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 using SharpReportCore;
@@ -265,6 +262,7 @@ namespace ReportGenerator{
 			this.txtFileName.Size = new System.Drawing.Size(248, 20);
 			this.txtFileName.TabIndex = 11;
 			this.txtFileName.Text = String.Empty;
+			this.txtFileName.TextChanged += new System.EventHandler(this.ChangedEvent);
 			// 
 			// cboGraphicsUnit
 			// 
@@ -272,6 +270,7 @@ namespace ReportGenerator{
 			this.cboGraphicsUnit.Name = "cboGraphicsUnit";
 			this.cboGraphicsUnit.Size = new System.Drawing.Size(248, 21);
 			this.cboGraphicsUnit.TabIndex = 17;
+			this.cboGraphicsUnit.TextChanged += new System.EventHandler(this.ChangedEvent);
 			// 
 			// cboReportType
 			// 

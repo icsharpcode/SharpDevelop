@@ -57,6 +57,7 @@
     <None Include="ReportGenerator.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="Generators\GenerateFormSheetReport.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Generators" />

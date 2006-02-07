@@ -62,7 +62,6 @@
     <Folder Include="Commands\AbstractCommand" />
     <Folder Include="FieldsExplorer" />
     <Folder Include="Configuration" />
-    <Folder Include="Resources" />
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>

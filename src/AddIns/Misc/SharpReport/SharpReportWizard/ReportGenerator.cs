@@ -22,14 +22,14 @@ using SharpQuery;
 using SharpQuery.Collections;
 using SharpQuery.SchemaClass;
 	
-	/// <summary>
-	/// This class creates settings for a report
-	/// </summary>
-	/// <remarks>
-	/// 	created by - Forstmeier Peter
-	/// 	created on - 28.01.2005 10:31:01
-	/// </remarks>
-using System.Diagnostics;
+/// <summary>
+/// This class creates settings for a report
+/// </summary>
+/// <remarks>
+/// 	created by - Forstmeier Peter
+/// 	created on - 28.01.2005 10:31:01
+/// </remarks>
+using System.Windows.Forms;
 
 namespace ReportGenerator {	
 	public class ReportGenerator : object {
@@ -61,11 +61,10 @@ namespace ReportGenerator {
 		
 		public ReportModel FillReportModel (ReportModel model) {
 			if (model == null) {
-				throw new ArgumentNullException("model");
+				throw new MissingModelException();
 			}
 			model.ReportSettings.ReportName = this.reportName;
 			model.ReportSettings.FileName = this.path + this.fileName;
-			
 			
 			model.ReportSettings.GraphicsUnit = this.graphicsUnit;
 			model.ReportSettings.ReportType = this.reportType;
@@ -82,9 +81,7 @@ namespace ReportGenerator {
 		/// from the queryParameters
 		/// </summary>
 		/// <returns></returns>
-		public   AbstractParametersCollection BuildSqlParameterList(){
-			Debug.Assert (sharpQueryProcedure != null,"ReportGenerator:BuildSqlParameterList : Wrong sharpQueryProcedure");
-			
+		public   AbstractParametersCollection BuildSqlParameterList(){			
 			if (this.queryParameters != null && this.queryParameters.Count > 0) {
 				AbstractParametersCollection paramCol = new  AbstractParametersCollection();
 				SqlParameter reportPar;
