@@ -25,6 +25,7 @@ namespace ICSharpCode.UnitTesting
 	{
 		TestLoader loader = new TestLoader();
 		static MessageViewCategory testRunnerCategory;
+		bool runningTests;
 		
 		[Flags]
 		public enum TestTreeViewState {
@@ -86,6 +87,9 @@ namespace ICSharpCode.UnitTesting
 			loader.Events.TestOutput += delegate(object sender, TestEventArgs e) {
 				// This method interceps StdOut/StdErr from the tests
 				TestRunnerCategory.AppendText(e.TestOutput.Text);
+			};
+			loader.Events.RunFinished += delegate(object sender, TestEventArgs e) {
+				runningTests = false;
 			};
 			loader.Events.TestFinished += delegate(object sender, TestEventArgs e) {
 				TestResult result = e.Result;
@@ -174,7 +178,7 @@ namespace ICSharpCode.UnitTesting
 		
 		public bool IsTestRunning {
 			get {
-				return loader.IsTestRunning;
+				return runningTests;
 			}
 		}
 		
@@ -308,6 +312,7 @@ namespace ICSharpCode.UnitTesting
 		public new void RunTests()
 		{
 			if (Nodes.Count > 0) {
+				runningTests = true;
 				base.RunTests();
 			}
 		}
