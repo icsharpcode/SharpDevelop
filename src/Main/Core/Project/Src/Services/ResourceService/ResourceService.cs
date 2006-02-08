@@ -326,7 +326,11 @@ namespace ICSharpCode.Core
 			
 			string s = null;
 			foreach (ResourceManager resourceManger in localStringsResMgrs) {
-				s = resourceManger.GetString(name);
+				try {
+					s = resourceManger.GetString(name);
+				}
+				catch (Exception) { }
+
 				if (s != null) {
 					break;
 				}
@@ -362,7 +366,11 @@ namespace ICSharpCode.Core
 				
 				if (iconobj == null) {
 					foreach (ResourceManager resourceManger in icons) {
-						iconobj = resourceManger.GetObject(name);
+						try {
+							iconobj = resourceManger.GetObject(name);
+						}
+						catch (Exception) { }
+
 						if (iconobj != null) {
 							break;
 						}
