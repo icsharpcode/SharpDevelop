@@ -455,7 +455,8 @@ namespace ICSharpCode.Core
 			string fullyQualifiedName = @class.FullyQualifiedName;
 			if (@class.IsPartial) {
 				// remove a part of a partial class
-				CompoundClass compound = (CompoundClass)GetClassInternal(fullyQualifiedName, @class.TypeParameters.Count, language);
+				// Use "as" cast to fix SD2-680: the stored class might be a part not marked as partial
+				CompoundClass compound = GetClassInternal(fullyQualifiedName, @class.TypeParameters.Count, language) as CompoundClass;
 				if (compound == null) return;
 				compound.Parts.Remove(@class);
 				if (compound.Parts.Count > 0) {
