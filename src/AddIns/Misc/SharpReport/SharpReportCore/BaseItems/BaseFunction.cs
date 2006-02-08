@@ -21,21 +21,21 @@ namespace SharpReportCore {
 	/// 	created on - 05.09.2005 22:25:18
 	/// </remarks>
 	public class BaseFunction : SharpReportCore.BaseTextItem {
-		string friendlyName;
+		string localisedName;
 
 		public BaseFunction():base() {
-			
+			this.localisedName = "SharpReport.Toolbar.Functions";
 		}
 		public BaseFunction(string friendlyName)
 		{
-			this.friendlyName = friendlyName;
+			this.localisedName = friendlyName;
 		}
 		
 		#region properties
 		
-		public virtual string FriendlyName {
+		public virtual string LocalisedName {
 			get {
-				return friendlyName;
+				return localisedName;
 			}
 		}
 		

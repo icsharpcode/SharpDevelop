@@ -20,7 +20,8 @@ using System.Globalization;
 	
 namespace SharpReportCore {
 	public class BaseToday : BaseFunction {
-		static string fnName = "Date";
+		static string fnName = "SharpReport.Toolbar.Functions.TodaysDate";
+		
 		public BaseToday():base(fnName) {
 			
 		}

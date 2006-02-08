@@ -24,7 +24,7 @@ using System.Drawing;
 
 namespace SharpReportCore {
 		public class BasePageNumber : BaseFunction {
-			static string fnName = "PageNumber";
+			static string fnName = "SharpReport.Toolbar.Functions.PageNumber";
 			
 			public BasePageNumber():base(fnName) {
 				
@@ -58,9 +58,9 @@ namespace SharpReportCore {
 				return "PageNumber";
 			}
 			
-			public override string FriendlyName {
+			public override string LocalisedName {
 				get {
-					return base.FriendlyName;
+					return base.LocalisedName;
 				}
 			}
 			

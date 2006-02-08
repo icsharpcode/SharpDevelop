@@ -65,20 +65,22 @@ namespace SharpReport
 		
 		private void AddReportElements (AxSideTab tab) {
 
+			Bitmap bitmap = ResourceService.GetIcon("Icons.16.16.SharpReport.Textbox").ToBitmap();
+			
 			AxSideTabItem	t = sideTab.SideTabItemFactory.CreateSideTabItem(ResourceService.GetString("SharpReport.Toolbar.TextBox"),
 			                                                               GlobalEnums.ReportItemType.ReportTextItem.ToString(),
-			                                                               GlobalValues.TextBoxBitmap());
-		
+			                                                               bitmap);
 			tab.Items.Add (t);
 			t = sideTab.SideTabItemFactory.CreateSideTabItem( ResourceService.GetString("SharpReport.Toolbar.DataField"),
 			                                                 GlobalEnums.ReportItemType.ReportDataItem.ToString(),
 			                                                 ResourceService.GetBitmap("Icons.16x16.SharpQuery.Column"));
 			tab.Items.Add (t);
 			
-			Icon icon = ResourceService.GetIcon("Icons.16x16.ResourceEditor.bmp");
+			bitmap = ResourceService.GetIcon("Icons.16x16.ResourceEditor.bmp").ToBitmap();
+			
 			t = sideTab.SideTabItemFactory.CreateSideTabItem( "Image",
 			                                                 GlobalEnums.ReportItemType.ReportImageItem.ToString(),
-			                                                 icon.ToBitmap());
+			                                                 bitmap);
 			tab.Items.Add (t);
 			
 			t = sideTab.SideTabItemFactory.CreateSideTabItem( ResourceService.GetString("SharpReport.Toolbar.Rectangle"),
@@ -86,9 +88,10 @@ namespace SharpReport
 			                                                 GlobalValues.RectangleBitmap());
 			tab.Items.Add (t);
 			
+			bitmap = ResourceService.GetIcon("Icons.16.16.SharpReport.Line").ToBitmap();
 			t = sideTab.SideTabItemFactory.CreateSideTabItem( ResourceService.GetString("SharpReport.Toolbar.Line"),
 			                                                 GlobalEnums.ReportItemType.ReportLineItem.ToString(),
-			                                                 GlobalValues.LineBitmap());
+			                                                 bitmap);
 			tab.Items.Add (t);
 			t = sideTab.SideTabItemFactory.CreateSideTabItem(ResourceService.GetString("SharpReport.Toolbar.Circle"),
 			                                                 GlobalEnums.ReportItemType.ReportCircleItem.ToString(),
@@ -100,17 +103,17 @@ namespace SharpReport
 			
 			FunctionFactory ff = new FunctionFactory();
 			string localise = "SharpReport.Toolbar.Functions.";
-			
+			Bitmap functionBitmap = ResourceService.GetIcon("Icons.16x16.SharpReport.Function").ToBitmap();
+		
 			AxSideTabItem	t = sideTab.SideTabItemFactory.CreateSideTabItem(ResourceService.GetString(localise + ff.AvailableTypes[0]) ,
 			                                                               ff.AvailableTypes[0].ToString(),
-			                                                               GlobalValues.FunctionBitmap());
+			                                                               functionBitmap);
 			
 			tab.Items.Add (t);
 			
-
 			t = sideTab.SideTabItemFactory.CreateSideTabItem (ResourceService.GetString(localise + ff.AvailableTypes[1]),
 			                                                  ff.AvailableTypes[1],
-			                                                  GlobalValues.FunctionBitmap());
+			                                                  functionBitmap);
 			
 			tab.Items.Add (t);
 			

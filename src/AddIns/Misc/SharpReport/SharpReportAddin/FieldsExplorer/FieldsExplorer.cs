@@ -28,11 +28,6 @@ using SharpReportCore;
 /// <summary>
 /// This Pad shows the Available Fields from a report and is used to handel sorting /grouping
 /// </summary>
-/// <remarks>
-/// 	created by - Forstmeier Peter
-/// 	created on - 12.06.200descendingIconescendingIcon 18:17:ascendingIconscendingIcon6
-/// </remarks>
-/// 
 
 
 namespace SharpReportAddin {
@@ -98,20 +93,43 @@ namespace SharpReportAddin {
 		
 		#region TreeView Events
 		
+		private void TreeMouseDown(object sender, System.Windows.Forms.MouseEventArgs e){
+			
+			TreeNode node = this.GetNodeAt(PointToClient(Cursor.Position));
+			if (node != null) {
+				this.SelectedNode = node;
+				CheckNode (node);
+				if (e.Button == MouseButtons.Right) {
+					if (node is AbstractFieldsNode) {
+						AbstractFieldsNode abstrNode = (AbstractFieldsNode)node;
+						if (abstrNode.ContextmenuAddinTreePath.Length > 0) {
+							ContextMenuStrip ctMen = MenuService.CreateContextMenu (this,abstrNode.ContextmenuAddinTreePath);
+							ctMen.Show (this,new Point (e.X,e.Y));
+						}
+					}
+				}
+			}
+		}
 		void TreeViewItemDrag (object sender,ItemDragEventArgs e) {
+			
 			if (e.Item is ColumnsTreeNode) {
 				ColumnsTreeNode node = (ColumnsTreeNode)e.Item;
-				this.SelectedNode = node;
-				if (node != null) {
-					this.DoDragDrop(node.DragDropDataObject,
-					                DragDropEffects.Copy | DragDropEffects.Scroll);
+				// for now, only dragging of Columns is allowed
+				if (node.ImageIndex == columnIcon) {
+					this.SelectedNode = node;
+					if (node != null) {
+						this.DoDragDrop(node.DragDropDataObject,
+						                DragDropEffects.Copy | DragDropEffects.Scroll);
+					}
 				}
 			}
 		}
 		
 		
 		void TreeViewDragOver (object sender,DragEventArgs e) {
+			
 			TreeNode node  = this.GetNodeAt(PointToClient(new Point (e.X,e.Y)));
+			
 			node.EnsureVisible();
 			if (node.Nodes.Count > 0) {
 				node.Expand();
@@ -157,7 +175,6 @@ namespace SharpReportAddin {
 		
 		
 		private void Fill () {
-//			BuildNodes();
 			this.FillTree();
 			this.ExpandAll();
 			isFilled = true;
@@ -177,25 +194,6 @@ namespace SharpReportAddin {
 		}
 		
 		
-		
-		private void TreeMouseDown(object sender, System.Windows.Forms.MouseEventArgs e){
-			TreeNode node = this.GetNodeAt(PointToClient(Cursor.Position));
-			if (node != null) {
-				this.SelectedNode = node;
-				CheckNode (node);
-				if (e.Button == MouseButtons.Right) {
-					if (node is AbstractFieldsNode) {
-						AbstractFieldsNode abstrNode = (AbstractFieldsNode)node;
-						if (abstrNode.ContextmenuAddinTreePath.Length > 0) {
-							ContextMenuStrip ctMen = MenuService.CreateContextMenu (this,abstrNode.ContextmenuAddinTreePath);
-							ctMen.Show (this,new Point (e.X,e.Y));
-						}
-					}
-				}
-			}
-		}
-		
-
 		private void CheckNode (TreeNode node) {
 			if (node.Parent == nodeSorting) {
 				ColumnsTreeNode cn = (ColumnsTreeNode)node;
@@ -398,13 +396,13 @@ namespace SharpReportAddin {
 		}
 		
 		void SetFunctions(){
-			ColumnsTreeNode node;
+			AbstractFieldsNode node;
 			this.nodeFunction.Nodes.Clear();
 			foreach (ReportSection section in this.reportModel.SectionCollection) {
 				foreach (BaseReportObject item in section.Items) {
 					BaseFunction func = item as BaseFunction;
 					if (func != null) {
-						node = new ColumnsTreeNode (func.FriendlyName);
+						node = new ColumnsTreeNode (ResourceService.GetString(func.LocalisedName));
 						node.SelectedImageIndex = functionIcon;
 						node.ImageIndex = functionIcon;
 						this.nodeFunction.Nodes.Add(node);

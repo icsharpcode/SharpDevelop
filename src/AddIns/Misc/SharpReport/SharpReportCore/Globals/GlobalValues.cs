@@ -17,15 +17,14 @@ using System.Drawing.Printing;
 //// Alex: for spooler
 using System.ServiceProcess;
 	
-	/// <summary>
-	/// This Class contains Global Icons and Constantes
-	/// </summary>
-	/// <remarks>
-	/// 	created by - Forstmeier Peter
-	/// 	created on - 19.01.2005 10:57:33
-	/// </remarks>
+/// <summary>
+/// This Class contains Global Icons and Constantes
+/// </summary>
+/// <remarks>
+/// 	created by - Forstmeier Peter
+/// 	created on - 19.01.2005 10:57:33
+/// </remarks>
 	
-//namespace SharpReport.Globals {
 namespace SharpReportCore {
 		public  class GlobalValues : object {
 		
@@ -198,34 +197,6 @@ namespace SharpReportCore {
 		
 		
 		#region Icons
-		/// <summary>
-		/// TooboxIcon for ReportTextbox
-		/// </summary>
-		/// <returns>Bitmap</returns>
-		
-		public static Bitmap TextBoxBitmap(){
-			Bitmap b = new Bitmap (25,25);
-			using (Graphics g = Graphics.FromImage (b)){
-				g.DrawString ("ab|",
-			              new Font ("Ariel",10,FontStyle.Bold),
-			              new SolidBrush(Color.Black),0,1);
-			}
-			return b;
-		}
-		/// <summary>
-		/// TooboxIcon for Functions
-		/// </summary>
-		/// <returns>Bitmap</returns>
-		
-		public static Bitmap FunctionBitmap(){
-			Bitmap b = new Bitmap (25,25);
-			using (Graphics g = Graphics.FromImage (b)){
-				g.DrawString ("F>",
-			              new Font ("Ariel",10,FontStyle.Bold),
-			              new SolidBrush(Color.Black),0,1);
-			}
-			return b;
-		}
 		
 		/// <summary>
 		/// ToolboxIcon for ReportRectangle
@@ -239,20 +210,7 @@ namespace SharpReportCore {
 			}
 			return b;
 		}
-		/// <summary>
-		/// ToolboxIcon for ReportLine
-		/// </summary>
-		/// <returns>Bitmap</returns>
-		/// 
-		public static Bitmap LineBitmap() {
-			Bitmap b = new Bitmap (19,19);
-			using (Graphics g = Graphics.FromImage (b)){
-				g.DrawLine (new Pen(Color.Black, 1),
-				            1,1,
-				            17,17);
-			}
-			return b;
-		}
+		
 		/// <summary>
 		/// ToolboxIcon for ReportCircle
 		/// </summary>
