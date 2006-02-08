@@ -151,7 +151,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		public override bool ProcessKeyEvent(char ch)
 		{
-			if (!Char.IsLetterOrDigit(ch) && ch != '_') {
+			if (dataProvider.IsInsertionKey(ch)) {
 				if (ch == ' ' && dataProvider.InsertSpace) {
 					// increment start + end and process as normal space
 					++startOffset;

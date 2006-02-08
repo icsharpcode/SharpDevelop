@@ -36,6 +36,10 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			get;
 			set;
 		}
+		/// <summary>
+		/// Gets if pressing 'key' should trigger the insertion of the currently selected element.
+		/// </summary>
+		bool IsInsertionKey(char key);
 		
 		/// <summary>
 		/// Generates the completion data. This method is called by the text editor control.

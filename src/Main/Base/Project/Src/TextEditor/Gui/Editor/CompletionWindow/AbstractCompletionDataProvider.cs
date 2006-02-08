@@ -63,6 +63,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		
 		/// <summary>
+		/// Gets if pressing 'key' should trigger the insertion of the currently selected element.
+		/// </summary>
+		public virtual bool IsInsertionKey(char key)
+		{
+			return !char.IsLetterOrDigit(key) && key != '_';
+		}
+		
+		/// <summary>
 		/// Generates the completion data. This method is called by the text editor control.
 		/// </summary>
 		public abstract ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped);

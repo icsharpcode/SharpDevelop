@@ -244,6 +244,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				if (codeCompletionWindow.ProcessKeyEvent(ch)) {
 					return true;
 				}
+				if (codeCompletionWindow != null && !codeCompletionWindow.IsDisposed) {
+					// code-completion window is still opened but did not want to handle
+					// the keypress -> don't try to restart code-completion
+					return false;
+				}
 			}
 			
 			try {

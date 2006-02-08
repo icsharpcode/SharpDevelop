@@ -38,6 +38,17 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
+		public override ImageList ImageList {
+			get {
+				return baseProvider.ImageList;
+			}
+		}
+		
+		public override bool IsInsertionKey(char key)
+		{
+			return baseProvider.IsInsertionKey(key);
+		}
+		
 		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
 			if (completionData == null) {
