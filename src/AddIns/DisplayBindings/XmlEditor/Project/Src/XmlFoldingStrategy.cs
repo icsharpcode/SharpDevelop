@@ -89,7 +89,7 @@ namespace ICSharpCode.XmlEditor
 		/// elements.
 		/// </summary>
 		bool showAttributesWhenFolded = false;
-
+		
 		public XmlFoldingStrategy()
 		{
 		}	
@@ -136,7 +136,8 @@ namespace ICSharpCode.XmlEditor
 				}
 			} catch (Exception) {
 				// If the xml is not well formed keep the foldings 
-				// we found.
+				// that already exist in the document.
+				return document.FoldingManager.FoldMarker;
 			}
 
 			return foldMarkers;
