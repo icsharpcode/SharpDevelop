@@ -287,7 +287,17 @@ namespace ICSharpCode.Core
 		
 		static void ParserUpdateStep()
 		{
-			object[] workbench = (object[])WorkbenchSingleton.SafeThreadCall(typeof(ParserService), "GetWorkbench");
+			object[] workbench;
+			try {
+				workbench = (object[])WorkbenchSingleton.SafeThreadCall(typeof(ParserService), "GetWorkbench");
+			} catch (ObjectDisposedException) {
+				// maybe workbench has been disposed while waiting for the SafeThreadCall
+				LoggingService.Warn("ObjectDisposedException while trying to invoke GetWorkbench()");
+				if (abortParserUpdateThread)
+					return; // abort this thread
+				else
+					throw;  // some other error -> re-raise
+			}
 			if (workbench != null) {
 				IEditable editable = workbench[0] as IEditable;
 				if (editable != null) {

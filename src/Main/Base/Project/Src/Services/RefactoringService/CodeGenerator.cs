@@ -342,10 +342,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		#region Generate OnEventMethod
 		public virtual MethodDeclaration CreateOnEventMethod(IEvent e)
 		{
-			TypeReference type = ConvertType(e.ReturnType, new ClassFinder(e));
-			if (type.Type.EndsWith("Handler"))
-				type.Type = type.Type.Substring(0, type.Type.Length - 7) + "Args";
-			
+			TypeReference type;
+			if (e.ReturnType.TypeArguments != null && e.ReturnType.Name == "EventHandler") {
+				type = ConvertType(e.ReturnType.TypeArguments[0], new ClassFinder(e));
+			} else {
+				type = ConvertType(e.ReturnType, new ClassFinder(e));
+				if (type.Type.EndsWith("Handler"))
+					type.Type = type.Type.Substring(0, type.Type.Length - 7) + "Args";
+			}
 			List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>(1);
 			parameters.Add(new ParameterDeclarationExpression(type, "e"));
 			ModifierEnum modifier;
