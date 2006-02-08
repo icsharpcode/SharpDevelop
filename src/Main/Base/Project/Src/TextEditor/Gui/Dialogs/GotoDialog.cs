@@ -363,8 +363,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					TextEditorControl editor = GetEditor();
 					if (editor != null) {
 						int i = Math.Min(editor.Document.TotalNumberOfLines, Math.Max(1, (int)tag));
-						editor.ActiveTextAreaControl.Caret.Line = i - 1;
-						editor.ActiveTextAreaControl.ScrollToCaret();
+						editor.ActiveTextAreaControl.JumpTo(i - 1, int.MaxValue);
 					}
 				} else if (tag is IClass) {
 					IClass c = tag as IClass;

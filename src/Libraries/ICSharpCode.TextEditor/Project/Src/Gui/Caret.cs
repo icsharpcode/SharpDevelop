@@ -146,7 +146,7 @@ namespace ICSharpCode.TextEditor
 			int line   = Math.Max(0, Math.Min(textArea.Document.TotalNumberOfLines - 1, pos.Y));
 			int column = Math.Max(0, pos.X);
 			
-			if (!textArea.TextEditorProperties.AllowCaretBeyondEOL) {
+			if (column == int.MaxValue || !textArea.TextEditorProperties.AllowCaretBeyondEOL) {
 				LineSegment lineSegment = textArea.Document.GetLineSegment(line);
 				column = Math.Min(column, lineSegment.Length);
 			}
@@ -162,7 +162,7 @@ namespace ICSharpCode.TextEditor
 			line = Math.Max(0, Math.Min(textArea.Document.TotalNumberOfLines - 1, line));
 			column = Math.Max(0, column);
 			
-			if (!textArea.TextEditorProperties.AllowCaretBeyondEOL) {
+			if (column == int.MaxValue || !textArea.TextEditorProperties.AllowCaretBeyondEOL) {
 				LineSegment lineSegment = textArea.Document.GetLineSegment(line);
 				column = Math.Min(column, lineSegment.Length);
 			}
