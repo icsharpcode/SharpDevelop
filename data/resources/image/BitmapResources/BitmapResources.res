@@ -487,7 +487,8 @@ CodeCoverage.Icons.16x16.Run             = CodeCoverageIcons\CodeCoverage.Icons.
 Icons.16x16.SharpReport.Ascending = SharpReportIcons\Icons.16x16.SharpReport.Ascending.png
 Icons.16x16.SharpReport.Descending = SharpReportIcons\Icons.16x16.SharpReport.Descending.png 
 Icons.16x16.SharpReport.Function = SharpReportIcons\Icons.16x16.SharpReport.Function.ico
-
+Icons.16.16.SharpReport.Textbox = SharpReportIcons\Icons.16.16.SharpReport.Textbox.ico
+Icons.16.16.SharpReport.Line = SharpReportIcons\Icons.16.16.SharpReport.Line.ico
 
 
 
