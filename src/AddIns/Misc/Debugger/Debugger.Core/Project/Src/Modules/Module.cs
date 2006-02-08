@@ -144,15 +144,21 @@ namespace Debugger
 			fullPath = Marshal.PtrToStringUni(pString);
 			Marshal.FreeHGlobal(pString);
 			
-			string tempPath = Path.Combine(Path.GetTempPath(), Path.Combine("DebeggerPdb", new Random().Next().ToString()));
-			string pdbFilename = Path.GetFileNameWithoutExtension(FullPath) + ".pdb";
-			string oldPdbPath = Path.Combine(Path.GetDirectoryName(FullPath), pdbFilename);
-			string newPdbPath = Path.Combine(tempPath, pdbFilename);
-			if (File.Exists(oldPdbPath)) {
-				Directory.CreateDirectory(tempPath);
-				File.Move(oldPdbPath, newPdbPath);
-			}
-			fullPathPDB = newPdbPath;
+			string tempPath = String.Empty;
+			string pdbFilename = String.Empty;
+			string oldPdbPath = String.Empty;
+			string newPdbPath = String.Empty;
+			try {
+				tempPath = Path.Combine(Path.GetTempPath(), Path.Combine("DebeggerPdb", new Random().Next().ToString()));
+				pdbFilename = Path.GetFileNameWithoutExtension(FullPath) + ".pdb";
+				oldPdbPath = Path.Combine(Path.GetDirectoryName(FullPath), pdbFilename);
+				newPdbPath = Path.Combine(tempPath, pdbFilename);
+				if (File.Exists(oldPdbPath)) {
+					Directory.CreateDirectory(tempPath);
+					File.Move(oldPdbPath, newPdbPath);
+				}
+				fullPathPDB = newPdbPath;
+			} catch {}
 			
 			SymBinder symBinder = new SymBinder();
 			IntPtr ptr = IntPtr.Zero;
@@ -166,10 +172,12 @@ namespace Debugger
 					Marshal.Release(ptr);
 				}
 			}
-			
-			if (File.Exists(newPdbPath)) {
-				File.Copy(newPdbPath, oldPdbPath);
-			}
+
+			try {
+				if (File.Exists(newPdbPath) && !File.Exists(oldPdbPath)) {
+					File.Copy(newPdbPath, oldPdbPath);
+				}
+			} catch {}
 			
 			JMCStatus = SymbolsLoaded;
 		}
