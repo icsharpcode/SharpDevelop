@@ -39,8 +39,8 @@ namespace ResourceEditor
 			sdialog.FileName = key;
 			
 			if (item.ResourceValue is Bitmap) {
-				sdialog.Filter 		= "Bitmap files (*.bmp)|*.bmp";
-				sdialog.DefaultExt 	= ".bmp";
+				sdialog.Filter 		= "Image files (*.png)|*.png";
+				sdialog.DefaultExt 	= ".png";
 			} else if (item.ResourceValue is Icon) {
 				sdialog.Filter 		= "Icon files (*.ico)|*.ico";
 				sdialog.DefaultExt 	= ".ico";
