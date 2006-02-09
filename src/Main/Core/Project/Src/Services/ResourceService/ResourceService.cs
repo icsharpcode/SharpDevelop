@@ -338,7 +338,11 @@ namespace ICSharpCode.Core
 			
 			if (s == null) {
 				foreach (ResourceManager resourceManger in strings) {
-					s = resourceManger.GetString(name);
+					try {
+						s = resourceManger.GetString(name);
+					}
+					catch (Exception) { }
+					
 					if (s != null) {
 						break;
 					}
