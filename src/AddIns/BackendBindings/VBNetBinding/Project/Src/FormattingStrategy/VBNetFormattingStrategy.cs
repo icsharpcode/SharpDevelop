@@ -39,7 +39,7 @@ namespace VBNetBinding.FormattingStrategy
 		{
 			
 			statements = new ArrayList();
-			statements.Add(new VBStatement("^if.*?(then)?$", "^end ?if$", "End If", 1));
+			statements.Add(new VBStatement("^if.*?(then| _)$", "^end ?if$", "End If", 1));
 			statements.Add(new VBStatement("\\bclass \\w+$", "^end class$", "End Class", 1));
 			statements.Add(new VBStatement("\\bnamespace \\w+$", "^end namespace$", "End Namespace", 1));
 			statements.Add(new VBStatement("\\bmodule \\w+$", "^end module$", "End Module", 1));
@@ -321,13 +321,13 @@ namespace VBNetBinding.FormattingStrategy
 					if (doCasing)
 					{
 						foreach (string keyword in keywords) {
-							string regex = "(?:\\W|^)(" + keyword + ")(?:\\W|$)";
+							string regex = "\\b" + keyword + "\\b"; // \b = word border
 							MatchCollection matches = Regex.Matches(texttoreplace, regex, RegexOptions.IgnoreCase | RegexOptions.Singleline);
 							foreach (Match match in matches) {
 								if (keyword == "EndIf") // special case
-									textArea.Document.Replace(lineAbove.Offset + match.Groups[1].Index, match.Groups[1].Length, "End If");
+									textArea.Document.Replace(lineAbove.Offset + match.Index, match.Length, "End If");
 								else
-									textArea.Document.Replace(lineAbove.Offset + match.Groups[1].Index, match.Groups[1].Length, keyword);
+									textArea.Document.Replace(lineAbove.Offset + match.Index, match.Length, keyword);
 								++undoCount;
 							}
 						}
@@ -335,6 +335,13 @@ namespace VBNetBinding.FormattingStrategy
 					
 					if (doInsertion)
 					{
+						if (Regex.IsMatch(texttoreplace.Trim(), @"^If .*[^_]$", RegexOptions.IgnoreCase)) {
+							if (false == Regex.IsMatch(texttoreplace, @"\bthen\b", RegexOptions.IgnoreCase)) {
+								textArea.Document.Insert(lineAbove.Offset + lineAbove.Length, " Then");
+								++undoCount;
+								texttoreplace += " Then";
+							}
+						}
 						foreach (VBStatement statement in statements) {
 							if (Regex.IsMatch(texttoreplace.Trim(), statement.StartRegex, RegexOptions.IgnoreCase)) {
 								string indentation = GetIndentation(textArea, lineNr - 1);
