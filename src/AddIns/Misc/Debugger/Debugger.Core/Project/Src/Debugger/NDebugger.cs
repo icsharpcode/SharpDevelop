@@ -212,6 +212,9 @@ namespace Debugger
 				e.VariableCollection.UpdateTo(new Variable[] {}); // Make it empty
 			} else {
 				e.VariableCollection.UpdateTo(CurrentFunction.Variables);
+				CurrentFunction.Expired += delegate { 
+					e.VariableCollection.UpdateTo(new Variable[] {});
+				};
 			}
 		}
 	}

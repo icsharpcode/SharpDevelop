@@ -77,6 +77,18 @@ namespace Debugger
 				return steppedOut || Module.Unloaded;
 			}
 		}
+		
+		/// <summary>
+		/// Occurs when function expires and is no longer usable
+		/// </summary>
+		public event EventHandler Expired;
+		
+		protected virtual void OnExpired(EventArgs e)
+		{
+			if (Expired != null) {
+				Expired(this, e);
+			}
+		}
 
 		public Value ThisValue {
 			get {
@@ -111,6 +123,7 @@ namespace Debugger
 			tracingStepper.PauseWhenComplete = false;
 			tracingStepper.StepComplete += delegate {
 				steppedOut = true;
+				OnExpired(EventArgs.Empty);
 			};
 		}
 		
