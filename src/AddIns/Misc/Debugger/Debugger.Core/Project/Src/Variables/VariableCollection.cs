@@ -138,19 +138,6 @@ namespace Debugger
 			OnUpdating();
 		}
 		
-		/// <summary>
-		/// Updates the given collections and changes the state of this collection so that it matches the given collections.
-		/// </summary>
-		/// <param name="collections"></param>
-		public void UpdateTo(params VariableCollection[] collections)
-		{
-			VariableCollection mergedCollection = VariableCollection.Merge(collections);
-			
-			mergedCollection.Update();
-			
-			UpdateTo((IEnumerable<Variable>)mergedCollection.InnerList.ToArray(typeof(Variable)));
-		}
-		
 		public void UpdateTo(IEnumerable<Variable> newVariables)
 		{
 			ArrayList toBeRemoved = (ArrayList)this.InnerList.Clone();
@@ -198,37 +185,6 @@ namespace Debugger
 			}
 			
 			return txt;
-		}
-		
-		public static VariableCollection Merge(params VariableCollection[] collections)
-		{
-			if (collections.Length == 0) throw new ArgumentException("Can not have lenght of 0", "collections");
-			VariableCollection newCollection = new VariableCollection(collections[0].Debugger);
-			newCollection.MergeWith(collections);
-			return newCollection;
-		}
-		
-		public void MergeWith(params VariableCollection[] collections)
-		{
-			// Add items of subcollections and ensure the stay in sync
-			foreach(VariableCollection collection in collections) {
-				foreach(Variable variable in collection) {
-					this.Add(variable);
-				}
-				collection.VariableAdded += delegate(object sender, VariableEventArgs e) {
-					this.Add(e.Variable);
-				};
-				collection.VariableRemoved += delegate(object sender, VariableEventArgs e) {
-					this.Remove(e.Variable);
-				};
-			}
-			
-			// Update subcollections at update
-			this.Updating += delegate {
-				foreach(VariableCollection collection in collections) {
-					collection.Update();
-				};
-			};
 		}
 	}
 }

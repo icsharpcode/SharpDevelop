@@ -209,7 +209,7 @@ namespace Debugger
 		void OnUpdatingLocalVariables(object sender, VariableCollectionEventArgs e)
 		{
 			if (CurrentFunction == null) {
-				e.VariableCollection.UpdateTo(VariableCollection.Empty);
+				e.VariableCollection.UpdateTo(new Variable[] {}); // Make it empty
 			} else {
 				e.VariableCollection.UpdateTo(CurrentFunction.Variables);
 			}
