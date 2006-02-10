@@ -372,9 +372,10 @@ namespace Debugger.Tests
 			Function function = null;
 			Variable argument = null;
 			Variable local    = null;
+			Variable localInSubFunction = null;
 			Variable @class   = null;
 			
-			StartProgram("FunctionVariablesLifetime");
+			StartProgram("FunctionVariablesLifetime"); // 1 - Enter program
 			WaitForPause(PausedReason.Break, null);
 			function = debugger.CurrentFunction;
 			Assert.IsNotNull(function);
@@ -396,19 +397,35 @@ namespace Debugger.Tests
 			Assert.AreEqual("2", local.Value.AsString);
 			Assert.AreEqual("3", @class.Value.AsString);
 			
-			debugger.Continue(); // Go to the SubFunction
+			debugger.Continue(); // 2 - Go to the SubFunction
 			WaitForPause(PausedReason.Break, null);
 			Assert.AreEqual("1", argument.Value.AsString);
 			Assert.AreEqual("2", local.Value.AsString);
 			Assert.AreEqual("3", @class.Value.AsString);
+			// Check localInSubFunction variable
+			localInSubFunction = debugger.LocalVariables["localInSubFunction"];
+			Assert.AreEqual("4", localInSubFunction.Value.AsString);
 			
-			debugger.Continue(); // Go back to Function
+			debugger.Continue(); // 3 - Go back to Function
 			WaitForPause(PausedReason.Break, null);
 			Assert.AreEqual("1", argument.Value.AsString);
 			Assert.AreEqual("2", local.Value.AsString);
 			Assert.AreEqual("3", @class.Value.AsString);
+			// localInSubFunction should be dead now
+			Assert.AreEqual(typeof(UnavailableValue), localInSubFunction.Value.GetType());
 			
-			debugger.Continue(); // Setp out of function
+			debugger.Continue(); // 4 - Go to the SubFunction
+			WaitForPause(PausedReason.Break, null);
+			Assert.AreEqual("1", argument.Value.AsString);
+			Assert.AreEqual("2", local.Value.AsString);
+			Assert.AreEqual("3", @class.Value.AsString);
+			// localInSubFunction should be still dead...
+			Assert.AreEqual(typeof(UnavailableValue), localInSubFunction.Value.GetType());
+			// ... , but we should able to get new one
+			localInSubFunction = debugger.LocalVariables["localInSubFunction"];
+			Assert.AreEqual("4", localInSubFunction.Value.AsString);
+			
+			debugger.Continue(); // 5 - Setp out of both functions
 			WaitForPause(PausedReason.Break, null);
 			Assert.AreEqual(typeof(UnavailableValue), argument.Value.GetType());
 			Assert.AreEqual(typeof(UnavailableValue), local.Value.GetType());

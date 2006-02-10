@@ -7,6 +7,8 @@
 
 using System;
 
+//CS0219: The variable 'variable' is assigned but its value is never used
+//CS0414: The private field 'field' is assigned but its value is never used
 #pragma warning disable 0219, 0414
 
 namespace Debugger.Tests.TestPrograms
@@ -18,7 +20,7 @@ namespace Debugger.Tests.TestPrograms
 		public static void Main()
 		{
 			new FunctionVariablesLifetime().Function(1);
-			System.Diagnostics.Debugger.Break(); // 4
+			System.Diagnostics.Debugger.Break(); // 5
 		}
 		
 		void Function(int argument)
@@ -27,11 +29,13 @@ namespace Debugger.Tests.TestPrograms
 			System.Diagnostics.Debugger.Break(); // 1
 			SubFunction();
 			System.Diagnostics.Debugger.Break(); // 3
+			SubFunction();
 		}
 		
 		void SubFunction()
 		{
-			System.Diagnostics.Debugger.Break(); // 2
+			int localInSubFunction = 4;
+			System.Diagnostics.Debugger.Break(); // 2, 4
 		}
 	}
 }
