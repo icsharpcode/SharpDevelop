@@ -315,7 +315,11 @@ namespace ICSharpCode.SharpDevelop.Services
 				bookmark.WillBeHit  = breakpoint.HadBeenSet || debugger.Processes.Count == 0;
 			};
 			breakpoint.Changed += delegate { setBookmarkColor(); };
-			debugger.ProcessStarted += delegate { setBookmarkColor(); };
+			debugger.ProcessStarted += delegate {
+				setBookmarkColor();
+				// User can change line number by inserting or deleting lines
+				breakpoint.SourcecodeSegment.StartLine = bookmark.LineNumber + 1;
+			};
 			debugger.ProcessExited  += delegate { setBookmarkColor(); };
 			setBookmarkColor();
 			
