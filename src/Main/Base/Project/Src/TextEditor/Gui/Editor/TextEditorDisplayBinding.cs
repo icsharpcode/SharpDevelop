@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			b2.Load(fileName);
 			b2.textAreaControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
 			b2.textAreaControl.InitializeFormatter();
-			b2.ForceFoldingUpdate(null);
+			b2.ForceFoldingUpdate();
 			b2.textAreaControl.ActivateQuickClassBrowserOnDemand();
 			return b2;
 		}
@@ -72,7 +72,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			b2.textAreaControl.Document.TextContent = StringParser.Parse(content);
 			b2.textAreaControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(language);
 			b2.textAreaControl.InitializeFormatter();
-			b2.ForceFoldingUpdate(language);
 			b2.textAreaControl.ActivateQuickClassBrowserOnDemand();
 			return b2;
 		}
@@ -157,6 +156,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			set {
 				base.UntitledName = value;
 				textAreaControl.FileName = value;
+				ForceFoldingUpdate();
 			}
 		}
 		
@@ -292,6 +292,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public override void Dispose()
 		{
+			if (this.IsUntitled) {
+				ParserService.ClearParseInformation(this.UntitledName);
+			}
 			if (WorkbenchSingleton.MainForm != null) {
 				WorkbenchSingleton.MainForm.Activated -= new EventHandler(GotFocusEvent);
 			}
@@ -327,7 +330,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			
 			textAreaControl.SaveFile(fileName);
-			FileName  = fileName;
+			if (fileName != this.FileName) {
+				ParserService.ClearParseInformation(this.FileName ?? this.UntitledName);
+				FileName  = fileName;
+				ParserService.ParseViewContent(this);
+			}
 			TitleName = Path.GetFileName(fileName);
 			IsDirty   = false;
 			
@@ -422,22 +429,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			textAreaControl.ActiveTextAreaControl.JumpTo(line, column);
 		}
 		
-		public void ForceFoldingUpdate(string language)
+		public void ForceFoldingUpdate()
 		{
 			if (textAreaControl.TextEditorProperties.EnableFolding) {
-				
-				string fileName = IsUntitled ? UntitledName : FileName;
-				ParseInformation parseInfo;
-				if (fileName == null || fileName.Length == 0) {
-					if (language == "C#") {
-						parseInfo = ParserService.ParseFile("a.cs", textAreaControl.Document.TextContent, false, false);
-					} else if (language == "VBNet") {
-						parseInfo = ParserService.ParseFile("a.vb", textAreaControl.Document.TextContent, false, false);
-					} else {
-						return;
-					}
-				} else {
-					parseInfo = ParserService.GetParseInformation(fileName);
+				string fileName = textAreaControl.FileName;
+				ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
+				if (parseInfo == null) {
+					parseInfo = ParserService.ParseFile(fileName,
+					                                    textAreaControl.Document.TextContent, false, false);
 				}
 				textAreaControl.Document.FoldingManager.UpdateFoldings(fileName, parseInfo);
 				UpdateClassMemberBookmarks(parseInfo);

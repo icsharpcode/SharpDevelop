@@ -73,6 +73,7 @@ namespace ICSharpCode.Core
 		string GetXmlDocumentation(string memberTag);
 		
 		void AddClassToNamespaceList(IClass addClass);
+		void RemoveCompilationUnit(ICompilationUnit oldUnit);
 		void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags);
 		
 		IClass GetClass(string typeName);

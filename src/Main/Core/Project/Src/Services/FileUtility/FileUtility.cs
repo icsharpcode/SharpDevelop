@@ -154,8 +154,8 @@ namespace ICSharpCode.Core
 			// Optimized for performance:
 			//return Path.GetFullPath(fileName1.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).ToLower() == Path.GetFullPath(fileName2.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).ToLower();
 			
-			
 			if (fileName1.Length == 0 || fileName2.Length == 0) return false;
+			
 			char lastChar;
 			lastChar = fileName1[fileName1.Length - 1];
 			if (lastChar == Path.DirectorySeparatorChar || lastChar == Path.AltDirectorySeparatorChar)
@@ -169,9 +169,7 @@ namespace ICSharpCode.Core
 					fileName1 = Path.GetFullPath(fileName1);
 				if (fileName2.Length < 2 || fileName2[1] != ':' || fileName2.IndexOf("/.") >= 0 || fileName2.IndexOf("\\.") >= 0)
 					fileName2 = Path.GetFullPath(fileName2);
-			} catch (Exception) {
-				return false;
-			}
+			} catch (Exception) { }
 			return string.Equals(fileName1, fileName2, StringComparison.OrdinalIgnoreCase);
 		}
 		

@@ -47,7 +47,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			FullRowSelect = true;
 			
 			ItemActivate += delegate { AddReference(); };
-			PopulateListView();
 		}
 		
 		public void AddReference()
@@ -58,6 +57,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 				                          library.Name,
 				                          library.Path,
 				                          library);
+			}
+		}
+		
+		bool populated;
+		
+		protected override void OnVisibleChanged(EventArgs e)
+		{
+			base.OnVisibleChanged(e);
+			if (populated == false && Visible) {
+				populated = true;
+				PopulateListView();
 			}
 		}
 		

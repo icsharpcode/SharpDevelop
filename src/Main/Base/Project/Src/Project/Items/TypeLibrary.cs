@@ -88,10 +88,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public class TypeLibraryEnumerator 
-		{
-			public IEnumerator<TypeLibrary> GetEnumerator()
-			{
+		public static IEnumerable<TypeLibrary> Libraries {
+			get {
 				RegistryKey typelibsKey = Registry.ClassesRoot.OpenSubKey("TypeLib");
 				foreach (string typelibKeyName in typelibsKey.GetSubKeyNames()) {
 					RegistryKey typelibKey = typelibsKey.OpenSubKey(typelibKeyName);
@@ -103,12 +101,6 @@ namespace ICSharpCode.SharpDevelop.Project
 						yield return lib;
 					}
 				}
-			}
-		}
-		static TypeLibraryEnumerator libraries = new TypeLibraryEnumerator();
-		public static TypeLibraryEnumerator Libraries {
-			get {
-				return libraries;
 			}
 		}
 		

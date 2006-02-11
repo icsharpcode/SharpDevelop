@@ -412,8 +412,10 @@ namespace ICSharpCode.Core
 		
 		public void RemoveCompilationUnit(ICompilationUnit unit)
 		{
-			foreach (IClass c in unit.Classes) {
-				RemoveClass(c);
+			lock (namespaces) {
+				foreach (IClass c in unit.Classes) {
+					RemoveClass(c);
+				}
 			}
 		}
 		

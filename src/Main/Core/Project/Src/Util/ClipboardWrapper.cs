@@ -50,24 +50,23 @@ namespace ICSharpCode.Core
 			try {
 				return Clipboard.GetDataObject();
 			} catch (ExternalException) {
-				return Clipboard.GetDataObject();
+				try {
+					return Clipboard.GetDataObject();
+				} catch (ExternalException) {
+					return new DataObject();
+				}
 			}
 		}
 		
 		public static void SetDataObject(object data)
 		{
-			int i = 0;
-			while (true) {
-				try {
-					Clipboard.SetDataObject(data, true, 5, 50);
-					return;
-				} catch (ExternalException) {
-					if (i++ > 5)
-						throw;
-				}
-				System.Threading.Thread.Sleep(50);
+			try {
+				Clipboard.SetDataObject(data, true, 10, 50);
+			} catch (ExternalException) {
 				Application.DoEvents();
-				System.Threading.Thread.Sleep(50);
+				try {
+					Clipboard.SetDataObject(data, true, 10, 50);
+				} catch (ExternalException) { }
 			}
 		}
 	}

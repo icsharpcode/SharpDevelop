@@ -140,10 +140,6 @@ namespace ICSharpCode.Core
 					UpdateDefaultImports(project.Items.ToArray());
 					break;
 				case ItemType.Compile:
-					ParseInformation info = ParserService.GetParseInformation(e.ProjectItem.FileName);
-					if (info != null) {
-						RemoveCompilationUnit(info.MostRecentCompilationUnit);
-					}
 					ParserService.ClearParseInformation(e.ProjectItem.FileName);
 					break;
 			}

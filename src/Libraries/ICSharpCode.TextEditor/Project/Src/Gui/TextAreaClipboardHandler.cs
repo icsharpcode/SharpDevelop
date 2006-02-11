@@ -88,21 +88,15 @@ namespace ICSharpCode.TextEditor
 				
 				// Work around ExternalException bug. (SD2-426)
 				// Best reproducable inside Virtual PC.
-				// SetDataObject has "retry" parameters, but apparently a call to "DoEvents"
-				// is necessary for the workaround to work.
-				int i = 0;
-				while (true) {
-					try {
-						Clipboard.SetDataObject(dataObject, true, 5, 50);
-						return true;
-					} catch (ExternalException) {
-						if (i++ > 5)
-							throw;
-					}
-					System.Threading.Thread.Sleep(50);
+				try {
+					Clipboard.SetDataObject(dataObject, true, 10, 50);
+				} catch (ExternalException) {
 					Application.DoEvents();
-					System.Threading.Thread.Sleep(50);
+					try {
+						Clipboard.SetDataObject(dataObject, true, 10, 50);
+					} catch (ExternalException) {}
 				}
+				return true;
 			} else {
 				return false;
 			}

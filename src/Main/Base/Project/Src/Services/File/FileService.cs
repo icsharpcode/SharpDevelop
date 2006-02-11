@@ -118,7 +118,7 @@ namespace ICSharpCode.Core
 					LoggingService.Warn(String.Format("Created view content was null{3}DefaultName:{0}{3}Language:{1}{3}Content:{2}", defaultName, language, content, Environment.NewLine));
 					return null;
 				}
-				newContent.UntitledName = defaultName;
+				newContent.UntitledName = newContent.GetHashCode() + "/" + defaultName;
 				DisplayBindingService.AttachSubWindows(newContent, false);
 				
 				WorkbenchSingleton.Workbench.ShowView(newContent);

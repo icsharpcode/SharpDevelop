@@ -77,7 +77,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static void PutInClipboardRing(string text)
 		{
-			if (sideBar != null) {
+			if (sideBar == null) {
+				WorkbenchSingleton.Workbench.GetPad(typeof(SideBarView)).CreatePad();
+			} else {
 				sideBar.PutInClipboardRing(text);
 				sideBar.Refresh();
 			}

@@ -556,8 +556,12 @@ namespace ICSharpCode.Core
 			if (fileName == null || fileName.Length == 0) {
 				return;
 			}
+			LoggingService.Info("ClearParseInformation: " + fileName);
 			if (parsings.ContainsKey(fileName)) {
 				ParseInformation parseInfo = parsings[fileName];
+				if (parseInfo != null && parseInfo.MostRecentCompilationUnit != null) {
+					parseInfo.MostRecentCompilationUnit.ProjectContent.RemoveCompilationUnit(parseInfo.MostRecentCompilationUnit);
+				}
 				parsings.Remove(fileName);
 				OnParseInformationUpdated(new ParseInformationEventArgs(fileName, parseInfo, null));
 			}
