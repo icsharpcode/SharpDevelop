@@ -33,6 +33,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			((CheckBox)ControlDictionary["hideMouseCursorCheckBox"]).Checked      = ((Properties)CustomizationObject).Get("HideMouseCursor", true);
 			((CheckBox)ControlDictionary["caretBehindEOLCheckBox"]).Checked       = ((Properties)CustomizationObject).Get("CursorBehindEOL", false);
 			((CheckBox)ControlDictionary["auotInsertTemplatesCheckBox"]).Checked  = ((Properties)CustomizationObject).Get("AutoInsertTemplates", true);
+			((CheckBox)ControlDictionary["cutCopyWholeLine"]).Checked             = ((Properties)CustomizationObject).Get("CutCopyWholeLine", true);
 			
 			((CheckBox)ControlDictionary["convertTabsToSpacesCheckBox"]).Checked  = ((Properties)CustomizationObject).Get("TabsToSpaces", false);
 			
@@ -59,6 +60,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			((Properties)CustomizationObject).Set("HideMouseCursor",        ((CheckBox)ControlDictionary["hideMouseCursorCheckBox"]).Checked);
 			((Properties)CustomizationObject).Set("CursorBehindEOL",        ((CheckBox)ControlDictionary["caretBehindEOLCheckBox"]).Checked);
 			((Properties)CustomizationObject).Set("AutoInsertTemplates",    ((CheckBox)ControlDictionary["auotInsertTemplatesCheckBox"]).Checked);
+			((Properties)CustomizationObject).Set("CutCopyWholeLine",       ((CheckBox)ControlDictionary["cutCopyWholeLine"]).Checked);
 			
 			((Properties)CustomizationObject).Set("IndentStyle", (IndentStyle)((ComboBox)ControlDictionary["indentStyleComboBox"]).SelectedIndex);
 			

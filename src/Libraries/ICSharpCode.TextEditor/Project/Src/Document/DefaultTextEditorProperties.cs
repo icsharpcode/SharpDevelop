@@ -46,6 +46,7 @@ namespace ICSharpCode.TextEditor.Document
 		bool        mouseWheelTextZoom   = true;
 		
 		bool        hideMouseCursor      = false;
+		bool        cutCopyWholeLine     = true;
 		
 		int         verticalRulerRow    = 80;
 		LineViewerStyle  lineViewerStyle = LineViewerStyle.None;
@@ -216,6 +217,16 @@ namespace ICSharpCode.TextEditor.Document
 				hideMouseCursor = value;
 			}
 		}
+
+		public bool CutCopyWholeLine {
+			get {
+				return cutCopyWholeLine;
+			}
+			set {
+				cutCopyWholeLine = value;
+			}
+		}
+
 		public Encoding Encoding {
 			get {
 				return encoding;

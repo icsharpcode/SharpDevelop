@@ -74,12 +74,24 @@ namespace ICSharpCode.TextEditor
 		{
 //			((DefaultWorkbench)WorkbenchSingleton.Workbench).UpdateToolbars();
 		}
+
+		string LineSelectedType
+		{
+			get {
+				return "MSDEVLineSelect";  // This is the type VS 2003 and 2005 use for flagging a whole line copy
+			}
+		}
 		
-		bool CopyTextToClipboard(string stringToCopy)
+		bool CopyTextToClipboard(string stringToCopy, bool asLine)
 		{
 			if (stringToCopy.Length > 0) {
 				DataObject dataObject = new DataObject();
 				dataObject.SetData(DataFormats.UnicodeText, true, stringToCopy);
+				if (asLine) {
+					MemoryStream lineSelected = new MemoryStream(1);
+					lineSelected.WriteByte(1);
+					dataObject.SetData(LineSelectedType, false, lineSelected);
+				}
 				// Default has no highlighting, therefore we don't need RTF output
 				if (textArea.Document.HighlightingStrategy.Name != "Default") {
 					dataObject.SetData(DataFormats.Rtf, RtfWriter.GenerateRtf(textArea));
@@ -101,6 +113,11 @@ namespace ICSharpCode.TextEditor
 				return false;
 			}
 		}
+
+		bool CopyTextToClipboard(string stringToCopy)
+		{
+			return CopyTextToClipboard(stringToCopy, false);
+		}
 		
 		public void Cut(object sender, EventArgs e)
 		{
@@ -110,13 +127,13 @@ namespace ICSharpCode.TextEditor
 				textArea.Caret.Position = textArea.SelectionManager.SelectionCollection[0].StartPosition;
 				textArea.SelectionManager.RemoveSelectedText();
 				textArea.EndUpdate();
-			} else {
+			} else if (textArea.Document.TextEditorProperties.CutCopyWholeLine){
 				// No text was selected, select and cut the entire line
 				int curLineNr = textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset);
 				LineSegment lineWhereCaretIs = textArea.Document.GetLineSegment(curLineNr);
 				string caretLineText = textArea.Document.GetText(lineWhereCaretIs.Offset, lineWhereCaretIs.TotalLength);
 				textArea.SelectionManager.SetSelection(textArea.Document.OffsetToPosition(lineWhereCaretIs.Offset), textArea.Document.OffsetToPosition(lineWhereCaretIs.Offset + lineWhereCaretIs.TotalLength));
-				if (CopyTextToClipboard(caretLineText)) {
+				if (CopyTextToClipboard(caretLineText, true)) {
 					// remove line
 					textArea.BeginUpdate();
 					textArea.Caret.Position = textArea.Document.OffsetToPosition(lineWhereCaretIs.Offset);
@@ -129,14 +146,12 @@ namespace ICSharpCode.TextEditor
 		
 		public void Copy(object sender, EventArgs e)
 		{
-			if (!CopyTextToClipboard(textArea.SelectionManager.SelectedText)) {
+			if (!CopyTextToClipboard(textArea.SelectionManager.SelectedText) && textArea.Document.TextEditorProperties.CutCopyWholeLine) {
 				// No text was selected, select the entire line, copy it, and then deselect
 				int curLineNr = textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset);
 				LineSegment lineWhereCaretIs = textArea.Document.GetLineSegment(curLineNr);
 				string caretLineText = textArea.Document.GetText(lineWhereCaretIs.Offset, lineWhereCaretIs.TotalLength);
-				textArea.SelectionManager.SetSelection(textArea.Document.OffsetToPosition(lineWhereCaretIs.Offset), textArea.Document.OffsetToPosition(lineWhereCaretIs.Offset + lineWhereCaretIs.TotalLength));
-				CopyTextToClipboard(caretLineText);
-				textArea.SelectionManager.ClearSelection();
+				CopyTextToClipboard(caretLineText, true);
 			}
 		}
 		
@@ -146,6 +161,7 @@ namespace ICSharpCode.TextEditor
 			for (int i = 0;; i++) {
 				try {
 					IDataObject data = Clipboard.GetDataObject();
+					bool fullLine = data.GetDataPresent(LineSelectedType);
 					if (data.GetDataPresent(DataFormats.UnicodeText)) {
 						string text = (string)data.GetData(DataFormats.UnicodeText);
 						if (text.Length > 0) {
@@ -154,7 +170,15 @@ namespace ICSharpCode.TextEditor
 								Delete(sender, e);
 								redocounter++;
 							}
-							textArea.InsertString(text);
+							if (fullLine) {
+								int col = textArea.Caret.Column;
+								textArea.Caret.Column = 0;
+								textArea.InsertString(text);
+								textArea.Caret.Column = col;
+							}
+							else {
+								textArea.InsertString(text);
+							}
 							if (redocounter > 0) {
 								textArea.Document.UndoStack.UndoLast(redocounter + 1); // redo the whole operation
 							}

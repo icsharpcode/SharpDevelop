@@ -215,6 +215,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				properties.Set("HideMouseCursor", value);
 			}
 		}
+
+		public bool CutCopyWholeLine {
+			get {
+				return properties.Get("CutCopyWholeLine", true);
+			}
+			set {
+				properties.Set("CutCopyWholeLine", value);
+			}
+		}
+
 		public Encoding Encoding {
 			get {
 				return Encoding.GetEncoding(properties.Get("Encoding", 65001));

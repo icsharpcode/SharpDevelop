@@ -2,7 +2,7 @@
   <System.Windows.Forms.UserControl>
     <Name value="CreatedObject0" />
     <DockPadding value="" />
-    <ClientSize value="{Width=384, Height=328}" />
+    <ClientSize value="{Width=384, Height=352}" />
     <Controls>
       <System.Windows.Forms.GroupBox>
         <Name value="CreatedObject2" />
@@ -75,7 +75,7 @@
         <TabIndex value="1" />
         <Location value="{X=8,Y=128}" />
         <Anchor value="Top, Left, Right" />
-        <ClientSize value="{Width=368, Height=176}" />
+        <ClientSize value="{Width=368, Height=200}" />
         <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.BehaviourGroupBox}" />
         <Controls>
           <System.Windows.Forms.CheckBox>
@@ -93,6 +93,14 @@
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox}" />
             <Anchor value="Top, Left, Right" />
             <TabIndex value="3" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="cutCopyWholeLine" />
+            <Location value="{X=8,Y=116}" />
+            <ClientSize value="{Width=348, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="4" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.CheckBox>
             <Name value="caretBehindEOLCheckBox" />
@@ -113,8 +121,8 @@
           <System.Windows.Forms.ComboBox>
             <Name value="mouseWhellDirectionComboBox" />
             <Anchor value="Bottom, Left" />
-            <TabIndex value="5" />
-            <Location value="{X=8,Y=144}" />
+            <TabIndex value="6" />
+            <Location value="{X=8,Y=168}" />
             <ClientSize value="{Width=152, Height=21}" />
             <DropDownStyle value="DropDownList" />
           </System.Windows.Forms.ComboBox>
@@ -123,9 +131,9 @@
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.MouseWhellGroupBox}" />
             <TextAlign value="BottomLeft" />
             <Anchor value="Top, Left, Right" />
-            <TabIndex value="4" />
+            <TabIndex value="5" />
             <ClientSize value="{Width=160, Height=24}" />
-            <Location value="{X=8,Y=118}" />
+            <Location value="{X=8,Y=142}" />
           </System.Windows.Forms.Label>
         </Controls>
       </System.Windows.Forms.GroupBox>

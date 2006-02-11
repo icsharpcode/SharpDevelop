@@ -38,6 +38,11 @@ namespace ICSharpCode.TextEditor.Document
 			set;
 		}
 		
+		bool CutCopyWholeLine {
+			get;
+			set;
+		}
+
 		bool UseAntiAliasedFont { // is wrapped in text editor control
 			get;
 			set;
