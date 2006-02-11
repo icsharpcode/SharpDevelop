@@ -22,7 +22,7 @@
 	 -->
 	<Files>
 		<!-- Designer file must come first, so the design tab is shown correctly -->
-		<File name="${Path}/${FileNameWithoutExtension}.Designer.boo" language="Boo"><![CDATA[namespace ${StandardNamespace}
+		<File name="${Path}/${FileNameWithoutExtension}.Designer.boo" dependentUpon="${FileName}" language="Boo"><![CDATA[namespace ${StandardNamespace}
 
 partial class ${ClassName}(System.Windows.Forms.Form):
 	private components as System.ComponentModel.IContainer = null

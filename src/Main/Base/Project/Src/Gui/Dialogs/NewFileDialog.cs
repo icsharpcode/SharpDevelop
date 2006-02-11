@@ -426,7 +426,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (allowUntitledFiles) {
 					fileName = GenerateCurrentFileName();
 				} else {
-					fileName = Path.Combine(basePath, ControlDictionary["fileNameTextBox"].Text);
+					fileName = ControlDictionary["fileNameTextBox"].Text;
+					if (Path.GetExtension(fileName).Length == 0) {
+						fileName += Path.GetExtension(item.Template.DefaultName);
+					}
+					fileName = Path.Combine(basePath, fileName);
 					fileName = Path.GetFullPath(fileName);
 					IProject project = ProjectService.CurrentProject;
 					if (project != null) {
