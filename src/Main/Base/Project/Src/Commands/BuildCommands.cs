@@ -96,18 +96,32 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public abstract class AbstractProjectBuildMenuCommand : AbstractBuildMenuCommand
 	{
+		protected IProject targetProject;
+		protected IProject ProjectToBuild {
+			get {
+				return targetProject ?? ProjectService.CurrentProject;
+			}
+		}
+		
 		public override bool CanRunBuild {
 			get {
-				return base.CanRunBuild
-					&& ProjectService.CurrentProject!=null;
+				return base.CanRunBuild && this.ProjectToBuild != null;
 			}
 		}
 	}
 	public class BuildProject : AbstractProjectBuildMenuCommand
 	{
+		public BuildProject()
+		{
+		}
+		public BuildProject(IProject targetProject)
+		{
+			this.targetProject = targetProject;
+		}
+		
 		public override void StartBuild()
 		{
-			ProjectService.CurrentProject.Build(CallbackMethod);
+			this.ProjectToBuild.Build(CallbackMethod);
 		}
 		
 		public override void AfterBuild()
@@ -120,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void StartBuild()
 		{
-			ProjectService.CurrentProject.Rebuild(CallbackMethod);
+			this.ProjectToBuild.Rebuild(CallbackMethod);
 		}
 	}
 	
@@ -128,7 +142,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void StartBuild()
 		{
-			ProjectService.CurrentProject.Clean(CallbackMethod);
+			this.ProjectToBuild.Clean(CallbackMethod);
 		}
 	}
 	
@@ -136,7 +150,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void StartBuild()
 		{
-			ProjectService.CurrentProject.Publish(CallbackMethod);
+			this.ProjectToBuild.Publish(CallbackMethod);
 		}
 	}
 	

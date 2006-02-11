@@ -149,6 +149,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (isRunning) {
 				CompilerResults results = new CompilerResults(null);
+				results.NativeCompilerReturnValue = -42;
 				results.Errors.Add(new CompilerError(null, 0, 0, null, "MSBuild is already running!"));
 				callback(results);
 			} else {
@@ -161,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		class ThreadStarter
 		{
-			CompilerResults results = new CompilerResults(null);
+			CompilerResults results;
 			string buildFile;
 			string[] targets;
 			MSBuildEngine engine;
@@ -169,6 +170,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public ThreadStarter(string buildFile, string[] targets, MSBuildEngine engine, MSBuildEngineCallback callback)
 			{
+				results = new CompilerResults(null);
+				results.NativeCompilerReturnValue = -1;
 				this.buildFile = buildFile;
 				this.targets = targets;
 				this.engine = engine;
@@ -200,8 +203,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				Microsoft.Build.BuildEngine.Project project = engine.CreateNewProject();
 				try {
 					project.Load(buildFile);
-					engine.BuildProject(project, targets);
+					if (engine.BuildProject(project, targets))
+						results.NativeCompilerReturnValue = 0;
+					else
+						results.NativeCompilerReturnValue = 1;
 				} catch (InvalidProjectFileException ex) {
+					results.NativeCompilerReturnValue = -2;
 					results.Errors.Add(new CompilerError(ex.ProjectFile, ex.LineNumber, ex.ColumnNumber, ex.ErrorCode, ex.Message));
 				}
 				

@@ -115,7 +115,7 @@ namespace ICSharpCode.NRefactory.Parser
 				            (blockStack.Count == 0) ? new Point(-1, -1) : blockStack.Peek().EndLocation,
 				            (localVariableDeclaration.Modifier & Modifier.Const) == Modifier.Const);
 			}
-			return data;
+			return base.Visit(localVariableDeclaration, data);
 		}
 		
 		public override object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)

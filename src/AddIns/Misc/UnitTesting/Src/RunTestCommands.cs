@@ -14,6 +14,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -31,13 +32,13 @@ namespace ICSharpCode.UnitTesting
 			if (project == null) {
 				throw new ArgumentNullException("project");
 			}
-			MSBuildEngineCallback callback = delegate(System.CodeDom.Compiler.CompilerResults results) {
-				if (results.Errors.Count > 0) {
-					return;
+			BuildProject build = new BuildProject(project);
+			build.BuildComplete += delegate {
+				if (MSBuildEngine.LastErrorCount == 0) {
+					RunTests(project, fixture, test);
 				}
-				RunTests(project, fixture, test);
 			};
-			project.Build(callback);
+			build.Run();
 		}
 		
 		protected abstract void RunTests(IProject project, IClass fixture, IMember test);
