@@ -1,0 +1,22 @@
+<AddIn name        = "Custom View Content Sample"
+       url         = "http://www.icsharpcode.net"
+       version     = "1.0.0">
+	
+	<Manifest>
+		<Identity name="SharpDevelop.Samples.CustomView"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="CustomView.dll"/>
+	</Runtime>
+
+	<Path name = "/SharpDevelop/Workbench/MainMenu">
+		<MenuItem id = "CustomViewSamples" 
+		          label = "Custom View Sample" 
+		          type = "Menu">
+			<MenuItem id = "ShowCustomView"
+		              label = "Show Custom View" 
+		              class = "CustomView.ShowCustomViewCommand"/>
+		</MenuItem>
+	</Path>
+</AddIn>

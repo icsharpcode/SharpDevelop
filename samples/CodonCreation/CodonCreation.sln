@@ -1,0 +1,16 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.1084
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodonCreation", "CodonCreation.csproj", "{F60D18F4-D293-43FE-8FE2-A2CE565B3AB5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F60D18F4-D293-43FE-8FE2-A2CE565B3AB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F60D18F4-D293-43FE-8FE2-A2CE565B3AB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F60D18F4-D293-43FE-8FE2-A2CE565B3AB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F60D18F4-D293-43FE-8FE2-A2CE565B3AB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal

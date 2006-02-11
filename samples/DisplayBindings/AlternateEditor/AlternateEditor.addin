@@ -1,0 +1,17 @@
+<AddIn name = "Alternate Editor Sample">
+	
+	<Manifest>
+		<Identity name = "SharpDevelop.Samples.AlternateEditor"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "AlternateEditor.dll"/>
+	</Runtime>
+
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id = "AlternateEditor"
+		       insertbefore = "Text"
+		       supportedformats = "Text Files,Source Files"
+		       class = "AlternateEditor.AlternateEditorDisplayBinding" />
+	</Path>
+</AddIn>

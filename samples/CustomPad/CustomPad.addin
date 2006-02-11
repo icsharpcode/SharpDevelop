@@ -1,0 +1,18 @@
+<AddIn name = "Custom Pad Sample">
+
+	<Manifest>
+		<Identity name="SharpDevelop.Samples.CustomPad"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="CustomPad.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "CustomPad"
+		     category = "Main"
+		     icon     = "PadIcons.Output"
+		     title    = "Custom Pad"
+		     class    = "CustomPad.MyCustomPad"/>
+	</Path>
+</AddIn>

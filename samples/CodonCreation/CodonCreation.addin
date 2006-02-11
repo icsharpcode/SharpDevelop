@@ -1,0 +1,32 @@
+<AddIn name        = "Codon Creation Sample"
+       url         = "http://www.icsharpcode.net"
+       version     = "1.0.0">
+	<Manifest>
+		<Identity name = "SharpDevelop.Samples.CodonCreation"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "CodonCreation.dll">
+			<Doozer name = "TestCodon"
+			        class = "CodonCreation.TestDoozer"/>
+		</Import>
+	</Runtime>
+	
+	<Path name = "/Samples/CodonCreation">
+		<TestCodon id = "codon1"
+		           text = "Hello World!"/>
+		<TestCodon id = "codon2"
+		           text = " Codon Creation Sample!"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu">
+		<MenuItem id = "CodonCreationSample" 
+		          label = "Codon Creation Sample" 
+		          type = "Menu">
+			<MenuItem id = "ReadTestCodon"
+		              label = "Read Test Codon" 
+		              class = "CodonCreation.ReadTestCodonCommand"/>
+		</MenuItem>
+	</Path>
+	
+</AddIn>
