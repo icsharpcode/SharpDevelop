@@ -51,9 +51,7 @@ namespace SharpReport.ReportItems.Functions {
 			GrapFromBase();
 			this.initDone = true;
 		}
-		private void tt (object sender, PropertyChangedEventArgs e) {
-			
-		}
+	
 		private void GrapFromBase() {
 			this.visualControl.SuspendLayout();
 			visualControl.StringFormat = base.StandartStringFormat;

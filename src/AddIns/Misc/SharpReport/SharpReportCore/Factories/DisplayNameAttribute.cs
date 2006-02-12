@@ -1,16 +1,16 @@
 using System;
 
-namespace SharpReportCore
-{
-	public class DisplayNameAttribute : Attribute
-	{
+namespace SharpReportCore{
+	
+	
+	public sealed class DisplayNameAttribute : Attribute{
 		string name;
-		public string Name
-		{
+		
+		public string Name{
 			get { return name; }
 		}
-		public DisplayNameAttribute(string name)
-		{
+		
+		public DisplayNameAttribute(string name){
 			this.name = name;
 		}
 	}

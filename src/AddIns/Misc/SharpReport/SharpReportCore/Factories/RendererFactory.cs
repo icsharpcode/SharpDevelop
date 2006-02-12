@@ -32,15 +32,17 @@ namespace SharpReportCore {
 		                                     typeof (AbstractRenderer)){
 		}
 		public  AbstractRenderer Create(ReportModel model,DataManager container) {
-			switch (model.ReportSettings.ReportType) {
-					case GlobalEnums.enmReportType.FormSheet :{
-						return new RenderFormSheetReport(model);
-					}
-					case GlobalEnums.enmReportType.DataReport:{
-						return new RenderDataReport(model,container);
-					}
+			if (model != null) {
+				switch (model.ReportSettings.ReportType) {
+						case GlobalEnums.enmReportType.FormSheet :{
+							return new RenderFormSheetReport(model);
+						}
+						case GlobalEnums.enmReportType.DataReport:{
+							return new RenderDataReport(model,container);
+						}
+				}
 			}
-			return null;
+			throw  new MissingModelException();
 		}
 	}
 }

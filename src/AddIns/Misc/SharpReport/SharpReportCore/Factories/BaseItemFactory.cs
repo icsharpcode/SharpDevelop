@@ -33,7 +33,8 @@ namespace SharpReportCore {
 		}
 		public new BaseReportItem Create (string name){
 			if (String.IsNullOrEmpty(name)) {
-				throw new ArgumentNullException("name");
+				String str = String.Format("<{0}>",name);
+				throw new UnkownItemException(str);
 			}
 			if (name.LastIndexOf('.') > 0) {
 				StringBuilder b = new StringBuilder (name);

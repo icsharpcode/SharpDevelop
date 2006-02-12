@@ -27,6 +27,10 @@ namespace SharpReportCore {
 		}
 		
 		public new BaseSection Create(string name) {
+			if (String.IsNullOrEmpty(name)) {
+				String str = String.Format("<{0}>",name);
+				throw new UnkownItemException(str);
+			}
 			return new BaseSection(name);
 		}
 		

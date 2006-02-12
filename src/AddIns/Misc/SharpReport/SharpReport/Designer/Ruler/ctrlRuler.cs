@@ -111,25 +111,20 @@ namespace Ruler
 				endValue = paperSize.Height;
 			}
 
-			try {
-				int i = 0;
-				int drawPos = 0;	
-				while (i < this.Height) {
-					drawPos = i * bigStep;
-					g.DrawString ((i + start).ToString(),this.Font,brush,3,drawPos);
-					Line (g,pen,0,drawPos,bLine,drawPos);
-					Line (g,pen,
-					      0,drawPos - smallStep,
-					      sLine,drawPos - smallStep);
-					i ++;
-				}
-				
-			} catch (Exception e) {
-				MessageBox.Show (e.Message);
-			} finally {
-				pen.Dispose();
-				brush.Dispose();
+			
+			int i = 0;
+			int drawPos = 0;
+			while (i < this.Height) {
+				drawPos = i * bigStep;
+				g.DrawString ((i + start).ToString(),this.Font,brush,3,drawPos);
+				Line (g,pen,0,drawPos,bLine,drawPos);
+				Line (g,pen,
+				      0,drawPos - smallStep,
+				      sLine,drawPos - smallStep);
+				i ++;
 			}
+			pen.Dispose();
+			brush.Dispose();
 		}
 		
 		void PaintHorizontal (Graphics g){
@@ -166,38 +161,29 @@ namespace Ruler
 				g.DrawRectangle (pen,0,0,(this.Width - 1) * size.Width,(this.Height - 1) * size.Width);
 			}
 			
-			try {
-				int i = 0;
-				int drawPos = 0;
 			
-				while (i < (int)((endValue / 10) + 1)) {
-					drawPos = i * bigStep;
-					g.DrawString ((i + start).ToString(),this.Font,brush,drawPos,sLine);
-					Line (g,pen,drawPos,0,i * bigStep,bLine);
-					Line (g,pen,drawPos - smallStep,0,drawPos - smallStep,sLine);
-					i ++;
-				}
-				// MarginMarker
-				if (leftMargin > 0) {
+			int i = 0;
+			int drawPos = 0;
+			
+			while (i < (int)((endValue / 10) + 1)) {
+				drawPos = i * bigStep;
+				g.DrawString ((i + start).ToString(),this.Font,brush,drawPos,sLine);
+				Line (g,pen,drawPos,0,i * bigStep,bLine);
+				Line (g,pen,drawPos - smallStep,0,drawPos - smallStep,sLine);
+				i ++;
+			}
+			// MarginMarker
+			if (leftMargin > 0) {
 //					g.DrawString ("L",this.Font,brush,leftMargin * size.Width,sLine);
 //					Line (g,
 //					      (int)(leftMargin * size.Width),0,
 //					      (int)(leftMargin * size.Width),bLine);
-					Line (g,
-					      (int)(leftMargin),0,
-					      (int)(leftMargin),bLine);
-				}
-				
-//				if (rightMargin > 0) {
-//					g.DrawString ("R",font,brush,leftMargin * size.Width,sLine);
-//				}
-				
-			} catch (Exception e) {
-				MessageBox.Show (e.Message);
-			} finally {
-				pen.Dispose();
-				brush.Dispose();
+				Line (g,
+				      (int)(leftMargin),0,
+				      (int)(leftMargin),bLine);
 			}
+			pen.Dispose();
+			brush.Dispose();
 		}
 	
 		#endregion

@@ -102,7 +102,6 @@
     <Compile Include="Printing\Text\TextDrawer.cs" />
     <Compile Include="Printing\AbstractRenderer.cs" />
     <Compile Include="Printing\FormatOutputEventArgs.cs" />
-    <Compile Include="Printing\PrintingUtilities.cs" />
     <Compile Include="Printing\RenderDataReport.cs" />
     <Compile Include="Printing\RenderFormSheetReport.cs" />
     <Compile Include="Printing\ReportDocument.cs" />

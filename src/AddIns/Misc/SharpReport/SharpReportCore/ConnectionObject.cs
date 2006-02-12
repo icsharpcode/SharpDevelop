@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 using System;
 using System.Data;	
+using System.Data.Common;
 using System.Data.OleDb;
 
 /// <summary>
@@ -22,64 +23,39 @@ using System.Data.OleDb;
 namespace SharpReportCore {
 	public class ConnectionObject : object,IDisposable {
 		IDbConnection connection;
-		string password;
-		string username;
+		OleDbConnectionStringBuilder oleDbConnectionStringBuilder;
 		string connectionString;
 		
 		
-		public ConnectionObject(string connectionString):this(connectionString,"","") {
-		}
-		
-		public ConnectionObject(string connectionString, string password, string username)
-		{
+		public ConnectionObject(string connectionString) {
 			if (String.IsNullOrEmpty(connectionString)) {
 				throw new ArgumentNullException("connectionString");
 			}
 			this.connectionString = connectionString;
-			this.password = password;
-			this.username = username;
 			this.connection = new OleDbConnection (this.connectionString);
 		}
 		
-		public ConnectionObject(IDbConnection connection, string password, string username)
-		{
-			this.connection = connection;
-			this.password = password;
-			this.username = username;
-			this.connectionString = this.connection.ConnectionString;
+		public ConnectionObject( OleDbConnectionStringBuilder oleDbConnectionStringBuilder){
+			this.oleDbConnectionStringBuilder = oleDbConnectionStringBuilder;
+			try {
+				this.connection = new OleDbConnection (this.oleDbConnectionStringBuilder.ConnectionString);
+			} catch (Exception ) {
+				throw;
+			}
 		}
 		
+		public ConnectionObject(IDbConnection connection){
+			this.connection = connection;
+			this.connectionString = this.connection.ConnectionString;
+		}
 		
 		public IDbConnection Connection {
 			get {
 				return connection;
 			}
-			set {
-				connection = value;
-			}
-		}
-		public string Password {
-			get {
-				return password;
-			}
-			set {
-				password = value;
-			}
-		}
-		public string Username {
-			get {
-				return username;
-			}
-			set {
-				username = value;
-			}
+			
 		}
 		
-//		public string ConnectionString {
-//			get {
-//				return connectionString;
-//			}
-//		}
 		public void Dispose(){
 			if (this.connection != null) {
 				if (this.connection.State == ConnectionState.Open) {

@@ -38,19 +38,20 @@ namespace SharpReportCore {
 		public LineShape() {
 		}
 
-		public override void DrawShape(Graphics g, BaseLine baseLine, RectangleF rectangle) {
-			base.DrawShape(g,baseLine,rectangle);
+		public override void DrawShape(Graphics graphics, BaseLine baseLine, RectangleF rectangle) {
+			base.DrawShape(graphics,baseLine,rectangle);
 			using (Pen p = new Pen(baseLine.Color,baseLine.Thickness)) {
 				p.DashStyle = baseLine.DashStyle;
 				float halfRect = rectangle.Top + (rectangle.Height / 2);
 				
-				g.DrawLine (p,
+				graphics.DrawLine (p,
 				            rectangle.X,
 				            halfRect,
 				            rectangle.X + rectangle.Width,
 				            halfRect);
 			}
 		}
+		
 		
 	}
 }

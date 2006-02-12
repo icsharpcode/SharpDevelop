@@ -26,33 +26,33 @@ namespace SharpReportCore {
 			
 		}
 		
-		public override void Render(ReportPageEventArgs e) {
-			base.Render(e);
+		public override void Render(ReportPageEventArgs rpea) {
+			base.Render(rpea);
 		
 			string formattedString = FormatAsDate(System.DateTime.Now.ToString(),base.FormatString);
 			
-			RectangleF rect = base.PrepareRectangle (e,formattedString);
+			RectangleF rect = base.PrepareRectangle (rpea,formattedString);
 
 			//Printout the textPart
-			base.PrintTheStuff (e,this.Text,rect);
+			base.PrintTheStuff (rpea,this.Text,rect);
 
 			//here we print the functionpart allway's with Stringalignment.Far
 			StringFormat fmt = StandartStringFormat;
 			fmt.Alignment = StringAlignment.Far;
 			fmt.LineAlignment = StringAlignment.Near;
 			
-			e.PrintPageEventArgs.Graphics.DrawString(formattedString,
+			rpea.PrintPageEventArgs.Graphics.DrawString(formattedString,
 			                                         this.Font,
 			                                         Brushes.Black,
 			                                         rect,
 			                                         fmt);
 			
 			// goon 
-			base.NotiyfyAfterPrint (e.LocationAfterDraw);
+			base.NotiyfyAfterPrint (rpea.LocationAfterDraw);
 		}
 		
 		public override string ToString() {
-			return "Today";
+			return "BaseToday";
 		}
 			
 			

@@ -59,7 +59,7 @@ namespace SharpReportCore {
 				if (this.connectionObject == null) {
 					
 					if (model.ReportSettings.ConnectionString != "") {
-						this.connectionObject = new ConnectionObject (model.ReportSettings.ConnectionString,"","");
+						this.connectionObject = new ConnectionObject (model.ReportSettings.ConnectionString);
 					}
 					
 					if (reportParameters != null) {
@@ -113,8 +113,11 @@ namespace SharpReportCore {
 		
 		
 		private void ApplyReportParameters (ReportModel model,ReportParameters parameters){
-			if ((model == null)||(parameters == null )){
-				throw new ArgumentNullException("SharpReportEngine:ApplyReportParameters");
+			if (model == null) {
+				throw new MissingModelException();
+			}
+			if (parameters == null ){
+				throw new ArgumentNullException("parameters");
 			}
 			
 			SetSqlParameters (model,parameters.SqlParameters);
@@ -152,8 +155,8 @@ namespace SharpReportCore {
 						}
 						
 					}
-					catch (System.Data.OleDb.OleDbException e) {
-						throw e;
+					catch (System.Data.OleDb.OleDbException) {
+						throw ;
 					}
 					catch (Exception) {
 						throw;
@@ -261,7 +264,7 @@ namespace SharpReportCore {
 		
 		protected AbstractRenderer AbstractRenderer (ReportModel model) {
 			if (model == null) {
-				throw new ArgumentNullException("PrintableDocument:ReportModel");
+				throw new MissingModelException();
 			}
 			AbstractRenderer abstr = SetupStandartRenderer(model);
 			return abstr;
@@ -274,8 +277,8 @@ namespace SharpReportCore {
 		/// this is an easy way to ask the report for desired paramaters</see></summary>
 		
 		public ReportParameters LoadParameters (string fileName) {
-			if (fileName.Length == 0) {
-				throw new ArgumentNullException("PreviewPushDataReport FileName");
+			if (String.IsNullOrEmpty(fileName)) {
+				throw new ArgumentNullException("fileName");
 			}
 			ReportModel model = null;
 			try {
@@ -304,7 +307,7 @@ namespace SharpReportCore {
 		
 		public void PreviewStandartReport (string fileName) {
 			if (fileName.Length == 0) {
-				throw new ArgumentNullException("PreviewPushDataReport FileName");
+				throw new ArgumentNullException("fileName");
 			}
 			PreviewStandartReport (fileName,null);
 		}
@@ -312,7 +315,7 @@ namespace SharpReportCore {
 		
 		public void PreviewStandartReport (string fileName,ReportParameters reportParameters) {
 			if (fileName.Length == 0) {
-				throw new ArgumentNullException("PreviewPushDataReport:FileName");
+				throw new ArgumentNullException("fileName");
 			}
 
 			ReportModel model = null;
@@ -373,7 +376,7 @@ namespace SharpReportCore {
 				doc = renderer.ReportDocument;
 				using (PrintDialog dlg = new PrintDialog()) {
 					dlg.Document = doc;
-					MessageBox.Show (model.ReportSettings.UseStandartPrinter.ToString());
+//					MessageBox.Show (model.ReportSettings.UseStandartPrinter.ToString());
 					if (model.ReportSettings.UseStandartPrinter == true) {
 						dlg.Document.Print();
 					} else {
@@ -497,7 +500,7 @@ namespace SharpReportCore {
 		/// <returns><see cref="ReportModel"></see></returns>
 		
 		protected ReportModel ModelFromFile (string fileName) {
-			if (fileName.Length == 0) {
+			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
 			

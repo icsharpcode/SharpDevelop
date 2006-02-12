@@ -31,9 +31,15 @@ namespace SharpReportCore {
 			this.localisedName = friendlyName;
 		}
 		
+		public override string ToString()
+		{
+			return "BaseFunction";
+		}
+		
+		
 		#region properties
 		
-		public virtual string LocalisedName {
+		public  string LocalisedName {
 			get {
 				return localisedName;
 			}

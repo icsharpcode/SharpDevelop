@@ -30,41 +30,32 @@ namespace SharpReportCore {
 				
 			}
 			
-			public override void Render(ReportPageEventArgs e) {
-				base.Render(e);
+			public override void Render(ReportPageEventArgs rpea) {
+				base.Render(rpea);
 				
-				string formattedString = base.FireFormatOutput(e.PageNumber.ToString(CultureInfo.InvariantCulture),
+				string formattedString = base.FireFormatOutput(rpea.PageNumber.ToString(CultureInfo.InvariantCulture),
 				                                               base.FormatString,"");
 				
 
-				RectangleF rect = base.PrepareRectangle (e,formattedString);
+				RectangleF rect = base.PrepareRectangle (rpea,formattedString);
 				//Printout the textpart
-				base.PrintTheStuff (e,this.Text,rect);
+				base.PrintTheStuff (rpea,this.Text,rect);
 				//here we print the functionpart
 				StringFormat fmt = StandartStringFormat;
 
 				fmt.Alignment = StringAlignment.Far;
 				fmt.LineAlignment = StringAlignment.Near;
-				e.PrintPageEventArgs.Graphics.DrawString(e.PageNumber.ToString(CultureInfo.InvariantCulture),
+				rpea.PrintPageEventArgs.Graphics.DrawString(rpea.PageNumber.ToString(CultureInfo.InvariantCulture),
 				                                         this.Font,
 				                                         Brushes.Black,
 				                                         rect,
 				                                         fmt);
 				
-				base.NotiyfyAfterPrint (e.LocationAfterDraw);
+				base.NotiyfyAfterPrint (rpea.LocationAfterDraw);
 			}
 			
 			public override string ToString() {
-				return "PageNumber";
+				return "BasePageNumber";
 			}
-			
-			public override string LocalisedName {
-				get {
-					return base.LocalisedName;
-				}
-			}
-			
-			
-			
 		}
 }

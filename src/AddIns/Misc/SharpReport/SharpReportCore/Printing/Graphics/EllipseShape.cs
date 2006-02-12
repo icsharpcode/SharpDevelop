@@ -37,18 +37,18 @@ namespace SharpReportCore {
 		}
 		
 		
-		public override void DrawShape(Graphics g, BaseLine baseLine, RectangleF rectangle) {
-			base.DrawShape(g,baseLine,rectangle);
+		public override void DrawShape(Graphics graphics, BaseLine baseLine, RectangleF rectangle) {
+			base.DrawShape(graphics,baseLine,rectangle);
 			using (Pen p = new Pen(baseLine.Color,baseLine.Thickness)) {
 				p.DashStyle = baseLine.DashStyle;
-				g.DrawEllipse(p,
+				graphics.DrawEllipse(p,
 				              rectangle);
 			}
 		}
 		
 		
-		public override void FillShape(Graphics g, AbstractFillPattern fillPattern, RectangleF rectangle) {
-			g.FillEllipse(fillPattern.Brush,
+		public override void FillShape(Graphics graphics, AbstractFillPattern fillPattern, RectangleF rectangle) {
+			graphics.FillEllipse(fillPattern.Brush,
 			              rectangle);
 		}
 		

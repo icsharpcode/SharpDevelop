@@ -36,21 +36,21 @@ namespace SharpReportCore{
 	/// (Line by Line)
 	/// </summary>
 	public class LocationSorter : IComparer<IItemRenderer>  {
-		public int Compare(IItemRenderer left, IItemRenderer right){
-			if (left == null){
-				if (right == null){
+		public int Compare(IItemRenderer x, IItemRenderer y){
+			if (x == null){
+				if (y == null){
 					return 0;
 				}
 				return -1;
 			}
-			if (right == null){
+			if (y == null){
 				return 1;
 			}
 			
-			if (left.Location.Y == right.Location.Y){
-				return left.Location.X - right.Location.X;
+			if (x.Location.Y == y.Location.Y){
+				return x.Location.X - y.Location.X;
 			}
-			return left.Location.Y - right.Location.Y;
+			return x.Location.Y - y.Location.Y;
 		}
 	}
 	
@@ -68,9 +68,6 @@ namespace SharpReportCore{
 		public void SortByLocation () {
 			if (this.Count > 1) {
 				this.Sort(new LocationSorter());
-				for (int i = 0;i < this.Count ; i ++) {
-					IItemRenderer col = this[i];
-				}
 			}
 		}
 		

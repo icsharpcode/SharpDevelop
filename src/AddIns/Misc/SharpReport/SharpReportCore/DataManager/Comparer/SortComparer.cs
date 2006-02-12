@@ -83,9 +83,9 @@ namespace SharpReportCore {
 			// Gleich Werte, dann Index bercksichtigen
 			return this.ListIndex.CompareTo(value.ListIndex);
 		}
-		public override int CompareTo(object value) {
-			base.CompareTo(value);
-			return this.CompareTo((SortComparer)value);
+		public override int CompareTo(object obj) {
+			base.CompareTo(obj);
+			return this.CompareTo((SortComparer)obj);
 		}
 	
 		

@@ -8,7 +8,7 @@ namespace SharpReportCore {
 	/// This class supports data binding
 	/// </summary>
 	public class SharpPropertyDescriptor : PropertyDescriptor{
-		bool readOnly = false;
+		bool readOnly;
 		Type componentType;
 		Type propertyType;
 		PropertyInfo prop;
@@ -18,6 +18,7 @@ namespace SharpReportCore {
 		{
 			this.componentType = componentType;
 			this.propertyType = propertyType;
+			this.readOnly= false;
 		}
 
 

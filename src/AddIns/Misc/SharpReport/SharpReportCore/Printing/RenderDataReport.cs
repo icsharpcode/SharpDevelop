@@ -68,19 +68,21 @@ namespace SharpReportCore {
 			}
 		}
 		
-		protected override void BeginPrintPage(object sender, ReportPageEventArgs e) {
-
-			base.BeginPrintPage (sender,e);
+		protected override void BeginPrintPage(object sender, ReportPageEventArgs rpea) {
+			if (rpea == null) {
+				throw new ArgumentNullException("rpea");
+			}
+			base.BeginPrintPage (sender,rpea);
 			//Draw ReportHeader
-			currentPoint = base.DrawReportHeader (e);		
+			currentPoint = base.DrawReportHeader (rpea);		
 			if (base.CurrentSection.PageBreakAfter) {
-				base.PageBreak(e,base.CurrentSection);
+				base.PageBreak(rpea,base.CurrentSection);
 				base.CurrentSection.PageBreakAfter = false;
 				return;
 			}
 			
 			//Draw Pageheader
-			currentPoint = base.DrawPageheader (currentPoint,e);
+			currentPoint = base.DrawPageheader (currentPoint,rpea);
 			base.DetailStart = new Point ((int)currentPoint.X,(int)currentPoint.Y);
 		}
 		

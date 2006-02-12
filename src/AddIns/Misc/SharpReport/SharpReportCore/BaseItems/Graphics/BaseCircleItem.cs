@@ -27,7 +27,6 @@ namespace SharpReportCore {
 		
 		public override void Render(ReportPageEventArgs rpea) {
 			base.Render (rpea);
-			SizeF measureSize = base.MeasureReportItem (rpea,this);
 			RectangleF rect = base.DrawingRectangle (rpea,this.Size);
 			
 			shape.FillShape(rpea.PrintPageEventArgs.Graphics,

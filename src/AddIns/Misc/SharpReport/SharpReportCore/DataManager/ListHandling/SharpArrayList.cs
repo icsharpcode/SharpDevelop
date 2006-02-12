@@ -225,20 +225,20 @@ namespace SharpReportCore
 		#endregion
 		
 		#region overrides
-		public override int Add(object val) {
-			if (this.elementType.GetType().IsAssignableFrom (val.GetType())) {
+		public override int Add(object value) {
+			if (this.elementType.GetType().IsAssignableFrom (value.GetType())) {
 				System.Console.WriteLine("type ok");
 			}
-			if ((val.GetType().IsSubclassOf(this.elementType))||( val.GetType() == this.elementType)){
+			if ((value.GetType().IsSubclassOf(this.elementType))||( value.GetType() == this.elementType)){
 				if (this.allowNew) {
-					int i = base.Add(val);
+					int i = base.Add(value);
 					this.OnListChange (new ListChangedEventArgs(ListChangedType.ItemAdded,i));
 					return i;
 				} else {
 					throw new NotSupportedException("SharpArrayList:Add(object)");
 				}
 			} else {
-				string str = String.Format("Add:Wrong Type {0} {1}",this.elementType,val.GetType());
+				string str = String.Format("Add:Wrong Type {0} {1}",this.elementType,value.GetType());
 				throw new ArgumentException(str);
 			}
 		}

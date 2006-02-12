@@ -55,6 +55,9 @@ namespace SharpReportCore {
 		
 		
 		protected AbstractRenderer(ReportModel model){
+			if (model == null) {
+				throw new MissingModelException();
+			}
 			this.reportSettings = model.ReportSettings;
 			this.sections = model.SectionCollection;
 			Init();
@@ -86,16 +89,18 @@ namespace SharpReportCore {
 
 		
 		protected int CalculateDrawAreaHeight(ReportPageEventArgs rpea){
-
+			if (rpea == null) {
+				throw new ArgumentNullException("rpea");
+			}
 			int to = rpea.PrintPageEventArgs.MarginBounds.Height ;
 
 			if (rpea.PageNumber ==1) {
 				to -= sections[Convert.ToInt16(GlobalEnums.enmSection.ReportHeader,CultureInfo.InvariantCulture)].Size.Height;
 			}
 			
-			to -= sections[Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader)].Size.Height;
+			to -= sections[Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader,CultureInfo.InvariantCulture)].Size.Height;
 			
-			to -= sections[Convert.ToInt16(GlobalEnums.enmSection.ReportPageFooter)].Size.Height;
+			to -= sections[Convert.ToInt16(GlobalEnums.enmSection.ReportPageFooter,CultureInfo.InvariantCulture)].Size.Height;
 			return to;
 		}
 		
@@ -103,7 +108,13 @@ namespace SharpReportCore {
 		/// Use this function to draw controlling rectangles
 		/// </summary>	
 		
-		protected void DebugRectangle (ReportPageEventArgs e,Rectangle rect) {
+		protected void DebugRectangle (ReportPageEventArgs rpea,Rectangle rectangle) {
+//			if (rpea == null) {
+//				throw new ArgumentNullException("rpea");
+//			}
+//			if (rectangle == null) {
+//				throw new ArgumentNullException("rectangle");
+//			}
 //			e.PrintPageEventArgs.Graphics.DrawRectangle (Pens.Black,rect);
 		}
 		
@@ -203,25 +214,35 @@ namespace SharpReportCore {
 	
 	
 		// Called by FormatOutPutEvent of the BaseReportItem
-		void FormatBaseReportItem (object sender, FormatOutputEventArgs e) {
-			if (sender is BaseDataItem) {
-				BaseDataItem i = (BaseDataItem)sender;
-				e.FormatedValue = defaultFormatter.FormatItem (i);
+		void FormatBaseReportItem (object sender, FormatOutputEventArgs rpea) {
+			BaseDataItem baseDataItem = sender as BaseDataItem;
+			if (baseDataItem != null) {
+				rpea.FormatedValue = defaultFormatter.FormatItem (baseDataItem);
 			}
+//			if (sender is BaseDataItem) {
+//				BaseDataItem i = (BaseDataItem)sender;
+//				e.FormatedValue = defaultFormatter.FormatItem (i);
+//			}
 		}
 		
 		
 		#region privates
-		protected void FitSectionToItems (BaseSection section,ReportPageEventArgs e){
-			Rectangle orgRect = new Rectangle (e.PrintPageEventArgs.MarginBounds.Left,
+		protected void FitSectionToItems (BaseSection section,ReportPageEventArgs rpea){
+			if (section == null) {
+				throw new ArgumentNullException("section");
+			}
+			if (rpea == null) {
+				throw new ArgumentNullException("rpea");
+			}
+			Rectangle orgRect = new Rectangle (rpea.PrintPageEventArgs.MarginBounds.Left,
 			                                   section.SectionOffset,
-			                                   e.PrintPageEventArgs.MarginBounds.Width,
+			                                   rpea.PrintPageEventArgs.MarginBounds.Width,
 			                                   section.Size.Height);
 			
 			if ((section.CanGrow == true)||(section.CanShrink == true))  {
-				AdjustSection (section,e);
+				AdjustSection (section,rpea);
 			} else {
-				AdjustItems (section,e);
+				AdjustItems (section,rpea);
 				
 			}
 		}
@@ -393,6 +414,7 @@ namespace SharpReportCore {
 			}
 		}
 		#endregion
+	
 		#region IDispoable
 		public void Dispose(){
 			if (this.reportDocument != null) {

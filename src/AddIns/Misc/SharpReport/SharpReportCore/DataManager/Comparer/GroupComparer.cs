@@ -92,9 +92,9 @@ namespace SharpReportCore {
 		
 		
 		
-		public override int CompareTo(object value) {
-			 base.CompareTo(value);
-			return this.CompareTo((GroupComparer)value);
+		public override int CompareTo(object obj) {
+			 base.CompareTo(obj);
+			return this.CompareTo((GroupComparer)obj);
 		}
 		
 		

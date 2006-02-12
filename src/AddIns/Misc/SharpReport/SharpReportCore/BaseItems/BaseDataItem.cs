@@ -43,12 +43,12 @@ namespace SharpReportCore {
 			this.columnName = columnName;
 		}
 		
-		public override void Render(SharpReportCore.ReportPageEventArgs e) {
+		public override void Render(SharpReportCore.ReportPageEventArgs rpea) {
 			// this.DbValue is formatted in the BeforePrintEvent catched in AbstractRenderer
 			string formattedString = base.FireFormatOutput(this.dbValue,this.FormatString,"");
-			RectangleF rect = base.PrepareRectangle (e,formattedString);
-			base.PrintTheStuff (e,formattedString,rect);
-			base.NotiyfyAfterPrint (e.LocationAfterDraw);
+			RectangleF rect = base.PrepareRectangle (rpea,formattedString);
+			base.PrintTheStuff (rpea,formattedString,rect);
+			base.NotiyfyAfterPrint (rpea.LocationAfterDraw);
 		}
 		
 		public override string ToString() {

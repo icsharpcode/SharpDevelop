@@ -38,21 +38,21 @@ namespace SharpReportCore {
 		
 		
 		#region overrides
-		public override void Visit(ReportModel model) {
-			if (model != null) {
+		public override void Visit(ReportModel reportModel) {
+			if (reportModel == null) {
+				throw new MissingModelException();
+			} else {
 				XmlDocument xmlDoc;
 				try {
 					xmlDoc = XmlHelper.OpenSharpReport (fileName);
 					xmlFormReader = new XmlFormReader();
-					model.ReportSettings.SetSettings ((XmlElement)xmlDoc.DocumentElement.FirstChild);
+					reportModel.ReportSettings.SetSettings ((XmlElement)xmlDoc.DocumentElement.FirstChild);
 					SetSections (xmlDoc);
 				} catch (Exception ) {
 					throw;
 				}
-			} else {
-				System.ArgumentNullException e = new System.ArgumentNullException ("LoadModelVisitor:Visit -> No valid Model");
-				throw e;
 			}
+			
 		}
 		#endregion
 		
@@ -87,8 +87,8 @@ namespace SharpReportCore {
 											rpt.Visible = true;
 											rpt.ResumeLayout();
 										} else {
-											UnkownItemException e = new UnkownItemException();
-											throw e;
+											String str = String.Format("< {0}>",ctrlElem.GetAttribute("basetype"));
+											throw new UnkownItemException(str);
 										}
 									} catch (Exception ) {
 										throw;

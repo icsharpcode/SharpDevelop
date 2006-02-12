@@ -34,7 +34,7 @@ namespace SharpReportCore {
 		private bool canShrink ;
 		private bool pageBreakBefore;
 		private bool pageBreakAfter;
-		private bool suspend = true;
+		private bool suspend;
 		private Size size;
 		private Point location;
 		
@@ -51,7 +51,7 @@ namespace SharpReportCore {
 		#endregion
 		
 		public BaseReportObject() {
-			suspend = false;
+			
 		}
 	
 		
