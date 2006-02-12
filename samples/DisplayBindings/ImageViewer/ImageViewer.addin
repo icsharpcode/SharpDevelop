@@ -1,0 +1,23 @@
+﻿<AddIn name        = "ImageViewer"
+       author      = "Daniel Grunwald"
+       copyright   = "GNU Lesser General Public License">
+	
+	<Runtime>
+		<Import assembly = "ImageViewer.dll"/>
+	</Runtime>
+
+	<Path name="/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id   = "ImageFileFilter"
+		            name = "Images"
+		            extensions   = "*.bmp;*.gif;*.jpg;*.jpeg;*.png"
+		            insertbefore = "Boo"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id    = "ImageViewer"
+		                class = "ImageViewer.ImageViewerDisplayBinding"
+		                insertbefore    = "Text"
+		                fileNamePattern = "\.(bmp|gif|jpe?g|png)$"
+		                languagePattern = "^ImagesFiles$"/>
+	</Path>
+</AddIn>

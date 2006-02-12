@@ -3,7 +3,7 @@
        description = "integrates Microsoft's Help 2.0 Environment">
 
 	<Manifest>
-		<Identity name = "ICSharpCode.HtmlHelp2"/>
+		<Identity name = "ICSharpCode.HtmlHelp2.DynamicHelpPad"/>
 	</Manifest>
 	
 	<Runtime>

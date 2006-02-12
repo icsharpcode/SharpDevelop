@@ -1,7 +1,11 @@
 ﻿<AddIn name        = "Resource Editor"
        author      = "Mike Krueger"
        copyright   = "prj:///doc/copyright.txt"
-       description = "A Display binding for *.resources and *.resx files.">
+       description = "A display binding for *.resources and *.resx files.">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.ResourceEditor"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly="ResourceEditor.dll"/>

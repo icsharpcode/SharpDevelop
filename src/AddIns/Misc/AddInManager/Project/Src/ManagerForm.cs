@@ -89,7 +89,7 @@ namespace ICSharpCode.AddInManager
 			               });
 			foreach (AddIn addIn in addInList) {
 				string identity = addIn.Manifest.PrimaryIdentity;
-				if (identity == null || addIn.Properties["addInManagerHidden"] == "true")
+				if (addIn.Properties["addInManagerHidden"] == "true")
 					continue;
 				addInControl = new AddInControl(addIn);
 				addInControl.Dock = DockStyle.Top;
@@ -213,6 +213,7 @@ namespace ICSharpCode.AddInManager
 				runActionButton.Visible = true;
 				uninstallButton.Visible = true;
 				
+				bool allHaveIdentity = true;
 				bool allEnabled      = true;
 				bool allDisabled     = true;
 				bool allInstalling   = true;
@@ -221,6 +222,10 @@ namespace ICSharpCode.AddInManager
 				bool allUninstallable = true;
 				bool hasErrors = false;
 				foreach (AddIn addIn in selected) {
+					if (addIn.Manifest.PrimaryIdentity == null) {
+						allHaveIdentity = false;
+						break;
+					}
 					allEnabled      &= addIn.Action == AddInAction.Enable;
 					if (addIn.Action == AddInAction.DependencyError || addIn.Action == AddInAction.InstalledTwice)
 						hasErrors = true;
@@ -235,11 +240,14 @@ namespace ICSharpCode.AddInManager
 						}
 					}
 				}
-				if (allEnabled) {
+				if (allEnabled == true || allHaveIdentity == false) {
 					selectedAction = AddInAction.Disable;
 					actionGroupBox.Text = runActionButton.Text = ResourceService.GetString("AddInManager.ActionDisable");
 					actionDescription.Text = ResourceService.GetString("AddInManager.DescriptionDisable");
-					runActionButton.Enabled = ShowDependencies(selected, ShowDependencyMode.Disable);
+					if (allHaveIdentity)
+						runActionButton.Enabled = ShowDependencies(selected, ShowDependencyMode.Disable);
+					else
+						runActionButton.Enabled = false;
 					uninstallButton.Enabled = allUninstallable && runActionButton.Enabled;
 				} else if (allDisabled) {
 					selectedAction = AddInAction.Enable;

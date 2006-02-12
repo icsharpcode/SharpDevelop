@@ -1,6 +1,11 @@
 <AddIn name        = "Help 2.0 Environment for SharpDevelop"
        author      = "Mathias Simmack"
-       description = "integrates Microsoft's Help 2.0 Environment">
+       description = "integrates Microsoft's Help 2.0 Environment"
+       addInManagerHidden = "true">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.HtmlHelp2"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly="HtmlHelp2.dll"/>
