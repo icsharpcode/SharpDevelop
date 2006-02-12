@@ -1,7 +1,18 @@
+++ DISCUSSION FORUM ++
+
+http://community.sharpdevelop.net/forums/
+
+
+++ WIKI ++
+
+http://wiki.sharpdevelop.net/ (HOME)
+http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.FeatureVideos
+http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.HowToDoThings
+
+
 ++ ROADMAPS ++
 
 http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.SharpDevelop2xRoadmap
-
 
 
 ++ HELPING ++
@@ -10,18 +21,7 @@ http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.HowCanIHelp
 http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.FeaturesYouCouldHelpUsWith
 
 
-
 ++ WISH LIST ++
 
 http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.SharpDevelopWishList
-
-
-
-++ DISCUSSION FORUM ++
-
-http://community.sharpdevelop.net/forums/
-
-Please also see:
-
-http://wiki.sharpdevelop.net/
 
