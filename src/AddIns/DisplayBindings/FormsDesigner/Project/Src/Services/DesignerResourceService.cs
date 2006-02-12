@@ -257,9 +257,25 @@ namespace ICSharpCode.FormsDesigner.Services
 				resourceFileName = new StringBuilder(Path.GetTempPath());
 			}
 			resourceFileName.Append(Path.DirectorySeparatorChar);
-			string sourceFileName = Path.GetFileNameWithoutExtension(this.FileName);
-			if (sourceFileName != null && sourceFileName.ToLowerInvariant().EndsWith(".designer")) {
-				sourceFileName = sourceFileName.Substring(0, sourceFileName.Length - 9);
+			string sourceFileName = null;
+			if (project != null && this.FileName != null) {
+				// Try to find the source file name by using the project dependencies first.
+				FileProjectItem sourceItem = project.Items.Find(delegate(ProjectItem item) {
+				                                                	FileProjectItem fpi = item as FileProjectItem;
+				                                                	return fpi != null && fpi.FileName != null && FileUtility.IsEqualFileName(fpi.FileName, this.FileName);
+				                                                }) as FileProjectItem;
+				if (sourceItem != null && sourceItem.DependentUpon != null && sourceItem.DependentUpon.Length > 0) {
+					sourceFileName = Path.GetFileNameWithoutExtension(sourceItem.DependentUpon);
+				}
+			}
+			if (sourceFileName == null) {
+				// If the source file name cannot be found using the project dependencies,
+				// assume the resource file name to be equal to the current source file name.
+				// Remove the ".Designer" part if present.
+				sourceFileName = Path.GetFileNameWithoutExtension(this.FileName);
+				if (sourceFileName != null && sourceFileName.ToLowerInvariant().EndsWith(".designer")) {
+					sourceFileName = sourceFileName.Substring(0, sourceFileName.Length - 9);
+				}
 			}
 			resourceFileName.Append(sourceFileName);
 			
