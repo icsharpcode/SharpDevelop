@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<SharpReport>
+   <section name="SharpReportCore.ReportSettings">
+      <SqlParams>
+         <params>
+            <DataType value="Int32"/>
+            <DefaultValue value="10248"/>
+            <ParameterDirection value="Input"/>
+            <Nullable value="False"/>
+            <ParameterName value="@OrderID"/>
+            <Prompt value=""/>
+         </params>
+      </SqlParams>
+      <ReportType value="DataReport"/>
+      <CommandText value="update CustOrdersDetail"/>
+      <CommandType value="StoredProcedure"/>
+      <DataModel value="PullData"/>
+      <DefaultFont value="Microsoft Sans Serif, 16pt"/>
+      <ReportName value="SharpReport1"/>
+      <UseStandartPrinter value="False"/>
+      <DefaultMargins value="50; 50; 50; 50"/>
+   </section>
+   <section name="ReportHeader">
+      <BackColor value="Color [Window]"/>
+      <Size value="{Width=803, Height=38}"/>
+      <CanGrow value="False"/>
+      <CanShrink value="False"/>
+      <Name value="ReportHeader"/>
+      <PageBreakAfter value="False"/>
+      <PageBreakBefore value="False"/>
+      <Location value="{X=0,Y=0}"/>
+      <controls/>
+   </section>
+   <section name="ReportPageHeader">
+      <BackColor value="Color [Window]"/>
+      <Size value="{Width=803, Height=78}"/>
+      <CanGrow value="False"/>
+      <CanShrink value="False"/>
+      <Name value="ReportPageHeader"/>
+      <PageBreakAfter value="False"/>
+      <PageBreakBefore value="False"/>
+      <Location value="{X=0,Y=0}"/>
+      <controls>
+         <control type="SharpReport.ReportItems.ReportTextItem" basetype="SharpReportCore.BaseTextItem">
+            <Size value="{Width=150, Height=35}"/>
+            <Location value="{X=50,Y=0}"/>
+            <Font value="Microsoft Sans Serif, 8pt"/>
+            <Text value="SharpReport1"/>
+            <FormatString value=""/>
+            <StringAlignment value="Near"/>
+            <StandartStringFormat value="[StringFormat, FormatFlags=FitBlackBox, LineLimit, NoClip]"/>
+            <Site value=""/>
+            <DrawBorder value="False"/>
+            <ForeColor value="Color [ControlText]"/>
+            <Visible value="True"/>
+            <CanGrow value="False"/>
+            <CanShrink value="False"/>
+            <Name value="ReportTextItem"/>
+            <PageBreakAfter value="False"/>
+            <PageBreakBefore value="False"/>
+            <BackColor value="Color [White]"/>
+         </control>
+         <control type="SharpReport.ReportItems.ReportTextItem" basetype="SharpReportCore.BaseTextItem">
+            <Size value="{Width=231, Height=26}"/>
+            <Location value="{X=1,Y=40}"/>
+            <Font value="Microsoft Sans Serif, 8pt"/>
+            <Text value="ProductName"/>
+            <FormatString value=""/>
+            <StringAlignment value="Near"/>
+            <StandartStringFormat value="[StringFormat, FormatFlags=FitBlackBox, LineLimit, NoClip]"/>
+            <Site value=""/>
+            <DrawBorder value="False"/>
+            <ForeColor value="Color [ControlText]"/>
+            <Visible value="True"/>
+            <CanGrow value="False"/>
+            <CanShrink value="False"/>
+            <Name value="ReportTextItem"/>
+            <PageBreakAfter value="False"/>
+            <PageBreakBefore value="False"/>
+            <BackColor value="Color [White]"/>
+         </control>
+         <control type="SharpReport.ReportItems.ReportTextItem" basetype="SharpReportCore.BaseTextItem">
+            <Size value="{Width=142, Height=25}"/>
+            <Location value="{X=350,Y=40}"/>
+            <Font value="Microsoft Sans Serif, 8pt"/>
+            <Text value="Quantity"/>
+            <FormatString value=""/>
+            <StringAlignment value="Near"/>
+            <StandartStringFormat value="[StringFormat, FormatFlags=FitBlackBox, LineLimit, NoClip]"/>
+            <Site value=""/>
+            <DrawBorder value="False"/>
+            <ForeColor value="Color [ControlText]"/>
+            <Visible value="True"/>
+            <CanGrow value="False"/>
+            <CanShrink value="False"/>
+            <Name value="ReportTextItem"/>
+            <PageBreakAfter value="False"/>
+            <PageBreakBefore value="False"/>
+            <BackColor value="Color [White]"/>
+         </control>
+         <control type="SharpReport.ReportItems.ReportTextItem" basetype="SharpReportCore.BaseTextItem">
+            <Size value="{Width=142, Height=25}"/>
+            <Location value="{X=500,Y=40}"/>
+            <Font value="Microsoft Sans Serif, 8pt"/>
+            <Text value="Discount"/>
+            <FormatString value=""/>
+            <StringAlignment value="Near"/>
+            <StandartStringFormat value="[StringFormat, FormatFlags=FitBlackBox, LineLimit, NoClip]"/>
+            <Site value=""/>
+            <DrawBorder value="False"/>
+            <ForeColor value="Color [ControlText]"/>
+            <Visible value="True"/>
+            <CanGrow value="False"/>
+            <CanShrink value="False"/>
+            <Name value="ReportTextItem"/>
+            <PageBreakAfter value="False"/>
+            <PageBreakBefore value="False"/>
+            <BackColor value="Color [White]"/>
+         </control>
+         <control type="SharpReport.ReportItems.ReportTextItem" basetype="SharpReportCore.BaseTextItem">
+            <Size value="{Width=142, Height=39}"/>
+            <Location value="{X=650,Y=40}"/>
+            <Font value="Microsoft Sans Serif, 8pt"/>
+            <Text value="ExtendedPrice"/>
+            <FormatString value=""/>
+            <StringAlignment value="Near"/>
+            <StandartStringFormat value="[StringFormat, FormatFlags=FitBlackBox, LineLimit, NoClip]"/>
+            <Site value=""/>
+            <DrawBorder value="False"/>
+            <ForeColor value="Color [ControlText]"/>
+            <Visible value="True"/>
+            <CanGrow value="False"/>
+            <CanShrink value="False"/>
+            <Name value="ReportTextItem"/>
+            <PageBreakAfter value="False"/>
+            <PageBreakBefore value="False"/>
+            <BackColor value="Color [White]"/>
+         </control>
+         <control type="SharpReport.ReportItems.ReportTextItem" basetype="SharpReportCore.BaseTextItem">
+            <Size value="{Width=115, Height=25}"/>
+            <Location value="{X=234,Y=41}"/>
+            <Font value="Microsoft Sans Serif, 8pt"/>
+            <Text value="UnitPrice"/>
+            <FormatString value=""/>
+            <StringAlignment value="Near"/>
+            <StandartStringFormat value="[StringFormat, FormatFlags=FitBlackBox, LineLimit, NoClip]"/>
+            <Site value=""/>
+            <DrawBorder value="False"/>
+            <ForeColor value="Color [ControlText]"/>
+            <Visible value="True"/>
+            <CanGrow value="False"/>
+            <CanShrink value="False"/>
+            <Name value="ReportTextItem"/>
+            <PageBreakAfter value="False"/>
+            <PageBreakBefore value="False"/>
+            <BackColor value="Color [White]"/>
+         </control>
+      </controls>
+   </section>
+   <section name="ReportDetail">
+      <BackColor value="Color [Window]"/>
+      <Size value="{Width=803, Height=38}"/>
+      <CanGrow value="False"/>
+      <CanShrink value="False"/>
+      <Name value="ReportDetail"/>
+      <PageBreakAfter value="False"/>
+      <PageBreakBefore value="False"/>
+      <Location value="{X=0,Y=0}"/>
+      <controls>
+         <control type="SharpReport.ReportItems.ReportDataItem" basetype="SharpReportCore.BaseDataItem">
+            <Size value="{Width=232, Height=26}"/>
+            <Location value="{X=0,Y=4}"/>
+            <Font value="Microsoft Sans Serif, 8pt"/>
+            <Text value="ProductName"/>
+            <ColumnName value="ProductName"/>
+            <DataType value="System.String"/>
+            <BaseTableName value="Products"/>
+            <FormatString value=""/>
+            <StringAlignment value="Near"/>
+            <StandartStringFormat value="[StringFormat, FormatFlags=FitBlackBox, LineLimit, NoClip]"/>
+            <Site value=""/>
+            <DrawBorder value="False"/>
+            <ForeColor value="Color [ControlText]"/>
+            <Visible value="True"/>
+            <CanGrow value="False"/>
+            <CanShrink value="False"/>
+            <Name value="ReportDbTextItem"/>
+            <PageBreakAfter value="False"/>
+            <PageBreakBefore value="False"/>
+            <BackColor value="Color [White]"/>
+         </control>
+         <control type="SharpReport.ReportItems.ReportDataItem" basetype="SharpReportCore.BaseDataItem">
+            <Size value="{Width=115, Height=25}"/>
+            <Location value="{X=234,Y=5}"/>
+            <Font value="Microsoft Sans Serif, 8pt"/>
+            <Text value="UnitPrice"/>
+            <ColumnName value="UnitPrice"/>
+            <DataType value="System.Decimal"/>
+            <BaseTableName value=""/>
+            <FormatString value=""/>
+            <StringAlignment value="Near"/>
+            <StandartStringFormat value="[StringFormat, FormatFlags=FitBlackBox, LineLimit, NoClip]"/>
+            <Site value=""/>
+            <DrawBorder value="False"/>
+            <ForeColor value="Color [ControlText]"/>
+            <Visible value="True"/>
+            <CanGrow value="False"/>
+            <CanShrink value="False"/>
+            <Name value="ReportDbTextItem"/>
+            <PageBreakAfter value="False"/>
+            <PageBreakBefore value="False"/>
+            <BackColor value="Color [White]"/>
+         </control>
+         <control type="SharpReport.ReportItems.ReportDataItem" basetype="SharpReportCore.BaseDataItem">
+            <Size value="{Width=142, Height=25}"/>
+            <Location value="{X=350,Y=5}"/>
+            <Font value="Microsoft Sans Serif, 8pt"/>
+            <Text value="Quantity"/>
+            <ColumnName value="Quantity"/>
+            <DataType value="System.Int16"/>
+            <BaseTableName value="Order Details"/>
+            <FormatString value=""/>
+            <StringAlignment value="Near"/>
+            <StandartStringFormat value="[StringFormat, FormatFlags=FitBlackBox, LineLimit, NoClip]"/>
+            <Site value=""/>
+            <DrawBorder value="False"/>
+            <ForeColor value="Color [ControlText]"/>
+            <Visible value="True"/>
+            <CanGrow value="False"/>
+            <CanShrink value="False"/>
+            <Name value="ReportDbTextItem"/>
+            <PageBreakAfter value="False"/>
+            <PageBreakBefore value="False"/>
+            <BackColor value="Color [White]"/>
+         </control>
+         <control type="SharpReport.ReportItems.ReportDataItem" basetype="SharpReportCore.BaseDataItem">
+            <Size value="{Width=142, Height=25}"/>
+            <Location value="{X=500,Y=5}"/>
+            <Font value="Microsoft Sans Serif, 8pt"/>
+            <Text value="Discount"/>
+            <ColumnName value="Discount"/>
+            <DataType value="System.Int32"/>
+            <BaseTableName value=""/>
+            <FormatString value=""/>
+            <StringAlignment value="Near"/>
+            <StandartStringFormat value="[StringFormat, FormatFlags=FitBlackBox, LineLimit, NoClip]"/>
+            <Site value=""/>
+            <DrawBorder value="False"/>
+            <ForeColor value="Color [ControlText]"/>
+            <Visible value="True"/>
+            <CanGrow value="False"/>
+            <CanShrink value="False"/>
+            <Name value="ReportDbTextItem"/>
+            <PageBreakAfter value="False"/>
+            <PageBreakBefore value="False"/>
+            <BackColor value="Color [White]"/>
+         </control>
+         <control type="SharpReport.ReportItems.ReportDataItem" basetype="SharpReportCore.BaseDataItem">
+            <Size value="{Width=142, Height=34}"/>
+            <Location value="{X=650,Y=5}"/>
+            <Font value="Microsoft Sans Serif, 8pt"/>
+            <Text value="ExtendedPrice"/>
+            <ColumnName value="ExtendedPrice"/>
+            <DataType value="System.Decimal"/>
+            <BaseTableName value=""/>
+            <FormatString value=""/>
+            <StringAlignment value="Near"/>
+            <StandartStringFormat value="[StringFormat, FormatFlags=FitBlackBox, LineLimit, NoClip]"/>
+            <Site value=""/>
+            <DrawBorder value="False"/>
+            <ForeColor value="Color [ControlText]"/>
+            <Visible value="True"/>
+            <CanGrow value="False"/>
+            <CanShrink value="False"/>
+            <Name value="ReportDbTextItem"/>
+            <PageBreakAfter value="False"/>
+            <PageBreakBefore value="False"/>
+            <BackColor value="Color [White]"/>
+         </control>
+      </controls>
+   </section>
+   <section name="ReportPageFooter">
+      <BackColor value="Color [Window]"/>
+      <Size value="{Width=803, Height=38}"/>
+      <CanGrow value="False"/>
+      <CanShrink value="False"/>
+      <Name value="ReportPageFooter"/>
+      <PageBreakAfter value="False"/>
+      <PageBreakBefore value="False"/>
+      <Location value="{X=0,Y=0}"/>
+      <controls>
+         <control type="SharpReport.ReportItems.Functions.PageNumber" basetype="SharpReportCore.BasePageNumber">
+            <Size value="{Width=150, Height=25}"/>
+            <Location value="{X=50,Y=0}"/>
+            <Font value="Microsoft Sans Serif, 8pt"/>
+            <Text value="PageNumber"/>
+            <FormatString value=""/>
+            <StringAlignment value="Near"/>
+            <StandartStringFormat value="[StringFormat, FormatFlags=FitBlackBox, LineLimit, NoClip]"/>
+            <Site value=""/>
+            <DrawBorder value="False"/>
+            <ForeColor value="Color [ControlText]"/>
+            <Visible value="True"/>
+            <CanGrow value="False"/>
+            <CanShrink value="False"/>
+            <Name value="PageNumber"/>
+            <PageBreakAfter value="False"/>
+            <PageBreakBefore value="False"/>
+            <BackColor value="Color [White]"/>
+         </control>
+      </controls>
+   </section>
+   <section name="ReportFooter">
+      <BackColor value="Color [Window]"/>
+      <Size value="{Width=803, Height=38}"/>
+      <CanGrow value="False"/>
+      <CanShrink value="False"/>
+      <Name value="ReportFooter"/>
+      <PageBreakAfter value="False"/>
+      <PageBreakBefore value="False"/>
+      <Location value="{X=0,Y=0}"/>
+      <controls/>
+   </section>
+</SharpReport>
