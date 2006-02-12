@@ -20,6 +20,7 @@
     <BaseAddress>134217728</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
+    <PreBuildEvent>..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Optimize>False</Optimize>
@@ -197,6 +198,9 @@
     <EmbeddedResource Include="Resources\Boo.xshd" />
     <Compile Include="Src\Gui\DrawableLine.cs" />
     <Compile Include="Src\Gui\ToolTipRequestEventArgs.cs" />
+    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

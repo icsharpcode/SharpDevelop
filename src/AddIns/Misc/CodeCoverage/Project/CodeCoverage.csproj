@@ -77,6 +77,9 @@
     <Compile Include="Src\CodeCoverageImageList.cs" />
     <Compile Include="Src\GrayScaleBitmap.cs" />
     <Compile Include="Src\CodeCoverageMethodsTreeNode.cs" />
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

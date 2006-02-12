@@ -75,6 +75,9 @@
     <Compile Include="Src\AbstractSharpQuerySchemaClass.cs" />
     <Compile Include="Src\ISchemaClass.cs" />
     <Compile Include="Src\SharpQuerySchemaClass.cs" />
+    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft OLE DB Service Component 1.0 Type Library">

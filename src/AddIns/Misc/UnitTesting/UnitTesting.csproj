@@ -57,7 +57,6 @@
     <None Include="UnitTesting.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\UnitTestCommands.cs" />
     <Compile Include="Src\TestableCondition.cs" />
     <Compile Include="Src\RunningTestsCondition.cs" />
@@ -66,6 +65,10 @@
     <Compile Include="Src\UnitTestApplicationStartHelper.cs" />
     <Compile Include="Src\NUnitResults.cs" />
     <Compile Include="Src\RunTestCommands.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -83,6 +86,7 @@
       <Name>ICSharpCode.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Configuration" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

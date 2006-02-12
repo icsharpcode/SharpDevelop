@@ -48,6 +48,9 @@
     <Compile Include="ConverterSettings.cs" />
     <Compile Include="BooPrinterVisitorWithComments.cs" />
     <Compile Include="RemoveRedundantTypeReferencesVisitor.cs" />
+    <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">

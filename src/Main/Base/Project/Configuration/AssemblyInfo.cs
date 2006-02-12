@@ -16,10 +16,5 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("SharpDevelopBase")]
 [assembly: AssemblyDescription("The base add-in of SharpDevelop")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ic#code")]
-[assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("2000-2006 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-
-[assembly: AssemblyVersion("2.0.0.1")]

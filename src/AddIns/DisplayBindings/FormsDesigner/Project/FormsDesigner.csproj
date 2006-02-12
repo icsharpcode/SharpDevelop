@@ -99,6 +99,9 @@
     <Compile Include="Src\DesignerGenerator\AbstractDesignerGenerator.cs" />
     <Compile Include="Src\Services\TypeDiscoveryService.cs" />
     <Compile Include="Src\UndoRedo\UndoEngine.cs" />
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

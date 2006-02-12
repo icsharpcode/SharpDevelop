@@ -50,6 +50,9 @@
     <Compile Include="Src\MonoGacReferencePanel.cs" />
     <Compile Include="Src\MonoProjectContentLoader.cs" />
     <Compile Include="Src\IsMonoProjectCondition.cs" />
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\MonoReflectionLoader\Project\MonoReflectionLoader.csproj">

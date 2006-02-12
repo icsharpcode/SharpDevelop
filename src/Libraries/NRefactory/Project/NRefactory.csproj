@@ -21,6 +21,7 @@
     <BaseAddress>100663296</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
+    <PreBuildEvent>..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Optimize>False</Optimize>
@@ -121,6 +122,9 @@
     <Compile Include="Src\Parser\AST\General\LocalVariableDeclaration.cs" />
     <Compile Include="Src\Parser\AST\General\PrimitiveExpression.cs" />
     <Compile Include="Src\Parser\Visitors\AbstractAstTransformer.cs" />
+    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />

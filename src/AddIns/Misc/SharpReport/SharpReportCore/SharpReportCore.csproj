@@ -129,6 +129,9 @@
     <Compile Include="Collections\Collections.cs" />
     <Compile Include="DataManager\SqlQueryChecker.cs" />
     <Compile Include="Exceptions\MissingModelException.cs" />
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />

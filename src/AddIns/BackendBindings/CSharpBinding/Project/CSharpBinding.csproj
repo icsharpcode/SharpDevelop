@@ -54,6 +54,9 @@
     <Compile Include="Src\CSharpCompletionBinding.cs" />
     <Compile Include="Src\EventHandlerCompletitionDataProvider.cs" />
     <Compile Include="Src\Project\VBToCSharpConverter.cs" />
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

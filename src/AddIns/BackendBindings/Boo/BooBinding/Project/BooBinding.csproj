@@ -59,7 +59,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\AssemblyInfo.cs" />
     <Compile Include="Src\BooProject.cs" />
     <Compile Include="Src\BooLanguageBinding.cs" />
     <Compile Include="Src\BooAmbience.cs" />
@@ -81,6 +80,10 @@
     <Compile Include="Src\CodeCompletion\ElementReturnType.cs" />
     <Compile Include="Src\FormattingStrategy.cs" />
     <Compile Include="Src\ConvertProject.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="BooBinding.addin">
@@ -137,6 +140,7 @@
       <Name>FormsDesigner</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Configuration" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="PostBuildEvent.proj" />

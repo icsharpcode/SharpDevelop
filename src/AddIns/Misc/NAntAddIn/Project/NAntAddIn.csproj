@@ -74,6 +74,9 @@
     </None>
     <Compile Include="Src\Commands\RefreshNantPadCommand.cs" />
     <Compile Include="Src\IsNAntRunningCondition.cs" />
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

@@ -752,6 +752,9 @@
     <Compile Include="Src\Util\LineReceivedEventArgs.cs" />
     <Compile Include="Src\Util\OutputReader.cs" />
     <Compile Include="Src\Util\ProcessRunner.cs" />
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

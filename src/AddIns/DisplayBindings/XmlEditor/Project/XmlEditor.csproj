@@ -89,6 +89,9 @@
     <Compile Include="Src\AssignStylesheetCommand.cs" />
     <Compile Include="Src\OpenStylesheetCommand.cs" />
     <Compile Include="Src\StylesheetAssignedCondition.cs" />
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

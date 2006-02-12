@@ -19,38 +19,26 @@ namespace UpdateAssemblyInfo
 	{
 		static Regex AssemblyVersion = new Regex(@"AssemblyVersion\(.*\)]");
 		static Regex BindingRedirect = new Regex(@"<bindingRedirect oldVersion=""2.0.0.1"" newVersion=""[\d\.]+""/>");
-		const string mainConfig = "Main/StartUp/Project/Configuration/";
+		const string templateFile       = "Main/GlobalAssemblyInfo.template";
+		const string globalAssemblyInfo = "Main/GlobalAssemblyInfo.cs";
 		
 		public static int Main(string[] args)
 		{
 			try {
-				if (args.Length != 1) {
-					PrintHelp();
-					return 1;
-				}
-				
 				if (!File.Exists("SharpDevelop.sln")) {
-					if (File.Exists("..\\src\\SharpDevelop.sln")) {
-						Directory.SetCurrentDirectory("..\\src");
+					string mainDir = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(typeof(MainClass).Assembly.Location), "../../../.."));
+					if (File.Exists(mainDir + "\\SharpDevelop.sln")) {
+						Directory.SetCurrentDirectory(mainDir);
 					}
 				}
 				if (!File.Exists("SharpDevelop.sln")) {
-					Console.WriteLine("Working directory must be SharpDevelop\\src or SharpDevelop\\bin!");
+					Console.WriteLine("Working directory must be SharpDevelop\\src!");
 					return 2;
 				}
-				string arg = args[0];
-				if (arg == "StartupOnly") {
-					RetrieveRevisionNumber();
-					UpdateStartup();
-				} else if (arg == "Libraries") {
-					RetrieveRevisionNumber();
-					UpdateLibraries(GetMajorVersion() + "." + revisionNumber);
-				} else if (arg == "ResetLibraries") {
-					UpdateLibraries("2.0.0.1");
-				} else {
-					PrintHelp();
-					return 1;
-				}
+				RetrieveRevisionNumber();
+				string versionNumber = GetMajorVersion() + "." + revisionNumber;
+				UpdateStartup();
+				SetVersionInfo("Main/StartUp/Project/SharpDevelop.exe.config", BindingRedirect, "<bindingRedirect oldVersion=\"2.0.0.1\" newVersion=\"" + versionNumber + "\"/>");
 				return 0;
 			} catch (Exception ex) {
 				Console.WriteLine(ex);
@@ -58,31 +46,23 @@ namespace UpdateAssemblyInfo
 			}
 		}
 		
-		static void PrintHelp()
-		{
-			Console.WriteLine("Application must be started with 1 argument:");
-			Console.WriteLine("UpdateAssemblyInfo StartupOnly    // updates version info in Startup project");
-			Console.WriteLine("UpdateAssemblyInfo Libraries      // updates all versions in the libraries, but not in Startup");
-			Console.WriteLine("UpdateAssemblyInfo ResetLibraries // resets versions in the libraries to 2.0.0.1 (use this before committing)");
-		}
-		
 		static void UpdateStartup()
 		{
 			string content;
-			using (StreamReader r = new StreamReader(mainConfig + "AssemblyInfo.template")) {
+			using (StreamReader r = new StreamReader(templateFile)) {
 				content = r.ReadToEnd();
 			}
 			content = content.Replace("-INSERTREVISION-", revisionNumber);
-			if (File.Exists(mainConfig + "AssemblyInfo.cs")) {
-				using (StreamReader r = new StreamReader(mainConfig + "AssemblyInfo.cs")) {
+			if (File.Exists(globalAssemblyInfo)) {
+				using (StreamReader r = new StreamReader(globalAssemblyInfo)) {
 					if (r.ReadToEnd() == content) {
-						// nothing changed, do not overwrite file to prevent recompilation of StartUp
+						// nothing changed, do not overwrite file to prevent recompilation
 						// every time.
 						return;
 					}
 				}
 			}
-			using (StreamWriter w = new StreamWriter(mainConfig + "AssemblyInfo.cs", false, Encoding.UTF8)) {
+			using (StreamWriter w = new StreamWriter(globalAssemblyInfo, false, Encoding.UTF8)) {
 				w.Write(content);
 			}
 		}
@@ -91,7 +71,7 @@ namespace UpdateAssemblyInfo
 		{
 			string version = "?";
 			// Get main version from startup
-			using (StreamReader r = new StreamReader(mainConfig + "AssemblyInfo.template")) {
+			using (StreamReader r = new StreamReader(templateFile)) {
 				string line;
 				while ((line = r.ReadLine()) != null) {
 					const string search = "string Version = \"";
@@ -105,61 +85,6 @@ namespace UpdateAssemblyInfo
 			}
 			return version;
 		}
-		
-		static void UpdateLibraries(string versionNumber)
-		{
-			StringCollection col = SearchDirectory("AddIns", "AssemblyInfo.cs");
-			SearchDirectory("Main", "AssemblyInfo.cs", col);
-			SearchDirectory("Libraries", "AssemblyInfo.cs", col);
-			string[] dontTouchList = new string[] {
-				"Main/StartUp/Project/", // Startup is special case
-				"Libraries/log4net/",
-				"Libraries/NUnit.Framework/",
-				"Libraries/DockPanel_Src/",
-				"AddIns/Misc/Debugger/TreeListView/Project/",
-			};
-			foreach (string fileName in col) {
-				bool doSetVersion = true;
-				foreach (string dontTouch in dontTouchList) {
-					if (fileName.StartsWith(dontTouch.Replace("/", Path.DirectorySeparatorChar.ToString()))) {
-						doSetVersion = false;
-						break;
-					}
-				}
-				if (doSetVersion) {
-					Console.WriteLine("Set revision to file: " + fileName + " to " + versionNumber);
-					SetVersionInfo(fileName, AssemblyVersion, "AssemblyVersion(\"" + versionNumber + "\")]");
-				}
-			}
-			SetVersionInfo("Main/StartUp/Project/SharpDevelop.exe.config", BindingRedirect, "<bindingRedirect oldVersion=\"2.0.0.1\" newVersion=\"" + versionNumber + "\"/>");
-		}
-		
-		#region SearchDirectory
-		static StringCollection SearchDirectory(string directory, string filemask)
-		{
-			StringCollection collection = new StringCollection();
-			SearchDirectory(directory, filemask, collection);
-			return collection;
-		}
-		
-		static void SearchDirectory(string directory, string filemask, StringCollection collection)
-		{
-			try {
-				string[] file = Directory.GetFiles(directory, filemask);
-				foreach (string f in file) {
-					collection.Add(f);
-				}
-				
-				string[] dir = Directory.GetDirectories(directory);
-				foreach (string d in dir) {
-					if (d.EndsWith("\\.svn")) continue;
-					SearchDirectory(d, filemask, collection);
-				}
-			} catch (Exception ex) {
-				Console.WriteLine(ex);
-			}
-		}
-		#endregion
 		
 		static void SetVersionInfo(string fileName, Regex regex, string replacement)
 		{

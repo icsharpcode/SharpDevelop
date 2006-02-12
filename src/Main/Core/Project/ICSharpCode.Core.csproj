@@ -14,6 +14,8 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Resources\ICSharpCode.Core.snk</AssemblyOriginatorKeyFile>
     <BaseAddress>83886080</BaseAddress>
+    <PreBuildEvent>..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe</PreBuildEvent>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -143,6 +145,9 @@
     <Compile Include="Src\AddInTree\CoreStartup.cs" />
     <Compile Include="Src\AddInTree\AddInManager.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\StringDoozer.cs" />
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Services\LoggingService" />
