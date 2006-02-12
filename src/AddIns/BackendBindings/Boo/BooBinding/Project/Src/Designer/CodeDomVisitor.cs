@@ -385,7 +385,9 @@ namespace Grunwald.BooBinding.Designer
 			foreach (IMethod me in rt.GetMethods()) {
 				if (me.IsStatic == isStatic && me.Name == name) {
 					_fieldReferenceType = me.ReturnType;
-					return new CodeMethodReferenceExpression(target, name);
+					CodeMethodReferenceExpression cmre = new CodeMethodReferenceExpression(target, name);
+					cmre.UserData["method"] = me;
+					return cmre;
 				}
 			}
 			foreach (IField field in rt.GetFields()) {
@@ -421,15 +423,34 @@ namespace Grunwald.BooBinding.Designer
 				} else if (_expression is CodeMethodReferenceExpression) {
 					cmie = new CodeMethodInvokeExpression((CodeMethodReferenceExpression)_expression);
 					ConvertExpressions(cmie.Parameters, node.Arguments);
+					FixArrayArguments(cmie);
 					_expression = cmie;
 				} else if (_expression is CodeFieldReferenceExpression) {
 					// when a type is unknown, a MemberReferenceExpression is translated into a CodeFieldReferenceExpression
 					CodeFieldReferenceExpression cfre = (CodeFieldReferenceExpression)_expression;
 					cmie = new CodeMethodInvokeExpression(cfre.TargetObject, cfre.FieldName);
 					ConvertExpressions(cmie.Parameters, node.Arguments);
+					FixArrayArguments(cmie);
 					_expression = cmie;
 				} else {
 					_expression = null;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Fixes the type of array literals used as arguments to the method.
+		/// </summary>
+		void FixArrayArguments(CodeMethodInvokeExpression cmie)
+		{
+			IMethod m = cmie.Method.UserData["method"] as IMethod;
+			if (m != null) {
+				int count = Math.Min(m.Parameters.Count, cmie.Parameters.Count);
+				for (int i = 0; i < count; i++) {
+					CodeArrayCreateExpression cace = cmie.Parameters[i] as CodeArrayCreateExpression;
+					if (cace != null) {
+						cace.CreateType = new CodeTypeReference(m.Parameters[i].ReturnType.FullyQualifiedName);
+					}
 				}
 			}
 		}

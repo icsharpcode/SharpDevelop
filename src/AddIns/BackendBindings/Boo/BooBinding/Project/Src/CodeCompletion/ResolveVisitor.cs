@@ -275,6 +275,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 					MakeTypeResult(c);
 					return;
 				}
+				
+				ClearResult();
 				// go through the members of the modules in that namespace
 				foreach (object o in projectContent.GetNamespaceContents(namespaceName)) {
 					IMember member = o as IMember;
@@ -296,6 +298,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		bool ResolveMember(IReturnType type, string memberName)
 		{
+			ClearResult();
 			if (type == null)
 				return false;
 			bool isClassInInheritanceTree = false;

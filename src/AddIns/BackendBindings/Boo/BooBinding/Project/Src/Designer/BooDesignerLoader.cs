@@ -183,7 +183,7 @@ namespace Grunwald.BooBinding.Designer
 			BooParsingStep step = new BooParsingStep();
 			
 			StringBuilder errors = new StringBuilder();
-			Module module = BooParser.ParseModule(4, new CompileUnit(), textEditorControl.FileName,
+			Module module = BooParser.ParseModule(4, new CompileUnit(), fileName,
 			                                      new StringReader(fileContent),
 			                                      delegate(antlr.RecognitionException e) {
 			                                      	errors.AppendLine(e.ToString());
