@@ -16,9 +16,15 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public static class RightToLeftConverter
 	{
+		public static string[] RightToLeftLanguages = new string[] {"ar", "he", "fa", "urdu"};
+		
 		public static bool IsRightToLeft {
 			get {
-				return ResourceService.Language.StartsWith("ar");
+				foreach (string language in RightToLeftLanguages) {
+					if (ResourceService.Language.StartsWith(language))
+						return true;
+				}
+				return false;
 			}
 		}
 		

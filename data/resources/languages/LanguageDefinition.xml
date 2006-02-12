@@ -1,36 +1,35 @@
 <Languages>
 	<Languages name="English"         		code="en"       page=""  icon="uk.png" />
 	
-	<Languages name="Brazilian Portuguese"          code="pt-br"	page=""  icon="brazil.png" />
-	<Languages name="Bulgarian"                     code="bg"       page=""  icon="bulgaria.png" />
-	<!--<Languages name="Catalan"                	code="ca"   	page=""  icon="catalonia.png" />-->
+	<!--<Languages name="Arabic"                        code="ar"       page=""  icon="Arabic.png" />-->
+	<Languages name="Brazilian Portuguese"          code="pt-br"    page=""  icon="brazil.png" />
+	<!--<Languages name="Bulgarian"                     code="bg"       page=""  icon="bulgaria.png" />-->
+	<!--<Languages name="Catalan"                       code="ca"       page=""  icon="catalonia.png" />-->
 	<!--<Languages name="Chinese (BIG5)"                code="cn-big"   page=""  icon="chinalg.png" />-->
-	<Languages name="Chinese (GB)"                  code="cn-gb"    page=""  icon="chinalg.png" />
+	<!--<Languages name="Chinese (GB)"                  code="cn-gb"    page=""  icon="chinalg.png" />-->
 	<Languages name="Czech"                         code="cz"       page=""  icon="czech.png" />
-	<Languages name="Danish"                        code="dk"       page=""  icon="denmark.png" />
+	<!--<Languages name="Danish"                        code="dk"       page=""  icon="denmark.png" />-->
 	<Languages name="Dutch"                         code="nl"       page=""  icon="netherlands.png" />
-	<Languages name="Finnish"                       code="fi"       page=""  icon="finnish.png" />
+	<!--<Languages name="Finnish"                       code="fi"       page=""  icon="finnish.png" />-->
 	<Languages name="French"                        code="fr"       page=""  icon="france.png" />
 	<Languages name="German"                        code="de"       page=""  icon="germany.png" />
-	<!--<Languages name="Greek"                	code="el"   	page=""  icon="notyetdone.png" />-->
+	<!--<Languages name="Greek"                         code="el"       page=""  icon="notyetdone.png" />-->
 	<Languages name="Hungarian"                     code="hu"       page=""  icon="hungary.png" />
 	<Languages name="Italian"                       code="it"       page=""  icon="italy.png" />
 	<Languages name="Japanese"                      code="jp"       page=""  icon="japan.png" />
 	<!--<Languages name="Korean"                        code="kr"       page=""  icon="south_korea.png" />-->
-	<Languages name="Lithuanian"                    code="lt"       page=""  icon="lithuania.png" />
+	<!--<Languages name="Lithuanian"                    code="lt"       page=""  icon="lithuania.png" />-->
 	<Languages name="Norwegian"                     code="no"       page=""  icon="norway.png" />
 	<Languages name="Polish"                        code="pl"       page=""  icon="poland.png" />
 	<Languages name="Portuguese"                    code="pt"       page=""  icon="portugal.png" />
 	<Languages name="Romanian"                      code="ro"       page=""  icon="romania.png" />
-	<Languages name="Russian"                       code="ru"       page=""  icon="russia.png" />
-	<Languages name="Serbian"                  	code="sr"       page=""  icon="serbia.png" />
-	<Languages name="Slovenian"                     code="sl"       page=""  icon="slovenia.png" />
+	<!--<Languages name="Russian"                       code="ru"       page=""  icon="russia.png" />-->
+	<!--<Languages name="Serbian"                       code="sr"       page=""  icon="serbia.png" />-->
+	<!--<Languages name="Slovenian"                     code="sl"       page=""  icon="slovenia.png" />-->
 	<Languages name="Spanish"                       code="es"       page=""  icon="spain.png" />
 	<Languages name="Spanish (Mexico)"              code="es-mx"    page=""  icon="mexico.png" />
 	<Languages name="Swedish"                       code="se"       page=""  icon="sweden.png" />
+	<Languages name="Turkish"                       code="tr"       page=""  icon="turkey.png" />
 	
-	
-	<!--	<Languages name="Arabic"                	code="ar"   	page=""  icon="Arabic.png" /> -->
-	<!--	<Languages name="Turkish"                	code="tr"   	page=""  icon="notyetdone.png" /> -->
 </Languages>
 

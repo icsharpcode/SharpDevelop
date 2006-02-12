@@ -160,6 +160,9 @@ namespace ICSharpCode.SharpDevelop
 				MessageService.CustomErrorReporter = ShowErrorBox;
 				#endif
 				
+				// disable RTL: translations for the RTL languages are inactive
+				RightToLeftConverter.RightToLeftLanguages = new string[0];
+				
 				Assembly exe = typeof(SharpDevelopMain).Assembly;
 				
 				FileUtility.ApplicationRootPath = Path.Combine(Path.GetDirectoryName(exe.Location), "..");
