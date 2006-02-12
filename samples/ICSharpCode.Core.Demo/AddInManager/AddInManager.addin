@@ -1,0 +1,74 @@
+﻿<AddIn name        = "AddInManager"
+       author      = "Daniel Grunwald"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Can install, enable, disable and uninstall AddIns">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.AddInManager"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "ICSharpCode.AddInManager.dll">
+			<ConditionEvaluator name="AddInManagerAddInState" class="ICSharpCode.AddInManager.AddInManagerAddInStateConditionEvaluator"/>
+		</Import>
+	</Runtime>
+	
+	<Path name = "/Workspace/Tools">
+		<MenuItem id = "ShowAddInManager"
+		          label = "${res:AddInManager.Title}"
+		          class = "ICSharpCode.AddInManager.ShowCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id    = "AddInManager"
+		                class = "ICSharpCode.AddInManager.AddInInstallBinding"
+		                insertbefore    = "Text"
+		                fileNamePattern = "\.sdaddin$"
+		                languagePattern = "^SDAddInPackageFiles$"/>
+	</Path>
+	
+	<Path name = "/AddIns/AddInManager/ContextMenu">
+		<Condition name="AddInManagerAddInState" states="Enable">
+			<MenuItem id="Disable"
+			          label="${res:AddInManager.ActionDisable}"
+			          class="ICSharpCode.AddInManager.DisableCommand"/>
+		</Condition>
+		<Condition name="AddInManagerAddInState" states="Disable">
+			<MenuItem id="Enable"
+			          label="${res:AddInManager.ActionEnable}"
+			          class="ICSharpCode.AddInManager.EnableCommand"/>
+		</Condition>
+		<Condition name="AddInManagerAddInState" states="Enable,Disable,InstalledTwice,DependencyError">
+			<MenuItem id="Uninstall"
+			          label="${res:AddInManager.ActionUninstall}"
+			          class="ICSharpCode.AddInManager.UninstallCommand"/>
+		</Condition>
+		<Condition name="AddInManagerAddInState" states="Install">
+			<MenuItem id="AbortInstall"
+			          label="${res:AddInManager.ActionCancelInstallation}"
+			          class="ICSharpCode.AddInManager.AbortInstallCommand"/>
+		</Condition>
+		<Condition name="AddInManagerAddInState" states="Uninstall">
+			<MenuItem id="AbortUninstall"
+			          label="${res:AddInManager.ActionCancelDeinstallation}"
+			          class="ICSharpCode.AddInManager.EnableCommand"/>
+		</Condition>
+		<Condition name="AddInManagerAddInState" states="Update">
+			<MenuItem id="AbortUpdate"
+			          label="${res:AddInManager.ActionCancelUpdate}"
+			          class="ICSharpCode.AddInManager.AbortUpdateCommand"/>
+		</Condition>
+		<MenuItem id="Separator1" type="Separator"/>
+		<MenuItem id="GoToHomepage"
+		          label="${res:AddInManager.OpenWebsite}"
+		          class="ICSharpCode.AddInManager.OpenHomepageCommand"
+		          loadclasslazy="false"/>
+		<MenuItem id="Options"
+		          label="${res:AddInManager.Options}"
+		          class="ICSharpCode.AddInManager.OptionsCommand"
+		          loadclasslazy="false"/>
+		<MenuItem id="About"
+		          label="${res:AddInManager.About}"
+		          class="ICSharpCode.AddInManager.AboutCommand"/>
+	</Path>
+</AddIn>

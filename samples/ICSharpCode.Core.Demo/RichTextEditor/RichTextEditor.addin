@@ -1,0 +1,25 @@
+﻿<AddIn name        = "Rich Text Editor"
+       author      = "Daniel Grunwald"
+       url         = "http://www.codeproject.com/TBD"
+       description = "Supports editing .rtf files in the ICSharpCode.Core example editor">
+	
+	<Manifest>
+		<!-- unique name of the AddIn, used when others AddIns want to reference this AddIn -->
+		<Identity name="ICSharpCode.Core.Demo.RichTextEditor" version = "@RichTextEditor.dll"/>
+		<Dependency addin="ICSharpCode.Core.Demo" version="1.0"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="RichTextEditor.dll"/>
+	</Runtime>
+	
+	<Path name = "/Workspace/FileFilter">
+		<FileFilter id = "RTF" name = "Rich text files" extensions = "*.rtf"/>
+	</Path>
+	
+	<Path name = "/Workspace/DisplayBindings">
+		<Class id = "RTF"
+		       class = "RichTextEditor.DisplayBinding"
+		       insertbefore = "Text"/>
+	</Path>
+</AddIn>

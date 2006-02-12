@@ -35,7 +35,7 @@ namespace CodonCreation
 		//                                 a custom codon object.
 		// A arraylist with the subitems : if this codon has subitems in it's path here are the
 		//                                 build items stored for these the codon may use these
-		//                                 or not, if not they get lost, if any where there.
+		//                                 or not, if not they get lost, if any were there.
 		//                                 'Normal' codons don't need them (then the tree-path is a list)
 		//                                 But for example menuitems use them.
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)

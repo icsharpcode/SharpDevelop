@@ -1,0 +1,20 @@
+"Base", "Startup" and "RichTextEditor":
+Copyright 2005 by
+  Daniel Grunwald
+  Bierberger Str. 9
+  31174 Schellerten
+  Germany
+  
+  email: daniel@danielgrunwald.de
+
+ICSharpCode.Core, AddInManager:
+Copyright 2002-2006 by
+
+  AlphaSierraPapa, Christoph Wille
+  Vordernberger Strasse 27/8
+  A-8700 Leoben
+  Austria
+
+  email: office@alphasierrapapa.com
+  court of jurisdiction: Landesgericht Leoben
+

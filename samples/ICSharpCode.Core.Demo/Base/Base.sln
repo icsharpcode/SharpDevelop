@@ -1,0 +1,6 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.932
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base", "Base.csproj", "{C9A2B6BC-5260-4DE3-8082-DCE8B391F7BB}"
+EndProject
+Global
+EndGlobal

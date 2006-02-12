@@ -1,0 +1,6 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.936
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RichTextEditor", "RichTextEditor.csproj", "{C663289E-DD00-463F-8988-9913DDDAEEE1}"
+EndProject
+Global
+EndGlobal

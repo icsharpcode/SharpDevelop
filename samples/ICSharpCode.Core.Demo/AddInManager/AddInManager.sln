@@ -1,0 +1,6 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.936
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddInManager", "AddInManager.csproj", "{8B4FE9EF-5899-4E84-88DE-C37D021A0658}"
+EndProject
+Global
+EndGlobal

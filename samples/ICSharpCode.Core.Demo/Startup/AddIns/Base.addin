@@ -1,0 +1,93 @@
+﻿<AddIn name        = "Demo Application"
+       author      = "Daniel Grunwald"
+       url         = "http://www.codeproject.com/TBD"
+       description = "Base add-in of ICSharpCode.Core example"
+       addInManagerHidden = "true">
+	
+	<Manifest>
+		<!-- unique name of the AddIn, used when others AddIns want to reference this AddIn -->
+		<Identity name="ICSharpCode.Core.Demo" version = "@EntryAssemblyVersion"/>
+		<!--
+		others AddIns can specify dependencies like this:
+		<Dependency addin="ICSharpCode.Core.Demo" version="1.0.0.x-1.0.0.y"/>
+		-->
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "../Base.dll"/>
+	</Runtime>
+	
+	<Path name = "/Workspace/FileFilter">
+		<FileFilter id = "Text" name = "Text files" extensions = "*.txt"/>
+		<FileFilter id = "LogFiles" name = "Log files" extensions = "*.log"/>
+	</Path>
+	
+	<Path name = "/Workspace/DisplayBindings">
+		<Class id = "Text" class = "Base.TextDisplayBinding"/>
+	</Path>
+	
+	<Path name = "/Workspace/Tools">
+	</Path>
+	
+	<Path name = "/Workbench/MainMenu">
+		<MenuItem id = "File"
+		          type = "Menu"
+		          label = "${res:Demo.Menu.File}">
+			<MenuItem id = "New"
+			          label = "&amp;New"
+			          shortcut = "Control|N"
+			          icon = "Icons.New"
+			          class = "Base.NewFileCommand"/>
+			<MenuItem id = "Open"
+			          label = "&amp;Open..."
+			          shortcut = "Control|O"
+			          icon = "Icons.Open"
+			          class = "Base.OpenFileCommand"/>
+			<MenuItem id = "Save"
+			          label = "&amp;Save"
+			          shortcut = "Control|S"
+			          icon = "Icons.Save"
+			          class = "Base.SaveFileCommand"/>
+			<MenuItem id = "SaveAs"
+			          label = "&amp;Save as..."
+			          class  = "Base.SaveFileAsCommand"/>
+			<MenuItem id = "Separator1" type = "Separator"/>
+			<MenuItem id = "Exit"
+			          label = "&amp;Exit"
+			          class = "Base.ExitCommand"/>
+		</MenuItem>
+		<MenuItem id = "Tools"
+		          type = "Menu"
+		          label = "&amp;Tools">
+			<Include id = "ToolList" path = "/Workspace/Tools"/>
+		</MenuItem>
+		<MenuItem id = "Help"
+		          type = "Menu"
+		          label = "&amp;?">
+			<MenuItem id = "Info"
+			          label = "&amp;Info..."
+			          icon = "Icons.Help"
+			          class  = "Base.InfoCommand"/>
+		</MenuItem>
+	</Path>
+	
+	<Path name = "/Workbench/Toolbar">
+		<ToolbarItem id = "New"
+		             tooltip = "Create new text file"
+		             icon = "Icons.New"
+		             class = "Base.NewFileCommand"/>
+		<ToolbarItem id = "Open"
+		             tooltip = "Open existing file"
+		             icon = "Icons.Open"
+		             class  = "Base.OpenFileCommand"/>
+		<ToolbarItem id = "Save"
+		             tooltip = "Save the current file"
+		             icon = "Icons.Save"
+		             class  = "Base.SaveFileCommand"/>
+		<ToolbarItem id = "Separator1" type = "Separator"/>
+		<ToolbarItem id = "Info"
+		             tooltip = "Show about dialog"
+		             icon = "Icons.Help"
+		             class  = "Base.InfoCommand"/>
+	</Path>
+</AddIn>
