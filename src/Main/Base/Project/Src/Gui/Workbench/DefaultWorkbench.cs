@@ -293,7 +293,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return;
 			}
 			
-			string directory = PropertyService.ConfigDirectory + "temp";
+			string directory = Path.Combine(PropertyService.ConfigDirectory, "temp");
 			if (!Directory.Exists(directory)) {
 				Directory.CreateDirectory(directory);
 			}

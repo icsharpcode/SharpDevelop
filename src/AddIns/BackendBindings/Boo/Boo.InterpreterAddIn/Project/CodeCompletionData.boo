@@ -96,31 +96,7 @@ internal class CodeCompletionData(AbstractCompletionData):
 	def AddEntity(entity as IEntity):
 		_entities.Add(entity)
 
-abstract internal class AbstractCompletionDataProvider(ICompletionDataProvider):
-	ImageList as System.Windows.Forms.ImageList:
-		get:
-			return ClassBrowserIconService.ImageList
-			
-	PreSelection as string:
-		get:
-			return null
-	
-	DefaultIndex:
-		get:
-			return -1
-	
-	insertSpace = false
-	
-	public InsertSpace as bool:
-		get:
-			return insertSpace
-		set:
-			insertSpace = value
-	
-	abstract def GenerateCompletionData(fileName as string, textArea as TextArea, charTyped as System.Char) as (ICompletionData):
-		pass
-
-internal class GlobalsCompletionDataProvider(AbstractCompletionDataProvider):
+internal class GlobalsCompletionDataProvider(ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.AbstractCompletionDataProvider):
 	_interpreter as InteractiveInterpreter
 	
 	class GlobalCompletionData(AbstractCompletionData):
@@ -157,7 +133,7 @@ internal class GlobalsCompletionDataProvider(AbstractCompletionDataProvider):
 		return data
 			
 
-internal class CodeCompletionDataProvider(AbstractCompletionDataProvider):
+internal class CodeCompletionDataProvider(ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.AbstractCompletionDataProvider):
 
 	_codeCompletion as (IEntity)
 	

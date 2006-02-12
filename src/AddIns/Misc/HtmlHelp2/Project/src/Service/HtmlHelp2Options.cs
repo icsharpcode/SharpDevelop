@@ -83,7 +83,7 @@ namespace HtmlHelp2.OptionsPanel
 				node.AppendChild(cdata);
 				xmldoc.DocumentElement.AppendChild(node);
 
-				xmldoc.Save(PropertyService.ConfigDirectory + help2EnvironmentFile);
+				xmldoc.Save(Path.Combine(PropertyService.ConfigDirectory, help2EnvironmentFile));
 
 				LoggingService.Info("Help 2.0: new configuration saved");
 			}

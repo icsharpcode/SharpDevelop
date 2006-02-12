@@ -168,7 +168,8 @@ namespace ICSharpCode.SharpDevelop
 				FileUtility.ApplicationRootPath = Path.Combine(Path.GetDirectoryName(exe.Location), "..");
 				
 				CoreStartup c = new CoreStartup("SharpDevelop");
-				c.ConfigDirectory = FileUtility.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".ICSharpCode", "SharpDevelop2") + Path.DirectorySeparatorChar;
+				c.ConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+				                                 ".ICSharpCode/SharpDevelop2.1");
 				LoggingService.Info("Starting core services...");
 				c.StartCoreServices();
 				

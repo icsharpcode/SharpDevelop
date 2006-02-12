@@ -8,6 +8,7 @@
 namespace HtmlHelp2.Environment
 {
 	using System;
+	using System.IO;
 	using System.Windows.Forms;
 	using System.Xml;
 	using ICSharpCode.Core;
@@ -88,7 +89,7 @@ namespace HtmlHelp2.Environment
 			try
 			{
 				XmlDocument xmldoc = new XmlDocument();
-				xmldoc.Load(PropertyService.ConfigDirectory + help2EnvironmentFile);
+				xmldoc.Load(Path.Combine(PropertyService.ConfigDirectory, help2EnvironmentFile));
 
 				XmlNode node = xmldoc.SelectSingleNode("/help2environment/collection");
 				if (node != null) {
