@@ -140,6 +140,9 @@ bool IsTypeNameForTypeCast(ref Token pt)
 		}
 		pt = Peek();
 	}
+	if (pt.kind == Tokens.Question) {
+		pt = Peek();
+	}
 	if (pt.kind == Tokens.Times || pt.kind == Tokens.OpenSquareBracket) {
 		return IsPointerOrDims(ref pt);
 	}

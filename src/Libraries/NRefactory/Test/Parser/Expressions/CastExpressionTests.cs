@@ -37,11 +37,21 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		}
 		
 		[Test]
-		public void NullableCastExpression()
+		public void NullablePrimitiveCastExpression()
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(int?)o");
 			Assert.AreEqual("System.Nullable", ce.CastTo.SystemType);
 			Assert.AreEqual("int", ce.CastTo.GenericTypes[0].Type);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
+			Assert.AreEqual(CastType.Cast, ce.CastType);
+		}
+		
+		[Test]
+		public void NullableCastExpression()
+		{
+			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(MyType?)o");
+			Assert.AreEqual("System.Nullable", ce.CastTo.SystemType);
+			Assert.AreEqual("MyType", ce.CastTo.GenericTypes[0].Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.AreEqual(CastType.Cast, ce.CastType);
 		}
