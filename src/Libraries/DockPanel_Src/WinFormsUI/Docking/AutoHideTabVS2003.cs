@@ -14,7 +14,7 @@ namespace WeifenLuo.WinFormsUI
 {
 	internal class AutoHideTabVS2003 : AutoHideTab
 	{
-		internal AutoHideTabVS2003(DockContent content) : base(content)
+		internal AutoHideTabVS2003(IDockContent content) : base(content)
 		{
 		}
 

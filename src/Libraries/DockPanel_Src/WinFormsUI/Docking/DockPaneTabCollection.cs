@@ -76,10 +76,10 @@ namespace WeifenLuo.WinFormsUI
 		{
 			get
 			{	
-				DockContent content = DockPane.DisplayingContents[index];
+				IDockContent content = DockPane.DisplayingContents[index];
 				if (content == null)
 					throw(new IndexOutOfRangeException());
-				return content.DockPaneTab;
+				return content.DockHandler.DockPaneTab;
 			}
 		}
 
@@ -90,8 +90,8 @@ namespace WeifenLuo.WinFormsUI
 			return (IndexOf(tab) != -1);
 		}
 
-		/// <include file='CodeDoc\DockPaneTabCollection.xml' path='//CodeDoc/Class[@name="DockPaneTabCollection"]/Method[@name="Contains(DockContent)"]/*'/>>
-		public bool Contains(DockContent content)
+		/// <include file='CodeDoc\DockPaneTabCollection.xml' path='//CodeDoc/Class[@name="DockPaneTabCollection"]/Method[@name="Contains(IDockContent)"]/*'/>>
+		public bool Contains(IDockContent content)
 		{
 			return (IndexOf(content) != -1);
 		}
@@ -103,8 +103,8 @@ namespace WeifenLuo.WinFormsUI
 			return DockPane.DisplayingContents.IndexOf(tab.Content);
 		}
 
-		/// <include file='CodeDoc\DockPaneTabCollection.xml' path='//CodeDoc/Class[@name="DockPaneTabCollection"]/Method[@name="IndexOf(DockContent)"]/*'/>>
-		public int IndexOf(DockContent content)
+		/// <include file='CodeDoc\DockPaneTabCollection.xml' path='//CodeDoc/Class[@name="DockPaneTabCollection"]/Method[@name="IndexOf(IDockContent)"]/*'/>>
+		public int IndexOf(IDockContent content)
 		{
 			return DockPane.DisplayingContents.IndexOf(content);
 		}

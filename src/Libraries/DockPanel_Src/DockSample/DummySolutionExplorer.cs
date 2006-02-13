@@ -150,11 +150,9 @@ namespace DockSample
 			// 
 			// DummySolutionExplorer
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(245, 322);
 			this.Controls.Add(this.treeView1);
-			this.DockableAreas = ((WeifenLuo.WinFormsUI.DockAreas)(((((WeifenLuo.WinFormsUI.DockAreas.Float | WeifenLuo.WinFormsUI.DockAreas.DockLeft) 
-				| WeifenLuo.WinFormsUI.DockAreas.DockRight) 
+			this.DockableAreas = ((WeifenLuo.WinFormsUI.DockAreas)((((WeifenLuo.WinFormsUI.DockAreas.DockLeft | WeifenLuo.WinFormsUI.DockAreas.DockRight) 
 				| WeifenLuo.WinFormsUI.DockAreas.DockTop) 
 				| WeifenLuo.WinFormsUI.DockAreas.DockBottom)));
 			this.DockPadding.Bottom = 1;

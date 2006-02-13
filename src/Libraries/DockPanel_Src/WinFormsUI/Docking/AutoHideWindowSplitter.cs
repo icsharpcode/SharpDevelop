@@ -20,7 +20,7 @@ namespace WeifenLuo.WinFormsUI
 	{
 		protected override int SplitterSize
 		{
-			get	{	return MeasureAutoHideWindow.SplitterSize;	}
+			get	{	return Measures.SplitterSize;	}
 		}
 
 		protected override void StartDrag()

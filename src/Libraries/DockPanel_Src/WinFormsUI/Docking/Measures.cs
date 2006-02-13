@@ -12,12 +12,17 @@ using System;
 
 namespace WeifenLuo.WinFormsUI
 {
+	internal class Measures
+	{
+		public const int SplitterSize = 4;
+	}
+
 	internal class MeasurePane
 	{
-		public const int DragSize = 4;
 		public const int MinSize = 24;
 	}
 
+	/*
 	internal class MeasureDockWindow
 	{
 		public const int SplitterSize = 4;
@@ -32,9 +37,5 @@ namespace WeifenLuo.WinFormsUI
 	{
 		public const int SplitterSize = 4;
 	}
-
-	internal class MeasureOutline
-	{
-		public const int Width = 4;
-	}
+	*/
 }

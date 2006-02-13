@@ -35,19 +35,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IWorkbenchWindow ActiveWorkbenchwindow {
 			get {
-				if (dockPanel == null || dockPanel.ActiveDocument == null || dockPanel.ActiveDocument.IsDisposed)  {
+				if (dockPanel == null || dockPanel.ActiveDocument == null)  {
 					return null;
 				}
-				return dockPanel.ActiveDocument as IWorkbenchWindow;
+				IWorkbenchWindow window = dockPanel.ActiveDocument as IWorkbenchWindow;
+				if (window.IsDisposed) {
+					return null;
+				}
+				return window;
 			}
 		}
 		
 		// prevent setting ActiveContent to null when application loses focus (e.g. because of context menu popup)
-		DockContent lastActiveContent;
+		IDockContent lastActiveContent;
 		
 		public object ActiveContent {
 			get {
-				DockContent activeContent;
+				IDockContent activeContent;
 				if (dockPanel == null)  {
 					activeContent = lastActiveContent;
 				} else {
@@ -55,14 +59,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				lastActiveContent = activeContent;
 				
-				if (activeContent == null || activeContent.IsDisposed) {
-					return null;
-				}
 				if (activeContent is IWorkbenchWindow) {
+					if ((activeContent as IWorkbenchWindow).IsDisposed)
+						return null;
 					return ((IWorkbenchWindow)activeContent).ActiveViewContent;
 				}
 				
 				if (activeContent is PadContentWrapper) {
+					if ((activeContent as PadContentWrapper).IsDisposed)
+						return null;
 					return ((PadContentWrapper)activeContent).PadContent;
 				}
 				
@@ -80,21 +85,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			toolStripContainer.SuspendLayout();
 			toolStripContainer.Dock = DockStyle.Fill;
 			
-			dockPanel = new WeifenLuo.WinFormsUI.DockPanel();
-			toolStripContainer.ContentPanel.Controls.Add(this.dockPanel);
-			
 			mainMenuContainer = new AutoHideMenuStripContainer(((DefaultWorkbench)wbForm).TopMenu);
 			mainMenuContainer.Dock = DockStyle.Top;
-			
-			this.dockPanel.ActiveAutoHideContent = null;
-			this.dockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			
 			statusStripContainer = new AutoHideStatusStripContainer((StatusStrip)StatusBarService.Control);
 			statusStripContainer.Dock = DockStyle.Bottom;
 			
+			dockPanel = new WeifenLuo.WinFormsUI.DockPanel();
+			dockPanel.DocumentStyle = DocumentStyles.DockingWindow;
+			this.dockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			
+			Panel helperPanel = new Panel();
+			helperPanel.Dock = DockStyle.Fill;
+			helperPanel.Controls.Add(dockPanel);
+			toolStripContainer.ContentPanel.Controls.Add(helperPanel);
 			
 			toolStripContainer.ContentPanel.Controls.Add(mainMenuContainer);
 			toolStripContainer.ContentPanel.Controls.Add(statusStripContainer);
+			
 			wbForm.Controls.Add(toolStripContainer);
 			// dock panel has to be added to the form before LoadLayoutConfiguration is called to fix SD2-463
 			

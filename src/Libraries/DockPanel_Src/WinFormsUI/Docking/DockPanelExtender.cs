@@ -19,14 +19,14 @@ namespace WeifenLuo.WinFormsUI
 		public interface IDockPaneFactory
 		{
 			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane"]/*'/>
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane(DockContent, DockState, bool)"]/*'/>
-			DockPane CreateDockPane(DockContent content, DockState visibleState, bool show);
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane(DockContent, FloatWindow, bool)"]/*'/>
-			DockPane CreateDockPane(DockContent content, FloatWindow floatWindow, bool show);
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane(DockContent, DockPane, DockAlignment, double, bool)"]/*'/>
-			DockPane CreateDockPane(DockContent content, DockPane prevPane, DockAlignment alignment, double proportion, bool show);
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane(DockContent, Rectangle, bool)"]/*'/>
-			DockPane CreateDockPane(DockContent content, Rectangle floatWindowBounds, bool show);
+			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane(IDockContent, DockState, bool)"]/*'/>
+			DockPane CreateDockPane(IDockContent content, DockState visibleState, bool show);
+			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane(IDockContent, FloatWindow, bool)"]/*'/>
+			DockPane CreateDockPane(IDockContent content, FloatWindow floatWindow, bool show);
+			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane(IDockContent, DockPane, DockAlignment, double, bool)"]/*'/>
+			DockPane CreateDockPane(IDockContent content, DockPane prevPane, DockAlignment alignment, double proportion, bool show);
+			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane(IDockContent, Rectangle, bool)"]/*'/>
+			DockPane CreateDockPane(IDockContent content, Rectangle floatWindowBounds, bool show);
 		}
 
 		/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IFloatWindowFactory"]/InterfaceDef/*'/>
@@ -63,8 +63,8 @@ namespace WeifenLuo.WinFormsUI
 		/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IAutoHideTabFactory"]/InterfaceDef/*'/>
 		public interface IAutoHideTabFactory
 		{
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IAutoHideTabFactory"]/Method[@name="CreateAutoHideTab(DockContent)"]/*'/>
-			AutoHideTab CreateAutoHideTab(DockContent content);
+			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IAutoHideTabFactory"]/Method[@name="CreateAutoHideTab(IDockContent)"]/*'/>
+			AutoHideTab CreateAutoHideTab(IDockContent content);
 		}
 
 		/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IAutoHidePaneFactory"]/InterfaceDef/*'/>
@@ -77,29 +77,29 @@ namespace WeifenLuo.WinFormsUI
 		/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneTabFactory"]/InterfaceDef/*'/>
 		public interface IDockPaneTabFactory
 		{
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneTabFactory"]/Method[@name="CreateDockPaneTab(DockContent)"]/*'/>
-			DockPaneTab CreateDockPaneTab(DockContent content);
+			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneTabFactory"]/Method[@name="CreateDockPaneTab(IDockContent)"]/*'/>
+			DockPaneTab CreateDockPaneTab(IDockContent content);
 		}
 
 		#region DefaultDockPaneFactory
 		private class DefaultDockPaneFactory : IDockPaneFactory
 		{
-			public DockPane CreateDockPane(DockContent content, DockState visibleState, bool show)
+			public DockPane CreateDockPane(IDockContent content, DockState visibleState, bool show)
 			{
 				return new DockPane(content, visibleState, show);
 			}
 
-			public DockPane CreateDockPane(DockContent content, FloatWindow floatWindow, bool show)
+			public DockPane CreateDockPane(IDockContent content, FloatWindow floatWindow, bool show)
 			{
 				return new DockPane(content, floatWindow, show);
 			}
 
-			public DockPane CreateDockPane(DockContent content, DockPane prevPane, DockAlignment alignment, double proportion, bool show)
+			public DockPane CreateDockPane(IDockContent content, DockPane prevPane, DockAlignment alignment, double proportion, bool show)
 			{
 				return new DockPane(content, prevPane, alignment, proportion, show);
 			}
 
-			public DockPane CreateDockPane(DockContent content, Rectangle floatWindowBounds, bool show)
+			public DockPane CreateDockPane(IDockContent content, Rectangle floatWindowBounds, bool show)
 			{
 				return new DockPane(content, floatWindowBounds, show);
 			}
@@ -134,7 +134,7 @@ namespace WeifenLuo.WinFormsUI
 		#region DefaultDockPaneTabFactory
 		private class DefaultDockPaneTabFactory : IDockPaneTabFactory
 		{
-			public DockPaneTab CreateDockPaneTab(DockContent content)
+			public DockPaneTab CreateDockPaneTab(IDockContent content)
 			{
 				return new DockPaneTabVS2003(content);
 			}
@@ -164,7 +164,7 @@ namespace WeifenLuo.WinFormsUI
 		#region DefaultAutoHideTabFactory
 		private class DefaultAutoHideTabFactory : IAutoHideTabFactory
 		{
-			public AutoHideTab CreateAutoHideTab(DockContent content)
+			public AutoHideTab CreateAutoHideTab(IDockContent content)
 			{
 				return new AutoHideTabVS2003(content);
 			}

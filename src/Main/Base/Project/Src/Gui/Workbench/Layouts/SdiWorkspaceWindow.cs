@@ -125,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.DockPadding.All = 2;
 
 			SetTitleEvent(this, EventArgs.Empty);
-			this.TabPageContextMenu  = MenuService.CreateContextMenu(this, contextMenuPath);
+			this.TabPageContextMenuStrip = MenuService.CreateContextMenu(this, contextMenuPath);
 			InitControls();
 			
 			ParserService.LoadSolutionProjectsThreadEnded += LoadSolutionProjectsThreadEndedEvent;

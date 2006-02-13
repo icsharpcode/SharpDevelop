@@ -32,18 +32,18 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		/// <include file='CodeDoc\DockContentCollection.xml' path='//CodeDoc/Class[@name="DockContentCollection"]/Property[@name="Item"]/*'/>>
-		public DockContent this[int index]
+		public IDockContent this[int index]
 		{
 			get 
 			{
 				if (DockPane == null)
-					return InnerList[index] as DockContent;
+					return InnerList[index] as IDockContent;
 				else
 					return GetVisibleContent(index);
 			}
 		}
 
-		internal int Add(DockContent content)
+		internal int Add(IDockContent content)
 		{
 			#if DEBUG
 			if (DockPane != null)
@@ -56,7 +56,7 @@ namespace WeifenLuo.WinFormsUI
 			return InnerList.Add(content);
 		}
 
-		internal void AddAt(DockContent content, int index)
+		internal void AddAt(IDockContent content, int index)
 		{
 			#if DEBUG
 			if (DockPane != null)
@@ -72,7 +72,7 @@ namespace WeifenLuo.WinFormsUI
 			InnerList.Insert(index, content);
 		}
 
-		internal void AddAt(DockContent content, DockContent before)
+		internal void AddAt(IDockContent content, IDockContent before)
 		{
 			#if DEBUG
 			if (DockPane != null)
@@ -98,8 +98,8 @@ namespace WeifenLuo.WinFormsUI
 			InnerList.Clear();
 		}
 
-		/// <include file='CodeDoc\DockContentCollection.xml' path='//CodeDoc/Class[@name="DockContentCollection"]/Method[@name="Contains(DockContent)"]/*'/>
-		public bool Contains(DockContent content)
+		/// <include file='CodeDoc\DockContentCollection.xml' path='//CodeDoc/Class[@name="DockContentCollection"]/Method[@name="Contains(IDockContent)"]/*'/>
+		public bool Contains(IDockContent content)
 		{
 			if (DockPane == null)
 				return InnerList.Contains(content);
@@ -119,8 +119,8 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
-		/// <include file='CodeDoc\DockContentCollection.xml' path='//CodeDoc/Class[@name="DockContentCollection"]/Method[@name="IndexOf(DockContent)"]/*'/>
-		public int IndexOf(DockContent content)
+		/// <include file='CodeDoc\DockContentCollection.xml' path='//CodeDoc/Class[@name="DockContentCollection"]/Method[@name="IndexOf(IDockContent)"]/*'/>
+		public int IndexOf(IDockContent content)
 		{
 			if (DockPane == null)
 			{
@@ -133,7 +133,7 @@ namespace WeifenLuo.WinFormsUI
 				return GetIndexOfVisibleContents(content);
 		}
 
-		internal void Remove(DockContent content)
+		internal void Remove(IDockContent content)
 		{
 			if (DockPane != null)
 				throw new InvalidOperationException();
@@ -144,21 +144,21 @@ namespace WeifenLuo.WinFormsUI
 			InnerList.Remove(content);
 		}
 
-		internal DockContent[] Select(DockAreas stateFilter)
+		internal IDockContent[] Select(DockAreas stateFilter)
 		{
 			if (DockPane != null)
 				throw new InvalidOperationException();
 
 			int count = 0;
-			foreach (DockContent c in this)
-				if (DockHelper.IsDockStateValid(c.DockState, stateFilter))
+			foreach (IDockContent c in this)
+				if (DockHelper.IsDockStateValid(c.DockHandler.DockState, stateFilter))
 					count ++;
 
-			DockContent[] contents = new DockContent[count];
+			IDockContent[] contents = new IDockContent[count];
 
 			count = 0;
-			foreach (DockContent c in this)
-				if (DockHelper.IsDockStateValid(c.DockState, stateFilter))
+			foreach (IDockContent c in this)
+				if (DockHelper.IsDockStateValid(c.DockHandler.DockState, stateFilter))
 					contents[count++] = c;
 
 			return contents;
@@ -174,16 +174,16 @@ namespace WeifenLuo.WinFormsUI
 				#endif
 
 				int count = 0;
-				foreach (DockContent content in DockPane.Contents)
+				foreach (IDockContent content in DockPane.Contents)
 				{
-					if (content.DockState == DockPane.DockState)
+					if (content.DockHandler.DockState == DockPane.DockState)
 						count ++;
 				}
 				return count;
 			}
 		}
 
-		private DockContent GetVisibleContent(int index)
+		private IDockContent GetVisibleContent(int index)
 		{
 			#if DEBUG
 			if (DockPane == null)
@@ -191,9 +191,9 @@ namespace WeifenLuo.WinFormsUI
 			#endif
 
 			int currentIndex = -1;
-			foreach (DockContent content in DockPane.Contents)
+			foreach (IDockContent content in DockPane.Contents)
 			{
-				if (content.DockState == DockPane.DockState)
+				if (content.DockHandler.DockState == DockPane.DockState)
 					currentIndex ++;
 
 				if (currentIndex == index)
@@ -202,7 +202,7 @@ namespace WeifenLuo.WinFormsUI
 			throw(new ArgumentOutOfRangeException());
 		}
 
-		private int GetIndexOfVisibleContents(DockContent content)
+		private int GetIndexOfVisibleContents(IDockContent content)
 		{
 			#if DEBUG
 			if (DockPane == null)
@@ -213,9 +213,9 @@ namespace WeifenLuo.WinFormsUI
 				return -1;
 
 			int index = -1;
-			foreach (DockContent c in DockPane.Contents)
+			foreach (IDockContent c in DockPane.Contents)
 			{
-				if (c.DockState == DockPane.DockState)
+				if (c.DockHandler.DockState == DockPane.DockState)
 				{
 					index++;
 

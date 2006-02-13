@@ -97,6 +97,7 @@ namespace DockSample
 			// 
 			this.inertButtonGeneral.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 				| System.Windows.Forms.AnchorStyles.Right)));
+			this.inertButtonGeneral.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.inertButtonGeneral.IsPopup = true;
 			this.inertButtonGeneral.Location = new System.Drawing.Point(2, 3);
 			this.inertButtonGeneral.Name = "inertButtonGeneral";
@@ -142,7 +143,6 @@ namespace DockSample
 			// 
 			// DummyToolbox
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(221, 365);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.inertButtonDown);
@@ -158,6 +158,7 @@ namespace DockSample
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "DummyToolbox";
 			this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockLeftAutoHide;
+			this.TabText = "Toolbox";
 			this.Text = "Toolbox";
 			this.ResumeLayout(false);
 

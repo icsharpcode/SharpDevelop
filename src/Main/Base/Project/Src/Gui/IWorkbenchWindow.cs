@@ -25,6 +25,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
+		/// Gets if the workbench window has been disposed.
+		/// </summary>
+		bool IsDisposed {
+			get;
+		}
+		
+		/// <summary>
 		/// The primary view content in this window.
 		/// </summary>
 		IViewContent ViewContent {

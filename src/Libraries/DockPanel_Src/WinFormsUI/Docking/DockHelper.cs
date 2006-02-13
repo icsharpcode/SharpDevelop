@@ -9,6 +9,8 @@
 // *****************************************************************************
 
 using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace WeifenLuo.WinFormsUI
 {
@@ -115,6 +117,34 @@ namespace WeifenLuo.WinFormsUI
 				return DockState.DockBottom;
 			else
 				return state;
+		}
+
+		public static DockPane PaneAtPoint(Point pt, DockPanel dockPanel)
+		{
+			for (Control control = Win32Helper.ControlAtPoint(pt); control != null; control = control.Parent)
+			{
+				IDockContent content = control as IDockContent;
+				if (content != null && content.DockHandler.DockPanel == dockPanel)
+					return content.DockHandler.Pane;
+
+				DockPane pane = control as DockPane;
+				if (pane != null && pane.DockPanel == dockPanel)
+					return control as DockPane;
+			}
+
+			return null;
+		}
+
+		public static FloatWindow FloatWindowAtPoint(Point pt, DockPanel dockPanel)
+		{
+			for (Control control = Win32Helper.ControlAtPoint(pt); control != null; control = control.Parent)
+			{
+				FloatWindow floatWindow = control as FloatWindow;
+				if (floatWindow != null && floatWindow.DockPanel == dockPanel)
+					return control as FloatWindow;
+			}
+
+			return null;
 		}
 	}
 }

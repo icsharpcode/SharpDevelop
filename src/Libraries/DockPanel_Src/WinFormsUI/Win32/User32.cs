@@ -23,6 +23,9 @@ namespace WeifenLuo.WinFormsUI
 		[DllImport("User32.dll", CharSet=CharSet.Auto)]
 		public static extern bool DragDetect(IntPtr hWnd, Point pt);
 
+		[DllImport("user32.dll", CharSet=CharSet.Auto)]
+		public static extern int EnableWindow(IntPtr hwnd, bool bEnable);
+		
 		[DllImport("User32.dll", CharSet=CharSet.Auto)]
 		public static extern IntPtr GetSysColorBrush(int index);
 
@@ -69,7 +72,7 @@ namespace WeifenLuo.WinFormsUI
         public static extern bool GetMessage(ref MSG msg, int hWnd, uint wFilterMin, uint wFilterMax);
 	
         [DllImport("User32.dll", CharSet=CharSet.Auto)]
-        public static extern bool PeekMessage(ref MSG msg, int hWnd, uint wFilterMin, uint wFilterMax, uint wFlag);
+        public static extern bool PeekMessage(ref MSG msg, IntPtr hWnd, uint wFilterMin, uint wFilterMax, uint wFlag);
 
         [DllImport("User32.dll", CharSet=CharSet.Auto)]
         public static extern IntPtr BeginPaint(IntPtr hWnd, ref PAINTSTRUCT ps);
@@ -82,6 +85,9 @@ namespace WeifenLuo.WinFormsUI
 
 		[DllImport("User32.dll", CharSet=CharSet.Auto)]
 		public static extern IntPtr GetWindowDC(IntPtr hWnd);
+		
+		[DllImport("user32.dll", CharSet=CharSet.Auto)]
+		public static extern bool LockWindowUpdate(IntPtr hWnd);
 		
 		[DllImport("User32.dll", CharSet=CharSet.Auto)]
         public static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
@@ -119,7 +125,13 @@ namespace WeifenLuo.WinFormsUI
         [DllImport("User32.dll", CharSet=CharSet.Auto)]
         public static extern IntPtr GetParent(IntPtr hWnd);
 
-        [DllImport("User32.dll", CharSet=CharSet.Auto)]
+		[DllImport("user32.dll", CharSet = CharSet.Auto)]
+		public static extern int GetWindowLong(IntPtr hWnd, int Index);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto)]
+		public static extern int SetWindowLong(IntPtr hWnd, int Index, int Value);
+
+		[DllImport("User32.dll", CharSet=CharSet.Auto)]
         public static extern bool DrawFocusRect(IntPtr hWnd, ref RECT rect);
 
         [DllImport("User32.dll", CharSet=CharSet.Auto)]
@@ -129,9 +141,16 @@ namespace WeifenLuo.WinFormsUI
         public static extern bool ShowCaret(IntPtr hWnd);
 
 		[DllImport("user32.dll", CharSet=CharSet.Auto)]
+		public static extern int ShowScrollBar(IntPtr hWnd, int wBar, int bShow);
+
+		[DllImport("user32.dll", CharSet=CharSet.Auto)]
 		public static extern bool SystemParametersInfo(SystemParametersInfoActions uAction, uint uParam, ref uint lpvParam, uint fuWinIni);
 
 		[DllImport("user32.dll", CharSet=CharSet.Auto)]
 		public static extern IntPtr WindowFromPoint(POINT point);
-    }
+
+		[DllImport("user32.dll", CharSet=CharSet.Auto)]
+		public static extern IntPtr DefWindowProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+	
+	}
 }

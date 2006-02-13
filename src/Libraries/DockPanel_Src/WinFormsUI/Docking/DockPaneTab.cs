@@ -15,10 +15,10 @@ namespace WeifenLuo.WinFormsUI
 	/// <include file='CodeDoc/DockPaneTab.xml' path='//CodeDoc/Class[@name="DockPaneTab"]/ClassDef/*'/>
 	public class DockPaneTab : IDisposable
 	{
-		private DockContent m_content;
+		private IDockContent m_content;
 
-		/// <include file='CodeDoc/DockPaneTab.xml' path='//CodeDoc/Class[@name="DockPaneTab"]/Construct[@name="(DockContent)"]/*'/>
-		public DockPaneTab(DockContent content)
+		/// <include file='CodeDoc/DockPaneTab.xml' path='//CodeDoc/Class[@name="DockPaneTab"]/Construct[@name="(IDockContent)"]/*'/>
+		public DockPaneTab(IDockContent content)
 		{
 			m_content = content;
 		}
@@ -30,7 +30,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		/// <include file='CodeDoc/DockPaneTab.xml' path='//CodeDoc/Class[@name="DockPaneTab"]/Property[@name="Content"]/*'/>
-		public DockContent Content
+		public IDockContent Content
 		{
 			get	{	return m_content;	}
 		}

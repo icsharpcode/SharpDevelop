@@ -108,7 +108,7 @@ namespace WeifenLuo.WinFormsUI
 
 				Size = new System.Drawing.Size(160, 144);
 				BackColor = SystemColors.Control;
-				ResumeLayout(false);
+				ResumeLayout();
 			}
 
 			public void SetStates(IWindowsFormsEditorService edSvc, DockAreas dockAreas)

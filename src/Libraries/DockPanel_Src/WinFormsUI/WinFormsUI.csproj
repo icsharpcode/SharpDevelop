@@ -19,13 +19,23 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;DEBUG;FRAMEWORK_VER_2x</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -33,10 +43,16 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE</DefineConstants>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;FRAMEWORK_VER_2x</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
     <Optimize>true</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
@@ -67,21 +83,39 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Components\DragForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Components\MdiClientController.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Controls\InertButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Docking\AutoHidePane.cs" />
-    <Compile Include="Docking\AutoHidePaneCollection.cs" />
-    <Compile Include="Docking\AutoHideStateCollection.cs" />
+    <Compile Include="Docking\AutoHidePane.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Docking\AutoHidePaneCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Docking\AutoHideStateCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Docking\AutoHideStripBase.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Docking\AutoHideStripVS2003.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Docking\AutoHideTab.cs" />
-    <Compile Include="Docking\AutoHideTabCollection.cs" />
-    <Compile Include="Docking\AutoHideTabVS2003.cs" />
+    <Compile Include="Docking\AutoHideTab.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Docking\AutoHideTabCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Docking\AutoHideTabVS2003.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Docking\AutoHideWindow.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -100,10 +134,22 @@
     <Compile Include="Docking\DockContentCollection.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Docking\DockContentHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Docking\DockHelper.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Docking\DockIndicator.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Docking\DockList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Docking\DockOutline.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Docking\DockOutlineBase.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Docking\DockPane.cs">
@@ -121,7 +167,9 @@
     <Compile Include="Docking\DockPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Docking\DockPanelExtender.cs" />
+    <Compile Include="Docking\DockPanelExtender.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Docking\DockPanelPersist.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -134,9 +182,15 @@
     <Compile Include="Docking\DockPaneStripVS2003.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Docking\DockPaneTab.cs" />
-    <Compile Include="Docking\DockPaneTabCollection.cs" />
-    <Compile Include="Docking\DockPaneTabVS2003.cs" />
+    <Compile Include="Docking\DockPaneTab.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPaneTabCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPaneTabVS2003.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Docking\DockWindow.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -167,9 +221,6 @@
     <Compile Include="Docking\FloatWindowCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Docking\HiddenMdiChild.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Docking\Interfaces.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -181,6 +232,9 @@
     </Compile>
     <Compile Include="Docking\SplitterBase.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\SplitterOutline.cs">
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Helpers\DrawHelper.cs">
       <SubType>Code</SubType>
@@ -194,31 +248,59 @@
     <Compile Include="Helpers\ResourceHelper.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Helpers\Win32Helper.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Win32\Enums.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Win32\Gdi32.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Win32\Kernel32.cs" />
     <Compile Include="Win32\Structs.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Win32\User32.cs">
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="Strings.resX" />
+    <EmbeddedResource Include="Docking\DockPanel.resx">
+      <DependentUpon>DockPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Docking\DockWindow.resx">
+      <DependentUpon>DockWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\DockIndicator.PaneDiamond.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PaneDiamond.Bottom.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PaneDiamond.Fill.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PaneDiamond.HotSpot.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PaneDiamond.HotSpotIndex.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PaneDiamond.Left.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PaneDiamond.Right.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PaneDiamond.Top.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PanelBottom.Active.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PanelBottom.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PanelFill.Active.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PanelFill.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PanelLeft.Active.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PanelLeft.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PanelRight.Active.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PanelRight.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PanelTop.Active.bmp" />
+    <EmbeddedResource Include="Resources\DockIndicator.PanelTop.bmp" />
     <EmbeddedResource Include="Resources\DockPaneCaption.AutoHideNo.bmp" />
     <EmbeddedResource Include="Resources\DockPaneCaption.AutoHideYes.bmp" />
     <EmbeddedResource Include="Resources\DockPaneCaption.CloseDisabled.bmp" />
     <EmbeddedResource Include="Resources\DockPaneCaption.CloseEnabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPanel.bmp" />
     <EmbeddedResource Include="Resources\DockPaneStrip.CloseDisabled.bmp" />
     <EmbeddedResource Include="Resources\DockPaneStrip.CloseEnabled.bmp" />
     <EmbeddedResource Include="Resources\DockPaneStrip.ScrollLeftDisabled.bmp" />
     <EmbeddedResource Include="Resources\DockPaneStrip.ScrollLeftEnabled.bmp" />
     <EmbeddedResource Include="Resources\DockPaneStrip.ScrollRightDisabled.bmp" />
     <EmbeddedResource Include="Resources\DockPaneStrip.ScrollRightEnabled.bmp" />
-  </ItemGroup>
-  <ItemGroup>
+    <EmbeddedResource Include="Resources\MdiClientController.bmp" />
+    <EmbeddedResource Include="Strings.resX" />
     <Content Include="Controls\CodeDoc\InertButton.xml" />
     <Content Include="Docking\CodeDoc\AutoHidePane.xml" />
     <Content Include="Docking\CodeDoc\AutoHidePaneCollection.xml" />
@@ -229,6 +311,7 @@
     <Content Include="Docking\CodeDoc\DisplayingDockList.xml" />
     <Content Include="Docking\CodeDoc\DockContent.xml" />
     <Content Include="Docking\CodeDoc\DockContentCollection.xml" />
+    <Content Include="Docking\CodeDoc\DockContentHandler.xml" />
     <Content Include="Docking\CodeDoc\DockList.xml" />
     <Content Include="Docking\CodeDoc\DockPane.xml" />
     <Content Include="Docking\CodeDoc\DockPaneCaptionBase.xml" />
@@ -248,7 +331,15 @@
     <Content Include="Docking\CodeDoc\FloatWindowCollection.xml" />
     <Content Include="Docking\CodeDoc\Interfaces.xml" />
     <Content Include="Docking\CodeDoc\NestedDockingStatus.xml" />
-    <Folder Include="Configuration\" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <ItemGroup>
+    <Service Include="{967B4E0D-AD0C-4609-AB67-0FA40C0206D8}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

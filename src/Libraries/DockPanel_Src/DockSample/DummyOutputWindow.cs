@@ -120,7 +120,6 @@ Building satellite assemblies...
 			// 
 			// DummyOutputWindow
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(255, 365);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.comboBox);

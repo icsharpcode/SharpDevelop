@@ -1,5 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <CodeDoc>
+	<Interface name="IDockContent">
+		<InterfaceDef>
+			<summary>Represents dockable form.</summary>
+			<remarks>Form implements this interface to be dockable. Docking is handled by DockPanel library
+			through its <see cref="WeifenLuo.WinFormsUI.IDockContent.DockHandler" /> object.</remarks>
+		</InterfaceDef>
+		<Property name="DockHandler">
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DockHandler"/> object to handle the docking behaviors.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.DockHandler"/> object to handle the docking behaviors.</value>
+		</Property>
+	</Interface>
 	<Interface name="IDockListContainer">
 		<InterfaceDef>
 			<summary>Container for nested docking <see cref='WeifenLuo.WinFormsUI.DockPane' /> objects.</summary>

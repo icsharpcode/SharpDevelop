@@ -24,9 +24,9 @@
 			<summary>Gets the appearance style of the <see cref="DockPane"/>.</summary>
 			<value>A <see cref="WeifenLuo.WinFormsUI.DockPane.AppearanceStyle"/> value that specifies the appearance style of the <see cref="DockPaneTab"/> objects for the <see cref="DockPane"/>.</value>
 		</Property>
-		<Method name="EnsureTabVisible(DockContent)">
+		<Method name="EnsureTabVisible(IDockContent)">
 			<summary>Ensures the specified content tab visible in the tab strip.</summary>
-			<param name="content">The specified <see cref="DockContent"/>.</param>
+			<param name="content">The specified <see cref="IDockContent"/>.</param>
 		</Method>
 		<Method name="GetHitTest">
 			<overloads><summary>Gets the hit test result of the tab strip.</summary></overloads>

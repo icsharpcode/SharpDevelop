@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace WeifenLuo.WinFormsUI
 {
@@ -54,9 +55,12 @@ namespace WeifenLuo.WinFormsUI
 			else
 				StartPosition = FormStartPosition.WindowsDefaultLocation;
 
-			m_dummyControl = new DummyControl();
-			m_dummyControl.Bounds = Rectangle.Empty;
-			Controls.Add(m_dummyControl);
+			if (Environment.Version.Major == 1)
+			{
+				m_dummyControl = new DummyControl();
+				m_dummyControl.Bounds = Rectangle.Empty;
+				Controls.Add(m_dummyControl);
+			}
 
 			m_dockPanel = dockPanel;
 			Owner = DockPanel.FindForm();
@@ -124,7 +128,7 @@ namespace WeifenLuo.WinFormsUI
 			get	{	return DockState == DockState.Float;	}
 		}
 
-		private Control m_dummyControl;
+		private Control m_dummyControl = null;
 		internal Control DummyControl
 		{
 			get	{	return m_dummyControl;	}
@@ -133,8 +137,8 @@ namespace WeifenLuo.WinFormsUI
 		internal bool IsDockStateValid(DockState dockState)
 		{
 			foreach (DockPane pane in DockList)
-				foreach (DockContent content in pane.Contents)
-					if (!DockHelper.IsDockStateValid(dockState, content.DockableAreas))
+				foreach (IDockContent content in pane.Contents)
+					if (!DockHelper.IsDockStateValid(dockState, content.DockHandler.DockableAreas))
 						return false;
 
 			return true;
@@ -167,7 +171,7 @@ namespace WeifenLuo.WinFormsUI
 			else if (theOnlyPane.ActiveContent == null)
 				Text = " ";
 			else
-				Text = theOnlyPane.ActiveContent.Text;
+				Text = theOnlyPane.ActiveContent.DockHandler.TabText;
 		}
 
 		/// <exclude/>
@@ -216,17 +220,17 @@ namespace WeifenLuo.WinFormsUI
 					DockContentCollection contents = DockList[i].Contents;
 					for (int j=contents.Count - 1; j>=0; j--)
 					{
-						DockContent content = contents[j];
-						if (content.DockState != DockState.Float)
+						IDockContent content = contents[j];
+						if (content.DockHandler.DockState != DockState.Float)
 							continue;
 
-						if (!content.CloseButton)
+						if (!content.DockHandler.CloseButton)
 							continue;
 
-						if (content.HideOnClose)
-							content.Hide();
+						if (content.DockHandler.HideOnClose)
+							content.DockHandler.Hide();
 						else
-							content.Close();
+							content.DockHandler.Close();
 					}
 				}
 				
@@ -240,19 +244,28 @@ namespace WeifenLuo.WinFormsUI
 					base.WndProc(ref m);
 					return;
 				}
-				
+		
+				Visible = false;
+				DockPanel.SuspendLayout(true);
+
 				// Restore to panel
-				DockContent activeContent = DockPanel.ActiveContent;
 				foreach(DockPane pane in DockList)
 				{
 					if (pane.DockState != DockState.Float)
 						continue;
 					pane.RestoreToPanel();
 				}
-				if (activeContent != null)
-					activeContent.Activate();
 
+				DockPanel.ResumeLayout(true, true);
+				if (Visible != (DisplayingList.Count > 0))
+					Visible = (DisplayingList.Count > 0);
 				return;
+			}
+			else if (m.Msg == (int)Win32.Msgs.WM_WINDOWPOSCHANGING)
+			{
+				int offset = (int)Marshal.OffsetOf(typeof(Win32.WINDOWPOS), "flags");
+				int flags = Marshal.ReadInt32(m.LParam, offset);
+				Marshal.WriteInt32(m.LParam, offset, flags | (int)Win32.FlagsSetWindowPos.SWP_NOCOPYBITS);
 			}
 			else if (m.Msg == WM_CHECKDISPOSE)
 			{
@@ -278,11 +291,11 @@ namespace WeifenLuo.WinFormsUI
 				DockContentCollection contents = DisplayingList[i].Contents;
 				for (int j=contents.Count - 1; j>=0; j--)
 				{
-					DockContent content = contents[j];
-					if (content.DockState != DockState.Float)
+					IDockContent content = contents[j];
+					if (content.DockHandler.DockState != DockState.Float)
 						continue;
 
-					if (content.CloseButton)
+					if (content.DockHandler.CloseButton)
 					{
 						ControlBox = true;
 						return;
@@ -296,6 +309,18 @@ namespace WeifenLuo.WinFormsUI
 		public virtual Rectangle DisplayingRectangle
 		{
 			get	{	return ClientRectangle;	}
+		}
+
+		internal void TestDrop(DragHandler dragHandler)
+		{
+			if (!dragHandler.IsDockStateValid(DockState) ||
+				DisplayingList.Count != 1)
+				return;
+
+			Point ptMouse = Control.MousePosition;
+			uint lParam = Win32Helper.MakeLong(ptMouse.X, ptMouse.Y);
+			if (User32.SendMessage(Handle, (int)Win32.Msgs.WM_NCHITTEST, 0, lParam) == (uint)Win32.HitTest.HTCAPTION)
+				dragHandler.DockOutline.Show(DisplayingList[0], -1);
 		}
 	}
 }

@@ -14,103 +14,21 @@ using System.Windows.Forms;
 
 namespace WeifenLuo.WinFormsUI
 {
-	internal class DropTarget
-	{
-		private Control m_dropTo = null;
-		private DockStyle m_dock = DockStyle.None;
-		private int m_contentIndex = -1;
-
-		private Control m_oldDropTo = null;
-		private DockStyle m_oldDock = DockStyle.None;
-		private int m_oldContentIndex = -1;
-
-		public DropTarget()
-		{
-			Clear();
-		}
-
-		public Control DropTo
-		{
-			get	{	return m_dropTo;	}
-		}
-
-		public DockStyle Dock
-		{
-			get	{	return m_dock;	}
-		}
-
-		public int ContentIndex
-		{
-			get	{	return m_contentIndex;	}
-		}
-
-		public bool SameAsOldValue
-		{
-			get	{	return (m_dropTo!=null && m_dropTo==m_oldDropTo && m_dock==m_oldDock && m_contentIndex==m_oldContentIndex);	}
-		}
-
-		public void Clear()
-		{
-			Clear(false);
-		}
-
-		public void Clear(bool saveOldValue)
-		{
-			if (saveOldValue)
-			{
-				m_oldDropTo = m_dropTo;
-				m_oldDock = m_dock;
-				m_oldContentIndex = m_contentIndex;
-			}
-			else
-			{
-				m_oldDropTo = null;
-				m_oldDock = DockStyle.None;
-				m_oldContentIndex = -1;
-			}
-
-			m_dropTo = null;
-			m_dock = DockStyle.None;
-			m_contentIndex = -1;
-		}
-
-		public void SetDropTarget(DockPane pane, DockStyle dock)
-		{
-			m_dropTo = pane;
-			m_dock = dock;
-			m_contentIndex = -1;
-		}
-
-		public void SetDropTarget(DockPane pane, int contentIndex)
-		{
-			m_dropTo = pane;
-			m_dock = DockStyle.Fill;
-			m_contentIndex = contentIndex;
-		}
-
-		public void SetDropTarget(DockPanel dockPanel, DockStyle dock)
-		{
-			m_dropTo = dockPanel;
-			m_dock = dock;
-			m_contentIndex = -1;
-		}
-	}
-
-	internal enum DragSource
-	{
-		Content,
-		Pane,
-		FloatWindow,
-		PaneSplitter,
-		DockWindowSplitter,
-		AutoHideWindowSplitter
-	}
-
 	/// <summary>
 	/// Summary description for DragHandler.
 	/// </summary>
 	internal sealed class DragHandler : DragHandlerBase
 	{
+		internal enum DragSource
+		{
+			Content,
+			Pane,
+			FloatWindow,
+			PaneSplitter,
+			DockWindowSplitter,
+			AutoHideWindowSplitter
+		}
+
 		private Point m_splitterLocation;
 
 		private Point m_mouseOffset = Point.Empty;
@@ -118,13 +36,12 @@ namespace WeifenLuo.WinFormsUI
 		public DragHandler(DockPanel dockPanel)
 		{
 			m_dockPanel = dockPanel;
-			m_dropTarget = new DropTarget();
 		}
 
-		private DragSource m_dragSource;
-		internal DragSource DragSource
+		private DragSource m_source;
+		internal DragSource Source
 		{
-			get	{	return m_dragSource;	}
+			get	{	return m_source;	}
 		}
 
 		private DockPanel m_dockPanel;
@@ -133,59 +50,38 @@ namespace WeifenLuo.WinFormsUI
 			get	{	return m_dockPanel;	}
 		}
 
-		private Region m_dragOutline = null;
-		internal Region DragOutline
+		private DockOutlineBase m_dockOutline;
+		internal DockOutlineBase DockOutline
 		{
-			get	{	return m_dragOutline;	}
-			set
-			{
-				if (m_dragOutline != null)
-				{
-					DrawHelper.DrawDragOutline(m_dragOutline);
-					m_dragOutline.Dispose();
-				}
-
-				m_dragOutline = value;
-				if (m_dragOutline != null)
-					DrawHelper.DrawDragOutline(m_dragOutline);
-			}
+			get	{	return m_dockOutline;	}
 		}
 
-		private DropTarget m_dropTarget;
-		public DropTarget DropTarget
+		private SplitterOutline m_splitterOutline;
+		private SplitterOutline SplitterOutline
 		{
-			get	{	return m_dropTarget;	}
+			get	{	return m_splitterOutline;	}
 		}
 
-		private int OutlineBorderWidth
+		private DockIndicator m_dockIndicator;
+		private DockIndicator DockIndicator
 		{
-			get
-			{
-				if (DragSource == DragSource.DockWindowSplitter)
-					return MeasureDockWindow.SplitterSize;
-				else if (DragSource == DragSource.AutoHideWindowSplitter)
-					return MeasureAutoHideWindow.SplitterSize;
-				else if (DragSource == DragSource.PaneSplitter)
-					return MeasurePaneSplitter.SplitterSize;
-				else
-					return MeasureOutline.Width;
-			}
+			get	{	return m_dockIndicator;	}
 		}
 
-		public void BeginDragContent(DockPane pane, Rectangle rectPane)
+		public void BeginDragContent(IDockContent content)
 		{
-			if (!InitDrag(pane, DragSource.Content))
+			if (!InitDrag(content as Control, DragSource.Content))
 				return;
 
-			Content_BeginDrag(rectPane);
+			Content_BeginDrag(content);
 		}
 
-		public void BeginDragPane(DockPane pane, Point captionLocation)
+		public void BeginDragPane(DockPane pane)
 		{
 			if (!InitDrag(pane, DragSource.Pane))
 				return;
 
-			Pane_BeginDrag(captionLocation);
+			Pane_BeginDrag();
 		}
 
 		public void BeginDragPaneSplitter(DockPaneSplitter splitter)
@@ -201,6 +97,7 @@ namespace WeifenLuo.WinFormsUI
 			if (!InitDrag(autoHideWindow, DragSource.AutoHideWindowSplitter))
 				return;
 
+			autoHideWindow.FlagDragging = true;
 			AutoHideWindowSplitter_BeginDrag(splitterLocation);
 		}
 
@@ -220,103 +117,89 @@ namespace WeifenLuo.WinFormsUI
 			FloatWindow_BeginDrag();
 		}
 
-		private bool InitDrag(Control c, DragSource dragSource)
+		private bool InitDrag(Control c, DragSource source)
 		{
 			if (!base.BeginDrag(c))
 				return false;
 
-			m_dragSource = dragSource;
-			DropTarget.Clear();
+			m_source = source;
+			if (Source == DragSource.Content ||
+				Source == DragSource.Pane ||
+				Source == DragSource.FloatWindow)
+			{
+				m_dockOutline = new DockOutline();
+				m_dockIndicator = new DockIndicator(this);
+				DockIndicator.Show(false);
+			}
+			else if (Source == DragSource.AutoHideWindowSplitter ||
+				Source == DragSource.DockWindowSplitter ||
+				Source == DragSource.PaneSplitter)
+				m_splitterOutline = new SplitterOutline();
+			else
+				return false;
+
 			return true;
 		}
 
 		protected override void OnDragging()
 		{
-			DropTarget.Clear(true);
-			
-			if (m_dragSource == DragSource.Content)
-				Content_OnDragging();
-			else if (m_dragSource == DragSource.Pane)
-				Pane_OnDragging();
-			else if (m_dragSource == DragSource.PaneSplitter)
-				PaneSplitter_OnDragging();
-			else if (m_dragSource == DragSource.DockWindowSplitter)
-				DockWindowSplitter_OnDragging();
-			else if (m_dragSource == DragSource.AutoHideWindowSplitter)
-				AutoHideWindowSplitter_OnDragging();
-			else if (m_dragSource == DragSource.FloatWindow)
-				FloatWindow_OnDragging();
+			if (Source == DragSource.Content ||
+				Source == DragSource.Pane ||
+				Source == DragSource.FloatWindow)
+				TestDrop();
+			else if (Source == DragSource.PaneSplitter)
+				SplitterOutline.Show(GetPaneSplitterDragRectangle());
+			else if (Source == DragSource.DockWindowSplitter)
+				SplitterOutline.Show(GetWindowSplitterDragRectangle());
+			else if (Source == DragSource.AutoHideWindowSplitter)
+				SplitterOutline.Show(GetWindowSplitterDragRectangle());
 		}
 
 		protected override void OnEndDrag(bool abort)
 		{
-			DragOutline = null;
+			if (Source == DragSource.Content ||
+				Source == DragSource.Pane ||
+				Source == DragSource.FloatWindow)
+			{
+				DockOutline.Close();
+				DockIndicator.Close();
+			}
+			else if (Source == DragSource.AutoHideWindowSplitter ||
+				Source == DragSource.DockWindowSplitter ||
+				Source == DragSource.PaneSplitter)
+				SplitterOutline.Close();
 
-			if (m_dragSource == DragSource.Content)
+			if (Source == DragSource.Content)
 				Content_OnEndDrag(abort);
-			else if (m_dragSource == DragSource.Pane)
+			else if (Source == DragSource.Pane)
 				Pane_OnEndDrag(abort);
-			else if (m_dragSource == DragSource.PaneSplitter)
+			else if (Source == DragSource.PaneSplitter)
 				PaneSplitter_OnEndDrag(abort);
-			else if (m_dragSource == DragSource.DockWindowSplitter)
+			else if (Source == DragSource.DockWindowSplitter)
 				DockWindowSplitter_OnEndDrag(abort);
-			else if (m_dragSource == DragSource.AutoHideWindowSplitter)
+			else if (Source == DragSource.AutoHideWindowSplitter)
 				AutoHideWindowSplitter_OnEndDrag(abort);
-			else if (m_dragSource == DragSource.FloatWindow)
+			else if (Source == DragSource.FloatWindow)
 				FloatWindow_OnEndDrag(abort);
 		}
 
-		private void Content_BeginDrag(Rectangle rectPane)
+		private void Content_BeginDrag(IDockContent content)
 		{
-			DockPane pane = (DockPane)DragControl;
+			DockPane pane = content.DockHandler.Pane;
+			Rectangle rectPane = pane.ClientRectangle;
 
 			Point pt;
 			if (pane.DockState == DockState.Document)
-				pt = new Point(rectPane.Top, rectPane.Left);
+				pt = new Point(rectPane.Left, rectPane.Top);
 			else
 				pt = new Point(rectPane.Left, rectPane.Bottom);
 
-			pt = DragControl.PointToScreen(pt);
+			pt = pane.PointToScreen(pt);
 
 			m_mouseOffset.X = pt.X - StartMousePosition.X;
 			m_mouseOffset.Y = pt.Y - StartMousePosition.Y;
 		}
 
-		private void Content_OnDragging()
-		{
-			Point ptMouse = Control.MousePosition;
-			DockPane pane = (DockPane)DragControl;
-
-			if (!TestDrop(ptMouse))
-				return;
-
-			if (DropTarget.DropTo == null)
-			{
-				if (IsDockStateValid(DockState.Float))
-				{
-					Size size = FloatWindow.DefaultWindowSize;
-					Point location;
-					if (pane.DockState == DockState.Document)
-						location = new Point(ptMouse.X + m_mouseOffset.X, ptMouse.Y + m_mouseOffset.Y);
-					else
-						location = new Point(ptMouse.X + m_mouseOffset.X, ptMouse.Y + m_mouseOffset.Y - size.Height);
-
-					if (ptMouse.X > location.X + size.Width)
-						location.X += ptMouse.X - (location.X + size.Width) + OutlineBorderWidth;
-
-					Rectangle rect = new Rectangle(location, size);
-					DragOutline = DrawHelper.CreateDragOutline(rect, OutlineBorderWidth);
-				}
-				else
-					DragOutline = null;
-			}
-
-			if (DragOutline == null)
-				User32.SetCursor(Cursors.No.Handle);
-			else
-				User32.SetCursor(DragControl.Cursor.Handle);
-		}
-		
 		private void Content_OnEndDrag(bool abort)
 		{
 			User32.SetCursor(DragControl.Cursor.Handle);
@@ -324,25 +207,30 @@ namespace WeifenLuo.WinFormsUI
 			if (abort)
 				return;
 
-			DockContent content = ((DockPane)DragControl).ActiveContent;
+			IDockContent content = DragControl as IDockContent;
 
-			if (DropTarget.DropTo is DockPane)
+			if (!DockOutline.FloatWindowBounds.IsEmpty)
 			{
-				DockPane paneTo = DropTarget.DropTo as DockPane;
+				DockPane pane = content.DockHandler.DockPanel.DockPaneFactory.CreateDockPane(content, DockOutline.FloatWindowBounds, true);
+				pane.Activate();
+			}
+			else if (DockOutline.DockTo is DockPane)
+			{
+				DockPane paneTo = DockOutline.DockTo as DockPane;
 
-				if (DropTarget.Dock == DockStyle.Fill)
+				if (DockOutline.Dock == DockStyle.Fill)
 				{
-					bool samePane = (content.Pane == paneTo);
+					bool samePane = (content.DockHandler.Pane == paneTo);
 					if (!samePane)
-						content.Pane = paneTo;
+						content.DockHandler.Pane = paneTo;
 
-					if (DropTarget.ContentIndex == -1 || !samePane)
-						paneTo.SetContentIndex(content, DropTarget.ContentIndex);
+					if (DockOutline.ContentIndex == -1 || !samePane)
+						paneTo.SetContentIndex(content, DockOutline.ContentIndex);
 					else
 					{
 						DockContentCollection contents = paneTo.Contents;
 						int oldIndex = contents.IndexOf(content);
-						int newIndex = DropTarget.ContentIndex;
+						int newIndex = DockOutline.ContentIndex;
 						if (oldIndex < newIndex)
 						{
 							newIndex += 1;
@@ -352,107 +240,55 @@ namespace WeifenLuo.WinFormsUI
 						paneTo.SetContentIndex(content, newIndex);
 					}
 
-					content.Activate();
+					content.DockHandler.Activate();
 				}
 				else
 				{
-					DockPane pane = content.DockPanel.DockPaneFactory.CreateDockPane(content, paneTo.DockState, true);
+					DockPane pane = content.DockHandler.DockPanel.DockPaneFactory.CreateDockPane(content, paneTo.DockState, true);
 					IDockListContainer container = paneTo.DockListContainer;
-					if (DropTarget.Dock == DockStyle.Left)
+					if (DockOutline.Dock == DockStyle.Left)
 						pane.AddToDockList(container, paneTo, DockAlignment.Left, 0.5);
-					else if (DropTarget.Dock == DockStyle.Right) 
+					else if (DockOutline.Dock == DockStyle.Right) 
 						pane.AddToDockList(container, paneTo, DockAlignment.Right, 0.5);
-					else if (DropTarget.Dock == DockStyle.Top)
+					else if (DockOutline.Dock == DockStyle.Top)
 						pane.AddToDockList(container, paneTo, DockAlignment.Top, 0.5);
-					else if (DropTarget.Dock == DockStyle.Bottom) 
+					else if (DockOutline.Dock == DockStyle.Bottom) 
 						pane.AddToDockList(container, paneTo, DockAlignment.Bottom, 0.5);
 
 					pane.DockState = paneTo.DockState;
 					pane.Activate();
 				}
 			}
-			else if (DropTarget.DropTo is DockPanel)
+			else if (DockOutline.DockTo is DockPanel)
 			{
 				DockPane pane;
-				DockPanel dockPanel = content.DockPanel;
-				if (DropTarget.Dock == DockStyle.Top)
+				DockPanel dockPanel = content.DockHandler.DockPanel;
+
+				SetDockWindow();
+				if (DockOutline.Dock == DockStyle.Top)
 					pane = dockPanel.DockPaneFactory.CreateDockPane(content, DockState.DockTop, true);
-				else if (DropTarget.Dock == DockStyle.Bottom)
+				else if (DockOutline.Dock == DockStyle.Bottom)
 					pane = dockPanel.DockPaneFactory.CreateDockPane(content, DockState.DockBottom, true);
-				else if (DropTarget.Dock == DockStyle.Left)
+				else if (DockOutline.Dock == DockStyle.Left)
 					pane = dockPanel.DockPaneFactory.CreateDockPane(content, DockState.DockLeft, true);
-				else if (DropTarget.Dock == DockStyle.Right)
+				else if (DockOutline.Dock == DockStyle.Right)
 					pane = dockPanel.DockPaneFactory.CreateDockPane(content, DockState.DockRight, true);
-				else if (DropTarget.Dock == DockStyle.Fill)
+				else if (DockOutline.Dock == DockStyle.Fill)
 					pane = dockPanel.DockPaneFactory.CreateDockPane(content, DockState.Document, true);
 				else
 					return;
 					
 				pane.Activate();
 			}
-			else if (IsDockStateValid(DockState.Float))
-			{
-				Point ptMouse = Control.MousePosition;
-
-				Size size = FloatWindow.DefaultWindowSize;
-				Point location;
-				if (content.DockState == DockState.Document)
-					location = new Point(ptMouse.X + m_mouseOffset.X, ptMouse.Y + m_mouseOffset.Y);
-				else
-					location = new Point(ptMouse.X + m_mouseOffset.X, ptMouse.Y + m_mouseOffset.Y - size.Height);
-
-				if (ptMouse.X > location.X + size.Width)
-					location.X += ptMouse.X - (location.X + size.Width) + OutlineBorderWidth;
-
-				DockPane pane = content.DockPanel.DockPaneFactory.CreateDockPane(content, new Rectangle(location, size), true);
-				pane.Activate();
-			}
 		}
 
-		private void Pane_BeginDrag(Point captionLocation)
+		private void Pane_BeginDrag()
 		{
-			Point pt = captionLocation;
+			Point pt = new Point(0, 0);
 			pt = DragControl.PointToScreen(pt);
 
 			m_mouseOffset.X = pt.X - StartMousePosition.X;
 			m_mouseOffset.Y = pt.Y - StartMousePosition.Y;
-		}
-
-		private void Pane_OnDragging()
-		{
-			Point ptMouse = Control.MousePosition;
-			DockPane pane = (DockPane)DragControl;
-
-			if (!TestDrop(ptMouse))
-				return;
-
-			if (DropTarget.DropTo == null)
-			{
-				if (IsDockStateValid(DockState.Float))
-				{
-					Point location = new Point(ptMouse.X + m_mouseOffset.X, ptMouse.Y + m_mouseOffset.Y);
-					Size size;
-					if (pane.FloatWindow == null)
-						size = FloatWindow.DefaultWindowSize;
-					else if (pane.FloatWindow.DisplayingList.Count == 1)
-						size = pane.FloatWindow.Size;
-					else
-						size = FloatWindow.DefaultWindowSize;
-
-					if (ptMouse.X > location.X + size.Width)
-						location.X += ptMouse.X - (location.X + size.Width) + OutlineBorderWidth;
-
-					Rectangle rect = new Rectangle(location, size);
-					DragOutline = DrawHelper.CreateDragOutline(rect, OutlineBorderWidth);
-				}
-				else
-					DragOutline = null;
-			}
-
-			if (DragOutline == null)
-				User32.SetCursor(Cursors.No.Handle);
-			else
-				User32.SetCursor(DragControl.Cursor.Handle);
 		}
 
 		private void Pane_OnEndDrag(bool abort)
@@ -464,77 +300,60 @@ namespace WeifenLuo.WinFormsUI
 
 			DockPane pane = (DockPane)DragControl;
 
-			if (DropTarget.DropTo is DockPane)
+			if (!DockOutline.FloatWindowBounds.IsEmpty)
 			{
-				DockPane paneTo = DropTarget.DropTo as DockPane;
+				if (pane.FloatWindow == null || pane.FloatWindow.DockList.Count != 1)
+					pane.FloatWindow = pane.DockPanel.FloatWindowFactory.CreateFloatWindow(pane.DockPanel, pane, DockOutline.FloatWindowBounds);
+				else
+					pane.FloatWindow.Bounds = DockOutline.FloatWindowBounds;
 
-				if (DropTarget.Dock == DockStyle.Fill)
+				pane.DockState = DockState.Float;
+				pane.Activate();
+			}
+			else if (DockOutline.DockTo is DockPane)
+			{
+				DockPane paneTo = DockOutline.DockTo as DockPane;
+
+				if (DockOutline.Dock == DockStyle.Fill)
 				{
 					for (int i=pane.Contents.Count - 1; i>=0; i--)
 					{
-						DockContent c = pane.Contents[i];
-						c.Pane = paneTo;
-						if (DropTarget.ContentIndex != -1)
-							paneTo.SetContentIndex(c, DropTarget.ContentIndex);
-						c.Activate();
+						IDockContent c = pane.Contents[i];
+						c.DockHandler.Pane = paneTo;
+						if (DockOutline.ContentIndex != -1)
+							paneTo.SetContentIndex(c, DockOutline.ContentIndex);
+						c.DockHandler.Activate();
 					}
 				}
 				else
 				{
-					if (DropTarget.Dock == DockStyle.Left)
+					if (DockOutline.Dock == DockStyle.Left)
 						pane.AddToDockList(paneTo.DockListContainer, paneTo, DockAlignment.Left, 0.5);
-					else if (DropTarget.Dock == DockStyle.Right) 
+					else if (DockOutline.Dock == DockStyle.Right) 
 						pane.AddToDockList(paneTo.DockListContainer, paneTo, DockAlignment.Right, 0.5);
-					else if (DropTarget.Dock == DockStyle.Top)
+					else if (DockOutline.Dock == DockStyle.Top)
 						pane.AddToDockList(paneTo.DockListContainer, paneTo, DockAlignment.Top, 0.5);
-					else if (DropTarget.Dock == DockStyle.Bottom) 
+					else if (DockOutline.Dock == DockStyle.Bottom) 
 						pane.AddToDockList(paneTo.DockListContainer, paneTo, DockAlignment.Bottom, 0.5);
 
 					pane.DockState = paneTo.DockState;
 					pane.Activate();
 				}
 			}
-			else if (DropTarget.DropTo is DockPanel)
+			else if (DockOutline.DockTo is DockPanel)
 			{
-				if (DropTarget.Dock == DockStyle.Top)
+				SetDockWindow();
+				if (DockOutline.Dock == DockStyle.Top)
 					pane.DockState = DockState.DockTop;
-				else if (DropTarget.Dock == DockStyle.Bottom)
+				else if (DockOutline.Dock == DockStyle.Bottom)
 					pane.DockState = DockState.DockBottom;
-				else if (DropTarget.Dock == DockStyle.Left)
+				else if (DockOutline.Dock == DockStyle.Left)
 					pane.DockState = DockState.DockLeft;
-				else if (DropTarget.Dock == DockStyle.Right)
+				else if (DockOutline.Dock == DockStyle.Right)
 					pane.DockState = DockState.DockRight;
-				else if (DropTarget.Dock == DockStyle.Fill)
+				else if (DockOutline.Dock == DockStyle.Fill)
 					pane.DockState = DockState.Document;
 					
-				pane.Activate();
-			}
-			else if (IsDockStateValid(DockState.Float))
-			{
-				Point ptMouse = Control.MousePosition;
-
-				Point location = new Point(ptMouse.X + m_mouseOffset.X, ptMouse.Y + m_mouseOffset.Y);
-				Size size;
-				bool createFloatWindow = true;
-				if (pane.FloatWindow == null)
-					size = FloatWindow.DefaultWindowSize;
-				else if (pane.FloatWindow.DockList.Count == 1)
-				{
-					size = pane.FloatWindow.Size;
-					createFloatWindow = false;
-				}
-				else
-					size = FloatWindow.DefaultWindowSize;
-
-				if (ptMouse.X > location.X + size.Width)
-					location.X += ptMouse.X - (location.X + size.Width) + OutlineBorderWidth;
-
-				if (createFloatWindow)
-					pane.FloatWindow = pane.DockPanel.FloatWindowFactory.CreateFloatWindow(pane.DockPanel, pane, new Rectangle(location, size));
-				else
-					pane.FloatWindow.Bounds = new Rectangle(location, size);
-
-				pane.DockState = DockState.Float;
 				pane.Activate();
 			}
 		}
@@ -548,13 +367,7 @@ namespace WeifenLuo.WinFormsUI
 			m_mouseOffset.Y = m_splitterLocation.Y - ptMouse.Y;
 
 			Rectangle rect = GetWindowSplitterDragRectangle();
-			DragOutline = DrawHelper.CreateDragOutline(rect, OutlineBorderWidth);
-		}
-
-		private void DockWindowSplitter_OnDragging()
-		{
-			Rectangle rect = GetWindowSplitterDragRectangle();
-			DragOutline = DrawHelper.CreateDragOutline(rect, OutlineBorderWidth);
+			SplitterOutline.Show(rect);
 		}
 
 		private void DockWindowSplitter_OnEndDrag(bool abort)
@@ -567,6 +380,9 @@ namespace WeifenLuo.WinFormsUI
 				return;
 			DockPanel dockPanel = dockWindow.DockPanel;
 			DockState state = dockWindow.DockState;
+
+			if ((Control.ModifierKeys & Keys.Shift) != 0)
+				dockWindow.SendToBack();
 
 			Point pt = m_splitterLocation;
 			Rectangle rect = GetWindowSplitterDragRectangle();
@@ -590,38 +406,35 @@ namespace WeifenLuo.WinFormsUI
 			m_mouseOffset.Y = m_splitterLocation.Y - ptMouse.Y;
 
 			Rectangle rect = GetWindowSplitterDragRectangle();
-			DragOutline = DrawHelper.CreateDragOutline(rect, OutlineBorderWidth);
-		}
-
-		private void AutoHideWindowSplitter_OnDragging()
-		{
-			Rectangle rect = GetWindowSplitterDragRectangle();
-			DragOutline = DrawHelper.CreateDragOutline(rect, OutlineBorderWidth);
+			SplitterOutline.Show(rect);
 		}
 
 		private void AutoHideWindowSplitter_OnEndDrag(bool abort)
 		{
-			if (abort)
-				return;
-
 			AutoHideWindow autoHideWindow = DragControl as AutoHideWindow;
-			if (autoHideWindow == null)
+			if (autoHideWindow == null || abort)
+			{
+				autoHideWindow.FlagDragging = false;
 				return;
+			}
+
 			DockPanel dockPanel = autoHideWindow.DockPanel;
 			DockState state = autoHideWindow.DockState;
 
 			Point pt = m_splitterLocation;
 			Rectangle rect = GetWindowSplitterDragRectangle();
 			Rectangle rectDockArea = dockPanel.DockArea;
-			DockContent content = dockPanel.ActiveAutoHideContent;
+			IDockContent content = dockPanel.ActiveAutoHideContent;
 			if (state == DockState.DockLeftAutoHide && rectDockArea.Width > 0)
-				content.AutoHidePortion += ((double)rect.X - (double)pt.X) / (double)rectDockArea.Width;
+				content.DockHandler.AutoHidePortion += ((double)rect.X - (double)pt.X) / (double)rectDockArea.Width;
 			else if (state == DockState.DockRightAutoHide && rectDockArea.Width > 0)
-				content.AutoHidePortion += ((double)pt.X - (double)rect.X) / (double)rectDockArea.Width;
+				content.DockHandler.AutoHidePortion += ((double)pt.X - (double)rect.X) / (double)rectDockArea.Width;
 			else if (state == DockState.DockBottomAutoHide && rectDockArea.Height > 0)
-				content.AutoHidePortion += ((double)pt.Y - (double)rect.Y) / (double)rectDockArea.Height;
+				content.DockHandler.AutoHidePortion += ((double)pt.Y - (double)rect.Y) / (double)rectDockArea.Height;
 			else if (state == DockState.DockTopAutoHide && rectDockArea.Height > 0)
-				content.AutoHidePortion += ((double)rect.Y - (double)pt.Y) / (double)rectDockArea.Height;
+				content.DockHandler.AutoHidePortion += ((double)rect.Y - (double)pt.Y) / (double)rectDockArea.Height;
+
+			autoHideWindow.FlagDragging = false;
 		}
 
 		private void PaneSplitter_BeginDrag(Point ptSplitter)
@@ -633,13 +446,7 @@ namespace WeifenLuo.WinFormsUI
 			m_mouseOffset.Y = m_splitterLocation.Y - ptMouse.Y;
 
 			Rectangle rect = GetPaneSplitterDragRectangle();
-			DragOutline = DrawHelper.CreateDragOutline(rect, OutlineBorderWidth);
-		}
-
-		private void PaneSplitter_OnDragging()
-		{
-			Rectangle rect = GetPaneSplitterDragRectangle();
-			DragOutline = DrawHelper.CreateDragOutline(rect, OutlineBorderWidth);
+			SplitterOutline.Show(rect);
 		}
 
 		private void PaneSplitter_OnEndDrag(bool abort)
@@ -689,21 +496,28 @@ namespace WeifenLuo.WinFormsUI
 				return Rectangle.Empty;
 
 			Rectangle rectLimit = dockPanel.DockArea;
+			Point location;
+			if ((Control.ModifierKeys & Keys.Shift) == 0)
+				location = dockPanel.PointToClient(DragControl.Parent.PointToScreen(DragControl.Location));
+			else
+				location = dockPanel.DockArea.Location;
 			bool bVerticalSplitter;
 			if (state == DockState.DockLeft || state == DockState.DockRight || state == DockState.DockLeftAutoHide || state == DockState.DockRightAutoHide)
 			{
 				rectLimit.X += MeasurePane.MinSize;
 				rectLimit.Width -= 2 * MeasurePane.MinSize;
-				rectLimit.Y = DragControl.Location.Y;
-				rectLimit.Height = DragControl.Height;
+				rectLimit.Y = location.Y;
+				if ((Control.ModifierKeys & Keys.Shift) == 0)
+					rectLimit.Height = DragControl.Height;
 				bVerticalSplitter = true;
 			}
 			else
 			{
 				rectLimit.Y += MeasurePane.MinSize;
 				rectLimit.Height -= 2 * MeasurePane.MinSize;
-				rectLimit.X = DragControl.Location.X;
-				rectLimit.Width = DragControl.Width;
+				rectLimit.X = location.X;
+				if ((Control.ModifierKeys & Keys.Shift) == 0)
+					rectLimit.Width = DragControl.Width;
 				bVerticalSplitter = false;
 			}
 
@@ -745,7 +559,7 @@ namespace WeifenLuo.WinFormsUI
 			{
 				rect.X = ptMouse.X + m_mouseOffset.X;
 				rect.Y = pt.Y;
-				rect.Width = OutlineBorderWidth;
+				rect.Width = Measures.SplitterSize;
 				rect.Height = rectLimit.Height;
 			}
 			else
@@ -753,7 +567,7 @@ namespace WeifenLuo.WinFormsUI
 				rect.X = pt.X;
 				rect.Y = ptMouse.Y + m_mouseOffset.Y;
 				rect.Width = rectLimit.Width;
-				rect.Height = OutlineBorderWidth;
+				rect.Height = Measures.SplitterSize;
 			}
 
 			if (rectLimit.Width <= 0 || rectLimit.Height <= 0)
@@ -780,21 +594,7 @@ namespace WeifenLuo.WinFormsUI
 			m_mouseOffset.X = DragControl.Bounds.X - StartMousePosition.X;
 			m_mouseOffset.Y = DragControl.Bounds.Y - StartMousePosition.Y;
 		}
-		private void FloatWindow_OnDragging()
-		{
-			Point ptMouse = Control.MousePosition;
 
-			if (!TestDrop(ptMouse))
-				return;
-
-			if (DropTarget.DropTo == null)
-			{
-				Rectangle rect = DragControl.Bounds;
-				rect.X = ptMouse.X + m_mouseOffset.X;
-				rect.Y = ptMouse.Y + m_mouseOffset.Y;
-				DragOutline = DrawHelper.CreateDragOutline(rect, OutlineBorderWidth);
-			}
-		}
 		private void FloatWindow_OnEndDrag(bool abort)
 		{
 			if (abort)
@@ -802,60 +602,59 @@ namespace WeifenLuo.WinFormsUI
 		
 			FloatWindow floatWindow = (FloatWindow)DragControl;
 
-			if (DropTarget.DropTo == null)
+			if (!DockOutline.FloatWindowBounds.IsEmpty)
 			{
-				Rectangle rect = DragControl.Bounds;
-				rect.X = Control.MousePosition.X + m_mouseOffset.X;
-				rect.Y = Control.MousePosition.Y + m_mouseOffset.Y;
-				DragControl.Bounds = rect;
+				DragControl.Bounds = DockOutline.FloatWindowBounds;
 			}
-			else if (DropTarget.DropTo is DockPane)
+			else if (DockOutline.DockTo is DockPane)
 			{
-				DockPane paneTo = DropTarget.DropTo as DockPane;
+				DockPane paneTo = DockOutline.DockTo as DockPane;
 
-				if (DropTarget.Dock == DockStyle.Fill)
+				if (DockOutline.Dock == DockStyle.Fill)
 				{
 					for (int i=floatWindow.DockList.Count-1; i>=0; i--)
 					{
 						DockPane pane = floatWindow.DockList[i];
 						for (int j=pane.Contents.Count - 1; j>=0; j--)
 						{
-							DockContent c = pane.Contents[j];
-							c.Pane = paneTo;
-							if (DropTarget.ContentIndex != -1)
-								paneTo.SetContentIndex(c, DropTarget.ContentIndex);
-							c.Activate();
+							IDockContent c = pane.Contents[j];
+							c.DockHandler.Pane = paneTo;
+							if (DockOutline.ContentIndex != -1)
+								paneTo.SetContentIndex(c, DockOutline.ContentIndex);
+							c.DockHandler.Activate();
 						}
 					}
 				}
 				else
 				{
 					DockAlignment alignment = DockAlignment.Left;
-					if (DropTarget.Dock == DockStyle.Left)
+					if (DockOutline.Dock == DockStyle.Left)
 						alignment = DockAlignment.Left;
-					else if (DropTarget.Dock == DockStyle.Right) 
+					else if (DockOutline.Dock == DockStyle.Right) 
 						alignment = DockAlignment.Right;
-					else if (DropTarget.Dock == DockStyle.Top)
+					else if (DockOutline.Dock == DockStyle.Top)
 						alignment = DockAlignment.Top;
-					else if (DropTarget.Dock == DockStyle.Bottom) 
+					else if (DockOutline.Dock == DockStyle.Bottom) 
 						alignment = DockAlignment.Bottom;
 
 					MergeDockList(floatWindow.DisplayingList, paneTo.DockListContainer.DockList, paneTo, alignment, 0.5);
 				}
 			}
-			else if (DropTarget.DropTo is DockPanel)
+			else if (DockOutline.DockTo is DockPanel)
 			{
+				SetDockWindow();
+				
 				DockList dockListTo = null;
 
-				if (DropTarget.Dock == DockStyle.Top)
+				if (DockOutline.Dock == DockStyle.Top)
 					dockListTo = floatWindow.DockPanel.DockWindows[DockState.DockTop].DockList;
-				else if (DropTarget.Dock == DockStyle.Bottom)
+				else if (DockOutline.Dock == DockStyle.Bottom)
 					dockListTo = floatWindow.DockPanel.DockWindows[DockState.DockBottom].DockList;
-				else if (DropTarget.Dock == DockStyle.Left)
+				else if (DockOutline.Dock == DockStyle.Left)
 					dockListTo = floatWindow.DockPanel.DockWindows[DockState.DockLeft].DockList;
-				else if (DropTarget.Dock == DockStyle.Right)
+				else if (DockOutline.Dock == DockStyle.Right)
 					dockListTo = floatWindow.DockPanel.DockWindows[DockState.DockRight].DockList;
-				else if (DropTarget.Dock == DockStyle.Fill)
+				else if (DockOutline.Dock == DockStyle.Fill)
 					dockListTo = floatWindow.DockPanel.DockWindows[DockState.Document].DockList;
 
 				DockPane prevPane = null;
@@ -902,74 +701,149 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
-		private DockPane PaneAtPoint(Point pt)
+		private void SetDockWindow()
 		{
-			Control control;
+			bool fullPanelEdge = (DockOutline.ContentIndex != 0);
 
-			for (control = ControlAtPoint(pt); control != null; control = control.Parent)
+			DockStyle dockStyle = DockOutline.Dock;
+			if (dockStyle == DockStyle.Left)
 			{
-				DockPane pane = control as DockPane;
-				if (pane != null && pane.DockPanel == DockPanel)
-					return control as DockPane;
+				if (fullPanelEdge)
+					DockPanel.DockWindows[DockState.DockLeft].SendToBack();
+				else
+					DockPanel.DockWindows[DockState.DockLeft].BringToFront();
 			}
-
-			return null;
-		}
-
-		private DockPanel DockPanelAtPoint(Point pt)
-		{
-			return (ControlAtPoint(pt) == DockPanel ? DockPanel : null);
-		}
-
-		private Control ControlAtPoint(Point pt)
-		{
-			Win32.POINT pt32;
-			pt32.x = pt.X;
-			pt32.y = pt.Y;
-
-			return Control.FromChildHandle(User32.WindowFromPoint(pt32));
+			else if (dockStyle == DockStyle.Right)
+			{
+				if (fullPanelEdge)
+					DockPanel.DockWindows[DockState.DockRight].SendToBack();
+				else
+					DockPanel.DockWindows[DockState.DockRight].BringToFront();
+			}
+			else if (dockStyle == DockStyle.Top)
+			{
+				if (fullPanelEdge)
+					DockPanel.DockWindows[DockState.DockTop].SendToBack();
+				else
+					DockPanel.DockWindows[DockState.DockTop].BringToFront();
+			}
+			else if (dockStyle == DockStyle.Bottom)
+			{
+				if (fullPanelEdge)
+					DockPanel.DockWindows[DockState.DockBottom].SendToBack();
+				else
+					DockPanel.DockWindows[DockState.DockBottom].BringToFront();
+			}
 		}
 
 		public bool IsDockStateValid(DockState dockState)
 		{
-			if (DragSource == DragSource.FloatWindow)
+			if (Source == DragSource.FloatWindow)
 				return ((FloatWindow)DragControl).IsDockStateValid(dockState);
-			else if (DragSource == DragSource.Pane)
+			else if (Source == DragSource.Pane)
 				return ((DockPane)DragControl).IsDockStateValid(dockState);
-			else if (DragSource == DragSource.Content)
-				return ((DockPane)DragControl).ActiveContent.IsDockStateValid(dockState);
+			else if (Source == DragSource.Content)
+				return ((IDockContent)DragControl).DockHandler.IsDockStateValid(dockState);
 			else
 				return false;
 		}
 
-		private bool TestDrop(Point ptMouse)
-		{
-			if ((Control.ModifierKeys & Keys.Control) == 0)
-			{
-				DockPanel panel = DockPanelAtPoint(ptMouse);
-				if (panel != null)
-					panel.TestDrop(this, ptMouse);
-
-				if (DropTarget.DropTo == null)
-				{
-					DockPane pane = PaneAtPoint(ptMouse);
-					if (pane != null)
-						PaneAtPoint(ptMouse).TestDrop(this, ptMouse);
-				}
-			}
-
-			return (!DropTarget.SameAsOldValue);
-		}
-
 		protected override bool OnPreFilterMessage(ref Message m)
 		{
-			if (m.Msg == (int)Win32.Msgs.WM_KEYDOWN &&
-				(int)m.WParam == (int)Keys.ControlKey &&
-				DropTarget.DropTo != null)
+			if ((m.Msg == (int)Win32.Msgs.WM_KEYDOWN || m.Msg == (int)Win32.Msgs.WM_KEYUP) &&
+				((int)m.WParam == (int)Keys.ControlKey || (int)m.WParam == (int)Keys.ShiftKey))
 				OnDragging();
-			
+
 			return base.OnPreFilterMessage(ref m);
 		}
 
+		private void TestDrop()
+		{
+			DockOutline.FlagTestDrop = false;
+
+			DockIndicator.FullPanelEdge = ((Control.ModifierKeys & Keys.Shift) != 0);
+
+			if ((Control.ModifierKeys & Keys.Control) == 0)
+			{
+				DockIndicator.TestDrop();
+
+				if (!DockOutline.FlagTestDrop)
+				{
+					DockPane pane = DockHelper.PaneAtPoint(Control.MousePosition, DockPanel);
+					if (pane != null && IsDockStateValid(pane.DockState))
+						pane.TestDrop(this);
+				}
+
+				if (!DockOutline.FlagTestDrop && IsDockStateValid(DockState.Float))
+				{
+					FloatWindow floatWindow = DockHelper.FloatWindowAtPoint(Control.MousePosition, DockPanel);
+					if (floatWindow != null)
+						floatWindow.TestDrop(this);
+				}
+			}
+			else
+				DockIndicator.DockPane = DockHelper.PaneAtPoint(Control.MousePosition, DockPanel);
+
+			if (!DockOutline.FlagTestDrop)
+			{
+				if (IsDockStateValid(DockState.Float))
+					DockOutline.Show(GetFloatWindowBounds());
+			}
+
+			if (!DockOutline.FlagTestDrop)
+			{
+				User32.SetCursor(Cursors.No.Handle);
+				DockOutline.Show();
+			}
+			else
+				User32.SetCursor(DragControl.Cursor.Handle);
+		}
+
+		private Rectangle GetFloatWindowBounds()
+		{
+			Point ptMouse = Control.MousePosition;
+
+			if (Source == DragSource.Content)
+			{
+				IDockContent content = (IDockContent)DragControl;
+				Size size = FloatWindow.DefaultWindowSize;
+				Point location;
+				if (content.DockHandler.DockState == DockState.Document)
+					location = new Point(ptMouse.X + m_mouseOffset.X, ptMouse.Y + m_mouseOffset.Y);
+				else
+					location = new Point(ptMouse.X + m_mouseOffset.X, ptMouse.Y + m_mouseOffset.Y - size.Height);
+
+				if (ptMouse.X > location.X + size.Width)
+					location.X += ptMouse.X - (location.X + size.Width) + Measures.SplitterSize;
+
+				return new Rectangle(location, size);
+			}
+			else if (Source == DragSource.Pane)
+			{
+				DockPane pane = (DockPane)DragControl;
+				Point location = new Point(ptMouse.X + m_mouseOffset.X, ptMouse.Y + m_mouseOffset.Y);
+				Size size;
+				if (pane.FloatWindow == null)
+					size = FloatWindow.DefaultWindowSize;
+				else if (pane.FloatWindow.DisplayingList.Count == 1)
+					size = pane.FloatWindow.Size;
+				else
+					size = FloatWindow.DefaultWindowSize;
+
+				if (ptMouse.X > location.X + size.Width)
+					location.X += ptMouse.X - (location.X + size.Width) + Measures.SplitterSize;
+
+				return new Rectangle(location, size);
+			}
+			else if (Source == DragSource.FloatWindow)
+			{
+				Rectangle rect = DragControl.Bounds;
+				rect.X = ptMouse.X + m_mouseOffset.X;
+				rect.Y = ptMouse.Y + m_mouseOffset.Y;
+				return rect;
+			}
+
+			return Rectangle.Empty;
+		}
 	}
 }

@@ -26,9 +26,9 @@
 			<param name="tab">The <see cref="DockPaneTab" /> to locate in <see cref="DockPaneTabCollection" />.</param>
 			<returns><b>true</b> if <paramref name="tab" /> is found in the <see cref="DockPaneTabCollection" />; otherwise, <b>false</b>.</returns>
 		</Method>
-		<Method name="Contains(DockContent)">
-			<summary>Determines whether a <see cref="DockContent" /> is in the <see cref="DockPaneTabCollection" />.</summary>
-			<param name="content">The <see cref="DockContent" /> to locate in <see cref="DockPaneTabCollection" />.</param>
+		<Method name="Contains(IDockContent)">
+			<summary>Determines whether a <see cref="IDockContent" /> is in the <see cref="DockPaneTabCollection" />.</summary>
+			<param name="content">The <see cref="IDockContent" /> to locate in <see cref="DockPaneTabCollection" />.</param>
 			<returns><b>true</b> if <paramref name="content" /> is found in the <see cref="DockPaneTabCollection" />; otherwise, <b>false</b>.</returns>
 		</Method>
 		<Method name="IndexOf">
@@ -39,9 +39,9 @@
 			<param name="tab">The <see cref="DockPaneTab" /> to locate in the <see cref="DockPaneTabCollection" />.</param>
 			<returns>The zero-based index of <paramref name="tab" /> within the entire <see cref="DockPaneTabCollection" />, if found; otherwise, -1.</returns>
 		</Method>
-		<Method name="IndexOf(DockContent)">
-			<summary>Searches for the specified <see cref="DockContent" /> and returns the zero-based index within the entire <see cref="DockPaneTabCollection" />.</summary>
-			<param name="content">The <see cref="DockContent" /> to locate in the <see cref="DockPaneTabCollection" />.</param>
+		<Method name="IndexOf(IDockContent)">
+			<summary>Searches for the specified <see cref="IDockContent" /> and returns the zero-based index within the entire <see cref="DockPaneTabCollection" />.</summary>
+			<param name="content">The <see cref="IDockContent" /> to locate in the <see cref="DockPaneTabCollection" />.</param>
 			<returns>The zero-based index of <paramref name="content" /> within the entire <see cref="DockPaneTabCollection" />, if found; otherwise, -1.</returns>
 		</Method>
 	</Class>

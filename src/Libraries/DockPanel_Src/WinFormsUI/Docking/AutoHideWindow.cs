@@ -10,6 +10,7 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Runtime.InteropServices;
 
 namespace WeifenLuo.WinFormsUI
 {
@@ -57,7 +58,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 		private void SetActivePane()
 		{
-			DockPane value = (ActiveContent == null ? null : ActiveContent.Pane);
+			DockPane value = (ActiveContent == null ? null : ActiveContent.DockHandler.Pane);
 
 			if (value == m_activePane)
 				return;
@@ -69,8 +70,8 @@ namespace WeifenLuo.WinFormsUI
 			m_activePane = value;
 		}
 
-		private DockContent m_activeContent = null;
-		public DockContent ActiveContent
+		private IDockContent m_activeContent = null;
+		public IDockContent ActiveContent
 		{
 			get	{	return m_activeContent;	}
 			set
@@ -80,7 +81,7 @@ namespace WeifenLuo.WinFormsUI
 
 				if (value != null)
 				{
-					if (!DockHelper.IsDockStateAutoHide(value.DockState) || value.DockPanel != DockPanel)
+					if (!DockHelper.IsDockStateAutoHide(value.DockHandler.DockState) || value.DockHandler.DockPanel != DockPanel)
 						throw(new InvalidOperationException(ResourceHelper.GetString(_ExceptionInvalidActiveContent)));
 				}
 
@@ -106,7 +107,7 @@ namespace WeifenLuo.WinFormsUI
 
 		public DockState DockState
 		{
-			get	{	return ActiveContent == null ? DockState.Unknown : ActiveContent.DockState;	}
+			get	{	return ActiveContent == null ? DockState.Unknown : ActiveContent.DockHandler.DockState;	}
 		}
 
 		private bool m_flagAnimate = true;
@@ -116,13 +117,29 @@ namespace WeifenLuo.WinFormsUI
 			set	{	m_flagAnimate = value;	}
 		}
 
+		private bool m_flagDragging = false;
+		internal bool FlagDragging
+		{
+			get	{	return m_flagDragging;	}
+			set
+			{
+				if (m_flagDragging == value)
+					return;
+
+				m_flagDragging = value;
+				SetTimerMouseTrack();
+			}
+		}
+
 		private void AnimateWindow(bool show)
 		{
-			if (!FlagAnimate)
+			if (!FlagAnimate && Visible != show)
 			{
 				Visible = show;
 				return;
 			}
+
+			Parent.SuspendLayout();
 
 			Rectangle rectSource = GetBounds(!show);
 			Rectangle rectTarget = GetBounds(show);
@@ -147,14 +164,16 @@ namespace WeifenLuo.WinFormsUI
 			if (show)
 			{
 				Bounds = new Rectangle(-rectTarget.Width, -rectTarget.Height, rectTarget.Width, rectTarget.Height);
-				Visible = true;
+				if (Visible == false)
+					Visible = true;
 				PerformLayout();
 			}
 
 			SuspendLayout();
 
 			LayoutAnimateWindow(rectSource);
-			Visible = true;
+			if (Visible == false)
+				Visible = true;
 
 			int speedFactor = 1;
 			int totalPixels = (rectSource.Width != rectTarget.Width) ?
@@ -180,7 +199,8 @@ namespace WeifenLuo.WinFormsUI
 					rectSource.Height = rectTarget.Height;
 				
 				LayoutAnimateWindow(rectSource);
-				DockPanel.Update();
+				if (Parent != null)
+					Parent.Update();
 
 				remainPixels -= speedFactor;
 
@@ -201,6 +221,7 @@ namespace WeifenLuo.WinFormsUI
 				}
 			}
 			ResumeLayout();
+			Parent.ResumeLayout();
 		}
 
 		private void LayoutAnimateWindow(Rectangle rect)
@@ -210,9 +231,9 @@ namespace WeifenLuo.WinFormsUI
 			Rectangle rectClient = ClientRectangle;
 
 			if (DockState == DockState.DockLeftAutoHide)
-				ActivePane.Location = new Point(rectClient.Right - 2 - MeasureAutoHideWindow.SplitterSize - ActivePane.Width, ActivePane.Location.Y);
+				ActivePane.Location = new Point(rectClient.Right - 2 - Measures.SplitterSize - ActivePane.Width, ActivePane.Location.Y);
 			else if (DockState == DockState.DockTopAutoHide)
-				ActivePane.Location = new Point(ActivePane.Location.X, rectClient.Bottom - 2 - MeasureAutoHideWindow.SplitterSize - ActivePane.Height);
+				ActivePane.Location = new Point(ActivePane.Location.X, rectClient.Bottom - 2 - Measures.SplitterSize - ActivePane.Height);
 		}
 
 		private Rectangle GetBounds(bool show)
@@ -245,7 +266,7 @@ namespace WeifenLuo.WinFormsUI
 
 		private void SetTimerMouseTrack()
 		{
-			if (ActivePane == null || ActivePane.IsActivated)
+			if (ActivePane == null || ActivePane.IsActivated || FlagDragging)
 			{
 				m_timerMouseTrack.Enabled = false;
 				return;
@@ -273,18 +294,18 @@ namespace WeifenLuo.WinFormsUI
 				// exclude the border and the splitter
 				if (DockState == DockState.DockBottomAutoHide)
 				{
-					rect.Y += 2 + MeasureAutoHideWindow.SplitterSize;
-					rect.Height -= 2 + MeasureAutoHideWindow.SplitterSize;
+					rect.Y += 2 + Measures.SplitterSize;
+					rect.Height -= 2 + Measures.SplitterSize;
 				}
 				else if (DockState == DockState.DockRightAutoHide)
 				{
-					rect.X += 2 + MeasureAutoHideWindow.SplitterSize;
-					rect.Width -= 2 + MeasureAutoHideWindow.SplitterSize;
+					rect.X += 2 + Measures.SplitterSize;
+					rect.Width -= 2 + Measures.SplitterSize;
 				}
 				else if (DockState == DockState.DockTopAutoHide)
-					rect.Height -= 2 + MeasureAutoHideWindow.SplitterSize;
+					rect.Height -= 2 + Measures.SplitterSize;
 				else if (DockState == DockState.DockLeftAutoHide)
-					rect.Width -= 2 + MeasureAutoHideWindow.SplitterSize;
+					rect.Width -= 2 + Measures.SplitterSize;
 
 				return rect;
 			}
@@ -357,7 +378,7 @@ namespace WeifenLuo.WinFormsUI
 			if (ActiveContent == null)
 				return;
 
-			if (!DockHelper.IsDockStateAutoHide(ActiveContent.DockState))
+			if (!DockHelper.IsDockStateAutoHide(ActiveContent.DockHandler.DockState))
 			{
 				FlagAnimate = false;
 				ActiveContent = null;
@@ -390,5 +411,18 @@ namespace WeifenLuo.WinFormsUI
 				m_timerMouseTrack.Enabled = false;
 			}
 		}
+
+		protected override void WndProc(ref Message m)
+		{
+			if (m.Msg == (int)Win32.Msgs.WM_WINDOWPOSCHANGING)
+			{
+				int offset = (int)Marshal.OffsetOf(typeof(Win32.WINDOWPOS), "flags");
+				int flags = Marshal.ReadInt32(m.LParam, offset);
+				Marshal.WriteInt32(m.LParam, offset, flags | (int)Win32.FlagsSetWindowPos.SWP_NOCOPYBITS);
+			}
+
+			base.WndProc (ref m);
+		}
+
 	}
 }

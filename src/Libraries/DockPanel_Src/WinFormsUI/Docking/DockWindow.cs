@@ -11,10 +11,13 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using System.ComponentModel;
 
 namespace WeifenLuo.WinFormsUI
 {
 	/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/ClassDef/*'/>
+	[ToolboxItem(false)]
 	public class DockWindow : Panel, IDockListContainer
 	{
 		private DockPanel m_dockPanel;
@@ -59,7 +62,9 @@ namespace WeifenLuo.WinFormsUI
 				m_splitter.Dock = DockStyle.Top;
 			}
 			else if (DockState == DockState.Document)
+			{
 				Dock = DockStyle.Fill;
+			}
 
 			ResumeLayout();
 		}
@@ -122,18 +127,18 @@ namespace WeifenLuo.WinFormsUI
 				}
 				// exclude the splitter
 				else if (DockState == DockState.DockLeft)
-					rect.Width -= MeasureDockWindow.SplitterSize;
+					rect.Width -= Measures.SplitterSize;
 				else if (DockState == DockState.DockRight)
 				{
-					rect.X += MeasureDockWindow.SplitterSize;
-					rect.Width -= MeasureDockWindow.SplitterSize;
+					rect.X += Measures.SplitterSize;
+					rect.Width -= Measures.SplitterSize;
 				}
 				else if (DockState == DockState.DockTop)
-					rect.Height -= MeasureDockWindow.SplitterSize;
+					rect.Height -= Measures.SplitterSize;
 				else if (DockState == DockState.DockBottom)
 				{
-					rect.Y += MeasureDockWindow.SplitterSize;
-					rect.Height -= MeasureDockWindow.SplitterSize;
+					rect.Y += Measures.SplitterSize;
+					rect.Height -= Measures.SplitterSize;
 				}
 
 				return rect;
@@ -156,18 +161,29 @@ namespace WeifenLuo.WinFormsUI
 			DisplayingList.Refresh();
 			if (DisplayingList.Count == 0)
 			{
-				Visible = false;
-				base.OnLayout(levent);
-				return;
+				if (Visible)
+					Visible = false;
 			}
-
-			if (!Visible)
+			else if (!Visible)
 			{
-				SendToBack();
 				Visible = true;
 				DisplayingList.Refresh();
 			}
+
 			base.OnLayout (levent);
+		}
+
+		/// <exclude/>
+		protected override void WndProc(ref Message m)
+		{
+			if (m.Msg == (int)Win32.Msgs.WM_WINDOWPOSCHANGING)
+			{
+				int offset = (int)Marshal.OffsetOf(typeof(Win32.WINDOWPOS), "flags");
+				int flags = Marshal.ReadInt32(m.LParam, offset);
+				Marshal.WriteInt32(m.LParam, offset, flags | (int)Win32.FlagsSetWindowPos.SWP_NOCOPYBITS);
+			}
+
+			base.WndProc (ref m);
 		}
 
 	}

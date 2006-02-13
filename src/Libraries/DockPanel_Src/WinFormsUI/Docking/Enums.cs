@@ -75,4 +75,17 @@ namespace WeifenLuo.WinFormsUI
 		/// <include file='CodeDoc\Enums.xml' path='//CodeDoc/Enum[@name="DockAlignment"]/Member[@name="Bottom"]/*'/>
 		Bottom
 	}
+
+	/// <include file='CodeDoc\Enums.xml' path='//CodeDoc/Enum[@name="DocumentStyles"]/EnumDef/*'/>
+	public enum DocumentStyles
+	{
+		/// <include file='CodeDoc\Enums.xml' path='//CodeDoc/Enum[@name="DocumentStyles"]/Member[@name="DockingMdi"]/*'/>
+		DockingMdi,
+		/// <include file='CodeDoc\Enums.xml' path='//CodeDoc/Enum[@name="DocumentStyles"]/Member[@name="DockingWindow"]/*'/>
+		DockingWindow,
+		/// <include file='CodeDoc\Enums.xml' path='//CodeDoc/Enum[@name="DocumentStyles"]/Member[@name="DockingSdi"]/*'/>
+		DockingSdi,
+		/// <include file='CodeDoc\Enums.xml' path='//CodeDoc/Enum[@name="DocumentStyles"]/Member[@name="SystemMdi"]/*'/>
+		SystemMdi,
+	}
 }

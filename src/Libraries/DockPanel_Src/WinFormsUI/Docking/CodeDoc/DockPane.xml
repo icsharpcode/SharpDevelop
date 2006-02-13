@@ -13,7 +13,7 @@
 			</Member>
 		</Enum>
 		<ClassDef>
-			<summary>The containing window for a collection of <see cref="WeifenLuo.WinFormsUI.DockContent" /> forms
+			<summary>The containing window for a collection of <see cref="WeifenLuo.WinFormsUI.IDockContent" /> forms
 			displayed in a tabbed manner.</summary>
 			<remarks>
 				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Property[@name="Contents"]/remarks/*' />
@@ -34,36 +34,36 @@
 				<summary>Initializes a new instance of DockPane class.</summary>
 			</overloads>
 		</Constructor>
-		<Constructor name="(DockContent, DockState, bool)">
+		<Constructor name="(IDockContent, DockState, bool)">
 			<summary>Initializes a new instance of DockPane class, with specified visible docking state.</summary>
-			<param name="content">The first DockContent for this DockPane.</param>
+			<param name="content">The first IDockContent for this DockPane.</param>
 			<param name="visibleState">The visible docking state for this DockPane.</param>
 			<param name="show"><b>True</b> to show the <paramref name="content" />, otherwise, <b>false</b>.</param>
 		</Constructor>
-		<Constructor name="(DockContent, FloatWindow, bool)">
+		<Constructor name="(IDockContent, FloatWindow, bool)">
 			<summary>Initializes a new instance of DockPane class, as nested docking to specified FloatWindow.</summary>
-			<param name="content">The first DockContent for this DockPane.</param>
+			<param name="content">The first IDockContent for this DockPane.</param>
 			<param name="floatWindow">The <see cref="WeifenLuo.WinFormsUI.FloatWindow"/> for nested docking.</param>
 			<param name="show"><b>True</b> to show the <paramref name="content" />, otherwise, <b>false</b>.</param>
 		</Constructor>
-		<Constructor name="(DockContent, DockPane, DockAlignment, double, bool)">
+		<Constructor name="(IDockContent, DockPane, DockAlignment, double, bool)">
 			<summary>Initializes a new instance of DockPane class, as specified nested docking.</summary>
-			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, DockState, bool)"]/param[@name="content"]' />
+			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(IDockContent, DockState, bool)"]/param[@name="content"]' />
 			<param name="prevPane">The target <see cref="WeifenLuo.WinFormsUI.DockPane" /> to dock.</param>
 			<param name="alignment">The edge of the target <see cref="WeifenLuo.WinFormsUI.DockPane" /> to dock.</param>
 			<param name="proportion">The proportion size of the source <see cref="WeifenLuo.WinFormsUI.DockPane" />
 			to take inside the target <see cref="WeifenLuo.WinFormsUI.DockPane" />.</param>
-			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, DockState, bool)"]/param[@name="show"]' />
+			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(IDockContent, DockState, bool)"]/param[@name="show"]' />
 		</Constructor>
-		<Constructor name="(DockContent, Rectangle, bool)">
+		<Constructor name="(IDockContent, Rectangle, bool)">
 			<summary>Initializes a new instance of DockPane class, as floating at the specified bounds.</summary>
-			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, DockState, bool)"]/param[@name="content"]' />
+			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(IDockContent, DockState, bool)"]/param[@name="content"]' />
 			<param name="floatWindowBounds">The bounds of the floating window.</param>
-			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, DockState, bool)"]/param[@name="show"]' />
+			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(IDockContent, DockState, bool)"]/param[@name="show"]' />
 		</Constructor>
 		<Property name="ActiveContent">
-			<summary>Gets or sets the currently active <see cref="WeifenLuo.WinFormsUI.DockContent" /> form.</summary>
-			<value>The currently active <see cref="WeifenLuo.WinFormsUI.DockContent" /> form.</value>
+			<summary>Gets or sets the currently active <see cref="WeifenLuo.WinFormsUI.IDockContent" /> form.</summary>
+			<value>The currently active <see cref="WeifenLuo.WinFormsUI.IDockContent" /> form.</value>
 		</Property>
 		<Property name="AllowRedocking">
 			<summary>Gets or sets to specify whether drag and drop re-docking is allowed.</summary>
@@ -77,57 +77,57 @@
 			<summary>Gets the text displayed for the caption.</summary>
 			<value>The text displayed for the caption.</value>
 			<remarks>The default implementation returns the <see cref="System.Windows.Forms.Control.Text" /> property
-			of current active <see cref="WeifenLuo.WinFormsUI.DockContent" /> form. You can override this
+			of current active <see cref="WeifenLuo.WinFormsUI.IDockContent" /> form. You can override this
 			property to provide your own implementation.</remarks>
 		</Property>
 		<Property name="Contents">
-			<summary>Gets the collection of contained <see cref="WeifenLuo.WinFormsUI.DockContent" /> forms.</summary>
+			<summary>Gets the collection of contained <see cref="WeifenLuo.WinFormsUI.IDockContent" /> forms.</summary>
 			<value>The <see cref="WeifenLuo.WinFormsUI.DockContentCollection" /> which contains all the
-			<see cref="WeifenLuo.WinFormsUI.DockContent" /> forms for this <see cref="WeifenLuo.WinFormsUI.DockPane" />.</value>
+			<see cref="WeifenLuo.WinFormsUI.IDockContent" /> forms for this <see cref="WeifenLuo.WinFormsUI.DockPane" />.</value>
 			<remarks>
 				<para>
-				A <see cref="WeifenLuo.WinFormsUI.DockContent" /> object can be added to the
+				A <see cref="WeifenLuo.WinFormsUI.IDockContent" /> object can be added to the
 				<see cref="WeifenLuo.WinFormsUI.DockPane" /> by various of ways:
 				<list type="number">
 						<item>
 							<description>Calling one of <see cref="WeifenLuo.WinFormsUI.DockPane" /> class's constructors,
-					providing the <see cref="WeifenLuo.WinFormsUI.DockContent" /> object as parameter.
+					providing the <see cref="WeifenLuo.WinFormsUI.IDockContent" /> object as parameter.
 					</description>
 						</item>
 						<item>
 							<description>Explicitly setting one of the
-					<see cref="WeifenLuo.WinFormsUI.DockContent.Pane" />,
-					<see cref="WeifenLuo.WinFormsUI.DockContent.PanelPane" /> or
-					<see cref="WeifenLuo.WinFormsUI.DockContent.FloatPane" /> properties
-					of <see cref="WeifenLuo.WinFormsUI.DockContent" /> class.
+					<see cref="WeifenLuo.WinFormsUI.DockContentHandler.Pane" />,
+					<see cref="WeifenLuo.WinFormsUI.DockContentHandler.PanelPane" /> or
+					<see cref="WeifenLuo.WinFormsUI.DockContentHandler.FloatPane" /> properties
+					of <see cref="WeifenLuo.WinFormsUI.IDockContent.DockHandler" /> class.
 					</description>
 						</item>
 						<item>
-							<description>Implicitly setting the docking state of the <see cref="WeifenLuo.WinFormsUI.DockContent" />,
-					for example, calling one of the <see cref="WeifenLuo.WinFormsUI.DockContent.Show" /> methods.
+							<description>Implicitly setting the docking state of the <see cref="WeifenLuo.WinFormsUI.IDockContent" />,
+					for example, calling one of the <see cref="WeifenLuo.WinFormsUI.DockContentHandler.Show" /> methods.
 					</description>
 						</item>
 					</list>
 					You can access the contained collection of
-					<see cref="WeifenLuo.WinFormsUI.DockContent" /> forms through the
+					<see cref="WeifenLuo.WinFormsUI.IDockContent" /> forms through the
 					<see cref="WeifenLuo.WinFormsUI.DockPane.Contents" /> property of class
 					<see cref="WeifenLuo.WinFormsUI.DockPane" />, and you can access a
-					<see cref="WeifenLuo.WinFormsUI.DockContent" />'s containing
-					<see cref="WeifenLuo.WinFormsUI.DockPane" /> through its
-					<see cref="WeifenLuo.WinFormsUI.DockContent.Pane" />,
-					<see cref="WeifenLuo.WinFormsUI.DockContent.PanelPane" /> or
-					<see cref="WeifenLuo.WinFormsUI.DockContent.FloatPane" /> properties.					
+					<see cref="WeifenLuo.WinFormsUI.IDockContent" />'s containing
+					<see cref="WeifenLuo.WinFormsUI.DockPane" /> through its <see cref="WeifenLuo.WinFormsUI.DockContentHandler" />'s
+					<see cref="WeifenLuo.WinFormsUI.DockContentHandler.Pane" />,
+					<see cref="WeifenLuo.WinFormsUI.DockContentHandler.PanelPane" /> or
+					<see cref="WeifenLuo.WinFormsUI.DockContentHandler.FloatPane" /> properties.					
 				</para>
-				<para>If there is no <see cref="WeifenLuo.WinFormsUI.DockContent" /> in
+				<para>If there is no <see cref="WeifenLuo.WinFormsUI.IDockContent" /> in
 				this <see cref="WeifenLuo.WinFormsUI.DockPane" />,
 				this <see cref="WeifenLuo.WinFormsUI.DockPane" /> will be disposed automatically.
 				</para>
 			</remarks>
 		</Property>
 		<Property name="DisplayingContents">
-			<summary>Gets the collection of displaying <see cref="DockContent" /> forms.</summary>
+			<summary>Gets the collection of displaying <see cref="IDockContent" /> forms.</summary>
 			<value>The <see cref="DockContentCollection" /> which contains all the displaying
-			<see cref="DockContent" /> forms for this <see cref="DockPane" />.</value>
+			<see cref="IDockContent" /> forms for this <see cref="DockPane" />.</value>
 			<seealso cref="DockPane.Contents"/>
 		</Property>
 		<Property name="DockListContainer">
@@ -190,9 +190,9 @@
 			</remarks>
 		</Property>
 		<Property name="IsHidden">
-			<summary>Gets whether all the contained <see cref="WeifenLuo.WinFormsUI.DockContent" /> forms
+			<summary>Gets whether all the contained <see cref="WeifenLuo.WinFormsUI.IDockContent" /> forms
 			are invisible in this <see cref="WeifenLuo.WinFormsUI.DockPane" />.</summary>
-			<value><b>True</b> if all the contained <see cref="WeifenLuo.WinFormsUI.DockContent" /> forms
+			<value><b>True</b> if all the contained <see cref="WeifenLuo.WinFormsUI.IDockContent" /> forms
 			are invisible in this <see cref="WeifenLuo.WinFormsUI.DockPane" />.</value>
 		</Property>
 		<Property name="NestedDockingStatus">
@@ -229,21 +229,21 @@
 			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Method[@name="AddToDockList(IDockListContainer)"]/returns' />
 		</Method>
 		<Method name="CloseActiveContent()">
-			<summary>Closes the currently active <see cref="DockContent"/>.</summary>
+			<summary>Closes the currently active <see cref="IDockContent"/>.</summary>
 		</Method>
 		<Method name="Float()">
-			<summary>Shows all contained <see cref="WeifenLuo.WinFormsUI.DockContent" /> forms as floating.</summary>
+			<summary>Shows all contained <see cref="WeifenLuo.WinFormsUI.IDockContent" /> forms as floating.</summary>
 			<returns>The new floating <see cref="WeifenLuo.WinFormsUI.DockPane" /> for the
-			<see cref="WeifenLuo.WinFormsUI.DockContent" /> forms.</returns>
+			<see cref="WeifenLuo.WinFormsUI.IDockContent" /> forms.</returns>
 		</Method>
 		<Method name="IsDockStateValid(DockState)">
 			<summary>Tests if the giving docking state conforms to the
-			<see cref="WeifenLuo.WinFormsUI.DockContent.DockableAreas" /> property of all the
-			contained <see cref="WeifenLuo.WinFormsUI.DockContent" /> forms.</summary>
+			<see cref="WeifenLuo.WinFormsUI.DockContentHandler.DockableAreas" /> property of all the
+			contained <see cref="WeifenLuo.WinFormsUI.IDockContent" /> forms.</summary>
 			<param name="dockState"></param>
 			<returns><b>True</b> if the giving docking state conforms to the
-			<see cref="WeifenLuo.WinFormsUI.DockContent.DockableAreas" /> property of all the
-			contained <see cref="WeifenLuo.WinFormsUI.DockContent" /> forms; otherwise, <b>false</b>.</returns>
+			<see cref="WeifenLuo.WinFormsUI.DockContentHandler.DockableAreas" /> property of all the
+			contained <see cref="WeifenLuo.WinFormsUI.IDockContent" /> forms; otherwise, <b>false</b>.</returns>
 		</Method>
 		<Method name="OnDockStateChanged(EventArgs)">
 			<summary>Raises the <see cref="WeifenLuo.WinFormsUI.DockPane.DockStateChanged" /> event.</summary>
@@ -258,16 +258,16 @@
 			<param name="e">An <see cref="System.EventArgs" /> that contains the event data.</param>
 		</Method>
 		<Method name="RestoreToPanel()">
-			<summary>Shows all contained <see cref="WeifenLuo.WinFormsUI.DockContent" /> forms as non-floating.</summary>
+			<summary>Shows all contained <see cref="WeifenLuo.WinFormsUI.IDockContent" /> forms as non-floating.</summary>
 		</Method>
-		<Method name="SetContentIndex(DockContent, int)">
-			<summary>Moves the specified <see cref="WeifenLuo.WinFormsUI.DockContent" /> form to the
+		<Method name="SetContentIndex(IDockContent, int)">
+			<summary>Moves the specified <see cref="WeifenLuo.WinFormsUI.IDockContent" /> form to the
 			specified position in the tab strip.</summary>
-			<param name="content">The specified <see cref="WeifenLuo.WinFormsUI.DockContent" /> form.</param>
+			<param name="content">The specified <see cref="WeifenLuo.WinFormsUI.IDockContent" /> form.</param>
 			<param name="index">The zero-based index represents the new position in the tab strip.</param>
 		</Method>
 		<Method name="SetDockState(DockState)">
-			<summary>Shows all contained <see cref="WeifenLuo.WinFormsUI.DockContent" /> forms as specified docking state.</summary>
+			<summary>Shows all contained <see cref="WeifenLuo.WinFormsUI.IDockContent" /> forms as specified docking state.</summary>
 			<param name="value">The specified docking state to display.</param>
 			<returns>The <see cref="WeifenLuo.WinFormsUI.DockPane" /> for the new docking state.</returns>
 		</Method>

@@ -69,19 +69,22 @@ namespace WeifenLuo.WinFormsUI
 		protected bool BeginDrag(Control c)
 		{
 			// Avoid re-entrance;
-			if (m_dragControl != null)
-				return false;
+			lock (this)
+			{
+				if (m_dragControl != null)
+					return false;
 
-			m_startMousePosition = Control.MousePosition;
+				m_startMousePosition = Control.MousePosition;
 
-			if (!User32.DragDetect(c.Handle, StartMousePosition))
-				return false;
+				if (!User32.DragDetect(c.Handle, StartMousePosition))
+					return false;
 
-			m_dragControl = c;
-			c.FindForm().Capture = true;
-			AssignHandle(c.FindForm().Handle);
-			Application.AddMessageFilter(this);
-			return true;
+				m_dragControl = c;
+				c.FindForm().Capture = true;
+				AssignHandle(c.FindForm().Handle);
+				Application.AddMessageFilter(this);
+				return true;
+			}
 		}
 
 		protected virtual void OnDragging()
@@ -119,7 +122,7 @@ namespace WeifenLuo.WinFormsUI
 
 		protected virtual bool OnPreFilterMessage(ref Message m)
 		{
-			return true;
+			return false;
 		}
 
 		private IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr wParam, IntPtr lParam)

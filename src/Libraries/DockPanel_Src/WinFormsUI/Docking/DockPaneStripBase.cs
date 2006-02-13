@@ -22,6 +22,12 @@ namespace WeifenLuo.WinFormsUI
 		{
 			m_dockPane = pane;
 
+			#if FRAMEWORK_VER_2x
+			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+			#else
+			SetStyle(ControlStyles.DoubleBuffer, true);
+			#endif
+
 			SetStyle(ControlStyles.Selectable, false);
 		}
 
@@ -36,12 +42,6 @@ namespace WeifenLuo.WinFormsUI
 		protected DockPane.AppearanceStyle Appearance
 		{
 			get	{	return DockPane.Appearance;	}
-		}
-
-		/// <include file='CodeDoc/DockPaneStripBase.xml' path='//CodeDoc/Class[@name="DockPaneStripBase"]/Property[@name="OutlineSize"]/*'/>
-		protected int OutlineSize
-		{
-			get	{	return MeasureOutline.Width;	}
 		}
 
 		/// <include file='CodeDoc/DockPaneStripBase.xml' path='//CodeDoc/Class[@name="DockPaneStripBase"]/Property[@name="Tabs"]/*'/>
@@ -63,8 +63,8 @@ namespace WeifenLuo.WinFormsUI
 		/// <include file='CodeDoc/DockPaneStripBase.xml' path='//CodeDoc/Class[@name="DockPaneStripBase"]/Method[@name="MeasureHeight()"]/*'/>
 		protected internal abstract int MeasureHeight();
 
-		/// <include file='CodeDoc/DockPaneStripBase.xml' path='//CodeDoc/Class[@name="DockPaneStripBase"]/Method[@name="EnsureTabVisible(DockContent)"]/*'/>
-		protected internal abstract void EnsureTabVisible(DockContent content);
+		/// <include file='CodeDoc/DockPaneStripBase.xml' path='//CodeDoc/Class[@name="DockPaneStripBase"]/Method[@name="EnsureTabVisible(IDockContent)"]/*'/>
+		protected internal abstract void EnsureTabVisible(IDockContent content);
 
 		/// <include file='CodeDoc/DockPaneStripBase.xml' path='//CodeDoc/Class[@name="DockPaneStripBase"]/Method[@name="GetHitTest"]/*'/>
 		/// <include file='CodeDoc/DockPaneStripBase.xml' path='//CodeDoc/Class[@name="DockPaneStripBase"]/Method[@name="GetHitTest()"]/*'/>
@@ -77,7 +77,7 @@ namespace WeifenLuo.WinFormsUI
 		protected internal abstract int GetHitTest(Point point);
 
 		/// <include file='CodeDoc/DockPaneStripBase.xml' path='//CodeDoc/Class[@name="DockPaneStripBase"]/Method[@name="GetOutlineXorPath(int)"]/*'/>
-		protected internal abstract GraphicsPath GetOutlineXorPath(int index);
+		protected internal abstract GraphicsPath GetOutlinePath(int index);
 
 		/// <exclude/>
 		protected override Size DefaultSize
@@ -88,38 +88,23 @@ namespace WeifenLuo.WinFormsUI
 		/// <exclude/>
 		protected override void WndProc(ref Message m)
 		{
-			if (m.Msg == (int)Win32.Msgs.WM_MOUSEACTIVATE)
-			{
-				DockPane.Activate();
-				base.WndProc(ref m);
-				return;
-			}
-			else if (m.Msg == (int)Win32.Msgs.WM_LBUTTONDOWN)
+			if (m.Msg == (int)Win32.Msgs.WM_LBUTTONDOWN)
 			{
 				int index = GetHitTest();
 				if (index != -1)
 				{
-					DockContent content = Tabs[index].Content;
+					IDockContent content = Tabs[index].Content;
 					if (DockPane.ActiveContent != content)
 					{
 						DockPane.ActiveContent = content;
+						DockPane.Activate();
 						Update();
 					}
-					if (DockPane.DockPanel.AllowRedocking && DockPane.AllowRedocking && DockPane.ActiveContent.AllowRedocking)
-						DockPane.DockPanel.DragHandler.BeginDragContent(DockPane, DockPane.ClientRectangle); //DockPane.DisplayingRectangle);
+					if (DockPane.DockPanel.AllowRedocking && DockPane.AllowRedocking && DockPane.ActiveContent.DockHandler.AllowRedocking)
+						DockPane.DockPanel.DragHandler.BeginDragContent(DockPane.ActiveContent);
 				}
 				else
 					base.WndProc(ref m);
-				return;
-			}
-			else if (m.Msg == (int)Win32.Msgs.WM_MBUTTONUP)
-			{
-				base.WndProc(ref m);
-				int index = GetHitTest();
-				if (index != -1)
-				{
-					DockPane.CloseContent(Tabs[index].Content);
-				}
 				return;
 			}
 			else if (m.Msg == (int)Win32.Msgs.WM_RBUTTONDOWN)
@@ -127,7 +112,7 @@ namespace WeifenLuo.WinFormsUI
 				int index = GetHitTest();
 				if (index != -1)
 				{
-					DockContent content = Tabs[index].Content;
+					IDockContent content = Tabs[index].Content;
 					if (DockPane.ActiveContent != content)
 						DockPane.ActiveContent = content;
 				}
@@ -139,10 +124,17 @@ namespace WeifenLuo.WinFormsUI
 				int index = GetHitTest();
 				if (index != -1)
 				{
-					DockContent content = Tabs[index].Content;
-					if (content.TabPageContextMenu != null) 
-						content.TabPageContextMenu.Show(this, this.PointToClient(Control.MousePosition));
-				}
+					IDockContent content = Tabs[index].Content;
+                    #if FRAMEWORK_VER_2x
+                    if (content.DockHandler.TabPageContextMenuStrip != null)
+                        content.DockHandler.TabPageContextMenuStrip.Show(this, this.PointToClient(Control.MousePosition));
+                    else if (content.DockHandler.TabPageContextMenu != null) 
+						content.DockHandler.TabPageContextMenu.Show(this, this.PointToClient(Control.MousePosition));
+                    #else
+                    if (content.DockHandler.TabPageContextMenu != null) 
+						content.DockHandler.TabPageContextMenu.Show(this, this.PointToClient(Control.MousePosition));
+                    #endif
+                }
 				base.WndProc(ref m);
 				return;
 			}
@@ -153,8 +145,8 @@ namespace WeifenLuo.WinFormsUI
 				int index = GetHitTest();
 				if (DockPane.DockPanel.AllowRedocking && index != -1)
 				{
-					DockContent content = Tabs[index].Content;
-					try	{	content.IsFloat = !content.IsFloat;	}	
+					IDockContent content = Tabs[index].Content;
+					try	{	content.DockHandler.IsFloat = !content.DockHandler.IsFloat;	}	
 					catch	{	}
 				}
 

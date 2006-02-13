@@ -13,6 +13,19 @@ namespace DockSample
 	/// </summary>
 	public class DummyDoc : DockContent
 	{
+        #if FRAMEWORK_VER_2x
+		private System.Windows.Forms.RichTextBox richTextBox1;
+		private System.Windows.Forms.MenuStrip mainMenu;
+		private System.Windows.Forms.ToolStripMenuItem menuItem1;
+		private System.Windows.Forms.ToolStripMenuItem menuItem2;
+		private System.Windows.Forms.ContextMenuStrip contextMenuTabPage;
+		private System.Windows.Forms.ToolStripMenuItem menuItem3;
+		private System.Windows.Forms.ToolStripMenuItem menuItem4;
+		private System.Windows.Forms.ToolStripMenuItem menuItem5;
+		private System.Windows.Forms.ToolStripMenuItem menuItemCheckTest;
+		private System.Windows.Forms.ToolTip toolTip;
+		private System.ComponentModel.IContainer components;
+        #else
 		private System.Windows.Forms.RichTextBox richTextBox1;
 		private System.Windows.Forms.MainMenu mainMenu;
 		private System.Windows.Forms.MenuItem menuItem1;
@@ -22,12 +35,11 @@ namespace DockSample
 		private System.Windows.Forms.MenuItem menuItem4;
 		private System.Windows.Forms.MenuItem menuItem5;
 		private System.Windows.Forms.MenuItem menuItemCheckTest;
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.Container components = null;
+		private System.Windows.Forms.ToolTip toolTip;
+		private System.ComponentModel.IContainer components;
+		#endif
 
-		public DummyDoc()
+        public DummyDoc()
 		{
 			//
 			// Required for Windows Form Designer support
@@ -50,6 +62,7 @@ namespace DockSample
 			base.Dispose( disposing );
 		}
 
+		#if FRAMEWORK_VER_2x
 		#region Windows Form Designer generated code
 		/// <summary>
 		/// Required method for Designer support - do not modify
@@ -57,6 +70,103 @@ namespace DockSample
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
+			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(DummyDoc));
+			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+			this.mainMenu = new System.Windows.Forms.MenuStrip();
+			this.menuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuItemCheckTest = new System.Windows.Forms.ToolStripMenuItem();
+			this.contextMenuTabPage = new System.Windows.Forms.ContextMenuStrip();
+			this.menuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuItem4 = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+			this.SuspendLayout();
+			// 
+			// richTextBox1
+			// 
+			this.richTextBox1.AcceptsTab = true;
+			this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.richTextBox1.Location = new System.Drawing.Point(0, 4);
+			this.richTextBox1.Name = "richTextBox1";
+			this.richTextBox1.Size = new System.Drawing.Size(448, 389);
+			this.richTextBox1.TabIndex = 0;
+			this.richTextBox1.Text = "";
+			this.toolTip.SetToolTip(this.richTextBox1, "Test Tooltip");
+			// 
+			// mainMenu
+			//
+            this.mainMenu.Visible = false;
+			this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+																					 this.menuItem1});
+			// 
+			// menuItem1
+			// 
+			this.menuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+																					  this.menuItem2,
+																					  this.menuItemCheckTest});
+			this.menuItem1.MergeIndex = 1;
+            this.menuItem1.MergeAction = MergeAction.Insert;
+			this.menuItem1.Text = "&MDI Document";
+			// 
+			// menuItem2
+			// 
+			this.menuItem2.Text = "Test";
+			this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
+			// 
+			// menuItemCheckTest
+			// 
+			this.menuItemCheckTest.Text = "Check Test";
+			this.menuItemCheckTest.Click += new System.EventHandler(this.menuItemCheckTest_Click);
+			// 
+			// contextMenuTabPage
+			// 
+			this.contextMenuTabPage.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+																							   this.menuItem3,
+																							   this.menuItem4,
+																							   this.menuItem5});
+			// 
+			// menuItem3
+			// 
+			this.menuItem3.Text = "Option &1";
+			// 
+			// menuItem4
+			// 
+			this.menuItem4.Text = "Option &2";
+			// 
+			// menuItem5
+			// 
+			this.menuItem5.Text = "Option &3";
+			// 
+			// DummyDoc
+			// 
+			this.ClientSize = new System.Drawing.Size(448, 393);
+			this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.mainMenu);
+            this.DockableAreas = ((WeifenLuo.WinFormsUI.DockAreas)(((((WeifenLuo.WinFormsUI.DockAreas.DockLeft | WeifenLuo.WinFormsUI.DockAreas.DockRight) 
+				| WeifenLuo.WinFormsUI.DockAreas.DockTop) 
+				| WeifenLuo.WinFormsUI.DockAreas.DockBottom) 
+				| WeifenLuo.WinFormsUI.DockAreas.Document)));
+			this.DockPadding.Top = 4;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.MainMenuStrip = this.mainMenu;
+			this.Name = "DummyDoc";
+			this.TabPageContextMenuStrip = this.contextMenuTabPage;
+			this.ResumeLayout(false);
+
+		}
+		#endregion
+		#else
+		#region Windows Form Designer generated code
+		/// <summary>
+		/// Required method for Designer support - do not modify
+		/// the contents of this method with the code editor.
+		/// </summary>
+		private void InitializeComponent()
+		{
+			this.components = new System.ComponentModel.Container();
+			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(DummyDoc));
 			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
 			this.mainMenu = new System.Windows.Forms.MainMenu();
 			this.menuItem1 = new System.Windows.Forms.MenuItem();
@@ -66,6 +176,7 @@ namespace DockSample
 			this.menuItem3 = new System.Windows.Forms.MenuItem();
 			this.menuItem4 = new System.Windows.Forms.MenuItem();
 			this.menuItem5 = new System.Windows.Forms.MenuItem();
+			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.SuspendLayout();
 			// 
 			// richTextBox1
@@ -74,9 +185,10 @@ namespace DockSample
 			this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.richTextBox1.Location = new System.Drawing.Point(0, 4);
 			this.richTextBox1.Name = "richTextBox1";
-			this.richTextBox1.Size = new System.Drawing.Size(264, 333);
+			this.richTextBox1.Size = new System.Drawing.Size(448, 389);
 			this.richTextBox1.TabIndex = 0;
 			this.richTextBox1.Text = "";
+			this.toolTip.SetToolTip(this.richTextBox1, "Test Tooltip");
 			// 
 			// mainMenu
 			// 
@@ -129,9 +241,14 @@ namespace DockSample
 			// DummyDoc
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(264, 337);
+			this.ClientSize = new System.Drawing.Size(448, 393);
 			this.Controls.Add(this.richTextBox1);
+			this.DockableAreas = ((WeifenLuo.WinFormsUI.DockAreas)(((((WeifenLuo.WinFormsUI.DockAreas.DockLeft | WeifenLuo.WinFormsUI.DockAreas.DockRight | WeifenLuo.WinFormsUI.DockAreas.Float) 
+				| WeifenLuo.WinFormsUI.DockAreas.DockTop) 
+				| WeifenLuo.WinFormsUI.DockAreas.DockBottom) 
+				| WeifenLuo.WinFormsUI.DockAreas.Document)));
 			this.DockPadding.Top = 4;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Menu = this.mainMenu;
 			this.Name = "DummyDoc";
 			this.TabPageContextMenu = this.contextMenuTabPage;
@@ -139,6 +256,7 @@ namespace DockSample
 
 		}
 		#endregion
+		#endif
 
 		private string m_fileName = string.Empty;
 		public string FileName
@@ -194,6 +312,13 @@ namespace DockSample
 		private void menuItemCheckTest_Click(object sender, System.EventArgs e)
 		{
 			menuItemCheckTest.Checked = !menuItemCheckTest.Checked;
+		}
+
+		protected override void OnTextChanged(EventArgs e)
+		{
+			base.OnTextChanged (e);
+			if (FileName == string.Empty)
+				this.richTextBox1.Text = Text;
 		}
 	}
 }

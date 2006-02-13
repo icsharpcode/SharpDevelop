@@ -10,10 +10,12 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 namespace WeifenLuo.WinFormsUI
 {
 	/// <include file='CodeDoc/DockPaneCaptionVS2003.xml' path='//CodeDoc/Class[@name="DockPaneCaptionVS2003"]/ClassDef/*'/>
+	[ToolboxItem(false)]
 	public class DockPaneCaptionVS2003 : DockPaneCaptionBase
 	{
 		#region consts
@@ -288,10 +290,15 @@ namespace WeifenLuo.WinFormsUI
 
 			Rectangle rectCaptionText = rectCaption;
 			rectCaptionText.X += TextGapLeft;
-			rectCaptionText.Width = rectCaption.Width - ButtonGapRight
-				- ButtonGapLeft
-				- ButtonGapBetween - 2 * m_buttonClose.Width
-				- TextGapLeft - TextGapRight;
+			if (ShouldShowCloseButton && ShouldShowAutoHideButton)
+				rectCaptionText.Width = rectCaption.Width - ButtonGapRight
+					- ButtonGapLeft	- TextGapLeft - TextGapRight -
+					(m_buttonAutoHide.Width + ButtonGapBetween + m_buttonClose.Width);
+			else if (ShouldShowCloseButton || ShouldShowAutoHideButton)
+				rectCaptionText.Width = rectCaption.Width - ButtonGapRight
+					- ButtonGapLeft	- TextGapLeft - TextGapRight - m_buttonClose.Width;
+			else
+				rectCaptionText.Width = rectCaption.Width - TextGapLeft - TextGapRight;
 			rectCaptionText.Y += TextGapTop;
 			rectCaptionText.Height -= TextGapTop + TextGapBottom;
 			using (Brush brush = new SolidBrush(DockPane.IsActivated ? ActiveTextColor : InactiveTextColor))
@@ -316,13 +323,18 @@ namespace WeifenLuo.WinFormsUI
 
 		private bool ShouldShowCloseButton
 		{
-			get	{	return (DockPane.ActiveContent != null)? DockPane.ActiveContent.CloseButton : false;	}
+			get	{	return (DockPane.ActiveContent != null)? DockPane.ActiveContent.DockHandler.CloseButton : false;	}
+		}
+
+		private bool ShouldShowAutoHideButton
+		{
+			get	{	return !DockPane.IsFloat;	}
 		}
 
 		private void SetButtons()
 		{
 			m_buttonClose.Visible = ShouldShowCloseButton;
-			m_buttonAutoHide.Visible = !DockPane.IsFloat;
+			m_buttonAutoHide.Visible = ShouldShowAutoHideButton;
 			m_buttonAutoHide.ImageEnabled = DockPane.IsAutoHide ? ImageAutoHideYes : ImageAutoHideNo;
 			
 			SetButtonsPosition();

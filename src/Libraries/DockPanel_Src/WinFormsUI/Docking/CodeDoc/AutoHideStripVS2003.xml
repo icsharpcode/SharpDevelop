@@ -91,7 +91,7 @@
 		<Method name="GetHitTest(Point)">
 			<summary>Gets the hit test result of the auto hide tab strip using specified point.</summary>
 			<param name="point">The specified point.</param>
-			<returns>The <see cref="DockContent"/> tab of the specified point, null for nothing.</returns>
+			<returns>The <see cref="IDockContent"/> tab of the specified point, null for nothing.</returns>
 		</Method>
 		<Method name="OnBeginDrawTab(AutoHideTab)">
 			<summary>Invoked when begin to draw the tab.</summary>

@@ -126,10 +126,53 @@ namespace WeifenLuo.WinFormsUI.Win32
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct CWPRETSTRUCT 
 	{
-		public int lResult;
-		public int lParam;
-		public int wParam;
+		public IntPtr lResult;
+		public IntPtr lParam;
+		public IntPtr wParam;
 		public int message;
 		public IntPtr hwnd;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	internal struct CREATESTRUCT 
+	{
+		public int lpCreateParams;
+		public int hInstance;
+		public int hMenu;
+		public int hWndParent;
+		public int cy;
+		public int cx;
+		public int y;
+		public int x;
+		public int style;
+		public string lpszName;
+		public string lpszClass;
+		public int ExStyle;
+	}
+	
+	[StructLayout(LayoutKind.Sequential)]
+	internal struct MDICREATESTRUCT 
+	{
+		public string szClass;
+		public string szTitle;
+		public int hOwner;
+		public int x;
+		public int y;
+		public int cx;
+		public int cy;
+		public int style;
+		public int lParam;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	internal struct WINDOWPOS 
+	{
+		public int hwnd;
+		public int hWndInsertAfter;
+		public int x;
+		public int y;
+		public int cx;
+		public int cy;
+		public int flags;
 	}
 }

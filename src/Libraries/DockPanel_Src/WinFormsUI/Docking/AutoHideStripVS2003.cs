@@ -11,10 +11,12 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using System.ComponentModel;
 
 namespace WeifenLuo.WinFormsUI
 {
 	/// <include file='CodeDoc/AutoHideStripVS2003.xml' path='//CodeDoc/Class[@name="AutoHideStripVS2003"]/ClassDef/*'/>
+	[ToolboxItem(false)]
 	public class AutoHideStripVS2003 : AutoHideStripBase
 	{
 		private const int _ImageHeight = 16;
@@ -179,7 +181,6 @@ namespace WeifenLuo.WinFormsUI
 			SetStyle(ControlStyles.ResizeRedraw, true);
 			SetStyle(ControlStyles.UserPaint, true);
 			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 			BackColor = Color.WhiteSmoke;
 		}
 
@@ -255,7 +256,7 @@ namespace WeifenLuo.WinFormsUI
 					foreach (AutoHideTabVS2003 tab in pane.Tabs)
 					{
 						int width = imageWidth + ImageGapLeft + ImageGapRight +
-							(int)g.MeasureString(tab.Content.TabText, Font).Width + 1 +
+							(int)g.MeasureString(tab.Content.DockHandler.TabText, Font).Width + 1 +
 							TextGapLeft + TextGapRight;
 						if (width > maxWidth)
 							maxWidth = width;
@@ -281,8 +282,8 @@ namespace WeifenLuo.WinFormsUI
 			if (rectTab.IsEmpty)
 				return;
 
-			DockState dockState = tab.Content.DockState;
-			DockContent content = tab.Content;
+			DockState dockState = tab.Content.DockHandler.DockState;
+			IDockContent content = tab.Content;
 			
 			OnBeginDrawTab(tab);
 
@@ -314,19 +315,19 @@ namespace WeifenLuo.WinFormsUI
 			rectImage.Height = imageHeight;
 			rectImage.Width = imageWidth;
 			rectImage = GetTransformedRectangle(dockState, rectImage);
-			g.DrawIcon(content.Icon, rectImage);
+			g.DrawIcon(((Form)content).Icon, rectImage);
 
 			// Draw the text
-			if (content == content.Pane.ActiveContent)
+			if (content == content.DockHandler.Pane.ActiveContent)
 			{
 				Rectangle rectText = rectTab;
 				rectText.X += ImageGapLeft + imageWidth + ImageGapRight + TextGapLeft;
 				rectText.Width -= ImageGapLeft + imageWidth + ImageGapRight + TextGapLeft;
 				rectText = GetTransformedRectangle(dockState, rectText);
 				if (dockState == DockState.DockLeftAutoHide || dockState == DockState.DockRightAutoHide)
-					g.DrawString(content.TabText, Font, brushTabText, rectText, StringFormatTabVertical);
+					g.DrawString(content.DockHandler.TabText, Font, brushTabText, rectText, StringFormatTabVertical);
 				else
-					g.DrawString(content.TabText, Font, brushTabText, rectText, StringFormatTabHorizontal);
+					g.DrawString(content.DockHandler.TabText, Font, brushTabText, rectText, StringFormatTabHorizontal);
 			}
 
 			// Set rotate back
@@ -397,7 +398,7 @@ namespace WeifenLuo.WinFormsUI
 
 		private Rectangle GetTabRectangle(AutoHideTabVS2003 tab, bool transformed)
 		{
-			DockState dockState = tab.Content.DockState;
+			DockState dockState = tab.Content.DockHandler.DockState;
 			Rectangle rectTabStrip = GetLogicalTabStripRectangle(dockState);
 
 			if (rectTabStrip.IsEmpty)
@@ -437,7 +438,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		/// <exclude />
-		protected override DockContent GetHitTest(Point ptMouse)
+		protected override IDockContent GetHitTest(Point ptMouse)
 		{
 			foreach(DockState state in DockStates)
 			{

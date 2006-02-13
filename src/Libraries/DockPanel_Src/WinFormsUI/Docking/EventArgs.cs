@@ -14,16 +14,16 @@ namespace WeifenLuo.WinFormsUI
 	/// <include file='CodeDoc\EventArgs.xml' path='//CodeDoc/Class[@name="DockContentEventArgs"]/ClassDef/*'/>
 	public class DockContentEventArgs : EventArgs
 	{
-		private DockContent m_content;
+		private IDockContent m_content;
 
-		/// <include file='CodeDoc\EventArgs.xml' path='//CodeDoc/Class[@name="DockContentEventArgs"]/Constructor[@name="(DockContent)"]/*'/>
-		public DockContentEventArgs(DockContent content)
+		/// <include file='CodeDoc\EventArgs.xml' path='//CodeDoc/Class[@name="DockContentEventArgs"]/Constructor[@name="(IDockContent)"]/*'/>
+		public DockContentEventArgs(IDockContent content)
 		{
 			m_content = content;
 		}
 
 		/// <include file='CodeDoc\EventArgs.xml' path='//CodeDoc/Class[@name="DockContentEventArgs"]/Property[@name="Content"]/*'/>
-		public DockContent Content
+		public IDockContent Content
 		{
 			get	{	return m_content;	}
 		}

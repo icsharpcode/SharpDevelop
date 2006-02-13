@@ -1,7 +1,7 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0A386EC6-40E1-4C5A-BA6B-B483FE89E8E7}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -24,6 +24,8 @@
     </StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -32,7 +34,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FRAMEWORK_VER_2x</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
@@ -53,7 +55,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;FRAMEWORK_VER_2x</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
@@ -101,7 +103,7 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\WinFormsUI\WinFormsUI.csproj">
+    <ProjectReference Include="..\WinFormsUI\WinFormsUI2005.csproj">
       <Name>WinFormsUI</Name>
       <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
@@ -133,13 +135,49 @@
     <Compile Include="DummyToolbox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Options.cs">
+    <Compile Include="Extender\Extender.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="OptionsDialog.cs">
+    <Compile Include="Extender\FromBase\AutoHideStripFromBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Extender\FromBase\AutoHideTabFromBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extender\FromBase\DockPaneCaptionFromBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Extender\FromBase\DockPaneStripFromBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Extender\FromBase\DockPaneTabFromBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extender\FromBase\Helpers\DockHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extender\FromBase\Helpers\ResourceHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extender\FromBase\Win32\Enums.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extender\FromBase\Win32\Gdi32.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extender\FromBase\Win32\Structs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extender\FromBase\Win32\User32.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extender\Override\AutoHideStripOverride.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Extender\Override\DockPaneStripOverride.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <EmbeddedResource Include="AboutDialog.resx">
@@ -166,9 +204,6 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OptionsDialog.resx">
-      <DependentUpon>OptionsDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Resources\DockPanel.xml" />
     <Content Include="App.ico" />
     <Content Include="Images\ArrowDown.bmp" />
@@ -178,6 +213,7 @@
     <Content Include="Images\ClosedFolder.ICO" />
     <Content Include="Images\CSFile.ico" />
     <Content Include="Images\CSProject.ico" />
+    <Content Include="Images\File.ico" />
     <Content Include="Images\Form.ico" />
     <Content Include="Images\Mouse.bmp" />
     <Content Include="Images\msenv22.ico" />
@@ -194,7 +230,7 @@
     <Content Include="Images\XmlFile.ico" />
     <None Include="RtfFiles\DummyDoc.cs.rtf" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

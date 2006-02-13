@@ -74,7 +74,7 @@ namespace DockSample
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(272, 16);
 			this.label1.TabIndex = 1;
-			this.label1.Text = "DockSample, Version 1.3";
+			this.label1.Text = "DockSample, Version 1.4";
 			// 
 			// label2
 			// 
@@ -82,12 +82,11 @@ namespace DockSample
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(272, 32);
 			this.label2.TabIndex = 2;
-			this.label2.Text = "Copyright 2003 - 2005, Weifen Luo";
+			this.label2.Text = "Copyright 2003 - 2006, Weifen Luo";
 			// 
 			// AboutDialog
 			// 
 			this.AcceptButton = this.buttonOK;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.buttonOK;
 			this.ClientSize = new System.Drawing.Size(322, 215);
 			this.Controls.Add(this.label2);

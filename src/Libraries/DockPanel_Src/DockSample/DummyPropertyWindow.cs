@@ -111,7 +111,6 @@ namespace DockSample
 			// 
 			// DummyPropertyWindow
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(208, 289);
 			this.Controls.Add(this.comboBox);
 			this.Controls.Add(this.propertyGrid);

@@ -6,13 +6,13 @@
 			<summary>Provides data for <see cref="WeifenLuo.WinFormsUI.DockPanel.ContentAdded"/> and 
 			<see cref="WeifenLuo.WinFormsUI.DockPanel.ContentRemoved"/> events.</summary>
 		</ClassDef>
-		<Constructor name="(DockContent)">
+		<Constructor name="(IDockContent)">
 			<summary>Initializes a new instance of <see cref="WeifenLuo.WinFormsUI.DockContentEventArgs"/> class.</summary>
-			<param name="content">The <see cref="WeifenLuo.WinFormsUI.DockContent"/> object.</param>
+			<param name="content">The <see cref="WeifenLuo.WinFormsUI.IDockContent"/> object.</param>
 		</Constructor>
 		<Property name="Content">
-			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DockContent"/> object.</summary>
-			<value>The <see cref="WeifenLuo.WinFormsUI.DockContent"/> object.</value>
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.IDockContent"/> object.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.IDockContent"/> object.</value>
 		</Property>
 	</Class>
 </CodeDoc>

@@ -126,7 +126,6 @@ namespace DockSample
 				| WeifenLuo.WinFormsUI.DockAreas.DockRight) 
 				| WeifenLuo.WinFormsUI.DockAreas.DockTop) 
 				| WeifenLuo.WinFormsUI.DockAreas.DockBottom);
-			this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
 			this.ClientSize = new System.Drawing.Size(337, 376);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
 																		  this.listView1});

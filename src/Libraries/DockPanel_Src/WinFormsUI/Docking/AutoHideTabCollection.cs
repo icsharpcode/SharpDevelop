@@ -90,10 +90,10 @@ namespace WeifenLuo.WinFormsUI
 		{
 			get
 			{	
-				DockContent content = DockPane.DisplayingContents[index];
+				IDockContent content = DockPane.DisplayingContents[index];
 				if (content == null)
 					throw(new IndexOutOfRangeException());
-				return content.AutoHideTab;
+				return content.DockHandler.AutoHideTab;
 			}
 		}
 
@@ -104,8 +104,8 @@ namespace WeifenLuo.WinFormsUI
 			return (IndexOf(tab) != -1);
 		}
 
-		/// <include file='CodeDoc\AutoHideTabCollection.xml' path='//CodeDoc/Class[@name="AutoHideTabCollection"]/Method[@name="Contains(DockContent)"]/*'/>>
-		public bool Contains(DockContent content)
+		/// <include file='CodeDoc\AutoHideTabCollection.xml' path='//CodeDoc/Class[@name="AutoHideTabCollection"]/Method[@name="Contains(IDockContent)"]/*'/>>
+		public bool Contains(IDockContent content)
 		{
 			return (IndexOf(content) != -1);
 		}
@@ -117,8 +117,8 @@ namespace WeifenLuo.WinFormsUI
 			return IndexOf(tab.Content);
 		}
 
-		/// <include file='CodeDoc\AutoHideTabCollection.xml' path='//CodeDoc/Class[@name="AutoHideTabCollection"]/Method[@name="IndexOf(DockContent)"]/*'/>>
-		public int IndexOf(DockContent content)
+		/// <include file='CodeDoc\AutoHideTabCollection.xml' path='//CodeDoc/Class[@name="AutoHideTabCollection"]/Method[@name="IndexOf(IDockContent)"]/*'/>>
+		public int IndexOf(IDockContent content)
 		{
 			return DockPane.DisplayingContents.IndexOf(content);
 		}

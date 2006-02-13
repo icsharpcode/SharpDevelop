@@ -22,7 +22,8 @@ namespace WeifenLuo.WinFormsUI
 {
 	internal class DockPanelPersist
 	{
-		private const string ConfigFileVersion = "0.9.3";
+		private const string ConfigFileVersion = "1.0";
+		private static string[] CompatibleConfigFileVersions = new string[] { };
 
 		private class DummyContent : DockContent
 		{
@@ -245,13 +246,20 @@ namespace WeifenLuo.WinFormsUI
 
 		public static void SaveAsXml(DockPanel dockPanel, Stream stream, Encoding encoding)
 		{
+			SaveAsXml(dockPanel, stream, encoding, false);
+		}
+
+		public static void SaveAsXml(DockPanel dockPanel, Stream stream, Encoding encoding, bool upstream)
+		{
 			XmlTextWriter xmlOut = new XmlTextWriter(stream, encoding); 
 
 			// Use indenting for readability
 			xmlOut.Formatting = Formatting.Indented;
-			
+
+			if (!upstream)
+				xmlOut.WriteStartDocument();
+
 			// Always begin file with identification and warning
-			xmlOut.WriteStartDocument();
 			xmlOut.WriteComment(" DockPanel configuration file. Author: Weifen Luo, all rights reserved. ");
 			xmlOut.WriteComment(" !!! AUTOMATICALLY GENERATED FILE. DO NOT MODIFY !!! ");
 
@@ -269,14 +277,14 @@ namespace WeifenLuo.WinFormsUI
 			// Contents
 			xmlOut.WriteStartElement("Contents");
 			xmlOut.WriteAttributeString("Count", dockPanel.Contents.Count.ToString());
-			foreach (DockContent content in dockPanel.Contents)
+			foreach (IDockContent content in dockPanel.Contents)
 			{
 				xmlOut.WriteStartElement("Content");
 				xmlOut.WriteAttributeString("ID", dockPanel.Contents.IndexOf(content).ToString());
-				xmlOut.WriteAttributeString("PersistString", content.PersistString);
-				xmlOut.WriteAttributeString("AutoHidePortion", content.AutoHidePortion.ToString(CultureInfo.InvariantCulture));
-				xmlOut.WriteAttributeString("IsHidden", content.IsHidden.ToString());
-				xmlOut.WriteAttributeString("IsFloat", content.IsFloat.ToString());
+				xmlOut.WriteAttributeString("PersistString", content.DockHandler.PersistString);
+				xmlOut.WriteAttributeString("AutoHidePortion", content.DockHandler.AutoHidePortion.ToString(CultureInfo.InvariantCulture));
+				xmlOut.WriteAttributeString("IsHidden", content.DockHandler.IsHidden.ToString());
+				xmlOut.WriteAttributeString("IsFloat", content.DockHandler.IsFloat.ToString());
 				xmlOut.WriteEndElement();
 			}
 			xmlOut.WriteEndElement();
@@ -292,7 +300,7 @@ namespace WeifenLuo.WinFormsUI
 				xmlOut.WriteAttributeString("ActiveContent", dockPanel.Contents.IndexOf(pane.ActiveContent).ToString());
 				xmlOut.WriteStartElement("Contents");
 				xmlOut.WriteAttributeString("Count", pane.Contents.Count.ToString());
-				foreach (DockContent content in pane.Contents)
+				foreach (IDockContent content in pane.Contents)
 				{
 					xmlOut.WriteStartElement("Content");
 					xmlOut.WriteAttributeString("ID", pane.Contents.IndexOf(content).ToString());
@@ -306,18 +314,12 @@ namespace WeifenLuo.WinFormsUI
 
 			// DockWindows
 			xmlOut.WriteStartElement("DockWindows");
-			int count = 0;
-			foreach (DockWindow dw in dockPanel.DockWindows)
-				if (dw.DockList.Count > 0)
-					count++;
-			xmlOut.WriteAttributeString("Count", count.ToString());
-			int i = 0;
+			int dockWindowId = 0;
 			foreach (DockWindow dw in dockPanel.DockWindows)
 			{
-				if (dw.DockList.Count == 0)
-					continue;
 				xmlOut.WriteStartElement("DockWindow");
-				xmlOut.WriteAttributeString("ID", i.ToString());
+				xmlOut.WriteAttributeString("ID", dockWindowId.ToString());
+				dockWindowId++;
 				xmlOut.WriteAttributeString("DockState", dw.DockState.ToString());
 				xmlOut.WriteAttributeString("ZOrderIndex", dockPanel.Controls.IndexOf(dw).ToString());
 				xmlOut.WriteStartElement("DockList");
@@ -335,7 +337,6 @@ namespace WeifenLuo.WinFormsUI
 				}
 				xmlOut.WriteEndElement();
 				xmlOut.WriteEndElement();
-				i++;
 			}
 			xmlOut.WriteEndElement();
 
@@ -369,10 +370,14 @@ namespace WeifenLuo.WinFormsUI
 			xmlOut.WriteEndElement();	//	</FloatWindows>
 			
 			xmlOut.WriteEndElement();
-			xmlOut.WriteEndDocument();
 
-			// This should flush all actions and close the file
-			xmlOut.Close();
+			if (!upstream)
+			{
+				xmlOut.WriteEndDocument();
+				xmlOut.Close();
+			}
+			else
+				xmlOut.Flush();
 		}
 
 		public static void LoadFromXml(DockPanel dockPanel, string filename, DeserializeDockContent deserializeContent)
@@ -390,6 +395,11 @@ namespace WeifenLuo.WinFormsUI
 
 		public static void LoadFromXml(DockPanel dockPanel, Stream stream, DeserializeDockContent deserializeContent)
 		{
+			LoadFromXml(dockPanel, stream, deserializeContent, true);
+		}
+
+		public static void LoadFromXml(DockPanel dockPanel, Stream stream, DeserializeDockContent deserializeContent, bool closeStream)
+		{
 
 			if (dockPanel.Contents.Count != 0)
 				throw new InvalidOperationException(ResourceHelper.GetString("DockPanel.LoadFromXml.AlreadyInitialized"));
@@ -402,12 +412,16 @@ namespace WeifenLuo.WinFormsUI
 			xmlIn.WhitespaceHandling = WhitespaceHandling.None;
 			xmlIn.MoveToContent();
 
-			if (xmlIn.Name != "DockPanel")
-				throw new ArgumentException(ResourceHelper.GetString("DockPanel.LoadFromXml.InvalidXmlFormat"));
+			while (!xmlIn.Name.Equals("DockPanel"))
+			{
+				if (!MoveToNextElement(xmlIn))
+					throw new ArgumentException(ResourceHelper.GetString("DockPanel.LoadFromXml.InvalidXmlFormat"));
+			}
 
 			string formatVersion = xmlIn.GetAttribute("FormatVersion");
-			if (formatVersion != ConfigFileVersion)
+			if (!IsFormatVersionValid(formatVersion))
 				throw new ArgumentException(ResourceHelper.GetString("DockPanel.LoadFromXml.InvalidFormatVersion"));
+
 			DockPanelStruct dockPanelStruct = new DockPanelStruct();
 			dockPanelStruct.DockLeftPortion = Convert.ToDouble(xmlIn.GetAttribute("DockLeftPortion"), CultureInfo.InvariantCulture);
 			dockPanelStruct.DockRightPortion = Convert.ToDouble(xmlIn.GetAttribute("DockRightPortion"), CultureInfo.InvariantCulture);
@@ -472,7 +486,7 @@ namespace WeifenLuo.WinFormsUI
 			// Load DockWindows
 			if (xmlIn.Name != "DockWindows")
 				throw new ArgumentException(ResourceHelper.GetString("DockPanel.LoadFromXml.InvalidXmlFormat"));
-			int countOfDockWindows = Convert.ToInt32(xmlIn.GetAttribute("Count"));
+			int countOfDockWindows = dockPanel.DockWindows.Count;
 			DockWindowStruct[] dockWindows = new DockWindowStruct[countOfDockWindows];
 			MoveToNextElement(xmlIn);
 			for (int i=0; i<countOfDockWindows; i++)
@@ -535,23 +549,44 @@ namespace WeifenLuo.WinFormsUI
 					MoveToNextElement(xmlIn);
 				}
 			}
-			xmlIn.Close();
+
+			if (closeStream)
+				xmlIn.Close();
 					
 			dockPanel.DockLeftPortion = dockPanelStruct.DockLeftPortion;
 			dockPanel.DockRightPortion = dockPanelStruct.DockRightPortion;
 			dockPanel.DockTopPortion = dockPanelStruct.DockTopPortion;
 			dockPanel.DockBottomPortion = dockPanelStruct.DockBottomPortion;
 
+			// Set DockWindow ZOrders
+			int prevMaxDockWindowZOrder = int.MaxValue;
+			for (int i=0; i<dockWindows.Length; i++)
+			{
+				int maxDockWindowZOrder = -1;
+				int index = -1;
+				for (int j=0; j<dockWindows.Length; j++)
+				{
+					if (dockWindows[j].ZOrderIndex > maxDockWindowZOrder && dockWindows[j].ZOrderIndex < prevMaxDockWindowZOrder)
+					{
+						maxDockWindowZOrder = dockWindows[j].ZOrderIndex;
+						index = j;
+					}
+				}
+
+				dockPanel.DockWindows[dockWindows[index].DockState].BringToFront();
+				prevMaxDockWindowZOrder = maxDockWindowZOrder;
+			}
+
 			// Create Contents
 			for (int i=0; i<contents.Length; i++)
 			{
-				DockContent content = deserializeContent(contents[i].PersistString);
+				IDockContent content = deserializeContent(contents[i].PersistString);
 				if (content == null)
 					content = new DummyContent();
-				content.DockPanel = dockPanel;
-				content.AutoHidePortion = contents[i].AutoHidePortion;
-				content.IsHidden = true;
-				content.IsFloat = contents[i].IsFloat;
+				content.DockHandler.DockPanel = dockPanel;
+				content.DockHandler.AutoHidePortion = contents[i].AutoHidePortion;
+				content.DockHandler.IsHidden = true;
+				content.DockHandler.IsFloat = contents[i].IsFloat;
 			}
 
 			// Create panes
@@ -560,13 +595,13 @@ namespace WeifenLuo.WinFormsUI
 				DockPane pane = null;
 				for (int j=0; j<panes[i].IndexContents.Length; j++)
 				{
-					DockContent content = dockPanel.Contents[panes[i].IndexContents[j]];
+					IDockContent content = dockPanel.Contents[panes[i].IndexContents[j]];
 					if (j==0)
 						pane = dockPanel.DockPaneFactory.CreateDockPane(content, panes[i].DockState, false);
 					else if (panes[i].DockState == DockState.Float)
-						content.FloatPane = pane;
+						content.DockHandler.FloatPane = pane;
 					else
-						content.PanelPane = pane;
+						content.DockHandler.PanelPane = pane;
 				}
 			}
 
@@ -611,7 +646,7 @@ namespace WeifenLuo.WinFormsUI
 				}
 			}
 
-			// sort DockContent by its Pane's ZOrder
+			// sort IDockContent by its Pane's ZOrder
 			int[] sortedContents = null;
 			if (contents.Length > 0)
 			{
@@ -624,9 +659,9 @@ namespace WeifenLuo.WinFormsUI
 				{
 					for (int j=i+1; j<contents.Length; j++)
 					{
-						DockPane pane1 = dockPanel.Contents[sortedContents[i]].Pane;
+						DockPane pane1 = dockPanel.Contents[sortedContents[i]].DockHandler.Pane;
 						int ZOrderIndex1 = pane1 == null ? 0 : panes[dockPanel.Panes.IndexOf(pane1)].ZOrderIndex;
-						DockPane pane2 = dockPanel.Contents[sortedContents[j]].Pane;
+						DockPane pane2 = dockPanel.Contents[sortedContents[j]].DockHandler.Pane;
 						int ZOrderIndex2 = pane2 == null ? 0 : panes[dockPanel.Panes.IndexOf(pane2)].ZOrderIndex;
 						if (ZOrderIndex1 > ZOrderIndex2)
 						{
@@ -638,20 +673,20 @@ namespace WeifenLuo.WinFormsUI
 				}
 			}
 
-			// show non-document DockContent first to avoid screen flickers
+			// show non-document IDockContent first to avoid screen flickers
 			for (int i=0; i<contents.Length; i++)
 			{
-				DockContent content = dockPanel.Contents[sortedContents[i]];
-				if (content.Pane != null && content.Pane.DockState != DockState.Document)
-					content.IsHidden = contents[sortedContents[i]].IsHidden;
+				IDockContent content = dockPanel.Contents[sortedContents[i]];
+				if (content.DockHandler.Pane != null && content.DockHandler.Pane.DockState != DockState.Document)
+					content.DockHandler.IsHidden = contents[sortedContents[i]].IsHidden;
 			}
 
-			// after all non-document DockContent, show document DockContent
+			// after all non-document IDockContent, show document IDockContent
 			for (int i=0; i<contents.Length; i++)
 			{
-				DockContent content = dockPanel.Contents[sortedContents[i]];
-				if (content.Pane != null && content.Pane.DockState == DockState.Document)
-					content.IsHidden = contents[sortedContents[i]].IsHidden;
+				IDockContent content = dockPanel.Contents[sortedContents[i]];
+				if (content.DockHandler.Pane != null && content.DockHandler.Pane.DockState == DockState.Document)
+					content.DockHandler.IsHidden = contents[sortedContents[i]].IsHidden;
 			}
 
 			for (int i=0; i<panes.Length; i++)
@@ -665,14 +700,33 @@ namespace WeifenLuo.WinFormsUI
 
 			for (int i=dockPanel.Contents.Count-1; i>=0; i--)
 				if (dockPanel.Contents[i] is DummyContent)
-					dockPanel.Contents[i].Close();
+					dockPanel.Contents[i].DockHandler.Form.Close();
 		}
 
-		private static void MoveToNextElement(XmlTextReader xmlIn)
+		private static bool MoveToNextElement(XmlTextReader xmlIn)
 		{
-			xmlIn.Read();
+			if (!xmlIn.Read())
+				return false;
+
 			while (xmlIn.NodeType == XmlNodeType.EndElement)
-				xmlIn.Read();
+			{
+				if (!xmlIn.Read())
+					return false;
+			}
+
+			return true;
+		}
+
+		private static bool IsFormatVersionValid(string formatVersion)
+		{
+			if (formatVersion == ConfigFileVersion)
+				return true;
+
+			foreach (string s in CompatibleConfigFileVersions)
+				if (s == formatVersion)
+					return true;
+
+			return false;
 		}
 	}
 }

@@ -26,6 +26,11 @@ namespace WeifenLuo.WinFormsUI
 			m_panesLeft = new AutoHidePaneCollection(panel, DockState.DockLeftAutoHide);
 			m_panesRight = new AutoHidePaneCollection(panel, DockState.DockRightAutoHide);
 
+			#if FRAMEWORK_VER_2x
+			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+			#else
+			SetStyle(ControlStyles.DoubleBuffer, true);
+			#endif
 			SetStyle(ControlStyles.Selectable, false);
 		}
 
@@ -149,9 +154,6 @@ namespace WeifenLuo.WinFormsUI
 
 		private void SetRegion()
 		{
-			if (Region == null)
-				Region = new Region();
-
 			DisplayingArea.Reset();
 			DisplayingArea.AddRectangle(RectangleTopLeft);
 			DisplayingArea.AddRectangle(RectangleTopRight);
@@ -164,12 +166,6 @@ namespace WeifenLuo.WinFormsUI
 			Region = new Region(DisplayingArea);
 		}
 
-		/// <exclude />
-		protected override Size DefaultSize
-		{
-			get	{	return Size.Empty;	}
-		}
-
 		/// <exclude/>
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
@@ -178,15 +174,15 @@ namespace WeifenLuo.WinFormsUI
 			if (e.Button != MouseButtons.Left)
 				return;
 
-			DockContent content = GetHitTest();
+			IDockContent content = GetHitTest();
 			if (content == null)
 				return;
 
 			if (content != DockPanel.ActiveAutoHideContent)
 				DockPanel.ActiveAutoHideContent = content;
 
-			if (!content.Pane.IsActivated)
-				content.Pane.Activate();
+			if (!content.DockHandler.Pane.IsActivated)
+				content.DockHandler.Pane.Activate();
 		}
 
 		/// <exclude/>
@@ -194,13 +190,14 @@ namespace WeifenLuo.WinFormsUI
 		{
 			base.OnMouseHover(e);
 
-			DockContent content = GetHitTest();
+			IDockContent content = GetHitTest();
 			if (content != null && DockPanel.ActiveAutoHideContent != content)
 				DockPanel.ActiveAutoHideContent = content;
 
 			// requires further tracking of mouse hover behavior,
 			// call TrackMouseEvent
-			this.ResetMouseEventArgs();
+			Win32.TRACKMOUSEEVENTS tme = new Win32.TRACKMOUSEEVENTS(Win32.TRACKMOUSEEVENTS.TME_HOVER, Handle, Win32.TRACKMOUSEEVENTS.HOVER_DEFAULT);
+			User32.TrackMouseEvent(ref tme);
 		}
 
 		/// <exclude />
@@ -224,13 +221,13 @@ namespace WeifenLuo.WinFormsUI
 		/// <include file='CodeDoc/AutoHideStripBase.xml' path='//CodeDoc/Class[@name="AutoHideStripBase"]/Method[@name="MeasureHeight()"]/*'/>
 		protected internal abstract int MeasureHeight();
 
-		private DockContent GetHitTest()
+		private IDockContent GetHitTest()
 		{
 			Point ptMouse = PointToClient(Control.MousePosition);
 			return GetHitTest(ptMouse);
 		}
 
 		/// <include file='CodeDoc/AutoHideStripBase.xml' path='//CodeDoc/Class[@name="AutoHideStripBase"]/Method[@name="GetHitTest(Point)"]/*'/>
-		protected abstract DockContent GetHitTest(Point point);
+		protected abstract IDockContent GetHitTest(Point point);
 	}
 }

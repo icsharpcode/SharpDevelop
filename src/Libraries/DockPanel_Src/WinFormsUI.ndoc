@@ -1,6 +1,6 @@
 <project SchemaVersion="1.3">
     <assemblies>
-        <assembly location=".\WinFormsUI\bin\Debug\WeifenLuo.WinFormsUI.Docking.dll" documentation=".\WinFormsUI\bin\Debug\CodeDoc.xml" />
+        <assembly location=".\WinFormsUI\bin\NDoc\WeifenLuo.WinFormsUI.Docking.dll" documentation=".\WinFormsUI\bin\NDoc\CodeDoc.xml" />
     </assemblies>
     <documenters>
         <documenter name="JavaDoc">
@@ -20,12 +20,15 @@
         <documenter name="MSDN">
             <property name="OutputDirectory" value="..\doc\" />
             <property name="HtmlHelpName" value="DockPanel" />
-            <property name="Title" value="DockPanel Class Library" />
+            <property name="Title" value="DockPanel Class Library (Ver 1.0)" />
             <property name="OutputTarget" value="HtmlHelp" />
             <property name="CopyrightText" value="Copyright Weifen Luo, All Rights Reserved." />
             <property name="FeedbackEmailAddress" value="weifenluo@yahoo.com" />
-            <property name="Preliminary" value="True" />
             <property name="CleanIntermediates" value="True" />
+        </documenter>
+        <documenter name="MSDN 2003">
+            <property name="OutputDirectory" value=".\doc\" />
+            <property name="Title" value="An NDoc Documented Class Library" />
         </documenter>
         <documenter name="VS.NET 2003">
             <property name="OutputDirectory" value=".\doc\" />

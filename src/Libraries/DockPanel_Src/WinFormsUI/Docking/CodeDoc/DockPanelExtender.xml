@@ -11,17 +11,17 @@
 			<Method name="CreateDockPane">
 				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="Overloads"]/*' />
 			</Method>
-			<Method name="CreateDockPane(DockContent, DockState, bool)">
-				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, DockState, bool)"]/*' />
+			<Method name="CreateDockPane(IDockContent, DockState, bool)">
+				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(IDockContent, DockState, bool)"]/*' />
 			</Method>
-			<Method name="CreateDockPane(DockContent, FloatWindow, bool)">
-				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, FloatWindow, bool)"]/*' />
+			<Method name="CreateDockPane(IDockContent, FloatWindow, bool)">
+				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(IDockContent, FloatWindow, bool)"]/*' />
 			</Method>
-			<Method name="CreateDockPane(DockContent, DockPane, DockAlignment, double, bool)">
-				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, DockPane, DockAlignment, double, bool)"]/*' />
+			<Method name="CreateDockPane(IDockContent, DockPane, DockAlignment, double, bool)">
+				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(IDockContent, DockPane, DockAlignment, double, bool)"]/*' />
 			</Method>
-			<Method name="CreateDockPane(DockContent, Rectangle, bool)">
-				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, Rectangle, bool)"]/*' />
+			<Method name="CreateDockPane(IDockContent, Rectangle, bool)">
+				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(IDockContent, Rectangle, bool)"]/*' />
 			</Method>
 		</Interface>
 		<Interface name="IFloatWindowFactory">
@@ -87,9 +87,9 @@
 				set the <see cref="DockPanelExtender.AutoHideTabFactory"/> property to create instance
 				of the derived class.</remarks>
 			</InterfaceDef>
-			<Method name="CreateAutoHideTab(DockContent)">
+			<Method name="CreateAutoHideTab(IDockContent)">
 				<summary>Creates a instance of <see cref="AutoHideTab"/>.</summary>
-				<param name="content">The <see cref="DockContent"/> to associate with.</param>
+				<param name="content">The <see cref="IDockContent"/> to associate with.</param>
 				<returns>A instance of <see cref="AutoHideTab"/>.</returns>
 			</Method>
 		</Interface>
@@ -113,9 +113,9 @@
 				set the <see cref="DockPanelExtender.DockPaneTabFactory"/> property to create instance
 				of the derived class.</remarks>
 			</InterfaceDef>
-			<Method name="CreateDockPaneTab(DockContent)">
+			<Method name="CreateDockPaneTab(IDockContent)">
 				<summary>Creates a instance of <see cref="DockPaneTab"/>.</summary>
-				<param name="content">The <see cref="DockContent"/> to associate with.</param>
+				<param name="content">The <see cref="IDockContent"/> to associate with.</param>
 				<returns>A instance of <see cref="DockPaneTab"/>.</returns>
 			</Method>
 		</Interface>

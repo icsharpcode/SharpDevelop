@@ -63,6 +63,22 @@
 			<summary>Determines if the button is displayed as black and white.</summary>
 			<value><b>True</b> if the button is displayed as as black and white; otherwise <b>false</b>. The default value is <b>false</b>.</value>
 		</Property>
+		<Property name="RepeatClick">
+			<summary>Determines if the button will generate repeat click event when mouse is holding down.</summary>
+			<value><b>True</b> if the button will generate repeat click event when mouse is holding down; otherwise <b>false</b>. The default value is <b>false</b>.</value>
+			<remarks>The interval of generating repeat click is determined by <see cref="WeifenLuo.WinFormsUI.InertButton.RepeatClickDelay"/> and
+			<see cref="WeifenLuo.WinFormsUI.InertButton.RepeatClickInterval" /> properties.</remarks>
+		</Property>
+		<Property name="RepeatClickDelay">
+			<summary>Gets or sets the amount of time, in milliseconds, the <see cref="WeifenLuo.WinFormsUI.InertButton" />
+			waits while it is pressed before it starts repeating. The value must be non-negative.</summary>
+			<value>The default value is 500 milliseconds.</value>
+		</Property>
+		<Property name="RepeatClickInterval">
+			<summary>Gets or sets the amount of time, in milliseconds, between repeats once repeating 
+			starts. The value must be non-negative.</summary>
+			<value>The default value is 100 milliseconds.</value>
+		</Property>
 		<Property name="TextAlign">
 			<summary>Gets or sets the alignment of the text in the button.</summary>
 			<value>One of the <see cref="System.Drawing.ContentAlignment" /> values. The default is <b>MiddleCenter</b>.</value>

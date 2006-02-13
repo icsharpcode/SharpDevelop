@@ -17,8 +17,32 @@ using System.ComponentModel;
 namespace WeifenLuo.WinFormsUI
 {
 	/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/ClassDef/*'/>
-	public class InertButton : Control
+	[ToolboxItem(false)]
+	public class InertButton : Button
 	{
+		private enum RepeatClickStatus
+		{
+			Disabled,
+			Started,
+			Repeating,
+			Stopped
+		}
+
+		private class RepeatClickEventArgs : EventArgs
+		{
+			private static RepeatClickEventArgs _empty;
+
+			static RepeatClickEventArgs()
+			{
+				_empty = new RepeatClickEventArgs();
+			}
+
+			public new static RepeatClickEventArgs Empty
+			{
+				get	{	return _empty;	}
+			}
+		}
+
 		private IContainer components = new Container();
 		private int m_borderWidth = 1;
 		private bool m_mouseOver = false;
@@ -26,11 +50,9 @@ namespace WeifenLuo.WinFormsUI
 		private bool m_isPopup = false;
 		private Image m_imageEnabled = null;
 		private Image m_imageDisabled = null;
-		private ImageList m_imageList = null;
 		private int m_imageIndexEnabled = -1;
 		private int m_imageIndexDisabled = -1;
 		private bool m_monochrom = true;
-		private ContentAlignment m_textAlign = ContentAlignment.MiddleCenter;
 		private ToolTip m_toolTip = null;
 		private string m_toolTipText = "";
 		private Color m_borderColor = Color.Empty;
@@ -64,15 +86,18 @@ namespace WeifenLuo.WinFormsUI
 			SetStyle(ControlStyles.ResizeRedraw, true);
 			SetStyle(ControlStyles.UserPaint, true);
 			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
 			// Prevent base class from trying to generate double click events and
 			// so testing clicks against the double click time and rectangle. Getting
 			// rid of this allows the user to press then release button very quickly.
-			SetStyle(ControlStyles.StandardDoubleClick, false);
+			//SetStyle(ControlStyles.StandardDoubleClick, false);
 
 			// Should not be allowed to select this control
 			SetStyle(ControlStyles.Selectable, false);
+
+			m_timer = new Timer();
+			m_timer.Enabled = false;
+			m_timer.Tick += new EventHandler(Timer_Tick);
 		}
 
 		/// <exclude/>
@@ -89,7 +114,11 @@ namespace WeifenLuo.WinFormsUI
 		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="BorderColor"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("InertButton.BorderColor.Description")]
-		public Color BorderColor
+        #if FRAMEWORK_VER_2x
+		public new Color BorderColor
+        #else
+        public Color BorderColor
+        #endif
 		{
 			get	{	return m_borderColor;	}
 			set
@@ -140,10 +169,10 @@ namespace WeifenLuo.WinFormsUI
 
 				try
 				{
-					if (m_imageList == null || m_imageIndexEnabled == -1)
+					if (ImageList == null || ImageIndexEnabled == -1)
 						return null;
 					else
-						return m_imageList.Images[m_imageIndexEnabled];
+						return ImageList.Images[m_imageIndexEnabled];
 				}
 				catch
 				{
@@ -179,10 +208,10 @@ namespace WeifenLuo.WinFormsUI
 
 				try
 				{
-					if (m_imageList == null || m_imageIndexDisabled == -1)
+					if (ImageList == null || ImageIndexDisabled == -1)
 						return null;
 					else
-						return m_imageList.Images[m_imageIndexDisabled];
+						return ImageList.Images[m_imageIndexDisabled];
 				}
 				catch
 				{
@@ -203,24 +232,6 @@ namespace WeifenLuo.WinFormsUI
 		private bool ShouldSerializeImageDisabled()
 		{
 			return (m_imageDisabled != null);
-		}
-
-		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="ImageList"]/*'/>
-		[Category("Appearance")]
-		[LocalizedDescription("InertButton.ImageList.Description")]
-		[DefaultValue(null)]
-		[RefreshProperties(RefreshProperties.Repaint)]
-		public ImageList ImageList
-		{
-			get	{	return m_imageList;	}
-			set
-			{
-				if (m_imageList != value)
-				{
-					m_imageList = value;
-					Invalidate();
-				}
-			}
 		}
 
 		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="ImageIndexEnabled"]/*'/>
@@ -298,21 +309,64 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
-		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="TextAlign"]/*'/>
-		[Category("Appearance")]
-		[LocalizedDescription("InertButton.TextAlign.Description")]
-		[DefaultValue(ContentAlignment.MiddleCenter)]
-		public ContentAlignment TextAlign
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="RepeatClick"]/*'/>
+		[Category("Behavior")]
+		[LocalizedDescription("InertButton.RepeatClick.Description")]
+		[DefaultValue(false)]
+		public bool RepeatClick
 		{
-			get	{	return m_textAlign;	}
+			get	{	return (ClickStatus != RepeatClickStatus.Disabled);	}
+			set	{	ClickStatus = RepeatClickStatus.Stopped;	}
+		}
+
+		private RepeatClickStatus m_clickStatus = RepeatClickStatus.Disabled;
+		private RepeatClickStatus ClickStatus
+		{
+			get	{	return m_clickStatus;	}
 			set
 			{
-				if (m_textAlign != value)
+				if (m_clickStatus == value)
+					return;
+
+				m_clickStatus = value;
+				if (ClickStatus == RepeatClickStatus.Started)
 				{
-					m_textAlign = value;
-					Invalidate();
+					Timer.Interval = RepeatClickDelay;
+					Timer.Enabled = true;
 				}
+				else if (ClickStatus == RepeatClickStatus.Repeating)
+					Timer.Interval = RepeatClickInterval;
+				else
+					Timer.Enabled = false;
 			}
+		}
+
+		private int m_repeatClickDelay = 500;
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="RepeatClickDelay"]/*'/>
+		[Category("Behavior")]
+		[LocalizedDescription("InertButton.RepeatClickDelay.Description")]
+		[DefaultValue(500)]
+		public int RepeatClickDelay
+		{
+			get	{	return m_repeatClickDelay;	} 
+			set	{	m_repeatClickDelay = value;	}
+		}
+
+		private int m_repeatClickInterval = 100;
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="RepeatClickInterval"]/*'/>
+		[Category("Behavior")]
+		[LocalizedDescription("InertButton.RepeatClickInterval.Description")]
+		[DefaultValue(100)]
+		public int RepeatClickInterval
+		{
+			get	{	return m_repeatClickInterval;	}
+			set	{	m_repeatClickInterval = value;	}
+		}
+
+		private Timer m_timer;
+		private Timer Timer
+		{
+			get	{	return m_timer;	}
 		}
 
 		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="ToolTipText"]/*'/>
@@ -334,6 +388,14 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		private void Timer_Tick(object sender, EventArgs e)
+		{
+			if (m_mouseCapture && m_mouseOver)
+				OnClick(RepeatClickEventArgs.Empty);
+			if (ClickStatus == RepeatClickStatus.Started)
+				ClickStatus = RepeatClickStatus.Repeating;
+		}
+
 		/// <exclude/>
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
@@ -350,6 +412,21 @@ namespace WeifenLuo.WinFormsUI
 				//Redraw to show button state
 				Invalidate();
 			}
+
+			if (RepeatClick)
+			{
+				OnClick(RepeatClickEventArgs.Empty);
+				ClickStatus = RepeatClickStatus.Started;
+			}
+		}
+
+		/// <exclude/>
+		protected override void OnClick(EventArgs e)
+		{
+			if (RepeatClick && !(e is RepeatClickEventArgs))
+				return;
+
+			base.OnClick (e);
 		}
 
 		/// <exclude/>
@@ -369,7 +446,8 @@ namespace WeifenLuo.WinFormsUI
 				Invalidate();
 			}
 
-			base.OnMouseUp(e);
+			if (RepeatClick)
+				ClickStatus = RepeatClickStatus.Stopped;
 		}
 
 		/// <exclude/>
@@ -425,9 +503,18 @@ namespace WeifenLuo.WinFormsUI
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
+			DrawBackground(e.Graphics);
 			DrawImage(e.Graphics);
 			DrawText(e.Graphics);
 			DrawBorder(e.Graphics);
+		}
+
+		private void DrawBackground(Graphics g)
+		{
+			using (SolidBrush brush = new SolidBrush(BackColor))
+			{
+				g.FillRectangle(brush, ClientRectangle);
+			}
 		}
 
 		private void DrawImage(Graphics g)
@@ -562,10 +649,10 @@ namespace WeifenLuo.WinFormsUI
 
 			// Decide on the type of border to draw around image
 			if (!this.Enabled)
-				bs = m_isPopup ? ButtonBorderStyle.Outset : ButtonBorderStyle.Solid;
+				bs = IsPopup ? ButtonBorderStyle.Outset : ButtonBorderStyle.Solid;
 			else if (m_mouseOver && m_mouseCapture)
 				bs = ButtonBorderStyle.Inset;
-			else if (m_isPopup || m_mouseOver)
+			else if (IsPopup || m_mouseOver)
 				bs = ButtonBorderStyle.Outset;
 			else
 				bs = ButtonBorderStyle.Solid;
@@ -602,6 +689,8 @@ namespace WeifenLuo.WinFormsUI
 			{
 				m_mouseOver = false;
 				m_mouseCapture = false;
+				if (RepeatClick && ClickStatus != RepeatClickStatus.Stopped)
+					ClickStatus = RepeatClickStatus.Stopped;
 			}
 			Invalidate();
 		}

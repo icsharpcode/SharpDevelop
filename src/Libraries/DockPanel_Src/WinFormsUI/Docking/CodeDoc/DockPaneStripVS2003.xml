@@ -168,6 +168,21 @@
 			<value>The extra width, in pixel, for drawing text of document style tab.</value>
 			<remarks>Derived class can override this property to provide its own value.</remarks>
 		</Property>
+		<Property name="DocumentIconGapLeft">
+			<summary>Gets the left side extra space of the document icon.</summary>
+			<value>The left side extra width, in pixel, of the document icon.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentIconGapWidth">
+			<summary>Gets the width of the document icon.</summary>
+			<value>The width, in pixel, of the document icon.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentIconGapHeight">
+			<summary>Gets the height of the document icon.</summary>
+			<value>The height, in pixel, of the document icon.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
 		<Property name="OutlineInnerPen">
 			<summary>Gets the <see cref="Pen"/> for drawing the inner outline.</summary>
 			<value>The <see cref="Pen"/> for drawing the inner outline.</value>

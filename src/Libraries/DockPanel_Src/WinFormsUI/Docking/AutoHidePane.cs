@@ -24,6 +24,12 @@ namespace WeifenLuo.WinFormsUI
 			m_tabs = new AutoHideTabCollection(DockPane);
 		}
 
+		/// <exclude/>
+		~AutoHidePane()
+		{
+			Dispose(false);
+		}
+
 		/// <include file='CodeDoc/AutoHidePane.xml' path='//CodeDoc/Class[@name="AutoHidePane"]/Property[@name="DockPane"]/*'/>
 		public DockPane DockPane
 		{
@@ -39,10 +45,14 @@ namespace WeifenLuo.WinFormsUI
 
 		/// <include file='CodeDoc/AutoHidePane.xml' path='//CodeDoc/Class[@name="AutoHidePane"]/Method[@name="Dispose"]/*'/>
 		/// <include file='CodeDoc/AutoHidePane.xml' path='//CodeDoc/Class[@name="AutoHidePane"]/Method[@name="Dispose()"]/*'/>
-		public virtual void Dispose()
+		public void Dispose()
 		{
-			// we don't need to dispose anything here, but we want to allow deriving classes
-			// to override dispose
+			Dispose(true);
+		}
+
+		/// <include file='CodeDoc/AutoHidePane.xml' path='//CodeDoc/Class[@name="AutoHidePane"]/Method[@name="Dispose(bool)"]/*'/>
+		protected virtual void Dispose(bool disposing)
+		{
 		}
 	}
 }

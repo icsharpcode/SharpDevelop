@@ -14,7 +14,7 @@ namespace WeifenLuo.WinFormsUI
 {
 	internal class DockPaneTabVS2003 : DockPaneTab
 	{
-		internal DockPaneTabVS2003(DockContent content) : base(content)
+		internal DockPaneTabVS2003(IDockContent content) : base(content)
 		{
 		}
 
