@@ -345,32 +345,34 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					}
 				}
 				
-				int lastIndex = 0;
-				IComparer comparer = new Comparer(System.Globalization.CultureInfo.InvariantCulture);
-				
-				foreach (IMethod m in c.Methods) {
-					items.Add(new ComboBoxItem(m, m.Name, ClassBrowserIconService.GetIcon(m), partialMode ? currentPart.Methods.Contains(m) : true));
+				lock (c) {
+					int lastIndex = 0;
+					IComparer comparer = new Comparer(System.Globalization.CultureInfo.InvariantCulture);
+					
+					foreach (IMethod m in c.Methods) {
+						items.Add(new ComboBoxItem(m, m.Name, ClassBrowserIconService.GetIcon(m), partialMode ? currentPart.Methods.Contains(m) : true));
+					}
+					items.Sort(lastIndex, c.Methods.Count, comparer);
+					lastIndex = items.Count;
+					
+					foreach (IProperty p in c.Properties) {
+						items.Add(new ComboBoxItem(p, p.Name, ClassBrowserIconService.GetIcon(p), partialMode ? currentPart.Properties.Contains(p) : true));
+					}
+					items.Sort(lastIndex, c.Properties.Count, comparer);
+					lastIndex = items.Count;
+					
+					foreach (IField f in c.Fields) {
+						items.Add(new ComboBoxItem(f, f.Name, ClassBrowserIconService.GetIcon(f), partialMode ? currentPart.Fields.Contains(f) : true));
+					}
+					items.Sort(lastIndex, c.Fields.Count, comparer);
+					lastIndex = items.Count;
+					
+					foreach (IEvent evt in c.Events) {
+						items.Add(new ComboBoxItem(evt, evt.Name, ClassBrowserIconService.GetIcon(evt), partialMode ? currentPart.Events.Contains(evt) : true));
+					}
+					items.Sort(lastIndex, c.Events.Count, comparer);
+					lastIndex = items.Count;
 				}
-				items.Sort(lastIndex, c.Methods.Count, comparer);
-				lastIndex = items.Count;
-				
-				foreach (IProperty p in c.Properties) {
-					items.Add(new ComboBoxItem(p, p.Name, ClassBrowserIconService.GetIcon(p), partialMode ? currentPart.Properties.Contains(p) : true));
-				}
-				items.Sort(lastIndex, c.Properties.Count, comparer);
-				lastIndex = items.Count;
-				
-				foreach (IField f in c.Fields) {
-					items.Add(new ComboBoxItem(f, f.Name, ClassBrowserIconService.GetIcon(f), partialMode ? currentPart.Fields.Contains(f) : true));
-				}
-				items.Sort(lastIndex, c.Fields.Count, comparer);
-				lastIndex = items.Count;
-				
-				foreach (IEvent evt in c.Events) {
-					items.Add(new ComboBoxItem(evt, evt.Name, ClassBrowserIconService.GetIcon(evt), partialMode ? currentPart.Events.Contains(evt) : true));
-				}
-				items.Sort(lastIndex, c.Events.Count, comparer);
-				lastIndex = items.Count;
 				
 				membersComboBox.BeginUpdate();
 				membersComboBox.Items.Clear();
