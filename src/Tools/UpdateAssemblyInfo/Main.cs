@@ -17,10 +17,10 @@ namespace UpdateAssemblyInfo
 	// Updates the version numbers in the assembly information.
 	class MainClass
 	{
-		static Regex AssemblyVersion = new Regex(@"AssemblyVersion\(.*\)]");
-		static Regex BindingRedirect = new Regex(@"<bindingRedirect oldVersion=""2.0.0.1"" newVersion=""[\d\.]+""/>");
 		const string templateFile       = "Main/GlobalAssemblyInfo.template";
 		const string globalAssemblyInfo = "Main/GlobalAssemblyInfo.cs";
+		const string configTemplateFile = "Main/StartUp/Project/app.template.config";
+		const string configFile         = "Main/StartUp/Project/SharpDevelop.exe.config";
 		
 		public static int Main(string[] args)
 		{
@@ -38,7 +38,7 @@ namespace UpdateAssemblyInfo
 				RetrieveRevisionNumber();
 				string versionNumber = GetMajorVersion() + "." + revisionNumber;
 				UpdateStartup();
-				SetVersionInfo("Main/StartUp/Project/SharpDevelop.exe.config", BindingRedirect, "<bindingRedirect oldVersion=\"2.0.0.1\" newVersion=\"" + versionNumber + "\"/>");
+				UpdateRedirectionConfig(versionNumber);
 				return 0;
 			} catch (Exception ex) {
 				Console.WriteLine(ex);
@@ -63,6 +63,29 @@ namespace UpdateAssemblyInfo
 				}
 			}
 			using (StreamWriter w = new StreamWriter(globalAssemblyInfo, false, Encoding.UTF8)) {
+				w.Write(content);
+			}
+		}
+		
+		static Regex BindingRedirect = new Regex(@"<bindingRedirect oldVersion=""2.0.0.1"" newVersion=""[\d\.]+""/>");
+		
+		static void UpdateRedirectionConfig(string fullVersionNumber)
+		{
+			string content;
+			using (StreamReader r = new StreamReader(configTemplateFile)) {
+				content = r.ReadToEnd();
+			}
+			content = content.Replace("$INSERTVERSION$", fullVersionNumber);
+			if (File.Exists(configFile)) {
+				using (StreamReader r = new StreamReader(configFile)) {
+					if (r.ReadToEnd() == content) {
+						// nothing changed, do not overwrite file to prevent recompilation
+						// every time.
+						return;
+					}
+				}
+			}
+			using (StreamWriter w = new StreamWriter(configFile, false, Encoding.UTF8)) {
 				w.Write(content);
 			}
 		}

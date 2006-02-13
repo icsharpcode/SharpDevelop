@@ -73,6 +73,7 @@
     <Content Include="..\..\GlobalAssemblyInfo.template">
       <Link>Configuration\GlobalAssemblyInfo.template</Link>
     </Content>
+    <Content Include="app.template.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
