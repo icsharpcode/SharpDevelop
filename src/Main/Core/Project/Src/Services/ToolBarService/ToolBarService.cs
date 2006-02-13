@@ -15,7 +15,17 @@ namespace ICSharpCode.Core
 	{
 		public static ToolStripItem[] CreateToolStripItems(object owner, AddInTreeNode treeNode)
 		{
-			return (ToolStripItem[])(treeNode.BuildChildItems(owner)).ToArray(typeof(ToolStripItem));
+			List<ToolStripItem> collection = new List<ToolStripItem>();
+			foreach (object item in treeNode.BuildChildItems(owner)) {
+				if (item is ToolStripItem) {
+					collection.Add((ToolStripItem)item);
+				} else {
+					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
+					collection.AddRange(submenuBuilder.BuildSubmenu(null, owner));
+				}
+			}
+			
+			return collection.ToArray();
 		}
 		
 		public static ToolStrip CreateToolStrip(object owner, AddInTreeNode treeNode)

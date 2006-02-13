@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public virtual string TitleName {
 			get {
-				return IsUntitled ? untitledName : titleName;
+				return titleName;
 			}
 			set {
 				titleName = value;
