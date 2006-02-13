@@ -107,6 +107,16 @@ namespace WeifenLuo.WinFormsUI
 					base.WndProc(ref m);
 				return;
 			}
+			else if (m.Msg == (int)Win32.Msgs.WM_MBUTTONUP)
+			{
+				base.WndProc(ref m);
+				int index = GetHitTest();
+				if (index != -1)
+				{
+					DockPane.CloseContent(Tabs[index].Content);
+				}
+				return;
+			}
 			else if (m.Msg == (int)Win32.Msgs.WM_RBUTTONDOWN)
 			{
 				int index = GetHitTest();

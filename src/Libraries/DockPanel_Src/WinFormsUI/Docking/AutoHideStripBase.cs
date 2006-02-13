@@ -196,8 +196,7 @@ namespace WeifenLuo.WinFormsUI
 
 			// requires further tracking of mouse hover behavior,
 			// call TrackMouseEvent
-			Win32.TRACKMOUSEEVENTS tme = new Win32.TRACKMOUSEEVENTS(Win32.TRACKMOUSEEVENTS.TME_HOVER, Handle, Win32.TRACKMOUSEEVENTS.HOVER_DEFAULT);
-			User32.TrackMouseEvent(ref tme);
+			this.ResetMouseEventArgs();
 		}
 
 		/// <exclude />

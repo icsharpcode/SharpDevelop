@@ -114,11 +114,7 @@ namespace WeifenLuo.WinFormsUI
 		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="BorderColor"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("InertButton.BorderColor.Description")]
-        #if FRAMEWORK_VER_2x
-		public new Color BorderColor
-        #else
-        public Color BorderColor
-        #endif
+		public Color BorderColor
 		{
 			get	{	return m_borderColor;	}
 			set

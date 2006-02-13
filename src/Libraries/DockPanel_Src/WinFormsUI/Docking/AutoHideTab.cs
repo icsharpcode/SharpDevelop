@@ -23,12 +23,6 @@ namespace WeifenLuo.WinFormsUI
 			m_content = content;
 		}
 
-		/// <exclude/>
-		~AutoHideTab()
-		{
-			Dispose(false);
-		}
-
 		/// <include file='CodeDoc/AutoHideTab.xml' path='//CodeDoc/Class[@name="AutoHideTab"]/Property[@name="Content"]/*'/>
 		public IDockContent Content
 		{
@@ -37,14 +31,10 @@ namespace WeifenLuo.WinFormsUI
 
 		/// <include file='CodeDoc/AutoHideTab.xml' path='//CodeDoc/Class[@name="AutoHideTab"]/Method[@name="Dispose"]/*'/>
 		/// <include file='CodeDoc/AutoHideTab.xml' path='//CodeDoc/Class[@name="AutoHideTab"]/Method[@name="Dispose()"]/*'/>
-		public void Dispose()
+		public virtual void Dispose()
 		{
-			Dispose(true);
-		}
-
-		/// <include file='CodeDoc/AutoHideTab.xml' path='//CodeDoc/Class[@name="AutoHideTab"]/Method[@name="Dispose(bool)"]/*'/>
-		protected virtual void Dispose(bool disposing)
-		{
+			// we don't need to dispose anything here, but we want to allow deriving classes
+			// to override dispose
 		}
 	}
 }

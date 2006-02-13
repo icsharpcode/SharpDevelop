@@ -1,0 +1,8 @@
+List of our custom patches to apply to the DockPanel Suite:
+
+Patch #1:
+	Close documents with middle click     - in DockPaneTabStripBase.cs
+	Remove redundant finalizers           - in AutoHidePane.cs and AutoHideTab.cs
+	Remove redundant P/Invoke call        - in AutoHideStripBase.cs
+	Fix compilation warning               - in InertButton.cs
+ Committed in revision 1147.

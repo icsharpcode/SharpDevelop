@@ -251,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
 						if (!Directory.Exists(configPath))
 							Directory.CreateDirectory(configPath);
-						dockPanel.SaveAsXml(Path.Combine(configPath, current.FileName));
+						dockPanel.SaveAsXml(Path.Combine(configPath, current.FileName), System.Text.Encoding.UTF8);
 					}
 				}
 			} catch (Exception e) {
