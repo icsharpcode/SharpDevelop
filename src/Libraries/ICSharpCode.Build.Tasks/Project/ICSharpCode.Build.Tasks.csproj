@@ -58,6 +58,9 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <None Include="SharpDevelop.Build.VisualBasic.targets">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="SharpDevelop.Build.CSharp.targets">

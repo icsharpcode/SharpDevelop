@@ -8,30 +8,30 @@
         <Name value="generalGroupBox" />
         <Location value="{X=3,Y=3}" />
         <Text value="${res:Dialog.ProjectOptions.BuildOptions.General}" />
+        <Anchor value="Top, Left, Right" />
         <Size value="{Width=521, Height=152}" />
         <TabIndex value="0" />
-        <Anchor value="Top, Left, Right" />
         <Controls>
           <System.Windows.Forms.ComboBox>
             <Name value="optionCompareComboBox" />
-            <TabIndex value="8" />
             <Size value="{Width=132, Height=21}" />
+            <TabIndex value="7" />
             <FormattingEnabled value="True" />
             <DropDownStyle value="DropDownList" />
             <Location value="{X=317,Y=125}" />
           </System.Windows.Forms.ComboBox>
           <System.Windows.Forms.ComboBox>
             <Name value="optionStrictComboBox" />
-            <TabIndex value="7" />
             <Size value="{Width=132, Height=21}" />
+            <TabIndex value="6" />
             <FormattingEnabled value="True" />
             <DropDownStyle value="DropDownList" />
             <Location value="{X=179,Y=125}" />
           </System.Windows.Forms.ComboBox>
           <System.Windows.Forms.ComboBox>
             <Name value="optionExplicitComboBox" />
-            <TabIndex value="6" />
             <Size value="{Width=160, Height=21}" />
+            <TabIndex value="5" />
             <FormattingEnabled value="True" />
             <DropDownStyle value="DropDownList" />
             <Location value="{X=13,Y=125}" />
@@ -41,37 +41,35 @@
             <Location value="{X=6,Y=111}" />
             <Text value="${res:Dialog.ProjectOptions.BuildOptions.VBOptionsDefaultValues}" />
             <Size value="{Width=218, Height=23}" />
-            <TabIndex value="5" />
+            <TabIndex value="4" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.CheckBox>
             <Name value="removeOverflowCheckBox" />
             <Location value="{X=12,Y=84}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <Text value="${res:Dialog.ProjectOptions.BuildOptions.RemoveOverflowChecks}" />
-            <TabIndex value="4" />
+            <TabIndex value="3" />
             <Size value="{Width=502, Height=24}" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.Label>
             <Name value="label1" />
             <Location value="{X=6,Y=17}" />
             <Text value="${res:Dialog.ProjectOptions.BuildOptions.ConditionalSymbols}" />
+            <Anchor value="Top, Left, Right" />
             <TextAlign value="BottomLeft" />
             <Size value="{Width=470, Height=16}" />
             <TabIndex value="0" />
-            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.TextBox>
             <Name value="conditionalSymbolsTextBox" />
             <TabIndex value="1" />
-            <Anchor value="Top, Left, Right" />
             <Size value="{Width=502, Height=21}" />
             <Location value="{X=13,Y=36}" />
+            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.CheckBox>
             <Name value="optimizeCodeCheckBox" />
             <AccessibleRole value="None" />
             <Location value="{X=13,Y=64}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <Text value="${res:Dialog.ProjectOptions.BuildOptions.OptimizeCode}" />
             <TabIndex value="2" />
             <Size value="{Width=502, Height=24}" />
@@ -83,22 +81,22 @@
         <Name value="groupBox3" />
         <Location value="{X=3,Y=161}" />
         <Text value="${res:Dialog.ProjectOptions.Build.Output}" />
-        <Size value="{Width=521, Height=248}" />
-        <TabIndex value="1" />
         <Anchor value="Top, Left, Right" />
+        <Size value="{Width=521, Height=279}" />
+        <TabIndex value="1" />
         <Controls>
           <System.Windows.Forms.GroupBox>
             <Name value="advancedOutputGroupBox" />
-            <Location value="{X=6,Y=115}" />
+            <Location value="{X=6,Y=150}" />
             <Text value="${res:Dialog.ProjectOptions.Build.Advanced}" />
-            <Size value="{Width=505, Height=127}" />
-            <TabIndex value="7" />
             <Anchor value="Top, Bottom, Left, Right" />
+            <Size value="{Width=505, Height=123}" />
+            <TabIndex value="9" />
             <Controls>
               <System.Windows.Forms.ComboBox>
                 <Name value="targetCpuComboBox" />
-                <TabIndex value="4" />
                 <Size value="{Width=171, Height=21}" />
+                <TabIndex value="4" />
                 <FormattingEnabled value="True" />
                 <DropDownStyle value="DropDownList" />
                 <Location value="{X=193,Y=71}" />
@@ -113,9 +111,9 @@
               </System.Windows.Forms.Label>
               <System.Windows.Forms.TextBox>
                 <Name value="dllBaseAddressTextBox" />
-                <TabIndex value="8" />
+                <TabIndex value="6" />
                 <Size value="{Width=171, Height=21}" />
-                <Location value="{X=193,Y=98}" />
+                <Location value="{X=193,Y=96}" />
               </System.Windows.Forms.TextBox>
               <System.Windows.Forms.Label>
                 <Name value="label8" />
@@ -123,12 +121,11 @@
                 <Text value="${res:Dialog.ProjectOptions.Build.DLLBaseAddress}" />
                 <TextAlign value="MiddleRight" />
                 <Size value="{Width=180, Height=23}" />
-                <TabIndex value="7" />
+                <TabIndex value="5" />
               </System.Windows.Forms.Label>
               <System.Windows.Forms.CheckBox>
                 <Name value="registerCOMInteropCheckBox" />
                 <Location value="{X=175,Y=18}" />
-                <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
                 <Text value="${res:Dialog.ProjectOptions.Build.RegisterForCOM}" />
                 <TabIndex value="0" />
                 <Size value="{Width=209, Height=20}" />
@@ -144,8 +141,8 @@
               </System.Windows.Forms.Label>
               <System.Windows.Forms.ComboBox>
                 <Name value="generateSerializationAssemblyComboBox" />
-                <TabIndex value="2" />
                 <Size value="{Width=171, Height=21}" />
+                <TabIndex value="2" />
                 <FormattingEnabled value="True" />
                 <DropDownStyle value="DropDownList" />
                 <Location value="{X=193,Y=44}" />
@@ -153,16 +150,31 @@
             </Controls>
           </System.Windows.Forms.GroupBox>
           <System.Windows.Forms.ComboBox>
-            <Name value="debugInfoComboBox" />
-            <TabIndex value="6" />
+            <Name value="targetFrameworkComboBox" />
             <Size value="{Width=121, Height=21}" />
+            <TabIndex value="8" />
+            <FormattingEnabled value="True" />
+            <DropDownStyle value="DropDownList" />
+            <Location value="{X=164,Y=115}" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="targetFrameworkLabel" />
+            <Location value="{X=13,Y=115}" />
+            <Text value="${res:Dialog.ProjectOptions.Build.TargetFramework}" />
+            <Size value="{Width=150, Height=20}" />
+            <TabIndex value="7" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.ComboBox>
+            <Name value="debugInfoComboBox" />
+            <Size value="{Width=121, Height=21}" />
+            <TabIndex value="6" />
             <FormattingEnabled value="True" />
             <DropDownStyle value="DropDownList" />
             <Location value="{X=164,Y=88}" />
           </System.Windows.Forms.ComboBox>
           <System.Windows.Forms.Label>
             <Name value="debugInfoLabel" />
-            <Location value="{X=13,Y=86}" />
+            <Location value="{X=13,Y=88}" />
             <Text value="${res:Dialog.ProjectOptions.Build.DebugInfo}" />
             <TextAlign value="MiddleRight" />
             <Size value="{Width=145, Height=23}" />
@@ -171,7 +183,6 @@
           <System.Windows.Forms.CheckBox>
             <Name value="xmlDocumentationCheckBox" />
             <Location value="{X=13,Y=63}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <Text value="${res:Dialog.ProjectOptions.Build.XmlDocumentationFile}" />
             <TabIndex value="3" />
             <Size value="{Width=151, Height=20}" />
@@ -179,58 +190,56 @@
           <System.Windows.Forms.TextBox>
             <Name value="xmlDocumentationTextBox" />
             <TabIndex value="4" />
-            <Anchor value="Top, Left, Right" />
             <Size value="{Width=351, Height=21}" />
             <Location value="{X=164,Y=62}" />
+            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Label>
             <Name value="label5" />
             <Location value="{X=6,Y=17}" />
             <Text value="${res:Dialog.ProjectOptions.Build.OutputPath}" />
+            <Anchor value="Top, Left, Right" />
             <TextAlign value="BottomLeft" />
             <Size value="{Width=505, Height=16}" />
             <TabIndex value="0" />
-            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.TextBox>
             <Name value="outputPathTextBox" />
             <TabIndex value="1" />
-            <Anchor value="Top, Left, Right" />
             <Size value="{Width=457, Height=21}" />
             <Location value="{X=13,Y=36}" />
+            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Button>
             <Name value="outputPathBrowseButton" />
             <Location value="{X=475,Y=36}" />
             <Text value="..." />
-            <Size value="{Width=40, Height=21}" />
             <Anchor value="Top, Right" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+            <Size value="{Width=40, Height=21}" />
             <TabIndex value="2" />
           </System.Windows.Forms.Button>
         </Controls>
       </System.Windows.Forms.GroupBox>
       <System.Windows.Forms.GroupBox>
         <Name value="treatWarningsAsErrorsGroupBox" />
-        <Location value="{X=3,Y=501}" />
+        <Location value="{X=3,Y=526}" />
         <Text value="${res:Dialog.ProjectOptions.Build.TreatWarningsAsErrors}" />
+        <Anchor value="Top, Left, Right" />
         <Size value="{Width=521, Height=100}" />
         <TabIndex value="3" />
-        <Anchor value="Top, Left, Right" />
         <Controls>
           <System.Windows.Forms.TextBox>
             <Name value="specificWarningsTextBox" />
             <TabIndex value="2" />
-            <Anchor value="Top, Left, Right" />
             <Size value="{Width=377, Height=21}" />
             <Location value="{X=136,Y=44}" />
+            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.RadioButton>
             <Name value="allRadioButton" />
             <Location value="{X=8,Y=68}" />
             <Text value="${res:Dialog.ProjectOptions.Build.TreatWarningsAsErrors.All}" />
             <Size value="{Width=128, Height=24}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <TabIndex value="3" />
           </System.Windows.Forms.RadioButton>
           <System.Windows.Forms.RadioButton>
@@ -238,7 +247,6 @@
             <Location value="{X=8,Y=44}" />
             <Text value="${res:Dialog.ProjectOptions.Build.TreatWarningsAsErrors.Specific}" />
             <Size value="{Width=128, Height=24}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <TabIndex value="1" />
           </System.Windows.Forms.RadioButton>
           <System.Windows.Forms.RadioButton>
@@ -246,25 +254,24 @@
             <Location value="{X=8,Y=20}" />
             <Text value="${res:Dialog.ProjectOptions.Build.TreatWarningsAsErrors.None}" />
             <Size value="{Width=128, Height=24}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <TabIndex value="0" />
           </System.Windows.Forms.RadioButton>
         </Controls>
       </System.Windows.Forms.GroupBox>
       <System.Windows.Forms.GroupBox>
         <Name value="warningsGroupBox" />
-        <Location value="{X=3,Y=415}" />
+        <Location value="{X=3,Y=440}" />
         <Text value="${res:Dialog.ProjectOptions.Build.ErrorsAndWarnings}" />
+        <Anchor value="Top, Left, Right" />
         <Size value="{Width=521, Height=80}" />
         <TabIndex value="2" />
-        <Anchor value="Top, Left, Right" />
         <Controls>
           <System.Windows.Forms.TextBox>
             <Name value="suppressWarningsTextBox" />
             <TabIndex value="3" />
-            <Anchor value="Top, Left, Right" />
             <Size value="{Width=349, Height=21}" />
             <Location value="{X=164,Y=44}" />
+            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Label>
             <Name value="label4" />
@@ -276,8 +283,8 @@
           </System.Windows.Forms.Label>
           <System.Windows.Forms.ComboBox>
             <Name value="warningLevelComboBox" />
-            <TabIndex value="1" />
             <Size value="{Width=60, Height=21}" />
+            <TabIndex value="1" />
             <FormattingEnabled value="True" />
             <DropDownStyle value="DropDownList" />
             <Location value="{X=164,Y=20}" />
