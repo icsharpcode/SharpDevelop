@@ -108,14 +108,14 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.DestroyConnection(pProcess, dwConnectionId);
 		}
 		
-		public void Exception(System.IntPtr pAppDomain, System.IntPtr pThread, System.IntPtr pFrame, uint nOffset, CorDebugExceptionCallbackType dwEventType, uint dwFlags)
+		public void Exception(System.IntPtr pAppDomain, System.IntPtr pThread, System.IntPtr pFrame, uint nOffset, Debugger.Wrappers.CorDebug.CorDebugExceptionCallbackType dwEventType, uint dwFlags)
 		{
-			this.WrappedObject.Exception(pAppDomain, pThread, pFrame, nOffset, ((Debugger.Interop.CorDebug.CorDebugExceptionCallbackType)(dwEventType)), dwFlags);
+			this.WrappedObject.Exception(pAppDomain, pThread, pFrame, nOffset, dwEventType, dwFlags);
 		}
 		
-		public void ExceptionUnwind(System.IntPtr pAppDomain, System.IntPtr pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
+		public void ExceptionUnwind(System.IntPtr pAppDomain, System.IntPtr pThread, Debugger.Wrappers.CorDebug.CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
 		{
-			this.WrappedObject.ExceptionUnwind(pAppDomain, pThread, ((Debugger.Interop.CorDebug.CorDebugExceptionUnwindCallbackType)(dwEventType)), dwFlags);
+			this.WrappedObject.ExceptionUnwind(pAppDomain, pThread, dwEventType, dwFlags);
 		}
 		
 		public void FunctionRemapComplete(System.IntPtr pAppDomain, System.IntPtr pThread, System.IntPtr pFunction)

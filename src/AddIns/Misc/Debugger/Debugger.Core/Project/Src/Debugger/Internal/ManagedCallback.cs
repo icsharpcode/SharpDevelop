@@ -133,17 +133,18 @@ namespace Debugger
 			}
 		}
 		
-		public void Breakpoint(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, IntPtr pBreakpoint)
+		public void Breakpoint(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugBreakpoint pBreakpoint)
 		{
 			EnterCallback("Breakpoint", pThread);
 			
 			ExitCallback_Paused(PausedReason.Breakpoint);
 			
-			foreach (Breakpoint b in debugger.Breakpoints) {
-				if (b.Equals(pBreakpoint)) {
-					b.OnHit();
-				}
-			}
+//			foreach (Breakpoint b in debugger.Breakpoints) {
+//				if (b.Equals(pBreakpoint)) {
+//					// TODO: Check that this works
+//					b.OnHit();
+//				}
+//			}
 		}
 		
 		public void BreakpointSetError(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugBreakpoint pBreakpoint, uint dwError)

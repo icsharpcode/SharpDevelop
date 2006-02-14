@@ -12,7 +12,6 @@ using System.Runtime.InteropServices;
 
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
-using Debugger.Interop.MetaData;
 
 namespace Debugger
 {
@@ -25,9 +24,9 @@ namespace Debugger
 		string fullPathPDB;
 		
 		int orderOfLoading = 0;
-		readonly ICorDebugModule corModule;
+		ICorDebugModule corModule;
 		SymReader symReader;
-		IMetaDataImport metaDataInterface;
+		MetaData metaData;
 		
 		public NDebugger Debugger {
 			get {
@@ -37,7 +36,7 @@ namespace Debugger
 		
 		internal MetaData MetaData {
 			get {
-				return new MetaData(metaDataInterface);
+				return metaData;
 			}
 		}
 		
@@ -127,10 +126,7 @@ namespace Debugger
 			
 			corModule = pModule;
 			
-			Guid metaDataInterfaceGuid = new Guid("{ 0x7dac8207, 0xd3ae, 0x4c75, { 0x9b, 0x67, 0x92, 0x80, 0x1a, 0x49, 0x7d, 0x44 } }");
-			object pMetaDataInterface = pModule.GetMetaDataInterface(ref metaDataInterfaceGuid);
-			
-			metaDataInterface = (IMetaDataImport) pMetaDataInterface;
+			metaData = new MetaData(pModule);
 			
 			uint pStringLenght = 0; // Terminating character included in pStringLenght
 			IntPtr pString = IntPtr.Zero;
@@ -161,19 +157,8 @@ namespace Debugger
 				fullPathPDB = newPdbPath;
 			} catch {}
 			
-			SymBinder symBinder = new SymBinder();
-			IntPtr ptr = IntPtr.Zero;
-			try {
-				ptr = Marshal.GetIUnknownForObject(metaDataInterface);
-				symReader = (SymReader)symBinder.GetReader(ptr, fullPath, tempPath);
-			} catch (System.Exception) {
-				symReader = null;
-			} finally {
-				if (ptr != IntPtr.Zero) {
-					Marshal.Release(ptr);
-				}
-			}
-
+			symReader = metaData.GetSymReader(fullPath, tempPath);
+			
 			try {
 				if (File.Exists(newPdbPath) && !File.Exists(oldPdbPath)) {
 					File.Copy(newPdbPath, oldPdbPath);
@@ -208,13 +193,7 @@ namespace Debugger
 				}
 			}
 			
-			try {
-				Marshal.FinalReleaseComObject(metaDataInterface);
-			} catch {
-				Console.WriteLine("metaDataInterface release failed. (FinalReleaseComObject)");
-			} finally {
-				metaDataInterface = null;
-			}
+			metaData.Dispose();
 			
 			unloaded = true;
 		}

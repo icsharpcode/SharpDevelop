@@ -23,7 +23,6 @@ namespace Debugger
 		bool hadBeenSet = false;
 		bool enabled = true;
 		ICorDebugFunctionBreakpoint corBreakpoint;
-		IntPtr pBreakpoint;
 		
 		public NDebugger Debugger {
 			get {
@@ -86,11 +85,6 @@ namespace Debugger
 			this.enabled = enabled;
 		}
 		
-		internal bool Equals(IntPtr ptr) 
-		{
-			return pBreakpoint == ptr;
-		}
-				
 		internal bool Equals(ICorDebugFunctionBreakpoint obj) 
 		{
 			return corBreakpoint == obj;
@@ -98,7 +92,7 @@ namespace Debugger
 		
 		public override bool Equals(object obj) 
 		{
-			return base.Equals(obj) || corBreakpoint == (obj as ICorDebugFunctionBreakpoint);
+			return base.Equals(obj) || corBreakpoint.Equals(obj);
 		}
 		
 		public override int GetHashCode() 
@@ -127,7 +121,6 @@ namespace Debugger
 			
 			hadBeenSet = true;
 			corBreakpoint.Activate(enabled?1:0);
-			pBreakpoint = Marshal.GetComInterfaceForObject(corBreakpoint.WrappedObject, typeof(Debugger.Interop.CorDebug.ICorDebugFunctionBreakpoint));
 			
 			OnChanged();
 			

@@ -93,9 +93,9 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.Breakpoint(pAppDomain, pThread, pBreakpoint);
 		}
 		
-		public void StepComplete(System.IntPtr pAppDomain, System.IntPtr pThread, System.IntPtr pStepper, CorDebugStepReason reason)
+		public void StepComplete(System.IntPtr pAppDomain, System.IntPtr pThread, System.IntPtr pStepper, Debugger.Wrappers.CorDebug.CorDebugStepReason reason)
 		{
-			this.WrappedObject.StepComplete(pAppDomain, pThread, pStepper, ((Debugger.Interop.CorDebug.CorDebugStepReason)(reason)));
+			this.WrappedObject.StepComplete(pAppDomain, pThread, pStepper, reason);
 		}
 		
 		public void Break(System.IntPtr pAppDomain, System.IntPtr thread)

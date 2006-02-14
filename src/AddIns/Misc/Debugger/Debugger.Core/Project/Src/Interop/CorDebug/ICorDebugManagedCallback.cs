@@ -17,7 +17,7 @@ namespace Debugger.Interop.CorDebug
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void Breakpoint([In] IntPtr pAppDomain, [In] IntPtr pThread, [In] IntPtr pBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void StepComplete([In] IntPtr pAppDomain, [In] IntPtr pThread, [In] IntPtr pStepper, [In] CorDebugStepReason reason);
+        void StepComplete([In] IntPtr pAppDomain, [In] IntPtr pThread, [In] IntPtr pStepper, [In] Debugger.Wrappers.CorDebug.CorDebugStepReason reason);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void Break([In] IntPtr pAppDomain, [In] IntPtr thread);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]

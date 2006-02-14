@@ -57,7 +57,6 @@
     <Compile Include="Src\Debugger\Internal\ManagedCallback.cs" />
     <Compile Include="Src\Debugger\Internal\ManagedCallbackProxy.cs" />
     <Compile Include="Src\Debugger\Internal\MTA2STA.cs" />
-    <Compile Include="Src\Debugger\Internal\NativeMethods.cs" />
     <Compile Include="Src\Debugger\NDebugger.cs" />
     <Compile Include="Src\Interop enums\ClassFieldAttribute.cs" />
     <Compile Include="Src\Interop enums\CorCallingConvention.cs" />
@@ -205,8 +204,6 @@
     <Compile Include="Src\Wrappers\CorDebug\CorDebug.cs" />
     <Compile Include="Src\Wrappers\CorDebug\CorDebugClass.cs" />
     <Compile Include="Src\Wrappers\CorDebug\CorDebugCreateProcessFlags.cs" />
-    <Compile Include="Src\Wrappers\CorDebug\CorDebugExceptionCallbackType.cs" />
-    <Compile Include="Src\Wrappers\CorDebug\CorDebugExceptionUnwindCallbackType.cs" />
     <Compile Include="Src\Wrappers\CorDebug\CorDebugHandleType.cs" />
     <Compile Include="Src\Wrappers\CorDebug\CorDebugChainReason.cs" />
     <Compile Include="Src\Wrappers\CorDebug\CorDebugIntercept.cs" />
@@ -214,7 +211,6 @@
     <Compile Include="Src\Wrappers\CorDebug\CorDebugMappingResult.cs" />
     <Compile Include="Src\Wrappers\CorDebug\CorDebugMDAFlags.cs" />
     <Compile Include="Src\Wrappers\CorDebug\CorDebugRegister.cs" />
-    <Compile Include="Src\Wrappers\CorDebug\CorDebugStepReason.cs" />
     <Compile Include="Src\Wrappers\CorDebug\CorDebugThreadState.cs" />
     <Compile Include="Src\Wrappers\CorDebug\CorDebugUnmappedStop.cs" />
     <Compile Include="Src\Wrappers\CorDebug\CorDebugUserState.cs" />
@@ -356,6 +352,9 @@
     <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedVariable.cs" />
     <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedWriter.cs" />
     <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedWriter2.cs" />
+    <Compile Include="Src\Wrappers\NativeMethods.cs" />
+    <Compile Include="Src\Wrappers\ICorDebugManagedCallbacks.cs" />
+    <Compile Include="Src\Wrappers\_SECURITY_ATTRIBUTES.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

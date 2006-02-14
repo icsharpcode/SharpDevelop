@@ -23,9 +23,9 @@ namespace Debugger.Interop.CorDebug
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void DestroyConnection([In] IntPtr pProcess, [In] uint dwConnectionId);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Exception([In] IntPtr pAppDomain, [In] IntPtr pThread, [In] IntPtr pFrame, [In] uint nOffset, [In] CorDebugExceptionCallbackType dwEventType, [In] uint dwFlags);
+        void Exception([In] IntPtr pAppDomain, [In] IntPtr pThread, [In] IntPtr pFrame, [In] uint nOffset, [In] Debugger.Wrappers.CorDebug.CorDebugExceptionCallbackType dwEventType, [In] uint dwFlags);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void ExceptionUnwind([In] IntPtr pAppDomain, [In] IntPtr pThread, [In] CorDebugExceptionUnwindCallbackType dwEventType, [In] uint dwFlags);
+        void ExceptionUnwind([In] IntPtr pAppDomain, [In] IntPtr pThread, [In] Debugger.Wrappers.CorDebug.CorDebugExceptionUnwindCallbackType dwEventType, [In] uint dwFlags);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void FunctionRemapComplete([In] IntPtr pAppDomain, [In] IntPtr pThread, [In] IntPtr pFunction);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]

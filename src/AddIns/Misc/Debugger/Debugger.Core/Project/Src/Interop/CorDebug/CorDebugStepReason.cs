@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace Debugger.Interop.CorDebug
+namespace Debugger.Wrappers.CorDebug
 {
     using System;
 

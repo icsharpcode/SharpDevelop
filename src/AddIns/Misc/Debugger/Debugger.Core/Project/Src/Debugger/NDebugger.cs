@@ -7,13 +7,12 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
 using Debugger.Wrappers.CorDebug;
-using Debugger.Interop.MetaData;
-using System.Collections.Generic;
 
 namespace Debugger
 {
