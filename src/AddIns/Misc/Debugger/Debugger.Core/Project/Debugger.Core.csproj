@@ -58,12 +58,6 @@
     <Compile Include="Src\Debugger\Internal\ManagedCallbackProxy.cs" />
     <Compile Include="Src\Debugger\Internal\MTA2STA.cs" />
     <Compile Include="Src\Debugger\Internal\NativeMethods.cs" />
-    <Compile Include="Src\Debugger\MetaData\FieldProps.cs" />
-    <Compile Include="Src\Debugger\MetaData\MetaData.cs" />
-    <Compile Include="Src\Debugger\MetaData\MethodProps.cs" />
-    <Compile Include="Src\Debugger\MetaData\ParamProps.cs" />
-    <Compile Include="Src\Debugger\MetaData\TypeDefProps.cs" />
-    <Compile Include="Src\Debugger\MetaData\TypeRefProps.cs" />
     <Compile Include="Src\Debugger\NDebugger.cs" />
     <Compile Include="Src\Interop enums\ClassFieldAttribute.cs" />
     <Compile Include="Src\Interop enums\CorCallingConvention.cs" />
@@ -294,6 +288,12 @@
     <Compile Include="Src\Wrappers\CorDebug\ISequentialStream.cs" />
     <Compile Include="Src\Wrappers\CorDebug\IStream.cs" />
     <Compile Include="Src\Wrappers\ResourceManager.cs" />
+    <Compile Include="Src\Wrappers\MetaData\FieldProps.cs" />
+    <Compile Include="Src\Wrappers\MetaData\MetaData.cs" />
+    <Compile Include="Src\Wrappers\MetaData\MethodProps.cs" />
+    <Compile Include="Src\Wrappers\MetaData\ParamProps.cs" />
+    <Compile Include="Src\Wrappers\MetaData\TypeDefProps.cs" />
+    <Compile Include="Src\Wrappers\MetaData\TypeRefProps.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />
