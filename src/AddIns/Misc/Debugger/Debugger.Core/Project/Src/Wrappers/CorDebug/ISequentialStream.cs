@@ -26,11 +26,19 @@ namespace Debugger.Wrappers.CorDebug
 		public ISequentialStream(Debugger.Interop.CorDebug.ISequentialStream wrappedObject)
 		{
 			this.wrappedObject = wrappedObject;
+			ResourceManager.TrackCOMObject(wrappedObject, typeof(ISequentialStream));
 		}
 		
 		public static ISequentialStream Wrap(Debugger.Interop.CorDebug.ISequentialStream objectToWrap)
 		{
 			return new ISequentialStream(objectToWrap);
+		}
+		
+		~ISequentialStream()
+		{
+			object o = wrappedObject;
+			wrappedObject = null;
+			ResourceManager.ReleaseCOMObject(o, typeof(ISequentialStream));
 		}
 		
 		public bool Is<T>() where T: class

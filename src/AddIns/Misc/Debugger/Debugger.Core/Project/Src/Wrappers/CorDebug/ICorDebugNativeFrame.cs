@@ -26,11 +26,19 @@ namespace Debugger.Wrappers.CorDebug
 		public ICorDebugNativeFrame(Debugger.Interop.CorDebug.ICorDebugNativeFrame wrappedObject)
 		{
 			this.wrappedObject = wrappedObject;
+			ResourceManager.TrackCOMObject(wrappedObject, typeof(ICorDebugNativeFrame));
 		}
 		
 		public static ICorDebugNativeFrame Wrap(Debugger.Interop.CorDebug.ICorDebugNativeFrame objectToWrap)
 		{
 			return new ICorDebugNativeFrame(objectToWrap);
+		}
+		
+		~ICorDebugNativeFrame()
+		{
+			object o = wrappedObject;
+			wrappedObject = null;
+			ResourceManager.ReleaseCOMObject(o, typeof(ICorDebugNativeFrame));
 		}
 		
 		public bool Is<T>() where T: class

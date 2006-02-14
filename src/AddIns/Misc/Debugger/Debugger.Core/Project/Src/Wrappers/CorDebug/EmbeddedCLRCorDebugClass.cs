@@ -26,11 +26,19 @@ namespace Debugger.Wrappers.CorDebug
 		public EmbeddedCLRCorDebugClass(Debugger.Interop.CorDebug.EmbeddedCLRCorDebugClass wrappedObject)
 		{
 			this.wrappedObject = wrappedObject;
+			ResourceManager.TrackCOMObject(wrappedObject, typeof(EmbeddedCLRCorDebugClass));
 		}
 		
 		public static EmbeddedCLRCorDebugClass Wrap(Debugger.Interop.CorDebug.EmbeddedCLRCorDebugClass objectToWrap)
 		{
 			return new EmbeddedCLRCorDebugClass(objectToWrap);
+		}
+		
+		~EmbeddedCLRCorDebugClass()
+		{
+			object o = wrappedObject;
+			wrappedObject = null;
+			ResourceManager.ReleaseCOMObject(o, typeof(EmbeddedCLRCorDebugClass));
 		}
 		
 		public bool Is<T>() where T: class

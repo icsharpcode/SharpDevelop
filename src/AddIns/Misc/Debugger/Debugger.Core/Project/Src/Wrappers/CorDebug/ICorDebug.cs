@@ -26,11 +26,19 @@ namespace Debugger.Wrappers.CorDebug
 		public ICorDebug(Debugger.Interop.CorDebug.ICorDebug wrappedObject)
 		{
 			this.wrappedObject = wrappedObject;
+			ResourceManager.TrackCOMObject(wrappedObject, typeof(ICorDebug));
 		}
 		
 		public static ICorDebug Wrap(Debugger.Interop.CorDebug.ICorDebug objectToWrap)
 		{
 			return new ICorDebug(objectToWrap);
+		}
+		
+		~ICorDebug()
+		{
+			object o = wrappedObject;
+			wrappedObject = null;
+			ResourceManager.ReleaseCOMObject(o, typeof(ICorDebug));
 		}
 		
 		public bool Is<T>() where T: class

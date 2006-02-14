@@ -141,7 +141,7 @@ namespace Debugger.Tests
 			Assert.AreEqual("Mark 1\r\nMark 2\r\n", log);
 		}
 		
-		[Test, Ignore("Works only if run alone")]
+		[Test]
 		public void FileRelease()
 		{
 			Assert.IsTrue(File.Exists(assemblyFilename), "Assembly file not found");

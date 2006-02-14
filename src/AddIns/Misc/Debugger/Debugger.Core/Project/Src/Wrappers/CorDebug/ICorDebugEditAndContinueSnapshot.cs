@@ -26,11 +26,19 @@ namespace Debugger.Wrappers.CorDebug
 		public ICorDebugEditAndContinueSnapshot(Debugger.Interop.CorDebug.ICorDebugEditAndContinueSnapshot wrappedObject)
 		{
 			this.wrappedObject = wrappedObject;
+			ResourceManager.TrackCOMObject(wrappedObject, typeof(ICorDebugEditAndContinueSnapshot));
 		}
 		
 		public static ICorDebugEditAndContinueSnapshot Wrap(Debugger.Interop.CorDebug.ICorDebugEditAndContinueSnapshot objectToWrap)
 		{
 			return new ICorDebugEditAndContinueSnapshot(objectToWrap);
+		}
+		
+		~ICorDebugEditAndContinueSnapshot()
+		{
+			object o = wrappedObject;
+			wrappedObject = null;
+			ResourceManager.ReleaseCOMObject(o, typeof(ICorDebugEditAndContinueSnapshot));
 		}
 		
 		public bool Is<T>() where T: class

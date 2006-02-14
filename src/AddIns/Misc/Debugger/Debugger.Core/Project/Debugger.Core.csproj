@@ -293,6 +293,7 @@
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugValueEnum.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ISequentialStream.cs" />
     <Compile Include="Src\Wrappers\CorDebug\IStream.cs" />
+    <Compile Include="Src\Wrappers\ResourceManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

@@ -21,7 +21,14 @@ namespace WrapperGenerator
 		Assembly assembly;
 		protected string wrapperNamespace;
 		
-		string comparsionCode =
+		string comparsionCode = 
+@"		~TheType()" + "\r\n" +
+@"		{" + "\r\n" +
+@"			object o = wrappedObject;" + "\r\n" +
+@"			wrappedObject = null;" + "\r\n" +
+@"			ResourceManager.ReleaseCOMObject(o, typeof(TheType));" + "\r\n" +
+@"		}" + "\r\n" +
+@"		" + "\r\n" +
 @"		public bool Is<T>() where T: class" + "\r\n" +
 @"		{" + "\r\n" +
 @"			try {" + "\r\n" +
@@ -219,6 +226,14 @@ namespace WrapperGenerator
 				new CodeAssignStatement(
 					ExpressionForWrappedObjectField,
 					new CodeArgumentReferenceExpression("wrappedObject")));
+			
+			codeConstructor.Statements.Add(
+				new CodeMethodInvokeExpression(
+					new CodeMethodReferenceExpression(
+						new CodeTypeReferenceExpression("ResourceManager"),
+						"TrackCOMObject"),
+					new CodeArgumentReferenceExpression("wrappedObject"),
+					new CodeTypeOfExpression(type.Name)));
 			
 			return codeConstructor;
 		}

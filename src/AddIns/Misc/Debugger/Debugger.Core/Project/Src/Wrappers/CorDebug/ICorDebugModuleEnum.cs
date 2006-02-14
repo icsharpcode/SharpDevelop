@@ -26,11 +26,19 @@ namespace Debugger.Wrappers.CorDebug
 		public ICorDebugModuleEnum(Debugger.Interop.CorDebug.ICorDebugModuleEnum wrappedObject)
 		{
 			this.wrappedObject = wrappedObject;
+			ResourceManager.TrackCOMObject(wrappedObject, typeof(ICorDebugModuleEnum));
 		}
 		
 		public static ICorDebugModuleEnum Wrap(Debugger.Interop.CorDebug.ICorDebugModuleEnum objectToWrap)
 		{
 			return new ICorDebugModuleEnum(objectToWrap);
+		}
+		
+		~ICorDebugModuleEnum()
+		{
+			object o = wrappedObject;
+			wrappedObject = null;
+			ResourceManager.ReleaseCOMObject(o, typeof(ICorDebugModuleEnum));
 		}
 		
 		public bool Is<T>() where T: class

@@ -26,11 +26,19 @@ namespace Debugger.Wrappers.CorDebug
 		public ICorDebugFunctionBreakpoint(Debugger.Interop.CorDebug.ICorDebugFunctionBreakpoint wrappedObject)
 		{
 			this.wrappedObject = wrappedObject;
+			ResourceManager.TrackCOMObject(wrappedObject, typeof(ICorDebugFunctionBreakpoint));
 		}
 		
 		public static ICorDebugFunctionBreakpoint Wrap(Debugger.Interop.CorDebug.ICorDebugFunctionBreakpoint objectToWrap)
 		{
 			return new ICorDebugFunctionBreakpoint(objectToWrap);
+		}
+		
+		~ICorDebugFunctionBreakpoint()
+		{
+			object o = wrappedObject;
+			wrappedObject = null;
+			ResourceManager.ReleaseCOMObject(o, typeof(ICorDebugFunctionBreakpoint));
 		}
 		
 		public bool Is<T>() where T: class

@@ -26,11 +26,19 @@ namespace Debugger.Wrappers.CorDebug
 		public ICorDebugStepper2(Debugger.Interop.CorDebug.ICorDebugStepper2 wrappedObject)
 		{
 			this.wrappedObject = wrappedObject;
+			ResourceManager.TrackCOMObject(wrappedObject, typeof(ICorDebugStepper2));
 		}
 		
 		public static ICorDebugStepper2 Wrap(Debugger.Interop.CorDebug.ICorDebugStepper2 objectToWrap)
 		{
 			return new ICorDebugStepper2(objectToWrap);
+		}
+		
+		~ICorDebugStepper2()
+		{
+			object o = wrappedObject;
+			wrappedObject = null;
+			ResourceManager.ReleaseCOMObject(o, typeof(ICorDebugStepper2));
 		}
 		
 		public bool Is<T>() where T: class

@@ -64,6 +64,11 @@ namespace Debugger
 			this.ModuleLoaded += SetBreakpointsInModule;
 			
 			localVariables = new VariableCollection(this);
+			
+			Wrappers.ResourceManager.TraceMessagesEnabled = false;
+			Wrappers.ResourceManager.TraceMessage += delegate (object s, MessageEventArgs e) { 
+				TraceMessage(e.Message);
+			};
 		}
 		
 		/// <summary>
@@ -137,6 +142,12 @@ namespace Debugger
 			corDebug.Terminate();
 			
 			TraceMessage("ICorDebug terminated");
+			
+			Wrappers.ResourceManager.TraceMessagesEnabled = true;
+			Wrappers.ResourceManager.ReleaseAllTrackedCOMObjects();
+			Wrappers.ResourceManager.TraceMessagesEnabled = false;
+			
+			TraceMessage("Tracked COM objects released");
 			
 			noProcessesHandle.Set();
 		}

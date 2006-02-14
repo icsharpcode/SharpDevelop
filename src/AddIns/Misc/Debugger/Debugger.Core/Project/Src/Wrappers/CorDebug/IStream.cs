@@ -26,11 +26,19 @@ namespace Debugger.Wrappers.CorDebug
 		public IStream(Debugger.Interop.CorDebug.IStream wrappedObject)
 		{
 			this.wrappedObject = wrappedObject;
+			ResourceManager.TrackCOMObject(wrappedObject, typeof(IStream));
 		}
 		
 		public static IStream Wrap(Debugger.Interop.CorDebug.IStream objectToWrap)
 		{
 			return new IStream(objectToWrap);
+		}
+		
+		~IStream()
+		{
+			object o = wrappedObject;
+			wrappedObject = null;
+			ResourceManager.ReleaseCOMObject(o, typeof(IStream));
 		}
 		
 		public bool Is<T>() where T: class
