@@ -35,9 +35,13 @@
     <Compile Include="AssemblyInfo.cs" />
     <EmbeddedResource Include="MainForm.resources" />
     <Compile Include="CodeGenerator.cs" />
-    <Compile Include="CorDebugGenerator.cs" />
     <Compile Include="Test.cs" />
     <Compile Include="FileGenerator.cs" />
+    <Compile Include="Debugger\CorDebugGenerator.cs" />
+    <Compile Include="Debugger\CorSymGenerator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Debugger" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

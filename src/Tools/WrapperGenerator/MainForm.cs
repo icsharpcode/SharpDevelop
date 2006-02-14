@@ -30,14 +30,17 @@ namespace WrapperGenerator
 				"\r\n";
 		//string dllFileName = Assembly.GetExecutingAssembly().Location;
 		string dllFileName = Path.Combine(Assembly.GetExecutingAssembly().Location, @"..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\Debugger.Core.dll");
-		string saveDirectory = Path.Combine(Assembly.GetExecutingAssembly().Location, @"..\..\..\..\..\..\src\AddIns\Misc\Debugger\Debugger.Core\Project\Src\Wrappers\CorDebug");
+		string saveDirectory = Path.Combine(Assembly.GetExecutingAssembly().Location, @"..\..\..\..\..\..\src\AddIns\Misc\Debugger\Debugger.Core\Project\Src\Wrappers");
 		
 		public MainForm()
 		{
 			InitializeComponent();
 			
-			CodeGenerator codeGenerator = new CorDebugGenerator(Assembly.LoadFile(dllFileName));
-			textBox1.Text = new FileGenerator(codeGenerator, header).SaveFiles(saveDirectory);
+			CodeGenerator codeGenerator1 = new CorDebugGenerator(Assembly.LoadFile(dllFileName));
+			textBox1.Text = new FileGenerator(codeGenerator1, header).SaveFiles(saveDirectory + @"\CorDebug");
+			
+			CodeGenerator codeGenerator2 = new CorSymGenerator(Assembly.LoadFile(dllFileName));
+			textBox1.Text += new FileGenerator(codeGenerator2, header).SaveFiles(saveDirectory + @"\CorSym");
 		}
 		
 		[STAThread]

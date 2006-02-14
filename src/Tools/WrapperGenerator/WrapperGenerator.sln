@@ -1,5 +1,5 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.0.0.920
+# SharpDevelop 2.0.0.1115
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WrapperGenerator", "WrapperGenerator.csproj", "{7ED425D8-30CA-422C-90DF-1CB901E46DE3}"
 EndProject
 Global
