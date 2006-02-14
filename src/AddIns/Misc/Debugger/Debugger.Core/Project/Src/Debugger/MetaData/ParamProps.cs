@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Debugger
+namespace Debugger.Wrappers.MetaData
 {
 	struct ParamProps
 	{

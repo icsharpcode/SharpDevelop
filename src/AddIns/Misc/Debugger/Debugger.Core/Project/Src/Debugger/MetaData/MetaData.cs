@@ -11,7 +11,7 @@ using System.Text;
 using Debugger.Interop.MetaData;
 using System.Runtime.InteropServices;
 
-namespace Debugger
+namespace Debugger.Wrappers.MetaData
 {
 	class MetaData
 	{

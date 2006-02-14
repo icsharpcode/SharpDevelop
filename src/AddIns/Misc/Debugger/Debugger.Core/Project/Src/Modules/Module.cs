@@ -11,6 +11,7 @@ using System.Diagnostics.SymbolStore;
 using System.Runtime.InteropServices;
 
 using Debugger.Wrappers.CorDebug;
+using Debugger.Wrappers.MetaData;
 using Debugger.Interop.MetaData;
 
 namespace Debugger

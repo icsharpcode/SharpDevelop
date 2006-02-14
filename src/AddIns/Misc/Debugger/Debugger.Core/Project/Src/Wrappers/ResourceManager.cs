@@ -11,12 +11,12 @@ using System.Runtime.InteropServices;
 
 namespace Debugger.Wrappers
 {
-	class MetaData
+	class TrackedObjectMetaData
 	{
 		public Type ObjectType;
 		public int RefCount;
 		
-		public MetaData(Type objectType, int refCount)
+		public TrackedObjectMetaData(Type objectType, int refCount)
 		{
 			this.ObjectType = objectType;
 			this.RefCount = refCount;
@@ -26,7 +26,7 @@ namespace Debugger.Wrappers
 	public static class ResourceManager
 	{
 		static bool trace;
-		static Dictionary<object, MetaData> trackedCOMObjects = new Dictionary<object, MetaData>();
+		static Dictionary<object, TrackedObjectMetaData> trackedCOMObjects = new Dictionary<object, TrackedObjectMetaData>();
 		
 		public static bool TraceMessagesEnabled {
 			get {
@@ -42,11 +42,11 @@ namespace Debugger.Wrappers
 			if (!Marshal.IsComObject(comObject)) {
 				if (trace) Trace("Will not be tracked: {0}", type.Name);
 			} else {
-				MetaData metaData;
+				TrackedObjectMetaData metaData;
 				if (trackedCOMObjects.TryGetValue(comObject, out metaData)) {
 					metaData.RefCount += 1;
 				} else {
-					metaData = new MetaData(type,1);
+					metaData = new TrackedObjectMetaData(type,1);
 					trackedCOMObjects.Add(comObject, metaData);
 				}
 				if (trace) Trace("AddRef {0,2}: {1}", metaData.RefCount, type.Name);
@@ -55,7 +55,7 @@ namespace Debugger.Wrappers
 		
 		public static void ReleaseCOMObject(object comObject, Type type)
 		{
-			MetaData metaData;
+			TrackedObjectMetaData metaData;
 			if (trackedCOMObjects.TryGetValue(comObject, out metaData)) {
 				metaData.RefCount -= 1;
 				if (metaData.RefCount == 0) {
@@ -72,7 +72,7 @@ namespace Debugger.Wrappers
 		{
 			if (trace) Trace("Releasing {0} tracked COM objects... ", trackedCOMObjects.Count);
 			while(trackedCOMObjects.Count > 0) {
-				foreach (KeyValuePair<object, MetaData> pair in trackedCOMObjects) {
+				foreach (KeyValuePair<object, TrackedObjectMetaData> pair in trackedCOMObjects) {
 					Marshal.FinalReleaseComObject(pair.Key);
 					if (trace) Trace(" * Releasing {0} ({1} references)", pair.Value.ObjectType.Name, pair.Value.RefCount);
 					trackedCOMObjects.Remove(pair.Key);
