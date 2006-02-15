@@ -152,6 +152,7 @@ namespace WrapperGenerator
 			
 			CodeTypeDeclaration codeTypeDeclaration = new CodeTypeDeclaration();
 			codeTypeDeclaration.Attributes = MemberAttributes.Private;
+			codeTypeDeclaration.IsPartial = true;
 			codeTypeDeclaration.Name = type.Name;
 			if (baseType != null) {
 				codeTypeDeclaration.BaseTypes.Add(baseType.Name);
