@@ -1,11 +1,11 @@
 !verbose 3
 
-!define PRODUCT_NAME "SharpDevelop2"
-!define PRODUCT_VERSION "Beta 2"
+!define PRODUCT_NAME "SharpDevelop"
+!define PRODUCT_VERSION "2.1 Preview"
 !define PRODUCT_PUBLISHER "ic#code"
 !define PRODUCT_WEB_SITE "http://www.icsharpcode.net/opensource/sd/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\SharpDevelop.exe"
-!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\SharpDevelop2"
+!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\SharpDevelop2.1"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
 !define MUI_WELCOMEFINISHPAGE_BITMAP "wizard-image.bmp"
@@ -54,7 +54,7 @@ CRCCheck on
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "Setup.exe"
-InstallDir "$PROGRAMFILES\SharpDevelop\2.0\"
+InstallDir "$PROGRAMFILES\SharpDevelop\2.1\"
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -102,20 +102,15 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR\doc"
   File /r /x .svn ..\doc\*.*
   
-  CreateDirectory "$SMPROGRAMS\SharpDevelop 2.0"
-  CreateShortCut "$SMPROGRAMS\SharpDevelop 2.0\SharpDevelop 2.0.lnk" "$INSTDIR\bin\SharpDevelop.exe"
-  CreateShortCut "$DESKTOP\SharpDevelop 2.0.lnk" "$INSTDIR\bin\SharpDevelop.exe"
-
-  ; Add default file associations
-  ; CreateFileAssociation extension extType extDef exeCmd defIcon
-  ${CreateFileAssociation} ".cmbx"  "SD.cmbxfile" "#Develop Combine" "$INSTDIR\bin\SharpDevelop.exe" "$INSTDIR\data\resources\filetypes\cmbx.ico"
-  ${CreateFileAssociation} ".prjx"  "SD.prjxfile" "#Develop Project" "$INSTDIR\bin\SharpDevelop.exe" "$INSTDIR\data\resources\filetypes\prjx.ico"
+  CreateDirectory "$SMPROGRAMS\SharpDevelop 2.1"
+  CreateShortCut "$SMPROGRAMS\SharpDevelop 2.1\SharpDevelop 2.1.lnk" "$INSTDIR\bin\SharpDevelop.exe"
+  CreateShortCut "$DESKTOP\SharpDevelop 2.1.lnk" "$INSTDIR\bin\SharpDevelop.exe"
 SectionEnd
 
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateShortCut "$SMPROGRAMS\SharpDevelop 2.0\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
-  CreateShortCut "$SMPROGRAMS\SharpDevelop 2.0\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  CreateShortCut "$SMPROGRAMS\SharpDevelop 2.1\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
+  CreateShortCut "$SMPROGRAMS\SharpDevelop 2.1\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
 Section -Post
@@ -135,8 +130,8 @@ Section -Post
 SectionEnd
 
 Section Uninstall
-  Delete "$DESKTOP\SharpDevelop 2.0.lnk"
-  Delete "$SMPROGRAMS\SharpDevelop 2.0\*.*"
+  Delete "$DESKTOP\SharpDevelop 2.1.lnk"
+  Delete "$SMPROGRAMS\SharpDevelop 2.1\*.*"
 
   ; first, remove all dependencies from the GAC etc
   SetOutPath "$INSTDIR\bin\setup"
@@ -144,7 +139,7 @@ Section Uninstall
   ; set OutPath to somewhere else because the current working directory cannot be deleted!
   SetOutPath "$DESKTOP"
   
-  RMDir "$SMPROGRAMS\SharpDevelop 2.0"
+  RMDir "$SMPROGRAMS\SharpDevelop 2.1"
   RMDir /r "$INSTDIR"
   
   ; NOTE: this application configuration deletion is now deactivated post-1.0 releases
@@ -152,10 +147,6 @@ Section Uninstall
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
-
-  ; File association removal
-  ${RemoveFileAssociation} ".cmbx"  "SD.cmbxfile"
-  ${RemoveFileAssociation} ".prjx"  "SD.prjxfile"
 SectionEnd
 
 ; GetWindowsVersion, taken from NSIS help, modified for our purposes
