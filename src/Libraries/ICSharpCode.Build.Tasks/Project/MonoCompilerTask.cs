@@ -13,28 +13,22 @@ using System.CodeDom.Compiler;
 namespace ICSharpCode.Build.Tasks
 {
 	/// <summary>
-	/// Base class task for the mono compilers mcs and gmcs.
+	/// Base class task for the mono compilers mcs, gmcs and mbas.
 	/// </summary>
 	public abstract class MonoCompilerTask : MyToolTask
 	{		
+		public const int DefaultWarningLevel = 2;
+		
 		string[] additionalLibPaths;
 		string[] addModules;
 		bool allowUnsafeBlocks;
-		bool checkForOverflowUnderflow;
 		int codePage;
 		string debugType;
 		string defineConstants;
-		bool delaySign;
 		string disabledWarnings;
-		string documentationFile;
-		string emitDebugInformation;
-		string keyContainer;
-		string keyFile;
-		string langVersion;
+		bool emitDebugInformation;
 		ITaskItem[] linkResources;
 		string mainEntryPoint;
-		string moduleAssemblyName;
-		bool noConfig;
 		bool noLogo;
 		bool noStandardLib;
 		bool optimize;
@@ -45,9 +39,17 @@ namespace ICSharpCode.Build.Tasks
 		ITaskItem[] sources;
 		string targetType;
 		bool treatWarningsAsErrors;
-		int warningLevel;
-		string win32Icon;
-		string win32Resource;
+		int warningLevel = DefaultWarningLevel;
+		bool warningLevelSet;
+		
+		public bool AllowUnsafeBlocks {
+			get {
+				return allowUnsafeBlocks;
+			}
+			set {
+				allowUnsafeBlocks = value;
+			}
+		}
 		
 		public string[] AdditionalLibPaths {
 			get {
@@ -64,24 +66,6 @@ namespace ICSharpCode.Build.Tasks
 			}
 			set {
 				addModules = value;
-			}
-		}
-		
-		public bool AllowUnsafeBlocks {
-			get {
-				return allowUnsafeBlocks;
-			}
-			set {
-				allowUnsafeBlocks = value;
-			}
-		}
-		
-		public bool CheckForOverflowUnderflow {
-			get {
-				return checkForOverflowUnderflow;
-			}
-			set {
-				checkForOverflowUnderflow = value;
 			}
 		}
 		
@@ -102,7 +86,7 @@ namespace ICSharpCode.Build.Tasks
 				debugType = value;
 			}
 		}
-
+		
 		public string DefineConstants {
 			get {
 				return defineConstants;
@@ -112,16 +96,6 @@ namespace ICSharpCode.Build.Tasks
 			}
 		}
 		
-		public bool DelaySign {
-			get {
-				return delaySign;
-			}
-			
-			set {
-				delaySign = value;
-			}
-		}
-
 		public string DisabledWarnings {
 			get {
 				return disabledWarnings;
@@ -130,17 +104,8 @@ namespace ICSharpCode.Build.Tasks
 				disabledWarnings = value;
 			}
 		}
-		
-		public string DocumentationFile {
-			get {
-				return documentationFile;
-			}
-			set {
-				documentationFile = value;
-			}
-		}
-		
-		public string EmitDebugInformation {
+
+		public bool EmitDebugInformation {
 			get {
 				return emitDebugInformation;
 			}
@@ -149,33 +114,6 @@ namespace ICSharpCode.Build.Tasks
 			}
 		}
 		
-		public string KeyContainer {
-			get {
-				return keyContainer;
-			}
-			set {
-				keyContainer = value;
-			}
-		}
-		
-		public string KeyFile {
-			get {
-				return keyFile;
-			}
-			set {
-				keyFile = value;
-			}
-		}
-
-		public string LangVersion {
-			get {
-				return langVersion; 
-			}
-			set {
-				langVersion = value;
-			}
-		}
-
 		public ITaskItem[] LinkResources {
 			get {
 				return linkResources;
@@ -193,25 +131,7 @@ namespace ICSharpCode.Build.Tasks
 				mainEntryPoint = value;
 			}
 		}
-		
-		public string ModuleAssemblyName {
-			get {
-				return moduleAssemblyName;
-			}
-			set {
-				moduleAssemblyName = value;
-			}
-		}
-
-		public bool NoConfig {
-			get {
-				return noConfig;
-			}
-			set {
-				noConfig = value;
-			}
-		}
-
+	
 		public bool NoLogo {
 			get {
 				return noLogo;
@@ -220,7 +140,7 @@ namespace ICSharpCode.Build.Tasks
 				noLogo = value;
 			}
 		}
-
+		
 		public bool NoStandardLib {
 			get {
 				return noStandardLib;
@@ -229,6 +149,7 @@ namespace ICSharpCode.Build.Tasks
 				noStandardLib = value;
 			}
 		}
+
 		
 		public bool Optimize {
 			get {
@@ -307,32 +228,17 @@ namespace ICSharpCode.Build.Tasks
 			}
 			set {
 				warningLevel = value;
-			}
-		}
-		
-		public string Win32Icon {
-			get {
-				return win32Icon;
-			}
-			set {
-				win32Icon = value;
-			}
-		}
-		
-		public string Win32Resource {
-			get {
-				return win32Resource;
-			}
-			set {
-				win32Resource = value;
+				warningLevelSet = true;
 			}
 		}
 
 		public override bool Execute()
 		{
-			string args = GenerateCommandLineArguments();
-			
+			string args = GenerateCommandLineArguments();			
 			ToolPath = GenerateFullPathToTool();
+		
+			LogToolCommand(String.Concat(ToolPath, " ", args));
+			
 			MonoCompiler compiler = new MonoCompiler();
 			int returnValue = compiler.Run(ToolPath, args, GetCompilerResultsParser());
 
@@ -354,17 +260,28 @@ namespace ICSharpCode.Build.Tasks
 		}
 		
 		/// <summary>
+		/// Determines whether the warning level property has been set.
+		/// </summary>
+		protected bool IsWarningLevelSet {
+			get {
+				return warningLevelSet;
+			}
+		}
+		
+		/// <summary>
 		/// Command line arguments that will be passed to the compiler.
 		/// </summary>
 		protected virtual string GenerateCommandLineArguments()
 		{
-			CompilerCommandLineArguments args = new CompilerCommandLineArguments(this);
-			return args.ToString();
+			return String.Empty;
 		}
 		
+		/// <summary>
+		/// Gets the parser that handles the compiler output.
+		/// </summary>
 		protected virtual ICompilerResultsParser GetCompilerResultsParser()
 		{
-			return new CompilerResultsParser();
+			return null;
 		}
 	}
 }

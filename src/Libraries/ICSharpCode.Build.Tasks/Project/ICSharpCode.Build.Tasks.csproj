@@ -42,7 +42,7 @@
     <Compile Include="CompilerCommandLineArguments.cs" />
     <Compile Include="MonoCompiler.cs" />
     <Compile Include="ICompilerResultsParser.cs" />
-    <Compile Include="CompilerResultsParser.cs" />
+    <Compile Include="MonoCSharpCompilerResultsParser.cs" />
     <Compile Include="Gmcs.cs" />
     <None Include="SharpDevelop.Build.Mono.Gmcs.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -61,6 +61,12 @@
     <None Include="SharpDevelop.Build.VisualBasic.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="Mbas.cs" />
+    <None Include="SharpDevelop.Build.Mono.Mbas.targets">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Compile Include="MonoBasicCompilerResultsParser.cs" />
+    <Compile Include="MonoCSharpCompilerTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SharpDevelop.Build.CSharp.targets">

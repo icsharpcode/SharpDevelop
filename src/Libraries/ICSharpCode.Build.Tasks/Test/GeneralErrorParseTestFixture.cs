@@ -22,7 +22,7 @@ namespace ICSharpCode.Build.Tasks.Tests
 		{
 			string error = "error CS1904: `CS0169' is not a valid warning number";
 
-			Regex regex = new Regex(CompilerResultsParser.GeneralErrorPattern, RegexOptions.Compiled);
+			Regex regex = new Regex(MonoCSharpCompilerResultsParser.GeneralErrorPattern, RegexOptions.Compiled);
 			match = regex.Match(error);
 		}
 		

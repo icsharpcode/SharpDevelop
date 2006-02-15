@@ -13,7 +13,7 @@ namespace ICSharpCode.Build.Tasks
 	/// <summary>
 	/// MSBuild task for Mono's MCS.
 	/// </summary>
-	public class Mcs : MonoCompilerTask
+	public class Mcs : MonoCSharpCompilerTask
 	{
 		protected override string ToolName {
 			get {

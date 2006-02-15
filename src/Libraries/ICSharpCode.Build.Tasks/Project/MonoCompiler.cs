@@ -35,7 +35,7 @@ namespace ICSharpCode.Build.Tasks
 			
 			int returnValue = Executor.ExecWaitWithCapture(command, tempFiles, ref outputFileName, ref errorFileName);
 			
-			results = parser.Parse(tempFiles, errorFileName);
+			results = parser.Parse(tempFiles, outputFileName, errorFileName);
 			
 			File.Delete(responseFileName);
 			File.Delete(outputFileName);

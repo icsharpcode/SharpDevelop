@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<Template originator   = "Matt Ward"
+          created      = "15/02/2006"
+          lastModified = "15/02/2006">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.GtkSharpProject.Name}</Name>
+		<Category>VBNet</Category>
+		<Subcategory>Mono</Subcategory>
+		<Icon>VBNet.Project.Form</Icon>
+		<LanguageName>VBNet</LanguageName>
+		<Description>${res:Templates.Project.GtkSharpProject.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MainWindow.vb"/>
+	</Actions>
+	
+	<Solution name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options OutputType = "WinExe"/>
+
+			<PropertyGroup>
+					<TargetFrameworkVersion>Mono v1.1</TargetFrameworkVersion>
+			</PropertyGroup>
+			
+			<Imports clear="True">
+				<Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.VisualBasic.targets" />
+			</Imports>
+			
+			<ProjectItems>
+				<Reference Include="atk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="gdk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="glib-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="gtk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="pango-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+
+				<Import Include="Microsoft.VisualBasic" />
+				<Import Include="System" />
+				<Import Include="System.Collections" />
+			</ProjectItems>
+			
+			<Files>
+				<File name="MainWindow.vb"><![CDATA[${StandardHeader.VBNET}
+Imports Gtk
+Imports System
+
+Public Class MainWindow
+	Inherits Window
+	
+	Public Sub New
+		MyBase.New("MainWindow")
+		AddHandler MyBase.DeleteEvent, AddressOf MainWindowDelete
+		Me.ShowAll()
+	End Sub
+	
+	Public Shared Sub Main
+		Application.Init()
+		Dim mainWindow As New MainWindow
+		Application.Run()
+	End Sub
+	
+	Private Sub MainWindowDelete(ByVal o As Object, ByVal args As DeleteEventArgs)
+		Application.Quit()
+		args.RetVal = true
+	End Sub
+End Class
+]]></File>
+		<File name="AssemblyInfo.vb">
+			<![CDATA[Imports System.Reflection
+Imports System.Runtime.CompilerServices
+
+' Information about this assembly is defined by the following
+' attributes.
+'
+' change them to the information which is associated with the assembly
+' you compile.
+
+<assembly: AssemblyTitle("")>
+<assembly: AssemblyDescription("")>
+<assembly: AssemblyConfiguration("")>
+<assembly: AssemblyCompany("")>
+<assembly: AssemblyProduct("")>
+<assembly: AssemblyCopyright("")>
+<assembly: AssemblyTrademark("")>
+<assembly: AssemblyCulture("")>
+
+' The assembly version has following format :
+'
+' Major.Minor.Build.Revision
+'
+' You can specify all values by your own or you can build default build and revision
+' numbers with the '*' character (the default):
+
+<assembly: AssemblyVersion("1.0.*")>
+]]></File>
+			</Files>
+		</Project>
+	</Solution>
+</Template>

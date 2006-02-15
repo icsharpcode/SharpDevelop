@@ -13,53 +13,53 @@ using System.Text.RegularExpressions;
 namespace ICSharpCode.Build.Tasks.Tests
 {
 	[TestFixture]
-	public class NormalMonoErrorParseTestFixture
+	public class NormalMbasErrorParseTestFixture
 	{
 		Match match;
 		
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
 		{
-			string error = "MyClass.cs(19,7): warning CS0169: The private field `Foo.MyClass.foo' is never used";
+			string error = "Form1.vb(38,3) error BC30201: Expression expected";
 
-			Regex regex = new Regex(MonoCSharpCompilerResultsParser.NormalErrorPattern, RegexOptions.Compiled);
+			Regex regex = new Regex(MonoBasicCompilerResultsParser.NormalErrorPattern, RegexOptions.Compiled);
 			match = regex.Match(error);
 		}
 		
 		[Test]
 		public void Column()
 		{
-			Assert.AreEqual("7", match.Result("${column}"));
+			Assert.AreEqual("3", match.Result("${column}"));
 		}
 		
 		[Test]
 		public void Line()
 		{
-			Assert.AreEqual("19", match.Result("${line}"));
+			Assert.AreEqual("38", match.Result("${line}"));
 		}
 		
 		[Test]
 		public void FileName()
 		{
-			Assert.AreEqual("MyClass.cs", match.Result("${file}"));
+			Assert.AreEqual("Form1.vb", match.Result("${file}"));
 		}
 		
 		[Test]
 		public void Warning()
 		{
-			Assert.AreEqual("warning", match.Result("${error}"));
+			Assert.AreEqual("error", match.Result("${error}"));
 		}		
 		
 		[Test]
 		public void ErrorNumber()
 		{
-			Assert.AreEqual("CS0169", match.Result("${number}"));
+			Assert.AreEqual("BC30201", match.Result("${number}"));
 		}		
 		
 		[Test]
 		public void ErrorText()
 		{
-			Assert.AreEqual("The private field `Foo.MyClass.foo' is never used", match.Result("${message}"));
-		}				
+			Assert.AreEqual("Expression expected", match.Result("${message}"));
+		}	
 	}
 }

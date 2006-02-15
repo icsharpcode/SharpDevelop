@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.GtkSharpWindow.Name}"
+		  icon        = "VBNet.File.Form"
+		  category    = "VB"
+		  subcategory = "Mono"
+		  defaultname = "Window${Number}.vb"
+		  language    = "VB"/>
+	 
+	<Description>${res:Templates.File.GtkSharpWindow.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+		${ClassName}                -> Class name (generally FileNameWithoutExtension w/o 'bad' characters)
+	 -->
+	<Files>
+		<File name="${FullName}" language="VBNet"><![CDATA[${StandardHeader.VBNET}
+Imports Gtk
+
+Public Class ${ClassName}
+	Inherits Window
+	
+	Public Sub New
+		MyBase.New("${ClassName}")
+	End Sub
+End Class
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

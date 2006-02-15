@@ -13,24 +13,22 @@ using System.Text.RegularExpressions;
 
 namespace ICSharpCode.Build.Tasks
 {
-	public class CompilerResultsParser : ICompilerResultsParser
+	public class MonoBasicCompilerResultsParser : ICompilerResultsParser
 	{
-		public const string NormalErrorPattern = @"(?<file>.*)\((?<line>\d+),(?<column>\d+)\):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)";
-		public const string GeneralErrorPattern = @"(?<error>.+?)\s+(?<number>[\d\w]+?):\s+(?<message>.*)";
+		public const string NormalErrorPattern = @"(?<file>.*)\((?<line>\d+),(?<column>\d+)\)\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)";
 
 		Regex normalError = new Regex(NormalErrorPattern, RegexOptions.Compiled);
-		Regex generalError = new Regex(GeneralErrorPattern, RegexOptions.Compiled);
 		
-		public CompilerResultsParser()
+		public MonoBasicCompilerResultsParser()
 		{
 		}
 		
-		public CompilerResults Parse(TempFileCollection tempFiles, string fileName)
+		public CompilerResults Parse(TempFileCollection tempFiles, string outputFileName, string errorFileName)
 		{
 			CompilerResults results = new CompilerResults(tempFiles);
 	
 			StringBuilder compilerOutput = new StringBuilder();
-			StreamReader resultsReader = File.OpenText(fileName);
+			StreamReader resultsReader = File.OpenText(outputFileName);
 						
 			while (true) {
 				string curLine = resultsReader.ReadLine();
@@ -57,15 +55,6 @@ namespace ICSharpCode.Build.Tasks
 					error.ErrorText   = match.Result("${message}");
 	
 					results.Errors.Add(error);
-				} else {
-					match = generalError.Match(curLine);
-					if (match.Success) {
-						error.IsWarning   = match.Result("${error}") == "warning";
-						error.ErrorNumber = match.Result("${number}");
-						error.ErrorText   = match.Result("${message}");
-						
-						results.Errors.Add(error);
-					}
 				}
 			}
 			resultsReader.Close();

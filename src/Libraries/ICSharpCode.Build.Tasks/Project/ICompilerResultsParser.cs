@@ -12,6 +12,6 @@ namespace ICSharpCode.Build.Tasks
 {
 	public interface ICompilerResultsParser
 	{
-		CompilerResults Parse(TempFileCollection tempFiles, string fileName);
+		CompilerResults Parse(TempFileCollection tempFiles, string outputFileName, string errorFileName);
 	}
 }

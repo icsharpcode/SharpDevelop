@@ -1,8 +1,22 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.0.0.546
+# SharpDevelop 2.0.0.1116
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Build.Tasks", "Project\ICSharpCode.Build.Tasks.csproj", "{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Build.Tasks.Tests", "Test\ICSharpCode.Build.Tasks.Tests.csproj", "{B7C2A664-B454-4920-AC6E-318F5274B2EF}"
 EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B7C2A664-B454-4920-AC6E-318F5274B2EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7C2A664-B454-4920-AC6E-318F5274B2EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7C2A664-B454-4920-AC6E-318F5274B2EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7C2A664-B454-4920-AC6E-318F5274B2EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
 EndGlobal

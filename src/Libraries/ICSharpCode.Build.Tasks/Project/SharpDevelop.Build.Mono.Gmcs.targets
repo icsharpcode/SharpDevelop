@@ -12,7 +12,7 @@
 	           AssemblyFile="$(SharpDevelopBinPath)\ICSharpCode.Build.Tasks.dll"/>
 
    <PropertyGroup>
-        <MSBuildAllProjects>$(MSBuildAllProjects);$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.targets</MSBuildAllProjects>
+        <MSBuildAllProjects>$(MSBuildAllProjects);$(SharpDevelopBuildBinPath)\SharpDevelop.Build.Mono.Gmcs.targets</MSBuildAllProjects>
         <DefaultLanguageSourceExtension>.cs</DefaultLanguageSourceExtension>
         <Language>C#</Language>
     </PropertyGroup>

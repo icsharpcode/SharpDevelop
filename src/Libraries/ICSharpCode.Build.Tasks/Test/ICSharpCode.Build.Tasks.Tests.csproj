@@ -43,10 +43,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CompilerCommandLineTestFixture.cs" />
+    <Compile Include="MonoCSharpCompilerCommandLineTestFixture.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="NormalMonoErrorParseTestFixture.cs" />
     <Compile Include="GeneralErrorParseTestFixture.cs" />
+    <Compile Include="MonoBasicCommandLineTestFixture.cs" />
+    <Compile Include="MockMbas.cs" />
+    <Compile Include="NormalMbasErrorParseTestFixture.cs" />
+    <Compile Include="MockMonoCSharpCompilerTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\ICSharpCode.Build.Tasks.csproj">

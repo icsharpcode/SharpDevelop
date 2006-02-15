@@ -1,0 +1,5 @@
+<Categories>
+	<Category Name="VBNet">
+		<Category Name="${res:Templates.File.Categories.WindowsApplications}" SortOrder="10"/>
+	</Category>
+</Categories>

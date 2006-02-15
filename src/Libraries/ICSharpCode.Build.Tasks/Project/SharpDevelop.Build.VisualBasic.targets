@@ -133,7 +133,8 @@
               Win32Icon="$(ApplicationIcon)"
               Win32Resource="$(Win32Resource)"
               />
-
     </Target>
-
+	
+	<!-- Mono imports -->
+	<Import Condition="  '$(SharpDevelopUseMicrosoftFramework)' != 'true'  " Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.Mbas.targets"/>
 </Project>
