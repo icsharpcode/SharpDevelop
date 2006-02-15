@@ -171,11 +171,27 @@ namespace Debugger.Wrappers.CorSym
 			return pRetVal;
 		}
 		
-		public void GetSequencePoints(uint cPoints, out uint pcPoints, ref uint offsets, ref ISymUnmanagedDocument documents, ref uint lines, ref uint columns, ref uint endLines, ref uint endColumns)
+		public void GetSequencePoints(uint cPoints, out uint pcPoints, uint[] offsets, ISymUnmanagedDocument[] documents, uint[] lines, uint[] columns, uint[] endLines, uint[] endColumns)
 		{
-			Debugger.Interop.CorSym.ISymUnmanagedDocument ref_documents = documents.WrappedObject;
-			this.WrappedObject.GetSequencePoints(cPoints, out pcPoints, ref offsets, ref ref_documents, ref lines, ref columns, ref endLines, ref endColumns);
-			documents = ISymUnmanagedDocument.Wrap(ref_documents);
+			Debugger.Interop.CorSym.ISymUnmanagedDocument[] array_documents = new Debugger.Interop.CorSym.ISymUnmanagedDocument[documents.Length];
+			for (int i = 0; (i < documents.Length); i = (i + 1))
+			{
+				if ((documents[i] != null))
+				{
+					array_documents[i] = documents[i].WrappedObject;
+				}
+			}
+			this.WrappedObject.GetSequencePoints(cPoints, out pcPoints, offsets, array_documents, lines, columns, endLines, endColumns);
+			for (int i = 0; (i < documents.Length); i = (i + 1))
+			{
+				if ((array_documents[i] != null))
+				{
+					documents[i] = ISymUnmanagedDocument.Wrap(array_documents[i]);
+				} else
+				{
+					documents[i] = null;
+				}
+			}
 		}
 	}
 }

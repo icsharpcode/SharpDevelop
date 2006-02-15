@@ -39,7 +39,7 @@ namespace Debugger.Wrappers
 		
 		public static void TrackCOMObject(object comObject, Type type)
 		{
-			if (!Marshal.IsComObject(comObject)) {
+			if (comObject == null || !Marshal.IsComObject(comObject)) {
 				if (trace) Trace("Will not be tracked: {0}", type.Name);
 			} else {
 				TrackedObjectMetaData metaData;
@@ -56,7 +56,7 @@ namespace Debugger.Wrappers
 		public static void ReleaseCOMObject(object comObject, Type type)
 		{
 			TrackedObjectMetaData metaData;
-			if (trackedCOMObjects.TryGetValue(comObject, out metaData)) {
+			if (comObject != null && trackedCOMObjects.TryGetValue(comObject, out metaData)) {
 				metaData.RefCount -= 1;
 				if (metaData.RefCount == 0) {
 					Marshal.FinalReleaseComObject(comObject);

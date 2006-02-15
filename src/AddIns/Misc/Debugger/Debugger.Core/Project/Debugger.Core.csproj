@@ -355,6 +355,14 @@
     <Compile Include="Src\Wrappers\NativeMethods.cs" />
     <Compile Include="Src\Wrappers\ResourceManager.cs" />
     <Compile Include="Src\Wrappers\_SECURITY_ATTRIBUTES.cs" />
+    <Compile Include="Src\Wrappers\Util.cs" />
+    <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedBinder.cs" />
+    <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedDocument.cs" />
+    <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedMethod.cs" />
+    <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedReader.cs" />
+    <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedScope.cs" />
+    <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedVariable.cs" />
+    <Compile Include="Src\Wrappers\CorSym\SequencePoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

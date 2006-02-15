@@ -106,9 +106,27 @@ namespace Debugger.Wrappers.CorSym
 			}
 		}
 		
-		public void GetChildren(uint cChildren, out uint pcChildren, System.IntPtr children)
+		public void GetChildren(uint cChildren, out uint pcChildren, ISymUnmanagedScope[] children)
 		{
-			this.WrappedObject.GetChildren(cChildren, out pcChildren, children);
+			Debugger.Interop.CorSym.ISymUnmanagedScope[] array_children = new Debugger.Interop.CorSym.ISymUnmanagedScope[children.Length];
+			for (int i = 0; (i < children.Length); i = (i + 1))
+			{
+				if ((children[i] != null))
+				{
+					array_children[i] = children[i].WrappedObject;
+				}
+			}
+			this.WrappedObject.GetChildren(cChildren, out pcChildren, array_children);
+			for (int i = 0; (i < children.Length); i = (i + 1))
+			{
+				if ((array_children[i] != null))
+				{
+					children[i] = ISymUnmanagedScope.Wrap(array_children[i]);
+				} else
+				{
+					children[i] = null;
+				}
+			}
 		}
 		
 		public uint StartOffset
@@ -135,14 +153,50 @@ namespace Debugger.Wrappers.CorSym
 			}
 		}
 		
-		public void GetLocals(uint cLocals, out uint pcLocals, System.IntPtr locals)
+		public void GetLocals(uint cLocals, out uint pcLocals, ISymUnmanagedVariable[] locals)
 		{
-			this.WrappedObject.GetLocals(cLocals, out pcLocals, locals);
+			Debugger.Interop.CorSym.ISymUnmanagedVariable[] array_locals = new Debugger.Interop.CorSym.ISymUnmanagedVariable[locals.Length];
+			for (int i = 0; (i < locals.Length); i = (i + 1))
+			{
+				if ((locals[i] != null))
+				{
+					array_locals[i] = locals[i].WrappedObject;
+				}
+			}
+			this.WrappedObject.GetLocals(cLocals, out pcLocals, array_locals);
+			for (int i = 0; (i < locals.Length); i = (i + 1))
+			{
+				if ((array_locals[i] != null))
+				{
+					locals[i] = ISymUnmanagedVariable.Wrap(array_locals[i]);
+				} else
+				{
+					locals[i] = null;
+				}
+			}
 		}
 		
-		public void GetNamespaces(uint cNameSpaces, out uint pcNameSpaces, System.IntPtr namespaces)
+		public void GetNamespaces(uint cNameSpaces, out uint pcNameSpaces, ISymUnmanagedNamespace[] namespaces)
 		{
-			this.WrappedObject.GetNamespaces(cNameSpaces, out pcNameSpaces, namespaces);
+			Debugger.Interop.CorSym.ISymUnmanagedNamespace[] array_namespaces = new Debugger.Interop.CorSym.ISymUnmanagedNamespace[namespaces.Length];
+			for (int i = 0; (i < namespaces.Length); i = (i + 1))
+			{
+				if ((namespaces[i] != null))
+				{
+					array_namespaces[i] = namespaces[i].WrappedObject;
+				}
+			}
+			this.WrappedObject.GetNamespaces(cNameSpaces, out pcNameSpaces, array_namespaces);
+			for (int i = 0; (i < namespaces.Length); i = (i + 1))
+			{
+				if ((array_namespaces[i] != null))
+				{
+					namespaces[i] = ISymUnmanagedNamespace.Wrap(array_namespaces[i]);
+				} else
+				{
+					namespaces[i] = null;
+				}
+			}
 		}
 	}
 }

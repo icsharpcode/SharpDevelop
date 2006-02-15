@@ -7,11 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.SymbolStore;
 using System.Text;
 using System.Runtime.InteropServices;
 
 using Debugger.Wrappers.CorDebug;
+using Debugger.Wrappers.CorSym;
 using Debugger.Interop.MetaData;
 
 namespace Debugger.Wrappers.MetaData
@@ -26,22 +26,14 @@ namespace Debugger.Wrappers.MetaData
 			metaData = (IMetaDataImport)pModule.GetMetaDataInterface(ref guid);
 		}
 		
-		public SymReader GetSymReader(string fullname, string searchPath)
+		public ISymUnmanagedReader GetSymReader(string fullname, string searchPath)
 		{
-			SymReader symReader;
-			SymBinder symBinder = new SymBinder();
-			IntPtr ptr = IntPtr.Zero;
 			try {
-				ptr = Marshal.GetIUnknownForObject(metaData);
-				symReader = (SymReader)symBinder.GetReader(ptr, fullname, searchPath);
-			} catch (System.Exception) {
-				symReader = null;
-			} finally {
-				if (ptr != IntPtr.Zero) {
-					Marshal.Release(ptr);
-				}
+				ISymUnmanagedBinder symBinder = new ISymUnmanagedBinder(new Debugger.Interop.CorSym.CorSymBinder_SxSClass());
+				return symBinder.GetReaderForFile(metaData, fullname, searchPath);
+			} catch {
+				return null;
 			}
-			return symReader;
 		}
 		
 		public void Dispose()

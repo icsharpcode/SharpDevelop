@@ -7,10 +7,10 @@
 
 using System;
 using System.IO;
-using System.Diagnostics.SymbolStore;
 using System.Runtime.InteropServices;
 
 using Debugger.Wrappers.CorDebug;
+using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
 
 namespace Debugger
@@ -21,11 +21,10 @@ namespace Debugger
 		
 		bool   unloaded = false;
 		string fullPath;
-		string fullPathPDB;
 		
 		int orderOfLoading = 0;
 		ICorDebugModule corModule;
-		SymReader symReader;
+		ISymUnmanagedReader symReader;
 		MetaData metaData;
 		
 		public NDebugger Debugger {
@@ -46,7 +45,7 @@ namespace Debugger
 			}
 		}
 		
-		public SymReader SymReader {
+		public ISymUnmanagedReader SymReader {
 			get {
 				return symReader;
 			}
@@ -141,29 +140,7 @@ namespace Debugger
 			fullPath = Marshal.PtrToStringUni(pString);
 			Marshal.FreeHGlobal(pString);
 			
-			string tempPath = String.Empty;
-			string pdbFilename = String.Empty;
-			string oldPdbPath = String.Empty;
-			string newPdbPath = String.Empty;
-			try {
-				tempPath = Path.Combine(Path.GetTempPath(), Path.Combine("DebeggerPdb", new Random().Next().ToString()));
-				pdbFilename = Path.GetFileNameWithoutExtension(FullPath) + ".pdb";
-				oldPdbPath = Path.Combine(Path.GetDirectoryName(FullPath), pdbFilename);
-				newPdbPath = Path.Combine(tempPath, pdbFilename);
-				if (File.Exists(oldPdbPath)) {
-					Directory.CreateDirectory(tempPath);
-					File.Move(oldPdbPath, newPdbPath);
-				}
-				fullPathPDB = newPdbPath;
-			} catch {}
-			
-			symReader = metaData.GetSymReader(fullPath, tempPath);
-			
-			try {
-				if (File.Exists(newPdbPath) && !File.Exists(oldPdbPath)) {
-					File.Copy(newPdbPath, oldPdbPath);
-				}
-			} catch {}
+			symReader = metaData.GetSymReader(fullPath, null);
 			
 			JMCStatus = SymbolsLoaded;
 		}
@@ -177,22 +154,6 @@ namespace Debugger
 		
 		public void Dispose()
 		{
-			if (symReader != null) {
-				try {
-					System.Reflection.MethodInfo m = symReader.GetType().GetMethod("{dtor}");
-					m.Invoke(symReader, null);
-				} catch {
-					Console.WriteLine("symReader release failed. ({dtor})");
-				} finally {
-					symReader = null;
-				}
-				try {
-					File.Delete(fullPathPDB);
-				} catch {
-					Console.WriteLine("Could not delete pdb temp file");
-				}
-			}
-			
 			metaData.Dispose();
 			
 			unloaded = true;

@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Diagnostics.SymbolStore;
 using System.Collections;
 using System.Runtime.InteropServices;
 
