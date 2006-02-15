@@ -17,7 +17,7 @@ namespace Debugger.Interop.CorSym
         // Methods
         [return: MarshalAs(UnmanagedType.Interface)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern ISymUnmanagedDocument GetDocument([In] ref ushort url, [In] Guid language, [In] Guid languageVendor, [In] Guid documentType);
+        public virtual extern ISymUnmanagedDocument GetDocument([In] IntPtr url, [In] Guid language, [In] Guid languageVendor, [In] Guid documentType);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         public virtual extern void GetDocuments([In] uint cDocs, out uint pcDocs, [Out] IntPtr pDocs);
@@ -50,7 +50,7 @@ namespace Debugger.Interop.CorSym
         public virtual extern void GetNamespaces([In] uint cNameSpaces, out uint pcNameSpaces, [Out] IntPtr namespaces);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void GetSymAttribute([In] uint parent, [In] ref ushort name, [In] uint cBuffer, out uint pcBuffer, [Out] IntPtr buffer);
+        public virtual extern void GetSymAttribute([In] uint parent, [In] IntPtr name, [In] uint cBuffer, out uint pcBuffer, [Out] IntPtr buffer);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         public virtual extern void GetSymbolStoreFileName([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
@@ -62,13 +62,13 @@ namespace Debugger.Interop.CorSym
         public virtual extern void GetVariables([In] uint parent, [In] uint cVars, out uint pcVars, [Out] IntPtr pVars);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void Initialize([In, MarshalAs(UnmanagedType.IUnknown)] object importer, [In] ref ushort filename, [In] ref ushort searchPath, [In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
+        public virtual extern void Initialize([In, MarshalAs(UnmanagedType.IUnknown)] object importer, [In] IntPtr filename, [In] IntPtr searchPath, [In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void ReplaceSymbolStore([In] ref ushort filename, [In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
+        public virtual extern void ReplaceSymbolStore([In] IntPtr filename, [In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void UpdateSymbolStore([In] ref ushort filename, [In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
+        public virtual extern void UpdateSymbolStore([In] IntPtr filename, [In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
 
     }
 }

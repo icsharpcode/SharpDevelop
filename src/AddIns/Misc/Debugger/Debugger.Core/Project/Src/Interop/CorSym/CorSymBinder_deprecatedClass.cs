@@ -17,7 +17,7 @@ namespace Debugger.Interop.CorSym
         // Methods
         [return: MarshalAs(UnmanagedType.Interface)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern ISymUnmanagedReader GetReaderForFile([In, MarshalAs(UnmanagedType.IUnknown)] object importer, [In] ref ushort filename, [In] ref ushort searchPath);
+        public virtual extern ISymUnmanagedReader GetReaderForFile([In, MarshalAs(UnmanagedType.IUnknown)] object importer, [In] IntPtr filename, [In] IntPtr searchPath);
 
         [return: MarshalAs(UnmanagedType.Interface)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]

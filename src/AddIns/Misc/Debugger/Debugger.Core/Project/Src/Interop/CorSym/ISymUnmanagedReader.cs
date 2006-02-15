@@ -16,7 +16,7 @@ namespace Debugger.Interop.CorSym
     {
         [return: MarshalAs(UnmanagedType.Interface)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        ISymUnmanagedDocument GetDocument([In] ref ushort url, [In] Guid language, [In] Guid languageVendor, [In] Guid documentType);
+        ISymUnmanagedDocument GetDocument([In] IntPtr url, [In] Guid language, [In] Guid languageVendor, [In] Guid documentType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetDocuments([In] uint cDocs, out uint pcDocs, [Out] IntPtr pDocs);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -35,15 +35,15 @@ namespace Debugger.Interop.CorSym
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         ISymUnmanagedMethod GetMethodFromDocumentPosition([In, MarshalAs(UnmanagedType.Interface)] ISymUnmanagedDocument document, [In] uint line, [In] uint column);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSymAttribute([In] uint parent, [In] ref ushort name, [In] uint cBuffer, out uint pcBuffer, [Out] IntPtr buffer);
+        void GetSymAttribute([In] uint parent, [In] IntPtr name, [In] uint cBuffer, out uint pcBuffer, [Out] IntPtr buffer);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetNamespaces([In] uint cNameSpaces, out uint pcNameSpaces, [Out] IntPtr namespaces);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Initialize([In, MarshalAs(UnmanagedType.IUnknown)] object importer, [In] ref ushort filename, [In] ref ushort searchPath, [In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
+        void Initialize([In, MarshalAs(UnmanagedType.IUnknown)] object importer, [In] IntPtr filename, [In] IntPtr searchPath, [In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void UpdateSymbolStore([In] ref ushort filename, [In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
+        void UpdateSymbolStore([In] IntPtr filename, [In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void ReplaceSymbolStore([In] ref ushort filename, [In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
+        void ReplaceSymbolStore([In] IntPtr filename, [In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetSymbolStoreFileName([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]

@@ -335,14 +335,13 @@ namespace Debugger
 			     });
 		}
 		
-		public void CreateConnection(IntPtr pProcess, uint dwConnectionId, ref ushort pConnName)
+		public void CreateConnection(IntPtr pProcess, uint dwConnectionId, IntPtr pConnName)
 		{
-			ushort pName = pConnName;
 			Call(delegate {
 			     	realCallback.CreateConnection(
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugProcess>(pProcess),
 			     		dwConnectionId,
-			     		ref pName
+			     		pConnName
 			     	);
 			     });
 		}

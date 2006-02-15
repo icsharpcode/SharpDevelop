@@ -410,7 +410,7 @@ namespace Debugger
 			ExitCallback_Continue();
 		}
 
-		public void CreateConnection(ICorDebugProcess pProcess, uint dwConnectionId, ref ushort pConnName)
+		public void CreateConnection(ICorDebugProcess pProcess, uint dwConnectionId, IntPtr pConnName)
 		{
 			EnterCallback("CreateConnection", pProcess);
 			

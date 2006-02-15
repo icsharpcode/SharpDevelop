@@ -17,7 +17,7 @@ namespace Debugger.Interop.CorDebug
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void FunctionRemapOpportunity([In] IntPtr pAppDomain, [In] IntPtr pThread, [In] IntPtr pOldFunction, [In] IntPtr pNewFunction, [In] uint oldILOffset);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateConnection([In] IntPtr pProcess, [In] uint dwConnectionId, [In] ref ushort pConnName);
+        void CreateConnection([In] IntPtr pProcess, [In] uint dwConnectionId, [In] IntPtr pConnName);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void ChangeConnection([In] IntPtr pProcess, [In] uint dwConnectionId);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
