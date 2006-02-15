@@ -91,7 +91,7 @@ namespace Debugger
 		
 		public override bool Equals(object obj) 
 		{
-			return base.Equals(obj) || corBreakpoint.Equals(obj);
+			return base.Equals(obj) || (corBreakpoint != null && corBreakpoint.Equals(obj));
 		}
 		
 		public override int GetHashCode() 
