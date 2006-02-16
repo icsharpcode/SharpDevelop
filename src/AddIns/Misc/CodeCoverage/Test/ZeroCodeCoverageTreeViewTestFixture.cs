@@ -110,4 +110,3 @@ namespace ICSharpCode.CodeCoverage.Tests
 		}
 	}
 }
-

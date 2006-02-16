@@ -1,4 +1,11 @@
-﻿using System.Reflection;
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 // Information about this assembly is defined by the following
@@ -24,4 +31,3 @@ using System.Runtime.CompilerServices;
 // numbers with the '*' character (the default):
 
 [assembly: AssemblyVersion("2.0.0.1")]
-
