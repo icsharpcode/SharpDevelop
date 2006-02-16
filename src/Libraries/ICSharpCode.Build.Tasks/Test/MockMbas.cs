@@ -22,7 +22,7 @@ namespace ICSharpCode.Build.Tasks.Tests
 		/// </summary>
 		public string GetCommandLine()
 		{
-			return base.GenerateCommandLineArguments();
+			return base.GenerateResponseFileCommands();
 		}
 	}
 }

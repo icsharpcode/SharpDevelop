@@ -22,7 +22,7 @@ namespace ICSharpCode.Build.Tasks
 		}
 		
 		protected override string GenerateFullPathToTool()
-		{
+		{			
 			return MonoToolLocationHelper.GetPathToTool(ToolName);
 		}
 	}

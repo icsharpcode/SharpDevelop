@@ -40,8 +40,6 @@
     <Compile Include="Mcs.cs" />
     <Compile Include="MonoCompilerTask.cs" />
     <Compile Include="CompilerCommandLineArguments.cs" />
-    <Compile Include="MonoCompiler.cs" />
-    <Compile Include="ICompilerResultsParser.cs" />
     <Compile Include="MonoCSharpCompilerResultsParser.cs" />
     <Compile Include="Gmcs.cs" />
     <None Include="SharpDevelop.Build.Mono.Gmcs.targets">

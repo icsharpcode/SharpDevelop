@@ -25,6 +25,8 @@ namespace ICSharpCode.Build.Tasks
 		bool removeIntegerChecks;
 		string rootNamespace;
 		
+		MonoBasicCompilerResultsParser parser = new MonoBasicCompilerResultsParser();
+		
 		public ITaskItem[] Imports {
 			get {
 				return imports;
@@ -88,10 +90,7 @@ namespace ICSharpCode.Build.Tasks
 			}
 		}
 		
-		/// <summary>
-		/// Command line arguments that will be passed to the compiler.
-		/// </summary>
-		protected override string GenerateCommandLineArguments()
+		protected override string GenerateResponseFileCommands()
 		{
 			CompilerCommandLineArguments args = new CompilerCommandLineArguments();
 						
@@ -122,12 +121,7 @@ namespace ICSharpCode.Build.Tasks
 
 			return args.ToString();
 		}
-		
-		protected override ICompilerResultsParser GetCompilerResultsParser()
-		{
-			return new MonoBasicCompilerResultsParser();
-		}
-		
+			
 		protected override string ToolName {
 			get {
 				return "Mbas.exe";
@@ -137,6 +131,11 @@ namespace ICSharpCode.Build.Tasks
 		protected override string GenerateFullPathToTool()
 		{
 			return MonoToolLocationHelper.GetPathToTool(ToolName);
+		}
+		
+		protected override CompilerError ParseLine(string line)
+		{
+			return parser.ParseLine(line);
 		}
 	}
 }

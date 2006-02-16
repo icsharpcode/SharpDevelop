@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.CodeDom.Compiler;
 
 namespace ICSharpCode.Build.Tasks
 {
@@ -24,6 +25,8 @@ namespace ICSharpCode.Build.Tasks
 		bool noConfig;
 		string win32Icon;
 		string win32Resource;
+		
+		MonoCSharpCompilerResultsParser parser = new MonoCSharpCompilerResultsParser();
 		
 		public bool CheckForOverflowUnderflow {
 			get {
@@ -116,7 +119,7 @@ namespace ICSharpCode.Build.Tasks
 			}
 		}
 		
-		protected override string GenerateCommandLineArguments()
+		protected override string GenerateResponseFileCommands()
 		{
 			CompilerCommandLineArguments args = new CompilerCommandLineArguments();
 			args.AppendSwitchIfTrue("-noconfig", noConfig);	
@@ -150,9 +153,9 @@ namespace ICSharpCode.Build.Tasks
 			return args.ToString();
 		}
 		
-		protected override ICompilerResultsParser GetCompilerResultsParser()
+		protected override CompilerError ParseLine(string line)
 		{
-			return new MonoCSharpCompilerResultsParser();
+			return parser.ParseLine(line);
 		}
 	}
 }

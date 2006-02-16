@@ -39,8 +39,7 @@ namespace ICSharpCode.Build.Tasks
 		ITaskItem[] sources;
 		string targetType;
 		bool treatWarningsAsErrors;
-		int warningLevel = DefaultWarningLevel;
-		bool warningLevelSet;
+		int? warningLevel;
 		
 		public bool AllowUnsafeBlocks {
 			get {
@@ -224,39 +223,14 @@ namespace ICSharpCode.Build.Tasks
 		
 		public int WarningLevel {
 			get {
-				return warningLevel;
+				if (warningLevel.HasValue) {
+					return warningLevel.Value;
+				}
+				return DefaultWarningLevel;
 			}
 			set {
 				warningLevel = value;
-				warningLevelSet = true;
 			}
-		}
-
-		public override bool Execute()
-		{
-			string args = GenerateCommandLineArguments();			
-			ToolPath = GenerateFullPathToTool();
-		
-			LogToolCommand(String.Concat(ToolPath, " ", args));
-			
-			MonoCompiler compiler = new MonoCompiler();
-			int returnValue = compiler.Run(ToolPath, args, GetCompilerResultsParser());
-
-			int errorCount = 0;
-			foreach (CompilerError error in compiler.Results.Errors) {
-				if (error.IsWarning) {
-					Log.LogWarning("warning", error.ErrorNumber, null, error.FileName, error.Line, error.Column, error.Line, error.Column, error.ErrorText);
-				} else {
-					errorCount++;
-					Log.LogError("error", error.ErrorNumber, null, error.FileName, error.Line, error.Column, error.Line, error.Column, error.ErrorText);
-				}
-			}
-			
-			if (returnValue != 0 && errorCount == 0) {
-				Log.LogError(String.Concat("Failed to execute compiler: ", returnValue, ": ", ToolPath));
-			}
-			
-			return errorCount == 0;
 		}
 		
 		/// <summary>
@@ -264,24 +238,36 @@ namespace ICSharpCode.Build.Tasks
 		/// </summary>
 		protected bool IsWarningLevelSet {
 			get {
-				return warningLevelSet;
+				return warningLevel.HasValue;
 			}
 		}
 		
 		/// <summary>
-		/// Command line arguments that will be passed to the compiler.
+		/// Returns a compiler error from the standard output or standard
+		/// error line.
 		/// </summary>
-		protected virtual string GenerateCommandLineArguments()
-		{
-			return String.Empty;
-		}
-		
-		/// <summary>
-		/// Gets the parser that handles the compiler output.
-		/// </summary>
-		protected virtual ICompilerResultsParser GetCompilerResultsParser()
+		protected virtual CompilerError ParseLine(string line)
 		{
 			return null;
+		}
+						
+		/// <summary>
+		/// Each line of output, from either standard output or standard error
+		/// is parsed and any compiler errors are logged.  If the line cannot
+		/// be parsed it is logged using the specified message importance.
+		/// </summary>
+		protected override void LogEventsFromTextOutput(string singleLine, MessageImportance messageImportance)
+		{
+			CompilerError error = ParseLine(singleLine);
+			if (error != null) {
+				if (error.IsWarning) {
+					Log.LogWarning("warning", error.ErrorNumber, null, error.FileName, error.Line, error.Column, error.Line, error.Column, error.ErrorText);
+				} else {
+					Log.LogError("error", error.ErrorNumber, null, error.FileName, error.Line, error.Column, error.Line, error.Column, error.ErrorText);
+				}
+			} else {
+				Log.LogMessage(messageImportance, singleLine);
+			}
 		}
 	}
 }

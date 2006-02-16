@@ -44,7 +44,7 @@ namespace ICSharpCode.Build.Tasks
 			if (sdkPath.Length > 0) {
 				string toolPath = Path.Combine(sdkPath, toolName);
 				if (System.IO.File.Exists(toolPath)) {
-					return String.Concat("\"", toolPath, "\"");
+					return toolPath;
 				}
 			}
 			
