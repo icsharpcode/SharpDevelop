@@ -37,6 +37,15 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
+		public bool ShowValuesInHexadecimal {
+			get {
+				return ((WindowsDebugger)DebuggerService.CurrentDebugger).Properties.Get("ShowValuesInHexadecimal", false);
+			}
+			set {
+				((WindowsDebugger)DebuggerService.CurrentDebugger).Properties.Set("ShowValuesInHexadecimal", value);
+			}
+		}
+		
 		public DynamicTreeDebuggerRow()
 		{
 		}
@@ -68,10 +77,15 @@ namespace ICSharpCode.SharpDevelop.Services
 			image = DebuggerIcons.GetImage(variable);
 			this[1].Text = ""; // Icon
 			this[2].Text = variable.Name;
-			this[3].Text = variable.Value.AsString;
+			if (ShowValuesInHexadecimal && variable.Value is PrimitiveValue && variable.Value.IsInteger) {
+				this[3].Text = String.Format("0x{0:X}", (variable.Value as PrimitiveValue).Primitive);
+			} else {
+				this[3].Text = variable.Value.AsString;
+			}
 			this[3].AllowLabelEdit = variable.Value is PrimitiveValue &&
 			                         variable.Value.ManagedType != typeof(string) &&
-			                         !(variable is PropertyVariable);
+			                         !(variable is PropertyVariable) &&
+			                         !ShowValuesInHexadecimal;
 			
 			this.ShowPlus = variable.Value.MayHaveSubVariables;
 			this.ShowMinusWhileExpanded = true;
@@ -108,8 +122,17 @@ namespace ICSharpCode.SharpDevelop.Services
 					ClipboardWrapper.SetText(((DynamicListItem)sender).Text);
 				};
 				
+				ToolStripMenuItem hewView;
+				hewView = new ToolStripMenuItem();
+				hewView.Text = "Show values in hexadecimal";
+				hewView.Checked = ShowValuesInHexadecimal;
+				hewView.Click += delegate {
+					ShowValuesInHexadecimal = !ShowValuesInHexadecimal;
+				};
+				
 				menu.Items.AddRange(new ToolStripItem[] {
-				                    	copyItem
+				                    	copyItem,
+				                    	hewView
 				                    });
 				
 				menu.Show(e.List, e.Location);

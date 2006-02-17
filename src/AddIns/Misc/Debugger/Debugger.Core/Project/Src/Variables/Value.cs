@@ -147,7 +147,26 @@ namespace Debugger
 				default: return null;
 			}
 		}
-
+		
+		/// <summary>
+		/// Returns true if the value is signed or unsigned integer of any siz
+		/// </summary>
+		public bool IsInteger {
+			get {
+				CorElementType corType = CorType;
+				return corType == CorElementType.I1 ||
+				       corType == CorElementType.U1 ||
+				       corType == CorElementType.I2 ||
+				       corType == CorElementType.U2 ||
+				       corType == CorElementType.I4 ||
+				       corType == CorElementType.U4 ||
+				       corType == CorElementType.I8 ||
+				       corType == CorElementType.U8 ||
+				       corType == CorElementType.I  ||
+				       corType == CorElementType.U;
+			}
+		}
+		
 		internal static string CorTypeToString(CorElementType corType)
 		{
 			Type manType = CorTypeToManagedType(corType);
