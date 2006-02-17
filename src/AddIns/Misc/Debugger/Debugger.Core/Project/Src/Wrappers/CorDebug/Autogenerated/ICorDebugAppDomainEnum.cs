@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static ICorDebugAppDomainEnum Wrap(Debugger.Interop.CorDebug.ICorDebugAppDomainEnum objectToWrap)
 		{
-			return new ICorDebugAppDomainEnum(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ICorDebugAppDomainEnum(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ICorDebugAppDomainEnum()

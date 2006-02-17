@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static IStream Wrap(Debugger.Interop.CorSym.IStream objectToWrap)
 		{
-			return new IStream(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new IStream(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~IStream()

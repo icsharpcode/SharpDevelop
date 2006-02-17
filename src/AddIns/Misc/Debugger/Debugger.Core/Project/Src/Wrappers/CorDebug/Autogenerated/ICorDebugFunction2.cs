@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static ICorDebugFunction2 Wrap(Debugger.Interop.CorDebug.ICorDebugFunction2 objectToWrap)
 		{
-			return new ICorDebugFunction2(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ICorDebugFunction2(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ICorDebugFunction2()

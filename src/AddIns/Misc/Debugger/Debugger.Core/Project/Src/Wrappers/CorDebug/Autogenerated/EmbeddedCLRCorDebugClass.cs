@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static EmbeddedCLRCorDebugClass Wrap(Debugger.Interop.CorDebug.EmbeddedCLRCorDebugClass objectToWrap)
 		{
-			return new EmbeddedCLRCorDebugClass(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new EmbeddedCLRCorDebugClass(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~EmbeddedCLRCorDebugClass()

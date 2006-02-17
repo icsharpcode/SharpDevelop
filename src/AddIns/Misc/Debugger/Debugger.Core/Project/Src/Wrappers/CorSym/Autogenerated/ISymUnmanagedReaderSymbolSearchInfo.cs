@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static ISymUnmanagedReaderSymbolSearchInfo Wrap(Debugger.Interop.CorSym.ISymUnmanagedReaderSymbolSearchInfo objectToWrap)
 		{
-			return new ISymUnmanagedReaderSymbolSearchInfo(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ISymUnmanagedReaderSymbolSearchInfo(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ISymUnmanagedReaderSymbolSearchInfo()

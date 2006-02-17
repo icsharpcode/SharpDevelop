@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static CorSymReader_deprecatedClass Wrap(Debugger.Interop.CorSym.CorSymReader_deprecatedClass objectToWrap)
 		{
-			return new CorSymReader_deprecatedClass(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new CorSymReader_deprecatedClass(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~CorSymReader_deprecatedClass()

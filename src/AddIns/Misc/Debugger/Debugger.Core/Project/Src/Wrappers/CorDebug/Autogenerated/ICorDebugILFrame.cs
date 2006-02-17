@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static ICorDebugILFrame Wrap(Debugger.Interop.CorDebug.ICorDebugILFrame objectToWrap)
 		{
-			return new ICorDebugILFrame(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ICorDebugILFrame(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ICorDebugILFrame()

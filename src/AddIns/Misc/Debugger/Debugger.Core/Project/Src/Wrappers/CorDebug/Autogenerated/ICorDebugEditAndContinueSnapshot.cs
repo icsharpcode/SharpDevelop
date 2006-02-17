@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static ICorDebugEditAndContinueSnapshot Wrap(Debugger.Interop.CorDebug.ICorDebugEditAndContinueSnapshot objectToWrap)
 		{
-			return new ICorDebugEditAndContinueSnapshot(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ICorDebugEditAndContinueSnapshot(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ICorDebugEditAndContinueSnapshot()

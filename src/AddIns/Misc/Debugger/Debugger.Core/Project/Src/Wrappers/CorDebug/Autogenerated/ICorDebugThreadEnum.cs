@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static ICorDebugThreadEnum Wrap(Debugger.Interop.CorDebug.ICorDebugThreadEnum objectToWrap)
 		{
-			return new ICorDebugThreadEnum(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ICorDebugThreadEnum(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ICorDebugThreadEnum()

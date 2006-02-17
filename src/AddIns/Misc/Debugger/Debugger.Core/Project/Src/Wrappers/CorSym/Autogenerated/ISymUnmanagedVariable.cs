@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static ISymUnmanagedVariable Wrap(Debugger.Interop.CorSym.ISymUnmanagedVariable objectToWrap)
 		{
-			return new ISymUnmanagedVariable(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ISymUnmanagedVariable(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ISymUnmanagedVariable()

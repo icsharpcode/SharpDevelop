@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static CorSymWriter_SxS Wrap(Debugger.Interop.CorSym.CorSymWriter_SxS objectToWrap)
 		{
-			return new CorSymWriter_SxS(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new CorSymWriter_SxS(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~CorSymWriter_SxS()

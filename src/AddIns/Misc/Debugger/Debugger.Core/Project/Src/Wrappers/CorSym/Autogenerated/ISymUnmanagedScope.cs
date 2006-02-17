@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static ISymUnmanagedScope Wrap(Debugger.Interop.CorSym.ISymUnmanagedScope objectToWrap)
 		{
-			return new ISymUnmanagedScope(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ISymUnmanagedScope(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ISymUnmanagedScope()

@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static ISequentialStream Wrap(Debugger.Interop.CorSym.ISequentialStream objectToWrap)
 		{
-			return new ISequentialStream(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ISequentialStream(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ISequentialStream()

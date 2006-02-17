@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static ICorDebugNativeFrame Wrap(Debugger.Interop.CorDebug.ICorDebugNativeFrame objectToWrap)
 		{
-			return new ICorDebugNativeFrame(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ICorDebugNativeFrame(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ICorDebugNativeFrame()

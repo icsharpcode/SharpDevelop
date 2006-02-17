@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static ICorDebugThread Wrap(Debugger.Interop.CorDebug.ICorDebugThread objectToWrap)
 		{
-			return new ICorDebugThread(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ICorDebugThread(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ICorDebugThread()

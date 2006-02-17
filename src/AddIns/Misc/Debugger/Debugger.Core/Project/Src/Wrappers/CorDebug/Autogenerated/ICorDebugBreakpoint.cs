@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static ICorDebugBreakpoint Wrap(Debugger.Interop.CorDebug.ICorDebugBreakpoint objectToWrap)
 		{
-			return new ICorDebugBreakpoint(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ICorDebugBreakpoint(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ICorDebugBreakpoint()

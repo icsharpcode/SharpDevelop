@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static ICorDebugBreakpointEnum Wrap(Debugger.Interop.CorDebug.ICorDebugBreakpointEnum objectToWrap)
 		{
-			return new ICorDebugBreakpointEnum(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ICorDebugBreakpointEnum(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ICorDebugBreakpointEnum()

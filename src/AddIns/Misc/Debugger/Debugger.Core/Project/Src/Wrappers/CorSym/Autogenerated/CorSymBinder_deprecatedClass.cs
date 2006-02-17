@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static CorSymBinder_deprecatedClass Wrap(Debugger.Interop.CorSym.CorSymBinder_deprecatedClass objectToWrap)
 		{
-			return new CorSymBinder_deprecatedClass(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new CorSymBinder_deprecatedClass(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~CorSymBinder_deprecatedClass()

@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static ICorDebugHeapValue Wrap(Debugger.Interop.CorDebug.ICorDebugHeapValue objectToWrap)
 		{
-			return new ICorDebugHeapValue(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ICorDebugHeapValue(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ICorDebugHeapValue()

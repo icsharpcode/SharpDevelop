@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static ICorDebugManagedCallback Wrap(Debugger.Interop.CorDebug.ICorDebugManagedCallback objectToWrap)
 		{
-			return new ICorDebugManagedCallback(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ICorDebugManagedCallback(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ICorDebugManagedCallback()

@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static ISymUnmanagedBinder Wrap(Debugger.Interop.CorSym.ISymUnmanagedBinder objectToWrap)
 		{
-			return new ISymUnmanagedBinder(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ISymUnmanagedBinder(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ISymUnmanagedBinder()

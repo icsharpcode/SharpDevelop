@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static CorSymBinder_SxSClass Wrap(Debugger.Interop.CorSym.CorSymBinder_SxSClass objectToWrap)
 		{
-			return new CorSymBinder_SxSClass(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new CorSymBinder_SxSClass(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~CorSymBinder_SxSClass()

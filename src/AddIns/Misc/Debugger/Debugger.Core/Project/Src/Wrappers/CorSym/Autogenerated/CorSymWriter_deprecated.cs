@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static CorSymWriter_deprecated Wrap(Debugger.Interop.CorSym.CorSymWriter_deprecated objectToWrap)
 		{
-			return new CorSymWriter_deprecated(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new CorSymWriter_deprecated(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~CorSymWriter_deprecated()

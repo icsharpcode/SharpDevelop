@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static ISymUnmanagedNamespace Wrap(Debugger.Interop.CorSym.ISymUnmanagedNamespace objectToWrap)
 		{
-			return new ISymUnmanagedNamespace(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ISymUnmanagedNamespace(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ISymUnmanagedNamespace()

@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static ICorDebugBoxValue Wrap(Debugger.Interop.CorDebug.ICorDebugBoxValue objectToWrap)
 		{
-			return new ICorDebugBoxValue(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ICorDebugBoxValue(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ICorDebugBoxValue()

@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public static CorDebugClass Wrap(Debugger.Interop.CorDebug.CorDebugClass objectToWrap)
 		{
-			return new CorDebugClass(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new CorDebugClass(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~CorDebugClass()

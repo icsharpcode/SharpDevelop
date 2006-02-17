@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static ISymUnmanagedDocumentWriter Wrap(Debugger.Interop.CorSym.ISymUnmanagedDocumentWriter objectToWrap)
 		{
-			return new ISymUnmanagedDocumentWriter(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ISymUnmanagedDocumentWriter(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ISymUnmanagedDocumentWriter()
