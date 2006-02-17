@@ -5,16 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace Debugger.Wrappers.CorSym
+namespace Debugger.Wrappers.CorDebug
 {
 	using System;
 	
 	
-	public partial class ISymUnmanagedDocument
+	public partial class ICorDebugModule
 	{
-		public string URL {
+		public string Name {
 			get {
-				return Util.GetString(GetURL, 0);
+				return Util.GetString(GetName);
 			}
 		}
 	}

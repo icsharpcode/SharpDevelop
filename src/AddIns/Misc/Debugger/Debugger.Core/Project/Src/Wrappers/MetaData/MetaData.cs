@@ -49,64 +49,33 @@ namespace Debugger.Wrappers.MetaData
 		
 		public TypeDefProps GetTypeDefProps(uint typeToken)
 		{
-			TypeDefProps typeDefProps;
+			TypeDefProps typeDefProps = new TypeDefProps();
 			
 			typeDefProps.Token = typeToken;
-			
-			uint pStringLenght = 0; // Terminating character included in pStringLenght
-			IntPtr pString = IntPtr.Zero;
-			
-			// Get length of string
-			metaData.GetTypeDefProps(typeDefProps.Token,
-									 pString,
-									 pStringLenght,
-									 out pStringLenght,
-									 out typeDefProps.Flags,
-			                         out typeDefProps.SuperClassToken);
-			
-			// Allocate string buffer
-			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
-			
-			// Get properties
-			metaData.GetTypeDefProps(typeDefProps.Token,
-									 pString,
-									 pStringLenght,
-									 out pStringLenght,
-									 out typeDefProps.Flags,
-			                         out typeDefProps.SuperClassToken);
-			
-			typeDefProps.Name = Marshal.PtrToStringUni(pString);
-			Marshal.FreeHGlobal(pString);
+			typeDefProps.Name = 
+				Util.GetString(delegate(uint pStringLenght, out uint stringLenght, System.IntPtr pString) {
+					metaData.GetTypeDefProps(typeDefProps.Token,
+					                         pString, pStringLenght, out stringLenght, // The string to get
+					                         out typeDefProps.Flags,
+					                         out typeDefProps.SuperClassToken);
+				});
 			
 			return typeDefProps;
 		}
 		
 		public TypeRefProps GetTypeRefProps(uint typeToken)
 		{
-			TypeRefProps typeRefProps;
+			TypeRefProps typeRefProps = new TypeRefProps();
 			
 			typeRefProps.Token = typeToken;
-			
-			uint unused;
-			uint pStringLenght = 0; // Terminating character included in pStringLenght
-			IntPtr pString = IntPtr.Zero;
-			metaData.GetTypeRefProps(typeRefProps.Token,
-			                         out unused,
-			                         pString,
-			                         pStringLenght,
-									 out pStringLenght); // real string lenght
-			
-			// Allocate string buffer
-			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
-			
-			metaData.GetTypeRefProps(typeRefProps.Token,
-									 out unused,
-									 pString,
-									 pStringLenght,
-									 out pStringLenght); // real string lenght
-			
-			typeRefProps.Name = Marshal.PtrToStringUni(pString);
-			Marshal.FreeHGlobal(pString);
+			typeRefProps.Name =
+				Util.GetString(delegate(uint pStringLenght, out uint stringLenght, System.IntPtr pString) {
+					uint unused;
+					metaData.GetTypeRefProps(typeRefProps.Token,
+					                         out unused,
+					                         pString, pStringLenght,out stringLenght // The string to get
+					                         );
+				});
 			
 			return typeRefProps;
 		}
@@ -128,43 +97,23 @@ namespace Debugger.Wrappers.MetaData
 		
 		public FieldProps GetFieldProps(uint fieldToken)
 		{
-			FieldProps fieldProps;
+			FieldProps fieldProps = new FieldProps();
 			
 			fieldProps.Token = fieldToken;
-			
-			uint unused;
-			IntPtr unusedPtr = IntPtr.Zero;
-			uint pStringLenght = 0; // Terminating character included in pStringLenght
-			IntPtr pString = IntPtr.Zero;
-			metaData.GetFieldProps(fieldProps.Token,
-			                       out fieldProps.ClassToken,
-			                       pString,
-			                       pStringLenght,
-			                       out pStringLenght, // real string lenght
-			                       out fieldProps.Flags,
-			                       IntPtr.Zero,
-			                       out unused,
-			                       out unused,
-			                       out unusedPtr,
-			                       out unused);
-			
-			// Allocate string buffer
-			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
-			
-			metaData.GetFieldProps(fieldProps.Token,
-			                       out fieldProps.ClassToken,
-			                       pString,
-			                       pStringLenght,
-			                       out pStringLenght, // real string lenght
-			                       out fieldProps.Flags,
-			                       IntPtr.Zero,
-			                       out unused,
-			                       out unused,
-			                       out unusedPtr,
-			                       out unused);
-			
-			fieldProps.Name = Marshal.PtrToStringUni(pString);
-			Marshal.FreeHGlobal(pString);
+			fieldProps.Name =
+				Util.GetString(delegate(uint pStringLenght, out uint stringLenght, System.IntPtr pString) {
+					uint unused;
+					IntPtr unusedPtr = IntPtr.Zero;
+					metaData.GetFieldProps(fieldProps.Token,
+					                       out fieldProps.ClassToken,
+					                       pString, pStringLenght, out stringLenght, // The string to get
+					                       out fieldProps.Flags,
+					                       IntPtr.Zero,
+					                       out unused,
+					                       out unused,
+					                       out unusedPtr,
+					                       out unused);
+				});
 			
 			return fieldProps;
 		}
@@ -186,45 +135,24 @@ namespace Debugger.Wrappers.MetaData
 		
 		public unsafe MethodProps GetMethodProps(uint methodToken)
 		{
-			MethodProps methodProps;
+			MethodProps methodProps = new MethodProps();
 			
 			methodProps.Token = methodToken;
-			
-			uint pStringLenght = 0; // Terminating character included in pStringLenght
-			IntPtr pString = IntPtr.Zero;
-			//IntPtr pSigBlob;
-			uint sigBlobSize;
-			metaData.GetMethodProps(methodProps.Token,
-			                        out methodProps.ClassToken,
-			                        pString,
-			                        pStringLenght,
-			                        out pStringLenght, // real string lenght
-			                        out methodProps.Flags,
-			                        IntPtr.Zero,//new IntPtr(&pSigBlob),
-			                        out sigBlobSize,
-			                        out methodProps.CodeRVA,
-			                        out methodProps.ImplFlags);
-			
-			// Allocate string buffer
-			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
-			
-			metaData.GetMethodProps(methodProps.Token,
-			                        out methodProps.ClassToken,
-			                        pString,
-			                        pStringLenght,
-			                        out pStringLenght, // real string lenght
-			                        out methodProps.Flags,
-			                        IntPtr.Zero,//new IntPtr(&pSigBlob),
-			                        out sigBlobSize,
-			                        out methodProps.CodeRVA,
-			                        out methodProps.ImplFlags);
-			
-			methodProps.Name = Marshal.PtrToStringUni(pString);
-			Marshal.FreeHGlobal(pString);
+			methodProps.Name =
+				Util.GetString(delegate(uint pStringLenght, out uint stringLenght, System.IntPtr pString) {
+					uint sigBlobSize;
+					metaData.GetMethodProps(methodProps.Token,
+					                        out methodProps.ClassToken,
+					                        pString, pStringLenght, out stringLenght, // The string to get
+					                        out methodProps.Flags,
+					                        IntPtr.Zero,//new IntPtr(&pSigBlob),
+					                        out sigBlobSize,
+					                        out methodProps.CodeRVA,
+					                        out methodProps.ImplFlags);
+				});
 			
 			methodProps.Signature = null;
 			//methodProps.Signature = new SignatureStream(pSigBlob, sigBlobSize);
-			
 			//Marshal.FreeCoTaskMem(pSigBlob);
 			
 			return methodProps;
@@ -239,40 +167,21 @@ namespace Debugger.Wrappers.MetaData
 		
 		public ParamProps GetParamProps(uint paramToken)
 		{
-			ParamProps paramProps;
+			ParamProps paramProps = new ParamProps();
 			
 			paramProps.Token = paramToken;
-			
-			uint unused;
-			uint pStringLenght = 0; // Terminating character included in pStringLenght
-			IntPtr pString = IntPtr.Zero;
-			metaData.GetParamProps(paramProps.Token,
-			                       out paramProps.MethodToken,
-			                       out paramProps.ParameterSequence,
-			                       pString,
-			                       pStringLenght,
-			                       out pStringLenght, // real string lenght
-			                       out paramProps.Flags,
-			                       out unused,
-			                       IntPtr.Zero,
-			                       out unused);
-			
-			// Allocate string buffer
-			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
-			
-			metaData.GetParamProps(paramProps.Token,
-			                       out paramProps.MethodToken,
-			                       out paramProps.ParameterSequence,
-			                       pString,
-			                       pStringLenght,
-			                       out pStringLenght, // real string lenght
-			                       out paramProps.Flags,
-			                       out unused,
-			                       IntPtr.Zero,
-			                       out unused);
-			
-			paramProps.Name = Marshal.PtrToStringUni(pString);
-			Marshal.FreeHGlobal(pString);
+			paramProps.Name =
+				Util.GetString(delegate(uint pStringLenght, out uint stringLenght, System.IntPtr pString) {
+					uint unused;
+					metaData.GetParamProps(paramProps.Token,
+					                       out paramProps.MethodToken,
+					                       out paramProps.ParameterSequence,
+					                       pString, pStringLenght, out stringLenght, // The string to get
+					                       out paramProps.Flags,
+					                       out unused,
+					                       IntPtr.Zero,
+					                       out unused);
+				});
 			
 			return paramProps;
 		}

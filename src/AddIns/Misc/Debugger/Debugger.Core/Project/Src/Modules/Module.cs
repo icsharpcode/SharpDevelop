@@ -127,18 +127,7 @@ namespace Debugger
 			
 			metaData = new MetaData(pModule);
 			
-			uint pStringLenght = 0; // Terminating character included in pStringLenght
-			IntPtr pString = IntPtr.Zero;
-			pModule.GetName(pStringLenght,
-							out pStringLenght, // real string lenght
-			                pString);
-			// Allocate string buffer
-			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
-			pModule.GetName(pStringLenght,
-							out pStringLenght, // real string lenght
-			                pString);
-			fullPath = Marshal.PtrToStringUni(pString);
-			Marshal.FreeHGlobal(pString);
+			fullPath = pModule.Name;
 			
 			symReader = metaData.GetSymReader(fullPath, null);
 			
