@@ -80,6 +80,9 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\ShowVisitCountCommand.cs" />
+    <Compile Include="Src\ShowSourceCodeCommand.cs" />
+    <Compile Include="Src\ShowDisplayOptionsDropDown.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

@@ -6,6 +6,8 @@
 // </file>
 
 using ICSharpCode.Core;
+using ICSharpCode.TextEditor;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -16,69 +18,21 @@ namespace ICSharpCode.CodeCoverage
 	{
 		CodeCoverageTreeView treeView;
 		ListView listView;
-		SplitContainer splitContainer;
+		SplitContainer verticalSplitContainer;
+		SplitContainer horizontalSplitContainer;
+		TextEditorControl textEditorControl;
 		ColumnHeader visitCountColumnHeader;
 		ColumnHeader startLineColumnHeader;
 		ColumnHeader endLineColumnHeader;
 		ColumnHeader startColumnColumnHeader;
 		ColumnHeader endColumnColumnHeader;
 		ToolStrip toolStrip;
+		bool showSourceCodePanel;
+		bool showVisitCountPanel = true;
 		
 		public CodeCoverageControl()
 		{
-			// TreeView
-			treeView = new CodeCoverageTreeView();
-			treeView.Dock = DockStyle.Fill;
-			treeView.ImageList = CodeCoverageImageList.ImageList;
-			treeView.AfterSelect += CodeCoverageTreeViewAfterSelect;
-			
-			// ListView
-			listView = new ListView();
-			listView.View = View.Details;
-			listView.Dock = DockStyle.Fill;
-			listView.FullRowSelect = true;
-			listView.HideSelection = false;
-			listView.ItemActivate += ListViewItemActivate;
-			
-			visitCountColumnHeader = new ColumnHeader();
-			visitCountColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.VisitCount}");
-			visitCountColumnHeader.Width = 80;
-			
-			startLineColumnHeader = new ColumnHeader();
-			startLineColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.Line}");
-			startLineColumnHeader.Width = 80;
-				
-			startColumnColumnHeader = new ColumnHeader();
-			startColumnColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.Column}");
-			startColumnColumnHeader.Width = 80;
-
-			endLineColumnHeader = new ColumnHeader();
-			endLineColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.EndLine}");
-			endLineColumnHeader.Width = 80;
-
-			endColumnColumnHeader = new ColumnHeader();
-			endColumnColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.EndColumn}");
-			endColumnColumnHeader.Width = 80;
-
-			listView.Columns.AddRange(new ColumnHeader[] {visitCountColumnHeader,
-			                          startLineColumnHeader,
-			                          startColumnColumnHeader,
-			                          endLineColumnHeader,
-			                          endColumnColumnHeader});
-			
-			// SplitContainer.
-			splitContainer = new SplitContainer();
-			splitContainer.SplitterWidth = 2;
-			splitContainer.Dock = DockStyle.Fill;
-			splitContainer.Panel1.Controls.Add(treeView);
-			splitContainer.Panel2.Controls.Add(listView);
-			
-			Controls.Add(splitContainer);
-			
-			// Toolstrip
-			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/CodeCoveragePad/Toolbar");
-			toolStrip.GripStyle = ToolStripGripStyle.Hidden;
-			Controls.Add(toolStrip);
+			UpdateDisplay();
 		}
 		
 		public void UpdateToolbar()
@@ -95,12 +49,164 @@ namespace ICSharpCode.CodeCoverage
 		public void Clear()
 		{
 			treeView.Clear();
-			listView.Items.Clear();
+			if (listView != null) {
+				listView.Items.Clear();
+			}
+			if (textEditorControl != null) {
+				textEditorControl.FileName = null;
+				textEditorControl.Text = String.Empty;
+			}
+		}
+		
+		public bool ShowSourceCodePanel {
+			get {
+				return showSourceCodePanel;
+			}
+			set {
+				if (showSourceCodePanel != value) {
+					showSourceCodePanel = value;
+					OnShowSourceCodePanelChanged();
+					UpdateDisplay();
+					DisplaySelectedItem(treeView.SelectedNode as CodeCoverageTreeNode);					
+				}
+			}
+		}
+		
+		public bool ShowVisitCountPanel {
+			get {
+				return showVisitCountPanel;
+			}
+			set {
+				if (showVisitCountPanel != value) {
+					showVisitCountPanel = value;
+					OnShowVisitCountPanelChanged();
+					UpdateDisplay();
+					DisplaySelectedItem(treeView.SelectedNode as CodeCoverageTreeNode);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Adds or removes the visit count list view or the source code 
+		/// panel.
+		/// </summary>
+		void UpdateDisplay()
+		{
+			CreateTreeView();
+
+			if (showVisitCountPanel) {
+				CreateListView();
+			} else {
+				DisposeListView();
+			}
+			
+			if (showSourceCodePanel) {
+				CreateTextEditor();
+			} else {
+				DisposeTextEditor();
+			}
+			
+			if (showVisitCountPanel || showSourceCodePanel) {
+				CreateVerticalSplitContainer();
+			} else {
+				DisposeVerticalSplitContainer();
+			}
+			
+			if (showSourceCodePanel && showVisitCountPanel) {
+				CreateHorizontalSplitContainer();
+			} else {
+				DisposeHorizontalSplitContainer();
+			}
+			
+			// Add tree view.
+			if (showVisitCountPanel || showSourceCodePanel) {
+				if (Controls.Contains(treeView)) {
+					Controls.Remove(treeView);
+				}
+				if (!verticalSplitContainer.Panel1.Controls.Contains(treeView)) {
+					verticalSplitContainer.Panel1.Controls.Add(treeView);
+				}
+			} else {
+				if (!Controls.Contains(treeView)) {
+					Controls.Add(treeView);
+				}
+			}		
+			
+			// Add list view.
+			if (showVisitCountPanel) {
+				if (showSourceCodePanel) {
+					if (verticalSplitContainer.Panel2.Controls.Contains(listView)) {
+						verticalSplitContainer.Panel2.Controls.Remove(listView);
+					}
+					if (!horizontalSplitContainer.Panel1.Controls.Contains(listView)) {
+						horizontalSplitContainer.Panel1.Controls.Add(listView);
+					}
+				} else {
+					if (!verticalSplitContainer.Panel2.Controls.Contains(listView)) {
+						verticalSplitContainer.Panel2.Controls.Add(listView);
+					}
+				}
+			}
+			
+			// Add text editor
+			if (showSourceCodePanel) {
+				if (showVisitCountPanel) {
+					if (verticalSplitContainer.Panel2.Controls.Contains(textEditorControl)) {
+						verticalSplitContainer.Panel2.Controls.Remove(textEditorControl);
+					}
+					if (!horizontalSplitContainer.Panel2.Controls.Contains(textEditorControl)) {
+						horizontalSplitContainer.Panel2.Controls.Add(textEditorControl);
+					}
+				} else {
+					if (!verticalSplitContainer.Panel2.Controls.Contains(textEditorControl)) {
+						verticalSplitContainer.Panel2.Controls.Add(textEditorControl);
+					}
+				}
+			}
+			
+			// Add vertical split container.
+			if (showVisitCountPanel || showSourceCodePanel) {
+				if (!Controls.Contains(verticalSplitContainer)) {
+					Controls.Add(verticalSplitContainer);
+				}
+			}		
+			
+			// Add horizontal split container.
+			if (showVisitCountPanel && showSourceCodePanel) {
+				if (!verticalSplitContainer.Panel2.Controls.Contains(horizontalSplitContainer)) {
+					verticalSplitContainer.Panel2.Controls.Add(horizontalSplitContainer);
+				}
+			}
+			
+			// Add toolstrip - need to re-add it last otherwise the
+			// other controls will be displayed underneath it.
+			if (toolStrip == null) {
+				toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/CodeCoveragePad/Toolbar");
+				toolStrip.GripStyle = ToolStripGripStyle.Hidden;
+			}
+			if (Controls.Contains(toolStrip)) {
+				Controls.Remove(toolStrip);
+			}
+			Controls.Add(toolStrip);	
 		}
 		
 		void CodeCoverageTreeViewAfterSelect(object sender, TreeViewEventArgs e)
 		{
-			UpdateListView((CodeCoverageTreeNode)e.Node);
+			DisplaySelectedItem((CodeCoverageTreeNode)e.Node);
+		}
+		
+		void DisplaySelectedItem(CodeCoverageTreeNode node)
+		{
+			if (node == null) {
+				return;
+			}
+			
+			if (listView != null) {
+				UpdateListView(node);
+			} 
+			if (textEditorControl != null) {
+				UpdateTextEditor(node);
+			}
 		}
 		
 		void UpdateListView(CodeCoverageTreeNode node)
@@ -115,6 +221,24 @@ namespace ICSharpCode.CodeCoverage
 				}
 			} finally {
 				listView.EndUpdate();
+			}
+		}
+		
+		void UpdateTextEditor(CodeCoverageTreeNode node)
+		{
+			CodeCoverageClassTreeNode classNode = node as CodeCoverageClassTreeNode;
+			CodeCoverageMethodTreeNode methodNode = node as CodeCoverageMethodTreeNode;
+			if (classNode != null && classNode.Nodes.Count > 0) {
+				methodNode = (CodeCoverageMethodTreeNode)classNode.Nodes[0];
+			} 
+			
+			if (methodNode != null && methodNode.Method.SequencePoints.Count > 0) {
+				CodeCoverageSequencePoint sequencePoint = methodNode.Method.SequencePoints[0];
+				if (classNode == null) {
+					OpenFile(sequencePoint.Document, sequencePoint.Line - 1, sequencePoint.Column - 1);
+				} else {
+					OpenFile(sequencePoint.Document, 1, 1);
+				}
 			}
 		}
 		
@@ -151,6 +275,240 @@ namespace ICSharpCode.CodeCoverage
 				if (sequencePoint.Document.Length > 0) {
 					FileService.JumpToFilePosition(sequencePoint.Document, sequencePoint.Line - 1, sequencePoint.Column - 1);
 				}
+			}
+		}
+		
+		void OpenFile(string fileName, int line, int column)
+		{
+			if (fileName != textEditorControl.FileName) {
+				textEditorControl.LoadFile(fileName, true, true); 
+			}
+			textEditorControl.ActiveTextAreaControl.ScrollTo(int.MaxValue);
+			textEditorControl.ActiveTextAreaControl.Caret.Line = line - 1;
+			textEditorControl.ActiveTextAreaControl.ScrollToCaret(); 
+			CodeCoverageService.ShowCodeCoverage(textEditorControl, fileName);
+		}
+		
+		void CreateTreeView()
+		{
+			if (treeView != null) {
+				return;
+			}
+			
+			treeView = new CodeCoverageTreeView();
+			treeView.Dock = DockStyle.Fill;
+			treeView.ImageList = CodeCoverageImageList.ImageList;
+			treeView.AfterSelect += CodeCoverageTreeViewAfterSelect;
+			
+			if (CodeCoverageService.Results != null) {
+				AddModules(CodeCoverageService.Results.Modules);
+			}
+		}
+		
+		void DisposeTreeView()
+		{
+			if (treeView == null) {
+				return;
+			}
+			
+			treeView.AfterSelect -= CodeCoverageTreeViewAfterSelect;
+			if (Controls.Contains(treeView)) {
+				Controls.Remove(treeView);
+			}
+			if (verticalSplitContainer != null && verticalSplitContainer.Panel1.Controls.Contains(treeView)) {
+				verticalSplitContainer.Panel1.Controls.Remove(treeView);
+			}
+			treeView.Dispose();
+			treeView = null;
+		}
+
+		void CreateListView()
+		{
+			if (listView != null) {
+				return;
+			}
+			
+			listView = new ListView();
+			listView.View = View.Details;
+			listView.Dock = DockStyle.Fill;
+			listView.FullRowSelect = true;
+			listView.HideSelection = false;
+			listView.ItemActivate += ListViewItemActivate;
+			
+			visitCountColumnHeader = new ColumnHeader();
+			visitCountColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.VisitCount}");
+			visitCountColumnHeader.Width = 80;
+			
+			startLineColumnHeader = new ColumnHeader();
+			startLineColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.Line}");
+			startLineColumnHeader.Width = 80;
+				
+			startColumnColumnHeader = new ColumnHeader();
+			startColumnColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.Column}");
+			startColumnColumnHeader.Width = 80;
+
+			endLineColumnHeader = new ColumnHeader();
+			endLineColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.EndLine}");
+			endLineColumnHeader.Width = 80;
+
+			endColumnColumnHeader = new ColumnHeader();
+			endColumnColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.EndColumn}");
+			endColumnColumnHeader.Width = 80;
+
+			listView.Columns.AddRange(new ColumnHeader[] {visitCountColumnHeader,
+			   	                      startLineColumnHeader,
+			                          startColumnColumnHeader,
+			                          endLineColumnHeader,
+			                          endColumnColumnHeader});
+		}
+						
+		void DisposeListView()
+		{
+			if (listView == null) {
+				return;
+			}
+			
+			if (verticalSplitContainer.Panel2.Controls.Contains(listView)) {
+				verticalSplitContainer.Panel2.Controls.Remove(listView);
+			}
+			
+			if (horizontalSplitContainer != null && horizontalSplitContainer.Panel1.Controls.Contains(listView)) {
+				horizontalSplitContainer.Panel1.Controls.Remove(listView);
+			}
+
+			listView.ItemActivate -= ListViewItemActivate;
+			listView.Dispose();
+			listView = null;
+		}
+		
+		void CreateVerticalSplitContainer()
+		{
+			if (verticalSplitContainer != null) {
+				return;
+			}
+			
+			verticalSplitContainer = new SplitContainer();
+			verticalSplitContainer.SplitterWidth = 2;
+			verticalSplitContainer.Dock = DockStyle.Fill;
+		}
+				
+		void DisposeVerticalSplitContainer()
+		{
+			if (verticalSplitContainer == null) {
+				return;
+			}
+			
+			if (horizontalSplitContainer != null && verticalSplitContainer.Panel2.Controls.Contains(horizontalSplitContainer)) {
+				verticalSplitContainer.Panel2.Controls.Remove(horizontalSplitContainer);
+			}
+			
+			if (listView != null && verticalSplitContainer.Panel2.Controls.Contains(listView)) {
+				verticalSplitContainer.Panel2.Controls.Remove(listView);
+			}
+			
+			if (treeView != null && verticalSplitContainer.Panel1.Controls.Contains(treeView)) {
+				verticalSplitContainer.Panel1.Controls.Remove(treeView);
+			}
+			
+			verticalSplitContainer.Dispose();
+			verticalSplitContainer = null;
+		}
+		
+		void CreateHorizontalSplitContainer()
+		{
+			if (horizontalSplitContainer != null) {
+				return;
+			}
+			
+			horizontalSplitContainer = new SplitContainer();
+			horizontalSplitContainer.SplitterWidth = 2;
+			horizontalSplitContainer.Orientation = Orientation.Horizontal;
+			horizontalSplitContainer.Dock = DockStyle.Fill;
+		}
+				
+		void DisposeHorizontalSplitContainer()
+		{
+			if (horizontalSplitContainer == null) {
+				return;
+			}
+			
+			if (listView != null && horizontalSplitContainer.Panel1.Controls.Contains(listView)) {
+				horizontalSplitContainer.Panel1.Controls.Remove(listView);
+			}
+			
+			if (textEditorControl != null && horizontalSplitContainer.Panel2.Controls.Contains(textEditorControl)) {
+				horizontalSplitContainer.Panel2.Controls.Remove(textEditorControl);
+			}
+			
+			if (verticalSplitContainer != null && verticalSplitContainer.Panel2.Controls.Contains(horizontalSplitContainer)) {
+				verticalSplitContainer.Panel2.Controls.Remove(horizontalSplitContainer);
+			}
+			
+			horizontalSplitContainer.Dispose();
+			horizontalSplitContainer = null;
+		}
+		
+		void CreateTextEditor()
+		{
+			if (textEditorControl != null) {
+				return;
+			}
+			
+			textEditorControl = new TextEditorControl();
+			textEditorControl.Dock = DockStyle.Fill;
+			textEditorControl.Document.ReadOnly = true;
+			textEditorControl.TextEditorProperties = new SharpDevelopTextEditorProperties();
+			textEditorControl.ActiveTextAreaControl.TextArea.DoubleClick += TextEditorControlDoubleClick;
+		}
+		
+		void DisposeTextEditor()
+		{
+			if (textEditorControl == null) {
+				return;
+			}
+			
+			if (verticalSplitContainer.Panel2.Controls.Contains(textEditorControl)) {
+				verticalSplitContainer.Panel2.Controls.Remove(textEditorControl);
+			}
+			
+			if (horizontalSplitContainer != null && horizontalSplitContainer.Panel2.Controls.Contains(textEditorControl)) {
+				horizontalSplitContainer.Panel2.Controls.Remove(textEditorControl);
+			}
+			
+			textEditorControl.ActiveTextAreaControl.TextArea.DoubleClick -= TextEditorControlDoubleClick;
+			textEditorControl.Dispose();
+			textEditorControl = null;
+		}
+		
+		void TextEditorControlDoubleClick(object sender, EventArgs e)
+		{
+			string fileName = textEditorControl.FileName;
+			if (fileName != null) {
+				Caret caret = textEditorControl.ActiveTextAreaControl.Caret;
+				FileService.JumpToFilePosition(fileName, caret.Line, caret.Column);
+			}
+		}
+		
+		/// <summary>
+		/// If the treeview is to be moved to a different parent then
+		/// it needs to be recreated otherwise the OnBeforeExpand method
+		/// is never called.
+		/// </summary>
+		void OnShowVisitCountPanelChanged()
+		{
+			if ((showVisitCountPanel && !showSourceCodePanel) ||
+			    (!showVisitCountPanel && !showSourceCodePanel)) {
+				// Tree view will be moved to a different parent.
+				DisposeTreeView();
+			}
+		}
+		
+		void OnShowSourceCodePanelChanged()
+		{
+			if ((showSourceCodePanel && !showVisitCountPanel) ||
+			    (!showSourceCodePanel && !showVisitCountPanel)) {
+				// Tree view will be moved to a different parent.
+				DisposeTreeView();
 			}
 		}
 	}

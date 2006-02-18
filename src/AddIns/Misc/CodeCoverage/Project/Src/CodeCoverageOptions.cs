@@ -22,6 +22,8 @@ namespace ICSharpCode.CodeCoverage
 		public static readonly string NotVisitedForeColorProperty     = "NotVisitedForeColor";
 		public static readonly string NCoverFileNameProperty          = "NCoverFileName";
 		public static readonly string CodeCoverageHighlightedProperty = "CodeCoverageHighlighted";
+		public static readonly string ShowSourceCodePanelProperty     = "ShowSourceCodePanel";
+		public static readonly string ShowVisitCountPanelProperty     = "ShowVisitCountPanel";
 		#endregion
 		
 		static Properties properties;
@@ -58,6 +60,30 @@ namespace ICSharpCode.CodeCoverage
 			}
 			set {
 				Properties.Set<bool>(CodeCoverageHighlightedProperty, value);
+			}
+		}
+		
+		/// <summary>
+		/// Shows/hides the source code panel in the code coverage pad.
+		/// </summary>
+		public static bool ShowSourceCodePanel {
+			get {
+				return Properties.Get<bool>(ShowSourceCodePanelProperty, false);
+			}
+			set {
+				Properties.Set<bool>(ShowSourceCodePanelProperty, value);
+			}
+		}
+
+		/// <summary>
+		/// Shows/hides the visit count panel in the code coverage pad.
+		/// </summary>
+		public static bool ShowVisitCountPanel {
+			get {
+				return Properties.Get<bool>(ShowVisitCountPanelProperty, true);
+			}
+			set {
+				Properties.Set<bool>(ShowVisitCountPanelProperty, value);
 			}
 		}
 

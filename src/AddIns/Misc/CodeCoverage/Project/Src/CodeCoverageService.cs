@@ -9,6 +9,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.TextEditor;
 using System;
 using System.Collections.Generic;
 
@@ -103,6 +104,15 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
+		public static void ShowCodeCoverage(TextEditorControl textEditor, string fileName)
+		{
+			List<CodeCoverageSequencePoint> sequencePoints = results.GetSequencePoints(fileName);
+			if (sequencePoints.Count > 0) {
+				codeCoverageHighlighter.AddMarkers(textEditor.Document.MarkerStrategy, sequencePoints);
+				textEditor.Refresh();
+			}
+		}
+		
 		static void ShowCodeCoverage()
 		{
 			// Highlight any open files.
@@ -131,13 +141,9 @@ namespace ICSharpCode.CodeCoverage
 		
 		static void ShowCodeCoverage(IViewContent view)
 		{
-			TextEditorDisplayBindingWrapper textEditor = view as TextEditorDisplayBindingWrapper;
-			if (textEditor != null && view.FileName != null) {
-				List<CodeCoverageSequencePoint> sequencePoints = results.GetSequencePoints(view.FileName);
-				if (sequencePoints.Count > 0) {
-					codeCoverageHighlighter.AddMarkers(textEditor.textAreaControl.Document.MarkerStrategy, sequencePoints);
-					textEditor.textAreaControl.Refresh();
-				}
+			TextEditorDisplayBindingWrapper displayBindingWrapper = view as TextEditorDisplayBindingWrapper;
+			if (displayBindingWrapper != null && displayBindingWrapper.TextEditorControl != null && view.FileName != null) {
+				ShowCodeCoverage(displayBindingWrapper.TextEditorControl, view.FileName);
 			}
 		}
 		

@@ -32,6 +32,21 @@
 		             tooltip = "${res:ICSharpCode.CodeCoverage.ToggleCodeCoverage}"
 		             type    = "CheckBox"
 		             class   = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
+		<ToolbarItem id      = "CodeCoveragePadDisplayOptionsSeparator" type = "Separator"/>
+		<ToolbarItem id      = "CodeCoveragePadDisplayOptions"
+		             type    = "DropDownButton"
+		             icon    = "Icons.16x16.Options"
+		             tooltip = "Display Options"
+		             class   = "ICSharpCode.CodeCoverage.ShowDisplayOptionsDropDown">
+			<MenuItem id    = "ShowVisitCountOption"
+			          type  = "CheckBox"
+			          label = "Show Visit Count"
+			          class = "ICSharpCode.CodeCoverage.ShowVisitCountCommand"/>
+			<MenuItem id    = "ShowSourceCodeOption"
+			          type  = "CheckBox"
+			          label = "Show Source Code"
+			          class = "ICSharpCode.CodeCoverage.ShowSourceCodeCommand"/>
+		</ToolbarItem>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">

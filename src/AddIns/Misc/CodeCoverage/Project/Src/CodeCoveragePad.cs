@@ -7,6 +7,7 @@
 
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.TextEditor;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -24,13 +25,13 @@ namespace ICSharpCode.CodeCoverage
 			instance = this;
 			
 			codeCoverageControl = new CodeCoverageControl();
-			if (CodeCoverageService.Results != null) {
-				codeCoverageControl.AddModules(CodeCoverageService.Results.Modules);
-			}
 			codeCoverageControl.UpdateToolbar();
 					
 			ProjectService.SolutionClosed += SolutionClosed;
 			ProjectService.SolutionLoaded += SolutionLoaded;
+			
+			ShowSourceCodePanel = CodeCoverageOptions.ShowSourceCodePanel;
+			ShowVisitCountPanel = CodeCoverageOptions.ShowVisitCountPanel;
 		}
 		
 		public static CodeCoveragePad Instance {
@@ -76,6 +77,24 @@ namespace ICSharpCode.CodeCoverage
 			codeCoverageControl.Clear();
 		}
 		
+		public bool ShowSourceCodePanel {
+			get {
+				return codeCoverageControl.ShowSourceCodePanel;
+			}
+			set {
+				codeCoverageControl.ShowSourceCodePanel = value;
+			}
+		}
+		
+		public bool ShowVisitCountPanel {
+			get {
+				return codeCoverageControl.ShowVisitCountPanel;
+			}
+			set {
+				codeCoverageControl.ShowVisitCountPanel = value;
+			}
+		}
+		
 		void SolutionLoaded(object sender, EventArgs e)
 		{
 			codeCoverageControl.UpdateToolbar();
@@ -83,6 +102,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		void SolutionClosed(object sender, EventArgs e)
 		{
+			ClearCodeCoverageResults();
 			codeCoverageControl.UpdateToolbar();
 		}
 	}
