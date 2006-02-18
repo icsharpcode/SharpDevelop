@@ -302,6 +302,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 			c.Methods.Add(invokeMethod);
 			invokeMethod = new DefaultMethod("BeginInvoke", CreateReturnType(typeof(IAsyncResult)), ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, c);
 			ConvertParameters(node.Parameters, invokeMethod);
+			if (invokeMethod.Parameters == DefaultParameter.EmptyParameterList) {
+				invokeMethod.Parameters = new List<IParameter>();
+			}
 			invokeMethod.Parameters.Add(new DefaultParameter("callback", CreateReturnType(typeof(AsyncCallback)), DomRegion.Empty));
 			invokeMethod.Parameters.Add(new DefaultParameter("object", ReflectionReturnType.Object, DomRegion.Empty));
 			c.Methods.Add(invokeMethod);

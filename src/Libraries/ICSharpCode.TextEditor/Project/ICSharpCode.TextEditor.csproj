@@ -17,7 +17,7 @@
     <RootNamespace>ICSharpCode.TextEditor</RootNamespace>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <BaseAddress>134217728</BaseAddress>
+    <BaseAddress>90177536</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
