@@ -26,15 +26,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public enum OpenFileTabState {
 			Nothing             = 0,
 			FileDirty           = 1,
-			ClickedWindowIsForm = 2,
+			FileReadOnly        = 2,
 			FileUntitled        = 4
 		}
 		
-		OpenFileTabState internalState = OpenFileTabState.Nothing;
-
 		public System.Enum InternalState {
 			get {
-				return internalState;
+				OpenFileTabState state = OpenFileTabState.Nothing;
+				if (content != null) {
+					if (content.IsDirty)    state |= OpenFileTabState.FileDirty;
+					if (content.IsReadOnly) state |= OpenFileTabState.FileReadOnly;
+					if (content.IsUntitled) state |= OpenFileTabState.FileUntitled;
+				}
+				return state;
 			}
 		}
 		#endregion
@@ -42,15 +46,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		TabControl   viewTabControl = null;
 		IViewContent content;
 		
-		string myUntitledTitle     = null;
-		
 		public string Title {
 			get {
 				return Text;
 			}
 			set {
 				Text = value;
-				OnTitleChanged(null);
+				OnTitleChanged(EventArgs.Empty);
 			}
 		}
 		
@@ -58,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get {
 				if (viewTabControl != null) {
 					int selectedIndex = 0;
-					if (viewTabControl.InvokeRequired) {
+					if (WorkbenchSingleton.InvokeRequired) {
 						// the window might have been disposed just here, invoke on the
 						// Workbench instead
 						selectedIndex = (int)WorkbenchSingleton.SafeThreadCall(this, "GetSelectedIndex");
@@ -118,8 +120,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			content.TitleNameChanged += new EventHandler(SetTitleEvent);
 			content.DirtyChanged     += new EventHandler(SetTitleEvent);
-			
-			SetTitleEvent(null, null);
 			
 			this.DockableAreas = WeifenLuo.WinFormsUI.DockAreas.Document;
 			this.DockPadding.All = 2;
@@ -230,50 +230,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SetTitleEvent(object sender, EventArgs e)
 		{
-			internalState = OpenFileTabState.Nothing;
-			
 			if (content == null) {
 				return;
 			}
 			SetToolTipText();
-			string newTitle = "";
+			string newTitle;
 			if (content.TitleName == null) {
-				myUntitledTitle = Path.GetFileNameWithoutExtension(content.UntitledName);
-//				if (myUntitledTitle == null) {
-//					string baseName
-//					int    number    = 1;
-//					bool   found     = true;
-//					while (found) {
-//						found = false;
-//						foreach (IViewContent windowContent in WorkbenchSingleton.Workbench.ViewContentCollection) {
-//							string title = windowContent.WorkbenchWindow.Title;
-//							if (title.EndsWith("*") || title.EndsWith("+")) {
-//								title = title.Substring(0, title.Length - 1);
-//							}
-//							if (title == baseName + number) {
-//								found = true;
-//								++number;
-//								break;
-//							}
-//						}
-//					}
-//					myUntitledTitle = baseName + number;
-//				}
-				newTitle = myUntitledTitle;
-				internalState |= OpenFileTabState.FileUntitled;
+				newTitle = Path.GetFileName(content.UntitledName);
 			} else {
 				newTitle = content.TitleName;
 			}
 			
 			if (content.IsDirty) {
-				internalState |= OpenFileTabState.FileDirty;
 				newTitle += "*";
 			} else if (content.IsReadOnly) {
 				newTitle += "+";
 			}
 			
 			if (newTitle != Title) {
-				Text = newTitle;
+				Title = newTitle;
 			}
 		}
 		

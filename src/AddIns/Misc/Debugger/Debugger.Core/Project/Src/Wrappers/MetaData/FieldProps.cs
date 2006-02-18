@@ -1,0 +1,39 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Debugger.Wrappers.MetaData
+{
+	struct FieldProps
+	{
+		public uint Token;
+		public string Name;
+		public uint ClassToken;
+		public uint Flags;
+		
+		public bool IsStatic {
+			get {
+				return (Flags & (uint)ClassFieldAttribute.fdStatic) != 0;
+			}
+		}
+		
+		public bool IsPublic {
+			get {
+				return (Flags & (uint)ClassFieldAttribute.fdPublic) != 0;
+			}
+		}
+		
+		public bool IsLiteral {
+			get {
+				return (Flags & (uint)ClassFieldAttribute.fdLiteral) != 0;
+			}
+		}
+	}
+}

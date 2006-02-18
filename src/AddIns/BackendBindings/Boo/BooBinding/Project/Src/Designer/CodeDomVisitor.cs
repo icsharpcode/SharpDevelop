@@ -198,6 +198,7 @@ namespace Grunwald.BooBinding.Designer
 			
 			_class.Members.Add(method);
 		}
+		
 		public override void OnBinaryExpression(BinaryExpression node)
 		{
 			BinaryOperatorType op = node.Operator;
@@ -223,6 +224,20 @@ namespace Grunwald.BooBinding.Designer
 				LoggingService.Warn("CodeDomVisitor: ignoring unknown Binary Operator" + op);
 			}
 		}
+		
+		public override void OnTryCastExpression(TryCastExpression node)
+		{
+			_expression = null;
+			node.Target.Accept(this);
+			if (_expression == null)
+				return;
+			if (_expression is CodeMethodReferenceExpression) {
+				_expression = new CodeObjectCreateExpression(ConvTypeRef(node.Type), _expression);
+			} else {
+				_expression = new CodeCastExpression(ConvTypeRef(node.Type), _expression);
+			}
+		}
+		
 		public override void OnCastExpression(CastExpression node)
 		{
 			_expression = null;
@@ -235,6 +250,7 @@ namespace Grunwald.BooBinding.Designer
 				_expression = new CodeCastExpression(ConvTypeRef(node.Type), _expression);
 			}
 		}
+		
 		public override void OnBlock(Block node)
 		{
 			foreach (Statement n in node.Statements)

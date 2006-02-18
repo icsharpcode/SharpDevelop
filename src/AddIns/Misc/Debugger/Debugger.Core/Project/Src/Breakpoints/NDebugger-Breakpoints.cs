@@ -10,7 +10,6 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 
 using Debugger.Wrappers.CorDebug;
-using Debugger.Interop.MetaData;
 
 namespace Debugger
 {

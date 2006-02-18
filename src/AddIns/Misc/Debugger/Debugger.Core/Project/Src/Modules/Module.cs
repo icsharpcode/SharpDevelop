@@ -7,11 +7,11 @@
 
 using System;
 using System.IO;
-using System.Diagnostics.SymbolStore;
 using System.Runtime.InteropServices;
 
 using Debugger.Wrappers.CorDebug;
-using Debugger.Interop.MetaData;
+using Debugger.Wrappers.CorSym;
+using Debugger.Wrappers.MetaData;
 
 namespace Debugger
 {
@@ -21,12 +21,11 @@ namespace Debugger
 		
 		bool   unloaded = false;
 		string fullPath;
-		string fullPathPDB;
 		
 		int orderOfLoading = 0;
-		readonly ICorDebugModule corModule;
-		SymReader symReader;
-		IMetaDataImport metaDataInterface;
+		ICorDebugModule corModule;
+		ISymUnmanagedReader symReader;
+		MetaData metaData;
 		
 		public NDebugger Debugger {
 			get {
@@ -36,7 +35,7 @@ namespace Debugger
 		
 		internal MetaData MetaData {
 			get {
-				return new MetaData(metaDataInterface);
+				return metaData;
 			}
 		}
 		
@@ -46,7 +45,7 @@ namespace Debugger
 			}
 		}
 		
-		public SymReader SymReader {
+		public ISymUnmanagedReader SymReader {
 			get {
 				return symReader;
 			}
@@ -126,58 +125,11 @@ namespace Debugger
 			
 			corModule = pModule;
 			
-			Guid metaDataInterfaceGuid = new Guid("{ 0x7dac8207, 0xd3ae, 0x4c75, { 0x9b, 0x67, 0x92, 0x80, 0x1a, 0x49, 0x7d, 0x44 } }");
-			object pMetaDataInterface = pModule.GetMetaDataInterface(ref metaDataInterfaceGuid);
+			metaData = new MetaData(pModule);
 			
-			metaDataInterface = (IMetaDataImport) pMetaDataInterface;
+			fullPath = pModule.Name;
 			
-			uint pStringLenght = 0; // Terminating character included in pStringLenght
-			IntPtr pString = IntPtr.Zero;
-			pModule.GetName(pStringLenght,
-							out pStringLenght, // real string lenght
-			                pString);
-			// Allocate string buffer
-			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
-			pModule.GetName(pStringLenght,
-							out pStringLenght, // real string lenght
-			                pString);
-			fullPath = Marshal.PtrToStringUni(pString);
-			Marshal.FreeHGlobal(pString);
-			
-			string tempPath = String.Empty;
-			string pdbFilename = String.Empty;
-			string oldPdbPath = String.Empty;
-			string newPdbPath = String.Empty;
-			try {
-				tempPath = Path.Combine(Path.GetTempPath(), Path.Combine("DebeggerPdb", new Random().Next().ToString()));
-				pdbFilename = Path.GetFileNameWithoutExtension(FullPath) + ".pdb";
-				oldPdbPath = Path.Combine(Path.GetDirectoryName(FullPath), pdbFilename);
-				newPdbPath = Path.Combine(tempPath, pdbFilename);
-				if (File.Exists(oldPdbPath)) {
-					Directory.CreateDirectory(tempPath);
-					File.Move(oldPdbPath, newPdbPath);
-				}
-				fullPathPDB = newPdbPath;
-			} catch {}
-			
-			SymBinder symBinder = new SymBinder();
-			IntPtr ptr = IntPtr.Zero;
-			try {
-				ptr = Marshal.GetIUnknownForObject(metaDataInterface);
-				symReader = (SymReader)symBinder.GetReader(ptr, fullPath, tempPath);
-			} catch (System.Exception) {
-				symReader = null;
-			} finally {
-				if (ptr != IntPtr.Zero) {
-					Marshal.Release(ptr);
-				}
-			}
-
-			try {
-				if (File.Exists(newPdbPath) && !File.Exists(oldPdbPath)) {
-					File.Copy(newPdbPath, oldPdbPath);
-				}
-			} catch {}
+			symReader = metaData.GetSymReader(fullPath, null);
 			
 			JMCStatus = SymbolsLoaded;
 		}
@@ -191,29 +143,7 @@ namespace Debugger
 		
 		public void Dispose()
 		{
-			if (symReader != null) {
-				try {
-					System.Reflection.MethodInfo m = symReader.GetType().GetMethod("{dtor}");
-					m.Invoke(symReader, null);
-				} catch {
-					Console.WriteLine("symReader release failed. ({dtor})");
-				} finally {
-					symReader = null;
-				}
-				try {
-					File.Delete(fullPathPDB);
-				} catch {
-					Console.WriteLine("Could not delete pdb temp file");
-				}
-			}
-			
-			try {
-				Marshal.FinalReleaseComObject(metaDataInterface);
-			} catch {
-				Console.WriteLine("metaDataInterface release failed. (FinalReleaseComObject)");
-			} finally {
-				metaDataInterface = null;
-			}
+			metaData.Dispose();
 			
 			unloaded = true;
 		}

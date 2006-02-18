@@ -13,6 +13,7 @@
     <AssemblyOriginatorKeyFile>Resources\StartUp.snk</AssemblyOriginatorKeyFile>
     <ApplicationIcon>.\Resources\SharpDevelop.ico</ApplicationIcon>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <BaseAddress>92798976</BaseAddress>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>Full</DebugType>

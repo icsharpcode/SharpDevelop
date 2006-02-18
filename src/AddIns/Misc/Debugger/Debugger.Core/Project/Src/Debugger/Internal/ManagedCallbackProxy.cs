@@ -23,7 +23,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	class ManagedCallbackProxy : Debugger.Interop.CorDebug.ICorDebugManagedCallback, Debugger.Interop.CorDebug.ICorDebugManagedCallback2
+	class ManagedCallbackProxy : ICorDebugManagedCallbacks
 	{
 		NDebugger debugger;
 		ManagedCallback realCallback;
@@ -45,14 +45,14 @@ namespace Debugger
 			debugger.MTA2STA.Call(callback);
 		}
 			
-		public void StepComplete(System.IntPtr pAppDomain, System.IntPtr pThread, System.IntPtr pStepper, Debugger.Interop.CorDebug.CorDebugStepReason reason)
+		public void StepComplete(System.IntPtr pAppDomain, System.IntPtr pThread, System.IntPtr pStepper, CorDebugStepReason reason)
 		{
 			Call(delegate {
 			     	realCallback.StepComplete(
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugAppDomain>(pAppDomain),
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugThread>(pThread),
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugStepper>(pStepper),
-			     		(CorDebugStepReason)reason
+			     		reason
 			     	);
 			     });
 		}
@@ -93,7 +93,7 @@ namespace Debugger
 			     	realCallback.Breakpoint(
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugAppDomain>(pAppDomain),
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugThread>(pThread),
-			     		pBreakpoint
+			     		MTA2STA.MarshalIntPtrTo<ICorDebugBreakpoint>(pBreakpoint)
 			     	);
 			     });
 		}
@@ -335,14 +335,13 @@ namespace Debugger
 			     });
 		}
 		
-		public void CreateConnection(IntPtr pProcess, uint dwConnectionId, ref ushort pConnName)
+		public void CreateConnection(IntPtr pProcess, uint dwConnectionId, IntPtr pConnName)
 		{
-			ushort pName = pConnName;
 			Call(delegate {
 			     	realCallback.CreateConnection(
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugProcess>(pProcess),
 			     		dwConnectionId,
-			     		ref pName
+			     		pConnName
 			     	);
 			     });
 		}
@@ -357,7 +356,7 @@ namespace Debugger
 			     });
 		}
 		
-		public void Exception(IntPtr pAppDomain, IntPtr pThread, IntPtr pFrame, uint nOffset, Debugger.Interop.CorDebug.CorDebugExceptionCallbackType dwEventType, uint dwFlags)
+		public void Exception(IntPtr pAppDomain, IntPtr pThread, IntPtr pFrame, uint nOffset, CorDebugExceptionCallbackType dwEventType, uint dwFlags)
 		{
 			Call(delegate {
 			     	realCallback.Exception2(
@@ -365,19 +364,19 @@ namespace Debugger
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugThread>(pThread),
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugFrame>(pFrame),
 			     		nOffset,
-			     		(CorDebugExceptionCallbackType)dwEventType,
+			     		dwEventType,
 			     		dwFlags
 			     	);
 			     });
 		}
 		
-		public void ExceptionUnwind(IntPtr pAppDomain, IntPtr pThread, Debugger.Interop.CorDebug.CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
+		public void ExceptionUnwind(IntPtr pAppDomain, IntPtr pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
 		{
 			Call(delegate {
 			     	realCallback.ExceptionUnwind(
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugAppDomain>(pAppDomain),
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugThread>(pThread),
-			     		(CorDebugExceptionUnwindCallbackType)dwEventType,
+			     		dwEventType,
 			     		dwFlags
 			     	);
 			     });

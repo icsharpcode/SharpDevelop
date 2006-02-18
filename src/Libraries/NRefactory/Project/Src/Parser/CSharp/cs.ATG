@@ -72,6 +72,8 @@ bool IsSimpleTypeCast ()
 	if (!IsTypeKWForTypeCast(ref pt)) {
 		return false;
 	}
+	if (pt.kind == Tokens.Question)
+		pt = lexer.Peek();
 	return pt.kind == Tokens.CloseParenthesis;
 }
 
@@ -136,6 +138,9 @@ bool IsTypeNameForTypeCast(ref Token pt)
 		if (pt.kind != Tokens.GreaterThan) {
 			return false;
 		}
+		pt = Peek();
+	}
+	if (pt.kind == Tokens.Question) {
 		pt = Peek();
 	}
 	if (pt.kind == Tokens.Times || pt.kind == Tokens.OpenSquareBracket) {
@@ -2344,9 +2349,13 @@ RelationalExpr<ref Expression outExpr>
 	|
 		(	"is"
 			TypeWithRestriction<out type, false, false>
+			[ IF (la.kind == Tokens.Question && Tokens.CastFollower[Peek(1).kind] == false)
+				NullableQuestionMark<ref type> ]
 			(. outExpr = new TypeOfIsExpression(outExpr, type); .)
 		|	"as"
 			TypeWithRestriction<out type, false, false>
+			[ IF (la.kind == Tokens.Question && Tokens.CastFollower[Peek(1).kind] == false)
+				NullableQuestionMark<ref type> ]
 			(. outExpr = new CastExpression(type, outExpr, CastType.TryCast); .)
 		)
 	}

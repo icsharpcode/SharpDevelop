@@ -1,132 +1,66 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="David SrbeckÃ½" email="dsrbecky@gmail.com"/>
+//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
 
 namespace Debugger.Wrappers.CorDebug
 {
 	using System;
+	using System.Runtime.InteropServices;
 	
-	
-	public class ICorDebugGenericValue
+	public partial class ICorDebugGenericValue
 	{
-		
-		private Debugger.Interop.CorDebug.ICorDebugGenericValue wrappedObject;
-		
-		internal Debugger.Interop.CorDebug.ICorDebugGenericValue WrappedObject
-		{
-			get
-			{
-				return this.wrappedObject;
+		public unsafe object Value {
+			get {
+				object retValue;
+				IntPtr pValue = Marshal.AllocHGlobal((int)Size);
+				GetValue(pValue);
+				switch((CorElementType)Type)
+				{
+					case CorElementType.BOOLEAN: retValue = *((System.Boolean*)pValue); break;
+					case CorElementType.CHAR:    retValue = *((System.Char*)   pValue); break;
+					case CorElementType.I1:      retValue = *((System.SByte*)  pValue); break;
+					case CorElementType.U1:      retValue = *((System.Byte*)   pValue); break;
+					case CorElementType.I2:      retValue = *((System.Int16*)  pValue); break;
+					case CorElementType.U2:      retValue = *((System.UInt16*) pValue); break;
+					case CorElementType.I4:      retValue = *((System.Int32*)  pValue); break;
+					case CorElementType.U4:      retValue = *((System.UInt32*) pValue); break;
+					case CorElementType.I8:      retValue = *((System.Int64*)  pValue); break;
+					case CorElementType.U8:      retValue = *((System.UInt64*) pValue); break;
+					case CorElementType.R4:      retValue = *((System.Single*) pValue); break;
+					case CorElementType.R8:      retValue = *((System.Double*) pValue); break;
+					case CorElementType.I:       retValue = *((int*)           pValue); break;
+					case CorElementType.U:       retValue = *((uint*)          pValue); break;
+					default: throw new NotSupportedException();
+				}
+				Marshal.FreeHGlobal(pValue);
+				return retValue;
 			}
-		}
-		
-		public ICorDebugGenericValue(Debugger.Interop.CorDebug.ICorDebugGenericValue wrappedObject)
-		{
-			this.wrappedObject = wrappedObject;
-		}
-		
-		public static ICorDebugGenericValue Wrap(Debugger.Interop.CorDebug.ICorDebugGenericValue objectToWrap)
-		{
-			return new ICorDebugGenericValue(objectToWrap);
-		}
-		
-		public bool Is<T>() where T: class
-		{
-			try {
-				CastTo<T>();
-				return true;
-			} catch {
-				return false;
+			set {
+				IntPtr pValue = Marshal.AllocHGlobal((int)Size);
+				switch((CorElementType)Type)
+				{
+					case CorElementType.BOOLEAN: *((System.Boolean*)pValue) = (System.Boolean)value; break;
+					case CorElementType.CHAR:    *((System.Char*)   pValue) = (System.Char)   value; break;
+					case CorElementType.I1:      *((System.SByte*)  pValue) = (System.SByte)  value; break;
+					case CorElementType.U1:      *((System.Byte*)   pValue) = (System.Byte)   value; break;
+					case CorElementType.I2:      *((System.Int16*)  pValue) = (System.Int16)  value; break;
+					case CorElementType.U2:      *((System.UInt16*) pValue) = (System.UInt16) value; break;
+					case CorElementType.I4:      *((System.Int32*)  pValue) = (System.Int32)  value; break;
+					case CorElementType.U4:      *((System.UInt32*) pValue) = (System.UInt32) value; break;
+					case CorElementType.I8:      *((System.Int64*)  pValue) = (System.Int64)  value; break;
+					case CorElementType.U8:      *((System.UInt64*) pValue) = (System.UInt64) value; break;
+					case CorElementType.R4:      *((System.Single*) pValue) = (System.Single) value; break;
+					case CorElementType.R8:      *((System.Double*) pValue) = (System.Double) value; break;
+					case CorElementType.I:       *((int*)           pValue) = (int)           value; break;
+					case CorElementType.U:       *((uint*)          pValue) = (uint)          value; break;
+					default: throw new NotSupportedException();
+				}
+				SetValue(pValue);
+				Marshal.FreeHGlobal(pValue);
 			}
-		}
-		
-		public T As<T>() where T: class
-		{
-			try {
-				return CastTo<T>();
-			} catch {
-				return null;
-			}
-		}
-		
-		public T CastTo<T>() where T: class
-		{
-			return (T)Activator.CreateInstance(typeof(T), this.WrappedObject);
-		}
-		
-		public static bool operator ==(ICorDebugGenericValue o1, ICorDebugGenericValue o2)
-		{
-			return ((object)o1 == null && (object)o2 == null) ||
-			       ((object)o1 != null && (object)o2 != null && o1.WrappedObject == o2.WrappedObject);
-		}
-		
-		public static bool operator !=(ICorDebugGenericValue o1, ICorDebugGenericValue o2)
-		{
-			return !(o1 == o2);
-		}
-		
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-		
-		public override bool Equals(object o)
-		{
-			ICorDebugGenericValue casted = o as ICorDebugGenericValue;
-			return (casted != null) && (casted.WrappedObject == wrappedObject);
-		}
-		
-		
-		public uint Type
-		{
-			get
-			{
-				uint pType;
-				this.WrappedObject.GetType(out pType);
-				return pType;
-			}
-		}
-		
-		public uint Size
-		{
-			get
-			{
-				uint pSize;
-				this.WrappedObject.GetSize(out pSize);
-				return pSize;
-			}
-		}
-		
-		public ulong Address
-		{
-			get
-			{
-				ulong pAddress;
-				this.WrappedObject.GetAddress(out pAddress);
-				return pAddress;
-			}
-		}
-		
-		public ICorDebugValueBreakpoint CreateBreakpoint()
-		{
-			ICorDebugValueBreakpoint ppBreakpoint;
-			Debugger.Interop.CorDebug.ICorDebugValueBreakpoint out_ppBreakpoint;
-			this.WrappedObject.CreateBreakpoint(out out_ppBreakpoint);
-			ppBreakpoint = ICorDebugValueBreakpoint.Wrap(out_ppBreakpoint);
-			return ppBreakpoint;
-		}
-		
-		public void GetValue(System.IntPtr pTo)
-		{
-			this.WrappedObject.GetValue(pTo);
-		}
-		
-		public void SetValue(System.IntPtr pFrom)
-		{
-			this.WrappedObject.SetValue(pFrom);
 		}
 	}
 }

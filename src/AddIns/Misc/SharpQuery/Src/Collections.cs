@@ -1,3 +1,10 @@
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Luc Morin" email=""/>
+//     <version>$Revision$</version>
+// </file>
+
 using System;
 using System.Collections.Generic;
 using SharpQuery.SchemaClass;

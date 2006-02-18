@@ -11,7 +11,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 
 using Debugger.Wrappers.CorDebug;
-using Debugger.Interop.MetaData;
 
 namespace Debugger
 {
@@ -87,11 +86,6 @@ namespace Debugger
 		{
 			debugger.TraceMessage("Executing " + filename);
 			
-			Debugger.Interop.CorDebug._SECURITY_ATTRIBUTES secAttr = new Debugger.Interop.CorDebug._SECURITY_ATTRIBUTES();
-			secAttr.bInheritHandle = 0;
-			secAttr.lpSecurityDescriptor = IntPtr.Zero;
-			secAttr.nLength = (uint)sizeof(Debugger.Interop.CorDebug._SECURITY_ATTRIBUTES); //=12?
-			
 			uint[] processStartupInfo = new uint[17];
 			processStartupInfo[0] = sizeof(uint) * 17;
 			uint[] processInfo = new uint[4];
@@ -109,8 +103,8 @@ namespace Debugger
 							filename,   // lpApplicationName
 							  // If we do not prepend " ", the first argument migh just get lost
 							" " + arguments,                       // lpCommandLine
-							ref secAttr,                       // lpProcessAttributes
-							ref secAttr,                      // lpThreadAttributes
+							ref _SECURITY_ATTRIBUTES.Default,                       // lpProcessAttributes
+							ref _SECURITY_ATTRIBUTES.Default,                      // lpThreadAttributes
 							1,//TRUE                    // bInheritHandles
 							0x00000010 /*CREATE_NEW_CONSOLE*/,    // dwCreationFlags
 							IntPtr.Zero,                       // lpEnvironment

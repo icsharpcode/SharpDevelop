@@ -300,16 +300,18 @@ namespace ICSharpCode.Core
 				CompoundClass compound = GetClassInternal(fullyQualifiedName, addClass.TypeParameters.Count, language) as CompoundClass;
 				if (compound != null) {
 					// possibly replace existing class (look for CU with same filename)
-					for (int i = 0; i < compound.Parts.Count; i++) {
-						if (compound.Parts[i].CompilationUnit.FileName == addClass.CompilationUnit.FileName) {
-							compound.Parts[i] = addClass;
-							compound.UpdateInformationFromParts();
-							LoggingService.Debug("Replaced old part!");
-							return;
+					lock (compound) {
+						for (int i = 0; i < compound.Parts.Count; i++) {
+							if (compound.Parts[i].CompilationUnit.FileName == addClass.CompilationUnit.FileName) {
+								compound.Parts[i] = addClass;
+								compound.UpdateInformationFromParts();
+								LoggingService.Debug("Replaced old part!");
+								return;
+							}
 						}
+						compound.Parts.Add(addClass);
+						compound.UpdateInformationFromParts();
 					}
-					compound.Parts.Add(addClass);
-					compound.UpdateInformationFromParts();
 					LoggingService.Debug("Added new part!");
 					return;
 				} else {
@@ -460,12 +462,14 @@ namespace ICSharpCode.Core
 				// Use "as" cast to fix SD2-680: the stored class might be a part not marked as partial
 				CompoundClass compound = GetClassInternal(fullyQualifiedName, @class.TypeParameters.Count, language) as CompoundClass;
 				if (compound == null) return;
-				compound.Parts.Remove(@class);
-				if (compound.Parts.Count > 0) {
-					compound.UpdateInformationFromParts();
-					return;
-				} else {
-					@class = compound; // all parts removed, remove compound class
+				lock (compound) {
+					compound.Parts.Remove(@class);
+					if (compound.Parts.Count > 0) {
+						compound.UpdateInformationFromParts();
+						return;
+					} else {
+						@class = compound; // all parts removed, remove compound class
+					}
 				}
 			}
 			

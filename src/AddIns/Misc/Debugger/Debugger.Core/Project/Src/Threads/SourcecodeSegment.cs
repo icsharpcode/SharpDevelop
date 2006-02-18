@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-using System.Diagnostics.SymbolStore;
 
 using Debugger.Wrappers.CorDebug;
+using Debugger.Wrappers.CorSym;
 
 namespace Debugger
 {
@@ -159,9 +159,9 @@ namespace Debugger
 			ilOffset = 0;
 			
 			Module           module     = null;
-			ISymbolReader    symReader  = null;
-			ISymbolDocument  symDoc     = null;
-
+			ISymUnmanagedReader    symReader  = null;
+			ISymUnmanagedDocument  symDoc     = null;
+			
 			// Try to get doc from moduleFilename
 			if (moduleFilename != null) {
 				try {
@@ -192,25 +192,25 @@ namespace Debugger
 				return false; //Not found
 			}
 			
-			int validLine;
+			uint validLine;
 			try {
-				validLine = symDoc.FindClosestLine(StartLine);
+				validLine = symDoc.FindClosestLine((uint)StartLine);
 			} catch {
 				return false; //Not found
 			}
 			if (validLine != StartLine && normailize) {
-				StartLine = validLine;
-				EndLine = validLine;
+				StartLine = (int)validLine;
+				EndLine = (int)validLine;
 				StartColumn = 0;
 				EndColumn = 0;
 			}
 			
-			ISymbolMethod symMethod;
-			symMethod = symReader.GetMethodFromDocumentPosition(symDoc, validLine, StartColumn);
+			ISymUnmanagedMethod symMethod;
+			symMethod = symReader.GetMethodFromDocumentPosition(symDoc, validLine, (uint)StartColumn);
 			
-			function = module.CorModule.GetFunctionFromToken((uint)symMethod.Token.GetToken());
+			function = module.CorModule.GetFunctionFromToken(symMethod.Token);
 			
-			ilOffset = symMethod.GetOffset(symDoc, validLine, StartColumn);
+			ilOffset = (int)symMethod.GetOffset(symDoc, validLine, (uint)StartColumn);
 			
 			return true;
 		}

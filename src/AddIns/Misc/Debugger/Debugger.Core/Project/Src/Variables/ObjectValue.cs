@@ -12,7 +12,7 @@ using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 
 using Debugger.Wrappers.CorDebug;
-using Debugger.Interop.MetaData;
+using Debugger.Wrappers.MetaData;
 
 namespace Debugger
 {

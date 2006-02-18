@@ -94,13 +94,13 @@ namespace CheckFileHeaders
 				char ch;
 				do {
 					Console.WriteLine();
-					Console.Write("  Mike/Daniel/Other/None/Ignore (M/D/O/N/I): ");
+					Console.Write("  Daniel/Matt/Other/None/Ignore (D/M/O/N/I): ");
 				}
 				while ((ch = char.ToUpper(Console.ReadKey().KeyChar)) != 'M'
 				       && ch != 'N' && ch != 'I' && ch != 'O' && ch != 'D');
 				Console.WriteLine();
 				if (ch == 'M') {
-					author = "Omnibrain";
+					author = "Matthew Ward";
 				} else if (ch == 'D') {
 					author = "Daniel Grunwald";
 				} else if (ch == 'O') {
@@ -110,6 +110,7 @@ namespace CheckFileHeaders
 						author = Console.ReadLine();
 						if (author == "David") author = "David Srbecky";
 						if (author == "Markus") author = "Markus Palme";
+						if (author == "Peter") author = "Peter Forstmeier";
 						email = CheckAuthor(ref author);
 						ok = author != null;
 					} while (!ok);
@@ -158,17 +159,13 @@ namespace CheckFileHeaders
 		string CheckAuthor(ref string author)
 		{
 			switch (author) {
-				case "Mike Krger":
 				case "Mike Krüger":
-				case "Mike Krueger":
-				case "Omnibrain":
 					author = "Mike Krüger";
 					return "mike@icsharpcode.net";
 				case "Daniel Grunwald":
 					return "daniel@danielgrunwald.de";
 				case "David Srbecký":
 				case "David Srbecky":
-				case "David Srbeck":
 					author = "David Srbecký";
 					return "dsrbecky@gmail.com";
 				case "Andrea Paatz":
@@ -198,6 +195,12 @@ namespace CheckFileHeaders
 					return "surf@softvelocity.com";
 				case "David Alpert":
 					return "david@spinthemoose.com";
+				case "Luc Morin":
+					return "";
+				case "Peter Forstmeier":
+				case "Forstmeier Peter":
+					author = "Peter Forstmeier";
+					return "peter.forstmeier@t-online.de";
 				case "none":
 					return "";
 				default:

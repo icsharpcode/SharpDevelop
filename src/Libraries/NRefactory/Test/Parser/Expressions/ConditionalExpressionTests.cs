@@ -37,6 +37,16 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.IsTrue(ce.TrueExpression is InvocationExpression);
 			Assert.IsTrue(ce.FalseExpression is FieldReferenceExpression);
 		}
+		
+		[Test]
+		public void CSharpConditionalIsExpressionTest2()
+		{
+			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a is b ? (a()) : a.B");
+			
+			Assert.IsTrue(ce.Condition is TypeOfIsExpression);
+			Assert.IsTrue(ce.TrueExpression is ParenthesizedExpression);
+			Assert.IsTrue(ce.FalseExpression is FieldReferenceExpression);
+		}
 		#endregion
 		
 		#region VB.NET

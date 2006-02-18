@@ -7,13 +7,12 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
 using Debugger.Wrappers.CorDebug;
-using Debugger.Interop.MetaData;
-using System.Collections.Generic;
 
 namespace Debugger
 {
@@ -64,6 +63,11 @@ namespace Debugger
 			this.ModuleLoaded += SetBreakpointsInModule;
 			
 			localVariables = new VariableCollection(this);
+			
+			Wrappers.ResourceManager.TraceMessagesEnabled = false;
+			Wrappers.ResourceManager.TraceMessage += delegate (object s, MessageEventArgs e) { 
+				TraceMessage(e.Message);
+			};
 		}
 		
 		/// <summary>
@@ -137,6 +141,12 @@ namespace Debugger
 			corDebug.Terminate();
 			
 			TraceMessage("ICorDebug terminated");
+			
+			Wrappers.ResourceManager.TraceMessagesEnabled = true;
+			Wrappers.ResourceManager.ReleaseAllTrackedCOMObjects();
+			Wrappers.ResourceManager.TraceMessagesEnabled = false;
+			
+			TraceMessage("Tracked COM objects released");
 			
 			noProcessesHandle.Set();
 		}
