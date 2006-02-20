@@ -82,6 +82,10 @@
 					          class="ICSharpCode.XmlEditor.RunXslTransformCommand"
 					          shortcut="Control|Shift|T"/>
 				</ComplexCondition>
+				<MenuItem id = "Separator2" type = "Separator"/>
+				<MenuItem id = "Format"
+				          label = "${res:XML.MainMenu.EditMenu.FormatMenu}"
+				          class = "ICSharpCode.XmlEditor.FormatXmlCommand" />
 			</MenuItem>
 		</Condition>
 	</Path>

@@ -239,6 +239,22 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		/// <summary>
+		/// Pretty prints the xml.
+		/// </summary>
+		public void FormatXml()
+		{
+			TaskService.ClearExceptCommentTasks();
+			
+			if (IsWellFormed) {
+				string xml = SimpleFormat(IndentedFormat(Text));
+				xmlEditor.Document.Replace(0, xmlEditor.Document.TextLength, xml);
+				UpdateFolding();
+			} else {
+				ShowErrorList();
+			}
+		}
+		
 		#region IEditable interface
 		
 		public IClipboardHandler ClipboardHandler {
@@ -730,7 +746,6 @@ namespace ICSharpCode.XmlEditor
 				view.LoadContent(xml);
 				view.WorkbenchWindow.SelectWindow();
 			}
-			
 		}
 		
 		/// <summary>
@@ -775,27 +790,31 @@ namespace ICSharpCode.XmlEditor
 		/// <returns>A pretty print version of the specified xml.  If the
 		/// string is not well formed xml the original string is returned.
 		/// </returns>
-		static string IndentedFormat(string xml)
+		string IndentedFormat(string xml)
 		{
 			string indentedText = String.Empty;
 
-			try
-			{
+			try	{
 				XmlTextReader reader = new XmlTextReader(new StringReader(xml));
 				reader.WhitespaceHandling = WhitespaceHandling.None;
 
 				StringWriter indentedXmlWriter = new StringWriter();
 				XmlTextWriter writer = new XmlTextWriter(indentedXmlWriter);
-				writer.Indentation = 1;
-				writer.IndentChar = '\t';
+				if (xmlEditor.TextEditorProperties.ConvertTabsToSpaces) {
+					writer.Indentation = xmlEditor.TextEditorProperties.TabIndent;
+					writer.IndentChar = ' ';
+					;
+				} else {
+					writer.Indentation = 1;
+					writer.IndentChar = '\t';
+				}
 				writer.Formatting = Formatting.Indented;
 				writer.WriteNode(reader, false);
 				writer.Flush();
 
 				indentedText = indentedXmlWriter.ToString();
 			}
-			catch(Exception)
-			{
+			catch(Exception) {
 				indentedText = xml;
 			}
 
@@ -807,14 +826,11 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		bool IsWellFormed {
 			get {
-				try
-				{
+				try	{
 					XmlDocument Document = new XmlDocument( );
 					Document.LoadXml(Text);
 					return true;
-				}
-				catch(XmlException ex)
-				{
+				} catch(XmlException ex) {
 					string fileName = FileName;
 					if (fileName == null || fileName.Length == 0) {
 						fileName = TitleName;
@@ -830,8 +846,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		bool IsValidXsl(string xml)
 		{
-			try
-			{
+			try	{
 				WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 
 				StringReader reader = new StringReader(xml);
@@ -841,9 +856,7 @@ namespace ICSharpCode.XmlEditor
 				xslTransform.Load(doc, XsltSettings.Default, new XmlUrlResolver());
 
 				return true;
-			}
-			catch(XsltCompileException ex)
-			{
+			} catch(XsltCompileException ex) {
 				string message = String.Empty;
 				
 				if(ex.InnerException != null)
@@ -856,13 +869,9 @@ namespace ICSharpCode.XmlEditor
 				}
 
 				AddTask(StylesheetFileName, message, ex.LineNumber - 1, ex.LinePosition - 1, TaskType.Error);
-			}
-			catch(XsltException ex)
-			{
+			} catch(XsltException ex) {
 				AddTask(StylesheetFileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
-			}
-			catch(XmlException ex)
-			{
+			} catch(XmlException ex) {
 				AddTask(StylesheetFileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
 			}
 

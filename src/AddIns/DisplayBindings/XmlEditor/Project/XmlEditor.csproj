@@ -92,6 +92,7 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\FormatXmlCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
