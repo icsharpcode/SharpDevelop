@@ -7,6 +7,7 @@
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.DefaultEditor;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -40,6 +41,8 @@ namespace ICSharpCode.XmlEditor
 			Document.HighlightingStrategy = HighlightingManager.Manager.FindHighlighter("XML");
 			Document.FoldingManager.FoldingStrategy = new XmlFoldingStrategy();
 			TextEditorProperties = new SharpDevelopTextEditorProperties();
+			
+			Document.BookmarkManager.Removed += new ICSharpCode.TextEditor.Document.BookmarkEventHandler(BookmarkRemoved);
 			
 			GenerateEditActions();
 		}
@@ -323,6 +326,24 @@ namespace ICSharpCode.XmlEditor
 			int delta = Document.FormattingStrategy.FormatLine(ActiveTextAreaControl.TextArea, currentLineNr, Document.PositionToOffset(ActiveTextAreaControl.TextArea.Caret.Position), ch);
 			
 			ActiveTextAreaControl.TextArea.MotherTextEditorControl.EndUpdate();
+		}
+		
+		/// <summary>
+		/// Have to remove the bookmark from the document otherwise the text will
+		/// stay marked in red if the bookmark is a breakpoint.  This is because
+		/// there are two bookmark managers, one in SharpDevelop itself and one
+		/// in the TextEditor library.  By default, only the one in the text editor's
+		/// bookmark manager will be removed, so SharpDevelop will not know about it.
+		/// Removing it from the SharpDevelop BookMarkManager informs the debugger
+		/// service that the breakpoint has been removed so it triggers the removal
+		/// of the text marker.
+		/// </summary>
+		void BookmarkRemoved(object sender, ICSharpCode.TextEditor.Document.BookmarkEventArgs e)
+		{
+			ICSharpCode.SharpDevelop.Bookmarks.SDBookmark b = e.Bookmark as ICSharpCode.SharpDevelop.Bookmarks.SDBookmark;
+			if (b != null) {
+				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.RemoveMark(b);
+			}
 		}
 	}
 }
