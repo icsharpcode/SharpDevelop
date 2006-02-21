@@ -347,17 +347,17 @@ namespace ICSharpCode.FormsDesigner
 		{
 			disposing = true;
 			if (IsFormsDesignerVisible) {
-				Deselected();
+				Deselecting();
 			}
 			base.Dispose();
 		}
 		
-		public override void Deselected()
+		public override void Deselecting()
 		{
 			// can happen if form designer is disposed and then deselected
 			if (!IsFormsDesignerVisible)
 				return;
-			LoggingService.Info("Deselected form designer, unloading..." + viewContent.TitleName);
+			LoggingService.Info("Deselecting form designer, unloading..." + viewContent.TitleName);
 			PropertyPad.PropertyValueChanged -= PropertyValueChanged;
 			propertyContainer.Clear();
 			IsFormsDesignerVisible = false;

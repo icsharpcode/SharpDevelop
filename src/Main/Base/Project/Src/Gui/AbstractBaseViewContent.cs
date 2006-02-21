@@ -55,6 +55,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public virtual void Deselected()
 		{
 		}
+
+		public virtual void Deselecting()
+		{
+		}
 		
 		public virtual void RedrawContent()
 		{

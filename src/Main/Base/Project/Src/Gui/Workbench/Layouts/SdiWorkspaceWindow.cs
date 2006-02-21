@@ -136,7 +136,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			viewTabControl = new TabControl();
 			viewTabControl.Alignment = TabAlignment.Bottom;
 			viewTabControl.Dock = DockStyle.Fill;
-			viewTabControl.SelectedIndexChanged += new EventHandler(viewTabControlIndexChanged);
+			viewTabControl.Selected += viewTabControlSelected;
+			viewTabControl.Deselecting += viewTabControlDeselecting;
+			viewTabControl.Deselected += viewTabControlDeselected;
 		}
 		
 		internal void InitControls()
@@ -200,11 +202,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			WorkbenchSingleton.SafeThreadAsyncCall(new MethodInvoker(this.RefreshSecondaryViewContents));
 		}
 		
-		void LeaveTabPage(object sender, EventArgs e)
-		{
-			OnWindowDeselected(EventArgs.Empty);
-		}
-		
 		public IViewContent ViewContent {
 			get {
 				return content;
@@ -260,6 +257,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (viewTabControl != null) {
 				foreach (TabPage page in viewTabControl.TabPages) {
+					if (viewTabControl.SelectedTab == page && page.Tag is IBaseViewContent) {
+						((IBaseViewContent)page.Tag).Deselecting();
+					}
 					page.Controls.Clear();
 					if (viewTabControl.SelectedTab == page && page.Tag is IBaseViewContent) {
 						((IBaseViewContent)page.Tag).Deselected();
@@ -319,28 +319,40 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return content.SecondaryViewContents[index - 1];
 		}
 		
-		int oldIndex = 0;
-		void viewTabControlIndexChanged(object sender, EventArgs e)
+		void viewTabControlSelected(object sender, TabControlEventArgs e)
 		{
-			if (oldIndex >= 0) {
-				IBaseViewContent secondaryViewContent = GetSubViewContent(oldIndex);
+			if (e.Action == TabControlAction.Selected && e.TabPageIndex >= 0) {
+				IBaseViewContent secondaryViewContent = GetSubViewContent(e.TabPageIndex);
 				if (secondaryViewContent != null) {
 					secondaryViewContent.Deselected();
-				}
-			}
-			
-			if (viewTabControl.SelectedIndex >= 0) {
-				IBaseViewContent secondaryViewContent = GetSubViewContent(viewTabControl.SelectedIndex);
-				if (secondaryViewContent != null) {
 					secondaryViewContent.SwitchedTo();
 					secondaryViewContent.Selected();
 				}
 			}
-			oldIndex = viewTabControl.SelectedIndex;
 			WorkbenchSingleton.Workbench.WorkbenchLayout.OnActiveWorkbenchWindowChanged(EventArgs.Empty);
 			ActiveViewContent.Control.Focus();
 		}
 		
+		void viewTabControlDeselecting(object sender, TabControlCancelEventArgs e)
+		{
+			if (e.Action == TabControlAction.Deselecting && e.TabPageIndex >= 0) {
+				IBaseViewContent secondaryViewContent = GetSubViewContent(e.TabPageIndex);
+				if (secondaryViewContent != null) {
+					secondaryViewContent.Deselecting();
+				}
+			}
+		}
+
+		void viewTabControlDeselected(object sender, TabControlEventArgs e)
+		{
+			if (e.Action == TabControlAction.Deselected && e.TabPageIndex >= 0) {
+				IBaseViewContent secondaryViewContent = GetSubViewContent(e.TabPageIndex);
+				if (secondaryViewContent != null) {
+					secondaryViewContent.Deselected();
+				}
+			}
+		}
+
 		public virtual void RedrawContent()
 		{
 			if (viewTabControl != null) {
