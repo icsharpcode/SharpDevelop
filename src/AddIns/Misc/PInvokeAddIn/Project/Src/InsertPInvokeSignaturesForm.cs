@@ -35,7 +35,6 @@ namespace ICSharpCode.PInvokeAddIn
 		ComboBox languageComboBox;
 		LinkLabel moreInfoLinkLabel;
 		
-		const char BackspaceCharacter = (char)0x08;
 		SignatureInfo[] signatures;
 		string allLanguages = StringParser.Parse("${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesForm.AllLanguages}");
 		
@@ -61,11 +60,13 @@ namespace ICSharpCode.PInvokeAddIn
 			findButton.Click += new EventHandler(FindButtonClick);
 			
 			functionNameComboBox = ((ComboBox)ControlDictionary["FunctionNameComboBox"]);	
-			functionNameComboBox.KeyPress += new KeyPressEventHandler(FunctionNameComboBoxKeyPress);
+			functionNameComboBox.AutoCompleteMode = AutoCompleteMode.Suggest;
+			functionNameComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
 
 			moduleNameComboBox = ((ComboBox)ControlDictionary["ModuleNameComboBox"]);
-			moduleNameComboBox.KeyPress += new KeyPressEventHandler(ModuleNameComboBoxKeyPress);
-		
+			moduleNameComboBox.AutoCompleteMode = AutoCompleteMode.Suggest;
+			moduleNameComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
+			
 			moreInfoLinkLabel = ((LinkLabel)ControlDictionary["MoreInfoLinkLabel"]);
 			moreInfoLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(MoreInfoLinkClicked);
 
@@ -242,71 +243,7 @@ namespace ICSharpCode.PInvokeAddIn
 		string GetSignature(SignatureInfo info)
 		{
 			return info.Signature.Replace("|", "\r\n");
-		}
-		
-		void FunctionNameComboBoxKeyPress(object sender, KeyPressEventArgs e)
-		{
-			Autocomplete(functionNameComboBox, e);
-		}
-		
-		void ModuleNameComboBoxKeyPress(object sender, KeyPressEventArgs e)
-		{
-			Autocomplete(moduleNameComboBox, e);
-		}		
-		
-		void Autocomplete(ComboBox comboBox, KeyPressEventArgs e)
-		{
-			e.Handled = true;
-			string searchText = String.Empty;
-				
-			if (e.KeyChar == BackspaceCharacter) {
-				if ((comboBox.SelectionStart == 1) || (comboBox.SelectionStart == 0)) {
-					comboBox.Text = String.Empty;
-					comboBox.SelectionStart = 0;
-					
-				} else {
-					comboBox.Text = comboBox.Text.Substring(0, comboBox.SelectionStart - 1);
-					comboBox.SelectionStart = comboBox.Text.Length;
-					searchText = GetComboBoxText(comboBox);
-				}
-			} else {
-				searchText = String.Concat(GetComboBoxText(comboBox), e.KeyChar);
-				comboBox.Text = searchText;
-				comboBox.SelectionStart = comboBox.Text.Length;
-			}
-			
-			if (searchText.Length > 0) {
-				
-				int index = comboBox.FindString(searchText);
-				
-				if (index != -1) {
-					comboBox.SelectedIndex = index;
-					comboBox.Text = (string)comboBox.Items[index];
-               		comboBox.Select(searchText.Length, comboBox.Text.Length - (searchText.Length));
- 				} else {
-					comboBox.Text = searchText;
-					comboBox.SelectionStart = comboBox.Text.Length;
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Gets the combo box text that has been typed in by the user
-		/// ignoring any autocomplete text.
-		/// </summary>
-		/// <param name="comboBox">A combo box control.</param>
-		/// <returns>
-		/// The combo box text that has been typed in by the user.
-		/// </returns>
-		string GetComboBoxText(ComboBox comboBox)
-		{
-			string comboBoxText = String.Empty;
-			
-			if (comboBox.SelectionStart > 0) {
-				comboBoxText = comboBox.Text.Substring(0, comboBox.SelectionStart);
-			}
-			return comboBoxText;
-		}
+		}	
 
 		string GetSourceFileLanguage()
 		{
