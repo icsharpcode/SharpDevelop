@@ -19,8 +19,10 @@ namespace ICSharpCode.CodeCoverage
 	public class CodeCoverageProjectOptionsPanel : AbstractProjectOptionPanel
 	{
 		static readonly string AssemblyListTextBoxName = "assemblyListTextBox";
+		static readonly string ExcludedAttributesListTextBoxName = "excludedAttributesTextBox";
 		
 		TextBox assemblyListTextBox;
+		TextBox excludedAttributesListTextBox;
 		
 		public CodeCoverageProjectOptionsPanel()
 		{
@@ -32,10 +34,12 @@ namespace ICSharpCode.CodeCoverage
 			InitializeHelper();
 			
 			assemblyListTextBox = (TextBox)ControlDictionary[AssemblyListTextBoxName];
+			excludedAttributesListTextBox = (TextBox)ControlDictionary[ExcludedAttributesListTextBoxName];
 			
 			ReadNCoverSettings();
 			
-			assemblyListTextBox.TextChanged += AssemblyListTextBoxTextChanged;
+			assemblyListTextBox.TextChanged += TextBoxTextChanged;
+			excludedAttributesListTextBox.TextChanged += TextBoxTextChanged;
 		}
 		
 		public override bool StorePanelContents()
@@ -45,7 +49,7 @@ namespace ICSharpCode.CodeCoverage
 			return true;
 		}
 		
-		void AssemblyListTextBoxTextChanged(object sender, EventArgs e)
+		void TextBoxTextChanged(object sender, EventArgs e)
 		{
 			IsDirty = true;
 		}
@@ -54,6 +58,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			NCoverSettings settings = new NCoverSettings();
 			settings.AssemblyList = assemblyListTextBox.Text;
+			settings.ExcludedAttributesList = excludedAttributesListTextBox.Text;
 			settings.Save(NCoverSettings.GetFileName(project));
 		}
 		
@@ -63,6 +68,7 @@ namespace ICSharpCode.CodeCoverage
 			if (File.Exists(settingsFileName)) {
 				NCoverSettings settings = new NCoverSettings(settingsFileName);
 				assemblyListTextBox.Text = settings.AssemblyList;
+				excludedAttributesListTextBox.Text = settings.ExcludedAttributesList;
 			}
 		}
 	}

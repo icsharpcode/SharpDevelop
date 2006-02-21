@@ -26,6 +26,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 		{
 			settings = new NCoverSettings();
 			settings.AssemblyList = "MyNamespace.Foo; MyNamespace.Bar";
+			settings.ExcludedAttributesList = "NUnit.Framework.TestFixtureAttribute; NUnit.Framework.TestAttribute";
 			StringBuilder savedSettingsXml = new StringBuilder();
 			settings.Save(new StringWriter(savedSettingsXml));
 			savedSettings = new NCoverSettings(new StringReader(savedSettingsXml.ToString()));
@@ -35,6 +36,12 @@ namespace ICSharpCode.CodeCoverage.Tests
 		public void IsAssemblyListSaved()
 		{
 			Assert.AreEqual(settings.AssemblyList, savedSettings.AssemblyList);
+		}
+		
+		[Test]
+		public void IsExcludedAttributeListListSaved()
+		{
+			Assert.AreEqual(settings.ExcludedAttributesList, savedSettings.ExcludedAttributesList);
 		}
 		
 		[Test]

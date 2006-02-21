@@ -20,8 +20,10 @@ namespace ICSharpCode.CodeCoverage
 	{
 		static readonly string RootElementName = "ProfilerSettings";
 		static readonly string AssembliesElementName = "Assemblies";
+		static readonly string ExclusionAttributesElementName = "ExclusionAttributes";
 		
 		string assemblyList = String.Empty;
+		string excludedAttributesList = String.Empty;
 		
 		public NCoverSettings()
 		{
@@ -60,6 +62,19 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
+		/// <summary>
+		/// A semi-colon delimited list of attributes to exclude in the code coverage
+		/// report.
+		/// </summary>
+		public string ExcludedAttributesList {
+			get {
+				return excludedAttributesList;
+			}
+			set {
+				excludedAttributesList = value;
+			}
+		}
+		
 		public void Save(TextWriter writer)
 		{
 			Save(new XmlTextWriter(writer));
@@ -77,6 +92,7 @@ namespace ICSharpCode.CodeCoverage
 			using (writer) {
 				writer.WriteStartElement(RootElementName);	
 				writer.WriteElementString(AssembliesElementName, assemblyList);
+				writer.WriteElementString(ExclusionAttributesElementName, excludedAttributesList);
 				writer.WriteEndElement();
 			}
 		}
@@ -88,6 +104,8 @@ namespace ICSharpCode.CodeCoverage
 					if (reader.NodeType == XmlNodeType.Element) {
 						if (reader.Name == AssembliesElementName) {
 							assemblyList = reader.ReadString();
+						} else if (reader.Name == ExclusionAttributesElementName) {
+							excludedAttributesList = reader.ReadString();
 						}
 					}
 				}

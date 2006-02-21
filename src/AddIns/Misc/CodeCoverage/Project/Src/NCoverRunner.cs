@@ -24,6 +24,7 @@ namespace ICSharpCode.CodeCoverage
 		string profiledApplicationCommandLineArguments = String.Empty;
 		string assemblyList = String.Empty;
 		string logFileName = String.Empty;
+		string excludedAttributesList = String.Empty;
 		ProcessRunner runner;
 		
 		/// <summary>
@@ -83,6 +84,20 @@ namespace ICSharpCode.CodeCoverage
 				// Remove any spaces from the assembly list since
 				// NCover will ignore any items after the space.
 				assemblyList = value.Replace(" ", String.Empty);
+			}
+		}	
+		
+		/// <summary>
+		/// The list of attributes to ignore when profiling.
+		/// </summary>
+		public string ExcludedAttributesList {
+			get {
+				return excludedAttributesList;
+			}
+			set {
+				// Remove any spaces from the assembly list since
+				// NCover will ignore any items after the space.
+				excludedAttributesList = value.Replace(" ", String.Empty);
 			}
 		}	
 		
@@ -241,6 +256,10 @@ namespace ICSharpCode.CodeCoverage
 			
 			if (assemblyList.Length > 0) {
 				ncoverArguments.AppendFormat("//a \"{0}\" ", assemblyList);
+			}
+			
+			if (excludedAttributesList.Length > 0) {
+				ncoverArguments.AppendFormat("//ea \"{0}\" ", excludedAttributesList);
 			}
 			
 			if (logFileName.Length > 0) {

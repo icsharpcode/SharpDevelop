@@ -17,8 +17,13 @@ namespace ICSharpCode.CodeCoverage
 		int column = 0;		
 		int endLine = 0;		
 		int endColumn = 0;	
+		bool excluded = false;
 		
-		public CodeCoverageSequencePoint(string document, int visitCount, int line, int column, int endLine, int endColumn)
+		public CodeCoverageSequencePoint(string document, int visitCount, int line, int column, int endLine, int endColumn) : this(document, visitCount, line, column, endLine, endColumn, false)
+		{
+		}
+
+		public CodeCoverageSequencePoint(string document, int visitCount, int line, int column, int endLine, int endColumn, bool excluded)
 		{
 			this.document = document;
 			this.visitCount = visitCount;
@@ -26,6 +31,13 @@ namespace ICSharpCode.CodeCoverage
 			this.column = column;
 			this.endLine = endLine;
 			this.endColumn = endColumn;
+			this.excluded = excluded;
+		}
+		
+		public bool IsExcluded {
+			get {
+				return excluded;
+			}
 		}
 		
 		public string Document {

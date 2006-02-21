@@ -33,6 +33,24 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
+		/// <summary>
+		/// Determines whether this method has been excluded.
+		/// </summary>
+		/// <remarks>
+		/// A method is considered excluded if all of its
+		/// sequence points have been marked as excluded.
+		/// </remarks>
+		public bool IsExcluded {
+			get {
+				foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
+					if (!sequencePoint.IsExcluded) {
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+		
 		public string Name {
 			get {
 				return name;

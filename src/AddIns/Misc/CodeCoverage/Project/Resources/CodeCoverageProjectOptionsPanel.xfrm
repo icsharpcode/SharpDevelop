@@ -4,6 +4,21 @@
     <ClientSize value="{Width=342, Height=266}" />
     <Controls>
       <System.Windows.Forms.TextBox>
+        <Name value="excludedAttributesTextBox" />
+        <TabIndex value="3" />
+        <Size value="{Width=317, Height=21}" />
+        <Location value="{X=12,Y=92}" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="excludedAttributesListLabel" />
+        <Location value="{X=12,Y=69}" />
+        <Text value="Excluded Attributes:" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=317, Height=20}" />
+        <TabIndex value="2" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.TextBox>
         <Name value="assemblyListTextBox" />
         <TabIndex value="1" />
         <Size value="{Width=317, Height=21}" />
@@ -15,7 +30,8 @@
         <Location value="{X=12,Y=12}" />
         <UseCompatibleTextRendering value="True" />
         <Text value="${res:ICSharpCode.CodeCoverage.ProjectOptionsPanel.AssemblyListLabel}" />
-        <Size value="{Width=114, Height=21}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=317, Height=21}" />
         <TabIndex value="0" />
       </System.Windows.Forms.Label>
     </Controls>

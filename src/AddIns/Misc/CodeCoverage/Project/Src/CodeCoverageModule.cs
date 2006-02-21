@@ -21,6 +21,18 @@ namespace ICSharpCode.CodeCoverage
 			this.name = name;
 		}
 		
+		public bool IsExcluded {
+			get {
+				int excludedMethods = 0;
+				foreach (CodeCoverageMethod method in methods) {
+					if (method.IsExcluded) {
+						++excludedMethods;
+					}
+				}
+				return excludedMethods == methods.Count;
+			}
+		}
+		
 		/// <summary>
 		/// The module's assembly name.
 		/// </summary>

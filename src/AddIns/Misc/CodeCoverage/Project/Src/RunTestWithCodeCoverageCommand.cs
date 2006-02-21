@@ -95,6 +95,7 @@ namespace ICSharpCode.CodeCoverage
 		void SetNCoverRunnerProperties(string ncoverFileName, IProject project, IClass fixture, IMember test)
 		{
 			string ncoverOutputDirectory = GetNCoverOutputDirectory(project);
+			NCoverSettings settings = GetNCoverSettings(project);
 			
 			UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
 			helper.Initialize(project, fixture, test);
@@ -106,7 +107,8 @@ namespace ICSharpCode.CodeCoverage
 			runner.WorkingDirectory = Path.GetDirectoryName(helper.Assemblies[0]);
 			runner.CoverageResultsFileName = Path.Combine(ncoverOutputDirectory, "Coverage.Xml");
 			runner.LogFileName = Path.Combine(ncoverOutputDirectory, "Coverage.log");
-			runner.AssemblyList = GetAssemblyList(project);
+			runner.AssemblyList = settings.AssemblyList;
+			runner.ExcludedAttributesList = settings.ExcludedAttributesList;
 		}
 		
 		void RunNCover()
@@ -206,27 +208,18 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		/// <summary>
-		/// Reads the list of assemblies to be profiled from the project's
-		/// NCover settings.
-		/// </summary>
-		string GetAssemblyList(IProject project)
-		{
-			if (project == null) {
-				return String.Empty;
-			}
-			
-			string ncoverSettingsFileName = NCoverSettings.GetFileName(project);
-			if (File.Exists(ncoverSettingsFileName)) {
-				NCoverSettings settings = new NCoverSettings(ncoverSettingsFileName);
-				return settings.AssemblyList;
-			}
-			return String.Empty;
-		}
-		
 		string GetNCoverOutputDirectory(IProject project)
 		{
 			return Path.Combine(project.Directory, "NCover");
+		}
+		
+		NCoverSettings GetNCoverSettings(IProject project)
+		{
+			string fileName = NCoverSettings.GetFileName(project);
+			if (File.Exists(fileName)) {
+				return new NCoverSettings(fileName);
+			}
+			return new NCoverSettings();
 		}
 	}
 }

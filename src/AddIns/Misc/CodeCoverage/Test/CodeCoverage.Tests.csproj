@@ -70,6 +70,10 @@
     <Compile Include="NUnitResultsTestFixture.cs" />
     <Compile Include="CodeCoverageNamespaceTestFixture.cs" />
     <Compile Include="ClassWithNoNamespaceInTreeViewTestFixture.cs" />
+    <Compile Include="ExcludedModuleResultsTestFixture.cs" />
+    <Compile Include="ExcludedMethodTestFixture.cs" />
+    <Compile Include="ExcludedModuleTestFixture.cs" />
+    <Compile Include="ExcludedMethodResultsTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

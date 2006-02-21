@@ -63,6 +63,9 @@ namespace ICSharpCode.CodeCoverage
 				}
 			}
 			reader.Close();
+			
+			RemoveExcludedModules();
+			RemoveExcludedMethods();
 		}
 		
 		CodeCoverageModule AddModule(XmlReader reader)
@@ -86,7 +89,8 @@ namespace ICSharpCode.CodeCoverage
 				GetInteger(reader.GetAttribute("line")),
 				GetInteger(reader.GetAttribute("column")),
 				GetInteger(reader.GetAttribute("endline")),
-				GetInteger(reader.GetAttribute("endcolumn")));
+				GetInteger(reader.GetAttribute("endcolumn")),
+				IsExcluded(reader));
 			method.SequencePoints.Add(sequencePoint);
 		}
 		
@@ -97,6 +101,49 @@ namespace ICSharpCode.CodeCoverage
 				return val;
 			}
 			return 0;
+		}
+		
+		void RemoveExcludedModules()
+		{
+			List<CodeCoverageModule> excludedModules = new List<CodeCoverageModule>();
+			
+			foreach (CodeCoverageModule module in modules) {
+				if (module.IsExcluded) {
+					excludedModules.Add(module);
+				}
+			}
+			
+			foreach (CodeCoverageModule excludedModule in excludedModules) {
+				modules.Remove(excludedModule);
+			}
+		}
+		
+		void RemoveExcludedMethods()
+		{
+			List<CodeCoverageMethod> excludedMethods = new List<CodeCoverageMethod>();
+			
+			foreach (CodeCoverageModule module in modules) {
+				foreach (CodeCoverageMethod method in module.Methods) {
+					if (method.IsExcluded) {
+						excludedMethods.Add(method);
+					}
+				}
+				foreach (CodeCoverageMethod excludedMethod in excludedMethods) {
+					module.Methods.Remove(excludedMethod);
+				}
+			}
+		}
+		
+		bool IsExcluded(XmlReader reader)
+		{
+			string excludedValue = reader.GetAttribute("excluded");
+			if (excludedValue != null) {
+				bool excluded;
+				if (Boolean.TryParse(excludedValue, out excluded)) {
+					return excluded;
+				}
+			}
+			return false;
 		}
 	}
 }
