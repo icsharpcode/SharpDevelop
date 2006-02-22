@@ -21,6 +21,6 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public interface IBuildItemsModifier
 	{
-		void Apply(ArrayList items);
+		void Apply(IList items);
 	}
 }

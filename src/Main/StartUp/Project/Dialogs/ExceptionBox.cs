@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop
 		string getClipboardString()
 		{
 			string str = "";
-			str += ".NET Version         : " + Environment.Version.ToString() + Environment.NewLine;
+			str += ".NET Version        : " + Environment.Version.ToString() + Environment.NewLine;
 			str += "OS Version           : " + Environment.OSVersion.ToString() + Environment.NewLine;
 			string cultureName = null;
 			try {
@@ -67,6 +67,9 @@ namespace ICSharpCode.SharpDevelop
 				}
 			} catch {}
 			try {
+				if (IntPtr.Size != 4) {
+					str += "Running as " + (IntPtr.Size * 8) + " bit process" + Environment.NewLine;
+				}
 				if (SystemInformation.TerminalServerSession) {
 					str += "Terminal Server Session" + Environment.NewLine;
 				}
