@@ -93,7 +93,7 @@ namespace ICSharpCode.Core
 							case "Condition":
 								condition = Condition.Read(reader);
 								goto exit;
-						}						
+						}
 						break;
 				}
 			}
@@ -134,6 +134,21 @@ namespace ICSharpCode.Core
 				}
 			}
 			return conditions.ToArray();
+		}
+		
+		public static ConditionFailedAction GetFailedAction(IEnumerable<ICondition> conditionList, object caller)
+		{
+			ConditionFailedAction action = ConditionFailedAction.Nothing;
+			foreach (ICondition condition in conditionList) {
+				if (!condition.IsValid(caller)) {
+					if (condition.Action == ConditionFailedAction.Disable) {
+						action = ConditionFailedAction.Disable;
+					} else {
+						return ConditionFailedAction.Exclude;
+					}
+				}
+			}
+			return action;
 		}
 	}
 }

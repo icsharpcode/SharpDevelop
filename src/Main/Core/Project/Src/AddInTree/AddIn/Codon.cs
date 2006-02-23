@@ -92,31 +92,17 @@ namespace ICSharpCode.Core
 		
 		public ConditionFailedAction GetFailedAction(object caller)
 		{
-			ConditionFailedAction action = ConditionFailedAction.Nothing;
-			foreach (ICondition condition in conditions) {
-				try {
-					if (!condition.IsValid(caller)) {
-						if (condition.Action == ConditionFailedAction.Disable) {
-							action = ConditionFailedAction.Disable;
-						} else {
-							return action = ConditionFailedAction.Exclude;
-						}
-					}
-				} catch {
-					LoggingService.Error("Exception while getting failed action from " + addIn.FileName);
-					throw;
-				}
-			}
-			return action;
+			return Condition.GetFailedAction(conditions, caller);
 		}
-//		
+		
+//
 //		public void BinarySerialize(BinaryWriter writer)
 //		{
 //			writer.Write(AddInTree.GetNameOffset(name));
 //			writer.Write(AddInTree.GetAddInOffset(addIn));
 //			properties.BinarySerialize(writer);
 //		}
-//		
+//
 		public object BuildItem(object owner, ArrayList subItems)
 		{
 			try {
@@ -137,7 +123,7 @@ namespace ICSharpCode.Core
 		{
 			return String.Format("[Codon: name = {0}, addIn={1}]",
 			                     name,
-			                    addIn.FileName);
+			                     addIn.FileName);
 		}
 	}
 }

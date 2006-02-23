@@ -199,6 +199,13 @@ namespace ICSharpCode.AddInManager
 		List<AddIn> selected;
 		AddInAction selectedAction;
 		
+		static bool IsErrorAction(AddInAction action)
+		{
+			return action == AddInAction.DependencyError
+				|| action == AddInAction.InstalledTwice
+				|| action == AddInAction.CustomError;
+		}
+		
 		void UpdateActionBox()
 		{
 			ignoreFocusChange = true;
@@ -227,7 +234,7 @@ namespace ICSharpCode.AddInManager
 						break;
 					}
 					allEnabled      &= addIn.Action == AddInAction.Enable;
-					if (addIn.Action == AddInAction.DependencyError || addIn.Action == AddInAction.InstalledTwice)
+					if (IsErrorAction(addIn.Action))
 						hasErrors = true;
 					else
 						allDisabled     &= addIn.Action == AddInAction.Disable;

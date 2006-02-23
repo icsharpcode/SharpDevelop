@@ -52,6 +52,15 @@ namespace ICSharpCode.Core
 				propertyObjects["exe"] = FileVersionInfo.GetVersionInfo(exeName);
 			}
 			properties["USER"] = Environment.UserName;
+			
+			// Maybe test for Mono?
+			if (IntPtr.Size == 4) {
+				properties["Platform"] = "Win32";
+			} else if (IntPtr.Size == 8) {
+				properties["Platform"] = "Win64";
+			} else {
+				properties["Platform"] = "unknown";
+			}
 		}
 		
 		public static string Parse(string input)

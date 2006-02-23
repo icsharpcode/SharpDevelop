@@ -8,7 +8,10 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly="SubversionAddIn.dll"/>
+		<Condition name = "Compare" string = "${Platform}" equals = "Win64">
+			<DisableAddIn message = "This AddIn does not work in the x64 Edition of Windows."/>
+		</Condition>
+		<Import assembly = "SubversionAddIn.dll"/>
 	</Runtime>
 	
 	<Path name = "/Workspace/Autostart">

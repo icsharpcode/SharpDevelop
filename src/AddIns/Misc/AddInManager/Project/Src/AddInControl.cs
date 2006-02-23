@@ -182,6 +182,9 @@ namespace ICSharpCode.AddInManager
 				case AddInAction.DependencyError:
 					textBrush = Brushes.Red;
 					return ResourceService.GetString("AddInManager.AddInDependencyFailed");
+				case AddInAction.CustomError:
+					textBrush = Brushes.Red;
+					return StringParser.Parse(addIn.CustomErrorMessage);
 				default:
 					textBrush = Brushes.Yellow;
 					return addIn.Action.ToString();

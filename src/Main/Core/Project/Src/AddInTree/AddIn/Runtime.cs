@@ -15,11 +15,25 @@ namespace ICSharpCode.Core
 {
 	public class Runtime
 	{
-		string           hintPath;
-		string           assembly;
-		Assembly         loadedAssembly = null;
-		List<Properties> definedDoozers    = new List<Properties>(1);
-		List<Properties> definedConditionEvaluators = new List<Properties>(1);
+		string   hintPath;
+		string   assembly;
+		Assembly loadedAssembly = null;
+		
+		IList<LazyLoadDoozer> definedDoozers = new List<LazyLoadDoozer>();
+		IList<LazyConditionEvaluator> definedConditionEvaluators = new List<LazyConditionEvaluator>();
+		ICondition[] conditions;
+		bool isActive = true;
+		bool isAssemblyLoaded;
+		
+		public bool IsActive {
+			get {
+				if (conditions != null) {
+					isActive = Condition.GetFailedAction(conditions, this) == ConditionFailedAction.Nothing;
+					conditions = null;
+				}
+				return isActive;
+			}
+		}
 		
 		public Runtime(string assembly, string hintPath)
 		{
@@ -32,8 +46,6 @@ namespace ICSharpCode.Core
 				return assembly;
 			}
 		}
-
-		bool isAssemblyLoaded;
 
 		public Assembly LoadedAssembly {
 			get {
@@ -79,13 +91,13 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public List<Properties> DefinedDoozers {
+		public IList<LazyLoadDoozer> DefinedDoozers {
 			get {
 				return definedDoozers;
 			}
 		}
 		
-		public List<Properties> DefinedConditionEvaluators {
+		public IList<LazyConditionEvaluator> DefinedConditionEvaluators {
 			get {
 				return definedConditionEvaluators;
 			}
@@ -93,18 +105,62 @@ namespace ICSharpCode.Core
 		
 		public object CreateInstance(string instance)
 		{
-			Assembly asm = LoadedAssembly;
-			if (asm == null)
+			if (IsActive) {
+				Assembly asm = LoadedAssembly;
+				if (asm == null)
+					return null;
+				return asm.CreateInstance(instance);
+			} else {
 				return null;
-			return asm.CreateInstance(instance);
+			}
 		}
 		
-		internal static Runtime Read(AddIn addIn, XmlTextReader reader, string hintPath)
+		internal static void ReadSection(XmlReader reader, AddIn addIn, string hintPath)
+		{
+			Stack<ICondition> conditionStack = new Stack<ICondition>();
+			while (reader.Read()) {
+				switch (reader.NodeType) {
+					case XmlNodeType.EndElement:
+						if (reader.LocalName == "Condition" || reader.LocalName == "ComplexCondition") {
+							conditionStack.Pop();
+						} else if (reader.LocalName == "Runtime") {
+							return;
+						}
+						break;
+					case XmlNodeType.Element:
+						switch (reader.LocalName) {
+							case "Condition":
+								conditionStack.Push(Condition.Read(reader));
+								break;
+							case "ComplexCondition":
+								conditionStack.Push(Condition.ReadComplexCondition(reader));
+								break;
+							case "Import":
+								addIn.Runtimes.Add(Runtime.Read(addIn, reader, hintPath, conditionStack));
+								break;
+							case "DisableAddIn":
+								if (Condition.GetFailedAction(conditionStack, addIn) == ConditionFailedAction.Nothing) {
+									// The DisableAddIn node not was not disabled by a condition
+									addIn.CustomErrorMessage = reader.GetAttribute("message");
+								}
+								break;
+							default:
+								throw new AddInLoadException("Unknown node in runtime section :" + reader.LocalName);
+						}
+						break;
+				}
+			}
+		}
+		
+		internal static Runtime Read(AddIn addIn, XmlReader reader, string hintPath, Stack<ICondition> conditionStack)
 		{
 			if (reader.AttributeCount != 1) {
 				throw new AddInLoadException("Import node requires ONE attribute.");
 			}
 			Runtime	runtime = new Runtime(reader.GetAttribute(0), hintPath);
+			if (conditionStack.Count > 0) {
+				runtime.conditions = conditionStack.ToArray();
+			}
 			if (!reader.IsEmptyElement) {
 				while (reader.Read()) {
 					switch (reader.NodeType) {
@@ -121,24 +177,13 @@ namespace ICSharpCode.Core
 									if (!reader.IsEmptyElement) {
 										throw new AddInLoadException("Doozer nodes must be empty!");
 									}
-									LazyLoadDoozer lazyLoadDoozer = new LazyLoadDoozer(addIn, properties);
-									
-									if (AddInTree.Doozers.ContainsKey(lazyLoadDoozer.Name)) {
-										throw new AddInLoadException("Duplicate doozer: " + lazyLoadDoozer.Name);
-									}
-									AddInTree.Doozers.Add(lazyLoadDoozer.Name, lazyLoadDoozer);
-									runtime.definedDoozers.Add(properties);
+									runtime.definedDoozers.Add(new LazyLoadDoozer(addIn, properties));
 									break;
 								case "ConditionEvaluator":
 									if (!reader.IsEmptyElement) {
 										throw new AddInLoadException("ConditionEvaluator nodes must be empty!");
 									}
-									LazyConditionEvaluator lazyLoadConditionEvaluator = new LazyConditionEvaluator(addIn, properties);
-									if (AddInTree.ConditionEvaluators.ContainsKey(lazyLoadConditionEvaluator.Name)) {
-										throw new AddInLoadException("Duplicate condition evaluator: " + lazyLoadConditionEvaluator.Name);
-									}
-									AddInTree.ConditionEvaluators.Add(lazyLoadConditionEvaluator.Name, lazyLoadConditionEvaluator);
-									runtime.definedConditionEvaluators.Add(properties);
+									runtime.definedConditionEvaluators.Add(new LazyConditionEvaluator(addIn, properties));
 									break;
 								default:
 									throw new AddInLoadException("Unknown node in Import section:" + nodeName);
@@ -147,6 +192,8 @@ namespace ICSharpCode.Core
 					}
 				}
 			}
+			runtime.definedDoozers             = (runtime.definedDoozers as List<LazyLoadDoozer>).AsReadOnly();
+			runtime.definedConditionEvaluators = (runtime.definedConditionEvaluators as List<LazyConditionEvaluator>).AsReadOnly();
 			return runtime;
 		}
 	}

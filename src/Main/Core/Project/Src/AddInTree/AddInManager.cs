@@ -21,7 +21,8 @@ namespace ICSharpCode.Core
 		Uninstall,
 		Update,
 		InstalledTwice,
-		DependencyError
+		DependencyError,
+		CustomError
 	}
 	
 	public static class AddInManager

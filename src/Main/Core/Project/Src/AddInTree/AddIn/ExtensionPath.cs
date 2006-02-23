@@ -44,7 +44,7 @@ namespace ICSharpCode.Core
 			this.name = name;
 		}
 		
-		public static void SetUp(ExtensionPath extensionPath, XmlTextReader reader, string endElement)
+		public static void SetUp(ExtensionPath extensionPath, XmlReader reader, string endElement)
 		{
 			Stack<ICondition> conditionStack = new Stack<ICondition>();
 			while (reader.Read()) {
@@ -59,8 +59,7 @@ namespace ICSharpCode.Core
 					case XmlNodeType.Element:
 						string elementName = reader.LocalName;
 						if (elementName == "Condition") {
-							ICondition newCondition = Condition.Read(reader);
-							conditionStack.Push(newCondition);
+							conditionStack.Push(Condition.Read(reader));
 						} else if (elementName == "ComplexCondition") {
 							conditionStack.Push(Condition.ReadComplexCondition(reader));
 						} else {

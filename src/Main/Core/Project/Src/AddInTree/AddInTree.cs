@@ -165,6 +165,23 @@ namespace ICSharpCode.Core
 					AddExtensionPath(path);
 				}
 				
+				foreach (Runtime runtime in addIn.Runtimes) {
+					if (runtime.IsActive) {
+						foreach (LazyLoadDoozer doozer in runtime.DefinedDoozers) {
+							if (AddInTree.Doozers.ContainsKey(doozer.Name)) {
+								throw new AddInLoadException("Duplicate doozer: " + doozer.Name);
+							}
+							AddInTree.Doozers.Add(doozer.Name, doozer);
+						}
+						foreach (LazyConditionEvaluator condition in runtime.DefinedConditionEvaluators) {
+							if (AddInTree.ConditionEvaluators.ContainsKey(condition.Name)) {
+								throw new AddInLoadException("Duplicate condition evaluator: " + condition.Name);
+							}
+							AddInTree.ConditionEvaluators.Add(condition.Name, condition);
+						}
+					}
+				}
+				
 				string addInRoot = Path.GetDirectoryName(addIn.FileName);
 				foreach(string bitmapResource in addIn.BitmapResources)
 				{
@@ -245,6 +262,10 @@ namespace ICSharpCode.Core
 			Dictionary<string, AddIn> addInDict = new Dictionary<string, AddIn>();
 			foreach (string fileName in addInFiles) {
 				AddIn addIn = AddIn.Load(fileName);
+				if (addIn.Action == AddInAction.CustomError) {
+					list.Add(addIn);
+					continue;
+				}
 				addIn.Enabled = true;
 				if (disabledAddIns != null && disabledAddIns.Count > 0) {
 					foreach (string name in addIn.Manifest.Identities.Keys) {
