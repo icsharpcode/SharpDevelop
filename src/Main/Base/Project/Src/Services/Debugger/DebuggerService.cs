@@ -55,7 +55,7 @@ namespace ICSharpCode.Core
 				project = ProjectService.OpenSolution.StartupProject;
 			}
 			foreach (DebuggerDescriptor d in debuggers) {
-				if (d.Debugger.CanDebug(project)) {
+				if (d.Debugger != null && d.Debugger.CanDebug(project)) {
 					return d.Debugger;
 				}
 			}

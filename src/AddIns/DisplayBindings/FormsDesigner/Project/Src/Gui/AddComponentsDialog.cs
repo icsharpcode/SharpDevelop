@@ -92,52 +92,48 @@ namespace ICSharpCode.FormsDesigner.Gui
 					} catch {}
 				}
 				try {
-					Module[] ms = assembly.GetModules(false);
 					((ListView)ControlDictionary["componentListView"]).SmallImageList = il;
-					foreach (Module m in ms) {
-						Type[] ts = m.GetTypes();
-						foreach (Type t in ts) {
-							if (t.IsPublic && !t.IsAbstract) {
-								if (t.IsDefined(typeof(ToolboxItemFilterAttribute), true) || t.IsDefined(typeof(ToolboxItemAttribute), true) || typeof(System.ComponentModel.IComponent).IsAssignableFrom(t)) {
-									object[] attributes  = t.GetCustomAttributes(false);
-									object[] filterAttrs = t.GetCustomAttributes(typeof(DesignTimeVisibleAttribute), true);
-									foreach (DesignTimeVisibleAttribute visibleAttr in filterAttrs) {
-										if (!visibleAttr.Visible) {
-											goto skip;
-										}
+					foreach (Type t in assembly.GetExportedTypes()) {
+						if (!t.IsAbstract) {
+							if (t.IsDefined(typeof(ToolboxItemFilterAttribute), true) || t.IsDefined(typeof(ToolboxItemAttribute), true) || typeof(System.ComponentModel.IComponent).IsAssignableFrom(t)) {
+								object[] attributes  = t.GetCustomAttributes(false);
+								object[] filterAttrs = t.GetCustomAttributes(typeof(DesignTimeVisibleAttribute), true);
+								foreach (DesignTimeVisibleAttribute visibleAttr in filterAttrs) {
+									if (!visibleAttr.Visible) {
+										goto skip;
 									}
-									
-									if (images[t.FullName + ".bmp"] == null) {
-										if (t.IsDefined(typeof(ToolboxBitmapAttribute), false)) {
-											foreach (object attr in attributes) {
-												if (attr is ToolboxBitmapAttribute) {
-													ToolboxBitmapAttribute toolboxBitmapAttribute = (ToolboxBitmapAttribute)attr;
-													images[t.FullName + ".bmp"] = il.Images.Count;
-													Bitmap b = new Bitmap(toolboxBitmapAttribute.GetImage(t));
-													b.MakeTransparent();
-													il.Images.Add(b);
-													break;
-												}
+								}
+								
+								if (images[t.FullName + ".bmp"] == null) {
+									if (t.IsDefined(typeof(ToolboxBitmapAttribute), false)) {
+										foreach (object attr in attributes) {
+											if (attr is ToolboxBitmapAttribute) {
+												ToolboxBitmapAttribute toolboxBitmapAttribute = (ToolboxBitmapAttribute)attr;
+												images[t.FullName + ".bmp"] = il.Images.Count;
+												Bitmap b = new Bitmap(toolboxBitmapAttribute.GetImage(t));
+												b.MakeTransparent();
+												il.Images.Add(b);
+												break;
 											}
 										}
 									}
-									
-									ListViewItem newItem = new ListViewItem(t.Name);
-									newItem.SubItems.Add(t.Namespace);
-									newItem.SubItems.Add(assembly.ToString());
-									newItem.SubItems.Add(assembly.Location);
-									newItem.SubItems.Add(t.Namespace);
-									if (images[t.FullName + ".bmp"] != null) {
-										newItem.ImageIndex = (int)images[t.FullName + ".bmp"];
-									}
-									newItem.Checked  = true;
-									ToolComponent toolComponent = new ToolComponent(t.FullName, new ComponentAssembly(assembly.FullName, loadPath));
-									toolComponent.IsEnabled    = true;
-									newItem.Tag = toolComponent;
-									((ListView)ControlDictionary["componentListView"]).Items.Add(newItem);
-									ToolboxItem item = new ToolboxItem(t);
-									skip:;
 								}
+								
+								ListViewItem newItem = new ListViewItem(t.Name);
+								newItem.SubItems.Add(t.Namespace);
+								newItem.SubItems.Add(assembly.ToString());
+								newItem.SubItems.Add(assembly.Location);
+								newItem.SubItems.Add(t.Namespace);
+								if (images[t.FullName + ".bmp"] != null) {
+									newItem.ImageIndex = (int)images[t.FullName + ".bmp"];
+								}
+								newItem.Checked  = true;
+								ToolComponent toolComponent = new ToolComponent(t.FullName, new ComponentAssembly(assembly.FullName, loadPath));
+								toolComponent.IsEnabled    = true;
+								newItem.Tag = toolComponent;
+								((ListView)ControlDictionary["componentListView"]).Items.Add(newItem);
+								ToolboxItem item = new ToolboxItem(t);
+								skip:;
 							}
 						}
 					}
