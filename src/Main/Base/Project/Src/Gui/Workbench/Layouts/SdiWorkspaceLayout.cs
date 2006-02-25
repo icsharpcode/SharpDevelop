@@ -57,19 +57,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 				} else {
 					activeContent = dockPanel.ActiveContent ?? lastActiveContent;
 				}
+				if (activeContent != null && activeContent.IsDisposed)
+					activeContent = null;
+				
 				lastActiveContent = activeContent;
 				
-				if (activeContent is IWorkbenchWindow) {
-					if ((activeContent as IWorkbenchWindow).IsDisposed)
-						return null;
+				if (activeContent is IWorkbenchWindow)
 					return ((IWorkbenchWindow)activeContent).ActiveViewContent;
-				}
-				
-				if (activeContent is PadContentWrapper) {
-					if ((activeContent as PadContentWrapper).IsDisposed)
-						return null;
+				if (activeContent is PadContentWrapper)
 					return ((PadContentWrapper)activeContent).PadContent;
-				}
 				
 				return activeContent;
 			}

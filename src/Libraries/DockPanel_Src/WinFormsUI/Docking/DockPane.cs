@@ -9,6 +9,7 @@
 // *****************************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -174,6 +175,31 @@ namespace WeifenLuo.WinFormsUI
 			base.Dispose(disposing);
 		}
 
+		private class VisitedTabsCollection
+		{
+			List<IDockContent> list = new List<IDockContent>();
+			public int Count {
+				get {
+					return list.Count;
+				}
+			}
+			public void PushOrMoveToEnd(IDockContent content)
+			{
+				for (int i = 0; i < list.Count; i++) {
+					if (list[i] == content || list[i].IsDisposed) {
+						list.RemoveAt(i--);
+					}
+				}
+				list.Add(content);
+			}
+			public IDockContent Pop()
+			{
+				IDockContent content = list[list.Count - 1];
+				list.RemoveAt(list.Count - 1);
+				return content;
+			}
+		}
+		private VisitedTabsCollection m_visitedTabs = new VisitedTabsCollection();
 		private IDockContent m_activeContent = null;
 		/// <include file='CodeDoc\DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Property[@name="ActiveContent"]/*'/>
 		public virtual IDockContent ActiveContent
@@ -202,6 +228,11 @@ namespace WeifenLuo.WinFormsUI
 
 				m_activeContent = value;
 
+				if (m_activeContent != null && m_activeContent.DockHandler.DockState == DockState.Document)
+				{
+					m_visitedTabs.PushOrMoveToEnd(m_activeContent);
+				}
+				
 				if (DockPanel.DocumentStyle == DocumentStyles.DockingMdi && DockState == DockState.Document)
 				{
 					if (m_activeContent != null)
@@ -736,27 +767,43 @@ namespace WeifenLuo.WinFormsUI
 				return;
 
 			IDockContent prevVisible = null;
-			for (int i=Contents.IndexOf(ActiveContent)-1; i>=0; i--)
-				if (Contents[i].DockHandler.DockState == DockState)
+			
+			if (ActiveContent.DockHandler.DockState == DockState.Unknown)
+			{
+				while(m_visitedTabs.Count > 0)
 				{
-					prevVisible = Contents[i];
-					break;
+					prevVisible = m_visitedTabs.Pop();
+					
+					if (prevVisible != null && !prevVisible.IsDisposed && prevVisible != ActiveContent)
+						break;
 				}
+			}
 
-			IDockContent nextVisible = null;
-			for (int i=Contents.IndexOf(ActiveContent)+1; i<Contents.Count; i++)
-				if (Contents[i].DockHandler.DockState == DockState)
-				{
-					nextVisible = Contents[i];
-					break;
-				}
-
-			if (prevVisible != null)
+			if (prevVisible != null) {
 				ActiveContent = prevVisible;
-			else if (nextVisible != null)
-				ActiveContent = nextVisible;
-			else
-				ActiveContent = null;
+			} else {
+				for (int i=Contents.IndexOf(ActiveContent)-1; i>=0; i--)
+					if (Contents[i].DockHandler.DockState == DockState)
+					{
+						prevVisible = Contents[i];
+						break;
+					}
+				
+				IDockContent nextVisible = null;
+				for (int i=Contents.IndexOf(ActiveContent)+1; i<Contents.Count; i++)
+					if (Contents[i].DockHandler.DockState == DockState)
+					{
+						nextVisible = Contents[i];
+						break;
+					}
+			
+	 			if (prevVisible != null)
+	 				ActiveContent = prevVisible;
+				else if (nextVisible != null)
+					ActiveContent = nextVisible;
+	 			else
+	 				ActiveContent = null;
+			}
 		}
 
 		private static readonly object DockStateChangedEvent = new object();
