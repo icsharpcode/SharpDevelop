@@ -47,6 +47,7 @@ namespace SearchAndReplace
 				
 				ControlDictionary["findNextButton"].Click     += FindNextButtonClicked;
 				ControlDictionary["lookInBrowseButton"].Click += LookInBrowseButtonClicked;
+				((Form)Parent).AcceptButton = (Button)ControlDictionary["findNextButton"];
 				SetOptions();
 				RightToLeftConverter.ReConvertRecursive(this);
 				ResumeLayout(false);
@@ -70,6 +71,7 @@ namespace SearchAndReplace
 		{
 			WritebackOptions();
 			SearchReplaceManager.FindNext();
+			Focus();
 		}
 		
 		void FindAllButtonClicked(object sender, EventArgs e)
@@ -88,6 +90,7 @@ namespace SearchAndReplace
 		{
 			WritebackOptions();
 			SearchReplaceManager.Replace();
+			Focus();
 		}
 		
 		void WritebackOptions()
