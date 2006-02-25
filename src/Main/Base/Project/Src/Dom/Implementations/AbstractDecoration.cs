@@ -164,6 +164,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return (modifiers & ModifierEnum.Override) == ModifierEnum.Override;
 			}
 		}
+		public bool IsOverridable {
+			get {
+				return (IsOverride || IsVirtual) && !IsSealed;
+			}
+		}
 		public bool IsNew {
 			get {
 				return (modifiers & ModifierEnum.New) == ModifierEnum.New;

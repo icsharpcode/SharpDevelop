@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Resources;
 using System.Reflection;
 using System.Drawing;
+using System.Threading;
 using System.Globalization;
 using ICSharpCode.Core;
 
@@ -93,7 +94,15 @@ namespace ICSharpCode.SharpDevelop
 		void CopyInfoToClipboard()
 		{
 			if (copyErrorCheckBox.Checked) {
-				ClipboardWrapper.SetText(getClipboardString());
+				if (Application.OleRequired() == ApartmentState.STA) {
+					ClipboardWrapper.SetText(getClipboardString());
+				} else {
+					Thread th = new Thread((ThreadStart)delegate {
+					                       	ClipboardWrapper.SetText(getClipboardString());
+					                       });
+					th.SetApartmentState(ApartmentState.STA);
+					th.Start();
+				}
 			}
 		}
 		
