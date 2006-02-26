@@ -218,11 +218,9 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					codeCompletionListView.PageUp();
 					return true;
 				case Keys.Down:
-				case Keys.Right:
 					codeCompletionListView.SelectNextItem();
 					return true;
 				case Keys.Up:
-				case Keys.Left:
 					codeCompletionListView.SelectPrevItem();
 					return true;
 				case Keys.Tab:
