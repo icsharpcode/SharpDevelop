@@ -54,6 +54,8 @@ namespace VBNetBinding.OptionPanels
 			                          new StringPair("Text", "Compare Text"));
 			b.RegisterLocationButton(locationButton);
 			
+			InitBaseIntermediateOutputPath();
+			InitIntermediateOutputPath();
 			InitOutputPath();
 			InitXmlDoc();
 			InitTargetFramework(VBNetProject.DefaultTargetsFile,

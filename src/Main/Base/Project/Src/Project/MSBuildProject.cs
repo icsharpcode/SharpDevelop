@@ -44,6 +44,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			BaseConfiguration.SetIsGuarded("Platform", true);
 			
 			configurations["Debug|*"] = new PropertyGroup();
+			configurations["Debug|*"]["BaseIntermediateOutputPath"] = @"obj\";
+			configurations["Debug|*"]["IntermediateOutputPath"] = @"obj\Debug\";
 			configurations["Debug|*"]["OutputPath"] = @"bin\Debug\";
 			configurations["Debug|*"]["Optimize"] = "False";
 			configurations["Debug|*"]["DefineConstants"] = "DEBUG" + BuildConstantSeparator + "TRACE";
@@ -51,6 +53,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			configurations["Debug|*"]["DebugType"] = "Full";
 			
 			configurations["Release|*"] = new PropertyGroup();
+			configurations["Release|*"]["BaseIntermediateOutputPath"] = @"obj\";
+			configurations["Release|*"]["IntermediateOutputPath"] = @"obj\Release\";
 			configurations["Release|*"]["OutputPath"] = @"bin\Release\";
 			configurations["Release|*"]["Optimize"] = "True";
 			configurations["Release|*"]["DefineConstants"] = "TRACE";

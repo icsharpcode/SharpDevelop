@@ -27,6 +27,8 @@ namespace CSharpBinding.OptionPanels
 			SetupFromXmlResource("BuildOptions.xfrm");
 			InitializeHelper();
 			
+			InitBaseIntermediateOutputPath();
+			InitIntermediateOutputPath();
 			InitOutputPath();
 			InitXmlDoc();
 			InitTargetFramework(CSharpProject.DefaultTargetsFile,
