@@ -10,6 +10,7 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
@@ -27,6 +28,8 @@ namespace ICSharpCode.NRefactory.Parser
 		//   MyBase.New() and MyClass.New() calls inside the constructor are converted to :base() and :this()
 		//   Add Public Modifier to methods and properties
 		//   Override Finalize => Destructor
+		//   IIF(cond, true, false) => ConditionalExpression
+		//   Built-in methods => Prefix with class name
 		
 		// The following conversions should be implemented in the future:
 		//   Function A() \n A = SomeValue \n End Function -> convert to return statement
@@ -197,6 +200,92 @@ namespace ICSharpCode.NRefactory.Parser
 				propertyDeclaration.Modifier = Modifier.Public;
 			
 			return base.Visit(propertyDeclaration, data);
+		}
+		
+		static volatile Dictionary<string, Expression> constantTable;
+		static volatile Dictionary<string, Expression> methodTable;
+		
+		public static readonly string VBAssemblyName = "Microsoft.VisualBasic, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a";
+		
+		static Dictionary<string, Expression> CreateDictionary(params string[] classNames)
+		{
+			Dictionary<string, Expression> d = new Dictionary<string, Expression>(StringComparer.InvariantCultureIgnoreCase);
+			Assembly asm = Assembly.Load(VBAssemblyName);
+			foreach (string className in classNames) {
+				Type type = asm.GetType("Microsoft.VisualBasic." + className);
+				Expression expr = new IdentifierExpression(className);
+				foreach (MemberInfo member in type.GetMembers()) {
+					if (member.DeclaringType == type) { // only direct members
+						d[member.Name] = expr;
+					}
+				}
+			}
+			return d;
+		}
+		
+		public override object Visit(IdentifierExpression identifierExpression, object data)
+		{
+			if (constantTable == null) {
+				constantTable = CreateDictionary("Constants");
+			}
+			Expression expr;
+			if (constantTable.TryGetValue(identifierExpression.Identifier, out expr)) {
+				FieldReferenceExpression fre = new FieldReferenceExpression(expr, identifierExpression.Identifier);
+				ReplaceCurrentNode(fre);
+				return base.Visit(fre, data);
+			}
+			return base.Visit(identifierExpression, data);
+		}
+		
+		public override object Visit(InvocationExpression invocationExpression, object data)
+		{
+			IdentifierExpression ident = invocationExpression.TargetObject as IdentifierExpression;
+			if (ident != null) {
+				if ("IIF".Equals(ident.Identifier, StringComparison.InvariantCultureIgnoreCase)
+				    && invocationExpression.Arguments.Count == 3)
+				{
+					ConditionalExpression ce = new ConditionalExpression(invocationExpression.Arguments[0],
+					                                                     invocationExpression.Arguments[1],
+					                                                     invocationExpression.Arguments[2]);
+					ReplaceCurrentNode(new ParenthesizedExpression(ce));
+					return base.Visit(ce, data);
+				}
+				if ("IsNothing".Equals(ident.Identifier, StringComparison.InvariantCultureIgnoreCase)
+				    && invocationExpression.Arguments.Count == 1)
+				{
+					BinaryOperatorExpression boe = new BinaryOperatorExpression(invocationExpression.Arguments[0],
+					                                                            BinaryOperatorType.ReferenceEquality,
+					                                                            new PrimitiveExpression(null, "null"));
+					ReplaceCurrentNode(new ParenthesizedExpression(boe));
+					return base.Visit(boe, data);
+				}
+				if (methodTable == null) {
+					methodTable = CreateDictionary("Conversion", "FileSystem", "Financial", "Information",
+					                               "Interaction", "Strings", "VBMath");
+				}
+				Expression expr;
+				if (methodTable.TryGetValue(ident.Identifier, out expr)) {
+					FieldReferenceExpression fre = new FieldReferenceExpression(expr, ident.Identifier);
+					invocationExpression.TargetObject = fre;
+				}
+			}
+			return base.Visit(invocationExpression, data);
+		}
+		
+		public override object Visit(UnaryOperatorExpression unaryOperatorExpression, object data)
+		{
+			base.Visit(unaryOperatorExpression, data);
+			if (unaryOperatorExpression.Op == UnaryOperatorType.Not) {
+				ParenthesizedExpression pe = unaryOperatorExpression.Expression as ParenthesizedExpression;
+				if (pe != null) {
+					BinaryOperatorExpression boe = pe.Expression as BinaryOperatorExpression;
+					if (boe != null && boe.Op == BinaryOperatorType.ReferenceEquality) {
+						boe.Op = BinaryOperatorType.ReferenceInequality;
+						ReplaceCurrentNode(pe);
+					}
+				}
+			}
+			return null;
 		}
 	}
 }

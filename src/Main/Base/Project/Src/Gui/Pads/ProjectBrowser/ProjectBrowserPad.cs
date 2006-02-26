@@ -20,6 +20,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		static ProjectBrowserPad instance;
 		public static ProjectBrowserPad Instance {
 			get {
+				if (instance == null) {
+					WorkbenchSingleton.Workbench.GetPad(typeof(ProjectBrowserPad)).CreatePad();
+				}
 				return instance;
 			}
 		}
@@ -28,6 +31,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		public AbstractProjectBrowserTreeNode SelectedNode {
 			get {
 				return projectBrowserPanel.SelectedNode;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the root node of the project tree view.
+		/// </summary>
+		public AbstractProjectBrowserTreeNode SolutionNode {
+			get {
+				return projectBrowserPanel.RootNode;
 			}
 		}
 		
