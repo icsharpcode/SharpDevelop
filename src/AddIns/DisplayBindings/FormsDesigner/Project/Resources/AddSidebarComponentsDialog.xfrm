@@ -1,64 +1,61 @@
 <Components version="1.0">
   <System.Windows.Forms.Form>
     <Name value="AddComponentsDialog" />
-    <ShowInTaskbar value="False" />
-    <FormBorderStyle value="FixedDialog" />
-    <StartPosition value="CenterScreen" />
-    <ClientSize value="{Width=522, Height=394}" />
     <MinimizeBox value="False" />
-    <DockPadding value="" />
+    <StartPosition value="CenterScreen" />
+    <ShowInTaskbar value="False" />
     <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.DialogName}" />
     <AcceptButton value="okButton [System.Windows.Forms.Button], Text: ${res:Global.OKButtonText}" />
     <CancelButton value="cancelButton [System.Windows.Forms.Button], Text: ${res:Global.CancelButtonText}" />
     <MaximizeBox value="False" />
+    <ClientSize value="{Width=685, Height=394}" />
     <Controls>
       <System.Windows.Forms.Button>
         <Name value="cancelButton" />
-        <Location value="{X=437,Y=363}" />
-        <ClientSize value="{Width=75, Height=23}" />
+        <DialogResult value="Cancel" />
+        <Location value="{X=600,Y=363}" />
         <Text value="${res:Global.CancelButtonText}" />
         <Anchor value="Bottom, Right" />
+        <Size value="{Width=75, Height=23}" />
         <TabIndex value="2" />
-        <DialogResult value="Cancel" />
       </System.Windows.Forms.Button>
       <System.Windows.Forms.Button>
         <Name value="okButton" />
-        <Location value="{X=357,Y=363}" />
-        <ClientSize value="{Width=75, Height=23}" />
+        <DialogResult value="OK" />
+        <Location value="{X=520,Y=363}" />
         <Text value="${res:Global.OKButtonText}" />
         <Anchor value="Bottom, Right" />
+        <Size value="{Width=75, Height=23}" />
         <TabIndex value="1" />
-        <DialogResult value="OK" />
       </System.Windows.Forms.Button>
       <System.Windows.Forms.Panel>
         <Name value="panel" />
         <Location value="{X=8,Y=8}" />
-        <ClientSize value="{Width=504, Height=347}" />
-        <DockPadding value="" />
-        <Anchor value="Top, Bottom, Left, Right" />
         <TabIndex value="0" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <Size value="{Width=667, Height=347}" />
         <Controls>
           <System.Windows.Forms.ListView>
             <Name value="componentListView" />
-            <GridLines value="True" />
-            <Dock value="Fill" />
-            <TabIndex value="3" />
-            <View value="Details" />
-            <FullRowSelect value="True" />
-            <Location value="{X=203,Y=16}" />
-            <ClientSize value="{Width=297, Height=327}" />
             <CheckBoxes value="True" />
+            <Size value="{Width=403, Height=331}" />
+            <TabIndex value="3" />
+            <FullRowSelect value="True" />
+            <GridLines value="True" />
+            <View value="Details" />
             <HideSelection value="False" />
+            <Dock value="Fill" />
+            <Location value="{X=264,Y=16}" />
             <Columns>
               <System.Windows.Forms.ColumnHeader>
-                <Width value="82" />
-                <Name value="componentColumnHeader1" />
+                <Width value="128" />
                 <Text value="${res:Global.Name}" />
+                <Name value="componentColumnHeader1" />
               </System.Windows.Forms.ColumnHeader>
               <System.Windows.Forms.ColumnHeader>
                 <Width value="88" />
-                <Name value="componentColumnHeader2" />
                 <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Namespace}" />
+                <Name value="componentColumnHeader2" />
               </System.Windows.Forms.ColumnHeader>
               <System.Windows.Forms.ColumnHeader>
                 <Name value="componentColumnHeader3" />
@@ -72,53 +69,50 @@
           </System.Windows.Forms.ListView>
           <System.Windows.Forms.Label>
             <Name value="label2" />
+            <Location value="{X=264,Y=0}" />
             <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.ComponentsToAddLabel}" />
-            <TabIndex value="2" />
-            <ClientSize value="{Width=301, Height=16}" />
-            <Location value="{X=203,Y=0}" />
+            <Size value="{Width=403, Height=16}" />
             <Dock value="Top" />
+            <TabIndex value="2" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.Splitter>
             <Name value="splitter" />
+            <Location value="{X=261,Y=0}" />
             <TabIndex value="1" />
-            <ClientSize value="{Width=3, Height=347}" />
-            <Location value="{X=200,Y=0}" />
+            <Size value="{Width=3, Height=347}" />
           </System.Windows.Forms.Splitter>
           <System.Windows.Forms.Panel>
             <Name value="panel2" />
             <Location value="{X=0,Y=0}" />
-            <ClientSize value="{Width=200, Height=347}" />
-            <DockPadding value="" />
             <TabIndex value="0" />
+            <Size value="{Width=261, Height=347}" />
             <Dock value="Left" />
             <Controls>
               <System.Windows.Forms.TabControl>
                 <Name value="tabControl" />
-                <TabIndex value="1" />
-                <Dock value="Fill" />
-                <ClientSize value="{Width=200, Height=347}" />
                 <Location value="{X=0,Y=0}" />
+                <Dock value="Fill" />
+                <TabIndex value="1" />
+                <Size value="{Width=261, Height=347}" />
                 <TabPages>
                   <System.Windows.Forms.TabPage>
                     <Name value="gacTabPage" />
-                    <DockPadding value="" />
                     <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GACTabPage}" />
-                    <ClientSize value="{Width=192, Height=321}" />
-                    <Location value="{X=4,Y=22}" />
+                    <Size value="{Width=253, Height=321}" />
                     <Controls>
                       <System.Windows.Forms.ListView>
                         <Name value="gacListView" />
-                        <Dock value="Fill" />
-                        <MultiSelect value="False" />
+                        <Size value="{Width=253, Height=321}" />
                         <TabIndex value="0" />
-                        <View value="Details" />
                         <FullRowSelect value="True" />
-                        <Location value="{X=0,Y=0}" />
-                        <ClientSize value="{Width=188, Height=317}" />
+                        <MultiSelect value="False" />
+                        <View value="Details" />
                         <HideSelection value="False" />
+                        <Dock value="Fill" />
+                        <Location value="{X=0,Y=0}" />
                         <Columns>
                           <System.Windows.Forms.ColumnHeader>
-                            <Width value="100" />
+                            <Width value="147" />
                             <Name value="columnHeader5" />
                             <Text value="${res:Global.Name}" />
                           </System.Windows.Forms.ColumnHeader>
@@ -133,41 +127,38 @@
                   </System.Windows.Forms.TabPage>
                   <System.Windows.Forms.TabPage>
                     <Name value="customTabPage" />
-                    <DockPadding value="" />
                     <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.CustomTabPage}" />
-                    <ClientSize value="{Width=192, Height=326}" />
-                    <Location value="{X=4,Y=22}" />
+                    <Size value="{Width=253, Height=321}" />
                     <Controls>
                       <System.Windows.Forms.Button>
                         <Name value="browseButton" />
-                        <Location value="{X=157,Y=27}" />
-                        <ClientSize value="{Width=32, Height=20}" />
+                        <Location value="{X=218,Y=27}" />
                         <Text value="..." />
                         <Anchor value="Top, Right" />
+                        <Size value="{Width=32, Height=20}" />
                         <TabIndex value="2" />
                       </System.Windows.Forms.Button>
                       <System.Windows.Forms.TextBox>
                         <Name value="fileNameTextBox" />
-                        <Anchor value="Top, Left, Right" />
                         <TabIndex value="1" />
+                        <Size value="{Width=205, Height=21}" />
                         <Location value="{X=8,Y=28}" />
-                        <ClientSize value="{Width=140, Height=17}" />
-                        <Text value="" />
+                        <Anchor value="Top, Left, Right" />
                       </System.Windows.Forms.TextBox>
                       <System.Windows.Forms.Label>
                         <Name value="label3" />
-                        <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponentsFileNameLabel}" />
-                        <TextAlign value="BottomLeft" />
-                        <Anchor value="Top, Left, Right" />
-                        <TabIndex value="0" />
-                        <ClientSize value="{Width=176, Height=16}" />
                         <Location value="{X=8,Y=8}" />
+                        <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponentsFileNameLabel}" />
+                        <Anchor value="Top, Left, Right" />
+                        <TextAlign value="BottomLeft" />
+                        <Size value="{Width=237, Height=16}" />
+                        <TabIndex value="0" />
                       </System.Windows.Forms.Label>
                       <System.Windows.Forms.Button>
                         <Name value="loadButton" />
                         <Location value="{X=8,Y=60}" />
-                        <ClientSize value="{Width=150, Height=23}" />
                         <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ShowComponentsButton}" />
+                        <Size value="{Width=150, Height=23}" />
                         <TabIndex value="3" />
                       </System.Windows.Forms.Button>
                     </Controls>

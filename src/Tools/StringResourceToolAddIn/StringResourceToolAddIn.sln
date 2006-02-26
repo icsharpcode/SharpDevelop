@@ -1,0 +1,16 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.1.0.9999
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringResourceToolAddIn", "StringResourceToolAddIn.csproj", "{3648E209-B853-4168-BFB5-7A60EAF316F8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AnyCPU = Debug|AnyCPU
+		Release|AnyCPU = Release|AnyCPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3648E209-B853-4168-BFB5-7A60EAF316F8}.Debug|AnyCPU.Build.0 = Debug|Any CPU
+		{3648E209-B853-4168-BFB5-7A60EAF316F8}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
+		{3648E209-B853-4168-BFB5-7A60EAF316F8}.Release|AnyCPU.Build.0 = Release|Any CPU
+		{3648E209-B853-4168-BFB5-7A60EAF316F8}.Release|AnyCPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal

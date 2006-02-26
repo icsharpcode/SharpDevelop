@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Resources;
 using System.Reflection;
 using System.Drawing;
+using System.Threading;
 using System.Globalization;
 using ICSharpCode.Core;
 
@@ -54,7 +55,7 @@ namespace ICSharpCode.SharpDevelop
 		string getClipboardString()
 		{
 			string str = "";
-			str += ".NET Version         : " + Environment.Version.ToString() + Environment.NewLine;
+			str += ".NET Version        : " + Environment.Version.ToString() + Environment.NewLine;
 			str += "OS Version           : " + Environment.OSVersion.ToString() + Environment.NewLine;
 			string cultureName = null;
 			try {
@@ -67,6 +68,9 @@ namespace ICSharpCode.SharpDevelop
 				}
 			} catch {}
 			try {
+				if (IntPtr.Size != 4) {
+					str += "Running as " + (IntPtr.Size * 8) + " bit process" + Environment.NewLine;
+				}
 				if (SystemInformation.TerminalServerSession) {
 					str += "Terminal Server Session" + Environment.NewLine;
 				}
@@ -90,7 +94,15 @@ namespace ICSharpCode.SharpDevelop
 		void CopyInfoToClipboard()
 		{
 			if (copyErrorCheckBox.Checked) {
-				ClipboardWrapper.SetText(getClipboardString());
+				if (Application.OleRequired() == ApartmentState.STA) {
+					ClipboardWrapper.SetText(getClipboardString());
+				} else {
+					Thread th = new Thread((ThreadStart)delegate {
+					                       	ClipboardWrapper.SetText(getClipboardString());
+					                       });
+					th.SetApartmentState(ApartmentState.STA);
+					th.Start();
+				}
 			}
 		}
 		

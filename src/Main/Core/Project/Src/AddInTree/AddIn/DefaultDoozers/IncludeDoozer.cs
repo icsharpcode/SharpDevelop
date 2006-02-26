@@ -67,12 +67,14 @@ namespace ICSharpCode.Core
 				this.path = path;
 			}
 			
-			public void Apply(ArrayList items)
+			public void Apply(IList items)
 			{
 				AddInTreeNode node;
 				try {
 					node = AddInTree.GetTreeNode(path);
-					items.AddRange(node.BuildChildItems(caller));
+					foreach (object o in node.BuildChildItems(caller)) {
+						items.Add(o);
+					}
 				} catch (TreePathNotFoundException) {
 					MessageService.ShowError("IncludeDoozer: AddinTree-Path not found: " + path);
 				}

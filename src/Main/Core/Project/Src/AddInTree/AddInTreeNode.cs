@@ -36,7 +36,7 @@ namespace ICSharpCode.Core
 		public AddInTreeNode()
 		{
 		}
-//		
+//
 //		public void BinarySerialize(BinaryWriter writer)
 //		{
 //			if (!isSorted) {
@@ -47,7 +47,7 @@ namespace ICSharpCode.Core
 //			foreach (Codon codon in codons) {
 //				codon.BinarySerialize(writer);
 //			}
-//			
+//
 //			writer.Write((ushort)childNodes.Count);
 //			foreach (KeyValuePair<string, AddInTreeNode> child in childNodes) {
 //				writer.Write(AddInTree.GetNameOffset(child.Key));
@@ -125,6 +125,35 @@ namespace ICSharpCode.Core
 				sortedCodons.Add(codons[codonIndex]);
 				visited[codonIndex] = true;
 			}
+		}
+		
+		public List<T> BuildChildItems<T>(object caller)
+		{
+			List<T> items = new List<T>(codons.Count);
+			if (!isSorted) {
+				codons = (new TopologicalSort(codons)).Execute();
+				isSorted = true;
+			}
+			foreach (Codon codon in codons) {
+				ArrayList subItems = null;
+				if (childNodes.ContainsKey(codon.Id)) {
+					subItems = childNodes[codon.Id].BuildChildItems(caller);
+				}
+				object result = codon.BuildItem(caller, subItems);
+				if (result == null)
+					continue;
+				IBuildItemsModifier mod = result as IBuildItemsModifier;
+				if (mod != null) {
+					mod.Apply(items);
+				} else if (result is T) {
+					items.Add((T)result);
+				} else {
+					throw new InvalidCastException("The AddInTreeNode <" + codon.Name + " id='" + codon.Id
+					                               + "' returned an instance of " + result.GetType().FullName
+					                               + " but the type " + typeof(T).FullName + " is expected.");
+				}
+			}
+			return items;
 		}
 		
 		public ArrayList BuildChildItems(object caller)

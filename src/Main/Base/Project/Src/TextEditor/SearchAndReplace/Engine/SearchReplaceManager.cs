@@ -138,7 +138,9 @@ namespace SearchAndReplace
 					
 					string transformedPattern = result.TransformReplacePattern(SearchOptions.ReplacePattern);
 					find.Replace(result.Offset, result.Length, transformedPattern);
-					textArea.Document.Replace(result.Offset, result.Length, transformedPattern);
+					if (find.CurrentDocumentInformation.Document == null) {
+						textArea.Document.Replace(result.Offset, result.Length, transformedPattern);
+					}
 				}
 			}
 		}

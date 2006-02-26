@@ -50,6 +50,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// tab. NOT when the windows is selected.
 		/// </summary>
 		void Selected();
+
+		/// <summary>
+		/// Is called just before the view content is deselected inside the window
+		/// tab before the other window is selected. NOT when the windows is deselected.
+		/// </summary>
+		void Deselecting();
 		
 		/// <summary>
 		/// Is called when the view content is deselected inside the window

@@ -57,12 +57,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 					
 					// do not add methods that were overridden
 					bool ok = true;
-					foreach (IMethod oldMethod in l) {
-						if (string.Equals(oldMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
-							if (m.IsStatic == oldMethod.IsStatic) {
-								if (DiffUtility.Compare(oldMethod.Parameters, m.Parameters) == 0) {
-									ok = false;
-									break;
+					if (m.IsOverridable) {
+						StringComparer comparer = m.DeclaringType.ProjectContent.Language.NameComparer;
+						foreach (IMethod oldMethod in l) {
+							if (comparer.Equals(oldMethod.Name, m.Name)) {
+								if (m.IsStatic == oldMethod.IsStatic) {
+									if (DiffUtility.Compare(oldMethod.Parameters, m.Parameters) == 0) {
+										ok = false;
+										break;
+									}
 								}
 							}
 						}
@@ -84,12 +87,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (IProperty p in bc.Properties) {
 					// do not add methods that were overridden
 					bool ok = true;
-					foreach (IProperty oldProperty in l) {
-						if (string.Equals(oldProperty.Name, p.Name, StringComparison.InvariantCultureIgnoreCase)) {
-							if (p.IsStatic == oldProperty.IsStatic) {
-								if (DiffUtility.Compare(oldProperty.Parameters, p.Parameters) == 0) {
-									ok = false;
-									break;
+					if (p.IsOverridable) {
+						StringComparer comparer = p.DeclaringType.ProjectContent.Language.NameComparer;
+						foreach (IProperty oldProperty in l) {
+							if (comparer.Equals(oldProperty.Name, p.Name)) {
+								if (p.IsStatic == oldProperty.IsStatic) {
+									if (DiffUtility.Compare(oldProperty.Parameters, p.Parameters) == 0) {
+										ok = false;
+										break;
+									}
 								}
 							}
 						}

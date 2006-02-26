@@ -593,12 +593,18 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				newSolution.fileName = Path.ChangeExtension(fileName, ".sln");
 				ICSharpCode.SharpDevelop.Project.Converter.CombineToSolution.ConvertSolution(newSolution, fileName);
+				if (newSolution.FixSolutionConfiguration(newSolution.Projects)) {
+					newSolution.Save();
+				}
 			} else if (extension == ".PRJX") {
 				if (!MessageService.AskQuestion("${res:SharpDevelop.Solution.ImportPrjx}")) {
 					return null;
 				}
 				newSolution.fileName = Path.ChangeExtension(fileName, ".sln");
 				ICSharpCode.SharpDevelop.Project.Converter.CombineToSolution.ConvertProject(newSolution, fileName);
+				if (newSolution.FixSolutionConfiguration(newSolution.Projects)) {
+					newSolution.Save();
+				}
 			} else {
 				newSolution.fileName = fileName;
 				if (!SetupSolution(newSolution, fileName)) {

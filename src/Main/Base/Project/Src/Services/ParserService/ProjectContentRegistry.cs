@@ -172,9 +172,13 @@ namespace ICSharpCode.Core
 				object o = domain.CreateInstanceAndUnwrap(typeof(ReflectionLoader).Assembly.FullName, typeof(ReflectionLoader).FullName);
 				ReflectionLoader loader = (ReflectionLoader)o;
 				database = loader.LoadAndCreateDatabase(filename, include);
+			} catch (FileLoadException e) {
+				database = null;
+				WorkbenchSingleton.SafeThreadAsyncCall((Action3<string, string, string>)ShowErrorMessage,
+				                                       new object[] { filename, include, e.Message });
 			} catch (Exception e) {
 				database = null;
-				MessageService.ShowError(e, "Error loading " + include + " from " + filename);
+				MessageService.ShowError(e, "Error loading code-completion information for " + include + " from " + filename);
 			} finally {
 				AppDomain.Unload(domain);
 			}
@@ -185,6 +189,16 @@ namespace ICSharpCode.Core
 				LoggingService.Debug("AppDomain finished, loading cache...");
 				return DomPersistence.LoadProjectContent(database);
 			}
+		}
+		
+		delegate void Action3<A, B, C>(A a, B b, C c);
+		
+		static void ShowErrorMessage(string filename, string include, string message)
+		{
+			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+			TaskService.BuildMessageViewCategory.AppendText("Error loading code-completion information for "
+			                                                + include + " from " + filename
+			                                                + ":\r\n" + message + "\r\n");
 		}
 		
 		public static Assembly MscorlibAssembly {

@@ -25,6 +25,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 	public class AddComponentsDialog : BaseSharpDevelopForm
 	{
 		ArrayList selectedComponents;
+		ListView componentListView;
 		
 		public ArrayList SelectedComponents {
 			get {
@@ -35,6 +36,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 		public AddComponentsDialog()
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormsDesigner.Resources.AddSidebarComponentsDialog.xfrm"));
+			
+			componentListView = (ListView)ControlDictionary["componentListView"];
 			
 			Icon = null;
 			PrintGACCache();
@@ -53,11 +56,11 @@ namespace ICSharpCode.FormsDesigner.Gui
 			IAssemblyName assemblyName = null;
 			
 			Fusion.CreateAssemblyEnum(out assemblyEnum, null, null, 2, 0);
-				
+			
 			while (assemblyEnum.GetNextAssembly(out applicationContext, out assemblyName, 0) == 0) {
 				uint nChars = 0;
 				assemblyName.GetDisplayName(null, ref nChars, 0);
-									
+				
 				StringBuilder sb = new StringBuilder((int)nChars);
 				assemblyName.GetDisplayName(sb, ref nChars, 0);
 				
@@ -74,8 +77,9 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void FillComponents(Assembly assembly, string loadPath)
 		{
-			((ListView)ControlDictionary["componentListView"]).BeginUpdate();
-			((ListView)ControlDictionary["componentListView"]).Items.Clear();
+			componentListView.BeginUpdate();
+			componentListView.Items.Clear();
+			componentListView.Controls.Clear();
 			
 			if (assembly != null) {
 				Hashtable images = new Hashtable();
@@ -92,84 +96,88 @@ namespace ICSharpCode.FormsDesigner.Gui
 					} catch {}
 				}
 				try {
-					Module[] ms = assembly.GetModules(false);
-					((ListView)ControlDictionary["componentListView"]).SmallImageList = il;
-					foreach (Module m in ms) {
-						Type[] ts = m.GetTypes();
-						foreach (Type t in ts) {
-							if (t.IsPublic && !t.IsAbstract) {
-								if (t.IsDefined(typeof(ToolboxItemFilterAttribute), true) || t.IsDefined(typeof(ToolboxItemAttribute), true) || typeof(System.ComponentModel.IComponent).IsAssignableFrom(t)) {
-									object[] attributes  = t.GetCustomAttributes(false);
-									object[] filterAttrs = t.GetCustomAttributes(typeof(DesignTimeVisibleAttribute), true);
-									foreach (DesignTimeVisibleAttribute visibleAttr in filterAttrs) {
-										if (!visibleAttr.Visible) {
-											goto skip;
-										}
+					componentListView.SmallImageList = il;
+					foreach (Type t in assembly.GetExportedTypes()) {
+						if (!t.IsAbstract) {
+							if (t.IsDefined(typeof(ToolboxItemFilterAttribute), true) || t.IsDefined(typeof(ToolboxItemAttribute), true) || typeof(System.ComponentModel.IComponent).IsAssignableFrom(t)) {
+								object[] attributes  = t.GetCustomAttributes(false);
+								object[] filterAttrs = t.GetCustomAttributes(typeof(DesignTimeVisibleAttribute), true);
+								foreach (DesignTimeVisibleAttribute visibleAttr in filterAttrs) {
+									if (!visibleAttr.Visible) {
+										goto skip;
 									}
-									
-									if (images[t.FullName + ".bmp"] == null) {
-										if (t.IsDefined(typeof(ToolboxBitmapAttribute), false)) {
-											foreach (object attr in attributes) {
-												if (attr is ToolboxBitmapAttribute) {
-													ToolboxBitmapAttribute toolboxBitmapAttribute = (ToolboxBitmapAttribute)attr;
-													images[t.FullName + ".bmp"] = il.Images.Count;
-													Bitmap b = new Bitmap(toolboxBitmapAttribute.GetImage(t));
-													b.MakeTransparent();
-													il.Images.Add(b);
-													break;
-												}
+								}
+								
+								if (images[t.FullName + ".bmp"] == null) {
+									if (t.IsDefined(typeof(ToolboxBitmapAttribute), false)) {
+										foreach (object attr in attributes) {
+											if (attr is ToolboxBitmapAttribute) {
+												ToolboxBitmapAttribute toolboxBitmapAttribute = (ToolboxBitmapAttribute)attr;
+												images[t.FullName + ".bmp"] = il.Images.Count;
+												Bitmap b = new Bitmap(toolboxBitmapAttribute.GetImage(t));
+												b.MakeTransparent();
+												il.Images.Add(b);
+												break;
 											}
 										}
 									}
-									
-									ListViewItem newItem = new ListViewItem(t.Name);
-									newItem.SubItems.Add(t.Namespace);
-									newItem.SubItems.Add(assembly.ToString());
-									newItem.SubItems.Add(assembly.Location);
-									newItem.SubItems.Add(t.Namespace);
-									if (images[t.FullName + ".bmp"] != null) {
-										newItem.ImageIndex = (int)images[t.FullName + ".bmp"];
-									}
-									newItem.Checked  = true;
-									ToolComponent toolComponent = new ToolComponent(t.FullName, new ComponentAssembly(assembly.FullName, loadPath));
-									toolComponent.IsEnabled    = true;
-									newItem.Tag = toolComponent;
-									((ListView)ControlDictionary["componentListView"]).Items.Add(newItem);
-									ToolboxItem item = new ToolboxItem(t);
-									skip:;
 								}
+								
+								ListViewItem newItem = new ListViewItem(t.Name);
+								newItem.SubItems.Add(t.Namespace);
+								newItem.SubItems.Add(assembly.ToString());
+								newItem.SubItems.Add(assembly.Location);
+								newItem.SubItems.Add(t.Namespace);
+								if (images[t.FullName + ".bmp"] != null) {
+									newItem.ImageIndex = (int)images[t.FullName + ".bmp"];
+								}
+								newItem.Checked  = true;
+								ToolComponent toolComponent = new ToolComponent(t.FullName, new ComponentAssembly(assembly.FullName, loadPath));
+								toolComponent.IsEnabled    = true;
+								newItem.Tag = toolComponent;
+								componentListView.Items.Add(newItem);
+								ToolboxItem item = new ToolboxItem(t);
+								skip:;
 							}
 						}
 					}
 				} catch (Exception e) {
-					MessageService.ShowError(e);
+					ClearComponentsList(e.Message);
+				}
+				if (componentListView.Items.Count == 0) {
+					if (componentListView.Controls.Count == 0) {
+						ClearComponentsList(StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.NoComponentsFound}", new string[,] {{"Name", assembly.FullName}}));
+					}
 				}
 			}
-			((ListView)ControlDictionary["componentListView"]).EndUpdate();
+			componentListView.EndUpdate();
 		}
-		
-		/* changed this unexpected behaviour -- added a load button, G.B.
-		void fileNameTextBoxTextChanged(object sender, System.EventArgs e)
-		{
-			if (File.Exists(this.fileNameTextBox.Text)) {
-				try {
-					FillComponents(Assembly.LoadFrom(this.fileNameTextBox.Text));
-				} catch (Exception ex) {
-					
-					MessageService.ShowError(ex);
-				}
-			}
-		}
-		*/
 		
 		void gacListViewSelectedIndexChanged(object sender, System.EventArgs e)
 		{
 			if (((ListView)ControlDictionary["gacListView"]).SelectedItems != null && ((ListView)ControlDictionary["gacListView"]).SelectedItems.Count == 1) {
 				string assemblyName = ((ListView)ControlDictionary["gacListView"]).SelectedItems[0].Tag.ToString();
-				Assembly asm = Assembly.Load(assemblyName);
-				FillComponents(asm, null);
+				try {
+					Assembly asm = Assembly.Load(assemblyName);
+					FillComponents(asm, null);
+				} catch (Exception ex) {
+					ClearComponentsList(ex.Message);
+				}
 			} else {
-				FillComponents(null, null);
+				ClearComponentsList(null);
+			}
+		}
+		
+		void ClearComponentsList(string message)
+		{
+			componentListView.Items.Clear();
+			componentListView.Controls.Clear();
+			if (message != null) {
+				Label lbl = new Label();
+				lbl.BackColor = SystemColors.Window;
+				lbl.Text = StringParser.Parse(message);
+				lbl.Dock = DockStyle.Fill;
+				componentListView.Controls.Add(lbl);
 			}
 		}
 		
@@ -193,7 +201,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		void buttonClick(object sender, System.EventArgs e)
 		{
 			selectedComponents = new ArrayList();
-			foreach (ListViewItem item in ((ListView)ControlDictionary["componentListView"]).Items) {
+			foreach (ListViewItem item in componentListView.Items) {
 				if (item.Checked) {
 					selectedComponents.Add((ToolComponent)item.Tag);
 				}

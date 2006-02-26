@@ -209,10 +209,8 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		static Dictionary<string, XslCompiledTransform> xsltDict = new Dictionary<string, XslCompiledTransform>();
 		
-		public static void RunConverter(string inFile, string outFile, string script, Conversion conversion)
+		public static void RunConverter(TextReader inFile, string outFile, string script, Conversion conversion)
 		{
-			conversion.basePath = Path.GetDirectoryName(inFile);
-			
 			XslCompiledTransform xslt;
 			if (xsltDict.ContainsKey(script)) {
 				xslt = xsltDict[script];
@@ -255,9 +253,13 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			else
 				convertedFileName = Path.ChangeExtension(fileName, ".csproj");
 			
-			RunConverter(fileName, convertedFileName, "CSharp_prjx2csproj.xsl", conversion);
-			
-			RunConverter(fileName, convertedFileName + ".user", "CSharp_prjx2csproj_user.xsl", conversion);
+			conversion.basePath = Path.GetDirectoryName(fileName);
+			using (StreamReader fileReader = new StreamReader(fileName)) {
+				RunConverter(fileReader, convertedFileName, "CSharp_prjx2csproj.xsl", conversion);
+			}
+			using (StreamReader fileReader = new StreamReader(fileName)) {
+				RunConverter(fileReader, convertedFileName + ".user", "CSharp_prjx2csproj_user.xsl", conversion);
+			}
 			
 			return LanguageBindingService.LoadProject(convertedFileName, Conversion.GetProjectName(fileName));
 		}
@@ -279,9 +281,15 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			if (Solution.SolutionBeingLoaded != null) {
 				Solution.ReadSolutionInformation(Solution.SolutionBeingLoaded.FileName, conversion);
 			}
-			RunConverter(old, fileName, "vsnet2msbuild.xsl", conversion);
+			
+			conversion.basePath = Path.GetDirectoryName(fileName);
+			
+			Encoding tmp = Encoding.Default;
+			string content = ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(old, ref tmp, tmp);
+			RunConverter(new StringReader(content), fileName, "vsnet2msbuild.xsl", conversion);
 			if (File.Exists(oldUserFile)) {
-				RunConverter(oldUserFile, userFile, "vsnet2msbuild_user.xsl", conversion);
+				content = ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(oldUserFile, ref tmp, tmp);
+				RunConverter(new StringReader(content), userFile, "vsnet2msbuild_user.xsl", conversion);
 			}
 		}
 	}

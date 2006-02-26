@@ -121,6 +121,8 @@ namespace ICSharpCode.AddInManager
 		
 		string GetLink(string text)
 		{
+			if (text == null)
+				return null;
 			switch (text) {
 				case "GNU General Public License":
 				case "GPL":

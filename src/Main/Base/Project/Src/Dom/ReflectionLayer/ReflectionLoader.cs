@@ -27,7 +27,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return null;
 				return DomPersistence.SaveProjectContent(content);
 			} catch (Exception ex) {
-				LoggingService.Error(ex);
+				if (ex is FileLoadException) {
+					LoggingService.Info(ex);
+				} else {
+					LoggingService.Error(ex);
+				}
 				throw;
 			}
 		}
@@ -48,10 +52,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (assembly != null)
 					return new ReflectionProjectContent(assembly);
 				else
-					return null;
-			} catch (BadImageFormatException) {
+					throw new FileLoadException("Assembly not found.");
+			} catch (BadImageFormatException ex) {
 				LoggingService.Warn("BadImageFormat: " + include);
-				return null;
+				throw new FileLoadException(ex.Message, ex);
 			} finally {
 				AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= AssemblyResolve;
 				lookupDirectory = null;

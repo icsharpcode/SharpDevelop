@@ -131,6 +131,34 @@ namespace ICSharpCode.Core
 				return node.BuildChildItems(caller);
 		}
 		
+		/// <summary>
+		/// Builds the items in the path. Ensures that all items have the type T.
+		/// Throws an exception if the path is not found.
+		/// </summary>
+		/// <param name="path">A path in the addin tree.</param>
+		/// <param name="caller">The owner used to create the objects.</param>
+		public static List<T> BuildItems<T>(string path, object caller)
+		{
+			return BuildItems<T>(path, caller, true);
+		}
+		
+		/// <summary>
+		/// Builds the items in the path. Ensures that all items have the type T.
+		/// </summary>
+		/// <param name="path">A path in the addin tree.</param>
+		/// <param name="caller">The owner used to create the objects.</param>
+		/// <param name="throwOnNotFound">If true, throws an TreePathNotFoundException
+		/// if the path is not found. If false, an empty ArrayList is returned when the
+		/// path is not found.</param>
+		public static List<T> BuildItems<T>(string path, object caller, bool throwOnNotFound)
+		{
+			AddInTreeNode node = GetTreeNode(path, throwOnNotFound);
+			if (node == null)
+				return new List<T>();
+			else
+				return node.BuildChildItems<T>(caller);
+		}
+		
 		static AddInTreeNode CreatePath(AddInTreeNode localRoot, string path)
 		{
 			if (path == null || path.Length == 0) {
