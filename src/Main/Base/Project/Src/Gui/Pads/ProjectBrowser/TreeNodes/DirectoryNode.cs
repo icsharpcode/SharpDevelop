@@ -416,6 +416,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			base.Initialize();
 		}
+
+		protected void BaseInitialize()
+		{
+			base.Initialize();
+		}
 		
 		void AddParentFolder(string virtualName, string relativeDirectoryPath, Dictionary<string, DirectoryNode> directoryNodeList)
 		{
