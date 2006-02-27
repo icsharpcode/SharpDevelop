@@ -269,15 +269,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			StatusBarService.RedrawStatusbar();
 		}
 		
+		string GetMementoFileName(string contentName)
+		{
+			string directory = Path.Combine(PropertyService.ConfigDirectory, "temp");
+			//string directoryName = Path.GetDirectoryName(contentName);
+			return Path.Combine(directory,
+			                    Path.GetFileName(contentName)
+			                    + "." + contentName.ToLowerInvariant().GetHashCode().ToString("x")
+			                    + ".xml");
+		}
+		
 		public Properties GetStoredMemento(IViewContent content)
 		{
 			if (content != null && content.FileName != null) {
-				string directory = Path.Combine(PropertyService.ConfigDirectory, "temp");
-				if (!Directory.Exists(directory)) {
-					Directory.CreateDirectory(directory);
-				}
-				string fileName = content.FileName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(Path.DirectorySeparatorChar, '.');
-				string fullFileName = Path.Combine(directory, fileName);
+				string fullFileName = GetMementoFileName(content.FileName);
 				// check the file name length because it could be more than the maximum length of a file name
 				
 				if (FileUtility.IsValidFileName(fullFileName) && File.Exists(fullFileName)) {
@@ -299,8 +304,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			
 			Properties memento = ((IMementoCapable)content).CreateMemento();
-			string fileName = content.FileName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(Path.DirectorySeparatorChar, '.');
-			string fullFileName = Path.Combine(directory, fileName);
+			string fullFileName = GetMementoFileName(content.FileName);
 			
 			if (FileUtility.IsValidFileName(fullFileName)) {
 				FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);

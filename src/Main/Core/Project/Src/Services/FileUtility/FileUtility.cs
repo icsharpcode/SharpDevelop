@@ -265,6 +265,8 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public static int MaxPathLength = 260;
+		
 		/// <summary>
 		/// This method checks the file fileName if it is valid.
 		/// </summary>
@@ -273,7 +275,7 @@ namespace ICSharpCode.Core
 			// Fixme: 260 is the hardcoded maximal length for a path on my Windows XP system
 			//        I can't find a .NET property or method for determining this variable.
 			
-			if (fileName == null || fileName.Length == 0 || fileName.Length >= 260) {
+			if (fileName == null || fileName.Length == 0 || fileName.Length >= MaxPathLength) {
 				return false;
 			}
 			
