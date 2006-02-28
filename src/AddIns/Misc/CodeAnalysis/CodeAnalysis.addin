@@ -1,0 +1,20 @@
+﻿<AddIn name        = "CodeAnalysis"
+       author      = "Daniel Grunwald"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Integrates FxCop code analysis">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.CodeAnalysis"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "CodeAnalysis.dll"/>
+	</Runtime>
+	
+	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
+		<DialogPanel id          = "CodeAnalysis"
+		             label       = "${res:ICSharpCode.CodeAnalysis}"
+		             insertafter = "Publish"
+		             class       = "ICSharpCode.CodeAnalysis.AnalysisProjectOptionsPanel"/>
+	</Path>
+</AddIn>

@@ -148,6 +148,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\Util\AppDomainLaunchHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Services\LoggingService" />
