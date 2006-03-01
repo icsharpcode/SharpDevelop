@@ -202,7 +202,7 @@ namespace ICSharpCode.UnitTesting
 		
 		void ShowErrorList()
 		{
-			if (TaskService.SomethingWentWrong) {
+			if (TaskService.SomethingWentWrong && ErrorListPad.ShowAfterBuild) {
 				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 		}

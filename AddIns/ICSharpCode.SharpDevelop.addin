@@ -977,6 +977,9 @@
 			<DialogPanel id    = "OutputWindowOptions"
 			             label = "${res:Dialog.Options.IDEOptions.OutputPanel.Title}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.OutputWindowOptionsPanel"/>
+			<DialogPanel id    = "ProjectAndSolutionOptions"
+			             label = "${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.PanelName}"
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ProjectAndSolutionOptionsPanel"/>
 		</DialogPanel>
 		<DialogPanel id    = "CodingOptions"
 		             label = "${res:Dialog.Options.IDEOptions.CodingOptionsText}">

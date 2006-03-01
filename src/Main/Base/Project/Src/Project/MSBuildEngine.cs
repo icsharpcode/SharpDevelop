@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						LastErrorCount++;
 				}
 				TaskService.InUpdate = false;
-				if (results.Errors.Count > 0) {
+				if (results.Errors.Count > 0 && ErrorListPad.ShowAfterBuild) {
 					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 				}
 			}

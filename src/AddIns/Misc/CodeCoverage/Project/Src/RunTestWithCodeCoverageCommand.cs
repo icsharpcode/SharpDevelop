@@ -150,7 +150,7 @@ namespace ICSharpCode.CodeCoverage
 			UnitTestApplicationStartHelper.DisplayResults(unitTestResultsFileName);
 			DisplayCoverageResults(runner.CoverageResultsFileName);
 			
-			if (TaskService.SomethingWentWrong) {
+			if (TaskService.SomethingWentWrong && ErrorListPad.ShowAfterBuild) {
 				ShowErrorList();
 			}
 		}

@@ -657,15 +657,9 @@ namespace ICSharpCode.XmlEditor
 			Category.AppendText(String.Concat(message, Environment.NewLine));
 		}
 		
-		bool ShowErrorListAfterBuild {
-			get {
-				return PropertyService.Get("SharpDevelop.ShowErrorListAfterBuild", true);
-			}
-		}
-		
 		void ShowErrorList()
 		{
-			if (ShowErrorListAfterBuild && TaskService.SomethingWentWrong) {
+			if (ErrorListPad.ShowAfterBuild && TaskService.SomethingWentWrong) {
 				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 		}

@@ -290,14 +290,12 @@ namespace ICSharpCode.NAntAddIn.Commands
 			}
 			
 			// Bring task list to front.
-			if (tasks.Count > 0) {				
-				//if ((bool)PropertyService.Get("SharpDevelop.ShowTaskListAfterBuild", true)) {
-					IWorkbench workbench = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench;
-					PadDescriptor padDescriptor = workbench.GetPad(typeof(ErrorListPad));		
-					if (padDescriptor != null) {
-						WorkbenchSingleton.SafeThreadAsyncCall(padDescriptor, "BringPadToFront");
-					}
-				//}
+			if (tasks.Count > 0 && ErrorListPad.ShowAfterBuild) {				
+				IWorkbench workbench = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench;
+				PadDescriptor padDescriptor = workbench.GetPad(typeof(ErrorListPad));		
+				if (padDescriptor != null) {
+					WorkbenchSingleton.SafeThreadAsyncCall(padDescriptor, "BringPadToFront");
+				}
 			}			
         }
         

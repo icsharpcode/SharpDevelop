@@ -1,0 +1,68 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="ProjectAndSolutionOptionsPanel" />
+    <ClientSize value="{Width=352, Height=324}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="CreatedObject2" />
+        <Location value="{X=8,Y=8}" />
+        <Text value="${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.SettingsGroupBox}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=336, Height=104}" />
+        <TabIndex value="0" />
+        <Controls>
+          <System.Windows.Forms.Button>
+            <Name value="selectProjectLocationButton" />
+            <Location value="{X=294,Y=32}" />
+            <Text value="..." />
+            <Anchor value="Top, Right" />
+            <Size value="{Width=32, Height=21}" />
+            <TabIndex value="6" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.TextBox>
+            <Name value="projectLocationTextBox" />
+            <TabIndex value="1" />
+            <Size value="{Width=280, Height=21}" />
+            <Location value="{X=8,Y=32}" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="label" />
+            <Location value="{X=8,Y=16}" />
+            <Text value="${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ProjectLocationLabel}" />
+            <Anchor value="Top, Left, Right" />
+            <TextAlign value="BottomLeft" />
+            <Size value="{Width=320, Height=16}" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.CheckBox>
+            <Name value="loadPrevProjectCheckBox" />
+            <Location value="{X=8,Y=56}" />
+            <Text value="${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.LoadPrevProjectCheckBox}" />
+            <TabIndex value="8" />
+            <Size value="{Width=320, Height=32}" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="CreatedObject27" />
+        <Location value="{X=8,Y=128}" />
+        <Text value="${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.BuildAndRunGroupBox}" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <Size value="{Width=336, Height=86}" />
+        <TabIndex value="1" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showErrorListCheckBox" />
+            <Location value="{X=8,Y=35}" />
+            <Text value="${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ShowErrorListPadCheckBox}" />
+            <TabIndex value="10" />
+            <Size value="{Width=320, Height=32}" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>
