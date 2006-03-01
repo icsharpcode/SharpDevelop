@@ -47,12 +47,23 @@ namespace SharpReportCore {
 		}
 
 		public RenderDataReport(ReportModel model,DataManager dataManager):base (model){
-//			System.Console.WriteLine("RenderDataReport".ToUpper());
 			this.dataManager = dataManager;
+			System.Console.WriteLine("ReenderDataReport");
+			System.Console.WriteLine("connect to groupingevents");
+			this.dataManager.GroupChanged += new EventHandler<GroupChangedEventArgs>(OnGroupChanged);
+			this.dataManager.GroupChanging += new EventHandler <EventArgs> (OnGroupChanging);
 		}
 		
-	
+
+		void OnGroupChanged (object sender,GroupChangedEventArgs e) {
+			
+			System.Console.WriteLine("OnGroupChanged");	
+		}
 		
+		void OnGroupChanging (object sender, EventArgs e) {
+			
+			System.Console.WriteLine("OnGroupChanging");	
+		}
 		#region overrides
 		
 

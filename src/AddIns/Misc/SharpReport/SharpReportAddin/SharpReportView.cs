@@ -502,7 +502,6 @@ namespace SharpReportAddin{
 		public override void Load(string fileName){
 			try {
 				designerControl.ReportControl.ObjectSelected -= new EventHandler <EventArgs>(OnObjectSelected);
-				
 				reportManager.LoadFromFile (fileName);
 				base.FileName = fileName;
 				designerControl.ReportModel.ReportSettings.FileName = fileName;
@@ -511,10 +510,9 @@ namespace SharpReportAddin{
 					PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
 					PropertyPad.Grid.Refresh();
 				}
-				
 				this.designerControl.ReportModel.ReportSettings.AvailableFieldsCollection = reportManager.AvailableFieldsCollection;
-				
-			} catch (Exception ) {
+			} catch (Exception e) {
+				MessageService.ShowError(e,"SharpReportView:Load");
 				throw ;
 			}
 		}

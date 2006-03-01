@@ -25,7 +25,8 @@ using System.Drawing;
 /// </remarks>
 	
 namespace SharpReportCore {	
-	public class BaseReportObject : IBaseRenderer,INotifyPropertyChanged {
+	public class BaseReportObject : IBaseRenderer,INotifyPropertyChanged,
+									IDisposable{
 		
 		private string name;
 		private object parent;
@@ -212,5 +213,23 @@ namespace SharpReportCore {
 		}
 		#endregion
 		
+		#region IDisposable
+		
+		public virtual void Dispose () {
+			Dispose(true);
+            GC.SuppressFinalize(this);
+		}
+		
+		~BaseReportObject(){
+			Dispose(false);
+		}
+		
+		protected virtual void Dispose(bool disposing) {
+			if (disposing){
+			
+			}
+		}
+
+		#endregion
 	}
 }

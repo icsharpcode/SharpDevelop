@@ -76,14 +76,14 @@ namespace SharpReportCore {
 		
 		
 		#region System.IDisposable interface implementation
-		public override void Dispose() {
-			base.Dispose();
-			for (int i = 0; i < arrayList.Count;i ++ ) {
-				IComponent curObj = (IComponent)arrayList[i];
-            curObj.Dispose();
-			}
-			arrayList = null;
-		}
+//		public override void Dispose() {
+//			base.Dispose();
+//			for (int i = 0; i < arrayList.Count;i ++ ) {
+//				IComponent curObj = (IComponent)arrayList[i];
+//            curObj.Dispose();
+//			}
+//			arrayList = null;
+//		}
 		#endregion
 		
 		

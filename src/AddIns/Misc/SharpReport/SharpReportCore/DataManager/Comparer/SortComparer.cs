@@ -28,7 +28,7 @@ namespace SharpReportCore {
 				throw new ArgumentNullException("value");
 			
 			if (value.ObjectArray.Length != base.ObjectArray.Length)
-				throw new InvalidOperationException("Differnet size of compare data");
+				throw new InvalidOperationException();
 			
 			int compare = 0;
 			
@@ -61,7 +61,7 @@ namespace SharpReportCore {
 				
 				
 				if (leftValue.GetType() != rightValue.GetType())
-					throw new InvalidOperationException("COmpare of different types is not supported");
+					throw new InvalidOperationException("Compare of different types is not supported");
 				
 				if (leftValue.GetType() == typeof(string))
 				{

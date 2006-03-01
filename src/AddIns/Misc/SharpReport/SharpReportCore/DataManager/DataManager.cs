@@ -45,12 +45,11 @@ namespace SharpReportCore {
 		ConnectionObject connectionObject;
 		IDbConnection connection;
 		IDataViewStrategy dataViewStrategy;
-		
-		
-//		private ListChangedEventArgs resetList = new ListChangedEventArgs(ListChangedType.Reset,-1,-1);
+		GroupSeperator groupSeperator;
 		
 		public event EventHandler <ListChangedEventArgs> ListChanged;
 		public event EventHandler <GroupChangedEventArgs> GroupChanged;
+		public event EventHandler <EventArgs> GroupChanging;
 		
 		/// <summary>
 		/// use this Constructor for PullDataReports
@@ -60,34 +59,32 @@ namespace SharpReportCore {
 		
 		#region Constructores
 		public DataManager(ConnectionObject connectionObject, ReportSettings reportSettings){
-			CheckAndSetReportSettings(reportSettings);
 			if (connectionObject == null) {
 				throw new ArgumentNullException("DataManager:ConnectionObject");
 			}
-			this.connectionObject = connectionObject;
-			try {
-				CheckConnection (this.connectionObject);
-				CheckAndSetSource(this.FillDataSet().Tables[0]);
-				
-				this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
-				                                          reportSettings);
-				this.dataViewStrategy.ListChanged += new EventHandler <ListChangedEventArgs> (NotifyListChanged);
-			} catch (Exception) {
-				throw;
+			
+			if (reportSettings == null) {
+				throw new ArgumentNullException("reportSettings");
 			}
+
+			this.connectionObject = connectionObject;
+			CheckConnection (this.connectionObject);
+			CheckReportSettings(reportSettings);
+			CheckDataSource(this.FillDataSet().Tables[0]);
+
+			this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
+			                                          reportSettings);
+			this.dataViewStrategy.ListChanged += new EventHandler <ListChangedEventArgs> (NotifyListChanged);
+			this.dataViewStrategy.GroupChanged += new EventHandler<GroupChangedEventArgs> (OnGroupChange);
 		}
 		
-		
 		public DataManager(DataTable dataSource, ReportSettings reportSettings){
-			try {
-				CheckAndSetReportSettings(reportSettings);
-				CheckAndSetSource(dataSource);
-				this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
-				                                          reportSettings);
-				this.dataViewStrategy.ListChanged += new EventHandler <ListChangedEventArgs> (NotifyListChanged);
-			} catch (Exception) {
-				throw ;
-			}
+			
+			this.InitDataManager(reportSettings,dataSource);
+			this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
+			                                          reportSettings);
+			this.dataViewStrategy.ListChanged += new EventHandler <ListChangedEventArgs> (NotifyListChanged);
+			
 		}
 		
 		public DataManager(DataSet dataSource, ReportSettings reportSettings)
@@ -97,54 +94,49 @@ namespace SharpReportCore {
 		
 		public DataManager(DataSet dataSource,string dataMember, ReportSettings reportSettings){
 			
-			try {
-				this.dataMember = dataMember;
-				CheckAndSetReportSettings(reportSettings);
-				CheckAndSetSource(dataSource);
-				this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
-				                                          reportSettings);
-				this.dataViewStrategy.ListChanged += new EventHandler <ListChangedEventArgs> (NotifyListChanged);
-			} catch (Exception ) {
-				throw ;
-			}
+			this.dataMember = dataMember;
+			this.InitDataManager(reportSettings,dataSource);
+			this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
+			                                          reportSettings);
+			this.dataViewStrategy.ListChanged += new EventHandler <ListChangedEventArgs> (NotifyListChanged);
 		}
 		
 		public DataManager(IList dataSource, ReportSettings reportSettings){
+			
+			this.InitDataManager(reportSettings,dataSource);
+			this.dataViewStrategy = new CollectionStrategy ((IList)this.dataSource,
+			                                                this.dataMember,
+			                                                reportSettings);
+			this.dataViewStrategy.ListChanged += new EventHandler <ListChangedEventArgs> (NotifyListChanged);
+			
+		}
+		
+		#endregion
+		
+		void InitDataManager (ReportSettings reportSettings,object dataSource) {
 			try {
-				CheckAndSetReportSettings(reportSettings);
-				CheckAndSetSource(dataSource);
-				this.dataViewStrategy = new CollectionStrategy ((IList)this.dataSource,
-				                                                this.dataMember,
-				                                                reportSettings);
-				this.dataViewStrategy.ListChanged += new EventHandler <ListChangedEventArgs> (NotifyListChanged);
+				CheckReportSettings(reportSettings);
+				CheckDataSource(dataSource);
 			} catch (Exception) {
 				throw;
 			}
 		}
 		
-		#endregion
-		
-		
-		
-		void CheckAndSetReportSettings(ReportSettings settings) {
-			if (settings == null) {
-				throw new ArgumentNullException("settings");
-			}
+		void CheckReportSettings(ReportSettings settings) {
 			try {
 				if (settings.DataModel != GlobalEnums.enmPushPullModel.PushData) {
-					SqlQueryCkecker check = new SqlQueryCkecker();
-					check.Check(settings.CommandText);
+					SqlQueryChecker checker = new SqlQueryChecker();
+					checker.Check(settings.CommandText);
 				}
 				
 			} catch (Exception) {
 				throw;
 			}
-			
 			this.reportSettings = settings;
 		}
 		
 		
-		void CheckAndSetSource(object source) {
+		void CheckDataSource(object source) {
 			if (source == null) {
 				throw new MissingDataSourceException();
 			}
@@ -175,7 +167,7 @@ namespace SharpReportCore {
 							}
 						}
 					}else {
-						throw new ArgumentException("DataManager:No Tables in DataSet");
+						throw new MissingDataSourceException();
 					}
 					return;
 				}
@@ -186,24 +178,13 @@ namespace SharpReportCore {
 					this.dataSource = list;
 					this.dataMember = source.ToString();
 					if (list.Count == 0) {
-						//System.Console.WriteLine("List  mit {0} Rows",list.Count);
-						throw new ArgumentException("No empty IList allowed");
+						throw new MissingDataSourceException();
 					}
 					return;
 					
 				}
-//				if (source is IList) {
-//					IList list = source as IList;
-//					this.dataSource = list;
-//					this.dataMember = source.ToString();
-//					if (list.Count == 0) {
-//						//System.Console.WriteLine("List  mit {0} Rows",list.Count);
-//						throw new ArgumentException("No empty IList allowed");
-//					}
-//					return;
-//				}
 			} else {
-				throw new ArgumentException ("DataManager:Wrong DataSource");
+				throw new MissingDataSourceException();
 			}
 		}
 		
@@ -215,7 +196,7 @@ namespace SharpReportCore {
 				}
 				connection.Open();
 				connection.Close();
-			} catch (Exception ) {
+			} catch (Exception) {
 				throw;
 			}
 		}
@@ -296,14 +277,25 @@ namespace SharpReportCore {
 				this.ListChanged (this,e);
 			}
 		}
-		
-		private void NotifyGroupChange (object sender,GroupChangedEventArgs e) {
-			
-			if (this.GroupChanged != null) {
-				this.GroupChanged (this,e);
-			}
+		private void NotifyGroupChanging () {
+			if (this.GroupChanging!= null) {
+				this.GroupChanging (this,EventArgs.Empty);
+			}		
 		}
 		
+		private void NotifyGroupChanged() {
+			if (this.IsGrouped) {
+				if (this.GroupChanged != null) {
+					this.GroupChanged (this,new GroupChangedEventArgs(this.groupSeperator));
+				}
+			}
+			
+		}
+		
+		private void OnGroupChange (object sender,GroupChangedEventArgs e) {
+			this.groupSeperator = e.GroupSeperator;
+			this.NotifyGroupChanging();
+		}
 		#endregion
 		
 		public string DataMember {
@@ -319,58 +311,12 @@ namespace SharpReportCore {
 			
 		}
 		
-		
-		public IHierarchicalArray  IHierarchicalArray {
-			get {
-				return (IHierarchicalArray)this.dataViewStrategy.IHierarchicalEnumerable;
-			}
-		}
-		
-		
-		
-		
-		/*
-		
-		public void PerformHierarchy (IHierarchicalEnumerable list) {
-			
-			IEnumerator iter = list.GetEnumerator();
-			System.Console.WriteLine("PerformHierarchy");
-			if (iter != null) {
-				while (iter.MoveNext()){
-					GroupSeperator g = (GroupSeperator)iter.Current;
-					System.Console.WriteLine("list {0} {1}",g.Path,g.ListIndex);
-					
-					CheckGroups (g);
-				}
-			} else {
-				throw new SystemException("PerformHierarchy: No valid IEnumerator");
-			}
-		}
-		
-		private void CheckGroups(GroupSeperator sep) {
-			System.Console.WriteLine("CheckGroups");
-			IEnumerator children = ((IHierarchicalEnumerable)sep.GetChildren()).GetEnumerator();
-			while (children.MoveNext()) {
-				System.Console.WriteLine("children");
-			}
-		}
-		
-		public IHierarchicalEnumerable HierarchicalList {
-			get {
-				return hierarchicalList;
-			}
-		}
-		 */
-		
+	
 		
 		#region SharpReportCore.IDataContainer interface implementation
 		public object DataSource {
 			get {
 				return this.dataSource;
-			}
-			set {
-				this.dataSource = value;
-				Reset();
 			}
 		}
 		
@@ -399,9 +345,8 @@ namespace SharpReportCore {
 		
 		
 		public bool DataBind() {
-			this.dataViewStrategy.Bind();
-			this.dataViewStrategy.GroupChanged += new EventHandler <GroupChangedEventArgs>(NotifyGroupChange);
 			CheckReportColumns();
+			this.dataViewStrategy.Bind();
 			return true;
 		}
 		
@@ -411,11 +356,30 @@ namespace SharpReportCore {
 		
 		
 		public void FetchData(ReportItemCollection collection) {
-			try {
-				foreach (IItemRenderer item in collection) {
-					this.dataViewStrategy.Fill(item);
-				}
-			} catch (Exception) {
+			foreach (IItemRenderer item in collection) {
+				this.dataViewStrategy.Fill(item);
+			}
+			this.NotifyGroupChanged();
+		}
+		
+		/// <summary>
+		/// Indicate's if the current <see cref="GroupSeperator"></see> has ChildRows
+		/// </summary>
+		public bool HasChilds {
+			get {
+				return this.dataViewStrategy.HasChilds;
+			}
+		}
+		
+		/// <summary>
+		/// Returns a <see cref="SharpArrayList"></see>, be carefull, this list is only a Indexlist
+		/// to the actuall data
+		/// </summary>
+		
+		
+		public SharpIndexCollection ChildRows {
+			get {
+				return this.dataViewStrategy.ChildRows;
 			}
 		}
 		
@@ -436,7 +400,7 @@ namespace SharpReportCore {
 		
 		public object Current {
 			get {
-				throw new NotImplementedException("DataManager.Current");
+				throw new NotImplementedException();
 			}
 		}
 		
@@ -463,10 +427,40 @@ namespace SharpReportCore {
 			}
 		}
 		
+		public bool IsSorted {
+			get {
+				return this.dataViewStrategy.IsSorted;
+			}
+		}
+		
+		public bool IsFiltered {
+			get {
+				return this.dataViewStrategy.IsFiltered;
+			}
+		}
 		#region System.IDisposable interface implementation
 		public void Dispose() {
-			this.connectionObject = null;
-			this.dataViewStrategy = null;
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		
+			~DataManager(){
+			Dispose(false);
+		}
+		
+		protected virtual void Dispose(bool disposing){
+			try {
+				if (disposing) {
+					// Free other state (managed objects).
+					if (this.dataViewStrategy != null) {
+						this.dataViewStrategy.Dispose();
+					}
+				}
+			} finally {
+				// Release unmanaged resources.
+				// Set large fields to null.
+				// Call Dispose on your base class.
+			}
 		}
 		#endregion
 		

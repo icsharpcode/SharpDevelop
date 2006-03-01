@@ -17,9 +17,7 @@ using System.Runtime.Serialization;
 /// 	created by - Forstmeier Peter
 /// 	created on - 05.07.2005 22:32:47
 /// </remarks>
-///<remarks>
-/// When porting to NET 2.0 use <see cref="Microsoft.Reporting.MissingdatasourceException"></see>
-/// </remarks>
+
 	
 namespace SharpReportCore {	
 	[Serializable()]

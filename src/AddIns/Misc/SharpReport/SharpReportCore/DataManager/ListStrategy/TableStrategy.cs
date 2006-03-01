@@ -24,7 +24,7 @@ namespace SharpReportCore {
 	/// 	created by - Forstmeier Peter
 	/// 	created on - 23.10.2005 15:12:06
 	/// </remarks>
-	public class TableStrategy : BaseListStrategy,IDisposable {
+	public class TableStrategy : BaseListStrategy {
 		
 		DataTable table;
 		DataView view = new DataView();
@@ -32,44 +32,19 @@ namespace SharpReportCore {
 		
 		
 		public TableStrategy(DataTable table,ReportSettings reportSettings):base(reportSettings) {
+			if (table == null) {
+				throw new ArgumentNullException("table");
+			}
 			this.table = table;
-//			view.ListChanged += new ListChangedEventHandler (OnListChange);
+			view = this.table.DefaultView;
 		}
 		
-//		private void OnListChange (object sender,ListChangedEventArgs e) {
-//			System.Console.WriteLine("called from view");
-//			MessageBox.Show ("On List Change");
-//		}
 		
-		/*
-		private string a_BuildSort(ColumnCollection sortCollection){
-			System.Console.WriteLine("BuildSort");
-			StringBuilder sb = new StringBuilder();	
 		
-			for (int i = 0;i < sortCollection.Count ;i++ ) {
-				SortColumn sc = (SortColumn)sortCollection[i];
-				sb.Append(sc.ColumnName);
-				if (sc.SortDirection == ListSortDirection.Ascending) {
-					sb.Append (" ASC");
-				} else {
-					sb.Append(" DESC");
-				}
-				sb.Append (",");
-			}
-			if (sb.ToString().EndsWith (",")) {
-				sb.Remove(sb.Length -1,1);
-			}
-			System.Console.WriteLine("\tsort by {0}",sb.ToString());
-			return sb.ToString();
-		}
-		*/
 		#region Building the Index list
 		
-		// if we have no sorting, we build the indexlist as well, so we don't need to
-		//check each time we reasd data if we have to go directly or by IndexList
-		private  ArrayList BuildSortIndex(ColumnCollection col) {
+		private  void BuildSortIndex(SharpIndexCollection arrayList,ColumnCollection col) {
 			
-			ArrayList sortValues = new ArrayList(this.view.Count);
 			try {
 				for (int rowIndex = 0; rowIndex < this.view.Count; rowIndex++){
 					DataRowView rowItem = this.view[rowIndex];
@@ -88,171 +63,79 @@ namespace SharpReportCore {
 							values[criteriaIndex] = DBNull.Value;
 						}
 					}
-					sortValues.Add(new SortComparer(col, rowIndex, values));
+					arrayList.Add(new SortComparer(col, rowIndex, values));
 				}
 			} catch (Exception) {
-				
+				throw;
 			}
-			sortValues.Sort();
-			return sortValues;
-		}
 
-		private  ArrayList BuildPlainIndex(ColumnCollection col) {
-			ArrayList sortValues = new ArrayList(this.view.Count);
+			arrayList.Sort();
+		}
+	
+		// if we have no sorting, we build the indexlist as well, so we don't need to
+		//check each time we reasd data if we have to go directly or by IndexList
+		private  void BuildPlainIndex(SharpIndexCollection arrayList,ColumnCollection col) {
 			try {
 				for (int rowIndex = 0; rowIndex < this.view.Count; rowIndex++){
 					object[] values = new object[1];
 					
 					// We insert only the RowNr as a dummy value
 					values[0] = rowIndex;
-					sortValues.Add(new BaseComparer(col, rowIndex, values));
+					arrayList.Add(new BaseComparer(col, rowIndex, values));
 				}
 			} catch (Exception) {
 				throw ;
 			}
-			return sortValues;;
 		}
 		
-		
-		private  ArrayList BuildGroupIndex(ColumnCollection col) {
-			ArrayList groupValues = new ArrayList(this.view.Count);
-			System.Console.WriteLine("\tBuildGroupIndex");
-			try {
-				for (int rowIndex = 0; rowIndex < this.view.Count; rowIndex++){
-					DataRowView rowItem = this.view[rowIndex];
-					object[] values = new object[col.Count];
-					for (int criteriaIndex = 0; criteriaIndex < col.Count; criteriaIndex++){
-						AbstractColumn c = (AbstractColumn)col[criteriaIndex];
-						object value = rowItem[c.ColumnName];
-
-						if (value != null && value != DBNull.Value){
-							if (!(value is IComparable)){
-								throw new InvalidOperationException("ReportDataSource:BuildSortArray - > This type doesn't support IComparable." + value.ToString());
-							}
-							
-							values[criteriaIndex] = value;
-						}   else {
-							values[criteriaIndex] = DBNull.Value;
-						}
-					}
-					groupValues.Add(new GroupComparer(col, rowIndex, values));
-				}
-			} catch (Exception) {
-				
-			}
-			groupValues.Sort();
-		
-			return groupValues;
-		}
-
 	
-		
 		#endregion
 		
 		#region Grouping
 		
-		private void WriteToIndexFile (ArrayList destination,int index,GroupComparer comparer) {
-			destination.Add(comparer);
-		}
 		
-		private void BuildGroupSeperator (ArrayList destination,BaseComparer newGroup,int groupLevel) {
-			
-			GroupSeperator seperator = new GroupSeperator (newGroup.ColumnCollection,
-			                                               newGroup.ListIndex,
-			                                               newGroup.ObjectArray,
-			                                               groupLevel);
-			
-			
-//		System.Console.WriteLine("\t Group change {0} level {1}",seperator.ObjectArray[0].ToString(),
-//			                         seperator.GroupLevel);
-//			System.Console.WriteLine("write group seperator");
-			destination.Add(seperator);
-		}
-		
-		private ArrayList InsertGroupRows (ArrayList sourceList) {
-			ArrayList destList = new ArrayList();
-			
-			int level = 0;
-			
-//			// only for testing
-//			ColumnCollection grBy = base.ReportSettings.GroupColumnsCollection;
-//			string columnName = grBy[level].ColumnName;
-////			System.Console.WriteLine("");
-//			System.Console.WriteLine("InsertGroupRows Grouping for  {0}",columnName);
-	
-			GroupComparer compareComparer = null;
-			
-			for (int i = 0;i < sourceList.Count ;i++ ) {
-				GroupComparer currentComparer = (GroupComparer)sourceList[i];
-				
-				if (compareComparer != null) {
-					string str1,str2;
-					str1 = currentComparer.ObjectArray[0].ToString();
-					str2 = compareComparer.ObjectArray[0].ToString();
-					int compareVal = str1.CompareTo(str2);
-					
-					if (compareVal != 0) {
-						this.BuildGroupSeperator (destList,currentComparer,level);
-					}
-				}
-				else {
-//					System.Console.WriteLine("\t\t Start of List {0}",currentComparer.ObjectArray[0].ToString());
-					this.BuildGroupSeperator (destList,currentComparer,level);
-				}
-				this.WriteToIndexFile (destList,i,currentComparer);
-				compareComparer = (GroupComparer)sourceList[i];
-			}
-			return destList;
-		}
 		
 		private void BuildGroup(){
 			try {
-				ArrayList groupedArray = new ArrayList();
+				SharpIndexCollection groupedArray = new SharpIndexCollection();
 				
 				if (base.ReportSettings.GroupColumnsCollection != null) {
 					if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
-						groupedArray =  this.BuildGroupIndex (base.ReportSettings.GroupColumnsCollection);
-						System.Console.WriteLine("\t1");
-					} else {
-						groupedArray =  BuildPlainIndex (base.ReportSettings.GroupColumnsCollection);
+						this.BuildSortIndex (groupedArray,base.ReportSettings.GroupColumnsCollection);
 					}
 				}
-				
-				base.IndexList.Clear();				
-				base.IndexList.AddRange (InsertGroupRows(groupedArray));
-				
-				if (base.IndexList == null){
-					throw new NotSupportedException("Sortieren für die Liste nicht unterstützt.");
+
+				base.MakeGroupedIndexList (groupedArray);
+
+//				System.Console.WriteLine("GroupedList with {0} elements",base.IndexList.Count);
+			/*
+				foreach (BaseComparer bc in this.IndexList) {
+					GroupSeperator gs = bc as GroupSeperator;
+					
+					if (gs != null) {
+//						System.Console.WriteLine("Group Header <{0}> with <{1}> Childs ",gs.ObjectArray[0].ToString(),gs.GetChildren.Count);
+						if (gs.HasChildren) {
+							foreach (SortComparer sc in gs.GetChildren) {
+								
+								System.Console.WriteLine("\t {0}   {1}",sc.ListIndex,sc.ObjectArray[0].ToString());										}
+						}
+					} else {
+						SortComparer sc = bc as SortComparer;
+						
+						if (sc != null) {
+							System.Console.WriteLine("\t Child {0}",sc.ObjectArray[0].ToString());
+						}
+					}
+					
 				}
-				
-				
+				*/
 			} catch (Exception e) {
 				System.Console.WriteLine("BuildGroup {0}",e.Message);
 				throw;
 			}
 		}
 		
-		
-		protected override void Group() {
-			if (base.ReportSettings.GroupColumnsCollection.Count == 0) {
-				return;
-			}
-			
-			try {
-				this.BuildGroup();					
-				base.Group();					
-				if (this.IsGrouped == false) {
-					throw new SharpReportException("TableStratregy:Group Error in grouping");
-				}
-					
-			} catch (Exception e) {
-				System.Console.WriteLine("Group {0}",e.Message);
-				base.IsGrouped = false;
-				base.IsSorted = false;
-				throw;
-			}
-		}
-
+	
 		#endregion
 		
 		
@@ -260,12 +143,10 @@ namespace SharpReportCore {
 		
 		public override void Bind() {
 			base.Bind();
-			view = this.table.DefaultView;
-			
+
 			if ((base.ReportSettings.GroupColumnsCollection != null) && (base.ReportSettings.GroupColumnsCollection.Count > 0)) {
 				this.Group ();
 				Reset();
-				base.NotifyResetList();
 				return;
 			}
 			
@@ -273,47 +154,44 @@ namespace SharpReportCore {
 				this.Sort ();
 			}
 			Reset();
-			base.NotifyResetList();
 		}
 	
-		
 		public override  void Sort () {
 			base.Sort();
-			ArrayList sortedArray = new ArrayList();
-			try {
-				if ((base.ReportSettings.SortColumnCollection != null)) {
-					if (base.ReportSettings.SortColumnCollection.Count > 0) {
-						SortColumn sc = (SortColumn)base.ReportSettings.SortColumnCollection[0];
-	
-						sortedArray =  this.BuildSortIndex (base.ReportSettings.SortColumnCollection);
-						base.IsSorted = true;
-					} else {
-						sortedArray =  BuildPlainIndex (base.ReportSettings.SortColumnCollection);
-						base.IsSorted = false;
-					}
+			if ((base.ReportSettings.SortColumnCollection != null)) {
+				if (base.ReportSettings.SortColumnCollection.Count > 0) {
+					this.BuildSortIndex (base.IndexList,
+					                     base.ReportSettings.SortColumnCollection);
+
+					base.IsSorted = true;
+				} else {
+					this.BuildPlainIndex(base.IndexList,
+					                     base.ReportSettings.SortColumnCollection);
+					base.IsSorted = false;
 				}
-				
-				base.IndexList.Clear();
-				base.IndexList.AddRange (sortedArray);
-				
-//				base.CheckSortArray (sortedArray,"TableStrategy - CheckSortArray");
-			} catch (Exception) {
-				throw;
 			}
-			
-			if (base.IndexList == null){
-				throw new NotSupportedException("Sortieren für die Liste nicht unterstützt.");
+		}
+		
+		protected override void Group() {
+			if (base.ReportSettings.GroupColumnsCollection.Count == 0) {
+				return;
 			}
+			this.BuildGroup();
+			base.Group();
 		}
 		
 		public override void Fill (IItemRenderer item) {
 			try {
 				base.Fill(item);
-				BaseDataItem baseDataItem = item as BaseDataItem;
-				if (baseDataItem != null) {
-					baseDataItem.DbValue = row[baseDataItem.ColumnName].ToString();
+				if (this.row != null) {
+					BaseDataItem baseDataItem = item as BaseDataItem;
+					if (baseDataItem != null) {
+						baseDataItem.DbValue = row[baseDataItem.ColumnName].ToString();
+					}
 				}
-			} catch (Exception ) {
+				
+			} catch (System.NullReferenceException) {
+				
 			}
 		}
 			
@@ -340,7 +218,7 @@ namespace SharpReportCore {
 		
 		public override int Count {
 			get {
-				return this.table.Rows.Count;
+				return this.IndexList.Count;
 			}
 		}
 		
@@ -356,31 +234,41 @@ namespace SharpReportCore {
 					
 					GroupSeperator sep = bc as GroupSeperator;
 					if (sep != null) {
-						base.NotifyGroupChange(this,sep);
+						base.NotifyGroupChanging(this,sep);
 					}
 					row = this.view[((BaseComparer)base.IndexList[value]).ListIndex];
 				}
 			}
 		}
 		
-		
-
-		
-		public override bool IsSorted {
-			get {
-				return (this.view.Sort.Length > 0);
-			}
-		}
-		
 		#endregion
-		
 		#region IDisposable
-		public void Dispose(){
-			if (this.view != null) {
-				this.view.Dispose();
-			}
+		
+		public override  void Dispose(){
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		
+		~TableStrategy(){
+			Dispose(false);
+		}
+		
+		protected override void Dispose(bool disposing){
+			try {
+				if (disposing) {
+					if (this.view != null) {
+						this.view.Dispose();
+						this.view = null;
+					}
+				}
+			} finally {
+				// Release unmanaged resources.
+				// Set large fields to null.
+				// Call Dispose on your base class.
+				base.Dispose(disposing);
+			}
+			
+		}
 		#endregion
 		
 	}

@@ -8,7 +8,7 @@ namespace SharpReportCore {
 	/// This class supports data binding
 	/// </summary>
 	public class SharpPropertyDescriptor : PropertyDescriptor{
-		bool readOnly;
+	
 		Type componentType;
 		Type propertyType;
 		PropertyInfo prop;
@@ -18,65 +18,59 @@ namespace SharpReportCore {
 		{
 			this.componentType = componentType;
 			this.propertyType = propertyType;
-			this.readOnly= false;
 		}
 
 
-		public override object GetValue (object component)
-		{			
-			if (!componentType.IsAssignableFrom(component.GetType()))
-			{
+		public override object GetValue (object component){			
+			if (!componentType.IsAssignableFrom(component.GetType())){
 				return null;
 			}
 
-			if (prop == null)
+			if (prop == null) {
 				prop = componentType.GetProperty (Name);
-			object o = prop.GetValue (component, null);
-			if (o is IList)
-			{
-				PropertyTypeHash.Instance[componentType, Name] = SharpArrayList.GetElementType((IList)o, componentType, Name);
 			}
-			return o;
+				
+			object obj = prop.GetValue (component, null);
+			if (obj != null) {
+				if (obj is IList){
+					PropertyTypeHash.Instance[componentType, Name] = SharpDataCollection<object>.GetElementType((IList)obj, componentType, Name);
+				}
+			} 
+			return obj;
 		}
 
-		public override void SetValue(object component,	object value) 
-		{
-			if (IsReadOnly)
+		
+		public override void SetValue(object component,	object value) {
+			if (IsReadOnly){
 				return;
-
-			if (prop == null)
+			}
+			if (prop == null){
 				prop = componentType.GetProperty (Name);
-
+			}
 			prop.SetValue (component, value, null);
 		}
 
-		public override void ResetValue(object component) 
-		{
+		public override void ResetValue(object component) {
 			return;
 		}
 
-		public override bool CanResetValue(object component) 
-		{
+		public override bool CanResetValue(object component) {
 			return false;
 		}
 
-		public override bool ShouldSerializeValue(object component) 
-		{
+		public override bool ShouldSerializeValue(object component) {
 			return false;
 		}
 
-		public override Type ComponentType
-		{
+		public override Type ComponentType{
 			get { return componentType; }
 		}
 
-		public override bool IsReadOnly
-		{
-			get { return readOnly; }
+		public override bool IsReadOnly{
+			get { return false; }
 		}
 
-		public override Type PropertyType
-		{
+		public override Type PropertyType{
 			get { return propertyType; }
 		}
 	}

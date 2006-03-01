@@ -70,7 +70,6 @@ namespace SharpReportAddin {
 			return GlobalValues.IsValidPrinter();
 		}
 		
-		
 		public virtual ICSharpCode.SharpDevelop.Gui.IViewContent CreateContentForFile(string fileName) {
 			if (GlobalValues.IsValidPrinter() == true) {
 				SharpReportView view = new SharpReportView();

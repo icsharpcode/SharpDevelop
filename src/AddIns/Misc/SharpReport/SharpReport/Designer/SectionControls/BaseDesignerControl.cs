@@ -57,13 +57,10 @@ namespace SharpReport.Designer
 		#region overrides
 		
 		protected override void Dispose(bool disposing ) {
-			if( disposing )
-			{
-//				if( components != null )
-//					components.Dispose();
+			if( disposing ){
+				this.reportControl = null;
+				this.ctrlRuler1 = null;
 			}
-			this.reportControl = null;
-			this.ctrlRuler1 = null;
 			base.Dispose( disposing );
 		}
 		
@@ -110,7 +107,10 @@ namespace SharpReport.Designer
 		public ReportModel ReportModel {
 			get {
 				reportModel.ReportSettings = reportControl.ReportSettings;
-				reportModel.SectionCollection = reportControl.SectionCollection;
+				reportModel.SectionCollection.Clear();
+				foreach (ReportSection section in reportControl.SectionCollection) {
+					reportModel.SectionCollection.Add (section);
+				}
 				return this.reportModel;
 				
 			}

@@ -23,29 +23,67 @@ namespace SharpReportCore {
 	
 	public class CollectionStrategy : BaseListStrategy {
 		// Holds the plain Data
-		private SharpArrayList baseList;
-
+		
 		private Type	itemType;
 		private object firstItem;
 		private object current;
 		
 		private PropertyDescriptorCollection listProperties;
 		
+		private SharpDataCollection<object> baseList;
+
+
 		public CollectionStrategy(IList list,string dataMember,ReportSettings reportSettings):base(reportSettings) {
+
 			if (list.Count > 0) {
 				firstItem = list[0];
 				itemType =  firstItem.GetType();
-				this.baseList = new SharpArrayList(itemType,dataMember);
+				
+				this.baseList = new SharpDataCollection <object>(itemType);
 				this.baseList.AddRange(list);
-				this.baseList.CurrentPosition = 0;
-				this.current = this.baseList[0];
 			}
+			
+			this.listProperties = this.baseList.GetItemProperties(null);
 		}
-		
+
 
 		private void BuildGroup(){
-//			throw new NotImplementedException("No grouping at the time");
-			return;
+
+			try {
+				SharpIndexCollection groupedArray = new SharpIndexCollection();
+				
+				if (base.ReportSettings.GroupColumnsCollection != null) {
+					if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
+						this.BuildSortIndex (groupedArray,base.ReportSettings.GroupColumnsCollection);
+					}
+				}
+
+				base.MakeGroupedIndexList (groupedArray);
+
+
+				foreach (BaseComparer bc in this.IndexList) {
+					GroupSeperator gs = bc as GroupSeperator;
+					
+					if (gs != null) {
+						System.Console.WriteLine("Group Header <{0}> with <{1}> Childs ",gs.ObjectArray[0].ToString(),gs.GetChildren.Count);
+						if (gs.HasChildren) {
+							foreach (SortComparer sc in gs.GetChildren) {
+								
+								System.Console.WriteLine("\t {0}   {1}",sc.ListIndex,sc.ObjectArray[0].ToString());										}
+						}
+					} else {
+						SortComparer sc = bc as SortComparer;
+						
+						if (sc != null) {
+							System.Console.WriteLine("\t Child {0}",sc.ObjectArray[0].ToString());
+						}
+					}
+					
+				}
+			} catch (Exception e) {
+				System.Console.WriteLine("BuildGroup {0}",e.Message);
+				throw;
+			}
 		}
 		
 		private PropertyDescriptor[] BuildSortProperties (ColumnCollection col){
@@ -66,69 +104,54 @@ namespace SharpReportCore {
 		}
 		
 		#region Index Building
-		
-		//Sorted Indexlist
-		private  ArrayList BuildSortIndex(ColumnCollection col) {
-
+		private  void BuildSortIndex(SharpIndexCollection arrayList,ColumnCollection col) {
 			PropertyDescriptor[] sortProperties = BuildSortProperties (col);
-		
-			// Übertragen der zu sortierenden Werte in eine standartComparer Auflistung
-			ArrayList sortValues = new ArrayList(this.baseList.Count);
-			try {
-				for (int rowIndex = 0; rowIndex < this.baseList.Count; rowIndex++){
-					object rowItem = this.baseList[rowIndex];
-					object[] values = new object[col.Count];
+			for (int rowIndex = 0; rowIndex < this.baseList.Count; rowIndex++){
+				object rowItem = this.baseList[rowIndex];
+				object[] values = new object[col.Count];
+				
+				// Hier bereits Wertabruf um dies nicht während des Sortierens tun zu müssen.
+				for (int criteriaIndex = 0; criteriaIndex < sortProperties.Length; criteriaIndex++){
+					object value = sortProperties[criteriaIndex].GetValue(rowItem);
+					// Hier auf Verträglichkeit testen um Vergleiche bei Sortierung zu vereinfachen.
+					// Muss IComparable und gleicher Typ sein.
 					
-					// Hier bereits Wertabruf um dies nicht während des Sortierens tun zu müssen.
-					for (int criteriaIndex = 0; criteriaIndex < sortProperties.Length; criteriaIndex++){
-						object value = sortProperties[criteriaIndex].GetValue(rowItem);
-						// Hier auf Verträglichkeit testen um Vergleiche bei Sortierung zu vereinfachen.
-						// Muss IComparable und gleicher Typ sein.
-						
-						if (value != null && value != DBNull.Value)
-						{
-							if (!(value is IComparable)){
-								throw new InvalidOperationException("ReportDataSource:BuildSortArray - > This type doesn't support IComparable." + value.ToString());
-							}
-							
-							values[criteriaIndex] = value;
+					if (value != null && value != DBNull.Value)
+					{
+						if (!(value is IComparable)){
+							throw new InvalidOperationException("ReportDataSource:BuildSortArray - > This type doesn't support IComparable." + value.ToString());
 						}
+						
+						values[criteriaIndex] = value;
 					}
-					sortValues.Add(new SortComparer(col, rowIndex, values));
 				}
-			} catch (Exception) {
-				throw ;
+				arrayList.Add(new SortComparer(col, rowIndex, values));
 			}
-			
-			sortValues.Sort();
-			return sortValues;
+			arrayList.Sort();
 		}
+		
+		
+		
 		
 		// if we have no sorting, we build the indexlist as well, so we don't need to
 		//check each time we reasd data if we have to go directly or by IndexList
-		
-		private  ArrayList BuildPlainIndex(ColumnCollection col) {
+		private  void BuildPlainIndex(SharpIndexCollection arrayList,ColumnCollection col) {
 			
 			PropertyDescriptor[] sortProperties = new PropertyDescriptor[1];
 			PropertyDescriptorCollection c = this.baseList.GetItemProperties(null);
 			PropertyDescriptor descriptor = c[0];
 			sortProperties[0] = descriptor;
-			ArrayList sortValues = new ArrayList(this.baseList.Count);
-			try {
-				for (int rowIndex = 0; rowIndex < this.baseList.Count; rowIndex++){
-					object[] values = new object[1];
-					
-					// We insert only the RowNr as a dummy value
-					values[0] = rowIndex;
-					sortValues.Add(new BaseComparer(col, rowIndex, values));
-				}
-			} catch (Exception) {
-				throw ;
+			
+			for (int rowIndex = 0; rowIndex < this.baseList.Count; rowIndex++){
+				object[] values = new object[1];
+				
+				// We insert only the RowNr as a dummy value
+				values[0] = rowIndex;
+				arrayList.Add(new BaseComparer(col, rowIndex, values));
 			}
-			return sortValues;;
 		}
-		
-		
+	
+	
 		#endregion
 		
 		#region SharpReportCore.IDataViewStrategy interface implementation
@@ -156,7 +179,6 @@ namespace SharpReportCore {
 			
 			set {
 				base.CurrentRow = value;
-
 				current = this.baseList[((BaseComparer)base.IndexList[value]).ListIndex];
 			}
 		}
@@ -164,28 +186,19 @@ namespace SharpReportCore {
 		
 		public override void Sort() {
 			base.Sort();
-			ArrayList sortedArray = new ArrayList();
-			try {
-				ColumnCollection sortColumnCollection = base.ReportSettings.SortColumnCollection;
-				if (sortColumnCollection != null) {
-					if (sortColumnCollection.Count > 0) {
-						sortedArray =  this.BuildSortIndex (sortColumnCollection);
-						base.IsSorted = true;
-					} else {
-						sortedArray =  BuildPlainIndex (sortColumnCollection);
-						base.IsSorted = false;
-					}
+			if ((base.ReportSettings.SortColumnCollection != null)) {
+				if (base.ReportSettings.SortColumnCollection.Count > 0) {
+					this.BuildSortIndex (base.IndexList,
+					                     base.ReportSettings.SortColumnCollection);
+					
+					
+					base.IsSorted = true;
+//					BaseListStrategy.CheckSortArray (base.IndexList,"TableStrategy - CheckSortArray");
+				} else {
+					this.BuildPlainIndex(base.IndexList,
+					                     base.ReportSettings.SortColumnCollection);
+					base.IsSorted = false;
 				}
-				
-				base.IndexList.Clear();
-				base.IndexList.AddRange (sortedArray);
-//				base.CheckSortArray (sortedArray,"CollectionStrategy - CheckSortArray");
-			} catch (Exception) {
-				throw;
-			}
-			
-			if (base.IndexList == null){
-				throw new NotSupportedException("Sortieren für die Liste nicht unterstützt.");
 			}
 		}
 		
@@ -200,24 +213,23 @@ namespace SharpReportCore {
 		
 		public override void Bind() {
 			base.Bind();
-			if (base.IndexList.Count > 0) {
-				base.IndexList.Clear();
-			}
-			this.listProperties = this.baseList.GetItemProperties(null);
 			
 			if ((base.ReportSettings.GroupColumnsCollection != null) && (base.ReportSettings.GroupColumnsCollection.Count > 0)) {
-				BuildGroup ();
+				this.Group ();
+				Reset();
+				return;
 			}
 			
-			this.Sort ();
-			this.Reset();
-			base.NotifyResetList();
+			if (base.ReportSettings.SortColumnCollection != null) {
+				this.Sort ();
+			}
+			Reset();
 		}
 		
 		public override void Fill(IItemRenderer item) {
-			base.Fill(item);
-			if (current != null) {
-				try {
+			try {
+				base.Fill(item);
+				if (current != null) {
 					BaseDataItem baseDataItem = item as BaseDataItem;
 					PropertyDescriptor p = this.listProperties.Find (baseDataItem.ColumnName,true);
 					
@@ -225,12 +237,50 @@ namespace SharpReportCore {
 						baseDataItem.DbValue = "";
 						baseDataItem.DbValue = p.GetValue(this.current).ToString();
 					}
-				} catch (Exception) {
-					
 				}
+			} catch (System.NullReferenceException) {
+
+			}
+			
+		}
+		
+		protected override void Group() {
+			if (base.ReportSettings.GroupColumnsCollection.Count == 0) {
+				return;
+			}
+			this.BuildGroup();
+			base.Group();
+		}
+		
+		
+		#endregion
+		
+		#region IDisposable
+		
+		public override void Dispose(){
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		
+		~CollectionStrategy(){
+			Dispose(false);
+		}
+		
+		protected override void Dispose(bool disposing){
+			try {
+				if (disposing) {
+					if (this.baseList != null) {
+						this.baseList.Clear();
+						this.baseList = null;
+					}
+				}
+			} finally {
+				base.Dispose(disposing);
+				// Release unmanaged resources.
+				// Set large fields to null.
+				// Call Dispose on your base class.
 			}
 		}
 		#endregion
-		
 	}
 }

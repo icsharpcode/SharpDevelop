@@ -31,7 +31,6 @@ namespace SharpReportCore {
 		
 		
 		private FontSingleton() {
-			MessageBox.Show ("Should be commented out","FontSingleton");
 			hash = new Hashtable();
 		}
 		public Hashtable Hash {
@@ -54,14 +53,6 @@ namespace SharpReportCore {
 		public Font GetFont(string family, float size, FontStyle style){
 			try {
 				string s=family+size.ToString()+((int)style).ToString();
-				MessageBox.Show (s);
-				//Remove when tested
-				if(hash.Contains(s)){
-MessageBox.Show ("font from hashtable","GetFont");
-				} else {
-					
-					MessageBox.Show ("font created","getFont");
-				}
 				
 				if(hash.Contains(s)){
 					return (Font)hash[s];
@@ -75,10 +66,6 @@ MessageBox.Show ("font from hashtable","GetFont");
 		}
 		
 		
-		public override string ToString() {
-			return base.ToString() + " FontSingleton / ";
-		}
-		
 		/// <summary>
 		/// Clear the Hashtable from all Fonts
 		/// </summary>
@@ -87,7 +74,7 @@ MessageBox.Show ("font from hashtable","GetFont");
 		/// 
 		/// </remarks>
 		public  void Dispose() {
-			MessageBox.Show ("dispose fonts " + hash.Count.ToString());
+			
 		}
 	}
 }

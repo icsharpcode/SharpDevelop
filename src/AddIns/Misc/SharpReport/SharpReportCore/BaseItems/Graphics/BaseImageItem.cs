@@ -75,10 +75,10 @@ namespace SharpReportCore {
 			}
 		}
 		
-		public override void Dispose() {
-			base.Dispose();
-			this.image = null;
-		}
+//		public override void Dispose() {
+//			base.Dispose();
+//			this.image = null;
+//		}
 		
 		public override string ToString() {
 			return "BaseImageItem";

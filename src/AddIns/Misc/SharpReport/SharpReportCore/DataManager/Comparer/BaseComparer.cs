@@ -33,13 +33,13 @@ namespace SharpReportCore {
 		}
 		
 		/// <summary>
-		/// TODO - add method description
+		/// Interface method from IComparable
 		/// </summary>
 		/// <remarks>
 		/// Interface method from IComparable
 		/// 
 		/// </remarks>
-		/// <param name='obj'>TODO - add parameter description</param>
+		/// <param name='obj'>a <see cref="BaseComparer"></see></param>
 		public virtual int CompareTo(object obj) {
 			return 0;
 		}

@@ -73,7 +73,6 @@ namespace SharpReport{
 		/// <returns><see cref="ColumnCollection"</returns>
 	
 		private ColumnCollection ReadColumnCollection() {
-			
 			ColumnCollection columnCollecion = new ColumnCollection();
 			switch (baseDesignerControl.ReportModel.DataModel) {
 				case GlobalEnums.enmPushPullModel.FormSheet:
@@ -88,13 +87,20 @@ namespace SharpReport{
 					if (base.ConnectionObject == null) {
 						base.ConnectionObject = this.BuildConnectionObject(baseDesignerControl.ReportModel.ReportSettings);
 					}
-					
+
 					if (this.baseDesignerControl.ReportModel.DataModel.Equals(GlobalEnums.enmPushPullModel.PullData)){
-						
-						using (DataManager dataManager = new DataManager(base.ConnectionObject,
-						                                                 baseDesignerControl.ReportModel.ReportSettings)) {
-							dataManager.DataBind();
-							columnCollecion = dataManager.AvailableFields;
+						try {
+							using (DataManager dataManager = new DataManager(base.ConnectionObject,
+							                                                 baseDesignerControl.ReportModel.ReportSettings)) {
+								
+								dataManager.DataBind();
+								columnCollecion = dataManager.AvailableFields;
+							}
+							
+						} catch (Exception e) {
+							throw e;
+						} finally {
+							System.Console.WriteLine("ReportManager:ReadColumnCollection in finally");
 						}
 					}
 					break;
@@ -104,10 +110,7 @@ namespace SharpReport{
 			return columnCollecion;
 		}
 		
-		
-		
-		
-		
+	
 		private void AddItemsToSection (BaseSection section,ReportItemCollection collection) {
 			
 			if ((section == null)|| (collection == null) ) {
@@ -324,6 +327,7 @@ namespace SharpReport{
 			if (base.ConnectionObject == null) {
 				base.ConnectionObject = this.BuildConnectionObject(model.ReportSettings);
 			}
+			
 			return  base.AbstractRenderer(model);
 		}
 		
@@ -478,20 +482,22 @@ namespace SharpReport{
 		}
 		
 		protected new void Dispose(bool disposing){
-			if (disposing) {
-				// Free other state (managed objects).
-				if (this.baseDesignerControl != null) {
-					this.baseDesignerControl.Dispose();
+			try {
+				if (disposing) {
+					// Free other state (managed objects).
+					if (this.baseDesignerControl != null) {
+						this.baseDesignerControl.Dispose();
+					}
+					if (this.reportModel != null) {
+						this.reportModel.Dispose();
+					}
 				}
-				if (this.reportModel != null) {
-					this.reportModel.Dispose();
-				}
+			} finally {
+				// Release unmanaged resources.
+				// Set large fields to null.
+				// Call Dispose on your base class.
+				base.Dispose();
 			}
-			
-			// Release unmanaged resources.
-			// Set large fields to null.
-			// Call Dispose on your base class.
-			base.Dispose();
 		}
 		#endregion
 	}

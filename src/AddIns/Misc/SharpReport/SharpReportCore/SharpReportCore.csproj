@@ -32,12 +32,12 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <Reference Include="System.ServiceProcess, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseItems\BaseTextItem.cs" />
@@ -50,13 +50,10 @@
     <Compile Include="BaseItems\Functions\BaseToday.cs" />
     <Compile Include="BaseItems\Functions\BasePageNumber.cs" />
     <Compile Include="DataManager\Comparer\BaseComparer.cs" />
-    <Compile Include="DataManager\Comparer\GroupComparer.cs" />
     <Compile Include="DataManager\Comparer\GroupSeperator.cs" />
     <Compile Include="DataManager\Comparer\SortComparer.cs" />
     <Compile Include="DataManager\ListHandling\ExtendedPropertyDescriptor.cs" />
     <Compile Include="DataManager\ListHandling\ExtendedTypeDescriptor.cs" />
-    <Compile Include="DataManager\ListHandling\IExtendedList.cs" />
-    <Compile Include="DataManager\ListHandling\IHierarchicalArray.cs" />
     <Compile Include="DataManager\ListHandling\PropertyTypeHash.cs" />
     <Compile Include="DataManager\ListHandling\SharpArrayList.cs" />
     <Compile Include="DataManager\ListStrategy\BaseListStrategy.cs" />
@@ -85,7 +82,6 @@
     <Compile Include="Interfaces\IBaseRenderer.cs" />
     <Compile Include="Interfaces\IDataContainer.cs" />
     <Compile Include="Interfaces\IDataViewStrategy.cs" />
-    <Compile Include="Interfaces\IHierarchyInterfaces.cs" />
     <Compile Include="Interfaces\IItemRenderer.cs" />
     <Compile Include="Interfaces\IOutputStrategy.cs" />
     <Compile Include="Interfaces\IRender.cs" />
@@ -129,6 +125,7 @@
     <Compile Include="Collections\Collections.cs" />
     <Compile Include="DataManager\SqlQueryChecker.cs" />
     <Compile Include="Exceptions\MissingModelException.cs" />
+    <Compile Include="Interfaces\IHierarchyInterfaces.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />

@@ -12,22 +12,22 @@ namespace SharpReportCore{
 
 		Hashtable types = new Hashtable();
 
-		private string MakeIndex(Type t, string name)
+		private static string MakeIndex(Type t, string name)
 		{
 			return t.FullName + '.' + name;
 		}
 
-		public object this[Type t, string fieldName]
+		public object this[Type type, string fieldName]
 		{
 			get
 			{
-				return types[MakeIndex(t, fieldName)];
+				return types[MakeIndex(type, fieldName)];
 			}
 			set
 			{
 				if (value == null)
 					return;
-				string key = MakeIndex(t, fieldName);
+				string key = MakeIndex(type, fieldName);
 				if (!types.Contains(key))
 					types.Add(key, value);				
 			}

@@ -16,14 +16,14 @@ namespace SharpReportCore
 	/// <summary>
 	/// This Class checks for invalid SqlStatements
 	/// </summary>
-	internal class SqlQueryCkecker{
+	internal class SqlQueryChecker{
 		internal string UPDATE = "UPDATE";
 		internal string DELETE = "DELETE";
 		internal string INSERT = "INSERT";
 		internal string noValidMessage = "is no valid Member of SqlString";
 		
 		
-		public SqlQueryCkecker(){
+		public SqlQueryChecker(){
 		}
 		
 		public void Check (string queryString) {
