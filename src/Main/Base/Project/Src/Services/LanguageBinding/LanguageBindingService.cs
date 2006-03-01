@@ -84,7 +84,7 @@ namespace ICSharpCode.Core
 		{
 			IProject newProject;
 			if (!File.Exists(location)) {
-				newProject = new MissingProject(location);
+				newProject = new MissingProject(location, title);
 				newProject.TypeGuid = projectTypeGuid;
 			} else {
 				ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(location);
@@ -93,11 +93,11 @@ namespace ICSharpCode.Core
 						newProject = binding.LoadProject(location, title);
 					} catch (XmlException ex) {
 						MessageService.ShowError("Error loading " + location + ":\n" + ex.Message);
-						newProject = new UnknownProject(location);
+						newProject = new UnknownProject(location, title);
 						newProject.TypeGuid = projectTypeGuid;
 					}
 				} else {
-					newProject = new UnknownProject(location);
+					newProject = new UnknownProject(location, title);
 					newProject.TypeGuid = projectTypeGuid;
 				}
 			}

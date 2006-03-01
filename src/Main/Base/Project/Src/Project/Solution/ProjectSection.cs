@@ -55,17 +55,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		static Regex sectionPattern  = new Regex("\\s*(?<Key>.*\\S)\\s*=\\s*(?<Value>.*\\S)\\s*", RegexOptions.Compiled);
-		public static ProjectSection ReadGlobalSection(StreamReader sr, string name, string sectionType)
+		public static ProjectSection ReadGlobalSection(TextReader sr, string name, string sectionType)
 		{
 			return ReadSection(sr, name, sectionType, "EndGlobalSection");
 		}
 		
-		public static ProjectSection ReadProjectSection(StreamReader sr, string name, string sectionType)
+		public static ProjectSection ReadProjectSection(TextReader sr, string name, string sectionType)
 		{
 			return ReadSection(sr, name, sectionType, "EndProjectSection");
 		}
 		
-		static ProjectSection ReadSection(StreamReader sr, string name, string sectionType, string endTag)
+		static ProjectSection ReadSection(TextReader sr, string name, string sectionType, string endTag)
 		{
 			ProjectSection newFolder = new ProjectSection(name, sectionType);
 			while (true) {

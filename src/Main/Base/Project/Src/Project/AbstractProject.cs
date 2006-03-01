@@ -29,9 +29,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		protected List<ProjectItem> items   = new List<ProjectItem>();
 		protected List<string>      imports = new List<string>();
+		readonly List<ProjectSection> projectSections = new List<ProjectSection>();
 		
-		protected string fileName;
-		protected string language;
+		string fileName;
+		string language;
 		
 		[Browsable(false)]
 		public Dictionary<string, PropertyGroup> Configurations {
@@ -154,6 +155,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
+		/// Gets a list of property sections stored in the solution file.
+		/// </summary>
+		[Browsable(false)]
+		public List<ProjectSection> ProjectSections {
+			get {
+				return projectSections;
+			}
+		}
+		
+		/// <summary>
 		/// Gets the list of MSBuild Imports.
 		/// </summary>
 		/// <returns>
@@ -172,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (fileName == null) {
 					return String.Empty;
 				}
-				return Path.GetFullPath(fileName);
+				return fileName;
 			}
 			set {
 				fileName = value;
@@ -188,7 +199,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (fileName == null) {
 						return String.Empty;
 					}
-					directoryName = Path.GetFullPath(Path.GetDirectoryName(fileName));
+					directoryName = Path.GetDirectoryName(fileName);
 				}
 				return directoryName;
 			}

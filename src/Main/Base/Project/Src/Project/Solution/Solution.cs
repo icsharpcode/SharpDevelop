@@ -271,23 +271,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				projectSection.AppendLine();
 				
 				if (currentFolder is IProject) {
-					// IProject project = (IProject)currentFolder;
-					// currently nothing to do. (I don't know if projects may have sections).
+					IProject project = (IProject)currentFolder;
+					// Web projects can have sections
+					SaveProjectSections(project.ProjectSections, projectSection);
+					
 				} else if (currentFolder is SolutionFolder) {
 					SolutionFolder folder = (SolutionFolder)currentFolder;
 					
-					foreach (ProjectSection section in folder.Sections) {
-						projectSection.Append("\tProjectSection(");
-						projectSection.Append(section.Name);
-						projectSection.Append(") = ");
-						projectSection.Append(section.SectionType);
-						projectSection.Append(Environment.NewLine);
-						
-						section.AppendSection(projectSection, "\t\t");
-						
-						projectSection.Append("\tEndProjectSection");
-						projectSection.Append(Environment.NewLine);
-					}
+					SaveProjectSections(folder.Sections, projectSection);
 					
 					foreach (ISolutionFolder subFolder in folder.Folders) {
 						stack.Push(subFolder);
@@ -336,6 +327,22 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				
 				sw.WriteLine("EndGlobal");
+			}
+		}
+		
+		static void SaveProjectSections(IEnumerable<ProjectSection> sections, StringBuilder projectSection)
+		{
+			foreach (ProjectSection section in sections) {
+				projectSection.Append("\tProjectSection(");
+				projectSection.Append(section.Name);
+				projectSection.Append(") = ");
+				projectSection.Append(section.SectionType);
+				projectSection.Append(Environment.NewLine);
+				
+				section.AppendSection(projectSection, "\t\t");
+				
+				projectSection.Append("\tEndProjectSection");
+				projectSection.Append(Environment.NewLine);
 			}
 		}
 		
@@ -432,14 +439,19 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (match.Success) {
 						string projectGuid  = match.Result("${ProjectGuid}");
 						string title        = match.Result("${Title}");
-						string location     = Path.Combine(solutionDirectory, match.Result("${Location}"));
+						string location     = match.Result("${Location}");
 						string guid         = match.Result("${Guid}");
+						
+						if (!FileUtility.IsUrl(location)) {
+							location = Path.Combine(solutionDirectory, location);
+						}
 						
 						if (projectGuid == FolderGuid) {
 							SolutionFolder newFolder = SolutionFolder.ReadFolder(sr, title, location, guid);
 							newSolution.AddFolder(newFolder);
 						} else {
 							IProject newProject = LanguageBindingService.LoadProject(location, title, projectGuid);
+							ReadProjectSections(sr, newProject.ProjectSections);
 							newProject.IdGuid = guid;
 							newSolution.AddFolder(newProject);
 						}

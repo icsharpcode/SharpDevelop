@@ -563,7 +563,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				foreach (string file in files) {
 					if (File.Exists(file)) {
-						FileService.OpenFile(file);
+						IProjectLoader loader = ProjectService.GetProjectLoader(file);
+						if (loader != null) {
+							FileUtility.ObservedLoad(new NamedFileOperationDelegate(loader.Load), file);
+						} else {
+							FileService.OpenFile(file);
+						}
 					}
 				}
 			}

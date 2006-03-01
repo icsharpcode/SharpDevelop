@@ -24,9 +24,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public UnknownProject(string fileName)
+		public UnknownProject(string fileName, string title)
 		{
-			Name     = Path.GetFileNameWithoutExtension(fileName);
+			Name     = title;
 			FileName = fileName;
 			IdGuid = "{" + Guid.NewGuid().ToString() + "}";
 		}

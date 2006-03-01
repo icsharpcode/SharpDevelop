@@ -31,6 +31,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
+		/// Gets a list of property sections stored in the solution file.
+		/// </summary>
+		List<ProjectSection> ProjectSections {
+			get;
+		}
+		
+		/// <summary>
 		/// Marks a project for needing recompilation.
 		/// </summary>
 		bool IsDirty {

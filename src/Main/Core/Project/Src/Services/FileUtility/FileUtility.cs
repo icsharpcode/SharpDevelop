@@ -103,6 +103,10 @@ namespace ICSharpCode.Core
 			return result;
 		}
 		
+		public static bool IsUrl(string path)
+		{
+			return path.IndexOf(':') >= 2;
+		}
 		
 		/// <summary>
 		/// Converts a given absolute path and a given base path to a path that leads
@@ -110,8 +114,15 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static string GetRelativePath(string baseDirectoryPath, string absPath)
 		{
-			baseDirectoryPath = Path.GetFullPath(baseDirectoryPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
-			absPath           = Path.GetFullPath(absPath);
+			if (IsUrl(absPath) || IsUrl(baseDirectoryPath)){
+				return absPath;
+			}
+			try {
+				baseDirectoryPath = Path.GetFullPath(baseDirectoryPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+				absPath           = Path.GetFullPath(absPath);
+			} catch (Exception ex) {
+				throw new ArgumentException("GetRelativePath error '" + baseDirectoryPath + "' -> '" + absPath + "'", ex);
+			}
 			
 			string[] bPath = baseDirectoryPath.Split(separators);
 			string[] aPath = absPath.Split(separators);
