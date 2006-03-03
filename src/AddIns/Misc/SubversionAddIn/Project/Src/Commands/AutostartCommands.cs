@@ -171,7 +171,6 @@ namespace ICSharpCode.Svn.Commands
 						return;
 				}
 				SvnClient.Instance.Client.Move(fullSource,
-				                               Revision.Unspecified, // TODO: Remove this line when upgrading to new NSvn version
 				                               Path.GetFullPath(e.TargetFile),
 				                               true
 				                              );
