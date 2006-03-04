@@ -19,19 +19,10 @@ namespace ICSharpCode.Svn
 	{
 		public override object Visit(SolutionNode node, object data)
 		{
-			return node.AcceptChildren(this, data);
-			/*
-			string fileName = node.FileName;
-			NodeStatus nodeStatus = NodeStatus.None;
-			if (fileName != null && fileName.Length > 0) {
-				Status status = client.SingleStatus(Path.GetFullPath(fileName));
-				nodeStatus = GetNodeStatus(status.TextStatus);
+			if (Directory.Exists(Path.Combine(node.Solution.Directory, ".svn"))) {
+				OverlayIconManager.Enqueue(node);
 			}
-			NodeStatusInformer nsi = new NodeStatusInformer(nodeStatus);
-			object back = node.AcceptChildren(this, nsi);
-			
-			node.NodeStatus = nsi.NodeStatus;
-			return back;*/
+			return node.AcceptChildren(this, data);
 		}
 		
 		public override object Visit(ProjectNode node, object data)

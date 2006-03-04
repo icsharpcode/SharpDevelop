@@ -18,6 +18,7 @@ using System.Diagnostics;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 using ICSharpCode.SharpDevelop.Project;
 using NSvn.Common;
@@ -27,109 +28,260 @@ namespace ICSharpCode.Svn.Commands
 {
 	public abstract class SubversionCommand : AbstractMenuCommand
 	{
-		protected string fileName;
-		
 		public override void Run()
 		{
 			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
 			if (node != null) {
-				fileName = null;
 				if (node is DirectoryNode) {
-					fileName = ((DirectoryNode)node).Directory;
+					Run(((DirectoryNode)node).Directory);
 				} else if (node is FileNode) {
-					fileName = ((FileNode)node).FileName;
-				}
-				if (fileName == null) {
-					return;
-				}
-				if (StartOperation()) {
-					SvnClient.Instance.WaitForOperationEnd();
-					OperationFinished();
-					OverlayIconManager.EnqueueRecursive(node);
+					Run(((FileNode)node).FileName);
+				} else if (node is SolutionNode) {
+					Run(((SolutionNode)node).Solution.Directory);
 				}
 			}
 		}
 		
-		protected abstract bool StartOperation();
-		
-		protected virtual void OperationFinished()
+		protected void Callback()
 		{
-			//if (AddInOptions.AutomaticallyReloadProject) {
-			//	projectService.ReloadCombine();
-			//}
+			WorkbenchSingleton.SafeThreadAsyncCall((MethodInvoker)CallbackInvoked);
 		}
+		
+		void CallbackInvoked()
+		{
+			SubversionStateCondition.ResetCache();
+			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
+			if (node != null) {
+				OverlayIconManager.EnqueueRecursive(node);
+			}
+		}
+		
+		protected abstract void Run(string filename);
 	}
 	
 	public class UpdateCommand : SubversionCommand
 	{
-		void DoUpdateCommand()
+		protected override void Run(string filename)
 		{
-			SvnClient.Instance.Client.Update(Directory.Exists(fileName) ? fileName : Path.GetDirectoryName(fileName), Revision.Head, true);
+			SvnGuiWrapper.Update(filename, Callback);
 		}
-		
-		protected override bool StartOperation()
+	}
+	
+	public class UpdateToRevisionCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
 		{
-			SvnClient.Instance.OperationStart("Update", new ThreadStart(DoUpdateCommand));
-			return true;
+			SvnGuiWrapper.UpdateToRevision(filename, Callback);
 		}
 	}
 	
 	public class RevertCommand : SubversionCommand
 	{
-		void DoRevertCommand()
+		protected override void Run(string filename)
 		{
-			SvnClient.Instance.Client.Revert(new string[] { fileName }, true);
-		}
-		
-		protected override bool StartOperation()
-		{
-			if (MessageService.AskQuestion("Revert removes all your local modifications to this file. Are you sure?", "Subversion revert")) {
-				SvnClient.Instance.OperationStart("Revert", new ThreadStart(DoRevertCommand));
-				return true;
-			}
-			return false;
+			SvnGuiWrapper.Revert(filename, Callback);
 		}
 	}
 	
-	/// <summary>
-	/// Description of CreatePatchCommand
-	/// </summary>
 	public class CreatePatchCommand : SubversionCommand
 	{
-		string output;
-		
-		void DoCreatePatchCommand()
+		protected override void Run(string filename)
 		{
-			try {
-				MemoryStream outStream = new MemoryStream();
-				MemoryStream errStream = new MemoryStream();
-				
-				SvnClient.Instance.Client.Diff(new string [] {} ,
-				                               fileName,
-				                               Revision.Committed,
-				                               fileName,
-				                               Revision.Working,
-				                               true,
-				                               false,
-				                               true,
-				                               outStream,
-				                               errStream);
-				output = Encoding.Default.GetString(outStream.ToArray());
-				ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(this, "DisplayPatch");
-			} catch (Exception e) {
-				MessageService.ShowError(e);
+			SvnGuiWrapper.CreatePatch(filename, null);
+		}
+	}
+	
+	public class ApplyPatchCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.ApplyPatch(filename, null);
+		}
+	}
+	
+	public class CommitCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.Commit(filename, Callback);
+		}
+	}
+	
+	public class AddCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.Add(filename, Callback);
+		}
+	}
+	
+	public class IgnoreCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.Ignore(filename, Callback);
+		}
+	}
+	
+	public class BlameCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.Blame(filename, Callback);
+		}
+	}
+	
+	public class UnignoreCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			PropertyDictionary pd = SvnClient.Instance.Client.PropGet("svn:ignore", Path.GetDirectoryName(filename), Revision.Working, false);
+			if (pd != null) {
+				string shortFileName = Path.GetFileName(filename);
+				foreach (Property p in pd.Values) {
+					StringBuilder b = new StringBuilder();
+					using (StreamReader r = new StreamReader(new MemoryStream(p.Data))) {
+						string line;
+						while ((line = r.ReadLine()) != null) {
+							if (!string.Equals(line, shortFileName, StringComparison.InvariantCultureIgnoreCase)) {
+								b.AppendLine(line);
+							}
+						}
+					}
+					SvnClient.Instance.Client.PropSet(new Property(p.Name, b.ToString()),
+					                                  Path.GetDirectoryName(filename), false);
+				}
+				MessageService.ShowMessage(shortFileName + " was removed from the ignore list.");
+				Callback();
 			}
 		}
-		
-		void DisplayPatch()
+	}
+	
+	public class HelpCommand : AbstractMenuCommand
+	{
+		public override void Run()
 		{
-			FileService.NewFile(Path.GetFileName(fileName) + ".patch", "patch", output);
+			SvnGuiWrapper.ShowSvnHelp();
 		}
-		
-		protected override bool StartOperation()
+	}
+	
+	public class SettingsCommand : AbstractMenuCommand
+	{
+		public override void Run()
 		{
-			SvnClient.Instance.OperationStart("CreatePatch", new ThreadStart(DoCreatePatchCommand));
-			return true;
+			SvnGuiWrapper.ShowSvnSettings();
+		}
+	}
+	
+	public class AboutCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			SvnGuiWrapper.ShowSvnAbout();
+		}
+	}
+	
+	public class DiffCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.Diff(filename, Callback);
+		}
+	}
+	
+	public class EditConflictsCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.ConflictEditor(filename, Callback);
+		}
+	}
+	
+	public class ResolveConflictsCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.ResolveConflict(filename, Callback);
+		}
+	}
+	
+	public class ShowLogCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.ShowLog(filename, Callback);
+		}
+	}
+	
+	public class CleanupCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.Cleanup(filename, Callback);
+		}
+	}
+	
+	public class RepoBrowserCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.RepoBrowser(filename, Callback);
+		}
+	}
+	
+	public class RepoStatusCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.RepoStatus(filename, Callback);
+		}
+	}
+	
+	public class RevisionGraphCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.RevisionGraph(filename, Callback);
+		}
+	}
+	
+	public class BranchCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.Branch(filename, Callback);
+		}
+	}
+	
+	public class SwitchCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.Switch(filename, Callback);
+		}
+	}
+	
+	public class MergeCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.Merge(filename, Callback);
+		}
+	}
+	
+	public class ExportWorkingCopyCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.Export(filename, Callback);
+		}
+	}
+	
+	public class RelocateCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.Relocate(filename, Callback);
 		}
 	}
 }

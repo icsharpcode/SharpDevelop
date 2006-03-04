@@ -52,25 +52,11 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\ClientCertDialog.xfrm" />
     <EmbeddedResource Include="Resources\ClientCertPassphraseDialog.xfrm" />
-    <EmbeddedResource Include="Resources\CommitDialog.xfrm" />
     <EmbeddedResource Include="Resources\InfoPanel.xfrm" />
     <EmbeddedResource Include="Resources\DiffPanel.xfrm" />
-    <EmbeddedResource Include="Resources\ExportDialog.xfrm" />
     <EmbeddedResource Include="Resources\LoginDialog.xfrm" />
     <EmbeddedResource Include="Resources\SslServerTrustDialog.xfrm" />
     <EmbeddedResource Include="Resources\SubversionOptionsPanel.xfrm" />
-    <Compile Include="Src\Commands\Checkout\CheckoutCommand.cs" />
-    <Compile Include="Src\Commands\Checkout\CheckoutDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\Commands\Commit\CommitCommand.cs" />
-    <Compile Include="Src\Commands\Commit\CommitDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\Commands\Export\ExportCommand.cs" />
-    <Compile Include="Src\Commands\Export\ExportDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\Commands\AutostartCommands.cs" />
     <Compile Include="Src\Commands\ProjectBrowserCommands.cs" />
     <Compile Include="Src\Gui\AuthentificationDialogs\ClientCertDialog.cs">
@@ -101,6 +87,10 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\ProjectBrowserVisitor\OverlayIconManager.cs" />
+    <Compile Include="Src\Gui\SvnGuiWrapper.cs" />
+    <Compile Include="Src\Gui\TortoiseSvnNotFoundForm.cs" />
+    <Compile Include="Src\Commands\CheckoutCommands.cs" />
+    <Compile Include="Src\SubversionStateCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -121,6 +111,7 @@
       <Link>msvcr70.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\TortoiseSvnNotFoundForm.xfrm" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

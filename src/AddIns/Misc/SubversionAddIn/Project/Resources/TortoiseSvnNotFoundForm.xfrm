@@ -1,0 +1,46 @@
+﻿<Components version="1.0">
+  <System.Windows.Forms.Form>
+    <Name value="TortoiseSvnNotFoundForm" />
+    <FormBorderStyle value="SizableToolWindow" />
+    <AcceptButton value="okButton [System.Windows.Forms.Button], Text: OK" />
+    <MinimizeBox value="False" />
+    <StartPosition value="CenterParent" />
+    <MinimumSize value="{Width=365, Height=147}" />
+    <Text value="SharpDevelop" />
+    <MaximizeBox value="False" />
+    <ClientSize value="{Width=357, Height=121}" />
+    <CancelButton value="okButton [System.Windows.Forms.Button], Text: OK" />
+    <Controls>
+      <System.Windows.Forms.PictureBox>
+        <Name value="iconPictureBox" />
+        <Location value="{X=10,Y=11}" />
+        <Size value="{Width=32, Height=32}" />
+      </System.Windows.Forms.PictureBox>
+      <System.Windows.Forms.Button>
+        <Name value="okButton" />
+        <DialogResult value="OK" />
+        <Location value="{X=142,Y=82}" />
+        <Text value="${res:Global.OKButtonText}" />
+        <Anchor value="Bottom" />
+        <UseVisualStyleBackColor value="True" />
+        <Size value="{Width=73, Height=29}" />
+        <TabIndex value="1" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.LinkLabel>
+        <Name value="linkLabel" />
+        <Size value="{Width=93, Height=26}" />
+        <TabIndex value="1" />
+        <Text value="tortoisesvn.tigris.org" />
+        <Location value="{X=12,Y=86}" />
+        <Anchor value="Bottom, Left" />
+      </System.Windows.Forms.LinkLabel>
+      <System.Windows.Forms.Label>
+        <Name value="messageLabel" />
+        <Location value="{X=48,Y=11}" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <Size value="{Width=302, Height=68}" />
+        <TabIndex value="2" />
+      </System.Windows.Forms.Label>
+    </Controls>
+  </System.Windows.Forms.Form>
+</Components>

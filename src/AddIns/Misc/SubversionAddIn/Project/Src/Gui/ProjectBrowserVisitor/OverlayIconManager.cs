@@ -160,7 +160,12 @@ namespace ICSharpCode.Svn
 				if (directoryNode != null) {
 					status = client.SingleStatus(directoryNode.Directory);
 				} else {
-					return;
+					SolutionNode solNode = node as SolutionNode;
+					if (solNode != null) {
+						status = client.SingleStatus(solNode.Solution.Directory);
+					} else {
+						return;
+					}
 				}
 			}
 			if (node.TreeView != null) {

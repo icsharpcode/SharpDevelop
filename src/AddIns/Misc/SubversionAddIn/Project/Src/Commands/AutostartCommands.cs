@@ -48,7 +48,7 @@ namespace ICSharpCode.Svn.Commands
 			node.AcceptVisitor(visitor, null);
 		}
 		
-		bool CanBeVersionControlled(string fileName)
+		internal static bool CanBeVersionControlled(string fileName)
 		{
 			string svnDir = Path.Combine(Path.GetDirectoryName(fileName), ".svn");
 			return Directory.Exists(svnDir);
@@ -63,6 +63,7 @@ namespace ICSharpCode.Svn.Commands
 			FileNode node = pad.ProjectBrowserControl.FindFileNode(fileName);
 			if (node == null) return;
 			OverlayIconManager.Enqueue(node);
+			SubversionStateCondition.ResetCache();
 		}
 		
 		void FileAdded(object sender, FileEventArgs e)
