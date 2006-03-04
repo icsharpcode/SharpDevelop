@@ -97,15 +97,15 @@ namespace SharpReportCore {
   		/// Convert any possible string-Value of a given enumeration
   		/// type to its internal representation.
    
-  		public static object StringToEnum( Type t, string value ) {
-  			foreach ( FieldInfo fi in t.GetFields() )
+  		public static object StringToEnum( Type type, string value ) {
+  			foreach ( FieldInfo fi in type.GetFields() )
   				if ( fi.Name == value )
   				return fi.GetValue( null );    // We use null because
   			
   			throw new Exception( string.Format(CultureInfo.CurrentCulture,
   			                                   "Can't convert {0} to {1}",
   			                                   value,
-  			                                   t.ToString()) );
+  			                                   type.ToString()) );
   		}
 	}
 }

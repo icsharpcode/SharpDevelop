@@ -117,9 +117,6 @@ namespace SharpReportCore {
 			get {
 				return sectionCollection;
 			}
-			set {
-				sectionCollection = value;
-			}
 		}
 		
 		#endregion
@@ -136,16 +133,23 @@ namespace SharpReportCore {
 		}
 		
 		protected virtual void Dispose(bool disposing){
-			if (disposing) {
-				// Free other state (managed objects).
-				if (this.reportSettings != null) {
-					this.reportSettings.Dispose();
-					this.reportSettings = null;
+			try {
+				if (disposing) {
+					// Free other state (managed objects).
+					if (this.reportSettings != null) {
+						this.reportSettings.Dispose();
+						this.reportSettings = null;
+					}
+					if (this.sectionCollection != null) {
+						this.sectionCollection.Clear();
+						this.sectionCollection = null;
+					}
 				}
-			}
-			// Free your own state (unmanaged objects).
-			// Set large fields to null.
+			} finally {
+				// Free your own state (unmanaged objects).
+				// Set large fields to null.
 
+			}
 		}
 		#endregion
 	}

@@ -22,11 +22,11 @@ using SharpReportCore;
 /// </remarks>
 
 namespace SharpReportCore {
-	public class GroupSeperator : SharpReportCore.GroupComparer,IHierarchyData {
+	public class GroupSeperator : SharpReportCore.BaseComparer,IHierarchyData {
 		private string typeName = "GroupSeperator";
 		
 		int groupLevel;
-		IHierarchicalArray childs ;
+		SharpIndexCollection childs ;
 		
 		public GroupSeperator(ColumnCollection owner, int listIndex, object[] values,int groupLevel):
 			base(owner,listIndex,values) {
@@ -40,16 +40,89 @@ namespace SharpReportCore {
 			}
 		}
 		
-		public IHierarchicalArray Childs {
+		public SharpIndexCollection GetChildren {
 			get {
+				if (this.childs == null) {
+					this.childs = new SharpIndexCollection("ChildList");
+				}
 				return childs;
-			}
-			set {
-				childs = value;
+				
 			}
 		}
 		
+		#region Comparer
+		internal int CompareTo(BaseComparer value)
+		{
+			// we shouldn't get to this point
+			if (value == null)
+				throw new ArgumentNullException("value");
+			
+			if (value.ObjectArray.Length != base.ObjectArray.Length)
+				throw new InvalidOperationException("Differnet size of compare data");
+			
+			int compare = 0;
+			
+			for (int index = 0; index < base.ObjectArray.Length; index++)
+			{
+				object leftValue = base.ObjectArray[index];
+				object rightValue = value.ObjectArray[index];
+				// Indizes sind hier deckungsgleich
+				
+				GroupColumn groupColumn = (GroupColumn)base.ColumnCollection[index];
+
+				bool descending = (groupColumn.SortDirection == ListSortDirection.Descending);
+				
+				// null means equl
+				if (leftValue == null || leftValue == System.DBNull.Value)
+				{
+					if (rightValue != null && rightValue != System.DBNull.Value)
+					{
+						return (descending) ? 1 : -1;
+					}
+					
+					// Beide Null
+					continue;
+				}
+				
+				if (rightValue == null || rightValue == System.DBNull.Value)
+				{
+					return (descending) ? -1 : 1;
+				}
+				
+				
+				if (leftValue.GetType() != rightValue.GetType())
+					throw new InvalidOperationException("Compare of different types is not supported");
+				
+				if (leftValue.GetType() == typeof(string))
+				{
+					compare = String.Compare((string)leftValue, (string)rightValue,
+					                         !groupColumn.CaseSensitive, base.ColumnCollection.Culture);
+				}
+				else
+				{
+					compare = ((IComparable)leftValue).CompareTo(rightValue);
+				}
+				
+				// Sind ungleich, tauschen je nach Richtung
+				if (compare != 0)
+				{
+					return (descending) ? -compare : compare;
+				}
+			}
+			
+			// Gleich Werte, dann Index bercksichtigen
+			return this.ListIndex.CompareTo(value.ListIndex);
+		}
 		
+		
+		
+		public override int CompareTo(object obj) {
+			 base.CompareTo(obj);
+			return this.CompareTo((BaseComparer)obj);
+		}
+		
+		
+		#endregion
 		
 		
 		#region SharpReportCore.IHierarchyData interface implementation
@@ -85,13 +158,13 @@ namespace SharpReportCore {
 			}
 		}
 		
-		public IHierarchicalEnumerable GetChildren() {
-			return this.childs;
-		}
-		
-		public IHierarchyData GetParent() {
-			return null;
-		}
+//		public IHierarchicalEnumerable GetChildren() {
+//			return this.childs;
+//		}
+//		
+//		public IHierarchyData GetParent() {
+//			return null;
+//		}
 	
 		#endregion
 		

@@ -42,9 +42,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected override WebResponse GetWebResponse(WebRequest request)
 		{
-			lastResponseReceived = null;
-			lastResponseReceived = base.GetWebResponse(request) as HttpWebResponse;
-			return lastResponseReceived;
+			WebResponse response = base.GetWebResponse(request);
+			lastResponseReceived = response as HttpWebResponse;
+			return response;
 		}
 	}
 }

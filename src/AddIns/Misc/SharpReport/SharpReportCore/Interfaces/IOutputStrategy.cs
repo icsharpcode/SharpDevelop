@@ -20,18 +20,18 @@ namespace SharpReportCore
 		/// <summary>
 		/// Measure the Size of the currnet Item
 		/// </summary>
-		SizeF MeasureItem(System.Drawing.Graphics e);
+		SizeF MeasureItem(System.Drawing.Graphics graphics);
 		/// <summary>
 		/// Format the current (TextBased)
 		/// </summary>
 		/// <param name="e"></param>
 		/// <returns></returns>
-		void FormatItem(System.Drawing.Graphics e );
+		void FormatItem(System.Drawing.Graphics graphics );
 		
 		/// <summary>
 		/// Print them out to ....
 		/// </summary>
 		/// <param name="e"></param>
-		void OutputItem (System.Drawing.Graphics e);
+		void OutputItem (System.Drawing.Graphics graphics);
 	}
 }

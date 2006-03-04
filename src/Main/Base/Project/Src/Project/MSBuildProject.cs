@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			configurations["Release|*"]["DebugSymbols"] = "False";
 			configurations["Release|*"]["DebugType"] = "None";
 			
-			fileName = information.OutputProjectFileName;
+			this.FileName = Path.GetFullPath(information.OutputProjectFileName);
 		}
 		
 		public override bool CanCompile(string fileName)
@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		protected void SetupProject(string projectFileName)
 		{
-			this.fileName = projectFileName;
+			this.FileName = Path.GetFullPath(projectFileName);
 			using (MSBuildFileReader reader = new MSBuildFileReader(projectFileName)) {
 				reader.WhitespaceHandling = WhitespaceHandling.Significant;
 				reader.MoveToContent(); // we have to skip over the XmlDeclaration (if it exists)

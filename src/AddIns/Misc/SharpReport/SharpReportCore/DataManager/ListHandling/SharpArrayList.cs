@@ -1,278 +1,34 @@
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.Reflection;
 using System.Collections;
 using System.ComponentModel;
 
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
 namespace SharpReportCore
 {
-	
+	/// <summary>
+	/// This class act'S as a IndexList to
+	/// <see cref="SharpBaseList"></see>
 	/// </summary>
-	public class SharpArrayList : ArrayList, IBindingList ,ITypedList,IExtendedList
-	{
-		Type elementType;
+	public class SharpIndexCollection :List<BaseComparer> {
 		string name;
 		int currentPosition;
 		
-		bool allowNew = true;
-		bool allowEdit = true;
-		bool allowRemove = true;
-		bool supportsSearching ;
-		bool supportsSorting ;
-		bool isSorted;
+		public SharpIndexCollection():this ("SharpIndexList"){	
+		}
 		
-		private ListChangedEventArgs resetEvent = new ListChangedEventArgs(ListChangedType.Reset, -1);
-
-		public event ListChangedEventHandler ListChanged;
-		
-		
-		public SharpArrayList(Type elementType,string name){
-			this.Clear();
-			this.elementType = elementType;
+		public SharpIndexCollection(string name){
 			this.name = name;
-			Reset();
-		}
-		
-		#region ITypedList Member
-
-		public PropertyDescriptorCollection GetItemProperties(PropertyDescriptor[] listAccessors){			
-			if (listAccessors != null && listAccessors.Length > 0){
-				Type t = this.elementType;
-				for(int i = 0; i < listAccessors.Length; i++){
-					PropertyDescriptor pd = listAccessors[i];
-					// System.Diagnostics.Debug.WriteLine("*** " + t.FullName + ": " + pd.Name);
-					t = (Type) PropertyTypeHash.Instance[t, pd.Name];
-				}
-				// System.Diagnostics.Debug.WriteLine("*** New Collection for " + t.FullName);
-				// if t is null an empty list will be generated
-				return SharpTypeDescriptor.GetProperties(t);
-			}
-			return SharpTypeDescriptor.GetProperties(elementType);
-		}
-
-		public static Type GetElementType(IList list,
-		                                  Type parentType,
-		                                  string propertyName){			
-			SharpArrayList al = list as SharpArrayList;
-			if (al == null)
-				return null;
-			return al.elementType;
-		}
-#if longVersion
-		public static Type GetElementType(IList list, 
-                                  Type parentType, 
-                                  string propertyName){
-			SharpArrayList al = null;
-			object element = null;
-			al = CheckForArrayList(list);
-			if (al == null){
-				if (list.Count > 0){
-					element = list[0];
-				}
-			}
-			if (al == null && element == null){
-				PropertyInfo pi = parentType.GetProperty(propertyName);
-				if (pi != null){
-					object parentObject = null;
-					try{
-						parentObject = Activator.CreateInstance(parentType);
-					}
-					catch(Exception ex) {}
-					
-					if (parentObject != null){
-						list = pi.GetValue(parentObject, null) as IList;
-						al = CheckForArrayList(list);
-					}
-				}
-			}
-			if (al != null){
-				return al.elementType;
-			}
-			else if (element != null){
-				return element.GetType();
-			}
-			return null;
-		}
-
-
-		private static SharpArrayList CheckForArrayList(object l){
-			IList list = l as IList;
-			if (list == null)
-				return null;
-			if (list.GetType().FullName == "System.Collections.ArrayList+ReadOnlyArrayList"){
-				FieldInfo fi = list.GetType().GetField("_list", BindingFlags.NonPublic | BindingFlags.Instance);
-				if (fi != null){
-					list = (IList) fi.GetValue(list);
-				}
-			}
-			return list as SharpArrayList;
-		}
-#endif
-
-
-
-		public string GetListName(PropertyDescriptor[] listAccessors){
-			return elementType.Name;
-		}
-
-		#endregion
-		
-		protected void Reset(){
-			this.currentPosition = 0;
-			this.OnListChange (resetEvent);
-		}
-		
-		private void OnListChange (ListChangedEventArgs handler) {
-			if (this.ListChanged != null) {
-				this.ListChanged (this,handler);
-			}
 		}
 		
 		
-		#region System.ComponentModel.IBindingList interface implementation
-		public bool AllowNew {
-			get {
-				return this.allowNew;
-			}
-		}
-		
-		public bool AllowEdit {
-			get {
-				return this.allowEdit;
-			}
-		}
-		
-		public bool AllowRemove {
-			get {
-				return this.allowRemove;
-			}
-		}
-		
-		public bool SupportsChangeNotification {
-			get {
-				return true;
-			}
-		}
-		
-		public bool SupportsSearching {
-			get {
-				return this.supportsSearching;
-			}
-			set {
-				this.supportsSearching = value;
-			}
-		}
-		
-		public bool SupportsSorting {
-			get {
-				return this.supportsSorting;
-			}
-			set {
-				this.supportsSorting = value;
-			}
-		}
-		
-		public bool IsSorted {
-			get {
-				return this.isSorted;
-			}
-			set {
-				this.isSorted = value;
-			}
-		}
-		
-		public System.ComponentModel.PropertyDescriptor SortProperty {
-			get {
-				return null;
-			}
-		}
-		
-		public System.ComponentModel.ListSortDirection SortDirection {
-			get {
-				return ListSortDirection.Ascending;
-			}
-		}
-		
-		public void RemoveSort() {
-			throw new NotImplementedException("RemoveSort");
-		}
-		//TODO Test fehlt
-		public void RemoveIndex(System.ComponentModel.PropertyDescriptor property) {
-			throw new NotImplementedException("RemoveIndex");
-		}
-		
-		//TODO Test fehlt
-		public int Find(System.ComponentModel.PropertyDescriptor property, object key) {
-//			return 0;
-			throw new NotImplementedException("Find");
-		}
-		//TODO Test fehlt
-		public void ApplySort(System.ComponentModel.PropertyDescriptor property, System.ComponentModel.ListSortDirection direction) {
-			throw new NotImplementedException("ApplySort");
-		}
-		//TODO Test fehlt
-		public void AddIndex(System.ComponentModel.PropertyDescriptor property) {
-			throw new NotImplementedException("AddIndex");
-		}
-		
-		public object AddNew() {
-			throw new NotImplementedException("AddNew");
-		}
-		
-		
-		#endregion
-		
-		#region overrides
-		public override int Add(object value) {
-			if (this.elementType.GetType().IsAssignableFrom (value.GetType())) {
-				System.Console.WriteLine("type ok");
-			}
-			if ((value.GetType().IsSubclassOf(this.elementType))||( value.GetType() == this.elementType)){
-				if (this.allowNew) {
-					int i = base.Add(value);
-					this.OnListChange (new ListChangedEventArgs(ListChangedType.ItemAdded,i));
-					return i;
-				} else {
-					throw new NotSupportedException("SharpArrayList:Add(object)");
-				}
-			} else {
-				string str = String.Format("Add:Wrong Type {0} {1}",this.elementType,value.GetType());
-				throw new ArgumentException(str);
-			}
-		}
-		
-		public override void AddRange(System.Collections.ICollection c) {
-			foreach (object o in c) {
-				this.Add (o);
-			}
-		}
-		
-		
-		public override void RemoveAt(int index) {
-			if (this.allowRemove) {
-				if (index > -1) {
-					base.RemoveAt(index);
-					this.OnListChange (new ListChangedEventArgs(ListChangedType.ItemDeleted,index));
-				}
-			} else {
-				throw new NotSupportedException("SharpArrayList:RemoveAt (index)");
-			}
-		}
-		
-		
-		#endregion
-		
-		
-		#region SharpReport.Data.IExtendedList interface implementation
-		public string Name {
-			get {
-				return this.name;
-			}
-			
-		}
-		
+		#region properties
+	
 		public int CurrentPosition {
 			get {
 				return currentPosition;
@@ -282,25 +38,192 @@ namespace SharpReportCore
 			}
 		}
 		
-		
-		public IList IndexList {
+		public string Name {
 			get {
-				return(IList)this;
+				return name;
 			}
 		}
 		
-		public void BuildHashList(IList list) {
-			throw new NotImplementedException("SharpArrayList:BuildHashList");
-/*
-			this.Clear();
-			for (int i = 0;i < list.Count ;i++ ) {
-//					this.Add (new PlainIndexItem(i,"satz " + i.ToString()));
+		
+		#endregion
+	}
+	
+	/// <summary>
+	/// This class act's as a store of the original Data
+	/// </summary>
+	
+	public class SharpDataCollection<T> : IList<T>,ITypedList{
+		Collection<T> list = new Collection<T>();
+		Type elementType;
+		
+		public SharpDataCollection(Type elementType)
+		{
+			this.elementType = elementType;
+		}
+
+		public T this[int index] {
+			get {
+				return list[index];
 			}
-			this.OnListChange (new ListChangedEventArgs(ListChangedType.Reset,-1,-1));
-	*/	
+			set {
+				T oldValue = list[index];
+				if (!object.Equals(oldValue, value)) {
+					list[index] = value;
+				}
+			}
+		}
+		
+		public int Count {
+			[DebuggerStepThrough]
+			get {
+				return list.Count;
+			}
+		}
+		
+		public bool IsReadOnly {
+			get {
+				return false;
+			}
+		}
+		
+		public int IndexOf(T item)
+		{
+			return list.IndexOf(item);
+		}
+		
+		public void Insert(int index, T item)
+		{
+			list.Insert(index, item);
+		}
+		
+		public void RemoveAt(int index)
+		{
+//			T item = list[index];
+			list.RemoveAt(index);
+		}
+		
+		public void Add(T item)
+		{
+			list.Add(item);
+		}
+		
+		
+		public void AddRange(IList range)
+		{
+			foreach(T t in range) {
+				Add(t);
+			}
+		}
+	
+		
+		public void Clear(){
+			list = new Collection<T>();
+		}
+		
+		public bool Contains(T item)
+		{
+			return list.Contains(item);
+		}
+		
+		public void CopyTo(T[] array, int arrayIndex)
+		{
+			list.CopyTo(array, arrayIndex);
+		}
+		
+		public bool Remove(T item)
+		{
+			if (list.Remove(item)) {
+				return true;
+			}
+			return false;
+		}
+		#region ITypedList Member
+
+		public PropertyDescriptorCollection GetItemProperties(PropertyDescriptor[] listAccessors){			
+			if (listAccessors != null && listAccessors.Length > 0){
+				Type t = this.elementType;
+				
+				for(int i = 0; i < listAccessors.Length; i++){
+					PropertyDescriptor pd = listAccessors[i];
+					t = (Type) PropertyTypeHash.Instance[t, pd.Name];
+				}
+				// if t is null an empty list will be generated
+				return SharpTypeDescriptor.GetProperties(t);
+			}
+			return SharpTypeDescriptor.GetProperties(elementType);
+		}
+		public string GetListName(PropertyDescriptor[] listAccessors){
+			return elementType.Name;
+		}
+		
+		public static Type GetElementType(IList list, Type parentType, string propertyName)
+		{			
+			SharpDataCollection<T> al = null;
+			object element = null;
+			al = CheckForArrayList(list);
+			if (al == null)
+			{
+				if (list.Count > 0)
+				{
+					element = list[0];
+				}
+			}
+			if (al == null && element == null)
+			{
+				PropertyInfo pi = parentType.GetProperty(propertyName);
+				if (pi != null)
+				{
+					object parentObject = null;
+					try
+					{
+						parentObject = Activator.CreateInstance(parentType);
+					}
+					catch(Exception) {}
+					if (parentObject != null)
+					{
+						list = pi.GetValue(parentObject, null) as IList;
+						al = CheckForArrayList(list);
+					}
+				}
+			}
+			if (al != null)
+			{
+				return al.elementType;
+			}
+			else if (element != null)
+			{
+				return element.GetType();
+			}
+			return null;
+		}
+		
+		private static SharpDataCollection<T> CheckForArrayList(object l)
+		{
+			IList list = l as IList;
+			if (list == null)
+				return null;
+			if (list.GetType().FullName == "System.Collections.ArrayList+ReadOnlyArrayList")
+			{
+				FieldInfo fi = list.GetType().GetField("_list", BindingFlags.NonPublic | BindingFlags.Instance);
+				if (fi != null)
+				{
+					list = (IList) fi.GetValue(list);
+				}
+			}
+			return list as SharpDataCollection<T>;
 		}
 		#endregion
 		
+		[DebuggerStepThrough]
+		public IEnumerator<T> GetEnumerator()
+		{
+			return list.GetEnumerator();
+		}
 		
+		[DebuggerStepThrough]
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return list.GetEnumerator();
+		}
 	}
 }

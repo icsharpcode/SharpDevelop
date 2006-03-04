@@ -140,6 +140,9 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			targetProject.Save();
 			targetProject.Dispose();
 			TreeNode node = ProjectBrowserPad.Instance.SelectedNode;
+			if (node == null) {
+				node = ProjectBrowserPad.Instance.SolutionNode;
+			}
 			while (node != null) {
 				if (node is ISolutionFolderNode) {
 					AddExitingProjectToSolution.AddProject((ISolutionFolderNode)node, targetProject.FileName);

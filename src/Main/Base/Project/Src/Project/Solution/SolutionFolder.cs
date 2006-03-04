@@ -117,9 +117,20 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		static Regex sectionHeaderPattern = new Regex("\\s*ProjectSection\\((?<Name>.*)\\)\\s*=\\s*(?<Type>.*)", RegexOptions.Compiled);
-		public static SolutionFolder ReadFolder(StreamReader sr, string title, string location, string guid)
+		
+		public static SolutionFolder ReadFolder(TextReader sr, string title, string location, string guid)
 		{
 			SolutionFolder newFolder = new SolutionFolder(title, location, guid);
+			ReadProjectSections(sr, newFolder.Sections);
+			return newFolder;
+		}
+		
+		/// <summary>
+		/// Reads project sections from the TextReader until the line "EndProject" is found and saves
+		/// them into the specified sectionList.
+		/// </summary>
+		public static void ReadProjectSections(TextReader sr, ICollection<ProjectSection> sectionList)
+		{
 			while (true) {
 				string line = sr.ReadLine();
 				if (line == null || line.Trim() == "EndProject") {
@@ -127,11 +138,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				Match match = sectionHeaderPattern.Match(line);
 				if (match.Success) {
-					newFolder.Sections.Add(ProjectSection.ReadProjectSection(sr, match.Result("${Name}"), match.Result("${Type}")));
+					sectionList.Add(ProjectSection.ReadProjectSection(sr, match.Result("${Name}"), match.Result("${Type}")));
 				}
 			}
-			return newFolder;
 		}
-		
 	}
 }

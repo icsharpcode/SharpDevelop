@@ -44,12 +44,8 @@ namespace SharpReportCore {
 		/// 
 		public static bool IsSharpReport (XmlElement elem) {
 			bool isOk = false;
-			try {
-				if (elem.Name.Equals (SharpReportCore.GlobalValues.SharpReportString)) {
-			    	isOk = true;
-			 	}
-			} catch (Exception) {
-				throw ;
+			if (elem.Name.Equals (SharpReportCore.GlobalValues.SharpReportString)) {
+				isOk = true;
 			}
 			return isOk;
 		}
@@ -75,13 +71,13 @@ namespace SharpReportCore {
 						// Valid Document
 						return xmlDoc;
 					} else {
-						throw new SharpReportException ("XmlHelper.OpenSharpReport - > No SharpReport");
+						throw new IllegalFileFormatException();
 					}
 				} else {
-					throw new SharpReportException ("XmlHelper.OpenSharpReport - >  No valid DocumentElement");
+					throw new IllegalFileFormatException();
 				}
 			}
-			catch (System.Xml.XmlException) {
+			catch (System.Xml.XmlException ) {
 				IllegalFileFormatException wf = new IllegalFileFormatException("XmlHelper.OpenSharpReport - > Wrong File Format");
 				throw wf;
 			}
@@ -108,19 +104,13 @@ namespace SharpReportCore {
 			XmlNodeList nodeList = element.ChildNodes;
 			
 			foreach (XmlNode node in nodeList) {
-				if (node is XmlElement) {
-					XmlElement elem = (XmlElement) node;
+				XmlElement elem = node as XmlElement;
+				if (elem != null) {
 					if (elem.HasAttribute("value")) {
-						try {
-							reader.SetValue (section,elem.Name,elem.GetAttribute("value"));
-						} catch (Exception e) {
-							MessageBox.Show (elem.Name + " / " + elem.GetAttribute("value"));
-							MessageBox.Show (e.Message);
-						}
-						
+						reader.SetValue (section,elem.Name,elem.GetAttribute("value"));
 					}
-				} else {
-					throw new System.Xml.XmlException ("Report : SetValues Wrong Node in Report");
+				}else {
+					throw new System.Xml.XmlException ();
 				}
 			}
 		}

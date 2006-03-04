@@ -56,6 +56,9 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual(@"blub", FileUtility.GetRelativePath(@"C:\hello\.\..\A", @"C:\.\a\blub"));
 			Assert.AreEqual(@"..\a\blub", FileUtility.GetRelativePath(@"C:\.\.\.\.\HELlo", @"C:\.\blub\.\..\.\a\.\blub"));
 			Assert.AreEqual(@"..\a\blub", FileUtility.GetRelativePath(@"C:\.\.\.\.\heLLo\A\..", @"C:\.\blub\.\..\.\a\.\blub"));
+			
+			// Project filename could be an URL
+			Assert.AreEqual("http://example.com/vdir/", FileUtility.GetRelativePath("C:\\temp", "http://example.com/vdir/"));
 		}
 		
 		[Test]

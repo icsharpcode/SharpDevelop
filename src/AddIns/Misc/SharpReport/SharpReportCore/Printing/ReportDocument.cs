@@ -80,7 +80,7 @@ namespace SharpReportCore {
 		}
 		
 		public void ReportDocumentPrintPage (object sender, PrintPageEventArgs e) {
-//			System.Console.WriteLine("\tReportDocument PrintPage");
+			System.Console.WriteLine("\tReportDocument PrintPage");
 			pageNr ++;
 			ReportPageEventArgs pea = new ReportPageEventArgs (e,pageNr,false,new PointF (0,0));
 			

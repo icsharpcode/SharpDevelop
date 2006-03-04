@@ -100,18 +100,15 @@ namespace SharpReportCore{
 		                                   XmlElement ctrlElem,
 		                                   AbstractColumn item) {
 			
-			try {
-				XmlNodeList nodeList = ctrlElem.ChildNodes;
-				foreach (XmlNode node in nodeList) {
-					if (node is XmlElement) {
-						XmlElement elem = (XmlElement)node;
-						if (elem.HasAttribute("value")) {
-							reader.SetValue (item,elem.Name,elem.GetAttribute("value"));
-						}
+			
+			XmlNodeList nodeList = ctrlElem.ChildNodes;
+			foreach (XmlNode node in nodeList) {
+				XmlElement elem = node as XmlElement;
+				if (elem != null) {
+					if (elem.HasAttribute("value")) {
+						reader.SetValue (item,elem.Name,elem.GetAttribute("value"));
 					}
 				}
-			} catch (Exception ) {
-				throw ;
 			}
 		}
 		
@@ -124,18 +121,18 @@ namespace SharpReportCore{
 		private void BuildReportParameter(XmlFormReader reader,
 		                                  XmlElement parElement,
 		                                  SharpReportCore.AbstractParameter item) {
-			try {
-				XmlNodeList nodeList = parElement.ChildNodes;
-				foreach (XmlNode node in nodeList) {
-					XmlElement elem = (XmlElement)node;
+			
+			XmlNodeList nodeList = parElement.ChildNodes;
+			foreach (XmlNode node in nodeList) {
+				XmlElement elem = node as XmlElement;
+				if (elem != null) {
 					if (elem.HasAttribute("value")) {
 						reader.SetValue ((SqlParameter)item,elem.Name,elem.GetAttribute("value"));
 					}
 				}
-			} catch (Exception) {
-				
 			}
 		}
+		
 		#endregion
 		
 		#region RestoreItems
@@ -152,8 +149,8 @@ namespace SharpReportCore{
 						XmlNodeList nodeList = xmlCol.ChildNodes;
 						this.availableFields.Clear();
 						foreach (XmlNode node in nodeList) {
-							if (node is XmlElement) {
-								XmlElement elem = (XmlElement) node;
+							XmlElement elem = node as XmlElement;
+							if (elem != null) {
 								AbstractColumn abstr = new AbstractColumn();
 								BuildAbstractColumn (xmlReader,elem,abstr);
 								this.availableFields.Add(abstr);
@@ -167,8 +164,8 @@ namespace SharpReportCore{
 						XmlNodeList nodeList = xmlCol.ChildNodes;
 						this.sortingCollection.Clear();
 						foreach (XmlNode node in nodeList) {
-							if (node is XmlElement) {
-								XmlElement elem = (XmlElement) node;
+							XmlElement elem = node as XmlElement;
+							if (elem != null) {
 								SortColumn sc = new SortColumn();
 								BuildAbstractColumn (xmlReader,elem,sc);
 								sortingCollection.Add(sc);
@@ -181,8 +178,8 @@ namespace SharpReportCore{
 						XmlNodeList nodeList = xmlCol.ChildNodes;
 						this.groupingsCollection.Clear();
 						foreach (XmlNode node in nodeList) {
-							if (node is XmlElement) {
-								XmlElement elem = (XmlElement) node;
+							XmlElement elem = node as XmlElement;
+							if (elem != null) {
 								GroupColumn gc = new GroupColumn();
 								BuildAbstractColumn (xmlReader,elem,gc);
 								groupingsCollection.Add(gc);
@@ -195,8 +192,8 @@ namespace SharpReportCore{
 						XmlNodeList nodeList = xmlCol.ChildNodes;
 						this.reportParametersCollection.Clear();
 						foreach( XmlNode node in nodeList) {
-							if (node is XmlElement) {
-								XmlElement elem = (XmlElement) node;
+							XmlElement elem = node as XmlElement;
+							if (elem != null) {
 								SqlParameter parameter = new SqlParameter();
 								BuildReportParameter (xmlReader,
 								                      elem,
@@ -205,10 +202,7 @@ namespace SharpReportCore{
 							}
 						}
 						break;
-					}
-					
-				default:
-					throw new SharpReportException ("Invalid Collection found in ReportSettings:CheckForCollection");
+					}					
 			}
 		}
 		
@@ -218,8 +212,8 @@ namespace SharpReportCore{
 			XmlFormReader xmlFormReader = new XmlFormReader();
 			base.InitDone = false;
 			foreach (XmlNode node in nodeList) {
-				if (node is XmlElement) {
-					XmlElement elem = (XmlElement) node;
+				XmlElement elem = node as XmlElement;
+				if (elem != null) {
 					CheckForCollection (xmlFormReader,elem);
 					
 					if (elem.Name == "PageSettings") {
@@ -228,9 +222,7 @@ namespace SharpReportCore{
 						                                                                   CultureInfo.InvariantCulture);
 						
 					}
-					else if (elem.Name == "DefaultFont") {
-						Font f = XmlFormReader.MakeFont (elem.GetAttribute("value"));
-					}
+
 					else if (elem.HasAttribute("value")) {
 						xmlFormReader.SetValue (this,elem.Name,elem.GetAttribute("value"));
 					}
@@ -526,9 +518,9 @@ namespace SharpReportCore{
 			get {
 				return sortingCollection;
 			}
-			set {
-				sortingCollection = value;
-			}
+//			set {
+//				sortingCollection = value;
+//			}
 		}
 		[Browsable(false)]
 		[XmlIgnoreAttribute]
@@ -539,6 +531,7 @@ namespace SharpReportCore{
 				}
 				return groupingsCollection;
 			}
+			/*
 			set {
 				if (this.groupingsCollection == null) {
 					groupingsCollection = new ColumnCollection();
@@ -548,6 +541,7 @@ namespace SharpReportCore{
 					this.NotifyPropertyChanged();
 				}
 			}
+			*/
 		}
 		
 		[Browsable(false)]

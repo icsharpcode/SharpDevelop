@@ -34,22 +34,30 @@ namespace ICSharpCode.FormsDesigner.Services
 		public ICollection GetTypes(Type baseType, bool excludeGlobalTypes)
 		{
 			List<Type> types = new List<Type>();
-			if (baseType != null) {
-				LoggingService.Debug("TypeDiscoveryService.GetTypes for " + baseType.FullName
-				                     + "excludeGlobalTypes=" + excludeGlobalTypes.ToString());
-				//seek in all assemblies
-				//allow to work designers like columns editor in datagridview
-				// Searching types can cause additional assemblies to be loaded, so we need to use
-				// ToArray to prevent an exception if the collection changes.
-				foreach (Assembly asm in TypeResolutionService.DesignerAssemblies.ToArray()) {
-					AddDerivedTypes(baseType, asm, types);
-				}
-				LoggingService.Debug("TypeDiscoveryService returns " + types.Count + " types");
-				
-				// TODO - Don't look in all assemblies.
-				// Should use the current project and its referenced assemblies
-				// as well as System.Windows.Forms.
+			
+			if (baseType == null) {
+				baseType = typeof(object);
 			}
+			
+			LoggingService.Debug("TypeDiscoveryService.GetTypes for " + baseType.FullName
+			                     + "excludeGlobalTypes=" + excludeGlobalTypes.ToString());
+			//seek in all assemblies
+			//allow to work designers like columns editor in datagridview
+			// Searching types can cause additional assemblies to be loaded, so we need to use
+			// ToArray to prevent an exception if the collection changes.
+			foreach (Assembly asm in TypeResolutionService.DesignerAssemblies.ToArray()) {
+				if (excludeGlobalTypes) {
+					if (FileUtility.IsBaseDirectory(ReflectionProjectContent.GacRootPath, asm.Location)) {
+						continue;
+					}
+				}
+				AddDerivedTypes(baseType, asm, types);
+			}
+			LoggingService.Debug("TypeDiscoveryService returns " + types.Count + " types");
+			
+			// TODO - Don't look in all assemblies.
+			// Should use the current project and its referenced assemblies
+			// as well as System.Windows.Forms.
 			
 			return types;
 		}

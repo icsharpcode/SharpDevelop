@@ -589,7 +589,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (discoveryClientProtocol != null) {
 					try {
 						discoveryClientProtocol.Abort();
-					} catch (NotImplementedException) {};
+					} catch (NotImplementedException) {
+					} catch (ObjectDisposedException) {
+						// Receive this error if the url pointed to a file.
+						// The discovery client will already have closed the file 
+						// so the abort fails.
+					}
 					discoveryClientProtocol.Dispose();
 				}
 				discoveryClientProtocol = new WebServiceDiscoveryClientProtocol();

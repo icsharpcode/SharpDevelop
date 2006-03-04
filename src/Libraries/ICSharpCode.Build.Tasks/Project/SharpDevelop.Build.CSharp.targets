@@ -17,6 +17,7 @@
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(SharpDevelopUse1xCompiler)' == 'true' ">
 		<UseHostCompilerIfAvailable>false</UseHostCompilerIfAvailable>
+		<ErrorReport/>
 		<PlatformTarget/>
 	</PropertyGroup>
 	

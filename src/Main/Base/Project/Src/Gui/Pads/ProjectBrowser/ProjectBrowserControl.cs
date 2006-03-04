@@ -47,6 +47,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public AbstractProjectBrowserTreeNode RootNode {
+			get {
+				return treeView.Nodes[0] as AbstractProjectBrowserTreeNode;
+			}
+		}
+		
 		public ExtTreeView TreeView {
 			get {
 				return treeView;
@@ -140,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			return FindFileNode(treeView.Nodes, fileName);
 		}
 		
-		// stores the fileName of the last selected target so 
+		// stores the fileName of the last selected target so
 		// that we can select it again on opening a folder
 		string lastSelectionTarget;
 		

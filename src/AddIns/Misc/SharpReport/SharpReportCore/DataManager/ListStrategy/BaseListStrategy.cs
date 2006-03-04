@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using SharpReportCore;
 	
 /// <summary>
-/// BaseClass for all datahandling Strategies
+/// BaseClass for all Datahandling Strategies
 /// </summary>
 /// <remarks>
 /// 	created by - Forstmeier Peter
@@ -30,10 +30,9 @@ namespace SharpReportCore {
 		private bool isGrouped;
 		
 		//Index to plain Datat
-		private SharpArrayList indexList;
+		private SharpIndexCollection indexList;
 		private ReportSettings reportSettings;
-		private IHierarchicalArray hierarchicalList;
-		
+
 		
 		private ListChangedEventArgs resetList = new ListChangedEventArgs(ListChangedType.Reset,-1,-1);
 		
@@ -43,20 +42,16 @@ namespace SharpReportCore {
 		#region Constructor
 		
 		protected BaseListStrategy(ReportSettings reportSettings) {
+			if (reportSettings == null) {
+				throw new ArgumentNullException("reportSettings");
+			}
 			this.reportSettings = reportSettings;
-			this.indexList = new SharpArrayList(typeof(BaseComparer),"IndexList");	
+			this.indexList = new SharpIndexCollection("IndexList");
 		}
 		
 		#endregion
 		
 		#region Event's
-		protected void NotifyGroupChange (object source,GroupSeperator groupSeperator) {
-			
-			if (this.GroupChanged != null) {
-				this.GroupChanged (source,new GroupChangedEventArgs(groupSeperator));
-			}
-		}
-			
 		
 		protected void NotifyResetList(){
 			if (this.ListChanged != null) {
@@ -64,10 +59,18 @@ namespace SharpReportCore {
 			}
 		}
 		
+		protected void NotifyGroupChanging (object source,GroupSeperator groupSeperator) {
+			
+			if (this.GroupChanged != null) {
+				this.GroupChanged (source,new GroupChangedEventArgs(groupSeperator));
+			}
+		}
+			
+		
 		#endregion
 		
 
-		public SharpArrayList IndexList {
+		public SharpIndexCollection IndexList {
 			get {
 				return indexList;
 			}
@@ -79,21 +82,87 @@ namespace SharpReportCore {
 				return reportSettings;
 			}
 		}
+		#region Building Groups
+		
+		private static void WriteToIndexFile (SharpIndexCollection destination,BaseComparer comparer) {
+			SortComparer sc = comparer as SortComparer;
+//			if (sc != null) {
+//				System.Console.WriteLine("\t {0} - <{1}>",comparer.ListIndex, comparer.ObjectArray[0].ToString());
+//			} else {
+//				System.Console.WriteLine("Wrong comparer");
+//			}
+			destination.Add(comparer);
+		}
 		
 		
-		protected void CheckSortArray (ArrayList arr,string text){
-//			System.Console.WriteLine("");
+		private static GroupSeperator BuildGroupSeperator (BaseComparer newGroup,int groupLevel) {
+			
+			GroupSeperator seperator = new GroupSeperator (newGroup.ColumnCollection,
+			                                               newGroup.ListIndex,
+			                                               newGroup.ObjectArray,
+			                                               groupLevel);
+			
+//			System.Console.WriteLine("Add Parent <{0}>",seperator.ObjectArray[0].ToString());
+			return seperator;
+		}
+		
+		
+		protected void MakeGroupedIndexList (SharpIndexCollection sourceList) {
+			if (sourceList == null) {
+				throw new ArgumentNullException("sourceList");
+			}
+			int level = 0;
+			this.indexList.Clear();
+			
+			
+			SortComparer compareComparer = null;
+			GroupSeperator parent = null;
+//			System.Console.WriteLine("MakeGroupedIndexList with {0} rows",sourceList.Count);
+			for (int i = 0;i < sourceList.Count ;i++ ) {
+				SortComparer currentComparer = (SortComparer)sourceList[i];
+				/*
+				System.Console.WriteLine("\t\t\t performing nr {0}",i);
+				if (i == 68) {
+					System.Console.WriteLine("last");
+				}
+				*/
+				if (compareComparer != null) {
+					string str1,str2;
+					str1 = currentComparer.ObjectArray[0].ToString();
+					str2 = compareComparer.ObjectArray[0].ToString();
+					int compareVal = str1.CompareTo(str2);
+					
+					if (compareVal != 0) {
+						BaseListStrategy.WriteToIndexFile(parent.GetChildren,compareComparer);
+						parent = BaseListStrategy.BuildGroupSeperator (currentComparer,level);
+						this.indexList.Add(parent);
+						BaseListStrategy.WriteToIndexFile(parent.GetChildren,currentComparer);
+					} else {
+						BaseListStrategy.WriteToIndexFile(parent.GetChildren,compareComparer);
+						
+					}
+				}
+				else {
+					parent = BaseListStrategy.BuildGroupSeperator (currentComparer,level);
+				this.indexList.Add(parent);
+				}		
+				compareComparer = (SortComparer)sourceList[i];
+			}
+			BaseListStrategy.WriteToIndexFile(parent.GetChildren,compareComparer);
+		}
+		
+		#endregion
+		
+		protected static void CheckSortArray (SharpIndexCollection arr,string text){
+
 			System.Console.WriteLine("{0}",text);
-//			string tabs = String.Empty;
 			
 			if (arr != null) {
 				int row = 0;
 				foreach (BaseComparer bc in arr) {
 					GroupSeperator sep = bc as GroupSeperator;
 					if (sep != null) {
-					
-//						System.Console.WriteLine("\t Group change {0} level {1}",sep.ObjectArray[0].ToString(),
-//						                         sep.GroupLevel);
+
 						
 					} else {
 						object [] oarr = bc.ObjectArray;
@@ -107,11 +176,9 @@ namespace SharpReportCore {
 					
 				}
 			}
-			System.Console.WriteLine("----------------");
-			System.Console.WriteLine("");
+			System.Console.WriteLine("-----End of <CheckSortArray>-----------");
+			
 		}
-		
-		
 		
 		#region SharpReportCore.IDataViewStrategy interface implementation
 		
@@ -133,8 +200,7 @@ namespace SharpReportCore {
 			}
 			set {
 				if (value > this.indexList.Count){
-					throw new IndexOutOfRangeException ("There is no row at " +
-					                                    "currentRow: " + value + ".");
+					throw new IndexOutOfRangeException ();
 				}
 				this.indexList.CurrentPosition = value;
 			}
@@ -167,15 +233,10 @@ namespace SharpReportCore {
 			get {
 				return this.isGrouped;
 			}
-			set {
-				this.isGrouped = true;
-			}
 		}
 		
 		protected virtual void Group() {
-			
 			if (this.indexList != null) {
-				this.BuildHierarchicalList (this.indexList);
 				this.isGrouped = true;
 				this.isSorted = true;
 			} else {
@@ -185,108 +246,10 @@ namespace SharpReportCore {
 		}
 		
 		
-		protected IHierarchicalArray HierarchicalList {
-			get {
-				return hierarchicalList;
-			}
-		}
-		
-		
-		
-		
-		
-		private GroupSeperator MakeSeperator (BaseComparer newGroup,int groupLevel) {
-			
-			GroupSeperator seperator = new GroupSeperator (newGroup.ColumnCollection,
-			                                               newGroup.ListIndex,
-			                                               newGroup.ObjectArray,
-			                                               groupLevel);
-//			System.Console.WriteLine("");
-//			System.Console.WriteLine("\t Group change {0} level {1}",seperator.ObjectArray[0].ToString(),
-//			                         seperator.GroupLevel);   
-//			System.Console.WriteLine("");
-			return seperator;                                              
-		}
-		
-		
-		private  IHierarchicalEnumerable BuildHierarchicalList(ArrayList sourceList) {
-			IHierarchicalArray destList = new IHierarchicalArray();
-			IHierarchicalArray childList = new IHierarchicalArray();
-			int level = 0;
-			
-//			System.Console.WriteLine("");
-//			System.Console.WriteLine("BuildHierachicalList");
 	
-//			ColumnCollection grBy =this.reportSettings.GroupColumnsCollection;
-//			string columnName = grBy[level].ColumnName;
-
-			GroupComparer compareComparer = null;
-			GroupSeperator seperator = null;
-			
-			destList.Clear();
-			childList.Clear();
-			
-			for (int i = 0;i < sourceList.Count ;i++ ) {
-				GroupComparer currentComparer = (GroupComparer)sourceList[i];
-				
-				if (compareComparer != null) {
-					string str1,str2;
-					str1 = currentComparer.ObjectArray[0].ToString();
-					str2 = compareComparer.ObjectArray[0].ToString();
-					int compareVal = str1.CompareTo(str2);
-					
-					if (compareVal != 0) {
-
-//						System.Console.WriteLine("child list with {0} entries",childList.Count);
-						
-						seperator.Childs = childList;
-						/*
-						//testcode
-						if (childList != null) {
-							foreach (BaseComparer bc in seperator.Childs) {
-								System.Console.WriteLine("\t {0} {1}",bc.ListIndex,
-								                         bc.ObjectArray[0].ToString());
-							}
-						}
-						// end testCode
-						*/
-						
-						childList = new IHierarchicalArray();
-						seperator = MakeSeperator (currentComparer,level);
-
-						childList.Clear();
-						destList.Add (seperator);
-					}
-				}
-				else {
-//					System.Console.WriteLine("\t\t Start of List {0}",currentComparer.ObjectArray[0].ToString());
-//
-//					System.Console.WriteLine("Group change ");
-					seperator = MakeSeperator (currentComparer,level);
-					childList.Clear();
-					destList.Add (seperator);
-					seperator.Childs = childList;
-				}
-//				System.Console.WriteLine("write {0} {1}",currentComparer.ListIndex,currentComparer.ObjectArray[0].ToString());
-				
-				childList.Add (currentComparer);
-				compareComparer = (GroupComparer)sourceList[i];
-				
-			}
-			// Add the last list
-			seperator.Childs = childList;
-			this.hierarchicalList = destList;
-			return destList;
-		}
-		
-		public IHierarchicalEnumerable  IHierarchicalEnumerable {
-			get {
-				return this.hierarchicalList;
-			}
-		}
 		
 		public virtual void Sort() {
-			
+			this.indexList.Clear();
 		}
 		
 		public  virtual void Reset() {
@@ -298,10 +261,62 @@ namespace SharpReportCore {
 		}
 		
 		public  virtual void Fill(IItemRenderer item) {
+		
+		}
+		
+		public  bool HasChilds {
+			get {
+				if (this.IsGrouped == true) {
+					GroupSeperator gs = (GroupSeperator)this.indexList[this.CurrentRow] as GroupSeperator;
+					if (gs != null) {
+						return (gs.GetChildren.Count > 0);
+					} else {
+						return false;
+					}
+				} else {
+					return false;
+				}
+			}
+		}
+		
+		public SharpIndexCollection ChildRows {
+			get {
+				if (this.IsGrouped == true) {
+					GroupSeperator gs = (GroupSeperator)this.indexList[this.CurrentRow] as GroupSeperator;
+					if (gs != null) {
+						return (gs.GetChildren);
+					} else {
+						return null;
+					}
+				} else {
+					return null;
+				}
+			}
+		}
+		
+		public virtual void Dispose(){
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		
+		~BaseListStrategy(){
+			Dispose(false);
+		}
+		
+		protected virtual void Dispose(bool disposing){
+			if (disposing) {
+				// Free other state (managed objects).
+				if (this.indexList != null) {
+					this.indexList.Clear();
+					this.indexList = null;
+				}
+			}
+			
+			// Release unmanaged resources.
+			// Set large fields to null.
+			// Call Dispose on your base class.
 		}
 		#endregion
 		
 	}
-	
-	
 }

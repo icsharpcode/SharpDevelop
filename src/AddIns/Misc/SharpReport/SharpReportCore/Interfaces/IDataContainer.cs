@@ -26,12 +26,7 @@ namespace SharpReportCore {
  		/// Reads one row of data and fill the
  		/// <see cref="ReportItemCollection"></see>
  		void FetchData (ReportItemCollection collection);
-// 		/// <summary>
-// 		/// set,get the SharpReportCore
-// 		/// </summary>
-// 		object SharpReportCore{
-// 			get;set;
-// 		}
+
  		int Count {
  			get;
  		}

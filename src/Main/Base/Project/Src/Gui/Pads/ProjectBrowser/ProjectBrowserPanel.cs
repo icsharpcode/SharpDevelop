@@ -29,6 +29,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public AbstractProjectBrowserTreeNode RootNode {
+			get {
+				return projectBrowserControl.RootNode;
+			}
+		}
+		
 		public ProjectBrowserControl ProjectBrowserControl {
 			get {
 				return projectBrowserControl;

@@ -13,19 +13,12 @@ using System.Collections;
 
 namespace SharpReportCore {
 	
-	
-	public interface IHierarchicalEnumerable :IEnumerable {
-		IHierarchyData GetHierarchyData (Object enumeratedItem);
-		
-	}
-	
-	
-	
-	
 	public interface IHierarchyData{
 		
-		IHierarchicalEnumerable GetChildren ();
-		IHierarchyData GetParent();
+		SharpIndexCollection GetChildren {
+			get;
+		}
+
 		bool HasChildren {
 			get;
 		}

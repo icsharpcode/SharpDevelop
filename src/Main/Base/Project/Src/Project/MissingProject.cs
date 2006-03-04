@@ -24,9 +24,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public MissingProject(string fileName)
+		public MissingProject(string fileName, string title)
 		{
-			Name     = Path.GetFileNameWithoutExtension(fileName);
+			Name     = title;
 			FileName = fileName;
 			IdGuid = "{" + Guid.NewGuid().ToString() + "}";
 		}

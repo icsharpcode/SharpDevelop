@@ -188,5 +188,47 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "\tDead();\n" +
 			           "}");
 		}
+		
+		[Test]
+		public void IIFExpression()
+		{
+			TestStatement("a = iif(cond, trueEx, falseEx)",
+			              "a = (cond ? trueEx : falseEx);");
+		}
+		
+		[Test]
+		public void IsNothing()
+		{
+			TestStatement("a = IsNothing(ex)",
+			              "a = (ex == null);");
+		}
+		
+		[Test]
+		public void IsNotNothing()
+		{
+			TestStatement("a = Not IsNothing(ex)",
+			              "a = (ex != null);");
+		}
+		
+		[Test]
+		public void CompatibilityMethods()
+		{
+			TestStatement("Beep()",
+			              "Interaction.Beep();");
+		}
+		
+		[Test]
+		public void EqualsCall()
+		{
+			TestStatement("Equals(a, b)",
+			              "Equals(a, b);");
+		}
+		
+		[Test]
+		public void VBConstants()
+		{
+			TestStatement("a = vbYesNo",
+			              "a = Constants.vbYesNo;");
+		}
 	}
 }

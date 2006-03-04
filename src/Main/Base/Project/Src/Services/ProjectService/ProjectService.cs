@@ -296,9 +296,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		static string GetPreferenceFileName(string projectFileName)
 		{
 			string directory = Path.Combine(PropertyService.ConfigDirectory, "preferences");
-			string fileName = projectFileName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(Path.DirectorySeparatorChar, '.');
-			string fullFileName = Path.Combine(directory, fileName + ".xml");
-			return fullFileName;
+			return Path.Combine(directory,
+			                    Path.GetFileName(projectFileName)
+			                    + "." + projectFileName.ToLowerInvariant().GetHashCode().ToString("x")
+			                    + ".xml");
 		}
 		
 		public static void SaveSolutionPreferences()

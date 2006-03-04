@@ -5,7 +5,7 @@ using System.Collections;
 using System.ComponentModel;
 
 namespace SharpReportCore{
-	public interface IDataViewStrategy {
+	public interface IDataViewStrategy:IDisposable{
 		
 		/// <summary>
 		/// Sort the DataSource
@@ -33,15 +33,7 @@ namespace SharpReportCore{
 			get;
 		}
 		
-		/// <summary>
-		/// Build a Hierarchical List of grouped DataRows
-		/// </summary>
-		/// <param name="sourceList"></param>
-		/// <returns></returns>
-
-		IHierarchicalEnumerable  IHierarchicalEnumerable{
-			get;
-		}
+		
 		
 		int Count {
 			get;
@@ -78,8 +70,21 @@ namespace SharpReportCore{
  		bool IsGrouped {
  			get;
  		}
-// 		event ListChangedEventHandler ListChanged;
+		
+ 		/// <summary>
+ 		/// Returns if the current Row has Child's
+ 		/// </summary>
+ 		
+ 		bool HasChilds {
+ 			get;
+ 		}
+ 		
+ 		SharpIndexCollection ChildRows {
+ 			get;
+ 		}
+ 		
  		event EventHandler <ListChangedEventArgs> ListChanged;
+ 		
  		/// <summary>
  		/// Fired each tim the grouping will change, this means theGroupLevel changes up or down
  		/// </summary>

@@ -41,6 +41,7 @@ namespace SharpReportCore {
 		private PreviewControl previewControl;
 		
 		private ConnectionObject connectionObject;
+		private DataManager dataManager;
 		
 		public event EventHandler <SharpReportEventArgs> NoData;
 		public event EventHandler <SharpReportParametersEventArgs> ParametersRequest;
@@ -134,22 +135,18 @@ namespace SharpReportCore {
 			}
 		}
 
-		private DataManager SetupDataContainer (ReportSettings settings) {
-			
+		private void InitDataContainer (ReportSettings settings) {	
+		
 			if (settings.ReportType == GlobalEnums.enmReportType.DataReport) {
 				if (settings.CommandText != null) {
 					try {
 						GrapSqlParameters (settings);
 						
 						if (this.connectionObject != null) {
-							DataManager container = new DataManager(this.connectionObject,
+							this.dataManager = new DataManager(this.connectionObject,
 							                                        settings);
 							
-							if (container.DataBind() == true) {
-								return container;
-							} else {
-								return null;
-							}
+							this.dataManager.DataBind();
 						}else {
 							throw new NullReferenceException("SetupContainer:connectionObject is missing");
 						}
@@ -163,7 +160,6 @@ namespace SharpReportCore {
 					}
 				}
 			}
-			return null;
 		}
 		
 		
@@ -187,6 +183,7 @@ namespace SharpReportCore {
 		
 		
 		protected SharpReportCore.AbstractRenderer SetupStandartRenderer (ReportModel model) {
+			
 			AbstractRenderer abstr = null;
 			switch (model.ReportSettings.ReportType) {
 					//FormSheets reports
@@ -195,9 +192,10 @@ namespace SharpReportCore {
 					break;
 					//Databased reports
 				case GlobalEnums.enmReportType.DataReport :
-					DataManager dataManager = SetupDataContainer (model.ReportSettings);
-					if (dataManager != null) {
-						if (dataManager.DataSource != null) {
+//					DataManager dataManager = SetupDataContainer (model.ReportSettings);
+					InitDataContainer (model.ReportSettings);
+					if (this.dataManager != null) {
+						if (this.dataManager.DataSource != null) {
 							abstr = new RendererFactory().Create (model,dataManager);
 						}
 						
@@ -239,11 +237,12 @@ namespace SharpReportCore {
 			}
 			
 			AbstractRenderer abstr = null;
-			DataManager dataManager = new DataManager (dataTable,model.ReportSettings);
 			
-			if (dataManager != null) {
-				dataManager.DataBind();
-				if (dataManager.DataSource != null) {
+			this.dataManager = new DataManager (dataTable,model.ReportSettings);
+			
+			if (this.dataManager != null) {
+				this.dataManager.DataBind();
+				if (this.dataManager.DataSource != null) {
 					abstr = new RendererFactory().Create (model,dataManager);
 				}
 				
@@ -475,7 +474,7 @@ namespace SharpReportCore {
 			try {
 				model = ModelFromFile (fileName);
 				if (!CheckForPushModel(model)) {
-					throw new SharpReportException ("PrintPushdataReport: No valid ReportModel");
+					throw new MissingModelException();
 				}
 				
 				renderer = this.SetupPushDataRenderer (model,dataTable);
@@ -555,19 +554,25 @@ namespace SharpReportCore {
 		}
 		
 		protected virtual void Dispose(bool disposing){
-			if (disposing) {
-				// Free other state (managed objects).
-				if (this.connectionObject != null) {
-					this.connectionObject.Dispose();
+			try {
+				if (disposing) {
+					// Free other state (managed objects).
+					if (this.connectionObject != null) {
+						this.connectionObject.Dispose();
+					}
+					if (this.dataManager != null) {
+						this.dataManager.Dispose();
+						this.dataManager = null;
+					}
+					if (this.previewControl != null) {
+						this.previewControl.Dispose();
+					}
 				}
-				if (this.previewControl != null) {
-					this.previewControl.Dispose();
-				}
+			} finally {
+				// Release unmanaged resources.
+				// Set large fields to null.
+				// Call Dispose on your base class.
 			}
-			
-			// Release unmanaged resources.
-			// Set large fields to null.
-			// Call Dispose on your base class.
 		}
 		#endregion
 	}

@@ -55,15 +55,33 @@ namespace SharpReportCore {
 			}
 			
 		}
+		#region IDisposeable
+		public void Dispose () {
+			Dispose(true);
+            GC.SuppressFinalize(this);
+		}
 		
-		public void Dispose(){
-			if (this.connection != null) {
-				if (this.connection.State == ConnectionState.Open) {
-					this.connection.Close();
+		~ConnectionObject(){
+			Dispose(false);
+		}
+		
+		protected virtual void Dispose(bool disposing) {
+			try{
+				if (disposing){
+					if (this.connection != null){
+						if (this.connection.State == ConnectionState.Open) {
+							this.connection.Close();
+						}
+						this.connection.Dispose();
+					}
 				}
-				this.connection.Dispose();
+			}
+			finally{
+				connection = null;
 			}
 		}
+
+		#endregion
 		
 	}
 }

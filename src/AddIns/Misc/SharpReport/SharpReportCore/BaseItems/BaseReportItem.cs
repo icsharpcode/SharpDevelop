@@ -98,15 +98,7 @@ namespace SharpReportCore {
 		
 		#endregion
 		
-		
-		#region System.IDisposable interface implementation
-		public virtual void Dispose() {
-			if(Disposed != null){
-				Disposed(this,EventArgs.Empty);
-			}
-		}
-		#endregion
-		
+
 		
 		#region Properties
 		
@@ -167,6 +159,34 @@ namespace SharpReportCore {
 			}
 		}
 		
+		#endregion
+		
+		#region IDisposeable
+		public override void Dispose () {
+			Dispose(true);
+            GC.SuppressFinalize(this);
+		}
+		
+		~BaseReportItem(){
+			Dispose(false);
+		}
+		
+		protected override void Dispose(bool disposing) {
+			try {
+				if (disposing){
+					if (this.font != null){
+						this.font = null;
+						this.font.Dispose();
+					}
+				}
+			} finally {
+				if (this.Disposed != null) {
+					this.Disposed (this,EventArgs.Empty);
+				}
+				base.Dispose(disposing);
+			}
+		}
+
 		#endregion
 		
 	}

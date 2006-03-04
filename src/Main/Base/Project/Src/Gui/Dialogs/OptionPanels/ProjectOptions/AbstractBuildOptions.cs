@@ -192,15 +192,16 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		protected void InitTargetFramework(string defaultTargets, string extendedTargets)
 		{
 			const string TargetFrameworkProperty = "TargetFrameworkVersion";
-			debugInfoBinding = helper.BindStringEnum("targetFrameworkComboBox", TargetFrameworkProperty,
-			                                         "",
-			                                         new StringPair("", "Default (.NET 2.0)"),
-			                                         new StringPair("v1.0", ".NET 1.0"),
-			                                         new StringPair("v1.1", ".NET 1.1"),
-			                                         new StringPair("v2.0", ".NET 2.0"),
-			                                         new StringPair("Mono v1.1", "Mono 1.1"),
-			                                         new StringPair("Mono v2.0", "Mono 2.0"));
-			debugInfoBinding.CreateLocationButton("targetFrameworkLabel");
+			ConfigurationGuiBinding targetFrameworkBinding;
+			targetFrameworkBinding = helper.BindStringEnum("targetFrameworkComboBox", TargetFrameworkProperty,
+			                                               "",
+			                                               new StringPair("", "Default (.NET 2.0)"),
+			                                               new StringPair("v1.0", ".NET 1.0"),
+			                                               new StringPair("v1.1", ".NET 1.1"),
+			                                               new StringPair("v2.0", ".NET 2.0"),
+			                                               new StringPair("Mono v1.1", "Mono 1.1"),
+			                                               new StringPair("Mono v2.0", "Mono 2.0"));
+			targetFrameworkBinding.CreateLocationButton("targetFrameworkLabel");
 			helper.Saved += delegate {
 				// Test if SharpDevelop-Build extensions are needed
 				MSBuildProject project = helper.Project;
