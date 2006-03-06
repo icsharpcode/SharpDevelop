@@ -66,7 +66,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				string[] ver = version.Split('.');
 				
-				return ver.Length == 0 ? -1 : Int32.Parse(ver[0]);
+				return ver.Length == 0 ? -1 : GetVersion(ver[0]);
 			}
 		}
 		
@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				string[] ver = version.Split('.');
 				
-				return ver.Length < 2 ? -1 : Int32.Parse(ver[1]);
+				return ver.Length < 2 ? -1 : GetVersion(ver[1]);
 			}
 		}
 		
@@ -145,6 +145,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			return null;
+		}
+		
+		static int GetVersion(string s)
+		{
+			int version;
+			if (Int32.TryParse(s, out version)) {
+				return version;
+			}
+			return -1;
 		}
 	}
 }
