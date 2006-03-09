@@ -70,6 +70,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void Load()
 		{
+			if (Loading != null) {
+				Loading(this, EventArgs.Empty);
+			}
 			foreach (ConfigurationGuiBinding binding in bindings) {
 				binding.Load();
 			}
@@ -92,6 +95,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			IsDirty = false;
 			return true;
 		}
+		
+		/// <summary>
+		/// This event is raised when another configuration is beginning to load.
+		/// </summary>
+		public event EventHandler Loading;
 		
 		/// <summary>
 		/// This event is raised when another configuration has been loaded.

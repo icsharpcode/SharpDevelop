@@ -141,6 +141,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			debugInfoBinding = helper.BindEnum<DebugSymbolType>("debugInfoComboBox", "DebugType");
 			debugInfoBinding.CreateLocationButton("debugInfoLabel");
+			DebugSymbolsLoaded(null, null);
+			helper.Loaded += DebugSymbolsLoaded;
+			helper.Saved += DebugSymbolsSave;
 			
 			ConfigurationGuiBinding b;
 			b = helper.BindBoolean("registerCOMInteropCheckBox", "RegisterForComInterop", false);
@@ -167,14 +170,29 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			                          new StringPair("Itanium", "${res:Dialog.ProjectOptions.Build.TargetCPU.Itanium}"));
 			b.DefaultLocation = PropertyStorageLocations.PlatformSpecific;
 			b.RegisterLocationButton(advancedLocationButton);
-			
-			helper.Saved += delegate {
-				if ((DebugSymbolType)Get<ComboBox>("debugInfo").SelectedIndex == DebugSymbolType.Full) {
-					helper.SetProperty("DebugSymbols", "true", debugInfoBinding.Location);
-				} else {
-					helper.SetProperty("DebugSymbols", "false", debugInfoBinding.Location);
+		}
+		
+		void DebugSymbolsLoaded(object sender, EventArgs e)
+		{
+			PropertyStorageLocations location;
+			helper.GetProperty("DebugType", "", out location);
+			if (location == PropertyStorageLocations.Unknown) {
+				bool debug = helper.GetProperty("DebugSymbols", false, out location);
+				if (location != PropertyStorageLocations.Unknown) {
+					debugInfoBinding.Location = location;
+					helper.SetProperty("DebugType", debug ? DebugSymbolType.Full : DebugSymbolType.None, location);
+					debugInfoBinding.Load();
 				}
-			};
+			}
+		}
+		
+		void DebugSymbolsSave(object sender, EventArgs e)
+		{
+			if ((DebugSymbolType)Get<ComboBox>("debugInfo").SelectedIndex == DebugSymbolType.Full) {
+				helper.SetProperty("DebugSymbols", "true", debugInfoBinding.Location);
+			} else {
+				helper.SetProperty("DebugSymbols", "false", debugInfoBinding.Location);
+			}
 		}
 		
 		protected void InitTargetFramework(string defaultTargets, string extendedTargets)
