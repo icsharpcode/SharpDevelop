@@ -46,7 +46,7 @@ namespace ICSharpCode.XmlEditor
 		bool wasChangedExternally;
 		static MessageViewCategory category;
 		string stylesheetFileName;
-		
+				
 		public XmlView()
 		{
 			xmlEditor.Dock = DockStyle.Fill;
@@ -120,42 +120,18 @@ namespace ICSharpCode.XmlEditor
 			
 			OutputWindowWriteLine(StringParser.Parse("${res:MainWindow.XmlValidationMessages.ValidationStarted}"));
 
-			try {
-				StringReader stringReader = new StringReader(xmlEditor.Document.TextContent);
-				XmlTextReader xmlReader = new XmlTextReader(stringReader);
-				xmlReader.XmlResolver = null;
-				XmlReaderSettings settings = new XmlReaderSettings();
-				settings.ValidationType = ValidationType.Schema;
-				settings.ValidationFlags = XmlSchemaValidationFlags.None;
-				settings.XmlResolver = null;
-				
-				XmlSchemaCompletionData schemaData = null;
-				try {
-					for (int i = 0; i < XmlSchemaManager.SchemaCompletionDataItems.Count; ++i) {
-						schemaData = XmlSchemaManager.SchemaCompletionDataItems[i];
-						settings.Schemas.Add(schemaData.Schema);
-					}
-				} catch (XmlSchemaException ex) {
-					DisplayValidationError(schemaData.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
-					ShowErrorList();
+			if (IsSchema) {
+				if (!ValidateSchema()) {
 					return;
 				}
-				
-				XmlReader reader = XmlReader.Create(xmlReader, settings);
-				
-				XmlDocument doc = new XmlDocument();
-				doc.Load(reader);
-				
-				OutputWindowWriteLine(String.Empty);
-				OutputWindowWriteLine(StringParser.Parse("${res:MainWindow.XmlValidationMessages.ValidationSuccess}"));
-				
-			} catch (XmlSchemaException ex) {
-				DisplayValidationError(xmlEditor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
-			} catch (XmlException ex) {
-				DisplayValidationError(xmlEditor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
+			} else {
+				if (!ValidateAgainstSchema()) {
+					return;
+				}
 			}
-			
-			ShowErrorList();
+				
+			OutputWindowWriteLine(String.Empty);
+			OutputWindowWriteLine(StringParser.Parse("${res:MainWindow.XmlValidationMessages.ValidationSuccess}"));
 		}
 		
 		/// <summary>
@@ -675,9 +651,13 @@ namespace ICSharpCode.XmlEditor
 		void DisplayValidationError(string fileName, string message, int column, int line)
 		{
 			OutputWindowWriteLine(message);
+			AddTask(fileName, message, column, line, TaskType.Error);
+		}
+		
+		void ShowValidationFailedMessage()
+		{
 			OutputWindowWriteLine(String.Empty);
 			OutputWindowWriteLine(StringParser.Parse("${res:MainWindow.XmlValidationMessages.ValidationFailed}"));
-			AddTask(fileName, message, column, line, TaskType.Error);
 		}
 		
 		/// <summary>
@@ -853,12 +833,9 @@ namespace ICSharpCode.XmlEditor
 			} catch(XsltCompileException ex) {
 				string message = String.Empty;
 				
-				if(ex.InnerException != null)
-				{
+				if(ex.InnerException != null) {
 					message = ex.InnerException.Message;
-				}
-				else
-				{
+				} else {
 					message = ex.ToString();
 				}
 
@@ -870,6 +847,107 @@ namespace ICSharpCode.XmlEditor
 			}
 
 			return false;
+		}
+		
+		/// <summary>
+		/// Validates the XML in the editor against all the schemas in the
+		/// schema manager.
+		/// </summary>
+		bool ValidateAgainstSchema()
+		{
+			try {
+				StringReader stringReader = new StringReader(xmlEditor.Document.TextContent);
+				XmlTextReader xmlReader = new XmlTextReader(stringReader);
+				xmlReader.XmlResolver = null;
+				XmlReaderSettings settings = new XmlReaderSettings();
+				settings.ValidationType = ValidationType.Schema;
+				settings.ValidationFlags = XmlSchemaValidationFlags.None;
+				settings.XmlResolver = null;
+				
+				XmlSchemaCompletionData schemaData = null;
+				try {
+					for (int i = 0; i < XmlSchemaManager.SchemaCompletionDataItems.Count; ++i) {
+						schemaData = XmlSchemaManager.SchemaCompletionDataItems[i];
+						settings.Schemas.Add(schemaData.Schema);
+					}
+				} catch (XmlSchemaException ex) {
+					DisplayValidationError(schemaData.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
+					ShowValidationFailedMessage();
+					ShowErrorList();
+					return false;
+				}
+			
+				XmlReader reader = XmlReader.Create(xmlReader, settings);
+				
+				XmlDocument doc = new XmlDocument();
+				doc.Load(reader);
+				return true;
+				
+			} catch (XmlSchemaException ex) {
+				DisplayValidationError(xmlEditor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
+			} catch (XmlException ex) {
+				DisplayValidationError(xmlEditor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
+			}
+			ShowValidationFailedMessage();
+			ShowErrorList();
+			return false;
+		}
+		
+		/// <summary>
+		/// Assumes the content in the editor is a schema and validates it using
+		/// the XmlSchema class.  This is used instead of validating against the 
+		/// XMLSchema.xsd file since it gives us better error information.
+		/// </summary>
+		bool ValidateSchema()
+		{
+			StringReader stringReader = new StringReader(xmlEditor.Document.TextContent);
+			XmlTextReader xmlReader = new XmlTextReader(stringReader);
+			xmlReader.XmlResolver = null;
+
+			try	{
+				XmlSchema schema = XmlSchema.Read(xmlReader, new ValidationEventHandler(SchemaValidation));
+				schema.Compile(new ValidationEventHandler(SchemaValidation));
+			} catch (XmlSchemaException ex) {
+				DisplayValidationError(xmlEditor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
+			} catch (XmlException ex) {
+				DisplayValidationError(xmlEditor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
+			} finally {
+				xmlReader.Close();
+			}
+			if (TaskService.SomethingWentWrong) {
+				ShowValidationFailedMessage();
+				ShowErrorList();
+				return false;
+			}
+			return true;
+		}
+		
+		void SchemaValidation(object source, ValidationEventArgs e)
+		{
+			if (e.Severity == XmlSeverityType.Error) {
+				DisplayValidationError(xmlEditor.FileName, e.Message, e.Exception.LinePosition - 1, e.Exception.LineNumber - 1);
+			} else {
+				DisplayValidationWarning(xmlEditor.FileName, e.Message, e.Exception.LinePosition - 1, e.Exception.LineNumber - 1);
+			}
+		}
+		
+		/// <summary>
+		/// Displays the validation warning.
+		/// </summary>
+		void DisplayValidationWarning(string fileName, string message, int column, int line)
+		{
+			OutputWindowWriteLine(message);
+			AddTask(fileName, message, column, line, TaskType.Warning);
+		}
+
+		bool IsSchema {
+			get {
+				string extension = Path.GetExtension(xmlEditor.FileName);
+				if (extension != null) {
+					return String.Compare(".xsd", extension, true) == 0;
+				}
+				return false;
+			}
 		}
 	}
 }
