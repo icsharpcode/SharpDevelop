@@ -160,7 +160,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 						}
 					}
 				}
-				int startOffset = offset;//Math.Min(textEditor.Document.TextLength, TextUtilities.FindWordStart(textEditor.Document, offset));
+				offset = Math.Min(offset, textEditor.Document.TextLength);
+				int startOffset = offset;
 				int endOffset   = Math.Max(1, TextUtilities.FindWordEnd(textEditor.Document, offset));
 				textEditor.Document.MarkerStrategy.AddMarker(new VisualError(startOffset, endOffset - startOffset + 1, task));
 				if (refresh) {
