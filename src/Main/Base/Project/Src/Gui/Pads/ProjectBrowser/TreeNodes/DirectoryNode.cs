@@ -487,9 +487,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (Directory != null) {
 				string newPath = Path.Combine(Path.GetDirectoryName(Directory), newName);
 				if (System.IO.Directory.Exists(newPath)) {
-					if (System.IO.Directory.GetFiles(Directory).Length == 0) {
-						System.IO.Directory.Delete(Directory);
-					} else if (System.IO.Directory.GetFiles(newPath).Length == 0) {
+					if (System.IO.Directory.GetFileSystemEntries(newPath).Length == 0) {
 						System.IO.Directory.Delete(newPath);
 						FileService.RenameFile(Directory, newPath, true);
 					} else {
