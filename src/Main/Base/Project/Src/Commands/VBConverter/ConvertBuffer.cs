@@ -41,18 +41,14 @@ namespace ICSharpCode.SharpDevelop.Commands
 					return;
 				}
 				
-				ICSharpCode.NRefactory.PrettyPrinter.VBNetOutputVisitor vbv = new ICSharpCode.NRefactory.PrettyPrinter.VBNetOutputVisitor();
+				VBNetOutputVisitor vbv = new VBNetOutputVisitor();
 				
 				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
 				PreProcessingDirective.CSharpToVB(specials);
 				new CSharpToVBNetConvertVisitor().Visit(p.CompilationUnit, null);
-				SpecialNodesInserter sni = new SpecialNodesInserter(specials,
-				                                                    new SpecialOutputVisitor(vbv.OutputFormatter));
-				vbv.NodeTracker.NodeVisiting += sni.AcceptNodeStart;
-				vbv.NodeTracker.NodeVisited  += sni.AcceptNodeEnd;
-				vbv.NodeTracker.NodeChildrenVisited += sni.AcceptNodeEnd;
-				vbv.Visit(p.CompilationUnit, null);
-				sni.Finish();
+				using (SpecialNodesInserter.Install(specials, vbv)) {
+					vbv.Visit(p.CompilationUnit, null);
+				}
 				
 				FileService.NewFile("Generated.VB", "VBNET", vbv.Text);
 			}

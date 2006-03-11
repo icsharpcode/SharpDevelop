@@ -131,6 +131,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			SpecialNodesInserter sni = new SpecialNodesInserter(specials, new SpecialOutputVisitor(outputVisitor.OutputFormatter));
 			outputVisitor.NodeTracker.NodeVisiting += sni.AcceptNodeStart;
 			outputVisitor.NodeTracker.NodeVisited  += sni.AcceptNodeEnd;
+			outputVisitor.NodeTracker.NodeChildrenVisited += sni.AcceptNodeEnd;
 			return sni;
 		}
 	}

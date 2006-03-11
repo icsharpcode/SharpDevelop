@@ -174,7 +174,7 @@ namespace UpdateAssemblyInfo
 				                                           null, entryInstance, new object[0]);
 				revisionNumber = revision.ToString();
 			} catch (Exception e) {
-				Console.WriteLine("Reading revision number with NSvn failed: " + e.Message);
+				Console.WriteLine("Reading revision number with NSvn failed: " + e.ToString());
 			} finally {
 				Environment.CurrentDirectory = oldWorkingDir;
 			}

@@ -248,7 +248,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static void LoadProject(string fileName)
 		{
-			BeforeLoadSolution();
 			string solutionFile = Path.ChangeExtension(fileName, ".sln");
 			if (File.Exists(solutionFile)) {
 				LoadSolution(solutionFile);
@@ -275,11 +274,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			solution.FixSolutionConfiguration(new IProject[] { project });
 			solution.Save(solutionFile);
 			
-			openSolution = solution;
-			ApplyConfigurationAndReadPreferences();
-			// preferences must be read before OnSolutionLoad is called to enable
-			// the event listeners to read e.Solution.Preferences.Properties
-			OnSolutionLoaded(new SolutionEventArgs(openSolution));
+			LoadSolution(solutionFile);
 		}
 		
 		public static void SaveSolution()

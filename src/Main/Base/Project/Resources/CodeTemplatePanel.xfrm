@@ -93,7 +93,6 @@
         <TabIndex value="1" />
         <Location value="{X=88,Y=8}" />
         <Size value="{Width=228, Height=21}" />
-        <DropDownStyle value="DropDownList" />
     	<RightToLeft value="No" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>

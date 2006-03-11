@@ -77,9 +77,9 @@
 		          class="SharpReportAddin.Commands.ToogleOrder"/>
 	</Path>
 
-	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
-		<MenuItem id       = "neuaddinPad"
-		          label = "ReportGenerator"
+	<Path name = "/Workspace/Tools">
+		<MenuItem id       = "ReportGeneratorPad"
+		          label = "${res:SharpReport.ReportGenerator}"
 		          
 		          shortcut = "Control|Alt|T"
 		          class    = "SharpReportAddin.Commands.RunSharpReport"/>

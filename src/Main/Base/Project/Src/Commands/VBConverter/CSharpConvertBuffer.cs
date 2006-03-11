@@ -36,24 +36,18 @@ namespace ICSharpCode.SharpDevelop.Commands
 				p.Parse();
 
 				if (p.Errors.count > 0) {
-					
 					MessageService.ShowError("Correct source code errors first (only correct source code would convert).");
 					return;
 				}
-				ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor vbv = new ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor();
+				ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor output = new ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor();
 				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
 				PreProcessingDirective.VBToCSharp(specials);
 				new VBNetToCSharpConvertVisitor().Visit(p.CompilationUnit, null);
-				SpecialNodesInserter sni = new SpecialNodesInserter(specials,
-				                                                    new SpecialOutputVisitor(vbv.OutputFormatter));
-				vbv.NodeTracker.NodeVisiting += sni.AcceptNodeStart;
-				vbv.NodeTracker.NodeVisited  += sni.AcceptNodeEnd;
-				vbv.NodeTracker.NodeChildrenVisited += sni.AcceptNodeEnd;
-				vbv.Visit(p.CompilationUnit, null);
-				sni.Finish();
+				using (SpecialNodesInserter.Install(specials, output)) {
+					output.Visit(p.CompilationUnit, null);
+				}
 				
-				
-				FileService.NewFile("Generated.CS", "C#", vbv.Text);
+				FileService.NewFile("Generated.CS", "C#", output.Text);
 			}
 		}
 	}

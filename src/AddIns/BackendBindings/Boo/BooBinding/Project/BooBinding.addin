@@ -102,9 +102,9 @@
 		<!--<DialogPanel id    = "ReferencePaths"
 		             label = "Reference Paths"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>-->
-		<!--<DialogPanel id    = "Signing"
+		<DialogPanel id    = "Signing"
 		             label = "Signing"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>-->
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>
 		<DialogPanel id    = "BuildEvents"
 		             label = "Build Events"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>

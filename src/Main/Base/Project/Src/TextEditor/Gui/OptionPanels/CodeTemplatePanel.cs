@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public override void LoadPanelContents()
 		{
-			templateGroups = CodeTemplateLoader.TemplateGroups;
+			templateGroups = CopyCodeTemplateGroups(CodeTemplateLoader.TemplateGroups);
 
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.CodeTemplatePanel.xfrm"));
 			
@@ -249,6 +249,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				}
 			}
 			IndexChange(this, EventArgs.Empty);
+		}
+		
+		ArrayList CopyCodeTemplateGroups(ArrayList groups)
+		{
+			ArrayList copiedGroups = new ArrayList();
+			foreach (CodeTemplateGroup group in groups) {
+				CodeTemplateGroup newGroup = new CodeTemplateGroup(String.Join(";", group.ExtensionStrings));
+				foreach (CodeTemplate template in group.Templates) {
+					CodeTemplate newTemplate = new CodeTemplate(template.Shortcut, template.Description, template.Text);
+					newGroup.Templates.Add(newTemplate);
+				}
+				copiedGroups.Add(newGroup);
+			}
+			return copiedGroups;
 		}
 	}
 }

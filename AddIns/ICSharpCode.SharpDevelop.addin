@@ -931,10 +931,12 @@
 		<MenuItem id = "SaveAs"
 		          label = "${res:OpenFileTabEventHandler.ContextMenu.SaveAs}"
 		          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.SaveFileAsTab"/>
-		<MenuItem id = "SaveAll"
+		<Condition name = "OpenWindowState" openwindowstate="Dirty" action="Disable">
+			<MenuItem id = "SaveAll"
 		          icon = "Icons.16x16.SaveAllIcon"
 		          label = "${res:XML.MainMenu.FileMenu.SaveAll.Description}"
 		          class = "ICSharpCode.SharpDevelop.Commands.SaveAllFiles"/>
+		</Condition>
 		<MenuItem id = "SaveSeparator" type = "Separator" />
 		<ComplexCondition action="Disable">
 			<Not>
@@ -1254,6 +1256,19 @@
 		
 		<Condition name = "ProjectActive" activeproject="*">
 			<MenuItem id = "Project" label = "${res:XML.MainMenu.ProjectMenu}" type="Menu">
+				<MenuItem id = "ProjectAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu" >
+					<MenuItem id    = "New Item"
+					          label = "${res:ProjectComponent.ContextMenu.NewItem}"
+					          icon  = "Icons.16x16.NewDocumentIcon"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewItemsToProject"/>
+					<MenuItem id    = "Existing Item"
+					          label = "${res:ProjectComponent.ContextMenu.ExistingItem}"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject"/>
+					<MenuItem id    = "NewFolder"
+					          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
+					          icon  = "Icons.16x16.NewFolderIcon"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewFolderToProject"/>
+				</MenuItem>
 				<MenuItem id    = "AddReference"
 				          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
