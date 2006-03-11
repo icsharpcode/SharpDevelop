@@ -28,9 +28,6 @@ class MainClass
 				Console.WriteLine("Working directory must be SharpDevelop\\src or SharpDevelop\\bin!");
 				return 2;
 			}
-			string appDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			File.Copy(@"AddIns\Misc\SubversionAddIn\RequiredLibraries\msvcr70.dll", Path.Combine(appDir, "msvcr70.dll"), true);
-			File.Copy(@"AddIns\Misc\SubversionAddIn\RequiredLibraries\msvcp70.dll", Path.Combine(appDir, "msvcp70.dll"), true);
 			if (args.Length == 1 && args[0] == "--REVISION") {
 				CreateRevisionFile();
 			}

@@ -105,13 +105,29 @@
     </ProjectReference>
     <Content Include="..\RequiredLibraries\msvcp70.dll">
       <Link>msvcp70.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\RequiredLibraries\msvcr70.dll">
       <Link>msvcr70.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\TortoiseSvnNotFoundForm.xfrm" />
+    <Content Include="..\RequiredLibraries\LIBAPR.DLL">
+      <Link>LIBAPR.DLL</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\RequiredLibraries\LibAprIconv.Dll">
+      <Link>LibAprIconv.Dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\RequiredLibraries\LibAprUtil.Dll">
+      <Link>LibAprUtil.Dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\RequiredLibraries\LibDB42.dll">
+      <Link>LibDB42.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

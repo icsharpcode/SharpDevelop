@@ -53,5 +53,31 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\LIBAPR.DLL">
+      <Link>LIBAPR.DLL</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\LibAprIconv.Dll">
+      <Link>LibAprIconv.Dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\LibAprUtil.Dll">
+      <Link>LibAprUtil.Dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\LibDB42.dll">
+      <Link>LibDB42.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\msvcp70.dll">
+      <Link>msvcp70.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\msvcr70.dll">
+      <Link>msvcr70.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
