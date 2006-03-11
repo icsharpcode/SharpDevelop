@@ -60,6 +60,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public SolutionFolderNode(Solution solution, SolutionFolder folder)
 		{
 			sortOrder = 0;
+			canLabelEdit = true;
 			
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionFolderNode";
 			this.solution  = solution;

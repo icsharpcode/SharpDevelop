@@ -244,11 +244,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			sortOrder = 1;
 			SetIcon();
+			canLabelEdit = true;
 		}
 		
 		public DirectoryNode(string directory) : this(directory, FileNodeStatus.None)
 		{
 			sortOrder = 1;
+			canLabelEdit = true;
 		}
 		CustomNode removeMe = null;
 		public DirectoryNode(string directory, FileNodeStatus fileNodeStatus)
@@ -262,6 +264,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			removeMe.AddTo(this);
 			
 			SetIcon();
+			canLabelEdit = true;
 		}
 		
 		/// <summary>
@@ -480,6 +483,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				return;
 			}
 			if (!FileService.CheckDirectoryName(newName)) {
+				return;
+			}
+			if (String.Compare(Text, newName, true) == 0) {
 				return;
 			}
 			string oldText = Text;

@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		string         fileName       = String.Empty;
 		FileNodeStatus fileNodeStatus = FileNodeStatus.None;
 		ProjectItem    projectItem    = null;
-		
+	
 		public override bool Visible {
 			get {
 				return ShowAll || fileNodeStatus != FileNodeStatus.None;
@@ -112,11 +112,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			autoClearNodes = false;
 			SetIcon();
+			canLabelEdit = true;
 		}
 		
 		public FileNode(string fileName) : this (fileName, FileNodeStatus.None)
 		{
 			sortOrder = 5;
+			canLabelEdit = true;
 		}
 		
 		public override void ActivateItem()

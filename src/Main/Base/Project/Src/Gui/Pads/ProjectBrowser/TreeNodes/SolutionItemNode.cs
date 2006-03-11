@@ -35,6 +35,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public SolutionItemNode(Solution solution, SolutionItem item)
 		{
 			sortOrder = 2;
+			canLabelEdit = true;
 			
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionItemNode";
 			

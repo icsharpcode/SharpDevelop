@@ -39,6 +39,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.solution = solution;
 			Text = "Solution " + solution.Name;
 			autoClearNodes = false;
+			canLabelEdit = true;
 			
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode";
 			

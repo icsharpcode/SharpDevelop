@@ -30,17 +30,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		string                  toolbarAddinTreePath     = null;
 		
 		protected bool autoClearNodes = true;
-		protected bool canLabelEdited = true;
-		
-		/// <returns>
-		/// True, if this node can be label edited, false otherwise.
-		/// </returns>
-		public bool CanLabelEdited {
-			get {
-				return canLabelEdited;
-			}
-		}
-		
 		
 		public virtual string ToolbarAddinTreePath {
 			get {
