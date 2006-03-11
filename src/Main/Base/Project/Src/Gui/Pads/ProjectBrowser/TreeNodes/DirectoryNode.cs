@@ -667,6 +667,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnableCopy {
 			get {
+				if (IsEditing) {
+					return false;
+				}
 				return true;
 			}
 		}
@@ -677,6 +680,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnableCut {
 			get {
+				if (IsEditing) {
+					return false;
+				}
 				return true;
 			}
 		}

@@ -216,6 +216,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnableCopy {
 			get {
+				if (base.IsEditing) {
+					return false;
+				}
 				return true;
 			}
 		}
@@ -227,6 +230,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnableCut {
 			get {
+				if (IsEditing) {
+					return false;
+				}
 				return true;
 			}
 		}
@@ -240,6 +246,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnablePaste {
 			get {
+				if (IsEditing) {
+					return false;
+				}
 				return ((ExtTreeNode)Parent).EnablePaste;
 			}
 		}
