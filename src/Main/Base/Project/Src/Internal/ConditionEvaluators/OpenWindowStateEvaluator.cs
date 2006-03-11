@@ -66,8 +66,8 @@ namespace ICSharpCode.Core
 				return false;
 			}
 			
-			windowState   = condition.Properties.Get("windowstate", WindowState.None);
-			nowindowState = condition.Properties.Get("nowindowstate", WindowState.None);
+			windowState   = condition.Properties.Get("openwindowstate", WindowState.None);
+			nowindowState = condition.Properties.Get("noopenwindowstate", WindowState.None);
 		
 			
 			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
