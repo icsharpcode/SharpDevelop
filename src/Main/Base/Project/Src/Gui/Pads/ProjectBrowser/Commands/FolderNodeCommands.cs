@@ -57,6 +57,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 								continue;
 							string virtualFullName = Path.Combine(project.Directory, fileItem.VirtualName);
 							if (FileUtility.IsBaseDirectory(directoryName, virtualFullName)) {
+								if (item.ItemType == ItemType.Folder && FileUtility.IsEqualFileName(directoryName, virtualFullName)) {
+									continue;
+								}
 								LoggingService.Debug("Found file " + virtualFullName);
 								FileProjectItem newItem = new FileProjectItem(node.Project, fileItem.ItemType);
 								if (FileUtility.IsBaseDirectory(directoryName, fileItem.FileName)) {
