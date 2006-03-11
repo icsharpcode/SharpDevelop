@@ -575,7 +575,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (File.Exists(clipboardObject.FileName)) {
 					CopyFileHere(clipboardObject.FileName, clipboardObject.PerformMove);
 					if (clipboardObject.PerformMove) {
-						dataObject.SetData(null);
+						Clipboard.Clear();
 					}
 				}
 			} else if (dataObject.GetDataPresent(typeof(DirectoryNode))) {
@@ -584,7 +584,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (System.IO.Directory.Exists(clipboardObject.FileName)) {
 					CopyDirectoryHere(clipboardObject.FileName, clipboardObject.PerformMove);
 					if (clipboardObject.PerformMove) {
-						dataObject.SetData(null);
+						Clipboard.Clear();
 					}
 				}
 			}
