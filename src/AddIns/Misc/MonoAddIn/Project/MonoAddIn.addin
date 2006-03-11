@@ -33,4 +33,16 @@
 		              class="ICSharpCode.MonoAddIn.AddMonoReferenceCommand"/>
 		</Condition>
 	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Project">
+		<Condition name="IsMonoInstalled" action="Exclude">
+			<Condition name = "ProjectActive" activeproject="*">
+				<MenuItem id="AddMonoReference"
+		    	          label="Add Mono Reference"
+		 		          insertafter="AddReference"
+				          insertbefore="AddWebReference"
+				          class="ICSharpCode.MonoAddIn.AddMonoReferenceCommand"/>
+			</Condition>
+		</Condition>
+	</Path>
 </AddIn>
