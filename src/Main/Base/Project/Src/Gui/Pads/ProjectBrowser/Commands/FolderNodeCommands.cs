@@ -24,6 +24,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 {
 	public class AddExistingItemsToProject : AbstractMenuCommand
 	{
+		enum ReplaceExistingFile {
+			Yes = 0,
+			YesToAll = 1,
+			No = 2,
+			Cancel = 3
+		}
+		
 		int GetFileFilterIndex(IProject project, string[] fileFilters)
 		{
 			if (project != null) {
@@ -102,22 +109,21 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(fileName));
 			if (!FileUtility.IsEqualFileName(fileName, copiedFileName)) {
 				File.Copy(fileName, copiedFileName, true);
-				FileNode newNode = new FileNode(copiedFileName);
-				newNode.AddTo(node);
-				if (includeInProject) {
-					return IncludeFileInProject.IncludeFileNode(newNode);
-				}
-			} else if (includeInProject) {
+			} 
+			if (includeInProject) {
 				FileNode fileNode;
 				foreach (TreeNode childNode in node.AllNodes) {
 					if (childNode is FileNode) {
 						fileNode = (FileNode)childNode;
 						if (FileUtility.IsEqualFileName(fileNode.FileName, copiedFileName)) {
-							return IncludeFileInProject.IncludeFileNode(fileNode);
+							if (fileNode.FileNodeStatus == FileNodeStatus.Missing) {
+								fileNode.FileNodeStatus = FileNodeStatus.InProject;
+							}
+							return fileNode.ProjectItem as FileProjectItem;
 						}
 					}
 				}
-				fileNode = new FileNode(fileName);
+				fileNode = new FileNode(copiedFileName);
 				fileNode.AddTo(node);
 				return IncludeFileInProject.IncludeFileNode(fileNode);
 			}
@@ -208,7 +214,24 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 							return;
 						}
 					}
+					bool replaceAll = false;
 					foreach (KeyValuePair<string, string> pair in fileNames) {
+						copiedFileName = Path.Combine(node.Directory, Path.GetFileName(pair.Key));
+						if (!replaceAll && File.Exists(copiedFileName) && !FileUtility.IsEqualFileName(pair.Key, copiedFileName)) {
+							ReplaceExistingFile res = (ReplaceExistingFile)MessageService.ShowCustomDialog(fdiag.Title, "A file with the name '" + Path.GetFileName(pair.Key) + "' already exists. Do you want to replace it?",
+						    	0, 3,
+						    	"${res:Global.Yes}",
+								"Yes to All",
+								"${res:Global.No}",
+								"${res:Global.CancelButtonText}");
+							if (res == ReplaceExistingFile.YesToAll) {
+								replaceAll = true;
+							} else if (res == ReplaceExistingFile.No) {
+								continue;
+							} else if (res == ReplaceExistingFile.Cancel) {
+								break;
+							}
+						}
 						FileProjectItem item = CopyFile(pair.Key, node, true);
 						if (item != null) {
 							item.DependentUpon = pair.Value;
