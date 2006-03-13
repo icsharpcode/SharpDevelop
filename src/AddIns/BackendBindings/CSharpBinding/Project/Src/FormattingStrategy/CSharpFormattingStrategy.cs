@@ -347,7 +347,7 @@ namespace CSharpBinding.FormattingStrategy
 									sb.Append("\"></param>");
 								}
 							}
-							if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void") {
+							if (method.ReturnType != null && !method.IsConstructor && method.ReturnType.FullyQualifiedName != "System.Void") {
 								sb.Append("\n");
 								sb.Append(indentation);
 								sb.Append("/// <returns></returns>");
