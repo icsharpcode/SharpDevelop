@@ -57,6 +57,7 @@ namespace ICSharpCode.FormsDesigner
 		Panel p = new Panel();
 		DesignSurface designSurface;
 		bool disposing;
+		string activeTabName = String.Empty;
 		
 		IDesignerLoaderProvider loaderProvider;
 		IDesignerGenerator generator;
@@ -340,6 +341,7 @@ namespace ICSharpCode.FormsDesigner
 			Reload();
 			IsFormsDesignerVisible = true;
 			AddSideBars();
+			SetActiveSideTab();
 			UpdatePropertyPad();
 		}
 		
@@ -361,6 +363,10 @@ namespace ICSharpCode.FormsDesigner
 			PropertyPad.PropertyValueChanged -= PropertyValueChanged;
 			propertyContainer.Clear();
 			IsFormsDesignerVisible = false;
+			activeTabName = String.Empty;
+			if (SharpDevelopSideBar.SideBar.ActiveTab != null && ToolboxProvider.SideTabs.Contains(SharpDevelopSideBar.SideBar.ActiveTab)) {
+				activeTabName = SharpDevelopSideBar.SideBar.ActiveTab.Name;
+			}
 			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
 				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
 					return;
@@ -600,6 +606,20 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 			SharpDevelopSideBar.SideBar.Refresh();
+		}
+		
+		void SetActiveSideTab()
+		{
+			if (activeTabName.Length == 0) {
+				return;
+			}
+			
+			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
+				if (activeTabName == tab.Name) {
+					SharpDevelopSideBar.SideBar.ActiveTab = tab;
+					return;
+				}
+			}
 		}
 	}
 }
