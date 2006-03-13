@@ -39,6 +39,7 @@ namespace ResourceEditor
 		
 		UndoStack undoStack = null;
 		bool writeProtected = false;
+		int editListViewItemIndex = -1;
 		
 		public event EventHandler Changed;
 		
@@ -73,12 +74,16 @@ namespace ResourceEditor
 			}
 		}
 		
+		public bool IsEditing {
+			get {
+				return editListViewItemIndex != -1;
+			}
+		}
+		
 		public ResourceList(ResourceEditorControl editor)
 		{
 			undoStack        = new UndoStack();
-			
-			
-			
+						
 			name.Text     = ResourceService.GetString("Global.Name");
 			name.Width    = 250;
 			
@@ -109,9 +114,6 @@ namespace ResourceEditor
 			images.Images.Add(ResourceService.GetIcon("Icons.16x16.ResourceEditor.bin"));
 			images.Images.Add(ResourceService.GetIcon("Icons.16x16.ResourceEditor.obj"));
 			SmallImageList = images;
-			
-			AfterLabelEdit += new LabelEditEventHandler(afterLabelEdit);
-			
 			
 			ContextMenuStrip = MenuService.CreateContextMenu(editor, "/SharpDevelop/ResourceEditor/ResourceList/ContextMenu");
 		}
@@ -197,8 +199,27 @@ namespace ResourceEditor
 			}
 		}
 		
-		void afterLabelEdit(object sender, LabelEditEventArgs e)
+		public void InitializeListView()
 		{
+			BeginUpdate();
+			Items.Clear();
+			
+			foreach (KeyValuePair<string, ResourceItem> entry in resources) {
+				ResourceItem item = entry.Value;
+				
+				string tmp  = item.ToString();
+				string type = item.ResourceValue.GetType().FullName;
+				
+				ListViewItem lv = new ListViewItem(new String[] {item.Name, type, tmp}, item.ImageIndex);
+				Items.Add(lv);
+			}
+			EndUpdate();
+		}
+		
+		protected override void OnAfterLabelEdit(LabelEditEventArgs e)
+		{
+			editListViewItemIndex = -1;
+			
 			if (writeProtected) {
 				e.CancelEdit = true;
 				return;
@@ -226,21 +247,12 @@ namespace ResourceEditor
 			OnChanged();
 		}
 		
-		public void InitializeListView()
+		protected override void OnBeforeLabelEdit(LabelEditEventArgs e)
 		{
-			BeginUpdate();
-			Items.Clear();
-			
-			foreach (KeyValuePair<string, ResourceItem> entry in resources) {
-				ResourceItem item = entry.Value;
-				
-				string tmp  = item.ToString();
-				string type = item.ResourceValue.GetType().FullName;
-				
-				ListViewItem lv = new ListViewItem(new String[] {item.Name, type, tmp}, item.ImageIndex);
-				Items.Add(lv);
+			base.OnBeforeLabelEdit(e);
+			if (!e.CancelEdit) {
+				editListViewItemIndex = e.Item;
 			}
-			EndUpdate();
 		}
 	}
 }
