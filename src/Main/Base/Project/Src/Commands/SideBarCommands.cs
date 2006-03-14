@@ -35,9 +35,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
 			AxSideTabItem item = sideBar.ActiveTab.ChoosedItem;
-			
-			
-			
 			if (item != null && MessageBox.Show(StringParser.Parse(ResourceService.GetString("SideBarComponent.ContextMenu.DeleteTabItemQuestion"), new string[,] { {"TabItem", item.Name}}),
 			                    ResourceService.GetString("Global.QuestionText"), 
 			                    MessageBoxButtons.YesNo, 
@@ -128,15 +125,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
 			AxSideTab selectedSideTab = sideBar.GetTabAt(sideBar.SideBarMousePosition.X, sideBar.SideBarMousePosition.Y);
-			
-			
-			
 			if (MessageBox.Show(StringParser.Parse(ResourceService.GetString("SideBarComponent.ContextMenu.DeleteTabHeaderQuestion"), new string[,] { {"TabHeader", selectedSideTab.Name}}),
 			                    ResourceService.GetString("Global.QuestionText"), 
 			                    MessageBoxButtons.YesNo, 
 			                    MessageBoxIcon.Question,
 			                    MessageBoxDefaultButton.Button2) == DialogResult.Yes) {
-				sideBar.Tabs.Remove(selectedSideTab);
+				sideBar.DeleteSideTab(selectedSideTab);
 				sideBar.Refresh();
 			}
 		} 
@@ -156,11 +150,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
-			int index = sideBar.ActiveTab.Items.IndexOf(sideBar.ActiveTab.SelectedItem);
+			int index = sideBar.ActiveTab.Items.IndexOf(sideBar.ActiveTab.ChoosedItem);
 			if (index > 0) {
-				AxSideTabItem item = sideBar.ActiveTab.Items[index];
-				sideBar.ActiveTab.Items[index] = sideBar.ActiveTab.Items[index - 1];
-				sideBar.ActiveTab.Items[index - 1] = item;
+				sideBar.ActiveTab.Exchange(index -1, index);
 				sideBar.Refresh();
 			}
 		}
@@ -171,11 +163,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
-			int index = sideBar.ActiveTab.Items.IndexOf(sideBar.ActiveTab.SelectedItem);
+			int index = sideBar.ActiveTab.Items.IndexOf(sideBar.ActiveTab.ChoosedItem);
 			if (index >= 0 && index < sideBar.ActiveTab.Items.Count - 1) {
-				AxSideTabItem item = sideBar.ActiveTab.Items[index];
-				sideBar.ActiveTab.Items[index] = sideBar.ActiveTab.Items[index + 1];
-				sideBar.ActiveTab.Items[index + 1] = item;
+				sideBar.ActiveTab.Exchange(index, index + 1);
 				sideBar.Refresh();
 			}
 		} 

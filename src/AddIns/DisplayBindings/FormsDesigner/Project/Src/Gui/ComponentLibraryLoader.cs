@@ -87,11 +87,12 @@ namespace ICSharpCode.FormsDesigner.Gui
 		protected ToolComponent()
 		{
 		}
-		public ToolComponent(string fullName, ComponentAssembly assembly)
+		public ToolComponent(string fullName, ComponentAssembly assembly, bool enabled)
 		{
 			this.fullName = fullName;
 			this.assemblyName = assembly.Name;
-			this.hintPath     = assembly.HintPath;
+			this.hintPath = assembly.HintPath;
+			this.isEnabled = enabled;
 		}
 		public string FileName {
 			get {
@@ -239,6 +240,57 @@ namespace ICSharpCode.FormsDesigner.Gui
 			return newCategories;
 		}
 		
+		public void RemoveCategory(string name)
+		{
+			foreach (Category category in categories) {
+				if (category.Name == name) {
+					categories.Remove(category);
+					break;
+				}
+			}
+		}
+		
+		public void DisableToolComponent(string categoryName, string fullName)
+		{
+			foreach (Category category in categories) {
+				if (category.Name == categoryName) {
+					foreach (ToolComponent component in category.ToolComponents) {
+						if (component.FullName == fullName) {
+							component.IsEnabled = false;
+							return;
+						}
+					}
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Swaps the order of the two specified tool components
+		/// </summary>
+		public void ExchangeToolComponents(string categoryName, string fullName1, string fullName2)
+		{
+			foreach (Category category in categories) {
+				if (category.Name == categoryName) {
+					int index1 = -1;
+					int index2 = -1;
+					for (int i = 0; i < category.ToolComponents.Count; ++i) {
+						ToolComponent component = (ToolComponent)category.ToolComponents[i];
+						if (component.FullName == fullName1) {
+							index1 = i;
+						} else if (component.FullName == fullName2) {
+							index2 = i;
+						}
+						
+						if (index1 != -1 && index2 != -1) {
+							ToolComponent component1 = (ToolComponent)category.ToolComponents[index1];
+							category.ToolComponents[index1] = category.ToolComponents[index2];
+							category.ToolComponents[index2] = component1;
+							return;
+						}
+					}
+				}
+			}
+		}
 		
 		public bool LoadToolComponentLibrary(string fileName)
 		{
@@ -273,7 +325,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 						Category newCategory = new Category(name);
 						foreach (XmlNode componentNode in node.ChildNodes) {
 							ToolComponent newToolComponent = new ToolComponent(componentNode.Attributes["class"].InnerText,
-							                                                   (ComponentAssembly)assemblies[Int32.Parse(componentNode.Attributes["assembly"].InnerText)]);
+								(ComponentAssembly)assemblies[Int32.Parse(componentNode.Attributes["assembly"].InnerText)],
+								IsEnabled(componentNode.Attributes["enabled"]));
 							newCategory.ToolComponents.Add(newToolComponent);
 						}
 						categories.Add(newCategory);
@@ -380,6 +433,17 @@ namespace ICSharpCode.FormsDesigner.Gui
 				}
 			}
 			doc.Save(fileName);
+		}
+		
+		bool IsEnabled(XmlAttribute attribute)
+		{
+			if (attribute != null && attribute.InnerText != null) {
+				bool enabled = true;
+				if (Boolean.TryParse(attribute.InnerText, out enabled)) {
+					return enabled;
+				}
+			}
+			return true;
 		}
 	}
 }

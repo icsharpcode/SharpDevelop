@@ -27,6 +27,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		object tag;
 		SideTabItemStatus sideTabItemStatus;
 		Bitmap icon;
+		bool canBeRenamed = true;
+		bool canBeDeleted = true;
 		
 		public Bitmap Icon {
 			get {
@@ -61,6 +63,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			set {
 				tag = value;
+			}
+		}
+		
+		public bool CanBeRenamed {
+			get {
+				return canBeRenamed;
+			}
+			set {
+				canBeRenamed = value;
+			}
+		}
+		
+		public bool CanBeDeleted {
+			get {
+				return canBeDeleted;
+			}
+			set {
+				canBeDeleted = value;
 			}
 		}
 		

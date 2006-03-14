@@ -38,6 +38,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		///<summary>create a tabitem from a toolboxitem. It init Icon and name from the tag</summary>
 		public SideTabItemDesigner(ToolboxItem tag) : base(tag.DisplayName, tag)
 		{
+			CanBeRenamed = false;
 			this.Icon = tag.Bitmap;
 			ReloadToolBox();
 		}
@@ -45,6 +46,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		///<summary>create a tabitem from a toolboxitem. It init Icon from the tag</summary>
 		public SideTabItemDesigner(string name, ToolboxItem tag) : base(name, tag)
 		{
+			CanBeRenamed = false;
 			this.Icon = tag.Bitmap;
 			ReloadToolBox();
 		}
@@ -52,15 +54,14 @@ namespace ICSharpCode.FormsDesigner.Gui
 		///<summary>create a default tabitem : a pointer icon with an empty toolboxitem</summary>
 		public SideTabItemDesigner() : base("Pointer")
 		{
-			
-			
-			
+			CanBeRenamed = false;
+			CanBeDeleted = false;
 			Bitmap pointerBitmap = new Bitmap(IconService.GetBitmap("Icons.16x16.FormsDesigner.PointerIcon"), 16, 16);
 //			ToolboxItem toolboxItemPointer = new ToolboxItem();
 //			toolboxItemPointer.Bitmap      = pointerBitmap;
 //			toolboxItemPointer.DisplayName = "Pointer";
 			this.Icon = pointerBitmap;
-			this.Tag  = null; //toolboxItemPointer;
+			this.Tag  = null;
 			ReloadToolBox();
 		}
 		

@@ -1005,15 +1005,17 @@
 			          class = "ICSharpCode.SharpDevelop.Commands.SideBarDeleteTabHeader"/>
 		</Condition>
 		
-		<MenuItem id    = "RenameTab"
-		          label = "${res:SideBarComponent.ContextMenu.RenameTab}"
-		          class = "ICSharpCode.SharpDevelop.Commands.SideBarRenameTabHeader"/>
-		
+		<Condition name = "Ownerstate" ownerstate="CanBeRenamed" action="Disable">
+			<MenuItem id    = "RenameTab"
+		              label = "${res:SideBarComponent.ContextMenu.RenameTab}"
+		              class = "ICSharpCode.SharpDevelop.Commands.SideBarRenameTabHeader"/>
+		</Condition>
+			
 		<MenuItem id = "Separator1" type = "Separator" />
 		<MenuItem id    = "AddTab"
 		          label = "${res:SideBarComponent.ContextMenu.AddTab}"
 		          class = "ICSharpCode.SharpDevelop.Commands.SideBarAddTabHeader"/>
-		
+
 		<MenuItem id = "Separator2" type = "Separator" />
 		<Condition name = "Ownerstate" ownerstate="CanMoveUp" action="Disable">
 			<MenuItem id    = "MoveTabUp"
@@ -1031,25 +1033,29 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/SharpDevelopSideBar/SideTab/ContextMenu">
-		<MenuItem id = "RenameTabItem"
-		          label = "${res:SideBarComponent.ContextMenu.RenameTabItem}"
-		          class = "ICSharpCode.SharpDevelop.Commands.SideBarRenameTabItem" />
-		<MenuItem id = "DeleteTabItem"
-		          label = "${res:SideBarComponent.ContextMenu.DeleteTabItem}"
-		          class = "ICSharpCode.SharpDevelop.Commands.SideBarDeleteTabItem"/>
-		<Condition name = "Ownerstate" ownerstate="TabCanBeDeleted">
-			<MenuItem id = "Separator1" type = "Separator" />
-			<Condition name = "Ownerstate" ownerstate="CanMoveItemUp" action="Disable">
-				<MenuItem id = "MoveItemUp"
-				          label = "${res:SideBarComponent.ContextMenu.MoveTabItemUp}"
-				          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveActiveItemUp"/>
-			</Condition>
-			
-			<Condition name = "Ownerstate" ownerstate="CanMoveItemDown" action="Disable">
-				<MenuItem id = "MoveItemDown"
-				          label = "${res:SideBarComponent.ContextMenu.MoveTabItemDown}"
-				          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveActiveItemDown"/>
-			</Condition>
+		<Condition name = "Ownerstate" ownerstate="TabCanBeDeleted" action="Disable">
+			<MenuItem id = "DeleteTabItem"
+		              label = "${res:SideBarComponent.ContextMenu.DeleteTabItem}"
+		              class = "ICSharpCode.SharpDevelop.Commands.SideBarDeleteTabItem"/>
+		</Condition>
+		
+		<Condition name = "Ownerstate" ownerstate="CanBeRenamed" action="Disable">
+			<MenuItem id = "RenameTabItem"
+		              label = "${res:SideBarComponent.ContextMenu.RenameTabItem}"
+		              class = "ICSharpCode.SharpDevelop.Commands.SideBarRenameTabItem" />
+		</Condition>
+		
+		<MenuItem id = "Separator1" type = "Separator" />
+		<Condition name = "Ownerstate" ownerstate="CanMoveItemUp" action="Disable">
+			<MenuItem id = "MoveItemUp"
+				      label = "${res:SideBarComponent.ContextMenu.MoveTabItemUp}"
+				      class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveActiveItemUp"/>
+		</Condition>
+		
+		<Condition name = "Ownerstate" ownerstate="CanMoveItemDown" action="Disable">
+			<MenuItem id = "MoveItemDown"
+				      label = "${res:SideBarComponent.ContextMenu.MoveTabItemDown}"
+				      class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveActiveItemDown"/>
 		</Condition>
 		
 		<Include id="CommonContextMenu" path="/SharpDevelop/Workbench/SharpDevelopSideBar/CommonContextMenu"/>
