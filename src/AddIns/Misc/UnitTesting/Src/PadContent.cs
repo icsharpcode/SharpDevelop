@@ -127,7 +127,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (autoLoadItems) {
 				if (callback != null)
-					callback();
+					WorkbenchSingleton.SafeThreadAsyncCall(callback);
 			} else {
 				ReloadAssemblyList(callback);
 			}
