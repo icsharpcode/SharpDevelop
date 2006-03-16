@@ -7,16 +7,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	/// <summary>
-	/// Description of TypeLibrary.
-	/// </summary>
 	public class TypeLibrary
 	{
 		string name;
+		string description;
 		string path;
 		string guid;
 		string version;
@@ -43,7 +44,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public string Name {
 			get {
+				if (name == null) {
+					name = GetTypeLibName();
+				}
 				return name;
+			}
+		}
+		
+		public string Description {
+			get {
+				return description;
 			}
 		}
 		
@@ -90,40 +100,40 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static IEnumerable<TypeLibrary> Libraries {
 			get {
-				RegistryKey typelibsKey = Registry.ClassesRoot.OpenSubKey("TypeLib");
-				foreach (string typelibKeyName in typelibsKey.GetSubKeyNames()) {
-					RegistryKey typelibKey = typelibsKey.OpenSubKey(typelibKeyName);
-					if (typelibKey == null) {
+				RegistryKey typeLibsKey = Registry.ClassesRoot.OpenSubKey("TypeLib");
+				foreach (string typeLibKeyName in typeLibsKey.GetSubKeyNames()) {
+					RegistryKey typeLibKey = typeLibsKey.OpenSubKey(typeLibKeyName);
+					if (typeLibKey == null) {
 						continue;
 					}
-					TypeLibrary lib = Create(typelibKey);
-					if (lib != null && lib.Name != null && lib.Path != null && lib.Name.Length > 0 && lib.Path.Length > 0) {
+					TypeLibrary lib = Create(typeLibKey);
+					if (lib != null && lib.Description != null && lib.Path != null && lib.Description.Length > 0 && lib.Path.Length > 0) {
 						yield return lib;
 					}
 				}
 			}
 		}
 		
-		static TypeLibrary Create(RegistryKey typelibKey)
+		static TypeLibrary Create(RegistryKey typeLibKey)
 		{
-			string[] versions = typelibKey.GetSubKeyNames();
+			string[] versions = typeLibKey.GetSubKeyNames();
 			if (versions.Length > 0) {
 				TypeLibrary lib = new TypeLibrary();
 				
 				// Use the last version
 				lib.version = versions[versions.Length - 1];
 				
-				RegistryKey versionKey = typelibKey.OpenSubKey(lib.version);
-				lib.name = (string)versionKey.GetValue(null);
-				lib.path = GetTypelibPath(versionKey, ref lib.lcid);
-				lib.guid = System.IO.Path.GetFileName(typelibKey.Name);
+				RegistryKey versionKey = typeLibKey.OpenSubKey(lib.version);
+				lib.description = (string)versionKey.GetValue(null);
+				lib.path = GetTypeLibPath(versionKey, ref lib.lcid);
+				lib.guid = System.IO.Path.GetFileName(typeLibKey.Name);
 				
 				return lib;
 			}
 			return null;
 		}
 		
-		static string GetTypelibPath(RegistryKey versionKey, ref string lcid)
+		static string GetTypeLibPath(RegistryKey versionKey, ref string lcid)
 		{
 			// Get the default value of the (typically) 0\win32 subkey:
 			string[] subkeys = versionKey.GetSubKeyNames();
@@ -132,17 +142,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				return null;
 			}
 			for (int i = 0; i < subkeys.Length; i++) {
-				try {
-					int.Parse(subkeys[i]); // The right key is a number
+				int result;
+				if (Int32.TryParse(subkeys[i], out result)) {
 					lcid = subkeys[i];
 					RegistryKey NullKey = versionKey.OpenSubKey(subkeys[i]);
 					string[] subsubkeys = NullKey.GetSubKeyNames();
 					RegistryKey win32Key = NullKey.OpenSubKey("win32");
 					
-					return win32Key == null || win32Key.GetValue(null) == null ? null : win32Key.GetValue(null).ToString();
-				} catch (FormatException) {
-					// Wrong keys don't parse til int
-				}
+					return win32Key == null || win32Key.GetValue(null) == null ? null : GetTypeLibPath(win32Key.GetValue(null).ToString());
+				} 
 			}
 			return null;
 		}
@@ -155,5 +163,89 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return -1;
 		}
+		
+		string GetTypeLibName()
+		{
+			string name = null;
+		
+			int typeLibLcid;
+			if (guid != null && lcid != null && Int32.TryParse(lcid, out typeLibLcid)) {
+				Guid typeLibGuid = new Guid(this.guid);
+				name = GetTypeLibNameFromGuid(ref typeLibGuid, (short)VersionMajor, (short)VersionMinor, typeLibLcid);
+			}
+			
+			if (name == null) {
+				name = GetTypeLibNameFromFile(path);
+			}
+			
+			if (name != null) {
+				return name;
+			}
+			return description;
+		}
+		
+		/// <summary>
+		/// Removes the trailing part of the type library filename if it
+		/// starts with a number.
+		/// </summary>
+		static string GetTypeLibPath(string fileName)
+		{
+			if (fileName != null) {
+				int index = fileName.LastIndexOf('\\');
+				if (index > 0 && index + 1 < fileName.Length) {
+					if (Char.IsDigit(fileName[index + 1])) {
+						return fileName.Substring(0, index);
+					}
+				}
+			}
+			return fileName;
+		}
+		
+		static string GetTypeLibNameFromFile(string fileName)
+		{
+			if (fileName != null && fileName.Length > 0 && File.Exists(fileName)) {
+				ITypeLib typeLib;
+				if (LoadTypeLibEx(fileName, RegKind.None, out typeLib) == 0) {
+					try {
+						return Marshal.GetTypeLibName(typeLib);
+					} finally {
+						Marshal.ReleaseComObject(typeLib);
+					}
+				}
+			}
+			return null;
+		}
+		
+		static string GetTypeLibNameFromGuid(ref Guid guid, short versionMajor, short versionMinor, int lcid)
+		{
+			ITypeLib typeLib;
+			if (LoadRegTypeLib(ref guid, versionMajor, versionMinor, lcid, out typeLib) == 0) {
+				try {
+					return Marshal.GetTypeLibName(typeLib);
+				} finally {
+					Marshal.ReleaseComObject(typeLib);
+				}
+			} 
+			return null;
+		}
+		
+		enum RegKind {
+			Default,
+			Register,
+			None
+		}
+		
+		[DllImport("oleaut32.dll")]
+		static extern int LoadTypeLibEx([MarshalAs(UnmanagedType.BStr)] string szFile,
+			RegKind regkind,
+			out ITypeLib pptlib);
+		
+		[DllImport("oleaut32.dll")]
+		static extern int LoadRegTypeLib( 
+			ref Guid rguid,             
+  			short wVerMajor,  
+  			short wVerMinor,  
+  			int lcid,                 
+  			out ITypeLib pptlib);
 	}
 }

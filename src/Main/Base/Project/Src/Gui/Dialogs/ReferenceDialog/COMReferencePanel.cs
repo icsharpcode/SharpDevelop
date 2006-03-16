@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void PopulateListView()
 		{
 			foreach (TypeLibrary typeLib in TypeLibrary.Libraries) {
-				ListViewItem newItem = new ListViewItem(new string[] { typeLib.Name, typeLib.Path });
+				ListViewItem newItem = new ListViewItem(new string[] { typeLib.Description, typeLib.Path });
 				newItem.Tag = typeLib;
 				Items.Add(newItem);
 			}
