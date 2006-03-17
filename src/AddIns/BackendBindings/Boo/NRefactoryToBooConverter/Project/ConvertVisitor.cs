@@ -146,9 +146,7 @@ namespace NRefactoryToBooConverter
 			if ((m & Modifier.Default) != 0) {
 				ParametrizedNode parametrizedNode = node as ParametrizedNode;
 				string name = null;
-				if (node is IndexerDeclaration) {
-					name = DefaultIndexerName;
-				} else if (parametrizedNode != null) {
+				if (parametrizedNode != null) {
 					name = parametrizedNode.Name;
 				} else {
 					AddError(node, "Default modifier is not supported on this member.");

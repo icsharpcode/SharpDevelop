@@ -213,13 +213,10 @@ namespace NRefactoryToBooConverter
 			return m;
 		}
 		
-		public const string DefaultIndexerName = "Indexer";
-		
 		public object Visit(IndexerDeclaration indexerDeclaration, object data)
 		{
-			indexerDeclaration.Modifier |= Modifier.Default;
-			
 			B.Property m = new B.Property(GetLexicalInfo(indexerDeclaration));
+			
 			m.Modifiers = ConvertModifier(indexerDeclaration, B.TypeMemberModifiers.Private);
 			ConvertAttributes(indexerDeclaration.Attributes, m.Attributes);
 			if (currentType != null) currentType.Members.Add(m);
@@ -228,7 +225,7 @@ namespace NRefactoryToBooConverter
 			m.Type = ConvertTypeReference(indexerDeclaration.TypeReference);
 			m.Name = "this";
 			m.ExplicitInfo = ConvertInterfaceImplementations(indexerDeclaration.InterfaceImplementations, indexerDeclaration, m);
-			m.Name = DefaultIndexerName;
+			m.Name = "self";
 			if (!indexerDeclaration.IsWriteOnly) {
 				m.Getter = new B.Method(GetLexicalInfo(indexerDeclaration.GetRegion));
 				if (indexerDeclaration.GetRegion != null) {

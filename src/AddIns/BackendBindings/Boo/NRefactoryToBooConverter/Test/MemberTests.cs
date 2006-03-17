@@ -217,26 +217,26 @@ namespace NRefactoryToBooConverter.Tests
 		[Test]
 		public void ReadOnlyIndexer()
 		{
-			TestInClassWithIndexer("public string this[int index] { get { } }", "public Indexer(index as System.Int32) as System.String:\n\tget:\n\t\tpass");
+			TestInClass("public string this[int index] { get { } }", "public self[index as System.Int32] as System.String:\n\tget:\n\t\tpass");
 		}
 		
 		[Test]
 		public void WriteOnlyIndexer()
 		{
-			TestInClassWithIndexer("public string this[int index] { set { } }", "public Indexer(index as System.Int32) as System.String:\n\tset:\n\t\tpass");
+			TestInClass("public string this[int index] { set { } }", "public self[index as System.Int32] as System.String:\n\tset:\n\t\tpass");
 		}
 		
 		[Test]
 		public void Indexer()
 		{
-			TestInClassWithIndexer("public string this[int index] { get {} set { } }", "public Indexer(index as System.Int32) as System.String:\n\tget:\n\t\tpass\n\tset:\n\t\tpass");
+			TestInClass("public string this[int index] { get {} set { } }", "public self[index as System.Int32] as System.String:\n\tget:\n\t\tpass\n\tset:\n\t\tpass");
 		}
 		
 		[Test]
 		public void IndexerWithAttributes()
 		{
-			TestInClassWithIndexer("[AA] public string this[int index] { [BB] get {} [CC] set { } }",
-			                       "[AA]\npublic Indexer(index as System.Int32) as System.String:\n\t[BB]\n\tget:\n\t\tpass\n\t[CC]\n\tset:\n\t\tpass");
+			TestInClass("[AA] public string this[int index] { [BB] get {} [CC] set { } }",
+			            "[AA]\npublic self[index as System.Int32] as System.String:\n\t[BB]\n\tget:\n\t\tpass\n\t[CC]\n\tset:\n\t\tpass");
 		}
 		
 		[Test]

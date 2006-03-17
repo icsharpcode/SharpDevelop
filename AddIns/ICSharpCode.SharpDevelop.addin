@@ -631,12 +631,11 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/CompilerMessageView/ContextMenu">
-		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>
 		<Include id = "Copy" item = "/SharpDevelop/Workbench/MainMenu/Edit/Copy"/>
 		<Include id = "SelectAll" item = "/SharpDevelop/Workbench/MainMenu/Edit/SelectAll"/>
 		<MenuItem id    = "Clear"
 		          icon  = "OutputPad.Toolbar.ClearOutputWindow"
-		          label = "Clear All"
+		          label = "${res:MainWindow.Windows.CompilerMessageView.ClearAllButton.ToolTip}"
 		          class = "ICSharpCode.SharpDevelop.Gui.ClearOutputWindow"/>
 	</Path>
 	

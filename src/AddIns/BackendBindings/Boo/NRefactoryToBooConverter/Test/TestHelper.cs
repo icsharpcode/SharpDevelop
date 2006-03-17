@@ -75,11 +75,6 @@ namespace NRefactoryToBooConverter.Tests
 			TestVB("Public Class ClassName\n" + input + "\nEnd Class\n", "public class ClassName:\n\t" + output.Replace("\n", "\n\t"));
 		}
 		
-		protected void TestInClassWithIndexer(string input, string output)
-		{
-			Test("public class ClassName {\n" + input + "\n}", "[System.Reflection.DefaultMember('Indexer')]\npublic class ClassName:\n\t" + output.Replace("\n", "\n\t"));
-		}
-		
 		protected void TestStatement(string input, string output)
 		{
 			ConverterSettings dummySet = new ConverterSettings("dummy.cs");
