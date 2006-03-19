@@ -244,11 +244,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			sortOrder = 1;
 			SetIcon();
+			canLabelEdit = true;
 		}
 		
 		public DirectoryNode(string directory) : this(directory, FileNodeStatus.None)
 		{
 			sortOrder = 1;
+			canLabelEdit = true;
 		}
 		CustomNode removeMe = null;
 		public DirectoryNode(string directory, FileNodeStatus fileNodeStatus)
@@ -262,6 +264,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			removeMe.AddTo(this);
 			
 			SetIcon();
+			canLabelEdit = true;
 		}
 		
 		/// <summary>
@@ -482,14 +485,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!FileService.CheckDirectoryName(newName)) {
 				return;
 			}
+			if (String.Compare(Text, newName, true) == 0) {
+				return;
+			}
 			string oldText = Text;
 			Text = newName;
 			if (Directory != null) {
 				string newPath = Path.Combine(Path.GetDirectoryName(Directory), newName);
 				if (System.IO.Directory.Exists(newPath)) {
-					if (System.IO.Directory.GetFiles(Directory).Length == 0) {
-						System.IO.Directory.Delete(Directory);
-					} else if (System.IO.Directory.GetFiles(newPath).Length == 0) {
+					if (System.IO.Directory.GetFileSystemEntries(newPath).Length == 0) {
 						System.IO.Directory.Delete(newPath);
 						FileService.RenameFile(Directory, newPath, true);
 					} else {
@@ -575,7 +579,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (File.Exists(clipboardObject.FileName)) {
 					CopyFileHere(clipboardObject.FileName, clipboardObject.PerformMove);
 					if (clipboardObject.PerformMove) {
-						dataObject.SetData(null);
+						Clipboard.Clear();
 					}
 				}
 			} else if (dataObject.GetDataPresent(typeof(DirectoryNode))) {
@@ -584,7 +588,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (System.IO.Directory.Exists(clipboardObject.FileName)) {
 					CopyDirectoryHere(clipboardObject.FileName, clipboardObject.PerformMove);
 					if (clipboardObject.PerformMove) {
-						dataObject.SetData(null);
+						Clipboard.Clear();
 					}
 				}
 			}
@@ -667,6 +671,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnableCopy {
 			get {
+				if (IsEditing) {
+					return false;
+				}
 				return true;
 			}
 		}
@@ -677,6 +684,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnableCut {
 			get {
+				if (IsEditing) {
+					return false;
+				}
 				return true;
 			}
 		}

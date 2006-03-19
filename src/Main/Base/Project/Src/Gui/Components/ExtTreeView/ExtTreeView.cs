@@ -139,21 +139,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (node == null) {
 				return;
 			}
-			node.EnsureVisible();
-			SelectedNode = node;
-			LabelEdit = true;
-			node.BeforeLabelEdit();
-			node.BeginEdit();
+			
+			if (node.CanLabelEdit) {
+				node.EnsureVisible();
+				SelectedNode = node;
+				LabelEdit = true;
+				node.BeforeLabelEdit();
+				node.BeginEdit();
+			}
 		}
 		
-		protected override bool ProcessDialogKey(Keys keyData)
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
 			switch (keyData) {
 				case Keys.F2:
 					StartLabelEdit(SelectedNode as ExtTreeNode);
 					break;
 			}
-			return base.ProcessDialogKey(keyData);
+			return base.ProcessCmdKey(ref msg, keyData);
 		}
 		
 		protected override void OnAfterLabelEdit(NodeLabelEditEventArgs e)

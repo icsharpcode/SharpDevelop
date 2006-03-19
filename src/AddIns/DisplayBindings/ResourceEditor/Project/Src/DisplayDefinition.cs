@@ -110,6 +110,9 @@ namespace ResourceEditor
 		public bool EnableCut
 		{
 			get {
+				if (resourceEditor.ResourceList.IsEditing || !resourceEditor.ResourceList.Focused) {
+					return false;
+				}
 				return resourceEditor.ResourceList.SelectedItems.Count > 0;
 			}
 		}
@@ -117,6 +120,9 @@ namespace ResourceEditor
 		public bool EnableCopy
 		{
 			get {
+				if (resourceEditor.ResourceList.IsEditing || !resourceEditor.ResourceList.Focused) {
+					return false;
+				}
 				return resourceEditor.ResourceList.SelectedItems.Count > 0;
 			}
 		}
@@ -124,6 +130,9 @@ namespace ResourceEditor
 		public bool EnablePaste
 		{
 			get {
+				if (resourceEditor.ResourceList.IsEditing || !resourceEditor.ResourceList.Focused) {
+					return false;
+				}
 				return true;
 			}
 		}
@@ -131,6 +140,9 @@ namespace ResourceEditor
 		public bool EnableDelete
 		{
 			get {
+				if (resourceEditor.ResourceList.IsEditing || !resourceEditor.ResourceList.Focused) {
+					return false;
+				}
 				return resourceEditor.ResourceList.SelectedItems.Count > 0;
 			}
 		}
@@ -138,6 +150,9 @@ namespace ResourceEditor
 		public bool EnableSelectAll
 		{
 			get {
+				if (resourceEditor.ResourceList.IsEditing || !resourceEditor.ResourceList.Focused) {
+					return false;
+				}
 				return true;
 			}
 		}

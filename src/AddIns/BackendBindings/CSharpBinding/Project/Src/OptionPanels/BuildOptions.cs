@@ -54,6 +54,7 @@ namespace CSharpBinding.OptionPanels
 			b = helper.BindBoolean("noCorlibCheckBox", "NoStdLib", false);
 			b.CreateLocationButton("noCorlibCheckBox");
 			
+			InitDebugInfo();
 			InitAdvanced();
 			b = helper.BindStringEnum("fileAlignmentComboBox", "FileAlignment",
 			                          "4096",

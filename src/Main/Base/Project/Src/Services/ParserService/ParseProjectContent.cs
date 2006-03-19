@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.IO;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
@@ -54,12 +55,14 @@ namespace ICSharpCode.Core
 			ProjectItem[] items = project.Items.ToArray();
 			ProjectService.ProjectItemAdded   += OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved += OnProjectItemRemoved;
+			ProjectService.EndBuild += OnEndBuild;
 			UpdateDefaultImports(items);
 			foreach (ProjectItem item in items) {
 				if (!initializing) return; // abort initialization
 				switch (item.ItemType) {
 					case ItemType.Reference:
 					case ItemType.ProjectReference:
+					case ItemType.COMReference:
 						AddReference(item as ReferenceProjectItem, false);
 						break;
 				}
@@ -208,8 +211,25 @@ namespace ICSharpCode.Core
 		{
 			ProjectService.ProjectItemAdded   -= OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved -= OnProjectItemRemoved;
+			ProjectService.EndBuild -= OnEndBuild;
 			initializing = false;
 			base.Dispose();
+		}
+				
+		void OnEndBuild(object source, EventArgs e)
+		{
+			AddComReferences();	
+		}
+		
+		void AddComReferences()
+		{
+			if (project != null) {
+				foreach (ProjectItem item in project.Items) {
+					if (item.ItemType == ItemType.COMReference) {
+						System.Threading.ThreadPool.QueueUserWorkItem(AddReference, item as ReferenceProjectItem);
+					}
+				}
+			}
 		}
 	}
 }

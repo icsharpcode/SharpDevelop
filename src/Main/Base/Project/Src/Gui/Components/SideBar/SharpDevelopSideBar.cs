@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return new SharpDevelopSideTabItem(name, tag, bitmap);
 		}
 	}
-	
+		
 	public class SharpDevelopSideBar : AxSideBar, IOwnerState
 	{
 		readonly static string contextMenuPath        = "/SharpDevelop/Workbench/SharpDevelopSideBar/ContextMenu";
@@ -62,7 +62,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			CanMoveDown   = 2,
 			TabCanBeDeleted = 4,
 			CanMoveItemUp = 8,
-			CanMoveItemDown = 16
+			CanMoveItemDown = 16,
+			CanBeRenamed = 32
 		}
 		
 		protected SidebarState internalState = SidebarState.TabCanBeDeleted;
@@ -172,15 +173,53 @@ namespace ICSharpCode.SharpDevelop.Gui
 			System.Diagnostics.Debug.Assert(false, "Can't find clipboard ring side tab category");
 		}
 		
+		public void DeleteSideTab(AxSideTab tab)
+		{
+			if (tab == null) {
+				return;
+			}
+			
+			Tabs.Remove(tab);
+			OnSideTabDeleted(tab);
+		}
+		
 		////////////////////////////////////////////////////////////////////////////
 		// Tab Context Menu
 		
-		void SetDeletedState(AxSideTab tab)
+		void SetDeletedState(AxSideTabItem item)
 		{
-			if (tab.CanBeDeleted) {
+			if (item != null) {
+				SetDeletedState(item.CanBeDeleted);
+			} else {
+				SetDeletedState(false);
+			}
+		}
+		
+		void SetDeletedState(bool canBeDeleted)
+		{
+			if (canBeDeleted) {
 				internalState |= SidebarState.TabCanBeDeleted;
 			} else {
 				internalState = internalState & ~SidebarState.TabCanBeDeleted;
+			}
+		}
+
+		
+		void SetRenameState(AxSideTabItem item)
+		{
+			if (item != null) {
+				SetRenameState(item.CanBeRenamed);
+			} else {
+				SetRenameState(false);
+			}
+		}
+		
+		void SetRenameState(bool canBeRenamed)
+		{
+			if (canBeRenamed) {
+				internalState |= SidebarState.CanBeRenamed;
+			} else {
+				internalState = internalState & ~SidebarState.CanBeRenamed;
 			}
 		}
 		
@@ -192,7 +231,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (index >= 0) {
 				AxSideTab tab = Tabs[index];
 				
-				SetDeletedState(tab);
+				SetDeletedState(tab.CanBeDeleted);
+				SetRenameState(tab.CanBeRenamed);
 				
 				if (index > 0) {
 					internalState |= SidebarState.CanMoveUp;
@@ -240,7 +280,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (e.Button == MouseButtons.Right) {
 				// set moveup/down states correctly
-				SetDeletedState(ActiveTab);
+				SetDeletedState(ActiveTab.SelectedItem);
+				SetRenameState(ActiveTab.SelectedItem);
 				
 				int index = ActiveTab.Items.IndexOf(ActiveTab.SelectedItem);
 				if (index > 0) {
@@ -329,5 +370,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return el;
 		}
 		
+		void OnSideTabDeleted(AxSideTab tab)
+		{
+			if (SideTabDeleted != null) {
+				SideTabDeleted(this, new SideTabEventArgs(tab));
+			}
+		}
+		
+		public event SideTabEventHandler SideTabDeleted;
 	}
 }

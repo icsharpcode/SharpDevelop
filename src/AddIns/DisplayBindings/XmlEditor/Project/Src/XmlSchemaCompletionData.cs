@@ -234,15 +234,12 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void ReadSchema(XmlReader reader)
 		{
-			try
-			{
+			try	{
 				schema = XmlSchema.Read(reader, new ValidationEventHandler(SchemaValidation));
 				schema.Compile(new ValidationEventHandler(SchemaValidation));
 			
 				namespaceUri = schema.TargetNamespace;
-			}
-			finally
-			{
+			} finally {
 				reader.Close();
 			}
 		}
@@ -882,7 +879,7 @@ namespace ICSharpCode.XmlEditor
 						} else {
 							// Abstract element?
 							XmlSchemaElement abstractElement = FindElement(element.RefName);
-							if (abstractElement.IsAbstract) {
+							if (abstractElement != null && abstractElement.IsAbstract) {
 								matchedElement = FindSubstitutionGroupElement(abstractElement.QualifiedName, name);
 							}
 						}

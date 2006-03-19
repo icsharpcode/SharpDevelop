@@ -20,11 +20,74 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Dragged
 	}
 	
+	public delegate void SideTabEventHandler(object source, SideTabEventArgs e);
+	
+	public class SideTabEventArgs
+	{
+		AxSideTab tab;
+		
+		public SideTabEventArgs(AxSideTab tab)
+		{
+			this.tab = tab;
+		}
+		
+		public AxSideTab SideTab {
+			get {
+				return tab;
+			}
+		}
+	}
+	
+	public delegate void SideTabItemEventHandler(object source, SideTabItemEventArgs e);
+	
+	public class SideTabItemEventArgs
+	{
+		AxSideTabItem item;
+		
+		public SideTabItemEventArgs(AxSideTabItem item)
+		{
+			this.item = item;
+		}
+		
+		public AxSideTabItem Item {
+			get {
+				return item;
+			}
+		}
+	}
+	
+	public delegate void SideTabItemExchangeEventHandler(object source, SideTabItemExchangeEventArgs e);
+	
+	public class SideTabItemExchangeEventArgs
+	{
+		AxSideTabItem item1;
+		AxSideTabItem item2;
+		
+		public SideTabItemExchangeEventArgs(AxSideTabItem item1, AxSideTabItem item2)
+		{
+			this.item1 = item1;
+			this.item2 = item2;
+		}
+		
+		public AxSideTabItem Item1 {
+			get {
+				return item1;
+			}
+		}
+		
+		public AxSideTabItem Item2 {
+			get {
+				return item2;
+			}
+		}
+	}
+	
 	public class AxSideTab
 	{
 		string    name;
 		bool      canDragDrop  = true;
 		bool      canBeDeleted = true;
+		bool      canBeRenamed = true;
 		bool      isClipboardRing = false;
 		SideTabItemCollection items = new SideTabItemCollection();
 		SideTabStatus sideTabStatus;
@@ -83,12 +146,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public bool   CanBeDeleted {
+		public bool CanBeDeleted {
 			get {
 				return canBeDeleted;
 			}
 			set {
 				canBeDeleted = value;
+			}
+		}
+		
+		public bool CanBeRenamed {
+			get {
+				return canBeRenamed;
+			}
+			set {
+				canBeRenamed = value;
 			}
 		}
 		
@@ -166,6 +238,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		/// <summary>
+		/// A SideTabItem has been removed.
+		/// </summary>
+		public event SideTabItemEventHandler ItemRemoved;
+		
+		/// <summary>
+		/// Two SideTabItems have exchanged locations.
+		/// </summary>
+		public event SideTabItemExchangeEventHandler ItemsExchanged;
+		
 		public ISideTabItemFactory SideTabItemFactory {
 			get {
 				return items.SideTabItemFactory;
@@ -187,13 +269,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public AxSideTab(AxSideBar sideBar, string name) : this(sideBar.SideTabItemFactory)
 		{
 			this.name = name;
+			SetCanRename();
+			items.ItemRemoved += OnSideTabItemRemoved;
 		}
 		
 		public AxSideTab(string name)
 		{
 			this.name = name;
+			SetCanRename();
+			items.ItemRemoved += OnSideTabItemRemoved;
 		}
-		
 		
 		public bool ScrollDownButtonActivated {
 			get {
@@ -261,11 +346,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			return GetItemAt(pos.X, pos.Y);
 		}
+		
 		public int ItemHeight {
 			get {
 				return 20;
 			}
 		}
+		
 		public void DrawTabContent(Graphics g, Font f, Rectangle rectangle)
 		{
 			for (int i = 0; i + ScrollIndex < Items.Count; ++i) {
@@ -280,10 +367,45 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		/// <summary>
+		/// Swaps two side tab items with the given indexes.
+		/// </summary>
+		public void Exchange(int a, int b)
+		{
+			AxSideTabItem itemA = Items[a];
+			AxSideTabItem itemB = Items[b];
+			Items[a] = itemB;
+			Items[b] = itemA;
+			OnExchange(itemA, itemB);
+		}
+		
+		void SetCanRename()
+		{
+			if (name != null && name.StartsWith("${res:")) {
+				canBeRenamed = false;
+			}
+		}
+		
+		void OnSideTabItemRemoved(object source, SideTabItemEventArgs e)
+		{
+			if (ItemRemoved != null) {
+				ItemRemoved(this, e);
+			}
+		}
+		
+		void OnExchange(AxSideTabItem item1, AxSideTabItem item2)
+		{
+			if (ItemsExchanged != null) {
+				ItemsExchanged(this, new SideTabItemExchangeEventArgs(item1, item2));
+			}
+		}
+
 		public class SideTabItemCollection : ICollection, IEnumerable
 		{
 			ArrayList list = new ArrayList();
 			ISideTabItemFactory sideTabItemFactory = new DefaultSideTabItemFactory();
+			
+			public event SideTabItemEventHandler ItemRemoved;
 			
 			public ISideTabItemFactory SideTabItemFactory {
 				get {
@@ -399,11 +521,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			public virtual void Remove(AxSideTabItem item)
 			{
 				list.Remove(item);
+				OnItemRemoved(item);
 			}
 			
 			public virtual void RemoveAt(int index)
 			{
-				list.RemoveAt(index);
+				if (index < 0 || index >= list.Count) {
+					return;
+				}
+				AxSideTabItem item = this[index];
+				list.Remove(item);
+				OnItemRemoved(item);
+			}
+			
+			void OnItemRemoved(AxSideTabItem item)
+			{
+				if (ItemRemoved != null) {
+					ItemRemoved(this, new SideTabItemEventArgs(item));
+				}
 			}
 		}
 	}

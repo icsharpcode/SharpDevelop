@@ -100,5 +100,23 @@ namespace ICSharpCode.SharpDevelop.Project
 			                     Include,
 			                     Properties);
 		}
+		
+		public override string FileName {
+			get {
+				try {
+					if (Project != null && Project.OutputAssemblyFullPath != null) {
+						string outputFolder = Path.GetDirectoryName(Project.OutputAssemblyFullPath);
+						string interopFileName = Path.Combine(outputFolder, String.Concat("Interop.", Include, ".dll"));
+						if (File.Exists(interopFileName)) {
+							return interopFileName;
+						}
+					}
+				}
+				catch (Exception) { }
+				return Include;
+			}
+			set {
+			}
+		}
 	}
 }

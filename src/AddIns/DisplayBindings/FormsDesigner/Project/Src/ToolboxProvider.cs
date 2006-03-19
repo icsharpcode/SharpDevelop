@@ -55,6 +55,7 @@ namespace ICSharpCode.FormsDesigner
 					toolboxService = new ICSharpCode.FormsDesigner.Services.ToolboxService();
 					ReloadSideTabs(false);
 					toolboxService.SelectedItemUsed += new EventHandler(SelectedToolUsedHandler);
+					SharpDevelopSideBar.SideBar.SideTabDeleted += SideTabDeleted;
 				}
 				return toolboxService;
 			}
@@ -101,6 +102,8 @@ namespace ICSharpCode.FormsDesigner
 		{
 			bool reInsertTabs = false;
 			foreach(AxSideTab tab in SideTabs) {
+				tab.ItemRemoved -= SideTabItemRemoved;
+				tab.ItemsExchanged -= SideTabItemsExchanged;
 				if (SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
 					SharpDevelopSideBar.SideBar.Tabs.Remove(tab);
 					reInsertTabs = true;;
@@ -113,6 +116,8 @@ namespace ICSharpCode.FormsDesigner
 				if (category.IsEnabled) {
 					try {
 						SideTabDesigner newTab = new SideTabDesigner(SharpDevelopSideBar.SideBar, category, toolboxService);
+						newTab.ItemRemoved += SideTabItemRemoved;
+						newTab.ItemsExchanged += SideTabItemsExchanged;
 						SideTabs.Add(newTab);
 					} catch (Exception e) {
 						ICSharpCode.Core.LoggingService.Warn("Can't add tab : " + e);
@@ -120,6 +125,8 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 			SideTabDesigner customTab = new CustomComponentsSideTab(SharpDevelopSideBar.SideBar, "Custom Components", toolboxService);
+			customTab.ItemRemoved += SideTabItemRemoved;
+			customTab.ItemsExchanged += SideTabItemsExchanged;
 			SideTabs.Add(customTab);
 			if (reInsertTabs) {
 				foreach(AxSideTab tab in SideTabs) {
@@ -246,6 +253,36 @@ namespace ICSharpCode.FormsDesigner
 			ProjectReferenceProjectItem reference = new ProjectReferenceProjectItem(project, referenceTo);
 			ProjectService.AddProjectItem(project, reference);
 			project.Save();
+		}
+		
+		static void SideTabDeleted(object source, SideTabEventArgs e)
+		{
+			if (SideTabs.Contains(e.SideTab)) {
+				SideTabs.Remove(e.SideTab);
+				componentLibraryLoader.RemoveCategory(e.SideTab.Name);
+				SaveToolbox();
+			}
+		}
+		
+		static void SideTabItemRemoved(object source, SideTabItemEventArgs e)
+		{
+			SideTabDesigner tab = source as SideTabDesigner;
+			ToolboxItem toolboxItem = e.Item.Tag as ToolboxItem;
+			if (tab != null && toolboxItem != null) {
+				componentLibraryLoader.DisableToolComponent(tab.Name, toolboxItem.TypeName);
+				SaveToolbox();
+			}
+		}
+		
+		static void SideTabItemsExchanged(object source, SideTabItemExchangeEventArgs e)
+		{
+			SideTabDesigner tab = source as SideTabDesigner;
+			ToolboxItem toolboxItem1 = e.Item1.Tag as ToolboxItem;
+			ToolboxItem toolboxItem2 = e.Item2.Tag as ToolboxItem;
+			if (tab != null && toolboxItem1 != null && toolboxItem2 != null) {
+				componentLibraryLoader.ExchangeToolComponents(tab.Name, toolboxItem1.TypeName, toolboxItem2.TypeName);
+				SaveToolbox();
+			}
 		}
 	}
 }

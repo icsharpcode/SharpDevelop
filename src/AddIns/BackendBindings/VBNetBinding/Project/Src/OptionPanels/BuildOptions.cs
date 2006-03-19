@@ -61,6 +61,7 @@ namespace VBNetBinding.OptionPanels
 			InitTargetFramework(VBNetProject.DefaultTargetsFile,
 			   @"$(SharpDevelopBinPath)\SharpDevelop.Build.VisualBasic.targets");
 
+			InitDebugInfo();
 			InitAdvanced();
 			InitWarnings();
 			

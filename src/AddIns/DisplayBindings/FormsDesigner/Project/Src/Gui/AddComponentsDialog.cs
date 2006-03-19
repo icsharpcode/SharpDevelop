@@ -132,8 +132,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 									newItem.ImageIndex = (int)images[t.FullName + ".bmp"];
 								}
 								newItem.Checked  = true;
-								ToolComponent toolComponent = new ToolComponent(t.FullName, new ComponentAssembly(assembly.FullName, loadPath));
-								toolComponent.IsEnabled    = true;
+								ToolComponent toolComponent = new ToolComponent(t.FullName, new ComponentAssembly(assembly.FullName, loadPath), true);
 								newItem.Tag = toolComponent;
 								componentListView.Items.Add(newItem);
 								ToolboxItem item = new ToolboxItem(t);

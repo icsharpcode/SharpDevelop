@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		#region Label edit
-		protected bool canLabelEdit = true;
+		protected bool canLabelEdit = false;
 		public virtual bool CanLabelEdit {
 			get {
 				return canLabelEdit;

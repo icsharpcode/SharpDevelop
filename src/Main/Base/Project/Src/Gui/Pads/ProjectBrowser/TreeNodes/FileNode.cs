@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		string         fileName       = String.Empty;
 		FileNodeStatus fileNodeStatus = FileNodeStatus.None;
 		ProjectItem    projectItem    = null;
-		
+	
 		public override bool Visible {
 			get {
 				return ShowAll || fileNodeStatus != FileNodeStatus.None;
@@ -112,11 +112,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			autoClearNodes = false;
 			SetIcon();
+			canLabelEdit = true;
 		}
 		
 		public FileNode(string fileName) : this (fileName, FileNodeStatus.None)
 		{
 			sortOrder = 5;
+			canLabelEdit = true;
 		}
 		
 		public override void ActivateItem()
@@ -216,6 +218,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnableCopy {
 			get {
+				if (base.IsEditing) {
+					return false;
+				}
 				return true;
 			}
 		}
@@ -227,6 +232,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnableCut {
 			get {
+				if (IsEditing) {
+					return false;
+				}
 				return true;
 			}
 		}
@@ -240,6 +248,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnablePaste {
 			get {
+				if (IsEditing) {
+					return false;
+				}
 				return ((ExtTreeNode)Parent).EnablePaste;
 			}
 		}

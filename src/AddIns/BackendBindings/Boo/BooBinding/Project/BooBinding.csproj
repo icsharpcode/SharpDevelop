@@ -84,6 +84,8 @@
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
+    <Compile Include="Src\BuildOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BooBinding.addin">
@@ -141,6 +143,7 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Configuration" />
+    <Folder Include="Resources" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="PostBuildEvent.proj" />
