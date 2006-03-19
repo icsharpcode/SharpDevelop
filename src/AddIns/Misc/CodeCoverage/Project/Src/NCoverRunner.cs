@@ -248,7 +248,10 @@ namespace ICSharpCode.CodeCoverage
 			}
 			
 			ncoverArguments.AppendFormat("\"{0}\" ", profiledApplicationCommand);
-			ncoverArguments.Append(profiledApplicationCommandLineArguments);
+			
+			//ncoverArguments.Append(profiledApplicationCommandLineArguments);
+			// HACK: Work around NCover bug: http://ncover.org/SITE/forums/thread/266.aspx
+			ncoverArguments.Append(profiledApplicationCommandLineArguments.Replace("\"", "\\\""));
 			
 			return ncoverArguments.ToString();
 		}
