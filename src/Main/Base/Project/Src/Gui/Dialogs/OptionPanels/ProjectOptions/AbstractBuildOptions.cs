@@ -137,14 +137,17 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		ConfigurationGuiBinding debugInfoBinding;
 		protected ChooseStorageLocationButton advancedLocationButton;
 		
-		protected void InitAdvanced()
+		protected void InitDebugInfo()
 		{
 			debugInfoBinding = helper.BindEnum<DebugSymbolType>("debugInfoComboBox", "DebugType");
 			debugInfoBinding.CreateLocationButton("debugInfoLabel");
 			DebugSymbolsLoaded(null, null);
 			helper.Loaded += DebugSymbolsLoaded;
 			helper.Saved += DebugSymbolsSave;
-			
+		}
+		
+		protected void InitAdvanced()
+		{
 			ConfigurationGuiBinding b;
 			b = helper.BindBoolean("registerCOMInteropCheckBox", "RegisterForComInterop", false);
 			b.DefaultLocation = PropertyStorageLocations.PlatformSpecific;

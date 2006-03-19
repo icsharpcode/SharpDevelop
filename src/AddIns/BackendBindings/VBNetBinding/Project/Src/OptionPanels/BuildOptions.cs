@@ -56,6 +56,7 @@ namespace VBNetBinding.OptionPanels
 			
 			InitOutputPath();
 			InitXmlDoc();
+			InitDebugInfo();
 			InitAdvanced();
 			InitWarnings();
 			

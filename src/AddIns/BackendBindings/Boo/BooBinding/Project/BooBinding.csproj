@@ -81,6 +81,8 @@
     <Compile Include="Src\CodeCompletion\ElementReturnType.cs" />
     <Compile Include="Src\FormattingStrategy.cs" />
     <Compile Include="Src\ConvertProject.cs" />
+    <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
+    <Compile Include="Src\BuildOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BooBinding.addin">
@@ -137,6 +139,7 @@
       <Name>FormsDesigner</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Resources" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="PostBuildEvent.proj" />
