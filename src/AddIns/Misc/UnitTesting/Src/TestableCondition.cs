@@ -75,7 +75,8 @@ namespace ICSharpCode.UnitTesting
 			string attributeName = (m != null) ? "Test" : "TestFixture";
 			foreach (IAttribute attribute in (m ?? (IDecoration)c).Attributes) {
 				if (nameComparer.Equals(attribute.Name, attributeName)
-				    || nameComparer.Equals(attribute.Name, attributeName + "Attribute"))
+				    || nameComparer.Equals(attribute.Name, attributeName + "Attribute")
+				    || nameComparer.Equals(attribute.Name, "NUnit.Framework." + attributeName + "Attribute"))
 				{
 					return true;
 				}

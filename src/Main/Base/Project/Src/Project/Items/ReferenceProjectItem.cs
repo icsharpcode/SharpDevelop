@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[ReadOnly(true)]
-		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Name}", 
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Name}",
 		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Name.Description}")]
 		public string Name {
 			get {
@@ -73,9 +73,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[ReadOnly(true)]
-		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Version}", 
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Version}",
 		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Version.Description}")]
-		public Version Version { 
+		public Version Version {
 			get {
 				AssemblyName assemblyName = GetAssemblyName(Include);
 				if (assemblyName != null) {
@@ -99,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[ReadOnly(true)]
-		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.PublicKeyToken}", 
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.PublicKeyToken}",
 		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.PublicKeyToken.Description}")]
 		public string PublicKeyToken {
 			get {
@@ -116,12 +116,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				return null;
 			}
-		}		
-			
+		}
+		
 		public override string FileName {
 			get {
-				try
-				{
+				if (Project != null) {
 					string hintPath = HintPath;
 					if (hintPath != null && hintPath.Length > 0) {
 						return Path.Combine(Project.Directory, hintPath);
@@ -137,7 +136,6 @@ namespace ICSharpCode.SharpDevelop.Project
 						return name + ".exe";
 					}
 				}
-				catch (Exception) { }
 				return Include;
 			}
 			set {
