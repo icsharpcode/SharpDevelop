@@ -25,6 +25,11 @@
 		</Condition>
 	</Path>
 	
+	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
+		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
+		<String id="csc" text = "csc"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "C#"
 		            insertbefore="AllFiles"

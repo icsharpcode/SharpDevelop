@@ -50,6 +50,7 @@ namespace ICSharpCode.CodeAnalysis
 			if (fxCopPath.Length > 0 && File.Exists(Path.Combine(fxCopPath, "FxCopCommon.dll"))) {
 				return fxCopPath;
 			}
+			// Code duplication: FxCop.cs in ICSharpCode.Build.Tasks
 			fxCopPath = FromRegistry(Registry.CurrentUser.OpenSubKey(@"Software\Classes\FxCopProject\Shell\Open\Command"));
 			if (fxCopPath.Length > 0 && File.Exists(Path.Combine(fxCopPath, "FxCopCommon.dll"))) {
 				return fxCopPath;
@@ -63,6 +64,7 @@ namespace ICSharpCode.CodeAnalysis
 		
 		static string FromRegistry(RegistryKey key)
 		{
+			// Code duplication: FxCop.cs in ICSharpCode.Build.Tasks
 			if (key == null) return string.Empty;
 			using (key) {
 				string cmd = key.GetValue("").ToString();

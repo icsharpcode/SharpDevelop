@@ -24,6 +24,11 @@
 		            extensions = "*.vb"/>
 	</Path>
 
+	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
+		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
+		<String id="vbc" text = "vbc"/>
+	</Path>
+	
 	<Path name = "/Workspace/Parser">
 		<Parser id    = "VBNet" 
 			supportedextensions  = ".vb"

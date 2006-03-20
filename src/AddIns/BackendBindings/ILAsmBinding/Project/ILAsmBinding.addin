@@ -19,6 +19,11 @@
 		            extensions = "*.il"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
+		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
+		<String id="ilasm" text = "ilasm"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/BackendBindings/Templates">
 		<Directory id = "ILAsm" path = "./Templates" />
 	</Path>

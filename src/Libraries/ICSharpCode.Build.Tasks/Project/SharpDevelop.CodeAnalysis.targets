@@ -1,0 +1,38 @@
+﻿<?xml version="1.0"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
+	<UsingTask TaskName="ICSharpCode.Build.Tasks.FxCop"
+	           AssemblyFile="$(SharpDevelopBinPath)\ICSharpCode.Build.Tasks.dll"/>
+	
+	<PropertyGroup>
+		<!-- Define compilation symbols -->
+		<DefineConstants      Condition="'$(RunCodeAnalysis)'=='true' and '$(Language)'!='C#' ">$(DefineConstants);CODE_ANALYSIS</DefineConstants>
+		<FinalDefineConstants Condition="'$(RunCodeAnalysis)'=='true' and '$(Language)'=='VB' ">$(FinalDefineConstants),CODE_ANALYSIS=1</FinalDefineConstants>
+		
+		<!-- prepare task properties -->
+		<SharpDevelopFxCopAssembly Condition="'$(CodeAnalysisInputAssembly)'!=''">$(CodeAnalysisInputAssembly)</SharpDevelopFxCopAssembly>
+		<SharpDevelopFxCopAssembly Condition="'$(CodeAnalysisInputAssembly)'==''">$(OutDir)$(TargetName)$(TargetExt)</SharpDevelopFxCopAssembly>
+		<SharpDevelopFxCopLogFile Condition="'$(CodeAnalysisLogFile)'!=''">$(CodeAnalysisLogFile)</SharpDevelopFxCopLogFile>
+		<SharpDevelopFxCopLogFile Condition="'$(CodeAnalysisLogFile)'==''">$(SharpDevelopFxCopAssembly).CodeAnalysisLog.xml</SharpDevelopFxCopLogFile>
+		
+		<!-- register custom target -->
+		<PrepareForRunDependsOn>$(PrepareForRunDependsOn);SharpDevelopFxCopRun</PrepareForRunDependsOn>
+	</PropertyGroup>
+	
+	<!-- run SharpDevelop FxCop. Disabled if the Microsoft CodeAnalysis extension is installed -->
+	<Target Name="SharpDevelopFxCopRun"
+	        Condition="'$(RunCodeAnalysis)'=='true' and '$(CodeAnalysisInputAssemblyForTask)'==''"
+	        Inputs="$(SharpDevelopFxCopAssembly)"
+	        Outputs="$(SharpDevelopFxCopLogFile)"
+	        DependsOnTargets="Compile">
+		<CreateItem Include = "$(SharpDevelopFxCopLogFile)">
+			<Output ItemName = "SharpDevelopFxCopLogFile" TaskParameter="Include"/>
+		</CreateItem>
+		<FxCop ToolPath       = "$(FxCopDir)"
+		       InputAssembly  = "$(SharpDevelopFxCopAssembly)"
+		       Rules          = "$(CodeAnalysisRules)"
+		       RuleAssemblies = "$(CodeAnalysisRuleAssemblies)"
+		       LogFile        = "$(SharpDevelopFxCopLogFile)"
+		       ReferencePaths = "@(ReferencePath)"/>
+	</Target>
+</Project>

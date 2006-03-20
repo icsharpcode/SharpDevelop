@@ -26,7 +26,6 @@ namespace Grunwald.BooBinding
 			LanguageProperties = BooLanguageProperties.Instance;
 			if (!initialized) {
 				initialized = true;
-				MSBuildEngine.CompileTaskNames.Add("booc");
 				MSBuildEngine.MSBuildProperties.Add("BooBinPath", BooBinPath);
 			}
 		}

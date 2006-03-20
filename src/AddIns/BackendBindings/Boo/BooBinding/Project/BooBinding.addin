@@ -30,6 +30,11 @@
 		            extensions = "*.boo"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
+		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
+		<String id="booc" text = "booc"/>
+	</Path>
+	
 	<Path name = "/AddIns/FileTypeRegisterer/FileTypes">
 		<FiletypeAssociation
 			id = "booproj"

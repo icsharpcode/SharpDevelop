@@ -11,7 +11,11 @@
 		<Import assembly = "CodeAnalysis.dll"/>
 	</Runtime>
 	
-	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
+	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalTargetFiles">
+		<String id="CodeAnalysis" text = "$(SharpDevelopBinPath)/SharpDevelop.CodeAnalysis.targets"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
 		<DialogPanel id          = "CodeAnalysis"
 		             label       = "${res:ICSharpCode.CodeAnalysis}"
 		             insertafter = "Publish"

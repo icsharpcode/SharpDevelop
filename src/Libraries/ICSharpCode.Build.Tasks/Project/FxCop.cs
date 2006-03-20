@@ -1,0 +1,266 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
+using System.IO;
+using System.Globalization;
+using System.Text;
+using System.Xml;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks;
+using Microsoft.Build.Utilities;
+using Microsoft.Win32;
+
+namespace ICSharpCode.Build.Tasks
+{
+	public sealed class FxCop : ToolTask
+	{
+		string logFile;
+		string realLogFile;
+		string inputAssembly;
+		string rules;
+		string[] ruleAssemblies;
+		string[] referencePaths;
+		
+		#region Properties
+		public string LogFile {
+			get {
+				return logFile;
+			}
+			set {
+				logFile = value;
+			}
+		}
+		
+		public string InputAssembly {
+			get {
+				return inputAssembly;
+			}
+			set {
+				inputAssembly = value;
+			}
+		}
+		
+		public string Rules {
+			get {
+				return rules;
+			}
+			set {
+				rules = value;
+			}
+		}
+		
+		public string[] RuleAssemblies {
+			get {
+				return ruleAssemblies;
+			}
+			set {
+				ruleAssemblies = value;
+			}
+		}
+		
+		public string[] ReferencePaths {
+			get {
+				return referencePaths;
+			}
+			set {
+				referencePaths = value;
+			}
+		}
+		#endregion
+		
+		protected override string ToolName {
+			get {
+				return "FxCopCmd.exe";
+			}
+		}
+		
+		public override bool Execute()
+		{
+			if (string.IsNullOrEmpty(ToolPath) || !File.Exists(GenerateFullPathToTool())) {
+				string path = FindFxCopPath();
+				Log.LogMessage(MessageImportance.High, "Running Code Analysis...");
+				if (path != null) {
+					ToolPath = path;
+				} else {
+					Log.LogError("SharpDevelop cannot find FxCop. Please specify the MSBuild property 'FxCopDir'.");
+					return false;
+				}
+			}
+			realLogFile = logFile ?? Path.GetTempFileName();
+			try {
+				bool result = base.Execute();
+				if (File.Exists(realLogFile)) {
+					try {
+						Console.WriteLine(File.ReadAllText(realLogFile));
+						XmlDocument doc = new XmlDocument();
+						doc.Load(realLogFile);
+						foreach (XmlNode node in doc.DocumentElement.SelectNodes(".//Exception")) {
+							XmlElement el = node as XmlElement;
+							if (el == null) continue;
+							
+							result = false;
+							string checkId = el.GetAttribute("CheckId");
+							string keyword = el.GetAttribute("Keyword");
+							string message = el["ExceptionMessage"].InnerText;
+							if (checkId.Length > 0) {
+								Log.LogError(null, null, keyword, "", 0, 0, 0, 0,
+								             "{0} : {2} ({1}): {3}", keyword, el.GetAttribute("Category"), checkId, el.GetAttribute("Target"), message);
+							} else {
+								Log.LogError(keyword + " : " + message);
+							}
+						}
+						foreach (XmlNode node in doc.DocumentElement.SelectNodes(".//Message")) {
+							XmlElement el = node as XmlElement;
+							if (el == null) continue;
+							result &= LogMessage(el);
+						}
+					} catch (XmlException e) {
+						Log.LogError("Cannot read FxCop log file: " + e.Message);
+					}
+				}
+				return result;
+			} finally {
+				if (logFile == null) {
+					File.Delete(realLogFile);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Logs a message.
+		/// </summary>
+		/// <returns>True for warning, false for error.</returns>
+		bool LogMessage(XmlElement message)
+		{
+			bool isWarning = true;
+			string checkId = message.GetAttribute("CheckId");
+			string category = message.GetAttribute("Category");
+			foreach (XmlNode node in message.SelectNodes(".//Issue")) {
+				XmlElement issueEl = node as XmlElement;
+				if (issueEl == null) continue;
+				
+				if ("true".Equals(message.GetAttribute("BreaksBuild"), StringComparison.OrdinalIgnoreCase)) {
+					isWarning = false;
+				}
+				string issueText = issueEl.InnerText;
+				string issuePath = issueEl.GetAttribute("Path");
+				string issueFile = issueEl.GetAttribute("File");
+				string issueLine = issueEl.GetAttribute("Line");
+				int issueLineNumber = 0;
+				string issueFullFile = null;
+				if (issuePath.Length > 0 && issueLine.Length > 0 && issueFile.Length > 0) {
+					issueFullFile = Path.Combine(issuePath, issueFile);
+					issueLineNumber = int.Parse(issueLine, CultureInfo.InvariantCulture);
+				} else {
+					// Try to find additional information about this type
+					string memberName = null;
+					XmlNode parent = message.ParentNode;
+					while (parent != null) {
+						if (parent.Name == "Member" || parent.Name == "Type" || parent.Name == "Namespace") {
+							if (memberName == null)
+								memberName = ((XmlElement)parent).GetAttribute("Name");
+							else
+								memberName = ((XmlElement)parent).GetAttribute("Name") + "." + memberName;
+						}
+						parent = parent.ParentNode;
+					}
+					if (memberName != null) {
+						issueFullFile = "positionof#" + memberName;
+					}
+				}
+				
+				issueText = checkId + " : " + category + " : " + issueText;
+				
+				if (isWarning) {
+					Log.LogWarning(null, null, checkId, issueFullFile, issueLineNumber, 0, 0, 0, issueText);
+				} else {
+					Log.LogError(null, null, checkId, issueFullFile, issueLineNumber, 0, 0, 0, issueText);
+				}
+			}
+			return isWarning;
+		}
+		
+		string FindFxCopPath()
+		{
+			// Code duplication: FxCopWrapper.cs in CodeAnalysis addin
+			string fxCopPath = FromRegistry(Registry.CurrentUser.OpenSubKey(@"Software\Classes\FxCopProject\Shell\Open\Command"));
+			if (fxCopPath.Length > 0 && File.Exists(Path.Combine(fxCopPath, ToolName))) {
+				return fxCopPath;
+			}
+			fxCopPath = FromRegistry(Registry.ClassesRoot.OpenSubKey(@"FxCopProject\Shell\Open\Command"));
+			if (fxCopPath.Length > 0 && File.Exists(Path.Combine(fxCopPath, ToolName))) {
+				return fxCopPath;
+			}
+			return null;
+		}
+		
+		string FromRegistry(RegistryKey key)
+		{
+			// Code duplication: FxCopWrapper.cs in CodeAnalysis addin
+			if (key == null) return string.Empty;
+			using (key) {
+				string cmd = key.GetValue("").ToString();
+				int pos;
+				if (cmd.StartsWith("\""))
+					pos = cmd.IndexOf('"', 1);
+				else
+					pos = cmd.IndexOf(' ');
+				try {
+					if (cmd.StartsWith("\""))
+						return Path.GetDirectoryName(cmd.Substring(1, pos - 1));
+					else
+						return Path.GetDirectoryName(cmd.Substring(0, pos));
+				} catch (ArgumentException ex) {
+					Log.LogWarning(cmd);
+					Log.LogWarningFromException(ex);
+					return string.Empty;
+				}
+			}
+		}
+		
+		protected override string GenerateFullPathToTool()
+		{
+			return Path.Combine(ToolPath.Trim('"'), ToolName);
+		}
+		
+		static void AppendSwitch(StringBuilder b, string @switch, string val)
+		{
+			if (!string.IsNullOrEmpty(val)) {
+				b.Append(" /");
+				b.Append(@switch);
+				b.Append(':');
+				if (val[0] == '"') {
+					b.Append(val);
+				} else {
+					b.Append('"');
+					b.Append(val);
+					b.Append('"');
+				}
+			}
+		}
+		
+		protected override string GenerateResponseFileCommands()
+		{
+			StringBuilder b = new StringBuilder();
+			AppendSwitch(b, "o", realLogFile);
+			AppendSwitch(b, "f", inputAssembly);
+			if (referencePaths != null) {
+				foreach (string path in referencePaths) {
+					AppendSwitch(b, "d", Path.GetDirectoryName(path));
+				}
+			}
+			if (ruleAssemblies != null) {
+				foreach (string asm in ruleAssemblies) {
+					AppendSwitch(b, "r", asm);
+				}
+			}
+			AppendSwitch(b, "rid", rules);
+			return b.ToString();
+		}
+	}
+}
