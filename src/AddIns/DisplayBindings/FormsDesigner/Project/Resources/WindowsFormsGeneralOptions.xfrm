@@ -1,0 +1,68 @@
+﻿<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="WindowsFormsGeneralOptions" />
+    <ClientSize value="{Width=391, Height=300}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="propertyPadOptionsGroupBox" />
+        <Location value="{X=9,Y=168}" />
+        <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PropertyGridGroupBox}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=372, Height=56}" />
+        <TabIndex value="1" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="sortAlphabeticalCheckBox" />
+            <Location value="{X=6,Y=24}" />
+            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PropertyGridSortCheckBox}" />
+            <TabIndex value="0" />
+            <Size value="{Width=366, Height=24}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="generalOptionsGroupBox" />
+        <Location value="{X=8,Y=8}" />
+        <Text value="${res:Dialog.Options.IDEOptions.TextEditor.General.GeneralOptionsGroupBox}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=373, Height=145}" />
+        <TabIndex value="0" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="optimizedCodeGenerationCheckBox" />
+            <Location value="{X=6,Y=110}" />
+            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.OptimizedCodeGenerationCheckBox}" />
+            <TabIndex value="3" />
+            <Size value="{Width=367, Height=24}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="smartTagAutoShowCheckBox" />
+            <Location value="{X=6,Y=80}" />
+            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.SmartTagAutoShowCheckBox}" />
+            <TabIndex value="2" />
+            <Size value="{Width=367, Height=24}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="inPlaceEditCheckBox" />
+            <Location value="{X=6,Y=50}" />
+            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.InPlaceEditCheckBox}" />
+            <TabIndex value="1" />
+            <Size value="{Width=367, Height=24}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="useSmartTagsCheckBox" />
+            <Location value="{X=6,Y=20}" />
+            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.SmartTagsCheckBox}" />
+            <TabIndex value="0" />
+            <Size value="{Width=367, Height=24}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

@@ -99,6 +99,8 @@
     <Compile Include="Src\DesignerGenerator\AbstractDesignerGenerator.cs" />
     <Compile Include="Src\Services\TypeDiscoveryService.cs" />
     <Compile Include="Src\UndoRedo\UndoEngine.cs" />
+    <Compile Include="Src\Gui\OptionPanels\GeneralOptions.cs" />
+    <EmbeddedResource Include="Resources\WindowsFormsGeneralOptions.xfrm" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

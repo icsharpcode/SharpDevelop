@@ -140,7 +140,7 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
 			serviceContainer.AddService(typeof(ITypeResolutionService), new TypeResolutionService(viewContent.FileName));
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerEventService), new DesignerEventService());
-			serviceContainer.AddService(typeof(System.ComponentModel.Design.DesignerOptionService), new ICSharpCode.FormsDesigner.Services.DesignerOptionService());
+			serviceContainer.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService());
 			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService());
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
 			
