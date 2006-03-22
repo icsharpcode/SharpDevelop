@@ -406,7 +406,7 @@ namespace VBNetBinding.FormattingStrategy
 						int column = textArea.Caret.Offset - curLine.Offset;
 						int index = Math.Min(column - 1, curLineText.Length - 1);
 						
-						while (index >= 0 && curLineText[index] != '<') {
+						while (index > 0 && curLineText[index] != '<') {
 							--index;
 							if(curLineText[index] == '/')
 								return 0; // the tag was an end tag or already
