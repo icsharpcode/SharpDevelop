@@ -173,10 +173,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static AttributedNode ConvertMember(IProperty p, ClassFinder targetContext)
 		{
 			if (p.IsIndexer) {
-				return new IndexerDeclaration(ConvertType(p.ReturnType, targetContext),
-				                              ConvertParameters(p.Parameters, targetContext),
-				                              ConvertModifier(p.Modifiers),
-				                              ConvertAttributes(p.Attributes, targetContext));
+				IndexerDeclaration md;
+				md = new IndexerDeclaration(ConvertType(p.ReturnType, targetContext),
+				                            ConvertParameters(p.Parameters, targetContext),
+				                            ConvertModifier(p.Modifiers),
+				                            ConvertAttributes(p.Attributes, targetContext));
+				md.Parameters = ConvertParameters(p.Parameters, targetContext);
+				if (p.CanGet) md.GetRegion = new PropertyGetRegion(CreateNotImplementedBlock(), null);
+				if (p.CanSet) md.SetRegion = new PropertySetRegion(CreateNotImplementedBlock(), null);
+				return md;
 			} else {
 				PropertyDeclaration md;
 				md = new PropertyDeclaration(p.Name,
@@ -389,6 +394,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public void ImplementInterface(IReturnType interf, IDocument document, bool explicitImpl, ModifierEnum implModifier, IClass targetClass)
 		{
 			List<AbstractNode> nodes = new List<AbstractNode>();
+			ImplementInterface(nodes, interf, explicitImpl, implModifier, targetClass);
 			InsertCodeAtEnd(targetClass.Region, document, nodes.ToArray());
 		}
 		
