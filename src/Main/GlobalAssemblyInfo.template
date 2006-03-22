@@ -21,7 +21,7 @@ using System.Reflection;
 [assembly: AssemblyCopyright("2000-2006 AlphaSierraPapa")]
 [assembly: AssemblyVersion(RevisionClass.Version + "." + RevisionClass.Revision)]
 
-internal class RevisionClass {
+internal static class RevisionClass {
 	public const string Version = "2.1.0";
 	public const string Revision = "-INSERTREVISION-";
 }

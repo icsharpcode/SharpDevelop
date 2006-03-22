@@ -111,6 +111,14 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	}
 	public class BuildProject : AbstractProjectBuildMenuCommand
 	{
+		IDictionary<string, string> additionalProperties = new SortedList<string, string>();
+		
+		public IDictionary<string, string> AdditionalProperties {
+			get {
+				return additionalProperties;
+			}
+		}
+		
 		public BuildProject()
 		{
 		}
@@ -121,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		
 		public override void StartBuild()
 		{
-			this.ProjectToBuild.Build(CallbackMethod);
+			this.ProjectToBuild.Build(CallbackMethod, AdditionalProperties);
 		}
 		
 		public override void AfterBuild()
@@ -132,9 +140,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public class RebuildProject : BuildProject
 	{
+		public RebuildProject() {}
+		public RebuildProject(IProject targetProject) : base(targetProject) {}
+		
 		public override void StartBuild()
 		{
-			this.ProjectToBuild.Rebuild(CallbackMethod);
+			this.ProjectToBuild.Rebuild(CallbackMethod, AdditionalProperties);
 		}
 	}
 	
@@ -142,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void StartBuild()
 		{
-			this.ProjectToBuild.Clean(CallbackMethod);
+			this.ProjectToBuild.Clean(CallbackMethod, null);
 		}
 	}
 	
@@ -150,7 +161,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void StartBuild()
 		{
-			this.ProjectToBuild.Publish(CallbackMethod);
+			this.ProjectToBuild.Publish(CallbackMethod, null);
 		}
 	}
 	

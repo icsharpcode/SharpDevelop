@@ -405,7 +405,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		public static void RunMSBuild(string fileName, string target, string configuration, string platform, bool isSingleProject, MSBuildEngineCallback callback)
+		public static void RunMSBuild(string fileName, string target, string configuration, string platform, bool isSingleProject, MSBuildEngineCallback callback, IDictionary<string, string> additionalProperties)
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 			MSBuildEngine engine = new MSBuildEngine();
@@ -414,6 +414,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (!dir.EndsWith("/") && !dir.EndsWith("\\"))
 					dir += Path.DirectorySeparatorChar;
 				engine.AdditionalProperties.Add("SolutionDir", dir);
+			}
+			if (additionalProperties != null) {
+				foreach (KeyValuePair<string, string> pair in additionalProperties) {
+					engine.AdditionalProperties.Add(pair.Key, pair.Value);
+				}
 			}
 			engine.Configuration = configuration;
 			engine.Platform = platform;
@@ -425,30 +430,30 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public void RunMSBuild(string target, MSBuildEngineCallback callback)
+		public void RunMSBuild(string target, MSBuildEngineCallback callback, IDictionary<string, string> additionalProperties)
 		{
-			RunMSBuild(this.FileName, target, this.Configuration, this.Platform, true, callback);
+			RunMSBuild(this.FileName, target, this.Configuration, this.Platform, true, callback, additionalProperties);
 		}
 		
-		public override void Build(MSBuildEngineCallback callback)
+		public override void Build(MSBuildEngineCallback callback, IDictionary<string, string> additionalProperties)
 		{
-			RunMSBuild("Build", callback);
+			RunMSBuild("Build", callback, additionalProperties);
 		}
 		
-		public override void Rebuild(MSBuildEngineCallback callback)
+		public override void Rebuild(MSBuildEngineCallback callback, IDictionary<string, string> additionalProperties)
 		{
-			RunMSBuild("Rebuild", callback);
+			RunMSBuild("Rebuild", callback, additionalProperties);
 		}
 		
-		public override void Clean(MSBuildEngineCallback callback)
+		public override void Clean(MSBuildEngineCallback callback, IDictionary<string, string> additionalProperties)
 		{
-			RunMSBuild("Clean", callback);
+			RunMSBuild("Clean", callback, additionalProperties);
 			isDirty = true;
 		}
 		
-		public override void Publish(MSBuildEngineCallback callback)
+		public override void Publish(MSBuildEngineCallback callback, IDictionary<string, string> additionalProperties)
 		{
-			RunMSBuild("Publish", callback);
+			RunMSBuild("Publish", callback, additionalProperties);
 		}
 		
 		public override string ToString()

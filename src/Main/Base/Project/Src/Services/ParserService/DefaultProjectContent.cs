@@ -822,7 +822,7 @@ namespace ICSharpCode.Core
 				if (curClass != null) {
 					IMember member = curClass.SearchMember(memberName, LanguageProperties.CSharp);
 					if (member != null) {
-						return new Position(curClass.CompilationUnit, member.Region.BeginLine, member.Region.BeginColumn);
+						return new Position(member.DeclaringType.CompilationUnit, member.Region.BeginLine, member.Region.BeginColumn);
 					}
 				}
 			}

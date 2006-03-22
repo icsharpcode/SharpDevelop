@@ -1,9 +1,9 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Daniel Grunwald
- * Date: 28.02.2006
- * Time: 17:16
- */
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.Collections.Generic;
@@ -67,6 +67,8 @@ namespace ICSharpCode.CodeAnalysis
 			FxCopRule o = (FxCopRule)obj;
 			int r = categoryName.CompareTo(o.categoryName);
 			if (r != 0) return r;
+			r = checkId.CompareTo(o.checkId);
+			if (r != 0) return r;
 			return displayName.CompareTo(o.displayName);
 		}
 	}
@@ -74,16 +76,11 @@ namespace ICSharpCode.CodeAnalysis
 	public class FxCopCategory
 	{
 		readonly string name;
-		readonly string displayName;
 		readonly List<FxCopRule> rules = new List<FxCopRule>();
 		
 		public FxCopCategory(string name)
 		{
 			this.name = name;
-			if (name.StartsWith("Microsoft."))
-				displayName = name.Substring(10);
-			else
-				displayName = name;
 		}
 		
 		public string Name {
@@ -94,7 +91,7 @@ namespace ICSharpCode.CodeAnalysis
 		
 		public string DisplayName {
 			get {
-				return displayName;
+				return name;
 			}
 		}
 		

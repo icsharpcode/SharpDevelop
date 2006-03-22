@@ -1,15 +1,16 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Daniel Grunwald
- * Date: 28.02.2006
- * Time: 15:52
- */
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -33,6 +34,7 @@ namespace ICSharpCode.CodeAnalysis
 			enableCheckBox.Text = StringParser.Parse(enableCheckBox.Text);
 			ruleLabel.Text = StringParser.Parse(ruleLabel.Text);
 			warningOrErrorLabel.Text = StringParser.Parse(warningOrErrorLabel.Text);
+			changeRuleAssembliesButton.Text = StringParser.Parse(changeRuleAssembliesButton.Text);
 			
 			ruleLabel.SizeChanged += delegate { ruleTreeView.Invalidate(); };
 		}
@@ -44,10 +46,16 @@ namespace ICSharpCode.CodeAnalysis
 			base.OnVisibleChanged(e);
 			
 			if (ruleTreeView.Nodes.Count == 0 && this.Visible) {
-				FxCopWrapper.GetRuleList(Callback);
-				if (ruleTreeView.Nodes.Count == 0) {
-					ruleTreeView.Nodes.Add(StringParser.Parse("${res:ICSharpCode.CodeAnalysis.ProjectOptions.LoadingRules}"));
-				}
+				ReloadRuleList();
+			}
+		}
+		
+		void ReloadRuleList()
+		{
+			ruleTreeView.Nodes.Clear();
+			FxCopWrapper.GetRuleList(GetRuleAssemblyList(true), Callback);
+			if (ruleTreeView.Nodes.Count == 0) {
+				ruleTreeView.Nodes.Add(StringParser.Parse("${res:ICSharpCode.CodeAnalysis.ProjectOptions.LoadingRules}"));
 			}
 		}
 		
@@ -57,6 +65,7 @@ namespace ICSharpCode.CodeAnalysis
 				WorkbenchSingleton.SafeThreadAsyncCall((Action<List<FxCopCategory>>)Callback, ruleList);
 			} else {
 				ruleTreeView.Nodes.Clear();
+				rules.Clear();
 				if (ruleList == null || ruleList.Count == 0) {
 					ruleTreeView.Nodes.Add(new TreeNode(StringParser.Parse("${res:ICSharpCode.CodeAnalysis.ProjectOptions.CannotFindFxCop}")));
 					ruleTreeView.Nodes.Add(new TreeNode(StringParser.Parse("${res:ICSharpCode.CodeAnalysis.ProjectOptions.SpecifyFxCopPath}")));
@@ -65,7 +74,7 @@ namespace ICSharpCode.CodeAnalysis
 						CategoryTreeNode catNode = new CategoryTreeNode(cat);
 						ruleTreeView.Nodes.Add(catNode);
 						foreach (RuleTreeNode ruleNode in catNode.Nodes) {
-							rules.Add(ruleNode.Identifier, ruleNode);
+							rules[ruleNode.Identifier] = ruleNode;
 						}
 					}
 					initSuccess = true;
@@ -116,7 +125,7 @@ namespace ICSharpCode.CodeAnalysis
 			public RuleTreeNode(FxCopRule rule)
 			{
 				this.rule = rule;
-				this.Text = rule.DisplayName;
+				this.Text = rule.CheckId + " : " + rule.DisplayName;
 			}
 			
 			public string Identifier {
@@ -245,6 +254,30 @@ namespace ICSharpCode.CodeAnalysis
 		}
 		#endregion
 		
+		#region Rule Assemblies Property
+		string ruleAssemblies;
+		const string DefaultRuleAssemblies = @"$(FxCopDir)\rules";
+		
+		public string RuleAssemblies {
+			get {
+				return ruleAssemblies;
+			}
+			set {
+				if (string.IsNullOrEmpty(value)) {
+					value = DefaultRuleAssemblies;
+				}
+				if (ruleAssemblies != value) {
+					ruleAssemblies = value;
+					
+					if (initSuccess) {
+						OnOptionChanged(EventArgs.Empty);
+						ReloadRuleList();
+					}
+				}
+			}
+		}
+		#endregion
+		
 		#region ConfigurationGuiBinding
 		public CheckBox EnableCheckBox {
 			get {
@@ -272,11 +305,14 @@ namespace ICSharpCode.CodeAnalysis
 			public override void Load()
 			{
 				po.RuleString = Get("");
+				PropertyStorageLocations tmp;
+				po.RuleAssemblies = Helper.GetProperty("CodeAnalysisRuleAssemblies", "", out tmp);
 			}
 			
 			public override bool Save()
 			{
 				Set(po.RuleString);
+				Helper.SetProperty("CodeAnalysisRuleAssemblies", (po.RuleAssemblies == DefaultRuleAssemblies) ? "" : po.RuleAssemblies, Location);
 				return true;
 			}
 		}
@@ -337,6 +373,73 @@ namespace ICSharpCode.CodeAnalysis
 					userCheck = true;
 				}
 				OnOptionChanged(EventArgs.Empty);
+			}
+		}
+		
+		string[] GetRuleAssemblyList(bool replacePath)
+		{
+			List<string> list = new List<string>();
+			foreach (string dir in ruleAssemblies.Split(';')) {
+				if (string.Equals(dir, "$(FxCopDir)\\rules", StringComparison.OrdinalIgnoreCase))
+					continue;
+				if (string.Equals(dir, "$(FxCopDir)/rules", StringComparison.OrdinalIgnoreCase))
+					continue;
+				if (replacePath) {
+					list.Add(Regex.Replace(dir, @"\$\(FxCopDir\)", FxCopWrapper.FindFxCopPath(), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase));
+				} else {
+					list.Add(dir);
+				}
+			}
+			return list.ToArray();
+		}
+		
+		void ChangeRuleAssembliesButtonClick(object sender, EventArgs e)
+		{
+			using (Form frm = new Form()) {
+				frm.Text = changeRuleAssembliesButton.Text;
+				
+				StringListEditor ed = new StringListEditor();
+				ed.Dock = DockStyle.Fill;
+				ed.ManualOrder = false;
+				ed.BrowseForDirectory = true;
+				ed.AutoAddAfterBrowse = true;
+				ed.TitleText = "${res:ICSharpCode.CodeAnalysis.ProjectOptions.ChooseRuleAssemblyDirectory}";
+				
+				ed.LoadList(GetRuleAssemblyList(false));
+				FlowLayoutPanel p = new FlowLayoutPanel();
+				p.Dock = DockStyle.Bottom;
+				p.FlowDirection = FlowDirection.RightToLeft;
+				
+				Button btn = new Button();
+				p.Height = btn.Height + 8;
+				btn.DialogResult = DialogResult.Cancel;
+				btn.Text = ResourceService.GetString("Global.CancelButtonText");
+				frm.CancelButton = btn;
+				p.Controls.Add(btn);
+				
+				btn = new Button();
+				btn.DialogResult = DialogResult.OK;
+				btn.Text = ResourceService.GetString("Global.OKButtonText");
+				frm.AcceptButton = btn;
+				p.Controls.Add(btn);
+				
+				frm.Controls.Add(ed);
+				frm.Controls.Add(p);
+				
+				frm.FormBorderStyle = FormBorderStyle.FixedDialog;
+				frm.MaximizeBox = false;
+				frm.MinimizeBox = false;
+				frm.ClientSize = new Size(400, 300);
+				frm.StartPosition = FormStartPosition.CenterParent;
+				
+				if (frm.ShowDialog(FindForm()) == DialogResult.OK) {
+					StringBuilder b = new StringBuilder(DefaultRuleAssemblies);
+					foreach (string asm in ed.GetList()) {
+						b.Append(';');
+						b.Append(asm);
+					}
+					this.RuleAssemblies = b.ToString();
+				}
 			}
 		}
 	}

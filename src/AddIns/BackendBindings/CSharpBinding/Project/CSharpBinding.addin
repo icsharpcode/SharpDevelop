@@ -70,6 +70,7 @@
 		<!--<DialogPanel id    = "Publish"
 		             label = "${res:Dialog.ProjectOptions.Publish}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>-->
+		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 	</Path>
 	
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/C#">

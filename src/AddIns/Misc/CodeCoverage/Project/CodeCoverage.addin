@@ -66,10 +66,9 @@
 		</Condition>
 	</Path>
 	
-	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
+	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
 		<DialogPanel id          = "CodeCoverage"
 		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
-		             insertafter = "Publish"
 		             class       = "ICSharpCode.CodeCoverage.CodeCoverageProjectOptionsPanel"/>
 	</Path>
 </AddIn>

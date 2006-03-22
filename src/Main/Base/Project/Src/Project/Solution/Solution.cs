@@ -637,29 +637,29 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		public void RunMSBuild(string target, MSBuildEngineCallback callback)
+		public void RunMSBuild(string target, MSBuildEngineCallback callback, IDictionary<string, string> additionalProperties)
 		{
-			MSBuildProject.RunMSBuild(FileName, target, preferences.ActiveConfiguration, preferences.ActivePlatform, false, callback);
+			MSBuildProject.RunMSBuild(FileName, target, preferences.ActiveConfiguration, preferences.ActivePlatform, false, callback, additionalProperties);
 		}
 		
 		public void Build(MSBuildEngineCallback callback)
 		{
-			RunMSBuild(null, callback);
+			RunMSBuild(null, callback, null);
 		}
 		
 		public void Rebuild(MSBuildEngineCallback callback)
 		{
-			RunMSBuild("Rebuild", callback);
+			RunMSBuild("Rebuild", callback, null);
 		}
 		
 		public void Clean(MSBuildEngineCallback callback)
 		{
-			RunMSBuild("Clean", callback);
+			RunMSBuild("Clean", callback, null);
 		}
 		
 		public void Publish(MSBuildEngineCallback callback)
 		{
-			RunMSBuild("Publish", callback);
+			RunMSBuild("Publish", callback, null);
 		}
 	}
 }

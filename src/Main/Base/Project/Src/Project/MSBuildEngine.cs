@@ -330,7 +330,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						IProjectContent pc = ParserService.GetProjectContent(project);
 						if (pc != null) {
 							Position pos = pc.GetPosition(memberName);
-							if (pos != null) {
+							if (pos != null && pos.Cu != null) {
 								file = pos.Cu.FileName ?? "";
 								lineNumber = pos.Line;
 								columnNumber = pos.Column;

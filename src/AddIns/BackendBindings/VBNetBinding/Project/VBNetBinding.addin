@@ -75,6 +75,7 @@
 		<DialogPanel id    = "ProjectImports"
 		             label = "${res:Dialog.ProjectOptions.ProjectImports}"
 		             class = "VBNetBinding.OptionPanels.ProjectImports"/>
+		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 	</Path>
 
 	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">

@@ -1,9 +1,9 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Daniel Grunwald
- * Date: 28.02.2006
- * Time: 16:24
- */
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.Collections;
@@ -17,8 +17,40 @@ namespace ICSharpCode.CodeAnalysis
 {
 	public static class FxCopWrapper
 	{
-		static List<FxCopCategory> rules = new List<FxCopCategory>();
-		static List<Action<List<FxCopCategory>>> callbacks = new List<Action<List<FxCopCategory>>>();
+		static Dictionary<string[], List<FxCopCategory>> ruleDict = new Dictionary<string[], List<FxCopCategory>>(new ArrayHashCodeProvider());
+		
+		class ArrayHashCodeProvider : IEqualityComparer<string[]>
+		{
+			public bool Equals(string[] x, string[] y)
+			{
+				if (x == y) return true;
+				if (x == null || y == null) return false;
+				if (x.Length != y.Length) return false;
+				for (int i = 0; i < x.Length; i++) {
+					if (StringComparer.OrdinalIgnoreCase.Equals(x[i], y[i])) return false;
+				}
+				return true;
+			}
+			public int GetHashCode(string[] obj)
+			{
+				int hashcode = 0;
+				foreach (string e in obj) {
+					hashcode ^= StringComparer.OrdinalIgnoreCase.GetHashCode(e);
+				}
+				return hashcode;
+			}
+		}
+		
+		class Request
+		{
+			public string[] ruleAssemblies;
+			public Action<List<FxCopCategory>> callback;
+			public Request(string[] ruleAssemblies, Action<List<FxCopCategory>> callback)
+			{
+				this.ruleAssemblies = ruleAssemblies;
+				this.callback = callback;
+			}
+		}
 		
 		/// <summary>
 		/// Gets the rules supported by the current FxCop version. The rules are loaded on a separate
@@ -26,20 +58,18 @@ namespace ICSharpCode.CodeAnalysis
 		/// Warning: the callback might be fired on the current thread if the rules are already loaded,
 		/// or on another thread!
 		/// </summary>
-		public static void GetRuleList(Action<List<FxCopCategory>> callback)
+		public static void GetRuleList(string[] ruleAssemblies, Action<List<FxCopCategory>> callback)
 		{
-			int count;
-			lock (rules) {
-				count = rules.Count;
-				if (count == 0) {
-					callbacks.Add(callback);
-					if (callbacks.Count == 1) {
-						// Start the thread:
-						System.Threading.ThreadPool.QueueUserWorkItem(RunGetRuleList);
-					}
+			if (ruleAssemblies == null)
+				throw new ArgumentNullException("ruleAssemblies");
+			List<FxCopCategory> rules = null;
+			lock (ruleDict) {
+				if (!ruleDict.TryGetValue(ruleAssemblies, out rules)) {
+					// Start the thread:
+					System.Threading.ThreadPool.QueueUserWorkItem(RunGetRuleList, new Request(ruleAssemblies, callback));
 				}
 			}
-			if (count > 0) {
+			if (rules != null) {
 				callback(rules);
 			}
 		}
@@ -88,27 +118,26 @@ namespace ICSharpCode.CodeAnalysis
 		
 		static void RunGetRuleList(object state)
 		{
+			Request request = (Request)state;
+			
 			LoggingService.Debug("Trying to find FxCop rules");
 			string fxCopPath = FindFxCopPath();
+			List<FxCopCategory> rules;
 			if (fxCopPath != null) {
 				try {
-					GetRuleListAndSort(fxCopPath);
+					rules = GetRuleListAndSort(fxCopPath, request.ruleAssemblies);
 				} catch (Exception ex) {
 					LoggingService.Warn(ex);
+					rules = new List<FxCopCategory>();
 				}
+			} else {
+				rules = new List<FxCopCategory>();
 			}
-			Action<List<FxCopCategory>>[] callbacks_tmp;
-			lock (rules) {
-				callbacks_tmp = callbacks.ToArray();
-				callbacks.Clear();
-			}
-			LoggingService.Debug("Finished getting FxCop rules, invoking " + callbacks_tmp.Length + " callback");
-			foreach (Action<List<FxCopCategory>> callback in callbacks_tmp) {
-				callback(rules);
-			}
+			LoggingService.Debug("Finished getting FxCop rules, invoking callback");
+			request.callback(rules);
 		}
 		
-		static void GetRuleListAndSort(string fxCopPath)
+		static List<FxCopCategory> GetRuleListAndSort(string fxCopPath, string[] ruleAssemblies)
 		{
 			AppDomainSetup setup = new AppDomainSetup();
 			setup.DisallowCodeDownload = true;
@@ -117,7 +146,7 @@ namespace ICSharpCode.CodeAnalysis
 			
 			string[][] ruleTextList;
 			try {
-				ruleTextList = (string[][])AppDomainLaunchHelper.LaunchInAppDomain(domain, typeof(FxCopWrapper), "GetRuleListInCurrentAppDomain", fxCopPath);
+				ruleTextList = (string[][])AppDomainLaunchHelper.LaunchInAppDomain(domain, typeof(FxCopWrapper), "GetRuleListInCurrentAppDomain", fxCopPath, ruleAssemblies);
 			} finally {
 				AppDomain.Unload(domain);
 			}
@@ -130,7 +159,8 @@ namespace ICSharpCode.CodeAnalysis
 			}
 			
 			Array.Sort(ruleList);
-			lock (rules) {
+			List<FxCopCategory> rules = new List<FxCopCategory>();
+			lock (ruleDict) {
 				FxCopCategory cat = null;
 				foreach (FxCopRule rule in ruleList) {
 					if (cat == null || cat.Name != rule.CategoryName) {
@@ -139,7 +169,9 @@ namespace ICSharpCode.CodeAnalysis
 					}
 					cat.Rules.Add(rule);
 				}
+				ruleDict[ruleAssemblies] = rules;
 			}
+			return rules;
 		}
 		
 		// We don't want to reference the FxCop assembly
@@ -170,12 +202,16 @@ namespace ICSharpCode.CodeAnalysis
 				return v.ToString();
 		}
 		
-		public static string[][] GetRuleListInCurrentAppDomain(string fxCopPath)
+		public static string[][] GetRuleListInCurrentAppDomain(string fxCopPath, string[] ruleAssemblies)
 		{
 			Assembly asm = Assembly.LoadFrom(Path.Combine(fxCopPath, "FxCopCommon.dll"));
 			
 			Type fxCopOM = asm.GetType("Microsoft.FxCop.Common.FxCopOM");
 			CallMethod(fxCopOM, "Initialize", BindingFlags.Static, null);
+			
+			object engines = fxCopOM.InvokeMember("Engines", BindingFlags.Public | BindingFlags.Static | BindingFlags.GetProperty, null, null, null);
+			((System.Collections.Specialized.StringCollection)GetProp(engines, "RuleDirectories"))
+				.AddRange(ruleAssemblies);
 			
 			object project = asm.CreateInstance("Microsoft.FxCop.Common.Project");
 			fxCopOM.InvokeMember("Project", BindingFlags.Public | BindingFlags.Static | BindingFlags.SetProperty,

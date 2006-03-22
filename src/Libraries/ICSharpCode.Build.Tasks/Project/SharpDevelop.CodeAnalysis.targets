@@ -6,7 +6,7 @@
 	
 	<PropertyGroup>
 		<!-- Define compilation symbols -->
-		<DefineConstants      Condition="'$(RunCodeAnalysis)'=='true' and '$(Language)'!='C#' ">$(DefineConstants);CODE_ANALYSIS</DefineConstants>
+		<DefineConstants      Condition="'$(RunCodeAnalysis)'=='true' and '$(Language)'!='VB' ">$(DefineConstants);CODE_ANALYSIS</DefineConstants>
 		<FinalDefineConstants Condition="'$(RunCodeAnalysis)'=='true' and '$(Language)'=='VB' ">$(FinalDefineConstants),CODE_ANALYSIS=1</FinalDefineConstants>
 		
 		<!-- prepare task properties -->

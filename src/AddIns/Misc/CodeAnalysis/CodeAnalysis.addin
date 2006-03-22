@@ -15,10 +15,16 @@
 		<String id="CodeAnalysis" text = "$(SharpDevelopBinPath)/SharpDevelop.CodeAnalysis.targets"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
+	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
 		<DialogPanel id          = "CodeAnalysis"
 		             label       = "${res:ICSharpCode.CodeAnalysis}"
-		             insertafter = "Publish"
 		             class       = "ICSharpCode.CodeAnalysis.AnalysisProjectOptionsPanel"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
+		<MenuItem id    = "CheckWithFxCop"
+		          label = "${res:ICSharpCode.CodeAnalysis.CheckWithFxCop}"
+		          class = "ICSharpCode.CodeAnalysis.CheckCurrentProjectCommand"
+		          insertafter = "Separator2" insertbefore="SetConfiguration"/>
 	</Path>
 </AddIn>

@@ -22,7 +22,7 @@ namespace ICSharpCode.Build.Tasks
 		string logFile;
 		string realLogFile;
 		string inputAssembly;
-		string rules;
+		string[] rules;
 		string[] ruleAssemblies;
 		string[] referencePaths;
 		
@@ -45,7 +45,7 @@ namespace ICSharpCode.Build.Tasks
 			}
 		}
 		
-		public string Rules {
+		public string[] Rules {
 			get {
 				return rules;
 			}
@@ -81,7 +81,7 @@ namespace ICSharpCode.Build.Tasks
 		
 		public override bool Execute()
 		{
-			if (string.IsNullOrEmpty(ToolPath) || !File.Exists(GenerateFullPathToTool())) {
+			if (string.IsNullOrEmpty(ToolPath)) {
 				string path = FindFxCopPath();
 				Log.LogMessage(MessageImportance.High, "Running Code Analysis...");
 				if (path != null) {
@@ -96,7 +96,9 @@ namespace ICSharpCode.Build.Tasks
 				bool result = base.Execute();
 				if (File.Exists(realLogFile)) {
 					try {
+						#if DEBUG
 						Console.WriteLine(File.ReadAllText(realLogFile));
+						#endif
 						XmlDocument doc = new XmlDocument();
 						doc.Load(realLogFile);
 						foreach (XmlNode node in doc.DocumentElement.SelectNodes(".//Exception")) {
@@ -256,10 +258,18 @@ namespace ICSharpCode.Build.Tasks
 			}
 			if (ruleAssemblies != null) {
 				foreach (string asm in ruleAssemblies) {
-					AppendSwitch(b, "r", asm);
+					if (asm.StartsWith("\\")) {
+						AppendSwitch(b, "r", ToolPath + asm);
+					} else {
+						AppendSwitch(b, "r", asm);
+					}
 				}
 			}
-			AppendSwitch(b, "rid", rules);
+			if (rules != null) {
+				foreach (string rule in rules) {
+					AppendSwitch(b, "ruleid", rule);
+				}
+			}
 			return b.ToString();
 		}
 	}
