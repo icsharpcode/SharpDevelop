@@ -74,7 +74,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			string applicationIcon = Path.Combine(baseDirectory, Get<ComboBox>("applicationIcon").Text);
 			if (File.Exists(applicationIcon)) {
-				Get<PictureBox>("applicationIcon").Image = Image.FromFile(applicationIcon);
+				try {
+					Get<PictureBox>("applicationIcon").Image = Image.FromFile(applicationIcon);
+				} catch (OutOfMemoryException) {
+					Get<PictureBox>("applicationIcon").Image = null;
+					MessageService.ShowErrorFormatted("${res:Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile}", Path.GetFullPath(applicationIcon));
+				}
 			} else {
 				Get<PictureBox>("applicationIcon").Image = null;
 			}
