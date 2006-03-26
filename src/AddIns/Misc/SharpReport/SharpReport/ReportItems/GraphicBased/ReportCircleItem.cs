@@ -17,7 +17,7 @@ using SharpReport.Designer;
 
 namespace SharpReport.ReportItems{
 	
-	public class ReportCircleItem : BaseCircleItem,SharpReport.Designer.IDesignable{	
+	public class ReportCircleItem : BaseCircleItem,IDesignable{	
 	/// <summary>
 	/// This Class draws a Circle 
 	///All this Graphical Classes derive from <see cref="BaseGraphicItem"></see>
@@ -42,7 +42,7 @@ namespace SharpReport.ReportItems{
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
 	
 			base.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (BasePropertyChange);
-			ItemsHelper.UpdateGraphicControl (this.visualControl,this);
+			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
 			this.initDone = true;
 		}
 
@@ -50,12 +50,12 @@ namespace SharpReport.ReportItems{
 		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
 			if (initDone == true) {
-				ItemsHelper.UpdateGraphicBase (this.visualControl,this);
+				ItemsHelper.UpdateControlFromGraphicBase (this.visualControl,this);
 			}
 		}
 		
 		private void OnControlChanged (object sender, EventArgs e) {
-			ItemsHelper.UpdateGraphicControl (this.visualControl,this);
+			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
 			this.HandlePropertyChanged("OnControlChanged");
 		}
 		

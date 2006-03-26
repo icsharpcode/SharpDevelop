@@ -46,6 +46,7 @@ namespace SharpReportCore {
 			foreach (GlobalEnums.enmSection sec in Enum.GetValues(typeof(GlobalEnums.enmSection))) {
 				sectionCollection.Add (sectionFactory.Create(sec.ToString()));
 			}
+			
 		}
 		
 		public ReportModel(GraphicsUnit graphicsUnit):this() {

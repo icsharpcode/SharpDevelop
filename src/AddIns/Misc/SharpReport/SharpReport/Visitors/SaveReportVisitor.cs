@@ -25,7 +25,7 @@ namespace SharpReport.Visitors{
 		
 		private XmlDocument xmlDoc;
 		
-		public SaveReportVisitor () {
+		public SaveReportVisitor ():base() {
 			
 		}
 		

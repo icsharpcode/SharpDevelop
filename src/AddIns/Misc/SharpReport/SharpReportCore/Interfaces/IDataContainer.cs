@@ -13,19 +13,20 @@ namespace SharpReportCore {
  		/// Setup the Databinding, return true if databinding was ok
  		/// </summary>
  		bool DataBind();
- 		/// <summary>
- 		/// Move to next row
- 		/// </summary>
- 		/// <returns></returns>
- 		void Skip();
+// 		/// <summary>
+// 		/// Move to next row
+// 		/// </summary>
+// 		/// <returns></returns>
+// 		void Skip();
  		/// <summary>
  		/// reste Datasource,move to position 0
  		/// </summary>
  		void Reset ();
- 		/// <summary>
- 		/// Reads one row of data and fill the
- 		/// <see cref="ReportItemCollection"></see>
- 		void FetchData (ReportItemCollection collection);
+ 	
+// 		/// <summary>
+// 		/// Reads one row of data and fill the
+// 		/// <see cref="ReportItemCollection"></see>
+// 		void FetchData (ReportItemCollection collection);
 
  		int Count {
  			get;

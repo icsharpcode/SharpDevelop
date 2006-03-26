@@ -143,7 +143,7 @@ namespace ReportGenerator{
 		private void CreateCollections (DataSet dataSet) {
 			using  (AutoReport auto = new AutoReport()){
 				abstractColumns  = auto.AbstractColumnsFromDataSet (dataSet);
-				colDetail = auto.ReportItemsFromSchema(this.model,dataSet);
+				colDetail = auto.DataItemsFromSchema(this.model,dataSet);
 			}
 		}
 		

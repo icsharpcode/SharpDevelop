@@ -39,7 +39,8 @@ namespace SharpReportAddin {
 				if (view != null) {
 					try {
 						ReportGenerator.CreateReport cmd = new ReportGenerator.CreateReport(view.DesignerControl.ReportModel);
-						cmd.Run();							
+						cmd.Run();	
+						cmd = null;
 						view.FileName = view.DesignerControl.ReportModel.ReportSettings.FileName;							
 						view.UpdateView(true);							
 						view.Selected();							

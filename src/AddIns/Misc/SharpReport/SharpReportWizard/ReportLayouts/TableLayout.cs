@@ -11,7 +11,8 @@ using System;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.ComponentModel;
-	
+using System.Windows.Forms;
+
 using SharpReportCore;
 /// <summary>
 /// This class build a TableLayout
@@ -29,22 +30,25 @@ namespace ReportGenerator {
 		#region ReportGenerator.IReportLayout interface implementation
 	
 		public override void BuildLayout() {
-			ReportSettings settings = base.ReportModel.ReportSettings;
-			PageSettings page = base.ReportModel.ReportSettings.PageSettings;
 
 			defaultFont = base.ReportModel.ReportSettings.DefaultFont;
-			
-			int gesWidth = page.Bounds.Width - settings.DefaultMargins.Left - settings.DefaultMargins.Right;
+
 			// first we build the DetailSection
 			BaseSection sec = base.ReportModel.DetailSection;
 			
-			this.colWidth = gesWidth / sec.Items.Count;
+			IContainerItem container = (IContainerItem)sec.Items[0];
 			
-			// we use GlobalValues.GridSize.Width as Gap 
-			//between to controls
-
+			Padding gap;
+			if (container != null) {
+				gap = container.Padding;
+			} else {
+				gap = base.ReportModel.ReportSettings.Padding;
+			}
+		
+			this.colWidth = (Convert.ToInt32(base.UseablePageWidth / sec.Items.Count)) - gap.Left;
+			
 			FormatSection (base.ReportModel.DetailSection,this.colWidth,
-		               0,GlobalValues.GridSize.Width);
+		               0,gap);
 		
 			//ReportHeader
 			sec = base.ReportModel.ReportHeader;
@@ -56,17 +60,17 @@ namespace ReportGenerator {
 			// here we build the PageHeader, we use the columnsWidth from Details
 			// but we start at position 1 in ItemsCollection
 			sec = base.ReportModel.PageHeader;
-			this.colWidth = gesWidth / (sec.Items.Count - 1);
+			this.colWidth = base.UseablePageWidth / (sec.Items.Count - 1);
 			FormatSection (sec,this.colWidth,
-			               1,GlobalValues.GridSize.Width);
+			               1,base.ReportModel.ReportSettings.Padding);
 			
 			base.FormatSingleEntry(sec.Items[0],
-			                       this.colWidth,new Point(settings.DefaultMargins.Left,0),defaultFont);
+			                       this.colWidth,new Point(base.ReportSettings.DefaultMargins.Left,0),defaultFont);
 			
 			//PageFooter
 			sec = base.ReportModel.PageFooter;
 			base.FormatSingleEntry(sec.Items[0],
-			                       this.colWidth,new Point(settings.DefaultMargins.Left,0),defaultFont);
+			                       this.colWidth,new Point(base.ReportSettings.DefaultMargins.Left,0),defaultFont);
 			
 			//ReportFooter
 			sec = base.ReportModel.ReportFooter;
@@ -76,21 +80,38 @@ namespace ReportGenerator {
 		}
 		#endregion
 		
+		private void FormatItems (ReportItemCollection collection, int leftMargin,
+		                     int itemWidth,int startAt,Padding gap) {
+			
+			int pos = 0;
+			BaseReportItem item;
+			for (int i = startAt;i < collection.Count ;i++ ) {
+				item = (BaseReportItem)collection[i];
+			
+				item.SuspendLayout();
+				
+				item.Location = new Point (leftMargin + gap.Left + (pos * itemWidth),item.Location.Y);
+				item.Size = new Size (itemWidth - gap.Left,item.Size.Height + GlobalValues.EnlargeControl);
+				item.Font =  defaultFont;
+				IContainerItem con = item as IContainerItem;
+				
+				if (con != null) {
+					item.Size = new Size (base.UseablePageWidth,item.Size.Height);
+					int colWidth = item.Size.Width / (con.Items.Count);
+					FormatItems (con.Items,0,colWidth,0,gap);
+				}
+				pos ++;
+				item.ResumeLayout();
+			}
+		}
+		
 		private void FormatSection (BaseSection section,
 		                            int itemWidth,int startAt,
-		                            int gap){
+		                            Padding gap){
+
+			int leftMargin = section.SectionMargin;
+			FormatItems (section.Items,leftMargin,itemWidth,startAt,gap);
 			
-			IItemRenderer rItem;
-			ReportItemCollection collection = section.Items;
-			int leftMargin = base.ReportModel.ReportSettings.DefaultMargins.Left;
-			int pos = 0;
-			for (int i = startAt;i < collection.Count ;i++ ) {
-				rItem = collection[i];
-				rItem.Location = new Point (leftMargin + (pos * itemWidth),rItem.Location.Y);
-				rItem.Size = new Size (itemWidth - gap,rItem.Size.Height + GlobalValues.EnlargeControl);
-				rItem.Font =  defaultFont;
-				pos ++;
-			}
 		}
 		
 

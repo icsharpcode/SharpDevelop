@@ -23,7 +23,7 @@ namespace SharpReport {
 	public class ItemsHelper : object {
 		
 		
-		public static void UpdateTextControl (ReportObjectControlBase control,
+		public static void UpdateBaseFromTextControl (ReportObjectControlBase control,
 		                                      BaseReportItem item) {
 			
 			item.SuspendLayout();
@@ -36,10 +36,10 @@ namespace SharpReport {
 			item.ResumeLayout();
 		}
 		
-		public static void UpdateGraphicControl (AbstractGraphicControl control,
+		public static void UpdateBaseFromGraphicControl (AbstractGraphicControl control,
 		                                  			BaseGraphicItem item) {
 			
-			ItemsHelper.UpdateTextControl (control,item);
+			ItemsHelper.UpdateBaseFromTextControl (control,item);
 			item.SuspendLayout();
 			item.Thickness = control.Thickness;
 			item.DashStyle = control.DashStyle;
@@ -47,36 +47,33 @@ namespace SharpReport {
 		}
 		
 		
-		public static void UpdateTextBase (ReportObjectControlBase control,
+		public static void UpdateControlFromTextBase (ReportObjectControlBase control,
 		                                   BaseReportItem item) {
 			
-//			control.SuspendLayout();
-//			item.SuspendLayout();
+			control.SuspendLayout();
+			item.SuspendLayout();
 			control.BackColor = item.BackColor;
 			control.ForeColor = item.ForeColor;
 			control.Location = item.Location;
 			control.Size = item.Size;
 			control.Font = item.Font; 
+			control.Name = item.Name;
 			BaseTextItem b = item as BaseTextItem;
 			if (b != null) {
 				control.StringAlignment = b.StringAlignment;
 			}
 
-//			item.ResumeLayout();
-//			control.ResumeLayout();
+			item.ResumeLayout();
+			control.ResumeLayout();
 		}
 		
 		
-		public static void UpdateGraphicBase (AbstractGraphicControl control,
+		public static void UpdateControlFromGraphicBase (AbstractGraphicControl control,
 		                                   BaseGraphicItem item) {
-			ItemsHelper.UpdateTextBase(control,item);
-//			control.SuspendLayout();
-//			item.SuspendLayout();
+			ItemsHelper.UpdateControlFromTextBase(control,item);
 			control.Location = item.Location;
 			control.DashStyle = item.DashStyle;
 			control.Thickness = item.Thickness;
-//			item.ResumeLayout();
-//			control.ResumeLayout();
 		}
 	}
 }

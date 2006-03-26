@@ -13,17 +13,16 @@ using System.Collections;
 using System.Data;
 using System.ComponentModel;
 
-using SharpReportCore;
+	
+/// <summary>
+/// This class handles DataTables
+/// </summary>
+/// <remarks>
+/// 	created by - Forstmeier Peter
+/// 	created on - 23.10.2005 15:12:06///
+///</remarks>
 
 namespace SharpReportCore {
-	
-	/// <summary>
-	/// This class handles DataTables
-	/// </summary>
-	/// <remarks>
-	/// 	created by - Forstmeier Peter
-	/// 	created on - 23.10.2005 15:12:06
-	/// </remarks>
 	public class TableStrategy : BaseListStrategy {
 		
 		DataTable table;
@@ -139,6 +138,31 @@ namespace SharpReportCore {
 		#endregion
 		
 		
+		#region IEnumerator
+		public override bool MoveNext(){
+			return base.MoveNext();
+		}
+		
+		public override void Reset() {
+			base.Reset();
+			this.view.Sort = "";
+			this.view.RowFilter = "";
+			
+		}
+		
+		public override object Current{
+			get {
+				if (base.CurrentRow < 0) {
+					return null;
+				} else {
+					return row = this.view[((BaseComparer)base.IndexList[base.CurrentRow]).ListIndex];
+				}
+			}
+		}
+		
+		#endregion
+		
+		
 		#region IDataViewStrategy interface implementation
 		
 		public override void Bind() {
@@ -183,6 +207,9 @@ namespace SharpReportCore {
 		public override void Fill (IItemRenderer item) {
 			try {
 				base.Fill(item);
+				if (this.Current == null) {
+					System.Console.WriteLine("ow is null");
+				}
 				if (this.row != null) {
 					BaseDataItem baseDataItem = item as BaseDataItem;
 					if (baseDataItem != null) {
@@ -190,19 +217,12 @@ namespace SharpReportCore {
 					}
 				}
 				
-			} catch (System.NullReferenceException) {
-				
+			} catch (Exception) {
+				throw;
 			}
 		}
 			
-		
-		public override void Reset() {
-			this.CurrentRow = 0;
-			this.view.Sort = "";
-			this.view.RowFilter = "";
-			base.Reset();
-		}
-		
+	
 		public override ColumnCollection AvailableFields {
 			get {
 				ColumnCollection c = base.AvailableFields;
@@ -226,10 +246,11 @@ namespace SharpReportCore {
 			get{
 				return base.IndexList.CurrentPosition;
 			}
+			
+			/*
 			set {
 				base.CurrentRow = value;
-	
-				if (base.IndexList.Count > 0) {
+				if ((value > -1) && (value < base.IndexList.Count)){
 					BaseComparer bc = (BaseComparer)base.IndexList[value];
 					
 					GroupSeperator sep = bc as GroupSeperator;
@@ -239,9 +260,11 @@ namespace SharpReportCore {
 					row = this.view[((BaseComparer)base.IndexList[value]).ListIndex];
 				}
 			}
+			*/
 		}
 		
 		#endregion
+		
 		#region IDisposable
 		
 		public override  void Dispose(){

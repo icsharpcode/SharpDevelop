@@ -43,11 +43,7 @@ namespace SharpReportCore {
 		/// <returns>"Report is SharpReport or not</returns>/returns>
 		/// 
 		public static bool IsSharpReport (XmlElement elem) {
-			bool isOk = false;
-			if (elem.Name.Equals (SharpReportCore.GlobalValues.SharpReportString)) {
-				isOk = true;
-			}
-			return isOk;
+			return (elem.Name.Equals (SharpReportCore.GlobalValues.SharpReportString));
 		}
 		
 		/// <summary>
@@ -128,18 +124,17 @@ namespace SharpReportCore {
 			try {
 				XmlNodeList nodeList = ctrlElem.ChildNodes;
 				foreach (XmlNode node in nodeList) {
-				if (node is XmlElement) {
-					XmlElement elem = (XmlElement)node;
-					if (elem.HasAttribute("value")) {
-						if (elem.Name == "Font") {
+					XmlElement elem = node as XmlElement;
+					if (elem != null) {
+						if (elem.HasAttribute("value")) {
+							if (elem.Name == "Font") {
+								item.Font = XmlFormReader.MakeFont (elem.GetAttribute("value"));
+							}
 							
-//							MessageBox.Show ("FOnt " + elem.GetAttribute("value").ToString(),"BuildCOntrol");
-							item.Font = XmlFormReader.MakeFont (elem.GetAttribute("value"));
+							reader.SetValue (item,elem.Name,elem.GetAttribute("value"));
 						}
-						reader.SetValue (item,elem.Name,elem.GetAttribute("value"));
 					}
 				}
-			}
 			} catch (Exception) {
 				throw;
 			}

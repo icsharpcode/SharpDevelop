@@ -21,9 +21,11 @@
 // Peter Forstmeier (Peter.Forstmeier@t-online.de)
 
 using System;
-using System.Globalization;
+
 using System.Data;
 using System.Drawing;
+using System.ComponentModel;
+using System.Globalization;
 using System.Drawing.Printing;
 	
 using SharpReportCore;
@@ -38,20 +40,15 @@ using SharpReportCore;
 	/// 
 
 namespace SharpReportCore {
-	public class RenderDataReport : SharpReportCore.AbstractRenderer {
-		
-		private DataManager dataManager;
-		private PointF currentPoint;
-		
-		public RenderDataReport(ReportModel model):base (model){
-		}
+//	public class RenderDataReport : AbstractRenderer {
+		public class RenderDataReport : AbstractDataRenderer {
 
-		public RenderDataReport(ReportModel model,DataManager dataManager):base (model){
-			this.dataManager = dataManager;
-			System.Console.WriteLine("ReenderDataReport");
-			System.Console.WriteLine("connect to groupingevents");
-			this.dataManager.GroupChanged += new EventHandler<GroupChangedEventArgs>(OnGroupChanged);
-			this.dataManager.GroupChanging += new EventHandler <EventArgs> (OnGroupChanging);
+		private PointF currentPoint;
+		private DataNavigator dataNavigator;
+
+		public RenderDataReport(ReportModel model,DataManager dataManager):base (model,dataManager){
+			base.DataManager.GroupChanged += new EventHandler<GroupChangedEventArgs>(OnGroupChanged);
+			base.DataManager.GroupChanging += new EventHandler <EventArgs> (OnGroupChanging);
 		}
 		
 
@@ -64,6 +61,13 @@ namespace SharpReportCore {
 			
 			System.Console.WriteLine("OnGroupChanging");	
 		}
+		
+		private void OnListChanged (object sender,System.ComponentModel.ListChangedEventArgs e) {
+			System.Console.WriteLine("List Changed sender <{0}> reason <{1}>",
+			                         sender.ToString(),
+			                         e.ListChangedType);
+		}
+		
 		#region overrides
 		
 
@@ -73,13 +77,16 @@ namespace SharpReportCore {
 			
 		protected override void ReportBegin(object sender, ReportPageEventArgs e) {
 			base.ReportBegin (sender,e);
-			//allways reset the dataManager before printing
-			if (this.dataManager != null) {
-				this.dataManager.Reset();
-			}
+		
+			base.DataManager.ListChanged += new EventHandler<ListChangedEventArgs> (OnListChanged);
+			dataNavigator = base.DataManager.GetNavigator;
+			dataNavigator.ListChanged += new EventHandler<ListChangedEventArgs> (OnListChanged);
+			dataNavigator.Reset();
+			base.DataNavigator = dataNavigator;
 		}
 		
 		protected override void BeginPrintPage(object sender, ReportPageEventArgs rpea) {
+			
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
@@ -93,7 +100,7 @@ namespace SharpReportCore {
 			}
 			
 			//Draw Pageheader
-			currentPoint = base.DrawPageheader (currentPoint,rpea);
+			currentPoint = base.DrawPageHeader (currentPoint,rpea);
 			base.DetailStart = new Point ((int)currentPoint.X,(int)currentPoint.Y);
 		}
 		
@@ -115,57 +122,36 @@ namespace SharpReportCore {
 			                             section.SectionOffset,
 			                             e.PrintPageEventArgs.MarginBounds.Width,
 			                             section.Size.Height);
-			DebugRectangle (e,detailRect);
+//			DebugRectangle (e,detailRect);
 			
 			// no loop if there is no data
-			if (! dataManager.HasMoreData ) {
+			if (! base.DataManager.HasMoreData ) {
 				e.PrintPageEventArgs.HasMorePages = false;
 				return;
 			}
-			
-			
-			// here starts the page
-			bool goon = true;
-			do {
-				try {
-					if (dataManager.HasMoreData) {
-						
-						dataManager.FetchData (base.CurrentSection.Items);
-//						offset = base.RenderSection (section,e);
-						base.RenderSection (section,e);
-						section.SectionOffset = section.SectionOffset + section.Size.Height  + 2 * base.Gap;
-						base.FitSectionToItems (base.CurrentSection,e);
-						
-						sectionRect = new Rectangle (e.PrintPageEventArgs.MarginBounds.Left,
-						                             section.SectionOffset,
-						                             e.PrintPageEventArgs.MarginBounds.Width,
-						                             section.Size.Height);
-						
-						dataManager.Skip();
-					} else {
-						e.PrintPageEventArgs.HasMorePages = false;
-						goon = false;
-					}
-					
-				} catch (Exception) {
-					e.PrintPageEventArgs.HasMorePages = false;
-					goon = false;
-				}
-				
-				
-			}
-			while (detailRect.Contains(sectionRect)&& goon);
-			
-			
-			// is there is anymore data
 
-			if (dataManager.HasMoreData ) {
-				base.PageBreak(e,section);
-				return;
-			} else {
-				e.PrintPageEventArgs.HasMorePages = false;
+			while (dataNavigator.MoveNext()) {
+				dataNavigator.Fill (base.CurrentSection.Items);	
+				base.RenderSection (section,e);
+				
+				section.SectionOffset = section.SectionOffset + section.Size.Height  + 2 * base.Gap;
+				
+				base.FitSectionToItems (base.CurrentSection,e);
+				
+				sectionRect = new Rectangle (e.PrintPageEventArgs.MarginBounds.Left,
+				                             section.SectionOffset,
+				                             e.PrintPageEventArgs.MarginBounds.Width,
+				                             section.Size.Height);
+				
+				if (!detailRect.Contains(sectionRect)) {
+					base.PageBreak(e,section);
+					return;
+				}	
+				
 			}
 			
+			e.PrintPageEventArgs.HasMorePages = false;
+
 			//Did we have a pagebreak 
 			if (base.CurrentSection.PageBreakAfter) {
 				base.PageBreak(e,section);
@@ -173,7 +159,6 @@ namespace SharpReportCore {
 				return;
 			}
 		}
-		
 		
 		
 		protected override void PrintBodyEnd(object sender, ReportPageEventArgs e) {

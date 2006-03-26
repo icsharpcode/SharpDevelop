@@ -19,10 +19,11 @@
 //
 // Peter Forstmeier (Peter.Forstmeier@t-online.de)
 using System;
-using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.IO;
+using System.ComponentModel;
+using System.Windows.Forms;
+
 using System.Xml.Serialization;
 
 	/// <summary>
@@ -42,20 +43,21 @@ namespace SharpReportCore {
 		private PageSettings pageSettings;
 		
 		private bool useStandartPrinter;
-		private bool includeSettings;
-		
+	
 		//if file is read, supress events
 		private bool initDone;
 		
 		private GraphicsUnit graphicsUnit;
 		private Margins defaultMargins = new Margins (50,50,50,50);
-		
+		private Size gridSize;
+		private Padding padding;
 		public event EventHandler PropertyChanged;
 		public event EventHandler FileNameChanged;
 		
 		#region Constructor
 		public BaseSettings():this(new PageSettings(),"","") {
 			BaseValues();
+			this.initDone = true;
 		}
 		
 		public BaseSettings(PageSettings pageSettings , string reportName,string fileName){
@@ -83,8 +85,9 @@ namespace SharpReportCore {
 		}
 		void BaseValues() {
 			this.useStandartPrinter = true;
-			this.includeSettings = false;
 			this.graphicsUnit = GraphicsUnit.Millimeter;
+			this.gridSize = GlobalValues.GridSize;
+			this.padding = new Padding(5);
 		}
 		
 		private static string MakePoperFilename (string file) {
@@ -104,10 +107,8 @@ namespace SharpReportCore {
 		#endregion
 		
 		protected void NotifyPropertyChanged() {
-			if (this.initDone) {
-				if (PropertyChanged != null) {
-					PropertyChanged (this,new EventArgs());
-				}
+			if (PropertyChanged != null) {
+				PropertyChanged (this,new EventArgs());
 			}
 		}
 		
@@ -131,23 +132,6 @@ namespace SharpReportCore {
 			}
 			set {
 				initDone = value;
-			}
-		}
-		
-		///<summary>
-		/// printout ReportSettings at ReportHeaderPage
-		/// </summary>
-		[Category("Base Settings")]
-		[DefaultValueAttribute (false)]
-		public bool IncludeSettings {
-			get {
-				return includeSettings;
-			}
-			set {
-				if (includeSettings != value) {
-					includeSettings = value;
-					this.NotifyPropertyChanged();
-				}
 			}
 		}
 		
@@ -231,6 +215,10 @@ namespace SharpReportCore {
 				
 			}
 		}
+	
+		#endregion
+		
+		#region DesignerSettings
 		[Category("Designer Settings")]
 		[DefaultValueAttribute (System.Drawing.GraphicsUnit.Millimeter)]
 		public System.Drawing.GraphicsUnit GraphicsUnit {
@@ -244,6 +232,34 @@ namespace SharpReportCore {
 				}
 			}
 		}
+		[Category("Designer Settings")]
+		public Size GridSize {
+			get {
+				return gridSize;
+			}
+			set {
+				if (this.gridSize != value) {
+					this.gridSize = value;
+					this.NotifyPropertyChanged();
+				}
+			}
+		}
+		
+		[Category("Designer Settings")]
+		public Padding Padding {
+			get {
+				return padding;
+			}
+			set {
+				if (this.padding != value) {
+					this.padding = value;
+					this.NotifyPropertyChanged();
+				}
+				
+			}
+		}
+		
 		#endregion
+		
 	}
 }

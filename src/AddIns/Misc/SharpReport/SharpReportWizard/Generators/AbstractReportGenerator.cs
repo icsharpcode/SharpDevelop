@@ -36,10 +36,12 @@ namespace ReportGenerator {
 		private ReportGenerator reportGenerator;
 		private Properties customizer;
 		private SharpReportManager manager;
+		private BaseReportItem parentItem;
+		private NameService nameService ;
+		private AutoReport autoReport;
+		private ReportItemCollection collection;
 		
-		public AbstractReportGenerator() {
-		}
-		
+	
 		public AbstractReportGenerator(Properties customizer,ReportModel reportModel){
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
@@ -49,9 +51,20 @@ namespace ReportGenerator {
 			}
 			this.customizer = customizer;
 			this.reportModel = reportModel;
+			this.nameService = new NameService();
+			this.autoReport = new AutoReport();
 			
 			reportGenerator = (ReportGenerator)customizer.Get("Generator");
 			manager = new SharpReportManager();
+			if (this.customizer.Get("DataRow") != null) {
+				SharpReport.Designer.IDesignableFactory bf = new SharpReport.Designer.IDesignableFactory();
+				this.parentItem = bf.Create (this.customizer.Get("DataRow").ToString());
+				
+				IContainerItem con = this.parentItem as IContainerItem;
+				if (con != null) {
+					con.Padding = reportModel.ReportSettings.Padding;
+				}
+			}
 		}
 		
 		#region ReportGenerator.IReportGenerator interface implementation
@@ -59,10 +72,12 @@ namespace ReportGenerator {
 			if (this.reportModel == null) {
 				throw new MissingModelException();
 			}
+			
 			BuildStandartSections();
 			manager.CreatePageHeader (this.reportModel);
 			manager.CreatePageNumber(this.reportModel);
 		}
+		
 		
 		#endregion
 		
@@ -74,16 +89,100 @@ namespace ReportGenerator {
 			}
 		}
 		
-		protected void AdjustAll () {
-			AdjustNames(reportModel);
+		
+		protected void BuildDataSection (BaseSection section) {
+			
+			if (section == null) {
+				throw new ArgumentException("section");
+			}
+			
+			if (this.parentItem == null) {
+				DataColumnsFromReportItems (section);
+			} else {
+				section.Items.Add (this.parentItem);
+				IContainerItem containerItem = this.parentItem as IContainerItem;
+				this.parentItem.Parent = section;
+				if ( containerItem != null) {
+					this.AddItemsToParent (containerItem,this.ReportItemCollection);
+				}
+			}
 		}
 		
-		private static void AdjustNames (ReportModel model) {
-			NameService nameService = new NameService();
-			foreach (BaseSection section in model.SectionCollection) {
-				foreach (IItemRenderer item in section.Items) {
-					item.Name = nameService.CreateName(section.Items,item.Name);
+		private void DataColumnsFromReportItems (BaseSection section) {
+			
+			try {
+				ReportItemCollection colDetail = autoReport.AutoDataColumns (this.ReportItemCollection);
+				section.SuspendLayout();
+				AddItemsToSection (section,colDetail);
+				section.ResumeLayout();
+			}catch (Exception) {
+				throw;
+			}
+			
+		}
+		
+		protected void HeaderColumnsFromReportItems (BaseSection section) {
+			
+			try {
+				ReportItemCollection colDetail = autoReport.HeaderColumnsFromReportItems (this.ReportItemCollection,section,false);
+				section.SuspendLayout();
+				AddItemsToSection (section,colDetail);
+				section.ResumeLayout();
+			} catch(Exception) {
+				throw;
+			}
+		}
+	
+		
+		
+		
+		private void AddItemsToParent (IContainerItem container,ReportItemCollection collection) {
+			for (int i = 0;i < collection.Count ;i ++ ) {
+				BaseReportItem r = (BaseReportItem)collection[i];
+				r.Location = new Point (r.Location.X,container.Padding.Top);
+				r.Parent = container;
+				container.Items.Add (r);
+			}
+		}
+		
+		private void AddItemsToSection (BaseSection section,ReportItemCollection collection) {
+			
+			if (section == null ) {
+				throw new ArgumentNullException ("section");
+			}
+			if (collection == null) {
+				throw new ArgumentNullException("collection");
+			}
+			// if there are already items in the section,
+			// then we have to append the Items, means whe have to enlarge the section
+			if (section.Items.Count > 0) {
+				section.Size = new Size (section.Size.Width,
+				                         section.Size.Height + GlobalValues.DefaultSectionHeight);
+			}
+			
+			for (int i = 0;i < collection.Count ;i ++ ) {
+				BaseReportItem r = (BaseReportItem)collection[i];
+				r.Parent = section;
+				r.Location = new Point (r.Location.X,GlobalValues.DefaultSectionHeight);
+				section.Items.Add (r);
+			}
+		}
+		
+		
+		protected void AdjustAllNames () {
+			foreach (BaseSection sec in this.reportModel.SectionCollection) {
+				AdjustNames(sec.Items);
+			}
+		}
+		
+		private void AdjustNames (ReportItemCollection items) {
+			
+			foreach (IItemRenderer item in items) {
+				IContainerItem it = item as IContainerItem;
+				if (it != null) {
+					AdjustNames (it.Items);
 				}
+				item.Name = nameService.CreateName(items,item.Name);
 			}
 		}
 		
@@ -94,21 +193,29 @@ namespace ReportGenerator {
 				return customizer;
 			}
 		}
+		
 		public ReportGenerator ReportGenerator {
 			get {
 				return reportGenerator;
 			}
 		}
+		
 		public ReportModel ReportModel {
 			get {
 				return reportModel;
 			}
 		}
-		public SharpReportManager Manager {
+
+		
+		public ReportItemCollection ReportItemCollection {
 			get {
-				return manager;
+				if (collection == null) {
+					this.collection = new ReportItemCollection();
+				}
+				return collection;
 			}
 		}
+		
 		
 		#endregion
 		
@@ -123,12 +230,16 @@ namespace ReportGenerator {
 		
 		protected  void Dispose(bool disposing){
 			if (disposing) {
-				// Free other state (managed objects).
-				if (this.manager != null) {
-					this.manager.Dispose();
-				}
+				
 			}
-			
+			if (this.manager != null) {
+				this.manager.Dispose();
+				this.manager = null;
+			}
+			if (this.autoReport != null) {
+				this.autoReport.Dispose();
+				this.autoReport = null;
+			}
 			// Release unmanaged resources.
 			// Set large fields to null.
 			// Call Dispose on your base class.

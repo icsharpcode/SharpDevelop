@@ -27,11 +27,13 @@ namespace SharpReport.Designer
 		private SharpReport.Designer.Report reportControl;
 		private Ruler.ctrlRuler ctrlRuler1;
 
-		private System.Drawing.GraphicsUnit graphicsUnit = GraphicsUnit.Point;
+		private System.Drawing.GraphicsUnit graphicsUnit;
 		
 		private ReportModel reportModel;
 		
 		public event PropertyChangedEventHandler DesignerDirty;
+		
+		
 		
 		public BaseDesignerControl()
 		{
@@ -48,11 +50,31 @@ namespace SharpReport.Designer
 			reportModel = new ReportModel (graphicsUnit);
 			this.ReportControl.ReportSettings = reportModel.ReportSettings;
 		}
-		
+		#region public'c
 		//if languages change, we need a way to chage the headlines here as well
+		
 		public void Localise() {
 			reportControl.Localise();
 		}
+		
+		public void RemoveSelectedItem () {
+			if (this.SelectedObject == null) {
+				return;
+			}
+			BaseReportItem item = this.SelectedObject as BaseReportItem;
+				
+			if ((item.Parent == this.SelectedSection)|| (item.Parent == null)){
+				this.SelectedSection.Items.Remove (item);
+			} else {
+				IContainerItem con = item.Parent as IContainerItem;
+				if (con != null) {
+					con.Items.Remove (item);
+				}
+			}
+		}
+		
+		
+		#endregion
 		
 		#region overrides
 		
@@ -106,13 +128,13 @@ namespace SharpReport.Designer
 		
 		public ReportModel ReportModel {
 			get {
+				
 				reportModel.ReportSettings = reportControl.ReportSettings;
 				reportModel.SectionCollection.Clear();
 				foreach (ReportSection section in reportControl.SectionCollection) {
 					reportModel.SectionCollection.Add (section);
 				}
-				return this.reportModel;
-				
+				return reportModel;
 			}
 			set {
 				this.reportModel = value;

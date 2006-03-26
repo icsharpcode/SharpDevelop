@@ -126,6 +126,11 @@
     <Compile Include="DataManager\SqlQueryChecker.cs" />
     <Compile Include="Exceptions\MissingModelException.cs" />
     <Compile Include="Interfaces\IHierarchyInterfaces.cs" />
+    <Compile Include="BaseItems\RowItem.cs" />
+    <Compile Include="Interfaces\IContainerItem.cs" />
+    <Compile Include="Exceptions\MissingSectionException.cs" />
+    <Compile Include="Printing\AbstractDataRenderer.cs" />
+    <Compile Include="DataManager\DataNavigator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />

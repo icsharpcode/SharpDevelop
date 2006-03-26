@@ -84,6 +84,9 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Designer\SectionControls\ReportSection.cs" />
     <Compile Include="Designer\SideTab\BuildSideTab.cs" />
+    <Compile Include="Designer\VisualControls\ReportRowControl.cs" />
+    <Compile Include="ReportItems\TextBased\ReportRowItem.cs" />
+    <Compile Include="Designer\VisualControls\ControlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Designer" />

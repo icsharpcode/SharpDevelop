@@ -111,39 +111,10 @@ namespace SharpReport{
 		}
 		
 	
-		private void AddItemsToSection (BaseSection section,ReportItemCollection collection) {
-			
-			if ((section == null)|| (collection == null) ) {
-				throw new ArgumentNullException ("section");
-			}
-			if (collection == null) {
-				throw new ArgumentNullException("collection");
-			}
-			// if there are already items in the section,
-			// the we have to append the Items, means whe have to enlarge the section
-			if (section.Items.Count > 0) {
-				section.Size = new Size (section.Size.Width,
-				                         section.Size.Height + GlobalValues.DefaultSectionHeight);
-				
-				// Adjust the Location
-				foreach (IItemRenderer i in collection) {
-					i.Location = new Point (i.Location.X,GlobalValues.DefaultSectionHeight);
-				}
-			}
-			
-			for (int i = 0;i < collection.Count ;i ++ ) {
-				BaseReportItem r = (BaseReportItem)collection[i];
-				r.Parent = section.Name;
-				section.Items.Add (r);
-			}
-		}
-		
-		private Font CopyFont (Font orgF) {
-			Font f = new Font(orgF.Name,orgF.Size,orgF.Style,orgF.Unit);
-			return f;
-		}
 		
 		#endregion
+		
+		
 		
 		#region Standarts for all reports (Headlines etc)
 		
@@ -163,6 +134,7 @@ namespace SharpReport{
 			item.Font = CopyFont(model.ReportSettings.DefaultFont);
 			item.Location = new Point (0,0);
 			item.Size = new Size (item.Size.Width,item.Font.Height + SharpReportCore.GlobalValues.EnlargeControl);
+			item.Parent = section;
 			section.Items.Add (item);
 			item.ResumeLayout();
 			section.ResumeLayout();
@@ -182,118 +154,19 @@ namespace SharpReport{
 			
 			pageNumber.Text = ResourceService.GetString("SharpReport.Toolbar.Functions.PageNumber");
 			pageNumber.Location = new Point (0,0);
+			pageNumber.Parent = section;
 			section.Items.Add(pageNumber);
 			pageNumber.ResumeLayout();
 			section.ResumeLayout();
-		}
-			
+		}	
 		#endregion
 		
-		#region HeaderColumns
-		/*
-		/// <summary>
-		/// Builds ColumHeaders for Reports, we take the ColumnNames as Text Property
-		/// </summary>
-		/// <param name="model">A valid(filled) reportModel</param>
-		/// <param name="section">The Section to use for headerLines</param>
-		/// <param name="schemaTable">SchemaTable witch contains the Column Informations</param>
-		
-		public void HeaderColumnsFromTable (BaseSection section,DataTable schemaTable) {
-			if (section == null) {
-				throw new ArgumentException("SharpReportManager:CreateColumnHeadersFromTable <section>");
-			}
-			using  (AutoReport auto = new AutoReport()){
-				try {
-					ReportItemCollection headerCol = auto.AutoHeaderFromTable (section,schemaTable,false);
-					AddItemsToSection (section,headerCol);
-				} catch (Exception) {
-					throw;
-				}
-			}
+		private Font CopyFont (Font orgF) {
+			Font f = new Font(orgF.Name,orgF.Size,orgF.Style,orgF.Unit);
+			return f;
 		}
-		*/
-		///<summary>
-		/// Create ColumHeaders for Reports
-		/// </summary>
-		/// <param name="section">A ReportSection whre to build the Hedarlines</param>
-		///<param name="collection">A <see cref="ReportitemCollection"></see>
-		/// containing the basic informations</param>
-		
-		public void HeaderColumnsFromReportItems (BaseSection section,ReportItemCollection collection) {
-			using  (AutoReport auto = new AutoReport()){
-				try {
-					ReportItemCollection colDetail = auto.AutoHeaderFromReportItems (collection,section,false);
-					section.SuspendLayout();
-					AddItemsToSection (section,colDetail);
-					section.ResumeLayout();
-				} catch(Exception) {
-					throw;
-				}
-			}
-		}
-		#endregion
-		
-		
-		#region Create report from Query
-		
-		/*
-		/// <summary>
-		/// Create Columns from SchemaTable
-		/// </summary>
-		///<param name="model">a valid reportModel</param>
-		///<param name="schemaTable">DataTable witch contaisn SchemaDefinitions</param>
-		/// 
-		
-		public void DataColumnsFromTable (ReportModel model,DataTable schemaTable) {
-			if ((model == null)||(schemaTable.Rows.Count == 0) ) {
-				throw new ArgumentException ("Invalid Arguments in SharpReportmanager:CreateColumnsFromFile");
-			}
-			
-			using  (AutoReport auto = new AutoReport()){
-				try {
-					ReportItemCollection colDetail = auto.ReportItemsFromTable (model,
-					                                                            schemaTable);
-					BaseSection section = model.DetailSection;
-					section.SuspendLayout();
-					AddItemsToSection (section,colDetail);
-					section.ResumeLayout();
-				} catch (Exception) {
-					throw;
-				}
-			}
-		}
-		*/
-		#endregion
-		
-		#region Create Reports from .Xsd Files
-		
-		
-		///<summary>
-		/// Create the DataColumns
-		/// </summary>
-		/// <param name="section">A ReportSection where to build the
-		///  <see cref="ReportDataItem"></see>
-		/// DataItems</param>
-		///<param name="collection">A reportItemcollection containing the basic informations</param>
-		public void DataColumnsFromReportItems (BaseSection section,ReportItemCollection collection) {
-			using  (AutoReport auto = new AutoReport()){
-				try {
-					ReportItemCollection colDetail = auto.AutoDataColumns (collection);
-					section.SuspendLayout();
-					AddItemsToSection (section,colDetail);
-					section.ResumeLayout();
-				}catch (Exception) {
-					throw;
-				}
-			}
-		}
-		
-		#endregion
-		
-		
 		
 		#region Preview
-		
 		
 		public  AbstractRenderer GetRendererForStandartReports (ReportModel model) {
 			if (model == null) {

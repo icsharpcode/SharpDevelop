@@ -16,8 +16,8 @@ using System.ComponentModel;
 using System.Drawing;
 	
 /// <summary>
-/// This is the BaseClass for <see cref="ReportSection"></see>
-/// and <see cref="ReportItem"></see> 
+/// This is the BaseClass for all 
+///  <see cref="ReportItem"></see> 
 /// </summary>
 /// <remarks>
 /// 	created by - Forstmeier Peter
@@ -41,7 +41,6 @@ namespace SharpReportCore {
 		
 		private Color backColor;
 		private int  sectionOffset;
-		private int sectionMargin;
 
 		public event EventHandler<EventArgs> BeforePrinting;
 		public event EventHandler<AfterPrintEventArgs> AfterPrinting;
@@ -70,12 +69,15 @@ namespace SharpReportCore {
 		public void ResumeLayout () {
 			suspend = false;
 		}
+		
+		#region properties
 		public virtual bool Visible {
 			get {
 				return visible;
 			}
 			set {
 				visible = value;
+				NotifyPropertyChanged ("Visible");
 			}
 		}
 		
@@ -85,6 +87,7 @@ namespace SharpReportCore {
 			}
 			set {
 				canGrow = value;
+				NotifyPropertyChanged ("CanGrow");
 			}
 		}
 		public virtual bool CanShrink {
@@ -93,16 +96,11 @@ namespace SharpReportCore {
 			}
 			set {
 				canShrink = value;
+				NotifyPropertyChanged ("CanShrink");
 			}
 		}
 		
-		[XmlIgnoreAttribute]
-		[Browsable(false)]
-		public bool Suspend {
-			get {
-				return suspend;
-			}
-		}
+		
 		
 		public virtual string Name {
 			get {
@@ -110,6 +108,7 @@ namespace SharpReportCore {
 			}
 			set {
 				name = value;
+				NotifyPropertyChanged ("Name");
 			}
 		}
 		
@@ -119,48 +118,22 @@ namespace SharpReportCore {
 			}
 			set {
 				pageBreakAfter = value;
+				NotifyPropertyChanged ("PageBreakAfter");
 			}
 		}
+		
+		
 		public virtual bool PageBreakBefore {
 			get {
 				return pageBreakBefore;
 			}
 			set {
 				pageBreakBefore = value;
-			}
-		}
-		[Browsable(false)]
-		[XmlIgnoreAttribute]
-		public virtual object Parent {
-			get {
-				return parent;
-			}
-			set {
-				parent = value;
+				NotifyPropertyChanged ("PageBreakBefore");
 			}
 		}
 		
-		[XmlIgnoreAttribute]
-		[Browsable(false)]
-		public virtual int SectionMargin {
-			get {
-				return sectionMargin;
-			}
-			set {
-				sectionMargin = value;
-			}
-		}
 		
-		[XmlIgnoreAttribute]
-		[Browsable(false)]
-		public virtual int SectionOffset {
-			get {
-				return sectionOffset;
-			}
-			set {
-				sectionOffset = value;
-			}
-		}
 		
 		public virtual Size Size {
 			get {
@@ -192,6 +165,38 @@ namespace SharpReportCore {
 			}
 		}
 		
+		[XmlIgnoreAttribute]
+		[Browsable(false)]
+		public virtual int SectionOffset {
+			get {
+				return sectionOffset;
+			}
+			set {
+				sectionOffset = value;
+			}
+		}
+		
+		[Browsable(false)]
+		[XmlIgnoreAttribute]
+		public virtual object Parent {
+			get {
+				return parent;
+			}
+			set {
+				parent = value;
+			}
+		}
+		
+		[XmlIgnoreAttribute]
+		[Browsable(false)]
+		public bool Suspend {
+			get {
+				return suspend;
+			}
+		}
+		#endregion
+		
+		#region EventHandling
 		public void NotiyfyAfterPrint (PointF afterPrintLocation) {
 			if (this.AfterPrinting != null) {
 				AfterPrintEventArgs rea = new AfterPrintEventArgs (afterPrintLocation);
@@ -205,7 +210,7 @@ namespace SharpReportCore {
 			}
 		}
 		
-		
+		#endregion
 		
 		#region SharpReportCore.IBaseRenderer interface implementation
 		public virtual void  Render(ReportPageEventArgs rpea) {

@@ -32,7 +32,6 @@ namespace SharpReport.Designer{
 			              ControlStyles.ResizeRedraw,
 			              true);
 			this.UpdateStyles();
-//			base.ItemSelected += new SelectedEventHandler (OnItemSelected);
 			base.ItemDragDrop += new ItemDragDropEventHandler (ItemsChanging);
 		}
 		
@@ -47,11 +46,7 @@ namespace SharpReport.Designer{
 				ReportItemsHandling (this,e);
 			}
 		}
-			
-//		protected void OnItemSelected (object sender,EventArgs e) {
-//			MessageBox.Show ("On Item selected" + sender.ToString());
-//		}
-//		
+	
 		
 		#region Windows Forms Designer generated code
 		/// <summary>

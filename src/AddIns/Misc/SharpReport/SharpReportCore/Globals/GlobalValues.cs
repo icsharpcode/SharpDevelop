@@ -32,6 +32,7 @@ namespace SharpReportCore {
 		private static string sharpReportExtension = ".srd";
 		private static string xsdExtension = "xsd";
 		private static string sharpReportStandartFileName = "SharpReport1";
+		private const string unbound = "unbound";
 		private const int enlargeControl = 5;
 		
 		#region some usefull functions and methodes
@@ -120,6 +121,12 @@ namespace SharpReportCore {
 			}
 		}
 		
+		public static Size PreferedSize {
+			get {
+				return new Size(100,20);
+			}
+		}
+		                                  
 	
 		/// <summary>
 		/// Size of Grids in Sections, used by the Designer
@@ -134,7 +141,7 @@ namespace SharpReportCore {
 		}
 		#endregion
 		
-		#region propertys
+		#region String Constant's
 		public static string SharpReportString {
   			get {
   				return sharpReportString;
@@ -157,6 +164,10 @@ namespace SharpReportCore {
 			get {
 				return sharpReportStandartFileName + sharpReportExtension;
 			}
+		}
+		
+		public static string UnboundName {
+			get {return unbound;}
 		}
 		#endregion
 		

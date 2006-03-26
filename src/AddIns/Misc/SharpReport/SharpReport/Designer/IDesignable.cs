@@ -40,8 +40,6 @@ namespace SharpReport.Designer{
 		}
 		
 		event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-
-//		event EventHandler <GroupChangedEventArgs> GroupChanged;
 		event EventHandler <EventArgs> Selected;
 	}
 }

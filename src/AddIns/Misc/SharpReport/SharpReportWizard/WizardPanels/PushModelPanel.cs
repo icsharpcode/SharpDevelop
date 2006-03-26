@@ -80,11 +80,11 @@ namespace ReportGenerator
 			using  (AutoReport auto = new AutoReport()){
 				ReportModel model = generator.FillReportModel (new ReportModel());
 				columnCollection  = auto.AbstractColumnsFromDataSet (ds);
-				reportItems = auto.ReportItemsFromSchema(model,ds);
+				reportItems = auto.DataItemsFromSchema(model,ds);
 				
 				if (reportItems != null) {
 					foreach (ReportDataItem item in reportItems) {
-						this.checkedListBox.Items.Add (item.MappingName,CheckState.Checked);
+						this.checkedListBox.Items.Add (item.MappingName,CheckState.Unchecked);
 					}
 				}
 			}
@@ -108,12 +108,9 @@ namespace ReportGenerator
 		}
 		
 		public override bool ReceiveDialogMessage(DialogMessage message){
-//			base.EnableNext = true;
-//			base.EnableFinish = true;
+			
 			if (message == DialogMessage.Activated) {
-//				base.EnableNext = true;
-//				base.EnableFinish = true;
-//				base.IsLastPanel = true;
+
 			}
 			else if (message == DialogMessage.Finish) {
 				
@@ -128,7 +125,7 @@ namespace ReportGenerator
 				base.EnableFinish = true;
 				base.IsLastPanel = true;
 				//We can't use the customizer here, because Resultpanel is called later on 
-				// and null's the proerties
+				// and null's the properties
 				generator.ReportItemCollection = itemCollection;
 				generator.ColumnCollection = columnCollection;
 			}

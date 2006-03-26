@@ -27,12 +27,11 @@ using SharpReportCore;
 namespace SharpReportCore {	
 	public class BaseDataItem : SharpReportCore.BaseTextItem,IItemRenderer {
 		
-		
-		private const string unbound = "(unbound)";
-		private string columnName = String.Empty;
-		private string baseTableName = String.Empty;
-		private string dbValue = String.Empty;
-		private string dataType = String.Empty;
+		private string columnName;
+		private string baseTableName;
+		private string dbValue;
+		private string dataType;
+		private string nullValue;
 		/// <summary>
 		/// Default constructor - initializes all fields to default values
 		/// </summary>
@@ -42,10 +41,30 @@ namespace SharpReportCore {
 		public BaseDataItem(string columnName){
 			this.columnName = columnName;
 		}
+		#region privates
+		//TODO Need a much better handling for 'null' values
+		
+		private string CheckForNullValue() {
+			if (String.IsNullOrEmpty(this.dbValue)) {
+				if (String.IsNullOrEmpty(this.nullValue)) {
+					return GlobalValues.UnboundName;
+					
+				} else
+					return this.nullValue;
+			}
+			return this.dbValue;
+		}
+	
+		#endregion
+		
 		
 		public override void Render(SharpReportCore.ReportPageEventArgs rpea) {
+			
 			// this.DbValue is formatted in the BeforePrintEvent catched in AbstractRenderer
-			string formattedString = base.FireFormatOutput(this.dbValue,this.FormatString,"");
+			
+			string toPrint = CheckForNullValue();
+			string formattedString = base.FireFormatOutput(toPrint,this.FormatString,"");
+//			System.Console.WriteLine("\t\tBaseDataItem:Render {0} ",formattedString);	
 			RectangleF rect = base.PrepareRectangle (rpea,formattedString);
 			base.PrintTheStuff (rpea,formattedString,rect);
 			base.NotiyfyAfterPrint (rpea.LocationAfterDraw);
@@ -72,10 +91,14 @@ namespace SharpReportCore {
 		
 		public virtual string ColumnName {
 			get {
+				if (String.IsNullOrEmpty(columnName)) {
+					this.columnName = GlobalValues.UnboundName;
+				}
 				return columnName;
 			}
 			set {
 				columnName = value;
+				this.Text = this.columnName;
 			}
 		}
 		
@@ -118,11 +141,15 @@ namespace SharpReportCore {
 				baseTableName = value;
 			}
 		}
-		[XmlIgnoreAttribute]
-		[Browsable(false)]
-		public string UnboundText {
+		[Browsable(true),
+		 Category("Databinding"),
+		 Description("Display Value for empty Field")]
+		public string NullValue {
 			get {
-				return unbound;
+				return nullValue;
+			}
+			set {
+				nullValue = value;
 			}
 		}
 	}

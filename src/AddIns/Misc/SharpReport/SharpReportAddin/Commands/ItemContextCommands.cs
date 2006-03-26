@@ -44,17 +44,7 @@ namespace SharpReportAddin.Commands {
 		/// 
 		public override void Run(){
 			if (this.IsEnabled){
-				try {
-					IItemRenderer iItemRenderer = base.View.DesignerControl.SelectedObject as IItemRenderer;
-					if (iItemRenderer != null) {
-						if (base.View.DesignerControl.SelectedSection.Items.Contains(iItemRenderer)) {
-							base.View.DesignerControl.SelectedSection.Items.Remove (iItemRenderer);
-							base.View.IsDirty = true;
-						}
-					}
-				} catch (Exception ) {
-					throw;
-				}
+				base.View.DesignerControl.RemoveSelectedItem ();
 			}
 		}
 	}

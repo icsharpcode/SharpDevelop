@@ -29,12 +29,12 @@ namespace SharpReport.Designer{
 		private SharpReport.Designer.ReportFooter visualFooter;
 		private SharpReport.Designer.ReportPageFooter visualPageFooter;
 		private SharpReport.Designer.ReportDetail visualDetail;
-	
+		
 
 		
 		// Generic selected object in report
 		private IBaseRenderer	selectedObject;
-		
+
 		// Section selected in report
 		private ReportSection	selectedSection;
 		
@@ -91,6 +91,12 @@ namespace SharpReport.Designer{
 			base.Dispose(disposing);
 		}
 		
+		private void SetDefaultValues() {
+			foreach (BaseSection sec in this.sectionCollection) {
+				sec.SectionMargin = this.reportSettings.DefaultMargins.Left;
+				sec.Parent = null;
+			}
+		}
 		
 		private void InitSectionCollection () {
 			sectionCollection = new ReportSectionCollection();
@@ -99,13 +105,13 @@ namespace SharpReport.Designer{
 			detail = new ReportSection(visualDetail);
 			pageFooter = new ReportSection(visualPageFooter);
 			footer = new ReportSection(visualFooter);
-	
+			
 			header.Name = header.VisualControl.GetType().Name;
 			pageHeader.Name = pageHeader.VisualControl.GetType().Name;
 			detail.Name = detail.VisualControl.GetType().Name;
 			footer.Name = footer.VisualControl.GetType().Name;
 			pageFooter.Name = pageFooter.VisualControl.GetType().Name;
-	
+			
 			sectionCollection.Add(header);
 			sectionCollection.Add(pageHeader);
 			sectionCollection.Add(detail);
@@ -131,7 +137,7 @@ namespace SharpReport.Designer{
 			visualPageFooter.ReportItemsHandling += new ItemDragDropEventHandler (OnAddReportItem);
 			visualFooter.ReportItemsHandling += new ItemDragDropEventHandler (OnAddReportItem);
 		}
-	
+		
 		private Rectangle SectionClientArea (SharpReport.Designer.ReportSectionControlBase ctrl) {
 			Rectangle rect = new Rectangle();
 			rect.X = ctrl.Location.X;
@@ -141,89 +147,152 @@ namespace SharpReport.Designer{
 			return rect;
 		}
 		
+		private  void SetParent(BaseReportItem child,Point pointOf) {
+			foreach (BaseReportItem i in this.SelectedSection.Items) {
+				Rectangle r = new Rectangle (i.Location,i.Size);
+				if (r.Contains(pointOf)) {
+					child.Parent = i as IContainerItem;
+					return;
+				}
+			}
+			child.Parent = this.SelectedSection;
+		}
 		
-		protected void OnAddReportItem (object sender,ItemDragDropEventArgs e) {
-			if (e.Action != ItemDragDropEventArgs.enmAction.Add) {
-				throw new NotSupportedException ("Only add allowed in Report.OnAddReportItem");
+		
+		private IContainerItem FindParent(ItemDragDropEventArgs iddea) {
+			foreach (BaseReportItem i in this.SelectedSection.Items) {
+				Rectangle r = new Rectangle (i.Location,i.Size);
+				if (r.Contains(iddea.ItemAtPoint)) {
+					return i as IContainerItem;
+				}
 			}
-			
-			ReportSectionControlBase b = (ReportSectionControlBase)sender;
-			
-			// Find Selected Section
-			if (b != null) {
-				selectedSection = (ReportSection)sectionCollection.Find(b.GetType().Name);
-			} else {
-				throw new NullReferenceException("No Section in Report.OnAddReportItem");
-			}
-			
-			//ReportItem from Factory
+			return null;
+		}
+		
+		
+		private BaseReportItem BuildDraggedItem (ItemDragDropEventArgs iddea) {
 			GlobalEnums.ReportItemType rptType = (GlobalEnums.ReportItemType)
-				GlobalEnums.StringToEnum(typeof(GlobalEnums.ReportItemType),e.ItemName);
+				GlobalEnums.StringToEnum(typeof(GlobalEnums.ReportItemType),iddea.ItemName);
 			
-			BaseReportItem baseReportItem = null;
-			try {
-				SharpReport.Designer.IDesignableFactory gf = new SharpReport.Designer.IDesignableFactory();
-				
-				baseReportItem = gf.Create (rptType.ToString());
-				IDesignable iDesignable = baseReportItem as IDesignable;
-				
-				if (iDesignable != null) {
-					iDesignable.Location = e.ItemAtPoint;
-					iDesignable.Name = nameService.CreateName(this.selectedSection.Items,
-					                                          rptType.ToString());
-					
-				} else {
-					string str = String.Format("<{0}> does not implement IDesignable");
-					MessageService.ShowError(str);
-				}
+			SharpReport.Designer.IDesignableFactory gf = new SharpReport.Designer.IDesignableFactory();
+			return gf.Create (rptType.ToString());
+		}
+		
+		private void CustomizeItem ( ItemDragDropEventArgs iddea,
+		                            ReportItemCollection itemCollection,
+		                            BaseReportItem baseReportItem) {
+			
+			GlobalEnums.ReportItemType rptType = (GlobalEnums.ReportItemType)
+				GlobalEnums.StringToEnum(typeof(GlobalEnums.ReportItemType),iddea.ItemName);
+			
+			baseReportItem.Name = nameService.CreateName(itemCollection,
+			                                             baseReportItem.Name);
+			
 
-			} catch (Exception ee) {
-				MessageService.ShowError(ee,ee.Message);
-			}
-			if (baseReportItem == null) {
-				string str = String.Format("Unable to create <0> ",rptType.ToString());
-				MessageService.ShowError(str);
-			}
-			
-			//If all went well until now
-			if (baseReportItem != null) {
-				// set usefull values
-				
-				try {
-					//Insert Item into selectedSection.Items
-					if (selectedSection != null) {
-						baseReportItem.Parent = selectedSection;
-						try {
-							IItemRenderer aa = baseReportItem as IItemRenderer;
-							if (aa != null) {
-								selectedSection.Items.Add(aa);
-							} else {
-								throw new NullReferenceException("Report:OnAddReportItem ");
-							}
-
-						} catch (Exception) {
-							throw;
-						}
-					}
-				} catch (Exception ee) {
-					throw ee;
-				}
-			}else {
-				throw new Exception("No Item created in Report.OnAddReportItem");
-			}
-			
-			try {
-				selectedObject = (IItemRenderer)baseReportItem;
-			} catch (Exception ex) {
-				MessageService.ShowError(ex,ex.Message);
-			}
-			
-			if (DesignViewChanged != null) {
-				DesignViewChanged (this,e);
+			if (baseReportItem.Parent == this.selectedSection) {
+				baseReportItem.Location = new Point(iddea.ItemAtPoint.X,iddea.ItemAtPoint.Y);
+			} else {
+				BaseReportItem br = (BaseReportItem)this.FindParent(iddea);
+				baseReportItem.Location = new Point(iddea.ItemAtPoint.X - br.Location.X,10);
 			}
 		}
 		
-		#region property's		
+		
+		private void AdjustDesignable (BaseReportItem item) {
+			IDesignable designable = item as IDesignable;
+			designable.VisualControl.Name = item.Name;
+		}
+		
+		
+		private void SetVisualControl (BaseReportItem item){
+			Control ctrl = null;
+			if (item.Parent == null) {
+				ctrl = this.selectedSection.VisualControl.Body;
+			} else {
+				if (item.Parent is ReportControlBase) {
+					ReportControlBase rb = item.Parent as ReportControlBase;
+					ctrl = rb.Body;
+				}
+			}
+			
+			if (ctrl != null) {
+				IDesignable designable = item as IDesignable;
+				if (designable != null) {
+					ctrl.Controls.Add(designable.VisualControl);
+					this.AdjustControl(designable);
+					ctrl.Invalidate();
+				}
+			}
+		}
+		
+		private ReportSection SectionByName ( ReportSectionControlBase item) {
+			if (item != null) {
+				return  (ReportSection)sectionCollection.Find(item.GetType().Name);
+			}
+			throw new NullReferenceException("No Section in Report.OnAddReportItem");
+		}
+		
+		private void AdjustControl (IDesignable ctrl) {
+			ctrl.VisualControl.BringToFront();
+			ctrl.VisualControl.Focus();
+		}
+		
+		
+		private void OnAddReportItem (object sender,ItemDragDropEventArgs iddea) {
+			
+			if (iddea.Action != ItemDragDropEventArgs.enmAction.Add) {
+				throw new NotSupportedException ();
+			}
+			
+			selectedSection = SectionByName ((ReportSectionControlBase)sender);
+
+			BaseReportItem	baseReportItem = BuildDraggedItem(iddea);
+			
+			if (baseReportItem != null) {
+
+				SetParent (baseReportItem,iddea.ItemAtPoint);
+				IItemRenderer itemRenderer = baseReportItem as IItemRenderer;
+				
+				
+				if (itemRenderer != null) {
+					SetVisualControl (baseReportItem);
+					if (baseReportItem.Parent != null) {
+						if (baseReportItem.Parent == this.selectedSection) {
+							// we have a 'TopLevel' Control
+							baseReportItem.Parent = selectedSection;
+							this.selectedSection.Items.Added += OnItemCollectionAdd;
+							this.selectedSection.Items.Add(itemRenderer);
+							CustomizeItem (iddea,selectedSection.Items,baseReportItem);
+						} else {
+							IContainerItem parent = baseReportItem.Parent as IContainerItem;
+							if (parent != null) {
+								parent.Items.Added += OnItemCollectionAdd;
+								parent.Items.Add (itemRenderer);
+								CustomizeItem (iddea,parent.Items,baseReportItem);
+							}
+						}
+					}
+					
+				} else {
+					throw new NullReferenceException("Report:OnAddReportItem ");
+				}
+				AdjustDesignable(baseReportItem);
+			}else {
+				string str = String.Format("Unable to create <0> ",iddea.ItemName);
+				MessageService.ShowError(str);
+			}
+			selectedObject = (IBaseRenderer)baseReportItem;
+			if (DesignViewChanged != null) {
+				DesignViewChanged (this,iddea);
+			}
+		}
+		
+		private void OnItemCollectionAdd(object sender, CollectionItemEventArgs<IItemRenderer> e){
+			SharpReport.Designer.IDesignable iDesignable = e.Item as SharpReport.Designer.IDesignable;
+			iDesignable.Selected += new EventHandler <EventArgs>(this.ItemSelected);
+		}
+		
+		#region property's
 		
 		public ReportSectionCollection SectionCollection
 		{
@@ -258,8 +327,12 @@ namespace SharpReport.Designer{
 			}
 			set {
 				reportSettings = value;
+				SetDefaultValues();
 			}
 		}
+		
+		
+		
 		#endregion
 		
 		#region events
@@ -297,7 +370,7 @@ namespace SharpReport.Designer{
 		
 		
 		
-	
+		
 		#region Windows Forms Designer generated code
 		/// <summary>
 		/// This method is required for Windows Forms designer support.

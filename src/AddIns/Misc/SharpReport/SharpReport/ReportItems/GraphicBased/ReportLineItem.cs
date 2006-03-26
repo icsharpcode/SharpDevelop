@@ -41,7 +41,7 @@ namespace SharpReport.ReportItems{
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
 	
 			base.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (BasePropertyChange);
-			ItemsHelper.UpdateGraphicControl (this.visualControl,this);
+			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
 			this.initDone = true;
 		}
 		
@@ -49,12 +49,12 @@ namespace SharpReport.ReportItems{
 		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
 			if (initDone == true) {
-				ItemsHelper.UpdateGraphicBase (this.visualControl,this);
+				ItemsHelper.UpdateControlFromGraphicBase (this.visualControl,this);
 			}
 		}
 		
 		private void OnControlChanged (object sender, EventArgs e) {
-			ItemsHelper.UpdateGraphicControl (this.visualControl,this);
+			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
 			this.HandlePropertyChanged("OnControlChanged");
 		}
 		

@@ -15,7 +15,7 @@ using System.ComponentModel;
 using SharpReportCore;
 
 /// <summary>
-/// Build proper (unique) Names for all added Item's
+/// Build a proper (unique) Names for all added Item's
 /// </summary>
 /// <remarks>
 /// 	created by - Forstmeier Peter
