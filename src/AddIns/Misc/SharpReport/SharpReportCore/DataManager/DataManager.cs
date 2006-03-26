@@ -98,6 +98,12 @@ namespace SharpReportCore {
 			
 		}
 		
+		
+		public void  DataBind() {
+			CheckReportColumns();
+			this.dataViewStrategy.Bind();
+		}
+		
 		#endregion
 		
 		void InitDataManager (ReportSettings reportSettings,object dataSource) {
@@ -300,27 +306,26 @@ namespace SharpReportCore {
 		}
 		
 	
-		
-		#region SharpReportCore.IDataContainer interface implementation
 		public object DataSource {
 			get {
 				return this.dataSource;
 			}
 		}
-		
+		/*
 		public int CurrentRow {
 			get {
 				return this.dataViewStrategy.CurrentRow;
 			}
 		}
-		
+		*/
+		/*
 		public int Count {
 			get {
 				return this.dataViewStrategy.Count;
 			}
 		}
-		
-		
+		*/
+		/*
 		public bool HasMoreData {
 			get {
 				if (this.dataViewStrategy.CurrentRow < this.dataViewStrategy.Count ){
@@ -331,12 +336,8 @@ namespace SharpReportCore {
 			}
 		}
 		
+		*/
 		
-		public bool DataBind() {
-			CheckReportColumns();
-			this.dataViewStrategy.Bind();
-			return true;
-		}
 		
 //		public void Skip() {
 //			this.dataViewStrategy.CurrentRow ++;
@@ -382,7 +383,7 @@ namespace SharpReportCore {
 				throw new NotImplementedException();
 			}
 		}
-		#endregion
+	
 		// Nur zum testen
 		
 		public DataNavigator GetNavigator {
@@ -391,14 +392,14 @@ namespace SharpReportCore {
 			}
 		}
 		
-		#region System.Collections.IEnumerator interface implementation
-		
+
+		/*
 		public object Current {
 			get {
 				throw new NotImplementedException();
 			}
 		}
-		
+		*/
 //		public void Reset() {
 //			this.dataViewStrategy.Reset();
 //		}
@@ -408,7 +409,6 @@ namespace SharpReportCore {
 //		}
 		
 		
-		#endregion
 		
 		public bool IsGrouped {
 			get {

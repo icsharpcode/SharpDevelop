@@ -80,7 +80,6 @@
     <Compile Include="Globals\GlobalEnums.cs" />
     <Compile Include="Globals\GlobalValues.cs" />
     <Compile Include="Interfaces\IBaseRenderer.cs" />
-    <Compile Include="Interfaces\IDataContainer.cs" />
     <Compile Include="Interfaces\IDataViewStrategy.cs" />
     <Compile Include="Interfaces\IItemRenderer.cs" />
     <Compile Include="Interfaces\IOutputStrategy.cs" />
@@ -131,6 +130,7 @@
     <Compile Include="Exceptions\MissingSectionException.cs" />
     <Compile Include="Printing\AbstractDataRenderer.cs" />
     <Compile Include="DataManager\DataNavigator.cs" />
+    <Compile Include="Interfaces\IDataNavigator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />

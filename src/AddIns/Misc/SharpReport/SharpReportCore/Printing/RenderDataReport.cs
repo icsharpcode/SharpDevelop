@@ -125,13 +125,14 @@ namespace SharpReportCore {
 //			DebugRectangle (e,detailRect);
 			
 			// no loop if there is no data
-			if (! base.DataManager.HasMoreData ) {
+			System.Console.WriteLine("Navi hasMore {0}",this.dataNavigator.HasMoreData);
+			if (! this.dataNavigator.HasMoreData ) {
 				e.PrintPageEventArgs.HasMorePages = false;
 				return;
 			}
 
-			while (dataNavigator.MoveNext()) {
-				dataNavigator.Fill (base.CurrentSection.Items);	
+			while (this.dataNavigator.MoveNext()) {
+				this.dataNavigator.Fill (base.CurrentSection.Items);	
 				base.RenderSection (section,e);
 				
 				section.SectionOffset = section.SectionOffset + section.Size.Height  + 2 * base.Gap;

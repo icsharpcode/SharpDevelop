@@ -15,9 +15,11 @@ namespace SharpReportCore
 	/// Description of DataNavigator.
 	/// </summary>
 	
-	public class DataNavigator{
+	public class DataNavigator :IDataNavigator{
 		IDataViewStrategy store;
 		public event EventHandler <ListChangedEventArgs> ListChanged;
+		
+		
 		public DataNavigator(IDataViewStrategy store){
 			this.store = store;
 			this.store.ListChanged += new EventHandler<ListChangedEventArgs> (OnListChanged);
@@ -35,6 +37,18 @@ namespace SharpReportCore
 			}
 		}
 		
+		
+		public bool HasMoreData {
+			get {
+				if (this.CurrentRow < this.Count ){
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+		
+		
 		/// <summary>
 		/// Indicate's if the current <see cref="GroupSeperator"></see> has ChildRows
 		/// </summary>
@@ -45,11 +59,11 @@ namespace SharpReportCore
 		}
 		
 		public int CurrentRow  {
-			get {return store.CurrentRow;}
+			get {return this.store.CurrentRow;}
 		}
 		
 		public int Count  {
-			get {return store.Count;}
+			get {return this.store.Count;}
 		}
 		
 		public bool MoveNext () {
@@ -57,12 +71,12 @@ namespace SharpReportCore
 		}
 		
 		public void Reset() {
-			store.Reset();
+			this.store.Reset();
 		}
 		
 		public object Current {
 			get {
-				return store.Current;
+				return this.store.Current;
 			}
 		}
 	}

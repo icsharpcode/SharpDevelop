@@ -222,6 +222,8 @@ namespace SharpReportCore {
 				if (!String.IsNullOrEmpty(baseDataItem.FormatString)) {
 					rpea.FormatedValue = defaultFormatter.FormatItem (baseDataItem);
 					System.Console.WriteLine("\tFormated Value = {0}",rpea.FormatedValue);
+				} else {
+					rpea.FormatedValue = rpea.ValueToFormat;
 				}
 			}
 		}
