@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			spaceSize = g.MeasureString("-", Font,  new PointF(0, 0), StringFormat.GenericTypographic);
 			
 			if (line != null) {
-				DrawLine(g, line, e.Bounds.Y, x);
+				DrawLine(g, line, e.Bounds.Y, x, e.State);
 			}
 		}
 		
@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			return wordSize.Width;
 		}
 		
-		void DrawLine(Graphics g, LineSegment line, float yPos, float xPos)
+		void DrawLine(Graphics g, LineSegment line, float yPos, float xPos, TreeNodeStates state)
 		{
 			int logicalX = 0;
 			if (line.Words != null) {
@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 							                         word.Word,
 							                         new PointF(xPos, yPos),
 							                         word.Font.Style == FontStyle.Bold ? BoldMonospacedFont : MonospacedFont,
-							                         word.Color
+							                         GetTextColor(state, word.Color)
 							                        );
 							logicalX += word.Word.Length;
 							break;
@@ -145,7 +145,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				                 bookmark.Document.GetText(line),
 				                 new PointF(xPos, yPos),
 				                 MonospacedFont,
-				                 Color.Black
+				                 GetTextColor(state, Color.Black)
 				                );
 			}
 		}

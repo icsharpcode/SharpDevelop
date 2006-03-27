@@ -133,7 +133,7 @@ namespace ICSharpCode.TextEditor
 			return spaceSize;
 		}
 		
-		public void DrawLine(Graphics g, ref float xPos, float xOffset, float yPos)
+		public void DrawLine(Graphics g, ref float xPos, float xOffset, float yPos, Color c)
 		{
 			SizeF spaceSize = GetSpaceSize(g);
 			foreach (SimpleTextWord word in words) {
@@ -151,11 +151,16 @@ namespace ICSharpCode.TextEditor
 						                         word.Word,
 						                         new PointF(xPos + xOffset, yPos),
 						                         word.Bold ? boldMonospacedFont : monospacedFont,
-						                         word.Color
+						                         c == Color.Empty ? word.Color : c
 						                        );
 						break;
 				}
 			}
+		}
+		
+		public void DrawLine(Graphics g, ref float xPos, float xOffset, float yPos)
+		{
+			DrawLine(g, ref xPos, xOffset, yPos, Color.Empty);
 		}
 		
 		public float MeasureWidth(Graphics g, float xPos)
