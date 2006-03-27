@@ -214,9 +214,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static void LoadSolution(string fileName)
 		{
 			BeforeLoadSolution();
-			openSolution = Solution.Load(fileName);
-			if (openSolution == null)
+			try {
+				openSolution = Solution.Load(fileName);
+				if (openSolution == null)
+					return;
+			} catch (UnauthorizedAccessException ex) {
+				MessageService.ShowError(ex.Message);
 				return;
+			}
 			try {
 				string file = GetPreferenceFileName(openSolution.FileName);
 				if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
@@ -258,7 +263,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(fileName);
 			IProject project;
 			if (binding != null) {
-				project = LanguageBindingService.LoadProject(fileName, solution.Name);
+				try {
+					project = LanguageBindingService.LoadProject(fileName, solution.Name);
+				} catch (UnauthorizedAccessException ex) {
+					MessageService.ShowError(ex.Message);
+					return;
+				}
 			} else {
 				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new string[,] {{"FileName", fileName}}));
 				return;
