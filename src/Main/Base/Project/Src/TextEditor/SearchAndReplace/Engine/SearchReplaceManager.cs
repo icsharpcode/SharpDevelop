@@ -87,12 +87,15 @@ namespace SearchAndReplace
 					return;
 				} else {
 					textArea = OpenTextArea(result.FileName);
-					
-					textArea.ActiveTextAreaControl.Caret.Position = textArea.Document.OffsetToPosition(result.Offset);
-					int lineNr = textArea.Document.GetLineNumberForOffset(result.Offset);
-					
-					if (!textArea.Document.BookmarkManager.IsMarked(lineNr)) {
-						textArea.Document.BookmarkManager.ToggleMarkAt(lineNr);
+					if (textArea != null) {
+						textArea.ActiveTextAreaControl.Caret.Position = textArea.Document.OffsetToPosition(result.Offset);
+						int lineNr = textArea.Document.GetLineNumberForOffset(result.Offset);
+						
+						if (!textArea.Document.BookmarkManager.IsMarked(lineNr)) {
+							textArea.Document.BookmarkManager.ToggleMarkAt(lineNr);
+						}
+					} else {
+						count--;
 					}
 				}
 			}
@@ -129,17 +132,20 @@ namespace SearchAndReplace
 					return;
 				} else {
 					TextEditorControl textArea = OpenTextArea(result.FileName);
-					
-					if (!textAreas.Contains(textArea)) {
-						textArea.BeginUpdate();
-						textArea.ActiveTextAreaControl.TextArea.SelectionManager.SelectionCollection.Clear();
-						textAreas.Add(textArea);
-					}
-					
-					string transformedPattern = result.TransformReplacePattern(SearchOptions.ReplacePattern);
-					find.Replace(result.Offset, result.Length, transformedPattern);
-					if (find.CurrentDocumentInformation.Document == null) {
-						textArea.Document.Replace(result.Offset, result.Length, transformedPattern);
+					if (textArea != null) {
+						if (!textAreas.Contains(textArea)) {
+							textArea.BeginUpdate();
+							textArea.ActiveTextAreaControl.TextArea.SelectionManager.SelectionCollection.Clear();
+							textAreas.Add(textArea);
+						}
+						
+						string transformedPattern = result.TransformReplacePattern(SearchOptions.ReplacePattern);
+						find.Replace(result.Offset, result.Length, transformedPattern);
+						if (find.CurrentDocumentInformation.Document == null) {
+							textArea.Document.Replace(result.Offset, result.Length, transformedPattern);
+						}
+					} else {
+						count--;
 					}
 				}
 			}
@@ -160,29 +166,34 @@ namespace SearchAndReplace
 				lastResult = null;
 				return;
 			}
-			SearchResult result = find.FindNext();
 			
-			if (result == null) {
-				ShowNotFoundMessage();
-				find.Reset();
-			} else {
-				TextEditorControl textArea = OpenTextArea(result.FileName);
-				
-				if (lastResult != null  && lastResult.FileName == result.FileName &&
-				    textArea.ActiveTextAreaControl.Caret.Offset != lastResult.Offset + lastResult.Length) {
+			TextEditorControl textArea = null;;
+			while (textArea == null) {
+				SearchResult result = find.FindNext();
+				if (result == null) {
+					ShowNotFoundMessage();
 					find.Reset();
+					lastResult = null;
+					return;
+				} else {
+					textArea = OpenTextArea(result.FileName);
+					if (textArea != null) {
+						if (lastResult != null  && lastResult.FileName == result.FileName &&
+						    textArea.ActiveTextAreaControl.Caret.Offset != lastResult.Offset + lastResult.Length) {
+							find.Reset();
+						}
+						int startPos = Math.Min(textArea.Document.TextLength, Math.Max(0, result.Offset));
+						int endPos   = Math.Min(textArea.Document.TextLength, startPos + result.Length);
+						
+						textArea.ActiveTextAreaControl.Caret.Position = textArea.Document.OffsetToPosition(endPos);
+						textArea.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
+						textArea.ActiveTextAreaControl.TextArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, textArea.Document.OffsetToPosition(startPos),
+						                                                                                           textArea.Document.OffsetToPosition(endPos)));
+						textArea.Refresh();
+						lastResult = result;
+					}
 				}
-				int startPos = Math.Min(textArea.Document.TextLength, Math.Max(0, result.Offset));
-				int endPos   = Math.Min(textArea.Document.TextLength, startPos + result.Length);
-				
-				textArea.ActiveTextAreaControl.Caret.Position = textArea.Document.OffsetToPosition(endPos);
-				textArea.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
-				textArea.ActiveTextAreaControl.TextArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, textArea.Document.OffsetToPosition(startPos),
-				                                                                                           textArea.Document.OffsetToPosition(endPos)));
-				textArea.Refresh();
 			}
-			
-			lastResult = result;
 		}
 		
 		static void ShowNotFoundMessage()
@@ -196,11 +207,17 @@ namespace SearchAndReplace
 		
 		static TextEditorControl OpenTextArea(string fileName)
 		{
+			ITextEditorControlProvider textEditorProvider = null;
 			if (fileName != null) {
-				return ((ITextEditorControlProvider)FileService.OpenFile(fileName).ViewContent).TextEditorControl;
+				textEditorProvider = FileService.OpenFile(fileName).ViewContent as ITextEditorControlProvider;
+			} else {
+				textEditorProvider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
 			}
-			
-			return ((ITextEditorControlProvider)WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent).TextEditorControl;
+				
+			if (textEditorProvider != null) {
+				return textEditorProvider.TextEditorControl;
+			} 
+			return null;
 		}
 	}
 }

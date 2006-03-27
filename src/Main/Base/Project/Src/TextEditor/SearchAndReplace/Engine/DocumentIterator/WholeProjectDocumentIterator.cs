@@ -52,7 +52,7 @@ namespace SearchAndReplace
 				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 					if (content.FileName != null &&
 					    FileUtility.IsEqualFileName(content.FileName, fileName) &&
-					    content is ITextEditorControlProvider )
+					    content is ITextEditorControlProvider)
 					{
 						document = (((ITextEditorControlProvider)content).TextEditorControl).Document;
 						return new ProvidedDocumentInformation(document,
@@ -91,7 +91,7 @@ namespace SearchAndReplace
 			files.Clear();
 			if (ProjectService.CurrentProject != null) {
 				foreach (ProjectItem item in ProjectService.CurrentProject.Items) {
-					if (item is FileProjectItem) {
+					if (item is FileProjectItem && SearchReplaceUtilities.IsSearchable(item.FileName)) {
 						files.Add(item.FileName);
 					}
 				}
