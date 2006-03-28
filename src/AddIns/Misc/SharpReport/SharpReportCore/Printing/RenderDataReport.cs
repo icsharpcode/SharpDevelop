@@ -125,7 +125,7 @@ namespace SharpReportCore {
 //			DebugRectangle (e,detailRect);
 			
 			// no loop if there is no data
-			System.Console.WriteLine("Navi hasMore {0}",this.dataNavigator.HasMoreData);
+
 			if (! this.dataNavigator.HasMoreData ) {
 				e.PrintPageEventArgs.HasMorePages = false;
 				return;

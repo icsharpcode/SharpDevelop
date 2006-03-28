@@ -42,7 +42,7 @@ namespace SharpReportCore {
 		private Color backColor;
 		private int  sectionOffset;
 
-		public event EventHandler<EventArgs> BeforePrinting;
+		public event EventHandler<BeforePrintEventArgs> BeforePrinting;
 		public event EventHandler<AfterPrintEventArgs> AfterPrinting;
 		
 		
@@ -206,7 +206,8 @@ namespace SharpReportCore {
 		
 		public void NotifyBeforePrint () {
 			if (this.BeforePrinting != null) {
-				BeforePrinting (this,EventArgs.Empty);
+				BeforePrintEventArgs ea = new BeforePrintEventArgs ();
+				BeforePrinting (this,ea);
 			}
 		}
 		

@@ -61,7 +61,6 @@
     <Compile Include="DataManager\ListStrategy\TableStrategy.cs" />
     <Compile Include="DataManager\DataManager.cs" />
     <Compile Include="Dialogs\PreviewControl.cs" />
-    <Compile Include="Events\AfterPrintEventArgs.cs" />
     <Compile Include="Events\GroupChangedEventArgs.cs" />
     <Compile Include="Events\ReportPageEventArgs.cs" />
     <Compile Include="Events\SharpReportEventArgs.cs" />
@@ -79,11 +78,9 @@
     <Compile Include="Globals\FontSingleton.cs" />
     <Compile Include="Globals\GlobalEnums.cs" />
     <Compile Include="Globals\GlobalValues.cs" />
-    <Compile Include="Interfaces\IBaseRenderer.cs" />
     <Compile Include="Interfaces\IDataViewStrategy.cs" />
     <Compile Include="Interfaces\IItemRenderer.cs" />
     <Compile Include="Interfaces\IOutputStrategy.cs" />
-    <Compile Include="Interfaces\IRender.cs" />
     <Compile Include="Interfaces\IStoreable.cs" />
     <Compile Include="Printing\Formatter\AbstractFormatter.cs" />
     <Compile Include="Printing\Formatter\DefaultFormatter.cs" />
@@ -131,6 +128,7 @@
     <Compile Include="Printing\AbstractDataRenderer.cs" />
     <Compile Include="DataManager\DataNavigator.cs" />
     <Compile Include="Interfaces\IDataNavigator.cs" />
+    <Compile Include="Events\PrintEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />
