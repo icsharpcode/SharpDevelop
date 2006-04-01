@@ -43,7 +43,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public override void Click(Control parent, MouseEventArgs e)
 		{
-			MenuService.ShowContextMenu(this, ContextMenuPath, parent, e.X, e.Y);
+			if (e.Button == MouseButtons.Left)
+				MenuService.ShowContextMenu(this, ContextMenuPath, parent, e.X, e.Y);
 		}
 		
 		public abstract int IconIndex {
@@ -79,7 +80,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public override void Click(Control parent, MouseEventArgs e)
 		{
-			MenuService.ShowContextMenu(this, ContextMenuPath, parent, e.X, e.Y);
+			if (e.Button == MouseButtons.Left)
+				MenuService.ShowContextMenu(this, ContextMenuPath, parent, e.X, e.Y);
 		}
 		
 		public override void Draw(IconBarMargin margin, Graphics g, Point p)
