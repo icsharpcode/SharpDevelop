@@ -144,6 +144,9 @@ namespace Debugger
 		public void Dispose()
 		{
 			metaData.Dispose();
+			if (symReader != null) {
+				symReader.As<ISymUnmanagedDispose>().Destroy();
+			}
 			
 			unloaded = true;
 		}
