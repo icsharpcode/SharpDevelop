@@ -93,7 +93,7 @@ namespace Debugger
 			     	realCallback.Breakpoint(
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugAppDomain>(pAppDomain),
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugThread>(pThread),
-			     		MTA2STA.MarshalIntPtrTo<ICorDebugBreakpoint>(pBreakpoint)
+			     		pBreakpoint // Do not marshal this one - it fails in .NET 1.1
 			     	);
 			     });
 		}
