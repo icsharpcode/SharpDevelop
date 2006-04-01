@@ -379,13 +379,14 @@ namespace ICSharpCode.CodeAnalysis
 		string[] GetRuleAssemblyList(bool replacePath)
 		{
 			List<string> list = new List<string>();
+			string fxCopPath = FxCopWrapper.FindFxCopPath();
 			foreach (string dir in ruleAssemblies.Split(';')) {
 				if (string.Equals(dir, "$(FxCopDir)\\rules", StringComparison.OrdinalIgnoreCase))
 					continue;
 				if (string.Equals(dir, "$(FxCopDir)/rules", StringComparison.OrdinalIgnoreCase))
 					continue;
-				if (replacePath) {
-					list.Add(Regex.Replace(dir, @"\$\(FxCopDir\)", FxCopWrapper.FindFxCopPath(), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase));
+				if (replacePath && !string.IsNullOrEmpty(fxCopPath)) {
+					list.Add(Regex.Replace(dir, @"\$\(FxCopDir\)", fxCopPath, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase));
 				} else {
 					list.Add(dir);
 				}

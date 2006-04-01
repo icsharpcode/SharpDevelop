@@ -35,4 +35,9 @@ class InterpreterWrapper:
 		// David: the code completion items have to be passed as strings;
 		// but it's not important, you can return null if you want.
 		return _interpreter.SuggestCodeCompletion(code)
-
+		
+	def GetGlobals():
+		return _interpreter.globals()
+	
+	def GetValue(variableName as string):
+		return _interpreter.GetValue(variableName)

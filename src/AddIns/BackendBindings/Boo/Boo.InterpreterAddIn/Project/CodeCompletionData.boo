@@ -97,7 +97,7 @@ internal class CodeCompletionData(AbstractCompletionData):
 		_entities.Add(entity)
 
 internal class GlobalsCompletionDataProvider(ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.AbstractCompletionDataProvider):
-	_interpreter as InteractiveInterpreter
+	_interpreter as InterpreterWrapper
 	
 	class GlobalCompletionData(AbstractCompletionData):
 		
@@ -107,25 +107,25 @@ internal class GlobalsCompletionDataProvider(ICSharpCode.SharpDevelop.DefaultEdi
 		[getter(Description)]
 		_description as string
 		
-		def constructor(name, imageIndex, description):
+		def constructor(name as string, imageIndex as int, description as string):
 			super(name)
 			_imageIndex = imageIndex
 			_description = description
 	
-	def constructor(interpreter):
+	def constructor(interpreter as InterpreterWrapper):
 		_interpreter = interpreter
 		
 	override def GenerateCompletionData(fileName as string, textArea as TextArea, charTyped as System.Char) as (ICompletionData):
-		globals = _interpreter.globals()
+		globals = _interpreter.GetGlobals()
 		data = array(ICompletionData, len(globals))
 		for index, key in enumerate(globals):
 			value = _interpreter.GetValue(key)
 			delegate = value as System.Delegate
-			if delegate is null:				
+			if delegate is null:
 				if value is not null:
 					description = "${key} as ${InteractiveInterpreter.GetBooTypeName(value.GetType())}"
 				else:
-					description = "null"				
+					description = "null"
 				item = GlobalCompletionData(key, ClassBrowserIconService.FieldIndex, description)
 			else:
 				item = GlobalCompletionData(key, ClassBrowserIconService.MethodIndex, InteractiveInterpreter.DescribeMethod(delegate.Method))
