@@ -286,10 +286,23 @@ namespace WrapperGenerator
 			*/
 			
 			method.Statements.Add(
-				new CodeMethodReturnStatement(
-					new CodeObjectCreateExpression(
-						wrappedType.Name,
-						new CodeArgumentReferenceExpression("objectToWrap"))));
+				// if
+				new CodeConditionStatement(
+					// objectToWrap != null
+					new CodeBinaryOperatorExpression(
+						new CodeArgumentReferenceExpression("objectToWrap"),
+						CodeBinaryOperatorType.IdentityInequality,
+						new CodePrimitiveExpression(null)),
+					// return new TheType(objectToWrap);
+					new CodeStatement[] {
+						new CodeMethodReturnStatement(
+							new CodeObjectCreateExpression(
+								wrappedType.Name,
+								new CodeArgumentReferenceExpression("objectToWrap")))},
+					// else return null;
+					new CodeStatement[] {
+						new CodeMethodReturnStatement(
+							new CodePrimitiveExpression(null))}));
 			
 			return method;
 		}

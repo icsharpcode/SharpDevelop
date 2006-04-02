@@ -33,7 +33,13 @@ namespace Debugger.Wrappers.CorSym
 		
 		public static ISymUnmanagedDispose Wrap(Debugger.Interop.CorSym.ISymUnmanagedDispose objectToWrap)
 		{
-			return new ISymUnmanagedDispose(objectToWrap);
+			if ((objectToWrap != null))
+			{
+				return new ISymUnmanagedDispose(objectToWrap);
+			} else
+			{
+				return null;
+			}
 		}
 		
 		~ISymUnmanagedDispose()
