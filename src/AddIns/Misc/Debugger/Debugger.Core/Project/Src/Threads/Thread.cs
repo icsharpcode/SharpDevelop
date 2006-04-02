@@ -32,7 +32,7 @@ namespace Debugger
 		string lastName = string.Empty;
 		bool hasBeenLoaded = false;
 
-		Function currentFunction;
+		Function selectedFunction;
 		
 		public NDebugger Debugger {
 			get {
@@ -290,36 +290,19 @@ namespace Debugger
 			}
 		}
 		
-		public Function CurrentFunction {
+		public Function SelectedFunction {
 			get {
-				process.AssertPaused();
-				
-				if (currentFunction == null) {
-					currentFunction = LastFunctionWithLoadedSymbols;
-				}
-				
-				if (currentFunction != null && currentFunction.HasSymbols) {
-					return currentFunction;
-				} else {
-					return null;
-				}
+				return selectedFunction;
 			}
-			internal set {
+			set {
 				if (value != null && !value.HasSymbols) {
-					throw new DebuggerException("CurrentFunction must have symbols");
+					throw new DebuggerException("SelectedFunction must have symbols");
 				}
 				
-				currentFunction = value;
+				selectedFunction = value;
 			}
 		}
 		
-		public void SetCurrentFunction(Function function)
-		{
-			CurrentFunction = function;
-			
-			debugger.Pause();
-		}
-
 		public Function LastFunctionWithLoadedSymbols {
 			get {
 				foreach (Function function in Callstack) {

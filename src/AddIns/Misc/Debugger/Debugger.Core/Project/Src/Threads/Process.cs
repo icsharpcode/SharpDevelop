@@ -20,7 +20,7 @@ namespace Debugger
 
 		ICorDebugProcess corProcess;
 
-		Thread currentThread;
+		Thread selectedThread;
 		bool isProcessRunning = true;
 		
 		public NDebugger Debugger {
@@ -41,26 +41,13 @@ namespace Debugger
 			}
 		}
 
-		public Thread CurrentThread {
+		public Thread SelectedThread {
 			get {
-				if (currentThread == null) {
-					IList<Thread> threads = Threads;
-					if (threads.Count > 0) {
-						currentThread = threads[0];
-					}
-				}
-				return currentThread;
+				return selectedThread;
 			}
-			internal set {
-				currentThread = value;
+			set {
+				selectedThread = value;
 			}
-		}
-		
-		public void SetCurrentThread(Thread thread)
-		{
-			CurrentThread = thread;
-			
-			debugger.Pause();
 		}
 
 		public IList<Thread> Threads {
@@ -127,7 +114,7 @@ namespace Debugger
 			
 			isProcessRunning = false;
 			debugger.PauseSession = new PauseSession(PausedReason.Break);
-			debugger.CurrentProcess = this;
+			debugger.SelectedProcess = this;
 			debugger.Pause();
 		}
 		

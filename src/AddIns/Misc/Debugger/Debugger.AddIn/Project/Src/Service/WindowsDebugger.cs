@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		public void StepInto()
 		{
-			if (debugger.CurrentFunction == null) {
+			if (debugger.SelectedFunction == null || debugger.IsRunning) {
 				MessageBox.Show("You can not step because there is no function selected to be stepped","Step into");
 			} else {
 				debugger.StepInto();
@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void StepOver()
 		{
-			if (debugger.CurrentFunction == null) {
+			if (debugger.SelectedFunction == null || debugger.IsRunning) {
 				MessageBox.Show("You can not step because there is no function selected to be stepped","Step over");
 			} else {
 				debugger.StepOver();
@@ -156,7 +156,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void StepOut()
 		{
-			if (debugger.CurrentFunction == null) {
+			if (debugger.SelectedFunction == null || debugger.IsRunning) {
 				MessageBox.Show("You can not step because there is no function selected to be stepped","Step out");
 			} else {
 				debugger.StepOut();
@@ -244,8 +244,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public bool CanSetInstructionPointer(string filename, int line, int column)
 		{
-			if (debugger != null && debugger.IsPaused && debugger.CurrentFunction != null) {
-				SourcecodeSegment seg = debugger.CurrentFunction.CanSetIP(filename, line, column);
+			if (debugger != null && debugger.IsPaused && debugger.SelectedFunction != null) {
+				SourcecodeSegment seg = debugger.SelectedFunction.CanSetIP(filename, line, column);
 				return seg != null;
 			} else {
 				return false;
@@ -255,7 +255,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		public bool SetInstructionPointer(string filename, int line, int column)
 		{
 			if (CanSetInstructionPointer(filename, line, column)) {
-				SourcecodeSegment seg = debugger.CurrentFunction.SetIP(filename, line, column);
+				SourcecodeSegment seg = debugger.SelectedFunction.SetIP(filename, line, column);
 				return seg != null;
 			} else {
 				return false;
@@ -368,9 +368,9 @@ namespace ICSharpCode.SharpDevelop.Services
 			OnIsProcessRunningChanged(EventArgs.Empty);
 			
 			if (e.Reason == PausedReason.Exception) {
-				exceptionHistory.Add(debugger.CurrentThread.CurrentException);
+				exceptionHistory.Add(debugger.SelectedThread.CurrentException);
 				OnExceptionHistoryModified();
-				if (debugger.CurrentThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED) {
+				if (debugger.SelectedThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED) {
 					// Ignore the exception
 					e.ResumeDebuggingAfterEvent();
 					return;
@@ -378,14 +378,14 @@ namespace ICSharpCode.SharpDevelop.Services
 				
 				JumpToCurrentLine();
 				
-				switch (ExceptionForm.Show(debugger.CurrentThread.CurrentException)) {
+				switch (ExceptionForm.Show(debugger.SelectedThread.CurrentException)) {
 					case ExceptionForm.Result.Break: 
 						break;
 					case ExceptionForm.Result.Continue:
 						e.ResumeDebuggingAfterEvent();
 						return;
 					case ExceptionForm.Result.Ignore:
-						debugger.CurrentThread.InterceptCurrentException();
+						debugger.SelectedThread.InterceptCurrentException();
 						break;
 				}
 			}

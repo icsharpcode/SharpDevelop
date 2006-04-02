@@ -182,7 +182,7 @@ namespace Debugger
 			ICorDebugStepper stepper = CorILFrame.CreateStepper();
 			stepper.StepOut();
 			
-			debugger.CurrentThread.AddActiveStepper(stepper);
+			thread.AddActiveStepper(stepper);
 			
 			debugger.Continue();
 		}
@@ -214,7 +214,7 @@ namespace Debugger
 					stepper.StepRange(1 /* true - step in*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
 				}
 				
-				debugger.CurrentThread.AddActiveStepper(stepper);
+				thread.AddActiveStepper(stepper);
 			}
 			
 			// Mind that step in which ends in code without symblols is cotinued
@@ -231,7 +231,7 @@ namespace Debugger
 				stepper.StepRange(0 /* false - step over*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
 			}
 			
-			debugger.CurrentThread.AddActiveStepper(stepper);
+			thread.AddActiveStepper(stepper);
 			
 			debugger.Continue();
 		}

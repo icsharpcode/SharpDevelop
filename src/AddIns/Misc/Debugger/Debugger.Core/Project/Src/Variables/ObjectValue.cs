@@ -209,8 +209,8 @@ namespace Debugger
 		{
 			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
 			ICorDebugFrame curFrame = null;
-			if (debugger.CurrentThread != null && debugger.CurrentThread.LastFunction != null && debugger.CurrentThread.LastFunction.CorILFrame != null) {
-				curFrame = debugger.CurrentThread.LastFunction.CorILFrame.CastTo<ICorDebugFrame>();
+			if (debugger.IsPaused && debugger.SelectedThread != null && debugger.SelectedThread.LastFunction != null && debugger.SelectedThread.LastFunction.CorILFrame != null) {
+				curFrame = debugger.SelectedThread.LastFunction.CorILFrame.CastTo<ICorDebugFrame>();
 			}
 			
 			try {

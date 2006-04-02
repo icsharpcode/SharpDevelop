@@ -158,8 +158,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void RunningThreadsListItemActivate(object sender, EventArgs e)
 		{
 			if (debuggerCore.IsPaused) {
-				if (debuggerCore.CurrentProcess != null) {
-					debuggerCore.CurrentProcess.SetCurrentThread((Thread)(runningThreadsList.SelectedItems[0].Tag));
+				if (debuggerCore.SelectedProcess != null) {
+					debuggerCore.SelectedProcess.SelectedThread = (Thread)(runningThreadsList.SelectedItems[0].Tag);
 				}
 			} else {
 				MessageBox.Show("You can not switch threads while the debugger is running.", "Thread switch");

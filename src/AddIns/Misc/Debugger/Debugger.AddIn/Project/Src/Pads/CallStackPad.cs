@@ -169,8 +169,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (debuggerCore.IsPaused) {
 				Function f = (Function)(callStackList.SelectedItems[0].Tag);
 				if (f.HasSymbols) {
-					if (debuggerCore.CurrentThread != null) {
-						debuggerCore.CurrentThread.SetCurrentFunction(f);
+					if (debuggerCore.SelectedThread != null) {
+						debuggerCore.SelectedThread.SelectedFunction = f;
 					}
 				} else {
 					MessageBox.Show("You can not switch to function without symbols", "Function switch");
@@ -200,8 +200,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			callStackList.BeginUpdate();
 			callStackList.Items.Clear();
-			if (debuggerCore != null && debuggerCore.CurrentThread != null) {
-				foreach (Function f in debuggerCore.CurrentThread.Callstack) {
+			if (debuggerCore != null && debuggerCore.SelectedThread != null && debuggerCore.IsPaused) {
+				foreach (Function f in debuggerCore.SelectedThread.Callstack) {
 					ListViewItem item;
 					if (f.HasSymbols || showExternalMethods) {
 						// Show the method in the list

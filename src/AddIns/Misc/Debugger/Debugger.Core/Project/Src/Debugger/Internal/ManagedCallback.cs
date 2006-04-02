@@ -39,8 +39,8 @@ namespace Debugger
 			debugger.TraceMessage("Callback: " + name);
 			debugger.AssertRunning();
 			debugger.PauseSession = new PauseSession(pausedReason);
-			debugger.CurrentProcess = debugger.GetProcess(pProcess);
-			debugger.CurrentProcess.IsRunning = false;
+			debugger.SelectedProcess = debugger.GetProcess(pProcess);
+			debugger.SelectedProcess.IsRunning = false;
 		}
 		
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugAppDomain pAppDomain)
@@ -55,20 +55,21 @@ namespace Debugger
 			if (name != "ExitProcess") debugger.AssertRunning();
 			Thread thread = debugger.GetThread(pThread);
 			debugger.PauseSession = new PauseSession(pausedReason);
-			debugger.CurrentProcess = thread.Process;
-			debugger.CurrentProcess.IsRunning = false;
-			debugger.CurrentProcess.CurrentThread = thread;
+			debugger.SelectedProcess = thread.Process;
+			debugger.SelectedProcess.IsRunning = false;
+			debugger.SelectedProcess.SelectedThread = thread;
 		}
 		
 		void ExitCallback_Continue()
 		{
-			debugger.CurrentProcess.Continue();
+			debugger.SelectedProcess.Continue();
 		}
 		
 		void ExitCallback_Paused()
 		{
-			if (debugger.CurrentThread != null) {
-				debugger.CurrentThread.DeactivateAllSteppers();
+			if (debugger.SelectedThread != null) {
+				debugger.SelectedThread.DeactivateAllSteppers();
+				debugger.SelectedThread.SelectedFunction = debugger.SelectedThread.LastFunctionWithLoadedSymbols;
 			}
 			debugger.Pause();
 		}
@@ -89,7 +90,7 @@ namespace Debugger
 				}
 			}
 			
-			if (!debugger.CurrentThread.LastFunction.HasSymbols) {
+			if (!debugger.SelectedThread.LastFunction.HasSymbols) {
 				// This should not happen with JMC enabled
 				debugger.TraceMessage(" - leaving code without symbols");
 				
@@ -339,8 +340,8 @@ namespace Debugger
 
 			debugger.RemoveThread(thread);
 
-			if (thread.Process.CurrentThread == thread) {
-				thread.Process.CurrentThread = null;
+			if (thread.Process.SelectedThread == thread) {
+				thread.Process.SelectedThread = null;
 			}
 
 			ExitCallback_Continue();
@@ -400,7 +401,7 @@ namespace Debugger
 			// Whatch out for the zeros and null!
 			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
 			
-			debugger.CurrentThread.CurrentExceptionType = (ExceptionType)exceptionType;
+			debugger.SelectedThread.CurrentExceptionType = (ExceptionType)exceptionType;
 			
 			if (ExceptionType.DEBUG_EXCEPTION_UNHANDLED != (ExceptionType)exceptionType) {
 				// Handled exception
