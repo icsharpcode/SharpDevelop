@@ -39,21 +39,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		Properties properties;
 		
-		bool isDebuggingCache = false;
-		bool isProcessRunningCache = false;
 		bool serviceInitialized = false;
-
-		List<Debugger.Exception> exceptionHistory = new List<Debugger.Exception>();
-
-		public event EventHandler ExceptionHistoryModified;
-
-		protected virtual void OnExceptionHistoryModified()
-		{
-			if (ExceptionHistoryModified != null) {
-				ExceptionHistoryModified(this, EventArgs.Empty);
-			}
-		}
-		
+				
 		public NDebugger DebuggerCore {
 			get {
 				return debugger;
@@ -71,12 +58,6 @@ namespace ICSharpCode.SharpDevelop.Services
 				return serviceInitialized;
 			}
 		}
-
-		public IList<Debugger.Exception> ExceptionHistory {
-			get {
-				return exceptionHistory.AsReadOnly();
-			}
-		}
 		
 		public WindowsDebugger()
 		{
@@ -87,13 +68,13 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		public bool IsDebugging { 
 			get { 
-				return isDebuggingCache; 
+				return serviceInitialized && (debugger.Processes.Count > 0);
 			} 
 		}
 		
 		public bool IsProcessRunning { 
 			get { 
-				return isProcessRunningCache; 
+				return IsDebugging && debugger.IsRunning; 
 			} 
 		}
 		
@@ -164,31 +145,13 @@ namespace ICSharpCode.SharpDevelop.Services
 		}
 
 		public event EventHandler DebugStarted;
-
-		protected virtual void OnDebugStarted(EventArgs e) 
-		{
-			if (DebugStarted != null) {
-				DebugStarted(this, e);
-			}
-		}
-
-
+		public event EventHandler DebugStopped;
 		public event EventHandler IsProcessRunningChanged;
 		
 		protected virtual void OnIsProcessRunningChanged(EventArgs e)
 		{
 			if (IsProcessRunningChanged != null) {
 				IsProcessRunningChanged(this, e);
-			}
-		}
-
-
-		public event EventHandler DebugStopped;
-
-		protected virtual void OnDebugStopped(EventArgs e) 
-		{
-			if (DebugStopped != null) {
-				DebugStopped(this, e);
 			}
 		}
 		
@@ -296,9 +259,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			foreach (BreakpointBookmark b in DebuggerService.Breakpoints) {
 				AddBreakpoint(b);
 			}
-
-			isDebuggingCache = false;
-			isProcessRunningCache = true;
 			
 			if (Initialize != null) {
 				Initialize(this, null);  
@@ -346,30 +306,26 @@ namespace ICSharpCode.SharpDevelop.Services
 		void ProcessStarted(object sender, ProcessEventArgs e)
 		{
 			if (debugger.Processes.Count == 1) {
-				OnDebugStarted(EventArgs.Empty);
-				isDebuggingCache = true;
-				isProcessRunningCache = true;
+				if (DebugStarted != null) {
+					DebugStarted(this, EventArgs.Empty);
+				}
 			}
 		}
 
 		void ProcessExited(object sender, ProcessEventArgs e)
 		{
 			if (debugger.Processes.Count == 0) {
-				exceptionHistory.Clear();
-				OnDebugStopped(EventArgs.Empty);
-				isDebuggingCache = false;
-				isProcessRunningCache = false;
+				if (DebugStopped != null) {
+					DebugStopped(this, e);
+				}
 			}
 		}
 		
 		void DebuggingPaused(object sender, DebuggingPausedEventArgs e)
 		{
-			isProcessRunningCache = false;
 			OnIsProcessRunningChanged(EventArgs.Empty);
 			
 			if (e.Reason == PausedReason.Exception) {
-				exceptionHistory.Add(debugger.SelectedThread.CurrentException);
-				OnExceptionHistoryModified();
 				if (debugger.SelectedThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED) {
 					// Ignore the exception
 					e.ResumeDebuggingAfterEvent();
@@ -398,7 +354,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void DebuggingResumed(object sender, DebuggerEventArgs e)
 		{
-			isProcessRunningCache = true;
 			if (!debugger.Evaluating) {
 				DebuggerService.RemoveCurrentLineMarker();
 			}
@@ -410,9 +365,9 @@ namespace ICSharpCode.SharpDevelop.Services
 			SourcecodeSegment nextStatement = debugger.NextStatement;
 			if (nextStatement == null) {
 				DebuggerService.RemoveCurrentLineMarker();
-				return;
+			} else {
+				DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 			}
-			DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 		}
 	}
 }

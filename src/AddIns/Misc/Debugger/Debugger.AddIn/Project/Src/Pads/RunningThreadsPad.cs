@@ -94,6 +94,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (debuggerCore.IsPaused) {
 				if (debuggerCore.SelectedProcess != null) {
 					debuggerCore.SelectedProcess.SelectedThread = (Thread)(runningThreadsList.SelectedItems[0].Tag);
+					debuggerCore.OnDebuggeeStateChanged(); // Force refresh of pads
 				}
 			} else {
 				MessageBox.Show("You can not switch threads while the debugger is running.", "Thread switch");

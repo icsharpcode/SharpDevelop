@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.CodeDom.Compiler;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using ICSharpCode.Core;
@@ -22,6 +23,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public class ExceptionHistoryPad : DebuggerPad
 	{
 		ListView  exceptionHistoryList;
+		
+		List<Debugger.Exception> exceptions = new List<Debugger.Exception>();
 		
 		ColumnHeader time      = new ColumnHeader();
 		ColumnHeader exception = new ColumnHeader();
@@ -62,7 +65,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override void RegisterDebuggerEvents()
 		{
-			debugger.ExceptionHistoryModified += delegate { RefreshPad(); };
+			debuggerCore.ProcessExited += delegate {
+				exceptions.Clear();
+				RefreshPad();
+			};
+			debuggerCore.DebuggingPaused += delegate (object sender, DebuggingPausedEventArgs e) {
+				if (e.Reason == PausedReason.Exception) {
+					exceptions.Add(debuggerCore.SelectedThread.CurrentException);
+					RefreshPad();
+				}
+			};
 		}
 		
 		void ExceptionHistoryListItemActivate(object sender, EventArgs e)
@@ -81,17 +93,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				if (content is IPositionable) {
 					((IPositionable)content).JumpTo((int)nextStatement.StartLine - 1, (int)nextStatement.StartColumn - 1);
 				}
-				
-				/*if (content.Control is TextEditorControl) {
-					IDocument document = ((TextEditorControl)content.Control).Document;
-					LineSegment line = document.GetLineSegment((int)nextStatement.StartLine - 1);
-					int offset = line.Offset + (int)nextStatement.StartColumn;
-					currentLineMarker = new TextMarker(offset, (int)nextStatement.EndColumn - (int)nextStatement.StartColumn, TextMarkerType.SolidBlock, Color.Yellow);
-					currentLineMarkerParent = document;
-					currentLineMarkerParent.MarkerStrategy.TextMarker.Add(currentLineMarker);
-					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-					document.CommitUpdate();
-				}*/
 			}
 		}
 		
@@ -100,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			exceptionHistoryList.BeginUpdate();
 			exceptionHistoryList.Items.Clear();
 			
-			foreach(Debugger.Exception exception in debugger.ExceptionHistory) {
+			foreach(Debugger.Exception exception in exceptions) {
 				string location;
 				if (exception.Location != null) {
 					location = exception.Location.SourceFilename + ":" + exception.Location.StartLine;

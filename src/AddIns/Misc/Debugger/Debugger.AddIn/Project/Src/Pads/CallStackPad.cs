@@ -72,6 +72,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				if (f.HasSymbols) {
 					if (debuggerCore.SelectedThread != null) {
 						debuggerCore.SelectedThread.SelectedFunction = f;
+						debuggerCore.OnDebuggeeStateChanged(); // Force refresh of pads
 					}
 				} else {
 					MessageBox.Show("You can not switch to function without symbols", "Function switch");

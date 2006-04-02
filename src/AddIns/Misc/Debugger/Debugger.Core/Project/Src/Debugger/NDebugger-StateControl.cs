@@ -59,7 +59,8 @@ namespace Debugger
 			}
 		}
 		
-		protected virtual void OnDebuggeeStateChanged()
+		// HACK: should not be public
+		public virtual void OnDebuggeeStateChanged()
 		{
 			TraceMessage ("Debugger event: OnDebuggeeStateChanged (" + PausedReason.ToString() + ")");
 			if (DebuggeeStateChanged != null) {
@@ -115,6 +116,10 @@ namespace Debugger
 			get {
 				return debugeeState;
 			}
+			private set {
+				debugeeState = value;
+				OnDebuggeeStateChanged();
+			}
 		}
 		
 		public void AssertPaused()
@@ -156,16 +161,13 @@ namespace Debugger
 		
 		internal void Pause()
 		{
+			if (PausedReason != PausedReason.EvalComplete) {
+				DebugeeState = new DebugeeState();
+			}
+			
 			OnDebuggingPaused();
 			
 			// Debugger state is unknown after calling OnDebuggingPaused (it may be resumed)
-			
-			if (IsPaused) {
-				if (PausedReason != PausedReason.EvalComplete) {
-					debugeeState = new DebugeeState();
-					OnDebuggeeStateChanged();
-				}
-			}
 			
 			if (IsPaused) {
 				pausedHandle.Set();
