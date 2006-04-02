@@ -23,7 +23,7 @@ namespace Debugger
 		Module module;
 		ICorDebugFunction corFunction;
 		ICorDebugILFrame  corILFrame;
-		object            corILFrameDebuggerSessionID;
+		object            corILFramePauseSession;
 		
 		bool steppedOut;
 		Thread thread;
@@ -110,7 +110,7 @@ namespace Debugger
 			this.chainIndex = chainIndex;
 			this.frameIndex = frameIndex;
 			this.corILFrame = corILFrame;
-			this.corILFrameDebuggerSessionID = debugger.SessionID;
+			this.corILFramePauseSession = debugger.PauseSession;
 			corFunction = corILFrame.Function;
 			module = debugger.GetModule(corFunction.Module);
 			
@@ -129,9 +129,9 @@ namespace Debugger
 		internal ICorDebugILFrame CorILFrame {
 			get {
 				if (HasExpired) throw new DebuggerException("Function has expired");
-				if (corILFrameDebuggerSessionID != debugger.SessionID) {
+				if (corILFramePauseSession != debugger.PauseSession) {
 					corILFrame = thread.GetFunctionAt(chainIndex, frameIndex).CorILFrame;
-					corILFrameDebuggerSessionID = debugger.SessionID;
+					corILFramePauseSession = debugger.PauseSession;
 				}
 				return corILFrame;
 			}
@@ -361,8 +361,10 @@ namespace Debugger
 						if (simulate) {
 							CorILFrame.CanSetIP((uint)ilOffset);
 						} else {
+							// invalidates all frames and chains for the current thread
 							CorILFrame.SetIP((uint)ilOffset);
-							debugger.FakePause(PausedReason.SetIP, false);
+							debugger.PauseSession = new PauseSession(PausedReason.SetIP);
+							debugger.Pause();
 						}
 					} catch {
 						return null;

@@ -132,7 +132,7 @@ namespace Debugger
 			
 			currentProcess = null;
 			pausedHandle.Reset();
-			pausedReason = null;
+			pauseSession = null;
 			
 			pendingEvalsCollection.Clear();
 			

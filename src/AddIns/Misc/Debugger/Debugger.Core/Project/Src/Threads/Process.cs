@@ -60,7 +60,7 @@ namespace Debugger
 		{
 			CurrentThread = thread;
 			
-			debugger.FakePause(PausedReason.CurrentThreadChanged, false);
+			debugger.Pause();
 		}
 
 		public IList<Thread> Threads {
@@ -122,36 +122,26 @@ namespace Debugger
 			if (!isProcessRunning) {
 				throw new DebuggerException("Invalid operation");
 			}
-
-            corProcess.Stop(5000); // TODO: Hardcoded value
-
+			
+			corProcess.Stop(5000); // TODO: Hardcoded value
+			
 			isProcessRunning = false;
-			debugger.Pause(PausedReason.Break, this, null, null);
+			debugger.PauseSession = new PauseSession(PausedReason.Break);
+			debugger.CurrentProcess = this;
+			debugger.Pause();
 		}
-
+		
 		public void Continue()
 		{
 			if (isProcessRunning) {
 				throw new DebuggerException("Invalid operation");
 			}
-
+			
 			debugger.Resume();
 			isProcessRunning = true;
-			debugger.SessionID = new object();
 			corProcess.Continue(0);
 		}
 		
-		internal void ContinueCallback()
-		{
-			if (isProcessRunning) {
-				throw new DebuggerException("Invalid operation");
-			}
-
-			isProcessRunning = true;
-			debugger.SessionID = new object();
-			corProcess.Continue(0);
-		}
-
 		public void Terminate()
 		{
 			// Resume stoped tread
