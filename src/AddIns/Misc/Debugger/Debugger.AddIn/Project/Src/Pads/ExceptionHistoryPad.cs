@@ -19,11 +19,8 @@ using Debugger;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class ExceptionHistoryPad : AbstractPadContent
+	public class ExceptionHistoryPad : DebuggerPad
 	{
-		WindowsDebugger debugger;
-		NDebugger debuggerCore;
-
 		ListView  exceptionHistoryList;
 		
 		ColumnHeader time      = new ColumnHeader();
@@ -36,15 +33,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		public ExceptionHistoryPad()
+		protected override void InitializeComponents()
 		{
-			InitializeComponents();
-		}
-		
-		void InitializeComponents()
-		{
-			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			
 			exceptionHistoryList = new ListView();
 			exceptionHistoryList.FullRowSelect = true;
 			exceptionHistoryList.AutoArrange = true;
@@ -60,30 +50,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			time.Width = 80;
 			
 			RedrawContent();
-
-			if (debugger.ServiceInitialized) {
-				InitializeDebugger();
-			} else {
-				debugger.Initialize += delegate {
-					InitializeDebugger();
-				};
-			}
 		}
 
-		public void InitializeDebugger()
-		{
-			debuggerCore = debugger.DebuggerCore;
-
-			debugger.ExceptionHistoryModified += new EventHandler(ExceptionHistoryModified);
-
-			RefreshList();
-		}
-		
 		public override void RedrawContent()
 		{
 			time.Text      = ResourceService.GetString("MainWindow.Windows.Debug.ExceptionHistory.Time");
 			exception.Text = ResourceService.GetString("MainWindow.Windows.Debug.ExceptionHistory.Exception");
 			location.Text  = ResourceService.GetString("AddIns.HtmlHelp2.Location");
+		}
+		
+		
+		protected override void RegisterDebuggerEvents()
+		{
+			debugger.ExceptionHistoryModified += delegate { RefreshPad(); };
 		}
 		
 		void ExceptionHistoryListItemActivate(object sender, EventArgs e)
@@ -115,13 +94,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				}*/
 			}
 		}
-
-		void ExceptionHistoryModified(object sender, EventArgs e)
-		{
-			RefreshList();
-		}
 		
-		public void RefreshList()
+		public override void RefreshPad()
 		{
 			exceptionHistoryList.BeginUpdate();
 			exceptionHistoryList.Items.Clear();

@@ -59,6 +59,9 @@
     <Compile Include="Src\Service\SetCurrentStatementCommand.cs" />
     <Compile Include="Src\Pads\TreeListViewDebuggerItem.cs" />
     <Compile Include="Src\Service\DebuggerIcons.cs" />
+    <Compile Include="Src\Pads\DebuggerPad.cs" />
+    <Compile Include="Src\Pads\CallStackPad.Menu.cs" />
+    <Compile Include="Src\Pads\RunningThreadsPad.Menu.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
