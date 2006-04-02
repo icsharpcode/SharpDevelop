@@ -123,15 +123,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		/// <summary>
 		/// Registers a new SpecialNodesInserter with the output visitor.
-		/// Make sure to call Finish() on the returned SpecialNodesInserter when the output
-		/// is finished.
+		/// Make sure to call Finish() (or Dispose()) on the returned SpecialNodesInserter
+		/// when the output is finished.
 		/// </summary>
 		public static SpecialNodesInserter Install(IEnumerable<ISpecial> specials, IOutputASTVisitor outputVisitor)
 		{
 			SpecialNodesInserter sni = new SpecialNodesInserter(specials, new SpecialOutputVisitor(outputVisitor.OutputFormatter));
 			outputVisitor.NodeTracker.NodeVisiting += sni.AcceptNodeStart;
 			outputVisitor.NodeTracker.NodeVisited  += sni.AcceptNodeEnd;
-			outputVisitor.NodeTracker.NodeChildrenVisited += sni.AcceptNodeEnd;
 			return sni;
 		}
 	}

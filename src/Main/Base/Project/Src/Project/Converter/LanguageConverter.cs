@@ -181,13 +181,9 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				
 				ConvertAst(p.CompilationUnit, specials);
 				
-				SpecialNodesInserter sni = new SpecialNodesInserter(specials,
-				                                                    new SpecialOutputVisitor(outputVisitor.OutputFormatter));
-				outputVisitor.NodeTracker.NodeVisiting += sni.AcceptNodeStart;
-				outputVisitor.NodeTracker.NodeVisited  += sni.AcceptNodeEnd;
-				outputVisitor.NodeTracker.NodeChildrenVisited += sni.AcceptNodeEnd;
-				outputVisitor.Visit(p.CompilationUnit, null);
-				sni.Finish();
+				using (SpecialNodesInserter.Install(specials, outputVisitor)) {
+					outputVisitor.Visit(p.CompilationUnit, null);
+				}
 				
 				p.Dispose();
 				

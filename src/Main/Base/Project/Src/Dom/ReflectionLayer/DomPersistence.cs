@@ -192,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		private sealed class ReadWriteHelper
+		public sealed class ReadWriteHelper
 		{
 			ReflectionProjectContent pc;
 			
@@ -526,6 +526,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 						classIndices.Add(pair, externalTypes.Count + classCount);
 						externalTypes.Add(pair);
 					}
+				} else if (rt is GenericReturnType) {
+					// ignore
 				} else if (rt.ArrayDimensions > 0) {
 					AddExternalType(rt.ArrayElementType, externalTypes, classCount);
 				} else if (rt.TypeArguments != null) {
@@ -533,8 +535,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 					foreach (IReturnType typeArgument in rt.TypeArguments) {
 						AddExternalType(typeArgument, externalTypes, classCount);
 					}
-				} else if (rt is GenericReturnType) {
-					// ignore
 				} else {
 					LoggingService.Warn("Unknown return type: " + rt.ToString());
 				}
@@ -560,6 +560,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 					} else {
 						writer.Write(classIndices[new ClassNameTypeCountPair(rt)]);
 					}
+				} else if (rt is GenericReturnType) {
+					GenericReturnType grt = (GenericReturnType)rt;
+					if (grt.TypeParameter.Method != null) {
+						writer.Write(MethodGenericRTCode);
+					} else {
+						writer.Write(TypeGenericRTCode);
+					}
+					writer.Write(grt.TypeParameter.Index);
 				} else if (rt.ArrayDimensions > 0) {
 					writer.Write(ArrayRTCode);
 					writer.Write(rt.ArrayDimensions);
@@ -571,14 +579,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 					foreach (IReturnType typeArgument in rt.TypeArguments) {
 						WriteType(typeArgument);
 					}
-				} else if (rt is GenericReturnType) {
-					GenericReturnType grt = (GenericReturnType)rt;
-					if (grt.TypeParameter.Method != null) {
-						writer.Write(MethodGenericRTCode);
-					} else {
-						writer.Write(TypeGenericRTCode);
-					}
-					writer.Write(grt.TypeParameter.Index);
 				} else {
 					writer.Write(NullRTReferenceCode);
 					LoggingService.Warn("Unknown return type: " + rt.ToString());
