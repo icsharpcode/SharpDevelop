@@ -21,16 +21,14 @@ namespace SharpReportCore {
 	/// </summary>
 	
 	public class BaseReportItem : SharpReportCore.BaseReportObject,
-											IItemRenderer,IComponent{
+											IItemRenderer{
 		
-		private int offset;
-		private int margin;
+		private int xOffset;
 		private bool drawBorder;	
 		private Color foreColor;
 		
 		private Font font;
-		private ISite site;
-		
+
 		public event EventHandler <FormatOutputEventArgs> FormatOutput;
 		public event EventHandler Disposed;
 		
@@ -62,10 +60,8 @@ namespace SharpReportCore {
 		#region virtual method's
 		protected RectangleF DrawingRectangle (ReportPageEventArgs e,SizeF measureSize) {
 			
-			PointF upperLeft = new PointF (this.Location.X + this.Margin,
-			                             this.Location.Y + this.Offset);
-			
-			
+			PointF upperLeft = new PointF (this.Location.X ,
+			                             this.Location.Y + this.SectionOffset);
 			SizeF lowerRight = new SizeF(0,0);
 			
 			if ((this.CanGrow == true )||(this.CanShrink == true)){
@@ -83,43 +79,16 @@ namespace SharpReportCore {
 		
 		#endregion
 		
-		
-		
-		#region System.ComponentModel.IComponent interface implementation
-		public System.ComponentModel.ISite Site {
-			get {
-				return site;
-			}
-			set {
-				site = value;
-			}
-		}
-		
-		
-		#endregion
-		
-
-		
 		#region Properties
 		
 		[XmlIgnoreAttribute]
-		public int Margin {
+		[Browsable(false)]
+		public int XOffset {
 			get {
-				return margin;
+				return xOffset;
 			}
 			set {
-				margin = value;
-			}
-		}
-		
-		
-		[XmlIgnoreAttribute]
-		public int Offset {
-			get {
-				return offset;
-			}
-			set {
-				offset = value;
+				xOffset = value;
 			}
 		}
 		
@@ -142,7 +111,6 @@ namespace SharpReportCore {
 			}
 			set {
 				foreColor = value;
-//				base.NotifyPropertyChanged ("ForeColor",true);
 				base.NotifyPropertyChanged ("ForeColor");
 			}
 		}
@@ -154,7 +122,6 @@ namespace SharpReportCore {
 			}
 			set {
 				this.font = value;
-//				NotifyPropertyChanged ("Font",true);
 				NotifyPropertyChanged ("Font");
 			}
 		}

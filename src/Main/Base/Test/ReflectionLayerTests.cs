@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using NUnit.Framework;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -104,14 +106,31 @@ namespace ICSharpCode.SharpDevelop.Tests
 		
 		class TestClass<A, B> where A : B {
 			public void TestMethod<K, V>(string param) where V: K where K: IComparable {}
+			
+			public void GetIndex<T>(T element) where T: IEquatable<T> {}
 		}
 		
 		[Test]
 		public void ReflectionParserTest()
 		{
-			DefaultCompilationUnit cu = new DefaultCompilationUnit(new DefaultProjectContent());
+			ICompilationUnit cu = new ReflectionProjectContent("TestName", "testlocation", new AssemblyName[0]).AssemblyCompilationUnit;
 			IClass c = new ReflectionClass(cu, typeof(TestClass<,>), typeof(TestClass<,>).FullName, null);
+			cu.ProjectContent.AddClassToNamespaceList(c);
 			
+			CheckClass(c);
+			MemoryStream memory = new MemoryStream();
+			DomPersistence.ReadWriteHelper helper = new DomPersistence.ReadWriteHelper(new BinaryWriter(memory));
+			helper.WriteProjectContent((ReflectionProjectContent)cu.ProjectContent);
+			
+			memory.Position = 0;
+			helper = new DomPersistence.ReadWriteHelper(new BinaryReader(memory));
+			foreach (IClass c2 in helper.ReadProjectContent().Classes) {
+				CheckClass(c2);
+			}
+		}
+		
+		void CheckClass(IClass c)
+		{
 			Assert.AreSame(c, c.TypeParameters[0].Class);
 			Assert.AreSame(c, c.TypeParameters[1].Class);
 			Assert.AreSame(c.TypeParameters[1], ((GenericReturnType)c.TypeParameters[0].Constraints[0]).TypeParameter);
@@ -126,6 +145,17 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreEqual("IComparable", m.TypeParameters[0].Constraints[0].Name);
 			GenericReturnType kConst = (GenericReturnType)m.TypeParameters[1].Constraints[0];
 			Assert.AreSame(m.TypeParameters[0], kConst.TypeParameter);
+			
+			m = c.Methods.Find(delegate(IMethod me) { return me.Name == "GetIndex"; });
+			Assert.IsNotNull(m);
+			Assert.AreEqual("T", m.TypeParameters[0].Name);
+			Assert.AreSame(m, m.TypeParameters[0].Method);
+			
+			Assert.AreEqual("IEquatable", m.TypeParameters[0].Constraints[0].Name);
+			Assert.AreEqual(1, m.TypeParameters[0].Constraints[0].TypeParameterCount);
+			Assert.AreEqual(1, m.TypeParameters[0].Constraints[0].TypeArguments.Count);
+			GenericReturnType grt = (GenericReturnType)m.TypeParameters[0].Constraints[0].TypeArguments[0];
+			Assert.AreSame(m.TypeParameters[0], grt.TypeParameter);
 		}
 	}
 }

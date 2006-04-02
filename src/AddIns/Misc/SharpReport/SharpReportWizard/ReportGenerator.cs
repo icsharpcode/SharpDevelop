@@ -9,8 +9,10 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.Globalization;
 using System.Drawing;
+using System.ComponentModel;
+using System.Globalization;
+
 	
 using System.Data;
 using System.Data.OleDb;
@@ -32,7 +34,7 @@ using SharpQuery.SchemaClass;
 using System.Windows.Forms;
 
 namespace ReportGenerator {	
-	public class ReportGenerator : object {
+	public class ReportGenerator : object,IDisposable {
 		
 		//BaseSettingsPanel
 		
@@ -244,6 +246,37 @@ namespace ReportGenerator {
 			}
 		}
 		
+		#endregion
+		
+		#region IDisposable
+		public void Dispose(){
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		
+		~ReportGenerator(){
+			Dispose(false);
+		}
+		
+		protected  void Dispose(bool disposing){
+			if (disposing) {
+				if (this.reportItemCollection != null) {
+					this.reportItemCollection.Clear();
+					this.reportItemCollection = null;
+				}
+				if (this.columnCollection == null) {
+					this.columnCollection.Clear();
+					this.columnCollection = null;
+				}
+				if (this.sharpQueryProcedure != null) {
+					this.sharpQueryProcedure = null;
+				}
+			}
+		
+			// Release unmanaged resources.
+			// Set large fields to null.
+			// Call Dispose on your base class.
+		}
 		#endregion
 		
 	}

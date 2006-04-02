@@ -33,10 +33,8 @@ namespace SharpReport.Designer {
 		string itemName;
 		enmAction action;
 		Point itemAtPoint;
-	
 
-		public ItemDragDropEventArgs(enmAction action, Point itemAtPoint, string itemName)
-		{
+		public ItemDragDropEventArgs(enmAction action, Point itemAtPoint, string itemName){
 			this.action = action;
 			this.itemAtPoint = itemAtPoint;
 			this.itemName = itemName;

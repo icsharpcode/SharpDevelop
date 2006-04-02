@@ -24,8 +24,6 @@ namespace Debugger
 	{
 		NDebugger debugger;
 		
-		object debugeeStateIDatCreation;
-		
 		ICorDebugEval     corEval;
 		ICorDebugFunction corFunction;
 		CorValuesGetter   getArgs;
@@ -101,7 +99,6 @@ namespace Debugger
 			this.debugger = debugger;
 			this.corFunction = corFunction;
 			this.getArgs = getArgs;
-			this.debugeeStateIDatCreation = debugger.DebugeeStateID;
 			
 			// Schedule the eval for evaluation
 			debugger.AddEval(this);
@@ -115,7 +112,7 @@ namespace Debugger
 		/// <returns>True is setup was successful</returns>
 		internal bool SetupEvaluation(Thread targetThread)
 		{
-			if (!debugger.ManagedCallback.HandlingCallback) debugger.AssertPaused();
+			debugger.AssertPaused();
 			
 			ICorDebugValue[] args = getArgs();
 			

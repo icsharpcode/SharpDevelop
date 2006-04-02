@@ -9,15 +9,18 @@
 //------------------------------------------------------------------------------
 using System;
 using System.ComponentModel;
+//using System.Windows.Forms;
+using System.Xml.Serialization;
+
 /// <summary>
-/// This Class is the BaseClass for all ReportSections
+/// This Class is the BaseClass for <see cref="ReportSection"></see>
 /// </summary>
-/// <remarks>
-/// 	created by - Forstmeier Helmut
-/// 	created on - 01.09.2005 13:12:32
-/// </remarks>
+
+
 namespace SharpReportCore {
 	public class BaseSection : SharpReportCore.BaseReportObject {
+		
+		private int sectionMargin;
 		
 		private ReportItemCollection items;
 		
@@ -28,9 +31,35 @@ namespace SharpReportCore {
 		
 		public BaseSection (string sectionName) :base(){
 			this.Name = sectionName;
-			
 		}
 		
+		#endregion
+		
+		
+		
+		#region properties
+		
+
+		public  int SectionMargin {
+			get {
+				return this.sectionMargin;
+			}
+			set {
+				this.sectionMargin = value;
+			}
+		}
+	
+		
+	
+		[Browsable(false)]
+		public ReportItemCollection Items{
+			get {
+				if (this.items == null) {
+					items = new ReportItemCollection();
+				}
+				return items;
+			}
+		}
 		#endregion
 		
 		#region System.IDisposable interface implementation
@@ -57,19 +86,5 @@ namespace SharpReportCore {
 		}
 		
 		#endregion
-		
-		#region properties
-		
-		[Browsable(false)]
-		public ReportItemCollection Items{
-			get {
-				if (this.items == null) {
-					items = new ReportItemCollection();
-				}
-				return items;
-			}
-		}
-		#endregion
-		
 	}
 }

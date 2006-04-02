@@ -23,22 +23,9 @@ using System.Globalization;
 /// </remarks>
 namespace SharpReportCore {
 	
-	public class DataManager : IDataContainer,IEnumerator,IDisposable {
+	public class DataManager :IDisposable {
 		
-		/*
-		/// <summary>
-		/// Operand to use when filtering...
-		/// </summary>
-		public enum FilterOperand {
-			Equals,
-			NotEquals,
-			Includes,
-			NotIncludes,
-		}
-		*/
-		
-		int currentRow = -1;
-		
+
 		ReportSettings reportSettings;
 		object dataSource;
 		string dataMember;
@@ -109,6 +96,12 @@ namespace SharpReportCore {
 			                                                reportSettings);
 			this.dataViewStrategy.ListChanged += new EventHandler <ListChangedEventArgs> (NotifyListChanged);
 			
+		}
+		
+		
+		public void  DataBind() {
+			CheckReportColumns();
+			this.dataViewStrategy.Bind();
 		}
 		
 		#endregion
@@ -277,6 +270,7 @@ namespace SharpReportCore {
 				this.ListChanged (this,e);
 			}
 		}
+		
 		private void NotifyGroupChanging () {
 			if (this.GroupChanging!= null) {
 				this.GroupChanging (this,EventArgs.Empty);
@@ -312,27 +306,26 @@ namespace SharpReportCore {
 		}
 		
 	
-		
-		#region SharpReportCore.IDataContainer interface implementation
 		public object DataSource {
 			get {
 				return this.dataSource;
 			}
 		}
-		
+		/*
 		public int CurrentRow {
 			get {
 				return this.dataViewStrategy.CurrentRow;
 			}
 		}
-		
+		*/
+		/*
 		public int Count {
 			get {
 				return this.dataViewStrategy.Count;
 			}
 		}
-		
-		
+		*/
+		/*
 		public bool HasMoreData {
 			get {
 				if (this.dataViewStrategy.CurrentRow < this.dataViewStrategy.Count ){
@@ -343,25 +336,22 @@ namespace SharpReportCore {
 			}
 		}
 		
-		
-		public bool DataBind() {
-			CheckReportColumns();
-			this.dataViewStrategy.Bind();
-			return true;
-		}
-		
-		public void Skip() {
-			this.dataViewStrategy.CurrentRow ++;
-		}
+		*/
 		
 		
+//		public void Skip() {
+//			this.dataViewStrategy.CurrentRow ++;
+//		}
+//		
+		/*
 		public void FetchData(ReportItemCollection collection) {
 			foreach (IItemRenderer item in collection) {
 				this.dataViewStrategy.Fill(item);
 			}
 			this.NotifyGroupChanged();
 		}
-		
+		*/
+		/*
 		/// <summary>
 		/// Indicate's if the current <see cref="GroupSeperator"></see> has ChildRows
 		/// </summary>
@@ -370,6 +360,7 @@ namespace SharpReportCore {
 				return this.dataViewStrategy.HasChilds;
 			}
 		}
+		*/
 		
 		/// <summary>
 		/// Returns a <see cref="SharpArrayList"></see>, be carefull, this list is only a Indexlist
@@ -392,34 +383,32 @@ namespace SharpReportCore {
 				throw new NotImplementedException();
 			}
 		}
-		#endregion
+	
+		// Nur zum testen
 		
+		public DataNavigator GetNavigator {
+			get {
+				return new DataNavigator(this.dataViewStrategy);
+			}
+		}
 		
-		
-		#region System.Collections.IEnumerator interface implementation
-		
+
+		/*
 		public object Current {
 			get {
 				throw new NotImplementedException();
 			}
 		}
+		*/
+//		public void Reset() {
+//			this.dataViewStrategy.Reset();
+//		}
+//		
+//		public bool MoveNext() {
+//			return this.dataViewStrategy.MoveNext();
+//		}
 		
-		public void Reset() {
-			this.dataViewStrategy.Reset();
-			this.currentRow = -1;
-		}
 		
-		public bool MoveNext() {
-			try {
-				this.currentRow ++;
-				this.dataViewStrategy.CurrentRow = this.currentRow;
-				return true;
-			} catch (Exception) {
-				return false;
-			}
-			
-		}
-		#endregion
 		
 		public bool IsGrouped {
 			get {

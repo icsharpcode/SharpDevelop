@@ -73,14 +73,12 @@ namespace SharpReportCore {
 		}
 		
 		public void ReportDocumentQueryPage (object sender, QueryPageSettingsEventArgs e) {
-//			System.Console.WriteLine("\tReportDocument QueryPage");
 			if (QueryPage != null) {
 				QueryPage (this,e);
 			}
 		}
 		
 		public void ReportDocumentPrintPage (object sender, PrintPageEventArgs e) {
-			System.Console.WriteLine("\tReportDocument PrintPage");
 			pageNr ++;
 			ReportPageEventArgs pea = new ReportPageEventArgs (e,pageNr,false,new PointF (0,0));
 			

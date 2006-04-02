@@ -22,8 +22,8 @@ namespace SharpReport.Designer{
 	public abstract class ReportControlBase : ReportObjectControlBase{
 		private System.Windows.Forms.Label lblTopLeft;
 		private System.Windows.Forms.Label lblBottomRight;
-		
-		const string contextMenuPath = "/SharpReport/ContextMenu/Items";
+		private ControlHelper controlHelper;
+		private const string contextMenuPath = "/SharpReport/ContextMenu/Items";
 		
 		private enum SizeDirection{
 			None,
@@ -46,6 +46,7 @@ namespace SharpReport.Designer{
 			this.UpdateStyles();
 			lblTopLeft.Visible = false;
 			lblBottomRight.Visible = false;
+			controlHelper = new ControlHelper((Control)this);
 		}
 		
 		private void ReportControlBaseEnter(object sender, System.EventArgs e){
@@ -94,15 +95,7 @@ namespace SharpReport.Designer{
 			mouseDown = SizeDirection.None;
 			base.OnControlChanged();
 		}
-		
-		private Rectangle BuildFocusRectangle(){
-			return new Rectangle(this.ClientRectangle.Left,
-			                            this.ClientRectangle.Top,
-			                            this.ClientRectangle.Width -1,
-			                            this.ClientRectangle.Height -1);
-			
-		}
-		
+	
 		private void DrawDecorations(Graphics g){
 			// it is not said that the
 			// focused object in all the app
@@ -112,48 +105,13 @@ namespace SharpReport.Designer{
 			if (lblBottomRight.Visible){
 				g.Clear(this.Body.BackColor);
 				ControlPaint.DrawFocusRectangle(g,
-				                                this.BuildFocusRectangle());
+				                                controlHelper.BuildFocusRectangle);
 			}
 		}
-		
+	
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e){
 			base.OnPaint(e);
-			int arc = 5;
-			Rectangle r = this.BuildFocusRectangle();
-			using (Pen p = new Pen (Color.Black)) {
-				
-				e.Graphics.DrawRectangle (p,
-				                          r);
-			}
-			
-			using (Pen pb = new Pen(this.BackColor)){
-				//top
-
-				int leftLine = r.Left + arc;
-				int rightLine = r.Left + r.Width - arc;
-				int botLine = r.Top + r.Height;
-				//top
-				e.Graphics.DrawLine (pb,
-				                     leftLine,r.Top,
-				                     rightLine, r.Top);
-				
-				//bottom
-				e.Graphics.DrawLine (pb,
-				                     leftLine,botLine,
-				                     rightLine,botLine);
-				//left
-				
-				int top = r.Top + arc;
-				int down = r.Top + r.Height - arc;
-				e.Graphics.DrawLine(pb,
-				                    r.Left,top,
-				                    r.Left,down);
-				//right
-				e.Graphics.DrawLine(pb,
-				                    r.Left + r.Width,top,
-				                    r.Left + r.Width,down);
-				                    
-			}
+			controlHelper.DrawEdges(e);
 			this.DrawDecorations(e.Graphics);
 		}
 		
@@ -161,17 +119,6 @@ namespace SharpReport.Designer{
 			base.OnResize(e);
 			this.Invalidate();
 		}
-		/*
-		private Image Line(){
-			Bitmap b = new Bitmap (8,1);
-			using (Graphics g = Graphics.FromImage (b)){
-				using (Pen p = new Pen(Color.Black,1)){
-					g.DrawLine(p,0,0,8,0);
-				}
-			}
-			return (Image)b;
-		}
-		*/
 		
 		#region Windows Forms Designer generated code
 		/// <summary>

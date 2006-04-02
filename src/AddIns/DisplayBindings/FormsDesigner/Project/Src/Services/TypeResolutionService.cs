@@ -350,5 +350,39 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			return false;
 		}
+		
+		public static void AddAssemblyResolver()
+		{
+			AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolveEventHandler;
+		}
+		
+		public static void RemoveAssemblyResolver()
+		{
+			AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolveEventHandler;
+		}
+		
+		static Assembly AssemblyResolveEventHandler(object sender, ResolveEventArgs args)
+		{
+			LoggingService.Debug("TypeResolutionService: AssemblyResolveEventHandler: " + args.Name);
+			
+			Assembly lastAssembly = null;
+			
+			foreach (Assembly asm in TypeResolutionService.DesignerAssemblies) {
+				if (asm.FullName == args.Name) {
+					return asm;
+				}
+			}
+			
+			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
+				if (asm.FullName == args.Name) {
+					lastAssembly = asm;
+				}
+			}
+			if (lastAssembly != null) {
+				TypeResolutionService.DesignerAssemblies.Add(lastAssembly);
+				LoggingService.Info("ICSharpAssemblyResolver found..." + args.Name);
+			}
+			return lastAssembly;
+		}
 	}
 }

@@ -38,13 +38,7 @@ namespace Debugger.Wrappers.MetaData
 		
 		public void Dispose()
 		{
-			try {
-				Marshal.FinalReleaseComObject(metaData);
-			} catch {
-				Console.WriteLine("metaData release failed. (FinalReleaseComObject)");
-			} finally {
-				metaData = null;
-			}
+			Marshal.FinalReleaseComObject(metaData);
 		}
 		
 		public TypeDefProps GetTypeDefProps(uint typeToken)

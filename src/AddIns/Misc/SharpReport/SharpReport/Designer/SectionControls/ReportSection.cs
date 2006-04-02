@@ -37,6 +37,7 @@ namespace SharpReport{
 		
 		public event EventHandler <EventArgs> ItemSelected;
 		public event EventHandler <EventArgs> Selected;
+		
 		#region Constructors
 		
 		internal ReportSection() : base(){
@@ -51,7 +52,6 @@ namespace SharpReport{
 		internal ReportSection(SharpReport.Designer.ReportSectionControlBase visualControl) : base(){
 			this.Initialize();
 			this.VisualControl = visualControl;
-//			this.visualControl.ItemSelected += new SelectedEventHandler (OnItemSelectfrom);
 			base.SectionOffset = 0;
 			
 		}
@@ -59,7 +59,7 @@ namespace SharpReport{
 		
 		private void Initialize(){
 			base.Items.Added += OnItemAddeded;
-			base.Items.Removed += OnItemRemoveded;
+			base.Items.Removed += OnRemoveTopLevelItem;
 		}
 		
 		internal ReportSectionControlBase VisualControl{
@@ -85,58 +85,72 @@ namespace SharpReport{
 			}
 		}
 		
+		void SerializeItemProperties (XmlDocument doc,
+		                              XmlElement xmlControl,
+		                              BaseReportItem item,PropertyInfo [] prop) {
+			XmlElement xmlProperty;
+			XmlAttribute attPropValue;
+			
+			foreach (PropertyInfo p in prop) {
+				AttributeCollection attributes = TypeDescriptor.GetProperties(item)[p.Name].Attributes;
+				XmlIgnoreAttribute xmlIgnoreAttribute = (XmlIgnoreAttribute)attributes[typeof(XmlIgnoreAttribute)];
+				if (xmlIgnoreAttribute == null){
+					
+					xmlProperty = xmlControl.OwnerDocument.CreateElement (p.Name);
+					if (p.PropertyType == typeof(Font)) {
+						XmlFormReader.BuildFontElement (item.Font,xmlProperty);
+					}
+					else {
+						attPropValue = xmlControl.OwnerDocument.CreateAttribute ("value");
+						attPropValue.InnerText = Convert.ToString(p.GetValue(item,null));
+						xmlProperty.Attributes.Append(attPropValue);
+					}
+					xmlControl.AppendChild(xmlProperty);
+				}
+			}
+			
+		}
+		
+		private XmlElement SerializeControl (XmlDocument doc,BaseReportItem item) {
+			Type type = item.GetType();
+			PropertyInfo [] prop = type.GetProperties();
+			XmlElement xmlControl = doc.CreateElement ("control");
+			XmlAttribute typeAttr = doc.CreateAttribute ("type");
+			typeAttr.InnerText = type.FullName;
+
+			xmlControl.Attributes.Append(typeAttr);
+			
+			XmlAttribute baseAttr = doc.CreateAttribute ("basetype");
+			baseAttr.InnerText = type.BaseType.ToString();
+			xmlControl.Attributes.Append(baseAttr);
+			SerializeItemProperties (doc,xmlControl,item,prop);
+			return xmlControl;
+		
+		}
 		/// <summary>
 		/// Read all ReportItenms of Section
 		/// </summary>
 		/// <param name="doc"></param>
-		private void ReportItemsToXml (XmlElement ctrlElement) {
-			
-			foreach (BaseReportItem it in base.Items) {
-				Type type = it.GetType();
-				PropertyInfo [] prop = type.GetProperties();
+		private XmlElement ReportItemsToXml (XmlDocument doc,ReportItemCollection items) {
+			XmlElement xmlControls = doc.CreateElement ("controls");
+
+			foreach (BaseReportItem item in items) {
+				XmlElement xmlControl = SerializeControl (doc,item);
 				
-				XmlElement ctrl = ctrlElement.OwnerDocument.CreateElement ("control");
-				XmlAttribute typeAttr = ctrlElement.OwnerDocument.CreateAttribute ("type");
-				typeAttr.InnerText = type.FullName;
-				ctrl.Attributes.Append(typeAttr);
+				IContainerItem iContainer = item as IContainerItem;
 				
-				XmlAttribute baseAttr = ctrlElement.OwnerDocument.CreateAttribute ("basetype");
-				baseAttr.InnerText = type.BaseType.ToString();
-				ctrl.Attributes.Append(baseAttr);
-				
-				XmlElement xmlProperty;
-				XmlAttribute attPropValue;
-				
-				foreach (PropertyInfo p in prop) {
-					AttributeCollection attributes = TypeDescriptor.GetProperties(it)[p.Name].Attributes;
-					XmlIgnoreAttribute xmlIgnoreAttribute = (XmlIgnoreAttribute)attributes[typeof(XmlIgnoreAttribute)];
-					if (xmlIgnoreAttribute == null){
-						
-						xmlProperty = ctrl.OwnerDocument.CreateElement (p.Name);
-						if (p.PropertyType == typeof(Font)) {
-							XmlFormReader.BuildFontElement (it.Font,xmlProperty);
-						}
-						else {
-							attPropValue = ctrl.OwnerDocument.CreateAttribute ("value");
-							attPropValue.InnerText = Convert.ToString(p.GetValue(it,null));
-							xmlProperty.Attributes.Append(attPropValue);
-						}
-						ctrl.AppendChild(xmlProperty);
-					}
+				if (iContainer != null) {
+					xmlControl.AppendChild ( ReportItemsToXml(doc,iContainer.Items));
 				}
-				ctrlElement.AppendChild(ctrl);
+				xmlControls.AppendChild(xmlControl);
 			}
+			return xmlControls;
 		}
 		
 		
-		private void SectionItemToXml (XmlElement xmlSection) {
-			Type type = this.GetType();
-			PropertyInfo [] prop = type.GetProperties();
-
-			XmlAttribute att = xmlSection.OwnerDocument.CreateAttribute ("name");
-			
-			att.InnerText = this.VisualControl.GetType().Name;
-			xmlSection.Attributes.Append(att);
+		private void SerializeSectionProperties (XmlDocument doc,
+		                                       XmlElement section,
+		                                       PropertyInfo [] prop) {
 			
 			XmlElement xmlProperty;
 			XmlAttribute attPropValue;
@@ -144,14 +158,29 @@ namespace SharpReport{
 			foreach (PropertyInfo p in prop) {
 				if (this.CheckForXmlIgnore(p) == null ) {
 					if (p.CanWrite) {
-						xmlProperty = xmlSection.OwnerDocument.CreateElement (p.Name);
-						attPropValue = xmlSection.OwnerDocument.CreateAttribute ("value");
+						xmlProperty = doc.CreateElement (p.Name);
+						attPropValue = doc.CreateAttribute ("value");
 						attPropValue.InnerText = Convert.ToString(p.GetValue(this,null));
 						xmlProperty.Attributes.Append(attPropValue);
-						xmlSection.AppendChild(xmlProperty);
+						section.AppendChild(xmlProperty);
 					}
 				}
 			}
+		}
+		
+		private XmlElement SectionItemToXml (XmlDocument doc) {
+			XmlElement section = doc.CreateElement ("section");
+			
+			Type type = this.GetType();
+			PropertyInfo [] prop = type.GetProperties();
+			
+			XmlAttribute att = section.OwnerDocument.CreateAttribute ("name");
+			
+			att.InnerText = this.VisualControl.GetType().Name;
+			section.Attributes.Append(att);
+			this.SerializeSectionProperties (doc,section,prop);
+			
+			return section;
 		}
 		
 		#endregion
@@ -161,31 +190,27 @@ namespace SharpReport{
 		#region iStoreable Interface
 		public  XmlDocument GetXmlData(){
 			//Only a temp DocumentObject
-			XmlDocument doc = SharpReportCore.XmlHelper.BuildXmlDocument ();
-			XmlElement root = doc.CreateElement ("Sections");
+			XmlDocument xmlDocument = SharpReportCore.XmlHelper.BuildXmlDocument ();
+			XmlElement xmlRoot = xmlDocument.CreateElement ("Sections");
 			
-			doc.AppendChild(root);
+			xmlDocument.AppendChild(xmlRoot);
 			
-			//Read the 'section'
-			XmlElement section = doc.CreateElement ("section");
-			SectionItemToXml (section);
+			XmlElement xmlSection = SectionItemToXml (xmlDocument);
 			//Then read all ReportItems of this Section
 			
-			XmlElement xmlControls = doc.CreateElement ("controls");
-			ReportItemsToXml (xmlControls);
-			section.AppendChild(xmlControls);
-			//and Append this to RootElement
-			root.AppendChild(section);
-			doc.AppendChild(root);
-			return doc;
+			XmlElement xmlControls = ReportItemsToXml (xmlDocument,base.Items);
+			xmlSection.AppendChild(xmlControls);
+			
+			xmlRoot.AppendChild(xmlSection);
+			xmlDocument.AppendChild(xmlRoot);
+
+			return xmlDocument;
 		}
 		
 		#endregion
 		
-
 		
 		public void OnItemSelect(object sender, EventArgs e){
-			
 			if (!base.Suspend) {
 				if (ItemSelected != null)
 					ItemSelected(sender, e);
@@ -224,27 +249,12 @@ namespace SharpReport{
 		public void OnSelect(){
 			if (Selected != null)
 				Selected(this,EventArgs.Empty);
-		}	
-		
+		}
+	
 		private void OnItemAddeded(object sender, CollectionItemEventArgs<IItemRenderer> e){
-			AddItem(e.Item);
-		}
+			
+			SharpReport.Designer.IDesignable iDesignable = e.Item as SharpReport.Designer.IDesignable;
 		
-		private void OnItemRemoveded(object sender, CollectionItemEventArgs<IItemRenderer> e){
-			//We have to Convert to IDesignable to 
-			//get the VisualControl
-			SharpReport.Designer.IDesignable iDes = e.Item as SharpReport.Designer.IDesignable;
-			if (iDes != null) {
-				try {
-					this.VisualControl.Body.Controls.Remove (iDes.VisualControl);
-				} catch (Exception) {
-					throw new SystemException("ReportSection:OnItemRemoveded");
-				}
-			}
-		}
-		
-		private void AddItem(IItemRenderer item){
-			SharpReport.Designer.IDesignable iDesignable = item as SharpReport.Designer.IDesignable;
 			if (iDesignable != null) {
 				if (this.VisualControl != null) {
 					iDesignable.Selected += new EventHandler <EventArgs>(this.ReportItemSelected);
@@ -255,6 +265,18 @@ namespace SharpReport{
 				}
 			}
 		}
+		
+		private void OnRemoveTopLevelItem(object sender, CollectionItemEventArgs<IItemRenderer> e){
+			//We have to Convert to IDesignable to
+			//get the VisualControl
+		
+			SharpReport.Designer.IDesignable iDes = e.Item as SharpReport.Designer.IDesignable;
+			if (iDes != null) {
+				this.VisualControl.Body.Controls.Remove (iDes.VisualControl);
+			}
+		}
+		
+		
 		
 		public  void Render (ReportSettings settings,
 		                     SharpReportCore.ReportPageEventArgs e) {
@@ -296,6 +318,9 @@ namespace SharpReport{
 				}
 			}
 		}
+		
+
+		
 		
 		[Browsable(false)]
 		[XmlIgnoreAttribute]

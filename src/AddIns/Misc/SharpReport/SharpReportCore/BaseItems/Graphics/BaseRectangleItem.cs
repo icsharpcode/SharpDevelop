@@ -23,7 +23,7 @@ using System.Drawing;
 /// 	created on - 29.09.2005 11:57:30
 /// </remarks>
 namespace SharpReportCore {	
-	public class BaseRectangleItem : SharpReportCore.BaseGraphicItem,IContainer {
+	public class BaseRectangleItem : SharpReportCore.BaseGraphicItem {
 		
 		private ArrayList arrayList;
 		RectangleShape shape = new RectangleShape();
@@ -49,30 +49,6 @@ namespace SharpReportCore {
 		public override string ToString() {
 			return "BaseRectangleItem";
 		}
-		
-		
-		
-		#region System.ComponentModel.IContainer interface implementation
-		public System.ComponentModel.ComponentCollection Components {
-			get {
-				IComponent[] datalist = new BaseReportItem[arrayList.Count];
-            arrayList.CopyTo(datalist,0);
-            return new ComponentCollection(datalist);
-			}
-		}
-		
-		public void Remove(System.ComponentModel.IComponent component) {
-			throw new NotImplementedException();
-		}
-		
-		public void Add(System.ComponentModel.IComponent component, string name) {
-			throw new NotImplementedException();
-		}
-		
-		public void Add(System.ComponentModel.IComponent component) {
-			throw new NotImplementedException();
-		}
-		#endregion
 		
 		
 		#region System.IDisposable interface implementation

@@ -11,7 +11,7 @@ using System;
 using System.Runtime.Serialization;
 
 /// <summary>
-/// This Exception is throwen 
+/// This Exception is throw if an unknown Items should be created
 /// </summary>
 /// <remarks>
 /// 	created by - Forstmeier Peter

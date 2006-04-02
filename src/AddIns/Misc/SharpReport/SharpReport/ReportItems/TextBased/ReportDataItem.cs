@@ -1,6 +1,6 @@
 /*
  * Created by SharpDevelop.
- * User: Forstmeier Helmut
+ * User: Forstmeier Peter
  * Date: 13.11.2004
  * Time: 22:48
  * 
@@ -19,29 +19,27 @@ namespace SharpReport.ReportItems{
 	/// This class reads a Column from a DataSource
 	/// </summary>
 	
-	public class ReportDataItem : BaseDataItem ,SharpReport.Designer.IDesignable{
+	public class ReportDataItem : BaseDataItem ,IDesignable{
+								
 		
 		private ReportDbTextControl visualControl;
 		bool initDone;
 		
 		#region Constructors
 		
-		public ReportDataItem() : base(){
-			Setup();
-			if (base.ColumnName != null) {
-				this.visualControl.Text = base.ColumnName;
-			} else {
-				visualControl.Text = base.UnboundText;
-			}	
-		}
-			
-		public ReportDataItem(string columnName):base(columnName){
-			Setup();
-			visualControl.Text = base.ColumnName;
+		public ReportDataItem() : this(String.Empty){
 		}
 		
+		public ReportDataItem(string columnName):base(columnName){
+			Setup();
+		}
+		#endregion
+		
+		#region SetUp
 		private void Setup(){
 			visualControl = new ReportDbTextControl();
+			
+			this.visualControl.Text = base.ColumnName;
 
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
@@ -50,8 +48,8 @@ namespace SharpReport.ReportItems{
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
 
 			base.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (BasePropertyChange);
-			ItemsHelper.UpdateTextControl (this.visualControl,this);
-			this.Text = visualControl.Name;
+			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+			this.Text = base.ColumnName;
 			GrapFromBase();
 			this.initDone = true;
 		}
@@ -65,12 +63,6 @@ namespace SharpReport.ReportItems{
 		#endregion
 		
 		#region overrides
-		public override void Dispose() {
-			base.Dispose();
-			this.visualControl.Dispose();
-		}
-		
-		
 		public override string ToString(){
 			return this.Name;
 		}
@@ -80,17 +72,17 @@ namespace SharpReport.ReportItems{
 		#region events's
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
 			if (initDone == true) {
-				ItemsHelper.UpdateTextBase(this.visualControl,this);
+				ItemsHelper.UpdateControlFromTextBase(this.visualControl,this);
 			}
 		}
 		
 
 		private void OnControlChanged (object sender, EventArgs e) {
-			ItemsHelper.UpdateTextControl (this.visualControl,this);
+			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 			this.HandlePropertyChanged("OnControlChanged");
 		}
 		
-		public void OnControlSelect(object sender, EventArgs e){
+		private void OnControlSelect(object sender, EventArgs e){
 			if (Selected != null)
 				Selected(this,e);
 		}
@@ -173,7 +165,7 @@ namespace SharpReport.ReportItems{
 
 		
 		#region IDesignable
-	
+		
 		[System.Xml.Serialization.XmlIgnoreAttribute]
 		[Browsable(false)]
 		public ReportObjectControlBase VisualControl {
@@ -181,9 +173,36 @@ namespace SharpReport.ReportItems{
 				return visualControl;
 			}
 		}
-	
+		
 		public new event PropertyChangedEventHandler PropertyChanged;
 		public event EventHandler <EventArgs> Selected;
 		#endregion
+		
+		/*
+		#region IDisposable
+		public override void Dispose(){
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		
+		~ReportDataItem()
+		{
+			Dispose(false);
+		}
+		
+		protected override void Dispose(bool disposing){
+			try {
+				if (disposing) {
+				// Free other state (managed objects).
+				if (this.visualControl != null) {
+					this.visualControl.Dispose();
+				}
+			}
+			} finally {
+				base.Dispose();
+			}
+		}
+		#endregion
+		*/
 	}
 }

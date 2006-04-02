@@ -8,50 +8,25 @@
  */
 
 using System;
-using System.ComponentModel;
 using System.Windows.Forms;
-using System.Drawing;
+
 using SharpReportCore;
-namespace SharpReport.Designer
-{
+
+namespace SharpReport.Designer{
 	/// <summary>
 	/// Description of ReportDbTextItem.
 	/// </summary>
-	internal class ReportDbTextControl : ReportControlBase
-	{
-		
-		private TextDrawer textDrawer = new TextDrawer();
-		
-		public ReportDbTextControl()
-		{
-			
+
+	internal class ReportDbTextControl : ReportTextControl{
+		public ReportDbTextControl():base(){
 			InitializeComponent();
-			this.SetStyle(ControlStyles.DoubleBuffer |
-			              ControlStyles.UserPaint |
-			              ControlStyles.AllPaintingInWmPaint |
-			              ControlStyles.ResizeRedraw,
-			              true);
-			this.UpdateStyles();
-			
+			this.Size = GlobalValues.PreferedSize;
+			base.Name = this.Name;
 		}
 		
-		
-	
-		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
-		{
-			base.OnPaint(e);
-			Graphics g = e.Graphics;
-			
-			// we can draw in the control as we draw in preview
-			
-			StringFormat fmt = base.StringFormat;
-			fmt.Alignment = base.StringAlignment;
-			textDrawer.DrawString(g,
-			                      this.Text,
-			                      this.Font,
-			                      new SolidBrush(this.ForeColor),
-			                      (RectangleF)this.ClientRectangle,
-			                      fmt);
+		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea){
+			base.Text = this.Text;
+			base.OnPaint(pea);
 		}
 		
 		

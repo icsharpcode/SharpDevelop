@@ -48,7 +48,7 @@ namespace SharpReport.ReportItems.Functions  {
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
 			
 			base.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (BasePropertyChange);
-			ItemsHelper.UpdateTextControl (this.visualControl,this);
+			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 
 			this.Text = functionName;
 			GrapFromBase();
@@ -64,13 +64,13 @@ namespace SharpReport.ReportItems.Functions  {
 		#region events
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
 			if (initDone == true) {
-				ItemsHelper.UpdateTextBase(this.visualControl,this);
+				ItemsHelper.UpdateControlFromTextBase(this.visualControl,this);
 			}
 		}
 		
 
 		private void OnControlChanged (object sender, EventArgs e) {
-			ItemsHelper.UpdateTextControl (this.visualControl,this);
+			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 			this.HandlePropertyChanged("OnControlChanged");
 		}
 		

@@ -25,12 +25,22 @@ using System.Windows.Forms;
 namespace ReportGenerator {	
 	public class GeneratePullDataReport : AbstractReportGenerator {
 		
+		
 		public GeneratePullDataReport(Properties customizer,
 		                              ReportModel reportModel):base(customizer,reportModel){
 
+			if (customizer == null) {
+				throw new ArgumentException("customizer");
+			}
+			if (reportModel == null) {
+				throw new ArgumentException("reportModel");
+			}
+			
 			if (base.ReportModel.ReportSettings.DataModel != GlobalEnums.enmPushPullModel.PullData) {
 				throw new ArgumentException ("Wrong DataModel in GeneratePullDataReport");
 			}
+			base.ReportItemCollection.Clear();
+			base.ReportItemCollection.AddRange((ReportItemCollection)base.Customizer.Get ("ReportItemCollection"));
 		}
 		
 		#region ReportGenerator.IReportGenerator interface implementation
@@ -39,24 +49,25 @@ namespace ReportGenerator {
 				base.ReportModel.ReportSettings.ReportType = GlobalEnums.enmReportType.DataReport;
 				base.ReportModel.ReportSettings.DataModel = GlobalEnums.enmPushPullModel.PullData;
 				
-				ReportItemCollection col = (ReportItemCollection)base.Customizer.Get ("ReportItemCollection");
-				ColumnCollection columnCollection = (ColumnCollection)base.Customizer.Get ("ColumnCollection");
-				this.ReportModel.ReportSettings.AvailableFieldsCollection = columnCollection;
+				
+				this.ReportModel.ReportSettings.AvailableFieldsCollection = 
+					(ColumnCollection)base.Customizer.Get ("ColumnCollection");;
 					
 				base.GenerateReport();	
-				base.Manager.HeaderColumnsFromReportItems (base.ReportModel.PageHeader,col);
-				base.Manager.DataColumnsFromReportItems (base.ReportModel.DetailSection,col);
+				base.HeaderColumnsFromReportItems (base.ReportModel.PageHeader);
+				base.BuildDataSection (base.ReportModel.DetailSection);
 
 				using (TableLayout layout = new TableLayout(base.ReportModel)){
 					layout.BuildLayout();
 				}
 				
-				base.AdjustAll();
+				base.AdjustAllNames();
 			} catch (Exception) {
 				throw;
 			}
 		
 		}
+		
 		
 		#endregion
 	}

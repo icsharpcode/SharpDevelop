@@ -49,7 +49,7 @@ namespace SharpReportAddin {
 		/// Clear the selected Section
 		/// </summary>
 		public void ClearNodeSection () {
-			System.Console.WriteLine("ClearNodeSection");
+//			System.Console.WriteLine("ClearNodeSection");
 			if (this.SelectedNode is SectionTreeNode) {
 				if (this.SelectedNode.Nodes.Count > 0) {
 					this.SelectedNode.Nodes.Clear();
@@ -221,8 +221,45 @@ namespace SharpReportAddin {
 		}
 		
 		#region PadEvents
-		
 		private void OnWindowChange (object sender,EventArgs e) {
+			try {
+				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is SharpReportView) {
+					if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent == null) {
+						return;
+					}
+					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving -= OnViewSaving;
+					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving += OnViewSaving;
+					
+					PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(FieldsExplorer));
+					
+					SharpReportView v =
+						WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent
+						as SharpReportView;
+					
+					if (v != null) {
+						this.reportModel = v.ReportManager.BaseDesignControl.ReportModel;
+						if (this.reportModel != null) {
+							this.Fill();
+							WorkbenchSingleton.Workbench.ShowPad(pad);
+						}
+						
+					} else {
+						WorkbenchSingleton.Workbench.WorkbenchLayout.HidePad(pad);
+					}
+					
+				} else {
+					System.Console.WriteLine(" NO view");				}
+			} catch (Exception) {
+				
+			}
+		}
+
+		private void old_OnWindowChange (object sender,EventArgs e) {
+//			System.Console.WriteLine("FieldsExplorer:OnWindowChange");
+//			System.Console.WriteLine("active control {0}",WorkbenchSingleton.ActiveControl.ToString());
+//			 ICSharpCode.SharpDevelop.Gui.DefaultWorkbench dw = (ICSharpCode.SharpDevelop.Gui.DefaultWorkbench)sender;
+			
+		
 			try {
 				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent == null) {
 					return;
@@ -235,10 +272,11 @@ namespace SharpReportAddin {
 				SharpReportView v =
 					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent
 					as SharpReportView;
-				
+		
 				if (v != null) {
 					this.reportModel = v.ReportManager.BaseDesignControl.ReportModel;
 					if (this.reportModel != null) {
+						
 						this.Fill();
 						WorkbenchSingleton.Workbench.ShowPad(pad);
 						pad.BringPadToFront();
@@ -522,6 +560,10 @@ namespace SharpReportAddin {
 			}
 		}
 		
+		public void RedrawContent() {
+			
+		}
+		
 		public string[] Shortcut {
 			get {
 				return null;
@@ -536,10 +578,6 @@ namespace SharpReportAddin {
 			}
 		}
 		
-		
-		public void RedrawContent() {
-			this.Invalidate ();
-		}
 		
 		// ********* Own events
 		protected virtual void OnTitleChanged(EventArgs e)
@@ -565,7 +603,7 @@ namespace SharpReportAddin {
 		
 		public FieldsExplorer() {
 			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += OnWindowChange;
-	
+
 			LabelEdit     = true;
 			AllowDrop     = true;
 			HideSelection = false;

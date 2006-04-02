@@ -110,6 +110,11 @@ namespace ICSharpCode.SharpDevelop.Project
 						if (File.Exists(interopFileName)) {
 							return interopFileName;
 						}
+						// Look for ActiveX interop.
+						interopFileName = GetActiveXInteropFileName(outputFolder, Include);
+						if (File.Exists(interopFileName)) {
+							return interopFileName;
+						}
 					}
 				}
 				catch (Exception) { }
@@ -117,6 +122,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 			}
+		}
+		
+		static string GetActiveXInteropFileName(string outputFolder, string include)
+		{
+			if (include.ToLowerInvariant().StartsWith("ax")) {
+				return Path.Combine(outputFolder, String.Concat("AxInterop.", include.Substring(2), ".dll"));
+			}
+			return null;
 		}
 	}
 }

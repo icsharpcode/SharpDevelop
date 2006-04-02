@@ -7,7 +7,9 @@
 
 using System;
 using System.Collections;
+using System.IO;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor;
@@ -52,7 +54,6 @@ namespace SearchAndReplace
 			}
 		}
 		
-		
 		public static IDocumentIterator CreateDocumentIterator(DocumentIteratorType type)
 		{
 			switch (type) {
@@ -72,6 +73,27 @@ namespace SearchAndReplace
 				default:
 					throw new System.NotImplementedException("CreateDocumentIterator for type " + type);
 			}
+		}
+		
+		static ArrayList excludedFileExtensions;
+		
+		public static bool IsSearchable(string fileName)
+		{
+			if (fileName == null) 
+				return false;
+			
+			if (excludedFileExtensions == null) {
+				excludedFileExtensions = AddInTree.BuildItems("/AddIns/DefaultTextEditor/Search/ExcludedFileExtensions", null, false);
+			}
+			string extension = Path.GetExtension(fileName);
+			if (extension != null) {
+				foreach (string excludedExtension in excludedFileExtensions) {
+					if (String.Compare(excludedExtension, extension, true) == 0) {
+						return false;
+					}
+				}
+			}
+			return true;
 		}
 	}
 }

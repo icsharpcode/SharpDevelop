@@ -27,6 +27,7 @@ namespace SharpReportCore {
 		private StringAlignment stringAlignment = StringAlignment.Near;
 		private StringFormat standartStringFormat;
 		private TextDrawer textDrawer = new TextDrawer();
+		
 	
 		public BaseTextItem() {
 			this.standartStringFormat = GlobalValues.StandartStringFormat();
@@ -34,7 +35,7 @@ namespace SharpReportCore {
 		
 		public override void Render(ReportPageEventArgs rpea) {
 			if (rpea == null) {
-				throw new ArgumentNullException("rpea","BasetextItem:Render");
+				throw new ArgumentNullException("rpea");
 			}
 			base.Render(rpea);
 			RectangleF rect = PrepareRectangle (rpea,this.Text);

@@ -17,7 +17,7 @@ namespace Debugger
 	{
 		protected NDebugger debugger;
 		protected ICorDebugValue corValue;
-		object debuggerSessionIDatCreation;
+		object pauseSessionAtCreation;
 		
 		public event EventHandler<ValueEventArgs> ValueChanged;
 		
@@ -38,7 +38,7 @@ namespace Debugger
 		/// </summary>
 		public bool IsExpired {
 			get {
-				return debuggerSessionIDatCreation != debugger.SessionID;
+				return pauseSessionAtCreation != debugger.PauseSession;
 			}
 		}
 		
@@ -106,7 +106,7 @@ namespace Debugger
 			if (corValue != null) {
 				this.corValue = DereferenceUnbox(corValue);
 			}
-			this.debuggerSessionIDatCreation = debugger.SessionID;
+			this.pauseSessionAtCreation = debugger.PauseSession;
 		}
 		
 		public override string ToString()

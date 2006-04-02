@@ -55,17 +55,16 @@ namespace SharpReportAddin{
 				panel.AutoScroll = true;
 				CreateTabControl();
 				BuildToolBarItems();
-				
 				if (PropertyPad.Grid != null) {
 					PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
 					PropertyPad.Grid.Refresh();
 				}
-				
+					
 				//Activate the FieldsExplorer - Pad
 				PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(FieldsExplorer));
 				if (pad != null) {
 					pad.CreatePad();
-				}
+				}	
 			} catch (Exception) {
 				throw;
 			}
@@ -192,6 +191,7 @@ namespace SharpReportAddin{
 		
 		private BaseDesignerControl CreateDesignerControl() {
 			BaseDesignerControl ctrl = reportManager.BaseDesignControl;
+			
 			ctrl.ReportControl.Width = ctrl.ReportModel.ReportSettings.PageSettings.Bounds.Width;
 			ctrl.ReportControl.AutoScroll = true;
 			ctrl.Dock = DockStyle.Fill;
@@ -453,6 +453,7 @@ namespace SharpReportAddin{
 		}
 		
 		public override void RedrawContent() {
+//			this.WorkbenchWindow.WindowDeselected += new EventHandler(OnDeselected);
 			SetHeadLines();
 		}
 		
@@ -490,6 +491,7 @@ namespace SharpReportAddin{
 		public SharpReportView():base() {
 			if (GlobalValues.IsValidPrinter()) {
 				InitView();
+				this.UpdateView(false);
 			} else {
 				MessageService.ShowError(ResourceService.GetString("Sharpreport.Error.NoPrinter"));
 			}

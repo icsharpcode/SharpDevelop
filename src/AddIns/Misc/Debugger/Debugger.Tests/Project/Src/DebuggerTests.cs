@@ -527,22 +527,22 @@ namespace Debugger.Tests
 			
 			Assert.AreEqual(typeof(UnavailableValue), subVars[1].Value.GetType());
 			debugger.StartEvaluation();
-			WaitForPause(PausedReason.AllEvalsComplete, null);
+			WaitForPause(PausedReason.EvalComplete, null);
 			Assert.AreEqual("private", subVars[1].Value.AsString);
 			
 			Assert.AreEqual(typeof(UnavailableValue), subVars[2].Value.GetType());
 			debugger.StartEvaluation();
-			WaitForPause(PausedReason.AllEvalsComplete, null);
+			WaitForPause(PausedReason.EvalComplete, null);
 			Assert.AreEqual("public", subVars[2].Value.AsString);
 			
 			Assert.AreEqual(typeof(UnavailableValue), subVars[3].Value.GetType());
 			debugger.StartEvaluation();
-			WaitForPause(PausedReason.AllEvalsComplete, null);
+			WaitForPause(PausedReason.EvalComplete, null);
 			Assert.AreEqual(typeof(UnavailableValue), subVars[3].Value.GetType());
 			
 			Assert.AreEqual(typeof(UnavailableValue), subVars[4].Value.GetType());
 			debugger.StartEvaluation();
-			WaitForPause(PausedReason.AllEvalsComplete, null);
+			WaitForPause(PausedReason.EvalComplete, null);
 			Assert.AreEqual("static", subVars[4].Value.AsString);
 			
 			debugger.Continue();
@@ -569,7 +569,7 @@ namespace Debugger.Tests
 				if (var is PropertyVariable) {
 					Assert.AreEqual(typeof(UnavailableValue), var.Value.GetType(), "Variable name: " + var.Name);
 					debugger.StartEvaluation();
-					WaitForPause(PausedReason.AllEvalsComplete, null);
+					WaitForPause(PausedReason.EvalComplete, null);
 					Assert.AreEqual(false, var.Value.IsExpired, "Variable name: " + var.Name);
 					Assert.AreNotEqual(null, var.Value.AsString, "Variable name: " + var.Name);
 				}
@@ -584,7 +584,7 @@ namespace Debugger.Tests
 				}
 			}
 			debugger.StartEvaluation();
-			WaitForPause(PausedReason.AllEvalsComplete, null);
+			WaitForPause(PausedReason.EvalComplete, null);
 			
 			debugger.Continue();
 			debugger.WaitForPrecessExit();

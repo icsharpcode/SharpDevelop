@@ -54,8 +54,9 @@ namespace ICSharpCode.TextEditor
 			// paint icons
 			foreach (Bookmark mark in textArea.Document.BookmarkManager.Marks) {
 				int lineNumber = textArea.Document.GetVisibleLine(mark.LineNumber);
-				int yPos = (int)(lineNumber * textArea.TextView.FontHeight) - textArea.VirtualTop.Y;
-				if (yPos >= rect.Y && yPos <= rect.Bottom) {
+				int lineHeight = textArea.TextView.FontHeight;
+				int yPos = (int)(lineNumber * lineHeight) - textArea.VirtualTop.Y;
+				if (IsLineInsideRegion(yPos, yPos + lineHeight, rect.Y, rect.Bottom)) {
 					if (lineNumber == textArea.Document.GetVisibleLine(mark.LineNumber - 1)) {
 						// marker is inside folded region, do not draw it
 						continue;
@@ -230,5 +231,17 @@ namespace ICSharpCode.TextEditor
 		}
 
 		#endregion
+		
+		static bool IsLineInsideRegion(int top, int bottom, int regionTop, int regionBottom)
+		{
+			if (top >= regionTop && top <= regionBottom) {
+				// Region overlaps the line's top edge.
+				return true;
+			} else if(regionTop > top && regionTop < bottom) {
+				// Region's top edge inside line.
+				return true;
+			} 
+			return false;
+		}
 	}
 }

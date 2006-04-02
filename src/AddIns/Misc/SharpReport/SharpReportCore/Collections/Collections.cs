@@ -132,7 +132,49 @@ namespace SharpReportCore{
 		
 	}
 	
-
+	/// <summary>
+	/// This class holds all the available Sections of an Report
+	/// </summary>
+	public class BaseDataItemCollection: List<BaseDataItem>{
+		public event EventHandler<CollectionItemEventArgs<BaseDataItem>> Added;
+		public event EventHandler<CollectionItemEventArgs<BaseDataItem>> Removed;
+		
+		public BaseDataItem Find (string columnName) {
+			for (int i = 0;i < this.Count ; i ++) {
+				BaseDataItem col = this[i];
+				if (String.Compare(col.Name.ToLower(CultureInfo.CurrentCulture),
+				                   columnName.ToLower(CultureInfo.CurrentCulture))== 0){
+					return col;
+				}
+			}
+			return null;
+		}
+		
+		public new void Add(BaseDataItem item){
+			base.Add(item);
+			this.OnAdded (item);
+		}
+		
+		
+		
+		public new bool Remove(BaseDataItem item)
+		{
+			if (base.Remove (item)) {
+				this.OnRemoved(item);
+				return true;
+			}
+			return false;
+		}
+		void OnAdded(BaseDataItem item){
+			if (Added != null)
+				Added(this, new CollectionItemEventArgs<BaseDataItem>(item));
+		}
+		
+		void OnRemoved( BaseDataItem item){
+			if (Removed != null)
+				Removed(this, new CollectionItemEventArgs<BaseDataItem>(item));
+		}
+	}
 	
 	[Serializable()]
 	public class ColumnCollection: List<AbstractColumn>{
@@ -161,12 +203,6 @@ namespace SharpReportCore{
 		public CultureInfo Culture
 		{
 			get { return culture; }
-//			set 
-//			{
-//				if (value == null)
-//					value = CultureInfo.CurrentCulture;
-//				culture = value; 
-//			}
 		}
 	}
 	

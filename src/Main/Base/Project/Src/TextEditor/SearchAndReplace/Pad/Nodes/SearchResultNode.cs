@@ -96,7 +96,7 @@ namespace SearchAndReplace
 				DrawText(g, specialText, Brushes.Black, Font, ref x, e.Bounds.Y);
 			} else {
 				x -= e.Bounds.X;
-				drawableLine.DrawLine(g, ref x, e.Bounds.X, e.Bounds.Y);
+				drawableLine.DrawLine(g, ref x, e.Bounds.X, e.Bounds.Y, GetTextColor(e.State, Color.Empty));
 			}
 			if (ShowFileName) {
 				float tabWidth = drawableLine.GetSpaceSize(g).Width * 6;

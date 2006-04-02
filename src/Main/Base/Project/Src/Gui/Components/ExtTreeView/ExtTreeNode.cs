@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Diagnostics;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -264,10 +265,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected void DrawText(Graphics g, string text, Brush brush, Font font, ref float x, int y)
 		{
+			if (IsSelected) {
+				brush = BrushRegistry.GetBrush(SystemColors.HighlightText);
+			}
 			g.DrawString(text, font, brush, new PointF(x, y));
 			
 			SizeF size = g.MeasureString(text,  font);
 			x += size.Width;
+		}
+		
+		protected Color GetTextColor(TreeNodeStates state, Color c)
+		{
+			if ((state & TreeNodeStates.Selected) == TreeNodeStates.Selected) {
+				return SystemColors.HighlightText;
+			}
+			return c;
 		}
 		#endregion
 		

@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 using System;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.ComponentModel;
 
 using SharpReportCore;
@@ -16,10 +17,7 @@ using SharpReportCore;
 	/// <summary>
 	/// This class is the BaseClass for all Layout's
 	/// </summary>
-	/// <remarks>
-	/// 	created by - Susanne Jooss
-	/// 	created on - 10.09.2005 19:07:17
-	/// </remarks>
+	
 namespace ReportGenerator {	
 	public class AbstractLayout : IReportLayout,IDisposable {
 		ReportModel reportModel;
@@ -53,11 +51,33 @@ namespace ReportGenerator {
 			throw new NotImplementedException("AbstractLayout:BuildLayout must be overriden");
 		}
 		#endregion
+		
+		#region Properties
+		
 		public ReportModel ReportModel {
 			get {
 				return reportModel;
 			}
 		}
+		
+		public ReportSettings ReportSettings {
+			get {
+				return reportModel.ReportSettings;
+			}
+		}
+		
+		public PageSettings PageSettings {
+			get {
+				return reportModel.ReportSettings.PageSettings;
+			}
+		}
+		
+		public int UseablePageWidth {
+			get {
+				return this.PageSettings.Bounds.Width - this.ReportSettings.DefaultMargins.Left - this.ReportSettings.DefaultMargins.Right;
+			}
+		}
+		#endregion
 		
 		
 		#region System.IDisposable interface implementation

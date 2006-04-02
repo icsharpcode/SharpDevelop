@@ -403,6 +403,7 @@ namespace ICSharpCode.Core
 		static void CreateDefaultProjectContent()
 		{
 			LoggingService.Info("Creating default project content");
+			LoggingService.Debug("Stacktrace is:\n" + Environment.StackTrace);
 			defaultProjectContent = new DefaultProjectContent();
 			defaultProjectContent.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
 			string[] defaultReferences = new string[] {

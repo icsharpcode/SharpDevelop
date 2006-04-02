@@ -75,7 +75,7 @@ namespace SharpReportCore {
 			}
 			
 			//Draw Pageheader
-			currentPoint = base.DrawPageheader (currentPoint,e);
+			currentPoint = base.DrawPageHeader (currentPoint,e);
 			base.DetailStart = new Point ((int)currentPoint.X,(int)currentPoint.Y);
 		}
 		
@@ -96,7 +96,7 @@ namespace SharpReportCore {
 			Rectangle detailRect = base.DetailRectangle (e);
 			FitSectionToItems (section,e);
 			base.RenderSection (section,e);
-			DebugRectangle (e,detailRect);
+//			DebugRectangle (e,detailRect);
 		}
 		
 		
@@ -122,7 +122,7 @@ namespace SharpReportCore {
 			                                base.CurrentSection.SectionOffset ,
 			                                e.PrintPageEventArgs.MarginBounds.Width,
 			                                base.CurrentSection.Size.Height);
-			DebugRectangle (e,r);
+//			DebugRectangle (e,r);
 			
 			int off = base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height + base.Gap;
 			//ReportFooter
@@ -138,7 +138,7 @@ namespace SharpReportCore {
 			                                base.CurrentSection.Size.Height);
 			
 			base.RenderSection (section,e);
-			DebugRectangle (e,rr);
+//			DebugRectangle (e,rr);
 		}
 		#endregion
 		

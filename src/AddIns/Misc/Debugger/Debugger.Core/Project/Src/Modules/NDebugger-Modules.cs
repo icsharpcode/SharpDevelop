@@ -80,6 +80,7 @@ namespace Debugger
 		{
 			moduleCollection.Remove(module);
 			OnModuleUnloaded(module);
+			module.Dispose();
 		}
 
 		internal void RemoveModule(ICorDebugModule corModule)
@@ -89,11 +90,9 @@ namespace Debugger
 
 		internal void ClearModules()
 		{
-			foreach (Module m in moduleCollection) {
- 				OnModuleUnloaded(m);
-				m.Dispose();
+			while(moduleCollection.Count > 0) {
+				RemoveModule(moduleCollection[0]);
 			}
-			moduleCollection.Clear();
 			lastAssignedModuleOrderOfLoading = 0;
 		}
 	}

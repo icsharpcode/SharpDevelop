@@ -109,13 +109,13 @@ namespace SharpReportCore {
 		/// </summary>	
 		
 		protected void DebugRectangle (ReportPageEventArgs rpea,Rectangle rectangle) {
-//			if (rpea == null) {
-//				throw new ArgumentNullException("rpea");
-//			}
-//			if (rectangle == null) {
-//				throw new ArgumentNullException("rectangle");
-//			}
-//			e.PrintPageEventArgs.Graphics.DrawRectangle (Pens.Black,rect);
+			if (rpea == null) {
+				throw new ArgumentNullException("rpea");
+			}
+			
+			System.Console.WriteLine("Debug Rectangle {0}",rectangle);
+			rpea.PrintPageEventArgs.Graphics.DrawRectangle (Pens.Black,rectangle);
+	
 		}
 		
 		/// <summary>
@@ -159,7 +159,7 @@ namespace SharpReportCore {
 		///</summary>
 		/// <param name="startAt">Section start at this PointF</param>
 		/// <param name="e">ReportPageEventArgs</param>
-		protected PointF DrawPageheader (PointF startat,ReportPageEventArgs e) {
+		protected PointF DrawPageHeader (PointF startat,ReportPageEventArgs e) {
 			float offset = 0F;
 			BaseSection section = null;
 			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader,CultureInfo.InvariantCulture);
@@ -177,52 +177,55 @@ namespace SharpReportCore {
 		}
 		
 		
-		protected int RenderSection (BaseSection section,ReportPageEventArgs rpea) {
+		
+		protected virtual int RenderSection (BaseSection section,ReportPageEventArgs rpea) {
+			
 			Point drawPoint	= new Point(0,0);
 			if (section.Visible){
 				section.Render (rpea);
 				
-				foreach (BaseReportItem rItem in section.Items) {
-					rItem.SuspendLayout();
-					rItem.Parent = section;
-					if (section.SectionMargin == 0) {
-						rItem.Margin = reportSettings.DefaultMargins.Left;
+				foreach (BaseReportItem item in section.Items) {
+					if (item.Parent == null) {
+						item.Parent = section;
 					}
-					else {
-						rItem.Margin = section.SectionMargin;
-					}
-					rItem.Offset = section.SectionOffset;
-
-					rItem.FormatOutput -= new EventHandler<FormatOutputEventArgs> (FormatBaseReportItem);
-					rItem.FormatOutput += new EventHandler<FormatOutputEventArgs> (FormatBaseReportItem);
+					item.SectionOffset = section.SectionOffset;
+					this.DrawSingleItem (rpea,item);
 					
-					rItem.Render(rpea);
-
 					drawPoint.Y = section.SectionOffset + section.Size.Height;
 					rpea.LocationAfterDraw = new PointF (rpea.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);
-					rItem.ResumeLayout();
+					
 				}
+				
 				if ((section.CanGrow == false)&& (section.CanShrink == false)) {
 					return section.Size.Height;
-					
 				}
 				
 				return drawPoint.Y;
 			}
 			return drawPoint.Y;
 		}
-	
+		
+		
+		protected void DrawSingleItem (ReportPageEventArgs rpea,BaseReportItem item){
+			item.SuspendLayout();
+			item.FormatOutput -= new EventHandler<FormatOutputEventArgs> (FormatBaseReportItem);
+			item.FormatOutput += new EventHandler<FormatOutputEventArgs> (FormatBaseReportItem);
+			item.Render(rpea);
+			item.ResumeLayout();
+		}
 	
 		// Called by FormatOutPutEvent of the BaseReportItem
 		void FormatBaseReportItem (object sender, FormatOutputEventArgs rpea) {
+			System.Console.WriteLine("FormatBaseReportItem");
 			BaseDataItem baseDataItem = sender as BaseDataItem;
 			if (baseDataItem != null) {
-				rpea.FormatedValue = defaultFormatter.FormatItem (baseDataItem);
+				if (!String.IsNullOrEmpty(baseDataItem.FormatString)) {
+					rpea.FormatedValue = defaultFormatter.FormatItem (baseDataItem);
+					System.Console.WriteLine("\tFormated Value = {0}",rpea.FormatedValue);
+				} else {
+					rpea.FormatedValue = rpea.ValueToFormat;
+				}
 			}
-//			if (sender is BaseDataItem) {
-//				BaseDataItem i = (BaseDataItem)sender;
-//				e.FormatedValue = defaultFormatter.FormatItem (i);
-//			}
 		}
 		
 		
@@ -416,7 +419,7 @@ namespace SharpReportCore {
 		#endregion
 	
 		#region IDispoable
-		public void Dispose(){
+		public virtual void Dispose(){
 			if (this.reportDocument != null) {
 				this.reportDocument.Dispose();
 			}

@@ -22,13 +22,35 @@ using System.Drawing;
 	/// </remarks>
 	
 namespace SharpReportCore {
-		
-	public class AfterPrintEventArgs : System.EventArgs {
-		PointF toPoint;
-		
-		public AfterPrintEventArgs(PointF toPoint){
-			
-			this.toPoint = toPoint;
+	
+	///<summary>
+	/// This event is fired just bevore an Item is printed
+	/// Use this event for formatting etc.
+	/// </summary>	
+	
+	public class BeforePrintEventArgs : System.EventArgs {
+		public BeforePrintEventArgs (){
+				
 		}
+	}
+	
+	/// <summary>
+	/// This Event is fiered after an Item is printed
+	/// </summary>
+	public class AfterPrintEventArgs : System.EventArgs {
+		PointF locationAfterPrint;
+			
+		
+		public AfterPrintEventArgs(PointF locationAfterPrint){
+				
+				this.locationAfterPrint = locationAfterPrint;
+		}
+		
+		public PointF LocationAfterPrint {
+			get {
+				return locationAfterPrint;
+			}
+		}
+		
 	}
 }

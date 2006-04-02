@@ -317,7 +317,7 @@ namespace Debugger
 		{
 			CurrentFunction = function;
 			
-			debugger.FakePause(PausedReason.CurrentFunctionChanged, true);
+			debugger.Pause();
 		}
 
 		public Function LastFunctionWithLoadedSymbols {

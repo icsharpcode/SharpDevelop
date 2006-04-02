@@ -87,6 +87,9 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Designer\VisualControls\ReportRowControl.cs" />
+    <Compile Include="ReportItems\TextBased\ReportRowItem.cs" />
+    <Compile Include="Designer\VisualControls\ControlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Designer" />

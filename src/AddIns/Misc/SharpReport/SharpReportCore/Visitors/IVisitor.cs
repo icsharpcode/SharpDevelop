@@ -8,8 +8,7 @@
  */
 
 using System;
-//using SharpReport.Designer;
-//using SharpReportCore;
+
 
 namespace SharpReportCore{
 		

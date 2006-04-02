@@ -15,23 +15,30 @@ using SharpReportCore;
 namespace ReportGenerator
 {
 	/// <summary>
-	/// Description of GenerateFormSheetReport.
+	/// This class generates a plain Formsheet
 	/// </summary>
 	public class GenerateFormSheetReport:AbstractReportGenerator
 	{
 		public GenerateFormSheetReport(Properties customizer,
 		                              ReportModel reportModel):base(customizer,reportModel){
 
+			if (customizer == null) {
+				throw new ArgumentException("customizer");
+			}
+			if (reportModel == null) {
+				throw new ArgumentException("reportModel");
+			}
 			if (base.ReportModel.ReportSettings.DataModel != GlobalEnums.enmPushPullModel.FormSheet) {
 				throw new ArgumentException ("Wrong DataModel in GeneratePullDataReport");
 			}
+			base.ReportItemCollection.Clear();
 		}
 		
 		public override void GenerateReport() {
 			base.ReportModel.ReportSettings.ReportType = GlobalEnums.enmReportType.FormSheet;
 			base.ReportModel.ReportSettings.DataModel = GlobalEnums.enmPushPullModel.FormSheet;
 			base.GenerateReport();	
-			base.AdjustAll();
+			base.AdjustAllNames();
 		}
 	}
 }

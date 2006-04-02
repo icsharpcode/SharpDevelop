@@ -68,10 +68,12 @@ namespace ReportGenerator{
 			dataModel = model.DataModel;
 			switch (dataModel) {
 				case GlobalEnums.enmPushPullModel.PullData:
+					customizer.Set("DataRow",GlobalEnums.ReportItemType.ReportRowItem);
 					GeneratePullDataReport generatePullDataReport = new GeneratePullDataReport(customizer,model);
 					generatePullDataReport.GenerateReport();
 					break;
 				case GlobalEnums.enmPushPullModel.PushData:
+					customizer.Set("DataRow",GlobalEnums.ReportItemType.ReportRowItem);
 					GeneratePushDataReport generatePushDataReport = new GeneratePushDataReport(customizer,model);
 					generatePushDataReport.GenerateReport();
 					break;

@@ -97,8 +97,7 @@ namespace SharpReportCore {
 							}
 						}
 					}else {
-						SharpReportException ex = new SharpReportException ("Wrong Section Name <" + sectionElem.GetAttribute("name") + ">");
-						throw ex;
+						throw new MissingSectionException();
 					}
 				}else {
 					throw new System.Xml.XmlException ("Report : SetSection Wrong Node in Report");

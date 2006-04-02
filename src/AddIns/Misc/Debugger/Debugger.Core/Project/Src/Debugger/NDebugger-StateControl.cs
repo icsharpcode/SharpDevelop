@@ -18,12 +18,11 @@ namespace Debugger
 {
 	public partial class NDebugger
 	{
-		PausedReason? pausedReason = null;
 		bool pauseOnHandledException = false;
 		ManualResetEvent pausedHandle = new ManualResetEvent(false);
 		
-		object sessionID = new object();
-		object debugeeStateID = new object();
+		PauseSession pauseSession;
+		DebugeeState debugeeState;
 		
 		Process currentProcess;
 		
@@ -74,9 +73,11 @@ namespace Debugger
 				if (currentProcess == null) {
 					return null;
 				} else {
-					if (currentProcess.IsRunning) return null;
 					return currentProcess;
 				}
+			}
+			set {
+				currentProcess = value;
 			}
 		}
 		
@@ -102,21 +103,21 @@ namespace Debugger
 		/// <summary>
 		/// Indentification of the current debugger session. This value changes whenever debugger is continued
 		/// </summary>
-		public object SessionID {
+		public PauseSession PauseSession {
 			get {
-				return sessionID;
+				return pauseSession;
 			}
 			internal set {
-				sessionID = value;
+				pauseSession = value;
 			}
 		}
 		
 		/// <summary>
 		/// Indentification of the state of the debugee. This value changes whenever the state of the debugee significatntly changes
 		/// </summary>
-		public object DebugeeStateID {
+		public DebugeeState DebugeeState {
 			get {
-				return debugeeStateID;
+				return debugeeState;
 			}
 		}
 		
@@ -136,13 +137,13 @@ namespace Debugger
 		
 		public bool IsPaused {
 			get {
-				return (pausedReason != null);
+				return (pauseSession != null);
 			}
 		}
 		
 		public bool IsRunning {
 			get {
-				return (pausedReason == null);
+				return (pauseSession == null);
 			}
 		}
 		
@@ -153,58 +154,26 @@ namespace Debugger
 		public PausedReason PausedReason {
 			get {
 				AssertPaused();
-				return (PausedReason)pausedReason;
+				return pauseSession.PausedReason;
 			}
 		}
 		
-		internal void Pause(PausedReason reason, Process process, Thread thread, Function function)
+		internal void Pause()
 		{
-			if (IsPaused) {
-				throw new DebuggerException("Already paused");
-			}
-			if (process == null) {
-				throw new DebuggerException("Process can not be null");
-			}
-			if (thread == null && function != null) {
-				throw new DebuggerException("Function can not be set without thread");
-			}
-			
-			currentProcess = process;
-			currentProcess.CurrentThread = thread;
-			if (currentProcess.CurrentThread != null) {
-				currentProcess.CurrentThread.CurrentFunction = function;
-			}
-			
-			pausedReason = reason;
-			
 			OnDebuggingPaused();
 			
 			// Debugger state is unknown after calling OnDebuggingPaused (it may be resumed)
 			
 			if (IsPaused) {
-				if (reason != PausedReason.AllEvalsComplete) {
-					debugeeStateID = new object();
+				if (PausedReason != PausedReason.EvalComplete) {
+					debugeeState = new DebugeeState();
 					OnDebuggeeStateChanged();
 				}
-			}
-			
-			// This is a good point to autmaticaly evaluate evals from update of variables (if there are any)
-			if (IsPaused) {
-				this.StartEvaluation();
 			}
 			
 			if (IsPaused) {
 				pausedHandle.Set();
 			}
-		}
-		
-		internal void FakePause(PausedReason reason, bool keepCurrentFunction)
-		{
-			Process process = CurrentProcess;
-			Thread thread = CurrentThread;
-			Function function = CurrentFunction;
-			Resume();
-			Pause(reason, process, thread, keepCurrentFunction ? function : null);
 		}
 		
 		internal void Resume()
@@ -217,14 +186,8 @@ namespace Debugger
 			
 			pausedHandle.Reset();
 			
-			pausedReason = null;
+			pauseSession = null;
 			
-			// Remove all stored functions, they are disponsed between callbacks and they need to be regenerated
-			foreach(Thread t in Threads) {
-				t.CurrentFunction = null;
-			}
-			
-			// Clear current process
 			currentProcess = null;
 		}
 		

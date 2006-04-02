@@ -52,15 +52,16 @@ namespace SearchAndReplace
 				if (curIndex < 0 || curIndex >= files.Count) {
 					return null;
 				}
-				if (!File.Exists(files[curIndex].ToString())) {
+				string fileName = files[curIndex].ToString();
+				if (!File.Exists(fileName) || !SearchReplaceUtilities.IsSearchable(fileName)) {
 					++curIndex;
 					return Current;
 				}
 				IDocument document;
-				string fileName = files[curIndex].ToString();
 				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 					if (content.FileName != null &&
-					    FileUtility.IsEqualFileName(content.FileName, fileName)) {
+					    FileUtility.IsEqualFileName(content.FileName, fileName) &&
+					    content is ITextEditorControlProvider) {
 						document = ((ITextEditorControlProvider)content).TextEditorControl.Document;
 						return new ProvidedDocumentInformation(document,
 						                                       fileName,

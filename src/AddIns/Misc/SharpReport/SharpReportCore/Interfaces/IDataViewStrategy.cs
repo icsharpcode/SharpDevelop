@@ -5,20 +5,17 @@ using System.Collections;
 using System.ComponentModel;
 
 namespace SharpReportCore{
-	public interface IDataViewStrategy:IDisposable{
+	public interface IDataViewStrategy:IEnumerator,IDisposable{
 		
 		/// <summary>
 		/// Sort the DataSource
 		/// </summary>
 		void Sort ();
+
 		/// <summary>
-		/// Reset Datasource to first position
-		/// </summary>
-		void Reset();
-		/// <summary>
-		/// Establish Databinding
-		/// Allway'S call this method before any other operations
-		/// </summary>
+//		/// Establish Databinding
+//		/// Allway's call this method before any other operations
+//		/// </summary>
 		void Bind();
 		/// <summary>
 		/// Fill's a <see cref="IItemRenderer"></see> with Data from the CurrentRow

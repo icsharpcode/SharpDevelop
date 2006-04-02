@@ -71,6 +71,12 @@ namespace SharpReport
 			                                                               GlobalEnums.ReportItemType.ReportTextItem.ToString(),
 			                                                               bitmap);
 			tab.Items.Add (t);
+			
+			t = sideTab.SideTabItemFactory.CreateSideTabItem( "DataRow",
+			                                                 GlobalEnums.ReportItemType.ReportRowItem.ToString(),
+			                                                 ResourceService.GetBitmap("Icons.16x16.SharpQuery.Table"));
+			tab.Items.Add (t);
+			
 			t = sideTab.SideTabItemFactory.CreateSideTabItem( ResourceService.GetString("SharpReport.Toolbar.DataField"),
 			                                                 GlobalEnums.ReportItemType.ReportDataItem.ToString(),
 			                                                 ResourceService.GetBitmap("Icons.16x16.SharpQuery.Column"));
@@ -82,10 +88,12 @@ namespace SharpReport
 			                                                 GlobalEnums.ReportItemType.ReportImageItem.ToString(),
 			                                                 bitmap);
 			tab.Items.Add (t);
-			
 			t = sideTab.SideTabItemFactory.CreateSideTabItem( ResourceService.GetString("SharpReport.Toolbar.Rectangle"),
 			                                                 GlobalEnums.ReportItemType.ReportRectangleItem.ToString(),
-			                                                 GlobalValues.RectangleBitmap());
+			                                                 ResourceService.GetBitmap("Icons.16x16.SharpReport.Rectangle"));
+//			t = sideTab.SideTabItemFactory.CreateSideTabItem( ResourceService.GetString("SharpReport.Toolbar.Rectangle"),
+//			                                                 GlobalEnums.ReportItemType.ReportRectangleItem.ToString(),
+//			                                                 GlobalValues.RectangleBitmap());
 			tab.Items.Add (t);
 			
 			bitmap = ResourceService.GetIcon("Icons.16.16.SharpReport.Line").ToBitmap();

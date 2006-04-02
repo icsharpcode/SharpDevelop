@@ -8,29 +8,29 @@
  */
 
 using System;
-using System.ComponentModel;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 
 using SharpReportCore;
 
-namespace SharpReport.Designer
-{
+namespace SharpReport.Designer{
 	/// <summary>
 	/// Description of ReportTextItem.
 	/// </summary>
 	internal class ReportTextControl : ReportControlBase{
 		
 		private TextDrawer textDrawer = new TextDrawer();
+		
 		public ReportTextControl(){
 			InitializeComponent();
-
+			
 			this.SetStyle(ControlStyles.DoubleBuffer |
 			              ControlStyles.UserPaint |
 			              ControlStyles.AllPaintingInWmPaint |
 			              ControlStyles.ResizeRedraw,
 			              true);
 			this.UpdateStyles();
+			this.Size = GlobalValues.PreferedSize;
 		}
 		
 		
@@ -44,15 +44,22 @@ namespace SharpReport.Designer
 		}
 
 		
-		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e){
-			base.OnPaint(e);
-			Graphics g = e.Graphics;
+		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea){
+
+			base.OnPaint(pea);
 			
+			Graphics graphics = pea.Graphics;
 			StringFormat fmt = GlobalValues.StandartStringFormat();
 			fmt.Alignment = this.StringAlignment;
+			string str;
 			
-			textDrawer.DrawString(g,
-			                      this.Text,
+			if (String.IsNullOrEmpty(this.Text)) {
+				str = this.Name;
+			} else {
+				str = this.Text;
+			}
+			textDrawer.DrawString(graphics,
+			                      str,
 			                      this.Font,
 			                      new SolidBrush(this.ForeColor),
 			                      (RectangleF)this.ClientRectangle,
@@ -72,7 +79,7 @@ namespace SharpReport.Designer
 			// 
 			this.BackColor = System.Drawing.Color.White;
 			this.Name = "ReportTextItem";
-			this.Size = new System.Drawing.Size(120, 20);
+			this.Size = new System.Drawing.Size(120, 60);
 		}
 		#endregion
 		

@@ -32,9 +32,18 @@ namespace ReportGenerator {
 		public GeneratePushDataReport(Properties customizer,
 		                              ReportModel reportModel):base(customizer,reportModel){
 			
+			if (customizer == null) {
+				throw new ArgumentException("customizer");
+			}
+			if (reportModel == null) {
+				throw new ArgumentException("reportModel");
+			}
 			if (base.ReportModel.ReportSettings.DataModel != GlobalEnums.enmPushPullModel.PushData) {
 				throw new ArgumentException ("Wrong DataModel in GeneratePushReport");
 			}
+			//we can't use the customizer here
+			base.ReportItemCollection.Clear();
+			base.ReportItemCollection.AddRange(base.ReportGenerator.ReportItemCollection);
 		}
 		
 		public override void GenerateReport() {
@@ -42,17 +51,15 @@ namespace ReportGenerator {
 			base.ReportModel.ReportSettings.ReportType = GlobalEnums.enmReportType.DataReport;
 			base.ReportModel.ReportSettings.DataModel = GlobalEnums.enmPushPullModel.PushData;
 			
-			//we can't use the customizer here
-			ReportItemCollection col = base.ReportGenerator.ReportItemCollection;
 			
 			base.ReportModel.ReportSettings.AvailableFieldsCollection = base.ReportGenerator.ColumnCollection;
 			base.GenerateReport();
-			base.Manager.HeaderColumnsFromReportItems (base.ReportModel.PageHeader,col);
-			base.Manager.DataColumnsFromReportItems (base.ReportModel.DetailSection,col);
+			base.HeaderColumnsFromReportItems (base.ReportModel.PageHeader);
+			base.BuildDataSection (base.ReportModel.DetailSection);
 			using (TableLayout layout = new TableLayout(base.ReportModel)){
 				layout.BuildLayout();
 			}
-			base.AdjustAll();
+			base.AdjustAllNames();
 			
 		}
 	}

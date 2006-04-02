@@ -9,17 +9,17 @@ namespace Debugger
 {
 	public enum PausedReason:int
 	{
-		AllEvalsComplete,
+		EvalComplete,
 		StepComplete,
 		Breakpoint,
 		Break,
 		ControlCTrap,
 		Exception,
 		DebuggerError,
-		EvalComplete,
 		CurrentThreadChanged,
 		CurrentFunctionChanged,
 		ExceptionIntercepted,
-		SetIP
+		SetIP,
+		Other
 	}
 }

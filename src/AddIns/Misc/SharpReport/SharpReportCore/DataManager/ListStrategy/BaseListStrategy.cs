@@ -13,7 +13,6 @@ using System.Globalization;
 using System.ComponentModel;
 using System.Collections;
 using System.Collections.Generic;
-using SharpReportCore;
 	
 /// <summary>
 /// BaseClass for all Datahandling Strategies
@@ -24,7 +23,7 @@ using SharpReportCore;
 /// </remarks>
 
 namespace SharpReportCore {	
-	public abstract class BaseListStrategy :IDataViewStrategy {
+	public abstract class BaseListStrategy :IDataViewStrategy,IEnumerator {
 		private bool isSorted;
 		private bool isFiltered;
 		private bool isGrouped;
@@ -179,6 +178,23 @@ namespace SharpReportCore {
 			System.Console.WriteLine("-----End of <CheckSortArray>-----------");
 			
 		}
+		public  virtual void Reset() {
+			this.indexList.CurrentPosition = -1;
+			this.NotifyResetList();
+		}
+		
+		public virtual object Current {
+			get {
+				
+				throw new NotImplementedException();
+			}
+		}
+		
+		public virtual bool MoveNext(){
+			return(++this.indexList.CurrentPosition<this.indexList.Count);
+		}
+		
+		
 		
 		#region SharpReportCore.IDataViewStrategy interface implementation
 		
@@ -196,13 +212,12 @@ namespace SharpReportCore {
 		
 		public virtual int CurrentRow {
 			get {
-				return 0;
+				return this.indexList.CurrentPosition;
 			}
 			set {
-				if (value > this.indexList.Count){
-					throw new IndexOutOfRangeException ();
+				if ((value > -1)|| (value > this.indexList.Count)){
+					this.indexList.CurrentPosition = value;
 				}
-				this.indexList.CurrentPosition = value;
 			}
 		}
 		
@@ -252,9 +267,7 @@ namespace SharpReportCore {
 			this.indexList.Clear();
 		}
 		
-		public  virtual void Reset() {
-			this.NotifyResetList();
-		}
+	
 		
 		public virtual void Bind() {
 			

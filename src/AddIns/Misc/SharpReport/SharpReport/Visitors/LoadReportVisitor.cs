@@ -30,14 +30,10 @@ using SharpReport.ReportItems;
 namespace SharpReport.Visitors {
 	public class LoadReportVisitor : SharpReport.Visitors.AbstractVisitor {
 		
-		private string fileName;
-		
 		SharpReport.Designer.BaseDesignerControl designer;
-		SharpReportCore.XmlFormReader xmlFormReader;
-		IDesignableFactory designableFactory = new IDesignableFactory();
+		IDesignableFactory designableFactory ;
 		
-		public LoadReportVisitor(string filename) {
-			this.fileName = filename;
+		public LoadReportVisitor(string fileName):base(fileName) {
 			designableFactory = new IDesignableFactory();
 		}
 		
@@ -47,21 +43,20 @@ namespace SharpReport.Visitors {
 		/// <param name='designer'>SharpReportDesigner</param>
 		
 		public override void Visit(SharpReport.Designer.BaseDesignerControl designer){
-			if (designer != null) {
-				XmlDocument xmlDoc;
-				try {
-					xmlDoc = XmlHelper.OpenSharpReport (fileName);
-					this.designer = designer;
-					xmlFormReader = new XmlFormReader();
-					SetDesigner (xmlDoc);
-					AdjustSectionsWidth();
-				} catch (Exception ) {
-					throw ;
-				}
-			} else {
-				System.ArgumentNullException e = new System.ArgumentNullException ("LoadReportVisitor:Visit -> No valid designer");
-				throw e;
+			if (designer == null) {
+				throw new ArgumentNullException("designer");
 			}
+			
+			XmlDocument xmlDoc;
+			try {
+				xmlDoc = XmlHelper.OpenSharpReport (base.FileName);
+				this.designer = designer;
+				SetDesigner (xmlDoc);
+				AdjustSectionsWidth();
+			} catch (Exception ) {
+				throw ;
+			}
+			
 		}
 		
 		private void AdjustSectionsWidth() {
@@ -73,11 +68,6 @@ namespace SharpReport.Visitors {
 			}
 		}
 		
-		private XmlDocument LoadFromFile (string fileName) {
-			XmlDocument xmlDoc = new XmlDocument();
-			xmlDoc.Load (fileName);
-			return xmlDoc;
-		}
 		
 		
 		private void  SetDesigner (XmlDocument doc){
@@ -88,51 +78,75 @@ namespace SharpReport.Visitors {
 	
 		
 		private void SetSections (XmlDocument doc) {
+		
 			XmlNodeList sectionNodes = doc.DocumentElement.ChildNodes;
 			//Start with node(1)
 			XmlNode node;
 			BaseSection baseSection = null;
 			for (int i = 1;i < sectionNodes.Count ; i++ ) {
 				node = sectionNodes[i];
-				
-				if (node is XmlElement) {
-					XmlElement sectionElem = (XmlElement)node;
+				XmlElement sectionElem = node as XmlElement;
+				if (sectionElem != null) {
 					baseSection = (BaseSection)designer.ReportModel.SectionCollection.Find(sectionElem.GetAttribute("name"));
 					if (baseSection != null) {
 						baseSection.SuspendLayout();
-						XmlHelper.SetSectionValues (xmlFormReader,sectionElem,baseSection);
-						XmlNodeList ctrlList = sectionElem.SelectNodes ("controls/control");
 						
-						if (ctrlList.Count > 0) {
-							foreach (XmlNode ctrlNode in ctrlList) {
-								if (ctrlNode is XmlElement) {
-									XmlElement ctrlElem = (XmlElement)ctrlNode;
-									IItemRenderer rpt = null;
-									try {
-										rpt = designableFactory.Create(ctrlElem.GetAttribute("type"));
-										BaseReportItem br = (BaseReportItem)rpt;
-										br.Parent = baseSection;
-										baseSection.Items.Add (rpt);
-										XmlHelper.BuildControl (xmlFormReader,ctrlElem,br);
-									}
-									catch (Exception ) {
-										string s = String.Format ("Unable to create <{0}>",ctrlElem.GetAttribute("type").ToString());
-										throw new SharpReportException (s);
-									}
-								}
-							}
-						}
+						XmlHelper.SetSectionValues (base.XmlFormReader,sectionElem,baseSection);
+						XmlNodeList ctrlList = sectionElem.SelectNodes (base.NodesQuery);
+						SetReportItems(baseSection,null,ctrlList);
 						baseSection.ResumeLayout();
 					} else {
-						SharpReportException ex = new SharpReportException ("Wrong Section Name <" + sectionElem.GetAttribute("name") + ">");
-						throw ex;
+						throw new MissingSectionException();
 					}
-				}else {
-					throw new System.Xml.XmlException ("Report : SetSection Wrong Node in Report");
+				} else {
+					throw new MissingSectionException();
 				}
 				baseSection.ResumeLayout();
 			}
 			baseSection.ResumeLayout();
+		}
+		
+		
+		void SetReportItems(BaseSection baseSection,
+		                    IContainerItem parentContainer,XmlNodeList ctrlList) {
+			
+			BaseReportItem baseReportItem;
+			//BaseReportItem parentItem;
+			foreach (XmlNode ctrlNode in ctrlList) {
+				XmlElement ctrlElem = ctrlNode as XmlElement;
+				if (ctrlElem != null) {
+					IItemRenderer itemRenderer = null;
+					try {
+						itemRenderer = designableFactory.Create(ctrlElem.GetAttribute("type"));
+						
+						baseReportItem = (BaseReportItem)itemRenderer;
+						if (parentContainer == null) {
+//							System.Console.WriteLine("\tParent of {0} is Section",baseReportItem.Name);
+							baseReportItem.Parent = baseSection;
+							baseSection.Items.Add (baseReportItem);
+						} else {
+//							System.Console.WriteLine("\tParent of <{0}> is Container",baseReportItem.Name);
+							baseReportItem.Parent = parentContainer;
+							parentContainer.Items.Add(baseReportItem);
+							
+						}
+						
+						XmlHelper.BuildControl (base.XmlFormReader,ctrlElem,baseReportItem);
+						
+						IContainerItem iContainer = baseReportItem as IContainerItem;
+
+						XmlNodeList newList = ctrlNode.SelectNodes (base.NodesQuery);
+						if (newList.Count > 0) {
+//							System.Console.WriteLine("\t recusiv call for <{0}> with {1} childs ",
+//							                         baseReportItem,newList.Count);
+							SetReportItems (baseSection,iContainer,newList);
+						}
+					}
+					catch (Exception ) {
+						throw new UnkownItemException();
+					}
+				}
+			}
 		}
 	}
 }
