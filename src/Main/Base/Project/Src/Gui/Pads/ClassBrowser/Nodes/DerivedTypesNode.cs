@@ -18,7 +18,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 {
 	/// <summary>
 	/// This class reperesents the base class for all nodes in the
@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public override bool Visible {
 			get {
-				ClassBrowserFilter filter = ClassBrowser.Instance.Filter;
+				ClassBrowserFilter filter = ClassBrowserPad.Instance.Filter;
 				return (filter & ClassBrowserFilter.ShowBaseAndDerivedTypes) != 0;
 			}
 		}

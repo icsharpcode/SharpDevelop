@@ -17,6 +17,7 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using SearchAndReplace;
 using ICSharpCode.SharpDevelop.Refactoring;
 

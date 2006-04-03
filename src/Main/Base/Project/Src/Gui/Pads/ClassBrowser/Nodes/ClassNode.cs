@@ -16,7 +16,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 {
 	/// <summary>
 	/// This class reperesents the base class for all nodes in the

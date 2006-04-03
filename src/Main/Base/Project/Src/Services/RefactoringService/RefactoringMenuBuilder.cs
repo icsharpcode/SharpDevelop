@@ -14,6 +14,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 

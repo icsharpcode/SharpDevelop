@@ -16,7 +16,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 {
 	public class MemberNode : ExtTreeNode
 	{
@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		public override bool Visible {
 			get {
-				ClassBrowserFilter filter = ClassBrowser.Instance.Filter;
+				ClassBrowserFilter filter = ClassBrowserPad.Instance.Filter;
 				if ((modifiers & ModifierEnum.Public) != 0) {
 					return (filter & ClassBrowserFilter.ShowPublic) != 0;
 				}

@@ -21,10 +21,11 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 {
 	[Flags]
-	public enum ClassBrowserFilter {
+	public enum ClassBrowserFilter
+	{
 		None = 0,
 		ShowProjectReferences = 1,
 		ShowBaseAndDerivedTypes = 32,
@@ -37,12 +38,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		All = ShowProjectReferences | ShowPublic | ShowProtected | ShowPrivate | ShowOther | ShowBaseAndDerivedTypes
 	}
 	
-	public class ClassBrowser : AbstractPadContent
+	public class ClassBrowserPad : AbstractPadContent
 	{
-		static ClassBrowser instance;
+		static ClassBrowserPad instance;
 		
 		
-		public static ClassBrowser Instance {
+		public static ClassBrowserPad Instance {
 			get {
 				return instance;
 			}
@@ -79,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ToolbarService.UpdateToolbar(searchStrip);
 		}
 		
-		public ClassBrowser()
+		public ClassBrowserPad()
 		{
 			instance = this;
 			classBrowserTreeView.Dock         = DockStyle.Fill;
@@ -117,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			lock (pending) {
 				foreach (ICompilationUnit[] units in pending) {
 					foreach (TreeNode node in classBrowserTreeView.Nodes) {
-						ProjectNode prjNode = node as ProjectNode;
+						AbstractProjectNode prjNode = node as AbstractProjectNode;
 						ICompilationUnit nonNullUnit = units[1] ?? units[0];
 						IProject project = nonNullUnit.ProjectContent.Project;
 						if (prjNode != null && prjNode.Project.IsFileInProject(nonNullUnit.FileName)) {
@@ -245,7 +246,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (projectContent != null) {
 						foreach (IClass c in projectContent.Classes) {
 							if (c.Name.ToUpper().StartsWith(searchTerm)) {
-								new ClassNode(project, c).AddTo(classBrowserTreeView);
+								ClassNodeBuilders.AddClassNode(classBrowserTreeView, project, c);
 							}
 						}
 					}
@@ -282,7 +283,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (project is MissingProject || project is UnknownProject) {
 					continue;
 				}
-				new ProjectNode(project).AddTo(classBrowserTreeView);
+				ProjectNodeBuilders.AddProjectNode(classBrowserTreeView, project);
 			}
 		}
 		

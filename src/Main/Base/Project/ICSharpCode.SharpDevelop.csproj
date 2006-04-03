@@ -757,6 +757,13 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\ProjectAndSolutionOptionsPanel.cs" />
     <EmbeddedResource Include="Resources\ProjectAndSolutionOptionsPanel.xfrm" />
+    <Compile Include="Src\Gui\Pads\ClassBrowser\Nodes\AbstractProjectNode.cs" />
+    <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\ClassNodeBuilders.cs" />
+    <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\DefaultClassNodeBuilder.cs" />
+    <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\DefaultProjectNodeBuilder.cs" />
+    <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\ProjectNodeBuilders.cs" />
+    <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\IClassNodeBuilder.cs" />
+    <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\IProjectNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
@@ -782,6 +789,7 @@
       <Link>ICSharpCode.SharpDevelop.addin</Link>
     </Content>
     <Folder Include="Src\Util" />
+    <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

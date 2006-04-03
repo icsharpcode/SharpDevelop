@@ -12,7 +12,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 
 namespace ICSharpCode.UnitTesting
 {

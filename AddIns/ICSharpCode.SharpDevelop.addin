@@ -44,7 +44,7 @@
 		     title    = "${res:MainWindow.Windows.ClassScoutLabel}"
 		     icon     = "PadIcons.ClassBrowser"
 		     shortcut = "Control|Shift|C"
-		     class    = "ICSharpCode.SharpDevelop.Gui.ClassBrowser"/>
+		     class    = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad"/>
 		
 		<Pad id       = "SideBar"
 		     category = "Main"
@@ -670,43 +670,43 @@
 		<ToolbarItem id      = "Back"
 		             icon    = "Icons.16x16.BrowserBefore"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.BackButton.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserNavigateBackward"/>
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserNavigateBackward"/>
 		<ToolbarItem id      = "Forward"
 		             icon    = "Icons.16x16.BrowserAfter"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.ForwardButton.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserNavigateForward"/>
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserNavigateForward"/>
 		
 		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
 		<ToolbarItem id      = "SelectFilter"
 		             type    = "DropDownButton"
 		             icon    = "Icons.16x16.FindInFiles"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettingsButton.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Gui.SelectClassBrowserFilter">
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.SelectClassBrowserFilter">
 			
 			<MenuItem id    = "ShowProjectReferences"
 			          type  = "CheckBox"
 			          label = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowProjectReferences.Label}"
-			          class = "ICSharpCode.SharpDevelop.Gui.ShowProjectReferences"/>
+			          class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ShowProjectReferences"/>
 			<MenuItem id = "ReferenceSeparator" type = "Separator"  />
 			<MenuItem id    = "ShowPublicMembers"
 			          type  = "CheckBox"
 			          label = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowPublicMembers.Label}"
-			          class = "ICSharpCode.SharpDevelop.Gui.ShowPublicMembers"/>
+			          class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ShowPublicMembers"/>
 			
 			<MenuItem id    = "ShowPrivateMembers"
 			          type  = "CheckBox"
 			          label = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowPrivateMembers.Label}"
-			          class = "ICSharpCode.SharpDevelop.Gui.ShowPrivateMembers"/>
+			          class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ShowPrivateMembers"/>
 			
 			<MenuItem id    = "ShowProtectedMembers"
 			          type  = "CheckBox"
 			          label = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowProtectedMembers.Label}"
-			          class = "ICSharpCode.SharpDevelop.Gui.ShowProtectedMembers"/>
+			          class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ShowProtectedMembers"/>
 			
 			<MenuItem id    = "ShowOtherMembers"
 			          type  = "CheckBox"
 			          label = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowOtherMembers.Label}"
-			          class = "ICSharpCode.SharpDevelop.Gui.ShowOtherMembers"/>
+			          class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ShowOtherMembers"/>
 		</ToolbarItem>
 	</Path>
 	
@@ -714,17 +714,17 @@
 		<ToolbarItem id      = "Search"
 		             type    = "ComboBox"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.SearchButton.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserSearchTerm"/>
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserSearchTerm"/>
 		
 		<ToolbarItem id      = "CommitSearch"
 		             icon    = "Icons.16x16.FindIcon"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserCommitSearch"/>
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserCommitSearch"/>
 		
 		<ToolbarItem id      = "CancelSearch"
 		             icon    = "OutputPad.Toolbar.ClearOutputWindow"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.ClearSearch.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserCancelSearch"/>
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserCancelSearch"/>
 	</Path>
 	
 	<!-- end ClassBrowser -->
@@ -2059,6 +2059,16 @@
 	<Path name = "/SharpDevelop/Views/ProjectBrowser/NodeBuilders">
 		<Class id = "DefaultBuilder"
 		       class = "ICSharpCode.SharpDevelop.Project.DefaultDotNetNodeBuilder"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Views/ClassBrowser/ProjectNodeBuilders">
+		<Class id = "DefaultProjectBuilder"
+		       class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.DefaultProjectNodeBuilder"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Views/ClassBrowser/ClassNodeBuilders">
+		<Class id = "DefaultClassBuilder"
+		       class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.DefaultClassNodeBuilder"/>
 	</Path>
 	
 	<Path name = "/AddIns/DefaultTextEditor/CodeGenerator">

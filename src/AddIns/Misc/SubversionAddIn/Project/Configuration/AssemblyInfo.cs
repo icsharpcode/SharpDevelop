@@ -17,23 +17,5 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("SubversionAddin")]
 [assembly: AssemblyDescription("Adds subversion support to SharpDevelop")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("www.icsharpcode.net")]
-[assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("(c) Mike Krüger, 2005; Daniel Grunwald, 2005")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-
-// The assembly version has following format :
-//
-// Major.Minor.Build.Revision
-//
-// You can specify all values by your own or you can build default build and revision
-// numbers with the '*' character (the default):
-
-[assembly: AssemblyVersion("2.0.0.1")]
-
-// The following attributes specify the key for the sign of your assembly. See the
-// .NET Framework documentation for more information about signing.
-// This is not required, if you don't want signing let these attributes like they're.
-[assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile("")]

@@ -15,18 +15,18 @@ using System.Diagnostics;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 {
 	public class ClassBrowserNavigateBackward : AbstractMenuCommand
 	{
 		public override bool IsEnabled {
 			get {
-				return ClassBrowser.Instance.CanNavigateBackward;
+				return ClassBrowserPad.Instance.CanNavigateBackward;
 			}
 		}
 		public override void Run()
 		{
-			ClassBrowser.Instance.NavigateBackward();
+			ClassBrowserPad.Instance.NavigateBackward();
 		}
 	}
 	
@@ -34,12 +34,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public override bool IsEnabled {
 			get {
-				return ClassBrowser.Instance.CanNavigateForward;
+				return ClassBrowserPad.Instance.CanNavigateForward;
 			}
 		}
 		public override void Run()
 		{
-			ClassBrowser.Instance.NavigateForward();
+			ClassBrowserPad.Instance.NavigateForward();
 		}
 	}
 	
@@ -71,13 +71,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public override bool IsChecked {
 			get {
-				return (ClassBrowser.Instance.Filter & ClassBrowserFilter.ShowBaseAndDerivedTypes) == ClassBrowserFilter.ShowBaseAndDerivedTypes;
+				return (ClassBrowserPad.Instance.Filter & ClassBrowserFilter.ShowBaseAndDerivedTypes) == ClassBrowserFilter.ShowBaseAndDerivedTypes;
 			}
 			set {
 				if (value) {
-					ClassBrowser.Instance.Filter |= ClassBrowserFilter.ShowBaseAndDerivedTypes;
+					ClassBrowserPad.Instance.Filter |= ClassBrowserFilter.ShowBaseAndDerivedTypes;
 				} else {
-					ClassBrowser.Instance.Filter &= ~ClassBrowserFilter.ShowBaseAndDerivedTypes;
+					ClassBrowserPad.Instance.Filter &= ~ClassBrowserFilter.ShowBaseAndDerivedTypes;
 				}
 			}
 		}
@@ -88,13 +88,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public override bool IsChecked {
 			get {
-				return (ClassBrowser.Instance.Filter & ClassBrowserFilter.ShowProjectReferences) == ClassBrowserFilter.ShowProjectReferences;
+				return (ClassBrowserPad.Instance.Filter & ClassBrowserFilter.ShowProjectReferences) == ClassBrowserFilter.ShowProjectReferences;
 			}
 			set {
 				if (value) {
-					ClassBrowser.Instance.Filter |= ClassBrowserFilter.ShowProjectReferences;
+					ClassBrowserPad.Instance.Filter |= ClassBrowserFilter.ShowProjectReferences;
 				} else {
-					ClassBrowser.Instance.Filter &= ~ClassBrowserFilter.ShowProjectReferences;
+					ClassBrowserPad.Instance.Filter &= ~ClassBrowserFilter.ShowProjectReferences;
 				}
 			}
 		}
@@ -104,13 +104,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public override bool IsChecked {
 			get {
-				return (ClassBrowser.Instance.Filter & ClassBrowserFilter.ShowPublic) == ClassBrowserFilter.ShowPublic;
+				return (ClassBrowserPad.Instance.Filter & ClassBrowserFilter.ShowPublic) == ClassBrowserFilter.ShowPublic;
 			}
 			set {
 				if (value) {
-					ClassBrowser.Instance.Filter |= ClassBrowserFilter.ShowPublic;
+					ClassBrowserPad.Instance.Filter |= ClassBrowserFilter.ShowPublic;
 				} else {
-					ClassBrowser.Instance.Filter &= ~ClassBrowserFilter.ShowPublic;
+					ClassBrowserPad.Instance.Filter &= ~ClassBrowserFilter.ShowPublic;
 				}
 			}
 		}
@@ -120,13 +120,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public override bool IsChecked {
 			get {
-				return (ClassBrowser.Instance.Filter & ClassBrowserFilter.ShowProtected) == ClassBrowserFilter.ShowProtected;
+				return (ClassBrowserPad.Instance.Filter & ClassBrowserFilter.ShowProtected) == ClassBrowserFilter.ShowProtected;
 			}
 			set {
 				if (value) {
-					ClassBrowser.Instance.Filter |= ClassBrowserFilter.ShowProtected;
+					ClassBrowserPad.Instance.Filter |= ClassBrowserFilter.ShowProtected;
 				} else {
-					ClassBrowser.Instance.Filter &= ~ClassBrowserFilter.ShowProtected;
+					ClassBrowserPad.Instance.Filter &= ~ClassBrowserFilter.ShowProtected;
 				}
 			}
 		}
@@ -136,13 +136,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public override bool IsChecked {
 			get {
-				return (ClassBrowser.Instance.Filter & ClassBrowserFilter.ShowPrivate) == ClassBrowserFilter.ShowPrivate;
+				return (ClassBrowserPad.Instance.Filter & ClassBrowserFilter.ShowPrivate) == ClassBrowserFilter.ShowPrivate;
 			}
 			set {
 				if (value) {
-					ClassBrowser.Instance.Filter |= ClassBrowserFilter.ShowPrivate;
+					ClassBrowserPad.Instance.Filter |= ClassBrowserFilter.ShowPrivate;
 				} else {
-					ClassBrowser.Instance.Filter &= ~ClassBrowserFilter.ShowPrivate;
+					ClassBrowserPad.Instance.Filter &= ~ClassBrowserFilter.ShowPrivate;
 				}
 			}
 		}
@@ -152,13 +152,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public override bool IsChecked {
 			get {
-				return (ClassBrowser.Instance.Filter & ClassBrowserFilter.ShowOther) == ClassBrowserFilter.ShowOther;
+				return (ClassBrowserPad.Instance.Filter & ClassBrowserFilter.ShowOther) == ClassBrowserFilter.ShowOther;
 			}
 			set {
 				if (value) {
-					ClassBrowser.Instance.Filter |= ClassBrowserFilter.ShowOther;
+					ClassBrowserPad.Instance.Filter |= ClassBrowserFilter.ShowOther;
 				} else {
-					ClassBrowser.Instance.Filter &= ~ClassBrowserFilter.ShowOther;
+					ClassBrowserPad.Instance.Filter &= ~ClassBrowserFilter.ShowOther;
 				}
 			}
 		}
@@ -183,13 +183,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ComboBoxTextChanged(object sender, EventArgs e)
 		{
-			ClassBrowser.Instance.SearchTerm = comboBox.Text;
+			ClassBrowserPad.Instance.SearchTerm = comboBox.Text;
 			Run(); // TODO: Enable live search via option
 		}
 		
 		public override void Run()
 		{
-			ClassBrowser.Instance.StartSearch();
+			ClassBrowserPad.Instance.StartSearch();
 		}
 	}
 	
@@ -197,7 +197,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public override void Run()
 		{
-			ClassBrowser.Instance.StartSearch();
+			ClassBrowserPad.Instance.StartSearch();
 		}
 	}
 	
@@ -205,12 +205,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public override bool IsEnabled {
 			get {
-				return ClassBrowser.Instance.IsInSearchMode;
+				return ClassBrowserPad.Instance.IsInSearchMode;
 			}
 		}
 		public override void Run()
 		{
-			ClassBrowser.Instance.CancelSearch();
+			ClassBrowserPad.Instance.CancelSearch();
 		}
 	}
 	#endregion

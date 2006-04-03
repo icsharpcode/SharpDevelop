@@ -91,6 +91,9 @@
     <Compile Include="Src\Gui\TortoiseSvnNotFoundForm.cs" />
     <Compile Include="Src\Commands\CheckoutCommands.cs" />
     <Compile Include="Src\SubversionStateCondition.cs" />
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
