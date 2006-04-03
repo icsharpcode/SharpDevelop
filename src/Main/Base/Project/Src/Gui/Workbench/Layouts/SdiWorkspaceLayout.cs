@@ -218,6 +218,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (dockPanel != null) {
 				LockWindowUpdate(wbForm.Handle);
 				try {
+					IViewContent activeView = GetActiveView();
 					dockPanel.ActiveDocumentChanged -= new EventHandler(ActiveMdiChanged);
 					
 					DetachPadContents(true);
@@ -227,6 +228,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					LoadLayoutConfiguration();
 					ShowPads();
 					ShowViewContents();
+					if (activeView != null && activeView.WorkbenchWindow != null) {
+						activeView.WorkbenchWindow.SelectWindow();
+					}
 				} finally {
 					LockWindowUpdate(IntPtr.Zero);
 				}
@@ -554,6 +558,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void ActiveContentChanged(object sender, EventArgs e)
 		{
 			OnActiveWorkbenchWindowChanged(e);
+		}
+		
+		static IViewContent GetActiveView()
+		{
+			IWorkbenchWindow activeWindow = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			if (activeWindow != null) {
+				return activeWindow.ViewContent;
+			}
+			return null;
 		}
 		
 		IWorkbenchWindow oldSelectedWindow = null;
