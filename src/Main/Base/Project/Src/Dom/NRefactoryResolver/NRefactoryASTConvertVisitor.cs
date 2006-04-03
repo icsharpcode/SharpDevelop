@@ -296,7 +296,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			if (c.ClassType != ClassType.Enum && typeDeclaration.BaseTypes != null) {
 				foreach (AST.TypeReference type in typeDeclaration.BaseTypes) {
-					c.BaseTypes.Add(CreateReturnType(type));
+					IReturnType rt = CreateReturnType(type);
+					if (rt != null) {
+						c.BaseTypes.Add(rt);
+					}
 				}
 			}
 			
@@ -350,7 +353,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		DefaultTypeParameter ConvertConstraints(AST.TemplateDefinition template, DefaultTypeParameter typeParameter)
 		{
 			foreach (AST.TypeReference typeRef in template.Bases) {
-				typeParameter.Constraints.Add(CreateReturnType(typeRef));
+				IReturnType rt = CreateReturnType(typeRef);
+				if (rt != null) {
+					typeParameter.Constraints.Add(rt);
+				}
 			}
 			return typeParameter;
 		}
