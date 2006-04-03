@@ -108,6 +108,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				string projectLocation = FileUtility.Combine(projectCreateInformation.ProjectBasePath, newProjectName + LanguageBindingService.GetProjectFileExtension(language));
 				
 				projectCreateInformation.OutputProjectFileName = projectLocation;
+				projectCreateInformation.SetDefaultCreateProjectOptions();
+				foreach (PropertyGroup pg in propertyGroups) {
+					if (pg.IsSet("OutputPath")) {
+						projectCreateInformation.CreateProjectWithDefaultOutputPath = false;
+					}
+				}
 				IProject project = languageinfo.CreateProject(projectCreateInformation, projectOptions);
 				
 				StringBuilder standardNamespace  = new StringBuilder();

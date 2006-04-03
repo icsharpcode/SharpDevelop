@@ -8,7 +8,7 @@
 using System;
 using System.Diagnostics;
 using System.Xml;
-using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Document;
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
@@ -20,9 +20,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 	{
 		const string syntaxModePath = "/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes";
 		
-		ArrayList syntaxModes;
+		List<SyntaxMode> syntaxModes;
 		
-		public ArrayList SyntaxModes {
+		public ICollection<SyntaxMode> SyntaxModes {
 			get {
 				return syntaxModes;
 			}
@@ -30,11 +30,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 		
 		public AddInTreeSyntaxModeProvider()
 		{
-			try {
-				syntaxModes = AddInTree.GetTreeNode(syntaxModePath).BuildChildItems(this);
-			} catch (TreePathNotFoundException) {
-				syntaxModes = new ArrayList();
-			}
+			syntaxModes = AddInTree.BuildItems<SyntaxMode>(syntaxModePath, this, false);
 		}
 		
 		public XmlTextReader GetSyntaxModeFile(SyntaxMode syntaxMode)

@@ -30,6 +30,18 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public List<string> CreatedProjects  = new List<string>();
 		
+		public ProjectCreateInformation()
+		{
+			SetDefaultCreateProjectOptions();
+		}
+		
+		internal bool CreateProjectWithDefaultOutputPath;
+		
+		internal void SetDefaultCreateProjectOptions()
+		{
+			CreateProjectWithDefaultOutputPath = true;
+		}
+		
 		public string OutputProjectFileName {
 			get {
 				return outputProjectFileName;

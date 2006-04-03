@@ -44,14 +44,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			BaseConfiguration.SetIsGuarded("Platform", true);
 			
 			configurations["Debug|*"] = new PropertyGroup();
-			configurations["Debug|*"]["OutputPath"] = @"bin\Debug\";
+			if (information.CreateProjectWithDefaultOutputPath) {
+				configurations["Debug|*"]["OutputPath"] = @"bin\Debug\";
+			}
 			configurations["Debug|*"]["Optimize"] = "False";
 			configurations["Debug|*"]["DefineConstants"] = "DEBUG" + BuildConstantSeparator + "TRACE";
 			configurations["Debug|*"]["DebugSymbols"] = "True";
 			configurations["Debug|*"]["DebugType"] = "Full";
 			
 			configurations["Release|*"] = new PropertyGroup();
-			configurations["Release|*"]["OutputPath"] = @"bin\Release\";
+			if (information.CreateProjectWithDefaultOutputPath) {
+				configurations["Release|*"]["OutputPath"] = @"bin\Release\";
+			}
 			configurations["Release|*"]["Optimize"] = "True";
 			configurations["Release|*"]["DefineConstants"] = "TRACE";
 			configurations["Release|*"]["DebugSymbols"] = "False";

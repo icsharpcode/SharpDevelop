@@ -107,7 +107,7 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public HighlightRuleSet(XmlElement el)
 		{
-			XmlNodeList nodes = el.GetElementsByTagName("KeyWords");
+			XmlNodeList nodes;
 			
 			if (el.Attributes["name"] != null) {
 				Name = el.Attributes["name"].InnerText;
@@ -126,13 +126,13 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			
 			for (int i  = 0; i < Delimiters.Length; ++i) {
-				Delimiters[i] = false;
+				delimiters[i] = false;
 			}
 			
 			if (el["Delimiters"] != null) {
 				string delimiterString = el["Delimiters"].InnerText;
 				foreach (char ch in delimiterString) {
-					Delimiters[(int)ch] = true;
+					delimiters[(int)ch] = true;
 				}
 			}
 			
@@ -142,6 +142,7 @@ namespace ICSharpCode.TextEditor.Document
 			prevMarkers = new LookupTable(!IgnoreCase);
 			nextMarkers = new LookupTable(!IgnoreCase);
 			
+			nodes = el.GetElementsByTagName("KeyWords");
 			foreach (XmlElement el2 in nodes) {
 				HighlightColor color = new HighlightColor(el2);
 				
@@ -170,6 +171,23 @@ namespace ICSharpCode.TextEditor.Document
 				NextMarker next = new NextMarker(el2);
 				nextMarkers[next.What] = next;
 			}
+		}
+		
+		/// <summary>
+		/// Merges spans etc. from the other rule set into this rule set.
+		/// </summary>
+		public void MergeFrom(HighlightRuleSet ruleSet)
+		{
+			for (int i = 0; i < delimiters.Length; i++) {
+				delimiters[i] |= ruleSet.delimiters[i];
+			}
+			// insert merged spans in front of old spans
+			ArrayList oldSpans = spans;
+			spans = (ArrayList)ruleSet.spans.Clone();
+			spans.AddRange(oldSpans);
+			//keyWords.MergeFrom(ruleSet.keyWords);
+			//prevMarkers.MergeFrom(ruleSet.prevMarkers);
+			//nextMarkers.MergeFrom(ruleSet.nextMarkers);
 		}
 	}
 }

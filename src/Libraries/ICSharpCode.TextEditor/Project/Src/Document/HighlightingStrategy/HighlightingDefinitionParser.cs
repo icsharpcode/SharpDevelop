@@ -11,6 +11,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Reflection;
 
@@ -24,8 +25,13 @@ namespace ICSharpCode.TextEditor.Document
 		}
 		
 		static ArrayList errors = null;
-		
+
 		public static DefaultHighlightingStrategy Parse(SyntaxMode syntaxMode, XmlTextReader xmlTextReader)
+		{
+			return Parse(null, syntaxMode, xmlTextReader);
+		}
+
+		public static DefaultHighlightingStrategy Parse(DefaultHighlightingStrategy highlighter, SyntaxMode syntaxMode, XmlTextReader xmlTextReader)
 		{
 			if (syntaxMode == null)
 				throw new ArgumentNullException("syntaxMode");
@@ -48,10 +54,20 @@ namespace ICSharpCode.TextEditor.Document
 				XmlDocument doc = new XmlDocument();
 				doc.Load(validatingReader);
 				
-				DefaultHighlightingStrategy highlighter = new DefaultHighlightingStrategy(doc.DocumentElement.Attributes["name"].InnerText);
+				if (highlighter == null)
+					highlighter = new DefaultHighlightingStrategy(doc.DocumentElement.Attributes["name"].InnerText);
 				
-				if (doc.DocumentElement.Attributes["extensions"]!= null) {
-					highlighter.Extensions = doc.DocumentElement.Attributes["extensions"].InnerText.Split(new char[] { ';', '|' });
+				if (doc.DocumentElement.HasAttribute("extends")) {
+					KeyValuePair<SyntaxMode, ISyntaxModeFileProvider> entry = HighlightingManager.Manager.FindHighlighterEntry(doc.DocumentElement.GetAttribute("extends"));
+					if (entry.Key == null) {
+						MessageBox.Show("Cannot find referenced highlighting source " + doc.DocumentElement.GetAttribute("extends"));
+					} else {
+						highlighter = Parse(highlighter, entry.Key, entry.Value.GetSyntaxModeFile(entry.Key));
+						if (highlighter == null) return null;
+					}
+				}
+				if (doc.DocumentElement.HasAttribute("extensions")) {
+					highlighter.Extensions = doc.DocumentElement.GetAttribute("extensions").Split(new char[] { ';', '|' });
 				}
 				
 				XmlElement environment = doc.DocumentElement["Environment"];
@@ -90,7 +106,7 @@ namespace ICSharpCode.TextEditor.Document
 					return highlighter;		
 				}
 			} catch (Exception e) {
-				MessageBox.Show("Could not load mode definition file.\n" + e.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+				MessageBox.Show("Could not load mode definition file '" + syntaxMode.FileName + "'.\n" + e.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
 				return null;
 			}
 		}	

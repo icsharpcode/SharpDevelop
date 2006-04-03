@@ -320,7 +320,7 @@
 				<xsd:element name="Properties" type="Properties" minOccurs="0" maxOccurs="1" />
 				
 				<!-- The Digits tag defines the color for rendering Digits-->
-				<xsd:element name="Digits" type="Digits" />
+				<xsd:element name="Digits" type="Digits" minOccurs="0" maxOccurs="1"/>
 				
 				<!-- The RuleSets tag defines the rule sets that are used in the mode. Note that all modes are defined in
 					 a flat structture even if they are used recursively. For an example of a mode that uses
@@ -335,6 +335,8 @@
 			<!-- The file extensions that the mode is applicable for. Extensions must be written with lower case and
 				 should include the ., as in .txt. If several extensions are applicable they should be separeated with | -->
 			<xsd:attribute name="extensions" type="xsd:string" />
+			<!-- Name of a syntax mode where rulesets, spans, keywords and other settings are imported from -->
+			<xsd:attribute name="extends" type="xsd:string" />
 		</xsd:complexType>
 	</xsd:element>
 

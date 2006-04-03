@@ -1,7 +1,7 @@
 <SyntaxModes version="1.0">
 	<Mode file       = "ASPX.xshd"
-	      name       = "ASP3/XHTML"
-	      extensions = ".asp"/>
+	      name       = "ASP/XHTML"
+	      extensions = ".asp;.aspx;.asax;.asmx"/>
 	
 	<Mode file       = "BAT-Mode.xshd"
 	      name       = "BAT"

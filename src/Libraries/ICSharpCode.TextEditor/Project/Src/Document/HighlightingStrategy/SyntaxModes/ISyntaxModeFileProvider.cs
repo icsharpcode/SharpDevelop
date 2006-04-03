@@ -6,14 +6,14 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace ICSharpCode.TextEditor.Document
 {
 	public interface ISyntaxModeFileProvider
 	{
-		ArrayList SyntaxModes {
+		ICollection<SyntaxMode> SyntaxModes {
 			get;
 		}
 		

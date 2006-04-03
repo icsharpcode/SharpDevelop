@@ -1,0 +1,194 @@
+﻿<?xml version="1.0"?>
+<Template author="Tom Schroeter" version="1.0">
+
+	<Config
+		name        = "ASP.NET Web Form"
+		icon        = "C#.File.NewClass"
+		category    = "C#"
+		subcategory = "ASP.NET"
+		defaultname = "WebForm${Number}.aspx"
+		language    = "C#"
+	/>
+
+	<Description>Component Frame for ASPX Code Behind. Enter the name of a new page.</Description>
+	<!--
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${Path}\Source\${FileNameWithoutExtension}.cs" language="C#"><![CDATA[${StandardHeader.C#}
+
+using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Web;
+using System.Web.SessionState;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.HtmlControls;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of ${ClassName}
+	/// </summary>
+	public class ${ClassName} : Page
+	{	
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Data
+
+		protected	HtmlInputButton		_Button_Ok;
+		protected	HtmlInputText		_Input_Name;
+
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Page Init & Exit (Open/Close DB connections here...)
+
+		protected void PageInit(object sender, System.EventArgs e)
+		{
+		}
+		//----------------------------------------------------------------------
+		protected void PageExit(object sender, System.EventArgs e)
+		{
+		}
+
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Page Load
+		private void Page_Load(object sender, System.EventArgs e)
+		{
+			Response.Write(@"Hello #Develop<br>");
+			//------------------------------------------------------------------
+			if(IsPostBack)
+			{
+			}
+			//------------------------------------------------------------------
+		}
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Click_Button_OK
+
+		//----------------------------------------------------------------------
+		protected void Click_Button_Ok(object sender, System.EventArgs e)
+		{
+			Response.Write( _Button_Ok.Value + " was cklicked!<br>");
+		}
+
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Change_Input_Name
+
+		//----------------------------------------------------------------------
+		protected void Changed_Input_Name(object sender, System.EventArgs e)
+		{
+			Response.Write( _Input_Name.Value + " has changed!<br>");
+		}
+
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Add more events here...
+
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Initialize Component
+
+		protected override void OnInit(EventArgs e)
+		{	InitializeComponent();
+			base.OnInit(e);
+		}
+		//----------------------------------------------------------------------
+		private void InitializeComponent()
+		{	//------------------------------------------------------------------
+			this.Load	+= new System.EventHandler(Page_Load);
+			this.Init   += new System.EventHandler(PageInit);
+			this.Unload += new System.EventHandler(PageExit);
+			//------------------------------------------------------------------
+			_Button_Ok.ServerClick	 += new EventHandler(Click_Button_Ok);
+			_Input_Name.ServerChange += new EventHandler(Changed_Input_Name);
+			//------------------------------------------------------------------
+		}
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	}
+}
+]]></File>
+		<File name="${FullName}" language="HTML"><![CDATA[<%@ Page
+	language="c#"
+	Codebehind="${FileNameWithoutExtension}.cs"
+	AutoEventWireup="false"
+	Inherits="${StandardNamespace}.${ClassName}"
+	validateRequest="false"
+	EnableSessionState="false"
+	debug="true"
+	trace="false"
+%>
+
+<!--
+<--%@ Register TagPrefix="???" Namespace="${StandardNamespace}" Assembly="${StandardNamespace}" %>
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmls="http://www.w3.org/1999/xhtml">
+
+<Html>
+	<Head>
+		<Title>${ClassName}</Title>
+
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+		<meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+
+		<LINK href="${StandardNamespace}.css" type="text/css" rel="stylesheet">
+		
+	</Head>
+	<Body>
+		<form id="Form_${ClassName}" method="post" runat="server">
+
+			<table>
+
+				<tr>
+					<td colspan="2">
+						Table
+					</td>
+				</tr>
+
+				<tr>
+				<td>
+						Name:
+					</td>
+					<td>
+						<input id="_Input_Name" runat="server">
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan="2">
+						<input id="_Button_No" type="submit" value="Oh No!" runat="server">
+						<input id="_Button_Ok" type="submit" value="Ok" runat="server">
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan="2" align="center">
+						<a href="?" >Click Here</a>
+					</td>
+				</tr>
+
+			</table>
+
+		</form>
+	</Body>
+</Html>
+]]>		</File>
+
+	</Files>
+
+	<AdditionalOptions/>
+</Template>

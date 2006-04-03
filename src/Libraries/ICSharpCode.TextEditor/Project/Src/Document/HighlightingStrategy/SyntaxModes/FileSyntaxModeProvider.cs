@@ -7,7 +7,7 @@
 
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
@@ -17,9 +17,9 @@ namespace ICSharpCode.TextEditor.Document
 	public class FileSyntaxModeProvider : ISyntaxModeFileProvider
 	{
 		string    directory;
-		ArrayList syntaxModes = null;
+		List<SyntaxMode> syntaxModes = null;
 		
-		public ArrayList SyntaxModes {
+		public ICollection<SyntaxMode> SyntaxModes {
 			get {
 				return syntaxModes;
 			}
@@ -53,10 +53,10 @@ namespace ICSharpCode.TextEditor.Document
 			return new XmlTextReader(File.OpenRead(syntaxModeFile));
 		}
 		
-		ArrayList ScanDirectory(string directory)
+		List<SyntaxMode> ScanDirectory(string directory)
 		{
 			string[] files = Directory.GetFiles(directory);
-			ArrayList modes = new ArrayList();
+			List<SyntaxMode> modes = new List<SyntaxMode>();
 			foreach (string file in files) {
 				if (Path.GetExtension(file).Equals(".XSHD", StringComparison.OrdinalIgnoreCase)) {
 					XmlTextReader reader = new XmlTextReader(file);

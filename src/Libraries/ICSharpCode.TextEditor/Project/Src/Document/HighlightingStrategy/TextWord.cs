@@ -158,7 +158,7 @@ namespace ICSharpCode.TextEditor.Document
 				return color;
 			}
 			set {
-				Debug.Assert(color != null);
+				Debug.Assert(value != null);
 				color = value;
 			}
 		}

@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using System.IO;
@@ -15,9 +15,9 @@ namespace ICSharpCode.TextEditor.Document
 {
 	public class ResourceSyntaxModeProvider : ISyntaxModeFileProvider
 	{
-		ArrayList syntaxModes = null;
+		List<SyntaxMode> syntaxModes = null;
 		
-		public ArrayList SyntaxModes {
+		public ICollection<SyntaxMode> SyntaxModes {
 			get {
 				return syntaxModes;
 			}
@@ -30,7 +30,7 @@ namespace ICSharpCode.TextEditor.Document
 			if (syntaxModeStream != null) {
 				syntaxModes = SyntaxMode.GetSyntaxModes(syntaxModeStream);
 			} else {
-				syntaxModes = new ArrayList();
+				syntaxModes = new List<SyntaxMode>();
 			}
 		}
 		
