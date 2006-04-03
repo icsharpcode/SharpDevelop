@@ -37,7 +37,8 @@ namespace Debugger
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugProcess pProcess)
 		{
 			debugger.TraceMessage("Callback: " + name);
-			debugger.AssertRunning();
+			// ExitProcess may be called at any time when debuggee is killed
+			if (name != "ExitProcess") debugger.AssertRunning();
 			debugger.PauseSession = new PauseSession(pausedReason);
 			debugger.SelectedProcess = debugger.GetProcess(pProcess);
 			debugger.SelectedProcess.IsRunning = false;

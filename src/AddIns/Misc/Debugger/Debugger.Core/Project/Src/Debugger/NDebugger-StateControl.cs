@@ -179,12 +179,10 @@ namespace Debugger
 			if (IsRunning) {
 				throw new DebuggerException("Already resumed");
 			}
-			
-			OnDebuggingResumed();
-			
-			pausedHandle.Reset();
-			
+
 			pauseSession = null;
+			OnDebuggingResumed();
+			pausedHandle.Reset();
 		}
 		
 		/// <summary>

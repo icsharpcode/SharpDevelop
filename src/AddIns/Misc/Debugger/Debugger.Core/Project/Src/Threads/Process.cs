@@ -133,7 +133,7 @@ namespace Debugger
 		{
 			// Resume stoped tread
 			if (corProcess.IsRunning == 0) {
-				Continue(); // TODO: Remove this...
+				corProcess.Continue(0); // TODO: Remove this...
 			}
 			// Stop&terminate - both must be called
 			corProcess.Stop(5000); // TODO: ...and this
