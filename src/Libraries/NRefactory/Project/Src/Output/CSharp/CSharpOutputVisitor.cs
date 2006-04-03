@@ -320,14 +320,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void OutputEnumMembers(TypeDeclaration typeDeclaration, object data)
 		{
-			bool first = true;
-			foreach (FieldDeclaration fieldDeclaration in typeDeclaration.Children) {
-				if (first) {
-					first = false;
-				} else {
-					outputFormatter.PrintToken(Tokens.Comma);
-					outputFormatter.NewLine();
-				}
+			for (int i = 0; i < typeDeclaration.Children.Count; i++) {
+				FieldDeclaration fieldDeclaration = (FieldDeclaration)typeDeclaration.Children[i];
+				nodeTracker.BeginNode(fieldDeclaration);
 				VariableDeclaration f = (VariableDeclaration)fieldDeclaration.Fields[0];
 				VisitAttributes(fieldDeclaration.Attributes, data);
 				outputFormatter.Indent();
@@ -338,8 +333,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.Space();
 					nodeTracker.TrackedVisit(f.Initializer, data);
 				}
+				if (i < typeDeclaration.Children.Count - 1) {
+					outputFormatter.PrintToken(Tokens.Comma);
+				}
+				outputFormatter.NewLine();
+				nodeTracker.EndNode(fieldDeclaration);
 			}
-			outputFormatter.NewLine();
 		}
 		
 		TypeDeclaration currentType = null;

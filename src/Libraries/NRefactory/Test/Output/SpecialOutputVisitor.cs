@@ -32,6 +32,21 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			parser.Dispose();
 		}
 		
+		void TestProgramVB(string program)
+		{
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
+			parser.Parse();
+			Assert.AreEqual("", parser.Errors.ErrorOutput);
+			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
+			using (SpecialNodesInserter.Install(parser.Lexer.SpecialTracker.RetrieveSpecials(),
+			                                    outputVisitor)) {
+				outputVisitor.Visit(parser.CompilationUnit, null);
+			}
+			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
+			Assert.AreEqual(program, outputVisitor.Text.TrimEnd().Replace("\r", ""));
+			parser.Dispose();
+		}
+		
 		[Test]
 		public void SimpleComments()
 		{
@@ -62,6 +77,33 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			            "{\n" +
 			            "}\n" +
 			            "#end if");
+		}
+		
+		[Test]
+		public void Enum()
+		{
+			TestProgram("enum Test\n" +
+			            "{\n" +
+			            "\t// a\n" +
+			            "\tm1,\n" +
+			            "\t// b\n" +
+			            "\tm2\n" +
+			            "\t// c\n" +
+			            "}\n" +
+			            "// d");
+		}
+		
+		[Test]
+		public void EnumVB()
+		{
+			TestProgramVB("Enum Test\n" +
+			            "\t' a\n" +
+			            "\tm1\n" +
+			            "\t' b\n" +
+			            "\tm2\n" +
+			            "\t' c\n" +
+			            "End Enum\n" +
+			            "' d");
 		}
 	}
 }
