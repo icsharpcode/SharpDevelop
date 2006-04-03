@@ -112,7 +112,7 @@ namespace ICSharpCode.TextEditor.Document
 			rules.Add(aRuleSet);
 		}
 		
-		internal void ResolveReferences()
+		public void ResolveReferences()
 		{
 			// Resolve references from Span definitions to RuleSets
 			ResolveRuleSetReferences();
@@ -184,7 +184,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		internal void SetColorFor(string name, HighlightColor color)
+		public void SetColorFor(string name, HighlightColor color)
 		{
 			if (name == "Default")
 				defaultTextColor = new HighlightColor(color.Color, color.Bold, color.Italic);
@@ -204,7 +204,7 @@ namespace ICSharpCode.TextEditor.Document
 			return GetColor(defaultRuleSet, document, currentSegment, currentOffset, currentLength);
 		}
 
-		HighlightColor GetColor(HighlightRuleSet ruleSet, IDocument document, LineSegment currentSegment, int currentOffset, int currentLength)
+		protected virtual HighlightColor GetColor(HighlightRuleSet ruleSet, IDocument document, LineSegment currentSegment, int currentOffset, int currentLength)
 		{
 			if (ruleSet != null) {
 				if (ruleSet.Reference != null) {
@@ -235,10 +235,10 @@ namespace ICSharpCode.TextEditor.Document
 		}
 
 		// Line state variable
-		LineSegment currentLine;
+		protected LineSegment currentLine;
 		
 		// Span stack state variable
-		Stack<Span> currentSpanStack;
+		protected Stack<Span> currentSpanStack;
 
 		public void MarkTokens(IDocument document)
 		{
@@ -428,13 +428,13 @@ namespace ICSharpCode.TextEditor.Document
 		}
 		
 		// Span state variables
-		bool inSpan;
-		Span activeSpan;
-		HighlightRuleSet activeRuleSet;
+		protected bool inSpan;
+		protected Span activeSpan;
+		protected HighlightRuleSet activeRuleSet;
 		
 		// Line scanning state variables
-		int currentOffset;
-		int currentLength;
+		protected int currentOffset;
+		protected int currentLength;
 		
 		void UpdateSpanStateVariables()
 		{
@@ -593,18 +593,21 @@ namespace ICSharpCode.TextEditor.Document
 								if (currentLine.MatchExpr(span.Begin, i, document)) {
 									PushCurWord(document, ref markNext, words);
 									string regex = currentLine.GetRegString(span.Begin, i, document);
-									currentLength += regex.Length;
-									words.Add(new TextWord(document, currentLine, currentOffset, currentLength, span.BeginColor, false));
-									currentOffset += currentLength;
-									currentLength = 0;
-									
-									i += regex.Length - 1;
-									if (currentSpanStack == null) {
-										currentSpanStack = new Stack<Span>();
+
+									if (!OverrideSpan(regex, document, words, span, ref i)) {
+										currentLength += regex.Length;
+										words.Add(new TextWord(document, currentLine, currentOffset, currentLength, span.BeginColor, false));
+										currentOffset += currentLength;
+										currentLength = 0;
+
+										i += regex.Length - 1;
+										if (currentSpanStack == null) {
+											currentSpanStack = new Stack<Span>();
+										}
+										currentSpanStack.Push(span);
+
+										UpdateSpanStateVariables();
 									}
-									currentSpanStack.Push(span);
-									
-									UpdateSpanStateVariables();
 									
 									goto skip;
 								}
@@ -630,6 +633,11 @@ namespace ICSharpCode.TextEditor.Document
 			PushCurWord(document, ref markNext, words);
 			
 			return words;
+		}
+
+		protected virtual bool OverrideSpan(string spanBegin, IDocument document, List<TextWord> words, Span span, ref int lineOffset)
+		{
+			return false;
 		}
 		
 		/// <summary>

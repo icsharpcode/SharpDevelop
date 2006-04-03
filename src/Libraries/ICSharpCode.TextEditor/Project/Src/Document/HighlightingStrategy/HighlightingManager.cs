@@ -57,6 +57,15 @@ namespace ICSharpCode.TextEditor.Document
 				syntaxModeFileProviders.Add(syntaxModeFileProvider);
 			}
 		}
+
+		public void AddHighlightingStrategy(IHighlightingStrategy highlightingStrategy)
+		{
+			highlightingDefs[highlightingStrategy.Name] = highlightingStrategy;
+			foreach (string extension in highlightingStrategy.Extensions)
+			{
+				extensionsToName[extension.ToUpperInvariant()] = highlightingStrategy.Name;
+			}
+		}
 		
 		public void ReloadSyntaxModes()
 		{

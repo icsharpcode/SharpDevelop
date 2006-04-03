@@ -16,16 +16,16 @@ using System.Reflection;
 
 namespace ICSharpCode.TextEditor.Document
 {
-	internal class HighlightingDefinitionParser
+	public static class HighlightingDefinitionParser
 	{
-		private HighlightingDefinitionParser()
-		{
-			// This is a pure utility class with no instances.	
-		}
-		
 		static ArrayList errors = null;
-		
+
 		public static DefaultHighlightingStrategy Parse(SyntaxMode syntaxMode, XmlTextReader xmlTextReader)
+		{
+			return Parse(null, syntaxMode, xmlTextReader);
+		}
+
+		public static DefaultHighlightingStrategy Parse(DefaultHighlightingStrategy highlighter, SyntaxMode syntaxMode, XmlTextReader xmlTextReader)
 		{
 			if (syntaxMode == null)
 				throw new ArgumentNullException("syntaxMode");
@@ -48,7 +48,8 @@ namespace ICSharpCode.TextEditor.Document
 				XmlDocument doc = new XmlDocument();
 				doc.Load(validatingReader);
 				
-				DefaultHighlightingStrategy highlighter = new DefaultHighlightingStrategy(doc.DocumentElement.Attributes["name"].InnerText);
+				if (highlighter == null)
+					highlighter = new DefaultHighlightingStrategy(doc.DocumentElement.Attributes["name"].InnerText);
 				
 				if (doc.DocumentElement.Attributes["extensions"]!= null) {
 					highlighter.Extensions = doc.DocumentElement.Attributes["extensions"].InnerText.Split(new char[] { ';', '|' });
