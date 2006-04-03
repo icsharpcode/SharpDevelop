@@ -23,7 +23,6 @@ namespace Debugger
 		internal ExceptionType currentExceptionType;
 
 		Process process;
-		List<ICorDebugStepper> activeSteppers = new List<ICorDebugStepper>();
 		List<Stepper> steppers = new List<Stepper>();
 
 		uint id;
@@ -140,18 +139,6 @@ namespace Debugger
 			process.Continue();
 		}
 		
-		internal Stepper CreateStepper()
-		{
-			Stepper stepper = new Stepper(debugger, corThread.CreateStepper());
-			stepper.StepComplete += delegate {
-				steppers.Remove(stepper);
-			};
-			
-			steppers.Add(stepper);
-			
-			return stepper;
-		}
-		
 		internal Stepper GetStepper(ICorDebugStepper corStepper)
 		{
 			foreach(Stepper stepper in steppers) {
@@ -159,35 +146,13 @@ namespace Debugger
 					return stepper;
 				}
 			}
-			return null;
+			throw new DebuggerException("Stepper is not in collection");
 		}
 		
-		internal IList<Stepper> Steppers {
+		internal List<Stepper> Steppers {
 			get {
-				return steppers.AsReadOnly();
+				return steppers;
 			}
-		}
-		
-		internal IList<ICorDebugStepper> ActiveSteppers {
-			get {
-				return activeSteppers.AsReadOnly();
-			}
-		}
-
-		internal void AddActiveStepper(ICorDebugStepper stepper)
-		{
-			activeSteppers.Add(stepper);
-		}
-
-		internal void DeactivateAllSteppers()
-		{
-			foreach(ICorDebugStepper stepper in activeSteppers) {
-				if (stepper.IsActive != 0) {
-					stepper.Deactivate();
-					debugger.TraceMessage("Stepper deactivated");
-				}
-			}
-			activeSteppers.Clear();
 		}
 
 		public event EventHandler<ThreadEventArgs> ThreadStateChanged;

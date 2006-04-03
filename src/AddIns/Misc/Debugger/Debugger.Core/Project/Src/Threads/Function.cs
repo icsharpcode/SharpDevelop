@@ -25,6 +25,8 @@ namespace Debugger
 		ICorDebugILFrame  corILFrame;
 		object            corILFramePauseSession;
 		
+		Stepper stepOutStepper;
+		
 		bool steppedOut;
 		Thread thread;
 		uint chainIndex;
@@ -117,10 +119,10 @@ namespace Debugger
 			methodProps = module.MetaData.GetMethodProps(corFunction.Token);
 			
 			// Expiry the function when it is finished
-			Stepper tracingStepper = thread.CreateStepper();
-			tracingStepper.CorStepper.StepOut();
-			tracingStepper.PauseWhenComplete = false;
-			tracingStepper.StepComplete += delegate {
+			stepOutStepper = CreateStepper();
+			stepOutStepper.CorStepper.StepOut();
+			stepOutStepper.PauseWhenComplete = false;
+			stepOutStepper.StepComplete += delegate {
 				steppedOut = true;
 				OnExpired(EventArgs.Empty);
 			};
@@ -167,6 +169,17 @@ namespace Debugger
 			}
 		}
 		
+		internal Stepper CreateStepper()
+		{
+			Stepper stepper = new Stepper(debugger, corILFrame.CreateStepper());
+			if (stepper.CorStepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
+				stepper.CorStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
+				(stepper.CorStepper.CastTo<ICorDebugStepper2>()).SetJMC(1 /* true */);
+			}
+			thread.Steppers.Add(stepper);
+			return stepper;
+		}
+		
 		public void StepInto()
 		{
 			Step(true);
@@ -179,11 +192,7 @@ namespace Debugger
 
 		public void StepOut()
 		{
-			ICorDebugStepper stepper = CorILFrame.CreateStepper();
-			stepper.StepOut();
-			
-			thread.AddActiveStepper(stepper);
-			
+			stepOutStepper.PauseWhenComplete = true;
 			debugger.Continue();
 		}
 
@@ -200,38 +209,18 @@ namespace Debugger
 				throw new DebuggerException("Unable to step. Next statement not aviable");
 			}
 			
-			ICorDebugStepper stepper;
+			Stepper stepper;
 			
 			if (stepIn) {
-				stepper = CorILFrame.CreateStepper();
-				
-				if (stepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
-					stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-					(stepper.CastTo<ICorDebugStepper2>()).SetJMC(1 /* true */);
-				}
-				
-				fixed (int* ranges = nextSt.StepRanges) {
-					stepper.StepRange(1 /* true - step in*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
-				}
-				
-				thread.AddActiveStepper(stepper);
+				stepper = CreateStepper();
+				stepper.CorStepper.StepRange(true /* step in */, nextSt.StepRanges);
 			}
 			
-			// Mind that step in which ends in code without symblols is cotinued
-			// so the next step over ensures that we atleast do step over
+			// Without JMC step in which ends in code without symblols is cotinued.
+			// The next step over ensures that we at least do step over.
 			
-			stepper = CorILFrame.CreateStepper();
-			
-			if (stepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
-				stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-				(stepper.CastTo<ICorDebugStepper2>()).SetJMC(1 /* true */);
-			}
-			
-			fixed (int* ranges = nextSt.StepRanges) {
-				stepper.StepRange(0 /* false - step over*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
-			}
-			
-			thread.AddActiveStepper(stepper);
+			stepper = CreateStepper();
+			stepper.CorStepper.StepRange(false /* step over */ , nextSt.StepRanges);
 			
 			debugger.Continue();
 		}

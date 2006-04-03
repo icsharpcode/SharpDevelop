@@ -13,6 +13,7 @@
 // \1\2\n\1{\n\1\tEnterCallback(PausedReason.Other, "\3");\n\1\t\n\1\tExitCallback_Continue();\n\1}
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using Debugger.Wrappers.CorDebug;
@@ -69,7 +70,11 @@ namespace Debugger
 		void ExitCallback_Paused()
 		{
 			if (debugger.SelectedThread != null) {
-				debugger.SelectedThread.DeactivateAllSteppers();
+				// Disable all steppers - do not Deactivate since function tracking still needs them
+				foreach(Stepper s in debugger.SelectedThread.Steppers) {
+					s.PauseWhenComplete = false;
+				}
+				
 				debugger.SelectedThread.SelectedFunction = debugger.SelectedThread.LastFunctionWithLoadedSymbols;
 			}
 			debugger.Pause();
@@ -82,23 +87,22 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.StepComplete, "StepComplete (" + reason.ToString() + ")", pThread);
 			
-			Stepper stepper = debugger.GetThread(pThread).GetStepper(pStepper);
-			if (stepper != null) {
-				stepper.OnStepComplete();
-				if (!stepper.PauseWhenComplete) {
+			Thread thread = debugger.GetThread(pThread);
+			Stepper stepper = thread.GetStepper(pStepper);
+
+			thread.Steppers.Remove(stepper);
+			stepper.OnStepComplete();
+			if (stepper.PauseWhenComplete) {
+				if (debugger.SelectedThread.LastFunction.HasSymbols) {
+					ExitCallback_Paused();
+				} else {
+					// This should not happen with JMC enabled
+					debugger.TraceMessage(" - leaving code without symbols");
+					
 					ExitCallback_Continue();
-					return;
 				}
-			}
-			
-			if (!debugger.SelectedThread.LastFunction.HasSymbols) {
-				// This should not happen with JMC enabled
-				debugger.TraceMessage(" - leaving code without symbols");
-				
-				ExitCallback_Continue();
 			} else {
-				
-				ExitCallback_Paused();
+				ExitCallback_Continue();
 			}
 		}
 		
