@@ -50,6 +50,12 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		public FormsDesignerViewContent ViewContent {
+			get {
+				return viewContent;
+			}
+		}
+		
 		public void Attach(FormsDesignerViewContent viewContent)
 		{
 			this.viewContent = viewContent;
@@ -130,7 +136,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected abstract DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method);
 		
-		public void MergeFormChanges(CodeCompileUnit unit)
+		public virtual void MergeFormChanges(CodeCompileUnit unit)
 		{
 			Reparse();
 			
@@ -246,8 +252,32 @@ namespace ICSharpCode.FormsDesigner
 		}
 		
 		IDocument document;
-		string saveDocumentToFile; // only set when InitializeComponent was loaded from code-behind file that was not opened
-		string designerFile; // file that contains InitializeComponents
+		string saveDocumentToFile;
+		string designerFile;
+		
+		/// <summary>
+		/// The document containing the content of the <see cref="DesignerFile"/>. Can be a
+		/// text editor document or independent of a text editor if partial classes are used.
+		/// </summary>
+		protected IDocument Document {
+			get { return document; }
+			set { document = value; }
+		}
+		/// <summary>
+		/// only set when InitializeComponent was loaded from code-behind file that was not open,
+		/// is normally either null or the same value as <see cref="DesignerFile"/>.
+		/// </summary>
+		protected string SaveDocumentToFile {
+			get { return saveDocumentToFile; }
+			set { saveDocumentToFile = value; }
+		}
+		/// <summary>
+		/// file that contains InitializeComponents
+		/// </summary>
+		protected string DesignerFile {
+			get { return designerFile; }
+			set { designerFile = value; }
+		}
 		
 		void SaveDocument()
 		{
@@ -319,7 +349,7 @@ namespace ICSharpCode.FormsDesigner
 		/// <param name="component"></param>
 		/// <param name="edesc"></param>
 		/// <returns></returns>
-		public bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
+		public virtual bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
 		{
 			if (this.failedDesignerInitialize) {
 				position = 0;
@@ -354,7 +384,7 @@ namespace ICSharpCode.FormsDesigner
 			return c.Region.EndLine;
 		}
 		
-		public ICollection GetCompatibleMethods(EventDescriptor edesc)
+		public virtual ICollection GetCompatibleMethods(EventDescriptor edesc)
 		{
 			Reparse();
 			ArrayList compatibleMethods = new ArrayList();
@@ -379,7 +409,7 @@ namespace ICSharpCode.FormsDesigner
 			return compatibleMethods;
 		}
 		
-		public ICollection GetCompatibleMethods(EventInfo edesc)
+		public virtual ICollection GetCompatibleMethods(EventInfo edesc)
 		{
 			Reparse();
 			ArrayList compatibleMethods = new ArrayList();
@@ -403,7 +433,7 @@ namespace ICSharpCode.FormsDesigner
 			return compatibleMethods;
 		}
 		
-		IField GetField(IClass c, string name)
+		protected IField GetField(IClass c, string name)
 		{
 			foreach (IField field in c.Fields) {
 				if (field.Name == name) {

@@ -38,13 +38,23 @@ namespace ICSharpCode.FormsDesigner
 		CodeDOMGeneratorUtility codeDOMGeneratorUtility = new CodeDOMGeneratorUtility();
 		string indentation;
 		
+		protected CodeDomProvider CodeDomProvider {
+			get { return codeProvider; }
+		}
+		protected CodeDOMGeneratorUtility CodeDOMGeneratorUtility {
+			get { return codeDOMGeneratorUtility; }
+		}
+		protected string Indentation {
+			get { return indentation; }
+		}
+		
 		public CodeDOMGenerator(CodeDomProvider codeProvider, string indentation)
 		{
 			this.codeProvider = codeProvider;
 			this.indentation = indentation;
 		}
 		
-		public void ConvertContentDefinition(CodeMemberMethod method, TextWriter writer)
+		public virtual void ConvertContentDefinition(CodeMemberMethod method, TextWriter writer)
 		{
 			LoggingService.Info("Generate code for: "+method.Name);
 			
