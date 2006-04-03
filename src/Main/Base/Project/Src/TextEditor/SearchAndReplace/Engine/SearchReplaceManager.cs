@@ -63,6 +63,42 @@ namespace SearchAndReplace
 			FindNext();
 		}
 		
+		static TextSelection textSelection;
+		
+		public static void ReplaceFirstInSelection(int offset, int length)
+		{
+			SetSearchOptions();
+			FindFirstInSelection(offset, length);
+		}
+		
+		public static bool ReplaceNextInSelection()
+		{
+			if (lastResult != null && WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
+				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
+				if (provider != null) {
+					TextEditorControl textarea = provider.TextEditorControl;
+					SelectionManager selectionManager = textarea.ActiveTextAreaControl.TextArea.SelectionManager;
+					
+					if (selectionManager.SelectionCollection.Count == 1
+					    && selectionManager.SelectionCollection[0].Offset == lastResult.Offset
+					    && selectionManager.SelectionCollection[0].Length == lastResult.Length
+					    && lastResult.FileName == textarea.FileName)
+					{
+						string replacePattern = lastResult.TransformReplacePattern(SearchOptions.ReplacePattern);
+						
+						textarea.BeginUpdate();
+						selectionManager.ClearSelection();
+						textarea.Document.Replace(lastResult.Offset, lastResult.Length, replacePattern);
+						textarea.ActiveTextAreaControl.Caret.Position = textarea.Document.OffsetToPosition(lastResult.Offset + replacePattern.Length);
+						textarea.EndUpdate();
+						
+						textSelection.Length -= lastResult.Length - replacePattern.Length;
+					}
+				}
+			}
+			return FindNextInSelection();
+		}
+		
 		public static void MarkAll()
 		{
 			SetSearchOptions();
@@ -185,15 +221,65 @@ namespace SearchAndReplace
 						int startPos = Math.Min(textArea.Document.TextLength, Math.Max(0, result.Offset));
 						int endPos   = Math.Min(textArea.Document.TextLength, startPos + result.Length);
 						
-						textArea.ActiveTextAreaControl.Caret.Position = textArea.Document.OffsetToPosition(endPos);
-						textArea.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
-						textArea.ActiveTextAreaControl.TextArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, textArea.Document.OffsetToPosition(startPos),
-						                                                                                           textArea.Document.OffsetToPosition(endPos)));
-						textArea.Refresh();
+						SearchReplaceUtilities.SelectText(textArea, startPos, endPos);
 						lastResult = result;
 					}
 				}
 			}
+		}
+		
+		static bool foundAtLeastOneItem = false;
+
+		public static void FindFirstInSelection(int offset, int length)
+		{
+			foundAtLeastOneItem = false;
+			textSelection = null;
+			SetSearchOptions();
+			
+			if (find == null ||
+			    SearchOptions.FindPattern == null ||
+			    SearchOptions.FindPattern.Length == 0) {
+				return;
+			}
+			
+			if (!find.SearchStrategy.CompilePattern()) {
+				find.Reset();
+				lastResult = null;
+				return;
+			}
+			
+			textSelection = new TextSelection(offset, length);
+			FindNextInSelection();
+		}
+
+		public static bool FindNextInSelection()
+		{			
+			TextEditorControl textArea = null;
+			while (textArea == null) {
+				SearchResult result = find.FindNext(textSelection.Offset, textSelection.Length);
+				if (result == null) {
+					if (!foundAtLeastOneItem) {
+						ShowNotFoundMessage();
+					}
+					find.Reset();
+					lastResult = null;
+					foundAtLeastOneItem = false;
+					return false;
+				} else {
+					textArea = OpenTextArea(result.FileName);
+					if (textArea != null) {
+						foundAtLeastOneItem = true;
+						if (lastResult != null  && lastResult.FileName == result.FileName &&
+						    textArea.ActiveTextAreaControl.Caret.Offset != lastResult.Offset + lastResult.Length) {
+						}
+						int startPos = Math.Min(textArea.Document.TextLength, Math.Max(0, result.Offset));
+						int endPos   = Math.Min(textArea.Document.TextLength, startPos + result.Length);
+						SearchReplaceUtilities.SelectText(textArea, startPos, endPos);
+						lastResult = result;
+					}
+				}
+			}
+			return true;
 		}
 		
 		static void ShowNotFoundMessage()

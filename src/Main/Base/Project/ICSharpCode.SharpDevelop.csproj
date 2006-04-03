@@ -752,6 +752,7 @@
     <Compile Include="Src\Util\LineReceivedEventArgs.cs" />
     <Compile Include="Src\Util\OutputReader.cs" />
     <Compile Include="Src\Util\ProcessRunner.cs" />
+    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\TextSelection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

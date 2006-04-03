@@ -100,6 +100,37 @@ namespace SearchAndReplace
 			FinishSearchInFiles(results);
 		}
 		
+		public static void ReplaceAll(int offset, int length)
+		{
+			if (!InitializeSearchInFiles()) {
+				return;
+			}
+			
+			List<SearchResult> results = new List<SearchResult>();
+			
+			while (true) {
+				SearchResult result = find.FindNext(offset, length);
+				if (result == null) {
+					break;
+				}
+				
+				string replacement = result.TransformReplacePattern(SearchOptions.ReplacePattern);
+				find.Replace(result.Offset, 
+				             result.Length, 
+				             replacement);
+				length -= result.Length - replacement.Length;
+				
+				// HACK - Move the cursor to the correct offset - the caret gets
+				// moved before the replace range if we replace a string with a 
+				// single character. The ProvidedDocInfo.Replace method assumes that
+				// the current offset is at the end of the found text which it is not.
+				find.CurrentDocumentInformation.CurrentOffset = result.Offset + replacement.Length - 1;
+				results.Add(result);
+			}
+			
+			FinishSearchInFiles(results);
+		}
+		
 		public static void FindAll()
 		{
 			if (!InitializeSearchInFiles()) {
@@ -109,6 +140,23 @@ namespace SearchAndReplace
 			List<SearchResult> results = new List<SearchResult>();
 			while (true) {
 				SearchResult result = find.FindNext();
+				if (result == null) {
+					break;
+				}
+				results.Add(result);
+			}
+			FinishSearchInFiles(results);
+		}
+		
+		public static void FindAll(int offset, int length) 
+		{
+			if (!InitializeSearchInFiles()) {
+				return;
+			}
+			
+			List<SearchResult> results = new List<SearchResult>();
+			while (true) {
+				SearchResult result = find.FindNext(offset, length);
 				if (result == null) {
 					break;
 				}

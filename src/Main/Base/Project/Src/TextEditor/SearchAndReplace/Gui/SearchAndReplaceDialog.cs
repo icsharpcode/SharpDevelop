@@ -11,6 +11,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
@@ -21,8 +22,8 @@ namespace SearchAndReplace
 	
 	public class SearchAndReplaceDialog : Form
 	{
-		public static string SearchPattern  = "";
-		public static string ReplacePattern = "";
+		public static string SearchPattern  = String.Empty;
+		public static string ReplacePattern = String.Empty;
 		
 		static SearchAndReplaceDialog Instance;
 		
@@ -45,7 +46,7 @@ namespace SearchAndReplace
 		ToolStripButton replaceButton = new ToolStripButton();
 		
 		SearchAndReplacePanel searchAndReplacePanel;
-		
+				
 		public SearchAndReplaceDialog(SearchAndReplaceMode searchAndReplaceMode)
 		{
 			this.Owner           = WorkbenchSingleton.MainForm;
@@ -96,7 +97,6 @@ namespace SearchAndReplace
 			}
 		}
 		
-		
 		void SearchButtonClick(object sender, EventArgs e)
 		{
 			if (!searchButton.Checked) {
@@ -126,6 +126,5 @@ namespace SearchAndReplace
 				this.ClientSize      = new Size(430, 385);
 			}
 		}
-		
 	}
 }
