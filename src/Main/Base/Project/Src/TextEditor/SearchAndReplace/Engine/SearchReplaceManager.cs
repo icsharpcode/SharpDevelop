@@ -110,30 +110,80 @@ namespace SearchAndReplace
 			find.Reset();
 			if (!find.SearchStrategy.CompilePattern())
 				return;
-			for (int count = 0;; count++) {
+			List<TextEditorControl> textAreas = new List<TextEditorControl>();
+			int count;
+			for (count = 0;; count++) {
 				SearchResult result = SearchReplaceManager.find.FindNext();
 				
 				if (result == null) {
-					if (count == 0) {
-						ShowNotFoundMessage();
-					} else {
-						MessageService.ShowMessage("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.MarkAllDone}", "${res:Global.FinishedCaptionText}");
-					}
-					find.Reset();
-					return;
+					break;
 				} else {
-					textArea = OpenTextArea(result.FileName);
-					if (textArea != null) {
-						textArea.ActiveTextAreaControl.Caret.Position = textArea.Document.OffsetToPosition(result.Offset);
-						int lineNr = textArea.Document.GetLineNumberForOffset(result.Offset);
-						
-						if (!textArea.Document.BookmarkManager.IsMarked(lineNr)) {
-							textArea.Document.BookmarkManager.ToggleMarkAt(lineNr);
-						}
-					} else {
-						count--;
-					}
+					MarkResult(textAreas, result);
 				}
+			}
+			find.Reset();
+			foreach (TextEditorControl ctl in textAreas) {
+				ctl.Refresh();
+			}
+			ShowMarkDoneMessage(count);
+		}
+		
+		public static void MarkAll(int offset, int length)
+		{
+			SetSearchOptions();
+			find.Reset();
+			
+			if (!find.SearchStrategy.CompilePattern())
+				return;
+			
+			List<TextEditorControl> textAreas = new List<TextEditorControl>();
+			int count;
+			for (count = 0;; count++) {
+				SearchResult result = find.FindNext(offset, length);
+				if (result == null) {
+					break;
+				} else {
+					MarkResult(textAreas, result);
+				}
+			}
+			find.Reset();
+			foreach (TextEditorControl ctl in textAreas) {
+				ctl.Refresh();
+			}
+			ShowMarkDoneMessage(count);
+		}
+		
+		static void MarkResult(List<TextEditorControl> textAreas, SearchResult result)
+		{
+			TextEditorControl textArea = OpenTextArea(result.FileName);
+			if (textArea != null) {
+				if (!textAreas.Contains(textArea)) {
+					textAreas.Add(textArea);
+				}
+				textArea.ActiveTextAreaControl.Caret.Position = textArea.Document.OffsetToPosition(result.Offset);
+				int lineNr = textArea.Document.GetLineNumberForOffset(result.Offset);
+				
+				if (!textArea.Document.BookmarkManager.IsMarked(lineNr)) {
+					textArea.Document.BookmarkManager.ToggleMarkAt(lineNr);
+				}
+			}
+		}
+		
+		static void ShowMarkDoneMessage(int count)
+		{
+			if (count == 0) {
+				ShowNotFoundMessage();
+			} else {
+				MessageService.ShowMessage("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.MarkAllDone}", "${res:Global.FinishedCaptionText}");
+			}
+		}
+		
+		static void ShowReplaceDoneMessage(int count)
+		{
+			if (count == 0) {
+				ShowNotFoundMessage();
+			} else {
+				MessageService.ShowMessage("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone}", "${res:Global.FinishedCaptionText}");
 			}
 		}
 		
@@ -155,15 +205,13 @@ namespace SearchAndReplace
 				SearchResult result = SearchReplaceManager.find.FindNext();
 				
 				if (result == null) {
-					if (count == 0) {
-						ShowNotFoundMessage();
-					} else {
+					if (count != 0) {
 						foreach (TextEditorControl textArea in textAreas) {
 							textArea.EndUpdate();
 							textArea.Refresh();
 						}
-						MessageService.ShowMessage("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone}", "${res:Global.FinishedCaptionText}");
 					}
+					ShowReplaceDoneMessage(count);
 					find.Reset();
 					return;
 				} else {
@@ -184,6 +232,35 @@ namespace SearchAndReplace
 						count--;
 					}
 				}
+			}
+		}
+		
+		public static void ReplaceAll(int offset, int length)
+		{
+			SetSearchOptions();
+			find.Reset();
+			
+			if (!find.SearchStrategy.CompilePattern())
+				return;
+			
+			for (int count = 0;; count++) {
+				SearchResult result = find.FindNext(offset, length);
+				if (result == null) {
+					ShowReplaceDoneMessage(count);
+					return;
+				}
+				
+				string replacement = result.TransformReplacePattern(SearchOptions.ReplacePattern);
+				find.Replace(result.Offset,
+				             result.Length,
+				             replacement);
+				length -= result.Length - replacement.Length;
+				
+				// HACK - Move the cursor to the correct offset - the caret gets
+				// moved before the replace range if we replace a string with a
+				// single character. The ProvidedDocInfo.Replace method assumes that
+				// the current offset is at the end of the found text which it is not.
+				find.CurrentDocumentInformation.CurrentOffset = result.Offset + replacement.Length - 1;
 			}
 		}
 		
@@ -253,7 +330,7 @@ namespace SearchAndReplace
 		}
 
 		public static bool FindNextInSelection()
-		{			
+		{
 			TextEditorControl textArea = null;
 			while (textArea == null) {
 				SearchResult result = find.FindNext(textSelection.Offset, textSelection.Length);
@@ -299,10 +376,10 @@ namespace SearchAndReplace
 			} else {
 				textEditorProvider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
 			}
-				
+			
 			if (textEditorProvider != null) {
 				return textEditorProvider.TextEditorControl;
-			} 
+			}
 			return null;
 		}
 	}

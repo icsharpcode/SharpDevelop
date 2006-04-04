@@ -20,7 +20,7 @@ using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
-	public static class SearchReplaceInFilesManager
+	public static class SearchInFilesManager
 	{
 		static Search find               = new Search();
 		
@@ -33,7 +33,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		static SearchReplaceInFilesManager()
+		static SearchInFilesManager()
 		{
 			find.TextIteratorBuilder = new ForwardTextIteratorBuilder();
 		}
@@ -63,7 +63,7 @@ namespace SearchAndReplace
 		
 		public static void ShowSearchResults(string pattern, List<SearchResult> results)
 		{
-			SearchAndReplace.SearchAllFinishedEventArgs e = 
+			SearchAndReplace.SearchAllFinishedEventArgs e =
 				new SearchAllFinishedEventArgs(pattern, results);
 			OnSearchAllFinished(e);
 
@@ -74,61 +74,6 @@ namespace SearchAndReplace
 			} else {
 				MessageService.ShowError("SearchResultPanel can't be created.");
 			}
-		}
-		
-		public static void ReplaceAll()
-		{
-			if (!InitializeSearchInFiles()) {
-				return;
-			}
-			
-			List<SearchResult> results = new List<SearchResult>();
-			
-			while (true) {
-				SearchResult result = find.FindNext();
-				if (result == null) {
-					break;
-				}
-				
-				find.Replace(result.Offset, 
-				             result.Length, 
-				             result.TransformReplacePattern(SearchOptions.ReplacePattern));
-				
-				results.Add(result);
-			}
-			
-			FinishSearchInFiles(results);
-		}
-		
-		public static void ReplaceAll(int offset, int length)
-		{
-			if (!InitializeSearchInFiles()) {
-				return;
-			}
-			
-			List<SearchResult> results = new List<SearchResult>();
-			
-			while (true) {
-				SearchResult result = find.FindNext(offset, length);
-				if (result == null) {
-					break;
-				}
-				
-				string replacement = result.TransformReplacePattern(SearchOptions.ReplacePattern);
-				find.Replace(result.Offset, 
-				             result.Length, 
-				             replacement);
-				length -= result.Length - replacement.Length;
-				
-				// HACK - Move the cursor to the correct offset - the caret gets
-				// moved before the replace range if we replace a string with a 
-				// single character. The ProvidedDocInfo.Replace method assumes that
-				// the current offset is at the end of the found text which it is not.
-				find.CurrentDocumentInformation.CurrentOffset = result.Offset + replacement.Length - 1;
-				results.Add(result);
-			}
-			
-			FinishSearchInFiles(results);
 		}
 		
 		public static void FindAll()
@@ -148,7 +93,7 @@ namespace SearchAndReplace
 			FinishSearchInFiles(results);
 		}
 		
-		public static void FindAll(int offset, int length) 
+		public static void FindAll(int offset, int length)
 		{
 			if (!InitializeSearchInFiles()) {
 				return;
@@ -164,7 +109,7 @@ namespace SearchAndReplace
 			}
 			FinishSearchInFiles(results);
 		}
-			
+		
 		static void OnSearchAllFinished(SearchAllFinishedEventArgs e)
 		{
 			lastSearches.Insert(0, e);
@@ -172,7 +117,7 @@ namespace SearchAndReplace
 				SearchAllFinished(null, e);
 			}
 		}
-				
+		
 		public static event SearchAllFinishedEventHandler SearchAllFinished;
 	}
 }

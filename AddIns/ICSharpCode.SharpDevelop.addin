@@ -1736,7 +1736,7 @@
 			<MenuItem id = "ClearBookmarks"
 			          label = "${res:XML.MainMenu.SearchMenu.ClrBookmark}"
 			          icon = "Bookmarks.ClearAll"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>
+			          class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"/>
 			<MenuItem id = "Separator2" type = "Separator" />
 			<MenuItem id = "GotoLineNr"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoLineNr}"

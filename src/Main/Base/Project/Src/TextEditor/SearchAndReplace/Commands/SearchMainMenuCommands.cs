@@ -33,9 +33,11 @@ namespace SearchAndReplace
 		{
 			// Get Highlighted value and set it to FindDialog.searchPattern
 			TextEditorControl textArea = SearchReplaceUtilities.GetActiveTextEditor();
-			string selectedText = textArea.ActiveTextAreaControl.TextArea.SelectionManager.SelectedText;
-			if (selectedText != null && selectedText.Length > 0 && !IsMultipleLines(selectedText)) {
-				SearchOptions.CurrentFindPattern = selectedText;
+			if (textArea != null) {
+				string selectedText = textArea.ActiveTextAreaControl.TextArea.SelectionManager.SelectedText;
+				if (selectedText != null && selectedText.Length > 0 && !IsMultipleLines(selectedText)) {
+					SearchOptions.CurrentFindPattern = selectedText;
+				}
 			}
 		}
 		

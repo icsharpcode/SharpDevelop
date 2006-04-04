@@ -41,6 +41,7 @@ namespace SearchAndReplace
 					case SearchAndReplaceMode.Search:
 						SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.FindPanel.xfrm"));
 						Get<Button>("findAll").Click += FindAllButtonClicked;
+						Get<Button>("bookmarkAll").Click += BookmarkAllButtonClicked;
 						break;
 					case SearchAndReplaceMode.Replace:
 						SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ReplacePanel.xfrm"));
@@ -103,10 +104,22 @@ namespace SearchAndReplace
 			WritebackOptions();
 			if (IsSelectionSearch) {
 				if (IsTextSelected(selection)) {
-					FindAllInSelection();
+					RunAllInSelection(0);
 				}
 			} else {
-				SearchReplaceInFilesManager.FindAll();
+				SearchInFilesManager.FindAll();
+			}
+		}
+		
+		void BookmarkAllButtonClicked(object sender, EventArgs e)
+		{
+			WritebackOptions();
+			if (IsSelectionSearch) {
+				if (IsTextSelected(selection)) {
+					RunAllInSelection(1);
+				}
+			} else {
+				SearchReplaceManager.MarkAll();
 			}
 		}
 		
@@ -115,7 +128,7 @@ namespace SearchAndReplace
 			WritebackOptions();
 			if (IsSelectionSearch) {
 				if (IsTextSelected(selection)) {
-					ReplaceAllInSelection();
+					RunAllInSelection(2);
 				}
 			} else {
 				SearchReplaceManager.ReplaceAll();
@@ -251,7 +264,7 @@ namespace SearchAndReplace
 		/// <summary>
 		/// Checks whether the selection spans two or more lines.
 		/// </summary>
-		/// <remarks>Maybe the ISelection interface should have an 
+		/// <remarks>Maybe the ISelection interface should have an
 		/// IsMultipleLine method?</remarks>
 		static bool IsMultipleLineSelection(ISelection selection)
 		{
@@ -270,7 +283,7 @@ namespace SearchAndReplace
 		}
 		
 		void FindNextInSelection()
-		{			
+		{
 			int startOffset = Math.Min(selection.Offset, selection.EndOffset);
 			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
 			
@@ -292,7 +305,7 @@ namespace SearchAndReplace
 			} finally {
 				ignoreSelectionChanges = false;
 			}
-		}	
+		}
 		
 		/// <summary>
 		/// Returns the first ISelection object from the currently active text editor
@@ -342,9 +355,9 @@ namespace SearchAndReplace
 		
 		/// <summary>
 		/// When the selected text is changed make sure the 'Current Selection'
-		/// option is not selected if no text is selected. 
+		/// option is not selected if no text is selected.
 		/// </summary>
-		/// <remarks>The text selection can change either when the user 
+		/// <remarks>The text selection can change either when the user
 		/// selects different text in the editor or the active window is
 		/// changed.</remarks>
 		void TextSelectionChanged(object source, EventArgs e)
@@ -375,7 +388,10 @@ namespace SearchAndReplace
 			RemoveActiveWindowChangedHandler();
 		}
 		
-		void FindAllInSelection()
+		/// <summary>
+		/// action: 0 = find, 1 = mark, 2 = replace
+		/// </summary>
+		void RunAllInSelection(int action)
 		{
 			int startOffset = Math.Min(selection.Offset, selection.EndOffset);
 			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
@@ -385,24 +401,12 @@ namespace SearchAndReplace
 			
 			try {
 				ignoreSelectionChanges = true;
-				SearchReplaceInFilesManager.FindAll(startOffset, endOffset - startOffset);
-				SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
-			} finally {
-				ignoreSelectionChanges = false;
-			}
-		}
-		
-		void ReplaceAllInSelection()
-		{
-			int startOffset = Math.Min(selection.Offset, selection.EndOffset);
-			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
-			
-			SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
-			SetCaretPosition(textEditor.ActiveTextAreaControl.TextArea, startOffset);
-		
-			try {
-				ignoreSelectionChanges = true;
-				SearchReplaceInFilesManager.ReplaceAll(startOffset, endOffset - startOffset);
+				if (action == 0)
+					SearchInFilesManager.FindAll(startOffset, endOffset - startOffset);
+				else if (action == 1)
+					SearchReplaceManager.MarkAll(startOffset, endOffset - startOffset);
+				else if (action == 2)
+					SearchReplaceManager.ReplaceAll(startOffset, endOffset - startOffset);
 				SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
 			} finally {
 				ignoreSelectionChanges = false;

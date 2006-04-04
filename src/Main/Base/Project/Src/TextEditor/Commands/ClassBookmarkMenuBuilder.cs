@@ -212,7 +212,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 				results.Add(res);
 			}
-			SearchReplaceInFilesManager.ShowSearchResults("Classes deriving from " + c.Name, results);
+			SearchInFilesManager.ShowSearchResults("Classes deriving from " + c.Name, results);
 		}
 		
 		void FindReferences(object sender, EventArgs e)
