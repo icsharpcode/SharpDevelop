@@ -349,7 +349,12 @@ namespace Debugger
 				thread.Process.SelectedThread = null;
 			}
 
-			ExitCallback_Continue();
+			try {
+				ExitCallback_Continue();
+			} catch (COMException e) {
+				// For some reason this sometimes happens in .NET 1.1
+				debugger.TraceMessage("Continue failed in ExitThread callback: " + e.Message);
+			}
 		}
 
 		public void ExitAppDomain(ICorDebugProcess pProcess, ICorDebugAppDomain pAppDomain)
