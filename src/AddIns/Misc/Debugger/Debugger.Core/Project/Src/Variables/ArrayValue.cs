@@ -57,7 +57,7 @@ namespace Debugger
 		
 		internal unsafe ArrayValue(NDebugger debugger, ICorDebugValue corValue):base(debugger, corValue)
 		{
-			corArrayValue = this.corValue.CastTo<ICorDebugArrayValue>();
+			corArrayValue = this.CorValue.CastTo<ICorDebugArrayValue>();
 			corElementType = (CorElementType)corArrayValue.ElementType;
 			
 			rank = corArrayValue.Rank;

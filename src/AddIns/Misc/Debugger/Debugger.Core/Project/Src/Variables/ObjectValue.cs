@@ -67,16 +67,6 @@ namespace Debugger
 		}
 		*/
 		
-		internal ICorDebugHandleValue SoftReference {
-			get {
-				ICorDebugHeapValue2 heapValue = this.CorValue.As<ICorDebugHeapValue2>();
-				if (heapValue == null) { // TODO: Investigate
-					return null;
-				}
-				return heapValue.CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION);
-			}
-		}
-		
 		public override string Type { 
 			get{ 
 				return classProps.Name;
@@ -97,7 +87,7 @@ namespace Debugger
 		
 		internal unsafe ObjectValue(NDebugger debugger, ICorDebugValue corValue):base(debugger, corValue)
 		{
-			corClass = this.corValue.CastTo<ICorDebugObjectValue>().Class;
+			corClass = this.CorValue.CastTo<ICorDebugObjectValue>().Class;
 			InitObjectVariable();
 		}
 
@@ -141,7 +131,7 @@ namespace Debugger
 			foreach(FieldProps f in metaData.EnumFields(ClassToken)) {
 				FieldProps field = f; // One per scope/delegate
 				if (field.IsStatic && field.IsLiteral) continue; // Skip field
-				if (!field.IsStatic && corValue == null) continue; // Skip field
+				if (!field.IsStatic && CorValue == null) continue; // Skip field
 				yield return new ClassVariable(debugger,
 				                               field.Name,
 				                               field.IsStatic,
@@ -178,7 +168,9 @@ namespace Debugger
 		Eval CreatePropertyEval(MethodProps method, ValueGetter getter)
 		{
 			Value updatedVal = getter();
-			if (updatedVal is UnavailableValue) return null;
+			if (updatedVal is UnavailableValue) {
+				return null;
+			}
 			if (this.IsEquivalentValue(updatedVal) && ((ObjectValue)updatedVal).SoftReference != null) {
 				ICorDebugFunction evalCorFunction = Module.CorModule.GetFunctionFromToken(method.Token);
 				
@@ -303,7 +295,7 @@ namespace Debugger
 				throw new DebuggerException("Unable to get base class: " + fullTypeName);
 			} else {
 				ICorDebugClass superClass = corModuleSuperclass.GetClassFromToken(classProps.SuperClassToken);
-				return new ObjectValue(debugger, corValue, superClass);
+				return new ObjectValue(debugger, CorValue, superClass);
 			}
 		}
 	}

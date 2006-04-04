@@ -32,7 +32,7 @@ namespace Debugger
 			if (Eval != null) {
 				return Eval.Result;
 			} else {
-				return new UnavailableValue(debugger, "Property has expired");
+				return new UnavailableValue(debugger, "Property unavailable");
 			}
 		}
 		

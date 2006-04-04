@@ -117,7 +117,7 @@ namespace Debugger
 			ICorDebugValue[] args = getArgs();
 			
 			if (args == null) {
-				error = "Can not evaluate property of property";
+				error = "Can not get args for eval";
 				evalState = EvalState.Error;
 				if (EvalComplete != null) {
 					EvalComplete(this, new EvalEventArgs(this));
@@ -156,6 +156,7 @@ namespace Debugger
 		
 		protected internal virtual void OnEvalComplete(bool successful) 
 		{
+			// Eval result should be ICorDebugHandleValue so it should survive Continue()
 			result = Value.CreateValue(debugger, corEval.Result);
 			
 			if (result == null) {
