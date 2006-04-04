@@ -168,91 +168,88 @@ namespace Debugger
 		{
 			return String.Format("ID = {0,-10} Name = {1,-20} Suspended = {2,-8}", ID, Name, Suspended);
 		}
-
-
+		
+		
 		public Exception CurrentException {
 			get {
 				return new Exception(this);
 			}
 		}
-
+		
 		public IEnumerable<Function> Callstack {
 			get {
-				return GetCallstackAt(uint.MaxValue, uint.MaxValue);
+				process.AssertPaused();
+				
+				ICorDebugChainEnum corChainEnum = corThread.EnumerateChains();
+				uint chainIndex = corChainEnum.Count;
+				foreach(ICorDebugChain corChain in corChainEnum.Enumerator) {
+					chainIndex--;
+					
+					if (corChain.IsManaged == 0) continue; // Only managed ones
+					
+					ICorDebugFrameEnum corFrameEnum = corChain.EnumerateFrames();
+					uint frameIndex = corFrameEnum.Count;
+					foreach(ICorDebugFrame corFrame in corFrameEnum.Enumerator) {
+						frameIndex--;
+						
+						Function function = GetFunctionFromCache(chainIndex, frameIndex, corFrame);
+						if (function != null) {
+							yield return function;
+						}
+					}
+				}
 			}
 		}
 		
-		internal Function GetFunctionAt(uint firstChainIndex, uint firstFrameIndex)
+		Dictionary<uint, Chain> chainCache = new Dictionary<uint, Chain>();
+		
+		class Chain {
+			public Dictionary<uint, Function> Frames = new Dictionary<uint, Function>();
+		}
+		
+		Function GetFunctionFromCache(uint chainIndex, uint frameIndex, ICorDebugFrame corFrame)
 		{
-			foreach(Function f in GetCallstackAt(firstChainIndex, firstFrameIndex)) {
-				return f;
-			}
-			throw new DebuggerException("Function not found");
+			try {
+				if (chainCache.ContainsKey(chainIndex) &&
+				    chainCache[chainIndex].Frames.ContainsKey(frameIndex) &&
+				    !chainCache[chainIndex].Frames[frameIndex].HasExpired) {
+					
+					Function function = chainCache[chainIndex].Frames[frameIndex];
+					function.CorILFrame = corFrame.As<ICorDebugILFrame>();
+					return function;
+				} else {
+					if (corFrame.Is<ICorDebugILFrame>()) {
+						Function function = new Function(this, chainIndex, frameIndex, corFrame.CastTo<ICorDebugILFrame>());
+						if (!chainCache.ContainsKey(chainIndex)) chainCache[chainIndex] = new Chain();
+						chainCache[chainIndex].Frames[frameIndex] = function;
+						function.Expired += delegate { chainCache[chainIndex].Frames.Remove(frameIndex); };
+						return function;
+					} else {
+						return null;
+					}
+				}
+			} catch (COMException) { // TODO
+				return null;
+			};
 		}
 		
-		internal IEnumerable<Function> GetCallstackAt(uint firstChainIndex, uint firstFrameIndex)
+		internal ICorDebugFrame GetFrameAt(uint chainIndex, uint frameIndex)
 		{
 			process.AssertPaused();
 			
 			ICorDebugChainEnum corChainEnum = corThread.EnumerateChains();
+			if (chainIndex >= corChainEnum.Count) throw new ArgumentException("Chain index too big", "chainIndex");
+			corChainEnum.Skip(corChainEnum.Count - chainIndex - 1);
 			
-			uint chainCount = corChainEnum.Count;
+			ICorDebugChain corChain = corChainEnum.Next();
 			
-			uint chainIndex = chainCount;
+			if (corChain.IsManaged == 0) throw new ArgumentException("Chain is not managed", "chainIndex");
 			
-			if (firstChainIndex != uint.MaxValue) {
-				int skipCount = (int)chainCount - (int)firstChainIndex - 1;
-				if (skipCount < 0) throw new ArgumentException("Chain index too big", "firstChainIndex");
-				corChainEnum.Skip((uint)skipCount);
-				chainIndex -= (uint)skipCount;
-				firstChainIndex = chainIndex - 1;
-			}
+			ICorDebugFrameEnum corFrameEnum = corChain.EnumerateFrames();
+			if (frameIndex >= corFrameEnum.Count) throw new ArgumentException("Frame index too big", "frameIndex");
+			corFrameEnum.Skip(corFrameEnum.Count - frameIndex - 1);
 			
-			while (true) {
-				ICorDebugChain[] corChains = new ICorDebugChain[1]; // One at time
-				uint chainsFetched = corChainEnum.Next(1, corChains);
-				if (chainsFetched == 0) break; // We are done
-				
-				chainIndex--;
-				
-				CorDebugChainReason reason = corChains[0].Reason;
-				
-				if (corChains[0].IsManaged == 0) continue; // Only managed ones
-				
-				ICorDebugFrameEnum corFrameEnum = corChains[0].EnumerateFrames();
-				
-				uint frameCount = corFrameEnum.Count;
-				
-				uint frameIndex = frameCount;
-				
-				if (firstFrameIndex != uint.MaxValue && chainIndex == firstChainIndex) {
-					int skipCount = (int)frameCount - (int)firstFrameIndex - 1;
-					if (skipCount < 0) throw new ArgumentException("Frame index too big", "firstFrameIndex");
-					corFrameEnum.Skip((uint)skipCount);
-					frameIndex -= (uint)skipCount;
-				}
-				
-				while (true) {
-					ICorDebugFrame[] corFrames = new ICorDebugFrame[1]; // Only one at time
-					uint framesFetched = corFrameEnum.Next(1, corFrames);
-					if (framesFetched == 0) break; // We are done
-					
-					frameIndex--;
-					
-					Function function = null;
-					try {
-						if (corFrames[0].Is<ICorDebugILFrame>()) {
-							function = new Function(this, chainIndex, frameIndex, corFrames[0].CastTo<ICorDebugILFrame>());
-						}
-					} catch (COMException) {
-						// TODO
-					};
-					
-					if (function != null) {
-						yield return function;
-					}
-				}
-			}
+			return corFrameEnum.Next();
 		}
 		
 		public Function SelectedFunction {

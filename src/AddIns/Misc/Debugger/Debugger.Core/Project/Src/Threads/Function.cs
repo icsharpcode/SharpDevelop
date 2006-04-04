@@ -132,10 +132,13 @@ namespace Debugger
 			get {
 				if (HasExpired) throw new DebuggerException("Function has expired");
 				if (corILFramePauseSession != debugger.PauseSession) {
-					corILFrame = thread.GetFunctionAt(chainIndex, frameIndex).CorILFrame;
-					corILFramePauseSession = debugger.PauseSession;
+					CorILFrame = thread.GetFrameAt(chainIndex, frameIndex).As<ICorDebugILFrame>();
 				}
 				return corILFrame;
+			}
+			set {
+				corILFrame = value;
+				corILFramePauseSession = debugger.PauseSession;
 			}
 		}
 		
