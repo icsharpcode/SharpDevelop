@@ -22,12 +22,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			statusStrip.AutoSize = false;
 			statusStrip.MouseMove += StatusStripMouseMove;
+			statusStrip.ItemAdded += delegate(object sender, ToolStripItemEventArgs e) {
+				e.Item.MouseMove += StatusStripMouseMove;
+			};
+			foreach(ToolStripItem i in statusStrip.Items) {
+				i.MouseMove += StatusStripMouseMove;
+			}
 		}
 		
 		void StatusStripMouseMove(object sender, MouseEventArgs e)
 		{
-			if (e.Y < control.Height - 3) {
-				HideOverlay();
+			if (e.Y < control.Height / 2) {
+				ShowOverlay = false;
 			}
 		}
 	}

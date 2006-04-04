@@ -42,6 +42,7 @@
         <TabIndex value="4" />
         <Size value="{Width=340, Height=20}" />
         <Anchor value="Top, Left, Right" />
+    	<Enabled value="False" />
       </System.Windows.Forms.CheckBox>
       <System.Windows.Forms.CheckBox>
         <Name value="HideVerticalScrollbarCheckBox" />
@@ -50,6 +51,7 @@
         <TabIndex value="5" />
         <Size value="{Width=340, Height=20}" />
         <Anchor value="Top, Left, Right" />
+    	<Enabled value="False" />
       </System.Windows.Forms.CheckBox>
       <System.Windows.Forms.CheckBox>
         <Name value="HideHorizontalScrollbarCheckBox" />
@@ -58,6 +60,7 @@
         <TabIndex value="6" />
         <Size value="{Width=340, Height=20}" />
         <Anchor value="Top, Left, Right" />
+    	<Enabled value="False" />
       </System.Windows.Forms.CheckBox>
       <System.Windows.Forms.CheckBox>
         <Name value="HideStatusBarCheckBox" />
@@ -82,6 +85,7 @@
         <TabIndex value="9" />
         <Size value="{Width=340, Height=24}" />
         <Anchor value="Top, Left, Right" />
+    	<Enabled value="False" />
       </System.Windows.Forms.CheckBox>
     </Controls>
   </System.Windows.Forms.UserControl>

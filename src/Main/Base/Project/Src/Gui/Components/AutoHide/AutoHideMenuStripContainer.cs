@@ -22,17 +22,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		Padding? defaultPadding;
 		
-		public override bool AutoHide {
-			get {
-				return base.AutoHide;
+		protected override void Reformat()
+		{
+			if (defaultPadding == null) {
+				defaultPadding = ((MenuStrip)control).Padding;
 			}
-			set {
-				if (defaultPadding == null) {
-					defaultPadding = ((MenuStrip)control).Padding;
-				}
-				((MenuStrip)control).Padding = value?Padding.Empty:(Padding)defaultPadding;
-				base.AutoHide = value;
-			}
+			((MenuStrip)control).Padding = AutoHide ? Padding.Empty : (Padding)defaultPadding;
+			base.Reformat();
 		}
 		
 		public AutoHideMenuStripContainer(MenuStrip menuStrip):base(menuStrip)
@@ -51,29 +47,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void AddEventHandlersForItem(ToolStripMenuItem menuItem)
 		{
-			menuItem.DropDownOpened += OnDropDownOpened;
-			menuItem.DropDownClosed += OnDropDownClosed;
-		}
-		
-		void OnDropDownOpened(object sender, EventArgs e)
-		{
-			dropDownOpened = true;
-		}
-		
-		void OnDropDownClosed(object sender, EventArgs e)
-		{
-			dropDownOpened = false;
-			if (!mouseIn) {
-				HideOverlay();
-			}
+			menuItem.DropDownOpened += delegate { dropDownOpened = true; };
+			menuItem.DropDownClosed += delegate { dropDownOpened = false; if (!mouseIn) ShowOverlay = false; };
 		}
 		
 		protected override void OnControlMouseLeave(object sender, EventArgs e)
 		{
 			mouseIn = false;
-			if (!dropDownOpened) {
-				HideOverlay();
-			}
+			if (!dropDownOpened) ShowOverlay = false;
 		}
 	}
 }

@@ -118,13 +118,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void TrackFullscreenPropertyChanges(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.OldValue != e.NewValue && wbForm.FullScreen) {
+			if (!Boolean.Equals(e.OldValue, e.NewValue) && wbForm.FullScreen) {
 				switch (e.Key) {
 					case "HideMainMenu":
-					case "HideToolbars":
-					case "HideStatusBar":
-						RedrawAllComponents();
+					case "ShowMainMenuOnMouseMove":
+						RedrawMainMenu();
 						break;
+					case "HideToolbars":
+						RedrawToolbars();
+						break;
+					//case "HideTabs":
+					//case "HideVerticalScrollbar":
+					//case "HideHorizontalScrollbar":
+					case "HideStatusBar":
+					case "ShowStatusBarOnMouseMove":
+						RedrawStatusBar();
+						break;
+					//case "HideWindowsTaskbar":
 				}
 			}
 		}
