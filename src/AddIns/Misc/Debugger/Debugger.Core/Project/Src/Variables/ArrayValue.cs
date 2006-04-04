@@ -106,20 +106,23 @@ namespace Debugger
 			
 			return new Variable(debugger,
 			                    elementName,
-			                    delegate {
-			                    	ArrayValue updatedVal = getter() as ArrayValue;
-			                    	if (this.IsEquivalentValue(updatedVal)) {
-			                    		ICorDebugValue element;
-			                    		unsafe {
-			                    			fixed (void* pIndices = indices) {
-			                    				element = updatedVal.corArrayValue.GetElement(rank, new IntPtr(pIndices));
-			                    			}
-			                    		}
-			                    		return Value.CreateValue(debugger, element);
-			                    	} else {
-			                    		return new UnavailableValue(debugger, "Value is not array");
-			                    	}
-			                    });
+			                    delegate { return GetValueOfItem(indices, getter); });
+		}
+		
+		Value GetValueOfItem(uint[] indices, ValueGetter getter)
+		{
+			ArrayValue updatedVal = getter() as ArrayValue;
+			if (this.IsEquivalentValue(updatedVal)) {
+				ICorDebugValue element;
+				unsafe {
+					fixed (void* pIndices = indices) {
+						element = updatedVal.corArrayValue.GetElement(rank, new IntPtr(pIndices));
+					}
+				}
+				return Value.CreateValue(debugger, element);
+			} else {
+				return new UnavailableValue(debugger, "Value is not array");
+			}
 		}
 		
 		public override bool MayHaveSubVariables {

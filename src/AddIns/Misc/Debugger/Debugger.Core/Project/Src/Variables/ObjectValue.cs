@@ -146,15 +146,18 @@ namespace Debugger
 				                               field.Name,
 				                               field.IsStatic,
 				                               field.IsPublic,
-				                               delegate {
-				                               	Value updatedVal = getter();
-				                               	if (updatedVal is UnavailableValue) return updatedVal;
-				                               	if (this.IsEquivalentValue(updatedVal)) {
-				                               		return GetValue(updatedVal, field);
-				                               	} else {
-				                               		return new UnavailableValue(debugger, "Object type changed");
-				                               	}
-				                               });
+				                               delegate { return GetValueOfField(field, getter); });
+			}
+		}
+		
+		Value GetValueOfField(FieldProps field, ValueGetter getter)
+		{
+			Value updatedVal = getter();
+			if (updatedVal is UnavailableValue) return updatedVal;
+			if (this.IsEquivalentValue(updatedVal)) {
+				return GetValue(updatedVal, field);
+			} else {
+				return new UnavailableValue(debugger, "Object type changed");
 			}
 		}
 		
@@ -167,35 +170,36 @@ namespace Debugger
 					                                  method.Name.Remove(0, 4),
 					                                  method.IsStatic,
 					                                  method.IsPublic,
-					                                  delegate {
-					                                  	Value updatedVal = getter();
-					                                  	if (updatedVal is UnavailableValue) return null;
-					                                  	if (this.IsEquivalentValue(updatedVal) && ((ObjectValue)updatedVal).SoftReference != null) {
-					                                  		return CreatePropertyEval(method, getter);
-					                                  	} else {
-					                                  		return null;
-					                                  	}
-					                                  });
+					                                  delegate { return CreatePropertyEval(method, getter); });
 				}
 			}
 		}
 		
 		Eval CreatePropertyEval(MethodProps method, ValueGetter getter)
 		{
-			ICorDebugFunction evalCorFunction = Module.CorModule.GetFunctionFromToken(method.Token);
-			
-			return new Eval(debugger, evalCorFunction, delegate {
-			                	Value updatedVal = getter();
-			                	if (this.IsEquivalentValue(updatedVal) && ((ObjectValue)updatedVal).SoftReference != null) {
-				                	if (method.IsStatic) {
-				                		return new ICorDebugValue[] {};
-				                	} else {
-				                		return new ICorDebugValue[] {((ObjectValue)updatedVal).SoftReference.CastTo<ICorDebugValue>()};
-				                	}
-			                	} else {
-			                		return null;
-			                	}
-			                });
+			Value updatedVal = getter();
+			if (updatedVal is UnavailableValue) return null;
+			if (this.IsEquivalentValue(updatedVal) && ((ObjectValue)updatedVal).SoftReference != null) {
+				ICorDebugFunction evalCorFunction = Module.CorModule.GetFunctionFromToken(method.Token);
+				
+				return new Eval(debugger, evalCorFunction, delegate { return GetArgsForEval(method, getter); });
+			} else {
+				return null;
+			}
+		}
+		
+		ICorDebugValue[] GetArgsForEval(MethodProps method, ValueGetter getter)
+		{
+			Value updatedVal = getter();
+			if (this.IsEquivalentValue(updatedVal) && ((ObjectValue)updatedVal).SoftReference != null) {
+				if (method.IsStatic) {
+					return new ICorDebugValue[] {};
+				} else {
+					return new ICorDebugValue[] {((ObjectValue)updatedVal).SoftReference.CastTo<ICorDebugValue>()};
+				}
+			} else {
+				return null;
+			}
 		}
 		
 		public override bool IsEquivalentValue(Value val)
@@ -231,17 +235,20 @@ namespace Debugger
 			if (HasBaseClass) {
 				return new Variable(debugger,
 				                    "<Base class>",
-				                    delegate {
-				                    	Value updatedVal = getter();
-				                    	if (updatedVal is UnavailableValue) return updatedVal;
-				                    	if (this.IsEquivalentValue(updatedVal)) {
-				                    		return ((ObjectValue)updatedVal).BaseClass;
-				                    	} else {
-				                    		return new UnavailableValue(debugger, "Object type changed");
-				                    	}
-				                    });
+				                    delegate { return GetBaseClassValue(getter); });
 			} else {
 				return null;
+			}
+		}
+		
+		Value GetBaseClassValue(ValueGetter getter)
+		{
+			Value updatedVal = getter();
+			if (updatedVal is UnavailableValue) return updatedVal;
+			if (this.IsEquivalentValue(updatedVal)) {
+				return ((ObjectValue)updatedVal).BaseClass;
+			} else {
+				return new UnavailableValue(debugger, "Object type changed");
 			}
 		}
 		

@@ -24,13 +24,16 @@ namespace Debugger
 		internal PropertyVariable(NDebugger debugger, string name, bool isStatic, bool isPublic, EvalCreator evalCreator):base(debugger, name, isStatic, isPublic, null)
 		{
 			this.evalCreator = evalCreator;
-			this.valueGetter = delegate {
-			                   	if (Eval != null) {
-			                   		return Eval.Result;
-			                   	} else {
-			                   		return new UnavailableValue(debugger, "Property has expired");
-			                   	}
-			                   };
+			this.valueGetter = delegate { return GetValueOfResult(); };
+		}
+		
+		Value GetValueOfResult()
+		{
+			if (Eval != null) {
+				return Eval.Result;
+			} else {
+				return new UnavailableValue(debugger, "Property has expired");
+			}
 		}
 		
 		public bool IsEvaluated {
