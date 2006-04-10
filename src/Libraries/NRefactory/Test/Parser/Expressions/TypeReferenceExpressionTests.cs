@@ -27,6 +27,22 @@ namespace ICSharpCode.NRefactory.Tests.AST
 	{
 		#region C#
 		[Test]
+		public void GlobalTypeReferenceExpression()
+		{
+			TypeReferenceExpression tr = ParseUtilCSharp.ParseExpression<TypeReferenceExpression>("global::System");
+			Assert.AreEqual("System", tr.TypeReference.Type);
+			Assert.IsTrue(tr.TypeReference.IsGlobal);
+		}
+		
+		[Test]
+		public void GlobalTypeReferenceExpressionWithoutTypeName()
+		{
+			TypeReferenceExpression tr = ParseUtilCSharp.ParseExpression<TypeReferenceExpression>("global::", true);
+			Assert.AreEqual("?", tr.TypeReference.Type);
+			Assert.IsTrue(tr.TypeReference.IsGlobal);
+		}
+		
+		[Test]
 		public void IntReferenceExpression()
 		{
 			FieldReferenceExpression fre = ParseUtilCSharp.ParseExpression<FieldReferenceExpression>("int.MaxValue");
