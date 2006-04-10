@@ -41,9 +41,6 @@ namespace SharpReportCore {
 		
 		private Color backColor;
 		private int  sectionOffset;
-
-		public event EventHandler<BeforePrintEventArgs> BeforePrinting;
-		public event EventHandler<AfterPrintEventArgs> AfterPrinting;
 		
 		
 		#region SharpReportCore.IPropertyChange interface implementation
@@ -196,22 +193,7 @@ namespace SharpReportCore {
 		}
 		#endregion
 		
-		#region EventHandling
-		public void NotiyfyAfterPrint (PointF afterPrintLocation) {
-			if (this.AfterPrinting != null) {
-				AfterPrintEventArgs rea = new AfterPrintEventArgs (afterPrintLocation);
-				AfterPrinting(this, rea);
-			}
-		}
 		
-		public void NotifyBeforePrint () {
-			if (this.BeforePrinting != null) {
-				BeforePrintEventArgs ea = new BeforePrintEventArgs ();
-				BeforePrinting (this,ea);
-			}
-		}
-		
-		#endregion
 		
 		#region SharpReportCore.IBaseRenderer interface implementation
 		public virtual void  Render(ReportPageEventArgs rpea) {

@@ -64,7 +64,7 @@ namespace SharpReportCore {
 			
 			string toPrint = CheckForNullValue();
 			string formattedString = base.FireFormatOutput(toPrint,this.FormatString,"");
-//			System.Console.WriteLine("\t\tBaseDataItem:Render {0} ",formattedString);	
+
 			RectangleF rect = base.PrepareRectangle (rpea,formattedString);
 			base.PrintTheStuff (rpea,formattedString,rect);
 			base.NotiyfyAfterPrint (rpea.LocationAfterDraw);

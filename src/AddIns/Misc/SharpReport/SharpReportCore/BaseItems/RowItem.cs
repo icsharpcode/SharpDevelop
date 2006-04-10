@@ -59,7 +59,7 @@ namespace SharpReportCore{
 		
 		
 		public override void Render(ReportPageEventArgs rpea){
-			System.Console.WriteLine("Render RowItem");
+//			System.Console.WriteLine("Render RowItem");
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}

@@ -23,6 +23,22 @@ using System.Drawing;
 	
 namespace SharpReportCore {
 	
+	public class SectionPrintingEventArgs : System.EventArgs {
+		BaseSection section;
+		
+		public SectionPrintingEventArgs(BaseSection section){
+			this.section = section;
+		}
+		
+		public BaseSection Section {
+			get {
+				return section;
+			}
+		}
+		
+	}
+		
+		
 	///<summary>
 	/// This event is fired just bevore an Item is printed
 	/// Use this event for formatting etc.

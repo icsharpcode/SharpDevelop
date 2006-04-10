@@ -17,6 +17,8 @@ namespace SharpReportCore{
 	public class AbstractDataRenderer : AbstractRenderer{
 		DataManager dataManager;
 		DataNavigator navigator;
+		
+		
 		public AbstractDataRenderer(ReportModel model,DataManager dataManager):base(model){
 			if (dataManager == null) {
 				throw new ArgumentNullException("dataManager");
@@ -24,8 +26,7 @@ namespace SharpReportCore{
 			this.dataManager = dataManager;
 		}
 		
-		protected override void ReportBegin(object sender, ReportPageEventArgs e)
-		{
+		protected override void ReportBegin(object sender, ReportPageEventArgs e){
 			base.ReportBegin(sender, e);
 		}
 		

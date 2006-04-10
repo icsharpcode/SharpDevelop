@@ -46,6 +46,16 @@ namespace SharpReportCore {
 		                             
 		}
 		
+		private void OnSectionPrinting (object sender,SectionPrintingEventArgs e) {
+			System.Console.WriteLine("");
+			System.Console.WriteLine("Begin Print <{0}> with  <{1}> Items ",e.Section.Name,
+			                         e.Section.Items.Count);
+		}
+		
+		private void OnSectionPrinted (object sender,SectionPrintingEventArgs e) {
+			System.Console.WriteLine("Section Printed {0} ",e.Section.Name);
+			
+		}
 		
 		#region event's
 		protected override  void ReportQueryPage (object sender,QueryPageSettingsEventArgs e) {
@@ -63,19 +73,21 @@ namespace SharpReportCore {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		/// 
-		protected override void  BeginPrintPage (object sender,ReportPageEventArgs e) {
-			base.BeginPrintPage (sender,e);
+		protected override void  BeginPrintPage (object sender,ReportPageEventArgs rpea) {
+			base.BeginPrintPage (sender,rpea);
 			//Draw ReportHeader
-			currentPoint = base.DrawReportHeader (e);		
 			
+			currentPoint = base.MeasureReportHeader(rpea);
+			base.RenderSection (base.CurrentSection,rpea);
 			if (base.CurrentSection.PageBreakAfter) {
-				base.PageBreak(e,base.CurrentSection);
+				base.PageBreak(rpea,base.CurrentSection);
 				base.CurrentSection.PageBreakAfter = false;
 				return;
 			}
 			
 			//Draw Pageheader
-			currentPoint = base.DrawPageHeader (currentPoint,e);
+			currentPoint = base.MeasurePageHeader(currentPoint,rpea);
+			base.RenderSection (base.CurrentSection,rpea);
 			base.DetailStart = new Point ((int)currentPoint.X,(int)currentPoint.Y);
 		}
 		
@@ -88,8 +100,6 @@ namespace SharpReportCore {
 		protected override void PrintBodyStart (object sender,ReportPageEventArgs e) {
 			base.PrintBodyStart (sender,e);
 			
-			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail,
-			                                   CultureInfo.InvariantCulture);
 			BaseSection section = base.CurrentSection;
 			section.SectionOffset = (int)this.currentPoint.Y + base.Gap;
 			

@@ -68,6 +68,7 @@ namespace SharpReportCore {
 				if (node is XmlElement) {
 					XmlElement sectionElem = (XmlElement)node;
 					baseSection = (BaseSection)model.SectionCollection.Find(sectionElem.GetAttribute("name"));
+					baseSection.SuspendLayout();
 					if (baseSection != null) {
 						XmlHelper.SetSectionValues (xmlFormReader,sectionElem,baseSection);
 						XmlNodeList ctrlList = sectionElem.SelectNodes ("controls/control");
@@ -85,7 +86,7 @@ namespace SharpReportCore {
 											baseSection.Items.Add (rpt);
 											XmlHelper.BuildControl (xmlFormReader,ctrlElem,rpt);
 											rpt.Visible = true;
-											rpt.ResumeLayout();
+//											rpt.ResumeLayout();
 										} else {
 											String str = String.Format("< {0}>",ctrlElem.GetAttribute("basetype"));
 											throw new UnkownItemException(str);
