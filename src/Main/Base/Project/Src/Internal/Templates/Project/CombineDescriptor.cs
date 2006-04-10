@@ -28,17 +28,17 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			internal List<ProjectDescriptor> projectDescriptors = new List<ProjectDescriptor>();
 			internal List<SolutionFolderDescriptor> solutionFoldersDescriptors = new List<SolutionFolderDescriptor>();
 			
-			internal void Read(XmlElement element)
+			internal void Read(XmlElement element, string hintPath)
 			{
 				name = element.GetAttribute("name");
 				foreach (XmlNode node in element.ChildNodes) {
 					if (node != null) {
 						switch (node.Name) {
 							case "Project":
-								projectDescriptors.Add(ProjectDescriptor.CreateProjectDescriptor((XmlElement)node));
+								projectDescriptors.Add(ProjectDescriptor.CreateProjectDescriptor((XmlElement)node, hintPath));
 								break;
 							case "SolutionFolder":
-								solutionFoldersDescriptors.Add(new SolutionFolderDescriptor((XmlElement)node));
+								solutionFoldersDescriptors.Add(new SolutionFolderDescriptor((XmlElement)node, hintPath));
 								break;
 						}
 					}
@@ -64,9 +64,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				return true;
 			}
 			
-			public SolutionFolderDescriptor(XmlElement element)
+			public SolutionFolderDescriptor(XmlElement element, string hintPath)
 			{
-				Read(element);
+				Read(element, hintPath);
 			}
 			
 			public SolutionFolderDescriptor(string name)
@@ -143,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			return combineLocation;
 		}
 		
-		public static CombineDescriptor CreateCombineDescriptor(XmlElement element)
+		public static CombineDescriptor CreateCombineDescriptor(XmlElement element, string hintPath)
 		{
 			CombineDescriptor combineDescriptor = new CombineDescriptor(element.Attributes["name"].InnerText);
 			
@@ -155,7 +155,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				combineDescriptor.startupProject = element["Options"]["StartupProject"].InnerText;
 			}
 			
-			combineDescriptor.mainFolder.Read(element);
+			combineDescriptor.mainFolder.Read(element, hintPath);
 			return combineDescriptor;
 		}
 	}
