@@ -69,7 +69,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			// Include menu for member that has been clicked on
 			ResolveResult rr = ResolveAtCaret(textEditorControl, textArea);
 			item = null;
-			if (rr is MemberResolveResult) {
+			if (rr is MethodResolveResult) {
+				item = MakeItem(definitions, ((MethodResolveResult)rr).GetMethodIfSingleOverload());
+			} else if (rr is MemberResolveResult) {
 				item = MakeItem(definitions, ((MemberResolveResult)rr).ResolvedMember);
 			} else if (rr is TypeResolveResult) {
 				item = MakeItem(definitions, ((TypeResolveResult)rr).ResolvedClass);

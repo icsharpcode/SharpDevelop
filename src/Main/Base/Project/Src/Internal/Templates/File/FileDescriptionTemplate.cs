@@ -40,10 +40,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			dependentUpon = xml.GetAttribute("dependentUpon");
 			subType = xml.GetAttribute("subType");
 			if (xml.HasAttribute("src")) {
+				string fileName = Path.Combine(hintPath, StringParser.Parse(xml.GetAttribute("src")));
 				try {
-					content = File.ReadAllText(Path.Combine(hintPath, xml.GetAttribute("src")));
+					content = File.ReadAllText(fileName);
 				} catch (Exception e) {
-					content = "Error reading content from " + Path.Combine(hintPath, xml.GetAttribute("src")) + ":\n" + e.ToString();
+					content = "Error reading content from " + fileName + ":\n" + e.ToString();
 					LoggingService.Warn(content);
 				}
 			} else {
