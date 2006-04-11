@@ -295,7 +295,11 @@ namespace Debugger
 				throw new DebuggerException("Unable to get base class: " + fullTypeName);
 			} else {
 				ICorDebugClass superClass = corModuleSuperclass.GetClassFromToken(classProps.SuperClassToken);
-				return new ObjectValue(debugger, CorValue, superClass);
+				if (corHandleValue != null) {
+					return new ObjectValue(debugger, corHandleValue.As<ICorDebugValue>(), superClass);
+				} else {
+					return new ObjectValue(debugger, CorValue, superClass);
+				}
 			}
 		}
 	}

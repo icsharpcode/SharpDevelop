@@ -18,7 +18,7 @@ namespace Debugger
 		protected NDebugger debugger;
 		ICorDebugValue corValue;
 		// ICorDebugHandleValue can be used to get corValue back after Continue()
-		ICorDebugHandleValue corHandleValue;
+		protected ICorDebugHandleValue corHandleValue;
 		object pauseSessionAtCreation;
 		
 		public event EventHandler<ValueEventArgs> ValueChanged;
