@@ -208,7 +208,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		static void ToggleBreakpointAt(IDocument document, string fileName, int lineNumber)
+		public static void ToggleBreakpointAt(IDocument document, string fileName, int lineNumber)
 		{
 			foreach (Bookmark m in document.BookmarkManager.Marks) {
 				BreakpointBookmark breakpoint = m as BreakpointBookmark;
@@ -222,6 +222,8 @@ namespace ICSharpCode.Core
 			foreach (char ch in document.GetText(document.GetLineSegment(lineNumber))) {
 				if (!char.IsWhiteSpace(ch)) {
 					document.BookmarkManager.AddMark(new BreakpointBookmark(fileName, document, lineNumber));
+					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, lineNumber));
+					document.CommitUpdate();
 					break;
 				}
 			}

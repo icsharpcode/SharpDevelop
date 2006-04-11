@@ -8,6 +8,9 @@
 using System;
 using System.Diagnostics;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
 {
@@ -85,6 +88,20 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			DebuggerService.CurrentDebugger.StepOut();
+		}
+	}
+	
+	public class ToggleBreakpointCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			
+			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
+				return;
+			}
+			TextEditorControl textEditor = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			DebuggerService.ToggleBreakpointAt(textEditor.Document, textEditor.FileName, textEditor.ActiveTextAreaControl.Caret.Line);
 		}
 	}
 }
