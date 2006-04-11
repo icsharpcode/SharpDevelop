@@ -64,6 +64,19 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 			base.OnGeneratorExpression(node);
 		}
+		
+		public override void OnUnpackStatement(UnpackStatement node)
+		{
+			ArrayLiteralExpression ale = node.Expression as ArrayLiteralExpression;
+			for (int i = 0; i < node.Declarations.Count; i++) {
+				Declaration decl = node.Declarations[i];
+				if (acceptImplicit && ale != null && ale.Items.Count > i) {
+					DeclarationFound(decl.Name, decl.Type, ale.Items[i], decl.LexicalInfo);
+				} else if (decl.Type != null) {
+					DeclarationFound(decl.Name, decl.Type, null, decl.LexicalInfo);
+				}
+			}
+		}
 	}
 	
 	/// <summary>
