@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected override void RegisterDebuggerEvents()
 		{
 			debuggerCore.DebuggeeStateChanged += delegate { RefreshPad(); };
-			debuggerCore.DebuggingResumed += delegate { RefreshPad(); };
+			debuggerCore.ProcessExited += delegate { callStackList.Items.Clear(); };
 		}
 		
 		void CallStackListItemActivate(object sender, EventArgs e)
