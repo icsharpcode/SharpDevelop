@@ -32,6 +32,8 @@ namespace Debugger
 		Value             result;
 		string            error;
 		
+		DebugeeState debugeeStateWhenEvaluated;
+		
 		public event EventHandler<EvalEventArgs> EvalStarted;
 		public event EventHandler<EvalEventArgs> EvalComplete;
 		
@@ -43,7 +45,7 @@ namespace Debugger
 		
 		public EvalState EvalState {
 			get {
-				if (result != null && result.IsExpired) {
+				if (result != null && (debugeeStateWhenEvaluated != debugger.DebugeeState || result.IsExpired)) {
 					return EvalState.Expired;
 				} else {
 					return evalState;
@@ -158,6 +160,8 @@ namespace Debugger
 		{
 			// Eval result should be ICorDebugHandleValue so it should survive Continue()
 			result = Value.CreateValue(debugger, corEval.Result);
+			
+			debugeeStateWhenEvaluated = debugger.DebugeeState;
 			
 			if (result == null) {
 				evalState = EvalState.EvaluatedNoResult;
