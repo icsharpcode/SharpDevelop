@@ -136,7 +136,6 @@ namespace Debugger
 			if (corThread.Is<ICorDebugThread2>()) { // Is the debuggee .NET 2.0?
 				corThread.CastTo<ICorDebugThread2>().InterceptCurrentException(LastFunction.CorILFrame.CastTo<ICorDebugFrame>());
 			}
-			process.Continue();
 		}
 		
 		internal Stepper GetStepper(ICorDebugStepper corStepper)

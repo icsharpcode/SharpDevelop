@@ -342,6 +342,7 @@ namespace ICSharpCode.SharpDevelop.Services
 						return;
 					case ExceptionForm.Result.Ignore:
 						debugger.SelectedThread.InterceptCurrentException();
+						e.ResumeDebuggingAfterEvent(); // HACK: Start interception
 						break;
 				}
 			}
