@@ -31,14 +31,14 @@ namespace Grunwald.BooBinding
 			//InitXmlDoc();
 			InitDebugInfo();
 			
-			ConfigurationGuiBinding b;
+			//ConfigurationGuiBinding b;
 			
 			//b = helper.BindString("conditionalSymbolsTextBox", "DefineConstants");
 			//b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
 			//b.CreateLocationButton("conditionalSymbolsTextBox");
 			
-			b = helper.BindBoolean("noCorlibCheckBox", "NoStdLib", false);
-			b.CreateLocationButton("noCorlibCheckBox");
+			helper.BindBoolean("noCorlibCheckBox", "NoStdLib", false).CreateLocationButton("noCorlibCheckBox");
+			helper.BindBoolean("duckyCheckBox", "Ducky", false).CreateLocationButton("duckyCheckBox");
 			
 			helper.BindString("pipelineTextBox", "Pipeline").CreateLocationButton("pipelineLabel");
 			
