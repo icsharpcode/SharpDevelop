@@ -18,32 +18,36 @@ namespace Debugger
 {
 	public class ArrayValue: Value
 	{
-		ICorDebugArrayValue corArrayValue;
 		uint[] dimensions;
-
-
+		
 		uint lenght;
 		CorElementType corElementType;
 		readonly uint rank;
-
+		
+		protected ICorDebugArrayValue CorArrayValue {
+			get {
+				return this.CorValue.CastTo<ICorDebugArrayValue>();
+			}
+		}
+		
 		public uint Lenght {
 			get {
 				return lenght;
 			}
 		}
-
+		
 		public string ElementsType { 
 			get {
 				return CorTypeToString(corElementType); 
 			} 
 		}
-
+		
 		public uint Rank { 
 			get {
 				return rank; 
 			} 
 		}
-
+		
 		public override string AsString { 
 			get {
 				string txt = "{" + ElementsType + "[";
@@ -57,15 +61,14 @@ namespace Debugger
 		
 		internal unsafe ArrayValue(NDebugger debugger, ICorDebugValue corValue):base(debugger, corValue)
 		{
-			corArrayValue = this.CorValue.CastTo<ICorDebugArrayValue>();
-			corElementType = (CorElementType)corArrayValue.ElementType;
+			corElementType = (CorElementType)CorArrayValue.ElementType;
 			
-			rank = corArrayValue.Rank;
-			lenght = corArrayValue.Count;
+			rank = CorArrayValue.Rank;
+			lenght = CorArrayValue.Count;
 			
 			dimensions = new uint[rank];
 			fixed (void* pDimensions = dimensions)
-				corArrayValue.GetDimensions(rank, new IntPtr(pDimensions));
+				CorArrayValue.GetDimensions(rank, new IntPtr(pDimensions));
 		}
 
 
@@ -116,7 +119,7 @@ namespace Debugger
 				ICorDebugValue element;
 				unsafe {
 					fixed (void* pIndices = indices) {
-						element = updatedVal.corArrayValue.GetElement(rank, new IntPtr(pIndices));
+						element = updatedVal.CorArrayValue.GetElement(rank, new IntPtr(pIndices));
 					}
 				}
 				return Value.CreateValue(debugger, element);
