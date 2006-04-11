@@ -115,10 +115,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					item.Text = thread.ID.ToString();
 					item.Tag = thread;
 					item.SubItems.Add(thread.Name);
-					Function location;
-					location = thread.LastFunctionWithLoadedSymbols;
-					if (location == null) {
-						location = thread.LastFunction;
+					Function location = null;
+					if (thread.Process.IsPaused) {
+						location = thread.LastFunctionWithLoadedSymbols;
+						if (location == null) {
+							location = thread.LastFunction;
+						}
 					}
 					if (location != null) {
 						item.SubItems.Add(location.Name);
