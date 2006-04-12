@@ -69,15 +69,20 @@ namespace Debugger
 		
 		void ExitCallback_Paused()
 		{
-			if (debugger.SelectedThread != null) {
-				// Disable all steppers - do not Deactivate since function tracking still needs them
-				foreach(Stepper s in debugger.SelectedThread.Steppers) {
-					s.PauseWhenComplete = false;
+			if (debugger.Evaluating) {
+				// Ignore events during property evaluation
+				ExitCallback_Continue();
+			} else {
+				if (debugger.SelectedThread != null) {
+					// Disable all steppers - do not Deactivate since function tracking still needs them
+					foreach(Stepper s in debugger.SelectedThread.Steppers) {
+						s.PauseWhenComplete = false;
+					}
+					
+					debugger.SelectedThread.SelectedFunction = debugger.SelectedThread.LastFunctionWithLoadedSymbols;
 				}
-				
-				debugger.SelectedThread.SelectedFunction = debugger.SelectedThread.LastFunctionWithLoadedSymbols;
+				debugger.Pause();
 			}
-			debugger.Pause();
 		}
 		
 		
