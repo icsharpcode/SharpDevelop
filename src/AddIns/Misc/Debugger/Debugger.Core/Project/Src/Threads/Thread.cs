@@ -191,9 +191,11 @@ namespace Debugger
 					foreach(ICorDebugFrame corFrame in corFrameEnum.Enumerator) {
 						frameIndex--;
 						
-						Function function = GetFunctionFromCache(chainIndex, frameIndex, corFrame);
-						if (function != null) {
-							yield return function;
+						if (corFrame.Is<ICorDebugILFrame>()) {
+							Function function = GetFunctionFromCache(chainIndex, frameIndex, corFrame.As<ICorDebugILFrame>());
+							if (function != null) {
+								yield return function;
+							}
 						}
 					}
 				}
@@ -206,7 +208,7 @@ namespace Debugger
 			public Dictionary<uint, Function> Frames = new Dictionary<uint, Function>();
 		}
 		
-		Function GetFunctionFromCache(uint chainIndex, uint frameIndex, ICorDebugFrame corFrame)
+		Function GetFunctionFromCache(uint chainIndex, uint frameIndex, ICorDebugILFrame corFrame)
 		{
 			try {
 				if (chainCache.ContainsKey(chainIndex) &&
@@ -214,18 +216,14 @@ namespace Debugger
 				    !chainCache[chainIndex].Frames[frameIndex].HasExpired) {
 					
 					Function function = chainCache[chainIndex].Frames[frameIndex];
-					function.CorILFrame = corFrame.As<ICorDebugILFrame>();
+					function.CorILFrame = corFrame;
 					return function;
 				} else {
-					if (corFrame.Is<ICorDebugILFrame>()) {
-						Function function = new Function(this, chainIndex, frameIndex, corFrame.CastTo<ICorDebugILFrame>());
-						if (!chainCache.ContainsKey(chainIndex)) chainCache[chainIndex] = new Chain();
-						chainCache[chainIndex].Frames[frameIndex] = function;
-						function.Expired += delegate { chainCache[chainIndex].Frames.Remove(frameIndex); };
-						return function;
-					} else {
-						return null;
-					}
+					Function function = new Function(this, chainIndex, frameIndex, corFrame.CastTo<ICorDebugILFrame>());
+					if (!chainCache.ContainsKey(chainIndex)) chainCache[chainIndex] = new Chain();
+					chainCache[chainIndex].Frames[frameIndex] = function;
+					function.Expired += delegate { chainCache[chainIndex].Frames.Remove(frameIndex); };
+					return function;
 				}
 			} catch (COMException) { // TODO
 				return null;

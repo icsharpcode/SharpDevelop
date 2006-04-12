@@ -111,8 +111,7 @@ namespace Debugger
 			this.thread = thread;
 			this.chainIndex = chainIndex;
 			this.frameIndex = frameIndex;
-			this.corILFrame = corILFrame;
-			this.corILFramePauseSession = debugger.PauseSession;
+			this.CorILFrame = corILFrame;
 			corFunction = corILFrame.Function;
 			module = debugger.GetModule(corFunction.Module);
 			
@@ -137,6 +136,7 @@ namespace Debugger
 				return corILFrame;
 			}
 			set {
+				if (value == null) throw new DebuggerException("Can not set frame to null");
 				corILFrame = value;
 				corILFramePauseSession = debugger.PauseSession;
 			}
