@@ -196,7 +196,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public DebuggerGridControl GetTooltipControl(string variableName)
 		{
-			Variable variable = GetVariableFromName(variableName);
+			Variable variable = GetVariableFromName(variableName.Trim());
 			
 			if (variable == null) {
 				return null;
