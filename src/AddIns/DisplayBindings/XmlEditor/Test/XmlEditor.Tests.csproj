@@ -91,6 +91,7 @@
     <Compile Include="Utils\SchemaIncludeTestFixtureHelper.cs" />
     <Compile Include="Schema\MissingSchemaElementTestFixture.cs" />
     <Compile Include="Schema\AllElementTestFixture.cs" />
+    <Compile Include="Parser\InsideAttributeValueTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Schema\" />
