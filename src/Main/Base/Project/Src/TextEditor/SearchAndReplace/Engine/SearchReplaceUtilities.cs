@@ -26,6 +26,15 @@ namespace SearchAndReplace
 			}
 		}
 		
+		public static TextEditorControl GetActiveTextEditor()
+		{
+			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			if (window != null && (window.ViewContent is ITextEditorControlProvider)) {
+				return ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			}
+			return null;
+		}
+		
 		public static bool IsWholeWordAt(ITextBufferStrategy document, int offset, int length)
 		{
 			return (offset - 1 < 0 || Char.IsWhiteSpace(document.GetCharAt(offset - 1))) &&
@@ -94,6 +103,19 @@ namespace SearchAndReplace
 				}
 			}
 			return true;
+		}
+		
+		public static void SelectText(TextEditorControl textArea, int offset, int endOffset)
+		{
+			int textLength = textArea.ActiveTextAreaControl.Document.TextLength;
+			if (textLength < endOffset) {
+				endOffset = textLength - 1;
+			}
+			textArea.ActiveTextAreaControl.Caret.Position = textArea.Document.OffsetToPosition(endOffset);
+			textArea.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
+			textArea.ActiveTextAreaControl.TextArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, textArea.Document.OffsetToPosition(offset),
+			                                                                                           textArea.Document.OffsetToPosition(endOffset)));
+			textArea.Refresh();
 		}
 	}
 }

@@ -256,51 +256,61 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void fileDeleted(object sender, FileSystemEventArgs e)
 		{
-			foreach(FileListItem fileItem in Items)
-			{
-				if(fileItem.FullName.Equals(e.FullPath, StringComparison.OrdinalIgnoreCase)) {
-					Items.Remove(fileItem);
-					break;
+			MethodInvoker method = delegate {
+				foreach(FileListItem fileItem in Items)
+				{
+					if(fileItem.FullName.Equals(e.FullPath, StringComparison.OrdinalIgnoreCase)) {
+						Items.Remove(fileItem);
+						break;
+					}
 				}
-			}
+			};
+			WorkbenchSingleton.SafeThreadAsyncCall(method);
 		}
 		
 		void fileChanged(object sender, FileSystemEventArgs e)
 		{
-			foreach(FileListItem fileItem in Items)
-			{
-				if(fileItem.FullName.Equals(e.FullPath, StringComparison.OrdinalIgnoreCase)) {
-					
-					FileInfo info = new FileInfo(e.FullPath);
-					
-					fileItem.SubItems[1].Text = Math.Round((double)info.Length / 1024).ToString() + " KB";
-					fileItem.SubItems[2].Text = info.LastWriteTime.ToString();
-					break;
+			MethodInvoker method = delegate {
+				foreach(FileListItem fileItem in Items)
+				{
+					if(fileItem.FullName.Equals(e.FullPath, StringComparison.OrdinalIgnoreCase)) {
+						
+						FileInfo info = new FileInfo(e.FullPath);
+						
+						fileItem.SubItems[1].Text = Math.Round((double)info.Length / 1024).ToString() + " KB";
+						fileItem.SubItems[2].Text = info.LastWriteTime.ToString();
+						break;
+					}
 				}
-			}
+			};
+			WorkbenchSingleton.SafeThreadAsyncCall(method);
 		}
 		
 		void fileCreated(object sender, FileSystemEventArgs e)
 		{
-			FileInfo info = new FileInfo(e.FullPath);
-			
-			ListViewItem fileItem = Items.Add(new FileListItem(e.FullPath));
-			fileItem.SubItems.Add(Math.Round((double)info.Length / 1024).ToString() + " KB");
-			fileItem.SubItems.Add(info.LastWriteTime.ToString());
-			
-			Items.Add(fileItem);
+			MethodInvoker method = delegate {
+				FileInfo info = new FileInfo(e.FullPath);
+				
+				ListViewItem fileItem = Items.Add(new FileListItem(e.FullPath));
+				fileItem.SubItems.Add(Math.Round((double)info.Length / 1024).ToString() + " KB");
+				fileItem.SubItems.Add(info.LastWriteTime.ToString());
+			};
+			WorkbenchSingleton.SafeThreadAsyncCall(method);
 		}
 		
 		void fileRenamed(object sender, RenamedEventArgs e)
 		{
-			foreach(FileListItem fileItem in Items)
-			{
-				if(fileItem.FullName.Equals(e.OldFullPath, StringComparison.OrdinalIgnoreCase)) {
-					fileItem.FullName = e.FullPath;
-					fileItem.Text = e.Name;
-					break;
+			MethodInvoker method = delegate {
+				foreach(FileListItem fileItem in Items)
+				{
+					if(fileItem.FullName.Equals(e.OldFullPath, StringComparison.OrdinalIgnoreCase)) {
+						fileItem.FullName = e.FullPath;
+						fileItem.Text = e.Name;
+						break;
+					}
 				}
-			}
+			};
+			WorkbenchSingleton.SafeThreadAsyncCall(method);
 		}
 		
 		void renameFile(object sender, EventArgs e)

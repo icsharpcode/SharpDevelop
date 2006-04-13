@@ -10,9 +10,8 @@
 
 
 using System;
-using System.ComponentModel;
 using System.Drawing;
-using System.Windows.Forms;
+using System.ComponentModel;
 
 using SharpReportCore;
 using SharpReport.Designer;
@@ -32,41 +31,33 @@ namespace SharpReport.ReportItems{
 	public class ReportRectangleItem : BaseRectangleItem,SharpReport.Designer.IDesignable {
 		
 		private ReportRectangleControl visualControl;
-		private bool initDone;
-		
-		
-		
+
 		public ReportRectangleItem():base() {
 			visualControl = new ReportRectangleControl();
+			
+			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
+			
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
 			this.visualControl.BackColorChanged += new EventHandler (OnControlChanged);
 			this.visualControl.FontChanged += new EventHandler (OnControlChanged);
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
-			this.visualControl.DragOver += new DragEventHandler (OnDragOver);
-			this.VisualControl.DragEnter += new DragEventHandler (OnDragEnter);
-		
+			
 			base.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (BasePropertyChange);
-			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
-			this.initDone = true;
 		}
 		
-		void OnDragEnter(object sender,DragEventArgs e) {
-//			System.Console.WriteLine("DragEnter");
-		}
-		void OnDragOver(object sender,DragEventArgs e) {
-//			System.Console.WriteLine("DragOver");
-		}
 		#region EventHandling
 		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
-			if (initDone == true) {
-				ItemsHelper.UpdateControlFromGraphicBase (this.visualControl,this);
-			}
+			ItemsHelper.UpdateControlFromGraphicBase (this.visualControl,this);
+			this.HandlePropertyChanged(e.PropertyName);
+
 		}
 		
 		private void OnControlChanged (object sender, EventArgs e) {
+			base.SuspendLayout();
 			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
+			base.ResumeLayout();
 			this.HandlePropertyChanged("OnControlChanged");
 		}
 		
@@ -86,7 +77,6 @@ namespace SharpReport.ReportItems{
 					PropertyChanged (this,new PropertyChangedEventArgs(info));
 				}
 			}
-			
 		}
 		#endregion
 		
@@ -133,6 +123,18 @@ namespace SharpReport.ReportItems{
 			}
 		}
 
+		public override Color BackColor {
+			get {
+				return base.BackColor;
+			}
+			set {
+				base.BackColor = value;
+				if (this.visualControl != null) {
+					this.visualControl.BackColor = value;
+				}
+				this.HandlePropertyChanged("Backcolor");
+			}
+		}
 		#endregion
 		
 		

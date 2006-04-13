@@ -40,7 +40,8 @@ namespace SharpReportCore{
 	/// 
 
 	public class ReportSettings : BaseSettings,SharpReportCore.IStoreable,
-	IBaseRenderer,IDisposable{
+								  IBaseRenderer,IDisposable{
+		
 		private string connectionString;
 		private string commandText;
 		
@@ -60,7 +61,8 @@ namespace SharpReportCore{
 		private ColumnCollection groupingsCollection;
 		private ColumnCollection sortingCollection;
 		
-
+		
+		
 		#region Constructor's
 		
 		public ReportSettings(System.Drawing.Printing.PageSettings defaultPageSettings)
@@ -228,7 +230,7 @@ namespace SharpReportCore{
 					}
 				}
 			}
-			base.InitDone = true;
+//			base.InitDone = true;
 		}
 		
 		#endregion
@@ -492,7 +494,7 @@ namespace SharpReportCore{
 			set {
 				if (reportType != value) {
 					reportType = value;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("ReportType");
 				}
 			}
 		}
@@ -560,7 +562,7 @@ namespace SharpReportCore{
 				}
 				if (reportParametersCollection != value) {
 					reportParametersCollection = value;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("SqlParametersCollection");
 				}
 			}
 		}
@@ -577,7 +579,7 @@ namespace SharpReportCore{
 			set {
 				if (connectionString != value) {
 					connectionString = value;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("ConnectionString");
 				}
 			}
 		}
@@ -592,7 +594,7 @@ namespace SharpReportCore{
 			set {
 				if (commandText != value) {
 					commandText = value;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("CommandText");
 				}
 			}
 		}
@@ -606,7 +608,7 @@ namespace SharpReportCore{
 			set {
 				if (commandType != value) {
 					commandType = value;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("CommandType");
 				}
 			}
 		}
@@ -620,7 +622,7 @@ namespace SharpReportCore{
 			set {
 				if (dataModel != value) {
 					dataModel = value;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("DataModel");
 				}
 			}
 		}
@@ -640,7 +642,7 @@ namespace SharpReportCore{
 			set {
 				if (defaultFont != value) {
 					defaultFont = value;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("DefaultFont");
 				}
 			}
 		}

@@ -19,11 +19,8 @@ using Debugger;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class LoadedModulesPad : AbstractPadContent
+	public class LoadedModulesPad : DebuggerPad
 	{
-		WindowsDebugger debugger;
-		NDebugger debuggerCore;
-
 		ListView  loadedModulesList;
 		
 		ColumnHeader name        = new ColumnHeader();
@@ -41,16 +38,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return loadedModulesList;
 			}
 		}
-		
-		public LoadedModulesPad() //: base("${res:MainWindow.Windows.Debug.Modules}", null)
+
+		protected override void InitializeComponents()
 		{
-			InitializeComponents();
-		}
-		
-		void InitializeComponents()
-		{
-			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			
 			loadedModulesList = new ListView();
 			loadedModulesList.FullRowSelect = true;
 			loadedModulesList.AutoArrange = true;
@@ -70,24 +60,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			information.Width = 130;
 
 			RedrawContent();
-
-			if (debugger.ServiceInitialized) {
-				InitializeDebugger();
-			} else {
-				debugger.Initialize += delegate {
-					InitializeDebugger();
-				};
-			}
-		}
-
-		public void InitializeDebugger()
-		{
-			debuggerCore = debugger.DebuggerCore;
-
-			debuggerCore.ModuleLoaded += new EventHandler<ModuleEventArgs>(AddModule);
-			debuggerCore.ModuleUnloaded += new EventHandler<ModuleEventArgs>(RemoveModule);
-
-			RefreshList();
 		}
 		
 		public override void RedrawContent()
@@ -101,8 +73,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			timestamp.Text    = StringParser.Parse("${res:MainWindow.Windows.Debug.TimestampColumn}");
 			information.Text  = StringParser.Parse("${res:MainWindow.Windows.Debug.InformationColumn}");
 		}
+		
+		
+		protected override void RegisterDebuggerEvents()
+		{
+			debuggerCore.ModuleLoaded += AddModule;
+			debuggerCore.ModuleUnloaded += RemoveModule;
+		}
 
-		void RefreshList()
+		public override void RefreshPad()
 		{
             loadedModulesList.Items.Clear();
             foreach(Module m in debuggerCore.Modules) {

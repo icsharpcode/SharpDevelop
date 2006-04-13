@@ -1404,7 +1404,7 @@
 				<Condition name="DebuggerSupports" debuggersupports = "Stepping">
 					<Condition name="IsProcessRunning"  isprocessrunning = "False" isdebugging = "True" action = "Disable">
 						<MenuItem id = "BeforeSteppingSeparator" type = "Separator" />
-						<MenuItem id       = "Step"
+						<MenuItem id       = "Step over"
 						          label    = "${res:XML.MainMenu.DebugMenu.Step}"
 						          icon     = "Icons.16x16.Debug.StepOver"
 						          shortcut = "F10"
@@ -1421,6 +1421,12 @@
 						          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
 					</Condition>
 				</Condition>
+				
+				<MenuItem id = "ToggleBreakpointSeparator" type = "Separator" />
+				<MenuItem id       = "Toggle Breakpoint"
+				          label    = "Toggle Breakpoint"
+				          shortcut = "F7"
+				          class    = "ICSharpCode.SharpDevelop.Project.Commands.ToggleBreakpointCommand"/>
 			</ComplexCondition>
 		</MenuItem> <!-- end DEBUG menu -->
 		
@@ -1739,7 +1745,7 @@
 			<MenuItem id = "ClearBookmarks"
 			          label = "${res:XML.MainMenu.SearchMenu.ClrBookmark}"
 			          icon = "Bookmarks.ClearAll"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>
+			          class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"/>
 			<MenuItem id = "Separator2" type = "Separator" />
 			<MenuItem id = "GotoLineNr"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoLineNr}"

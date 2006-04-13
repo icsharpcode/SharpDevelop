@@ -18,32 +18,36 @@ namespace Debugger
 {
 	public class ArrayValue: Value
 	{
-		ICorDebugArrayValue corArrayValue;
 		uint[] dimensions;
-
-
+		
 		uint lenght;
 		CorElementType corElementType;
 		readonly uint rank;
-
+		
+		protected ICorDebugArrayValue CorArrayValue {
+			get {
+				return this.CorValue.CastTo<ICorDebugArrayValue>();
+			}
+		}
+		
 		public uint Lenght {
 			get {
 				return lenght;
 			}
 		}
-
+		
 		public string ElementsType { 
 			get {
 				return CorTypeToString(corElementType); 
 			} 
 		}
-
+		
 		public uint Rank { 
 			get {
 				return rank; 
 			} 
 		}
-
+		
 		public override string AsString { 
 			get {
 				string txt = "{" + ElementsType + "[";
@@ -57,15 +61,14 @@ namespace Debugger
 		
 		internal unsafe ArrayValue(NDebugger debugger, ICorDebugValue corValue):base(debugger, corValue)
 		{
-			corArrayValue = this.corValue.CastTo<ICorDebugArrayValue>();
-			corElementType = (CorElementType)corArrayValue.ElementType;
+			corElementType = (CorElementType)CorArrayValue.ElementType;
 			
-			rank = corArrayValue.Rank;
-			lenght = corArrayValue.Count;
+			rank = CorArrayValue.Rank;
+			lenght = CorArrayValue.Count;
 			
 			dimensions = new uint[rank];
 			fixed (void* pDimensions = dimensions)
-				corArrayValue.GetDimensions(rank, new IntPtr(pDimensions));
+				CorArrayValue.GetDimensions(rank, new IntPtr(pDimensions));
 		}
 
 
@@ -106,20 +109,23 @@ namespace Debugger
 			
 			return new Variable(debugger,
 			                    elementName,
-			                    delegate {
-			                    	ArrayValue updatedVal = getter() as ArrayValue;
-			                    	if (this.IsEquivalentValue(updatedVal)) {
-			                    		ICorDebugValue element;
-			                    		unsafe {
-			                    			fixed (void* pIndices = indices) {
-			                    				element = updatedVal.corArrayValue.GetElement(rank, new IntPtr(pIndices));
-			                    			}
-			                    		}
-			                    		return Value.CreateValue(debugger, element);
-			                    	} else {
-			                    		return new UnavailableValue(debugger, "Value is not array");
-			                    	}
-			                    });
+			                    delegate { return GetValueOfItem(indices, getter); });
+		}
+		
+		Value GetValueOfItem(uint[] indices, ValueGetter getter)
+		{
+			ArrayValue updatedVal = getter() as ArrayValue;
+			if (this.IsEquivalentValue(updatedVal)) {
+				ICorDebugValue element;
+				unsafe {
+					fixed (void* pIndices = indices) {
+						element = updatedVal.CorArrayValue.GetElement(rank, new IntPtr(pIndices));
+					}
+				}
+				return Value.CreateValue(debugger, element);
+			} else {
+				return new UnavailableValue(debugger, "Value is not array");
+			}
 		}
 		
 		public override bool MayHaveSubVariables {

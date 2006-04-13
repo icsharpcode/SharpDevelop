@@ -62,6 +62,9 @@
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\Pads\DebuggerPad.cs" />
+    <Compile Include="Src\Pads\CallStackPad.Menu.cs" />
+    <Compile Include="Src\Pads\RunningThreadsPad.Menu.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

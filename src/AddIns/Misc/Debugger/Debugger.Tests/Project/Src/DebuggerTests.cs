@@ -227,20 +227,20 @@ namespace Debugger.Tests
 			
 			StartProgram("Callstack");
 			WaitForPause(PausedReason.Break, null);
-			callstack = new List<Function>(debugger.CurrentThread.Callstack);
+			callstack = new List<Function>(debugger.SelectedThread.Callstack);
 			Assert.AreEqual("Sub2", callstack[0].Name);
 			Assert.AreEqual("Sub1", callstack[1].Name);
 			Assert.AreEqual("Main", callstack[2].Name);
 			
 			debugger.StepOut();
 			WaitForPause(PausedReason.StepComplete, null);
-			callstack = new List<Function>(debugger.CurrentThread.Callstack);
+			callstack = new List<Function>(debugger.SelectedThread.Callstack);
 			Assert.AreEqual("Sub1", callstack[0].Name);
 			Assert.AreEqual("Main", callstack[1].Name);
 			
 			debugger.StepOut();
 			WaitForPause(PausedReason.StepComplete, null);
-			callstack = new List<Function>(debugger.CurrentThread.Callstack);
+			callstack = new List<Function>(debugger.SelectedThread.Callstack);
 			Assert.AreEqual("Main", callstack[0].Name);
 			
 			debugger.Continue();
@@ -258,7 +258,7 @@ namespace Debugger.Tests
 			for(int i = 0; i < 2; i++) {
 				debugger.Continue();
 				WaitForPause(PausedReason.Break, null);
-				args = new List<Variable>(debugger.CurrentFunction.ArgumentVariables);
+				args = new List<Variable>(debugger.SelectedFunction.ArgumentVariables);
 				// names
 				Assert.AreEqual("i", args[0].Name);
 				Assert.AreEqual("s", args[1].Name);
@@ -274,7 +274,7 @@ namespace Debugger.Tests
 				
 				debugger.Continue();
 				WaitForPause(PausedReason.Break, null);
-				args = new List<Variable>(debugger.CurrentFunction.ArgumentVariables);
+				args = new List<Variable>(debugger.SelectedFunction.ArgumentVariables);
 				// types
 				Assert.AreEqual(typeof(PrimitiveValue), args[0].Value.GetType());
 				Assert.AreEqual(typeof(PrimitiveValue), args[1].Value.GetType());
@@ -286,7 +286,7 @@ namespace Debugger.Tests
 				
 				debugger.Continue();
 				WaitForPause(PausedReason.Break, null);
-				args = new List<Variable>(debugger.CurrentFunction.ArgumentVariables);
+				args = new List<Variable>(debugger.SelectedFunction.ArgumentVariables);
 				// types
 				Assert.AreEqual(typeof(PrimitiveValue), args[0].Value.GetType());
 				Assert.AreEqual(typeof(NullValue), args[1].Value.GetType());
@@ -308,7 +308,7 @@ namespace Debugger.Tests
 			
 			StartProgram("FunctionLocalVariables");
 			WaitForPause(PausedReason.Break, null);
-			args = new List<Variable>(debugger.CurrentFunction.LocalVariables);
+			args = new List<Variable>(debugger.SelectedFunction.LocalVariables);
 			// names
 			Assert.AreEqual("i", args[0].Name);
 			Assert.AreEqual("s", args[1].Name);
@@ -339,7 +339,7 @@ namespace Debugger.Tests
 			
 			StartProgram("FunctionLifetime");
 			WaitForPause(PausedReason.Break, null);
-			function = debugger.CurrentFunction;
+			function = debugger.SelectedFunction;
 			Assert.IsNotNull(function);
 			Assert.AreEqual("Function", function.Name);
 			Assert.AreEqual(false, function.HasExpired);
@@ -347,19 +347,19 @@ namespace Debugger.Tests
 			
 			debugger.Continue(); // Go to the SubFunction
 			WaitForPause(PausedReason.Break, null);
-			Assert.AreEqual("SubFunction", debugger.CurrentFunction.Name);
+			Assert.AreEqual("SubFunction", debugger.SelectedFunction.Name);
 			Assert.AreEqual(false, function.HasExpired);
 			Assert.AreEqual("1", function.GetArgumentVariable(0).Value.AsString);
 			
 			debugger.Continue(); // Go back to Function
 			WaitForPause(PausedReason.Break, null);
-			Assert.AreEqual("Function", debugger.CurrentFunction.Name);
+			Assert.AreEqual("Function", debugger.SelectedFunction.Name);
 			Assert.AreEqual(false, function.HasExpired);
 			Assert.AreEqual("1", function.GetArgumentVariable(0).Value.AsString);
 			
 			debugger.Continue(); // Setp out of function
 			WaitForPause(PausedReason.Break, null);
-			Assert.AreEqual("Main", debugger.CurrentFunction.Name);
+			Assert.AreEqual("Main", debugger.SelectedFunction.Name);
 			Assert.AreEqual(true, function.HasExpired);
 			
 			debugger.Continue();
@@ -377,7 +377,7 @@ namespace Debugger.Tests
 			
 			StartProgram("FunctionVariablesLifetime"); // 1 - Enter program
 			WaitForPause(PausedReason.Break, null);
-			function = debugger.CurrentFunction;
+			function = debugger.SelectedFunction;
 			Assert.IsNotNull(function);
 			Assert.AreEqual("Function", function.Name);
 			argument = function.GetArgumentVariable(0);
@@ -443,7 +443,7 @@ namespace Debugger.Tests
 			
 			StartProgram("ArrayValue");
 			WaitForPause(PausedReason.Break, null);
-			foreach(Variable var in debugger.CurrentFunction.LocalVariables) {
+			foreach(Variable var in debugger.SelectedFunction.LocalVariables) {
 				local = var; break;
 			}
 			Assert.AreEqual("array", local.Name);
@@ -471,7 +471,7 @@ namespace Debugger.Tests
 			
 			StartProgram("ObjectValue");
 			WaitForPause(PausedReason.Break, null);
-			foreach(Variable var in debugger.CurrentFunction.LocalVariables) {
+			foreach(Variable var in debugger.SelectedFunction.LocalVariables) {
 				local = var;
 			}
 			Assert.AreEqual("val", local.Name);
@@ -514,7 +514,7 @@ namespace Debugger.Tests
 			
 			StartProgram("PropertyVariable");
 			WaitForPause(PausedReason.Break, null);
-			foreach(Variable var in debugger.CurrentFunction.LocalVariables) {
+			foreach(Variable var in debugger.SelectedFunction.LocalVariables) {
 				local = var;
 			}
 			foreach(Variable var in local.SubVariables) {
@@ -559,7 +559,7 @@ namespace Debugger.Tests
 			
 			StartProgram("PropertyVariableForm");
 			WaitForPause(PausedReason.Break, null);
-			foreach(Variable var in debugger.CurrentFunction.LocalVariables) {
+			foreach(Variable var in debugger.SelectedFunction.LocalVariables) {
 				local = var;
 			}
 			Assert.AreEqual("form", local.Name);
@@ -596,9 +596,9 @@ namespace Debugger.Tests
 			StartProgram("SetIP");
 			WaitForPause(PausedReason.Break, "1");
 			
-			Assert.IsNotNull(debugger.CurrentFunction.CanSetIP("SetIP.cs", 16, 0));
-			Assert.IsNull(debugger.CurrentFunction.CanSetIP("SetIP.cs", 100, 0));
-			debugger.CurrentFunction.SetIP("SetIP.cs", 16, 0);
+			Assert.IsNotNull(debugger.SelectedFunction.CanSetIP("SetIP.cs", 16, 0));
+			Assert.IsNull(debugger.SelectedFunction.CanSetIP("SetIP.cs", 100, 0));
+			debugger.SelectedFunction.SetIP("SetIP.cs", 16, 0);
 			debugger.Continue();
 			WaitForPause(PausedReason.Break, "1");
 			Assert.AreEqual("1\r\n1\r\n", log);

@@ -8,8 +8,8 @@
  */
 
 using System;
-using System.ComponentModel;
 using System.Drawing;
+using System.ComponentModel;
 
 using SharpReportCore;
 using SharpReport.Designer;
@@ -30,11 +30,12 @@ namespace SharpReport.ReportItems{
 	
 	private	ReportCircleControl visualControl;
 		
-		private bool initDone;
-		
-		
-		public ReportCircleItem() : base(){
+
+	public ReportCircleItem() : base(){
 			visualControl = new ReportCircleControl();
+			
+			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
+			
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
 			this.visualControl.BackColorChanged += new EventHandler (OnControlChanged);
@@ -42,20 +43,20 @@ namespace SharpReport.ReportItems{
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
 	
 			base.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (BasePropertyChange);
-			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
-			this.initDone = true;
-		}
+	}
 
 		#region EventHandling
 		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
-			if (initDone == true) {
-				ItemsHelper.UpdateControlFromGraphicBase (this.visualControl,this);
-			}
+			ItemsHelper.UpdateControlFromGraphicBase (this.visualControl,this);
+			this.HandlePropertyChanged(e.PropertyName);
+
 		}
 		
 		private void OnControlChanged (object sender, EventArgs e) {
+			base.SuspendLayout();
 			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
+			base.ResumeLayout();
 			this.HandlePropertyChanged("OnControlChanged");
 		}
 		
@@ -75,8 +76,8 @@ namespace SharpReport.ReportItems{
 					PropertyChanged (this,new PropertyChangedEventArgs(info));
 				}
 			}
-			
 		}
+		
 		#endregion
 		
 		#region overrides
@@ -120,7 +121,20 @@ namespace SharpReport.ReportItems{
 				this.HandlePropertyChanged("Location");
 			}
 		}
-
+		
+		public override Color BackColor {
+			get {
+				return base.BackColor;
+			}
+			set {
+				base.BackColor = value;
+				if (this.visualControl != null) {
+					this.visualControl.BackColor = value;
+				}
+				this.HandlePropertyChanged("Backcolor");
+			}
+		}
+		
 		#endregion
 		
 		#region SharpReport.Designer.IDesignable interface implementation

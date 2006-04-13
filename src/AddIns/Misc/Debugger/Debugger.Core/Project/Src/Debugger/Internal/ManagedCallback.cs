@@ -13,6 +13,7 @@
 // \1\2\n\1{\n\1\tEnterCallback(PausedReason.Other, "\3");\n\1\t\n\1\tExitCallback_Continue();\n\1}
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using Debugger.Wrappers.CorDebug;
@@ -37,10 +38,11 @@ namespace Debugger
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugProcess pProcess)
 		{
 			debugger.TraceMessage("Callback: " + name);
-			debugger.AssertRunning();
+			// ExitProcess may be called at any time when debuggee is killed
+			if (name != "ExitProcess") debugger.AssertRunning();
 			debugger.PauseSession = new PauseSession(pausedReason);
-			debugger.CurrentProcess = debugger.GetProcess(pProcess);
-			debugger.CurrentProcess.IsRunning = false;
+			debugger.SelectedProcess = debugger.GetProcess(pProcess);
+			debugger.SelectedProcess.IsRunning = false;
 		}
 		
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugAppDomain pAppDomain)
@@ -55,22 +57,32 @@ namespace Debugger
 			if (name != "ExitProcess") debugger.AssertRunning();
 			Thread thread = debugger.GetThread(pThread);
 			debugger.PauseSession = new PauseSession(pausedReason);
-			debugger.CurrentProcess = thread.Process;
-			debugger.CurrentProcess.IsRunning = false;
-			debugger.CurrentProcess.CurrentThread = thread;
+			debugger.SelectedProcess = thread.Process;
+			debugger.SelectedProcess.IsRunning = false;
+			debugger.SelectedProcess.SelectedThread = thread;
 		}
 		
 		void ExitCallback_Continue()
 		{
-			debugger.CurrentProcess.Continue();
+			debugger.SelectedProcess.Continue();
 		}
 		
 		void ExitCallback_Paused()
 		{
-			if (debugger.CurrentThread != null) {
-				debugger.CurrentThread.DeactivateAllSteppers();
+			if (debugger.Evaluating) {
+				// Ignore events during property evaluation
+				ExitCallback_Continue();
+			} else {
+				if (debugger.SelectedThread != null) {
+					// Disable all steppers - do not Deactivate since function tracking still needs them
+					foreach(Stepper s in debugger.SelectedThread.Steppers) {
+						s.PauseWhenComplete = false;
+					}
+					
+					debugger.SelectedThread.SelectedFunction = debugger.SelectedThread.LastFunctionWithLoadedSymbols;
+				}
+				debugger.Pause();
 			}
-			debugger.Pause();
 		}
 		
 		
@@ -80,23 +92,22 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.StepComplete, "StepComplete (" + reason.ToString() + ")", pThread);
 			
-			Stepper stepper = debugger.GetThread(pThread).GetStepper(pStepper);
-			if (stepper != null) {
-				stepper.OnStepComplete();
-				if (!stepper.PauseWhenComplete) {
+			Thread thread = debugger.GetThread(pThread);
+			Stepper stepper = thread.GetStepper(pStepper);
+
+			thread.Steppers.Remove(stepper);
+			stepper.OnStepComplete();
+			if (stepper.PauseWhenComplete) {
+				if (debugger.SelectedThread.LastFunction.HasSymbols) {
+					ExitCallback_Paused();
+				} else {
+					// This should not happen with JMC enabled
+					debugger.TraceMessage(" - leaving code without symbols");
+					
 					ExitCallback_Continue();
-					return;
 				}
-			}
-			
-			if (!debugger.CurrentThread.LastFunction.HasSymbols) {
-				// This should not happen with JMC enabled
-				debugger.TraceMessage(" - leaving code without symbols");
-				
-				ExitCallback_Continue();
 			} else {
-				
-				ExitCallback_Paused();
+				ExitCallback_Continue();
 			}
 		}
 		
@@ -339,11 +350,16 @@ namespace Debugger
 
 			debugger.RemoveThread(thread);
 
-			if (thread.Process.CurrentThread == thread) {
-				thread.Process.CurrentThread = null;
+			if (thread.Process.SelectedThread == thread) {
+				thread.Process.SelectedThread = null;
 			}
 
-			ExitCallback_Continue();
+			try {
+				ExitCallback_Continue();
+			} catch (COMException e) {
+				// For some reason this sometimes happens in .NET 1.1
+				debugger.TraceMessage("Continue failed in ExitThread callback: " + e.Message);
+			}
 		}
 
 		public void ExitAppDomain(ICorDebugProcess pProcess, ICorDebugAppDomain pAppDomain)
@@ -400,7 +416,7 @@ namespace Debugger
 			// Whatch out for the zeros and null!
 			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
 			
-			debugger.CurrentThread.CurrentExceptionType = (ExceptionType)exceptionType;
+			debugger.SelectedThread.CurrentExceptionType = (ExceptionType)exceptionType;
 			
 			if (ExceptionType.DEBUG_EXCEPTION_UNHANDLED != (ExceptionType)exceptionType) {
 				// Handled exception

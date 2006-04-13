@@ -46,7 +46,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			configurations["Debug|*"] = new PropertyGroup();
 			configurations["Debug|*"]["BaseIntermediateOutputPath"] = @"obj\";
 			configurations["Debug|*"]["IntermediateOutputPath"] = @"obj\Debug\";
-			configurations["Debug|*"]["OutputPath"] = @"bin\Debug\";
+			if (information.CreateProjectWithDefaultOutputPath) {
+				configurations["Debug|*"]["OutputPath"] = @"bin\Debug\";
+			}
 			configurations["Debug|*"]["Optimize"] = "False";
 			configurations["Debug|*"]["DefineConstants"] = "DEBUG" + BuildConstantSeparator + "TRACE";
 			configurations["Debug|*"]["DebugSymbols"] = "True";
@@ -55,7 +57,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			configurations["Release|*"] = new PropertyGroup();
 			configurations["Release|*"]["BaseIntermediateOutputPath"] = @"obj\";
 			configurations["Release|*"]["IntermediateOutputPath"] = @"obj\Release\";
-			configurations["Release|*"]["OutputPath"] = @"bin\Release\";
+			if (information.CreateProjectWithDefaultOutputPath) {
+				configurations["Release|*"]["OutputPath"] = @"bin\Release\";
+			}
 			configurations["Release|*"]["Optimize"] = "True";
 			configurations["Release|*"]["DefineConstants"] = "TRACE";
 			configurations["Release|*"]["DebugSymbols"] = "False";

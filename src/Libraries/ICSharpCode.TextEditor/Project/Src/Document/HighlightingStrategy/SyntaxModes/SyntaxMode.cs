@@ -7,7 +7,7 @@
 
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Xml;
 
@@ -60,10 +60,10 @@ namespace ICSharpCode.TextEditor.Document
 			this.extensions = extensions;
 		}
 		
-		public static ArrayList GetSyntaxModes(Stream xmlSyntaxModeStream)
+		public static List<SyntaxMode> GetSyntaxModes(Stream xmlSyntaxModeStream)
 		{
 			XmlTextReader reader = new XmlTextReader(xmlSyntaxModeStream);
-			ArrayList syntaxModes = new ArrayList();
+			List<SyntaxMode> syntaxModes = new List<SyntaxMode>();
 			while (reader.Read()) {
 				switch (reader.NodeType) {
 					case XmlNodeType.Element:

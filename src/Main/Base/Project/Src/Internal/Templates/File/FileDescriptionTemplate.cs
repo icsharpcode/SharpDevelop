@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		public FileDescriptionTemplate(XmlElement xml)
+		public FileDescriptionTemplate(XmlElement xml, string hintPath)
 		{
 			name = xml.GetAttribute("name");
 			language = xml.GetAttribute("language");
@@ -39,7 +39,17 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			copyToOutputDirectory = xml.GetAttribute("copyToOutputDirectory");
 			dependentUpon = xml.GetAttribute("dependentUpon");
 			subType = xml.GetAttribute("subType");
-			content = xml.InnerText;
+			if (xml.HasAttribute("src")) {
+				string fileName = Path.Combine(hintPath, StringParser.Parse(xml.GetAttribute("src")));
+				try {
+					content = File.ReadAllText(fileName);
+				} catch (Exception e) {
+					content = "Error reading content from " + fileName + ":\n" + e.ToString();
+					LoggingService.Warn(content);
+				}
+			} else {
+				content = xml.InnerText;
+			}
 		}
 		
 		/// <summary>

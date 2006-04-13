@@ -25,6 +25,8 @@ namespace Debugger
 		ICorDebugILFrame  corILFrame;
 		object            corILFramePauseSession;
 		
+		Stepper stepOutStepper;
+		
 		bool steppedOut;
 		Thread thread;
 		uint chainIndex;
@@ -109,18 +111,17 @@ namespace Debugger
 			this.thread = thread;
 			this.chainIndex = chainIndex;
 			this.frameIndex = frameIndex;
-			this.corILFrame = corILFrame;
-			this.corILFramePauseSession = debugger.PauseSession;
+			this.CorILFrame = corILFrame;
 			corFunction = corILFrame.Function;
 			module = debugger.GetModule(corFunction.Module);
 			
 			methodProps = module.MetaData.GetMethodProps(corFunction.Token);
 			
 			// Expiry the function when it is finished
-			Stepper tracingStepper = thread.CreateStepper();
-			tracingStepper.CorStepper.StepOut();
-			tracingStepper.PauseWhenComplete = false;
-			tracingStepper.StepComplete += delegate {
+			stepOutStepper = CreateStepper();
+			stepOutStepper.CorStepper.StepOut();
+			stepOutStepper.PauseWhenComplete = false;
+			stepOutStepper.StepComplete += delegate {
 				steppedOut = true;
 				OnExpired(EventArgs.Empty);
 			};
@@ -130,10 +131,14 @@ namespace Debugger
 			get {
 				if (HasExpired) throw new DebuggerException("Function has expired");
 				if (corILFramePauseSession != debugger.PauseSession) {
-					corILFrame = thread.GetFunctionAt(chainIndex, frameIndex).CorILFrame;
-					corILFramePauseSession = debugger.PauseSession;
+					CorILFrame = thread.GetFrameAt(chainIndex, frameIndex).As<ICorDebugILFrame>();
 				}
 				return corILFrame;
+			}
+			set {
+				if (value == null) throw new DebuggerException("Can not set frame to null");
+				corILFrame = value;
+				corILFramePauseSession = debugger.PauseSession;
 			}
 		}
 		
@@ -167,6 +172,17 @@ namespace Debugger
 			}
 		}
 		
+		internal Stepper CreateStepper()
+		{
+			Stepper stepper = new Stepper(debugger, corILFrame.CreateStepper());
+			if (stepper.CorStepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
+				stepper.CorStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
+				(stepper.CorStepper.CastTo<ICorDebugStepper2>()).SetJMC(1 /* true */);
+			}
+			thread.Steppers.Add(stepper);
+			return stepper;
+		}
+		
 		public void StepInto()
 		{
 			Step(true);
@@ -179,11 +195,7 @@ namespace Debugger
 
 		public void StepOut()
 		{
-			ICorDebugStepper stepper = CorILFrame.CreateStepper();
-			stepper.StepOut();
-			
-			debugger.CurrentThread.AddActiveStepper(stepper);
-			
+			stepOutStepper.PauseWhenComplete = true;
 			debugger.Continue();
 		}
 
@@ -200,38 +212,18 @@ namespace Debugger
 				throw new DebuggerException("Unable to step. Next statement not aviable");
 			}
 			
-			ICorDebugStepper stepper;
+			Stepper stepper;
 			
 			if (stepIn) {
-				stepper = CorILFrame.CreateStepper();
-				
-				if (stepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
-					stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-					(stepper.CastTo<ICorDebugStepper2>()).SetJMC(1 /* true */);
-				}
-				
-				fixed (int* ranges = nextSt.StepRanges) {
-					stepper.StepRange(1 /* true - step in*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
-				}
-				
-				debugger.CurrentThread.AddActiveStepper(stepper);
+				stepper = CreateStepper();
+				stepper.CorStepper.StepRange(true /* step in */, nextSt.StepRanges);
 			}
 			
-			// Mind that step in which ends in code without symblols is cotinued
-			// so the next step over ensures that we atleast do step over
+			// Without JMC step in which ends in code without symblols is cotinued.
+			// The next step over ensures that we at least do step over.
 			
-			stepper = CorILFrame.CreateStepper();
-			
-			if (stepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
-				stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-				(stepper.CastTo<ICorDebugStepper2>()).SetJMC(1 /* true */);
-			}
-			
-			fixed (int* ranges = nextSt.StepRanges) {
-				stepper.StepRange(0 /* false - step over*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
-			}
-			
-			debugger.CurrentThread.AddActiveStepper(stepper);
+			stepper = CreateStepper();
+			stepper.CorStepper.StepRange(false /* step over */ , nextSt.StepRanges);
 			
 			debugger.Continue();
 		}
@@ -420,28 +412,26 @@ namespace Debugger
 			}
 		}
 		
-		internal ICorDebugValue GetArgumentValue(int index)
-		{
-			// Non-static functions include 'this' as first argument
-			return CorILFrame.GetArgument((uint)(IsStatic? index : (index + 1)));
-		}
-		
 		public Variable GetArgumentVariable(int index)
 		{
 			return new Variable(debugger,
 			                    GetParameterName(index),
-			                    delegate {
-			                    	if (this.HasExpired) {
-			                    		return new UnavailableValue(debugger, "Function has expired");
-			                    	} else {
-			                    		try {
-			                    			return Value.CreateValue(debugger, GetArgumentValue(index));
-			                    		} catch (COMException e) {
-			                    			if ((uint)e.ErrorCode == 0x80131304) return new UnavailableValue(debugger, "Unavailable in optimized code");
-			                    			throw;
-			                    		}
-			                    	}
-			                    });
+			                    delegate { return GetArgumentValue(index); });
+		}
+		
+		Value GetArgumentValue(int index)
+		{
+			if (this.HasExpired) {
+				return new UnavailableValue(debugger, "Function has expired");
+			} else {
+				try {
+					// Non-static functions include 'this' as first argument
+					return Value.CreateValue(debugger, CorILFrame.GetArgument((uint)(IsStatic? index : (index + 1))));
+				} catch (COMException e) {
+					if ((uint)e.ErrorCode == 0x80131304) return new UnavailableValue(debugger, "Unavailable in optimized code");
+					throw;
+				}
+			}
 		}
 		
 		public IEnumerable<Variable> ArgumentVariables {
@@ -481,20 +471,23 @@ namespace Debugger
 		{
 			return new Variable(debugger,
 			                    symVar.Name,
-			                    delegate {
-			                    	if (this.HasExpired) {
-			                    		return new UnavailableValue(debugger, "Function has expired");
-			                    	} else {
-			                    		ICorDebugValue corValue;
-			                    		try {
-			                    			corValue = CorILFrame.GetLocalVariable((uint)symVar.AddressField1);
-			                    		} catch (COMException e) {
-			                    			if ((uint)e.ErrorCode == 0x80131304) return new UnavailableValue(debugger, "Unavailable in optimized code");
-			                    			throw;
-			                    		}
-			                    		return Value.CreateValue(debugger, corValue);
-			                    	}
-			                    });
+			                    delegate { return GetValueOfLocalVariable(symVar); });
+		}
+		
+		Value GetValueOfLocalVariable(ISymUnmanagedVariable symVar)
+		{
+			if (this.HasExpired) {
+				return new UnavailableValue(debugger, "Function has expired");
+			} else {
+				ICorDebugValue corValue;
+				try {
+					corValue = CorILFrame.GetLocalVariable((uint)symVar.AddressField1);
+				} catch (COMException e) {
+					if ((uint)e.ErrorCode == 0x80131304) return new UnavailableValue(debugger, "Unavailable in optimized code");
+					throw;
+				}
+				return Value.CreateValue(debugger, corValue);
+			}
 		}
 	}
 }

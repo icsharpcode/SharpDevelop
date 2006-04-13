@@ -13,14 +13,78 @@ using Boo.Lang.Compiler.Ast;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {
+	public abstract class VariableLookupVisitorBase : DepthFirstVisitor
+	{
+		protected BooResolver resolver;
+		protected bool acceptImplicit = true;
+		
+		protected abstract void DeclarationFound(string declarationName, TypeReference declarationType, Expression initializer, LexicalInfo lexicalInfo);
+		protected abstract void IterationDeclarationFound(string declarationName, TypeReference declarationType, Expression initializer, LexicalInfo lexicalInfo);
+		
+		public override void OnDeclarationStatement(DeclarationStatement node)
+		{
+			DeclarationFound(node.Declaration.Name, node.Declaration.Type, node.Initializer, node.LexicalInfo);
+		}
+		
+		protected override void OnError(Node node, Exception error)
+		{
+			MessageService.ShowError(error, "VariableLookupVisitor: error processing " + node);
+		}
+		
+		public override void OnBinaryExpression(BinaryExpression node)
+		{
+			if (acceptImplicit) {
+				ReferenceExpression reference = node.Left as ReferenceExpression;
+				if (node.Operator == BinaryOperatorType.Assign && reference != null) {
+					if (!(reference is MemberReferenceExpression)) {
+						DeclarationFound(reference.Name, null, node.Right, node.LexicalInfo);
+					}
+				}
+			}
+			base.OnBinaryExpression(node);
+		}
+		
+		public override void OnForStatement(ForStatement node)
+		{
+			if (node.LexicalInfo.Line <= resolver.CaretLine && node.Block.EndSourceLocation.Line >= resolver.CaretLine - 1) {
+				foreach (Declaration decl in node.Declarations) {
+					IterationDeclarationFound(decl.Name, decl.Type, node.Iterator, node.LexicalInfo);
+				}
+			}
+			base.OnForStatement(node);
+		}
+		
+		public override void OnGeneratorExpression(GeneratorExpression node)
+		{
+			if (node.LexicalInfo.Line != resolver.CaretLine)
+				return;
+			LoggingService.Warn("GeneratorExpression: " + node.EndSourceLocation.Line);
+			foreach (Declaration decl in node.Declarations) {
+				IterationDeclarationFound(decl.Name, decl.Type, node.Iterator, node.LexicalInfo);
+			}
+			base.OnGeneratorExpression(node);
+		}
+		
+		public override void OnUnpackStatement(UnpackStatement node)
+		{
+			ArrayLiteralExpression ale = node.Expression as ArrayLiteralExpression;
+			for (int i = 0; i < node.Declarations.Count; i++) {
+				Declaration decl = node.Declarations[i];
+				if (acceptImplicit && ale != null && ale.Items.Count > i) {
+					DeclarationFound(decl.Name, decl.Type, ale.Items[i], decl.LexicalInfo);
+				} else if (decl.Type != null) {
+					DeclarationFound(decl.Name, decl.Type, null, decl.LexicalInfo);
+				}
+			}
+		}
+	}
+	
 	/// <summary>
 	/// Finds an variable declaration in the boo AST.
 	/// </summary>
-	public class VariableLookupVisitor : DepthFirstVisitor
+	public class VariableLookupVisitor : VariableLookupVisitorBase
 	{
-		BooResolver resolver;
 		string lookFor;
-		bool acceptImplicit;
 		
 		public VariableLookupVisitor(BooResolver resolver, string lookFor, bool acceptImplicit)
 		{
@@ -37,11 +101,41 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 		}
 		
+		protected override void IterationDeclarationFound(string declarationName, TypeReference declarationType, Expression iterator, LexicalInfo lexicalInfo)
+		{
+			if (result != null)
+				return;
+			if (declarationName == lookFor) {
+				if (declarationType != null) {
+					result = new DefaultField.LocalVariableField(resolver.ConvertType(declarationType),
+					                                             declarationName,
+					                                             new DomRegion(lexicalInfo.Line, lexicalInfo.Column),
+					                                             resolver.CallingClass);
+				} else if (iterator != null) {
+					InferResult(iterator, declarationName, lexicalInfo, true);
+				}
+			}
+		}
+		
+		protected override void DeclarationFound(string declarationName, TypeReference declarationType, Expression initializer, LexicalInfo lexicalInfo)
+		{
+			if (result != null)
+				return;
+			if (declarationName == lookFor) {
+				if (declarationType != null) {
+					result = new DefaultField.LocalVariableField(resolver.ConvertType(declarationType),
+					                                             declarationName,
+					                                             new DomRegion(lexicalInfo.Line, lexicalInfo.Column),
+					                                             resolver.CallingClass);
+				} else if (initializer != null) {
+					InferResult(initializer, declarationName, lexicalInfo, false);
+				}
+			}
+		}
+		
 		private void InferResult(Expression expr, string name, LexicalInfo lexicalInfo, bool useElementType)
 		{
 			if (expr == null)
-				return;
-			if (result != null)
 				return;
 			IReturnType returnType = new InferredReturnType(expr, resolver.CallingClass);
 			if (useElementType)
@@ -50,91 +144,15 @@ namespace Grunwald.BooBinding.CodeCompletion
 			                                             new DomRegion(lexicalInfo.Line, lexicalInfo.Column),
 			                                             resolver.CallingClass);
 		}
-		
-		public override void OnDeclaration(Declaration node)
-		{
-			if (result != null)
-				return;
-			if (node.Name == lookFor) {
-				if (node.Type != null) {
-					result = new DefaultField.LocalVariableField(resolver.ConvertType(node.Type),
-					                                             node.Name,
-					                                             new DomRegion(node.LexicalInfo.Line, node.LexicalInfo.Column),
-					                                             resolver.CallingClass);
-				}
-			}
-		}
-		
-		public override void OnDeclarationStatement(DeclarationStatement node)
-		{
-			if (node.Declaration.Name == lookFor) {
-				Visit(node.Declaration);
-				InferResult(node.Initializer, node.Declaration.Name, node.LexicalInfo, false);
-			}
-		}
-		
-		protected override void OnError(Node node, Exception error)
-		{
-			MessageService.ShowError(error, "VariableLookupVisitor: error processing " + node);
-		}
-		
-		public override void OnBinaryExpression(BinaryExpression node)
-		{
-			if (acceptImplicit) {
-				ReferenceExpression reference = node.Left as ReferenceExpression;
-				if (node.Operator == BinaryOperatorType.Assign && reference != null) {
-					if (!(reference is MemberReferenceExpression)) {
-						if (reference.Name == lookFor) {
-							InferResult(node.Right, reference.Name, reference.LexicalInfo, false);
-						}
-					}
-				}
-			}
-			base.OnBinaryExpression(node);
-		}
-		
-		public override void OnForStatement(ForStatement node)
-		{
-			if (node.LexicalInfo.Line > resolver.CaretLine || node.Block.EndSourceLocation.Line < resolver.CaretLine)
-				return;
-			
-			if (node.Declarations.Count != 1) {
-				// TODO: support unpacking
-				base.OnForStatement(node);
-				return;
-			}
-			if (node.Declarations[0].Name == lookFor) {
-				Visit(node.Declarations[0]);
-				InferResult(node.Iterator, node.Declarations[0].Name, node.LexicalInfo, true);
-			}
-		}
-		
-		public override void OnGeneratorExpression(GeneratorExpression node)
-		{
-			if (node.LexicalInfo.Line != resolver.CaretLine)
-				return;
-			LoggingService.Warn("GeneratorExpression: " + node.EndSourceLocation.Line);
-			if (node.Declarations.Count != 1) {
-				// TODO: support unpacking
-				base.OnGeneratorExpression(node);
-				return;
-			}
-			if (node.Declarations[0].Name == lookFor) {
-				Visit(node.Declarations[0]);
-				InferResult(node.Iterator, node.Declarations[0].Name, node.LexicalInfo, true);
-			}
-			base.OnGeneratorExpression(node);
-		}
 	}
 	
 	/// <summary>
 	/// Creates a hashtable name => (Expression or TypeReference) for the local
 	/// variables in the block that is visited.
 	/// </summary>
-	public class VariableListLookupVisitor : DepthFirstVisitor
+	public class VariableListLookupVisitor : VariableLookupVisitorBase
 	{
 		List<string> knownVariableNames;
-		BooResolver resolver;
 		
 		public VariableListLookupVisitor(List<string> knownVariableNames, BooResolver resolver)
 		{
@@ -171,48 +189,22 @@ namespace Grunwald.BooBinding.CodeCompletion
 			results.Add(name, resolver.ConvertType(reference));
 		}
 		
-		public override void OnDeclaration(Declaration node)
+		protected override void DeclarationFound(string declarationName, TypeReference declarationType, Expression initializer, LexicalInfo lexicalInfo)
 		{
-			Add(node.Name, node.Type);
-		}
-		
-		public override void OnDeclarationStatement(DeclarationStatement node)
-		{
-			Visit(node.Declaration);
-			Add(node.Declaration.Name, node.Initializer, false);
-		}
-		
-		protected override void OnError(Node node, Exception error)
-		{
-			MessageService.ShowError(error, "VariableListLookupVisitor: error processing " + node);
-		}
-		
-		public override void OnBinaryExpression(BinaryExpression node)
-		{
-			if (node.Operator == BinaryOperatorType.Assign && node.Left is ReferenceExpression) {
-				ReferenceExpression reference = node.Left as ReferenceExpression;
-				if (node.Operator == BinaryOperatorType.Assign && reference != null) {
-					if (!(reference is MemberReferenceExpression)) {
-						if (!knownVariableNames.Contains(reference.Name)) {
-							Add(reference.Name, node.Right, false);
-						}
-					}
-				}
+			if (declarationType != null) {
+				Add(declarationName, declarationType);
+			} else if (initializer != null) {
+				Add(declarationName, initializer, false);
 			}
-			base.OnBinaryExpression(node);
 		}
 		
-		public override void OnForStatement(ForStatement node)
+		protected override void IterationDeclarationFound(string declarationName, TypeReference declarationType, Expression initializer, LexicalInfo lexicalInfo)
 		{
-			if (node.LexicalInfo.Line > resolver.CaretLine || node.Block.EndSourceLocation.Line < resolver.CaretLine)
-				return;
-			
-			if (node.Declarations.Count != 1) {
-				// TODO: support unpacking
-				base.OnForStatement(node);
-				return;
+			if (declarationType != null) {
+				Add(declarationName, declarationType);
+			} else if (initializer != null) {
+				Add(declarationName, initializer, true);
 			}
-			Add(node.Declarations[0].Name, node.Iterator, true);
 		}
 	}
 }

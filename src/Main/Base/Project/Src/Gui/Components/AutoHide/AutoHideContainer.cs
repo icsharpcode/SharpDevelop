@@ -16,10 +16,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		protected Control control;
 		
-		protected bool autoHide = true;
-		protected bool showOnMouseMove = true;
-		protected bool showOnMouseDown = true;
-		protected int activatorHeight = 1;
+		bool autoHide = true;
+		bool showOverlay = false;
+		bool showOnMouseMove = true;
+		bool showOnMouseDown = true;
+		int activatorHeight = 1;
 		
 		protected bool mouseIn;
 		
@@ -29,16 +30,45 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			set {
 				autoHide = value;
-				RefreshSize();
+				Reformat();
 			}
 		}
 		
-		protected virtual void RefreshSize()
+		public bool ShowOverlay {
+			get {
+				return showOverlay;
+			}
+			set {
+				showOverlay = value;
+				Reformat();
+			}
+		}
+		
+		protected virtual void Reformat()
 		{
 			if (autoHide) {
-				this.Height = activatorHeight;
-				this.Controls.Clear();
+				if (showOverlay) {
+					// Show as overlay
+					this.Height = activatorHeight;
+					control.Dock = DockStyle.None;
+					control.Size = new Size(this.Width, control.PreferredSize.Height);
+					if (this.Dock != DockStyle.Bottom) {
+						control.Location = new Point(this.Left, this.Top);
+					} else {
+						control.Location = new Point(this.Left, this.Top - control.PreferredSize.Height + 1);
+					}
+					Parent.Controls.Add(control);
+					control.BringToFront();
+				} else {
+					// Hidden
+					this.Height = activatorHeight;
+					control.Dock = DockStyle.None;
+					control.Size = new Size(this.Width, 1);
+					control.Location = new Point(0, activatorHeight);
+					this.Controls.Add(control);
+				}
 			} else {
+				// Permanently shown
 				this.Height = PreferredHeight;
 				control.Dock = DockStyle.Fill;
 				this.Controls.Add(control);
@@ -49,6 +79,28 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get {
 				return control.PreferredSize.Height;
 			}
+		}
+		
+		public AutoHideContainer(Control control)
+		{
+			if (control == null) throw new ArgumentNullException("control");
+			this.control = control;
+			this.MouseMove += delegate { if (showOnMouseMove) ShowOverlay = true; };
+			this.MouseDown += delegate { if (showOnMouseDown) ShowOverlay = true; };
+			control.MouseEnter += OnControlMouseEnter;
+			control.MouseLeave += OnControlMouseLeave;
+			Reformat();
+		}
+		
+		protected virtual void OnControlMouseEnter(object sender, EventArgs e)
+		{
+			mouseIn = true;
+		}
+		
+		protected virtual void OnControlMouseLeave(object sender, EventArgs e)
+		{
+			mouseIn = false;
+			ShowOverlay = false;
 		}
 		
 		public bool ShowOnMouseMove {
@@ -84,64 +136,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			set {
 				activatorHeight = value;
-			}
-		}
-		
-		public AutoHideContainer(Control control)
-		{
-			if (control == null) {
-				throw new ArgumentNullException("control");
-			}
-			this.control = control;
-			RefreshSize();
-			this.MouseMove += OnPanelMouseMove;
-			this.MouseDown += OnPanelMouseDown;
-			control.MouseEnter += OnControlMouseEnter;
-			control.MouseLeave += OnControlMouseLeave;
-		}
-		
-		protected virtual void OnPanelMouseMove(object sender, MouseEventArgs e)
-		{
-			if (showOnMouseMove && autoHide) {
-				ShowOverlay();
-			}
-		}
-		
-		protected virtual void OnPanelMouseDown(object sender, MouseEventArgs e)
-		{
-			if (showOnMouseDown && autoHide) {
-				ShowOverlay();
-			}
-		}
-		
-		protected virtual void OnControlMouseEnter(object sender, EventArgs e)
-		{
-			mouseIn = true;
-		}
-		
-		protected virtual void OnControlMouseLeave(object sender, EventArgs e)
-		{
-			mouseIn = false;
-			HideOverlay();
-		}
-		
-		public virtual void ShowOverlay()
-		{
-			control.Dock = DockStyle.None;
-			control.Size = new Size(this.Width, control.PreferredSize.Height);
-			if (this.Dock != DockStyle.Bottom) {
-				control.Location = new Point(this.Left, this.Top);
-			} else {
-				control.Location = new Point(this.Left, this.Top - control.PreferredSize.Height + 1);
-			}
-			Parent.Controls.Add(control);
-			control.BringToFront();
-		}
-		
-		public virtual void HideOverlay()
-		{
-			if (Parent.Controls.Contains(control)) {
-				Parent.Controls.Remove(control);
 			}
 		}
 	}

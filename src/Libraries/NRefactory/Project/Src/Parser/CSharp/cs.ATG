@@ -2146,7 +2146,7 @@ PrimaryExpr<out Expression pexpr>
 		| IF (la.kind == Tokens.Identifier && Peek(1).kind == Tokens.DoubleColon)
 			ident (. type = new TypeReference(t.val); .)
 			"::"  (. pexpr = new TypeReferenceExpression(type); .)
-			ident (. if (type.Type == "global") { type.IsGlobal = true; type.Type = t.val; } else type.Type += "." + t.val; .)
+			ident (. if (type.Type == "global") { type.IsGlobal = true; type.Type = (t.val ?? "?"); } else type.Type += "." + (t.val ?? "?"); .)
 		/*--- simple name: */
 		| ident (. pexpr = new IdentifierExpression(t.val); .)
 		/*--- parenthesized expression: */

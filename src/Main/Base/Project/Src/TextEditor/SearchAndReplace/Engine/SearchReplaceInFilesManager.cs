@@ -20,7 +20,7 @@ using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
-	public static class SearchReplaceInFilesManager
+	public static class SearchInFilesManager
 	{
 		static Search find               = new Search();
 		
@@ -33,7 +33,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		static SearchReplaceInFilesManager()
+		static SearchInFilesManager()
 		{
 			find.TextIteratorBuilder = new ForwardTextIteratorBuilder();
 		}
@@ -63,7 +63,7 @@ namespace SearchAndReplace
 		
 		public static void ShowSearchResults(string pattern, List<SearchResult> results)
 		{
-			SearchAndReplace.SearchAllFinishedEventArgs e = 
+			SearchAndReplace.SearchAllFinishedEventArgs e =
 				new SearchAllFinishedEventArgs(pattern, results);
 			OnSearchAllFinished(e);
 
@@ -74,30 +74,6 @@ namespace SearchAndReplace
 			} else {
 				MessageService.ShowError("SearchResultPanel can't be created.");
 			}
-		}
-		
-		public static void ReplaceAll()
-		{
-			if (!InitializeSearchInFiles()) {
-				return;
-			}
-			
-			List<SearchResult> results = new List<SearchResult>();
-			
-			while (true) {
-				SearchResult result = find.FindNext();
-				if (result == null) {
-					break;
-				}
-				
-				find.Replace(result.Offset, 
-				             result.Length, 
-				             result.TransformReplacePattern(SearchOptions.ReplacePattern));
-				
-				results.Add(result);
-			}
-			
-			FinishSearchInFiles(results);
 		}
 		
 		public static void FindAll()
@@ -116,7 +92,24 @@ namespace SearchAndReplace
 			}
 			FinishSearchInFiles(results);
 		}
+		
+		public static void FindAll(int offset, int length)
+		{
+			if (!InitializeSearchInFiles()) {
+				return;
+			}
 			
+			List<SearchResult> results = new List<SearchResult>();
+			while (true) {
+				SearchResult result = find.FindNext(offset, length);
+				if (result == null) {
+					break;
+				}
+				results.Add(result);
+			}
+			FinishSearchInFiles(results);
+		}
+		
 		static void OnSearchAllFinished(SearchAllFinishedEventArgs e)
 		{
 			lastSearches.Insert(0, e);
@@ -124,7 +117,7 @@ namespace SearchAndReplace
 				SearchAllFinished(null, e);
 			}
 		}
-				
+		
 		public static event SearchAllFinishedEventHandler SearchAllFinished;
 	}
 }

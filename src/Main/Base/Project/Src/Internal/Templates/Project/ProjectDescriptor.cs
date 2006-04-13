@@ -108,6 +108,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				string projectLocation = FileUtility.Combine(projectCreateInformation.ProjectBasePath, newProjectName + LanguageBindingService.GetProjectFileExtension(language));
 				
 				projectCreateInformation.OutputProjectFileName = projectLocation;
+				projectCreateInformation.SetDefaultCreateProjectOptions();
+				foreach (PropertyGroup pg in propertyGroups) {
+					if (pg.IsSet("OutputPath")) {
+						projectCreateInformation.CreateProjectWithDefaultOutputPath = false;
+					}
+				}
 				IProject project = languageinfo.CreateProject(projectCreateInformation, projectOptions);
 				
 				StringBuilder standardNamespace  = new StringBuilder();
@@ -215,7 +221,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		public static ProjectDescriptor CreateProjectDescriptor(XmlElement element)
+		public static ProjectDescriptor CreateProjectDescriptor(XmlElement element, string hintPath)
 		{
 			ProjectDescriptor projectDescriptor = new ProjectDescriptor(element.Attributes["name"].InnerText, element.Attributes["directory"].InnerText);
 			
@@ -228,7 +234,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				foreach (XmlNode node in element["Files"].ChildNodes) {
 					if (node != null && node.Name == "File") {
 						XmlElement filenode = (XmlElement)node;
-						projectDescriptor.files.Add(new FileDescriptionTemplate(filenode));
+						projectDescriptor.files.Add(new FileDescriptionTemplate(filenode, hintPath));
 					}
 				}
 			}

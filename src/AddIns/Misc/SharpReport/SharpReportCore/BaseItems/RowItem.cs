@@ -59,7 +59,7 @@ namespace SharpReportCore{
 		
 		
 		public override void Render(ReportPageEventArgs rpea){
-			System.Console.WriteLine("Render RowItem");
+			
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
@@ -71,11 +71,9 @@ namespace SharpReportCore{
 
 			foreach (BaseReportItem childItem in this.items) {
 				Point loc = new Point (childItem.Location.X,childItem.Location.Y);
-
+				
 				childItem.Location = new Point(this.Location.X + childItem.Location.X,
-				                               this.SectionOffset + this.Location.Y);
-				
-				
+				                               this.SectionOffset + childItem.Location.Y);
 			
 				childItem.Render (rpea);
 				childItem.Location = new Point(loc.X,loc.Y);

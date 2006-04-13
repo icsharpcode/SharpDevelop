@@ -20,11 +20,8 @@ using Debugger;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class CallStackPad : AbstractPadContent
+	public partial class CallStackPad : DebuggerPad
 	{
-		WindowsDebugger debugger;
-		NDebugger debuggerCore;
-
 		ListView  callStackList;
 		
 		ColumnHeader name     = new ColumnHeader();
@@ -36,15 +33,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		public CallStackPad()// : base("${res:MainWindow.Windows.Debug.CallStack}", null)
+		protected override void InitializeComponents()
 		{
-			InitializeComponents();
-		}
-		
-		void InitializeComponents()
-		{
-			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-
 			callStackList = new ListView();
 			callStackList.FullRowSelect = true;
 			callStackList.AutoArrange = true;
@@ -60,24 +50,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			language.Width = 50;
 
 			RedrawContent();
-
-			if (debugger.ServiceInitialized) {
-				InitializeDebugger();
-			} else {
-				debugger.Initialize += delegate {
-					InitializeDebugger();
-				};
-			}
-		}
-
-		public void InitializeDebugger()
-		{
-			debuggerCore = debugger.DebuggerCore;
-
-			debuggerCore.DebuggeeStateChanged += DebuggeeStateChanged;
-			debuggerCore.DebuggingResumed += DebuggingResumed;
-
-			RefreshList();
 		}
 		
 		public override void RedrawContent()
@@ -86,82 +58,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			language.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.Language");
 		}
 		
-		public bool ShowArgumentNames {
-			get {
-				return debugger.Properties.Get("ShowArgumentNames", true);
-			}
-			set {
-				debugger.Properties.Set("ShowArgumentNames", value);
-			}
-		}
-		
-		public bool ShowArgumentValues {
-			get {
-				return debugger.Properties.Get("ShowArgumentValues", true);
-			}
-			set {
-				debugger.Properties.Set("ShowArgumentValues", value);
-			}
-		}
-		
-		public bool ShowExternalMethods {
-			get {
-				return debugger.Properties.Get("ShowExternalMethods", false);
-			}
-			set {
-				debugger.Properties.Set("ShowExternalMethods", value);
-			}
-		}
-		
-		ContextMenuStrip CreateContextMenuStrip()
+
+		protected override void RegisterDebuggerEvents()
 		{
-			ContextMenuStrip menu = new ContextMenuStrip();
-			menu.Opening += FillContextMenuStrip;
-			return menu;
-		}
-		
-		void FillContextMenuStrip(object sender, CancelEventArgs e)
-		{
-			ContextMenuStrip menu = sender as ContextMenuStrip;
-			menu.Items.Clear();
-			
-			ToolStripMenuItem argNamesItem;
-			argNamesItem = new ToolStripMenuItem();
-			argNamesItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowArgumentNames");
-			argNamesItem.Checked = ShowArgumentNames;
-			argNamesItem.Click +=
-				delegate {
-				ShowArgumentNames = !ShowArgumentNames;
-				RefreshList();
-			};
-			
-			ToolStripMenuItem argValuesItem;
-			argValuesItem = new ToolStripMenuItem();
-			argValuesItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowArgumentValues");
-			argValuesItem.Checked = ShowArgumentValues;
-			argValuesItem.Click +=
-				delegate {
-				ShowArgumentValues = !ShowArgumentValues;
-				RefreshList();
-			};
-			
-			ToolStripMenuItem extMethodsItem;
-			extMethodsItem = new ToolStripMenuItem();
-			extMethodsItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowExternalMethods");
-			extMethodsItem.Checked = ShowExternalMethods;
-			extMethodsItem.Click +=
-				delegate {
-				ShowExternalMethods = !ShowExternalMethods;
-				RefreshList();
-			};
-			
-			menu.Items.AddRange(new ToolStripItem[] {
-			                    	argNamesItem,
-			                    	argValuesItem,
-			                    	extMethodsItem
-			                    });
-			
-			e.Cancel = false;
+			debuggerCore.DebuggeeStateChanged += delegate { RefreshPad(); };
+			debuggerCore.ProcessExited += delegate { callStackList.Items.Clear(); };
 		}
 		
 		void CallStackListItemActivate(object sender, EventArgs e)
@@ -169,8 +70,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (debuggerCore.IsPaused) {
 				Function f = (Function)(callStackList.SelectedItems[0].Tag);
 				if (f.HasSymbols) {
-					if (debuggerCore.CurrentThread != null) {
-						debuggerCore.CurrentThread.SetCurrentFunction(f);
+					if (debuggerCore.SelectedThread != null) {
+						debuggerCore.SelectedThread.SelectedFunction = f;
+						debuggerCore.OnDebuggeeStateChanged(); // Force refresh of pads
 					}
 				} else {
 					MessageBox.Show("You can not switch to function without symbols", "Function switch");
@@ -179,18 +81,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				MessageBox.Show("You can not switch functions while the debugger is running.", "Function switch");
 			}
 		}
-
-		void DebuggeeStateChanged(object sender, DebuggerEventArgs e)
-		{
-			RefreshList();
-		}
-
-		void DebuggingResumed(object sender, DebuggerEventArgs e)
-		{
-			RefreshList();
-		}
 		
-		public void RefreshList()
+		public override void RefreshPad()
 		{
 			bool showArgumentNames = ShowArgumentNames;
 			bool showArgumentValues = ShowArgumentValues;
@@ -200,8 +92,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			callStackList.BeginUpdate();
 			callStackList.Items.Clear();
-			if (debuggerCore != null && debuggerCore.CurrentThread != null) {
-				foreach (Function f in debuggerCore.CurrentThread.Callstack) {
+			if (debuggerCore != null && debuggerCore.SelectedThread != null && debuggerCore.IsPaused) {
+				foreach (Function f in debuggerCore.SelectedThread.Callstack) {
 					ListViewItem item;
 					if (f.HasSymbols || showExternalMethods) {
 						// Show the method in the list

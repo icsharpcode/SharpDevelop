@@ -311,7 +311,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			XmlNodeList nodes = files.ChildNodes;
 			foreach (XmlNode filenode in nodes) {
 				if (filenode is XmlElement) {
-					this.files.Add(new FileDescriptionTemplate((XmlElement)filenode));
+					this.files.Add(new FileDescriptionTemplate((XmlElement)filenode, Path.GetDirectoryName(filename)));
 				}
 			}
 			

@@ -14,6 +14,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// Parses output text in the Output Build pad window and extracts source code
 	/// file references.
 	/// </summary>
+	/// <remarks>
+	/// Supported formats:
+	/// C#: "d:\somedir\somefile.ext(12,34)"
+	/// NUnit: "in d:\somedir\somefile.ext:line 12" (stacktrace format)
+	/// C++: "d:\somedir\somefile.ext(12)" (also VB and some NUnit failures)
+	/// </remarks>
 	public static class OutputTextLineParser
 	{
 		/// <summary>
@@ -25,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static FileLineReference GetCSharpCompilerFileLineReference(string lineText)
 		{
 			if (lineText != null) {
-				Match match = Regex.Match(lineText, @"^.*?(\w+:[/\\].*?)\(([\d]*),([\d]*)\)");
+				Match match = Regex.Match(lineText, @"\b(\w:[/\\].*?)\((\d+),(\d+)\)");
 				if (match.Success) {
 					try	{
 						// Take off 1 for line/col since SharpDevelop is zero index based.
@@ -33,7 +39,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 						int col = Convert.ToInt32(match.Groups[3].Value) - 1;
 						
 						return new FileLineReference(match.Groups[1].Value, line, col);
-					} catch (Exception) {
+					} catch (FormatException) {
+					} catch (OverflowException) {
 						// Ignore.
 					}
 				}
@@ -65,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// Extracts source code file reference from NUnit output.
+		/// Extracts source code file reference from NUnit output. (stacktrace format)
 		/// </summary>
 		/// <param name="line">The text line to parse.</param>
 		/// <param name="multiline">The <paramref name="line"/> text is multilined.</param>
@@ -75,20 +82,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			RegexOptions regexOptions = multiline ? RegexOptions.Multiline : RegexOptions.None;
 			
+			FileLineReference result = null;
+			
 			if (lineText != null) {
-				Match match = Regex.Match(lineText, @"^.*?\sin\s(.*?):line\s(\d*)?\r?$", regexOptions);
-				
-				if (match.Success) {
+				Match match = Regex.Match(lineText, @"\sin\s(.*?):line\s(\d+)?\r?$", regexOptions);
+				while (match.Success) {
 					try	{
 						int line = Convert.ToInt32(match.Groups[2].Value) - 1;
-						return new FileLineReference(match.Groups[1].Value, line);
-					} catch (Exception) {
+						result = new FileLineReference(match.Groups[1].Value, line);
+					} catch (FormatException) {
+					} catch (OverflowException) {
 						// Ignore.
 					}
+					match = match.NextMatch();
 				}
 			}
 			
-			return null;
+			return result;
 		}
 		
 		/// <summary>
@@ -101,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (lineText != null ) {
 				
-				Match match = Regex.Match(lineText, @"^.*?(\w+:[/\\].*?)\(([\d]*)\) :");
+				Match match = Regex.Match(lineText, @"\b(\w:[/\\].*?)\((\d+)\)");
 				
 				if (match.Success) {
 					try	{
@@ -109,7 +119,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 						int line = Convert.ToInt32(match.Groups[2].Value) - 1;
 						
 						return new FileLineReference(match.Groups[1].Value.Trim(), line);
-					} catch (Exception) {
+					} catch (FormatException) {
+					} catch (OverflowException) {
 						// Ignore.
 					}
 				}

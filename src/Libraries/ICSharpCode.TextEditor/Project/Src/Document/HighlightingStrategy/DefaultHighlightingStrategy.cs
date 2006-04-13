@@ -109,7 +109,12 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public void AddRuleSet(HighlightRuleSet aRuleSet)
 		{
-			rules.Add(aRuleSet);
+			HighlightRuleSet existing = FindHighlightRuleSet(aRuleSet.Name);
+			if (existing != null) {
+				existing.MergeFrom(aRuleSet);
+			} else {
+				rules.Add(aRuleSet);
+			}
 		}
 		
 		public void ResolveReferences()
@@ -593,19 +598,19 @@ namespace ICSharpCode.TextEditor.Document
 								if (currentLine.MatchExpr(span.Begin, i, document)) {
 									PushCurWord(document, ref markNext, words);
 									string regex = currentLine.GetRegString(span.Begin, i, document);
-
+									
 									if (!OverrideSpan(regex, document, words, span, ref i)) {
 										currentLength += regex.Length;
 										words.Add(new TextWord(document, currentLine, currentOffset, currentLength, span.BeginColor, false));
 										currentOffset += currentLength;
 										currentLength = 0;
-
+										
 										i += regex.Length - 1;
 										if (currentSpanStack == null) {
 											currentSpanStack = new Stack<Span>();
 										}
 										currentSpanStack.Push(span);
-
+										
 										UpdateSpanStateVariables();
 									}
 									

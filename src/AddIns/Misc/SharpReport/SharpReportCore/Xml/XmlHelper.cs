@@ -117,7 +117,7 @@ namespace SharpReportCore {
 		/// <param name="reader">See XMLFormReader</param>
 		/// <param name="item">The Control for wich the values are</param>
 		/// <param name="ctrlElem">Element witch contains the values</param>
-		public static void BuildControl (XmlFormReader reader,
+		public static void SetReportItemValues (XmlFormReader reader,
 		                                 XmlElement ctrlElem,
 		                                BaseReportItem item) {
 			
@@ -131,7 +131,8 @@ namespace SharpReportCore {
 								item.Font = XmlFormReader.MakeFont (elem.GetAttribute("value"));
 							}
 							
-							reader.SetValue (item,elem.Name,elem.GetAttribute("value"));
+							reader.SetValue (item,
+							                 elem.Name,elem.GetAttribute("value"));
 						}
 					}
 				}

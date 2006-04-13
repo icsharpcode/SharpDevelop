@@ -44,7 +44,7 @@ namespace SearchAndReplace
 		
 		public override bool IsEnabled {
 			get {
-				return SearchReplaceInFilesManager.LastSearches.Count > 0;
+				return SearchInFilesManager.LastSearches.Count > 0;
 			}
 		}
 		
@@ -57,8 +57,8 @@ namespace SearchAndReplace
 			SearchAllFinishedEventArgs args = (SearchAllFinishedEventArgs)((ToolStripItem)sender).Tag;
 
 			// "bubble" this saved search to the top of the list			
-			SearchReplaceInFilesManager.LastSearches.Remove(args);
-			SearchReplaceInFilesManager.LastSearches.Insert(0, args);
+			SearchInFilesManager.LastSearches.Remove(args);
+			SearchInFilesManager.LastSearches.Insert(0, args);
 			UpdateLastSearches(null, args);
 			
 			PadDescriptor searchResultPanel = WorkbenchSingleton.Workbench.GetPad(typeof(SearchResultPanel));
@@ -73,14 +73,14 @@ namespace SearchAndReplace
 		void ClearHistory(object sender, EventArgs e)
 		{
 			SearchResultPanel.Instance.Clear();
-			SearchReplaceInFilesManager.LastSearches.Clear();
+			SearchInFilesManager.LastSearches.Clear();
 			UpdateLastSearches(null, null);
 		}
 		
 		void UpdateLastSearches(object sender, SearchAllFinishedEventArgs e)
 		{
 			dropDownButton.DropDownItems.Clear();
-			foreach (SearchAllFinishedEventArgs args in SearchReplaceInFilesManager.LastSearches) {
+			foreach (SearchAllFinishedEventArgs args in SearchInFilesManager.LastSearches) {
 				ToolStripItem newItem = new ToolStripMenuItem();
 				newItem.Text = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesOf}",
 				                                  new string[,] {{ "Pattern", args.Pattern }})
@@ -102,7 +102,7 @@ namespace SearchAndReplace
 			base.OnOwnerChanged(e);
 			dropDownButton = (ToolBarDropDownButton)Owner;
 			
-			SearchReplaceInFilesManager.SearchAllFinished += new SearchAllFinishedEventHandler(UpdateLastSearches);
+			SearchInFilesManager.SearchAllFinished += new SearchAllFinishedEventHandler(UpdateLastSearches);
 			UpdateLastSearches(null, null);
 		}
 	}

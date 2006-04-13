@@ -46,15 +46,84 @@ namespace SharpReportCore {
 		                             
 		}
 		
+		private void OnSectionPrinting (object sender,SectionPrintingEventArgs e) {
+			System.Console.WriteLine("");
+			System.Console.WriteLine("Begin Print <{0}> with  <{1}> Items ",e.Section.Name,
+			                         e.Section.Items.Count);
+		}
 		
-		#region event's
-		protected override  void ReportQueryPage (object sender,QueryPageSettingsEventArgs e) {
-			base.ReportQueryPage (sender,e);
+		private void OnSectionPrinted (object sender,SectionPrintingEventArgs e) {
+			System.Console.WriteLine("Section Printed {0} ",e.Section.Name);
+			
+		}
+		
+		private void AddSectionEvents () {
+			base.CurrentSection.SectionPrinting += new EventHandler<SectionPrintingEventArgs>(OnSectionPrinting);
+			base.CurrentSection.SectionPrinted += new EventHandler<SectionPrintingEventArgs>(OnSectionPrinted);
+		}
+		
+		private void RemoveSectionEvents () {
+			base.CurrentSection.SectionPrinting -= new EventHandler<SectionPrintingEventArgs>(OnSectionPrinting);
+			base.CurrentSection.SectionPrinted -= new EventHandler<SectionPrintingEventArgs>(OnSectionPrinted);
 		}
 		
 		
-		protected override void ReportBegin (object sender,ReportPageEventArgs e) {
-			base.ReportBegin (sender,e);
+		
+		#region Draw the different report Sections
+		private PointF DoReportHeader (ReportPageEventArgs rpea){
+			PointF endAt = base.MeasureReportHeader (rpea);
+
+			this.AddSectionEvents();
+			base.RenderSection (base.CurrentSection,rpea);
+			this.RemoveSectionEvents();
+			
+			if (base.CurrentSection.PageBreakAfter) {
+				base.PageBreak(rpea,base.CurrentSection);
+				base.CurrentSection.PageBreakAfter = false;
+				return new PointF();
+			}
+			return endAt;
+		}
+		
+		private PointF DoPageHeader (PointF startAt,ReportPageEventArgs rpea){
+			
+			PointF endAt = base.MeasurePageHeader (startAt,rpea);
+
+			this.AddSectionEvents();
+			base.RenderSection (base.CurrentSection,rpea);
+			this.RemoveSectionEvents();
+			return endAt;
+		}
+		
+		private void DoPageEnd (ReportPageEventArgs rpea){
+			base.PrintPageEnd(this,rpea);
+			base.MeasurePageEnd (rpea);
+			
+			this.AddSectionEvents();
+			base.RenderSection (base.CurrentSection,rpea);
+			this.RemoveSectionEvents();
+			
+		}
+		
+		//TODO how should we handle ReportFooter, print it on an seperate page ????
+		private void  DoReportFooter (PointF startAt,ReportPageEventArgs rpea){
+			base.MeasureReportFooter(rpea);
+
+			this.AddSectionEvents();
+			base.RenderSection (base.CurrentSection,rpea);
+			this.RemoveSectionEvents();
+		}
+		
+		#endregion
+		
+		#region event's
+		protected override  void ReportQueryPage (object sender,QueryPageSettingsEventArgs qpea) {
+			base.ReportQueryPage (sender,qpea);
+		}
+		
+		
+		protected override void ReportBegin (object sender,ReportPageEventArgs rpea) {
+			base.ReportBegin (sender,rpea);
 		}
 		
 		/// <summary>
@@ -63,19 +132,31 @@ namespace SharpReportCore {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		/// 
-		protected override void  BeginPrintPage (object sender,ReportPageEventArgs e) {
-			base.BeginPrintPage (sender,e);
+		protected override void  BeginPrintPage (object sender,ReportPageEventArgs rpea) {
+			
+			if (rpea == null) {
+				throw new ArgumentNullException("rpea");
+			}
+			
+			base.BeginPrintPage (sender,rpea);
+			
 			//Draw ReportHeader
-			currentPoint = base.DrawReportHeader (e);		
+			if (rpea.PageNumber == 1) {
+				//Draw ReportHeader
+				this.currentPoint = DoReportHeader (rpea);
+			}
+
 			
 			if (base.CurrentSection.PageBreakAfter) {
-				base.PageBreak(e,base.CurrentSection);
+				base.PageBreak(rpea,base.CurrentSection);
 				base.CurrentSection.PageBreakAfter = false;
 				return;
 			}
 			
 			//Draw Pageheader
-			currentPoint = base.DrawPageHeader (currentPoint,e);
+	
+			this.currentPoint = DoPageHeader (this.currentPoint,rpea);
+
 			base.DetailStart = new Point ((int)currentPoint.X,(int)currentPoint.Y);
 		}
 		
@@ -85,61 +166,38 @@ namespace SharpReportCore {
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		protected override void PrintBodyStart (object sender,ReportPageEventArgs e) {
-			base.PrintBodyStart (sender,e);
+		protected override void PrintBodyStart (object sender,ReportPageEventArgs rpea) {
+			base.PrintBodyStart (sender,rpea);
 			
-			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail,
-			                                   CultureInfo.InvariantCulture);
 			BaseSection section = base.CurrentSection;
 			section.SectionOffset = (int)this.currentPoint.Y + base.Gap;
 			
-			Rectangle detailRect = base.DetailRectangle (e);
-			FitSectionToItems (section,e);
-			base.RenderSection (section,e);
-//			DebugRectangle (e,detailRect);
+			Rectangle detailRect = base.DetailRectangle (rpea);
+			FitSectionToItems (section,rpea);
+			
+			this.AddSectionEvents();
+			base.RenderSection (section,rpea);
+			this.RemoveSectionEvents();
 		}
-		
-		
-		protected override void PrintBodyEnd (object sender,ReportPageEventArgs e) {
-			base.PrintBodyEnd (sender,e);
-		}
-		
-		
 		/// <summary>
-		/// PageFooter and, if LastPage ReportFooter
+		/// Print the PageFooter 
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		protected override void PrintPageEnd (object sender,ReportPageEventArgs e) {
-		
-			//PageFooter
-			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageFooter,
-			                                   CultureInfo.InvariantCulture);
-			base.PrintPageEnd (sender,e);
-			
-			
-			Rectangle r = new Rectangle (e.PrintPageEventArgs.MarginBounds.Left,
-			                                base.CurrentSection.SectionOffset ,
-			                                e.PrintPageEventArgs.MarginBounds.Width,
-			                                base.CurrentSection.Size.Height);
-//			DebugRectangle (e,r);
-			
-			int off = base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height + base.Gap;
-			//ReportFooter
-			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportFooter,
-			                                   CultureInfo.InvariantCulture);
-			BaseSection section = base.CurrentSection;
-	
-			section.SectionOffset = off;
-			FitSectionToItems (section,e);
-			Rectangle rr = new Rectangle (e.PrintPageEventArgs.MarginBounds.Left,
-			                                base.CurrentSection.SectionOffset ,
-			                                e.PrintPageEventArgs.MarginBounds.Width,
-			                                base.CurrentSection.Size.Height);
-			
-			base.RenderSection (section,e);
-//			DebugRectangle (e,rr);
+		protected override void PrintPageEnd(object sender, ReportPageEventArgs rpea) {
+			this.DoPageEnd (rpea);
 		}
+		
+		
+		
+		protected override void PrintBodyEnd (object sender,ReportPageEventArgs rpea) {
+			base.PrintBodyEnd (sender,rpea);
+			this.DoReportFooter (new PointF(0,base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height),
+			                     rpea);
+		}
+		
+		
+		
 		#endregion
 		
 	}

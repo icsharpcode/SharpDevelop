@@ -374,6 +374,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		void OutputEnumMembers(TypeDeclaration typeDeclaration, object data)
 		{
 			foreach (FieldDeclaration fieldDeclaration in typeDeclaration.Children) {
+				nodeTracker.BeginNode(fieldDeclaration);
 				VariableDeclaration f = (VariableDeclaration)fieldDeclaration.Fields[0];
 				VisitAttributes(fieldDeclaration.Attributes, data);
 				outputFormatter.Indent();
@@ -385,6 +386,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					nodeTracker.TrackedVisit(f.Initializer, data);
 				}
 				outputFormatter.NewLine();
+				nodeTracker.EndNode(fieldDeclaration);
 			}
 		}
 		

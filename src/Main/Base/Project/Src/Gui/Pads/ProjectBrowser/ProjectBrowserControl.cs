@@ -70,6 +70,31 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectService.ProjectItemAdded += ProjectServiceProjectItemAdded;
 			ProjectService.SolutionFolderRemoved += ProjectServiceSolutionFolderRemoved;
 			treeView.DrawNode += TreeViewDrawNode;
+			treeView.DragDrop += TreeViewDragDrop;
+		}
+		
+		void TreeViewDragDrop(object sender, DragEventArgs e)
+		{
+			Point       clientcoordinate = PointToClient(new Point(e.X, e.Y));
+			ExtTreeNode node             = treeView.GetNodeAt(clientcoordinate) as ExtTreeNode;
+			if (node == null) {
+				// did not drag onto any node
+				if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+					string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+					foreach (string file in files) {
+						try {
+							IProjectLoader loader = ProjectService.GetProjectLoader(file);
+							if (loader != null) {
+								FileUtility.ObservedLoad(new NamedFileOperationDelegate(loader.Load), file);
+							} else {
+								FileService.OpenFile(file);
+							}
+						} catch (Exception ex) {
+							MessageService.ShowError(ex, "unable to open file " + file);
+						}
+					}
+				}
+			}
 		}
 		
 		void TreeViewDrawNode(object sender, DrawTreeNodeEventArgs e)

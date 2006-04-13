@@ -28,9 +28,9 @@ namespace Debugger
 		public object Primitive { 
 			get {
 				if (CorType == CorElementType.STRING) {
-					return (corValue.CastTo<ICorDebugStringValue>()).String;
+					return (CorValue.CastTo<ICorDebugStringValue>()).String;
 				} else {
-					return (corValue.CastTo<ICorDebugGenericValue>()).Value;
+					return (CorValue.CastTo<ICorDebugGenericValue>()).Value;
 				}
 			}
 			set {
@@ -45,7 +45,7 @@ namespace Debugger
 				if (CorType == CorElementType.STRING) {
 					throw new NotSupportedException();
 				} else {
-					(corValue.CastTo<ICorDebugGenericValue>()).Value = newValue;
+					(CorValue.CastTo<ICorDebugGenericValue>()).Value = newValue;
 				}
 				OnValueChanged();
 			}

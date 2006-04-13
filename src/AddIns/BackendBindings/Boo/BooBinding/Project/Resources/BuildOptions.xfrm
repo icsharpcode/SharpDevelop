@@ -12,16 +12,24 @@
         <Size value="{Width=504, Height=146}" />
         <TabIndex value="0" />
         <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="duckyCheckBox" />
+            <Location value="{X=6,Y=86}" />
+            <Text value="Use duck typing by default" />
+            <TabIndex value="8" />
+            <Size value="{Width=492, Height=24}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.TextBox>
             <Name value="pipelineTextBox" />
             <TabIndex value="7" />
             <Size value="{Width=386, Height=21}" />
-            <Location value="{X=112,Y=87}" />
+            <Location value="{X=112,Y=116}" />
             <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Label>
             <Name value="pipelineLabel" />
-            <Location value="{X=6,Y=87}" />
+            <Location value="{X=6,Y=116}" />
             <Text value="Pipeline:" />
             <TextAlign value="MiddleRight" />
             <Size value="{Width=100, Height=23}" />

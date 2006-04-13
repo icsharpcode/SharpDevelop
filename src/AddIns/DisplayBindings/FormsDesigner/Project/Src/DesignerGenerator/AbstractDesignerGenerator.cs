@@ -333,7 +333,7 @@ namespace ICSharpCode.FormsDesigner
 							tabs = line.Substring(0, line.Length - line.TrimStart().Length);
 						}
 						this.c = c;
-						this.completeClass = c.DefaultReturnType.GetUnderlyingClass();
+						this.completeClass = c.GetCompoundClass();
 						this.formClass = initializeComponents.DeclaringType;
 						break;
 					}

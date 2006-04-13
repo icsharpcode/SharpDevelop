@@ -764,6 +764,7 @@
     <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\ProjectNodeBuilders.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\IClassNodeBuilder.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\IProjectNodeBuilder.cs" />
+    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\TextSelection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

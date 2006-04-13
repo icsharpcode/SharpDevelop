@@ -24,7 +24,7 @@ namespace Debugger
 		PauseSession pauseSession;
 		DebugeeState debugeeState;
 		
-		Process currentProcess;
+		Process selectedProcess;
 		
 		public event EventHandler<DebuggerEventArgs> DebuggingResumed;
 		public event EventHandler<DebuggingPausedEventArgs> DebuggingPaused;
@@ -59,7 +59,8 @@ namespace Debugger
 			}
 		}
 		
-		protected virtual void OnDebuggeeStateChanged()
+		// HACK: should not be public
+		public virtual void OnDebuggeeStateChanged()
 		{
 			TraceMessage ("Debugger event: OnDebuggeeStateChanged (" + PausedReason.ToString() + ")");
 			if (DebuggeeStateChanged != null) {
@@ -67,35 +68,31 @@ namespace Debugger
 			}
 		}
 		
-		public Process CurrentProcess {
+		public Process SelectedProcess {
 			get {
-				if (IsRunning) return null;
-				if (currentProcess == null) {
-					return null;
-				} else {
-					return currentProcess;
-				}
+				return selectedProcess;
 			}
 			set {
-				currentProcess = value;
+				selectedProcess = value;
 			}
 		}
 		
-		public Thread CurrentThread {
+		public Thread SelectedThread {
 			get {
-				if (IsRunning) return null;
-				if (CurrentProcess == null) return null;
-				return CurrentProcess.CurrentThread;
-			}
-		}
-		
-		public Function CurrentFunction {
-			get {
-				if (IsRunning) return null;
-				if (CurrentThread == null) {
+				if (SelectedProcess == null) {
 					return null;
 				} else {
-					return CurrentThread.CurrentFunction;
+					return SelectedProcess.SelectedThread;
+				}
+			}
+		}
+		
+		public Function SelectedFunction {
+			get {
+				if (SelectedThread == null) {
+					return null;
+				} else {
+					return SelectedThread.SelectedFunction;
 				}
 			}
 		}
@@ -118,6 +115,10 @@ namespace Debugger
 		public DebugeeState DebugeeState {
 			get {
 				return debugeeState;
+			}
+			private set {
+				debugeeState = value;
+				OnDebuggeeStateChanged();
 			}
 		}
 		
@@ -160,16 +161,13 @@ namespace Debugger
 		
 		internal void Pause()
 		{
+			if (PausedReason != PausedReason.EvalComplete) {
+				DebugeeState = new DebugeeState();
+			}
+			
 			OnDebuggingPaused();
 			
 			// Debugger state is unknown after calling OnDebuggingPaused (it may be resumed)
-			
-			if (IsPaused) {
-				if (PausedReason != PausedReason.EvalComplete) {
-					debugeeState = new DebugeeState();
-					OnDebuggeeStateChanged();
-				}
-			}
 			
 			if (IsPaused) {
 				pausedHandle.Set();
@@ -181,14 +179,10 @@ namespace Debugger
 			if (IsRunning) {
 				throw new DebuggerException("Already resumed");
 			}
-			
-			OnDebuggingResumed();
-			
-			pausedHandle.Reset();
-			
+
 			pauseSession = null;
-			
-			currentProcess = null;
+			OnDebuggingResumed();
+			pausedHandle.Reset();
 		}
 		
 		/// <summary>
@@ -230,22 +224,22 @@ namespace Debugger
 
 		public void StepInto()
 		{
-			CurrentFunction.StepInto();
+			SelectedFunction.StepInto();
 		}
 
 		public void StepOver()
 		{
-			CurrentFunction.StepOver();
+			SelectedFunction.StepOver();
 		}
 
 		public void StepOut()
 		{
-			CurrentFunction.StepOut();
+			SelectedFunction.StepOut();
 		}
 
 		public void Continue()
 		{
-			CurrentProcess.Continue();
+			SelectedProcess.Continue();
 		}
 
 		public void Terminate()

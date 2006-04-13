@@ -110,7 +110,7 @@ namespace Debugger
 			this.AssertPaused();
 			
 			// TODO: Investigate other threads, are they alowed to run?
-			if (SetupNextEvaluation(CurrentThread)) {
+			if (SetupNextEvaluation(SelectedThread)) {
 				evaluating = true;
 				this.Continue();
 				return true;

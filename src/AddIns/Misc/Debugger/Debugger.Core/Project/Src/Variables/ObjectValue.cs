@@ -67,16 +67,6 @@ namespace Debugger
 		}
 		*/
 		
-		internal ICorDebugHandleValue SoftReference {
-			get {
-				ICorDebugHeapValue2 heapValue = this.CorValue.As<ICorDebugHeapValue2>();
-				if (heapValue == null) { // TODO: Investigate
-					return null;
-				}
-				return heapValue.CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION);
-			}
-		}
-		
 		public override string Type { 
 			get{ 
 				return classProps.Name;
@@ -97,7 +87,7 @@ namespace Debugger
 		
 		internal unsafe ObjectValue(NDebugger debugger, ICorDebugValue corValue):base(debugger, corValue)
 		{
-			corClass = this.corValue.CastTo<ICorDebugObjectValue>().Class;
+			corClass = this.CorValue.CastTo<ICorDebugObjectValue>().Class;
 			InitObjectVariable();
 		}
 
@@ -141,20 +131,23 @@ namespace Debugger
 			foreach(FieldProps f in metaData.EnumFields(ClassToken)) {
 				FieldProps field = f; // One per scope/delegate
 				if (field.IsStatic && field.IsLiteral) continue; // Skip field
-				if (!field.IsStatic && corValue == null) continue; // Skip field
+				if (!field.IsStatic && CorValue == null) continue; // Skip field
 				yield return new ClassVariable(debugger,
 				                               field.Name,
 				                               field.IsStatic,
 				                               field.IsPublic,
-				                               delegate {
-				                               	Value updatedVal = getter();
-				                               	if (updatedVal is UnavailableValue) return updatedVal;
-				                               	if (this.IsEquivalentValue(updatedVal)) {
-				                               		return GetValue(updatedVal, field);
-				                               	} else {
-				                               		return new UnavailableValue(debugger, "Object type changed");
-				                               	}
-				                               });
+				                               delegate { return GetValueOfField(field, getter); });
+			}
+		}
+		
+		Value GetValueOfField(FieldProps field, ValueGetter getter)
+		{
+			Value updatedVal = getter();
+			if (updatedVal is UnavailableValue) return updatedVal;
+			if (this.IsEquivalentValue(updatedVal)) {
+				return GetValue(updatedVal, field);
+			} else {
+				return new UnavailableValue(debugger, "Object type changed");
 			}
 		}
 		
@@ -167,35 +160,38 @@ namespace Debugger
 					                                  method.Name.Remove(0, 4),
 					                                  method.IsStatic,
 					                                  method.IsPublic,
-					                                  delegate {
-					                                  	Value updatedVal = getter();
-					                                  	if (updatedVal is UnavailableValue) return null;
-					                                  	if (this.IsEquivalentValue(updatedVal) && ((ObjectValue)updatedVal).SoftReference != null) {
-					                                  		return CreatePropertyEval(method, getter);
-					                                  	} else {
-					                                  		return null;
-					                                  	}
-					                                  });
+					                                  delegate { return CreatePropertyEval(method, getter); });
 				}
 			}
 		}
 		
 		Eval CreatePropertyEval(MethodProps method, ValueGetter getter)
 		{
-			ICorDebugFunction evalCorFunction = Module.CorModule.GetFunctionFromToken(method.Token);
-			
-			return new Eval(debugger, evalCorFunction, delegate {
-			                	Value updatedVal = getter();
-			                	if (this.IsEquivalentValue(updatedVal) && ((ObjectValue)updatedVal).SoftReference != null) {
-				                	if (method.IsStatic) {
-				                		return new ICorDebugValue[] {};
-				                	} else {
-				                		return new ICorDebugValue[] {((ObjectValue)updatedVal).SoftReference.CastTo<ICorDebugValue>()};
-				                	}
-			                	} else {
-			                		return null;
-			                	}
-			                });
+			Value updatedVal = getter();
+			if (updatedVal is UnavailableValue) {
+				return null;
+			}
+			if (this.IsEquivalentValue(updatedVal) && ((ObjectValue)updatedVal).SoftReference != null) {
+				ICorDebugFunction evalCorFunction = Module.CorModule.GetFunctionFromToken(method.Token);
+				
+				return new Eval(debugger, evalCorFunction, delegate { return GetArgsForEval(method, getter); });
+			} else {
+				return null;
+			}
+		}
+		
+		ICorDebugValue[] GetArgsForEval(MethodProps method, ValueGetter getter)
+		{
+			Value updatedVal = getter();
+			if (this.IsEquivalentValue(updatedVal) && ((ObjectValue)updatedVal).SoftReference != null) {
+				if (method.IsStatic) {
+					return new ICorDebugValue[] {};
+				} else {
+					return new ICorDebugValue[] {((ObjectValue)updatedVal).SoftReference.CastTo<ICorDebugValue>()};
+				}
+			} else {
+				return null;
+			}
 		}
 		
 		public override bool IsEquivalentValue(Value val)
@@ -209,8 +205,8 @@ namespace Debugger
 		{
 			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
 			ICorDebugFrame curFrame = null;
-			if (debugger.CurrentThread != null && debugger.CurrentThread.LastFunction != null && debugger.CurrentThread.LastFunction.CorILFrame != null) {
-				curFrame = debugger.CurrentThread.LastFunction.CorILFrame.CastTo<ICorDebugFrame>();
+			if (debugger.IsPaused && debugger.SelectedThread != null && debugger.SelectedThread.LastFunction != null && debugger.SelectedThread.LastFunction.CorILFrame != null) {
+				curFrame = debugger.SelectedThread.LastFunction.CorILFrame.CastTo<ICorDebugFrame>();
 			}
 			
 			try {
@@ -231,17 +227,20 @@ namespace Debugger
 			if (HasBaseClass) {
 				return new Variable(debugger,
 				                    "<Base class>",
-				                    delegate {
-				                    	Value updatedVal = getter();
-				                    	if (updatedVal is UnavailableValue) return updatedVal;
-				                    	if (this.IsEquivalentValue(updatedVal)) {
-				                    		return ((ObjectValue)updatedVal).BaseClass;
-				                    	} else {
-				                    		return new UnavailableValue(debugger, "Object type changed");
-				                    	}
-				                    });
+				                    delegate { return GetBaseClassValue(getter); });
 			} else {
 				return null;
+			}
+		}
+		
+		Value GetBaseClassValue(ValueGetter getter)
+		{
+			Value updatedVal = getter();
+			if (updatedVal is UnavailableValue) return updatedVal;
+			if (this.IsEquivalentValue(updatedVal)) {
+				return ((ObjectValue)updatedVal).BaseClass;
+			} else {
+				return new UnavailableValue(debugger, "Object type changed");
 			}
 		}
 		
@@ -296,7 +295,11 @@ namespace Debugger
 				throw new DebuggerException("Unable to get base class: " + fullTypeName);
 			} else {
 				ICorDebugClass superClass = corModuleSuperclass.GetClassFromToken(classProps.SuperClassToken);
-				return new ObjectValue(debugger, corValue, superClass);
+				if (corHandleValue != null) {
+					return new ObjectValue(debugger, corHandleValue.As<ICorDebugValue>(), superClass);
+				} else {
+					return new ObjectValue(debugger, CorValue, superClass);
+				}
 			}
 		}
 	}

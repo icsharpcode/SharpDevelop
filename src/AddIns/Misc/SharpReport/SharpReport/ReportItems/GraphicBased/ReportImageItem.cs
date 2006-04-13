@@ -26,52 +26,46 @@ namespace SharpReport.ReportItems {
 	public class ReportImageItem : BaseImageItem,SharpReport.Designer.IDesignable {
 		
 		private	ReportImageControl visualControl;
-		private bool initDone;
-		
+
 		public ReportImageItem() :base(){
+			
 			visualControl = new ReportImageControl();
+			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
+			
+			Setup();
+			
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
 			this.visualControl.BackColorChanged += new EventHandler (OnControlChanged);
 			this.visualControl.FontChanged += new EventHandler (OnControlChanged);
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
 			base.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (BasePropertyChange);
+		}
+		
+		private void Setup() {
+			this.visualControl.Location = base.Location;
+			this.visualControl.Size = base.Size;
 			
-			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
-			
-			this.initDone = true;
+			if (base.Image != null) {
+				this.visualControl.Image = base.Image;
+				this.visualControl.ScaleImageToSize = base.ScaleImageToSize;
+				this.visualControl.Invalidate();
+			} 
 		}
-		
-		#region overrides
-		public override void Dispose() {
-			base.Dispose();
-			this.visualControl.Dispose();
-		}
-		
-		public override string ToString(){
-			return this.Name;
-		}
-		
-		#endregion
 		
 		#region EventHandling
 		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
-			if (initDone == true) {
-
-				this.visualControl.Location = base.Location;
-				this.visualControl.Size = base.Size;
-				
-				if (base.Image != null) {
-					this.visualControl.Image = base.Image;
-					this.visualControl.ScaleImageToSize = base.ScaleImageToSize;
-					this.visualControl.Invalidate();
-				}
-			}
+			Setup();
+			ItemsHelper.UpdateControlFromGraphicBase(this.visualControl,this);
+			this.HandlePropertyChanged(e.PropertyName);
 		}
 		
 		private void OnControlChanged (object sender, EventArgs e) {
+			Setup();
+			base.SuspendLayout();
 			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
+			base.ResumeLayout();
 			this.HandlePropertyChanged("OnControlChanged");
 		}
 		
@@ -110,5 +104,50 @@ namespace SharpReport.ReportItems {
 
 		#endregion
 		
+		#region overrides
+		
+		public override Size Size {
+			get {
+				return base.Size;
+			}
+			set {
+				base.Size = value;
+				if (this.visualControl != null) {
+					this.visualControl.Size = value;
+				}
+				this.HandlePropertyChanged("Size");
+			}
+		}
+		
+		public override Point Location {
+			get {
+				return base.Location;
+			}
+			set {
+				base.Location = value;
+				if (this.visualControl != null) {
+					this.visualControl.Location = value;
+				}
+				this.HandlePropertyChanged("Location");
+			}
+		}
+		
+//		public override Image Image {
+//			get {
+//				return base.Image;
+//			}
+//		}
+//		
+		
+		public override void Dispose() {
+			base.Dispose();
+			this.visualControl.Dispose();
+		}
+		
+		public override string ToString(){
+			return this.Name;
+		}
+		
+		#endregion
 	}
 }

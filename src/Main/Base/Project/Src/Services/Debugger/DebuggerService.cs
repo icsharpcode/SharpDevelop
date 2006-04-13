@@ -208,7 +208,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		static void ToggleBreakpointAt(IDocument document, string fileName, int lineNumber)
+		public static void ToggleBreakpointAt(IDocument document, string fileName, int lineNumber)
 		{
 			foreach (Bookmark m in document.BookmarkManager.Marks) {
 				BreakpointBookmark breakpoint = m as BreakpointBookmark;
@@ -222,6 +222,8 @@ namespace ICSharpCode.Core
 			foreach (char ch in document.GetText(document.GetLineSegment(lineNumber))) {
 				if (!char.IsWhiteSpace(ch)) {
 					document.BookmarkManager.AddMark(new BreakpointBookmark(fileName, document, lineNumber));
+					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, lineNumber));
+					document.CommitUpdate();
 					break;
 				}
 			}
@@ -240,6 +242,7 @@ namespace ICSharpCode.Core
 				
 				textArea.IconBarMargin.MouseDown += IconBarMouseDown;
 				textArea.ToolTipRequest          += TextAreaToolTipRequest;
+				textArea.MouseLeave              += TextAreaMouseLeave;
 			}
 		}
 		
@@ -250,6 +253,7 @@ namespace ICSharpCode.Core
 				
 				textArea.IconBarMargin.MouseDown -= IconBarMouseDown;
 				textArea.ToolTipRequest          -= TextAreaToolTipRequest;
+				textArea.MouseLeave              -= TextAreaMouseLeave;
 			}
 		}
 		
@@ -284,6 +288,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		static void TextAreaToolTipRequest(object sender, ToolTipRequestEventArgs e)
 		{
+			DebuggerGridControl toolTipControl = null;
 			try {
 				TextArea textArea = (TextArea)sender;
 				if (e.ToolTipShown) return;
@@ -312,7 +317,6 @@ namespace ICSharpCode.Core
 						ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, logicPos.X + 1, textArea.MotherTextEditorControl.FileName, textContent);
 						bool debuggerCanShowValue;
 						string toolTipText = GetText(result, expression, out debuggerCanShowValue);
-						DebuggerGridControl toolTipControl = null;
 						if (toolTipText != null) {
 							if (Control.ModifierKeys == Keys.Control) {
 								toolTipText = "expr: " + expressionResult.ToString() + "\n" + toolTipText;
@@ -324,10 +328,7 @@ namespace ICSharpCode.Core
 						if (toolTipText != null) {
 							e.ShowToolTip(toolTipText);
 						}
-						if (oldToolTipControl != null) {
-							Form frm = oldToolTipControl.FindForm();
-							if (frm != null) frm.Close();
-						}
+						CloseOldToolTip();
 						if (toolTipControl != null) {
 							toolTipControl.ShowForm(textArea, logicPos);
 						}
@@ -336,7 +337,31 @@ namespace ICSharpCode.Core
 				}
 			} catch (Exception ex) {
 				ICSharpCode.Core.MessageService.ShowError(ex);
+			} finally {
+				if (toolTipControl == null && CanCloseOldToolTip)
+					CloseOldToolTip();
 			}
+		}
+		
+		static bool CanCloseOldToolTip {
+			get {
+				return oldToolTipControl != null && oldToolTipControl.AllowClose;
+			}
+		}
+		
+		static void CloseOldToolTip()
+		{
+			if (oldToolTipControl != null) {
+				Form frm = oldToolTipControl.FindForm();
+				if (frm != null) frm.Close();
+				oldToolTipControl = null;
+			}
+		}
+		
+		static void TextAreaMouseLeave(object source, EventArgs e)
+		{
+			if (CanCloseOldToolTip && !oldToolTipControl.IsMouseOver)
+				CloseOldToolTip();
 		}
 		
 		static string GetText(ResolveResult result, string expression, out bool debuggerCanShowValue)

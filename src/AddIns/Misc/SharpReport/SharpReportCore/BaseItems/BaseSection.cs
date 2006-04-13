@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 using System;
 using System.ComponentModel;
-//using System.Windows.Forms;
+
 using System.Xml.Serialization;
 
 /// <summary>
@@ -24,7 +24,12 @@ namespace SharpReportCore {
 		
 		private ReportItemCollection items;
 		
+		public event EventHandler<SectionPrintingEventArgs> SectionPrinting;
+		public event EventHandler<SectionPrintingEventArgs> SectionPrinted;
+		
+		
 		#region Constructors
+		
 		public BaseSection(): base() {
 			this.Name = String.Empty;
 		}
@@ -35,11 +40,28 @@ namespace SharpReportCore {
 		
 		#endregion
 		
+		public override void Render(ReportPageEventArgs rpea){
+			this.NotifyPrinting();
+			base.Render(rpea);
+			this.NotifyPrinted();
+		}
 		
 		
 		#region properties
+		public void NotifyPrinting () {
+			if (this.SectionPrinting != null) {
+				SectionPrintingEventArgs ea = new SectionPrintingEventArgs (this);
+				SectionPrinting (this,ea);
+			}
+		}
 		
-
+		public void NotifyPrinted () {
+			if (this.SectionPrinted != null) {
+				SectionPrintingEventArgs ea = new SectionPrintingEventArgs (this);
+				SectionPrinted (this,ea);
+			}
+		}
+		
 		public  int SectionMargin {
 			get {
 				return this.sectionMargin;

@@ -20,11 +20,8 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class LocalVarPad : AbstractPadContent
+	public class LocalVarPad : DebuggerPad
 	{
-		WindowsDebugger debugger;
-		NDebugger debuggerCore;
-
 		TreeListView localVarList;
 		
 		ColumnHeader name = new ColumnHeader();
@@ -37,15 +34,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		public LocalVarPad() //: base("${res:MainWindow.Windows.Debug.Local}", null)
+		protected override void InitializeComponents()
 		{
-			InitializeComponents();
-		}
-		
-		void InitializeComponents()
-		{
-			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			
 			//iconsService = (ClassBrowserIconsService)ServiceManager.Services.GetService(typeof(ClassBrowserIconsService));
 			localVarList = new TreeListView();
 			localVarList.SmallImageList = DebuggerIcons.ImageList;
@@ -65,14 +55,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			
 			RedrawContent();
-			
-			if (debugger.ServiceInitialized) {
-				InitializeDebugger();
-			} else {
-				debugger.Initialize += delegate {
-					InitializeDebugger();
-				};
-			}
+		}
+		
+		public override void RedrawContent()
+		{
+			name.Text = ResourceService.GetString("Global.Name");
+			val.Text  = ResourceService.GetString("Dialog.HighlightingEditor.Properties.Value");
+			type.Text = ResourceService.GetString("ResourceEditor.ResourceEdit.TypeColumn");
 		}
 		
 		// This is a walkarond for a visual issue
@@ -81,13 +70,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.Visible = true;
 		}
 		
-		public void InitializeDebugger()
+		
+		protected override void RegisterDebuggerEvents()
 		{
-			debuggerCore = debugger.DebuggerCore;
-			
 			debuggerCore.DebuggeeStateChanged += delegate { debuggerCore.LocalVariables.Update(); };
-			
+		}
+		
+		public override void RefreshPad()
+		{
 			localVarList.BeginUpdate();
+			localVarList.Items.Clear();
 			AddVariableCollectionToTree(debuggerCore.LocalVariables, localVarList.Items);
 			localVarList.EndUpdate();
 		}
@@ -108,13 +100,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			TreeListViewDebuggerItem newItem = new TreeListViewDebuggerItem(variableToAdd);
 			
 			tree.Add(newItem);
-		}
-		
-		public override void RedrawContent()
-		{
-			name.Text = ResourceService.GetString("Global.Name");
-			val.Text  = ResourceService.GetString("Dialog.HighlightingEditor.Properties.Value");
-			type.Text = ResourceService.GetString("ResourceEditor.ResourceEdit.TypeColumn");
 		}
 
 		private void localVarList_BeforeExpand(object sender, TreeListViewCancelEventArgs e)

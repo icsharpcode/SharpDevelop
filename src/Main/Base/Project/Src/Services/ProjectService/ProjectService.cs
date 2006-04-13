@@ -192,6 +192,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			CurrentProject = OpenSolution.FindProjectContainingFile(fileName) ?? CurrentProject;
 		}
 		
+		public static void AddProject(ISolutionFolderNode solutionFolderNode, IProject newProject)
+		{
+			solutionFolderNode.Container.AddFolder(newProject);
+			ParserService.CreateProjectContentForAddedProject(newProject);
+			solutionFolderNode.Solution.FixSolutionConfiguration(new IProject[] { newProject });
+			OnProjectAdded(new ProjectEventArgs(newProject));
+		}
+		
 		/// <summary>
 		/// Adds a project item to the project, raising the ProjectItemAdded event.
 		/// Make sure you call project.Save() after adding new items!
@@ -483,7 +491,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				ProjectItemRemoved(null, e);
 			}
 		}
+		static void OnProjectAdded(ProjectEventArgs e)
+		{
+			if (ProjectAdded != null) {
+				ProjectAdded(null, e);
+			}
+		}
 		
+		public static event ProjectEventHandler ProjectAdded;
 		public static event SolutionFolderEventHandler SolutionFolderRemoved;
 		
 		public static event EventHandler StartBuild;

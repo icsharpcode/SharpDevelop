@@ -217,7 +217,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					results.Add(res);
 				}
 			}
-			SearchReplaceInFilesManager.ShowSearchResults("Overrides of " + member.Name, results);
+			SearchInFilesManager.ShowSearchResults("Overrides of " + member.Name, results);
 		}
 		
 		void FindReferences(object sender, EventArgs e)

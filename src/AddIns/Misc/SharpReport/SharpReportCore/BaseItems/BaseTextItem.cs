@@ -20,6 +20,7 @@ using SharpReportCore;
 
 
 namespace SharpReportCore {
+	
 	public class BaseTextItem : SharpReportCore.BaseReportItem,IItemRenderer {
 		private string text;
 
@@ -28,10 +29,13 @@ namespace SharpReportCore {
 		private StringFormat standartStringFormat;
 		private TextDrawer textDrawer = new TextDrawer();
 		
-	
-		public BaseTextItem() {
+		#region Constructor
+		
+		public BaseTextItem():base() {
 			this.standartStringFormat = GlobalValues.StandartStringFormat();
 		}
+		
+		#endregion
 		
 		public override void Render(ReportPageEventArgs rpea) {
 			if (rpea == null) {

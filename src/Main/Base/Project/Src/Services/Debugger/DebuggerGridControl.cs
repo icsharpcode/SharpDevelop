@@ -93,6 +93,15 @@ namespace ICSharpCode.Core
 			frm.ClientSize = new Size(frm.ClientSize.Width, row.Height + 2);
 		}
 		
+		public bool IsMouseOver {
+			get {
+				if (frm != null && !frm.IsDisposed) {
+					return frm.ClientRectangle.Contains(frm.PointToClient(Control.MousePosition));
+				}
+				return false;
+			}
+		}
+		
 		void OnTextAreaClick(object sender, EventArgs e)
 		{
 			((ICSharpCode.TextEditor.TextArea)sender).KeyDown -= OnTextAreaClick;

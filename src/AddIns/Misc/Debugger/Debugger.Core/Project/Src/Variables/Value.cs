@@ -16,7 +16,9 @@ namespace Debugger
 	public abstract class Value: RemotingObjectBase
 	{
 		protected NDebugger debugger;
-		protected ICorDebugValue corValue;
+		ICorDebugValue corValue;
+		// ICorDebugHandleValue can be used to get corValue back after Continue()
+		protected ICorDebugHandleValue corHandleValue;
 		object pauseSessionAtCreation;
 		
 		public event EventHandler<ValueEventArgs> ValueChanged;
@@ -29,7 +31,30 @@ namespace Debugger
 		
 		internal ICorDebugValue CorValue {
 			get {
-				return corValue;
+				if (pauseSessionAtCreation == debugger.PauseSession) {
+					return corValue;
+				} else {
+					if (corHandleValue == null) {
+						throw new DebuggerException("CorValue has expired");
+					} else {
+						corValue = DereferenceUnbox(corHandleValue.As<ICorDebugValue>());
+						pauseSessionAtCreation = debugger.PauseSession;
+						return corValue;
+					}
+				}
+			}
+		}
+		
+		protected ICorDebugHandleValue SoftReference {
+			get {
+				if (corHandleValue != null) return corHandleValue;
+				
+				ICorDebugHeapValue2 heapValue = this.CorValue.As<ICorDebugHeapValue2>();
+				if (heapValue == null) { // TODO: Investigate - hmmm, value types are not at heap?
+					return null;
+				} else {
+					return heapValue.CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION);
+				}
 			}
 		}
 		
@@ -38,13 +63,17 @@ namespace Debugger
 		/// </summary>
 		public bool IsExpired {
 			get {
-				return pauseSessionAtCreation != debugger.PauseSession;
+				if (corHandleValue == null) {
+					return pauseSessionAtCreation != debugger.PauseSession;
+				} else {
+					return false;
+				}
 			}
 		}
 		
 		internal CorElementType CorType {
 			get {
-				return GetCorType(corValue);
+				return GetCorType(CorValue);
 			}
 		}
 		
@@ -104,6 +133,9 @@ namespace Debugger
 		{
 			this.debugger = debugger;
 			if (corValue != null) {
+				if (corValue.Is<ICorDebugHandleValue>()) {
+					corHandleValue = corValue.As<ICorDebugHandleValue>();
+				}
 				this.corValue = DereferenceUnbox(corValue);
 			}
 			this.pauseSessionAtCreation = debugger.PauseSession;
@@ -203,12 +235,12 @@ namespace Debugger
 		internal static Value CreateValue(NDebugger debugger, ICorDebugValue corValue)
 		{
 			CorElementType type = Value.GetCorType(corValue);
-
+			
 			if (Value.DereferenceUnbox(corValue) == null)
 			{
 				return new NullValue(debugger, corValue);
 			}
-
+			
 			switch(type)
 			{
 				case CorElementType.BOOLEAN:

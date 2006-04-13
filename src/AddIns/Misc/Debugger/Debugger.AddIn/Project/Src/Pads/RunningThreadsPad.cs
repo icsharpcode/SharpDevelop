@@ -20,11 +20,8 @@ using Debugger;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class RunningThreadsPad : AbstractPadContent
+	public partial class RunningThreadsPad : DebuggerPad
 	{
-		WindowsDebugger debugger;
-		NDebugger debuggerCore;
-
 		ListView  runningThreadsList;
 		
 		ColumnHeader id          = new ColumnHeader();
@@ -38,16 +35,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return runningThreadsList;
 			}
 		}
-		
-		public RunningThreadsPad() //: base("${res:MainWindow.Windows.Debug.Threads}", null)
-		{
-			InitializeComponents();
-		}
-		
-		void InitializeComponents()
-		{
-			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
 			
+		protected override void InitializeComponents()
+		{
 			runningThreadsList = new ListView();
 			runningThreadsList.FullRowSelect = true;
 			runningThreadsList.AutoArrange = true;
@@ -66,26 +56,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			breaked.Width = 80;
 			
 			RedrawContent();
-
-			if (debugger.ServiceInitialized) {
-				InitializeDebugger();
-			} else {
-				debugger.Initialize += delegate {
-					InitializeDebugger();
-				};
-			}
-		}
-
-		public void InitializeDebugger()
-		{
-			debuggerCore = debugger.DebuggerCore;
-
-			debuggerCore.DebuggeeStateChanged += DebuggeeStateChanged;
-			debuggerCore.ThreadStarted += ThreadStarted;
-			debuggerCore.ThreadStateChanged += ThreadStateChanged;
-			debuggerCore.ThreadExited += ThreadExited;
-
-			RefreshList();
 		}
 		
 		public override void RedrawContent()
@@ -97,58 +67,22 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			breaked.Text  = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Frozen");
 		}
 		
-		ContextMenuStrip CreateContextMenuStrip()
+
+		protected override void RegisterDebuggerEvents()
 		{
-			ContextMenuStrip menu = new ContextMenuStrip();
-			menu.Opening += FillContextMenuStrip;
-			return menu;
-		}
-		
-		void FillContextMenuStrip(object sender, CancelEventArgs e)
-		{
-			ListView.SelectedListViewItemCollection items = runningThreadsList.SelectedItems;
-			
-			if (items.Count == 0) {
-				e.Cancel = true;
-				return;
-			}
-			
-			ListViewItem item = items[0];
-			
-			ContextMenuStrip menu = sender as ContextMenuStrip;
-			menu.Items.Clear();
-			
-			ToolStripMenuItem freezeItem;
-			freezeItem = new ToolStripMenuItem();
-			freezeItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Freeze");
-			freezeItem.Checked = (item.Tag as Thread).Suspended;
-			freezeItem.Click +=
-				delegate {
-				ListView.SelectedListViewItemCollection selItems = runningThreadsList.SelectedItems;
-				if (selItems.Count == 0) {
-					return;
-				}
-				bool suspended = (selItems[0].Tag as Thread).Suspended;
-				
-				if (!debuggerCore.IsPaused) {
-					MessageBox.Show("You can not freeze or thaw thread while the debugger is running.", "Thread freeze");
-					return;
-				}
-				
-				foreach(ListViewItem i in selItems) {
-					(i.Tag as Thread).Suspended = !suspended;
-				}
-				RefreshList();
+			debuggerCore.DebuggeeStateChanged += delegate { RefreshPad(); };
+			debuggerCore.ThreadStarted += delegate(object sender, ThreadEventArgs e) {
+				AddThread(e.Thread);
 			};
-			
-			menu.Items.AddRange(new ToolStripItem[] {
-			                    	freezeItem,
-			                    });
-			
-			e.Cancel = false;
+			debuggerCore.ThreadStateChanged += delegate(object sender, ThreadEventArgs e) {
+				RefreshThread(e.Thread);
+			};
+			debuggerCore.ThreadExited += delegate(object sender, ThreadEventArgs e) {
+				RemoveThread(e.Thread);
+			};
 		}
 		
-		void RefreshList()
+		public override void RefreshPad()
 		{
 			foreach (Thread t in debuggerCore.Threads) {
 				RefreshThread(t);
@@ -158,34 +92,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void RunningThreadsListItemActivate(object sender, EventArgs e)
 		{
 			if (debuggerCore.IsPaused) {
-				if (debuggerCore.CurrentProcess != null) {
-					debuggerCore.CurrentProcess.SetCurrentThread((Thread)(runningThreadsList.SelectedItems[0].Tag));
+				if (debuggerCore.SelectedProcess != null) {
+					debuggerCore.SelectedProcess.SelectedThread = (Thread)(runningThreadsList.SelectedItems[0].Tag);
+					debuggerCore.OnDebuggeeStateChanged(); // Force refresh of pads
 				}
 			} else {
 				MessageBox.Show("You can not switch threads while the debugger is running.", "Thread switch");
 			}
-		}
-
-		void DebuggeeStateChanged(object sender, DebuggerEventArgs e)
-		{
-			RefreshList();
-		}
-
-		void ThreadStarted(object sender, ThreadEventArgs e)
-		{
-			AddThread(e.Thread);
-		}
-
-		void ThreadStateChanged(object sender, ThreadEventArgs e)
-		{
-			RefreshThread(e.Thread);
-		}
-		
-		void ThreadExited(object sender, ThreadEventArgs e)
-		{
-			RemoveThread(e.Thread);
-		}
-		
+		}		
 		
 		void AddThread(Thread thread)
 		{
@@ -201,10 +115,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					item.Text = thread.ID.ToString();
 					item.Tag = thread;
 					item.SubItems.Add(thread.Name);
-					Function location;
-					location = thread.LastFunctionWithLoadedSymbols;
-					if (location == null) {
-						location = thread.LastFunction;
+					Function location = null;
+					if (thread.Process.IsPaused) {
+						location = thread.LastFunctionWithLoadedSymbols;
+						if (location == null) {
+							location = thread.LastFunction;
+						}
 					}
 					if (location != null) {
 						item.SubItems.Add(location.Name);

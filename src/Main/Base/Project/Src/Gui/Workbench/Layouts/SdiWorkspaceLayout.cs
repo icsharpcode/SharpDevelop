@@ -122,13 +122,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void TrackFullscreenPropertyChanges(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.OldValue != e.NewValue && wbForm.FullScreen) {
+			if (!Boolean.Equals(e.OldValue, e.NewValue) && wbForm.FullScreen) {
 				switch (e.Key) {
 					case "HideMainMenu":
-					case "HideToolbars":
-					case "HideStatusBar":
-						RedrawAllComponents();
+					case "ShowMainMenuOnMouseMove":
+						RedrawMainMenu();
 						break;
+					case "HideToolbars":
+						RedrawToolbars();
+						break;
+					//case "HideTabs":
+					//case "HideVerticalScrollbar":
+					//case "HideHorizontalScrollbar":
+					case "HideStatusBar":
+					case "ShowStatusBarOnMouseMove":
+						RedrawStatusBar();
+						break;
+					//case "HideWindowsTaskbar":
 				}
 			}
 		}
@@ -222,6 +232,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (dockPanel != null) {
 				LockWindowUpdate(wbForm.Handle);
 				try {
+					IViewContent activeView = GetActiveView();
 					dockPanel.ActiveDocumentChanged -= new EventHandler(ActiveMdiChanged);
 					
 					DetachPadContents(true);
@@ -231,6 +242,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					LoadLayoutConfiguration();
 					ShowPads();
 					ShowViewContents();
+					if (activeView != null && activeView.WorkbenchWindow != null) {
+						activeView.WorkbenchWindow.SelectWindow();
+					}
 				} finally {
 					LockWindowUpdate(IntPtr.Zero);
 				}
@@ -558,6 +572,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void ActiveContentChanged(object sender, EventArgs e)
 		{
 			OnActiveWorkbenchWindowChanged(e);
+		}
+		
+		static IViewContent GetActiveView()
+		{
+			IWorkbenchWindow activeWindow = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			if (activeWindow != null) {
+				return activeWindow.ViewContent;
+			}
+			return null;
 		}
 		
 		IWorkbenchWindow oldSelectedWindow = null;

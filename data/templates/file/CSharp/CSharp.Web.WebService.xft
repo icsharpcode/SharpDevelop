@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<Template author="Tom Schroeter" version="1.0">
+
+	<Config
+		name        = "ASP.NET Web Service"
+		icon        = "C#.File.NewClass"
+		category    = "C#"
+		subcategory = "ASP.NET"
+		defaultname = "WebService.asmx"
+		language    = "C#"
+	/>
+
+	<Description>Component Frame for ASMX Web Service. Enter the name of a new service.</Description>
+	<!--
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${Path}\Source\${FileNameWithoutExtension}.cs" language="C#"><![CDATA[${StandardHeader.C#}
+
+using System;
+using System.Web.Services;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of ${ClassName}
+	/// </summary>
+	[WebService
+ 	 (	Name = "${ClassName}",
+  		Description = "${ClassName}",
+  		Namespace = "http://www.${ClassName}.example"
+ 	 )
+	]
+	public class ${ClassName} : WebService
+	{
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Data
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Constructor
+		
+		public ${ClassName}()
+		{
+		}
+		
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<		
+		#region Status
+			
+		[WebMethod]
+		public string Status()
+		{
+			string s = string.Format("Time: {0}", DateTime.Now);
+			return s;
+		}
+		
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region More...
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region More...
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	}
+}
+]]></File>
+		<File name="${FullName}"><![CDATA[
+<%@ WebService  Class="${StandardNamespace}.${ClassName}" Language="C#" Debug="true" %>
+
+]]>		</File>
+
+	</Files>
+
+	<AdditionalOptions/>
+</Template>

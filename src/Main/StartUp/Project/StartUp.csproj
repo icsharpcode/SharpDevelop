@@ -14,6 +14,12 @@
     <ApplicationIcon>.\Resources\SharpDevelop.ico</ApplicationIcon>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <BaseAddress>92798976</BaseAddress>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <PlatformTarget>x86</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>Full</DebugType>

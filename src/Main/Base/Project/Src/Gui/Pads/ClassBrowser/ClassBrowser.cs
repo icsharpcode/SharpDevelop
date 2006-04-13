@@ -99,21 +99,22 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			contentPanel.Controls.Add(toolStrip);
 			
-			ProjectService.SolutionLoaded += ProjectServiceSolutionLoaded;
+			ProjectService.SolutionLoaded += ProjectServiceSolutionChanged;
+			ProjectService.ProjectAdded += ProjectServiceSolutionChanged; // rebuild view when project is added to solution
+			ProjectService.SolutionFolderRemoved += ProjectServiceSolutionChanged; // rebuild view when project is removed from solution
 			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 			
 			ParserService.ParseInformationUpdated += new ParseInformationEventHandler(ParserServiceParseInformationUpdated);
 			
 			AmbienceService.AmbienceChanged += new EventHandler(AmbienceServiceAmbienceChanged);
 			if (ProjectService.OpenSolution != null) {
-				ProjectServiceSolutionLoaded(null, null);
+				ProjectServiceSolutionChanged(null, null);
 			}
-			Application.Idle += new EventHandler(UpdateThread);
 			UpdateToolbars();
 		}
 		
 		List<ICompilationUnit[]> pending = new List<ICompilationUnit[]> ();
-		void UpdateThread(object sender, EventArgs ea)
+		void UpdateThread()
 		{
 			lock (pending) {
 				foreach (ICompilationUnit[] units in pending) {
@@ -135,6 +136,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			lock (pending) {
 				pending.Add(new ICompilationUnit[] { e.ParseInformation.BestCompilationUnit as ICompilationUnit, e.CompilationUnit});
 			}
+			WorkbenchSingleton.SafeThreadAsyncCall(new MethodInvoker(UpdateThread));
 		}
 		
 		#region Navigation
@@ -276,7 +278,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			}
 		}
 		
-		void ProjectServiceSolutionLoaded(object sender, SolutionEventArgs e)
+		void ProjectServiceSolutionChanged(object sender, EventArgs e)
 		{
 			classBrowserTreeView.Nodes.Clear();
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {

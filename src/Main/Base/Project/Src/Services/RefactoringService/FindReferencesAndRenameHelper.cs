@@ -143,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				res.ProvidedDocumentInformation = GetDocumentInformation(r.FileName);
 				results.Add(res);
 			}
-			SearchReplaceInFilesManager.ShowSearchResults(pattern, results);
+			SearchInFilesManager.ShowSearchResults(pattern, results);
 		}
 		
 		public static void RenameReferences(List<Reference> list, string newName)

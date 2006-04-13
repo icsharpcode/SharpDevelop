@@ -89,21 +89,16 @@ namespace SharpReport.Visitors {
 				if (sectionElem != null) {
 					baseSection = (BaseSection)designer.ReportModel.SectionCollection.Find(sectionElem.GetAttribute("name"));
 					if (baseSection != null) {
-						baseSection.SuspendLayout();
-						
 						XmlHelper.SetSectionValues (base.XmlFormReader,sectionElem,baseSection);
 						XmlNodeList ctrlList = sectionElem.SelectNodes (base.NodesQuery);
 						SetReportItems(baseSection,null,ctrlList);
-						baseSection.ResumeLayout();
 					} else {
 						throw new MissingSectionException();
 					}
 				} else {
 					throw new MissingSectionException();
 				}
-				baseSection.ResumeLayout();
 			}
-			baseSection.ResumeLayout();
 		}
 		
 		
@@ -120,26 +115,28 @@ namespace SharpReport.Visitors {
 						itemRenderer = designableFactory.Create(ctrlElem.GetAttribute("type"));
 						
 						baseReportItem = (BaseReportItem)itemRenderer;
+						
 						if (parentContainer == null) {
-//							System.Console.WriteLine("\tParent of {0} is Section",baseReportItem.Name);
 							baseReportItem.Parent = baseSection;
 							baseSection.Items.Add (baseReportItem);
 						} else {
-//							System.Console.WriteLine("\tParent of <{0}> is Container",baseReportItem.Name);
 							baseReportItem.Parent = parentContainer;
 							parentContainer.Items.Add(baseReportItem);
 							
 						}
 						
-						XmlHelper.BuildControl (base.XmlFormReader,ctrlElem,baseReportItem);
-						
-						IContainerItem iContainer = baseReportItem as IContainerItem;
+						XmlHelper.SetReportItemValues (base.XmlFormReader,ctrlElem,baseReportItem);
 
-						XmlNodeList newList = ctrlNode.SelectNodes (base.NodesQuery);
-						if (newList.Count > 0) {
-//							System.Console.WriteLine("\t recusiv call for <{0}> with {1} childs ",
-//							                         baseReportItem,newList.Count);
-							SetReportItems (baseSection,iContainer,newList);
+						IContainerItem iContainer = baseReportItem as IContainerItem;
+						
+						if (iContainer != null) {
+							XmlNodeList newList = ctrlNode.SelectNodes (base.NodesQuery);
+							if (newList.Count > 0) {
+								System.Console.WriteLine("\tLoadReportVisitor recursive call for <{0}> with {1} elements",
+								                         baseReportItem.Name,
+								                         newList.Count);
+								SetReportItems (baseSection,iContainer,newList);
+							}
 						}
 					}
 					catch (Exception ) {

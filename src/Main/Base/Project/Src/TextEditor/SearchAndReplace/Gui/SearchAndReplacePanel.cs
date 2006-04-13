@@ -24,6 +24,10 @@ namespace SearchAndReplace
 	public class SearchAndReplacePanel : BaseSharpDevelopUserControl
 	{
 		SearchAndReplaceMode  searchAndReplaceMode;
+		ISelection selection;
+		TextEditorControl textEditor;
+		bool ignoreSelectionChanges;
+		bool findFirst;
 		
 		public SearchAndReplaceMode SearchAndReplaceMode {
 			get {
@@ -36,12 +40,13 @@ namespace SearchAndReplace
 				switch (searchAndReplaceMode) {
 					case SearchAndReplaceMode.Search:
 						SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.FindPanel.xfrm"));
-						Get<Button>("findAll").Click += new EventHandler(FindAllButtonClicked);
+						Get<Button>("findAll").Click += FindAllButtonClicked;
+						Get<Button>("bookmarkAll").Click += BookmarkAllButtonClicked;
 						break;
 					case SearchAndReplaceMode.Replace:
 						SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ReplacePanel.xfrm"));
-						Get<Button>("replace").Click += new EventHandler(ReplaceButtonClicked);
-						Get<Button>("replaceAll").Click += new EventHandler(ReplaceAllButtonClicked);
+						Get<Button>("replace").Click += ReplaceButtonClicked;
+						Get<Button>("replaceAll").Click += ReplaceAllButtonClicked;
 						break;
 				}
 				
@@ -58,6 +63,22 @@ namespace SearchAndReplace
 		{
 		}
 		
+		protected override void Dispose(bool disposing)
+		{
+			RemoveSelectionChangedHandler();
+			RemoveActiveWindowChangedHandler();
+			base.Dispose(disposing);
+		}
+		
+		public DocumentIteratorType DocumentIteratorType {
+			get {
+				return (DocumentIteratorType)(Get<ComboBox>("lookIn").SelectedIndex);
+			}
+			set {
+				Get<ComboBox>("lookIn").SelectedIndex = (int)value;
+			}
+		}
+		
 		void LookInBrowseButtonClicked(object sender, EventArgs e)
 		{
 			FolderDialog dlg = new FolderDialog();
@@ -70,26 +91,62 @@ namespace SearchAndReplace
 		void FindNextButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			SearchReplaceManager.FindNext();
+			if (IsSelectionSearch) {
+				if (IsTextSelected(selection)) {
+					FindNextInSelection();
+				}
+			} else {
+				SearchReplaceManager.FindNext();
+			}
 			Focus();
 		}
 		
 		void FindAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			SearchReplaceInFilesManager.FindAll();
+			if (IsSelectionSearch) {
+				if (IsTextSelected(selection)) {
+					RunAllInSelection(0);
+				}
+			} else {
+				SearchInFilesManager.FindAll();
+			}
+		}
+		
+		void BookmarkAllButtonClicked(object sender, EventArgs e)
+		{
+			WritebackOptions();
+			if (IsSelectionSearch) {
+				if (IsTextSelected(selection)) {
+					RunAllInSelection(1);
+				}
+			} else {
+				SearchReplaceManager.MarkAll();
+			}
 		}
 		
 		void ReplaceAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			SearchReplaceManager.ReplaceAll();
+			if (IsSelectionSearch) {
+				if (IsTextSelected(selection)) {
+					RunAllInSelection(2);
+				}
+			} else {
+				SearchReplaceManager.ReplaceAll();
+			}
 		}
 		
 		void ReplaceButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			SearchReplaceManager.Replace();
+			if (IsSelectionSearch) {
+				if (IsTextSelected(selection)) {
+					ReplaceInSelection();
+				}
+			} else {
+				SearchReplaceManager.Replace();
+			}
 			Focus();
 		}
 		
@@ -152,7 +209,12 @@ namespace SearchAndReplace
 			}
 			Get<ComboBox>("lookIn").Items.Add(SearchOptions.LookIn);
 			Get<ComboBox>("lookIn").SelectedIndexChanged += new EventHandler(LookInSelectedIndexChanged);
-			Get<ComboBox>("lookIn").SelectedIndex = (int)SearchOptions.DocumentIteratorType;
+			
+			if (IsMultipleLineSelection(GetCurrentTextSelection())) {
+				DocumentIteratorType = DocumentIteratorType.CurrentSelection;
+			} else {
+				DocumentIteratorType = SearchOptions.DocumentIteratorType;
+			}
 			
 			Get<ComboBox>("fileTypes").Text         = SearchOptions.LookInFiletypes;
 			Get<CheckBox>("matchCase").Checked      = SearchOptions.MatchCase;
@@ -188,6 +250,194 @@ namespace SearchAndReplace
 				Get<CheckBox>("includeSubFolder").Enabled = false;
 				Get<ComboBox>("fileTypes").Enabled = false;
 				Get<Label>("lookAtTypes").Enabled = false;
+			}
+			if (IsSelectionSearch) {
+				InitSelectionSearch();
+			} else {
+				RemoveSelectionSearchHandlers();
+			}
+		}
+		
+		bool IsSelectionSearch {
+			get {
+				return DocumentIteratorType == DocumentIteratorType.CurrentSelection;
+			}
+		}
+		
+		/// <summary>
+		/// Checks whether the selection spans two or more lines.
+		/// </summary>
+		/// <remarks>Maybe the ISelection interface should have an
+		/// IsMultipleLine method?</remarks>
+		static bool IsMultipleLineSelection(ISelection selection)
+		{
+			if (IsTextSelected(selection)) {
+				return selection.SelectedText.IndexOf('\n') != -1;
+			}
+			return false;
+		}
+		
+		static bool IsTextSelected(ISelection selection)
+		{
+			if (selection != null) {
+				return !selection.IsEmpty;
+			}
+			return false;
+		}
+		
+		void FindNextInSelection()
+		{
+			int startOffset = Math.Min(selection.Offset, selection.EndOffset);
+			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
+			
+			if (findFirst) {
+				SetCaretPosition(textEditor.ActiveTextAreaControl.TextArea, startOffset);
+			}
+			
+			try {
+				ignoreSelectionChanges = true;
+				if (findFirst) {
+					findFirst = false;
+					SearchReplaceManager.FindFirstInSelection(startOffset, endOffset - startOffset);
+				} else {
+					findFirst = !SearchReplaceManager.FindNextInSelection();
+					if (findFirst) {
+						SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
+					}
+				}
+			} finally {
+				ignoreSelectionChanges = false;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the first ISelection object from the currently active text editor
+		/// </summary>
+		static ISelection GetCurrentTextSelection()
+		{
+			TextEditorControl textArea = SearchReplaceUtilities.GetActiveTextEditor();
+			if (textArea != null) {
+				SelectionManager selectionManager = textArea.ActiveTextAreaControl.SelectionManager;
+				if (selectionManager.HasSomethingSelected) {
+					return selectionManager.SelectionCollection[0];
+				}
+			}
+			return null;
+		}
+		
+		void WorkbenchWindowChanged(object source, EventArgs e)
+		{
+			TextEditorControl activeTextEditorControl = SearchReplaceUtilities.GetActiveTextEditor();
+			if (activeTextEditorControl != this.textEditor) {
+				AddSelectionChangedHandler(activeTextEditorControl);
+				TextSelectionChanged(source, e);
+			}
+		}
+		
+		void AddSelectionChangedHandler(TextEditorControl textEditor)
+		{
+			RemoveSelectionChangedHandler();
+			
+			this.textEditor = textEditor;
+			if (textEditor != null) {
+				this.textEditor.ActiveTextAreaControl.SelectionManager.SelectionChanged += TextSelectionChanged;
+			}
+		}
+		
+		void RemoveSelectionChangedHandler()
+		{
+			if (textEditor != null) {
+				textEditor.ActiveTextAreaControl.SelectionManager.SelectionChanged -= TextSelectionChanged;
+			}
+		}
+		
+		void RemoveActiveWindowChangedHandler()
+		{
+			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged -= WorkbenchWindowChanged;
+		}
+		
+		/// <summary>
+		/// When the selected text is changed make sure the 'Current Selection'
+		/// option is not selected if no text is selected.
+		/// </summary>
+		/// <remarks>The text selection can change either when the user
+		/// selects different text in the editor or the active window is
+		/// changed.</remarks>
+		void TextSelectionChanged(object source, EventArgs e)
+		{
+			if (!ignoreSelectionChanges) {
+				LoggingService.Debug("TextSelectionChanged.");
+				selection = GetCurrentTextSelection();
+				findFirst = true;
+			}
+		}
+		
+		void SetCaretPosition(TextArea textArea, int offset)
+		{
+			textArea.Caret.Position = textArea.Document.OffsetToPosition(offset);
+		}
+		
+		void InitSelectionSearch()
+		{
+			findFirst = true;
+			selection = GetCurrentTextSelection();
+			AddSelectionChangedHandler(SearchReplaceUtilities.GetActiveTextEditor());
+			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += WorkbenchWindowChanged;
+		}
+		
+		void RemoveSelectionSearchHandlers()
+		{
+			RemoveSelectionChangedHandler();
+			RemoveActiveWindowChangedHandler();
+		}
+		
+		/// <summary>
+		/// action: 0 = find, 1 = mark, 2 = replace
+		/// </summary>
+		void RunAllInSelection(int action)
+		{
+			int startOffset = Math.Min(selection.Offset, selection.EndOffset);
+			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
+			
+			SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
+			SetCaretPosition(textEditor.ActiveTextAreaControl.TextArea, startOffset);
+			
+			try {
+				ignoreSelectionChanges = true;
+				if (action == 0)
+					SearchInFilesManager.FindAll(startOffset, endOffset - startOffset);
+				else if (action == 1)
+					SearchReplaceManager.MarkAll(startOffset, endOffset - startOffset);
+				else if (action == 2)
+					SearchReplaceManager.ReplaceAll(startOffset, endOffset - startOffset);
+				SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
+			} finally {
+				ignoreSelectionChanges = false;
+			}
+		}
+		
+		void ReplaceInSelection()
+		{
+			int startOffset = Math.Min(selection.Offset, selection.EndOffset);
+			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
+			
+			if (findFirst) {
+				SetCaretPosition(textEditor.ActiveTextAreaControl.TextArea, startOffset);
+			}
+			
+			try {
+				ignoreSelectionChanges = true;
+				if (findFirst) {
+					findFirst = false;
+					SearchReplaceManager.ReplaceFirstInSelection(startOffset, endOffset - startOffset);
+				} else {
+					findFirst = !SearchReplaceManager.ReplaceNextInSelection();
+					if (findFirst) {
+						SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
+					}
+				}
+			} finally {
+				ignoreSelectionChanges = false;
 			}
 		}
 	}

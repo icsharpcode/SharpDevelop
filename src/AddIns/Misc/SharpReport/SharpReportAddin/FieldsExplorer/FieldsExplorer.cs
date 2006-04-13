@@ -221,7 +221,7 @@ namespace SharpReportAddin {
 		}
 		
 		#region PadEvents
-		private void OnWindowChange (object sender,EventArgs e) {
+		private void old_OnWindowChange (object sender,EventArgs e) {
 			try {
 				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is SharpReportView) {
 					if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent == null) {
@@ -248,13 +248,13 @@ namespace SharpReportAddin {
 					}
 					
 				} else {
-					System.Console.WriteLine(" NO view");				}
+					System.Console.WriteLine("FieldsExplorer:  NO view");				}
 			} catch (Exception) {
 				
 			}
 		}
 
-		private void old_OnWindowChange (object sender,EventArgs e) {
+		private void OnWindowChange (object sender,EventArgs e) {
 //			System.Console.WriteLine("FieldsExplorer:OnWindowChange");
 //			System.Console.WriteLine("active control {0}",WorkbenchSingleton.ActiveControl.ToString());
 //			 ICSharpCode.SharpDevelop.Gui.DefaultWorkbench dw = (ICSharpCode.SharpDevelop.Gui.DefaultWorkbench)sender;

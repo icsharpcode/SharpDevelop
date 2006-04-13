@@ -102,6 +102,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		/// <summary>
+		/// If this is a partial class, gets the compound class containing information from all parts.
+		/// If this is not a partial class, a reference to this class is returned.
+		/// </summary>
+		IClass GetCompoundClass();
+		
 		IClass GetInnermostClass(int caretLine, int caretColumn);
 		
 		List<IClass> GetAccessibleTypes(IClass callingClass);

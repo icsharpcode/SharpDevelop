@@ -130,7 +130,7 @@ namespace Debugger
 			
 			ClearThreads();
 			
-			currentProcess = null;
+			selectedProcess = null;
 			pausedHandle.Reset();
 			pauseSession = null;
 			
@@ -201,10 +201,10 @@ namespace Debugger
 
 		public SourcecodeSegment NextStatement { 
 			get {
-				if (CurrentFunction == null) {
+				if (SelectedFunction == null || IsRunning) {
 					return null;
 				} else {
-					return CurrentFunction.NextStatement;
+					return SelectedFunction.NextStatement;
 				}
 			}
 		}
@@ -218,11 +218,11 @@ namespace Debugger
 		
 		void OnUpdatingLocalVariables(object sender, VariableCollectionEventArgs e)
 		{
-			if (CurrentFunction == null) {
+			if (SelectedFunction == null || IsRunning) {
 				e.VariableCollection.UpdateTo(new Variable[] {}); // Make it empty
 			} else {
-				e.VariableCollection.UpdateTo(CurrentFunction.Variables);
-				CurrentFunction.Expired += delegate { 
+				e.VariableCollection.UpdateTo(SelectedFunction.Variables);
+				SelectedFunction.Expired += delegate { 
 					e.VariableCollection.UpdateTo(new Variable[] {});
 				};
 			}

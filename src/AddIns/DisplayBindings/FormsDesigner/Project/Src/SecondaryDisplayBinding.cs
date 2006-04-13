@@ -37,9 +37,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		public static IMethod GetInitializeComponents(IClass c)
 		{
-			c = c.DefaultReturnType.GetUnderlyingClass();
-			if (c == null)
-				return null;
+			c = c.GetCompoundClass();
 			foreach (IMethod method in c.Methods) {
 				if (IsInitializeComponentsMethodName(method.Name) && method.Parameters.Count == 0) {
 					return method;
@@ -51,7 +49,7 @@ namespace ICSharpCode.FormsDesigner
 		public static bool BaseClassIsFormOrControl(IClass c)
 		{
 			// Simple test for fully qualified name
-			c = c.DefaultReturnType.GetUnderlyingClass();
+			c = c.GetCompoundClass();
 			foreach (IReturnType baseType in c.BaseTypes) {
 				if (baseType.FullyQualifiedName == "System.Windows.Forms.Form"
 				    || baseType.FullyQualifiedName == "System.Windows.Forms.UserControl"

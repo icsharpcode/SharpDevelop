@@ -21,7 +21,7 @@ namespace SharpReport.Designer
 	/// and can have some common members managed easier.
 	/// </summary>
 
-	public abstract class ReportObjectControlBase : System.Windows.Forms.UserControl	
+	public abstract class ReportObjectControlBase : UserControl	
 	{
 		private StringAlignment stringAlignment = StringAlignment.Near;
 		private StringFormat stringFormat;

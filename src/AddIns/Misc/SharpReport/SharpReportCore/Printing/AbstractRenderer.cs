@@ -113,7 +113,7 @@ namespace SharpReportCore {
 				throw new ArgumentNullException("rpea");
 			}
 			
-			System.Console.WriteLine("Debug Rectangle {0}",rectangle);
+//			System.Console.WriteLine("Debug Rectangle {0}",rectangle);
 			rpea.PrintPageEventArgs.Graphics.DrawRectangle (Pens.Black,rectangle);
 	
 		}
@@ -132,54 +132,65 @@ namespace SharpReportCore {
 			return rect;
 		}
 		
-		
-		///<summary>
-		/// Prints the ReportHader printjob is the same in all Types of reportz
-		///</summary>
-		/// <param name="e">ReportpageEventArgs</param>
-		/// 
-		protected PointF DrawReportHeader (ReportPageEventArgs e) {
-			float offset = 0;
-			BaseSection section = null;
+		protected PointF MeasureReportHeader (ReportPageEventArgs e) {
+			PointF endAt = new PointF();
 			if (e.PageNumber == 1) {
-				sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportHeader,CultureInfo.InvariantCulture);
+				sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportHeader,
+				                               CultureInfo.InvariantCulture);
+				if (this.CurrentSection.Items.Count > 0) {
+					this.CurrentSection.SectionOffset = reportSettings.DefaultMargins.Top;
+					FitSectionToItems (this.CurrentSection,e);
+					endAt = new PointF (0,
+			                   reportSettings.DefaultMargins.Top + this.CurrentSection.Size.Height + Gap);
+				} else {
+					endAt = new PointF(0,reportSettings.DefaultMargins.Top);
+				}
 				
-				section = CurrentSection;
-				section.SectionOffset = reportSettings.DefaultMargins.Top;
-				FitSectionToItems (section,e);
-				offset =  RenderSection (section,e);
 			}
-			return new PointF (0,offset + reportSettings.DefaultMargins.Top + Gap);
+			return endAt;
 		}
 		
 		
-		
-		///<summary>
-		/// Prints the PageHeader printjob is the same in all Types of reportz
 		///</summary>
 		/// <param name="startAt">Section start at this PointF</param>
 		/// <param name="e">ReportPageEventArgs</param>
-		protected PointF DrawPageHeader (PointF startat,ReportPageEventArgs e) {
-			float offset = 0F;
-			BaseSection section = null;
-			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader,CultureInfo.InvariantCulture);
-			section = CurrentSection;
+		protected PointF MeasurePageHeader (PointF startat,ReportPageEventArgs e) {
+
+			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader,
+			                               CultureInfo.InvariantCulture);
 
 			if (e.PageNumber == 1) {
-				section.SectionOffset = (int)startat.Y + Gap;
+				this.CurrentSection.SectionOffset = (int)startat.Y + Gap;
 			} else {
-				section.SectionOffset = reportSettings.DefaultMargins.Top;
+				this.CurrentSection.SectionOffset = reportSettings.DefaultMargins.Top;
 			}
 
-			FitSectionToItems (section,e);
-			offset = RenderSection (section,e);
-			return new PointF (0,section.SectionOffset + offset + Gap);	
+			FitSectionToItems (this.CurrentSection,e);
+			return new PointF (0,
+			                   this.CurrentSection.SectionOffset + this.CurrentSection.Size.Height + Gap);
 		}
+		
+		protected PointF  MeasurePageEnd (ReportPageEventArgs e) {
+			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageFooter,
+			                               CultureInfo.InvariantCulture);
+			this.CurrentSection.SectionOffset = reportSettings.PageSettings.Bounds.Height - reportSettings.DefaultMargins.Top - reportSettings.DefaultMargins.Bottom;
+			FitSectionToItems (this.CurrentSection,e);
+			this.DetailEnds = new Point (0,this.CurrentSection.SectionOffset);
+			return new PointF(0,this.CurrentSection.SectionOffset);
+		}
+		
+		
+		protected PointF MeasureReportFooter (ReportPageEventArgs e) {
+			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportFooter,
+			                                   CultureInfo.InvariantCulture);
+			FitSectionToItems (this.CurrentSection,e);
+			return new PointF(0,this.CurrentSection.SectionOffset + this.CurrentSection.Size.Height);
+		}
+		
 		
 		
 		
 		protected virtual int RenderSection (BaseSection section,ReportPageEventArgs rpea) {
-			
 			Point drawPoint	= new Point(0,0);
 			if (section.Visible){
 				section.Render (rpea);
@@ -204,7 +215,7 @@ namespace SharpReportCore {
 			}
 			return drawPoint.Y;
 		}
-		
+	
 		
 		protected void DrawSingleItem (ReportPageEventArgs rpea,BaseReportItem item){
 			item.SuspendLayout();
@@ -216,12 +227,12 @@ namespace SharpReportCore {
 	
 		// Called by FormatOutPutEvent of the BaseReportItem
 		void FormatBaseReportItem (object sender, FormatOutputEventArgs rpea) {
-			System.Console.WriteLine("FormatBaseReportItem");
+//			System.Console.WriteLine("FormatBaseReportItem");
 			BaseDataItem baseDataItem = sender as BaseDataItem;
 			if (baseDataItem != null) {
 				if (!String.IsNullOrEmpty(baseDataItem.FormatString)) {
 					rpea.FormatedValue = defaultFormatter.FormatItem (baseDataItem);
-					System.Console.WriteLine("\tFormated Value = {0}",rpea.FormatedValue);
+//					System.Console.WriteLine("\tFormated Value = {0}",rpea.FormatedValue);
 				} else {
 					rpea.FormatedValue = rpea.ValueToFormat;
 				}
@@ -333,7 +344,8 @@ namespace SharpReportCore {
 		}
 		
 		protected virtual void  PrintBodyStart (object sender,ReportPageEventArgs e) {
-			
+				this.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail,
+			                                    CultureInfo.InvariantCulture);
 			
 		}
 		
@@ -341,12 +353,12 @@ namespace SharpReportCore {
 			
 		}
 		
-		protected virtual void  PrintPageEnd (object sender,ReportPageEventArgs e) {
-			BaseSection section = null;
-			section = CurrentSection;
-			section.SectionOffset = reportSettings.PageSettings.Bounds.Height - reportSettings.DefaultMargins.Top - reportSettings.DefaultMargins.Bottom;
-			FitSectionToItems (section,e);
-			RenderSection (section,e);
+		protected virtual void  PrintPageEnd (object sender,ReportPageEventArgs e) {		
+//			BaseSection section = null;
+//			section = CurrentSection;
+//			section.SectionOffset = reportSettings.PageSettings.Bounds.Height - reportSettings.DefaultMargins.Top - reportSettings.DefaultMargins.Bottom;
+//			FitSectionToItems (section,e);
+//			RenderSection (section,e);
 		}
 		
 		#endregion

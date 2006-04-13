@@ -20,7 +20,7 @@ namespace Debugger
 
 		ICorDebugProcess corProcess;
 
-		Thread currentThread;
+		Thread selectedThread;
 		bool isProcessRunning = true;
 		
 		public NDebugger Debugger {
@@ -41,26 +41,13 @@ namespace Debugger
 			}
 		}
 
-		public Thread CurrentThread {
+		public Thread SelectedThread {
 			get {
-				if (currentThread == null) {
-					IList<Thread> threads = Threads;
-					if (threads.Count > 0) {
-						currentThread = threads[0];
-					}
-				}
-				return currentThread;
+				return selectedThread;
 			}
-			internal set {
-				currentThread = value;
+			set {
+				selectedThread = value;
 			}
-		}
-		
-		public void SetCurrentThread(Thread thread)
-		{
-			CurrentThread = thread;
-			
-			debugger.Pause();
 		}
 
 		public IList<Thread> Threads {
@@ -127,7 +114,21 @@ namespace Debugger
 			
 			isProcessRunning = false;
 			debugger.PauseSession = new PauseSession(PausedReason.Break);
-			debugger.CurrentProcess = this;
+			debugger.SelectedProcess = this;
+			
+			if (this.SelectedThread == null && this.Threads.Count > 0) {
+				this.SelectedThread = this.Threads[0];
+			}
+			
+			if (debugger.SelectedThread != null) {
+				// Disable all steppers - do not Deactivate since function tracking still needs them
+				foreach(Stepper s in debugger.SelectedThread.Steppers) {
+					s.PauseWhenComplete = false;
+				}
+				
+				debugger.SelectedThread.SelectedFunction = debugger.SelectedThread.LastFunctionWithLoadedSymbols;
+			}
+			
 			debugger.Pause();
 		}
 		
@@ -146,7 +147,7 @@ namespace Debugger
 		{
 			// Resume stoped tread
 			if (corProcess.IsRunning == 0) {
-				Continue(); // TODO: Remove this...
+				corProcess.Continue(0); // TODO: Remove this...
 			}
 			// Stop&terminate - both must be called
 			corProcess.Stop(5000); // TODO: ...and this

@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
@@ -93,10 +94,31 @@ namespace ICSharpCode.TextEditor.Document
 			ISyntaxModeFileProvider syntaxModeFileProvider = (ISyntaxModeFileProvider)entry.Value;
 			
 			DefaultHighlightingStrategy highlightingStrategy = HighlightingDefinitionParser.Parse(syntaxMode, syntaxModeFileProvider.GetSyntaxModeFile(syntaxMode));
+			if (highlightingStrategy == null) {
+				highlightingStrategy = DefaultHighlighting;
+			}
 			highlightingDefs[syntaxMode.Name] = highlightingStrategy;
 			highlightingStrategy.ResolveReferences();
 			
 			return highlightingStrategy;
+		}
+		
+		public DefaultHighlightingStrategy DefaultHighlighting {
+			get {
+				return (DefaultHighlightingStrategy)highlightingDefs["Default"];
+			}
+		}
+		
+		internal KeyValuePair<SyntaxMode, ISyntaxModeFileProvider> FindHighlighterEntry(string name)
+		{
+			foreach (ISyntaxModeFileProvider provider in syntaxModeFileProviders) {
+				foreach (SyntaxMode mode in provider.SyntaxModes) {
+					if (mode.Name == name) {
+						return new KeyValuePair<SyntaxMode, ISyntaxModeFileProvider>(mode, provider);
+					}
+				}
+			}
+			return new KeyValuePair<SyntaxMode, ISyntaxModeFileProvider>(null, null);
 		}
 		
 		public IHighlightingStrategy FindHighlighter(string name)
@@ -105,7 +127,7 @@ namespace ICSharpCode.TextEditor.Document
 			if (def is DictionaryEntry) {
 				return LoadDefinition((DictionaryEntry)def);
 			}
-			return (IHighlightingStrategy)(def == null ? highlightingDefs["Default"] : def);
+			return def == null ? DefaultHighlighting : (IHighlightingStrategy)def;
 		}
 		
 		public IHighlightingStrategy FindHighlighterForFile(string fileName)
@@ -116,9 +138,9 @@ namespace ICSharpCode.TextEditor.Document
 				if (def is DictionaryEntry) {
 					return LoadDefinition((DictionaryEntry)def);
 				}
-				return (IHighlightingStrategy)(def == null ? highlightingDefs["Default"] : def);
+				return def == null ? DefaultHighlighting : (IHighlightingStrategy)def;
 			} else {
-				return (IHighlightingStrategy)highlightingDefs["Default"];
+				return DefaultHighlighting;
 			}
 		}
 		

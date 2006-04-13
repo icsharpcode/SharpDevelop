@@ -86,6 +86,9 @@
     </Compile>
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
     <Compile Include="Src\BuildOptions.cs" />
+    <None Include="Templates\DefaultAssemblyInfo.boo">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="BooBinding.addin">

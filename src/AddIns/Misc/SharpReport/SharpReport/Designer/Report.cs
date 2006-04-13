@@ -195,6 +195,7 @@ namespace SharpReport.Designer{
 				BaseReportItem br = (BaseReportItem)this.FindParent(iddea);
 				baseReportItem.Location = new Point(iddea.ItemAtPoint.X - br.Location.X,10);
 			}
+			baseReportItem.ResumeLayout();
 		}
 		
 		

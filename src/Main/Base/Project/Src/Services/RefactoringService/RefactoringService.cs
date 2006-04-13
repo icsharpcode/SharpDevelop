@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <param name="directDerivationOnly">If true, gets only the classes that derive directly from <paramref name="baseClass"/>.</param>
 		public static List<IClass> FindDerivedClasses(IClass baseClass, IEnumerable<IProjectContent> projectContents, bool directDerivationOnly)
 		{
-			baseClass = FixClass(baseClass);
+			baseClass = baseClass.GetCompoundClass();
 			string baseClassName = baseClass.Name;
 			string baseClassFullName = baseClass.FullyQualifiedName;
 			List<IClass> list = new List<IClass>();
@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				files = new List<ProjectItem>();
 				files.Add(FindItem(ownerClass.CompilationUnit.FileName));
 			} else {
-				ownerClass = FixClass(ownerClass);
+				ownerClass = ownerClass.GetCompoundClass();
 				files = GetPossibleFiles(ownerClass, member);
 			}
 			ParseableFileContentEnumerator enumerator = new ParseableFileContentEnumerator(files.ToArray());
@@ -234,14 +234,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			return new Point(column, line);
-		}
-		
-		/// <summary>
-		/// Gets the compound class if the class was partial.
-		/// </summary>
-		static IClass FixClass(IClass c)
-		{
-			return c.DefaultReturnType.GetUnderlyingClass();
 		}
 		
 		public static List<string> GetFileNames(IClass c)

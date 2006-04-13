@@ -58,6 +58,22 @@ namespace SearchAndReplace
 			return -1;
 		}
 		
+		int InternalFindNext(ITextIterator textIterator, int offset, int length)
+		{
+			while (textIterator.MoveAhead(1) && TextSelection.IsInsideRange(textIterator.Position, offset, length)) {
+				if (SearchOptions.MatchCase ? MatchCaseSensitive(textIterator.TextBuffer, textIterator.Position, searchPattern) : MatchCaseInsensitive(textIterator.TextBuffer, textIterator.Position, searchPattern)) {
+					if (!SearchOptions.MatchWholeWord || IsWholeWordAt(textIterator.TextBuffer, textIterator.Position, searchPattern.Length)) {
+						if (TextSelection.IsInsideRange(textIterator.Position + searchPattern.Length - 1, offset, length)) {
+							return textIterator.Position;
+						} else {
+							return -1;
+						}
+					}
+				}
+			}
+			return -1;
+		}
+		
 		public bool CompilePattern()
 		{
 			searchPattern = SearchOptions.MatchCase ? SearchOptions.FindPattern : SearchOptions.FindPattern.ToUpper();
@@ -67,6 +83,17 @@ namespace SearchAndReplace
 		public SearchResult FindNext(ITextIterator textIterator)
 		{
 			int offset = InternalFindNext(textIterator);
+			return GetSearchResult(offset);
+		}
+		
+		public SearchResult FindNext(ITextIterator textIterator, int offset, int length)
+		{
+			int foundOffset = InternalFindNext(textIterator, offset, length);
+			return GetSearchResult(foundOffset);
+		}
+		
+		SearchResult GetSearchResult(int offset)
+		{
 			return offset >= 0 ? new SearchResult(offset, searchPattern.Length) : null;
 		}
 	}

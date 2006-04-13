@@ -8,9 +8,8 @@
  */
 
 using System;
-using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Printing;
+using System.ComponentModel;
 
 using SharpReportCore;
 using SharpReport.Designer;
@@ -26,14 +25,17 @@ namespace SharpReport.ReportItems {
 
 	public class ReportTextItem : BaseTextItem,IDesignable {
 		
-		
 		private ReportTextControl visualControl;
-		bool initDone;
 		
 		#region Constructor
 		public ReportTextItem() : base(){
 			visualControl = new ReportTextControl();
 
+			this.Text = visualControl.Name;
+			visualControl.StringFormat = base.StandartStringFormat;
+			
+			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+			
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
 			this.visualControl.BackColorChanged += new EventHandler (OnControlChanged);
@@ -41,45 +43,32 @@ namespace SharpReport.ReportItems {
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
 
 			base.PropertyChanged += new PropertyChangedEventHandler (BasePropertyChange);
-//			ItemsHelper.UpdateTextControl (this.visualControl,this);
-			
-			this.Text = visualControl.Name;
-			visualControl.StringFormat = base.StandartStringFormat;
-			
-			ItemsHelper.UpdateControlFromTextBase (this.visualControl,this);
-			this.initDone = true;
 		}
 		
 		
 		#endregion
 		
-		#region overrides
 		
-		public override string ToString(){
-			return this.Name;
-		}
-		
-		#endregion
 		
 		#region events
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
-			System.Console.WriteLine("Text:BasePropertyChanged");
-			if (initDone == true) {
-				ItemsHelper.UpdateControlFromTextBase(this.visualControl,this);
-			}
+			ItemsHelper.UpdateControlFromTextBase(this.visualControl,this);
+			this.HandlePropertyChanged(e.PropertyName);
 		}
 		
 
 		private void OnControlChanged (object sender, EventArgs e) {
-			System.Console.WriteLine("Text:OnControlChanged");
+			base.SuspendLayout();
 			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+			base.ResumeLayout();
 			this.HandlePropertyChanged("OnControlSelected");
 		}
 		
+		
 		private void OnControlSelect(object sender, EventArgs e){
-			System.Console.WriteLine("Text:OnControlSelect");
-			if (Selected != null)
+			if (Selected != null){
 				Selected(this,e);
+			}
 		}
 		
 		/// <summary>
@@ -88,15 +77,15 @@ namespace SharpReport.ReportItems {
 		/// </summary>
 		
 		protected void HandlePropertyChanged(string info) {
-			System.Console.WriteLine("Text:HandlePropertyChanged");
 			if ( !base.Suspend) {
 				if (PropertyChanged != null) {
 					PropertyChanged (this,new PropertyChangedEventArgs(info));
 				}
 			}
 		}
+		
 		#endregion
-
+		
 		public override Size Size {
 			get {
 				return base.Size;
@@ -168,6 +157,13 @@ namespace SharpReport.ReportItems {
 
 		#endregion
 		
+		#region overrides
+		
+		public override string ToString(){
+			return this.Name;
+		}
+		
+		#endregion
 		/*
 		#region IDisposable
 		public override void Dispose(){

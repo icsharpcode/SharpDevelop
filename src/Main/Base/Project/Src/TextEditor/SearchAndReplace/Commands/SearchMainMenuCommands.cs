@@ -32,12 +32,10 @@ namespace SearchAndReplace
 		public static void SetSearchPattern()
 		{
 			// Get Highlighted value and set it to FindDialog.searchPattern
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			
-			if (window != null && (window.ViewContent is ITextEditorControlProvider)) {
-				TextEditorControl textarea = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
-				string selectedText = textarea.ActiveTextAreaControl.TextArea.SelectionManager.SelectedText;
-				if (selectedText != null && selectedText.Length > 0) {
+			TextEditorControl textArea = SearchReplaceUtilities.GetActiveTextEditor();
+			if (textArea != null) {
+				string selectedText = textArea.ActiveTextAreaControl.TextArea.SelectionManager.SelectedText;
+				if (selectedText != null && selectedText.Length > 0 && !IsMultipleLines(selectedText)) {
 					SearchOptions.CurrentFindPattern = selectedText;
 				}
 			}
@@ -48,13 +46,23 @@ namespace SearchAndReplace
 			SetSearchPattern();
 			SearchAndReplaceDialog.ShowSingleInstance(SearchAndReplaceMode.Search);
 		}
+		
+		static bool IsMultipleLines(string text)
+		{
+			return text.IndexOf('\n') != -1;
+		}
 	}
 	
 	public class FindNext : AbstractMenuCommand
 	{
 		public override void Run()
 		{
-			SearchReplaceManager.FindNext();
+			if (SearchOptions.CurrentFindPattern.Length > 0) {
+				SearchReplaceManager.FindNext();
+			} else {
+				Find find = new Find();
+				find.Run();
+			}
 		}
 	}
 	

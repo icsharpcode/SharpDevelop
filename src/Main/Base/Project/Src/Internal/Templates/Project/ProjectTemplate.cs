@@ -199,13 +199,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 			
 			if (doc.DocumentElement["Solution"] != null) {
-				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(doc.DocumentElement["Solution"]);
+				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(doc.DocumentElement["Solution"], Path.GetDirectoryName(fileName));
 			} else if (doc.DocumentElement["Combine"] != null) {
-				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(doc.DocumentElement["Combine"]);
+				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(doc.DocumentElement["Combine"], Path.GetDirectoryName(fileName));
 			}
 			
 			if (doc.DocumentElement["Project"] != null) {
-				projectDescriptor = ProjectDescriptor.CreateProjectDescriptor(doc.DocumentElement["Project"]);
+				projectDescriptor = ProjectDescriptor.CreateProjectDescriptor(doc.DocumentElement["Project"], Path.GetDirectoryName(fileName));
 			}
 			
 			// Read Actions;

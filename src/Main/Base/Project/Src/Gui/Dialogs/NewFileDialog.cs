@@ -374,6 +374,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (parsedFileName.StartsWith("/") || parsedFileName.StartsWith("\\"))
 				parsedFileName = parsedFileName.Substring(1);
 			if (newfile.IsDependentFile && Path.IsPathRooted(parsedFileName)) {
+				Directory.CreateDirectory(Path.GetDirectoryName(parsedFileName));
 				File.WriteAllText(parsedFileName, parsedContent, ParserService.DefaultFileEncoding);
 				ParserService.ParseFile(parsedFileName, parsedContent);
 			} else {
@@ -438,7 +439,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 						string[] subdirs = relPath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 						StringBuilder standardNameSpace = new StringBuilder(project.RootNamespace);
 						foreach(string subdir in subdirs) {
-							if (subdir == "." || subdir == ".." || subdir == "" || subdir.Equals("src", StringComparison.OrdinalIgnoreCase))
+							if (subdir == "." || subdir == ".." || subdir.Length == 0)
+								continue;
+							if (subdir.Equals("src", StringComparison.OrdinalIgnoreCase))
+								continue;
+							if (subdir.Equals("source", StringComparison.OrdinalIgnoreCase))
 								continue;
 							standardNameSpace.Append('.');
 							standardNameSpace.Append(GenerateValidClassName(subdir));

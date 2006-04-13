@@ -22,16 +22,12 @@ namespace SharpReport.Designer
 		int thickness = 1;
 		DashStyle dashStyle = DashStyle.Solid;
 		
-		public AbstractGraphicControl()
-		{
-		
+		public AbstractGraphicControl(){
 			InitializeComponent();
-			base.DragEnter += new DragEventHandler (OnOver);
 		}
 		
-		void OnOver (object sender, DragEventArgs e) {
-			System.Console.WriteLine("AbstractGraphicControl:On Over");
-		}
+		
+		
 		#region property's
 		
 		/// <summary>

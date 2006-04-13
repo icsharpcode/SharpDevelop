@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.CodeDom.Compiler;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using ICSharpCode.Core;
@@ -19,12 +20,11 @@ using Debugger;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class ExceptionHistoryPad : AbstractPadContent
+	public class ExceptionHistoryPad : DebuggerPad
 	{
-		WindowsDebugger debugger;
-		NDebugger debuggerCore;
-
 		ListView  exceptionHistoryList;
+		
+		List<Debugger.Exception> exceptions = new List<Debugger.Exception>();
 		
 		ColumnHeader time      = new ColumnHeader();
 		ColumnHeader exception = new ColumnHeader();
@@ -36,15 +36,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		public ExceptionHistoryPad()
+		protected override void InitializeComponents()
 		{
-			InitializeComponents();
-		}
-		
-		void InitializeComponents()
-		{
-			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			
 			exceptionHistoryList = new ListView();
 			exceptionHistoryList.FullRowSelect = true;
 			exceptionHistoryList.AutoArrange = true;
@@ -60,30 +53,28 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			time.Width = 80;
 			
 			RedrawContent();
-
-			if (debugger.ServiceInitialized) {
-				InitializeDebugger();
-			} else {
-				debugger.Initialize += delegate {
-					InitializeDebugger();
-				};
-			}
 		}
 
-		public void InitializeDebugger()
-		{
-			debuggerCore = debugger.DebuggerCore;
-
-			debugger.ExceptionHistoryModified += new EventHandler(ExceptionHistoryModified);
-
-			RefreshList();
-		}
-		
 		public override void RedrawContent()
 		{
 			time.Text      = ResourceService.GetString("MainWindow.Windows.Debug.ExceptionHistory.Time");
 			exception.Text = ResourceService.GetString("MainWindow.Windows.Debug.ExceptionHistory.Exception");
 			location.Text  = ResourceService.GetString("AddIns.HtmlHelp2.Location");
+		}
+		
+		
+		protected override void RegisterDebuggerEvents()
+		{
+			debuggerCore.ProcessExited += delegate {
+				exceptions.Clear();
+				RefreshPad();
+			};
+			debuggerCore.DebuggingPaused += delegate (object sender, DebuggingPausedEventArgs e) {
+				if (e.Reason == PausedReason.Exception) {
+					exceptions.Add(debuggerCore.SelectedThread.CurrentException);
+					RefreshPad();
+				}
+			};
 		}
 		
 		void ExceptionHistoryListItemActivate(object sender, EventArgs e)
@@ -102,31 +93,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				if (content is IPositionable) {
 					((IPositionable)content).JumpTo((int)nextStatement.StartLine - 1, (int)nextStatement.StartColumn - 1);
 				}
-				
-				/*if (content.Control is TextEditorControl) {
-					IDocument document = ((TextEditorControl)content.Control).Document;
-					LineSegment line = document.GetLineSegment((int)nextStatement.StartLine - 1);
-					int offset = line.Offset + (int)nextStatement.StartColumn;
-					currentLineMarker = new TextMarker(offset, (int)nextStatement.EndColumn - (int)nextStatement.StartColumn, TextMarkerType.SolidBlock, Color.Yellow);
-					currentLineMarkerParent = document;
-					currentLineMarkerParent.MarkerStrategy.TextMarker.Add(currentLineMarker);
-					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-					document.CommitUpdate();
-				}*/
 			}
 		}
-
-		void ExceptionHistoryModified(object sender, EventArgs e)
-		{
-			RefreshList();
-		}
 		
-		public void RefreshList()
+		public override void RefreshPad()
 		{
 			exceptionHistoryList.BeginUpdate();
 			exceptionHistoryList.Items.Clear();
 			
-			foreach(Debugger.Exception exception in debugger.ExceptionHistory) {
+			foreach(Debugger.Exception exception in exceptions) {
 				string location;
 				if (exception.Location != null) {
 					location = exception.Location.SourceFilename + ":" + exception.Location.StartLine;

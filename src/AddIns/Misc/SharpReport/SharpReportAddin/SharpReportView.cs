@@ -35,7 +35,7 @@ namespace SharpReportAddin{
 	public class SharpReportView : AbstractViewContent,IPrintable,IDisposable
 	{
 		
-		private SharpReportManager reportManager = null;
+		private SharpReportManager reportManager;
 		
 		private BaseDesignerControl designerControl;
 		private	TabControl tabControl;
@@ -45,13 +45,15 @@ namespace SharpReportAddin{
 		// SideBar
 		private AxSideTab sideTabItem = null;
 		private AxSideTab sideTabFunctions = null;
-		private Panel panel = new Panel();
+		private Panel panel;
 		
+		private bool designerInitialised;
 		#region privates
 		
 		void InitView() {
 			try {
 				reportManager = new SharpReportManager();
+				panel = new Panel();
 				panel.AutoScroll = true;
 				CreateTabControl();
 				BuildToolBarItems();
@@ -77,7 +79,8 @@ namespace SharpReportAddin{
 		private void SetOnPropertyChangedEvents () {
 			try {
 				ReportModel model = designerControl.ReportModel;
-				model.ReportSettings.PropertyChanged += new EventHandler (OnSettingsChanged);
+
+				model.ReportSettings.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (OnPropertyChanged);
 				model.ReportHeader.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (OnPropertyChanged);
 				model.PageHeader.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (OnPropertyChanged);
 				model.DetailSection.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (OnPropertyChanged);
@@ -134,6 +137,7 @@ namespace SharpReportAddin{
 					SharpDevelopSideBar	sideBar = GetSideBar();
 					sideBar.Tabs.Remove (sideTabItem);
 				}
+				
 				if (this.sideTabFunctions != null) {
 					SharpDevelopSideBar	sideBar = GetSideBar();
 					sideBar.Tabs.Remove(this.sideTabFunctions);
@@ -187,14 +191,16 @@ namespace SharpReportAddin{
 			previewPage.Text = ResourceService.GetString("SharpReport.Preview");
 			this.OnTabPageChanged (this,EventArgs.Empty);
 			this.designerControl.Localise();
+			
 		}
 		
 		private BaseDesignerControl CreateDesignerControl() {
 			BaseDesignerControl ctrl = reportManager.BaseDesignControl;
-			
+			ctrl.SuspendLayout();
 			ctrl.ReportControl.Width = ctrl.ReportModel.ReportSettings.PageSettings.Bounds.Width;
 			ctrl.ReportControl.AutoScroll = true;
 			ctrl.Dock = DockStyle.Fill;
+			ctrl.ResumeLayout();
 			
 			ctrl.ReportControl.ObjectSelected +=new EventHandler <EventArgs>(OnObjectSelected);
 			
@@ -309,6 +315,9 @@ namespace SharpReportAddin{
 			}
 		}
 		
+		void SetTabTitel (string name) {
+			base.TitleName = String.Format("{0} [{1}]",name,this.tabControl.SelectedTab.Text);
+		}
 		
 		private void OnTabPageChanged (object sender, EventArgs e) {
 			
@@ -321,7 +330,7 @@ namespace SharpReportAddin{
 			} else {
 				name = Path.GetFileName (base.FileName);
 			}
-			base.TitleName = String.Format("{0} [{1}]",name,this.tabControl.SelectedTab.Text);
+			SetTabTitel (name);
 			switch (tabControl.SelectedIndex) {
 				case 0 :
 					break;
@@ -344,22 +353,48 @@ namespace SharpReportAddin{
 			base.IsDirty = true;
 		}
 		
-		public void OnPropertyChanged (object sender,
-		                               System.ComponentModel.PropertyChangedEventArgs e) {
-			base.IsDirty = true;
+		private void OnPropertyChanged (object sender,
+		                                System.ComponentModel.PropertyChangedEventArgs e) {
+			if (this.designerInitialised) {
+				base.IsDirty = true;
+				OnObjectSelected (this,EventArgs.Empty);
+			}
+			this.designerInitialised = true;
 		}
-		
-		private void OnSettingsChanged (object sender,EventArgs e) {
-			base.IsDirty = true;
-		}
+	
 		private void OnModelFileNameChanged (object sender,EventArgs e) {
 			base.FileName = designerControl.ReportModel.ReportSettings.FileName;
-			base.IsDirty = true;
-			this.OnFileNameChanged(e);
+			if (designerControl.ReportModel.ReportSettings.InitDone) {
+				base.IsDirty = true;
+				this.OnFileNameChanged(e);
+				this.SetTabTitel(Path.GetFileName (base.FileName));
+			}
 		}
 		
 		
 		private void OnObjectSelected (object sender,EventArgs e) {
+			
+			if (designerControl.ReportControl.SelectedObject != null) {
+				BaseReportObject oldobj = PropertyPad.Grid.SelectedObject as BaseReportObject;
+				
+//				if (oldobj != null) {
+//					System.Console.WriteLine("");
+//					System.Console.WriteLine("leaving {0} <{1}> ",oldobj.Name,oldobj.Suspend);
+//				}
+				
+				BaseReportObject newobj = designerControl.ReportControl.SelectedObject;
+				newobj.ResumeLayout();
+//				System.Console.WriteLine("View:OnObjectSelected {0} <{1}>",newobj.Name,newobj.Suspend);
+				
+				if (PropertyPad.Grid != null) {
+					PropertyPad.Grid.SelectedObject = designerControl.ReportControl.SelectedObject;
+				}
+				
+			}
+		}
+		
+		private void old_OnObjectSelected (object sender,EventArgs e) {
+			
 			if (designerControl.ReportControl.SelectedObject != null) {
 				if (PropertyPad.Grid != null) {
 					PropertyPad.Grid.SelectedObject = designerControl.ReportControl.SelectedObject;
@@ -368,10 +403,6 @@ namespace SharpReportAddin{
 			}
 		}
 		
-		protected override void OnFileNameChanged(System.EventArgs e) {
-			base.OnFileNameChanged(e);
-		}
-
 		#endregion
 		
 		#region Calls from outside commands
@@ -406,6 +437,7 @@ namespace SharpReportAddin{
 		/// Change Sorting or Grouping etc. to update the View and set the DirtyFlag
 		/// </summary>
 		/// <param name="setViewDirty">If true, set the DirtyFlag and Fire the PropertyChanged Event</param>
+		
 		public void UpdateView(bool setViewDirty) {
 			this.tabControl.SelectedIndex = 0;
 			this.OnTabPageChanged(this,EventArgs.Empty);
@@ -513,6 +545,8 @@ namespace SharpReportAddin{
 					PropertyPad.Grid.Refresh();
 				}
 				this.designerControl.ReportModel.ReportSettings.AvailableFieldsCollection = reportManager.AvailableFieldsCollection;
+				this.designerControl.RegisterEvents();
+				
 			} catch (Exception e) {
 				MessageService.ShowError(e,"SharpReportView:Load");
 				throw ;
@@ -522,9 +556,8 @@ namespace SharpReportAddin{
 		
 		#endregion
 		
-		
-		
 		#region ICSharpCode.SharpDevelop.Gui.IPrintable interface implementation
+		
 		public System.Drawing.Printing.PrintDocument PrintDocument {
 			get {
 				AbstractRenderer renderer;
@@ -541,8 +574,8 @@ namespace SharpReportAddin{
 		
 		
 		#endregion
-		#region IDisposable
 		
+		#region IDisposable
 		
 		public override void Dispose(){
 			if (PropertyPad.Grid != null) {
@@ -575,6 +608,7 @@ namespace SharpReportAddin{
 			// Call Dispose on your base class.
 			base.Dispose();
 		}
+		
 		#endregion
 	}
 	

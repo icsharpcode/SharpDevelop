@@ -276,6 +276,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					bool additionalProperties = false;
 					foreach (KeyValuePair<string, PropertyGroup> createdFile in nfd.CreatedFiles) {
 						FileProjectItem item = CreateNewFile(node, createdFile.Key);
+						if (!FileUtility.IsEqualFileName(node.Directory, Path.GetDirectoryName(createdFile.Key))) {
+							additionalProperties = true;
+						}
 						if (createdFile.Value.PropertyCount > 0) {
 							additionalProperties = true;
 							item.Properties.Merge(createdFile.Value);

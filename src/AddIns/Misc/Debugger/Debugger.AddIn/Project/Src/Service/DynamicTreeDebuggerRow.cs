@@ -146,7 +146,16 @@ namespace ICSharpCode.SharpDevelop.Services
 		protected override void OnExpanding(DynamicListEventArgs e)
 		{
 			if (!populated) {
-				Populate();
+				if (Variable.Debugger.IsPaused) {
+					Populate();
+				} else {
+					EventHandler<DebuggingPausedEventArgs> populate = null;
+					populate = delegate {
+						Populate();
+						Variable.Debugger.DebuggingPaused -= populate;
+					};
+					Variable.Debugger.DebuggingPaused += populate;
+				}
 			}
 		}
 		

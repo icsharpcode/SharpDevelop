@@ -28,7 +28,10 @@ namespace SharpReportCore {
 		private Color foreColor;
 		
 		private Font font;
-
+		
+		public event EventHandler<BeforePrintEventArgs> ItemPrinting;
+		public event EventHandler<AfterPrintEventArgs> ItemPrinted;
+		
 		public event EventHandler <FormatOutputEventArgs> FormatOutput;
 		public event EventHandler Disposed;
 		
@@ -57,6 +60,22 @@ namespace SharpReportCore {
 		
 		#endregion
 		
+		#region EventHandling
+		protected void NotiyfyAfterPrint (PointF afterPrintLocation) {
+			if (this.ItemPrinted != null) {
+				AfterPrintEventArgs rea = new AfterPrintEventArgs (afterPrintLocation);
+				ItemPrinted(this, rea);
+			}
+		}
+		
+		protected void NotifyBeforePrint () {
+			if (this.ItemPrinting != null) {
+				BeforePrintEventArgs ea = new BeforePrintEventArgs ();
+				ItemPrinting (this,ea);
+			}
+		}
+		
+		#endregion
 		#region virtual method's
 		protected RectangleF DrawingRectangle (ReportPageEventArgs e,SizeF measureSize) {
 			
@@ -102,6 +121,7 @@ namespace SharpReportCore {
 			}
 			set {
 				drawBorder = value;
+				base.NotifyPropertyChanged ("DrawBorder");
 			}
 		}
 		

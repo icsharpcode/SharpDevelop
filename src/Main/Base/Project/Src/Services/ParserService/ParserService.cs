@@ -184,7 +184,7 @@ namespace ICSharpCode.Core
 			newContent.Initialize2();
 		}
 		
-		public static IProjectContent CreateProjectContentForAddedProject(IProject project)
+		internal static IProjectContent CreateProjectContentForAddedProject(IProject project)
 		{
 			lock (projectContents) {
 				ParseProjectContent newContent = project.CreateProjectContent();

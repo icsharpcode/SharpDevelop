@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<Template author="Tom Schroeter" version="1.0">
+
+	<Config
+		name        = "ASP.NET Web Control"
+		icon        = "C#.File.NewClass"
+		category    = "C#"
+		subcategory = "ASP.NET"
+		defaultname = "WebControl"
+		language    = "C#"
+	/>
+
+	<Description>Custom Web Control. Enter the name of a new control.</Description>
+	<!--
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${Path}\Source\${FileNameWithoutExtension}.cs" language="C#"><![CDATA[${StandardHeader.C#}
+
+using System;
+using System.Web;
+using System.Web.SessionState;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.HtmlControls;
+
+namespace ${StandardNamespace}
+{
+	//**************************************************************************
+	#region Class ${ClassName}
+	/// <summary>
+	/// Description of ${ClassName}
+	/// </summary>
+
+	public class ${ClassName} : Control
+	{	
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Data
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Constructor
+
+		public ${ClassName}()
+		{
+			Init += new EventHandler( OnInit );
+			Load += new EventHandler( OnLoad );
+		}
+		
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region OnInit
+		
+		private void OnInit(object sender, EventArgs e)
+		{
+		}
+		
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region OnLoad
+		
+		private void OnLoad(object sender, EventArgs e)
+		{
+		}
+		
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Properties
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Render
+
+		override
+		protected void Render(HtmlTextWriter Writer)
+		{	
+			Writer.Write( "${ClassName} Control" );
+		}
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region More...
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region More...
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	}
+	#endregion
+	//**************************************************************************
+}
+]]></File>
+
+	</Files>
+
+	<AdditionalOptions/>
+</Template>

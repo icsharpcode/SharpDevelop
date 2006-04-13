@@ -53,6 +53,31 @@ namespace SearchAndReplace
 			return null;
 		}
 		
+		public SearchResult FindNext(ITextIterator textIterator, int offset, int length)
+		{
+			string document = textIterator.TextBuffer.GetText(0, textIterator.TextBuffer.Length);
+			
+			while (textIterator.MoveAhead(1) && TextSelection.IsInsideRange(textIterator.Position, offset, length)) {
+				Match m = regex.Match(document, textIterator.Position);
+				if (m == null || m.Index <= 0 || m.Length <= 0) {
+					
+				} else {
+					int delta = m.Index - textIterator.Position;
+					if (delta <= 0 || textIterator.MoveAhead(delta)) {
+						if (TextSelection.IsInsideRange(m.Index + m.Length - 1, offset, length)) {
+							return new RegexSearchResult(m);
+						} else {
+							return null;
+						}
+					} else {
+						return null;
+					}
+				}
+			}
+			
+			return null;
+		}
+		
 		private class RegexSearchResult : SearchResult
 		{
 			Match m;
