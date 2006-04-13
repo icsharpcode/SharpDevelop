@@ -98,14 +98,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			contentPanel.Controls.Add(toolStrip);
 			
-			ProjectService.SolutionLoaded += ProjectServiceSolutionLoaded;
+			ProjectService.SolutionLoaded += ProjectServiceSolutionChanged;
+			ProjectService.ProjectAdded += ProjectServiceSolutionChanged; // rebuild view when project is added to solution
+			ProjectService.SolutionFolderRemoved += ProjectServiceSolutionChanged; // rebuild view when project is removed from solution
 			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 			
 			ParserService.ParseInformationUpdated += new ParseInformationEventHandler(ParserServiceParseInformationUpdated);
 			
 			AmbienceService.AmbienceChanged += new EventHandler(AmbienceServiceAmbienceChanged);
 			if (ProjectService.OpenSolution != null) {
-				ProjectServiceSolutionLoaded(null, null);
+				ProjectServiceSolutionChanged(null, null);
 			}
 			UpdateToolbars();
 		}
@@ -275,7 +277,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void ProjectServiceSolutionLoaded(object sender, SolutionEventArgs e)
+		void ProjectServiceSolutionChanged(object sender, EventArgs e)
 		{
 			classBrowserTreeView.Nodes.Clear();
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
