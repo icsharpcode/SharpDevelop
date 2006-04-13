@@ -86,6 +86,12 @@ namespace XmlEditor.Tests.Parser
 		{
 			string text = " a";
 			Assert.AreEqual(String.Empty, XmlParser.GetAttributeName(text, text.Length), "Should have retrieved the attribute name 'foo'");
-		}		
+		}	
+		
+		[Test]
+		public void EmptyString()
+		{
+			Assert.AreEqual(String.Empty, XmlParser.GetAttributeName(String.Empty, 10));
+		}
 	}
 }
