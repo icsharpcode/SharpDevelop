@@ -171,7 +171,7 @@ namespace Debugger
 			if (updatedVal is UnavailableValue) {
 				return null;
 			}
-			if (this.IsEquivalentValue(updatedVal) && ((ObjectValue)updatedVal).SoftReference != null) {
+			if (this.IsEquivalentValue(updatedVal)) {
 				ICorDebugFunction evalCorFunction = Module.CorModule.GetFunctionFromToken(method.Token);
 				
 				return new Eval(debugger, evalCorFunction, delegate { return GetArgsForEval(method, getter); });
@@ -182,12 +182,16 @@ namespace Debugger
 		
 		ICorDebugValue[] GetArgsForEval(MethodProps method, ValueGetter getter)
 		{
-			Value updatedVal = getter();
-			if (this.IsEquivalentValue(updatedVal) && ((ObjectValue)updatedVal).SoftReference != null) {
+			ObjectValue updatedVal = (ObjectValue)getter();
+			if (this.IsEquivalentValue(updatedVal)) {
 				if (method.IsStatic) {
 					return new ICorDebugValue[] {};
 				} else {
-					return new ICorDebugValue[] {((ObjectValue)updatedVal).SoftReference.CastTo<ICorDebugValue>()};
+					if (updatedVal.SoftReference != null) {
+						return new ICorDebugValue[] {updatedVal.SoftReference.CastTo<ICorDebugValue>()};
+					} else {
+						return new ICorDebugValue[] {updatedVal.CorValue};
+					}
 				}
 			} else {
 				return null;
