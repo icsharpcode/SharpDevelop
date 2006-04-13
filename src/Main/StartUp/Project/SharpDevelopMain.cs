@@ -190,6 +190,14 @@ namespace ICSharpCode.SharpDevelop
 				LoggingService.Info("Loading AddInTree...");
 				c.RunInitialization();
 				
+				string[] fileList = SplashScreenForm.GetRequestedFileList();
+				if (fileList.Length > 0) {
+					if (LoadFilesInPreviousInstance(fileList)) {
+						LoggingService.Info("Aborting startup, arguments will be handled by previous instance");
+						return;
+					}
+				}
+				
 				LoggingService.Info("Initializing workbench...");
 				// .NET base autostarts
 				// taken out of the add-in tree for performance reasons (every tick in startup counts)
@@ -206,7 +214,7 @@ namespace ICSharpCode.SharpDevelop
 				// finally start the workbench.
 				try {
 					LoggingService.Info("Starting workbench...");
-					new StartWorkbenchCommand().Run(SplashScreenForm.GetRequestedFileList());
+					new StartWorkbenchCommand().Run(fileList);
 					exception = false;
 				} finally {
 					LoggingService.Info("Unloading services...");
@@ -223,6 +231,21 @@ namespace ICSharpCode.SharpDevelop
 				}
 			} finally {
 				LoggingService.Info("Leaving RunApplication()");
+			}
+		}
+		
+		static bool LoadFilesInPreviousInstance(string[] fileList)
+		{
+			try {
+				foreach (string file in fileList) {
+					if (ProjectService.HasProjectLoader(file)) {
+						return false;
+					}
+				}
+				return DefaultWorkbench.SingleInstanceHelper.OpenFilesInPreviousInstance(fileList);
+			} catch (Exception ex) {
+				LoggingService.Error(ex);
+				return false;
 			}
 		}
 		

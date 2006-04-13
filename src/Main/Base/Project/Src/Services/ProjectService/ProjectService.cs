@@ -64,6 +64,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			FileService.FileRemoved += FileServiceFileRemoved;
 		}
 
+		/// <summary>
+		/// Returns if a project loader exists for the given file. This method works even in early
+		/// startup (before service initialization)
+		/// </summary>
+		public static bool HasProjectLoader(string fileName)
+		{
+			AddInTreeNode addinTreeNode = AddInTree.GetTreeNode("/SharpDevelop/Workbench/Combine/FileFilter");
+			foreach (Codon codon in addinTreeNode.Codons) {
+				string pattern = codon.Properties.Get("extensions", "");
+				if (FileUtility.MatchesPattern(fileName, pattern) && codon.Properties.Contains("class")) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		public static IProjectLoader GetProjectLoader(string fileName)
 		{
 			AddInTreeNode addinTreeNode = AddInTree.GetTreeNode("/SharpDevelop/Workbench/Combine/FileFilter");
