@@ -53,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (oldUnit != null) {
 				foreach (IClass c in oldUnit.Classes) {
-					classDictionary[c.FullyQualifiedName] = c;
+					classDictionary[c.FullyQualifiedName] = c.GetCompoundClass();
 					wasUpdatedDictionary[c.FullyQualifiedName] = false;
 				}
 			}
@@ -62,9 +62,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					TreeNode  path = GetNodeByPath(c.Namespace, true);
 					ClassNode node = GetNodeByName(path.Nodes, c.Name) as ClassNode;
 					if (node != null) {
-						node.Class = c;
+						node.Class = c.GetCompoundClass();
 					} else {
-						new ClassNode(project, c).AddTo(path);
+						new ClassNode(project, c.GetCompoundClass()).AddTo(path);
 					}
 					wasUpdatedDictionary[c.FullyQualifiedName] = true;
 				}
@@ -74,10 +74,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 					IClass c = classDictionary[entry.Key];
 					
 					TreeNode path = GetNodeByPath(c.Namespace, true);
-					TreeNode node = GetNodeByName(path.Nodes, c.Name);
+					ClassNode node = GetNodeByName(path.Nodes, c.Name) as ClassNode;
+					
 					if (node != null) {
-						path.Nodes.Remove(node);
-						RemoveEmptyNamespace(path);
+						CompoundClass cc = c as CompoundClass;
+						if (cc != null && cc.Parts.Count > 0) {
+							node.Class = cc; // update members after part has been removed
+						} else {
+							path.Nodes.Remove(node);
+							RemoveEmptyNamespace(path);
+						}
 					}
 				}
 			}
@@ -120,8 +126,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void InsertParseInformation(ICompilationUnit unit)
 		{
 			foreach (IClass c in unit.Classes) {
-				TreeNode node = GetNodeByPath(c.Namespace, true);
-				new ClassNode(project, c).AddTo(node);
+				TreeNode path = GetNodeByPath(c.Namespace, true);
+				TreeNode node = GetNodeByName(path.Nodes, c.Name);
+				if (node == null) {
+					new ClassNode(project, c.GetCompoundClass()).AddTo(path);
+				}
 			}
 		}
 		

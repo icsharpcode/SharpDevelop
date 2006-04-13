@@ -126,6 +126,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public IClass GetCompoundClass()
+		{
+			return this.DefaultReturnType.GetUnderlyingClass() ?? this;
+		}
+		
 		protected override void OnFullyQualifiedNameChanged(EventArgs e)
 		{
 			base.OnFullyQualifiedNameChanged(e);

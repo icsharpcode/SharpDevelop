@@ -146,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public static void RenameClass(IClass c, string newName)
 		{
-			c = c.DefaultReturnType.GetUnderlyingClass(); // get compound class if class is partial
+			c = c.GetCompoundClass(); // get compound class if class is partial
 			
 			List<Reference> list = RefactoringService.FindReferences(c, null);
 			if (list == null) return;

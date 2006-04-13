@@ -107,12 +107,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (ProjectService.OpenSolution != null) {
 				ProjectServiceSolutionLoaded(null, null);
 			}
-			Application.Idle += new EventHandler(UpdateThread);
 			UpdateToolbars();
 		}
 		
 		List<ICompilationUnit[]> pending = new List<ICompilationUnit[]> ();
-		void UpdateThread(object sender, EventArgs ea)
+		void UpdateThread()
 		{
 			lock (pending) {
 				foreach (ICompilationUnit[] units in pending) {
@@ -134,6 +133,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			lock (pending) {
 				pending.Add(new ICompilationUnit[] { e.ParseInformation.BestCompilationUnit as ICompilationUnit, e.CompilationUnit});
 			}
+			WorkbenchSingleton.SafeThreadAsyncCall(new MethodInvoker(UpdateThread));
 		}
 		
 		#region Navigation

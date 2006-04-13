@@ -150,7 +150,7 @@ namespace ICSharpCode.FormsDesigner
 				throw new FormsDesignerLoadException("No class derived from Form or UserControl was found.");
 			
 			// Initialize designer for formClass
-			formClass = formClass.DefaultReturnType.GetUnderlyingClass();
+			formClass = formClass.GetCompoundClass();
 			List<IClass> parts;
 			if (formClass is CompoundClass) {
 				parts = (formClass as CompoundClass).Parts;
