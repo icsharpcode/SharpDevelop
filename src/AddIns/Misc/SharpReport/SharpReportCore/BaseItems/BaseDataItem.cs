@@ -32,15 +32,18 @@ namespace SharpReportCore {
 		private string dbValue;
 		private string dataType;
 		private string nullValue;
-		/// <summary>
-		/// Default constructor - initializes all fields to default values
-		/// </summary>
-		public BaseDataItem() {
+		
+		#region Constructor
+		
+		public BaseDataItem():base() {
 		}
 		
-		public BaseDataItem(string columnName){
+		public BaseDataItem(string columnName):base(){
 			this.columnName = columnName;
 		}
+		
+		#endregion
+		
 		#region privates
 		//TODO Need a much better handling for 'null' values
 		
@@ -73,6 +76,8 @@ namespace SharpReportCore {
 		public override string ToString() {
 			return "BaseDataItem";
 		}
+		
+		#region Properies
 		
 		[XmlIgnoreAttribute]
 		[Browsable(false)]
@@ -152,5 +157,8 @@ namespace SharpReportCore {
 				nullValue = value;
 			}
 		}
+		
+		#endregion
+		
 	}
 }

@@ -81,12 +81,12 @@ namespace SharpReportCore {
 										//Read the <BaseClassName> Element
 										rpt = (BaseReportItem)baseItemFactory.Create(ctrlElem.GetAttribute("basetype"));
 										if (rpt != null) {
-											rpt.SuspendLayout();
+//											rpt.SuspendLayout();
 											rpt.Parent = baseSection;
 											baseSection.Items.Add (rpt);
-											XmlHelper.BuildControl (xmlFormReader,ctrlElem,rpt);
+											XmlHelper.SetReportItemValues (xmlFormReader,ctrlElem,rpt);
 											rpt.Visible = true;
-//											rpt.ResumeLayout();
+											rpt.ResumeLayout();
 										} else {
 											String str = String.Format("< {0}>",ctrlElem.GetAttribute("basetype"));
 											throw new UnkownItemException(str);

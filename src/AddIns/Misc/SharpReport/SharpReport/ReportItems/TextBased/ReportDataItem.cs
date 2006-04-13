@@ -23,7 +23,7 @@ namespace SharpReport.ReportItems{
 								
 		
 		private ReportDbTextControl visualControl;
-		bool initDone;
+//		bool initDone;
 		
 		#region Constructors
 		
@@ -40,6 +40,10 @@ namespace SharpReport.ReportItems{
 			visualControl = new ReportDbTextControl();
 			
 			this.visualControl.Text = base.ColumnName;
+			visualControl.StringFormat = base.StandartStringFormat;
+			this.Text = base.ColumnName;
+			
+			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
@@ -48,16 +52,6 @@ namespace SharpReport.ReportItems{
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
 
 			base.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (BasePropertyChange);
-			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
-			this.Text = base.ColumnName;
-			GrapFromBase();
-			this.initDone = true;
-		}
-		
-		private void GrapFromBase() {
-			this.visualControl.SuspendLayout();
-			visualControl.StringFormat = base.StandartStringFormat;
-			this.visualControl.ResumeLayout();
 		}
 		
 		#endregion
@@ -71,14 +65,15 @@ namespace SharpReport.ReportItems{
 		
 		#region events's
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
-			if (initDone == true) {
-				ItemsHelper.UpdateControlFromTextBase(this.visualControl,this);
-			}
+			ItemsHelper.UpdateControlFromTextBase(this.visualControl,this);
+			this.HandlePropertyChanged(e.PropertyName);
 		}
 		
 
 		private void OnControlChanged (object sender, EventArgs e) {
+			base.SuspendLayout();
 			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+			base.ResumeLayout();
 			this.HandlePropertyChanged("OnControlChanged");
 		}
 		

@@ -40,12 +40,12 @@ using SharpReportCore;
 	/// 
 
 namespace SharpReportCore {
-//	public class RenderDataReport : AbstractRenderer {
-		public class RenderDataReport : AbstractDataRenderer {
+	public class RenderDataReport : AbstractDataRenderer {
 
 		private PointF currentPoint;
 		private DataNavigator dataNavigator;
 
+		
 		public RenderDataReport(ReportModel model,DataManager dataManager):base (model,dataManager){
 			base.DataManager.GroupChanged += new EventHandler<GroupChangedEventArgs>(OnGroupChanged);
 			base.DataManager.GroupChanging += new EventHandler <EventArgs> (OnGroupChanging);
@@ -63,9 +63,9 @@ namespace SharpReportCore {
 		}
 		
 		private void OnListChanged (object sender,System.ComponentModel.ListChangedEventArgs e) {
-			System.Console.WriteLine("List Changed sender <{0}> reason <{1}>",
-			                         sender.ToString(),
-			                         e.ListChangedType);
+//			System.Console.WriteLine("List Changed sender <{0}> reason <{1}>",
+//			                         sender.ToString(),
+//			                         e.ListChangedType);
 		}
 		
 		
@@ -121,6 +121,7 @@ namespace SharpReportCore {
 		
 		
 		private void DoPageEnd (ReportPageEventArgs rpea){
+			System.Console.WriteLine("\tDoPageEnd");
 			base.PrintPageEnd(this,rpea);
 			base.MeasurePageEnd (rpea);
 			
@@ -139,12 +140,12 @@ namespace SharpReportCore {
 		}
 		#endregion
 
-		protected override void ReportQueryPage(object sender, QueryPageSettingsEventArgs e) {
-			base.ReportQueryPage (sender,e);
+		protected override void ReportQueryPage(object sender, QueryPageSettingsEventArgs qpea) {
+			base.ReportQueryPage (sender,qpea);
 		}
 			
-		protected override void ReportBegin(object sender, ReportPageEventArgs e) {
-			base.ReportBegin (sender,e);
+		protected override void ReportBegin(object sender, ReportPageEventArgs rpea) {
+			base.ReportBegin (sender,rpea);
 		
 			base.DataManager.ListChanged += new EventHandler<ListChangedEventArgs> (OnListChanged);
 			dataNavigator = base.DataManager.GetNavigator;
@@ -175,70 +176,69 @@ namespace SharpReportCore {
 		
 	
 			
-		protected override void PrintBodyStart(object sender, ReportPageEventArgs e) {
+		protected override void PrintBodyStart(object sender, ReportPageEventArgs rpea) {
 			Rectangle sectionRect;
 			Rectangle detailRect;
-//			System.Console.WriteLine("PrintBodyStart");
-			base.PrintBodyStart (sender,e);
+
+			base.PrintBodyStart (sender,rpea);
 
 			BaseSection section = base.CurrentSection;
 			
 			section.SectionOffset = (int)this.currentPoint.Y + base.Gap;
 			
-			detailRect = base.DetailRectangle (e);
+			detailRect = base.DetailRectangle (rpea);
 			
 			//this is only for the first record, zhe other details will be calculated
-			sectionRect = new Rectangle (e.PrintPageEventArgs.MarginBounds.Left,
+			sectionRect = new Rectangle (rpea.PrintPageEventArgs.MarginBounds.Left,
 			                             section.SectionOffset,
-			                             e.PrintPageEventArgs.MarginBounds.Width,
+			                             rpea.PrintPageEventArgs.MarginBounds.Width,
 			                             section.Size.Height);
 //			DebugRectangle (e,detailRect);
 			
 			// no loop if there is no data
 
 			if (! this.dataNavigator.HasMoreData ) {
-				e.PrintPageEventArgs.HasMorePages = false;
+				rpea.PrintPageEventArgs.HasMorePages = false;
 				return;
 			}
 
 			while (this.dataNavigator.MoveNext()) {
 				this.dataNavigator.Fill (base.CurrentSection.Items);	
-				base.RenderSection (section,e);
+				base.RenderSection (section,rpea);
 				
 				section.SectionOffset = section.SectionOffset + section.Size.Height  + 2 * base.Gap;
 				
-				base.FitSectionToItems (base.CurrentSection,e);
+				base.FitSectionToItems (base.CurrentSection,rpea);
 				
-				sectionRect = new Rectangle (e.PrintPageEventArgs.MarginBounds.Left,
+				sectionRect = new Rectangle (rpea.PrintPageEventArgs.MarginBounds.Left,
 				                             section.SectionOffset,
-				                             e.PrintPageEventArgs.MarginBounds.Width,
+				                             rpea.PrintPageEventArgs.MarginBounds.Width,
 				                             section.Size.Height);
 				
 				if (!detailRect.Contains(sectionRect)) {
-//					System.Console.WriteLine("--------- Page Break ----------");
-					base.PageBreak(e,section);
+					base.PageBreak(rpea,section);
 					return;
 				}	
 				
 			}
 			
 			DoReportFooter (new PointF(0,section.SectionOffset + section.Size.Height),
-			                e);
+			                rpea);
 				
-			e.PrintPageEventArgs.HasMorePages = false;
+			rpea.PrintPageEventArgs.HasMorePages = false;
 
 			//Did we have a pagebreak 
 			if (base.CurrentSection.PageBreakAfter) {
-				base.PageBreak(e,section);
+				base.PageBreak(rpea,section);
 				base.CurrentSection.PageBreakAfter = false;
 				return;
 			}
 		}
 		
 		
-		protected override void PrintBodyEnd(object sender, ReportPageEventArgs e) {
+		protected override void PrintBodyEnd(object sender, ReportPageEventArgs rpea) {
 //			System.Console.WriteLine("PrintBodyEnd");
-			base.PrintBodyEnd (sender,e);
+			base.PrintBodyEnd (sender,rpea);
 		}
 		
 		

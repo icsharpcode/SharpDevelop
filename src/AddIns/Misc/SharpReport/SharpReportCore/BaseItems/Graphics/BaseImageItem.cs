@@ -88,9 +88,7 @@ namespace SharpReportCore {
 		
 		
 		#region properties
-		
-//		[EditorAttribute(typeof(System.Windows.Forms.Design.f.Design.FileNameEditor), typeof(System.Drawing.Design.UITypeEditor))]
-		
+				
 		public virtual string FileName {
 			get {
 				return fileName;
@@ -106,7 +104,7 @@ namespace SharpReportCore {
 		/// <summary>
 		/// The Image loaded from a File
 		/// </summary>
-		public Image Image {
+		public  virtual Image Image {
 			get {
 				return image;
 			}

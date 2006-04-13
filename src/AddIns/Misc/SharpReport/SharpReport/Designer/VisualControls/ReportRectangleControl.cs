@@ -37,7 +37,6 @@ namespace SharpReport.Designer {
 			              true);
 			this.UpdateStyles();
 		}
-		
 		#region overrides
 		
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e) {

@@ -24,52 +24,43 @@ namespace SharpReport {
 		
 		
 		public static void UpdateBaseFromTextControl (ReportObjectControlBase control,
-		                                      BaseReportItem item) {
+		                                              BaseReportItem item) {
 			
-			item.SuspendLayout();
 			item.Size = control.Size;
 			item.Location = control.Location;
 			item.Name = control.Name;
 			item.BackColor = control.BackColor;
 			item.ForeColor = control.ForeColor;
 			item.Font = control.Font;
-			item.ResumeLayout();
 		}
 		
 		public static void UpdateBaseFromGraphicControl (AbstractGraphicControl control,
-		                                  			BaseGraphicItem item) {
+		                                                 BaseGraphicItem item) {
 			
 			ItemsHelper.UpdateBaseFromTextControl (control,item);
-			item.SuspendLayout();
 			item.Thickness = control.Thickness;
 			item.DashStyle = control.DashStyle;
-			item.ResumeLayout();
 		}
 		
 		
 		public static void UpdateControlFromTextBase (ReportObjectControlBase control,
-		                                   BaseReportItem item) {
+		                                              BaseReportItem item) {
 			
-			control.SuspendLayout();
-			item.SuspendLayout();
 			control.BackColor = item.BackColor;
 			control.ForeColor = item.ForeColor;
 			control.Location = item.Location;
 			control.Size = item.Size;
-			control.Font = item.Font; 
+			control.Font = item.Font;
 			control.Name = item.Name;
 			BaseTextItem b = item as BaseTextItem;
 			if (b != null) {
 				control.StringAlignment = b.StringAlignment;
 			}
-
-			item.ResumeLayout();
-			control.ResumeLayout();
 		}
 		
 		
 		public static void UpdateControlFromGraphicBase (AbstractGraphicControl control,
-		                                   BaseGraphicItem item) {
+		                                                 BaseGraphicItem item) {
 			ItemsHelper.UpdateControlFromTextBase(control,item);
 			control.Location = item.Location;
 			control.DashStyle = item.DashStyle;

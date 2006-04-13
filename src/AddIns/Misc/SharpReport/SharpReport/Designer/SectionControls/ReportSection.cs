@@ -211,24 +211,24 @@ namespace SharpReport{
 		
 		
 		public void OnItemSelect(object sender, EventArgs e){
-			if (!base.Suspend) {
+//			if (!base.Suspend) {
 				if (ItemSelected != null)
 					ItemSelected(sender, e);
-			}
+//			}
 			
 		}
 		
 		public void VisualControlClick(object sender, EventArgs e){
-			if (!base.Suspend) {
+//			if (!base.Suspend) {
 				this.OnSelect();
-			}
+//			}
 		}
 		
 		public void ReportItemSelected(object sender, EventArgs e){
-			if (!base.Suspend) {
+//			if (!base.Suspend) {
 				this.OnSelect ();
 				this.OnItemSelect(sender, e);
-			}
+//			}
 		}
 		
 		

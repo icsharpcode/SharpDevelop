@@ -29,8 +29,8 @@ namespace SharpReportCore {
 		
 		private Font font;
 		
-		public event EventHandler<BeforePrintEventArgs> BeforePrinting;
-		public event EventHandler<AfterPrintEventArgs> AfterPrinting;
+		public event EventHandler<BeforePrintEventArgs> ItemPrinting;
+		public event EventHandler<AfterPrintEventArgs> ItemPrinted;
 		
 		public event EventHandler <FormatOutputEventArgs> FormatOutput;
 		public event EventHandler Disposed;
@@ -61,17 +61,17 @@ namespace SharpReportCore {
 		#endregion
 		
 		#region EventHandling
-		public void NotiyfyAfterPrint (PointF afterPrintLocation) {
-			if (this.AfterPrinting != null) {
+		protected void NotiyfyAfterPrint (PointF afterPrintLocation) {
+			if (this.ItemPrinted != null) {
 				AfterPrintEventArgs rea = new AfterPrintEventArgs (afterPrintLocation);
-				AfterPrinting(this, rea);
+				ItemPrinted(this, rea);
 			}
 		}
 		
-		public void NotifyBeforePrint () {
-			if (this.BeforePrinting != null) {
+		protected void NotifyBeforePrint () {
+			if (this.ItemPrinting != null) {
 				BeforePrintEventArgs ea = new BeforePrintEventArgs ();
-				BeforePrinting (this,ea);
+				ItemPrinting (this,ea);
 			}
 		}
 		
@@ -121,6 +121,7 @@ namespace SharpReportCore {
 			}
 			set {
 				drawBorder = value;
+				base.NotifyPropertyChanged ("DrawBorder");
 			}
 		}
 		

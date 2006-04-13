@@ -21,7 +21,7 @@ namespace SharpReport.Designer{
 		
 		private TextDrawer textDrawer = new TextDrawer();
 		
-		public ReportTextControl(){
+		public ReportTextControl():base(){
 			InitializeComponent();
 			
 			this.SetStyle(ControlStyles.DoubleBuffer |
@@ -79,7 +79,7 @@ namespace SharpReport.Designer{
 			// 
 			this.BackColor = System.Drawing.Color.White;
 			this.Name = "ReportTextItem";
-			this.Size = new System.Drawing.Size(120, 60);
+			this.Size = new System.Drawing.Size(120, 20);
 		}
 		#endregion
 		

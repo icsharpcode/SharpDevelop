@@ -1,6 +1,6 @@
 /*
  * Created by SharpDevelop.
- * User: Forstmeier Helmut
+ * User: Forstmeier Peter
  * Date: 01.03.2006
  * Time: 14:35
  * 
@@ -8,6 +8,7 @@
  */
 
 using System;
+using System.Drawing;
 using System.ComponentModel;
 
 using SharpReport.Designer;
@@ -21,7 +22,7 @@ namespace SharpReport.ReportItems
 	/// </summary>
 	public class ReportRowItem : RowItem ,IDesignable{
 		private ReportRowControl visualControl;
-		private bool initDone;
+
 		
 		#region Constructor
 		public ReportRowItem():this (GlobalValues.UnboundName){
@@ -37,21 +38,19 @@ namespace SharpReport.ReportItems
 		private void Setup(){
 			
 			visualControl = new ReportRowControl();
-
+			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+			
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
 			this.visualControl.FontChanged += new EventHandler (OnControlChanged);
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
-			
 			this.visualControl.BackColorChanged += new EventHandler (OnAppereanceChanged);
 			
 			base.PropertyChanged += new PropertyChangedEventHandler (BasePropertyChange);
-		
+			
 			base.Items.Added += OnAdd;
 			base.Items.Removed += OnRemove;
-			ItemsHelper.UpdateControlFromTextBase (this.visualControl,this);
-			this.initDone = true;
-					}
+		}
 		#endregion
 		
 		
@@ -67,8 +66,9 @@ namespace SharpReport.ReportItems
 		}
 		
 		private void ChildPropertyChange (object sender, PropertyChangedEventArgs e){
-			if (initDone == true) {
+			if (! base.Suspend) {
 				ItemsHelper.UpdateControlFromTextBase (this.visualControl,this);
+				this.HandlePropertyChanged(e.PropertyName);
 			}
 		}
 		
@@ -77,6 +77,10 @@ namespace SharpReport.ReportItems
 		private void UpdateChilds () {
 			foreach (BaseReportItem br in this.Items) {
 				br.BackColor = this.BackColor;
+				IDesignable des = br as IDesignable;
+				if (des != null) {
+					des.VisualControl.BackColor = this.BackColor;
+				}
 			}
 		}
 		
@@ -103,22 +107,28 @@ namespace SharpReport.ReportItems
 		
 		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
-			if (initDone == true) {
-				ItemsHelper.UpdateControlFromTextBase (this.visualControl,this);
-			}
+			ItemsHelper.UpdateControlFromTextBase (this.visualControl,this);
+			this.HandlePropertyChanged(e.PropertyName);
 		}
 		
 		
 		private void OnControlChanged (object sender, EventArgs e) {
+			this.SuspendLayout();
 			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+			this.ResumeLayout();
 			this.HandlePropertyChanged("OnControlChanged");
+		
 		}
 		
 		private void OnAppereanceChanged (object sender, EventArgs e) {
+			this.SuspendLayout();
 			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+			this.ResumeLayout();
 			UpdateChilds();
+			
 			this.HandlePropertyChanged("OnControlChanged");
 		}
+		
 		private void OnControlSelect(object sender, EventArgs e){
 			if (Selected != null)
 				Selected(this,e);
@@ -153,7 +163,47 @@ namespace SharpReport.ReportItems
 		public event EventHandler <EventArgs> Selected;
 		#endregion
 		
+		
+		
 		#region overrides
+		public override Size Size {
+			get {
+				return base.Size;
+			}
+			set {
+				base.Size = value;
+				if (this.visualControl != null) {
+					this.visualControl.Size = value;
+				}
+				this.HandlePropertyChanged("Size");
+			}
+		}
+		
+		public override Point Location {
+			get {
+				return base.Location;
+			}
+			set {
+				base.Location = value;
+				if (this.visualControl != null) {
+					this.visualControl.Location = value;
+				}
+				this.HandlePropertyChanged("Location");
+			}
+		}
+		
+		public override Font Font {
+			get {
+				return base.Font;
+			}
+			set {
+				base.Font = value;
+				if (this.visualControl != null) {
+					this.visualControl.Font = value;
+				}
+				this.HandlePropertyChanged("Font");
+			}
+		}
 		
 		public override string ToString(){
 			return this.Name;

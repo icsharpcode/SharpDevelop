@@ -51,10 +51,15 @@ namespace SharpReport.Designer
 			this.ReportControl.ReportSettings = reportModel.ReportSettings;
 		}
 		#region public'c
-		//if languages change, we need a way to chage the headlines here as well
 		
 		public void Localise() {
 			reportControl.Localise();
+		}
+		
+		public void RegisterEvents () {
+			this.reportControl.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.ReportControlSectionChanged);
+			this.reportControl.SizeChanged += new System.EventHandler(this.ReportControlSizeChanged);
+			this.reportControl.DesignViewChanged += new SharpReport.Designer.ItemDragDropEventHandler(this.ReportControlDesignViewChanged);
 		}
 		
 		public void RemoveSelectedItem () {
@@ -96,23 +101,23 @@ namespace SharpReport.Designer
 		void ReportControlSizeChanged(object sender, System.EventArgs e){
 			this.ctrlRuler1.Width = reportControl.Width;
 			this.ctrlRuler1.Invalidate();
-			FireSaveNeeded();
+			NotifyPropertyChanged(this.Name + "ReportControlSizeChanged");
 		}
 		
 		void ReportControlSectionChanged (object sender,SectionChangedEventArgs e) {
-			FireSaveNeeded();
+			NotifyPropertyChanged(this.Name + "ReportControlSectionChanged");
 		}
 		
 		void ReportControlDesignViewChanged(object sender, SharpReport.Designer.ItemDragDropEventArgs e){
-			FireSaveNeeded();
+			NotifyPropertyChanged(this.Name + "ReportControlDesignViewChanged");
 		}
 		
 		#endregion
 		
 		#region privates
-		void FireSaveNeeded() {
+		void NotifyPropertyChanged(string info) {
 			if (DesignerDirty != null) {
-				DesignerDirty (this,new PropertyChangedEventArgs("Designer"));
+				DesignerDirty (this,new PropertyChangedEventArgs(info));
 			}
 		}
 		#endregion
@@ -216,9 +221,9 @@ namespace SharpReport.Designer
 			this.reportControl.Name = "reportControl";
 			this.reportControl.Size = new System.Drawing.Size(592, 400);
 			this.reportControl.TabIndex = 1;
-			this.reportControl.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.ReportControlSectionChanged);
-			this.reportControl.SizeChanged += new System.EventHandler(this.ReportControlSizeChanged);
-			this.reportControl.DesignViewChanged += new SharpReport.Designer.ItemDragDropEventHandler(this.ReportControlDesignViewChanged);
+//			this.reportControl.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.ReportControlSectionChanged);
+//			this.reportControl.SizeChanged += new System.EventHandler(this.ReportControlSizeChanged);
+//			this.reportControl.DesignViewChanged += new SharpReport.Designer.ItemDragDropEventHandler(this.ReportControlDesignViewChanged);
 			// 
 			// BaseDesignerControl
 			// 

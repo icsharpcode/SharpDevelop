@@ -36,19 +36,21 @@ namespace SharpReport.Designer {
 		}
 	}
 		
-		public class IDesignableFactory : SharpReportCore.GenericFactory {
+	public class IDesignableFactory : SharpReportCore.GenericFactory {
 			
-			public IDesignableFactory() :base(Assembly.GetExecutingAssembly(),typeof(IDesignable)){
+		public IDesignableFactory() :base(Assembly.GetExecutingAssembly(),typeof(IDesignable)){
+		}
+			
+		public new  BaseReportItem Create(string name) {
+			if (String.IsNullOrEmpty(name)) {
+				throw new ArgumentNullException("name");
 			}
-			
-			public new  BaseReportItem Create(string name) {
-				if (name.LastIndexOf('.') > 0) {
+			if (name.LastIndexOf('.') > 0) {
 				StringBuilder b = new StringBuilder (name);
 				b.Remove (0,name.LastIndexOf('.') +1);
 				name = b.ToString();
 			}
 			return (BaseReportItem) base.Create (name);
-			}
-			
 		}
+	}
 }

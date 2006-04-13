@@ -34,7 +34,7 @@ using System.Xml.Serialization;
 	/// 	created on - 07.10.2005 22:50:43
 	/// </remarks>
 namespace SharpReportCore {	
-	public class BaseSettings : object {
+	public class BaseSettings : INotifyPropertyChanged{
 		private const string defaultReportName = "SharpReport1";
 
 		
@@ -51,13 +51,16 @@ namespace SharpReportCore {
 		private Margins defaultMargins = new Margins (50,50,50,50);
 		private Size gridSize;
 		private Padding padding;
-		public event EventHandler PropertyChanged;
+
 		public event EventHandler FileNameChanged;
+		
+		#region SharpReportCore.IPropertyChange interface implementation
+		public event PropertyChangedEventHandler PropertyChanged;
+		#endregion
 		
 		#region Constructor
 		public BaseSettings():this(new PageSettings(),"","") {
 			BaseValues();
-			this.initDone = true;
 		}
 		
 		public BaseSettings(PageSettings pageSettings , string reportName,string fileName){
@@ -77,12 +80,10 @@ namespace SharpReportCore {
 				this.fileName = MakePoperFilename(fileName);
 			}
 			
-			
 			this.pageSettings = pageSettings;
-			
-			
 			BaseValues();
 		}
+		
 		void BaseValues() {
 			this.useStandartPrinter = true;
 			this.graphicsUnit = GraphicsUnit.Millimeter;
@@ -106,9 +107,12 @@ namespace SharpReportCore {
 		}
 		#endregion
 		
-		protected void NotifyPropertyChanged() {
-			if (PropertyChanged != null) {
-				PropertyChanged (this,new EventArgs());
+		protected void NotifyPropertyChanged(string info) {
+			if (this.initDone) {
+				if (PropertyChanged != null) {
+					System.Console.WriteLine("BaseSettings : PropertyChanged {0}",info);
+					PropertyChanged (this,new PropertyChangedEventArgs (info));
+				}
 			}
 		}
 		
@@ -125,8 +129,9 @@ namespace SharpReportCore {
 			}
 		}
 		
-		
-		protected bool InitDone {
+		[Browsable(false)]
+		[XmlIgnoreAttribute]
+		public bool InitDone {
 			get {
 				return initDone;
 			}
@@ -147,7 +152,7 @@ namespace SharpReportCore {
 			set {
 				if (reportName != value) {
 					reportName = value;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("ReportName");
 				}
 			}
 		}
@@ -165,7 +170,7 @@ namespace SharpReportCore {
 			set {
 				if (fileName != value) {
 					fileName = value;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("FileName");
 					if (FileNameChanged != null ){
 						FileNameChanged (this,EventArgs.Empty);
 					}
@@ -182,7 +187,7 @@ namespace SharpReportCore {
 			set {
 				if (useStandartPrinter != value) {
 					useStandartPrinter = value;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("UseStandrtPrinter");
 				}
 			}
 		}
@@ -196,7 +201,7 @@ namespace SharpReportCore {
 			}
 			set {
 				this.pageSettings = value;
-				this.NotifyPropertyChanged();
+				this.NotifyPropertyChanged("PageSettings");
 			}
 		}
 		
@@ -210,7 +215,7 @@ namespace SharpReportCore {
 				if (defaultMargins != value) {
 					defaultMargins = value;
 					PageSettings.Margins = defaultMargins;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("DefaultMargins");
 				}
 				
 			}
@@ -228,7 +233,7 @@ namespace SharpReportCore {
 			set {
 				if (graphicsUnit != value) {
 					graphicsUnit = value;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("GraphicsUnit");
 				}
 			}
 		}
@@ -240,7 +245,7 @@ namespace SharpReportCore {
 			set {
 				if (this.gridSize != value) {
 					this.gridSize = value;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("GridSize");
 				}
 			}
 		}
@@ -253,7 +258,7 @@ namespace SharpReportCore {
 			set {
 				if (this.padding != value) {
 					this.padding = value;
-					this.NotifyPropertyChanged();
+					this.NotifyPropertyChanged("Padding");
 				}
 				
 			}

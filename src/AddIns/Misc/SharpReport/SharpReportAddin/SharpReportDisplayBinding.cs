@@ -44,7 +44,7 @@ namespace SharpReportAddin {
 						view.FileName = view.DesignerControl.ReportModel.ReportSettings.FileName;							
 						view.UpdateView(true);							
 						view.Selected();							
-						view.ShowReportSettings();							
+						view.ShowReportSettings();	
 						return view;
 					} catch (SharpReportException) {
 						if (view != null) {
@@ -79,6 +79,7 @@ namespace SharpReportAddin {
 					view.Load (fileName);
 					view.UpdateView (false);
 					view.Selected();
+					view.DesignerControl.ReportModel.ReportSettings.InitDone = true;
 					return view;
 				} catch (Exception) {
 					return new SharpReportView();

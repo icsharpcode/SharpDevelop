@@ -48,7 +48,7 @@ namespace SharpReportCore {
 		#endregion
 		
 		public BaseReportObject() {
-			
+			this.suspend = true;
 		}
 	
 		
