@@ -107,27 +107,29 @@ namespace ICSharpCode.SharpDevelop.Dom
 			string indexFile = GetIndexFileName();
 			Dictionary<string, string> list = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 			if (File.Exists(indexFile)) {
-				using (FileStream fs = new FileStream(indexFile, FileMode.Open, FileAccess.Read)) {
-					using (BinaryReader reader = new BinaryReader(fs)) {
-						if (reader.ReadInt64() != IndexFileMagic) {
-							LoggingService.Warn("Index cache has wrong file magic");
-							return list;
+				try {
+					using (FileStream fs = new FileStream(indexFile, FileMode.Open, FileAccess.Read)) {
+						using (BinaryReader reader = new BinaryReader(fs)) {
+							if (reader.ReadInt64() != IndexFileMagic) {
+								LoggingService.Warn("Index cache has wrong file magic");
+								return list;
+							}
+							if (reader.ReadInt16() != FileVersion) {
+								LoggingService.Warn("Index cache has wrong file version");
+								return list;
+							}
+							int count = reader.ReadInt32();
+							for (int i = 0; i < count; i++) {
+								string key = reader.ReadString();
+								list[key] = reader.ReadString();
+							}
 						}
-						if (reader.ReadInt16() != FileVersion) {
-							LoggingService.Warn("Index cache has wrong file version");
-							return list;
-						}
-						int count = reader.ReadInt32();
-						for (int i = 0; i < count; i++) {
-							string key = reader.ReadString();
-							list[key] = reader.ReadString();
-						}
-						return list;
 					}
+				} catch (IOException ex) {
+					LoggingService.Warn("Error reading DomPersistance cache index", ex);
 				}
-			} else {
-				return list;
 			}
+			return list;
 		}
 		
 		static void SaveCacheIndex(Dictionary<string, string> cacheIndex)

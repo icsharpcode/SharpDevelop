@@ -348,7 +348,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public virtual MethodDeclaration CreateOnEventMethod(IEvent e)
 		{
 			TypeReference type;
-			if (e.ReturnType.TypeArguments != null && e.ReturnType.Name == "EventHandler") {
+			if (e.ReturnType == null) {
+				type = new TypeReference("?");
+			} else if (e.ReturnType.TypeArguments != null && e.ReturnType.Name == "EventHandler") {
 				type = ConvertType(e.ReturnType.TypeArguments[0], new ClassFinder(e));
 			} else {
 				type = ConvertType(e.ReturnType, new ClassFinder(e));

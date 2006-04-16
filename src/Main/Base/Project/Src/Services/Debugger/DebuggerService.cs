@@ -311,8 +311,8 @@ namespace ICSharpCode.Core
 						return;
 					string textContent = doc.TextContent;
 					ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, seg.Offset + logicPos.X);
-					string expression = expressionResult.Expression;
-					if (expression != null && expression.Length > 0) {
+					string expression = (expressionResult.Expression ?? "").Trim();
+					if (expression.Length > 0) {
 						// Look if it is variable
 						ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, logicPos.X + 1, textArea.MotherTextEditorControl.FileName, textContent);
 						bool debuggerCanShowValue;
@@ -446,6 +446,7 @@ namespace ICSharpCode.Core
 				text.Append(member.ToString());
 			}
 			if (tryDisplayValue && currentDebugger != null) {
+				LoggingService.Info("asking debugger for value of '" + expression + "'");
 				string currentValue = currentDebugger.GetValueAsString(expression);
 				if (currentValue != null) {
 					debuggerCanShowValue = true;
