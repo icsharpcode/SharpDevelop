@@ -84,6 +84,7 @@ namespace ICSharpCode.CodeCoverage
 		void SolutionClosed(object sender, EventArgs e)
 		{
 			codeCoverageControl.UpdateToolbar();
+			ClearCodeCoverageResults();
 		}
 	}
 }
