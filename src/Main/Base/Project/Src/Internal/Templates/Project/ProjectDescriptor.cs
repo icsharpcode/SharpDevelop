@@ -142,8 +142,19 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				StringParser.Properties["StandardNamespace"] = project.RootNamespace;
 				// Add Project items
 				foreach (ProjectItem projectItem in projectItems) {
-					projectItem.Project = project;
-					project.Items.Add(projectItem);
+					bool itemFound = false;
+					foreach (ProjectItem existingItem in project.Items) {
+						if (existingItem.ItemType == projectItem.ItemType
+						    && existingItem.Include == projectItem.Include)
+						{
+							itemFound = true;
+							break;
+						}
+					}
+					if (!itemFound) {
+						projectItem.Project = project;
+						project.Items.Add(projectItem);
+					}
 				}
 				
 				// Add Imports
