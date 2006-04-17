@@ -20,6 +20,7 @@ using ICSharpCode.TextEditor;
 using System.Drawing;
 using System.Windows.Forms;
 using BM = ICSharpCode.SharpDevelop.Bookmarks;
+using ITextEditorControlProvider = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider;
 
 namespace ICSharpCode.Core
 {
@@ -237,8 +238,8 @@ namespace ICSharpCode.Core
 		
 		static void ViewContentOpened(object sender, ViewContentEventArgs e)
 		{
-			if (e.Content.Control is TextEditor.TextEditorControl) {
-				TextArea textArea = ((TextEditor.TextEditorControl)e.Content.Control).ActiveTextAreaControl.TextArea;
+			if (e.Content is ITextEditorControlProvider) {
+				TextArea textArea = ((ITextEditorControlProvider)e.Content).TextEditorControl.ActiveTextAreaControl.TextArea;
 				
 				textArea.IconBarMargin.MouseDown += IconBarMouseDown;
 				textArea.ToolTipRequest          += TextAreaToolTipRequest;
@@ -248,8 +249,8 @@ namespace ICSharpCode.Core
 		
 		static void ViewContentClosed(object sender, ViewContentEventArgs e)
 		{
-			if (e.Content.Control is TextEditor.TextEditorControl) {
-				TextArea textArea = ((TextEditor.TextEditorControl)e.Content.Control).ActiveTextAreaControl.TextArea;
+			if (e.Content is ITextEditorControlProvider) {
+				TextArea textArea = ((ITextEditorControlProvider)e.Content).TextEditorControl.ActiveTextAreaControl.TextArea;
 				
 				textArea.IconBarMargin.MouseDown -= IconBarMouseDown;
 				textArea.ToolTipRequest          -= TextAreaToolTipRequest;
