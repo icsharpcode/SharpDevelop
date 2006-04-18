@@ -89,6 +89,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.FileName = Path.GetFullPath(projectFileName);
 			using (MSBuildFileReader reader = new MSBuildFileReader(projectFileName)) {
 				reader.WhitespaceHandling = WhitespaceHandling.Significant;
+				reader.Namespaces = false;
 				reader.MoveToContent(); // we have to skip over the XmlDeclaration (if it exists)
 				if (reader.Name == "VisualStudioProject") {
 					reader.Close();
@@ -187,6 +188,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			using (MSBuildFileWriter writer = new MSBuildFileWriter(fileName, Encoding.UTF8)) {
 				writer.Formatting = Formatting.Indented;
+				writer.Namespaces = false;
 				
 				writer.WriteStartElement("Project");
 				// 				writer.WriteAttributeString("MSBuildVersion", "2.0");
@@ -251,6 +253,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (userConfigurations.Count > 0 || UserBaseConfiguration.PropertyCount > 0 || File.Exists(userSettingsFileName)) {
 				using (MSBuildFileWriter writer = new MSBuildFileWriter(userSettingsFileName, Encoding.UTF8)) {
 					writer.Formatting = Formatting.Indented;
+					writer.Namespaces = false;
 					writer.WriteStartElement("Project");
 					writer.WriteAttributeString("xmlns", "http://schemas.microsoft.com/developer/msbuild/2003");
 					
