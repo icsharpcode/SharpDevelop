@@ -184,7 +184,7 @@ namespace VBNetBinding
 				builder.Append(')');
 			}
 			
-			if (c.ClassType == ClassType.Delegate) {
+			if (ShowReturnType && c.ClassType == ClassType.Delegate) {
 				builder.Append("(");
 				if (IncludeHTMLMarkup) builder.Append("<br>");
 				

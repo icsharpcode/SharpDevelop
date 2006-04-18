@@ -326,7 +326,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return ret;
 		}
 		
-		void ConvertTemplates(List<AST.TemplateDefinition> templateList, DefaultClass c)
+		void ConvertTemplates(IList<AST.TemplateDefinition> templateList, DefaultClass c)
 		{
 			int index = 0;
 			if (templateList.Count == 0) {
@@ -367,42 +367,48 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, ConvertModifier(delegateDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
 			c.Documentation = GetDocumentation(region.BeginLine);
 			ConvertAttributes(delegateDeclaration, c);
+			CreateDelegate(c, delegateDeclaration.Name, delegateDeclaration.ReturnType,
+			               delegateDeclaration.Templates, delegateDeclaration.Parameters);
+			return c;
+		}
+		
+		void CreateDelegate(DefaultClass c, string name, AST.TypeReference returnType, IList<AST.TemplateDefinition> templates, IList<AST.ParameterDeclarationExpression> parameters)
+		{
 			c.BaseTypes.Add(ReflectionReturnType.CreatePrimitive(typeof(Delegate)));
 			if (currentClass.Count > 0) {
 				DefaultClass cur = GetCurrentClass();
 				cur.InnerClasses.Add(c);
-				c.FullyQualifiedName = cur.FullyQualifiedName + '.' + delegateDeclaration.Name;
+				c.FullyQualifiedName = cur.FullyQualifiedName + '.' + name;
 			} else {
 				if (currentNamespace.Count == 0) {
-					c.FullyQualifiedName = delegateDeclaration.Name;
+					c.FullyQualifiedName = name;
 				} else {
-					c.FullyQualifiedName = (string)currentNamespace.Peek() + '.' + delegateDeclaration.Name;
+					c.FullyQualifiedName = (string)currentNamespace.Peek() + '.' + name;
 				}
 				cu.Classes.Add(c);
 			}
 			currentClass.Push(c); // necessary for CreateReturnType
-			ConvertTemplates(delegateDeclaration.Templates, c);
-			DefaultMethod invokeMethod = new DefaultMethod("Invoke", CreateReturnType(delegateDeclaration.ReturnType), ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, c);
-			if (delegateDeclaration.Parameters != null) {
-				foreach (AST.ParameterDeclarationExpression par in delegateDeclaration.Parameters) {
+			ConvertTemplates(templates, c);
+			DefaultMethod invokeMethod = new DefaultMethod("Invoke", CreateReturnType(returnType), ModifierEnum.Public, c.Region, DomRegion.Empty, c);
+			if (parameters != null) {
+				foreach (AST.ParameterDeclarationExpression par in parameters) {
 					invokeMethod.Parameters.Add(CreateParameter(par));
 				}
 			}
 			c.Methods.Add(invokeMethod);
-			invokeMethod = new DefaultMethod("BeginInvoke", CreateReturnType(typeof(IAsyncResult)), ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, c);
-			if (delegateDeclaration.Parameters != null) {
-				foreach (AST.ParameterDeclarationExpression par in delegateDeclaration.Parameters) {
+			invokeMethod = new DefaultMethod("BeginInvoke", CreateReturnType(typeof(IAsyncResult)), ModifierEnum.Public, c.Region, DomRegion.Empty, c);
+			if (parameters != null) {
+				foreach (AST.ParameterDeclarationExpression par in parameters) {
 					invokeMethod.Parameters.Add(CreateParameter(par));
 				}
 			}
 			invokeMethod.Parameters.Add(new DefaultParameter("callback", CreateReturnType(typeof(AsyncCallback)), DomRegion.Empty));
 			invokeMethod.Parameters.Add(new DefaultParameter("object", ReflectionReturnType.Object, DomRegion.Empty));
 			c.Methods.Add(invokeMethod);
-			invokeMethod = new DefaultMethod("EndInvoke", CreateReturnType(delegateDeclaration.ReturnType), ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, c);
+			invokeMethod = new DefaultMethod("EndInvoke", CreateReturnType(returnType), ModifierEnum.Public, c.Region, DomRegion.Empty, c);
 			invokeMethod.Parameters.Add(new DefaultParameter("result", CreateReturnType(typeof(IAsyncResult)), DomRegion.Empty));
 			c.Methods.Add(invokeMethod);
 			currentClass.Pop();
-			return c;
 		}
 		
 		IParameter CreateParameter(AST.ParameterDeclarationExpression par)
@@ -544,9 +550,23 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DomRegion region     = GetRegion(eventDeclaration.StartLocation, eventDeclaration.EndLocation);
 			DomRegion bodyRegion = GetRegion(eventDeclaration.BodyStart,     eventDeclaration.BodyEnd);
-			IReturnType type = CreateReturnType(eventDeclaration.TypeReference);
 			DefaultClass c = GetCurrentClass();
-			DefaultEvent e = new DefaultEvent(eventDeclaration.Name, type, ConvertModifier(eventDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			
+			IReturnType type;
+			if (eventDeclaration.TypeReference.IsNull) {
+				DefaultClass del = new DefaultClass(cu, ClassType.Delegate,
+				                                    ConvertModifier(eventDeclaration.Modifier),
+				                                    region, c);
+				del.Modifiers |= ModifierEnum.Synthetic;
+				CreateDelegate(del, eventDeclaration.Name + "EventHandler",
+				               new AST.TypeReference("System.Void"),
+				               new AST.TemplateDefinition[0],
+				               eventDeclaration.Parameters);
+				type = del.DefaultReturnType;
+			} else {
+				type = CreateReturnType(eventDeclaration.TypeReference);
+			}
+			DefaultEvent e = new DefaultEvent(eventDeclaration.Name, type, ConvertModifier(eventDeclaration.Modifier), region, bodyRegion, c);
 			ConvertAttributes(eventDeclaration, e);
 			c.Events.Add(e);
 			if (e != null) {

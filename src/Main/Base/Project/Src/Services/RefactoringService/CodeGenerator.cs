@@ -347,18 +347,22 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		#region Generate OnEventMethod
 		public virtual MethodDeclaration CreateOnEventMethod(IEvent e)
 		{
-			TypeReference type;
-			if (e.ReturnType == null) {
-				type = new TypeReference("?");
-			} else if (e.ReturnType.TypeArguments != null && e.ReturnType.Name == "EventHandler") {
-				type = ConvertType(e.ReturnType.TypeArguments[0], new ClassFinder(e));
-			} else {
-				type = ConvertType(e.ReturnType, new ClassFinder(e));
-				if (type.Type.EndsWith("Handler"))
-					type.Type = type.Type.Substring(0, type.Type.Length - 7) + "Args";
+			ClassFinder context = new ClassFinder(e);
+			List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
+			bool sender = false;
+			if (e.ReturnType != null) {
+				IMethod invoke = e.ReturnType.GetMethods().Find(delegate(IMethod m) { return m.Name=="Invoke"; });
+				if (invoke != null) {
+					foreach (IParameter param in invoke.Parameters) {
+						parameters.Add(new ParameterDeclarationExpression(ConvertType(param.ReturnType, context), param.Name));
+					}
+					if (parameters.Count > 0 && string.Equals(parameters[0].ParameterName, "sender", StringComparison.InvariantCultureIgnoreCase)) {
+						sender = true;
+						parameters.RemoveAt(0);
+					}
+				}
 			}
-			List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>(1);
-			parameters.Add(new ParameterDeclarationExpression(type, "e"));
+			
 			ModifierEnum modifier;
 			if (e.IsStatic)
 				modifier = ModifierEnum.Private | ModifierEnum.Static;
@@ -371,12 +375,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			                                                 new TypeReference("System.Void"),
 			                                                 parameters, null);
 			
-			List<Expression> arguments = new List<Expression>(2);
-			if (e.IsStatic)
-				arguments.Add(new PrimitiveExpression(null, "null"));
-			else
-				arguments.Add(new ThisReferenceExpression());
-			arguments.Add(new IdentifierExpression("e"));
+			List<Expression> arguments = new List<Expression>();
+			if (sender) {
+				if (e.IsStatic)
+					arguments.Add(new PrimitiveExpression(null, "null"));
+				else
+					arguments.Add(new ThisReferenceExpression());
+			}
+			foreach (ParameterDeclarationExpression param in parameters) {
+				arguments.Add(new IdentifierExpression(param.ParameterName));
+			}
 			method.Body = new BlockStatement();
 			method.Body.AddChild(new RaiseEventStatement(e.Name, arguments));
 			
