@@ -4186,14 +4186,14 @@ out SwitchSection stmt) {
 out label);
 
 #line  1971 "cs.ATG" 
-		switchSection.SwitchLabels.Add(label); 
+		if (label != null) { switchSection.SwitchLabels.Add(label); } 
 		while (la.kind == 54 || la.kind == 62) {
 			SwitchLabel(
 #line  1973 "cs.ATG" 
 out label);
 
 #line  1973 "cs.ATG" 
-			switchSection.SwitchLabels.Add(label); 
+			if (label != null) { switchSection.SwitchLabels.Add(label); } 
 		}
 
 #line  1975 "cs.ATG" 

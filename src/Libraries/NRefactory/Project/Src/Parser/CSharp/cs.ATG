@@ -1968,9 +1968,9 @@ SwitchSection<out SwitchSection stmt>
 	CaseLabel label;
 .)
 =
-	SwitchLabel<out label> (. switchSection.SwitchLabels.Add(label); .) 
+	SwitchLabel<out label> (. if (label != null) { switchSection.SwitchLabels.Add(label); } .) 
 	{
-		SwitchLabel<out label> (. switchSection.SwitchLabels.Add(label); .) 
+		SwitchLabel<out label> (. if (label != null) { switchSection.SwitchLabels.Add(label); } .) 
 	}
 	(. compilationUnit.BlockStart(switchSection); .)
 	Statement { Statement }
