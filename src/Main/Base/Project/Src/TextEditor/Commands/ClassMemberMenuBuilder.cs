@@ -46,7 +46,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				&& !FindReferencesAndRenameHelper.IsReadOnly(member.DeclaringType);
 			
 			if (method == null || !method.IsConstructor) {
-				if (!FindReferencesAndRenameHelper.IsReadOnly(member.DeclaringType)) {
+				if (!FindReferencesAndRenameHelper.IsReadOnly(member.DeclaringType) &&
+				    !(member is IProperty && ((IProperty)member).IsIndexer)) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
 					cmd.Tag = member;
 					list.Add(cmd);
@@ -223,7 +224,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
-			FindReferencesAndRenameHelper.ShowAsSearchResults("References to " + member.Name, RefactoringService.FindReferences(member, null));
+			string memberName;
+			if (member is IProperty && ((IProperty)member).IsIndexer) {
+				// The name of the default indexer is always "Indexer" in C#.
+				// Add the type name to clarify which indexer is referred to.
+				memberName = member.Name + " of " + member.DeclaringType.Name;
+			} else {
+				memberName = member.Name;
+			}
+			FindReferencesAndRenameHelper.ShowAsSearchResults("References to " + memberName, RefactoringService.FindReferences(member, null));
 		}
 	}
 }
