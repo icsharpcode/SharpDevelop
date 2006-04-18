@@ -53,9 +53,9 @@ namespace SharpReport {
 			control.Font = item.Font;
 			control.Name = item.Name;
 			BaseTextItem b = item as BaseTextItem;
-			if (b != null) {
-				control.StringAlignment = b.StringAlignment;
-			}
+//			if (b != null) {
+//				control. = b.StringAlignment;
+//			}
 		}
 		
 		

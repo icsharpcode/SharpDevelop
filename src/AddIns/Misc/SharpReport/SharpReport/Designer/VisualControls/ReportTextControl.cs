@@ -18,8 +18,7 @@ namespace SharpReport.Designer{
 	/// Description of ReportTextItem.
 	/// </summary>
 	internal class ReportTextControl : ReportControlBase{
-		
-		private TextDrawer textDrawer = new TextDrawer();
+		StringFormat stringFormat;
 		
 		public ReportTextControl():base(){
 			InitializeComponent();
@@ -42,15 +41,27 @@ namespace SharpReport.Designer{
 				base.Text = value; 
 			}
 		}
-
+		
+		public StringFormat StringFormat{
+			set {
+				if (this.stringFormat != value) {
+					this.stringFormat = value;
+					this.Invalidate();
+				}
+			}
+		}
 		
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea){
 
 			base.OnPaint(pea);
+			base.DrawEdges (pea);
+			base.DrawDecorations(pea);
 			
-			Graphics graphics = pea.Graphics;
-			StringFormat fmt = GlobalValues.StandartStringFormat();
-			fmt.Alignment = this.StringAlignment;
+			if (this.stringFormat == null) {
+				this.stringFormat = GlobalValues.StandartStringFormat();
+				this.stringFormat.LineAlignment = StringAlignment.Center;
+			} 
+			
 			string str;
 			
 			if (String.IsNullOrEmpty(this.Text)) {
@@ -58,12 +69,11 @@ namespace SharpReport.Designer{
 			} else {
 				str = this.Text;
 			}
-			textDrawer.DrawString(graphics,
-			                      str,
-			                      this.Font,
-			                      new SolidBrush(this.ForeColor),
-			                      (RectangleF)this.ClientRectangle,
-			                      fmt);
+			
+			pea.Graphics.DrawString(str,this.Font,
+			                        new SolidBrush(this.ForeColor),
+			                        (RectangleF)this.ClientRectangle,
+			                        this.stringFormat);
 		}
 		
 		

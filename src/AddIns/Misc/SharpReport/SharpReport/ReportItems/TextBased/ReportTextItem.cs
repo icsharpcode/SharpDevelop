@@ -32,7 +32,7 @@ namespace SharpReport.ReportItems {
 			visualControl = new ReportTextControl();
 
 			this.Text = visualControl.Name;
-			visualControl.StringFormat = base.StandartStringFormat;
+			visualControl.StringFormat = base.StringFormat;
 			
 			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 			
@@ -53,6 +53,7 @@ namespace SharpReport.ReportItems {
 		#region events
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
 			ItemsHelper.UpdateControlFromTextBase(this.visualControl,this);
+			this.visualControl.StringFormat = base.StringFormat;
 			this.HandlePropertyChanged(e.PropertyName);
 		}
 		

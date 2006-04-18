@@ -37,14 +37,16 @@ namespace SharpReport.ReportItems {
 			this.UpdateStyles();
 		}
 		
-		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e) {
-			base.OnPaint (e);
+		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea) {
+			base.OnPaint (pea);
+			base.DrawEdges (pea);
+			base.DrawDecorations(pea);
 			
 			if (this.image != null) {
 				if (this.scaleImageToSize) {
-					e.Graphics.DrawImageUnscaled(image,0,0);
+					pea.Graphics.DrawImageUnscaled(image,0,0);
 				} else {
-					e.Graphics.DrawImage(image,0,0,this.Width,this.Height);
+					pea.Graphics.DrawImage(image,0,0,this.Width,this.Height);
 				}
 				
 			}

@@ -15,7 +15,7 @@ namespace SharpReport.Designer
 	/// <summary>
 	/// Description of ControlHelper.
 	/// </summary>
-	public class ControlHelper{
+	internal class ControlHelper{
 		Control control;
 		
 		public ControlHelper(Control control){
@@ -35,27 +35,27 @@ namespace SharpReport.Designer
 		}
 		
 		
-		
 		public  void DrawEdges (PaintEventArgs e) {
+			this.DrawEdges (e,this.BuildFocusRectangle);
+		}
+		
+		public  void DrawEdges (PaintEventArgs e,Rectangle rectangle) {
 			
 			int arc = 5;
-			Rectangle r = this.BuildFocusRectangle;
 			using (Pen p = new Pen (Color.Black)) {
-				
-				e.Graphics.DrawRectangle (p,
-				                          r);
+				e.Graphics.DrawRectangle (p,rectangle);
 			}
 			
 			using (Pen pb = new Pen(this.control.BackColor)){
 				//top
 
-				int leftLine = r.Left + arc;
-				int rightLine = r.Left + r.Width - arc;
-				int botLine = r.Top + r.Height;
+				int leftLine = rectangle.Left + arc;
+				int rightLine = rectangle.Left + rectangle.Width - arc;
+				int botLine = rectangle.Top + rectangle.Height;
 				//top
 				e.Graphics.DrawLine (pb,
-				                     leftLine,r.Top,
-				                     rightLine, r.Top);
+				                     leftLine,rectangle.Top,
+				                     rightLine, rectangle.Top);
 				
 				//bottom
 				e.Graphics.DrawLine (pb,
@@ -63,17 +63,18 @@ namespace SharpReport.Designer
 				                     rightLine,botLine);
 				//left
 				
-				int top = r.Top + arc;
-				int down = r.Top + r.Height - arc;
+				int top = rectangle.Top + arc;
+				int down = rectangle.Top + rectangle.Height - arc;
 				e.Graphics.DrawLine(pb,
-				                    r.Left,top,
-				                    r.Left,down);
+				                    rectangle.Left,top,
+				                    rectangle.Left,down);
 				//right
 				e.Graphics.DrawLine(pb,
-				                    r.Left + r.Width,top,
-				                    r.Left + r.Width,down);
+				                    rectangle.Left + rectangle.Width,top,
+				                    rectangle.Left + rectangle.Width,down);
 				
 			}
+		
 		}
 		
 	}

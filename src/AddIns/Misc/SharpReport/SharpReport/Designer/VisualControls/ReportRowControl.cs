@@ -20,8 +20,7 @@ namespace SharpReport.Designer{
 	/// Description of ReportTableControl.
 	/// </summary>
 
-	public class ReportRowControl:ReportControlBase{
-		ControlHelper controlHelper;
+	internal class ReportRowControl:ReportControlBase{
 
 		public ReportRowControl():base(){
 			InitializeComponent();
@@ -34,19 +33,24 @@ namespace SharpReport.Designer{
 			
 			this.Size = new Size((GlobalValues.PreferedSize.Width * 2) + 10,
 			                     GlobalValues.PreferedSize.Height + 10);
-			
-			controlHelper = new ControlHelper((Control)this);
 		}
+		
+		
 		#region overrides
-		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e){
-			base.OnPaint(e);
-			TextDrawer tx = new TextDrawer();
-			
-			tx.DrawString(e.Graphics,this.Name,
+		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea){
+			base.OnPaint(pea);
+
+			Rectangle r = new Rectangle(0,5,this.ClientSize.Width - 1,this.ClientSize.Height - 6);
+			base.DrawEdges (pea,r);
+			base.DrawDecorations(pea);
+
+			StringFormat fmt = GlobalValues.StandartStringFormat();
+			fmt.LineAlignment = StringAlignment.Near;
+			pea.Graphics.DrawString(this.Name,
 			                        this.Font,
 			                        new SolidBrush(this.ForeColor),
-			                        new Rectangle(1,0,e.ClipRectangle.Width,(int)this.Font.GetHeight(e.Graphics) + 2),
-			                        new StringFormat());
+			                        new Rectangle(7,0,pea.ClipRectangle.Width,(int)this.Font.GetHeight(pea.Graphics) + 2),
+			                        fmt);
 		}
 		
 		public override string ToString() {

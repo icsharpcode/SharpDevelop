@@ -21,11 +21,8 @@ namespace SharpReport.Designer
 	/// and can have some common members managed easier.
 	/// </summary>
 
-	public abstract class ReportObjectControlBase : UserControl	
-	{
-		private StringAlignment stringAlignment = StringAlignment.Near;
-		private StringFormat stringFormat;
-	
+	public abstract class ReportObjectControlBase : UserControl	{
+
 		/// <summary>
 		/// This Event fire's when anything in the VisualControl Design changes like
 		/// Size,Location,BackColor etc.
@@ -55,38 +52,12 @@ namespace SharpReport.Designer
 		// does not coincide with the "rendered object"
 		// so "this" identifies the whole report object
 		// and "Body" identifies the rendered control
-		public virtual Control Body
-		{
+		public virtual Control Body{
 			get { 
 				return this; 
 			}
 		}		
-		
-		/// <summary>
-		/// Use the same StringFormat we use in printing the report
-		/// </summary>
-		public StringFormat StringFormat {
-			get {
-				return stringFormat;
-			}
-			set {
-				stringFormat = value;
-			}
-		}
-		
-		
-		/// <summary>
-		/// use the same StringAlignment we use in printing
-		/// </summary>
-		public StringAlignment StringAlignment {
-			get {
-				return stringAlignment;
-			}
-			set {
-				stringAlignment = value;
-				this.Invalidate();
-			}
-		}
+	
 		#endregion	
 		
 		#region Windows Forms Designer generated code

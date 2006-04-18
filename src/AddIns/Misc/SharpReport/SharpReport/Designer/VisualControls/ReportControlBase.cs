@@ -96,23 +96,32 @@ namespace SharpReport.Designer{
 			base.OnControlChanged();
 		}
 	
-		private void DrawDecorations(Graphics g){
+		
+		protected void DrawDecorations(PaintEventArgs e){
 			// it is not said that the
 			// focused object in all the app
 			// is the current report item!
 			// So I don't check this.Focused.
 			
 			if (lblBottomRight.Visible){
-				g.Clear(this.Body.BackColor);
-				ControlPaint.DrawFocusRectangle(g,
+				e.Graphics.Clear(this.Body.BackColor);
+				ControlPaint.DrawFocusRectangle(e.Graphics,
 				                                controlHelper.BuildFocusRectangle);
 			}
 		}
-	
+		
+		protected void DrawEdges (PaintEventArgs e,Rectangle rectangle) {
+			controlHelper.DrawEdges(e,rectangle);
+		}
+		
+		
+		protected void DrawEdges (PaintEventArgs e) {
+			controlHelper.DrawEdges(e);
+		}
+		
+		
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e){
 			base.OnPaint(e);
-			controlHelper.DrawEdges(e);
-			this.DrawDecorations(e.Graphics);
 		}
 		
 		protected override void OnResize(EventArgs e){		

@@ -37,7 +37,7 @@ namespace SharpReportCore {
 			base.PrintTheStuff (rpea,this.Text,rect);
 
 			//here we print the functionpart allway's with Stringalignment.Far
-			StringFormat fmt = StandartStringFormat;
+			StringFormat fmt = StringFormat;
 			fmt.Alignment = StringAlignment.Far;
 			fmt.LineAlignment = StringAlignment.Near;
 			

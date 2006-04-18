@@ -395,7 +395,6 @@ namespace SharpReport.Designer{
 			this.visualDetail.Location = new System.Drawing.Point(0, 140);
 			this.visualDetail.Name = "visualDetail";
 			this.visualDetail.Size = new System.Drawing.Size(400, 72);
-			this.visualDetail.StringAlignment = System.Drawing.StringAlignment.Near;
 			this.visualDetail.TabIndex = 3;
 			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 
@@ -407,7 +406,6 @@ namespace SharpReport.Designer{
 			this.visualPageFooter.Location = new System.Drawing.Point(0, 212);
 			this.visualPageFooter.Name = "visualPageFooter";
 			this.visualPageFooter.Size = new System.Drawing.Size(400, 68);
-			this.visualPageFooter.StringAlignment = System.Drawing.StringAlignment.Near;
 			this.visualPageFooter.TabIndex = 6;
 			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 
@@ -419,7 +417,6 @@ namespace SharpReport.Designer{
 			this.visualFooter.Location = new System.Drawing.Point(0, 280);
 			this.visualFooter.Name = "visualFooter";
 			this.visualFooter.Size = new System.Drawing.Size(400, 76);
-			this.visualFooter.StringAlignment = System.Drawing.StringAlignment.Near;
 			this.visualFooter.TabIndex = 7;
 			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 
@@ -431,7 +428,6 @@ namespace SharpReport.Designer{
 			this.visualPageHeader.Location = new System.Drawing.Point(0, 56);
 			this.visualPageHeader.Name = "visualPageHeader";
 			this.visualPageHeader.Size = new System.Drawing.Size(400, 84);
-			this.visualPageHeader.StringAlignment = System.Drawing.StringAlignment.Near;
 			this.visualPageHeader.TabIndex = 1;
 			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 
@@ -443,7 +439,6 @@ namespace SharpReport.Designer{
 			this.visualReportHeader.Location = new System.Drawing.Point(0, 0);
 			this.visualReportHeader.Name = "visualReportHeader";
 			this.visualReportHeader.Size = new System.Drawing.Size(400, 56);
-			this.visualReportHeader.StringAlignment = System.Drawing.StringAlignment.Near;
 			this.visualReportHeader.TabIndex = 0;
 			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 

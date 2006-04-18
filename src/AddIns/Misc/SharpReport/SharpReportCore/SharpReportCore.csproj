@@ -129,6 +129,7 @@
     <Compile Include="DataManager\DataNavigator.cs" />
     <Compile Include="Interfaces\IDataNavigator.cs" />
     <Compile Include="Events\PrintEventArgs.cs" />
+    <Compile Include="BaseItems\TableItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />
