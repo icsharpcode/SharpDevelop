@@ -380,7 +380,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (e.IsDirectory) {
 				foreach (IViewContent content in ViewContentCollection) {
-					if (content.FileName.StartsWith(e.SourceFile)) {
+					if (content.FileName != null && content.FileName.StartsWith(e.SourceFile)) {
 						content.FileName = e.TargetFile + content.FileName.Substring(e.SourceFile.Length);
 					}
 				}
