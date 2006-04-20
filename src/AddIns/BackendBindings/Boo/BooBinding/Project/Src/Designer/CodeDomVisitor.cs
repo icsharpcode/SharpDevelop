@@ -508,7 +508,9 @@ namespace Grunwald.BooBinding.Designer
 				int count = Math.Min(m.Parameters.Count, cmie.Parameters.Count);
 				for (int i = 0; i < count; i++) {
 					CodeArrayCreateExpression cace = cmie.Parameters[i] as CodeArrayCreateExpression;
-					if (cace != null) {
+					if (cace != null && (bool)cace.UserData["unknownType"]
+					    && m.Parameters[i].ReturnType.ArrayDimensions > 0)
+					{
 						cace.CreateType = new CodeTypeReference(m.Parameters[i].ReturnType.FullyQualifiedName);
 					}
 				}
@@ -561,6 +563,7 @@ namespace Grunwald.BooBinding.Designer
 				initializers[i] = _expression;
 			}
 			_expression = new CodeArrayCreateExpression(createType.FullyQualifiedName, initializers);
+			_expression.UserData["unknownType"] = node.Type != null;
 		}
 	}
 }
