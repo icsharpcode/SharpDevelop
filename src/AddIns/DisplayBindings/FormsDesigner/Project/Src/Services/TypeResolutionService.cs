@@ -42,6 +42,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			DesignerAssemblies.Add(ProjectContentRegistry.MscorlibAssembly);
 			DesignerAssemblies.Add(ProjectContentRegistry.SystemAssembly);
 			DesignerAssemblies.Add(typeof(System.Drawing.Point).Assembly);
+			DesignerAssemblies.Add(typeof(System.Windows.Forms.Design.AnchorEditor).Assembly);
 		}
 		
 		[System.Runtime.InteropServices.DllImport("kernel32.dll")]
@@ -272,7 +273,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				if (type == null) {
 					IProjectContent pc = this.CallingProject;
 					if (pc != null) {
-						IClass foundClass = pc.GetClass(name);
+						IClass foundClass = pc.GetClass(name.Replace('+', '.'));
 						if (foundClass != null) {
 							Assembly assembly = LoadAssembly(foundClass.ProjectContent);
 							if (assembly != null) {

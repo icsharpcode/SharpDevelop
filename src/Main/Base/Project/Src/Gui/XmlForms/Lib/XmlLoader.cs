@@ -128,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 				el = (XmlElement)doc.DocumentElement.ChildNodes[0];
 			}
 
-			customizationObject = objectCreator.CreateObject(el.Name, el);
+			customizationObject = objectCreator.CreateObject(XmlConvert.DecodeName(el.Name), el);
 			
 			SetUpObject(customizationObject, el);
 			return customizationObject;
@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 				el = (XmlElement)doc.DocumentElement.ChildNodes[0];
 			}
 
-			customizationObject = objectCreator.CreateObject(el.Name, el);
+			customizationObject = objectCreator.CreateObject(XmlConvert.DecodeName(el.Name), el);
 			
 			SetUpObject(customizationObject, el);
 			return customizationObject;
@@ -363,7 +363,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 					foreach (XmlNode subNode in el.ChildNodes) {
 						if (subNode is XmlElement){
 							XmlElement subElement = (XmlElement)subNode;
-							object collectionObject = objectCreator.CreateObject(subElement.Name, subElement);
+							object collectionObject = objectCreator.CreateObject(XmlConvert.DecodeName(subElement.Name), subElement);
 							if (collectionObject == null) {
 								continue;
 							}

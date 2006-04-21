@@ -75,7 +75,7 @@ namespace ICSharpCode.FormsDesigner
 			return new object[] {};
 		}
 		
-		public XmlElement GetElementFor(XmlDocument doc, object o)
+		public XmlElement GetElementFor(XmlDocument doc, object o, Hashtable visitedControls)
 		{
 			if (doc == null) {
 				throw new ArgumentNullException("doc");
@@ -85,8 +85,11 @@ namespace ICSharpCode.FormsDesigner
 				throw new ArgumentNullException("o");
 			}
 			
+			visitedControls[o] = null;
+			
 			try {
-				XmlElement el = doc.CreateElement(o.GetType().FullName);
+				XmlElement el = doc.CreateElement(XmlConvert.EncodeName(o.GetType().FullName));
+				
 				PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(o);
 				
 				Control ctrl = o as Control;
@@ -128,7 +131,7 @@ namespace ICSharpCode.FormsDesigner
 						childNodes.Insert(0, childEl);
 						continue;
 					}
-					childEl = doc.CreateElement(pd.Name);
+					childEl = doc.CreateElement(XmlConvert.EncodeName(pd.Name));
 					
 					object propertyValue = null;
 					try {
@@ -141,8 +144,8 @@ namespace ICSharpCode.FormsDesigner
 					// lists are other than normal properties
 					if (propertyValue is IList && !(ctrl is PropertyGrid)) {
 						foreach (object listObject in (IList)propertyValue) {
-							XmlElement newEl = GetElementFor(doc, listObject);
-							if (newEl != null) {
+							XmlElement newEl = GetElementFor(doc, listObject, visitedControls);
+							if (newEl != null && !newEl.Name.StartsWith("System.Windows.Forms.Design.")) {
 								childEl.AppendChild(newEl);
 							}
 						}
@@ -191,13 +194,14 @@ namespace ICSharpCode.FormsDesigner
 			versionAttribute.InnerText = "1.0";
 			componentsElement.Attributes.Append(versionAttribute);
 			
+			Hashtable visitedControls = new Hashtable();
 			// insert root element
-			componentsElement.AppendChild(GetElementFor(doc, host.RootComponent));
+			componentsElement.AppendChild(GetElementFor(doc, host.RootComponent, visitedControls));
 			
 			// insert any non gui (=tray components)
 			foreach (IComponent component in host.Container.Components) {
-				if (!(component is Control)) {
-					componentsElement.AppendChild(GetElementFor(doc, component));
+				if (!(component is Control) && !visitedControls.ContainsKey(component)) {
+					componentsElement.AppendChild(GetElementFor(doc, component, visitedControls));
 				}
 			}
 			
