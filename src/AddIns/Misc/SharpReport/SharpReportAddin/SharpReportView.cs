@@ -11,14 +11,12 @@
 
 using System;
 using System.IO;
-using System.ComponentModel;
+//using System.ComponentModel;
 using System.Globalization;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Windows.Forms;
 using System.Data;
-
-
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -47,7 +45,8 @@ namespace SharpReportAddin{
 		private AxSideTab sideTabFunctions = null;
 		private Panel panel;
 		
-		private bool designerInitialised;
+		private bool disposed;
+		
 		#region privates
 		
 		void InitView() {
@@ -56,7 +55,7 @@ namespace SharpReportAddin{
 				panel = new Panel();
 				panel.AutoScroll = true;
 				CreateTabControl();
-				BuildToolBarItems();
+				SharpReportView.BuildToolBarItems();
 				if (PropertyPad.Grid != null) {
 					PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
 					PropertyPad.Grid.Refresh();
@@ -99,7 +98,7 @@ namespace SharpReportAddin{
 		
 		#region SideBar Handling
 		
-		private bool SharpReportIsRunning () {
+		private static bool SharpReportIsRunning () {
 			// Did we already exist
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 				SharpReportView view = content as SharpReportView;
@@ -110,17 +109,17 @@ namespace SharpReportAddin{
 			return false;
 		}
 		
-		private SharpDevelopSideBar GetSideBar () {
+		private static SharpDevelopSideBar GetSideBar () {
 			SideBarView v = (SideBarView)WorkbenchSingleton.Workbench.GetPad (typeof(SideBarView)).PadContent;
 			SharpDevelopSideBar sb =(SharpDevelopSideBar) v.Control;
 			return sb;
 		}
 		
-		private void BuildToolBarItems() {
+		private static void BuildToolBarItems() {
 			
-			SharpDevelopSideBar	sideBar = GetSideBar();
+			SharpDevelopSideBar	sideBar = SharpReportView.GetSideBar();
 
-			if (!this.SharpReportIsRunning()) {
+			if (!SharpReportView.SharpReportIsRunning()) {
 				SharpReport.BuildSideTab buildSideTab = new SharpReport.BuildSideTab (sideBar);
 				buildSideTab.CreateSidetabs();
 				sideBar.Refresh();
@@ -132,9 +131,9 @@ namespace SharpReportAddin{
 		
 		void RemoveSideBarItem() {
 
-			if (!this.SharpReportIsRunning()) {
+			if (!SharpReportView.SharpReportIsRunning()) {
 				if (sideTabItem != null) {
-					SharpDevelopSideBar	sideBar = GetSideBar();
+					SharpDevelopSideBar	sideBar = SharpReportView.GetSideBar();
 					sideBar.Tabs.Remove (sideTabItem);
 				}
 				
@@ -214,8 +213,9 @@ namespace SharpReportAddin{
 		
 		#region Preview handling
 		
-		private DataSet DataSetFromFile () {
+		private static  DataSet DataSetFromFile () {
 			DataSet ds = new DataSet();
+			ds.Locale = CultureInfo.InvariantCulture;
 			using (OpenFileDialog openFileDialog = new OpenFileDialog()){
 				openFileDialog.Filter = GlobalValues.XsdFileFilter;
 				openFileDialog.DefaultExt = GlobalValues.XsdExtension;
@@ -251,7 +251,7 @@ namespace SharpReportAddin{
 						
 				}
 			} catch (Exception e) {
-				MessageBox.Show("Error in RunPreview" + e.Message);
+				MessageService.ShowError(e);
 			}
 			
 		}
@@ -260,7 +260,7 @@ namespace SharpReportAddin{
 		
 		private void PreviewPushReport (bool standAlone){
 			try {
-				DataSet ds = DataSetFromFile ();
+				DataSet ds = SharpReportView.DataSetFromFile ();
 				reportManager.ReportPreviewPushData(designerControl.ReportModel,
 				                                    ds,
 				                                    standAlone);
@@ -316,7 +316,8 @@ namespace SharpReportAddin{
 		}
 		
 		void SetTabTitel (string name) {
-			base.TitleName = String.Format("{0} [{1}]",name,this.tabControl.SelectedTab.Text);
+			base.TitleName = String.Format(CultureInfo.CurrentCulture,
+			                               "{0} [{1}]",name,this.tabControl.SelectedTab.Text);
 		}
 		
 		private void OnTabPageChanged (object sender, EventArgs e) {
@@ -355,11 +356,8 @@ namespace SharpReportAddin{
 		
 		private void OnPropertyChanged (object sender,
 		                                System.ComponentModel.PropertyChangedEventArgs e) {
-			if (this.designerInitialised) {
-				base.IsDirty = true;
-				OnObjectSelected (this,EventArgs.Empty);
-			}
-			this.designerInitialised = true;
+			base.IsDirty = true;
+			OnObjectSelected (this,EventArgs.Empty);
 		}
 	
 		private void OnModelFileNameChanged (object sender,EventArgs e) {
@@ -375,16 +373,8 @@ namespace SharpReportAddin{
 		private void OnObjectSelected (object sender,EventArgs e) {
 			
 			if (designerControl.ReportControl.SelectedObject != null) {
-				BaseReportObject oldobj = PropertyPad.Grid.SelectedObject as BaseReportObject;
-				
-//				if (oldobj != null) {
-//					System.Console.WriteLine("");
-//					System.Console.WriteLine("leaving {0} <{1}> ",oldobj.Name,oldobj.Suspend);
-//				}
-				
 				BaseReportObject newobj = designerControl.ReportControl.SelectedObject;
 				newobj.ResumeLayout();
-//				System.Console.WriteLine("View:OnObjectSelected {0} <{1}>",newobj.Name,newobj.Suspend);
 				
 				if (PropertyPad.Grid != null) {
 					PropertyPad.Grid.SelectedObject = designerControl.ReportControl.SelectedObject;
@@ -392,16 +382,7 @@ namespace SharpReportAddin{
 				
 			}
 		}
-		
-		private void old_OnObjectSelected (object sender,EventArgs e) {
-			
-			if (designerControl.ReportControl.SelectedObject != null) {
-				if (PropertyPad.Grid != null) {
-					PropertyPad.Grid.SelectedObject = designerControl.ReportControl.SelectedObject;
-				}
-				
-			}
-		}
+	
 		
 		#endregion
 		
@@ -430,7 +411,10 @@ namespace SharpReportAddin{
 			base.OnSaving(EventArgs.Empty);
 			this.RunPreview(false);
 		}
-
+		
+		public void RemoveSelectedItem () {
+			this.designerControl.RemoveSelectedItem ();
+		}
 		
 		/// <summary>
 		/// This Method is called after something has changed like Load a new report
@@ -446,6 +430,7 @@ namespace SharpReportAddin{
 				this.OnPropertyChanged (this,new System.ComponentModel.PropertyChangedEventArgs("Fired from UpdateView"));
 			}
 		}
+		
 		
 		
 		#endregion
@@ -471,6 +456,11 @@ namespace SharpReportAddin{
 			}
 		}
 		
+		public bool Disposed {
+			get {
+				return disposed;
+			}
+		}
 		#endregion
 		
 		
@@ -563,7 +553,7 @@ namespace SharpReportAddin{
 				AbstractRenderer renderer;
 				if (this.designerControl.ReportModel.DataModel == GlobalEnums.enmPushPullModel.PushData) {
 					renderer = reportManager.GetRendererForPushDataReports(this.designerControl.ReportModel,
-					                                                       this.DataSetFromFile());
+					                                                       SharpReportView.DataSetFromFile());
 					
 				} else {
 					renderer = reportManager.GetRendererForStandartReports(this.designerControl.ReportModel);
@@ -581,7 +571,7 @@ namespace SharpReportAddin{
 			if (PropertyPad.Grid != null) {
 				PropertyPad.Grid.SelectedObject = null;
 			}
-			
+			this.disposed = true;
 			RemoveSideBarItem();
 			this.Dispose(true);
 			GC.SuppressFinalize(this);
@@ -600,7 +590,10 @@ namespace SharpReportAddin{
 				if (this.designerControl != null) {
 					this.designerControl.Dispose();
 				}
-				this.tabControl.Dispose();
+
+				if (this.panel != null) {
+					this.panel.Dispose();
+				}
 			}
 			
 			// Release unmanaged resources.

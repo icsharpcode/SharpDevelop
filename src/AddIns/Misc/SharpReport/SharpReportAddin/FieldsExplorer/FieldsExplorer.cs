@@ -49,7 +49,6 @@ namespace SharpReportAddin {
 		/// Clear the selected Section
 		/// </summary>
 		public void ClearNodeSection () {
-//			System.Console.WriteLine("ClearNodeSection");
 			if (this.SelectedNode is SectionTreeNode) {
 				if (this.SelectedNode.Nodes.Count > 0) {
 					this.SelectedNode.Nodes.Clear();
@@ -100,6 +99,14 @@ namespace SharpReportAddin {
 				this.SelectedNode = node;
 				CheckNode (node);
 				if (e.Button == MouseButtons.Right) {
+					AbstractFieldsNode abstrNode = node as AbstractFieldsNode;
+					if (abstrNode != null) {
+						if (abstrNode.ContextmenuAddinTreePath.Length > 0) {
+							ContextMenuStrip ctMen = MenuService.CreateContextMenu (this,abstrNode.ContextmenuAddinTreePath);
+							ctMen.Show (this,new Point (e.X,e.Y));
+						}
+					}
+					/*
 					if (node is AbstractFieldsNode) {
 						AbstractFieldsNode abstrNode = (AbstractFieldsNode)node;
 						if (abstrNode.ContextmenuAddinTreePath.Length > 0) {
@@ -107,6 +114,7 @@ namespace SharpReportAddin {
 							ctMen.Show (this,new Point (e.X,e.Y));
 						}
 					}
+					*/
 				}
 			}
 		}
@@ -149,17 +157,16 @@ namespace SharpReportAddin {
 		
 		void TreeViewDragDrop (object sender,DragEventArgs e) {
 			if(e.Data.GetDataPresent("SharpReportAddin.ColumnsTreeNode", false)){
-				
-				Point pt = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
-				SectionTreeNode node = (SectionTreeNode)((TreeView)sender).GetNodeAt(pt);
+				Point pt = this.PointToClient (new Point( e.X,e.Y));
 
+				SectionTreeNode node = this.GetNodeAt (pt) as SectionTreeNode;
 				if (node != null) {
 					
 					ColumnsTreeNode t = (ColumnsTreeNode)e.Data.GetData("SharpReportAddin.ColumnsTreeNode", true);
 					ColumnsTreeNode dest = new ColumnsTreeNode (t.Text);
 
 					// Useless to add a node twice
-					if (!CheckForExist (node,dest)) {
+					if (!FieldsExplorer.CheckForExist (node,dest)) {
 						dest.SortDirection = ListSortDirection.Ascending;
 						dest.ImageIndex = ascendingIcon;
 						dest.SelectedImageIndex = ascendingIcon;
@@ -174,13 +181,13 @@ namespace SharpReportAddin {
 		}
 		
 		
-		private void Fill () {
+		private void FillExplorer () {
 			this.FillTree();
 			this.ExpandAll();
 			isFilled = true;
 		}
 		
-		private bool CheckForExist (SectionTreeNode sec,ColumnsTreeNode col) {
+		private static bool CheckForExist (SectionTreeNode sec,ColumnsTreeNode col) {
 			if (sec.Nodes.Count > 0) {
 				for (int i = 0;i < sec.Nodes.Count ;i++ ) {
 					if (sec.Nodes[i].Text == col.Text) {
@@ -193,21 +200,22 @@ namespace SharpReportAddin {
 			return false;
 		}
 		
-		
 		private void CheckNode (TreeNode node) {
-			if (node.Parent == nodeSorting) {
-				ColumnsTreeNode cn = (ColumnsTreeNode)node;
-
-				if (cn.SortDirection ==  ListSortDirection.Ascending) {
-					cn.ImageIndex = ascendingIcon;
-				} else {
-					cn.ImageIndex = descendingIcon;
+			ColumnsTreeNode cn = node as ColumnsTreeNode;
+			
+			if (cn != null) {
+				if (node.Parent == nodeSorting) {
+					if (cn.SortDirection ==  ListSortDirection.Ascending) {
+						cn.ImageIndex = ascendingIcon;
+					} else {
+						cn.ImageIndex = descendingIcon;
+					}
+				} else if (node.Parent == this.nodeGrouping) {
+					cn.ImageIndex = clearIcon;
+					cn.SelectedImageIndex = clearIcon;
 				}
-			} else if (node.Parent == this.nodeGrouping) {
-				ColumnsTreeNode cn = (ColumnsTreeNode)node;
-				cn.ImageIndex = clearIcon;
-				cn.SelectedImageIndex = clearIcon;
 			}
+			
 		}
 		
 		#endregion
@@ -221,74 +229,47 @@ namespace SharpReportAddin {
 		}
 		
 		#region PadEvents
-		private void old_OnWindowChange (object sender,EventArgs e) {
-			try {
-				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is SharpReportView) {
-					if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent == null) {
-						return;
-					}
-					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving -= OnViewSaving;
-					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving += OnViewSaving;
+		private void OnUpdateExplorerWindow (object sender,EventArgs e) {
+			
+			if (WorkbenchSingleton.Workbench.ActiveContent != null) {
+				
+				Type type = WorkbenchSingleton.Workbench.ActiveContent.GetType();
+				if (type != typeof(PropertyPad)) {
 					
-					PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(FieldsExplorer));
-					
-					SharpReportView v =
-						WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent
-						as SharpReportView;
-					
-					if (v != null) {
-						this.reportModel = v.ReportManager.BaseDesignControl.ReportModel;
-						if (this.reportModel != null) {
-							this.Fill();
-							WorkbenchSingleton.Workbench.ShowPad(pad);
+					try {
+						if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent == null) {
+							return;
+						}
+						WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving -= OnViewSaving;
+						WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving += OnViewSaving;
+						
+						PadDescriptor pad =
+							WorkbenchSingleton.Workbench.GetPad(typeof(FieldsExplorer));
+						if (pad != null) {
+							SharpReportView view =
+								WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent
+								as SharpReportView;
+							
+							if ((view != null) && (!view.Disposed)) {
+								this.reportModel = view.ReportManager.BaseDesignControl.ReportModel;
+								if (this.reportModel != null) {
+									this.FillExplorer();
+									WorkbenchSingleton.Workbench.ShowPad(pad);
+									pad.BringPadToFront();
+								}
+							}
 						}
 						
-					} else {
-						WorkbenchSingleton.Workbench.WorkbenchLayout.HidePad(pad);
+						else {
+							WorkbenchSingleton.Workbench.WorkbenchLayout.HidePad(pad);
+						}
+					} catch (Exception) {
+//						throw;
 					}
-					
-				} else {
-					System.Console.WriteLine("FieldsExplorer:  NO view");				}
-			} catch (Exception) {
-				
+				}
 			}
 		}
-
-		private void OnWindowChange (object sender,EventArgs e) {
-//			System.Console.WriteLine("FieldsExplorer:OnWindowChange");
-//			System.Console.WriteLine("active control {0}",WorkbenchSingleton.ActiveControl.ToString());
-//			 ICSharpCode.SharpDevelop.Gui.DefaultWorkbench dw = (ICSharpCode.SharpDevelop.Gui.DefaultWorkbench)sender;
-			
 		
-			try {
-				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent == null) {
-					return;
-				}
-				WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving -= OnViewSaving;
-				WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving += OnViewSaving;
-				
-				PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(FieldsExplorer));
-				
-				SharpReportView v =
-					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent
-					as SharpReportView;
-		
-				if (v != null) {
-					this.reportModel = v.ReportManager.BaseDesignControl.ReportModel;
-					if (this.reportModel != null) {
-						
-						this.Fill();
-						WorkbenchSingleton.Workbench.ShowPad(pad);
-						pad.BringPadToFront();
-					}
-					
-				} else {
-					WorkbenchSingleton.Workbench.WorkbenchLayout.HidePad(pad);
-				}
-				
-			} catch (Exception) {
-			}
-		}
 		
 		private void OnViewSaving (object sender, EventArgs e) {
 			if (this.isFilled) {
@@ -375,62 +356,50 @@ namespace SharpReportAddin {
 		
 		
 		void SetSortFields(){
-			try {
-				ColumnsTreeNode node;
-				this.nodeSorting.Nodes.Clear();
-				int scCount = this.reportModel.ReportSettings.SortColumnCollection.Count;
-				foreach (SortColumn sc in this.reportModel.ReportSettings.SortColumnCollection) {
-					node = new ColumnsTreeNode(sc.ColumnName,sc.SortDirection);
-					if (node.SortDirection == ListSortDirection.Ascending) {
-						node.ImageIndex = 4;
-						node.SelectedImageIndex = 4;
-					} else {
-						node.ImageIndex = descendingIcon;
-						node.SelectedImageIndex = descendingIcon;
-					}
-					this.nodeSorting.Nodes.Add(node);
+			ColumnsTreeNode node;
+			
+			this.nodeSorting.Nodes.Clear();
+
+			foreach (SortColumn sc in this.reportModel.ReportSettings.SortColumnCollection) {
+				node = new ColumnsTreeNode(sc.ColumnName,sc.SortDirection);
+				if (node.SortDirection == ListSortDirection.Ascending) {
+					node.ImageIndex = 4;
+					node.SelectedImageIndex = 4;
+				} else {
+					node.ImageIndex = descendingIcon;
+					node.SelectedImageIndex = descendingIcon;
 				}
-			} catch (Exception) {
-				
+				this.nodeSorting.Nodes.Add(node);
 			}
 		}
-		void SetGroupFields(){
-			try {
-				ColumnsTreeNode node;
-				this.nodeGrouping.Nodes.Clear();
-				int gcCount = this.reportModel.ReportSettings.GroupColumnsCollection.Count;
-				for (int i = 0;i < gcCount ;i++ ) {
-					GroupColumn gc = (GroupColumn)this.reportModel.ReportSettings.GroupColumnsCollection[i];
-					node = new ColumnsTreeNode(gc.ColumnName);
-					if (node.SortDirection == ListSortDirection.Ascending) {
-						node.ImageIndex = ascendingIcon;
-						node.SelectedImageIndex = ascendingIcon;
-					} else {
-						node.ImageIndex = descendingIcon;
-						node.SelectedImageIndex = descendingIcon;
-					}
-					this.nodeGrouping.Nodes.Add(node);
+		private void SetGroupFields(){
+			ColumnsTreeNode node;
+			
+			this.nodeGrouping.Nodes.Clear();
+			foreach (GroupColumn gc in this.reportModel.ReportSettings.GroupColumnsCollection) {
+				node = new ColumnsTreeNode(gc.ColumnName);
+				if (node.SortDirection == ListSortDirection.Ascending) {
+					node.ImageIndex = ascendingIcon;
+					node.SelectedImageIndex = ascendingIcon;
+				} else {
+					node.ImageIndex = descendingIcon;
+					node.SelectedImageIndex = descendingIcon;
 				}
-			} catch (Exception) {
-				
+				this.nodeGrouping.Nodes.Add(node);
 			}
 		}
 		
 		void SetParamFields (){
-			
 			ColumnsTreeNode node;
+			
 			this.nodeParams.Nodes.Clear();
-			int parCount = this.reportModel.ReportSettings.SqlParametersCollection.Count;
-			if (parCount > 0) {
-				for (int i = 0;i < parCount ;i++ ) {
-					SqlParameter par = (SqlParameter)this.reportModel.ReportSettings.SqlParametersCollection[i];
-					node = new ColumnsTreeNode(par.ParameterName);
+			foreach (SqlParameter par in this.reportModel.ReportSettings.SqlParametersCollection) {
+				node = new ColumnsTreeNode(par.ParameterName);
 					node.Tag = par;
 					node.SelectedImageIndex = columnIcon;
 					node.ImageIndex = columnIcon;
 					this.nodeParams.Nodes.Add (node);
-				}
-			} 
+			}
 		}
 		
 		void SetFunctions(){
@@ -513,29 +482,26 @@ namespace SharpReportAddin {
 			ImageList imageList = new ImageList();
 			imageList.ColorDepth = ColorDepth.Depth32Bit;
 			imageList.ImageSize = new System.Drawing.Size(16, 16);
-			try {
-				imageList.Images.Add(IconService.GetBitmap("Icons.16x16.ClosedFolderBitmap"));
-				imageList.Images.Add(IconService.GetBitmap("Icons.16x16.OpenFolderBitmap"));
-				imageList.Images.Add(new Bitmap(1, 1));
+			
+			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.ClosedFolderBitmap"));
+			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.OpenFolderBitmap"));
+			imageList.Images.Add(new Bitmap(1, 1));
 
-				imageList.Images.Add(IconService.GetBitmap("Icons.16x16.SelectionArrow"));
-							
-				imageList.Images.Add(IconService.GetBitmap("Icons.16x16.SharpReport.Ascending"));
+			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.SelectionArrow"));
+			
+			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.SharpReport.Ascending"));
 
-				imageList.Images.Add(IconService.GetBitmap("Icons.16x16.SharpReport.Descending"));
-				//Table's or procedure
-				imageList.Images.Add(IconService.GetBitmap("Icons.16x16.SharpQuery.Table"));
-				imageList.Images.Add(IconService.GetBitmap("Icons.16x16.SharpQuery.Procedure"));
-				
-				//Parameters
-				imageList.Images.Add(IconService.GetBitmap("Icons.16x16.SharpQuery.Column"));
-				
-				//Function
-				imageList.Images.Add(ResourceService.GetIcon("Icons.16x16.SharpReport.Function"));
-				ImageList = imageList;
-			} catch (Exception e) {
-				MessageService.ShowError(e);
-			}
+			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.SharpReport.Descending"));
+			//Table's or procedure
+			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.SharpQuery.Table"));
+			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.SharpQuery.Procedure"));
+			
+			//Parameters
+			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.SharpQuery.Column"));
+			
+			//Function
+			imageList.Images.Add(ResourceService.GetIcon("Icons.16x16.SharpReport.Function"));
+			ImageList = imageList;
 		}
 		#endregion
 		
@@ -601,8 +567,9 @@ namespace SharpReportAddin {
 		#endregion
 		
 		
+		
 		public FieldsExplorer() {
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += OnWindowChange;
+			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += OnUpdateExplorerWindow;
 
 			LabelEdit     = true;
 			AllowDrop     = true;

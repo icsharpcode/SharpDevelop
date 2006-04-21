@@ -76,6 +76,7 @@ namespace SharpReport.Designer
 					con.Items.Remove (item);
 				}
 			}
+			this.NotifyPropertyChanged("RemoveSelectedItem");
 		}
 		
 		

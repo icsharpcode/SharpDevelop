@@ -8,7 +8,6 @@
  */
 
 using System;
-using System.Drawing.Printing;
 using System.Globalization;
 using System.Text;
 using System.Reflection;
@@ -85,9 +84,10 @@ namespace SharpReport{
 			}
 		}
 		
-		void SerializeItemProperties (XmlDocument doc,
-		                              XmlElement xmlControl,
+
+		void SerializeItemProperties (XmlElement xmlControl,
 		                              BaseReportItem item,PropertyInfo [] prop) {
+		                              
 			XmlElement xmlProperty;
 			XmlAttribute attPropValue;
 			
@@ -102,7 +102,8 @@ namespace SharpReport{
 					}
 					else {
 						attPropValue = xmlControl.OwnerDocument.CreateAttribute ("value");
-						attPropValue.InnerText = Convert.ToString(p.GetValue(item,null));
+						attPropValue.InnerText = Convert.ToString(p.GetValue(item,null),
+						                                         CultureInfo.InvariantCulture);
 						xmlProperty.Attributes.Append(attPropValue);
 					}
 					xmlControl.AppendChild(xmlProperty);
@@ -123,7 +124,7 @@ namespace SharpReport{
 			XmlAttribute baseAttr = doc.CreateAttribute ("basetype");
 			baseAttr.InnerText = type.BaseType.ToString();
 			xmlControl.Attributes.Append(baseAttr);
-			SerializeItemProperties (doc,xmlControl,item,prop);
+			SerializeItemProperties (xmlControl,item,prop);
 			return xmlControl;
 		
 		}
@@ -160,7 +161,8 @@ namespace SharpReport{
 					if (p.CanWrite) {
 						xmlProperty = doc.CreateElement (p.Name);
 						attPropValue = doc.CreateAttribute ("value");
-						attPropValue.InnerText = Convert.ToString(p.GetValue(this,null));
+						attPropValue.InnerText = Convert.ToString(p.GetValue(this,null),
+						                                         CultureInfo.InvariantCulture);
 						xmlProperty.Attributes.Append(attPropValue);
 						section.AppendChild(xmlProperty);
 					}
@@ -211,24 +213,18 @@ namespace SharpReport{
 		
 		
 		public void OnItemSelect(object sender, EventArgs e){
-//			if (!base.Suspend) {
-				if (ItemSelected != null)
-					ItemSelected(sender, e);
-//			}
-			
+			if (ItemSelected != null)
+				ItemSelected(sender, e);
+
 		}
 		
 		public void VisualControlClick(object sender, EventArgs e){
-//			if (!base.Suspend) {
-				this.OnSelect();
-//			}
+			this.OnSelect();
 		}
 		
 		public void ReportItemSelected(object sender, EventArgs e){
-//			if (!base.Suspend) {
-				this.OnSelect ();
-				this.OnItemSelect(sender, e);
-//			}
+			this.OnSelect ();
+			this.OnItemSelect(sender, e);
 		}
 		
 		

@@ -35,7 +35,6 @@
 	<!-- FieldsExplorer -->
 	<Path name ="/SharpDevelop/Workbench/Pads">
 			<Pad id="fieldsexplorer"
-			     category = "Invisible"
 			     icon="Icons.16x16.SharpQuery.Refresh"
 			     title = "${res:SharpReport.FieldsExplorer.Title}"
 			     shortcut = "Control|Alt|F"
@@ -58,7 +57,9 @@
 	 <!-- ContextMenu Items -->
    <Path name ="/SharpReport/ContextMenu/Items">
       <MenuItem id="cut" label="${res:SharpReport.ContextMenu.Cut}" class="SharpReportAddin.Commands.CutReportItem"/>
-      <MenuItem id="paste" label="${res:SharpReport.ContextMenu.Paste}" class="SharpReportAddin.Commands.PasteReportItem"/>
+     <!--
+   	  <MenuItem id="paste" label="${res:SharpReport.ContextMenu.Paste}" class="SharpReportAddin.Commands.PasteReportItem"/>
+   		-->
    </Path>
 
    <!-- Fields Explorer ContextMenu's -->

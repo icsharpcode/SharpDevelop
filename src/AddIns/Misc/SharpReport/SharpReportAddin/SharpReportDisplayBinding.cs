@@ -18,7 +18,7 @@
 
 
 using System;
-
+using System.Globalization;
 using ICSharpCode.Core;
 
 using SharpReportCore;
@@ -76,6 +76,7 @@ namespace SharpReportAddin {
 				SharpReportView view = new SharpReportView();
 				try {
 					StatusBarService.SetMessage (String.Format("File : {0}",fileName));
+					                             
 					view.Load (fileName);
 					view.UpdateView (false);
 					view.Selected();
