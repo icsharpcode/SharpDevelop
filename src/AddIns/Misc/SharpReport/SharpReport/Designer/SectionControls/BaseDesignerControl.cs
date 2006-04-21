@@ -17,8 +17,7 @@ using SharpReportCore;
 
 
 
-namespace SharpReport.Designer
-{
+namespace SharpReport.Designer{
 	/// <summary>
 	/// Description of BaseDesignerControl.
 	/// </summary>
@@ -26,17 +25,12 @@ namespace SharpReport.Designer
 	{
 		private SharpReport.Designer.Report reportControl;
 		private Ruler.ctrlRuler ctrlRuler1;
-
 		private System.Drawing.GraphicsUnit graphicsUnit;
-		
 		private ReportModel reportModel;
 		
 		public event PropertyChangedEventHandler DesignerDirty;
 		
-		
-		
-		public BaseDesignerControl()
-		{
+		public BaseDesignerControl(){
 			InitializeComponent();
 			
 			this.SetStyle(ControlStyles.DoubleBuffer |

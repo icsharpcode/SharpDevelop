@@ -402,6 +402,7 @@ namespace SharpReportAddin{
 		/// <summary>
 		/// Show's Report in PreviewControl
 		/// </summary>
+		
 		public void OnPreviewClick () {
 			reportManager.NoData -= new EventHandler<SharpReportEventArgs> (OnNoDataForReport);
 			reportManager.NoData += new EventHandler<SharpReportEventArgs> (OnNoDataForReport);
@@ -412,6 +413,10 @@ namespace SharpReportAddin{
 			this.RunPreview(false);
 		}
 		
+		/// <summary>
+		/// Remove the selected Item from <see cref="BaseDesignerControl"></see>
+		/// </summary>
+	
 		public void RemoveSelectedItem () {
 			this.designerControl.RemoveSelectedItem ();
 		}
@@ -425,13 +430,21 @@ namespace SharpReportAddin{
 		public void UpdateView(bool setViewDirty) {
 			this.tabControl.SelectedIndex = 0;
 			this.OnTabPageChanged(this,EventArgs.Empty);
-			SetOnPropertyChangedEvents();
+//			SetOnPropertyChangedEvents();
 			if (setViewDirty) {
 				this.OnPropertyChanged (this,new System.ComponentModel.PropertyChangedEventArgs("Fired from UpdateView"));
 			}
 		}
 		
+		/// <summary>
+		/// Tells the <see cref="BaseDesignerControl"></see> to fire an Event if 
+		/// something in the report layout changes
+		/// </summary>
 		
+		public void RegisterPropertyChangedEvents () {
+			SetOnPropertyChangedEvents();
+			this.designerControl.RegisterEvents();
+		}
 		
 		#endregion
 		
@@ -475,7 +488,6 @@ namespace SharpReportAddin{
 		}
 		
 		public override void RedrawContent() {
-//			this.WorkbenchWindow.WindowDeselected += new EventHandler(OnDeselected);
 			SetHeadLines();
 		}
 		
@@ -535,7 +547,7 @@ namespace SharpReportAddin{
 					PropertyPad.Grid.Refresh();
 				}
 				this.designerControl.ReportModel.ReportSettings.AvailableFieldsCollection = reportManager.AvailableFieldsCollection;
-				this.designerControl.RegisterEvents();
+//				this.designerControl.RegisterEvents();
 				
 			} catch (Exception e) {
 				MessageService.ShowError(e,"SharpReportView:Load");

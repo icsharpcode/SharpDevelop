@@ -81,6 +81,7 @@ namespace SharpReportAddin {
 					view.UpdateView (false);
 					view.Selected();
 					view.DesignerControl.ReportModel.ReportSettings.InitDone = true;
+					view.RegisterPropertyChangedEvents();
 					return view;
 				} catch (Exception) {
 					return new SharpReportView();
