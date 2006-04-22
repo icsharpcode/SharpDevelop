@@ -844,7 +844,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	[ ";" ]                         (. newType.EndLocation = t.Location; 
 	                                   compilationUnit.BlockEnd();
 	                                .)
-	| /*--- struct declaration: */  (. m.Check(Modifier.StructsInterfacesEnumsDelegates); .)
+| /*--- struct declaration: */  (. m.Check(Modifier.StructsInterfacesEnumsDelegates); .)
 	( "struct"                      (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 	                                   templates = newType.Templates;
 	                                   newType.StartLocation = m.GetDeclarationLocation(t.Location);
@@ -867,7 +867,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	[ ";" ]                          (. newType.EndLocation = t.Location; 
 	                                    compilationUnit.BlockEnd();
 	                                 .)
-	| /*--- interface declaration: */ 
+| /*--- interface declaration: */ 
 	"interface"                      (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 	                                    templates = newType.Templates;
 	                                    compilationUnit.AddChild(newType);
@@ -889,7 +889,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	[ ";" ]                          (. newType.EndLocation = t.Location; 
 	                                    compilationUnit.BlockEnd();
 	                                 .)
-	| /*--- enumeration declaration: */
+| /*--- enumeration declaration: */
 	"enum"                           (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 	                                    compilationUnit.AddChild(newType);
 	                                    compilationUnit.BlockStart(newType);
@@ -903,7 +903,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	[ ";" ]                          (. newType.EndLocation = t.Location; 
 	                                    compilationUnit.BlockEnd();
 	                                 .)
-	| /*--- delegate declaration: */
+| /*--- delegate declaration: */
 	"delegate"                       (. DelegateDeclaration delegateDeclr = new DelegateDeclaration(m.Modifier, attributes);
 	                                    templates = delegateDeclr.Templates;
 	                                    delegateDeclr.StartLocation = m.GetDeclarationLocation(t.Location);
@@ -955,7 +955,7 @@ ClassBody
 		                                 Modifiers m = new Modifiers();
 		                               .)
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
-		{ MemberModifier<m> } 
+		MemberModifiers<m>
 		ClassMemberDecl<m, attributes> 
 	}
 	"}"
@@ -979,7 +979,7 @@ StructBody
 		                                   Modifiers m = new Modifiers();
 		                                 .)
 		{ AttributeSection<out section>  (. attributes.Add(section); .) }
-		{ MemberModifier<m> } 
+		MemberModifiers<m>
 		StructMemberDecl<m, attributes> 
 	}
 	"}" 
@@ -1136,7 +1136,7 @@ TypeModifier<Modifiers m>
 	| "abstract"                       (. m.Add(Modifier.Abstract, t.Location); .)
 	| "sealed"                         (. m.Add(Modifier.Sealed, t.Location); .)
 	| "static"                         (. m.Add(Modifier.Static, t.Location); .)
-	| ident                            (. if (t.val == "partial") { m.Add(Modifier.Partial, t.Location); } .)
+	| ident                            (. if (t.val == "partial") { m.Add(Modifier.Partial, t.Location); } else { Error("Unexpected identifier"); } .)
 .
 
 ClassType<out TypeReference typeRef, bool canBeUnbound>
@@ -1160,9 +1160,10 @@ IntegralType<out string name>          (. name = ""; .)
 	| "char"                           (. name = "char"; .)
 .
 
-MemberModifier<Modifiers m>
+MemberModifiers<Modifiers m>
 =
-	"abstract"                         (. m.Add(Modifier.Abstract, t.Location); .)
+	{
+	  "abstract"                       (. m.Add(Modifier.Abstract, t.Location); .)
 	| "extern"                         (. m.Add(Modifier.Extern, t.Location); .)
 	| "internal"                       (. m.Add(Modifier.Internal, t.Location); .)
 	| "new"                            (. m.Add(Modifier.New, t.Location); .)
@@ -1176,6 +1177,10 @@ MemberModifier<Modifiers m>
 	| "unsafe"                         (. m.Add(Modifier.Unsafe, t.Location); .)
 	| "virtual"                        (. m.Add(Modifier.Virtual, t.Location); .)
 	| "volatile"                       (. m.Add(Modifier.Volatile, t.Location); .)
+	| ( IF(la.kind == Tokens.Identifier && la.val == "partial")
+		ident  (. m.Add(Modifier.Partial, t.Location); .)
+	  )
+	}
 .
 
 StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
@@ -1204,8 +1209,9 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		"=" Expr<out expr>                 (. f.Initializer = expr; .)
 	} ";"                                  (. fd.EndLocation = t.EndLocation; compilationUnit.AddChild(fd); .)
 	
-	/*--- void method (procedure) declaration: */
-	| IF (NotVoidPointer())                (. m.Check(Modifier.PropertysEventsMethods); .)
+	
+|   /*--- void method (procedure) declaration: */
+	IF (NotVoidPointer())                (. m.Check(Modifier.PropertysEventsMethods); .)
 	"void"                                 (. Point startPos = t.Location; .)
 	( IF (IsExplicitInterfaceImplementation())
 		TypeName<out explicitInterface, false>
@@ -1240,7 +1246,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	                                          methodDeclaration.Body  = (BlockStatement)stmt;
 	                                       .)
 	
-	| /*--- event declaration: */   (. m.Check(Modifier.PropertysEventsMethods); .)
+|	/*--- event declaration: */     (. m.Check(Modifier.PropertysEventsMethods); .)
 		"event"                     (. EventDeclaration eventDecl = new EventDeclaration(null, null, m.Modifier, attributes, null);
 		                               eventDecl.StartLocation = t.Location;
 		                               compilationUnit.AddChild(eventDecl);
@@ -1267,8 +1273,8 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		   eventDecl.RemoveRegion = removeBlock;
 		.)
 	
-	/*--- constructor or static contructor declaration: */
-	| IF (IdentAndLPar())                  (. m.Check(Modifier.Constructors | Modifier.StaticConstructors); .)
+|   /*--- constructor or static contructor declaration: */
+	IF (IdentAndLPar())                  (. m.Check(Modifier.Constructors | Modifier.StaticConstructors); .)
 	ident (. string name = t.val; Point startPos = t.Location; .) "(" [  (. m.Check(Modifier.Constructors); .)
 	FormalParameterList<p>
 	]
@@ -1283,8 +1289,8 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	
 	( Block<out stmt> | ";" ) (. cd.Body = (BlockStatement)stmt; compilationUnit.AddChild(cd); .)
 	
-	/*--- conversion operator declaration: */
-	|                                      (. m.Check(Modifier.Operators);
+	
+|   /*--- conversion operator declaration: */   (. m.Check(Modifier.Operators);
 	                                          if (m.isNone) Error("at least one modifier must be set"); 
 	                                          bool isImplicit = true;
 	                                          Point startPos = Point.Empty;
@@ -1310,9 +1316,11 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		compilationUnit.AddChild(operatorDeclaration);
 	.)
 	
-	/*--- inner type declaration: */
-	| TypeDecl<m, attributes>
-	| Type<out type>                       (. Point startPos = t.Location;  .)
+	
+|	/*--- inner type declaration: */
+	TypeDecl<m, attributes>
+
+|	Type<out type>                       (. Point startPos = t.Location;  .)
 	(
 		/*--- operator declaration: */     (. OverloadableOperatorType op;
 		                                      m.Check(Modifier.Operators);
