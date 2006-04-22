@@ -8,6 +8,7 @@
  */
 
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 using SharpReportCore;
@@ -18,12 +19,13 @@ namespace SharpReport.Designer{
 	/// </summary>
 
 	internal class ReportDbTextControl : ReportTextControl{
+		
 		public ReportDbTextControl():base(){
 			InitializeComponent();
 			this.Size = GlobalValues.PreferedSize;
 			base.Name = this.Name;
 		}
-		
+	
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea){
 			base.Text = this.Text;
 			base.OnPaint(pea);

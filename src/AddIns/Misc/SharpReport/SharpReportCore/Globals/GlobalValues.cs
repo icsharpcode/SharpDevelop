@@ -93,9 +93,9 @@ namespace SharpReportCore {
 		public static StringFormat StandartStringFormat() {
 			StringFormat sFormat = StringFormat.GenericTypographic;
 			sFormat.FormatFlags |= StringFormatFlags.LineLimit;
-			
-			sFormat.Trimming |= StringTrimming.EllipsisCharacter;
-			sFormat.LineAlignment |= StringAlignment.Near;
+//			
+//			sFormat.Trimming |= StringTrimming.EllipsisCharacter;
+//			sFormat.LineAlignment |= StringAlignment.Near;
 			return sFormat;
 		}
 		

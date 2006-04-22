@@ -116,16 +116,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			textEditorControl.LinkClicked += delegate(object sender, LinkClickedEventArgs e) {
 				FileService.OpenFile("browser://" + e.LinkText);
 			};
-			/*textEditorControl.ShowLineNumbers   = false;
-			textEditorControl.ShowInvalidLines  = false;
-			textEditorControl.EnableFolding     = false;
-			textEditorControl.IsIconBarVisible  = false;
-			textEditorControl.Document.ReadOnly = true;
-			textEditorControl.ShowHRuler        = false;
-			textEditorControl.ShowVRuler        = false;
-			textEditorControl.ShowSpaces        = false;
-			textEditorControl.ShowTabs          = false;
-			textEditorControl.ShowEOLMarkers    = false;*/
+			
+			// auto-scrolling on RichTextBox only works when HideSelection=false.
+			// See comments to http://weblogs.asp.net/jdanforth/archive/2004/01/23/62026.aspx
+			textEditorControl.HideSelection = false;
+			
 			textEditorControl.ReadOnly = true;
 			
 			textEditorControl.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");

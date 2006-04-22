@@ -42,6 +42,19 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		}
 		
 		[Test]
+		public void CSharpNestedClassesTest()
+		{
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("class MyClass { partial class P1 {} public partial class P2 {} static class P3 {} internal static class P4 {} }");
+			Assert.IsNotNull(td);
+			Assert.AreEqual(ClassType.Class, td.Type);
+			Assert.AreEqual("MyClass", td.Name);
+			Assert.AreEqual(Modifier.Partial, ((TypeDeclaration)td.Children[0]).Modifier);
+			Assert.AreEqual(Modifier.Partial | Modifier.Public, ((TypeDeclaration)td.Children[1]).Modifier);
+			Assert.AreEqual(Modifier.Static, ((TypeDeclaration)td.Children[2]).Modifier);
+			Assert.AreEqual(Modifier.Static | Modifier.Internal, ((TypeDeclaration)td.Children[3]).Modifier);
+		}
+		
+		[Test]
 		public void CSharpSimpleStaticClassTypeDeclarationTest()
 		{
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("static class MyClass { }");

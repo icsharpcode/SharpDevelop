@@ -39,13 +39,15 @@ namespace SharpReport.Designer {
 		}
 		#region overrides
 		
-		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e) {
-			base.OnPaint(e);
-			shape.FillShape(e.Graphics,
+		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea) {
+			base.OnPaint(pea);
+			base.DrawEdges (pea);
+			base.DrawDecorations(pea);
+			shape.FillShape(pea.Graphics,
 			                new SolidFillPattern(this.BackColor),
 			                (RectangleF)this.ClientRectangle);
 			
-			shape.DrawShape (e.Graphics,
+			shape.DrawShape (pea.Graphics,
 			                 new BaseLine (this.ForeColor,base.DashStyle,base.Thickness),
 			                 (RectangleF)this.ClientRectangle);
 		}

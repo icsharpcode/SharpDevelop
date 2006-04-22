@@ -130,6 +130,7 @@ namespace SharpReportCore {
 			this.RemoveSectionEvents();
 			
 		}
+		
 		//TODO how should we handle ReportFooter, print it on an seperate page ????
 		private void  DoReportFooter (PointF startAt,ReportPageEventArgs rpea){
 			base.MeasureReportFooter(rpea);
@@ -155,7 +156,7 @@ namespace SharpReportCore {
 		}
 		
 		protected override void BeginPrintPage(object sender, ReportPageEventArgs rpea) {
-			
+			System.Console.WriteLine("!!! Beginprintpage");
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
@@ -243,6 +244,7 @@ namespace SharpReportCore {
 		
 		
 		protected override void PrintPageEnd(object sender, ReportPageEventArgs rpea) {
+			System.Console.WriteLine("!! Page End");
 			this.DoPageEnd (rpea);
 		}
 	

@@ -114,7 +114,6 @@ namespace ICSharpCode.CodeCoverage
 		void RunNCover()
 		{
 			CodeCoverageService.ClearResults();
-			CodeCoverageService.CodeCoverageHighlighted = true;
 			
 			Category.ClearText();
 			TaskService.ClearExceptCommentTasks();

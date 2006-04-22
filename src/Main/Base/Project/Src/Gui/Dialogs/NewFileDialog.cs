@@ -383,6 +383,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return;
 				}
 				if (Path.IsPathRooted(parsedFileName)) {
+					Directory.CreateDirectory(Path.GetDirectoryName(parsedFileName));
 					window.ViewContent.Save(parsedFileName);
 				}
 			}

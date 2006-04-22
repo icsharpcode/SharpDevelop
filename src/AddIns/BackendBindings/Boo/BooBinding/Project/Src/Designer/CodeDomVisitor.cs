@@ -199,29 +199,73 @@ namespace Grunwald.BooBinding.Designer
 			_class.Members.Add(method);
 		}
 		
+		static CodeBinaryOperatorType GetOperatorType(BinaryOperatorType op)
+		{
+			switch (op) {
+				case BinaryOperatorType.Addition:
+					return CodeBinaryOperatorType.Add;
+				case BinaryOperatorType.And:
+					return CodeBinaryOperatorType.BooleanAnd;
+				case BinaryOperatorType.BitwiseAnd:
+					return CodeBinaryOperatorType.BitwiseAnd;
+				case BinaryOperatorType.BitwiseOr:
+					return CodeBinaryOperatorType.BitwiseOr;
+				case BinaryOperatorType.Division:
+					return CodeBinaryOperatorType.Divide;
+				case BinaryOperatorType.Equality:
+					return CodeBinaryOperatorType.ValueEquality;
+				case BinaryOperatorType.GreaterThan:
+					return CodeBinaryOperatorType.GreaterThan;
+				case BinaryOperatorType.GreaterThanOrEqual:
+					return CodeBinaryOperatorType.GreaterThanOrEqual;
+				case BinaryOperatorType.LessThan:
+					return CodeBinaryOperatorType.LessThan;
+				case BinaryOperatorType.LessThanOrEqual:
+					return CodeBinaryOperatorType.LessThanOrEqual;
+				case BinaryOperatorType.Modulus:
+					return CodeBinaryOperatorType.Modulus;
+				case BinaryOperatorType.Multiply:
+					return CodeBinaryOperatorType.Multiply;
+				case BinaryOperatorType.Or:
+					return CodeBinaryOperatorType.BooleanOr;
+				case BinaryOperatorType.Subtraction:
+					return CodeBinaryOperatorType.Subtract;
+				default:
+					return CodeBinaryOperatorType.Assign;
+			}
+		}
+		
 		public override void OnBinaryExpression(BinaryExpression node)
 		{
-			BinaryOperatorType op = node.Operator;
-			if (op == BinaryOperatorType.Assign) {
-				_expression = null;
+			_expression = null;
+			CodeBinaryOperatorType op = GetOperatorType(node.Operator);
+			if (op == CodeBinaryOperatorType.Assign) {
+				// non-standard op
+				if (node.Operator == BinaryOperatorType.Assign) {
+					node.Left.Accept(this);
+					CodeExpression left = _expression;
+					_expression = null;
+					node.Right.Accept(this);
+					if (left != null && _expression != null)
+						_statements.Add(new CodeAssignStatement(left, _expression));
+					_expression = null;
+				} else if (node.Operator == BinaryOperatorType.InPlaceAddition) {
+					node.Left.Accept(this);
+					CodeEventReferenceExpression left = _expression as CodeEventReferenceExpression;
+					_expression = null;
+					node.Right.Accept(this);
+					if (left != null && _expression != null)
+						_statements.Add(new CodeAttachEventStatement(left, _expression));
+					_expression = null;
+				} else {
+					LoggingService.Warn("CodeDomVisitor: ignoring unknown Binary Operator" + node.Operator);
+				}
+			} else {
 				node.Left.Accept(this);
 				CodeExpression left = _expression;
 				_expression = null;
 				node.Right.Accept(this);
-				if (left != null && _expression != null)
-					_statements.Add(new CodeAssignStatement(left, _expression));
-				_expression = null;
-			} else if (op == BinaryOperatorType.InPlaceAddition) {
-				_expression = null;
-				node.Left.Accept(this);
-				CodeEventReferenceExpression left = _expression as CodeEventReferenceExpression;
-				_expression = null;
-				node.Right.Accept(this);
-				if (left != null && _expression != null)
-					_statements.Add(new CodeAttachEventStatement(left, _expression));
-				_expression = null;
-			} else {
-				LoggingService.Warn("CodeDomVisitor: ignoring unknown Binary Operator" + op);
+				_expression = new CodeBinaryOperatorExpression(left, op, _expression);
 			}
 		}
 		
@@ -464,7 +508,9 @@ namespace Grunwald.BooBinding.Designer
 				int count = Math.Min(m.Parameters.Count, cmie.Parameters.Count);
 				for (int i = 0; i < count; i++) {
 					CodeArrayCreateExpression cace = cmie.Parameters[i] as CodeArrayCreateExpression;
-					if (cace != null) {
+					if (cace != null && (bool)cace.UserData["unknownType"]
+					    && m.Parameters[i].ReturnType.ArrayDimensions > 0)
+					{
 						cace.CreateType = new CodeTypeReference(m.Parameters[i].ReturnType.FullyQualifiedName);
 					}
 				}
@@ -517,6 +563,7 @@ namespace Grunwald.BooBinding.Designer
 				initializers[i] = _expression;
 			}
 			_expression = new CodeArrayCreateExpression(createType.FullyQualifiedName, initializers);
+			_expression.UserData["unknownType"] = node.Type != null;
 		}
 	}
 }

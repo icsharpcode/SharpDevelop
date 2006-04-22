@@ -26,6 +26,11 @@ namespace Grunwald.BooBinding.CodeCompletion
 			DeclarationFound(node.Declaration.Name, node.Declaration.Type, node.Initializer, node.LexicalInfo);
 		}
 		
+		public override void OnParameterDeclaration(ParameterDeclaration node)
+		{
+			DeclarationFound(node.Name, node.Type, null, node.LexicalInfo);
+		}
+		
 		protected override void OnError(Node node, Exception error)
 		{
 			MessageService.ShowError(error, "VariableLookupVisitor: error processing " + node);

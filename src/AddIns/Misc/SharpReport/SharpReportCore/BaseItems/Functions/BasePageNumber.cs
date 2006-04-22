@@ -41,7 +41,7 @@ namespace SharpReportCore {
 				//Printout the textpart
 				base.PrintTheStuff (rpea,this.Text,rect);
 				//here we print the functionpart
-				StringFormat fmt = StandartStringFormat;
+				StringFormat fmt = StringFormat;
 
 				fmt.Alignment = StringAlignment.Far;
 				fmt.LineAlignment = StringAlignment.Near;

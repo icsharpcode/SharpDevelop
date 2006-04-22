@@ -21,10 +21,8 @@ namespace SharpReport.ReportItems{
 	
 	public class ReportDataItem : BaseDataItem ,IDesignable{
 								
-		
 		private ReportDbTextControl visualControl;
-//		bool initDone;
-		
+
 		#region Constructors
 		
 		public ReportDataItem() : this(String.Empty){
@@ -40,7 +38,7 @@ namespace SharpReport.ReportItems{
 			visualControl = new ReportDbTextControl();
 			
 			this.visualControl.Text = base.ColumnName;
-			visualControl.StringFormat = base.StandartStringFormat;
+			visualControl.StringFormat = base.StringFormat;
 			this.Text = base.ColumnName;
 			
 			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
@@ -64,8 +62,10 @@ namespace SharpReport.ReportItems{
 		#endregion
 		
 		#region events's
+		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
 			ItemsHelper.UpdateControlFromTextBase(this.visualControl,this);
+			this.visualControl.StringFormat = base.StringFormat;
 			this.HandlePropertyChanged(e.PropertyName);
 		}
 		
@@ -96,9 +96,8 @@ namespace SharpReport.ReportItems{
 		}
 		#endregion
 		
-
-		
 		#region Property's
+		
 		public override Size Size {
 			get {
 				return base.Size;
@@ -171,6 +170,7 @@ namespace SharpReport.ReportItems{
 		
 		public new event PropertyChangedEventHandler PropertyChanged;
 		public event EventHandler <EventArgs> Selected;
+		
 		#endregion
 		
 		/*

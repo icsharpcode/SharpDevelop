@@ -97,8 +97,8 @@ namespace SharpReport{
 								columnCollecion = dataManager.AvailableFields;
 							}
 							
-						} catch (Exception e) {
-							throw e;
+						} catch (Exception ) {
+							throw;
 						} finally {
 							System.Console.WriteLine("ReportManager:ReadColumnCollection in finally");
 						}
@@ -125,6 +125,10 @@ namespace SharpReport{
 		/// </summary>
 		/// <param name="model">ReportModel</param>
 		public void CreatePageHeader (ReportModel model) {
+			if (model == null) {
+				throw new ArgumentNullException("model");
+			}
+			
 			BaseSection section = model.PageHeader;
 			section.SuspendLayout();
 			SharpReport.Designer.IDesignableFactory gf = new SharpReport.Designer.IDesignableFactory();
@@ -146,6 +150,10 @@ namespace SharpReport{
 		/// <param name="model">ReportModel</param>
 		
 		public void CreatePageNumber (ReportModel model) {
+			if (model == null) {
+				throw new ArgumentNullException("model");
+			}
+			
 			BaseSection section = model.PageFooter;
 			section.SuspendLayout();
 			FunctionFactory gf = new FunctionFactory();
@@ -181,6 +189,10 @@ namespace SharpReport{
 		/// <param name="model"><see cref="">ReportModel</see></param>
 		/// <param name="showInUserControl"></param>
 		public void ReportPreview (ReportModel model,bool standAlone) {
+			if (model == null) {
+				throw new ArgumentNullException("model");
+			}
+			
 			try {
 				AbstractRenderer abstr = this.BuildStandartRenderer (model);
 				if (abstr != null) {
@@ -194,7 +206,7 @@ namespace SharpReport{
 		
 		private AbstractRenderer BuildStandartRenderer (ReportModel model) {
 			if (model == null) {
-				throw new ArgumentException("SharpReportManager:BuildStandartRenderer 'ReportModel'");
+				throw new ArgumentNullException("model");
 			}
 			
 			if (base.ConnectionObject == null) {
@@ -207,10 +219,10 @@ namespace SharpReport{
 		
 		public AbstractRenderer GetRendererForPushDataReports (ReportModel model,DataSet dataSet) {
 			if (model == null) {
-				throw new ArgumentException("SharpReportManager:GetRendererForPushDataReports 'ReportModel'");
+				throw new ArgumentNullException("model");
 			}
 			if (dataSet == null) {
-				throw new ArgumentException("SharpReportManager:GetRendererForPushDataReports 'DataSet'");
+				throw new ArgumentNullException("dataSet");
 			}
 			return base.SetupPushDataRenderer(model,dataSet.Tables[0]);
 		}
@@ -220,9 +232,11 @@ namespace SharpReport{
 		                                   DataSet dataSet,
 		                                   bool standAlone) {
 			if (model == null) {
-				throw new ArgumentException("SharpReportManager:ReportPreviewPushData 'ReportModel'");
+				throw new ArgumentNullException("model");
 			}
-			
+			if (dataSet == null) {
+				throw new ArgumentNullException("dataSet");
+			}
 			try {
 				AbstractRenderer abstr = GetRendererForPushDataReports (model,dataSet);
 				if (abstr != null) {

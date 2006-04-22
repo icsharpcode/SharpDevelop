@@ -112,7 +112,6 @@ namespace ICSharpCode.TextEditor
 			ResizeRedraw = true;
 			
 			Document.DocumentChanged += new DocumentEventHandler(AdjustScrollBars);
-			SetStyle(ControlStyles.Selectable, true);
 		}
 		
 		protected override void Dispose(bool disposing)
@@ -321,6 +320,27 @@ namespace ICSharpCode.TextEditor
 			textArea.Caret.Position = new Point(column, line);
 			textArea.SetDesiredColumn();
 			ScrollToCaret();
+		}
+		
+		public event MouseEventHandler ShowContextMenu;
+		
+		protected override void WndProc(ref Message m)
+		{
+			if (m.Msg == 0x007B) { // handle WM_CONTEXTMENU
+				if (ShowContextMenu != null) {
+					long lParam = m.LParam.ToInt64();
+					int x = unchecked((short)(lParam & 0xffff));
+					int y = unchecked((short)((lParam & 0xffff0000) >> 16));
+					if (x == -1 && y == -1) {
+						Point pos = Caret.ScreenPosition;
+						ShowContextMenu(this, new MouseEventArgs(MouseButtons.None, 0, pos.X, pos.Y + textArea.TextView.FontHeight, 0));
+					} else {
+						Point pos = PointToClient(new Point(x, y));
+						ShowContextMenu(this, new MouseEventArgs(MouseButtons.Right, 1, pos.X, pos.Y, 0));
+					}
+				}
+			}
+			base.WndProc(ref m);
 		}
 	}
 }

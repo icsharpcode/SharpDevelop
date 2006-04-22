@@ -68,22 +68,35 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			
 			// Include menu for member that has been clicked on
-			ResolveResult rr = ResolveAtCaret(textEditorControl, textArea);
+			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textEditorControl.FileName);
+			ExpressionResult expressionResult;
+			ResolveResult rr;
+			int insertIndex = resultItems.Count;	// Insert items at this position to get the outermost expression first, followed by the inner expressions (if any).
+			expressionResult = FindFullExpressionAtCaret(textArea, expressionFinder);
+		repeatResolve:
+			rr = ResolveExpressionAtCaret(textArea, expressionResult);
 			item = null;
 			if (rr is MethodResolveResult) {
 				item = MakeItem(definitions, ((MethodResolveResult)rr).GetMethodIfSingleOverload());
 			} else if (rr is MemberResolveResult) {
-				item = MakeItem(definitions, ((MemberResolveResult)rr).ResolvedMember);
+				MemberResolveResult mrr = (MemberResolveResult)rr;
+				item = MakeItem(definitions, mrr.ResolvedMember);
+				if (RefactoringService.FixIndexerExpression(expressionFinder, ref expressionResult, mrr)) {
+					if (item != null) {
+						resultItems.Insert(insertIndex, item);
+					}
+					// Include menu for the underlying expression of the
+					// indexer expression as well.
+					goto repeatResolve;
+				}
 			} else if (rr is TypeResolveResult) {
 				item = MakeItem(definitions, ((TypeResolveResult)rr).ResolvedClass);
 			} else if (rr is LocalResolveResult) {
 				item = MakeItem((LocalResolveResult)rr, caretLine + 1 == ((LocalResolveResult)rr).Field.Region.BeginLine);
+				insertIndex = 0;	// Insert local variable menu item at the topmost position.
 			}
 			if (item != null) {
-				if (rr is LocalResolveResult)
-					resultItems.Insert(0, item);
-				else
-					resultItems.Add(item);
+				resultItems.Insert(insertIndex, item);
 			}
 			
 			// Include menu for current class and method
@@ -201,16 +214,19 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return item;
 		}
 		
-		ResolveResult ResolveAtCaret(TextEditorControl textEditorControl, TextArea textArea)
+		static ExpressionResult FindFullExpressionAtCaret(TextArea textArea, IExpressionFinder expressionFinder)
 		{
-			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textEditorControl.FileName);
-			if (expressionFinder == null)
-				return null;
-			IDocument doc = textArea.Document;
-			string textContent = doc.TextContent;
-			ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, textArea.Caret.Offset);
+			if (expressionFinder != null) {
+				return expressionFinder.FindFullExpression(textArea.Document.TextContent, textArea.Caret.Offset);
+			} else {
+				return new ExpressionResult(null);
+			}
+		}
+		
+		static ResolveResult ResolveExpressionAtCaret(TextArea textArea, ExpressionResult expressionResult)
+		{
 			if (expressionResult.Expression != null) {
-				return ParserService.Resolve(expressionResult, textArea.Caret.Line + 1, textArea.Caret.Column + 1, textArea.MotherTextEditorControl.FileName, textContent);
+				return ParserService.Resolve(expressionResult, textArea.Caret.Line + 1, textArea.Caret.Column + 1, textArea.MotherTextEditorControl.FileName, textArea.Document.TextContent);
 			}
 			return null;
 		}

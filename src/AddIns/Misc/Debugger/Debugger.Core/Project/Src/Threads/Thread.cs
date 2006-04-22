@@ -249,6 +249,29 @@ namespace Debugger
 			return corFrameEnum.Next();
 		}
 		
+		internal void CheckExpirationOfFunctions()
+		{
+			ICorDebugChainEnum corChainEnum = corThread.EnumerateChains();
+			uint maxChainIndex = corChainEnum.Count - 1;
+			
+			ICorDebugFrameEnum corFrameEnum = corChainEnum.Next().EnumerateFrames();
+			uint maxFrameIndex = corFrameEnum.Count - 1;
+			
+			List<Function> expiredFunctions = new List<Function>();
+			
+			foreach(KeyValuePair<uint, Chain> chain in chainCache) {
+				if (chain.Key < maxChainIndex) continue;
+				foreach(KeyValuePair<uint, Function> func in chain.Value.Frames) {
+					if (chain.Key == maxChainIndex && func.Key <= maxFrameIndex) continue;
+					expiredFunctions.Add(func.Value);
+				}
+			}
+			
+			foreach(Function f in expiredFunctions) {
+				f.OnExpired(EventArgs.Empty);
+			}
+		}
+		
 		public Function SelectedFunction {
 			get {
 				return selectedFunction;

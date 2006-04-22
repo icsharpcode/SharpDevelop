@@ -2797,8 +2797,8 @@ CaseClauses<out List<CaseLabel> caseClauses>
 		caseClauses = new List<CaseLabel>();
 		CaseLabel caseClause = null;
 	.) =
-	CaseClause<out caseClause> (. caseClauses.Add(caseClause); .)
-	{ "," CaseClause<out caseClause> (. caseClauses.Add(caseClause); .) }
+	CaseClause<out caseClause> (. if (caseClause != null) { caseClauses.Add(caseClause); } .)
+	{ "," CaseClause<out caseClause> (. if (caseClause != null) { caseClauses.Add(caseClause); } .) }
 	.
 
 /* 19.8.2 */

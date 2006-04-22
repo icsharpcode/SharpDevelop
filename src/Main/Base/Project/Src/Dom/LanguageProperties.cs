@@ -115,6 +115,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		/// <summary>
+		/// Gets the token that denotes a possible beginning of an indexer expression.
+		/// </summary>
+		public virtual string IndexerExpressionStartToken {
+			get {
+				return "[";
+			}
+		}
+		
 		public virtual bool ShowInNamespaceCompletion(IClass c)
 		{
 			return true;
@@ -184,6 +193,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			public override bool CanImportClasses {
 				get {
 					return true;
+				}
+			}
+			
+			public override string IndexerExpressionStartToken {
+				get {
+					return "(";
 				}
 			}
 			

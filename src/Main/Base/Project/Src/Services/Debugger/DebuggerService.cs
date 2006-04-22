@@ -20,6 +20,7 @@ using ICSharpCode.TextEditor;
 using System.Drawing;
 using System.Windows.Forms;
 using BM = ICSharpCode.SharpDevelop.Bookmarks;
+using ITextEditorControlProvider = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider;
 
 namespace ICSharpCode.Core
 {
@@ -237,8 +238,8 @@ namespace ICSharpCode.Core
 		
 		static void ViewContentOpened(object sender, ViewContentEventArgs e)
 		{
-			if (e.Content.Control is TextEditor.TextEditorControl) {
-				TextArea textArea = ((TextEditor.TextEditorControl)e.Content.Control).ActiveTextAreaControl.TextArea;
+			if (e.Content is ITextEditorControlProvider) {
+				TextArea textArea = ((ITextEditorControlProvider)e.Content).TextEditorControl.ActiveTextAreaControl.TextArea;
 				
 				textArea.IconBarMargin.MouseDown += IconBarMouseDown;
 				textArea.ToolTipRequest          += TextAreaToolTipRequest;
@@ -248,8 +249,8 @@ namespace ICSharpCode.Core
 		
 		static void ViewContentClosed(object sender, ViewContentEventArgs e)
 		{
-			if (e.Content.Control is TextEditor.TextEditorControl) {
-				TextArea textArea = ((TextEditor.TextEditorControl)e.Content.Control).ActiveTextAreaControl.TextArea;
+			if (e.Content is ITextEditorControlProvider) {
+				TextArea textArea = ((ITextEditorControlProvider)e.Content).TextEditorControl.ActiveTextAreaControl.TextArea;
 				
 				textArea.IconBarMargin.MouseDown -= IconBarMouseDown;
 				textArea.ToolTipRequest          -= TextAreaToolTipRequest;
@@ -311,8 +312,8 @@ namespace ICSharpCode.Core
 						return;
 					string textContent = doc.TextContent;
 					ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, seg.Offset + logicPos.X);
-					string expression = expressionResult.Expression;
-					if (expression != null && expression.Length > 0) {
+					string expression = (expressionResult.Expression ?? "").Trim();
+					if (expression.Length > 0) {
 						// Look if it is variable
 						ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, logicPos.X + 1, textArea.MotherTextEditorControl.FileName, textContent);
 						bool debuggerCanShowValue;
@@ -446,6 +447,7 @@ namespace ICSharpCode.Core
 				text.Append(member.ToString());
 			}
 			if (tryDisplayValue && currentDebugger != null) {
+				LoggingService.Info("asking debugger for value of '" + expression + "'");
 				string currentValue = currentDebugger.GetValueAsString(expression);
 				if (currentValue != null) {
 					debuggerCanShowValue = true;

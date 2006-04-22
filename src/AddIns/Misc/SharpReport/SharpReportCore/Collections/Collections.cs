@@ -219,4 +219,30 @@ namespace SharpReportCore{
 		}
 	}
 	
+	/*
+	/// <summary>
+	/// This class holds a COllection <see cref="RowItem"></see>
+	/// used in <see cref="TableItem"></see></summary>
+	public class RowItemCollection : List<RowItem> {
+		
+		public event EventHandler<CollectionItemEventArgs<IItemRenderer>> Added;
+		public event EventHandler<CollectionItemEventArgs<IItemRenderer>> Removed;
+	
+		public new void Add(IItemRenderer item){
+			base.Add(item);
+			this.OnAdded (item);
+		}
+		
+		
+		
+		public new bool Remove(IItemRenderer item)
+		{
+			if (base.Remove (item)) {
+				this.OnRemoved(item);
+				return true;
+			}
+			return false;
+		}
+	}
+	*/
 }

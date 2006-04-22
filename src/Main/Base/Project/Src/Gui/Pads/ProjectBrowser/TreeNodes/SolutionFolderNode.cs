@@ -158,7 +158,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject.GetDataPresent(typeof(ISolutionFolder).ToString())) {
 				string guid = dataObject.GetData(typeof(ISolutionFolder).ToString()).ToString();
 				ISolutionFolder solutionFolder = container.Solution.GetSolutionFolder(guid);
-				if (solutionFolder == container)
+				if (solutionFolder == null || solutionFolder == container)
 					return false;
 				if (solutionFolder is ISolutionFolderContainer) {
 					return solutionFolder.Parent != container

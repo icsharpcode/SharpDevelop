@@ -118,6 +118,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						if (FileUtility.IsEqualFileName(fileNode.FileName, copiedFileName)) {
 							if (fileNode.FileNodeStatus == FileNodeStatus.Missing) {
 								fileNode.FileNodeStatus = FileNodeStatus.InProject;
+							} else if (fileNode.FileNodeStatus == FileNodeStatus.None) {
+								return IncludeFileInProject.IncludeFileNode(fileNode);
 							}
 							return fileNode.ProjectItem as FileProjectItem;
 						}

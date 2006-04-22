@@ -316,11 +316,11 @@ namespace SharpReportCore {
 					BaseDataItem it = item as BaseDataItem;
 					str = it.DbValue;
 				}
-		// TODO need a much better way		
+			
 				sizeF = e.PrintPageEventArgs.Graphics.MeasureString(str,
 				                                                    myItem.Font,
 				                                                    myItem.Size.Width,
-				                                                    GlobalValues.StandartStringFormat());
+				                                                    myItem.StringFormat);
 			} else {
 				sizeF = new SizeF (item.Size.Width,item.Size.Height);
 			}

@@ -37,22 +37,32 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			return (T)parser.CompilationUnit.Children[0];
 		}
 		
-		public static T ParseTypeMember<T>(string typeMember) where T : INode
+		public static T ParseTypeMember<T>(string typeMember, bool expectErrors) where T : INode
 		{
-			TypeDeclaration td = ParseGlobal<TypeDeclaration>("Class TestClass\n " + typeMember + "\n End Class\n");
+			TypeDeclaration td = ParseGlobal<TypeDeclaration>("Class TestClass\n " + typeMember + "\n End Class\n", expectErrors);
 			Assert.IsTrue(td.Children.Count > 0);
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(td.Children[0].GetType()), String.Format("Parsed expression was {0} instead of {1} ({2})", td.GetType(), type, td));
 			return (T)td.Children[0];
 		}
 		
-		public static T ParseStatement<T>(string statement) where T : INode
+		public static T ParseTypeMember<T>(string typeMember) where T : INode
 		{
-			MethodDeclaration md = ParseTypeMember<MethodDeclaration>("Sub A()\n " + statement + "\nEnd Sub\n");
+			return ParseTypeMember<T>(typeMember, false);
+		}
+		
+		public static T ParseStatement<T>(string statement, bool expectErrors) where T : INode
+		{
+			MethodDeclaration md = ParseTypeMember<MethodDeclaration>("Sub A()\n " + statement + "\nEnd Sub\n", expectErrors);
 			Assert.IsTrue(md.Body.Children.Count > 0);
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(md.Body.Children[0].GetType()), String.Format("Parsed expression was {0} instead of {1} ({2})", md.GetType(), type, md));
 			return (T)md.Body.Children[0];
+		}
+		
+		public static T ParseStatement<T>(string statement) where T : INode
+		{
+			return ParseStatement<T>(statement, false);
 		}
 		
 		public static T ParseExpression<T>(string expr) where T : INode

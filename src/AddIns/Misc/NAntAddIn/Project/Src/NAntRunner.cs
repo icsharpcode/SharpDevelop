@@ -185,6 +185,7 @@ namespace ICSharpCode.NAntAddIn
 			
 			if (OutputLineReceived != null) {
 				runner.OutputLineReceived += new LineReceivedEventHandler(OnOutputLineReceived);
+				runner.ErrorLineReceived += new LineReceivedEventHandler(OnOutputLineReceived);
 			}
 			runner.Start(nantFileName, arguments);	
 			OnNAntStarted();

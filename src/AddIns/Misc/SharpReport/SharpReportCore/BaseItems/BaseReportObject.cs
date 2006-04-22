@@ -152,6 +152,7 @@ namespace SharpReportCore {
 			}
 		}
 		
+		[Category("Appearance")]
 		public virtual Color BackColor {
 			get {
 				return backColor;

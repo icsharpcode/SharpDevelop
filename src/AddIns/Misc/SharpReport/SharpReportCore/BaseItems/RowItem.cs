@@ -21,8 +21,10 @@ namespace SharpReportCore{
 	public class RowItem:BaseReportItem,IContainerItem{
 		private string tableName;
 		
-		ReportItemCollection items;
-		Padding padding;
+		private ReportItemCollection items;
+		private Padding padding;
+		private Color secondaryBackColor;
+		private int changeBackColorEveryNRow;
 		
 		public RowItem():this (String.Empty){
 		}
@@ -33,8 +35,7 @@ namespace SharpReportCore{
 			this.Items.Added += OnAdded;
 		}
 		
-		void OnAdded (object sender, CollectionItemEventArgs<IItemRenderer> e){
-			
+		void OnAdded (object sender, CollectionItemEventArgs<IItemRenderer> e){			
 			System.Console.WriteLine("");
 			System.Console.WriteLine("RowItem:OnAdded");
 		}
@@ -90,19 +91,32 @@ namespace SharpReportCore{
 		
 	
 		#region properties
-	
-		public string TableName {
+		
+		
+		
+		[Category("Appearance"),
+		 Description("Change the Backcolor on every 'N' Row")]
+		public Color SecondaryBackColor {
 			get {
-				
-				return tableName;
+				return this.secondaryBackColor;
 			}
 			set {
-				tableName = value;
+				this.secondaryBackColor = value;
+				base.NotifyPropertyChanged("SecondaryBackColor");
 			}
 		}
 		
-		
-		
+		[Category("Appearance")]
+		public int ChangeBackColorEveryNRow {
+			get {
+				return changeBackColorEveryNRow;
+			}
+			set {
+				changeBackColorEveryNRow = value;
+				base.NotifyPropertyChanged("ChangeBackColorEveryNRow");
+				                         
+			}
+		}
 		
 		#endregion
 		
@@ -114,11 +128,11 @@ namespace SharpReportCore{
 			}
 			set {
 				padding = value;
+				base.NotifyPropertyChanged("Padding");
 			}
 		}
 		
 		public bool IsValidChild(BaseReportItem childControl){
-//			BaseDataItem bdi = childControl as BaseDataItem;
 			BaseReportItem bdi = childControl as BaseDataItem;
 			if (bdi != null) {
 				return true;

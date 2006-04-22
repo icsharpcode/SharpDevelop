@@ -15,7 +15,8 @@
 
 	<!-- Actions -->
 	<Actions>
-		<Open filename = ".\Source\Main.cs"/>
+		<Open filename = ".\Default.aspx"/>
+		<Open filename = ".\Default.aspx.cs"/>
 	</Actions>
 
 	<Combine name = "${ProjectName}" directory = ".">
@@ -41,7 +42,7 @@
 
 	<Files>
 <!--*************************************************************************-->
-		<File name=".\Source\Main.cs"><![CDATA[${StandardHeader.C#}
+		<File name=".\Default.aspx.cs" dependentUpon="Default.aspx"><![CDATA[${StandardHeader.C#}
 
 using System;
 using System.Collections;
@@ -59,7 +60,7 @@ namespace ${StandardNamespace}
 	/// <summary>
 	/// Description of MainForm.
 	/// </summary>
-	public class Main : Page
+	public class Default : Page
 	{	
 		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 		#region Data
@@ -138,7 +139,7 @@ namespace ${StandardNamespace}
 	}
 }]]></File>
 <!--*************************************************************************-->
-		<File name=".\Source\AssemblyInfo.cs">
+		<File name=".\AssemblyInfo.cs">
 			<![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -170,11 +171,11 @@ using System.Runtime.CompilerServices;
 <!--*************************************************************************-->
 		<File name="Global.asax" language="HTML">
 			<![CDATA[<%@ Application Codebehind="Global.cs"
-	Inherits="${ProjectName}.Global"
+	Inherits="${StandardNamespace}.Global"
 %>
 ]]></File>
 <!--*************************************************************************-->
-		<File name=".\Source\Global.cs">
+		<File name=".\Global.asax.cs" dependentUpon="Global.asax">
 			<![CDATA[
 using System;
 using System.Collections;
@@ -258,36 +259,30 @@ namespace ${StandardNamespace}
 }
 ]]></File>
 <!--*************************************************************************-->
-		<File name="Main.aspx" language="HTML"><![CDATA[<%@ Page
-	language="c#"
-	Codebehind="Main.cs"
-	AutoEventWireup="false"
-	Inherits="${ProjectName}.Main"
-	validateRequest="false"
-	EnableSessionState="false"
-	debug="true"
-	trace="false"
+		<File name="Default.aspx" language="HTML"><![CDATA[<%@ Page
+	Language           = "C#"
+	AutoEventWireup    = "false"
+	Inherits           = "${StandardNamespace}.Default"
+	ValidateRequest    = "false"
+	EnableSessionState = "false"
 %>
 
-<!--
-<--%@ Register TagPrefix="???" Namespace="${StandardNamespace}" Assembly="${StandardNamespace}" %>
--->
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmls="http://www.w3.org/1999/xhtml">
 
-<Html>
-	<Head>
-		<title>Main</title>
+<html>
+	<head>
+		<title>${ClassName}</title>
 
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 		<meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
-		
-		<LINK href="${ProjectName}.css" type="text/css" rel="stylesheet">
 
-	</Head>
-	<Body>
+		<link href="${StandardNamespace}.css" type="text/css" rel="stylesheet">
+		
+	</head>
+	<body>
 		<form id="Form1" method="post" runat="server">
 		<!-- Site Code goes here! -->
 			<table>
@@ -327,7 +322,7 @@ namespace ${StandardNamespace}
 </Html>
 ]]></File>
 <!--*************************************************************************-->
-		<File name="${ProjectName}.css" language="HTML">
+		<File name="${StandardNamespace}.css" language="HTML">
 			<![CDATA[/*----------------------------------------------*/
 BODY
 {	font-family: Verdana, Arial;

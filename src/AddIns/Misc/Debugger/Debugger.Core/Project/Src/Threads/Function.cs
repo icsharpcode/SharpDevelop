@@ -27,7 +27,7 @@ namespace Debugger
 		
 		Stepper stepOutStepper;
 		
-		bool steppedOut;
+		bool steppedOut = false;
 		Thread thread;
 		uint chainIndex;
 		uint frameIndex;
@@ -84,10 +84,13 @@ namespace Debugger
 		/// </summary>
 		public event EventHandler Expired;
 		
-		protected virtual void OnExpired(EventArgs e)
+		internal protected virtual void OnExpired(EventArgs e)
 		{
-			if (Expired != null) {
-				Expired(this, e);
+			if (!steppedOut) {
+				steppedOut = true;
+				if (Expired != null) {
+					Expired(this, e);
+				}
 			}
 		}
 
@@ -122,7 +125,6 @@ namespace Debugger
 			stepOutStepper.CorStepper.StepOut();
 			stepOutStepper.PauseWhenComplete = false;
 			stepOutStepper.StepComplete += delegate {
-				steppedOut = true;
 				OnExpired(EventArgs.Empty);
 			};
 		}

@@ -19,7 +19,7 @@ namespace SharpReport.Designer
 	/// </summary>
 	internal class FunctionControl : ReportControlBase {
 		string functionValue;
-		
+		StringFormat stringFormat;
 		public FunctionControl()
 		{
 			InitializeComponent();
@@ -32,18 +32,21 @@ namespace SharpReport.Designer
 		}
 		
 		#region Overrides
-		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
+		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea)
 		{
-			base.OnPaint(e);
-			Graphics g = e.Graphics;
-
-			StringFormat f = base.StringFormat;
-			f.Alignment = base.StringAlignment;
-			g.DrawString(this.Text + functionValue,
+			base.OnPaint(pea);
+			base.DrawEdges (pea);
+			base.DrawDecorations(pea);
+			
+//			StringFormat f = base.StringFormat;
+//			f.Alignment = base.StringAlignment;
+//			f.LineAlignment = StringAlignment.Center;
+			
+			pea.Graphics.DrawString(this.Text + functionValue,
 			             this.Font, 
 			             new SolidBrush(this.ForeColor),
 			             new Rectangle(0, 0, this.Width - 1, this.Height - 1),
-			             f);
+			             this.stringFormat);
 		}
 		
 		/// <summary>
@@ -66,7 +69,14 @@ namespace SharpReport.Designer
 			}
 		}
 		
-		
+		public StringFormat StringFormat{
+			set {
+				if (this.stringFormat != value) {
+					this.stringFormat = value;
+					this.Invalidate();
+				}
+			}
+		}
 		#endregion
 		
 		#region Windows Forms Designer generated code

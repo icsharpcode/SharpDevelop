@@ -104,6 +104,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			ClearCodeCoverageResults();
 			codeCoverageControl.UpdateToolbar();
+			ClearCodeCoverageResults();
 		}
 	}
 }

@@ -5875,7 +5875,7 @@ out List<CaseLabel> caseClauses) {
 out caseClause);
 
 #line  2800 "VBNET.ATG" 
-		caseClauses.Add(caseClause); 
+		if (caseClause != null) { caseClauses.Add(caseClause); } 
 		while (la.kind == 12) {
 			lexer.NextToken();
 			CaseClause(
@@ -5883,7 +5883,7 @@ out caseClause);
 out caseClause);
 
 #line  2801 "VBNET.ATG" 
-			caseClauses.Add(caseClause); 
+			if (caseClause != null) { caseClauses.Add(caseClause); } 
 		}
 	}
 

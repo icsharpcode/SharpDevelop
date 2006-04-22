@@ -128,7 +128,7 @@ namespace ICSharpCode.Core
 			ReferenceProjectItem reference = e.ProjectItem as ReferenceProjectItem;
 			if (reference != null) {
 				try {
-					IProjectContent referencedContent = ProjectContentRegistry.GetProjectContentForReference(reference);
+					IProjectContent referencedContent = ProjectContentRegistry.GetExistingProjectContentForReference(reference);
 					if (referencedContent != null) {
 						ReferencedContents.Remove(referencedContent);
 						OnReferencedContentsChanged(EventArgs.Empty);

@@ -16,15 +16,13 @@ using System.ComponentModel;
 using SharpReportCore;
 using SharpReport.ReportItems;
 
+/// <summary>
+/// BaseControl for <see cref="ReportSection"></see>
+/// </summary>
+/// 
+
 namespace SharpReport.Designer{
-	/// <summary>
-	/// BaseControl for <see cref="ReportSection"></see>
-	/// </summary>
-	/// 
-	
-	public abstract class ReportSectionControlBase :ReportObjectControlBase
-	{
-		private System.Windows.Forms.Label titleLabel;
+	public abstract class ReportSectionControlBase :ReportObjectControlBase{
 		private System.Windows.Forms.Panel titlePanel;
 		private System.Windows.Forms.Panel splitPanel;
 		private Ruler.ctrlRuler ctrlRuler1;
@@ -40,12 +38,10 @@ namespace SharpReport.Designer{
 		private BaseReportItem draggedItem;
 		
 		public event EventHandler <EventArgs> ItemSelected;
-
 		public event ItemDragDropEventHandler ItemDragDrop;
 		public event EventHandler <SectionChangedEventArgs> SectionChanged;
 		
-		internal ReportSectionControlBase()
-		{
+		internal ReportSectionControlBase(){
 			InitializeComponent();
 			this.SetStyle(ControlStyles.DoubleBuffer |
 			              ControlStyles.UserPaint |
@@ -55,11 +51,6 @@ namespace SharpReport.Designer{
 			this.UpdateStyles();
 			caption = this.Name;
 			this.designableFactory = new IDesignableFactory();
-		}
-		
-		
-		void ReportSectionLoad(object sender, System.EventArgs e){
-			titleLabel.Text = this.GetType().Name;
 		}
 		
 		void BodyPanelSizeChanged(object sender, System.EventArgs e){
@@ -76,14 +67,13 @@ namespace SharpReport.Designer{
 		}
 		
 		
-		
-		private void TitelLabelPaint(object sender, PaintEventArgs pea) {
+		private void OnPaintTitel(object sender, PaintEventArgs pea) {
 			pea.Graphics.Clear (this.BackColor);
 			using (Brush brush = new SolidBrush(Color.Black)) {
 				pea.Graphics.DrawString (caption,
-				                       this.Font,
-				                       brush,
-				                       new PointF(0,0));
+				                         this.Font,
+				                         brush,
+				                         new PointF(this.bodyPanel.Location.X,0));
 			}
 		}
 		
@@ -106,25 +96,19 @@ namespace SharpReport.Designer{
 		
 		#region propertys
 
-		public override Control Body
-		{
+		public override Control Body{
 			get { return bodyPanel; }
 		}
 		
-		public  Control Head
-		{
+		public  Control Head{
 			get {
 				return this.titlePanel;
 			}
 		}
 		
 		public string Caption {
-			get {
-				return caption;
-			}
 			set {
 				caption = value;
-				this.titleLabel.Text = caption;
 			}
 		}
 		
@@ -147,23 +131,9 @@ namespace SharpReport.Designer{
 		
 		#endregion
 		
-		#region overrides
-		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea)
-		{
-			base.OnPaint(pea);
-			using (Pen p = new Pen(Color.Gray,5)){
-				pea.Graphics.DrawRectangle(p, 0, 0, this.Width - 1, this.Height - 1);
-			}
-		}
 		
-		protected override void OnResize (EventArgs e) {
-			base.OnResize (e);
-		}
+		#region DragDrop
 		
-		
-		#endregion
-		
-		#region dragdrop
 		private string DragObjectToString (DragEventArgs dea) {
 			if (dea.Data.GetDataPresent(typeof(System.String))){
 				return Convert.ToString (dea.Data.GetData(typeof(System.String)),
@@ -243,7 +213,7 @@ namespace SharpReport.Designer{
 				if (r.Contains(c.PointToClient(point))) {
 					IContainerItem ia = c as IContainerItem;
 					return ia;
-				} 
+				}
 			}
 			return null;
 		}
@@ -262,7 +232,6 @@ namespace SharpReport.Designer{
 			this.ctrlRuler1 = new Ruler.ctrlRuler();
 			this.splitPanel = new System.Windows.Forms.Panel();
 			this.titlePanel = new System.Windows.Forms.Panel();
-			this.titleLabel = new System.Windows.Forms.Label();
 			this.titlePanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -276,29 +245,31 @@ namespace SharpReport.Designer{
 			this.bodyPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.bodyPanel.Location = new System.Drawing.Point(24, 20);
 			this.bodyPanel.Name = "bodyPanel";
-			this.bodyPanel.Size = new System.Drawing.Size(408, 129);
+			this.bodyPanel.Size = new System.Drawing.Size(408, 131);
 			this.bodyPanel.TabIndex = 6;
+			this.bodyPanel.DragOver += new System.Windows.Forms.DragEventHandler(this.BodyPanelDragOver);
+			this.bodyPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.BodyPanelDragDrop);
 			this.bodyPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.BodyPanelDragEnter);
+			this.bodyPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.BodyPanelPaint);
 			this.bodyPanel.SizeChanged += new System.EventHandler(this.BodyPanelSizeChanged);
 			this.bodyPanel.DragLeave += new System.EventHandler(this.BodyPanelDragLeave);
-			this.bodyPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.BodyPanelPaint);
-			this.bodyPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.BodyPanelDragDrop);
-			this.bodyPanel.DragOver += new System.Windows.Forms.DragEventHandler(this.BodyPanelDragOver);
 			// 
 			// ctrlRuler1
 			// 
+			this.ctrlRuler1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			                                                               | System.Windows.Forms.AnchorStyles.Left)));
 			this.ctrlRuler1.BackColor = System.Drawing.SystemColors.Window;
 			this.ctrlRuler1.Direction = Ruler.ctrlRuler.enmDirection.enmVertikal;
-			this.ctrlRuler1.DrawFrame = false;
+			this.ctrlRuler1.DrawFrame = true;
 			this.ctrlRuler1.EndValue = 210;
-			this.ctrlRuler1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.ctrlRuler1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.ctrlRuler1.LeftMargin = 0;
 			this.ctrlRuler1.Location = new System.Drawing.Point(0, 20);
 			this.ctrlRuler1.MarginColor = System.Drawing.Color.Empty;
 			this.ctrlRuler1.Name = "ctrlRuler1";
 			this.ctrlRuler1.RightMargin = 0;
 			this.ctrlRuler1.ScaleUnit = System.Drawing.GraphicsUnit.Millimeter;
-			this.ctrlRuler1.Size = new System.Drawing.Size(24, 128);
+			this.ctrlRuler1.Size = new System.Drawing.Size(24, 131);
 			this.ctrlRuler1.StartValue = 0;
 			this.ctrlRuler1.TabIndex = 1;
 			// 
@@ -311,45 +282,33 @@ namespace SharpReport.Designer{
 			this.splitPanel.Name = "splitPanel";
 			this.splitPanel.Size = new System.Drawing.Size(432, 4);
 			this.splitPanel.TabIndex = 7;
-			this.splitPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.SplitPanelMouseUp);
 			this.splitPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SplitPanelMouseDown);
+			this.splitPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.SplitPanelMouseUp);
 			// 
 			// titlePanel
 			// 
 			this.titlePanel.BackColor = System.Drawing.SystemColors.Control;
-			this.titlePanel.Controls.Add(this.titleLabel);
 			this.titlePanel.Dock = System.Windows.Forms.DockStyle.Top;
 			this.titlePanel.Location = new System.Drawing.Point(0, 0);
 			this.titlePanel.Name = "titlePanel";
 			this.titlePanel.Size = new System.Drawing.Size(432, 20);
 			this.titlePanel.TabIndex = 5;
+			this.titlePanel.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaintTitel);
 			// 
-			// titleLabel
-			// 
-			this.titleLabel.Location = new System.Drawing.Point(24, 0);
-			this.titleLabel.Name = "titleLabel";
-			this.titleLabel.Size = new System.Drawing.Size(144, 20);
-			this.titleLabel.TabIndex = 3;
-			this.titleLabel.Text = "label1";
-			this.titleLabel.Paint += new System.Windows.Forms.PaintEventHandler(this.TitelLabelPaint);
-			// 
-			// ReportSectionControlBase
+			// UserControl1
 			// 
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.Controls.Add(this.bodyPanel);
 			this.Controls.Add(this.titlePanel);
 			this.Controls.Add(this.splitPanel);
 			this.Controls.Add(this.ctrlRuler1);
-			this.Name = "ReportSectionControlBase";
+			this.Name = "UserControl1";
 			this.Size = new System.Drawing.Size(432, 154);
-			this.Load += new System.EventHandler(this.ReportSectionLoad);
 			this.titlePanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+		
 		#endregion
-		
-		
-		
 	}
 	
 }

@@ -149,6 +149,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			string lowerFileContent = fileContent.ToLower();
 			string searchedText; // the text that is searched for
+			bool searchingIndexer = false;
 			
 			if (member == null) {
 				searchedText = parentClass.Name.ToLower();
@@ -158,28 +159,40 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				// (examples: derived classes, partial classes)
 				if (member is IMethod && ((IMethod)member).IsConstructor)
 					searchedText = parentClass.Name.ToLower();
-				else
-					searchedText = member.Name.ToLower();
+				else {
+					if (member is IProperty && ((IProperty)member).IsIndexer) {
+						searchingIndexer = true;
+						searchedText = GetIndexerExpressionStartToken(fileName);
+					} else {
+						searchedText = member.Name.ToLower();
+					}
+				}
 			}
 			
 			int pos = -1;
+			int exprPos;
 			IExpressionFinder expressionFinder = null;
 			while ((pos = lowerFileContent.IndexOf(searchedText, pos + 1)) >= 0) {
-				if (pos > 0 && char.IsLetterOrDigit(fileContent, pos - 1)) {
-					continue; // memberName is not a whole word (a.SomeName cannot reference Name)
-				}
-				if (pos < fileContent.Length - searchedText.Length - 1
-				    && char.IsLetterOrDigit(fileContent, pos + searchedText.Length))
-				{
-					continue; // memberName is not a whole word (a.Name2 cannot reference Name)
+				if (!searchingIndexer) {
+					if (pos > 0 && char.IsLetterOrDigit(fileContent, pos - 1)) {
+						continue; // memberName is not a whole word (a.SomeName cannot reference Name)
+					}
+					if (pos < fileContent.Length - searchedText.Length - 1
+					    && char.IsLetterOrDigit(fileContent, pos + searchedText.Length))
+					{
+						continue; // memberName is not a whole word (a.Name2 cannot reference Name)
+					}
+					exprPos = pos;
+				} else {
+					exprPos = pos-1;	// indexer expressions are found by resolving the part before the indexer
 				}
 				
 				if (expressionFinder == null) {
 					expressionFinder = ParserService.GetExpressionFinder(fileName);
 				}
-				ExpressionResult expr = expressionFinder.FindFullExpression(fileContent, pos);
+				ExpressionResult expr = expressionFinder.FindFullExpression(fileContent, exprPos);
 				if (expr.Expression != null) {
-					Point position = GetPosition(fileContent, pos);
+					Point position = GetPosition(fileContent, exprPos);
 				repeatResolve:
 					// TODO: Optimize by re-using the same resolver if multiple expressions were
 					// found in this file (the resolver should parse all methods at once)
@@ -189,18 +202,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 						// find reference to local variable
 						if (IsReferenceToLocalVariable(rr, member)) {
 							list.Add(new Reference(fileName, pos, searchedText.Length, expr.Expression, rr));
+						} else if (FixIndexerExpression(expressionFinder, ref expr, mrr)) {
+							goto repeatResolve;
 						}
 					} else if (member != null) {
 						// find reference to member
 						if (IsReferenceToMember(member, rr)) {
 							list.Add(new Reference(fileName, pos, searchedText.Length, expr.Expression, rr));
-						} else if (mrr != null && mrr.ResolvedMember is IProperty && ((IProperty)mrr.ResolvedMember).IsIndexer) {
-							// we got an indexer call as expression ("objectList[0].ToString()[2]")
-							// strip the index from the expression to resolve the underlying expression
-							string newExpr = expressionFinder.RemoveLastPart(expr.Expression);
-							if (newExpr.Length >= expr.Expression.Length)
-								throw new ApplicationException("new expression must be shorter than old expression");
-							expr.Expression = newExpr;
+						} else if (FixIndexerExpression(expressionFinder, ref expr, mrr)) {
 							goto repeatResolve;
 						}
 					} else {
@@ -219,6 +228,45 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 				}
 			}
+		}
+		
+		/// <summary>
+		/// Makes the given ExpressionResult point to the underlying expression if
+		/// the expression is an indexer expression.
+		/// </summary>
+		/// <returns><c>true</c>, if the expression was an indexer expression and has been changed, <c>false</c> otherwise.</returns>
+		public static bool FixIndexerExpression(IExpressionFinder expressionFinder, ref ExpressionResult expr, MemberResolveResult mrr)
+		{
+			if (mrr != null && mrr.ResolvedMember is IProperty && ((IProperty)mrr.ResolvedMember).IsIndexer) {
+				// we got an indexer call as expression ("objectList[0].ToString()[2]")
+				// strip the index from the expression to resolve the underlying expression
+				string newExpr = expressionFinder.RemoveLastPart(expr.Expression);
+				if (newExpr.Length >= expr.Expression.Length) {
+					throw new ApplicationException("new expression must be shorter than old expression");
+				}
+				expr.Expression = newExpr;
+				return true;
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// Determines the token that denotes a possible beginning of an indexer
+		/// expression in the specified file.
+		/// </summary>
+		static string GetIndexerExpressionStartToken(string fileName)
+		{
+			if (fileName != null) {
+				ParseInformation pi = ParserService.GetParseInformation(fileName);
+				if (pi != null &&
+				    pi.MostRecentCompilationUnit != null &&
+				    pi.MostRecentCompilationUnit.ProjectContent != null &&
+				    pi.MostRecentCompilationUnit.ProjectContent.Language != null) {
+					return pi.MostRecentCompilationUnit.ProjectContent.Language.IndexerExpressionStartToken;
+				}
+			}
+			LoggingService.Warn("RefactoringService: unable to determine the correct indexer expression start token for file '"+fileName+"'");
+			return LanguageProperties.CSharp.IndexerExpressionStartToken;
 		}
 		
 		static Point GetPosition(string fileContent, int pos)

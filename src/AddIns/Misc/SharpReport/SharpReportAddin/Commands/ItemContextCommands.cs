@@ -44,7 +44,7 @@ namespace SharpReportAddin.Commands {
 		/// 
 		public override void Run(){
 			if (this.IsEnabled){
-				base.View.DesignerControl.RemoveSelectedItem ();
+				base.View.RemoveSelectedItem();
 			}
 		}
 	}
