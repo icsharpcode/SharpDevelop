@@ -136,10 +136,10 @@ namespace WeifenLuo.WinFormsUI.Win32
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct CREATESTRUCT 
 	{
-		public int lpCreateParams;
-		public int hInstance;
-		public int hMenu;
-		public int hWndParent;
+        public IntPtr lpCreateParams;
+        public IntPtr hInstance;
+        public IntPtr hMenu;
+        public IntPtr hWndParent;
 		public int cy;
 		public int cx;
 		public int y;
@@ -155,20 +155,20 @@ namespace WeifenLuo.WinFormsUI.Win32
 	{
 		public string szClass;
 		public string szTitle;
-		public int hOwner;
+        public IntPtr hOwner;
 		public int x;
 		public int y;
 		public int cx;
 		public int cy;
 		public int style;
-		public int lParam;
+		public IntPtr lParam;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct WINDOWPOS 
 	{
-		public int hwnd;
-		public int hWndInsertAfter;
+		public IntPtr hwnd;
+        public IntPtr hWndInsertAfter;
 		public int x;
 		public int y;
 		public int cx;
