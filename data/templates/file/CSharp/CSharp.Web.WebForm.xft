@@ -21,7 +21,7 @@
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-		<File name="${Path}\Source\${FileNameWithoutExtension}.cs" language="C#"><![CDATA[${StandardHeader.C#}
+		<File name="${Path}/${FileName}.cs" dependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
 
 using System;
 using System.Collections;
@@ -120,35 +120,28 @@ namespace ${StandardNamespace}
 }
 ]]></File>
 		<File name="${FullName}" language="HTML"><![CDATA[<%@ Page
-	language="c#"
-	Codebehind="${FileNameWithoutExtension}.cs"
-	AutoEventWireup="false"
-	Inherits="${StandardNamespace}.${ClassName}"
-	validateRequest="false"
-	EnableSessionState="false"
-	debug="true"
-	trace="false"
+	Language           = "C#"
+	AutoEventWireup    = "false"
+	Inherits           = "${StandardNamespace}.${ClassName}"
+	ValidateRequest    = "false"
+	EnableSessionState = "false"
 %>
-
-<!--
-<--%@ Register TagPrefix="???" Namespace="${StandardNamespace}" Assembly="${StandardNamespace}" %>
--->
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmls="http://www.w3.org/1999/xhtml">
 
-<Html>
-	<Head>
-		<Title>${ClassName}</Title>
+<html>
+	<head>
+		<title>${ClassName}</title>
 
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 		<meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 
-		<LINK href="${StandardNamespace}.css" type="text/css" rel="stylesheet">
+		<link href="${StandardNamespace}.css" type="text/css" rel="stylesheet">
 		
-	</Head>
-	<Body>
+	</head>
+	<body>
 		<form id="Form_${ClassName}" method="post" runat="server">
 
 			<table>
@@ -171,7 +164,7 @@ namespace ${StandardNamespace}
 				<tr>
 					<td colspan="2">
 						<input id="_Button_No" type="submit" value="Oh No!" runat="server">
-						<input id="_Button_Ok" type="submit" value="Ok" runat="server">
+						<input id="ButtonOk" type="submit" value="Ok" runat="server">
 					</td>
 				</tr>
 
@@ -184,8 +177,8 @@ namespace ${StandardNamespace}
 			</table>
 
 		</form>
-	</Body>
-</Html>
+	</body>
+</html>
 ]]>		</File>
 
 	</Files>

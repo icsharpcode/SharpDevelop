@@ -21,7 +21,7 @@
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-		<File name="${Path}\Source\${FileNameWithoutExtension}.cs" language="C#"><![CDATA[${StandardHeader.C#}
+		<File name="${Path}/${FileNameWithoutExtension}.cs" dependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
 
 using System;
 using System.Web;
@@ -32,12 +32,9 @@ using System.Web.UI.HtmlControls;
 
 namespace ${StandardNamespace}
 {
-	//**************************************************************************
-	#region Class ${ClassName}
 	/// <summary>
 	/// Description of ${ClassName}
 	/// </summary>
-
 	public class ${ClassName} : Control
 	{	
 		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -75,22 +72,12 @@ namespace ${StandardNamespace}
 		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 		#region Render
 
-		override
-		protected void Render(HtmlTextWriter Writer)
+		protected override void Render(HtmlTextWriter Writer)
 		{	
 			Writer.Write( "${ClassName} Control" );
 		}
 		#endregion
-		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-		#region More...
-		#endregion
-		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-		#region More...
-		#endregion
-		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	}
-	#endregion
-	//**************************************************************************
 }
 ]]></File>
 

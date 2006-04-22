@@ -21,7 +21,7 @@
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-		<File name="${Path}\Source\${FileNameWithoutExtension}.cs" language="C#"><![CDATA[${StandardHeader.C#}
+		<File name="${Path}/${FileNameWithoutExtension}.cs" dependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
 
 using System;
 using System.Web.Services;
@@ -39,40 +39,21 @@ namespace ${StandardNamespace}
 	]
 	public class ${ClassName} : WebService
 	{
-		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-		#region Data
-		#endregion
-		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-		#region Constructor
-		
 		public ${ClassName}()
 		{
 		}
 		
-		#endregion
-		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<		
-		#region Status
-			
 		[WebMethod]
 		public string Status()
 		{
 			string s = string.Format("Time: {0}", DateTime.Now);
 			return s;
 		}
-		
-		#endregion
-		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-		#region More...
-		#endregion
-		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-		#region More...
-		#endregion
-		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	}
 }
 ]]></File>
 		<File name="${FullName}"><![CDATA[
-<%@ WebService  Class="${StandardNamespace}.${ClassName}" Language="C#" Debug="true" %>
+<%@ WebService  Class="${StandardNamespace}.${ClassName}" Language="C#" %>
 
 ]]>		</File>
 
