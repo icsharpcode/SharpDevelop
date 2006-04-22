@@ -51,16 +51,30 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
+		TextAreaControl activeTextAreaControl;
+		
 		public override TextAreaControl ActiveTextAreaControl {
 			get {
-				return primaryTextArea;
+				return activeTextAreaControl;
 			}
 		}
+		
+		protected void SetActiveTextAreaControl(TextAreaControl value)
+		{
+			if (activeTextAreaControl != value) {
+				activeTextAreaControl = value;
+				
+				if (ActiveTextAreaControlChanged != null) {
+					ActiveTextAreaControlChanged(this, EventArgs.Empty);
+				}
+			}
+		}
+		
+		public event EventHandler ActiveTextAreaControlChanged;
 		
 		public TextEditorControl()
 		{
 			SetStyle(ControlStyles.ContainerControl, true);
-			SetStyle(ControlStyles.Selectable, true);
 			
 			textAreaPanel.Dock = DockStyle.Fill;
 			
@@ -68,6 +82,10 @@ namespace ICSharpCode.TextEditor
 			Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy();
 			
 			primaryTextArea  = new TextAreaControl(this);
+			activeTextAreaControl = primaryTextArea;
+			primaryTextArea.TextArea.GotFocus += delegate {
+				SetActiveTextAreaControl(primaryTextArea);
+			};
 			primaryTextArea.Dock = DockStyle.Fill;
 			textAreaPanel.Controls.Add(primaryTextArea);
 			InitializeTextAreaControl(primaryTextArea);
@@ -95,6 +113,11 @@ namespace ICSharpCode.TextEditor
 				secondaryTextArea = new TextAreaControl(this);
 				secondaryTextArea.Dock = DockStyle.Bottom;
 				secondaryTextArea.Height = Height / 2;
+				
+				secondaryTextArea.TextArea.GotFocus += delegate {
+					SetActiveTextAreaControl(secondaryTextArea);
+				};
+				
 				textAreaSplitter =  new Splitter();
 				textAreaSplitter.BorderStyle = BorderStyle.FixedSingle ;
 				textAreaSplitter.Height = 8;
@@ -104,6 +127,8 @@ namespace ICSharpCode.TextEditor
 				InitializeTextAreaControl(secondaryTextArea);
 				secondaryTextArea.OptionsChanged();
 			} else {
+				SetActiveTextAreaControl(primaryTextArea);
+				
 				textAreaPanel.Controls.Remove(secondaryTextArea);
 				textAreaPanel.Controls.Remove(textAreaSplitter);
 				

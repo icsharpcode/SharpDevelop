@@ -259,7 +259,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			} else {
 				SelectedNode = null;
-				this.ContextMenuStrip = null;
 			}
 		}
 		
@@ -270,7 +269,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			base.OnBeforeSelect(e);
 			ExtTreeNode node = e.Node as ExtTreeNode;
 			if (node != null) {
-				this.ContextMenuStrip = MenuService.CreateContextMenu(e.Node, node.ContextmenuAddinTreePath);
+				node.ContextMenuStrip = MenuService.CreateContextMenu(e.Node, node.ContextmenuAddinTreePath);
 			}
 		}
 		
