@@ -156,12 +156,15 @@ namespace ICSharpCode.FormsDesigner
 						}
 					} else if (pd.ShouldSerializeValue(o) && pd.IsBrowsable) {
 						XmlAttribute valueAttribute = doc.CreateAttribute("value");
-						if (propertyValue is Font) {
-							Font f = (Font)propertyValue;
-							propertyValue = new Font(f.FontFamily, (float)Math.Round(f.Size));
-						}
 						
-						valueAttribute.InnerText = propertyValue == null ? null : propertyValue.ToString();
+						if (propertyValue == null) {
+							valueAttribute.InnerText = null;
+						} else if (propertyValue is Color) {
+							valueAttribute.InnerText = propertyValue.ToString();
+						} else {
+							TypeConverter typeConv = TypeDescriptor.GetConverter(pd.PropertyType);
+							valueAttribute.InnerText = typeConv.ConvertToInvariantString(propertyValue);
+						}
 						childEl.Attributes.Append(valueAttribute);
 						childNodes.Insert(0, childEl);
 					}

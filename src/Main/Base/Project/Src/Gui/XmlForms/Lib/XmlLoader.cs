@@ -40,7 +40,6 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 		IObjectCreator        objectCreator        = new DefaultObjectCreator();
 		IPropertyValueCreator propertyValueCreator = null;
 		
-		readonly static Regex fontRegex = new Regex(@"Name=(\.+)\,\s+Size=(\d+)");
 		readonly static Regex propertySet  = new Regex(@"(?<Property>[\w]+)\s*=\s*(?<Value>[\w\d]+)", RegexOptions.Compiled);
 		
 		/// <summary>
@@ -298,23 +297,10 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 					} else {
 						propertyInfo.SetValue(o, Color.FromName(color), null);
 					}
-				} else if (propertyInfo.PropertyType == typeof(Font)) {
-					Match m = fontRegex.Match(val);
-					if (m.Success) {
-						propertyInfo.SetValue(o, new Font(m.Groups[0].Value, Int32.Parse(m.Groups[1].Value)), null);
-					} else {
-						// set some default font here
-						propertyInfo.SetValue(o, SystemInformation.MenuFont, null);
-					}
-				} else if (propertyInfo.PropertyType == typeof(System.Windows.Forms.Cursor)) {
-					string[] cursor = val.Split('[', ']', ' ', ':');
-					PropertyInfo cursorProperty = typeof(System.Windows.Forms.Cursors).GetProperty(cursor[3]);
-					if (cursorProperty != null) {
-						propertyInfo.SetValue(o, cursorProperty.GetValue(null, null), null);
-					}
 				} else {
 					if (val.Length > 0) {
-						propertyInfo.SetValue(o, Convert.ChangeType(val, propertyInfo.PropertyType), null);
+						TypeConverter conv = TypeDescriptor.GetConverter(propertyInfo.PropertyType);
+						propertyInfo.SetValue(o, conv.ConvertFromInvariantString(val), null);
 					}
 				}
 			} catch (Exception e) {
