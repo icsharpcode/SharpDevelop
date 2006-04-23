@@ -610,13 +610,13 @@
 							<xs:enumeration value="Item" />
 							<xs:enumeration value="Command" />
 							<xs:enumeration value="Menu" />
-							<xs:enumeration value="Builder" />
+							<xs:enumeration value="Builder"/>
 						</xs:restriction>
 					</xs:simpleType>
 					<xs:annotation>
 						<xs:documentation>
 			This attribute must be one of these values:
-			Separator, CheckBox, Item=Command, Menu (=with subitems),
+			Separator, CheckBox, Item (=Command), Menu (=with subitems), 
 			Builder (=class implementing ISubmenuBuilder).
 			Default: Command.
 			</xs:documentation>
@@ -864,13 +864,19 @@
 							<xs:enumeration value="CheckBox" />
 							<xs:enumeration value="Item" />
 							<xs:enumeration value="ComboBox" />
+							<xs:enumeration value="TextBox" />
+							<xs:enumeration value="Label" />
 							<xs:enumeration value="DropDownButton" />
+							<xs:enumeration value="SplitButton" />						
+							<xs:enumeration value="Builder" />						
 						</xs:restriction>
 					</xs:simpleType>
 					<xs:annotation>
 						<xs:documentation>
 			This attribute must be one of these values:
-			Separator, CheckBox, Item, ComboBox, DropDownButton
+			Separator, CheckBox, Item, ComboBox, DropDownButton,
+			ComboBox, TextBox, Label, DropDownButton,
+			SplitButton (=Command with MenuItem subitems)
 			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
@@ -879,6 +885,13 @@
 						<xs:documentation>
 			Only for the type "Item". When set to false, the command class is loaded
 			immediately instead of the usual lazy-loading.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="label" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Label of the tool bar item.
 			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>

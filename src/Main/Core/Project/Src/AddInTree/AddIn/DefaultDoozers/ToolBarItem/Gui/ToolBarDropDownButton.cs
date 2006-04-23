@@ -15,6 +15,7 @@ namespace ICSharpCode.Core
 	{
 		object caller;
 		Codon codon;
+		ICommand menuBuilder = null;
 		ArrayList subItems;
 		
 		public ToolBarDropDownButton(Codon codon, object caller, ArrayList subItems)
@@ -22,7 +23,7 @@ namespace ICSharpCode.Core
 			this.RightToLeft = RightToLeft.Inherit;
 			this.caller        = caller;
 			this.codon         = codon;
-			this.subItems			= subItems;
+			this.subItems	   = subItems;
 
 			if (codon.Properties.Contains("label")){
 				Text = StringParser.Parse(codon.Properties["label"]);
@@ -30,13 +31,30 @@ namespace ICSharpCode.Core
 			if (Image == null && codon.Properties.Contains("icon")) {
 				Image = ResourceService.GetBitmap(StringParser.Parse(codon.Properties["icon"]));
 			}
-			
+			if (menuBuilder == null && codon.Properties.Contains("class")) {
+				menuBuilder = codon.AddIn.CreateObject(StringParser.Parse(codon.Properties["class"])) as ICommand;
+				menuBuilder.Owner = this;
+			}
+
 			UpdateStatus();
 			UpdateText();
 		}
 
 		void CreateDropDownItems()
 		{
+			// let's assume that if a menuBuilder exists,
+			// as in the Search Results panel or the Class
+			// Browser toolbar, it will handle this step.
+			if (menuBuilder != null) {
+				return;
+			}
+
+			// also, let's prevent a null exception
+			// in the event that there are no subitems
+			if (subItems == null || subItems.Count==0) {
+				return;
+			}
+			
 			DropDownItems.Clear();
 			foreach (object item in subItems)
 			{
