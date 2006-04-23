@@ -20,6 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		ClassType classType;
 		DomRegion region;
+		DomRegion bodyRegion;
 		
 		ICompilationUnit compilationUnit;
 		
@@ -169,6 +170,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			set {
 				region = value;
+			}
+		}
+		
+		public DomRegion BodyRegion {
+			get {
+				return bodyRegion;
+			}
+			set {
+				bodyRegion = value;
 			}
 		}
 		

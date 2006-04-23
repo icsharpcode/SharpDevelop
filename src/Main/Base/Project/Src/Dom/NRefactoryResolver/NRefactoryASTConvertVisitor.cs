@@ -74,8 +74,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		string GetDocumentation(int line)
+		string GetDocumentation(int line, IList<AST.AttributeSection> attributes)
 		{
+			foreach (AST.AttributeSection att in attributes) {
+				if (att.StartLocation.Y > 0 && att.StartLocation.Y < line)
+					line = att.StartLocation.Y;
+			}
 			List<string> lines = new List<string>();
 			int length = 0;
 			while (line > 0) {
@@ -141,7 +145,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(AST.CompilationUnit compilationUnit, object data)
 		{
-			//TODO: usings, Comments
 			if (compilationUnit == null) {
 				return null;
 			}
@@ -276,9 +279,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(AST.TypeDeclaration typeDeclaration, object data)
 		{
 			DomRegion region = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
+			DomRegion bodyRegion = GetRegion(typeDeclaration.BodyStartLocation, typeDeclaration.EndLocation);
+			
 			DefaultClass c = new DefaultClass(cu, TranslateClassType(typeDeclaration.Type), ConvertModifier(typeDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
+			c.BodyRegion = bodyRegion;
 			ConvertAttributes(typeDeclaration, c);
-			c.Documentation = GetDocumentation(region.BeginLine);
+			c.Documentation = GetDocumentation(region.BeginLine, typeDeclaration.Attributes);
 			
 			if (currentClass.Count > 0) {
 				DefaultClass cur = GetCurrentClass();
@@ -365,7 +371,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DomRegion region = GetRegion(delegateDeclaration.StartLocation, delegateDeclaration.EndLocation);
 			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, ConvertModifier(delegateDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
-			c.Documentation = GetDocumentation(region.BeginLine);
+			c.Documentation = GetDocumentation(region.BeginLine, delegateDeclaration.Attributes);
 			ConvertAttributes(delegateDeclaration, c);
 			CreateDelegate(c, delegateDeclaration.Name, delegateDeclaration.ReturnType,
 			               delegateDeclaration.Templates, delegateDeclaration.Parameters);
@@ -426,7 +432,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass c  = GetCurrentClass();
 			
 			DefaultMethod method = new DefaultMethod(methodDeclaration.Name, null, ConvertModifier(methodDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
-			method.Documentation = GetDocumentation(region.BeginLine);
+			method.Documentation = GetDocumentation(region.BeginLine, methodDeclaration.Attributes);
 			ConvertTemplates(methodDeclaration.Templates, method);
 			method.ReturnType = CreateReturnType(methodDeclaration.TypeReference, method);
 			ConvertAttributes(methodDeclaration, method);
@@ -466,7 +472,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass c = GetCurrentClass();
 			
 			Constructor constructor = new Constructor(ConvertModifier(constructorDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
-			constructor.Documentation = GetDocumentation(region.BeginLine);
+			constructor.Documentation = GetDocumentation(region.BeginLine, constructorDeclaration.Attributes);
 			ConvertAttributes(constructorDeclaration, constructor);
 			if (constructorDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
@@ -495,7 +501,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DomRegion region = GetRegion(fieldDeclaration.StartLocation, fieldDeclaration.EndLocation);
 			DefaultClass c = GetCurrentClass();
-			string doku = GetDocumentation(region.BeginLine);
+			string doku = GetDocumentation(region.BeginLine, fieldDeclaration.Attributes);
 			if (currentClass.Count > 0) {
 				for (int i = 0; i < fieldDeclaration.Fields.Count; ++i) {
 					AST.VariableDeclaration field = (AST.VariableDeclaration)fieldDeclaration.Fields[i];
@@ -535,7 +541,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				property.SetterRegion = GetRegion(propertyDeclaration.SetRegion.StartLocation, propertyDeclaration.SetRegion.EndLocation);
 				property.CanSet = true;
 			}
-			property.Documentation = GetDocumentation(region.BeginLine);
+			property.Documentation = GetDocumentation(region.BeginLine, propertyDeclaration.Attributes);
 			ConvertAttributes(propertyDeclaration, property);
 			c.Properties.Add(property);
 			return null;
@@ -565,7 +571,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			ConvertAttributes(eventDeclaration, e);
 			c.Events.Add(e);
 			if (e != null) {
-				e.Documentation = GetDocumentation(region.BeginLine);
+				e.Documentation = GetDocumentation(region.BeginLine, eventDeclaration.Attributes);
 			} else {
 				LoggingService.Warn("NRefactoryASTConvertVisitor: " + eventDeclaration + " has no events!");
 			}
@@ -578,7 +584,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DomRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
 			DefaultProperty i = new DefaultProperty("Indexer", CreateReturnType(indexerDeclaration.TypeReference), ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 			i.IsIndexer = true;
-			i.Documentation = GetDocumentation(region.BeginLine);
+			i.Documentation = GetDocumentation(region.BeginLine, indexerDeclaration.Attributes);
 			ConvertAttributes(indexerDeclaration, i);
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {

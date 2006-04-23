@@ -35,3 +35,5 @@ del VBNET.ATG
 :exit
 pause
 cd ..
+cd ..\..\..
+%windir%\microsoft.net\framework\v2.0.50727\msbuild

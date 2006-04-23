@@ -840,6 +840,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	/* .NET 2.0 */
 	{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
 	
+	(. newType.BodyStartLocation = t.EndLocation; .)
 	ClassBody
 	[ ";" ]                         (. newType.EndLocation = t.Location; 
 	                                   compilationUnit.BlockEnd();
@@ -863,6 +864,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
 	
 	
+	(. newType.BodyStartLocation = t.EndLocation; .)
 	StructBody
 	[ ";" ]                          (. newType.EndLocation = t.Location; 
 	                                    compilationUnit.BlockEnd();
@@ -885,6 +887,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	/* .NET 2.0 */
 	{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
 	
+	(. newType.BodyStartLocation = t.EndLocation; .)
 	InterfaceBody
 	[ ";" ]                          (. newType.EndLocation = t.Location; 
 	                                    compilationUnit.BlockEnd();
@@ -899,6 +902,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	ident                            (. newType.Name = t.val; .)
 	[ ":" IntegralType<out name>     (. newType.BaseTypes.Add(new TypeReference(name)); .)
 	]
+	(. newType.BodyStartLocation = t.EndLocation; .)
 	EnumBody 
 	[ ";" ]                          (. newType.EndLocation = t.Location; 
 	                                    compilationUnit.BlockEnd();
@@ -974,7 +978,7 @@ StructInterfaces<out List<TypeReference> names>
 StructBody
 (. AttributeSection section; .)
 =
-	"{" 
+	"{"
 	{                                    (.List<AttributeSection> attributes = new List<AttributeSection>();
 		                                   Modifiers m = new Modifiers();
 		                                 .)
@@ -996,12 +1000,17 @@ InterfaceBase<out List<TypeReference> names>
 .
 
 InterfaceBody
-= "{" { InterfaceMemberDecl } "}" .
+= "{"
+  { InterfaceMemberDecl }
+  "}"
+.
 
 EnumBody                                 (. FieldDeclaration f; .)
 =
-	"{" [ EnumMemberDecl<out f>          (. compilationUnit.AddChild(f); .)
-	{ IF (NotFinalComma()) "," EnumMemberDecl<out f> (. compilationUnit.AddChild(f); .)
+	"{"
+	[ EnumMemberDecl<out f>          (. compilationUnit.AddChild(f); .)
+	{ IF (NotFinalComma()) ","
+		EnumMemberDecl<out f> (. compilationUnit.AddChild(f); .)
 	}
 	[","] ] "}"
 .

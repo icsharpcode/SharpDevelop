@@ -662,6 +662,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 	Identifier			 (. newType.Name = t.val; .) 
 	TypeParameterList<newType.Templates>
 	EndOfStmt
+	(. newType.BodyStartLocation = t.Location; .)
 	[ ClassBaseType<out typeRef> (. newType.BaseTypes.Add(typeRef); .) ]
 	{ TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces); .) }
 	ClassBody<newType>
@@ -679,6 +680,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 		.)
 	Identifier			 (. newType.Name = t.val; .)
 	EOL
+	(. newType.BodyStartLocation = t.Location; .)
 	ModuleBody<newType>
 	(.
 		compilationUnit.BlockEnd();
@@ -694,7 +696,9 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
 	TypeParameterList<newType.Templates>
-	EOL { TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces);.) }
+	EOL
+	(. newType.BodyStartLocation = t.Location; .)
+	{ TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces);.) }
 	StructureBody<newType>
 	(.
 		compilationUnit.BlockEnd();
@@ -713,6 +717,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 	Identifier			 (. newType.Name = t.val; .) 
 	[ "As" NonArrayTypeName<out typeRef, false> (. newType.BaseTypes.Add(typeRef); .) ]
 	EOL
+	(. newType.BodyStartLocation = t.Location; .)
 	EnumBody<newType>
 	(.
 		compilationUnit.BlockEnd();
@@ -729,7 +734,9 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
 	TypeParameterList<newType.Templates>
-	EndOfStmt { InterfaceBase<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces); .) }
+	EndOfStmt
+	(. newType.BodyStartLocation = t.Location; .)
+	{ InterfaceBase<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces); .) }
 	InterfaceBody<newType>
 	(.
 		compilationUnit.BlockEnd();

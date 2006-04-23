@@ -32,7 +32,19 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		}
 		
 		[Test]
-		public void CSharpSimplePartitialClassTypeDeclarationTest()
+		public void CSharpSimpleClassRegionTest()
+		{
+			const string program = "class MyClass\n{\n}\n";
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
+			Assert.AreEqual(1, td.StartLocation.Y, "StartLocation.Y");
+			Assert.AreEqual(1, td.StartLocation.X, "StartLocation.X");
+			Assert.AreEqual(1, td.BodyStartLocation.Y, "BodyStartLocation.Y");
+			Assert.AreEqual(14, td.BodyStartLocation.X, "BodyStartLocation.X");
+			Assert.AreEqual(3, td.EndLocation.Y, "EndLocation.Y");
+		}
+		
+		[Test]
+		public void CSharpSimplePartialClassTypeDeclarationTest()
 		{
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("partial class MyClass { }");
 			Assert.IsNotNull(td);
@@ -184,6 +196,8 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual(1, td.StartLocation.Y, "start line");
+			Assert.AreEqual(1, td.BodyStartLocation.Y, "bodystart line");
+			Assert.AreEqual(16, td.BodyStartLocation.X, "bodystart col");
 			Assert.AreEqual(2, td.EndLocation.Y, "end line");
 		}
 		
