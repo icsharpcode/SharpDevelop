@@ -80,6 +80,7 @@ namespace Grunwald.BooBinding.Tests
 		}
 		#endregion
 		
+		#region Basic tests
 		const string prog =
 			"import System\n" +
 			"def MyMethod(arg as string):\n" +
@@ -94,7 +95,6 @@ namespace Grunwald.BooBinding.Tests
 			"\t\treturn recursiveClosure()\n" +
 			"\t/*3*/\n";
 		
-		#region Basic tests
 		[Test]
 		public void MethodParameter()
 		{
