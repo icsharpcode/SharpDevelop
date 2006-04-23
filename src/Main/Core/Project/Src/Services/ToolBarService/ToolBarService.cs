@@ -75,21 +75,25 @@ namespace ICSharpCode.Core
 		
 		public static void UpdateToolbar(ToolStrip toolStrip)
 		{
+			toolStrip.SuspendLayout();
 			foreach (ToolStripItem item in toolStrip.Items) {
 				if (item is IStatusUpdate) {
 					((IStatusUpdate)item).UpdateStatus();
 				}
 			}
+			toolStrip.ResumeLayout();
 			//toolStrip.Refresh();
 		}
 		
 		public static void UpdateToolbarText(ToolStrip toolStrip)
 		{
+			toolStrip.SuspendLayout();
 			foreach (ToolStripItem item in toolStrip.Items) {
 				if (item is IStatusUpdate) {
 					((IStatusUpdate)item).UpdateText();
 				}
 			}
+			toolStrip.ResumeLayout();
 		}
 	}
 }
