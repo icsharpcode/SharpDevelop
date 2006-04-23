@@ -6,9 +6,11 @@
  */
 
 using System;
+using System.Reflection;
 using NUnit.Framework;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 using Grunwald.BooBinding.CodeCompletion;
 
 namespace Grunwald.BooBinding.Tests
@@ -16,6 +18,7 @@ namespace Grunwald.BooBinding.Tests
 	[TestFixture]
 	public class ResolverTests
 	{
+		#region Helper
 		T Resolve<T>(string code) where T : ResolveResult
 		{
 			return Resolve<T>(code, "/*1*/");
@@ -29,6 +32,26 @@ namespace Grunwald.BooBinding.Tests
 			return (T)rr;
 		}
 		
+		T ResolveReg<T>(string code) where T : ResolveResult
+		{
+			return ResolveReg<T>(code, "/*1*/");
+		}
+		
+		T ResolveReg<T>(string code, string marker) where T : ResolveResult
+		{
+			ResolveResult rr = Resolve(regressionProg, new ExpressionResult(code), marker);
+			Assert.IsNotNull(rr, "Resolve must not return null");
+			Assert.IsInstanceOfType(typeof(T), rr, "Resolve must return instance of type " + typeof(T).Name);
+			return (T)rr;
+		}
+		
+		IProjectContent booLangPC;
+		
+		public ResolverTests() {
+			booLangPC = new ReflectionProjectContent(Assembly.Load("Boo.Lang"), "Boo.Lang.dll");
+			booLangPC.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
+		}
+		
 		ResolveResult Resolve(string prog, ExpressionResult er, string marker)
 		{
 			const string fileName = "tempFile.boo";
@@ -36,6 +59,7 @@ namespace Grunwald.BooBinding.Tests
 			ParserService.ForceProjectContent(pc);
 			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
 			pc.ReferencedContents.Add(ProjectContentRegistry.WinForms);
+			pc.ReferencedContents.Add(booLangPC);
 			ICompilationUnit cu = new BooParser().Parse(pc, fileName, prog);
 			ParserService.UpdateParseInformation(cu, fileName, false, false);
 			cu.Classes.ForEach(pc.AddClassToNamespaceList);
@@ -54,6 +78,7 @@ namespace Grunwald.BooBinding.Tests
 			BooResolver r = new BooResolver();
 			return r.Resolve(er, line, column, fileName, prog);
 		}
+		#endregion
 		
 		const string prog =
 			"import System\n" +
@@ -69,6 +94,7 @@ namespace Grunwald.BooBinding.Tests
 			"\t\treturn recursiveClosure()\n" +
 			"\t/*3*/\n";
 		
+		#region Basic tests
 		[Test]
 		public void MethodParameter()
 		{
@@ -138,5 +164,37 @@ namespace Grunwald.BooBinding.Tests
 			Assert.IsFalse(rr.IsParameter);
 			Assert.AreEqual("delegate():?", rr.ResolvedType.FullyQualifiedName);
 		}
+		#endregion
+		
+		#region Regression
+		const string regressionProg =
+			"import System\n" +
+			"import System.Reflection\n" +
+			"def MyMethod(arg as string):\n" +
+			"\tif true:\n" +
+			"\t\tboo629 = 'hello'\n" +
+			"\tfor boo640a in [1, 2, 3]:\n" +
+			"\t\tif boo640b = boo640a as FieldInfo: /*640*/\n" +
+			"\t\t\tprint boo640b\n" +
+			"\t\n" +
+			"\t/*1*/\n";
+		
+		[Test]
+		public void Boo629VariableScope()
+		{
+			LocalResolveResult rr = ResolveReg<LocalResolveResult>("boo629");
+			Assert.AreEqual("System.String", rr.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void Boo640ConditionalAssignment()
+		{
+			LocalResolveResult rr = ResolveReg<LocalResolveResult>("boo640b");
+			Assert.AreEqual("System.Reflection.FieldInfo", rr.ResolvedType.FullyQualifiedName);
+			rr = ResolveReg<LocalResolveResult>("boo640a", "/*640*/");
+			Assert.AreEqual("System.Object", rr.ResolvedType.FullyQualifiedName);
+			Assert.IsNull(Resolve(regressionProg, new ExpressionResult("boo640a"), "/*1*/"));
+		}
+		#endregion
 	}
 }
