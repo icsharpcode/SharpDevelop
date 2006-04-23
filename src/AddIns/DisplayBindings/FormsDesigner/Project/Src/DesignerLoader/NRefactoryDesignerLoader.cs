@@ -329,7 +329,11 @@ namespace ICSharpCode.FormsDesigner
 				this.CodeDomProvider.GenerateCodeFromCompileUnit(unit, Console.Out, null);
 			}
 			#endif
-			generator.MergeFormChanges(unit);
+			try {
+				generator.MergeFormChanges(unit);
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
 		}
 		
 //		public void Reload()

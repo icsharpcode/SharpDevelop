@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				                                    "${res:Dialog.NewFile.AddToProjectQuestionTitle}",
 				                                    "${res:Dialog.NewFile.AddToProjectQuestionProject}",
 				                                    "${res:Dialog.NewFile.AddToProjectQuestionStandalone}")
-				    == 1)
+				    == 0)
 				{
 					new Project.Commands.AddNewItemsToProject().Run();
 					return;

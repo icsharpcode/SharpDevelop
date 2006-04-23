@@ -152,6 +152,10 @@ namespace ICSharpCode.FormsDesigner
 			if (formClass == null || initializeComponent == null) {
 				throw new InvalidOperationException("InitializeComponent method not found in framework-generated CodeDom.");
 			}
+			if (this.formClass == null) {
+				MessageService.ShowMessage("Cannot save form: InitializeComponent method does not exist anymore. You should not modify the Designer.cs file while editing a form.");
+				return;
+			}
 			
 			if (formClass.Name != this.formClass.Name) {
 				LoggingService.Info("Renaming form to " + formClass.Name);
