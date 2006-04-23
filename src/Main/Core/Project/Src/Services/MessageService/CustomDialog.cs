@@ -50,7 +50,6 @@ namespace ICSharpCode.Core
 				for (int i = 0; i < buttons.Length; i++) {
 					Button newButton = new Button();
 					newButton.FlatStyle = FlatStyle.System;
-					newButton.Anchor = AnchorStyles.Right;
 					newButton.Tag = i;
 					string buttonLabel = StringParser.Parse(buttonLabels[i]);
 					newButton.Text = buttonLabel;
@@ -68,15 +67,17 @@ namespace ICSharpCode.Core
 					CancelButton = buttons[cancelButton];
 				}
 				
-				pos -= 4; // remove space after last button
+				pos += 4; // add space before first button
+				// (we don't start with pos=4 because this space doesn't belong to the button panel)
+				
 				if (pos > clientSize.Width) {
 					clientSize.Width = pos;
 				}
 				clientSize.Height += panel.Height + 6;
 				this.ClientSize = clientSize;
-				int start = (panel.ClientSize.Width - pos) / 2;
+				int start = (clientSize.Width - pos) / 2;
 				for (int i = 0; i < buttons.Length; i++) {
-					((Button)buttons[i]).Location = new Point(start + positions[i], 4);
+					buttons[i].Location = new Point(start + positions[i], 4);
 				}
 				panel.Controls.AddRange(buttons);
 			}
@@ -92,7 +93,6 @@ namespace ICSharpCode.Core
 			this.Close();
 		}
 		
-		#region Windows Forms Designer generated code
 		/// <summary>
 		/// This method is required for Windows Forms designer support.
 		/// Do not change the method contents inside the source code editor. The Forms designer might
@@ -123,7 +123,6 @@ namespace ICSharpCode.Core
 			// 
 			// CustomDialog
 			// 
-//			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(274, 112);
 			this.Controls.Add(this.label);
 			this.Controls.Add(this.panel);
@@ -137,6 +136,5 @@ namespace ICSharpCode.Core
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "CustomDialog";
 		}
-		#endregion
 	}
 }
