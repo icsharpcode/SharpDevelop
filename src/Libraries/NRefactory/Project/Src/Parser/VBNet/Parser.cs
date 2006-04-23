@@ -379,7 +379,7 @@ ref val);
 out u);
 
 #line  537 "VBNET.ATG" 
-		usings.Add(u); 
+		if (u != null) { usings.Add(u); } 
 		while (la.kind == 12) {
 			lexer.NextToken();
 			ImportClause(
@@ -387,7 +387,7 @@ out u);
 out u);
 
 #line  539 "VBNET.ATG" 
-			usings.Add(u); 
+			if (u != null) { usings.Add(u); } 
 		}
 		EndOfStmt();
 

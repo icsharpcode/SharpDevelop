@@ -534,9 +534,9 @@ ImportsStmt
 		Point startPos = t.Location;
 		Using u;
 	.)
-	ImportClause<out u> (. usings.Add(u); .)
+	ImportClause<out u> (. if (u != null) { usings.Add(u); } .)
 	{
-		"," ImportClause<out u> (. usings.Add(u); .)
+		"," ImportClause<out u> (. if (u != null) { usings.Add(u); } .)
 	}
 	EndOfStmt
 	(.
