@@ -54,13 +54,13 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			Text = what;
 		}
 		
-		public override string ToXml()
+		public override void WriteXml(XmlWriter writer)
 		{
-			string ret = "\t\t\t<Mark" + (previous ? "Previous" : "Following") + " ";
-			ret += color.ToXml();
-			if (markMarker) ret += " markmarker=\"true\"";
-			ret += ">" + ReplaceXmlChars(what) + "</Mark" + (previous ? "Previous" : "Following") + ">\n\n";
-			return ret;
+			writer.WriteStartElement("Mark" + (previous ? "Previous" : "Following"));
+			color.WriteXmlAttributes(writer);
+			if (markMarker) writer.WriteAttributeString("markmarker", "true");
+			writer.WriteString(what);
+			writer.WriteEndElement();
 		}
 		
 		public string What {

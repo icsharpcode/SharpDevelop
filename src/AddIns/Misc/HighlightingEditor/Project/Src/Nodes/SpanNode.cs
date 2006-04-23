@@ -59,27 +59,32 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			
 		}
 		
-		public override string ToXml()
+		public override void WriteXml(XmlWriter writer)
 		{
-			string ret = "";
-			ret = "\t\t\t<Span name=\"" + ReplaceXmlChars(name) + "\" ";
-			if (noEscapeSequences) ret += "noescapesequences=\"true\" ";
-			if (rule != "") ret += "rule=\"" + ReplaceXmlChars(rule) + "\" ";
-			ret += "stopateol=\"" + stopEOL.ToString().ToLowerInvariant() + "\" ";
-			ret += color.ToXml();
-			ret += ">\n";
+			writer.WriteStartElement("Span");
+			writer.WriteAttributeString("name", name);
+			if (noEscapeSequences)
+				writer.WriteAttributeString("noescapesequences", "true");
+			if (rule != "")
+				writer.WriteAttributeString("rule", rule);
+			writer.WriteAttributeString("stopateol", stopEOL.ToString().ToLowerInvariant());
+			color.WriteXmlAttributes(writer);
 			
-			ret += "\t\t\t\t<Begin ";
-			if (beginColor != null && !beginColor.NoColor) ret += beginColor.ToXml();
-			ret += ">" + ReplaceXmlChars(begin) + "</Begin>\n";
+			writer.WriteStartElement("Begin");
+			if (beginColor != null && !beginColor.NoColor)
+				beginColor.WriteXmlAttributes(writer);
+			writer.WriteString(begin);
+			writer.WriteEndElement();
 			
 			if (end != "") {
-				ret += "\t\t\t\t<End ";
-				if (endColor != null && !endColor.NoColor) ret += endColor.ToXml();
-				ret += ">" + ReplaceXmlChars(end) + "</End>\n";
+				writer.WriteStartElement("End");
+				if (endColor != null && !endColor.NoColor)
+					endColor.WriteXmlAttributes(writer);
+				writer.WriteString(end);
+				writer.WriteEndElement();
 			}
-			ret += "\t\t\t</Span>\n\n";
-			return ret;
+			
+			writer.WriteEndElement();
 		}
 		
 		public SpanNode(string Name)
@@ -90,6 +95,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			
 			panel = new SpanOptionPanel(this);
 		}
+		
 		
 		public override void UpdateNodeText()
 		{
@@ -121,7 +127,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		}
 		
 		public EditorHighlightColor BeginColor {
-			get {		
+			get {
 				return beginColor;
 			}
 			set {

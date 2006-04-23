@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 	{
 		bool hasForeColor = false;
 		bool hasBackColor = false;
-			
+		
 		Color  foreColor;
 		bool   sysForeColor     = false;
 		string sysForeColorName = "";
@@ -105,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			    el.Attributes["color"] == null &&
 			    el.Attributes["bgcolor"] == null)
 			{
-			    noColor = true;
+				noColor = true;
 				return;
 			}
 			
@@ -144,6 +144,11 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 					backColor = (Color)myPropInfo.GetValue(null, null);
 				}
 			}
+		}
+		
+		public static EditorHighlightColor FromTextEditor(ICSharpCode.TextEditor.Document.HighlightColor color)
+		{
+			return new EditorHighlightColor(color.HasForgeground, color.Color, color.HasBackground, color.BackgroundColor, color.Bold, color.Italic);
 		}
 		
 		public EditorHighlightColor(bool hascolor, Color Color, bool hasbackcolor, Color BackColor, bool bold, bool italic)
@@ -209,38 +214,30 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			return Color.FromArgb(a, r, g, b);
 		}
 		
-		public string ToXml()
+		public void WriteXmlAttributes(XmlWriter writer)
 		{
-			string str = "";
-			str += "bold=\"" + bold.ToString().ToLowerInvariant() + "\" ";
-			str += "italic=\"" + italic.ToString().ToLowerInvariant() + "\" ";
+			writer.WriteAttributeString("bold", bold.ToString().ToLowerInvariant());
+			writer.WriteAttributeString("italic", italic.ToString().ToLowerInvariant());
 			if (hasForeColor) {
-				str += "color=\"";
 				if (sysForeColor) {
-					str += "SystemColors." + sysForeColorName;
+					writer.WriteAttributeString("color", "SystemColors." + sysForeColorName);
 				} else {
-					str += ReplaceColorName("#" + (foreColor.A != 255 ? foreColor.A.ToString("X2") : "") + 
-								 foreColor.R.ToString("X2") +
-								 foreColor.G.ToString("X2") + 
-								 foreColor.B.ToString("X2"));
+					writer.WriteAttributeString("color", ReplaceColorName("#" + (foreColor.A != 255 ? foreColor.A.ToString("X2") : "") +
+					                                                      foreColor.R.ToString("X2") +
+					                                                      foreColor.G.ToString("X2") +
+					                                                      foreColor.B.ToString("X2")));
 				}
-					
-				str += "\" ";
 			}
 			if (hasBackColor) {
-				str += "bgcolor=\"";
 				if (sysBackColor) {
-					str += "SystemColors." + sysBackColorName;
+					writer.WriteAttributeString("bgcolor", "SystemColors." + sysBackColorName);
 				} else {
-					str += ReplaceColorName("#" + (backColor.A != 255 ? backColor.A.ToString("X2") : "") + 
-								 backColor.R.ToString("X2") + 
-								 backColor.G.ToString("X2") + 
-								 backColor.B.ToString("X2"));
+					writer.WriteAttributeString("bgcolor", ReplaceColorName("#" + (backColor.A != 255 ? backColor.A.ToString("X2") : "") +
+					                                                        backColor.R.ToString("X2") +
+					                                                        backColor.G.ToString("X2") +
+					                                                        backColor.B.ToString("X2")));
 				}
-					
-				str += "\" ";
 			}
-			return str;
 		}
 		
 		Color ParseSysColor(string colorName)

@@ -37,13 +37,11 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		{
 		}
 		
-		public override string ToXml()
+		public override void WriteXml(XmlWriter writer)
 		{
-			string ret = "";
 			foreach (KeywordListNode node in Nodes) {
-				ret += node.ToXml();
+				node.WriteXml(writer);
 			}
-			return ret;
 		}
 	}
 	

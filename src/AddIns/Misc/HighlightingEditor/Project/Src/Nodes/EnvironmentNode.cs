@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Xml;
@@ -26,8 +27,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		
 		public EnvironmentNode(XmlElement el)
 		{
-			
-			
 			ArrayList envColors            = new ArrayList();
 			ArrayList envColorNames        = new ArrayList();
 			ArrayList envColorDescriptions = new ArrayList();
@@ -40,13 +39,22 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 					}
 				}
 			}
+			
+			foreach (KeyValuePair<string, HighlightColor> pair in new DefaultHighlightingStrategy().EnvironmentColors) {
+				if (!envColorNames.Contains(pair.Key)) {
+					envColorNames.Add(pair.Key);
+					envColorDescriptions.Add("${res:Dialog.HighlightingEditor.EnvColors." + pair.Key + "}");
+					envColors.Add(EditorHighlightColor.FromTextEditor(pair.Value));
+				}
+			}
+			
 			EnvironmentNode.ColorNames = (string[])envColorNames.ToArray(typeof(string));
 			this.ColorDescs = (string[])envColorDescriptions.ToArray(typeof(string));
 			this.Colors     = (EditorHighlightColor[])envColors.ToArray(typeof(EditorHighlightColor));
 			StringParser.Parse(ColorDescs);
 			
 			Text = ResNodeName("EnvironmentColors");
-		
+			
 			panel = new EnvironmentOptionPanel(this);
 		}
 
@@ -54,14 +62,15 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		{
 		}
 		
-		public override string ToXml()
+		public override void WriteXml(XmlWriter writer)
 		{
-			string str = "\t<Environment>\n";
-			for (int i = 0; i <= ColorNames.GetUpperBound(0); ++i) {
-				str += "\t\t<" + ColorNames[i] + " " + Colors[i].ToXml() + "/>\n";
+			writer.WriteStartElement("Environment");
+			for (int i = 0; i < ColorNames.Length; i++) {
+				writer.WriteStartElement(ColorNames[i]);
+				Colors[i].WriteXmlAttributes(writer);
+				writer.WriteEndElement();
 			}
-			str += "\t</Environment>\n\n";
-			return str;
+			writer.WriteEndElement();
 		}
 	}
 	

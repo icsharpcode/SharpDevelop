@@ -35,14 +35,13 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		{
 		}
 		
-		public override string ToXml()
+		public override void WriteXml(XmlWriter writer)
 		{
-			string ret = "\t<RuleSets>\n";
+			writer.WriteStartElement("RuleSets");
 			foreach (RuleSetNode node in Nodes) {
-				ret += node.ToXml();
+				node.WriteXml(writer);
 			}
-			ret += "\t</RuleSets>\n\n";
-			return ret;
+			writer.WriteEndElement();
 		}
 	}
 	

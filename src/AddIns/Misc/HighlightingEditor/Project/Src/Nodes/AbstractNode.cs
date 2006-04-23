@@ -36,11 +36,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		public abstract void UpdateNodeText();
 		
 		// should be made abstract when implementing ToXml()
-		public virtual string ToXml() { return ""; }
-		
-		public static string ReplaceXmlChars(string str)
-		{
-			return str.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
-		}
+		public abstract void WriteXml(XmlWriter writer);
 	}
 }

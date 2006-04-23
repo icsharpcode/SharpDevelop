@@ -386,6 +386,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public virtual void OnWindowSelected(EventArgs e)
 		{
+			if (viewTabControl != null) {
+				TabPage page = viewTabControl.TabPages[viewTabControl.TabIndex];
+				if (page.Controls.Count == 1 && !page.ContainsFocus) page.Controls[0].Focus();
+			}
 			if (WindowSelected != null) {
 				WindowSelected(this, e);
 			}
