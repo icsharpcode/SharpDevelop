@@ -6,10 +6,6 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Diagnostics;
-using System.Drawing.Text;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core
@@ -30,15 +26,18 @@ namespace ICSharpCode.Core
 				menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
 			}
 			
+			if (codon.Properties.Contains("label")){
+				Text = StringParser.Parse(codon.Properties["label"]);
+			}
 			if (Image == null && codon.Properties.Contains("icon")) {
-				Image = ResourceService.GetBitmap(codon.Properties["icon"]);
+				Image = ResourceService.GetBitmap(StringParser.Parse(codon.Properties["icon"]));
 			}
 			
 			UpdateStatus();
 			UpdateText();
 		}
 		
-		protected override void OnClick(System.EventArgs e)
+		protected override void OnClick(EventArgs e)
 		{
 			base.OnClick(e);
 			if (menuCommand == null) {
@@ -50,12 +49,6 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-//		protected override void OnSelect(System.EventArgs e)
-//		{
-//			base.OnSelect(e);
-//			StatusBarService.SetMessage(description);
-//		}
-		
 		public virtual void UpdateStatus()
 		{
 			if (codon != null) {
@@ -66,13 +59,23 @@ namespace ICSharpCode.Core
 					isEnabled = ((IMenuCommand)menuCommand).IsEnabled;
 				}
 				this.Enabled = isEnabled;
+				
+				if (this.Visible && codon.Properties.Contains("icon")) {
+					Image = ResourceService.GetBitmap(StringParser.Parse(codon.Properties["icon"]));
+				}
 			}
 		}
 		
 		public virtual void UpdateText()
 		{
 			if (codon != null) {
-				ToolTipText = StringParser.Parse(codon.Properties["tooltip"]);
+				if (codon.Properties.Contains("tooltip")) {
+					ToolTipText = StringParser.Parse(codon.Properties["tooltip"]);
+				}
+				
+				if (codon.Properties.Contains("label")){
+					Text = StringParser.Parse(codon.Properties["label"]);
+				}
 			}
 		}
 	}

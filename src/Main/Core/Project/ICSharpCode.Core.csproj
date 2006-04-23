@@ -149,6 +149,11 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\Util\AppDomainLaunchHelper.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarLabel.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarSplitButton.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarTextBox.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\AbstractTextBoxCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ITextBoxCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Services\LoggingService" />

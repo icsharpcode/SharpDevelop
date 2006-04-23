@@ -1,8 +1,8 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision$</version>
+//     <owner name="John Simons" email="johnsimons007@yahoo.com.au"/>
+//     <version>$Revision: 1 $</version>
 // </file>
 
 using System;
@@ -11,13 +11,14 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core
 {
-	public class ToolBarDropDownButton : ToolStripDropDownButton , IStatusUpdate
+	public class ToolBarSplitButton : ToolStripSplitButton , IStatusUpdate
 	{
 		object caller;
 		Codon codon;
 		ArrayList subItems;
-		
-		public ToolBarDropDownButton(Codon codon, object caller, ArrayList subItems)
+		ICommand menuCommand = null;
+
+		public ToolBarSplitButton(Codon codon, object caller, ArrayList subItems)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
 			this.caller        = caller;
@@ -30,7 +31,8 @@ namespace ICSharpCode.Core
 			if (Image == null && codon.Properties.Contains("icon")) {
 				Image = ResourceService.GetBitmap(StringParser.Parse(codon.Properties["icon"]));
 			}
-			
+			menuCommand = codon.AddIn.CreateObject(codon.Properties["class"]) as ICommand;
+			menuCommand.Owner = this;
 			UpdateStatus();
 			UpdateText();
 		}
@@ -65,6 +67,13 @@ namespace ICSharpCode.Core
 			base.OnDropDownShow(e);
 		}
 
+		protected override void OnButtonClick(EventArgs e)
+		{
+			base.OnButtonClick(e);
+			menuCommand.Run();
+		}
+		
+		
 		public override bool Enabled {
 			get {
 				if (codon == null) {
@@ -73,6 +82,10 @@ namespace ICSharpCode.Core
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
 				
 				bool isEnabled = failedAction != ConditionFailedAction.Disable;
+				
+				if (menuCommand != null && menuCommand is IMenuCommand) {
+					isEnabled &= ((IMenuCommand)menuCommand).IsEnabled;
+				}
 				
 				return isEnabled;
 			}

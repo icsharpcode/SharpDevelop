@@ -14,6 +14,9 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Creates tool bar items from a location in the addin tree.
 	/// </summary>
+	/// <attribute name="label" use="optional">
+	/// Label of the tool bar item.
+	/// </attribute>
 	/// <attribute name="icon" use="optional">
 	/// Icon of the tool bar item.
 	/// </attribute>
@@ -65,8 +68,16 @@ namespace ICSharpCode.Core
 					return new ToolBarCommand(codon, caller, createCommand);
 				case "ComboBox":
 					return new ToolBarComboBox(codon, caller);
+				case "TextBox":
+					return new ToolBarTextBox(codon, caller);
+				case "Label":
+					return new ToolBarLabel(codon, caller);
 				case "DropDownButton":
-					return new ToolBarDropDownButton(codon, caller);
+					return new ToolBarDropDownButton(codon, caller, subItems);
+				case "SplitButton":
+					return new ToolBarSplitButton(codon, caller, subItems);
+				case "Builder":
+					return codon.AddIn.CreateObject(codon.Properties["class"]);
 				default:
 					throw new System.NotSupportedException("unsupported menu item type : " + type);
 			}
