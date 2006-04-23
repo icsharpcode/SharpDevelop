@@ -291,6 +291,17 @@ namespace Grunwald.BooBinding.CodeCompletion
 				}
 			} else {
 				if (resolveResult != null) {
+					if (resolveResult is TypeResolveResult) {
+						IClass rClass = (resolveResult as TypeResolveResult).ResolvedClass;
+						if (rClass != null) {
+							foreach (IClass innerClass in rClass.InnerClasses) {
+								if (IsSameName(innerClass.Name, node.Name)) {
+									MakeTypeResult(innerClass);
+									return;
+								}
+							}
+						}
+					}
 					ResolveMember(resolveResult.ResolvedType, node.Name);
 				}
 			}
@@ -531,8 +542,6 @@ namespace Grunwald.BooBinding.CodeCompletion
 				case BinaryOperatorType.Member:
 				case BinaryOperatorType.NotMatch:
 				case BinaryOperatorType.NotMember:
-				case BinaryOperatorType.Or:
-				case BinaryOperatorType.And:
 				case BinaryOperatorType.ReferenceEquality:
 				case BinaryOperatorType.ReferenceInequality:
 				case BinaryOperatorType.TypeTest:
@@ -566,7 +575,15 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override void OnCallableBlockExpression(CallableBlockExpression node)
 		{
-			MakeResult(new AnonymousMethodReturnType());
+			AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(cu);
+			if (node.ReturnType != null) {
+				amrt.MethodReturnType = ConvertType(node.ReturnType);
+			} else {
+				
+				amrt.MethodReturnType = new InferredReturnType(node.Body, resolver.CallingClass);
+			}
+			ConvertVisitor.AddParameters(node.Parameters, amrt.MethodParameters, resolver.CallingMember, resolver.CallingClass ?? new DefaultClass(resolver.CompilationUnit, "__Dummy"));
+			MakeResult(amrt);
 		}
 		
 		public override void OnCallableTypeReference(CallableTypeReference node)

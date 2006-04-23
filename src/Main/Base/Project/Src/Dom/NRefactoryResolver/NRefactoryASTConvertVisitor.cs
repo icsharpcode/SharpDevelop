@@ -389,25 +389,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			currentClass.Push(c); // necessary for CreateReturnType
 			ConvertTemplates(templates, c);
-			DefaultMethod invokeMethod = new DefaultMethod("Invoke", CreateReturnType(returnType), ModifierEnum.Public, c.Region, DomRegion.Empty, c);
+			
+			List<IParameter> p = new List<IParameter>();
 			if (parameters != null) {
-				foreach (AST.ParameterDeclarationExpression par in parameters) {
-					invokeMethod.Parameters.Add(CreateParameter(par));
+				foreach (AST.ParameterDeclarationExpression param in parameters) {
+					p.Add(CreateParameter(param));
 				}
 			}
-			c.Methods.Add(invokeMethod);
-			invokeMethod = new DefaultMethod("BeginInvoke", CreateReturnType(typeof(IAsyncResult)), ModifierEnum.Public, c.Region, DomRegion.Empty, c);
-			if (parameters != null) {
-				foreach (AST.ParameterDeclarationExpression par in parameters) {
-					invokeMethod.Parameters.Add(CreateParameter(par));
-				}
-			}
-			invokeMethod.Parameters.Add(new DefaultParameter("callback", CreateReturnType(typeof(AsyncCallback)), DomRegion.Empty));
-			invokeMethod.Parameters.Add(new DefaultParameter("object", ReflectionReturnType.Object, DomRegion.Empty));
-			c.Methods.Add(invokeMethod);
-			invokeMethod = new DefaultMethod("EndInvoke", CreateReturnType(returnType), ModifierEnum.Public, c.Region, DomRegion.Empty, c);
-			invokeMethod.Parameters.Add(new DefaultParameter("result", CreateReturnType(typeof(IAsyncResult)), DomRegion.Empty));
-			c.Methods.Add(invokeMethod);
+			AnonymousMethodReturnType.AddDefaultDelegateMethod(c, CreateReturnType(returnType), p);
+			
 			currentClass.Pop();
 		}
 		
@@ -418,7 +408,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IParameter CreateParameter(AST.ParameterDeclarationExpression par, IMethod method)
 		{
-			IReturnType parType = CreateReturnType(par.TypeReference, method);
+			return CreateParameter(par, method, GetCurrentClass(), cu);
+		}
+		
+		internal static IParameter CreateParameter(AST.ParameterDeclarationExpression par, IMethod method, IClass currentClass, ICompilationUnit cu)
+		{
+			IReturnType parType = CreateReturnType(par.TypeReference, method, currentClass, cu);
 			DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DomRegion(par.StartLocation, par.EndLocation));
 			p.Modifiers = (ParameterModifiers)par.ParamModifier;
 			return p;
@@ -597,22 +592,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IReturnType CreateReturnType(AST.TypeReference reference, IMethod method)
 		{
-			IClass c = GetCurrentClass();
-			if (c == null) {
+			return CreateReturnType(reference, method, GetCurrentClass(), cu);
+		}
+		
+		static IReturnType CreateReturnType(AST.TypeReference reference, IMethod method, IClass currentClass, ICompilationUnit cu)
+		{
+			if (currentClass == null) {
 				return TypeVisitor.CreateReturnType(reference, new DefaultClass(cu, "___DummyClass"), method, 1, 1, cu.ProjectContent, true);
 			} else {
-				return TypeVisitor.CreateReturnType(reference, c, method, c.Region.BeginLine + 1, 1, cu.ProjectContent, true);
+				return TypeVisitor.CreateReturnType(reference, currentClass, method, currentClass.Region.BeginLine + 1, 1, cu.ProjectContent, true);
 			}
 		}
 		
 		IReturnType CreateReturnType(AST.TypeReference reference)
 		{
 			return CreateReturnType(reference, null);
-		}
-		
-		IReturnType CreateReturnType(Type type)
-		{
-			return ReflectionReturnType.Create(ProjectContentRegistry.Mscorlib, null, type, false);
 		}
 	}
 }

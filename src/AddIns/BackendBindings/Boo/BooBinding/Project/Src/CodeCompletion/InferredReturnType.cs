@@ -82,7 +82,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 			public override void OnYieldStatement(YieldStatement node)
 			{
 				noReturnStatement = false;
-				result = ReflectionReturnType.CreatePrimitive(typeof(System.Collections.IEnumerable));
+				IClass enumerable = ProjectContentRegistry.Mscorlib.GetClass("System.Collections.Generic.IEnumerable", 1);
+				result = new ConstructedReturnType(enumerable.DefaultReturnType, new IReturnType[] { new InferredReturnType(node.Expression, context) });
 			}
 			
 			public override bool Visit(Node node)

@@ -177,7 +177,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (parameters == null || parameters.Count == 0) {
 				m.Parameters = DefaultParameter.EmptyParameterList;
 			} else {
-				AddParameters(parameters, m.Parameters);
+				AddParameters(parameters, m.Parameters, m, m.DeclaringType);
 			}
 		}
 		void ConvertParameters(AST.ParameterDeclarationCollection parameters, DefaultProperty p)
@@ -185,14 +185,17 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (parameters == null || parameters.Count == 0) {
 				p.Parameters = DefaultParameter.EmptyParameterList;
 			} else {
-				AddParameters(parameters, p.Parameters);
+				AddParameters(parameters, p.Parameters, p, p.DeclaringType);
 			}
 		}
-		void AddParameters(AST.ParameterDeclarationCollection parameters, IList<IParameter> output)
+		internal static void AddParameters(AST.ParameterDeclarationCollection parameters, IList<IParameter> output, IMethodOrProperty method, IClass c)
 		{
+			if (c == null) throw new ArgumentNullException("c");
 			DefaultParameter p = null;
 			foreach (AST.ParameterDeclaration par in parameters) {
-				p = new DefaultParameter(par.Name, CreateReturnType(par.Type), GetRegion(par));
+				p = new DefaultParameter(par.Name,
+				                         CreateReturnType(par.Type, c, method as IMethod, c.Region.BeginLine + 1, 1, c.ProjectContent),
+				                         new DomRegion(par.LexicalInfo.Line, par.LexicalInfo.Column));
 				if (par.IsByRef) p.Modifiers |= ParameterModifiers.Ref;
 				output.Add(p);
 			}
@@ -211,7 +214,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 		}
 		public static IReturnType CreateReturnType(AST.TypeReference reference, IClass callingClass,
-		                                           IMember callingMember, int caretLine, int caretColumn,
+		                                           IMethodOrProperty callingMember, int caretLine, int caretColumn,
 		                                           IProjectContent projectContent)
 		{
 			if (reference == null) {
@@ -244,7 +247,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 				}
 				return rt;
 			} else if (reference is AST.CallableTypeReference) {
-				return new AnonymousMethodReturnType();
+				AST.CallableTypeReference ctr = (AST.CallableTypeReference)reference;
+				AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(new DefaultCompilationUnit(projectContent));
+				if (ctr.ReturnType != null) {
+					amrt.MethodReturnType = CreateReturnType(ctr.ReturnType, callingClass, callingMember, caretLine, caretColumn, projectContent);
+				}
+				AddParameters(ctr.Parameters, amrt.MethodParameters, callingMember, callingClass ?? new DefaultClass(new DefaultCompilationUnit(projectContent), "__Dummy"));
+				return amrt;
 			} else {
 				throw new NotSupportedException("unknown reference type: " + reference.ToString());
 			}

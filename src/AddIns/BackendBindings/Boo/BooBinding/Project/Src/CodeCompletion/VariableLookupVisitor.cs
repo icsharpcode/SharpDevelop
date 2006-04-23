@@ -26,9 +26,28 @@ namespace Grunwald.BooBinding.CodeCompletion
 			DeclarationFound(node.Declaration.Name, node.Declaration.Type, node.Initializer, node.LexicalInfo);
 		}
 		
-		public override void OnParameterDeclaration(ParameterDeclaration node)
+		LexicalInfo GetEndSourceLocation(Node node)
 		{
-			DeclarationFound(node.Name, node.Type, null, node.LexicalInfo);
+			if (node.LexicalInfo.IsValid) return node.LexicalInfo;
+			if (node is CallableBlockExpression) {
+				return GetEndSourceLocation((node as CallableBlockExpression).Body);
+			} else if (node is Block) {
+				StatementCollection st = (node as Block).Statements;
+				if (st.Count > 0) {
+					return GetEndSourceLocation(st[st.Count - 1]);
+				}
+			}
+			return node.LexicalInfo;
+		}
+		
+		public override void OnCallableBlockExpression(CallableBlockExpression node)
+		{
+			if (node.LexicalInfo.Line <= resolver.CaretLine && GetEndSourceLocation(node).Line >= resolver.CaretLine - 1) {
+				foreach (ParameterDeclaration param in node.Parameters) {
+					DeclarationFound(param.Name, param.Type, null, param.LexicalInfo);
+				}
+				base.OnCallableBlockExpression(node);
+			}
 		}
 		
 		protected override void OnError(Node node, Exception error)
@@ -51,7 +70,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override void OnForStatement(ForStatement node)
 		{
-			if (node.LexicalInfo.Line <= resolver.CaretLine && node.Block.EndSourceLocation.Line >= resolver.CaretLine - 1) {
+			if (node.LexicalInfo.Line <= resolver.CaretLine && GetEndSourceLocation(node).Line >= resolver.CaretLine - 1) {
 				foreach (Declaration decl in node.Declarations) {
 					IterationDeclarationFound(decl.Name, decl.Type, node.Iterator, node.LexicalInfo);
 				}
@@ -142,7 +161,14 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			if (expr == null)
 				return;
-			IReturnType returnType = new InferredReturnType(expr, resolver.CallingClass);
+			// Prevent creating an infinite number of InferredReturnTypes in inferring cycles
+			IReturnType returnType;
+			if (expr.ContainsAnnotation("DomReturnType")) {
+				returnType = (IReturnType)expr["DomReturnType"];
+			} else {
+				returnType = new InferredReturnType(expr, resolver.CallingClass);
+				expr.Annotate("DomReturnType", returnType);
+			}
 			if (useElementType)
 				returnType = new ElementReturnType(returnType);
 			result = new DefaultField.LocalVariableField(returnType, name,
