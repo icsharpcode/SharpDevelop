@@ -217,6 +217,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		DynamicTreeRow MakeSubMenu(string name, params IEnumerable<DynamicListRow>[] elements)
 		{
 			DynamicTreeRow rootRow = new DynamicTreeRow();
+			rootRow.ShowMinusWhileExpanded = true;
 			DebuggerGridControl.AddColumns(rootRow.ChildColumns);
 			rootRow[2].Text = name;
 			foreach(IEnumerable<DynamicListRow> rows in elements) {
