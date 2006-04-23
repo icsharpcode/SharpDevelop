@@ -230,6 +230,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				MessageService.ShowError(ex.Message);
 				return;
 			}
+			AbstractProject.filesToOpenAfterSolutionLoad.Clear();
 			try {
 				string file = GetPreferenceFileName(openSolution.FileName);
 				if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
@@ -239,9 +240,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
+			// Create project contents for solution
+			ParserService.OnSolutionLoaded();
+			
 			// preferences must be read before OnSolutionLoad is called to enable
 			// the event listeners to read e.Solution.Preferences.Properties
 			OnSolutionLoaded(new SolutionEventArgs(openSolution));
+		}
+		
+		internal static void ParserServiceCreatedProjectContents()
+		{
+			foreach (string file in AbstractProject.filesToOpenAfterSolutionLoad) {
+				if (File.Exists(file)) {
+					FileService.OpenFile(file);
+				}
+			}
+			AbstractProject.filesToOpenAfterSolutionLoad.Clear();
 		}
 		
 		static void ApplyConfigurationAndReadPreferences()
@@ -396,7 +410,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void OnSolutionLoaded(SolutionEventArgs e)
 		{
-			ParserService.OnSolutionLoaded();
 			if (SolutionLoaded != null) {
 				SolutionLoaded(null, e);
 			}

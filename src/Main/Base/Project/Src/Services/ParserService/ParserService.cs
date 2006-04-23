@@ -155,6 +155,7 @@ namespace ICSharpCode.Core
 					ICSharpCode.Core.MessageService.ShowError(e, "Error while retrieving project contents from " + project);
 				}
 			}
+			WorkbenchSingleton.SafeThreadAsyncCall((ThreadStart)ProjectService.ParserServiceCreatedProjectContents);
 			int workAmount = 0;
 			foreach (ParseProjectContent newContent in createdContents) {
 				if (abortLoadSolutionProjectsThread) return;
@@ -167,7 +168,7 @@ namespace ICSharpCode.Core
 			}
 			StatusBarService.ProgressMonitor.BeginTask("Parsing...", workAmount);
 			foreach (ParseProjectContent newContent in createdContents) {
-				if (abortLoadSolutionProjectsThread) return;
+				if (abortLoadSolutionProjectsThread) break;
 				try {
 					newContent.Initialize2();
 				} catch (Exception e) {
@@ -182,6 +183,7 @@ namespace ICSharpCode.Core
 			ParseProjectContent newContent = (ParseProjectContent)state;
 			newContent.Initialize1();
 			newContent.Initialize2();
+			StatusBarService.ProgressMonitor.Done();
 		}
 		
 		internal static IProjectContent CreateProjectContentForAddedProject(IProject project)
