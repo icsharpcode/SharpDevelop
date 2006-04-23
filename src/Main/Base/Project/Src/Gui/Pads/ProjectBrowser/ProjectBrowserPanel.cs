@@ -60,14 +60,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void TreeViewBeforeSelect(object sender, TreeViewCancelEventArgs e)
 		{
-			AbstractProjectBrowserTreeNode node = e.Node as AbstractProjectBrowserTreeNode;
-			if (node == null) {
-				toolStrip.Items.Clear();
-				return;
-			}
+			UpdateToolStrip(e.Node as AbstractProjectBrowserTreeNode);
+		}
+		
+		void UpdateToolStrip(AbstractProjectBrowserTreeNode node)
+		{
 			toolStrip.Items.Clear();
 			toolStrip.Items.AddRange(standardItems);
-			if (node.ToolbarAddinTreePath != null) {
+			ToolbarService.UpdateToolbar(toolStrip);
+			if (node != null && node.ToolbarAddinTreePath != null) {
 				toolStrip.Items.Add(new ToolStripSeparator());
 				toolStrip.Items.AddRange((ToolStripItem[])AddInTree.BuildItems(node.ToolbarAddinTreePath, node, false).ToArray(typeof(ToolStripItem)));
 			}
@@ -75,6 +76,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void ViewSolution(Solution solution)
 		{
+			UpdateToolStrip(null);
 			projectBrowserControl.ViewSolution(solution);
 		}
 		
@@ -161,6 +163,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void Clear()
 		{
 			projectBrowserControl.Clear();
+			UpdateToolStrip(null);
 		}
 		
 		public void SelectFile(string fileName)
