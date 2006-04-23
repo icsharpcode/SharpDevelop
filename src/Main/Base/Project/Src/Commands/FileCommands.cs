@@ -25,6 +25,17 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
+			if (ProjectService.CurrentProject != null) {
+				if (MessageService.ShowCustomDialog("${res:Dialog.NewFile.AddToProjectQuestion}",
+				                                    "${res:Dialog.NewFile.AddToProjectQuestionTitle}",
+				                                    "${res:Dialog.NewFile.AddToProjectQuestionProject}",
+				                                    "${res:Dialog.NewFile.AddToProjectQuestionStandalone}")
+				    == 1)
+				{
+					new Project.Commands.AddNewItemsToProject().Run();
+					return;
+				}
+			}
 			using (NewFileDialog nfd = new NewFileDialog(null)) {
 				nfd.Owner = (Form)WorkbenchSingleton.Workbench;
 				nfd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
@@ -164,7 +175,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 							fdiag.AddExtension    = true;
 							
 							fdiag.Filter          = String.Join("|", (string[])(AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(null)).ToArray(typeof(string)));
-						
+							
 							if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 								string fileName = fdiag.FileName;
 								// currently useless, because the fdiag.FileName can't
@@ -247,7 +258,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	public class ExitWorkbenchCommand : AbstractMenuCommand
 	{
 		public override void Run()
-		{			
+		{
 			((Form)WorkbenchSingleton.Workbench).Close();
 		}
 	}
@@ -312,7 +323,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	public class ClearRecentFiles : AbstractMenuCommand
 	{
 		public override void Run()
-		{			
+		{
 			try {
 				
 				FileService.RecentOpen.ClearRecentFiles();
@@ -323,7 +334,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	public class ClearRecentProjects : AbstractMenuCommand
 	{
 		public override void Run()
-		{			
+		{
 			try {
 				
 				FileService.RecentOpen.ClearRecentProjects();

@@ -263,9 +263,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			TreeNode selectedNode = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
-			DirectoryNode node = selectedNode as DirectoryNode;
-			if (node == null) {
-				node = selectedNode.Parent as DirectoryNode;
+			DirectoryNode node = null;
+			while (selectedNode != null && node == null) {
+				node = selectedNode as DirectoryNode;
+				selectedNode = selectedNode.Parent;
 			}
 			if (node == null) {
 				return;

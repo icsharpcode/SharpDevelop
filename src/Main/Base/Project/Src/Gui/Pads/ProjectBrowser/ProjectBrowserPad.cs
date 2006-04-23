@@ -72,6 +72,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (ProjectService.OpenSolution != null) {
 				ProjectServiceSolutionLoaded(null, new SolutionEventArgs(ProjectService.OpenSolution));
 			}
+			ActiveWindowChanged(null, null);
 		}
 		
 		public void StartLabelEdit(ExtTreeNode node)
