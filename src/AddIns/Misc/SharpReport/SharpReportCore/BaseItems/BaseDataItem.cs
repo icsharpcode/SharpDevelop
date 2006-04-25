@@ -66,11 +66,10 @@ namespace SharpReportCore {
 			// this.DbValue is formatted in the BeforePrintEvent catched in AbstractRenderer
 			
 			string toPrint = CheckForNullValue();
-			string formattedString = base.FireFormatOutput(toPrint,this.FormatString,"");
-
-			RectangleF rect = base.PrepareRectangle (rpea,formattedString);
-			base.PrintTheStuff (rpea,formattedString,rect);
-			base.NotiyfyAfterPrint (rpea.LocationAfterDraw);
+			
+			base.Text = base.FireFormatOutput(toPrint,this.FormatString,"");
+			base.Render (rpea);
+			
 		}
 		
 		public override string ToString() {

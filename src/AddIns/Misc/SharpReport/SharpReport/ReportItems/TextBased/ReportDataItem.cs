@@ -38,8 +38,11 @@ namespace SharpReport.ReportItems{
 			visualControl = new ReportDbTextControl();
 			
 			this.visualControl.Text = base.ColumnName;
-			visualControl.StringFormat = base.StringFormat;
+
 			this.Text = base.ColumnName;
+			
+			visualControl.ContentAlignment = base.ContentAlignment;
+			visualControl.StringTrimming = base.StringTrimming;
 			
 			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 
@@ -65,7 +68,10 @@ namespace SharpReport.ReportItems{
 		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
 			ItemsHelper.UpdateControlFromTextBase(this.visualControl,this);
-			this.visualControl.StringFormat = base.StringFormat;
+		
+			this.visualControl.ContentAlignment = base.ContentAlignment;
+			this.visualControl.StringTrimming = base.StringTrimming;
+			
 			this.HandlePropertyChanged(e.PropertyName);
 		}
 		

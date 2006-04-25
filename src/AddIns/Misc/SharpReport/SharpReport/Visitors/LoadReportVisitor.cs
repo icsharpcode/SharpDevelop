@@ -115,7 +115,10 @@ namespace SharpReport.Visitors {
 						itemRenderer = designableFactory.Create(ctrlElem.GetAttribute("type"));
 						
 						baseReportItem = (BaseReportItem)itemRenderer;
-						
+					
+						baseReportItem.SuspendLayout();
+						XmlHelper.SetReportItemValues (base.XmlFormReader,ctrlElem,baseReportItem);
+	
 						if (parentContainer == null) {
 							baseReportItem.Parent = baseSection;
 							baseSection.Items.Add (baseReportItem);
@@ -124,9 +127,7 @@ namespace SharpReport.Visitors {
 							parentContainer.Items.Add(baseReportItem);
 							
 						}
-						
-						XmlHelper.SetReportItemValues (base.XmlFormReader,ctrlElem,baseReportItem);
-
+						baseReportItem.ResumeLayout();
 						IContainerItem iContainer = baseReportItem as IContainerItem;
 						
 						if (iContainer != null) {

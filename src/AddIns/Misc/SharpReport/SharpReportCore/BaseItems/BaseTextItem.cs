@@ -32,6 +32,7 @@ namespace SharpReportCore {
 		private ContentAlignment contentAlignment;
 		
 		#region Constructor
+		
 		public BaseTextItem():base() {
 		this.stringFormat = StringFormat.GenericTypographic;
 		this.contentAlignment = ContentAlignment.MiddleLeft;
@@ -40,85 +41,19 @@ namespace SharpReportCore {
 		
 		#endregion
 		
-		private StringFormat BuildStringFormat(){
-			StringFormat format = StringFormat.GenericTypographic;
-			format.Trimming = this.stringTrimming;
-			format.FormatFlags = StringFormatFlags.LineLimit;
-
-//			if (base.RightToLeft)
-//			{
-//				format1.FormatFlags |= StringFormatFlags.DirectionRightToLeft;
-//			}
-			
-			ContentAlignment alignment = this.contentAlignment;
-			if (alignment <= ContentAlignment.MiddleCenter){
-				switch (alignment){
-					case ContentAlignment.TopLeft:{
-							format.Alignment = StringAlignment.Near;
-							format.LineAlignment = StringAlignment.Near;
-							return format;
-						}
-					case ContentAlignment.TopCenter:{
-							format.Alignment = StringAlignment.Center;
-							format.LineAlignment = StringAlignment.Near;
-							return format;
-						}
-					case (ContentAlignment.TopCenter | ContentAlignment.TopLeft):{
-							return format;
-						}
-					case ContentAlignment.TopRight:{
-							format.Alignment = StringAlignment.Far;
-							format.LineAlignment = StringAlignment.Near;
-							return format;
-						}
-					case ContentAlignment.MiddleLeft:{
-							format.Alignment = StringAlignment.Near;
-							format.LineAlignment = StringAlignment.Center;
-							return format;
-						}
-					case ContentAlignment.MiddleCenter:{
-							format.Alignment = StringAlignment.Center;
-							format.LineAlignment = StringAlignment.Center;
-							return format;
-						}
-				}
-				return format;
-			}
-			if (alignment <= ContentAlignment.BottomLeft){
-				if (alignment == ContentAlignment.MiddleRight){
-					format.Alignment = StringAlignment.Far;
-					format.LineAlignment = StringAlignment.Center;
-					return format;
-				}
-				if (alignment != ContentAlignment.BottomLeft){
-					return format;
-				}
-			}
-			else{
-				if (alignment != ContentAlignment.BottomCenter){
-					if (alignment == ContentAlignment.BottomRight)
-					{
-						format.Alignment = StringAlignment.Far;
-						format.LineAlignment = StringAlignment.Far;
-					}
-					return format;
-				}
-				format.Alignment = StringAlignment.Center;
-				format.LineAlignment = StringAlignment.Far;
-				return format;
-			}
-			format.Alignment = StringAlignment.Near;
-			format.LineAlignment = StringAlignment.Far;
-			return format;
-		}
-		
 		
 		public override void Render(ReportPageEventArgs rpea) {
+			
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
+			
 			base.Render(rpea);
 			RectangleF rect = PrepareRectangle (rpea,this.Text);
+			FillBackGround (rpea.PrintPageEventArgs.Graphics,
+			                rect);
+			DrawFrame (rpea.PrintPageEventArgs.Graphics,
+			           Rectangle.Ceiling (rect));
 			PrintTheStuff (rpea,this.Text,rect);
 			base.NotiyfyAfterPrint (rpea.LocationAfterDraw);
 		}
@@ -127,22 +62,29 @@ namespace SharpReportCore {
 			return "BaseTextItem";
 		}
 		
-		private void Decorate (ReportPageEventArgs rpea,Rectangle border) {
+		protected void FillBackGround (Graphics  graphics,RectangleF rectangle) {
 			using (SolidBrush brush = new SolidBrush(base.BackColor)) {
-				rpea.PrintPageEventArgs.Graphics.FillRectangle(brush,border);
-			}
-			if (base.DrawBorder == true) {
-				using (Pen pen = new Pen(Color.Black, 1)) {
-					rpea.PrintPageEventArgs.Graphics.DrawRectangle (pen,border);
-				}
+				graphics.FillRectangle(brush,rectangle);
 			}
 		}
 		
-		protected RectangleF PrepareRectangle (ReportPageEventArgs e,string text) {
+		protected void DrawFrame (Graphics graphics,Rectangle border) {
+			if (base.DrawBorder == true) {
+				using (Pen pen = new Pen(Color.Black, 1)) {
+					graphics.DrawRectangle (pen,border);
+				}
+				//TODO use this class to draw a border	
+//				RectangleShape shape = new RectangleShape();
+//					shape.DrawShape (graphics,
+//					                 new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1),
+//					                 border);
+			}
+		}
+		
+		protected RectangleF PrepareRectangle (ReportPageEventArgs rpea,string text) {
 			SizeF measureSize = new SizeF ();
-			measureSize = MeasureReportItem (e,text);			
-			RectangleF rect = base.DrawingRectangle (e,measureSize);
-			Decorate (e,System.Drawing.Rectangle.Ceiling (rect));
+			measureSize = MeasureReportItem (rpea,text);			
+			RectangleF rect = base.DrawingRectangle (rpea,measureSize);
 			return rect;
 		}
 		
@@ -172,20 +114,31 @@ namespace SharpReportCore {
 		                              RectangleF rectangle ) {
 			
 			if (rpea == null) {
-				throw new ArgumentException (this.Name);
+				throw new ArgumentNullException("rpea");
 			}
-			StringFormat fmt = this.stringFormat;			
+			
 			textDrawer.DrawString(rpea.PrintPageEventArgs.Graphics,
-			                      toPrint,
-			                      this.Font,
+			                      toPrint,this.Font,
 			                      new SolidBrush(this.ForeColor),
 			                      rectangle,
-			                      fmt);
-
-			rpea.LocationAfterDraw = new PointF (this.Location.X + this.Size.Width,
+			                      this.stringTrimming,this.contentAlignment);
+			                      
+			
+			 rpea.LocationAfterDraw = new PointF (this.Location.X + this.Size.Width,
 			                                  this.Location.Y + this.Size.Height);
 		}
 	
+		
+		public virtual string Text {
+			get {
+				return text;
+			}
+			set {
+				text = value;
+				base.NotifyPropertyChanged("Text");
+			}
+		}
+		
 		///<summary>
 		/// Formatstring like in MSDN
 		/// </summary>
@@ -204,20 +157,8 @@ namespace SharpReportCore {
 		}
 		
 		
-		public virtual string Text {
-			get {
-				return text;
-			}
-			set {
-				text = value;
-				base.NotifyPropertyChanged("Text");
-			}
-		}
-		
-		
-		
 		[Category("Appearance")]
-		public StringTrimming StringTrimming {
+		public  StringTrimming StringTrimming {
 			get {
 				return stringTrimming;
 			}
@@ -237,12 +178,13 @@ namespace SharpReportCore {
 				base.NotifyPropertyChanged("ContentAlignment");
 			}
 		}
-		
+	
 		[Browsable(false)]
 		[XmlIgnoreAttribute]
-		public StringFormat StringFormat {
+		public virtual StringFormat StringFormat {
 			get {
-				return this.BuildStringFormat();
+				return this.textDrawer.BuildStringFormat (this.StringTrimming,
+				                                          this.ContentAlignment);
 			}
 		}
 	}

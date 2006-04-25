@@ -248,7 +248,7 @@ namespace SharpReport{
 		}
 	
 		private void OnItemAddeded(object sender, CollectionItemEventArgs<IItemRenderer> e){
-			
+		
 			SharpReport.Designer.IDesignable iDesignable = e.Item as SharpReport.Designer.IDesignable;
 		
 			if (iDesignable != null) {
@@ -259,7 +259,7 @@ namespace SharpReport{
 					iDesignable.VisualControl.Focus();
 					iDesignable.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (OnPropertyChanged);
 				}
-			}
+			}                  
 		}
 		
 		private void OnRemoveTopLevelItem(object sender, CollectionItemEventArgs<IItemRenderer> e){

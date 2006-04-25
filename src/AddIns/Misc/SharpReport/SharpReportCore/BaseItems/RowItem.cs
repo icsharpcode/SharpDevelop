@@ -23,7 +23,7 @@ namespace SharpReportCore{
 		
 		private ReportItemCollection items;
 		private Padding padding;
-		private Color secondaryBackColor;
+		private Color alternateBackColor;
 		private int changeBackColorEveryNRow;
 		
 		public RowItem():this (String.Empty){
@@ -64,7 +64,8 @@ namespace SharpReportCore{
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
-			
+			System.Console.WriteLine("");
+			System.Console.WriteLine("--Start Row Item");
 			base.Render(rpea);
 			RectangleF rect = PrepareRectangle (rpea);
 			
@@ -79,7 +80,8 @@ namespace SharpReportCore{
 				childItem.Render (rpea);
 				childItem.Location = new Point(loc.X,loc.Y);
 			}
-			
+			System.Console.WriteLine("--End of RowItem");
+			System.Console.WriteLine("");
 			base.NotiyfyAfterPrint (rpea.LocationAfterDraw);
 		}
 		
@@ -96,12 +98,12 @@ namespace SharpReportCore{
 		
 		[Category("Appearance"),
 		 Description("Change the Backcolor on every 'N' Row")]
-		public Color SecondaryBackColor {
+		public Color AlternateBackColor {
 			get {
-				return this.secondaryBackColor;
+				return this.alternateBackColor;
 			}
 			set {
-				this.secondaryBackColor = value;
+				this.alternateBackColor = value;
 				base.NotifyPropertyChanged("SecondaryBackColor");
 			}
 		}
