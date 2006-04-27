@@ -26,25 +26,27 @@ namespace Grunwald.BooBinding.CodeCompletion
 			DeclarationFound(node.Declaration.Name, node.Declaration.Type, node.Initializer, node.LexicalInfo);
 		}
 		
-		LexicalInfo GetEndSourceLocation(Node node)
+		SourceLocation GetEndSourceLocation(Node node)
 		{
-			if (node.LexicalInfo.IsValid) return node.LexicalInfo;
+			if (node.EndSourceLocation.IsValid) return node.EndSourceLocation;
 			if (node is CallableBlockExpression) {
 				return GetEndSourceLocation((node as CallableBlockExpression).Body);
+			} else if (node is ForStatement) {
+				return GetEndSourceLocation((node as ForStatement).Block);
 			} else if (node is Block) {
 				StatementCollection st = (node as Block).Statements;
 				if (st.Count > 0) {
 					return GetEndSourceLocation(st[st.Count - 1]);
 				}
 			}
-			return node.LexicalInfo;
+			return node.EndSourceLocation;
 		}
 		
 		public override void OnCallableBlockExpression(CallableBlockExpression node)
 		{
 			if (node.LexicalInfo.Line <= resolver.CaretLine && GetEndSourceLocation(node).Line >= resolver.CaretLine - 1) {
 				foreach (ParameterDeclaration param in node.Parameters) {
-					DeclarationFound(param.Name, param.Type, null, param.LexicalInfo);
+					DeclarationFound(param.Name, param.Type ?? (resolver.IsDucky ? new SimpleTypeReference("duck") : new SimpleTypeReference("object")), null, param.LexicalInfo);
 				}
 				base.OnCallableBlockExpression(node);
 			}
@@ -225,7 +227,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (declarationType != null) {
 				Add(declarationName, declarationType);
 			} else if (initializer != null) {
-				Add(declarationName, initializer, false);
+				if (!knownVariableNames.Contains(declarationName)) {
+					Add(declarationName, initializer, false);
+				}
 			}
 		}
 		

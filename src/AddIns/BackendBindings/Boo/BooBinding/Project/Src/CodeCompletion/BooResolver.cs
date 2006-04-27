@@ -63,6 +63,19 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return cu;
 			}
 		}
+		
+		/// <summary>
+		/// Gets if duck typing is enabled for the Boo project.
+		/// </summary>
+		public bool IsDucky {
+			get {
+				BooProject p = pc.Project as BooProject;
+				if (p != null)
+					return p.Ducky;
+				else
+					return false;
+			}
+		}
 		#endregion
 		
 		#region Initialization

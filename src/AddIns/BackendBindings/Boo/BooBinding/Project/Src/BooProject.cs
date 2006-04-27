@@ -102,5 +102,12 @@ namespace Grunwald.BooBinding
 				return BooAmbience.Instance;
 			}
 		}
+		
+		[Browsable(false)]
+		public bool Ducky {
+			get {
+				return GetProperty("Ducky", false);
+			}
+		}
 	}
 }
