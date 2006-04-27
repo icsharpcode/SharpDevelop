@@ -182,6 +182,36 @@ namespace Grunwald.BooBinding.Tests
 			LocalResolveResult rr = Resolve<LocalResolveResult>("myObject", "/*inRecursiveClosure*/");
 			Assert.AreEqual("System.Object", rr.ResolvedType.FullyQualifiedName);
 		}
+		
+		[Test]
+		public void EqualityOperator()
+		{
+			ResolveResult rr = Resolve<ResolveResult>("0 == 0");
+			Assert.AreEqual("System.Boolean", rr.ResolvedType.FullyQualifiedName);
+			rr = Resolve<ResolveResult>("0 != 1");
+			Assert.AreEqual("System.Boolean", rr.ResolvedType.FullyQualifiedName);
+			rr = Resolve<ResolveResult>("null is null");
+			Assert.AreEqual("System.Boolean", rr.ResolvedType.FullyQualifiedName);
+			rr = Resolve<ResolveResult>("object() is not null");
+			Assert.AreEqual("System.Boolean", rr.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void ClassMethodAmbiguity()
+		{
+			string prog =
+				"class Test:\n" +
+				"\tdef constructor():\n" +
+				"\t\tpass\n" +
+				"class OtherClass:\n" +
+				"\tdef Test():\n" +
+				"\t\t/*mark*/\n" +
+				"\t\tpass\n";
+			ResolveResult rr = Resolve(prog, new ExpressionResult("Test()"), "/*mark*/");
+			Assert.IsNotNull(rr);
+			Assert.IsInstanceOfType(typeof(MemberResolveResult), rr);
+			Assert.AreEqual("OtherClass.Test", (rr as MemberResolveResult).ResolvedMember.FullyQualifiedName);
+		}
 		#endregion
 		
 		#region Regression

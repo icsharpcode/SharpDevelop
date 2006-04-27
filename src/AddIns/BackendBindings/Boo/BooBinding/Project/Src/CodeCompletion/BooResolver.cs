@@ -286,18 +286,18 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent, ExpressionContext context)
 		{
-			ArrayList result;
+			ArrayList result = new ArrayList();
 			
 			if (!Initialize(fileName, caretLine, caretColumn))
 				return null;
 			if (context == ExpressionContext.Importable) {
-				result = new ArrayList();
 				pc.AddNamespaceContents(result, "", pc.Language, true);
 				NRResolver.AddUsing(result, pc.DefaultImports, pc);
 				return result;
 			}
 			
-			result = GetImportedNamespaceContents();
+			NRResolver.AddContentsFromCalling(result, callingClass, callingMember);
+			AddImportedNamespaceContents(result);
 			
 			if (BooProject.BooCompilerPC != null) {
 				if (context == ExpressionFinder.BooAttributeContext.Instance) {
@@ -316,8 +316,6 @@ namespace Grunwald.BooBinding.CodeCompletion
 					}
 				}
 			}
-			
-			NRResolver.AddContentsFromCalling(result, callingClass, callingMember);
 			
 			List<string> knownVariableNames = new List<string>();
 			foreach (object o in result) {
@@ -338,14 +336,19 @@ namespace Grunwald.BooBinding.CodeCompletion
 		// used by ctrl+space and resolve visitor (resolve identifier)
 		public ArrayList GetImportedNamespaceContents()
 		{
-			ArrayList list = new ArrayList();
+			ArrayList result = new ArrayList();
+			AddImportedNamespaceContents(result);
+			return result;
+		}
+		
+		void AddImportedNamespaceContents(ArrayList list)
+		{
 			IClass c;
 			foreach (KeyValuePair<string, string> pair in BooAmbience.TypeConversionTable) {
 				c = GetPrimitiveClass(pc, pair.Key, pair.Value);
 				if (c != null) list.Add(c);
 			}
 			NRResolver.AddImportedNamespaceContents(list, cu, callingClass);
-			return list;
 		}
 		#endregion
 	}

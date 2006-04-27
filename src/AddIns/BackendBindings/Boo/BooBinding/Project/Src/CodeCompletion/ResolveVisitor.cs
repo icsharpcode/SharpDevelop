@@ -361,19 +361,28 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			ClearResult();
 			node.Target.Accept(this);
+			if (resolveResult is MixedResolveResult) {
+				MixedResolveResult mixed = (MixedResolveResult)resolveResult;
+				resolveResult = mixed.TypeResult;
+				foreach (ResolveResult rr in mixed.Results) {
+					if (rr is MethodResolveResult) {
+						resolveResult = rr;
+						break;
+					}
+				}
+			}
 			if (resolveResult == null)
 				return;
+			
 			if (resolveResult is MethodResolveResult) {
 				// normal method call
 				string methodName = ((MethodResolveResult)resolveResult).Name;
 				IReturnType containingType = ((MethodResolveResult)resolveResult).ContainingType;
 				
 				ResolveMethodInType(containingType, methodName, node.Arguments);
-			} else if (resolveResult is TypeResolveResult || resolveResult is MixedResolveResult) {
-				TypeResolveResult trr = resolveResult as TypeResolveResult;
-				if (trr == null)
-					trr = (resolveResult as MixedResolveResult).TypeResult;
-				if (trr != null && trr.ResolvedClass != null) {
+			} else if (resolveResult is TypeResolveResult) {
+				TypeResolveResult trr = (TypeResolveResult)resolveResult;
+				if (trr.ResolvedClass != null) {
 					if (trr.ResolvedClass.FullyQualifiedName == "array") {
 						ResolveArrayCreation(node.Arguments);
 						return;
@@ -535,6 +544,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			switch (node.Operator) {
 				case BinaryOperatorType.GreaterThan:
 				case BinaryOperatorType.GreaterThanOrEqual:
+				case BinaryOperatorType.Equality:
 				case BinaryOperatorType.Inequality:
 				case BinaryOperatorType.LessThan:
 				case BinaryOperatorType.LessThanOrEqual:

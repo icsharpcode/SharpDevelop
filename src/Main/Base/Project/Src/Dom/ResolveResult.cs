@@ -214,6 +214,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public IEnumerable<ResolveResult> Results {
+			get {
+				yield return primaryResult;
+				yield return secondaryResult;
+			}
+		}
+		
 		public TypeResolveResult TypeResult {
 			get {
 				if (primaryResult is TypeResolveResult)
