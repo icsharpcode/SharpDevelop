@@ -33,6 +33,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return GetEndSourceLocation((node as CallableBlockExpression).Body);
 			} else if (node is ForStatement) {
 				return GetEndSourceLocation((node as ForStatement).Block);
+			} else if (node is ExceptionHandler) {
+				return GetEndSourceLocation((node as ExceptionHandler).Block);
 			} else if (node is Block) {
 				StatementCollection st = (node as Block).Statements;
 				if (st.Count > 0) {
@@ -102,6 +104,14 @@ namespace Grunwald.BooBinding.CodeCompletion
 					DeclarationFound(decl.Name, decl.Type, null, decl.LexicalInfo);
 				}
 			}
+		}
+		
+		public override void OnExceptionHandler(ExceptionHandler node)
+		{
+			if (node.LexicalInfo.Line <= resolver.CaretLine && GetEndSourceLocation(node).Line >= resolver.CaretLine) {
+				DeclarationFound(node.Declaration.Name, node.Declaration.Type ?? new SimpleTypeReference("System.Exception"), null, node.Declaration.LexicalInfo);
+			}
+			base.OnExceptionHandler(node);
 		}
 	}
 	
