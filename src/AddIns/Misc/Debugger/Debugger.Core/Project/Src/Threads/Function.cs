@@ -42,7 +42,7 @@ namespace Debugger
 
 		public string Name { 
 			get { 
-				return methodProps.Name; 
+				return methodProps.Name; // + "(" + chainIndex.ToString() + ", " + frameIndex.ToString() + ")";
 			} 
 		}
 		

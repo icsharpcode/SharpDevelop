@@ -249,8 +249,11 @@ namespace Debugger
 			return corFrameEnum.Next();
 		}
 		
+		// NOTE: During evlulation some chains may be temporaly removed
 		internal void CheckExpirationOfFunctions()
 		{
+			if (debugger.Evaluating) return;
+			
 			ICorDebugChainEnum corChainEnum = corThread.EnumerateChains();
 			uint maxChainIndex = corChainEnum.Count - 1;
 			
