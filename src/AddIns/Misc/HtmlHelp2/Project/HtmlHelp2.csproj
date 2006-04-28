@@ -36,11 +36,6 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <Reference Include="ICSharpCode.TextEditor">
-      <HintPath>..\..\..\..\..\bin\ICSharpCode.TextEditor.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\BaseControls\TocPad.cs">
@@ -107,6 +102,11 @@
     <ProjectReference Include="..\JScriptGlobals\HtmlHelp2JScriptGlobals.vbproj">
       <Project>{E54A5AD2-418D-4A85-BA5E-CD803DE38715}</Project>
       <Name>HtmlHelp2JScriptGlobals</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

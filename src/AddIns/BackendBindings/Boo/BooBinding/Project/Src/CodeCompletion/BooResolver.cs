@@ -197,6 +197,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return new NamespaceResolveResult(callingClass, callingMember, "");
 			}
 			
+			ResolveResult rr = NRResolver.GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, caretLine, caretColumn, expressionResult.Expression);
+			if (rr != null) return rr;
+			
 			AST.Expression expr;
 			try {
 				expr = Boo.Lang.Parser.BooParser.ParseExpression("expression", expressionResult.Expression);

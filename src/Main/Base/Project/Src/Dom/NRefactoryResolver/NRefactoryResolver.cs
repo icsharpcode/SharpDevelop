@@ -121,6 +121,28 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return expression;
 		}
 		
+		public static ResolveResult GetResultFromDeclarationLine(IClass callingClass, IMethodOrProperty callingMember, int caretLine, int caretColumn, string expression)
+		{
+			if (callingClass == null) return null;
+			int pos = expression.IndexOf('(');
+			if (pos >= 0) {
+				expression = expression.Substring(0, pos);
+			}
+			expression = expression.Trim();
+			if (!callingClass.BodyRegion.IsInside(caretLine, caretColumn)
+			    && callingClass.ProjectContent.Language.NameComparer.Equals(expression, callingClass.Name))
+			{
+				return new TypeResolveResult(callingClass, callingMember, callingClass);
+			}
+			if (callingMember != null
+			    && !callingMember.BodyRegion.IsInside(caretLine, caretColumn)
+			    && callingClass.ProjectContent.Language.NameComparer.Equals(expression, callingMember.Name))
+			{
+				return new MemberResolveResult(callingClass, callingMember, callingMember);
+			}
+			return null;
+		}
+		
 		public ResolveResult Resolve(ExpressionResult expressionResult,
 		                             int caretLineNumber,
 		                             int caretColumn,
@@ -178,6 +200,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			RunLookupTableVisitor(fileContent);
+			
+			ResolveResult rr = GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, caretLine, caretColumn, expression);
+			if (rr != null) return rr;
 			
 			return ResolveInternal(expr, expressionResult.Context);
 		}
