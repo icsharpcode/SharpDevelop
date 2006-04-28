@@ -353,6 +353,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				MessageService.ShowError(psi.FileName + " does not exist and cannot be started.");
 				return;
 			}
+			if (!System.IO.Directory.Exists(psi.WorkingDirectory)) {
+				MessageService.ShowError("Working directory " + psi.WorkingDirectory + " does not exist; the process cannot be started. You can specify the working directory in the project options.");
+				return;
+			}
 			
 			if (withDebugging) {
 				DebuggerService.CurrentDebugger.Start(psi);

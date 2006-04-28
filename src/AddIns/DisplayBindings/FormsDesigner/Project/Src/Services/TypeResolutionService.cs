@@ -17,6 +17,7 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
 using System.Diagnostics;
+using Microsoft.Win32;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
@@ -339,6 +340,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			ICSharpCode.Core.LoggingService.Warn("TODO: Add Assembly reference : " + name);
 		}
 		
+		#region VSDesigner workarounds
 		/// <summary>
 		/// HACK - Ignore any requests for types from the Microsoft.VSDesigner
 		/// assembly.  There are smart tag problems if data adapter
@@ -357,8 +359,38 @@ namespace ICSharpCode.FormsDesigner.Services
 			return false;
 		}
 		
+		static string vsDesignerIdeDir;
+		
+		static void RegisterVSDesignerWorkaround()
+		{
+			if (vsDesignerIdeDir == null) {
+				vsDesignerIdeDir = "";
+				RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\8.0\Setup\VS");
+				if (key != null) {
+					vsDesignerIdeDir = key.GetValue("VS7CommonDir") as string ?? "";
+					if (vsDesignerIdeDir.Length > 0) {
+						vsDesignerIdeDir = Path.Combine(vsDesignerIdeDir, "IDE");
+						AppDomain.CurrentDomain.AssemblyResolve += delegate(object sender, ResolveEventArgs args) {
+							string shortName = args.Name;
+							if (shortName.IndexOf(',') >= 0) {
+								shortName = shortName.Substring(0, shortName.IndexOf(','));
+							}
+							if (shortName.StartsWith("Microsoft.")
+							    && File.Exists(Path.Combine(vsDesignerIdeDir, shortName + ".dll")))
+							{
+								return Assembly.LoadFrom(Path.Combine(vsDesignerIdeDir, shortName + ".dll"));
+							}
+							return null;
+						};
+					}
+				}
+			}
+		}
+		#endregion
+		
 		public static void AddAssemblyResolver()
 		{
+			RegisterVSDesignerWorkaround();
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolveEventHandler;
 		}
 		
