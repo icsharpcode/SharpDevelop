@@ -116,5 +116,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			UrlBehavior = "Static";
 		}
+		
+		public override ProjectItem Clone()
+		{
+			ProjectItem n = new WebReferenceUrl(this.Project);
+			n.Include = this.Include;
+			this.CopyExtraPropertiesTo(n);
+			return n;
+		}
 	}
 }

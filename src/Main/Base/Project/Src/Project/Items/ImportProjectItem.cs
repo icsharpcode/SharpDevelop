@@ -23,5 +23,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				return ItemType.Import;
 			}
 		}
+		
+		public override ProjectItem Clone()
+		{
+			ImportProjectItem n = new ImportProjectItem(this.Project);
+			n.Include = this.Include;
+			this.CopyExtraPropertiesTo(n);
+			return n;
+		}
 	}
 }

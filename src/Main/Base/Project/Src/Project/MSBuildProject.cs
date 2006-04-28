@@ -117,6 +117,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
+			ExpandWildcards();
 			
 			string userSettingsFileName = projectFileName + ".user";
 			if (File.Exists(userSettingsFileName)) {
@@ -134,6 +135,26 @@ namespace ICSharpCode.SharpDevelop.Project
 									break;
 							}
 						}
+					}
+				}
+			}
+		}
+		
+		void ExpandWildcards()
+		{
+			for (int i = 0; i < items.Count; i++) {
+				ProjectItem item = items[i];
+				if (item.Include.IndexOf('*') >= 0 && item is FileProjectItem) {
+					items.RemoveAt(i--);
+					try {
+						string path = Path.Combine(this.Directory, Path.GetDirectoryName(item.Include));
+						foreach (string file in System.IO.Directory.GetFiles(path, Path.GetFileName(item.Include))) {
+							ProjectItem n = item.Clone();
+							n.Include = FileUtility.GetRelativePath(this.Directory, file);
+							items.Insert(++i, n);
+						}
+					} catch (Exception ex) {
+						MessageService.ShowError(ex, "Error expanding wildcards in " + item.Include);
 					}
 				}
 			}

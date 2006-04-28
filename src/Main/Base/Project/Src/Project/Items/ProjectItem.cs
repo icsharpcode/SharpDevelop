@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		BootstrapperFile
 	}
 	
-	public abstract class ProjectItem : LocalizedObject, IDisposable
+	public abstract class ProjectItem : LocalizedObject, IDisposable, ICloneable
 	{
 		string        include;
 		PropertyGroup properties = new PropertyGroup();
@@ -80,6 +80,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			string newInclude = item.Include;
 			item.Properties.Merge(this.Properties);
 			item.Include = newInclude;
+		}
+		
+		public virtual ProjectItem Clone()
+		{
+			// TODO: Make me abstract in SD 2.1
+			throw new NotSupportedException();
+		}
+		
+		object ICloneable.Clone()
+		{
+			return this.Clone();
 		}
 		
 		[Browsable(false)]
