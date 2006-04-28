@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -896,6 +896,9 @@ namespace ICSharpCode.NRefactory.Parser
 			IdentifierExpression identifier = fieldReferenceExpression.TargetObject as IdentifierExpression;
 			if (identifier != null)
 				return !IsField(identifier.Identifier) && !IsLocalVariable(identifier.Identifier);
+			TypeReferenceExpression tre = fieldReferenceExpression.TargetObject as TypeReferenceExpression;
+			if (tre != null)
+				return true;
 			return false;
 		}
 		
@@ -958,6 +961,9 @@ namespace ICSharpCode.NRefactory.Parser
 				if (Type.GetType(type.ToString()) == null) {
 					type = new StringBuilder(oldType);
 				}
+				return new CodeTypeReferenceExpression(type.ToString());
+			} else if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
+				type.Insert(0, ((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference.SystemType);
 				return new CodeTypeReferenceExpression(type.ToString());
 			} else {
 				return null;

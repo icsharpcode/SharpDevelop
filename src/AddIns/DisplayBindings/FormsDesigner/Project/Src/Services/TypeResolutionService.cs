@@ -266,6 +266,11 @@ namespace ICSharpCode.FormsDesigner.Services
 			if (IgnoreType(name)) {
 				return null;
 			}
+			#if DEBUG
+			if (!name.StartsWith("System.")) {
+				LoggingService.Debug("TypeResolutionService: Looking for " + name);
+			}
+			#endif
 			try {
 				
 				Type type = Type.GetType(name, false, ignoreCase);

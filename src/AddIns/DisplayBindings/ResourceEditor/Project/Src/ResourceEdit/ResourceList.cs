@@ -120,10 +120,10 @@ namespace ResourceEditor
 		
 		public void LoadFile(string filename)
 		{
-			Stream s = File.OpenRead(filename);
 			switch (Path.GetExtension(filename).ToLowerInvariant()) {
 				case ".resx":
-					ResXResourceReader rx = new ResXResourceReader(s);
+					ResXResourceReader rx = new ResXResourceReader(filename);
+					rx.BasePath = Path.GetDirectoryName(filename);
 					IDictionaryEnumerator n = rx.GetEnumerator();
 					while (n.MoveNext()) 
 						if (!resources.ContainsKey(n.Key.ToString()))
@@ -135,7 +135,7 @@ namespace ResourceEditor
 					//// new file will fail here - so we have to ignore exception(s)
 					ResourceReader rr=null;
 					try {
-						rr = new ResourceReader(s);
+						rr = new ResourceReader(filename);
 						foreach (DictionaryEntry entry in rr) {
 							if (!resources.ContainsKey(entry.Key.ToString()))
 								resources.Add(entry.Key.ToString(), new ResourceItem(entry.Key.ToString(), entry.Value));
@@ -149,7 +149,6 @@ namespace ResourceEditor
 					}
 					break;
 			}
-			s.Close();
 			InitializeListView();
 		}
 		
