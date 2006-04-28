@@ -22,6 +22,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		{
 		}
 		
+		void ReadPreProcessingDirective()
+		{
+			Point start = new Point(Col - 1, Line);
+			string directive = ReadIdent('#');
+			string argument  = ReadToEOL();
+			this.specialTracker.AddPreProcessingDirective(directive, argument.Trim(), start, new Point(start.X + directive.Length + argument.Length, start.Y));
+		}
+		
 		protected override Token Next()
 		{
 			int nextChar;
@@ -47,10 +55,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						}
 						break;
 					case '#':
-						Point start = new Point(Col - 1, Line);
-						string directive = ReadIdent('#');
-						string argument  = ReadToEOL();
-						this.specialTracker.AddPreProcessingDirective(directive, argument.Trim(), start, new Point(start.X + directive.Length + argument.Length, start.Y));
+						ReadPreProcessingDirective();
 						continue;
 					case '"':
 						token = ReadString();
@@ -817,7 +822,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						}
 						break;
 					case '#':
-						SkipToEOL();
+						ReadPreProcessingDirective();
 						break;
 					case '"':
 						ReadString();
