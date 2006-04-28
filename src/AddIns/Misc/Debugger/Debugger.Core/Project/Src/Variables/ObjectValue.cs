@@ -182,7 +182,7 @@ namespace Debugger
 		
 		ICorDebugValue[] GetArgsForEval(MethodProps method, ValueGetter getter)
 		{
-			ObjectValue updatedVal = (ObjectValue)getter();
+			ObjectValue updatedVal = getter() as ObjectValue;
 			if (this.IsEquivalentValue(updatedVal)) {
 				if (method.IsStatic) {
 					return new ICorDebugValue[] {};

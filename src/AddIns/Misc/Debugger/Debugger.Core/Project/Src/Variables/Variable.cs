@@ -120,6 +120,13 @@ namespace Debugger
 			this.valueGetter = valueGetter;
 			this.subVariables = new VariableCollection(debugger);
 			this.subVariables.Updating += OnSubVariablesUpdating;
+			
+			if (name.StartsWith("<") && name.Contains(">") && name != "<Base class>") {
+				string middle = name.TrimStart('<').Split('>')[0]; // Get text between '<' and '>'
+				if (middle != "") {
+					this.name = middle;
+				}
+			}
 		}
 		
 		void OnSubVariablesUpdating(object sender, VariableCollectionEventArgs e)
