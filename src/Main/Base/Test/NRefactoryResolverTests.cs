@@ -607,6 +607,58 @@ class Activator {
 		}
 		
 		[Test]
+		public void ParentNamespaceTypeLookup()
+		{
+			// Classes in the current namespace are preferred over classes from
+			// imported namespaces
+			string program = @"using System;
+namespace Root {
+  class Alpha {}
+}
+namespace Root.Child {
+  class Beta {
+  
+  }
+}
+";
+			ResolveResult result = Resolve<TypeResolveResult>(program, "Alpha", 7);
+			Assert.AreEqual("Root.Alpha", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void ParentNamespaceCtrlSpace()
+		{
+			// Classes in the current namespace are preferred over classes from
+			// imported namespaces
+			string program = @"using System;
+namespace Root {
+  class Alpha {}
+}
+namespace Root.Child {
+  class Beta {
+  
+  }
+}
+";
+			AddCompilationUnit(Parse("a.cs", program), "a.cs");
+			
+			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguage.CSharp);
+			ArrayList m = resolver.CtrlSpace(7, 0, "a.cs", program, ExpressionContext.Default);
+			Assert.IsTrue(TypeExists(m, "Beta"), "Meta must exist");
+			Assert.IsTrue(TypeExists(m, "Alpha"), "Alpha must exist");
+		}
+		
+		bool TypeExists(ArrayList m, string name)
+		{
+			foreach (object o in m) {
+				IClass c = o as IClass;
+				if (c != null && c.Name == name)
+					return true;
+			}
+			return false;
+		}
+		
+		[Test]
 		public void ImportedSubnamespaceTestCSharp()
 		{
 			// using an import in this way is not possible in C#

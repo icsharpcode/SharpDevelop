@@ -1052,9 +1052,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			AddUsing(result, projectContent.DefaultImports, projectContent);
 			
 			if (callingClass != null) {
-				foreach (object member in projectContent.GetNamespaceContents(callingClass.Namespace)) {
-					if (!result.Contains(member))
-						result.Add(member);
+				string[] namespaceParts = callingClass.Namespace.Split('.');
+				for (int i = 1; i <= namespaceParts.Length; i++) {
+					foreach (object member in projectContent.GetNamespaceContents(string.Join(".", namespaceParts, 0, i))) {
+						if (!result.Contains(member))
+							result.Add(member);
+					}
 				}
 				IClass currentClass = callingClass;
 				do {
