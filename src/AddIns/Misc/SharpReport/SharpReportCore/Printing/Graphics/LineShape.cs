@@ -20,7 +20,7 @@
 // Peter Forstmeier (Peter.Forstmeier@t-online.de)
 using System;
 using System.Drawing;
-	
+using System.Drawing.Drawing2D;	
 	
 /// <summary>
 /// Draw a Line, used by DesingerControls and printing stuff
@@ -37,21 +37,13 @@ namespace SharpReportCore {
 		/// </summary>
 		public LineShape() {
 		}
+	
+		public override GraphicsPath CreatePath(RectangleF rectangle){
+			GraphicsPath path = new GraphicsPath();
+			float halfRect = rectangle.Top + (rectangle.Height /2);
+			path.AddLine(rectangle.Left, halfRect, rectangle.Right, halfRect);
+			return path;
 
-		public override void DrawShape(Graphics graphics, BaseLine baseLine, RectangleF rectangle) {
-			base.DrawShape(graphics,baseLine,rectangle);
-			using (Pen p = new Pen(baseLine.Color,baseLine.Thickness)) {
-				p.DashStyle = baseLine.DashStyle;
-				float halfRect = rectangle.Top + (rectangle.Height / 2);
-				
-				graphics.DrawLine (p,
-				            rectangle.X,
-				            halfRect,
-				            rectangle.X + rectangle.Width,
-				            halfRect);
-			}
 		}
-		
-		
 	}
 }

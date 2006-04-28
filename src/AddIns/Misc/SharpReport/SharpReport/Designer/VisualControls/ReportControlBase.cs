@@ -129,6 +129,10 @@ namespace SharpReport.Designer{
 			this.Invalidate();
 		}
 		
+		protected Rectangle FocusRectangle {
+			get {return this.controlHelper.BuildFocusRectangle;}
+		}
+		
 		#region Windows Forms Designer generated code
 		/// <summary>
 		/// This method is required for Windows Forms designer support.

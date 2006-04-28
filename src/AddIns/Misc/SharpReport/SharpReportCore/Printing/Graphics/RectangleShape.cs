@@ -20,6 +20,7 @@
 // Peter Forstmeier (Peter.Forstmeier@t-online.de)
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 /// <summary>
 /// Draw a Rectangle, used by DesingerControls and printing stuff
@@ -34,27 +35,13 @@ namespace SharpReportCore {
 		public RectangleShape() {
 		}
 		
+		
+		public override GraphicsPath CreatePath(RectangleF rect){
+			GraphicsPath path1 = new GraphicsPath();
+			path1.AddRectangle(rect);
+			return path1;
+		}
 
-		public override void DrawShape(Graphics graphics, BaseLine baseLine, RectangleF rectangle) {
-			base.DrawShape(graphics,baseLine,rectangle);
-			using (Pen p = new Pen(baseLine.Color,baseLine.Thickness)) {
-				p.DashStyle = baseLine.DashStyle;
-				graphics.DrawRectangle (p,rectangle.Left,
-				                 rectangle.Top,
-				                 rectangle.Width,
-				                 rectangle.Height);
-			}
-		}
-		
-		public override void FillShape(Graphics graphics, AbstractFillPattern fillPattern, RectangleF rectangle) {
-			graphics.FillRectangle(fillPattern.Brush,
-			                rectangle);
-		}
-		
-		public override void FillShape(Graphics graphics, Brush brush, RectangleF rectangle) {
-			graphics.FillRectangle(brush, rectangle);
-			       
-		}
-		
+
 	}
 }

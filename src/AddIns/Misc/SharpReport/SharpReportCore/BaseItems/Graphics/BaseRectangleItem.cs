@@ -25,11 +25,9 @@ using System.Drawing;
 namespace SharpReportCore {	
 	public class BaseRectangleItem : SharpReportCore.BaseGraphicItem {
 		
-		private ArrayList arrayList;
 		RectangleShape shape = new RectangleShape();
 		
 		public BaseRectangleItem() {
-			arrayList = new ArrayList();
 		}
 		
 		public override void Render(ReportPageEventArgs rpea) {
@@ -39,7 +37,7 @@ namespace SharpReportCore {
 			shape.FillShape(rpea.PrintPageEventArgs.Graphics,
 			                new SolidFillPattern(this.BackColor),
 			                rect);
-			
+
 			shape.DrawShape (rpea.PrintPageEventArgs.Graphics,
 			                 new BaseLine (this.ForeColor,base.DashStyle,base.Thickness),
 			                 rect);

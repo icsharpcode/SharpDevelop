@@ -9,6 +9,7 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -25,6 +26,8 @@ namespace SharpReportCore{
 		private Padding padding;
 		private Color alternateBackColor;
 		private int changeBackColorEveryNRow;
+		private RectangleShape shape = new RectangleShape();
+		
 		
 		public RowItem():this (String.Empty){
 		}
@@ -41,16 +44,7 @@ namespace SharpReportCore{
 		}
 		
 		#region overrides
-		private void Decorate (ReportPageEventArgs rpea,Rectangle border) {
-			using (SolidBrush brush = new SolidBrush(base.BackColor)) {
-				rpea.PrintPageEventArgs.Graphics.FillRectangle(brush,border);
-			}
-			if (base.DrawBorder == true) {
-				using (Pen pen = new Pen(Color.Black, 1)) {
-					rpea.PrintPageEventArgs.Graphics.DrawRectangle (pen,border);
-				}
-			}
-		}
+		
 		
 		protected RectangleF PrepareRectangle (ReportPageEventArgs e) {
 			SizeF measureSize = new SizeF ((SizeF)this.Size);
@@ -65,11 +59,20 @@ namespace SharpReportCore{
 				throw new ArgumentNullException("rpea");
 			}
 			System.Console.WriteLine("");
-			System.Console.WriteLine("--Start Row Item");
+			System.Console.WriteLine("--Start of {0}",this.ToString());
 			base.Render(rpea);
 			RectangleF rect = PrepareRectangle (rpea);
 			
-			Decorate (rpea,System.Drawing.Rectangle.Ceiling (rect));
+			shape.FillShape(rpea.PrintPageEventArgs.Graphics,
+			                new SolidFillPattern(this.BackColor),
+			                rect);
+			
+			if (base.DrawBorder == true) {
+				shape.DrawShape (rpea.PrintPageEventArgs.Graphics,
+				                 new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1),
+				                 rect);
+			}
+
 
 			foreach (BaseReportItem childItem in this.items) {
 				Point loc = new Point (childItem.Location.X,childItem.Location.Y);
@@ -86,7 +89,7 @@ namespace SharpReportCore{
 		}
 		
 		public override string ToString(){
-			return "RowItem";
+			return this.GetType().Name;
 		}
 		
 		#endregion

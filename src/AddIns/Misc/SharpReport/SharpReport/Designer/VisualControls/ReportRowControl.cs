@@ -21,7 +21,8 @@ namespace SharpReport.Designer{
 	/// </summary>
 
 	internal class ReportRowControl:ReportControlBase{
-
+		private RectangleShape shape = new RectangleShape();
+		private bool drawBorder;
 		public ReportRowControl():base(){
 			InitializeComponent();
 			this.SetStyle(ControlStyles.DoubleBuffer |
@@ -39,10 +40,15 @@ namespace SharpReport.Designer{
 		#region overrides
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea){
 			base.OnPaint(pea);
-
-			Rectangle r = new Rectangle(0,5,this.ClientSize.Width - 1,this.ClientSize.Height - 6);
-			base.DrawEdges (pea,r);
+			base.DrawEdges (pea,
+			                new Rectangle(0,5,this.ClientSize.Width - 1,this.ClientSize.Height - 6) );
 			base.DrawDecorations(pea);
+			
+			if (this.drawBorder) {
+				shape.DrawShape (pea.Graphics,
+				                 new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1),
+				                 base.FocusRectangle);
+			}
 
 			StringFormat fmt = GlobalValues.StandartStringFormat();
 			fmt.LineAlignment = StringAlignment.Near;
@@ -54,10 +60,17 @@ namespace SharpReport.Designer{
 		}
 		
 		public override string ToString() {
-			return this.Name;
+			return this.GetType().Name;
 		}
 		
 		#endregion
+		
+		public bool DrawBorder {
+			set {
+				drawBorder = value;
+				this.Invalidate();
+			}
+		}
 		
 		#region Windows Forms Designer generated code
 		/// <summary>

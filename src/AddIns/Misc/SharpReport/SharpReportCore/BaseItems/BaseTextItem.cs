@@ -30,6 +30,7 @@ namespace SharpReportCore {
 		private StringTrimming stringTrimming;
 		private TextDrawer textDrawer = new TextDrawer();
 		private ContentAlignment contentAlignment;
+		private RectangleShape shape = new RectangleShape();
 		
 		#region Constructor
 		
@@ -63,27 +64,21 @@ namespace SharpReportCore {
 		}
 		
 		protected void FillBackGround (Graphics  graphics,RectangleF rectangle) {
-			using (SolidBrush brush = new SolidBrush(base.BackColor)) {
-				graphics.FillRectangle(brush,rectangle);
-			}
+			shape.FillShape(graphics,
+			                new SolidFillPattern(this.BackColor),
+			                rectangle);
 		}
 		
-		protected void DrawFrame (Graphics graphics,Rectangle border) {
+		protected void DrawFrame (Graphics graphics,Rectangle rectangle) {
 			if (base.DrawBorder == true) {
-				using (Pen pen = new Pen(Color.Black, 1)) {
-					graphics.DrawRectangle (pen,border);
-				}
-				//TODO use this class to draw a border	
-//				RectangleShape shape = new RectangleShape();
-//					shape.DrawShape (graphics,
-//					                 new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1),
-//					                 border);
+				shape.DrawShape (graphics,
+				                 new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1),
+				                 rectangle);
 			}
 		}
 		
 		protected RectangleF PrepareRectangle (ReportPageEventArgs rpea,string text) {
-			SizeF measureSize = new SizeF ();
-			measureSize = MeasureReportItem (rpea,text);			
+			SizeF measureSize = MeasureReportItem (rpea,text);			
 			RectangleF rect = base.DrawingRectangle (rpea,measureSize);
 			return rect;
 		}

@@ -20,6 +20,8 @@
 // Peter Forstmeier (Peter.Forstmeier@t-online.de)
 using System;
 using System.Drawing;	
+using System.Drawing.Drawing2D;
+
 /// <summary>
 /// This class draws a Ellipse/Ellipse
 /// </summary>
@@ -37,19 +39,10 @@ namespace SharpReportCore {
 		}
 		
 		
-		public override void DrawShape(Graphics graphics, BaseLine baseLine, RectangleF rectangle) {
-			base.DrawShape(graphics,baseLine,rectangle);
-			using (Pen p = new Pen(baseLine.Color,baseLine.Thickness)) {
-				p.DashStyle = baseLine.DashStyle;
-				graphics.DrawEllipse(p,
-				              rectangle);
-			}
-		}
-		
-		
-		public override void FillShape(Graphics graphics, AbstractFillPattern fillPattern, RectangleF rectangle) {
-			graphics.FillEllipse(fillPattern.Brush,
-			              rectangle);
+		public override GraphicsPath CreatePath(RectangleF rectangle){
+			GraphicsPath path = new GraphicsPath();
+			path.AddEllipse(rectangle);
+			return path;
 		}
 		
 	}

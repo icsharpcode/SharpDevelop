@@ -21,8 +21,10 @@ namespace SharpReport.Designer{
 
 		private StringTrimming stringTrimming;
 		private ContentAlignment contentAlignment;
-		TextDrawer textDrawer  = new TextDrawer();
+		private bool drawBorder;
 		
+		private TextDrawer textDrawer  = new TextDrawer();
+		private RectangleShape shape = new RectangleShape();
 		
 		public ReportTextControl():base(){
 			InitializeComponent();
@@ -36,6 +38,12 @@ namespace SharpReport.Designer{
 			this.Size = GlobalValues.PreferedSize;
 		}
 		
+		public bool DrawBorder {
+			set {
+				drawBorder = value;
+				this.Invalidate();
+			}
+		}
 		
 		
 		
@@ -61,7 +69,7 @@ namespace SharpReport.Designer{
 		}
 	
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea){
-		
+			
 			base.OnPaint(pea);
 			base.DrawEdges (pea);
 			base.DrawDecorations(pea);
@@ -74,9 +82,16 @@ namespace SharpReport.Designer{
 				str = this.Text;
 			}
 			
+			if (this.drawBorder) {
+				shape.DrawShape (pea.Graphics,
+				                 new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1),
+				                 base.FocusRectangle);
+			}
+			
 			this.textDrawer.DrawString (pea.Graphics,this.Text,this.Font,
 			                            new SolidBrush(this.ForeColor),(RectangleF)this.ClientRectangle,
 			                            this.stringTrimming,this.contentAlignment);
+			
 		}
 		
 		

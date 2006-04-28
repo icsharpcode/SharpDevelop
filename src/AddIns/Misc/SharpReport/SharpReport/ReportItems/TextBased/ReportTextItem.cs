@@ -57,6 +57,7 @@ namespace SharpReport.ReportItems {
 			
 			this.visualControl.ContentAlignment = base.ContentAlignment;
 			this.visualControl.StringTrimming = base.StringTrimming;
+			this.visualControl.DrawBorder = base.DrawBorder;
 			
 			this.HandlePropertyChanged(e.PropertyName);
 		}

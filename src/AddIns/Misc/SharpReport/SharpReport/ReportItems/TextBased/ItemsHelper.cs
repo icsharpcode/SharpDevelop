@@ -53,7 +53,6 @@ namespace SharpReport {
 			control.Size = item.Size;
 			control.Font = item.Font;
 			control.Name = item.Name;
-			BaseTextItem b = item as BaseTextItem;
 		}
 		
 		
