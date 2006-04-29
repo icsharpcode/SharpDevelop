@@ -401,6 +401,18 @@ namespace Grunwald.BooBinding.CodeCompletion
 		private void LeaveTypeDefinition(AST.TypeDefinition node)
 		{
 			DefaultClass c = _currentClass.Pop();
+			foreach (AST.Attribute att in node.Attributes) {
+				if (att.Name == "System.Reflection.DefaultMemberAttribute" && att.Arguments.Count == 1) {
+					AST.StringLiteralExpression sle = att.Arguments[0] as AST.StringLiteralExpression;
+					if (sle != null) {
+						foreach (DefaultProperty p in c.Properties) {
+							if (p.Name == sle.Value) {
+								p.IsIndexer = true;
+							}
+						}
+					}
+				}
+			}
 			//LoggingService.Debug("Leave "+node.GetType().Name+" "+node.FullName+" (Class = "+c.FullyQualifiedName+")");
 		}
 		

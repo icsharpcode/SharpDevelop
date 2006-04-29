@@ -26,10 +26,7 @@ namespace Grunwald.BooBinding.Tests
 		
 		T Resolve<T>(string code, string marker) where T : ResolveResult
 		{
-			ResolveResult rr = Resolve(prog, new ExpressionResult(code), marker);
-			Assert.IsNotNull(rr, "Resolve must not return null");
-			Assert.IsInstanceOfType(typeof(T), rr, "Resolve must return instance of type " + typeof(T).Name);
-			return (T)rr;
+			return Resolve<T>(normalProg, code, marker);
 		}
 		
 		T ResolveReg<T>(string code) where T : ResolveResult
@@ -39,7 +36,12 @@ namespace Grunwald.BooBinding.Tests
 		
 		T ResolveReg<T>(string code, string marker) where T : ResolveResult
 		{
-			ResolveResult rr = Resolve(regressionProg, new ExpressionResult(code), marker);
+			return Resolve<T>(regressionProg, code, marker);
+		}
+		
+		T Resolve<T>(string prog, string code, string marker) where T : ResolveResult
+		{
+			ResolveResult rr = Resolve(prog, new ExpressionResult(code), marker);
 			Assert.IsNotNull(rr, "Resolve must not return null");
 			Assert.IsInstanceOfType(typeof(T), rr, "Resolve must return instance of type " + typeof(T).Name);
 			return (T)rr;
@@ -92,7 +94,7 @@ namespace Grunwald.BooBinding.Tests
 		#endregion
 		
 		#region Basic tests
-		const string prog =
+		const string normalProg =
 			"import System\n" +
 			"def MyMethod(arg as string):\n" +
 			"\tlocalVar = arg\n" +
@@ -145,7 +147,7 @@ namespace Grunwald.BooBinding.Tests
 			LocalResolveResult rr = Resolve<LocalResolveResult>("e", "/*inClosure*/");
 			Assert.AreEqual("System.String", rr.ResolvedType.FullyQualifiedName);
 			
-			Assert.IsNull(Resolve(prog, new ExpressionResult("e"), "/*1*/"));
+			Assert.IsNull(Resolve(normalProg, new ExpressionResult("e"), "/*1*/"));
 		}
 		
 		[Test]
@@ -207,10 +209,8 @@ namespace Grunwald.BooBinding.Tests
 				"\tdef Test():\n" +
 				"\t\t/*mark*/\n" +
 				"\t\tpass\n";
-			ResolveResult rr = Resolve(prog, new ExpressionResult("Test()"), "/*mark*/");
-			Assert.IsNotNull(rr);
-			Assert.IsInstanceOfType(typeof(MemberResolveResult), rr);
-			Assert.AreEqual("OtherClass.Test", (rr as MemberResolveResult).ResolvedMember.FullyQualifiedName);
+			MemberResolveResult rr = Resolve<MemberResolveResult>(prog, "Test()", "/*mark*/");
+			Assert.AreEqual("OtherClass.Test", rr.ResolvedMember.FullyQualifiedName);
 		}
 		#endregion
 		
@@ -242,6 +242,25 @@ namespace Grunwald.BooBinding.Tests
 			rr = ResolveReg<LocalResolveResult>("boo640a", "/*640*/");
 			Assert.AreEqual("System.Object", rr.ResolvedType.FullyQualifiedName);
 			Assert.IsNull(Resolve(regressionProg, new ExpressionResult("boo640a"), "/*1*/"));
+		}
+		
+		[Test]
+		public void IndexerRecognition()
+		{
+			string prog =
+				"class Foo:\n" +
+				"\tself[index as int]:\n" +
+				"\t\tget:\n" +
+				"\t\t\treturn true\n" +
+				"def example():\n" +
+				"\tfoo = Foo()\n" +
+				"\tmybool = foo[1] /*mark*/\n" +
+				"\tprint mybool\n";
+			MemberResolveResult rr = Resolve<MemberResolveResult>(prog, "foo[1]", "/*mark*/");
+			Assert.IsTrue(((IProperty)rr.ResolvedMember).IsIndexer);
+			Assert.AreEqual("System.Boolean", rr.ResolvedType.FullyQualifiedName);
+			LocalResolveResult rr2 = Resolve<LocalResolveResult>(prog, "mybool", "/*mark*/");
+			Assert.AreEqual("System.Boolean", rr2.ResolvedType.FullyQualifiedName);
 		}
 		#endregion
 		

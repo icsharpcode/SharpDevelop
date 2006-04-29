@@ -303,6 +303,14 @@ namespace ICSharpCode.Core
 			}
 			
 			if (property.IsIndexer) {
+				if (property.DeclaringType != null) {
+					if (UseFullyQualifiedMemberNames) {
+						builder.Append(property.DeclaringType.FullyQualifiedName);
+					} else {
+						builder.Append(property.DeclaringType.Name);
+					}
+					builder.Append('.');
+				}
 				builder.Append("this");
 			} else {
 				if (IncludeHTMLMarkup) {
