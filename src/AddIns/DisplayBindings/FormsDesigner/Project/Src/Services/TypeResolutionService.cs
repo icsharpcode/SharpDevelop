@@ -131,6 +131,11 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 		}
 		
+		static string GetHash(string fileName)
+		{
+			return Path.GetFileName(fileName).ToLowerInvariant() + File.GetLastWriteTimeUtc(fileName).Ticks.ToString();
+		}
+		
 		/// <summary>
 		/// Loads the file in none-locking mode. Returns null on failure.
 		/// </summary>
@@ -138,7 +143,16 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			if (!File.Exists(fileName))
 				return null;
-			string hash = Path.GetFileName(fileName) + File.GetLastWriteTimeUtc(fileName).Ticks.ToString();
+			
+			// FIX for SD2-716, remove when designer gets its own AppDomain
+			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
+				if (string.Equals(asm.Location, fileName, StringComparison.InvariantCultureIgnoreCase)) {
+					RegisterAssembly(asm);
+					return asm;
+				}
+			}
+			
+			string hash = GetHash(fileName);
 			lock (assemblyDict) {
 				Assembly asm;
 				if (assemblyDict.TryGetValue(hash, out asm))
@@ -214,6 +228,20 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 		}
 		
+		public static void RegisterAssembly(Assembly asm)
+		{
+			string file = asm.Location;
+			if (file.Length > 0) {
+				lock (assemblyDict) {
+					assemblyDict[GetHash(file)] = asm;
+				}
+			}
+			lock (designerAssemblies) {
+				if (!designerAssemblies.Contains(asm))
+					designerAssemblies.Insert(0, asm);
+			}
+		}
+		
 		public Assembly GetAssembly(AssemblyName name)
 		{
 			return LoadAssembly(name, false);
@@ -228,10 +256,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			try {
 				Assembly asm = Assembly.Load(name);
-				lock (designerAssemblies) {
-					if (!designerAssemblies.Contains(asm))
-						designerAssemblies.Insert(0, asm);
-				}
+				RegisterAssembly(asm);
 				return asm;
 			} catch (System.IO.FileLoadException) {
 				if (throwOnError)
