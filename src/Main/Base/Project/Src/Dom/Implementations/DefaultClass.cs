@@ -336,14 +336,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return BaseTypes[index];
 		}
 		
+		IReturnType cachedBaseType;
+		
 		public IReturnType BaseType {
 			get {
-				foreach (IReturnType baseType in this.BaseTypes) {
-					IClass baseClass = baseType.GetUnderlyingClass();
-					if (baseClass != null && baseClass.ClassType == this.ClassType)
-						return baseType;
+				if (cachedBaseType == null) {
+					foreach (IReturnType baseType in this.BaseTypes) {
+						IClass baseClass = baseType.GetUnderlyingClass();
+						if (baseClass != null && baseClass.ClassType == this.ClassType) {
+							cachedBaseType = baseType;
+							break;
+						}
+					}
 				}
-				return GetBaseTypeByClassType();
+				if (cachedBaseType == null) {
+					return GetBaseTypeByClassType();
+				} else {
+					return cachedBaseType;
+				}
 			}
 		}
 		
