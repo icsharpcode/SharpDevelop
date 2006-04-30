@@ -37,19 +37,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					// can derive from the class
 					continue;
 				}
-				foreach (IClass c in pc.Classes) {
-					int count = c.BaseTypes.Count;
-					for (int i = 0; i < count; i++) {
-						string baseTypeName = c.BaseTypes[i].Name;
-						if (pc.Language.NameComparer.Equals(baseTypeName, baseClassName) ||
-						    pc.Language.NameComparer.Equals(baseTypeName, baseClassFullName)) {
-							IReturnType possibleBaseClass = c.GetBaseType(i);
-							if (possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName) {
-								list.Add(c);
-							}
-						}
-					}
-				}
+				AddDerivedClasses(pc, baseClass, baseClassName, baseClassFullName, pc.Classes, list);
 			}
 			if (!directDerivationOnly) {
 				List<IClass> additional = new List<IClass>();
@@ -62,6 +50,25 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			return list;
+		}
+		
+		static void AddDerivedClasses(IProjectContent pc, IClass baseClass, string baseClassName, string baseClassFullName,
+		                              IEnumerable<IClass> classList, IList<IClass> resultList)
+		{
+			foreach (IClass c in classList) {
+				AddDerivedClasses(pc, baseClass, baseClassName, baseClassFullName, c.InnerClasses, resultList);
+				int count = c.BaseTypes.Count;
+				for (int i = 0; i < count; i++) {
+					string baseTypeName = c.BaseTypes[i].Name;
+					if (pc.Language.NameComparer.Equals(baseTypeName, baseClassName) ||
+					    pc.Language.NameComparer.Equals(baseTypeName, baseClassFullName)) {
+						IReturnType possibleBaseClass = c.GetBaseType(i);
+						if (possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName) {
+							resultList.Add(c);
+						}
+					}
+				}
+			}
 		}
 		#endregion
 		

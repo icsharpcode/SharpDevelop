@@ -347,11 +347,50 @@ namespace Grunwald.BooBinding.CodeCompletion
 		void AddImportedNamespaceContents(ArrayList list)
 		{
 			IClass c;
-			foreach (KeyValuePair<string, string> pair in BooAmbience.TypeConversionTable) {
-				c = GetPrimitiveClass(pc, pair.Key, pair.Value);
+			foreach (KeyValuePair<string, string> pair in BooAmbience.ReverseTypeConversionTable) {
+				c = GetPrimitiveClass(pc, pair.Value, pair.Key);
 				if (c != null) list.Add(c);
 			}
+			list.Add(new DuckClass(cu));
 			NRResolver.AddImportedNamespaceContents(list, cu, callingClass);
+		}
+		
+		internal class DuckClass : DefaultClass
+		{
+			public DuckClass(ICompilationUnit cu) : base(cu, "duck")
+			{
+				Documentation = "Use late-binding to access members of this type.<br/>\n'If it walks like a duck and quacks like a duck, it must be a duck.'";
+				Modifiers = ModifierEnum.Public;
+			}
+			
+			protected override IReturnType CreateDefaultReturnType()
+			{
+				return new DuckReturnType(this);
+			}
+		}
+		
+		internal class DuckReturnType : AbstractReturnType
+		{
+			IClass c;
+			public DuckReturnType(IClass c) {
+				this.c = c;
+				FullyQualifiedName = c.FullyQualifiedName;
+			}
+			public override IClass GetUnderlyingClass() {
+				return c;
+			}
+			public override List<IMethod> GetMethods() {
+				return new List<IMethod>();
+			}
+			public override List<IProperty> GetProperties() {
+				return new List<IProperty>();
+			}
+			public override List<IField> GetFields() {
+				return new List<IField>();
+			}
+			public override List<IEvent> GetEvents() {
+				return new List<IEvent>();
+			}
 		}
 		#endregion
 	}

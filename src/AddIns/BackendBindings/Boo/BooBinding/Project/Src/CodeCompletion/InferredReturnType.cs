@@ -102,6 +102,11 @@ namespace Grunwald.BooBinding.CodeCompletion
 				result = new ConstructedReturnType(enumerable.DefaultReturnType, new IReturnType[] { new InferredReturnType(node.Expression, context) });
 			}
 			
+			public override void OnCallableBlockExpression(CallableBlockExpression node)
+			{
+				// ignore return statements in callable blocks
+			}
+			
 			public override bool Visit(Node node)
 			{
 				if (result != null && !(result is NullReturnType))

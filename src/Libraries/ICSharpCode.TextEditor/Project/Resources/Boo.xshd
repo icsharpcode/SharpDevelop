@@ -173,6 +173,7 @@
 
 			<KeyWords name="ReferenceTypes" bold="true" italic="false" color="Purple" >
 				<Key word="object"/>
+				<Key word="duck"/>
 				<Key word="string"/>
 				<Key word="regex"/>
 			</KeyWords>

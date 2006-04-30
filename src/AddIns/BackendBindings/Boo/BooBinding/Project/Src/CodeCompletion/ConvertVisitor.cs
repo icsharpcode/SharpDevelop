@@ -217,9 +217,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 		                                           IMethodOrProperty callingMember, int caretLine, int caretColumn,
 		                                           IProjectContent projectContent)
 		{
+			System.Diagnostics.Debug.Assert(projectContent != null);
 			if (reference == null) {
-				LoggingService.Warn("inferred return type!");
-				return ReflectionReturnType.Object;
+				BooProject project = projectContent.Project as BooProject;
+				if (project != null && project.Ducky)
+					return new BooResolver.DuckClass(new DefaultCompilationUnit(projectContent)).DefaultReturnType;
+				else
+					return ReflectionReturnType.Object;
 			}
 			if (reference is AST.ArrayTypeReference) {
 				AST.ArrayTypeReference arr = (AST.ArrayTypeReference)reference;
@@ -230,7 +234,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 				string name = ((AST.SimpleTypeReference)reference).Name;
 				IReturnType rt;
 				int typeParameterCount = (reference is AST.GenericTypeReference) ? ((AST.GenericTypeReference)reference).GenericArguments.Count : 0;
-				if (BooAmbience.ReverseTypeConversionTable.ContainsKey(name))
+				if (name == "duck")
+					rt = new BooResolver.DuckClass(new DefaultCompilationUnit(projectContent)).DefaultReturnType;
+				else if (BooAmbience.ReverseTypeConversionTable.ContainsKey(name))
 					rt = new GetClassReturnType(projectContent, BooAmbience.ReverseTypeConversionTable[name], typeParameterCount);
 				else
 					rt = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn,
