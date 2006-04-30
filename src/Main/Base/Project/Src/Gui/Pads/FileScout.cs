@@ -277,8 +277,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 						
 						FileInfo info = new FileInfo(e.FullPath);
 						
-						fileItem.SubItems[1].Text = Math.Round((double)info.Length / 1024).ToString() + " KB";
-						fileItem.SubItems[2].Text = info.LastWriteTime.ToString();
+						try {
+							fileItem.SubItems[1].Text = Math.Round((double)info.Length / 1024).ToString() + " KB";
+							fileItem.SubItems[2].Text = info.LastWriteTime.ToString();
+						} catch (IOException) {
+							// ignore IO errors
+						}
 						break;
 					}
 				}
@@ -292,8 +296,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				FileInfo info = new FileInfo(e.FullPath);
 				
 				ListViewItem fileItem = Items.Add(new FileListItem(e.FullPath));
-				fileItem.SubItems.Add(Math.Round((double)info.Length / 1024).ToString() + " KB");
-				fileItem.SubItems.Add(info.LastWriteTime.ToString());
+				try {
+					fileItem.SubItems.Add(Math.Round((double)info.Length / 1024).ToString() + " KB");
+					fileItem.SubItems.Add(info.LastWriteTime.ToString());
+				} catch (IOException) {
+					// ignore IO errors
+				}
 			};
 			WorkbenchSingleton.SafeThreadAsyncCall(method);
 		}
