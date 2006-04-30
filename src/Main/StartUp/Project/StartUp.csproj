@@ -13,7 +13,7 @@
     <AssemblyOriginatorKeyFile>Resources\StartUp.snk</AssemblyOriginatorKeyFile>
     <ApplicationIcon>.\Resources\SharpDevelop.ico</ApplicationIcon>
     <PreBuildEvent>..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe StartupOnly</PreBuildEvent>
-    <BaseAddress>92798976</BaseAddress>
+    <BaseAddress>4194304</BaseAddress>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>

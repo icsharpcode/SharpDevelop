@@ -16,7 +16,7 @@
     <StartProgram>..\..\..\..\..\bin\SharpDevelop.exe</StartProgram>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <BaseAddress>4194304</BaseAddress>
+    <BaseAddress>110100480</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
     <NoWarn>0618</NoWarn>

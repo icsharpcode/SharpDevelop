@@ -1,0 +1,61 @@
+To be on the safe side and leave enough space for the future,
+the in-memory size of an assembly used here should be 8 times the disk image size.
+
+Sysinternals Processexplorer can show relocated assemblies in yellow in the DLL View.
+
+adr = 0x5000000
+def AddModule(kbsize as int):
+	print "0x${adr.ToString('x')} - 0x${(adr + 3 * kbsize * 1024).ToString('x')}"
+	adr += 8 * kbsize * 1024
+	adr = 0x80000 * System.Math.Ceiling(cast(double,adr) / 0x80000)
+
+def AddModules(*names as (string)):
+	for name in names:
+		System.Console.Write("${name}:\t")
+		AddModule(System.IO.FileInfo("d:\\corsavy\\sharpdevelop\\bin\\" + name + ".dll").Length / 1024)
+
+AssemblyName:			startaddress - endaddress
+ICSharpCode.Core:		0x5000000 - 0x504e000
+ICSharpCode.SharpDevelop:	0x5100000 - 0x5472000
+ICSharpCode.NRefactory:		0x5a80000 - 0x5b9a000
+ICSharpCode.TextEditor:		0x5d80000 - 0x5e67000
+MonoReflectionLoader:		0x6000000 - 0x600c000
+WeifenLuo.WinFormsUI.Docking:	0x6080000 - 0x6107000
+ICSharpCode.Build.Tasks:	0x6200000 - 0x621b000
+
+CSharpBinding:			0x6280000 - 0x62bc000
+ILAsmBinding:			0x6380000 - 0x639b000
+VBNetBinding:			0x6400000 - 0x643f000
+NRefactoryToBooConverter:	0x6500000 - 0x6536000
+BooBinding:			0x6600000 - 0x664e000
+
+FormsDesigner:			0x6700000 - 0x676f000
+ResourceEditor:			0x6880000 - 0x689e000
+XmlEditor:			0x6900000 - 0x6948000
+
+ICSharpCode.AddInMananger:	0x6a00000 - 0x6a24000
+AddInScout:			0x6a80000 - 0x6a8b400
+CodeCoverage:			0x6b00000 - 0x6b30000
+TreeListView (debugger):	0x6b80000 - 0x6be6000
+Debugger.Code:			0x6d00000 - 0x6ddb000
+Debugger.AddIn:			0x6f80000 - 0x6faa000
+FileTypeRegisterer:		0x7000000 - 0x7009000
+HighlightingEditor:		0x7080000 - 0x70ec000
+HtmlHelp2:			0x7200000 - 0x723f000
+HtmlHelp2JScriptGlobals:	0x7300000 - 0x7306c00
+MonoAddIn:			0x7380000 - 0x7395000
+NAntAddIn:			0x7400000 - 0x7427000
+PInvokeAddIn:			0x7480000 - 0x749b000
+RegExpTk:			0x7500000 - 0x7524000
+SharpQuery:			0x7580000 - 0x75b0000
+SharpReportCore:		0x7600000 - 0x7654000
+SharpReport:			0x7700000 - 0x773c000
+SharpReportAddIn:		0x7800000 - 0x781e000
+ReportGenerator:		0x7880000 - 0x78a1000
+StartPage:			0x7900000 - 0x791e000
+UnitTesting:			0x7980000 - 0x799b000
+
+Next free address:		0x7a00000
+
+
+

@@ -16,7 +16,7 @@
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <BaseAddress>84410368</BaseAddress>
+    <BaseAddress>84934656</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>

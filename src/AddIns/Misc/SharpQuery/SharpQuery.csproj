@@ -13,7 +13,7 @@
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <BaseAddress>4194304</BaseAddress>
+    <BaseAddress>123207680</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
     <StartAction>Program</StartAction>
