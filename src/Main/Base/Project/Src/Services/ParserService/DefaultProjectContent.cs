@@ -565,12 +565,14 @@ namespace ICSharpCode.Core
 				string outerName = typeName.Substring(0, lastIndex);
 				IClass upperClass = GetClassInternal(outerName, typeParameterCount, language);
 				if (upperClass != null) {
-					List<IClass> innerClasses = upperClass.InnerClasses;
-					if (innerClasses != null) {
-						string innerName = typeName.Substring(lastIndex + 1);
-						foreach (IClass innerClass in innerClasses) {
-							if (language.NameComparer.Equals(innerClass.Name, innerName)) {
-								return innerClass;
+					foreach (IClass upperBaseClass in upperClass.ClassInheritanceTree) {
+						List<IClass> innerClasses = upperBaseClass.InnerClasses;
+						if (innerClasses != null) {
+							string innerName = typeName.Substring(lastIndex + 1);
+							foreach (IClass innerClass in innerClasses) {
+								if (language.NameComparer.Equals(innerClass.Name, innerName)) {
+									return innerClass;
+								}
 							}
 						}
 					}

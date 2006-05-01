@@ -213,17 +213,23 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return CreateReturnType(reference, c, method, c.Region.BeginLine + 1, 1, _cu.ProjectContent);
 			}
 		}
+		
+		internal static IReturnType GetDefaultReturnType(IProjectContent projectContent)
+		{
+			BooProject project = projectContent.Project as BooProject;
+			if (project != null && project.Ducky)
+				return new BooResolver.DuckClass(new DefaultCompilationUnit(projectContent)).DefaultReturnType;
+			else
+				return ReflectionReturnType.Object;
+		}
+		
 		public static IReturnType CreateReturnType(AST.TypeReference reference, IClass callingClass,
 		                                           IMethodOrProperty callingMember, int caretLine, int caretColumn,
 		                                           IProjectContent projectContent)
 		{
 			System.Diagnostics.Debug.Assert(projectContent != null);
 			if (reference == null) {
-				BooProject project = projectContent.Project as BooProject;
-				if (project != null && project.Ducky)
-					return new BooResolver.DuckClass(new DefaultCompilationUnit(projectContent)).DefaultReturnType;
-				else
-					return ReflectionReturnType.Object;
+				return GetDefaultReturnType(projectContent);
 			}
 			if (reference is AST.ArrayTypeReference) {
 				AST.ArrayTypeReference arr = (AST.ArrayTypeReference)reference;
@@ -278,7 +284,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (field.Initializer != null)
 					return new InferredReturnType(field.Initializer, OuterClass);
 				else
-					return ReflectionReturnType.Object;
+					return GetDefaultReturnType(_cu.ProjectContent);
 			} else {
 				return CreateReturnType(field.Type);
 			}

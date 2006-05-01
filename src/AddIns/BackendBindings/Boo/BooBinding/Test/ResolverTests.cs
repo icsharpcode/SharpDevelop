@@ -29,16 +29,6 @@ namespace Grunwald.BooBinding.Tests
 			return Resolve<T>(normalProg, code, marker);
 		}
 		
-		T ResolveReg<T>(string code) where T : ResolveResult
-		{
-			return ResolveReg<T>(code, "/*1*/");
-		}
-		
-		T ResolveReg<T>(string code, string marker) where T : ResolveResult
-		{
-			return Resolve<T>(regressionProg, code, marker);
-		}
-		
 		T Resolve<T>(string prog, string code, string marker) where T : ResolveResult
 		{
 			ResolveResult rr = Resolve(prog, new ExpressionResult(code), marker);
@@ -55,10 +45,12 @@ namespace Grunwald.BooBinding.Tests
 		}
 		
 		const string fileName = "tempFile.boo";
+		DefaultProjectContent lastPC;
 		
 		void Register(string prog)
 		{
 			DefaultProjectContent pc = new DefaultProjectContent();
+			lastPC = pc;
 			ParserService.ForceProjectContent(pc);
 			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
 			pc.ReferencedContents.Add(ProjectContentRegistry.WinForms);
@@ -230,16 +222,16 @@ namespace Grunwald.BooBinding.Tests
 		[Test]
 		public void Boo629VariableScope()
 		{
-			LocalResolveResult rr = ResolveReg<LocalResolveResult>("boo629");
+			LocalResolveResult rr = Resolve<LocalResolveResult>(regressionProg, "boo629", "/*1*/");
 			Assert.AreEqual("System.String", rr.ResolvedType.FullyQualifiedName);
 		}
 		
 		[Test]
 		public void Boo640ConditionalAssignment()
 		{
-			LocalResolveResult rr = ResolveReg<LocalResolveResult>("boo640b");
+			LocalResolveResult rr = Resolve<LocalResolveResult>(regressionProg, "boo640b", "/*1*/");
 			Assert.AreEqual("System.Reflection.FieldInfo", rr.ResolvedType.FullyQualifiedName);
-			rr = ResolveReg<LocalResolveResult>("boo640a", "/*640*/");
+			rr = Resolve<LocalResolveResult>(regressionProg, "boo640a", "/*640*/");
 			Assert.AreEqual("System.Object", rr.ResolvedType.FullyQualifiedName);
 			Assert.IsNull(Resolve(regressionProg, new ExpressionResult("boo640a"), "/*1*/"));
 		}
@@ -261,6 +253,80 @@ namespace Grunwald.BooBinding.Tests
 			Assert.AreEqual("System.Boolean", rr.ResolvedType.FullyQualifiedName);
 			LocalResolveResult rr2 = Resolve<LocalResolveResult>(prog, "mybool", "/*mark*/");
 			Assert.AreEqual("System.Boolean", rr2.ResolvedType.FullyQualifiedName);
+		}
+		#endregion
+		
+		#region Nested Classes
+		const string nestedClassProg =
+			"class Outer:\n" +
+			"\tpublic static outerField = 1\n" +
+			"\tpublic class Inner:\n/*inner*/" +
+			"\t\tpublic innerField = 2\n" +
+			"class Derived(Outer):\n/*derived*/" +
+			"\tpublic static derivedField = 3\n" +
+			"def Method():\n" +
+			"\ti as Outer.Inner\n" +
+			"\ti2 as Derived.Inner\n" +
+			"\t/*1*/";
+		
+		[Test]
+		public void NestedClassTypeResolution()
+		{
+			TypeResolveResult trr;
+			trr = Resolve<TypeResolveResult>(nestedClassProg, "Outer.Inner", "/*1*/");
+			Assert.AreEqual("Outer.Inner", trr.ResolvedClass.FullyQualifiedName);
+			trr = Resolve<TypeResolveResult>(nestedClassProg, "Inner", "/*inner*/");
+			Assert.AreEqual("Outer.Inner", trr.ResolvedClass.FullyQualifiedName);
+			trr = Resolve<TypeResolveResult>(nestedClassProg, "Inner", "/*derived*/");
+			Assert.AreEqual("Outer.Inner", trr.ResolvedClass.FullyQualifiedName);
+			trr = Resolve<TypeResolveResult>(nestedClassProg, "Derived.Inner", "/*1*/");
+			Assert.AreEqual("Outer.Inner", trr.ResolvedClass.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void NestedClassCtrlSpace()
+		{
+			CtrlSpace(nestedClassProg.Replace("/*inner*/", "/*mark*/"), "outerField", "innerField", "Inner", "Outer", "Derived");
+			CtrlSpace(nestedClassProg.Replace("/*derived*/", "/*mark*/"), "outerField", "derivedField", "Inner", "Outer", "Derived");
+		}
+		
+		[Test]
+		public void NestedClassParentStaticField()
+		{
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(nestedClassProg, "outerField", "/*inner*/");
+			Assert.AreEqual("Outer.outerField", mrr.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void NestedClassCC()
+		{
+			LocalResolveResult rr = Resolve<LocalResolveResult>(nestedClassProg, "i", "/*1*/");
+			Assert.AreEqual("Outer.Inner", rr.ResolvedType.FullyQualifiedName);
+			bool ok = false;
+			foreach (object o in rr.GetCompletionData(lastPC)) {
+				IMember m = o as IMember;
+				if (m != null && m.Name == "innerField")
+					ok = true;
+			}
+			Assert.IsTrue(ok);
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(nestedClassProg, "i.innerField", "/*1*/");
+			Assert.AreEqual("Outer.Inner.innerField", mrr.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void NestedClassCC2()
+		{
+			LocalResolveResult rr = Resolve<LocalResolveResult>(nestedClassProg, "i2", "/*1*/");
+			Assert.AreEqual("Outer.Inner", rr.ResolvedType.FullyQualifiedName);
+			bool ok = false;
+			foreach (object o in rr.GetCompletionData(lastPC)) {
+				IMember m = o as IMember;
+				if (m != null && m.Name == "innerField")
+					ok = true;
+			}
+			Assert.IsTrue(ok);
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(nestedClassProg, "i2.innerField", "/*1*/");
+			Assert.AreEqual("Outer.Inner.innerField", mrr.ResolvedMember.FullyQualifiedName);
 		}
 		#endregion
 		

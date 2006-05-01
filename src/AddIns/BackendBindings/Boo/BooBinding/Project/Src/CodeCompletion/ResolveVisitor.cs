@@ -168,9 +168,14 @@ namespace Grunwald.BooBinding.CodeCompletion
 					}
 				}
 			}
-			if (callingClass != null) {
-				if (ResolveMember(callingClass.DefaultReturnType, identifier))
-					return true;
+			
+			{ // Find members of this class or enclosing classes
+				IClass tmp = callingClass;
+				while (tmp != null) {
+					if (ResolveMember(tmp.DefaultReturnType, identifier))
+						return true;
+					tmp = tmp.DeclaringType;
+				}
 			}
 			
 			string namespaceName = projectContent.SearchNamespace(identifier, callingClass, cu, resolver.CaretLine, resolver.CaretColumn);
@@ -294,10 +299,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 					if (resolveResult is TypeResolveResult) {
 						IClass rClass = (resolveResult as TypeResolveResult).ResolvedClass;
 						if (rClass != null) {
-							foreach (IClass innerClass in rClass.InnerClasses) {
-								if (IsSameName(innerClass.Name, node.Name)) {
-									MakeTypeResult(innerClass);
-									return;
+							foreach (IClass baseClass in rClass.ClassInheritanceTree) {
+								foreach (IClass innerClass in baseClass.InnerClasses) {
+									if (IsSameName(innerClass.Name, node.Name)) {
+										MakeTypeResult(innerClass);
+										return;
+									}
 								}
 							}
 						}

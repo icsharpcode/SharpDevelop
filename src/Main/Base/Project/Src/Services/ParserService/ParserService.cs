@@ -182,8 +182,25 @@ namespace ICSharpCode.Core
 		{
 			ParseProjectContent newContent = (ParseProjectContent)state;
 			newContent.Initialize1();
+			StatusBarService.ProgressMonitor.BeginTask("Parsing...", newContent.GetInitializationWorkAmount());
 			newContent.Initialize2();
 			StatusBarService.ProgressMonitor.Done();
+		}
+		
+		static void ReparseProject(object state)
+		{
+			ParseProjectContent newContent = (ParseProjectContent)state;
+			StatusBarService.ProgressMonitor.BeginTask("Parsing...", newContent.GetInitializationWorkAmount());
+			newContent.ReInitialize2();
+			StatusBarService.ProgressMonitor.Done();
+		}
+		
+		public static void Reparse(IProject project)
+		{
+			ParseProjectContent pc = GetProjectContent(project) as ParseProjectContent;
+			if (pc != null) {
+				ThreadPool.QueueUserWorkItem(ReparseProject, pc);
+			}
 		}
 		
 		internal static IProjectContent CreateProjectContentForAddedProject(IProject project)
@@ -198,8 +215,10 @@ namespace ICSharpCode.Core
 		
 		public static IProjectContent GetProjectContent(IProject project)
 		{
-			if (projectContents.ContainsKey(project)) {
-				return projectContents[project];
+			lock (projectContents) {
+				if (projectContents.ContainsKey(project)) {
+					return projectContents[project];
+				}
 			}
 			return null;
 		}

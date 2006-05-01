@@ -447,11 +447,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return CreateMemberResolveResult(member);
 			c = type.GetUnderlyingClass();
 			if (c != null) {
-				List<IClass> innerClasses = c.InnerClasses;
-				if (innerClasses != null) {
-					foreach (IClass innerClass in innerClasses) {
-						if (IsSameName(innerClass.Name, fieldReferenceExpression.FieldName)) {
-							return new TypeResolveResult(callingClass, callingMember, innerClass);
+				foreach (IClass baseClass in c.ClassInheritanceTree) {
+					List<IClass> innerClasses = baseClass.InnerClasses;
+					if (innerClasses != null) {
+						foreach (IClass innerClass in innerClasses) {
+							if (IsSameName(innerClass.Name, fieldReferenceExpression.FieldName)) {
+								return new TypeResolveResult(callingClass, callingMember, innerClass);
+							}
 						}
 					}
 				}
@@ -1051,7 +1053,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				members.Clear();
 				IClass c = callingClass.DeclaringType;
 				while (c != null) {
-					result.Add(c);
 					t = c.DefaultReturnType;
 					members.AddRange(t.GetMethods());
 					members.AddRange(t.GetFields());

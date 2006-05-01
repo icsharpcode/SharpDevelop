@@ -177,6 +177,13 @@ namespace ICSharpCode.Core
 			return project.Items.Count;
 		}
 		
+		internal void ReInitialize2()
+		{
+			if (initializing) return;
+			initializing = true;
+			Initialize2();
+		}
+		
 		internal void Initialize2()
 		{
 			if (!initializing) return;

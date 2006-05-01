@@ -106,6 +106,21 @@ class C : A {
 			ResolveResult result = Resolve(program, "B", 6);
 			Assert.IsTrue(result is TypeResolveResult);
 			Assert.AreEqual("A.B", result.ResolvedType.FullyQualifiedName);
+			
+			result = Resolve(program, "C.B", 6);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("A.B", result.ResolvedType.FullyQualifiedName);
+			
+			result = Resolve(program, "C", 6);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("C", result.ResolvedType.FullyQualifiedName);
+			foreach (object o in result.GetCompletionData(nrrt.lastPC)) {
+				if (o is IClass) {
+					Assert.AreEqual("A.B", ((IClass)o).FullyQualifiedName);
+					return;
+				}
+			}
+			Assert.Fail("Inherited inner class not visible.");
 		}
 	}
 }

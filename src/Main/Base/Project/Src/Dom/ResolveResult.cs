@@ -430,7 +430,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			ArrayList ar = GetCompletionData(projectContent.Language, true);
 			if (resolvedClass != null) {
-				ar.AddRange(resolvedClass.InnerClasses);
+				foreach (IClass baseClass in resolvedClass.ClassInheritanceTree) {
+					ar.AddRange(baseClass.InnerClasses);
+				}
 			}
 			return ar;
 		}
