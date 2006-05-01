@@ -90,11 +90,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return PropertyService.Get("Workbench.CurrentLayout", "Default");
 			}
 			set {
+				if (WorkbenchSingleton.InvokeRequired)
+					throw new InvalidOperationException("Invoke required");
 				if (value != CurrentLayoutName) {
-					
 					PropertyService.Set("Workbench.CurrentLayout", value);
-					WorkbenchSingleton.SafeThreadCall(WorkbenchSingleton.Workbench.WorkbenchLayout, "LoadConfiguration");
-					WorkbenchSingleton.SafeThreadCall(typeof(LayoutConfiguration), "OnLayoutChanged", EventArgs.Empty);
+					WorkbenchSingleton.Workbench.WorkbenchLayout.LoadConfiguration();
+					OnLayoutChanged(EventArgs.Empty);
+					#if DEBUG
+					GC.Collect();
+					GC.WaitForPendingFinalizers();
+					GC.Collect();
+					#endif
 				}
 			}
 		}

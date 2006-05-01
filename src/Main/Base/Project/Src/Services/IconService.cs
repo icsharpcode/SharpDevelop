@@ -73,8 +73,9 @@ namespace ICSharpCode.Core
 		
 		public static Bitmap GetBitmap(string name)
 		{
-			if (ResourceService.GetBitmap(name) != null) {
-				return ResourceService.GetBitmap(name);
+			Bitmap bmp = ResourceService.GetBitmap(name);
+			if (bmp != null) {
+				return bmp;
 			}
 			
 			return ResourceService.GetBitmap("Icons.16x16.MiscFiles");
@@ -82,8 +83,11 @@ namespace ICSharpCode.Core
 		
 		public static Icon GetIcon(string name)
 		{
-			Bitmap bitmap = GetBitmap(name);
-			return Icon.FromHandle(bitmap.GetHicon());
+			Icon icon = ResourceService.GetIcon(name);
+			if (icon != null) {
+				return icon;
+			}
+			return ResourceService.GetIcon("Icons.16x16.MiscFiles");
 		}
 		
 		
