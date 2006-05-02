@@ -235,6 +235,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				string file = GetPreferenceFileName(openSolution.FileName);
 				if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
 					(openSolution.Preferences as IMementoCapable).SetMemento(Properties.Load(file));
+				} else {
+					(openSolution.Preferences as IMementoCapable).SetMemento(new Properties());
 				}
 				ApplyConfigurationAndReadPreferences();
 			} catch (Exception ex) {
@@ -299,7 +301,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectSection configSection = solution.GetSolutionConfigurationsSection();
 			foreach (string configuration in project.GetConfigurationNames()) {
 				foreach (string platform in project.GetPlatformNames()) {
-					string key = configuration + "|" + platform;
+					string key;
+					if (platform == "AnyCPU") { // Fix for SD2-786
+						key = configuration + "|Any CPU";
+					} else {
+						key = configuration + "|" + platform;
+					}
 					configSection.Items.Add(new SolutionItem(key, key));
 				}
 			}
