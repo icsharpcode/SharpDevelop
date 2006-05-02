@@ -63,6 +63,8 @@ namespace ICSharpCode.Core
 		
 		public static void ShowError(Exception ex, string message)
 		{
+			if (message == null) message = string.Empty;
+			
 			if (ex != null) {
 				LoggingService.Error(message, ex);
 				if (customErrorReporter != null) {
@@ -73,21 +75,7 @@ namespace ICSharpCode.Core
 				LoggingService.Error(message);
 			}
 			
-			#if DEBUG
-			if (ex != null) {
-				Console.Beep();
-				return;
-			}
-			#endif
-			string msg = String.Empty;
-			
-			if (message != null) {
-				msg += message;
-			}
-			
-			if (message != null && ex != null) {
-				msg += "\n\n";
-			}
+			string msg = message + "\n\n";
 			
 			if (ex != null) {
 				msg += "Exception occurred: " + ex.ToString();
