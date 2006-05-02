@@ -845,6 +845,37 @@ class B {
 			}
 			return false;
 		}
+		
+		[Test]
+		public void OverriddenMemberVisibilityTest()
+		{
+			string program = @"using System;
+  public abstract class GrandParent {
+    protected abstract void OverrideMe();
+  }
+  public class Parent: GrandParent {
+      protected override void OverrideMe() {
+      }
+  }
+  public class Child: Parent {
+  }
+";
+			ResolveResult result = Resolve(program, "(Child)someVar", 6);
+			Assert.AreEqual("Child", result.ResolvedType.FullyQualifiedName);
+			int count = 0;
+			foreach (IMethod m in result.ResolvedType.GetMethods()) {
+				if (m.Name == "OverrideMe")
+					count += 1;
+			}
+			Assert.AreEqual(1, count);
+			count = 0;
+			foreach (object o in result.GetCompletionData(lastPC)) {
+				IMethod m = o as IMethod;
+				if (m != null && m.Name == "OverrideMe")
+					count += 1;
+			}
+			Assert.AreEqual(1, count);
+		}
 		#endregion
 		
 		#region MixedType tests
