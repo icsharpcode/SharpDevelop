@@ -144,6 +144,17 @@ namespace Debugger
 			
 			foreach(Variable newVariable in newVariables) {
 				if (this.Contains(newVariable.Name)) {
+					Variable oldVariable = this[newVariable.Name];
+					// HACK: Realy bad object-oriented design!!!
+					// Trasfer the new variable into the old one
+					if (oldVariable != newVariable) {
+						oldVariable.valueGetter = newVariable.valueGetter;
+						oldVariable.cachedValue = null;
+						if (newVariable is ClassVariable && oldVariable is ClassVariable) {
+							((ClassVariable)oldVariable).isPublic = ((ClassVariable)oldVariable).isPublic;
+							((ClassVariable)oldVariable).isStatic = ((ClassVariable)oldVariable).isStatic;
+						}
+					}
 					// Keep the variable in the list
 					toBeRemoved.Remove(this[newVariable.Name]);
 				} else {

@@ -11,8 +11,8 @@ namespace Debugger
 {
 	public class ClassVariable: Variable
 	{
-		bool isStatic;
-		bool isPublic;
+		internal bool isStatic;
+		internal bool isPublic;
 		
 		public bool IsStatic {
 			get {
