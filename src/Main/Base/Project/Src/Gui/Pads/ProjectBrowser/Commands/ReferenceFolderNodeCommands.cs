@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					DiscoveryClientProtocol protocol = DiscoverWebServices(url.UpdateFromURL);
 					if (protocol != null) {
 						// Save web services.
-						WebReference webReference = new WebReference(url.Project, url.UpdateFromURL, node.Text, url.Project.RootNamespace, protocol);
+						WebReference webReference = new WebReference(url.Project, url.UpdateFromURL, node.Text, url.Namespace, protocol);
 						webReference.Save();
 						
 						// Update project.

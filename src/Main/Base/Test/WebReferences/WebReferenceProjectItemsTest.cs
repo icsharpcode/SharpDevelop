@@ -111,6 +111,12 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		}
 		
 		[Test]
+		public void WebReferenceUrlNamespace()
+		{
+			Assert.AreEqual(proxyNamespace, webReferenceUrl.Namespace);
+		}
+		
+		[Test]
 		public void WebReferenceRelPath()
 		{
 			Assert.AreEqual("Web References\\localhost", webReferenceUrl.RelPath);

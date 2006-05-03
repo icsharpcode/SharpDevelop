@@ -98,6 +98,20 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
+		public string Namespace {
+			get {
+				string ns = base.Properties["Namespace"];
+				if (ns.Length > 0) {
+					return ns;
+				} 
+				return Project.RootNamespace;
+			}
+			set {
+				base.Properties["Namespace"] = value;
+			}
+		}
+		
 		public override string FileName {
 			get {
 				if (Project != null && RelPath != null) {
