@@ -198,7 +198,11 @@ namespace Grunwald.BooBinding.Designer
 		protected override void Write(CodeCompileUnit unit)
 		{
 			LoggingService.Info("BooDesignerLoader.Write called");
-			generator.MergeFormChanges(unit);
+			try {
+				generator.MergeFormChanges(unit);
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
 		}
 	}
 }

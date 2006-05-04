@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using System.CodeDom;
@@ -28,6 +29,77 @@ namespace Grunwald.BooBinding.Designer
 		protected override System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider()
 		{
 			return new Boo.Lang.CodeDom.BooCodeProvider();
+		}
+		
+		protected override void FixGeneratedCode(IClass formClass, CodeMemberMethod code)
+		{
+			base.FixGeneratedCode(formClass, code);
+			Dictionary<string, IReturnType> variables = new Dictionary<string, IReturnType>();
+			foreach (IField f in formClass.DefaultReturnType.GetFields()) {
+				variables[f.Name] = f.ReturnType;
+			}
+			variables[""] = formClass.DefaultReturnType;
+			foreach (CodeStatement statement in code.Statements) {
+				CodeExpressionStatement ces = statement as CodeExpressionStatement;
+				if (ces != null) {
+					CodeMethodInvokeExpression cmie = ces.Expression as CodeMethodInvokeExpression;
+					if (cmie != null && cmie.Parameters.Count == 1) {
+						CodeArrayCreateExpression cace = cmie.Parameters[0] as CodeArrayCreateExpression;
+						if (cace != null) {
+							IReturnType rt = ResolveType(cmie.Method.TargetObject, variables);
+							if (rt != null) {
+								foreach (IMethod m in rt.GetMethods()) {
+									if (m.Name == cmie.Method.MethodName
+									    && m.Parameters.Count == 1
+									    && m.Parameters[0].IsParams
+									    && m.Parameters[0].ReturnType.ArrayDimensions == 1
+									    && m.Parameters[0].ReturnType.ArrayElementType.FullyQualifiedName == cace.CreateType.BaseType)
+									{
+										cace.UserData["Explode"] = true;
+									}
+								}
+							}
+						}
+					}
+				}
+				CodeVariableDeclarationStatement cvds = statement as CodeVariableDeclarationStatement;
+				if (cvds != null) {
+					variables[cvds.Name] = new SearchClassReturnType(formClass.ProjectContent, formClass, formClass.Region.BeginLine + 1, 0, cvds.Type.BaseType, cvds.Type.TypeArguments.Count);
+				}
+			}
+		}
+		
+		IReturnType ResolveType(CodeExpression expr, Dictionary<string, IReturnType> variables)
+		{
+			IReturnType rt;
+			if (expr is CodeThisReferenceExpression) {
+				return variables[""];
+			} else if (expr is CodeVariableReferenceExpression) {
+				string name = (expr as CodeVariableReferenceExpression).VariableName;
+				if (variables.TryGetValue(name, out rt))
+					return rt;
+			} else if (expr is CodeFieldReferenceExpression) {
+				string name = (expr as CodeFieldReferenceExpression).FieldName;
+				rt = ResolveType((expr as CodeFieldReferenceExpression).TargetObject, variables);
+				if (rt != null) {
+					foreach (IField f in rt.GetFields()) {
+						if (f.Name == name) {
+							return f.ReturnType;
+						}
+					}
+				}
+			} else if (expr is CodePropertyReferenceExpression) {
+				string name = (expr as CodePropertyReferenceExpression).PropertyName;
+				rt = ResolveType((expr as CodePropertyReferenceExpression).TargetObject, variables);
+				if (rt != null) {
+					foreach (IProperty p in rt.GetProperties()) {
+						if (p.Name == name) {
+							return p.ReturnType;
+						}
+					}
+				}
+			}
+			return null;
 		}
 		
 		protected override string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body, string indentation)

@@ -130,6 +130,10 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected abstract DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method);
 		
+		protected virtual void FixGeneratedCode(IClass formClass, CodeMemberMethod code)
+		{
+		}
+		
 		public void MergeFormChanges(CodeCompileUnit unit)
 		{
 			Reparse();
@@ -162,6 +166,8 @@ namespace ICSharpCode.FormsDesigner
 				ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassBookmarkMenuBuilder.RenameClass(this.formClass, formClass.Name);
 				Reparse();
 			}
+			
+			FixGeneratedCode(this.formClass, initializeComponent);
 			
 			// generate file and get initialize components string
 			StringWriter writer = new StringWriter();
