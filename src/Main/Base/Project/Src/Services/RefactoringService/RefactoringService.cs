@@ -86,7 +86,33 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public static List<Reference> FindReferences(IClass @class, IProgressMonitor progressMonitor)
 		{
+			if (@class == null)
+				throw new ArgumentNullException("class");
 			return RunFindReferences(@class, null, false, progressMonitor);
+		}
+		
+		/// <summary>
+		/// Find all references to the resolved entity.
+		/// </summary>
+		public static List<Reference> FindReferences(ResolveResult entity, IProgressMonitor progressMonitor)
+		{
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			if (entity is LocalResolveResult) {
+				return RunFindReferences(entity.CallingClass, (entity as LocalResolveResult).Field, true, progressMonitor);
+			} else if (entity is TypeResolveResult) {
+				return FindReferences((entity as TypeResolveResult).ResolvedClass, progressMonitor);
+			} else if (entity is MemberResolveResult) {
+				return FindReferences((entity as MemberResolveResult).ResolvedMember, progressMonitor);
+			} else if (entity is MethodResolveResult) {
+				IMethod method = (entity as MethodResolveResult).GetMethodIfSingleOverload();
+				if (method != null) {
+					return FindReferences(method, progressMonitor);
+				}
+			} else if (entity is MixedResolveResult) {
+				return FindReferences((entity as MixedResolveResult).PrimaryResult, progressMonitor);
+			}
+			return null;
 		}
 		
 		/// <summary>

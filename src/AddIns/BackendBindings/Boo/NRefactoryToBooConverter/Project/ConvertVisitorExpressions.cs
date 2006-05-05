@@ -117,6 +117,10 @@ namespace NRefactoryToBooConverter
 			if (val is double) {
 				return new B.DoubleLiteralExpression(GetLexicalInfo(pe), (double)val, false);
 			}
+			if (val is decimal) {
+				AddWarning(pe, "Converting decimal literal to double literal");
+				return new B.DoubleLiteralExpression(GetLexicalInfo(pe), (double)(decimal)val);
+			}
 			AddError(pe, "Unknown primitive literal of type " + val.GetType().FullName);
 			return null;
 		}
@@ -520,14 +524,14 @@ namespace NRefactoryToBooConverter
 		{
 			AddError(checkedExpression, "Using 'checked' inside an expression is not supported by boo, " +
 			         "use the checked {} block instead.");
-			return null;
+			return MakeMethodCall("checked", ConvertExpression(checkedExpression.Expression));
 		}
 		
 		public object Visit(UncheckedExpression uncheckedExpression, object data)
 		{
 			AddError(uncheckedExpression, "Using 'unchecked' inside an expression is not supported by boo, " +
 			         "use the unchecked {} block instead.");
-			return null;
+			return MakeMethodCall("unchecked", ConvertExpression(uncheckedExpression.Expression));
 		}
 	}
 }
