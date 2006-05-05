@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					DiscoveryClientProtocol protocol = DiscoverWebServices(url.UpdateFromURL);
 					if (protocol != null) {
 						// Save web services.
-						WebReference webReference = new WebReference(url.Project, url.UpdateFromURL, node.Text, url.Project.RootNamespace, protocol);
+						WebReference webReference = new WebReference(url.Project, url.UpdateFromURL, node.Text, url.Namespace, protocol);
 						webReference.Save();
 						
 						// Update project.
@@ -117,7 +117,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			AbstractProjectBrowserTreeNode node = Owner as AbstractProjectBrowserTreeNode;
+			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
 			if (node != null && node.Project != null) {
 				using (AddWebReferenceDialog refDialog = new AddWebReferenceDialog(node.Project)) {
 					refDialog.NamespacePrefix = node.Project.RootNamespace;
@@ -152,7 +152,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			} else if (node is ReferenceFolder && node.Parent != null && node.Parent is ProjectNode) {
 				webReferencesNode = AddWebReferenceToProjectNode((ProjectNode)node.Parent, webReference);
 			} else {
-				LoggingService.Error("AddWebReferenceToProjectBrowser: Selected node type is not handled.");
+				LoggingService.Warn("AddWebReferenceToProjectBrowser: Selected node type is not handled.");
+				AddWebReferenceToProjectBrowser(node.Parent as AbstractProjectBrowserTreeNode, webReference);
 			}
 			
 			if (webReferencesNode != null) {

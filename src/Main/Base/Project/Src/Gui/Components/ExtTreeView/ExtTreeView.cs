@@ -249,6 +249,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		bool canClearSelection = true;
+		
+		/// <summary>
+		/// Gets/Sets whether the user can clear the selection by clicking in the empty area.
+		/// </summary>
+		public bool CanClearSelection {
+			get {
+				return canClearSelection;
+			}
+			set {
+				canClearSelection = value;
+			}
+		}
+		
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			base.OnMouseDown(e);
@@ -258,7 +272,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					SelectedNode = node;
 				}
 			} else {
-				SelectedNode = null;
+				if (canClearSelection) {
+					SelectedNode = null;
+				}
 			}
 		}
 		

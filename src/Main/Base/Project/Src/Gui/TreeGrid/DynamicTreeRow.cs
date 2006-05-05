@@ -193,15 +193,32 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 		#region Child form
 		static bool isOpeningChild;
 		
+		/// <summary>
+		/// Block the next click event - used to ensure that a click on the "-" sign
+		/// does not cause the submenu to open again when the "-" sign becomes a "+" sign
+		/// before the click event is handled.
+		/// </summary>
+		bool blockClickEvent;
+		
 		protected virtual void OnPlusClick(object sender, DynamicListEventArgs e)
 		{
+			if (blockClickEvent) { blockClickEvent = false; return; }
 			OnExpanding(e);
 			ChildForm frm = new ChildForm();
 			frm.Closed += delegate {
+				blockClickEvent = true;
 				if (expandedIn != null)
 					expandedIn.Remove(e.List);
 				OnCollapsed(e);
 				plus.RaiseItemChanged();
+				Timer timer = new Timer();
+				timer.Interval = 85;
+				timer.Tick += delegate(object sender2, EventArgs e2) { 
+					((Timer)sender2).Stop();
+					((Timer)sender2).Dispose();
+					blockClickEvent = false;
+				};
+				timer.Start();
 			};
 			Point p = e.List.PointToScreen(e.List.GetPositionFromRow(this));
 			p.Offset(e.List.Columns[0].Width, Height);
@@ -292,6 +309,9 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			
 			bool showWindowWithoutActivation;
 			
+			/// <summary>
+			/// Gets/Sets whether the window will receive focus when it is shown.
+			/// </summary>
 			public bool ShowWindowWithoutActivation {
 				get {
 					return showWindowWithoutActivation;

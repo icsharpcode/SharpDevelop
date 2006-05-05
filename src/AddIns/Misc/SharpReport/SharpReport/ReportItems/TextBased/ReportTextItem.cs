@@ -32,16 +32,17 @@ namespace SharpReport.ReportItems {
 			visualControl = new ReportTextControl();
 
 			this.Text = visualControl.Name;
-			visualControl.StringFormat = base.StringFormat;
+			
+			visualControl.ContentAlignment = base.ContentAlignment;
+			visualControl.StringTrimming = base.StringTrimming;
 			
 			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
-			
+
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
 			this.visualControl.BackColorChanged += new EventHandler (OnControlChanged);
 			this.visualControl.FontChanged += new EventHandler (OnControlChanged);
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
-
 			base.PropertyChanged += new PropertyChangedEventHandler (BasePropertyChange);
 		}
 		
@@ -49,11 +50,15 @@ namespace SharpReport.ReportItems {
 		#endregion
 		
 		
-		
 		#region events
+		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
 			ItemsHelper.UpdateControlFromTextBase(this.visualControl,this);
-			this.visualControl.StringFormat = base.StringFormat;
+			
+			this.visualControl.ContentAlignment = base.ContentAlignment;
+			this.visualControl.StringTrimming = base.StringTrimming;
+			this.visualControl.DrawBorder = base.DrawBorder;
+			
 			this.HandlePropertyChanged(e.PropertyName);
 		}
 		
@@ -86,20 +91,7 @@ namespace SharpReport.ReportItems {
 		}
 		
 		#endregion
-		
-		public override Size Size {
-			get {
-				return base.Size;
-			}
-			set {
-				base.Size = value;
-				if (this.visualControl != null) {
-					this.visualControl.Size = value;
-				}
-				this.HandlePropertyChanged("Size");
-			}
-		}
-		
+	
 		public override Point Location {
 			get {
 				return base.Location;
@@ -142,7 +134,7 @@ namespace SharpReport.ReportItems {
 				this.HandlePropertyChanged("Text");
 			}
 		}
-		
+	
 		#region IDesignable
 	
 		[System.Xml.Serialization.XmlIgnoreAttribute]

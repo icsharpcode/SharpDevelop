@@ -43,23 +43,40 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return c;
 		}
 		
+		bool getMembersBusy;
+		
 		public override List<IMethod> GetMethods()
 		{
+			if (getMembersBusy) return new List<IMethod>();
+			getMembersBusy = true;
 			List<IMethod> l = new List<IMethod>();
-			foreach (IClass bc in c.ClassInheritanceTree) {
-				if (bc.ClassType == ClassType.Interface && c.ClassType != ClassType.Interface)
-					continue; // ignore explicit interface implementations
-				
-				foreach (IMethod m in bc.Methods) {
-					// do not add base class constructors
-					if (m.IsConstructor && c != bc)
+			l.AddRange(c.Methods);
+			if (c.ClassType == ClassType.Interface) {
+				if (c.BaseTypes.Count == 0) {
+					AddMethodsFromBaseType(l, ReflectionReturnType.Object);
+				} else {
+					foreach (IReturnType baseType in c.BaseTypes) {
+						AddMethodsFromBaseType(l, baseType);
+					}
+				}
+			} else {
+				AddMethodsFromBaseType(l, c.BaseType);
+			}
+			getMembersBusy = false;
+			return l;
+		}
+		
+		void AddMethodsFromBaseType(List<IMethod> l, IReturnType baseType)
+		{
+			if (baseType != null) {
+				foreach (IMethod m in baseType.GetMethods()) {
+					if (m.IsConstructor)
 						continue;
 					
-					// do not add methods that were overridden
 					bool ok = true;
 					if (m.IsOverridable) {
 						StringComparer comparer = m.DeclaringType.ProjectContent.Language.NameComparer;
-						foreach (IMethod oldMethod in l) {
+						foreach (IMethod oldMethod in c.Methods) {
 							if (comparer.Equals(oldMethod.Name, m.Name)) {
 								if (m.IsStatic == oldMethod.IsStatic) {
 									if (DiffUtility.Compare(oldMethod.Parameters, m.Parameters) == 0) {
@@ -74,22 +91,33 @@ namespace ICSharpCode.SharpDevelop.Dom
 						l.Add(m);
 				}
 			}
-			return l;
 		}
 		
 		public override List<IProperty> GetProperties()
 		{
+			if (getMembersBusy) return new List<IProperty>();
+			getMembersBusy = true;
 			List<IProperty> l = new List<IProperty>();
-			foreach (IClass bc in c.ClassInheritanceTree) {
-				if (bc.ClassType == ClassType.Interface && c.ClassType != ClassType.Interface)
-					continue; // ignore explicit interface implementations
-				
-				foreach (IProperty p in bc.Properties) {
-					// do not add methods that were overridden
+			l.AddRange(c.Properties);
+			if (c.ClassType == ClassType.Interface) {
+				foreach (IReturnType baseType in c.BaseTypes) {
+					AddPropertiesFromBaseType(l, baseType);
+				}
+			} else {
+				AddPropertiesFromBaseType(l, c.BaseType);
+			}
+			getMembersBusy = false;
+			return l;
+		}
+		
+		void AddPropertiesFromBaseType(List<IProperty> l, IReturnType baseType)
+		{
+			if (baseType != null) {
+				foreach (IProperty p in baseType.GetProperties()) {
 					bool ok = true;
 					if (p.IsOverridable) {
 						StringComparer comparer = p.DeclaringType.ProjectContent.Language.NameComparer;
-						foreach (IProperty oldProperty in l) {
+						foreach (IProperty oldProperty in c.Properties) {
 							if (comparer.Equals(oldProperty.Name, p.Name)) {
 								if (p.IsStatic == oldProperty.IsStatic) {
 									if (DiffUtility.Compare(oldProperty.Parameters, p.Parameters) == 0) {
@@ -104,28 +132,43 @@ namespace ICSharpCode.SharpDevelop.Dom
 						l.Add(p);
 				}
 			}
-			return l;
 		}
 		
 		public override List<IField> GetFields()
 		{
-			List<IField> l = new List<IField>();
-			foreach (IClass bc in c.ClassInheritanceTree) {
-				if (bc.ClassType == ClassType.Interface && c.ClassType != ClassType.Interface)
-					continue; // ignore explicit interface implementations
-				l.AddRange(bc.Fields);
+			if (getMembersBusy) return new List<IField>();
+			getMembersBusy = true;
+			List<IField> l;
+			if (c.ClassType == ClassType.Interface) {
+				l = new List<IField>();
+				foreach (IReturnType baseType in c.BaseTypes) {
+					l.AddRange(baseType.GetFields());
+				}
+			} else {
+				IReturnType baseType = c.BaseType;
+				l = baseType != null ? c.BaseType.GetFields() : new List<IField>();
 			}
+			l.AddRange(c.Fields);
+			getMembersBusy = false;
 			return l;
 		}
 		
 		public override List<IEvent> GetEvents()
 		{
-			List<IEvent> l = new List<IEvent>();
-			foreach (IClass bc in c.ClassInheritanceTree) {
-				if (bc.ClassType == ClassType.Interface && c.ClassType != ClassType.Interface)
-					continue; // ignore explicit interface implementations
-				l.AddRange(bc.Events);
+			if (getMembersBusy) return new List<IEvent>();
+			getMembersBusy = true;
+			List<IEvent> l;
+			if (c.ClassType == ClassType.Interface) {
+				l = new List<IEvent>();
+				foreach (IReturnType baseType in c.BaseTypes) {
+					l.AddRange(baseType.GetEvents());
+				}
+			} else {
+				IReturnType baseType = c.BaseType;
+				l = baseType != null ? c.BaseType.GetEvents() : new List<IEvent>();
 			}
+			l.AddRange(c.Events);
+			getMembersBusy = false;
 			return l;
 		}
 		

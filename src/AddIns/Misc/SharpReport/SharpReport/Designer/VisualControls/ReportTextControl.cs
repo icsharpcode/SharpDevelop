@@ -18,7 +18,13 @@ namespace SharpReport.Designer{
 	/// Description of ReportTextItem.
 	/// </summary>
 	internal class ReportTextControl : ReportControlBase{
-		StringFormat stringFormat;
+
+		private StringTrimming stringTrimming;
+		private ContentAlignment contentAlignment;
+		private bool drawBorder;
+		
+		private TextDrawer textDrawer  = new TextDrawer();
+		private RectangleShape shape = new RectangleShape();
 		
 		public ReportTextControl():base(){
 			InitializeComponent();
@@ -32,36 +38,42 @@ namespace SharpReport.Designer{
 			this.Size = GlobalValues.PreferedSize;
 		}
 		
+		public bool DrawBorder {
+			set {
+				drawBorder = value;
+				this.Invalidate();
+			}
+		}
 		
 		
 		
 		public override string Text{
 			get { return base.Text; }
-			set { 
-				base.Text = value; 
-			}
+			set { base.Text = value;}
 		}
 		
-		public StringFormat StringFormat{
+		
+		public  StringTrimming StringTrimming {
 			set {
-				if (this.stringFormat != value) {
-					this.stringFormat = value;
-					this.Invalidate();
-				}
+				stringTrimming = value;
+				this.Invalidate();
 			}
 		}
 		
+		
+		public System.Drawing.ContentAlignment ContentAlignment {
+			set {
+				this.contentAlignment = value;
+				this.Invalidate();
+			}
+		}
+	
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea){
-
+			
 			base.OnPaint(pea);
 			base.DrawEdges (pea);
 			base.DrawDecorations(pea);
-			
-			if (this.stringFormat == null) {
-				this.stringFormat = GlobalValues.StandartStringFormat();
-				this.stringFormat.LineAlignment = StringAlignment.Center;
-			} 
-			
+
 			string str;
 			
 			if (String.IsNullOrEmpty(this.Text)) {
@@ -70,10 +82,16 @@ namespace SharpReport.Designer{
 				str = this.Text;
 			}
 			
-			pea.Graphics.DrawString(str,this.Font,
-			                        new SolidBrush(this.ForeColor),
-			                        (RectangleF)this.ClientRectangle,
-			                        this.stringFormat);
+			if (this.drawBorder) {
+				shape.DrawShape (pea.Graphics,
+				                 new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1),
+				                 base.FocusRectangle);
+			}
+			
+			this.textDrawer.DrawString (pea.Graphics,this.Text,this.Font,
+			                            new SolidBrush(this.ForeColor),(RectangleF)this.ClientRectangle,
+			                            this.stringTrimming,this.contentAlignment);
+			
 		}
 		
 		

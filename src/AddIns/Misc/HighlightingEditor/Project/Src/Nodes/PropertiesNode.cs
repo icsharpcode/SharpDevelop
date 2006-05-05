@@ -33,20 +33,21 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			}
 			
 		}
-	
+		
 		public override void UpdateNodeText()
 		{
 		}
 		
-		public override string ToXml()
+		public override void WriteXml(XmlWriter writer)
 		{
-			string ret = "\t<Properties>\n";
+			writer.WriteStartElement("Properties");
 			foreach (DictionaryEntry de in Properties) {
-				ret += "\t\t<Property name=\"" + ReplaceXmlChars((string)de.Key) 
-						+ "\" value=\"" + ReplaceXmlChars((string)de.Value) + "\"/>\n";
+				writer.WriteStartElement("Property");
+				writer.WriteAttributeString("name", (string)de.Key);
+				writer.WriteAttributeString("value", (string)de.Value);
+				writer.WriteEndElement();
 			}
-			ret += "\t</Properties>\n\n";
-			return ret;
+			writer.WriteEndElement();
 		}
 	}
 	
@@ -55,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		private System.Windows.Forms.Button addBtn;
 		private System.Windows.Forms.Button editBtn;
 		private System.Windows.Forms.Button removeBtn;
-		private System.Windows.Forms.ListView listView;	
+		private System.Windows.Forms.ListView listView;
 		
 		public PropertiesOptionPanel(PropertiesNode parent) : base(parent)
 		{
@@ -70,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			
 			listView  = (ListView)ControlDictionary["listView"];
 		}
-	
+		
 		public override void StoreSettings()
 		{
 			PropertiesNode node = (PropertiesNode)parent;

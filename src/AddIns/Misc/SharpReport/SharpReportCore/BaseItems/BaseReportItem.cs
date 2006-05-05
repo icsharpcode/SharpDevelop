@@ -60,14 +60,17 @@ namespace SharpReportCore {
 		#endregion
 		
 		#region EventHandling
+		
 		protected void NotiyfyAfterPrint (PointF afterPrintLocation) {
+//			System.Console.WriteLine("\tNotiyfyAfterPrint");
 			if (this.ItemPrinted != null) {
 				AfterPrintEventArgs rea = new AfterPrintEventArgs (afterPrintLocation);
 				ItemPrinted(this, rea);
 			}
 		}
 		
-		protected void NotifyBeforePrint () {
+		private void NotifyBeforePrint () {
+//			System.Console.WriteLine("\tNotifyBeforePrint");
 			if (this.ItemPrinting != null) {
 				BeforePrintEventArgs ea = new BeforePrintEventArgs ();
 				ItemPrinting (this,ea);
@@ -75,6 +78,15 @@ namespace SharpReportCore {
 		}
 		
 		#endregion
+		
+		#region overrides
+		public override void Render(ReportPageEventArgs rpea){
+			base.Render(rpea);
+			this.NotifyBeforePrint();
+		}
+		
+		#endregion
+		
 		#region virtual method's
 		protected RectangleF DrawingRectangle (ReportPageEventArgs e,SizeF measureSize) {
 			
@@ -145,7 +157,7 @@ namespace SharpReportCore {
 				NotifyPropertyChanged ("Font");
 			}
 		}
-		
+			
 		#endregion
 		
 		#region IDisposeable

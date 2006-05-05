@@ -108,6 +108,7 @@ namespace SharpReport.ReportItems
 		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
 			ItemsHelper.UpdateControlFromTextBase (this.visualControl,this);
+			this.visualControl.DrawBorder = base.DrawBorder;
 			this.HandlePropertyChanged(e.PropertyName);
 		}
 		
@@ -115,6 +116,7 @@ namespace SharpReport.ReportItems
 		private void OnControlChanged (object sender, EventArgs e) {
 			this.SuspendLayout();
 			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+			
 			this.ResumeLayout();
 			this.HandlePropertyChanged("OnControlChanged");
 		
@@ -206,7 +208,7 @@ namespace SharpReport.ReportItems
 		}
 		
 		public override string ToString(){
-			return this.Name;
+			return this.GetType().Name;
 		}
 		
 		#endregion

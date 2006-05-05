@@ -55,7 +55,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		/// <summary>
+		/// Region of the whole class including the body.
+		/// </summary>
 		DomRegion Region {
+			get;
+		}
+		
+		DomRegion BodyRegion {
 			get;
 		}
 		

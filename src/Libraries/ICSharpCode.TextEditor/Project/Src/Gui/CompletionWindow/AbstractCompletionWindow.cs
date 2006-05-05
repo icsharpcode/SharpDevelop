@@ -41,6 +41,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			StartPosition   = FormStartPosition.Manual;
 			FormBorderStyle = FormBorderStyle.None;
 			ShowInTaskbar   = false;
+			MinimumSize     = new Size(1, 1);
 			Size            = new Size(1, 1);
 		}
 		

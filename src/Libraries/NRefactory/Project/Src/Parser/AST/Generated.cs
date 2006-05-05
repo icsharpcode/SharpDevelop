@@ -3806,6 +3806,8 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 		
 		List<TemplateDefinition> templates;
 		
+		Point bodyStartLocation;
+		
 		public string Name {
 			get {
 				return name;
@@ -3842,12 +3844,22 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
+		public Point BodyStartLocation {
+			get {
+				return bodyStartLocation;
+			}
+			set {
+				bodyStartLocation = value;
+			}
+		}
+		
 		public TypeDeclaration(Modifier modifier, List<AttributeSection> attributes) : 
 				base(attributes) {
 			Modifier = modifier;
 			name = "";
 			baseTypes = new List<TypeReference>();
 			templates = new List<TemplateDefinition>();
+			bodyStartLocation = new Point(-1, -1);
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
@@ -3855,8 +3867,8 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 		}
 		
 		public override string ToString() {
-			return string.Format("[TypeDeclaration Name={0} Type={1} BaseTypes={2} Templates={3} Attributes={4} Mod" +
-					"ifier={5}]", Name, Type, GetCollectionString(BaseTypes), GetCollectionString(Templates), GetCollectionString(Attributes), Modifier);
+			return string.Format("[TypeDeclaration Name={0} Type={1} BaseTypes={2} Templates={3} BodyStartLocation=" +
+					"{4} Attributes={5} Modifier={6}]", Name, Type, GetCollectionString(BaseTypes), GetCollectionString(Templates), BodyStartLocation, GetCollectionString(Attributes), Modifier);
 		}
 	}
 	

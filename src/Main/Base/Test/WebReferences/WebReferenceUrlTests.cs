@@ -54,6 +54,28 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			Assert.AreEqual("http://localhost/test.asmx", url.Include);
 			Assert.AreEqual("Web References\\mywebservice", url.RelPath);
 		}
-
+		
+		[Test]
+		public void NoNamespaceSpecified()
+		{
+			MSBuildProject project = new MSBuildProject();
+			project.FileName = "c:\\projects\\test\\foo.csproj";
+			project.RootNamespace = "TestRootNamespace";
+			WebReferenceUrl url = new WebReferenceUrl(project);
+			
+			Assert.AreEqual("TestRootNamespace", url.Namespace);
+		}
+		
+		[Test]
+		public void NamespaceSpecified()
+		{
+			MSBuildProject project = new MSBuildProject();
+			project.FileName = "c:\\projects\\test\\foo.csproj";
+			project.RootNamespace = "TestRootNamespace";
+			WebReferenceUrl url = new WebReferenceUrl(project);
+			url.Namespace = "WebReferenceNamespace";
+			
+			Assert.AreEqual("WebReferenceNamespace", url.Namespace);
+		}
 	}
 }

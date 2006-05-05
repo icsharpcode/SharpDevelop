@@ -39,7 +39,8 @@ namespace SharpReportCore {
 			
 		}
 		
-		
+		public abstract Brush CreateBrush(RectangleF rect);
+
 		protected Color Color {
 			get {
 				return color;
@@ -64,7 +65,12 @@ namespace SharpReportCore {
 	/// </summary>
 	public class SolidFillPattern : AbstractFillPattern {
 		public SolidFillPattern (Color color) :base(color){
-			base.Brush = new SolidBrush(color);
+//			base.Brush = new SolidBrush(color);
 		}
+		
+		public override Brush CreateBrush(RectangleF rect){
+			return new SolidBrush(this.Color);
+		}
+		
 	}
 }

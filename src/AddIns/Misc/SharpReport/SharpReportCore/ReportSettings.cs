@@ -48,7 +48,7 @@ namespace SharpReportCore{
 		private System.Data.CommandType commandType;
 		
 		private Font defaultFont = new Font("Microsoft Sans Serif",
-		                                    16,
+		                                    10,
 		                                    FontStyle.Regular,
 		                                    GraphicsUnit.Point);
 		

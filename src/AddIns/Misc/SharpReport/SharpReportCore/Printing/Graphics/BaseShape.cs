@@ -31,33 +31,47 @@ using System.Drawing.Drawing2D;
 /// </remarks>
 namespace SharpReportCore {	
 	
-	public class BaseShape : object {
+	public abstract class BaseShape : object {
 		
 	
 		public BaseShape() {
 		}
 		
 		
-		public virtual void DrawShape (Graphics graphics,BaseLine baseLine,RectangleF rectangle) {
+		public void FillShape (Graphics graphics, Brush brush,RectangleF rectangle) {
 			
+			GraphicsPath path1 = this.CreatePath(rectangle);
+			graphics.FillPath(brush, path1);
+
+		}
+		public void FillShape (Graphics graphics,AbstractFillPattern fillPattern,RectangleF rectangle) {
+			
+			if (fillPattern != null){
+				using (Brush brush = fillPattern.CreateBrush(rectangle)){
+					if (brush != null){
+						this.FillShape(graphics, brush, rectangle);
+					}
+				}
+			}
+		}
+		
+		public abstract GraphicsPath CreatePath (RectangleF rectangle) ;
+		
+		
+		
+		public void DrawShape(Graphics g, BaseLine line, RectangleF rectangle){
+			using (Pen pen = line.CreatePen()){
+				if (pen != null){
+					this.new_DrawShape(g, pen, rectangle);
+				}
+			}
+		}
+	
+		public void new_DrawShape(Graphics g, Pen pen, RectangleF rectangle){
+			GraphicsPath path1 = this.CreatePath(rectangle);
+			g.DrawPath(pen, path1);
 		}
 
-		
-		public virtual void DrawShape (Graphics graphics,Pen pen,RectangleF rectangle) {
-			
-		}
-		
-		
-		public virtual void FillShape (Graphics graphics, Brush brush,RectangleF rectangle) {
-			
-		}
-		
-		public virtual void FillShape (Graphics graphics,AbstractFillPattern fillPattern,RectangleF rectangle) {
-			
-		}
-		
-		public virtual GraphicsPath CreatePath (RectangleF rectangleF) {
-			return null;
-		}
+
 	}
 }

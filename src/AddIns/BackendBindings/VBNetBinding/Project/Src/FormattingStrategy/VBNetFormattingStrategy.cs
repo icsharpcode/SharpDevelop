@@ -269,7 +269,7 @@ namespace VBNetBinding.FormattingStrategy
 					
 					if (curLineText != null && curLineText.EndsWith("'''") && (lineAboveText == null || !lineAboveText.Trim().StartsWith("'''"))) {
 						string indentation = base.GetIndentation(textArea, lineNr);
-						object member = GetMember(textArea, lineNr);
+						object member = GetMemberAfter(textArea, lineNr);
 						if (member != null) {
 							StringBuilder sb = new StringBuilder();
 							sb.Append(" <summary>\n");
@@ -446,69 +446,63 @@ namespace VBNetBinding.FormattingStrategy
 			return false;
 		}
 		
-		object GetMember(TextArea textArea, int lineNr)
+		/// <summary>
+		/// Gets the next member after the specified caret position.
+		/// </summary>
+		object GetMemberAfter(TextArea textArea, int caretLine)
 		{
 			string fileName = textArea.MotherTextEditorControl.FileName;
+			object nextElement = null;
 			if (fileName != null && fileName.Length > 0 ) {
-				string fullPath = Path.GetFullPath(fileName);
-				ParseInformation parseInfo = ParserService.GetParseInformation(fullPath);
+				ParseInformation parseInfo = ParserService.ParseFile(fileName, textArea.Document.TextContent);
 				if (parseInfo != null) {
-					ICompilationUnit currentCompilationUnit = (ICompilationUnit)parseInfo.BestCompilationUnit;
+					ICompilationUnit currentCompilationUnit = parseInfo.BestCompilationUnit;
 					if (currentCompilationUnit != null) {
-						foreach (IClass c in currentCompilationUnit.Classes) {
-							object o = GetClassMember(textArea, lineNr, c);
-							if (o != null) {
-								return o;
+						IClass currentClass = currentCompilationUnit.GetInnermostClass(caretLine, 0);
+						int nextElementLine = int.MaxValue;
+						if (currentClass == null) {
+							foreach (IClass c in currentCompilationUnit.Classes) {
+								if (c.Region.BeginLine < nextElementLine && c.Region.BeginLine > caretLine) {
+									nextElementLine = c.Region.BeginLine;
+									nextElement = c;
+								}
+							}
+						} else {
+							foreach (IClass c in currentClass.InnerClasses) {
+								if (c.Region.BeginLine < nextElementLine && c.Region.BeginLine > caretLine) {
+									nextElementLine = c.Region.BeginLine;
+									nextElement = c;
+								}
+							}
+							foreach (IMember m in currentClass.Methods) {
+								if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
+									nextElementLine = m.Region.BeginLine;
+									nextElement = m;
+								}
+							}
+							foreach (IMember m in currentClass.Properties) {
+								if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
+									nextElementLine = m.Region.BeginLine;
+									nextElement = m;
+								}
+							}
+							foreach (IMember m in currentClass.Fields) {
+								if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
+									nextElementLine = m.Region.BeginLine;
+									nextElement = m;
+								}
+							}
+							foreach (IMember m in currentClass.Events) {
+								if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
+									nextElementLine = m.Region.BeginLine;
+									nextElement = m;
+								}
 							}
 						}
 					}
 				}
 			}
-			return null;
-		}
-		
-		object GetClassMember(TextArea textArea, int lineNr, IClass c)
-		{
-			if (IsBeforeRegion(textArea, c.Region, lineNr)) {
-				return c;
-			}
-			
-			foreach (IClass inner in c.InnerClasses) {
-				object o = GetClassMember(textArea, lineNr, inner);
-				if (o != null) {
-					return o;
-				}
-			}
-			
-			foreach (IField f in c.Fields) {
-				if (IsBeforeRegion(textArea, f.Region, lineNr)) {
-					return f;
-				}
-			}
-			foreach (IProperty p in c.Properties) {
-				if (IsBeforeRegion(textArea, p.Region, lineNr)) {
-					return p;
-				}
-			}
-			foreach (IEvent e in c.Events) {
-				if (IsBeforeRegion(textArea, e.Region, lineNr)) {
-					return e;
-				}
-			}
-			foreach (IMethod m in c.Methods) {
-				if (IsBeforeRegion(textArea, m.Region, lineNr)) {
-					return m;
-				}
-			}
-			return null;
-		}
-		
-		bool IsBeforeRegion(TextArea textArea, DomRegion region, int lineNr)
-		{
-			if (region.IsEmpty) {
-				return false;
-			}
-			return region.BeginLine - 2 <= lineNr && lineNr <= region.BeginLine;
+			return nextElement;
 		}
 		
 		bool IsInString(string start)

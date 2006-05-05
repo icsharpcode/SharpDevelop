@@ -155,7 +155,7 @@ namespace Debugger
 		{
 			foreach(MethodProps m in Methods) {
 				MethodProps method = m; // One per scope/delegate
-				if (method.Name.StartsWith("get_") && method.HasSpecialName) {
+				if (method.HasSpecialName && method.Name.StartsWith("get_") && method.Name != "get_Item") {
 					yield return new PropertyVariable(debugger,
 					                                  method.Name.Remove(0, 4),
 					                                  method.IsStatic,
@@ -182,7 +182,7 @@ namespace Debugger
 		
 		ICorDebugValue[] GetArgsForEval(MethodProps method, ValueGetter getter)
 		{
-			ObjectValue updatedVal = (ObjectValue)getter();
+			ObjectValue updatedVal = getter() as ObjectValue;
 			if (this.IsEquivalentValue(updatedVal)) {
 				if (method.IsStatic) {
 					return new ICorDebugValue[] {};

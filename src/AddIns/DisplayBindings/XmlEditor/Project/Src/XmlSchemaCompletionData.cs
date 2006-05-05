@@ -794,8 +794,9 @@ namespace ICSharpCode.XmlEditor
 			XmlSchemaSequence sequence = complexType.Particle as XmlSchemaSequence;
 			XmlSchemaChoice choice = complexType.Particle as XmlSchemaChoice;
 			XmlSchemaGroupRef groupRef = complexType.Particle as XmlSchemaGroupRef;
+			XmlSchemaAll all = complexType.Particle as XmlSchemaAll;
 			XmlSchemaComplexContent complexContent = complexType.ContentModel as XmlSchemaComplexContent;
-
+			
 			if (sequence != null) {
 				matchedElement = FindElement(sequence.Items, name);
 			} else if (choice != null) {
@@ -810,6 +811,8 @@ namespace ICSharpCode.XmlEditor
 				}
 			} else if (groupRef != null) {
 				matchedElement = FindElement(groupRef, name);
+			} else if (all != null) {
+				matchedElement = FindElement(all.Items, name);
 			}
 			
 			return matchedElement;

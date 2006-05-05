@@ -168,9 +168,14 @@ namespace Grunwald.BooBinding.CodeCompletion
 					}
 				}
 			}
-			if (callingClass != null) {
-				if (ResolveMember(callingClass.DefaultReturnType, identifier))
-					return true;
+			
+			{ // Find members of this class or enclosing classes
+				IClass tmp = callingClass;
+				while (tmp != null) {
+					if (ResolveMember(tmp.DefaultReturnType, identifier))
+						return true;
+					tmp = tmp.DeclaringType;
+				}
 			}
 			
 			string namespaceName = projectContent.SearchNamespace(identifier, callingClass, cu, resolver.CaretLine, resolver.CaretColumn);
@@ -291,6 +296,19 @@ namespace Grunwald.BooBinding.CodeCompletion
 				}
 			} else {
 				if (resolveResult != null) {
+					if (resolveResult is TypeResolveResult) {
+						IClass rClass = (resolveResult as TypeResolveResult).ResolvedClass;
+						if (rClass != null) {
+							foreach (IClass baseClass in rClass.ClassInheritanceTree) {
+								foreach (IClass innerClass in baseClass.InnerClasses) {
+									if (IsSameName(innerClass.Name, node.Name)) {
+										MakeTypeResult(innerClass);
+										return;
+									}
+								}
+							}
+						}
+					}
 					ResolveMember(resolveResult.ResolvedType, node.Name);
 				}
 			}
@@ -350,19 +368,28 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			ClearResult();
 			node.Target.Accept(this);
+			if (resolveResult is MixedResolveResult) {
+				MixedResolveResult mixed = (MixedResolveResult)resolveResult;
+				resolveResult = mixed.TypeResult;
+				foreach (ResolveResult rr in mixed.Results) {
+					if (rr is MethodResolveResult) {
+						resolveResult = rr;
+						break;
+					}
+				}
+			}
 			if (resolveResult == null)
 				return;
+			
 			if (resolveResult is MethodResolveResult) {
 				// normal method call
 				string methodName = ((MethodResolveResult)resolveResult).Name;
 				IReturnType containingType = ((MethodResolveResult)resolveResult).ContainingType;
 				
 				ResolveMethodInType(containingType, methodName, node.Arguments);
-			} else if (resolveResult is TypeResolveResult || resolveResult is MixedResolveResult) {
-				TypeResolveResult trr = resolveResult as TypeResolveResult;
-				if (trr == null)
-					trr = (resolveResult as MixedResolveResult).TypeResult;
-				if (trr != null && trr.ResolvedClass != null) {
+			} else if (resolveResult is TypeResolveResult) {
+				TypeResolveResult trr = (TypeResolveResult)resolveResult;
+				if (trr.ResolvedClass != null) {
 					if (trr.ResolvedClass.FullyQualifiedName == "array") {
 						ResolveArrayCreation(node.Arguments);
 						return;
@@ -524,6 +551,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			switch (node.Operator) {
 				case BinaryOperatorType.GreaterThan:
 				case BinaryOperatorType.GreaterThanOrEqual:
+				case BinaryOperatorType.Equality:
 				case BinaryOperatorType.Inequality:
 				case BinaryOperatorType.LessThan:
 				case BinaryOperatorType.LessThanOrEqual:
@@ -531,8 +559,6 @@ namespace Grunwald.BooBinding.CodeCompletion
 				case BinaryOperatorType.Member:
 				case BinaryOperatorType.NotMatch:
 				case BinaryOperatorType.NotMember:
-				case BinaryOperatorType.Or:
-				case BinaryOperatorType.And:
 				case BinaryOperatorType.ReferenceEquality:
 				case BinaryOperatorType.ReferenceInequality:
 				case BinaryOperatorType.TypeTest:
@@ -566,7 +592,15 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override void OnCallableBlockExpression(CallableBlockExpression node)
 		{
-			MakeResult(new AnonymousMethodReturnType());
+			AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(cu);
+			if (node.ReturnType != null) {
+				amrt.MethodReturnType = ConvertType(node.ReturnType);
+			} else {
+				amrt.MethodReturnType = new InferredReturnType(node.Body, resolver.CallingClass,
+				                                               node.ContainsAnnotation("inline"));
+			}
+			ConvertVisitor.AddParameters(node.Parameters, amrt.MethodParameters, resolver.CallingMember, resolver.CallingClass ?? new DefaultClass(resolver.CompilationUnit, "__Dummy"));
+			MakeResult(amrt);
 		}
 		
 		public override void OnCallableTypeReference(CallableTypeReference node)

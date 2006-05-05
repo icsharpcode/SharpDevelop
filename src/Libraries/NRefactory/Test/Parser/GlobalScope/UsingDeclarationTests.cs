@@ -107,7 +107,25 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
 			parser.Parse();
 			Assert.IsTrue(parser.Errors.count > 0);
+			UsingDeclaration u = (UsingDeclaration)parser.CompilationUnit.Children[0];
+			foreach (Using us in u.Usings) {
+				Assert.IsNotNull(us);
+			}
 		}
+		
+		[Test]
+		public void VBNetWrongUsing2Test()
+		{
+			string program = "Imports ,\n";
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
+			parser.Parse();
+			Assert.IsTrue(parser.Errors.count > 0);
+			UsingDeclaration u = (UsingDeclaration)parser.CompilationUnit.Children[0];
+			foreach (Using us in u.Usings) {
+				Assert.IsNotNull(us);
+			}
+		}
+		
 		[Test]
 		public void VBNetDeclarationTest()
 		{

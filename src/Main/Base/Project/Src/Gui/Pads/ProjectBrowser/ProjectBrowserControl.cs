@@ -62,6 +62,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ProjectBrowserControl()
 		{
 			InitializeComponent();
+			treeView.CanClearSelection = false;
 			treeView.BeforeSelect   += TreeViewBeforeSelect;
 			treeView.AfterExpand    += TreeViewAfterExpand;
 			FileService.FileRenamed += FileServiceFileRenamed;

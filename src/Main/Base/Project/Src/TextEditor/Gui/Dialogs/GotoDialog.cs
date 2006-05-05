@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
 using System.ComponentModel;
@@ -276,18 +277,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
 					IProjectContent projectContent = ParserService.GetProjectContent(project);
 					if (projectContent != null) {
-						foreach (IClass c in projectContent.Classes) {
-							string className = c.Name;
-							if (className.Length >= text.Length) {
-								if (className.ToLowerInvariant().IndexOf(lowerText) >= 0) {
-									list.Add(c);
-								}
-							}
-						}
+						AddClasses(lowerText, list, projectContent.Classes);
 					}
 				}
 			}
 			return list;
+		}
+		
+		void AddClasses(string lowerText, ArrayList list, IEnumerable<IClass> classes)
+		{
+			foreach (IClass c in classes) {
+				string className = c.Name;
+				if (className.Length >= lowerText.Length) {
+					if (className.ToLowerInvariant().IndexOf(lowerText) >= 0) {
+						list.Add(c);
+					}
+				}
+				AddClasses(lowerText, list, c.InnerClasses);
+			}
 		}
 		
 		void AddItem(string text, int imageIndex, object tag, double priority)

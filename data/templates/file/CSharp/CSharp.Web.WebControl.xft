@@ -6,7 +6,7 @@
 		icon        = "C#.File.NewClass"
 		category    = "C#"
 		subcategory = "ASP.NET"
-		defaultname = "WebControl"
+		defaultname = "WebControl${Number}"
 		language    = "C#"
 	/>
 

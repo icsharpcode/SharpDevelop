@@ -20,10 +20,10 @@ namespace SharpReport {
 	/// 	created by - Forstmeier Peter
 	/// 	created on - 31.08.2005 13:49:47
 	/// </remarks>
-	public class ItemsHelper : object {
+	internal class ItemsHelper : object {
 		
 		
-		public static void UpdateBaseFromTextControl (ReportObjectControlBase control,
+		internal static void UpdateBaseFromTextControl (ReportObjectControlBase control,
 		                                              BaseReportItem item) {
 			
 			item.Size = control.Size;
@@ -32,9 +32,10 @@ namespace SharpReport {
 			item.BackColor = control.BackColor;
 			item.ForeColor = control.ForeColor;
 			item.Font = control.Font;
+			
 		}
 		
-		public static void UpdateBaseFromGraphicControl (AbstractGraphicControl control,
+		internal static void UpdateBaseFromGraphicControl (AbstractGraphicControl control,
 		                                                 BaseGraphicItem item) {
 			
 			ItemsHelper.UpdateBaseFromTextControl (control,item);
@@ -43,7 +44,7 @@ namespace SharpReport {
 		}
 		
 		
-		public static void UpdateControlFromTextBase (ReportObjectControlBase control,
+		internal static void UpdateControlFromTextBase (ReportObjectControlBase control,	
 		                                              BaseReportItem item) {
 			
 			control.BackColor = item.BackColor;
@@ -52,14 +53,10 @@ namespace SharpReport {
 			control.Size = item.Size;
 			control.Font = item.Font;
 			control.Name = item.Name;
-			BaseTextItem b = item as BaseTextItem;
-//			if (b != null) {
-//				control. = b.StringAlignment;
-//			}
 		}
 		
 		
-		public static void UpdateControlFromGraphicBase (AbstractGraphicControl control,
+		internal static void UpdateControlFromGraphicBase (AbstractGraphicControl control,
 		                                                 BaseGraphicItem item) {
 			ItemsHelper.UpdateControlFromTextBase(control,item);
 			control.Location = item.Location;

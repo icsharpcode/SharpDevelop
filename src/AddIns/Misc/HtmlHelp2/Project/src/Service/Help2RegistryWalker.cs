@@ -55,9 +55,9 @@ namespace HtmlHelp2.RegistryWalker
 				else
 					help2Collections.SelectedIndex = 0;
 			}
-			catch
+			catch(Exception ex)
 			{
-				LoggingService.Error("Help 2.0: cannot build namespaces list for Options dialog");
+				LoggingService.Error("Help 2.0: cannot build namespaces list for Options dialog", ex);
 			}
 
 			help2Collections.EndUpdate();

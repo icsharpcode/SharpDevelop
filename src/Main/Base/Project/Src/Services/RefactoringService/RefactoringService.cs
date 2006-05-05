@@ -37,19 +37,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					// can derive from the class
 					continue;
 				}
-				foreach (IClass c in pc.Classes) {
-					int count = c.BaseTypes.Count;
-					for (int i = 0; i < count; i++) {
-						string baseTypeName = c.BaseTypes[i].Name;
-						if (pc.Language.NameComparer.Equals(baseTypeName, baseClassName) ||
-						    pc.Language.NameComparer.Equals(baseTypeName, baseClassFullName)) {
-							IReturnType possibleBaseClass = c.GetBaseType(i);
-							if (possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName) {
-								list.Add(c);
-							}
-						}
-					}
-				}
+				AddDerivedClasses(pc, baseClass, baseClassName, baseClassFullName, pc.Classes, list);
 			}
 			if (!directDerivationOnly) {
 				List<IClass> additional = new List<IClass>();
@@ -62,6 +50,25 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			return list;
+		}
+		
+		static void AddDerivedClasses(IProjectContent pc, IClass baseClass, string baseClassName, string baseClassFullName,
+		                              IEnumerable<IClass> classList, IList<IClass> resultList)
+		{
+			foreach (IClass c in classList) {
+				AddDerivedClasses(pc, baseClass, baseClassName, baseClassFullName, c.InnerClasses, resultList);
+				int count = c.BaseTypes.Count;
+				for (int i = 0; i < count; i++) {
+					string baseTypeName = c.BaseTypes[i].Name;
+					if (pc.Language.NameComparer.Equals(baseTypeName, baseClassName) ||
+					    pc.Language.NameComparer.Equals(baseTypeName, baseClassFullName)) {
+						IReturnType possibleBaseClass = c.GetBaseType(i);
+						if (possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName) {
+							resultList.Add(c);
+						}
+					}
+				}
+			}
 		}
 		#endregion
 		
@@ -79,15 +86,33 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public static List<Reference> FindReferences(IClass @class, IProgressMonitor progressMonitor)
 		{
+			if (@class == null)
+				throw new ArgumentNullException("class");
 			return RunFindReferences(@class, null, false, progressMonitor);
 		}
 		
 		/// <summary>
-		/// Find all references to the specified local variable.
+		/// Find all references to the resolved entity.
 		/// </summary>
-		public static List<Reference> FindReferences(LocalResolveResult local, IProgressMonitor progressMonitor)
+		public static List<Reference> FindReferences(ResolveResult entity, IProgressMonitor progressMonitor)
 		{
-			return RunFindReferences(local.CallingClass, local.Field, true, progressMonitor);
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			if (entity is LocalResolveResult) {
+				return RunFindReferences(entity.CallingClass, (entity as LocalResolveResult).Field, true, progressMonitor);
+			} else if (entity is TypeResolveResult) {
+				return FindReferences((entity as TypeResolveResult).ResolvedClass, progressMonitor);
+			} else if (entity is MemberResolveResult) {
+				return FindReferences((entity as MemberResolveResult).ResolvedMember, progressMonitor);
+			} else if (entity is MethodResolveResult) {
+				IMethod method = (entity as MethodResolveResult).GetMethodIfSingleOverload();
+				if (method != null) {
+					return FindReferences(method, progressMonitor);
+				}
+			} else if (entity is MixedResolveResult) {
+				return FindReferences((entity as MixedResolveResult).PrimaryResult, progressMonitor);
+			}
+			return null;
 		}
 		
 		/// <summary>

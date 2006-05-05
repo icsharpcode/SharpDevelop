@@ -41,15 +41,15 @@ namespace SharpReport.Designer {
 		
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea) {
 			base.OnPaint(pea);
-			base.DrawEdges (pea);
 			base.DrawDecorations(pea);
+
 			shape.FillShape(pea.Graphics,
 			                new SolidFillPattern(this.BackColor),
-			                (RectangleF)this.ClientRectangle);
+			                (RectangleF)base.FocusRectangle);
 			
 			shape.DrawShape (pea.Graphics,
 			                 new BaseLine (this.ForeColor,base.DashStyle,base.Thickness),
-			                 (RectangleF)this.ClientRectangle);
+			                 (RectangleF)base.FocusRectangle);
 		}
 		
 		

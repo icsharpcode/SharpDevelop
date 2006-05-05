@@ -136,6 +136,10 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected abstract DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method);
 		
+		protected virtual void FixGeneratedCode(IClass formClass, CodeMemberMethod code)
+		{
+		}
+		
 		public virtual void MergeFormChanges(CodeCompileUnit unit)
 		{
 			Reparse();
@@ -158,12 +162,18 @@ namespace ICSharpCode.FormsDesigner
 			if (formClass == null || initializeComponent == null) {
 				throw new InvalidOperationException("InitializeComponent method not found in framework-generated CodeDom.");
 			}
+			if (this.formClass == null) {
+				MessageService.ShowMessage("Cannot save form: InitializeComponent method does not exist anymore. You should not modify the Designer.cs file while editing a form.");
+				return;
+			}
 			
 			if (formClass.Name != this.formClass.Name) {
 				LoggingService.Info("Renaming form to " + formClass.Name);
 				ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassBookmarkMenuBuilder.RenameClass(this.formClass, formClass.Name);
 				Reparse();
 			}
+			
+			FixGeneratedCode(this.formClass, initializeComponent);
 			
 			// generate file and get initialize components string
 			StringWriter writer = new StringWriter();

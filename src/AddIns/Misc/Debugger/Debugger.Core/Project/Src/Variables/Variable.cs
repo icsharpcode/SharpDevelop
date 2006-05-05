@@ -23,8 +23,8 @@ namespace Debugger
 		string name;
 		VariableCollection subVariables;
 		
-		protected ValueGetter valueGetter;
-		Value cachedValue;
+		internal protected ValueGetter valueGetter;
+		internal Value cachedValue;
 		
 		event EventHandler<DebuggerEventArgs> valueChanged;
 		public event EventHandler<VariableCollectionEventArgs> ValueRemovedFromCollection;
@@ -89,7 +89,7 @@ namespace Debugger
 			}
 		}
 		
-		protected virtual void OnValueChanged()
+		protected internal virtual void OnValueChanged()
 		{
 			cachedValue = null;
 			if (valueChanged != null) {
@@ -120,6 +120,13 @@ namespace Debugger
 			this.valueGetter = valueGetter;
 			this.subVariables = new VariableCollection(debugger);
 			this.subVariables.Updating += OnSubVariablesUpdating;
+			
+			if (name.StartsWith("<") && name.Contains(">") && name != "<Base class>") {
+				string middle = name.TrimStart('<').Split('>')[0]; // Get text between '<' and '>'
+				if (middle != "") {
+					this.name = middle;
+				}
+			}
 		}
 		
 		void OnSubVariablesUpdating(object sender, VariableCollectionEventArgs e)

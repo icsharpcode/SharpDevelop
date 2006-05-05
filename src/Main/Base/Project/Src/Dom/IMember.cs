@@ -16,6 +16,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		/// <summary>
+		/// Declaration region of the member (without body!)
+		/// </summary>
 		DomRegion Region {
 			get;
 		}

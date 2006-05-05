@@ -190,8 +190,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				DialogResult res = dlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
 				
 				if (res == DialogResult.OK) {
-					using (StreamWriter sw = new StreamWriter(item.FileName, false)) {
-						sw.WriteLine(item.Node.ToXml().Replace("\n", "\r\n"));
+					using (XmlTextWriter writer = new XmlTextWriter(item.FileName, Encoding.UTF8)) {
+						writer.Formatting = Formatting.Indented;
+						writer.IndentChar = '\t';
+						writer.Indentation = 1;
+						writer.WriteStartDocument();
+						item.Node.WriteXml(writer);
+						writer.WriteEndDocument();
 					}
 					// refresh item text
 					userList.Items.RemoveAt(userList.SelectedIndex);

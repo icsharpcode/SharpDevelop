@@ -17,6 +17,7 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
 using System.Diagnostics;
+using Microsoft.Win32;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
@@ -130,6 +131,11 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 		}
 		
+		static string GetHash(string fileName)
+		{
+			return Path.GetFileName(fileName).ToLowerInvariant() + File.GetLastWriteTimeUtc(fileName).Ticks.ToString();
+		}
+		
 		/// <summary>
 		/// Loads the file in none-locking mode. Returns null on failure.
 		/// </summary>
@@ -137,7 +143,16 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			if (!File.Exists(fileName))
 				return null;
-			string hash = Path.GetFileName(fileName) + File.GetLastWriteTimeUtc(fileName).Ticks.ToString();
+			
+			// FIX for SD2-716, remove when designer gets its own AppDomain
+			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
+				if (string.Equals(asm.Location, fileName, StringComparison.InvariantCultureIgnoreCase)) {
+					RegisterAssembly(asm);
+					return asm;
+				}
+			}
+			
+			string hash = GetHash(fileName);
 			lock (assemblyDict) {
 				Assembly asm;
 				if (assemblyDict.TryGetValue(hash, out asm))
@@ -213,6 +228,20 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 		}
 		
+		public static void RegisterAssembly(Assembly asm)
+		{
+			string file = asm.Location;
+			if (file.Length > 0) {
+				lock (assemblyDict) {
+					assemblyDict[GetHash(file)] = asm;
+				}
+			}
+			lock (designerAssemblies) {
+				if (!designerAssemblies.Contains(asm))
+					designerAssemblies.Insert(0, asm);
+			}
+		}
+		
 		public Assembly GetAssembly(AssemblyName name)
 		{
 			return LoadAssembly(name, false);
@@ -227,10 +256,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			try {
 				Assembly asm = Assembly.Load(name);
-				lock (designerAssemblies) {
-					if (!designerAssemblies.Contains(asm))
-						designerAssemblies.Insert(0, asm);
-				}
+				RegisterAssembly(asm);
 				return asm;
 			} catch (System.IO.FileLoadException) {
 				if (throwOnError)
@@ -266,6 +292,11 @@ namespace ICSharpCode.FormsDesigner.Services
 			if (IgnoreType(name)) {
 				return null;
 			}
+			#if DEBUG
+			if (!name.StartsWith("System.")) {
+				LoggingService.Debug("TypeResolutionService: Looking for " + name);
+			}
+			#endif
 			try {
 				
 				Type type = Type.GetType(name, false, ignoreCase);
@@ -334,6 +365,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			ICSharpCode.Core.LoggingService.Warn("TODO: Add Assembly reference : " + name);
 		}
 		
+		#region VSDesigner workarounds
 		/// <summary>
 		/// HACK - Ignore any requests for types from the Microsoft.VSDesigner
 		/// assembly.  There are smart tag problems if data adapter
@@ -352,8 +384,38 @@ namespace ICSharpCode.FormsDesigner.Services
 			return false;
 		}
 		
+		static string vsDesignerIdeDir;
+		
+		static void RegisterVSDesignerWorkaround()
+		{
+			if (vsDesignerIdeDir == null) {
+				vsDesignerIdeDir = "";
+				RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\8.0\Setup\VS");
+				if (key != null) {
+					vsDesignerIdeDir = key.GetValue("VS7CommonDir") as string ?? "";
+					if (vsDesignerIdeDir.Length > 0) {
+						vsDesignerIdeDir = Path.Combine(vsDesignerIdeDir, "IDE");
+						AppDomain.CurrentDomain.AssemblyResolve += delegate(object sender, ResolveEventArgs args) {
+							string shortName = args.Name;
+							if (shortName.IndexOf(',') >= 0) {
+								shortName = shortName.Substring(0, shortName.IndexOf(','));
+							}
+							if (shortName.StartsWith("Microsoft.")
+							    && File.Exists(Path.Combine(vsDesignerIdeDir, shortName + ".dll")))
+							{
+								return Assembly.LoadFrom(Path.Combine(vsDesignerIdeDir, shortName + ".dll"));
+							}
+							return null;
+						};
+					}
+				}
+			}
+		}
+		#endregion
+		
 		public static void AddAssemblyResolver()
 		{
+			RegisterVSDesignerWorkaround();
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolveEventHandler;
 		}
 		

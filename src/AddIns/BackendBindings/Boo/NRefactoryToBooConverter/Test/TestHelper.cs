@@ -65,6 +65,11 @@ namespace NRefactoryToBooConverter.Tests
 			Assert.AreEqual(output.Replace("??", ConverterSettings.DefaultNameGenerationPrefix), ConvertVB(input));
 		}
 		
+		protected void TestInInterface(string input, string output)
+		{
+			Test("public interface ClassName {\n" + input + "\n}", "public interface ClassName:\n\t" + output.Replace("\n", "\n\t"));
+		}
+		
 		protected void TestInClass(string input, string output)
 		{
 			Test("public class ClassName {\n" + input + "\n}", "public class ClassName:\n\t" + output.Replace("\n", "\n\t"));

@@ -69,8 +69,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			Nodes.Add(keywordNode);
 			Nodes.Add(spansNode);
 			Nodes.Add(prevMarkerNode);
-			Nodes.Add(nextMarkerNode);			
-	
+			Nodes.Add(nextMarkerNode);
+			
 		}
 		
 		public RuleSetNode(string Name, string Delim, string Ref, bool noEsc, bool noCase)
@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			Nodes.Add(keywordNode);
 			Nodes.Add(spansNode);
 			Nodes.Add(prevMarkerNode);
-			Nodes.Add(nextMarkerNode);	
+			Nodes.Add(nextMarkerNode);
 			
 			panel = new RuleSetOptionPanel(this);
 		}
@@ -101,25 +101,25 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			}
 		}
 		
-		public override string ToXml()
+		public override void WriteXml(XmlWriter writer)
 		{
-			if (reference != "")   return "\t\t<RuleSet name=\"" + ReplaceXmlChars(name) + "\" reference=\"" + ReplaceXmlChars(reference) + "\"></RuleSet>\n\n";
-			
-			string ret = "\t\t<RuleSet ignorecase=\"" + ignoreCase.ToString().ToLowerInvariant() + "\" ";
-			if (noEscapeSequences) ret += "noescapesequences=\"true\" ";
-			if (!isRoot)           ret += "name=\"" + ReplaceXmlChars(name) + "\" ";
-			ret += ">\n";
-			
-			ret += "\t\t\t<Delimiters>" + ReplaceXmlChars(delimiters) + "</Delimiters>\n\n";
-			
-			ret += spansNode.ToXml();
-			ret += prevMarkerNode.ToXml();
-			ret += nextMarkerNode.ToXml();
-			ret += keywordNode.ToXml();
-			
-			ret += "\t\t</RuleSet>\n\n";
-			
-			return ret;
+			writer.WriteStartElement("RuleSet");
+			if (!isRoot)
+				writer.WriteAttributeString("name", name);
+			if (reference != "") {
+				writer.WriteAttributeString("reference", reference);
+			} else {
+				writer.WriteAttributeString("ignorecase", ignoreCase.ToString().ToLowerInvariant());
+				if (noEscapeSequences)
+					writer.WriteAttributeString("noescapesequences", "true");
+				if (delimiters != "")
+					writer.WriteElementString("Delimiters", delimiters);
+				spansNode.WriteXml(writer);
+				prevMarkerNode.WriteXml(writer);
+				nextMarkerNode.WriteXml(writer);
+				keywordNode.WriteXml(writer);
+			}
+			writer.WriteEndElement();
 		}
 		
 		public string Delimiters {

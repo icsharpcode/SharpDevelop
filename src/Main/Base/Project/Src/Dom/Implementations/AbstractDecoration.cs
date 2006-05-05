@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		public bool IsOverridable {
 			get {
-				return (IsOverride || IsVirtual) && !IsSealed;
+				return (IsOverride || IsVirtual || IsAbstract) && !IsSealed;
 			}
 		}
 		public bool IsNew {

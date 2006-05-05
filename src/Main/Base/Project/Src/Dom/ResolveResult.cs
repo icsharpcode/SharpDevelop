@@ -214,6 +214,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public IEnumerable<ResolveResult> Results {
+			get {
+				yield return primaryResult;
+				yield return secondaryResult;
+			}
+		}
+		
 		public TypeResolveResult TypeResult {
 			get {
 				if (primaryResult is TypeResolveResult)
@@ -423,7 +430,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			ArrayList ar = GetCompletionData(projectContent.Language, true);
 			if (resolvedClass != null) {
-				ar.AddRange(resolvedClass.InnerClasses);
+				foreach (IClass baseClass in resolvedClass.ClassInheritanceTree) {
+					ar.AddRange(baseClass.InnerClasses);
+				}
 			}
 			return ar;
 		}

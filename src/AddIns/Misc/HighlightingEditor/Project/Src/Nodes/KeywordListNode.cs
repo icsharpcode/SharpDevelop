@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		{
 			Text = ResNodeName("KeywordList");
 			panel = new KeywordListOptionPanel(this);
-				
+			
 			if (el == null) return;
 
 			color = new EditorHighlightColor(el);
@@ -88,23 +88,17 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			if (name != "") Text = name;
 		}
 		
-		public override string ToXml()
+		public override void WriteXml(XmlWriter writer)
 		{
-			StringBuilder ret = new StringBuilder("\t\t\t<KeyWords name=\"");
-			ret.Append(ReplaceXmlChars(name));
-			ret.Append("\" ");
-			////ret += color.ToXml() + ">\n";
-			ret.Append(color.ToXml());
-			ret.Append(">\n");
+			writer.WriteStartElement("KeyWords");
+			writer.WriteAttributeString("name", name);
+			color.WriteXmlAttributes(writer);
 			foreach(string str in words) {
-				////ret += "\t\t\t\t<Key word=\"" + ReplaceXmlChars(str) + "\"/>\n";
-				ret.Append("\t\t\t\t<Key word=\"");
-				ret.Append(ReplaceXmlChars(str));
-				ret.Append("\"/>\n");
+				writer.WriteStartElement("Key");
+				writer.WriteAttributeString("word", str);
+				writer.WriteEndElement();
 			}
-			////ret += "\t\t\t</KeyWords>\n\n";
-			ret.Append("\t\t\t</KeyWords>\n\n");
-			return ret.ToString();
+			writer.WriteEndElement();
 		}
 	}
 	

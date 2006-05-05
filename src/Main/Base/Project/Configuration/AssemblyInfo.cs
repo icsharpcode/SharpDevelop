@@ -13,6 +13,15 @@ using System.Runtime.CompilerServices;
 [assembly: CLSCompliant(false)]
 [assembly: StringFreezing()]
 
+// Use hard-binding for ICSharpCode.SharpDevelop:
+[assembly: Dependency("ICSharpCode.Core", LoadHint.Always)]
+[assembly: Dependency("ICSharpCode.TextEditor", LoadHint.Always)]
+[assembly: Dependency("ICSharpCode.NRefactory", LoadHint.Always)]
+[assembly: Dependency("System.Drawing", LoadHint.Always)]
+[assembly: Dependency("System.Xml", LoadHint.Always)]
+[assembly: Dependency("System.Windows.Forms", LoadHint.Always)]
+[assembly: Dependency("WeifenLuo.WinFormsUI.Docking", LoadHint.Always)]
+
 [assembly: AssemblyTitle("SharpDevelopBase")]
 [assembly: AssemblyDescription("The base add-in of SharpDevelop")]
 [assembly: AssemblyConfiguration("")]

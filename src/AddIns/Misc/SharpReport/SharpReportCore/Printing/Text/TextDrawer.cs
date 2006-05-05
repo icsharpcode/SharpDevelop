@@ -38,12 +38,102 @@ namespace SharpReportCore {
 		}
 		
 		
-		public void DrawString(Graphics graphics,string text,Font font,Brush brush,RectangleF rectangle,StringFormat stringFormat) {
+		public void DrawString(Graphics graphics,string text,
+		                       Font font,Brush brush,
+		                       RectangleF rectangle,
+		                       StringFormat stringFormat) {
+			
 			graphics.DrawString(text,
 			             font,
 			             brush,
 			             rectangle,
 			             stringFormat);	
+		}
+		
+		
+		public void DrawString(Graphics graphics,string text,
+		                       Font font,Brush brush,
+		                       RectangleF rectangle,
+		                       StringTrimming stringTrimming,
+		                       ContentAlignment alignment) {
+			
+			StringFormat s = BuildStringFormat(stringTrimming,alignment);
+			this.DrawString(graphics,text,
+			                font,brush,
+			                rectangle,
+			                s);
+		}
+		
+		
+		public StringFormat BuildStringFormat(StringTrimming stringTrimming,ContentAlignment alignment){
+			StringFormat format = StringFormat.GenericTypographic;
+			format.Trimming = stringTrimming;
+			format.FormatFlags = StringFormatFlags.LineLimit;
+
+//			if (base.RightToLeft)
+//			{
+//				format1.FormatFlags |= StringFormatFlags.DirectionRightToLeft;
+//			}
+			
+			if (alignment <= ContentAlignment.MiddleCenter){
+				switch (alignment){
+					case ContentAlignment.TopLeft:{
+							format.Alignment = StringAlignment.Near;
+							format.LineAlignment = StringAlignment.Near;
+							return format;
+						}
+					case ContentAlignment.TopCenter:{
+							format.Alignment = StringAlignment.Center;
+							format.LineAlignment = StringAlignment.Near;
+							return format;
+						}
+					case (ContentAlignment.TopCenter | ContentAlignment.TopLeft):{
+							return format;
+						}
+					case ContentAlignment.TopRight:{
+							format.Alignment = StringAlignment.Far;
+							format.LineAlignment = StringAlignment.Near;
+							return format;
+						}
+					case ContentAlignment.MiddleLeft:{
+							format.Alignment = StringAlignment.Near;
+							format.LineAlignment = StringAlignment.Center;
+							return format;
+						}
+					case ContentAlignment.MiddleCenter:{
+							format.Alignment = StringAlignment.Center;
+							format.LineAlignment = StringAlignment.Center;
+							return format;
+						}
+				}
+				return format;
+			}
+			if (alignment <= ContentAlignment.BottomLeft){
+				if (alignment == ContentAlignment.MiddleRight){
+					format.Alignment = StringAlignment.Far;
+					format.LineAlignment = StringAlignment.Center;
+					return format;
+				}
+				if (alignment != ContentAlignment.BottomLeft){
+					return format;
+				}
+			}
+			else{
+				if (alignment != ContentAlignment.BottomCenter){
+					if (alignment == ContentAlignment.BottomRight)
+					{
+						format.Alignment = StringAlignment.Far;
+						format.LineAlignment = StringAlignment.Far;
+					}
+					return format;
+				}
+				format.Alignment = StringAlignment.Center;
+				format.LineAlignment = StringAlignment.Far;
+				return format;
+			}
+			format.Alignment = StringAlignment.Near;
+			format.LineAlignment = StringAlignment.Far;
+			return format;
 		}
 	}
 }

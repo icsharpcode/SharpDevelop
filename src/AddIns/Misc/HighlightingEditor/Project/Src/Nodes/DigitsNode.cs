@@ -45,9 +45,12 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		{
 		}
 		
-		public override string ToXml()
+		public override void WriteXml(XmlWriter writer)
 		{
-			return "\t<Digits name=\"Digits\" " + color.ToXml() + "/>\n\n";
+			writer.WriteStartElement("Digits");
+			writer.WriteAttributeString("name", "Digits");
+			color.WriteXmlAttributes(writer);
+			writer.WriteEndElement();
 		}
 	}
 	

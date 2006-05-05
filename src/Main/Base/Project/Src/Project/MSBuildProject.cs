@@ -121,6 +121,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
+			ExpandWildcards();
 			
 			string userSettingsFileName = projectFileName + ".user";
 			if (File.Exists(userSettingsFileName)) {
@@ -138,6 +139,26 @@ namespace ICSharpCode.SharpDevelop.Project
 									break;
 							}
 						}
+					}
+				}
+			}
+		}
+		
+		void ExpandWildcards()
+		{
+			for (int i = 0; i < items.Count; i++) {
+				ProjectItem item = items[i];
+				if (item.Include.IndexOf('*') >= 0 && item is FileProjectItem) {
+					items.RemoveAt(i--);
+					try {
+						string path = Path.Combine(this.Directory, Path.GetDirectoryName(item.Include));
+						foreach (string file in System.IO.Directory.GetFiles(path, Path.GetFileName(item.Include))) {
+							ProjectItem n = item.Clone();
+							n.Include = FileUtility.GetRelativePath(this.Directory, file);
+							items.Insert(++i, n);
+						}
+					} catch (Exception ex) {
+						MessageService.ShowError(ex, "Error expanding wildcards in " + item.Include);
 					}
 				}
 			}
@@ -334,6 +355,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			if (!File.Exists(psi.FileName)) {
 				MessageService.ShowError(psi.FileName + " does not exist and cannot be started.");
+				return;
+			}
+			if (!System.IO.Directory.Exists(psi.WorkingDirectory)) {
+				MessageService.ShowError("Working directory " + psi.WorkingDirectory + " does not exist; the process cannot be started. You can specify the working directory in the project options.");
 				return;
 			}
 			

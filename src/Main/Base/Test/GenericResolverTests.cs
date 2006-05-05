@@ -156,6 +156,37 @@ class TestClass {
 			LocalResolveResult lr = Resolve(program, "a", 5) as LocalResolveResult;
 			Assert.AreEqual("System.Collections.Generic.List{System.String}", lr.ResolvedType.DotNetName, "a");
 		}
+		
+		[Test]
+		public void InheritFromGenericClass()
+		{
+			string program = @"using System;
+class BaseClass<T> {
+	public T value;
+}
+class DerivedClass : BaseClass<string> {
+	
+}";
+			MemberResolveResult rr = Resolve(program, "value", 6) as MemberResolveResult;
+			Assert.AreEqual("System.String", rr.ResolvedType.FullyQualifiedName);
+		}
+		
+				[Test]
+		public void CrossTypeParametersInheritance()
+		{
+			string program = @"using System;
+class BaseClass<A,B> {
+	public A a;
+	public B b;
+}
+class DerivedClass<A,B> : BaseClass<B,A> {
+	
+}";
+			MemberResolveResult rr = Resolve(program, "a", 7) as MemberResolveResult;
+			Assert.AreEqual("B", rr.ResolvedType.Name);
+			rr = Resolve(program, "b", 7) as MemberResolveResult;
+			Assert.AreEqual("A", rr.ResolvedType.Name);
+		}
 		#endregion
 		
 		#region CodeCompletion inside generic classes

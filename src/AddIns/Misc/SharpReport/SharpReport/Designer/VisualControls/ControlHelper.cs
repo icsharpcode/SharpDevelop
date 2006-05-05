@@ -15,7 +15,7 @@ namespace SharpReport.Designer
 	/// <summary>
 	/// Description of ControlHelper.
 	/// </summary>
-	internal class ControlHelper{
+	public class ControlHelper{
 		Control control;
 		
 		public ControlHelper(Control control){

@@ -537,10 +537,10 @@
 		<ComplexCondition>
 			<Not>
 				<Condition name = "Ownerstate" ownerstate = "Missing"/>
-			</Not>			
+			</Not>
 			<MenuItem id    = "AddWebReference"
-		              label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
-		              class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
+			          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
 			<MenuItem id = "AddSeparator" type = "Separator"/>
 			<MenuItem id = "Delete"
 			          label = "${res:XML.MainMenu.EditMenu.Delete}"
@@ -565,11 +565,11 @@
 		<ComplexCondition>
 			<Not>
 				<Condition name = "Ownerstate" ownerstate = "Missing"/>
-			</Not>		
+			</Not>
 			<MenuItem id = "Refresh"
-	                  label = "${res:ProjectComponent.ContextMenu.RefreshWebReference}" 
+			          label = "${res:ProjectComponent.ContextMenu.RefreshWebReference}"
 			          type = "Item"
-	                  class = "ICSharpCode.SharpDevelop.Project.Commands.RefreshWebReference"/>
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.RefreshWebReference"/>
 			<MenuItem id = "RefreshSeparator" type = "Separator" />
 			<MenuItem id = "Delete"
 			          label = "${res:XML.MainMenu.EditMenu.Delete}"
@@ -582,9 +582,9 @@
 			          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
 			<MenuItem id = "PropertiesSeparator" type = "Separator" />
 			<MenuItem id = "Properties"
-		          icon  = "Icons.16x16.PropertiesIcon"
-		          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+			          icon  = "Icons.16x16.PropertiesIcon"
+			          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
 		</ComplexCondition>
 	</Path>
 	
@@ -933,9 +933,9 @@
 		          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.SaveFileAsTab"/>
 		<Condition name = "OpenWindowState" openwindowstate="Dirty" action="Disable">
 			<MenuItem id = "SaveAll"
-		          icon = "Icons.16x16.SaveAllIcon"
-		          label = "${res:XML.MainMenu.FileMenu.SaveAll.Description}"
-		          class = "ICSharpCode.SharpDevelop.Commands.SaveAllFiles"/>
+			          icon = "Icons.16x16.SaveAllIcon"
+			          label = "${res:XML.MainMenu.FileMenu.SaveAll.Description}"
+			          class = "ICSharpCode.SharpDevelop.Commands.SaveAllFiles"/>
 		</Condition>
 		<MenuItem id = "SaveSeparator" type = "Separator" />
 		<ComplexCondition action="Disable">
@@ -1010,15 +1010,15 @@
 		
 		<Condition name = "Ownerstate" ownerstate="CanBeRenamed" action="Disable">
 			<MenuItem id    = "RenameTab"
-		              label = "${res:SideBarComponent.ContextMenu.RenameTab}"
-		              class = "ICSharpCode.SharpDevelop.Commands.SideBarRenameTabHeader"/>
+			          label = "${res:SideBarComponent.ContextMenu.RenameTab}"
+			          class = "ICSharpCode.SharpDevelop.Commands.SideBarRenameTabHeader"/>
 		</Condition>
-			
+		
 		<MenuItem id = "Separator1" type = "Separator" />
 		<MenuItem id    = "AddTab"
 		          label = "${res:SideBarComponent.ContextMenu.AddTab}"
 		          class = "ICSharpCode.SharpDevelop.Commands.SideBarAddTabHeader"/>
-
+		
 		<MenuItem id = "Separator2" type = "Separator" />
 		<Condition name = "Ownerstate" ownerstate="CanMoveUp" action="Disable">
 			<MenuItem id    = "MoveTabUp"
@@ -1038,27 +1038,27 @@
 	<Path name = "/SharpDevelop/Workbench/SharpDevelopSideBar/SideTab/ContextMenu">
 		<Condition name = "Ownerstate" ownerstate="TabCanBeDeleted" action="Disable">
 			<MenuItem id = "DeleteTabItem"
-		              label = "${res:SideBarComponent.ContextMenu.DeleteTabItem}"
-		              class = "ICSharpCode.SharpDevelop.Commands.SideBarDeleteTabItem"/>
+			          label = "${res:SideBarComponent.ContextMenu.DeleteTabItem}"
+			          class = "ICSharpCode.SharpDevelop.Commands.SideBarDeleteTabItem"/>
 		</Condition>
 		
 		<Condition name = "Ownerstate" ownerstate="CanBeRenamed" action="Disable">
 			<MenuItem id = "RenameTabItem"
-		              label = "${res:SideBarComponent.ContextMenu.RenameTabItem}"
-		              class = "ICSharpCode.SharpDevelop.Commands.SideBarRenameTabItem" />
+			          label = "${res:SideBarComponent.ContextMenu.RenameTabItem}"
+			          class = "ICSharpCode.SharpDevelop.Commands.SideBarRenameTabItem" />
 		</Condition>
 		
 		<MenuItem id = "Separator1" type = "Separator" />
 		<Condition name = "Ownerstate" ownerstate="CanMoveItemUp" action="Disable">
 			<MenuItem id = "MoveItemUp"
-				      label = "${res:SideBarComponent.ContextMenu.MoveTabItemUp}"
-				      class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveActiveItemUp"/>
+			          label = "${res:SideBarComponent.ContextMenu.MoveTabItemUp}"
+			          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveActiveItemUp"/>
 		</Condition>
 		
 		<Condition name = "Ownerstate" ownerstate="CanMoveItemDown" action="Disable">
 			<MenuItem id = "MoveItemDown"
-				      label = "${res:SideBarComponent.ContextMenu.MoveTabItemDown}"
-				      class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveActiveItemDown"/>
+			          label = "${res:SideBarComponent.ContextMenu.MoveTabItemDown}"
+			          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveActiveItemDown"/>
 		</Condition>
 		
 		<Include id="CommonContextMenu" path="/SharpDevelop/Workbench/SharpDevelopSideBar/CommonContextMenu"/>
@@ -1279,8 +1279,8 @@
 				          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
 				<MenuItem id    = "AddWebReference"
-		          	          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
-		          	          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
+				          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
 				<MenuItem id = "AddSeparator" type = "Separator"/>
 				<Include id = "ProjectActions" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions"/>
 				<MenuItem id = "Separator2" type = "Separator" />
@@ -1579,7 +1579,7 @@
 	<!-- File extensions that should not be searched since they are not opened
 	 in a text editor -->
 	<Path name="/AddIns/DefaultTextEditor/Search/ExcludedFileExtensions">
-    	<String text=".resx"/>
+		<String text=".resx"/>
 		<String text=".resources"/>
 	</Path>
 	
@@ -1612,7 +1612,7 @@
 		          class = "ICSharpCode.SharpDevelop.Refactoring.RenameLocalVariableCommand"/>
 		<MenuItem id = "FindReferences"
 		          label = "${res:SharpDevelop.Refactoring.FindReferencesCommand}"
-		          class = "ICSharpCode.SharpDevelop.Refactoring.FindLocalVariableReferencesCommand"/>				  
+		          class = "ICSharpCode.SharpDevelop.Refactoring.FindLocalVariableReferencesCommand"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariableDefinition">
@@ -1654,10 +1654,6 @@
 		          icon  = "Icons.16x16.CommentRegion"
 		          label = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
 		          class= "ICSharpCode.SharpDevelop.DefaultEditor.Commands.CommentRegion"/>
-		<!--		<MenuItem id = "Uncomment"
-		          icon  = "Icons.16x16.UnCommentRegion"
-                  label = "${res:XML.TextAreaContextMenu.UncommentSelection}"
-		          class= "ICSharpCode.SharpDevelop.DefaultEditor.Commands.UncommentRegion"/>-->
 		<MenuItem id = "Indent"
 		          label = "${res:XML.TextAreaContextMenu.Indent}"
 		          shortcut = "Control|I"
@@ -1814,6 +1810,15 @@
 				<MenuItem id = "LeadingSpaces2Tabs"
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab}"
 				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertLeadingSpacesToTabs"/>
+				<MenuItem id = "Separator4" type = "Separator" />
+				<MenuItem id = "Comment"
+				          icon  = "Icons.16x16.CommentRegion"
+				          label = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
+				          class= "ICSharpCode.SharpDevelop.DefaultEditor.Commands.CommentRegion"/>
+				<MenuItem id = "Indent"
+				          label = "${res:XML.TextAreaContextMenu.Indent}"
+				          shortcut = "Control|I"
+				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
 			</Condition>
 		</MenuItem>
 		<MenuItem insertafter = "Format" insertbefore = "Separator3" id = "Folding" label = "${res:XML.MainMenu.EditMenu.FoldingMenu}" type="Menu">
@@ -1933,7 +1938,6 @@
 	<Path name = "/AddIns/DefaultTextEditor/EditActions">
 		<EditAction id = "TemplateCompletion"  class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.TemplateCompletion"  keys = "Control|J"/>
 		<EditAction id = "CodeCompletionPopup" class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.CodeCompletionPopup"  keys = "Control|Space"/>
-		<EditAction id = "IndentSelection"     class = "ICSharpCode.TextEditor.Actions.IndentSelection"  keys = "Control|I"/>
 		<EditAction id = "GoToDefinition"      class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.GoToDefinition"  keys = "Control|Enter"/>
 	</Path>
 	

@@ -37,6 +37,15 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			if (CanRunBuild) {
+				if (DebuggerService.IsDebuggerLoaded && DebuggerService.CurrentDebugger.IsDebugging) {
+					if (MessageService.AskQuestion("${res:XML.MainMenu.RunMenu.Compile.StopDebuggingQuestion}",
+					                               "${res:XML.MainMenu.RunMenu.Compile.StopDebuggingTitle}"))
+					{
+						DebuggerService.CurrentDebugger.Stop();
+					} else {
+						return;
+					}
+				}
 				BeforeBuild();
 				StartBuild();
 			} else {

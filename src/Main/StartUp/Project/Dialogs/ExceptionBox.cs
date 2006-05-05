@@ -110,10 +110,8 @@ namespace ICSharpCode.SharpDevelop
 		{
 			CopyInfoToClipboard();
 			
-			StartUrl("http://community.sharpdevelop.net/forums/23/ShowForum.aspx");
-			
-			//Version v = Assembly.GetEntryAssembly().GetName().Version;
-			//StartUrl("http://www.icsharpcode.net/OpenSource/SD/BugReporting.aspx?version=" + v.Major + "." + v.Minor + "." + v.Revision + "." + v.Build);
+			Version v = Assembly.GetEntryAssembly().GetName().Version;
+			StartUrl("http://www.icsharpcode.net/OpenSource/SD/BugReporting.aspx?version=" + v.Major + "." + v.Minor + "." + v.Revision + "." + v.Build);
 			
 			/*
 			string text = "This version of SharpDevelop is an internal build, " +

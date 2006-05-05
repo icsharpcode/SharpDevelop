@@ -63,6 +63,19 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return cu;
 			}
 		}
+		
+		/// <summary>
+		/// Gets if duck typing is enabled for the Boo project.
+		/// </summary>
+		public bool IsDucky {
+			get {
+				BooProject p = pc.Project as BooProject;
+				if (p != null)
+					return p.Ducky;
+				else
+					return false;
+			}
+		}
 		#endregion
 		
 		#region Initialization
@@ -184,6 +197,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return new NamespaceResolveResult(callingClass, callingMember, "");
 			}
 			
+			ResolveResult rr = NRResolver.GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, caretLine, caretColumn, expressionResult.Expression);
+			if (rr != null) return rr;
+			
 			AST.Expression expr;
 			try {
 				expr = Boo.Lang.Parser.BooParser.ParseExpression("expression", expressionResult.Expression);
@@ -273,18 +289,18 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent, ExpressionContext context)
 		{
-			ArrayList result;
+			ArrayList result = new ArrayList();
 			
 			if (!Initialize(fileName, caretLine, caretColumn))
 				return null;
 			if (context == ExpressionContext.Importable) {
-				result = new ArrayList();
 				pc.AddNamespaceContents(result, "", pc.Language, true);
 				NRResolver.AddUsing(result, pc.DefaultImports, pc);
 				return result;
 			}
 			
-			result = GetImportedNamespaceContents();
+			NRResolver.AddContentsFromCalling(result, callingClass, callingMember);
+			AddImportedNamespaceContents(result);
 			
 			if (BooProject.BooCompilerPC != null) {
 				if (context == ExpressionFinder.BooAttributeContext.Instance) {
@@ -303,8 +319,6 @@ namespace Grunwald.BooBinding.CodeCompletion
 					}
 				}
 			}
-			
-			NRResolver.AddContentsFromCalling(result, callingClass, callingMember);
 			
 			List<string> knownVariableNames = new List<string>();
 			foreach (object o in result) {
@@ -325,14 +339,58 @@ namespace Grunwald.BooBinding.CodeCompletion
 		// used by ctrl+space and resolve visitor (resolve identifier)
 		public ArrayList GetImportedNamespaceContents()
 		{
-			ArrayList list = new ArrayList();
+			ArrayList result = new ArrayList();
+			AddImportedNamespaceContents(result);
+			return result;
+		}
+		
+		void AddImportedNamespaceContents(ArrayList list)
+		{
 			IClass c;
-			foreach (KeyValuePair<string, string> pair in BooAmbience.TypeConversionTable) {
-				c = GetPrimitiveClass(pc, pair.Key, pair.Value);
+			foreach (KeyValuePair<string, string> pair in BooAmbience.ReverseTypeConversionTable) {
+				c = GetPrimitiveClass(pc, pair.Value, pair.Key);
 				if (c != null) list.Add(c);
 			}
+			list.Add(new DuckClass(cu));
 			NRResolver.AddImportedNamespaceContents(list, cu, callingClass);
-			return list;
+		}
+		
+		internal class DuckClass : DefaultClass
+		{
+			public DuckClass(ICompilationUnit cu) : base(cu, "duck")
+			{
+				Documentation = "Use late-binding to access members of this type.<br/>\n'If it walks like a duck and quacks like a duck, it must be a duck.'";
+				Modifiers = ModifierEnum.Public;
+			}
+			
+			protected override IReturnType CreateDefaultReturnType()
+			{
+				return new DuckReturnType(this);
+			}
+		}
+		
+		internal class DuckReturnType : AbstractReturnType
+		{
+			IClass c;
+			public DuckReturnType(IClass c) {
+				this.c = c;
+				FullyQualifiedName = c.FullyQualifiedName;
+			}
+			public override IClass GetUnderlyingClass() {
+				return c;
+			}
+			public override List<IMethod> GetMethods() {
+				return new List<IMethod>();
+			}
+			public override List<IProperty> GetProperties() {
+				return new List<IProperty>();
+			}
+			public override List<IField> GetFields() {
+				return new List<IField>();
+			}
+			public override List<IEvent> GetEvents() {
+				return new List<IEvent>();
+			}
 		}
 		#endregion
 	}

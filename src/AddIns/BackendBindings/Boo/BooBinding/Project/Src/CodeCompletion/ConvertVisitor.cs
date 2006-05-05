@@ -177,7 +177,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (parameters == null || parameters.Count == 0) {
 				m.Parameters = DefaultParameter.EmptyParameterList;
 			} else {
-				AddParameters(parameters, m.Parameters);
+				AddParameters(parameters, m.Parameters, m, m.DeclaringType);
 			}
 		}
 		void ConvertParameters(AST.ParameterDeclarationCollection parameters, DefaultProperty p)
@@ -185,14 +185,17 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (parameters == null || parameters.Count == 0) {
 				p.Parameters = DefaultParameter.EmptyParameterList;
 			} else {
-				AddParameters(parameters, p.Parameters);
+				AddParameters(parameters, p.Parameters, p, p.DeclaringType);
 			}
 		}
-		void AddParameters(AST.ParameterDeclarationCollection parameters, IList<IParameter> output)
+		internal static void AddParameters(AST.ParameterDeclarationCollection parameters, IList<IParameter> output, IMethodOrProperty method, IClass c)
 		{
+			if (c == null) throw new ArgumentNullException("c");
 			DefaultParameter p = null;
 			foreach (AST.ParameterDeclaration par in parameters) {
-				p = new DefaultParameter(par.Name, CreateReturnType(par.Type), GetRegion(par));
+				p = new DefaultParameter(par.Name,
+				                         CreateReturnType(par.Type, c, method as IMethod, c.Region.BeginLine + 1, 1, c.ProjectContent),
+				                         new DomRegion(par.LexicalInfo.Line, par.LexicalInfo.Column));
 				if (par.IsByRef) p.Modifiers |= ParameterModifiers.Ref;
 				output.Add(p);
 			}
@@ -210,13 +213,23 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return CreateReturnType(reference, c, method, c.Region.BeginLine + 1, 1, _cu.ProjectContent);
 			}
 		}
+		
+		internal static IReturnType GetDefaultReturnType(IProjectContent projectContent)
+		{
+			BooProject project = projectContent.Project as BooProject;
+			if (project != null && project.Ducky)
+				return new BooResolver.DuckClass(new DefaultCompilationUnit(projectContent)).DefaultReturnType;
+			else
+				return ReflectionReturnType.Object;
+		}
+		
 		public static IReturnType CreateReturnType(AST.TypeReference reference, IClass callingClass,
-		                                           IMember callingMember, int caretLine, int caretColumn,
+		                                           IMethodOrProperty callingMember, int caretLine, int caretColumn,
 		                                           IProjectContent projectContent)
 		{
+			System.Diagnostics.Debug.Assert(projectContent != null);
 			if (reference == null) {
-				LoggingService.Warn("inferred return type!");
-				return ReflectionReturnType.Object;
+				return GetDefaultReturnType(projectContent);
 			}
 			if (reference is AST.ArrayTypeReference) {
 				AST.ArrayTypeReference arr = (AST.ArrayTypeReference)reference;
@@ -227,7 +240,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 				string name = ((AST.SimpleTypeReference)reference).Name;
 				IReturnType rt;
 				int typeParameterCount = (reference is AST.GenericTypeReference) ? ((AST.GenericTypeReference)reference).GenericArguments.Count : 0;
-				if (BooAmbience.ReverseTypeConversionTable.ContainsKey(name))
+				if (name == "duck")
+					rt = new BooResolver.DuckClass(new DefaultCompilationUnit(projectContent)).DefaultReturnType;
+				else if (BooAmbience.ReverseTypeConversionTable.ContainsKey(name))
 					rt = new GetClassReturnType(projectContent, BooAmbience.ReverseTypeConversionTable[name], typeParameterCount);
 				else
 					rt = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn,
@@ -244,7 +259,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 				}
 				return rt;
 			} else if (reference is AST.CallableTypeReference) {
-				return new AnonymousMethodReturnType();
+				AST.CallableTypeReference ctr = (AST.CallableTypeReference)reference;
+				AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(new DefaultCompilationUnit(projectContent));
+				if (ctr.ReturnType != null) {
+					amrt.MethodReturnType = CreateReturnType(ctr.ReturnType, callingClass, callingMember, caretLine, caretColumn, projectContent);
+				}
+				AddParameters(ctr.Parameters, amrt.MethodParameters, callingMember, callingClass ?? new DefaultClass(new DefaultCompilationUnit(projectContent), "__Dummy"));
+				return amrt;
 			} else {
 				throw new NotSupportedException("unknown reference type: " + reference.ToString());
 			}
@@ -263,7 +284,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (field.Initializer != null)
 					return new InferredReturnType(field.Initializer, OuterClass);
 				else
-					return ReflectionReturnType.Object;
+					return GetDefaultReturnType(_cu.ProjectContent);
 			} else {
 				return CreateReturnType(field.Type);
 			}
@@ -271,13 +292,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 		IReturnType CreateReturnType(AST.Method node, IMethod method)
 		{
 			if (node.ReturnType == null)
-				return new InferredReturnType(node.Body, OuterClass);
+				return new InferredReturnType(node.Body, OuterClass, false);
 			return CreateReturnType(node.ReturnType, method);
 		}
 		IReturnType CreateReturnType(AST.Property property)
 		{
 			if (property.Type == null && property.Getter != null && property.Getter.Body != null)
-				return new InferredReturnType(property.Getter.Body, OuterClass);
+				return new InferredReturnType(property.Getter.Body, OuterClass, false);
 			return CreateReturnType(property.Type);
 		}
 		
@@ -392,6 +413,18 @@ namespace Grunwald.BooBinding.CodeCompletion
 		private void LeaveTypeDefinition(AST.TypeDefinition node)
 		{
 			DefaultClass c = _currentClass.Pop();
+			foreach (AST.Attribute att in node.Attributes) {
+				if (att.Name == "System.Reflection.DefaultMemberAttribute" && att.Arguments.Count == 1) {
+					AST.StringLiteralExpression sle = att.Arguments[0] as AST.StringLiteralExpression;
+					if (sle != null) {
+						foreach (DefaultProperty p in c.Properties) {
+							if (p.Name == sle.Value) {
+								p.IsIndexer = true;
+							}
+						}
+					}
+				}
+			}
 			//LoggingService.Debug("Leave "+node.GetType().Name+" "+node.FullName+" (Class = "+c.FullyQualifiedName+")");
 		}
 		

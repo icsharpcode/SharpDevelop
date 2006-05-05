@@ -169,5 +169,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			return null;
 		}
+		
+		public override ProjectItem Clone()
+		{
+			ProjectItem n = new ReferenceProjectItem(this.Project);
+			n.Include = this.Include;
+			this.CopyExtraPropertiesTo(n);
+			return n;
+		}
 	}
 }

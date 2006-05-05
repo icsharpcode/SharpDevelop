@@ -607,6 +607,58 @@ class Activator {
 		}
 		
 		[Test]
+		public void ParentNamespaceTypeLookup()
+		{
+			// Classes in the current namespace are preferred over classes from
+			// imported namespaces
+			string program = @"using System;
+namespace Root {
+  class Alpha {}
+}
+namespace Root.Child {
+  class Beta {
+  
+  }
+}
+";
+			ResolveResult result = Resolve<TypeResolveResult>(program, "Alpha", 7);
+			Assert.AreEqual("Root.Alpha", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void ParentNamespaceCtrlSpace()
+		{
+			// Classes in the current namespace are preferred over classes from
+			// imported namespaces
+			string program = @"using System;
+namespace Root {
+  class Alpha {}
+}
+namespace Root.Child {
+  class Beta {
+  
+  }
+}
+";
+			AddCompilationUnit(Parse("a.cs", program), "a.cs");
+			
+			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguage.CSharp);
+			ArrayList m = resolver.CtrlSpace(7, 0, "a.cs", program, ExpressionContext.Default);
+			Assert.IsTrue(TypeExists(m, "Beta"), "Meta must exist");
+			Assert.IsTrue(TypeExists(m, "Alpha"), "Alpha must exist");
+		}
+		
+		bool TypeExists(ArrayList m, string name)
+		{
+			foreach (object o in m) {
+				IClass c = o as IClass;
+				if (c != null && c.Name == name)
+					return true;
+			}
+			return false;
+		}
+		
+		[Test]
 		public void ImportedSubnamespaceTestCSharp()
 		{
 			// using an import in this way is not possible in C#
@@ -792,6 +844,37 @@ class B {
 				if (m.Name == name) return true;
 			}
 			return false;
+		}
+		
+		[Test]
+		public void OverriddenMemberVisibilityTest()
+		{
+			string program = @"using System;
+  public abstract class GrandParent {
+    protected abstract void OverrideMe();
+  }
+  public class Parent: GrandParent {
+      protected override void OverrideMe() {
+      }
+  }
+  public class Child: Parent {
+  }
+";
+			ResolveResult result = Resolve(program, "(Child)someVar", 6);
+			Assert.AreEqual("Child", result.ResolvedType.FullyQualifiedName);
+			int count = 0;
+			foreach (IMethod m in result.ResolvedType.GetMethods()) {
+				if (m.Name == "OverrideMe")
+					count += 1;
+			}
+			Assert.AreEqual(1, count);
+			count = 0;
+			foreach (object o in result.GetCompletionData(lastPC)) {
+				IMethod m = o as IMethod;
+				if (m != null && m.Name == "OverrideMe")
+					count += 1;
+			}
+			Assert.AreEqual(1, count);
 		}
 		#endregion
 		

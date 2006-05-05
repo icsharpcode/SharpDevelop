@@ -246,18 +246,34 @@ namespace ICSharpCode.SharpDevelop.Project
 				MessageService.ShowError(ex.Message);
 				return;
 			}
+			AbstractProject.filesToOpenAfterSolutionLoad.Clear();
 			try {
 				string file = GetPreferenceFileName(openSolution.FileName);
 				if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
 					(openSolution.Preferences as IMementoCapable).SetMemento(Properties.Load(file));
+				} else {
+					(openSolution.Preferences as IMementoCapable).SetMemento(new Properties());
 				}
 				ApplyConfigurationAndReadPreferences();
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
+			// Create project contents for solution
+			ParserService.OnSolutionLoaded();
+			
 			// preferences must be read before OnSolutionLoad is called to enable
 			// the event listeners to read e.Solution.Preferences.Properties
 			OnSolutionLoaded(new SolutionEventArgs(openSolution));
+		}
+		
+		internal static void ParserServiceCreatedProjectContents()
+		{
+			foreach (string file in AbstractProject.filesToOpenAfterSolutionLoad) {
+				if (File.Exists(file)) {
+					FileService.OpenFile(file);
+				}
+			}
+			AbstractProject.filesToOpenAfterSolutionLoad.Clear();
 		}
 		
 		static void ApplyConfigurationAndReadPreferences()
@@ -301,7 +317,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectSection configSection = solution.GetSolutionConfigurationsSection();
 			foreach (string configuration in project.GetConfigurationNames()) {
 				foreach (string platform in project.GetPlatformNames()) {
-					string key = configuration + "|" + platform;
+					string key;
+					if (platform == "AnyCPU") { // Fix for SD2-786
+						key = configuration + "|Any CPU";
+					} else {
+						key = configuration + "|" + platform;
+					}
 					configSection.Items.Add(new SolutionItem(key, key));
 				}
 			}
@@ -412,7 +433,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void OnSolutionLoaded(SolutionEventArgs e)
 		{
-			ParserService.OnSolutionLoaded();
 			if (SolutionLoaded != null) {
 				SolutionLoaded(null, e);
 			}

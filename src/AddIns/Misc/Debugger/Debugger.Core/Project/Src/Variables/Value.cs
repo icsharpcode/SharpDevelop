@@ -19,7 +19,8 @@ namespace Debugger
 		ICorDebugValue corValue;
 		// ICorDebugHandleValue can be used to get corValue back after Continue()
 		protected ICorDebugHandleValue corHandleValue;
-		object pauseSessionAtCreation;
+		PauseSession pauseSessionAtCreation;
+		DebugeeState debugeeStateAtCreation;
 		
 		public event EventHandler<ValueEventArgs> ValueChanged;
 		
@@ -31,6 +32,8 @@ namespace Debugger
 		
 		internal ICorDebugValue CorValue {
 			get {
+				if (this.IsExpired) throw new DebuggerException("CorValue has expired");
+				
 				if (pauseSessionAtCreation == debugger.PauseSession) {
 					return corValue;
 				} else {
@@ -47,6 +50,8 @@ namespace Debugger
 		
 		protected ICorDebugHandleValue SoftReference {
 			get {
+				if (this.IsExpired) throw new DebuggerException("CorValue has expired");
+				
 				if (corHandleValue != null) return corHandleValue;
 				
 				ICorDebugHeapValue2 heapValue = this.CorValue.As<ICorDebugHeapValue2>();
@@ -66,7 +71,7 @@ namespace Debugger
 				if (corHandleValue == null) {
 					return pauseSessionAtCreation != debugger.PauseSession;
 				} else {
-					return false;
+					return debugeeStateAtCreation != debugger.DebugeeState;
 				}
 			}
 		}
@@ -139,6 +144,7 @@ namespace Debugger
 				this.corValue = DereferenceUnbox(corValue);
 			}
 			this.pauseSessionAtCreation = debugger.PauseSession;
+			this.debugeeStateAtCreation = debugger.DebugeeState;
 		}
 		
 		public override string ToString()

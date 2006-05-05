@@ -121,6 +121,7 @@ namespace SharpReportCore {
 		                                 XmlElement ctrlElem,
 		                                BaseReportItem item) {
 			
+			item.SuspendLayout();
 			try {
 				XmlNodeList nodeList = ctrlElem.ChildNodes;
 				foreach (XmlNode node in nodeList) {
@@ -130,7 +131,6 @@ namespace SharpReportCore {
 							if (elem.Name == "Font") {
 								item.Font = XmlFormReader.MakeFont (elem.GetAttribute("value"));
 							}
-							
 							reader.SetValue (item,
 							                 elem.Name,elem.GetAttribute("value"));
 						}
@@ -138,6 +138,8 @@ namespace SharpReportCore {
 				}
 			} catch (Exception) {
 				throw;
+			} finally {
+				item.ResumeLayout();
 			}
 		}
 	}

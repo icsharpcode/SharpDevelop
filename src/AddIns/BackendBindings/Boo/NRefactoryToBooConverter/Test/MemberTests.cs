@@ -135,6 +135,18 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
+		public void AbstractMethod()
+		{
+			TestInClass("public abstract void Run();", "public abstract def Run() as System.Void:\n\tpass");
+		}
+		
+		[Test]
+		public void AbstractMethodInInterface()
+		{
+			TestInInterface("void Run();", "def Run() as System.Void");
+		}
+		
+		[Test]
 		public void StaticMethodInStaticClass()
 		{
 			Test("public static class MainClass { public static void Run() {} }",
@@ -215,6 +227,18 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
+		public void AbstractProperty()
+		{
+			TestInClass("public abstract string Prop { get; }", "public abstract Prop as System.String:\n\tget:\n\t\tpass");
+		}
+		
+		[Test]
+		public void AbstractPropertyInInterface()
+		{
+			TestInInterface("string Prop { get; }", "Prop as System.String:\n\tget");
+		}
+		
+		[Test]
 		public void ReadOnlyIndexer()
 		{
 			TestInClass("public string this[int index] { get { } }", "public self[index as System.Int32] as System.String:\n\tget:\n\t\tpass");
@@ -249,6 +273,12 @@ namespace NRefactoryToBooConverter.Tests
 		public void EventWithAttribute()
 		{
 			TestInClass("[LookHere] event EventHandler Closed;", "[LookHere]\nprivate event Closed as EventHandler");
+		}
+		
+		[Test]
+		public void EventInInterface()
+		{
+			TestInInterface("event EventHandler Closed;", "event Closed as EventHandler");
 		}
 		
 		[Test]

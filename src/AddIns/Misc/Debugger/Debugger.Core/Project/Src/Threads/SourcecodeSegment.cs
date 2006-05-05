@@ -158,7 +158,7 @@ namespace Debugger
 			function = null;
 			ilOffset = 0;
 			
-			Module           module     = null;
+			Module                 module     = null;
 			ISymUnmanagedReader    symReader  = null;
 			ISymUnmanagedDocument  symDoc     = null;
 			
@@ -206,7 +206,11 @@ namespace Debugger
 			}
 			
 			ISymUnmanagedMethod symMethod;
-			symMethod = symReader.GetMethodFromDocumentPosition(symDoc, validLine, (uint)StartColumn);
+			try {
+				symMethod = symReader.GetMethodFromDocumentPosition(symDoc, (uint)StartLine, (uint)StartColumn);
+			} catch {
+				return false; //Not found
+			}
 			
 			function = module.CorModule.GetFunctionFromToken(symMethod.Token);
 			

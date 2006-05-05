@@ -428,7 +428,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			return new AnonymousMethodReturnType();
+			AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(resolver.CompilationUnit);
+			foreach (ParameterDeclarationExpression param in anonymousMethodExpression.Parameters) {
+				amrt.MethodParameters.Add(NRefactoryASTConvertVisitor.CreateParameter(param, resolver.CallingMember as IMethod, resolver.CallingClass, resolver.CompilationUnit));
+			}
+			return amrt;
 		}
 		
 		public override object Visit(ArrayInitializerExpression arrayInitializerExpression, object data)

@@ -134,6 +134,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		private void CreateViewTabControl()
 		{
 			viewTabControl = new TabControl();
+			viewTabControl.GotFocus += delegate {
+				TabPage page = viewTabControl.TabPages[viewTabControl.TabIndex];
+				if (page.Controls.Count == 1 && !page.ContainsFocus) page.Controls[0].Focus();
+			};
 			viewTabControl.Alignment = TabAlignment.Bottom;
 			viewTabControl.Dock = DockStyle.Fill;
 			viewTabControl.Selected += viewTabControlSelected;

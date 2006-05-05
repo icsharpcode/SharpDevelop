@@ -31,7 +31,7 @@ using System.Drawing.Drawing2D;
 /// 	created by - Forstmeier Peter
 /// 	created on - 09.10.2005 18:37:51
 /// </remarks>
-namespace SharpReportCore {	
+namespace SharpReportCore {
 	public class BaseLine : object {
 		
 		DashStyle dashStyle;
@@ -45,10 +45,51 @@ namespace SharpReportCore {
 			this.thickness = thickness;
 		}
 		
-		public void CreatePen () {
-			throw new NotImplementedException("BaseLine:CreatePen");
-		}
 		
+		public Pen CreatePen(){
+			return this.CreatePen(72f);
+		}
+
+
+		public Pen CreatePen(float resolution)
+		{
+			Pen pen;
+
+			if (this.thickness == 0f)
+			{
+				pen = new Pen(this.color, resolution / 72f);
+			}
+			else
+			{
+				pen = new Pen(this.color, (this.thickness * resolution) / 72f);
+			}
+			
+			switch (this.dashStyle){
+				case DashStyle.Dot:
+					{
+						pen.DashStyle = DashStyle.Dot;
+						return pen;
+					}
+				case DashStyle.Dash:
+					{
+						pen.DashStyle = DashStyle.Dash;
+						return pen;
+					}
+				case DashStyle.DashDot:
+					{
+						pen.DashStyle = DashStyle.DashDot;
+						return pen;
+					}
+				case DashStyle.DashDotDot:
+					{
+						pen.DashStyle = DashStyle.DashDotDot;
+						return pen;
+					}
+			}
+			return pen;
+		}
+
+
 		public Color Color {
 			get {
 				return color;

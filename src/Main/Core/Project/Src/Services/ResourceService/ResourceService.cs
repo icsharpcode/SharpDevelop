@@ -65,6 +65,9 @@ namespace ICSharpCode.Core
 		static Hashtable localStrings = null;
 		static Hashtable localIcons   = null;
 		
+		static Dictionary<string, Icon> iconCache = new Dictionary<string, Icon>();
+		static Dictionary<string, Bitmap> bitmapCache = new Dictionary<string, Bitmap>();
+		
 		/// <summary>Strings resource managers for the current language</summary>
 		static List<ResourceManager> localStringsResMgrs = new List<ResourceManager>();
 		/// <summary>Image resource managers for the current language</summary>
@@ -182,6 +185,9 @@ namespace ICSharpCode.Core
 		
 		static void LoadLanguageResources(string language)
 		{
+			iconCache.Clear();
+			bitmapCache.Clear();
+			
 			try {
 				Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(language);
 			} catch (Exception) {
@@ -400,15 +406,22 @@ namespace ICSharpCode.Core
 		/// </exception>
 		public static Icon GetIcon(string name)
 		{
-			object iconobj = GetImageResource(name);
-			
-			if (iconobj == null) {
-				return null;
-			}
-			if (iconobj is Icon) {
-				return (Icon)iconobj;
-			} else {
-				return Icon.FromHandle(((Bitmap)iconobj).GetHicon());
+			lock (iconCache) {
+				Icon ico;
+				if (iconCache.TryGetValue(name, out ico))
+					return ico;
+				
+				object iconobj = GetImageResource(name);
+				if (iconobj == null) {
+					return null;
+				}
+				if (iconobj is Icon) {
+					ico = (Icon)iconobj;
+				} else {
+					ico = Icon.FromHandle(((Bitmap)iconobj).GetHicon());
+				}
+				iconCache[name] = ico;
+				return ico;
 			}
 		}
 		
@@ -427,9 +440,15 @@ namespace ICSharpCode.Core
 		/// </exception>
 		public static Bitmap GetBitmap(string name)
 		{
-			Bitmap b = (Bitmap)GetImageResource(name);
-			Debug.Assert(b != null, "Resource " + name);
-			return b;
+			lock (bitmapCache) {
+				Bitmap bmp;
+				if (bitmapCache.TryGetValue(name, out bmp))
+					return bmp;
+				bmp = (Bitmap)GetImageResource(name);
+				Debug.Assert(bmp != null, "Resource " + name);
+				bitmapCache[name] = bmp;
+				return bmp;
+			}
 		}
 	}
 }

@@ -29,9 +29,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 			this.expression = expression;
 		}
 		
-		public InferredReturnType(Block block, IClass context)
+		bool useLastStatementIfNoReturnStatement;
+		
+		public InferredReturnType(Block block, IClass context, bool useLastStatementIfNoReturnStatement)
 		{
 			if (block == null) throw new ArgumentNullException("block");
+			this.useLastStatementIfNoReturnStatement = useLastStatementIfNoReturnStatement;
 			this.block = block;
 			this.context = context;
 		}
@@ -44,12 +47,17 @@ namespace Grunwald.BooBinding.CodeCompletion
 					Block b = block;
 					block = null; // reset block before calling Visit to prevent StackOverflow
 					v.Visit(b);
-					if (v.noReturnStatement)
-						cachedType = ReflectionReturnType.Void;
-					else if (v.result is NullReturnType)
+					if (v.noReturnStatement) {
+						if (useLastStatementIfNoReturnStatement && v.lastExpressionStatement != null) {
+							cachedType = new BooResolver().GetTypeOfExpression(v.lastExpressionStatement.Expression, context);
+						} else {
+							cachedType = ReflectionReturnType.Void;
+						}
+					} else if (v.result is NullReturnType) {
 						cachedType = ReflectionReturnType.Object;
-					else
+					} else {
 						cachedType = v.result;
+					}
 				} else if (expression != null) {
 					Expression expr = expression;
 					expression = null;
@@ -66,8 +74,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 			{
 				this.context = context;
 			}
+			
 			public IReturnType result;
 			public bool noReturnStatement = true;
+			public ExpressionStatement lastExpressionStatement;
 			
 			public override void OnReturnStatement(ReturnStatement node)
 			{
@@ -79,10 +89,22 @@ namespace Grunwald.BooBinding.CodeCompletion
 				}
 			}
 			
+			public override void OnExpressionStatement(ExpressionStatement node)
+			{
+				base.OnExpressionStatement(node);
+				lastExpressionStatement = node;
+			}
+			
 			public override void OnYieldStatement(YieldStatement node)
 			{
 				noReturnStatement = false;
-				result = ReflectionReturnType.CreatePrimitive(typeof(System.Collections.IEnumerable));
+				IClass enumerable = ProjectContentRegistry.Mscorlib.GetClass("System.Collections.Generic.IEnumerable", 1);
+				result = new ConstructedReturnType(enumerable.DefaultReturnType, new IReturnType[] { new InferredReturnType(node.Expression, context) });
+			}
+			
+			public override void OnCallableBlockExpression(CallableBlockExpression node)
+			{
+				// ignore return statements in callable blocks
 			}
 			
 			public override bool Visit(Node node)

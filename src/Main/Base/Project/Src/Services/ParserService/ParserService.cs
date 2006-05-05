@@ -155,6 +155,7 @@ namespace ICSharpCode.Core
 					ICSharpCode.Core.MessageService.ShowError(e, "Error while retrieving project contents from " + project);
 				}
 			}
+			WorkbenchSingleton.SafeThreadAsyncCall((ThreadStart)ProjectService.ParserServiceCreatedProjectContents);
 			int workAmount = 0;
 			foreach (ParseProjectContent newContent in createdContents) {
 				if (abortLoadSolutionProjectsThread) return;
@@ -167,7 +168,7 @@ namespace ICSharpCode.Core
 			}
 			StatusBarService.ProgressMonitor.BeginTask("Parsing...", workAmount);
 			foreach (ParseProjectContent newContent in createdContents) {
-				if (abortLoadSolutionProjectsThread) return;
+				if (abortLoadSolutionProjectsThread) break;
 				try {
 					newContent.Initialize2();
 				} catch (Exception e) {
@@ -181,7 +182,25 @@ namespace ICSharpCode.Core
 		{
 			ParseProjectContent newContent = (ParseProjectContent)state;
 			newContent.Initialize1();
+			StatusBarService.ProgressMonitor.BeginTask("Parsing...", newContent.GetInitializationWorkAmount());
 			newContent.Initialize2();
+			StatusBarService.ProgressMonitor.Done();
+		}
+		
+		static void ReparseProject(object state)
+		{
+			ParseProjectContent newContent = (ParseProjectContent)state;
+			StatusBarService.ProgressMonitor.BeginTask("Parsing...", newContent.GetInitializationWorkAmount());
+			newContent.ReInitialize2();
+			StatusBarService.ProgressMonitor.Done();
+		}
+		
+		public static void Reparse(IProject project)
+		{
+			ParseProjectContent pc = GetProjectContent(project) as ParseProjectContent;
+			if (pc != null) {
+				ThreadPool.QueueUserWorkItem(ReparseProject, pc);
+			}
 		}
 		
 		internal static IProjectContent CreateProjectContentForAddedProject(IProject project)
@@ -196,8 +215,10 @@ namespace ICSharpCode.Core
 		
 		public static IProjectContent GetProjectContent(IProject project)
 		{
-			if (projectContents.ContainsKey(project)) {
-				return projectContents[project];
+			lock (projectContents) {
+				if (projectContents.ContainsKey(project)) {
+					return projectContents[project];
+				}
 			}
 			return null;
 		}

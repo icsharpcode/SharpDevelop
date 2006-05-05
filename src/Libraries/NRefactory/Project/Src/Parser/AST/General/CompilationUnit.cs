@@ -34,6 +34,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			blockStack.Pop();
 		}
 		
+		public INode CurrentBock {
+			get {
+				return blockStack.Count > 0 ? (INode)blockStack.Peek() : null;
+			}
+		}
+		
 		public override void AddChild(INode childNode)
 		{
 			if (childNode != null) {

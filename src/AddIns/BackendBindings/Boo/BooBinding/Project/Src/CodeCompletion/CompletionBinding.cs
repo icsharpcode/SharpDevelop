@@ -52,7 +52,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override bool HandleKeyword(SharpDevelopTextAreaControl editor, string word)
 		{
-			switch (word.ToLower(CultureInfo.InvariantCulture)) {
+			switch (word.ToLowerInvariant()) {
 				case "import":
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Importable), ' ');
 					return true;

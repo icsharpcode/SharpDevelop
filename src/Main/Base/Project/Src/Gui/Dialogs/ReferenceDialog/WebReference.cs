@@ -372,6 +372,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			webReferenceUrl.Include = url;
 			webReferenceUrl.UpdateFromURL = url;
 			webReferenceUrl.RelPath = relativePath;
+			webReferenceUrl.Namespace = proxyNamespace;
 			items.Add(webReferenceUrl);
 			
 			// References.

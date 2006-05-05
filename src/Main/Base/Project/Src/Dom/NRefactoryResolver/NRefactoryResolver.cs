@@ -121,6 +121,28 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return expression;
 		}
 		
+		public static ResolveResult GetResultFromDeclarationLine(IClass callingClass, IMethodOrProperty callingMember, int caretLine, int caretColumn, string expression)
+		{
+			if (callingClass == null) return null;
+			int pos = expression.IndexOf('(');
+			if (pos >= 0) {
+				expression = expression.Substring(0, pos);
+			}
+			expression = expression.Trim();
+			if (!callingClass.BodyRegion.IsInside(caretLine, caretColumn)
+			    && callingClass.ProjectContent.Language.NameComparer.Equals(expression, callingClass.Name))
+			{
+				return new TypeResolveResult(callingClass, callingMember, callingClass);
+			}
+			if (callingMember != null
+			    && !callingMember.BodyRegion.IsInside(caretLine, caretColumn)
+			    && callingClass.ProjectContent.Language.NameComparer.Equals(expression, callingMember.Name))
+			{
+				return new MemberResolveResult(callingClass, callingMember, callingMember);
+			}
+			return null;
+		}
+		
 		public ResolveResult Resolve(ExpressionResult expressionResult,
 		                             int caretLineNumber,
 		                             int caretColumn,
@@ -178,6 +200,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			RunLookupTableVisitor(fileContent);
+			
+			ResolveResult rr = GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, caretLine, caretColumn, expression);
+			if (rr != null) return rr;
 			
 			return ResolveInternal(expr, expressionResult.Context);
 		}
@@ -422,11 +447,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return CreateMemberResolveResult(member);
 			c = type.GetUnderlyingClass();
 			if (c != null) {
-				List<IClass> innerClasses = c.InnerClasses;
-				if (innerClasses != null) {
-					foreach (IClass innerClass in innerClasses) {
-						if (IsSameName(innerClass.Name, fieldReferenceExpression.FieldName)) {
-							return new TypeResolveResult(callingClass, callingMember, innerClass);
+				foreach (IClass baseClass in c.ClassInheritanceTree) {
+					List<IClass> innerClasses = baseClass.InnerClasses;
+					if (innerClasses != null) {
+						foreach (IClass innerClass in innerClasses) {
+							if (IsSameName(innerClass.Name, fieldReferenceExpression.FieldName)) {
+								return new TypeResolveResult(callingClass, callingMember, innerClass);
+							}
 						}
 					}
 				}
@@ -1026,7 +1053,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				members.Clear();
 				IClass c = callingClass.DeclaringType;
 				while (c != null) {
-					result.Add(c);
 					t = c.DefaultReturnType;
 					members.AddRange(t.GetMethods());
 					members.AddRange(t.GetFields());
@@ -1052,9 +1078,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			AddUsing(result, projectContent.DefaultImports, projectContent);
 			
 			if (callingClass != null) {
-				foreach (object member in projectContent.GetNamespaceContents(callingClass.Namespace)) {
-					if (!result.Contains(member))
-						result.Add(member);
+				string[] namespaceParts = callingClass.Namespace.Split('.');
+				for (int i = 1; i <= namespaceParts.Length; i++) {
+					foreach (object member in projectContent.GetNamespaceContents(string.Join(".", namespaceParts, 0, i))) {
+						if (!result.Contains(member))
+							result.Add(member);
+					}
 				}
 				IClass currentClass = callingClass;
 				do {

@@ -101,5 +101,21 @@ namespace Grunwald.BooBinding
 				return BooAmbience.Instance;
 			}
 		}
+		
+		[Browsable(false)]
+		public bool Ducky {
+			get {
+				return GetProperty("Ducky", false);
+			}
+		}
+		
+		public override void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocations location)
+		{
+			bool oldDucky = Ducky;
+			base.SetProperty(configurationName, platform, property, value, location);
+			if (Ducky != oldDucky) {
+				ParserService.Reparse(this);
+			}
+		}
 	}
 }
