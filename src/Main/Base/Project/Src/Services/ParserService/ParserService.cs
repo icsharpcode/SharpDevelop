@@ -6,26 +6,16 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Security;
-using System.Security.Permissions;
-using System.Security.Policy;
-using System.Xml;
+using System.IO;
 using System.Text;
+using System.Threading;
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Core
 {
@@ -464,6 +454,8 @@ namespace ICSharpCode.Core
 		
 		public static ParseInformation ParseFile(IProjectContent fileProjectContent, string fileName, string fileContent, bool updateCommentTags, bool fireUpdate)
 		{
+			if (fileName == null) throw new ArgumentNullException("fileName");
+			
 			IParser parser = GetParser(fileName);
 			if (parser == null) {
 				return null;

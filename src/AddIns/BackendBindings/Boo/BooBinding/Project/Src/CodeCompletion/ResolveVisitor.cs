@@ -9,9 +9,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Boo.Lang.Compiler.Ast;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using Boo.Lang.Compiler.Ast;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {
@@ -110,7 +110,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			ResolveResult oldResult = resolveResult;
 			ClearResult();
 			// Try to resolve as type:
-			IReturnType t = projectContent.SearchType(identifier, 0, callingClass, cu, resolver.CaretLine, resolver.CaretColumn);
+			IReturnType t = projectContent.SearchType(new SearchTypeRequest(identifier, 0, callingClass, cu, resolver.CaretLine, resolver.CaretColumn)).Result;
 			if (t != null) {
 				MakeTypeResult(t);
 			} else {
@@ -253,8 +253,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 					LoggingService.Warn("Unknown expression in GenericReferenceExpression: " + expr);
 				}
 			}
-			IReturnType rt = projectContent.SearchType(name.ToString(), typeArguments.Count, callingClass,
-			                                           cu, resolver.CaretLine, resolver.CaretColumn);
+			IReturnType rt = projectContent.SearchType(new SearchTypeRequest(name.ToString(), typeArguments.Count, callingClass,
+			                                                                 cu, resolver.CaretLine, resolver.CaretColumn)).Result;
 			return new ConstructedReturnType(rt, typeArguments);
 		}
 		#endregion

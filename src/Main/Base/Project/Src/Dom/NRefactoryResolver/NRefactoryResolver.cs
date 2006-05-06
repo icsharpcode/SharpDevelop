@@ -11,9 +11,8 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.NRefactory.Parser.AST;
 using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.AST;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
@@ -783,7 +782,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public IReturnType SearchType(string name)
 		{
-			return projectContent.SearchType(name, 0, callingClass, cu, caretLine, caretColumn);
+			return projectContent.SearchType(new SearchTypeRequest(name, 0, callingClass, cu, caretLine, caretColumn)).Result;
 		}
 		
 		#region Helper for TypeVisitor

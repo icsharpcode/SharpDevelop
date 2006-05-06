@@ -6,22 +6,11 @@
 // </file>
 
 using System;
-using System.Text;
 using System.IO;
-using System.Threading;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Collections;
-using System.ComponentModel;
 using System.Windows.Forms;
-using System.Diagnostics;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Gui;
-using NSvn.Common;
 using NSvn.Core;
 
 namespace ICSharpCode.Svn.Commands
@@ -104,6 +93,7 @@ namespace ICSharpCode.Svn.Commands
 				switch (status.TextStatus) {
 					case StatusKind.None:
 					case StatusKind.Unversioned:
+					case StatusKind.Deleted:
 						return; // nothing to do
 					case StatusKind.Normal:
 						// remove without problem

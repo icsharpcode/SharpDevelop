@@ -10,10 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using Boo.Lang.Compiler;
 using AST = Boo.Lang.Compiler.Ast;
-using Boo.Lang.Compiler.IO;
-using Boo.Lang.Compiler.Steps;
 using NRResolver = ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver;
 
 namespace Grunwald.BooBinding.CodeCompletion
@@ -217,10 +214,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (mie != null)
 					expr = mie.Target;
 				string name = expr.ToCodeString();
-				IReturnType rt = pc.SearchType(name, 0, callingClass, cu, caretLine, caretColumn);
+				IReturnType rt = pc.SearchType(new SearchTypeRequest(name, 0, callingClass, cu, caretLine, caretColumn)).Result;
 				if (rt != null && rt.GetUnderlyingClass() != null)
 					return new TypeResolveResult(callingClass, callingMember, rt);
-				rt = pc.SearchType(name + "Attribute", 0, callingClass, cu, caretLine, caretColumn);
+				rt = pc.SearchType(new SearchTypeRequest(name + "Attribute", 0, callingClass, cu, caretLine, caretColumn)).Result;
 				if (rt != null && rt.GetUnderlyingClass() != null)
 					return new TypeResolveResult(callingClass, callingMember, rt);
 				if (BooProject.BooCompilerPC != null) {

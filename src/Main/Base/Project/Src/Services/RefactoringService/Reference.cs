@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Refactoring

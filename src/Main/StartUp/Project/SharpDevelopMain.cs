@@ -6,18 +6,12 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
-using System.Drawing;
-using System.Collections;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Resources;
-using System.Xml;
 using System.Threading;
-using System.Runtime.Remoting;
-using System.Security.Policy;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Commands;
@@ -263,6 +257,7 @@ namespace ICSharpCode.SharpDevelop
 			AddInTree.ConditionEvaluators.Add("ProjectActive", new ProjectActiveConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("TextContent", new ICSharpCode.SharpDevelop.DefaultEditor.Conditions.TextContentConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("BrowserLocation", new ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserLocationConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("RefactoringProviderSupports", new Refactoring.RefactoringProviderSupportsConditionEvaluator());
 			
 			AddInTree.Doozers.Add("DialogPanel", new DialogPanelDoozer());
 			AddInTree.Doozers.Add("DisplayBinding", new DisplayBindingDoozer());

@@ -6,26 +6,11 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Security;
-using System.Security.Permissions;
-using System.Security.Policy;
-using System.Xml;
-using System.Text;
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Core
 {
@@ -89,9 +74,66 @@ namespace ICSharpCode.Core
 		void AddNamespaceContents(ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences);
 		
 		string SearchNamespace(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
-		IReturnType SearchType(string name, int typeParameterCount, IClass curType, int caretLine, int caretColumn);
-		IReturnType SearchType(string name, int typeParameterCount, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
+		SearchTypeResult SearchType(SearchTypeRequest request);
 		
 		Position GetPosition(string fullMemberName);
+	}
+	
+	public struct SearchTypeRequest
+	{
+		public string Name;
+		public int TypeParameterCount;
+		public ICompilationUnit CurrentCompilationUnit;
+		public IClass CurrentType;
+		public int CaretLine;
+		public int CaretColumn;
+		
+		public SearchTypeRequest(string name, int typeParameterCount, IClass currentType, int caretLine, int caretColumn)
+		{
+			this.Name = name;
+			this.TypeParameterCount = typeParameterCount;
+			this.CurrentCompilationUnit = currentType.CompilationUnit;
+			this.CurrentType = currentType;
+			this.CaretLine = caretLine;
+			this.CaretColumn = caretColumn;
+		}
+		
+		public SearchTypeRequest(string name, int typeParameterCount, IClass currentType, ICompilationUnit currentCompilationUnit, int caretLine, int caretColumn)
+		{
+			this.Name = name;
+			this.TypeParameterCount = typeParameterCount;
+			this.CurrentCompilationUnit = currentCompilationUnit;
+			this.CurrentType = currentType;
+			this.CaretLine = caretLine;
+			this.CaretColumn = caretColumn;
+		}
+	}
+	
+	public struct SearchTypeResult
+	{
+		public static readonly SearchTypeResult Empty = new SearchTypeResult(null);
+		
+		IReturnType result;
+		IUsing usedUsing;
+		
+		public SearchTypeResult(IReturnType result) : this(result, null) {}
+		
+		public SearchTypeResult(IReturnType result, IUsing usedUsing)
+		{
+			this.result = result;
+			this.usedUsing = usedUsing;
+		}
+		
+		public IReturnType Result {
+			get {
+				return result;
+			}
+		}
+		
+		public IUsing UsedUsing {
+			get {
+				return usedUsing;
+			}
+		}
 	}
 }

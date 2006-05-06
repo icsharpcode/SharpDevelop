@@ -6,14 +6,13 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using System.Drawing;
 using System.Text;
+using ICSharpCode.NRefactory.Parser.AST;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using ICSharpCode.NRefactory.Parser.AST;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
@@ -87,6 +86,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static ParamModifier ConvertModifier(ParameterModifiers m)
 		{
 			return (ParamModifier)m;
+		}
+		
+		public static UsingDeclaration ConvertUsing(IUsing u)
+		{
+			List<Using> usings = new List<Using>();
+			foreach (string name in u.Usings) {
+				usings.Add(new Using(name));
+			}
+			if (u.HasAliases) {
+				foreach (KeyValuePair<string, IReturnType> pair in u.Aliases) {
+					usings.Add(new Using(pair.Key, ConvertType(pair.Value, null)));
+				}
+			}
+			return new UsingDeclaration(usings);
 		}
 		
 		public static List<ParameterDeclarationExpression> ConvertParameters(IList<IParameter> parameters, ClassFinder targetContext)
@@ -513,6 +526,70 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				ie.Arguments.Add(expr);
 			}
 			return ie;
+		}
+		#endregion
+		
+		#region Using statements
+		public virtual void ReplaceUsings(IDocument document, IList<IUsing> oldUsings, IList<IUsing> newUsings)
+		{
+			if (oldUsings.Count == newUsings.Count) {
+				bool identical = true;
+				for (int i = 0; i < oldUsings.Count; i++) {
+					if (oldUsings[i] != newUsings[i]) {
+						identical = false;
+						break;
+					}
+				}
+				if (identical) return;
+			}
+			
+			int firstLine = int.MaxValue;
+			List<KeyValuePair<int, int>> regions = new List<KeyValuePair<int, int>>();
+			foreach (IUsing u in oldUsings) {
+				if (u.Region.BeginLine < firstLine)
+					firstLine = u.Region.BeginLine;
+				int st = document.PositionToOffset(new Point(u.Region.BeginColumn - 1, u.Region.BeginLine - 1));
+				int en = document.PositionToOffset(new Point(u.Region.EndColumn - 1, u.Region.EndLine - 1));
+				regions.Add(new KeyValuePair<int, int>(st, en - st));
+			}
+			
+			regions.Sort(delegate(KeyValuePair<int, int> a, KeyValuePair<int, int> b) {
+			             	return a.Key.CompareTo(b.Key);
+			             });
+			int insertionOffset = regions.Count == 0 ? 0 : regions[0].Key;
+			string indentation;
+			if (firstLine != int.MaxValue) {
+				indentation = GetIndentation(document, firstLine);
+				insertionOffset -= indentation.Length;
+			} else {
+				indentation = "";
+			}
+			
+			for (int i = regions.Count - 1; i >= 0; i--) {
+				document.Remove(regions[i].Key, regions[i].Value);
+			}
+			int actionCount = regions.Count;
+			int lastNewLine = insertionOffset;
+			for (int i = insertionOffset; i < document.TextLength; i++) {
+				char c = document.GetCharAt(i);
+				if (!char.IsWhiteSpace(c))
+					break;
+				if (c == '\n') {
+					if (i > 0 && document.GetCharAt(i - 1) == '\r')
+						lastNewLine = i - 1;
+					else
+						lastNewLine = i;
+				}
+			}
+			if (lastNewLine != insertionOffset) {
+				document.Remove(insertionOffset, lastNewLine - insertionOffset); actionCount++;
+			}
+			StringBuilder txt = new StringBuilder();
+			foreach (IUsing us in newUsings) {
+				txt.Append(GenerateCode(ConvertUsing(us), indentation));
+			}
+			document.Insert(insertionOffset, txt.ToString()); actionCount++;
+			document.UndoStack.UndoLast(actionCount);
 		}
 		#endregion
 	}

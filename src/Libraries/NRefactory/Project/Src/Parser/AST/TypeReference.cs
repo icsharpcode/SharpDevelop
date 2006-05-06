@@ -6,11 +6,10 @@
 // </file>
 
 using System;
-using System.Diagnostics;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
 using System.Globalization;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -20,7 +19,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		string systemType = "";
 		int    pointerNestingLevel = 0;
 		int[]  rankSpecifier = null;
-		List<TypeReference> genericTypes = new List<TypeReference>(1);
+		List<TypeReference> genericTypes = new List<TypeReference>();
 		bool isGlobal = false;
 		
 		static Dictionary<string, string> types   = new Dictionary<string, string>();

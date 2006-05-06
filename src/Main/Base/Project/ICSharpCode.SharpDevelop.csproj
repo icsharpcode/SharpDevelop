@@ -502,7 +502,7 @@
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\AbstractClassImplementorCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\AbstractFieldCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\AbstractPropertyCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\CodeGenerator.cs" />
+    <Compile Include="Src\TextEditor\Commands\CodeGenerators\CodeGeneratorBase.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\ConstructorCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\EqualsCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\GetterAndSetterCodeGenerator.cs" />
@@ -765,7 +765,10 @@
     <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\IClassNodeBuilder.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\IProjectNodeBuilder.cs" />
     <Compile Include="Src\TextEditor\SearchAndReplace\Engine\TextSelection.cs" />
-    <Compile Include="Src\Services\RefactoringService\NamespaceRefactoring.cs" />
+    <Compile Include="Src\Services\RefactoringService\RefactoringProvider.cs" />
+    <Compile Include="Src\Services\RefactoringService\NRefactoryRefactoringProvider.cs" />
+    <Compile Include="Src\Services\RefactoringService\NamespaceRefactoringService.cs" />
+    <Compile Include="Src\Services\RefactoringService\RefactorMenu.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

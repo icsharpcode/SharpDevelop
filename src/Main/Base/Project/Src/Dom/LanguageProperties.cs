@@ -38,6 +38,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public virtual RefactoringProvider RefactoringProvider {
+			get {
+				return RefactoringProvider.DummyProvider;
+			}
+		}
+		
 		/// <summary>
 		/// Gets if the language supports calling C# 3-style extension methods
 		/// (first parameter = instance parameter)
@@ -154,6 +160,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			public CSharpProperties() : base(StringComparer.InvariantCulture, CSharpCodeGenerator.Instance) {}
 			
+			public override RefactoringProvider RefactoringProvider {
+				get {
+					return NRefactoryRefactoringProvider.NRefactoryProviderInstance;
+				}
+			}
+			
 			public override string ToString()
 			{
 				return "[LanguageProperties: C#]";
@@ -228,6 +240,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				u.Usings.Add("System.Diagnostics");
 				u.Usings.Add("System.Windows.Forms");
 				return u;
+			}
+			
+			public override RefactoringProvider RefactoringProvider {
+				get {
+					return NRefactoryRefactoringProvider.NRefactoryProviderInstance;
+				}
 			}
 			
 			public override string ToString()

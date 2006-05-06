@@ -7,18 +7,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 using SearchAndReplace;
-using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {

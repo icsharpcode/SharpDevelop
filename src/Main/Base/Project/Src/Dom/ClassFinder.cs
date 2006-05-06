@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public IReturnType SearchType(string name, int typeParameterCount)
 		{
-			return projectContent.SearchType(name, typeParameterCount, callingClass, cu, caretLine, caretColumn);
+			return projectContent.SearchType(new SearchTypeRequest(name, typeParameterCount, callingClass, cu, caretLine, caretColumn)).Result;
 		}
 		
 		public string SearchNamespace(string name)

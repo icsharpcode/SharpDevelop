@@ -1260,6 +1260,16 @@
 			          class       = "ICSharpCode.SharpDevelop.Commands.ToggleFullscreenCommand" />
 		</MenuItem> <!-- end VIEW menu -->
 		
+		<Condition name="RefactoringProviderSupports" supports="*">
+			<MenuItem id = "Refactor" label = "${res:XML.MainMenu.RefactorMenu}" type="Menu">
+				<Condition name="RefactoringProviderSupports" supports="FindUnusedUsingDeclarations">
+					<MenuItem id    = "RemoveUnusedUsings"
+					          label = "Removed unused import statements"
+					          class = "ICSharpCode.SharpDevelop.Refactoring.RemoveUnusedUsingsCommand" />
+				</Condition>
+			</MenuItem>
+		</Condition> <!-- end REFACTOR menu -->
+		
 		<Condition name = "ProjectActive" activeproject="*">
 			<MenuItem id = "Project" label = "${res:XML.MainMenu.ProjectMenu}" type="Menu">
 				<MenuItem id = "ProjectAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu" >
@@ -1339,7 +1349,7 @@
 					<MenuItem id = "ConfigurationBuilder" type = "Builder" class = "ICSharpCode.SharpDevelop.Project.Commands.SetConfigurationMenuBuilder"/>
 				</MenuItem>
 			</ComplexCondition>
-		</MenuItem> <!-- end RUN menu -->
+		</MenuItem> <!-- end BUILD menu -->
 		
 		<MenuItem id = "Debug" label = "${res:XML.MainMenu.DebugMenu}" type="Menu">
 			<ComplexCondition action="Disable">
@@ -2070,12 +2080,12 @@
 		<Class id = "DefaultBuilder"
 		       class = "ICSharpCode.SharpDevelop.Project.DefaultDotNetNodeBuilder"/>
 	</Path>
-
+	
 	<Path name = "/SharpDevelop/Views/ClassBrowser/ProjectNodeBuilders">
 		<Class id = "DefaultProjectBuilder"
 		       class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.DefaultProjectNodeBuilder"/>
 	</Path>
-
+	
 	<Path name = "/SharpDevelop/Views/ClassBrowser/ClassNodeBuilders">
 		<Class id = "DefaultClassBuilder"
 		       class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.DefaultClassNodeBuilder"/>

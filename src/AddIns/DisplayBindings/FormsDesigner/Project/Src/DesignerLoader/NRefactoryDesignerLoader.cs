@@ -6,26 +6,21 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.ComponentModel.Design;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
+using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
-using System.Windows.Forms.Design;
 
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
-
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
-using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -314,7 +309,7 @@ namespace ICSharpCode.FormsDesigner
 				FixTypeReference(tref, location, domCu);
 			}
 			ICSharpCode.SharpDevelop.Dom.IClass curType = domCu.GetInnermostClass(location.Y, location.X);
-			ICSharpCode.SharpDevelop.Dom.IReturnType rt = domCu.ProjectContent.SearchType(type.Type, type.GenericTypes.Count, curType, domCu, location.Y, location.X);
+			ICSharpCode.SharpDevelop.Dom.IReturnType rt = domCu.ProjectContent.SearchType(new SearchTypeRequest(type.Type, type.GenericTypes.Count, curType, domCu, location.Y, location.X)).Result;
 			if (rt != null) {
 				type.Type = rt.FullyQualifiedName;
 			}

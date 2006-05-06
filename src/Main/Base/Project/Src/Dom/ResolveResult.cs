@@ -10,9 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Core;
-
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -32,8 +30,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public ResolveResult(IClass callingClass, IMember callingMember, IReturnType resolvedType)
 		{
-//			if (callingMember != null && callingMember.DeclaringType != callingClass)
-//				throw new ArgumentException("callingMember.DeclaringType must be equal to callingClass");
 			this.callingClass = callingClass;
 			this.callingMember = callingMember;
 			this.resolvedType = resolvedType;
@@ -498,7 +494,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return GetDefinitionPosition(resolvedMember);
 		}
 		
-		public static FilePosition GetDefinitionPosition(IMember resolvedMember)
+		internal static FilePosition GetDefinitionPosition(IMember resolvedMember)
 		{
 			IClass declaringType = resolvedMember.DeclaringType;
 			if (declaringType == null) {

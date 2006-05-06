@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -309,7 +308,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return new Point(column, line);
 		}
 		
-		public static List<string> GetFileNames(IClass c)
+		static List<string> GetFileNames(IClass c)
 		{
 			List<string> list = new List<string>();
 			CompoundClass cc = c as CompoundClass;
@@ -407,6 +406,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		#endregion
 		
+		#region IsReferenceTo...
 		public static bool IsReferenceToLocalVariable(ResolveResult rr, IMember variable)
 		{
 			LocalResolveResult local = rr as LocalResolveResult;
@@ -432,7 +432,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return false;
 			}
 		}
+		#endregion
 		
+		#region IsSimilarMember / FindBaseMember
 		/// <summary>
 		/// Gets if member1 is the same as member2 or if member1 overrides member2.
 		/// </summary>
@@ -516,5 +518,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			return null;
 		}
+		#endregion
 	}
 }

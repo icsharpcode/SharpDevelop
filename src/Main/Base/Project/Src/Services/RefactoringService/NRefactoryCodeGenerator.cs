@@ -6,8 +6,6 @@
 // </file>
 
 using System;
-using System.IO;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.NRefactory.Parser.AST;
 using ICSharpCode.NRefactory.PrettyPrinter;
 

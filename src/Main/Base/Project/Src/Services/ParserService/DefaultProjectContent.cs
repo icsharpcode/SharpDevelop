@@ -6,26 +6,15 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Security;
-using System.Security.Permissions;
-using System.Security.Policy;
-using System.Xml;
+using System.IO;
 using System.Text;
+using System.Threading;
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Core
 {
@@ -723,30 +712,23 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		public IReturnType SearchType(string name, int typeParameterCount, IClass curType, int caretLine, int caretColumn)
+		public SearchTypeResult SearchType(SearchTypeRequest request)
 		{
-			if (curType == null) {
-				return SearchType(name, typeParameterCount, null, null, caretLine, caretColumn);
-			}
-			return SearchType(name, typeParameterCount, curType, curType.CompilationUnit, caretLine, caretColumn);
-		}
-		
-		public IReturnType SearchType(string name, int typeParameterCount, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn)
-		{
+			string name = request.Name;
 			if (name == null || name.Length == 0) {
-				return null;
+				return SearchTypeResult.Empty;
 			}
 			
 			// Try if name is already the full type name
-			IClass c = GetClass(name, typeParameterCount);
+			IClass c = GetClass(name, request.TypeParameterCount);
 			if (c != null) {
-				return c.DefaultReturnType;
+				return new SearchTypeResult(c.DefaultReturnType);
 			}
 			// fallback-class if the one with the right type parameter count is not found.
-			IReturnType fallbackClass = null;
-			if (curType != null) {
+			SearchTypeResult fallbackResult = SearchTypeResult.Empty;
+			if (request.CurrentType != null) {
 				// Try parent namespaces of the current class
-				string fullname = curType.FullyQualifiedName;
+				string fullname = request.CurrentType.FullyQualifiedName;
 				string[] namespaces = fullname.Split('.');
 				StringBuilder curnamespace = new StringBuilder();
 				for (int i = 0; i < namespaces.Length; ++i) {
@@ -754,12 +736,12 @@ namespace ICSharpCode.Core
 					curnamespace.Append('.');
 					
 					curnamespace.Append(name);
-					c = GetClass(curnamespace.ToString(), typeParameterCount);
+					c = GetClass(curnamespace.ToString(), request.TypeParameterCount);
 					if (c != null) {
-						if (c.TypeParameters.Count == typeParameterCount)
-							return c.DefaultReturnType;
+						if (c.TypeParameters.Count == request.TypeParameterCount)
+							return new SearchTypeResult(c.DefaultReturnType);
 						else
-							fallbackClass = c.DefaultReturnType;
+							fallbackResult = new SearchTypeResult(c.DefaultReturnType);
 					}
 					// remove class name again to try next namespace
 					curnamespace.Length -= name.Length;
@@ -768,42 +750,42 @@ namespace ICSharpCode.Core
 				if (name.IndexOf('.') < 0) {
 					// Try inner classes (in full inheritance tree)
 					// Don't use loop with cur = cur.BaseType because of inheritance cycles
-					foreach (IClass baseClass in curType.ClassInheritanceTree) {
+					foreach (IClass baseClass in request.CurrentType.ClassInheritanceTree) {
 						if (baseClass.ClassType == ClassType.Class) {
 							foreach (IClass innerClass in baseClass.InnerClasses) {
 								if (language.NameComparer.Equals(innerClass.Name, name))
-									return innerClass.DefaultReturnType;
+									return new SearchTypeResult(innerClass.DefaultReturnType);
 							}
 						}
 					}
 				}
 			}
-			if (unit != null) {
+			if (request.CurrentCompilationUnit != null) {
 				// Combine name with usings
-				foreach (IUsing u in unit.Usings) {
+				foreach (IUsing u in request.CurrentCompilationUnit.Usings) {
 					if (u != null) {
-						IReturnType r = u.SearchType(name, typeParameterCount);
+						IReturnType r = u.SearchType(name, request.TypeParameterCount);
 						if (r != null) {
-							if (r.TypeParameterCount == typeParameterCount) {
-								return r;
+							if (r.TypeParameterCount == request.TypeParameterCount) {
+								return new SearchTypeResult(r, u);
 							} else {
-								fallbackClass = r;
+								fallbackResult = new SearchTypeResult(r, u);
 							}
 						}
 					}
 				}
 			}
 			if (defaultImports != null) {
-				IReturnType r = defaultImports.SearchType(name, typeParameterCount);
+				IReturnType r = defaultImports.SearchType(name, request.TypeParameterCount);
 				if (r != null) {
-					if (r.TypeParameterCount == typeParameterCount) {
-						return r;
+					if (r.TypeParameterCount == request.TypeParameterCount) {
+						return new SearchTypeResult(r, defaultImports);
 					} else {
-						fallbackClass = r;
+						fallbackResult = new SearchTypeResult(r, defaultImports);
 					}
 				}
 			}
-			return fallbackClass;
+			return fallbackResult;
 		}
 		
 		/// <summary>
