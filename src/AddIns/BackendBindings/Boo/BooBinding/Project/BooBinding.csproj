@@ -89,6 +89,8 @@
     <None Include="Templates\DefaultAssemblyInfo.boo">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="Src\CodeCompletion\BooRefactoringProvider.cs" />
+    <Compile Include="Src\CodeCompletion\BooAdvancedHighlighter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BooBinding.addin">

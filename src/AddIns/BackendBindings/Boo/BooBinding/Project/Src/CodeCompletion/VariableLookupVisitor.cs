@@ -65,7 +65,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				ReferenceExpression reference = node.Left as ReferenceExpression;
 				if (node.Operator == BinaryOperatorType.Assign && reference != null) {
 					if (!(reference is MemberReferenceExpression)) {
-						DeclarationFound(reference.Name, null, node.Right, node.LexicalInfo);
+						DeclarationFound(reference.Name, null, node.Right, reference.LexicalInfo);
 					}
 				}
 			}

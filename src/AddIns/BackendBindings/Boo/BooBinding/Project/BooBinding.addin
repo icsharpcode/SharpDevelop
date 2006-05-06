@@ -88,6 +88,10 @@
 		<Class id = "BooFormatter" class = "Grunwald.BooBinding.BooFormattingStrategy"/>
 	</Path>
 	
+	<Path name = "/AddIns/DefaultTextEditor/AdvancedHighlighter/Boo">
+		<Class id = "BooFormatter" class = "Grunwald.BooBinding.CodeCompletion.BooAdvancedHighlighter"/>
+	</Path>
+	
 	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
 		<CodeCompletionBinding id = "Boo" extensions = ".boo" class = "Grunwald.BooBinding.CodeCompletion.CompletionBinding"/>
 	</Path>

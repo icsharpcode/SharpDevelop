@@ -11,14 +11,24 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	public class RefactoringProvider
+	public abstract class RefactoringProvider
 	{
 		/// <summary>
 		/// A RefactoringProvider instance that supports no refactorings.
 		/// </summary>
-		public static readonly RefactoringProvider DummyProvider = new RefactoringProvider();
+		public static readonly RefactoringProvider DummyProvider = new DummyRefactoringProvider();
 		
 		protected RefactoringProvider() {}
+		
+		public abstract bool IsEnabledForFile(string fileName);
+		
+		private class DummyRefactoringProvider : RefactoringProvider
+		{
+			public override bool IsEnabledForFile(string fileName)
+			{
+				return false;
+			}
+		}
 		
 		public virtual bool SupportsFindUnusedUsingDeclarations {
 			get {

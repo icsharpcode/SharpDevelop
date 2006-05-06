@@ -45,5 +45,11 @@ namespace Grunwald.BooBinding
 				return true;
 			}
 		}
+		
+		public override ICSharpCode.SharpDevelop.Refactoring.RefactoringProvider RefactoringProvider {
+			get {
+				return CodeCompletion.BooRefactoringProvider.BooProvider;
+			}
+		}
 	}
 }

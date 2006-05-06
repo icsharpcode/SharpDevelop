@@ -344,7 +344,7 @@ namespace ICSharpCode.Core
 								((IParseInformationListener)editable).ParseInformationUpdated(parseInformation);
 							}
 						}
-						OnParserUpdateStepFinished(new ParserUpdateStepEventArgs(fileName, text, updated));
+						OnParserUpdateStepFinished(new ParserUpdateStepEventArgs(fileName, text, updated, parseInformation));
 					}
 				}
 			}

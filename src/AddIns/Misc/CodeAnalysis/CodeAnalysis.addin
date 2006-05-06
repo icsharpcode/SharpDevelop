@@ -24,7 +24,6 @@
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
 		<MenuItem id    = "CheckWithFxCop"
 		          label = "${res:ICSharpCode.CodeAnalysis.CheckWithFxCop}"
-		          class = "ICSharpCode.CodeAnalysis.CheckCurrentProjectCommand"
-		          insertafter = "Separator2" insertbefore="SetConfiguration"/>
+		          class = "ICSharpCode.CodeAnalysis.CheckCurrentProjectCommand"/>
 	</Path>
 </AddIn>

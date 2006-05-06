@@ -21,16 +21,16 @@ namespace ICSharpCode.TextEditor.Document
 	{
 		static ArrayList errors = null;
 
-		public static DefaultHighlightingStrategy Parse(SyntaxMode syntaxMode, XmlTextReader xmlTextReader)
+		public static DefaultHighlightingStrategy Parse(SyntaxMode syntaxMode, XmlReader xmlReader)
 		{
-			return Parse(null, syntaxMode, xmlTextReader);
+			return Parse(null, syntaxMode, xmlReader);
 		}
 
-		public static DefaultHighlightingStrategy Parse(DefaultHighlightingStrategy highlighter, SyntaxMode syntaxMode, XmlTextReader xmlTextReader)
+		public static DefaultHighlightingStrategy Parse(DefaultHighlightingStrategy highlighter, SyntaxMode syntaxMode, XmlReader xmlReader)
 		{
 			if (syntaxMode == null)
 				throw new ArgumentNullException("syntaxMode");
-			if (xmlTextReader == null)
+			if (xmlReader == null)
 				throw new ArgumentNullException("xmlTextReader");
 			try {
 				XmlReaderSettings settings = new XmlReaderSettings();
@@ -38,13 +38,13 @@ namespace ICSharpCode.TextEditor.Document
 				settings.Schemas.Add("", new XmlTextReader(shemaStream));
 				settings.Schemas.ValidationEventHandler += new ValidationEventHandler(ValidationHandler);
 				settings.ValidationType = ValidationType.Schema;
-				XmlReader validatingReader = XmlReader.Create(xmlTextReader, settings);
+				XmlReader validatingReader = XmlReader.Create(xmlReader, settings);
 
 //				XmlValidatingReader validatingReader = new XmlValidatingReader(xmlTextReader);
 				//				Stream shemaStream = Assembly.GetCallingAssembly().GetManifestResourceStream("Resources.Mode.xsd");
 //				validatingReader.Schemas.Add("", new XmlTextReader(shemaStream));
 //				validatingReader.ValidationType = ValidationType.Schema;
-			    
+				
 				
 				XmlDocument doc = new XmlDocument();
 				doc.Load(validatingReader);
@@ -70,7 +70,11 @@ namespace ICSharpCode.TextEditor.Document
 					foreach (XmlNode node in environment.ChildNodes) {
 						if (node is XmlElement) {
 							XmlElement el = (XmlElement)node;
-							highlighter.SetColorFor(el.Name, el.HasAttribute("bgcolor") ? new HighlightBackground(el) : new HighlightColor(el));
+							if (el.Name == "Custom") {
+								highlighter.SetColorFor(el.GetAttribute("name"), el.HasAttribute("bgcolor") ? new HighlightBackground(el) : new HighlightColor(el));
+							} else {
+								highlighter.SetColorFor(el.Name, el.HasAttribute("bgcolor") ? new HighlightBackground(el) : new HighlightColor(el));
+							}
 						}
 					}
 				}
@@ -91,20 +95,20 @@ namespace ICSharpCode.TextEditor.Document
 					highlighter.AddRuleSet(new HighlightRuleSet(element));
 				}
 				
-				xmlTextReader.Close();
+				xmlReader.Close();
 				
 				if(errors!=null) {
 					ReportErrors(syntaxMode.FileName);
 					errors = null;
 					return null;
 				} else {
-					return highlighter;		
+					return highlighter;
 				}
 			} catch (Exception e) {
 				MessageBox.Show("Could not load mode definition file '" + syntaxMode.FileName + "'.\n" + e.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
 				return null;
 			}
-		}	
+		}
 		
 		private static void ValidationHandler(object sender, ValidationEventArgs args)
 		{

@@ -69,6 +69,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					throw new Exception("Strategy can't be null");
 				}
 				control.Document.HighlightingStrategy = strat;
+				if (control is SharpDevelopTextAreaControl) {
+					((SharpDevelopTextAreaControl)control).InitializeAdvancedHighlighter();
+				}
 				control.Refresh();
 			}
 		}

@@ -24,14 +24,6 @@ namespace ICSharpCode.TextEditor.Document
 		List<HighlightRuleSet> rules = new List<HighlightRuleSet>();
 		
 		Dictionary<string, HighlightColor> environmentColors = new Dictionary<string, HighlightColor>();
-		
-		public IEnumerable<KeyValuePair<string, HighlightColor>> EnvironmentColors {
-			get {
-				return environmentColors;
-			}
-		}
-		
-		
 		Dictionary<string, string> properties       = new Dictionary<string, string>();
 		string[]  extensions;
 		
@@ -47,6 +39,23 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
+		public IEnumerable<KeyValuePair<string, HighlightColor>> EnvironmentColors {
+			get {
+				return environmentColors;
+			}
+		}
+		
+		protected void ImportSettingsFrom(DefaultHighlightingStrategy source)
+		{
+			properties = source.properties;
+			extensions = source.extensions;
+			digitColor = source.digitColor;
+			defaultRuleSet = source.defaultRuleSet;
+			name = source.name;
+			rules = source.rules;
+			environmentColors = source.environmentColors;
+			defaultTextColor = source.defaultTextColor;
+		}
 		
 		public DefaultHighlightingStrategy() : this("Default")
 		{
@@ -249,11 +258,12 @@ namespace ICSharpCode.TextEditor.Document
 
 		// Line state variable
 		protected LineSegment currentLine;
+		protected int currentLineNumber;
 		
 		// Span stack state variable
 		protected Stack<Span> currentSpanStack;
 
-		public void MarkTokens(IDocument document)
+		public virtual void MarkTokens(IDocument document)
 		{
 			if (Rules.Count == 0) {
 				return;
@@ -283,6 +293,7 @@ namespace ICSharpCode.TextEditor.Document
 					return;
 				}
 				
+				currentLineNumber = lineNumber;
 				List<TextWord> words = ParseLine(document);
 				// Alex: clear old words
 				if (currentLine.Words != null) {
@@ -300,6 +311,7 @@ namespace ICSharpCode.TextEditor.Document
 		
 		bool MarkTokensInLine(IDocument document, int lineNumber, ref bool spanChanged)
 		{
+			currentLineNumber = lineNumber;
 			bool processNextLine = false;
 			LineSegment previousLine = (lineNumber > 0 ? document.GetLineSegment(lineNumber - 1) : null);
 			
@@ -396,7 +408,7 @@ namespace ICSharpCode.TextEditor.Document
 			return processNextLine;
 		}
 		
-		public void MarkTokens(IDocument document, List<LineSegment> inputLines)
+		public virtual void MarkTokens(IDocument document, List<LineSegment> inputLines)
 		{
 			if (Rules.Count == 0) {
 				return;
@@ -645,9 +657,15 @@ namespace ICSharpCode.TextEditor.Document
 			
 			PushCurWord(document, ref markNext, words);
 			
+			OnParsedLine(document, currentLine, words);
+			
 			return words;
 		}
-
+		
+		protected virtual void OnParsedLine(IDocument document, LineSegment currentLine, List<TextWord> words)
+		{
+		}
+		
 		protected virtual bool OverrideSpan(string spanBegin, IDocument document, List<TextWord> words, Span span, ref int lineOffset)
 		{
 			return false;

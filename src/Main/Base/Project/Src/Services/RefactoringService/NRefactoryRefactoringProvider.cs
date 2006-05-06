@@ -19,6 +19,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public static readonly NRefactoryRefactoringProvider NRefactoryProviderInstance = new NRefactoryRefactoringProvider();
 		
+		public override bool IsEnabledForFile(string fileName)
+		{
+			string extension = Path.GetExtension(fileName);
+			if (extension.Equals(".cs", StringComparison.InvariantCultureIgnoreCase))
+				return true;
+			else if (extension.Equals(".vb", StringComparison.InvariantCultureIgnoreCase))
+				return true;
+			else
+				return false;
+		}
+		
 		#region FindUnusedUsingDeclarations
 		protected class PossibleTypeReference
 		{

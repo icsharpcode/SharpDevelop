@@ -6,23 +6,18 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Collections;
-using System.Drawing;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Actions;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
-using ICSharpCode.SharpDevelop.Internal.Templates;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor.Gui.InsightWindow;
+using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-
-using System.Threading;
+using ICSharpCode.TextEditor.Gui.InsightWindow;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
@@ -31,9 +26,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		readonly static string contextMenuPath       = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu";
 		readonly static string editActionsPath       = "/AddIns/DefaultTextEditor/EditActions";
 		readonly static string formatingStrategyPath = "/AddIns/DefaultTextEditor/Formatter";
+		readonly static string advancedHighlighterPath = "/AddIns/DefaultTextEditor/AdvancedHighlighter";
 		
 		QuickClassBrowserPanel quickClassBrowserPanel = null;
 		ErrorDrawer errorDrawer;
+		IAdvancedHighlighter advancedHighlighter;
 		
 		public QuickClassBrowserPanel QuickClassBrowserPanel {
 			get {
@@ -98,6 +95,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				if (quickClassBrowserPanel != null) {
 					quickClassBrowserPanel.Dispose();
 					quickClassBrowserPanel = null;
+				}
+				if (advancedHighlighter != null) {
+					advancedHighlighter.Dispose();
+					advancedHighlighter = null;
 				}
 				CloseCodeCompletionWindow(this, EventArgs.Empty);
 				CloseInsightWindow(this, EventArgs.Empty);
@@ -386,6 +387,29 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			// restore old property settings
 			TextEditorProperties.AutoInsertCurlyBracket = save1;
 			TextEditorProperties.IndentStyle            = save2;
+		}
+		
+		protected override void OnReloadHighlighting(object sender, EventArgs e)
+		{
+			base.OnReloadHighlighting(sender, e);
+			InitializeAdvancedHighlighter();
+		}
+		
+		public void InitializeAdvancedHighlighter()
+		{
+			if (advancedHighlighter != null) {
+				advancedHighlighter.Dispose();
+				advancedHighlighter = null;
+			}
+			string highlighterPath = advancedHighlighterPath + "/" + Document.HighlightingStrategy.Name;
+			if (AddInTree.ExistsTreeNode(highlighterPath)) {
+				IList<IAdvancedHighlighter> highlighter = AddInTree.BuildItems<IAdvancedHighlighter>(highlighterPath, this);
+				if (highlighter != null && highlighter.Count > 0) {
+					advancedHighlighter = highlighter[0];
+					Document.HighlightingStrategy = new ParserHighlightingStrategy((DefaultHighlightingStrategy)Document.HighlightingStrategy, advancedHighlighter);
+					advancedHighlighter.Initialize(this);
+				}
+			}
 		}
 		
 		public void InitializeFormatter()

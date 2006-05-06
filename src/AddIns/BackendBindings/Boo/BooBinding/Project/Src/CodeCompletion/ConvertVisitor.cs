@@ -40,6 +40,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		public override void Run()
 		{
 			try {
+				_cu.Tag = CompileUnit;
 				Visit(CompileUnit);
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);

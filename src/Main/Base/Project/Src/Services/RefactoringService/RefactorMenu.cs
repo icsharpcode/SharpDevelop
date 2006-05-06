@@ -37,13 +37,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return false;
 			}
 			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorControlProvider;
-			if (provider == null) return false;
+			if (provider == null)
+				return false;
 			LanguageProperties language = ParserService.CurrentProjectContent.Language;
-			if (language == null) return false;
+			if (language == null)
+				return false;
+			
+			RefactoringProvider rp = language.RefactoringProvider;
+			if (!rp.IsEnabledForFile(provider.TextEditorControl.FileName))
+				return false;
 			
 			string supports = condition.Properties["supports"];
-			if (supports == "*") return true;
-			RefactoringProvider rp = language.RefactoringProvider;
+			if (supports == "*")
+				return true;
+			
 			Type t = rp.GetType();
 			try {
 				return (bool)t.InvokeMember("Supports" + supports, BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty, null, rp, null);

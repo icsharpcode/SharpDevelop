@@ -19,102 +19,43 @@
     </xsd:annotation>
 
 	<!-- Defines the default rendering of the mode -->
-	<xsd:complexType name="Default">
-        <xsd:attribute name="bold" type="xsd:boolean" />
-        <xsd:attribute name="italic" type="xsd:boolean" />
-        <xsd:attribute name="color" type="xsd:string" />
-        <xsd:attribute name="bgcolor" type="xsd:string" />
-    </xsd:complexType>
-	<xsd:complexType name="VRuler">
-        <xsd:attribute name="bold" type="xsd:boolean" />
-        <xsd:attribute name="italic" type="xsd:boolean" />
-        <xsd:attribute name="color" type="xsd:string" />
-        <xsd:attribute name="bgcolor" type="xsd:string" />
-    </xsd:complexType>
-	<!-- Defines the rendering of the current selection -->
-	<xsd:complexType name="Selection">
-        <xsd:attribute name="bold" type="xsd:boolean" />
-        <xsd:attribute name="italic" type="xsd:boolean" />
-        <xsd:attribute name="color" type="xsd:string" />
-        <xsd:attribute name="bgcolor" type="xsd:string" />
-    </xsd:complexType>
-	<!-- Defines the rendering of line numbers -->
-	<xsd:complexType name="LineNumbers">
-        <xsd:attribute name="bold" type="xsd:boolean" />
-        <xsd:attribute name="italic" type="xsd:boolean" />
-        <xsd:attribute name="color" type="xsd:string" />
-        <xsd:attribute name="bgcolor" type="xsd:string" />
-    </xsd:complexType>
-	<xsd:complexType name="InvalidLines">
-        <xsd:attribute name="bold" type="xsd:boolean" />
-        <xsd:attribute name="italic" type="xsd:boolean" />
-        <xsd:attribute name="color" type="xsd:string" />
-        <xsd:attribute name="bgcolor" type="xsd:string" />
-    </xsd:complexType>
-	<xsd:complexType name="EOLMarkers">
-        <xsd:attribute name="bold" type="xsd:boolean" />
-        <xsd:attribute name="italic" type="xsd:boolean" />
-        <xsd:attribute name="color" type="xsd:string" />
-        <xsd:attribute name="bgcolor" type="xsd:string" />
-    </xsd:complexType>
-	<xsd:complexType name="SpaceMarkers">
-        <xsd:attribute name="bold" type="xsd:boolean" />
-        <xsd:attribute name="italic" type="xsd:boolean" />
-        <xsd:attribute name="color" type="xsd:string" />
-        <xsd:attribute name="bgcolor" type="xsd:string" />
-    </xsd:complexType>
-	<xsd:complexType name="TabMarkers">
-        <xsd:attribute name="bold" type="xsd:boolean" />
-        <xsd:attribute name="italic" type="xsd:boolean" />
-        <xsd:attribute name="color" type="xsd:string" />
-        <xsd:attribute name="bgcolor" type="xsd:string" />
-    </xsd:complexType>
-	<xsd:complexType name="CaretMarker">
-        <xsd:attribute name="bold" type="xsd:boolean" />
-        <xsd:attribute name="italic" type="xsd:boolean" />
-        <xsd:attribute name="color" type="xsd:string" />
-        <xsd:attribute name="bgcolor" type="xsd:string" />
-    </xsd:complexType>
-	<xsd:complexType name="FoldLine">
-        <xsd:attribute name="bold" type="xsd:boolean" />
-        <xsd:attribute name="italic" type="xsd:boolean" />
-        <xsd:attribute name="color" type="xsd:string" />
-        <xsd:attribute name="bgcolor" type="xsd:string" />
-    </xsd:complexType>
-	<xsd:complexType name="FoldMarker">
-        <xsd:attribute name="bold" type="xsd:boolean" />
-        <xsd:attribute name="italic" type="xsd:boolean" />
-        <xsd:attribute name="color" type="xsd:string" />
-        <xsd:attribute name="bgcolor" type="xsd:string" />
-    </xsd:complexType>
-	
-	<xsd:complexType name="SelectedFoldLine">
+	<xsd:complexType name="EnvironmentEntry">
         <xsd:attribute name="bold" type="xsd:boolean" />
         <xsd:attribute name="italic" type="xsd:boolean" />
         <xsd:attribute name="color" type="xsd:string" />
         <xsd:attribute name="bgcolor" type="xsd:string" />
     </xsd:complexType>
 
+	<xsd:complexType name="CustomEnvironmentEntry">
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="bold" type="xsd:boolean" />
+        <xsd:attribute name="italic" type="xsd:boolean" />
+        <xsd:attribute name="color" type="xsd:string" />
+        <xsd:attribute name="bgcolor" type="xsd:string" />
+    </xsd:complexType>
+	
 	<!-- The environment tag defines the coloring of various attributes in SharpDevelop -->
 	<xsd:complexType name="Environment">
-        <xsd:sequence>
-            <xsd:element name="Default" type="Default" minOccurs="0" maxOccurs="1" />
-            <xsd:element name="Selection" type="Selection" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="VRuler" type="VRuler" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="InvalidLines" type="InvalidLines" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="CaretMarker" type="CaretMarker" minOccurs="0" maxOccurs="1"/>
+		
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="Default" type="EnvironmentEntry" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="Selection" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="VRuler" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="InvalidLines" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="CaretMarker" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
             
-            <xsd:element name="LineNumbers" type="LineNumbers" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="LineNumbers" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
             
-            <xsd:element name="FoldLine" type="FoldLine" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="FoldMarker" type="FoldMarker" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="SelectedFoldLine" type="SelectedFoldLine" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="FoldLine" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="FoldMarker" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="SelectedFoldLine" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
             
-            <xsd:element name="EOLMarkers" type="EOLMarkers" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="SpaceMarkers" type="SpaceMarkers" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="TabMarkers" type="TabMarkers" minOccurs="0" maxOccurs="1"/>
-            
-        </xsd:sequence>
+            <xsd:element name="EOLMarkers" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="SpaceMarkers" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="TabMarkers" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
+        	
+            <xsd:element name="Custom" type="CustomEnvironmentEntry" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
     </xsd:complexType>
     
     <xsd:complexType name="Properties">

@@ -1,5 +1,5 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.1.0.1333
+# SharpDevelop 2.1.0.1388
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactoryToBooConverter", "NRefactoryToBooConverter\Project\NRefactoryToBooConverter.csproj", "{DBCF20A1-BA13-4582-BFA9-74DE4D987B73}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactoryToBooConverter.Tests", "NRefactoryToBooConverter\Test\NRefactoryToBooConverter.Tests.csproj", "{C9DE556D-325C-4544-B29F-16A9EB7C9830}"
@@ -21,6 +21,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormsDesigner", "..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj", "{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BooBinding.Tests", "BooBinding\Test\BooBinding.Tests.csproj", "{6FA16499-896F-4C02-BB43-1AF5C6C7C713}"
+EndProject
+Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "Boo.InterpreterAddIn", "Boo.InterpreterAddIn\Project\Boo.InterpreterAddIn.booproj", "{928E34B2-5E46-4A4D-8E4D-2CA2CCDB905A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

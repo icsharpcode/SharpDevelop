@@ -25,6 +25,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		public string[]               ColorDescs;
 		public EditorHighlightColor[] Colors;
 		
+		const string CustomColorPrefix = "Custom$";
+		
 		public EnvironmentNode(XmlElement el)
 		{
 			ArrayList envColors            = new ArrayList();
@@ -33,8 +35,13 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			if (el != null) {
 				foreach (XmlNode node in el.ChildNodes) {
 					if (node is XmlElement) {
-						envColorNames.Add(node.Name);
-						envColorDescriptions.Add("${res:Dialog.HighlightingEditor.EnvColors." + node.Name + "}");
+						if (node.Name == "Custom") {
+							envColorNames.Add(CustomColorPrefix + (node as XmlElement).GetAttribute("name"));
+							envColorDescriptions.Add((node as XmlElement).GetAttribute("name"));
+						} else {
+							envColorNames.Add(node.Name);
+							envColorDescriptions.Add("${res:Dialog.HighlightingEditor.EnvColors." + node.Name + "}");
+						}
 						envColors.Add(new EditorHighlightColor((XmlElement)node));
 					}
 				}
@@ -66,7 +73,12 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		{
 			writer.WriteStartElement("Environment");
 			for (int i = 0; i < ColorNames.Length; i++) {
-				writer.WriteStartElement(ColorNames[i]);
+				if (ColorNames[i].StartsWith(CustomColorPrefix)) {
+					writer.WriteStartElement("Custom");
+					writer.WriteAttributeString("name", ColorNames[i].Substring(CustomColorPrefix.Length));
+				} else {
+					writer.WriteStartElement(ColorNames[i]);
+				}
 				Colors[i].WriteXmlAttributes(writer);
 				writer.WriteEndElement();
 			}

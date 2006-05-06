@@ -14,6 +14,7 @@
 		<EOLMarkers bold="false" italic="false" color="#E0E0E5" />
 		<SpaceMarkers bold="false" italic="false" color="#E0E0E5" />
 		<TabMarkers bold="false" italic="false" color="#E0E0E5" />
+		<Custom name="LocalVariableCreation" bold="false" italic="false" color="#04ABAB" />
 	</Environment>
 
 	<Properties>

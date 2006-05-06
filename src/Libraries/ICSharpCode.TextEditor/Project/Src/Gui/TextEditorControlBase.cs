@@ -499,19 +499,16 @@ namespace ICSharpCode.TextEditor
 		protected TextEditorControlBase()
 		{
 			GenerateDefaultActions();
-			HighlightingManager.Manager.ReloadSyntaxHighlighting += new EventHandler(ReloadHighlighting);
+			HighlightingManager.Manager.ReloadSyntaxHighlighting += new EventHandler(OnReloadHighlighting);
 		}
 		
-		
-		void ReloadHighlighting(object sender, EventArgs e)
+		protected virtual void OnReloadHighlighting(object sender, EventArgs e)
 		{
 			if (Document.HighlightingStrategy != null) {
 				Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(Document.HighlightingStrategy.Name);
 				OptionsChanged();
 			}
 		}
-		
-		
 		
 		internal IEditAction GetEditAction(Keys keyData)
 		{
@@ -723,7 +720,7 @@ namespace ICSharpCode.TextEditor
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing) {
-				HighlightingManager.Manager.ReloadSyntaxHighlighting -= new EventHandler(ReloadHighlighting);
+				HighlightingManager.Manager.ReloadSyntaxHighlighting -= new EventHandler(OnReloadHighlighting);
 				document.HighlightingStrategy = null;
 				document.UndoStack.TextEditorControl = null;
 			}
