@@ -6,10 +6,9 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using NUnit.Framework;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using NUnit.Framework;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {
@@ -40,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		IReturnType SearchType(string type)
 		{
 			ICompilationUnit cu = Prepare(LanguageProperties.CSharp);
-			IReturnType c = cu.ProjectContent.SearchType(type, 0, null, cu, 1, 1);
+			IReturnType c = cu.ProjectContent.SearchType(new SearchTypeRequest(type, 0, null, cu, 1, 1)).Result;
 			Assert.IsNotNull(c, type + "not found");
 			return c;
 		}
@@ -48,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		IReturnType SearchTypeVB(string type)
 		{
 			ICompilationUnit cu = Prepare(LanguageProperties.VBNet);
-			IReturnType c = cu.ProjectContent.SearchType(type, 0, null, cu, 1, 1);
+			IReturnType c = cu.ProjectContent.SearchType(new SearchTypeRequest(type, 0, null, cu, 1, 1)).Result;
 			Assert.IsNotNull(c, type + "not found");
 			return c;
 		}
@@ -116,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		public void SearchArrayList()
 		{
 			ICompilationUnit cu = Prepare(LanguageProperties.CSharp);
-			IReturnType c = cu.ProjectContent.SearchType("Collections.ArrayList", 0, null, cu, 1, 1);
+			IReturnType c = cu.ProjectContent.SearchType(new SearchTypeRequest("Collections.ArrayList", 0, null, cu, 1, 1)).Result;
 			Assert.IsNull(c, "Namespaces should not be imported in C#");
 		}
 

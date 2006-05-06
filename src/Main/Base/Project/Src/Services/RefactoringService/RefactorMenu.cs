@@ -74,6 +74,18 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			provider.TextEditorControl.Refresh();
 		}
 		
+		protected ResolveResult ResolveAtCaret(TextEditorControl textEditor)
+		{
+			string fileName = textEditor.FileName;
+			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
+			if (expressionFinder == null) return null;
+			Caret caret = textEditor.ActiveTextAreaControl.Caret;
+			string content = textEditor.Document.TextContent;
+			ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
+			if (expr.Expression == null) return null;
+			return ParserService.Resolve(expr, caret.Line + 1, caret.Column + 1, fileName, content);
+		}
+		
 		protected abstract void Run(TextEditorControl textEditor, RefactoringProvider provider);
 	}
 	
@@ -82,6 +94,47 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		protected override void Run(TextEditorControl textEditor, RefactoringProvider provider)
 		{
 			NamespaceRefactoringService.ManageUsings(textEditor.FileName, textEditor.Document, true, true);
+		}
+	}
+	
+	public class RenameCommand : AbstractRefactoringCommand
+	{
+		protected override void Run(TextEditorControl textEditor, RefactoringProvider provider)
+		{
+			ResolveResult rr = ResolveAtCaret(textEditor);
+			if (rr is MixedResolveResult) rr = (rr as MixedResolveResult).PrimaryResult;
+			if (rr is TypeResolveResult) {
+				IClass c = (rr as TypeResolveResult).ResolvedClass;
+				if (c == null) {
+					ShowUnknownSymbolError();
+				} else if (c.CompilationUnit.FileName == null) {
+					MessageService.ShowMessage("The type cannot be renamed because it is not defined in user code.");
+				} else {
+					FindReferencesAndRenameHelper.RenameClass(c);
+				}
+			} else if (rr is MemberResolveResult) {
+				Rename((rr as MemberResolveResult).ResolvedMember);
+			} else if (rr is MethodResolveResult) {
+				Rename((rr as MethodResolveResult).GetMethodIfSingleOverload());
+			} else {
+				ShowUnknownSymbolError();
+			}
+		}
+		
+		static void ShowUnknownSymbolError()
+		{
+			MessageService.ShowMessage("The element at the caret position cannot be renamed.");
+		}
+		
+		static void Rename(IMember member)
+		{
+			if (member == null) {
+				ShowUnknownSymbolError();
+			} else if (member.DeclaringType.CompilationUnit.FileName == null) {
+				MessageService.ShowMessage("The member cannot be renamed because it is not defined in user code.");
+			} else {
+				FindReferencesAndRenameHelper.RenameMember(member);
+			}
 		}
 	}
 }

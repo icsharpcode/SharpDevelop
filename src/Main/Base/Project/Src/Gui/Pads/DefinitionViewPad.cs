@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			string content = (e == null) ? ctl.Text : e.Content;
 			ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
 			if (expr.Expression == null) return null;
-			return ParserService.Resolve(expr, caret.Line, caret.Column, fileName, content);
+			return ParserService.Resolve(expr, caret.Line + 1, caret.Column + 1, fileName, content);
 		}
 		
 		delegate void OpenFileDelegate(FilePosition pos);

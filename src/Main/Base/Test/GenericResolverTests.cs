@@ -6,12 +6,8 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.IO;
-using NUnit.Framework;
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using NUnit.Framework;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {

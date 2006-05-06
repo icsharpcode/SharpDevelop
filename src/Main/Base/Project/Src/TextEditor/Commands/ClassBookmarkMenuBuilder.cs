@@ -132,70 +132,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					FileService.JumpToFilePosition(fileName, baseClass.Region.BeginLine - 1, baseClass.Region.BeginColumn - 1);
 				}
 			}
-			
 		}
 		
 		void Rename(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
-			IClass c = (IClass)item.Tag;
-			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameClassText}", c.Name);
-			if (!FindReferencesAndRenameHelper.CheckName(newName, c.Name)) return;
-			
-			RenameClass(c, newName);
-		}
-		
-		public static void RenameClass(IClass c, string newName)
-		{
-			c = c.GetCompoundClass(); // get compound class if class is partial
-			
-			List<Reference> list = RefactoringService.FindReferences(c, null);
-			if (list == null) return;
-			
-			// Add the class declaration(s)
-			foreach (IClass part in GetClassParts(c)) {
-				AddDeclarationAsReference(list, part.CompilationUnit.FileName, part.Region, part.Name);
-			}
-			
-			// Add the constructors
-			foreach (IMethod m in c.Methods) {
-				if (m.IsConstructor) {
-					AddDeclarationAsReference(list, m.DeclaringType.CompilationUnit.FileName, m.Region, c.Name);
-				}
-			}
-			
-			FindReferencesAndRenameHelper.RenameReferences(list, newName);
-		}
-		
-		static void AddDeclarationAsReference(List<Reference> list, string fileName, DomRegion region, string name)
-		{
-			if (fileName == null)
-				return;
-			ProvidedDocumentInformation documentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(fileName);
-			int offset = documentInformation.CreateDocument().PositionToOffset(new Point(region.BeginColumn - 1, region.BeginLine - 1));
-			string text = documentInformation.TextBuffer.GetText(offset, Math.Min(name.Length + 30, documentInformation.TextBuffer.Length - offset - 1));
-			int offsetChange = text.IndexOf(name);
-			if (offsetChange < 0)
-				return;
-			offset += offsetChange;
-			foreach (Reference r in list) {
-				if (r.Offset == offset)
-					return;
-			}
-			list.Add(new Reference(fileName, offset, name.Length, name, null));
-		}
-		
-		static List<IClass> GetClassParts(IClass c)
-		{
-			List<IClass> list;
-			CompoundClass cc = c as CompoundClass;
-			if (cc != null) {
-				list = cc.Parts;
-			} else {
-				list = new List<IClass>(1);
-				list.Add(c);
-			}
-			return list;
+			FindReferencesAndRenameHelper.RenameClass((IClass)item.Tag);
 		}
 		
 		void FindDerivedClasses(object sender, EventArgs e)

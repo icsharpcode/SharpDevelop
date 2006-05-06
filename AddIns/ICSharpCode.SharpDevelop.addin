@@ -1262,6 +1262,9 @@
 		
 		<Condition name="RefactoringProviderSupports" supports="*">
 			<MenuItem id = "Refactor" label = "${res:XML.MainMenu.RefactorMenu}" type="Menu">
+				<MenuItem id    = "Rename"
+				          label = "Rename"
+				          class = "ICSharpCode.SharpDevelop.Refactoring.RenameCommand" />
 				<Condition name="RefactoringProviderSupports" supports="FindUnusedUsingDeclarations">
 					<MenuItem id    = "RemoveUnusedUsings"
 					          label = "Removed unused import statements"

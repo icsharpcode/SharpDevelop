@@ -15,6 +15,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	public static class NamespaceRefactoringService
 	{
+		internal static bool IsSystemNamespace(string ns)
+		{
+			return ns.StartsWith("System.") || ns == "System";
+		}
+		
 		static int CompareUsings(IUsing a, IUsing b)
 		{
 			if (a.HasAliases != b.HasAliases)
@@ -22,12 +27,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (a.Usings.Count != 0 && b.Usings.Count != 0) {
 				string u1 = a.Usings[0];
 				string u2 = b.Usings[0];
-				if (u1.StartsWith("System.") || u1 == "System") {
-					if (!(u2.StartsWith("System.") || u2 == "System"))
-						return -1;
-				} else {
-					if (u2.StartsWith("System.") || u2 == "System")
-						return 1;
+				if (IsSystemNamespace(u1) && !IsSystemNamespace(u2)) {
+					return -1;
+				} else if (!IsSystemNamespace(u1) && IsSystemNamespace(u2)) {
+					return 1;
 				}
 				return a.Usings[0].CompareTo(b.Usings[0]);
 			}
@@ -59,6 +62,22 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 						}
 						if (ns != "System") { // never remove "using System;"
 							newUsings.Remove(u);
+						}
+					}
+				}
+			}
+			
+			// put empty line after last System namespace
+			if (sort && newUsings.Count > 1 && newUsings[0].Usings.Count > 0) {
+				bool inSystem = IsSystemNamespace(newUsings[0].Usings[0]);
+				int inSystemCount = 1;
+				for (int i = 1; inSystem && i < newUsings.Count; i++) {
+					inSystem = newUsings[i].Usings.Count > 0 && IsSystemNamespace(newUsings[i].Usings[0]);
+					if (inSystem) {
+						inSystemCount++;
+					} else {
+						if (inSystemCount > 2) { // only use empty line when there are more than 2 system namespaces
+							newUsings.Insert(i, null);
 						}
 					}
 				}

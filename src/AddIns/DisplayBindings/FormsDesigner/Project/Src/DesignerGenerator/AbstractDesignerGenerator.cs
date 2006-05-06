@@ -169,7 +169,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			if (formClass.Name != this.formClass.Name) {
 				LoggingService.Info("Renaming form to " + formClass.Name);
-				ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassBookmarkMenuBuilder.RenameClass(this.formClass, formClass.Name);
+				ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameClass(this.formClass, formClass.Name);
 				Reparse();
 			}
 			

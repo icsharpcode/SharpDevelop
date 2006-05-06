@@ -89,8 +89,8 @@ namespace CSharpBinding
 						if (expr == null || expr.Length == 0)
 							break;
 						parameters.Push(ParserService.Resolve(new ExpressionResult(expr),
-						                                      editor.ActiveTextAreaControl.Caret.Line,
-						                                      editor.ActiveTextAreaControl.Caret.Column,
+						                                      editor.ActiveTextAreaControl.Caret.Line + 1,
+						                                      editor.ActiveTextAreaControl.Caret.Column + 1,
 						                                      editor.FileName,
 						                                      documentText));
 						cursor = ef.LastExpressionStartPosition;
@@ -105,7 +105,7 @@ namespace CSharpBinding
 					ExpressionResult result = ef.FindFullExpression(documentText, position);
 					
 					if(result.Expression != null) {
-						ResolveResult resolveResult = ParserService.Resolve(result, editor.ActiveTextAreaControl.Caret.Line, editor.ActiveTextAreaControl.Caret.Column, editor.FileName, documentText);
+						ResolveResult resolveResult = ParserService.Resolve(result, editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1, editor.FileName, documentText);
 						if (resolveResult != null && resolveResult.ResolvedType != null) {
 							IClass underlyingClass = resolveResult.ResolvedType.GetUnderlyingClass();
 							if (underlyingClass != null && underlyingClass.IsTypeInInheritanceTree(ProjectContentRegistry.Mscorlib.GetClass("System.MulticastDelegate"))) {
@@ -137,7 +137,7 @@ namespace CSharpBinding
 						string expr = lineText.Substring(t.col);
 						LoggingService.Debug("DeclarationTypeInference: >" + expr + "<");
 						ResolveResult rr = ParserService.Resolve(new ExpressionResult(expr),
-						                                         editor.ActiveTextAreaControl.Caret.Line,
+						                                         editor.ActiveTextAreaControl.Caret.Line + 1,
 						                                         t.col, editor.FileName,
 						                                         editor.Document.TextContent);
 						if (rr != null && rr.ResolvedType != null) {

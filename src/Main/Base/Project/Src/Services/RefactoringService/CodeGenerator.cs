@@ -586,7 +586,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			StringBuilder txt = new StringBuilder();
 			foreach (IUsing us in newUsings) {
-				txt.Append(GenerateCode(ConvertUsing(us), indentation));
+				if (us == null)
+					txt.AppendLine(indentation);
+				else
+					txt.Append(GenerateCode(ConvertUsing(us), indentation));
 			}
 			document.Insert(insertionOffset, txt.ToString()); actionCount++;
 			document.UndoStack.UndoLast(actionCount);

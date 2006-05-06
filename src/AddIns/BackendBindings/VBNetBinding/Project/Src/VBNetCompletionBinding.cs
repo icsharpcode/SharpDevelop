@@ -70,8 +70,8 @@ namespace VBNetBinding
 							break;
 						}
 						parameters.Push(ParserService.Resolve(new ExpressionResult(expr),
-						                                      editor.ActiveTextAreaControl.Caret.Line,
-						                                      editor.ActiveTextAreaControl.Caret.Column,
+						                                      editor.ActiveTextAreaControl.Caret.Line + 1,
+						                                      editor.ActiveTextAreaControl.Caret.Column + 1,
 						                                      editor.FileName,
 						                                      documentText));
 						cursor = ef.LastExpressionStartPosition;
@@ -210,7 +210,7 @@ namespace VBNetBinding
 			string expr = lineText.Substring(t2.col);
 			LoggingService.Debug("DeclarationTypeInference: >" + expr + "<");
 			ResolveResult rr = ParserService.Resolve(new ExpressionResult(expr),
-			                                         editor.ActiveTextAreaControl.Caret.Line,
+			                                         editor.ActiveTextAreaControl.Caret.Line + 1,
 			                                         t2.col, editor.FileName,
 			                                         editor.Document.TextContent);
 			if (rr != null && rr.ResolvedType != null) {

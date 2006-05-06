@@ -202,7 +202,7 @@ namespace HtmlHelp2
 			this.lastPoint = caret.Position;
 			this.AddToStringCollection(String.Format("!{0}", expr.Expression));
 
-			return ParserService.Resolve(expr, caret.Line, caret.Column, fileName, content);
+			return ParserService.Resolve(expr, caret.Line + 1, caret.Column + 1, fileName, content);
 		}
 		#endregion
 

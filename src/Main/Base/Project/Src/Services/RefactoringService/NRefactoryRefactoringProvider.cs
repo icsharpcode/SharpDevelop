@@ -19,11 +19,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public static readonly NRefactoryRefactoringProvider NRefactoryProviderInstance = new NRefactoryRefactoringProvider();
 		
+		#region FindUnusedUsingDeclarations
 		protected class PossibleTypeReference
 		{
-			internal string Name;
-			internal bool Global;
-			internal int TypeParameterCount;
+			public string Name;
+			public bool Global;
+			public int TypeParameterCount;
 			
 			public PossibleTypeReference(string name)
 			{
@@ -66,9 +67,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				list[new PossibleTypeReference(typeReference)] = data;
 				return base.Visit(typeReference, data);
 			}
+			
+			public override object Visit(ICSharpCode.NRefactory.Parser.AST.Attribute attribute, object data)
+			{
+				list[new PossibleTypeReference(attribute.Name)] = data;
+				list[new PossibleTypeReference(attribute.Name + "Attribute")] = data;
+				return base.Visit(attribute, data);
+			}
 		}
 		
-		protected Dictionary<PossibleTypeReference, object> FindPossibleTypeReferences(string extension, string fileContent)
+		protected virtual Dictionary<PossibleTypeReference, object> FindPossibleTypeReferences(string extension, string fileContent)
 		{
 			NR.IParser parser;
 			if (extension.Equals(".cs", StringComparison.InvariantCultureIgnoreCase))
@@ -125,5 +133,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			return list;
 		}
+		#endregion
 	}
 }

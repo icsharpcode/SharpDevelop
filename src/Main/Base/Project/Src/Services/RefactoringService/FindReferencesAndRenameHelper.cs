@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
@@ -19,6 +20,114 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	public static class FindReferencesAndRenameHelper
 	{
+		#region Rename Class
+		public static void RenameClass(IClass c)
+		{
+			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameClassText}", c.Name);
+			if (!FindReferencesAndRenameHelper.CheckName(newName, c.Name)) return;
+			
+			RenameClass(c, newName);
+		}
+		
+		public static void RenameClass(IClass c, string newName)
+		{
+			c = c.GetCompoundClass(); // get compound class if class is partial
+			
+			List<Reference> list = RefactoringService.FindReferences(c, null);
+			if (list == null) return;
+			
+			// Add the class declaration(s)
+			foreach (IClass part in GetClassParts(c)) {
+				AddDeclarationAsReference(list, part.CompilationUnit.FileName, part.Region, part.Name);
+			}
+			
+			// Add the constructors
+			foreach (IMethod m in c.Methods) {
+				if (m.IsConstructor) {
+					AddDeclarationAsReference(list, m.DeclaringType.CompilationUnit.FileName, m.Region, c.Name);
+				}
+			}
+			
+			FindReferencesAndRenameHelper.RenameReferences(list, newName);
+		}
+		
+		static IList<IClass> GetClassParts(IClass c)
+		{
+			CompoundClass cc = c as CompoundClass;
+			if (cc != null) {
+				return cc.Parts;
+			} else {
+				return new IClass[] {c};
+			}
+		}
+		
+		static void AddDeclarationAsReference(List<Reference> list, string fileName, DomRegion region, string name)
+		{
+			if (fileName == null)
+				return;
+			ProvidedDocumentInformation documentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(fileName);
+			int offset = documentInformation.CreateDocument().PositionToOffset(new Point(region.BeginColumn - 1, region.BeginLine - 1));
+			string text = documentInformation.TextBuffer.GetText(offset, Math.Min(name.Length + 30, documentInformation.TextBuffer.Length - offset - 1));
+			int offsetChange = text.IndexOf(name);
+			if (offsetChange < 0)
+				return;
+			offset += offsetChange;
+			foreach (Reference r in list) {
+				if (r.Offset == offset)
+					return;
+			}
+			list.Add(new Reference(fileName, offset, name.Length, name, null));
+		}
+		#endregion
+		
+		#region Rename member
+		public static void RenameMember(IMember member)
+		{
+			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameMemberText}", member.Name);
+			if (!FindReferencesAndRenameHelper.CheckName(newName, member.Name)) return;
+			
+			RenameMember(member, newName);
+		}
+		
+		public static void RenameMember(IMember member, string newName)
+		{
+			List<Reference> list = RefactoringService.FindReferences(member, null);
+			if (list == null) return;
+			FindReferencesAndRenameHelper.RenameReferences(list, newName);
+			
+			if (member is IField) {
+				IProperty property = FindProperty((IField)member);
+				if (property != null) {
+					string newPropertyName = member.DeclaringType.ProjectContent.Language.CodeGenerator.GetPropertyName(newName);
+					if (newPropertyName != newName && newPropertyName != property.Name) {
+						if (MessageService.AskQuestionFormatted("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameFieldAndProperty}", property.FullyQualifiedName, newPropertyName)) {
+							list = RefactoringService.FindReferences(property, null);
+							if (list != null) {
+								FindReferencesAndRenameHelper.RenameReferences(list, newPropertyName);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		internal static IProperty FindProperty(IField field)
+		{
+			LanguageProperties language = field.DeclaringType.ProjectContent.Language;
+			if (language.CodeGenerator == null) return null;
+			string propertyName = language.CodeGenerator.GetPropertyName(field.Name);
+			IProperty foundProperty = null;
+			foreach (IProperty prop in field.DeclaringType.Properties) {
+				if (language.NameComparer.Equals(propertyName, prop.Name)) {
+					foundProperty = prop;
+					break;
+				}
+			}
+			return foundProperty;
+		}
+		#endregion
+		
+		#region Common helper functions
 		public static ProvidedDocumentInformation GetDocumentInformation(string fileName)
 		{
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
@@ -160,5 +269,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				ParserService.ParseViewContent(viewContent);
 			}
 		}
+		#endregion
 	}
 }

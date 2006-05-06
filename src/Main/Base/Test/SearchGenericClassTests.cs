@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		IReturnType SearchType(string type, int typeParameterCount)
 		{
 			ICompilationUnit cu = Prepare(LanguageProperties.CSharp);
-			IReturnType c = cu.ProjectContent.SearchType(type, typeParameterCount, null, cu, 1, 1);
+			IReturnType c = cu.ProjectContent.SearchType(new SearchTypeRequest(type, typeParameterCount, null, cu, 1, 1)).Result;
 			Assert.IsNotNull(c, type + "not found");
 			return c;
 		}
@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		IReturnType SearchTypeVB(string type, int typeParameterCount)
 		{
 			ICompilationUnit cu = Prepare(LanguageProperties.VBNet);
-			IReturnType c = cu.ProjectContent.SearchType(type, typeParameterCount, null, cu, 1, 1);
+			IReturnType c = cu.ProjectContent.SearchType(new SearchTypeRequest(type, typeParameterCount, null, cu, 1, 1)).Result;
 			Assert.IsNotNull(c, type + "not found");
 			return c;
 		}

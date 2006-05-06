@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
 using ICSharpCode.SharpDevelop.Gui;
 using NUnit.Framework;
-using System;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {

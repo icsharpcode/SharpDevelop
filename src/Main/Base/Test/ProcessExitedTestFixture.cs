@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Util;
-using NUnit.Framework;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
+
+using ICSharpCode.SharpDevelop.Util;
+using NUnit.Framework;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {

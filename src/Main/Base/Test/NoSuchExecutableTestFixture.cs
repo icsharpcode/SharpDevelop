@@ -7,8 +7,8 @@
 
 using System;
 using System.ComponentModel;
-using NUnit.Framework;
 using ICSharpCode.SharpDevelop.Util;
+using NUnit.Framework;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {
