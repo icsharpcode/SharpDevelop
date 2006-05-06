@@ -254,6 +254,23 @@ namespace Grunwald.BooBinding.Tests
 			LocalResolveResult rr2 = Resolve<LocalResolveResult>(prog, "mybool", "/*mark*/");
 			Assert.AreEqual("System.Boolean", rr2.ResolvedType.FullyQualifiedName);
 		}
+		
+		[Test]
+		public void InfiniteRecursionGenerator()
+		{
+			string prog =
+				"class Test:\n" +
+				"\t_testList = []\n" +
+				"\tTestProperty:\n" +
+				"\t\tget:\n" +
+				"\t\t\tfor testobj as Test in _testList:\n" +
+				"\t\t\t\tyield testobj.TestProperty /*mark*/\n";
+			MemberResolveResult rr = Resolve<MemberResolveResult>(prog, "testobj.TestProperty", "/*mark*/");
+			Assert.AreEqual("Test.TestProperty", rr.ResolvedMember.FullyQualifiedName);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable", rr.ResolvedType.FullyQualifiedName);
+			// prevent creating self-referring ConstructedReturnType
+			Assert.AreEqual("?", rr.ResolvedType.TypeArguments[0].FullyQualifiedName);
+		}
 		#endregion
 		
 		#region Nested Classes

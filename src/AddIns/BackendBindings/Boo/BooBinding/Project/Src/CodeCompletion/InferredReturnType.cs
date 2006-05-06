@@ -43,7 +43,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			get {
 				// clear up references to method/expression after the type has been resolved
 				if (block != null) {
-					GetReturnTypeVisitor v = new GetReturnTypeVisitor(context);
+					GetReturnTypeVisitor v = new GetReturnTypeVisitor(this);
 					Block b = block;
 					block = null; // reset block before calling Visit to prevent StackOverflow
 					v.Visit(b);
@@ -70,9 +70,11 @@ namespace Grunwald.BooBinding.CodeCompletion
 		class GetReturnTypeVisitor : DepthFirstVisitor
 		{
 			IClass context;
-			public GetReturnTypeVisitor(IClass context)
+			InferredReturnType parentReturnType;
+			public GetReturnTypeVisitor(InferredReturnType parentReturnType)
 			{
-				this.context = context;
+				this.context = parentReturnType.context;
+				this.parentReturnType = parentReturnType;
 			}
 			
 			public IReturnType result;
@@ -99,7 +101,18 @@ namespace Grunwald.BooBinding.CodeCompletion
 			{
 				noReturnStatement = false;
 				IClass enumerable = ProjectContentRegistry.Mscorlib.GetClass("System.Collections.Generic.IEnumerable", 1);
-				result = new ConstructedReturnType(enumerable.DefaultReturnType, new IReturnType[] { new InferredReturnType(node.Expression, context) });
+				
+				// Prevent creating an infinite number of InferredReturnTypes in inferring cycles
+				parentReturnType.expression = new NullLiteralExpression();
+				IReturnType returnType = new BooResolver().GetTypeOfExpression(node.Expression, context);
+				returnType.GetUnderlyingClass(); // force to infer type
+				if (parentReturnType.expression == null) {
+					// inferrence cycle with parentReturnType
+					returnType = new GetClassReturnType(context.ProjectContent, "?", 0);
+				}
+				parentReturnType.expression = null;
+				
+				result = new ConstructedReturnType(enumerable.DefaultReturnType, new IReturnType[] { returnType });
 			}
 			
 			public override void OnCallableBlockExpression(CallableBlockExpression node)
