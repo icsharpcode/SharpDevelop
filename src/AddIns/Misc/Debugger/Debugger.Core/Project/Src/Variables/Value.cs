@@ -240,12 +240,12 @@ namespace Debugger
 		
 		internal static Value CreateValue(NDebugger debugger, ICorDebugValue corValue)
 		{
-			CorElementType type = Value.GetCorType(corValue);
-			
-			if (Value.DereferenceUnbox(corValue) == null)
-			{
+			ICorDebugValue derefed = Value.DereferenceUnbox(corValue);
+			if (derefed == null) {
 				return new NullValue(debugger, corValue);
 			}
+			
+			CorElementType type = Value.GetCorType(derefed);
 			
 			switch(type)
 			{
