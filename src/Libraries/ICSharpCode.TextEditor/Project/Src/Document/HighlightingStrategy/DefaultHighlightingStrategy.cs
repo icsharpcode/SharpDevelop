@@ -47,6 +47,8 @@ namespace ICSharpCode.TextEditor.Document
 		
 		protected void ImportSettingsFrom(DefaultHighlightingStrategy source)
 		{
+			if (source == null)
+				throw new ArgumentNullException("source");
 			properties = source.properties;
 			extensions = source.extensions;
 			digitColor = source.digitColor;
@@ -215,10 +217,11 @@ namespace ICSharpCode.TextEditor.Document
 
 		public HighlightColor GetColorFor(string name)
 		{
-			if (! environmentColors.ContainsKey(name)) {
-				throw new Exception("Color : " + name + " not found!");
-			}
-			return (HighlightColor)environmentColors[name];
+			HighlightColor color;
+			if (environmentColors.TryGetValue(name, out color))
+				return color;
+			else
+				return defaultTextColor;
 		}
 		
 		public HighlightColor GetColor(IDocument document, LineSegment currentSegment, int currentOffset, int currentLength)

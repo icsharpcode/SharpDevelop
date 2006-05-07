@@ -18,24 +18,21 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {
-	public class BooAdvancedHighlighter : IAdvancedHighlighter
+	public class BooAdvancedHighlighter : AsynchronousAdvancedHighlighter
 	{
-		public event EventHandler MarkOutstandingRequests;
-		
-		TextEditorControl textEditor;
 		volatile Dictionary<int, List<int>> declarations;
 		
-		public void Initialize(TextEditorControl textEditor)
+		public override void Initialize(TextEditorControl textEditor)
 		{
-			LoggingService.Debug("AdvancedHighlighter created");
-			this.textEditor = textEditor;
+			this.ImmediateMarkLimit = 0; // never immediately mark lines
+			base.Initialize(textEditor);
 			ParserService.ParserUpdateStepFinished += OnUpdateStep;
 		}
 		
-		public void Dispose()
+		public override void Dispose()
 		{
-			LoggingService.Debug("AdvancedHighlighter destroyed");
 			ParserService.ParserUpdateStepFinished -= OnUpdateStep;
+			base.Dispose();
 		}
 		
 		private class FindAssignmentsVisitor : DepthFirstVisitor
@@ -74,10 +71,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		void OnUpdateStep(object sender, ParserUpdateStepEventArgs e)
 		{
-			if (FileUtility.IsEqualFileName(e.FileName, textEditor.FileName)) {
+			if (FileUtility.IsEqualFileName(e.FileName, this.TextEditor.FileName)) {
 				ParseInformation parseInfo = e.ParseInformation;
 				if (parseInfo == null && this.declarations == null)
-					parseInfo = ParserService.GetParseInformation(textEditor.FileName);
+					parseInfo = ParserService.GetParseInformation(this.TextEditor.FileName);
 				if (parseInfo != null) {
 					ICompilationUnit cu = parseInfo.MostRecentCompilationUnit;
 					CompileUnit booCu = cu.Tag as CompileUnit;
@@ -87,38 +84,36 @@ namespace Grunwald.BooBinding.CodeCompletion
 						this.declarations = visitor.declarations; // volatile access!
 					}
 				}
-				WorkbenchSingleton.SafeThreadAsyncCall(this, "RaiseMarkOutstandingRequests", e);
+				WorkbenchSingleton.SafeThreadAsyncCall((System.Threading.ThreadStart)MarkOutstanding);
 			}
 		}
 		
 		bool markingOutstanding;
 		int resolveCount;
 		
-		void RaiseMarkOutstandingRequests(EventArgs e)
+		protected override void MarkOutstanding()
 		{
 			#if DEBUG
 			int time = Environment.TickCount;
 			#endif
 			markingOutstanding = true;
 			resolveCount = 0;
-			if (MarkOutstandingRequests != null) {
-				MarkOutstandingRequests(this, e);
-			}
+			base.MarkOutstanding();
 			markingOutstanding = false;
 			#if DEBUG
-			if (resolveCount > 0) {
-				LoggingService.Debug("AdvancedHighlighter took " + (Environment.TickCount - time) + " ms for " + resolveCount + " resolves");
+			time = Environment.TickCount - time;
+			if (time > 0) {
+				LoggingService.Info("BooHighlighter took " + time + "ms for " + resolveCount + " resolves");
 			}
 			#endif
-			textEditor.Document.CommitUpdate();
+			this.Document.CommitUpdate();
 		}
 		
-		public void MarkLine(IDocument document, LineSegment currentLine, List<TextWord> words)
+		protected override void MarkWords(int lineNumber, LineSegment currentLine, List<TextWord> words)
 		{
 			Dictionary<int, List<int>> decl = this.declarations; // volatile access!
 			if (decl == null) return;
 			int currentLineOffset = currentLine.Offset;
-			int lineNumber = document.GetLineNumberForOffset(currentLineOffset);
 			List<int> list;
 			bool changedLine = false;
 			if (decl.TryGetValue(lineNumber, out list)) {
@@ -130,15 +125,15 @@ namespace Grunwald.BooBinding.CodeCompletion
 								resolveCount++;
 								rr = ParserService.Resolve(new ExpressionResult(word.Word),
 								                           lineNumber + 1, word.Offset + 1,
-								                           textEditor.FileName,
-								                           textEditor.Document.TextContent
+								                           this.TextEditor.FileName,
+								                           this.Document.TextContent
 								                          ) as LocalResolveResult;
 								if (rr != null
 								    && rr.Field.Region.BeginLine == lineNumber + 1
 								    && rr.Field.Region.BeginColumn == word.Offset + 1)
 								{
 									changedLine = true;
-									word.SyntaxColor = textEditor.Document.HighlightingStrategy.GetColorFor("LocalVariableCreation");
+									word.SyntaxColor = this.Document.HighlightingStrategy.GetColorFor("LocalVariableCreation");
 								} else {
 									list.RemoveAt(i--);
 								}
@@ -148,7 +143,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				}
 			}
 			if (markingOutstanding && changedLine) {
-				textEditor.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, lineNumber));
+				this.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, lineNumber));
 			}
 		}
 	}

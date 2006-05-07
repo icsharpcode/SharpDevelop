@@ -41,7 +41,7 @@ namespace ICSharpCode.TextEditor.Document
 		// returns special color. (BackGround Color, Cursor Color and so on)
 		
 		/// <remarks>
-		/// Used internally, do not call
+		/// Gets the color of an Environment element.
 		/// </remarks>
 		HighlightColor   GetColorFor(string name);
 		

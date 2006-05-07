@@ -406,8 +406,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				IList<IAdvancedHighlighter> highlighter = AddInTree.BuildItems<IAdvancedHighlighter>(highlighterPath, this);
 				if (highlighter != null && highlighter.Count > 0) {
 					advancedHighlighter = highlighter[0];
-					Document.HighlightingStrategy = new ParserHighlightingStrategy((DefaultHighlightingStrategy)Document.HighlightingStrategy, advancedHighlighter);
 					advancedHighlighter.Initialize(this);
+					Document.HighlightingStrategy = new AdvancedHighlightingStrategy((DefaultHighlightingStrategy)Document.HighlightingStrategy, advancedHighlighter);
 				}
 			}
 		}
