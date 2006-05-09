@@ -250,6 +250,7 @@ namespace Debugger
 		}
 		
 		// NOTE: During evlulation some chains may be temporaly removed
+		// NOTE: When two events are invoked, step outs ocurr at once when all is done
 		internal void CheckExpirationOfFunctions()
 		{
 			if (debugger.Evaluating) return;
@@ -260,6 +261,8 @@ namespace Debugger
 			ICorDebugFrameEnum corFrameEnum = corChainEnum.Next().EnumerateFrames();
 			uint maxFrameIndex = corFrameEnum.Count - 1;
 			
+			ICorDebugFrame lastFrame = corFrameEnum.Next();
+			
 			List<Function> expiredFunctions = new List<Function>();
 			
 			foreach(KeyValuePair<uint, Chain> chain in chainCache) {
@@ -267,6 +270,18 @@ namespace Debugger
 				foreach(KeyValuePair<uint, Function> func in chain.Value.Frames) {
 					if (chain.Key == maxChainIndex && func.Key <= maxFrameIndex) continue;
 					expiredFunctions.Add(func.Value);
+				}
+			}
+			
+			// Check the token of the last function
+			// TODO: Investigate: this should not happen (test case: event with two handlers)
+			if (lastFrame != null &&
+			    chainCache.ContainsKey(maxChainIndex) &&
+			    chainCache[maxChainIndex].Frames.ContainsKey(maxFrameIndex)) {
+				
+				Function cachedFunction = chainCache[maxChainIndex].Frames[maxFrameIndex];
+				if (cachedFunction.Token != lastFrame.FunctionToken) {
+					expiredFunctions.Add(cachedFunction);
 				}
 			}
 			
