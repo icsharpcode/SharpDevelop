@@ -95,6 +95,8 @@ namespace Debugger
 			Thread thread = debugger.GetThread(pThread);
 			Stepper stepper = thread.GetStepper(pStepper);
 			
+			debugger.TraceMessage(" - stepper info: " + stepper.Operation + " in " + stepper.Function.Name + " pause = " + stepper.PauseWhenComplete);
+			
 			// There is a race condition: The tracking step out can be triggered after stepping step over
 			thread.CheckExpirationOfFunctions();
 			

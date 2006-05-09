@@ -13,21 +13,30 @@ namespace Debugger
 {
 	class Stepper
 	{
-		NDebugger debugger;
+		public enum StepperOperation {Idle, StepIn, StepOver, StepOut};
+			
+		Function function;
 		ICorDebugStepper corStepper;
+		StepperOperation operation = StepperOperation.Idle;
 		bool pauseWhenComplete = true;
 		
 		public event EventHandler<StepperEventArgs> StepComplete;
 		
 		public NDebugger Debugger {
 			get {
-				return debugger;
+				return function.Debugger;
 			}
 		}
 		
-		public ICorDebugStepper CorStepper {
+		public Function Function {
 			get {
-				return corStepper;
+				return function;
+			}
+		}
+		
+		public StepperOperation Operation {
+			get {
+				return operation;
 			}
 		}
 		
@@ -40,16 +49,45 @@ namespace Debugger
 			}
 		}
 		
-		public Stepper(NDebugger debugger, ICorDebugStepper corStepper)
+		public Stepper(Function function, ICorDebugStepper corStepper)
 		{
-			this.debugger = debugger;
+			this.function = function;
 			this.corStepper = corStepper;
+			
+			// Turn on Just-My-Code
+			if (corStepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
+				corStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
+				corStepper.CastTo<ICorDebugStepper2>().SetJMC(1 /* true */);
+			}
 		}
 		
 		protected internal virtual void OnStepComplete() {
 			if (StepComplete != null) {
 				StepComplete(this, new StepperEventArgs(this));
 			}
+		}
+		
+		public bool IsCorStepper(ICorDebugStepper corStepper)
+		{
+			return this.corStepper == corStepper;
+		}
+		
+		public void StepOut()
+		{
+			operation = StepperOperation.StepOut;
+			corStepper.StepOut();
+		}
+		
+		public void StepIn(int[] ranges)
+		{
+			operation = StepperOperation.StepIn;
+			corStepper.StepRange(true /* step in */, ranges);
+		}
+		
+		public void StepOver(int[] ranges)
+		{
+			operation = StepperOperation.StepOver;
+			corStepper.StepRange(true /* step over */, ranges);
 		}
 	}
 }

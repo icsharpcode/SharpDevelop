@@ -141,7 +141,7 @@ namespace Debugger
 		internal Stepper GetStepper(ICorDebugStepper corStepper)
 		{
 			foreach(Stepper stepper in steppers) {
-				if (stepper.CorStepper == corStepper) {
+				if (stepper.IsCorStepper(corStepper)) {
 					return stepper;
 				}
 			}
