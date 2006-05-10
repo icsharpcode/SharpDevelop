@@ -49,16 +49,19 @@ namespace Debugger
 			}
 		}
 		
-		public Stepper(Function function, ICorDebugStepper corStepper)
+		public Stepper(Function function)
 		{
 			this.function = function;
-			this.corStepper = corStepper;
+			
+			corStepper = function.CorILFrame.CreateStepper();
 			
 			// Turn on Just-My-Code
 			if (corStepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
 				corStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
 				corStepper.CastTo<ICorDebugStepper2>().SetJMC(1 /* true */);
 			}
+			
+			function.Thread.Steppers.Add(this);
 		}
 		
 		protected internal virtual void OnStepComplete() {

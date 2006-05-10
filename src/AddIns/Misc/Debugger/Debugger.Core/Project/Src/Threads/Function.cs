@@ -57,6 +57,12 @@ namespace Debugger
 				return module; 
 			} 
 		}
+		
+		public Thread Thread {
+			get {
+				return thread;
+			}
+		}
 
 		public bool IsStatic {
 			get {
@@ -127,7 +133,7 @@ namespace Debugger
 			methodProps = module.MetaData.GetMethodProps(corFunction.Token);
 			
 			// Expiry the function when it is finished
-			stepOutStepper = CreateStepper();
+			stepOutStepper = new Stepper(this);
 			stepOutStepper.StepOut();
 			stepOutStepper.PauseWhenComplete = false;
 			stepOutStepper.StepComplete += delegate {
@@ -180,13 +186,6 @@ namespace Debugger
 			}
 		}
 		
-		internal Stepper CreateStepper()
-		{
-			Stepper stepper = new Stepper(this, corILFrame.CreateStepper());
-			thread.Steppers.Add(stepper);
-			return stepper;
-		}
-		
 		public void StepInto()
 		{
 			Step(true);
@@ -219,14 +218,14 @@ namespace Debugger
 			Stepper stepper;
 			
 			if (stepIn) {
-				stepper = CreateStepper();
+				stepper = new Stepper(this);
 				stepper.StepIn(nextSt.StepRanges);
 			}
 			
 			// Without JMC step in which ends in code without symblols is cotinued.
 			// The next step over ensures that we at least do step over.
 			
-			stepper = CreateStepper();
+			stepper = new Stepper(this);
 			stepper.StepOver(nextSt.StepRanges);
 			
 			debugger.Continue();
