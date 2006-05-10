@@ -90,7 +90,7 @@ namespace Debugger
 		public void StepOver(int[] ranges)
 		{
 			operation = StepperOperation.StepOver;
-			corStepper.StepRange(true /* step over */, ranges);
+			corStepper.StepRange(false /* step over */, ranges);
 		}
 	}
 }
