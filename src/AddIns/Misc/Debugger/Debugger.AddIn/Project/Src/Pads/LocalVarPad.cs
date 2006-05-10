@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class LocalVarPad : DebuggerPad
 	{
-		TreeListView localVarList;
+		DebuggerTreeListView localVarList;
 		
 		ColumnHeader name = new ColumnHeader();
 		ColumnHeader val  = new ColumnHeader();
@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected override void InitializeComponents()
 		{
 			//iconsService = (ClassBrowserIconsService)ServiceManager.Services.GetService(typeof(ClassBrowserIconsService));
-			localVarList = new TreeListView();
+			localVarList = new DebuggerTreeListView();
 			localVarList.SmallImageList = DebuggerIcons.ImageList;
 			localVarList.ShowPlusMinus = true;
 			localVarList.FullRowSelect = true;

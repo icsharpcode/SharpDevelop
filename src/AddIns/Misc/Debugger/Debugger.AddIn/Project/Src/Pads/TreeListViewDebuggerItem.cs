@@ -59,23 +59,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void Update(object sender, DebuggerEventArgs e)
 		{
+			if (this.TreeListView is DebuggerTreeListView) {
+				((DebuggerTreeListView)this.TreeListView).DelayRefresh();
+			}
 			Highlight = (Variable.Value.AsString != SubItems[1].Text);
 			Update();
 		}
 		
 		public void Update()
 		{
-			if (this.SubItems[0].Text != Variable.Name)
-				this.SubItems[0].Text = Variable.Name;
-			if (this.SubItems[1].Text != Variable.Value.AsString)
-				this.SubItems[1].Text = Variable.Value.AsString;
-			if (this.SubItems[2].Text != Variable.Value.Type)
-				this.SubItems[2].Text = Variable.Value.Type;
+			this.SubItems[0].Text = Variable.Name;
+			this.SubItems[1].Text = Variable.Value.AsString;
+			this.SubItems[2].Text = Variable.Value.Type;
 			
-			int imageIndex = DebuggerIcons.GetImageListIndex(variable);
-			if (this.ImageIndex != imageIndex) {
-				this.ImageIndex = imageIndex;
-			}
+			this.ImageIndex = DebuggerIcons.GetImageListIndex(variable);
 			
 			if (IsExpanded) {
 				variable.SubVariables.Update();
