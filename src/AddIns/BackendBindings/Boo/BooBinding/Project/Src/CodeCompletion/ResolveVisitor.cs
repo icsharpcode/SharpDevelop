@@ -504,10 +504,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			ClearResult();
 			Visit(node.Target);
-			Slice slice = node.Indices[0];
-			if (slice.End != null) {
-				// Boo slice, returns a part of the source -> same type as source
-				return;
+			if (node.Indices.Count > 0) {
+				Slice slice = node.Indices[0];
+				if (slice.End != null) {
+					// Boo slice, returns a part of the source -> same type as source
+					return;
+				}
 			}
 			IReturnType rt = (resolveResult != null) ? resolveResult.ResolvedType : null;
 			if (rt == null) {

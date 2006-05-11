@@ -100,19 +100,27 @@ namespace Grunwald.BooBinding.CodeCompletion
 			public override void OnYieldStatement(YieldStatement node)
 			{
 				noReturnStatement = false;
-				IClass enumerable = ProjectContentRegistry.Mscorlib.GetClass("System.Collections.Generic.IEnumerable", 1);
+				
+				IProjectContent pc = context != null ? context.ProjectContent : ParserService.CurrentProjectContent;
+				IReturnType enumerable = new GetClassReturnType(pc, "System.Collections.Generic.IEnumerable", 1);
 				
 				// Prevent creating an infinite number of InferredReturnTypes in inferring cycles
 				parentReturnType.expression = new NullLiteralExpression();
-				IReturnType returnType = new BooResolver().GetTypeOfExpression(node.Expression, context);
-				returnType.GetUnderlyingClass(); // force to infer type
+				IReturnType returnType;
+				if (node.Expression == null)
+					returnType = ReflectionReturnType.Object;
+				else
+					returnType = new BooResolver().GetTypeOfExpression(node.Expression, context);
+				if (returnType != null) {
+					returnType.GetUnderlyingClass(); // force to infer type
+				}
 				if (parentReturnType.expression == null) {
 					// inferrence cycle with parentReturnType
 					returnType = new GetClassReturnType(context.ProjectContent, "?", 0);
 				}
 				parentReturnType.expression = null;
 				
-				result = new ConstructedReturnType(enumerable.DefaultReturnType, new IReturnType[] { returnType });
+				result = new ConstructedReturnType(enumerable, new IReturnType[] { returnType });
 			}
 			
 			public override void OnCallableBlockExpression(CallableBlockExpression node)
