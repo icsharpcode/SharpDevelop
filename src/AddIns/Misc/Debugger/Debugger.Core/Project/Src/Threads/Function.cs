@@ -133,7 +133,7 @@ namespace Debugger
 			methodProps = module.MetaData.GetMethodProps(corFunction.Token);
 			
 			// Expiry the function when it is finished
-			stepOutStepper = new Stepper(this);
+			stepOutStepper = new Stepper(this, "Function Tracker");
 			stepOutStepper.StepOut();
 			stepOutStepper.PauseWhenComplete = false;
 			stepOutStepper.StepComplete += delegate {
@@ -198,7 +198,8 @@ namespace Debugger
 
 		public void StepOut()
 		{
-			stepOutStepper.PauseWhenComplete = true;
+			Stepper stepper = new Stepper(this);
+			stepper.StepOut();
 			debugger.Continue();
 		}
 

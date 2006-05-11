@@ -16,6 +16,7 @@ namespace Debugger
 		public enum StepperOperation {Idle, StepIn, StepOver, StepOut};
 			
 		Function function;
+		string name;
 		ICorDebugStepper corStepper;
 		StepperOperation operation = StepperOperation.Idle;
 		bool pauseWhenComplete = true;
@@ -34,6 +35,12 @@ namespace Debugger
 			}
 		}
 		
+		public string Name {
+			get {
+				return name;
+			}
+		}
+		
 		public StepperOperation Operation {
 			get {
 				return operation;
@@ -47,6 +54,11 @@ namespace Debugger
 			set {
 				pauseWhenComplete = value;
 			}
+		}
+		
+		public Stepper(Function function, string name): this(function)
+		{
+			this.name = name;
 		}
 		
 		public Stepper(Function function)
@@ -75,10 +87,15 @@ namespace Debugger
 			return this.corStepper == corStepper;
 		}
 		
+		// NOTE: corStepper.StepOut(); finishes when pevious frame is activated, not when function is exited
+		//       this is important for events with multiple handlers
+		// NOTE: StepRange callbacks go first (probably in order),
+		//       StepOut callback are called after that
 		public void StepOut()
 		{
 			operation = StepperOperation.StepOut;
-			corStepper.StepOut();
+			// corStepper.StepOut(); Don't! see note
+			corStepper.StepRange(false, new int[] {0, int.MaxValue});
 		}
 		
 		public void StepIn(int[] ranges)
@@ -91,6 +108,11 @@ namespace Debugger
 		{
 			operation = StepperOperation.StepOver;
 			corStepper.StepRange(false /* step over */, ranges);
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("{0} in {1} pause={2} {3}", Operation, Function.Name, PauseWhenComplete, name);
 		}
 	}
 }

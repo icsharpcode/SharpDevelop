@@ -251,6 +251,8 @@ namespace Debugger
 		
 		// NOTE: During evlulation some chains may be temporaly removed
 		// NOTE: When two events are invoked, step outs ocurr at once when all is done
+		// NOTE: Step out works properly for exceptions
+		// NOTE: Step over works properly for exceptions
 		internal void CheckExpirationOfFunctions()
 		{
 			if (debugger.Evaluating) return;
