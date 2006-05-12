@@ -84,69 +84,61 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.EndUpdate();
 		}
 		
+		delegate void AddVariableMethod(Variable variable);
+		
 		public static void AddVariableCollectionToTree(VariableCollection varCollection, TreeListViewItemCollection tree)
 		{
-			varCollection.VariableAdded += delegate(object sender, VariableEventArgs e) {
-				AddVariableToTree(e.Variable, tree);
-			};
+			TreeListViewItem privateInstanceMenu = new TreeListViewItem("<Private Members>", 0);
+			TreeListViewItem staticMenu = new TreeListViewItem("<Static Members>", 0);
+			TreeListViewItem privateStaticMenu = new TreeListViewItem("<Private Static Members>", 0);
 			
-			List<Variable> publicStatic = new List<Variable>();
-			List<Variable> publicInstance = new List<Variable>();
-			List<Variable> privateStatic = new List<Variable>();
-			List<Variable> privateInstance = new List<Variable>();
-			
-			foreach(Variable variable in varCollection) {
+			AddVariableMethod addVariable = delegate(Variable variable) {
 				ClassVariable classVariable = variable as ClassVariable;
-				if (classVariable == null) {
-					publicInstance.Add(variable);
-				} else {
-					if (classVariable.IsPublic) {
-						if (classVariable.IsStatic) {
-							publicStatic.Add(variable);
-						} else {
-							publicInstance.Add(variable);
+				
+				if (classVariable == null || classVariable.IsPublic) {
+					if (classVariable != null && classVariable.IsStatic) {
+						// Public static
+						if (staticMenu.TreeListView == null) {
+							tree.Add(staticMenu);
+							tree.Sort(false);
 						}
+						staticMenu.Items.Add(new TreeListViewDebuggerItem(variable));
 					} else {
-						if (classVariable.IsStatic) {
-							privateStatic.Add(variable);
-						} else {
-							privateInstance.Add(variable);
+						// Public instance
+						tree.Add(new TreeListViewDebuggerItem(variable));
+					}
+				} else {
+					if (classVariable.IsStatic) {
+						// Private static
+						if (staticMenu.TreeListView == null) {
+							tree.Add(staticMenu);
+							tree.Sort(false);
 						}
+						if (privateStaticMenu.TreeListView == null) {
+							staticMenu.Items.Add(privateStaticMenu);
+							staticMenu.Items.Sort(false);
+						}
+						privateStaticMenu.Items.Add(new TreeListViewDebuggerItem(variable));
+					} else {
+						// Private instance
+						if (privateInstanceMenu.TreeListView == null) {
+							tree.Add(privateInstanceMenu);
+							tree.Sort(false);
+						}
+						privateInstanceMenu.Items.Add(new TreeListViewDebuggerItem(variable));
 					}
 				}
-			}
+			};
 			
-			if (privateInstance.Count > 0) {
-				AddMenu("<Private Members>", privateInstance, tree);
-			}
-			if (publicStatic.Count > 0) {
-				AddMenu("<Public Static Members>", publicStatic, tree);
-			}
-			if (privateStatic.Count > 0) {
-				AddMenu("<Private Static Members>", privateStatic, tree);
-			}
-			// Public Members
-			foreach(Variable variable in publicInstance) {
-				AddVariableToTree(variable, tree);
+			varCollection.VariableAdded += delegate(object sender, VariableEventArgs e) {
+				addVariable(e.Variable);
+			};
+			
+			foreach(Variable variable in varCollection) {
+				addVariable(variable);
 			}
 		}
 		
-		public static void AddMenu(string name, List<Variable> variables, TreeListViewItemCollection tree)
-		{
-			TreeListViewItem menu = new TreeListViewItem(name, 0);
-			tree.Add(menu);
-			foreach(Variable variable in variables) {
-				AddVariableToTree(variable, menu.Items);
-			}
-		}
-		
-		public static void AddVariableToTree(Variable variableToAdd, TreeListViewItemCollection tree)
-		{
-			TreeListViewDebuggerItem newItem = new TreeListViewDebuggerItem(variableToAdd);
-			
-			tree.Add(newItem);
-		}
-
 		private void localVarList_BeforeExpand(object sender, TreeListViewCancelEventArgs e)
 		{
 			if (debuggerCore.IsPaused) {
