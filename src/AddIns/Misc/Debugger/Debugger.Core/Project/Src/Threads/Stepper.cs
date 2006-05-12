@@ -94,7 +94,7 @@ namespace Debugger
 		public void StepOut()
 		{
 			operation = StepperOperation.StepOut;
-			// corStepper.StepOut(); Don't! see note
+			// corStepper.StepOut(); // Don't! see note
 			corStepper.StepRange(false, new int[] {0, int.MaxValue});
 		}
 		

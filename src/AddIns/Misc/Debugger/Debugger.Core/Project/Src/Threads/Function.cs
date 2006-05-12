@@ -132,6 +132,11 @@ namespace Debugger
 			
 			methodProps = module.MetaData.GetMethodProps(corFunction.Token);
 			
+			AddTrackingStepper();
+		}
+		
+		internal void AddTrackingStepper()
+		{
 			// Expiry the function when it is finished
 			stepOutStepper = new Stepper(this, "Function Tracker");
 			stepOutStepper.StepOut();
