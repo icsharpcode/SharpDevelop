@@ -36,7 +36,7 @@ namespace Debugger
 			}
 		}
 		
-		public bool IsEvaluated {
+		bool IsEvaluated {
 			get {
 				if (Eval != null) {
 					return Eval.Evaluated;
@@ -46,7 +46,7 @@ namespace Debugger
 			}
 		}
 		
-		public Eval Eval {
+		Eval Eval {
 			get {
 				if (cachedEval == null || cachedEval.HasExpired) {
 					cachedEval = evalCreator();
