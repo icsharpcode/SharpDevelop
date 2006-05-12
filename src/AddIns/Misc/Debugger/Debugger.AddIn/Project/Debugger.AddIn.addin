@@ -6,7 +6,7 @@
 	<Runtime>
 		<Import assembly="Debugger.AddIn.dll"/>
 	</Runtime>
-
+	
 	<Path name="/SharpDevelop/Services/DebuggerService/Debugger">
 		<Debugger id="DefaultDebugger"
 		          supportsStepping = "true"
@@ -23,7 +23,7 @@
 			          class = "ICSharpCode.SharpDevelop.Services.SetCurrentStatementCommand"/>
 		</Condition>
 	</Path>
-		
+	
 	<!--<Path name = "/SharpDevelop/Workbench/MainMenu/Debug">
 		<MenuItem id = "CatchHandledExceptionsSeparator"
 		          type = "Separator"
@@ -32,48 +32,48 @@
 		          label = ""
 		          class = "ICSharpCode.SharpDevelop.Services.DebbugerExceptionMenuBuilder"/>
 	</Path>-->
-
-    <Path name = "/SharpDevelop/Workbench/Pads">
-        <Pad id    = "BreakPointsPad3" 
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id    = "BreakPointsPad" 
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Breakpoints}"
 		     icon     = "PadIcons.BreakPoints"
 		     shortcut = "Control|Alt|B"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.BreakPointsPad"/>
-
-        <Pad id    = "CallStackPad3" 
+		
+		<Pad id    = "CallStackPad" 
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.CallStack}"
 		     icon     = "PadIcons.CallStack"
 		     shortcut = "Control|Alt|C"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.CallStackPad"/>
-
-        <Pad id    = "LoadedModulesPad3" 
+		
+		<Pad id    = "LoadedModulesPad" 
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Modules}"
 		     icon     = "PadIcons.LoadedModules"
 		     shortcut = "Control|Alt|U"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LoadedModulesPad"/>
-
-        <Pad id    = "RunningThreadsPad3"
+		
+		<Pad id    = "RunningThreadsPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Threads}"
 		     icon     = "PadIcons.Threads"
 		     shortcut = "Control|Alt|H"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.RunningThreadsPad"/>
-
-        <Pad id    = "LocalVarPad3" 
+		
+		<Pad id    = "LocalVarPad" 
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.LocalVariables}"
 		     icon     = "PadIcons.LocalVariables"
 		     shortcut = "Control|Alt|V"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad"/>
-
-        <Pad id    = "ExceptionHistoryPad" 
-             category = "Debugger"
-             title    = "${res:MainWindow.Windows.Debug.ExceptionHistory}"
-             icon     = "PadIcons.Exceptions"
-             shortcut = "Control|Alt|E"
-             class = "ICSharpCode.SharpDevelop.Gui.Pads.ExceptionHistoryPad"/>
-       </Path>
+		
+		<!--<Pad id    = "ExceptionHistoryPad" 
+		     category = "Debugger"
+		     title    = "${res:MainWindow.Windows.Debug.ExceptionHistory}"
+		     icon     = "PadIcons.Exceptions"
+		      shortcut = "Control|Alt|E"
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ExceptionHistoryPad"/>-->
+	</Path>
 </AddIn>
