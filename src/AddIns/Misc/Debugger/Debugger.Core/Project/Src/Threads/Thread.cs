@@ -289,6 +289,7 @@ namespace Debugger
 			}
 			
 			foreach(Function f in expiredFunctions) {
+				debugger.TraceMessage("Function " + f.Name + " expired. (check)");
 				f.OnExpired(EventArgs.Empty);
 			}
 		}

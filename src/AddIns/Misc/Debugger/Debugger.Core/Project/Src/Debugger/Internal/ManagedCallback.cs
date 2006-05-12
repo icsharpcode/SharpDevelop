@@ -97,11 +97,12 @@ namespace Debugger
 			
 			debugger.TraceMessage(" - stepper info: " + stepper.ToString());
 			
-			// There is a race condition: The tracking step out can be triggered after stepping step over
-			//thread.CheckExpirationOfFunctions();
-			
 			thread.Steppers.Remove(stepper);
 			stepper.OnStepComplete();
+			
+			// There is a race condition: The tracking step out can be triggered after stepping step over
+			thread.CheckExpirationOfFunctions();
+			
 			if (stepper.PauseWhenComplete) {
 				if (debugger.SelectedThread.LastFunction.HasSymbols) {
 					ExitCallback_Paused();
