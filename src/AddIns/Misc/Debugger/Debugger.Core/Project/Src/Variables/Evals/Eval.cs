@@ -146,7 +146,9 @@ namespace Debugger
 			OnEvalStarted(new EvalEventArgs(this));
 			
 			// Stepper needs to be reset after evaluation
-			targetThread.LastFunction.AddTrackingStepper();
+			if (targetThread.LastFunction != null) { // TODO: Investigate
+				targetThread.LastFunction.AddTrackingStepper();
+			}
 			
 			evalState = EvalState.Evaluating;
 			return true;
