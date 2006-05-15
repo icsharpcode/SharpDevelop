@@ -55,16 +55,19 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (variable == null) throw new ArgumentNullException("variable");
 			
 			this.variable = variable;
-			this.variable.ValueChanged += Update;
-			this.Hidden += delegate { this.variable.ValueChanged -= Update; };
+			this.Shown += delegate {
+				this.variable.ValueChanged += Update;
+				DoInPausedState( delegate { Update(); } );
+			};
+			this.Hidden += delegate {
+				this.variable.ValueChanged -= Update;
+			};
 			
 			DebuggerGridControl.AddColumns(this.ChildColumns);
 			
 			this[1].Paint += OnIconPaint;
 			this[3].FinishLabelEdit += OnLabelEdited;
 			this[3].MouseDown += OnMouseDown;
-			
-			Update();
 		}
 		
 		void Update(object sender, DebuggerEventArgs e)
@@ -146,16 +149,21 @@ namespace ICSharpCode.SharpDevelop.Services
 		protected override void OnExpanding(DynamicListEventArgs e)
 		{
 			if (!populated) {
-				if (Variable.Debugger.IsPaused) {
-					Populate();
-				} else {
-					EventHandler<DebuggingPausedEventArgs> populate = null;
-					populate = delegate {
-						Populate();
-						Variable.Debugger.DebuggingPaused -= populate;
-					};
-					Variable.Debugger.DebuggingPaused += populate;
-				}
+				DoInPausedState(delegate { Populate(); });
+			}
+		}
+		
+		void DoInPausedState(MethodInvoker action)
+		{
+			if (Variable.Debugger.IsPaused) {
+				action();
+			} else {
+				EventHandler<DebuggingPausedEventArgs> onDebuggingPaused = null;
+				onDebuggingPaused = delegate {
+					action();
+					Variable.Debugger.DebuggingPaused -= onDebuggingPaused;
+				};
+				Variable.Debugger.DebuggingPaused += onDebuggingPaused;
 			}
 		}
 		
