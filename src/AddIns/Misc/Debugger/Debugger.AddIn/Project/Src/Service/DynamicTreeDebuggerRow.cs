@@ -50,6 +50,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 		}
 		
+		bool skipUpdate = true;
+		
 		public DynamicTreeDebuggerRow(Variable variable)
 		{
 			if (variable == null) throw new ArgumentNullException("variable");
@@ -57,7 +59,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.variable = variable;
 			this.Shown += delegate {
 				this.variable.ValueChanged += Update;
-				DoInPausedState( delegate { Update(); } );
+				if (!skipUpdate) {
+					DoInPausedState( delegate { Update(); } );
+				}
+				skipUpdate = false;
 			};
 			this.Hidden += delegate {
 				this.variable.ValueChanged -= Update;
@@ -68,6 +73,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			this[1].Paint += OnIconPaint;
 			this[3].FinishLabelEdit += OnLabelEdited;
 			this[3].MouseDown += OnMouseDown;
+			
+			Update();
 		}
 		
 		void Update(object sender, DebuggerEventArgs e)
