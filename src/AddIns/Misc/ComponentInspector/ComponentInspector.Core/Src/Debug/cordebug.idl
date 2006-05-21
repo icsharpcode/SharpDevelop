@@ -1,0 +1,3531 @@
+// ==++==
+// 
+//   Copyright (c) Microsoft Corporation.  All rights reserved.
+// 
+// ==--==
+/*****************************************************************************
+ **                                                                         **
+ ** Cordebug.idl - Common Language Runtime Debugging interfaces.            **
+ **                                                                         **
+ *****************************************************************************/
+
+
+/* ************ In-Process Notes: ********************************************
+ *
+ * Note that anything marked "Not Implemented In-Proc" should return 
+ * CORDBG_E_INPROC_NOT_IMPL if you do try and invoke it.  Any interface marked
+ * "Not Implemented In-Proc" should be inaccessible (ie, you shouldn't be able
+ * to get one), and if you do, invoking methods on it are undefined.
+ *
+ * @FUTURE: Note that if you do a stack trace from within a
+ * NotifyJitCompilation, you'll be told that there is an active chain,
+ * of type CHAIN_CLASS_INIT, with no frames in it. This is wrong, and
+ * should be ignored.
+ *
+ * Please read the InProcess Only comment next to EnumerateChains for a note on
+ * stack tracing and cache refreshing.
+ */
+
+/* ------------------------------------------------------------------------- *
+ * Imported types
+ * ------------------------------------------------------------------------- */
+
+#if !DUMMY_DEFINITIONS_BECAUSE_I_CANT_FIGURE_OUT_HOW_TO_IMPORT_THESE
+
+cpp_quote("#define CorDB_CONTROL_REMOTE_DEBUGGING   \"Cor_Enable_Remote_Debugging\"")
+cpp_quote("#define CorDB_CONTROL_REMOTE_DEBUGGINGL L\"Cor_Enable_Remote_Debugging\"")
+
+cpp_quote("#if 0")
+
+import "unknwn.idl";
+
+typedef UINT32 mdToken;
+typedef mdToken mdModule;
+typedef SIZE_T  mdScope;
+typedef mdToken mdTypeDef;
+typedef mdToken mdSourceFile;
+typedef mdToken mdMemberRef;
+typedef mdToken mdMethodDef;
+typedef mdToken mdFieldDef;
+typedef mdToken mdSignature;
+typedef ULONG CorElementType;
+typedef SIZE_T PCCOR_SIGNATURE;
+
+typedef SIZE_T LPDEBUG_EVENT;
+
+typedef SIZE_T LPSTARTUPINFOW;
+typedef SIZE_T LPPROCESS_INFORMATION;
+
+cpp_quote("#endif")
+
+typedef [wire_marshal(unsigned long)] void *HPROCESS;
+typedef [wire_marshal(unsigned long)] void *HTHREAD;
+
+#endif
+
+cpp_quote("#ifndef _COR_IL_MAP")
+cpp_quote("#define _COR_IL_MAP")
+
+// Note that this structure is also defined in CorProf.idl - PROPOGATE CHANGES
+// BOTH WAYS, or this'll become a really insidious bug some day.
+typedef struct _COR_IL_MAP
+{
+	ULONG32 oldOffset;		// Old IL offset relative to beginning of function
+	ULONG32 newOffset;		// New IL offset relative to beginning of function
+	BOOL    fAccurate;      // TRUE if mapping is known to be good, FALSE otherwise
+} COR_IL_MAP;
+
+cpp_quote("#endif //_COR_IL_MAP")
+
+cpp_quote("#ifndef _COR_DEBUG_IL_TO_NATIVE_MAP_")
+cpp_quote("#define _COR_DEBUG_IL_TO_NATIVE_MAP_")
+
+/* ICorDebugCode:: GetILToNativeMapping returns an array of  
+ * COR_DEBUG_IL_TO_NATIVE_MAP structures.  In order to convey that certain 
+ * ranges of native instructions correspond to special regions of code (for 
+ * example, the prolog), an entry in the array may have it's ilOffset field set 
+ * to one of these values. 
+ */
+typedef enum CorDebugIlToNativeMappingTypes
+{
+    NO_MAPPING = -1,
+    PROLOG     = -2,
+    EPILOG     = -3
+} CorDebugIlToNativeMappingTypes;
+
+typedef struct COR_DEBUG_IL_TO_NATIVE_MAP
+{
+    ULONG32 ilOffset;
+    ULONG32 nativeStartOffset;
+    ULONG32 nativeEndOffset;
+} COR_DEBUG_IL_TO_NATIVE_MAP;
+
+cpp_quote("#endif // _COR_DEBUG_IL_TO_NATIVE_MAP_")
+
+cpp_quote("#define REMOTE_DEBUGGING_DLL_ENTRY L\"Software\\\\Microsoft\\\\.NETFramework\\\\Debugger\\\\ActivateRemoteDebugging\"")
+
+/* ------------------------------------------------------------------------- *
+ * Forward declarations
+ * ------------------------------------------------------------------------- */
+
+interface ICorDebug;
+
+interface ICorDebugController;
+interface ICorDebugProcess;
+interface ICorDebugAppDomain;
+interface ICorDebugAssembly;
+interface ICorDebugBreakpoint;
+interface ICorDebugFunctionBreakpoint;
+interface ICorDebugModuleBreakpoint;
+interface ICorDebugValueBreakpoint;
+interface ICorDebugStepper;
+interface ICorDebugEval;
+interface ICorDebugThread;
+interface ICorDebugChain;
+interface ICorDebugFrame;
+interface ICorDebugILFrame;
+interface ICorDebugNativeFrame;
+interface ICorDebugContext;
+interface ICorDebugModule;
+interface ICorDebugFunction;
+interface ICorDebugCode;
+interface ICorDebugClass;
+
+interface ICorDebugValue;
+interface ICorDebugGenericValue;
+interface ICorDebugReferenceValue;
+interface ICorDebugHeapValue;
+interface ICorDebugObjectValue;
+interface ICorDebugStringValue;
+interface ICorDebugArrayValue;
+
+interface ICorDebugEnum;
+interface ICorDebugObjectEnum;
+interface ICorDebugProcessEnum;
+interface ICorDebugBreakpointEnum;
+interface ICorDebugStepperEnum;
+interface ICorDebugModuleEnum;
+interface ICorDebugThreadEnum;
+interface ICorDebugChainEnum;
+interface ICorDebugFrameEnum;
+interface ICorDebugValueEnum;
+interface ICorDebugAppDomainEnum;
+interface ICorDebugAssemblyEnum;
+
+interface ICorDebugErrorInfoEnum;
+
+/**** WARNING:  Edit And Continue not supported in Version 1 ****/
+interface ICorDebugEditAndContinueSnapshot;
+interface ICorDebugEditAndContinueErrorInfo;
+
+typedef ULONG64 CORDB_ADDRESS;
+typedef ULONG64 CORDB_REGISTER;
+
+/* ------------------------------------------------------------------------- *
+ * Library definition
+ * ------------------------------------------------------------------------- */
+
+[
+	uuid(53D13620-F417-11d1-9762-A63826A4F255),
+	version(1.0),
+	helpstring("Common Language Runtime Debugging 1.0 Type Library")
+]
+library CORDBLib
+{
+	importlib("stdole32.tlb");
+
+	[
+		uuid(6fef44d0-39e7-4c77-be8e-c9f8cf988630)
+	]
+	coclass CorDebug
+	{
+		[default] interface ICorDebug;
+	};
+
+	[
+		uuid(211f1254-bc7e-4af5-b9aa-067308d83dd1)
+	]
+	coclass EmbeddedCLRCorDebug
+	{
+		[default] interface ICorDebug;
+	};
+};
+
+
+/* ------------------------------------------------------------------------- *
+ * User Callback interface
+ * ------------------------------------------------------------------------- */
+
+
+
+/* 
+ * ICorDebugManagedCallback is implemented by the user of the
+ * ICorDebug interfaces in order to respond to events in managed code
+ * in the debuggee process.  
+ */
+
+[
+	object,
+    uuid(3d6f5f60-7538-11d3-8d5b-00104b35e7ef),
+	pointer_default(unique)
+]
+interface ICorDebugManagedCallback : IUnknown
+{
+	/*
+	 * All callbacks are called with the process in the synchronized state
+	 * All callbacks are serialized, and are called in in the same thread.
+	 * Each callback implementor must call Continue in a callback to 
+	 *		resume execution.
+	 * If Continue is not called before returning, the process will 
+	 * remain stopped. Continue must later be called before any more 
+	 * event callbacks will happen.
+     *
+     * Not Implemented In-Proc : The inproc doesn't call back to anything
+	 */
+
+	/*
+	 * Breakpoint is called when a breakpoint is hit.
+	 */
+
+	HRESULT Breakpoint([in] ICorDebugAppDomain *pAppDomain,
+					   [in] ICorDebugThread *pThread, 
+					   [in] ICorDebugBreakpoint *pBreakpoint);
+
+	/*
+	 * StepComplete is called when a step has completed.  The stepper
+	 * may be used to continue stepping if desired (except for TERMINATE 
+	 * reasons.)
+	 *
+	 * STEP_NORMAL means that stepping completed normally, in the same
+	 *		function.
+	 *
+	 * STEP_RETURN means that stepping continued normally, after the function
+	 *		returned.
+	 *
+	 * STEP_CALL means that stepping continued normally, at the start of 
+	 *		a newly called function.
+	 *
+	 * STEP_EXCEPTION_FILTER means that control passed to an exception filter
+	 *		after an exception was thrown.
+	 * 
+	 * STEP_EXCEPTION_HANDLER means that control passed to an exception handler
+	 *		after an exception was thrown.
+	 *
+	 * STEP_INTERCEPT means that control passed to an interceptor.
+	 * 
+	 * STEP_EXIT means that the thread exited before the step completed.
+	 *		No more stepping can be performed with the stepper.
+	 */
+
+	typedef enum CorDebugStepReason
+	{
+		STEP_NORMAL,
+		STEP_RETURN,
+		STEP_CALL,
+		STEP_EXCEPTION_FILTER,
+		STEP_EXCEPTION_HANDLER,
+		STEP_INTERCEPT,
+		STEP_EXIT
+	} CorDebugStepReason;
+
+	HRESULT StepComplete([in] ICorDebugAppDomain *pAppDomain,
+						 [in] ICorDebugThread *pThread,
+						 [in] ICorDebugStepper *pStepper,
+						 [in] CorDebugStepReason reason);
+
+	/* 
+	 * Break is called when a break opcode in the code stream is
+	 * executed.
+	 */
+
+	HRESULT Break([in] ICorDebugAppDomain *pAppDomain,
+				  [in] ICorDebugThread *thread);
+
+	/*
+	 * Exception is called when an exception is thrown from managed
+	 * code, The specific exception can be retrieved from the thread object.
+	 *
+	 * If unhandled is FALSE, this is a "first chance" exception that
+	 * hasn't had a chance to be processed by the application.  If
+	 * unhandled is TRUE, this is an unhandled exception which will
+	 * terminate the process.
+     */
+
+	HRESULT Exception([in] ICorDebugAppDomain *pAppDomain,
+					  [in] ICorDebugThread *pThread,
+					  [in] BOOL unhandled);
+
+	/*
+	 * EvalComplete is called when an evaluation is completed. 
+	 */
+
+	HRESULT EvalComplete([in] ICorDebugAppDomain *pAppDomain,
+                         [in] ICorDebugThread *pThread,
+                         [in] ICorDebugEval *pEval);
+
+	/*
+	 * EvalException is called when an evaluation terminates with
+	 * an unhandled exception. 
+	 */
+
+	HRESULT EvalException([in] ICorDebugAppDomain *pAppDomain,
+                          [in] ICorDebugThread *pThread,
+                          [in] ICorDebugEval *pEval);
+
+	/*
+	 * CreateProcess is called when a process is first attached to or 
+	 * started.  
+	 * 
+	 * This entry point won't be called until the EE is initialized.
+	 */
+
+	HRESULT CreateProcess([in] ICorDebugProcess *pProcess);
+
+	/*
+	 * ExitProcess is called when a process exits.
+     *
+     * Note: you don't Continue from an ExitProcess event, and this
+     * event may fire asynchronously to other events, while the
+     * process appears to be stopped. This can occur if the process
+     * dies while stopped, usually due to some external force.
+     */
+
+	HRESULT ExitProcess([in] ICorDebugProcess *pProcess);
+
+	/*
+	 * CreateThread is called when a thread first begins executing managed
+	 * code. The thread will be positioned immediately at the first 
+	 * managed code to be executed.
+	 */
+
+	HRESULT CreateThread([in] ICorDebugAppDomain *pAppDomain,
+						 [in] ICorDebugThread *thread);
+
+
+	/*
+	 * ExitThread is called when a thread which has run managed code 
+	 * exits.
+	 */
+
+	HRESULT ExitThread([in] ICorDebugAppDomain *pAppDomain,
+					   [in] ICorDebugThread *thread);
+
+	/*
+     * LoadModule is called when a Common Language Runtime module is successfully
+	 * loaded. This is an appropriate time to examine metadata for the
+	 * module, enable or disable jit debugging, or enable or disable
+	 * class loading callbacks for the module.
+     */
+
+	HRESULT LoadModule([in] ICorDebugAppDomain *pAppDomain,
+					   [in] ICorDebugModule *pModule);
+
+	/*
+	 * UnloadModule is called when a Common Language Runtime module (DLL) is unloaded. The module 
+	 * should not be used after this point.
+	 */
+
+	HRESULT UnloadModule([in] ICorDebugAppDomain *pAppDomain,
+						 [in] ICorDebugModule *pModule);
+
+	/*
+	 * LoadClass is called when a class finishes loading.  This callback only 
+	 * occurs if ClassLoading has been enabled for the class's module.
+	 */
+
+	HRESULT LoadClass([in] ICorDebugAppDomain *pAppDomain,
+					  [in] ICorDebugClass *c);
+
+	/*
+	 * UnloadClass is called immediately before a class is unloaded. The class 
+	 * should not be referenced after this point. This callback only occurs if 
+	 * ClassLoading has been enabled for the class's module.
+	 */
+
+	HRESULT UnloadClass([in] ICorDebugAppDomain *pAppDomain,
+						[in] ICorDebugClass *c);
+
+	/*
+	 * DebuggerError is called when an error occurs while attempting to
+     * handle an event from the Common Language Runtime. The process is placed into
+     * pass thru mode, possible permantely, depending on the nature of the
+     * error.
+	 */
+
+	HRESULT DebuggerError([in] ICorDebugProcess *pProcess,
+                          [in] HRESULT errorHR,
+                          [in] DWORD errorCode);
+
+
+	/*
+	 * Enum defining log message LoggingLevels
+	 */
+	typedef enum LoggingLevelEnum
+	{
+		LTraceLevel0 = 0,
+		LTraceLevel1,
+		LTraceLevel2,
+		LTraceLevel3,
+		LTraceLevel4,
+		LStatusLevel0 = 20,
+		LStatusLevel1,
+		LStatusLevel2,
+		LStatusLevel3,
+		LStatusLevel4,
+		LWarningLevel = 40,
+		LErrorLevel = 50,
+		LPanicLevel = 100
+	} LoggingLevelEnum;
+
+
+	typedef enum LogSwitchCallReason
+	{
+		SWITCH_CREATE,
+		SWITCH_MODIFY,
+		SWITCH_DELETE
+	} LogSwitchCallReason;
+
+
+	/*
+	 * LogMessage is called when a Common Language Runtime managed thread calls the Log
+     * class in the System.Diagnostics package to log an event.
+	 */	
+	HRESULT LogMessage([in] ICorDebugAppDomain *pAppDomain,
+                       [in] ICorDebugThread *pThread,
+					   [in] LONG lLevel,
+					   [in] WCHAR *pLogSwitchName,
+					   [in] WCHAR *pMessage);
+
+	/*
+	 * LogSwitch is called when a Common Language Runtime managed thread calls the LogSwitch
+     * class in the System.Diagnostics package to create/modify a LogSwitch.
+	 */
+	HRESULT LogSwitch([in] ICorDebugAppDomain *pAppDomain,
+                      [in] ICorDebugThread *pThread,
+					  [in] LONG lLevel,
+					  [in] ULONG ulReason,
+					  [in] WCHAR *pLogSwitchName,
+					  [in] WCHAR *pParentName);
+
+	/*
+	 * CreateAppDomain is called when an app domain is created.
+	 */
+	HRESULT CreateAppDomain([in] ICorDebugProcess *pProcess,
+							[in] ICorDebugAppDomain *pAppDomain); 
+
+	/*
+	 * ExitAppDomain is called when an app domain exits.
+	 */
+	HRESULT ExitAppDomain([in] ICorDebugProcess *pProcess,
+						  [in] ICorDebugAppDomain *pAppDomain); 
+
+
+	/*
+     * LoadAssembly is called when a Common Language Runtime module is successfully
+	 * loaded. 
+     */
+	HRESULT LoadAssembly([in] ICorDebugAppDomain *pAppDomain,
+						 [in] ICorDebugAssembly *pAssembly);
+
+	/*
+	 * UnloadAssembly is called when a Common Language Runtime module (DLL) is unloaded. The module 
+	 * should not be used after this point.
+	 */
+	HRESULT UnloadAssembly([in] ICorDebugAppDomain *pAppDomain,
+						   [in] ICorDebugAssembly *pAssembly);
+
+    /*
+     * ControlCTrap is called if a CTRL-C is trapped in the process being
+     * debugger. All appdomains within the process are stopped for
+     * this callback.
+	 * Return values: 
+	 *      S_OK    : Debugger will handle the ControlC Trap
+	 *      S_FALSE : Debugger won't handle the ControlC Trap 
+     */
+    HRESULT ControlCTrap([in] ICorDebugProcess *pProcess);
+
+    /*
+	 * NameChange() is called if either an AppDomain's or
+	 * Thread's name changes.
+     */
+ 	HRESULT NameChange([in] ICorDebugAppDomain *pAppDomain,
+					   [in] ICorDebugThread *pThread);
+
+	/*
+     * UpdateModuleSymbols is called when a Common Language Runtime module's symbols have
+     * changed. This is a debugger's chance to update its view of a
+     * module's symbols, typically by calling
+     * ISymUnmanagedReader::UpdateSymbolStore or
+     * ISymUnmanagedReader::ReplaceSymbolStore.
+     */
+	HRESULT UpdateModuleSymbols([in] ICorDebugAppDomain *pAppDomain,
+                                [in] ICorDebugModule *pModule,
+                                [in] IStream *pSymbolStream);
+
+
+    /* 
+     * EditAndContinueRemap is called before executing any instructions of the new version
+     * of a method that has been Edit And Continue'd.  
+     *
+     * This callback will be invoked once (and only once) per method, per version.
+     *
+     * fAccurate is a copy of the fAccurate field of the COR_IL_MAP for the 
+     *  entry that was used to compute where IP should point to in the new version.
+     *
+     */
+    HRESULT EditAndContinueRemap([in] ICorDebugAppDomain *pAppDomain,
+                                 [in] ICorDebugThread *pThread, 
+                                 [in] ICorDebugFunction *pFunction,
+                                 [in] BOOL fAccurate);
+
+    /*
+     * BreakpointSetError is called if the CLR was unable to accuratley bind a breakpoint that
+     * was set before a function was JIT compiled. The given breakpoint will never be hit. The
+     * debugger should deactivate it and rebind it appropiatley.
+     */
+    HRESULT BreakpointSetError([in] ICorDebugAppDomain *pAppDomain,
+                               [in] ICorDebugThread *pThread,
+                               [in] ICorDebugBreakpoint *pBreakpoint,
+                               [in] DWORD dwError);
+};
+
+[
+	object,
+    uuid(5263E909-8CB5-11d3-BD2F-0000F80849BD),
+	pointer_default(unique)
+]
+interface ICorDebugUnmanagedCallback : IUnknown
+{
+    /* 
+	 * DebugEvent is called when a DEBUG_EVENT is received which is
+     * not directly related to the Common Language Runtime.
+	 *
+	 * This callback is an exception to the rules about callbacks.
+	 * When this callback is called, the process will be in the "raw"
+	 * OS debug stopped state. The process will not be synchronized.
+	 * The process will automatically enter the synchronized state when
+     * necessary to satifsy certain requests for information about
+     * managed code. (Note that this may result in other nested
+	 * DebugEvent callbacks.)
+     *
+     * Call ClearCurrentException on the process to ignore an
+     * exception event before continuing the process. (Causes
+     * DBG_CONTINUE to be sent on continue rather than
+     * DBG_EXCEPTION_NOT_HANDLED)
+     *
+     * fOutOfBand will be FALSE if the debugging services support
+     * interaction with the process's managed state while the process
+     * is stopped due to this event. fOutOfBand will be TRUE if
+     * interaction with the process's managed state is impossible until
+     * the unmanaged event is continued from.
+     *
+     * Not Implemented In-Proc : The inproc doesn't call back to anything
+     */
+
+	HRESULT DebugEvent([in] LPDEBUG_EVENT pDebugEvent,
+                       [in] BOOL fOutOfBand);
+};
+
+/* ------------------------------------------------------------------------- *
+ * Debugger interface
+ * ------------------------------------------------------------------------- */
+
+
+typedef enum CorDebugCreateProcessFlags
+{
+    DEBUG_NO_SPECIAL_OPTIONS        = 0x0000
+} CorDebugCreateProcessFlags;
+
+/*
+ * ICorDebug represents an event processing loop for a debugger process.
+ */
+
+[
+	object,
+	local,
+    uuid(3d6f5f61-7538-11d3-8d5b-00104b35e7ef),
+	pointer_default(unique)
+]
+interface ICorDebug : IUnknown
+{
+    /*
+     * The debugger calls this method at creation time to initialize the debugging 
+     * services, and  must be called at creation time before any other method on 
+     * ICorDebug is called.  It is not neccessary to call this method when using the
+     * In Process Debugging API.
+     */
+
+    HRESULT Initialize();
+    
+    /*
+     * Terminate must be called when the ICorDebug is no longer needed.
+     *
+     * Not Implemented In-Proc 
+     */
+
+    HRESULT Terminate();
+    
+	/*
+	 * SetManagedHandler should be called at creation time to specify the 
+	 * event handler object for managed events.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT SetManagedHandler([in] ICorDebugManagedCallback *pCallback);
+
+	/*
+	 * SetUnmanagedHandler should be called at creation time to specify the 
+	 * event handler object for managed events.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT SetUnmanagedHandler([in] ICorDebugUnmanagedCallback *pCallback);
+
+	/*
+	 * CreateProcess launches a process under the control of the debugger
+	 * All parameters are the same as the win32 CreateProcess call.
+	 * 
+	 * Note that the DEBUG_PROCESS flag (passed in dwCreationFlags), if
+	 * set, will enable unmanaged debugging.  If only managed debugging
+	 * is desired, do not set this flag. (Note that unmanaged debugging can
+	 * also be enabled later by the EnableUnmanagedDebugging entry point
+	 * on the process.)
+     *
+     * Not Implemented In-Proc
+     *
+     * Note that if debuggingFlags is set to DEBUG_ENABLE_EDIT_AND_CONTINUE,
+     * then E&C will be allowed for the process.  Otherwise, the argument
+     * should be zero'd out, and no E&C will be allowed.  E&C is not allowed
+     * when JIT attaching to a process.
+	 */
+
+	HRESULT CreateProcess([in] LPCWSTR lpApplicationName,
+						  [in] LPWSTR lpCommandLine,
+						  [in] LPSECURITY_ATTRIBUTES lpProcessAttributes,
+						  [in] LPSECURITY_ATTRIBUTES lpThreadAttributes,
+						  [in] BOOL bInheritHandles,
+						  [in] DWORD dwCreationFlags,
+						  [in] PVOID lpEnvironment,
+						  [in] LPCWSTR lpCurrentDirectory,
+						  [in] LPSTARTUPINFOW lpStartupInfo,
+						  [in] LPPROCESS_INFORMATION lpProcessInformation,
+						  [in] CorDebugCreateProcessFlags debuggingFlags,
+						  [out, retval] ICorDebugProcess **ppProcess);
+	
+	/*
+	 * DebugActiveProcess is used to attach to an existing process.
+     *
+     * If win32Attach is TRUE, then the debugger becomes the Win32
+     * debugger for the process and will begin dispatching the
+     * unmanaged callbacks.
+     *
+     * Not Implemented In-Proc
+     */
+
+	HRESULT DebugActiveProcess([in] DWORD id,
+                               [in] BOOL win32Attach,
+							   [out, retval] ICorDebugProcess **ppProcess);
+
+	/*
+	 * EnumerateProcesses returns an enum of processes being debugged.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT EnumerateProcesses([out, retval] ICorDebugProcessEnum **ppProcess);
+
+	/*
+	 * GetProcess returns the ICorDebugProcess with the given OS Id.  
+	 */
+	
+	HRESULT GetProcess([in] DWORD dwProcessId, 
+					   [out, retval] ICorDebugProcess **ppProcess);
+
+    /*
+     * CanLaunchOrAttach returns S_OK if the debugging services believe that
+     * launching a new process or attaching to the given process is possible
+     * given what it knows about the current machine and runtime configuration.
+     *
+     * If you plan to launch with win32 debugging enabled, or to attach with
+     * win32 debugging enabled then pass in TRUE for win32DebuggineEnabled.
+     * The answer may be different if this option will be used.
+     *
+     * Note: the rest of the API will not stop you from launching or attaching
+     * to a process anyway. This function is purely informational.
+     *
+     * Possible HRESULTs: S_OK, CORDBG_E_DEBUGGING_NOT_POSSIBLE,
+     * CORDBG_E_KERNEL_DEBUGGER_PRESENT, CORDBG_E_KERNEL_DEBUGGER_ENABLED
+     *
+     * Not Implemented In-Proc
+     */
+
+    HRESULT CanLaunchOrAttach([in] DWORD dwProcessId,
+                              [in] BOOL win32DebuggingEnabled);
+     
+};
+
+
+/* ------------------------------------------------------------------------- *
+ * Controller interface
+ * ------------------------------------------------------------------------- */
+
+
+/*
+ * A thread's DebugState determines whether the debugger lets a thread
+ * run or not.  Possible states are:
+ *
+ * THREAD_RUN - thread runs freely, unless a debug event occurs
+ * THREAD_SUSPEND - thread cannot run.
+ *
+ * NOTE: We allow for message pumping via a callback provided to the Hosting
+ *		API, thus we don't need an 'interrupted' state here.
+ */
+
+typedef enum CorDebugThreadState
+{
+	THREAD_RUN,
+	THREAD_SUSPEND
+} CorDebugThreadState;
+
+
+/*
+ * ICorDebugController represents a scope at which program execution context
+ * can be controlled.  It represents either a process or an app domain.
+ * 
+ * If this is the controller of a process, this controller affects all 
+ * threads in the process.  Otherwise it just affects the threads of 
+ * a particular app domain
+ */
+
+[
+	object,
+	uuid(3d6f5f62-7538-11d3-8d5b-00104b35e7ef),
+	pointer_default(unique)
+]
+
+interface ICorDebugController : IUnknown
+{
+	/* 
+	 * Stop performs a cooperative stop on all threads running managed
+	 * code in the process.  Threads running unmanaged code are
+	 * suspended (unless this is in-process).  If the cooperative stop
+	 * fails due to a deadlock, all threads are suspended (and E_TIMEOUT 
+     * is returned)
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT Stop([in] DWORD dwTimeout);
+
+    /*
+     * Continue continues the process after a call to Stop.
+     *
+     * Continue continues the process. fIsOutOfBand is set to TRUE
+     * if continuing from an unmanaged event that was sent with the
+     * fOutOfBand flag in the unmanaged callback and it is set to
+     * FALSE if continuing from a managed event or a normal
+     * unmanaged event.
+     *
+     * Not Implemented In-Proc
+     */
+
+    HRESULT Continue([in] BOOL fIsOutOfBand);
+
+	/*
+	 * IsRunning returns TRUE if the threads in the process are running freely.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT IsRunning([out, retval] BOOL *pbRunning);
+
+	/*
+     * HasQueuedCallbacks returns TRUE if there are currently managed
+	 * callbacks which are queued up for the given thread.  These
+	 * callbacks will be dispatched one at a time, each time Continue
+	 * is called.
+	 *
+	 * The debugger can check this flag if it wishes to report multiple 
+	 * debugging events which occur simultaneously.
+     *
+     * If NULL is given for the pThread parameter, HasQueuedCallbacks
+     * will return TRUE if there are currently managed callbacks
+     * queued for any thread.
+     *
+     * Not Implemented In-Proc
+     */
+	
+	HRESULT HasQueuedCallbacks([in] ICorDebugThread *pThread,
+                               [out, retval] BOOL *pbQueued);
+
+	/*
+	 * EnumerateThreads returns an enum of all threads active in the process.
+	 */
+
+	HRESULT EnumerateThreads([out, retval] ICorDebugThreadEnum **ppThreads);
+
+	/*
+	 * SetAllThreadsDebugState sets the current debug state of each thread.
+	 * See ICorDebugThread::SetDebugState for details.
+	 *
+	 * The pExceptThisThread parameter allows you to specify one
+	 * thread which is exempted from the debug state change. Pass NULL
+	 * if you want to affect all threads.
+     *
+     * Not Implemented In-Proc
+     */
+
+	HRESULT SetAllThreadsDebugState([in] CorDebugThreadState state,
+									[in] ICorDebugThread *pExceptThisThread);
+
+	/*
+	 * Detach detaches the debugger from the process/appdomain.  The process  
+	 * continues execution normally. The ICorDebugProcess/AppDomain object is  
+	 * no longer valid and no further callbacks will occur.
+	 *
+	 * Note that currently if unmanaged debugging is enabled this call will 
+	 * fail due to OS limitations.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT Detach();
+
+	/*
+	 * Terminate terminates the process (with extreme prejudice, I might add).
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT Terminate([in] UINT exitCode);
+    
+	/*
+     * *****  WARNING:   NOT IMPLEMENTED FOR VERSION 1 *****
+     *
+	 * CanCommitChanges is called to see if the delta PE's can be applied to
+	 * the running process.  If there are any known problems with the changes,
+	 * then an error information is returned.
+     *
+     * The following is a partial list of what will/may cause CCC to fail:
+     *
+     *  ><  Increasing the maximum nesting level of exception handlers
+     *
+     *
+     * Not Implemented In-Proc.
+	 */
+
+	HRESULT CanCommitChanges([in] ULONG cSnapshots, 
+                             [in, size_is(cSnapshots)] ICorDebugEditAndContinueSnapshot *pSnapshots[], 
+                             [out, retval] ICorDebugErrorInfoEnum **pError);
+
+
+	/*
+     * *****  WARNING:   NOT IMPLEMENTED FOR VERSION 1 *****
+     *
+     * CommitChanges is called to apply the delta PE's to the running
+	 * process.  Any failures return detailed error information.
+	 * There are no rollback guarantees when a failure occurs.
+	 * Applying delta PE's to a running process must be done in the
+	 * order the snapshots are retrieved and may not be interleaved
+	 * (ie: there is no merging of multiple snapshots applied out of
+	 * order or with the same root).
+     *
+     * Not Implemented In-Proc
+     */
+
+	HRESULT CommitChanges([in] ULONG cSnapshots, 
+                          [in, size_is(cSnapshots)] ICorDebugEditAndContinueSnapshot *pSnapshots[], 
+                          [out, retval] ICorDebugErrorInfoEnum **pError);
+
+};
+
+
+
+/* ------------------------------------------------------------------------- *
+ *    
+ * AppDomain interface
+ * ------------------------------------------------------------------------- */
+
+
+[
+	object,
+	uuid(3d6f5f63-7538-11d3-8d5b-00104b35e7ef),
+	pointer_default(unique)
+]
+interface ICorDebugAppDomain : ICorDebugController
+{
+	/* 		
+	 * GetProcess returns the process containing the app domain
+	 */
+
+	HRESULT GetProcess([out, retval] ICorDebugProcess **ppProcess);		
+
+	/*		  
+	 * EnumerateAssemblies enumerates all assemblies in the app domain
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT EnumerateAssemblies([out, retval] ICorDebugAssemblyEnum **ppAssemblies);
+
+	/*
+     * GetModuleFromMetaDataInterface returns the ICorDebugModule with
+	 * the given metadata interface.
+     */
+	
+	HRESULT GetModuleFromMetaDataInterface([in] IUnknown *pIMetaData, 
+                                           [out, retval] ICorDebugModule **ppModule);
+
+	/*
+     * EnumerateBreakpoints returns an enum (ICorDebugBreakpointEnum) of all active 
+     * breakpoints in the app domain.  This includes all types of breakpoints : 
+     * function breakpoints, data breakpoints, etc.
+     *
+     * Not Implemented In-Proc
+     */
+
+	HRESULT EnumerateBreakpoints([out, retval] ICorDebugBreakpointEnum **ppBreakpoints);
+
+	/*
+	 * EnumerateSteppers returns an enum of all active steppers in the app domain.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT EnumerateSteppers([out, retval] ICorDebugStepperEnum **ppSteppers);
+	/*
+	 * IsAttached returns whether or not the debugger is attached to the 
+	 * app domain.  The controller methods on the app domain cannot be used
+	 * until the debugger attaches to the app domain.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT IsAttached([out, retval] BOOL *pbAttached);
+
+
+	/*
+	 * GetName returns the name of the app domain. 
+	 */
+
+	HRESULT GetName([in] ULONG32 cchName, 
+                    [out] ULONG32 *pcchName,
+                    [out, retval, size_is(cchName), 
+                    length_is(*pcchName)] WCHAR szName[]); 
+
+	/*
+	 * GetObject returns the runtime app domain object. 
+	 * Note:   This method is not yet implemented.
+	 */
+
+	HRESULT GetObject([out, retval] ICorDebugValue **ppObject);
+
+	/* Attach() should be called to attach to the app domain to 
+	 * receive all app domain related events (load assembly, load module, etc.)
+	 * in order to be able to debug the app domain. 
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT Attach();
+
+    /*
+     * Get the ID of this app domain.
+     */
+
+    HRESULT GetID([out, retval] ULONG32 *pId);
+
+};
+
+
+/* ------------------------------------------------------------------------- *
+ * Assembly interface
+ * ------------------------------------------------------------------------- */
+
+
+[
+	object,
+	uuid(df59507c-d47a-459e-bce2-6427eac8fd06),
+	pointer_default(unique)
+]
+
+interface ICorDebugAssembly : IUnknown
+{
+	/* 		
+	 * GetProcess returns the process containing the assembly
+	 */
+
+	HRESULT GetProcess([out, retval] ICorDebugProcess **ppProcess);		
+
+	/* 		
+	 * GetAppDomain returns the app domain containing the assembly.
+	 * Returns null if this is the system assembly
+	 */
+
+	HRESULT GetAppDomain([out, retval] ICorDebugAppDomain **ppAppDomain);		
+
+	/*		  
+	 * EnumerateModules enumerates all modules in the assembly
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT EnumerateModules([out, retval] ICorDebugModuleEnum **ppModules);
+
+	/*
+	 * GetCodeBase returns the code base used to load the assembly
+	 * Note:   This method is not yet implemented.
+	 */
+
+	HRESULT GetCodeBase([in] ULONG32 cchName, 
+						[out] ULONG32 *pcchName,
+						[out, retval, size_is(cchName), 
+						length_is(*pcchName)] WCHAR szName[]); 
+
+	/*
+	 * GetName returns the name of the assembly
+	 */
+
+	HRESULT GetName([in] ULONG32 cchName, 
+                    [out] ULONG32 *pcchName,
+                    [out, retval, size_is(cchName), 
+                    length_is(*pcchName)] WCHAR szName[]); 
+};
+
+
+/* ------------------------------------------------------------------------- *
+ * Process interface
+ * ------------------------------------------------------------------------- */
+
+
+/*
+ * ICorDebugProcess represents a process running some managed code.
+ */
+
+[
+	object,
+	uuid(3d6f5f64-7538-11d3-8d5b-00104b35e7ef),
+	pointer_default(unique)
+]
+interface ICorDebugProcess : ICorDebugController
+{
+	/*
+	 * GetID returns the OS ID of the process. 
+	 */
+
+	HRESULT GetID([out, retval] DWORD *pdwProcessId);
+
+	/*
+	 * GetHandle returns a handle to the process. 
+	 */
+
+	HRESULT GetHandle([out, retval] HPROCESS *phProcessHandle);
+
+	/*
+	 * GetThread returns the ICorDebugThread with the given OS Id.  
+	 * 
+	 * Note that eventually there will not be a one to one correspondence
+	 * between OS threads and runtime threads, so this entry point will
+	 * go away.
+	 */
+	
+	HRESULT GetThread([in] DWORD dwThreadId, [out, retval] ICorDebugThread **ppThread);
+
+	/* 
+	 * TENTATIVE:
+	 * 
+	 * EnumerateObjects returns an enum which will return all managed objects
+	 * in the process. 
+	 * 
+     * Note: not yet implemented.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT EnumerateObjects([out, retval] ICorDebugObjectEnum **ppObjects);
+
+	/*
+	 * IsTransitionStub tests whether an address is inside of a transition stub
+	 * which will cause a transition to managed code.  This can be used by
+	 * unmanaged stepping code to decide when to return stepping control to
+	 * the managed stepper.
+	 *
+	 * Note that, tentatively, these stubs may also be able to be identified
+	 * ahead of time by looking at information in the PE file.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT IsTransitionStub([in] CORDB_ADDRESS address,
+							 [out, retval] BOOL *pbTransitionStub);
+
+
+	/* 
+	 * IsOSSuspended returns whether or not the thread has been
+	 * suspended as part of the debugger logic of stopping the process. 
+	 * (that is, it has had its Win32 suspend count incremented by
+	 * one.)  The debugger UI may want to take this into account if
+	 * it shows the user the OS suspend count of the thread.
+	 *
+	 * This function only makes sense in the context of 
+	 * unmanaged debugging - during managed debugging threads are not
+	 * OS suspended. (They are cooperatively suspended.)
+	 */
+
+	HRESULT IsOSSuspended([in] DWORD threadID, [out, retval] BOOL *pbSuspended);
+
+	/*
+	 * GetThreadContext returns the context for the given thread.  The
+	 * debugger should call this function rather than the Win32 
+	 * GetThreadContext, because the thread may actually be in a "hijacked" 
+	 * state where its context has been temporarily changed.
+	 * 
+	 * The data returned is a CONTEXT structure for the current platform.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT GetThreadContext([in] DWORD threadID, 
+							 [in] ULONG32 contextSize,
+							 [out, retval, length_is(contextSize), 
+							 size_is(contextSize)] BYTE context[]);
+
+	/*
+	 * SetThreadContext sets the context for the given thread.  The
+	 * debugger should call this function rather than the Win32 
+	 * SetThreadContext, because the thread may actually be in a "hijacked" 
+	 * state where its context has been temporarily changed.
+	 * 
+	 * The data returned is a CONTEXT structure for the current platform.
+	 *
+	 * This is a dangerous call which can corrupt the runtime if used 
+	 * improperly.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT SetThreadContext([in] DWORD threadID, 
+							 [in] ULONG32 contextSize,
+							 [in, length_is(contextSize), 
+							 size_is(contextSize)] BYTE context[]);
+
+	/*
+	 * ReadMemory reads memory from the process.  Any debugger patches will
+	 * be automatically removed.  No caching of process memory is peformed.
+	 */
+
+	HRESULT ReadMemory([in] CORDB_ADDRESS address, [in] DWORD size,
+					   [out, size_is(size), length_is(size)] BYTE buffer[],
+                       [out, retval] DWORD *read);
+
+	/*
+	 * WriteMemory writes memory in the process.  Any debugger patches will
+	 * be automatically written behind.
+	 *
+	 * This is a dangerous call which can corrupt the runtime if used 
+	 * improperly.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT WriteMemory([in] CORDB_ADDRESS address, [in] DWORD size,
+						[in, size_is(size)] BYTE buffer[],
+                        [out, retval]DWORD *written);
+
+
+	/*
+     * ClearCurrentException clears the current unmanaged exception on
+	 * the given thread. Call this before calling Continue when a
+	 * thread has reported an unmanaged exception that should be
+	 * ignored by the debuggee.
+     *
+     * Not Implemented In-Proc
+     */
+
+	HRESULT ClearCurrentException([in] DWORD threadID);
+
+	/*
+	 * EnableLogMessages enables/disables sending of log messages to the 
+	 * debugger for logging.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT EnableLogMessages([in]BOOL fOnOff);
+
+	/*
+	 * ModifyLogSwitch modifies the specified switch's severity level.
+     *
+     * Not Implemented In-Proc
+	 */
+	HRESULT ModifyLogSwitch([in] WCHAR *pLogSwitchName,
+                            [in]LONG lLevel);
+	
+	/* 
+	 * EnumerateAppDomains enumerates all app domains in the process.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT EnumerateAppDomains([out, retval] 
+         ICorDebugAppDomainEnum **ppAppDomains);
+
+	/*
+	 * GetObject returns the runtime process object.
+	 * Note: This method is not yet implemented.
+	 */
+
+	HRESULT GetObject([out, retval] ICorDebugValue **ppObject);
+
+    /*
+     * Given a fiber cookie from the Runtime Hosting API, return
+     * the matching ICorDebugThread.
+     *
+     * If the thread is found, returns S_OK. Returns S_FALSE otherwise.
+     */
+    
+    HRESULT ThreadForFiberCookie([in] DWORD fiberCookie,
+                                 [out, retval] ICorDebugThread **ppThread);
+
+    /*
+     * Returns the OS thread id of the debugger's internal helper thread.
+     * During managed/unmanaged debugging, it is the debugger's
+     * responsibility to ensure that the thread with this ID remains running
+     * if it hits a breakpoint placed by the debugger. A debugger may also
+     * wish to hide this thread from the user.
+     *
+     * If there is no helper thread in the process yet, then this method
+     * will return zero as the thread id.
+     *
+     * Note: you cannot cache this value. The ID of the helper thread will
+     * change over time, so this value must be re-queried at every stopping
+     * event.
+     *
+     * Note: this value will be correct on every unmanaged CreateThread event.
+     * This will allow a debugger to determine the TID of the helper thread
+     * and hide it from the user. A thread identified as a helper thread during
+     * an unmanaged CreateThread event will never run user code.
+     */
+
+    HRESULT GetHelperThreadID([out, retval] DWORD *pThreadID);
+};
+
+/* ------------------------------------------------------------------------- *
+ * Breakpoint interface
+ * ------------------------------------------------------------------------- */
+
+/*
+ * ICorDebugBreakpoint represents a breakpoint; either a breakpoint
+ * set in a function, or a watchpoint set on a value.
+ * 
+ * Note that breakpoints have no direct support for condition 
+ * expressions.  The debugger must implement this functionality on top of 
+ * this interface if desired.
+ *
+ * Not Implemented In-Proc : There are _no_ breakpoints within the in-proc
+ * interface.
+ */
+
+[
+	object,
+    uuid(CC7BCAE8-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugBreakpoint : IUnknown
+{
+	HRESULT Activate([in] BOOL bActive);
+	HRESULT IsActive([out, retval] BOOL *pbActive);
+};
+
+[
+	object,
+    uuid(CC7BCAE9-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugFunctionBreakpoint : ICorDebugBreakpoint
+{
+	HRESULT GetFunction([out, retval] ICorDebugFunction **ppFunction);
+	HRESULT GetOffset([out, retval] ULONG32 *pnOffset);
+};
+
+[
+	object,
+    uuid(CC7BCAEA-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugModuleBreakpoint : ICorDebugBreakpoint
+{
+	HRESULT GetModule([out, retval] ICorDebugModule **ppModule);
+};
+
+[
+	object,
+    uuid(CC7BCAEB-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugValueBreakpoint : ICorDebugBreakpoint
+{
+	HRESULT GetValue([out, retval] ICorDebugValue **ppValue);
+};
+
+/* ------------------------------------------------------------------------- *
+ * Stepper interface
+ * ------------------------------------------------------------------------- */
+
+/*
+ * A Stepper object represents a stepping operation being performed by 
+ * the debugger.  Note that there can be more than one stepper per
+ * thread; for instance a breakpoint may be hit in the midst of a
+ * stepping over a function, and the user may wish to start a new 
+ * stepping operation inside that function. (Note that it is up to the
+ * debugger how to handle this; it may want to cancel the original
+ * stepping operation, or nest them.  This API allows either behavior.) 
+ * 
+ * Also, a stepper may migrate between threads if a cross-thread
+ * marshalled call is made by the EE.
+ * 
+ * This object serves several purposes.  Its serves as an identifer between a
+ * step command issued and the completion of that command. It also
+ * provides a central interface to encapsulate all of the stepping
+ * that can be performed.  Finally it provides a way to prematurely
+ * cancel a stepping operation.
+ *
+ * Not Implemented In-Proc
+ */
+
+[
+	object,
+    uuid(CC7BCAEC-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugStepper : IUnknown
+{
+	/*
+	 * IsActive returns whether or not the stepper is active, that is, whether
+	 * it is currently stepping.
+	 *
+	 * Any step action remains active until StepComplete is called.  Note that
+	 * this automatically deactivates the stepper.
+	 *
+	 * A stepper may also be deactivated prematurely by calling
+	 * Deactivate before a callback condition is reached.
+	 */
+
+	HRESULT IsActive([out, retval] BOOL *pbActive);
+
+	/*
+	 * Deactivate causes a stepper to cancel the last stepping command it
+	 * received.  A new stepping command may then be issued.
+	 */
+
+	HRESULT Deactivate();
+
+	/*
+	 * SetInterceptMask controls which intercept code will be stepped
+	 * into by the stepper. If the bit for an interceptor is set, the
+	 * stepper will complete with reason STEPPER_INTERCEPT when the
+	 * given type of intercept occurs.  If the bit is cleared, the 
+	 * intercepting code will be skipped.
+	 *
+     * Note that SetInterceptMask may have unforeseen interactions
+     * with SetUnmappedStopMask (from the user's point of view).  For
+     * example, if the only visible (ie, non internal) portion of class
+     * init code lacks mapping info (STOP_NO_MAPPING_INFO) and
+     * STOP_NO_MAPPING_INFO isn't set, then we'll step over the class init.
+     *
+	 * By default, only INTERCEPT_NONE will be used.
+	 */
+
+	typedef enum CorDebugIntercept
+	{
+          INTERCEPT_NONE                = 0x0 ,
+		  INTERCEPT_CLASS_INIT			= 0x01,
+		  INTERCEPT_EXCEPTION_FILTER	= 0x02,
+		  INTERCEPT_SECURITY			= 0x04,
+		  INTERCEPT_CONTEXT_POLICY		= 0x08,
+		  INTERCEPT_INTERCEPTION		= 0x10,
+		  INTERCEPT_ALL					= 0xffff
+	} CorDebugIntercept;
+
+	HRESULT SetInterceptMask([in] CorDebugIntercept mask);
+
+	/*
+	 * SetUnmappedStopMask controls whether the stepper
+	 * will stop in jitted code which is not mapped to IL.
+	 * 
+	 * If the given flag is set, then that type of unmapped code
+	 * will be stopped in.  Otherwise stepping transparently continues.
+     *
+     * It should be noted that if one doesn't use a stepper to enter a
+     * method (for example, the main() method of C++), then one
+     * won't neccessarily step over prologs,etc.
+     *
+     * By default, STOP_OTHER_UNMAPPED will be used.
+	 */
+
+	typedef enum CorDebugUnmappedStop
+	{
+        STOP_NONE               = 0x0,
+		STOP_PROLOG				= 0x01,
+		STOP_EPILOG				= 0x02,
+		STOP_NO_MAPPING_INFO	= 0x04,		
+		STOP_OTHER_UNMAPPED		= 0x08,
+		STOP_UNMANAGED          = 0x10,
+		STOP_ALL				= 0xffff
+	} CorDebugUnmappedStop;
+
+	HRESULT SetUnmappedStopMask([in] CorDebugUnmappedStop mask);
+
+	/*
+	 * Step is called when a thread is to be single stepped.  The step
+	 * will complete at the next managed instruction executed by the
+	 * EE in the stepper's frame.
+	 * 
+	 * If bStepIn is TRUE, any function calls made during the step
+	 * will be stepped into.  Otherwise they will be skipped.
+	 *
+	 * If Step is called on a stepper which is not in managed code,
+	 * the step will complete when the next managed code is executed
+	 * by the thread. (if bStepIn is FALSE, it will only complete 
+	 * when managed code is returned to, not when it is stepped into.)
+	 */
+
+	HRESULT Step([in] BOOL bStepIn);
+
+	/*
+	 * StepRange works just like Step, except it will not complete
+	 * until code outside the given range is reached.  This can be
+	 * more efficient than stepping one instruction at a time.
+	 * 
+	 * Ranges are specified as a list of offset pairs [start, end)
+	 * (note that end is exclusive) from the start of the stepper's
+	 * frame's code.
+	 *
+	 * Ranges are in relative to the IL code of a method.  Call
+	 * SetRangeIL(FALSE) to specify ranges relative to the native code
+	 * of a method.
+	 */
+
+	typedef struct COR_DEBUG_STEP_RANGE
+	{
+		ULONG32 startOffset, endOffset;
+	} COR_DEBUG_STEP_RANGE;
+
+	HRESULT StepRange([in] BOOL bStepIn, 
+					  [in,size_is(cRangeCount)] COR_DEBUG_STEP_RANGE ranges[], 
+					  [in] ULONG32 cRangeCount);
+
+	/*
+	 * A StepOut operation will complete after the current frame is 
+	 * returned from normally and the previous frame is reactivated.
+	 * 
+	 * If this is called when in unmanaged code, the step will complete
+	 * when the calling managed code is returned to.
+	 */
+
+	HRESULT StepOut();
+
+	/*
+	 * SetRangeIL is used to set whether the ranges passed StepRange are
+	 * relative to the IL code or the native code for the method being 
+	 * stepped in.
+	 *
+	 * By default the range is in IL.
+	 */
+
+	HRESULT SetRangeIL([in] BOOL bIL);
+};
+
+
+/* ------------------------------------------------------------------------- *
+ * Program state object interfaces
+ * ------------------------------------------------------------------------- */
+
+/*
+ * ICorDebugRegisterSet 
+ */
+
+[
+	object,
+    uuid(CC7BCB0B-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugRegisterSet : IUnknown
+{
+	typedef enum CorDebugRegister
+	{
+		// registers (potentially) available on all architectures
+		// Note that these overlap with the architecture-specific 
+		// registers
+
+		REGISTER_INSTRUCTION_POINTER = 0,
+		REGISTER_STACK_POINTER,
+		REGISTER_FRAME_POINTER,
+		
+		// X86 registers
+
+		REGISTER_X86_EIP = 0,
+		REGISTER_X86_ESP,
+		REGISTER_X86_EBP,
+
+		REGISTER_X86_EAX,
+		REGISTER_X86_ECX,
+		REGISTER_X86_EDX,
+		REGISTER_X86_EBX,
+
+		REGISTER_X86_ESI,
+		REGISTER_X86_EDI,
+
+		REGISTER_X86_FPSTACK_0,
+		REGISTER_X86_FPSTACK_1,
+		REGISTER_X86_FPSTACK_2,
+		REGISTER_X86_FPSTACK_3,
+		REGISTER_X86_FPSTACK_4,
+		REGISTER_X86_FPSTACK_5,
+		REGISTER_X86_FPSTACK_6,
+		REGISTER_X86_FPSTACK_7,
+
+		// other architectures here
+	} CorDebugRegister;
+
+	/*
+	 * GetRegistersAvailable returns a mask indicating which registers
+	 * are available in the given register set.  Registers may be unavailable
+	 * if their value is undeterminable for the given situation.  The returned
+	 * word contains a bit for each register (1 << register index), which will
+	 * be 1 if the register is available or 0 if it is not.
+	 */
+
+	HRESULT GetRegistersAvailable([out, retval] ULONG64 *pAvailable);
+
+	/* 
+	 * GetRegisters returns an array of register values corresponding
+	 * to the given mask.  The registers which have their bit set in
+	 * the mask will be packed into the resulting array.  (No room is
+	 * assigned in the array for registers whose mask bit is not set.)
+	 * Thus, the size of the array should be equal to the number of
+	 * 1's in the mask.
+	 *
+	 * If an unavailable register is indicated by the mask, an indeterminate
+	 * value will be returned for the corresponding register.
+	 *
+	 * registerBufferCount should indicate number of elements in the
+	 * buffer to receive the register values.  If it is too small for
+	 * the number of registers indicated by the mask, the higher
+	 * numbered registers will be truncated from the set.  Or, if it
+	 * is too large, the unused registerBuffer elements will be
+	 * unmodified.  */
+
+	HRESULT GetRegisters([in] ULONG64 mask, [in] ULONG32 regCount,
+						 [out, retval, size_is(regCount), length_is(regCount)] 
+						 CORDB_REGISTER regBuffer[]);
+
+	/* 
+	 * SetRegisters sets the value of the set registers corresponding
+	 * to the given mask.  For each bit set in the mask, the
+	 * corresponding register will be set from the corresponding
+	 * element in the registerBuffer. (Note that the correlation is by
+	 * sequence, not by the position of the bit.  That is,
+	 * registerBuffer is "packed"; there are no elements corresponding
+	 * to registers whose bit is not set.
+	 *
+	 * If an unavailable register is indicated by the mask, the
+	 * register will not be set (although a value for that register is
+	 * recognized from the registerBuffer.)
+	 *
+	 * registerBufferCount should indicate number of elements in the
+	 * buffer to be the register values.  If it is too small for the
+	 * number of registers indicated by the mask, the higher numbered
+	 * registers will not be set.  If it is too large, the extra
+	 * values will be ignored.
+	 *
+	 * Note that setting registers this way is inherently dangerous.
+	 * CorDebug makes no attempt to insure that the runtime remains in
+	 * a valid state when register values are changed. (For example,
+	 * if the IP were set to point to non-managed code, who knows what
+	 * would happen.)  
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT SetRegisters([in] ULONG64 mask, 
+						 [in] ULONG32 regCount, 
+						 [in, size_is(regCount)] CORDB_REGISTER regBuffer[]);
+
+	/*
+	 * GetThreadContext returns the context for the given thread.  The
+	 * debugger should call this function rather than the Win32 
+	 * GetThreadContext, because the thread may actually be in a "hijacked" 
+	 * state where its context has been temporarily changed.
+	 * 
+	 * The data returned is a CONTEXT structure for the current platform.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT GetThreadContext([in] ULONG32 contextSize,
+							 [out, retval, length_is(contextSize), 
+							 size_is(contextSize)] BYTE context[]);
+
+	/*
+	 * SetThreadContext sets the context for the given thread.  The
+	 * debugger should call this function rather than the Win32 
+	 * SetThreadContext, because the thread may actually be in a "hijacked" 
+	 * state where its context has been temporarily changed.
+	 * 
+	 * The data returned is a CONTEXT structure for the current platform.
+	 *
+	 * This is a dangerous call which can corrupt the runtime if used 
+	 * improperly.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT SetThreadContext([in] ULONG32 contextSize,
+							 [in, length_is(contextSize), 
+							 size_is(contextSize)] BYTE context[]);
+}
+
+/*
+ * ICorDebugThread represents a thread in the process.  The lifetime of a 
+ * thread object is equal to the lifetime of the thread it represents.
+ */
+
+[
+	object,
+	uuid(938c6d66-7fb6-4f69-b389-425b8987329b),
+	pointer_default(unique)
+]
+interface ICorDebugThread : IUnknown
+{
+	/*
+	 * GetProcess returns the process of which this thread is a part.
+	 */
+
+	HRESULT GetProcess([out, retval] ICorDebugProcess **ppProcess);
+
+	/*
+	 * GetID returns the current OS ID of the active part of the thread.  
+	 * Note that this may theoretically change as the process executes,
+	 * and even be different for different parts of the thread.
+	 */
+
+	HRESULT GetID([out, retval] DWORD *pdwThreadId);
+
+	/*
+	 * GetHandle returns the current Handle of the active part of the thread.  
+	 * Note that this may theoretically change as the process executes,
+	 * and even be different for different parts of the thread.
+	 */
+
+	HRESULT GetHandle([out, retval] HTHREAD *phThreadHandle);
+
+	/*
+	 * GetAppDomain returns the app domain which the thread is currently 
+	 * executing in.
+	 */
+
+	HRESULT GetAppDomain([out, retval] ICorDebugAppDomain **ppAppDomain);
+
+	/*
+     * SetDebugState sets the current debug state of the thread.
+     * (The "current debug state"
+	 * represents the debug state if the process were to be continued,
+	 * not the actual current state.)
+	 *
+	 * The normal value for this is THREAD_RUNNING.  Only the debugger
+	 * can affect the debug state of a thread.  Debug states do
+	 * last across continues, so if you want to keep a thread
+	 * THREAD_SUSPENDed over mulitple continues, you can set it once
+	 * and thereafter not have to worry about it.
+     *
+     * Not Implemented In-Proc
+     */
+
+	HRESULT SetDebugState([in] CorDebugThreadState state);
+
+	/*
+     * GetDebugState returns the current debug state of the thread.
+	 * (If the process is currently stopped, the "current debug state"
+	 * represents the debug state if the process were to be continued,
+	 * not the actual current state.)
+     */
+
+	HRESULT GetDebugState([out, retval] CorDebugThreadState *pState);
+
+	/*
+	 * GetUserState returns the user state of the thread, that is, the state
+	 * which it has when the program being debugged examines it.
+	 */
+
+	typedef enum CorDebugUserState
+	{
+		USER_STOP_REQUESTED		= 0x01,
+		USER_SUSPEND_REQUESTED	= 0x02,
+		USER_BACKGROUND			= 0x04,
+		USER_UNSTARTED			= 0x08,
+		USER_STOPPED			= 0x10,
+		USER_WAIT_SLEEP_JOIN	= 0x20,
+		USER_SUSPENDED			= 0x40
+	} CorDebugUserState;
+
+	HRESULT GetUserState([out, retval] CorDebugUserState *pState);
+
+	/* 
+	 * GetCurrentException returns the exception object which is
+	 * currently being thrown by the thread.  This will only exist for
+	 * the duration of an Exception callback.
+	 */
+
+	HRESULT GetCurrentException([out, retval] ICorDebugValue **ppExceptionObject);
+
+	/* 
+	 * ClearCurrentException clears the current exception object,
+	 * preventing it from being thrown.  This should be called before
+	 * the Exception callback returns.
+	 * 
+	 * This can only succeed if the current exception is 
+	 * a continuable exception.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT ClearCurrentException();
+
+	/*
+     * CreateStepper creates a stepper object which operates relative
+	 * to the active frame in the given thread. (Note that this may be
+	 * unmanaged code.)  The Stepper API must then be used to perform
+	 * actual stepping.
+     *
+     * Not Implemented In-Proc
+     */
+
+	HRESULT CreateStepper([out, retval] ICorDebugStepper **ppStepper);
+
+	/*
+	 * EnumerateChains returns an enum which will return all the stack
+	 * chains in the thread, starting at the active (most recent) one.
+	 * These chains represent the physical call stack for the thread.
+	 * 
+	 * Chain boundaries occur for several reasons:
+	 *   managed <-> unmanaged transitions
+	 *   context switches
+	 *   debugger hijacking of user threads
+	 * 
+	 * Note that in the simple case for a thread running purely
+	 * managed code in a single context there will be a one to one
+	 * correspondence between threads & chains.
+	 *
+	 * A debugger may want to rearrange the physical call
+     * stacks of all threads into logical call stacks. This would involve
+     * sorting all the threads' chains by their caller/callee
+     * relationships & regrouping them.
+     *
+     * InProc Only: Note that invoking this method will cause a stack trace
+     * to occur, and thus will refresh any caches that the inprocess debugger
+     * maintains.  This should only be called once per time that you want
+     * the stack traced (mostly, once after managed code has been allowed to
+     * execute) - the enumerator that's
+     * returned can be cloned / reset if multiple stack traces are desired.
+     *
+     * NOTE: For in-proc debugging, chain enumeration may only be done from
+     *       FunctionEnter, FunctionLeave, FunctionTailcall,
+     *       UnmanagedToManagedTransition and ManagedToUnmanagedTransition
+     *       profiling events.  Behaviour from all other locations is
+     *       undefined.
+     *
+     * NOTE: Chain enumeration for in-proc debugging is currently NYI and
+     *       will be implemented for Beta 2.
+     *
+	 */
+
+	HRESULT EnumerateChains([out, retval] ICorDebugChainEnum **ppChains);
+
+	/*
+	 * GetActiveChain is a convenience routine to return the 
+	 * active (most recent) chain on the thread, if any.
+     *
+	 */
+
+	HRESULT GetActiveChain([out, retval] ICorDebugChain **ppChain);
+
+	/*
+	 * GetActiveFrame is a convenience routine to return the 
+	 * active (most recent) frame on the thread, if any.
+     *
+	 */
+
+	HRESULT GetActiveFrame([out, retval] ICorDebugFrame **ppFrame);
+
+	/*
+	 * GetRegisterSet returns the register set for the active part
+	 * of the thread.
+     *
+	 */
+
+	HRESULT GetRegisterSet([out, retval] ICorDebugRegisterSet **ppRegisters);
+
+	/*
+	 * CreateEval creates an evaluation object which operates on the 
+	 * given thread.  The Eval will push a new chain on the thread before
+	 * doing its computation.  
+	 *
+	 * Note that this interrupts the computation currently
+	 * being performed on the thread until the eval completes.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT CreateEval([out, retval] ICorDebugEval **ppEval);
+
+	/*
+	 * Returns the runtime thread object.
+	 */
+	
+	HRESULT GetObject([out, retval] ICorDebugValue **ppObject);
+};
+
+/*
+ * ICorDebugChain represents a segment of a physical or logical call
+ * stack.  All frames in a chain occupy contiguous stack space, and
+ * they share the same thread & context.  A chain may represent either
+ * managed or unmanaged code, although an unmanaged chain will have no
+ * visible frames.
+ */
+
+[
+	object,
+    uuid(CC7BCAEE-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugChain : IUnknown
+{
+	/* 
+	 * GetThread returns the physical thread which this call chain is
+	 * part of.
+	 */
+
+	HRESULT GetThread([out, retval] ICorDebugThread **ppThread);
+
+	/*
+	 * GetStackRange returns the address range of the stack segment for the
+	 * call chain.  Note that you cannot make any assumptions about
+	 * what is actually stored on the stack - the numeric range is to compare
+     * stack frame locations only.  
+	 *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT GetStackRange([out] CORDB_ADDRESS *pStart, [out] CORDB_ADDRESS *pEnd);
+
+	/*
+	 * GetContext returns the Common Language Runtime context for all of the frames in
+	 * the chain. 
+     *
+     * Note: not yet implemented.
+	 */
+
+	HRESULT GetContext([out, retval] ICorDebugContext **ppContext);
+
+	/*
+	 * GetCaller returns a pointer to the chain which called this
+	 * chain.  Note that this may be a chain on another thread in the
+	 * case of cross-thread-marshalled calls. The caller will be NULL
+	 * for spontaneously called chains (e.g. the ThreadProc, a
+	 * debugger initiated call, etc.)
+	 */
+
+	HRESULT GetCaller([out, retval] ICorDebugChain **ppChain);
+
+	/*
+	 * GetCallee returns a pointer to the chain which this chain is
+	 * waiting on before it resumes. Note that this may be a chain on
+	 * another thread in the case of cross-thread-marshalled
+	 * calls. The callee will be NULL if the chain is currently
+	 * actively running.
+	 */
+
+	HRESULT GetCallee([out, retval] ICorDebugChain **ppChain);
+
+	/*
+	 * GetPrevious returns a pointer to the chain which was on this 
+	 * thread before the current one was pushed, if there is one.
+	 */
+
+	HRESULT GetPrevious([out, retval] ICorDebugChain **ppChain);
+
+	/*
+	 * GetNext returns a pointer to the chain which was pushed on this 
+	 * thread after the current one, if there is one.
+	 */
+
+	HRESULT GetNext([out, retval] ICorDebugChain **ppChain);
+
+	/*
+	 * IsManaged returns whether or not the chain is running managed
+	 * code.  
+	 */
+
+	HRESULT IsManaged([out, retval] BOOL *pManaged);
+
+	/*
+	 * These chains represent the physical call stack for the thread.
+	 * EnumerateFrames returns an iterator which will list all the stack
+	 * frames in the chain, starting at the active (most recent) one. This 
+	 * should be called only for managed chains.
+	 */
+
+	HRESULT EnumerateFrames([out, retval] ICorDebugFrameEnum **ppFrames);
+
+	/*
+	 * GetActiveFrame is a convenience routine to return the 
+	 * active (most recent) frame on the chain, if any.
+	 */
+
+	HRESULT GetActiveFrame([out, retval] ICorDebugFrame **ppFrame);
+
+	/*
+	 * GetRegisterSet returns the register set for the active part
+	 * of the chain.
+     *
+	 */
+
+	HRESULT GetRegisterSet([out, retval] ICorDebugRegisterSet **ppRegisters);
+
+	/* 
+	 * GetReason returns the reason for the genesis of this calling chain.
+	 */
+
+	typedef enum CorDebugChainReason
+	{
+        // Note that the first five line up with CorDebugIntercept
+        CHAIN_NONE              = 0x000,
+        CHAIN_CLASS_INIT        = 0x001,
+        CHAIN_EXCEPTION_FILTER  = 0x002,
+        CHAIN_SECURITY          = 0x004,
+        CHAIN_CONTEXT_POLICY    = 0x008,
+        CHAIN_INTERCEPTION      = 0x010,
+        CHAIN_PROCESS_START     = 0x020,
+        CHAIN_THREAD_START      = 0x040,
+        CHAIN_ENTER_MANAGED     = 0x080,
+        CHAIN_ENTER_UNMANAGED   = 0x100,
+        CHAIN_DEBUGGER_EVAL     = 0x200,
+        CHAIN_CONTEXT_SWITCH    = 0x400,
+        CHAIN_FUNC_EVAL         = 0x800,
+	} CorDebugChainReason;
+
+	HRESULT GetReason([out, retval] CorDebugChainReason *pReason);
+};
+
+
+[
+	object,
+    uuid(CC7BCAEF-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugFrame : IUnknown
+{
+	/*
+	 * GetChain returns the chain of which this stack frame is a part.
+	 */
+
+	HRESULT GetChain([out, retval] ICorDebugChain **ppChain);
+
+	/*
+	 * GetCode returns the code which this stack frame is running.
+	 */
+
+	HRESULT GetCode([out, retval] ICorDebugCode **ppCode);
+
+	/*
+	 * GetFunction is a convenience routine to return the function for the 
+	 * code which this stack frame is running.
+	 */
+
+	HRESULT GetFunction([out, retval] ICorDebugFunction **ppFunction);
+
+	/*
+	 * GetFunctionToken is a convenience routine to return the token for the
+	 * function for the code which this stack frame is running.
+	 */
+
+	HRESULT GetFunctionToken([out, retval] mdMethodDef *pToken);
+
+	/* 
+	 * GetStackRange returns the absolute address range of the stack
+	 * frame.  (This is useful for piecing together interleaved stack
+	 * traces gathered from multiple ee engines.)  Note that you
+	 * cannot make any assumptions about what is actually stored on
+	 * the stack - the numeric range is to compare stack frame
+	 * locations only.  
+	 */
+
+	HRESULT GetStackRange([out] CORDB_ADDRESS *pStart, [out] CORDB_ADDRESS *pEnd);
+
+	/*
+	 * GetCaller returns a pointer to the frame in the current chain 
+	 * which called this frame, or NULL if this is the outermost frame 
+	 * in the chain.
+	 */
+
+	HRESULT GetCaller([out, retval] ICorDebugFrame **ppFrame);
+
+	/* 
+	 * GetCallee returns a pointer to the frame in the current chain 
+	 * which this frame called, or NULL if this is the innermost frame 
+	 * in the chain.
+	 */
+
+	HRESULT GetCallee([out, retval] ICorDebugFrame **ppFrame);
+
+	/*
+	 * CreateStepper creates a stepper object which operates relative to the 
+	 * frame. The Stepper API must then be used to perform actual stepping. 
+	 *
+	 * Note that if this frame is not active, the frame will typically have to 
+	 * be returned to before the step is completed. 
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT CreateStepper([out, retval] ICorDebugStepper **ppStepper);
+};
+
+/*
+ * ICorDebugILFrame is a specialized interface of ICorDebugFrame for
+ * which is used either for IL frames or jitted frames.  (Note
+ * that jitted frames implement both ILFrame and NativeFrame.)
+ */
+
+[
+	object,
+	uuid(03E26311-4F76-11d3-88C6-006097945418),
+	pointer_default(unique)
+]
+interface ICorDebugILFrame : ICorDebugFrame
+{
+	/*
+	 * GetIP returns the stack frame's offset into the function's IL code.  
+	 * If this stack frame is active, this address is the next 
+	 * instruction to execute.  If this stack frame is not active, this is the 
+	 * next instruction to execute when the stack frame is reactivated. 
+	 *
+	 * Note that if this a jitted frame, the IP will be determined by
+	 * mapping backwards from the actual native IP, so the value may
+	 * be only approximately correct.
+	 *
+	 * If pMappingResult is not NULL, A mapping result is returned which
+	 * indicates the details of how the IP was obtained.  The following values
+	 * can be returned:
+     *
+	 *	MAPPING_EXACT - the IP is correct; either the frame is
+	 *	interpreted or there is an exact IL map for the function.
+     *
+	 *  MAPPING_APPROXIMATE - the IP was successfully mapped, but may
+	 *  be only approximately correct
+     *
+	 *  MAPPING_UNMAPPED_ADDRESS - although there is mapping info for
+	 *  the function, the current address is not mappable to IL.  An
+	 *  IP of 0 is returned.
+     *
+	 *  MAPPING_PROLOG - the native code is in the prolog, so an IP of
+	 *  0 is returned
+     *
+	 *  MAPPING_EPILOG - the native code is in an epilog, so the last
+	 *  IP of the method is returned
+     *
+	 *  MAPPING_NO_INFO - no mapping info is available for the method,
+	 *  so an IP of 0 is returned
+     *
+     */
+
+	typedef enum CorDebugMappingResult
+	{
+		MAPPING_PROLOG              = 0x1,
+		MAPPING_EPILOG              = 0x2,
+		MAPPING_NO_INFO             = 0x4,
+		MAPPING_UNMAPPED_ADDRESS    = 0x8,
+		MAPPING_EXACT               = 0x10,
+		MAPPING_APPROXIMATE         = 0x20,
+	} CorDebugMappingResult;
+
+	HRESULT GetIP([out] ULONG32 *pnOffset, [out, retval] CorDebugMappingResult *pMappingResult);
+
+	/* 
+	 * SetIP sets the instruction pointer to the IL at the given offset. 
+	 * The debugger will do its best to fix up the state of the executing code
+	 * so that it is consistent with the new IP as far as the EE is concerned,
+	 * while preserving as much of the state of the user program as possible.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT SetIP([in] ULONG32 nOffset);
+
+	/* 
+	 * EnumerateLocalVariables returns a list of the local variables
+	 * available in the frame.  Note that this may not include all of
+	 * the locals in the running function, as some of them may not be
+	 * active.  
+	 */
+
+	HRESULT EnumerateLocalVariables([out, retval] ICorDebugValueEnum **ppValueEnum);
+
+	/* 
+	 * GetLocalVariable gets the value for a local variable
+	 * in an IL frame.  This can be used either in an IL
+	 * frame or a jitted frame.  
+	 */
+
+	HRESULT GetLocalVariable([in] DWORD dwIndex, 
+							 [out, retval] ICorDebugValue **ppValue);
+
+	/* 
+	 * EnumerateArguments returns a list of the arguments available in the
+	 * frame.  Note that this will include varargs arguments as well as
+	 * arguments declared by the function signature.
+	 */
+
+	HRESULT EnumerateArguments([out, retval] ICorDebugValueEnum **ppValueEnum);
+
+	/* 
+	 * GetArgument gets the value for an argument
+	 * in an IL frame.  This can be used either in an IL
+	 * frame or a jitted frame.  
+	 */
+
+	HRESULT GetArgument([in] DWORD dwIndex, 
+						[out, retval] ICorDebugValue **ppValue);
+
+	/*
+	 * GetStackDepth gets the operand stack depth of an IL frame
+     *
+     * Note: not yet implemented.
+	 */
+
+	HRESULT GetStackDepth([out, retval] ULONG32 *pDepth);
+
+	/* 
+	 * GetStackValue gets a value from the operand stack in an IL
+	 * frame.  This can be only be used on IL frames.  The
+	 * index is the index from the top of the stack (the topmost
+	 * element is at index 0).  
+     *
+     * Note: not yet implemented.
+	 */
+
+	HRESULT GetStackValue([in] DWORD dwIndex, 
+						  [out, retval] ICorDebugValue **ppValue);
+
+	/* 
+	 * CanSetIP attempts to determine if it's safe to set the instruction pointer 
+	 * to the IL at the given offset. If this returns S_OK, then executing 
+	 * SetIP (see above) will result in a safe, correct, continued execution.
+	 * If CanSetIP returns anything else, SetIP can still be invoked, but
+	 * continued, correct execution of the debuggee cannot be guaranteed.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT CanSetIP([in] ULONG32 nOffset);
+
+};
+
+/*
+ * ICorDebugNativeFrame is a specialized interface of ICorDebugFrame for
+ * which is used either for jitted frames or managed native frames.  (Note
+ * that jitted frames implement both ILFrame and NativeFrame.)
+ */
+
+[
+	object,
+	uuid(03E26314-4F76-11d3-88C6-006097945418),
+	pointer_default(unique)
+]
+interface ICorDebugNativeFrame : ICorDebugFrame
+{
+	/*
+     * GetIP returns the stack frame's offset into the function's
+	 * native code.  If this stack frame is active, this address is
+	 * the next instruction to execute.  If this stack frame is not
+	 * active, this is the next instruction to execute when the stack
+	 * frame is reactivated.
+     */
+
+	HRESULT GetIP([out, retval] ULONG32 *pnOffset);
+
+	/* 
+	 * SetIP sets the instruction pointer to the given native
+	 * offset. CorDebug will attempt to keep the stack frame in a
+	 * coherent state.  (Note that even if the frame is in a valid
+	 * state as far as the runtime is concerned, there still may be
+	 * problems - e.g. uninitialized local variables, etc.  The caller
+	 * (or perhaps the user) is responsible for insuring coherency of
+	 * the running program.)  
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT SetIP([in] ULONG32 nOffset);
+
+	/*
+	 * GetRegisterSet returns the register set for the given frame.
+     *
+	 */
+
+	HRESULT GetRegisterSet([out, retval] ICorDebugRegisterSet **ppRegisters);
+
+	/* 
+	 * GetLocalRegisterValue gets the value for a local variable or
+	 * argument stored in a register of a native frame. This can be
+	 * used either in a native frame or a jitted frame.  
+	 */
+
+	HRESULT GetLocalRegisterValue([in] CorDebugRegister reg,
+                                  [in] ULONG cbSigBlob,
+                                  [in] PCCOR_SIGNATURE pvSigBlob,
+								  [out, retval] ICorDebugValue **ppValue);
+
+	/* 
+	 * GetLocalDoubleRegisterValue gets the value for a local variable
+	 * or argument stored in 2 registers of a native frame. This can
+	 * be used either in a native frame or a jitted frame.  
+	 */
+
+	HRESULT GetLocalDoubleRegisterValue([in] CorDebugRegister highWordReg, 
+										[in] CorDebugRegister lowWordReg, 
+                                        [in] ULONG cbSigBlob,
+                                        [in] PCCOR_SIGNATURE pvSigBlob,
+										[out, retval] ICorDebugValue **ppValue);
+
+	/* 
+	 * GetLocalMemoryValue gets the value for a local variable stored
+	 * at the given address. 
+	 */
+
+	HRESULT GetLocalMemoryValue([in] CORDB_ADDRESS address, 
+                                [in] ULONG cbSigBlob,
+                                [in] PCCOR_SIGNATURE pvSigBlob,
+								[out, retval] ICorDebugValue **ppValue);
+
+	/* 
+	 * GetLocalRegisterMemoryValue gets the value for a local which
+	 * is stored half in a register and half in memory.
+	 */
+
+	HRESULT GetLocalRegisterMemoryValue([in] CorDebugRegister highWordReg, 
+										[in] CORDB_ADDRESS lowWordAddress,
+                                        [in] ULONG cbSigBlob,
+                                        [in] PCCOR_SIGNATURE pvSigBlob,
+										[out, retval] ICorDebugValue **ppValue);
+
+	/* 
+	 * GetLocalMemoryRegisterValue gets the value for a local which
+	 * is stored half in a register and half in memory.
+	 */
+
+	HRESULT GetLocalMemoryRegisterValue([in] CORDB_ADDRESS highWordAddress, 
+										[in] CorDebugRegister lowWordRegister,
+                                        [in] ULONG cbSigBlob,
+                                        [in] PCCOR_SIGNATURE pvSigBlob,
+										[out, retval] ICorDebugValue **ppValue);
+	/* 
+	 * CanSetIP attempts to determine if it's safe to set the instruction pointer 
+	 * to the given native offset. If this returns S_OK, then executing 
+	 * SetIP (see above) will result in a safe, correct, continued execution.
+	 * If CanSetIP returns anything else, SetIP can still be invoked, but
+	 * continued, correct execution of the debuggee cannot be guaranteed.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT CanSetIP([in] ULONG32 nOffset);
+};
+
+/*
+ * ICorDebugModule represents a Common Language Runtime module.  (either an executable or
+ * DLL.)
+ */
+
+[
+	object,
+	uuid(dba2d8c1-e5c5-4069-8c13-10a7c6abf43d),
+	pointer_default(unique)
+]
+interface ICorDebugModule : IUnknown
+{
+	/*
+	 * GetProcess returns the process of which this module is a part.
+	 */
+
+	HRESULT GetProcess([out, retval] ICorDebugProcess **ppProcess);
+
+	/*
+	 * GetBaseAddress returns the base address of the module.
+	 */
+
+	HRESULT GetBaseAddress([out, retval] CORDB_ADDRESS *pAddress);
+    
+	/* 
+	 * GetAssembly returns the assembly of which this module is a part.
+	 */
+
+	HRESULT GetAssembly([out, retval] ICorDebugAssembly **ppAssembly);
+
+	/*
+	 * GetName returns the file name of the module
+	 */
+
+	HRESULT GetName([in] ULONG32 cchName, 
+                    [out] ULONG32 *pcchName,
+                    [out, retval, size_is(cchName), 
+                    length_is(*pcchName)] WCHAR szName[]); 
+
+	/* 
+	 * EnableJITDebugging controls whether the jitter preserves
+	 * debugging information for methods within this module.
+	 * If bTrackJITInfo is true, then the jitter preserves
+	 * mapping information between the IL version of a function and
+	 * the jitted version for functions in the module.  If bAllowJitOpts
+	 * is true, then the jitter will generate code with certain (JIT-specific)
+	 * optimizations.
+	 *
+	 * JITDebug is enabled by default for all modules loaded when the
+	 * debugger is active.  Programmatically enabling/disabling these
+	 * settings will override global settings.
+     *
+     * Not Implemented In-Proc
+	 */
+	HRESULT EnableJITDebugging([in] BOOL bTrackJITInfo,
+	                           [in] BOOL bAllowJitOpts);
+
+	/*
+     * EnableClassLoadCallbacks controls whether on not ClassLoad
+	 * callbacks are called for the particular module.  ClassLoad
+	 * callbacks are off by default.
+	 *
+     * Not Implemented In-Proc
+     */
+	 
+	HRESULT EnableClassLoadCallbacks([in] BOOL bClassLoadCallbacks);
+
+	/*
+     * GetFunctionFromToken returns the ICorDebugFunction from
+	 * metadata information. Returns CORDBG_E_FUNCTION_NOT_IL if
+	 * called with a methodDef that does not refer to an IL method.
+     */
+
+	HRESULT GetFunctionFromToken([in] mdMethodDef methodDef,
+								 [out, retval] ICorDebugFunction **ppFunction);
+
+	/*
+	 * GetFunctionFromRVA returns the ICorDebugFunction from the relative
+	 * address of the function in the module.
+	 * Note:   This method is not yet implemented.
+	 */
+
+	HRESULT GetFunctionFromRVA([in] CORDB_ADDRESS rva,
+							   [out, retval] ICorDebugFunction **ppFunction);
+
+	/*
+	 * GetClassFromToken returns the ICorDebugClass from metadata information.
+	 */
+
+	HRESULT GetClassFromToken([in] mdTypeDef typeDef,
+							  [out, retval] ICorDebugClass **ppClass);
+
+	/*
+	 * CreateBreakpoint creates a breakpoint which will be triggered
+	 * when any code in the module is executed.
+     *
+     * Note: not yet implemented.
+     *
+     * Not Implemented In-Proc
+	 */
+	
+	HRESULT CreateBreakpoint([out, retval] ICorDebugModuleBreakpoint **ppBreakpoint);
+
+    /*
+     * *****  WARNING:   NOT IMPLEMENTED FOR VERSION 1 *****
+     *
+     * Edit & Continue support.  GetEditAndContinueSnapshot produces
+	 * a snapshot of the running process.  This snapshot can then be
+	 * fed into the compiler to guarantee the same token values are
+	 * returned by the meta data during compile, to find the address
+	 * where new static data should go, etc.  These changes are
+	 * comitted using ICorDebugProcess.
+     *
+     * Not Implemented In-Proc
+     */
+    
+	HRESULT GetEditAndContinueSnapshot([out, retval] ICorDebugEditAndContinueSnapshot **ppEditAndContinueSnapshot);
+
+	/*
+	 * Return a meta data interface pointer that can be used to examine the
+	 * meta data for this module.
+	 */
+	HRESULT GetMetaDataInterface([in] REFIID riid, [out, retval] IUnknown **ppObj);
+
+
+	/*
+	 * Return the token for the Module table entry for this object.  The token
+	 * may then be passed to the meta data import api's.
+	 */
+	HRESULT GetToken([out, retval] mdModule *pToken);
+
+	/*
+	 * If this is a dynamic module, IsDynamic sets *pDynamic to true, otherwise
+	 * sets *pDynamic to false.
+	 */
+	HRESULT IsDynamic([out, retval] BOOL *pDynamic);
+
+	/*
+	 * GetGlobalVariableValue returns a value object for the given global
+	 * variable.
+	 */
+	HRESULT GetGlobalVariableValue([in] mdFieldDef fieldDef,
+                                   [out, retval] ICorDebugValue **ppValue);
+
+    /*
+     * GetSize returns the size, in bytes, of the module.
+     */
+    HRESULT GetSize([out, retval] ULONG32 *pcBytes);
+
+	/*
+     * If this is a module that exists only in the debuggee's memory,
+	 * then pInMemory will be set to TRUE. The Runtime supports
+	 * loading assemblies from raw streams of bytes. Such modules are
+	 * called "in memory" modules and they have no on-disk
+	 * representation.
+     */
+	HRESULT IsInMemory([out, retval] BOOL *pInMemory);
+};
+
+[
+	object,
+    uuid(CC7BCAF3-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugFunction : IUnknown
+{
+	/*
+	 * GetModule returns the module for the function.
+	 */
+
+	HRESULT GetModule([out, retval] ICorDebugModule **ppModule);
+
+	/*
+     * GetClass returns the class for the function. Returns null if
+	 * the function is not a member.
+     */
+
+	HRESULT GetClass([out, retval] ICorDebugClass **ppClass);
+
+	/*
+	 * GetToken returns the metadata memberdef token for the function.
+	 */
+
+	HRESULT GetToken([out, retval] mdMethodDef *pMethodDef);
+
+	/* 
+	 * GetILCode returns the IL code for the function.  Returns null
+	 * if there is no IL code for the function.  Note that this will 
+	 * get the IL code corresponding to the MOST RECENT version of 
+	 * the code in the runtime, if this function has been EnC'd.
+	 */
+
+	HRESULT GetILCode([out, retval] ICorDebugCode **ppCode);
+
+	/* 
+	 * GetNativeCode returns the native code for the function.
+	 * Returns null if there is no native code for the function
+	 * (i.e. it is an IL function which has not been jitted) 
+	 * Note that this will get the native code corresponding to the 
+	 * MOST RECENT version of the code in the runtime that's been JITted, 
+	 * if this function has been EnC'd.
+	 */
+
+	HRESULT GetNativeCode([out, retval] ICorDebugCode **ppCode);
+
+	/* 
+	 * CreateBreakpoint creates a breakpoint at the start of the function.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT CreateBreakpoint([out, retval] ICorDebugFunctionBreakpoint **ppBreakpoint);
+
+	/* 
+	 * Returns the token for the local variable signature for this function.
+	 * If there is no signature (ie, the function doesn't have any local
+	 * variables), then mdSignatureNil will be returned.
+	 */
+
+	HRESULT GetLocalVarSigToken([out, retval] mdSignature *pmdSig);
+
+
+    /*
+     * Obtains the current version of the function, which is the same version
+     * as that obtained by Get{IL or Native}Code's ICorDebugCode's 
+     * GetVersionNumber()
+     */
+
+     HRESULT GetCurrentVersionNumber([out, retval] ULONG32 *pnCurrentVersion);
+};
+
+[
+	object,
+    uuid(CC7BCAF4-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugCode : IUnknown
+{
+	/*
+	 * IsIL returns whether the code is IL (as opposed to native.)
+	 */
+	
+	HRESULT IsIL([out, retval] BOOL *pbIL);
+	
+	/*
+	 * GetFunction returns the function for the code.
+	 */
+	
+	HRESULT GetFunction([out, retval] ICorDebugFunction **ppFunction);
+	
+	/*
+	 * GetAddress returns the address of the code.
+	 */
+
+	HRESULT GetAddress([out, retval] CORDB_ADDRESS *pStart);
+
+	/*
+	 * GetSize returns the size in bytes of the code.
+	 */
+
+	HRESULT GetSize([out, retval] ULONG32 *pcBytes);
+
+	/* 
+	 * CreateBreakpoint creates a breakpoint in the function at the
+	 * given offset.  Note that the breakpoint must be added to the
+	 * process object before it is active.
+	 * 
+	 * If this code is IL code, and there is a jitted native version
+	 * of the code, the breakpoint will be applied in the jitted code
+	 * as well.  (The same is true if the code is later jitted.)  
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT CreateBreakpoint([in] ULONG32 offset, 
+							 [out, retval] ICorDebugFunctionBreakpoint **ppBreakpoint);
+
+	/*
+	 * GetCode returns the code of the method, suitable for disassembly.  Note 
+	 * that instruction boundaries aren't checked.
+	 */
+
+	HRESULT GetCode([in] ULONG32 startOffset, [in] ULONG32 endOffset,
+					[in] ULONG32 cBufferAlloc,
+					[out, size_is(cBufferAlloc),
+						  length_is(*pcBufferSize)] BYTE buffer[],
+					[out, retval] ULONG32 *pcBufferSize);
+
+    /*
+     * GetVersionNumber returns the 1 based number identifying the
+     * version of the code that this ICorDebugCode corresponds to.  The
+     * version number is incremented each time the function is Edit-And-
+     * Continue'd.
+     */
+    
+	HRESULT GetVersionNumber([out, retval] ULONG32 *nVersion);
+
+    /*
+     * GetILToNativeMapping returns a map from IL offsets to native
+     * offsets for this code. An array of COR_DEBUG_IL_TO_NATIVE_MAP
+     * structs will be returned, and some of the ilOffsets in this array
+     * map be the values specified in CorDebugIlToNativeMappingTypes.
+     *
+     * Note: this method is only valid for ICorDebugCodes representing
+     * native code that was jitted from IL code.
+     * Note: There is no ordering to the array of elements returned, nor
+     * should you assume that there is or will be. 
+     */
+    HRESULT GetILToNativeMapping([in] ULONG32 cMap,
+                                 [out] ULONG32 *pcMap,
+                                 [out, retval, size_is(cMap), length_is(*pcMap)]
+                                 COR_DEBUG_IL_TO_NATIVE_MAP map[]);
+
+    /*
+     * GetEnCRemapSequencePoints returns a list of IL offsets that the Runtime
+     * will use when switching from old code to new code during after an EnC.
+     */
+    HRESULT GetEnCRemapSequencePoints([in] ULONG32 cMap,
+                                      [out] ULONG32 *pcMap,
+                                      [out, retval, size_is(cMap), length_is(*pcMap)]
+                                      ULONG32 offsets[]);
+};
+
+[
+	object,
+    uuid(CC7BCAF5-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugClass : IUnknown
+{
+	/*
+	 * GetModule returns the module for the class.
+	 */
+
+	HRESULT GetModule([out, retval] ICorDebugModule **pModule);
+
+	/*
+	 * GetTypeDefToken returns the metadata typedef token for the class.
+	 */
+
+	HRESULT GetToken([out, retval] mdTypeDef *pTypeDef);
+
+	/*
+	 * GetStaticFieldValue returns a value object (ICorDebugValue) for the given static field
+	 * variable. If the static field could possibly be relative to either
+     * a thread, context, or appdomain, then pFrame will help the debugger
+     * determine the proper value.
+	 */
+
+	HRESULT GetStaticFieldValue([in] mdFieldDef fieldDef,
+                                [in] ICorDebugFrame *pFrame,
+								[out, retval] ICorDebugValue **ppValue);
+
+};
+
+/* ------------------------------------------------------------------------- *
+ * Function call interfaces
+ * ------------------------------------------------------------------------- */
+
+/*
+ * ICorDebugEval collects functionality which requires running code
+ * inside the debuggee. Note that the operations do not complete until
+ * ICorDebugProcess::Continue is called, and the EvalComplete callback
+ * is called.
+ *
+ * An ICorDebugEval object is created in the context of a specific
+ * thread, which will be used to perform the evaluations.
+ *
+ * If you need to use this functionality without changing the state of
+ * the program, set the DebugState of the program's threads to STOP
+ * before calling Continue.
+ *
+ * Note that since user code is running when the evaluation is in
+ * progress, any debug events can occur, including class loads,
+ * breakpoints, etc. Callbacks will be called normally in such a
+ * case. The state of the Eval will be seen as part of the normal
+ * program state inspection; the full debugger API continues to
+ * operate as normal in such a circumstance. Evals can even be nested.
+ *
+ * Also, the user code may never complete due to deadlock or infinite
+ * looping. In this case you will need to Abort the Eval before
+ * resuming the program.
+ *
+ * Not Implemented In-Proc : In-proc can't do func eval
+ */
+
+[
+	object,
+    uuid(CC7BCAF6-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugEval : IUnknown
+{
+	/*
+	 * CallFunction sets up a function call.  Note that the given function
+	 * is called directly; there is no virtual dispatch.  
+	 * (Use ICorDebugObjectValue::GetVirtualMethod to do virtual dispatch.)
+	 */
+
+	HRESULT CallFunction([in] ICorDebugFunction *pFunction, 
+						 [in] ULONG32 nArgs,
+						 [in, size_is(nArgs)] ICorDebugValue *ppArgs[]);
+
+	/*
+	 * NewObject allocates and calls the constructor for an object.
+	 */
+
+	HRESULT NewObject([in] ICorDebugFunction *pConstructor,
+					  [in] ULONG32 nArgs,
+					  [in, size_is(nArgs)] ICorDebugValue *ppArgs[]);
+
+	/*
+     * NewObjectNoConstructor allocates a new object without
+	 * attempting to call any constructor on the object.
+     */
+
+	HRESULT NewObjectNoConstructor([in] ICorDebugClass *pClass);
+
+	/*
+	 * NewString allocates a string object with the given contents.
+	 */
+
+	HRESULT NewString([in] LPCWSTR string);
+
+	/*
+     * NewArray allocates a new array with the given element type and
+	 * dimensions. If the elementType is a primitive, pElementClass
+	 * may be NULL. Otherwise, pElementClass should be the class of
+	 * the elements of the array. Note: lowBounds is optional. If
+     * omitted, a zero lower bound for each dimension is assumed.
+     */
+
+	HRESULT NewArray([in] CorElementType elementType,
+                     [in] ICorDebugClass *pElementClass, 
+					 [in] ULONG32 rank,
+					 [in, size_is(rank)] ULONG32 dims[], 
+					 [in, size_is(rank)] ULONG32 lowBounds[]);
+
+	/*
+	 * IsActive returns whether or not the Eval has an active computation.
+	 */
+
+	HRESULT IsActive([out, retval] BOOL *pbActive);
+
+	/*
+	 * Abort aborts the current computation.  Note that in the case of nested
+	 * Evals, this may fail unless it is the most recent Eval.
+	 */
+
+	HRESULT Abort();
+
+	/*
+     * GetResult returns the result of the evaluation.  This is only
+	 * valid after the evaluation is completed.
+	 *
+	 * If the evaluation completes normally, the result will be the
+	 * return value.  If it terminates with an exception, the result
+	 * is the exception thrown. If the evaluation was for a new object,
+     * the return value is the reference to the object.
+     */
+
+	HRESULT GetResult([out, retval] ICorDebugValue **ppResult);
+
+	/* 
+	 * GetThread returns the thread which this eval was created from.
+	 */
+
+	HRESULT GetThread([out, retval] ICorDebugThread **ppThread);
+
+    /*
+     * CreateValue creates an ICorDebugValue of the given type for the
+     * sole purpose of using it in a function evaluation. These can be
+     * use to pass user constants as parameters. The value has a zero
+     * or NULL initial value. Use ICorDebugValue::SetValue to
+     * set the value.
+     *
+     * pElementClass is only required for value classes. Pass NULL
+     * otherwise.
+     *
+     * If elementType == ELEMENT_TYPE_CLASS, then you get an
+     * ICorDebugReferenceValue representing the NULL object reference.
+     * You can use this to pass NULL to evals that have object reference
+     * parameters. You cannot set the ICorDebugReferenceValue to
+     * anything... it always remains NULL.
+     */
+    
+    HRESULT CreateValue([in] CorElementType elementType,
+                        [in] ICorDebugClass *pElementClass,
+                        [out, retval] ICorDebugValue **ppValue);
+};
+
+/* ------------------------------------------------------------------------- *
+ * Runtime value interfaces
+ * ------------------------------------------------------------------------- */
+
+/* 
+ * ICorDebugValue represents a value in the remote process.  Note that
+ * the values can be both Get and Set; they are "lvalues".
+ * 
+ * In general, ownership of a value object is passed when it is returned. The 
+ * recipient is responsible for removing a reference from the object when 
+ * finished with it.
+ *
+ * Depending on where the value was retrieved from, the value may not remain 
+ * valid after the process is resumed, 
+ * so in general they shouldn't be held across continues.  
+ */
+ 
+[
+	object,
+    uuid(CC7BCAF7-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugValue : IUnknown 
+{
+	/*
+	 * GetType returns the simple type of the value.  If the object 
+	 * has a more complex runtime type, that type may be examined through the
+	 * appropriate subclasses (e.g. ICorDebugObjectValue can get the class of
+	 * an object.)
+	 */
+
+	HRESULT GetType([out, retval] CorElementType *pType);
+
+	/*
+	 * GetSize returns the size of the value in bytes. Note that for reference
+	 * types this will be the size of the pointer rather than the size of
+	 * the object.
+	 */
+
+	HRESULT GetSize([out, retval] ULONG32 *pSize);
+
+	/*
+     * GetAddress returns the address of the value in the debugee
+	 * process.  This might be useful information for the debugger to
+	 * show.
+	 * 
+	 * If the value is at least partly in registers, 0 is returned.
+     */
+
+	HRESULT GetAddress([out, retval] CORDB_ADDRESS *pAddress); 
+
+	/*
+	 * CreateBreakpoint creates a breakpoint which will be triggered when 
+	 * the value is modified. 
+     *
+     * Note: not yet implemented.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT CreateBreakpoint([out, retval] ICorDebugValueBreakpoint **ppBreakpoint);
+};
+
+/*
+ * ICorDebugGenericValue is a subclass of ICorDebugValue which applies to 
+ * all values, and can be used to get & set the value.  It is a 
+ * separate subinterface because it is non-remotable.
+ *
+ * Note that for reference types, the value is the reference rather than
+ * the contents.
+ */
+
+[
+	object,
+	local,
+    uuid(CC7BCAF8-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugGenericValue : ICorDebugValue 
+{
+	/*
+	 * GetValue copies the value into the specified buffer.  The buffer should
+	 * be the appropriate size for the simple type.
+	 */
+
+	HRESULT GetValue([out, retval] void *pTo);
+
+	/*
+	 * SetValue copies a new value from the specified buffer. The buffer should
+	 * be the approprirate size for the simple type.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT SetValue([in] void *pFrom); 
+};
+
+/* ISSUE: an remotable interface for each simple type
+ * 
+ * It might be nice to have a subclass with a typesafe Get/Set for each simple
+ * type.
+ */
+
+/*
+ * ICorDebugReferenceValue is a subclass of ICorDebugValue which applies to 
+ * a reference type. 
+ */
+
+[
+	object,
+    uuid(CC7BCAF9-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugReferenceValue : ICorDebugValue 
+{
+	/*
+	 * IsNull tests whether the reference is null.
+	 */
+
+	HRESULT IsNull([out, retval] BOOL *pbNull);
+
+	/*
+	 * GetValue copies the value into the specified buffer.  The buffer should
+	 * be the appropriate size for the simple type.
+	 */
+
+	HRESULT GetValue([out, retval] CORDB_ADDRESS *pValue);
+
+	/*
+	 * SetValue copies a new value from the specified buffer. The buffer should
+	 * be the appropriate size for the simple type.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT SetValue([in] CORDB_ADDRESS value); 
+
+	/*
+     * Dereference returns a ICorDebugValue representing the value
+	 * referenced. If the resulting value is a garbage collected
+	 * object, then the resulting value is a "weak reference" which
+	 * will become invalid if the object is garbage collected.
+     */
+	
+	HRESULT Dereference([out, retval] ICorDebugValue **ppValue);
+
+	/*
+	 * DereferenceStrong returns a ICorDebugValue representing the value
+     * referenced. If the resulting value is a garbage collected object,
+     * then the resulting value is a "strong reference" which will cause
+     * the object referenced to not be collect as long as it exists.
+	 */
+	
+	HRESULT DereferenceStrong([out, retval] ICorDebugValue **ppValue);
+};
+
+/*
+ * ICorDebugHeapValue is a subclass of ICorDebugValue which represents
+ * a garbage collected object 
+ */
+
+[
+	object,
+    uuid(CC7BCAFA-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugHeapValue : ICorDebugValue 
+{
+	/*
+	 * IsValid tests whether the object is valid.  (The object
+	 * becomes invalid if the garbage collector reclaims the object.)
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT IsValid([out, retval] BOOL *pbValid);
+
+	/*
+	 * CreateRelocBreakpoint creates a breakpoint which will be triggered when 
+	 * the address in the reference changes due to a garbage collection.
+     *
+     * Note: not yet implemented.
+     *
+     * Not Implemented In-Proc
+	 */
+
+	HRESULT CreateRelocBreakpoint([out, retval] 
+								  ICorDebugValueBreakpoint **ppBreakpoint);
+};
+
+/*
+ * ICorDebugObjectValue is a subclass of ICorDebugValue which applies to 
+ * values which contain an object.  
+ */
+
+[
+	object,
+    uuid(18AD3D6E-B7D2-11d2-BD04-0000F80849BD),
+	pointer_default(unique)
+]
+interface ICorDebugObjectValue : ICorDebugValue
+{
+	/*
+	 * GetClass returns the runtime class of the object in the value. 
+	 */
+
+	HRESULT GetClass([out, retval] ICorDebugClass **ppClass);
+
+	/*
+     * GetFieldValue returns a value for the given field in the given
+	 * class. The class must be on the class hierarchy of the object's
+	 * class, and the field must be a field of that class.
+     */
+
+	HRESULT GetFieldValue([in] ICorDebugClass *pClass,
+                          [in] mdFieldDef fieldDef,
+						  [out, retval] ICorDebugValue **ppValue);
+
+	/*
+	 * GetVirtualMethod returns the most derived function
+	 * for the given ref on this object.
+     *
+     * Note: not yet implemented.
+	 */
+
+	HRESULT GetVirtualMethod([in] mdMemberRef memberRef,
+							 [out, retval] ICorDebugFunction **ppFunction);
+
+	/*
+	 * GetContext returns the Common Language Runtime context for the object.
+     *
+     * Note: not yet implemented.
+	 */
+
+	HRESULT GetContext([out, retval] ICorDebugContext **ppContext);
+
+    /*
+     * IsValueClass returns true if the the class of this object is
+     * a value class.
+     */
+
+    HRESULT IsValueClass([out, retval] BOOL *pbIsValueClass);
+
+    /*
+     * GetManagedCopy will return an IUnknown that is a managed copy
+     * of a value class object. This can be used with Common Language Runtime Interop to
+     * get info about the object, like calling System.Object::ToString
+     * on it.
+     *
+     * Returns CORDB_E_OBJECT_IS_NOT_COPYABLE_VALUE_CLASS if the class of this
+     * object is not a value class.
+     *
+     * Not Implemented In-Proc
+     */
+
+    HRESULT GetManagedCopy([out, retval] IUnknown **ppObject);
+
+    /*
+     * SetFromManagedCopy will update a object's contents given a
+     * managed copy of the object. This can be used after using
+     * GetManagedCopy to update an object with a changed version.
+     *
+     * Returns CORDB_E_OBJECT_IS_NOT_COPYABLE_VALUE_CLASS if the class of this
+     * object is not a value class.
+     *
+     * Not Implemented In-Proc
+     *
+     */
+
+    HRESULT SetFromManagedCopy([in] IUnknown *pObject);
+};
+
+/*
+ * ICorDebugBoxValue is a subclass of ICorDebugValue which
+ * represents a boxed value class object.  
+ */
+
+[
+	object,
+    uuid(CC7BCAFC-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugBoxValue : ICorDebugHeapValue
+{
+	/*
+	 * GetObject returns the value object which is in the box.
+	 */
+
+	HRESULT GetObject([out, retval] ICorDebugObjectValue **ppObject);
+};
+
+/* 
+ * ICorDebugStringValue is a subclass of ICorDebugValue which
+ * applies to values which contain a string.  This interface
+ * provides an easy way to get the string contents.  
+ */
+
+[
+	object,
+    uuid(CC7BCAFD-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugStringValue : ICorDebugHeapValue
+{
+	/* 
+	 * GetLength returns the number of characters in the string.
+	 */
+
+	HRESULT GetLength([out, retval] ULONG32 *pcchString);
+
+	/* 
+	 * GetString returns the contents of the string.
+	 */
+
+	HRESULT GetString([in] ULONG32 cchString, 
+					  [out] ULONG32 *pcchString,
+					  [out, retval, size_is(cchString), 
+					  length_is(*pcchString)] WCHAR szString[]); 
+};
+
+/*
+ * ICorDebugArrayValue is a subclass of ICorDebugValue which applies
+ * to values which contain an array. This interface supports both
+ * single and multidimension arrays.
+ */
+
+[
+	object,
+    uuid(0405B0DF-A660-11d2-BD02-0000F80849BD),
+	pointer_default(unique)
+]
+interface ICorDebugArrayValue : ICorDebugHeapValue
+{
+	/*
+	 * GetElementType returns the simple type of the elements in the 
+	 * array. 
+	 */
+
+	HRESULT GetElementType([out, retval] CorElementType *pType);
+
+	/*
+	 * GetRank returns the number of dimensions in the array.  
+	 */
+
+	HRESULT GetRank([out, retval] ULONG32 *pnRank);
+
+	/*
+	 * GetCount returns the number of elements in all dimensions of
+     * the array.  
+	 */
+
+	HRESULT GetCount([out, retval] ULONG32 *pnCount);
+
+	/*
+	 * GetDimensions returns the dimensions of the array.
+	 */
+
+	HRESULT GetDimensions([in] ULONG32 cdim,
+						  [out, retval, size_is(cdim), 
+						   length_is(cdim)] ULONG32 dims[]);
+
+    /*
+     * HasBaseIndicies returns whether or not the array has base indicies.
+     * If the answer is no, then all dimensions have a base index of 0.
+     */
+
+    HRESULT HasBaseIndicies([out, retval] BOOL *pbHasBaseIndicies);
+    
+	/*
+	 * GetBaseIndicies returns the base index of each dimension in 
+	 * the array
+	 */
+
+	HRESULT GetBaseIndicies([in] ULONG32 cdim,
+							[out, retval, size_is(cdim), 
+							length_is(cdim)] ULONG32 indicies[]);
+
+	/*
+	 * GetElement returns a value representing the given element in the array.
+	 */
+
+	HRESULT GetElement([in] ULONG32 cdim,
+					   [in, size_is(cdim), 
+					    length_is(cdim)] ULONG32 indices[],
+					   [out, retval] ICorDebugValue **ppValue);
+	/*
+     * GetElementAtPosition returns a value representing the given
+	 * element at the given position in the array. The position is
+	 * over all dimensions of the array.
+     */
+
+	HRESULT GetElementAtPosition([in] ULONG32 nPosition, 
+                                 [out, retval] ICorDebugValue **ppValue);
+};
+
+/*
+ * ICorDebugContext represents a context object.  
+ * 
+ * Interface TBD.
+ */
+
+[
+	object,
+    uuid(CC7BCB00-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugContext : ICorDebugObjectValue 
+{
+};
+
+
+/* ------------------------------------------------------------------------- *
+ * Enum interfaces
+ * ------------------------------------------------------------------------- */
+
+/*
+ * ICorDebugEnum is an abstract enumerator.
+ */
+
+[
+	object,
+    uuid(CC7BCB01-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugEnum : IUnknown
+{
+    HRESULT Skip([in] ULONG celt);
+    HRESULT Reset();
+    HRESULT Clone([out, retval] ICorDebugEnum **ppEnum);
+    HRESULT GetCount([out, retval] ULONG *pcelt);
+};
+
+[
+	object,
+    uuid(CC7BCB02-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugObjectEnum : ICorDebugEnum
+{
+    HRESULT Next([in] ULONG celt,
+				 [out, size_is(celt), 
+				  length_is(*pceltFetched)]  CORDB_ADDRESS objects[],
+				 [out, retval] ULONG *pceltFetched);
+};
+
+/*
+ * Not Implemented In-Proc : There aren't any inproc breakpoints to enum!
+ */
+[
+	object,
+    uuid(CC7BCB03-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+
+interface ICorDebugBreakpointEnum : ICorDebugEnum
+{
+    HRESULT Next([in] ULONG celt,
+				 [out, size_is(celt), length_is(*pceltFetched)]  
+					ICorDebugBreakpoint *breakpoints[],
+				 [out, retval] ULONG *pceltFetched);
+};
+
+/*
+ * Not Implemented In-Proc : There aren't any inproc steppers to enum!
+ */
+[
+	object,
+    uuid(CC7BCB04-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+
+interface ICorDebugStepperEnum : ICorDebugEnum
+{
+    HRESULT Next([in] ULONG celt,
+				 [out, size_is(celt), length_is(*pceltFetched)]  
+					ICorDebugStepper *steppers[],
+				 [out, retval] ULONG *pceltFetched);
+};
+
+[
+	object,
+    uuid(CC7BCB05-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugProcessEnum : ICorDebugEnum
+{
+    HRESULT Next([in] ULONG celt,
+				 [out, size_is(celt), length_is(*pceltFetched)]  
+					ICorDebugProcess *processes[],
+				 [out, retval] ULONG *pceltFetched);
+};
+
+[
+	object,
+    uuid(CC7BCB06-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugThreadEnum : ICorDebugEnum
+{
+    HRESULT Next([in] ULONG celt,
+				 [out, size_is(celt), length_is(*pceltFetched)]  
+					ICorDebugThread *threads[],
+				 [out, retval] ULONG *pceltFetched);
+};
+
+[
+	object,
+	uuid(CC7BCB07-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugFrameEnum : ICorDebugEnum
+{
+    HRESULT Next([in] ULONG celt,
+				 [out, size_is(celt), length_is(*pceltFetched)]  
+					ICorDebugFrame *frames[],
+				 [out, retval] ULONG *pceltFetched);
+};
+
+[
+	object,
+	uuid(CC7BCB08-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugChainEnum : ICorDebugEnum
+{
+    HRESULT Next([in] ULONG celt,
+				 [out, size_is(celt), length_is(*pceltFetched)]  
+					ICorDebugChain *chains[],
+				 [out, retval] ULONG *pceltFetched);
+};
+
+[
+	object,
+    uuid(CC7BCB09-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugModuleEnum : ICorDebugEnum
+{
+    HRESULT Next([in] ULONG celt,
+				 [out, size_is(celt), length_is(*pceltFetched)]  
+					ICorDebugModule *modules[],
+				 [out, retval] ULONG *pceltFetched);
+};
+
+[
+	object,
+    uuid(CC7BCB0A-8A68-11d2-983C-0000F808342D),
+	pointer_default(unique)
+]
+interface ICorDebugValueEnum : ICorDebugEnum
+{
+    HRESULT Next([in] ULONG celt,
+				 [out, size_is(celt), length_is(*pceltFetched)]  
+					ICorDebugValue *values[],
+				 [out, retval] ULONG *pceltFetched);
+};
+
+
+
+/* ------------------------------------------------------------------------- *
+ * *****  WARNING:   NOT IMPLEMENTED FOR VERSION 1 *****
+ *
+ * ICorDebugErrorInfoEnum interface
+ *
+ * Not Implemented In-Proc
+ * ------------------------------------------------------------------------- */
+[
+	object,
+    uuid(F0E18809-72B5-11d2-976F-00A0C9B4D50C),
+	pointer_default(unique)
+]
+interface ICorDebugErrorInfoEnum : ICorDebugEnum
+{
+    HRESULT Next([in] ULONG celt,
+				 [out, size_is(celt), length_is(*pceltFetched)]  
+					ICorDebugEditAndContinueErrorInfo *errors[],
+				 [out, retval] ULONG *pceltFetched);
+};
+
+/* ------------------------------------------------------------------------- *
+ * AppDomainEnum interface
+ * ------------------------------------------------------------------------- */
+
+[
+	object,
+	uuid(63ca1b24-4359-4883-bd57-13f815f58744),
+	pointer_default(unique)
+]
+
+interface ICorDebugAppDomainEnum : ICorDebugEnum
+{
+    HRESULT Next([in] ULONG celt,
+				 [out, size_is(celt), length_is(*pceltFetched)]
+					ICorDebugAppDomain *values[],
+				 [out, retval] ULONG *pceltFetched);
+
+};
+
+
+/* ------------------------------------------------------------------------- *
+ * AssemblyEnum interface
+ * ------------------------------------------------------------------------- */
+
+[
+	object,
+	uuid(4a2a1ec9-85ec-4bfb-9f15-a89fdfe0fe83),
+	pointer_default(unique)
+]
+
+interface ICorDebugAssemblyEnum : ICorDebugEnum
+{
+    HRESULT Next([in] ULONG celt,
+				 [out, size_is(celt), length_is(*pceltFetched)]
+					ICorDebugAssembly *values[],
+				 [out, retval] ULONG *pceltFetched);
+
+};
+
+
+
+/* ------------------------------------------------------------------------- *
+ * Edit and Continue interfaces
+ * *****  WARNING:   NOT IMPLEMENTED FOR VERSION 1 *****
+ * ------------------------------------------------------------------------- */
+
+/*
+ * ICorDebugEditAndContinueErrorInfo - This interface is used to describe
+ * failures that occur when one attempts to invoke EditAndContinue on an
+ * invalid delta PE.
+ *
+ *  Not Implemented In-Proc : EnC isn't allowed inproc
+ */
+[
+	object,
+	uuid(8D600D41-F4F6-4cb3-B7EC-7BD164944036),
+	pointer_default(unique)
+]
+interface ICorDebugEditAndContinueErrorInfo : IUnknown
+{
+	/*
+	 * GetModule will return the module where the error occurred.
+	 */
+	HRESULT GetModule([out, retval] ICorDebugModule **ppModule);
+
+	/*
+	 * GetToken will return the token that indicates the source
+	 * of the failure.  It may be a method/function, a field, or
+	 * anything else.
+	 */
+    HRESULT GetToken([out, retval]mdToken *pToken);
+
+	/*
+     * GetErrorCode fills out (*Hr) with the HRESULT indicating the
+     * reason for failure.
+	 */
+    HRESULT GetErrorCode([out, retval]HRESULT *pHr);
+
+	/*
+	 * GetString returns a textual description of the error, suitable
+	 * for display to the user.
+	 */
+	HRESULT GetString([in] ULONG32 cchString, 
+					  [out] ULONG32 *pcchString,
+					  [out, retval, size_is(cchString), 
+					  length_is(*pcchString)] WCHAR szString[]); 
+}
+
+/*
+ * ICorDebugEditAndContinueSnapshot - This interface is used to (a) get
+ * required	data for a compiler to emit changes based on a running
+ * process, and (b)	pass the updated delta PE back to the Runtime.
+ *
+ *  Not Implemented In-Proc : EnC isn't allowed inproc
+ */
+
+[
+	object,
+    uuid(6DC3FA01-D7CB-11d2-8A95-0080C792E5D8),
+	pointer_default(unique)
+]
+interface ICorDebugEditAndContinueSnapshot : IUnknown
+{
+	/*
+	 * CopyMetaData saves a copy of the executing metadata from the debuggee
+	 * for this snapshot to the output stream.  The stream implementation must
+	 * be supplied by the caller and will typically either save the copy to
+	 * memory or to disk.  Only the IStream::Write method will be called by
+	 * this method.  The MVID value returned is the unique metadata ID for
+	 * this copy of the metadata.  It may be used on subsequent edit and 
+	 * continue operations to determine if the client has the most recent
+	 * version already (performance win to cache).
+	 */
+	HRESULT CopyMetaData([in] IStream *pIStream, [out, retval] GUID *pMvid);
+	
+	/*
+	 * GetMvid will return the currently active metadata ID for the executing
+	 * process.  This value can be used in conjunction with CopyMetaData to
+	 * cache the most recent copy of the metadata and avoid expensive copies.
+	 * So for example, if you call CopyMetaData once and save that copy,
+	 * then on the next E&C operation you can ask for the current MVID and see
+	 * if it is already in your cache.  If it is, use your version instead of
+	 * calling CopyMetaData again.
+	 */
+	HRESULT GetMvid([out, retval] GUID *pMvid);
+
+	/*
+	 * GetRoDataRVA returns the base RVA that should be used when adding new
+	 * static read only data to an existing image.  The EE will guarantee that
+	 * any RVA values embedded in the code are valid when the delta PE is
+	 * applied with new data.  The new data will be added to a page that is
+	 * marked read only.
+	 */
+	HRESULT GetRoDataRVA([out, retval] ULONG32 *pRoDataRVA);
+
+	/*
+	 * GetRwDataRVA returns the base RVA that should be used when adding new
+	 * static read/write data to an existing image.  The EE will guarantee that
+	 * any RVA values embedded in the code are valid when the delta PE is
+	 * applied with new data.  The ew data will be added to a page that is 
+	 * marked for both read and write access.
+	 */
+	HRESULT GetRwDataRVA([out, retval] ULONG32 *pRwDataRVA);
+
+
+	/*
+	 * SetPEBytes gives the snapshot object a reference to the delta PE which was
+	 * based on the snapshot.  This reference will be AddRef'd and cached until
+	 * CanCommitChanges and/or CommitChanges are called, at which point the 
+	 * engine will read the delta PE and remote it into the debugee process where
+	 * the changes will be checked/applied.
+	 */
+	HRESULT SetPEBytes([in] IStream *pIStream);
+
+	/*
+	 * SetILMap is called once for every method being replace that has
+	 * active instances on a call stack on a thread in the target process.
+	 * It is up to the caller of this API to determine this case exists.
+	 * One should halt the target process before making this check and
+	 * calling this method.
+	 */
+	HRESULT SetILMap([in] mdToken mdFunction, [in] ULONG cMapSize, 
+                     [in, size_is(cMapSize)] COR_IL_MAP map[]);
+
+    /*
+     * SetPESymbolBytes gives the snapshot object a reference to the
+     * updated symbols for the delta PE. This reference will be AddRef'd
+     * and cached until CanCommitChanged and/or CommitChanges are called,
+     * at which point the engine will read the delta and remote it into
+     * the debuggee process where the changes will be checked/applied.
+     */
+    HRESULT SetPESymbolBytes([in] IStream *pIStream);
+};
+

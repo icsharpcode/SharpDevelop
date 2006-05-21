@@ -1,0 +1,209 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ComponentInspector.Core</RootNamespace>
+    <AssemblyName>ComponentInspector.Core</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E6F4983F-DE41-4AEC-88E7-1FA9AFB4E6FF}</ProjectGuid>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>128450560</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>0618,0626,0108</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\ComponentInspector\</OutputPath>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\ComponentInspector\</OutputPath>
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Debug\Debugger.cs" />
+    <Compile Include="Src\ObjectBrowser\ActionMenuHelper.cs" />
+    <Compile Include="Src\ObjectBrowser\ActiveX\DetailPanel.cs" />
+    <Compile Include="Src\ObjectBrowser\Dialogs\AboutDialog.cs" />
+    <Compile Include="Src\ObjectBrowser\GuiDesigner\DesignerSite.cs" />
+    <Compile Include="Src\ObjectBrowser\LinkHelpers\ComLinkHelper.cs" />
+    <Compile Include="Src\ObjectBrowser\Panels\ButtonPanel.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\AssemblyTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\Types\BaseTypeHandler.cs" />
+    <Compile Include="Src\Objects\BasicInfo.cs" />
+    <Compile Include="Src\Util\Constants.cs" />
+    <Compile Include="Src\Win32\ActiveX.cs" />
+    <Compile Include="Src\Controls\ErrorDialog.cs" />
+    <Compile Include="Src\Controls\TreeListView.cs" />
+    <Compile Include="Src\Controls\NumericTextBox.cs" />
+    <Compile Include="Src\Controls\TreeListNode.cs" />
+    <Compile Include="Src\Controls\TreeListPanel.cs" />
+    <Compile Include="Src\Debug\CORDBLib_1_0.cs" />
+    <Compile Include="Src\Debug\Profile.cs" />
+    <Compile Include="Src\Debug\EnumHolder.cs" />
+    <Compile Include="Src\Debug\EnumMarshaler.cs" />
+    <Compile Include="Src\ObjectBrowser\ActiveX\ObjectTreePanel.cs" />
+    <Compile Include="Src\ObjectBrowser\Dialogs\WaitingForAppDialog.cs" />
+    <Compile Include="Src\ObjectBrowser\Dialogs\AttachDialog.cs" />
+    <Compile Include="Src\ObjectBrowser\Dialogs\CastDialog.cs" />
+    <Compile Include="Src\ObjectBrowser\Dialogs\ConstructorDialog.cs" />
+    <Compile Include="Src\ObjectBrowser\Dialogs\CustomizeDialog.cs" />
+    <Compile Include="Src\ObjectBrowser\Dialogs\Dialog.cs" />
+    <Compile Include="Src\ObjectBrowser\Dialogs\FindDialog.cs" />
+    <Compile Include="Src\ObjectBrowser\Dialogs\GettingStartedDialog.cs" />
+    <Compile Include="Src\ObjectBrowser\Dialogs\ProgressDialog.cs" />
+    <Compile Include="Src\ObjectBrowser\Dialogs\SplashDialog.cs" />
+    <Compile Include="Src\ObjectBrowser\Dialogs\TracingDialog.cs" />
+    <Compile Include="Src\ObjectBrowser\GuiDesigner\ToolBoxService.cs" />
+    <Compile Include="Src\ObjectBrowser\GuiDesigner\BrowserDesignerTransaction.cs" />
+    <Compile Include="Src\ObjectBrowser\GuiDesigner\DesignerContainer.cs" />
+    <Compile Include="Src\ObjectBrowser\GuiDesigner\DesignerHost.cs" />
+    <Compile Include="Src\ObjectBrowser\GuiDesigner\ImagePanel.cs" />
+    <Compile Include="Src\ObjectBrowser\LinkHelpers\TypeLinkHelper.cs" />
+    <Compile Include="Src\ObjectBrowser\LinkHelpers\HelpLinkHelper.cs" />
+    <Compile Include="Src\ObjectBrowser\LinkHelpers\ObjLinkHelper.cs" />
+    <Compile Include="Src\ObjectBrowser\LinkHelpers\ObjMemberLinkHelper.cs" />
+    <Compile Include="Src\ObjectBrowser\Panels\StatusPanel.cs" />
+    <Compile Include="Src\ObjectBrowser\Panels\CustActiveXPanel.cs" />
+    <Compile Include="Src\ObjectBrowser\Panels\CustDirPanel.cs" />
+    <Compile Include="Src\ObjectBrowser\Panels\CustObjectPanel.cs" />
+    <Compile Include="Src\ObjectBrowser\Panels\CustShowPanel.cs" />
+    <Compile Include="Src\ObjectBrowser\Panels\CustTypeHandlerPanel.cs" />
+    <Compile Include="Src\ObjectBrowser\Panels\DetailPanel.cs" />
+    <Compile Include="Src\ObjectBrowser\Panels\ICustPanel.cs" />
+    <Compile Include="Src\ObjectBrowser\Panels\ParamControlInfo.cs" />
+    <Compile Include="Src\ObjectBrowser\Panels\ParamPanel.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\TypeTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\BrowserTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ComAppIdRootTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ComCatRootTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ComCatTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ComClassRootTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ComInterfaceRootTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ComMemberTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ComProgIdRootTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ComRootTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ComSearchMaterializer.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ComTypeLibRootTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ComTypeLibTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ComTypeTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\IntermediateTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\MemberTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ModuleTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\NamespaceTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ObjectTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\TreeNodes\ObjectTypeTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\Types\IListTypeHandler.cs" />
+    <Compile Include="Src\ObjectBrowser\Types\EventHandlerListTypeHandler.cs" />
+    <Compile Include="Src\ObjectBrowser\Types\IEnumeratorTypeHandler.cs" />
+    <Compile Include="Src\ObjectBrowser\AssemblySupport.cs" />
+    <Compile Include="Src\ObjectBrowser\BrowserFinder.cs" />
+    <Compile Include="Src\ObjectBrowser\BrowserTree.cs" />
+    <Compile Include="Src\ObjectBrowser\CastInfo.cs" />
+    <Compile Include="Src\ObjectBrowser\CompNumber.cs" />
+    <Compile Include="Src\ObjectBrowser\ComSupport.cs" />
+    <Compile Include="Src\ObjectBrowser\ControlTree.cs" />
+    <Compile Include="Src\ObjectBrowser\DragDropSupport.cs" />
+    <Compile Include="Src\ObjectBrowser\EventLogList.cs" />
+    <Compile Include="Src\ObjectBrowser\GacList.cs" />
+    <Compile Include="Src\ObjectBrowser\IBrowserNode.cs" />
+    <Compile Include="Src\ObjectBrowser\ICastableTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\IConvertableTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\IDesignSurfaceNode.cs" />
+    <Compile Include="Src\ObjectBrowser\IDragDropSourceTarget.cs" />
+    <Compile Include="Src\ObjectBrowser\IDrapDropItem.cs" />
+    <Compile Include="Src\ObjectBrowser\IDropTarget.cs" />
+    <Compile Include="Src\ObjectBrowser\IEventLoggingMenuNode.cs" />
+    <Compile Include="Src\ObjectBrowser\IEventLoggingNode.cs" />
+    <Compile Include="Src\ObjectBrowser\IFavoriteTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\IInvokableTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\ILinkTarget.cs" />
+    <Compile Include="Src\ObjectBrowser\IMenuTreeNode.cs" />
+    <Compile Include="Src\ObjectBrowser\IntermediateNodeType.cs" />
+    <Compile Include="Src\ObjectBrowser\IObjectMember.cs" />
+    <Compile Include="Src\ObjectBrowser\ISearcher.cs" />
+    <Compile Include="Src\ObjectBrowser\ISearchMaterializer.cs" />
+    <Compile Include="Src\ObjectBrowser\ISearchNode.cs" />
+    <Compile Include="Src\ObjectBrowser\ITargetType.cs" />
+    <Compile Include="Src\ObjectBrowser\ITypeTreeHandler.cs" />
+    <Compile Include="Src\ObjectBrowser\ObjectBrowser.cs" />
+    <Compile Include="Src\ObjectBrowser\ObjectBrowserForm.cs" />
+    <Compile Include="Src\ObjectBrowser\ObjectCreator.cs" />
+    <Compile Include="Src\ObjectBrowser\OutputList.cs" />
+    <Compile Include="Src\ObjectBrowser\PanelLabel.cs" />
+    <Compile Include="Src\ObjectBrowser\PresentationMap.cs" />
+    <Compile Include="Src\ObjectBrowser\TypeHandlerManager.cs" />
+    <Compile Include="Src\ObjectBrowser\Version.cs" />
+    <Compile Include="Src\Objects\AssemblyInfo.cs" />
+    <Compile Include="Src\Objects\ClassCache.cs" />
+    <Compile Include="Src\Objects\ComAppInfo.cs" />
+    <Compile Include="Src\Objects\ComClassInfo.cs" />
+    <Compile Include="Src\Objects\ComInterfaceInfo.cs" />
+    <Compile Include="Src\Objects\ComMemberInfo.cs" />
+    <Compile Include="Src\Objects\ComObjectInfo.cs" />
+    <Compile Include="Src\Objects\ComStructInfo.cs" />
+    <Compile Include="Src\Objects\ComTypeDefInfo.cs" />
+    <Compile Include="Src\Objects\ComVariableInfo.cs" />
+    <Compile Include="Src\Objects\ICodeDom.cs" />
+    <Compile Include="Src\Objects\IObjectInfo.cs" />
+    <Compile Include="Src\Objects\IObjectNode.cs" />
+    <Compile Include="Src\Objects\NamePropCache.cs" />
+    <Compile Include="Src\Objects\ObjectInfo.cs" />
+    <Compile Include="Src\Objects\ObjectInfoFactory.cs" />
+    <Compile Include="Src\Objects\StructAccessor.cs" />
+    <Compile Include="Src\Objects\TypeLibKey.cs" />
+    <Compile Include="Src\Objects\TypeLibrary.cs" />
+    <Compile Include="Src\Objects\TypeLibUtil.cs" />
+    <Compile Include="Src\Util\LocalPrefs.cs" />
+    <Compile Include="Src\Util\ReflectionHelper.cs" />
+    <Compile Include="Src\Util\TraceUtil.cs" />
+    <Compile Include="Src\Util\Utils.cs" />
+    <Compile Include="Src\Win32\Windows.cs" />
+    <Compile Include="Src\Win32\Win32Utils.cs" />
+    <Compile Include="Src\ObjectBrowser\ComponentInspectorProperties.cs" />
+    <Compile Include="Src\ObjectBrowser\PreviouslyOpenedAssembly.cs" />
+    <Compile Include="Src\ObjectBrowser\PreviouslyOpenedAssemblyCollection.cs" />
+    <Compile Include="Src\ObjectBrowser\PreviouslyOpenedTypeLibrary.cs" />
+    <Compile Include="Src\ObjectBrowser\PreviouslyOpenedTypeLibraryCollection.cs" />
+    <Compile Include="Src\ObjectBrowser\SavedCastInfo.cs" />
+    <Compile Include="Src\ObjectBrowser\SavedCastInfoCollection.cs" />
+    <Compile Include="Src\ObjectBrowser\GuiDesigner\DummyDesigner.cs" />
+    <EmbeddedResource Include="Resources\BitmapResources.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources" />
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

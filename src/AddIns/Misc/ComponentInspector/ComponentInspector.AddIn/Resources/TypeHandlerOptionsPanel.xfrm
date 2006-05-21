@@ -1,0 +1,46 @@
+﻿<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="TypeHandlerOptionsPanel" />
+    <ClientSize value="{Width=390, Height=306}" />
+    <Controls>
+      <System.Windows.Forms.CheckBox>
+        <Name value="eventHandlerListCheckBox" />
+        <Location value="{X=12,Y=121}" />
+        <Checked value="True" />
+        <CheckState value="Checked" />
+        <Text value="System.ComponentModel.EventHandlerList" />
+        <TabIndex value="3" />
+        <Size value="{Width=319, Height=33}" />
+        <UseVisualStyleBackColor value="True" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="listCheckBox" />
+        <Location value="{X=12,Y=101}" />
+        <Checked value="True" />
+        <CheckState value="Checked" />
+        <Text value="System.Collections.IList" />
+        <TabIndex value="2" />
+        <Size value="{Width=319, Height=24}" />
+        <UseVisualStyleBackColor value="True" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="enumeratorCheckBox" />
+        <Location value="{X=12,Y=78}" />
+        <Checked value="True" />
+        <CheckState value="Checked" />
+        <Text value="System.Collections.IEnumerator" />
+        <TabIndex value="1" />
+        <Size value="{Width=319, Height=26}" />
+        <UseVisualStyleBackColor value="True" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.Label>
+        <Name value="informationLabel" />
+        <Location value="{X=12,Y=13}" />
+        <Text value="Type handlers present the classes marked below in a more convenient manner, suppressing unnecessary details." />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=366, Height=62}" />
+        <TabIndex value="0" />
+      </System.Windows.Forms.Label>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

@@ -1,0 +1,11 @@
+using System;
+
+namespace NoGoop.ObjBrowser
+{
+
+    internal class Version
+    {
+        internal const String           VERSION = 
+            "@CompInspVersion@";
+    }
+}

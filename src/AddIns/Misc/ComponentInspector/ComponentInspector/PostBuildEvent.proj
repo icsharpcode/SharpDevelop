@@ -1,0 +1,17 @@
+﻿<?xml version="1.0"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
+	<PropertyGroup>
+		<PrepareForRunDependsOn>$(PrepareForRunDependsOn);MyPostBuildTarget</PrepareForRunDependsOn>
+	</PropertyGroup>
+	
+	<!-- MSBuild refuses to copy files that the ComponentInspector depends on when we build
+	the project using the main SharpDevelop solution. The separate ComponentInspector solution
+	works correctly without this postbuild workaround. -->
+	<ItemGroup>
+		<MyCopyItem Include="$(MSBuildProjectDirectory)\..\..\..\..\..\bin\ICSharpCode.Core.dll" />
+		<MyCopyItem Include="$(MSBuildProjectDirectory)\..\..\..\..\..\bin\log4net.dll" />
+	</ItemGroup>
+	<Target Name="MyPostBuildTarget">
+		<Copy SourceFiles="@(MyCopyItem)" DestinationFolder="$(OutputPath)" />
+	</Target>
+</Project>

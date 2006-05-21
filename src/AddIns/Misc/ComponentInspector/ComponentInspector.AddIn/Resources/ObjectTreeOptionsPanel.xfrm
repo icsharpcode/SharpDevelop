@@ -1,0 +1,169 @@
+﻿<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="ObjectTreeOptionsPanel" />
+    <ClientSize value="{Width=384, Height=335}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="categoriesGroupBox" />
+        <Location value="{X=10,Y=194}" />
+        <Text value="Categories" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=362, Height=118}" />
+        <TabIndex value="2" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showObjectAsBaseClassCheckBox" />
+            <Location value="{X=5,Y=83}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <Text value="Show Object members in base class category" />
+            <TabIndex value="4" />
+            <Size value="{Width=301, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.TextBox>
+            <Name value="categoryCountTextBox" />
+            <TabIndex value="3" />
+            <Text value="100" />
+            <Size value="{Width=42, Height=21}" />
+            <Location value="{X=253,Y=62}" />
+            <Lines>
+              <System.String value="100" />
+            </Lines>
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="categoryCountLabel" />
+            <Location value="{X=22,Y=62}" />
+            <Text value="When number of members exceeds" />
+            <Size value="{Width=225, Height=20}" />
+            <TabIndex value="2" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showBaseClassCategoryCheckBox" />
+            <Location value="{X=6,Y=41}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <Text value="Show base class categories" />
+            <TabIndex value="1" />
+            <Size value="{Width=319, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showMemberCategoriesCheckBox" />
+            <Location value="{X=6,Y=20}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <Text value="Show member categories" />
+            <TabIndex value="0" />
+            <Size value="{Width=319, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="showGroupBox" />
+        <Location value="{X=10,Y=93}" />
+        <Text value="Show" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=363, Height=92}" />
+        <TabIndex value="1" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="displayIntegersInHexCheckBox" />
+            <Location value="{X=172,Y=41}" />
+            <Text value="Integers in hex" />
+            <TabIndex value="4" />
+            <Size value="{Width=168, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showBaseClassNamesCheckBox" />
+            <Location value="{X=172,Y=20}" />
+            <Text value="Base class names" />
+            <TabIndex value="3" />
+            <Size value="{Width=168, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showPropertyAccessorsMethodsCheckBox" />
+            <Location value="{X=6,Y=62}" />
+            <Text value="Property/Event accessor methods" />
+            <TabIndex value="2" />
+            <Size value="{Width=334, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showPublicMembersOnlyCheckBox" />
+            <Location value="{X=6,Y=41}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <Text value="Public members only" />
+            <TabIndex value="1" />
+            <Size value="{Width=160, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showBaseClassMembersCheckBox" />
+            <Location value="{X=6,Y=20}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <Text value="Base class members" />
+            <TabIndex value="0" />
+            <Size value="{Width=160, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="showMembersGroupBox" />
+        <Location value="{X=10,Y=11}" />
+        <Text value="Show Members" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=364, Height=73}" />
+        <TabIndex value="0" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showEventsCheckBox" />
+            <Location value="{X=172,Y=41}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <Text value="Events" />
+            <TabIndex value="3" />
+            <Size value="{Width=146, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showMethodsCheckBox" />
+            <Location value="{X=172,Y=20}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <Text value="Methods" />
+            <TabIndex value="2" />
+            <Size value="{Width=146, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showPropertiesCheckBox" />
+            <Location value="{X=6,Y=41}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <Text value="Properties" />
+            <TabIndex value="1" />
+            <Size value="{Width=146, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showFieldsCheckBox" />
+            <Location value="{X=6,Y=20}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <Text value="Fields" />
+            <TabIndex value="0" />
+            <Size value="{Width=146, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

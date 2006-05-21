@@ -1,0 +1,71 @@
+﻿<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="GeneralOptionsPanel" />
+    <ClientSize value="{Width=402, Height=333}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="activeXgroupBox" />
+        <Location value="{X=10,Y=104}" />
+        <Text value="ActiveX/COM" />
+        <Size value="{Width=382, Height=70}" />
+        <TabIndex value="1" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="automaticallyGetComPropertiesCheckBox" />
+            <Location value="{X=6,Y=41}" />
+            <Text value="Automatically get COM properties" />
+            <TabIndex value="1" />
+            <Size value="{Width=357, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="getRunningComObjectsAtStartupCheckBox" />
+            <Location value="{X=6,Y=20}" />
+            <Text value="Get COM running objects at startup" />
+            <TabIndex value="0" />
+            <Size value="{Width=357, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="panelsGroupBox" />
+        <Location value="{X=10,Y=10}" />
+        <Text value="Panels" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=382, Height=88}" />
+        <TabIndex value="0" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showGacPanelCheckBox" />
+            <Location value="{X=6,Y=62}" />
+            <Text value="Show GAC Panel" />
+            <TabIndex value="2" />
+            <Size value="{Width=357, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showControlsPanelCheckBox" />
+            <Location value="{X=6,Y=41}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <Text value="Show Controls Panel" />
+            <TabIndex value="1" />
+            <Size value="{Width=357, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showAssemblyPanelCheckBox" />
+            <Location value="{X=6,Y=20}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <Text value="Show Assembly Panel" />
+            <TabIndex value="0" />
+            <Size value="{Width=357, Height=20}" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

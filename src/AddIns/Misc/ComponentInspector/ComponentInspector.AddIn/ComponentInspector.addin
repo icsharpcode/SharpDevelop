@@ -1,0 +1,59 @@
+﻿<AddIn name="ComponentInspectorAddIn" 
+       author="Matt Ward" 
+       url="http://oaklandsoftware.com/"
+       copyright="prj:///doc/copyright.txt"
+       description="Component Inspector AddIn for SharpDevelop">
+
+	<Manifest>
+		<Identity name="ICSharpCode.ComponentInspector"/>
+	</Manifest>
+
+	<Runtime>
+		<Import assembly="ComponentInspector.AddIn.dll"/>
+	</Runtime>
+
+	<Path name="/Workspace/Tools">
+		<MenuItem id="ShowComponentInspector"
+		          insertafter="ShowAddInScout"
+		          label="Component Inspector" 
+		          class="ICSharpCode.ComponentInspector.AddIn.ShowComponentInspectorCommand"/>
+	</Path>
+
+	<Path name="/SharpDevelop/Workbench/MainMenu">
+		<Condition name="WindowActive" activewindow="ICSharpCode.ComponentInspector.AddIn.ComponentInspectorView">
+				<MenuItem id="ComponentInspector"
+				          insertafter="Tools"
+				          insertbefore="Window"
+				          label="&amp;Inspector"
+				          type="Menu">
+				<MenuItem id="OpenAssembly"
+				          label="&amp;Open Assembly..."
+				          class="ICSharpCode.ComponentInspector.AddIn.OpenAssemblyCommand"/>
+				<MenuItem id="CloseAssembly"
+				          label="Close &amp;Assembly..."
+				          class="ICSharpCode.ComponentInspector.AddIn.CloseAssemblyCommand"/>
+				<MenuItem id="FindSeparator" type="Separator"/>
+				<MenuItem id="Find"
+				          label="&amp;Find..."
+				          class="ICSharpCode.ComponentInspector.AddIn.FindCommand"/>
+			</MenuItem>
+		</Condition>
+	</Path>
+
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
+		<DialogPanel id="ComponentInspectorOptions"
+		             label="Component Inspector"
+		             insertafter="CodingOptions"
+		             insertbefore="TextEditorOptions">
+			<DialogPanel id="GeneralOptionsPanel"
+			             label="General"
+			             class="ICSharpCode.ComponentInspector.AddIn.GeneralOptionsPanel"/>
+			<DialogPanel id="ObjectTreeOptionsPanel"
+			             label="Object Tree"
+			             class="ICSharpCode.ComponentInspector.AddIn.ObjectTreeOptionsPanel"/>
+			<DialogPanel id="TypeHandlerOptionsPanel"
+			             label="Type Handlers"
+			             class="ICSharpCode.ComponentInspector.AddIn.TypeHandlerOptionsPanel"/>
+		</DialogPanel>
+	</Path>
+</AddIn>
