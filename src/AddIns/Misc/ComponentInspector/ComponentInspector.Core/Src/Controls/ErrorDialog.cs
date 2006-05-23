@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -275,28 +276,12 @@ namespace NoGoop.Controls
 			SetText();
 		}
 		
-		protected const int MAX_URI_TEXT_SIZE = 1500;
-		
 		protected void BugClickedHandler(object sender, EventArgs e)
 		{
 			try {
-				String body = "Please enter what you were doing or any other descriptive information here: \n\n\n" 
-					+ _title + "\n\n";
-				if (_exception != null)
-					body += _exception;
-				else
-					body += _summary;
-				String uriText = "mailto:support@oaklandsoftware.com?"
-								 + "subject=BR - "
-								 /*+ ObjectBrowser.License.ProductName */
-								 + " - " + ObjectBrowser.CODEBASE_VERSION
-								 + "&body=" + body;
-				// Make sure its not too big for the email client
-				if (uriText.Length > MAX_URI_TEXT_SIZE)
-					uriText = uriText.Substring(0, MAX_URI_TEXT_SIZE);
+				CopyInfoToClipboard();
+				string uriText = "http://www.icsharpcode.net/OpenSource/SD/BugReporting.aspx";
 				Uri uri = new Uri(uriText);
-				// Send using local email client so the user
-				// has control over the content
 				Utils.InvokeBrowser(uri, !Utils.SHOW_WINDOW);
 			} catch (Exception ex) {
 				TraceUtil.WriteLineWarning(this, "Error sending bug report: " + ex);
@@ -306,6 +291,28 @@ namespace NoGoop.Controls
 		protected void LinkClicked(object sender, LinkClickedEventArgs e)
 		{
 			Utils.InvokeBrowser(e.LinkText);
+		}
+		
+		void CopyInfoToClipboard()
+		{
+			ClipboardWrapper.SetText(GetClipboardString());
+		}
+		
+		string GetClipboardString()
+		{
+			string str = String.Empty;
+			str += ".NET Version : " + Environment.Version.ToString() + Environment.NewLine;
+			str += "OS Version : " + Environment.OSVersion.ToString() + Environment.NewLine;
+			System.Version v = Assembly.GetEntryAssembly().GetName().Version;
+			str += "Component Inspector Version : " + v.Major + "." + v.Minor + "." + v.Build + "." + v.Revision + Environment.NewLine;
+			str += Environment.NewLine;
+			
+			if (_exception != null) {
+				str += _exception + Environment.NewLine;
+			} else {
+				str += _summary + Environment.NewLine;
+			}
+			return str;
 		}
 	}
 }
