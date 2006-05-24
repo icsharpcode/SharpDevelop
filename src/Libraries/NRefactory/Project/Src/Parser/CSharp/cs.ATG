@@ -1750,8 +1750,8 @@ OverloadableOperator<out OverloadableOperatorType op>
 	| "++"   (. op = OverloadableOperatorType.Increment; .)
 	| "--"   (. op = OverloadableOperatorType.Decrement; .)
 	
-	| "true"   (. op = OverloadableOperatorType.True; .)
-	| "false"   (. op = OverloadableOperatorType.False; .)
+	| "true"   (. op = OverloadableOperatorType.IsTrue; .)
+	| "false"   (. op = OverloadableOperatorType.IsFalse; .)
 	
 	| "*"    (. op = OverloadableOperatorType.Multiply; .)
 	| "/"    (. op = OverloadableOperatorType.Divide; .)

@@ -3121,14 +3121,14 @@ out OverloadableOperatorType op) {
 			lexer.NextToken();
 
 #line  1753 "cs.ATG" 
-			op = OverloadableOperatorType.True; 
+			op = OverloadableOperatorType.IsTrue; 
 			break;
 		}
 		case 71: {
 			lexer.NextToken();
 
 #line  1754 "cs.ATG" 
-			op = OverloadableOperatorType.False; 
+			op = OverloadableOperatorType.IsFalse; 
 			break;
 		}
 		case 6: {

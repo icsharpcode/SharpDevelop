@@ -155,12 +155,6 @@ namespace NRefactoryToBooConverter
 					currentType.Attributes.Add(MakeAttribute("System.Reflection.DefaultMember", new B.StringLiteralExpression(name)));
 				}
 			}
-			if ((m & Modifier.Narrowing) != 0) {
-				AddError(node, "Narrowing modifier is not supported");
-			}
-			if ((m & Modifier.Widening) != 0) {
-				AddError(node, "Widening modifier is not supported");
-			}
 			return r;
 		}
 		

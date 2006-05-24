@@ -622,6 +622,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Dot);
 			}
 			outputFormatter.PrintIdentifier(methodDeclaration.Name);
+			
+			PrintMethodDeclaration(methodDeclaration);
+			return null;
+		}
+		
+		void PrintMethodDeclaration(MethodDeclaration methodDeclaration)
+		{
 			PrintTemplates(methodDeclaration.Templates);
 			if (prettyPrintOptions.BeforeMethodDeclarationParentheses) {
 				outputFormatter.Space();
@@ -630,9 +637,118 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			AppendCommaSeparatedList(methodDeclaration.Parameters);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			foreach (TemplateDefinition templateDefinition in methodDeclaration.Templates) {
-				nodeTracker.TrackedVisit(templateDefinition, data);
+				nodeTracker.TrackedVisit(templateDefinition, null);
 			}
 			OutputBlock(methodDeclaration.Body, this.prettyPrintOptions.MethodBraceStyle);
+		}
+		
+		public object Visit(OperatorDeclaration operatorDeclaration, object data)
+		{
+			VisitAttributes(operatorDeclaration.Attributes, data);
+			outputFormatter.Indent();
+			OutputModifier(operatorDeclaration.Modifier);
+			
+			if (operatorDeclaration.IsConversionOperator) {
+				if (operatorDeclaration.ConversionType == ConversionType.Implicit) {
+					outputFormatter.PrintToken(Tokens.Implicit);
+				} else {
+					outputFormatter.PrintToken(Tokens.Explicit);
+				}
+			} else {
+				nodeTracker.TrackedVisit(operatorDeclaration.TypeReference, data);
+			}
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Operator);
+			outputFormatter.Space();
+			
+			if (operatorDeclaration.IsConversionOperator) {
+				nodeTracker.TrackedVisit(operatorDeclaration.TypeReference, data);
+			} else {
+				switch (operatorDeclaration.OverloadableOperator) {
+					case OverloadableOperatorType.Add:
+						outputFormatter.PrintToken(Tokens.Plus);
+						break;
+					case OverloadableOperatorType.BitNot:
+						outputFormatter.PrintToken(Tokens.BitwiseComplement);
+						break;
+					case OverloadableOperatorType.BitwiseAnd:
+						outputFormatter.PrintToken(Tokens.BitwiseAnd);
+						break;
+					case OverloadableOperatorType.BitwiseOr:
+						outputFormatter.PrintToken(Tokens.BitwiseOr);
+						break;
+					case OverloadableOperatorType.Concat:
+						outputFormatter.PrintToken(Tokens.Plus);
+						break;
+					case OverloadableOperatorType.Decrement:
+						outputFormatter.PrintToken(Tokens.Decrement);
+						break;
+					case OverloadableOperatorType.Divide:
+					case OverloadableOperatorType.DivideInteger:
+						outputFormatter.PrintToken(Tokens.Div);
+						break;
+					case OverloadableOperatorType.Equality:
+						outputFormatter.PrintToken(Tokens.Equal);
+						break;
+					case OverloadableOperatorType.ExclusiveOr:
+						outputFormatter.PrintToken(Tokens.Xor);
+						break;
+					case OverloadableOperatorType.GreaterThan:
+						outputFormatter.PrintToken(Tokens.GreaterThan);
+						break;
+					case OverloadableOperatorType.GreaterThanOrEqual:
+						outputFormatter.PrintToken(Tokens.GreaterEqual);
+						break;
+					case OverloadableOperatorType.Increment:
+						outputFormatter.PrintToken(Tokens.Increment);
+						break;
+					case OverloadableOperatorType.InEquality:
+						outputFormatter.PrintToken(Tokens.NotEqual);
+						break;
+					case OverloadableOperatorType.IsTrue:
+						outputFormatter.PrintToken(Tokens.True);
+						break;
+					case OverloadableOperatorType.IsFalse:
+						outputFormatter.PrintToken(Tokens.False);
+						break;
+					case OverloadableOperatorType.LessThan:
+						outputFormatter.PrintToken(Tokens.LessThan);
+						break;
+					case OverloadableOperatorType.LessThanOrEqual:
+						outputFormatter.PrintToken(Tokens.LessEqual);
+						break;
+					case OverloadableOperatorType.Like:
+						outputFormatter.PrintText("Like");
+						break;
+					case OverloadableOperatorType.Modulus:
+						outputFormatter.PrintToken(Tokens.Mod);
+						break;
+					case OverloadableOperatorType.Multiply:
+						outputFormatter.PrintToken(Tokens.Times);
+						break;
+					case OverloadableOperatorType.Not:
+						outputFormatter.PrintToken(Tokens.Not);
+						break;
+					case OverloadableOperatorType.Power:
+						outputFormatter.PrintText("Power");
+						break;
+					case OverloadableOperatorType.ShiftLeft:
+						outputFormatter.PrintToken(Tokens.ShiftLeft);
+						break;
+					case OverloadableOperatorType.ShiftRight:
+						outputFormatter.PrintToken(Tokens.GreaterThan);
+						outputFormatter.PrintToken(Tokens.GreaterThan);
+						break;
+					case OverloadableOperatorType.Subtract:
+						outputFormatter.PrintToken(Tokens.Minus);
+						break;
+					default:
+						errors.Error(-1, -1, operatorDeclaration.OverloadableOperator.ToString() + " is not supported as overloadable operator");
+						break;
+				}
+			}
+			
+			PrintMethodDeclaration(operatorDeclaration);
 			return null;
 		}
 		
@@ -733,62 +849,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
 			OutputBlock(destructorDeclaration.Body, this.prettyPrintOptions.DestructorBraceStyle);
-			return null;
-		}
-		
-		public object Visit(OperatorDeclaration operatorDeclaration, object data)
-		{
-			// TODO: implement me
-//			VisitAttributes(operatorDeclaration.Attributes, data);
-//			outputFormatter.Indent();
-//			OutputModifier(operatorDeclaration.Modifier);
-//			switch (operatorDeclaration.OperatorType) {
-//				case OperatorType.Explicit:
-//					outputFormatter.PrintToken(Tokens.Explicit);
-//					break;
-//				case OperatorType.Implicit:
-//					outputFormatter.PrintToken(Tokens.Implicit);
-//					break;
-//				default:
-//					Visit(operatorDeclaration.OpratorDeclarator.TypeReference, data);
-//					break;
-//			}
-//			outputFormatter.Space();
-//			outputFormatter.PrintToken(Tokens.Operator);
-//			outputFormatter.Space();
-//			if (!operatorDeclaration.OpratorDeclarator.IsConversion) {
-//				outputFormatter.PrintIdentifier(Tokens.GetTokenString(operatorDeclaration.OpratorDeclarator.OverloadOperatorToken));
-//			} else {
-//				Visit(operatorDeclaration.OpratorDeclarator.TypeReference, data);
-//			}
-//
-//			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-//			Visit(operatorDeclaration.OpratorDeclarator.FirstParameterType, data);
-//			outputFormatter.Space();
-//			outputFormatter.PrintIdentifier(operatorDeclaration.OpratorDeclarator.FirstParameterName);
-//			if (operatorDeclaration.OpratorDeclarator.OperatorType == OperatorType.Binary) {
-//				outputFormatter.PrintToken(Tokens.Comma);
-//				outputFormatter.Space();
-//				Visit(operatorDeclaration.OpratorDeclarator.SecondParameterType, data);
-//				outputFormatter.Space();
-//				outputFormatter.PrintIdentifier(operatorDeclaration.OpratorDeclarator.SecondParameterName);
-//			}
-//			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-//
-//			if (operatorDeclaration.Body.IsNull) {
-//				outputFormatter.PrintToken(Tokens.Semicolon);
-//			} else {
-//				outputFormatter.NewLine();
-//				outputFormatter.Indent();
-//				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-//				outputFormatter.NewLine();
-//				++outputFormatter.IndentationLevel;
-//				operatorDeclaration.Body.AcceptChildren(this, data);
-//				--outputFormatter.IndentationLevel;
-//				outputFormatter.Indent();
-//				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
-//			}
-//			outputFormatter.NewLine();
 			return null;
 		}
 		
