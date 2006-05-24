@@ -153,20 +153,24 @@ namespace ICSharpCode.Svn
 			}
 			FileNode fileNode = node as FileNode;
 			Status status;
-			if (fileNode != null) {
-				status = client.SingleStatus(fileNode.FileName);
-			} else {
-				DirectoryNode directoryNode = node as DirectoryNode;
-				if (directoryNode != null) {
-					status = client.SingleStatus(directoryNode.Directory);
+			try {
+				if (fileNode != null) {
+					status = client.SingleStatus(fileNode.FileName);
 				} else {
-					SolutionNode solNode = node as SolutionNode;
-					if (solNode != null) {
-						status = client.SingleStatus(solNode.Solution.Directory);
+					DirectoryNode directoryNode = node as DirectoryNode;
+					if (directoryNode != null) {
+						status = client.SingleStatus(directoryNode.Directory);
 					} else {
-						return;
+						SolutionNode solNode = node as SolutionNode;
+						if (solNode != null) {
+							status = client.SingleStatus(solNode.Solution.Directory);
+						} else {
+							return;
+						}
 					}
 				}
+			} catch (SvnException) {
+				return;
 			}
 			if (node.TreeView != null) {
 				node.TreeView.BeginInvoke(new MethodInvoker(delegate {

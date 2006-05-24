@@ -396,14 +396,12 @@ namespace ICSharpCode.Core
 		/// instead of an icon in the dabase. It is converted automatically.
 		/// </summary>
 		/// <returns>
-		/// The icon in the (localized) resource database.
+		/// The icon in the (localized) resource database, or null, if the icon cannot
+		/// be found.
 		/// </returns>
 		/// <param name="name">
 		/// The name of the requested icon.
 		/// </param>
-		/// <exception cref="ResourceNotFoundException">
-		/// Is thrown when the GlobalResource manager can't find a requested resource.
-		/// </exception>
 		public static Icon GetIcon(string name)
 		{
 			lock (iconCache) {
@@ -445,7 +443,9 @@ namespace ICSharpCode.Core
 				if (bitmapCache.TryGetValue(name, out bmp))
 					return bmp;
 				bmp = (Bitmap)GetImageResource(name);
-				Debug.Assert(bmp != null, "Resource " + name);
+				if (bmp == null) {
+					throw new ResourceNotFoundException(name);
+				}
 				bitmapCache[name] = bmp;
 				return bmp;
 			}

@@ -6,13 +6,11 @@
 // </file>
 
 using System;
-using System.Text;
 using System.Drawing;
+using System.Text;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
-
-using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor

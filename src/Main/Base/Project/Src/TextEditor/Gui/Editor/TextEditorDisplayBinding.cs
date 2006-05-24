@@ -6,20 +6,16 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Drawing.Printing;
+using System.IO;
+using System.Windows.Forms;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Internal.Undo;
-
-using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {

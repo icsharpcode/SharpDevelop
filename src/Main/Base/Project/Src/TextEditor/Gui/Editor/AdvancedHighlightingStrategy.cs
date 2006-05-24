@@ -7,11 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Xml;
-using System.Windows.Forms;
-using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
