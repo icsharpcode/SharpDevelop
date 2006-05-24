@@ -95,6 +95,10 @@ namespace ICSharpCode.Core
 						MessageService.ShowError("Error loading " + location + ":\n" + ex.Message);
 						newProject = new UnknownProject(location, title);
 						newProject.TypeGuid = projectTypeGuid;
+					} catch (UnauthorizedAccessException ex) {
+						MessageService.ShowError("Error loading " + location + ":\n" + ex.Message);
+						newProject = new UnknownProject(location, title);
+						newProject.TypeGuid = projectTypeGuid;
 					}
 				} else {
 					newProject = new UnknownProject(location, title);

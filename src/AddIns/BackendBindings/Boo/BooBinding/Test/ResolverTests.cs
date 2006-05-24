@@ -6,6 +6,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Reflection;
 using NUnit.Framework;
 using ICSharpCode.Core;
@@ -217,7 +218,24 @@ namespace Grunwald.BooBinding.Tests
 			"\t\tif boo640b = boo640a as FieldInfo: /*640*/\n" +
 			"\t\t\tprint boo640b\n" +
 			"\t\n" +
+			"\tprint 'end of method'\n" +
 			"\t/*1*/\n";
+		
+		[Test]
+		public void MyMethodCompletion()
+		{
+			MethodResolveResult rr = Resolve<MethodResolveResult>(regressionProg, "MyMethod", "/*1*/");
+			ArrayList arr = rr.GetCompletionData(lastPC);
+			Assert.IsNotNull(arr);
+			bool beginInvoke = false;
+			bool invoke = false;
+			foreach (IMember m in arr) {
+				if (m.Name == "BeginInvoke") beginInvoke = true;
+				if (m.Name == "Invoke") invoke = true;
+			}
+			Assert.IsTrue(beginInvoke, "beginInvoke");
+			Assert.IsTrue(invoke, "invoke");
+		}
 		
 		[Test]
 		public void Boo629VariableScope()

@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public sealed class AnonymousMethodReturnType : ProxyReturnType
 	{
 		IReturnType returnType;
-		List<IParameter> parameters = new List<IParameter>();
+		IList<IParameter> parameters = new List<IParameter>();
 		ICompilationUnit cu;
 		
 		public AnonymousMethodReturnType(ICompilationUnit cu)
@@ -44,6 +44,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public IList<IParameter> MethodParameters {
 			get {
 				return parameters;
+			}
+			set {
+				if (value == null) throw new ArgumentNullException("value");
+				parameters = value;
 			}
 		}
 		

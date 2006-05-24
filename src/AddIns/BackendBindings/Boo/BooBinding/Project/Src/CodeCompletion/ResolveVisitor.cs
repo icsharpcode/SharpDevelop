@@ -84,6 +84,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 		void MakeMethodResult(IReturnType type, string methodName)
 		{
 			resolveResult = new MethodResolveResult(callingClass, resolver.CallingMember, type, methodName);
+			IMethod m = (resolveResult as MethodResolveResult).GetMethodIfSingleOverload();
+			if (m != null) {
+				AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(cu);
+				amrt.MethodReturnType = m.ReturnType;
+				amrt.MethodParameters = m.Parameters;
+				resolveResult.ResolvedType = amrt;
+			}
 		}
 		
 		void MakeNamespaceResult(string namespaceName)

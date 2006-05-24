@@ -235,6 +235,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			CSharpTestBinaryOperatorExpressionTest("a ?? b", BinaryOperatorType.NullCoalescing);
 		}
+		
+		[Test]
+		public void CSharpLessThanOrGreaterTest()
+		{
+			const string expr = "i1 < 0 || i1 > (Count - 1)";
+			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(expr);
+			Assert.AreEqual(BinaryOperatorType.LogicalOr, boe.Op);
+		}
 		#endregion
 		
 		#region VB.NET

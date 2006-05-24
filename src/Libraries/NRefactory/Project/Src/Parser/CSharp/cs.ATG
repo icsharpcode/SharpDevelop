@@ -335,7 +335,11 @@ bool SkipGeneric(ref Token pt)
 				--braces;
 			} else if (pt.kind == Tokens.LessThan) {
 				++braces;
-			} else if (pt.kind == Tokens.Semicolon || pt.kind == Tokens.OpenCurlyBrace || pt.kind == Tokens.CloseCurlyBrace || pt.kind == Tokens.EOF) {
+			} else if (pt.kind != Tokens.Identifier && pt.kind != Tokens.Comma
+				    && pt.kind != Tokens.OpenSquareBracket && pt.kind != Tokens.CloseSquareBracket
+				    && pt.kind != Tokens.Question
+			        && !Tokens.TypeKW[pt.kind])
+			{
 				return false;
 			}
 		}
