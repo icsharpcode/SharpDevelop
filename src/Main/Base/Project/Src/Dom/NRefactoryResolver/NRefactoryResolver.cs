@@ -282,7 +282,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			IClass c = SearchClass(name);
 			if (c != null) {
-				if (c.IsTypeInInheritanceTree(ProjectContentRegistry.Mscorlib.GetClass("System.Attribute")))
+				if (c.IsTypeInInheritanceTree(c.ProjectContent.SystemTypes.Attribute.GetUnderlyingClass()))
 					return c;
 			}
 			return SearchClass(name + "Attribute");
@@ -318,7 +318,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			if (expr is PrimitiveExpression) {
 				if (((PrimitiveExpression)expr).Value is int)
-					return new IntegerLiteralResolveResult(callingClass, callingMember);
+					return new IntegerLiteralResolveResult(callingClass, callingMember, projectContent.SystemTypes.Int32);
 			} else if (expr is InvocationExpression) {
 				IMethodOrProperty method = typeVisitor.GetMethod(expr as InvocationExpression);
 				if (method != null) {
@@ -400,9 +400,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 				IReturnType[] typeParameters = null;
-				if (type.TypeArguments != null) {
-					typeParameters = new IReturnType[type.TypeArguments.Count];
-					type.TypeArguments.CopyTo(typeParameters, 0);
+				if (type.IsConstructedReturnType) {
+					typeParameters = new IReturnType[type.CastToConstructedReturnType().TypeArguments.Count];
+					type.CastToConstructedReturnType().TypeArguments.CopyTo(typeParameters, 0);
 				}
 				ResolveResult rr = CreateMemberResolveResult(typeVisitor.FindOverload(constructors, typeParameters, ((ObjectCreateExpression)expr).Parameters, null));
 				if (rr != null) {

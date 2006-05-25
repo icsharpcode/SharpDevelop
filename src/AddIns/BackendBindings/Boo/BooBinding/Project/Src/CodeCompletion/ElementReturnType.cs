@@ -18,37 +18,41 @@ namespace Grunwald.BooBinding.CodeCompletion
 	public class ElementReturnType : ProxyReturnType
 	{
 		IReturnType listType;
+		IProjectContent pc;
 		
-		public ElementReturnType(IReturnType listType)
+		public ElementReturnType(IProjectContent pc, IReturnType listType)
 		{
+			if (pc == null)
+				throw new ArgumentNullException("pc");
 			// listType is probably an InferredReturnType
 			this.listType = listType;
+			this.pc = pc;
 		}
 		
 		public override IReturnType BaseType {
 			get {
 				// get element type from listType
-				if (listType.ArrayDimensions > 0)
-					return listType.ArrayElementType;
+				if (listType.IsArrayReturnType)
+					return listType.CastToArrayReturnType().ArrayElementType;
 				
 				IClass c = listType.GetUnderlyingClass();
 				if (c == null)
 					return null;
-				IClass genumerable = ProjectContentRegistry.Mscorlib.GetClass("System.Collections.Generic.IEnumerable", 1);
+				IClass genumerable = pc.GetClass("System.Collections.Generic.IEnumerable", 1);
 				if (c.IsTypeInInheritanceTree(genumerable)) {
 					return MemberLookupHelper.GetTypeParameterPassedToBaseClass(listType, genumerable, 0);
 				}
-				IClass enumerable = ProjectContentRegistry.Mscorlib.GetClass("System.Collections.IEnumerable", 0);
+				IClass enumerable = pc.GetClass("System.Collections.IEnumerable", 0);
 				if (c.IsTypeInInheritanceTree(enumerable)) {
 					// We can't use the EnumeratorItemType attribute because SharpDevelop
 					// does not store attribute argument values in the cache.
 					
 					// HACK: Hacked in support for range(), take out when RangeEnumerator implements IEnumerable<int>
 					if (c.FullyQualifiedName == "Boo.Lang.Builtins.RangeEnumerator") {
-						return ReflectionReturnType.Int;
+						return pc.SystemTypes.Int32;
 					}
 					
-					return ReflectionReturnType.Object;
+					return pc.SystemTypes.Object;
 				}
 				return null;
 			}

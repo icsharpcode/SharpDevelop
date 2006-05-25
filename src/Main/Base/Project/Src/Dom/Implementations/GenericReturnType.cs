@@ -31,12 +31,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return typeParameter.Equals(rt.typeParameter);
 		}
 		
-		public override bool IsDefaultReturnType {
-			get {
-				return false;
-			}
-		}
-		
 		public override int GetHashCode()
 		{
 			return typeParameter.GetHashCode();
@@ -85,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				int count = typeParameter.Constraints.Count;
 				if (count == 0)
-					return ReflectionReturnType.Object;
+					return typeParameter.Class.ProjectContent.SystemTypes.Object;
 				if (count == 1)
 					return typeParameter.Constraints[0];
 				return new CombinedReturnType(typeParameter.Constraints,
@@ -115,6 +109,29 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override string ToString()
 		{
 			return String.Format("[GenericReturnType: {0}]", typeParameter);
+		}
+		
+		public override bool IsArrayReturnType {
+			get {
+				return false;
+			}
+		}
+		
+		public override bool IsConstructedReturnType {
+			get {
+				return false;
+			}
+		}
+		
+		public override bool IsGenericReturnType {
+			get {
+				return true;
+			}
+		}
+		
+		public override ICSharpCode.SharpDevelop.Dom.GenericReturnType CastToGenericReturnType()
+		{
+			return this;
 		}
 	}
 }

@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Dom
+namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {
 	[Serializable]
 	public class ReflectionClass : DefaultClass
@@ -123,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				int i = 0;
 				foreach (Type g in type.GetGenericArguments()) {
-					((DefaultTypeParameter)this.TypeParameters[i++]).AddConstraintsFromType(g);
+					AddConstraintsFromType(this.TypeParameters[i++], g);
 				}
 			}
 			
@@ -163,6 +163,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			InitMembers(type);
+		}
+		
+		internal void AddConstraintsFromType(ITypeParameter tp, Type type)
+		{
+			foreach (Type constraint in type.GetGenericParameterConstraints()) {
+				if (tp.Method != null) {
+					tp.Constraints.Add(ReflectionReturnType.Create(tp.Method, constraint, false));
+				} else {
+					tp.Constraints.Add(ReflectionReturnType.Create(tp.Class, constraint, false));
+				}
+			}
 		}
 	}
 	

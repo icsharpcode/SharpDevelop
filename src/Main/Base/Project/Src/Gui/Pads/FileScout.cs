@@ -516,12 +516,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public ShellTree()
 		{
 			Sorted = true;
-			TreeNode rootNode = Nodes.Add("Desktop");
+			TreeNode rootNode = Nodes.Add(Path.GetFileName(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)));
 			rootNode.ImageIndex = 6;
 			rootNode.SelectedImageIndex = 6;
 			rootNode.Tag = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 			
-			TreeNode myFilesNode = rootNode.Nodes.Add("My Documents");
+			TreeNode myFilesNode = rootNode.Nodes.Add(Path.GetFileName(Environment.GetFolderPath(Environment.SpecialFolder.Personal)));
 			myFilesNode.ImageIndex = 7;
 			myFilesNode.SelectedImageIndex = 7;
 			try {
@@ -532,7 +532,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			myFilesNode.Nodes.Add("");
 			
-			TreeNode computerNode = rootNode.Nodes.Add("My Computer");
+			TreeNode computerNode = rootNode.Nodes.Add(StringParser.Parse("${res:MainWindow.Windows.FileScout.MyComputer}"));
 			computerNode.ImageIndex = 8;
 			computerNode.SelectedImageIndex = 8;
 			try {

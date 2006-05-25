@@ -52,10 +52,14 @@ namespace Grunwald.BooBinding.Designer
 									if (m.Name == cmie.Method.MethodName
 									    && m.Parameters.Count == 1
 									    && m.Parameters[0].IsParams
-									    && m.Parameters[0].ReturnType.ArrayDimensions == 1
-									    && m.Parameters[0].ReturnType.ArrayElementType.FullyQualifiedName == cace.CreateType.BaseType)
+									    && m.Parameters[0].ReturnType.IsArrayReturnType)
 									{
-										cace.UserData["Explode"] = true;
+										ArrayReturnType paramArt = m.Parameters[0].ReturnType.CastToArrayReturnType();
+										if (paramArt.ArrayDimensions == 1
+										    && paramArt.FullyQualifiedName == cace.CreateType.BaseType)
+										{
+											cace.UserData["Explode"] = true;
+										}
 									}
 								}
 							}

@@ -11,7 +11,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
 
-namespace ICSharpCode.SharpDevelop.Dom
+namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {
 	[Serializable]
 	public class ReflectionField : DefaultField

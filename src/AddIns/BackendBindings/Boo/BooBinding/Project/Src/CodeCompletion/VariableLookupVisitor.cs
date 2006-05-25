@@ -182,7 +182,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				expr.Annotate("DomReturnType", returnType);
 			}
 			if (useElementType)
-				returnType = new ElementReturnType(returnType);
+				returnType = new ElementReturnType(resolver.ProjectContent, returnType);
 			result = new DefaultField.LocalVariableField(returnType, name,
 			                                             new DomRegion(lexicalInfo.Line, lexicalInfo.Column),
 			                                             resolver.CallingClass);
@@ -218,7 +218,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (results.ContainsKey(name))
 				return;
 			if (elementReturnType)
-				results.Add(name, new ElementReturnType(new InferredReturnType(expr, resolver.CallingClass)));
+				results.Add(name, new ElementReturnType(resolver.ProjectContent,
+				                                        new InferredReturnType(expr, resolver.CallingClass)));
 			else
 				results.Add(name, new InferredReturnType(expr, resolver.CallingClass));
 		}

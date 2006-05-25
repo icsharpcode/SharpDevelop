@@ -38,6 +38,8 @@ namespace Grunwald.BooBinding.Designer
 		
 		public CodeDomVisitor(IProjectContent pc)
 		{
+			if (pc == null)
+				throw new ArgumentNullException("pc");
 			this.pc = pc;
 		}
 		
@@ -509,7 +511,7 @@ namespace Grunwald.BooBinding.Designer
 				for (int i = 0; i < count; i++) {
 					CodeArrayCreateExpression cace = cmie.Parameters[i] as CodeArrayCreateExpression;
 					if (cace != null && (bool)cace.UserData["unknownType"]
-					    && m.Parameters[i].ReturnType.ArrayDimensions > 0)
+					    && m.Parameters[i].ReturnType.IsArrayReturnType)
 					{
 						cace.CreateType = new CodeTypeReference(m.Parameters[i].ReturnType.FullyQualifiedName);
 					}
@@ -555,7 +557,7 @@ namespace Grunwald.BooBinding.Designer
 			BooResolver resolver = new BooResolver();
 			IReturnType createType = resolver.GetTypeOfExpression(node, null);
 			if (createType == null)
-				createType = ReflectionReturnType.Object;
+				createType = pc.SystemTypes.Object;
 			CodeExpression[] initializers = new CodeExpression[node.Items.Count];
 			for (int i = 0; i < initializers.Length; i++) {
 				_expression = null;

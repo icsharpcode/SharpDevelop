@@ -55,6 +55,14 @@ namespace ICSharpCode.Core
 			get;
 		}
 		
+		/// <summary>
+		/// Gets a class that allows to conveniently access commonly used types in the system
+		/// namespace.
+		/// </summary>
+		SystemTypes SystemTypes {
+			get;
+		}
+		
 		string GetXmlDocumentation(string memberTag);
 		
 		void AddClassToNamespaceList(IClass addClass);

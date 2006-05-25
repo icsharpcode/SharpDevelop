@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (primitiveExpression.Value == null) {
 				return NullReturnType.Instance;
 			} else {
-				return ReflectionReturnType.CreatePrimitive(primitiveExpression.Value.GetType());
+				return resolver.ProjectContent.SystemTypes.CreatePrimitive(primitiveExpression.Value.GetType());
 			}
 		}
 		
@@ -40,9 +40,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				case BinaryOperatorType.NullCoalescing:
 					return binaryOperatorExpression.Right.AcceptVisitor(this, data);
 				case BinaryOperatorType.DivideInteger:
-					return ReflectionReturnType.Int;
+					return resolver.ProjectContent.SystemTypes.Int32;
 				case BinaryOperatorType.Concat:
-					return ReflectionReturnType.String;
+					return resolver.ProjectContent.SystemTypes.String;
 				case BinaryOperatorType.Equality:
 				case BinaryOperatorType.InEquality:
 				case BinaryOperatorType.ReferenceEquality:
@@ -53,9 +53,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				case BinaryOperatorType.LessThanOrEqual:
 				case BinaryOperatorType.GreaterThan:
 				case BinaryOperatorType.GreaterThanOrEqual:
-					return ReflectionReturnType.Bool;
+					return resolver.ProjectContent.SystemTypes.Boolean;
 				default:
-					return MemberLookupHelper.GetCommonType(binaryOperatorExpression.Left.AcceptVisitor(this, data) as IReturnType,
+					return MemberLookupHelper.GetCommonType(resolver.ProjectContent,
+					                                        binaryOperatorExpression.Left.AcceptVisitor(this, data) as IReturnType,
 					                                        binaryOperatorExpression.Right.AcceptVisitor(this, data) as IReturnType);
 			}
 		}
@@ -348,12 +349,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(SizeOfExpression sizeOfExpression, object data)
 		{
-			return CreateReturnType(typeof(int));
+			return resolver.ProjectContent.SystemTypes.Int32;
 		}
 		
 		public override object Visit(TypeOfExpression typeOfExpression, object data)
 		{
-			return CreateReturnType(typeof(Type));
+			return resolver.ProjectContent.SystemTypes.Type;
 		}
 		
 		public override object Visit(CheckedExpression checkedExpression, object data)
@@ -415,7 +416,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(TypeOfIsExpression typeOfIsExpression, object data)
 		{
-			return ReflectionReturnType.Bool;
+			return resolver.ProjectContent.SystemTypes.Boolean;
 		}
 		
 		public override object Visit(DefaultValueExpression defaultValueExpression, object data)
@@ -532,14 +533,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				t = new ConstructedReturnType(t, para);
 			}
-			return WrapArray(t, reference);
+			return WrapArray(projectContent, t, reference);
 		}
 		
-		static IReturnType WrapArray(IReturnType t, TypeReference reference)
+		static IReturnType WrapArray(IProjectContent pc, IReturnType t, TypeReference reference)
 		{
 			if (reference.IsArrayType) {
 				for (int i = reference.RankSpecifier.Length - 1; i >= 0; --i) {
-					t = new ArrayReturnType(t, reference.RankSpecifier[i] + 1);
+					t = new ArrayReturnType(pc, t, reference.RankSpecifier[i] + 1);
 				}
 			}
 			return t;
@@ -571,11 +572,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			public override List<IEvent> GetEvents() {
 				return new List<IEvent>();
 			}
-		}
-		
-		static IReturnType CreateReturnType(Type type)
-		{
-			return ReflectionReturnType.Create(ProjectContentRegistry.Mscorlib, null, type, false);
 		}
 	}
 }

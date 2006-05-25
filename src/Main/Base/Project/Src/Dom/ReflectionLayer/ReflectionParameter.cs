@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Xml;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Dom
+namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {
 	[Serializable]
 	public class ReflectionParameter : DefaultParameter

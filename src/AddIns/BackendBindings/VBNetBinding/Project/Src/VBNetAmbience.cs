@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 using ICSharpCode.SharpDevelop.Dom;
@@ -491,19 +492,21 @@ namespace VBNetBinding
 		
 		void UnpackNestedType(StringBuilder builder, IReturnType returnType)
 		{
-			if (returnType.ArrayDimensions > 0) {
+			if (returnType.IsArrayReturnType) {
 				builder.Append('(');
-				for (int i = 1; i < returnType.ArrayDimensions; ++i) {
+				int dimensions = returnType.CastToArrayReturnType().ArrayDimensions;
+				for (int i = 1; i < dimensions; ++i) {
 					builder.Append(',');
 				}
 				builder.Append(')');
-				UnpackNestedType(builder, returnType.ArrayElementType);
-			} else if (returnType.TypeArguments != null) {
-				UnpackNestedType(builder, returnType.UnboundType);
+				UnpackNestedType(builder, returnType.CastToArrayReturnType().ArrayElementType);
+			} else if (returnType.IsConstructedReturnType) {
+				UnpackNestedType(builder, returnType.CastToConstructedReturnType().UnboundType);
 				builder.Append("(Of ");
-				for (int i = 0; i < returnType.TypeArguments.Count; ++i) {
+				IList<IReturnType> ta = returnType.CastToConstructedReturnType().TypeArguments;
+				for (int i = 0; i < ta.Count; ++i) {
 					if (i > 0) builder.Append(", ");
-					builder.Append(Convert(returnType.TypeArguments[i]));
+					builder.Append(Convert(ta[i]));
 				}
 				builder.Append(')');
 			}

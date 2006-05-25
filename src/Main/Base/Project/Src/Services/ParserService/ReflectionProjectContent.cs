@@ -16,6 +16,7 @@ using System.Reflection;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -102,18 +103,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public void InitializeSpecialClasses()
 		{
 			if (GetClassInternal(VoidClass.VoidName, 0, Language) != null) {
-				AddClassToNamespaceList(new VoidClass(assemblyCompilationUnit));
-			}
-		}
-		
-		private class VoidClass : ReflectionClass
-		{
-			internal static readonly string VoidName = typeof(void).FullName;
-			
-			public VoidClass(ICompilationUnit compilationUnit) : base(compilationUnit, typeof(void), VoidName, null) {}
-			
-			protected override IReturnType CreateDefaultReturnType() {
-				return ReflectionReturnType.Void;
+				AddClassToNamespaceList(VoidClass.Instance);
 			}
 		}
 		

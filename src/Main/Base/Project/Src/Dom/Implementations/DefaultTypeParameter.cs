@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Reflection;
 using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
@@ -89,17 +88,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.targetClass = method.DeclaringType;
 			this.name = type.Name;
 			this.index = type.GenericParameterPosition;
-		}
-		
-		public void AddConstraintsFromType(Type type)
-		{
-			foreach (Type constraint in type.GetGenericParameterConstraints()) {
-				if (method != null) {
-					constraints.Add(ReflectionReturnType.Create(method, constraint, false));
-				} else {
-					constraints.Add(ReflectionReturnType.Create(targetClass, constraint, false));
-				}
-			}
 		}
 		
 		public DefaultTypeParameter(IClass targetClass, string name, int index)

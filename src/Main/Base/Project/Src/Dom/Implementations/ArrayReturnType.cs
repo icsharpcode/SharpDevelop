@@ -22,13 +22,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		IReturnType elementType;
 		int dimensions;
+		IProjectContent pc;
 		
-		public ArrayReturnType(IReturnType elementType, int dimensions)
+		internal IProjectContent ProjectContent {
+			get {
+				return pc;
+			}
+		}
+		
+		public ArrayReturnType(IProjectContent pc, IReturnType elementType, int dimensions)
 		{
+			if (pc == null)
+				throw new ArgumentNullException("pc");
 			if (dimensions <= 0)
 				throw new ArgumentOutOfRangeException("dimensions", dimensions, "dimensions must be positive");
 			if (elementType == null)
 				throw new ArgumentNullException("elementType");
+			this.pc = pc;
 			this.elementType = elementType;
 			this.dimensions = dimensions;
 		}
@@ -36,9 +46,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override bool Equals(object o)
 		{
 			IReturnType rt = o as IReturnType;
-			if (rt == null) return false;
-			if (rt.ArrayDimensions != dimensions) return false;
-			return elementType.Equals(rt.ArrayElementType);
+			if (rt == null || !rt.IsArrayReturnType) return false;
+			ArrayReturnType art = rt.CastToArrayReturnType();
+			if (art.ArrayDimensions != dimensions) return false;
+			return elementType.Equals(art.ArrayElementType);
 		}
 		
 		public override int GetHashCode()
@@ -48,9 +59,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override IReturnType ArrayElementType {
+		public IReturnType ArrayElementType {
 			get {
 				return elementType;
+			}
+		}
+		
+		public int ArrayDimensions {
+			get {
+				return dimensions;
 			}
 		}
 		
@@ -74,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override IReturnType BaseType {
 			get {
-				return ReflectionReturnType.Array;
+				return pc.SystemTypes.Array;
 			}
 		}
 		
@@ -83,8 +100,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		public class ArrayIndexer : DefaultProperty
 		{
-			public ArrayIndexer(IReturnType elementType)
-				: base("Indexer", elementType, ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, ReflectionReturnType.Array.GetUnderlyingClass())
+			public ArrayIndexer(IReturnType elementType, IClass systemArray)
+				: base("Indexer", elementType, ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, systemArray)
 			{
 				IsIndexer = true;
 			}
@@ -93,24 +110,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override List<IProperty> GetProperties()
 		{
 			List<IProperty> l = base.GetProperties();
-			ArrayIndexer property = new ArrayIndexer(elementType);
+			ArrayIndexer property = new ArrayIndexer(elementType, this.BaseType.GetUnderlyingClass());
+			IReturnType int32 = pc.SystemTypes.Int32;
 			for (int i = 0; i < dimensions; ++i) {
-				property.Parameters.Add(new DefaultParameter("index", ReflectionReturnType.Int, DomRegion.Empty));
+				property.Parameters.Add(new DefaultParameter("index", int32, DomRegion.Empty));
 			}
 			l.Add(property);
 			return l;
-		}
-		
-		public override int ArrayDimensions {
-			get {
-				return dimensions;
-			}
-		}
-		
-		public override bool IsDefaultReturnType {
-			get {
-				return false;
-			}
 		}
 		
 		/// <summary>
@@ -130,6 +136,35 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override string ToString()
 		{
 			return String.Format("[ArrayReturnType: {0}, dimensions={1}]", elementType, AppendArrayString(""));
+		}
+		
+		public override bool IsDefaultReturnType {
+			get {
+				return false;
+			}
+		}
+		
+		public override bool IsArrayReturnType {
+			get {
+				return true;
+			}
+		}
+		
+		public override ArrayReturnType CastToArrayReturnType()
+		{
+			return this;
+		}
+		
+		public override bool IsConstructedReturnType {
+			get {
+				return false;
+			}
+		}
+		
+		public override bool IsGenericReturnType {
+			get {
+				return false;
+			}
 		}
 	}
 }

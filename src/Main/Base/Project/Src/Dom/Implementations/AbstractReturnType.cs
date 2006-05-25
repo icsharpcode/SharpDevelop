@@ -80,34 +80,40 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public int ArrayDimensions {
-			get {
-				return 0;
-			}
-		}
-		
 		public virtual bool IsDefaultReturnType {
 			get {
 				return true;
 			}
 		}
 		
-		public IReturnType ArrayElementType {
+		public virtual bool IsArrayReturnType {
 			get {
-				throw new NotSupportedException();
+				return false;
 			}
 		}
-		
-		public IReturnType UnboundType {
-			get {
-				throw new NotSupportedException();
-			}
+		public virtual ArrayReturnType CastToArrayReturnType()
+		{
+			throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
 		}
 		
-		public IList<IReturnType> TypeArguments {
+		public virtual bool IsGenericReturnType {
 			get {
-				return null;
+				return false;
 			}
+		}
+		public virtual GenericReturnType CastToGenericReturnType()
+		{
+			throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
+		}
+		
+		public virtual bool IsConstructedReturnType {
+			get {
+				return false;
+			}
+		}
+		public virtual ConstructedReturnType CastToConstructedReturnType()
+		{
+			throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
 		}
 	}
 }

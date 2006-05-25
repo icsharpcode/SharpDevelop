@@ -63,52 +63,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
-		/// Gets the array ranks of the return type.
-		/// When the return type is not an array, this property returns 0.
-		/// </summary>
-		int ArrayDimensions {
-			get;
-		}
-		
-		/// <summary>
-		/// Gets the element type of the array.
-		/// When the return type is not an array, a NotSupportedException is thrown.
-		/// </summary>
-		IReturnType ArrayElementType {
-			get;
-		}
-		
-		/// <summary>
 		/// Gets the count of type parameters the target class should have.
 		/// </summary>
 		int TypeParameterCount {
-			get;
-		}
-		
-		/// <summary>
-		/// Gets if the return type is a default type, i.e. no array, generic etc.
-		/// </summary>
-		/// <returns>
-		/// True for SearchClassReturnType, GetClassReturnType and DefaultReturnType.<br/>
-		/// False for ArrayReturnType, SpecificReturnType etc.
-		/// </returns>
-		bool IsDefaultReturnType {
-			get;
-		}
-		
-		/// <summary>
-		/// Gets the type arguments used if this is a ConstructedReturnType.
-		/// Otherwise, null is returned.
-		/// </summary>
-		IList<IReturnType> TypeArguments {
-			get;
-		}
-		
-		/// <summary>
-		/// Gets the unbound type if this is a ConstructedReturnType.
-		/// Otherwise, a NotSupportedException is thrown.
-		/// </summary>
-		IReturnType UnboundType {
 			get;
 		}
 		
@@ -137,5 +94,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets all events that can be called on this return type.
 		/// </summary>
 		List<IEvent>    GetEvents();
+		
+		
+		/// <summary>
+		/// Gets if the return type is a default type, i.e. no array, generic etc.
+		/// </summary>
+		/// <returns>
+		/// True for SearchClassReturnType, GetClassReturnType and DefaultReturnType.<br/>
+		/// False for ArrayReturnType, SpecificReturnType etc.
+		/// </returns>
+		bool IsDefaultReturnType { get; }
+		
+		bool IsArrayReturnType { get; }
+		ArrayReturnType CastToArrayReturnType();
+		
+		bool IsGenericReturnType { get; }
+		GenericReturnType CastToGenericReturnType();
+		
+		bool IsConstructedReturnType { get; }
+		ConstructedReturnType CastToConstructedReturnType();
 	}
 }

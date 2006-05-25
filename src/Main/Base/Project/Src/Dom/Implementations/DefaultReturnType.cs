@@ -53,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			l.AddRange(c.Methods);
 			if (c.ClassType == ClassType.Interface) {
 				if (c.BaseTypes.Count == 0) {
-					AddMethodsFromBaseType(l, ReflectionReturnType.Object);
+					AddMethodsFromBaseType(l, c.ProjectContent.SystemTypes.Object);
 				} else {
 					foreach (IReturnType baseType in c.BaseTypes) {
 						AddMethodsFromBaseType(l, baseType);

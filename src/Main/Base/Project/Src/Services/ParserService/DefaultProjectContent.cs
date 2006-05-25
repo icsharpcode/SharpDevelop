@@ -151,6 +151,21 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		SystemTypes systemTypes;
+		
+		/// <summary>
+		/// Gets a class that allows to conveniently access commonly used types in the system
+		/// namespace.
+		/// </summary>
+		public virtual SystemTypes SystemTypes {
+			get {
+				if (systemTypes == null) {
+					systemTypes = new SystemTypes(this);
+				}
+				return systemTypes;
+			}
+		}
+		
 		public ICollection<IProjectContent> ReferencedContents {
 			get {
 				return referencedContents;
@@ -818,8 +833,25 @@ namespace ICSharpCode.Core
 		
 		protected virtual void OnReferencedContentsChanged(EventArgs e)
 		{
+			systemTypes = null; // re-create system types
 			if (ReferencedContentsChanged != null) {
 				ReferencedContentsChanged(this, e);
+			}
+		}
+		
+		public static readonly IProjectContent DummyProjectContent = new DummyContent();
+		
+		private class DummyContent : DefaultProjectContent
+		{
+			public override string ToString()
+			{
+				return "[DummyProjectContent]";
+			}
+			
+			public override SystemTypes SystemTypes {
+				get {
+					return ParserService.CurrentProjectContent.SystemTypes;
+				}
 			}
 		}
 	}

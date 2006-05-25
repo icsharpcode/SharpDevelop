@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IList<IReturnType> typeArguments;
 		IReturnType baseType;
 		
-		public override IList<IReturnType> TypeArguments {
+		public IList<IReturnType> TypeArguments {
 			get {
 				return typeArguments;
 			}
@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override IReturnType UnboundType {
+		public IReturnType UnboundType {
 			get {
 				return baseType;
 			}
@@ -78,10 +78,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (t is GenericReturnType) {
 				GenericReturnType rt = (GenericReturnType)t;
 				return rt.TypeParameter.Method == null;
-			} else if (t.ArrayDimensions > 0) {
-				return CheckReturnType(t.ArrayElementType);
-			} else if (t.TypeArguments != null) {
-				foreach (IReturnType para in t.TypeArguments) {
+			} else if (t.IsArrayReturnType) {
+				return CheckReturnType(t.CastToArrayReturnType().ArrayElementType);
+			} else if (t.IsConstructedReturnType) {
+				foreach (IReturnType para in t.CastToConstructedReturnType().TypeArguments) {
 					if (para != null) {
 						if (CheckReturnType(para)) return true;
 					}
@@ -126,8 +126,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (typeParameters == null || typeParameters.Count == 0) {
 				return input; // nothing to do when there are no type parameters specified
 			}
-			if (input is GenericReturnType) {
-				GenericReturnType rt = (GenericReturnType)input;
+			if (input.IsGenericReturnType) {
+				GenericReturnType rt = input.CastToGenericReturnType();
 				if (convertForMethod ? (rt.TypeParameter.Method != null) : (rt.TypeParameter.Method == null)) {
 					if (rt.TypeParameter.Index < typeParameters.Count) {
 						IReturnType newType = typeParameters[rt.TypeParameter.Index];
@@ -136,17 +136,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 						}
 					}
 				}
-			} else if (input.ArrayDimensions > 0) {
-				IReturnType e = input.ArrayElementType;
+			} else if (input.IsArrayReturnType) {
+				ArrayReturnType arInput = input.CastToArrayReturnType();
+				IReturnType e = arInput.ArrayElementType;
 				IReturnType t = TranslateType(e, typeParameters, convertForMethod);
 				if (e != t && t != null)
-					return new ArrayReturnType(t, input.ArrayDimensions);
-			} else if (input.TypeArguments != null) {
-				List<IReturnType> para = new List<IReturnType>(input.TypeArguments.Count);
-				foreach (IReturnType argument in input.TypeArguments) {
+					return new ArrayReturnType(arInput.ProjectContent, t, arInput.ArrayDimensions);
+			} else if (input.IsConstructedReturnType) {
+				ConstructedReturnType cinput = input.CastToConstructedReturnType();
+				List<IReturnType> para = new List<IReturnType>(cinput.TypeArguments.Count);
+				foreach (IReturnType argument in cinput.TypeArguments) {
 					para.Add(TranslateType(argument, typeParameters, convertForMethod));
 				}
-				return new ConstructedReturnType(input.UnboundType, para);
+				return new ConstructedReturnType(cinput.UnboundType, para);
 			}
 			return input;
 		}
@@ -228,6 +230,29 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			return r + ">]";
+		}
+		
+		public override bool IsArrayReturnType {
+			get {
+				return false;
+			}
+		}
+		
+		public override bool IsConstructedReturnType {
+			get {
+				return true;
+			}
+		}
+		
+		public override ConstructedReturnType CastToConstructedReturnType()
+		{
+			return this;
+		}
+		
+		public override bool IsGenericReturnType {
+			get {
+				return false;
+			}
 		}
 	}
 }

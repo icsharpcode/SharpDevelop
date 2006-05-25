@@ -55,8 +55,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		void MakeLiteralResult(string fullTypeName)
 		{
-			resolveResult = new ResolveResult(callingClass, resolver.CallingMember,
-			                                  new GetClassReturnType(projectContent, fullTypeName, 0));
+			MakeResult(new GetClassReturnType(projectContent, fullTypeName, 0));
 		}
 		
 		void MakeResult(IMember member)
@@ -427,7 +426,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 							resolveResult.ResolvedType = invoke.ReturnType;
 						}
 					} else if (c.FullyQualifiedName == "System.Type") {
-						resolveResult.ResolvedType = ReflectionReturnType.Object;
+						resolveResult.ResolvedType = projectContent.SystemTypes.Object;
 					} else {
 						ClearResult();
 					}
@@ -446,7 +445,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				arguments[0].Accept(this);
 				TypeResolveResult trr = resolveResult as TypeResolveResult;
 				if (trr != null) {
-					MakeResult(new ArrayReturnType(trr.ResolvedType, 1));
+					MakeResult(new ArrayReturnType(projectContent, trr.ResolvedType, 1));
 				}
 			} else {
 				ResolveMethodInType(new GetClassReturnType(projectContent, "Boo.Lang.Builtins", 0),
@@ -562,7 +561,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				case BinaryOperatorType.ReferenceEquality:
 				case BinaryOperatorType.ReferenceInequality:
 				case BinaryOperatorType.TypeTest:
-					MakeResult(ReflectionReturnType.Bool);
+					MakeResult(projectContent.SystemTypes.Boolean);
 					break;
 				default:
 					if (node.Left == null) {
@@ -580,7 +579,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					IReturnType left = (resolveResult != null) ? resolveResult.ResolvedType : null;
 					node.Right.Accept(this);
 					IReturnType right = (resolveResult != null) ? resolveResult.ResolvedType : null;
-					MakeResult(MemberLookupHelper.GetCommonType(left, right));
+					MakeResult(MemberLookupHelper.GetCommonType(projectContent, left, right));
 					break;
 			}
 		}
@@ -632,11 +631,11 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (elementType == null)
 					elementType = thisType;
 				else if (thisType != null)
-					elementType = MemberLookupHelper.GetCommonType(elementType, thisType);
+					elementType = MemberLookupHelper.GetCommonType(projectContent, elementType, thisType);
 			}
 			if (elementType == null)
-				elementType = ReflectionReturnType.Object;
-			MakeResult(new ArrayReturnType(elementType, 1));
+				elementType = ConvertVisitor.GetDefaultReturnType(projectContent);
+			MakeResult(new ArrayReturnType(projectContent, elementType, 1));
 		}
 		
 		public override void OnTryCastExpression(TryCastExpression node)
@@ -651,7 +650,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override void OnBoolLiteralExpression(BoolLiteralExpression node)
 		{
-			MakeResult(ReflectionReturnType.Bool);
+			MakeResult(projectContent.SystemTypes.Boolean);
 		}
 		
 		public override void OnDoubleLiteralExpression(DoubleLiteralExpression node)
@@ -677,7 +676,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (node.IsLong)
 				MakeLiteralResult("System.Int64");
 			else
-				MakeResult(ReflectionReturnType.Int);
+				MakeResult(projectContent.SystemTypes.Int32);
 		}
 		
 		public override void OnNullLiteralExpression(NullLiteralExpression node)
@@ -708,7 +707,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override void OnStringLiteralExpression(StringLiteralExpression node)
 		{
-			MakeResult(ReflectionReturnType.String);
+			MakeResult(projectContent.SystemTypes.String);
 		}
 		
 		public override void OnTimeSpanLiteralExpression(TimeSpanLiteralExpression node)
@@ -718,7 +717,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override void OnTypeofExpression(TypeofExpression node)
 		{
-			MakeLiteralResult("System.Type");
+			MakeResult(projectContent.SystemTypes.Type);
 		}
 		
 		IReturnType ConvertType(TypeReference typeRef)

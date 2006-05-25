@@ -97,7 +97,7 @@ namespace CSharpBinding.Parser
 				UnGet();
 				ReadNextToken();
 				if (curTokenType == Ident && lastIdentifier == "throw") {
-					return ExpressionContext.TypeDerivingFrom(ProjectContentRegistry.Mscorlib.GetClass("System.Exception"), true);
+					return ExpressionContext.TypeDerivingFrom(ParserService.CurrentProjectContent.GetClass("System.Exception"), true);
 				}
 			}
 			return ExpressionContext.ObjectCreation;

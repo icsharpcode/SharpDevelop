@@ -10,6 +10,7 @@ using System.Collections;
 using System.Reflection;
 
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
 namespace ICSharpCode.Core
 {

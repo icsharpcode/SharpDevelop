@@ -59,8 +59,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (cachedClass != null) return cachedClass;
 			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, ModifierEnum.None, DomRegion.Empty, null);
-			c.BaseTypes.Add(ReflectionReturnType.CreatePrimitive(typeof(Delegate)));
-			AddDefaultDelegateMethod(c, returnType ?? ReflectionReturnType.Object, parameters);
+			c.BaseTypes.Add(cu.ProjectContent.SystemTypes.Delegate);
+			AddDefaultDelegateMethod(c, returnType ?? cu.ProjectContent.SystemTypes.Object, parameters);
 			cachedClass = c;
 			return c;
 		}
@@ -72,21 +72,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 				invokeMethod.Parameters.Add(par);
 			}
 			c.Methods.Add(invokeMethod);
-			invokeMethod = new DefaultMethod("BeginInvoke", CreateReturnType(typeof(IAsyncResult)), ModifierEnum.Public, c.Region, DomRegion.Empty, c);
+			invokeMethod = new DefaultMethod("BeginInvoke", c.ProjectContent.SystemTypes.IAsyncResult, ModifierEnum.Public, c.Region, DomRegion.Empty, c);
 			foreach (IParameter par in parameters) {
 				invokeMethod.Parameters.Add(par);
 			}
-			invokeMethod.Parameters.Add(new DefaultParameter("callback", CreateReturnType(typeof(AsyncCallback)), DomRegion.Empty));
-			invokeMethod.Parameters.Add(new DefaultParameter("object", ReflectionReturnType.Object, DomRegion.Empty));
+			invokeMethod.Parameters.Add(new DefaultParameter("callback", c.ProjectContent.SystemTypes.AsyncCallback, DomRegion.Empty));
+			invokeMethod.Parameters.Add(new DefaultParameter("object", c.ProjectContent.SystemTypes.Object, DomRegion.Empty));
 			c.Methods.Add(invokeMethod);
 			invokeMethod = new DefaultMethod("EndInvoke", returnType, ModifierEnum.Public, c.Region, DomRegion.Empty, c);
-			invokeMethod.Parameters.Add(new DefaultParameter("result", CreateReturnType(typeof(IAsyncResult)), DomRegion.Empty));
+			invokeMethod.Parameters.Add(new DefaultParameter("result", c.ProjectContent.SystemTypes.IAsyncResult, DomRegion.Empty));
 			c.Methods.Add(invokeMethod);
-		}
-		
-		static IReturnType CreateReturnType(Type type)
-		{
-			return ReflectionReturnType.Create(ProjectContentRegistry.Mscorlib, null, type, false);
 		}
 		
 		public override IReturnType BaseType {

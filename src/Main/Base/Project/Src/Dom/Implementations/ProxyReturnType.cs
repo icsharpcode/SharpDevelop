@@ -86,42 +86,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual int ArrayDimensions {
-			get {
-				IReturnType baseType = BaseType;
-				int tmp = (baseType != null && TryEnter()) ? baseType.ArrayDimensions : 0;
-				busy = false;
-				return tmp;
-			}
-		}
-		
-		public virtual IReturnType ArrayElementType {
-			get {
-				IReturnType baseType = BaseType;
-				IReturnType tmp = (baseType != null && TryEnter()) ? baseType.ArrayElementType : null;
-				busy = false;
-				return tmp;
-			}
-		}
-		
-		public virtual IReturnType UnboundType {
-			get {
-				IReturnType baseType = BaseType;
-				IReturnType tmp = (baseType != null && TryEnter()) ? baseType.UnboundType : null;
-				busy = false;
-				return tmp;
-			}
-		}
-		
-		public virtual IList<IReturnType> TypeArguments {
-			get {
-				IReturnType baseType = BaseType;
-				IList<IReturnType> tmp = (baseType != null && TryEnter()) ? baseType.TypeArguments : null;
-				busy = false;
-				return tmp;
-			}
-		}
-		
 		public virtual IClass GetUnderlyingClass()
 		{
 			IReturnType baseType = BaseType;
@@ -169,6 +133,66 @@ namespace ICSharpCode.SharpDevelop.Dom
 				busy = false;
 				return tmp;
 			}
+		}
+		
+		public virtual bool IsArrayReturnType {
+			get {
+				IReturnType baseType = BaseType;
+				bool tmp = (baseType != null && TryEnter()) ? baseType.IsArrayReturnType : false;
+				busy = false;
+				return tmp;
+			}
+		}
+		public virtual ArrayReturnType CastToArrayReturnType()
+		{
+			IReturnType baseType = BaseType;
+			ArrayReturnType temp;
+			if (baseType != null && TryEnter())
+				temp = CastToArrayReturnType();
+			else
+				throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
+			busy = false;
+			return temp;
+		}
+		
+		public virtual bool IsGenericReturnType {
+			get {
+				IReturnType baseType = BaseType;
+				bool tmp = (baseType != null && TryEnter()) ? baseType.IsGenericReturnType : false;
+				busy = false;
+				return tmp;
+			}
+		}
+		public virtual GenericReturnType CastToGenericReturnType()
+		{
+			IReturnType baseType = BaseType;
+			GenericReturnType temp;
+			if (baseType != null && TryEnter())
+				temp = CastToGenericReturnType();
+			else
+				throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
+			busy = false;
+			return temp;
+		}
+		
+		public virtual bool IsConstructedReturnType {
+			get {
+				IReturnType baseType = BaseType;
+				bool tmp = (baseType != null && TryEnter()) ? baseType.IsConstructedReturnType : false;
+				busy = false;
+				return tmp;
+			}
+		}
+		public virtual ConstructedReturnType CastToConstructedReturnType()
+		{
+			IReturnType baseType = BaseType;
+			ConstructedReturnType temp;
+			if (baseType != null && TryEnter())
+				temp = CastToConstructedReturnType();
+			else
+				throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
+			busy = false;
+			return temp;
 		}
 	}
 }

@@ -363,15 +363,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 				case ClassType.Class:
 				case ClassType.Interface:
 					if (FullyQualifiedName != "System.Object") {
-						return ReflectionReturnType.Object;
+						return this.ProjectContent.SystemTypes.Object;
 					}
 					break;
 				case ClassType.Enum:
-					return ProjectContentRegistry.Mscorlib.GetClass("System.Enum").DefaultReturnType;
+					return this.ProjectContent.SystemTypes.Enum;
 				case ClassType.Delegate:
-					return ReflectionReturnType.Delegate;
+					return this.ProjectContent.SystemTypes.Delegate;
 				case ClassType.Struct:
-					return ProjectContentRegistry.Mscorlib.GetClass("System.ValueType").DefaultReturnType;
+					return this.ProjectContent.SystemTypes.ValueType;
 			}
 			return null;
 		}
@@ -386,15 +386,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 				switch (ClassType) {
 					case ClassType.Class:
 						if (FullyQualifiedName != "System.Object") {
-							return ReflectionReturnType.Object.GetUnderlyingClass();
+							return this.ProjectContent.SystemTypes.Object.GetUnderlyingClass();
 						}
 						break;
 					case ClassType.Enum:
-						return ProjectContentRegistry.Mscorlib.GetClass("System.Enum");
+						return this.ProjectContent.SystemTypes.Enum.GetUnderlyingClass();
 					case ClassType.Delegate:
-						return ProjectContentRegistry.Mscorlib.GetClass("System.Delegate");
+						return this.ProjectContent.SystemTypes.Delegate.GetUnderlyingClass();
 					case ClassType.Struct:
-						return ProjectContentRegistry.Mscorlib.GetClass("System.ValueType");
+						return this.ProjectContent.SystemTypes.ValueType.GetUnderlyingClass();
 				}
 				return null;
 			}

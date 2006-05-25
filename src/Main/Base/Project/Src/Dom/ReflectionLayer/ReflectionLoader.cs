@@ -10,7 +10,7 @@ using System.IO;
 using System.Reflection;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Dom
+namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {
 	public sealed class ReflectionLoader : MarshalByRefObject
 	{

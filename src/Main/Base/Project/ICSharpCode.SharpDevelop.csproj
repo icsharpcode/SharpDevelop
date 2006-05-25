@@ -771,6 +771,7 @@
     <Compile Include="Src\Services\RefactoringService\RefactorMenu.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\AdvancedHighlightingStrategy.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\AdvancedHighlighter.cs" />
+    <Compile Include="Src\Dom\Implementations\SystemTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

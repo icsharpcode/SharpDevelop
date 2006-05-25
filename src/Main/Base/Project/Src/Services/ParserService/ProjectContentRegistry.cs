@@ -6,20 +6,17 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Threading;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-using System.Text;
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 using MSjogren.GacTool.FusionNative;
 
 namespace ICSharpCode.Core

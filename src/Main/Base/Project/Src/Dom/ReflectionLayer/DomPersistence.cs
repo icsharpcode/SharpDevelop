@@ -530,11 +530,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 				} else if (rt is GenericReturnType) {
 					// ignore
-				} else if (rt.ArrayDimensions > 0) {
-					AddExternalType(rt.ArrayElementType, externalTypes, classCount);
-				} else if (rt.TypeArguments != null) {
-					AddExternalType(rt.UnboundType, externalTypes, classCount);
-					foreach (IReturnType typeArgument in rt.TypeArguments) {
+				} else if (rt.IsArrayReturnType) {
+					AddExternalType(rt.CastToArrayReturnType().ArrayElementType, externalTypes, classCount);
+				} else if (rt.IsConstructedReturnType) {
+					AddExternalType(rt.CastToConstructedReturnType().UnboundType, externalTypes, classCount);
+					foreach (IReturnType typeArgument in rt.CastToConstructedReturnType().TypeArguments) {
 						AddExternalType(typeArgument, externalTypes, classCount);
 					}
 				} else {
@@ -562,23 +562,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 					} else {
 						writer.Write(classIndices[new ClassNameTypeCountPair(rt)]);
 					}
-				} else if (rt is GenericReturnType) {
-					GenericReturnType grt = (GenericReturnType)rt;
+				} else if (rt.IsGenericReturnType) {
+					GenericReturnType grt = rt.CastToGenericReturnType();
 					if (grt.TypeParameter.Method != null) {
 						writer.Write(MethodGenericRTCode);
 					} else {
 						writer.Write(TypeGenericRTCode);
 					}
 					writer.Write(grt.TypeParameter.Index);
-				} else if (rt.ArrayDimensions > 0) {
+				} else if (rt.IsArrayReturnType) {
 					writer.Write(ArrayRTCode);
-					writer.Write(rt.ArrayDimensions);
-					WriteType(rt.ArrayElementType);
-				} else if (rt.TypeArguments != null) {
+					writer.Write(rt.CastToArrayReturnType().ArrayDimensions);
+					WriteType(rt.CastToArrayReturnType().ArrayElementType);
+				} else if (rt.IsConstructedReturnType) {
+					ConstructedReturnType crt = rt.CastToConstructedReturnType();
 					writer.Write(ConstructedRTCode);
-					WriteType(rt.UnboundType);
-					writer.Write((byte)rt.TypeArguments.Count);
-					foreach (IReturnType typeArgument in rt.TypeArguments) {
+					WriteType(crt.UnboundType);
+					writer.Write((byte)crt.TypeArguments.Count);
+					foreach (IReturnType typeArgument in crt.TypeArguments) {
 						WriteType(typeArgument);
 					}
 				} else {
@@ -594,7 +595,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				switch (index) {
 					case ArrayRTCode:
 						int dimensions = reader.ReadInt32();
-						return new ArrayReturnType(ReadType(), dimensions);
+						return new ArrayReturnType(pc, ReadType(), dimensions);
 					case ConstructedRTCode:
 						IReturnType baseType = ReadType();
 						IReturnType[] typeArguments = new IReturnType[reader.ReadByte()];
@@ -609,7 +610,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					case NullRTReferenceCode:
 						return null;
 					case VoidRTCode:
-						return ReflectionReturnType.Void;
+						return VoidReturnType.Instance;
 					default:
 						return types[index];
 				}

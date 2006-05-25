@@ -221,7 +221,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (project != null && project.Ducky)
 				return new BooResolver.DuckClass(new DefaultCompilationUnit(projectContent)).DefaultReturnType;
 			else
-				return ReflectionReturnType.Object;
+				return projectContent.SystemTypes.Object;
 		}
 		
 		public static IReturnType CreateReturnType(AST.TypeReference reference, IClass callingClass,
@@ -234,7 +234,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 			if (reference is AST.ArrayTypeReference) {
 				AST.ArrayTypeReference arr = (AST.ArrayTypeReference)reference;
-				return new ArrayReturnType(CreateReturnType(arr.ElementType, callingClass, callingMember,
+				return new ArrayReturnType(projectContent,
+				                           CreateReturnType(arr.ElementType, callingClass, callingMember,
 				                                            caretLine, caretColumn, projectContent),
 				                           (arr.Rank != null) ? (int)arr.Rank.Value : 1);
 			} else if (reference is AST.SimpleTypeReference) {
@@ -275,10 +276,6 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			return CreateReturnType(reference, null);
 		}
-		IReturnType CreateReturnType(Type type)
-		{
-			return ReflectionReturnType.CreatePrimitive(type);
-		}
 		IReturnType CreateReturnType(AST.Field field)
 		{
 			if (field.Type == null) {
@@ -309,7 +306,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			DomRegion region = GetRegion(node);
 			DefaultClass c = new DefaultClass(_cu, ClassType.Delegate, GetModifier(node), region, OuterClass);
 			ConvertAttributes(node, c);
-			c.BaseTypes.Add(ReflectionReturnType.CreatePrimitive(typeof(Delegate)));
+			c.BaseTypes.Add(c.ProjectContent.SystemTypes.Delegate);
 			c.FullyQualifiedName = node.FullName;
 			if (_currentClass.Count > 0) {
 				OuterClass.InnerClasses.Add(c);
@@ -322,16 +319,16 @@ namespace Grunwald.BooBinding.CodeCompletion
 			DefaultMethod invokeMethod = new DefaultMethod("Invoke", returnType, ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, c);
 			ConvertParameters(node.Parameters, invokeMethod);
 			c.Methods.Add(invokeMethod);
-			invokeMethod = new DefaultMethod("BeginInvoke", CreateReturnType(typeof(IAsyncResult)), ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, c);
+			invokeMethod = new DefaultMethod("BeginInvoke", c.ProjectContent.SystemTypes.IAsyncResult, ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, c);
 			ConvertParameters(node.Parameters, invokeMethod);
 			if (invokeMethod.Parameters == DefaultParameter.EmptyParameterList) {
 				invokeMethod.Parameters = new List<IParameter>();
 			}
-			invokeMethod.Parameters.Add(new DefaultParameter("callback", CreateReturnType(typeof(AsyncCallback)), DomRegion.Empty));
-			invokeMethod.Parameters.Add(new DefaultParameter("object", ReflectionReturnType.Object, DomRegion.Empty));
+			invokeMethod.Parameters.Add(new DefaultParameter("callback", c.ProjectContent.SystemTypes.AsyncCallback, DomRegion.Empty));
+			invokeMethod.Parameters.Add(new DefaultParameter("object", c.ProjectContent.SystemTypes.Object, DomRegion.Empty));
 			c.Methods.Add(invokeMethod);
 			invokeMethod = new DefaultMethod("EndInvoke", returnType, ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, c);
-			invokeMethod.Parameters.Add(new DefaultParameter("result", CreateReturnType(typeof(IAsyncResult)), DomRegion.Empty));
+			invokeMethod.Parameters.Add(new DefaultParameter("result", c.ProjectContent.SystemTypes.IAsyncResult, DomRegion.Empty));
 			c.Methods.Add(invokeMethod);
 			_currentClass.Pop();
 		}

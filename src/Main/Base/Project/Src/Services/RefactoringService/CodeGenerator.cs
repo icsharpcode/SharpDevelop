@@ -32,15 +32,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				typeRef = new TypeReference(returnType.Name);
 			else
 				typeRef = new TypeReference(returnType.FullyQualifiedName);
-			while (returnType.ArrayDimensions > 0) {
+			while (returnType.IsArrayReturnType) {
 				int[] rank = typeRef.RankSpecifier ?? new int[0];
 				Array.Resize(ref rank, rank.Length + 1);
-				rank[rank.Length - 1] = returnType.ArrayDimensions - 1;
+				rank[rank.Length - 1] = returnType.CastToArrayReturnType().ArrayDimensions - 1;
 				typeRef.RankSpecifier = rank;
-				returnType = returnType.ArrayElementType;
+				returnType = returnType.CastToArrayReturnType().ArrayElementType;
 			}
-			if (returnType.TypeArguments != null) {
-				foreach (IReturnType typeArgument in returnType.TypeArguments) {
+			if (returnType.IsConstructedReturnType) {
+				foreach (IReturnType typeArgument in returnType.CastToConstructedReturnType().TypeArguments) {
 					typeRef.GenericTypes.Add(ConvertType(typeArgument, context));
 				}
 			}
@@ -71,9 +71,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				case "System.UInt16":
 				case "System.UInt32":
 				case "System.UInt64":
+					// don't use short name -> output visitor will use the instrinsic name
 					return false;
 			}
-			int typeArgumentCount = (returnType.TypeArguments != null) ? returnType.TypeArguments.Count : 0;
+			int typeArgumentCount = (returnType.IsConstructedReturnType) ? returnType.CastToConstructedReturnType().TypeArguments.Count : 0;
 			IReturnType typeInTargetContext = context.SearchType(returnType.Name, typeArgumentCount);
 			return typeInTargetContext != null && typeInTargetContext.FullyQualifiedName == returnType.FullyQualifiedName;
 		}

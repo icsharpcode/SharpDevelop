@@ -16,6 +16,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class DefaultCompilationUnit : ICompilationUnit
 	{
+		public static readonly ICompilationUnit DummyCompilationUnit = new DefaultCompilationUnit(DefaultProjectContent.DummyProjectContent);
+		
 		List<IUsing> usings  = new List<IUsing>();
 		List<IClass> classes = new List<IClass>();
 		List<IAttribute> attributes = new List<IAttribute>();

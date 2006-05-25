@@ -12,12 +12,12 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 
-namespace ICSharpCode.SharpDevelop.Dom
+namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {
 	[Serializable]
 	public class ReflectionMethod : DefaultMethod
 	{
-		public ReflectionMethod(MethodBase methodBase, IClass declaringType)
+		public ReflectionMethod(MethodBase methodBase, ReflectionClass declaringType)
 			: base(declaringType, methodBase is ConstructorInfo ? "#ctor" : methodBase.Name)
 		{
 			if (methodBase is MethodInfo) {
@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				int i = 0;
 				foreach (Type g in methodBase.GetGenericArguments()) {
-					((DefaultTypeParameter)this.TypeParameters[i++]).AddConstraintsFromType(g);
+					declaringType.AddConstraintsFromType(this.TypeParameters[i++], g);
 				}
 			}
 			

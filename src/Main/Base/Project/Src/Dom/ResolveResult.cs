@@ -124,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			bool supportsExtensionProperties = language.SupportsExtensionProperties;
 			if (supportsExtensionMethods || supportsExtensionProperties) {
 				ArrayList list = new ArrayList();
-				IMethod dummyMethod = new DefaultMethod("dummy", ReflectionReturnType.Void, ModifierEnum.Static, DomRegion.Empty, DomRegion.Empty, callingClass);
+				IMethod dummyMethod = new DefaultMethod("dummy", VoidReturnType.Instance, ModifierEnum.Static, DomRegion.Empty, DomRegion.Empty, callingClass);
 				NRefactoryResolver.NRefactoryResolver.AddContentsFromCalling(list, callingClass, dummyMethod);
 				NRefactoryResolver.NRefactoryResolver.AddImportedNamespaceContents(list, callingClass.CompilationUnit, callingClass);
 				
@@ -367,8 +367,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public class IntegerLiteralResolveResult : ResolveResult
 	{
-		public IntegerLiteralResolveResult(IClass callingClass, IMember callingMember)
-			: base(callingClass, callingMember, ReflectionReturnType.Int)
+		public IntegerLiteralResolveResult(IClass callingClass, IMember callingMember, IReturnType systemInt32)
+			: base(callingClass, callingMember, systemInt32)
 		{
 		}
 		

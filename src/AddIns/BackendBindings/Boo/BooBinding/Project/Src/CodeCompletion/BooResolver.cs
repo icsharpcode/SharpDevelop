@@ -207,7 +207,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (expr == null)
 				return null;
 			if (expr is AST.IntegerLiteralExpression)
-				return new IntegerLiteralResolveResult(callingClass, callingMember);
+				return new IntegerLiteralResolveResult(callingClass, callingMember, pc.SystemTypes.Int32);
 			
 			if (expressionResult.Context == ExpressionFinder.BooAttributeContext.Instance) {
 				AST.MethodInvocationExpression mie = expr as AST.MethodInvocationExpression;
