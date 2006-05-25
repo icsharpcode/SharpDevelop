@@ -151,7 +151,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				}
 				node = node.Parent;
 			}
-			FileService.NewFile("Conversion Results", "Text", conversionLog.ToString());
+			ICSharpCode.SharpDevelop.Gui.IWorkbenchWindow newFileWindow;
+			newFileWindow = FileService.NewFile("Conversion Results", "Text", conversionLog.ToString());
+			if (newFileWindow != null) {
+				newFileWindow.ViewContent.IsDirty = false;
+			}
 		}
 	}
 	

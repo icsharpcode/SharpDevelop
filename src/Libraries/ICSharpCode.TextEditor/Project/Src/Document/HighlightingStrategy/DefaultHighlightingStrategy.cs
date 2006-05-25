@@ -585,7 +585,7 @@ namespace ICSharpCode.TextEditor.Document
 							// Check for SPAN ENDs
 							if (inSpan) {
 								if (activeSpan.End != null && !activeSpan.End.Equals("")) {
-									if (currentLine.MatchExpr(activeSpan.End, i, document)) {
+									if (currentLine.MatchExpr(activeSpan.End, i, document, activeSpan.IgnoreCase)) {
 										PushCurWord(document, ref markNext, words);
 										string regex = currentLine.GetRegString(activeSpan.End, i, document);
 										currentLength += regex.Length;
@@ -603,7 +603,7 @@ namespace ICSharpCode.TextEditor.Document
 							// check for SPAN BEGIN
 							if (activeRuleSet != null) {
 								foreach (Span span in activeRuleSet.Spans) {
-									if (currentLine.MatchExpr(span.Begin, i, document)) {
+									if (currentLine.MatchExpr(span.Begin, i, document, activeRuleSet.IgnoreCase)) {
 										PushCurWord(document, ref markNext, words);
 										string regex = currentLine.GetRegString(span.Begin, i, document);
 										currentLength += regex.Length;
@@ -616,6 +616,7 @@ namespace ICSharpCode.TextEditor.Document
 											currentSpanStack = new Stack<Span>();
 										}
 										currentSpanStack.Push(span);
+										span.IgnoreCase = activeRuleSet.IgnoreCase;
 										
 										UpdateSpanStateVariables();
 										

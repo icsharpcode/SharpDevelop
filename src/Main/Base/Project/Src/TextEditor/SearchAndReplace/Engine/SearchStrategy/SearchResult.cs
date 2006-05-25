@@ -57,6 +57,10 @@ namespace SearchAndReplace
 		
 		public SearchResult(int offset, int length)
 		{
+			if (length < 0)
+				throw new ArgumentOutOfRangeException("length");
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException("offset");
 			this.offset   = offset;
 			this.length   = length;
 		}
