@@ -528,7 +528,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						classIndices.Add(pair, externalTypes.Count + classCount);
 						externalTypes.Add(pair);
 					}
-				} else if (rt is GenericReturnType) {
+				} else if (rt.IsGenericReturnType) {
 					// ignore
 				} else if (rt.IsArrayReturnType) {
 					AddExternalType(rt.CastToArrayReturnType().ArrayElementType, externalTypes, classCount);

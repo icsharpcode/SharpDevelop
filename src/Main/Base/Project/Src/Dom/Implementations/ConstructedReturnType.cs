@@ -75,9 +75,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		bool CheckReturnType(IReturnType t)
 		{
-			if (t is GenericReturnType) {
-				GenericReturnType rt = (GenericReturnType)t;
-				return rt.TypeParameter.Method == null;
+			if (t.IsGenericReturnType) {
+				return t.CastToGenericReturnType().TypeParameter.Method == null;
 			} else if (t.IsArrayReturnType) {
 				return CheckReturnType(t.CastToArrayReturnType().ArrayElementType);
 			} else if (t.IsConstructedReturnType) {
@@ -212,12 +211,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return l;
 		}
 		
-		public override bool IsDefaultReturnType {
-			get {
-				return false;
-			}
-		}
-		
 		public override string ToString()
 		{
 			string r = "[ConstructedReturnType: ";
@@ -230,6 +223,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			return r + ">]";
+		}
+		
+		public override bool IsDefaultReturnType {
+			get {
+				return false;
+			}
 		}
 		
 		public override bool IsArrayReturnType {

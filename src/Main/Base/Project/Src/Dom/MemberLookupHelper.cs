@@ -508,8 +508,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (argument == null) // TODO: Use NullReturnType instead of no return type
 				return true; // "null" can be passed for any argument
-			if (expected is GenericReturnType) {
-				foreach (IReturnType constraint in ((GenericReturnType)expected).TypeParameter.Constraints) {
+			if (expected.IsGenericReturnType) {
+				foreach (IReturnType constraint in expected.CastToGenericReturnType().TypeParameter.Constraints) {
 					if (!ConversionExists(argument, constraint)) {
 						return false;
 					}

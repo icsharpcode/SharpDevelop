@@ -77,11 +77,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 	
 	public class VoidClass : DefaultClass
 	{
+		internal static readonly string VoidName = typeof(void).FullName;
 		public static readonly VoidClass Instance = new VoidClass();
 		
-		internal static readonly string VoidName = typeof(void).FullName;
-		
-		public VoidClass() : base(DefaultCompilationUnit.DummyCompilationUnit, VoidName)
+		public VoidClass()
+			: base(DefaultCompilationUnit.DummyCompilationUnit, VoidName)
 		{
 		}
 		

@@ -77,7 +77,7 @@ class TestClass {
 			Assert.IsTrue(result is MemberResolveResult);
 			IMethod m = (IMethod)((MemberResolveResult)result).ResolvedMember;
 			Assert.AreEqual("TestClass", m.ReturnType.FullyQualifiedName);
-			Assert.AreEqual(1, m.ReturnType.ArrayDimensions);
+			Assert.AreEqual(1, m.ReturnType.CastToArrayReturnType().ArrayDimensions);
 		}
 		
 		[Test]

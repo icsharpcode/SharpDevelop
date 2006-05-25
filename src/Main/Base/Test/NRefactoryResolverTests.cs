@@ -365,7 +365,7 @@ class A {
 ";
 			ResolveResult result = Resolve(program, "TestMethod()", 4);
 			Assert.IsNotNull(result);
-			Assert.AreSame(ReflectionReturnType.Void, result.ResolvedType, result.ResolvedType.ToString());
+			Assert.AreSame(VoidReturnType.Instance, result.ResolvedType, result.ResolvedType.ToString());
 			Assert.AreEqual(0, result.GetCompletionData(lastPC).Count);
 		}
 		

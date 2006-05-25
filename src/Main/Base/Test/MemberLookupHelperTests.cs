@@ -33,18 +33,19 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void TypeParameterPassedToBaseClassTest()
 		{
-			IReturnType[] stringInt = { ReflectionReturnType.String, ReflectionReturnType.Int };
+			IReturnType[] stringInt = { msc.SystemTypes.String, msc.SystemTypes.Int32 };
 			IReturnType rrt = new ConstructedReturnType(DictionaryRT, stringInt);
 			IReturnType res = MemberLookupHelper.GetTypeParameterPassedToBaseClass(rrt, EnumerableClass, 0);
 			Assert.AreEqual("System.Collections.Generic.KeyValuePair", res.FullyQualifiedName);
-			Assert.AreEqual("System.String", res.TypeArguments[0].FullyQualifiedName);
-			Assert.AreEqual("System.Int32", res.TypeArguments[1].FullyQualifiedName);
+			ConstructedReturnType resc = res.CastToConstructedReturnType();
+			Assert.AreEqual("System.String", resc.TypeArguments[0].FullyQualifiedName);
+			Assert.AreEqual("System.Int32", resc.TypeArguments[1].FullyQualifiedName);
 		}
 		
 		[Test]
 		public void TypeParameterPassedToBaseClassSameClass()
 		{
-			IReturnType[] stringArr = { ReflectionReturnType.String };
+			IReturnType[] stringArr = { msc.SystemTypes.String };
 			IReturnType rrt = new ConstructedReturnType(EnumerableClass.DefaultReturnType, stringArr);
 			IReturnType res = MemberLookupHelper.GetTypeParameterPassedToBaseClass(rrt, EnumerableClass, 0);
 			Assert.AreEqual("System.String", res.FullyQualifiedName);
@@ -53,7 +54,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void GetCommonType()
 		{
-			IReturnType res = MemberLookupHelper.GetCommonType(swf.GetClass("System.Windows.Forms.ToolStripButton").DefaultReturnType,
+			IReturnType res = MemberLookupHelper.GetCommonType(msc,
+			                                                   swf.GetClass("System.Windows.Forms.ToolStripButton").DefaultReturnType,
 			                                                   swf.GetClass("System.Windows.Forms.ToolStripSeparator").DefaultReturnType);
 			Assert.AreEqual("System.Windows.Forms.ToolStripItem", res.FullyQualifiedName);
 		}

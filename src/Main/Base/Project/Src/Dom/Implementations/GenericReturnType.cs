@@ -26,9 +26,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override bool Equals(object o)
 		{
-			GenericReturnType rt = o as GenericReturnType;
-			if (rt == null) return false;
-			return typeParameter.Equals(rt.typeParameter);
+			IReturnType rt = o as IReturnType;
+			if (rt == null || !rt.IsGenericReturnType)
+			    return false;
+			return typeParameter.Equals(rt.CastToGenericReturnType().typeParameter);
 		}
 		
 		public override int GetHashCode()
@@ -109,6 +110,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override string ToString()
 		{
 			return String.Format("[GenericReturnType: {0}]", typeParameter);
+		}
+		
+		public override bool IsDefaultReturnType {
+			get {
+				return false;
+			}
 		}
 		
 		public override bool IsArrayReturnType {

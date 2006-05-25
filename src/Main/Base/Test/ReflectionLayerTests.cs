@@ -12,6 +12,7 @@ using System.Reflection;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 using NUnit.Framework;
 
 namespace ICSharpCode.SharpDevelop.Tests
@@ -102,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			IClass c = pc.GetClass("System.Void");
 			Assert.IsNotNull(c, "System.Void not found");
-			Assert.AreSame(c.DefaultReturnType, ReflectionReturnType.Void, "ReflectionReturnType.Void is c.DefaultReturnType");
+			Assert.AreSame(c.DefaultReturnType, VoidReturnType.Instance, "VoidReturnType.Instance is c.DefaultReturnType");
 		}
 		
 		class TestClass<A, B> where A : B {
@@ -154,8 +155,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 			
 			Assert.AreEqual("IEquatable", m.TypeParameters[0].Constraints[0].Name);
 			Assert.AreEqual(1, m.TypeParameters[0].Constraints[0].TypeParameterCount);
-			Assert.AreEqual(1, m.TypeParameters[0].Constraints[0].TypeArguments.Count);
-			GenericReturnType grt = (GenericReturnType)m.TypeParameters[0].Constraints[0].TypeArguments[0];
+			Assert.AreEqual(1, m.TypeParameters[0].Constraints[0].CastToConstructedReturnType().TypeArguments.Count);
+			GenericReturnType grt = (GenericReturnType)m.TypeParameters[0].Constraints[0].CastToConstructedReturnType().TypeArguments[0];
 			Assert.AreSame(m.TypeParameters[0], grt.TypeParameter);
 		}
 	}
