@@ -6,19 +6,10 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.DirectoryServices; // for SortDirection
-using System.ComponentModel;
 using System.Windows.Forms;
-
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.TextEditor.Document;
 using ICSharpCode.Core;
-
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
-using ICSharpCode.TextEditor;
-
+using SortDirection = ICSharpCode.SharpDevelop.DefaultEditor.Commands.SortSelection.SortDirection;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -39,8 +30,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			((CheckBox)ControlDictionary["caseSensitiveCheckBox"]).Checked = PropertyService.Get(caseSensitiveOption, true);
 			((CheckBox)ControlDictionary["ignoreWhiteSpacesCheckBox"]).Checked = PropertyService.Get(ignoreWhiteSpacesOption, false);
 			
-			((RadioButton)ControlDictionary["ascendingRadioButton"]).Checked = ((SortDirection)PropertyService.Get(sortDirectionOption, SortDirection.Ascending)) == SortDirection.Ascending;
-			((RadioButton)ControlDictionary["descendingRadioButton"]).Checked = ((SortDirection)PropertyService.Get(sortDirectionOption, SortDirection.Ascending)) == SortDirection.Descending;
+			((RadioButton)ControlDictionary["ascendingRadioButton"]).Checked = PropertyService.Get(sortDirectionOption, SortDirection.Ascending) == SortDirection.Ascending;
+			((RadioButton)ControlDictionary["descendingRadioButton"]).Checked = PropertyService.Get(sortDirectionOption, SortDirection.Ascending) == SortDirection.Descending;
 			
 			// insert event handlers
 			ControlDictionary["okButton"].Click  += new EventHandler(OkEvent);

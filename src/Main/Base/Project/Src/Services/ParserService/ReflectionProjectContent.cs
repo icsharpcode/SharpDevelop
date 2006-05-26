@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		string assemblyFullName;
 		AssemblyName[] referencedAssemblies;
-		ICompilationUnit assemblyCompilationUnit;
+		protected ICompilationUnit assemblyCompilationUnit;
 		string assemblyLocation;
 		
 		public string AssemblyLocation {

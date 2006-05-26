@@ -79,13 +79,13 @@ namespace MSjogren.GacTool.FusionNative
 		//
 		[PreserveSig()]
 		int Set(uint PropertyId,
-		                IntPtr pvProperty,
-		                uint cbProperty);
+		        IntPtr pvProperty,
+		        uint cbProperty);
 		
 		[PreserveSig()]
 		int Get(uint PropertyId,
-		                IntPtr pvProperty,
-		                ref uint pcbProperty);
+		        IntPtr pvProperty,
+		        ref uint pcbProperty);
 		
 		[PreserveSig()]
 		int Finalize();
@@ -242,9 +242,18 @@ namespace MSjogren.GacTool.FusionNative
 		                                                  uint dw);
 		
 		[DllImport("fusion.dll")]
-		public static extern int GetCachePath([MarshalAs(UnmanagedType.LPWStr)] StringBuilder wzDir,
-		                                      ref uint pdwSize,
-		                                      uint dwreserved);
+		public static extern int GetCachePath(uint flags,
+		                                      [MarshalAs(UnmanagedType.LPWStr)] StringBuilder wzDir,
+		                                      ref uint pdwSize);
+		
+		public static string GetGacPath()
+		{
+			const int size = 260;
+			StringBuilder b = new StringBuilder(size);
+			uint tmp = size;
+			GetCachePath(8, b, ref tmp); // flag 8 = GAC_ROOT_PATH
+			return b.ToString();
+		}
 		
 		// _InstallCustomAssembly@16
 		// _InstallCustomModule@8

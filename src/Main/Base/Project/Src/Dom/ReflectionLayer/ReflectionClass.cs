@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			}
 		}
 		
-		public static bool IsDelegate(Type type)
+		static bool IsDelegate(Type type)
 		{
 			return type.IsSubclassOf(typeof(Delegate)) && type != typeof(MulticastDelegate);
 		}
@@ -78,6 +78,18 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 					a.NamedArguments.Add(arg.MemberInfo.Name, new AttributeArgument(type, arg.TypedValue.Value));
 				}
 				list.Add(a);
+			}
+		}
+		
+		internal static void ApplySpecialsFromAttributes(DefaultClass c)
+		{
+			foreach (IAttribute att in c.Attributes) {
+				if (att.Name == "Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute"
+				    || att.Name == "Boo.Lang.ModuleAttribute")
+				{
+					c.ClassType = ClassType.Module;
+					break;
+				}
 			}
 		}
 		
@@ -108,14 +120,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 				this.ClassType = ClassType.Delegate;
 			} else {
 				this.ClassType = ClassType.Class;
-				foreach (IAttribute att in this.Attributes) {
-					if (att.Name == "Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute"
-					    || att.Name == "Boo.Lang.ModuleAttribute")
-					{
-						this.ClassType = ClassType.Module;
-						break;
-					}
-				}
+				ApplySpecialsFromAttributes(this);
 			}
 			if (type.IsGenericTypeDefinition) {
 				foreach (Type g in type.GetGenericArguments()) {

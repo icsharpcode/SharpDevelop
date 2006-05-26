@@ -61,8 +61,8 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 			
-			IClass form = ProjectContentRegistry.WinForms.GetClass("System.Windows.Forms.Form");
-			IClass userControl = ProjectContentRegistry.WinForms.GetClass("System.Windows.Forms.UserControl");
+			IClass form = c.ProjectContent.GetClass("System.Windows.Forms.Form");
+			IClass userControl = c.ProjectContent.GetClass("System.Windows.Forms.UserControl");
 			if (form != null && c.IsTypeInInheritanceTree(form))
 				return true;
 			if (userControl != null && c.IsTypeInInheritanceTree(userControl))

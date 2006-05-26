@@ -81,7 +81,14 @@ namespace ICSharpCode.Core
 				msg += "Exception occurred: " + ex.ToString();
 			}
 			
-			MessageBox.Show(MessageService.MainForm, StringParser.Parse(msg), StringParser.Parse("${res:Global.ErrorText}"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+			MethodInvoker showError = delegate {
+				MessageBox.Show(MessageService.MainForm, StringParser.Parse(msg), StringParser.Parse("${res:Global.ErrorText}"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+			};
+			if (MessageService.MainForm.InvokeRequired) {
+				MessageService.MainForm.BeginInvoke(showError);;
+			} else {
+				showError();
+			}
 		}
 		
 		public static void ShowWarning(string message)

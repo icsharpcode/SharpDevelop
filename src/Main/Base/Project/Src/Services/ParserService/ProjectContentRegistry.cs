@@ -43,11 +43,12 @@ namespace ICSharpCode.Core
 					}
 					int time = LoggingService.IsDebugEnabled ? Environment.TickCount : 0;
 					LoggingService.Debug("Loading PC for mscorlib...");
-					mscorlibContent = DomPersistence.LoadProjectContentByAssemblyName(typeof(object).Assembly.FullName);
+					mscorlibContent = DomPersistence.LoadProjectContentByAssemblyName(MscorlibAssembly.FullName);
 					if (mscorlibContent == null) {
-						mscorlibContent = new ReflectionProjectContent(typeof(object).Assembly);
+						mscorlibContent = new ReflectionProjectContent(MscorlibAssembly);
+						//mscorlibContent = CecilReader.LoadAssembly(MscorlibAssembly.Location);
 						if (time != 0) {
-							LoggingService.Debug("Loaded mscorlib with reflection in " + (Environment.TickCount - time) + " ms");
+							LoggingService.Debug("Loaded mscorlib with Reflection in " + (Environment.TickCount - time) + " ms");
 						}
 						DomPersistence.SaveProjectContent(mscorlibContent);
 						LoggingService.Debug("Saved mscorlib to cache");
@@ -65,17 +66,6 @@ namespace ICSharpCode.Core
 		public static IEnumerable<IProjectContent> LoadedProjectContents {
 			get {
 				return contents.Values;
-			}
-		}
-		
-		public static IProjectContent WinForms {
-			get {
-				lock (contents) {
-					if (contents.ContainsKey("System.Windows.Forms")) {
-						return contents["System.Windows.Forms"];
-					}
-				}
-				return GetProjectContentForReference(new ReferenceProjectItem(null, "System.Windows.Forms"));
 			}
 		}
 		
@@ -155,7 +145,31 @@ namespace ICSharpCode.Core
 							DomPersistence.SaveProjectContent(pc);
 						}
 					} else {
-						pc = LoadProjectContent(itemFileName, itemInclude);
+						//pc = LoadProjectContent(itemFileName, itemInclude);
+						
+						// find real file name for cecil:
+						if (File.Exists(itemFileName)) {
+							pc = CecilReader.LoadAssembly(itemFileName);
+						} else {
+							pc = null;
+							AssemblyName asmName = FindBestMatchingAssemblyName(itemInclude);
+							if (asmName != null) {
+								string subPath = FileUtility.Combine(asmName.Name,
+								                                     GetVersion__Token(asmName),
+								                                     asmName.Name + ".dll");
+								foreach (string dir in Directory.GetDirectories(Fusion.GetGacPath(), "GAC*")) {
+									itemFileName = Path.Combine(dir, subPath);
+									if (File.Exists(itemFileName)) {
+										pc = CecilReader.LoadAssembly(itemFileName);
+										break;
+									}
+								}
+							}
+							if (pc == null) {
+								WorkbenchSingleton.SafeThreadAsyncCall((Action3<string, string, string>)ShowErrorMessage,
+								                                       new object[] { "?", itemInclude, "Could not find assembly file." });
+							}
+						}
 					}
 					if (pc != null) {
 						contents[item.Include] = pc;
@@ -172,6 +186,19 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static string GetVersion__Token(AssemblyName asmName)
+		{
+			StringBuilder b = new StringBuilder(asmName.Version.ToString());
+			b.Append("__");
+			foreach (byte by in asmName.GetPublicKeyToken()) {
+				b.Append(by.ToString("x2"));
+			}
+			return b.ToString();
+		}
+		
+		/// <summary>
+		/// Load a project content using Reflection in a separate AppDomain.
+		/// </summary>
 		static ReflectionProjectContent LoadProjectContent(string filename, string include)
 		{
 			ReflectionProjectContent pc = DomPersistence.LoadProjectContentByAssemblyName(filename);
@@ -243,8 +270,6 @@ namespace ICSharpCode.Core
 					return typeof(System.Data.DataException).Assembly;
 				case "System.Design":
 					return typeof(System.ComponentModel.Design.DesignSurface).Assembly;
-				case "System.DirectoryServices":
-					return typeof(System.DirectoryServices.AuthenticationTypes).Assembly;
 				case "System.Drawing":
 					return typeof(System.Drawing.Color).Assembly;
 				case "System.Web.Services":
