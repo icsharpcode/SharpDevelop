@@ -84,12 +84,20 @@ namespace ICSharpCode.FiletypeRegisterer {
 		
 		public static bool IsRegisteredFileType(string extension)
 		{
-			using (RegistryKey key = Registry.ClassesRoot.OpenSubKey("." + extension)) {
-				if (key != null)
-					return true;
+			try {
+				using (RegistryKey key = Registry.ClassesRoot.OpenSubKey("." + extension)) {
+					if (key != null)
+						return true;
+				}
+			} catch (System.Security.SecurityException) {
+				// registry access might be denied
 			}
-			using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\Classes\\." + extension)) {
-				return key != null;
+			try {
+				using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\Classes\\." + extension)) {
+					return key != null;
+				}
+			} catch (System.Security.SecurityException) {
+				return false;
 			}
 		}
 		
@@ -135,7 +143,7 @@ namespace ICSharpCode.FiletypeRegisterer {
 			UnRegisterFiletype(extension, Registry.ClassesRoot);
 			try {
 				UnRegisterFiletype(extension, Registry.CurrentUser.CreateSubKey("Software\\Classes"));
-			} catch {}
+			} catch {} // catch CreateSubKey(Software\Classes)-exceptions
 			try {
 				SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
 			} catch {}

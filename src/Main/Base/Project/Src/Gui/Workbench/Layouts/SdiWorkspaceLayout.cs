@@ -429,7 +429,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Properties properties = (Properties)PropertyService.Get("Workspace.ViewMementos", new Properties());
 			
 			PadContentWrapper newContent = new PadContentWrapper(content);
-			if (content.Icon != null) {
+			if (!string.IsNullOrEmpty(content.Icon)) {
 				newContent.Icon = IconService.GetIcon(content.Icon);
 			}
 			newContent.Text = StringParser.Parse(content.Title);
