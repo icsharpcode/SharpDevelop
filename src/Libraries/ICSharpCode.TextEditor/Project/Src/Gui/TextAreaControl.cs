@@ -313,6 +313,13 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
+		public void JumpTo(int line)
+		{
+			line = Math.Min(line, Document.TotalNumberOfLines - 1);
+			string text = Document.GetText(Document.GetLineSegment(line));
+			JumpTo(line, text.Length - text.TrimStart().Length);
+		}
+		
 		public void JumpTo(int line, int column)
 		{
 			textArea.Focus();

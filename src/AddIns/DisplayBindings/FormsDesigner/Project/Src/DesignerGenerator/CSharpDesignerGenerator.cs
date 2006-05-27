@@ -19,19 +19,7 @@ namespace ICSharpCode.FormsDesigner
 	{
 		protected override DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method)
 		{
-			DomRegion r = method.BodyRegion;
-			int offset = document.PositionToOffset(new Point(r.BeginColumn - 1, r.BeginLine - 1));
-			string tmp = document.GetText(offset, 10);
-			while (offset < document.TextLength) {
-				char c = document.GetCharAt(offset++);
-				if (c == '{') {
-					return new DomRegion(r.BeginLine + 1, 1, r.EndLine, 1);
-				}
-				if (c != ' ') {
-					break;
-				}
-			}
-			return new DomRegion(r.BeginLine + 2, 1, r.EndLine, 1);
+			return new DomRegion(GetCursorLine(document, method), 1, method.BodyRegion.EndLine, 1);
 		}
 		
 		protected override System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider()
@@ -50,6 +38,28 @@ namespace ICSharpCode.FormsDesigner
 			b.AppendLine(indentation + "\t" + body);
 			b.AppendLine(indentation + "}");
 			return b.ToString();
+		}
+		
+		protected override int GetCursorLineAfterEventHandlerCreation()
+		{
+			return 3;
+		}
+		
+		protected override int GetCursorLine(ICSharpCode.TextEditor.Document.IDocument document, IMethod method)
+		{
+			DomRegion r = method.BodyRegion;
+			int offset = document.PositionToOffset(new Point(r.BeginColumn - 1, r.BeginLine - 1));
+			string tmp = document.GetText(offset, 10);
+			while (offset < document.TextLength) {
+				char c = document.GetCharAt(offset++);
+				if (c == '{') {
+					return r.BeginLine + 1;
+				}
+				if (c != ' ') {
+					break;
+				}
+			}
+			return r.BeginLine + 2;
 		}
 		
 		protected static string GenerateParams(EventDescriptor edesc, bool paramNames)

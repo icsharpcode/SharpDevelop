@@ -323,6 +323,16 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected abstract string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body, string indentation);
 		
+		protected virtual int GetCursorLine(IDocument document, IMethod method)
+		{
+			return method.BodyRegion.BeginLine + 1;
+		}
+		
+		protected virtual int GetCursorLineAfterEventHandlerCreation()
+		{
+			return 2;
+		}
+		
 		/// <summary>
 		/// If found return true and int as position
 		/// </summary>
@@ -341,7 +351,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			foreach (IMethod method in completeClass.Methods) {
 				if (method.Name == eventMethodName) {
-					position = method.Region.BeginLine + 1;
+					position = GetCursorLine(document, method);
 					file = method.DeclaringType.CompilationUnit.FileName;
 					return true;
 				}
@@ -349,12 +359,13 @@ namespace ICSharpCode.FormsDesigner
 			viewContent.MergeFormChanges();
 			Reparse();
 			
-			position = c.Region.EndLine + 1;
 			file = c.CompilationUnit.FileName;
+			int line = GetEventHandlerInsertionLine(c);
 			
-			int offset = viewContent.Document.GetLineSegment(GetEventHandlerInsertionLine(c) - 1).Offset;
+			int offset = viewContent.Document.GetLineSegment(line - 1).Offset;
 			
 			viewContent.Document.Insert(offset, CreateEventHandler(edesc, eventMethodName, body, tabs));
+			position = line + GetCursorLineAfterEventHandlerCreation();
 			
 			return false;
 		}
