@@ -90,6 +90,7 @@ namespace ICSharpCode.SharpDevelop
 			parameterList.Clear();
 			
 			foreach (string arg in args) {
+				if (arg.Length == 0) continue;
 				if (arg[0] == '-' || arg[0] == '/') {
 					int markerLength = 1;
 					

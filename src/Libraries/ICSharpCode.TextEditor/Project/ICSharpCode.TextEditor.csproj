@@ -198,6 +198,7 @@
     <EmbeddedResource Include="Resources\Boo.xshd" />
     <Compile Include="Src\Gui\DrawableLine.cs" />
     <Compile Include="Src\Gui\ToolTipRequestEventArgs.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\SpanStack.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

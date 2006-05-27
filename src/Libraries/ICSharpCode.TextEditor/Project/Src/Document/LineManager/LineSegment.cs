@@ -17,7 +17,7 @@ namespace ICSharpCode.TextEditor.Document
 		int delimiterLength;
 		
 		List<TextWord> words              = null;
-		Stack<Span>    highlightSpanStack = null;
+		SpanStack highlightSpanStack = null;
 		
 		public TextWord GetWord(int column)
 		{
@@ -83,7 +83,7 @@ namespace ICSharpCode.TextEditor.Document
 			return new HighlightColor(Color.Black, false, false);
 		}
 		
-		public Stack<Span> HighlightSpanStack {
+		public SpanStack HighlightSpanStack {
 			get {
 				return highlightSpanStack;
 			}
