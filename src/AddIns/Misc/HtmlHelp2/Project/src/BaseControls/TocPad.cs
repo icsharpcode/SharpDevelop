@@ -300,7 +300,11 @@ namespace HtmlHelp2
 		#region published Help2 TOC Commands
 		public void SynchronizeToc(string topicUrl)
 		{
-			tocControl.Synchronize(topicUrl);
+			try {
+				tocControl.Synchronize(topicUrl);
+			} catch (System.Runtime.InteropServices.COMException) {
+				// SD2-812: ignore exception when trying to synchronize non-existing URL
+			}
 		}
 
 		public void GetNextFromNode()
@@ -312,9 +316,14 @@ namespace HtmlHelp2
 
 		public void GetNextFromUrl(string url)
 		{
-			int currentNode = tocControl.Hierarchy.GetNextFromUrl(url);
-			string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
-			this.CallHelp(topicUrl, true);
+			try {
+				int currentNode = tocControl.Hierarchy.GetNextFromUrl(url);
+				string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
+				this.CallHelp(topicUrl, true);
+			} catch (System.Runtime.InteropServices.COMException) {
+			} catch (ArgumentException) {
+				// SD2-812: ignore exception when trying to synchronize non-existing URL
+			}
 		}
 
 		public void GetPrevFromNode()
@@ -326,9 +335,14 @@ namespace HtmlHelp2
 
 		public void GetPrevFromUrl(string url)
 		{
-			int currentNode = tocControl.Hierarchy.GetPrevFromUrl(url);
-			string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
-			this.CallHelp(topicUrl, true);
+			try {
+				int currentNode = tocControl.Hierarchy.GetPrevFromUrl(url);
+				string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
+				this.CallHelp(topicUrl, true);
+			} catch (ArgumentException) {
+			} catch (System.Runtime.InteropServices.COMException) {
+				// SD2-812: ignore exception when trying to synchronize non-existing URL
+			}
 		}
 
 		public bool IsNotFirstNode
