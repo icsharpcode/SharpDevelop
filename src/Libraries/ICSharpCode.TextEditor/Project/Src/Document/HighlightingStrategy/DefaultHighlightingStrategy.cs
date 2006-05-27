@@ -452,7 +452,7 @@ namespace ICSharpCode.TextEditor.Document
 		void UpdateSpanStateVariables()
 		{
 			inSpan = (currentSpanStack != null && !currentSpanStack.IsEmpty);
-			activeSpan = inSpan ? (Span)currentSpanStack.Peek() : null;
+			activeSpan = inSpan ? currentSpanStack.Peek() : null;
 			activeRuleSet = GetRuleSet(activeSpan);
 		}
 
