@@ -106,6 +106,9 @@ namespace SearchAndReplace
 						}
 						break;
 					case CommandType.AnyZeroOrMore:
+						if (ch == '\n') {
+							return false;
+						}
 						return Match(document, curOffset, ignoreCase, pc + 1) ||
 						       Match(document, curOffset + 1, ignoreCase, pc);
 					case CommandType.AnySingle:
@@ -135,9 +138,11 @@ namespace SearchAndReplace
 		int InternalFindNext(ITextIterator textIterator)
 		{
 			while (textIterator.MoveAhead(1)) {
-				if (Match(textIterator.TextBuffer, textIterator.Position, !SearchOptions.MatchCase, 0)) {
-					if (!SearchOptions.MatchWholeWord || SearchReplaceUtilities.IsWholeWordAt(textIterator.TextBuffer, textIterator.Position, curMatchEndOffset - textIterator.Position)) {
-						return textIterator.Position;
+				int position = textIterator.Position;
+				if (Match(textIterator.TextBuffer, position, !SearchOptions.MatchCase, 0)) {
+					if (!SearchOptions.MatchWholeWord || SearchReplaceUtilities.IsWholeWordAt(textIterator.TextBuffer, position, curMatchEndOffset - position)) {
+						textIterator.MoveAhead(curMatchEndOffset - position - 1);
+						return position;
 					}
 				}
 			}
@@ -147,10 +152,12 @@ namespace SearchAndReplace
 		int InternalFindNext(ITextIterator textIterator, int offset, int length)
 		{
 			while (textIterator.MoveAhead(1) && TextSelection.IsInsideRange(textIterator.Position, offset, length)) {
-				if (Match(textIterator.TextBuffer, textIterator.Position, !SearchOptions.MatchCase, 0)) {
-					if (!SearchOptions.MatchWholeWord || SearchReplaceUtilities.IsWholeWordAt(textIterator.TextBuffer, textIterator.Position, curMatchEndOffset - textIterator.Position)) {
+				int position = textIterator.Position;
+				if (Match(textIterator.TextBuffer, position, !SearchOptions.MatchCase, 0)) {
+					if (!SearchOptions.MatchWholeWord || SearchReplaceUtilities.IsWholeWordAt(textIterator.TextBuffer, position, curMatchEndOffset - position)) {
 						if (TextSelection.IsInsideRange(curMatchEndOffset - 1, offset, length)) {
-							return textIterator.Position;
+							textIterator.MoveAhead(curMatchEndOffset - position - 1);
+							return position;
 						} else {
 							return -1;
 						}

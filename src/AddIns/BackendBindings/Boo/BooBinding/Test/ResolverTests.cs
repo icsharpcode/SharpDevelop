@@ -6,6 +6,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Reflection;
 using NUnit.Framework;
 using ICSharpCode.Core;
@@ -53,7 +54,7 @@ namespace Grunwald.BooBinding.Tests
 			lastPC = pc;
 			ParserService.ForceProjectContent(pc);
 			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
-			pc.ReferencedContents.Add(ProjectContentRegistry.WinForms);
+			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(new ReferenceProjectItem(null, "System.Windows.Forms")));
 			pc.ReferencedContents.Add(booLangPC);
 			ICompilationUnit cu = new BooParser().Parse(pc, fileName, prog);
 			ParserService.UpdateParseInformation(cu, fileName, false, false);
@@ -217,7 +218,24 @@ namespace Grunwald.BooBinding.Tests
 			"\t\tif boo640b = boo640a as FieldInfo: /*640*/\n" +
 			"\t\t\tprint boo640b\n" +
 			"\t\n" +
+			"\tprint 'end of method'\n" +
 			"\t/*1*/\n";
+		
+		[Test]
+		public void MyMethodCompletion()
+		{
+			MethodResolveResult rr = Resolve<MethodResolveResult>(regressionProg, "MyMethod", "/*1*/");
+			ArrayList arr = rr.GetCompletionData(lastPC);
+			Assert.IsNotNull(arr);
+			bool beginInvoke = false;
+			bool invoke = false;
+			foreach (IMember m in arr) {
+				if (m.Name == "BeginInvoke") beginInvoke = true;
+				if (m.Name == "Invoke") invoke = true;
+			}
+			Assert.IsTrue(beginInvoke, "beginInvoke");
+			Assert.IsTrue(invoke, "invoke");
+		}
 		
 		[Test]
 		public void Boo629VariableScope()
@@ -253,6 +271,23 @@ namespace Grunwald.BooBinding.Tests
 			Assert.AreEqual("System.Boolean", rr.ResolvedType.FullyQualifiedName);
 			LocalResolveResult rr2 = Resolve<LocalResolveResult>(prog, "mybool", "/*mark*/");
 			Assert.AreEqual("System.Boolean", rr2.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void InfiniteRecursionGenerator()
+		{
+			string prog =
+				"class Test:\n" +
+				"\t_testList = []\n" +
+				"\tTestProperty:\n" +
+				"\t\tget:\n" +
+				"\t\t\tfor testobj as Test in _testList:\n" +
+				"\t\t\t\tyield testobj.TestProperty /*mark*/\n";
+			MemberResolveResult rr = Resolve<MemberResolveResult>(prog, "testobj.TestProperty", "/*mark*/");
+			Assert.AreEqual("Test.TestProperty", rr.ResolvedMember.FullyQualifiedName);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable", rr.ResolvedType.FullyQualifiedName);
+			// prevent creating self-referring ConstructedReturnType
+			Assert.AreEqual("?", rr.ResolvedType.CastToConstructedReturnType().TypeArguments[0].FullyQualifiedName);
 		}
 		#endregion
 		

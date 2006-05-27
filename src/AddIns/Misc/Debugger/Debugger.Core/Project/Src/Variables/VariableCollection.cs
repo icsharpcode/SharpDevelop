@@ -154,6 +154,9 @@ namespace Debugger
 							((ClassVariable)oldVariable).isPublic = ((ClassVariable)oldVariable).isPublic;
 							((ClassVariable)oldVariable).isStatic = ((ClassVariable)oldVariable).isStatic;
 						}
+						if (newVariable is PropertyVariable) {
+							newVariable.ValueChanged += delegate { oldVariable.OnValueChanged(); };
+						}
 					}
 					// Keep the variable in the list
 					toBeRemoved.Remove(this[newVariable.Name]);

@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (res == null) return;
 			FilePosition pos = res.GetDefinitionPosition();
 			if (pos == null) return;
-			ctl.Invoke(new OpenFileDelegate(OpenFile), pos);
+			WorkbenchSingleton.SafeThreadAsyncCall(new OpenFileDelegate(OpenFile), pos);
 		}
 		
 		ResolveResult ResolveAtCaret(ParserUpdateStepEventArgs e)

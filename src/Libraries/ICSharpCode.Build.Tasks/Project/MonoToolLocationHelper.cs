@@ -172,7 +172,9 @@ namespace ICSharpCode.Build.Tasks
 				if (key != null) {
 					string readValue = (string)key.GetValue(name);
 					key.Close();
-					return readValue;
+					if (readValue != null) {
+						return readValue;
+					}
 				}
 			} catch (SecurityException) { }
 			

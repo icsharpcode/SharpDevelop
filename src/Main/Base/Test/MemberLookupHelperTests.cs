@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 
@@ -16,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	public class MemberLookupHelperTests
 	{
 		IProjectContent msc = ProjectContentRegistry.Mscorlib;
-		IProjectContent swf = ProjectContentRegistry.WinForms;
+		IProjectContent swf = ProjectContentRegistry.GetProjectContentForReference(new ReferenceProjectItem(null, "System.Windows.Forms"));
 		
 		public IReturnType DictionaryRT {
 			get {

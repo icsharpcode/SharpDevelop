@@ -40,6 +40,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
+		bool IsVisible {
+			get {
+				foreach(TreeListViewItem parent in this.ParentsInHierarch) {
+					if (!parent.IsExpanded) {
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+		
 		public TreeListViewDebuggerItem(Variable variable)
 		{
 			this.variable = variable;
@@ -54,28 +65,42 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			SubItems.Add("");
 			SubItems.Add("");
 			
-			Update();
+			Update(this, null);
 		}
+		
+		bool waitingForParentToExpand = false;
 		
 		void Update(object sender, DebuggerEventArgs e)
 		{
-			Highlight = (Variable.Value.AsString != SubItems[1].Text);
-			Update();
-		}
-		
-		public void Update()
-		{
-			if (this.SubItems[0].Text != Variable.Name)
-				this.SubItems[0].Text = Variable.Name;
-			if (this.SubItems[1].Text != Variable.Value.AsString)
-				this.SubItems[1].Text = Variable.Value.AsString;
-			if (this.SubItems[2].Text != Variable.Value.Type)
-				this.SubItems[2].Text = Variable.Value.Type;
+			if (waitingForParentToExpand) return;
 			
-			int imageIndex = DebuggerIcons.GetImageListIndex(variable);
-			if (this.ImageIndex != imageIndex) {
-				this.ImageIndex = imageIndex;
+			if (this.Parent != null && !IsVisible) {
+				// Delay the update until the parent is expanded
+				TreeListViewItemHanlder update = null;
+				update = delegate {
+					waitingForParentToExpand = false;
+					Update(this, null);
+					foreach(TreeListViewItem parent in this.ParentsInHierarch) {
+						parent.AfterExpand -= update;
+					}
+				};
+				foreach(TreeListViewItem parent in this.ParentsInHierarch) {
+					parent.AfterExpand += update;
+				}
+				waitingForParentToExpand = true;
+				return;
 			}
+			
+			if (this.TreeListView != null) {
+				((DebuggerTreeListView)this.TreeListView).DelayRefresh();
+				Highlight = (Variable.Value.AsString != SubItems[1].Text);
+			}
+			
+			this.SubItems[0].Text = Variable.Name;
+			this.SubItems[1].Text = Variable.Value.AsString;
+			this.SubItems[2].Text = Variable.Value.Type;
+			
+			this.ImageIndex = DebuggerIcons.GetImageListIndex(variable);
 			
 			if (IsExpanded) {
 				variable.SubVariables.Update();

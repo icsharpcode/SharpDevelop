@@ -105,6 +105,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public virtual string FileName {
 			get {
+				if (project == null)
+					return Include;
 				if (fileNameCache == null)
 					fileNameCache = Path.Combine(project.Directory, include);
 				return fileNameCache;

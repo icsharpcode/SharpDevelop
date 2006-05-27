@@ -167,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			
 			public string Negate(string booleanString)
 			{
-				return (!bool.Parse(booleanString)).ToString();
+				return "false".Equals(booleanString, StringComparison.OrdinalIgnoreCase).ToString();
 			}
 			
 			public string GetFileName(string fileName)

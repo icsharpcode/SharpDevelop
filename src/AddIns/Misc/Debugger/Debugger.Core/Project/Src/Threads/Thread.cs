@@ -141,7 +141,7 @@ namespace Debugger
 		internal Stepper GetStepper(ICorDebugStepper corStepper)
 		{
 			foreach(Stepper stepper in steppers) {
-				if (stepper.CorStepper == corStepper) {
+				if (stepper.IsCorStepper(corStepper)) {
 					return stepper;
 				}
 			}
@@ -250,6 +250,10 @@ namespace Debugger
 		}
 		
 		// NOTE: During evlulation some chains may be temporaly removed
+		// NOTE: When two events are invoked, step outs ocurr at once when all is done
+		// NOTE: Step out works properly for exceptions
+		// NOTE: Step over works properly for exceptions
+		// NOTE: Evaluation kills stepper overs on active frame
 		internal void CheckExpirationOfFunctions()
 		{
 			if (debugger.Evaluating) return;
@@ -259,6 +263,8 @@ namespace Debugger
 			
 			ICorDebugFrameEnum corFrameEnum = corChainEnum.Next().EnumerateFrames();
 			uint maxFrameIndex = corFrameEnum.Count - 1;
+			
+			ICorDebugFrame lastFrame = corFrameEnum.Next();
 			
 			List<Function> expiredFunctions = new List<Function>();
 			
@@ -270,7 +276,20 @@ namespace Debugger
 				}
 			}
 			
+			// Check the token of the last function
+			// TODO: Investigate: this should not happen (test case: event with two handlers)
+			if (lastFrame != null &&
+			    chainCache.ContainsKey(maxChainIndex) &&
+			    chainCache[maxChainIndex].Frames.ContainsKey(maxFrameIndex)) {
+				
+				Function cachedFunction = chainCache[maxChainIndex].Frames[maxFrameIndex];
+				if (cachedFunction.Token != lastFrame.FunctionToken) {
+					expiredFunctions.Add(cachedFunction);
+				}
+			}
+			
 			foreach(Function f in expiredFunctions) {
+				debugger.TraceMessage("Function " + f.Name + " expired. (check)");
 				f.OnExpired(EventArgs.Empty);
 			}
 		}

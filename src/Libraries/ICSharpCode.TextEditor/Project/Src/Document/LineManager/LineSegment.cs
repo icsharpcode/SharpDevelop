@@ -160,7 +160,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// <summary>
 		/// returns true, if the get the string s2 at index matches the expression expr
 		/// </summary>
-		internal bool MatchExpr(char[] expr, int index, IDocument document)
+		internal bool MatchExpr(char[] expr, int index, IDocument document, bool ignoreCase)
 		{
 			for (int i = 0, j = 0; i < expr.Length; ++i, ++j) {
 				switch (expr[i]) {
@@ -178,7 +178,9 @@ namespace ICSharpCode.TextEditor.Document
 									if (this.Offset + index + j + whatmatch.Length < document.TextLength) {
 										int k = 0;
 										for (; k < whatmatch.Length; ++k) {
-											if (document.GetCharAt(this.Offset + index + j + k) != whatmatch[k]) {
+											char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(this.Offset + index + j + k)) : document.GetCharAt(this.Offset + index + j + k);
+											char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
+											if (docChar != spanChar) {
 												break;
 											}
 										}
@@ -198,9 +200,12 @@ namespace ICSharpCode.TextEditor.Document
 									}
 									if (index - whatmatch.Length >= 0) {
 										int k = 0;
-										for (; k < whatmatch.Length; ++k)
-											if (document.GetCharAt(this.Offset + index - whatmatch.Length + k) != whatmatch[k])
+										for (; k < whatmatch.Length; ++k) {
+											char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(this.Offset + index - whatmatch.Length + k)) : document.GetCharAt(this.Offset + index - whatmatch.Length + k);
+											char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
+											if (docChar != spanChar)
 												break;
+										}
 										if (k >= whatmatch.Length) {
 											return false;
 										}
@@ -217,10 +222,17 @@ namespace ICSharpCode.TextEditor.Document
 						}
 						break;
 					default:
-						if (index + j >= this.Length || expr[i] != document.GetCharAt(this.Offset + index + j)) {
+					{
+						if (index + j >= this.Length) {
+							return false;
+						}
+						char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(this.Offset + index + j)) : document.GetCharAt(this.Offset + index + j);
+						char spanChar = ignoreCase ? Char.ToUpperInvariant(expr[i]) : expr[i];
+						if (docChar != spanChar) {
 							return false;
 						}
 						break;
+					}
 				}
 			}
 			return true;

@@ -131,14 +131,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 					case "HideToolbars":
 						RedrawToolbars();
 						break;
-					//case "HideTabs":
-					//case "HideVerticalScrollbar":
-					//case "HideHorizontalScrollbar":
+						//case "HideTabs":
+						//case "HideVerticalScrollbar":
+						//case "HideHorizontalScrollbar":
 					case "HideStatusBar":
 					case "ShowStatusBarOnMouseMove":
 						RedrawStatusBar();
 						break;
-					//case "HideWindowsTaskbar":
+						//case "HideWindowsTaskbar":
 				}
 			}
 		}
@@ -167,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			try {
 				if (File.Exists(LayoutConfiguration.CurrentLayoutFileName)) {
-					dockPanel.LoadFromXml(LayoutConfiguration.CurrentLayoutFileName, new DeserializeDockContent(GetContent));
+					LoadDockPanelLayout(LayoutConfiguration.CurrentLayoutFileName);
 				} else {
 					LoadDefaultLayoutConfiguration();
 				}
@@ -179,7 +179,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void LoadDefaultLayoutConfiguration()
 		{
 			if (File.Exists(LayoutConfiguration.CurrentLayoutTemplateFileName)) {
-				dockPanel.LoadFromXml(LayoutConfiguration.CurrentLayoutTemplateFileName, new DeserializeDockContent(GetContent));
+				LoadDockPanelLayout(LayoutConfiguration.CurrentLayoutTemplateFileName);
+			}
+		}
+		
+		void LoadDockPanelLayout(string fileName)
+		{
+			// LoadFromXml(fileName, ...) locks the file against simultanous read access
+			// -> we would loose the layout when starting two SharpDevelop instances
+			//    at the same time => open stream with shared read access.
+			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
+				dockPanel.LoadFromXml(fs, new DeserializeDockContent(GetContent));
 			}
 		}
 		
@@ -423,7 +433,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Properties properties = (Properties)PropertyService.Get("Workspace.ViewMementos", new Properties());
 			
 			PadContentWrapper newContent = new PadContentWrapper(content);
-			if (content.Icon != null) {
+			if (!string.IsNullOrEmpty(content.Icon)) {
 				newContent.Icon = IconService.GetIcon(content.Icon);
 			}
 			newContent.Text = StringParser.Parse(content.Title);

@@ -12,6 +12,7 @@ using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 
 namespace ICSharpCode.SharpDevelop.Tests
@@ -27,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
 			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
-			pc.ReferencedContents.Add(ProjectContentRegistry.WinForms);
+			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(new ReferenceProjectItem(null, "System.Windows.Forms")));
 			ParserService.ForceProjectContent(pc);
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
@@ -51,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			DefaultProjectContent pc = new DefaultProjectContent();
 			ParserService.ForceProjectContent(pc);
 			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
-			pc.ReferencedContents.Add(ProjectContentRegistry.WinForms);
+			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(new ReferenceProjectItem(null, "System.Windows.Forms")));
 			pc.Language = LanguageProperties.VBNet;
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);

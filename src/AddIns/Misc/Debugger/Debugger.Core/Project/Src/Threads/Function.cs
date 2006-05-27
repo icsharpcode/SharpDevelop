@@ -46,10 +46,22 @@ namespace Debugger
 			} 
 		}
 		
+		public uint Token {
+			get {
+				return methodProps.Token;
+			}
+		}
+		
 		public Module Module { 
 			get { 
 				return module; 
 			} 
+		}
+		
+		public Thread Thread {
+			get {
+				return thread;
+			}
 		}
 
 		public bool IsStatic {
@@ -120,9 +132,14 @@ namespace Debugger
 			
 			methodProps = module.MetaData.GetMethodProps(corFunction.Token);
 			
+			AddTrackingStepper();
+		}
+		
+		internal void AddTrackingStepper()
+		{
 			// Expiry the function when it is finished
-			stepOutStepper = CreateStepper();
-			stepOutStepper.CorStepper.StepOut();
+			stepOutStepper = new Stepper(this, "Function Tracker");
+			stepOutStepper.StepOut();
 			stepOutStepper.PauseWhenComplete = false;
 			stepOutStepper.StepComplete += delegate {
 				OnExpired(EventArgs.Empty);
@@ -174,17 +191,6 @@ namespace Debugger
 			}
 		}
 		
-		internal Stepper CreateStepper()
-		{
-			Stepper stepper = new Stepper(debugger, corILFrame.CreateStepper());
-			if (stepper.CorStepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
-				stepper.CorStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-				(stepper.CorStepper.CastTo<ICorDebugStepper2>()).SetJMC(1 /* true */);
-			}
-			thread.Steppers.Add(stepper);
-			return stepper;
-		}
-		
 		public void StepInto()
 		{
 			Step(true);
@@ -197,7 +203,8 @@ namespace Debugger
 
 		public void StepOut()
 		{
-			stepOutStepper.PauseWhenComplete = true;
+			Stepper stepper = new Stepper(this);
+			stepper.StepOut();
 			debugger.Continue();
 		}
 
@@ -217,15 +224,15 @@ namespace Debugger
 			Stepper stepper;
 			
 			if (stepIn) {
-				stepper = CreateStepper();
-				stepper.CorStepper.StepRange(true /* step in */, nextSt.StepRanges);
+				stepper = new Stepper(this);
+				stepper.StepIn(nextSt.StepRanges);
 			}
 			
 			// Without JMC step in which ends in code without symblols is cotinued.
 			// The next step over ensures that we at least do step over.
 			
-			stepper = CreateStepper();
-			stepper.CorStepper.StepRange(false /* step over */ , nextSt.StepRanges);
+			stepper = new Stepper(this);
+			stepper.StepOver(nextSt.StepRanges);
 			
 			debugger.Continue();
 		}

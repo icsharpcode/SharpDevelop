@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class LocalVarPad : DebuggerPad
 	{
-		TreeListView localVarList;
+		DebuggerTreeListView localVarList;
 		
 		ColumnHeader name = new ColumnHeader();
 		ColumnHeader val  = new ColumnHeader();
@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected override void InitializeComponents()
 		{
 			//iconsService = (ClassBrowserIconsService)ServiceManager.Services.GetService(typeof(ClassBrowserIconsService));
-			localVarList = new TreeListView();
+			localVarList = new DebuggerTreeListView();
 			localVarList.SmallImageList = DebuggerIcons.ImageList;
 			localVarList.ShowPlusMinus = true;
 			localVarList.FullRowSelect = true;
@@ -84,28 +84,67 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.EndUpdate();
 		}
 		
+		delegate void AddVariableMethod(Variable variable);
+		
 		public static void AddVariableCollectionToTree(VariableCollection varCollection, TreeListViewItemCollection tree)
 		{
+			TreeListViewItem privateInstanceMenu = new TreeListViewItem("<Private Members>", 0);
+			TreeListViewItem staticMenu = new TreeListViewItem("<Static Members>", 0);
+			TreeListViewItem privateStaticMenu = new TreeListViewItem("<Private Static Members>", 0);
+			
+			AddVariableMethod addVariable = delegate(Variable variable) {
+				ClassVariable classVariable = variable as ClassVariable;
+				
+				if (classVariable == null || classVariable.IsPublic) {
+					if (classVariable != null && classVariable.IsStatic) {
+						// Public static
+						if (staticMenu.TreeListView == null) {
+							tree.Add(staticMenu);
+							tree.Sort(false);
+						}
+						staticMenu.Items.Add(new TreeListViewDebuggerItem(variable));
+					} else {
+						// Public instance
+						tree.Add(new TreeListViewDebuggerItem(variable));
+					}
+				} else {
+					if (classVariable.IsStatic) {
+						// Private static
+						if (staticMenu.TreeListView == null) {
+							tree.Add(staticMenu);
+							tree.Sort(false);
+						}
+						if (privateStaticMenu.TreeListView == null) {
+							staticMenu.Items.Add(privateStaticMenu);
+							staticMenu.Items.Sort(false);
+						}
+						privateStaticMenu.Items.Add(new TreeListViewDebuggerItem(variable));
+					} else {
+						// Private instance
+						if (privateInstanceMenu.TreeListView == null) {
+							tree.Add(privateInstanceMenu);
+							tree.Sort(false);
+						}
+						privateInstanceMenu.Items.Add(new TreeListViewDebuggerItem(variable));
+					}
+				}
+			};
+			
 			varCollection.VariableAdded += delegate(object sender, VariableEventArgs e) {
-				AddVariableToTree(e.Variable, tree);
+				addVariable(e.Variable);
 			};
 			
 			foreach(Variable variable in varCollection) {
-				AddVariableToTree(variable, tree);
+				addVariable(variable);
 			}
 		}
 		
-		public static void AddVariableToTree(Variable variableToAdd, TreeListViewItemCollection tree)
-		{
-			TreeListViewDebuggerItem newItem = new TreeListViewDebuggerItem(variableToAdd);
-			
-			tree.Add(newItem);
-		}
-
 		private void localVarList_BeforeExpand(object sender, TreeListViewCancelEventArgs e)
 		{
 			if (debuggerCore.IsPaused) {
-				((TreeListViewDebuggerItem)e.Item).BeforeExpand();
+				if (e.Item is TreeListViewDebuggerItem) {
+					((TreeListViewDebuggerItem)e.Item).BeforeExpand();
+				}
 			} else {
 				MessageBox.Show("You can not explore variables while the debuggee is running.");
 				e.Cancel = true;

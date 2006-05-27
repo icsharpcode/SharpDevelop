@@ -13,21 +13,37 @@ namespace Debugger
 {
 	class Stepper
 	{
-		NDebugger debugger;
+		public enum StepperOperation {Idle, StepIn, StepOver, StepOut};
+			
+		Function function;
+		string name;
 		ICorDebugStepper corStepper;
+		StepperOperation operation = StepperOperation.Idle;
 		bool pauseWhenComplete = true;
 		
 		public event EventHandler<StepperEventArgs> StepComplete;
 		
 		public NDebugger Debugger {
 			get {
-				return debugger;
+				return function.Debugger;
 			}
 		}
 		
-		public ICorDebugStepper CorStepper {
+		public Function Function {
 			get {
-				return corStepper;
+				return function;
+			}
+		}
+		
+		public string Name {
+			get {
+				return name;
+			}
+		}
+		
+		public StepperOperation Operation {
+			get {
+				return operation;
 			}
 		}
 		
@@ -40,16 +56,63 @@ namespace Debugger
 			}
 		}
 		
-		public Stepper(NDebugger debugger, ICorDebugStepper corStepper)
+		public Stepper(Function function, string name): this(function)
 		{
-			this.debugger = debugger;
-			this.corStepper = corStepper;
+			this.name = name;
+		}
+		
+		public Stepper(Function function)
+		{
+			this.function = function;
+			
+			corStepper = function.CorILFrame.CreateStepper();
+			
+			// Turn on Just-My-Code
+			if (corStepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
+				corStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
+				corStepper.CastTo<ICorDebugStepper2>().SetJMC(1 /* true */);
+			}
+			
+			function.Thread.Steppers.Add(this);
 		}
 		
 		protected internal virtual void OnStepComplete() {
 			if (StepComplete != null) {
 				StepComplete(this, new StepperEventArgs(this));
 			}
+		}
+		
+		public bool IsCorStepper(ICorDebugStepper corStepper)
+		{
+			return this.corStepper == corStepper;
+		}
+		
+		// NOTE: corStepper.StepOut(); finishes when pevious frame is activated, not when function is exited
+		//       this is important for events with multiple handlers
+		// NOTE: StepRange callbacks go first (probably in order),
+		//       StepOut callback are called after that
+		public void StepOut()
+		{
+			operation = StepperOperation.StepOut;
+			// corStepper.StepOut(); // Don't! see note
+			corStepper.StepRange(false, new int[] {0, int.MaxValue});
+		}
+		
+		public void StepIn(int[] ranges)
+		{
+			operation = StepperOperation.StepIn;
+			corStepper.StepRange(true /* step in */, ranges);
+		}
+		
+		public void StepOver(int[] ranges)
+		{
+			operation = StepperOperation.StepOver;
+			corStepper.StepRange(false /* step over */, ranges);
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("{0} in {1} pause={2} {3}", Operation, Function.Name, PauseWhenComplete, name);
 		}
 	}
 }

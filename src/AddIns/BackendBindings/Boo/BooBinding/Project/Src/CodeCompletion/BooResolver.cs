@@ -100,6 +100,14 @@ namespace Grunwald.BooBinding.CodeCompletion
 					callingMember = ResolveCurrentMember(olderClass);
 				}
 			}
+			if (callingMember != null) {
+				if (caretLine > callingMember.BodyRegion.EndLine) {
+					this.caretLine = callingMember.BodyRegion.EndLine;
+					this.caretColumn = callingMember.BodyRegion.EndColumn - 1;
+				} else if (caretLine == callingMember.BodyRegion.EndLine && caretColumn >= callingMember.BodyRegion.EndColumn) {
+					this.caretColumn = callingMember.BodyRegion.EndColumn - 1;
+				}
+			}
 			return true;
 		}
 		
@@ -194,7 +202,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return new NamespaceResolveResult(callingClass, callingMember, "");
 			}
 			
-			ResolveResult rr = NRResolver.GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, caretLine, caretColumn, expressionResult.Expression);
+			ResolveResult rr = NRResolver.GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, this.caretLine, this.caretColumn, expressionResult.Expression);
 			if (rr != null) return rr;
 			
 			AST.Expression expr;

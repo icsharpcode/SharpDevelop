@@ -95,11 +95,14 @@ namespace Debugger
 			Thread thread = debugger.GetThread(pThread);
 			Stepper stepper = thread.GetStepper(pStepper);
 			
-			// There is a race condition: The tracking step out can be triggered after stepping step over
-			thread.CheckExpirationOfFunctions();
+			debugger.TraceMessage(" - stepper info: " + stepper.ToString());
 			
 			thread.Steppers.Remove(stepper);
 			stepper.OnStepComplete();
+			
+			// There is a race condition: The tracking step out can be triggered after stepping step over
+			thread.CheckExpirationOfFunctions();
+			
 			if (stepper.PauseWhenComplete) {
 				if (debugger.SelectedThread.LastFunction.HasSymbols) {
 					ExitCallback_Paused();
@@ -413,7 +416,7 @@ namespace Debugger
 
 		public void Exception2(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFrame pFrame, uint nOffset, CorDebugExceptionCallbackType exceptionType, uint dwFlags)
 		{
-			EnterCallback(PausedReason.Exception, "Exception2", pThread);
+			EnterCallback(PausedReason.Exception, "Exception2 (type=" + exceptionType.ToString() + ")", pThread);
 			
 			// This callback is also called from Exception(...)!!!! (the .NET 1.1 version)
 			// Whatch out for the zeros and null!

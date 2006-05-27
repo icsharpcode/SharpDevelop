@@ -258,5 +258,26 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("On Error Resume Next");
 		}
+		
+		[Test]
+		public void OverloadedConversionOperators()
+		{
+			TestTypeMember("Public Shared Narrowing Operator CType(ByVal xmlNode As XmlNode) As TheBug\nEnd Operator");
+			TestTypeMember("Public Shared Widening Operator CType(ByVal bugNode As TheBug) As XmlNode\nEnd Operator");
+		}
+		
+		[Test]
+		public void OverloadedTrueFalseOperators()
+		{
+			TestTypeMember("Public Shared Operator IsTrue(ByVal a As TheBug) As Boolean\nEnd Operator");
+			TestTypeMember("Public Shared Operator IsFalse(ByVal a As TheBug) As Boolean\nEnd Operator");
+		}
+		
+		[Test]
+		public void OverloadedOperators()
+		{
+			TestTypeMember("Public Shared Operator +(ByVal bugNode As TheBug, ByVal bugNode2 As TheBug) As TheBug\nEnd Operator");
+			TestTypeMember("Public Shared Operator >>(ByVal bugNode As TheBug, ByVal b As Integer) As TheBug\nEnd Operator");
+		}
 	}
 }

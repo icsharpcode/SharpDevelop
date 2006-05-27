@@ -63,7 +63,9 @@ namespace SearchAndReplace
 			LineSegment line = document.GetLineSegment(startPosition.Y);
 			drawableLine = new DrawableLine(document, line, MonospacedFont, BoldMonospacedFont);
 			drawableLine.SetBold(0, drawableLine.LineLength, false);
-			drawableLine.SetBold(startPosition.X, endPosition.X, true);
+			if (startPosition.Y == endPosition.Y) {
+				drawableLine.SetBold(startPosition.X, endPosition.X, true);
+			}
 			
 			specialText = result.DisplayText;
 			if (specialText != null) {

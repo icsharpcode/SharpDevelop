@@ -1437,7 +1437,7 @@
 				
 				<MenuItem id = "ToggleBreakpointSeparator" type = "Separator" />
 				<MenuItem id       = "Toggle Breakpoint"
-				          label    = "Toggle Breakpoint"
+				          label    = "${res:XML.MainMenu.DebugMenu.ToggleBreakpoint}"
 				          shortcut = "F7"
 				          class    = "ICSharpCode.SharpDevelop.Project.Commands.ToggleBreakpointCommand"/>
 			</ComplexCondition>

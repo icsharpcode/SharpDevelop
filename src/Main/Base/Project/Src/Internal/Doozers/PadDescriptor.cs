@@ -29,8 +29,8 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
-		/// Returns the icon bitmap resource name of the pad. May be null, if the pad has no
-		/// icon defined.
+		/// Returns the icon bitmap resource name of the pad. May be an empty string
+		/// if the pad has no icon defined.
 		/// </summary>
 		public string Icon {
 			get {

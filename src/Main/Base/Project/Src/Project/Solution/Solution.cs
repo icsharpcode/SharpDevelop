@@ -213,10 +213,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			return null;
 		}
 		
-		
 		public void Save()
 		{
-			Save(fileName);
+			try {
+				Save(fileName);
+			} catch (IOException ex) {
+				MessageService.ShowError("Could not save " + fileName + ":\n" + ex.Message);
+			} catch (UnauthorizedAccessException ex) {
+				MessageService.ShowError("Could not save " + fileName + ":\n" + ex.Message + "\n\nEnsure the file is writable.");
+			}
 		}
 		
 		public SolutionFolder CreateFolder(string folderName)

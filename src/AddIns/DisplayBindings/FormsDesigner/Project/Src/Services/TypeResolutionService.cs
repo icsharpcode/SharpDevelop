@@ -218,6 +218,15 @@ namespace ICSharpCode.FormsDesigner.Services
 						throw; // don't ignore other load errors
 					}
 				}
+				
+				AddAssemblyResolver();
+				try {
+					asm.GetTypes(); // force loading references etc.
+				} catch {
+					// some assemblies cause strange exceptions in Reflection...
+				} finally {
+					RemoveAssemblyResolver();
+				}
 
 				lock (designerAssemblies) {
 					if (!designerAssemblies.Contains(asm))

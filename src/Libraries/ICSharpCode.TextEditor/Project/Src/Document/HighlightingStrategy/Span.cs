@@ -30,6 +30,7 @@ namespace ICSharpCode.TextEditor.Document
 		string      rule  = null;
 		HighlightRuleSet ruleSet = null;
 		bool        noEscapeSequences = false;
+		bool		ignoreCase = false;
 		
 		internal HighlightRuleSet RuleSet {
 			get {
@@ -37,6 +38,15 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			set {
 				ruleSet = value;
+			}
+		}
+
+		public bool IgnoreCase	{
+			get	{
+				return ignoreCase;
+			}
+			set	{
+				ignoreCase = value;
 			}
 		}
 

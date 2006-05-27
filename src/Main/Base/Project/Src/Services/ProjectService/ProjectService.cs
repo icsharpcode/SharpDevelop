@@ -303,12 +303,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(fileName);
 			IProject project;
 			if (binding != null) {
-				try {
-					project = LanguageBindingService.LoadProject(fileName, solution.Name);
-				} catch (UnauthorizedAccessException ex) {
-					MessageService.ShowError(ex.Message);
-					return;
-				}
+				project = LanguageBindingService.LoadProject(fileName, solution.Name);
 			} else {
 				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new string[,] {{"FileName", fileName}}));
 				return;
@@ -327,9 +322,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			solution.FixSolutionConfiguration(new IProject[] { project });
-			solution.Save(solutionFile);
 			
-			LoadSolution(solutionFile);
+			if (FileUtility.ObservedSave((NamedFileOperationDelegate)solution.Save, solutionFile) == FileOperationResult.OK) {
+				// only load when saved succesfully
+				LoadSolution(solutionFile);
+			}
 		}
 		
 		public static void SaveSolution()

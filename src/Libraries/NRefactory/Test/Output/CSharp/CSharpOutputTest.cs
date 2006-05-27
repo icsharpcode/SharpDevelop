@@ -338,5 +338,26 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			TestTypeMember("public string this[int index] { get { return index.ToString(); } set { } }");
 			TestTypeMember("public string IList.this[int index] { get { return index.ToString(); } set { } }");
 		}
+		
+		[Test]
+		public void OverloadedConversionOperators()
+		{
+			TestTypeMember("public static explicit operator TheBug(XmlNode xmlNode) { }");
+			TestTypeMember("public static implicit operator XmlNode(TheBug bugNode) { }");
+		}
+		
+		[Test]
+		public void OverloadedTrueFalseOperators()
+		{
+			TestTypeMember("public static bool operator true(TheBug bugNode) { }");
+			TestTypeMember("public static bool operator false(TheBug bugNode) { }");
+		}
+		
+		[Test]
+		public void OverloadedOperators()
+		{
+			TestTypeMember("public static TheBug operator +(TheBug bugNode, TheBug bugNode2) { }");
+			TestTypeMember("public static TheBug operator >>(TheBug bugNode, int b) { }");
+		}
 	}
 }

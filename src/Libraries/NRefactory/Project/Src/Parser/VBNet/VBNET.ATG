@@ -1317,7 +1317,9 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		decl.RaiseRegion = raiseEventAccessorDeclaration;
 		compilationUnit.AddChild(decl);
 	.)
-	|
+	|  (. ConversionType opConversionType = ConversionType.None; .)
+		[ "Widening"		(. opConversionType = ConversionType.Implicit; .)
+		| "Narrowing"		(. opConversionType = ConversionType.Explicit;.) ]
 	"Operator"
 	(.
 		m.Check(Modifier.VBOperators);
@@ -1352,6 +1354,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		                                                                  returnType,
 		                                                                  operatorType
 		                                                                  );
+		operatorDeclaration.ConversionType = opConversionType;
 		operatorDeclaration.ReturnTypeAttributes = returnTypeAttributes;
 		operatorDeclaration.Body = (BlockStatement)stmt;
 		operatorDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
@@ -2994,8 +2997,6 @@ MemberModifier<Modifiers m> =
 	| "WriteOnly"		(.m.Add(Modifier.WriteOnly, t.Location);.)
 	| "WithEvents"		(.m.Add(Modifier.WithEvents, t.Location);.)
 	| "Dim"				(.m.Add(Modifier.Dim, t.Location);.)
-	| "Widening"		(.m.Add(Modifier.Widening, t.Location);.)
-	| "Narrowing"		(.m.Add(Modifier.Narrowing, t.Location);.)
 .
 
 END VBNET.

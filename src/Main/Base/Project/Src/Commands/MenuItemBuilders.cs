@@ -353,7 +353,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				this.padDescriptor = padDescriptor;
 				Text = StringParser.Parse(padDescriptor.Title);
 				
-				if (padDescriptor.Icon != null) {
+				if (!string.IsNullOrEmpty(padDescriptor.Icon)) {
 					base.Image = IconService.GetBitmap(padDescriptor.Icon);
 				}
 				

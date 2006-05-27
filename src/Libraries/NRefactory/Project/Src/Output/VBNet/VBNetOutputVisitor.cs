@@ -983,10 +983,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(OperatorDeclaration operatorDeclaration, object data)
 		{
-			// TODO: widenting... operators
 			VisitAttributes(operatorDeclaration.Attributes, data);
 			outputFormatter.Indent();
 			OutputModifier(operatorDeclaration.Modifier);
+			
+			if (operatorDeclaration.IsConversionOperator) {
+				if (operatorDeclaration.ConversionType == ConversionType.Implicit) {
+					outputFormatter.PrintToken(Tokens.Widening);
+				} else {
+					outputFormatter.PrintToken(Tokens.Narrowing);
+				}
+				outputFormatter.Space();
+			}
+			
 			outputFormatter.PrintToken(Tokens.Operator);
 			outputFormatter.Space();
 			
@@ -1077,13 +1086,24 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 			}
 			
-			if(op != -1)  outputFormatter.PrintToken(op);
+			
+			
+			if (operatorDeclaration.IsConversionOperator) {
+				outputFormatter.PrintToken(Tokens.CType);
+			} else {
+				if(op != -1)  outputFormatter.PrintToken(op);
+			}
 			
 			PrintTemplates(operatorDeclaration.Templates);
-			
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			AppendCommaSeparatedList(operatorDeclaration.Parameters);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			if (!operatorDeclaration.TypeReference.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				nodeTracker.TrackedVisit(operatorDeclaration.TypeReference, data);
+			}
 			
 			outputFormatter.NewLine();
 			
@@ -1091,7 +1111,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			nodeTracker.TrackedVisit(operatorDeclaration.Body, data);
 			--outputFormatter.IndentationLevel;
 			
-			outputFormatter.NewLine();
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.End);
 			outputFormatter.Space();
