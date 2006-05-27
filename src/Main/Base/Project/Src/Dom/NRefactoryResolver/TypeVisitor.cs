@@ -499,14 +499,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					if (useLazyReturnType) {
 						if (reference.IsGlobal)
 							t = new GetClassReturnType(projectContent, reference.SystemType, typeParameterCount);
-						else
+						else if (callingClass != null)
 							t = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn, reference.SystemType, typeParameterCount);
 					} else {
 						IClass c;
 						if (reference.IsGlobal) {
 							c = projectContent.GetClass(reference.SystemType, typeParameterCount);
 							t = (c != null) ? c.DefaultReturnType : null;
-						} else {
+						} else if (callingClass != null) {
 							t = projectContent.SearchType(new SearchTypeRequest(reference.SystemType, typeParameterCount, callingClass, caretLine, caretColumn)).Result;
 						}
 						if (t == null) {

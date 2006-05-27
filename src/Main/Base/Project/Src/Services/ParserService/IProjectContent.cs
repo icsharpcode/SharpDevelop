@@ -89,15 +89,17 @@ namespace ICSharpCode.Core
 	
 	public struct SearchTypeRequest
 	{
-		public string Name;
-		public int TypeParameterCount;
-		public ICompilationUnit CurrentCompilationUnit;
-		public IClass CurrentType;
-		public int CaretLine;
-		public int CaretColumn;
+		public readonly string Name;
+		public readonly int TypeParameterCount;
+		public readonly ICompilationUnit CurrentCompilationUnit;
+		public readonly IClass CurrentType;
+		public readonly int CaretLine;
+		public readonly int CaretColumn;
 		
 		public SearchTypeRequest(string name, int typeParameterCount, IClass currentType, int caretLine, int caretColumn)
 		{
+			if (currentType == null)
+				throw new ArgumentNullException("currentType");
 			this.Name = name;
 			this.TypeParameterCount = typeParameterCount;
 			this.CurrentCompilationUnit = currentType.CompilationUnit;
@@ -108,6 +110,8 @@ namespace ICSharpCode.Core
 		
 		public SearchTypeRequest(string name, int typeParameterCount, IClass currentType, ICompilationUnit currentCompilationUnit, int caretLine, int caretColumn)
 		{
+			if (currentCompilationUnit == null)
+				throw new ArgumentNullException("currentCompilationUnit");
 			this.Name = name;
 			this.TypeParameterCount = typeParameterCount;
 			this.CurrentCompilationUnit = currentCompilationUnit;
@@ -121,8 +125,8 @@ namespace ICSharpCode.Core
 	{
 		public static readonly SearchTypeResult Empty = new SearchTypeResult(null);
 		
-		IReturnType result;
-		IUsing usedUsing;
+		readonly IReturnType result;
+		readonly IUsing usedUsing;
 		
 		public SearchTypeResult(IReturnType result) : this(result, null) {}
 		

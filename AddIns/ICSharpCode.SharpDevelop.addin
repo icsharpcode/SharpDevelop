@@ -2123,4 +2123,8 @@
 		<String id = "FormsDesignerGeneratedCode" text=".Designer${Extension}"/>
 		<String id = "FormsDesignerResources"     text=".resx"/>
 	</Path>
+	
+	<Path name="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
+		<!-- put project option panels valid for all .NET projects here -->
+	</Path>
 </AddIn>

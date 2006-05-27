@@ -67,19 +67,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		internal static void AddDefaultDelegateMethod(DefaultClass c, IReturnType returnType, IList<IParameter> parameters)
 		{
-			DefaultMethod invokeMethod = new DefaultMethod("Invoke", returnType, ModifierEnum.Public, c.Region, DomRegion.Empty, c);
+			ModifierEnum modifiers = ModifierEnum.Public | ModifierEnum.Synthetic;
+			DefaultMethod invokeMethod = new DefaultMethod("Invoke", returnType, modifiers, c.Region, DomRegion.Empty, c);
 			foreach (IParameter par in parameters) {
 				invokeMethod.Parameters.Add(par);
 			}
 			c.Methods.Add(invokeMethod);
-			invokeMethod = new DefaultMethod("BeginInvoke", c.ProjectContent.SystemTypes.IAsyncResult, ModifierEnum.Public, c.Region, DomRegion.Empty, c);
+			invokeMethod = new DefaultMethod("BeginInvoke", c.ProjectContent.SystemTypes.IAsyncResult, modifiers, c.Region, DomRegion.Empty, c);
 			foreach (IParameter par in parameters) {
 				invokeMethod.Parameters.Add(par);
 			}
 			invokeMethod.Parameters.Add(new DefaultParameter("callback", c.ProjectContent.SystemTypes.AsyncCallback, DomRegion.Empty));
 			invokeMethod.Parameters.Add(new DefaultParameter("object", c.ProjectContent.SystemTypes.Object, DomRegion.Empty));
 			c.Methods.Add(invokeMethod);
-			invokeMethod = new DefaultMethod("EndInvoke", returnType, ModifierEnum.Public, c.Region, DomRegion.Empty, c);
+			invokeMethod = new DefaultMethod("EndInvoke", returnType, modifiers, c.Region, DomRegion.Empty, c);
 			invokeMethod.Parameters.Add(new DefaultParameter("result", c.ProjectContent.SystemTypes.IAsyncResult, DomRegion.Empty));
 			c.Methods.Add(invokeMethod);
 		}
