@@ -231,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if ((nestedType.Attributes & TypeAttributes.NestedPublic) == TypeAttributes.NestedPublic)
 					{
 						// NestedFamily somehow also finds internal inner classes (e.g. Environment.ResourceHelper)
-						string name = nestedType.FullName;
+						string name = nestedType.Name;
 						int pos = name.LastIndexOf('/');
 						if (pos > 0)
 							name = name.Substring(pos + 1);
@@ -239,6 +239,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 							continue;
 						if (name.Length > 2 && name[name.Length - 2] == '`')
 							name = name.Substring(0, name.Length - 2);
+						name = this.FullyQualifiedName + "." + name;
 						InnerClasses.Add(new CecilClass(this.CompilationUnit, this, nestedType, name));
 					}
 				}

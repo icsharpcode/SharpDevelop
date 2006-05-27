@@ -148,7 +148,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			IReturnType baseType = BaseType;
 			ArrayReturnType temp;
 			if (baseType != null && TryEnter())
-				temp = CastToArrayReturnType();
+				temp = baseType.CastToArrayReturnType();
 			else
 				throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
 			busy = false;
@@ -168,7 +168,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			IReturnType baseType = BaseType;
 			GenericReturnType temp;
 			if (baseType != null && TryEnter())
-				temp = CastToGenericReturnType();
+				temp = baseType.CastToGenericReturnType();
 			else
 				throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
 			busy = false;
@@ -188,7 +188,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			IReturnType baseType = BaseType;
 			ConstructedReturnType temp;
 			if (baseType != null && TryEnter())
-				temp = CastToConstructedReturnType();
+				temp = baseType.CastToConstructedReturnType();
 			else
 				throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
 			busy = false;
