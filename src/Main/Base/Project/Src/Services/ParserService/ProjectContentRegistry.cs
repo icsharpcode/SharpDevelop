@@ -177,6 +177,10 @@ namespace ICSharpCode.Core
 						contents[pc.AssemblyFullName] = pc;
 					}
 					return pc;
+				} catch (Exception ex) {
+					WorkbenchSingleton.SafeThreadAsyncCall((Action3<string, string, string>)ShowErrorMessage,
+					                                       new object[] { itemFileName, itemInclude, "Error loading assembly:\n" + ex.ToString() });
+					return null;
 				} finally {
 					#if DEBUG
 					LoggingService.DebugFormatted("Loaded {0} in {1}ms", itemInclude, Environment.TickCount - time);

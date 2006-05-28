@@ -94,7 +94,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				string tmp = base.Namespace;
 				if (tmp == "?") {
-					return fullName.Substring(0, fullName.LastIndexOf('.'));
+					if (fullName.IndexOf('.') > 0)
+						return fullName.Substring(0, fullName.LastIndexOf('.'));
+					else
+						return "";
 				}
 				return tmp;
 			}
