@@ -82,11 +82,7 @@ bool IsTypeKWForTypeCast(ref Token pt)
 {
 	if (Tokens.TypeKW[pt.kind]) {
 		pt = lexer.Peek();
-		if (pt.kind == Tokens.Times || pt.kind == Tokens.OpenSquareBracket) {
-			return IsPointerOrDims(ref pt);
-		} else {
-		  return true;
-		}
+		return IsPointerOrDims(ref pt) && SkipQuestionMark(ref pt);
 	} else if (pt.kind == Tokens.Void) {
 		pt = lexer.Peek();
 		return IsPointerOrDims(ref pt);
@@ -103,7 +99,7 @@ bool IsTypeNameOrKWForTypeCast(ref Token pt)
 		return IsTypeNameForTypeCast(ref pt);
 }
 
-// TypeName = ident [ "::" ident ] {  "." ident } ["<" TypeNameOrKW { "," TypeNameOrKW } ">" ] PointerOrDims
+// TypeName = ident [ "::" ident ] { ["<" TypeNameOrKW { "," TypeNameOrKW } ">" ] "." ident } ["?"] PointerOrDims
 /* !!! Proceeds from current peek position !!! */
 bool IsTypeNameForTypeCast(ref Token pt)
 {
@@ -120,26 +116,29 @@ bool IsTypeNameForTypeCast(ref Token pt)
 		}
 		pt = Peek();
 	}
-	// { "." ident }
-	while (pt.kind == Tokens.Dot) {
+	// { ["<" TypeNameOrKW { "," TypeNameOrKW } ">" ] "." ident }
+	while (true) {
+		if (pt.kind == Tokens.LessThan) {
+			do {
+				pt = Peek();
+				if (!IsTypeNameOrKWForTypeCast(ref pt)) {
+					return false;
+				}
+			} while (pt.kind == Tokens.Comma);
+			if (pt.kind != Tokens.GreaterThan) {
+				return false;
+			}
+			pt = Peek();
+		}
+		if (pt.kind != Tokens.Dot)
+			break;
 		pt = Peek();
 		if (pt.kind != Tokens.Identifier) {
 			return false;
 		}
 		pt = Peek();
 	}
-	if (pt.kind == Tokens.LessThan) {
-		do {
-			pt = Peek();
-			if (!IsTypeNameOrKWForTypeCast(ref pt)) {
-				return false;
-			}
-		} while (pt.kind == Tokens.Comma);
-		if (pt.kind != Tokens.GreaterThan) {
-			return false;
-		}
-		pt = Peek();
-	}
+	// ["?"]
 	if (pt.kind == Tokens.Question) {
 		pt = Peek();
 	}
@@ -328,21 +327,11 @@ bool IsPointer () { return la.kind == Tokens.Times; }
 bool SkipGeneric(ref Token pt)
 {
 	if (pt.kind == Tokens.LessThan) {
-		int braces = 1;
-		while (braces != 0) {
+		do {
 			pt = Peek();
-			if (pt.kind == Tokens.GreaterThan) {
-				--braces;
-			} else if (pt.kind == Tokens.LessThan) {
-				++braces;
-			} else if (pt.kind != Tokens.Identifier && pt.kind != Tokens.Comma
-				    && pt.kind != Tokens.OpenSquareBracket && pt.kind != Tokens.CloseSquareBracket
-				    && pt.kind != Tokens.Question
-			        && !Tokens.TypeKW[pt.kind])
-			{
-				return false;
-			}
-		}
+			if (!IsTypeNameOrKWForTypeCast(ref pt)) return false;
+		} while (pt.kind == Tokens.Comma);
+		if (pt.kind != Tokens.GreaterThan) return false;
 		pt = Peek();
 	}
 	return true;
@@ -366,16 +355,8 @@ bool IsLocalVarDecl () {
 	}
 	
 	StartPeek();
-	Token pt = la ;
-	string ignore;
-	if (!IsQualident(ref pt, out ignore)) return false;
-	if (!SkipGeneric(ref pt)) return false;
-	while (pt.kind == Tokens.Dot) {
-		pt = Peek();
-		if (!IsQualident(ref pt, out ignore)) return false;
-		if (!SkipGeneric(ref pt)) return false;
-	}
-	return SkipQuestionMark(ref pt) && IsPointerOrDims(ref pt) && pt.kind == Tokens.Identifier;
+	Token pt = la;
+	return IsTypeNameOrKWForTypeCast(ref pt) && pt.kind == Tokens.Identifier;
 }
 
 /* True if lookahead is type parameters (<...>) followed by the specified token */

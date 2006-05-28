@@ -63,7 +63,7 @@ namespace ICSharpCode.TextEditor.Document
 		}
 		
 		public HighlightColor BeginColor {
-			get {		
+			get {
 				if(beginColor != null) {
 					return beginColor;
 				} else {
@@ -112,16 +112,19 @@ namespace ICSharpCode.TextEditor.Document
 		{
 			color   = new HighlightColor(span);
 			
-			if (span.Attributes["rule"] != null) {
-				rule = span.Attributes["rule"].InnerText;
+			if (span.HasAttribute("rule")) {
+				rule = span.GetAttribute("rule");
 			}
 			
-			if (span.Attributes["noescapesequences"] != null) {
-				noEscapeSequences = Boolean.Parse(span.Attributes["noescapesequences"].InnerText);
+			if (span.HasAttribute("noescapesequences")) {
+				noEscapeSequences = Boolean.Parse(span.GetAttribute("noescapesequences"));
 			}
 			
-			name    = span.Attributes["name"].InnerText;
-			stopEOL = Boolean.Parse(span.Attributes["stopateol"].InnerText);
+			name = span.GetAttribute("name");
+			if (span.HasAttribute("stopateol")) {
+				stopEOL = Boolean.Parse(span.GetAttribute("stopateol"));
+			}
+			
 			begin   = span["Begin"].InnerText.ToCharArray();
 			beginColor = new HighlightColor(span["Begin"], color);
 			

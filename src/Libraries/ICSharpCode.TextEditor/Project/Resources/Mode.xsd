@@ -186,7 +186,7 @@
 			<xsd:element name="End" minOccurs="0" type="End" />
 		</xsd:sequence>
 		<!-- The name of the span definition -->
-        <xsd:attribute name="name" type="xsd:string" />
+        <xsd:attribute name="name" type="xsd:string" use="required" />
         <!-- Defines the rule set that is applicable in the Span. May be omitted. -->
         <xsd:attribute name="rule" type="xsd:string" />
         <!-- Defines wether the Span should terminate automatically at the end of line. Typical examples
