@@ -239,6 +239,17 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void Indexer()
+		{
+			TestMember("public CategoryInfo this[int index] { get { return List[index] as CategoryInfo; } }",
+			           "Public Default ReadOnly Property Item(ByVal index As Integer) As CategoryInfo\n" +
+			           "\tGet\n" +
+			           "\t\tReturn TryCast(List(index), CategoryInfo)\n" +
+			           "\tEnd Get\n" +
+			           "End Property");
+		}
+		
+		[Test]
 		public void RenameConflictingNames()
 		{
 			TestMember("int count;" +

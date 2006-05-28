@@ -1693,6 +1693,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
 			switch (binaryOperatorExpression.Op) {
 				case BinaryOperatorType.Add:
+				case BinaryOperatorType.Concat: // translate Concatenation to +
 					if (prettyPrintOptions.AroundAdditiveOperatorParentheses) {
 						outputFormatter.Space();
 					}

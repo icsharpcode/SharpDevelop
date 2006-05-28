@@ -225,6 +225,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void Concatenation()
+		{
+			TestStatement("x = \"Hello \" & \"World\"",
+			              "x = \"Hello \" + \"World\";");
+		}
+		
+		[Test]
 		public void VBConstants()
 		{
 			TestStatement("a = vbYesNo",
