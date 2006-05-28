@@ -77,7 +77,7 @@ namespace ICSharpCode.TextEditor.Document
 			return this.GetEnumerator();
 		}
 		
-		public sealed class Enumerator : IEnumerator<Span>
+		public struct Enumerator : IEnumerator<Span>
 		{
 			StackNode c;
 			

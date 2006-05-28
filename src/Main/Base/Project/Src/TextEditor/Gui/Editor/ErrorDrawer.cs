@@ -149,21 +149,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (task.Line >= 0 && task.Line < textEditor.Document.TotalNumberOfLines) {
 				LineSegment line = textEditor.Document.GetLineSegment(task.Line);
 				int offset = line.Offset + task.Column;
+				int length = 1;
 				if (line.Words != null) {
 					foreach (TextWord tw in line.Words) {
-						if (task.Column >= tw.Offset && task.Column < (tw.Offset + tw.Length)) {
-							textEditor.Document.MarkerStrategy.AddMarker(new VisualError(offset, tw.Length, task));
-							if (refresh) {
-								textEditor.Refresh();
-							}
-							return;
+						if (task.Column == tw.Offset) {
+							length = tw.Length;
+							break;
 						}
 					}
 				}
-				offset = Math.Min(offset, textEditor.Document.TextLength);
-				int startOffset = offset;
-				int endOffset   = Math.Max(1, TextUtilities.FindWordEnd(textEditor.Document, offset));
-				textEditor.Document.MarkerStrategy.AddMarker(new VisualError(startOffset, endOffset - startOffset + 1, task));
+				if (length == 1 && task.Column < line.Length) {
+					length = 2; // use minimum length
+				}
+				textEditor.Document.MarkerStrategy.AddMarker(new VisualError(offset, length, task));
 				if (refresh) {
 					textEditor.Refresh();
 				}

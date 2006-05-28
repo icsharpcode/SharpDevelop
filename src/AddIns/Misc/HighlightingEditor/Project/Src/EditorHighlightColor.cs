@@ -148,7 +148,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		
 		public static EditorHighlightColor FromTextEditor(ICSharpCode.TextEditor.Document.HighlightColor color)
 		{
-			return new EditorHighlightColor(color.HasForgeground, color.Color, color.HasBackground, color.BackgroundColor, color.Bold, color.Italic);
+			return new EditorHighlightColor(color.HasForeground, color.Color, color.HasBackground, color.BackgroundColor, color.Bold, color.Italic);
 		}
 		
 		public EditorHighlightColor(bool hascolor, Color Color, bool hasbackcolor, Color BackColor, bool bold, bool italic)

@@ -18,7 +18,7 @@ namespace ICSharpCode.TextEditor.Document
 	}
 	
 	/// <summary>
-	/// This class represents single words with color information, two special versions of a word are 
+	/// This class represents single words with color information, two special versions of a word are
 	/// spaces and tabs.
 	/// </summary>
 	public class TextWord
@@ -120,6 +120,25 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
+		/// <summary>
+		/// Splits the <paramref name="word"/> into two parts: the part before <paramref name="pos"/> is assigned to
+		/// the reference parameter <paramref name="word"/>, the part after <paramref name="pos"/> is returned.
+		/// </summary>
+		public static TextWord Split(ref TextWord word, int pos)
+		{
+			#if DEBUG
+			if (word.Type != TextWordType.Word)
+				throw new ArgumentException("word.Type must be Word");
+			if (pos <= 0)
+				throw new ArgumentOutOfRangeException("pos", pos, "pos must be > 0");
+			if (pos >= word.Length)
+				throw new ArgumentOutOfRangeException("pos", pos, "pos must be < word.Length");
+			#endif
+			TextWord after = new TextWord(word.document, word.line, word.offset + pos, word.length - pos, word.color, word.hasDefaultColor);
+			word = new TextWord(word.document, word.line, word.offset, pos, word.color, word.hasDefaultColor);
+			return after;
+		}
+		
 		public bool HasDefaultColor {
 			get {
 				return hasDefaultColor;
@@ -149,7 +168,10 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public Color Color {
 			get {
-				return color.Color;
+				if (color == null)
+					return Color.Black;
+				else
+					return color.Color;
 			}
 		}
 		

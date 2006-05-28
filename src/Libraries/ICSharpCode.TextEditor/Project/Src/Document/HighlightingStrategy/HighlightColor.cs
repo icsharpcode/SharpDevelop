@@ -33,12 +33,12 @@ namespace ICSharpCode.TextEditor.Document
 		
 		bool   bold   = false;
 		bool   italic = false;
-		bool   hasForgeground = false;
+		bool   hasForeground = false;
 		bool   hasBackground = false;
 		
-		public bool HasForgeground {
+		public bool HasForeground {
 			get {
-				return hasForgeground;
+				return hasForeground;
 			}
 		}
 		
@@ -144,7 +144,7 @@ namespace ICSharpCode.TextEditor.Document
 				} else {
 					color = (Color)(Color.GetType()).InvokeMember(c, BindingFlags.GetProperty, null, Color, new object[0]);
 				}
-				hasForgeground = true;
+				hasForeground = true;
 			} else {
 				color = Color.Transparent; // to set it to the default value.
 			}
@@ -191,7 +191,7 @@ namespace ICSharpCode.TextEditor.Document
 				} else {
 					color = (Color)(Color.GetType()).InvokeMember(c, BindingFlags.GetProperty, null, Color, new object[0]);
 				}
-				hasForgeground = true;
+				hasForeground = true;
 			} else {
 				color = defaultColor.color;
 			}
@@ -217,7 +217,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// </summary>
 		public HighlightColor(Color color, bool bold, bool italic)
 		{
-			hasForgeground = true;
+			hasForeground = true;
 			this.color  = color;
 			this.bold   = bold;
 			this.italic = italic;
@@ -228,7 +228,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// </summary>
 		public HighlightColor(Color color, Color backgroundcolor, bool bold, bool italic)
 		{
-			hasForgeground = true;
+			hasForeground = true;
 			hasBackground  = true;
 			this.color            = color;
 			this.backgroundcolor  = backgroundcolor;
@@ -242,7 +242,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// </summary>
 		public HighlightColor(string systemColor, string systemBackgroundColor, bool bold, bool italic)
 		{
-			hasForgeground = true;
+			hasForeground = true;
 			hasBackground  = true;
 			
 			this.systemColor  = true;
