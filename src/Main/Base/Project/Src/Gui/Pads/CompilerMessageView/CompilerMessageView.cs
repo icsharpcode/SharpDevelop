@@ -234,9 +234,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				SetText(category, category.Text);
 				SetUpdate(true);
 				textEditorControl.SelectionStart = textEditorControl.TextLength;
-				LoggingService.Debug("Replaced " + pendingAppendCalls + " appends with one set call");
+				if (LoggingService.IsDebugEnabled) {
+					LoggingService.Debug("Replaced " + pendingAppendCalls + " appends with one set call");
+				}
 				pendingAppendCalls = 0;
 			}
+			textEditorControl.Refresh();
 		}
 		
 		void AppendText(MessageViewCategory category, string fullText, string text)
