@@ -96,7 +96,7 @@ namespace SharpReport.Designer{
 		void ReportControlSizeChanged(object sender, System.EventArgs e){
 			this.ctrlRuler1.Width = reportControl.Width;
 			this.ctrlRuler1.Invalidate();
-			NotifyPropertyChanged(this.Name + "ReportControlSizeChanged");
+//			NotifyPropertyChanged(this.Name + "ReportControlSizeChanged");
 		}
 		
 		void ReportControlSectionChanged (object sender,SectionChangedEventArgs e) {

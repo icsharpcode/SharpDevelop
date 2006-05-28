@@ -18,15 +18,16 @@ using SharpReport.Designer;
 	
 using System.Windows.Forms;
 	
-	/// <summary>
-	/// This Function show's the date like
-	/// 'Printed : 04.23.2005'
-	/// Localise it by just overriding the Text Property
-	/// </summary>
-	/// <remarks>
-	/// 	created by - Forstmeier Peter
-	/// 	created on - 24.04.2005 10:29:05
-	/// </remarks>
+/// <summary>
+/// This Function show's the date like
+/// 'Printed : 04.23.2005'
+/// Localise it by just overriding the Text Property
+/// </summary>
+/// <remarks>
+/// 	created by - Forstmeier Peter
+/// 	created on - 24.04.2005 10:29:05
+/// </remarks>
+
 namespace SharpReport.ReportItems.Functions  {
 	
 		public class TodaysDate : SharpReportCore.BaseToday,SharpReport.Designer.IDesignable {
@@ -48,6 +49,10 @@ namespace SharpReport.ReportItems.Functions  {
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
 			
 			base.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (BasePropertyChange);
+			
+			//Event from Tracker
+			this.visualControl.PropertyChanged += new PropertyChangedEventHandler (ControlPropertyChange);
+			
 			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 
 			this.Text = functionName;
@@ -62,6 +67,13 @@ namespace SharpReport.ReportItems.Functions  {
 		}
 		
 		#region events
+		
+		//Tracker
+		private void ControlPropertyChange (object sender, PropertyChangedEventArgs e){
+			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+			this.HandlePropertyChanged(e.PropertyName);
+		}
+		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
 			if (initDone == true) {
 				ItemsHelper.UpdateControlFromTextBase(this.visualControl,this);
@@ -93,10 +105,9 @@ namespace SharpReport.ReportItems.Functions  {
 		}
 		#endregion
 		
-		
-		
-		
+	
 		#region overrides
+		
 		public override string ToString() {
 			return functionName;
 		}

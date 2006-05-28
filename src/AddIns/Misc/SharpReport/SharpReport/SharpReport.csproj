@@ -87,6 +87,9 @@
     <Compile Include="Designer\VisualControls\ReportRowControl.cs" />
     <Compile Include="ReportItems\TextBased\ReportRowItem.cs" />
     <Compile Include="Designer\VisualControls\ControlHelper.cs" />
+    <Compile Include="Designer\VisualControls\RectTracker.cs" />
+    <Compile Include="Designer\VisualControls\ContainerControl.cs" />
+    <Compile Include="Designer\VisualControls\ITracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Designer" />

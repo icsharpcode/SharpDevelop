@@ -40,7 +40,7 @@ namespace SharpReportCore{
 		
 		void OnAdded (object sender, CollectionItemEventArgs<IItemRenderer> e){			
 			System.Console.WriteLine("");
-			System.Console.WriteLine("RowItem:OnAdded");
+			System.Console.WriteLine("RowItem:OnAdded did we use this function???");
 		}
 		
 		#region overrides

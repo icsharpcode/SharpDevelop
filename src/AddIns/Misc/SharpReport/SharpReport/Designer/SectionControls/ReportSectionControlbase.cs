@@ -22,7 +22,9 @@ using SharpReport.ReportItems;
 /// 
 
 namespace SharpReport.Designer{
-	public abstract class ReportSectionControlBase :ReportObjectControlBase{
+	public abstract class ReportSectionControlBase :ReportObjectControlBase,
+													ITracker{
+													
 		private System.Windows.Forms.Panel titlePanel;
 		private System.Windows.Forms.Panel splitPanel;
 		private Ruler.ctrlRuler ctrlRuler1;
@@ -35,11 +37,15 @@ namespace SharpReport.Designer{
 		
 		private int  currentY;
 		private IDesignableFactory designableFactory;
+		private ControlHelper controlHelper;
 		private BaseReportItem draggedItem;
 		
 		public event EventHandler <EventArgs> ItemSelected;
 		public event ItemDragDropEventHandler ItemDragDrop;
 		public event EventHandler <SectionChangedEventArgs> SectionChanged;
+		
+		private ReportControlBase selectedControl;
+		private RectTracker rectTracker = new RectTracker();
 		
 		internal ReportSectionControlBase(){
 			InitializeComponent();
@@ -51,12 +57,191 @@ namespace SharpReport.Designer{
 			this.UpdateStyles();
 			caption = this.Name;
 			this.designableFactory = new IDesignableFactory();
+			this.controlHelper = new ControlHelper(this);
 		}
 		
 		void BodyPanelSizeChanged(object sender, System.EventArgs e){
 			this.Size  = new Size (this.Size.Width,this.bodyPanel.Height + this.titlePanel.Height + this.splitPanel.Height);
 		}
 		
+		#region overrides
+		
+		protected override CreateParams CreateParams{ 
+			get { 
+				CreateParams cp=base.CreateParams; 
+				cp.ExStyle|=0x00000020; //WS_EX_TRANSPARENT 
+				return cp; 
+			} 
+		} 
+		
+		#endregion
+		
+		#region ITracker implementation
+		
+		public void ClearSelections() {
+			this.controlHelper.Clear(this.bodyPanel);
+			this.selectedControl = null;
+			this.InvalidateEx();
+		}
+		
+		public void InvalidateEx() {
+			
+			this.Invalidate();
+			
+			if (this.Parent ==  null) {
+				return;
+			}
+			Rectangle rc = new Rectangle  (this.bodyPanel.Location,this.bodyPanel.Size);
+			this.Invalidate(rc,true);
+			
+			if(this.selectedControl != null){
+				rc = this.rectTracker.m_rect;
+				this.selectedControl.SetBounds(rc.Left, rc.Top, rc.Width, rc.Height);
+				this.selectedControl.Invalidate();
+			}
+			
+		}
+		
+		public ReportControlBase SelectedControl {
+			set {
+				selectedControl = value;
+			}
+		}
+		
+		public RectTracker RectTracker {
+			get {
+				return this.rectTracker;
+			}
+		}
+		
+		public Control DesignSurface {
+			get{
+				return this.bodyPanel;
+			}
+		}
+		#endregion
+		
+		
+		#region tracker
+		
+		
+		private Rectangle GetParentRectangle(){
+			return new Rectangle(new Point(0,0),this.bodyPanel.Size);
+		}
+		
+		
+		private void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs e){			
+		
+			if (this.rectTracker == null) {
+				return;
+			}
+			if(e.Button != MouseButtons .Left){
+				return;
+			}	
+			Point pt = this.bodyPanel.PointToClient(Cursor.Position);
+			
+			Rectangle rcForm = GetParentRectangle();
+
+			if(rcForm.Contains(pt)){		
+				Rectangle rcObject;
+				if (this.rectTracker.HitTest(pt) == RectTracker.TrackerHit.hitNothing) {
+
+					this.selectedControl = null;
+					this.rectTracker.m_rect = new Rectangle(0,0,0,0);
+					// just to demonstrate RectTracker::TrackRubberBand
+					RectTracker tracker=new RectTracker();
+					if (tracker.TrackRubberBand(this.bodyPanel, pt, false)){
+						// see if rubber band intersects with the doc's tracker		
+//                        System.Console.WriteLine("3");
+						tracker.NormalizeRect(ref tracker.m_rect);
+						Rectangle rectIntersect = tracker.m_rect;
+						foreach (Control ctrl in this.bodyPanel.Controls){
+							rcObject = ctrl.Bounds;
+//				
+							if(tracker.m_rect.Contains(rcObject)){
+								
+								this.rectTracker.m_rect = rcObject;
+								this.selectedControl = (ReportControlBase)ctrl;
+								this.selectedControl.Selected = true;
+								break;
+							}
+						}
+					}
+					else{
+					
+						// No rubber band, see if the point selects an object.
+						
+						foreach (Control ctrl in this.bodyPanel.Controls){
+							rcObject = ctrl.Bounds ;
+							if(rcObject.Contains(pt)){
+								this.rectTracker.m_rect = rcObject;
+								this.selectedControl = (ReportControlBase)ctrl;
+								break;
+							}
+						}
+					}
+					if(this.selectedControl == null){
+						NotifySectionClick();
+					}
+					else{
+//						System.Console.WriteLine("6");
+//						m_FormTracker.Clear();
+						
+					}
+				}
+				else if(this.selectedControl != null){// normal tracking action, when tracker is hit	
+					if (this.rectTracker.Track(this.bodyPanel, pt, false,null)) {
+						Rectangle rc = this.rectTracker.m_rect;
+						this.selectedControl.SetBounds(rc.Left, rc.Top, rc.Width, rc.Height);
+						this.selectedControl.NotifyPropertyChanged("Tracker");
+					}
+				}
+
+			}
+			else{
+				if(this.selectedControl == null){//select the container form
+					System.Console.WriteLine("9");
+//					MainForm.m_propertyWindow.SetSelectedObject(m_Form);
+					/*
+					if(m_FormTracker.HitTest(pt) == RectTracker.TrackerHit.hitNothing)
+					{
+						m_FormTracker.m_rect = rcForm;		
+					}
+					else if(!m_FormTracker.IsEmpty()) 
+					{
+						m_FormTracker.Track(this, pt, false,null);
+					}
+					*/
+				}
+				else{
+//					System.Console.WriteLine("10");
+//					m_FormTracker.Clear();
+				}
+			}
+			this.InvalidateEx();
+			
+		}
+		
+		
+		private void OnMouseMove(object sender, System.Windows.Forms.MouseEventArgs e){
+			if (this.rectTracker != null) {
+				Point mousept=new Point(e.X,e.Y);
+				
+				if(this.selectedControl != null){
+					if(!rectTracker.SetCursor(this,0,mousept))
+						this.Cursor=Cursors.Arrow;
+				}
+				
+//			else{
+//				if(!m_FormTracker.SetCursor(this,0,mousept))
+//					this.Cursor=Cursors.Arrow;
+//			}
+			}
+		}
+
+		#endregion
+		
+		#region painting
 		
 		private void BodyPanelPaint(object sender, PaintEventArgs pea) {
 			pea.Graphics.Clear(this.Body.BackColor);
@@ -77,6 +262,9 @@ namespace SharpReport.Designer{
 			}
 		}
 		
+		#endregion
+		
+		#region splitter
 		void SplitPanelMouseDown(object sender, System.Windows.Forms.MouseEventArgs e){
 			mouseDown = true;
 			currentY = e.Y;
@@ -93,6 +281,7 @@ namespace SharpReport.Designer{
 			}
 		}
 		
+		#endregion
 		
 		#region propertys
 
@@ -115,7 +304,12 @@ namespace SharpReport.Designer{
 		#endregion
 		
 		#region events
-
+		
+		void NotifySectionClick () {
+			ClearSelections();
+			this.OnClick(EventArgs.Empty);
+		}
+		
 		void FiredDragDropItem (string item,Point pointAt) {
 			if (ItemSelected != null) {
 				ItemSelected (this,new EventArgs());
@@ -130,7 +324,7 @@ namespace SharpReport.Designer{
 		}
 		
 		#endregion
-		
+
 		
 		#region DragDrop
 		
@@ -253,6 +447,8 @@ namespace SharpReport.Designer{
 			this.bodyPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.BodyPanelPaint);
 			this.bodyPanel.SizeChanged += new System.EventHandler(this.BodyPanelSizeChanged);
 			this.bodyPanel.DragLeave += new System.EventHandler(this.BodyPanelDragLeave);
+			this.bodyPanel.MouseMove += new MouseEventHandler(this.OnMouseMove);
+			this.bodyPanel.MouseDown += new MouseEventHandler(this.OnMouseDown);
 			// 
 			// ctrlRuler1
 			// 
@@ -302,6 +498,7 @@ namespace SharpReport.Designer{
 			this.Controls.Add(this.titlePanel);
 			this.Controls.Add(this.splitPanel);
 			this.Controls.Add(this.ctrlRuler1);
+			
 			this.Name = "UserControl1";
 			this.Size = new System.Drawing.Size(432, 154);
 			this.titlePanel.ResumeLayout(false);

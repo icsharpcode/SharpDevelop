@@ -77,5 +77,19 @@ namespace SharpReport.Designer
 		
 		}
 		
+		/// <summary>
+		/// Set the Controls to selected = false, so the Focusrectangle is
+		/// not draw
+		/// </summary>
+		/// <param name="control"></param>
+		public  void Clear (Control control) {
+			foreach (Control c in control.Controls) {
+				ReportControlBase rcb = c as ReportControlBase;
+				if (rcb != null) {
+					rcb.Selected = false;
+					Clear (c);
+				}
+			}
+		}
 	}
 }

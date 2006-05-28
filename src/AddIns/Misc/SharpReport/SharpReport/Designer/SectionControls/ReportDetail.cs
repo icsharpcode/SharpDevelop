@@ -35,11 +35,6 @@ namespace SharpReport.Designer{
 			base.ItemDragDrop += new ItemDragDropEventHandler (ItemsChanging);
 		}
 		
-		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e) {
-			base.OnPaint (e);
-		}
-		
-		
 		
 		protected void ItemsChanging (object sender,ItemDragDropEventArgs e) {
 			if (ReportItemsHandling != null) {

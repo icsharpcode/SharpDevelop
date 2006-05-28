@@ -44,6 +44,9 @@ namespace SharpReport.ReportItems.Functions {
 			
 			base.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler (BasePropertyChange);
 
+		//Event from Tracker
+			this.visualControl.PropertyChanged += new PropertyChangedEventHandler (ControlPropertyChange);
+			
 			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 
 			this.Text = functionName;
@@ -58,6 +61,12 @@ namespace SharpReport.ReportItems.Functions {
 			this.visualControl.ResumeLayout();
 		}
 		
+		#region Events
+		//Tracker
+		private void ControlPropertyChange (object sender, PropertyChangedEventArgs e){
+			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+			this.HandlePropertyChanged(e.PropertyName);
+		}
 		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
 			if (initDone == true) {
@@ -88,6 +97,8 @@ namespace SharpReport.ReportItems.Functions {
 				}
 			}
 		}
+		
+		#endregion
 		
 		#region Properties
 		public override Size Size {

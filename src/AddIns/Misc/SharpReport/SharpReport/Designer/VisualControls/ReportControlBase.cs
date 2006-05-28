@@ -19,22 +19,15 @@ namespace SharpReport.Designer{
 	/// Base Class of all Visible Controls like Graphic or textbased Item's
 	/// </summary>
 	
-	public abstract class ReportControlBase : ReportObjectControlBase{
-		private System.Windows.Forms.Label lblTopLeft;
-		private System.Windows.Forms.Label lblBottomRight;
+	public abstract class ReportControlBase : ReportObjectControlBase,
+	INotifyPropertyChanged{
+		
 		private ControlHelper controlHelper;
+		
 		private const string contextMenuPath = "/SharpReport/ContextMenu/Items";
 		
-		private enum SizeDirection{
-			None,
-			TopLeft,
-			BottomRight,
-		}
+		private bool selected;
 		
-		
-		private int xCoor;
-		private int yCoor;
-		private SizeDirection mouseDown;
 		
 		internal ReportControlBase(){
 			InitializeComponent();
@@ -44,72 +37,71 @@ namespace SharpReport.Designer{
 			              ControlStyles.ResizeRedraw,
 			              true);
 			this.UpdateStyles();
-			lblTopLeft.Visible = false;
-			lblBottomRight.Visible = false;
 			controlHelper = new ControlHelper((Control)this);
 		}
 		
-		private void ReportControlBaseEnter(object sender, System.EventArgs e){
-			lblTopLeft.Visible = true;
-			lblBottomRight.Visible = true;
-			this.Refresh();
+		private ITracker GetParent {
+			get {	
+				if (this.Parent is Panel) {
+					ITracker t = this.Parent.Parent as ITracker;
+					if (t != null) {
+						return t;
+					} else {
+						System.Console.WriteLine("!!!!!!!!! NO TRACKER !!!!");
+						return null;
+						
+					}
+				} else {
+					ITracker ct = this.Parent as ITracker;
+					if (ct != null) {
+						return ct;
+					}else {
+						System.Console.WriteLine("!!!!!!!!! NO TRACKER !!!!");
+						return null;
+					}
+				}
+			}
 		}
 		
-		private void ReportControlBaseLeave(object sender, System.EventArgs e){
-			lblTopLeft.Visible = false;
-			lblBottomRight.Visible = false;
-			this.Refresh();
-		}
 		
-		private void SizeMouseDown(object sender, System.Windows.Forms.MouseEventArgs e){
-			if (sender == lblTopLeft){
-				mouseDown = SizeDirection.TopLeft;
-			}
-			if (sender == lblBottomRight){
-				mouseDown = SizeDirection.BottomRight;
-			}
-			xCoor = e.X;
-			yCoor = e.Y;
-		}
-		
-		private void SizeMouseMove(object sender, System.Windows.Forms.MouseEventArgs e){
-			if (mouseDown == SizeDirection.TopLeft){
-				this.Top = this.Top + (e.Y - yCoor);
-				this.Left = this.Left + (e.X - xCoor);
-			}
+		private void NotifySelected() {
 			
-			if (mouseDown == SizeDirection.BottomRight){
-				this.Height = this.Height + (e.Y - yCoor);
-				this.Width = this.Width + (e.X - xCoor);
-			}
-			
+			this.GetParent.SelectedControl = this;
+			this.GetParent.InvalidateEx();
+			this.OnClick (EventArgs.Empty);
 		}
-		private void ReportControlBaseMouseUp(object sender, MouseEventArgs e){
+		
+		
+		private void NotifyUnSelected () {
+			this.selected = false;
+			this.GetParent.SelectedControl = null;
+			this.GetParent.InvalidateEx();
+		}
+		
+	
+		private void OnMouseDown (object sender, MouseEventArgs e) {
+			ITracker tracker = this.GetParent;
+			if (tracker != null) {
+				tracker.ClearSelections();
+				tracker.RectTracker.m_rect = this.Bounds;
+				this.selected = true;
+				this.NotifySelected();
+				tracker.SelectedControl = this;
+			}
+			this.selected = true;
+		}
+		
+		
+		private void OnMouseUp(object sender, MouseEventArgs e){
 			
 			if (e.Button == MouseButtons.Right) {
 				ContextMenuStrip ctMen = MenuService.CreateContextMenu (this,contextMenuPath);
 				ctMen.Show (this,new Point (e.X,e.Y));
-			} 
-		}
-		private void SizeMouseUp(object sender, System.Windows.Forms.MouseEventArgs e){
-			mouseDown = SizeDirection.None;
-			base.OnControlChanged();
+				this.NotifyUnSelected();
+			}
+			
 		}
 	
-		
-		protected void DrawDecorations(PaintEventArgs e){
-			// it is not said that the
-			// focused object in all the app
-			// is the current report item!
-			// So I don't check this.Focused.
-			
-			if (lblBottomRight.Visible){
-				e.Graphics.Clear(this.Body.BackColor);
-				ControlPaint.DrawFocusRectangle(e.Graphics,
-				                                controlHelper.BuildFocusRectangle);
-			}
-		}
-		
 		protected void DrawEdges (PaintEventArgs e,Rectangle rectangle) {
 			controlHelper.DrawEdges(e,rectangle);
 		}
@@ -122,16 +114,48 @@ namespace SharpReport.Designer{
 		
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e){
 			base.OnPaint(e);
+			if (this.selected) {
+				RectTracker tracker = this.GetParent.RectTracker;
+				if (tracker != null) {
+					tracker.m_rect = this.Bounds;
+					tracker.Draw(this.GetParent.DesignSurface.CreateGraphics());
+				}
+			}
 		}
 		
-		protected override void OnResize(EventArgs e){		
+		protected override void OnResize(EventArgs e){
 			base.OnResize(e);
 			this.Invalidate();
 		}
 		
+		protected ControlHelper ControlHelper {
+			get {
+				return controlHelper;
+			}
+		}
+		
+		
+		
 		protected Rectangle FocusRectangle {
 			get {return this.controlHelper.BuildFocusRectangle;}
 		}
+		
+		public bool Selected {
+			set {
+				selected = value;
+			}
+		}
+		
+		#region SharpReportCore.IPropertyChange interface implementation
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		
+		public void NotifyPropertyChanged(string property) {
+			if (this.PropertyChanged != null) {
+				this.PropertyChanged(this,new System.ComponentModel.PropertyChangedEventArgs (property));
+			}
+		}
+		#endregion
+		
 		
 		#region Windows Forms Designer generated code
 		/// <summary>
@@ -140,46 +164,14 @@ namespace SharpReport.Designer{
 		/// not be able to load this method if it was changed manually.
 		/// </summary>
 		private void InitializeComponent() {
-			this.lblBottomRight = new System.Windows.Forms.Label();
-			this.lblTopLeft = new System.Windows.Forms.Label();
 			this.SuspendLayout();
-			// 
-			// lblBottomRight
-			// 
-			this.lblBottomRight.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblBottomRight.BackColor = System.Drawing.Color.Transparent;
-			this.lblBottomRight.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.lblBottomRight.Cursor = System.Windows.Forms.Cursors.SizeNWSE;
-			this.lblBottomRight.Location = new System.Drawing.Point(283, 47);
-			this.lblBottomRight.Name = "lblBottomRight";
-			this.lblBottomRight.Size = new System.Drawing.Size(8, 8);
-			this.lblBottomRight.TabIndex = 0;
-			this.lblBottomRight.MouseUp += new System.Windows.Forms.MouseEventHandler(this.SizeMouseUp);
-			this.lblBottomRight.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SizeMouseMove);
-			this.lblBottomRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SizeMouseDown);
-			// 
-			// lblTopLeft
-			// 
-			this.lblTopLeft.BackColor = System.Drawing.Color.Transparent;
-			this.lblTopLeft.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.lblTopLeft.Cursor = System.Windows.Forms.Cursors.SizeAll;
-			this.lblTopLeft.Location = new System.Drawing.Point(0, 0);
-			this.lblTopLeft.Name = "lblTopLeft";
-			this.lblTopLeft.Size = new System.Drawing.Size(8, 8);
-			this.lblTopLeft.TabIndex = 1;
-			this.lblTopLeft.MouseUp += new System.Windows.Forms.MouseEventHandler(this.SizeMouseUp);
-			this.lblTopLeft.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SizeMouseMove);
-			this.lblTopLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SizeMouseDown);
 			// 
 			// ReportControlBase
 			// 
-			this.Controls.Add(this.lblTopLeft);
-			this.Controls.Add(this.lblBottomRight);
 			this.Name = "ReportControlBase";
 			this.Size = new System.Drawing.Size(292, 56);
-			this.Enter += new System.EventHandler(this.ReportControlBaseEnter);
-			this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ReportControlBaseMouseUp);
-			this.Leave += new System.EventHandler(this.ReportControlBaseLeave);
+			this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
+			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
 			this.ResumeLayout(false);
 		}
 		#endregion

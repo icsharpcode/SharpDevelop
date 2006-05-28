@@ -340,11 +340,22 @@ namespace SharpReport.Designer{
 		
 		void SectionSelected(object sender, System.EventArgs e){
 			ReportSection section = (ReportSection)sender;
+			
+			if (this.selectedSection != null) {
+				if (this.selectedSection != section) {
+					ITracker tracker = selectedSection.VisualControl as ITracker;
+					if (tracker != null) {
+						tracker.ClearSelections();
+					}
+				}
+			}
+			
 			selectedSection = section;
 			selectedObject = (IBaseRenderer)section;
 			OnObjectSelected(e);
-			
 		}
+		
+		
 		void ItemSelected(object sender, System.EventArgs e){
 			selectedObject = (IBaseRenderer)sender;
 			OnObjectSelected(e);
@@ -407,7 +418,7 @@ namespace SharpReport.Designer{
 			this.visualPageFooter.Name = "visualPageFooter";
 			this.visualPageFooter.Size = new System.Drawing.Size(400, 68);
 			this.visualPageFooter.TabIndex = 6;
-			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
+			this.visualPageFooter.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 
 			// visualFooter
 			// 
@@ -418,7 +429,7 @@ namespace SharpReport.Designer{
 			this.visualFooter.Name = "visualFooter";
 			this.visualFooter.Size = new System.Drawing.Size(400, 76);
 			this.visualFooter.TabIndex = 7;
-			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
+			this.visualFooter.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 
 			// visualPageHeader
 			// 
@@ -429,7 +440,7 @@ namespace SharpReport.Designer{
 			this.visualPageHeader.Name = "visualPageHeader";
 			this.visualPageHeader.Size = new System.Drawing.Size(400, 84);
 			this.visualPageHeader.TabIndex = 1;
-			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
+			this.visualPageHeader.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 
 			// visualReportHeader
 			// 
@@ -440,7 +451,7 @@ namespace SharpReport.Designer{
 			this.visualReportHeader.Name = "visualReportHeader";
 			this.visualReportHeader.Size = new System.Drawing.Size(400, 56);
 			this.visualReportHeader.TabIndex = 0;
-			this.visualDetail.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
+			this.visualReportHeader.SectionChanged += new EventHandler<SectionChangedEventArgs> (this.SectionSizeChanged);
 			// 
 			// Report
 			// 
