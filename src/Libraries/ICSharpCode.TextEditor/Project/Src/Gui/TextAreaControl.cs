@@ -111,7 +111,8 @@ namespace ICSharpCode.TextEditor
 			Controls.Add(this.hScrollBar);
 			ResizeRedraw = true;
 			
-			Document.DocumentChanged += new DocumentEventHandler(AdjustScrollBars);
+			Document.DocumentChanged += AdjustScrollBarsOnDocumentChange;
+			Document.UpdateCommited  += AdjustScrollBarsOnCommittedUpdate;
 		}
 		
 		protected override void Dispose(bool disposing)
@@ -119,7 +120,8 @@ namespace ICSharpCode.TextEditor
 			if (disposing) {
 				if (!disposed) {
 					disposed = true;
-					Document.DocumentChanged -= new DocumentEventHandler(AdjustScrollBars);
+					Document.DocumentChanged -= AdjustScrollBarsOnDocumentChange;
+					Document.UpdateCommited  -= AdjustScrollBarsOnCommittedUpdate;
 					motherTextEditorControl = null;
 					if (vScrollBar != null) {
 						vScrollBar.Dispose();
@@ -172,7 +174,33 @@ namespace ICSharpCode.TextEditor
 			                                  Width - SystemInformation.HorizontalScrollBarArrowWidth,
 			                                  SystemInformation.VerticalScrollBarArrowHeight);
 		}
-		public void AdjustScrollBars(object sender, DocumentEventArgs e)
+		
+		bool adjustScrollBarsOnNextUpdate;
+		Point scrollToPosOnNextUpdate;
+		
+		void AdjustScrollBarsOnDocumentChange(object sender, DocumentEventArgs e)
+		{
+			if (motherTextEditorControl.IsInUpdate == false) {
+				AdjustScrollBars();
+			} else {
+				adjustScrollBarsOnNextUpdate = true;
+			}
+		}
+		
+		void AdjustScrollBarsOnCommittedUpdate(object sender, EventArgs e)
+		{
+			if (motherTextEditorControl.IsInUpdate == false) {
+				if (adjustScrollBarsOnNextUpdate) {
+					adjustScrollBarsOnNextUpdate = false;
+					AdjustScrollBars();
+				}
+				if (!scrollToPosOnNextUpdate.IsEmpty) {
+					ScrollTo(scrollToPosOnNextUpdate.Y, scrollToPosOnNextUpdate.X);
+				}
+			}
+		}
+		
+		public void AdjustScrollBars()
 		{
 			vScrollBar.Minimum = 0;
 			// number of visible lines in document (folding!)
@@ -213,7 +241,7 @@ namespace ICSharpCode.TextEditor
 				}
 			}
 			
-			AdjustScrollBars(null, null);
+			AdjustScrollBars();
 		}
 		
 		void VScrollBarValueChanged(object sender, EventArgs e)
@@ -265,11 +293,19 @@ namespace ICSharpCode.TextEditor
 		
 		public void ScrollToCaret()
 		{
+			ScrollTo(textArea.Caret.Line, textArea.Caret.Column);
+		}
+		
+		public void ScrollTo(int line, int column)
+		{
+			if (motherTextEditorControl.IsInUpdate) {
+				scrollToPosOnNextUpdate = new Point(column, line);
+				return;
+			}
 			int curCharMin  = (int)(this.hScrollBar.Value - this.hScrollBar.Minimum);
 			int curCharMax  = curCharMin + textArea.TextView.VisibleColumnCount;
 			
-			int pos = textArea.TextView.GetVisualColumn(textArea.Caret.Line,
-			                                            textArea.Caret.Column);
+			int pos = textArea.TextView.GetVisualColumn(line, column);
 			
 			if (textArea.TextView.VisibleColumnCount < 0) {
 				hScrollBar.Value = 0;
@@ -282,7 +318,7 @@ namespace ICSharpCode.TextEditor
 					}
 				}
 			}
-			ScrollTo(textArea.Caret.Line);
+			ScrollTo(line);
 		}
 		
 		int scrollMarginHeight  = 3;

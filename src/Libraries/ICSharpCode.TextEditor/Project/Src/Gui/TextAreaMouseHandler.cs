@@ -217,7 +217,7 @@ namespace ICSharpCode.TextEditor
 				                                                                mousepos.Y - textArea.TextView.DrawingPosition.Y);
 				if (marker != null && marker.IsFolded) {
 					marker.IsFolded = false;
-					textArea.MotherTextAreaControl.AdjustScrollBars(null, null);
+					textArea.MotherTextAreaControl.AdjustScrollBars();
 				}
 				if (textArea.Caret.Offset < textArea.Document.TextLength) {
 					switch (textArea.Document.GetCharAt(textArea.Caret.Offset)) {

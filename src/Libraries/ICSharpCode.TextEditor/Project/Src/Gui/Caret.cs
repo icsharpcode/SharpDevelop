@@ -285,8 +285,26 @@ namespace ICSharpCode.TextEditor
 		static extern bool HideCaret(IntPtr hWnd);
 		#endregion
 		
+		bool firePositionChangedAfterUpdateEnd;
+		
+		void FirePositionChangedAfterUpdateEnd(object sender, EventArgs e)
+		{
+			OnPositionChanged(EventArgs.Empty);
+		}
+		
 		protected virtual void OnPositionChanged(EventArgs e)
 		{
+			if (this.textArea.MotherTextEditorControl.IsInUpdate) {
+				if (firePositionChangedAfterUpdateEnd == false) {
+					firePositionChangedAfterUpdateEnd = true;
+					this.textArea.Document.UpdateCommited += FirePositionChangedAfterUpdateEnd;
+				}
+				return;
+			} else if (firePositionChangedAfterUpdateEnd) {
+				this.textArea.Document.UpdateCommited -= FirePositionChangedAfterUpdateEnd;
+				firePositionChangedAfterUpdateEnd = false;
+			}
+			
 			List<FoldMarker> foldings = textArea.Document.FoldingManager.GetFoldingsFromPosition(line, column);
 			bool  shouldUpdate = false;
 			foreach (FoldMarker foldMarker in foldings) {
