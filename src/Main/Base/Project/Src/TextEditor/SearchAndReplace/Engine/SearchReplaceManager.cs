@@ -102,11 +102,7 @@ namespace SearchAndReplace
 		public static void MarkAll()
 		{
 			SetSearchOptions();
-			TextEditorControl textArea = null;
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				textArea = ((ITextEditorControlProvider)WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent).TextEditorControl;
-				textArea.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
-			}
+			ClearSelection();
 			find.Reset();
 			if (!find.SearchStrategy.CompilePattern())
 				return;
@@ -190,12 +186,7 @@ namespace SearchAndReplace
 		public static void ReplaceAll()
 		{
 			SetSearchOptions();
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
-				if (provider != null) {
-					provider.TextEditorControl.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
-				}
-			}
+			ClearSelection();
 			find.Reset();
 			if (!find.SearchStrategy.CompilePattern())
 				return;
@@ -285,7 +276,7 @@ namespace SearchAndReplace
 				return;
 			}
 			
-			TextEditorControl textArea = null;;
+			TextEditorControl textArea = null;
 			while (textArea == null) {
 				SearchResult result = find.FindNext();
 				if (result == null) {
@@ -386,6 +377,16 @@ namespace SearchAndReplace
 				return textEditorProvider.TextEditorControl;
 			}
 			return null;
+		}
+		
+		static void ClearSelection()
+		{
+			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
+				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
+				if (provider != null) {
+					provider.TextEditorControl.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
+				}
+			}
 		}
 	}
 }
