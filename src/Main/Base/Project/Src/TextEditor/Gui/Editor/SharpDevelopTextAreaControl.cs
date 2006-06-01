@@ -238,22 +238,25 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		InsightWindow insightWindow = null;
 		CodeCompletionWindow codeCompletionWindow = null;
+		bool inHandleKeyPress;
 		
 		bool HandleKeyPress(char ch)
 		{
-			string fileName = FileName;
-			if (codeCompletionWindow != null && !codeCompletionWindow.IsDisposed) {
-				if (codeCompletionWindow.ProcessKeyEvent(ch)) {
-					return true;
-				}
-				if (codeCompletionWindow != null && !codeCompletionWindow.IsDisposed) {
-					// code-completion window is still opened but did not want to handle
-					// the keypress -> don't try to restart code-completion
-					return false;
-				}
-			}
-			
+			if (inHandleKeyPress)
+				return false;
+			inHandleKeyPress = true;
 			try {
+				if (codeCompletionWindow != null && !codeCompletionWindow.IsDisposed) {
+					if (codeCompletionWindow.ProcessKeyEvent(ch)) {
+						return true;
+					}
+					if (codeCompletionWindow != null && !codeCompletionWindow.IsDisposed) {
+						// code-completion window is still opened but did not want to handle
+						// the keypress -> don't try to restart code-completion
+						return false;
+					}
+				}
+				
 				if (ICSharpCode.SharpDevelop.Dom.CodeCompletionOptions.EnableCodeCompletion) {
 					foreach (ICodeCompletionBinding ccBinding in CodeCompletionBindings) {
 						if (ccBinding.HandleKeyPress(this, ch))
@@ -282,6 +285,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			} catch (Exception ex) {
 				LogException(ex);
+			} finally {
+				inHandleKeyPress = false;
 			}
 			return false;
 		}

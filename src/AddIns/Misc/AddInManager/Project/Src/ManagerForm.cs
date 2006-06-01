@@ -446,8 +446,7 @@ namespace ICSharpCode.AddInManager
 					switch (Path.GetExtension(file).ToLowerInvariant()) {
 						case ".addin":
 							if (FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, file)) {
-								MessageService.ShowMessage("You cannot install AddIns inside the ${ProductName} directory, " +
-								                           "they will be picked up as pre-installed AddIns automatically.");
+								MessageService.ShowMessage("${res:AddInManager.CannotInstallIntoApplicationDirectory}");
 								return false;
 							}
 							list.Add(new InstallableAddIn(file, false));
@@ -457,7 +456,7 @@ namespace ICSharpCode.AddInManager
 							list.Add(new InstallableAddIn(file, true));
 							break;
 						default:
-							MessageService.ShowMessage("Unknown file format: " + Path.GetExtension(file));
+							MessageService.ShowMessage("${res:AddInManager.UnknownFileFormat} " + Path.GetExtension(file));
 							return false;
 					}
 				} catch (AddInLoadException ex) {
@@ -644,7 +643,7 @@ namespace ICSharpCode.AddInManager
 				case AddInAction.Disable:
 					for (int i = 0; i < selected.Count; i++) {
 						if (selected[i].Manifest.PrimaryIdentity == "ICSharpCode.AddInManager") {
-							MessageService.ShowMessage("You cannot disable the AddInManager because you need it to re-enable AddIns!");
+							MessageService.ShowMessage("${res:AddInManager.CannotDisableAddInManager}");
 							selected.RemoveAt(i--);
 						}
 					}

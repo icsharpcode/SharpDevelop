@@ -40,7 +40,7 @@ namespace ICSharpCode.AddInManager
 				addIn = AddIn.Load(fileName);
 			}
 			if (addIn.Manifest.PrimaryIdentity == null)
-				throw new AddInLoadException("The AddIn must have an <Identity> for use with the AddIn-Manager.");
+				throw new AddInLoadException(ResourceService.GetString("AddInManager.AddInMustHaveIdentity"));
 		}
 		
 		void LoadAddInFromZip(ZipFile file)

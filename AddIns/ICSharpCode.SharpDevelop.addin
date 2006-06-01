@@ -155,7 +155,7 @@
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ToolBar/File">
 		<ToolbarItem id      = "OpenFile"
 		             icon    = "Icons.16x16.OpenFileIcon"
-		             tooltip = "Open"
+		             tooltip = "${res:Gui.ProjectBrowser.Open}"
 		             class   = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
 	</Path>
 	
@@ -670,10 +670,12 @@
 		<ToolbarItem id      = "Back"
 		             icon    = "Icons.16x16.BrowserBefore"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.BackButton.ToolTip}"
+		             loadclasslazy = "false"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserNavigateBackward"/>
 		<ToolbarItem id      = "Forward"
 		             icon    = "Icons.16x16.BrowserAfter"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.ForwardButton.ToolTip}"
+		             loadclasslazy = "false"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserNavigateForward"/>
 		
 		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
@@ -741,7 +743,7 @@
 		             class   = "ICSharpCode.SharpDevelop.Commands.OpenFile"/>
 		
 		<ToolbarItem id      = "OpenProject"
-		             tooltip = "${res:XML.MainMenu.FileMenu.Open.Project}"
+		             tooltip = "${res:XML.MainMenu.FileMenu.Open.Project.Description}"
 		             icon    = "Icons.16x16.OpenProjectIcon"
 		             class   = "ICSharpCode.SharpDevelop.Project.Commands.LoadSolution"
 		/>
@@ -1669,34 +1671,34 @@
 	
 	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
 		<ToolbarItem id = "SearchSeparator" type = "Separator"/>
-		<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable"> -->
-		<ToolbarItem id = "Comment"
-		             icon = "Icons.16x16.CommentRegion"
-		             tooltip = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
-		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.CommentRegion"/>
-		<!--				<ToolbarItem id = "Uncomment"
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+			<ToolbarItem id = "Comment"
+			             icon = "Icons.16x16.CommentRegion"
+			             tooltip = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
+			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.CommentRegion"/>
+			<!--				<ToolbarItem id = "Uncomment"
 				             icon = "Icons.16x16.UnCommentRegion"
 				             tooltip = "${res:XML.TextAreaContextMenu.UncommentSelection}"
 				             class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.UncommentRegion"/> -->
-		
-		<ToolbarItem id = "SearchSeparator2" type = "Separator"/>
-		<ToolbarItem id = "ToggleBookmark"
-		             icon = "Bookmarks.ToggleMark"
-		             tooltip = "${res:XML.MainMenu.SearchMenu.ToggleBookmark.Description}"
-		             class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
-		<ToolbarItem id = "PrevBookmark"
-		             icon = "Bookmarks.GotoPrevInFile"
-		             tooltip = "${res:XML.MainMenu.SearchMenu.PrevBookmark.Description}"
-		             class = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark"/>
-		<ToolbarItem id = "NextBookmark"
-		             icon = "Bookmarks.GotoNextInFile"
-		             tooltip = "${res:XML.MainMenu.SearchMenu.NextBookmark.Description}"
-		             class = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmark"/>
-		<ToolbarItem id = "ClearBookmarks"
-		             icon = "Bookmarks.ClearAll"
-		             tooltip = "${res:XML.MainMenu.SearchMenu.ClrBookmark.Description}"
-		             class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"/>
-		<!--			</Condition> -->
+			
+			<ToolbarItem id = "SearchSeparator2" type = "Separator"/>
+			<ToolbarItem id = "ToggleBookmark"
+			             icon = "Bookmarks.ToggleMark"
+			             tooltip = "${res:XML.MainMenu.SearchMenu.ToggleBookmark.Description}"
+			             class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
+			<ToolbarItem id = "PrevBookmark"
+			             icon = "Bookmarks.GotoPrevInFile"
+			             tooltip = "${res:XML.MainMenu.SearchMenu.PrevBookmark.Description}"
+			             class = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark"/>
+			<ToolbarItem id = "NextBookmark"
+			             icon = "Bookmarks.GotoNextInFile"
+			             tooltip = "${res:XML.MainMenu.SearchMenu.NextBookmark.Description}"
+			             class = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmark"/>
+			<ToolbarItem id = "ClearBookmarks"
+			             icon = "Bookmarks.ClearAll"
+			             tooltip = "${res:XML.MainMenu.SearchMenu.ClrBookmark.Description}"
+			             class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"/>
+		</Condition>
 	</Path>
 	
 	
