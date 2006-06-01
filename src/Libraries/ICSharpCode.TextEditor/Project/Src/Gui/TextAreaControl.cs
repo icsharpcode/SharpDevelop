@@ -301,6 +301,8 @@ namespace ICSharpCode.TextEditor
 			if (motherTextEditorControl.IsInUpdate) {
 				scrollToPosOnNextUpdate = new Point(column, line);
 				return;
+			} else {
+				scrollToPosOnNextUpdate = Point.Empty;
 			}
 			int curCharMin  = (int)(this.hScrollBar.Value - this.hScrollBar.Minimum);
 			int curCharMax  = curCharMin + textArea.TextView.VisibleColumnCount;
