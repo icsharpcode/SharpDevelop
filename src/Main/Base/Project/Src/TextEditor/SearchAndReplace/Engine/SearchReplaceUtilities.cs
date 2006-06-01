@@ -22,7 +22,7 @@ namespace SearchAndReplace
 		public static bool IsTextAreaSelected {
 			get {
 				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null &&
-					   WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is ITextEditorControlProvider;
+					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is ITextEditorControlProvider;
 			}
 		}
 		
@@ -38,15 +38,7 @@ namespace SearchAndReplace
 		public static bool IsWholeWordAt(ITextBufferStrategy document, int offset, int length)
 		{
 			return (offset - 1 < 0 || Char.IsWhiteSpace(document.GetCharAt(offset - 1))) &&
-			       (offset + length + 1 >= document.Length || Char.IsWhiteSpace(document.GetCharAt(offset + length)));
-		}
-
-		public static int CalcCurrentOffset(IDocument document) 
-		{
-//			TODO:
-//			int endOffset = document.Caret.Offset % document.TextLength;
-//			return endOffset;
-			return 0;
+				(offset + length + 1 >= document.Length || Char.IsWhiteSpace(document.GetCharAt(offset + length)));
 		}
 		
 		public static ISearchStrategy CreateSearchStrategy(SearchStrategyType type)
@@ -70,8 +62,17 @@ namespace SearchAndReplace
 				case DocumentIteratorType.CurrentSelection:
 					return new CurrentDocumentIterator();
 				case DocumentIteratorType.Directory:
-					return new DirectoryDocumentIterator(SearchOptions.LookIn, 
-					                                     SearchOptions.LookInFiletypes, 
+					try {
+						if (!Directory.Exists(SearchOptions.LookIn)) {
+							MessageService.ShowMessageFormatted("${res:Dialog.NewProject.SearchReplace.SearchStringNotFound.Title}", "${res:Dialog.NewProject.SearchReplace.LookIn.DirectoryNotFound}", Path.GetFullPath(SearchOptions.LookIn));
+							return new DummyDocumentIterator();
+						}
+					} catch (Exception ex) {
+						MessageService.ShowMessage(ex.Message);
+						return new DummyDocumentIterator();
+					}
+					return new DirectoryDocumentIterator(SearchOptions.LookIn,
+					                                     SearchOptions.LookInFiletypes,
 					                                     SearchOptions.IncludeSubdirectories);
 				case DocumentIteratorType.AllOpenFiles:
 					return new AllOpenDocumentIterator();
@@ -88,7 +89,7 @@ namespace SearchAndReplace
 		
 		public static bool IsSearchable(string fileName)
 		{
-			if (fileName == null) 
+			if (fileName == null)
 				return false;
 			
 			if (excludedFileExtensions == null) {

@@ -138,17 +138,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (getMembersBusy) return new List<IField>();
 			getMembersBusy = true;
-			List<IField> l;
+			List<IField> l = new List<IField>();
+			l.AddRange(c.Fields);
 			if (c.ClassType == ClassType.Interface) {
-				l = new List<IField>();
 				foreach (IReturnType baseType in c.BaseTypes) {
 					l.AddRange(baseType.GetFields());
 				}
 			} else {
 				IReturnType baseType = c.BaseType;
-				l = baseType != null ? c.BaseType.GetFields() : new List<IField>();
+				if (baseType != null) {
+					l.AddRange(baseType.GetFields());
+				}
 			}
-			l.AddRange(c.Fields);
 			getMembersBusy = false;
 			return l;
 		}
@@ -157,17 +158,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (getMembersBusy) return new List<IEvent>();
 			getMembersBusy = true;
-			List<IEvent> l;
+			List<IEvent> l = new List<IEvent>();
+			l.AddRange(c.Events);
 			if (c.ClassType == ClassType.Interface) {
-				l = new List<IEvent>();
 				foreach (IReturnType baseType in c.BaseTypes) {
 					l.AddRange(baseType.GetEvents());
 				}
 			} else {
 				IReturnType baseType = c.BaseType;
-				l = baseType != null ? c.BaseType.GetEvents() : new List<IEvent>();
+				if (baseType != null) {
+					l.AddRange(baseType.GetEvents());
+				}
 			}
-			l.AddRange(c.Events);
 			getMembersBusy = false;
 			return l;
 		}
