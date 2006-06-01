@@ -35,8 +35,8 @@ namespace SharpReportCore {
 		GroupSeperator groupSeperator;
 		
 		public event EventHandler <ListChangedEventArgs> ListChanged;
-		public event EventHandler <GroupChangedEventArgs> GroupChanged;
-		public event EventHandler <EventArgs> GroupChanging;
+//		public event EventHandler <GroupChangedEventArgs> GroupChanged;
+//		public event EventHandler <EventArgs> GroupChanging;
 		
 		/// <summary>
 		/// use this Constructor for PullDataReports
@@ -62,7 +62,7 @@ namespace SharpReportCore {
 			this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
 			                                          reportSettings);
 			this.dataViewStrategy.ListChanged += new EventHandler <ListChangedEventArgs> (NotifyListChanged);
-			this.dataViewStrategy.GroupChanged += new EventHandler<GroupChangedEventArgs> (OnGroupChange);
+//			this.dataViewStrategy.GroupChanged += new EventHandler<GroupChangedEventArgs> (OnGroupChange);
 		}
 		
 		public DataManager(DataTable dataSource, ReportSettings reportSettings){
@@ -272,18 +272,18 @@ namespace SharpReportCore {
 		}
 		
 		private void NotifyGroupChanging () {
-			if (this.GroupChanging!= null) {
-				this.GroupChanging (this,EventArgs.Empty);
-			}		
+//			if (this.GroupChanging!= null) {
+//				this.GroupChanging (this,EventArgs.Empty);
+//			}		
 		}
+		
 		
 		private void NotifyGroupChanged() {
 			if (this.IsGrouped) {
-				if (this.GroupChanged != null) {
-					this.GroupChanged (this,new GroupChangedEventArgs(this.groupSeperator));
-				}
+//				if (this.GroupChanged != null) {
+//					this.GroupChanged (this,new GroupChangedEventArgs(this.groupSeperator));
+//				}
 			}
-			
 		}
 		
 		private void OnGroupChange (object sender,GroupChangedEventArgs e) {
@@ -384,7 +384,6 @@ namespace SharpReportCore {
 			}
 		}
 	
-		// Nur zum testen
 		
 		public DataNavigator GetNavigator {
 			get {
@@ -393,22 +392,6 @@ namespace SharpReportCore {
 		}
 		
 
-		/*
-		public object Current {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		*/
-//		public void Reset() {
-//			this.dataViewStrategy.Reset();
-//		}
-//		
-//		public bool MoveNext() {
-//			return this.dataViewStrategy.MoveNext();
-//		}
-		
-		
 		
 		public bool IsGrouped {
 			get {
@@ -427,6 +410,7 @@ namespace SharpReportCore {
 				return this.dataViewStrategy.IsFiltered;
 			}
 		}
+		
 		#region System.IDisposable interface implementation
 		public void Dispose() {
 			this.Dispose(true);

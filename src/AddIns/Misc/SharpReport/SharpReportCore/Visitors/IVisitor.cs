@@ -11,13 +11,24 @@ using System;
 
 
 namespace SharpReportCore{
-		
-	public interface IModel{
-			void Accept(IModelVisitor visitor);
-	}	
+	
+	/// <summary>
+	/// Used by <see cref="SharpReport.Designer.BaseDesignerControl"></see>
+	/// </summary>
+	
+	public interface  IVisitor{
+		void Accept(SharpReportCore.IModelVisitor visitor);
+	}
 	
 	public interface IModelVisitor{
+			///<summary>
+			/// Use this function to Visit from ReportEngine
+			/// </summary>
 			void Visit (SharpReportCore.ReportModel reportModel);
+			///<summary>
+			/// This function is used by the Designer
+			/// </summary>
+			void Visit (System.Windows.Forms.Control designer);
 	}
 }
 	

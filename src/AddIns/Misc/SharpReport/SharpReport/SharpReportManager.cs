@@ -261,7 +261,7 @@ namespace SharpReport{
 		public void  SaveToFile(string fileName){
 			try {
 				SharpReport.Visitors.SaveReportVisitor saveVisitor = new SharpReport.Visitors.SaveReportVisitor();
-				this.baseDesignerControl.Accept (saveVisitor);
+				this.baseDesignerControl.Accept ((SharpReportCore.IModelVisitor)saveVisitor);
 				XmlDocument xmlDoc = saveVisitor.XmlDocument;
 				XmlTextWriter xw = new XmlTextWriter (fileName,System.Text.Encoding.UTF8);
 				xmlDoc.PreserveWhitespace = true;

@@ -212,13 +212,15 @@ namespace SharpReportCore {
 		public override void Bind() {
 			base.Bind();
 			
-			if ((base.ReportSettings.GroupColumnsCollection != null) && (base.ReportSettings.GroupColumnsCollection.Count > 0)) {
+//			if ((base.ReportSettings.GroupColumnsCollection != null) && (base.ReportSettings.GroupColumnsCollection.Count > 0)) {
+			if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
 				this.Group ();
 				Reset();
 				return;
 			}
 			
 			if (base.ReportSettings.SortColumnCollection != null) {
+//			if (base.ReportSettings.SortColumnCollection.Count > 0) {	
 				this.Sort ();
 			}
 			Reset();

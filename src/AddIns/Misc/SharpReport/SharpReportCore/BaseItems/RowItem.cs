@@ -35,14 +35,15 @@ namespace SharpReportCore{
 		
 		public RowItem(string tableName){
 			this.tableName = tableName;
-			this.Items.Added += OnAdded;
+//			this.Items.Added += OnAdded;
 		}
 		
+		/*
 		void OnAdded (object sender, CollectionItemEventArgs<IItemRenderer> e){			
 			System.Console.WriteLine("");
 			System.Console.WriteLine("RowItem:OnAdded did we use this function???");
 		}
-		
+		*/
 		#region overrides
 		
 		
@@ -58,8 +59,8 @@ namespace SharpReportCore{
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
-			System.Console.WriteLine("");
-			System.Console.WriteLine("--Start of {0}",this.ToString());
+//			System.Console.WriteLine("");
+//			System.Console.WriteLine("--Start of {0}",this.ToString());
 			base.Render(rpea);
 			RectangleF rect = PrepareRectangle (rpea);
 			
@@ -83,8 +84,8 @@ namespace SharpReportCore{
 				childItem.Render (rpea);
 				childItem.Location = new Point(loc.X,loc.Y);
 			}
-			System.Console.WriteLine("--End of RowItem");
-			System.Console.WriteLine("");
+//			System.Console.WriteLine("--End of RowItem");
+//			System.Console.WriteLine("");
 			base.NotiyfyAfterPrint (rpea.LocationAfterDraw);
 		}
 		

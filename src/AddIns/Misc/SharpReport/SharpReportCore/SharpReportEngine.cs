@@ -505,7 +505,7 @@ namespace SharpReportCore {
 			
 			try {
 				ReportModel model = new ReportModel();
-				SharpReportCore.LoadModelVisitor modelVisitor = new SharpReportCore.LoadModelVisitor(model,fileName);
+				SharpReportCore.LoadModelVisitor modelVisitor = new SharpReportCore.LoadModelVisitor(model,fileName);                                                                                    
 				model.Accept (modelVisitor);
 				return model;
 			} catch (Exception) {

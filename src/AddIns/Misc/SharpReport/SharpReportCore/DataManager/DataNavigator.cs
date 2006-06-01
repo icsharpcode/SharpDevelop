@@ -17,12 +17,16 @@ namespace SharpReportCore
 	
 	public class DataNavigator :IDataNavigator{
 		IDataViewStrategy store;
-		public event EventHandler <ListChangedEventArgs> ListChanged;
+		GroupSeperator groupSeperator;
 		
+		public event EventHandler <ListChangedEventArgs> ListChanged;
+//		public event EventHandler <EventArgs> GroupChanging;
+		public event EventHandler <GroupChangedEventArgs> GroupChanged;
 		
 		public DataNavigator(IDataViewStrategy store){
 			this.store = store;
 			this.store.ListChanged += new EventHandler<ListChangedEventArgs> (OnListChanged);
+			this.store.GroupChanged += new EventHandler<GroupChangedEventArgs> (OnGroupChange);
 		}
 
 		private void OnListChanged (object sender,System.ComponentModel.ListChangedEventArgs e) {
@@ -31,10 +35,34 @@ namespace SharpReportCore
 			}
 		}
 		
+//		private void NotifyGroupChanging () {
+//			if (this.GroupChanging!= null) {
+//				this.GroupChanging (this,EventArgs.Empty);
+//			}		
+//		}
+		
+		private void NotifyGroupChanged() {
+			if (this.store.IsGrouped) {
+				if (this.GroupChanged != null) {
+					this.GroupChanged (this,new GroupChangedEventArgs(this.groupSeperator));
+				}
+			}
+		}
+		
+		private void OnGroupChange (object sender,GroupChangedEventArgs e) {
+			this.groupSeperator = e.GroupSeperator;
+			this.NotifyGroupChanged();
+		}
+		
+		#region IDataNavigator implementation
+		
 		public void Fill (ReportItemCollection collection) {
+//			this.NotifyGroupChanging();
+			this.NotifyGroupChanged();
 			foreach (IItemRenderer item in collection) {
 				this.store.Fill(item);
 			}
+//			this.NotifyGroupChanged();
 		}
 		
 		
@@ -79,5 +107,7 @@ namespace SharpReportCore
 				return this.store.Current;
 			}
 		}
+		
+		#endregion
 	}
 }

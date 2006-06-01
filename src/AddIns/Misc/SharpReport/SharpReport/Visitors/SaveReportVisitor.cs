@@ -20,17 +20,22 @@ namespace SharpReport.Visitors{
 	/// Description of SaveReportVisitor.
 	/// </summary>
 	
-	public class SaveReportVisitor : AbstractVisitor
+	public class SaveReportVisitor :SharpReportCore.AbstractModelVisitor
 	{
 		
 		private XmlDocument xmlDoc;
+		private SharpReport.Designer.BaseDesignerControl baseDesigner;
 		
-		public SaveReportVisitor ():base() {
+		public SaveReportVisitor ():base(String.Empty) {
 			
 		}
-		
-		public override void Visit (SharpReport.Designer.BaseDesignerControl designer) {
-			xmlDoc = this.BuildReportDocument(designer);
+		public override void Visit (Control designer) {
+			this.baseDesigner = designer as SharpReport.Designer.BaseDesignerControl;
+			
+			if (this.baseDesigner == null) {
+				throw new ArgumentException("designer");
+			}
+			xmlDoc = this.BuildReportDocument(baseDesigner);
 		}
 		
 		private XmlDocument BuildReportDocument (SharpReport.Designer.BaseDesignerControl designer) {

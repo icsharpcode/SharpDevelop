@@ -25,13 +25,11 @@ using SharpReportCore;
 namespace SharpReportCore {	
 	public class LoadModelVisitor : SharpReportCore.AbstractModelVisitor {
 		
-		private string fileName;
 		private ReportModel model;
-		SharpReportCore.XmlFormReader xmlFormReader;
 		BaseItemFactory baseItemFactory;
 		
-		public LoadModelVisitor(ReportModel reportModel,string fileName){
-			this.fileName = fileName;
+		public LoadModelVisitor(ReportModel reportModel,
+		                        string fileName):base(fileName){
 			this.model = reportModel;
 			baseItemFactory = new BaseItemFactory();
 		}
@@ -40,12 +38,11 @@ namespace SharpReportCore {
 		#region overrides
 		public override void Visit(ReportModel reportModel) {
 			if (reportModel == null) {
-				throw new MissingModelException();
+				throw new ArgumentNullException("reportModel");
 			} else {
 				XmlDocument xmlDoc;
 				try {
-					xmlDoc = XmlHelper.OpenSharpReport (fileName);
-					xmlFormReader = new XmlFormReader();
+					xmlDoc = XmlHelper.OpenSharpReport (base.FileName);
 					reportModel.ReportSettings.SetSettings ((XmlElement)xmlDoc.DocumentElement.FirstChild);
 					SetSections (xmlDoc);
 				} catch (Exception ) {
@@ -60,48 +57,51 @@ namespace SharpReportCore {
 		void SetSections (XmlDocument doc) {
 			XmlNodeList sectionNodes = doc.DocumentElement.ChildNodes;
 			//Start with node(1)
-			XmlNode node;
-			BaseSection baseSection;
+
 			for (int i = 1;i < sectionNodes.Count ; i++ ) {
-				node = sectionNodes[i];
+				XmlNode node = sectionNodes[i];
 				
 				if (node is XmlElement) {
 					XmlElement sectionElem = (XmlElement)node;
-					baseSection = (BaseSection)model.SectionCollection.Find(sectionElem.GetAttribute("name"));
-					baseSection.SuspendLayout();
-					if (baseSection != null) {
-						XmlHelper.SetSectionValues (xmlFormReader,sectionElem,baseSection);
-						XmlNodeList ctrlList = sectionElem.SelectNodes ("controls/control");
-						if (ctrlList.Count > 0) {
-							foreach (XmlNode ctrlNode in ctrlList) {
-								if (ctrlNode is XmlElement) {
-									XmlElement ctrlElem = (XmlElement)ctrlNode;
-									BaseReportItem rpt = null;
-									try {
-										//Read the <BaseClassName> Element
-										rpt = (BaseReportItem)baseItemFactory.Create(ctrlElem.GetAttribute("basetype"));
-										if (rpt != null) {
-//											rpt.SuspendLayout();
-											rpt.Parent = baseSection;
-											baseSection.Items.Add (rpt);
-											XmlHelper.SetReportItemValues (xmlFormReader,ctrlElem,rpt);
-											rpt.Visible = true;
-											rpt.ResumeLayout();
-										} else {
-											String str = String.Format("< {0}>",ctrlElem.GetAttribute("basetype"));
-											throw new UnkownItemException(str);
-										}
-									} catch (Exception ) {
-										throw;
-									}
-								}
-							}
-						}
-					}else {
-						throw new MissingSectionException();
-					}
+					
+					BaseSection baseSection = (BaseSection)model.SectionCollection.Find(sectionElem.GetAttribute("name"));
+					
+					XmlNodeList ctrlList = base.MakeSection(sectionElem,baseSection);
+					SetReportItems(baseSection,null,ctrlList);
+					
 				}else {
 					throw new System.Xml.XmlException ("Report : SetSection Wrong Node in Report");
+				}
+			}
+		}
+		
+		
+		void SetReportItems(BaseSection baseSection,
+		                    IContainerItem parentContainer,XmlNodeList ctrlList) {
+			
+			BaseReportItem baseReportItem;
+		
+			foreach (XmlNode ctrlNode in ctrlList) {
+				XmlElement ctrlElem = ctrlNode as XmlElement;
+				if (ctrlElem != null) {
+					IItemRenderer itemRenderer = null;
+					try {
+						itemRenderer = baseItemFactory.Create(ctrlElem.GetAttribute("basetype"));
+						baseReportItem = base.MakeItem (ctrlElem,parentContainer,baseSection,itemRenderer);
+						
+						IContainerItem iContainer = baseReportItem as IContainerItem;
+						
+						if (iContainer != null) {
+							XmlNodeList newList = ctrlNode.SelectNodes (base.NodesQuery);
+							if (newList.Count > 0) {
+								SetReportItems (baseSection,iContainer,newList);
+							}
+						}
+						
+					}
+					catch (Exception ) {
+						throw new UnkownItemException();
+					}
 				}
 			}
 		}

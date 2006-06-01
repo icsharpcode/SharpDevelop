@@ -38,7 +38,8 @@ namespace SharpReport.Designer {
 		
 	public class IDesignableFactory : SharpReportCore.GenericFactory {
 			
-		public IDesignableFactory() :base(Assembly.GetExecutingAssembly(),typeof(IDesignable)){
+		public IDesignableFactory() :base(Assembly.GetExecutingAssembly(),
+			                                  typeof(IDesignable)){
 		}
 			
 		public new  BaseReportItem Create(string name) {

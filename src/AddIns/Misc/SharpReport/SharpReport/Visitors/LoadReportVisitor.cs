@@ -28,9 +28,9 @@ using SharpReport.ReportItems;
 
 
 namespace SharpReport.Visitors {
-	public class LoadReportVisitor : SharpReport.Visitors.AbstractVisitor {
-		
-		SharpReport.Designer.BaseDesignerControl designer;
+
+	public class LoadReportVisitor : SharpReportCore.AbstractModelVisitor {	
+		SharpReport.Designer.BaseDesignerControl baseDesigner;
 		IDesignableFactory designableFactory ;
 		
 		public LoadReportVisitor(string fileName):base(fileName) {
@@ -41,16 +41,19 @@ namespace SharpReport.Visitors {
 		/// Loads ReportDefinition from File and set the values in the SharpReportDesigner
 		/// </summary>
 		/// <param name='designer'>SharpReportDesigner</param>
-		
-		public override void Visit(SharpReport.Designer.BaseDesignerControl designer){
+		public override void Visit(System.Windows.Forms.Control designer){
 			if (designer == null) {
 				throw new ArgumentNullException("designer");
+			}
+			this.baseDesigner = designer as SharpReport.Designer.BaseDesignerControl;
+			
+			if (this.baseDesigner == null) {
+				throw new ArgumentException("designer");
 			}
 			
 			XmlDocument xmlDoc;
 			try {
 				xmlDoc = XmlHelper.OpenSharpReport (base.FileName);
-				this.designer = designer;
 				SetDesigner (xmlDoc);
 				AdjustSectionsWidth();
 			} catch (Exception ) {
@@ -60,41 +63,36 @@ namespace SharpReport.Visitors {
 		}
 		
 		private void AdjustSectionsWidth() {
-			foreach (ReportSection section in designer.SectionsCollection) {
-				section.VisualControl.Width = designer.ReportModel.ReportSettings.PageSettings.Bounds.Width;
+			foreach (ReportSection section in baseDesigner.SectionsCollection) {
+				section.VisualControl.Width = baseDesigner.ReportModel.ReportSettings.PageSettings.Bounds.Width;
 				if (section.SectionMargin == 0) {
-					section.SectionMargin = designer.ReportModel.ReportSettings.PageSettings.Bounds.Left;
+					section.SectionMargin = baseDesigner.ReportModel.ReportSettings.PageSettings.Bounds.Left;
 				}
 			}
 		}
 		
 		
-		
 		private void  SetDesigner (XmlDocument doc){
-			this.designer.ReportModel.ReportSettings.SetSettings ((XmlElement)doc.DocumentElement.FirstChild);
+			this.baseDesigner.ReportModel.ReportSettings.SetSettings ((XmlElement)doc.DocumentElement.FirstChild);
 			SetSections (doc);
 		}
 		
 	
 		
 		private void SetSections (XmlDocument doc) {
-		
+			
 			XmlNodeList sectionNodes = doc.DocumentElement.ChildNodes;
 			//Start with node(1)
-			XmlNode node;
-			BaseSection baseSection = null;
+
 			for (int i = 1;i < sectionNodes.Count ; i++ ) {
-				node = sectionNodes[i];
+				XmlNode node = sectionNodes[i];
 				XmlElement sectionElem = node as XmlElement;
 				if (sectionElem != null) {
-					baseSection = (BaseSection)designer.ReportModel.SectionCollection.Find(sectionElem.GetAttribute("name"));
-					if (baseSection != null) {
-						XmlHelper.SetSectionValues (base.XmlFormReader,sectionElem,baseSection);
-						XmlNodeList ctrlList = sectionElem.SelectNodes (base.NodesQuery);
-						SetReportItems(baseSection,null,ctrlList);
-					} else {
-						throw new MissingSectionException();
-					}
+					BaseSection baseSection = (BaseSection)baseDesigner.ReportModel.SectionCollection.Find(sectionElem.GetAttribute("name"));
+
+					XmlNodeList ctrlList = base.MakeSection(sectionElem,baseSection);
+					SetReportItems(baseSection,null,ctrlList);
+
 				} else {
 					throw new MissingSectionException();
 				}
@@ -106,7 +104,6 @@ namespace SharpReport.Visitors {
 		                    IContainerItem parentContainer,XmlNodeList ctrlList) {
 			
 			BaseReportItem baseReportItem;
-			//BaseReportItem parentItem;
 			foreach (XmlNode ctrlNode in ctrlList) {
 				XmlElement ctrlElem = ctrlNode as XmlElement;
 				if (ctrlElem != null) {
@@ -114,28 +111,12 @@ namespace SharpReport.Visitors {
 					try {
 						itemRenderer = designableFactory.Create(ctrlElem.GetAttribute("type"));
 						
-						baseReportItem = (BaseReportItem)itemRenderer;
-					
-						baseReportItem.SuspendLayout();
-						XmlHelper.SetReportItemValues (base.XmlFormReader,ctrlElem,baseReportItem);
-	
-						if (parentContainer == null) {
-							baseReportItem.Parent = baseSection;
-							baseSection.Items.Add (baseReportItem);
-						} else {
-							baseReportItem.Parent = parentContainer;
-							parentContainer.Items.Add(baseReportItem);
-							
-						}
-						baseReportItem.ResumeLayout();
+						baseReportItem = base.MakeItem(ctrlElem,parentContainer,baseSection,itemRenderer);
 						IContainerItem iContainer = baseReportItem as IContainerItem;
 						
 						if (iContainer != null) {
 							XmlNodeList newList = ctrlNode.SelectNodes (base.NodesQuery);
 							if (newList.Count > 0) {
-								System.Console.WriteLine("\tLoadReportVisitor recursive call for <{0}> with {1} elements",
-								                         baseReportItem.Name,
-								                         newList.Count);
 								SetReportItems (baseSection,iContainer,newList);
 							}
 						}
