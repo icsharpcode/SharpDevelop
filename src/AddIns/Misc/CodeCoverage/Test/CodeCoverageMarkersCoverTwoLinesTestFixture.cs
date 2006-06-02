@@ -70,7 +70,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 		[Test]
 		public void MarkerOneOffset()
 		{
-			Assert.AreEqual(3, markerOne.Offset);
+			Assert.AreEqual(2, markerOne.Offset);
 		}
 		
 		[Test]
@@ -82,13 +82,13 @@ namespace ICSharpCode.CodeCoverage.Tests
 		[Test]
 		public void MarkerTwoOffset()
 		{
-			Assert.AreEqual(9, markerTwo.Offset);
+			Assert.AreEqual(8, markerTwo.Offset);
 		}
 		
 		[Test]
 		public void MarkerTwoLength()
 		{
-			Assert.AreEqual(56, markerTwo.Length);
+			Assert.AreEqual(58, markerTwo.Length);
 		}
 		
 		[Test]
@@ -112,7 +112,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 		[Test]
 		public void MarkerFourOffset()
 		{
-			Assert.AreEqual(129, markerFour.Offset);
+			Assert.AreEqual(128, markerFour.Offset);
 		}
 	}
 }
