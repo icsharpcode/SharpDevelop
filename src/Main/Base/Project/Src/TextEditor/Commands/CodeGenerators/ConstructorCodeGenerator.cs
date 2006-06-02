@@ -19,13 +19,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override string CategoryName {
 			get {
-				return "Constructor";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.Constructor}";
 			}
 		}
 		
 		public override string Hint {
 			get {
-				return "Choose fields to initialize by constructor";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.Constructor.Hint}";
 			}
 		}
 		

@@ -19,13 +19,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override string CategoryName {
 			get {
-				return "Event OnXXX methods";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.EventOnXXX}";
 			}
 		}
 		
 		public override string Hint {
 			get {
-				return "Choose events to generate OnXXX methods";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.EventOnXXX.Hint}";
 			}
 		}
 		

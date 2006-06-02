@@ -105,7 +105,7 @@ namespace ICSharpCode.XmlEditor
 					changed = AddSchema(schemaFileName);
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex, "${res:ICSharpCode.XmlEditor.XmlSchemasPanel.UnableToAddSchema}");
+				MessageService.ShowError("${res:ICSharpCode.XmlEditor.XmlSchemasPanel.UnableToAddSchema}\n\n" + ex.Message);
 			}
 		}
 		

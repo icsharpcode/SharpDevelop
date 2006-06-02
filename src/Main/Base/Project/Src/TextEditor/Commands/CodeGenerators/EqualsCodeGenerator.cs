@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override string CategoryName {
 			get {
-				return "Generate Equals and GetHashCode methods";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.GenerateEqualsAndGetHashCode}";
 			}
 		}
 		

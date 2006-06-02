@@ -51,13 +51,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public override string CategoryName {
 			get {
-				return "Generate default ToString() method";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.ToString}";
 			}
 		}
 		
 		public override string Hint {
 			get {
-				return "Choose Properties to include in the description";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.ToString.Hint}";
 			}
 		}
 		public override int ImageIndex {

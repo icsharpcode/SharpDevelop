@@ -13,17 +13,28 @@ namespace ICSharpCode.ILAsmBinding
 {
 	public class ILAsmProject : MSBuildProject
 	{
+		static bool initialized = false;
+		
+		void Init()
+		{
+			if (!initialized) {
+				initialized = true;
+				MSBuildEngine.CompileTaskNames.Add("ilasm");
+			}
+			this.Language = "ILAsm";
+		}
+		
 		public ILAsmProject(string fileName, string projectName)
 		{
 			this.Name = projectName;
-			Language = "ILAsm";
+			Init();
 			SetupProject(fileName);
 			IdGuid = BaseConfiguration["ProjectGuid"];
 		}
 		
 		public ILAsmProject(ProjectCreateInformation info)
 		{
-			Language = "ILAsm";
+			Init();
 			Create(info);
 			imports.Add(@"$(SharpDevelopBinPath)\SharpDevelop.Build.MSIL.Targets");
 		}

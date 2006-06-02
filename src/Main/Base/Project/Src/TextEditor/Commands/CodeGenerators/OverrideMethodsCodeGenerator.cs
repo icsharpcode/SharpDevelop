@@ -19,13 +19,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override string CategoryName {
 			get {
-				return "Override methods";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.OverrideMethods}";
 			}
 		}
 		
 		public override string Hint {
 			get {
-				return "Choose methods to override";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.OverrideMethods.Hint}";
 			}
 		}
 		

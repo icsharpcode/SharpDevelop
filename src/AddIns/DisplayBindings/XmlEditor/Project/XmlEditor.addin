@@ -44,7 +44,7 @@
 		            extensions = "*.xml"/>
 		<FileFilter id = "Xsl"
 		            insertbefore="AllFiles"
-		            name = "XSL files (*.xsl;*.xslt)"
+		            name = "${res:SharpDevelop.FileFilter.XslFiles} (*.xsl;*.xslt)"
 		            extensions = "*.xsl;*.xslt"/>
 	</Path>
 	

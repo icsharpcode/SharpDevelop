@@ -17,7 +17,7 @@
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "NAnt"
 	                insertbefore="AllFiles"
-	                name = "NAnt Build Files (*.build;*.include)"
+	                name = "${res:SharpDevelop.FileFilter.NAnt} (*.build;*.include)"
 	                extensions = "*.build;*.include"/>
 	</Path>
 	

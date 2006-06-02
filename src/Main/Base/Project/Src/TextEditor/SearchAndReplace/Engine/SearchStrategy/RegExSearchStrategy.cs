@@ -27,7 +27,7 @@ namespace SearchAndReplace
 				regex = new Regex(SearchOptions.FindPattern, regexOptions);
 				return true;
 			} catch (ArgumentException ex) {
-				MessageService.ShowError("Error parsing regular expression:\n" + ex.Message);
+				MessageService.ShowError("${res:Dialog.NewProject.SearchReplace.ErrorParsingRegex}\n" + ex.Message);
 				return false;
 			}
 		}

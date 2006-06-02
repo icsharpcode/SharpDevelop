@@ -20,13 +20,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override string CategoryName {
 			get {
-				return "Abstract class overridings";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.AbstractClass}";
 			}
 		}
 		
 		public override string Hint {
 			get {
-				return "Choose abstract class to override";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.AbstractClass.Hint}";
 			}
 		}
 		

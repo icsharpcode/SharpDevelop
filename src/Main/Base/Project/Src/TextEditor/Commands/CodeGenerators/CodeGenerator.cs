@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public virtual string Hint {
 			get {
-				return "no hint";
+				return "-";
 			}
 		}
 		
