@@ -22,8 +22,8 @@
 	 -->
 	<Files>
 		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<Page x:Class="${StandardNamespace}.${FileNameWithoutExtension}"
-    xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
-    xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="${FileNameWithoutExtension}"
     >
     <Grid>
@@ -31,18 +31,22 @@
     </Grid>
 </Page>]]></File>
 		<File name="${FullName}.cs" language="C#" dependentUpon="${FileName}" subType="Code"><![CDATA[using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace ${StandardNamespace}
 {
     /// <summary>
-    /// Interaction logic for ${FileName}
+    /// Interaction logic for ${FullName}
     /// </summary>
 
     public partial class ${FileNameWithoutExtension} : Page

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template originator   = "Mathias Simmack"
           created      = "26/10/2005"
-          lastModified = "11/01/2006">
+          lastModified = "02/06/2006">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -28,17 +28,17 @@
 			<ProjectItems>
 				<Reference Include="System" />
 				<Reference Include="System.Data" />
-				<Reference Include="System.Printing"/>
-				<Reference Include="System.Runtime.Serialization"/>
-				<Reference Include="System.Security.Authorization"/>
-				<!-- Reference Include="System.ServiceModel"/ -->
 				<Reference Include="System.Xml" />
 				<Reference Include="WindowsBase" />
 				<Reference Include="PresentationCore" />
 				<Reference Include="PresentationFramework" />
-				<Reference Include="ReachFramework" />
 				<Reference Include="UIAutomationProvider" />
 				<Reference Include="UIAutomationTypes" />
+				<Reference Include="ReachFramework" />
+				<Reference Include="System.Printing" />
+				<Reference Include="System.ServiceModel" />
+				<Reference Include="System.Runtime.Serialization" />
+				<Reference Include="System.IdentityModel" />
 			</ProjectItems>
 
 			<Imports>
@@ -46,16 +46,16 @@
 			</Imports>
 			
 			<Files>
-				<File name="MyApp.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application x:Class="${StandardNamespace}.MyApp"
-    xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
-    xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
-    Startup="AppStartup"
+				<File name="App.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application x:Class="${StandardNamespace}.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    StartupUri="Window1.xaml"
     >
     <Application.Resources>
          
     </Application.Resources>
 </Application>]]></File>
-				<File name="MyApp.xaml.cs" subType="Code" dependentUpon="MyApp.xaml"><![CDATA[using System;
+				<File name="App.xaml.cs" subType="Code" dependentUpon="App.xaml"><![CDATA[using System;
 using System.Windows;
 using System.Data;
 using System.Xml;
@@ -64,35 +64,38 @@ using System.Configuration;
 namespace ${StandardNamespace}
 {
     /// <summary>
-    /// Interaction logic for MyApp.xaml
+    /// Interaction logic for App.xaml
     /// </summary>
 
-    public partial class MyApp : Application
+    public partial class App : Application
     {
 
-        void AppStartup(object sender, StartupEventArgs args)
+        public App()
         {
-            Window1 mainWindow = new Window1();
-            mainWindow.Show();
+            InitializeComponent();
         }
 
     }
 }]]></File>
 				<File name="Window1.xaml" buildAction="Page" language="XML"><![CDATA[<Window x:Class="${StandardNamespace}.Window1"
-    xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
-    xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
-    Title="Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="${StandardNamespace}" Height="300" Width="300"
     >
     <Grid>
         
     </Grid>
 </Window>]]></File>
 				<File name="Window1.xaml.cs" subType="Code" dependentUpon="Window1.xaml"><![CDATA[using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 
@@ -104,16 +107,11 @@ namespace ${StandardNamespace}
 
     public partial class Window1 : Window
     {
+
         public Window1()
         {
             InitializeComponent();
         }
-
-        // To use Loaded event put Loaded="WindowLoaded" attribute in root element of .xaml file.
-        // private void WindowLoaded(object sender, RoutedEventArgs e) {}
-
-        // Sample event handler:  
-        // private void ButtonClick(object sender, RoutedEventArgs e) {}
 
     }
 }]]></File>
@@ -131,12 +129,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("${ProjectName}")]
+[assembly: AssemblyTitle("${StandardNamespace}")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("${USER}")]
-[assembly: AssemblyProduct("${ProjectName}")]
-[assembly: AssemblyCopyright("Copyright @ ${USER} ${DATE}")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("${StandardNamespace}")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

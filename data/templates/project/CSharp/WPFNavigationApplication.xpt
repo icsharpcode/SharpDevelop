@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template originator   = "Mathias Simmack"
           created      = "26/10/2005"
-          lastModified = "11/01/2006">
+          lastModified = "02/06/2006">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -28,17 +28,17 @@
 			<ProjectItems>
 				<Reference Include="System" />
 				<Reference Include="System.Data" />
-				<Reference Include="System.Printing"/>
-				<Reference Include="System.Runtime.Serialization"/>
-				<Reference Include="System.Security.Authorization"/>
-				<!-- Reference Include="System.ServiceModel"/ -->
 				<Reference Include="System.Xml" />
 				<Reference Include="WindowsBase" />
 				<Reference Include="PresentationCore" />
 				<Reference Include="PresentationFramework" />
-				<Reference Include="ReachFramework" />
 				<Reference Include="UIAutomationProvider" />
 				<Reference Include="UIAutomationTypes" />
+				<Reference Include="ReachFramework" />
+				<Reference Include="System.Printing" />
+				<Reference Include="System.ServiceModel" />
+				<Reference Include="System.Runtime.Serialization" />
+				<Reference Include="System.IdentityModel" />
 			</ProjectItems>
 
 			<Imports>
@@ -46,55 +46,73 @@
 			</Imports>
 			
 			<Files>
-				<File name="MyApp.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
-                       xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
-                       x:Class="${StandardNamespace}.MyApp"
-                       StartupUri="Page1.xaml">
+				<File name="App.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application x:Class="${StandardNamespace}.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    StartupUri="Page1.xaml"
+    >
     <Application.Resources>
-
+         
     </Application.Resources>
 </Application>]]></File>
-				<File name="MyApp.xaml.cs" subType="Code" dependentUpon="MyApp.xaml"><![CDATA[using System;
+				<File name="App.xaml.cs" subType="Code" dependentUpon="App.xaml"><![CDATA[using System;
 using System.Windows;
-using System.Windows.Navigation;
 using System.Data;
 using System.Xml;
 using System.Configuration;
 
+namespace ${StandardNamespace}
+{
+    /// <summary>
+    /// Interaction logic for App.xaml
+    /// </summary>
+
+    public partial class App : Application
+    {
+
+        public App()
+        {
+            InitializeComponent();
+        }
+
+    }
+}]]></File>
+				<File name="Page1.xaml" language="XML" buildAction="Page"><![CDATA[<Page x:Class="${StandardNamespace}.Page1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Page1"
+    >
+    <StackPanel>
+        
+    </StackPanel>
+</Page>]]></File>
+				<File name="Page1.xaml.cs" language="C#" dependentUpon="Page1.xaml" subType="Code"><![CDATA[using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 namespace ${StandardNamespace}
 {
     /// <summary>
-    /// Interaction logic for MyApp.xaml
+    /// Interaction logic for Page1.xaml
     /// </summary>
 
-    public partial class MyApp : Application
+    public partial class Page1 : Page
     {
+        public Page1()
+        {
+            InitializeComponent();
+        }
 
     }
-}]]></File>
-				<File name="Page1.xaml" buildAction="Page"><![CDATA[<Page xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
-      xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
-      x:Class="${StandardNamespace}.Page1">
-  <StackPanel>
-
-  </StackPanel>
-</Page>]]></File>
-				<File name="Page1.xaml.cs" subType="Code" dependentUpon="Page1.xaml"><![CDATA[using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Navigation;
-using System.ComponentModel;
-
-namespace ${StandardNamespace}
-{
-	public partial class Page1 : Page
-	{
-		public Page1()
-		{
-			InitializeComponent();
-		}
-	}
 }]]></File>
 				<File name="AssemblyInfo.cs"><![CDATA[#region Using directives
 
@@ -110,12 +128,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("${ProjectName}")]
+[assembly: AssemblyTitle("${StandardNamespace}")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("${USER}")]
-[assembly: AssemblyProduct("${ProjectName}")]
-[assembly: AssemblyCopyright("Copyright @ ${USER} ${DATE}")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("${StandardNamespace}")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

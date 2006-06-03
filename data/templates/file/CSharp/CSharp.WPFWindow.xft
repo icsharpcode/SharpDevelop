@@ -22,21 +22,26 @@
 	 -->
 	<Files>
 		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<Window x:Class="${StandardNamespace}.${FileNameWithoutExtension}"
-    xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
-    xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
-    Title="${StandardNamespace}"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="${StandardNamespace}" Height="300" Width="300"
     >
     <Grid>
         
     </Grid>
 </Window>]]></File>
 		<File name="${FullName}.cs" language="C#" dependentUpon="${FileName}" subType="Code"><![CDATA[using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+
 
 namespace ${StandardNamespace}
 {
@@ -46,16 +51,11 @@ namespace ${StandardNamespace}
 
     public partial class ${FileNameWithoutExtension} : Window
     {
+
         public ${FileNameWithoutExtension}()
         {
             InitializeComponent();
         }
-
-        // To use Loaded event put Loaded="WindowLoaded" attribute in root element of .xaml file.
-        // private void WindowLoaded(object sender, RoutedEventArgs e) {}
-
-        // Sample event handler:  
-        // private void ButtonClick(object sender, RoutedEventArgs e) {}
 
     }
 }]]></File>
