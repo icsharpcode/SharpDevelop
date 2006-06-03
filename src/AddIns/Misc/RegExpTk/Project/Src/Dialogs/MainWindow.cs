@@ -249,7 +249,7 @@ namespace Plugins.RegExpTk {
 			SaveFileDialog sfd = new SaveFileDialog();
 			
 			sfd.InitialDirectory = "c:\\";
-			sfd.Filter = "${res:RegExpTk.MainDialog.Assemblies}";
+			sfd.Filter = ResourceService.GetString("RegExpTk.MainDialog.Assemblies");
 			sfd.DefaultExt = "dll";
 			sfd.CheckPathExists = true;
 			

@@ -5,10 +5,10 @@
 	${Selection}
 }</CodeTemplate>
     <CodeTemplate template="forb" description="for block">for (|; ; ) {
-${Selection}
+	${Selection}
 }</CodeTemplate>
     <CodeTemplate template="fors" description="for (no braces)">for (|; ; )
-${Selection}</CodeTemplate>
+	${Selection}</CodeTemplate>
     <CodeTemplate template="ifb" description="if statement">if (|) {
 	${Selection}
 }</CodeTemplate>
@@ -18,41 +18,41 @@ ${Selection}</CodeTemplate>
 	
 }</CodeTemplate>
     <CodeTemplate template="ifs" description="if statement (no braces)">if (|)
-${Selection}</CodeTemplate>
+	${Selection}</CodeTemplate>
     <CodeTemplate template="switchd" description="switch statement (with default)">switch (|) {
-case:
-break;
-default:
-${Selection}
-break;
+	case:
+		break;
+	default:
+		${Selection}
+		break;
 }</CodeTemplate>
     <CodeTemplate template="switchs" description="switch statement">switch (|) {
-case :
-${Selection}
-break;
+	case :
+		${Selection}
+	break;
 }</CodeTemplate>
     <CodeTemplate template="tryc" description="try / catch">try {
-${Selection}|
+	${Selection}|
 } catch (Exception) {
 	
 }</CodeTemplate>
     <CodeTemplate template="trycf" description="try / catch / finally">try {
-${Selection}|
+	${Selection}|
 } catch (Exception) {
-
+	
 } finally {
-
+	
 }</CodeTemplate>
     <CodeTemplate template="tryf" description="try / finally">try {
-${Selection}|
+	${Selection}|
 } finally {
-
+	
 }</CodeTemplate>
     <CodeTemplate template="whileb" description="while">while (|) {
-${Selection}
+	${Selection}
 }</CodeTemplate>
     <CodeTemplate template="whiles" description="while (no braces)">while (|)
-${Selection}</CodeTemplate>
+	${Selection}</CodeTemplate>
     <CodeTemplate template="scwl" description="System.Console.WriteLine">System.Console.WriteLine(${Selection}|);</CodeTemplate>
     <CodeTemplate template="scw" description="System.Console.Write">System.Console.Write(${Selection}|);</CodeTemplate>
   </CodeTemplateGroup>

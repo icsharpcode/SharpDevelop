@@ -59,6 +59,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			
 			XmlDocument doc = new XmlDocument();
 			try {
+				doc.PreserveWhitespace = true;
 				doc.Load(filename);
 				
 				templateGroups = new ArrayList();
@@ -67,10 +68,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					return false;
 				}
 				
-				foreach (XmlElement el in doc.DocumentElement.ChildNodes) {
-					templateGroups.Add(new CodeTemplateGroup(el));
+				foreach (XmlNode n in doc.DocumentElement.ChildNodes) {
+					XmlElement el = n as XmlElement;
+					if (el != null) {
+						templateGroups.Add(new CodeTemplateGroup(el));
+					}
 				}
-			} catch (Exception) {
+			} catch (FileNotFoundException) {
 				return false;
 			}
 			return true;

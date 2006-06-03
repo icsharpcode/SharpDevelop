@@ -260,16 +260,19 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			if (data != null) {
 				control.BeginUpdate();
 				
-				if (endOffset - startOffset > 0) {
-					control.Document.Remove(startOffset, endOffset - startOffset);
+				try {
+					if (endOffset - startOffset > 0) {
+						control.Document.Remove(startOffset, endOffset - startOffset);
+					}
+					if (dataProvider.InsertSpace) {
+						control.Document.Insert(startOffset++, " ");
+					}
+					control.ActiveTextAreaControl.Caret.Position = control.Document.OffsetToPosition(startOffset);
+					
+					result = data.InsertAction(control.ActiveTextAreaControl.TextArea, ch);
+				} finally {
+					control.EndUpdate();
 				}
-				if (dataProvider.InsertSpace) {
-					control.Document.Insert(startOffset++, " ");
-				}
-				control.ActiveTextAreaControl.Caret.Position = control.Document.OffsetToPosition(startOffset);
-				
-				result = data.InsertAction(control.ActiveTextAreaControl.TextArea, ch);
-				control.EndUpdate();
 			}
 			Close();
 			return result;

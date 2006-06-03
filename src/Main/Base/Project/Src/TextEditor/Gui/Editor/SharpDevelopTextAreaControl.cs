@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using System.Collections;
 using System.Drawing;
 using System.Diagnostics;
@@ -344,53 +345,36 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				ActiveTextAreaControl.TextArea.Caret.Position = ActiveTextAreaControl.TextArea.SelectionManager.SelectionCollection[0].StartPosition;
 				base.ActiveTextAreaControl.TextArea.SelectionManager.RemoveSelectedText();
 			}
-			int newCaretOffset   = ActiveTextAreaControl.TextArea.Caret.Offset;
-			int finalCaretOffset = newCaretOffset;
-			int firstLine        = Document.GetLineNumberForOffset(newCaretOffset);
 			
 			// save old properties, these properties cause strange effects, when not
 			// be turned off (like insert curly braces or other formatting stuff)
-			bool save1         = TextEditorProperties.AutoInsertCurlyBracket;
-			IndentStyle save2  = TextEditorProperties.IndentStyle;
-			TextEditorProperties.AutoInsertCurlyBracket = false;
-			TextEditorProperties.IndentStyle            = IndentStyle.Auto;
-			
 			
 			string templateText = StringParser.Parse(template.Text, new string[,] { { "Selection", selectedText } });
+			int finalCaretOffset = templateText.IndexOf('|');
+			if (finalCaretOffset >= 0) {
+				templateText = templateText.Remove(finalCaretOffset, 1);
+			} else {
+				finalCaretOffset = templateText.Length;
+			}
+			int caretOffset = ActiveTextAreaControl.TextArea.Caret.Offset;
 			
 			BeginUpdate();
-			for (int i =0; i < templateText.Length; ++i) {
-				switch (templateText[i]) {
-					case '|':
-						finalCaretOffset = newCaretOffset;
-						break;
-					case '\r':
-						break;
-					case '\t':
-//						new Tab().Execute(ActiveTextAreaControl.TextArea);
-						break;
-					case '\n':
-						ActiveTextAreaControl.TextArea.Caret.Position = Document.OffsetToPosition(newCaretOffset);
-						new Return().Execute(ActiveTextAreaControl.TextArea);
-						newCaretOffset = ActiveTextAreaControl.TextArea.Caret.Offset;
-						break;
-					default:
-						ActiveTextAreaControl.TextArea.InsertChar(templateText[i]);
-						newCaretOffset = ActiveTextAreaControl.TextArea.Caret.Offset;
-						break;
-				}
-			}
-			int lastLine = Document.GetLineNumberForOffset(newCaretOffset);
-			EndUpdate();
-			Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.LinesBetween, firstLine, lastLine));
-			Document.CommitUpdate();
-			ActiveTextAreaControl.TextArea.Caret.Position = Document.OffsetToPosition(finalCaretOffset);
+			int beginLine = ActiveTextAreaControl.TextArea.Caret.Line;
+			Document.Insert(caretOffset, templateText);
+			
+			ActiveTextAreaControl.TextArea.Caret.Position = Document.OffsetToPosition(caretOffset + finalCaretOffset);
+			int endLine = Document.OffsetToPosition(caretOffset + templateText.Length).Y;
+			
+			IndentStyle save1 = TextEditorProperties.IndentStyle;
 			TextEditorProperties.IndentStyle = IndentStyle.Smart;
-			Document.FormattingStrategy.IndentLines(ActiveTextAreaControl.TextArea, firstLine, lastLine);
+			Console.WriteLine("Indent between {0} and {1}", beginLine, endLine);
+			Document.FormattingStrategy.IndentLines(ActiveTextAreaControl.TextArea, beginLine, endLine);
+			EndUpdate();
+			Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
+			Document.CommitUpdate();
 			
 			// restore old property settings
-			TextEditorProperties.AutoInsertCurlyBracket = save1;
-			TextEditorProperties.IndentStyle            = save2;
+			TextEditorProperties.IndentStyle = save1;
 		}
 		
 		public void InitializeFormatter()
