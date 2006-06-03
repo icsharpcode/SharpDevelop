@@ -24,7 +24,6 @@ namespace HtmlHelp2.OptionsPanel
 	public class HtmlHelp2OptionsPanel : AbstractOptionPanel
 	{
 		static string help2EnvironmentFile = "help2environment.xml";
-		bool Help2EnvIsReady               = false;
 		ComboBox help2Collections          = null;
 		string selectedHelp2Collection     = HtmlHelp2Environment.DefaultNamespaceName;
 
@@ -45,12 +44,10 @@ namespace HtmlHelp2.OptionsPanel
 
 		private void InitializeComponents()
 		{
-			Help2EnvIsReady                  = HtmlHelp2Environment.IsReady;
-
 			try
 			{
 				help2Collections             = (ComboBox)ControlDictionary["help2Collections"];
-				help2Collections.Enabled     = Help2EnvIsReady;
+				help2Collections.Enabled     = HtmlHelp2Environment.IsReady;
 				help2Collections.SelectedIndexChanged += new EventHandler(this.NamespaceNameChanged);
 				selectedHelp2Collection      = HtmlHelp2Environment.CurrentSelectedNamespace;
 
@@ -73,6 +70,11 @@ namespace HtmlHelp2.OptionsPanel
 
 		private void SaveHelp2Config()
 		{
+			if (selectedHelp2Collection.Length == 0)
+			{
+				return;
+			}
+
 			try
 			{
 				XmlDocument xmldoc    = new XmlDocument();
@@ -83,7 +85,7 @@ namespace HtmlHelp2.OptionsPanel
 				node.AppendChild(cdata);
 				xmldoc.DocumentElement.AppendChild(node);
 
-				xmldoc.Save(PropertyService.ConfigDirectory + help2EnvironmentFile);
+				xmldoc.Save(Path.Combine(PropertyService.ConfigDirectory, help2EnvironmentFile));
 
 				LoggingService.Info("Help 2.0: new configuration saved");
 			}
