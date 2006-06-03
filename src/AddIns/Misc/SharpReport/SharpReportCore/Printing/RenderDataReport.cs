@@ -70,13 +70,13 @@ namespace SharpReportCore {
 		
 		
 		private void OnSectionPrinting (object sender,SectionPrintingEventArgs e) {
-			System.Console.WriteLine("");
-			System.Console.WriteLine("Begin Print <{0}> with  <{1}> Items ",e.Section.Name,
-			                         e.Section.Items.Count);
+//			System.Console.WriteLine("");
+//			System.Console.WriteLine("Begin Print <{0}> with  <{1}> Items ",e.Section.Name,
+//			                         e.Section.Items.Count);
 		}
 		
 		private void OnSectionPrinted (object sender,SectionPrintingEventArgs e) {
-			System.Console.WriteLine("Section Printed <{0}> ",e.Section.Name);
+//			System.Console.WriteLine("Section Printed <{0}> ",e.Section.Name);
 			
 		}
 		
@@ -121,7 +121,7 @@ namespace SharpReportCore {
 		
 		
 		private void DoPageEnd (ReportPageEventArgs rpea){
-			System.Console.WriteLine("\tDoPageEnd");
+//			System.Console.WriteLine("\tDoPageEnd");
 			base.PrintPageEnd(this,rpea);
 			base.MeasurePageEnd (rpea);
 			
@@ -156,7 +156,7 @@ namespace SharpReportCore {
 		}
 		
 		protected override void BeginPrintPage(object sender, ReportPageEventArgs rpea) {
-			System.Console.WriteLine("!!! BeginPrintpage");
+//			System.Console.WriteLine("!!! BeginPrintpage");
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
