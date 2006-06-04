@@ -38,6 +38,9 @@ namespace ICSharpCode.SharpDevelop.Gui {
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ColorDialog.xfrm"));
 			
+			if (color == null) {
+				color = new EditorHighlightColor(true);
+			}
 			Color = color;
 			
 			boldBox   = (CheckBox)ControlDictionary["boldBox"];
