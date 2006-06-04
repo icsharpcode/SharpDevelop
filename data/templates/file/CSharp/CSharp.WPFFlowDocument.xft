@@ -9,7 +9,7 @@
 		  defaultname = "FlowDocument${Number}.xaml"
 		  language    = "XML"/>
 	 
-	<Description>A WinFX Flow Document</Description>
+	<Description>${res:Templates.File.WinFXFlowDocument.Name}</Description>
 	
 	<!-- 
 	Special new file templates:

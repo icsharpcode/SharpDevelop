@@ -108,7 +108,7 @@
 	
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id         = "Solution"
-		            name       = "Solutions (*.sln)"
+		            name       = "${res:SharpDevelop.FileFilter.SolutionFiles}"
 		            class      = "ICSharpCode.SharpDevelop.Project.LoadSolution"
 		            extensions = "*.sln"/>
 		

@@ -5,12 +5,12 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>ASP.net webpage project</Name>
+		<Name>${res:Templates.Project.WebPage.Name}</Name>
 		<Category>C#</Category>
 		<Subcategory>ASP.NET</Subcategory>
 		<Icon>C#.Project.Form</Icon>
 		<LanguageName>C#</LanguageName>
-		<Description>ASP.net web application</Description>
+		<Description>${res:Templates.Project.WebPage.Description}</Description>
 	</TemplateConfiguration>
 
 	<!-- Actions -->

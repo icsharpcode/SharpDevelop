@@ -9,7 +9,7 @@
 		  defaultname = "PageFunction${Number}.xaml"
 		  language    = "XML"/>
 	 
-	<Description>A WinFX Page Function</Description>
+	<Description>${res:Templates.File.WinFXPageFunction.Name}</Description>
 	
 	<!-- 
 	Special new file templates:

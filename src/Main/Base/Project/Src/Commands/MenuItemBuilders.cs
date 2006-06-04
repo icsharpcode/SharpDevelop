@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			Process p = (Process)sender;
 			string output = p.StandardOutput.ReadToEnd();
 			
-			TaskService.BuildMessageViewCategory.AppendText(output + Environment.NewLine + "Exited with code:" + p.ExitCode + Environment.NewLine);
+			TaskService.BuildMessageViewCategory.AppendText(output + Environment.NewLine + "${res:XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode} " + p.ExitCode + Environment.NewLine);
 		}
 		
 		void ToolEvt(object sender, EventArgs e)
@@ -149,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					if (tool.PromptForArguments) {
 						InputBox box = new InputBox();
 						box.Text = tool.MenuCommand;
-						box.Label.Text = "Enter arguments for the tool:";
+						box.Label.Text = ResourceService.GetString("XML.MainMenu.ToolMenu.ExternalTools.EnterArguments");
 						box.TextBox.Text = args;
 						if (box.ShowDialog() != DialogResult.OK)
 							return;
@@ -177,7 +177,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						}
 						process.Start();
 					} catch (Exception ex) {
-						MessageService.ShowError("External program execution failed.\nError while starting:\n '" + command + " " + args + "'\n" + ex.Message);
+						MessageService.ShowError("${res:XML.MainMenu.ToolMenu.ExternalTools.ExecutionFailed} '" + command + " " + args + "'\n" + ex.Message);
 					}
 					break;
 				}

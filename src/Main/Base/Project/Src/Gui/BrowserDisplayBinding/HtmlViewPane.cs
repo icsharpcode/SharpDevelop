@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			if (title != null)
 				title = title.Trim();
 			if (title == null || title.Length == 0)
-				TitleName = "Browser";
+				TitleName = ResourceService.GetString("ICSharpCode.SharpDevelop.BrowserDisplayBinding.Browser");
 			else
 				TitleName = title;
 		}

@@ -97,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					debuggerCore.OnDebuggeeStateChanged(); // Force refresh of pads
 				}
 			} else {
-				MessageBox.Show("You can not switch threads while the debugger is running.", "Thread switch");
+				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
 			}
 		}		
 		
@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 							item.SubItems.Add(thread.Priority.ToString());
 							break;
 					}
-					item.SubItems.Add(StringParser.Parse(thread.Suspended ? "${res:Global.Yes}" : "${res:Global.No}"));
+					item.SubItems.Add(ResourceService.GetString(thread.Suspended ? "Global.Yes" : "Global.No"));
 					return;
 				}
 			}

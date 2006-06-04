@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				bool suspended = (selItems[0].Tag as Thread).Suspended;
 				
 				if (!debuggerCore.IsPaused) {
-					MessageBox.Show("You can not freeze or thaw thread while the debugger is running.", "Thread freeze");
+					MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotFreezeWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.Freeze}");
 					return;
 				}
 				

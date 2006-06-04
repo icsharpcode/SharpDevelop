@@ -2,7 +2,7 @@
 <Template author="Tom Schroeter" version="1.0">
 
 	<Config
-		name        = "ASP.NET Web Form"
+		name        = "${res:Templates.File.WebForm.Name}"
 		icon        = "C#.File.NewClass"
 		category    = "C#"
 		subcategory = "ASP.NET"
@@ -10,7 +10,7 @@
 		language    = "C#"
 	/>
 
-	<Description>Component Frame for ASPX Code Behind. Enter the name of a new page.</Description>
+	<Description>${res:Templates.File.WebForm.Description}</Description>
 	<!--
 	Special new file templates:
 		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension

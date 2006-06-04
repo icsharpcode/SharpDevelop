@@ -120,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void StepInto()
 		{
 			if (debugger.SelectedFunction == null || debugger.IsRunning) {
-				MessageBox.Show("You can not step because there is no function selected to be stepped","Step into");
+				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}", "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
 				debugger.StepInto();
 			}
@@ -129,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void StepOver()
 		{
 			if (debugger.SelectedFunction == null || debugger.IsRunning) {
-				MessageBox.Show("You can not step because there is no function selected to be stepped","Step over");
+				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}", "${res:XML.MainMenu.DebugMenu.StepOver.Description}");
 			} else {
 				debugger.StepOver();
 			}
@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void StepOut()
 		{
 			if (debugger.SelectedFunction == null || debugger.IsRunning) {
-				MessageBox.Show("You can not step because there is no function selected to be stepped","Step out");
+				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}", "${res:XML.MainMenu.DebugMenu.StepOut}");
 			} else {
 				debugger.StepOut();
 			}

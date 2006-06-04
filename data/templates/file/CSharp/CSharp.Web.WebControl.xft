@@ -2,7 +2,7 @@
 <Template author="Tom Schroeter" version="1.0">
 
 	<Config
-		name        = "ASP.NET Web Control"
+		name        = "${res:Templates.File.WebControl.Name}"
 		icon        = "C#.File.NewClass"
 		category    = "C#"
 		subcategory = "ASP.NET"
@@ -10,7 +10,7 @@
 		language    = "C#"
 	/>
 
-	<Description>Custom Web Control. Enter the name of a new control.</Description>
+	<Description>${res:Templates.File.WebControl.Description}</Description>
 	<!--
 	Special new file templates:
 		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension

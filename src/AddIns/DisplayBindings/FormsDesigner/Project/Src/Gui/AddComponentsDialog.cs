@@ -183,7 +183,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		void loadButtonClick(object sender, System.EventArgs e)
 		{
 			if (!System.IO.File.Exists(ControlDictionary["fileNameTextBox"].Text)) {
-				MessageBox.Show("Please enter a valid file name.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				MessageService.ShowWarning("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.EnterValidFilename}");
 				return;
 			}
 			
@@ -192,7 +192,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 				Assembly asm = Assembly.LoadFrom(assemblyFileName);
 				FillComponents(asm, Path.GetDirectoryName(assemblyFileName));
 			} catch {
-				MessageBox.Show("Please enter the file name of a valid .NET assembly.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				MessageService.ShowWarning("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.FileIsNotAssembly}");
 				FillComponents(null, null);
 			}
 		}

@@ -2,14 +2,14 @@
 <Template author="Mathias Simmack" version="1.0">
 	
 	<Config
-		  name        = "WinFX Resource Dictionary"
+		  name        = "${res:Templates.File.WinFXResourceDictionary.Name}"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  subcategory = "WinFX"
 		  category    = "C#"
 		  defaultname = "Dictionary${Number}.xaml"
 		  language    = "XML"/>
 	 
-	<Description>A WinFX Resource Dictionary</Description>
+	<Description>${res:Templates.File.WinFXResourceDictionary.Name}</Description>
 	
 	<!-- 
 	Special new file templates:

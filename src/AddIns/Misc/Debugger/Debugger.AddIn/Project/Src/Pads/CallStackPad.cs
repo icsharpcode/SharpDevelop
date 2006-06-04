@@ -75,10 +75,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						debuggerCore.OnDebuggeeStateChanged(); // Force refresh of pads
 					}
 				} else {
-					MessageBox.Show("You can not switch to function without symbols", "Function switch");
+					MessageService.ShowMessage("${res:MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbols}", "${res:MainWindow.Windows.Debug.CallStack.FunctionSwitch}");
 				}
 			} else {
-				MessageBox.Show("You can not switch functions while the debugger is running.", "Function switch");
+				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.CallStack.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.CallStack.FunctionSwitch}");
 			}
 		}
 		

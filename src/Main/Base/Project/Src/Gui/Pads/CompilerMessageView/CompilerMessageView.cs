@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			set {
 				if (selectedCategory != value) {
 					selectedCategory = value;
-					textEditorControl.Text = (value < 0) ? "" : messageCategories[value].Text;
+					textEditorControl.Text = (value < 0) ? "" : StringParser.Parse(messageCategories[value].Text);
 					//textEditorControl.Refresh();
 					OnSelectedCategoryIndexChanged(EventArgs.Empty);
 				}
