@@ -301,7 +301,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				MessageViewCategory category = (MessageViewCategory)messageCategories[i];
 				if (category.Category == categoryName) {
 					selectedCategory = i;
-					textEditorControl.Text = text;
+					textEditorControl.Text = StringParser.Parse(text);
 					//textEditorControl.Refresh();
 					OnSelectedCategoryIndexChanged(EventArgs.Empty);
 					break;
