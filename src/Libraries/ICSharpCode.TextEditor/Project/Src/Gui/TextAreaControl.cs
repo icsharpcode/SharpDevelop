@@ -181,6 +181,7 @@ namespace ICSharpCode.TextEditor
 		void AdjustScrollBarsOnDocumentChange(object sender, DocumentEventArgs e)
 		{
 			if (motherTextEditorControl.IsInUpdate == false) {
+				AdjustScrollBarsClearCache();
 				AdjustScrollBars();
 			} else {
 				adjustScrollBarsOnNextUpdate = true;
@@ -190,30 +191,61 @@ namespace ICSharpCode.TextEditor
 		void AdjustScrollBarsOnCommittedUpdate(object sender, EventArgs e)
 		{
 			if (motherTextEditorControl.IsInUpdate == false) {
-				if (adjustScrollBarsOnNextUpdate) {
-					adjustScrollBarsOnNextUpdate = false;
-					AdjustScrollBars();
-				}
 				if (!scrollToPosOnNextUpdate.IsEmpty) {
 					ScrollTo(scrollToPosOnNextUpdate.Y, scrollToPosOnNextUpdate.X);
+				}
+				if (adjustScrollBarsOnNextUpdate) {
+					AdjustScrollBarsClearCache();
+					AdjustScrollBars();
+				}
+			}
+		}
+		
+		int[] lineLengthCache;
+		const int LineLengthCacheAdditionalSize = 100;
+		
+		void AdjustScrollBarsClearCache()
+		{
+			if (lineLengthCache != null) {
+				if (lineLengthCache.Length < this.Document.TotalNumberOfLines + 2 * LineLengthCacheAdditionalSize) {
+					lineLengthCache = null;
+				} else {
+					Array.Clear(lineLengthCache, 0, lineLengthCache.Length);
 				}
 			}
 		}
 		
 		public void AdjustScrollBars()
 		{
+			adjustScrollBarsOnNextUpdate = false;
 			vScrollBar.Minimum = 0;
 			// number of visible lines in document (folding!)
 			vScrollBar.Maximum = textArea.MaxVScrollValue;
 			int max = 0;
-			foreach (LineSegment lineSegment in this.Document.LineSegmentCollection) {
-				int lineNumber = Document.GetLineNumberForOffset(lineSegment.Offset);
-				if(Document.FoldingManager.IsLineVisible(lineNumber)) {
-					max = Math.Max(max, textArea.TextView.GetVisualColumnFast(lineSegment, lineSegment.Length));
+			
+			int firstLine = textArea.TextView.FirstVisibleLine;
+			int lastLine = this.Document.GetFirstLogicalLine(textArea.TextView.FirstPhysicalLine + textArea.TextView.VisibleLineCount);
+			if (lastLine >= this.Document.TotalNumberOfLines)
+				lastLine = this.Document.TotalNumberOfLines - 1;
+			
+			if (lineLengthCache == null || lineLengthCache.Length <= lastLine) {
+				lineLengthCache = new int[lastLine + LineLengthCacheAdditionalSize];
+			}
+			
+			for (int lineNumber = firstLine; lineNumber <= lastLine; lineNumber++) {
+				LineSegment lineSegment = this.Document.GetLineSegment(lineNumber);
+				if (Document.FoldingManager.IsLineVisible(lineNumber)) {
+					if (lineLengthCache[lineNumber] > 0) {
+						max = Math.Max(max, lineLengthCache[lineNumber]);
+					} else {
+						int visualLength = textArea.TextView.GetVisualColumnFast(lineSegment, lineSegment.Length);
+						lineLengthCache[lineNumber] = Math.Max(1, visualLength);
+						max = Math.Max(max, visualLength);
+					}
 				}
 			}
 			hScrollBar.Minimum = 0;
-			hScrollBar.Maximum = (Math.Max(0, max + textArea.TextView.VisibleColumnCount - 1));
+			hScrollBar.Maximum = (Math.Max(max + 20, textArea.TextView.VisibleColumnCount - 1));
 			
 			vScrollBar.LargeChange = Math.Max(0, textArea.TextView.DrawingPosition.Height);
 			vScrollBar.SmallChange = Math.Max(0, textArea.TextView.FontHeight);
@@ -248,6 +280,7 @@ namespace ICSharpCode.TextEditor
 		{
 			textArea.VirtualTop = new Point(textArea.VirtualTop.X, vScrollBar.Value);
 			textArea.Invalidate();
+			AdjustScrollBars();
 		}
 		
 		void HScrollBarValueChanged(object sender, EventArgs e)
@@ -304,6 +337,9 @@ namespace ICSharpCode.TextEditor
 			} else {
 				scrollToPosOnNextUpdate = Point.Empty;
 			}
+			
+			ScrollTo(line);
+			
 			int curCharMin  = (int)(this.hScrollBar.Value - this.hScrollBar.Minimum);
 			int curCharMax  = curCharMin + textArea.TextView.VisibleColumnCount;
 			
@@ -320,7 +356,6 @@ namespace ICSharpCode.TextEditor
 					}
 				}
 			}
-			ScrollTo(line);
 		}
 		
 		int scrollMarginHeight  = 3;
