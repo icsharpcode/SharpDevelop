@@ -82,11 +82,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			item.Include = newInclude;
 		}
 		
-		public virtual ProjectItem Clone()
-		{
-			// TODO: Make me abstract in SD 2.1
-			throw new NotSupportedException();
-		}
+		public abstract ProjectItem Clone();
 		
 		object ICloneable.Clone()
 		{

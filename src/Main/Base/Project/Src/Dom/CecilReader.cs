@@ -57,6 +57,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			while (type is ModType) {
 				type = (type as ModType).ElementType;
 			}
+			if (type == null) {
+				LoggingService.Warn("CecilReader: Null type for: " + member);
+				return VoidReturnType.Instance;
+			}
 			if (type is ReferenceType) {
 				// TODO: Use ByRefRefReturnType
 				return CreateType(pc, member, (type as ReferenceType).ElementType);
