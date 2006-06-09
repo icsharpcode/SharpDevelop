@@ -63,6 +63,15 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void MoveImportsStatement()
+		{
+			TestProgram("namespace test { using SomeNamespace; }",
+			            "Imports SomeNamespace\r\n" +
+			            "Namespace test\r\n" +
+			            "End Namespace\r\n");
+		}
+		
+		[Test]
 		public void ForWithUnknownConditionAndSingleStatement()
 		{
 			TestStatement("for (i = 0; unknownCondition; i++) b[i] = s[i];",
@@ -223,6 +232,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "Public Sub New()\n\tMyBase.New(1)\nEnd Sub");
 			TestMember("public tmp1() : this(1) { }",
 			           "Public Sub New()\n\tMe.New(1)\nEnd Sub");
+		}
+		
+		[Test]
+		public void StaticConstructor()
+		{
+			TestMember("static tmp1() { }",
+			           "Shared Sub New()\nEnd Sub");
 		}
 		
 		[Test]

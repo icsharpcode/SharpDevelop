@@ -66,7 +66,8 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public override object Visit(ConstructorDeclaration constructorDeclaration, object data)
 		{
-			if ((constructorDeclaration.Modifier & Modifier.Visibility) == 0)
+			// make constructor public if visiblity is not set (unless constructor is static)
+			if ((constructorDeclaration.Modifier & (Modifier.Visibility | Modifier.Static)) == 0)
 				constructorDeclaration.Modifier = Modifier.Public;
 			
 			// MyBase.New() and MyClass.New() calls inside the constructor are converted to :base() and :this()
