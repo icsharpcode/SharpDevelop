@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (node != null) {
 				using (OpenFileDialog fdiag = new OpenFileDialog()) {
 					fdiag.AddExtension    = true;
-					fdiag.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+					fdiag.Filter = ProjectService.GetAllProjectsFilter(this);
 					fdiag.Multiselect     = true;
 					fdiag.CheckFileExists = true;
 					if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {

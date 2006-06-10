@@ -123,6 +123,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (File.Exists(userSettingsFileName)) {
 				using (MSBuildFileReader reader = new MSBuildFileReader(userSettingsFileName)) {
 					reader.WhitespaceHandling = WhitespaceHandling.Significant;
+					reader.Namespaces = false;
 					reader.MoveToContent(); // we have to skip over the XmlDeclaration (if it exists)
 					while (reader.Read()){
 						if (reader.IsStartElement()) {
