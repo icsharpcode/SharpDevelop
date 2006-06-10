@@ -298,30 +298,20 @@
 		<MenuItem id = "AddSeparator" type = "Separator"/>
 		<Include id = "ProjectActions" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions"/>
 		<MenuItem id = "Separator2" type = "Separator"/>
-		<MenuItem id = "Cut"
-		          label = "${res:XML.MainMenu.EditMenu.Cut}"
-		          type = "Item"
-		          icon = "Icons.16x16.CutIcon"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
-		<MenuItem id = "Paste"
-		          label = "${res:XML.MainMenu.EditMenu.Paste}"
-		          type = "Item"
-		          icon = "Icons.16x16.PasteIcon"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
-		<MenuItem id = "Remove"
-		          label = "${res:Global.RemoveButtonText}"
-		          type = "Item"
-		          icon  = "Icons.16x16.DeleteIcon"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
-		<MenuItem id       = "Rename"
-		          label    = "${res:ProjectComponent.ContextMenu.Rename}"
-		          shortcut = "F2"
-		          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+		<Include id="inc" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutPasteRemoveRename"/>
 		<MenuItem id = "CutCopyPasteSeparator" type = "Separator"/>
 		<MenuItem id    = "Properties"
 		          icon  = "Icons.16x16.PropertiesIcon"
 		          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/MissingProjectNode">
+		<Include id="inc" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutPasteRemoveRename"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/UnknownProjectNode">
+		<Include id="inc" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutPasteRemoveRename"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
@@ -415,36 +405,69 @@
 				
 				<MenuItem id = "ExcludeSeparator" type = "Separator" />
 			</ComplexCondition>
-			<MenuItem id = "Cut"
-			          label = "${res:XML.MainMenu.EditMenu.Cut}"
-			          type = "Item"
-			          icon = "Icons.16x16.CutIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
-			<MenuItem id = "Copy"
-			          label = "${res:XML.MainMenu.EditMenu.Copy}"
-			          type = "Item"
-			          icon = "Icons.16x16.CopyIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.CopyProjectBrowserNode"/>
-			<MenuItem id    = "Paste"
-			          label = "${res:XML.MainMenu.EditMenu.Paste}"
-			          type = "Item"
-			          icon  = "Icons.16x16.PasteIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
-			<MenuItem id = "Delete"
-			          label = "${res:XML.MainMenu.EditMenu.Delete}"
-			          type = "Item"
-			          icon  = "Icons.16x16.DeleteIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
-			<MenuItem id = "Rename"
-			          label    = "${res:ProjectComponent.ContextMenu.Rename}"
-			          shortcut = "F2"
-			          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+			<Include id="CutCopyPasteDeleteRename" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutCopyPasteDeleteRename"/>
 			<MenuItem id = "RenameSeparator" type = "Separator" />
 			<MenuItem id    = "Properties"
 			          icon  = "Icons.16x16.PropertiesIcon"
 			          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
 		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutPasteRemoveRename">
+		<MenuItem id = "Cut"
+		          label = "${res:XML.MainMenu.EditMenu.Cut}"
+		          type = "Item"
+		          icon = "Icons.16x16.CutIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
+		<MenuItem id    = "Paste"
+		          label = "${res:XML.MainMenu.EditMenu.Paste}"
+		          type = "Item"
+		          icon  = "Icons.16x16.PasteIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
+		<MenuItem id = "Remove"
+		          label = "${res:Global.RemoveButtonText}"
+		          type = "Item"
+		          icon  = "Icons.16x16.DeleteIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+		<MenuItem id = "Rename"
+		          label    = "${res:ProjectComponent.ContextMenu.Rename}"
+		          shortcut = "F2"
+		          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutCopyPasteDeleteRename">
+		<MenuItem id = "Cut"
+		          label = "${res:XML.MainMenu.EditMenu.Cut}"
+		          type = "Item"
+		          icon = "Icons.16x16.CutIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
+		<MenuItem id = "Copy"
+		          label = "${res:XML.MainMenu.EditMenu.Copy}"
+		          type = "Item"
+		          icon = "Icons.16x16.CopyIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.CopyProjectBrowserNode"/>
+		<MenuItem id    = "Paste"
+		          label = "${res:XML.MainMenu.EditMenu.Paste}"
+		          type = "Item"
+		          icon  = "Icons.16x16.PasteIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
+		<MenuItem id = "Delete"
+		          label = "${res:XML.MainMenu.EditMenu.Delete}"
+		          type = "Item"
+		          icon  = "Icons.16x16.DeleteIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+		<MenuItem id = "Rename"
+		          label    = "${res:ProjectComponent.ContextMenu.Rename}"
+		          shortcut = "F2"
+		          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode">
@@ -499,30 +522,7 @@
 				<MenuItem id = "ExcludeSeparator" type = "Separator" />
 			</ComplexCondition>
 			
-			<MenuItem id = "Cut"
-			          label = "${res:XML.MainMenu.EditMenu.Cut}"
-			          type = "Item"
-			          icon = "Icons.16x16.CutIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
-			<MenuItem id    = "Copy"
-			          label = "${res:XML.MainMenu.EditMenu.Copy}"
-			          type = "Item"
-			          icon  = "Icons.16x16.CopyIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.CopyProjectBrowserNode"/>
-			<MenuItem id    = "Paste"
-			          label = "${res:XML.MainMenu.EditMenu.Paste}"
-			          icon  = "Icons.16x16.PasteIcon"
-			          type = "Item"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
-			<MenuItem id = "Delete"
-			          label = "${res:XML.MainMenu.EditMenu.Delete}"
-			          type = "Item"
-			          icon  = "Icons.16x16.DeleteIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
-			<MenuItem id = "Rename"
-			          label    = "${res:ProjectComponent.ContextMenu.Rename}"
-			          shortcut = "F2"
-			          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+			<Include id="CutCopyPasteDeleteRename" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutCopyPasteDeleteRename"/>
 		</ComplexCondition>
 	</Path>
 	

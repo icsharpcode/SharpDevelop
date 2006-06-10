@@ -544,14 +544,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				if (dataObject.GetDataPresent(typeof(FileNode))) {
 					FileOperationClipboardObject clipboardObject = (FileOperationClipboardObject)dataObject.GetData(typeof(FileNode).ToString());
-					return !FileUtility.IsEqualFileName(Directory, clipboardObject.FileName) && !FileUtility.IsEqualFileName(Directory, Path.GetDirectoryName(clipboardObject.FileName)) && File.Exists(clipboardObject.FileName);
+					return File.Exists(clipboardObject.FileName);
 				}
 				if (dataObject.GetDataPresent(typeof(DirectoryNode))) {
 					FileOperationClipboardObject clipboardObject = (FileOperationClipboardObject)dataObject.GetData(typeof(DirectoryNode).ToString());
 					if (FileUtility.IsBaseDirectory(clipboardObject.FileName, Directory)) {
 						return false;
 					}
-					return !FileUtility.IsEqualFileName(Directory, clipboardObject.FileName) && !FileUtility.IsEqualFileName(Directory, Path.GetDirectoryName(clipboardObject.FileName)) && System.IO.Directory.Exists(clipboardObject.FileName);
+					return System.IO.Directory.Exists(clipboardObject.FileName);
 				}
 				return false;
 			}
