@@ -47,8 +47,8 @@ namespace SharpReportCore {
 
 		
 		public RenderDataReport(ReportModel model,DataManager dataManager):base (model,dataManager){
-			base.DataManager.GroupChanged += new EventHandler<GroupChangedEventArgs>(OnGroupChanged);
-			base.DataManager.GroupChanging += new EventHandler <EventArgs> (OnGroupChanging);
+//			base.DataManager.GroupChanged += new EventHandler<GroupChangedEventArgs>(OnGroupChanged);
+//			base.DataManager.GroupChanging += new EventHandler <EventArgs> (OnGroupChanging);
 		}
 		
 
@@ -70,13 +70,13 @@ namespace SharpReportCore {
 		
 		
 		private void OnSectionPrinting (object sender,SectionPrintingEventArgs e) {
-			System.Console.WriteLine("");
-			System.Console.WriteLine("Begin Print <{0}> with  <{1}> Items ",e.Section.Name,
-			                         e.Section.Items.Count);
+//			System.Console.WriteLine("");
+//			System.Console.WriteLine("Begin Print <{0}> with  <{1}> Items ",e.Section.Name,
+//			                         e.Section.Items.Count);
 		}
 		
 		private void OnSectionPrinted (object sender,SectionPrintingEventArgs e) {
-			System.Console.WriteLine("Section Printed <{0}> ",e.Section.Name);
+//			System.Console.WriteLine("Section Printed <{0}> ",e.Section.Name);
 			
 		}
 		
@@ -121,7 +121,7 @@ namespace SharpReportCore {
 		
 		
 		private void DoPageEnd (ReportPageEventArgs rpea){
-			System.Console.WriteLine("\tDoPageEnd");
+//			System.Console.WriteLine("\tDoPageEnd");
 			base.PrintPageEnd(this,rpea);
 			base.MeasurePageEnd (rpea);
 			
@@ -156,7 +156,7 @@ namespace SharpReportCore {
 		}
 		
 		protected override void BeginPrintPage(object sender, ReportPageEventArgs rpea) {
-			System.Console.WriteLine("!!! Beginprintpage");
+//			System.Console.WriteLine("!!! BeginPrintpage");
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
@@ -206,7 +206,6 @@ namespace SharpReportCore {
 			while (this.dataNavigator.MoveNext()) {
 				this.dataNavigator.Fill (base.CurrentSection.Items);	
 				base.RenderSection (section,rpea);
-				
 				section.SectionOffset = section.SectionOffset + section.Size.Height  + 2 * base.Gap;
 				
 				base.FitSectionToItems (base.CurrentSection,rpea);

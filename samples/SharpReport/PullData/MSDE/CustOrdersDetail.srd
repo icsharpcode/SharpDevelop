@@ -12,7 +12,7 @@
          </params>
       </SqlParams>
       <ReportType value="DataReport"/>
-      <CommandText value="update CustOrdersDetail"/>
+      <CommandText value="CustOrdersDetail"/>
       <CommandType value="StoredProcedure"/>
       <DataModel value="PullData"/>
       <DefaultFont value="Microsoft Sans Serif, 16pt"/>

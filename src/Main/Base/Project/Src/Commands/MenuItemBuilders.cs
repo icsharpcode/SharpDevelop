@@ -104,15 +104,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 			Process p = (Process)sender;
 			string output = p.StandardOutput.ReadToEnd();
 			
-			TaskService.BuildMessageViewCategory.AppendText(Environment.NewLine + "Exited with code:" + p.ExitCode + Environment.NewLine);
+			TaskService.BuildMessageViewCategory.AppendText(output + Environment.NewLine + "${res:XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode} " + p.ExitCode + Environment.NewLine);
 		}
 		
 		void ToolEvt(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
-			
-			
-			
 			
 			for (int i = 0; i < ToolLoader.Tool.Count; ++i) {
 				if (item.Text == ToolLoader.Tool[i].ToString()) {
@@ -149,6 +146,16 @@ namespace ICSharpCode.SharpDevelop.Commands
 					string command = StringParser.Parse(tool.Command);
 					string args    = StringParser.Parse(tool.Arguments);
 					
+					if (tool.PromptForArguments) {
+						InputBox box = new InputBox();
+						box.Text = tool.MenuCommand;
+						box.Label.Text = ResourceService.GetString("XML.MainMenu.ToolMenu.ExternalTools.EnterArguments");
+						box.TextBox.Text = args;
+						if (box.ShowDialog() != DialogResult.OK)
+							return;
+						args = box.TextBox.Text;
+					}
+					
 					try {
 						ProcessStartInfo startinfo;
 						if (args == null || args.Length == 0 || args.Trim('"', ' ').Length == 0) {
@@ -170,7 +177,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						}
 						process.Start();
 					} catch (Exception ex) {
-						MessageService.ShowError("External program execution failed.\nError while starting:\n '" + command + " " + args + "'\n" + ex.Message);
+						MessageService.ShowError("${res:XML.MainMenu.ToolMenu.ExternalTools.ExecutionFailed} '" + command + " " + args + "'\n" + ex.Message);
 					}
 					break;
 				}

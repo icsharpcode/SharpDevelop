@@ -49,13 +49,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override string CategoryName {
 			get {
-				return "Interface implementation";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.ImplementInterface}";
 			}
 		}
 		
 		public override string Hint {
 			get {
-				return "Choose interfaces to implement";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.ImplementInterface.Hint}";
 			}
 		}
 		

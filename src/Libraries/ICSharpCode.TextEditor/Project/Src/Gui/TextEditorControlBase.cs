@@ -59,6 +59,8 @@ namespace ICSharpCode.TextEditor
 		/// <value>
 		/// Current file's character encoding
 		/// </value>
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public Encoding Encoding {
 			get {
 				if (encoding == null)

@@ -1820,6 +1820,10 @@ InvocationExpression<ref Expression pexpr>
 	"(" (. Point start = t.Location; .)
 	(	"Of"
 		TypeName<out type> (. if (type != null) typeParameters.Add(type); .)
+		{
+			","
+			TypeName<out type> (. if (type != null) typeParameters.Add(type); .)
+		}
 		")"
 		(
 			"." Identifier

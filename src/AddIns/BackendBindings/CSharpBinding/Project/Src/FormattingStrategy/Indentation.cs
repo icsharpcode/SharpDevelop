@@ -321,7 +321,8 @@ namespace CSharpBinding.FormattingStrategy
 				// statement).
 				if (!oldBlock.Continuation && !oldBlock.OneLineBlock &&
 				    oldBlock.StartLine == block.StartLine &&
-				    block.StartLine < doc.LineNumber && lastRealChar != ':') {
+				    block.StartLine < doc.LineNumber && lastRealChar != ':')
+				{
 					// use indent StringBuilder to get the indentation of the current line
 					indent.Length = 0;
 					line = doc.Text; // get untrimmed line
@@ -329,6 +330,11 @@ namespace CSharpBinding.FormattingStrategy
 						if (!Char.IsWhiteSpace(line[i]))
 							break;
 						indent.Append(line[i]);
+					}
+					// /* */ multiline comments have an extra space - do not count it
+					// for the block's indentation.
+					if (startInComment && indent.Length > 0 && indent[indent.Length - 1] == ' ') {
+						indent.Length -= 1;
 					}
 					block.InnerIndent = indent.ToString();
 				}

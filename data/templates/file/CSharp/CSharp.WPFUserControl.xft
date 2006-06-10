@@ -9,7 +9,7 @@
 		  defaultname = "UserControl${Number}.xaml"
 		  language    = "C#"/>
 	 
-	<Description>A WinFX Custom Control</Description>
+	<Description>${res:Templates.File.WinFXUserControl.Description}</Description>
 	
 	<!-- 
 	Special new file templates:

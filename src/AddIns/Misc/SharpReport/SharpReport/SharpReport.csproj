@@ -62,8 +62,6 @@
     <Compile Include="Designer\VisualControls\ReportTextControl.cs" />
     <Compile Include="Designer\Factories.cs" />
     <Compile Include="Designer\IDesignable.cs" />
-    <Compile Include="Designer\IDesignerVisitor.cs" />
-    <Compile Include="Designer\IVisitor.cs" />
     <Compile Include="Designer\NameService.cs" />
     <Compile Include="Designer\Report.cs" />
     <Compile Include="Designer\XmlHelpers.cs" />
@@ -76,7 +74,6 @@
     <Compile Include="ReportItems\TextBased\ItemsHelper.cs" />
     <Compile Include="ReportItems\TextBased\ReportDataItem.cs" />
     <Compile Include="ReportItems\TextBased\ReportTextItem.cs" />
-    <Compile Include="Visitors\AbstractVisitor.cs" />
     <Compile Include="Visitors\LoadReportVisitor.cs" />
     <Compile Include="Visitors\SaveReportVisitor.cs" />
     <Compile Include="AutoReport.cs" />
@@ -90,6 +87,9 @@
     <Compile Include="Designer\VisualControls\ReportRowControl.cs" />
     <Compile Include="ReportItems\TextBased\ReportRowItem.cs" />
     <Compile Include="Designer\VisualControls\ControlHelper.cs" />
+    <Compile Include="Designer\VisualControls\RectTracker.cs" />
+    <Compile Include="Designer\VisualControls\ContainerControl.cs" />
+    <Compile Include="Designer\VisualControls\ITracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Designer" />

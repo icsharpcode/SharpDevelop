@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			foreach (CodeGeneratorBase codeGenerator in codeGenerators) {
 				if (codeGenerator.IsActive) {
-					ListViewItem newItem = new ListViewItem(codeGenerator.CategoryName);
+					ListViewItem newItem = new ListViewItem(StringParser.Parse(codeGenerator.CategoryName));
 					newItem.ImageIndex = codeGenerator.ImageIndex;
 					newItem.Tag        = codeGenerator;
 					categoryListView.Items.Add(newItem);
@@ -124,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				return;
 			}
 			
-			statusLabel.Text = codeGenerator.Hint;
+			statusLabel.Text = StringParser.Parse(codeGenerator.Hint);
 			selectionListBox.BeginUpdate();
 			selectionListBox.Items.Clear();
 			if (codeGenerator.Content.Count > 0) {
@@ -217,7 +217,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			this.statusLabel.Name = "statusLabel";
 			this.statusLabel.Size = new System.Drawing.Size(262, 16);
 			this.statusLabel.TabIndex = 1;
-			this.statusLabel.Text = "Choose fields to generate getters and setters";
+			this.statusLabel.Text = "statusLabel";
 			this.statusLabel.UseCompatibleTextRendering = true;
 			// 
 			// categoryListView

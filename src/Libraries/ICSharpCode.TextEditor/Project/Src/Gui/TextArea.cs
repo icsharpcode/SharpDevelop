@@ -506,7 +506,7 @@ namespace ICSharpCode.TextEditor
 			}
 			
 			if (adjustScrollBars) {
-				this.motherTextAreaControl.AdjustScrollBars(null, null);
+				this.motherTextAreaControl.AdjustScrollBars();
 			}
 			
 			Caret.UpdateCaretPosition();
@@ -516,7 +516,7 @@ namespace ICSharpCode.TextEditor
 		void DocumentFoldingsChanged(object sender, EventArgs e)
 		{
 			Invalidate();
-			this.motherTextAreaControl.AdjustScrollBars(null, null);
+			this.motherTextAreaControl.AdjustScrollBars();
 		}
 		
 		#region keyboard handling methods

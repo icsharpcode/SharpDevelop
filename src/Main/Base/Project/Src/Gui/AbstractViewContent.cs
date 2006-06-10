@@ -185,8 +185,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return isDirty;
 			}
 			set {
-				isDirty = value;
-				OnDirtyChanged(EventArgs.Empty);
+				if (isDirty != value) {
+					isDirty = value;
+					OnDirtyChanged(EventArgs.Empty);
+				}
 			}
 		}
 		bool   isDirty  = false;

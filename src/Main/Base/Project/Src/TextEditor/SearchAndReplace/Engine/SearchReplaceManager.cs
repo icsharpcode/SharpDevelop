@@ -102,11 +102,7 @@ namespace SearchAndReplace
 		public static void MarkAll()
 		{
 			SetSearchOptions();
-			TextEditorControl textArea = null;
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				textArea = ((ITextEditorControlProvider)WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent).TextEditorControl;
-				textArea.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
-			}
+			ClearSelection();
 			find.Reset();
 			if (!find.SearchStrategy.CompilePattern())
 				return;
@@ -190,39 +186,39 @@ namespace SearchAndReplace
 		public static void ReplaceAll()
 		{
 			SetSearchOptions();
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
-				if (provider != null) {
-					provider.TextEditorControl.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
-				}
-			}
+			ClearSelection();
 			find.Reset();
 			if (!find.SearchStrategy.CompilePattern())
 				return;
 			
 			List<TextEditorControl> textAreas = new List<TextEditorControl>();
+			TextEditorControl textArea = null;
 			for (int count = 0;; count++) {
 				SearchResult result = SearchReplaceManager.find.FindNext();
 				
 				if (result == null) {
 					if (count != 0) {
-						foreach (TextEditorControl textArea in textAreas) {
-							textArea.EndUpdate();
-							textArea.Refresh();
+						foreach (TextEditorControl ta in textAreas) {
+							ta.EndUpdate();
+							ta.Refresh();
 						}
 					}
 					ShowReplaceDoneMessage(count);
 					find.Reset();
 					return;
 				} else {
-					TextEditorControl textArea = OpenTextArea(result.FileName);
-					if (textArea != null) {
-						if (!textAreas.Contains(textArea)) {
-							textArea.BeginUpdate();
-							textArea.ActiveTextAreaControl.TextArea.SelectionManager.SelectionCollection.Clear();
-							textAreas.Add(textArea);
+					if (textArea == null || textArea.FileName != result.FileName) {
+						// we need to open another text area
+						textArea = OpenTextArea(result.FileName);
+						if (textArea != null) {
+							if (!textAreas.Contains(textArea)) {
+								textArea.BeginUpdate();
+								textArea.ActiveTextAreaControl.TextArea.SelectionManager.SelectionCollection.Clear();
+								textAreas.Add(textArea);
+							}
 						}
-						
+					}
+					if (textArea != null) {
 						string transformedPattern = result.TransformReplacePattern(SearchOptions.ReplacePattern);
 						find.Replace(result.Offset, result.Length, transformedPattern);
 						if (find.CurrentDocumentInformation.Document == null) {
@@ -280,7 +276,7 @@ namespace SearchAndReplace
 				return;
 			}
 			
-			TextEditorControl textArea = null;;
+			TextEditorControl textArea = null;
 			while (textArea == null) {
 				SearchResult result = find.FindNext();
 				if (result == null) {
@@ -381,6 +377,16 @@ namespace SearchAndReplace
 				return textEditorProvider.TextEditorControl;
 			}
 			return null;
+		}
+		
+		static void ClearSelection()
+		{
+			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
+				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
+				if (provider != null) {
+					provider.TextEditorControl.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
+				}
+			}
 		}
 	}
 }

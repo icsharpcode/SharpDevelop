@@ -63,6 +63,15 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void MoveImportsStatement()
+		{
+			TestProgram("namespace test { using SomeNamespace; }",
+			            "Imports SomeNamespace\r\n" +
+			            "Namespace test\r\n" +
+			            "End Namespace\r\n");
+		}
+		
+		[Test]
 		public void ForWithUnknownConditionAndSingleStatement()
 		{
 			TestStatement("for (i = 0; unknownCondition; i++) b[i] = s[i];",
@@ -226,6 +235,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void StaticConstructor()
+		{
+			TestMember("static tmp1() { }",
+			           "Shared Sub New()\nEnd Sub");
+		}
+		
+		[Test]
 		public void Destructor()
 		{
 			TestMember("~tmp1() { Dead(); }",
@@ -236,6 +252,17 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "\t\tMyBase.Finalize()\n" +
 			           "\tEnd Try\n" +
 			           "End Sub");
+		}
+		
+		[Test]
+		public void Indexer()
+		{
+			TestMember("public CategoryInfo this[int index] { get { return List[index] as CategoryInfo; } }",
+			           "Public Default ReadOnly Property Item(ByVal index As Integer) As CategoryInfo\n" +
+			           "\tGet\n" +
+			           "\t\tReturn TryCast(List(index), CategoryInfo)\n" +
+			           "\tEnd Get\n" +
+			           "End Property");
 		}
 		
 		[Test]

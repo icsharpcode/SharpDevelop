@@ -14,9 +14,9 @@ using System.Collections.Generic;
 namespace ICSharpCode.TextEditor.Document
 {
 	/// <summary>
-	/// Description of MarkerStrategy.
+	/// Manages the list of markers and provides ways to retrieve markers for specific positions.
 	/// </summary>
-	public class MarkerStrategy
+	public sealed class MarkerStrategy
 	{
 		List<TextMarker> textMarker = new List<TextMarker>();
 		IDocument document;
@@ -29,7 +29,7 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public IEnumerable<TextMarker> TextMarker {
 			get {
-				return textMarker;
+				return textMarker.AsReadOnly();
 			}
 		}
 		
@@ -71,7 +71,7 @@ namespace ICSharpCode.TextEditor.Document
 				List<TextMarker> markers = new List<TextMarker>();
 				for (int i = 0; i < textMarker.Count; ++i) {
 					TextMarker marker = (TextMarker)textMarker[i];
-					if (marker.Offset <= offset && offset <= marker.Offset + marker.Length) {
+					if (marker.Offset <= offset && offset <= marker.EndOffset) {
 						markers.Add(marker);
 					}
 				}
@@ -82,14 +82,20 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public List<TextMarker> GetMarkers(int offset, int length)
 		{
+			int endOffset = offset + length - 1;
 			List<TextMarker> markers = new List<TextMarker>();
 			for (int i = 0; i < textMarker.Count; ++i) {
 				TextMarker marker = (TextMarker)textMarker[i];
-				if (marker.Offset <= offset && offset <= marker.Offset + marker.Length ||
-				    marker.Offset <= offset + length && offset + length <= marker.Offset + marker.Length ||
-				    offset <= marker.Offset && marker.Offset <= offset + length ||
-				    offset <= marker.Offset + marker.Length && marker.Offset + marker.Length <= offset + length
-				   ) {
+				if (// start in marker region
+				    marker.Offset <= offset && offset <= marker.EndOffset ||
+				    // end in marker region
+				    marker.Offset <= endOffset && endOffset <= marker.EndOffset ||
+				    // marker start in region
+				    offset <= marker.Offset && marker.Offset <= endOffset ||
+				    // marker end in region
+				    offset <= marker.EndOffset && marker.EndOffset <= endOffset
+				   )
+				{
 					markers.Add(marker);
 				}
 			}

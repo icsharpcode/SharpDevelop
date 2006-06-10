@@ -39,7 +39,6 @@ namespace SharpReportCore{
 		
 		
 		protected override int RenderSection(BaseSection section, ReportPageEventArgs rpea){
-		
 			bool hasContainer = false;
 			IContainerItem container = null;
 			foreach (BaseReportItem item in section.Items) {
@@ -54,7 +53,7 @@ namespace SharpReportCore{
 			} else {
 				return base.RenderSection(section, rpea);
 			}
-			
+
 		}
 		
 		private int DoContainerControl (BaseSection section,
@@ -64,7 +63,6 @@ namespace SharpReportCore{
 			if (container == null) {
 				return section.Size.Height;
 			}
-			
 			this.DataNavigator.Fill(container.Items);
 			Point drawPoint	= new Point(0,0);
 			if (section.Visible){
@@ -81,10 +79,8 @@ namespace SharpReportCore{
 					
 				}
 				if ((section.CanGrow == false)&& (section.CanShrink == false)) {
-					return section.Size.Height;
-					
-				}
-				
+					return section.Size.Height;					
+				}				
 				return drawPoint.Y;
 			}
 			return drawPoint.Y;

@@ -19,13 +19,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override string CategoryName {
 			get {
-				return "Getter and Setter";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.GetterAndSetter}";
 			}
 		}
 		
 		public override string Hint {
 			get {
-				return "Choose fields to generate getters and setters";
+				return "${res:ICSharpCode.SharpDevelop.CodeGenerator.GetterAndSetter.Hint}";
 			}
 		}
 		

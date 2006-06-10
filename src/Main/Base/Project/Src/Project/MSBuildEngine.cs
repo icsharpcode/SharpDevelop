@@ -159,7 +159,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (isRunning) {
 				CompilerResults results = new CompilerResults(null);
 				results.NativeCompilerReturnValue = -42;
-				results.Errors.Add(new CompilerError(null, 0, 0, null, "MSBuild is already running!"));
+				results.Errors.Add(new CompilerError(null, 0, 0, null, ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning")));
 				callback(results);
 			} else {
 				isRunning = true;
@@ -253,17 +253,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			void OnBuildStarted(object sender, BuildStartedEventArgs e)
 			{
-				AppendText("Build started.");
+				AppendText("${res:MainWindow.CompilerMessages.BuildStarted}");
 			}
 			
 			void OnBuildFinished(object sender, BuildFinishedEventArgs e)
 			{
 				if (e.Succeeded) {
-					AppendText("Build finished successfully.");
-					StatusBarService.SetMessage("Build finished successfully.");
+					AppendText("${res:MainWindow.CompilerMessages.BuildFinished}");
+					StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildFinished}");
 				} else {
-					AppendText("Build failed.");
-					StatusBarService.SetMessage("Build failed.");
+					AppendText("${res:MainWindow.CompilerMessages.BuildFailed}");
+					StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildFailed}");
 				}
 			}
 			
@@ -272,14 +272,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			void OnProjectStarted(object sender, ProjectStartedEventArgs e)
 			{
 				projectFiles.Push(e.ProjectFile);
-				StatusBarService.SetMessage("Building " + Path.GetFileNameWithoutExtension(e.ProjectFile) + "...");
+				StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildVerb} " + Path.GetFileNameWithoutExtension(e.ProjectFile) + "...");
 			}
 			
 			void OnProjectFinished(object sender, ProjectFinishedEventArgs e)
 			{
 				projectFiles.Pop();
 				if (projectFiles.Count > 0) {
-					StatusBarService.SetMessage("Building " + Path.GetFileNameWithoutExtension(projectFiles.Peek()) + "...");
+					StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildVerb} " + Path.GetFileNameWithoutExtension(projectFiles.Peek()) + "...");
 				}
 			}
 			
@@ -299,7 +299,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				activeTaskName = e.TaskName;
 				if (CompileTaskNames.Contains(e.TaskName.ToLowerInvariant())) {
-					AppendText("Compiling " + Path.GetFileNameWithoutExtension(e.ProjectFile));
+					AppendText("${res:MainWindow.CompilerMessages.CompileVerb} " + Path.GetFileNameWithoutExtension(e.ProjectFile));
 				}
 			}
 			

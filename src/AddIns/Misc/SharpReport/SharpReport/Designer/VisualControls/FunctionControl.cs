@@ -36,7 +36,6 @@ namespace SharpReport.Designer
 		{
 			base.OnPaint(pea);
 			base.DrawEdges (pea);
-			base.DrawDecorations(pea);
 			
 //			StringFormat f = base.StringFormat;
 //			f.Alignment = base.StringAlignment;

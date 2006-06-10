@@ -72,7 +72,7 @@ namespace SharpReport
 			                                                               bitmap);
 			tab.Items.Add (t);
 			
-			t = sideTab.SideTabItemFactory.CreateSideTabItem( "DataRow",
+			t = sideTab.SideTabItemFactory.CreateSideTabItem( ResourceService.GetString("SharpReport.Toolbar.DataRow"),
 			                                                 GlobalEnums.ReportItemType.ReportRowItem.ToString(),
 			                                                 ResourceService.GetBitmap("Icons.16x16.SharpQuery.Table"));
 			tab.Items.Add (t);
@@ -84,7 +84,7 @@ namespace SharpReport
 			
 			bitmap = ResourceService.GetIcon("Icons.16x16.ResourceEditor.bmp").ToBitmap();
 			
-			t = sideTab.SideTabItemFactory.CreateSideTabItem( "Image",
+			t = sideTab.SideTabItemFactory.CreateSideTabItem( ResourceService.GetString("SharpReport.Toolbar.Image"),
 			                                                 GlobalEnums.ReportItemType.ReportImageItem.ToString(),
 			                                                 bitmap);
 			tab.Items.Add (t);

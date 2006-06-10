@@ -6,12 +6,11 @@
 // </file>
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Core
 {
@@ -126,6 +125,17 @@ namespace ICSharpCode.Core
 			} else {
 				throw new ApplicationException("Can't create display binding for language " + language);
 			}
+		}
+		
+		public static IList<string> GetOpenFiles()
+		{
+			List<string> fileNames = new List<string>();
+			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
+				string contentName = content.IsUntitled ? content.UntitledName : content.FileName;
+				if (contentName != null)
+					fileNames.Add(contentName);
+			}
+			return fileNames;
 		}
 		
 		public static IWorkbenchWindow GetOpenFile(string fileName)

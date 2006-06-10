@@ -43,7 +43,7 @@ namespace ICSharpCode.XmlEditor
 				dialog.AddExtension = true;
 				dialog.Multiselect = false;
 				dialog.CheckFileExists = true;
-				dialog.Title = "Assign XSLT Stylesheet";
+				dialog.Title = ResourceService.GetString("ICSharpCode.XmlEditor.AssignXSLT.Title");
 				
 				AddInTreeNode node = AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter");
 				if (node != null) {

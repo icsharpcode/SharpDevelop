@@ -42,68 +42,24 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public CodeCompileUnit codeCompileUnit   = new CodeCompileUnit();
 		
-		static string[,] typeConversionList = new string[,] {
-			{"System.Void",    "void"},
-			{"System.Object",  "object"},
-			{"System.Boolean", "bool"},
-			{"System.Byte",    "byte"},
-			{"System.SByte",   "sbyte"},
-			{"System.Char",    "char"},
-			{"System.Enum",    "enum"},
-			{"System.Int16",   "short"},
-			{"System.Int32",   "int"},
-			{"System.Int64",   "long"},
-			{"System.UInt16",  "ushort"},
-			{"System.UInt32",  "uint"},
-			{"System.UInt64",  "ulong"},
-			{"System.Single",  "float"},
-			{"System.Double",  "double"},
-			{"System.Decimal", "decimal"},
-			{"System.String",  "string"}
-		};
-		
-		static string[,] typeConversionListVB = new string[,] {
-			{"System.Object",	"OBJECT"},
-			{"System.Boolean",	"BOOLEAN"},
-			{"System.Byte",		"BYTE"},
-			{"System.Char",		"CHAR"},
-			{"System.Int16",	"SHORT"},
-			{"System.Int32",	"INTEGER"},
-			{"System.Int64",	"LONG"},
-			{"System.Single",	"SINGLE"},
-			{"System.Double",	"DOUBLE"},
-			{"System.Decimal",	"DECIMAL"},
-			{"System.String",	"STRING"},
-			{"System.DateTime",	"DATE"}
-		};
-		
-		static Hashtable typeConversionTable   = new Hashtable();
-		static Hashtable typeConversionTableVB = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-		
-		static CodeDOMVisitor()
-		{
-			for (int i = 0; i < typeConversionList.GetLength(0); ++i) {
-				typeConversionTable[typeConversionList[i, 1]] = typeConversionList[i, 0];
-			}
-			
-			for (int i = 0; i < typeConversionListVB.GetLength(0); ++i) {
-				typeConversionTableVB[typeConversionListVB[i, 1]] = typeConversionListVB[i, 0];
-			}
-		}
-		
-		string ConvType(string type)
+		CodeTypeReference ConvType(TypeReference type)
 		{
 			if (type == null) {
-				return null;
+				throw new ArgumentNullException("type");
+			}
+			if (type.SystemType == "") {
+				throw new InvalidOperationException("empty type");
 			}
 			
-			if (typeConversionTable[type] != null) {
-				return typeConversionTable[type].ToString();
+			CodeTypeReference t = new CodeTypeReference(type.SystemType);
+			foreach (TypeReference gt in type.GenericTypes) {
+				t.TypeArguments.Add(ConvType(gt));
 			}
-			if (typeConversionTableVB[type] != null) {
-				return typeConversionTableVB[type].ToString();
+			if (type.IsArrayType) {
+				t = new CodeTypeReference(t, type.RankSpecifier.Length);
 			}
-			return type;
+			
+			return t;
 		}
 		
 		void AddStmt(CodeStatement stmt)
@@ -257,9 +213,9 @@ namespace ICSharpCode.NRefactory.Parser
 				if ((fieldDeclaration.Modifier & Modifier.WithEvents) != 0) {
 					//this.withEventsFields.Add(field);
 				}
-				string typeString = fieldDeclaration.GetTypeForField(i).Type;
+				TypeReference fieldType = fieldDeclaration.GetTypeForField(i);
 				
-				CodeMemberField memberField = new CodeMemberField(new CodeTypeReference(ConvType(typeString)), field.Name);
+				CodeMemberField memberField = new CodeMemberField(ConvType(fieldType), field.Name);
 				memberField.Attributes = ConvMemberAttributes(fieldDeclaration.Modifier);
 				if (!field.Initializer.IsNull) {
 					memberField.InitExpression = (CodeExpression)field.Initializer.AcceptVisitor(this, data);
@@ -322,34 +278,12 @@ namespace ICSharpCode.NRefactory.Parser
 			return exp;
 		}
 		
-		public string Convert(TypeReference typeRef)
-		{
-			StringBuilder builder = new StringBuilder();
-			builder.Append(ConvType(typeRef.Type));
-			
-			for (int i = 0; i < typeRef.PointerNestingLevel; ++i) {
-				builder.Append('*');
-			}
-			
-			if (typeRef.RankSpecifier != null) {
-				for (int i = 0; i < typeRef.RankSpecifier.Length; ++i) {
-					builder.Append('[');
-					for (int j = 1; j < typeRef.RankSpecifier[i]; ++j) {
-						builder.Append(',');
-					}
-					builder.Append(']');
-				}
-			}
-			
-			return builder.ToString();
-		}
-		
 		public override object Visit(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
 			CodeVariableDeclarationStatement declStmt = null;
 			
 			for (int i = 0; i < localVariableDeclaration.Variables.Count; ++i) {
-				CodeTypeReference type = new CodeTypeReference(Convert(localVariableDeclaration.GetTypeForVariable(i)));
+				CodeTypeReference type = ConvType(localVariableDeclaration.GetTypeForVariable(i));
 				VariableDeclaration var = (VariableDeclaration)localVariableDeclaration.Variables[i];
 				if (!var.Initializer.IsNull) {
 					declStmt = new CodeVariableDeclarationStatement(type,
@@ -786,12 +720,12 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public override object Visit(TypeOfExpression typeOfExpression, object data)
 		{
-			return new CodeTypeOfExpression(ConvType(typeOfExpression.TypeReference.Type));
+			return new CodeTypeOfExpression(ConvType(typeOfExpression.TypeReference));
 		}
 		
 		public override object Visit(CastExpression castExpression, object data)
 		{
-			string typeRef = ConvType(castExpression.CastTo.Type);
+			CodeTypeReference typeRef = ConvType(castExpression.CastTo);
 			return new CodeCastExpression(typeRef, (CodeExpression)castExpression.Expression.AcceptVisitor(this, data));
 		}
 		
@@ -813,22 +747,22 @@ namespace ICSharpCode.NRefactory.Parser
 		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			if (arrayCreateExpression.ArrayInitializer == null) {
-				return new CodeArrayCreateExpression(ConvType(arrayCreateExpression.CreateType.Type),
+				return new CodeArrayCreateExpression(ConvType(arrayCreateExpression.CreateType),
 				                                     arrayCreateExpression.Arguments[0].AcceptVisitor(this, data) as CodeExpression);
 			}
-			return new CodeArrayCreateExpression(ConvType(arrayCreateExpression.CreateType.Type),
+			return new CodeArrayCreateExpression(ConvType(arrayCreateExpression.CreateType),
 			                                     GetExpressionList(arrayCreateExpression.ArrayInitializer.CreateExpressions));
 		}
 		
 		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			return new CodeObjectCreateExpression(ConvType(objectCreateExpression.CreateType.Type),
+			return new CodeObjectCreateExpression(ConvType(objectCreateExpression.CreateType),
 			                                      objectCreateExpression.Parameters == null ? null : GetExpressionList(objectCreateExpression.Parameters));
 		}
 		
 		public override object Visit(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
-			return new CodeParameterDeclarationExpression(new CodeTypeReference(ConvType(parameterDeclarationExpression.TypeReference.Type)), parameterDeclarationExpression.ParameterName);
+			return new CodeParameterDeclarationExpression(ConvType(parameterDeclarationExpression.TypeReference), parameterDeclarationExpression.ParameterName);
 		}
 		
 		bool IsField(string type, string fieldName)

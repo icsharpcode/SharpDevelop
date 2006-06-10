@@ -2,7 +2,7 @@
   <System.Windows.Forms.Form>
     <Name value="GroupsForm" />
     <FormBorderStyle value="SizableToolWindow" />
-    <Text value="Groups" />
+    <Text value="${res:RegExpTk.MainDialog.GroupsColumn}" />
     <ClientSize value="{Width=460, Height=222}" />
     <Controls>
       <System.Windows.Forms.Button>

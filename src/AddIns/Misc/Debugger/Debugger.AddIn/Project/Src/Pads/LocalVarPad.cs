@@ -57,11 +57,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			RedrawContent();
 		}
 		
+		static string privateMembersName, staticMembersName, privateStaticMembersName;
+		
 		public override void RedrawContent()
 		{
 			name.Text = ResourceService.GetString("Global.Name");
 			val.Text  = ResourceService.GetString("Dialog.HighlightingEditor.Properties.Value");
 			type.Text = ResourceService.GetString("ResourceEditor.ResourceEdit.TypeColumn");
+			
+			privateMembersName = StringParser.Parse("<${res:MainWindow.Windows.Debug.LocalVariables.PrivateMembers}>");
+			staticMembersName = StringParser.Parse("<${res:MainWindow.Windows.Debug.LocalVariables.StaticMembers}>");
+			privateStaticMembersName = StringParser.Parse("<${res:MainWindow.Windows.Debug.LocalVariables.PrivateStaticMembers}>");
 		}
 		
 		// This is a walkarond for a visual issue
@@ -88,9 +94,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public static void AddVariableCollectionToTree(VariableCollection varCollection, TreeListViewItemCollection tree)
 		{
-			TreeListViewItem privateInstanceMenu = new TreeListViewItem("<Private Members>", 0);
-			TreeListViewItem staticMenu = new TreeListViewItem("<Static Members>", 0);
-			TreeListViewItem privateStaticMenu = new TreeListViewItem("<Private Static Members>", 0);
+			TreeListViewItem privateInstanceMenu = new TreeListViewItem(privateMembersName, 0);
+			TreeListViewItem staticMenu = new TreeListViewItem(staticMembersName, 0);
+			TreeListViewItem privateStaticMenu = new TreeListViewItem(privateStaticMembersName, 0);
 			
 			AddVariableMethod addVariable = delegate(Variable variable) {
 				ClassVariable classVariable = variable as ClassVariable;
@@ -146,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					((TreeListViewDebuggerItem)e.Item).BeforeExpand();
 				}
 			} else {
-				MessageBox.Show("You can not explore variables while the debuggee is running.");
+				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.LocalVariables.CannotExploreVariablesWhileRunning}");
 				e.Cancel = true;
 			}
 		}

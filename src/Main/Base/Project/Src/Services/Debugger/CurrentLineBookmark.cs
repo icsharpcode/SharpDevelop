@@ -48,10 +48,9 @@ namespace ICSharpCode.Core
 			endColumn   = makerEndColumn;
 			
 			LineSegment line = document.GetLineSegment(startLine - 1);
-			int offset = line.Offset + startColumn;
 			instance = new CurrentLineBookmark(fileName, document, startLine - 1);
 			document.BookmarkManager.AddMark(instance);
-			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, startLine - 1));
+			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.LinesBetween, startLine - 1, endLine - 1));
 			document.CommitUpdate();
 		}
 		
@@ -84,7 +83,7 @@ namespace ICSharpCode.Core
 		protected override TextMarker CreateMarker()
 		{
 			LineSegment lineSeg = Document.GetLineSegment(startLine - 1);
-			TextMarker marker = new TextMarker(lineSeg.Offset + startColumn, endColumn - startColumn, TextMarkerType.SolidBlock, Color.Yellow, Color.Blue);
+			TextMarker marker = new TextMarker(lineSeg.Offset + startColumn - 1, Math.Max(endColumn - startColumn, 1), TextMarkerType.SolidBlock, Color.Yellow, Color.Blue);
 			Document.MarkerStrategy.InsertMarker(0, marker);
 			return marker;
 		}

@@ -9,7 +9,7 @@
 		  defaultname = "Window${Number}.xaml"
 		  language    = "C#"/>
 	 
-	<Description>A WinFX Window</Description>
+	<Description>${res:Templates.File.WinFXWindow.Description}</Description>
 	
 	<!-- 
 	Special new file templates:

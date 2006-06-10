@@ -60,8 +60,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			foreach (string ext in exts) {
 				extensions.Add(ext);
 			}
-			foreach (XmlElement childElement in el.ChildNodes) {
-				templates.Add(new CodeTemplate(childElement));
+			foreach (XmlNode childNode in el.ChildNodes) {
+				XmlElement childElement = childNode as XmlElement;
+				if (childElement != null) {
+					templates.Add(new CodeTemplate(childElement));
+				}
 			}
 		}
 		

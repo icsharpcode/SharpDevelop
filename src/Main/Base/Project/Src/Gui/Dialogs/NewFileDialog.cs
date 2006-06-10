@@ -310,9 +310,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 						StringParser.Properties["Number"] = curNumber.ToString();
 						string fileName = StringParser.Parse(SelectedTemplate.DefaultName);
 						if (allowUntitledFiles) {
-							if (!FileService.IsOpen(fileName)) {
-								break;
+							bool found = false;
+							foreach (string openFile in FileService.GetOpenFiles()) {
+								if (Path.GetFileName(openFile) == fileName) {
+									found = true;
+									break;
+								}
 							}
+							if (found == false)
+								break;
 						} else if (!File.Exists(Path.Combine(basePath, fileName))) {
 							break;
 						}

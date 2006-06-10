@@ -28,6 +28,29 @@ namespace ICSharpCode.NRefactory.Parser
 		//   Conflicting field/property names -> m_field
 		//   Anonymous methods are put into new methods
 		//   Simple event handler creation is replaced with AddressOfExpression
+		//   Move Imports-statements out of namespaces
+		
+		List<INode> nodesToMoveToCompilationUnit = new List<INode>();
+		
+		public override object Visit(CompilationUnit compilationUnit, object data)
+		{
+			base.Visit(compilationUnit, data);
+			for (int i = 0; i < nodesToMoveToCompilationUnit.Count; i++) {
+				compilationUnit.Children.Insert(i, nodesToMoveToCompilationUnit[i]);
+				nodesToMoveToCompilationUnit[i].Parent = compilationUnit;
+			}
+			return null;
+		}
+		
+		public override object Visit(UsingDeclaration usingDeclaration, object data)
+		{
+			base.Visit(usingDeclaration, data);
+			if (usingDeclaration.Parent is NamespaceDeclaration) {
+				nodesToMoveToCompilationUnit.Add(usingDeclaration);
+				RemoveCurrentNode();
+			}
+			return null;
+		}
 		
 		TypeDeclaration currentType;
 		
@@ -261,7 +284,8 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public override object Visit(ConstructorDeclaration constructorDeclaration, object data)
 		{
-			if ((constructorDeclaration.Modifier & Modifier.Visibility) == 0)
+			// make constructor private if visiblity is not set (unless constructor is static)
+			if ((constructorDeclaration.Modifier & (Modifier.Visibility | Modifier.Static)) == 0)
 				constructorDeclaration.Modifier |= Modifier.Private;
 			return base.Visit(constructorDeclaration, data);
 		}

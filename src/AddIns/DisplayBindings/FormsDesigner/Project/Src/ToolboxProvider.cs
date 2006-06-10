@@ -124,7 +124,7 @@ namespace ICSharpCode.FormsDesigner
 					}
 				}
 			}
-			SideTabDesigner customTab = new CustomComponentsSideTab(SharpDevelopSideBar.SideBar, "Custom Components", toolboxService);
+			SideTabDesigner customTab = new CustomComponentsSideTab(SharpDevelopSideBar.SideBar, ResourceService.GetString("ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CustomComponents"), toolboxService);
 			customTab.ItemRemoved += SideTabItemRemoved;
 			customTab.ItemsExchanged += SideTabItemsExchanged;
 			SideTabs.Add(customTab);

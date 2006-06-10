@@ -84,7 +84,7 @@ namespace ReportGenerator{
 			}
 		}
 		
-		
+		/*
 		public class WriteXsdComplete : AbstractMenuCommand {
 			public override void Run() {
 				ResultPanel resultPanel = base.Owner as ResultPanel;
@@ -103,6 +103,26 @@ namespace ReportGenerator{
 				}
 				
 			}
+		}
+		 */
+	}
+	public class WriteXsdComplete : AbstractMenuCommand {
+		public override void Run() {
+			ResultPanel resultPanel = base.Owner as ResultPanel;
+			if (resultPanel != null) {
+				resultPanel.SaveXsdFile (false);
+			}
+			
+		}
+	}
+	
+	public class WriteXsdSchema : AbstractMenuCommand {
+		public override void Run() {
+			ResultPanel resultPanel = base.Owner as ResultPanel;
+			if (resultPanel != null) {
+				resultPanel.SaveXsdFile (true);
+			}
+			
 		}
 	}
 }

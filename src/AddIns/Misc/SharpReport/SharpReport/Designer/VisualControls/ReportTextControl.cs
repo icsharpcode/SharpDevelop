@@ -72,7 +72,6 @@ namespace SharpReport.Designer{
 			
 			base.OnPaint(pea);
 			base.DrawEdges (pea);
-			base.DrawDecorations(pea);
 
 			string str;
 			
@@ -91,7 +90,7 @@ namespace SharpReport.Designer{
 			this.textDrawer.DrawString (pea.Graphics,this.Text,this.Font,
 			                            new SolidBrush(this.ForeColor),(RectangleF)this.ClientRectangle,
 			                            this.stringTrimming,this.contentAlignment);
-			
+
 		}
 		
 		

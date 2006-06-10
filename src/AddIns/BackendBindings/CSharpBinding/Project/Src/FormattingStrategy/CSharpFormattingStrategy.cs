@@ -417,8 +417,8 @@ namespace CSharpBinding.FormattingStrategy
 						return IndentLine(textArea, lineNr) + "#endregion".Length;
 					}
 					
-					if (lineAbove.HighlightSpanStack != null && lineAbove.HighlightSpanStack.Count > 0) {
-						if (!((Span)lineAbove.HighlightSpanStack.Peek()).StopEOL) {	// case for /* style comments
+					if (lineAbove.HighlightSpanStack != null && !lineAbove.HighlightSpanStack.IsEmpty) {
+						if (!lineAbove.HighlightSpanStack.Peek().StopEOL) {	// case for /* style comments
 							int index = lineAboveText.IndexOf("/*");
 							if (index > 0) {
 								StringBuilder indentation = new StringBuilder(GetIndentation(textArea, lineNr - 1));

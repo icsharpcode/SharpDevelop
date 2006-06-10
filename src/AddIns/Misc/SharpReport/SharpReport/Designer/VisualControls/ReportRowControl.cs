@@ -20,9 +20,11 @@ namespace SharpReport.Designer{
 	/// Description of ReportTableControl.
 	/// </summary>
 
-	internal class ReportRowControl:ReportControlBase{
+	internal class ReportRowControl:ContainerControl{
+		
 		private RectangleShape shape = new RectangleShape();
 		private bool drawBorder;
+		
 		public ReportRowControl():base(){
 			InitializeComponent();
 			this.SetStyle(ControlStyles.DoubleBuffer |
@@ -42,7 +44,6 @@ namespace SharpReport.Designer{
 			base.OnPaint(pea);
 			base.DrawEdges (pea,
 			                new Rectangle(0,5,this.ClientSize.Width - 1,this.ClientSize.Height - 6) );
-			base.DrawDecorations(pea);
 			
 			if (this.drawBorder) {
 				shape.DrawShape (pea.Graphics,

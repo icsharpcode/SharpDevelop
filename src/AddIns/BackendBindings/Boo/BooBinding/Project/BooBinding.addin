@@ -26,7 +26,7 @@
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "Boo"
 		            insertbefore="AllFiles"
-		            name = "Boo Files (*.boo)"
+		            name = "${res:SharpDevelop.FileFilter.Boo} (*.boo)"
 		            extensions = "*.boo"/>
 	</Path>
 	

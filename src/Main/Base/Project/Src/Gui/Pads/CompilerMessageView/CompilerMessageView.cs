@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			set {
 				if (selectedCategory != value) {
 					selectedCategory = value;
-					textEditorControl.Text = (value < 0) ? "" : messageCategories[value].Text;
+					textEditorControl.Text = (value < 0) ? "" : StringParser.Parse(messageCategories[value].Text);
 					//textEditorControl.Refresh();
 					OnSelectedCategoryIndexChanged(EventArgs.Empty);
 				}
@@ -234,9 +234,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				SetText(category, category.Text);
 				SetUpdate(true);
 				textEditorControl.SelectionStart = textEditorControl.TextLength;
-				LoggingService.Debug("Replaced " + pendingAppendCalls + " appends with one set call");
+				if (LoggingService.IsDebugEnabled) {
+					LoggingService.Debug("Replaced " + pendingAppendCalls + " appends with one set call");
+				}
 				pendingAppendCalls = 0;
 			}
+			textEditorControl.Refresh();
 		}
 		
 		void AppendText(MessageViewCategory category, string fullText, string text)
@@ -298,7 +301,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				MessageViewCategory category = (MessageViewCategory)messageCategories[i];
 				if (category.Category == categoryName) {
 					selectedCategory = i;
-					textEditorControl.Text = text;
+					textEditorControl.Text = StringParser.Parse(text);
 					//textEditorControl.Refresh();
 					OnSelectedCategoryIndexChanged(EventArgs.Empty);
 					break;

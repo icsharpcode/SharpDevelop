@@ -219,6 +219,7 @@ namespace SharpReportCore {
 		
 		protected void DrawSingleItem (ReportPageEventArgs rpea,BaseReportItem item){
 			item.SuspendLayout();
+//			System.Console.WriteLine("\tDrawSingleItem {0}",item.Name);
 			item.FormatOutput -= new EventHandler<FormatOutputEventArgs> (FormatBaseReportItem);
 			item.FormatOutput += new EventHandler<FormatOutputEventArgs> (FormatBaseReportItem);
 			item.Render(rpea);
@@ -227,10 +228,11 @@ namespace SharpReportCore {
 	
 		// Called by FormatOutPutEvent of the BaseReportItem
 		void FormatBaseReportItem (object sender, FormatOutputEventArgs rpea) {
-//			System.Console.WriteLine("FormatBaseReportItem");
 			BaseDataItem baseDataItem = sender as BaseDataItem;
+			
 			if (baseDataItem != null) {
 				if (!String.IsNullOrEmpty(baseDataItem.FormatString)) {
+					
 					rpea.FormatedValue = defaultFormatter.FormatItem (baseDataItem);
 //					System.Console.WriteLine("\tFormated Value = {0}",rpea.FormatedValue);
 				} else {

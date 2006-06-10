@@ -40,7 +40,6 @@ namespace SharpReport.ReportItems {
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea) {
 			base.OnPaint (pea);
 			base.DrawEdges (pea);
-			base.DrawDecorations(pea);
 			
 			if (this.image != null) {
 				if (this.scaleImageToSize) {

@@ -2,7 +2,7 @@
 <Template author="Tom Schroeter" version="1.0">
 
 	<Config
-		name        = "ASP.NET Web Service"
+		name        = "${res:Templates.File.WebService.Name}"
 		icon        = "C#.File.NewClass"
 		category    = "C#"
 		subcategory = "ASP.NET"
@@ -10,7 +10,7 @@
 		language    = "C#"
 	/>
 
-	<Description>Component Frame for ASMX Web Service. Enter the name of a new service.</Description>
+	<Description>${res:Templates.File.WebService.Description}</Description>
 	<!--
 	Special new file templates:
 		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension

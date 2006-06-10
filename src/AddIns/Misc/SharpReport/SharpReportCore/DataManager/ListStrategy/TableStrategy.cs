@@ -92,8 +92,6 @@ namespace SharpReportCore {
 		
 		#region Grouping
 		
-		
-		
 		private void BuildGroup(){
 			try {
 				SharpIndexCollection groupedArray = new SharpIndexCollection();
@@ -168,15 +166,14 @@ namespace SharpReportCore {
 		public override void Bind() {
 			base.Bind();
 
-			if ((base.ReportSettings.GroupColumnsCollection != null) && (base.ReportSettings.GroupColumnsCollection.Count > 0)) {
+			if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
 				this.Group ();
 				Reset();
 				return;
 			}
 			
-			if (base.ReportSettings.SortColumnCollection != null) {
 				this.Sort ();
-			}
+
 			Reset();
 		}
 	
@@ -208,7 +205,7 @@ namespace SharpReportCore {
 			try {
 				base.Fill(item);
 				if (this.Current == null) {
-					System.Console.WriteLine("ow is null");
+					System.Console.WriteLine("row is null");
 				}
 				if (this.row != null) {
 					BaseDataItem baseDataItem = item as BaseDataItem;
@@ -239,6 +236,7 @@ namespace SharpReportCore {
 		public override int Count {
 			get {
 				return this.IndexList.Count;
+//				return this.view.Count;
 			}
 		}
 		

@@ -289,7 +289,7 @@ namespace ICSharpCode.FormsDesigner
 		public void ShowSourceCode(int lineNumber)
 		{
 			ShowSourceCode();
-			textAreaControlProvider.TextEditorControl.ActiveTextAreaControl.JumpTo(lineNumber, 255);
+			textAreaControlProvider.TextEditorControl.ActiveTextAreaControl.JumpTo(lineNumber - 1);
 		}
 		
 		public void ShowSourceCode(IComponent component, EventDescriptor edesc, string eventMethodName)
@@ -300,7 +300,7 @@ namespace ICSharpCode.FormsDesigner
 			if (FileUtility.IsEqualFileName(file, this.TextEditorControl.FileName)) {
 				ShowSourceCode(position);
 			} else {
-				FileService.JumpToFilePosition(file, position, 255);
+				FileService.JumpToFilePosition(file, position - 1, 0);
 			}
 		}
 		

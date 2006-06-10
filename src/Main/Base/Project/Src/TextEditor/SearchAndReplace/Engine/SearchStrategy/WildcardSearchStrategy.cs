@@ -114,7 +114,7 @@ namespace SearchAndReplace
 					case CommandType.AnySingle:
 						break;
 					case CommandType.AnyDigit:
-						if (!Char.IsDigit(ch)) {
+						if (!Char.IsDigit(ch) && ch != '#') {
 							return false;
 						}
 						break;

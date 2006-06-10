@@ -21,7 +21,7 @@ namespace SharpReport.Designer{
 	/// <summary>
 	/// Description of BaseDesignerControl.
 	/// </summary>
-	public class BaseDesignerControl : System.Windows.Forms.UserControl,SharpReport.Designer.IVisitor
+	public class BaseDesignerControl : UserControl,SharpReportCore.IVisitor
 	{
 		private SharpReport.Designer.Report reportControl;
 		private Ruler.ctrlRuler ctrlRuler1;
@@ -96,7 +96,7 @@ namespace SharpReport.Designer{
 		void ReportControlSizeChanged(object sender, System.EventArgs e){
 			this.ctrlRuler1.Width = reportControl.Width;
 			this.ctrlRuler1.Invalidate();
-			NotifyPropertyChanged(this.Name + "ReportControlSizeChanged");
+//			NotifyPropertyChanged(this.Name + "ReportControlSizeChanged");
 		}
 		
 		void ReportControlSectionChanged (object sender,SectionChangedEventArgs e) {
@@ -118,9 +118,12 @@ namespace SharpReport.Designer{
 		#endregion
 		
 		#region SharpReport.DelegatesInterfaces.IVisitor interface implementation
-		public void Accept(IDesignerVisitor visitor) {
-			visitor.Visit(this);
+
+		public void Accept(IModelVisitor visitor){
+			SharpReportCore.IModelVisitor v = visitor as SharpReportCore.IModelVisitor;
+			v.Visit(this);
 		}
+
 		#endregion
 		
 		

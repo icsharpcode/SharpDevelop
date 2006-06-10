@@ -41,7 +41,9 @@ namespace SharpReport.Designer
 		}
 		#endregion
 		
-		protected void OnControlChanged () {
+		
+		
+		public void NotifyControlChanged () {
 			if ( VisualControlChanged != null ) {
 				VisualControlChanged (this,EventArgs.Empty);
 			}

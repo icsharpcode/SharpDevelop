@@ -15,7 +15,7 @@
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "ILASM"
 		            insertbefore="AllFiles"
-		            name = "IL Files (*.il)"
+		            name = "${res:SharpDevelop.FileFilter.ILAsm} (*.il)"
 		            extensions = "*.il"/>
 	</Path>
 	

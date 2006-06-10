@@ -44,7 +44,7 @@
 		            extensions = "*.xml"/>
 		<FileFilter id = "Xsl"
 		            insertbefore="AllFiles"
-		            name = "XSL files (*.xsl;*.xslt)"
+		            name = "${res:SharpDevelop.FileFilter.XslFiles} (*.xsl;*.xslt)"
 		            extensions = "*.xsl;*.xslt"/>
 	</Path>
 	
@@ -65,7 +65,7 @@
 						<Condition name = "WindowActive" activewindow = "ICSharpCode.XmlEditor.XslOutputView"/>
 					</Not>
 					<MenuItem id="AssignStylesheet"
-					          label="&amp;Assign XSLT..."
+					          label="${res:ICSharpCode.XmlEditor.AssignXSLT}"
 					          class="ICSharpCode.XmlEditor.AssignStylesheetCommand"/>
 					<ComplexCondition action="Disable">
 						<!-- evaluate StylesheetAssigned only when XmlView is active - important for lazy loading! -->
@@ -74,11 +74,11 @@
 							<Condition name = "StylesheetAssigned" action="Disable"/>
 						</And>
 						<MenuItem id="OpenStylesheet"
-						          label="&amp;Open XSLT"
+						          label="${res:ICSharpCode.XmlEditor.OpenXSLT}"
 						          class="ICSharpCode.XmlEditor.OpenStylesheetCommand"/>
 					</ComplexCondition>
 					<MenuItem id="RunTransform"
-					          label="Run XSL&amp;T"
+					          label="${res:ICSharpCode.XmlEditor.RunXSLT}"
 					          class="ICSharpCode.XmlEditor.RunXslTransformCommand"
 					          shortcut="Control|Shift|T"/>
 				</ComplexCondition>

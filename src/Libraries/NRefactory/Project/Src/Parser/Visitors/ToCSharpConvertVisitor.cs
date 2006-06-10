@@ -23,8 +23,26 @@ namespace ICSharpCode.NRefactory.Parser
 	/// </summary>
 	public class ToCSharpConvertVisitor : AbstractAstTransformer
 	{
-		// The following conversions should be implemented in the future:
+		// The following conversions are implemented:
 		//   Public Event EventName(param As String) -> automatic delegate declaration
 		
+		public override object Visit(EventDeclaration eventDeclaration, object data)
+		{
+			if (!eventDeclaration.HasAddRegion && !eventDeclaration.HasRaiseRegion && !eventDeclaration.HasRemoveRegion) {
+				if (eventDeclaration.TypeReference.IsNull) {
+					DelegateDeclaration dd = new DelegateDeclaration(eventDeclaration.Modifier, null);
+					dd.Name = eventDeclaration.Name + "EventHandler";
+					dd.Parameters = eventDeclaration.Parameters;
+					dd.ReturnType = new TypeReference("System.Void");
+					dd.Parent = eventDeclaration.Parent;
+					eventDeclaration.Parameters = null;
+					int index = eventDeclaration.Parent.Children.IndexOf(eventDeclaration);
+					// inserting before current position is not allowed in a Transformer
+					eventDeclaration.Parent.Children.Insert(index + 1, dd);
+					eventDeclaration.TypeReference = new TypeReference(dd.Name);
+				}
+			}
+			return base.Visit(eventDeclaration, data);
+		}
 	}
 }

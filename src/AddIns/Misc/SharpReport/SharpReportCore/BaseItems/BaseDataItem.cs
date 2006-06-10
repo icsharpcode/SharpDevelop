@@ -68,6 +68,7 @@ namespace SharpReportCore {
 			string toPrint = CheckForNullValue();
 			
 			base.Text = base.FireFormatOutput(toPrint,this.FormatString,"");
+//			System.Console.WriteLine("\tBaseDataItem <{0}> / <{1}>",this.Name,this.Text);
 			base.Render (rpea);
 			
 		}

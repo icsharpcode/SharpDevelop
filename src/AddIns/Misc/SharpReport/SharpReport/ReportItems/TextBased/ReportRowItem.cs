@@ -45,6 +45,8 @@ namespace SharpReport.ReportItems
 			this.visualControl.FontChanged += new EventHandler (OnControlChanged);
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
 			this.visualControl.BackColorChanged += new EventHandler (OnAppereanceChanged);
+			//Event from Tracker
+			this.visualControl.PropertyChanged += new PropertyChangedEventHandler (ControlPropertyChange);
 			
 			base.PropertyChanged += new PropertyChangedEventHandler (BasePropertyChange);
 			
@@ -52,7 +54,7 @@ namespace SharpReport.ReportItems
 			base.Items.Removed += OnRemove;
 		}
 		#endregion
-		
+	
 		
 		#region Events for Childs
 		private void ChildSelected(object sender, EventArgs e){
@@ -104,7 +106,13 @@ namespace SharpReport.ReportItems
 				this.HandlePropertyChanged("OnChildControlRemoved");
 			}
 		}
+	
+		//Tracker
 		
+		private void ControlPropertyChange (object sender, PropertyChangedEventArgs e){
+			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+			this.HandlePropertyChanged(e.PropertyName);
+		}
 		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
 			ItemsHelper.UpdateControlFromTextBase (this.visualControl,this);

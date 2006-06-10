@@ -6,14 +6,13 @@
 // </file>
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.Project.Commands;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -545,14 +544,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				if (dataObject.GetDataPresent(typeof(FileNode))) {
 					FileOperationClipboardObject clipboardObject = (FileOperationClipboardObject)dataObject.GetData(typeof(FileNode).ToString());
-					return !FileUtility.IsEqualFileName(Directory, clipboardObject.FileName) && !FileUtility.IsEqualFileName(Directory, Path.GetDirectoryName(clipboardObject.FileName)) && File.Exists(clipboardObject.FileName);
+					return File.Exists(clipboardObject.FileName);
 				}
 				if (dataObject.GetDataPresent(typeof(DirectoryNode))) {
 					FileOperationClipboardObject clipboardObject = (FileOperationClipboardObject)dataObject.GetData(typeof(DirectoryNode).ToString());
 					if (FileUtility.IsBaseDirectory(clipboardObject.FileName, Directory)) {
 						return false;
 					}
-					return !FileUtility.IsEqualFileName(Directory, clipboardObject.FileName) && !FileUtility.IsEqualFileName(Directory, Path.GetDirectoryName(clipboardObject.FileName)) && System.IO.Directory.Exists(clipboardObject.FileName);
+					return System.IO.Directory.Exists(clipboardObject.FileName);
 				}
 				return false;
 			}
@@ -599,6 +598,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			AddExistingItemsToProject.CopyDirectory(fileName, this, true);
 			if (performMove) {
+				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
+					if (content.FileName != null &&
+					    FileUtility.IsBaseDirectory(fileName, content.FileName))
+					{
+						content.FileName = FileUtility.RenameBaseDirectory(content.FileName, fileName, Path.Combine(this.directory, Path.GetFileName(fileName)));
+					}
+				}
 				FileService.RemoveFile(fileName, true);
 			}
 		}
@@ -640,6 +646,14 @@ namespace ICSharpCode.SharpDevelop.Project
 					RecreateSubNodes();
 			}
 			if (performMove) {
+				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
+					if (content.FileName != null &&
+					    FileUtility.IsEqualFileName(content.FileName, fileName))
+					{
+						content.FileName  = copiedFileName;
+						content.TitleName = shortFileName;
+					}
+				}
 				FileService.RemoveFile(fileName, false);
 			}
 		}

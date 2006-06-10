@@ -31,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
+			preSelection = "";
 			
 			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.TextFileIcon"));
 			CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(fileName);

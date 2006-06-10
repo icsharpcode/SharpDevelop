@@ -347,7 +347,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		{
 			// Changes Shankar
 			FolderDialog fd = new FolderDialog();
-			if (fd.DisplayDialog("Select the directory in which the project will be created.") == DialogResult.OK) {
+			if (fd.DisplayDialog("${res:Dialog.NewProject.SelectDirectoryForProject}") == DialogResult.OK) {
 				((TextBox)ControlDictionary["locationTextBox"]).Text = fd.Path;
 			}
 			// End

@@ -40,19 +40,19 @@ namespace ICSharpCode.CodeCoverage
 			
 			if (sequencePoint.EndLine == sequencePoint.Line) {
 				LineSegment lineSegment = markerStrategy.Document.GetLineSegment(sequencePoint.Line - 1);
-				markerStrategy.AddMarker(new CodeCoverageTextMarker(lineSegment.Offset + sequencePoint.Column, sequencePoint));
+				markerStrategy.AddMarker(new CodeCoverageTextMarker(lineSegment.Offset + sequencePoint.Column - 1, sequencePoint));
 			} else {
 				// Sequence point spread across lines.
 				for (int line = sequencePoint.Line; line <= sequencePoint.EndLine; ++line) {
 					LineSegment lineSegment = markerStrategy.Document.GetLineSegment(line - 1);
 					if (line == sequencePoint.Line) {
 						// First line.
-						markerStrategy.AddMarker(new CodeCoverageTextMarker(lineSegment.Offset + sequencePoint.Column, lineSegment.Length - (lineSegment.DelimiterLength - 1) - sequencePoint.Column, sequencePoint));
+						markerStrategy.AddMarker(new CodeCoverageTextMarker(lineSegment.Offset + sequencePoint.Column - 1, lineSegment.Length - (sequencePoint.Column - 1), sequencePoint));
 					} else if (line == sequencePoint.EndLine) {
 						// Last line.
 						markerStrategy.AddMarker(new CodeCoverageTextMarker(lineSegment.Offset, sequencePoint.EndColumn - 1, sequencePoint));
 					} else {
-						markerStrategy.AddMarker(new CodeCoverageTextMarker(lineSegment.Offset, lineSegment.Length - (lineSegment.DelimiterLength - 1), sequencePoint));						
+						markerStrategy.AddMarker(new CodeCoverageTextMarker(lineSegment.Offset, lineSegment.Length, sequencePoint));						
 					}
 				}
 			}

@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -338,6 +339,32 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				OnSolutionSaved(new SolutionEventArgs(openSolution));
 			}
+		}
+		
+		/// <summary>
+		/// Returns a File Dialog filter that can be used to filter on all registered project formats
+		/// </summary>
+		public static string GetAllProjectsFilter(object caller)
+		{
+			AddInTreeNode addinTreeNode = AddInTree.GetTreeNode("/SharpDevelop/Workbench/Combine/FileFilter");
+			StringBuilder b = new StringBuilder(StringParser.Parse("${res:SharpDevelop.Solution.AllKnownProjectFormats}|"));
+			bool first = true;
+			foreach (Codon c in addinTreeNode.Codons) {
+				string ext = c.Properties.Get("extensions", "");
+				if (ext != "*.*" && ext.Length > 0) {
+					if (!first) {
+						b.Append(';');
+					} else {
+						first = false;
+					}
+					b.Append(ext);
+				}
+			}
+			foreach (string entry in addinTreeNode.BuildChildItems(caller)) {
+				b.Append('|');
+				b.Append(entry);
+			}
+			return b.ToString();
 		}
 		
 		static string GetPreferenceFileName(string projectFileName)

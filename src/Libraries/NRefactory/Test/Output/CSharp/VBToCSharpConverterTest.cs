@@ -125,6 +125,14 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void VBEvent()
+		{
+			TestMember("Friend Event CancelNow(ByVal a As String)",
+			           "internal event CancelNowEventHandler CancelNow;\n" +
+			           "internal delegate void CancelNowEventHandler(string a);");
+		}
+		
+		[Test]
 		public void StaticMethod()
 		{
 			TestMember("Shared Sub A()\nEnd Sub",
@@ -170,6 +178,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "public tmp1() : base(1)\n{\n}");
 			TestMember("Public Sub New()\n\tMe.New(1)\nEnd Sub",
 			           "public tmp1() : this(1)\n{\n}");
+		}
+		
+		[Test]
+		public void StaticConstructor()
+		{
+			TestMember("Shared Sub New()\nEnd Sub",
+			           "static tmp1()\n{\n}");
 		}
 		
 		[Test]
@@ -222,6 +237,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("Equals(a, b)",
 			              "Equals(a, b);");
+		}
+		
+		[Test]
+		public void Concatenation()
+		{
+			TestStatement("x = \"Hello \" & \"World\"",
+			              "x = \"Hello \" + \"World\";");
 		}
 		
 		[Test]

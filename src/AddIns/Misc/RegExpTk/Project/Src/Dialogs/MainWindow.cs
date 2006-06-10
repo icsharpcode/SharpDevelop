@@ -32,7 +32,7 @@ namespace Plugins.RegExpTk {
 			
 			public QuickInsert(string name, string text)
 			{
-				Name = name;
+				Name = StringParser.Parse(name);
 				Text = text;
 			}
 			
@@ -67,13 +67,14 @@ namespace Plugins.RegExpTk {
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.RegExpTkMainForm.xfrm"));
 			
 			ArrayList quickies = new ArrayList();
-			quickies.Add(new QuickInsert("Ungreedy star", "*?"));
-			quickies.Add(new QuickInsert("Word character value", "\\w"));
-			quickies.Add(new QuickInsert("Non-word character value", "\\W"));
-			quickies.Add(new QuickInsert("Whitespace character", "\\s"));
-			quickies.Add(new QuickInsert("Non-whitespace character", "\\S"));
-			quickies.Add(new QuickInsert("Digit character", "\\d"));
-			quickies.Add(new QuickInsert("Non-digit character", "\\D"));
+			quickies.Add(new QuickInsert("${res:RegExpTk.RegExpMenu.UngreedyStar}", "*?"));
+			quickies.Add(new QuickInsert("${res:RegExpTk.RegExpMenu.WordCharacter}", "\\w"));
+			quickies.Add(new QuickInsert("${res:RegExpTk.RegExpMenu.NonWordCharacter}", "\\W"));
+			quickies.Add(new QuickInsert("${res:RegExpTk.RegExpMenu.WhitespaceCharacter}", "\\s"));
+			quickies.Add(new QuickInsert("${res:RegExpTk.RegExpMenu.NonWhitespaceCharacter}", "\\S"));
+			quickies.Add(new QuickInsert("${res:RegExpTk.RegExpMenu.DigitCharacter}", "\\d"));
+			quickies.Add(new QuickInsert("${res:RegExpTk.RegExpMenu.NonDigitCharacter}", "\\D"));
+			quickies.Add(new QuickInsert("${res:RegExpTk.RegExpMenu.WordBorder}", "\\b"));
 			
 			foreach (QuickInsert insert in quickies) {
 				MenuCommand cmd = new MenuCommand(insert.Name, new EventHandler(quickInsert));
@@ -81,7 +82,7 @@ namespace Plugins.RegExpTk {
 				quickInsertMenu.Items.Add(cmd);
 			}
 			
-			matchListViewContextMenu.Items.Add(new MenuCommand("Show groups", new EventHandler(MatchListViewContextMenu_Clicked)));
+			matchListViewContextMenu.Items.Add(new MenuCommand("${res:RegExpTk.MainDialog.ShowGroups}", new EventHandler(MatchListViewContextMenu_Clicked)));
 			
 			((Button)ControlDictionary["OkButton"]).Click += new EventHandler(OkButton_Click);
 			((CheckBox)ControlDictionary["ReplaceCheckBox"]).CheckedChanged += new EventHandler(ReplaceCheckBox_CheckedChanged);
@@ -248,7 +249,7 @@ namespace Plugins.RegExpTk {
 			SaveFileDialog sfd = new SaveFileDialog();
 			
 			sfd.InitialDirectory = "c:\\";
-			sfd.Filter = "Assemblies (*.dll)|*.dll";
+			sfd.Filter = ResourceService.GetString("RegExpTk.MainDialog.Assemblies");
 			sfd.DefaultExt = "dll";
 			sfd.CheckPathExists = true;
 			

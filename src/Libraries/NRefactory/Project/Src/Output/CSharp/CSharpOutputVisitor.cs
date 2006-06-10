@@ -436,6 +436,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(DelegateDeclaration delegateDeclaration, object data)
 		{
 			VisitAttributes(delegateDeclaration.Attributes, data);
+			outputFormatter.Indent();
 			OutputModifier(delegateDeclaration.Modifier);
 			outputFormatter.PrintToken(Tokens.Delegate);
 			outputFormatter.Space();
@@ -1693,6 +1694,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
 			switch (binaryOperatorExpression.Op) {
 				case BinaryOperatorType.Add:
+				case BinaryOperatorType.Concat: // translate Concatenation to +
 					if (prettyPrintOptions.AroundAdditiveOperatorParentheses) {
 						outputFormatter.Space();
 					}

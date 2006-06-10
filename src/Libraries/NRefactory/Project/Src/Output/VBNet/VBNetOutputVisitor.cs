@@ -908,7 +908,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			outputFormatter.PrintToken(Tokens.Property);
 			outputFormatter.Space();
-			outputFormatter.PrintIdentifier("ConvertedIndexer");
+			outputFormatter.PrintIdentifier("Item");
 			
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			AppendCommaSeparatedList(indexerDeclaration.Parameters);
@@ -931,7 +931,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.End);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Property);
-			outputFormatter.Space();
 			outputFormatter.NewLine();
 			return null;
 		}

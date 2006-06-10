@@ -50,7 +50,7 @@ namespace ResourceEditor
 			
 			viewHexDumpCheckBox.Location = new Point(8, 4);
 			viewHexDumpCheckBox.Size = new Size(Width - 16, 16);
-			viewHexDumpCheckBox.Text = "Show as Hex Dump";
+			viewHexDumpCheckBox.Text = StringParser.Parse("${res:ResourceEditor.ResourceEdit.ShowAsHexDump}");
 			viewHexDumpCheckBox.CheckedChanged += new EventHandler(CheckEvt);
 			
 			Controls.Add(byteDataTextBox);

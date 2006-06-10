@@ -35,10 +35,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			if (project != null) {
 				LanguageBindingDescriptor languageCodon = LanguageBindingService.GetCodonPerLanguageName(project.Language);
-				for (int i = 0; i < fileFilters.Length; ++i) {
-					for (int j = 0; j < languageCodon.Supportedextensions.Length; ++j) {
-						if (fileFilters[i].ToUpperInvariant().IndexOf(languageCodon.Supportedextensions[j].ToUpperInvariant()) >= 0) {
-							return i + 1;
+				if (languageCodon != null) {
+					for (int i = 0; i < fileFilters.Length; ++i) {
+						for (int j = 0; j < languageCodon.Supportedextensions.Length; ++j) {
+							if (fileFilters[i].ToUpperInvariant().IndexOf(languageCodon.Supportedextensions[j].ToUpperInvariant()) >= 0) {
+								return i + 1;
+							}
 						}
 					}
 				}

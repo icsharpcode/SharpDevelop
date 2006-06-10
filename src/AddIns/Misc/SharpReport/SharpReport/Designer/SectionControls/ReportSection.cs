@@ -66,7 +66,7 @@ namespace SharpReport{
 				return this.visualControl;
 			}
 			set { this.visualControl = value;
-				this.visualControl.Body.Click += new EventHandler(VisualControlClick);
+				this.visualControl.Click += new EventHandler(VisualControlClick);
 				this.visualControl.Body.MouseDown += new MouseEventHandler (VisualControlMouseUp);
 			}
 		}

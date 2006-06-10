@@ -73,16 +73,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		void AddImplementInterfaceCommandItems(List<ToolStripItem> subItems, IClass c, bool explicitImpl, ModifierEnum modifier)
 		{
 			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
+			IAmbience ambience = AmbienceService.CurrentAmbience;
+			ambience.ConversionFlags = ConversionFlags.None;
 			foreach (IReturnType rt in c.BaseTypes) {
 				IClass interf = rt.GetUnderlyingClass();
 				if (interf != null && interf.ClassType == ClassType.Interface) {
+					IReturnType rtCopy = rt; // copy for access by anonymous method
 					EventHandler eh = delegate {
 						IDocument d = GetDocument(c);
 						if (d != null)
-							codeGen.ImplementInterface(rt, d, explicitImpl, modifier, c);
+							codeGen.ImplementInterface(rtCopy, d, explicitImpl, modifier, c);
 						ParserService.ParseCurrentViewContent();
 					};
-					subItems.Add(new MenuCommand(interf.Name, eh));
+					subItems.Add(new MenuCommand(ambience.Convert(interf), eh));
 				}
 			}
 		}

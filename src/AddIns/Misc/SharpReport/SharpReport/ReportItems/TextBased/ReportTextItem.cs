@@ -43,7 +43,11 @@ namespace SharpReport.ReportItems {
 			this.visualControl.BackColorChanged += new EventHandler (OnControlChanged);
 			this.visualControl.FontChanged += new EventHandler (OnControlChanged);
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
+			//Event from Tracker
+			this.visualControl.PropertyChanged += new PropertyChangedEventHandler (ControlPropertyChange);
+			
 			base.PropertyChanged += new PropertyChangedEventHandler (BasePropertyChange);
+			
 		}
 		
 		
@@ -52,9 +56,14 @@ namespace SharpReport.ReportItems {
 		
 		#region events
 		
+		//Tracker
+		private void ControlPropertyChange (object sender, PropertyChangedEventArgs e){
+			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+			this.HandlePropertyChanged(e.PropertyName);
+		}
+		
 		private void BasePropertyChange (object sender, PropertyChangedEventArgs e){
 			ItemsHelper.UpdateControlFromTextBase(this.visualControl,this);
-			
 			this.visualControl.ContentAlignment = base.ContentAlignment;
 			this.visualControl.StringTrimming = base.StringTrimming;
 			this.visualControl.DrawBorder = base.DrawBorder;
