@@ -309,7 +309,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			VisitAttributes(typeDeclaration.Attributes, data);
 			
 			outputFormatter.Indent();
-			OutputModifier(typeDeclaration.Modifier);
+			OutputModifier(typeDeclaration.Modifier, true);
 			
 			int typeToken = GetTypeToken(typeDeclaration);
 			outputFormatter.PrintToken(typeToken);
@@ -330,13 +330,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			outputFormatter.NewLine();
+			++outputFormatter.IndentationLevel;
 			
 			if (typeDeclaration.BaseTypes != null && typeDeclaration.Type != ClassType.Enum) {
 				foreach (TypeReference baseTypeRef in typeDeclaration.BaseTypes) {
 					outputFormatter.Indent();
 					
 					string baseType = baseTypeRef.Type;
-					bool baseTypeIsInterface = baseType.StartsWith("I") && (baseType.Length <= 1 || Char.IsUpper(baseType[1]));
+					if (baseType.IndexOf('.') >= 0) {
+						baseType = baseType.Substring(baseType.LastIndexOf('.') + 1);
+					}
+					bool baseTypeIsInterface = baseType.Length >= 2 && baseType[0] == 'I' && Char.IsUpper(baseType[1]);
 					
 					if (!baseTypeIsInterface || typeDeclaration.Type == ClassType.Interface) {
 						outputFormatter.PrintToken(Tokens.Inherits);
@@ -349,7 +353,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				}
 			}
 			
-			++outputFormatter.IndentationLevel;
 			TypeDeclaration oldType = currentType;
 			currentType = typeDeclaration;
 			
@@ -409,7 +412,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(DelegateDeclaration delegateDeclaration, object data)
 		{
 			VisitAttributes(delegateDeclaration.Attributes, data);
-			OutputModifier(delegateDeclaration.Modifier);
+			OutputModifier(delegateDeclaration.Modifier, true);
 			outputFormatter.PrintToken(Tokens.Delegate);
 			outputFormatter.Space();
 			
@@ -2040,6 +2043,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.Space();
 					nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
 					return null;
+				case BinaryOperatorType.NullCoalescing:
+					outputFormatter.PrintText("IIf(");
+					nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
+					outputFormatter.PrintText(" Is Nothing, ");
+					nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
+					outputFormatter.PrintToken(Tokens.Comma);
+					outputFormatter.Space();
+					nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
+					outputFormatter.PrintToken(Tokens.CloseParenthesis);
+					return null;
 				case BinaryOperatorType.LessThan:
 					op = Tokens.LessThan;
 					break;
@@ -2515,6 +2528,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void OutputModifier(Modifier modifier)
 		{
+			OutputModifier(modifier, false);
+		}
+		
+		void OutputModifier(Modifier modifier, bool forTypeDecl)
+		{
 			if ((modifier & Modifier.Public) == Modifier.Public) {
 				outputFormatter.PrintToken(Tokens.Public);
 				outputFormatter.Space();
@@ -2543,7 +2561,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			if ((modifier & Modifier.Abstract) == Modifier.Abstract) {
-				outputFormatter.PrintToken(Tokens.MustOverride);
+				outputFormatter.PrintToken(forTypeDecl ? Tokens.MustInherit : Tokens.MustOverride);
 				outputFormatter.Space();
 			}
 			if ((modifier & Modifier.Override) == Modifier.Override) {
@@ -2558,7 +2576,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			if ((modifier & Modifier.Sealed) == Modifier.Sealed) {
-				outputFormatter.PrintToken(Tokens.NotInheritable);
+				outputFormatter.PrintToken(forTypeDecl ? Tokens.NotInheritable : Tokens.NotOverridable);
 				outputFormatter.Space();
 			}
 			

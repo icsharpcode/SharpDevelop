@@ -195,12 +195,41 @@ namespace ICSharpCode.NRefactory.Parser
 			return base.Visit(methodDeclaration, data);
 		}
 		
+		public override object Visit(FieldDeclaration fieldDeclaration, object data)
+		{
+			fieldDeclaration.Modifier &= ~Modifier.Dim; // remove "Dim" flag
+			return base.Visit(fieldDeclaration, data);
+		}
+		
 		public override object Visit(PropertyDeclaration propertyDeclaration, object data)
 		{
 			if ((propertyDeclaration.Modifier & Modifier.Visibility) == 0)
 				propertyDeclaration.Modifier = Modifier.Public;
 			
+			if (propertyDeclaration.HasSetRegion) {
+				propertyDeclaration.SetRegion.AcceptVisitor(new RenameIdentifierVisitor("Value", "value"), null);
+			}
+			
 			return base.Visit(propertyDeclaration, data);
+		}
+		
+		class RenameIdentifierVisitor : AbstractAstVisitor
+		{
+			string from, to;
+			
+			public RenameIdentifierVisitor(string from, string to)
+			{
+				this.from = from;
+				this.to = to;
+			}
+			
+			public override object Visit(IdentifierExpression identifierExpression, object data)
+			{
+				if (string.Equals(identifierExpression.Identifier, from, StringComparison.InvariantCultureIgnoreCase)) {
+					identifierExpression.Identifier = to;
+				}
+				return base.Visit(identifierExpression, data);
+			}
 		}
 		
 		static volatile Dictionary<string, Expression> constantTable;

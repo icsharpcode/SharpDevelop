@@ -376,7 +376,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void SaveFile(FileDescriptionTemplate newfile, string content)
 		{
 			string parsedFileName = StringParser.Parse(newfile.Name);
-			string parsedContent = StringParser.Parse(content);
+			// Parse twice so that tags used in included standard header are parsed
+			string parsedContent = StringParser.Parse(StringParser.Parse(content));
 			if (parsedFileName.StartsWith("/") || parsedFileName.StartsWith("\\"))
 				parsedFileName = parsedFileName.Substring(1);
 			if (newfile.IsDependentFile && Path.IsPathRooted(parsedFileName)) {

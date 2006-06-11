@@ -1989,6 +1989,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.TimesAssign);
 					break;
 				case AssignmentOperatorType.Divide:
+				case AssignmentOperatorType.DivideInteger:
 					outputFormatter.PrintToken(Tokens.DivAssign);
 					break;
 				case AssignmentOperatorType.ShiftLeft:

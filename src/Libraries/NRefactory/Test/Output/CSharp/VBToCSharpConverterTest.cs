@@ -147,6 +147,20 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void ValueInPropertySetter()
+		{
+			TestMember("WriteOnly Property A()\nSet\nDim x As Object = Value\nEnd Set\nEnd Property",
+			           "public object A {\n\tset {\n\t\tobject x = value;\n\t}\n}");
+		}
+		
+		[Test]
+		public void FieldDeclaredWithDim()
+		{
+			TestMember("Dim f as String",
+			           "string f;");
+		}
+		
+		[Test]
 		public void PInvoke()
 		{
 			TestMember("Declare Function SendMessage Lib \"user32.dll\" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As UIntPtr, ByVal lParam As IntPtr) As IntPtr",
@@ -244,6 +258,15 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("x = \"Hello \" & \"World\"",
 			              "x = \"Hello \" + \"World\";");
+		}
+		
+		[Test]
+		public void IntegerDivision()
+		{
+			TestStatement(@"x = x \ b",
+			              "x = x / b;");
+			TestStatement(@"x \= b",
+			              "x /= b;");
 		}
 		
 		[Test]

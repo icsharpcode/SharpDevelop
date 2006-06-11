@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			TextEditorDisplayBindingWrapper b2 = new TextEditorDisplayBindingWrapper();
 			
-			b2.textAreaControl.Document.TextContent = StringParser.Parse(content);
+			b2.textAreaControl.Document.TextContent = content;
 			b2.textAreaControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(language);
 			b2.textAreaControl.InitializeFormatter();
 			b2.textAreaControl.ActivateQuickClassBrowserOnDemand();

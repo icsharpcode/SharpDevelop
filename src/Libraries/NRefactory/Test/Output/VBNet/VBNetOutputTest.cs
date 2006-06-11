@@ -79,6 +79,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void MustInheritClass()
+		{
+			TestProgram("Public MustInherit Class Foo\nEnd Class");
+		}
+		
+		[Test]
 		public void GenericClassDefinition()
 		{
 			TestProgram("Public Class Foo(Of T As {IDisposable, ICloneable})\nEnd Class");

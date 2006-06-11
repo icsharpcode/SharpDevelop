@@ -72,6 +72,42 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void ClassImplementsInterface()
+		{
+			TestProgram("class test : IComparable { }",
+			            "Class test\r\n" +
+			            "\tImplements IComparable\r\n" +
+			            "End Class\r\n");
+		}
+		
+		[Test]
+		public void ClassImplementsInterface2()
+		{
+			TestProgram("class test : System.IComparable { }",
+			            "Class test\r\n" +
+			            "\tImplements System.IComparable\r\n" +
+			            "End Class\r\n");
+		}
+		
+		[Test]
+		public void ClassInheritsClass()
+		{
+			TestProgram("class test : InvalidDataException { }",
+			            "Class test\r\n" +
+			            "\tInherits InvalidDataException\r\n" +
+			            "End Class\r\n");
+		}
+		
+		[Test]
+		public void ClassInheritsClass2()
+		{
+			TestProgram("class test : System.IO.InvalidDataException { }",
+			            "Class test\r\n" +
+			            "\tInherits System.IO.InvalidDataException\r\n" +
+			            "End Class\r\n");
+		}
+		
+		[Test]
 		public void ForWithUnknownConditionAndSingleStatement()
 		{
 			TestStatement("for (i = 0; unknownCondition; i++) b[i] = s[i];",
@@ -292,6 +328,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "\t\tcount = 3\n" +
 			           "\tNext\n" +
 			           "End Sub");
+		}
+		
+		[Test]
+		public void NullCoalescing()
+		{
+			TestStatement("c = a ?? b;",
+			              "c = IIf(a Is Nothing, b, a)");
 		}
 	}
 }
