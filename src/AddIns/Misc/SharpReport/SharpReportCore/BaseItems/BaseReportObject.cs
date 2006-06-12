@@ -33,8 +33,8 @@ namespace SharpReportCore {
 		private bool visible = true;
 		private bool  canGrow ;
 		private bool canShrink ;
-		private bool pageBreakBefore;
-		private bool pageBreakAfter;
+
+		
 		private bool suspend;
 		private Size size;
 		private Point location;
@@ -44,7 +44,9 @@ namespace SharpReportCore {
 		
 		
 		#region SharpReportCore.IPropertyChange interface implementation
+		
 		public event PropertyChangedEventHandler PropertyChanged;
+		
 		#endregion
 		
 		public BaseReportObject() {
@@ -68,6 +70,7 @@ namespace SharpReportCore {
 		}
 		
 		#region properties
+		
 		public virtual bool Visible {
 			get {
 				return visible;
@@ -109,26 +112,6 @@ namespace SharpReportCore {
 			}
 		}
 		
-		public virtual bool PageBreakAfter {
-			get {
-				return pageBreakAfter;
-			}
-			set {
-				pageBreakAfter = value;
-				NotifyPropertyChanged ("PageBreakAfter");
-			}
-		}
-		
-		
-		public virtual bool PageBreakBefore {
-			get {
-				return pageBreakBefore;
-			}
-			set {
-				pageBreakBefore = value;
-				NotifyPropertyChanged ("PageBreakBefore");
-			}
-		}
 		
 		
 		

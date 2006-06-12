@@ -5,7 +5,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Drawing.Printing;
-	
+
 using SharpReportCore;
 /// <summary>
 /// Derived from PrintDocument to have more control about printing
@@ -14,42 +14,74 @@ using SharpReportCore;
 /// 	created by - Forstmeier Peter
 /// 	created on - 21.11.2004 14:47:20
 /// </remarks>
-	
+
 namespace SharpReportCore {
 	
 	public class ReportDocument : PrintDocument {
 		
-		public event QueryPageSettingsEventHandler QueryPage;
-
-		public event EventHandler<ReportPageEventArgs> ReportBegin;
-		public event EventHandler<ReportPageEventArgs> PrintPageBegin;
 		public event EventHandler<ReportPageEventArgs> PrintPageBodyStart;
 		public event EventHandler<ReportPageEventArgs> PrintPageBodyEnd;
 		public event EventHandler<ReportPageEventArgs> PrintPageEnd;
-		public event EventHandler<ReportPageEventArgs> ReportEnd;
 		
 		
-		int pageNr;
+		public event EventHandler<ReportPageEventArgs> RenderReportHeader;
+		public event EventHandler<ReportPageEventArgs> RenderPageHeader;
 		
+		int pageNumber;
 		
 		public ReportDocument():base() {
-			base.BeginPrint += new PrintEventHandler (ReportDocumentBeginPrint);
 			
-			base.PrintPage += new PrintPageEventHandler (ReportDocumentPrintPage);
-			
-			base.EndPrint += new PrintEventHandler (ReportDocumentEndPrint);
-			base.QueryPageSettings += new QueryPageSettingsEventHandler (ReportDocumentQueryPage);
 		}
 		
-		void GeneratePage (SharpReportCore.ReportPageEventArgs page) {		
-			if (PrintPageBegin != null) {
-				PrintPageBegin (this,page);
+		
+		#region overriede's
+		
+		protected override void OnQueryPageSettings(QueryPageSettingsEventArgs e){
+			base.OnQueryPageSettings(e);
+		}
+		
+		protected override void OnBeginPrint(PrintEventArgs e){
+			base.OnBeginPrint(e);
+			pageNumber = 0;
+		}
+		
+		protected override void OnPrintPage(PrintPageEventArgs e){
+			base.OnPrintPage(e);
+			pageNumber ++;
+
+			ReportPageEventArgs pea = new ReportPageEventArgs (e,pageNumber,false,new PointF (0,0));
+			GeneratePage (pea);
+			
+
+			if (pea.PrintPageEventArgs.HasMorePages == false) {
+				this.OnEndPrint (new PrintEventArgs());
+			}
+		}
+		
+		protected override void OnEndPrint(PrintEventArgs e){
+			base.OnEndPrint(e);
+		}
+		
+		#endregion
+		
+		private void GeneratePage (SharpReportCore.ReportPageEventArgs page) {
+			
+			if (this.pageNumber == 1) {
+				if (this.RenderReportHeader != null) {
+					this.RenderReportHeader(this,page);
+				}
 			}
 			
+			if (this.RenderPageHeader != null) {
+				this.RenderPageHeader (this,page);
+			}
+			
+			/*
 			if (page.ForceNewPage == true) {
 				page.PrintPageEventArgs.HasMorePages = true;
 				return;
 			}
+			*/
 			// print PageFooter before DetailSection
 			//so it's much easyer to calculate size of DetailSection
 			if (PrintPageEnd != null) {
@@ -65,52 +97,17 @@ namespace SharpReportCore {
 				PrintPageBodyEnd (this,page);
 			}
 		}
+	
+	
 		
-		#region events
-		//this events are also used by PrintPreviewControl
-		public  void ReportDocumentBeginPrint (object sender,PrintEventArgs e) {
-			pageNr = 0;
-		}
+		#region Property's
 		
-		public void ReportDocumentQueryPage (object sender, QueryPageSettingsEventArgs e) {
-			if (QueryPage != null) {
-				QueryPage (this,e);
+		public int PageNumber {
+			get {
+				return pageNumber;
 			}
 		}
 		
-		public void ReportDocumentPrintPage (object sender, PrintPageEventArgs e) {
-			pageNr ++;
-			ReportPageEventArgs pea = new ReportPageEventArgs (e,pageNr,false,new PointF (0,0));
-			
-			if (pageNr == 1) {
-				if (ReportBegin != null) {
-					ReportBegin (this,pea);
-				}
-			}
-			
-			GeneratePage (pea);
-			
-			if ((pea.ForceNewPage == true) && (pea.PrintPageEventArgs.HasMorePages == true)) {
-				pea.ForceNewPage = false;
-			    	return;
-			}
-			if (pea.PrintPageEventArgs.HasMorePages == false) {
-				if (ReportEnd != null) {
-					ReportEnd (this,pea);
-				}
-			}
-			
-		}
-		public void  ReportDocumentEndPrint (object sender,PrintEventArgs e) {
-//			System.Console.WriteLine("\tReportDocument EndPrint");
-			pageNr = 0;
-			if (ReportEnd != null) {
-				ReportEnd (this,null);
-			}
-			
-		}
 		#endregion
-		
-		
 	}
 }

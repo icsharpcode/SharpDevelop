@@ -21,6 +21,8 @@ namespace SharpReportCore {
 	public class BaseSection : SharpReportCore.BaseReportObject {
 		
 		private int sectionMargin;
+//		private bool pageBreakBefore;
+		private bool pageBreakAfter;
 		
 		private ReportItemCollection items;
 		
@@ -46,8 +48,8 @@ namespace SharpReportCore {
 			this.NotifyPrinted();
 		}
 		
+		#region Events
 		
-		#region properties
 		public void NotifyPrinting () {
 			if (this.SectionPrinting != null) {
 				SectionPrintingEventArgs ea = new SectionPrintingEventArgs (this);
@@ -61,6 +63,11 @@ namespace SharpReportCore {
 				SectionPrinted (this,ea);
 			}
 		}
+		
+		#endregion
+		
+		#region properties
+		
 		
 		public  int SectionMargin {
 			get {
@@ -82,6 +89,29 @@ namespace SharpReportCore {
 				return items;
 			}
 		}
+		
+		/*
+		public virtual bool PageBreakBefore {
+			get {
+				return pageBreakBefore;
+			}
+			set {
+				pageBreakBefore = value;
+				NotifyPropertyChanged ("PageBreakBefore");
+			}
+		}
+		*/
+		public virtual bool PageBreakAfter {
+			get {
+				return pageBreakAfter;
+			}
+			set {
+				pageBreakAfter = value;
+				NotifyPropertyChanged ("PageBreakAfter");
+			}
+		}
+		
+		
 		#endregion
 		
 		#region System.IDisposable interface implementation

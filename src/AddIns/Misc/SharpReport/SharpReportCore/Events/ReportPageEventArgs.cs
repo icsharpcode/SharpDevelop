@@ -30,6 +30,7 @@ namespace SharpReportCore {
 		PrintPageEventArgs printEventArgs;
 		int pageNumber;
 		bool forceNewPage;
+		
 		PointF locationAfterDraw;
 		
 		public ReportPageEventArgs(PrintPageEventArgs e,
@@ -62,6 +63,8 @@ namespace SharpReportCore {
 				forceNewPage = value;
 			}
 		}
+		
+		
 		public PointF LocationAfterDraw {
 			get {
 				return locationAfterDraw;

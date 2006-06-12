@@ -77,8 +77,9 @@ namespace SharpReportCore {
 			base.RenderSection (base.CurrentSection,rpea);
 			this.RemoveSectionEvents();
 			
-			if (base.CurrentSection.PageBreakAfter) {
-				base.PageBreak(rpea,base.CurrentSection);
+			if (base.CheckPageBreakAfter()) {
+//				base.PageBreak(rpea,base.CurrentSection);
+				base.PageBreak(rpea);
 				base.CurrentSection.PageBreakAfter = false;
 				return new PointF();
 			}
@@ -116,49 +117,37 @@ namespace SharpReportCore {
 		
 		#endregion
 		
-		#region event's
-		protected override  void ReportQueryPage (object sender,QueryPageSettingsEventArgs qpea) {
-			base.ReportQueryPage (sender,qpea);
+		#region test
+		
+		protected override void BuildReportHeader (object sender, ReportPageEventArgs e) {
+			System.Console.WriteLine("!!!!");
+			System.Console.WriteLine("testReportStart");
+			base.BuildReportHeader (sender,e);
+			this.currentPoint = DoReportHeader (e);
+			System.Console.WriteLine("");
 		}
 		
-		
-		protected override void ReportBegin (object sender,ReportPageEventArgs rpea) {
-			base.ReportBegin (sender,rpea);
-		}
-		
-		/// <summary>
-		/// ReportHeader and if PageHeader
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		/// 
-		protected override void  BeginPrintPage (object sender,ReportPageEventArgs rpea) {
+		protected override void BuildPageHeader (object sender, ReportPageEventArgs e) {
 			
-			if (rpea == null) {
-				throw new ArgumentNullException("rpea");
-			}
-			
-			base.BeginPrintPage (sender,rpea);
-			
-			//Draw ReportHeader
-			if (rpea.PageNumber == 1) {
-				//Draw ReportHeader
-				this.currentPoint = DoReportHeader (rpea);
-			}
-
-			
-			if (base.CurrentSection.PageBreakAfter) {
-				base.PageBreak(rpea,base.CurrentSection);
-				base.CurrentSection.PageBreakAfter = false;
-				return;
-			}
-			
-			//Draw Pageheader
-	
-			this.currentPoint = DoPageHeader (this.currentPoint,rpea);
-
+			System.Console.WriteLine("!!!!");
+			System.Console.WriteLine("testPrintheader");
+			base.BuildPageHeader (sender,e);
+			this.currentPoint = DoPageHeader (this.currentPoint,e);
 			base.DetailStart = new Point ((int)currentPoint.X,(int)currentPoint.Y);
+			System.Console.WriteLine("");
 		}
+		
+		#endregion
+		
+		#region event's
+//		protected override  void ReportQueryPage (object sender,QueryPageSettingsEventArgs qpea) {
+//			base.ReportQueryPage (sender,qpea);
+//		}
+		
+		
+//		protected override void ReportBegin (object sender,PrintEventArgs rpea) {
+//			base.ReportBegin (sender,rpea);
+//		}
 		
 		
 		/// <summary>
@@ -191,12 +180,16 @@ namespace SharpReportCore {
 		
 		
 		protected override void PrintBodyEnd (object sender,ReportPageEventArgs rpea) {
+			
 			base.PrintBodyEnd (sender,rpea);
 			this.DoReportFooter (new PointF(0,base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height),
 			                     rpea);
 		}
 		
 		
+		protected override void ReportEnd(object sender, PrintEventArgs e){
+			base.ReportEnd(sender, e);
+		}
 		
 		#endregion
 		

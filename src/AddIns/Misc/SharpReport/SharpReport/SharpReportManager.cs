@@ -100,7 +100,7 @@ namespace SharpReport{
 						} catch (Exception ) {
 							throw;
 						} finally {
-							System.Console.WriteLine("ReportManager:ReadColumnCollection in finally");
+//							System.Console.WriteLine("ReportManager:ReadColumnCollection in finally");
 						}
 					}
 					break;

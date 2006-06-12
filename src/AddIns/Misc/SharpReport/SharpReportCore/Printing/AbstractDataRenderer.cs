@@ -9,7 +9,7 @@
 
 using System;
 using System.Drawing;
-
+using System.Drawing.Printing;
 namespace SharpReportCore{
 	/// <summary>
 	/// Description of AbstractDataRenderer.
@@ -26,21 +26,35 @@ namespace SharpReportCore{
 			this.dataManager = dataManager;
 		}
 		
-		protected override void ReportBegin(object sender, ReportPageEventArgs e){
+		#region overrides
+		protected override void ReportBegin(object sender, PrintEventArgs e){
 			base.ReportBegin(sender, e);
 		}
 		
 		
-		
-		protected override void BeginPrintPage(object sender, ReportPageEventArgs e)
-		{
-			base.BeginPrintPage(sender, e);
-		}
-		
-		
 		protected override int RenderSection(BaseSection section, ReportPageEventArgs rpea){
-			bool hasContainer = false;
+			return 0;
+		}
+		#endregion
+		protected int DoItems (ReportPageEventArgs rpea) {
 			IContainerItem container = null;
+			bool hasContainer = false;
+			foreach (BaseReportItem item in this.CurrentSection.Items) {
+				container = item as IContainerItem;
+				if (container != null) {
+					hasContainer = true;
+					break;
+				}
+			}
+			if (hasContainer) {
+				return DoContainerControl(this.CurrentSection,container,rpea);
+			} else {
+				return base.RenderSection(this.CurrentSection, rpea);
+			}
+		}
+		protected int old_DoItems (BaseSection section, ReportPageEventArgs rpea) {
+			IContainerItem container = null;
+			bool hasContainer = false;
 			foreach (BaseReportItem item in section.Items) {
 				container = item as IContainerItem;
 				if (container != null) {
@@ -53,7 +67,6 @@ namespace SharpReportCore{
 			} else {
 				return base.RenderSection(section, rpea);
 			}
-
 		}
 		
 		private int DoContainerControl (BaseSection section,
