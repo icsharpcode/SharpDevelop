@@ -207,7 +207,13 @@ namespace ICSharpCode.NRefactory.Parser
 				propertyDeclaration.Modifier = Modifier.Public;
 			
 			if (propertyDeclaration.HasSetRegion) {
-				propertyDeclaration.SetRegion.AcceptVisitor(new RenameIdentifierVisitor("Value", "value"), null);
+				string from = "Value";
+				if (propertyDeclaration.SetRegion.Parameters.Count > 0) {
+					ParameterDeclarationExpression p = propertyDeclaration.SetRegion.Parameters[0];
+					from = p.ParameterName;
+					p.ParameterName = "Value";
+				}
+				propertyDeclaration.SetRegion.AcceptVisitor(new RenameIdentifierVisitor(from, "value"), null);
 			}
 			
 			return base.Visit(propertyDeclaration, data);

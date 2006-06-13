@@ -154,6 +154,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void ValueInPropertySetter2()
+		{
+			TestMember("WriteOnly Property A()\nSet(ByVal otherName)\nDim x As Object = otherName\nEnd Set\nEnd Property",
+			           "public object A {\n\tset {\n\t\tobject x = value;\n\t}\n}");
+		}
+		
+		[Test]
 		public void FieldDeclaredWithDim()
 		{
 			TestMember("Dim f as String",
@@ -274,6 +281,23 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("a = vbYesNo",
 			              "a = Constants.vbYesNo;");
+		}
+		
+		[Test]
+		public void ForNextLoop()
+		{
+			TestStatement("For i = 0 To 10\n" +
+			              "Next",
+			              "for (i = 0; i <= 10; i++) {\n" +
+			              "}");
+			TestStatement("For l As Long = 0 To 10 Step 2\n" +
+			              "Next",
+			              "for (long l = 0; l <= 10; l += 2) {\n" +
+			              "}");
+			TestStatement("For l As Long = 10 To 0 Step -1\n" +
+			              "Next",
+			              "for (long l = 10; l >= 0; l += -1) {\n" +
+			              "}");
 		}
 	}
 }

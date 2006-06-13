@@ -2130,13 +2130,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					
 				case UnaryOperatorType.Minus:
 					outputFormatter.PrintToken(Tokens.Minus);
-					outputFormatter.Space();
 					nodeTracker.TrackedVisit(unaryOperatorExpression.Expression, data);
 					return null;
 					
 				case UnaryOperatorType.Plus:
 					outputFormatter.PrintToken(Tokens.Plus);
-					outputFormatter.Space();
 					nodeTracker.TrackedVisit(unaryOperatorExpression.Expression, data);
 					return null;
 					
@@ -2157,7 +2155,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					return null;
 					
 				case UnaryOperatorType.Star:
+					outputFormatter.PrintToken(Tokens.Times);
+					break;
 				case UnaryOperatorType.BitWiseAnd:
+					outputFormatter.PrintToken(Tokens.AddressOf);
 					break;
 			}
 			throw new System.NotSupportedException();

@@ -127,6 +127,15 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void ForNextLoop()
+		{
+			TestStatement("For i = 0 To 10\n" +
+			              "Next");
+			TestStatement("For i As Long = 10 To 0 Step -1\n" +
+			              "Next");
+		}
+		
+		[Test]
 		public void Assignment()
 		{
 			TestExpression("a = b");

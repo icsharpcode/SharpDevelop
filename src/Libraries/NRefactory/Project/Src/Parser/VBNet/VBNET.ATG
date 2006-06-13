@@ -2702,12 +2702,6 @@ LoopControlVariable<out TypeReference type, out string name>
 			} else if (arrayModifiers != null) {
 				type.RankSpecifier = (int[])arrayModifiers.ToArray(typeof(int));
 			}
-		} else {
-			if (arrayModifiers != null) {
-				type = new TypeReference("Integer", (int[])arrayModifiers.ToArray(typeof(int)));
-			} else {
-				type = new TypeReference("Integer");
-			}
 		}
 	.)
 .

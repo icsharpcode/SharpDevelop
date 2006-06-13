@@ -215,6 +215,10 @@ namespace ICSharpCode.NRefactory.Parser
 				}
 				TypeReference fieldType = fieldDeclaration.GetTypeForField(i);
 				
+				if (fieldType.IsNull) {
+					fieldType = new TypeReference(typeDeclarations.Peek().Name);
+				}
+				
 				CodeMemberField memberField = new CodeMemberField(ConvType(fieldType), field.Name);
 				memberField.Attributes = ConvMemberAttributes(fieldDeclaration.Modifier);
 				if (!field.Initializer.IsNull) {

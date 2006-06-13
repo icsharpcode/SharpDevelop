@@ -1495,7 +1495,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Break);
 			}
 			outputFormatter.PrintToken(Tokens.Semicolon);
-			outputFormatter.PrintText("// might not be correct. Was : Exit " + exitStatement.ExitType);
+			outputFormatter.PrintText(" // TODO: might not be correct. Was : Exit " + exitStatement.ExitType);
 			outputFormatter.NewLine();
 			return null;
 		}
@@ -1503,6 +1503,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(ForNextStatement forNextStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.For);
+			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			if (!forNextStatement.TypeReference.IsNull) {
 				nodeTracker.TrackedVisit(forNextStatement.TypeReference, data);
@@ -1518,7 +1519,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintIdentifier(forNextStatement.VariableName);
 			outputFormatter.Space();
 			PrimitiveExpression pe = forNextStatement.Step as PrimitiveExpression;
-			if (pe == null || !(pe.Value is int) || ((int)pe.Value) >= 0)
+			if ((pe == null || !(pe.Value is int) || ((int)pe.Value) >= 0)
+			    && !(forNextStatement.Step is UnaryOperatorExpression))
 				outputFormatter.PrintToken(Tokens.LessEqual);
 			else
 				outputFormatter.PrintToken(Tokens.GreaterEqual);
@@ -1537,7 +1539,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
-			return nodeTracker.TrackedVisit(forNextStatement.EmbeddedStatement, data);
+			WriteEmbeddedStatement(forNextStatement.EmbeddedStatement);
+			return null;
 		}
 		#endregion
 		
