@@ -2664,27 +2664,17 @@ EmbeddedStatement<out Statement statement>
 			statement = new StatementExpression(expr);
 		.)
 	| "Call" SimpleExpr<out expr> (. statement = new StatementExpression(expr); .)
-	| "Using" Identifier (. 
-		string resourcename = t.val, typeName; 
-		Statement resourceAquisition = null, block = null;
-	.) "As" (
-		"New" Qualident<out typeName>
-		(. List<Expression> initializer = null; .)
-		["(" [ ArgumentList<out initializer> ] ")" ]
-		(.  
-			resourceAquisition =  new LocalVariableDeclaration(new VariableDeclaration(resourcename, new ArrayInitializerExpression(initializer), new TypeReference(typeName)));
-			
-		.) |
-		Qualident<out typeName> "=" Expr<out expr> 
-		(.
-			resourceAquisition =  new LocalVariableDeclaration(new VariableDeclaration(resourcename, expr, new TypeReference(typeName)));
-		.) )
-		
+	| "Using"
+		(. LocalVariableDeclaration resourceAquisition = new LocalVariableDeclaration(Modifier.None); .)
+		(. Statement block;  .)
+		VariableDeclarator<resourceAquisition.Variables>
+		{ ","
+		  VariableDeclarator<resourceAquisition.Variables>
+		}
 		Block<out block>
 		"End" "Using"
 		(. statement = new UsingStatement(resourceAquisition, block); .)
-		
-	.
+.
 
 /* 10.9.2 */
 LoopControlVariable<out TypeReference type, out string name>

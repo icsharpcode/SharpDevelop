@@ -507,18 +507,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintIdentifier(variableDeclaration.Name);
 			
-			if (variableDeclaration.TypeReference.IsNull) {
-				if (currentVariableType != null && !currentVariableType.IsNull) {
-					outputFormatter.Space();
-					outputFormatter.PrintToken(Tokens.As);
-					outputFormatter.Space();
-					nodeTracker.TrackedVisit(currentVariableType, data);
-				}
-			} else {
+			TypeReference varType = currentVariableType;
+			if (varType != null && varType.IsNull)
+				varType = null;
+			if (varType == null && !variableDeclaration.TypeReference.IsNull)
+				varType = variableDeclaration.TypeReference;
+			
+			if (varType != null) {
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(variableDeclaration.TypeReference, data);
+				ObjectCreateExpression init = variableDeclaration.Initializer as ObjectCreateExpression;
+				if (init != null && TypeReference.AreEqualReferences(init.CreateType, varType)) {
+					nodeTracker.TrackedVisit(variableDeclaration.Initializer, data);
+					return null;
+				} else {
+					nodeTracker.TrackedVisit(varType, data);
+				}
 			}
 			
 			if (!variableDeclaration.Initializer.IsNull) {

@@ -155,6 +155,14 @@ End Select");
 		}
 		
 		[Test]
+		public void UsingStatement()
+		{
+			TestStatement(@"Using nf As New Font(), nf2 As New List(Of Font)(), nf3 = Nothing
+	Bla(nf)
+End Using");
+		}
+		
+		[Test]
 		public void UntypedVariable()
 		{
 			TestStatement("Dim x = 0");
@@ -224,7 +232,7 @@ End Select");
 		[Test]
 		public void Using()
 		{
-			TestStatement("Using a As A = New A()\na.Work()\nEnd Using");
+			TestStatement("Using a As New A()\na.Work()\nEnd Using");
 		}
 		
 		[Test]
