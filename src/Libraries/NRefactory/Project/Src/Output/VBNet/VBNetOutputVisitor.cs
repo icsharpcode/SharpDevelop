@@ -488,6 +488,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (fieldDeclaration.Modifier == Modifier.None) {
 				outputFormatter.PrintToken(Tokens.Private);
 				outputFormatter.Space();
+			} else if (fieldDeclaration.Modifier == Modifier.Dim) {
+				outputFormatter.PrintToken(Tokens.Dim);
+				outputFormatter.Space();
 			} else {
 				OutputModifier(fieldDeclaration.Modifier);
 			}
@@ -503,13 +506,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(VariableDeclaration variableDeclaration, object data)
 		{
 			outputFormatter.PrintIdentifier(variableDeclaration.Name);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.As);
-			outputFormatter.Space();
 			
-			if (variableDeclaration.TypeReference.IsNull && currentVariableType != null) {
-				nodeTracker.TrackedVisit(currentVariableType, data);
+			if (variableDeclaration.TypeReference.IsNull) {
+				if (currentVariableType != null && !currentVariableType.IsNull) {
+					outputFormatter.Space();
+					outputFormatter.PrintToken(Tokens.As);
+					outputFormatter.Space();
+					nodeTracker.TrackedVisit(currentVariableType, data);
+				}
 			} else {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
 				nodeTracker.TrackedVisit(variableDeclaration.TypeReference, data);
 			}
 			
@@ -1440,6 +1448,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			exitTokenStack.Push(Tokens.Select);
 			outputFormatter.PrintToken(Tokens.Select);
 			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Case);
+			outputFormatter.Space();
 			nodeTracker.TrackedVisit(switchStatement.SwitchExpression, data);
 			outputFormatter.NewLine();
 			++outputFormatter.IndentationLevel;
@@ -1596,15 +1606,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			PrintIndentedBlock(doLoopStatement.EmbeddedStatement);
 			
 			outputFormatter.Indent();
-			if (doLoopStatement.ConditionType == ConditionType.While) {
-				outputFormatter.PrintToken(Tokens.End);
-				outputFormatter.Space();
-				outputFormatter.PrintToken(Tokens.While);
-			} else {
-				outputFormatter.PrintToken(Tokens.Loop);
-			}
+			outputFormatter.PrintToken(Tokens.Loop);
 			
-			if (doLoopStatement.ConditionPosition == ConditionPosition.End) {
+			if (doLoopStatement.ConditionPosition == ConditionPosition.End && !doLoopStatement.Condition.IsNull) {
 				outputFormatter.Space();
 				switch (doLoopStatement.ConditionType) {
 					case ConditionType.While:

@@ -136,6 +136,37 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void DoLoop()
+		{
+			TestStatement("Do\n" +
+			              "Loop");
+			TestStatement("Do\n" +
+			              "Loop While Not (i = 10)");
+		}
+		
+		[Test]
+		public void SelectCase()
+		{
+			TestStatement(@"Select Case i
+	Case 0
+	Case 1 To 4
+	Case Else
+End Select");
+		}
+		
+		[Test]
+		public void UntypedVariable()
+		{
+			TestStatement("Dim x = 0");
+		}
+		
+		[Test]
+		public void UntypedField()
+		{
+			TestTypeMember("Dim x = 0");
+		}
+		
+		[Test]
 		public void Assignment()
 		{
 			TestExpression("a = b");

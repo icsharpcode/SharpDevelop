@@ -287,7 +287,7 @@ namespace ICSharpCode.NRefactory.Parser
 			CodeVariableDeclarationStatement declStmt = null;
 			
 			for (int i = 0; i < localVariableDeclaration.Variables.Count; ++i) {
-				CodeTypeReference type = ConvType(localVariableDeclaration.GetTypeForVariable(i));
+				CodeTypeReference type = ConvType(localVariableDeclaration.GetTypeForVariable(i) ?? new TypeReference("object"));
 				VariableDeclaration var = (VariableDeclaration)localVariableDeclaration.Variables[i];
 				if (!var.Initializer.IsNull) {
 					declStmt = new CodeVariableDeclarationStatement(type,

@@ -999,7 +999,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.Indent();
 				}
 				OutputModifier(localVariableDeclaration.Modifier);
-				nodeTracker.TrackedVisit(localVariableDeclaration.GetTypeForVariable(i), data);
+				nodeTracker.TrackedVisit(localVariableDeclaration.GetTypeForVariable(i) ?? new TypeReference("object"), data);
 				outputFormatter.Space();
 				nodeTracker.TrackedVisit(v, data);
 				outputFormatter.PrintToken(Tokens.Semicolon);
@@ -1303,9 +1303,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			if (doLoopStatement.ConditionType == ConditionType.Until) {
 				outputFormatter.PrintToken(Tokens.Not);
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			}
 			
-			nodeTracker.TrackedVisit(doLoopStatement.Condition, null);
+			if (doLoopStatement.Condition.IsNull) {
+				outputFormatter.PrintToken(Tokens.True);
+			} else {
+				nodeTracker.TrackedVisit(doLoopStatement.Condition, null);
+			}
+			
+			if (doLoopStatement.ConditionType == ConditionType.Until) {
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 		}
 		
@@ -1321,11 +1330,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Do);
 			}
 			
-			++outputFormatter.IndentationLevel;
 			WriteEmbeddedStatement(doLoopStatement.EmbeddedStatement);
-			--outputFormatter.IndentationLevel;
 			
 			if (doLoopStatement.ConditionPosition == ConditionPosition.End) {
+				outputFormatter.Indent();
 				PrintLoopCheck(doLoopStatement);
 				outputFormatter.PrintToken(Tokens.Semicolon);
 				outputFormatter.NewLine();

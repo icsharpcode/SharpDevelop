@@ -306,7 +306,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		}
 		public override object AcceptVisitor(IAstVisitor visitor, object data)
 		{
-			return data;
+			return null;
 		}
 		public static NullTypeReference Instance {
 			get {

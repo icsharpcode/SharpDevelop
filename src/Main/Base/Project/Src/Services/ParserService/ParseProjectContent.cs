@@ -74,7 +74,11 @@ namespace ICSharpCode.Core
 		void UpdateReferenceInterDependencies()
 		{
 			// Use ToArray because the collection could be modified inside the loop
-			foreach (IProjectContent referencedContent in this.referencedContents.ToArray()) {
+			IProjectContent[] referencedContents;
+			lock (this.referencedContents) {
+				referencedContents = this.referencedContents.ToArray();
+			}
+			foreach (IProjectContent referencedContent in referencedContents) {
 				if (referencedContent is ReflectionProjectContent) {
 					((ReflectionProjectContent)referencedContent).InitializeReferences();
 				}
@@ -86,7 +90,9 @@ namespace ICSharpCode.Core
 			try {
 				IProjectContent referencedContent = ProjectContentRegistry.GetProjectContentForReference(reference);
 				if (referencedContent != null) {
-					ReferencedContents.Add(referencedContent);
+					lock (this.referencedContents) {
+						this.referencedContents.Add(referencedContent);
+					}
 				}
 				if (updateInterDependencies) {
 					UpdateReferenceInterDependencies();
@@ -130,7 +136,9 @@ namespace ICSharpCode.Core
 				try {
 					IProjectContent referencedContent = ProjectContentRegistry.GetExistingProjectContentForReference(reference);
 					if (referencedContent != null) {
-						ReferencedContents.Remove(referencedContent);
+						lock (ReferencedContents) {
+							ReferencedContents.Remove(referencedContent);
+						}
 						OnReferencedContentsChanged(EventArgs.Empty);
 					}
 				} catch (Exception ex) {
@@ -192,7 +200,12 @@ namespace ICSharpCode.Core
 			try {
 				StatusBarService.ProgressMonitor.TaskName = "Parsing " + project.Name + "...";
 				
-				foreach (IProjectContent referencedContent in ReferencedContents) {
+				IProjectContent[] referencedContents;
+				lock (this.referencedContents) {
+					referencedContents = this.referencedContents.ToArray();
+				}
+				
+				foreach (IProjectContent referencedContent in referencedContents) {
 					if (referencedContent is ReflectionProjectContent) {
 						((ReflectionProjectContent)referencedContent).InitializeReferences();
 					}
@@ -222,10 +235,10 @@ namespace ICSharpCode.Core
 			initializing = false;
 			base.Dispose();
 		}
-				
+		
 		void OnEndBuild(object source, EventArgs e)
 		{
-			AddComReferences();	
+			AddComReferences();
 		}
 		
 		void AddComReferences()

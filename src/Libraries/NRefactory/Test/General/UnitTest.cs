@@ -29,11 +29,29 @@ namespace ICSharpCode.NRefactory.Tests
 			}
 		}
 		
+		[Test]
+		public void TestUnitTests()
+		{
+			Type[] allTypes = typeof(StructuralTest).Assembly.GetTypes();
+			
+			foreach (Type type in allTypes) {
+				if (type.GetCustomAttributes(typeof(TestFixtureAttribute), true).Length > 0) {
+					foreach (MethodInfo m in type.GetMethods()) {
+						if (m.IsPublic && m.ReturnType == typeof(void) && m.GetParameters().Length == 0) {
+							if (m.GetCustomAttributes(typeof(TestAttribute), true).Length == 0) {
+								Assert.Fail(type.Name + "." + m.Name + " should have the [Test] attribute!");
+							}
+						}
+					}
+				}
+			}
+		}
+		
 //		[Test]
 //		public void TestAcceptVisitorMethods()
 //		{
 //			Type[] allTypes = typeof(AbstractNode).Assembly.GetTypes();
-//			
+//
 //			foreach (Type type in allTypes) {
 //				if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(INode).FullName) != null) {
 //					MethodInfo methodInfo = type.GetMethod("AcceptVisitor", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public);

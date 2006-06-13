@@ -190,10 +190,12 @@ namespace ICSharpCode.Core
 			if (desc != null) {
 				return desc;
 			}
-			foreach (IProjectContent referencedContent in referencedContents) {
-				desc = referencedContent.XmlDoc.GetDocumentation(memberTag);
-				if (desc != null) {
-					return desc;
+			lock (referencedContents) {
+				foreach (IProjectContent referencedContent in referencedContents) {
+					desc = referencedContent.XmlDoc.GetDocumentation(memberTag);
+					if (desc != null) {
+						return desc;
+					}
 				}
 			}
 			return null;
@@ -543,13 +545,15 @@ namespace ICSharpCode.Core
 			
 			// Search in references:
 			if (lookInReferences) {
-				foreach (IProjectContent content in referencedContents) {
-					IClass contentClass = content.GetClass(typeName, typeParameterCount, language, false);
-					if (contentClass != null) {
-						if (contentClass.TypeParameters.Count == typeParameterCount) {
-							return contentClass;
-						} else {
-							c = contentClass;
+				lock (referencedContents) {
+					foreach (IProjectContent content in referencedContents) {
+						IClass contentClass = content.GetClass(typeName, typeParameterCount, language, false);
+						if (contentClass != null) {
+							if (contentClass.TypeParameters.Count == typeParameterCount) {
+								return contentClass;
+							} else {
+								c = contentClass;
+							}
 						}
 					}
 				}
@@ -598,8 +602,10 @@ namespace ICSharpCode.Core
 			}
 			
 			if (lookInReferences) {
-				foreach (IProjectContent content in referencedContents) {
-					content.AddNamespaceContents(list, nameSpace, language, false);
+				lock (referencedContents) {
+					foreach (IProjectContent content in referencedContents) {
+						content.AddNamespaceContents(list, nameSpace, language, false);
+					}
 				}
 			}
 			
@@ -665,9 +671,11 @@ namespace ICSharpCode.Core
 			}
 			
 			if (lookInReferences) {
-				foreach (IProjectContent content in referencedContents) {
-					if (content.NamespaceExists(name, language, false)) {
-						return true;
+				lock (referencedContents) {
+					foreach (IProjectContent content in referencedContents) {
+						if (content.NamespaceExists(name, language, false)) {
+							return true;
+						}
 					}
 				}
 			}

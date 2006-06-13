@@ -299,5 +299,18 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			              "for (long l = 10; l >= 0; l += -1) {\n" +
 			              "}");
 		}
+		
+		[Test]
+		public void DoLoop()
+		{
+			TestStatement("Do \n Loop",
+			              "do {\n" +
+			              "}\n" +
+			              "while (true);");
+			TestStatement("Do \n Loop Until i = 10000",
+			              "do {\n" +
+			              "}\n" +
+			              "while (!(i == 10000));");
+		}
 	}
 }
