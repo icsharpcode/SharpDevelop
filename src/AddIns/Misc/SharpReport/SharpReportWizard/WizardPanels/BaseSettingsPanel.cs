@@ -8,6 +8,7 @@
  */
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
@@ -40,6 +41,8 @@ namespace ReportGenerator{
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.RadioButton radioFormSheet;
 		
+		private System.Windows.Forms.ErrorProvider errorProvider;
+		
 		ReportGenerator generator;
 		Properties customizer;
 	
@@ -47,10 +50,22 @@ namespace ReportGenerator{
 		
 		public BaseSettingsPanel(){	
 			InitializeComponent();
-			Localise();
+			errorProvider = new ErrorProvider();
+			errorProvider.ContainerControl = this;
+			this.txtFileName.KeyUp += new KeyEventHandler(OnKeyUp);
 			
+			Localise();
 			DoInit();
 			base.VisibleChanged += new EventHandler (ChangedEvent );
+		}
+		
+		private void OnKeyUp (object sender,KeyEventArgs e) {
+			if (this.txtFileName.Text.Length == 0) {
+				this.errorProvider.SetError(this.txtFileName,"aaaaa");
+				this.EnableNext = false;
+			}else {
+				this.errorProvider.SetError(this.txtFileName,"");
+			}
 		}
 		
 		private void Localise() {
@@ -115,15 +130,19 @@ namespace ReportGenerator{
 		}
 	
 		void ChangedEvent(object sender, EventArgs e){
-			
 			if (initDone) {
 				generator.ReportName = txtReportName.Text;
-				generator.FileName = txtFileName.Text;
+				
+				if (!this.txtFileName.Text.EndsWith(GlobalValues.SharpReportExtension)){
+					generator.FileName = txtFileName.Text + GlobalValues.SharpReportExtension;
+				} else {
+					generator.FileName = txtFileName.Text;
+				}
+				
 				generator.Path = this.txtPath.Text;
 				generator.GraphicsUnit = (GraphicsUnit)Enum.Parse(typeof(GraphicsUnit),this.cboGraphicsUnit.Text);
 				SetSuccessor (this,new EventArgs());
 			}
-			
 		}
 		
 		
@@ -155,21 +174,16 @@ namespace ReportGenerator{
 		
 		///<summary>Browse for Report Folder</summary>
 		void Button1Click(object sender, System.EventArgs e) {
-			try {
-				ICSharpCode.SharpDevelop.Gui.FolderDialog ff = new ICSharpCode.SharpDevelop.Gui.FolderDialog();
-				ff.DisplayDialog(String.Empty);
-				if (!String.IsNullOrEmpty(ff.Path)) {
-					if (!ff.Path.EndsWith(@"\")){             
-						this.txtPath.Text = ff.Path + @"\";
-					} else {
-						
-						this.txtPath.Text = ff.Path;
-					}
-					generator.Path = this.txtPath.Text;
+			
+			ICSharpCode.SharpDevelop.Gui.FolderDialog ff = new ICSharpCode.SharpDevelop.Gui.FolderDialog();
+			ff.DisplayDialog(String.Empty);
+			if (!String.IsNullOrEmpty(ff.Path)) {
+				if (!ff.Path.EndsWith(@"\")){
+					this.txtPath.Text = ff.Path + @"\";
+				} else {
+					this.txtPath.Text = ff.Path;
 				}
-				
-			} catch (Exception ) {
-				throw ;
+				generator.Path = this.txtPath.Text;
 			}
 		}
 		
