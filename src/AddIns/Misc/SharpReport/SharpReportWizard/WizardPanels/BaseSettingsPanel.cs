@@ -30,7 +30,7 @@ namespace ReportGenerator{
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.TextBox txtReportName;
-		private System.Windows.Forms.ComboBox cboReportType;
+//		private System.Windows.Forms.ComboBox cboReportType;
 		private System.Windows.Forms.ComboBox cboGraphicsUnit;
 		private System.Windows.Forms.TextBox txtFileName;
 		private System.Windows.Forms.TextBox txtPath;
@@ -118,11 +118,8 @@ namespace ReportGenerator{
 		void DoInit(){
 			txtFileName.Text = GlobalValues.SharpReportPlainFileName;
 			txtReportName.Text = GlobalValues.SharpReportStandartFileName;
-					
-			cboReportType.Items.AddRange(Enum.GetNames (typeof(GlobalEnums.enmReportType)));
-			cboReportType.SelectedIndex = cboReportType.FindString(GlobalEnums.enmReportType.DataReport.ToString());
-			cboGraphicsUnit.Items.Add (GraphicsUnit.Millimeter);
-			cboGraphicsUnit.Items.Add (GraphicsUnit.Inch);
+			this.cboGraphicsUnit.Items.AddRange(Enum.GetNames(typeof (GraphicsUnit)));
+			                                    
 			cboGraphicsUnit.SelectedIndex = cboGraphicsUnit.FindString(GraphicsUnit.Millimeter.ToString());
 			
 			this.radioPullModell.Checked = true;
@@ -140,7 +137,8 @@ namespace ReportGenerator{
 				}
 				
 				generator.Path = this.txtPath.Text;
-				generator.GraphicsUnit = (GraphicsUnit)Enum.Parse(typeof(GraphicsUnit),this.cboGraphicsUnit.Text);
+				generator.GraphicsUnit = (GraphicsUnit)Enum.Parse(typeof(GraphicsUnit),
+				                                                  this.cboGraphicsUnit.Text);
 				SetSuccessor (this,new EventArgs());
 			}
 		}
@@ -204,7 +202,7 @@ namespace ReportGenerator{
 			this.txtPath = new System.Windows.Forms.TextBox();
 			this.txtFileName = new System.Windows.Forms.TextBox();
 			this.cboGraphicsUnit = new System.Windows.Forms.ComboBox();
-			this.cboReportType = new System.Windows.Forms.ComboBox();
+//			this.cboReportType = new System.Windows.Forms.ComboBox();
 			this.txtReportName = new System.Windows.Forms.TextBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -285,16 +283,19 @@ namespace ReportGenerator{
 			this.cboGraphicsUnit.Size = new System.Drawing.Size(248, 21);
 			this.cboGraphicsUnit.TabIndex = 17;
 			this.cboGraphicsUnit.TextChanged += new System.EventHandler(this.ChangedEvent);
+			this.cboGraphicsUnit.DropDownStyle = ComboBoxStyle.DropDownList;
 			// 
 			// cboReportType
 			// 
+			/*
 			this.cboReportType.Location = new System.Drawing.Point(112, 120);
 			this.cboReportType.Name = "cboReportType";
 			this.cboReportType.Size = new System.Drawing.Size(248, 21);
 			this.cboReportType.TabIndex = 16;
 			this.cboReportType.Visible = false;
 			this.cboReportType.SelectedIndexChanged += new System.EventHandler(this.ChangedEvent);
-			// 
+*/			
+// 
 			// txtReportName
 			// 
 			this.txtReportName.Location = new System.Drawing.Point(120, 40);
@@ -309,7 +310,7 @@ namespace ReportGenerator{
 			this.groupBox1.Controls.Add(this.groupBox2);
 			this.groupBox1.Controls.Add(this.button1);
 			this.groupBox1.Controls.Add(this.cboGraphicsUnit);
-			this.groupBox1.Controls.Add(this.cboReportType);
+//			this.groupBox1.Controls.Add(this.cboReportType);
 			this.groupBox1.Controls.Add(this.label4);
 			this.groupBox1.Controls.Add(this.label3);
 			this.groupBox1.Controls.Add(this.txtPath);

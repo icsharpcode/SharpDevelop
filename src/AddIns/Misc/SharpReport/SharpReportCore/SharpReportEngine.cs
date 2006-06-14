@@ -59,7 +59,7 @@ namespace SharpReportCore {
 			if (model.ReportSettings.ReportType != GlobalEnums.enmReportType.FormSheet) {
 				if (this.connectionObject == null) {
 					
-					if (model.ReportSettings.ConnectionString != "") {
+					if (String.IsNullOrEmpty(model.ReportSettings.ConnectionString)) {
 						this.connectionObject = new ConnectionObject (model.ReportSettings.ConnectionString);
 					}
 					
@@ -229,6 +229,9 @@ namespace SharpReportCore {
 		protected SharpReportCore.AbstractRenderer SetupPushDataRenderer (ReportModel model,
 		                                                                  DataTable dataTable) {
 			
+			if (model == null) {
+				throw new ArgumentNullException("model");
+			}
 			if (model.ReportSettings.ReportType != GlobalEnums.enmReportType.DataReport) {
 				throw new ArgumentException("SetupPushDataRenderer <No valid ReportModel>");
 			}
@@ -305,7 +308,7 @@ namespace SharpReportCore {
 		/// <param name="fileName">Path to ReportFile</param>
 		
 		public void PreviewStandartReport (string fileName) {
-			if (fileName.Length == 0) {
+			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
 			PreviewStandartReport (fileName,null);
@@ -313,7 +316,7 @@ namespace SharpReportCore {
 		
 		
 		public void PreviewStandartReport (string fileName,ReportParameters reportParameters) {
-			if (fileName.Length == 0) {
+			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
 
@@ -462,7 +465,7 @@ namespace SharpReportCore {
 		/// <param name="fileName"></param>
 		/// <param name="dataTable"></param>
 		public void PrintPushDataReport (string fileName,DataTable dataTable) {
-			if (fileName.Length == 0) {
+			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
 			if (dataTable == null) {

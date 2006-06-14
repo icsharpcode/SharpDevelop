@@ -169,9 +169,9 @@ namespace SharpReportCore {
 			base.ReportQueryPage (sender,qpea);
 		}
 		
-		protected override void ReportBegin(object sender, PrintEventArgs rpea) {
+		protected override void ReportBegin(object sender, PrintEventArgs pea) {
 			System.Console.WriteLine("ReportBegin (BeginPrint)");
-			base.ReportBegin (sender,rpea);
+			base.ReportBegin (sender,pea);
 			base.DataManager.ListChanged += new EventHandler<ListChangedEventArgs> (OnListChanged);
 			dataNavigator = base.DataManager.GetNavigator;
 			dataNavigator.ListChanged += new EventHandler<ListChangedEventArgs> (OnListChanged);

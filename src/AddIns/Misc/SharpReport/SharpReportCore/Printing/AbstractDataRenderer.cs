@@ -52,22 +52,7 @@ namespace SharpReportCore{
 				return base.RenderSection(this.CurrentSection, rpea);
 			}
 		}
-		protected int old_DoItems (BaseSection section, ReportPageEventArgs rpea) {
-			IContainerItem container = null;
-			bool hasContainer = false;
-			foreach (BaseReportItem item in section.Items) {
-				container = item as IContainerItem;
-				if (container != null) {
-					hasContainer = true;
-					break;
-				}
-			}
-			if (hasContainer) {
-				return DoContainerControl(section,container,rpea);
-			} else {
-				return base.RenderSection(section, rpea);
-			}
-		}
+		
 		
 		private int DoContainerControl (BaseSection section,
 		                                IContainerItem container,
@@ -115,16 +100,18 @@ namespace SharpReportCore{
 		#endregion
 		
 		#region IDisposable
-		public override void Dispose()
-		{
-			if (this.dataManager != null) {
-				this.dataManager.Dispose();
-				this.dataManager = null;
+		public override void Dispose(){
+			try {
+				if (this.dataManager != null) {
+					this.dataManager.Dispose();
+					this.dataManager = null;
+				}
+				if (this.navigator != null) {
+					this.navigator= null;
+				}
+			} finally {
+				base.Dispose();
 			}
-			if (this.navigator != null) {
-				this.navigator= null;
-			}
-			base.Dispose();
 		}
 		#endregion
 	}

@@ -88,6 +88,9 @@ namespace SharpReportCore {
 		
 		#endregion
 		protected void PageBreak(ReportPageEventArgs pea) {
+			if (pea == null) {
+				throw new ArgumentNullException("pea");
+			}
 			pea.PrintPageEventArgs.HasMorePages = true;
 			pea.ForceNewPage = true;
 		}
@@ -129,25 +132,31 @@ namespace SharpReportCore {
 		/// Calculates the rectangle wich can be used by Detail
 		/// </summary>
 		/// <returns></returns>
-		protected Rectangle DetailRectangle (ReportPageEventArgs e) {
+		protected Rectangle DetailRectangle (ReportPageEventArgs rpea) {
+			if (rpea == null) {
+				throw new ArgumentNullException("rpea");
+			}
 			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail,
 			                               CultureInfo.InvariantCulture);
 			
-			Rectangle rect = new Rectangle (e.PrintPageEventArgs.MarginBounds.Left,
+			Rectangle rect = new Rectangle (rpea.PrintPageEventArgs.MarginBounds.Left,
 			                               this.detailStart.Y ,
-			                                e.PrintPageEventArgs.MarginBounds.Width,
+			                                rpea.PrintPageEventArgs.MarginBounds.Width,
 			                                detailEnds.Y - detailStart.Y - (3 * gap));
 			return rect;
 		}
 		
-		protected PointF MeasureReportHeader (ReportPageEventArgs e) {
+		protected PointF MeasureReportHeader (ReportPageEventArgs rpea) {
+			if (rpea == null) {
+				throw new ArgumentNullException("rpea");
+			}
 			PointF endAt = new PointF();
-			if (e.PageNumber == 1) {
+			if (rpea.PageNumber == 1) {
 				sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportHeader,
 				                               CultureInfo.InvariantCulture);
 				if (this.CurrentSection.Items.Count > 0) {
 					this.CurrentSection.SectionOffset = reportSettings.DefaultMargins.Top;
-					FitSectionToItems (this.CurrentSection,e);
+					FitSectionToItems (this.CurrentSection,rpea);
 					endAt = new PointF (0,
 			                   reportSettings.DefaultMargins.Top + this.CurrentSection.Size.Height + Gap);
 				} else {
@@ -162,18 +171,20 @@ namespace SharpReportCore {
 		///</summary>
 		/// <param name="startAt">Section start at this PointF</param>
 		/// <param name="e">ReportPageEventArgs</param>
-		protected PointF MeasurePageHeader (PointF startat,ReportPageEventArgs e) {
-
+		protected PointF MeasurePageHeader (PointF startat,ReportPageEventArgs rpea) {
+			if (rpea == null) {
+				throw new ArgumentNullException("rpea");
+			}
 			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader,
 			                               CultureInfo.InvariantCulture);
 
-			if (e.PageNumber == 1) {
+			if (rpea.PageNumber == 1) {
 				this.CurrentSection.SectionOffset = (int)startat.Y + Gap;
 			} else {
 				this.CurrentSection.SectionOffset = reportSettings.DefaultMargins.Top;
 			}
 
-			FitSectionToItems (this.CurrentSection,e);
+			FitSectionToItems (this.CurrentSection,rpea);
 			return new PointF (0,
 			                   this.CurrentSection.SectionOffset + this.CurrentSection.Size.Height + Gap);
 		}
@@ -344,23 +355,23 @@ namespace SharpReportCore {
 		}
 		
 		
-		protected virtual void  ReportBegin (object sender,PrintEventArgs e) {
+		protected virtual void  ReportBegin (object sender,PrintEventArgs pea) {
 //			System.Console.WriteLine("\tAbstract - ReportBegin");
 		}
 		
 		
-		protected virtual void  PrintBodyStart (object sender,ReportPageEventArgs e) {
+		protected virtual void  PrintBodyStart (object sender,ReportPageEventArgs rpea) {
 //			System.Console.WriteLine("\tAbstract - PrintBodyStart");
 			this.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail,
 			                                    CultureInfo.InvariantCulture);
 			
 		}
 		
-		protected virtual void  PrintBodyEnd (object sender,ReportPageEventArgs e) {
+		protected virtual void  PrintBodyEnd (object sender,ReportPageEventArgs rpea) {
 //			System.Console.WriteLine("\tAbstarct - PrintBodyEnd");
 		}
 		
-		protected virtual void  PrintPageEnd (object sender,ReportPageEventArgs e) {	
+		protected virtual void  PrintPageEnd (object sender,ReportPageEventArgs rpea) {	
 //			System.Console.WriteLine("\tAbstract - PrintPageEnd");
 //			BaseSection section = null;
 //			section = CurrentSection;

@@ -44,6 +44,9 @@ namespace SharpReportCore {
 		}
 		
 		public void DrawBorder (Graphics graphics, RectangleF rectangle) {
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
 			using (Pen p = new Pen(baseLine.Color,baseLine.Thickness)) {
 				p.DashStyle = baseLine.DashStyle;
 				graphics.DrawRectangle (p,rectangle.Left,
@@ -54,6 +57,9 @@ namespace SharpReportCore {
 		}
 		
 		public void DrawBorder (Graphics graphics, Rectangle rectangle ) {
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
 			using (Pen p = new Pen(baseLine.Color,baseLine.Thickness)) {
 				p.DashStyle = baseLine.DashStyle;
 				graphics.DrawRectangle (p,rectangle);

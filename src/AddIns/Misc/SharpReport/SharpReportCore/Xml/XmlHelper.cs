@@ -43,6 +43,9 @@ namespace SharpReportCore {
 		/// <returns>"Report is SharpReport or not</returns>/returns>
 		/// 
 		public static bool IsSharpReport (XmlElement elem) {
+			if (elem == null) {
+				throw new ArgumentNullException("elem");
+			}
 			return (elem.Name.Equals (SharpReportCore.GlobalValues.SharpReportString));
 		}
 		

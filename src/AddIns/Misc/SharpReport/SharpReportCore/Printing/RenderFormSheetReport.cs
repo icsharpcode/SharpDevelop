@@ -158,14 +158,14 @@ namespace SharpReportCore {
 		protected override void PrintBodyStart (object sender,ReportPageEventArgs rpea) {
 			base.PrintBodyStart (sender,rpea);
 			
-			BaseSection section = base.CurrentSection;
-			section.SectionOffset = (int)this.currentPoint.Y + base.Gap;
+//			BaseSection section = base.CurrentSection;
+			base.CurrentSection.SectionOffset = (int)this.currentPoint.Y + base.Gap;
 			
-			Rectangle detailRect = base.DetailRectangle (rpea);
-			FitSectionToItems (section,rpea);
+			
+			FitSectionToItems (base.CurrentSection,rpea);
 			
 			this.AddSectionEvents();
-			base.RenderSection (section,rpea);
+			base.RenderSection (base.CurrentSection,rpea);
 			this.RemoveSectionEvents();
 		}
 		/// <summary>

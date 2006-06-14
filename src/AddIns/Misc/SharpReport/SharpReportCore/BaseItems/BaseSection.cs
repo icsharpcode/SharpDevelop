@@ -33,11 +33,12 @@ namespace SharpReportCore {
 		#region Constructors
 		
 		public BaseSection(): base() {
-			this.Name = String.Empty;
+//			this.Name = String.Empty;
+			base.Name = String.Empty;
 		}
 		
 		public BaseSection (string sectionName) :base(){
-			this.Name = sectionName;
+			base.Name = sectionName;
 		}
 		
 		#endregion

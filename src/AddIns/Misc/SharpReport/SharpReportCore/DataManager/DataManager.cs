@@ -32,11 +32,8 @@ namespace SharpReportCore {
 		ConnectionObject connectionObject;
 		IDbConnection connection;
 		IDataViewStrategy dataViewStrategy;
-		GroupSeperator groupSeperator;
 		
 		public event EventHandler <ListChangedEventArgs> ListChanged;
-//		public event EventHandler <GroupChangedEventArgs> GroupChanged;
-//		public event EventHandler <EventArgs> GroupChanging;
 		
 		/// <summary>
 		/// use this Constructor for PullDataReports
@@ -287,7 +284,6 @@ namespace SharpReportCore {
 		}
 		
 		private void OnGroupChange (object sender,GroupChangedEventArgs e) {
-			this.groupSeperator = e.GroupSeperator;
 			this.NotifyGroupChanging();
 		}
 		#endregion

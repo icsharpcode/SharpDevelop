@@ -33,11 +33,6 @@ namespace SharpReportCore {
 	
 	public abstract class BaseShape : object {
 		
-	
-		public BaseShape() {
-		}
-		
-		
 		public void FillShape (Graphics graphics, Brush brush,RectangleF rectangle) {
 			
 			GraphicsPath path1 = this.CreatePath(rectangle);
