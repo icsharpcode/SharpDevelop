@@ -594,18 +594,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectService.SaveSolution();
 		}
 		
-		public void CopyDirectoryHere(string fileName, bool performMove)
+		public void CopyDirectoryHere(string directoryName, bool performMove)
 		{
-			AddExistingItemsToProject.CopyDirectory(fileName, this, true);
+			string copiedName = Path.Combine(Directory, Path.GetFileName(directoryName));
+			if (FileUtility.IsEqualFileName(directoryName, copiedName))
+				return;
+			AddExistingItemsToProject.CopyDirectory(directoryName, this, true);
 			if (performMove) {
 				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 					if (content.FileName != null &&
-					    FileUtility.IsBaseDirectory(fileName, content.FileName))
+					    FileUtility.IsBaseDirectory(directoryName, content.FileName))
 					{
-						content.FileName = FileUtility.RenameBaseDirectory(content.FileName, fileName, Path.Combine(this.directory, Path.GetFileName(fileName)));
+						content.FileName = FileUtility.RenameBaseDirectory(content.FileName, directoryName, Path.Combine(this.directory, Path.GetFileName(directoryName)));
 					}
 				}
-				FileService.RemoveFile(fileName, true);
+				FileService.RemoveFile(directoryName, true);
 			}
 		}
 		

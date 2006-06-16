@@ -207,6 +207,9 @@ namespace ICSharpCode.SharpDevelop.Project
 						results.NativeCompilerReturnValue = 0;
 					else
 						results.NativeCompilerReturnValue = 1;
+				} catch (ArgumentException ex) {
+					results.NativeCompilerReturnValue = -2;
+					results.Errors.Add(new CompilerError(null, -1, -1, "", ex.Message));
 				} catch (InvalidProjectFileException ex) {
 					results.NativeCompilerReturnValue = -2;
 					results.Errors.Add(new CompilerError(ex.ProjectFile, ex.LineNumber, ex.ColumnNumber, ex.ErrorCode, ex.Message));
