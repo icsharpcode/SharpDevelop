@@ -271,9 +271,9 @@
 		<MenuItem id = "Clean project"
 		          label = "${res:ProjectComponent.ContextMenu.Clean}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.CleanProject"/>
-		<MenuItem id = "Publish project"
+		<!--<MenuItem id = "Publish project"
 		          label = "${res:XML.MainMenu.BuildMenu.PublishProject}"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>-->
 		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
 		
 		<MenuItem id = "ProjectAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu" >
@@ -1327,9 +1327,9 @@
 					<MenuItem id    = "Clean project"
 					          label = "${res:XML.MainMenu.BuildMenu.CleanProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.CleanProject"/>
-					<MenuItem id    = "Publish project"
+					<!--<MenuItem id    = "Publish project"
 					          label = "${res:XML.MainMenu.BuildMenu.PublishProject}"
-					          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>-->
 				</Condition>
 				<MenuItem id = "Separator2" type = "Separator" />
 				<MenuItem id = "SetConfiguration"

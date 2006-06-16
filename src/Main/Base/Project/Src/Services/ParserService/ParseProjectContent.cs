@@ -198,7 +198,7 @@ namespace ICSharpCode.Core
 			int progressStart = StatusBarService.ProgressMonitor.WorkDone;
 			ParseableFileContentEnumerator enumerator = new ParseableFileContentEnumerator(project);
 			try {
-				StatusBarService.ProgressMonitor.TaskName = "Parsing " + project.Name + "...";
+				StatusBarService.ProgressMonitor.TaskName = "${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing} " + project.Name + "...";
 				
 				IProjectContent[] referencedContents;
 				lock (this.referencedContents) {

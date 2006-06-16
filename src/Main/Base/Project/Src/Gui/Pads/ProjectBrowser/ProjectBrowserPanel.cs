@@ -105,6 +105,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		// -> nodes whose text contains '[' can not be saved
 		public static string GetViewStateString(TreeView treeView)
 		{
+			if (treeView.Nodes.Count == 0) return "";
 			StringBuilder b = new StringBuilder();
 			WriteViewStateString(b, treeView.Nodes[0]);
 			return b.ToString();

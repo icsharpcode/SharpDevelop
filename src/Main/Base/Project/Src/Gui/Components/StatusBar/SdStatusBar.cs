@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			statusProgressBar.Value = 0;
 			statusProgressBar.Maximum = totalWork;
-			jobNamePanel.Text = taskName;
+			SetTaskName();
 			jobNamePanel.Visible = true;
 			statusProgressBar.Visible = true;
 		}
@@ -187,7 +187,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void SetTaskName()
 		{
-			jobNamePanel.Text = taskName;
+			jobNamePanel.Text = StringParser.Parse(taskName);
 		}
 	}
 }

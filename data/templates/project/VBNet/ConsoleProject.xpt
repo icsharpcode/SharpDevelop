@@ -51,6 +51,7 @@ Module Main
 	End Sub
 End Module
 ]]></File>
+		<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
 			</Files>
 		</Project>
 	</Combine>

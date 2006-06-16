@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template originator   = "Mike Krueger"
           created      = "02/01/2003"
-          lastModified = "14/01/2006">
+          lastModified = "16/06/2006">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -29,6 +29,7 @@
 
 			<ProjectItems>
 				<Reference Include="System" />
+				<Reference Include="System.Configuration.Install" />
 				<Reference Include="System.Data" />
 				<Reference Include="System.ServiceProcess" />
 				<Reference Include="System.Xml" />
@@ -49,6 +50,8 @@ namespace ${StandardNamespace}
 {
 	public class ${ProjectName} : ServiceBase
 	{
+		public const string MyServiceName = "${ProjectName}";
+		
 		public ${ProjectName}()
 		{
 			InitializeComponent();
@@ -56,7 +59,7 @@ namespace ${StandardNamespace}
 		
 		private void InitializeComponent()
 		{
-			this.ServiceName = "${ProjectName}";
+			this.ServiceName = MyServiceName;
 		}
 		
 		/// <summary>
@@ -86,6 +89,35 @@ namespace ${StandardNamespace}
 	}
 }
 ]]></File>
+				<File name="ProjectInstaller.cs"><![CDATA[${StandardHeader.C#}
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration.Install;
+using System.ServiceProcess;
+
+namespace ${StandardNamespace}
+{
+	[RunInstaller(true)]
+	public class ProjectInstaller : Installer
+	{
+		private ServiceProcessInstaller serviceProcessInstaller;
+		private ServiceInstaller serviceInstaller;
+		
+		public ProjectInstaller()
+		{
+			serviceProcessInstaller = new ServiceProcessInstaller();
+			serviceInstaller = new ServiceInstaller();
+			// Here you can set properties on serviceProcessInstaller or register event handlers
+			serviceProcessInstaller.Account = ServiceAccount.LocalService;
+			
+			serviceInstaller.ServiceName = ${ProjectName}.MyServiceName;
+			this.Installers.AddRange(new Installer[] { serviceProcessInstaller, serviceInstaller });
+		}
+	}
+}
+]]></File>
 				<File name="Program.cs"><![CDATA[${StandardHeader.C#}
 
 using System;
@@ -108,34 +140,7 @@ namespace ${ProjectName}
 	}
 }
 ]]></File>
-				<File name="AssemblyInfo.cs"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-// Information about this assembly is defined by the following
-// attributes.
-//
-// change them to the information which is associated with the assembly
-// you compile.
-
-[assembly: AssemblyTitle("")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// The assembly version has following format :
-//
-// Major.Minor.Build.Revision
-//
-// You can specify all values by your own or you can build default build and revision
-// numbers with the '*' character (the default):
-
-[assembly: AssemblyVersion("1.0.*")]
-
-]]></File>
+				<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
 			</Files>
 		</Project>
 	</Combine>

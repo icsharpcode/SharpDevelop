@@ -27,8 +27,8 @@
 			
 			<ProjectItems>
 				<Reference Include="System" />
+				<Reference Include="System.Configuration.Install" />
 				<Reference Include="System.Data" />
-				<Reference Include="System.Deployment" />
 				<Reference Include="System.ServiceProcess" />
 				<Reference Include="System.Xml" />
 				
@@ -49,11 +49,17 @@ Imports System.ServiceProcess
 Public Class ${ProjectName}
 	Inherits ServiceBase
 	
+	Public Const MyServiceName As String = "${ProjectName}"
+	
 	' The main entry point for the process
 	<MTAThread()> _
 	Shared Sub Main()
 		' To run more than one service you have to add them here
 		ServiceBase.Run(New ServiceBase() {New ${ProjectName}})
+	End Sub
+	
+	Public Sub New()
+		Me.ServiceName = MyServiceName
 	End Sub
 	
 	Protected Overrides Sub OnStart(ByVal args() As String)
@@ -66,34 +72,30 @@ Public Class ${ProjectName}
 End Class
 
 ]]></File>
-		<File name="AssemblyInfo.vb">
-			<![CDATA[Imports System.Reflection
-Imports System.Runtime.CompilerServices
+				<File name="ProjectInstaller.vb"><![CDATA[${StandardHeader.VBNET}
 
-' Information about this assembly is defined by the following
-' attributes.
-'
-' change them to the information which is associated with the assembly
-' you compile.
+Imports System.ComponentModel
+Imports System.Configuration.Install
+Imports System.ServiceProcess
 
-<assembly: AssemblyTitle("")>
-<assembly: AssemblyDescription("")>
-<assembly: AssemblyConfiguration("")>
-<assembly: AssemblyCompany("")>
-<assembly: AssemblyProduct("")>
-<assembly: AssemblyCopyright("")>
-<assembly: AssemblyTrademark("")>
-<assembly: AssemblyCulture("")>
+<RunInstaller(True)> _
+Public Class ProjectInstaller
+	Inherits Installer
+	
+	Private serviceProcessInstaller As New ServiceProcessInstaller
+	Private serviceInstaller As New ServiceInstaller
+	
+	Public Sub New()
+		' Here you can set properties on serviceProcessInstaller or register event handlers
+		serviceProcessInstaller.Account = ServiceAccount.LocalService
+		
+		serviceInstaller.ServiceName = ${ProjectName}.MyServiceName
+		Me.Installers.AddRange(New Installer() { serviceProcessInstaller, serviceInstaller })
+	End Sub
+End Class
 
-' The assembly version has following format :
-'
-' Major.Minor.Build.Revision
-'
-' You can specify all values by your own or you can build default build and revision
-' numbers with the '*' character (the default):
-
-<assembly: AssemblyVersion("1.0.*")>
 ]]></File>
+		<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
 			</Files>
 		</Project>
 	</Combine>	
