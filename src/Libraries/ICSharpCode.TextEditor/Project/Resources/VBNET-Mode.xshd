@@ -39,7 +39,7 @@
 			</Span>
 			
 			<Span name = "LINECOMMENT" bold = "false" italic = "false" color = "Green" stopateol = "true">
-				<Begin>REM</Begin>
+				<Begin singleword="true">REM@C</Begin>
 			</Span>
 			
 			<KeyWords name = "DataTypes" bold="false" italic="false" color="#6F002F">

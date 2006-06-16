@@ -168,6 +168,16 @@ namespace ICSharpCode.TextEditor.Document
 						++i;
 						if (i < expr.Length) {
 							switch (expr[i]) {
+								case 'C': // match whitespace or punctuation
+									if (index + j == this.Offset || index + j >= this.Offset + this.Length) {
+										// nothing (EOL or SOL)
+									} else {
+										char ch = document.GetCharAt(this.Offset + index + j);
+										if (!Char.IsWhiteSpace(ch) && !Char.IsPunctuation(ch)) {
+											return false;
+										} 
+									}
+									break;
 								case '!': // don't match the following expression
 								{
 									StringBuilder whatmatch = new StringBuilder();

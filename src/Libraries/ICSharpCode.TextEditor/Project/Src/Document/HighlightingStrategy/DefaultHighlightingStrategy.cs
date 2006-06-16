@@ -342,7 +342,7 @@ namespace ICSharpCode.TextEditor.Document
 			
 			// Check if the span state has changed, if so we must re-render the next line
 			// This check may seem utterly complicated but I didn't want to introduce any function calls
-			// or alllocations here for perf reasons.
+			// or allocations here for perf reasons.
 			if(currentLine.HighlightSpanStack != currentSpanStack) {
 				if (currentLine.HighlightSpanStack == null) {
 					processNextLine = false;
@@ -618,7 +618,7 @@ namespace ICSharpCode.TextEditor.Document
 						// check for SPAN BEGIN
 						if (activeRuleSet != null) {
 							foreach (Span span in activeRuleSet.Spans) {
-								if (currentLine.MatchExpr(span.Begin, i, document, activeRuleSet.IgnoreCase)) {
+								if ((!span.IsBeginSingleWord || currentLength == 0) && currentLine.MatchExpr(span.Begin, i, document, activeRuleSet.IgnoreCase)) {
 									PushCurWord(document, ref markNext, words);
 									string regex = currentLine.GetRegString(span.Begin, i, document);
 									

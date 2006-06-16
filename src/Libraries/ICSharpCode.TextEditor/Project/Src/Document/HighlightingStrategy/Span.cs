@@ -31,6 +31,8 @@ namespace ICSharpCode.TextEditor.Document
 		HighlightRuleSet ruleSet = null;
 		bool        noEscapeSequences = false;
 		bool		ignoreCase = false;
+		bool        isBeginSingleWord = false;
+		bool        isEndSingleWord = false;
 		
 		internal HighlightRuleSet RuleSet {
 			get {
@@ -53,6 +55,18 @@ namespace ICSharpCode.TextEditor.Document
 		public bool StopEOL {
 			get {
 				return stopEOL;
+			}
+		}
+		
+		public bool IsBeginSingleWord {
+			get {
+				return isBeginSingleWord;
+			}
+		}
+		
+		public bool IsEndSingleWord {
+			get {
+				return isEndSingleWord;
 			}
 		}
 		
@@ -128,9 +142,18 @@ namespace ICSharpCode.TextEditor.Document
 			begin   = span["Begin"].InnerText.ToCharArray();
 			beginColor = new HighlightColor(span["Begin"], color);
 			
+			if (span["Begin"].HasAttribute("singleword")) {
+				this.isBeginSingleWord = Boolean.Parse(span["Begin"].GetAttribute("singleword"));
+			}
+			
+			
 			if (span["End"] != null) {
 				end  = span["End"].InnerText.ToCharArray();
 				endColor = new HighlightColor(span["End"], color);
+				if (span["End"].HasAttribute("singleword")) {
+					this.isEndSingleWord = Boolean.Parse(span["End"].GetAttribute("singleword"));
+				}
+
 			}
 		}
 	}
