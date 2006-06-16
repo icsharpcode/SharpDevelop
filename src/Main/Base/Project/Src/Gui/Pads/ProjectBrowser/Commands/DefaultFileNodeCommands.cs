@@ -61,7 +61,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			dependentNodes.ForEach(ExcludeFileNode);
 			
 			bool isLink = fileNode.IsLink;
-			ProjectService.RemoveProjectItem(fileNode.Project, fileNode.ProjectItem);
+			if (fileNode.ProjectItem != null) { // don't try to exclude same node twice
+				ProjectService.RemoveProjectItem(fileNode.Project, fileNode.ProjectItem);
+			}
 			if (isLink) {
 				fileNode.Remove();
 			} else {
