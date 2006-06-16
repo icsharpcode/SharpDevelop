@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public class ExcludeFileFromProject : AbstractMenuCommand
 	{
-		void ExcludeFileNode(FileNode fileNode)
+		public static void ExcludeFileNode(FileNode fileNode)
 		{
 			List<FileNode> dependentNodes = new List<FileNode>();
 			foreach (TreeNode subNode in fileNode.Nodes) {
@@ -60,15 +60,20 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 			dependentNodes.ForEach(ExcludeFileNode);
 			
+			bool isLink = fileNode.IsLink;
 			ProjectService.RemoveProjectItem(fileNode.Project, fileNode.ProjectItem);
-			fileNode.ProjectItem = null;
-			fileNode.FileNodeStatus = FileNodeStatus.None;
-			if (fileNode.Parent is ExtTreeNode) {
-				((ExtTreeNode)fileNode.Parent).UpdateVisibility();
+			if (isLink) {
+				fileNode.Remove();
+			} else {
+				fileNode.ProjectItem = null;
+				fileNode.FileNodeStatus = FileNodeStatus.None;
+				if (fileNode.Parent is ExtTreeNode) {
+					((ExtTreeNode)fileNode.Parent).UpdateVisibility();
+				}
 			}
 		}
 		
-		void ExcludeDirectoryNode(DirectoryNode directoryNode)
+		static void ExcludeDirectoryNode(DirectoryNode directoryNode)
 		{
 			if (directoryNode.ProjectItem != null) {
 				ProjectService.RemoveProjectItem(directoryNode.Project, directoryNode.ProjectItem);

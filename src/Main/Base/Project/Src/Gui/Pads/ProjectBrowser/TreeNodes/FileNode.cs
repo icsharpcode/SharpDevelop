@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		string         fileName       = String.Empty;
 		FileNodeStatus fileNodeStatus = FileNodeStatus.None;
 		ProjectItem    projectItem    = null;
-	
+		
 		public override bool Visible {
 			get {
 				return ShowAll || fileNodeStatus != FileNodeStatus.None;
@@ -199,20 +199,22 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Delete()
 		{
-			if (FileNodeStatus == FileNodeStatus.Missing) {
-				FileService.RemoveFile(FileName, false);
-				Project.Save();
-			} else {
-				if (Nodes.Count > 0) {
-					if (MessageService.AskQuestion(GetQuestionText("${res:ProjectComponent.ContextMenu.DeleteWithDependentFiles.Question}"))) {
-						DeleteChildNodes();
-						FileService.RemoveFile(FileName, false);
-						Project.Save();
-					}
-				} else if (MessageService.AskQuestion(GetQuestionText("${res:ProjectComponent.ContextMenu.Delete.Question}"))) {
+			if (Nodes.Count > 0) {
+				if (MessageService.AskQuestion(GetQuestionText("${res:ProjectComponent.ContextMenu.DeleteWithDependentFiles.Question}"))) {
+					DeleteChildNodes();
 					FileService.RemoveFile(FileName, false);
 					Project.Save();
 				}
+			} else if (!File.Exists(FileName)) {
+				FileService.RemoveFile(FileName, false);
+				Project.Save();
+			} else if (MessageService.AskQuestion(GetQuestionText("${res:ProjectComponent.ContextMenu.Delete.Question}"))) {
+				FileService.RemoveFile(FileName, false);
+				if (IsLink) {
+					// we need to manually remove the link
+					Commands.ExcludeFileFromProject.ExcludeFileNode(this);
+				}
+				Project.Save();
 			}
 		}
 		
