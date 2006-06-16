@@ -168,6 +168,22 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void MultipleFields()
+		{
+			TestMember("Private example, test As Single",
+			           "private float example;\n" +
+			           "private float test;");
+		}
+		
+		[Test]
+		public void MultipleVariables()
+		{
+			TestStatement("Dim example, test As Single",
+			              "float example;\n" +
+			              "float test;");
+		}
+		
+		[Test]
 		public void PInvoke()
 		{
 			TestMember("Declare Function SendMessage Lib \"user32.dll\" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As UIntPtr, ByVal lParam As IntPtr) As IntPtr",
@@ -311,6 +327,94 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			              "do {\n" +
 			              "}\n" +
 			              "while (!(i == 10000));");
+		}
+		
+		[Test]
+		public void UsingStatement()
+		{
+			TestStatement("Using r1 As New StreamReader(file1), r2 As New StreamReader(file2)\n" +
+			              "End Using",
+			              "using (StreamReader r1 = new StreamReader(file1)) {\n" +
+			              "\tusing (StreamReader r2 = new StreamReader(file2)) {\n" +
+			              "\t}\n" +
+			              "}");
+		}
+		
+		[Test]
+		public void SwitchStatement()
+		{
+			TestStatement(@"Select Case i
+                  Case 0 To 5
+                        i = 10
+                  Case 11
+                        i = 0
+                  Case Else
+                        i = 9
+            End Select",
+			              "switch (i) {\n" +
+			              "\tcase 0:\n" +
+			              "\tcase 1:\n" +
+			              "\tcase 2:\n" +
+			              "\tcase 3:\n" +
+			              "\tcase 4:\n" +
+			              "\tcase 5:\n" +
+			              "\t\ti = 10;\n" +
+			              "\t\tbreak;\n" +
+			              "\tcase 11:\n" +
+			              "\t\ti = 0;\n" +
+			              "\t\tbreak;\n" +
+			              "\tdefault:\n" +
+			              "\t\ti = 9;\n" +
+			              "\t\tbreak;\n" +
+			              "}");
+		}
+		
+		[Test]
+		public void FunctionWithImplicitReturn()
+		{
+			TestMember("Public Function run(i As Integer) As Integer\n" +
+			           " run = 0\n" +
+			           "End Function",
+			           "public int run(int i)\n" +
+			           "{\n" +
+			           "\treturn 0;\n" +
+			           "}");
+		}
+		
+		[Test]
+		public void FunctionWithImplicitReturn2()
+		{
+			TestMember("Public Function run(i As Integer) As Integer\n" +
+			           " While something\n" +
+			           "   run += i\n" +
+			           " End While\n" +
+			           "End Function",
+			           "public int run(int i)\n" +
+			           "{\n" +
+			           "\tint " + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = 0;\n" +
+			           "\twhile (something) {\n" +
+			           "\t\t" + VBNetConstructsConvertVisitor.FunctionReturnValueName + " += i;\n" +
+			           "\t}\n" +
+			           "\treturn " + VBNetConstructsConvertVisitor.FunctionReturnValueName + ";\n" +
+			           "}");
+		}
+		
+		[Test]
+		public void FunctionWithImplicitReturn3()
+		{
+			TestMember("Public Function run(i As Integer) As CustomType\n" +
+			           " While something\n" +
+			           "   run = New CustomType()\n" +
+			           " End While\n" +
+			           "End Function",
+			           "public CustomType run(int i)\n" +
+			           "{\n" +
+			           "\tCustomType " + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = null;\n" +
+			           "\twhile (something) {\n" +
+			           "\t\t" + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = new CustomType();\n" +
+			           "\t}\n" +
+			           "\treturn " + VBNetConstructsConvertVisitor.FunctionReturnValueName + ";\n" +
+			           "}");
 		}
 	}
 }

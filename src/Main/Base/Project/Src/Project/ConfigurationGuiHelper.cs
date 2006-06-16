@@ -346,8 +346,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				int val;
 				if (!int.TryParse(txt, style, NumberFormatInfo.InvariantInfo, out val)) {
 					textBox.Focus();
-					// TODO: Translate Please enter a valid number.
-					MessageService.ShowMessage("Please enter a valid number.");
+					MessageService.ShowMessage("${res:Dialog.ProjectOptions.PleaseEnterValidNumber}");
 					return false;
 				}
 				Set(val.ToString(NumberFormatInfo.InvariantInfo));

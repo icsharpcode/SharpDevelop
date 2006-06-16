@@ -468,7 +468,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#region Type level
 		public object Visit(FieldDeclaration fieldDeclaration, object data)
 		{
-			// TODO: use FieldDeclaration.GetTypeForField and VB.NET fields aren't that easy....
 			if (!fieldDeclaration.TypeReference.IsNull) {
 				VisitAttributes(fieldDeclaration.Attributes, data);
 				outputFormatter.Indent();
@@ -479,13 +478,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Semicolon);
 				outputFormatter.NewLine();
 			} else {
-				foreach (VariableDeclaration varDecl in fieldDeclaration.Fields) {
+				for (int i = 0; i < fieldDeclaration.Fields.Count; i++) {
 					VisitAttributes(fieldDeclaration.Attributes, data);
 					outputFormatter.Indent();
 					OutputModifier(fieldDeclaration.Modifier);
-					nodeTracker.TrackedVisit(varDecl.TypeReference, data);
+					nodeTracker.TrackedVisit(fieldDeclaration.GetTypeForField(i), data);
 					outputFormatter.Space();
-					nodeTracker.TrackedVisit(varDecl, data);
+					nodeTracker.TrackedVisit(fieldDeclaration.Fields[i], data);
 					outputFormatter.PrintToken(Tokens.Semicolon);
 					outputFormatter.NewLine();
 				}
@@ -868,7 +867,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (blockStatement.IsNull) {
 				outputFormatter.PrintToken(Tokens.Semicolon);
 				outputFormatter.NewLine();
-				nodeTracker.EndNode(blockStatement);
 			} else {
 				outputFormatter.BeginBrace(braceStyle);
 				foreach (Statement stmt in blockStatement.Children) {
@@ -877,9 +875,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					if (!outputFormatter.LastCharacterIsNewLine)
 						outputFormatter.NewLine();
 				}
-				nodeTracker.EndNode(blockStatement);
 				outputFormatter.EndBrace();
 			}
+			nodeTracker.EndNode(blockStatement);
 		}
 		
 		public object Visit(BlockStatement blockStatement, object data)
@@ -1240,6 +1238,30 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				nodeTracker.TrackedVisit(caseLabel.Label, data);
 			}
 			outputFormatter.PrintToken(Tokens.Colon);
+			if (!caseLabel.ToExpression.IsNull) {
+				PrimitiveExpression pl = caseLabel.Label as PrimitiveExpression;
+				PrimitiveExpression pt = caseLabel.ToExpression as PrimitiveExpression;
+				if (pl != null && pt != null && pl.Value is int && pt.Value is int) {
+					int plv = (int)pl.Value;
+					int prv = (int)pt.Value;
+					if (plv < prv && plv + 12 > prv) {
+						for (int i = plv + 1; i <= prv; i++) {
+							outputFormatter.NewLine();
+							outputFormatter.Indent();
+							outputFormatter.PrintToken(Tokens.Case);
+							outputFormatter.Space();
+							outputFormatter.PrintText(i.ToString(NumberFormatInfo.InvariantInfo));
+							outputFormatter.PrintToken(Tokens.Colon);
+						}
+					} else {
+						outputFormatter.PrintText(" // TODO: to ");
+						nodeTracker.TrackedVisit(caseLabel.ToExpression, data);
+					}
+				} else {
+					outputFormatter.PrintText(" // TODO: to ");
+					nodeTracker.TrackedVisit(caseLabel.ToExpression, data);
+				}
+			}
 			outputFormatter.NewLine();
 			return null;
 		}

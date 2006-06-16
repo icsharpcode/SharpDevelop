@@ -71,8 +71,10 @@ namespace ICSharpCode.SharpDevelop.Commands
 				case "TaskService.Messages":
 					return TaskService.GetCount(TaskType.Message).ToString();
 				case "CurrentProjectName":
-					// TODO: Translate "<empty>"!!!!
-					return ProjectService.CurrentProject == null ? "<empty>" : ProjectService.CurrentProject.Name;
+					if (ProjectService.CurrentProject == null)
+						return "<no current project>";
+					else
+						return ProjectService.CurrentProject.Name;
 					
 			}
 			switch (tag.ToUpperInvariant()) {

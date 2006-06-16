@@ -30,8 +30,6 @@ namespace ICSharpCode.NRefactory.Parser
 		//   Override Finalize => Destructor
 		//   IIF(cond, true, false) => ConditionalExpression
 		//   Built-in methods => Prefix with class name
-		
-		// The following conversions should be implemented in the future:
 		//   Function A() \n A = SomeValue \n End Function -> convert to return statement
 		
 		Dictionary<string, string> usings;
@@ -192,8 +190,81 @@ namespace ICSharpCode.NRefactory.Parser
 				}
 			}
 			
+			if (methodDeclaration.TypeReference.SystemType != "System.Void" && methodDeclaration.Body.Children.Count > 0) {
+				if (IsAssignmentTo(methodDeclaration.Body.Children[methodDeclaration.Body.Children.Count - 1], methodDeclaration.Name))
+				{
+					ReturnStatement rs = new ReturnStatement(GetAssignmentFromStatement(methodDeclaration.Body.Children[methodDeclaration.Body.Children.Count - 1]).Right);
+					methodDeclaration.Body.Children.RemoveAt(methodDeclaration.Body.Children.Count - 1);
+					methodDeclaration.Body.AddChild(rs);
+				} else {
+					methodDeclaration.Body.AcceptVisitor(new ReturnStatementForFunctionAssignment(methodDeclaration.Name), null);
+					Expression init;
+					switch (methodDeclaration.TypeReference.SystemType) {
+						case "System.Int16":
+						case "System.Int32":
+						case "System.Int64":
+						case "System.Byte":
+						case "System.UInt16":
+						case "System.UInt32":
+						case "System.UInt64":
+							init = new PrimitiveExpression(0, "0");
+							break;
+						case "System.Boolean":
+							init = new PrimitiveExpression(false, "false");
+							break;
+						default:
+							init = new PrimitiveExpression(null, "null");
+							break;
+					}
+					methodDeclaration.Body.Children.Insert(0, new LocalVariableDeclaration(new VariableDeclaration(FunctionReturnValueName, init, methodDeclaration.TypeReference)));
+					methodDeclaration.Body.Children[0].Parent = methodDeclaration.Body;
+					methodDeclaration.Body.AddChild(new ReturnStatement(new IdentifierExpression(FunctionReturnValueName)));
+				}
+			}
+			
 			return base.Visit(methodDeclaration, data);
 		}
+		
+		public const string FunctionReturnValueName = "functionReturnValue";
+		
+		static AssignmentExpression GetAssignmentFromStatement(INode statement)
+		{
+			StatementExpression se = statement as StatementExpression;
+			if (se == null) return null;
+			return se.Expression as AssignmentExpression;
+		}
+		
+		static bool IsAssignmentTo(INode statement, string varName)
+		{
+			AssignmentExpression ass = GetAssignmentFromStatement(statement);
+			if (ass == null) return false;
+			IdentifierExpression ident = ass.Left as IdentifierExpression;
+			if (ident == null) return false;
+			return ident.Identifier.Equals(varName, StringComparison.InvariantCultureIgnoreCase);
+		}
+		
+		#region Create return statement for assignment to function name
+		class ReturnStatementForFunctionAssignment : AbstractAstTransformer
+		{
+			string functionName;
+			
+			public ReturnStatementForFunctionAssignment(string functionName)
+			{
+				this.functionName = functionName;
+			}
+			
+			public override object Visit(AssignmentExpression assignmentExpression, object data)
+			{
+				IdentifierExpression ident = assignmentExpression.Left as IdentifierExpression;
+				if (ident != null) {
+					if (ident.Identifier.Equals(functionName, StringComparison.InvariantCultureIgnoreCase)) {
+						ident.Identifier = FunctionReturnValueName;
+					}
+				}
+				return base.Visit(assignmentExpression, data);
+			}
+		}
+		#endregion
 		
 		public override object Visit(FieldDeclaration fieldDeclaration, object data)
 		{
@@ -322,6 +393,22 @@ namespace ICSharpCode.NRefactory.Parser
 				}
 			}
 			return null;
+		}
+		
+		public override object Visit(UsingStatement usingStatement, object data)
+		{
+			LocalVariableDeclaration lvd = usingStatement.ResourceAcquisition as LocalVariableDeclaration;
+			if (lvd != null && lvd.Variables.Count > 1) {
+				usingStatement.ResourceAcquisition = new LocalVariableDeclaration(lvd.Variables[0]);
+				for (int i = 1; i < lvd.Variables.Count; i++) {
+					UsingStatement n = new UsingStatement(new LocalVariableDeclaration(lvd.Variables[i]),
+					                                      usingStatement.EmbeddedStatement);
+					usingStatement.EmbeddedStatement = new BlockStatement();
+					usingStatement.EmbeddedStatement.AddChild(n);
+					usingStatement = n;
+				}
+			}
+			return base.Visit(usingStatement, data);
 		}
 	}
 }

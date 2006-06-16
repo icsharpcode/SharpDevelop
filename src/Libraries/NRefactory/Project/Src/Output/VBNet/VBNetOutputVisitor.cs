@@ -827,9 +827,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.NewLine();
 			
 			if (!IsAbstract(methodDeclaration)) {
+				nodeTracker.BeginNode(methodDeclaration.Body);
 				++outputFormatter.IndentationLevel;
 				exitTokenStack.Push(isSub ? Tokens.Sub : Tokens.Function);
-				nodeTracker.TrackedVisit(methodDeclaration.Body, data);
+				methodDeclaration.Body.AcceptVisitor(this, data);
 				exitTokenStack.Pop();
 				--outputFormatter.IndentationLevel;
 				
@@ -842,6 +843,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.Function);
 				}
 				outputFormatter.NewLine();
+				nodeTracker.EndNode(methodDeclaration.Body);
 			}
 			return null;
 		}

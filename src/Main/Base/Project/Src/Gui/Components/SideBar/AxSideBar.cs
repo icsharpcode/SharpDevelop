@@ -912,8 +912,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			protected override void OnMouseDown(MouseEventArgs e)
 			{
 				base.OnMouseDown(e);
-				mouseDownPos = e.Location;
-				sideBar.activeTab.ChoosedItem = sideBar.activeTab.SelectedItem;
+				if (e.Button == MouseButtons.Left) {
+					mouseDownPos = e.Location;
+					sideBar.activeTab.ChoosedItem = sideBar.activeTab.SelectedItem;
+				}
 				Refresh();
 			}
 			
