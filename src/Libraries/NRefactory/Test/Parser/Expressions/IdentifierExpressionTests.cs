@@ -50,10 +50,9 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetAssemblyIdentifierExpressionTest()
 		{
-			IdentifierExpression ie = ParseUtilVBNet.ParseExpression<IdentifierExpression>("Assembly");
-			Assert.AreEqual("Assembly", ie.Identifier);
+			Assert.AreEqual("Assembly", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Assembly").Identifier);
+			Assert.AreEqual("Custom", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Custom").Identifier);
 		}
 		#endregion
-		
 	}
 }

@@ -184,7 +184,8 @@ End Using");
 		public void SpecialIdentifiers()
 		{
 			// Assembly, Ansi and Until are contextual keywords
-			TestExpression("Assembly = Ansi * [For] + Until");
+			// Custom is valid inside methods, but not valid for field names
+			TestExpression("Assembly = Ansi * [For] + Until - [Custom]");
 		}
 		
 		[Test]
