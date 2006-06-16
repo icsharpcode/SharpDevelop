@@ -623,6 +623,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			string copiedFileName = Path.Combine(Directory, shortFileName);
 			if (FileUtility.IsEqualFileName(fileName, copiedFileName))
 				return;
+			bool wasFileReplacement = false;
+			if (File.Exists(copiedFileName)) {
+				if (!FileService.FireFileReplacing(copiedFileName, false))
+					return;
+				if (AddExistingItemsToProject.ShowReplaceExistingFileDialog(null, copiedFileName, false) == AddExistingItemsToProject.ReplaceExistingFile.Yes) {
+					wasFileReplacement = true;
+				} else {
+					// don't replace file
+					return;
+				}
+			}
 			
 			FileProjectItem newItem = AddExistingItemsToProject.CopyFile(fileName, this, true);
 			IProject sourceProject = Solution.FindProjectContainingFile(fileName);
@@ -658,6 +669,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 				FileService.RemoveFile(fileName, false);
+			}
+			if (wasFileReplacement) {
+				FileService.FireFileReplaced(copiedFileName, false);
 			}
 		}
 		

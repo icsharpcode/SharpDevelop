@@ -258,10 +258,29 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public static bool FireFileReplacing(string fileName, bool isDirectory)
+		{
+			FileCancelEventArgs e = new FileCancelEventArgs(fileName, isDirectory);
+			if (FileReplacing != null) {
+				FileReplacing(null, e);
+			}
+			return !e.Cancel;
+		}
+		
+		public static void FireFileReplaced(string fileName, bool isDirectory)
+		{
+			if (FileReplaced != null) {
+				FileReplaced(null, new FileEventArgs(fileName, isDirectory));
+			}
+		}
+		
 		public static event EventHandler<FileRenamingEventArgs> FileRenaming;
 		public static event EventHandler<FileRenameEventArgs> FileRenamed;
 		
 		public static event EventHandler<FileCancelEventArgs> FileRemoving;
 		public static event EventHandler<FileEventArgs> FileRemoved;
+		
+		public static event EventHandler<FileCancelEventArgs> FileReplacing;
+		public static event EventHandler<FileEventArgs> FileReplaced;
 	}
 }
