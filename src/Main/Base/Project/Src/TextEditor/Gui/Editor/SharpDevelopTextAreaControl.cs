@@ -34,12 +34,26 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		readonly static string advancedHighlighterPath = "/AddIns/DefaultTextEditor/AdvancedHighlighter";
 		
 		QuickClassBrowserPanel quickClassBrowserPanel = null;
+		Control customQuickClassBrowserPanel = null;
 		ErrorDrawer errorDrawer;
 		IAdvancedHighlighter advancedHighlighter;
 		
 		public QuickClassBrowserPanel QuickClassBrowserPanel {
 			get {
 				return quickClassBrowserPanel;
+			}
+		}
+		public Control CustomQuickClassBrowserPanel {
+			get	{
+				return customQuickClassBrowserPanel;
+			}
+			set	{
+				if (customQuickClassBrowserPanel != null) {
+					RemoveQuickClassBrowserPanel();
+					customQuickClassBrowserPanel.Dispose();
+				}
+				customQuickClassBrowserPanel = value;
+				ActivateQuickClassBrowserOnDemand();
 			}
 		}
 		
@@ -100,6 +114,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				if (quickClassBrowserPanel != null) {
 					quickClassBrowserPanel.Dispose();
 					quickClassBrowserPanel = null;
+				}
+				if (customQuickClassBrowserPanel != null) {
+					customQuickClassBrowserPanel.Dispose();
+					customQuickClassBrowserPanel = null;
 				}
 				if (advancedHighlighter != null) {
 					advancedHighlighter.Dispose();
@@ -189,6 +207,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				quickClassBrowserPanel = null;
 				textAreaPanel.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			}
+			if (customQuickClassBrowserPanel != null) {
+				if (Controls.Contains(customQuickClassBrowserPanel)) {
+					Controls.Remove(customQuickClassBrowserPanel);
+					customQuickClassBrowserPanel.Enabled = false;
+					textAreaPanel.BorderStyle = System.Windows.Forms.BorderStyle.None;
+				}
+			}
 		}
 		void ShowQuickClassBrowserPanel()
 		{
@@ -196,6 +221,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				quickClassBrowserPanel = new QuickClassBrowserPanel(this);
 				Controls.Add(quickClassBrowserPanel);
 				textAreaPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			}
+			if (customQuickClassBrowserPanel != null) {
+				if (quickClassBrowserPanel != null)
+					RemoveQuickClassBrowserPanel();
+				if (!Controls.Contains(customQuickClassBrowserPanel)) {
+					Controls.Add(customQuickClassBrowserPanel);
+					customQuickClassBrowserPanel.Enabled = true;
+					textAreaPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+				}
+				return;
 			}
 		}
 		public void ActivateQuickClassBrowserOnDemand()
