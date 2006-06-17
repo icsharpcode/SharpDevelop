@@ -41,12 +41,10 @@ namespace SharpReportCore {
          StreamingContext context) : base(info, context){
          // Implement type-specific serialization constructor logic.
       	}
+		
 		public string ErrorMessage {
 			get {
 				return errorMessage;
-			}
-			set {
-				errorMessage = value;
 			}
 		}
 	}

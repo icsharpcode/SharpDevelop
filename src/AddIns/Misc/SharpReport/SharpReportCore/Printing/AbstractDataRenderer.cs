@@ -27,8 +27,8 @@ namespace SharpReportCore{
 		}
 		
 		#region overrides
-		protected override void ReportBegin(object sender, PrintEventArgs e){
-			base.ReportBegin(sender, e);
+		protected override void ReportBegin(object sender, PrintEventArgs pea){
+			base.ReportBegin(sender, pea);
 		}
 		
 		
@@ -100,8 +100,9 @@ namespace SharpReportCore{
 		#endregion
 		
 		#region IDisposable
-		public override void Dispose(){
+		public new void Dispose(){
 			try {
+				System.Console.WriteLine("Abstarct:Dispose");
 				if (this.dataManager != null) {
 					this.dataManager.Dispose();
 					this.dataManager = null;

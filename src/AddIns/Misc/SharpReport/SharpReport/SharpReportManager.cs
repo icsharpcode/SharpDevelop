@@ -189,6 +189,7 @@ namespace SharpReport{
 		/// <param name="model"><see cref="">ReportModel</see></param>
 		/// <param name="showInUserControl"></param>
 		public void ReportPreview (ReportModel model,bool standAlone) {
+			System.Console.WriteLine("Manager:ReportPreview");
 			if (model == null) {
 				throw new ArgumentNullException("model");
 			}
@@ -199,16 +200,17 @@ namespace SharpReport{
 					PreviewControl.ShowPreview (abstr,1.5,standAlone);
 				}
 				
-			} catch (Exception ) {
-				throw;
+			} catch (Exception e) {
+				MessageService.ShowError (e,"SharpReportManager:ReportPreview");
 			}
 		}
 		
 		private AbstractRenderer BuildStandartRenderer (ReportModel model) {
+			System.Console.WriteLine("Manager:BuildStandartRenderr");
+			
 			if (model == null) {
 				throw new ArgumentNullException("model");
 			}
-			
 			if (base.ConnectionObject == null) {
 				base.ConnectionObject = this.BuildConnectionObject(model.ReportSettings);
 			}

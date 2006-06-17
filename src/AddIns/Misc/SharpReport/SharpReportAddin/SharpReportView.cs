@@ -568,7 +568,12 @@ namespace SharpReportAddin{
 					                                                       SharpReportView.DataSetFromFile());
 					
 				} else {
-					renderer = reportManager.GetRendererForStandartReports(this.designerControl.ReportModel);
+					try {
+						renderer = reportManager.GetRendererForStandartReports(this.designerControl.ReportModel);
+					} catch (Exception e) {
+						MessageService.ShowError (e,"SharpReportManager:ReportPreview");
+						return null;
+					}
 				}
 				return renderer.ReportDocument;
 			}

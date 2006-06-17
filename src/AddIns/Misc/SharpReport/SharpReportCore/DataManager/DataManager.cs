@@ -50,16 +50,25 @@ namespace SharpReportCore {
 			if (reportSettings == null) {
 				throw new ArgumentNullException("reportSettings");
 			}
+			try {
+				this.connectionObject = connectionObject;
+				CheckConnection (this.connectionObject);
+				
+				CheckReportSettings(reportSettings);
+				CheckDataSource(this.FillDataSet().Tables[0]);
 
-			this.connectionObject = connectionObject;
-			CheckConnection (this.connectionObject);
-			CheckReportSettings(reportSettings);
-			CheckDataSource(this.FillDataSet().Tables[0]);
-
-			this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
-			                                          reportSettings);
-			this.dataViewStrategy.ListChanged += new EventHandler <ListChangedEventArgs> (NotifyListChanged);
+				this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
+				                                          reportSettings);
+				this.dataViewStrategy.ListChanged += new EventHandler <ListChangedEventArgs> (NotifyListChanged);
 //			this.dataViewStrategy.GroupChanged += new EventHandler<GroupChangedEventArgs> (OnGroupChange);
+			}
+			catch (Exception) {
+				throw;
+			} finally {
+				if (this.connectionObject.Connection.State == ConnectionState.Open) {
+					this.connectionObject.Connection.Close();
+				}
+			}
 		}
 		
 		public DataManager(DataTable dataSource, ReportSettings reportSettings){
@@ -115,11 +124,13 @@ namespace SharpReportCore {
 		void CheckReportSettings(ReportSettings settings) {
 			try {
 				if (settings.DataModel != GlobalEnums.enmPushPullModel.PushData) {
-					SqlQueryChecker checker = new SqlQueryChecker();
-					checker.Check(settings.CommandText);
+					SqlQueryChecker.Check(settings.CommandText);
 				}
 				
-			} catch (Exception) {
+			} catch (IllegalQueryException) {
+				throw;
+			}
+			catch (Exception) {
 				throw;
 			}
 			this.reportSettings = settings;
@@ -196,16 +207,19 @@ namespace SharpReportCore {
 				if (this.connection.State == ConnectionState.Closed) {
 					this.connection.Open();
 				}
-				
+
 				OleDbCommand command = ((OleDbConnection)this.connection).CreateCommand();
 				command.CommandText = reportSettings.CommandText;
 				command.CommandType = reportSettings.CommandType;
 				// We have to check if there are parameters for this Query, if so
 				// add them to the command
 				
-				CheckForAndBuildParams(command,reportSettings);
+				BuildQueryParameters(command,reportSettings);
+				
 				OleDbDataAdapter adapter = new OleDbDataAdapter(command);
+				
 				DataSet ds = new DataSet();
+				
 				ds.Locale = CultureInfo.CurrentCulture;
 				adapter.Fill (ds);
 				return ds;
@@ -219,7 +233,7 @@ namespace SharpReportCore {
 		}
 		
 		
-		private static void CheckForAndBuildParams (OleDbCommand cmd,ReportSettings reportSettings) {
+		private static void BuildQueryParameters (OleDbCommand cmd,ReportSettings reportSettings) {
 			if (reportSettings.SqlParametersCollection != null && reportSettings.SqlParametersCollection.Count > 0) {
 				SqlParameter rpPar;
 				OleDbParameter oleDBPar = null;
@@ -307,56 +321,7 @@ namespace SharpReportCore {
 				return this.dataSource;
 			}
 		}
-		/*
-		public int CurrentRow {
-			get {
-				return this.dataViewStrategy.CurrentRow;
-			}
-		}
-		*/
-		/*
-		public int Count {
-			get {
-				return this.dataViewStrategy.Count;
-			}
-		}
-		*/
-		/*
-		public bool HasMoreData {
-			get {
-				if (this.dataViewStrategy.CurrentRow < this.dataViewStrategy.Count ){
-					return true;
-				} else {
-					return false;
-				}
-			}
-		}
-		
-		*/
-		
-		
-//		public void Skip() {
-//			this.dataViewStrategy.CurrentRow ++;
-//		}
-//		
-		/*
-		public void FetchData(ReportItemCollection collection) {
-			foreach (IItemRenderer item in collection) {
-				this.dataViewStrategy.Fill(item);
-			}
-			this.NotifyGroupChanged();
-		}
-		*/
-		/*
-		/// <summary>
-		/// Indicate's if the current <see cref="GroupSeperator"></see> has ChildRows
-		/// </summary>
-		public bool HasChilds {
-			get {
-				return this.dataViewStrategy.HasChilds;
-			}
-		}
-		*/
+	
 		
 		/// <summary>
 		/// Returns a <see cref="SharpArrayList"></see>, be carefull, this list is only a Indexlist

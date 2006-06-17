@@ -87,7 +87,7 @@ namespace SharpReportCore {
 		}
 		
 		#endregion
-		protected void PageBreak(ReportPageEventArgs pea) {
+		protected static void PageBreak(ReportPageEventArgs pea) {
 			if (pea == null) {
 				throw new ArgumentNullException("pea");
 			}
@@ -121,7 +121,7 @@ namespace SharpReportCore {
 		/// Use this function to draw controlling rectangles
 		/// </summary>	
 		
-		protected void DebugRectangle (ReportPageEventArgs rpea,Rectangle rectangle) {
+		protected static void DebugRectangle (ReportPageEventArgs rpea,Rectangle rectangle) {
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
@@ -273,18 +273,18 @@ namespace SharpReportCore {
 			                                   section.Size.Height);
 			
 			if ((section.CanGrow == true)||(section.CanShrink == true))  {
-				AdjustSection (section,rpea);
+				AbstractRenderer.AdjustSection (section,rpea);
 			} else {
-				AdjustItems (section,rpea);
+				AbstractRenderer.AdjustItems (section,rpea);
 				
 			}
 		}
 		
-		private void AdjustItems (BaseSection section,ReportPageEventArgs e){
+		private static void AdjustItems (BaseSection section,ReportPageEventArgs e){
 
 			int toFit = section.Size.Height;
 			foreach (BaseReportItem rItem in section.Items) {
-				if (!CheckItemInSection (section,rItem,e)){
+				if (!AbstractRenderer.CheckItemInSection (section,rItem,e)){
 					
 					rItem.Size = new Size (rItem.Size.Width,
 					                       toFit - rItem.Location.Y);
@@ -294,12 +294,12 @@ namespace SharpReportCore {
 			
 		}
 		
-		private void AdjustSection (BaseSection section,ReportPageEventArgs e){
+		private static void AdjustSection (BaseSection section,ReportPageEventArgs e){
 			
 			foreach (BaseReportItem rItem in section.Items) {
-				if (!CheckItemInSection (section,rItem,e)){
+				if (!AbstractRenderer.CheckItemInSection (section,rItem,e)){
 					
-					SizeF size = MeasureReportItem (rItem,e);
+					SizeF size = AbstractRenderer.MeasureReportItem (rItem,e);
 					
 					section.Size = new Size (section.Size.Width,
 					                         Convert.ToInt32(rItem.Location.Y + size.Height));
@@ -309,9 +309,9 @@ namespace SharpReportCore {
 		}
 		
 		
-		private bool CheckItemInSection (BaseSection section,BaseReportItem item ,ReportPageEventArgs e) {
+		private static bool CheckItemInSection (BaseSection section,BaseReportItem item ,ReportPageEventArgs e) {
 			Rectangle secRect = new Rectangle (0,0,section.Size.Width,section.Size.Height);
-			SizeF size = MeasureReportItem(item,e);
+			SizeF size = AbstractRenderer.MeasureReportItem(item,e);
 			Rectangle itemRect = new Rectangle (item.Location.X,
 			                                    item.Location.Y,
 			                                    (int)size.Width,
@@ -322,12 +322,13 @@ namespace SharpReportCore {
 			return false;
 		}
 		
-		private  SizeF MeasureReportItem(IItemRenderer item,
+		private static SizeF MeasureReportItem(IItemRenderer item,
 		                                                    ReportPageEventArgs e) {
 			SizeF sizeF = new SizeF ();
 			BaseTextItem myItem = item as BaseTextItem;
 			if (myItem != null) {
 				string str = String.Empty;
+				
 				if (item is BaseTextItem) {
 					BaseTextItem it = item as BaseTextItem;
 					str = it.Text;
@@ -335,7 +336,7 @@ namespace SharpReportCore {
 					BaseDataItem it = item as BaseDataItem;
 					str = it.DbValue;
 				}
-			
+		
 				sizeF = e.PrintPageEventArgs.Graphics.MeasureString(str,
 				                                                    myItem.Font,
 				                                                    myItem.Size.Width,
@@ -350,8 +351,8 @@ namespace SharpReportCore {
 		
 		#region virtuals
 		
-		protected virtual void ReportQueryPage (object sender,QueryPageSettingsEventArgs e) {
-			e.PageSettings.Margins = reportSettings.DefaultMargins;
+		protected virtual void ReportQueryPage (object sender,QueryPageSettingsEventArgs qpea) {
+			qpea.PageSettings.Margins = reportSettings.DefaultMargins;
 		}
 		
 		
@@ -429,11 +430,12 @@ namespace SharpReportCore {
 			}
 		}
 		
-		protected int Gap {
+		protected static int Gap {
 			get {
 				return gap;
 			}
 		}
+		
 		protected Point DetailEnds {
 			get {
 				return detailEnds;
@@ -454,7 +456,8 @@ namespace SharpReportCore {
 		#endregion
 	
 		#region IDispoable
-		public virtual void Dispose(){
+		public  void Dispose(){
+			System.Console.WriteLine("base:Dispose()");
 			if (this.reportDocument != null) {
 				this.reportDocument.Dispose();
 			}

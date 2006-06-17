@@ -187,7 +187,7 @@ namespace SharpReportCore {
 			this.currentPoint = new PointF (base.CurrentSection.Location.X,
 			                                this.DetailStart.Y);
 			
-			base.CurrentSection.SectionOffset = (int)this.DetailStart.Y + base.Gap;
+			base.CurrentSection.SectionOffset = (int)this.DetailStart.Y + AbstractRenderer.Gap;
 			
 //			base.DebugRectangle(rpea,base.DetailRectangle(rpea));
 			// no loop if there is no data
@@ -205,7 +205,7 @@ namespace SharpReportCore {
 					base.RenderSection (base.CurrentSection,rpea);
 					
 					if (!firstOnPage) {
-						base.CurrentSection.SectionOffset = base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height  + 2 * base.Gap;
+						base.CurrentSection.SectionOffset = base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height  + 2 * AbstractRenderer.Gap;
 					
 					}
 					
@@ -218,7 +218,7 @@ namespace SharpReportCore {
 					                             base.CurrentSection.Size.Height);
 					
 					if (!base.DetailRectangle(rpea).Contains(sectionRect)) {
-						base.PageBreak(rpea);
+						AbstractRenderer.PageBreak(rpea);
 						return;
 					}
 					
@@ -228,7 +228,7 @@ namespace SharpReportCore {
 
 					if (this.dataNavigator.CurrentRow < this.dataNavigator.Count -1) {
 						if (base.CurrentSection.PageBreakAfter) {
-							base.PageBreak(rpea);;
+							AbstractRenderer.PageBreak(rpea);;
 							return;
 						}
 					}                            

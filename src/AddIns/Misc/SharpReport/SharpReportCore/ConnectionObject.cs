@@ -36,6 +36,9 @@ namespace SharpReportCore {
 		}
 		
 		public ConnectionObject( OleDbConnectionStringBuilder oleDbConnectionStringBuilder){
+			if (oleDbConnectionStringBuilder == null) {
+				throw new ArgumentNullException("oleDbConnectionStringBuilder");
+			}
 			this.oleDbConnectionStringBuilder = oleDbConnectionStringBuilder;
 			try {
 				this.connection = new OleDbConnection (this.oleDbConnectionStringBuilder.ConnectionString);
@@ -45,6 +48,9 @@ namespace SharpReportCore {
 		}
 		
 		public ConnectionObject(IDbConnection connection){
+			if (connection == null) {
+				throw new ArgumentNullException("connection");
+			}
 			this.connection = connection;
 			this.connectionString = this.connection.ConnectionString;
 		}

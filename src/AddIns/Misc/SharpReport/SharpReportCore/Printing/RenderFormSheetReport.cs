@@ -78,8 +78,7 @@ namespace SharpReportCore {
 			this.RemoveSectionEvents();
 			
 			if (base.CheckPageBreakAfter()) {
-//				base.PageBreak(rpea,base.CurrentSection);
-				base.PageBreak(rpea);
+				AbstractRenderer.PageBreak(rpea);
 				base.CurrentSection.PageBreakAfter = false;
 				return new PointF();
 			}
@@ -159,7 +158,7 @@ namespace SharpReportCore {
 			base.PrintBodyStart (sender,rpea);
 			
 //			BaseSection section = base.CurrentSection;
-			base.CurrentSection.SectionOffset = (int)this.currentPoint.Y + base.Gap;
+			base.CurrentSection.SectionOffset = (int)this.currentPoint.Y + AbstractRenderer.Gap;
 			
 			
 			FitSectionToItems (base.CurrentSection,rpea);
