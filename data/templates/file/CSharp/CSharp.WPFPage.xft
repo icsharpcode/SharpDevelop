@@ -46,7 +46,7 @@ using System.Windows.Shapes;
 namespace ${StandardNamespace}
 {
     /// <summary>
-    /// Interaction logic for ${FullName}
+    /// Interaction logic for ${FileName}
     /// </summary>
 
     public partial class ${FileNameWithoutExtension} : Page
