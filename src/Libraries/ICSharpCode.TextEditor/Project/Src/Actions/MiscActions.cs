@@ -905,9 +905,10 @@ namespace ICSharpCode.TextEditor.Actions
 	{
 		public override void Execute(TextArea textArea)
 		{
-			if (textArea.TextView.Highlight != null) {
-				Point p1 = new Point(textArea.TextView.Highlight.CloseBrace.X + 1, textArea.TextView.Highlight.CloseBrace.Y);
-				Point p2 = new Point(textArea.TextView.Highlight.OpenBrace.X + 1, textArea.TextView.Highlight.OpenBrace.Y);
+			Highlight highlight = textArea.FindMatchingBracketHighlight();
+			if (highlight != null) {
+				Point p1 = new Point(highlight.CloseBrace.X + 1, highlight.CloseBrace.Y);
+				Point p2 = new Point(highlight.OpenBrace.X + 1, highlight.OpenBrace.Y);
 				if (p1 == textArea.Caret.Position) {
 					if (textArea.Document.TextEditorProperties.BracketMatchingStyle == BracketMatchingStyle.After) {
 						textArea.Caret.Position = p2;
