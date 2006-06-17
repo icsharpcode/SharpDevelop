@@ -27,12 +27,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string fileName          = null;
 		IProjectContent projectContent;
 		
+		/// <summary>
+		/// Source code file this compilation unit was created from. For compiled are compiler-generated
+		/// code, this property returns null.
+		/// </summary>
 		public string FileName {
 			get {
 				return fileName;
 			}
 			set {
-				Debug.Assert(value != null);
 				fileName = value;
 			}
 		}

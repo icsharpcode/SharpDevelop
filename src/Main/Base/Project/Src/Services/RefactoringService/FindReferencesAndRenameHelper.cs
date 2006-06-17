@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static bool IsReadOnly(IClass c)
 		{
-			return c.CompilationUnit.FileName == null;
+			return c.CompilationUnit.FileName == null || c.GetCompoundClass().IsSynthetic;
 		}
 		
 		public static TextEditorControl JumpToDefinition(IMember member)
