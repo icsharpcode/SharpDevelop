@@ -528,7 +528,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			rootNode.SelectedImageIndex = 6;
 			rootNode.Tag = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 			
-			TreeNode myFilesNode = rootNode.Nodes.Add("${res:MainWindow.Windows.FileScout.MyDocuments}");
+			TreeNode myFilesNode = rootNode.Nodes.Add(ResourceService.GetString("MainWindow.Windows.FileScout.MyDocuments"));
 			myFilesNode.ImageIndex = 7;
 			myFilesNode.SelectedImageIndex = 7;
 			try {
@@ -539,7 +539,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			myFilesNode.Nodes.Add("");
 			
-			TreeNode computerNode = rootNode.Nodes.Add("${res:MainWindow.Windows.FileScout.MyComputer}");
+			TreeNode computerNode = rootNode.Nodes.Add(ResourceService.GetString("MainWindow.Windows.FileScout.MyComputer"));
 			computerNode.ImageIndex = 8;
 			computerNode.SelectedImageIndex = 8;
 			try {

@@ -64,7 +64,7 @@ namespace ICSharpCode.Core
 				foreach (IProjectContent pc in AllProjectContents) {
 					yield return pc;
 				}
-				foreach (IProjectContent pc in ProjectContentRegistry.LoadedProjectContents) {
+				foreach (IProjectContent pc in ProjectContentRegistry.GetLoadedProjectContents()) {
 					yield return pc;
 				}
 			}

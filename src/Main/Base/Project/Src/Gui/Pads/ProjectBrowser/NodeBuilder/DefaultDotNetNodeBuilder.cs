@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (project is MissingProject) {
 				CustomNode missingNode = new CustomNode();
 				missingNode.SetIcon("Icons.16x16.Warning");
-				missingNode.Text = "The project file cannot be found.";
+				missingNode.Text = ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.ProjectFileNotFound");
 				missingNode.AddTo(projectNode);
 			} else if (project is UnknownProject) {
 				string ext = Path.GetExtension(project.FileName);
@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				} else {
 					CustomNode unknownNode = new CustomNode();
 					unknownNode.SetIcon("Icons.16x16.Warning");
-					unknownNode.Text = "No backend for project type installed.";
+					unknownNode.Text = ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.NoBackendForProjectType");
 					unknownNode.AddTo(projectNode);
 				}
 			} else {

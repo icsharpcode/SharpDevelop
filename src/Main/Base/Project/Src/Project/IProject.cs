@@ -86,6 +86,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
+		string IntermediateOutputFullPath {
+			get;
+		}
+		
 		OutputType OutputType {
 			get;
 			set;

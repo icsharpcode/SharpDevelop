@@ -65,9 +65,10 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static IEnumerable<IProjectContent> LoadedProjectContents {
-			get {
-				return contents.Values;
+		public static ICollection<IProjectContent> GetLoadedProjectContents()
+		{
+			lock (contents) { // we need to return a copy because we have to lock
+				return new List<IProjectContent>(contents.Values);
 			}
 		}
 		

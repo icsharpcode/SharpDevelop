@@ -317,6 +317,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
+		public string IntermediateOutputFullPath {
+			get {
+				string outputPath = GetProperty("IntermediateOutputPath");
+				if (string.IsNullOrEmpty(outputPath)) {
+					outputPath = GetProperty("BaseIntermediateOutputPath");
+					if (string.IsNullOrEmpty(outputPath)) {
+						outputPath = "obj";
+					}
+					outputPath = Path.Combine(outputPath, activeConfiguration);
+				}
+				return Path.Combine(Directory, outputPath);
+			}
+		}
+		
 		public static string GetExtension(OutputType outputType)
 		{
 			switch (outputType) {
