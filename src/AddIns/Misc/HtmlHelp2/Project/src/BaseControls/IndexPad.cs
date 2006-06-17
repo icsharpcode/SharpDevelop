@@ -168,13 +168,24 @@ namespace HtmlHelp2
 		public void LoadIndex()
 		{
 			if (!this.controlIsEnabled) return;
-			
-			searchTerm.Text                       = "";
-			searchTerm.Items.Clear();
-			indexControl.IndexData                = HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.CurrentFilterQuery);
-			filterCombobox.SelectedIndexChanged  -= new EventHandler(FilterChanged);
-			HtmlHelp2Environment.BuildFilterList(filterCombobox);
-			filterCombobox.SelectedIndexChanged  += new EventHandler(FilterChanged);
+
+			try
+			{
+				searchTerm.Text                       = "";
+				searchTerm.Items.Clear();
+				indexControl.IndexData                = HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.CurrentFilterQuery);
+				filterCombobox.SelectedIndexChanged  -= new EventHandler(FilterChanged);
+				HtmlHelp2Environment.BuildFilterList(filterCombobox);
+				filterCombobox.SelectedIndexChanged  += new EventHandler(FilterChanged);
+			}
+			catch
+			{
+				LoggingService.Error("Help 2.0: cannot connect to IHxIndex interface (Index)");
+				indexControl.Enabled   = false;
+				indexControl.BackColor = SystemColors.ButtonFace;
+				filterCombobox.Enabled = false;
+				searchTerm.Enabled     = false;
+			}
 		}
 
 		private void FilterChanged(object sender, EventArgs e)

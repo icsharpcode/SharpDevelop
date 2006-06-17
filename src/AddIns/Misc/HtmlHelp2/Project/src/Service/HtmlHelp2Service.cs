@@ -203,34 +203,16 @@ namespace HtmlHelp2.Environment
 
 		public static IHxHierarchy GetTocHierarchy(string filterQuery)
 		{
-			try
-			{
-				IHxHierarchy defaultToc =
-					(IHxHierarchy)session.GetNavigationInterface("!DefaultTOC", filterQuery, ref TocGuid);
-				return defaultToc;
-			}
-			catch
-			{
-				LoggingService.Error("Help 2.0: cannot connect to IHxHierarchy interface (Contents)");
-				return null;
-			}
+			IHxHierarchy defaultToc =
+				(IHxHierarchy)session.GetNavigationInterface("!DefaultTOC", filterQuery, ref TocGuid);
+			return defaultToc;
 		}
 
 		public static IHxIndex GetIndex(string filterQuery)
 		{
-			try
-			{
-				IHxIndex defaultIndex =
-					(IHxIndex)session.GetNavigationInterface("!DefaultKeywordIndex",
-					                                         filterQuery,
-					                                         ref IndexGuid);
-				return defaultIndex;
-			}
-			catch
-			{
-				LoggingService.Error("Help 2.0: cannot connect to IHxIndex interface (Index)");
-				return null;
-			}
+			IHxIndex defaultIndex =
+				(IHxIndex)session.GetNavigationInterface("!DefaultKeywordIndex", filterQuery, ref IndexGuid);
+			return defaultIndex;
 		}
 
 		public static void BuildFilterList(ComboBox filterCombobox)
