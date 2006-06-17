@@ -205,10 +205,20 @@ namespace HtmlHelp2
 		{
 			if (!this.controlIsEnabled) return;
 
-			tocControl.Hierarchy                 = HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.CurrentFilterQuery);
-			filterCombobox.SelectedIndexChanged -= new EventHandler(this.FilterChanged);
-			HtmlHelp2Environment.BuildFilterList(filterCombobox);
-			filterCombobox.SelectedIndexChanged += new EventHandler(this.FilterChanged);
+			try
+			{
+				tocControl.Hierarchy                 = HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.CurrentFilterQuery);
+				filterCombobox.SelectedIndexChanged -= new EventHandler(this.FilterChanged);
+				HtmlHelp2Environment.BuildFilterList(filterCombobox);
+				filterCombobox.SelectedIndexChanged += new EventHandler(this.FilterChanged);
+			}
+			catch
+			{
+				LoggingService.Error("Help 2.0: cannot connect to IHxHierarchy interface (Contents)");
+				tocControl.Enabled = false;
+				tocControl.BackColor = SystemColors.ButtonFace;
+				filterCombobox.Enabled = false;
+			}
 		}
 
 		private void FilterChanged(object sender, EventArgs e)
