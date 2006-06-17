@@ -55,32 +55,31 @@ namespace HtmlHelp2
 		public HtmlHelp2TocPad()
 		{
 			help2TocControl = new MsHelp2TocControl();
-			if (help2TocControl.IsEnabled) help2TocControl.LoadToc();
 		}
 
 		public void SyncToc(string topicUrl)
 		{
-			if (help2TocControl.IsEnabled) help2TocControl.SynchronizeToc(topicUrl);
+			help2TocControl.SynchronizeToc(topicUrl);
 		}
 
 		public void GetPrevFromNode()
 		{
-			if (help2TocControl.IsEnabled) help2TocControl.GetPrevFromNode();
+			help2TocControl.GetPrevFromNode();
 		}
 
 		public void GetPrevFromUrl(string topicUrl)
 		{
-			if (help2TocControl.IsEnabled) help2TocControl.GetPrevFromUrl(topicUrl);
+			help2TocControl.GetPrevFromUrl(topicUrl);
 		}
 
 		public void GetNextFromNode()
 		{
-			if (help2TocControl.IsEnabled) help2TocControl.GetNextFromNode();
+			help2TocControl.GetNextFromNode();
 		}
 
 		public void GetNextFromUrl(string topicUrl)
 		{
-			if (help2TocControl.IsEnabled) help2TocControl.GetNextFromUrl(topicUrl);
+			help2TocControl.GetNextFromUrl(topicUrl);
 		}
 
 		public bool IsNotFirstNode
@@ -96,67 +95,62 @@ namespace HtmlHelp2
 
 	public class MsHelp2TocControl : UserControl
 	{
-		AxHxTocCtrl tocControl             = null;
-		ComboBox filterCombobox            = new ComboBox();
-		Label label1                       = new Label();
-		ContextMenuStrip printPopup        = new ContextMenuStrip();
-		ToolStripMenuItem printTopic       = new ToolStripMenuItem();
-		ToolStripMenuItem printChildTopics = new ToolStripMenuItem();
-		bool controlIsEnabled              = false;
+		AxHxTocCtrl tocControl = null;
+		ComboBox filterCombobox = new ComboBox();
+		Label label1 = new Label();
+		ContextMenuStrip printContextMenu = new ContextMenuStrip();
+		ToolStripMenuItem printTopic = new ToolStripMenuItem();
+		ToolStripMenuItem printTopicAndSubTopics = new ToolStripMenuItem();
+		bool isEnabled = false;
 
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
-			if (disposing && tocControl != null) { tocControl.Dispose(); }
-		}
-
-		public bool IsEnabled
-		{
-			get { return this.controlIsEnabled; }
-		}
-
-		public void RedrawContent()
-		{
-			label1.Text = StringParser.Parse("${res:AddIns.HtmlHelp2.FilteredBy}");
+			if (disposing && tocControl != null)
+			{
+				tocControl.Dispose();
+			}
 		}
 
 		public MsHelp2TocControl()
 		{
-			this.controlIsEnabled = (HtmlHelp2Environment.IsReady &&
-			                         Help2ControlsValidation.IsTocControlRegistered);
+			this.isEnabled = (HtmlHelp2Environment.IsReady && Help2ControlsValidation.IsTocControlRegistered);
 
-			if (this.controlIsEnabled)
+			if (this.isEnabled)
 			{
 				try
 				{
-					tocControl                        = new AxHxTocCtrl();
+					tocControl = new AxHxTocCtrl();
 					tocControl.BeginInit();
-					tocControl.Dock                   = DockStyle.Fill;
-					tocControl.NodeClick             +=
-						new AxMSHelpControls.IHxTreeViewEvents_NodeClickEventHandler(this.TocNodeClicked);
-					tocControl.NodeRightClick        +=
-						new AxMSHelpControls.IHxTreeViewEvents_NodeRightClickEventHandler(this.TocNodeRightClicked);
+					tocControl.Dock = DockStyle.Fill;
+					tocControl.NodeClick +=
+						new AxMSHelpControls.IHxTreeViewEvents_NodeClickEventHandler(this.TocNodeClick);
+					tocControl.NodeRightClick +=
+						new AxMSHelpControls.IHxTreeViewEvents_NodeRightClickEventHandler(TocNodeRightClick);
 					tocControl.EndInit();
 					Controls.Add(tocControl);
 					tocControl.CreateControl();
-					tocControl.BorderStyle            = HxBorderStyle.HxBorderStyle_FixedSingle;
-					tocControl.FontSource             = HxFontSourceConstant.HxFontExternal;
-					#if DExplore8Style_NoTOCPictures
-					tocControl.TreeStyle              = HxTreeStyleConstant.HxTreeStyle_TreelinesPlusMinusText;
-					#endif
 
-					printTopic.Image                  = ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Print.bmp");
-					printTopic.DisplayStyle           = ToolStripItemDisplayStyle.ImageAndText;
-					printTopic.Text                   = StringParser.Parse("${res:AddIns.HtmlHelp2.PrintTopic}");
-					printChildTopics.Text             = StringParser.Parse("${res:AddIns.HtmlHelp2.PrintSubtopics}");
-					printPopup.Items.Add(printTopic);
-					printTopic.Click                 += new EventHandler(this.PrintTopic);
-					printPopup.Items.Add(printChildTopics);
-					printChildTopics.Click           += new EventHandler(this.PrintTopicAndSubtopics);
+					tocControl.BorderStyle = HxBorderStyle.HxBorderStyle_FixedSingle;
+					tocControl.FontSource = HxFontSourceConstant.HxFontExternal;
+					#if DExplore8StyleWithNoTocPictures
+					tocControl.TreeStyle = HxTreeStyleConstant.HxTreeStyle_TreelinesPlusMinusText;
+					#endif
+					
+					printTopic.Image = ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Print.bmp");
+					printTopic.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+					printTopic.Text = StringParser.Parse("${res:AddIns.HtmlHelp2.PrintTopic}");
+					printTopic.Click += new EventHandler(this.PrintTopic);
+					printContextMenu.Items.Add(printTopic);
+
+					printTopicAndSubTopics.Text = StringParser.Parse("${res:AddIns.HtmlHelp2.PrintSubtopics}");
+					printTopicAndSubTopics.Click += new EventHandler(this.PrintTopicAndSubTopics);
+					printContextMenu.Items.Add(printTopicAndSubTopics);
 				}
-				catch (Exception ex)
+				catch(Exception ex)
 				{
 					LoggingService.Error("Help 2.0: TOC control failed; " + ex.ToString());
+					this.isEnabled = false;
 					this.FakeHelpControl();
 				}
 			}
@@ -164,72 +158,147 @@ namespace HtmlHelp2
 			{
 				this.FakeHelpControl();
 			}
-
-			// Combobox panel
-			Panel panel1                          = new Panel();
+			
+			Panel panel1 = new Panel();
 			Controls.Add(panel1);
-			panel1.Dock                           = DockStyle.Top;
-			panel1.Height                         = filterCombobox.Height + 7;
+			panel1.Dock = DockStyle.Top;
+			panel1.Height = filterCombobox.Height + 7;
+
 			panel1.Controls.Add(filterCombobox);
-			filterCombobox.Dock                   = DockStyle.Top;
-			filterCombobox.DropDownStyle          = ComboBoxStyle.DropDownList;
-			filterCombobox.Sorted                 = true;
-			filterCombobox.Enabled                = this.controlIsEnabled;
-			filterCombobox.SelectedIndexChanged  += new EventHandler(this.FilterChanged);
+			filterCombobox.Dock = DockStyle.Top;
+			filterCombobox.DropDownStyle = ComboBoxStyle.DropDownList;
+			filterCombobox.Sorted = true;
+			filterCombobox.Enabled = this.isEnabled;
+			filterCombobox.SelectedIndexChanged += new EventHandler(this.FilterChanged);
 
-			// Filter label
 			Controls.Add(label1);
-			label1.Text                           = StringParser.Parse("${res:AddIns.HtmlHelp2.FilteredBy}");
-			label1.Dock                           = DockStyle.Top;
-			label1.TextAlign                      = ContentAlignment.MiddleLeft;
-			label1.Enabled                        = this.controlIsEnabled;
-
-			if (this.controlIsEnabled)
+			label1.Dock = DockStyle.Top;
+			label1.TextAlign = ContentAlignment.MiddleLeft;
+			label1.Enabled = this.isEnabled;
+			this.RedrawContent();
+			
+			if (this.isEnabled)
 			{
-				HtmlHelp2Environment.FilterQueryChanged  += new EventHandler(this.FilterQueryChanged);
-				HtmlHelp2Environment.NamespaceReloaded   += new EventHandler(this.NamespaceReloaded);
+				HtmlHelp2Environment.FilterQueryChanged += new EventHandler(this.FilterQueryChanged);
+				HtmlHelp2Environment.NamespaceReloaded += new EventHandler(this.NamespaceReloaded);
+				this.LoadToc();
 			}
 		}
 
 		private void FakeHelpControl()
 		{
-			tocControl            = null;
-			Label nohelpLabel     = new Label();
-			nohelpLabel.Dock      = DockStyle.Fill;
-			nohelpLabel.Text      = StringParser.Parse("${res:AddIns.HtmlHelp2.HelpSystemNotAvailable}");
+			if (tocControl != null) tocControl.Dispose();
+			tocControl = null;
+
+			Controls.Clear();
+			Label nohelpLabel = new Label();
+			nohelpLabel.Dock = DockStyle.Fill;
+			nohelpLabel.Text = StringParser.Parse("${res:AddIns.HtmlHelp2.HelpSystemNotAvailable}");
 			nohelpLabel.TextAlign = ContentAlignment.MiddleCenter;
 			Controls.Add(nohelpLabel);
 		}
 
-		public void LoadToc()
+		public void RedrawContent()
 		{
-			if (!this.controlIsEnabled) return;
+			label1.Text = StringParser.Parse("${res:AddIns.HtmlHelp2.FilteredBy}");
+		}
+		
+		private void TocNodeClick(object sender, IHxTreeViewEvents_NodeClickEvent e)
+		{
+			string topicUrl = tocControl.Hierarchy.GetURL(e.hNode);
+			this.CallHelp(topicUrl);
+		}
 
-			try
+		private void TocNodeRightClick(object sender, IHxTreeViewEvents_NodeRightClickEvent e)
+		{
+			if (e.hNode != 0)
 			{
-				tocControl.Hierarchy                 = HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.CurrentFilterQuery);
+				printTopic.Enabled = tocControl.Hierarchy.GetURL(e.hNode) != "";
+				printTopicAndSubTopics.Enabled = tocControl.Hierarchy.GetFirstChild(e.hNode) != 0;
+				bool selectTextFlag = (tocControl.Hierarchy.GetFirstChild(e.hNode) == 0 ||
+				                       tocControl.Hierarchy.GetURL(e.hNode) == "");
+				printTopicAndSubTopics.Text =
+					StringParser.Parse((selectTextFlag)?
+					                   "${res:AddIns.HtmlHelp2.PrintSubtopics}":
+					                   "${res:AddIns.HtmlHelp2.PrintTopicAndSubtopics}");
+
+				Point p = new Point(e.x, e.y);
+				p = this.PointToClient(p);
+				printContextMenu.Show(this, p);
+			}
+		}
+
+		#region Printing
+		private void PrintTopic(object sender, EventArgs e)
+		{
+			if (tocControl.Selection != 0)
+			{
+				tocControl.Hierarchy.PrintNode(0, tocControl.Selection, PrintOptions.HxHierarchy_PrintNode_Option_Node);
+			}
+		}
+
+		private void PrintTopicAndSubTopics(object sender, EventArgs e)
+		{
+			if (tocControl.Selection != 0)
+			{
+				tocControl.Hierarchy.PrintNode(0, tocControl.Selection, PrintOptions.HxHierarchy_PrintNode_Option_Children);
+			}
+		}
+		
+		#endregion
+
+		private void FilterChanged(object sender, EventArgs e)
+		{
+			string selectedFilterName = filterCombobox.SelectedItem.ToString();
+			if (selectedFilterName != null && selectedFilterName.Length > 0)
+			{
+				Cursor.Current = Cursors.WaitCursor;
+				this.SetToc(selectedFilterName);
+				Cursor.Current = Cursors.Default;
+			}
+		}
+		
+		private void LoadToc()
+		{
+			this.SetToc(HtmlHelp2Environment.CurrentFilterName);
+			if (this.isEnabled)
+			{
 				filterCombobox.SelectedIndexChanged -= new EventHandler(this.FilterChanged);
 				HtmlHelp2Environment.BuildFilterList(filterCombobox);
 				filterCombobox.SelectedIndexChanged += new EventHandler(this.FilterChanged);
 			}
+		}
+	
+		private void SetToc(string filterName)
+		{
+			if (!this.isEnabled) return;
+			try
+			{
+				tocControl.Hierarchy =
+					HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.FindFilterQuery(filterName));
+			}
 			catch
 			{
-				LoggingService.Error("Help 2.0: cannot connect to IHxHierarchy interface (Contents)");
-				tocControl.Enabled     = false;
-				tocControl.BackColor   = SystemColors.ButtonFace;
+				this.isEnabled = false;
+				tocControl.Enabled = false;
+				tocControl.BackColor = SystemColors.ButtonFace;
 				filterCombobox.Enabled = false;
+				label1.Enabled = false;
+				LoggingService.Error("Help 2.0: cannot connect to IHxHierarchy interface (Contents)");
 			}
 		}
 
-		private void FilterChanged(object sender, EventArgs e)
+		private void CallHelp(string topicUrl)
 		{
-			string selectedString = filterCombobox.SelectedItem.ToString();
+			this.CallHelp(topicUrl, true);
+		}
 
-			if (selectedString != null && selectedString != "")
+		private void CallHelp(string topicUrl, bool syncToc)
+		{
+			if (topicUrl.Length > 0)
 			{
-				Cursor.Current       = Cursors.WaitCursor;
-				tocControl.Hierarchy = HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.FindFilterQuery(selectedString));
-				Cursor.Current       = Cursors.Default;
+				if (syncToc) this.SynchronizeToc(topicUrl);
+				ShowHelpBrowser.OpenHelpView(topicUrl);
 			}
 		}
 
@@ -239,11 +308,12 @@ namespace HtmlHelp2
 			Application.DoEvents();
 
 			string currentFilterName = filterCombobox.SelectedItem.ToString();
-			if (String.Compare(currentFilterName, HtmlHelp2Environment.CurrentFilterName) != 0)
+			if (string.Compare(currentFilterName, HtmlHelp2Environment.CurrentFilterName) != 0)
 			{
 				filterCombobox.SelectedIndexChanged -= new EventHandler(this.FilterChanged);
-				filterCombobox.SelectedIndex         = filterCombobox.Items.IndexOf(HtmlHelp2Environment.CurrentFilterName);
-				tocControl.Hierarchy                 = HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.CurrentFilterQuery);
+				filterCombobox.SelectedIndex =
+					filterCombobox.Items.IndexOf(HtmlHelp2Environment.CurrentFilterName);
+				this.SetToc(HtmlHelp2Environment.CurrentFilterName);
 				filterCombobox.SelectedIndexChanged += new EventHandler(this.FilterChanged);
 			}
 		}
@@ -254,71 +324,23 @@ namespace HtmlHelp2
 		}
 		#endregion
 
-		private void CallHelp(string topicUrl, bool syncToc)
-		{
-			if (topicUrl != null && topicUrl != "")
-			{
-				if (syncToc) this.SynchronizeToc(topicUrl);
-				ShowHelpBrowser.OpenHelpView(topicUrl);
-			}
-		}
-
-		private void TocNodeClicked(object sender, IHxTreeViewEvents_NodeClickEvent e)
-		{
-			string TopicUrl = tocControl.Hierarchy.GetURL(e.hNode);
-			this.CallHelp(TopicUrl,false);
-		}
-
-		#region Printing
-		private void TocNodeRightClicked(object sender, IHxTreeViewEvents_NodeRightClickEvent e)
-		{
-			if (e.hNode != 0)
-			{
-				printTopic.Enabled       = tocControl.Hierarchy.GetURL(e.hNode) != "";
-				printChildTopics.Enabled = tocControl.Hierarchy.GetFirstChild(e.hNode) != 0;
-				printChildTopics.Text    = StringParser.Parse((tocControl.Hierarchy.GetFirstChild(e.hNode) == 0 || tocControl.Hierarchy.GetURL(e.hNode) == "")?
-				                                              "${res:AddIns.HtmlHelp2.PrintSubtopics}":
-				                                              "${res:AddIns.HtmlHelp2.PrintTopicAndSubtopics}");
-
-				Point p = new Point(e.x, e.y);
-				p       = this.PointToClient(p);
-				printPopup.Show(this, p);
-			}
-		}
-
-		private void PrintTopic(object sender, EventArgs e)
-		{
-			if (tocControl.Selection != 0)
-			{
-				tocControl.Hierarchy.PrintNode(0,
-				                               tocControl.Selection,
-				                               PrintOptions.HxHierarchy_PrintNode_Option_Node);
-			}
-		}
-
-		private void PrintTopicAndSubtopics(object sender, EventArgs e)
-		{
-			if (tocControl.Selection != 0)
-			{
-				tocControl.Hierarchy.PrintNode(0,
-				                               tocControl.Selection,
-				                               PrintOptions.HxHierarchy_PrintNode_Option_Children);
-			}
-		}
-		#endregion
-
-		#region published Help2 TOC Commands
+		#region Published Help 2.0 Commands
 		public void SynchronizeToc(string topicUrl)
 		{
-			try {
+			if (!this.isEnabled) return;
+			try
+			{
 				tocControl.Synchronize(topicUrl);
-			} catch (System.Runtime.InteropServices.COMException) {
+			}
+			catch (System.Runtime.InteropServices.COMException)
+			{
 				// SD2-812: ignore exception when trying to synchronize non-existing URL
 			}
 		}
 
 		public void GetNextFromNode()
 		{
+			if (!this.isEnabled) return;
 			int currentNode = tocControl.Hierarchy.GetNextFromNode(tocControl.Selection);
 			string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
 			this.CallHelp(topicUrl, true);
@@ -326,18 +348,25 @@ namespace HtmlHelp2
 
 		public void GetNextFromUrl(string url)
 		{
-			try {
+			if (!this.isEnabled || url == null || url.Length == 0) return;
+			try
+			{
 				int currentNode = tocControl.Hierarchy.GetNextFromUrl(url);
 				string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
 				this.CallHelp(topicUrl, true);
-			} catch (System.Runtime.InteropServices.COMException) {
-			} catch (ArgumentException) {
+			}
+			catch (System.Runtime.InteropServices.COMException)
+			{
 				// SD2-812: ignore exception when trying to synchronize non-existing URL
+			}
+			catch (ArgumentException)
+			{
 			}
 		}
 
 		public void GetPrevFromNode()
 		{
+			if (!this.isEnabled) return;
 			int currentNode = tocControl.Hierarchy.GetPrevFromNode(tocControl.Selection);
 			string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
 			this.CallHelp(topicUrl, true);
@@ -345,13 +374,19 @@ namespace HtmlHelp2
 
 		public void GetPrevFromUrl(string url)
 		{
-			try {
+			if (!this.isEnabled || url == null || url.Length == 0) return;
+			try
+			{
 				int currentNode = tocControl.Hierarchy.GetPrevFromUrl(url);
 				string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
 				this.CallHelp(topicUrl, true);
-			} catch (ArgumentException) {
-			} catch (System.Runtime.InteropServices.COMException) {
+			}
+			catch (System.Runtime.InteropServices.COMException)
+			{
 				// SD2-812: ignore exception when trying to synchronize non-existing URL
+			}
+			catch (ArgumentException)
+			{
 			}
 		}
 
@@ -362,7 +397,7 @@ namespace HtmlHelp2
 				try
 				{
 					int currentNode = tocControl.Hierarchy.GetPrevFromNode(tocControl.Selection);
-					return currentNode != 0;
+					return (currentNode != 0);
 				}
 				catch
 				{
@@ -378,13 +413,18 @@ namespace HtmlHelp2
 				try
 				{
 					int currentNode = tocControl.Hierarchy.GetNextFromNode(tocControl.Selection);
-					return currentNode != 0;
+					return (currentNode != 0);
 				}
 				catch
 				{
 					return true;
 				}
 			}
+		}
+
+		public bool IsEnabled
+		{
+			get { return this.isEnabled; }
 		}
 		#endregion
 	}
