@@ -19,12 +19,14 @@ public string ContainingAssembly
 }
 Token t
 {
+	[System.Diagnostics.DebuggerStepThrough]
 	get {
 		return lexer.Token;
 	}
 }
 Token la
 {
+	[System.Diagnostics.DebuggerStepThrough]
 	get {
 		return lexer.LookAhead;
 	}
@@ -1777,7 +1779,7 @@ SimpleExpr<out Expression pexpr>
 		|	/* 11.4.2 */ "(" Expr<out expr> ")" 				(. pexpr = new ParenthesizedExpression(expr); .)
 		|	/* 11.4.4 */ Identifier					(. pexpr = new IdentifierExpression(t.val); .)
 		|	(. string val = String.Empty; .)
-			PrimitiveTypeName<out val>
+			[ PrimitiveTypeName<out val> | "Object" (. val = "Object"; .) ]
 			"." (. t.val = ""; .) Identifier (. pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); .)
 		|	"Me"							(. pexpr = new ThisReferenceExpression(); .)
 		|	(. Expression retExpr = null; .)
@@ -2031,12 +2033,14 @@ ObjectCreateExpression<out Expression oce>
 	oce = null;
 .) =
 	"New" NonArrayTypeName<out type, false>
-	["(" [ ArgumentList<out arguments> ] ")" ]
-	[ IF (la.kind == Tokens.OpenParenthesis)
-	  ArrayTypeModifiers<out dimensions>
-	  ArrayInitializer<out initializer>
-	| ArrayInitializer<out initializer> ]
+	["(" ArgumentList<out arguments> ")"
+		[ IF (la.kind == Tokens.OpenParenthesis)
+		  ArrayTypeModifiers<out dimensions>
+		  ArrayInitializer<out initializer>
+		| ArrayInitializer<out initializer> ]
+	]
 	(.
+		if (type == null) type = new TypeReference("Object"); // fallback type on parser errors
 		if (initializer == null) {
 			oce = new ObjectCreateExpression(type, arguments);
 		} else {
@@ -2056,14 +2060,13 @@ ArgumentList<out List<Expression> arguments>
 		arguments = new List<Expression>();
 		Expression expr = null;
 	.) =
-	[
-		Argument<out expr>			(. if (expr != null) { arguments.Add(expr); } .)
-		{
-			","
-			Argument<out expr>		(. if (expr != null) { arguments.Add(expr); } .)
-		}
-	]
-	.
+	[ Argument<out expr> ]
+	{ "," (. arguments.Add(expr ?? Expression.Null); expr = null; .)
+		[ Argument<out expr> ]
+		(. if (expr == null) expr = Expression.Null; .)
+	}
+	(. if (expr != null) arguments.Add(expr); .)
+.
 
 /* Spec, 11.8 */
 Argument<out Expression argumentexpr>
@@ -2078,7 +2081,7 @@ Argument<out Expression argumentexpr>
 	.)
 	|
 	Expr<out argumentexpr>
-	.
+.
 
 /* 7.1. */
 TypeName<out TypeReference typeref>

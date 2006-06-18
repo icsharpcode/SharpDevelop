@@ -81,7 +81,25 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("", fre.FieldName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
-		#endregion
 		
+		[Test]
+		public void VBObjectReferenceExpression()
+		{
+			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>("Object.ReferenceEquals");
+			Assert.AreEqual("ReferenceEquals", fre.FieldName);
+			Assert.AreEqual("System.Object", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
+		}
+		
+		[Test]
+		public void VBStandaloneObjectReferenceExpression()
+		{
+			// this is propably not what really should be returned for a standalone int
+			// reference, but it has to stay consistent because NRefactoryResolver depends
+			// on this trick.
+			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>("obJeCt", true);
+			Assert.AreEqual("", fre.FieldName);
+			Assert.AreEqual("System.Object", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
+		}
+		#endregion
 	}
 }

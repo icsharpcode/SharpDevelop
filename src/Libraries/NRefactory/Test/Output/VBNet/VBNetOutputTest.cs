@@ -112,6 +112,14 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void ArrayInitialization()
 		{
 			TestStatement("Dim a As Object() = New Object(10) {}");
+			TestTypeMember("Private MultiDim As Integer(,) = {{1, 2}, {1, 3}}");
+			TestExpression("New Integer(, ) {{1, 1}, {1, 1}}");
+		}
+		
+		[Test]
+		public void MethodCallWithOptionalArguments()
+		{
+			TestExpression("M(, )");
 		}
 		
 		[Test]

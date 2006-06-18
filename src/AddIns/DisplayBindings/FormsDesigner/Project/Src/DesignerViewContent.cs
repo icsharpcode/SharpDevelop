@@ -251,7 +251,7 @@ namespace ICSharpCode.FormsDesigner
 				} else if (e is FormsDesignerLoadException) {
 					errorText.Text = e.Message;
 				} else if (!designSurface.IsLoaded && designSurface.LoadErrors != null) {
-					errorText.Text = "Error loading designer:\r\n\r\n";
+					errorText.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.ErrorLoadingDesigner}\r\n\r\n");
 					foreach(Exception le in designSurface.LoadErrors) {
 						errorText.Text += le.ToString();
 						errorText.Text += "\r\n";
@@ -263,7 +263,7 @@ namespace ICSharpCode.FormsDesigner
 				errorText.Dock = DockStyle.Fill;
 				p.Controls.Add(errorText);
 				Control title = new Label();
-				title.Text = "Failed to load designer. Check the source code for syntax errors and check if all references are available.";
+				title.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors}");
 				title.Dock = DockStyle.Top;
 				p.Controls.Add(title);
 			}
