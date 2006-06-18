@@ -336,5 +336,14 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			TestStatement("c = a ?? b;",
 			              "c = IIf(a Is Nothing, b, a)");
 		}
+		
+		[Test]
+		public void ConvertedLoop()
+		{
+			TestStatement("while (cond) example();",
+			              "While cond\n" +
+			              "\texample()\n" +
+			              "End While");
+		}
 	}
 }

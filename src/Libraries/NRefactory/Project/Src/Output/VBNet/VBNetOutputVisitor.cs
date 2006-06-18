@@ -1613,7 +1613,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			PrintIndentedBlock(doLoopStatement.EmbeddedStatement);
 			
 			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.Loop);
+			if (doLoopStatement.ConditionPosition == ConditionPosition.Start && doLoopStatement.ConditionType == ConditionType.While) {
+				outputFormatter.PrintToken(Tokens.End);
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.While);
+			} else {
+				outputFormatter.PrintToken(Tokens.Loop);
+			}
 			
 			if (doLoopStatement.ConditionPosition == ConditionPosition.End && !doLoopStatement.Condition.IsNull) {
 				outputFormatter.Space();
