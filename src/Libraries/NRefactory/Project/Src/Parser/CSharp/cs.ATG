@@ -1715,8 +1715,6 @@ VariableInitializer<out Expression initializerExpression>
 	Expr<out initializerExpression>
 	| ArrayInitializer<out initializerExpression>
 	| "stackalloc" Type<out type> "[" Expr<out expr> "]" (. initializerExpression = new StackAllocExpression(type, expr); .)
-	| /* workaround for coco bug? doesn't work in Expr production in this case. */
-	  "default" "(" Type<out type> ")" (. initializerExpression = new DefaultValueExpression(type); .)
 .
 
 OverloadableOperator<out OverloadableOperatorType op>
@@ -1890,7 +1888,7 @@ EmbeddedStatement<out Statement statement>
 	} .)
   | "switch" (. List<SwitchSection> switchSections = new List<SwitchSection>(); SwitchSection switchSection; .)
 	  "(" Expr<out expr> ")"
-	  "{" { SwitchSection<out switchSection> (. switchSections.Add(switchSection); .) } 
+	  "{" SwitchSections<switchSections>
 	  "}"  (. statement = new SwitchStatement(expr, switchSections); .)
 	/*--- iteration statements (while, do, for, foreach): */
   | "while" "(" Expr<out expr> ")"
@@ -1964,22 +1962,29 @@ ForIterator<out List<Statement> iterator>
 	StatementExpr<out stmt> (. iterator.Add(stmt);.) { "," StatementExpr<out stmt> (. iterator.Add(stmt); .) }
 .
 
-SwitchSection<out SwitchSection stmt>
+SwitchSections<List<SwitchSection> switchSections>
 (.
 	SwitchSection switchSection = new SwitchSection();
 	CaseLabel label;
 .)
 =
 	SwitchLabel<out label> (. if (label != null) { switchSection.SwitchLabels.Add(label); } .) 
-	{
-		SwitchLabel<out label> (. if (label != null) { switchSection.SwitchLabels.Add(label); } .) 
-	}
 	(. compilationUnit.BlockStart(switchSection); .)
-	Statement { Statement }
-	(.
-		compilationUnit.BlockEnd();
-		stmt = switchSection;
-	.)
+	{
+		( SwitchLabel<out label>
+		  (. if (label != null) {
+		  		if (switchSection.Children.Count > 0) {
+		  			// open new section
+		  			compilationUnit.BlockEnd(); switchSections.Add(switchSection);
+		  			switchSection = new SwitchSection();
+		  			compilationUnit.BlockStart(switchSection);
+		  		}
+		  		switchSection.SwitchLabels.Add(label);
+		  	 }
+		  .)
+		| Statement)
+	}
+	(. compilationUnit.BlockEnd(); switchSections.Add(switchSection); .)
 .
 
 SwitchLabel<out CaseLabel label>
@@ -2218,9 +2223,7 @@ PrimaryExpr<out Expression pexpr>
 			| TypeWithRestriction<out type, true, true>
 		) ")"                            (. pexpr = new TypeOfExpression(type); .)
 		
-		| IF (la.kind == Tokens.Default && Peek(1).kind == Tokens.OpenParenthesis)
-			/* possible conflict with switch's default */
-			"default" "(" Type<out type> ")" (. pexpr = new DefaultValueExpression(type); .)
+		| "default" "(" Type<out type> ")" (. pexpr = new DefaultValueExpression(type); .)
 		| "sizeof" "(" Type<out type> ")" (. pexpr = new SizeOfExpression(type); .)
 		| "checked" "(" Expr<out expr> ")" (. pexpr = new CheckedExpression(expr); .)
 		| "unchecked" "(" Expr<out expr> ")" (. pexpr = new UncheckedExpression(expr); .)
