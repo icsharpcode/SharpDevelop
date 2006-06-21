@@ -38,7 +38,6 @@ namespace ICSharpCode.FormsDesigner
 		
 		FormsDesignerViewContent viewContent;
 		bool failedDesignerInitialize = false;
-		
 		CodeDomProvider provider;
 		
 		public CodeDomProvider CodeDomProvider {

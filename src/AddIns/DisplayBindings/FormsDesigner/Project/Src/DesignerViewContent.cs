@@ -296,11 +296,13 @@ namespace ICSharpCode.FormsDesigner
 		{
 			int position;
 			string file;
-			generator.InsertComponentEvent(component, edesc, eventMethodName, "", out file, out position);
-			if (FileUtility.IsEqualFileName(file, this.TextEditorControl.FileName)) {
-				ShowSourceCode(position);
-			} else {
-				FileService.JumpToFilePosition(file, position - 1, 0);
+			bool eventCreated = generator.InsertComponentEvent(component, edesc, eventMethodName, "", out file, out position);
+			if (eventCreated) {
+				if (FileUtility.IsEqualFileName(file, this.TextEditorControl.FileName)) {
+					ShowSourceCode(position);
+				} else {
+					FileService.JumpToFilePosition(file, position - 1, 0);
+				}
 			}
 		}
 		
