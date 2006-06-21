@@ -254,12 +254,12 @@ namespace ICSharpCode.XmlEditor
 		// ParserUpdateThread uses the text property via IEditable, I had an exception
 		// because multiple threads were accessing the GapBufferStrategy at the same time.
 		
-		string GetText()
+		internal string GetText()
 		{
 			return xmlEditor.Document.TextContent;
 		}
 		
-		void SetText(string value)
+		internal void SetText(string value)
 		{
 			xmlEditor.Document.TextContent = value;
 		}
