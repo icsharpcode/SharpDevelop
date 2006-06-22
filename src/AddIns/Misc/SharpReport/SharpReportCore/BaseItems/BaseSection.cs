@@ -26,14 +26,13 @@ namespace SharpReportCore {
 		
 		private ReportItemCollection items;
 		
-		public event EventHandler<SectionPrintingEventArgs> SectionPrinting;
-		public event EventHandler<SectionPrintingEventArgs> SectionPrinted;
+		public event EventHandler<SectionEventArgs> SectionPrinting;
+		public event EventHandler<SectionEventArgs> SectionPrinted;
 		
 		
 		#region Constructors
 		
 		public BaseSection(): base() {
-//			this.Name = String.Empty;
 			base.Name = String.Empty;
 		}
 		
@@ -43,24 +42,24 @@ namespace SharpReportCore {
 		
 		#endregion
 		
+		#region Rendering
+		
 		public override void Render(ReportPageEventArgs rpea){
 			this.NotifyPrinting();
 			base.Render(rpea);
 			this.NotifyPrinted();
 		}
 		
-		#region Events
-		
-		public void NotifyPrinting () {
+		private void NotifyPrinting () {
 			if (this.SectionPrinting != null) {
-				SectionPrintingEventArgs ea = new SectionPrintingEventArgs (this);
+				SectionEventArgs ea = new SectionEventArgs (this);
 				SectionPrinting (this,ea);
-			}
+			} 
 		}
 		
-		public void NotifyPrinted () {
+		private void NotifyPrinted () {
 			if (this.SectionPrinted != null) {
-				SectionPrintingEventArgs ea = new SectionPrintingEventArgs (this);
+				SectionEventArgs ea = new SectionEventArgs (this);
 				SectionPrinted (this,ea);
 			}
 		}

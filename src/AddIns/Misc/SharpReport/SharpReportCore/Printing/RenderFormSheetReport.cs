@@ -46,37 +46,12 @@ namespace SharpReportCore {
 		                             
 		}
 		
-		private void OnSectionPrinting (object sender,SectionPrintingEventArgs e) {
-			System.Console.WriteLine("");
-			System.Console.WriteLine("Begin Print <{0}> with  <{1}> Items ",e.Section.Name,
-			                         e.Section.Items.Count);
-		}
-		
-		private void OnSectionPrinted (object sender,SectionPrintingEventArgs e) {
-			System.Console.WriteLine("Section Printed {0} ",e.Section.Name);
-			
-		}
-		
-		private void AddSectionEvents () {
-			base.CurrentSection.SectionPrinting += new EventHandler<SectionPrintingEventArgs>(OnSectionPrinting);
-			base.CurrentSection.SectionPrinted += new EventHandler<SectionPrintingEventArgs>(OnSectionPrinted);
-		}
-		
-		private void RemoveSectionEvents () {
-			base.CurrentSection.SectionPrinting -= new EventHandler<SectionPrintingEventArgs>(OnSectionPrinting);
-			base.CurrentSection.SectionPrinted -= new EventHandler<SectionPrintingEventArgs>(OnSectionPrinted);
-		}
-		
-		
 		
 		#region Draw the different report Sections
 		private PointF DoReportHeader (ReportPageEventArgs rpea){
 			PointF endAt = base.MeasureReportHeader (rpea);
+			base.RenderSection (rpea);
 
-			this.AddSectionEvents();
-			base.RenderSection (base.CurrentSection,rpea);
-			this.RemoveSectionEvents();
-			
 			if (base.CheckPageBreakAfter()) {
 				AbstractRenderer.PageBreak(rpea);
 				base.CurrentSection.PageBreakAfter = false;
@@ -88,29 +63,21 @@ namespace SharpReportCore {
 		private PointF DoPageHeader (PointF startAt,ReportPageEventArgs rpea){
 			
 			PointF endAt = base.MeasurePageHeader (startAt,rpea);
-
-			this.AddSectionEvents();
-			base.RenderSection (base.CurrentSection,rpea);
-			this.RemoveSectionEvents();
+			base.RenderSection (rpea);
 			return endAt;
 		}
 		
 		private void DoPageEnd (ReportPageEventArgs rpea){
 			base.PrintPageEnd(this,rpea);
 			base.MeasurePageEnd (rpea);
-			
-			this.AddSectionEvents();
-			base.RenderSection (base.CurrentSection,rpea);
-			this.RemoveSectionEvents();
-			
+			base.RenderSection (rpea);
+
 		}
 		
 		//TODO how should we handle ReportFooter, print it on an seperate page ????
 		private void  DoReportFooter (PointF startAt,ReportPageEventArgs rpea){
 			base.MeasureReportFooter(rpea);
-
-			this.AddSectionEvents();
-			base.RenderSection (base.CurrentSection,rpea);
+			base.RenderSection (rpea);
 			this.RemoveSectionEvents();
 		}
 		
@@ -118,35 +85,21 @@ namespace SharpReportCore {
 		
 		#region test
 		
-		protected override void BuildReportHeader (object sender, ReportPageEventArgs e) {
-			System.Console.WriteLine("!!!!");
-			System.Console.WriteLine("testReportStart");
-			base.BuildReportHeader (sender,e);
+		protected override void PrintReportHeader (object sender, ReportPageEventArgs e) {
+			base.PrintReportHeader (sender,e);
 			this.currentPoint = DoReportHeader (e);
-			System.Console.WriteLine("");
 		}
 		
-		protected override void BuildPageHeader (object sender, ReportPageEventArgs e) {
-			
-			System.Console.WriteLine("!!!!");
-			System.Console.WriteLine("testPrintheader");
-			base.BuildPageHeader (sender,e);
+		protected override void PrintPageHeader (object sender, ReportPageEventArgs e) {
+			base.PrintPageHeader (sender,e);
 			this.currentPoint = DoPageHeader (this.currentPoint,e);
 			base.DetailStart = new Point ((int)currentPoint.X,(int)currentPoint.Y);
-			System.Console.WriteLine("");
 		}
 		
 		#endregion
 		
+		
 		#region event's
-//		protected override  void ReportQueryPage (object sender,QueryPageSettingsEventArgs qpea) {
-//			base.ReportQueryPage (sender,qpea);
-//		}
-		
-		
-//		protected override void ReportBegin (object sender,PrintEventArgs rpea) {
-//			base.ReportBegin (sender,rpea);
-//		}
 		
 		
 		/// <summary>
@@ -154,18 +107,13 @@ namespace SharpReportCore {
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		protected override void PrintBodyStart (object sender,ReportPageEventArgs rpea) {
-			base.PrintBodyStart (sender,rpea);
-			
-//			BaseSection section = base.CurrentSection;
+		protected override void BodyStart (object sender,ReportPageEventArgs rpea) {
+			base.BodyStart (sender,rpea);
 			base.CurrentSection.SectionOffset = (int)this.currentPoint.Y + AbstractRenderer.Gap;
 			
-			
 			FitSectionToItems (base.CurrentSection,rpea);
-			
-			this.AddSectionEvents();
-			base.RenderSection (base.CurrentSection,rpea);
-			this.RemoveSectionEvents();
+			base.RenderSection (rpea);
+
 		}
 		/// <summary>
 		/// Print the PageFooter 
@@ -178,9 +126,9 @@ namespace SharpReportCore {
 		
 		
 		
-		protected override void PrintBodyEnd (object sender,ReportPageEventArgs rpea) {
+		protected override void OnBodyEnd (object sender,ReportPageEventArgs rpea) {
 			
-			base.PrintBodyEnd (sender,rpea);
+			base.OnBodyEnd (sender,rpea);
 			this.DoReportFooter (new PointF(0,base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height),
 			                     rpea);
 		}

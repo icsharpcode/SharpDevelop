@@ -38,8 +38,10 @@ namespace SharpReportCore {
 		private Point detailEnds;
 	
 		private DefaultFormatter defaultFormatter;
-		private bool cancel;
+		private bool cancel;		
 		
+		public event EventHandler<SectionRenderEventArgs> SectionRendering;
+		public event EventHandler<SectionRenderEventArgs> SectionRendered;
 		
 		protected AbstractRenderer(ReportModel model){
 			if (model == null) {
@@ -57,36 +59,93 @@ namespace SharpReportCore {
 		
 		void Init() {
 			reportDocument = new SharpReportCore.ReportDocument();
+			reportDocument.DocumentName = reportSettings.ReportName;
+			
 			// Events from ReportDocument
 			reportDocument.QueryPageSettings += new QueryPageSettingsEventHandler (ReportQueryPage);
 			reportDocument.BeginPrint += new PrintEventHandler(ReportBegin);
 			reportDocument.EndPrint += new PrintEventHandler(ReportEnd);
 			
 			// homemade events
-			reportDocument.PrintPageBodyStart += new EventHandler<ReportPageEventArgs> (PrintBodyStart);
-			reportDocument.PrintPageBodyEnd += new EventHandler<ReportPageEventArgs> (PrintBodyEnd);
-			reportDocument.PrintPageEnd += new EventHandler<ReportPageEventArgs> (PrintPageEnd);
-
+			reportDocument.PrintPageBodyStart += new EventHandler<ReportPageEventArgs> (BodyStart);
 			
-			reportDocument.DocumentName = reportSettings.ReportName;
-		
+			reportDocument.PrintPageBodyEnd += new EventHandler<ReportPageEventArgs> (OnBodyEnd);
+
 			//
-			reportDocument.RenderReportHeader += new EventHandler<ReportPageEventArgs> (BuildReportHeader);
-			reportDocument.RenderPageHeader += new EventHandler<ReportPageEventArgs> (BuildPageHeader);
+			reportDocument.RenderReportHeader += new EventHandler<ReportPageEventArgs> (PrintReportHeader);
+			reportDocument.RenderPageHeader += new EventHandler<ReportPageEventArgs> (PrintPageHeader);
+			reportDocument.RenderDetails += new EventHandler<ReportPageEventArgs> (PrintDetail);
+			reportDocument.RenderPageEnd += new EventHandler<ReportPageEventArgs> (PrintPageEnd);
+			reportDocument.RenderReportEnd += new EventHandler<ReportPageEventArgs> (PrintReportFooter);
+		}
+		#region Event handling for SectionRendering
+		
+		protected void AddSectionEvents () {
+			this.CurrentSection.SectionPrinting += new EventHandler<SectionEventArgs>(OnSectionPrinting);
+			this.CurrentSection.SectionPrinted += new EventHandler<SectionEventArgs>(OnSectionPrinted);
 		}
 		
-		#region test
-		protected virtual void BuildReportHeader (object sender, ReportPageEventArgs e) {
-			SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader,
-			                               CultureInfo.InvariantCulture);
+		
+		protected void RemoveSectionEvents () {
+			this.CurrentSection.SectionPrinting -= new EventHandler<SectionEventArgs>(OnSectionPrinting);
+			this.CurrentSection.SectionPrinted -= new EventHandler<SectionEventArgs>(OnSectionPrinted);
 		}
 		
-		protected virtual void BuildPageHeader (object sender, ReportPageEventArgs e) {
-			SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader,
-			                               CultureInfo.InvariantCulture);
+		
+		private  void OnSectionPrinting (object sender,SectionEventArgs e) {
+			if (this.SectionRendering != null) {
+				SectionRenderEventArgs ea = new SectionRenderEventArgs (e.Section,
+				                                                        this.reportDocument.PageNumber,0,
+				                                                        (GlobalEnums.enmSection)this.sectionInUse);
+				this.SectionRendering(this,ea);
+			} 
+		}
+		
+		
+		private void OnSectionPrinted (object sender,SectionEventArgs e) {
+			if (this.SectionRendered != null) {
+				SectionRenderEventArgs ea = new SectionRenderEventArgs (e.Section,
+				                                                        this.reportDocument.PageNumber,0,
+				                                                        (GlobalEnums.enmSection)this.sectionInUse);
+				this.SectionRendered(this,ea);
+			}
 		}
 		
 		#endregion
+		
+		protected virtual void PrintReportHeader (object sender, ReportPageEventArgs e) {
+			SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportHeader,
+			                               CultureInfo.InvariantCulture);
+			this.AddSectionEvents();
+		}
+		
+		protected virtual void PrintPageHeader (object sender, ReportPageEventArgs e) {
+			SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader,
+			                               CultureInfo.InvariantCulture);
+			this.AddSectionEvents();
+		}
+		
+		protected virtual void  PrintDetail (object sender,ReportPageEventArgs rpea) {
+			SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail,
+			                               CultureInfo.InvariantCulture);
+			this.AddSectionEvents();
+//			System.Console.WriteLine("\tAbstract - PrintDetail");
+		}
+		
+		protected virtual void  PrintPageEnd (object sender,ReportPageEventArgs rpea) {	
+			SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageFooter,
+			                               CultureInfo.InvariantCulture);
+//			System.Console.WriteLine("\tAbstract:PrintPageEnd");
+			this.AddSectionEvents();
+
+		}
+		protected virtual void  PrintReportFooter (object sender,ReportPageEventArgs rpea) {	
+			SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportFooter,
+			                               CultureInfo.InvariantCulture);
+//			System.Console.WriteLine("\tAbstract:PrintReportFooter");
+			this.AddSectionEvents();
+		}
+		
 		protected static void PageBreak(ReportPageEventArgs pea) {
 			if (pea == null) {
 				throw new ArgumentNullException("pea");
@@ -206,35 +265,33 @@ namespace SharpReportCore {
 			return new PointF(0,this.CurrentSection.SectionOffset + this.CurrentSection.Size.Height);
 		}
 		
-		
-		
-		
-		protected virtual int RenderSection (BaseSection section,ReportPageEventArgs rpea) {
+		protected virtual int RenderSection (ReportPageEventArgs rpea) {
 			Point drawPoint	= new Point(0,0);
-			if (section.Visible){
-				section.Render (rpea);
+			
+			if (this.CurrentSection.Visible){
+				this.CurrentSection.Render (rpea);
 				
-				foreach (BaseReportItem item in section.Items) {
+				foreach (BaseReportItem item in this.CurrentSection.Items) {
 					if (item.Parent == null) {
-						item.Parent = section;
+						item.Parent = this.CurrentSection;
 					}
-					item.SectionOffset = section.SectionOffset;
+					item.SectionOffset = this.CurrentSection.SectionOffset;
 					this.DrawSingleItem (rpea,item);
 					
-					drawPoint.Y = section.SectionOffset + section.Size.Height;
-					rpea.LocationAfterDraw = new PointF (rpea.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);
+					drawPoint.Y = this.CurrentSection.SectionOffset + this.CurrentSection.Size.Height;
+					rpea.LocationAfterDraw = new PointF (rpea.LocationAfterDraw.X,this.CurrentSection.SectionOffset + this.CurrentSection.Size.Height);
 					
 				}
 				
-				if ((section.CanGrow == false)&& (section.CanShrink == false)) {
-					return section.Size.Height;
+				if ((this.CurrentSection.CanGrow == false)&& (this.CurrentSection.CanShrink == false)) {
+					return this.CurrentSection.Size.Height;
 				}
 				
 				return drawPoint.Y;
 			}
 			return drawPoint.Y;
 		}
-	
+		
 		
 		protected void DrawSingleItem (ReportPageEventArgs rpea,BaseReportItem item){
 			item.SuspendLayout();
@@ -291,7 +348,6 @@ namespace SharpReportCore {
 					
 				}
 			}
-			
 		}
 		
 		private static void AdjustSection (BaseSection section,ReportPageEventArgs e){
@@ -349,6 +405,7 @@ namespace SharpReportCore {
 		}
 		#endregion
 		
+		
 		#region virtuals
 		
 		protected virtual void ReportQueryPage (object sender,QueryPageSettingsEventArgs qpea) {
@@ -361,28 +418,23 @@ namespace SharpReportCore {
 		}
 		
 		
-		protected virtual void  PrintBodyStart (object sender,ReportPageEventArgs rpea) {
+		protected virtual void  BodyStart (object sender,ReportPageEventArgs rpea) {
 //			System.Console.WriteLine("\tAbstract - PrintBodyStart");
 			this.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail,
 			                                    CultureInfo.InvariantCulture);
 			
 		}
 		
-		protected virtual void  PrintBodyEnd (object sender,ReportPageEventArgs rpea) {
-//			System.Console.WriteLine("\tAbstarct - PrintBodyEnd");
-		}
 		
-		protected virtual void  PrintPageEnd (object sender,ReportPageEventArgs rpea) {	
-//			System.Console.WriteLine("\tAbstract - PrintPageEnd");
-//			BaseSection section = null;
-//			section = CurrentSection;
-//			section.SectionOffset = reportSettings.PageSettings.Bounds.Height - reportSettings.DefaultMargins.Top - reportSettings.DefaultMargins.Bottom;
-//			FitSectionToItems (section,e);
-//			RenderSection (section,e);
+	
+		protected virtual void  OnBodyEnd (object sender,ReportPageEventArgs rpea) {
+//			System.Console.WriteLine("\tAbstarct - PrintBodyEnd");
+		this.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportFooter,
+			                                    CultureInfo.InvariantCulture);
 		}
 		
 		protected virtual void  ReportEnd (object sender,PrintEventArgs e) {
-//			System.Console.WriteLine("Abstract - ReportEnd");
+//			System.Console.WriteLine("\tAbstract - ReportEnd");
 		}
 	
 		#endregion

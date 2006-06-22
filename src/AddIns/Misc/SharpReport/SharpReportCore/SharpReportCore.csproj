@@ -131,6 +131,7 @@
     <Compile Include="Events\PrintEventArgs.cs" />
     <Compile Include="BaseItems\TableItem.cs" />
     <Compile Include="Exceptions\IllegalQueryException.cs" />
+    <Compile Include="Events\SectionRenderEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />

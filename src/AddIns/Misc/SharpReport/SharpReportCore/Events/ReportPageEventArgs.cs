@@ -50,6 +50,8 @@ namespace SharpReportCore {
 				return pageNumber;
 			}
 		}
+		
+		
 		public PrintPageEventArgs PrintPageEventArgs {
 			get {
 				return printEventArgs;

@@ -70,93 +70,77 @@ namespace SharpReportCore {
 //			                         e.ListChangedType);
 		}
 		
-		
-		private void OnSectionPrinting (object sender,SectionPrintingEventArgs e) {
-//			System.Console.WriteLine("");
-//			System.Console.WriteLine("Begin Print <{0}> with  <{1}> Items ",e.Section.Name,
-//			                         e.Section.Items.Count);
-		}
-		
-		private void OnSectionPrinted (object sender,SectionPrintingEventArgs e) {
-//			System.Console.WriteLine("Section Printed <{0}> ",e.Section.Name);
-			
-		}
-		
-		private void AddSectionEvents () {
-			base.CurrentSection.SectionPrinting += new EventHandler<SectionPrintingEventArgs>(OnSectionPrinting);
-			base.CurrentSection.SectionPrinted += new EventHandler<SectionPrintingEventArgs>(OnSectionPrinted);
-		}
-		
-		private void RemoveSectionEvents () {
-			base.CurrentSection.SectionPrinting -= new EventHandler<SectionPrintingEventArgs>(OnSectionPrinting);
-			base.CurrentSection.SectionPrinted -= new EventHandler<SectionPrintingEventArgs>(OnSectionPrinted);
-		}
-		
 		#region overrides
 		
 		#region Draw the different report Sections
 		
 		private PointF DoReportHeader (ReportPageEventArgs rpea){
-			System.Console.WriteLine("DoReportHeader");
 			PointF endAt = base.MeasureReportHeader (rpea);
-
-			this.AddSectionEvents();
-			base.RenderSection (base.CurrentSection,rpea);
+			base.RenderSection (rpea);
 			base.DoItems(rpea);
-			this.RemoveSectionEvents();
 			
-//			if (base.CheckPageBreakAfter()) {
-//				base.PageBreak(rpea);
-//				base.CurrentSection.PageBreakAfter = false;
-//				return new PointF();
-//			}
 			return endAt;
 		}
 		
 		
 		private PointF DoPageHeader (PointF startAt,ReportPageEventArgs rpea){
 			PointF endAt = base.MeasurePageHeader (startAt,rpea);
-			this.AddSectionEvents();
-			base.RenderSection (base.CurrentSection,rpea);
+			base.RenderSection (rpea);
 			base.DoItems(rpea);
-			this.RemoveSectionEvents();
 			return endAt;
 		}
 		
 		
 		private void DoPageEnd (ReportPageEventArgs rpea){
-			System.Console.WriteLine("DoPageEnd");
-			base.PrintPageEnd(this,rpea);
+//			System.Console.WriteLine("DataRenderer:DoPageEnd");
 			base.MeasurePageEnd (rpea);
-			
-			this.AddSectionEvents();
-			base.RenderSection (base.CurrentSection,rpea);
+			base.RenderSection (rpea);
 			base.DoItems(rpea);
-			this.RemoveSectionEvents();
-			
 		}
 		
 		//TODO how should we handle ReportFooter, print it on an seperate page ????
 		private void  DoReportFooter (PointF startAt,ReportPageEventArgs rpea){
+//			System.Console.WriteLine("DoReportFooter");
 			base.MeasureReportFooter(rpea);
-			this.AddSectionEvents();
-			base.RenderSection (base.CurrentSection,rpea);
+			base.RenderSection (rpea);
 			base.DoItems(rpea);
-			this.RemoveSectionEvents();
 		}
+		
 		#endregion
 
 		#region test
 		
-		protected override void BuildReportHeader (object sender, ReportPageEventArgs e) {
-			base.BuildReportHeader (sender,e);
+		protected override void PrintReportHeader (object sender, ReportPageEventArgs e) {
+			base.PrintReportHeader (sender,e);
 			this.currentPoint = DoReportHeader (e);
+			base.RemoveSectionEvents();
 		}
 		
-		protected override void BuildPageHeader (object sender, ReportPageEventArgs e) {
-			base.BuildPageHeader (sender,e);
+		protected override void PrintPageHeader (object sender, ReportPageEventArgs e) {
+			base.PrintPageHeader (sender,e);
 			this.currentPoint = DoPageHeader (this.currentPoint,e);
 			base.DetailStart = new Point ((int)currentPoint.X,(int)currentPoint.Y +1);
+			base.RemoveSectionEvents();
+		}
+		
+		protected override void PrintPageEnd(object sender, ReportPageEventArgs rpea) {
+//			System.Console.WriteLine("DataRenderer:PrintPageEnd");
+			base.PrintPageEnd(sender,rpea);
+			this.DoPageEnd (rpea);
+			base.RemoveSectionEvents();
+		}
+		
+		protected override void PrintReportFooter(object sender, ReportPageEventArgs rpea){
+			System.Console.WriteLine("DataRenderer:PrintReportFooter");
+			base.PrintReportFooter(sender, rpea);
+			DoReportFooter (new PointF(0,base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height),
+			                rpea);
+			base.RemoveSectionEvents();
+		}
+		
+		protected override void ReportEnd(object sender, PrintEventArgs e){
+//			System.Console.WriteLine("DataRenderer:ReportEnd");
+			base.ReportEnd(sender, e);
 		}
 		
 		#endregion
@@ -170,7 +154,8 @@ namespace SharpReportCore {
 		}
 		
 		protected override void ReportBegin(object sender, PrintEventArgs pea) {
-			System.Console.WriteLine("ReportBegin (BeginPrint)");
+//			System.Console.WriteLine("");
+//			System.Console.WriteLine("ReportBegin (BeginPrint)");
 			base.ReportBegin (sender,pea);
 			base.DataManager.ListChanged += new EventHandler<ListChangedEventArgs> (OnListChanged);
 			dataNavigator = base.DataManager.GetNavigator;
@@ -179,15 +164,23 @@ namespace SharpReportCore {
 			base.DataNavigator = dataNavigator;
 		}
 		
-		protected override void PrintBodyStart(object sender, ReportPageEventArgs rpea) {
-			Rectangle sectionRect;
-			bool firstOnPage = true;
-			
-			base.PrintBodyStart (sender,rpea);
+		
+		
+		protected override void BodyStart(object sender, ReportPageEventArgs rpea) {
+//			System.Console.WriteLine("DataRenderer:PrintBodyStart");
+			base.BodyStart (sender,rpea);
 			this.currentPoint = new PointF (base.CurrentSection.Location.X,
 			                                this.DetailStart.Y);
 			
 			base.CurrentSection.SectionOffset = (int)this.DetailStart.Y + AbstractRenderer.Gap;
+		}
+		
+		
+		protected override void PrintDetail(object sender, ReportPageEventArgs rpea){
+			Rectangle sectionRect;
+			bool firstOnPage = true;
+//			System.Console.WriteLine("RenderDataReport:PrintDetail");
+			base.PrintDetail(sender, rpea);
 			
 //			base.DebugRectangle(rpea,base.DetailRectangle(rpea));
 			// no loop if there is no data
@@ -197,66 +190,59 @@ namespace SharpReportCore {
 			}
 			
 			// first element
-			if (this.dataNavigator.MoveNext()){
-				do {
-					
-					this.dataNavigator.Fill (base.CurrentSection.Items);
-
-					base.RenderSection (base.CurrentSection,rpea);
-					
-					if (!firstOnPage) {
-						base.CurrentSection.SectionOffset = base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height  + 2 * AbstractRenderer.Gap;
-					
-					}
-					
-					
-					base.FitSectionToItems (base.CurrentSection,rpea);
-					
-					sectionRect = new Rectangle (rpea.PrintPageEventArgs.MarginBounds.Left,
-					                             base.CurrentSection.SectionOffset,
-					                             rpea.PrintPageEventArgs.MarginBounds.Width,
-					                             base.CurrentSection.Size.Height);
-					
-					if (!base.DetailRectangle(rpea).Contains(sectionRect)) {
-						AbstractRenderer.PageBreak(rpea);
-						return;
-					}
-					
-					int i = base.DoItems(rpea);
-					this.currentPoint = new PointF (base.CurrentSection.Location.X, i);
-					firstOnPage = false;
-
-					if (this.dataNavigator.CurrentRow < this.dataNavigator.Count -1) {
-						if (base.CurrentSection.PageBreakAfter) {
-							AbstractRenderer.PageBreak(rpea);;
-							return;
-						}
-					}                            
-				}
-				while (this.dataNavigator.MoveNext());
+			if (rpea.PageNumber == 1) {
+				this.dataNavigator.MoveNext();
 			}
 			
-			DoReportFooter (new PointF(0,base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height),
-			                rpea);
-			
+			do {
+				
+				this.dataNavigator.Fill (base.CurrentSection.Items);
+
+				base.RenderSection (rpea);
+				
+				if (!firstOnPage) {
+					base.CurrentSection.SectionOffset = base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height  + 2 * AbstractRenderer.Gap;
+					
+				}
+				
+				
+				base.FitSectionToItems (base.CurrentSection,rpea);
+				
+				sectionRect = new Rectangle (rpea.PrintPageEventArgs.MarginBounds.Left,
+				                             base.CurrentSection.SectionOffset,
+				                             rpea.PrintPageEventArgs.MarginBounds.Width,
+				                             base.CurrentSection.Size.Height);
+				
+				if (!base.DetailRectangle(rpea).Contains(sectionRect)) {
+					AbstractRenderer.PageBreak(rpea);
+					return;
+				}
+				
+				int i = base.DoItems(rpea);
+				this.currentPoint = new PointF (base.CurrentSection.Location.X, i);
+				firstOnPage = false;
+
+				if (this.dataNavigator.CurrentRow < this.dataNavigator.Count -1) {
+					if (base.CurrentSection.PageBreakAfter) {
+						AbstractRenderer.PageBreak(rpea);;
+						return;
+					}
+				}
+			}
+			while (this.dataNavigator.MoveNext());
+			this.RemoveSectionEvents();
+		}
+		
+		protected override void OnBodyEnd(object sender, ReportPageEventArgs rpea) {
+//			System.Console.WriteLine("PrintBodyEnd ????");
+			base.OnBodyEnd (sender,rpea);
+//			DoReportFooter (new PointF(0,base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height),
+//			                rpea);
 			rpea.PrintPageEventArgs.HasMorePages = false;
 		}
 		
 		
-		protected override void PrintBodyEnd(object sender, ReportPageEventArgs rpea) {
-//			System.Console.WriteLine("PrintBodyEnd ????");
-			base.PrintBodyEnd (sender,rpea);
-		}
 		
-		
-		protected override void PrintPageEnd(object sender, ReportPageEventArgs rpea) {
-			System.Console.WriteLine("Page End");
-			this.DoPageEnd (rpea);
-		}
-		
-		protected override void ReportEnd(object sender, PrintEventArgs e){
-			base.ReportEnd(sender, e);
-		}
 		
 		#endregion
 		

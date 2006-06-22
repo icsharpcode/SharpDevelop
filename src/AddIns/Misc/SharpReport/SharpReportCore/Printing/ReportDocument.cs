@@ -20,13 +20,16 @@ namespace SharpReportCore {
 	public class ReportDocument : PrintDocument {
 		
 		public event EventHandler<ReportPageEventArgs> PrintPageBodyStart;
+	
 		public event EventHandler<ReportPageEventArgs> PrintPageBodyEnd;
-		public event EventHandler<ReportPageEventArgs> PrintPageEnd;
+		
 		
 		
 		public event EventHandler<ReportPageEventArgs> RenderReportHeader;
 		public event EventHandler<ReportPageEventArgs> RenderPageHeader;
-		
+		public event EventHandler<ReportPageEventArgs> RenderDetails;
+		public event EventHandler<ReportPageEventArgs> RenderPageEnd;
+		public event EventHandler<ReportPageEventArgs> RenderReportEnd;
 		int pageNumber;
 		
 		public ReportDocument():base() {
@@ -49,12 +52,16 @@ namespace SharpReportCore {
 			base.OnPrintPage(e);
 			pageNumber ++;
 
-			ReportPageEventArgs pea = new ReportPageEventArgs (e,pageNumber,false,new PointF (0,0));
+			ReportPageEventArgs pea = new ReportPageEventArgs (e,pageNumber,
+			                                                   false,new PointF (0,0));
 			GeneratePage (pea);
 			
 
 			if (pea.PrintPageEventArgs.HasMorePages == false) {
-				this.OnEndPrint (new PrintEventArgs());
+				if (this.RenderReportEnd != null) {
+					this.RenderReportEnd(this,pea);
+				}
+//				this.OnEndPrint (new PrintEventArgs());
 			}
 		}
 		
@@ -76,16 +83,11 @@ namespace SharpReportCore {
 				this.RenderPageHeader (this,page);
 			}
 			
-			/*
-			if (page.ForceNewPage == true) {
-				page.PrintPageEventArgs.HasMorePages = true;
-				return;
-			}
-			*/
+			
 			// print PageFooter before DetailSection
 			//so it's much easyer to calculate size of DetailSection
-			if (PrintPageEnd != null) {
-				PrintPageEnd (this,page);
+			if (RenderPageEnd != null) {
+				RenderPageEnd (this,page);
 			}
 			
 			
@@ -93,9 +95,16 @@ namespace SharpReportCore {
 				PrintPageBodyStart (this,page);
 			}
 			
-			if (PrintPageBodyEnd != null) {
-				PrintPageBodyEnd (this,page);
+			if (this.RenderDetails != null) {
+				this.RenderDetails(this,page);
 			}
+
+			if (page.PrintPageEventArgs.HasMorePages == false) {
+				if (PrintPageBodyEnd != null) {
+					PrintPageBodyEnd (this,page);
+				}
+			}
+			
 		}
 	
 	

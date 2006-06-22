@@ -45,6 +45,16 @@ namespace SharpReportCore {
 		
 		public event EventHandler <SharpReportEventArgs> NoData;
 		public event EventHandler <SharpReportParametersEventArgs> ParametersRequest;
+		/// <summary>
+		/// This event is fired before a Section is Rendered, you can use 
+		/// it to modify items to be printed
+		/// </summary>
+		public event EventHandler<SectionRenderEventArgs> SectionRendering;
+		/// <summary>
+		/// This event is fired after a section's output is done
+		/// </summary>
+		public event EventHandler<SectionRenderEventArgs> SectionRendered;
+		
 		
 		public SharpReportEngine() {
 			if (SharpReportCore.GlobalValues.IsValidPrinter() == false) {
@@ -124,7 +134,7 @@ namespace SharpReportCore {
 		}
 
 		private void InitDataContainer (ReportSettings settings) {	
-			System.Console.WriteLine("Engine:InitDataContainer eortType {0}",settings.ReportType);
+			System.Console.WriteLine("Engine:InitDataContainer ReportType <{0}>",settings.ReportType);
 			if (settings.ReportType == GlobalEnums.enmReportType.DataReport) {
 				if (settings.CommandText != null) {
 					try {
@@ -207,13 +217,26 @@ namespace SharpReportCore {
 					default:
 						throw new SharpReportException ("SharpReportmanager:SetupRenderer -> Unknown Reporttype");
 				}
+				abstr.SectionRendering += new EventHandler<SectionRenderEventArgs>(OnSectionPrinting);
+				abstr.SectionRendered +=new EventHandler<SectionRenderEventArgs>(OnSectionPrinted);
 				return abstr;
 			} catch (Exception) {
-				throw;
+				throw; 
 			}
 			
 		}
 		
+		private void OnSectionPrinting (object sender,SectionRenderEventArgs e) {
+			if (this.SectionRendering != null) {
+				this.SectionRendering(this,e);
+			} 
+		}
+		
+		private void OnSectionPrinted (object sender,SectionRenderEventArgs e) {
+			if (this.SectionRendered != null) {
+				this.SectionRendered (this,e);
+			} 
+		}
 		
 		protected SharpReportCore.AbstractRenderer SetupPushDataRenderer (ReportModel model,
 		                                                                  DataTable dataTable) {
@@ -321,6 +344,10 @@ namespace SharpReportCore {
 				model = ModelFromFile (fileName);
 				if (CheckReportParameters (model,reportParameters)) {
 					renderer = SetupStandartRenderer (model);
+					//				
+//				renderer.SectionRendering += new EventHandler<SectionPrintingEventArgs>(OnTestPrinting);
+//				System.Console.WriteLine("Event should be set");
+
 					if (renderer != null) {
 						PreviewControl.ShowPreview(renderer,1.5,false);
 					}
@@ -328,8 +355,10 @@ namespace SharpReportCore {
 			} catch (Exception) {
 				throw;
 			}
-			
 		}
+		
+		
+		
 		/// <summary>
 		/// Preview a "PushModel - Report"
 		/// </summary>

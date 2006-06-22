@@ -196,6 +196,7 @@ namespace SharpReport{
 			
 			try {
 				AbstractRenderer abstr = this.BuildStandartRenderer (model);
+
 				if (abstr != null) {
 					PreviewControl.ShowPreview (abstr,1.5,standAlone);
 				}
@@ -204,6 +205,8 @@ namespace SharpReport{
 				MessageService.ShowError (e,"SharpReportManager:ReportPreview");
 			}
 		}
+		
+		
 		
 		private AbstractRenderer BuildStandartRenderer (ReportModel model) {
 			System.Console.WriteLine("Manager:BuildStandartRenderr");
@@ -242,7 +245,6 @@ namespace SharpReport{
 			try {
 				AbstractRenderer abstr = GetRendererForPushDataReports (model,dataSet);
 				if (abstr != null) {
-					
 					PreviewControl.ShowPreview (abstr,1.5,standAlone);
 				}
 				

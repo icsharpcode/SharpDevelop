@@ -16,8 +16,7 @@ namespace SharpReportCore{
 	/// </summary>
 	public class AbstractDataRenderer : AbstractRenderer{
 		DataManager dataManager;
-		DataNavigator navigator;
-		
+		DataNavigator dataNavigator;
 		
 		public AbstractDataRenderer(ReportModel model,DataManager dataManager):base(model){
 			if (dataManager == null) {
@@ -32,9 +31,11 @@ namespace SharpReportCore{
 		}
 		
 		
-		protected override int RenderSection(BaseSection section, ReportPageEventArgs rpea){
+		
+		protected override int RenderSection(ReportPageEventArgs rpea){
 			return 0;
 		}
+		
 		#endregion
 		protected int DoItems (ReportPageEventArgs rpea) {
 			IContainerItem container = null;
@@ -49,7 +50,7 @@ namespace SharpReportCore{
 			if (hasContainer) {
 				return DoContainerControl(this.CurrentSection,container,rpea);
 			} else {
-				return base.RenderSection(this.CurrentSection, rpea);
+				return base.RenderSection(rpea);
 			}
 		}
 		
@@ -93,8 +94,8 @@ namespace SharpReportCore{
 		}
 		
 		protected DataNavigator DataNavigator{
-			get {return this.navigator;}
-			set {this.navigator = value;}
+			get {return this.dataNavigator;}
+			set {this.dataNavigator = value;}
 		}
 		
 		#endregion
@@ -102,13 +103,12 @@ namespace SharpReportCore{
 		#region IDisposable
 		public new void Dispose(){
 			try {
-				System.Console.WriteLine("Abstarct:Dispose");
 				if (this.dataManager != null) {
 					this.dataManager.Dispose();
 					this.dataManager = null;
 				}
-				if (this.navigator != null) {
-					this.navigator= null;
+				if (this.dataNavigator != null) {
+					this.dataNavigator= null;
 				}
 			} finally {
 				base.Dispose();
