@@ -84,6 +84,83 @@ namespace ReportSamples
 				MessageBox.Show(er.ToString(),"MainForm");
 			}
 		}
+		
+		private void OpenUnbound() {
+			try{
+				OpenFileDialog dg = new OpenFileDialog();
+				dg.Filter = "SharpReport files|*.srd";
+				dg.Title = "Select a report file: ";
+				if (dg.ShowDialog() == DialogResult.OK){
+					SharpReportCore.SharpReportEngine mn = new SharpReportCore.SharpReportEngine();
+					mn.SectionRendering += new EventHandler<SectionRenderEventArgs>(OnTestPrinting);
+					mn.SectionRendered += new EventHandler<SectionRenderEventArgs>(OnTestPrinted);
+					mn.PreviewStandartReport(dg.FileName.ToString());
+					
+				}
+			}
+			catch(Exception er){
+				MessageBox.Show(er.ToString(),"MainForm");
+			}
+		}
+		
+		private void OnTestPrinting (object sender,SectionRenderEventArgs e) {
+			System.Console.WriteLine("");
+			System.Console.WriteLine("--------------");
+			System.Console.WriteLine("MainForm:OnTestPrinting on PageNr <{0}>",e.PageNumber);
+			System.Console.WriteLine("\t SectionInUse <{0}>",e.CurrentSection);
+			System.Console.WriteLine("\t <{0}> Items",e.Section.Items.Count);
+
+		
+			switch (e.CurrentSection) {
+				case GlobalEnums.enmSection.ReportHeader:
+					System.Console.WriteLine("I found the ReportHeader");
+					break;
+				case GlobalEnums.enmSection.ReportPageHeader:
+					
+					BaseTextItem t = (BaseTextItem)e.Section.Items.Find("reportTextItem1");
+					if (t != null) {
+						t.Location = new Point(80,5);
+						t.Text = "Label";
+					}
+					
+					
+					BaseDataItem bb = (BaseDataItem)e.Section.Items.Find("reportDbTextItem1");
+					if (bb != null) {
+						bb.DrawBorder = true;
+						bb.Location = new Point(200,5);
+						bb.DbValue = "Hello World";
+					}
+					
+					System.Console.WriteLine("I found the Pageheader");
+					break;
+				case GlobalEnums.enmSection.ReportDetail:
+					System.Console.WriteLine("I found the ReportDetail");
+					break;
+				case GlobalEnums.enmSection.ReportPageFooter:
+					System.Console.WriteLine("I found the PageFooter");
+					BaseReportItem b = (BaseReportItem)e.Section.Items.Find("pageNumber1");
+					if (b != null) {
+						b.BackColor = Color.AliceBlue;
+					} else {
+						string s = String.Format ("<{0}> not found");
+						MessageBox.Show (s);
+					}
+					break;
+				case GlobalEnums.enmSection.ReportFooter:
+					System.Console.WriteLine("I found the ReportFooter");
+					break;
+				default:
+					
+					break;
+			}
+			System.Console.WriteLine("");
+		}
+		
+		private void OnTestPrinted (object sender,SectionRenderEventArgs e) {
+			System.Console.WriteLine("MainForm:OnTestPrinted for <{0}>",e.CurrentSection);
+			System.Console.WriteLine("----------");
+		}
+		
 		///<summary>Preferd Method to initialise the <see cref="SharpReportCore.ConnectionObject"></see>
 		/// hav a look to
 		/// <http://msdn2.microsoft.com/en-us/library/system.data.oledb.oledbconnectionstringbuilder(VS.80).aspx>
@@ -134,8 +211,8 @@ namespace ReportSamples
 					reportFileName = dg.FileName.ToString();
 					DataTable table = SelectData();
 					if (table != null) {
-//						mn.PreviewPushDataReport(reportFileName,table);
-						mn.PrintPushDataReport(reportFileName,table);
+						mn.PreviewPushDataReport(reportFileName,table);
+//						mn.PrintPushDataReport(reportFileName,table);
 					}
 				}
 			}
@@ -143,7 +220,7 @@ namespace ReportSamples
 				
 			}			
 		}
-		
+	
 		private DataTable SelectData()
 		{
 			OpenFileDialog dg = new OpenFileDialog();
@@ -192,6 +269,11 @@ namespace ReportSamples
 		void EmployeesPushClick(object sender, System.EventArgs e)
 		{
 			OpenPushModell();
+		}
+		
+		void UnboundToolStripMenuItem1Click(object sender, System.EventArgs e)
+		{
+			this.OpenUnbound();
 		}
 	}
 }

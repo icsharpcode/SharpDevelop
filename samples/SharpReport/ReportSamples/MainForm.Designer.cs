@@ -36,6 +36,7 @@ namespace ReportSamples
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.formSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.simpleFormsSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,7 +46,11 @@ namespace ReportSamples
 			this.missingConnectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pushModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.emlpoyeesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+			this.unboundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.unboundToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// menuStrip1
@@ -53,7 +58,8 @@ namespace ReportSamples
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 									this.formSheetToolStripMenuItem,
 									this.pullMpToolStripMenuItem,
-									this.pushModelToolStripMenuItem});
+									this.pushModelToolStripMenuItem,
+									this.unboundToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(518, 24);
@@ -121,6 +127,25 @@ namespace ReportSamples
 			this.emlpoyeesToolStripMenuItem.Text = "Employees-Push";
 			this.emlpoyeesToolStripMenuItem.Click += new System.EventHandler(this.EmployeesPushClick);
 			// 
+			// errorProvider1
+			// 
+			this.errorProvider1.ContainerControl = this;
+			// 
+			// unboundToolStripMenuItem
+			// 
+			this.unboundToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+									this.unboundToolStripMenuItem1});
+			this.unboundToolStripMenuItem.Name = "unboundToolStripMenuItem";
+			this.unboundToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
+			this.unboundToolStripMenuItem.Text = "Unbound";
+			// 
+			// unboundToolStripMenuItem1
+			// 
+			this.unboundToolStripMenuItem1.Name = "unboundToolStripMenuItem1";
+			this.unboundToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+			this.unboundToolStripMenuItem1.Text = "Unbound";
+			this.unboundToolStripMenuItem1.Click += new System.EventHandler(this.UnboundToolStripMenuItem1Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -132,9 +157,13 @@ namespace ReportSamples
 			this.Text = "ReportSamples";
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.ToolStripMenuItem unboundToolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem unboundToolStripMenuItem;
+		private System.Windows.Forms.ErrorProvider errorProvider1;
 		private System.Windows.Forms.ToolStripMenuItem emlpoyeesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem missingConnectionToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem employeeToolStripMenuItem;
