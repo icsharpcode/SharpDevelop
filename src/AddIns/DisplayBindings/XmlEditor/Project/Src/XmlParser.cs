@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -127,6 +128,8 @@ namespace ICSharpCode.XmlEditor
 					}
 				}
 			} catch (XmlException) { 
+				// Do nothing.
+			} catch (WebException) {
 				// Do nothing.
 			}
 			
