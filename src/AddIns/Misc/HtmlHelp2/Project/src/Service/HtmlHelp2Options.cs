@@ -30,8 +30,8 @@ namespace HtmlHelp2.OptionsPanel
 		public override void LoadPanelContents()
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("HtmlHelp2.Resources.HtmlHelp2Options.xfrm"));
-			ControlDictionary["reregisterButton"].Click += ReregisterButtonClick;
-			ControlDictionary["reregisterButton"].Visible = false;
+//			ControlDictionary["reregisterButton"].Click += ReregisterButtonClick;
+//			ControlDictionary["reregisterButton"].Visible = false;
 			this.InitializeComponents();
 		}
 
@@ -96,26 +96,26 @@ namespace HtmlHelp2.OptionsPanel
 		}
 
 		#region ReRegister
-		void ReregisterButtonClick(object sender, EventArgs e)
-		{
-			System.Threading.ThreadPool.QueueUserWorkItem(DoReregister);
-		}
-		
-		void DoReregister(object state)
-		{
-			try
-			{
-				ProcessStartInfo info = new ProcessStartInfo("cmd", "/c call echo Unregistering... & unregister.bat & echo. & echo Registering... & call register.bat & pause");
-				info.WorkingDirectory = Path.Combine(FileUtility.ApplicationRootPath, "bin\\setup\\help");
-				Process p = Process.Start(info);
-				p.WaitForExit(45000);
-				WorkbenchSingleton.SafeThreadAsyncCall(typeof(HtmlHelp2Environment), "ReloadNamespace");
-			}
-			catch (Exception ex)
-			{
-				MessageService.ShowError(ex);
-			}
-		}
+//		void ReregisterButtonClick(object sender, EventArgs e)
+//		{
+//			System.Threading.ThreadPool.QueueUserWorkItem(DoReregister);
+//		}
+//		
+//		void DoReregister(object state)
+//		{
+//			try
+//			{
+//				ProcessStartInfo info = new ProcessStartInfo("cmd", "/c call echo Unregistering... & unregister.bat & echo. & echo Registering... & call register.bat & pause");
+//				info.WorkingDirectory = Path.Combine(FileUtility.ApplicationRootPath, "bin\\setup\\help");
+//				Process p = Process.Start(info);
+//				p.WaitForExit(45000);
+//				WorkbenchSingleton.SafeThreadAsyncCall(typeof(HtmlHelp2Environment), "ReloadNamespace");
+//			}
+//			catch (Exception ex)
+//			{
+//				MessageService.ShowError(ex);
+//			}
+//		}
 		#endregion
 	}
 }

@@ -66,6 +66,7 @@ namespace HtmlHelp2
 			enableStemming.Text     = StringParser.Parse("${res:AddIns.HtmlHelp2.LookForSimilarWords}");
 			reuseMatches.Text       = StringParser.Parse("${res:AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics}");
 			hiliteTopics.Text       = StringParser.Parse("${res:AddIns.HtmlHelp2.HighlightMatches}");
+			useCurrentLang.Text     = StringParser.Parse("${res:AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch}");
 			label1.Text             = StringParser.Parse("${res:AddIns.HtmlHelp2.FilteredBy}");
 			label2.Text             = StringParser.Parse("${res:AddIns.HtmlHelp2.LookFor}");
 		}
@@ -90,7 +91,6 @@ namespace HtmlHelp2
 
 			panel3.Controls.Add(searchButton);
 			searchButton.Enabled                  = false;
-			searchButton.Text                     = StringParser.Parse("${res:AddIns.HtmlHelp2.Search}");
 			searchButton.Click                   += new EventHandler(SearchButtonClick);
 			panel3.Controls.Add(titlesOnly);
 			panel3.Controls.Add(enableStemming);
@@ -99,33 +99,28 @@ namespace HtmlHelp2
 			panel3.Controls.Add(useCurrentLang);
 
 			titlesOnly.Width                      = pw;
-			titlesOnly.Text                       = StringParser.Parse("${res:AddIns.HtmlHelp2.SearchInTitlesOnly}");
 			titlesOnly.Top                        = searchButton.Top + searchButton.Height + 10;
 			titlesOnly.TextAlign                  = ContentAlignment.MiddleLeft;
 			titlesOnly.Enabled                    = HtmlHelp2Environment.IsReady;
 
 			enableStemming.Width                  = pw;
-			enableStemming.Text                   = StringParser.Parse("${res:AddIns.HtmlHelp2.LookForSimilarWords}");
 			enableStemming.Top                    = titlesOnly.Top + titlesOnly.Height - 4;
 			enableStemming.TextAlign              = ContentAlignment.MiddleLeft;
 			enableStemming.Enabled                = HtmlHelp2Environment.IsReady;
 
 			reuseMatches.Width                    = pw;
 			reuseMatches.Top                      = enableStemming.Top + enableStemming.Height - 4;
-			reuseMatches.Text                     = StringParser.Parse("${res:AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics}");
 			reuseMatches.Enabled                  = false;
 			reuseMatches.TextAlign                = ContentAlignment.MiddleLeft;
 
 			hiliteTopics.Width                    = pw;
 			hiliteTopics.Top                      = reuseMatches.Top + reuseMatches.Height - 4;
-			hiliteTopics.Text                     = StringParser.Parse("${res:AddIns.HtmlHelp2.HighlightMatches}");
 			hiliteTopics.TextAlign                = ContentAlignment.MiddleLeft;
 			hiliteTopics.Enabled                  = HtmlHelp2Environment.IsReady;
 			hiliteTopics.Checked                  = true;
 
 			useCurrentLang.Width                  = pw;
 			useCurrentLang.Top                    = hiliteTopics.Top + hiliteTopics.Height;
-			useCurrentLang.Text                   = StringParser.Parse("${res:AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch}");
 			useCurrentLang.TextAlign              = ContentAlignment.MiddleLeft;
 			useCurrentLang.Enabled                = HtmlHelp2Environment.IsReady;
 			useCurrentLang.Visible                = ProjectService.CurrentProject != null;
@@ -153,7 +148,6 @@ namespace HtmlHelp2
 
 			// Filter label
 			mainPanel.Controls.Add(label1);
-			label1.Text                           = StringParser.Parse("${res:AddIns.HtmlHelp2.FilteredBy}");
 			label1.Dock                           = DockStyle.Top;
 			label1.TextAlign                      = ContentAlignment.MiddleLeft;
 			label1.Enabled                        = HtmlHelp2Environment.IsReady;
@@ -170,10 +164,11 @@ namespace HtmlHelp2
 			searchTerm.Enabled                    = HtmlHelp2Environment.IsReady;
 
 			mainPanel.Controls.Add(label2);
-			label2.Text                           = StringParser.Parse("${res:AddIns.HtmlHelp2.LookFor}");
 			label2.Dock                           = DockStyle.Top;
 			label2.TextAlign                      = ContentAlignment.MiddleLeft;
 			label2.Enabled                        = HtmlHelp2Environment.IsReady;
+
+			this.RedrawContent();
 			
 			ProjectService.SolutionLoaded        += this.SolutionLoaded;
 			ProjectService.SolutionClosed        += this.SolutionUnloaded;
@@ -181,10 +176,10 @@ namespace HtmlHelp2
 
 		private void FilterChanged(object sender, EventArgs e)
 		{
-			object selectedItem = filterCombobox.SelectedItem;
-			if (selectedItem != null)
+			string selectedFilterName = filterCombobox.SelectedItem.ToString();
+			if (selectedFilterName.Length > 0)
 			{
-				selectedQuery = HtmlHelp2Environment.FindFilterQuery(selectedItem.ToString());
+				selectedQuery = HtmlHelp2Environment.FindFilterQuery(selectedFilterName);
 			}
 		}
 
@@ -193,8 +188,8 @@ namespace HtmlHelp2
 		{
 			mainPanel.Refresh();
 
-			string currentFilterName = filterCombobox.SelectedItem.ToString();
-			if (String.Compare(currentFilterName, HtmlHelp2Environment.CurrentFilterName) != 0)
+			string selectedFilterName = filterCombobox.SelectedItem.ToString();
+			if (string.Compare(selectedFilterName, HtmlHelp2Environment.CurrentFilterName) != 0)
 			{
 				filterCombobox.SelectedIndexChanged -= new EventHandler(FilterChanged);
 				filterCombobox.SelectedIndex         = filterCombobox.Items.IndexOf(HtmlHelp2Environment.CurrentFilterName);
@@ -215,7 +210,7 @@ namespace HtmlHelp2
 
 		private void SearchButtonClick(object sender, EventArgs e)
 		{
-			if (searchTerm.Text != "")
+			if (searchTerm.Text.Length > 0)
 			{
 				this.AddTermToList(searchTerm.Text);
 				this.PerformFTS(searchTerm.Text);
@@ -224,12 +219,12 @@ namespace HtmlHelp2
 
 		private void SearchTextChanged(object sender, EventArgs e)
 		{
-			searchButton.Enabled = (searchTerm.Text != "");
+			searchButton.Enabled = (searchTerm.Text.Length > 0);
 		}
 
 		private void KeyPressed(object sender, KeyPressEventArgs e)
 		{
-			if (e.KeyChar == (char)13 && searchTerm.Text != null)
+			if (e.KeyChar == (char)13 && searchTerm.Text.Length > 0)
 			{
 				e.Handled = true;
 				this.AddTermToList(searchTerm.Text);
@@ -317,6 +312,11 @@ namespace HtmlHelp2
 			catch (Exception ex)
 			{
 				LoggingService.Error("Help 2.0: cannot get matching search word; " + ex.ToString());
+
+				foreach (Control control in this.mainPanel.Controls)
+				{
+					control.Enabled = false;
+				}
 			}
 			finally
 			{
