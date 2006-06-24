@@ -135,9 +135,9 @@ namespace ICSharpCode.Core
 							}
 						};
 						if (project is MSBuildProject) {
-							((MSBuildProject)project).RunMSBuild("ResolveComReferences", callback);
+							((MSBuildProject)project).RunMSBuild("ResolveComReferences", callback, null);
 						} else {
-							project.Build(callback);
+							project.Build(callback, null);
 						}
 					};
 					lock (callAfterAddComReference) {
