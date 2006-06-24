@@ -155,6 +155,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				case Keys.F2:
 					StartLabelEdit(SelectedNode as ExtTreeNode);
 					break;
+				case Keys.Delete:
+					DeleteNode(SelectedNode as ExtTreeNode);
+					break;
 			}
 			return base.ProcessCmdKey(ref msg, keyData);
 		}
@@ -385,6 +388,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return ImageList.Images.Count - 1;
 			}
 			return imageIndexTable[imageKey];
+		}
+		
+		void DeleteNode(ExtTreeNode node)
+		{
+			if (node == null) {
+				return;
+			}
+			
+			if (node.EnableDelete) {
+				node.EnsureVisible();
+				SelectedNode = node;
+				node.Delete();
+			}
 		}
 	}
 }
