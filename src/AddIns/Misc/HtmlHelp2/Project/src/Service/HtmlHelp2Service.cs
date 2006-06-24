@@ -11,14 +11,15 @@ namespace HtmlHelp2.Environment
 	using System.IO;
 	using System.Windows.Forms;
 	using System.Xml;
+	using System.Xml.Serialization;
 	using ICSharpCode.Core;
 	using MSHelpServices;
 	using HtmlHelp2.RegistryWalker;
 	using HtmlHelp2.HelperDialog;
+	using HtmlHelp2.OptionsPanel;
 
 	public sealed class HtmlHelp2Environment
 	{
-		static string help2EnvironmentFile               = "help2environment.xml";
 		static Guid TocGuid                              = new Guid("314111B2-A502-11D2-BBCA-00C04F8EC294");
 		static Guid IndexGuid                            = new Guid("314111CC-A502-11D2-BBCA-00C04F8EC294");
 		static Guid QueryGuid                            = new Guid("31411193-A502-11D2-BBCA-00C04F8EC294");
@@ -33,6 +34,8 @@ namespace HtmlHelp2.Environment
 		static string defaultPage                        = "about:blank";
 		static string searchPage                         = "http://msdn.microsoft.com";
 		static bool dynamicHelpIsBusy                    = false;
+		static HtmlHelp2Options config                   = new HtmlHelp2Options();
+
 
 		static HtmlHelp2Environment()
 		{
@@ -81,29 +84,40 @@ namespace HtmlHelp2.Environment
 		{
 			get { return dynamicHelpIsBusy; }
 		}
+
+		public static HtmlHelp2Options Config
+		{
+			get { return config; }
+		}
 		#endregion
 
 		#region Namespace Functions
 		private static void LoadHelp2Config()
 		{
-			try
+			LoadConfiguration();
+			if (!string.IsNullOrEmpty(config.SelectedCollection))
 			{
-				XmlDocument xmldoc = new XmlDocument();
-				xmldoc.Load(Path.Combine(PropertyService.ConfigDirectory, help2EnvironmentFile));
-
-				XmlNode node = xmldoc.SelectSingleNode("/help2environment/collection");
-				if (node != null) {
-					if (!string.IsNullOrEmpty(node.InnerText)) {
-						DefaultNamespaceName = node.InnerText;
-					}
-				}
-
-				LoggingService.Info("Help 2.0: using last configuration");
+				DefaultNamespaceName = config.SelectedCollection;
 			}
-			catch
-			{
-				LoggingService.Info("Help 2.0: using default configuration");
-			}
+
+//			try
+//			{
+//				XmlDocument xmldoc = new XmlDocument();
+//				xmldoc.Load(Path.Combine(PropertyService.ConfigDirectory, help2EnvironmentFile));
+//
+//				XmlNode node = xmldoc.SelectSingleNode("/help2environment/collection");
+//				if (node != null) {
+//					if (!string.IsNullOrEmpty(node.InnerText)) {
+//						DefaultNamespaceName = node.InnerText;
+//					}
+//				}
+//
+//				LoggingService.Info("Help 2.0: using last configuration");
+//			}
+//			catch
+//			{
+//				LoggingService.Info("Help 2.0: using default configuration");
+//			}
 		}
 
 		public static void ReloadNamespace()
@@ -306,6 +320,53 @@ namespace HtmlHelp2.Environment
 			if(NamespaceReloaded != null)
 			{
 				NamespaceReloaded(null, e);
+			}
+		}
+		#endregion
+
+		#region Configuration
+		public static void LoadConfiguration()
+		{
+			try
+			{
+				string configFile =
+					Path.Combine(PropertyService.ConfigDirectory, "help2environment.xml");
+
+				if(!File.Exists(configFile))
+				{
+					return;
+				}
+				
+				XmlSerializer serialize = new XmlSerializer(typeof(HtmlHelp2Options));
+				StreamReader file = new StreamReader(configFile);
+				config = (HtmlHelp2Options)serialize.Deserialize(file);
+				file.Close();
+
+				LoggingService.Info("Help 2.0: Configuration successfully loaded.");
+			}
+			catch
+			{
+				LoggingService.Error("Help 2.0: Error while trying to load configuration.");
+			}
+		}
+
+		public static void SaveConfiguration()
+		{
+			try
+			{
+				string configFile =
+					Path.Combine(PropertyService.ConfigDirectory, "help2environment.xml");
+
+				XmlSerializer serialize = new XmlSerializer(typeof(HtmlHelp2Options));
+				StreamWriter file = new StreamWriter(configFile);
+				serialize.Serialize(file, config);
+				file.Close();
+
+				LoggingService.Info("Help 2.0: Configuration successfully saved.");
+			}
+			catch
+			{
+				LoggingService.Error("Help 2.0: Error while trying to save configuration.");
 			}
 		}
 		#endregion

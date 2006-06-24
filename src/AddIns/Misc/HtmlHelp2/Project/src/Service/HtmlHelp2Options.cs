@@ -15,6 +15,7 @@ namespace HtmlHelp2.OptionsPanel
 	using System.Reflection;
 	using System.Windows.Forms;
 	using System.Xml;
+	using System.Xml.Serialization;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop.Gui;
 	using HtmlHelp2.Environment;
@@ -23,9 +24,9 @@ namespace HtmlHelp2.OptionsPanel
 
 	public class HtmlHelp2OptionsPanel : AbstractOptionPanel
 	{
-		static string help2EnvironmentFile = "help2environment.xml";
-		ComboBox help2Collections          = null;
-		string selectedHelp2Collection     = HtmlHelp2Environment.DefaultNamespaceName;
+		ComboBox help2Collections = null;
+		CheckBox tocPictures = null;
+		string selectedHelp2Collection = HtmlHelp2Environment.DefaultNamespaceName;
 
 		public override void LoadPanelContents()
 		{
@@ -46,10 +47,14 @@ namespace HtmlHelp2.OptionsPanel
 		{
 			try
 			{
-				help2Collections             = (ComboBox)ControlDictionary["help2Collections"];
-				help2Collections.Enabled     = HtmlHelp2Environment.IsReady;
+				help2Collections = (ComboBox)ControlDictionary["help2Collections"];
+				help2Collections.Enabled = HtmlHelp2Environment.IsReady;
 				help2Collections.SelectedIndexChanged += new EventHandler(this.NamespaceNameChanged);
-				selectedHelp2Collection      = HtmlHelp2Environment.CurrentSelectedNamespace;
+				selectedHelp2Collection = HtmlHelp2Environment.CurrentSelectedNamespace;
+
+				tocPictures = (CheckBox)ControlDictionary["tocPictures"];
+				tocPictures.Enabled = HtmlHelp2Environment.IsReady;
+				tocPictures.Checked = HtmlHelp2Environment.Config.TocPictures;
 
 				Help2RegistryWalker.BuildNamespacesList(help2Collections, selectedHelp2Collection);
 			}
@@ -70,29 +75,9 @@ namespace HtmlHelp2.OptionsPanel
 
 		private void SaveHelp2Config()
 		{
-			if (selectedHelp2Collection.Length == 0)
-			{
-				return;
-			}
-
-			try
-			{
-				XmlDocument xmldoc    = new XmlDocument();
-				xmldoc.LoadXml("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><help2environment/>");
-
-				XmlNode node          = xmldoc.CreateElement("collection");
-				XmlCDataSection cdata = xmldoc.CreateCDataSection(selectedHelp2Collection);
-				node.AppendChild(cdata);
-				xmldoc.DocumentElement.AppendChild(node);
-
-				xmldoc.Save(Path.Combine(PropertyService.ConfigDirectory, help2EnvironmentFile));
-
-				LoggingService.Info("Help 2.0: new configuration saved");
-			}
-			catch
-			{
-				LoggingService.Error("Help 2.0: error while trying to save configuration");
-			}
+			HtmlHelp2Environment.Config.SelectedCollection = selectedHelp2Collection;
+			HtmlHelp2Environment.Config.TocPictures = tocPictures.Checked;
+			HtmlHelp2Environment.SaveConfiguration();
 		}
 
 		#region ReRegister
@@ -117,5 +102,26 @@ namespace HtmlHelp2.OptionsPanel
 //			}
 //		}
 		#endregion
+	}
+
+	[XmlRoot("help2environment")]
+	public class HtmlHelp2Options
+	{
+		private string selectedCollection = string.Empty;
+		private bool tocPictures = true;
+
+		[XmlElement("collection")]
+		public string SelectedCollection
+		{
+			get { return selectedCollection; }
+			set { selectedCollection = value; }
+		}
+
+		[XmlElement("tocpictures")]
+		public bool TocPictures
+		{
+			get { return tocPictures; }
+			set { tocPictures = value; }
+		}
 	}
 }

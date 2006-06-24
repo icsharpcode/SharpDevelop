@@ -5,8 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-//#define DExplore8Style_NoTOCPictures
-
 namespace HtmlHelp2
 {
 	using System;
@@ -22,6 +20,7 @@ namespace HtmlHelp2
 	using HtmlHelp2.ControlsValidation;
 	using HtmlHelp2.ResourcesHelperClass;
 	using PrintOptions = MSHelpServices.HxHierarchy_PrintNode_Options;
+	using TSC = MSHelpControls.HxTreeStyleConstant;
 
 
 	public class ShowTocMenuCommand : AbstractMenuCommand
@@ -133,9 +132,8 @@ namespace HtmlHelp2
 
 					tocControl.BorderStyle = HxBorderStyle.HxBorderStyle_FixedSingle;
 					tocControl.FontSource = HxFontSourceConstant.HxFontExternal;
-					#if DExplore8StyleWithNoTocPictures
-					tocControl.TreeStyle = HxTreeStyleConstant.HxTreeStyle_TreelinesPlusMinusText;
-					#endif
+					tocControl.TreeStyle =
+						(HtmlHelp2Environment.Config.TocPictures)?TSC.HxTreeStyle_TreelinesPlusMinusPictureText:TSC.HxTreeStyle_TreelinesPlusMinusText;
 					
 					printTopic.Image = ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Print.bmp");
 					printTopic.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
@@ -321,6 +319,9 @@ namespace HtmlHelp2
 		private void NamespaceReloaded(object sender, EventArgs e)
 		{
 			this.LoadToc();
+			
+			tocControl.TreeStyle =
+				(HtmlHelp2Environment.Config.TocPictures)?TSC.HxTreeStyle_TreelinesPlusMinusPictureText:TSC.HxTreeStyle_TreelinesPlusMinusText;
 		}
 		#endregion
 
