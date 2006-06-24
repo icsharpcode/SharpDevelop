@@ -9,15 +9,14 @@
 
 using System;
 using System.Drawing;
-
+using System.Drawing.Printing;
 namespace SharpReportCore{
 	/// <summary>
 	/// Description of AbstractDataRenderer.
 	/// </summary>
 	public class AbstractDataRenderer : AbstractRenderer{
 		DataManager dataManager;
-		DataNavigator navigator;
-		
+		DataNavigator dataNavigator;
 		
 		public AbstractDataRenderer(ReportModel model,DataManager dataManager):base(model){
 			if (dataManager == null) {
@@ -26,22 +25,22 @@ namespace SharpReportCore{
 			this.dataManager = dataManager;
 		}
 		
-		protected override void ReportBegin(object sender, ReportPageEventArgs e){
-			base.ReportBegin(sender, e);
+		#region overrides
+		protected override void ReportBegin(object sender, PrintEventArgs pea){
+			base.ReportBegin(sender, pea);
 		}
 		
 		
 		
-		protected override void BeginPrintPage(object sender, ReportPageEventArgs e)
-		{
-			base.BeginPrintPage(sender, e);
+		protected override int RenderSection(ReportPageEventArgs rpea){
+			return 0;
 		}
 		
-		
-		protected override int RenderSection(BaseSection section, ReportPageEventArgs rpea){
-			bool hasContainer = false;
+		#endregion
+		protected int DoItems (ReportPageEventArgs rpea) {
 			IContainerItem container = null;
-			foreach (BaseReportItem item in section.Items) {
+			bool hasContainer = false;
+			foreach (BaseReportItem item in this.CurrentSection.Items) {
 				container = item as IContainerItem;
 				if (container != null) {
 					hasContainer = true;
@@ -49,12 +48,12 @@ namespace SharpReportCore{
 				}
 			}
 			if (hasContainer) {
-				return DoContainerControl(section,container,rpea);
+				return DoContainerControl(this.CurrentSection,container,rpea);
 			} else {
-				return base.RenderSection(section, rpea);
+				return base.RenderSection(rpea);
 			}
-
 		}
+		
 		
 		private int DoContainerControl (BaseSection section,
 		                                IContainerItem container,
@@ -95,23 +94,25 @@ namespace SharpReportCore{
 		}
 		
 		protected DataNavigator DataNavigator{
-			get {return this.navigator;}
-			set {this.navigator = value;}
+			get {return this.dataNavigator;}
+			set {this.dataNavigator = value;}
 		}
 		
 		#endregion
 		
 		#region IDisposable
-		public override void Dispose()
-		{
-			if (this.dataManager != null) {
-				this.dataManager.Dispose();
-				this.dataManager = null;
+		public new void Dispose(){
+			try {
+				if (this.dataManager != null) {
+					this.dataManager.Dispose();
+					this.dataManager = null;
+				}
+				if (this.dataNavigator != null) {
+					this.dataNavigator= null;
+				}
+			} finally {
+				base.Dispose();
 			}
-			if (this.navigator != null) {
-				this.navigator= null;
-			}
-			base.Dispose();
 		}
 		#endregion
 	}

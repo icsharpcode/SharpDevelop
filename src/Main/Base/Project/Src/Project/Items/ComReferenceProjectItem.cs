@@ -115,6 +115,18 @@ namespace ICSharpCode.SharpDevelop.Project
 						if (File.Exists(interopFileName)) {
 							return interopFileName;
 						}
+						
+						// look in obj\Debug:
+						outputFolder = Project.IntermediateOutputFullPath;
+						interopFileName = Path.Combine(outputFolder, String.Concat("Interop.", Include, ".dll"));
+						if (File.Exists(interopFileName)) {
+							return interopFileName;
+						}
+						// Look for ActiveX interop.
+						interopFileName = GetActiveXInteropFileName(outputFolder, Include);
+						if (File.Exists(interopFileName)) {
+							return interopFileName;
+						}
 					}
 				}
 				catch (Exception) { }

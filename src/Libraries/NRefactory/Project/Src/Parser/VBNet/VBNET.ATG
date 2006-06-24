@@ -19,12 +19,14 @@ public string ContainingAssembly
 }
 Token t
 {
+	[System.Diagnostics.DebuggerStepThrough]
 	get {
 		return lexer.Token;
 	}
 }
 Token la
 {
+	[System.Diagnostics.DebuggerStepThrough]
 	get {
 		return lexer.LookAhead;
 	}
@@ -957,9 +959,10 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		Statement stmt = null;
 		List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>();
 		List<TemplateDefinition> templates = new List<TemplateDefinition>();
-	.)=
+	.)
+=
 	NonModuleDeclaration<m, attributes>
-	| /* 9.2.1 */
+| /* 9.2.1 */
 	"Sub"
 	(.
 		Point startPos = t.Location;
@@ -1038,7 +1041,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			compilationUnit.AddChild(cd);
 		.)
 	)
-	|
+|
 	/* 9.2.1 */
 	"Function"
 	(.
@@ -1112,7 +1115,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			.)
 			EOL
 	)
-	|
+|
 	/* 9.2.2. */
 	"Declare"
 	(.
@@ -1152,7 +1155,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				compilationUnit.AddChild(declareDeclaration);
 			.)
 		)
-	|
+|
 	/* 9. 4 */
 	"Event"
 	(.
@@ -1176,14 +1179,15 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		compilationUnit.AddChild(eventDeclaration);
 	.)
 	EOL
-	| /* 9.6 */
+| /* 9.6 */
 	(. Point startPos = t.Location; .)
 	(.
 		m.Check(Modifier.Fields);
 		FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
 		fd.StartLocation = m.GetDeclarationLocation(startPos); 
 	.)
-	VariableDeclarator<variableDeclarators>
+	IdentifierForFieldDeclaration (. string name = t.val; .)
+	VariableDeclaratorPartAfterIdentifier<variableDeclarators, name>
 	{ "," VariableDeclarator<variableDeclarators> }
 	EOL
 	(.
@@ -1210,7 +1214,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		fd.EndLocation = t.EndLocation;
 		compilationUnit.AddChild(fd);
 	.)
-	| /* 9.7 */
+| /* 9.7 */
 	"Property"
 	(.
 		m.Check(Modifier.VBProperties);
@@ -1261,7 +1265,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			compilationUnit.AddChild(pDecl);
 		.)
 	)
-	|
+|
 	"Custom" (. Point startPos = t.Location; .) "Event"
 	(.
 		m.Check(Modifier.VBCustomEvents);
@@ -1317,9 +1321,9 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		decl.RaiseRegion = raiseEventAccessorDeclaration;
 		compilationUnit.AddChild(decl);
 	.)
-	|  (. ConversionType opConversionType = ConversionType.None; .)
-		[ "Widening"		(. opConversionType = ConversionType.Implicit; .)
-		| "Narrowing"		(. opConversionType = ConversionType.Explicit;.) ]
+|   (. ConversionType opConversionType = ConversionType.None; .)
+	[ "Widening"		(. opConversionType = ConversionType.Implicit; .)
+	| "Narrowing"		(. opConversionType = ConversionType.Explicit;.) ]
 	"Operator"
 	(.
 		m.Check(Modifier.VBOperators);
@@ -1363,7 +1367,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		operatorDeclaration.Body.EndLocation = t.Location;
 		compilationUnit.AddChild(operatorDeclaration);
 	.)
-	.
+.
 
 OverloadableOperator<out OverloadableOperatorType operatorType>
 	(. operatorType = OverloadableOperatorType.None; .)
@@ -1536,13 +1540,18 @@ ConstantDeclarator<List<VariableDeclaration> constantDeclaration>
 
 /* 9.6 */
 VariableDeclarator<List<VariableDeclaration> fieldDeclaration>
+=
+	Identifier (. string name = t.val; .)
+	VariableDeclaratorPartAfterIdentifier<fieldDeclaration, name>
+.
+
+VariableDeclaratorPartAfterIdentifier<List<VariableDeclaration> fieldDeclaration, string name>
 	(.
 		Expression expr = null;
 		TypeReference type = null;
 		ArrayList rank = null;
 		List<Expression> dimension = null;
 	.) =
-	Identifier (. string name = t.val; .)
 	[ IF(IsSize() && !IsDims()) ArrayInitializationModifier<out dimension> ]
 	[ IF(IsDims())              ArrayNameModifier<out rank> ]
 	(
@@ -1770,7 +1779,7 @@ SimpleExpr<out Expression pexpr>
 		|	/* 11.4.2 */ "(" Expr<out expr> ")" 				(. pexpr = new ParenthesizedExpression(expr); .)
 		|	/* 11.4.4 */ Identifier					(. pexpr = new IdentifierExpression(t.val); .)
 		|	(. string val = String.Empty; .)
-			PrimitiveTypeName<out val>
+			[ PrimitiveTypeName<out val> | "Object" (. val = "Object"; .) ]
 			"." (. t.val = ""; .) Identifier (. pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); .)
 		|	"Me"							(. pexpr = new ThisReferenceExpression(); .)
 		|	(. Expression retExpr = null; .)
@@ -2024,12 +2033,14 @@ ObjectCreateExpression<out Expression oce>
 	oce = null;
 .) =
 	"New" NonArrayTypeName<out type, false>
-	["(" [ ArgumentList<out arguments> ] ")" ]
-	[ IF (la.kind == Tokens.OpenParenthesis)
-	  ArrayTypeModifiers<out dimensions>
-	  ArrayInitializer<out initializer>
-	| ArrayInitializer<out initializer> ]
+	["(" ArgumentList<out arguments> ")"
+		[ IF (la.kind == Tokens.OpenParenthesis)
+		  ArrayTypeModifiers<out dimensions>
+		  ArrayInitializer<out initializer>
+		| ArrayInitializer<out initializer> ]
+	]
 	(.
+		if (type == null) type = new TypeReference("Object"); // fallback type on parser errors
 		if (initializer == null) {
 			oce = new ObjectCreateExpression(type, arguments);
 		} else {
@@ -2049,14 +2060,13 @@ ArgumentList<out List<Expression> arguments>
 		arguments = new List<Expression>();
 		Expression expr = null;
 	.) =
-	[
-		Argument<out expr>			(. if (expr != null) { arguments.Add(expr); } .)
-		{
-			","
-			Argument<out expr>		(. if (expr != null) { arguments.Add(expr); } .)
-		}
-	]
-	.
+	[ Argument<out expr> ]
+	{ "," (. arguments.Add(expr ?? Expression.Null); expr = null; .)
+		[ Argument<out expr> ]
+		(. if (expr == null) expr = Expression.Null; .)
+	}
+	(. if (expr != null) arguments.Add(expr); .)
+.
 
 /* Spec, 11.8 */
 Argument<out Expression argumentexpr>
@@ -2071,7 +2081,7 @@ Argument<out Expression argumentexpr>
 	.)
 	|
 	Expr<out argumentexpr>
-	.
+.
 
 /* 7.1. */
 TypeName<out TypeReference typeref>
@@ -2664,27 +2674,17 @@ EmbeddedStatement<out Statement statement>
 			statement = new StatementExpression(expr);
 		.)
 	| "Call" SimpleExpr<out expr> (. statement = new StatementExpression(expr); .)
-	| "Using" Identifier (. 
-		string resourcename = t.val, typeName; 
-		Statement resourceAquisition = null, block = null;
-	.) "As" (
-		"New" Qualident<out typeName>
-		(. List<Expression> initializer = null; .)
-		["(" [ ArgumentList<out initializer> ] ")" ]
-		(.  
-			resourceAquisition =  new LocalVariableDeclaration(new VariableDeclaration(resourcename, new ArrayInitializerExpression(initializer), new TypeReference(typeName)));
-			
-		.) |
-		Qualident<out typeName> "=" Expr<out expr> 
-		(.
-			resourceAquisition =  new LocalVariableDeclaration(new VariableDeclaration(resourcename, expr, new TypeReference(typeName)));
-		.) )
-		
+	| "Using"
+		(. LocalVariableDeclaration resourceAquisition = new LocalVariableDeclaration(Modifier.None); .)
+		(. Statement block;  .)
+		VariableDeclarator<resourceAquisition.Variables>
+		{ ","
+		  VariableDeclarator<resourceAquisition.Variables>
+		}
 		Block<out block>
 		"End" "Using"
 		(. statement = new UsingStatement(resourceAquisition, block); .)
-		
-	.
+.
 
 /* 10.9.2 */
 LoopControlVariable<out TypeReference type, out string name>
@@ -2701,12 +2701,6 @@ LoopControlVariable<out TypeReference type, out string name>
 				Error("array rank only allowed one time");
 			} else if (arrayModifiers != null) {
 				type.RankSpecifier = (int[])arrayModifiers.ToArray(typeof(int));
-			}
-		} else {
-			if (arrayModifiers != null) {
-				type = new TypeReference("Integer", (int[])arrayModifiers.ToArray(typeof(int)));
-			} else {
-				type = new TypeReference("Integer");
 			}
 		}
 	.)
@@ -2927,13 +2921,28 @@ Identifier	=
 	| "Text"
 	| "Binary"
 	| "Compare"
+	| "Custom"
 	| "Assembly"
 	| "Ansi"
 	| "Auto"
 	| "Preserve"
 	| "Unicode"
 	| "Until"
-	.
+.
+
+IdentifierForFieldDeclaration =
+	ident
+	| "Text"
+	| "Binary"
+	| "Compare"
+	/*| "Custom" Custom is not valid for field declaration */
+	| "Assembly"
+	| "Ansi"
+	| "Auto"
+	| "Preserve"
+	| "Unicode"
+	| "Until"
+.
 
 /* 2.2 */
 

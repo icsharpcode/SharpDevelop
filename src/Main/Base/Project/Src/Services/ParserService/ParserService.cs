@@ -64,7 +64,7 @@ namespace ICSharpCode.Core
 				foreach (IProjectContent pc in AllProjectContents) {
 					yield return pc;
 				}
-				foreach (IProjectContent pc in ProjectContentRegistry.LoadedProjectContents) {
+				foreach (IProjectContent pc in ProjectContentRegistry.GetLoadedProjectContents()) {
 					yield return pc;
 				}
 			}
@@ -142,7 +142,7 @@ namespace ICSharpCode.Core
 					}
 					createdContents.Add(newContent);
 				} catch (Exception e) {
-					ICSharpCode.Core.MessageService.ShowError(e, "Error while retrieving project contents from " + project);
+					MessageService.ShowError(e, "Error while retrieving project contents from " + project);
 				}
 			}
 			WorkbenchSingleton.SafeThreadAsyncCall((ThreadStart)ProjectService.ParserServiceCreatedProjectContents);
@@ -153,16 +153,16 @@ namespace ICSharpCode.Core
 					newContent.Initialize1();
 					workAmount += newContent.GetInitializationWorkAmount();
 				} catch (Exception e) {
-					ICSharpCode.Core.MessageService.ShowError(e, "Error while initializing project references:" + newContent);
+					MessageService.ShowError(e, "Error while initializing project references:" + newContent);
 				}
 			}
-			StatusBarService.ProgressMonitor.BeginTask("Parsing...", workAmount);
+			StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount);
 			foreach (ParseProjectContent newContent in createdContents) {
 				if (abortLoadSolutionProjectsThread) break;
 				try {
 					newContent.Initialize2();
 				} catch (Exception e) {
-					ICSharpCode.Core.MessageService.ShowError(e, "Error while initializing project contents:" + newContent);
+					MessageService.ShowError(e, "Error while initializing project contents:" + newContent);
 				}
 			}
 			StatusBarService.ProgressMonitor.Done();
@@ -172,7 +172,7 @@ namespace ICSharpCode.Core
 		{
 			ParseProjectContent newContent = (ParseProjectContent)state;
 			newContent.Initialize1();
-			StatusBarService.ProgressMonitor.BeginTask("Parsing...", newContent.GetInitializationWorkAmount());
+			StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", newContent.GetInitializationWorkAmount());
 			newContent.Initialize2();
 			StatusBarService.ProgressMonitor.Done();
 		}
@@ -180,7 +180,7 @@ namespace ICSharpCode.Core
 		static void ReparseProject(object state)
 		{
 			ParseProjectContent newContent = (ParseProjectContent)state;
-			StatusBarService.ProgressMonitor.BeginTask("Parsing...", newContent.GetInitializationWorkAmount());
+			StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", newContent.GetInitializationWorkAmount());
 			newContent.ReInitialize2();
 			StatusBarService.ProgressMonitor.Done();
 		}
@@ -595,6 +595,8 @@ namespace ICSharpCode.Core
 		
 		public static IParser GetParser(string fileName)
 		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
 			IParser curParser = null;
 			foreach (ParserDescriptor descriptor in parser) {
 				if (descriptor.CanParse(fileName)) {

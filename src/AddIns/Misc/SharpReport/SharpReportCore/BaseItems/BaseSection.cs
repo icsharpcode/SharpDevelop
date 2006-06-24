@@ -21,24 +21,28 @@ namespace SharpReportCore {
 	public class BaseSection : SharpReportCore.BaseReportObject {
 		
 		private int sectionMargin;
+//		private bool pageBreakBefore;
+		private bool pageBreakAfter;
 		
 		private ReportItemCollection items;
 		
-		public event EventHandler<SectionPrintingEventArgs> SectionPrinting;
-		public event EventHandler<SectionPrintingEventArgs> SectionPrinted;
+		public event EventHandler<SectionEventArgs> SectionPrinting;
+		public event EventHandler<SectionEventArgs> SectionPrinted;
 		
 		
 		#region Constructors
 		
 		public BaseSection(): base() {
-			this.Name = String.Empty;
+			base.Name = String.Empty;
 		}
 		
 		public BaseSection (string sectionName) :base(){
-			this.Name = sectionName;
+			base.Name = sectionName;
 		}
 		
 		#endregion
+		
+		#region Rendering
 		
 		public override void Render(ReportPageEventArgs rpea){
 			this.NotifyPrinting();
@@ -46,21 +50,24 @@ namespace SharpReportCore {
 			this.NotifyPrinted();
 		}
 		
-		
-		#region properties
-		public void NotifyPrinting () {
+		private void NotifyPrinting () {
 			if (this.SectionPrinting != null) {
-				SectionPrintingEventArgs ea = new SectionPrintingEventArgs (this);
+				SectionEventArgs ea = new SectionEventArgs (this);
 				SectionPrinting (this,ea);
-			}
+			} 
 		}
 		
-		public void NotifyPrinted () {
+		private void NotifyPrinted () {
 			if (this.SectionPrinted != null) {
-				SectionPrintingEventArgs ea = new SectionPrintingEventArgs (this);
+				SectionEventArgs ea = new SectionEventArgs (this);
 				SectionPrinted (this,ea);
 			}
 		}
+		
+		#endregion
+		
+		#region properties
+		
 		
 		public  int SectionMargin {
 			get {
@@ -82,6 +89,29 @@ namespace SharpReportCore {
 				return items;
 			}
 		}
+		
+		/*
+		public virtual bool PageBreakBefore {
+			get {
+				return pageBreakBefore;
+			}
+			set {
+				pageBreakBefore = value;
+				NotifyPropertyChanged ("PageBreakBefore");
+			}
+		}
+		*/
+		public virtual bool PageBreakAfter {
+			get {
+				return pageBreakAfter;
+			}
+			set {
+				pageBreakAfter = value;
+				NotifyPropertyChanged ("PageBreakAfter");
+			}
+		}
+		
+		
 		#endregion
 		
 		#region System.IDisposable interface implementation

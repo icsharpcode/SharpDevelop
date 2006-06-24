@@ -115,8 +115,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected void ConnectBrowseFolder(string browseButton, string target)
 		{
-			// TODO: Translation:
-			ConnectBrowseFolder(browseButton, target, "Select folder");
+			ConnectBrowseFolder(browseButton, target, "${res:Dialog.ProjectOptions.SelectFolderTitle}");
 		}
 		protected void ConnectBrowseFolder(string browseButton, string target, string description)
 		{

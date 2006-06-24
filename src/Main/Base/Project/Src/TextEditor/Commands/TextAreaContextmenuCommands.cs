@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override void Run()
 		{
-			OptionsCommand.ShowTabbedOptions("ShowTabbedOptions",
+			OptionsCommand.ShowTabbedOptions(ResourceService.GetString("Dialog.Options.BufferOptions"),
 			                                 AddInTree.GetTreeNode("/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog"));
 		}
 	}

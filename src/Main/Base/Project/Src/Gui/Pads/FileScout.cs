@@ -146,18 +146,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			switch(GetDriveType(drive)) {
 				case DriveType.Removeable:
-					text += " (Removeable)";
+					text += " (${res:MainWindow.Windows.FileScout.DriveType.Removeable})";
 					break;
 				case DriveType.Fixed:
-					text += " (Fixed)";
+					text += " (${res:MainWindow.Windows.FileScout.DriveType.Fixed})";
 					break;
 				case DriveType.Cdrom:
-					text += " (CD)";
+					text += " (${res:MainWindow.Windows.FileScout.DriveType.CD})";
 					break;
 				case DriveType.Remote:
-					text += " (Remote)";
+					text += " (${res:MainWindow.Windows.FileScout.DriveType.Remote})";
 					break;
 			}
+			text = StringParser.Parse(text);
 		}
 		
 		public override string ToString()
@@ -330,7 +331,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void deleteFiles(object sender, EventArgs e)
 		{
-			if (MessageService.AskQuestion("Are you sure ?", "Delete files")) {
+			string fileName = "";
+			foreach(FileListItem fileItem in SelectedItems) {
+				fileName = fileItem.FullName;
+				break;
+			}
+			if (MessageService.AskQuestion(StringParser.Parse("${res:ProjectComponent.ContextMenu.Delete.Question}", new string[,] {{"FileName", fileName}}),
+			                               "${Global.Delete}")) {
 				foreach(FileListItem fileItem in SelectedItems)
 				{
 					try {
@@ -521,7 +528,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			rootNode.SelectedImageIndex = 6;
 			rootNode.Tag = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 			
-			TreeNode myFilesNode = rootNode.Nodes.Add(Path.GetFileName(Environment.GetFolderPath(Environment.SpecialFolder.Personal)));
+			TreeNode myFilesNode = rootNode.Nodes.Add(ResourceService.GetString("MainWindow.Windows.FileScout.MyDocuments"));
 			myFilesNode.ImageIndex = 7;
 			myFilesNode.SelectedImageIndex = 7;
 			try {
@@ -532,7 +539,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			myFilesNode.Nodes.Add("");
 			
-			TreeNode computerNode = rootNode.Nodes.Add(StringParser.Parse("${res:MainWindow.Windows.FileScout.MyComputer}"));
+			TreeNode computerNode = rootNode.Nodes.Add(ResourceService.GetString("MainWindow.Windows.FileScout.MyComputer"));
 			computerNode.ImageIndex = 8;
 			computerNode.SelectedImageIndex = 8;
 			try {

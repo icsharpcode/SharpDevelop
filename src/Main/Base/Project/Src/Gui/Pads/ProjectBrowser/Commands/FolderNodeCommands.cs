@@ -24,11 +24,30 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 {
 	public class AddExistingItemsToProject : AbstractMenuCommand
 	{
-		enum ReplaceExistingFile {
+		public enum ReplaceExistingFile {
 			Yes = 0,
 			YesToAll = 1,
 			No = 2,
 			Cancel = 3
+		}
+		
+		public static ReplaceExistingFile ShowReplaceExistingFileDialog(string caption, string fileName, bool replacingMultiple)
+		{
+			if (caption == null)
+				caption = "${res:ProjectComponent.ContextMenu.AddExistingFiles.ReplaceExistingFile.Title}";
+			string text = StringParser.Parse("${res:ProjectComponent.ContextMenu.AddExistingFiles.ReplaceExistingFile}", new string[,] {{"FileName", fileName}});
+			if (replacingMultiple) {
+				return (ReplaceExistingFile)
+					MessageService.ShowCustomDialog(caption, text,
+					                                0, 3,
+					                                "${res:Global.Yes}",
+					                                "${res:Global.YesToAll}",
+					                                "${res:Global.No}",
+					                                "${res:Global.CancelButtonText}");
+			} else {
+				return MessageService.AskQuestion(text, caption)
+					? ReplaceExistingFile.Yes : ReplaceExistingFile.No;
+			}
 		}
 		
 		int GetFileFilterIndex(IProject project, string[] fileFilters)
@@ -111,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(fileName));
 			if (!FileUtility.IsEqualFileName(fileName, copiedFileName)) {
 				File.Copy(fileName, copiedFileName, true);
-			} 
+			}
 			if (includeInProject) {
 				FileNode fileNode;
 				foreach (TreeNode childNode in node.AllNodes) {
@@ -222,12 +241,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					foreach (KeyValuePair<string, string> pair in fileNames) {
 						copiedFileName = Path.Combine(node.Directory, Path.GetFileName(pair.Key));
 						if (!replaceAll && File.Exists(copiedFileName) && !FileUtility.IsEqualFileName(pair.Key, copiedFileName)) {
-							ReplaceExistingFile res = (ReplaceExistingFile)MessageService.ShowCustomDialog(fdiag.Title, "A file with the name '" + Path.GetFileName(pair.Key) + "' already exists. Do you want to replace it?",
-						    	0, 3,
-						    	"${res:Global.Yes}",
-								"Yes to All",
-								"${res:Global.No}",
-								"${res:Global.CancelButtonText}");
+							ReplaceExistingFile res = ShowReplaceExistingFileDialog(fdiag.Title, Path.GetFileName(pair.Key), true);
 							if (res == ReplaceExistingFile.YesToAll) {
 								replaceAll = true;
 							} else if (res == ReplaceExistingFile.No) {

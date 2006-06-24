@@ -23,10 +23,10 @@ using System.Drawing;
 	
 namespace SharpReportCore {
 	
-	public class SectionPrintingEventArgs : System.EventArgs {
+	public class SectionEventArgs : System.EventArgs {
 		BaseSection section;
 		
-		public SectionPrintingEventArgs(BaseSection section){
+		public SectionEventArgs(BaseSection section){
 			this.section = section;
 		}
 		

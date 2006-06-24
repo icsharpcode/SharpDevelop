@@ -39,19 +39,17 @@ namespace SharpReportCore {
 		}
 		
 		protected bool CheckFormat (string format) {
-			if (format.Length > 0) {
-				return true;
-			} else {
+			if (String.IsNullOrEmpty(format)) {
 				return false;
-			}
+			} 
+			return true;
 		}
 		
 		protected bool CheckValue (string toFormat) {
-			if ((toFormat == null)||(toFormat.Length == 0) ) {
+			if (String.IsNullOrEmpty(toFormat)) {
 				return false;
-			} else {
-				return true;
 			}
+			return true;
 		}
 	}
 }

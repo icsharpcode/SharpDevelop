@@ -229,7 +229,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ProjectService.CurrentProjectChanged += new ProjectEventHandler(SetProjectTitle);
 
-			FileService.FileRemoved += CheckRemovedFile;
+			FileService.FileRemoved += CheckRemovedOrReplacedFile;
+			FileService.FileReplaced += CheckRemovedOrReplacedFile;
 			FileService.FileRenamed += CheckRenamedFile;
 			
 			FileService.FileRemoved += FileService.RecentOpen.FileRemoved;
@@ -448,7 +449,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void CheckRemovedFile(object sender, FileEventArgs e)
+		void CheckRemovedOrReplacedFile(object sender, FileEventArgs e)
 		{
 			for (int i = 0; i < ViewContentCollection.Count;) {
 				if (FileUtility.IsBaseDirectory(e.FileName, ViewContentCollection[i].FileName)) {
@@ -463,8 +464,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (e.IsDirectory) {
 				foreach (IViewContent content in ViewContentCollection) {
-					if (content.FileName != null && content.FileName.StartsWith(e.SourceFile)) {
-						content.FileName = e.TargetFile + content.FileName.Substring(e.SourceFile.Length);
+					if (content.FileName != null && FileUtility.IsBaseDirectory(e.SourceFile, content.FileName)) {
+						content.FileName = FileUtility.RenameBaseDirectory(content.FileName, e.SourceFile, e.TargetFile);
 					}
 				}
 			} else {

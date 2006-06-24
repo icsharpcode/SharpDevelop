@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.project = project;
 
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceFolderNode";
-			Text = "References";
+			Text = ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.ReferencesNodeText");
 			OpenedImage = "ProjectBrowser.ReferenceFolder.Open";
 			ClosedImage = "ProjectBrowser.ReferenceFolder.Closed";
 			

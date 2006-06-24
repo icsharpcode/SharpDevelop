@@ -293,6 +293,29 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 			return b.ToString();
 		}
+		
+		public static bool AreEqualReferences(TypeReference a, TypeReference b)
+		{
+			if (a == b) return true;
+			if (a == null || b == null) return false;
+			if (a is InnerClassTypeReference) a = ((InnerClassTypeReference)a).CombineToNormalTypeReference();
+			if (b is InnerClassTypeReference) b = ((InnerClassTypeReference)b).CombineToNormalTypeReference();
+			if (a.systemType != b.systemType) return false;
+			if (a.pointerNestingLevel != b.pointerNestingLevel) return false;
+			if (a.IsArrayType != b.IsArrayType) return false;
+			if (a.IsArrayType) {
+				if (a.rankSpecifier.Length != b.rankSpecifier.Length) return false;
+				for (int i = 0; i < a.rankSpecifier.Length; i++) {
+					if (a.rankSpecifier[i] != b.rankSpecifier[i]) return false;
+				}
+			}
+			if (a.genericTypes.Count != b.genericTypes.Count) return false;
+			for (int i = 0; i < a.genericTypes.Count; i++) {
+				if (!AreEqualReferences(a.genericTypes[i], b.genericTypes[i]))
+					return false;
+			}
+			return true;
+		}
 	}
 	
 	public class NullTypeReference : TypeReference
@@ -305,7 +328,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		}
 		public override object AcceptVisitor(IAstVisitor visitor, object data)
 		{
-			return data;
+			return null;
 		}
 		public static NullTypeReference Instance {
 			get {

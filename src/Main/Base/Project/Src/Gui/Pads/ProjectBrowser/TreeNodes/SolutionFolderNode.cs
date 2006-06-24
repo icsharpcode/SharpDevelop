@@ -172,6 +172,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void DoPaste(ISolutionFolderNode folderNode)
 		{
+			if (!DoEnablePaste(folderNode)) {
+				LoggingService.Warn("SolutionFolderNode.DoPaste: Pasting was not enabled.");
+				return;
+			}
+			
 			ExtTreeNode folderTreeNode = (ExtTreeNode)folderNode;
 			IDataObject dataObject = ClipboardWrapper.GetDataObject();
 			

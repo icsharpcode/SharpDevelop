@@ -22,11 +22,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public override bool IsEnabledForFile(string fileName)
 		{
 			string extension = Path.GetExtension(fileName);
-			if (extension == null) {
+			if (extension.Equals(".cs", StringComparison.InvariantCultureIgnoreCase))
+				return true;
+			else if (extension.Equals(".vb", StringComparison.InvariantCultureIgnoreCase))
+				return true;
+			else
 				return false;
-			}
-			return extension.Equals(".cs", StringComparison.InvariantCultureIgnoreCase) ||
-				   extension.Equals(".vb", StringComparison.InvariantCultureIgnoreCase);
 		}
 		
 		#region FindUnusedUsingDeclarations

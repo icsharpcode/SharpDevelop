@@ -229,42 +229,39 @@ namespace ICSharpCode.TextEditor
 				textView.Highlight = null;
 				return;
 			}
-			bool changed = false;
-			if (caret.Offset == 0) {
-				if (textView.Highlight != null) {
-					int line  = textView.Highlight.OpenBrace.Y;
-					int line2 = textView.Highlight.CloseBrace.Y;
-					textView.Highlight = null;
-					UpdateLine(line);
-					UpdateLine(line2);
-				}
-				return;
+			int oldLine1 = -1, oldLine2 = -1;
+			if (textView.Highlight != null && textView.Highlight.OpenBrace.Y >=0 && textView.Highlight.OpenBrace.Y < Document.TotalNumberOfLines) {
+				oldLine1 = textView.Highlight.OpenBrace.Y;
 			}
+			if (textView.Highlight != null && textView.Highlight.CloseBrace.Y >=0 && textView.Highlight.CloseBrace.Y < Document.TotalNumberOfLines) {
+				oldLine2 = textView.Highlight.CloseBrace.Y;
+			}
+			textView.Highlight = FindMatchingBracketHighlight();
+			if (oldLine1 >= 0)
+				UpdateLine(oldLine1);
+			if (oldLine2 >= 0 && oldLine2 != oldLine1)
+				UpdateLine(oldLine2);
+			if (textView.Highlight != null) {
+				int newLine1 = textView.Highlight.OpenBrace.Y;
+				int newLine2 = textView.Highlight.CloseBrace.Y;
+				if (newLine1 != oldLine1 && newLine1 != oldLine2)
+					UpdateLine(newLine1);
+				if (newLine2 != oldLine1 && newLine2 != oldLine2 && newLine2 != newLine1)
+					UpdateLine(newLine2);
+			}
+		}
+		
+		public Highlight FindMatchingBracketHighlight()
+		{
+			if (Caret.Offset == 0)
+				return null;
 			foreach (BracketHighlightingSheme bracketsheme in bracketshemes) {
-//				if (bracketsheme.IsInside(textareapainter.Document, textareapainter.Document.Caret.Offset)) {
 				Highlight highlight = bracketsheme.GetHighlight(Document, Caret.Offset - 1);
-				if (textView.Highlight != null && textView.Highlight.OpenBrace.Y >=0 && textView.Highlight.OpenBrace.Y < Document.TotalNumberOfLines) {
-					UpdateLine(textView.Highlight.OpenBrace.Y);
-				}
-				if (textView.Highlight != null && textView.Highlight.CloseBrace.Y >=0 && textView.Highlight.CloseBrace.Y < Document.TotalNumberOfLines) {
-					UpdateLine(textView.Highlight.CloseBrace.Y);
-				}
-				textView.Highlight = highlight;
 				if (highlight != null) {
-					changed = true;
-					break;
+					return highlight;
 				}
-//				}
 			}
-			if (changed || textView.Highlight != null) {
-				int line = textView.Highlight.OpenBrace.Y;
-				int line2 = textView.Highlight.CloseBrace.Y;
-				if (!changed) {
-					textView.Highlight = null;
-				}
-				UpdateLine(line);
-				UpdateLine(line2);
-			}
+			return null;
 		}
 		
 		public void SetDesiredColumn()

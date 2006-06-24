@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				p.Parse();
 
 				if (p.Errors.count > 0) {
-					MessageService.ShowError("Correct source code errors first (only correct source code would convert).");
+					MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Convert.CorrectSourceCodeErrors}\n" + p.Errors.ErrorOutput);
 					return;
 				}
 				ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor output = new ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor();

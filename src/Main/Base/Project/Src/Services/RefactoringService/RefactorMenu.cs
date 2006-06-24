@@ -42,6 +42,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			LanguageProperties language = ParserService.CurrentProjectContent.Language;
 			if (language == null)
 				return false;
+			if (string.IsNullOrEmpty(provider.TextEditorControl.FileName))
+				return false;
 			
 			RefactoringProvider rp = language.RefactoringProvider;
 			if (!rp.IsEnabledForFile(provider.TextEditorControl.FileName))

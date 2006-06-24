@@ -11,44 +11,23 @@ using System;
 using System.Globalization;
 using System.Windows.Forms;
 
-namespace SharpReportCore
-{
+namespace SharpReportCore{
 	/// <summary>
 	/// This Class checks for invalid SqlStatements
 	/// </summary>
 	internal class SqlQueryChecker{
-		internal string UPDATE = "UPDATE";
-		internal string DELETE = "DELETE";
-		internal string INSERT = "INSERT";
-		internal string noValidMessage = "is no valid Member of SqlString";
+		internal string noValidMessage = "Query should start with 'Select'";
 		
-		
-		public SqlQueryChecker(){
+		private SqlQueryChecker () {
 		}
 		
-		public void Check (string queryString) {
+		public static void Check (string queryString) {
 			if (!String.IsNullOrEmpty(queryString)) {
 				queryString = queryString.ToUpper(CultureInfo.CurrentCulture);
-				
-				if (queryString.IndexOf (this.UPDATE) > -1) {
-					this.Invalid (this.UPDATE);
-				}
-				
-				if (queryString.IndexOf(this.DELETE) > -1)  {
-					this.Invalid (this.DELETE);
-				}
-				
-				if (queryString.IndexOf(this.INSERT) > -1)  {
-					this.Invalid (this.INSERT);
+				if (queryString.IndexOf("SELECT") < 0) {
+					throw new SharpReportCore.IllegalQueryException();
 				}
 			}
-		}
-		
-		private void Invalid (string invalidArgument) {
-			
-			string str = String.Format(CultureInfo.CurrentCulture,
-			                           "{0} {1}",invalidArgument,this.noValidMessage);
-			throw new SharpReportCore.SharpReportException(str);
 		}
 	}
 }

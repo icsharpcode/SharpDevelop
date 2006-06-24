@@ -24,6 +24,7 @@ namespace ICSharpCode.Core
 		
 		public Menu(Codon codon, object caller, ArrayList subItems)
 		{
+			if (subItems == null) subItems = new ArrayList(); // don't crash when item has no children
 			this.codon    = codon;
 			this.caller   = caller;
 			this.subItems = subItems;

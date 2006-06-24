@@ -29,7 +29,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (node is Statement)
 				visitor.OutputFormatter.Indent();
 			node.AcceptVisitor(visitor, null);
-			return visitor.Text;
+			string text = visitor.Text;
+			if (node is Statement && !text.EndsWith("\n"))
+				text += Environment.NewLine;
+			return text;
 		}
 	}
 	

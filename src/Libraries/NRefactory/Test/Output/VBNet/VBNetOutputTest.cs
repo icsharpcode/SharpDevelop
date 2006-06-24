@@ -79,6 +79,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void MustInheritClass()
+		{
+			TestProgram("Public MustInherit Class Foo\nEnd Class");
+		}
+		
+		[Test]
 		public void GenericClassDefinition()
 		{
 			TestProgram("Public Class Foo(Of T As {IDisposable, ICloneable})\nEnd Class");
@@ -106,6 +112,14 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void ArrayInitialization()
 		{
 			TestStatement("Dim a As Object() = New Object(10) {}");
+			TestTypeMember("Private MultiDim As Integer(,) = {{1, 2}, {1, 3}}");
+			TestExpression("New Integer(, ) {{1, 1}, {1, 1}}");
+		}
+		
+		[Test]
+		public void MethodCallWithOptionalArguments()
+		{
+			TestExpression("M(, )");
 		}
 		
 		[Test]
@@ -121,6 +135,54 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void ForNextLoop()
+		{
+			TestStatement("For i = 0 To 10\n" +
+			              "Next");
+			TestStatement("For i As Long = 10 To 0 Step -1\n" +
+			              "Next");
+		}
+		
+		[Test]
+		public void DoLoop()
+		{
+			TestStatement("Do\n" +
+			              "Loop");
+			TestStatement("Do\n" +
+			              "Loop While Not (i = 10)");
+		}
+		
+		[Test]
+		public void SelectCase()
+		{
+			TestStatement(@"Select Case i
+	Case 0
+	Case 1 To 4
+	Case Else
+End Select");
+		}
+		
+		[Test]
+		public void UsingStatement()
+		{
+			TestStatement(@"Using nf As New Font(), nf2 As New List(Of Font)(), nf3 = Nothing
+	Bla(nf)
+End Using");
+		}
+		
+		[Test]
+		public void UntypedVariable()
+		{
+			TestStatement("Dim x = 0");
+		}
+		
+		[Test]
+		public void UntypedField()
+		{
+			TestTypeMember("Dim x = 0");
+		}
+		
+		[Test]
 		public void Assignment()
 		{
 			TestExpression("a = b");
@@ -130,7 +192,8 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void SpecialIdentifiers()
 		{
 			// Assembly, Ansi and Until are contextual keywords
-			TestExpression("Assembly = Ansi * [For] + Until");
+			// Custom is valid inside methods, but not valid for field names
+			TestExpression("Assembly = Ansi * [For] + Until - [Custom]");
 		}
 		
 		[Test]
@@ -178,7 +241,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void Using()
 		{
-			TestStatement("Using a As A = New A()\na.Work()\nEnd Using");
+			TestStatement("Using a As New A()\na.Work()\nEnd Using");
 		}
 		
 		[Test]

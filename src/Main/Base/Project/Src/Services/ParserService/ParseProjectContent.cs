@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using ICSharpCode.Core;
@@ -55,7 +56,6 @@ namespace ICSharpCode.Core
 			ProjectItem[] items = project.Items.ToArray();
 			ProjectService.ProjectItemAdded   += OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved += OnProjectItemRemoved;
-			ProjectService.EndBuild += OnEndBuild;
 			UpdateDefaultImports(items);
 			foreach (ProjectItem item in items) {
 				if (!initializing) return; // abort initialization
@@ -74,7 +74,11 @@ namespace ICSharpCode.Core
 		void UpdateReferenceInterDependencies()
 		{
 			// Use ToArray because the collection could be modified inside the loop
-			foreach (IProjectContent referencedContent in this.referencedContents.ToArray()) {
+			IProjectContent[] referencedContents;
+			lock (this.referencedContents) {
+				referencedContents = this.referencedContents.ToArray();
+			}
+			foreach (IProjectContent referencedContent in referencedContents) {
 				if (referencedContent is ReflectionProjectContent) {
 					((ReflectionProjectContent)referencedContent).InitializeReferences();
 				}
@@ -86,7 +90,9 @@ namespace ICSharpCode.Core
 			try {
 				IProjectContent referencedContent = ProjectContentRegistry.GetProjectContentForReference(reference);
 				if (referencedContent != null) {
-					ReferencedContents.Add(referencedContent);
+					lock (this.referencedContents) {
+						this.referencedContents.Add(referencedContent);
+					}
 				}
 				if (updateInterDependencies) {
 					UpdateReferenceInterDependencies();
@@ -103,13 +109,48 @@ namespace ICSharpCode.Core
 			AddReference((ReferenceProjectItem)state, true);
 		}
 		
+		// ensure that com references are built serially because we cannot invoke multiple instances of MSBuild
+		static Queue<System.Windows.Forms.MethodInvoker> callAfterAddComReference = new Queue<System.Windows.Forms.MethodInvoker>();
+		static bool buildingComReference;
+		
 		void OnProjectItemAdded(object sender, ProjectItemEventArgs e)
 		{
 			if (e.Project != project) return;
 			
 			ReferenceProjectItem reference = e.ProjectItem as ReferenceProjectItem;
 			if (reference != null) {
-				System.Threading.ThreadPool.QueueUserWorkItem(AddReference, reference);
+				if (reference.ItemType == ItemType.COMReference) {
+					System.Windows.Forms.MethodInvoker action = delegate {
+						// Compile project to ensure interop library is generated
+						project.Save(); // project is not yet saved when ItemAdded fires, so save it here
+						TaskService.BuildMessageViewCategory.AppendText("\n${res:MainWindow.CompilerMessages.CreatingCOMInteropAssembly}\n");
+						MSBuildEngineCallback callback = delegate {
+							System.Threading.ThreadPool.QueueUserWorkItem(AddReference, reference);
+							lock (callAfterAddComReference) {
+								if (callAfterAddComReference.Count > 0) {
+									callAfterAddComReference.Dequeue()();
+								} else {
+									buildingComReference = false;
+								}
+							}
+						};
+						if (project is MSBuildProject) {
+							((MSBuildProject)project).RunMSBuild("ResolveComReferences", callback);
+						} else {
+							project.Build(callback);
+						}
+					};
+					lock (callAfterAddComReference) {
+						if (buildingComReference) {
+							callAfterAddComReference.Enqueue(action);
+						} else {
+							buildingComReference = true;
+							action();
+						}
+					}
+				} else {
+					System.Threading.ThreadPool.QueueUserWorkItem(AddReference, reference);
+				}
 			}
 			switch (e.ProjectItem.ItemType) {
 				case ItemType.Import:
@@ -130,7 +171,9 @@ namespace ICSharpCode.Core
 				try {
 					IProjectContent referencedContent = ProjectContentRegistry.GetExistingProjectContentForReference(reference);
 					if (referencedContent != null) {
-						ReferencedContents.Remove(referencedContent);
+						lock (ReferencedContents) {
+							ReferencedContents.Remove(referencedContent);
+						}
 						OnReferencedContentsChanged(EventArgs.Empty);
 					}
 				} catch (Exception ex) {
@@ -190,9 +233,14 @@ namespace ICSharpCode.Core
 			int progressStart = StatusBarService.ProgressMonitor.WorkDone;
 			ParseableFileContentEnumerator enumerator = new ParseableFileContentEnumerator(project);
 			try {
-				StatusBarService.ProgressMonitor.TaskName = "Parsing " + project.Name + "...";
+				StatusBarService.ProgressMonitor.TaskName = "${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing} " + project.Name + "...";
 				
-				foreach (IProjectContent referencedContent in ReferencedContents) {
+				IProjectContent[] referencedContents;
+				lock (this.referencedContents) {
+					referencedContents = this.referencedContents.ToArray();
+				}
+				
+				foreach (IProjectContent referencedContent in referencedContents) {
 					if (referencedContent is ReflectionProjectContent) {
 						((ReflectionProjectContent)referencedContent).InitializeReferences();
 					}
@@ -218,25 +266,8 @@ namespace ICSharpCode.Core
 		{
 			ProjectService.ProjectItemAdded   -= OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved -= OnProjectItemRemoved;
-			ProjectService.EndBuild -= OnEndBuild;
 			initializing = false;
 			base.Dispose();
-		}
-				
-		void OnEndBuild(object source, EventArgs e)
-		{
-			AddComReferences();	
-		}
-		
-		void AddComReferences()
-		{
-			if (project != null) {
-				foreach (ProjectItem item in project.Items) {
-					if (item.ItemType == ItemType.COMReference) {
-						System.Threading.ThreadPool.QueueUserWorkItem(AddReference, item as ReferenceProjectItem);
-					}
-				}
-			}
 		}
 	}
 }

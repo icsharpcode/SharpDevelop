@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 				outputVisitor.Visit(parser.CompilationUnit, null);
 			}
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
-			Assert.AreEqual(program, outputVisitor.Text.TrimEnd().Replace("\r", ""));
+			Assert.AreEqual(program.Replace("\r", ""), outputVisitor.Text.TrimEnd().Replace("\r", ""));
 			parser.Dispose();
 		}
 		
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 				outputVisitor.Visit(parser.CompilationUnit, null);
 			}
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
-			Assert.AreEqual(program, outputVisitor.Text.TrimEnd().Replace("\r", ""));
+			Assert.AreEqual(program.Replace("\r", ""), outputVisitor.Text.TrimEnd().Replace("\r", ""));
 			parser.Dispose();
 		}
 		
@@ -97,13 +97,41 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void EnumVB()
 		{
 			TestProgramVB("Enum Test\n" +
-			            "\t' a\n" +
-			            "\tm1\n" +
-			            "\t' b\n" +
-			            "\tm2\n" +
-			            "\t' c\n" +
-			            "End Enum\n" +
-			            "' d");
+			              "\t' a\n" +
+			              "\tm1\n" +
+			              "\t' b\n" +
+			              "\tm2\n" +
+			              "\t' c\n" +
+			              "End Enum\n" +
+			              "' d");
+		}
+		
+		[Test]
+		public void RegionInsideMethod()
+		{
+			TestProgram(@"public class Class1
+{
+	private bool test(int l, int lvw)
+	{
+		#region Metodos Auxiliares
+		int i = 1;
+		return false;
+		#endregion
+	}
+}");
+		}
+		
+		[Test]
+		public void RegionInsideMethodVB()
+		{
+			TestProgramVB(@"Public Class Class1
+	Private Function test(ByVal l As Integer, ByVal lvw As Integer) As Boolean
+		' Begin
+		Dim i As Integer = 1
+		Return False
+		' End of method
+	End Function
+End Class");
 		}
 	}
 }

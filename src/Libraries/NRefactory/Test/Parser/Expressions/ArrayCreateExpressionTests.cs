@@ -28,6 +28,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		#endregion
 		
 		#region VB.NET
+		
 		[Test]
 		public void VBNetArrayCreateExpressionTest1()
 		{

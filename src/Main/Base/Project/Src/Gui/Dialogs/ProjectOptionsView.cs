@@ -125,6 +125,11 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			this.IsDirty = dirty;
 		}
 		
+		public override void Load(string fileName)
+		{
+			// TODO: reload project file
+		}
+		
 		public override void Save(string fileName)
 		{
 			foreach (IDialogPanelDescriptor pane in descriptors) {

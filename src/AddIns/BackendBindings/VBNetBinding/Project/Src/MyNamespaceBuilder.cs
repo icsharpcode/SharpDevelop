@@ -22,7 +22,7 @@ namespace VBNetBinding
 		public static void BuildNamespace(IProject project, IProjectContent pc)
 		{
 			ICompilationUnit cu = new DefaultCompilationUnit(pc);
-			cu.FileName = "GeneratedMyNamespace.vb";
+			//cu.FileName = "GeneratedMyNamespace.vb"; // leave FileName null - fixes SD2-854
 			string ns;
 			if (project.RootNamespace == null || project.RootNamespace.Length == 0)
 				ns = "My";
@@ -41,7 +41,7 @@ namespace VBNetBinding
 			}
 			DefaultClass c = new DefaultClass(cu, ns + ".MyProject");
 			c.ClassType = ClassType.Module;
-			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Partial | ModifierEnum.Sealed;
+			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Partial | ModifierEnum.Sealed | ModifierEnum.Synthetic;
 			c.Attributes.Add(new DefaultAttribute("Microsoft.VisualBasic.HideModuleNameAttribute"));
 			
 			// we need to use GetClassReturnType instead of DefaultReturnType because we need
@@ -72,7 +72,7 @@ namespace VBNetBinding
 		{
 			DefaultClass c = new DefaultClass(cu, ns + ".MyApplication");
 			c.ClassType = ClassType.Class;
-			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Sealed | ModifierEnum.Partial;
+			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Sealed | ModifierEnum.Partial | ModifierEnum.Synthetic;
 			c.Attributes.Add(new DefaultAttribute("Microsoft.VisualBasic.HideModuleNameAttribute"));
 			switch (project.OutputType) {
 				case OutputType.WinExe:
@@ -97,7 +97,7 @@ namespace VBNetBinding
 		{
 			DefaultClass c = new DefaultClass(cu, ns + ".MyComputer");
 			c.ClassType = ClassType.Class;
-			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Sealed | ModifierEnum.Partial;
+			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Sealed | ModifierEnum.Partial | ModifierEnum.Synthetic;
 			c.Attributes.Add(new DefaultAttribute("Microsoft.VisualBasic.HideModuleNameAttribute"));
 			c.BaseTypes.Add(CreateBaseType(cu, "Microsoft.VisualBasic.Devices.Computer"));
 			return c;
@@ -107,7 +107,7 @@ namespace VBNetBinding
 		{
 			DefaultClass c = new MyFormsClass(cu, ns + ".MyForms");
 			c.ClassType = ClassType.Class;
-			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Sealed; //| ModifierEnum.Partial;
+			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Sealed | ModifierEnum.Synthetic;
 			c.Attributes.Add(new DefaultAttribute("Microsoft.VisualBasic.HideModuleNameAttribute"));
 			return c;
 		}
@@ -119,14 +119,11 @@ namespace VBNetBinding
 			public override List<IProperty> Properties {
 				get {
 					List<IProperty> properties = new List<IProperty>();
-					IProjectContent pc = ProjectContentRegistry.GetExistingProjectContent(new System.Reflection.AssemblyName("System.Windows.Forms"));
-					if (pc == null)
-						return properties;
-					IClass formClass = pc.GetClass("System.Windows.Forms.Form");
+					IClass formClass = this.ProjectContent.GetClass("System.Windows.Forms.Form");
 					if (formClass == null)
 						return properties;
 					foreach (IClass c in this.ProjectContent.Classes) {
-						if (c.BaseClass == formClass) {
+						if (c.IsTypeInInheritanceTree(formClass)) {
 							properties.Add(new DefaultProperty(c.Name,
 							                                   new GetClassReturnType(this.ProjectContent, c.FullyQualifiedName, 0),
 							                                   ModifierEnum.Public | ModifierEnum.Static,

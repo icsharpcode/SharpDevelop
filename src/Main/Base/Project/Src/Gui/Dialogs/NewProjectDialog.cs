@@ -251,11 +251,6 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			((ListView)ControlDictionary["templateListView"]).View = ((RadioButton)ControlDictionary["smallIconsRadioButton"]).Checked ? View.List : View.LargeIcon;
 		}
 		
-		public bool IsFilenameAvailable(string fileName)
-		{
-			return true;
-		}
-		
 		public string NewProjectLocation;
 		public string NewCombineLocation;
 		
@@ -271,10 +266,23 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			string solution = ((TextBox)ControlDictionary["solutionNameTextBox"]).Text;
 			string name     = ((TextBox)ControlDictionary["nameTextBox"]).Text;
 			string location = ((TextBox)ControlDictionary["locationTextBox"]).Text;
-			if (!FileUtility.IsValidFileName(solution) || solution.IndexOf(Path.DirectorySeparatorChar) >= 0 ||
-			    !FileUtility.IsValidFileName(name)     || name.IndexOf(Path.DirectorySeparatorChar) >= 0 ||
-			    !FileUtility.IsValidFileName(location)) {
+			if (!FileUtility.IsValidFileName(solution)
+			    || solution.IndexOf(Path.DirectorySeparatorChar) >= 0
+			    || solution.IndexOf(Path.AltDirectorySeparatorChar) >= 0
+			    || !FileUtility.IsValidFileName(name)
+			    || name.IndexOf(Path.AltDirectorySeparatorChar) >= 0
+			    || name.IndexOf(Path.DirectorySeparatorChar) >= 0
+			    || !FileUtility.IsValidFileName(location))
+			{
 				MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError}");
+				return;
+			}
+			if (!char.IsLetter(name[0]) && name[0] != '_') {
+				MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustStartWithLetter}");
+				return;
+			}
+			if (name.EndsWith(".")) {
+				MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustNotEndWithDot}");
 				return;
 			}
 			

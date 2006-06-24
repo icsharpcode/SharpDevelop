@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			sortOrder = -1;
 			
 			this.project = project;
-			Text = "References";
+			Text = ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.ReferencesNodeText");
 			
 			OpenedIcon = "ProjectBrowser.ReferenceFolder.Open";
 			ClosedIcon = "ProjectBrowser.ReferenceFolder.Closed";

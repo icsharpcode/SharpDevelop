@@ -119,7 +119,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 						IProjectContent content = ProjectContentRegistry.GetExistingProjectContent((AssemblyName)missingNames[i]);
 						if (content != null) {
 							changed = true;
-							ReferencedContents.Add(content);
+							lock (ReferencedContents) {
+								ReferencedContents.Add(content);
+							}
 							missingNames.RemoveAt(i--);
 						}
 					}
@@ -136,7 +138,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				IProjectContent content = ProjectContentRegistry.GetExistingProjectContent(name);
 				if (content != null) {
 					changed = true;
-					ReferencedContents.Add(content);
+					lock (ReferencedContents) {
+						ReferencedContents.Add(content);
+					}
 				} else {
 					if (missingNames == null)
 						missingNames = new ArrayList();

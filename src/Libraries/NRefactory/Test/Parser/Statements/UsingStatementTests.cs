@@ -47,6 +47,16 @@ End Using";
 			UsingStatement usingStmt = ParseUtilVBNet.ParseStatement<UsingStatement>(usingText);
 			// TODO : Extend test.
 		}
+		[Test]
+		public void VBNetUsingStatementTest3()
+		{
+			string usingText = @"
+Using nf As New Font(), nf2 As New List(Of Font)(), nf3 = Nothing
+	Bla(nf)
+End Using";
+			UsingStatement usingStmt = ParseUtilVBNet.ParseStatement<UsingStatement>(usingText);
+			// TODO : Extend test.
+		}
 		#endregion
 	}
 }

@@ -42,8 +42,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				ProjectOptionsView projectOptions = new ProjectOptionsView(projectOptionsNode, project);
 				WorkbenchSingleton.Workbench.ShowView(projectOptions);
 			} catch (TreePathNotFoundException) {
-				// TODO: Translate me!
-				MessageService.ShowError("No installed project options panels were found.");
+				MessageService.ShowError("${res:Dialog.ProjectOptions.NoPanelsInstalledForProject}");
 			}
 		}
 	}

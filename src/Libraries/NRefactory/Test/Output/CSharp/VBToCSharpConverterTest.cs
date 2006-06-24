@@ -147,6 +147,43 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void ValueInPropertySetter()
+		{
+			TestMember("WriteOnly Property A()\nSet\nDim x As Object = Value\nEnd Set\nEnd Property",
+			           "public object A {\n\tset {\n\t\tobject x = value;\n\t}\n}");
+		}
+		
+		[Test]
+		public void ValueInPropertySetter2()
+		{
+			TestMember("WriteOnly Property A()\nSet(ByVal otherName)\nDim x As Object = otherName\nEnd Set\nEnd Property",
+			           "public object A {\n\tset {\n\t\tobject x = value;\n\t}\n}");
+		}
+		
+		[Test]
+		public void FieldDeclaredWithDim()
+		{
+			TestMember("Dim f as String",
+			           "string f;");
+		}
+		
+		[Test]
+		public void MultipleFields()
+		{
+			TestMember("Private example, test As Single",
+			           "private float example;\n" +
+			           "private float test;");
+		}
+		
+		[Test]
+		public void MultipleVariables()
+		{
+			TestStatement("Dim example, test As Single",
+			              "float example;\n" +
+			              "float test;");
+		}
+		
+		[Test]
 		public void PInvoke()
 		{
 			TestMember("Declare Function SendMessage Lib \"user32.dll\" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As UIntPtr, ByVal lParam As IntPtr) As IntPtr",
@@ -247,10 +284,137 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void IntegerDivision()
+		{
+			TestStatement(@"x = x \ b",
+			              "x = x / b;");
+			TestStatement(@"x \= b",
+			              "x /= b;");
+		}
+		
+		[Test]
 		public void VBConstants()
 		{
 			TestStatement("a = vbYesNo",
 			              "a = Constants.vbYesNo;");
+		}
+		
+		[Test]
+		public void ForNextLoop()
+		{
+			TestStatement("For i = 0 To 10\n" +
+			              "Next",
+			              "for (i = 0; i <= 10; i++) {\n" +
+			              "}");
+			TestStatement("For l As Long = 0 To 10 Step 2\n" +
+			              "Next",
+			              "for (long l = 0; l <= 10; l += 2) {\n" +
+			              "}");
+			TestStatement("For l As Long = 10 To 0 Step -1\n" +
+			              "Next",
+			              "for (long l = 10; l >= 0; l += -1) {\n" +
+			              "}");
+		}
+		
+		[Test]
+		public void DoLoop()
+		{
+			TestStatement("Do \n Loop",
+			              "do {\n" +
+			              "}\n" +
+			              "while (true);");
+			TestStatement("Do \n Loop Until i = 10000",
+			              "do {\n" +
+			              "}\n" +
+			              "while (!(i == 10000));");
+		}
+		
+		[Test]
+		public void UsingStatement()
+		{
+			TestStatement("Using r1 As New StreamReader(file1), r2 As New StreamReader(file2)\n" +
+			              "End Using",
+			              "using (StreamReader r1 = new StreamReader(file1)) {\n" +
+			              "\tusing (StreamReader r2 = new StreamReader(file2)) {\n" +
+			              "\t}\n" +
+			              "}");
+		}
+		
+		[Test]
+		public void SwitchStatement()
+		{
+			TestStatement(@"Select Case i
+                  Case 0 To 5
+                        i = 10
+                  Case 11
+                        i = 0
+                  Case Else
+                        i = 9
+            End Select",
+			              "switch (i) {\n" +
+			              "\tcase 0:\n" +
+			              "\tcase 1:\n" +
+			              "\tcase 2:\n" +
+			              "\tcase 3:\n" +
+			              "\tcase 4:\n" +
+			              "\tcase 5:\n" +
+			              "\t\ti = 10;\n" +
+			              "\t\tbreak;\n" +
+			              "\tcase 11:\n" +
+			              "\t\ti = 0;\n" +
+			              "\t\tbreak;\n" +
+			              "\tdefault:\n" +
+			              "\t\ti = 9;\n" +
+			              "\t\tbreak;\n" +
+			              "}");
+		}
+		
+		[Test]
+		public void FunctionWithImplicitReturn()
+		{
+			TestMember("Public Function run(i As Integer) As Integer\n" +
+			           " run = 0\n" +
+			           "End Function",
+			           "public int run(int i)\n" +
+			           "{\n" +
+			           "\treturn 0;\n" +
+			           "}");
+		}
+		
+		[Test]
+		public void FunctionWithImplicitReturn2()
+		{
+			TestMember("Public Function run(i As Integer) As Integer\n" +
+			           " While something\n" +
+			           "   run += i\n" +
+			           " End While\n" +
+			           "End Function",
+			           "public int run(int i)\n" +
+			           "{\n" +
+			           "\tint " + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = 0;\n" +
+			           "\twhile (something) {\n" +
+			           "\t\t" + VBNetConstructsConvertVisitor.FunctionReturnValueName + " += i;\n" +
+			           "\t}\n" +
+			           "\treturn " + VBNetConstructsConvertVisitor.FunctionReturnValueName + ";\n" +
+			           "}");
+		}
+		
+		[Test]
+		public void FunctionWithImplicitReturn3()
+		{
+			TestMember("Public Function run(i As Integer) As CustomType\n" +
+			           " While something\n" +
+			           "   run = New CustomType()\n" +
+			           " End While\n" +
+			           "End Function",
+			           "public CustomType run(int i)\n" +
+			           "{\n" +
+			           "\tCustomType " + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = null;\n" +
+			           "\twhile (something) {\n" +
+			           "\t\t" + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = new CustomType();\n" +
+			           "\t}\n" +
+			           "\treturn " + VBNetConstructsConvertVisitor.FunctionReturnValueName + ";\n" +
+			           "}");
 		}
 	}
 }

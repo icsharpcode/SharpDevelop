@@ -149,9 +149,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			bool wordWrap = this.WordWrap;
 			textEditorControl.WordWrap = wordWrap;
 			if (wordWrap) {
-				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedBoth;
-			} else {
 				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedVertical;
+			} else {
+				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedBoth;
 			}
 		}
 		

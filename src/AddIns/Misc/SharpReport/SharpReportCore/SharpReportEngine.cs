@@ -45,6 +45,16 @@ namespace SharpReportCore {
 		
 		public event EventHandler <SharpReportEventArgs> NoData;
 		public event EventHandler <SharpReportParametersEventArgs> ParametersRequest;
+		/// <summary>
+		/// This event is fired before a Section is Rendered, you can use 
+		/// it to modify items to be printed
+		/// </summary>
+		public event EventHandler<SectionRenderEventArgs> SectionRendering;
+		/// <summary>
+		/// This event is fired after a section's output is done
+		/// </summary>
+		public event EventHandler<SectionRenderEventArgs> SectionRendered;
+		
 		
 		public SharpReportEngine() {
 			if (SharpReportCore.GlobalValues.IsValidPrinter() == false) {
@@ -59,7 +69,7 @@ namespace SharpReportCore {
 			if (model.ReportSettings.ReportType != GlobalEnums.enmReportType.FormSheet) {
 				if (this.connectionObject == null) {
 					
-					if (model.ReportSettings.ConnectionString != "") {
+					if (!String.IsNullOrEmpty(model.ReportSettings.ConnectionString)) {
 						this.connectionObject = new ConnectionObject (model.ReportSettings.ConnectionString);
 					}
 					
@@ -93,7 +103,7 @@ namespace SharpReportCore {
 		}
 		
 		
-		void SetSqlParameters (ReportModel model,AbstractParametersCollection sqlParams) {
+		private static void SetSqlParameters (ReportModel model,AbstractParametersCollection sqlParams) {
 			if ((sqlParams == null)||(sqlParams.Count == 0)) {
 				return;
 			}
@@ -112,18 +122,6 @@ namespace SharpReportCore {
 		}
 		
 		
-		
-		private void ApplyReportParameters (ReportModel model,ReportParameters parameters){
-			if (model == null) {
-				throw new MissingModelException();
-			}
-			if (parameters == null ){
-				throw new ArgumentNullException("parameters");
-			}
-			
-			SetSqlParameters (model,parameters.SqlParameters);
-			SetCustomSorting (model,parameters.SortColumnCollection);
-		}
 		#endregion
 		
 		#region Setup for print/preview
@@ -136,7 +134,7 @@ namespace SharpReportCore {
 		}
 
 		private void InitDataContainer (ReportSettings settings) {	
-		
+			System.Console.WriteLine("Engine:InitDataContainer ReportType <{0}>",settings.ReportType);
 			if (settings.ReportType == GlobalEnums.enmReportType.DataReport) {
 				if (settings.CommandText != null) {
 					try {
@@ -147,8 +145,6 @@ namespace SharpReportCore {
 							                                        settings);
 							
 							this.dataManager.DataBind();
-						}else {
-							throw new NullReferenceException("SetupContainer:connectionObject is missing");
 						}
 						
 					}
@@ -183,52 +179,71 @@ namespace SharpReportCore {
 		
 		
 		protected SharpReportCore.AbstractRenderer SetupStandartRenderer (ReportModel model) {
-			
+	
 			AbstractRenderer abstr = null;
-			switch (model.ReportSettings.ReportType) {
-					//FormSheets reports
-				case GlobalEnums.enmReportType.FormSheet:
-					abstr = new RendererFactory().Create (model,null);
-					break;
-					//Databased reports
-				case GlobalEnums.enmReportType.DataReport :
-//					DataManager dataManager = SetupDataContainer (model.ReportSettings);
-					InitDataContainer (model.ReportSettings);
-					if (this.dataManager != null) {
-						if (this.dataManager.DataSource != null) {
-							abstr = new RendererFactory().Create (model,dataManager);
-						}
-						
-					} else {
-						if (NoData != null) {
-							SharpReportEventArgs e = new SharpReportEventArgs();
-							e.PageNumber = 0;
-							e.Cancel = false;
-							NoData (this,e);
-							if (e.Cancel == true) {
-								// If we cancel, we have to create an instance of any kind of renderer
-								//to set the cancel flag to true
-								abstr = new RendererFactory().Create (model,null);
-								abstr.Cancel = true;
-							} else {
-								// Print the report only as Formsheet -> only Text and Graphic Items
-								abstr = new RendererFactory().Create (model,null);
+			try {
+				switch (model.ReportSettings.ReportType) {
+						//FormSheets reports
+					case GlobalEnums.enmReportType.FormSheet:
+						abstr = new RendererFactory().Create (model,null);
+						break;
+						//Databased reports
+					case GlobalEnums.enmReportType.DataReport :
+						InitDataContainer (model.ReportSettings);
+						if (this.dataManager != null) {
+							if (this.dataManager.DataSource != null) {
+								abstr = new RendererFactory().Create (model,dataManager);
+							}
+							
+						} else {
+							if (NoData != null) {
+								SharpReportEventArgs e = new SharpReportEventArgs();
+								e.PageNumber = 0;
+								e.Cancel = false;
+								NoData (this,e);
+								if (e.Cancel == true) {
+									// If we cancel, we have to create an instance of any kind of renderer
+									//to set the cancel flag to true
+									abstr = new RendererFactory().Create (model,null);
+									abstr.Cancel = true;
+								} else {
+									// Print the report only as Formsheet -> only Text and Graphic Items
+									abstr = new RendererFactory().Create (model,null);
+								}
 							}
 						}
-					}
-					
-					break;
-				default:
-					throw new SharpReportException ("SharpReportmanager:SetupRenderer -> Unknown Reporttype");
+						
+						break;
+					default:
+						throw new SharpReportException ("SharpReportmanager:SetupRenderer -> Unknown Reporttype");
+				}
+				abstr.SectionRendering += new EventHandler<SectionRenderEventArgs>(OnSectionPrinting);
+				abstr.SectionRendered +=new EventHandler<SectionRenderEventArgs>(OnSectionPrinted);
+				return abstr;
+			} catch (Exception) {
+				throw; 
 			}
 			
-			return abstr;
 		}
 		
+		private void OnSectionPrinting (object sender,SectionRenderEventArgs e) {
+			if (this.SectionRendering != null) {
+				this.SectionRendering(this,e);
+			} 
+		}
+		
+		private void OnSectionPrinted (object sender,SectionRenderEventArgs e) {
+			if (this.SectionRendered != null) {
+				this.SectionRendered (this,e);
+			} 
+		}
 		
 		protected SharpReportCore.AbstractRenderer SetupPushDataRenderer (ReportModel model,
 		                                                                  DataTable dataTable) {
 			
+			if (model == null) {
+				throw new ArgumentNullException("model");
+			}
 			if (model.ReportSettings.ReportType != GlobalEnums.enmReportType.DataReport) {
 				throw new ArgumentException("SetupPushDataRenderer <No valid ReportModel>");
 			}
@@ -265,8 +280,13 @@ namespace SharpReportCore {
 			if (model == null) {
 				throw new MissingModelException();
 			}
-			AbstractRenderer abstr = SetupStandartRenderer(model);
-			return abstr;
+			try {
+				AbstractRenderer abstr = SetupStandartRenderer(model);
+				return abstr;
+			} catch (Exception) {
+				throw;
+			}
+			
 		}
 		
 		
@@ -305,7 +325,7 @@ namespace SharpReportCore {
 		/// <param name="fileName">Path to ReportFile</param>
 		
 		public void PreviewStandartReport (string fileName) {
-			if (fileName.Length == 0) {
+			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
 			PreviewStandartReport (fileName,null);
@@ -313,7 +333,8 @@ namespace SharpReportCore {
 		
 		
 		public void PreviewStandartReport (string fileName,ReportParameters reportParameters) {
-			if (fileName.Length == 0) {
+			
+			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
 
@@ -323,6 +344,10 @@ namespace SharpReportCore {
 				model = ModelFromFile (fileName);
 				if (CheckReportParameters (model,reportParameters)) {
 					renderer = SetupStandartRenderer (model);
+					//				
+//				renderer.SectionRendering += new EventHandler<SectionPrintingEventArgs>(OnTestPrinting);
+//				System.Console.WriteLine("Event should be set");
+
 					if (renderer != null) {
 						PreviewControl.ShowPreview(renderer,1.5,false);
 					}
@@ -330,8 +355,10 @@ namespace SharpReportCore {
 			} catch (Exception) {
 				throw;
 			}
-			
 		}
+		
+		
+		
 		/// <summary>
 		/// Preview a "PushModel - Report"
 		/// </summary>
@@ -358,7 +385,7 @@ namespace SharpReportCore {
 					PreviewControl.ShowPreview(renderer,1.5,false);
 				}
 			} catch (Exception) {
-				
+				throw;
 			}
 		}
 		
@@ -366,16 +393,18 @@ namespace SharpReportCore {
 		
 		#region Printing
 		
-		private void ReportToPrinter (AbstractRenderer renderer,ReportModel model) {
+		private static void ReportToPrinter (AbstractRenderer renderer,ReportModel model) {
 			if (renderer == null) {
-				throw new NullReferenceException("SparpReportEngine:ReportToPrinter: No valid Renderer");
+				throw new ArgumentNullException("renderer");
+			}
+			if (model == null) {
+				throw new ArgumentNullException("model");
 			}
 			PrintDocument  doc = null;
 			if (renderer.Cancel == false) {
 				doc = renderer.ReportDocument;
 				using (PrintDialog dlg = new PrintDialog()) {
 					dlg.Document = doc;
-//					MessageBox.Show (model.ReportSettings.UseStandartPrinter.ToString());
 					if (model.ReportSettings.UseStandartPrinter == true) {
 						dlg.Document.Print();
 					} else {
@@ -414,12 +443,13 @@ namespace SharpReportCore {
 				model = ModelFromFile (fileName);
 				if (CheckReportParameters (model,reportParameters)) {
 					renderer = SetupStandartRenderer (model);
-					this.ReportToPrinter (renderer,model);
+					SharpReportEngine.ReportToPrinter (renderer,model);
 				}
 			} catch (Exception) {
 				throw;
 			}
 		}
+		
 		/// <summary>
 		/// Print a PullModel Report
 		/// </summary>
@@ -447,9 +477,10 @@ namespace SharpReportCore {
 				}
 				
 				renderer = SetupPushDataRenderer (model,dataTable);
-				this.ReportToPrinter(renderer,model);
+				SharpReportEngine.ReportToPrinter(renderer,model);
 				
 			} catch (Exception) {
+				throw;
 			}
 			
 			
@@ -462,7 +493,7 @@ namespace SharpReportCore {
 		/// <param name="fileName"></param>
 		/// <param name="dataTable"></param>
 		public void PrintPushDataReport (string fileName,DataTable dataTable) {
-			if (fileName.Length == 0) {
+			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
 			if (dataTable == null) {
@@ -478,9 +509,10 @@ namespace SharpReportCore {
 				}
 				
 				renderer = this.SetupPushDataRenderer (model,dataTable);
-				this.ReportToPrinter(renderer,model);
+				SharpReportEngine.ReportToPrinter(renderer,model);
 				
 			} catch (Exception) {
+				throw;
 			}
 		}
 		

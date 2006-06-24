@@ -26,7 +26,8 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpFullQualifiedDefaultValue()
 		{
-			DefaultValueExpression toe = ParseUtilCSharp.ParseExpression<DefaultValueExpression>("default(MyNamespace.N1.MyType)");
+			DefaultValueExpression toe = ParseUtilCSharp.ParseExpression<DefaultValueExpression>("default(global::MyNamespace.N1.MyType)");
+			Assert.IsTrue(toe.TypeReference.IsGlobal);
 			Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
 		}
 		
@@ -44,6 +45,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			// This test is failing because we need a resolver for the "default:" / "default(" conflict.
 			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("T a = default(T);");
 			DefaultValueExpression dve = (DefaultValueExpression)lvd.Variables[0].Initializer;
+			Assert.AreEqual("T", dve.TypeReference.Type);
+		}
+		
+		[Test]
+		public void CSharpDefaultValueInReturnStatement()
+		{
+			ReturnStatement rs = ParseUtilCSharp.ParseStatement<ReturnStatement>("return default(T);");
+			DefaultValueExpression dve = (DefaultValueExpression)rs.Expression;
 			Assert.AreEqual("T", dve.TypeReference.Type);
 		}
 	}

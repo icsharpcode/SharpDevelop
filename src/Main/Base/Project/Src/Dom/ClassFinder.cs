@@ -55,6 +55,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.callingClass = callingClass;
 			this.cu = callingClass.CompilationUnit;
 			this.projectContent = cu.ProjectContent;
+			if (projectContent == null)
+				throw new ArgumentException("callingClass must have a project content!");
 		}
 		
 		// currently callingMember is not required
@@ -78,6 +80,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} else {
 				projectContent = ParserService.CurrentProjectContent;
 			}
+			if (projectContent == null)
+				throw new ArgumentException("projectContent not found!");
 		}
 		
 		public IClass GetClass(string fullName, int typeParameterCount)
