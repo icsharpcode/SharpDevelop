@@ -1675,6 +1675,10 @@
 		          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowBufferOptions"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ToolTips">
+		<Class id = "DefaultDebuggerToolTips" class = "ICSharpCode.Core.DebuggerTextAreaToolTipProvider"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
 		<ToolbarItem id = "SearchSeparator" type = "Separator"/>
 		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">

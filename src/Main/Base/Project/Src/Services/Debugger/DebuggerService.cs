@@ -21,6 +21,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using BM = ICSharpCode.SharpDevelop.Bookmarks;
 using ITextEditorControlProvider = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider;
+using ITextAreaToolTipProvider = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextAreaToolTipProvider;
+using ToolTipInfo = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ToolTipInfo;
 
 namespace ICSharpCode.Core
 {
@@ -282,6 +284,8 @@ namespace ICSharpCode.Core
 		}
 		
 		#region Tool tips
+		const string ToolTipProviderAddInTreePath = "/SharpDevelop/ViewContent/DefaultTextEditor/ToolTips";
+		
 		static DebuggerGridControl oldToolTipControl;
 		
 		/// <summary>
@@ -302,39 +306,28 @@ namespace ICSharpCode.Core
 				}
 				
 				if (e.InDocument) {
-					Point logicPos = e.LogicalPosition;
-					IDocument doc = textArea.Document;
-					IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textArea.MotherTextEditorControl.FileName);
-					if (expressionFinder == null)
-						return;
-					LineSegment seg = doc.GetLineSegment(logicPos.Y);
-					if (logicPos.X > seg.Length - 1)
-						return;
-					string textContent = doc.TextContent;
-					ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, seg.Offset + logicPos.X);
-					string expression = (expressionResult.Expression ?? "").Trim();
-					if (expression.Length > 0) {
-						// Look if it is variable
-						ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, logicPos.X + 1, textArea.MotherTextEditorControl.FileName, textContent);
-						bool debuggerCanShowValue;
-						string toolTipText = GetText(result, expression, out debuggerCanShowValue);
-						if (toolTipText != null) {
-							if (Control.ModifierKeys == Keys.Control) {
-								toolTipText = "expr: " + expressionResult.ToString() + "\n" + toolTipText;
-							} else if (debuggerCanShowValue && currentDebugger != null) {
-								toolTipControl = currentDebugger.GetTooltipControl(expressionResult.Expression);
-								toolTipText = null;
-							}
+					
+					// Query all registered tooltip providers using the AddInTree.
+					// The first one that does not return null will be used.
+					ToolTipInfo ti = null;
+					foreach (ITextAreaToolTipProvider toolTipProvider in AddInTree.BuildItems<ITextAreaToolTipProvider>(ToolTipProviderAddInTreePath, null, false)) {
+						if ((ti = toolTipProvider.GetToolTipInfo(textArea, e)) != null) {
+							break;
 						}
-						if (toolTipText != null) {
-							e.ShowToolTip(toolTipText);
-						}
-						CloseOldToolTip();
-						if (toolTipControl != null) {
-							toolTipControl.ShowForm(textArea, logicPos);
-						}
-						oldToolTipControl = toolTipControl;
 					}
+					
+					if (ti != null) {
+						toolTipControl = ti.ToolTipControl;
+						if (ti.ToolTipText != null) {
+							e.ShowToolTip(ti.ToolTipText);
+						}
+					}
+					CloseOldToolTip();
+					if (toolTipControl != null) {
+						toolTipControl.ShowForm(textArea, e.LogicalPosition);
+					}
+					oldToolTipControl = toolTipControl;
+					
 				}
 			} catch (Exception ex) {
 				ICSharpCode.Core.MessageService.ShowError(ex);
@@ -363,6 +356,43 @@ namespace ICSharpCode.Core
 		{
 			if (CanCloseOldToolTip && !oldToolTipControl.IsMouseOver)
 				CloseOldToolTip();
+		}
+		
+		/// <summary>
+		/// Gets debugger tooltip information for the specified position.
+		/// A descriptive text for the element or a DebuggerGridControl
+		/// showing its current value (when in debugging mode) can be returned
+		/// through the ToolTipInfo object.
+		/// Returns <c>null</c>, if no tooltip information is available.
+		/// </summary>
+		internal static ToolTipInfo GetToolTipInfo(TextArea textArea, ToolTipRequestEventArgs e)
+		{
+			Point logicPos = e.LogicalPosition;
+			IDocument doc = textArea.Document;
+			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textArea.MotherTextEditorControl.FileName);
+			if (expressionFinder == null)
+				return null;
+			LineSegment seg = doc.GetLineSegment(logicPos.Y);
+			if (logicPos.X > seg.Length - 1)
+				return null;
+			string textContent = doc.TextContent;
+			ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, seg.Offset + logicPos.X);
+			string expression = (expressionResult.Expression ?? "").Trim();
+			if (expression.Length > 0) {
+				// Look if it is variable
+				ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, logicPos.X + 1, textArea.MotherTextEditorControl.FileName, textContent);
+				bool debuggerCanShowValue;
+				string toolTipText = GetText(result, expression, out debuggerCanShowValue);
+				if (toolTipText != null) {
+					if (Control.ModifierKeys == Keys.Control) {
+						toolTipText = "expr: " + expressionResult.ToString() + "\n" + toolTipText;
+					} else if (debuggerCanShowValue && currentDebugger != null) {
+						return new ToolTipInfo(currentDebugger.GetTooltipControl(expressionResult.Expression));
+					}
+					return new ToolTipInfo(toolTipText);
+				}
+			}
+			return null;
 		}
 		
 		static string GetText(ResolveResult result, string expression, out bool debuggerCanShowValue)
@@ -463,5 +493,19 @@ namespace ICSharpCode.Core
 			return text.ToString();
 		}
 		#endregion
+	}
+	
+	/// <summary>
+	/// Provides the default debugger tooltips on the text area.
+	/// </summary>
+	/// <remarks>
+	/// This class must be public because it is accessed via the AddInTree.
+	/// </remarks>
+	public class DebuggerTextAreaToolTipProvider : ITextAreaToolTipProvider
+	{
+		public ToolTipInfo GetToolTipInfo(TextArea textArea, ToolTipRequestEventArgs e)
+		{
+			return DebuggerService.GetToolTipInfo(textArea, e);
+		}
 	}
 }
