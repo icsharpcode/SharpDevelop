@@ -258,7 +258,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		[ReadOnly(true)]
 		[LocalizedProperty("${res:Dialog.ProjectOptions.Configuration}")]
-		public string Configuration {
+		public virtual string Configuration {
 			get {
 				return activeConfiguration;
 			}

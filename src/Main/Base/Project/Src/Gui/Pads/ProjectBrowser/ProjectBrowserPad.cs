@@ -33,7 +33,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				return projectBrowserPanel.SelectedNode;
 			}
 		}
-		
+		public ProjectNode CurrentProject {
+			get {
+				AbstractProjectBrowserTreeNode node = SelectedNode;
+				while (node != null && !(node is ProjectNode))
+					node = (AbstractProjectBrowserTreeNode)node.Parent;
+				return (ProjectNode)node;
+			}
+		}
 		/// <summary>
 		/// Gets the root node of the project tree view.
 		/// </summary>

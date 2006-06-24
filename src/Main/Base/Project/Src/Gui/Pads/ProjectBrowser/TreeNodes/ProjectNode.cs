@@ -176,5 +176,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			return visitor.Visit(this, data);
 		}
+		
+		public virtual void AddNewItemsToProject()
+		{
+			new Project.Commands.AddNewItemsToProject().Run();
+			return;
+		}
 	}
 }
