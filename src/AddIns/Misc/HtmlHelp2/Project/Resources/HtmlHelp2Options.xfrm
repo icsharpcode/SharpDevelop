@@ -7,19 +7,10 @@
 				<Name value="groupBox1" />
 				<Location value="{X=8, Y=8}" />
 				<Text value="${res:AddIns.HtmlHelp2.Options.Groupbox}" />
-				<Size value="{Width=344, Height=124}" />
+				<Size value="{Width=344, Height=112}" />
 				<TabIndex value="0" />
 				<Anchor value="Top, Left, Right" />
 				<Controls>
-					<!-- ReRegisterButton
-					<System.Windows.Forms.Button>
-						<Name value="reregisterButton" />
-						<Location value="{X=73,Y=107}" />
-						<Text value="${res:AddIns.HtmlHelp2.Options.Reregister}" />
-						<Size value="{Width=204, Height=23}" />
-						<Anchor value="Top" />
-						<TabIndex value="2" />
-					</System.Windows.Forms.Button> -->
 					<System.Windows.Forms.ComboBox>
 						<Name value="help2Collections" />
 						<TabIndex value="1" />
@@ -27,7 +18,7 @@
 						<Size value="{Width=312, Height=21}" />
 						<FormattingEnabled value="True" />
 						<DropDownStyle value="DropDownList" />
-						<Location value="{X=16,Y=80}" />
+						<Location value="{X=16, Y=75}" />
 					</System.Windows.Forms.ComboBox>
 					<System.Windows.Forms.Label>
 						<Name value="label1" />
@@ -41,9 +32,9 @@
 			</System.Windows.Forms.GroupBox>
 			<System.Windows.Forms.GroupBox>
 				<Name value="groupBox2" />
-				<Location value="{X=8, Y=145}" />
+				<Location value="{X=8, Y=130}" />
 				<Text value="${res:AddIns.HtmlHelp2.Options.AdditionOptions}" />
-				<Size value="{Width=344, Height=124}" />
+				<Size value="{Width=344, Height=55}" />
 				<TabIndex value="1" />
 				<Anchor value="Top, Left, Right" />
 				<Controls>
@@ -51,8 +42,8 @@
 						<Name value="tocPictures" />
 						<TabIndex value="0" />
 						<Anchor value="Top, Left, Right" />
-						<Size value="{Width=312, Height=45}" />
-						<Location value="{X=16, Y=15}" />
+						<Size value="{Width=312, Height=23}" />
+						<Location value="{X=16, Y=20}" />
 						<Text value="${res:AddIns.HtmlHelp2.Options.ShowTocPictures}" />
 					</System.Windows.Forms.CheckBox>
 				</Controls>

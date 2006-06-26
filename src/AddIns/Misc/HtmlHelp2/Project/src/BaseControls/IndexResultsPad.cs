@@ -60,6 +60,7 @@ namespace HtmlHelp2
 			listView.MultiSelect       = false;
 			listView.HideSelection     = false;
 			listView.Enabled           = HtmlHelp2Environment.IsReady;
+			listView.Font              = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			ListViewResize(this,null);
 
 			listView.Resize           += new EventHandler(ListViewResize);

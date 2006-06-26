@@ -91,6 +91,7 @@ namespace HtmlHelp2
 
 			panel3.Controls.Add(searchButton);
 			searchButton.Enabled                  = false;
+			searchButton.Font                     = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			searchButton.Click                   += new EventHandler(SearchButtonClick);
 			panel3.Controls.Add(titlesOnly);
 			panel3.Controls.Add(enableStemming);
@@ -102,28 +103,33 @@ namespace HtmlHelp2
 			titlesOnly.Top                        = searchButton.Top + searchButton.Height + 10;
 			titlesOnly.TextAlign                  = ContentAlignment.MiddleLeft;
 			titlesOnly.Enabled                    = HtmlHelp2Environment.IsReady;
+			titlesOnly.Font                       = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			enableStemming.Width                  = pw;
 			enableStemming.Top                    = titlesOnly.Top + titlesOnly.Height - 4;
 			enableStemming.TextAlign              = ContentAlignment.MiddleLeft;
 			enableStemming.Enabled                = HtmlHelp2Environment.IsReady;
+			enableStemming.Font                   = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			reuseMatches.Width                    = pw;
 			reuseMatches.Top                      = enableStemming.Top + enableStemming.Height - 4;
 			reuseMatches.Enabled                  = false;
 			reuseMatches.TextAlign                = ContentAlignment.MiddleLeft;
+			reuseMatches.Font                     = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			hiliteTopics.Width                    = pw;
 			hiliteTopics.Top                      = reuseMatches.Top + reuseMatches.Height - 4;
 			hiliteTopics.TextAlign                = ContentAlignment.MiddleLeft;
 			hiliteTopics.Enabled                  = HtmlHelp2Environment.IsReady;
 			hiliteTopics.Checked                  = true;
+			hiliteTopics.Font                     = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			useCurrentLang.Width                  = pw;
 			useCurrentLang.Top                    = hiliteTopics.Top + hiliteTopics.Height;
 			useCurrentLang.TextAlign              = ContentAlignment.MiddleLeft;
 			useCurrentLang.Enabled                = HtmlHelp2Environment.IsReady;
 			useCurrentLang.Visible                = ProjectService.CurrentProject != null;
+			useCurrentLang.Font                   = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			panel3.Dock                           = DockStyle.Fill;
 
@@ -137,6 +143,7 @@ namespace HtmlHelp2
 			filterCombobox.DropDownStyle          = ComboBoxStyle.DropDownList;
 			filterCombobox.Sorted                 = true;
 			filterCombobox.Enabled                = HtmlHelp2Environment.IsReady;
+			filterCombobox.Font                   = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			filterCombobox.SelectedIndexChanged  += new EventHandler(FilterChanged);
 			
 			if (HtmlHelp2Environment.IsReady)
@@ -151,6 +158,7 @@ namespace HtmlHelp2
 			label1.Dock                           = DockStyle.Top;
 			label1.TextAlign                      = ContentAlignment.MiddleLeft;
 			label1.Enabled                        = HtmlHelp2Environment.IsReady;
+			label1.Font                           = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			// SearchTerm Combobox
 			Panel panel2                          = new Panel();
@@ -162,11 +170,13 @@ namespace HtmlHelp2
 			searchTerm.TextChanged               += new EventHandler(SearchTextChanged);
 			searchTerm.KeyPress                  += new KeyPressEventHandler(KeyPressed);
 			searchTerm.Enabled                    = HtmlHelp2Environment.IsReady;
+			searchTerm.Font                       = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			mainPanel.Controls.Add(label2);
 			label2.Dock                           = DockStyle.Top;
 			label2.TextAlign                      = ContentAlignment.MiddleLeft;
 			label2.Enabled                        = HtmlHelp2Environment.IsReady;
+			label2.Font                           = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			this.RedrawContent();
 			
@@ -177,7 +187,7 @@ namespace HtmlHelp2
 		private void FilterChanged(object sender, EventArgs e)
 		{
 			string selectedFilterName = filterCombobox.SelectedItem.ToString();
-			if (selectedFilterName.Length > 0)
+			if (!string.IsNullOrEmpty(selectedFilterName))
 			{
 				selectedQuery = HtmlHelp2Environment.FindFilterQuery(selectedFilterName);
 			}
@@ -210,7 +220,7 @@ namespace HtmlHelp2
 
 		private void SearchButtonClick(object sender, EventArgs e)
 		{
-			if (searchTerm.Text.Length > 0)
+			if (!string.IsNullOrEmpty(searchTerm.Text))
 			{
 				this.AddTermToList(searchTerm.Text);
 				this.PerformFTS(searchTerm.Text);
@@ -219,7 +229,7 @@ namespace HtmlHelp2
 
 		private void SearchTextChanged(object sender, EventArgs e)
 		{
-			searchButton.Enabled = (searchTerm.Text.Length > 0);
+			searchButton.Enabled = (!string.IsNullOrEmpty(searchTerm.Text));
 		}
 
 		private void KeyPressed(object sender, KeyPressEventArgs e)
@@ -250,7 +260,10 @@ namespace HtmlHelp2
 
 		private void PerformFTS(string searchWord, bool useDynamicHelp)
 		{
-			if (!HtmlHelp2Environment.IsReady || searchIsBusy) return;
+			if (!HtmlHelp2Environment.IsReady || string.IsNullOrEmpty(searchWord) || searchIsBusy)
+			{
+				return;
+			}
 
 			HtmlHelp2SearchResultsView searchResults = HtmlHelp2SearchResultsView.Instance;
 
@@ -331,7 +344,10 @@ namespace HtmlHelp2
 
 		public bool PerformF1FTS(string keyword, bool useDynamicHelp)
 		{
-			if (!HtmlHelp2Environment.IsReady || searchIsBusy) return false;
+			if (!HtmlHelp2Environment.IsReady || string.IsNullOrEmpty(keyword) || searchIsBusy)
+			{
+				return false;
+			}
 
 			this.PerformFTS(keyword, useDynamicHelp);
 

@@ -67,6 +67,7 @@ namespace HtmlHelp2
 			listView.Alignment         = ListViewAlignment.Left;
 			listView.View              = View.Details;
 			listView.Dock              = DockStyle.Fill;
+			listView.Font              = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			ListViewResize(this,null);
 
 			listView.Resize           += new EventHandler(ListViewResize);

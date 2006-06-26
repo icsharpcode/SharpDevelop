@@ -99,25 +99,6 @@ namespace HtmlHelp2.Environment
 			{
 				DefaultNamespaceName = config.SelectedCollection;
 			}
-
-//			try
-//			{
-//				XmlDocument xmldoc = new XmlDocument();
-//				xmldoc.Load(Path.Combine(PropertyService.ConfigDirectory, help2EnvironmentFile));
-//
-//				XmlNode node = xmldoc.SelectSingleNode("/help2environment/collection");
-//				if (node != null) {
-//					if (!string.IsNullOrEmpty(node.InnerText)) {
-//						DefaultNamespaceName = node.InnerText;
-//					}
-//				}
-//
-//				LoggingService.Info("Help 2.0: using last configuration");
-//			}
-//			catch
-//			{
-//				LoggingService.Info("Help 2.0: using default configuration");
-//			}
 		}
 
 		public static void ReloadNamespace()
@@ -130,10 +111,12 @@ namespace HtmlHelp2.Environment
 
 		private static void InitializeNamespace(string namespaceName)
 		{
-			if(namespaceName == null || namespaceName == "")
+			if (string.IsNullOrEmpty(namespaceName))
+			{
 				return;
+			}
 
-			if(session != null) session = null;
+			session = null;
 
 			HtmlHelp2Dialog initDialog = new HtmlHelp2Dialog();
 			try
@@ -143,8 +126,8 @@ namespace HtmlHelp2.Environment
 				initDialog.Show();
 				Application.DoEvents();
 
-				currentSelectedFilterQuery = "";
-				currentSelectedFilterName  = "";
+				currentSelectedFilterQuery = string.Empty;
+				currentSelectedFilterName  = string.Empty;
 
 				session                    = new HxSession();
 				session.Initialize(String.Format("ms-help://{0}", namespaceName), 0);
@@ -169,12 +152,14 @@ namespace HtmlHelp2.Environment
 
 		private static void ReloadFTSSystem()
 		{
-			fulltextSearch = (IHxQuery)session.GetNavigationInterface("!DefaultFullTextSearch", currentSelectedFilterQuery, ref QueryGuid);
+			fulltextSearch = (IHxQuery)session.GetNavigationInterface
+				("!DefaultFullTextSearch", currentSelectedFilterQuery, ref QueryGuid);
 		}
 
 		private static void ReloadDynamicHelpSystem()
 		{
-			dynamicHelp = (IHxIndex)session.GetNavigationInterface("!DefaultContextWindowIndex", currentSelectedFilterQuery, ref IndexGuid);
+			dynamicHelp = (IHxIndex)session.GetNavigationInterface
+				("!DefaultContextWindowIndex", currentSelectedFilterQuery, ref IndexGuid);
 		}
 
 		private static void ReloadDefaultPages()
@@ -185,34 +170,59 @@ namespace HtmlHelp2.Environment
 
 		private static string GetDefaultPage(string pageName, string alternatePageName, string defaultValue)
 		{
-			string resultString = "";
+			string result = string.Empty;
 
 			try
 			{
-				IHxIndex namedUrlIndex = (IHxIndex)session.GetNavigationInterface("!DefaultNamedUrlIndex",
-				                                                                  "",
-				                                                                  ref IndexGuid);
-				IHxTopicList topics = null;
+				IHxIndex namedUrlIndex =
+					(IHxIndex)session.GetNavigationInterface("!DefaultNamedUrlIndex", "", ref IndexGuid);
 
-				topics = namedUrlIndex.GetTopicsFromString(pageName, 0);
-
-				if(topics.Count == 0 && (alternatePageName != null && alternatePageName != ""))
+				IHxTopicList topics = namedUrlIndex.GetTopicsFromString(pageName, 0);
+				if (topics.Count == 0 && !string.IsNullOrEmpty(alternatePageName))
 				{
 					topics = namedUrlIndex.GetTopicsFromString(alternatePageName, 0);
 				}
 
-				if(topics.Count > 0)
-					resultString = topics.ItemAt(1).URL;
+				if (topics.Count > 0)
+					result = topics.ItemAt(1).URL;
 
-				if (resultString == null || resultString.Length == 0)
-					resultString = defaultValue;
+				if (string.IsNullOrEmpty(result))
+					result = defaultValue;
 
-				return resultString;
+				return result;
 			}
 			catch
 			{
 				return defaultValue;
 			}
+//			string resultString = "";
+//
+//			try
+//			{
+//				IHxIndex namedUrlIndex = (IHxIndex)session.GetNavigationInterface("!DefaultNamedUrlIndex",
+//				                                                                  "",
+//				                                                                  ref IndexGuid);
+//				IHxTopicList topics = null;
+//
+//				topics = namedUrlIndex.GetTopicsFromString(pageName, 0);
+//
+//				if(topics.Count == 0 && (alternatePageName != null && alternatePageName != ""))
+//				{
+//					topics = namedUrlIndex.GetTopicsFromString(alternatePageName, 0);
+//				}
+//
+//				if(topics.Count > 0)
+//					resultString = topics.ItemAt(1).URL;
+//
+//				if (resultString == null || resultString.Length == 0)
+//					resultString = defaultValue;
+//
+//				return resultString;
+//			}
+//			catch
+//			{
+//				return defaultValue;
+//			}
 		}
 
 		public static IHxHierarchy GetTocHierarchy(string filterQuery)
@@ -236,22 +246,32 @@ namespace HtmlHelp2.Environment
 
 			try
 			{
-				foreach(IHxRegFilter filter in namespaceFilters)
+				foreach (IHxRegFilter filter in namespaceFilters)
 				{
-					string filterName = (string)filter.GetProperty(HxRegFilterPropId.HxRegFilterName);
+					string filterName =
+						(string)filter.GetProperty(HxRegFilterPropId.HxRegFilterName);
 					filterCombobox.Items.Add(filterName);
-					if(currentSelectedFilterName == "") currentSelectedFilterName = filterName;
+
+					if (string.IsNullOrEmpty(currentSelectedFilterName))
+					{
+						currentSelectedFilterName = filterName;
+					}
 				}
 
-				if(namespaceFilters.Count == 0)
-					filterCombobox.Items.Add(StringParser.Parse("${res:AddIns.HtmlHelp2.DefaultEmptyFilter}"));
+				if (namespaceFilters.Count == 0)
+				{
+					filterCombobox.Items.Add
+						(StringParser.Parse("${res:AddIns.HtmlHelp2.DefaultEmptyFilter}"));
+				}
 
-				if(currentSelectedFilterName == "")	filterCombobox.SelectedIndex = 0;
-				else filterCombobox.SelectedIndex = filterCombobox.Items.IndexOf(currentSelectedFilterName);
+				if (string.IsNullOrEmpty(currentSelectedFilterName))
+					filterCombobox.SelectedIndex = 0;
+				else
+					filterCombobox.SelectedIndex = filterCombobox.Items.IndexOf(currentSelectedFilterName);
 			}
 			catch(Exception ex)
 			{
-				LoggingService.Error("Help 2.0: cannot build filters; " + ex.Message);
+				LoggingService.Error("Help 2.0: Cannot build filters; " + ex.Message);
 			}
 
 			filterCombobox.EndUpdate();
@@ -259,26 +279,47 @@ namespace HtmlHelp2.Environment
 
 		public static string FindFilterQuery(string filterName)
 		{
-			if(String.Compare(filterName, currentSelectedFilterName) == 0)
+			if (string.Compare(filterName, currentSelectedFilterName) == 0)
+			{
 				return currentSelectedFilterQuery;
+			}
 
 			try
 			{
-				IHxRegFilter filter        = namespaceFilters.FindFilter(filterName);
-				currentSelectedFilterQuery = (string)filter.GetProperty(HxRegFilterPropId.HxRegFilterQuery);
-				currentSelectedFilterName  = filterName;
+				IHxRegFilter filter = namespaceFilters.FindFilter(filterName);
+				currentSelectedFilterName = filterName;
+				currentSelectedFilterQuery =
+					(string)filter.GetProperty(HxRegFilterPropId.HxRegFilterQuery);
 
 				OnFilterQueryChanged(EventArgs.Empty);
 
 				ReloadFTSSystem();
 				ReloadDynamicHelpSystem();
 				ReloadDefaultPages();
+
 				return currentSelectedFilterQuery;
 			}
 			catch
 			{
-				return "";
+				return string.Empty;
 			}
+//			try
+//			{
+//				IHxRegFilter filter        = namespaceFilters.FindFilter(filterName);
+//				currentSelectedFilterQuery = (string)filter.GetProperty(HxRegFilterPropId.HxRegFilterQuery);
+//				currentSelectedFilterName  = filterName;
+//
+//				OnFilterQueryChanged(EventArgs.Empty);
+//
+//				ReloadFTSSystem();
+//				ReloadDynamicHelpSystem();
+//				ReloadDefaultPages();
+//				return currentSelectedFilterQuery;
+//			}
+//			catch
+//			{
+//				return "";
+//			}
 		}
 
 		public static IHxTopicList GetMatchingTopicsForDynamicHelp(string searchTerm)
@@ -297,7 +338,7 @@ namespace HtmlHelp2.Environment
 			}
 			finally
 			{
-				dynamicHelpIsBusy   = false;
+				dynamicHelpIsBusy = false;
 			}
 			return topics;
 		}

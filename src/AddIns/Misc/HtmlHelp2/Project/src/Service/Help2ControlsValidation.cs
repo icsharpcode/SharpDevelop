@@ -44,13 +44,5 @@ namespace HtmlHelp2.ControlsValidation
 				return false;
 			}
 		}
-
-		public Help2ControlsValidation()
-		{
-		}
-
-		static Help2ControlsValidation()
-		{
-		}
 	}
 }

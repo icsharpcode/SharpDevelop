@@ -114,12 +114,14 @@ namespace HtmlHelp2
 			filterCombobox.DropDownStyle = ComboBoxStyle.DropDownList;
 			filterCombobox.Sorted = true;
 			filterCombobox.Enabled = this.isEnabled;
+			filterCombobox.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			filterCombobox.SelectedIndexChanged += new EventHandler(this.FilterChanged);
 
 			Controls.Add(label1);
 			label1.Dock = DockStyle.Top;
 			label1.TextAlign = ContentAlignment.MiddleLeft;
 			label1.Enabled = this.isEnabled;
+			label1.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			Panel panel2 = new Panel();
 			Controls.Add(panel2);
@@ -129,6 +131,7 @@ namespace HtmlHelp2
 			panel2.Controls.Add(searchTerm);
 			searchTerm.Dock = DockStyle.Top;
 			searchTerm.Enabled = this.isEnabled;
+			searchTerm.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			searchTerm.TextChanged += new EventHandler(this.SearchTextChanged);
 			searchTerm.KeyPress += new KeyPressEventHandler(this.SearchKeyPress);
 
@@ -136,6 +139,7 @@ namespace HtmlHelp2
 			label2.Dock = DockStyle.Top;
 			label2.TextAlign = ContentAlignment.MiddleLeft;
 			label2.Enabled = this.isEnabled;
+			label2.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			this.RedrawContent();
 
@@ -153,10 +157,11 @@ namespace HtmlHelp2
 			indexControl = null;
 
 			Controls.Clear();
-			Panel nohelpPanel = new Panel();
-			nohelpPanel.Dock = DockStyle.Fill;
-			nohelpPanel.BorderStyle = BorderStyle.Fixed3D;
-			Controls.Add(nohelpPanel);
+			Label nohelpLabel = new Label();
+			nohelpLabel.Dock = DockStyle.Fill;
+			nohelpLabel.Text = StringParser.Parse("${res:AddIns.HtmlHelp2.HelpSystemNotAvailable}");
+			nohelpLabel.TextAlign = ContentAlignment.MiddleCenter;
+			Controls.Add(nohelpLabel);
 		}
 
 		public void RedrawContent()
@@ -174,7 +179,6 @@ namespace HtmlHelp2
 			searchTerm.Items.Insert(0, indexTerm);
 			searchTerm.SelectedIndex = 0;
 			itemClicked = false;
-			
 
 			this.ShowSelectedItemEntry(indexTerm, indexSlot);
 		}
@@ -182,7 +186,7 @@ namespace HtmlHelp2
 		private void FilterChanged(object sender, EventArgs e)
 		{
 			string selectedFilterName = filterCombobox.SelectedItem.ToString();
-			if (selectedFilterName != null && selectedFilterName.Length > 0)
+			if (!string.IsNullOrEmpty(selectedFilterName))
 			{
 				Cursor.Current = Cursors.WaitCursor;
 				this.SetIndex(selectedFilterName);

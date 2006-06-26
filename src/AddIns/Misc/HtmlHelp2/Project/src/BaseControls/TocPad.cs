@@ -167,12 +167,14 @@ namespace HtmlHelp2
 			filterCombobox.DropDownStyle = ComboBoxStyle.DropDownList;
 			filterCombobox.Sorted = true;
 			filterCombobox.Enabled = this.isEnabled;
+			filterCombobox.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			filterCombobox.SelectedIndexChanged += new EventHandler(this.FilterChanged);
 
 			Controls.Add(label1);
 			label1.Dock = DockStyle.Top;
 			label1.TextAlign = ContentAlignment.MiddleLeft;
 			label1.Enabled = this.isEnabled;
+			label1.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.RedrawContent();
 			
 			if (this.isEnabled)
@@ -293,7 +295,7 @@ namespace HtmlHelp2
 
 		private void CallHelp(string topicUrl, bool syncToc)
 		{
-			if (topicUrl.Length > 0)
+			if (!string.IsNullOrEmpty(topicUrl))
 			{
 				if (syncToc) this.SynchronizeToc(topicUrl);
 				ShowHelpBrowser.OpenHelpView(topicUrl);

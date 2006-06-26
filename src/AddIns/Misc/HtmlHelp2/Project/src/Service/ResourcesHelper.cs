@@ -24,7 +24,7 @@ namespace HtmlHelp2.ResourcesHelperClass
 		public static Bitmap GetBitmap(string resourceName)
 		{
 			Assembly assembly = typeof(ResourcesHelper).Assembly;
-			string fullName   = String.Format("HtmlHelp2.Resources.{0}", resourceName);
+			string fullName = string.Format("HtmlHelp2.Resources.{0}", resourceName);
 			return new Bitmap(assembly.GetManifestResourceStream(fullName));
 		}
 

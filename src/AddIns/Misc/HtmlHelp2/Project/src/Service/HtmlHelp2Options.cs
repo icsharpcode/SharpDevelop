@@ -14,13 +14,11 @@ namespace HtmlHelp2.OptionsPanel
 	using System.IO;
 	using System.Reflection;
 	using System.Windows.Forms;
-	using System.Xml;
 	using System.Xml.Serialization;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop.Gui;
 	using HtmlHelp2.Environment;
 	using HtmlHelp2.RegistryWalker;
-	using MSHelpServices;
 
 	public class HtmlHelp2OptionsPanel : AbstractOptionPanel
 	{
@@ -31,8 +29,6 @@ namespace HtmlHelp2.OptionsPanel
 		public override void LoadPanelContents()
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("HtmlHelp2.Resources.HtmlHelp2Options.xfrm"));
-//			ControlDictionary["reregisterButton"].Click += ReregisterButtonClick;
-//			ControlDictionary["reregisterButton"].Visible = false;
 			this.InitializeComponents();
 		}
 
@@ -55,7 +51,7 @@ namespace HtmlHelp2.OptionsPanel
 				tocPictures = (CheckBox)ControlDictionary["tocPictures"];
 				tocPictures.Enabled = HtmlHelp2Environment.IsReady;
 				tocPictures.Checked = HtmlHelp2Environment.Config.TocPictures;
-
+				
 				Help2RegistryWalker.BuildNamespacesList(help2Collections, selectedHelp2Collection);
 			}
 			catch(Exception ex)
@@ -79,29 +75,6 @@ namespace HtmlHelp2.OptionsPanel
 			HtmlHelp2Environment.Config.TocPictures = tocPictures.Checked;
 			HtmlHelp2Environment.SaveConfiguration();
 		}
-
-		#region ReRegister
-//		void ReregisterButtonClick(object sender, EventArgs e)
-//		{
-//			System.Threading.ThreadPool.QueueUserWorkItem(DoReregister);
-//		}
-//		
-//		void DoReregister(object state)
-//		{
-//			try
-//			{
-//				ProcessStartInfo info = new ProcessStartInfo("cmd", "/c call echo Unregistering... & unregister.bat & echo. & echo Registering... & call register.bat & pause");
-//				info.WorkingDirectory = Path.Combine(FileUtility.ApplicationRootPath, "bin\\setup\\help");
-//				Process p = Process.Start(info);
-//				p.WaitForExit(45000);
-//				WorkbenchSingleton.SafeThreadAsyncCall(typeof(HtmlHelp2Environment), "ReloadNamespace");
-//			}
-//			catch (Exception ex)
-//			{
-//				MessageService.ShowError(ex);
-//			}
-//		}
-		#endregion
 	}
 
 	[XmlRoot("help2environment")]
@@ -109,6 +82,7 @@ namespace HtmlHelp2.OptionsPanel
 	{
 		private string selectedCollection = string.Empty;
 		private bool tocPictures = true;
+		private bool dynamicHelpDebugInfo = false;
 
 		[XmlElement("collection")]
 		public string SelectedCollection
@@ -122,6 +96,13 @@ namespace HtmlHelp2.OptionsPanel
 		{
 			get { return tocPictures; }
 			set { tocPictures = value; }
+		}
+
+		[XmlElement("dhdebuginfos")]
+		public bool DynamicHelpDebugInfos
+		{
+			get { return this.dynamicHelpDebugInfo; }
+			set { this.dynamicHelpDebugInfo = value; }
 		}
 	}
 }

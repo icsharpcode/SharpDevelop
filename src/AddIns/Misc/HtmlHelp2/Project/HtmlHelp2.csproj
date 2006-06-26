@@ -88,7 +88,7 @@
     <None Include="Resources\Favorites.16x16.Rename.bmp" />
     <EmbeddedResource Include="Resources\HtmlHelp2Options.xfrm" />
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.TextZoom.png" />
-    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.AddToFavorites.png" />
+    <None Include="Resources\HtmlHelp2.16x16.AddToFavorites.png" />
     <Compile Include="src\BrowserControl\HelpBrowserCommands.cs" />
     <Compile Include="src\BrowserScheme.cs" />
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Print.bmp" />

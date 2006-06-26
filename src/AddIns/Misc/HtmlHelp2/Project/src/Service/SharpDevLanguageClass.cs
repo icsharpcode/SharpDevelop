@@ -23,10 +23,6 @@ namespace HtmlHelp2.SharpDevLanguageClass
 			languages.Add("VBNet", "VB");
 		}
 
-		SharpDevLanguage()
-		{
-		}
-
 		private static int DevLangCounter(IHxTopic topic)
 		{
 			try
