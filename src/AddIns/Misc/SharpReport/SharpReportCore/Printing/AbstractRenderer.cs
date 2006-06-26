@@ -37,7 +37,7 @@ namespace SharpReportCore {
 		private Point detailStart;
 		private Point detailEnds;
 	
-		private DefaultFormatter defaultFormatter;
+		private StandartFormatter standartFormatter;
 		private bool cancel;		
 		
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
@@ -50,7 +50,7 @@ namespace SharpReportCore {
 			this.reportSettings = model.ReportSettings;
 			this.sections = model.SectionCollection;
 			Init();
-			defaultFormatter = new DefaultFormatter();
+			standartFormatter = new StandartFormatter();
 		}
 		
 		public virtual void SetupRenderer () {
@@ -308,7 +308,7 @@ namespace SharpReportCore {
 			if (baseDataItem != null) {
 				if (!String.IsNullOrEmpty(baseDataItem.FormatString)) {
 					
-					rpea.FormatedValue = defaultFormatter.FormatItem (baseDataItem);
+					rpea.FormatedValue = standartFormatter.FormatItem (baseDataItem);
 				} else {
 					rpea.FormatedValue = rpea.ValueToFormat;
 				}

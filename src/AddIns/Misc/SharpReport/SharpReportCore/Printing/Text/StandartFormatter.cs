@@ -1,40 +1,23 @@
-//
-// SharpDevelop ReportEditor
-//
-// Copyright (C) 2005 Peter Forstmeier
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// Peter Forstmeier (Peter.Forstmeier@t-online.de)
+/*
+ * Created by SharpDevelop.
+ * User: Forstmeier Peter
+ * Date: 26.06.2006
+ * Time: 09:42
+ * 
+ * To change this template use Tools | Options | Coding | Edit Standard Headers.
+ */
+
 using System;
 using System.Globalization;
-//using System.Windows.Forms;
-
 /// <summary>
 /// This Class handles the formatting of Output Values depending on there
 /// Type and DbValue
 /// </summary>
-/// <remarks>
-/// 	created by - Forstmeier Peter
-/// 	created on - 30.03.2005 09:14:20
-/// </remarks>
-namespace SharpReportCore{
-	public class DefaultFormatter : AbstractFormatter {
+namespace SharpReportCore {
+	public class StandartFormatter : object {
 		
 		
-		public DefaultFormatter() {
+		public StandartFormatter() {
 		}
 		
 		///<summary>Looks witch formatting Class to use, call the approbiate formatter
@@ -78,9 +61,9 @@ namespace SharpReportCore{
 		
 		public string BoolValue (string toFormat, string format){
 			string str = String.Empty;
-			if (base.CheckFormat(format) == true) {
+			if (StandartFormatter.CheckFormat(format) == true) {
 				
-				if (base.CheckValue (toFormat)) {
+				if (StandartFormatter.CheckValue (toFormat)) {
 					try {
 						bool b = bool.Parse (toFormat);
 						str = b.ToString (CultureInfo.CurrentCulture);
@@ -98,8 +81,8 @@ namespace SharpReportCore{
 		
 		public  string IntegerValues(string valueType,string toFormat, string format) {
 			string str = String.Empty;
-			if (base.CheckFormat(format) == true) {
-				if (base.CheckValue (toFormat)) {
+			if (StandartFormatter.CheckFormat(format) == true) {
+				if (StandartFormatter.CheckValue (toFormat)) {
 					try {
 						int number;
 						switch (valueType) {
@@ -136,9 +119,9 @@ namespace SharpReportCore{
 		
 		public  string DecimalValues(string toFormat, string format) {
 			string str = String.Empty;
-			if (base.CheckFormat(format) == true) {
+			if (StandartFormatter.CheckFormat(format) == true) {
 				
-				if (base.CheckValue (toFormat)) {
+				if (StandartFormatter.CheckValue (toFormat)) {
 					try {
 						decimal dec =	Decimal.Parse(toFormat,
 						                            System.Globalization.NumberStyles.Any,
@@ -162,7 +145,7 @@ namespace SharpReportCore{
 		
 		public  string DateValues(string toFormat, string format) {
 			
-			if (base.CheckFormat(format) == true) {
+			if (StandartFormatter.CheckFormat(format) == true) {
 				try {
 					DateTime date = DateTime.Parse (toFormat.Trim(),
 					                                CultureInfo.CurrentCulture.DateTimeFormat);
@@ -178,6 +161,20 @@ namespace SharpReportCore{
 				return toFormat.Trim();
 			}
 			return toFormat.Trim();
+		}
+		
+		private static bool CheckFormat (string format) {
+			if (String.IsNullOrEmpty(format)) {
+				return false;
+			} 
+			return true;
+		}
+		
+		private static bool CheckValue (string toFormat) {
+			if (String.IsNullOrEmpty(toFormat)) {
+				return false;
+			}
+			return true;
 		}
 	}
 }
