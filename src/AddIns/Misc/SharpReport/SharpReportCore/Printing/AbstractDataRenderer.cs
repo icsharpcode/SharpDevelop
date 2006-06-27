@@ -72,7 +72,7 @@ namespace SharpReportCore{
 						item.Parent = section;
 					}
 					item.SectionOffset = section.SectionOffset;
-					base.DrawSingleItem (rpea,item);
+					item.Render(rpea);
 					drawPoint.Y = section.SectionOffset + section.Size.Height;
 					rpea.LocationAfterDraw = new PointF (rpea.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);
 					

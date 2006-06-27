@@ -31,7 +31,7 @@ namespace SharpReportCore {
 		public event EventHandler<BeforePrintEventArgs> ItemPrinting;
 		public event EventHandler<AfterPrintEventArgs> ItemPrinted;
 		
-		public event EventHandler <FormatOutputEventArgs> FormatOutput;
+//		public event EventHandler <FormatOutputEventArgs> FormatOutput;
 		public event EventHandler Disposed;
 		
 		public BaseReportItem() :base(){
@@ -46,14 +46,14 @@ namespace SharpReportCore {
 		/// <param name="formatString">the formatString</param>
 		/// <param name="nullValue">Value to return when there is null in toFormat</param>
 		/// <returns></returns>
-		protected string FireFormatOutput(string toFormat,string format, string nullValue) {
-			if (FormatOutput != null) {
-				FormatOutputEventArgs ea = new FormatOutputEventArgs (toFormat,
-				                                                      format,
-				                                                      nullValue);
-				FormatOutput (this,ea);
-				return ea.FormatedValue;
-			}
+		protected string old_FireFormatOutput(string toFormat,string format, string nullValue) {
+//			if (FormatOutput != null) {
+//				FormatOutputEventArgs ea = new FormatOutputEventArgs (toFormat,
+//				                                                      format,
+//				                                                      nullValue);
+//				FormatOutput (this,ea);
+//				return ea.FormatedValue;
+//			}
 			return toFormat;
 		}
 		

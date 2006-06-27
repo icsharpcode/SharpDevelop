@@ -82,8 +82,6 @@
     <Compile Include="Interfaces\IItemRenderer.cs" />
     <Compile Include="Interfaces\IOutputStrategy.cs" />
     <Compile Include="Interfaces\IStoreable.cs" />
-    <Compile Include="Printing\Formatter\AbstractFormatter.cs" />
-    <Compile Include="Printing\Formatter\DefaultFormatter.cs" />
     <Compile Include="Printing\Graphics\BaseLine.cs" />
     <Compile Include="Printing\Graphics\BaseShape.cs" />
     <Compile Include="Printing\Graphics\Border.cs" />
@@ -133,6 +131,7 @@
     <Compile Include="Exceptions\IllegalQueryException.cs" />
     <Compile Include="Events\SectionRenderEventArgs.cs" />
     <Compile Include="Printing\Text\StandartFormatter.cs" />
+    <Compile Include="BaseClasses\DataTypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />

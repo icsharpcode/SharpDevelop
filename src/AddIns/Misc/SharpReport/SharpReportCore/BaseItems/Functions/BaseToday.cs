@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 using System;
 using System.Drawing;	
+using System.ComponentModel;
 using System.Globalization;
 	/// <summary>
 	/// BaseClass for Today's Date
@@ -28,9 +29,17 @@ namespace SharpReportCore {
 		
 		public override void Render(ReportPageEventArgs rpea) {
 			base.Render(rpea);
-		
-			string formattedString = FormatAsDate(System.DateTime.Now.ToString(),base.FormatString);
 			
+			string f;
+			if (String.IsNullOrEmpty(this.FormatString)) {
+				f = "d";
+			} else {
+				f = this.FormatString;
+			}
+			string formattedString = base.FormatOutput(System.DateTime.Now.ToString(CultureInfo.CurrentCulture),
+			                                           f,
+			                                           TypeCode.DateTime,
+			                                           "");
 			RectangleF rect = base.PrepareRectangle (rpea,formattedString);
 
 			//Printout the textPart
@@ -39,42 +48,30 @@ namespace SharpReportCore {
 			//here we print the functionpart allway's with Stringalignment.Far
 			StringFormat fmt = StringFormat;
 			fmt.Alignment = StringAlignment.Far;
-			fmt.LineAlignment = StringAlignment.Near;
-			
+			fmt.LineAlignment = StringAlignment.Center;
 			rpea.PrintPageEventArgs.Graphics.DrawString(formattedString,
-			                                         this.Font,
-			                                         Brushes.Black,
-			                                         rect,
-			                                         fmt);
+			                                            this.Font,
+			                                            Brushes.Black,
+			                                            rect,
+			                                            fmt);
 			
-			// goon 
+			// goon
 			base.NotiyfyAfterPrint (rpea.LocationAfterDraw);
 		}
 		
 		public override string ToString() {
 			return "BaseToday";
 		}
-			
-			
-		#region privates
-		private string FormatAsDate (string toFormat,string formatWith) {
-			if (toFormat.Length == 0) {
-				return String.Empty;
+		
+		[Browsable(false)]
+		public override ContentAlignment ContentAlignment {
+			get {
+				return base.ContentAlignment;
 			}
-			if (formatWith.Length == 0) {
-				return toFormat;
+			set {
+				base.ContentAlignment = value;
 			}
-			try {
-				DateTime date = DateTime.Parse (toFormat.Trim(),
-				                                CultureInfo.CurrentCulture.DateTimeFormat);
-				string str = date.ToString(formatWith,
-				                           DateTimeFormatInfo.CurrentInfo);
-			    return str;
-			} catch (Exception) {
-				throw;
-			}
-			
 		}
-		#endregion
+		
 	}
 }

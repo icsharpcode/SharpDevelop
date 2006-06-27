@@ -37,7 +37,7 @@ namespace SharpReportCore {
 		private Point detailStart;
 		private Point detailEnds;
 	
-		private StandartFormatter standartFormatter;
+		private StandardFormatter standartFormatter;
 		private bool cancel;		
 		
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
@@ -50,7 +50,7 @@ namespace SharpReportCore {
 			this.reportSettings = model.ReportSettings;
 			this.sections = model.SectionCollection;
 			Init();
-			standartFormatter = new StandartFormatter();
+			standartFormatter = new StandardFormatter();
 		}
 		
 		public virtual void SetupRenderer () {
@@ -276,8 +276,7 @@ namespace SharpReportCore {
 						item.Parent = this.CurrentSection;
 					}
 					item.SectionOffset = this.CurrentSection.SectionOffset;
-					this.DrawSingleItem (rpea,item);
-					
+					item.Render(rpea);
 					drawPoint.Y = this.CurrentSection.SectionOffset + this.CurrentSection.Size.Height;
 					rpea.LocationAfterDraw = new PointF (rpea.LocationAfterDraw.X,this.CurrentSection.SectionOffset + this.CurrentSection.Size.Height);
 					
@@ -292,16 +291,9 @@ namespace SharpReportCore {
 			return drawPoint.Y;
 		}
 		
-		
-		protected void DrawSingleItem (ReportPageEventArgs rpea,BaseReportItem item){
-			item.SuspendLayout();
-			item.FormatOutput -= new EventHandler<FormatOutputEventArgs> (FormatBaseReportItem);
-			item.FormatOutput += new EventHandler<FormatOutputEventArgs> (FormatBaseReportItem);
-			item.Render(rpea);
-			item.ResumeLayout();
-		}
 	
 		// Called by FormatOutPutEvent of the BaseReportItem
+		/*
 		void FormatBaseReportItem (object sender, FormatOutputEventArgs rpea) {
 			BaseDataItem baseDataItem = sender as BaseDataItem;
 			
@@ -314,7 +306,7 @@ namespace SharpReportCore {
 				}
 			}
 		}
-		
+		*/
 		
 		#region privates
 		protected void FitSectionToItems (BaseSection section,ReportPageEventArgs rpea){

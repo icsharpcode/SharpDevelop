@@ -131,7 +131,7 @@ namespace SharpReportCore {
 		}
 		
 		protected override void PrintReportFooter(object sender, ReportPageEventArgs rpea){
-			System.Console.WriteLine("DataRenderer:PrintReportFooter");
+//			System.Console.WriteLine("DataRenderer:PrintReportFooter");
 			base.PrintReportFooter(sender, rpea);
 			DoReportFooter (new PointF(0,base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height),
 			                rpea);
