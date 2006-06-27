@@ -496,12 +496,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public ProjectSection GetSolutionConfigurationsSection()
 		{
-			foreach (ProjectSection sec in Sections) {
+			foreach (ProjectSection sec in this.Sections) {
 				if (sec.Name == "SolutionConfigurationPlatforms")
 					return sec;
 			}
 			ProjectSection newSec = new ProjectSection("SolutionConfigurationPlatforms", "preSolution");
-			Sections.Insert(0, newSec);
+			this.Sections.Insert(0, newSec);
+			foreach (ProjectSection sec in this.Sections) {
+				if (sec.Name == "SolutionConfiguration") {
+					this.Sections.Remove(sec);
+					foreach (SolutionItem item in sec.Items) {
+						newSec.Items.Add(new SolutionItem(item.Name + "|Any CPU", item.Location + "|Any CPU"));
+					}
+					break;
+				}
+			}
 			return newSec;
 		}
 		
@@ -513,6 +522,49 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			ProjectSection newSec = new ProjectSection("ProjectConfigurationPlatforms", "postSolution");
 			Sections.Add(newSec);
+			foreach (ProjectSection sec in this.Sections) {
+				if (sec.Name == "ProjectConfiguration") {
+					this.Sections.Remove(sec);
+					foreach (SolutionItem item in sec.Items) {
+						string name = item.Name;
+						string location = item.Location;
+						if (!name.Contains("|")) {
+							int pos = name.LastIndexOf('.');
+							if (pos > 0) {
+								string firstpart = name.Substring(0, pos);
+								string lastpart = name.Substring(pos);
+								if (lastpart == ".0") {
+									pos = firstpart.LastIndexOf('.');
+									if (pos > 0) {
+										lastpart = name.Substring(pos);
+										firstpart = name.Substring(0, pos);
+									}
+								}
+								name = firstpart + "|Any CPU" + lastpart;
+							}
+							
+							pos = location.LastIndexOf('|');
+							if (pos < 0) {
+								location += "|Any CPU";
+							} else {
+								string platform = location.Substring(pos+1);
+								bool found = false;
+								foreach (IProject p in this.Projects) {
+									if (p.GetPlatformNames().Contains(platform)) {
+										found = true;
+										break;
+									}
+								}
+								if (!found) {
+									location = location.Substring(0, pos) + "|Any CPU";
+								}
+							}
+						}
+						newSec.Items.Add(new SolutionItem(name, location));
+					}
+					break;
+				}
+			}
 			return newSec;
 		}
 		
