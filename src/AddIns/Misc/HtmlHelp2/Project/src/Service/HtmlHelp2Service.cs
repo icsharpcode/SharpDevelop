@@ -45,7 +45,7 @@ namespace HtmlHelp2.Environment
 		}
 
 		#region Properties
-		public static bool IsReady
+		public static bool SessionIsInitialized
 		{
 			get { return session != null; }
 		}
@@ -195,34 +195,6 @@ namespace HtmlHelp2.Environment
 			{
 				return defaultValue;
 			}
-//			string resultString = "";
-//
-//			try
-//			{
-//				IHxIndex namedUrlIndex = (IHxIndex)session.GetNavigationInterface("!DefaultNamedUrlIndex",
-//				                                                                  "",
-//				                                                                  ref IndexGuid);
-//				IHxTopicList topics = null;
-//
-//				topics = namedUrlIndex.GetTopicsFromString(pageName, 0);
-//
-//				if(topics.Count == 0 && (alternatePageName != null && alternatePageName != ""))
-//				{
-//					topics = namedUrlIndex.GetTopicsFromString(alternatePageName, 0);
-//				}
-//
-//				if(topics.Count > 0)
-//					resultString = topics.ItemAt(1).URL;
-//
-//				if (resultString == null || resultString.Length == 0)
-//					resultString = defaultValue;
-//
-//				return resultString;
-//			}
-//			catch
-//			{
-//				return defaultValue;
-//			}
 		}
 
 		public static IHxHierarchy GetTocHierarchy(string filterQuery)
@@ -303,23 +275,6 @@ namespace HtmlHelp2.Environment
 			{
 				return string.Empty;
 			}
-//			try
-//			{
-//				IHxRegFilter filter        = namespaceFilters.FindFilter(filterName);
-//				currentSelectedFilterQuery = (string)filter.GetProperty(HxRegFilterPropId.HxRegFilterQuery);
-//				currentSelectedFilterName  = filterName;
-//
-//				OnFilterQueryChanged(EventArgs.Empty);
-//
-//				ReloadFTSSystem();
-//				ReloadDynamicHelpSystem();
-//				ReloadDefaultPages();
-//				return currentSelectedFilterQuery;
-//			}
-//			catch
-//			{
-//				return "";
-//			}
 		}
 
 		public static IHxTopicList GetMatchingTopicsForDynamicHelp(string searchTerm)

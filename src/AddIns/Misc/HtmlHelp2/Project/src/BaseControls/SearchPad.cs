@@ -79,6 +79,27 @@ namespace HtmlHelp2
 		public HtmlHelp2SearchPad()
 		{
 			this.InitializeComponents();
+			this.UpdateControls();
+			
+			HtmlHelp2Environment.FilterQueryChanged += new EventHandler(FilterQueryChanged);
+			HtmlHelp2Environment.NamespaceReloaded  += new EventHandler(NamespaceReloaded);
+
+			ProjectService.SolutionLoaded        += this.SolutionLoaded;
+			ProjectService.SolutionClosed        += this.SolutionUnloaded;
+		}
+
+		private void UpdateControls()
+		{
+			titlesOnly.Enabled = HtmlHelp2Environment.SessionIsInitialized;
+			enableStemming.Enabled = HtmlHelp2Environment.SessionIsInitialized;
+			hiliteTopics.Enabled = HtmlHelp2Environment.SessionIsInitialized;
+			useCurrentLang.Enabled = HtmlHelp2Environment.SessionIsInitialized;
+			filterCombobox.Enabled = HtmlHelp2Environment.SessionIsInitialized;
+			searchTerm.Enabled = HtmlHelp2Environment.SessionIsInitialized;
+
+			searchTerm.Text = string.Empty;
+			searchTerm.Items.Clear();
+			filterCombobox.Items.Clear();
 		}
 
 		private void InitializeComponents()
@@ -102,13 +123,11 @@ namespace HtmlHelp2
 			titlesOnly.Width                      = pw;
 			titlesOnly.Top                        = searchButton.Top + searchButton.Height + 10;
 			titlesOnly.TextAlign                  = ContentAlignment.MiddleLeft;
-			titlesOnly.Enabled                    = HtmlHelp2Environment.IsReady;
 			titlesOnly.Font                       = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			enableStemming.Width                  = pw;
 			enableStemming.Top                    = titlesOnly.Top + titlesOnly.Height - 4;
 			enableStemming.TextAlign              = ContentAlignment.MiddleLeft;
-			enableStemming.Enabled                = HtmlHelp2Environment.IsReady;
 			enableStemming.Font                   = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			reuseMatches.Width                    = pw;
@@ -120,14 +139,12 @@ namespace HtmlHelp2
 			hiliteTopics.Width                    = pw;
 			hiliteTopics.Top                      = reuseMatches.Top + reuseMatches.Height - 4;
 			hiliteTopics.TextAlign                = ContentAlignment.MiddleLeft;
-			hiliteTopics.Enabled                  = HtmlHelp2Environment.IsReady;
 			hiliteTopics.Checked                  = true;
 			hiliteTopics.Font                     = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			useCurrentLang.Width                  = pw;
 			useCurrentLang.Top                    = hiliteTopics.Top + hiliteTopics.Height;
 			useCurrentLang.TextAlign              = ContentAlignment.MiddleLeft;
-			useCurrentLang.Enabled                = HtmlHelp2Environment.IsReady;
 			useCurrentLang.Visible                = ProjectService.CurrentProject != null;
 			useCurrentLang.Font                   = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
@@ -142,22 +159,18 @@ namespace HtmlHelp2
 			filterCombobox.Dock                   = DockStyle.Top;
 			filterCombobox.DropDownStyle          = ComboBoxStyle.DropDownList;
 			filterCombobox.Sorted                 = true;
-			filterCombobox.Enabled                = HtmlHelp2Environment.IsReady;
 			filterCombobox.Font                   = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			filterCombobox.SelectedIndexChanged  += new EventHandler(FilterChanged);
 			
-			if (HtmlHelp2Environment.IsReady)
+			if (HtmlHelp2Environment.SessionIsInitialized)
 			{
 				HtmlHelp2Environment.BuildFilterList(filterCombobox);
-				HtmlHelp2Environment.FilterQueryChanged += new EventHandler(FilterQueryChanged);
-				HtmlHelp2Environment.NamespaceReloaded  += new EventHandler(NamespaceReloaded);
 			}
 
 			// Filter label
 			mainPanel.Controls.Add(label1);
 			label1.Dock                           = DockStyle.Top;
 			label1.TextAlign                      = ContentAlignment.MiddleLeft;
-			label1.Enabled                        = HtmlHelp2Environment.IsReady;
 			label1.Font                           = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			// SearchTerm Combobox
@@ -169,19 +182,15 @@ namespace HtmlHelp2
 			searchTerm.Dock                       = DockStyle.Top;
 			searchTerm.TextChanged               += new EventHandler(SearchTextChanged);
 			searchTerm.KeyPress                  += new KeyPressEventHandler(KeyPressed);
-			searchTerm.Enabled                    = HtmlHelp2Environment.IsReady;
 			searchTerm.Font                       = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			mainPanel.Controls.Add(label2);
 			label2.Dock                           = DockStyle.Top;
 			label2.TextAlign                      = ContentAlignment.MiddleLeft;
-			label2.Enabled                        = HtmlHelp2Environment.IsReady;
 			label2.Font                           = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			this.RedrawContent();
 			
-			ProjectService.SolutionLoaded        += this.SolutionLoaded;
-			ProjectService.SolutionClosed        += this.SolutionUnloaded;
 		}
 
 		private void FilterChanged(object sender, EventArgs e)
@@ -210,11 +219,14 @@ namespace HtmlHelp2
 
 		private void NamespaceReloaded(object sender, EventArgs e)
 		{
-			searchTerm.Text                      = "";
-			searchTerm.Items.Clear();
-			filterCombobox.SelectedIndexChanged -= new EventHandler(FilterChanged);
-			HtmlHelp2Environment.BuildFilterList(filterCombobox);
-			filterCombobox.SelectedIndexChanged += new EventHandler(FilterChanged);
+			this.UpdateControls();
+			
+			if (HtmlHelp2Environment.SessionIsInitialized)
+			{
+				filterCombobox.SelectedIndexChanged -= new EventHandler(FilterChanged);
+				HtmlHelp2Environment.BuildFilterList(filterCombobox);
+				filterCombobox.SelectedIndexChanged += new EventHandler(FilterChanged);
+			}
 		}
 		#endregion
 
@@ -260,7 +272,7 @@ namespace HtmlHelp2
 
 		private void PerformFTS(string searchWord, bool useDynamicHelp)
 		{
-			if (!HtmlHelp2Environment.IsReady || string.IsNullOrEmpty(searchWord) || searchIsBusy)
+			if (!HtmlHelp2Environment.SessionIsInitialized || string.IsNullOrEmpty(searchWord) || searchIsBusy)
 			{
 				return;
 			}
@@ -344,7 +356,7 @@ namespace HtmlHelp2
 
 		public bool PerformF1FTS(string keyword, bool useDynamicHelp)
 		{
-			if (!HtmlHelp2Environment.IsReady || string.IsNullOrEmpty(keyword) || searchIsBusy)
+			if (!HtmlHelp2Environment.SessionIsInitialized || string.IsNullOrEmpty(keyword) || searchIsBusy)
 			{
 				return false;
 			}

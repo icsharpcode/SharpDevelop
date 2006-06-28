@@ -15,14 +15,15 @@ namespace HtmlHelp2.RegistryWalker
 
 	public sealed class Help2RegistryWalker
 	{
-		public static void BuildNamespacesList(ComboBox help2Collections, string selectedHelp2Collection)
+		public static bool BuildNamespacesList(ComboBox help2Collections, string selectedHelp2Collection)
 		{
 			if (help2Collections == null)
 			{
-				return;
+				return false;
 			}
 			help2Collections.Items.Clear();
 			help2Collections.BeginUpdate();
+			bool result = true;
 
 			try
 			{
@@ -36,7 +37,7 @@ namespace HtmlHelp2.RegistryWalker
 						((string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription));
 
 					if (!string.IsNullOrEmpty(selectedHelp2Collection) &&
-					    string.Compare(selectedHelp2Collection, currentNamespace.Name) == 0)
+					     string.Compare(selectedHelp2Collection, currentNamespace.Name) == 0)
 					{
 						currentDescription =
 							(string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription);
@@ -48,12 +49,16 @@ namespace HtmlHelp2.RegistryWalker
 				else
 					help2Collections.SelectedIndex = 0;
 			}
-			catch(Exception ex)
+			catch
 			{
-				LoggingService.Error("Help 2.0: Cannot build namespaces list;", ex);
+				result = false;
+			}
+			finally
+			{
+				help2Collections.EndUpdate();
 			}
 
-			help2Collections.EndUpdate();
+			return result;
 		}
 
 		public static string GetNamespaceName(string description)

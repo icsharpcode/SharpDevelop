@@ -24,11 +24,12 @@ namespace HtmlHelp2.OptionsPanel
 	{
 		ComboBox help2Collections = null;
 		CheckBox tocPictures = null;
-		string selectedHelp2Collection = HtmlHelp2Environment.DefaultNamespaceName;
+		string selectedHelp2Collection = string.Empty;
 
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("HtmlHelp2.Resources.HtmlHelp2Options.xfrm"));
+			SetupFromXmlStream
+				(this.GetType().Assembly.GetManifestResourceStream("HtmlHelp2.Resources.HtmlHelp2Options.xfrm"));
 			this.InitializeComponents();
 		}
 
@@ -41,22 +42,18 @@ namespace HtmlHelp2.OptionsPanel
 
 		private void InitializeComponents()
 		{
-			try
-			{
-				help2Collections = (ComboBox)ControlDictionary["help2Collections"];
-				help2Collections.Enabled = HtmlHelp2Environment.IsReady;
-				help2Collections.SelectedIndexChanged += new EventHandler(this.NamespaceNameChanged);
-				selectedHelp2Collection = HtmlHelp2Environment.CurrentSelectedNamespace;
+			selectedHelp2Collection = HtmlHelp2Environment.CurrentSelectedNamespace;
 
-				tocPictures = (CheckBox)ControlDictionary["tocPictures"];
-				tocPictures.Enabled = HtmlHelp2Environment.IsReady;
-				tocPictures.Checked = HtmlHelp2Environment.Config.TocPictures;
-				
-				Help2RegistryWalker.BuildNamespacesList(help2Collections, selectedHelp2Collection);
-			}
-			catch(Exception ex)
+			help2Collections = (ComboBox)ControlDictionary["help2Collections"];
+			help2Collections.SelectedIndexChanged += new EventHandler(this.NamespaceNameChanged);
+
+			tocPictures = (CheckBox)ControlDictionary["tocPictures"];
+			tocPictures.Checked = HtmlHelp2Environment.Config.TocPictures;
+			
+			if (!Help2RegistryWalker.BuildNamespacesList(help2Collections, selectedHelp2Collection))
 			{
-				LoggingService.Error("Help 2.0: Cannot initialize options panel; " + ex.Message);
+				help2Collections.Enabled = false;
+				tocPictures.Enabled = false;
 			}
 		}
 

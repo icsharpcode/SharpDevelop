@@ -63,7 +63,6 @@ namespace HtmlHelp2
 
 			listView.FullRowSelect     = true;
 			listView.AutoArrange       = true;
-			listView.Enabled           = HtmlHelp2Environment.IsReady;
 			listView.Alignment         = ListViewAlignment.Left;
 			listView.View              = View.Details;
 			listView.Dock              = DockStyle.Fill;

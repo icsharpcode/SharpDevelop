@@ -114,7 +114,7 @@ namespace HtmlHelp2
 		
 		private bool CallDynamicHelp(string searchTerm, bool keywordSearch)
 		{
-			if (!HtmlHelp2Environment.IsReady || HtmlHelp2Environment.DynamicHelpIsBusy)
+			if (!HtmlHelp2Environment.SessionIsInitialized || HtmlHelp2Environment.DynamicHelpIsBusy)
 			{
 				return false;
 			}
@@ -363,7 +363,6 @@ namespace HtmlHelp2
 			dynamicHelpToolbar.AllowItemReorder          = false;
 			dynamicHelpToolbar.ShowItemToolTips          = false;
 			dynamicHelpToolbar.GripStyle                 = ToolStripGripStyle.Hidden;
-			dynamicHelpToolbar.Enabled                   = HtmlHelp2Environment.IsReady;
 			for (int i = 0; i < toolbarButtons.Length; i++)
 			{
 				ToolStripButton button = new ToolStripButton();
@@ -382,7 +381,7 @@ namespace HtmlHelp2
 			dynamicHelpToolbar.ImageList.Images.Add(ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Index.png"));
 			dynamicHelpToolbar.ImageList.Images.Add(ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Search.png"));
 
-			if (HtmlHelp2Environment.IsReady)
+			if (HtmlHelp2Environment.SessionIsInitialized)
 			{
 				HtmlHelp2Environment.NamespaceReloaded   += new EventHandler(this.NamespaceReloaded);
 			}
@@ -390,11 +389,6 @@ namespace HtmlHelp2
 
 		public void LoadDynamicHelpPage()
 		{
-			if (!HtmlHelp2Environment.IsReady)
-			{
-				return;
-			}
-
 			string url = String.Format("res://{0}/context", Assembly.GetExecutingAssembly().Location);
 			axWebBrowser.Navigate(url);
 		}

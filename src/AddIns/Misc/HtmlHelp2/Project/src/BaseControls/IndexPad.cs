@@ -61,9 +61,10 @@ namespace HtmlHelp2
 		ComboBox searchTerm = new ComboBox();
 		Label label1 = new Label();
 		Label label2 = new Label();
+		Label infoLabel = new Label();
+		bool indexControlFailed = false;
 		bool itemClicked = false;
-		bool isEnabled = false;
-	
+
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
@@ -75,10 +76,47 @@ namespace HtmlHelp2
 
 		public MsHelp2IndexControl()
 		{
-			this.isEnabled = (HtmlHelp2Environment.IsReady &&
-			                  Help2ControlsValidation.IsIndexControlRegistered);
+			this.InitializeComponents();
+			this.UpdateControls();
 
-			if (this.isEnabled)
+			HtmlHelp2Environment.FilterQueryChanged += new EventHandler(this.FilterQueryChanged);
+			HtmlHelp2Environment.NamespaceReloaded += new EventHandler(this.NamespaceReloaded);
+		}
+
+		private void UpdateControls()
+		{
+			filterCombobox.Enabled =
+				(HtmlHelp2Environment.SessionIsInitialized && !this.indexControlFailed);
+			searchTerm.Enabled =
+				(HtmlHelp2Environment.SessionIsInitialized && !this.indexControlFailed);
+			infoLabel.Visible = false;
+
+			if (this.indexControlFailed)
+			{
+				this.ShowInfoMessage
+					(StringParser.Parse("${res:AddIns.HtmlHelp2.HelpSystemNotAvailable}"));
+			}
+			else if (!HtmlHelp2Environment.SessionIsInitialized)
+			{
+				if (indexControl != null) indexControl.Visible = false;
+				this.ShowInfoMessage
+					("${res:AddIns.HtmlHelp2.HelpCollectionMayBeEmpty}");
+			}
+			else
+			{
+				indexControl.Visible = true;
+				this.LoadIndex();
+			}
+		}
+		
+		private void InitializeComponents()
+		{
+			infoLabel.Dock = DockStyle.Fill;
+			infoLabel.Visible = false;
+			infoLabel.TextAlign = ContentAlignment.MiddleCenter;
+			Controls.Add(infoLabel);
+
+			if (Help2ControlsValidation.IsIndexControlRegistered)
 			{
 				try
 				{
@@ -93,17 +131,18 @@ namespace HtmlHelp2
 					indexControl.BorderStyle = HxBorderStyle.HxBorderStyle_FixedSingle;
 					indexControl.FontSource = HxFontSourceConstant.HxFontExternal;
 				}
+				catch (System.Runtime.InteropServices.COMException ex)
+				{
+					LoggingService.Error("Help 2.0: Index control failed; " + ex.ToString());
+					this.indexControlFailed = true;
+				}
 				catch (Exception ex)
 				{
 					LoggingService.Error("Help 2.0: Index control failed; " + ex.ToString());
-					this.FakeHelpControl();
+					this.indexControlFailed = true;
 				}
 			}
-			else
-			{
-				this.FakeHelpControl();
-			}
-			
+
 			Panel panel1 = new Panel();
 			Controls.Add(panel1);
 			panel1.Dock = DockStyle.Top;
@@ -113,14 +152,13 @@ namespace HtmlHelp2
 			filterCombobox.Dock = DockStyle.Top;
 			filterCombobox.DropDownStyle = ComboBoxStyle.DropDownList;
 			filterCombobox.Sorted = true;
-			filterCombobox.Enabled = this.isEnabled;
+			filterCombobox.Enabled = false;
 			filterCombobox.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			filterCombobox.SelectedIndexChanged += new EventHandler(this.FilterChanged);
 
 			Controls.Add(label1);
 			label1.Dock = DockStyle.Top;
 			label1.TextAlign = ContentAlignment.MiddleLeft;
-			label1.Enabled = this.isEnabled;
 			label1.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			Panel panel2 = new Panel();
@@ -130,7 +168,7 @@ namespace HtmlHelp2
 
 			panel2.Controls.Add(searchTerm);
 			searchTerm.Dock = DockStyle.Top;
-			searchTerm.Enabled = this.isEnabled;
+			searchTerm.Enabled = false;
 			searchTerm.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			searchTerm.TextChanged += new EventHandler(this.SearchTextChanged);
 			searchTerm.KeyPress += new KeyPressEventHandler(this.SearchKeyPress);
@@ -138,30 +176,20 @@ namespace HtmlHelp2
 			Controls.Add(label2);
 			label2.Dock = DockStyle.Top;
 			label2.TextAlign = ContentAlignment.MiddleLeft;
-			label2.Enabled = this.isEnabled;
 			label2.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
 			this.RedrawContent();
 
-			if (this.isEnabled)
-			{
-				HtmlHelp2Environment.FilterQueryChanged += new EventHandler(this.FilterQueryChanged);
-				HtmlHelp2Environment.NamespaceReloaded += new EventHandler(this.NamespaceReloaded);
-				this.LoadIndex();
-			}
+			this.indexControlFailed = (this.indexControlFailed || indexControl == null);
 		}
 
-		private void FakeHelpControl()
+		private void ShowInfoMessage(string infoText)
 		{
-			if (indexControl != null) indexControl.Dispose();
-			indexControl = null;
-
-			Controls.Clear();
-			Label nohelpLabel = new Label();
-			nohelpLabel.Dock = DockStyle.Fill;
-			nohelpLabel.Text = StringParser.Parse("${res:AddIns.HtmlHelp2.HelpSystemNotAvailable}");
-			nohelpLabel.TextAlign = ContentAlignment.MiddleCenter;
-			Controls.Add(nohelpLabel);
+			filterCombobox.Items.Clear();
+			searchTerm.Items.Clear();
+			searchTerm.Text = string.Empty;
+			infoLabel.Text = infoText;
+			infoLabel.Visible = true;
 		}
 
 		public void RedrawContent()
@@ -223,8 +251,7 @@ namespace HtmlHelp2
 	
 		private void LoadIndex()
 		{
-			this.SetIndex(HtmlHelp2Environment.CurrentFilterName);
-			if (this.isEnabled)
+			if (this.SetIndex(HtmlHelp2Environment.CurrentFilterName))
 			{
 				searchTerm.Text = string.Empty;
 				searchTerm.Items.Clear();
@@ -234,24 +261,18 @@ namespace HtmlHelp2
 			}
 		}
 
-		private void SetIndex(string filterName)
+		private bool SetIndex(string filterName)
 		{
-			if (!this.isEnabled) return;
 			try
 			{
 				indexControl.IndexData =
 					HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.FindFilterQuery(filterName));
+				return true;
 			}
 			catch
 			{
-				this.isEnabled = false;
-				indexControl.Enabled = false;
-				indexControl.BackColor = SystemColors.ButtonFace;
-				filterCombobox.Enabled = false;
-				searchTerm.Enabled = false;
-				label1.Enabled = false;
-				label2.Enabled = false;
 				LoggingService.Error("Help 2.0: cannot connect to IHxIndex interface (Index)");
+				return false;
 			}
 		}
 
@@ -325,13 +346,8 @@ namespace HtmlHelp2
 
 		private void NamespaceReloaded(object sender, EventArgs e)
 		{
-			this.LoadIndex();
+			this.UpdateControls();
 		}
 		#endregion
-
-		public bool IsEnabled
-		{
-			get { return this.isEnabled; }
-		}
 	}
 }
