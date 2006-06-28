@@ -148,7 +148,6 @@
     <Folder Include="Globals" />
     <Folder Include="Interfaces" />
     <Folder Include="Printing" />
-    <Folder Include="Printing\Formatter" />
     <Folder Include="Printing\Graphics" />
     <Folder Include="Printing\Text" />
     <Folder Include="Visitors" />
