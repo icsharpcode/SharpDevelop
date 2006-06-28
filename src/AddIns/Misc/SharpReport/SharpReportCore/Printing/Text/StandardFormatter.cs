@@ -21,6 +21,8 @@ namespace SharpReportCore {
 		public StandardFormatter() {
 		}
 		
+		//TODO why not TypeCode tc = Type.GetTypeCode( Type.GetType(this.dataType));
+		
 		public string FormatItem (string valueToFormat,string formatString,
 		                         TypeCode typeCode,string nullValue) {
 			string retValue = String.Empty;

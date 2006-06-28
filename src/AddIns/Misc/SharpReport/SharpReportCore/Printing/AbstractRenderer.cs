@@ -291,23 +291,6 @@ namespace SharpReportCore {
 			return drawPoint.Y;
 		}
 		
-	
-		// Called by FormatOutPutEvent of the BaseReportItem
-		/*
-		void FormatBaseReportItem (object sender, FormatOutputEventArgs rpea) {
-			BaseDataItem baseDataItem = sender as BaseDataItem;
-			
-			if (baseDataItem != null) {
-				if (!String.IsNullOrEmpty(baseDataItem.FormatString)) {
-					
-					rpea.FormatedValue = standartFormatter.FormatItem (baseDataItem);
-				} else {
-					rpea.FormatedValue = rpea.ValueToFormat;
-				}
-			}
-		}
-		*/
-		
 		#region privates
 		protected void FitSectionToItems (BaseSection section,ReportPageEventArgs rpea){
 			if (section == null) {
