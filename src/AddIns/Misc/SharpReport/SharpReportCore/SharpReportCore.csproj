@@ -130,7 +130,7 @@
     <Compile Include="BaseItems\TableItem.cs" />
     <Compile Include="Exceptions\IllegalQueryException.cs" />
     <Compile Include="Events\SectionRenderEventArgs.cs" />
-    <Compile Include="Printing\Text\StandartFormatter.cs" />
+    <Compile Include="Printing\Text\StandardFormatter.cs" />
     <Compile Include="BaseClasses\DataTypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
