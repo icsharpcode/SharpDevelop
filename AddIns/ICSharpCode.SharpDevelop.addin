@@ -1724,6 +1724,10 @@
 			          icon = "Icons.16x16.FindNextIcon"
 			          shortcut = "F3"
 			          class = "SearchAndReplace.FindNext"/>
+			<MenuItem id = "FindNextSelected"
+			          label = "${res:XML.MainMenu.SearchMenu.FindNextSelected}"
+			          shortcut = "Control|F3"
+			          class = "SearchAndReplace.FindNextSelected"/>			
 			<MenuItem id = "Replace"
 			          label = "${res:XML.MainMenu.SearchMenu.Replace}"
 			          icon = "Icons.16x16.ReplaceIcon"
