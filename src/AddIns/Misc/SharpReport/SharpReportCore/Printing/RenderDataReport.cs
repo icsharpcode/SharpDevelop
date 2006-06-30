@@ -93,7 +93,7 @@ namespace SharpReportCore {
 		
 		private void DoPageEnd (ReportPageEventArgs rpea){
 //			System.Console.WriteLine("DataRenderer:DoPageEnd");
-			base.MeasurePageEnd (rpea);
+			base.MeasurePageFooter (rpea);
 			base.RenderSection (rpea);
 			base.DoItems(rpea);
 		}

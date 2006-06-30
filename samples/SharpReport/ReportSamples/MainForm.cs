@@ -85,6 +85,7 @@ namespace ReportSamples
 			}
 		}
 		
+		#region unbound
 		private void OpenUnbound() {
 			try{
 				OpenFileDialog dg = new OpenFileDialog();
@@ -92,8 +93,8 @@ namespace ReportSamples
 				dg.Title = "Select a report file: ";
 				if (dg.ShowDialog() == DialogResult.OK){
 					SharpReportCore.SharpReportEngine mn = new SharpReportCore.SharpReportEngine();
-					mn.SectionRendering += new EventHandler<SectionRenderEventArgs>(OnTestPrinting);
-					mn.SectionRendered += new EventHandler<SectionRenderEventArgs>(OnTestPrinted);
+					mn.SectionRendering += new EventHandler<SectionRenderEventArgs>(UnboundPrinting);
+					mn.SectionRendered += new EventHandler<SectionRenderEventArgs>(UnboundPrinted);
 					mn.PreviewStandartReport(dg.FileName.ToString());
 					
 				}
@@ -103,18 +104,19 @@ namespace ReportSamples
 			}
 		}
 		
-		private void OnTestPrinting (object sender,SectionRenderEventArgs e) {
-			System.Console.WriteLine("");
-			System.Console.WriteLine("--------------");
-			System.Console.WriteLine("MainForm:OnTestPrinting on PageNr <{0}>",e.PageNumber);
-			System.Console.WriteLine("\t SectionInUse <{0}>",e.CurrentSection);
-			System.Console.WriteLine("\t <{0}> Items",e.Section.Items.Count);
-
-		
+		private void UnboundPrinting (object sender,SectionRenderEventArgs e) {
+//			System.Console.WriteLine("");
+//			System.Console.WriteLine("--------------");
+//			System.Console.WriteLine("MainForm:OnTestPrinting <{0}> for PageNr <{1}>",e.CurrentSection,e.PageNumber);
+//			System.Console.WriteLine("\t <{0}> Items",e.Section.Items.Count);
+//
+//		
 			switch (e.CurrentSection) {
 				case GlobalEnums.enmSection.ReportHeader:
-					System.Console.WriteLine("I found the ReportHeader");
+					System.Console.WriteLine("\tI found the ReportHeader");
 					break;
+				
+				
 				case GlobalEnums.enmSection.ReportPageHeader:
 					
 					BaseTextItem t = (BaseTextItem)e.Section.Items.Find("reportTextItem1");
@@ -131,13 +133,23 @@ namespace ReportSamples
 						bb.DbValue = "Hello World";
 					}
 					
-					System.Console.WriteLine("I found the Pageheader");
+					System.Console.WriteLine("\tI found the Pageheader");
 					break;
+				
 				case GlobalEnums.enmSection.ReportDetail:
-					System.Console.WriteLine("I found the ReportDetail");
+					System.Console.WriteLine("\tI found the ReportDetail");
+					BaseDataItem bdi = (BaseDataItem)e.Section.Items.Find("reportDbTextItem1");
+					if (bdi != null) {
+						bdi.BackColor = Color.LightGray;
+						bdi.Location = new Point(200,5);
+						bdi.DbValue = "Unbound Field in DetailSection";
+					}
+					
+					
 					break;
+				
 				case GlobalEnums.enmSection.ReportPageFooter:
-					System.Console.WriteLine("I found the PageFooter");
+					System.Console.WriteLine("\tI found the PageFooter");
 					BaseReportItem b = (BaseReportItem)e.Section.Items.Find("pageNumber1");
 					if (b != null) {
 						b.BackColor = Color.AliceBlue;
@@ -146,20 +158,25 @@ namespace ReportSamples
 						MessageBox.Show (s);
 					}
 					break;
+				
 				case GlobalEnums.enmSection.ReportFooter:
-					System.Console.WriteLine("I found the ReportFooter");
+					System.Console.WriteLine("\tI found the ReportFooter");
 					break;
+				
 				default:
-					
 					break;
 			}
 			System.Console.WriteLine("");
 		}
 		
-		private void OnTestPrinted (object sender,SectionRenderEventArgs e) {
-			System.Console.WriteLine("MainForm:OnTestPrinted for <{0}>",e.CurrentSection);
+		private void UnboundPrinted (object sender,SectionRenderEventArgs e) {
+//			System.Console.WriteLine("MainForm:Rendering done for  <{0}>",e.CurrentSection);
 			System.Console.WriteLine("----------");
 		}
+		
+		#endregion
+		
+		
 		
 		///<summary>Preferd Method to initialise the <see cref="SharpReportCore.ConnectionObject"></see>
 		/// hav a look to
@@ -274,6 +291,17 @@ namespace ReportSamples
 		void UnboundToolStripMenuItem1Click(object sender, System.EventArgs e)
 		{
 			this.OpenUnbound();
+		}
+		
+		void UnboundPullModelToolStripMenuItemClick(object sender, System.EventArgs e){
+			SimpleUnboundPullModel sm = new SimpleUnboundPullModel();
+			sm.Run();
+		}
+		
+		void MultipageUnboundPullModelToolStripMenuItemClick(object sender, System.EventArgs e)
+		{
+			MultiPageUnboundPullModel mp = new MultiPageUnboundPullModel();
+			mp.Run();
 		}
 	}
 }

@@ -65,7 +65,7 @@ namespace SharpReportCore {
 			reportDocument.QueryPageSettings += new QueryPageSettingsEventHandler (ReportQueryPage);
 			reportDocument.BeginPrint += new PrintEventHandler(ReportBegin);
 			reportDocument.EndPrint += new PrintEventHandler(ReportEnd);
-			
+reportDocument.PrintPage += new PrintPageEventHandler(testPageStart);
 			// homemade events
 			reportDocument.PrintPageBodyStart += new EventHandler<ReportPageEventArgs> (BodyStart);
 			
@@ -234,6 +234,7 @@ namespace SharpReportCore {
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
+			System.Console.WriteLine("MeasurePageHeader");
 			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader,
 			                               CultureInfo.InvariantCulture);
 
@@ -248,13 +249,15 @@ namespace SharpReportCore {
 			                   this.CurrentSection.SectionOffset + this.CurrentSection.Size.Height + Gap);
 		}
 		
-		protected PointF  MeasurePageEnd (ReportPageEventArgs e) {
+		protected PointF  MeasurePageFooter (ReportPageEventArgs e) {
+			System.Console.WriteLine("MeasurePageFooter");
 			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageFooter,
 			                               CultureInfo.InvariantCulture);
 			this.CurrentSection.SectionOffset = reportSettings.PageSettings.Bounds.Height - reportSettings.DefaultMargins.Top - reportSettings.DefaultMargins.Bottom;
 			FitSectionToItems (this.CurrentSection,e);
 			this.DetailEnds = new Point (0,this.CurrentSection.SectionOffset);
 			return new PointF(0,this.CurrentSection.SectionOffset);
+//			return this.DetailEnds;
 		}
 		
 		
@@ -382,7 +385,9 @@ namespace SharpReportCore {
 		
 		
 		#region virtuals
-		
+		protected virtual void testPageStart (object sender, PrintPageEventArgs e) {
+			System.Console.WriteLine("PAGESTART");
+		}
 		protected virtual void ReportQueryPage (object sender,QueryPageSettingsEventArgs qpea) {
 			qpea.PageSettings.Margins = reportSettings.DefaultMargins;
 		}

@@ -49,6 +49,7 @@ namespace SharpReportCore {
 		
 		#region Draw the different report Sections
 		private PointF DoReportHeader (ReportPageEventArgs rpea){
+			System.Console.WriteLine("\t ReportHeader");
 			PointF endAt = base.MeasureReportHeader (rpea);
 			base.RenderSection (rpea);
 
@@ -61,21 +62,24 @@ namespace SharpReportCore {
 		}
 		
 		private PointF DoPageHeader (PointF startAt,ReportPageEventArgs rpea){
-			
+System.Console.WriteLine("\t PageHeader");
 			PointF endAt = base.MeasurePageHeader (startAt,rpea);
 			base.RenderSection (rpea);
 			return endAt;
 		}
 		
 		private void DoPageEnd (ReportPageEventArgs rpea){
+			
 			base.PrintPageEnd(this,rpea);
-			base.MeasurePageEnd (rpea);
+			base.MeasurePageFooter (rpea);
 			base.RenderSection (rpea);
-
 		}
+		
+		
 		
 		//TODO how should we handle ReportFooter, print it on an seperate page ????
 		private void  DoReportFooter (PointF startAt,ReportPageEventArgs rpea){
+			System.Console.WriteLine("\t ReportFooter");
 			base.MeasureReportFooter(rpea);
 			base.RenderSection (rpea);
 			this.RemoveSectionEvents();
@@ -83,19 +87,44 @@ namespace SharpReportCore {
 		
 		#endregion
 		
-		#region test
+		#region print all the sections
 		
 		protected override void PrintReportHeader (object sender, ReportPageEventArgs e) {
+			System.Console.WriteLine("PRINT REPORTHEADER");
 			base.PrintReportHeader (sender,e);
 			this.currentPoint = DoReportHeader (e);
 		}
 		
 		protected override void PrintPageHeader (object sender, ReportPageEventArgs e) {
+			System.Console.WriteLine("PRINT PAGEHEDER");
 			base.PrintPageHeader (sender,e);
 			this.currentPoint = DoPageHeader (this.currentPoint,e);
 			base.DetailStart = new Point ((int)currentPoint.X,(int)currentPoint.Y);
 		}
 		
+		protected override void PrintDetail(object sender, ReportPageEventArgs rpea){
+			base.PrintDetail(sender, rpea);
+			System.Console.WriteLine("PRINT DETAIL");
+			base.RenderSection(rpea);
+			base.RemoveSectionEvents();
+		}
+		
+		protected override void PrintReportFooter(object sender, ReportPageEventArgs rpea){
+			System.Console.WriteLine("PRINT REPORTFOOTER");
+			base.PrintReportFooter(sender, rpea);
+			base.RenderSection(rpea);
+			base.RemoveSectionEvents();
+		}
+		
+		/// <summary>
+		/// Print the PageFooter 
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		protected override void PrintPageEnd(object sender, ReportPageEventArgs rpea) {
+			System.Console.WriteLine("PRINTPAGEEND");
+			this.DoPageEnd (rpea);
+		}
 		#endregion
 		
 		
@@ -115,15 +144,6 @@ namespace SharpReportCore {
 			base.RenderSection (rpea);
 
 		}
-		/// <summary>
-		/// Print the PageFooter 
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		protected override void PrintPageEnd(object sender, ReportPageEventArgs rpea) {
-			this.DoPageEnd (rpea);
-		}
-		
 		
 		
 		protected override void OnBodyEnd (object sender,ReportPageEventArgs rpea) {

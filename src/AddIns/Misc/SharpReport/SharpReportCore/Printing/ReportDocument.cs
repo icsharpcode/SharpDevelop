@@ -64,6 +64,7 @@ namespace SharpReportCore {
 //				this.OnEndPrint (new PrintEventArgs());
 			}
 		}
+
 		
 		protected override void OnEndPrint(PrintEventArgs e){
 			base.OnEndPrint(e);
