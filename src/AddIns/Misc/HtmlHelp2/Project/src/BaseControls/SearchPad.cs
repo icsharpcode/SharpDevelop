@@ -100,6 +100,11 @@ namespace HtmlHelp2
 			searchTerm.Text = string.Empty;
 			searchTerm.Items.Clear();
 			filterCombobox.Items.Clear();
+			
+			if (HtmlHelp2Environment.SessionIsInitialized)
+			{
+				HtmlHelp2Environment.BuildFilterList(filterCombobox);
+			}
 		}
 
 		private void InitializeComponents()
@@ -161,11 +166,6 @@ namespace HtmlHelp2
 			filterCombobox.Sorted                 = true;
 			filterCombobox.Font                   = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			filterCombobox.SelectedIndexChanged  += new EventHandler(FilterChanged);
-			
-			if (HtmlHelp2Environment.SessionIsInitialized)
-			{
-				HtmlHelp2Environment.BuildFilterList(filterCombobox);
-			}
 
 			// Filter label
 			mainPanel.Controls.Add(label1);

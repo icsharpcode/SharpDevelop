@@ -42,7 +42,7 @@ namespace HtmlHelp2.OptionsPanel
 
 		private void InitializeComponents()
 		{
-			selectedHelp2Collection = HtmlHelp2Environment.CurrentSelectedNamespace;
+			selectedHelp2Collection = HtmlHelp2Environment.DefaultNamespaceName;
 
 			help2Collections = (ComboBox)ControlDictionary["help2Collections"];
 			help2Collections.SelectedIndexChanged += new EventHandler(this.NamespaceNameChanged);

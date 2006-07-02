@@ -50,11 +50,6 @@ namespace HtmlHelp2.Environment
 			get { return session != null; }
 		}
 
-		public static string CurrentSelectedNamespace
-		{
-			get { return DefaultNamespaceName; }
-		}
-
 		public static string CurrentFilterQuery
 		{
 			get { return currentSelectedFilterQuery; }
@@ -213,6 +208,10 @@ namespace HtmlHelp2.Environment
 
 		public static void BuildFilterList(ComboBox filterCombobox)
 		{
+			if (filterCombobox == null)
+			{
+				return;
+			}
 			filterCombobox.Items.Clear();
 			filterCombobox.BeginUpdate();
 

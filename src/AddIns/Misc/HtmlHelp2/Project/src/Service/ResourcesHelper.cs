@@ -14,12 +14,7 @@ namespace HtmlHelp2.ResourcesHelperClass
 
 	public sealed class ResourcesHelper
 	{
-		static ResourcesHelper instance;
-
-		static ResourcesHelper()
-		{
-			instance = new ResourcesHelper();
-		}
+		static ResourcesHelper instance = new ResourcesHelper();
 
 		public static Bitmap GetBitmap(string resourceName)
 		{
