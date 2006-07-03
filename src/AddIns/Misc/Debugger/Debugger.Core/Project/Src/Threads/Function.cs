@@ -114,7 +114,17 @@ namespace Debugger
 					if (this.HasExpired) {
 						return new UnavailableValue(debugger, "Function has expired");
 					} else {
-						return new ObjectValue(debugger, CorILFrame.GetArgument(0), ContaingClass);
+						try {
+							return new ObjectValue(debugger, CorILFrame.GetArgument(0), ContaingClass);
+						} catch (COMException e) {
+							// System.Runtime.InteropServices.COMException (0x80131304): An IL variable is not available at the current native IP.
+							// See Forum-8640
+							if ((uint)e.ErrorCode == 0x80131304) {
+								return new UnavailableValue(debugger, "Not available in the current state");
+							} else {
+								throw;
+							}
+						}
 					}
 				}
 			}
