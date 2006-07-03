@@ -135,6 +135,7 @@ namespace Debugger
 			pauseSession = null;
 			
 			pendingEvalsCollection.Clear();
+			evaluating = false;
 			
 			TraceMessage("Reset done");
 			

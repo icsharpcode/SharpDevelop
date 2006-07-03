@@ -330,5 +330,12 @@ namespace Debugger
 				return null;
 			}
 		}
+		
+		public bool IsLastFunctionNative {
+			get {
+				process.AssertPaused();
+				return corThread.ActiveChain.IsManaged == 0;
+			}
+		}
 	}
 }

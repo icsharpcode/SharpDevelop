@@ -116,6 +116,15 @@ namespace Debugger
 		{
 			debugger.AssertPaused();
 			
+			if (targetThread.IsLastFunctionNative) {
+				error = "Can not evaluate because native frame is on top of stack";
+				evalState = EvalState.Error;
+				if (EvalComplete != null) {
+					EvalComplete(this, new EvalEventArgs(this));
+				}
+				return false;
+			}
+			
 			ICorDebugValue[] args = getArgs();
 			
 			if (args == null) {
