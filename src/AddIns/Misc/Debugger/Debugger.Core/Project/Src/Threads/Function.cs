@@ -29,8 +29,7 @@ namespace Debugger
 		
 		bool steppedOut = false;
 		Thread thread;
-		uint chainIndex;
-		uint frameIndex;
+		FrameID frameID;
 		
 		MethodProps methodProps;
 		
@@ -42,7 +41,7 @@ namespace Debugger
 
 		public string Name { 
 			get { 
-				return methodProps.Name; // + "(" + chainIndex.ToString() + ", " + frameIndex.ToString() + ")";
+				return methodProps.Name;
 			} 
 		}
 		
@@ -100,6 +99,7 @@ namespace Debugger
 		{
 			if (!steppedOut) {
 				steppedOut = true;
+				debugger.TraceMessage("Function " + this.ToString() + " expired");
 				if (Expired != null) {
 					Expired(this, e);
 				}
@@ -130,37 +130,35 @@ namespace Debugger
 			}
 		}
 		
-		internal Function(Thread thread, uint chainIndex, uint frameIndex, ICorDebugILFrame corILFrame)
+		internal Function(Thread thread, FrameID frameID, ICorDebugILFrame corILFrame)
 		{
 			this.debugger = thread.Debugger;
 			this.thread = thread;
-			this.chainIndex = chainIndex;
-			this.frameIndex = frameIndex;
+			this.frameID = frameID;
 			this.CorILFrame = corILFrame;
 			corFunction = corILFrame.Function;
 			module = debugger.GetModule(corFunction.Module);
 			
 			methodProps = module.MetaData.GetMethodProps(corFunction.Token);
 			
-			AddTrackingStepper();
-		}
-		
-		internal void AddTrackingStepper()
-		{
-			// Expiry the function when it is finished
+			// Force some callback when function steps out so that we can expire it
 			stepOutStepper = new Stepper(this, "Function Tracker");
 			stepOutStepper.StepOut();
 			stepOutStepper.PauseWhenComplete = false;
-			stepOutStepper.StepComplete += delegate {
-				OnExpired(EventArgs.Empty);
-			};
+			
+			debugger.TraceMessage("Function " + this.ToString() + " created");
+		}
+		
+		public override string ToString()
+		{
+			return methodProps.Name + "(" + frameID.ToString() + ")";
 		}
 		
 		internal ICorDebugILFrame CorILFrame {
 			get {
 				if (HasExpired) throw new DebuggerException("Function has expired");
 				if (corILFramePauseSession != debugger.PauseSession) {
-					CorILFrame = thread.GetFrameAt(chainIndex, frameIndex).As<ICorDebugILFrame>();
+					CorILFrame = thread.GetFrameAt(frameID).As<ICorDebugILFrame>();
 				}
 				return corILFrame;
 			}
@@ -213,8 +211,7 @@ namespace Debugger
 
 		public void StepOut()
 		{
-			Stepper stepper = new Stepper(this);
-			stepper.StepOut();
+			new Stepper(this, "Function step out").StepOut();
 			debugger.Continue();
 		}
 
@@ -231,18 +228,14 @@ namespace Debugger
 				throw new DebuggerException("Unable to step. Next statement not aviable");
 			}
 			
-			Stepper stepper;
-			
 			if (stepIn) {
-				stepper = new Stepper(this);
-				stepper.StepIn(nextSt.StepRanges);
+				new Stepper(this, "Function step in").StepIn(nextSt.StepRanges);
+				// Without JMC step in which ends in code without symblols is cotinued.
+				// The next step over ensures that we at least do step over.
+				new Stepper(this, "Safety step over").StepOver(nextSt.StepRanges);
+			} else {
+				new Stepper(this, "Function step over").StepOver(nextSt.StepRanges);
 			}
-			
-			// Without JMC step in which ends in code without symblols is cotinued.
-			// The next step over ensures that we at least do step over.
-			
-			stepper = new Stepper(this);
-			stepper.StepOver(nextSt.StepRanges);
 			
 			debugger.Continue();
 		}

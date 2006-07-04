@@ -15,9 +15,12 @@ namespace Debugger.Wrappers.CorDebug
 	{
 		public IEnumerable<ICorDebugFrame> Enumerator {
 			get {
+				Reset();
+				uint index = this.Count - 1;
 				while (true) {
 					ICorDebugFrame corFrame = Next();
 					if (corFrame != null) {
+						corFrame.Index = index--;
 						yield return corFrame;
 					} else {
 						break;

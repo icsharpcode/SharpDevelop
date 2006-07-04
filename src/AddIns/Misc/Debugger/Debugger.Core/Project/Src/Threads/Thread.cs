@@ -179,81 +179,58 @@ namespace Debugger
 			get {
 				process.AssertPaused();
 				
-				ICorDebugChainEnum corChainEnum = corThread.EnumerateChains();
-				uint chainIndex = corChainEnum.Count;
-				foreach(ICorDebugChain corChain in corChainEnum.Enumerator) {
-					chainIndex--;
-					
+				foreach(ICorDebugChain corChain in corThread.EnumerateChains().Enumerator) {
 					if (corChain.IsManaged == 0) continue; // Only managed ones
-					
-					ICorDebugFrameEnum corFrameEnum = corChain.EnumerateFrames();
-					uint frameIndex = corFrameEnum.Count;
-					foreach(ICorDebugFrame corFrame in corFrameEnum.Enumerator) {
-						frameIndex--;
-						
+					foreach(ICorDebugFrame corFrame in corChain.EnumerateFrames().Enumerator) {
 						if (corFrame.Is<ICorDebugILFrame>()) {
-							Function function = GetFunctionFromCache(chainIndex, frameIndex, corFrame.As<ICorDebugILFrame>());
-							if (function != null) {
-								yield return function;
-							}
+							Function function;
+							try {
+								function = GetFunctionFromCache(new FrameID(corChain.Index, corFrame.Index), corFrame.As<ICorDebugILFrame>());
+							} catch (COMException) { // TODO
+								continue;
+							};
+							yield return function;
 						}
 					}
 				}
 			}
 		}
 		
-		Dictionary<uint, Chain> chainCache = new Dictionary<uint, Chain>();
+		Dictionary<FrameID, Function> functionCache = new Dictionary<FrameID, Function>();
 		
-		class Chain {
-			public Dictionary<uint, Function> Frames = new Dictionary<uint, Function>();
-		}
-		
-		Function GetFunctionFromCache(uint chainIndex, uint frameIndex, ICorDebugILFrame corFrame)
+		Function GetFunctionFromCache(FrameID frameID, ICorDebugILFrame corFrame)
 		{
-			try {
-				if (chainCache.ContainsKey(chainIndex) &&
-				    chainCache[chainIndex].Frames.ContainsKey(frameIndex) &&
-				    !chainCache[chainIndex].Frames[frameIndex].HasExpired) {
-					
-					Function function = chainCache[chainIndex].Frames[frameIndex];
-					function.CorILFrame = corFrame;
-					return function;
-				} else {
-					Function function = new Function(this, chainIndex, frameIndex, corFrame.CastTo<ICorDebugILFrame>());
-					if (!chainCache.ContainsKey(chainIndex)) chainCache[chainIndex] = new Chain();
-					chainCache[chainIndex].Frames[frameIndex] = function;
-					function.Expired += delegate { chainCache[chainIndex].Frames.Remove(frameIndex); };
-					return function;
-				}
-			} catch (COMException) { // TODO
-				return null;
-			};
+			Function function;
+			if (functionCache.TryGetValue(frameID, out function) && !function.HasExpired) {
+				function.CorILFrame = corFrame;
+				return function;
+			} else {
+				function = new Function(this, frameID, corFrame);
+				functionCache[frameID] = function;
+				return function;
+			}
 		}
 		
-		internal ICorDebugFrame GetFrameAt(uint chainIndex, uint frameIndex)
+		internal ICorDebugFrame GetFrameAt(FrameID frameID)
 		{
 			process.AssertPaused();
 			
 			ICorDebugChainEnum corChainEnum = corThread.EnumerateChains();
-			if (chainIndex >= corChainEnum.Count) throw new ArgumentException("Chain index too big", "chainIndex");
-			corChainEnum.Skip(corChainEnum.Count - chainIndex - 1);
+			if (frameID.ChainIndex >= corChainEnum.Count) throw new ArgumentException("Chain index too big", "chainIndex");
+			corChainEnum.Skip(corChainEnum.Count - frameID.ChainIndex - 1);
 			
 			ICorDebugChain corChain = corChainEnum.Next();
 			
 			if (corChain.IsManaged == 0) throw new ArgumentException("Chain is not managed", "chainIndex");
 			
 			ICorDebugFrameEnum corFrameEnum = corChain.EnumerateFrames();
-			if (frameIndex >= corFrameEnum.Count) throw new ArgumentException("Frame index too big", "frameIndex");
-			corFrameEnum.Skip(corFrameEnum.Count - frameIndex - 1);
+			if (frameID.FrameIndex >= corFrameEnum.Count) throw new ArgumentException("Frame index too big", "frameIndex");
+			corFrameEnum.Skip(corFrameEnum.Count - frameID.FrameIndex - 1);
 			
 			return corFrameEnum.Next();
 		}
 		
-		// NOTE: During evlulation some chains may be temporaly removed
-		// NOTE: When two events are invoked, step outs ocurr at once when all is done
-		// NOTE: Step out works properly for exceptions
-		// NOTE: Step over works properly for exceptions
-		// NOTE: Evaluation kills stepper overs on active frame
+		// See docs\Stepping.txt
 		internal void CheckExpirationOfFunctions()
 		{
 			if (debugger.Evaluating) return;
@@ -266,31 +243,29 @@ namespace Debugger
 			
 			ICorDebugFrame lastFrame = corFrameEnum.Next();
 			
-			List<Function> expiredFunctions = new List<Function>();
-			
-			foreach(KeyValuePair<uint, Chain> chain in chainCache) {
-				if (chain.Key < maxChainIndex) continue;
-				foreach(KeyValuePair<uint, Function> func in chain.Value.Frames) {
-					if (chain.Key == maxChainIndex && func.Key <= maxFrameIndex) continue;
-					expiredFunctions.Add(func.Value);
-				}
-			}
-			
-			// Check the token of the last function
-			// TODO: Investigate: this should not happen (test case: event with two handlers)
-			if (lastFrame != null &&
-			    chainCache.ContainsKey(maxChainIndex) &&
-			    chainCache[maxChainIndex].Frames.ContainsKey(maxFrameIndex)) {
+			// Check the token of the current function - function can change if there are multiple handlers for an event
+			Function function;
+			if (lastFrame != null && 
+			    functionCache.TryGetValue(new FrameID(maxChainIndex, maxFrameIndex), out function) &&
+			    function.Token != lastFrame.FunctionToken) {
 				
-				Function cachedFunction = chainCache[maxChainIndex].Frames[maxFrameIndex];
-				if (cachedFunction.Token != lastFrame.FunctionToken) {
-					expiredFunctions.Add(cachedFunction);
+				functionCache.Remove(new FrameID(maxChainIndex, maxFrameIndex));
+				function.OnExpired(EventArgs.Empty);
+			}
+
+			// Expire all functions behind the current maximum
+			// Multiple functions can expire at once (test case: Step out of Button1Click in simple winforms application)
+			List<KeyValuePair<FrameID, Function>> toBeRemoved = new List<KeyValuePair<FrameID, Function>>();
+			foreach(KeyValuePair<FrameID, Function> kvp in functionCache) {
+				if ((kvp.Key.ChainIndex > maxChainIndex) ||
+				    (kvp.Key.ChainIndex == maxChainIndex && kvp.Key.FrameIndex > maxFrameIndex)) {
+					
+					toBeRemoved.Add(kvp);
 				}
 			}
-			
-			foreach(Function f in expiredFunctions) {
-				debugger.TraceMessage("Function " + f.Name + " expired. (check)");
-				f.OnExpired(EventArgs.Empty);
+			foreach(KeyValuePair<FrameID, Function> kvp in toBeRemoved){
+				functionCache.Remove(kvp.Key);
+				kvp.Value.OnExpired(EventArgs.Empty);
 			}
 		}
 		

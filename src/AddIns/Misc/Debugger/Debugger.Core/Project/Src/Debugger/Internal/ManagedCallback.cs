@@ -122,10 +122,17 @@ namespace Debugger
 				if (debugger.SelectedThread.LastFunction.HasSymbols) {
 					ExitCallback_Paused();
 				} else {
-					// This should not happen with JMC enabled
-					debugger.TraceMessage(" - leaving code without symbols");
-					
-					ExitCallback_Continue();
+					// This can only happen when JMC is disabled (ie NET1.1 or StepOut)
+					if (stepper.Operation == Stepper.StepperOperation.StepOut) {
+						// Create new stepper and keep going
+						debugger.TraceMessage(" - stepping out of code without symbols at " + debugger.SelectedThread.LastFunction.ToString());
+						new Stepper(debugger.SelectedThread.LastFunction, "Stepper out of code without symbols").StepOut();
+						ExitCallback_Continue();
+					} else {
+						// NET1.1: There is extra step over stepper, just keep going
+						debugger.TraceMessage(" - leaving code without symbols");
+						ExitCallback_Continue();
+					}
 				}
 			} else {
 				ExitCallback_Continue();

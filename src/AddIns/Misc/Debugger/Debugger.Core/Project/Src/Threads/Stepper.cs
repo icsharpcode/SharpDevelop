@@ -56,6 +56,15 @@ namespace Debugger
 			}
 		}
 		
+		public bool JustMyCode {
+			set {
+				if (corStepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
+					corStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
+					corStepper.CastTo<ICorDebugStepper2>().SetJMC(value ? 1 : 0);
+				}
+			}
+		}
+		
 		public Stepper(Function function, string name): this(function)
 		{
 			this.name = name;
@@ -67,11 +76,7 @@ namespace Debugger
 			
 			corStepper = function.CorILFrame.CreateStepper();
 			
-			// Turn on Just-My-Code
-			if (corStepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
-				corStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-				corStepper.CastTo<ICorDebugStepper2>().SetJMC(1 /* true */);
-			}
+			JustMyCode = true;
 			
 			function.Thread.Steppers.Add(this);
 		}
@@ -87,15 +92,11 @@ namespace Debugger
 			return this.corStepper == corStepper;
 		}
 		
-		// NOTE: corStepper.StepOut(); finishes when pevious frame is activated, not when function is exited
-		//       this is important for events with multiple handlers
-		// NOTE: StepRange callbacks go first (probably in order),
-		//       StepOut callback are called after that
 		public void StepOut()
 		{
 			operation = StepperOperation.StepOut;
-			// corStepper.StepOut(); // Don't! see note
-			corStepper.StepRange(false, new int[] {0, int.MaxValue});
+			JustMyCode = false; // Needed for multiple events. See docs\Stepping.txt
+			corStepper.StepOut();
 		}
 		
 		public void StepIn(int[] ranges)
@@ -112,7 +113,7 @@ namespace Debugger
 		
 		public override string ToString()
 		{
-			return string.Format("{0} in {1} pause={2} {3}", Operation, Function.Name, PauseWhenComplete, name);
+			return string.Format("{0} in {1} pause={2} \"{3}\"", Operation, Function.ToString(), PauseWhenComplete, name);
 		}
 	}
 }
