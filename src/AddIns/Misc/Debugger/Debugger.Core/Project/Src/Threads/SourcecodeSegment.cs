@@ -207,15 +207,18 @@ namespace Debugger
 			
 			ISymUnmanagedMethod symMethod;
 			try {
-				symMethod = symReader.GetMethodFromDocumentPosition(symDoc, (uint)StartLine, (uint)StartColumn);
+				symMethod = symReader.GetMethodFromDocumentPosition(symDoc, validLine, 0);
 			} catch {
 				return false; //Not found
 			}
 			
+			// Check that StartLine is within the method
+			uint start = symMethod.SequencePoints[0].Line;
+			uint end = symMethod.SequencePoints[symMethod.SequencePointCount - 1].EndLine;
+			if (StartLine < start || StartLine > end) return false;
+			
 			function = module.CorModule.GetFunctionFromToken(symMethod.Token);
-			
-			ilOffset = (int)symMethod.GetOffset(symDoc, validLine, (uint)StartColumn);
-			
+			ilOffset = (int)symMethod.GetOffset(symDoc, validLine, 0);
 			return true;
 		}
 	}
