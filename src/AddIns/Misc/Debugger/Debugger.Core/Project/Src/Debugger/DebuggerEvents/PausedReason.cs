@@ -15,6 +15,7 @@ namespace Debugger
 		Break,
 		ControlCTrap,
 		Exception,
+		ForcedBreak, // Process.Break called
 		DebuggerError,
 		CurrentThreadChanged,
 		CurrentFunctionChanged,

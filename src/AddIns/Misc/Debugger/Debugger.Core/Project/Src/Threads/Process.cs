@@ -113,7 +113,7 @@ namespace Debugger
 			corProcess.Stop(5000); // TODO: Hardcoded value
 			
 			isProcessRunning = false;
-			debugger.PauseSession = new PauseSession(PausedReason.Break);
+			debugger.PauseSession = new PauseSession(PausedReason.ForcedBreak);
 			debugger.SelectedProcess = this;
 			
 			if (this.SelectedThread == null && this.Threads.Count > 0) {

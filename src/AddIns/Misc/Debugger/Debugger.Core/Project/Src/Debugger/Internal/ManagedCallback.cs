@@ -23,6 +23,7 @@ namespace Debugger
 	class ManagedCallback
 	{
 		NDebugger debugger;
+		bool pauseProcessInsteadOfContinue;
 		
 		public NDebugger Debugger {
 			get {
@@ -38,11 +39,27 @@ namespace Debugger
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugProcess pProcess)
 		{
 			debugger.TraceMessage("Callback: " + name);
-			// ExitProcess may be called at any time when debuggee is killed
-			if (name != "ExitProcess") debugger.AssertRunning();
-			debugger.PauseSession = new PauseSession(pausedReason);
-			debugger.SelectedProcess = debugger.GetProcess(pProcess);
-			debugger.SelectedProcess.IsRunning = false;
+			// Check state
+			if (debugger.IsRunning ||
+				// After break is pressed we may receive some messages that were already queued
+				debugger.PauseSession.PausedReason == PausedReason.ForcedBreak ||
+				// ExitProcess may be called at any time when debuggee is killed
+				name == "ExitProcess") {
+				
+				debugger.SelectedProcess = debugger.GetProcess(pProcess);
+				if (debugger.IsPaused && debugger.PauseSession.PausedReason == PausedReason.ForcedBreak) {
+					debugger.TraceMessage("Processing post-break callback");
+					// Continue the break, process is still breaked because of the callback
+					debugger.SelectedProcess.Continue();
+					pauseProcessInsteadOfContinue = true;
+				} else {
+					pauseProcessInsteadOfContinue = false;
+				}
+				debugger.SelectedProcess.IsRunning = false;
+				debugger.PauseSession = new PauseSession(pausedReason);
+			} else {
+				throw new DebuggerException("Invalid state at the start of callback");
+			}
 		}
 		
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugAppDomain pAppDomain)
@@ -52,19 +69,17 @@ namespace Debugger
 		
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugThread pThread)
 		{
-			debugger.TraceMessage("Callback: " + name);
-			// ExitProcess may be called at any time when debuggee is killed
-			if (name != "ExitProcess") debugger.AssertRunning();
-			Thread thread = debugger.GetThread(pThread);
-			debugger.PauseSession = new PauseSession(pausedReason);
-			debugger.SelectedProcess = thread.Process;
-			debugger.SelectedProcess.IsRunning = false;
-			debugger.SelectedProcess.SelectedThread = thread;
+			EnterCallback(pausedReason, name, pThread.Process);
+			debugger.SelectedProcess.SelectedThread = debugger.GetThread(pThread);
 		}
 		
 		void ExitCallback_Continue()
 		{
-			debugger.SelectedProcess.Continue();
+			if (pauseProcessInsteadOfContinue) {
+				ExitCallback_Paused();
+			} else {
+				debugger.SelectedProcess.Continue();
+			}
 		}
 		
 		void ExitCallback_Paused()
