@@ -25,7 +25,8 @@ namespace Debugger.Wrappers
 	
 	public static class ResourceManager
 	{
-		static bool trace;
+		static MTA2STA mta2sta = new MTA2STA();
+		static bool trace = true;
 		static Dictionary<object, TrackedObjectMetaData> trackedCOMObjects = new Dictionary<object, TrackedObjectMetaData>();
 		
 		public static bool TraceMessagesEnabled {
@@ -54,6 +55,18 @@ namespace Debugger.Wrappers
 		}
 		
 		public static void ReleaseCOMObject(object comObject, Type type)
+		{
+			// Ensure that the release is done synchronosly
+			try {
+				mta2sta.AsyncCall(delegate {
+					ReleaseCOMObjectInternal(comObject, type);
+				});
+			} catch (InvalidOperationException) {
+				// This might happen when the application is shuting down
+			}
+		}
+		
+		static void ReleaseCOMObjectInternal(object comObject, Type type)
 		{
 			TrackedObjectMetaData metaData;
 			if (comObject != null && trackedCOMObjects.TryGetValue(comObject, out metaData)) {
