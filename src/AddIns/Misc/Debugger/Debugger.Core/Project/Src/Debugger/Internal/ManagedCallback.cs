@@ -254,6 +254,11 @@ namespace Debugger
 			EnterCallback(PausedReason.DebuggerError, "DebuggerError", pProcess);
 
 			string errorText = String.Format("Debugger error: \nHR = 0x{0:X} \nCode = 0x{1:X}", errorHR, errorCode);
+			
+			if ((uint)errorHR == 0x80131C30) {
+				errorText += "\n\nIf you are running a 64-bit system this setting might help:\nProject -> Project Options -> Compiling -> Target CPU = 32-bit Intel";
+			}
+			
 			System.Windows.Forms.MessageBox.Show(errorText);
 
 			ExitCallback_Paused();
