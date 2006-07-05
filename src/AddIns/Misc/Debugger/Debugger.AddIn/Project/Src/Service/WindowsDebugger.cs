@@ -88,9 +88,13 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (!serviceInitialized) {
 				InitializeService();
 			}
-			debugger.Start(processStartInfo.FileName,
-			               processStartInfo.WorkingDirectory,
-						   processStartInfo.Arguments);
+			if (debugger.GetProgramVersion(processStartInfo.FileName).StartsWith("v1.0")) {
+				MessageBox.Show("Debugging of .NET Framework 1.0 programs is not supported");
+			} else {
+				debugger.Start(processStartInfo.FileName,
+				               processStartInfo.WorkingDirectory,
+							   processStartInfo.Arguments);
+			}
 		}
 
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
