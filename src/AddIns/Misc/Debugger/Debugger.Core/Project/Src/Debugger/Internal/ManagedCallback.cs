@@ -71,6 +71,8 @@ namespace Debugger
 		{
 			EnterCallback(pausedReason, name, pThread.Process);
 			debugger.SelectedProcess.SelectedThread = debugger.GetThread(pThread);
+			// Remove expired functions from the callstack cache
+			debugger.SelectedProcess.SelectedThread.CheckExpirationOfFunctions();
 		}
 		
 		void ExitCallback_Continue()
@@ -114,9 +116,6 @@ namespace Debugger
 			
 			thread.Steppers.Remove(stepper);
 			stepper.OnStepComplete();
-			
-			// There is a race condition: The tracking step out can be triggered after stepping step over
-			thread.CheckExpirationOfFunctions();
 			
 			if (stepper.PauseWhenComplete) {
 				if (debugger.SelectedThread.LastFunction.HasSymbols) {
