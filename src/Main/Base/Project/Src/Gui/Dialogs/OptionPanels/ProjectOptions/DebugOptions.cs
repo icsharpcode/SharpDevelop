@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public override void LoadPanelContents()
 		{
 			SetupFromXmlResource("ProjectOptions.DebugOptions.xfrm");
-			ConnectBrowseButton("startExternalProgramBrowseButton", "startExternalProgramTextBox", "${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+			ConnectBrowseButton("startExternalProgramBrowseButton", "startExternalProgramTextBox", "${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe;*.com;*.pif;*.bat;*.cmd");
 			ConnectBrowseFolder("workingDirectoryBrowseButton", "workingDirectoryTextBox");
 			
 			InitializeHelper();

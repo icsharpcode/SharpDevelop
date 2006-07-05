@@ -88,8 +88,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (!serviceInitialized) {
 				InitializeService();
 			}
-			if (debugger.GetProgramVersion(processStartInfo.FileName).StartsWith("v1.0")) {
+			string version = debugger.GetProgramVersion(processStartInfo.FileName);
+			if (version.StartsWith("v1.0")) {
 				MessageBox.Show("Debugging of .NET Framework 1.0 programs is not supported");
+			} else if (version == null || version.Length == 0) {
+				MessageBox.Show("Can not get .NET Framework version of program. Check that the program is managed assembly.");
 			} else {
 				debugger.Start(processStartInfo.FileName,
 				               processStartInfo.WorkingDirectory,
