@@ -380,6 +380,11 @@ namespace Debugger
 		
 		public IEnumerable<Variable> Variables {
 			get {
+				if (!IsStatic) {
+					yield return new Variable(debugger,
+					                          "this",
+					                          delegate { return ThisValue; });
+				}
 				foreach(Variable var in ArgumentVariables) {
 					yield return var;
 				}
