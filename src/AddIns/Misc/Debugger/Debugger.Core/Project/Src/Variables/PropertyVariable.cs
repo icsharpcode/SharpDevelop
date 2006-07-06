@@ -24,7 +24,7 @@ namespace Debugger
 		internal PropertyVariable(NDebugger debugger, string name, bool isStatic, bool isPublic, EvalCreator evalCreator):base(debugger, name, isStatic, isPublic, null)
 		{
 			this.evalCreator = evalCreator;
-			this.valueGetter = delegate { return GetValueOfResult(); };
+			this.pValue = new PersistentValue(delegate { return GetValueOfResult(); });
 		}
 		
 		Value GetValueOfResult()

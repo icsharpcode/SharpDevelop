@@ -26,7 +26,7 @@ namespace Debugger
 			}
 		}
 		
-		public ClassVariable(NDebugger debugger, string name, bool isStatic, bool isPublic, ValueGetter valueGetter): base(debugger, name, valueGetter)
+		public ClassVariable(NDebugger debugger, string name, bool isStatic, bool isPublic, PersistentValue pValue): base(debugger, name, pValue)
 		{
 			this.isStatic = isStatic;
 			this.isPublic = isPublic;

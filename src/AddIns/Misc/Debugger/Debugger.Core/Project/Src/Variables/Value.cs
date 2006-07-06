@@ -112,7 +112,7 @@ namespace Debugger
 		/// Gets the subvariables of this value
 		/// </summary>
 		/// <param name="getter">Delegate that will be called to get the up-to-date value</param>
-		public virtual IEnumerable<Variable> GetSubVariables(ValueGetter getter)
+		public virtual IEnumerable<Variable> GetSubVariables(PersistentValue pValue)
 		{
 			yield break;
 		}
@@ -127,14 +127,14 @@ namespace Debugger
 		
 		public Variable this[string variableName] {
 			get {
-				foreach(Variable v in GetSubVariables(delegate{ return this.IsExpired?new UnavailableValue(debugger, "Value has expired"):this;})) {
+				foreach(Variable v in GetSubVariables(new PersistentValue(delegate{ return this.IsExpired?new UnavailableValue(debugger, "Value has expired"):this;}))) {
 					if (v.Name == variableName) return v;
 				}
 				throw new DebuggerException("Subvariable " + variableName + " does not exist");
 			}
 		}
 		
-		internal Value(NDebugger debugger, ICorDebugValue corValue)
+		protected Value(NDebugger debugger, ICorDebugValue corValue)
 		{
 			this.debugger = debugger;
 			if (corValue != null) {

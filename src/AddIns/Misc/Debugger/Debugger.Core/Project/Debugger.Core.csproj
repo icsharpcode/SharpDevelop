@@ -380,6 +380,7 @@
     <Compile Include="Src\Threads\FrameID.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugChain.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugFrame.cs" />
+    <Compile Include="Src\Variables\PersistentValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

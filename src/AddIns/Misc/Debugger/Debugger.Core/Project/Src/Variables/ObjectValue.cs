@@ -111,22 +111,22 @@ namespace Debugger
 			}
 		}
 		
-		public override IEnumerable<Variable> GetSubVariables(ValueGetter getter)
+		public override IEnumerable<Variable> GetSubVariables(PersistentValue pValue)
 		{
 			if (HasBaseClass) {
-				yield return GetBaseClassVariable(getter);
+				yield return GetBaseClassVariable(pValue);
 			}
 			
-			foreach(Variable var in GetFieldVariables(getter)) {
+			foreach(Variable var in GetFieldVariables(pValue)) {
 				yield return var;
 			}
 			
-			foreach(Variable var in GetPropertyVariables(getter)) {
+			foreach(Variable var in GetPropertyVariables(pValue)) {
 				yield return var;
 			}
 		}
 		
-		public IEnumerable<Variable> GetFieldVariables(ValueGetter getter)
+		public IEnumerable<Variable> GetFieldVariables(PersistentValue pValue)
 		{
 			foreach(FieldProps f in metaData.EnumFields(ClassToken)) {
 				FieldProps field = f; // One per scope/delegate
@@ -136,13 +136,13 @@ namespace Debugger
 				                               field.Name,
 				                               field.IsStatic,
 				                               field.IsPublic,
-				                               delegate { return GetValueOfField(field, getter); });
+				                               new PersistentValue(delegate { return GetValueOfField(field, pValue); }));
 			}
 		}
 		
-		Value GetValueOfField(FieldProps field, ValueGetter getter)
+		Value GetValueOfField(FieldProps field, PersistentValue pValue)
 		{
-			Value updatedVal = getter();
+			Value updatedVal = pValue.Value;
 			if (updatedVal is UnavailableValue) return updatedVal;
 			if (this.IsEquivalentValue(updatedVal)) {
 				return GetValue(updatedVal, field);
@@ -151,7 +151,7 @@ namespace Debugger
 			}
 		}
 		
-		public IEnumerable<Variable> GetPropertyVariables(ValueGetter getter)
+		public IEnumerable<Variable> GetPropertyVariables(PersistentValue pValue)
 		{
 			foreach(MethodProps m in Methods) {
 				MethodProps method = m; // One per scope/delegate
@@ -160,29 +160,29 @@ namespace Debugger
 					                                  method.Name.Remove(0, 4),
 					                                  method.IsStatic,
 					                                  method.IsPublic,
-					                                  delegate { return CreatePropertyEval(method, getter); });
+					                                  delegate { return CreatePropertyEval(method, pValue); });
 				}
 			}
 		}
 		
-		Eval CreatePropertyEval(MethodProps method, ValueGetter getter)
+		Eval CreatePropertyEval(MethodProps method, PersistentValue pValue)
 		{
-			Value updatedVal = getter();
+			Value updatedVal = pValue.Value;
 			if (updatedVal is UnavailableValue) {
 				return null;
 			}
 			if (this.IsEquivalentValue(updatedVal)) {
 				ICorDebugFunction evalCorFunction = Module.CorModule.GetFunctionFromToken(method.Token);
 				
-				return new Eval(debugger, evalCorFunction, delegate { return GetArgsForEval(method, getter); });
+				return new Eval(debugger, evalCorFunction, delegate { return GetArgsForEval(method, pValue); });
 			} else {
 				return null;
 			}
 		}
 		
-		ICorDebugValue[] GetArgsForEval(MethodProps method, ValueGetter getter)
+		ICorDebugValue[] GetArgsForEval(MethodProps method, PersistentValue pValue)
 		{
-			ObjectValue updatedVal = getter() as ObjectValue;
+			ObjectValue updatedVal = pValue.Value as ObjectValue;
 			if (this.IsEquivalentValue(updatedVal)) {
 				if (method.IsStatic) {
 					return new ICorDebugValue[] {};
@@ -226,20 +226,20 @@ namespace Debugger
 			}
 		}
 		
-		public Variable GetBaseClassVariable(ValueGetter getter)
+		public Variable GetBaseClassVariable(PersistentValue pValue)
 		{
 			if (HasBaseClass) {
 				return new Variable(debugger,
 				                    "<Base class>",
-				                    delegate { return GetBaseClassValue(getter); });
+				                    new PersistentValue(delegate { return GetBaseClassValue(pValue); }));
 			} else {
 				return null;
 			}
 		}
 		
-		Value GetBaseClassValue(ValueGetter getter)
+		Value GetBaseClassValue(PersistentValue pValue)
 		{
-			Value updatedVal = getter();
+			Value updatedVal = pValue.Value;
 			if (updatedVal is UnavailableValue) return updatedVal;
 			if (this.IsEquivalentValue(updatedVal)) {
 				return ((ObjectValue)updatedVal).BaseClass;

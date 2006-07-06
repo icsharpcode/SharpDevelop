@@ -148,7 +148,7 @@ namespace Debugger
 					// HACK: Realy bad object-oriented design!!!
 					// Trasfer the new variable into the old one
 					if (oldVariable != newVariable) {
-						oldVariable.valueGetter = newVariable.valueGetter;
+						oldVariable.pValue = newVariable.pValue;
 						oldVariable.cachedValue = null;
 						if (newVariable is ClassVariable && oldVariable is ClassVariable) {
 							((ClassVariable)oldVariable).isPublic = ((ClassVariable)oldVariable).isPublic;

@@ -11,11 +11,6 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	/// <summary>
-	/// Delegate that is used to get value. This delegate may be called at any time and should never return null.
-	/// </summary>
-	public delegate Value ValueGetter();
-	
 	public class Variable: RemotingObjectBase
 	{
 		protected NDebugger debugger;
@@ -23,7 +18,7 @@ namespace Debugger
 		string name;
 		VariableCollection subVariables;
 		
-		internal protected ValueGetter valueGetter;
+		internal protected PersistentValue pValue;
 		internal Value cachedValue;
 		
 		event EventHandler<DebuggerEventArgs> valueChanged;
@@ -61,7 +56,7 @@ namespace Debugger
 		public Value Value {
 			get {
 				if (cachedValue == null || cachedValue.IsExpired) {
-					cachedValue = valueGetter();
+					cachedValue = pValue.Value;
 					if (cachedValue == null) throw new DebuggerException("ValueGetter returned null");
 					cachedValue.ValueChanged += delegate { OnValueChanged(); };
 				}
@@ -108,16 +103,16 @@ namespace Debugger
 			
 		}
 		
-		public Variable(Value val, string name):this(val.Debugger, name, delegate {return val;})
+		public Variable(Value val, string name):this(val.Debugger, name, new PersistentValue(delegate {return val;}))
 		{
 			
 		}
 		
-		public Variable(NDebugger debugger, string name, ValueGetter valueGetter)
+		public Variable(NDebugger debugger, string name, PersistentValue pValue)
 		{
 			this.debugger = debugger;
 			this.name = name;
-			this.valueGetter = valueGetter;
+			this.pValue = pValue;
 			this.subVariables = new VariableCollection(debugger);
 			this.subVariables.Updating += OnSubVariablesUpdating;
 			
@@ -131,7 +126,7 @@ namespace Debugger
 		
 		void OnSubVariablesUpdating(object sender, VariableCollectionEventArgs e)
 		{
-			subVariables.UpdateTo(Value.GetSubVariables(delegate{return this.Value;}));
+			subVariables.UpdateTo(Value.GetSubVariables(new PersistentValue(delegate{return this.Value;})));
 		}
 	}
 }

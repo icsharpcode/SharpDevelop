@@ -92,11 +92,11 @@ namespace Debugger
 		
 		public Variable this[uint[] indices] {
 			get {
-				return GetItem(indices, delegate {return this;});
+				return GetItem(indices, new PersistentValue(delegate {return this;}));
 			}
 		}
 		
-		Variable GetItem(uint[] itemIndices, ValueGetter getter)
+		Variable GetItem(uint[] itemIndices, PersistentValue pValue)
 		{
 			uint[] indices = (uint[])itemIndices.Clone();
 			
@@ -109,12 +109,12 @@ namespace Debugger
 			
 			return new Variable(debugger,
 			                    elementName,
-			                    delegate { return GetValueOfItem(indices, getter); });
+			                    new PersistentValue(delegate { return GetValueOfItem(indices, pValue); }));
 		}
 		
-		Value GetValueOfItem(uint[] indices, ValueGetter getter)
+		Value GetValueOfItem(uint[] indices, PersistentValue pValue)
 		{
-			ArrayValue updatedVal = getter() as ArrayValue;
+			ArrayValue updatedVal = pValue.Value as ArrayValue;
 			if (this.IsEquivalentValue(updatedVal)) {
 				ICorDebugValue element;
 				unsafe {
@@ -134,7 +134,7 @@ namespace Debugger
 			}
 		}
 		
-		public override IEnumerable<Variable> GetSubVariables(ValueGetter getter)
+		public override IEnumerable<Variable> GetSubVariables(PersistentValue pValue)
 		{
 			uint[] indices = new uint[rank];
 			
@@ -147,7 +147,7 @@ namespace Debugger
 					}
 				if (indices[0] >= dimensions[0]) break; // We are done
 				
-				yield return GetItem(indices, getter);
+				yield return GetItem(indices, pValue);
 				
 				indices[rank - 1]++;
 			}

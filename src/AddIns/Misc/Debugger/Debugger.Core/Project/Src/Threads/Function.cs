@@ -383,7 +383,7 @@ namespace Debugger
 				if (!IsStatic) {
 					yield return new Variable(debugger,
 					                          "this",
-					                          delegate { return ThisValue; });
+					                          new PersistentValue(delegate { return ThisValue; }));
 				}
 				foreach(Variable var in ArgumentVariables) {
 					yield return var;
@@ -401,7 +401,7 @@ namespace Debugger
 			get {
 				// TODO: Should work for static
 				if (!IsStatic) {
-					foreach(Variable var in ThisValue.GetSubVariables(delegate{return ThisValue;})) {
+					foreach(Variable var in ThisValue.GetSubVariables(new PersistentValue(delegate{return ThisValue;}))) {
 						yield return var;
 					}
 				}
@@ -433,7 +433,7 @@ namespace Debugger
 		{
 			return new Variable(debugger,
 			                    GetParameterName(index),
-			                    delegate { return GetArgumentValue(index); });
+			                    new PersistentValue(delegate { return GetArgumentValue(index); }));
 		}
 		
 		Value GetArgumentValue(int index)
@@ -488,7 +488,7 @@ namespace Debugger
 		{
 			return new Variable(debugger,
 			                    symVar.Name,
-			                    delegate { return GetValueOfLocalVariable(symVar); });
+			                    new PersistentValue(delegate { return GetValueOfLocalVariable(symVar); }));
 		}
 		
 		Value GetValueOfLocalVariable(ISymUnmanagedVariable symVar)
