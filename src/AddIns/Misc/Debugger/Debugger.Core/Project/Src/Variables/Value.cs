@@ -16,7 +16,7 @@ namespace Debugger
 	public abstract class Value: RemotingObjectBase
 	{
 		protected NDebugger debugger;
-		PersistentCorValue pCorValue;
+		PersistentValue pValue;
 		
 		public event EventHandler<ValueEventArgs> ValueChanged;
 		
@@ -28,19 +28,19 @@ namespace Debugger
 		
 		protected ICorDebugHandleValue corHandleValue {
 			get {
-				return pCorValue.corHandleValue;
+				return pValue.corHandleValue;
 			}
 		}
 		
 		internal ICorDebugValue CorValue {
 			get {
-				return pCorValue.CorValue;
+				return pValue.CorValue;
 			}
 		}
 		
 		protected ICorDebugHandleValue SoftReference {
 			get {
-				return pCorValue.SoftReference;
+				return pValue.SoftReference;
 			}
 		}
 		
@@ -49,7 +49,7 @@ namespace Debugger
 		/// </summary>
 		public bool IsExpired {
 			get {
-				return pCorValue.IsExpired;
+				return pValue.IsExpired;
 			}
 		}
 		
@@ -111,10 +111,10 @@ namespace Debugger
 			}
 		}
 		
-		protected Value(NDebugger debugger, PersistentCorValue pCorValue)
+		protected Value(NDebugger debugger, PersistentValue pValue)
 		{
 			this.debugger = debugger;
-			this.pCorValue = pCorValue;
+			this.pValue = pValue;
 		}
 		
 		public override string ToString()

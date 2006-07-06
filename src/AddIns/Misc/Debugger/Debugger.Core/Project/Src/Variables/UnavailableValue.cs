@@ -33,7 +33,7 @@ namespace Debugger
 			
 		}
 		
-		internal UnavailableValue(NDebugger debugger, string message):base(debugger, new PersistentCorValue(debugger, null))
+		internal UnavailableValue(NDebugger debugger, string message):base(debugger, new PersistentValue(debugger, (ICorDebugValue)null))
 		{
 			this.message = message;
 		}

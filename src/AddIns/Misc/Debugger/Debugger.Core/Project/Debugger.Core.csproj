@@ -381,7 +381,6 @@
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugChain.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugFrame.cs" />
     <Compile Include="Src\Variables\PersistentValue.cs" />
-    <Compile Include="Src\Variables\PersistentCorValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

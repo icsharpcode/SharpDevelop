@@ -30,11 +30,67 @@ namespace Debugger
 		public delegate ICorDebugValue CorValueGetter();
 		
 		
+		NDebugger debugger;
+		
 		ValueGetter getter;
+		ICorDebugValue corValue;
+		// ICorDebugHandleValue can be used to get corValue back after Continue()
+		public ICorDebugHandleValue corHandleValue;
+		PauseSession pauseSessionAtCreation;
+		DebugeeState debugeeStateAtCreation;
+		
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
 		
 		public Value Value {
 			get {
 				return getter();
+			}
+		}
+		
+		public bool IsExpired {
+			get {
+				if (corHandleValue == null) {
+					return pauseSessionAtCreation != debugger.PauseSession;
+				} else {
+					return debugeeStateAtCreation != debugger.DebugeeState;
+				}
+			}
+		}
+		
+		public ICorDebugValue CorValue {
+			get {
+				if (this.IsExpired) throw new DebuggerException("CorValue has expired");
+				
+				if (pauseSessionAtCreation == debugger.PauseSession) {
+					return corValue;
+				} else {
+					if (corHandleValue == null) {
+						throw new DebuggerException("CorValue has expired");
+					} else {
+						corValue = PersistentValue.DereferenceUnbox(corHandleValue.As<ICorDebugValue>());
+						pauseSessionAtCreation = debugger.PauseSession;
+						return corValue;
+					}
+				}
+			}
+		}
+		
+		public ICorDebugHandleValue SoftReference {
+			get {
+				if (this.IsExpired) throw new DebuggerException("CorValue has expired");
+				
+				if (corHandleValue != null) return corHandleValue;
+				
+				ICorDebugHeapValue2 heapValue = this.CorValue.As<ICorDebugHeapValue2>();
+				if (heapValue == null) { // TODO: Investigate - hmmm, value types are not at heap?
+					return null;
+				} else {
+					return heapValue.CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION);
+				}
 			}
 		}
 		
@@ -45,8 +101,15 @@ namespace Debugger
 		
 		public PersistentValue(NDebugger debugger, ICorDebugValue corValue)
 		{
-			Value val = CreateValue(debugger, corValue);
-			this.getter = delegate { return val; };
+			this.debugger = debugger;
+			if (corValue != null) {
+				this.corHandleValue = corValue.As<ICorDebugHandleValue>();
+				this.corValue = PersistentValue.DereferenceUnbox(corValue);
+			}
+			this.pauseSessionAtCreation = debugger.PauseSession;
+			this.debugeeStateAtCreation = debugger.DebugeeState;
+
+			this.getter = delegate { return CreateValue(debugger, corValue); };
 		}
 		
 		public PersistentValue(NDebugger debugger, CorValueGetter corValueGetter)
@@ -89,7 +152,7 @@ namespace Debugger
 		{
 			ICorDebugValue derefed = DereferenceUnbox(corValue);
 			if (derefed == null) {
-				return new NullValue(debugger, new PersistentCorValue(debugger, corValue));
+				return new NullValue(debugger, new PersistentValue(debugger, corValue));
 			}
 			
 			CorElementType type = Value.GetCorType(derefed);
@@ -111,16 +174,16 @@ namespace Debugger
 				case CorElementType.I:
 				case CorElementType.U:
 				case CorElementType.STRING:
-					return new PrimitiveValue(debugger, new PersistentCorValue(debugger, corValue));
+					return new PrimitiveValue(debugger, new PersistentValue(debugger, corValue));
 
 				case CorElementType.ARRAY:
 				case CorElementType.SZARRAY: // Short-cut for single dimension zero lower bound array
-					return new ArrayValue(debugger, new PersistentCorValue(debugger, corValue));
+					return new ArrayValue(debugger, new PersistentValue(debugger, corValue));
 
 				case CorElementType.VALUETYPE:
 				case CorElementType.CLASS:
 				case CorElementType.OBJECT: // Short-cut for Class "System.Object"
-					return new ObjectValue(debugger, new PersistentCorValue(debugger, corValue));
+					return new ObjectValue(debugger, new PersistentValue(debugger, corValue));
 						
 				default: // Unknown type
 					return new UnavailableValue(debugger, "Unknown value type");

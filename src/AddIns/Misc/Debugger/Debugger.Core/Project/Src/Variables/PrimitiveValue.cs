@@ -51,7 +51,7 @@ namespace Debugger
 			}
 		}
 
-		internal PrimitiveValue(NDebugger debugger, PersistentCorValue pCorValue):base(debugger, pCorValue)
+		internal PrimitiveValue(NDebugger debugger, PersistentValue pValue):base(debugger, pValue)
 		{
 		}
 

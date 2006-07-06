@@ -85,13 +85,13 @@ namespace Debugger
 			}
 		}
 		
-		internal unsafe ObjectValue(NDebugger debugger, PersistentCorValue pCorValue):base(debugger, pCorValue)
+		internal unsafe ObjectValue(NDebugger debugger, PersistentValue pValue):base(debugger, pValue)
 		{
 			corClass = this.CorValue.CastTo<ICorDebugObjectValue>().Class;
 			InitObjectVariable();
 		}
 
-		internal unsafe ObjectValue(NDebugger debugger, PersistentCorValue pCorValue, ICorDebugClass corClass):base(debugger, pCorValue)
+		internal unsafe ObjectValue(NDebugger debugger, PersistentValue pValue, ICorDebugClass corClass):base(debugger, pValue)
 		{
 			this.corClass = corClass;
 			InitObjectVariable();
@@ -295,9 +295,9 @@ namespace Debugger
 			} else {
 				ICorDebugClass superClass = corModuleSuperclass.GetClassFromToken(classProps.SuperClassToken);
 				if (corHandleValue != null) {
-					return new ObjectValue(debugger, new PersistentCorValue(debugger, corHandleValue.As<ICorDebugValue>()), superClass);
+					return new ObjectValue(debugger, new PersistentValue(debugger, corHandleValue.As<ICorDebugValue>()), superClass);
 				} else {
-					return new ObjectValue(debugger, new PersistentCorValue(debugger, CorValue), superClass);
+					return new ObjectValue(debugger, new PersistentValue(debugger, CorValue), superClass);
 				}
 			}
 		}
