@@ -41,7 +41,7 @@ namespace Debugger
 			this.thread = thread;
 			corValue = thread.CorThread.CurrentException;
 			exceptionType = thread.CurrentExceptionType;
-			runtimeValue = Value.CreateValue(debugger, corValue);
+			runtimeValue = new PersistentValue(debugger, corValue).Value;
 			runtimeValueException = runtimeValue as ObjectValue;
 			if (runtimeValueException != null) {
 				while (runtimeValueException.Type != "System.Exception") {

@@ -433,21 +433,19 @@ namespace Debugger
 		{
 			return new Variable(debugger,
 			                    GetParameterName(index),
-			                    new PersistentValue(delegate { return GetArgumentValue(index); }));
+			                    new PersistentValue(debugger, delegate { return GetArgumentCorValue(index); } ));
 		}
 		
-		Value GetArgumentValue(int index)
+		ICorDebugValue GetArgumentCorValue(int index)
 		{
-			if (this.HasExpired) {
-				return new UnavailableValue(debugger, "Function has expired");
-			} else {
-				try {
-					// Non-static functions include 'this' as first argument
-					return Value.CreateValue(debugger, CorILFrame.GetArgument((uint)(IsStatic? index : (index + 1))));
-				} catch (COMException e) {
-					if ((uint)e.ErrorCode == 0x80131304) return new UnavailableValue(debugger, "Unavailable in optimized code");
-					throw;
-				}
+			if (this.HasExpired) throw new CannotGetValueException("Function has expired");
+			
+			try {
+				// Non-static functions include 'this' as first argument
+				return CorILFrame.GetArgument((uint)(IsStatic? index : (index + 1)));
+			} catch (COMException e) {
+				if ((uint)e.ErrorCode == 0x80131304) throw new CannotGetValueException("Unavailable in optimized code");
+				throw;
 			}
 		}
 		
@@ -488,22 +486,18 @@ namespace Debugger
 		{
 			return new Variable(debugger,
 			                    symVar.Name,
-			                    new PersistentValue(delegate { return GetValueOfLocalVariable(symVar); }));
+			                    new PersistentValue(debugger, delegate { return GetCorValueOfLocalVariable(symVar); }));
 		}
 		
-		Value GetValueOfLocalVariable(ISymUnmanagedVariable symVar)
+		ICorDebugValue GetCorValueOfLocalVariable(ISymUnmanagedVariable symVar)
 		{
-			if (this.HasExpired) {
-				return new UnavailableValue(debugger, "Function has expired");
-			} else {
-				ICorDebugValue corValue;
-				try {
-					corValue = CorILFrame.GetLocalVariable((uint)symVar.AddressField1);
-				} catch (COMException e) {
-					if ((uint)e.ErrorCode == 0x80131304) return new UnavailableValue(debugger, "Unavailable in optimized code");
-					throw;
-				}
-				return Value.CreateValue(debugger, corValue);
+			if (this.HasExpired) throw new CannotGetValueException("Function has expired");
+			
+			try {
+				return CorILFrame.GetLocalVariable((uint)symVar.AddressField1);
+			} catch (COMException e) {
+				if ((uint)e.ErrorCode == 0x80131304) throw new CannotGetValueException("Unavailable in optimized code");
+				throw;
 			}
 		}
 	}

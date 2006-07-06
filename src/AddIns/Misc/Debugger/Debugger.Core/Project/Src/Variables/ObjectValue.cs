@@ -136,19 +136,16 @@ namespace Debugger
 				                               field.Name,
 				                               field.IsStatic,
 				                               field.IsPublic,
-				                               new PersistentValue(delegate { return GetValueOfField(field, pValue); }));
+				                               new PersistentValue(debugger, delegate { return GetCorValueOfField(field, pValue); }));
 			}
 		}
 		
-		Value GetValueOfField(FieldProps field, PersistentValue pValue)
+		ICorDebugValue GetCorValueOfField(FieldProps field, PersistentValue pValue)
 		{
 			Value updatedVal = pValue.Value;
-			if (updatedVal is UnavailableValue) return updatedVal;
-			if (this.IsEquivalentValue(updatedVal)) {
-				return GetValue(updatedVal, field);
-			} else {
-				return new UnavailableValue(debugger, "Object type changed");
-			}
+			if (updatedVal is UnavailableValue) throw new CannotGetValueException(updatedVal.AsString);
+			if (!this.IsEquivalentValue(updatedVal)) throw new CannotGetValueException("Object type changed");
+			return GetCorValue(updatedVal, field);
 		}
 		
 		public IEnumerable<Variable> GetPropertyVariables(PersistentValue pValue)
@@ -205,7 +202,7 @@ namespace Debugger
 			       objVal.ClassToken == this.ClassToken;
 		}
 		
-		Value GetValue(Value val, FieldProps field)
+		ICorDebugValue GetCorValue(Value val, FieldProps field)
 		{
 			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
 			ICorDebugFrame curFrame = null;
@@ -214,15 +211,13 @@ namespace Debugger
 			}
 			
 			try {
-				ICorDebugValue fieldValue;
 				if (field.IsStatic) {
-					fieldValue = corClass.GetStaticFieldValue(field.Token, curFrame);
+					return corClass.GetStaticFieldValue(field.Token, curFrame);
 				} else {
-					fieldValue = (val.CorValue.CastTo<ICorDebugObjectValue>()).GetFieldValue(corClass, field.Token);
+					return (val.CorValue.CastTo<ICorDebugObjectValue>()).GetFieldValue(corClass, field.Token);
 				}
-				return Value.CreateValue(debugger, fieldValue);
 			} catch {
-				return new UnavailableValue(debugger);
+				throw new CannotGetValueException();
 			}
 		}
 		

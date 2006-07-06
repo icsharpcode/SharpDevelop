@@ -34,7 +34,7 @@ namespace Debugger
 		
 		internal ICorDebugValue CorValue {
 			get {
-				return pCorValue.CorValueProp;
+				return pCorValue.CorValue;
 			}
 		}
 		
@@ -180,74 +180,6 @@ namespace Debugger
 			Type manType = CorTypeToManagedType(corType);
 			if (manType == null) return "<unknown>";
 			return manType.ToString();
-		}
-		
-		
-		internal static ICorDebugValue DereferenceUnbox(ICorDebugValue corValue)
-		{
-			if (corValue.Is<ICorDebugReferenceValue>()) {
-				int isNull = corValue.CastTo<ICorDebugReferenceValue>().IsNull;
-				if (isNull == 0) {
-					ICorDebugValue dereferencedValue;
-					try {
-						dereferencedValue = (corValue.CastTo<ICorDebugReferenceValue>()).Dereference();
-					} catch {
-						// Error during dereferencing
-						return null;
-					}
-					return DereferenceUnbox(dereferencedValue); // Try again
-				} else {
-					return null;
-				}
-			}
-			
-			if (corValue.Is<ICorDebugBoxValue>()) {
-				return DereferenceUnbox(corValue.CastTo<ICorDebugBoxValue>().Object.CastTo<ICorDebugValue>()); // Try again
-			}
-			
-			return corValue;
-		}
-		
-		internal static Value CreateValue(NDebugger debugger, ICorDebugValue corValue)
-		{
-			ICorDebugValue derefed = Value.DereferenceUnbox(corValue);
-			if (derefed == null) {
-				return new NullValue(debugger, new PersistentCorValue(debugger, corValue));
-			}
-			
-			CorElementType type = Value.GetCorType(derefed);
-			
-			switch(type)
-			{
-				case CorElementType.BOOLEAN:
-				case CorElementType.CHAR:
-				case CorElementType.I1:
-				case CorElementType.U1:
-				case CorElementType.I2:
-				case CorElementType.U2:
-				case CorElementType.I4:
-				case CorElementType.U4:
-				case CorElementType.I8:
-				case CorElementType.U8:
-				case CorElementType.R4:
-				case CorElementType.R8:
-				case CorElementType.I:
-				case CorElementType.U:
-				case CorElementType.STRING:
-					return new PrimitiveValue(debugger, new PersistentCorValue(debugger, corValue));
-
-				case CorElementType.ARRAY:
-				case CorElementType.SZARRAY: // Short-cut for single dimension zero lower bound array
-					return new ArrayValue(debugger, new PersistentCorValue(debugger, corValue));
-
-				case CorElementType.VALUETYPE:
-				case CorElementType.CLASS:
-				case CorElementType.OBJECT: // Short-cut for Class "System.Object"
-					return new ObjectValue(debugger, new PersistentCorValue(debugger, corValue));
-						
-				default: // Unknown type
-					return new UnavailableValue(debugger, "Unknown value type");
-			}
 		}
 	}
 }

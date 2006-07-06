@@ -168,7 +168,7 @@ namespace Debugger
 		protected internal virtual void OnEvalComplete(bool successful) 
 		{
 			// Eval result should be ICorDebugHandleValue so it should survive Continue()
-			result = Value.CreateValue(debugger, corEval.Result);
+			result = new PersistentValue(debugger, corEval.Result).Value;
 			
 			debugeeStateWhenEvaluated = debugger.DebugeeState;
 			

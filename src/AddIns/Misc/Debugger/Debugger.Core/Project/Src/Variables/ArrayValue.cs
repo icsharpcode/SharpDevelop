@@ -109,22 +109,20 @@ namespace Debugger
 			
 			return new Variable(debugger,
 			                    elementName,
-			                    new PersistentValue(delegate { return GetValueOfItem(indices, pValue); }));
+			                    new PersistentValue(debugger, delegate { return GetCorValueOfItem(indices, pValue); }));
 		}
 		
-		Value GetValueOfItem(uint[] indices, PersistentValue pValue)
+		ICorDebugValue GetCorValueOfItem(uint[] indices, PersistentValue pValue)
 		{
 			ArrayValue updatedVal = pValue.Value as ArrayValue;
 			if (this.IsEquivalentValue(updatedVal)) {
-				ICorDebugValue element;
 				unsafe {
 					fixed (void* pIndices = indices) {
-						element = updatedVal.CorArrayValue.GetElement(rank, new IntPtr(pIndices));
+						return updatedVal.CorArrayValue.GetElement(rank, new IntPtr(pIndices));
 					}
 				}
-				return Value.CreateValue(debugger, element);
 			} else {
-				return new UnavailableValue(debugger, "Value is not array");
+				throw new CannotGetValueException("Value is not array");
 			}
 		}
 		

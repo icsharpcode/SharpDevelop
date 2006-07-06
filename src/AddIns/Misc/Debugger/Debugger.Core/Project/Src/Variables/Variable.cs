@@ -98,7 +98,7 @@ namespace Debugger
 			}
 		}
 		
-		public Variable(NDebugger debugger, ICorDebugValue corValue, string name):this(Value.CreateValue(debugger, corValue), name)
+		public Variable(NDebugger debugger, ICorDebugValue corValue, string name):this(new PersistentValue(debugger, corValue).Value, name)
 		{
 			
 		}
