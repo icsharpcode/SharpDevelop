@@ -59,7 +59,7 @@ namespace Debugger
 		}
 		
 		
-		internal unsafe ArrayValue(NDebugger debugger, ICorDebugValue corValue):base(debugger, corValue)
+		internal unsafe ArrayValue(NDebugger debugger, PersistentCorValue pCorValue):base(debugger, pCorValue)
 		{
 			corElementType = (CorElementType)CorArrayValue.ElementType;
 			
