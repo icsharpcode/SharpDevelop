@@ -23,21 +23,17 @@ namespace Debugger
 		/// Delegate that is used to get value. This delegate may be called at any time and should never return null.
 		/// </summary>
 		public delegate Value ValueGetter();
-		
-		/// <summary>
-		/// Delegate that is used to get value. This delegate may be called at any time and should never return null.
-		/// </summary>
 		public delegate ICorDebugValue CorValueGetter();
+		public delegate bool IsExpiredDelegate();
 		
 		
 		NDebugger debugger;
 		
-		ValueGetter getter;
-		ICorDebugValue corValue;
-		// ICorDebugHandleValue can be used to get corValue back after Continue()
-		public ICorDebugHandleValue corHandleValue;
-		PauseSession pauseSessionAtCreation;
-		DebugeeState debugeeStateAtCreation;
+		CorValueGetter corValueGetter;
+		ValueGetter valueGetter;
+		IsExpiredDelegate isExpired;
+		
+		public ICorDebugValue initValue;
 		
 		public NDebugger Debugger {
 			get {
@@ -45,37 +41,25 @@ namespace Debugger
 			}
 		}
 		
+		public ICorDebugValue CorValue {
+			get {
+				return corValueGetter();
+			}
+		}
+		
 		public Value Value {
 			get {
-				return getter();
+				try {
+					return valueGetter();
+				} catch (CannotGetValueException e) {
+					return new UnavailableValue(debugger, e.Message);
+				}
 			}
 		}
 		
 		public bool IsExpired {
 			get {
-				if (corHandleValue == null) {
-					return pauseSessionAtCreation != debugger.PauseSession;
-				} else {
-					return debugeeStateAtCreation != debugger.DebugeeState;
-				}
-			}
-		}
-		
-		public ICorDebugValue CorValue {
-			get {
-				if (this.IsExpired) throw new DebuggerException("CorValue has expired");
-				
-				if (pauseSessionAtCreation == debugger.PauseSession) {
-					return corValue;
-				} else {
-					if (corHandleValue == null) {
-						throw new DebuggerException("CorValue has expired");
-					} else {
-						corValue = PersistentValue.DereferenceUnbox(corHandleValue.As<ICorDebugValue>());
-						pauseSessionAtCreation = debugger.PauseSession;
-						return corValue;
-					}
-				}
+				return isExpired();
 			}
 		}
 		
@@ -83,44 +67,46 @@ namespace Debugger
 			get {
 				if (this.IsExpired) throw new DebuggerException("CorValue has expired");
 				
-				if (corHandleValue != null) return corHandleValue;
-				
-				ICorDebugHeapValue2 heapValue = this.CorValue.As<ICorDebugHeapValue2>();
-				if (heapValue == null) { // TODO: Investigate - hmmm, value types are not at heap?
-					return null;
+				if (this.initValue != null && this.initValue.Is<ICorDebugHandleValue>()) {
+					return this.initValue.As<ICorDebugHandleValue>();
+				} else if (this.initValue != null && this.initValue.Is<ICorDebugHeapValue2>()) {
+					return this.initValue.As<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION);
 				} else {
-					return heapValue.CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION);
+					return null; // Value type
 				}
 			}
 		}
 		
 		public PersistentValue(ValueGetter getter)
 		{
-			this.getter = getter;
+			this.valueGetter = getter;
 		}
 		
 		public PersistentValue(NDebugger debugger, ICorDebugValue corValue)
 		{
 			this.debugger = debugger;
-			if (corValue != null) {
-				this.corHandleValue = corValue.As<ICorDebugHandleValue>();
-				this.corValue = PersistentValue.DereferenceUnbox(corValue);
-			}
-			this.pauseSessionAtCreation = debugger.PauseSession;
-			this.debugeeStateAtCreation = debugger.DebugeeState;
-
-			this.getter = delegate { return CreateValue(debugger, corValue); };
+			this.initValue = corValue;
+			PauseSession pauseSessionAtCreation = debugger.PauseSession;
+			DebugeeState debugeeStateAtCreation = debugger.DebugeeState;
+			
+			this.corValueGetter = delegate {
+				if (this.IsExpired) throw new DebuggerException("CorValue has expired");
+				
+				return PersistentValue.DereferenceUnbox(this.initValue);
+			};
+			this.isExpired = delegate {
+				if (this.initValue != null && this.initValue.Is<ICorDebugHandleValue>()) {
+					return debugeeStateAtCreation != debugger.DebugeeState;
+				} else {
+					return pauseSessionAtCreation != debugger.PauseSession;
+				}
+			};
+			this.valueGetter = delegate { return CreateValue(debugger, corValue); };
 		}
 		
 		public PersistentValue(NDebugger debugger, CorValueGetter corValueGetter)
 		{
-			this.getter = delegate {
-				try {
-					return CreateValue(debugger, corValueGetter());
-				} catch (CannotGetValueException e) {
-					return new UnavailableValue(debugger, e.Message);
-				}
-			};
+			this.valueGetter = delegate { return CreateValue(debugger, corValueGetter()); };
 		}
 		
 		internal static ICorDebugValue DereferenceUnbox(ICorDebugValue corValue)

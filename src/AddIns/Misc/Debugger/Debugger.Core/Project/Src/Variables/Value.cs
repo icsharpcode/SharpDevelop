@@ -28,7 +28,7 @@ namespace Debugger
 		
 		protected ICorDebugHandleValue corHandleValue {
 			get {
-				return pValue.corHandleValue;
+				return pValue.initValue.As<ICorDebugHandleValue>();
 			}
 		}
 		
