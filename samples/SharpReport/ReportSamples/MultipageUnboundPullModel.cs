@@ -8,6 +8,7 @@
  */
 
 using System;
+
 using System.Windows.Forms;
 
 using SharpReportCore;
@@ -19,7 +20,9 @@ namespace ReportSamples{
 	public class MultiPageUnboundPullModel{
 		int rowNr;
 		int rowsPerPage;
-		int pageNr;
+		System.DateTime startTime;
+		System.DateTime endTime;
+		
 		public MultiPageUnboundPullModel(){
 		}
 		
@@ -32,8 +35,9 @@ namespace ReportSamples{
 					SharpReportCore.SharpReportEngine mn = new SharpReportCore.SharpReportEngine();
 					mn.SectionRendering += new EventHandler<SectionRenderEventArgs>(MultipagePrinting);
 					mn.SectionRendered += new EventHandler<SectionRenderEventArgs>(MultipagePrinted);
-					mn.PreviewStandartReport(dg.FileName.ToString());
+					this.startTime = System.DateTime.Now;
 					
+					mn.PreviewStandartReport(dg.FileName.ToString());
 				}
 			}
 			catch(Exception er){
@@ -45,19 +49,21 @@ namespace ReportSamples{
 			CheckItems(e.Section.Items);
 			switch (e.CurrentSection) {
 				case GlobalEnums.enmSection.ReportHeader:
-					System.Console.WriteLine("\tI found the ReportHeader");
+					System.Console.WriteLine("\tReportHeader");
 					break;
 
 				case GlobalEnums.enmSection.ReportPageHeader:
 					
-					System.Console.WriteLine("\tI found the Pageheader");
+					System.Console.WriteLine("\tPageheader");
+					System.Console.WriteLine("");
 					this.rowsPerPage = 0;
 					break;
 					
 				case GlobalEnums.enmSection.ReportDetail:
-					System.Console.WriteLine("\tI found the ReportDetail");
+				
 					this.rowNr ++;
 					this.rowsPerPage ++;
+					System.Console.WriteLine("\tReportDetail");
 					RowItem ri = e.Section.Items[0] as RowItem;
 					if (ri != null) {
 						if (this.rowNr %2 == 0) {
@@ -69,7 +75,7 @@ namespace ReportSamples{
 					break;
 					
 				case GlobalEnums.enmSection.ReportPageFooter:
-					System.Console.WriteLine("\tI found the PageFooter");
+					System.Console.WriteLine("\tPageFooter");
 					BaseDataItem bdi = e.Section.Items.Find("ItemsPerPage") as BaseDataItem;
 					if (bdi != null) {
 						bdi.DbValue = this.rowsPerPage.ToString();
@@ -77,7 +83,15 @@ namespace ReportSamples{
 					break;
 					
 				case GlobalEnums.enmSection.ReportFooter:
-					System.Console.WriteLine("\tI found the ReportFooter");
+					System.Console.WriteLine("\tReportFooter");
+					this.endTime = System.DateTime.Now;
+					
+					BaseDataItem b = e.Section.Items.Find("reportDbTextItem1")as BaseDataItem;
+					if (b != null) {
+						b.FormatString = "t";
+						b.DbValue = (this.endTime - this.startTime).ToString();
+					}
+					
 					break;
 					
 				default:
@@ -86,16 +100,15 @@ namespace ReportSamples{
 		}
 		
 		private void MultipagePrinted (object sender,SectionRenderEventArgs e) {
-////			System.Console.WriteLine("MainForm:Rendering done for  <{0}>",e.CurrentSection);
-//			System.Console.WriteLine("----------");
+//			System.Console.WriteLine("---Rendering done <{0}>-----",e.CurrentSection);
 		}
 		
 		private void CheckItems (ReportItemCollection items) {
-			System.Console.WriteLine("\t<{0}> Items",items.Count );
+//			System.Console.WriteLine("\t<{0}> Items",items.Count );
 			foreach (BaseReportItem i in items) {
 				IContainerItem container = i as IContainerItem;
 				if (container != null) {
-					System.Console.WriteLine("\t\tContainer found");
+//					System.Console.WriteLine("\t\tContainer found");
 					CheckItems (container.Items);
 				}
 			}

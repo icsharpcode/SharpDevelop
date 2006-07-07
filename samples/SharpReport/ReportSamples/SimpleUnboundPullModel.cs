@@ -85,11 +85,11 @@ namespace ReportSamples
 		}
 		
 		private void CheckItems (ReportItemCollection items) {
-			System.Console.WriteLine("\t<{0}> Items",items.Count );
+//			System.Console.WriteLine("\t<{0}> Items",items.Count );
 			foreach (BaseReportItem i in items) {
 				IContainerItem container = i as IContainerItem;
 				if (container != null) {
-					System.Console.WriteLine("\t\tContainer found");
+//					System.Console.WriteLine("\t\tContainer found");
 					CheckItems (container.Items);
 				}
 			}
