@@ -149,13 +149,12 @@ namespace Debugger
 					// Trasfer the new variable into the old one
 					if (oldVariable != newVariable) {
 						oldVariable.pValue = newVariable.pValue;
-						oldVariable.cachedValue = null;
 						if (newVariable is ClassVariable && oldVariable is ClassVariable) {
 							((ClassVariable)oldVariable).isPublic = ((ClassVariable)oldVariable).isPublic;
 							((ClassVariable)oldVariable).isStatic = ((ClassVariable)oldVariable).isStatic;
 						}
 						if (newVariable is PropertyVariable) {
-							newVariable.ValueChanged += delegate { oldVariable.OnValueChanged(); };
+							newVariable.ValueChanged += delegate { oldVariable.OnValueChanged(this, null); };
 						}
 					}
 					// Keep the variable in the list

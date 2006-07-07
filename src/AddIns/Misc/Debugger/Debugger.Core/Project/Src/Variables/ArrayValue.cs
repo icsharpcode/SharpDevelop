@@ -51,8 +51,9 @@ namespace Debugger
 		public override string AsString { 
 			get {
 				string txt = "{" + ElementsType + "[";
-				for (int i = 0; i < rank; i++)
+				for (int i = 0; i < rank; i++) {
 					txt += dimensions[i].ToString() + ",";
+				}
 				txt = txt.TrimEnd(new char[] {','}) + "]}";
 				return txt;
 			} 
@@ -67,11 +68,21 @@ namespace Debugger
 			lenght = CorArrayValue.Count;
 			
 			dimensions = new uint[rank];
-			fixed (void* pDimensions = dimensions)
+			fixed (void* pDimensions = dimensions) {
 				CorArrayValue.GetDimensions(rank, new IntPtr(pDimensions));
+			}
 		}
-
-
+		
+		bool IsCorValueCompatible {
+			get {
+				ArrayValue freshValue = this.FreshValue as ArrayValue;
+				return freshValue != null &&
+				       freshValue.ElementsType == this.ElementsType &&
+				       freshValue.Lenght == this.Lenght &&
+				       freshValue.Rank == this.Rank;
+			}
+		}
+		
 		public Variable this[uint index] {
 			get {
 				return this[new uint[] {index}];
@@ -92,11 +103,11 @@ namespace Debugger
 		
 		public Variable this[uint[] indices] {
 			get {
-				return GetItem(indices, new PersistentValue(delegate {return this;}));
+				return GetItem(indices);
 			}
 		}
 		
-		Variable GetItem(uint[] itemIndices, PersistentValue pValue)
+		Variable GetItem(uint[] itemIndices)
 		{
 			uint[] indices = (uint[])itemIndices.Clone();
 			
@@ -109,20 +120,14 @@ namespace Debugger
 			
 			return new Variable(debugger,
 			                    elementName,
-			                    new PersistentValue(debugger, delegate { return GetCorValueOfItem(indices, pValue); }));
+			                    new PersistentValue(debugger, delegate { return GetCorValueOfItem(indices); }));
 		}
 		
-		ICorDebugValue GetCorValueOfItem(uint[] indices, PersistentValue pValue)
+		unsafe ICorDebugValue GetCorValueOfItem(uint[] indices)
 		{
-			ArrayValue updatedVal = pValue.Value as ArrayValue;
-			if (this.IsEquivalentValue(updatedVal)) {
-				unsafe {
-					fixed (void* pIndices = indices) {
-						return updatedVal.CorArrayValue.GetElement(rank, new IntPtr(pIndices));
-					}
-				}
-			} else {
-				throw new CannotGetValueException("Value is not array");
+			if (!IsCorValueCompatible) throw new CannotGetValueException("Value is not the same array");
+			fixed (void* pIndices = indices) {
+				return CorArrayValue.GetElement(rank, new IntPtr(pIndices));
 			}
 		}
 		
@@ -132,32 +137,22 @@ namespace Debugger
 			}
 		}
 		
-		public override IEnumerable<Variable> GetSubVariables(PersistentValue pValue)
+		public override IEnumerable<Variable> GetSubVariables()
 		{
 			uint[] indices = new uint[rank];
 			
 			while(true) { // Go thought all combinations
 				for (uint i = rank - 1; i >= 1; i--)
-					if (indices[i] >= dimensions[i])
-					{
+					if (indices[i] >= dimensions[i]) {
 						indices[i] = 0;
 						indices[i-1]++;
 					}
 				if (indices[0] >= dimensions[0]) break; // We are done
 				
-				yield return GetItem(indices, pValue);
+				yield return GetItem(indices);
 				
 				indices[rank - 1]++;
 			}
-		}
-		
-		public override bool IsEquivalentValue(Value val)
-		{
-			ArrayValue arrayVal = val as ArrayValue;
-			return arrayVal != null &&
-			       arrayVal.ElementsType == this.ElementsType &&
-			       arrayVal.Lenght == this.Lenght &&
-			       arrayVal.Rank == this.Rank;
 		}
 	}
 }

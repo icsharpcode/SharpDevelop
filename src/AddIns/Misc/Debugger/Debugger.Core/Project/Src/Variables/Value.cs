@@ -16,19 +16,13 @@ namespace Debugger
 	public abstract class Value: RemotingObjectBase
 	{
 		protected NDebugger debugger;
-		PersistentValue pValue;
+		protected PersistentValue pValue;
 		
 		public event EventHandler<ValueEventArgs> ValueChanged;
 		
 		public NDebugger Debugger {
 			get {
 				return debugger;
-			}
-		}
-		
-		protected ICorDebugHandleValue corHandleValue {
-			get {
-				return pValue.initValue.As<ICorDebugHandleValue>();
 			}
 		}
 		
@@ -41,6 +35,12 @@ namespace Debugger
 		protected ICorDebugHandleValue SoftReference {
 			get {
 				return pValue.SoftReference;
+			}
+		}
+		
+		protected Value FreshValue {
+			get {
+				return pValue.Value;
 			}
 		}
 		
@@ -88,23 +88,14 @@ namespace Debugger
 		/// <summary>
 		/// Gets the subvariables of this value
 		/// </summary>
-		/// <param name="getter">Delegate that will be called to get the up-to-date value</param>
-		public virtual IEnumerable<Variable> GetSubVariables(PersistentValue pValue)
+		public virtual IEnumerable<Variable> GetSubVariables()
 		{
 			yield break;
 		}
 		
-		/// <summary>
-		/// Gets whether the given value is equivalent to this one. (ie it is may be just its other instance)
-		/// </summary>
-		public virtual bool IsEquivalentValue(Value val)
-		{
-			return val.GetType() == this.GetType();
-		}
-		
 		public Variable this[string variableName] {
 			get {
-				foreach(Variable v in GetSubVariables(new PersistentValue(delegate{ return this.IsExpired?new UnavailableValue(debugger, "Value has expired"):this;}))) {
+				foreach(Variable v in GetSubVariables()) {
 					if (v.Name == variableName) return v;
 				}
 				throw new DebuggerException("Subvariable " + variableName + " does not exist");
@@ -157,7 +148,7 @@ namespace Debugger
 		}
 		
 		/// <summary>
-		/// Returns true if the value is signed or unsigned integer of any siz
+		/// Returns true if the value is signed or unsigned integer of any size
 		/// </summary>
 		public bool IsInteger {
 			get {

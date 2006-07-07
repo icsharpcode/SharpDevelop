@@ -18,13 +18,18 @@ namespace Debugger
 {
 	public class ObjectValue: Value
 	{
-		ICorDebugClass corClass;
-		ICorDebugModule corModule;
-		MetaData metaData;
-		ICorDebugModule corModuleSuperclass;
-		ObjectValue baseClass;
+		Module finalCorClassModule;
+		uint finalCorClassToken;
 		
+		Module module;
+		ICorDebugClass corClass;
 		TypeDefProps classProps;
+		
+		protected ICorDebugObjectValue CorObjectValue {
+			get {
+				return this.CorValue.CastTo<ICorDebugObjectValue>();
+			}
+		}
 		
 		public override string AsString {
 			get {
@@ -32,13 +37,74 @@ namespace Debugger
 			}
 		}
 		
-		public ObjectValue BaseClassObject {
+		public override string Type { 
+			get{ 
+				return classProps.Name;
+			} 
+		}
+		
+		public Module Module {
 			get {
-				ObjectValue baseClass = this;
-				while (baseClass.HasBaseClass) {
-					baseClass = baseClass.BaseClass;
+				return module;
+			}
+		}
+		
+		public uint ClassToken {
+			get {
+				return classProps.Token;
+			}
+		}
+		
+		public ObjectValue BaseClass {
+			get	{
+				ICorDebugClass superClass = GetSuperClass(debugger, corClass);
+				if (superClass == null) throw new DebuggerException("Does not have a base class");
+				return new ObjectValue(debugger, pValue, superClass);
+			}
+		}
+		
+		public bool HasBaseClass {
+			get {
+				return GetSuperClass(debugger, corClass) != null;
+			}
+		}
+		
+		internal ObjectValue(NDebugger debugger, PersistentValue pValue):base(debugger, pValue)
+		{
+			InitObjectValue(this.CorObjectValue.Class);
+		}
+
+		internal ObjectValue(NDebugger debugger, PersistentValue pValue, ICorDebugClass corClass):base(debugger, pValue)
+		{
+			InitObjectValue(corClass);
+		}
+
+		void InitObjectValue(ICorDebugClass corClass)
+		{
+			this.finalCorClassModule = debugger.GetModule(this.CorObjectValue.Class.Module);
+			this.finalCorClassToken = this.CorObjectValue.Class.Token;
+			
+			this.module = debugger.GetModule(corClass.Module);
+			this.corClass = corClass;
+			this.classProps = Module.MetaData.GetTypeDefProps(corClass.Token);
+		}
+		
+		bool IsCorValueCompatible {
+			get {
+				ObjectValue freshValue = this.FreshValue as ObjectValue;
+				return freshValue != null &&
+				       this.finalCorClassModule == freshValue.Module &&
+				       this.finalCorClassToken == freshValue.ClassToken;
+			}
+		}
+		
+		public ObjectValue ObjectClass {
+			get {
+				ObjectValue objectClass = this;
+				while (objectClass.HasBaseClass) {
+					objectClass = objectClass.BaseClass;
 				}
-				return baseClass;
+				return objectClass;
 			}
 		}
 		
@@ -46,6 +112,149 @@ namespace Debugger
 			get {
 				return this.Module.MetaData.EnumMethods(this.ClassToken);
 			}
+		}
+
+		public override bool MayHaveSubVariables {
+			get {
+				return true;
+			}
+		}
+		
+		public override IEnumerable<Variable> GetSubVariables()
+		{
+			if (HasBaseClass) {
+				yield return GetBaseClassVariable();
+			}
+			
+			foreach(Variable var in GetFieldVariables()) {
+				yield return var;
+			}
+			
+			foreach(Variable var in GetPropertyVariables()) {
+				yield return var;
+			}
+		}
+		
+		public IEnumerable<Variable> GetFieldVariables()
+		{
+			foreach(FieldProps f in Module.MetaData.EnumFields(ClassToken)) {
+				FieldProps field = f; // One per scope/delegate
+				if (field.IsStatic && field.IsLiteral) continue; // Skip field
+				if (!field.IsStatic && CorValue == null) continue; // Skip field
+				yield return new ClassVariable(debugger,
+				                               field.Name,
+				                               field.IsStatic,
+				                               field.IsPublic,
+				                               new PersistentValue(debugger, delegate { return GetCorValueOfField(field); }));
+			}
+		}
+		
+		ICorDebugValue GetCorValueOfField(FieldProps field)
+		{
+			if (!IsCorValueCompatible) throw new CannotGetValueException("Object type changed");
+
+			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
+			ICorDebugFrame curFrame = null;
+			if (debugger.IsPaused && debugger.SelectedThread != null && debugger.SelectedThread.LastFunction != null && debugger.SelectedThread.LastFunction.CorILFrame != null) {
+				curFrame = debugger.SelectedThread.LastFunction.CorILFrame.CastTo<ICorDebugFrame>();
+			}
+			
+			try {
+				if (field.IsStatic) {
+					return corClass.GetStaticFieldValue(field.Token, curFrame);
+				} else {
+					return CorObjectValue.GetFieldValue(corClass, field.Token);
+				}
+			} catch {
+				throw new CannotGetValueException();
+			}
+		}
+		
+		public IEnumerable<Variable> GetPropertyVariables()
+		{
+			foreach(MethodProps m in Methods) {
+				MethodProps method = m; // One per scope/delegate
+				if (method.HasSpecialName && method.Name.StartsWith("get_") && method.Name != "get_Item") {
+					yield return new PropertyVariable(debugger,
+					                                  method.Name.Remove(0, 4),
+					                                  method.IsStatic,
+					                                  method.IsPublic,
+					                                  delegate { return CreatePropertyEval(method); });
+				}
+			}
+		}
+		
+		Eval CreatePropertyEval(MethodProps method)
+		{
+			if (!IsCorValueCompatible) return null;
+			
+			ICorDebugFunction evalCorFunction = Module.CorModule.GetFunctionFromToken(method.Token);
+			return new Eval(debugger, evalCorFunction, delegate { return GetArgsForEval(method); });
+		}
+		
+		ICorDebugValue[] GetArgsForEval(MethodProps method)
+		{
+			if (!IsCorValueCompatible) return null;
+			
+			if (method.IsStatic) {
+				return new ICorDebugValue[] {};
+			} else {
+				if (this.SoftReference != null) {
+					return new ICorDebugValue[] {this.SoftReference.CastTo<ICorDebugValue>()};
+				} else {
+					return new ICorDebugValue[] {this.CorValue};
+				}
+			}
+		}
+		
+		public Variable GetBaseClassVariable()
+		{
+			if (HasBaseClass) {
+				return new Variable(debugger,
+				                    "<Base class>",
+				                    new PersistentValue(debugger, delegate { return GetBaseClassValue(); }));
+			} else {
+				return null;
+			}
+		}
+		
+		Value GetBaseClassValue()
+		{
+			if (!IsCorValueCompatible) return new UnavailableValue(debugger, "Object type changed");
+			
+			return this.BaseClass;
+		}
+		
+		protected static ICorDebugClass GetSuperClass(NDebugger debugger, ICorDebugClass currClass)
+		{
+			Module currModule = debugger.GetModule(currClass.Module);
+			uint superToken = currModule.MetaData.GetTypeDefProps(currClass.Token).SuperClassToken;
+			
+			// It has no base class
+			if ((superToken & 0x00FFFFFF) == 0x00000000) return null;
+			
+			// TypeDef - Localy defined
+			if ((superToken & 0xFF000000) == 0x02000000) {
+				return currModule.CorModule.GetClassFromToken(superToken);
+			}
+			
+			// TypeRef - Referencing to external assembly
+			if ((superToken & 0xFF000000) == 0x01000000) {
+				string fullTypeName = currModule.MetaData.GetTypeRefProps(superToken).Name;
+				
+				foreach (Module superModule in debugger.Modules) {
+					// TODO: Does not work for nested
+					// TODO: preservesig
+					try	{
+						uint token = superModule.MetaData.FindTypeDefByName(fullTypeName, 0).Token;
+						return superModule.CorModule.GetClassFromToken(token);
+					} catch {
+						continue;
+					}
+				}
+			}
+			
+			throw new DebuggerException("Superclass not found");
 		}
 		
 		/*
@@ -66,240 +275,5 @@ namespace Debugger
 			}
 		}
 		*/
-		
-		public override string Type { 
-			get{ 
-				return classProps.Name;
-			} 
-		}
-		
-		public Module Module {
-			get {
-				return debugger.GetModule(corModule);
-			}
-		}
-		
-		public uint ClassToken {
-			get {
-				return classProps.Token;
-			}
-		}
-		
-		internal unsafe ObjectValue(NDebugger debugger, PersistentValue pValue):base(debugger, pValue)
-		{
-			corClass = this.CorValue.CastTo<ICorDebugObjectValue>().Class;
-			InitObjectVariable();
-		}
-
-		internal unsafe ObjectValue(NDebugger debugger, PersistentValue pValue, ICorDebugClass corClass):base(debugger, pValue)
-		{
-			this.corClass = corClass;
-			InitObjectVariable();
-		}
-
-		void InitObjectVariable ()
-		{
-			corModule = corClass.Module;
-			metaData = Module.MetaData;
-			classProps = metaData.GetTypeDefProps(corClass.Token);
-			corModuleSuperclass = corModule;
-		}
-
-		public override bool MayHaveSubVariables {
-			get {
-				return true;
-			}
-		}
-		
-		public override IEnumerable<Variable> GetSubVariables(PersistentValue pValue)
-		{
-			if (HasBaseClass) {
-				yield return GetBaseClassVariable(pValue);
-			}
-			
-			foreach(Variable var in GetFieldVariables(pValue)) {
-				yield return var;
-			}
-			
-			foreach(Variable var in GetPropertyVariables(pValue)) {
-				yield return var;
-			}
-		}
-		
-		public IEnumerable<Variable> GetFieldVariables(PersistentValue pValue)
-		{
-			foreach(FieldProps f in metaData.EnumFields(ClassToken)) {
-				FieldProps field = f; // One per scope/delegate
-				if (field.IsStatic && field.IsLiteral) continue; // Skip field
-				if (!field.IsStatic && CorValue == null) continue; // Skip field
-				yield return new ClassVariable(debugger,
-				                               field.Name,
-				                               field.IsStatic,
-				                               field.IsPublic,
-				                               new PersistentValue(debugger, delegate { return GetCorValueOfField(field, pValue); }));
-			}
-		}
-		
-		ICorDebugValue GetCorValueOfField(FieldProps field, PersistentValue pValue)
-		{
-			Value updatedVal = pValue.Value;
-			if (updatedVal is UnavailableValue) throw new CannotGetValueException(updatedVal.AsString);
-			if (!this.IsEquivalentValue(updatedVal)) throw new CannotGetValueException("Object type changed");
-			return GetCorValue(updatedVal, field);
-		}
-		
-		public IEnumerable<Variable> GetPropertyVariables(PersistentValue pValue)
-		{
-			foreach(MethodProps m in Methods) {
-				MethodProps method = m; // One per scope/delegate
-				if (method.HasSpecialName && method.Name.StartsWith("get_") && method.Name != "get_Item") {
-					yield return new PropertyVariable(debugger,
-					                                  method.Name.Remove(0, 4),
-					                                  method.IsStatic,
-					                                  method.IsPublic,
-					                                  delegate { return CreatePropertyEval(method, pValue); });
-				}
-			}
-		}
-		
-		Eval CreatePropertyEval(MethodProps method, PersistentValue pValue)
-		{
-			Value updatedVal = pValue.Value;
-			if (updatedVal is UnavailableValue) {
-				return null;
-			}
-			if (this.IsEquivalentValue(updatedVal)) {
-				ICorDebugFunction evalCorFunction = Module.CorModule.GetFunctionFromToken(method.Token);
-				
-				return new Eval(debugger, evalCorFunction, delegate { return GetArgsForEval(method, pValue); });
-			} else {
-				return null;
-			}
-		}
-		
-		ICorDebugValue[] GetArgsForEval(MethodProps method, PersistentValue pValue)
-		{
-			ObjectValue updatedVal = pValue.Value as ObjectValue;
-			if (this.IsEquivalentValue(updatedVal)) {
-				if (method.IsStatic) {
-					return new ICorDebugValue[] {};
-				} else {
-					if (updatedVal.SoftReference != null) {
-						return new ICorDebugValue[] {updatedVal.SoftReference.CastTo<ICorDebugValue>()};
-					} else {
-						return new ICorDebugValue[] {updatedVal.CorValue};
-					}
-				}
-			} else {
-				return null;
-			}
-		}
-		
-		public override bool IsEquivalentValue(Value val)
-		{
-			ObjectValue objVal = val as ObjectValue;
-			return objVal != null &&
-			       objVal.ClassToken == this.ClassToken;
-		}
-		
-		ICorDebugValue GetCorValue(Value val, FieldProps field)
-		{
-			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
-			ICorDebugFrame curFrame = null;
-			if (debugger.IsPaused && debugger.SelectedThread != null && debugger.SelectedThread.LastFunction != null && debugger.SelectedThread.LastFunction.CorILFrame != null) {
-				curFrame = debugger.SelectedThread.LastFunction.CorILFrame.CastTo<ICorDebugFrame>();
-			}
-			
-			try {
-				if (field.IsStatic) {
-					return corClass.GetStaticFieldValue(field.Token, curFrame);
-				} else {
-					return (val.CorValue.CastTo<ICorDebugObjectValue>()).GetFieldValue(corClass, field.Token);
-				}
-			} catch {
-				throw new CannotGetValueException();
-			}
-		}
-		
-		public Variable GetBaseClassVariable(PersistentValue pValue)
-		{
-			if (HasBaseClass) {
-				return new Variable(debugger,
-				                    "<Base class>",
-				                    new PersistentValue(delegate { return GetBaseClassValue(pValue); }));
-			} else {
-				return null;
-			}
-		}
-		
-		Value GetBaseClassValue(PersistentValue pValue)
-		{
-			Value updatedVal = pValue.Value;
-			if (updatedVal is UnavailableValue) return updatedVal;
-			if (this.IsEquivalentValue(updatedVal)) {
-				return ((ObjectValue)updatedVal).BaseClass;
-			} else {
-				return new UnavailableValue(debugger, "Object type changed");
-			}
-		}
-		
-		public unsafe ObjectValue BaseClass {
-			get	{
-				if (baseClass == null) baseClass = GetBaseClass();
-				if (baseClass == null) throw new DebuggerException("Object doesn't have a base class. You may use HasBaseClass to check this.");
-				return baseClass;
-			}
-		}
-
-		public bool HasBaseClass {
-			get {
-				if (baseClass == null) {
-					try {
-						baseClass = GetBaseClass();
-					} catch (DebuggerException) {
-						baseClass = null;
-					}
-				}
-				return (baseClass != null);
-			}
-		}
-
-		protected ObjectValue GetBaseClass()
-		{
-			string fullTypeName = "<>";
-
-			// If referencing to external assembly
-			if ((classProps.SuperClassToken & 0x01000000) != 0)	{
-
-				fullTypeName = metaData.GetTypeRefProps(classProps.SuperClassToken).Name;
-
-				classProps.SuperClassToken = 0;
-				foreach (Module m in debugger.Modules)
-				{
-					// TODO: Does not work for nested
-					//       see FindTypeDefByName in dshell.cpp
-					// TODO: preservesig
-					try	{
-						classProps.SuperClassToken = m.MetaData.FindTypeDefByName(fullTypeName, 0).Token;
-					} catch {
-						continue;
-					}
-					corModuleSuperclass = m.CorModule;
-					break; 
-				}
-			}
-
-			// If it has no base class
-			if ((classProps.SuperClassToken & 0x00FFFFFF) == 0)	{
-				throw new DebuggerException("Unable to get base class: " + fullTypeName);
-			} else {
-				ICorDebugClass superClass = corModuleSuperclass.GetClassFromToken(classProps.SuperClassToken);
-				if (corHandleValue != null) {
-					return new ObjectValue(debugger, new PersistentValue(debugger, corHandleValue.As<ICorDebugValue>()), superClass);
-				} else {
-					return new ObjectValue(debugger, new PersistentValue(debugger, CorValue), superClass);
-				}
-			}
-		}
 	}
 }

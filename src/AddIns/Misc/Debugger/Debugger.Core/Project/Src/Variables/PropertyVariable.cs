@@ -24,7 +24,7 @@ namespace Debugger
 		internal PropertyVariable(NDebugger debugger, string name, bool isStatic, bool isPublic, EvalCreator evalCreator):base(debugger, name, isStatic, isPublic, null)
 		{
 			this.evalCreator = evalCreator;
-			this.pValue = new PersistentValue(delegate { return GetValueOfResult(); });
+			this.pValue = new PersistentValue(debugger, delegate { return GetValueOfResult(); });
 		}
 		
 		Value GetValueOfResult()
@@ -51,8 +51,8 @@ namespace Debugger
 				if (cachedEval == null || cachedEval.HasExpired) {
 					cachedEval = evalCreator();
 					if (cachedEval != null) {
-						cachedEval.EvalStarted += delegate { OnValueChanged(); };
-						cachedEval.EvalComplete += delegate { OnValueChanged(); };
+						cachedEval.EvalStarted += delegate { OnValueChanged(this, null); };
+						cachedEval.EvalComplete += delegate { OnValueChanged(this, null); };
 					}
 				}
 				return cachedEval;

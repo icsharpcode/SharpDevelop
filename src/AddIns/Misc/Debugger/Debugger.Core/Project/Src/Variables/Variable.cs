@@ -19,7 +19,6 @@ namespace Debugger
 		VariableCollection subVariables;
 		
 		internal protected PersistentValue pValue;
-		internal Value cachedValue;
 		
 		event EventHandler<DebuggerEventArgs> valueChanged;
 		public event EventHandler<VariableCollectionEventArgs> ValueRemovedFromCollection;
@@ -55,15 +54,10 @@ namespace Debugger
 		/// </summary>
 		public Value Value {
 			get {
-				if (cachedValue == null || cachedValue.IsExpired) {
-					cachedValue = pValue.Value;
-					if (cachedValue == null) throw new DebuggerException("ValueGetter returned null");
-					cachedValue.ValueChanged += delegate { OnValueChanged(); };
-				}
-				if (cachedValue.IsExpired) {
-					return new UnavailableValue(debugger, "The value has expired");
-				}
-				return cachedValue;
+				Value val = pValue.Value;
+				val.ValueChanged -= OnValueChanged;
+				val.ValueChanged += OnValueChanged;
+				return val;
 			}
 		}
 		
@@ -84,9 +78,8 @@ namespace Debugger
 			}
 		}
 		
-		protected internal virtual void OnValueChanged()
+		protected internal virtual void OnValueChanged(object sender, ValueEventArgs e)
 		{
-			cachedValue = null;
 			if (valueChanged != null) {
 				valueChanged(this, new VariableEventArgs(this));
 			}
@@ -96,16 +89,6 @@ namespace Debugger
 			if (ValueRemovedFromCollection != null) {
 				ValueRemovedFromCollection(this, e);
 			}
-		}
-		
-		public Variable(NDebugger debugger, ICorDebugValue corValue, string name):this(new PersistentValue(debugger, corValue).Value, name)
-		{
-			
-		}
-		
-		public Variable(Value val, string name):this(val.Debugger, name, new PersistentValue(delegate {return val;}))
-		{
-			
 		}
 		
 		public Variable(NDebugger debugger, string name, PersistentValue pValue)
@@ -126,7 +109,7 @@ namespace Debugger
 		
 		void OnSubVariablesUpdating(object sender, VariableCollectionEventArgs e)
 		{
-			subVariables.UpdateTo(Value.GetSubVariables(new PersistentValue(delegate{return this.Value;})));
+			subVariables.UpdateTo(Value.GetSubVariables());
 		}
 	}
 }

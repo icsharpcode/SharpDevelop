@@ -105,27 +105,17 @@ namespace Debugger
 				}
 			}
 		}
-
-		public Value ThisValue {
+		
+		ICorDebugValue ThisCorValue {
 			get {
-				if (IsStatic) {
-					throw new DebuggerException("Static method does not have 'this'.");
-				} else {
-					if (this.HasExpired) {
-						return new UnavailableValue(debugger, "Function has expired");
-					} else {
-						try {
-							return new ObjectValue(debugger, new PersistentValue(debugger, CorILFrame.GetArgument(0)), ContaingClass);
-						} catch (COMException e) {
-							// System.Runtime.InteropServices.COMException (0x80131304): An IL variable is not available at the current native IP.
-							// See Forum-8640
-							if ((uint)e.ErrorCode == 0x80131304) {
-								return new UnavailableValue(debugger, "Not available in the current state");
-							} else {
-								throw;
-							}
-						}
-					}
+				if (IsStatic) throw new DebuggerException("Static method does not have 'this'.");
+				if (this.HasExpired) throw new CannotGetValueException("Function has expired");
+				try {
+					return CorILFrame.GetArgument(0);
+				} catch (COMException e) {
+					// System.Runtime.InteropServices.COMException (0x80131304): An IL variable is not available at the current native IP. (See Forum-8640)
+					if ((uint)e.ErrorCode == 0x80131304) throw new CannotGetValueException("Not available in the current state");
+					throw;
 				}
 			}
 		}
@@ -383,7 +373,7 @@ namespace Debugger
 				if (!IsStatic) {
 					yield return new Variable(debugger,
 					                          "this",
-					                          new PersistentValue(delegate { return ThisValue; }));
+					                          new PersistentValue(debugger, delegate { return ThisCorValue; }));
 				}
 				foreach(Variable var in ArgumentVariables) {
 					yield return var;
@@ -401,7 +391,7 @@ namespace Debugger
 			get {
 				// TODO: Should work for static
 				if (!IsStatic) {
-					foreach(Variable var in ThisValue.GetSubVariables(new PersistentValue(delegate{return ThisValue;}))) {
+					foreach(Variable var in new PersistentValue(debugger, delegate{ return ThisCorValue; }).Value.GetSubVariables()) {
 						yield return var;
 					}
 				}
