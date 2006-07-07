@@ -18,10 +18,16 @@ using SharpReportCore;
 namespace SharpReportCore {
 	
 	public class ReportDocument : PrintDocument {
+		///<summary>
+		/// Fired just before the DetailSection ist printed
+		/// </summary>
+		/// 
+		public event EventHandler<ReportPageEventArgs> BodyStart;
 		
-		public event EventHandler<ReportPageEventArgs> PrintPageBodyStart;
-	
-		public event EventHandler<ReportPageEventArgs> PrintPageBodyEnd;
+		/// <summary>
+		/// Fired if all Details 8data) are printed
+		/// </summary>
+		public event EventHandler<ReportPageEventArgs> BodyEnd;
 		
 		
 		
@@ -30,14 +36,16 @@ namespace SharpReportCore {
 		public event EventHandler<ReportPageEventArgs> RenderDetails;
 		public event EventHandler<ReportPageEventArgs> RenderPageEnd;
 		public event EventHandler<ReportPageEventArgs> RenderReportEnd;
+		
 		int pageNumber;
+		bool detailsDone;
 		
 		public ReportDocument():base() {
 			
 		}
 		
 		
-		#region overriede's
+		#region Overrides
 		
 		protected override void OnQueryPageSettings(QueryPageSettingsEventArgs e){
 			base.OnQueryPageSettings(e);
@@ -49,22 +57,139 @@ namespace SharpReportCore {
 		}
 		
 		protected override void OnPrintPage(PrintPageEventArgs e){
-			base.OnPrintPage(e);
 			pageNumber ++;
-
-			ReportPageEventArgs pea = new ReportPageEventArgs (e,pageNumber,
-			                                                   false,new PointF (0,0));
-			GeneratePage (pea);
+			base.OnPrintPage(e);
 			
-
-			if (pea.PrintPageEventArgs.HasMorePages == false) {
-				if (this.RenderReportEnd != null) {
-					this.RenderReportEnd(this,pea);
+			
+			ReportPageEventArgs pea = new ReportPageEventArgs (e,pageNumber,
+			                                                   false,Point.Empty);
+			
+			
+			// ReportHeader only on first page
+			if (this.pageNumber == 1) {
+				if (this.RenderReportHeader != null) {
+					this.RenderReportHeader(this,pea);
 				}
-//				this.OnEndPrint (new PrintEventArgs());
+			}
+			
+			// allway draw PageHeader
+			
+			if (this.RenderPageHeader != null) {
+				this.RenderPageHeader (this,pea);
+			}
+			
+			// Details
+
+			if (BodyStart != null) {
+				BodyStart (this,pea);
+			}
+//
+			if (this.RenderDetails != null) {
+				this.RenderDetails(this,pea);
+			}
+			
+			
+			if (pea.ForceNewPage) {
+				if (RenderPageEnd != null) {
+					RenderPageEnd (this,pea);
+					return;
+				}
+				pea.ForceNewPage = false;
+				return;
+			}
+			
+			if (BodyEnd != null) {
+				BodyEnd (this,pea);
+			}
+			
+			// ReportFooter
+			if (this.detailsDone) {
+				this.RenderReportEnd(this,pea);
+				
+				if (pea.ForceNewPage) {
+					e.HasMorePages = true;
+					pea.ForceNewPage = false;
+
+				}
+			}
+
+			
+			//PageFooter
+			if (RenderPageEnd != null) {
+				RenderPageEnd (this,pea);
+				e.HasMorePages = false;
+				return;
 			}
 		}
+		
+		
+		/*
+		protected override void OnPrintPage(PrintPageEventArgs e){
+			pageNumber ++;
+			base.OnPrintPage(e);
+			
+			
+			ReportPageEventArgs pea = new ReportPageEventArgs (e,pageNumber,
+			                                                   false,Point.Empty);
+			
+			
+			// ReportHeader only on first page
+			if (this.pageNumber == 1) {
+				if (this.RenderReportHeader != null) {
+					this.RenderReportHeader(this,pea);
+				}
+			}
+			
+			// allway draw PageHeader
+			
+			if (this.RenderPageHeader != null) {
+				this.RenderPageHeader (this,pea);
+			}
+			
+			// Details
+			
+			if (!this.detailsDone) {
+				if (BodyStart != null) {
+					BodyStart (this,pea);
+				}
+				
+				if (this.RenderDetails != null) {
+					this.RenderDetails(this,pea);
+				}
+			}
+			
+			if (pea.ForceNewPage) {
+				if (RenderPageEnd != null) {
+					RenderPageEnd (this,pea);
+					return;
+				}
+				pea.ForceNewPage = false;
+				return;
+			}
+			
+			// ReportFooter
+			
+			if (this.detailsDone) {
+				if (BodyEnd != null) {
+					BodyEnd (this,pea);
+					this.RenderReportEnd(this,pea);
+					
+					if (pea.ForceNewPage) {
+						e.HasMorePages = true;
+						pea.ForceNewPage = false;
 
+					}
+				}
+			}
+			
+			//PageFooter
+			if (RenderPageEnd != null) {
+				RenderPageEnd (this,pea);
+				e.HasMorePages = false;
+				return;
+			}
+		}
+	*/
 		
 		protected override void OnEndPrint(PrintEventArgs e){
 			base.OnEndPrint(e);
@@ -72,43 +197,6 @@ namespace SharpReportCore {
 		
 		#endregion
 		
-		private void GeneratePage (SharpReportCore.ReportPageEventArgs page) {
-			
-			if (this.pageNumber == 1) {
-				if (this.RenderReportHeader != null) {
-					this.RenderReportHeader(this,page);
-				}
-			}
-			
-			if (this.RenderPageHeader != null) {
-				this.RenderPageHeader (this,page);
-			}
-			
-			
-			// print PageFooter before DetailSection
-			//so it's much easyer to calculate size of DetailSection
-			if (RenderPageEnd != null) {
-				RenderPageEnd (this,page);
-			}
-			
-			
-			if (PrintPageBodyStart != null) {
-				PrintPageBodyStart (this,page);
-			}
-			
-			if (this.RenderDetails != null) {
-				this.RenderDetails(this,page);
-			}
-
-			if (page.PrintPageEventArgs.HasMorePages == false) {
-				if (PrintPageBodyEnd != null) {
-					PrintPageBodyEnd (this,page);
-				}
-			}
-			
-		}
-	
-	
 		
 		#region Property's
 		
@@ -117,6 +205,13 @@ namespace SharpReportCore {
 				return pageNumber;
 			}
 		}
+		
+		public bool DetailsDone {
+			set {
+				detailsDone = value;
+			}
+		}
+		
 		
 		#endregion
 	}

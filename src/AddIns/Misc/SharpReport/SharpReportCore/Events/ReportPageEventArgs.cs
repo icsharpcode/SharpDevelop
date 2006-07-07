@@ -31,12 +31,12 @@ namespace SharpReportCore {
 		int pageNumber;
 		bool forceNewPage;
 		
-		PointF locationAfterDraw;
+		Point locationAfterDraw;
 		
 		public ReportPageEventArgs(PrintPageEventArgs e,
 		                           int pageNumber,
 		                           bool forceNewPage,
-		                           PointF locationAfterDraw){
+		                           Point locationAfterDraw){
 			
 			this.printEventArgs = e;
 			this.pageNumber = pageNumber;
@@ -67,7 +67,7 @@ namespace SharpReportCore {
 		}
 		
 		
-		public PointF LocationAfterDraw {
+		public Point LocationAfterDraw {
 			get {
 				return locationAfterDraw;
 			}

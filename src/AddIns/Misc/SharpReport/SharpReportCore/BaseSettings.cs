@@ -110,7 +110,6 @@ namespace SharpReportCore {
 		protected void NotifyPropertyChanged(string info) {
 			if (this.initDone) {
 				if (PropertyChanged != null) {
-					System.Console.WriteLine("BaseSettings : PropertyChanged {0}",info);
 					PropertyChanged (this,new PropertyChangedEventArgs (info));
 				}
 			}

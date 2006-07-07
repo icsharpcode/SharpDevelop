@@ -131,6 +131,7 @@
     <Compile Include="Events\SectionRenderEventArgs.cs" />
     <Compile Include="Printing\Text\StandardFormatter.cs" />
     <Compile Include="BaseClasses\DataTypeHelper.cs" />
+    <Compile Include="Printing\Page.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />

@@ -129,7 +129,7 @@ namespace SharpReportCore {
 			                      this.stringTrimming,this.contentAlignment);
 			                      
 			
-			 rpea.LocationAfterDraw = new PointF (this.Location.X + this.Size.Width,
+			 rpea.LocationAfterDraw = new Point (this.Location.X + this.Size.Width,
 			                                  this.Location.Y + this.Size.Height);
 		}
 	
