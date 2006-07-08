@@ -9,14 +9,13 @@ namespace HtmlHelp2
 {
 	using System;
 	using System.Drawing;
+	using System.Globalization;
 	using System.Windows.Forms;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Gui;
 	using ICSharpCode.SharpDevelop.Project;
 	using HtmlHelp2.Environment;
-	using HtmlHelp2.HelperDialog;
-	using HtmlHelp2.SharpDevLanguageClass;
 	using MSHelpServices;
 
 
@@ -46,8 +45,7 @@ namespace HtmlHelp2
 		CheckBox useCurrentLang    = new CheckBox();
 		Label label1               = new Label();
 		Label label2               = new Label();
-		string selectedQuery       = "";
-		bool searchIsBusy          = false;
+		bool searchIsBusy;
 
 		public override Control Control
 		{
@@ -60,6 +58,11 @@ namespace HtmlHelp2
 		}
 
 		public override void RedrawContent()
+		{
+			this.RedrawContentInternal();
+		}
+
+		void RedrawContentInternal()
 		{
 			searchButton.Text       = StringParser.Parse("${res:AddIns.HtmlHelp2.Search}");
 			titlesOnly.Text         = StringParser.Parse("${res:AddIns.HtmlHelp2.SearchInTitlesOnly}");
@@ -189,8 +192,7 @@ namespace HtmlHelp2
 			label2.TextAlign                      = ContentAlignment.MiddleLeft;
 			label2.Font                           = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
-			this.RedrawContent();
-			
+			this.RedrawContentInternal();
 		}
 
 		private void FilterChanged(object sender, EventArgs e)
@@ -198,7 +200,7 @@ namespace HtmlHelp2
 			string selectedFilterName = filterCombobox.SelectedItem.ToString();
 			if (!string.IsNullOrEmpty(selectedFilterName))
 			{
-				selectedQuery = HtmlHelp2Environment.FindFilterQuery(selectedFilterName);
+				HtmlHelp2Environment.FindFilterQuery(selectedFilterName);
 			}
 		}
 
@@ -212,7 +214,6 @@ namespace HtmlHelp2
 			{
 				filterCombobox.SelectedIndexChanged -= new EventHandler(FilterChanged);
 				filterCombobox.SelectedIndex         = filterCombobox.Items.IndexOf(HtmlHelp2Environment.CurrentFilterName);
-				selectedQuery                        = HtmlHelp2Environment.CurrentFilterQuery;
 				filterCombobox.SelectedIndexChanged += new EventHandler(FilterChanged);
 			}
 		}
@@ -235,7 +236,7 @@ namespace HtmlHelp2
 			if (!string.IsNullOrEmpty(searchTerm.Text))
 			{
 				this.AddTermToList(searchTerm.Text);
-				this.PerformFTS(searchTerm.Text);
+				this.PerformFts(searchTerm.Text);
 			}
 		}
 
@@ -250,7 +251,7 @@ namespace HtmlHelp2
 			{
 				e.Handled = true;
 				this.AddTermToList(searchTerm.Text);
-				this.PerformFTS(searchTerm.Text);
+				this.PerformFts(searchTerm.Text);
 			}
 		}
 
@@ -265,12 +266,12 @@ namespace HtmlHelp2
 		}
 
 		#region FTS
-		private void PerformFTS(string searchWord)
+		private void PerformFts(string searchWord)
 		{
-			this.PerformFTS(searchWord, false);
+			this.PerformFts(searchWord, false);
 		}
 
-		private void PerformFTS(string searchWord, bool useDynamicHelp)
+		private void PerformFts(string searchWord, bool useDynamicHelp)
 		{
 			if (!HtmlHelp2Environment.SessionIsInitialized || string.IsNullOrEmpty(searchWord) || searchIsBusy)
 			{
@@ -300,7 +301,7 @@ namespace HtmlHelp2
 				if (useDynamicHelp)
 					matchingTopics = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(searchWord);
 				else
-					matchingTopics = HtmlHelp2Environment.FTS.Query(searchWord, searchFlags);
+					matchingTopics = HtmlHelp2Environment.Fts.Query(searchWord, searchFlags);
 
 				Cursor.Current     = Cursors.Default;
 
@@ -319,7 +320,7 @@ namespace HtmlHelp2
 						                                   HxTopicGetTitleDefVal.HxTopicGetTitleFileName);
 						lvi.Tag          = topic;
 						lvi.SubItems.Add(topic.Location);
-						lvi.SubItems.Add(topic.Rank.ToString());
+						lvi.SubItems.Add(topic.Rank.ToString(CultureInfo.CurrentCulture));
 
 						searchResults.SearchResultsListView.Items.Add(lvi);
 					}
@@ -334,7 +335,7 @@ namespace HtmlHelp2
 					searchIsBusy = false;
 				}
 			}
-			catch (Exception ex)
+			catch (System.Runtime.InteropServices.COMException ex)
 			{
 				LoggingService.Error("Help 2.0: cannot get matching search word; " + ex.ToString());
 
@@ -349,19 +350,19 @@ namespace HtmlHelp2
 			}
 		}
 
-		public bool PerformF1FTS(string keyword)
+		public bool PerformF1Fts(string keyword)
 		{
-			return this.PerformF1FTS(keyword, false);
+			return this.PerformF1Fts(keyword, false);
 		}
 
-		public bool PerformF1FTS(string keyword, bool useDynamicHelp)
+		public bool PerformF1Fts(string keyword, bool useDynamicHelp)
 		{
 			if (!HtmlHelp2Environment.SessionIsInitialized || string.IsNullOrEmpty(keyword) || searchIsBusy)
 			{
 				return false;
 			}
 
-			this.PerformFTS(keyword, useDynamicHelp);
+			this.PerformFts(keyword, useDynamicHelp);
 
 			HtmlHelp2SearchResultsView searchResults = HtmlHelp2SearchResultsView.Instance;
 			return searchResults.SearchResultsListView.Items.Count > 0;

@@ -22,7 +22,7 @@ namespace HtmlHelp2
 			try
 			{
 				PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchPad));
-				return ((HtmlHelp2SearchPad)search.PadContent).PerformF1FTS(fullTypeName, true);
+				return ((HtmlHelp2SearchPad)search.PadContent).PerformF1Fts(fullTypeName, true);
 			}
 			catch
 			{
@@ -37,7 +37,7 @@ namespace HtmlHelp2
 			try
 			{
 				PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchPad));
-				return ((HtmlHelp2SearchPad)search.PadContent).PerformF1FTS(keyword);
+				return ((HtmlHelp2SearchPad)search.PadContent).PerformF1Fts(keyword);
 			}
 			catch
 			{

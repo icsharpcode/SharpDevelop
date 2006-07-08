@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace HtmlHelp2.OptionsPanel
+namespace HtmlHelp2.Environment
 {
 	using System;
 	using System.Drawing;
@@ -17,13 +17,11 @@ namespace HtmlHelp2.OptionsPanel
 	using System.Xml.Serialization;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop.Gui;
-	using HtmlHelp2.Environment;
-	using HtmlHelp2.RegistryWalker;
 
 	public class HtmlHelp2OptionsPanel : AbstractOptionPanel
 	{
-		ComboBox help2Collections = null;
-		CheckBox tocPictures = null;
+		ComboBox help2Collections;
+		CheckBox tocPictures;
 		string selectedHelp2Collection = string.Empty;
 
 		public override void LoadPanelContents()
@@ -78,8 +76,8 @@ namespace HtmlHelp2.OptionsPanel
 	public class HtmlHelp2Options
 	{
 		private string selectedCollection = string.Empty;
-		private bool tocPictures = true;
-		private bool dynamicHelpDebugInfo = false;
+		private bool tocPictures;
+		private bool dynamicHelpDebugInfo;
 
 		[XmlElement("collection")]
 		public string SelectedCollection

@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace HtmlHelp2.ControlsValidation
+namespace HtmlHelp2.Environment
 {
 	using System;
 	using System.IO;
@@ -13,6 +13,10 @@ namespace HtmlHelp2.ControlsValidation
 
 	public sealed class Help2ControlsValidation
 	{
+		Help2ControlsValidation()
+		{
+		}
+
 		public static bool IsTocControlRegistered
 		{
 			get
@@ -33,16 +37,16 @@ namespace HtmlHelp2.ControlsValidation
 		{
 			try
 			{
-				using (RegistryKey tempRegKey = Registry.ClassesRoot.OpenSubKey(String.Format("CLSID\\{0}\\InprocServer32", classId)))
-				{
-					string help2Dll        = (string)tempRegKey.GetValue("");
-					return (help2Dll != null && help2Dll != "" && File.Exists(help2Dll));
-				}
+				RegistryKey tmp = Registry.ClassesRoot.OpenSubKey
+					(string.Format(null, @"CLSID\{0}\InprocServer32", classId), false);
+				string help2Library = (string)tmp.GetValue("", string.Empty);
+				tmp.Close();
+				return (!string.IsNullOrEmpty(help2Library) && File.Exists(help2Library));
 			}
-			catch
+			catch (System.NullReferenceException)
 			{
-				return false;
 			}
+			return false;
 		}
 	}
 }

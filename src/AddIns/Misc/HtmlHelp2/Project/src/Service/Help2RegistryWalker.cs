@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace HtmlHelp2.RegistryWalker
+namespace HtmlHelp2.Environment
 {
 	using System;
 	using System.Runtime.InteropServices;
@@ -15,29 +15,48 @@ namespace HtmlHelp2.RegistryWalker
 
 	public sealed class Help2RegistryWalker
 	{
+		Help2RegistryWalker()
+		{
+		}
+
 		public static bool BuildNamespacesList(ComboBox help2Collections, string selectedHelp2Collection)
 		{
 			if (help2Collections == null)
 			{
+				throw new ArgumentNullException("help2Collections");
+			}
+
+			HxRegistryWalkerClass registryWalker;
+			IHxRegNamespaceList help2Namespaces;
+			try
+			{
+				registryWalker = new HxRegistryWalkerClass();
+				help2Namespaces = registryWalker.get_RegisteredNamespaceList("");
+			}
+			catch (System.Runtime.InteropServices.COMException)
+			{
+				help2Namespaces = null;
+				registryWalker = null;
+			}
+
+			if (registryWalker == null || help2Namespaces == null || help2Namespaces.Count == 0)
+			{
 				return false;
 			}
+
 			help2Collections.Items.Clear();
 			help2Collections.BeginUpdate();
-			bool result = true;
-
 			try
 			{
 				string currentDescription = string.Empty;
-				HxRegistryWalkerClass registryWalker = new HxRegistryWalkerClass();
-				IHxRegNamespaceList namespaces = registryWalker.get_RegisteredNamespaceList("");
 
-				foreach (IHxRegNamespace currentNamespace in namespaces)
+				foreach (IHxRegNamespace currentNamespace in help2Namespaces)
 				{
 					help2Collections.Items.Add
 						((string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription));
 
 					if (!string.IsNullOrEmpty(selectedHelp2Collection) &&
-					     string.Compare(selectedHelp2Collection, currentNamespace.Name) == 0)
+					    string.Compare(selectedHelp2Collection, currentNamespace.Name) == 0)
 					{
 						currentDescription =
 							(string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription);
@@ -49,93 +68,158 @@ namespace HtmlHelp2.RegistryWalker
 				else
 					help2Collections.SelectedIndex = 0;
 			}
-			catch
-			{
-				result = false;
-			}
 			finally
 			{
 				help2Collections.EndUpdate();
 			}
-
-			return result;
+			return true;
+//			if (help2Collections == null)
+//			{
+//				return false;
+//			}
+//			help2Collections.Items.Clear();
+//			help2Collections.BeginUpdate();
+//			bool result = true;
+//
+//			try
+//			{
+//				string currentDescription = string.Empty;
+//				HxRegistryWalkerClass registryWalker = new HxRegistryWalkerClass();
+//				IHxRegNamespaceList namespaces = registryWalker.get_RegisteredNamespaceList("");
+//
+//				foreach (IHxRegNamespace currentNamespace in namespaces)
+//				{
+//					help2Collections.Items.Add
+//						((string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription));
+//
+//					if (!string.IsNullOrEmpty(selectedHelp2Collection) &&
+//					     string.Compare(selectedHelp2Collection, currentNamespace.Name) == 0)
+//					{
+//						currentDescription =
+//							(string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription);
+//					}
+//				}
+//
+//				if (!string.IsNullOrEmpty(currentDescription))
+//					help2Collections.SelectedIndex = help2Collections.Items.IndexOf(currentDescription);
+//				else
+//					help2Collections.SelectedIndex = 0;
+//			}
+//			catch
+//			{
+//				result = false;
+//			}
+//			finally
+//			{
+//				help2Collections.EndUpdate();
+//			}
+//
+//			return result;
 		}
 
 		public static string GetNamespaceName(string description)
 		{
+			HxRegistryWalkerClass registryWalker;
+			IHxRegNamespaceList help2Namespaces;
 			try
 			{
-				HxRegistryWalkerClass registryWalker = new HxRegistryWalkerClass();
-				IHxRegNamespaceList namespaces = registryWalker.get_RegisteredNamespaceList("");
-
-				foreach (IHxRegNamespace currentNamespace in namespaces)
-				{
-					string currentDescription =
-						(string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription);
-					if (string.Compare(currentDescription, description) == 0)
-					{
-						return currentNamespace.Name;
-					}
-				}
+				registryWalker = new HxRegistryWalkerClass();
+				help2Namespaces = registryWalker.get_RegisteredNamespaceList("");
 			}
-			catch
+			catch (System.Runtime.InteropServices.COMException)
 			{
-				LoggingService.Error("Help 2.0: cannot find selected namespace name");
+				help2Namespaces = null;
+				registryWalker = null;
+			}
+
+			if (registryWalker == null || help2Namespaces == null || help2Namespaces.Count == 0)
+			{
+				return string.Empty;
+			}
+			foreach (IHxRegNamespace currentNamespace in help2Namespaces)
+			{
+				string currentDescription =
+					(string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription);
+				if (string.Compare(currentDescription, description) == 0)
+				{
+					return currentNamespace.Name;
+				}
 			}
 			return string.Empty;
 		}
 
 		public static string GetFirstNamespace(string name)
 		{
+			HxRegistryWalkerClass registryWalker;
+			IHxRegNamespaceList help2Namespaces;
 			try
 			{
-				HxRegistryWalkerClass registryWalker = new HxRegistryWalkerClass();
-				IHxRegNamespaceList namespaces = registryWalker.get_RegisteredNamespaceList("");
-
-				foreach (IHxRegNamespace currentNamespace in namespaces)
-				{
-					if (string.Compare(currentNamespace.Name, name) == 0)
-					{
-						return name;
-					}
-				}
-				return namespaces.ItemAt(1).Name;
+				registryWalker = new HxRegistryWalkerClass();
+				help2Namespaces = registryWalker.get_RegisteredNamespaceList("");
 			}
-			catch
+			catch (System.Runtime.InteropServices.COMException)
+			{
+				help2Namespaces = null;
+				registryWalker = null;
+			}
+
+			if (registryWalker == null || help2Namespaces == null || help2Namespaces.Count == 0)
 			{
 				return string.Empty;
 			}
+			foreach (IHxRegNamespace currentNamespace in help2Namespaces)
+			{
+				if (string.Compare(currentNamespace.Name, name) == 0)
+				{
+					return name;
+				}
+			}
+			return help2Namespaces.ItemAt(1).Name;
 		}
 
 		public static string GetFirstMatchingNamespaceName(string matchingName)
 		{
-			if (!string.IsNullOrEmpty(matchingName))
+			HxRegistryWalkerClass registryWalker;
+			IHxRegNamespaceList help2Namespaces;
+			try
 			{
-				try
-				{
-					HxRegistryWalkerClass registryWalker = new HxRegistryWalkerClass();
-					IHxRegNamespaceList namespaces = registryWalker.get_RegisteredNamespaceList("");
-
-					foreach (IHxRegNamespace currentNamespace in namespaces)
-					{
-						if (PathMatchSpec(currentNamespace.Name, matchingName))
-						{
-							return currentNamespace.Name;
-						}
-					}
-				}
-				catch
-				{
-					// I don't care about an exception here ;-)
-				}
+				registryWalker = new HxRegistryWalkerClass();
+				help2Namespaces = registryWalker.get_RegisteredNamespaceList("");
+			}
+			catch (System.Runtime.InteropServices.COMException)
+			{
+				help2Namespaces = null;
+				registryWalker = null;
 			}
 
+			if (registryWalker == null ||
+			    help2Namespaces == null || help2Namespaces.Count == 0 ||
+			    string.IsNullOrEmpty(matchingName))
+			{
+				return string.Empty;
+			}
+			foreach (IHxRegNamespace currentNamespace in help2Namespaces)
+			{
+				if (NativeMethods.PathMatchSpec(currentNamespace.Name, matchingName))
+				{
+					return currentNamespace.Name;
+				}
+			}
 			return string.Empty;
 		}
 
-		#region PatchMatchSpec@Win32API
+	}
+	
+	internal class NativeMethods
+	{
+		NativeMethods()
+		{
+		}
+
+		#region PatchMatchSpec
 		[DllImport("shlwapi.dll")]
-		static extern bool PathMatchSpec(string pwszFile, string pwszSpec);
+		[return: MarshalAs(UnmanagedType.Bool)]
+		internal static extern bool PathMatchSpec(string pwszFile, string pwszSpec);
 		#endregion
 	}
 }

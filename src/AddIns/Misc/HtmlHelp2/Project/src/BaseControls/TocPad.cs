@@ -9,6 +9,7 @@ namespace HtmlHelp2
 {
 	using System;
 	using System.Drawing;
+	using System.Security.Permissions;
 	using System.Windows.Forms;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop;
@@ -17,8 +18,6 @@ namespace HtmlHelp2
 	using MSHelpControls;
 	using MSHelpServices;
 	using HtmlHelp2.Environment;
-	using HtmlHelp2.ControlsValidation;
-	using HtmlHelp2.ResourcesHelperClass;
 	using PrintOptions = MSHelpServices.HxHierarchy_PrintNode_Options;
 	using TSC = MSHelpControls.HxTreeStyleConstant;
 
@@ -34,7 +33,7 @@ namespace HtmlHelp2
 
 	public class HtmlHelp2TocPad : AbstractPadContent
 	{
-		protected MsHelp2TocControl help2TocControl;
+		MSHelp2TocControl help2TocControl;
 
 		public override Control Control
 		{
@@ -53,12 +52,12 @@ namespace HtmlHelp2
 
 		public HtmlHelp2TocPad()
 		{
-			help2TocControl = new MsHelp2TocControl();
+			help2TocControl = new MSHelp2TocControl();
 		}
 
-		public void SyncToc(string topicUrl)
+		public void SyncToc(string topic)
 		{
-			help2TocControl.SynchronizeToc(topicUrl);
+			help2TocControl.SynchronizeToc(topic);
 		}
 
 		public void GetPrevFromNode()
@@ -66,9 +65,9 @@ namespace HtmlHelp2
 			help2TocControl.GetPrevFromNode();
 		}
 
-		public void GetPrevFromUrl(string topicUrl)
+		public void GetPrevFromUrl(string topic)
 		{
-			help2TocControl.GetPrevFromUrl(topicUrl);
+			help2TocControl.GetPrevFromUrl(topic);
 		}
 
 		public void GetNextFromNode()
@@ -76,9 +75,9 @@ namespace HtmlHelp2
 			help2TocControl.GetNextFromNode();
 		}
 
-		public void GetNextFromUrl(string topicUrl)
+		public void GetNextFromUrl(string topic)
 		{
-			help2TocControl.GetNextFromUrl(topicUrl);
+			help2TocControl.GetNextFromUrl(topic);
 		}
 
 		public bool IsNotFirstNode
@@ -92,16 +91,16 @@ namespace HtmlHelp2
 		}
 	}
 
-	public class MsHelp2TocControl : UserControl
+	public class MSHelp2TocControl : UserControl
 	{
-		AxHxTocCtrl tocControl = null;
+		AxHxTocCtrl tocControl;
 		ComboBox filterCombobox = new ComboBox();
 		Label label1 = new Label();
 		Label infoLabel = new Label();
 		ContextMenuStrip printContextMenu = new ContextMenuStrip();
 		ToolStripMenuItem printTopic = new ToolStripMenuItem();
 		ToolStripMenuItem printTopicAndSubTopics = new ToolStripMenuItem();
-		bool tocControlFailed = false;
+		bool tocControlFailed;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -112,7 +111,8 @@ namespace HtmlHelp2
 			}
 		}
 
-		public MsHelp2TocControl()
+		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
+		public MSHelp2TocControl()
 		{
 			this.InitializeComponents();
 			this.UpdateControl();
@@ -144,7 +144,7 @@ namespace HtmlHelp2
 				this.LoadToc();
 			}
 		}
-
+		
 		private void InitializeComponents()
 		{
 			infoLabel.Dock = DockStyle.Fill;
@@ -186,11 +186,6 @@ namespace HtmlHelp2
 				catch (System.Runtime.InteropServices.COMException cEx)
 				{
 					LoggingService.Error("Help 2.0: TOC control failed: " + cEx.ToString());
-					this.tocControlFailed = true;
-				}
-				catch(Exception ex)
-				{
-					LoggingService.Error("Help 2.0: TOC control failed; " + ex.ToString());
 					this.tocControlFailed = true;
 				}
 			}
@@ -239,10 +234,10 @@ namespace HtmlHelp2
 		{
 			if (e.hNode != 0)
 			{
-				printTopic.Enabled = tocControl.Hierarchy.GetURL(e.hNode) != "";
+				printTopic.Enabled = !string.IsNullOrEmpty(tocControl.Hierarchy.GetURL(e.hNode));
 				printTopicAndSubTopics.Enabled = tocControl.Hierarchy.GetFirstChild(e.hNode) != 0;
 				bool selectTextFlag = (tocControl.Hierarchy.GetFirstChild(e.hNode) == 0 ||
-				                       tocControl.Hierarchy.GetURL(e.hNode) == "");
+				                       string.IsNullOrEmpty(tocControl.Hierarchy.GetURL(e.hNode)));
 				printTopicAndSubTopics.Text =
 					StringParser.Parse((selectTextFlag)?
 					                   "${res:AddIns.HtmlHelp2.PrintSubtopics}":
@@ -301,24 +296,24 @@ namespace HtmlHelp2
 					HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.FindFilterQuery(filterName));
 				return true;
 			}
-			catch
+			catch (System.Runtime.InteropServices.COMException)
 			{
 				LoggingService.Error("Help 2.0: Cannot connect to the IHxHierarchy interface.");
 				return false;
 			}
 		}
 
-		private void CallHelp(string topicUrl)
+		private void CallHelp(string topic)
 		{
-			this.CallHelp(topicUrl, true);
+			this.CallHelp(topic, true);
 		}
 
-		private void CallHelp(string topicUrl, bool syncToc)
+		private void CallHelp(string topic, bool syncToc)
 		{
-			if (!string.IsNullOrEmpty(topicUrl))
+			if (!string.IsNullOrEmpty(topic))
 			{
-				if (syncToc) this.SynchronizeToc(topicUrl);
-				ShowHelpBrowser.OpenHelpView(topicUrl);
+				if (syncToc) this.SynchronizeToc(topic);
+				ShowHelpBrowser.OpenHelpView(topic);
 			}
 		}
 
@@ -348,11 +343,11 @@ namespace HtmlHelp2
 		#endregion
 
 		#region Published Help 2.0 Commands
-		public void SynchronizeToc(string topicUrl)
+		public void SynchronizeToc(string topic)
 		{
 			try
 			{
-				tocControl.Synchronize(topicUrl);
+				tocControl.Synchronize(topic);
 			}
 			catch (System.Runtime.InteropServices.COMException)
 			{
@@ -371,17 +366,14 @@ namespace HtmlHelp2
 			catch (System.Runtime.InteropServices.COMException)
 			{
 			}
-			catch
-			{
-			}
 		}
 
-		public void GetNextFromUrl(string url)
+		public void GetNextFromUrl(string topic)
 		{
-			if (url == null || url.Length == 0) return;
+			if (topic == null || topic.Length == 0) return;
 			try
 			{
-				int currentNode = tocControl.Hierarchy.GetNextFromUrl(url);
+				int currentNode = tocControl.Hierarchy.GetNextFromUrl(topic);
 				string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
 				this.CallHelp(topicUrl, true);
 			}
@@ -405,17 +397,14 @@ namespace HtmlHelp2
 			catch (System.Runtime.InteropServices.COMException)
 			{
 			}
-			catch
-			{
-			}
 		}
 
-		public void GetPrevFromUrl(string url)
+		public void GetPrevFromUrl(string topic)
 		{
-			if (url == null || url.Length == 0) return;
+			if (topic == null || topic.Length == 0) return;
 			try
 			{
-				int currentNode = tocControl.Hierarchy.GetPrevFromUrl(url);
+				int currentNode = tocControl.Hierarchy.GetPrevFromUrl(topic);
 				string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
 				this.CallHelp(topicUrl, true);
 			}
@@ -434,10 +423,10 @@ namespace HtmlHelp2
 			{
 				try
 				{
-					int currentNode = tocControl.Hierarchy.GetPrevFromNode(tocControl.Selection);
-					return (currentNode != 0);
+					int node = tocControl.Hierarchy.GetPrevFromNode(tocControl.Selection);
+					return node != 0;
 				}
-				catch
+				catch (System.Runtime.InteropServices.COMException)
 				{
 					return true;
 				}
@@ -450,10 +439,10 @@ namespace HtmlHelp2
 			{
 				try
 				{
-					int currentNode = tocControl.Hierarchy.GetNextFromNode(tocControl.Selection);
-					return (currentNode != 0);
+					int node = tocControl.Hierarchy.GetNextFromNode(tocControl.Selection);
+					return (node != 0);
 				}
-				catch
+				catch (System.Runtime.InteropServices.COMException)
 				{
 					return true;
 				}

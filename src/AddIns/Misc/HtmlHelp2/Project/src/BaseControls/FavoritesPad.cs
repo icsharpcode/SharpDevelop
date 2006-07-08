@@ -17,7 +17,6 @@ namespace HtmlHelp2
 	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Gui;
 	using HtmlHelp2.Environment;
-	using HtmlHelp2.ResourcesHelperClass;
 
 
 	public class ShowFavoritesMenuCommand : AbstractMenuCommand

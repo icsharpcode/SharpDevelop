@@ -21,8 +21,6 @@ namespace HtmlHelp2
 	using ICSharpCode.SharpDevelop.Project;
 	using ICSharpCode.TextEditor;
 	using HtmlHelp2.Environment;
-	using HtmlHelp2.ResourcesHelperClass;
-	using HtmlHelp2.SharpDevLanguageClass;
 	using MSHelpServices;
 
 

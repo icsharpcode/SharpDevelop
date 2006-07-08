@@ -14,34 +14,34 @@ namespace HtmlHelp2.Environment
 	using System.Xml.Serialization;
 	using ICSharpCode.Core;
 	using MSHelpServices;
-	using HtmlHelp2.RegistryWalker;
-	using HtmlHelp2.HelperDialog;
-	using HtmlHelp2.OptionsPanel;
 
 	public sealed class HtmlHelp2Environment
 	{
 		static Guid TocGuid                              = new Guid("314111B2-A502-11D2-BBCA-00C04F8EC294");
 		static Guid IndexGuid                            = new Guid("314111CC-A502-11D2-BBCA-00C04F8EC294");
 		static Guid QueryGuid                            = new Guid("31411193-A502-11D2-BBCA-00C04F8EC294");
-		
-		static HxSession session                         = null;
-		static IHxRegFilterList namespaceFilters         = null;
-		static IHxQuery fulltextSearch                   = null;
-		static IHxIndex dynamicHelp                      = null;
-		public static string DefaultNamespaceName        = "MS.NETFramework.v20*";
+		static HxSession session;
+		static IHxRegFilterList namespaceFilters;
+		static IHxQuery fulltextSearch;
+		static IHxIndex dynamicHelp;
+		static string defaultNamespaceName               =
+			Help2RegistryWalker.GetFirstMatchingNamespaceName("MS.NETFramework.v20*");
 		static string currentSelectedFilterQuery         = "";
 		static string currentSelectedFilterName          = "";
 		static string defaultPage                        = "about:blank";
 		static string searchPage                         = "http://msdn.microsoft.com";
-		static bool dynamicHelpIsBusy                    = false;
+		static bool dynamicHelpIsBusy;
 		static HtmlHelp2Options config                   = new HtmlHelp2Options();
 
+		
+		HtmlHelp2Environment()
+		{
+		}
 
 		static HtmlHelp2Environment()
 		{
 			LoadHelp2Config();
-			DefaultNamespaceName = Help2RegistryWalker.GetFirstMatchingNamespaceName(DefaultNamespaceName);
-			InitializeNamespace(DefaultNamespaceName);
+			InitializeNamespace(defaultNamespaceName);
 		}
 
 		#region Properties
@@ -50,6 +50,11 @@ namespace HtmlHelp2.Environment
 			get { return session != null; }
 		}
 
+		public static string DefaultNamespaceName
+		{
+			get { return defaultNamespaceName; }
+		}
+		
 		public static string CurrentFilterQuery
 		{
 			get { return currentSelectedFilterQuery; }
@@ -70,7 +75,7 @@ namespace HtmlHelp2.Environment
 			get { return searchPage; }
 		}
 
-		public static IHxQuery FTS
+		public static IHxQuery Fts
 		{
 			get { return fulltextSearch; }
 		}
@@ -92,15 +97,15 @@ namespace HtmlHelp2.Environment
 			LoadConfiguration();
 			if (!string.IsNullOrEmpty(config.SelectedCollection))
 			{
-				DefaultNamespaceName = config.SelectedCollection;
+				defaultNamespaceName = config.SelectedCollection;
 			}
 		}
 
 		public static void ReloadNamespace()
 		{
 			LoadHelp2Config();
-			DefaultNamespaceName = Help2RegistryWalker.GetFirstNamespace(DefaultNamespaceName);
-			InitializeNamespace(DefaultNamespaceName);
+			defaultNamespaceName = Help2RegistryWalker.GetFirstNamespace(defaultNamespaceName);
+			InitializeNamespace(defaultNamespaceName);
 			OnNamespaceReloaded(EventArgs.Empty);
 		}
 
@@ -125,18 +130,18 @@ namespace HtmlHelp2.Environment
 				currentSelectedFilterName  = string.Empty;
 
 				session                    = new HxSession();
-				session.Initialize(String.Format("ms-help://{0}", namespaceName), 0);
+				session.Initialize(String.Format(null, "ms-help://{0}", namespaceName), 0);
 				namespaceFilters           = session.GetFilterList();
 
 				ReloadDefaultPages();
 				ReloadFTSSystem();
 				ReloadDynamicHelpSystem();
 
-				LoggingService.Info("Help 2.0: service sucessfully loaded");
+				LoggingService.Info("Help 2.0: Service sucessfully loaded");
 			}
-			catch(Exception ex)
+			catch (System.Runtime.InteropServices.COMException cEx)
 			{
-				LoggingService.Error("Help 2.0: not initialize service; " + ex.ToString());
+				LoggingService.Error("Help 2.0: Cannot not initialize service; " + cEx.ToString());
 				session = null;
 			}
 			finally
@@ -147,46 +152,66 @@ namespace HtmlHelp2.Environment
 
 		private static void ReloadFTSSystem()
 		{
-			fulltextSearch = (IHxQuery)session.GetNavigationInterface
-				("!DefaultFullTextSearch", currentSelectedFilterQuery, ref QueryGuid);
+			try
+			{
+				fulltextSearch = (IHxQuery)session.GetNavigationInterface
+					("!DefaultFullTextSearch", currentSelectedFilterQuery, ref QueryGuid);
+			}
+			catch (System.Runtime.InteropServices.COMException)
+			{
+				fulltextSearch = null;
+			}
 		}
 
 		private static void ReloadDynamicHelpSystem()
 		{
-			dynamicHelp = (IHxIndex)session.GetNavigationInterface
-				("!DefaultContextWindowIndex", currentSelectedFilterQuery, ref IndexGuid);
+			try
+			{
+				dynamicHelp = (IHxIndex)session.GetNavigationInterface
+					("!DefaultContextWindowIndex", currentSelectedFilterQuery, ref IndexGuid);
+			}
+			catch (System.Runtime.InteropServices.COMException)
+			{
+				dynamicHelp = null;
+			}
 		}
 
 		private static void ReloadDefaultPages()
 		{
-			defaultPage = GetDefaultPage("HomePage", "DefaultPage", "about:blank");
+			defaultPage = GetDefaultPage("HomePage", "DefaultPage");
 			searchPage  = GetDefaultPage("SearchHelpPage", "SearchWebPage", "http://msdn.microsoft.com");
+		}
+
+		private static string GetDefaultPage(string pageName, string alternatePageName)
+		{
+			return GetDefaultPage(pageName, alternatePageName, "about:blank");
 		}
 
 		private static string GetDefaultPage(string pageName, string alternatePageName, string defaultValue)
 		{
-			string result = string.Empty;
-
+			if (string.IsNullOrEmpty(pageName) && string.IsNullOrEmpty(alternatePageName))
+			{
+				throw new ArgumentNullException("pageName & alternatePageName");
+			}
 			try
 			{
+				string result = string.Empty;
+
 				IHxIndex namedUrlIndex =
 					(IHxIndex)session.GetNavigationInterface("!DefaultNamedUrlIndex", "", ref IndexGuid);
-
 				IHxTopicList topics = namedUrlIndex.GetTopicsFromString(pageName, 0);
+
 				if (topics.Count == 0 && !string.IsNullOrEmpty(alternatePageName))
 				{
 					topics = namedUrlIndex.GetTopicsFromString(alternatePageName, 0);
 				}
 
-				if (topics.Count > 0)
-					result = topics.ItemAt(1).URL;
-
-				if (string.IsNullOrEmpty(result))
-					result = defaultValue;
+				if (topics.Count > 0) result = topics.ItemAt(1).URL;
+				if (string.IsNullOrEmpty(result)) result = defaultValue;
 
 				return result;
 			}
-			catch
+			catch (System.Runtime.InteropServices.COMException)
 			{
 				return defaultValue;
 			}
@@ -210,12 +235,19 @@ namespace HtmlHelp2.Environment
 		{
 			if (filterCombobox == null)
 			{
-				return;
+				throw new ArgumentNullException("filterCombobox");
 			}
+
 			filterCombobox.Items.Clear();
 			filterCombobox.BeginUpdate();
 
-			try
+			if (namespaceFilters == null || namespaceFilters.Count == 0)
+			{
+				filterCombobox.Items.Add
+					(StringParser.Parse("${res:AddIns.HtmlHelp2.DefaultEmptyFilter}"));
+				filterCombobox.SelectedIndex = 0;
+			}
+			else
 			{
 				foreach (IHxRegFilter filter in namespaceFilters)
 				{
@@ -229,22 +261,11 @@ namespace HtmlHelp2.Environment
 					}
 				}
 
-				if (namespaceFilters.Count == 0)
-				{
-					filterCombobox.Items.Add
-						(StringParser.Parse("${res:AddIns.HtmlHelp2.DefaultEmptyFilter}"));
-				}
-
 				if (string.IsNullOrEmpty(currentSelectedFilterName))
 					filterCombobox.SelectedIndex = 0;
 				else
 					filterCombobox.SelectedIndex = filterCombobox.Items.IndexOf(currentSelectedFilterName);
 			}
-			catch(Exception ex)
-			{
-				LoggingService.Error("Help 2.0: Cannot build filters; " + ex.Message);
-			}
-
 			filterCombobox.EndUpdate();
 		}
 
@@ -254,41 +275,53 @@ namespace HtmlHelp2.Environment
 			{
 				return currentSelectedFilterQuery;
 			}
-
-			try
-			{
-				IHxRegFilter filter = namespaceFilters.FindFilter(filterName);
-				currentSelectedFilterName = filterName;
-				currentSelectedFilterQuery =
-					(string)filter.GetProperty(HxRegFilterPropId.HxRegFilterQuery);
-
-				OnFilterQueryChanged(EventArgs.Empty);
-
-				ReloadFTSSystem();
-				ReloadDynamicHelpSystem();
-				ReloadDefaultPages();
-
-				return currentSelectedFilterQuery;
-			}
-			catch
+			if (namespaceFilters == null || namespaceFilters.Count == 0)
 			{
 				return string.Empty;
 			}
+
+			IHxRegFilter filter = namespaceFilters.FindFilter(filterName);
+			if (filter == null)
+			{
+				return string.Empty;
+			}
+
+			currentSelectedFilterName = filterName;
+			currentSelectedFilterQuery =
+				(string)filter.GetProperty(HxRegFilterPropId.HxRegFilterQuery);
+
+			OnFilterQueryChanged(EventArgs.Empty);
+
+			try
+			{
+				ReloadFTSSystem();
+				ReloadDynamicHelpSystem();
+				ReloadDefaultPages();
+			}
+			catch (System.Runtime.InteropServices.COMException cEx)
+			{
+				LoggingService.Error("Help 2.0: Cannot not initialize service; " + cEx.ToString());
+			}
+			return currentSelectedFilterQuery;
 		}
 
 		public static IHxTopicList GetMatchingTopicsForDynamicHelp(string searchTerm)
 		{
-			if(dynamicHelpIsBusy) return null;
-			IHxTopicList topics = null;
+			if (dynamicHelpIsBusy || dynamicHelp == null || string.IsNullOrEmpty(searchTerm))
+			{
+				return null;
+			}
+			IHxTopicList topics;
 			try
 			{
 				dynamicHelpIsBusy = true;
 				topics = dynamicHelp.GetTopicsFromString(searchTerm, 0);
 				LoggingService.Info("Help 2.0: Dynamic Help called");
 			}
-			catch
+			catch (System.Runtime.InteropServices.COMException)
 			{
 				LoggingService.Error("Help 2.0: Dynamic Help search failed");
+				topics = null;
 			}
 			finally
 			{
@@ -322,46 +355,41 @@ namespace HtmlHelp2.Environment
 		#region Configuration
 		public static void LoadConfiguration()
 		{
+			string configFile = Path.Combine(PropertyService.ConfigDirectory, "help2environment.xml");
+			if (!File.Exists(configFile))
+			{
+				return;
+			}
 			try
 			{
-				string configFile =
-					Path.Combine(PropertyService.ConfigDirectory, "help2environment.xml");
-
-				if(!File.Exists(configFile))
-				{
-					return;
-				}
-				
 				XmlSerializer serialize = new XmlSerializer(typeof(HtmlHelp2Options));
-				StreamReader file = new StreamReader(configFile);
+				TextReader file = new StreamReader(configFile);
 				config = (HtmlHelp2Options)serialize.Deserialize(file);
 				file.Close();
-
-				LoggingService.Info("Help 2.0: Configuration successfully loaded.");
+	
+				LoggingService.Info("Help 2.0: Configuration successfully loaded");
 			}
-			catch
+			catch (InvalidOperationException)
 			{
-				LoggingService.Error("Help 2.0: Error while trying to load configuration.");
+				LoggingService.Error("Help 2.0: Error while trying to load configuration");
 			}
 		}
 
 		public static void SaveConfiguration()
 		{
+			string configFile = Path.Combine(PropertyService.ConfigDirectory, "help2environment.xml");
 			try
 			{
-				string configFile =
-					Path.Combine(PropertyService.ConfigDirectory, "help2environment.xml");
-
 				XmlSerializer serialize = new XmlSerializer(typeof(HtmlHelp2Options));
-				StreamWriter file = new StreamWriter(configFile);
+				TextWriter file = new StreamWriter(configFile);
 				serialize.Serialize(file, config);
 				file.Close();
 
-				LoggingService.Info("Help 2.0: Configuration successfully saved.");
+				LoggingService.Info("Help 2.0: Configuration successfully saved");
 			}
-			catch
+			catch (InvalidOperationException)
 			{
-				LoggingService.Error("Help 2.0: Error while trying to save configuration.");
+				LoggingService.Error("Help 2.0: Error while trying to save configuration");
 			}
 		}
 		#endregion

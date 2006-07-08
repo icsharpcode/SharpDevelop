@@ -45,7 +45,7 @@
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id    = "HtmlHelp2Options"
 		             label = "${res:AddIns.HtmlHelp2.Environment}"
-		             class = "HtmlHelp2.OptionsPanel.HtmlHelp2OptionsPanel"/>
+		             class = "HtmlHelp2.Environment.HtmlHelp2OptionsPanel"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Help">

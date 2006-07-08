@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace HtmlHelp2.SharpDevLanguageClass
+namespace HtmlHelp2.Environment
 {
 	using System;
 	using System.Collections.Generic;
@@ -15,48 +15,67 @@ namespace HtmlHelp2.SharpDevLanguageClass
 
 	public sealed class SharpDevLanguage
 	{
-		private static Dictionary<string, string>languages = new Dictionary<string, string>();
+		static Dictionary<string, string> languages = InitializeLanguages();
 
-		static SharpDevLanguage()
+		static Dictionary<string, string> InitializeLanguages()
 		{
-			languages.Add("C#", "CSharp");
-			languages.Add("VBNet", "VB");
+			Dictionary<string, string> result = new Dictionary<string, string>();
+			result.Add("C#", "CSharp");
+			result.Add("VBNet", "VB");
+
+			return result;
+		}
+
+		SharpDevLanguage()
+		{
 		}
 
 		private static int DevLangCounter(IHxTopic topic)
 		{
-			try
-			{
-				int counter                      = 0;
-				IHxAttributeList topicAttributes = topic.Attributes;
-				foreach (IHxAttribute attr in topicAttributes)
-				{
-					if (String.Compare(attr.DisplayName, "DevLang") == 0)
-					{
-						counter++;
-					}
-				}
-				return counter;
-			}
-			catch
+			if (topic == null)
 			{
 				return 0;
 			}
+
+			int counter                      = 0;
+			IHxAttributeList topicAttributes = topic.Attributes;
+			if (topicAttributes == null || topicAttributes.Count == 0)
+			{
+				return 0;
+			}
+
+			foreach (IHxAttribute attr in topicAttributes)
+			{
+				if (String.Compare(attr.DisplayName, "DevLang") == 0)
+				{
+					counter++;
+				}
+			}
+			return counter;
 		}
 
 		public static bool CheckTopicLanguage(IHxTopic topic)
 		{
-			if (ProjectService.CurrentProject != null) {
+			if (ProjectService.CurrentProject != null)
+			{
 				return CheckTopicLanguage(topic, ProjectService.CurrentProject.Language);
-			} else {
+			}
+			else
+			{
 				return true;
 			}
 		}
 
 		public static bool CheckTopicLanguage(IHxTopic topic, string expectedLanguage)
 		{
-			if (string.IsNullOrEmpty(expectedLanguage)) { return true; }
-			if (topic == null) { return false; }
+			if (string.IsNullOrEmpty(expectedLanguage))
+			{
+				return true;
+			}
+			if (topic == null)
+			{
+				return false;
+			}
 
 			string tempLanguage = String.Empty;
 			if (!languages.ContainsKey(expectedLanguage) ||
@@ -65,12 +84,19 @@ namespace HtmlHelp2.SharpDevLanguageClass
 				tempLanguage = expectedLanguage;
 			}
 
-			return (tempLanguage == String.Empty || topic.HasAttribute("DevLang", tempLanguage));
+			return (string.IsNullOrEmpty(tempLanguage) || topic.HasAttribute("DevLang", tempLanguage));
 		}
 
 		public static bool CheckUniqueTopicLanguage(IHxTopic topic)
 		{
-			return CheckUniqueTopicLanguage(topic, ProjectService.CurrentProject.Language);
+			if (ProjectService.CurrentProject != null)
+			{
+				return CheckUniqueTopicLanguage(topic, ProjectService.CurrentProject.Language);
+			}
+			else
+			{
+				return CheckUniqueTopicLanguage(topic, string.Empty);
+			}
 		}
 
 		public static bool CheckUniqueTopicLanguage(IHxTopic topic, string expectedLanguage)

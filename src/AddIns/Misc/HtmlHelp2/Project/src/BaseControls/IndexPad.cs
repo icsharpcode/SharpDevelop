@@ -9,6 +9,7 @@ namespace HtmlHelp2
 {
 	using System;
 	using System.Drawing;
+	using System.Security.Permissions;
 	using System.Windows.Forms;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop;
@@ -17,7 +18,6 @@ namespace HtmlHelp2
 	using MSHelpControls;
 	using MSHelpServices;
 	using HtmlHelp2.Environment;
-	using HtmlHelp2.ControlsValidation;
 
 
 	public class ShowIndexMenuCommand : AbstractMenuCommand
@@ -31,7 +31,7 @@ namespace HtmlHelp2
 
 	public class HtmlHelp2IndexPad : AbstractPadContent
 	{
-		protected MsHelp2IndexControl help2IndexControl;
+		MSHelp2IndexControl help2IndexControl;
 
 		public override Control Control
 		{
@@ -50,20 +50,20 @@ namespace HtmlHelp2
 
 		public HtmlHelp2IndexPad()
 		{
-			help2IndexControl = new MsHelp2IndexControl();
+			help2IndexControl = new MSHelp2IndexControl();
 		}
 	}
 	
-	public class MsHelp2IndexControl : UserControl
+	public class MSHelp2IndexControl : UserControl
 	{
-		AxHxIndexCtrl indexControl = null;
+		AxHxIndexCtrl indexControl;
 		ComboBox filterCombobox = new ComboBox();
 		ComboBox searchTerm = new ComboBox();
 		Label label1 = new Label();
 		Label label2 = new Label();
 		Label infoLabel = new Label();
-		bool indexControlFailed = false;
-		bool itemClicked = false;
+		bool indexControlFailed;
+		bool itemClicked;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -74,7 +74,8 @@ namespace HtmlHelp2
 			}
 		}
 
-		public MsHelp2IndexControl()
+		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
+		public MSHelp2IndexControl()
 		{
 			this.InitializeComponents();
 			this.UpdateControls();
@@ -132,11 +133,6 @@ namespace HtmlHelp2
 					indexControl.FontSource = HxFontSourceConstant.HxFontExternal;
 				}
 				catch (System.Runtime.InteropServices.COMException ex)
-				{
-					LoggingService.Error("Help 2.0: Index control failed; " + ex.ToString());
-					this.indexControlFailed = true;
-				}
-				catch (Exception ex)
 				{
 					LoggingService.Error("Help 2.0: Index control failed; " + ex.ToString());
 					this.indexControlFailed = true;
@@ -269,7 +265,7 @@ namespace HtmlHelp2
 					HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.FindFilterQuery(filterName));
 				return true;
 			}
-			catch
+			catch (System.Runtime.InteropServices.COMException)
 			{
 				LoggingService.Error("Help 2.0: cannot connect to IHxIndex interface (Index)");
 				return false;
@@ -322,9 +318,9 @@ namespace HtmlHelp2
 						break;
 				}
 			}
-			catch (Exception ex)
+			catch (System.Runtime.InteropServices.COMException cEx)
 			{
-				LoggingService.Error("Help 2.0: cannot get matching index entries; " + ex.ToString());
+				LoggingService.Error("Help 2.0: cannot get matching index entries; " + cEx.ToString());
 			}
 		}
 		

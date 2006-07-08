@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace HtmlHelp2.HelperDialog
+namespace HtmlHelp2.Environment
 {
 	using System;
 	using System.Drawing;
@@ -13,7 +13,7 @@ namespace HtmlHelp2.HelperDialog
 
 	public class IconPictureBox : PictureBox
 	{
-		private Icon icon = null;
+		private Icon icon;
 
 		public Icon Icon
 		{
@@ -23,8 +23,15 @@ namespace HtmlHelp2.HelperDialog
 			}
 			set
 			{
-				this.icon  = value;
-				base.Image = this.icon.ToBitmap();
+				if (value == null)
+				{
+					throw new ArgumentNullException("value");
+				}
+				else
+				{
+					this.icon  = value;
+					base.Image = this.icon.ToBitmap();
+				}
 			}
 		}
 
@@ -48,7 +55,17 @@ namespace HtmlHelp2.HelperDialog
 		public Icon ActionIcon
 		{
 			get { return pictureBox1.Icon; }
-			set { pictureBox1.Icon = value; }
+			set
+			{
+				if (value == null)
+				{
+					throw new ArgumentNullException("value");
+				}
+				else
+				{
+					pictureBox1.Icon = value;
+				}
+			}
 		}
 
 		public HtmlHelp2Dialog()
@@ -98,7 +115,7 @@ namespace HtmlHelp2.HelperDialog
 			this.ControlBox = false;
 			this.Name = "HtmlHelp2Dialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "HtmlHelp2Dialog";
+//			this.Text = "HtmlHelp2Dialog";
 			this.ResumeLayout(false);
 		}
 		#endregion
