@@ -25,14 +25,13 @@ namespace SharpReport {
 		
 		internal static void UpdateBaseFromTextControl (ReportObjectControlBase control,
 		                                              BaseReportItem item) {
-			
+
 			item.Size = control.Size;
-			item.Location = control.Location;
+			item.Location = new System.Drawing.Point (control.Location.X,control.Location.Y);
 			item.Name = control.Name;
 			item.BackColor = control.BackColor;
 			item.ForeColor = control.ForeColor;
 			item.Font = control.Font;
-			
 		}
 		
 		internal static void UpdateBaseFromGraphicControl (AbstractGraphicControl control,
@@ -63,5 +62,7 @@ namespace SharpReport {
 			control.DashStyle = item.DashStyle;
 			control.Thickness = item.Thickness;
 		}
+		
+		
 	}
 }
