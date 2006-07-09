@@ -114,7 +114,9 @@ namespace Debugger
 				if (!HasBeenLoaded) throw new DebuggerException("Thread has not started jet");
 				process.AssertPaused();
 				
-				return new PersistentValue(debugger, corThread.Object).Value;
+				return new PersistentValue(debugger,
+				                           new IExpirable[] {debugger.PauseSession},
+				                           corThread.Object).Value;
 			}
 		}
 

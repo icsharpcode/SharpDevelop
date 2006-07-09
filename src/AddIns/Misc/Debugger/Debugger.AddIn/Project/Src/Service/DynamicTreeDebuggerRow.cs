@@ -27,6 +27,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		Variable variable;
 		Image image;
 		bool populated = false;
+		bool dirty = true;
 		
 		public Variable Variable {
 			get {
@@ -50,8 +51,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 		}
 		
-		bool skipUpdate = true;
-		
 		public DynamicTreeDebuggerRow(Variable variable)
 		{
 			if (variable == null) throw new ArgumentNullException("variable");
@@ -59,10 +58,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.variable = variable;
 			this.Shown += delegate {
 				this.variable.ValueChanged += Update;
-				if (!skipUpdate) {
-					DoInPausedState( delegate { Update(); } );
-				}
-				skipUpdate = false;
+				dirty = true;
+				DoInPausedState( delegate { Update(); } );
 			};
 			this.Hidden += delegate {
 				this.variable.ValueChanged -= Update;
@@ -77,13 +74,16 @@ namespace ICSharpCode.SharpDevelop.Services
 			Update();
 		}
 		
-		void Update(object sender, DebuggerEventArgs e)
+		void Update(object sender, PersistentValueEventArgs e)
 		{
+			dirty = true;
 			Update();
 		}
 		
 		void Update()
 		{
+			if (!dirty) return;
+			
 			image = DebuggerIcons.GetImage(variable);
 			this[1].Text = ""; // Icon
 			this[2].Text = variable.Name;
@@ -94,11 +94,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			this[3].AllowLabelEdit = variable.Value is PrimitiveValue &&
 			                         variable.Value.ManagedType != typeof(string) &&
-			                         !(variable is PropertyVariable) &&
 			                         !ShowValuesInHexadecimal;
 			
 			this.ShowPlus = variable.Value.MayHaveSubVariables;
 			this.ShowMinusWhileExpanded = true;
+			
+			dirty = false;
 		}
 		
 		void OnIconPaint(object sender, ItemPaintEventArgs e)
@@ -182,22 +183,17 @@ namespace ICSharpCode.SharpDevelop.Services
 			List<Variable> privateInstance = new List<Variable>();
 			
 			foreach(Variable variable in this.Variable.SubVariables) {
-				ClassVariable classVariable = variable as ClassVariable;
-				if (classVariable == null) {
-					publicInstance.Add(variable);
-				} else {
-					if (classVariable.IsPublic) {
-						if (classVariable.IsStatic) {
-							publicStatic.Add(variable);
-						} else {
-							publicInstance.Add(variable);
-						}
+				if (variable.IsPublic) {
+					if (variable.IsStatic) {
+						publicStatic.Add(variable);
 					} else {
-						if (classVariable.IsStatic) {
-							privateStatic.Add(variable);
-						} else {
-							privateInstance.Add(variable);
-						}
+						publicInstance.Add(variable);
+					}
+				} else {
+					if (variable.IsStatic) {
+						privateStatic.Add(variable);
+					} else {
+						privateInstance.Add(variable);
 					}
 				}
 			}

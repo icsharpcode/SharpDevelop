@@ -28,12 +28,7 @@ namespace Debugger
 			} 
 		}
 		
-		internal UnavailableValue(NDebugger debugger): this(debugger, "Value is not available")
-		{
-			
-		}
-		
-		internal UnavailableValue(NDebugger debugger, string message):base(debugger, new PersistentValue(debugger, (ICorDebugValue)null))
+		internal UnavailableValue(NDebugger debugger, PersistentValue pValue, string message):base(debugger, pValue)
 		{
 			this.message = message;
 		}

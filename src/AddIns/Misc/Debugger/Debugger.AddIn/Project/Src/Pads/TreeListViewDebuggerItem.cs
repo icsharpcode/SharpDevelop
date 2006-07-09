@@ -17,6 +17,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	{
 		Variable variable;
 		bool populated = false;
+		bool dirty = true;
 		
 		public Variable Variable {
 			get {
@@ -42,10 +43,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		bool IsVisible {
 			get {
+				if (this.Parent == null) return true;
 				foreach(TreeListViewItem parent in this.ParentsInHierarch) {
-					if (!parent.IsExpanded) {
-						return false;
-					}
+					if (!parent.IsExpanded) return false;
 				}
 				return true;
 			}
@@ -55,41 +55,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			this.variable = variable;
 			
-			variable.ValueChanged += Update;
-			
-			variable.ValueRemovedFromCollection += delegate {
-				variable.ValueChanged -= Update;
-				this.Remove();
-			};
+			variable.ValueChanged += delegate { dirty = true; Update(); };
+			variable.Expired += delegate { this.Remove(); };
 			
 			SubItems.Add("");
 			SubItems.Add("");
 			
-			Update(this, null);
+			Update();
 		}
 		
-		bool waitingForParentToExpand = false;
-		
-		void Update(object sender, DebuggerEventArgs e)
+		public void Update()
 		{
-			if (waitingForParentToExpand) return;
-			
-			if (this.Parent != null && !IsVisible) {
-				// Delay the update until the parent is expanded
-				TreeListViewItemHanlder update = null;
-				update = delegate {
-					waitingForParentToExpand = false;
-					Update(this, null);
-					foreach(TreeListViewItem parent in this.ParentsInHierarch) {
-						parent.AfterExpand -= update;
-					}
-				};
-				foreach(TreeListViewItem parent in this.ParentsInHierarch) {
-					parent.AfterExpand += update;
-				}
-				waitingForParentToExpand = true;
-				return;
-			}
+			if (!dirty) return;
+			if (!IsVisible) return;
 			
 			if (this.TreeListView != null) {
 				((DebuggerTreeListView)this.TreeListView).DelayRefresh();
@@ -102,9 +80,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			this.ImageIndex = DebuggerIcons.GetImageListIndex(variable);
 			
-			if (IsExpanded) {
-				variable.SubVariables.Update();
-			} else {
+			if (!IsExpanded) {
 				// Show plus sign
 				if (variable.Value.MayHaveSubVariables && Items.Count == 0) {
 					TreeListViewItem dummy = new TreeListViewItem();
@@ -112,31 +88,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					Items.Add(dummy);
 				}
 			}
+			
+			dirty = false;
 		}
 		
 		public void BeforeExpand()
 		{
-			if (populated) {
-				variable.SubVariables.Update();
-			} else {
-				Populate();
+			if (!populated) {
+				Items.Clear();
+				// Do not sort names of array items
+				this.Items.SortOrder = variable.Value is ArrayValue ? SortOrder.None : SortOrder.Ascending;
+				LocalVarPad.AddVariableCollectionToTree(variable.SubVariables, this.Items);
 				populated = true;
 			}
 		}
-		
-		public void Populate()
-		{
-			Items.Clear();
-			
-			// Do not sort names of array items
-			if (variable.Value is ArrayValue) {
-				this.Items.SortOrder = SortOrder.None;
-			} else {
-				this.Items.SortOrder = SortOrder.Ascending;
-			}
-			
-			LocalVarPad.AddVariableCollectionToTree(variable.SubVariables, this.Items);
-		}
-		
 	}
 }

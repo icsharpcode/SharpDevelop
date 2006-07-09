@@ -118,9 +118,10 @@ namespace Debugger
 				elementName += indices[i].ToString() + ",";
 			elementName = elementName.TrimEnd(new char[] {','}) + "]";
 			
-			return new Variable(debugger,
-			                    elementName,
-			                    new PersistentValue(debugger, delegate { return GetCorValueOfItem(indices); }));
+			return new Variable(elementName,
+			                    new PersistentValue(debugger,
+			                                        new IExpirable[] {this.PersistentValue},
+			                                        delegate { return GetCorValueOfItem(indices); }));
 		}
 		
 		unsafe ICorDebugValue GetCorValueOfItem(uint[] indices)
@@ -137,7 +138,7 @@ namespace Debugger
 			}
 		}
 		
-		public override IEnumerable<Variable> GetSubVariables()
+		protected override IEnumerable<Variable> GetSubVariables()
 		{
 			uint[] indices = new uint[rank];
 			

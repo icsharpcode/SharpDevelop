@@ -117,8 +117,12 @@ namespace Debugger
 				return debugeeState;
 			}
 			private set {
+				DebugeeState oldDebugeeState = debugeeState;
 				debugeeState = value;
 				OnDebuggeeStateChanged();
+				if (oldDebugeeState != null) {
+					oldDebugeeState.NotifyHasExpired();
+				}
 			}
 		}
 		
@@ -180,6 +184,7 @@ namespace Debugger
 				throw new DebuggerException("Already resumed");
 			}
 
+			pauseSession.NotifyHasExpired();
 			pauseSession = null;
 			OnDebuggingResumed();
 			pausedHandle.Reset();

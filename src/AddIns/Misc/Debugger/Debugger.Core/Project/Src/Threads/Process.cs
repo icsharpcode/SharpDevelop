@@ -14,7 +14,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public class Process: RemotingObjectBase
+	public class Process: RemotingObjectBase, IExpirable
 	{
 		NDebugger debugger;
 
@@ -22,6 +22,27 @@ namespace Debugger
 
 		Thread selectedThread;
 		bool isProcessRunning = true;
+		
+		bool hasExpired = false;
+		
+		public event EventHandler Expired;
+		
+		public bool HasExpired {
+			get {
+				return hasExpired;
+			}
+		}
+		
+		internal void NotifyHasExpired()
+		{
+			if(!hasExpired) {
+				hasExpired = true;
+				if (Expired != null) {
+					Expired(this, new DebuggerEventArgs(debugger));
+				}
+			}
+		}
+		
 		
 		public NDebugger Debugger {
 			get {

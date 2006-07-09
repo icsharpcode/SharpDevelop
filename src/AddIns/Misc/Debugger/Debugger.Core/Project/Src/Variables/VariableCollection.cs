@@ -14,106 +14,27 @@ using Debugger.Wrappers.CorDebug;
 namespace Debugger
 {
 	[Serializable]
-	public class VariableCollection: ReadOnlyCollectionBase
+	public class VariableCollection: RemotingObjectBase, IEnumerable<Variable>
 	{
-		NDebugger debugger;
+		public static VariableCollection Empty = new VariableCollection(new Variable[] {});
 		
-		public static VariableCollection Empty;
+		IEnumerable<Variable> collectionEnum;
 		
-		bool readOnly = false;
-		
-		public event EventHandler<VariableEventArgs> VariableAdded;
-		public event EventHandler<VariableEventArgs> VariableRemoved;
-		internal event EventHandler<VariableCollectionEventArgs> Updating;
-		
-		public NDebugger Debugger {
-			get {
-				return debugger;
-			}
-		}
-		
-		internal VariableCollection(NDebugger debugger)
+		IEnumerator IEnumerable.GetEnumerator()
 		{
-			this.debugger = debugger;
+			return GetEnumerator();
 		}
 		
-		/// <summary>
-		/// Creates new collection and fills it by calling 'updating' delegate
-		/// </summary>
-		/// <param name="updating"></param>
-		/// <returns></returns>
-		internal VariableCollection(NDebugger debugger, EventHandler<VariableCollectionEventArgs> updating): this(debugger)
+		public IEnumerator<Variable> GetEnumerator()
 		{
-			this.Updating += updating;
-			this.Update();
+			return collectionEnum.GetEnumerator();
 		}
 		
-		static VariableCollection()
+		internal VariableCollection(IEnumerable<Variable> collectionEnum)
 		{
-			Empty = new VariableCollection(null);
-			Empty.readOnly = true;
+			this.collectionEnum = collectionEnum;
 		}
 		
-		public bool Contains(Variable variable)
-		{
-			foreach (Variable v in InnerList) {
-				if (v == variable) {
-					return true;
-				}
-			}
-			return false;
-		}
-		
-		public bool Contains(string variableName)
-		{
-			foreach (Variable v in InnerList) {
-				if (v.Name == variableName) {
-					return true;
-				}
-			}
-			return false;
-		}
-		
-		internal void Add(Variable variable)
-		{
-			if (readOnly) {
-				throw new DebuggerException("VariableCollection is marked as read only"); 
-			}
-			if (variable != null) {
-				InnerList.Add(variable);
-				OnVariableAdded(new VariableEventArgs(variable));
-			}
-		}
-		
-		internal void Remove(Variable variable)
-		{
-			if (readOnly) {
-				throw new DebuggerException("VariableCollection is marked as read only"); 
-			}
-			if (variable != null) {
-				InnerList.Remove(variable);
-				OnVariableRemoved(new VariableEventArgs(variable));
-				variable.OnValueRemovedFromCollection(new VariableCollectionEventArgs(this));
-			}
-		}
-		
-		/// <summary>
-		/// Removes all variables from collection and resets the updating function
-		/// </summary>
-		internal void Clear()
-		{
-			while(this.Count > 0) {
-				this.Remove(this[0]);
-			}
-			Updating = null;
-		}
-		
-		public Variable this[int index] {
-			get {
-				return (Variable) InnerList[index];
-			}
-		}
-
 		public Variable this[string variableName] {
 			get {
 				int index = variableName.IndexOf('.');
@@ -122,72 +43,11 @@ namespace Debugger
 					string subVariable = variableName.Substring(index + 1);
 					return this[rootVariable].SubVariables[subVariable];
 				} else {
-					foreach (Variable v in InnerList) {
-						if (v.Name == variableName) {
-							return v;
-						}
+					foreach (Variable v in this) {
+						if (v.Name == variableName) return v;
 					}
 				}
-
 				throw new DebuggerException("Variable \"" + variableName + "\" is not in collection");
-			}
-		}
-		
-		public void Update()
-		{
-			OnUpdating();
-		}
-		
-		public void UpdateTo(IEnumerable<Variable> newVariables)
-		{
-			ArrayList toBeRemoved = (ArrayList)this.InnerList.Clone();
-			
-			foreach(Variable newVariable in newVariables) {
-				if (this.Contains(newVariable.Name)) {
-					Variable oldVariable = this[newVariable.Name];
-					// HACK: Realy bad object-oriented design!!!
-					// Trasfer the new variable into the old one
-					if (oldVariable != newVariable) {
-						oldVariable.pValue = newVariable.pValue;
-						if (newVariable is ClassVariable && oldVariable is ClassVariable) {
-							((ClassVariable)oldVariable).isPublic = ((ClassVariable)oldVariable).isPublic;
-							((ClassVariable)oldVariable).isStatic = ((ClassVariable)oldVariable).isStatic;
-						}
-						if (newVariable is PropertyVariable) {
-							newVariable.ValueChanged += delegate { oldVariable.OnValueChanged(this, null); };
-						}
-					}
-					// Keep the variable in the list
-					toBeRemoved.Remove(this[newVariable.Name]);
-				} else {
-					// Add new variable
-					this.Add(newVariable);
-				}
-			}
-			
-			foreach(Variable variable in toBeRemoved) {
-				this.Remove(variable);
-			}
-		}
-		
-		protected virtual void OnVariableAdded(VariableEventArgs e)
-		{
-			if (VariableAdded != null) {
-				VariableAdded(this, e);
-			}
-		}
-		
-		protected virtual void OnVariableRemoved(VariableEventArgs e)
-		{
-			if (VariableRemoved != null) {
-				VariableRemoved(this, e);
-			}
-		}
-		
-		protected virtual void OnUpdating()
-		{
-			if (Updating != null) {
-				Updating(this, new VariableCollectionEventArgs(this));
 			}
 		}
 		
@@ -196,7 +56,6 @@ namespace Debugger
 			foreach(Variable v in this) {
 				txt += v.ToString() + "\n";
 			}
-			
 			return txt;
 		}
 	}

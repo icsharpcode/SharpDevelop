@@ -24,8 +24,6 @@ namespace Debugger
 		
 		MTA2STA mta2sta = new MTA2STA();
 		
-		VariableCollection localVariables;
-		
 		string debuggeeVersion;
 		
 		public MTA2STA MTA2STA {
@@ -61,8 +59,6 @@ namespace Debugger
 			}
 			
 			this.ModuleLoaded += SetBreakpointsInModule;
-			
-			localVariables = new VariableCollection(this);
 			
 			Wrappers.ResourceManager.TraceMessagesEnabled = false;
 			Wrappers.ResourceManager.TraceMessage += delegate (object s, MessageEventArgs e) { 
@@ -115,15 +111,11 @@ namespace Debugger
 			corDebug.Initialize();
 			corDebug.SetManagedHandler(new ICorDebugManagedCallback(managedCallbackProxy));
 			
-			localVariables.Updating += OnUpdatingLocalVariables;
-			
 			TraceMessage("ICorDebug initialized, debugee version " + debuggeeVersion);
 		}
 		
 		internal void TerminateDebugger()
 		{
-			localVariables.Clear();
-			
 			ClearModules();
 			
 			ResetBreakpoints();
@@ -212,20 +204,11 @@ namespace Debugger
 		
 		public VariableCollection LocalVariables { 
 			get {
-				localVariables.Update();
-				return localVariables;
-			}
-		}
-		
-		void OnUpdatingLocalVariables(object sender, VariableCollectionEventArgs e)
-		{
-			if (SelectedFunction == null || IsRunning) {
-				e.VariableCollection.UpdateTo(new Variable[] {}); // Make it empty
-			} else {
-				e.VariableCollection.UpdateTo(SelectedFunction.Variables);
-				SelectedFunction.Expired += delegate { 
-					e.VariableCollection.UpdateTo(new Variable[] {});
-				};
+				if (SelectedFunction == null || IsRunning) {
+					return VariableCollection.Empty;
+				} else {
+					return SelectedFunction.Variables;
+				}
 			}
 		}
 	}

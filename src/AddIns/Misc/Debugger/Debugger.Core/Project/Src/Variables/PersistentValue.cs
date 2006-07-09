@@ -16,22 +16,32 @@ namespace Debugger
 	/// the value of a given object even after continue. This level of 
 	/// abstraction is necessary because the type of a value can change 
 	/// (eg for local variable of type object)
+	/// 
+	/// Expiration: Once value expires it can not be used anymore. Expiration
+	/// is permanet - once value expires it stays expired. Value expires when
+	/// any object specified in constructor expires of when process exits.
+	/// 
+	/// ValueChange: ValueChange event is called whenever DebugeeState changes
+	/// or when NotifyValueChange() is called.
 	/// </summary>
-	public class PersistentValue
+	public class PersistentValue: IExpirable
 	{
 		/// <summary>
 		/// Delegate that is used to get value. This delegate may be called at any time and should never return null.
 		/// </summary>
 		public delegate Value ValueGetter();
 		public delegate ICorDebugValue CorValueGetter();
-		public delegate bool IsExpiredDelegate();
 		
 		
 		NDebugger debugger;
 		
 		CorValueGetter corValueGetter;
 		ValueGetter valueGetter;
-		IsExpiredDelegate isExpired;
+		
+		bool isExpired = false;
+		
+		public event EventHandler Expired;
+		public event EventHandler<PersistentValueEventArgs> ValueChanged;
 		
 		public NDebugger Debugger {
 			get {
@@ -47,6 +57,7 @@ namespace Debugger
 		
 		ICorDebugValue RawCorValue {
 			get {
+				if (this.HasExpired) throw new CannotGetValueException("CorValue has expired");
 				return corValueGetter();
 			}
 		}
@@ -56,68 +67,104 @@ namespace Debugger
 				try {
 					return valueGetter();
 				} catch (CannotGetValueException e) {
-					return new UnavailableValue(debugger, e.Message);
+					return new UnavailableValue(debugger, this, e.Message);
 				}
 			}
 		}
 		
-		public bool IsExpired {
+		public bool HasExpired {
 			get {
-				return isExpired();
+				return isExpired;
 			}
 		}
 		
-		public ICorDebugHandleValue SoftReference {
+		public ICorDebugValue SoftReference {
 			get {
-				if (this.IsExpired) throw new DebuggerException("CorValue has expired");
+				if (this.HasExpired) throw new DebuggerException("CorValue has expired");
 				
 				ICorDebugValue corValue = RawCorValue;
 				if (corValue != null && corValue.Is<ICorDebugHandleValue>()) {
-					return corValue.As<ICorDebugHandleValue>();
+					return corValue;
 				}
 				corValue = PersistentValue.DereferenceUnbox(corValue);
 				if (corValue != null && corValue.Is<ICorDebugHeapValue2>()) {
-					return corValue.As<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION);
+					return corValue.As<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION).CastTo<ICorDebugValue>();
 				} else {
-					return null; // Value type
+					return corValue; // Value type - return value type
 				}
 			}
 		}
 		
-		public PersistentValue(NDebugger debugger, ValueGetter valueGetter)
+		PersistentValue(NDebugger debugger, IExpirable[] dependencies)
 		{
 			this.debugger = debugger;
+			foreach(IExpirable exp in dependencies) {
+				AddDependency(exp);
+			}
+			AddDependency(debugger.SelectedProcess);
+			debugger.DebuggeeStateChanged += NotifyValueChange;
+		}
+		
+		public PersistentValue(NDebugger debugger, IExpirable[] dependencies, ValueGetter valueGetter):this(debugger, dependencies)
+		{
 			this.corValueGetter = delegate { throw new CannotGetValueException("CorValue not available for custom value"); };
-			this.isExpired = delegate { return false; };
 			this.valueGetter = valueGetter;
 		}
 		
-		public PersistentValue(NDebugger debugger, ICorDebugValue corValue)
+		public PersistentValue(NDebugger debugger, IExpirable[] dependencies, ICorDebugValue corValue):this(debugger, dependencies)
 		{
-			PauseSession pauseSessionAtCreation = debugger.PauseSession;
-			DebugeeState debugeeStateAtCreation = debugger.DebugeeState;
-			
-			this.debugger = debugger;
-			this.corValueGetter = delegate {
-				if (this.IsExpired) throw new CannotGetValueException("CorValue has expired");
-				return corValue;
-			};
-			this.isExpired = delegate {
-				if (corValue != null && corValue.Is<ICorDebugHandleValue>()) {
-					return debugeeStateAtCreation != debugger.DebugeeState;
-				} else {
-					return pauseSessionAtCreation != debugger.PauseSession;
-				}
-			};
+			this.corValueGetter = delegate { return corValue; };
 			this.valueGetter = delegate { return CreateValue(); };
 		}
 		
-		public PersistentValue(NDebugger debugger, CorValueGetter corValueGetter)
+		public PersistentValue(NDebugger debugger, IExpirable[] dependencies, CorValueGetter corValueGetter):this(debugger, dependencies)
 		{
-			this.debugger = debugger;
 			this.corValueGetter = corValueGetter;
-			this.isExpired = delegate { return false; };
 			this.valueGetter = delegate { return CreateValue(); };
+		}
+		
+		void AddDependency(IExpirable dependency)
+		{
+			if (dependency.HasExpired) {
+				MakeExpired();
+			} else {
+				dependency.Expired += delegate { MakeExpired(); };
+			}
+		}
+		
+		void MakeExpired()
+		{
+			if (!isExpired) {
+				isExpired = true;
+				OnExpired(new PersistentValueEventArgs(this));
+				debugger.DebuggeeStateChanged -= NotifyValueChange;
+			}
+		}
+		
+		void NotifyValueChange(object sender, DebuggerEventArgs e)
+		{
+			NotifyValueChange();
+		}
+		
+		internal void NotifyValueChange()
+		{
+			if (!isExpired) {
+				OnValueChanged(new PersistentValueEventArgs(this));
+			}
+		}
+		
+		protected virtual void OnValueChanged(PersistentValueEventArgs e)
+		{
+			if (ValueChanged != null) {
+				ValueChanged(this, e);
+			}
+		}
+		
+		protected virtual void OnExpired(EventArgs e)
+		{
+			if (Expired != null) {
+				Expired(this, e);
+			}
 		}
 		
 		internal static ICorDebugValue DereferenceUnbox(ICorDebugValue corValue)
@@ -147,16 +194,15 @@ namespace Debugger
 		
 		Value CreateValue()
 		{
-			ICorDebugValue corValue = RawCorValue;
-			ICorDebugValue derefed = DereferenceUnbox(corValue);
-			if (derefed == null) {
+			ICorDebugValue corValue = this.CorValue;
+			
+			if (corValue == null) {
 				return new NullValue(debugger, this);
 			}
 			
-			CorElementType type = Value.GetCorType(derefed);
+			CorElementType type = Value.GetCorType(corValue);
 			
-			switch(type)
-			{
+			switch(type) {
 				case CorElementType.BOOLEAN:
 				case CorElementType.CHAR:
 				case CorElementType.I1:
@@ -173,18 +219,18 @@ namespace Debugger
 				case CorElementType.U:
 				case CorElementType.STRING:
 					return new PrimitiveValue(debugger, this);
-
+				
 				case CorElementType.ARRAY:
 				case CorElementType.SZARRAY: // Short-cut for single dimension zero lower bound array
 					return new ArrayValue(debugger, this);
-
+				
 				case CorElementType.VALUETYPE:
 				case CorElementType.CLASS:
 				case CorElementType.OBJECT: // Short-cut for Class "System.Object"
 					return new ObjectValue(debugger, this);
-						
+				
 				default: // Unknown type
-					return new UnavailableValue(debugger, "Unknown value type");
+					throw new CannotGetValueException("Unknown value type");
 			}
 		}
 	}

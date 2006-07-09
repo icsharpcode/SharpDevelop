@@ -20,12 +20,6 @@ namespace Debugger
 			}
 		}
 		
-		public Value Result {
-			get {
-				return eval.Result;
-			}
-		}
-		
 		public EvalEventArgs(Eval eval): base(eval.Debugger)
 		{
 			this.eval = eval;

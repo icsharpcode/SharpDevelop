@@ -16,7 +16,7 @@ using Debugger.Wrappers.MetaData;
 
 namespace Debugger
 {
-	public class Function: RemotingObjectBase
+	public class Function: RemotingObjectBase, IExpirable
 	{	
 		NDebugger debugger;
 		
@@ -102,20 +102,6 @@ namespace Debugger
 				debugger.TraceMessage("Function " + this.ToString() + " expired");
 				if (Expired != null) {
 					Expired(this, e);
-				}
-			}
-		}
-		
-		ICorDebugValue ThisCorValue {
-			get {
-				if (IsStatic) throw new DebuggerException("Static method does not have 'this'.");
-				if (this.HasExpired) throw new CannotGetValueException("Function has expired");
-				try {
-					return CorILFrame.GetArgument(0);
-				} catch (COMException e) {
-					// System.Runtime.InteropServices.COMException (0x80131304): An IL variable is not available at the current native IP. (See Forum-8640)
-					if ((uint)e.ErrorCode == 0x80131304) throw new CannotGetValueException("Not available in the current state");
-					throw;
 				}
 			}
 		}
@@ -368,21 +354,47 @@ namespace Debugger
 			}
 		}
 		
-		public IEnumerable<Variable> Variables {
+		public VariableCollection Variables {
 			get {
-				if (!IsStatic) {
-					yield return new Variable(debugger,
-					                          "this",
-					                          new PersistentValue(debugger, delegate { return ThisCorValue; }));
-				}
-				foreach(Variable var in ArgumentVariables) {
-					yield return var;
-				}
-				foreach(Variable var in LocalVariables) {
-					yield return var;
-				}
-				foreach(Variable var in ContaingClassVariables) {
-					yield return var;
+				return new VariableCollection(GetVariables());
+			}
+		}
+		
+		IEnumerable<Variable> GetVariables() 
+		{
+			if (!IsStatic) {
+				yield return new Variable("this",
+				                          ThisValue);
+			}
+			foreach(Variable var in ArgumentVariables) {
+				yield return var;
+			}
+			foreach(Variable var in LocalVariables) {
+				yield return var;
+			}
+			foreach(Variable var in ContaingClassVariables) {
+				yield return var;
+			}
+		}
+		
+		public PersistentValue ThisValue {
+			get {
+				return new PersistentValue(debugger,
+				                           new IExpirable[] {this},
+				                           delegate { return ThisCorValue; });
+			}
+		}
+		
+		ICorDebugValue ThisCorValue {
+			get {
+				if (IsStatic) throw new DebuggerException("Static method does not have 'this'.");
+				if (this.HasExpired) throw new CannotGetValueException("Function has expired");
+				try {
+					return CorILFrame.GetArgument(0);
+				} catch (COMException e) {
+					// System.Runtime.InteropServices.COMException (0x80131304): An IL variable is not available at the current native IP. (See Forum-8640)
+					if ((uint)e.ErrorCode == 0x80131304) throw new CannotGetValueException("Not available in the current state");
+					throw;
 				}
 			}
 		}
@@ -391,7 +403,7 @@ namespace Debugger
 			get {
 				// TODO: Should work for static
 				if (!IsStatic) {
-					foreach(Variable var in new PersistentValue(debugger, delegate{ return ThisCorValue; }).Value.GetSubVariables()) {
+					foreach(Variable var in ThisValue.Value.SubVariables) {
 						yield return var;
 					}
 				}
@@ -421,9 +433,10 @@ namespace Debugger
 		
 		public Variable GetArgumentVariable(int index)
 		{
-			return new Variable(debugger,
-			                    GetParameterName(index),
-			                    new PersistentValue(debugger, delegate { return GetArgumentCorValue(index); } ));
+			return new Variable(GetParameterName(index),
+			                    new PersistentValue(debugger,
+			                                        new IExpirable[] {this},
+			                                        delegate { return GetArgumentCorValue(index); } ));
 		}
 		
 		ICorDebugValue GetArgumentCorValue(int index)
@@ -474,9 +487,10 @@ namespace Debugger
 		
 		Variable GetLocalVariable(ISymUnmanagedVariable symVar)
 		{
-			return new Variable(debugger,
-			                    symVar.Name,
-			                    new PersistentValue(debugger, delegate { return GetCorValueOfLocalVariable(symVar); }));
+			return new Variable(symVar.Name,
+			                    new PersistentValue(debugger,
+			                                        new IExpirable[] {this},
+			                                        delegate { return GetCorValueOfLocalVariable(symVar); }));
 		}
 		
 		ICorDebugValue GetCorValueOfLocalVariable(ISymUnmanagedVariable symVar)

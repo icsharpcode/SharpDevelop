@@ -55,11 +55,29 @@ namespace Debugger
 			}
 		}
 		
+		public IEnumerable<ObjectValue> SuperClasses {
+			get {
+				ICorDebugClass currentClass = corClass;
+				do {
+					yield return new ObjectValue(debugger, this.PersistentValue, currentClass);
+					currentClass = GetSuperClass(debugger, currentClass);
+				} while (currentClass != null);
+			}
+		}
+		
+		internal bool IsSuperClass(ICorDebugClass corClass)
+		{
+			foreach(ObjectValue superClass in SuperClasses) {
+				if (superClass.corClass == corClass) return true;
+			}
+			return false;
+		}
+		
 		public ObjectValue BaseClass {
 			get	{
 				ICorDebugClass superClass = GetSuperClass(debugger, corClass);
 				if (superClass == null) throw new DebuggerException("Does not have a base class");
-				return new ObjectValue(debugger, pValue, superClass);
+				return new ObjectValue(debugger, this.PersistentValue, superClass);
 			}
 		}
 		
@@ -120,7 +138,7 @@ namespace Debugger
 			}
 		}
 		
-		public override IEnumerable<Variable> GetSubVariables()
+		protected override IEnumerable<Variable> GetSubVariables()
 		{
 			if (HasBaseClass) {
 				yield return GetBaseClassVariable();
@@ -141,11 +159,12 @@ namespace Debugger
 				FieldProps field = f; // One per scope/delegate
 				if (field.IsStatic && field.IsLiteral) continue; // Skip field
 				if (!field.IsStatic && CorValue == null) continue; // Skip field
-				yield return new ClassVariable(debugger,
-				                               field.Name,
-				                               field.IsStatic,
-				                               field.IsPublic,
-				                               new PersistentValue(debugger, delegate { return GetCorValueOfField(field); }));
+				yield return new Variable(field.Name,
+				                          field.IsStatic,
+				                          field.IsPublic,
+				                          new PersistentValue(debugger,
+				                                              new IExpirable[] {this.PersistentValue},
+				                                              delegate { return GetCorValueOfField(field); }));
 			}
 		}
 		
@@ -175,34 +194,15 @@ namespace Debugger
 			foreach(MethodProps m in Methods) {
 				MethodProps method = m; // One per scope/delegate
 				if (method.HasSpecialName && method.Name.StartsWith("get_") && method.Name != "get_Item") {
-					yield return new PropertyVariable(debugger,
-					                                  method.Name.Remove(0, 4),
-					                                  method.IsStatic,
-					                                  method.IsPublic,
-					                                  delegate { return CreatePropertyEval(method); });
-				}
-			}
-		}
-		
-		Eval CreatePropertyEval(MethodProps method)
-		{
-			if (!IsCorValueCompatible) return null;
-			
-			ICorDebugFunction evalCorFunction = Module.CorModule.GetFunctionFromToken(method.Token);
-			return new Eval(debugger, evalCorFunction, delegate { return GetArgsForEval(method); });
-		}
-		
-		ICorDebugValue[] GetArgsForEval(MethodProps method)
-		{
-			if (!IsCorValueCompatible) return null;
-			
-			if (method.IsStatic) {
-				return new ICorDebugValue[] {};
-			} else {
-				if (this.SoftReference != null) {
-					return new ICorDebugValue[] {this.SoftReference.CastTo<ICorDebugValue>()};
-				} else {
-					return new ICorDebugValue[] {this.CorValue};
+					Eval eval = new Eval(debugger,
+					                     Module.CorModule.GetFunctionFromToken(method.Token),
+					                     true, // reevaluateAfterDebuggeeStateChange
+					                     method.IsStatic? null : this.PersistentValue,
+					                     new PersistentValue[] {});
+					yield return new Variable(method.Name.Remove(0, 4),
+					                          method.IsStatic,
+					                          method.IsPublic,
+					                          eval.PersistentValue);
 				}
 			}
 		}
@@ -210,9 +210,10 @@ namespace Debugger
 		public Variable GetBaseClassVariable()
 		{
 			if (HasBaseClass) {
-				return new Variable(debugger,
-				                    "<Base class>",
-				                    new PersistentValue(debugger, delegate { return GetBaseClassValue(); }));
+				return new Variable("<Base class>",
+				                    new PersistentValue(debugger,
+				                                        new IExpirable[] {this.PersistentValue},
+				                                        delegate { return GetBaseClassValue(); }));
 			} else {
 				return null;
 			}
@@ -220,7 +221,7 @@ namespace Debugger
 		
 		Value GetBaseClassValue()
 		{
-			if (!IsCorValueCompatible) return new UnavailableValue(debugger, "Object type changed");
+			if (!IsCorValueCompatible) throw new CannotGetValueException("Object type changed");
 			
 			return this.BaseClass;
 		}

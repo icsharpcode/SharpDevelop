@@ -484,22 +484,20 @@ namespace Debugger.Tests
 			Assert.AreEqual("privateField", subVars[1].Name);
 			Assert.AreEqual("publicFiled", subVars[2].Name);
 			Assert.AreEqual("PublicProperty", subVars[3].Name);
-			Assert.AreEqual(typeof(ClassVariable), subVars[1].GetType());
-			Assert.AreEqual(typeof(ClassVariable), subVars[2].GetType());
-			Assert.AreEqual(typeof(PropertyVariable), subVars[3].GetType());
-			Assert.AreEqual(false, ((ClassVariable)subVars[1]).IsPublic);
-			Assert.AreEqual(true, ((ClassVariable)subVars[2]).IsPublic);
-			Assert.AreEqual(true, ((ClassVariable)subVars[3]).IsPublic);
+			Assert.AreEqual(typeof(Variable), subVars[1].GetType());
+			Assert.AreEqual(typeof(Variable), subVars[2].GetType());
+			Assert.AreEqual(typeof(Variable), subVars[3].GetType());
+			Assert.AreEqual(false, ((Variable)subVars[1]).IsPublic);
+			Assert.AreEqual(true, ((Variable)subVars[2]).IsPublic);
+			Assert.AreEqual(true, ((Variable)subVars[3]).IsPublic);
 			Assert.AreEqual(true, ((ObjectValue)local.Value).HasBaseClass);
 			baseClass = subVars[0];
 			Assert.AreEqual(typeof(ObjectValue), baseClass.Value.GetType());
-			Assert.AreEqual(false, baseClass.Value.IsExpired);
 			Assert.AreEqual("{Debugger.Tests.TestPrograms.BaseClass}", baseClass.Value.AsString);
 			
 			debugger.Continue();
 			WaitForPause(PausedReason.Break, null);
 			Assert.AreEqual(typeof(ObjectValue), baseClass.Value.GetType());
-			Assert.AreEqual(false, baseClass.Value.IsExpired);
 			Assert.AreEqual("{Debugger.Tests.TestPrograms.BaseClass}", baseClass.Value.AsString);
 			
 			debugger.Continue();
@@ -566,22 +564,17 @@ namespace Debugger.Tests
 			Assert.AreEqual(typeof(Variable), local.GetType());
 			
 			foreach(Variable var in local.SubVariables) {
-				if (var is PropertyVariable) {
-					Assert.AreEqual(typeof(UnavailableValue), var.Value.GetType(), "Variable name: " + var.Name);
-					debugger.StartEvaluation();
-					WaitForPause(PausedReason.EvalComplete, null);
-					Assert.AreEqual(false, var.Value.IsExpired, "Variable name: " + var.Name);
-					Assert.AreNotEqual(null, var.Value.AsString, "Variable name: " + var.Name);
-				}
+				Assert.AreEqual(typeof(UnavailableValue), var.Value.GetType(), "Variable name: " + var.Name);
+				debugger.StartEvaluation();
+				WaitForPause(PausedReason.EvalComplete, null);
+				Assert.AreNotEqual(null, var.Value.AsString, "Variable name: " + var.Name);
 			}
 			
 			debugger.Continue();
 			WaitForPause(PausedReason.Break, null);
 			
 			foreach(Variable var in local.SubVariables) {
-				if (var is PropertyVariable) {
-					Assert.AreEqual(typeof(UnavailableValue), var.Value.GetType(), "Variable name: " + var.Name);
-				}
+				Assert.AreEqual(typeof(UnavailableValue), var.Value.GetType(), "Variable name: " + var.Name);
 			}
 			debugger.StartEvaluation();
 			WaitForPause(PausedReason.EvalComplete, null);

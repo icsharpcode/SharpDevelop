@@ -49,6 +49,7 @@ namespace Debugger
 		internal void RemoveProcess(Process process)
 		{
 			processCollection.Remove(process);
+			process.NotifyHasExpired();
 			OnProcessExited(process);
 			// noProcessesHandle is set in NDebugger.TerminateDebugger
 		}

@@ -16,13 +16,17 @@ namespace Debugger
 	public abstract class Value: RemotingObjectBase
 	{
 		protected NDebugger debugger;
-		protected PersistentValue pValue;
-		
-		public event EventHandler<ValueEventArgs> ValueChanged;
+		PersistentValue pValue;
 		
 		public NDebugger Debugger {
 			get {
 				return debugger;
+			}
+		}
+		
+		public PersistentValue PersistentValue {
+			get {
+				return pValue;
 			}
 		}
 		
@@ -32,24 +36,9 @@ namespace Debugger
 			}
 		}
 		
-		protected ICorDebugHandleValue SoftReference {
-			get {
-				return pValue.SoftReference;
-			}
-		}
-		
 		protected Value FreshValue {
 			get {
 				return pValue.Value;
-			}
-		}
-		
-		/// <summary>
-		/// If true than the value is no longer valid and you should obtain updated copy
-		/// </summary>
-		public bool IsExpired {
-			get {
-				return pValue.IsExpired;
 			}
 		}
 		
@@ -69,12 +58,6 @@ namespace Debugger
 			}	
 		}
 		
-		protected virtual void OnValueChanged() {
-			if (ValueChanged != null) {
-				ValueChanged(this, new ValueEventArgs(this));
-			}
-		}
-		
 		public virtual Type ManagedType {
 			get {
 				return CorTypeToManagedType(CorType);
@@ -85,17 +68,20 @@ namespace Debugger
 			get;
 		}
 		
-		/// <summary>
-		/// Gets the subvariables of this value
-		/// </summary>
-		public virtual IEnumerable<Variable> GetSubVariables()
+		public VariableCollection SubVariables {
+			get {
+				return new VariableCollection(GetSubVariables());
+			}
+		}
+		
+		protected virtual IEnumerable<Variable> GetSubVariables()
 		{
 			yield break;
 		}
 		
 		public Variable this[string variableName] {
 			get {
-				foreach(Variable v in GetSubVariables()) {
+				foreach(Variable v in SubVariables) {
 					if (v.Name == variableName) return v;
 				}
 				throw new DebuggerException("Subvariable " + variableName + " does not exist");

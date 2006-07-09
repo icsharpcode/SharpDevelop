@@ -52,6 +52,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.Visible = false;
 			localVarList.SizeChanged += new EventHandler(localVarList_SizeChanged);
 			localVarList.BeforeExpand += new TreeListViewCancelEventHandler(localVarList_BeforeExpand);
+			localVarList.AfterExpand += new TreeListViewEventHandler(localVarList_AfterExpand);
 			
 			
 			RedrawContent();
@@ -79,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override void RegisterDebuggerEvents()
 		{
-			debuggerCore.DebuggeeStateChanged += delegate { debuggerCore.LocalVariables.Update(); };
+			debuggerCore.DebuggeeStateChanged += delegate { RefreshPad(); };
 		}
 		
 		public override void RefreshPad()
@@ -98,11 +99,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			TreeListViewItem staticMenu = new TreeListViewItem(staticMembersName, 0);
 			TreeListViewItem privateStaticMenu = new TreeListViewItem(privateStaticMembersName, 0);
 			
-			AddVariableMethod addVariable = delegate(Variable variable) {
-				ClassVariable classVariable = variable as ClassVariable;
-				
-				if (classVariable == null || classVariable.IsPublic) {
-					if (classVariable != null && classVariable.IsStatic) {
+			foreach(Variable variable in varCollection) {
+				if (variable.IsPublic) {
+					if (variable.IsStatic) {
 						// Public static
 						if (staticMenu.TreeListView == null) {
 							tree.Add(staticMenu);
@@ -114,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						tree.Add(new TreeListViewDebuggerItem(variable));
 					}
 				} else {
-					if (classVariable.IsStatic) {
+					if (variable.IsStatic) {
 						// Private static
 						if (staticMenu.TreeListView == null) {
 							tree.Add(staticMenu);
@@ -134,18 +133,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						privateInstanceMenu.Items.Add(new TreeListViewDebuggerItem(variable));
 					}
 				}
-			};
-			
-			varCollection.VariableAdded += delegate(object sender, VariableEventArgs e) {
-				addVariable(e.Variable);
-			};
-			
-			foreach(Variable variable in varCollection) {
-				addVariable(variable);
 			}
 		}
 		
-		private void localVarList_BeforeExpand(object sender, TreeListViewCancelEventArgs e)
+		void localVarList_BeforeExpand(object sender, TreeListViewCancelEventArgs e)
 		{
 			if (debuggerCore.IsPaused) {
 				if (e.Item is TreeListViewDebuggerItem) {
@@ -154,6 +145,21 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			} else {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.LocalVariables.CannotExploreVariablesWhileRunning}");
 				e.Cancel = true;
+			}
+		}
+		
+		void localVarList_AfterExpand(object sender, TreeListViewEventArgs e)
+		{
+			UpdateSubTree(e.Item);
+		}
+		
+		static void UpdateSubTree(TreeListViewItem tree)
+		{
+			foreach(TreeListViewItem item in tree.Items) {
+				if (item is TreeListViewDebuggerItem) {
+					((TreeListViewDebuggerItem)item).Update();
+				}
+				if (item.IsExpanded) UpdateSubTree(item);
 			}
 		}
 	}

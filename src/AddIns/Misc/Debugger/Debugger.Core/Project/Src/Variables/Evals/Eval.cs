@@ -7,15 +7,14 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	delegate ICorDebugValue[] CorValuesGetter();
-	
-	public enum EvalState {Pending, Evaluating, EvaluatedSuccessfully, EvaluatedException, EvaluatedNoResult, Error, Expired};
+	public enum EvalState {WaitingForRequest, EvaluationScheduled, Evaluating, EvaluatedSuccessfully, EvaluatedException, EvaluatedNoResult, EvaluatedError};
 	
 	/// <summary>
 	/// This class holds information about function evaluation.
@@ -24,15 +23,18 @@ namespace Debugger
 	{
 		NDebugger debugger;
 		
+		PersistentValue   pValue;
+		
 		ICorDebugEval     corEval;
 		ICorDebugFunction corFunction;
-		CorValuesGetter   getArgs;
+		bool              reevaluateAfterDebuggeeStateChange;
+		PersistentValue   thisValue;
+		PersistentValue[] args;
 		
-		EvalState         evalState = EvalState.Pending;
-		Value             result;
+		EvalState         evalState = EvalState.WaitingForRequest;
+		ICorDebugValue    result;
+		DebugeeState      debugeeStateOfResult;
 		string            error;
-		
-		DebugeeState debugeeStateWhenEvaluated;
 		
 		public event EventHandler<EvalEventArgs> EvalStarted;
 		public event EventHandler<EvalEventArgs> EvalComplete;
@@ -45,48 +47,30 @@ namespace Debugger
 		
 		public EvalState EvalState {
 			get {
-				if (result != null && (debugeeStateWhenEvaluated != debugger.DebugeeState || result.IsExpired)) {
-					return EvalState.Expired;
-				} else {
-					return evalState;
+				return evalState;
+			}
+			set {
+				evalState = value;
+				if (Evaluated) {
+					debugeeStateOfResult = debugger.DebugeeState;
+					OnEvalComplete(new EvalEventArgs(this));
 				}
+				pValue.NotifyValueChange();
 			}
 		}
 		
-		/// <summary>
-		/// True if the evaluation has been completed.
-		/// </summary>
 		public bool Evaluated {
 			get {
-				return this.EvalState != EvalState.Pending &&
-				       this.EvalState != EvalState.Evaluating;
+				return evalState == EvalState.EvaluatedSuccessfully ||
+				       evalState == EvalState.EvaluatedException ||
+				       evalState == EvalState.EvaluatedNoResult ||
+				       evalState == EvalState.EvaluatedError;
 			}
 		}
 		
-		public bool HasExpired {
+		public PersistentValue PersistentValue {
 			get {
-				return this.EvalState == EvalState.Expired;
-			}
-		}
-		
-		/// <summary>
-		/// The result of the evaluation. Always non-null, but it may be UnavailableValue.
-		/// </summary>
-		public Value Result {
-			get {
-				switch(this.EvalState) {
-					case EvalState.Pending: return new UnavailableValue(debugger, "Evaluation pending");
-					case EvalState.Evaluating: return new UnavailableValue(debugger, "Evaluating...");
-					case EvalState.EvaluatedSuccessfully: return result;
-					case EvalState.EvaluatedException:
-						ObjectValue exception = (ObjectValue)result;
-						while (exception.Type != "System.Exception") exception = exception.BaseClass;
-						return new UnavailableValue(debugger, result.Type + ": " + exception["_message"].Value.AsString);
-					case EvalState.EvaluatedNoResult: return new UnavailableValue(debugger, "No return value");
-					case EvalState.Error: return new UnavailableValue(debugger, error);
-					case EvalState.Expired: return new UnavailableValue(debugger, "Result has expired");
-					default: throw new DebuggerException("Unknown state");
-				}
+				return pValue;
 			}
 		}
 		
@@ -96,43 +80,83 @@ namespace Debugger
 			}
 		}
 		
-		internal Eval(NDebugger debugger, ICorDebugFunction corFunction, CorValuesGetter getArgs)
+		internal Eval(NDebugger debugger, ICorDebugFunction corFunction, bool reevaluateAfterDebuggeeStateChange, PersistentValue thisValue, PersistentValue[] args)
 		{
 			this.debugger = debugger;
 			this.corFunction = corFunction;
-			this.getArgs = getArgs;
+			this.reevaluateAfterDebuggeeStateChange = reevaluateAfterDebuggeeStateChange;
+			this.thisValue = thisValue;
+			this.args = args;
 			
-			// Schedule the eval for evaluation
-			debugger.AddEval(this);
-			debugger.MTA2STA.AsyncCall(delegate {
-			                           	if (debugger.IsPaused && !this.HasExpired) {
-			                           		debugger.StartEvaluation();
-			                           	}
-			                           });
+			List<PersistentValue> dependencies = new List<PersistentValue>();
+			if (thisValue != null) dependencies.Add(thisValue);
+			dependencies.AddRange(args);
+			
+			pValue = new PersistentValue(debugger,
+			                             dependencies.ToArray(),
+			                             delegate { return GetCorValue(); });
+			
+			foreach(PersistentValue dependency in dependencies) {
+				dependency.ValueChanged += delegate { EvalState = EvalState.WaitingForRequest; };
+			}
 		}
 		
-		/// <returns>True is setup was successful</returns>
+		ICorDebugValue GetCorValue()
+		{
+			if (Evaluated && reevaluateAfterDebuggeeStateChange && debugger.DebugeeState != debugeeStateOfResult) {
+				ScheduleEvaluation();
+			}
+			
+			switch(this.EvalState) {
+				case EvalState.WaitingForRequest: ScheduleEvaluation(); goto case EvalState.EvaluationScheduled;
+				case EvalState.EvaluationScheduled: throw new CannotGetValueException("Evaluation pending");
+				case EvalState.Evaluating: throw new CannotGetValueException("Evaluating...");
+				case EvalState.EvaluatedSuccessfully: return result;
+				case EvalState.EvaluatedException: return result;
+				case EvalState.EvaluatedNoResult: throw new CannotGetValueException("No return value");
+				case EvalState.EvaluatedError: throw new CannotGetValueException(error);
+				default: throw new DebuggerException("Unknown state");
+			}
+		}
+		
+		void ScheduleEvaluation()
+		{
+			debugger.AddEval(this);
+			debugger.MTA2STA.AsyncCall(delegate {
+			                           	if (debugger.IsPaused) debugger.StartEvaluation();
+			                           });
+			EvalState = EvalState.EvaluationScheduled;
+		}
+		
+		/// <returns>True if setup was successful</returns>
 		internal bool SetupEvaluation(Thread targetThread)
 		{
 			debugger.AssertPaused();
 			
 			if (targetThread.IsLastFunctionNative) {
-				error = "Can not evaluate because native frame is on top of stack";
-				evalState = EvalState.Error;
-				if (EvalComplete != null) {
-					EvalComplete(this, new EvalEventArgs(this));
-				}
+				OnError("Can not evaluate because native frame is on top of stack");
 				return false;
 			}
 			
-			ICorDebugValue[] args = getArgs();
-			
-			if (args == null) {
-				error = "Can not get args for eval";
-				evalState = EvalState.Error;
-				if (EvalComplete != null) {
-					EvalComplete(this, new EvalEventArgs(this));
+			List<ICorDebugValue> corArgs = new List<ICorDebugValue>();
+			try {
+				if (thisValue != null) {
+					Value val = thisValue.Value;
+					if (!(val is ObjectValue)) {
+						OnError("Can not evaluate on a value which is not an object");
+						return false;
+					}
+					if (!((ObjectValue)val).IsSuperClass(corFunction.Class)) {
+						OnError("Can not evaluate because the object does not contain specified function");
+						return false;
+					}
+					corArgs.Add(thisValue.SoftReference);
 				}
+				foreach(PersistentValue arg in args) {
+					corArgs.Add(arg.SoftReference);
+				}
+			} catch (CannotGetValueException e) {
+				OnError(e.Message);
 				return false;
 			}
 			
@@ -140,22 +164,25 @@ namespace Debugger
 			corEval = targetThread.CorThread.CreateEval();
 			
 			try {
-				corEval.CallFunction(corFunction, (uint)args.Length, args);
+				corEval.CallFunction(corFunction, (uint)corArgs.Count, corArgs.ToArray());
 			} catch (COMException e) {
 				if ((uint)e.ErrorCode == 0x80131C26) {
-					error = "Can not evaluate in optimized code";
-					evalState = EvalState.Error;
-					if (EvalComplete != null) {
-						EvalComplete(this, new EvalEventArgs(this));
-					}
+					OnError("Can not evaluate in optimized code");
 					return false;
 				}
 			}
 			
+			EvalState = EvalState.Evaluating;
+			
 			OnEvalStarted(new EvalEventArgs(this));
 			
-			evalState = EvalState.Evaluating;
 			return true;
+		}
+		
+		void OnError(string msg)
+		{
+			error = msg;
+			EvalState = EvalState.EvaluatedError;
 		}
 		
 		protected virtual void OnEvalStarted(EvalEventArgs e)
@@ -165,25 +192,26 @@ namespace Debugger
 			}
 		}
 		
-		protected internal virtual void OnEvalComplete(bool successful) 
+		protected virtual void OnEvalComplete(EvalEventArgs e)
+		{
+			if (EvalComplete != null) {
+				EvalComplete(this, e);
+			}
+		}
+		
+		internal void NotifyEvaluationComplete(bool successful) 
 		{
 			// Eval result should be ICorDebugHandleValue so it should survive Continue()
-			result = new PersistentValue(debugger, corEval.Result).Value;
-			
-			debugeeStateWhenEvaluated = debugger.DebugeeState;
+			result = corEval.Result;
 			
 			if (result == null) {
-				evalState = EvalState.EvaluatedNoResult;
+				EvalState = EvalState.EvaluatedNoResult;
 			} else {
 				if (successful) {
-					evalState = EvalState.EvaluatedSuccessfully;
+					EvalState = EvalState.EvaluatedSuccessfully;
 				} else {
-					evalState = EvalState.EvaluatedException;
+					EvalState = EvalState.EvaluatedException;
 				}
-			}
-			
-			if (EvalComplete != null) {
-				EvalComplete(this, new EvalEventArgs(this));
 			}
 		}
 	}

@@ -11,35 +11,40 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public class Variable: RemotingObjectBase
+	public class Variable: RemotingObjectBase, IExpirable
 	{
-		protected NDebugger debugger;
-		
 		string name;
-		VariableCollection subVariables;
+		PersistentValue pValue;
+		bool isStatic;
+		bool isPublic;
 		
-		internal protected PersistentValue pValue;
-		
-		event EventHandler<DebuggerEventArgs> valueChanged;
-		public event EventHandler<VariableCollectionEventArgs> ValueRemovedFromCollection;
-		
-		public event EventHandler<DebuggerEventArgs> ValueChanged {
+		public event EventHandler<PersistentValueEventArgs> ValueChanged {
 			add {
-				valueChanged += value;
-				debugger.DebuggeeStateChanged += value;
-				debugger.ProcessExited += delegate {
-					debugger.DebuggeeStateChanged -= value;
-				};
+				pValue.ValueChanged += value;
 			}
 			remove {
-				valueChanged -= value;
-				debugger.DebuggeeStateChanged -= value;
+				pValue.ValueChanged -= value;
+			}
+		}
+		
+		public event EventHandler Expired {
+			add {
+				pValue.Expired += value;
+			}
+			remove {
+				pValue.Expired -= value;
+			}
+		}
+		
+		public bool HasExpired {
+			get {
+				return pValue.HasExpired;
 			}
 		}
 		
 		public NDebugger Debugger {
 			get {
-				return debugger;
+				return pValue.Debugger;
 			}
 		}
 		
@@ -49,55 +54,53 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary>
-		/// Gets value of variable which is safe to use (it is not null and it is not expired)
-		/// </summary>
-		public Value Value {
+		public PersistentValue PersistentValue {
 			get {
-				Value val = pValue.Value;
-				val.ValueChanged -= OnValueChanged;
-				val.ValueChanged += OnValueChanged;
-				return val;
+				return pValue;
 			}
 		}
 		
-		/// <summary>
-		/// Return up-to-date collection of subvariables.
-		/// This collection is lazy - you need to call its method Update if you want to use it later
-		/// </summary>
-		public VariableCollection SubVariables {
+		public bool IsStatic {
 			get {
-				subVariables.Update();
-				return subVariables;
+				return isStatic;
+			}
+		}
+		
+		public bool IsPublic {
+			get {
+				return isPublic;
+			}
+		}
+		
+		public Value Value {
+			get {
+				return pValue.Value;
 			}
 		}
 		
 		public bool MayHaveSubVariables {
 			get {
-				return Value.MayHaveSubVariables;
+				return pValue.Value.MayHaveSubVariables;
 			}
 		}
 		
-		protected internal virtual void OnValueChanged(object sender, ValueEventArgs e)
+		public VariableCollection SubVariables {
+			get {
+				return pValue.Value.SubVariables;
+			}
+		}
+		
+		public Variable(string name, PersistentValue pValue):this(name, false, true, pValue)
 		{
-			if (valueChanged != null) {
-				valueChanged(this, new VariableEventArgs(this));
-			}
+			
 		}
 		
-		protected internal virtual void OnValueRemovedFromCollection(VariableCollectionEventArgs e) {
-			if (ValueRemovedFromCollection != null) {
-				ValueRemovedFromCollection(this, e);
-			}
-		}
-		
-		public Variable(NDebugger debugger, string name, PersistentValue pValue)
+		public Variable(string name, bool isStatic, bool isPublic, PersistentValue pValue)
 		{
-			this.debugger = debugger;
 			this.name = name;
+			this.isStatic = isStatic;
+			this.isPublic = isPublic;
 			this.pValue = pValue;
-			this.subVariables = new VariableCollection(debugger);
-			this.subVariables.Updating += OnSubVariablesUpdating;
 			
 			if (name.StartsWith("<") && name.Contains(">") && name != "<Base class>") {
 				string middle = name.TrimStart('<').Split('>')[0]; // Get text between '<' and '>'
@@ -105,11 +108,6 @@ namespace Debugger
 					this.name = middle;
 				}
 			}
-		}
-		
-		void OnSubVariablesUpdating(object sender, VariableCollectionEventArgs e)
-		{
-			subVariables.UpdateTo(Value.GetSubVariables());
 		}
 	}
 }
