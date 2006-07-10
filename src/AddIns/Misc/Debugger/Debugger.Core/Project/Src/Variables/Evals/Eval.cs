@@ -19,18 +19,14 @@ namespace Debugger
 	/// <summary>
 	/// This class holds information about function evaluation.
 	/// </summary>
-	public class Eval 
+	public abstract partial class Eval 
 	{
 		NDebugger debugger;
 		
 		PersistentValue   pValue;
 		
 		ICorDebugEval     corEval;
-		ICorDebugFunction corFunction;
 		bool              reevaluateAfterDebuggeeStateChange;
-		PersistentValue   thisValue;
-		PersistentValue[] args;
-		
 		EvalState         evalState = EvalState.WaitingForRequest;
 		ICorDebugValue    result;
 		DebugeeState      debugeeStateOfResult;
@@ -49,7 +45,7 @@ namespace Debugger
 			get {
 				return evalState;
 			}
-			set {
+			protected set {
 				evalState = value;
 				if (Evaluated) {
 					debugeeStateOfResult = debugger.DebugeeState;
@@ -68,7 +64,7 @@ namespace Debugger
 			}
 		}
 		
-		public PersistentValue PersistentValue {
+		public PersistentValue Result {
 			get {
 				return pValue;
 			}
@@ -80,33 +76,42 @@ namespace Debugger
 			}
 		}
 		
-		internal Eval(NDebugger debugger, ICorDebugFunction corFunction, bool reevaluateAfterDebuggeeStateChange, PersistentValue thisValue, PersistentValue[] args)
+		protected Eval(NDebugger debugger, bool reevaluateAfterDebuggeeStateChange, IExpirable[] dependencies)
 		{
 			this.debugger = debugger;
-			this.corFunction = corFunction;
 			this.reevaluateAfterDebuggeeStateChange = reevaluateAfterDebuggeeStateChange;
-			this.thisValue = thisValue;
-			this.args = args;
-			
-			List<PersistentValue> dependencies = new List<PersistentValue>();
-			if (thisValue != null) dependencies.Add(thisValue);
-			dependencies.AddRange(args);
 			
 			pValue = new PersistentValue(debugger,
-			                             dependencies.ToArray(),
+			                             dependencies,
 			                             delegate { return GetCorValue(); });
 			
-			foreach(PersistentValue dependency in dependencies) {
-				dependency.ValueChanged += delegate { EvalState = EvalState.WaitingForRequest; };
+			foreach(IExpirable dependency in dependencies) {
+				if (dependency is PersistentValue) {
+					((PersistentValue)dependency).ValueChanged += delegate { EvalState = EvalState.WaitingForRequest; };
+				}
 			}
+			if (reevaluateAfterDebuggeeStateChange) {
+				debugger.DebuggeeStateChanged += delegate { EvalState = EvalState.WaitingForRequest; };
+			}
+		}
+		
+		public static Eval CallFunction(NDebugger debugger, string moduleName, string containgType, string functionName, bool reevaluateAfterDebuggeeStateChange, PersistentValue thisValue, PersistentValue[] args)
+		{
+			return new CallFunctionEval(debugger, moduleName, containgType, functionName, reevaluateAfterDebuggeeStateChange, thisValue, args);
+		}
+		
+		public static Eval CallFunction(NDebugger debugger, ICorDebugFunction corFunction, bool reevaluateAfterDebuggeeStateChange, PersistentValue thisValue, PersistentValue[] args)
+		{
+			return new CallFunctionEval(debugger, corFunction, reevaluateAfterDebuggeeStateChange, thisValue, args);
+		}
+		
+		public static Eval NewString(NDebugger debugger, string textToCreate)
+		{
+			return new NewStringEval(debugger, textToCreate);
 		}
 		
 		ICorDebugValue GetCorValue()
 		{
-			if (Evaluated && reevaluateAfterDebuggeeStateChange && debugger.DebugeeState != debugeeStateOfResult) {
-				ScheduleEvaluation();
-			}
-			
 			switch(this.EvalState) {
 				case EvalState.WaitingForRequest: ScheduleEvaluation(); goto case EvalState.EvaluationScheduled;
 				case EvalState.EvaluationScheduled: throw new CannotGetValueException("Evaluation pending");
@@ -119,67 +124,31 @@ namespace Debugger
 			}
 		}
 		
-		void ScheduleEvaluation()
+		public void ScheduleEvaluation()
 		{
-			debugger.AddEval(this);
-			debugger.MTA2STA.AsyncCall(delegate {
-			                           	if (debugger.IsPaused) debugger.StartEvaluation();
-			                           });
-			EvalState = EvalState.EvaluationScheduled;
+			if (Evaluated || EvalState == EvalState.WaitingForRequest) {
+				debugger.AddEval(this);
+				debugger.MTA2STA.AsyncCall(delegate {
+				                           	if (debugger.IsPaused) debugger.StartEvaluation();
+				                           });
+				EvalState = EvalState.EvaluationScheduled;
+			}
 		}
 		
 		/// <returns>True if setup was successful</returns>
-		internal bool SetupEvaluation(Thread targetThread)
+		internal abstract bool SetupEvaluation(Thread targetThread);
+		
+		public PersistentValue EvaluateNow()
 		{
-			debugger.AssertPaused();
-			
-			if (targetThread.IsLastFunctionNative) {
-				OnError("Can not evaluate because native frame is on top of stack");
-				return false;
+			while (EvalState == EvalState.WaitingForRequest) {
+				ScheduleEvaluation();
+				debugger.WaitForPause();
+				debugger.WaitForPause();
 			}
-			
-			List<ICorDebugValue> corArgs = new List<ICorDebugValue>();
-			try {
-				if (thisValue != null) {
-					Value val = thisValue.Value;
-					if (!(val is ObjectValue)) {
-						OnError("Can not evaluate on a value which is not an object");
-						return false;
-					}
-					if (!((ObjectValue)val).IsSuperClass(corFunction.Class)) {
-						OnError("Can not evaluate because the object does not contain specified function");
-						return false;
-					}
-					corArgs.Add(thisValue.SoftReference);
-				}
-				foreach(PersistentValue arg in args) {
-					corArgs.Add(arg.SoftReference);
-				}
-			} catch (CannotGetValueException e) {
-				OnError(e.Message);
-				return false;
-			}
-			
-			// TODO: What if this thread is not suitable?
-			corEval = targetThread.CorThread.CreateEval();
-			
-			try {
-				corEval.CallFunction(corFunction, (uint)corArgs.Count, corArgs.ToArray());
-			} catch (COMException e) {
-				if ((uint)e.ErrorCode == 0x80131C26) {
-					OnError("Can not evaluate in optimized code");
-					return false;
-				}
-			}
-			
-			EvalState = EvalState.Evaluating;
-			
-			OnEvalStarted(new EvalEventArgs(this));
-			
-			return true;
+			return Result;
 		}
 		
-		void OnError(string msg)
+		protected void OnError(string msg)
 		{
 			error = msg;
 			EvalState = EvalState.EvaluatedError;

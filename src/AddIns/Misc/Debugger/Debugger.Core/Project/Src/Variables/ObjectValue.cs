@@ -194,15 +194,15 @@ namespace Debugger
 			foreach(MethodProps m in Methods) {
 				MethodProps method = m; // One per scope/delegate
 				if (method.HasSpecialName && method.Name.StartsWith("get_") && method.Name != "get_Item") {
-					Eval eval = new Eval(debugger,
-					                     Module.CorModule.GetFunctionFromToken(method.Token),
-					                     true, // reevaluateAfterDebuggeeStateChange
-					                     method.IsStatic? null : this.PersistentValue,
-					                     new PersistentValue[] {});
+					Eval eval = Eval.CallFunction(debugger,
+					                              Module.CorModule.GetFunctionFromToken(method.Token),
+					                              true, // reevaluateAfterDebuggeeStateChange
+					                              method.IsStatic? null : this.PersistentValue,
+					                              new PersistentValue[] {});
 					yield return new Variable(method.Name.Remove(0, 4),
 					                          method.IsStatic,
 					                          method.IsPublic,
-					                          eval.PersistentValue);
+					                          eval.Result);
 				}
 			}
 		}

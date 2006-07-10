@@ -127,6 +127,21 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
+		public IEnumerable<MethodProps> EnumMethodsWithName(uint typeToken, string name)
+		{
+			IntPtr enumerator = IntPtr.Zero;
+			while(true) {
+				uint methodToken;
+				uint methodsFetched;
+				metaData.EnumMethodsWithName(ref enumerator, typeToken, name, out methodToken, 1, out methodsFetched);
+				if (methodsFetched == 0) {
+					metaData.CloseEnum(enumerator);
+					break;
+				}
+				yield return GetMethodProps(methodToken);
+			}
+		}
+		
 		public unsafe MethodProps GetMethodProps(uint methodToken)
 		{
 			MethodProps methodProps = new MethodProps();
@@ -150,6 +165,28 @@ namespace Debugger.Wrappers.MetaData
 			//Marshal.FreeCoTaskMem(pSigBlob);
 			
 			return methodProps;
+		}
+		
+		public IEnumerable<uint> EnumParams(uint mb)
+		{
+			IntPtr enumerator = IntPtr.Zero;
+			while(true) {
+				uint token;
+				uint fetched;
+				metaData.EnumParams(ref enumerator, mb, out token, 1, out fetched);
+				if (fetched == 0) {
+					metaData.CloseEnum(enumerator);
+					break;
+				}
+				yield return token;
+			}
+		}
+		
+		public int GetParamCount(uint methodToken)
+		{
+			int count = 0;
+			foreach(uint param in EnumParams(methodToken)) count++;
+			return count;
 		}
 		
 		public ParamProps GetParamForMethodIndex(uint methodToken, uint parameterSequence)
@@ -185,6 +222,17 @@ namespace Debugger.Wrappers.MetaData
 			uint typeDefToken;
 			metaData.FindTypeDefByName(typeName, enclosingClassToken, out typeDefToken);
 			return GetTypeDefProps(typeDefToken);
+		}
+		
+		public MethodProps GetMethod(string type, string name, int paramCount)
+		{
+			TypeDefProps typeDefProps = FindTypeDefByName(type, 0);
+			foreach(MethodProps method in EnumMethodsWithName(typeDefProps.Token, name)) {
+				if (GetParamCount(method.Token) == paramCount) {
+					return method;
+				}
+			}
+			throw new DebuggerException("Not found");
 		}
 	}
 }

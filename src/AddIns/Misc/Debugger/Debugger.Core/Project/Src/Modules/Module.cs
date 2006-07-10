@@ -119,6 +119,12 @@ namespace Debugger
 			}
 		}
 		
+		internal ICorDebugFunction GetMethod(string type, string name, int paramCount)
+		{
+			uint token = MetaData.GetMethod(type, name, paramCount).Token;
+			return corModule.GetFunctionFromToken(token);
+		}
+		
 		internal Module(NDebugger debugger, ICorDebugModule pModule)
 		{
 			this.debugger = debugger;
