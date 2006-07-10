@@ -16,7 +16,7 @@ namespace Debugger
 	public abstract class Value: RemotingObjectBase
 	{
 		protected NDebugger debugger;
-		PersistentValue pValue;
+		Variable variable;
 		
 		public NDebugger Debugger {
 			get {
@@ -24,21 +24,21 @@ namespace Debugger
 			}
 		}
 		
-		public PersistentValue PersistentValue {
+		public Variable Variable {
 			get {
-				return pValue;
+				return variable;
 			}
 		}
 		
 		internal ICorDebugValue CorValue {
 			get {
-				return pValue.CorValue;
+				return variable.CorValue;
 			}
 		}
 		
 		protected Value FreshValue {
 			get {
-				return pValue.Value;
+				return variable.Value;
 			}
 		}
 		
@@ -88,10 +88,10 @@ namespace Debugger
 			}
 		}
 		
-		protected Value(NDebugger debugger, PersistentValue pValue)
+		protected Value(NDebugger debugger, Variable variable)
 		{
 			this.debugger = debugger;
-			this.pValue = pValue;
+			this.variable = variable;
 		}
 		
 		public override string ToString()

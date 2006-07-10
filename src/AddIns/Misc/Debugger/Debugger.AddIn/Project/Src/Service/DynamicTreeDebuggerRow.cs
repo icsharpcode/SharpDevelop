@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			Update();
 		}
 		
-		void Update(object sender, PersistentValueEventArgs e)
+		void Update(object sender, VariableEventArgs e)
 		{
 			dirty = true;
 			Update();
@@ -182,7 +182,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			List<Variable> privateStatic = new List<Variable>();
 			List<Variable> privateInstance = new List<Variable>();
 			
-			foreach(Variable variable in this.Variable.SubVariables) {
+			foreach(Variable variable in this.Variable.Value.SubVariables) {
 				if (variable.IsPublic) {
 					if (variable.IsStatic) {
 						publicStatic.Add(variable);

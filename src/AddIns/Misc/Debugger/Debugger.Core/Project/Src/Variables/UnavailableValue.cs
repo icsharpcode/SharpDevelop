@@ -28,7 +28,7 @@ namespace Debugger
 			} 
 		}
 		
-		internal UnavailableValue(NDebugger debugger, PersistentValue pValue, string message):base(debugger, pValue)
+		internal UnavailableValue(NDebugger debugger, Variable variable, string message):base(debugger, variable)
 		{
 			this.message = message;
 		}

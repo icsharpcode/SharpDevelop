@@ -23,7 +23,7 @@ namespace Debugger
 	{
 		NDebugger debugger;
 		
-		PersistentValue   pValue;
+		Variable          variablele;
 		
 		ICorDebugEval     corEval;
 		bool              reevaluateAfterDebuggeeStateChange;
@@ -51,7 +51,7 @@ namespace Debugger
 					debugeeStateOfResult = debugger.DebugeeState;
 					OnEvalComplete(new EvalEventArgs(this));
 				}
-				pValue.NotifyValueChange();
+				variablele.NotifyValueChange();
 			}
 		}
 		
@@ -64,9 +64,9 @@ namespace Debugger
 			}
 		}
 		
-		public PersistentValue Result {
+		public Variable Result {
 			get {
-				return pValue;
+				return variablele;
 			}
 		}
 		
@@ -81,13 +81,15 @@ namespace Debugger
 			this.debugger = debugger;
 			this.reevaluateAfterDebuggeeStateChange = reevaluateAfterDebuggeeStateChange;
 			
-			pValue = new PersistentValue(debugger,
-			                             dependencies,
-			                             delegate { return GetCorValue(); });
+			variablele = new Variable(debugger,
+			                      String.Empty,
+			                      Variable.Flags.Default,
+			                      dependencies,
+			                      delegate { return GetCorValue(); });
 			
 			foreach(IExpirable dependency in dependencies) {
-				if (dependency is PersistentValue) {
-					((PersistentValue)dependency).ValueChanged += delegate { EvalState = EvalState.WaitingForRequest; };
+				if (dependency is Variable) {
+					((Variable)dependency).ValueChanged += delegate { EvalState = EvalState.WaitingForRequest; };
 				}
 			}
 			if (reevaluateAfterDebuggeeStateChange) {
@@ -95,12 +97,12 @@ namespace Debugger
 			}
 		}
 		
-		public static Eval CallFunction(NDebugger debugger, string moduleName, string containgType, string functionName, bool reevaluateAfterDebuggeeStateChange, PersistentValue thisValue, PersistentValue[] args)
+		public static Eval CallFunction(NDebugger debugger, string moduleName, string containgType, string functionName, bool reevaluateAfterDebuggeeStateChange, Variable thisValue, Variable[] args)
 		{
 			return new CallFunctionEval(debugger, moduleName, containgType, functionName, reevaluateAfterDebuggeeStateChange, thisValue, args);
 		}
 		
-		public static Eval CallFunction(NDebugger debugger, ICorDebugFunction corFunction, bool reevaluateAfterDebuggeeStateChange, PersistentValue thisValue, PersistentValue[] args)
+		public static Eval CallFunction(NDebugger debugger, ICorDebugFunction corFunction, bool reevaluateAfterDebuggeeStateChange, Variable thisValue, Variable[] args)
 		{
 			return new CallFunctionEval(debugger, corFunction, reevaluateAfterDebuggeeStateChange, thisValue, args);
 		}
@@ -138,7 +140,7 @@ namespace Debugger
 		/// <returns>True if setup was successful</returns>
 		internal abstract bool SetupEvaluation(Thread targetThread);
 		
-		public PersistentValue EvaluateNow()
+		public Variable EvaluateNow()
 		{
 			while (EvalState == EvalState.WaitingForRequest) {
 				ScheduleEvaluation();

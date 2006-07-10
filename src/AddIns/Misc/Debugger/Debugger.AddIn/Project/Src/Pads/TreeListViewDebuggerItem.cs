@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				Items.Clear();
 				// Do not sort names of array items
 				this.Items.SortOrder = variable.Value is ArrayValue ? SortOrder.None : SortOrder.Ascending;
-				LocalVarPad.AddVariableCollectionToTree(variable.SubVariables, this.Items);
+				LocalVarPad.AddVariableCollectionToTree(variable.Value.SubVariables, this.Items);
 				populated = true;
 			}
 		}

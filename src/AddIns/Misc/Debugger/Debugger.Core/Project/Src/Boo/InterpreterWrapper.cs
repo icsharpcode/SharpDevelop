@@ -19,7 +19,7 @@ namespace Debugger
 		const string booDll = "Boo.Lang.Interpreter.dll";
 		
 		NDebugger debugger;
-		PersistentValue interpreter;
+		Variable  interpreter;
 		
 		public NDebugger Debugger {
 			get {
@@ -36,49 +36,49 @@ namespace Debugger
 		{
 			this.debugger = debugger;
 			
-			PersistentValue assemblyPath = Eval.NewString(debugger, booInterpreterPath).EvaluateNow();
-			PersistentValue assembly = Eval.CallFunction(debugger, "mscorlib.dll", "System.Reflection.Assembly", "LoadFrom", false, null, new PersistentValue[] {assemblyPath}).EvaluateNow();
-			PersistentValue interpreterType = Eval.NewString(debugger, "Boo.Lang.Interpreter.InteractiveInterpreter").EvaluateNow();
-			interpreter = Eval.CallFunction(debugger, "mscorlib.dll", "System.Reflection.Assembly", "CreateInstance", false, assembly, new PersistentValue[] {interpreterType}).EvaluateNow();
+			Variable assemblyPath = Eval.NewString(debugger, booInterpreterPath).EvaluateNow();
+			Variable assembly = Eval.CallFunction(debugger, "mscorlib.dll", "System.Reflection.Assembly", "LoadFrom", false, null, new Variable[] {assemblyPath}).EvaluateNow();
+			Variable interpreterType = Eval.NewString(debugger, "Boo.Lang.Interpreter.InteractiveInterpreter").EvaluateNow();
+			interpreter = Eval.CallFunction(debugger, "mscorlib.dll", "System.Reflection.Assembly", "CreateInstance", false, assembly, new Variable[] {interpreterType}).EvaluateNow();
 			RunCommand("interpreter.RememberLastValue = true");
 			
 			// Testing:
 			RunCommand("1 + 2");
-			PersistentValue res = GetLastValue();
+			Variable res = GetLastValue();
 			SetValue("a", res);
 			RunCommand("a = a + 100");
-			PersistentValue a = GetValue("a");
-			PersistentValue sug = SuggestCodeCompletion("interpreter.__codecomplete__");
+			Variable a = GetValue("a");
+			Variable sug = SuggestCodeCompletion("interpreter.__codecomplete__");
 		}
 		
 		
 		public void RunCommand(string code)
 		{
-			PersistentValue cmd = Eval.NewString(debugger, code).EvaluateNow();
-			Eval.CallFunction(debugger, booDll, "Boo.Lang.Interpreter.InteractiveInterpreter", "LoopEval", false, interpreter, new PersistentValue[] {cmd}).EvaluateNow();
+			Variable cmd = Eval.NewString(debugger, code).EvaluateNow();
+			Eval.CallFunction(debugger, booDll, "Boo.Lang.Interpreter.InteractiveInterpreter", "LoopEval", false, interpreter, new Variable[] {cmd}).EvaluateNow();
 		}
 		
-		public void SetValue(string valueName, PersistentValue newValue)
+		public void SetValue(string valueName, Variable newValue)
 		{
-			PersistentValue name = Eval.NewString(debugger, valueName).EvaluateNow();
-			Eval.CallFunction(debugger, booDll, "Boo.Lang.Interpreter.InteractiveInterpreter", "SetValue", false, interpreter, new PersistentValue[] {name, newValue}).EvaluateNow();
+			Variable name = Eval.NewString(debugger, valueName).EvaluateNow();
+			Eval.CallFunction(debugger, booDll, "Boo.Lang.Interpreter.InteractiveInterpreter", "SetValue", false, interpreter, new Variable[] {name, newValue}).EvaluateNow();
 		}
 		
-		public PersistentValue GetValue(string valueName)
+		public Variable GetValue(string valueName)
 		{
-			PersistentValue name = Eval.NewString(debugger, valueName).EvaluateNow();
-			return Eval.CallFunction(debugger, booDll, "Boo.Lang.Interpreter.InteractiveInterpreter", "GetValue", false, interpreter, new PersistentValue[] {name}).EvaluateNow();
+			Variable name = Eval.NewString(debugger, valueName).EvaluateNow();
+			return Eval.CallFunction(debugger, booDll, "Boo.Lang.Interpreter.InteractiveInterpreter", "GetValue", false, interpreter, new Variable[] {name}).EvaluateNow();
 		}
 		
-		public PersistentValue GetLastValue()
+		public Variable GetLastValue()
 		{
-			return Eval.CallFunction(debugger, booDll, "Boo.Lang.Interpreter.InteractiveInterpreter", "get_LastValue", false, interpreter, new PersistentValue[] {}).EvaluateNow();
+			return Eval.CallFunction(debugger, booDll, "Boo.Lang.Interpreter.InteractiveInterpreter", "get_LastValue", false, interpreter, new Variable[] {}).EvaluateNow();
 		}
 		
-		public PersistentValue SuggestCodeCompletion(string code)
+		public Variable SuggestCodeCompletion(string code)
 		{
-			PersistentValue cmd = Eval.NewString(debugger, code).EvaluateNow();
-			return Eval.CallFunction(debugger, booDll, "Boo.Lang.Interpreter.AbstractInterpreter", "SuggestCodeCompletion", false, interpreter, new PersistentValue[] {cmd}).EvaluateNow();
+			Variable cmd = Eval.NewString(debugger, code).EvaluateNow();
+			return Eval.CallFunction(debugger, booDll, "Boo.Lang.Interpreter.AbstractInterpreter", "SuggestCodeCompletion", false, interpreter, new Variable[] {cmd}).EvaluateNow();
 		}
 	}
 }

@@ -195,7 +195,6 @@
     <Compile Include="Src\Variables\Value.cs" />
     <Compile Include="Src\Variables\ValueEventArgs.cs" />
     <Compile Include="Src\Variables\VariableCollection.cs" />
-    <Compile Include="Src\Variables\Variable.cs" />
     <Compile Include="Src\Threads\Stepper.cs" />
     <Compile Include="Src\Threads\StepperEventArgs.cs" />
     <Compile Include="Src\Interop\CorSym\_FILETIME.cs" />
@@ -376,12 +375,12 @@
     <Compile Include="Src\Threads\FrameID.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugChain.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugFrame.cs" />
-    <Compile Include="Src\Variables\PersistentValue.cs" />
-    <Compile Include="Src\Variables\PersistentValueEventArgs.cs" />
+    <Compile Include="Src\Variables\VariableEventArgs.cs" />
     <Compile Include="Src\Debugger\IExpirable.cs" />
     <Compile Include="Src\Boo\InterpreterWrapper.cs" />
     <Compile Include="Src\Variables\Evals\Eval.CallFunctionEval.cs" />
     <Compile Include="Src\Variables\Evals\Eval.NewStringEval.cs" />
+    <Compile Include="Src\Variables\PersistentValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

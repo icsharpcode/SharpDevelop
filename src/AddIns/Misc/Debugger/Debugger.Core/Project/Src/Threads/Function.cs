@@ -363,8 +363,7 @@ namespace Debugger
 		IEnumerable<Variable> GetVariables() 
 		{
 			if (!IsStatic) {
-				yield return new Variable("this",
-				                          ThisValue);
+				yield return ThisVariable;
 			}
 			foreach(Variable var in ArgumentVariables) {
 				yield return var;
@@ -377,11 +376,13 @@ namespace Debugger
 			}
 		}
 		
-		public PersistentValue ThisValue {
+		public Variable ThisVariable {
 			get {
-				return new PersistentValue(debugger,
-				                           new IExpirable[] {this},
-				                           delegate { return ThisCorValue; });
+				return new Variable(debugger,
+				                    "this",
+				                    Variable.Flags.Default,
+				                    new IExpirable[] {this},
+				                    delegate { return ThisCorValue; });
 			}
 		}
 		
@@ -403,7 +404,7 @@ namespace Debugger
 			get {
 				// TODO: Should work for static
 				if (!IsStatic) {
-					foreach(Variable var in ThisValue.Value.SubVariables) {
+					foreach(Variable var in ThisVariable.Value.SubVariables) {
 						yield return var;
 					}
 				}
@@ -433,10 +434,11 @@ namespace Debugger
 		
 		public Variable GetArgumentVariable(int index)
 		{
-			return new Variable(GetParameterName(index),
-			                    new PersistentValue(debugger,
-			                                        new IExpirable[] {this},
-			                                        delegate { return GetArgumentCorValue(index); } ));
+			return new Variable(debugger,
+			                    GetParameterName(index),
+			                    Variable.Flags.Default,
+			                    new IExpirable[] {this},
+			                    delegate { return GetArgumentCorValue(index); } );
 		}
 		
 		ICorDebugValue GetArgumentCorValue(int index)
@@ -487,10 +489,11 @@ namespace Debugger
 		
 		Variable GetLocalVariable(ISymUnmanagedVariable symVar)
 		{
-			return new Variable(symVar.Name,
-			                    new PersistentValue(debugger,
-			                                        new IExpirable[] {this},
-			                                        delegate { return GetCorValueOfLocalVariable(symVar); }));
+			return new Variable(debugger,
+			                    symVar.Name,
+			                    Variable.Flags.Default,
+			                    new IExpirable[] {this},
+			                    delegate { return GetCorValueOfLocalVariable(symVar); });
 		}
 		
 		ICorDebugValue GetCorValueOfLocalVariable(ISymUnmanagedVariable symVar)

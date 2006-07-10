@@ -9,19 +9,19 @@ using System;
 
 namespace Debugger
 {
-	public class PersistentValueEventArgs: EventArgs
+	public class VariableEventArgs: EventArgs
 	{
-		PersistentValue persistentValue;
+		Variable variable;
 		
-		public PersistentValue PersistentValue {
+		public Variable Variable {
 			get {
-				return persistentValue;
+				return variable;
 			}
 		}
 		
-		public PersistentValueEventArgs(PersistentValue persistentValue)
+		public VariableEventArgs(Variable variable)
 		{
-			this.persistentValue = persistentValue;
+			this.variable = variable;
 		}
 	}
 }

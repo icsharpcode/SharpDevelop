@@ -60,7 +60,7 @@ namespace Debugger
 		}
 		
 		
-		internal unsafe ArrayValue(NDebugger debugger, PersistentValue pValue):base(debugger, pValue)
+		internal unsafe ArrayValue(NDebugger debugger, Variable variable):base(debugger, variable)
 		{
 			corElementType = (CorElementType)CorArrayValue.ElementType;
 			
@@ -118,10 +118,11 @@ namespace Debugger
 				elementName += indices[i].ToString() + ",";
 			elementName = elementName.TrimEnd(new char[] {','}) + "]";
 			
-			return new Variable(elementName,
-			                    new PersistentValue(debugger,
-			                                        new IExpirable[] {this.PersistentValue},
-			                                        delegate { return GetCorValueOfItem(indices); }));
+			return new Variable(debugger,
+			                    elementName,
+			                    Variable.Flags.Default,
+			                    new IExpirable[] {this.Variable},
+			                    delegate { return GetCorValueOfItem(indices); });
 		}
 		
 		unsafe ICorDebugValue GetCorValueOfItem(uint[] indices)

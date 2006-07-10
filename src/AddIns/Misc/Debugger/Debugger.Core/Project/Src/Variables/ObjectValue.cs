@@ -59,7 +59,7 @@ namespace Debugger
 			get {
 				ICorDebugClass currentClass = corClass;
 				do {
-					yield return new ObjectValue(debugger, this.PersistentValue, currentClass);
+					yield return new ObjectValue(debugger, this.Variable, currentClass);
 					currentClass = GetSuperClass(debugger, currentClass);
 				} while (currentClass != null);
 			}
@@ -77,7 +77,7 @@ namespace Debugger
 			get	{
 				ICorDebugClass superClass = GetSuperClass(debugger, corClass);
 				if (superClass == null) throw new DebuggerException("Does not have a base class");
-				return new ObjectValue(debugger, this.PersistentValue, superClass);
+				return new ObjectValue(debugger, this.Variable, superClass);
 			}
 		}
 		
@@ -87,12 +87,12 @@ namespace Debugger
 			}
 		}
 		
-		internal ObjectValue(NDebugger debugger, PersistentValue pValue):base(debugger, pValue)
+		internal ObjectValue(NDebugger debugger, Variable variable):base(debugger, variable)
 		{
 			InitObjectValue(this.CorObjectValue.Class);
 		}
 
-		internal ObjectValue(NDebugger debugger, PersistentValue pValue, ICorDebugClass corClass):base(debugger, pValue)
+		internal ObjectValue(NDebugger debugger, Variable variable, ICorDebugClass corClass):base(debugger, variable)
 		{
 			InitObjectValue(corClass);
 		}
@@ -159,12 +159,12 @@ namespace Debugger
 				FieldProps field = f; // One per scope/delegate
 				if (field.IsStatic && field.IsLiteral) continue; // Skip field
 				if (!field.IsStatic && CorValue == null) continue; // Skip field
-				yield return new Variable(field.Name,
-				                          field.IsStatic,
-				                          field.IsPublic,
-				                          new PersistentValue(debugger,
-				                                              new IExpirable[] {this.PersistentValue},
-				                                              delegate { return GetCorValueOfField(field); }));
+				yield return new Variable(debugger,
+				                          field.Name,
+				                          (field.IsStatic ? Variable.Flags.Static : Variable.Flags.None) |
+				                          (field.IsPublic ? Variable.Flags.Public : Variable.Flags.None),
+				                          new IExpirable[] {this.Variable},
+				                          delegate { return GetCorValueOfField(field); });
 			}
 		}
 		
@@ -197,12 +197,13 @@ namespace Debugger
 					Eval eval = Eval.CallFunction(debugger,
 					                              Module.CorModule.GetFunctionFromToken(method.Token),
 					                              true, // reevaluateAfterDebuggeeStateChange
-					                              method.IsStatic? null : this.PersistentValue,
-					                              new PersistentValue[] {});
-					yield return new Variable(method.Name.Remove(0, 4),
-					                          method.IsStatic,
-					                          method.IsPublic,
-					                          eval.Result);
+					                              method.IsStatic? null : this.Variable,
+					                              new Variable[] {});
+					Variable var = eval.Result;
+					var.Name = method.Name.Remove(0, 4);
+					var.VariableFlags = (method.IsStatic ? Variable.Flags.Static : Variable.Flags.None) |
+					                    (method.IsPublic ? Variable.Flags.Public : Variable.Flags.None);
+					yield return var;
 				}
 			}
 		}
@@ -210,10 +211,11 @@ namespace Debugger
 		public Variable GetBaseClassVariable()
 		{
 			if (HasBaseClass) {
-				return new Variable("<Base class>",
-				                    new PersistentValue(debugger,
-				                                        new IExpirable[] {this.PersistentValue},
-				                                        delegate { return GetBaseClassValue(); }));
+				return new Variable(debugger,
+				                    "<Base class>",
+				                    Variable.Flags.Default,
+				                    new IExpirable[] {this.Variable},
+				                    delegate { return GetBaseClassValue(); });
 			} else {
 				return null;
 			}

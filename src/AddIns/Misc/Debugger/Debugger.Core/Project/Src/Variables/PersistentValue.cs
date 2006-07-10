@@ -12,7 +12,7 @@ using Debugger.Wrappers.CorDebug;
 namespace Debugger
 {
 	/// <summary>
-	/// PersistentValue is a container which holds data necessaty to obtain 
+	/// Variable is a container which holds data necessaty to obtain 
 	/// the value of a given object even after continue. This level of 
 	/// abstraction is necessary because the type of a value can change 
 	/// (eg for local variable of type object)
@@ -24,7 +24,7 @@ namespace Debugger
 	/// ValueChange: ValueChange event is called whenever DebugeeState changes
 	/// or when NotifyValueChange() is called.
 	/// </summary>
-	public class PersistentValue: IExpirable
+	public class Variable: IExpirable
 	{
 		/// <summary>
 		/// Delegate that is used to get value. This delegate may be called at any time and should never return null.
@@ -32,16 +32,21 @@ namespace Debugger
 		public delegate Value ValueGetter();
 		public delegate ICorDebugValue CorValueGetter();
 		
+		[Flags] 
+		public enum Flags { Default = Public, None = 0, Public = 1, Static = 2};
+		
 		
 		NDebugger debugger;
 		
+		string name;
+		Flags flags;
 		CorValueGetter corValueGetter;
 		ValueGetter valueGetter;
 		
 		bool isExpired = false;
 		
 		public event EventHandler Expired;
-		public event EventHandler<PersistentValueEventArgs> ValueChanged;
+		public event EventHandler<VariableEventArgs> ValueChanged;
 		
 		public NDebugger Debugger {
 			get {
@@ -49,9 +54,18 @@ namespace Debugger
 			}
 		}
 		
+		public string Name {
+			get {
+				return name;
+			}
+			set {
+				name = value;
+			}
+		}
+		
 		public ICorDebugValue CorValue {
 			get {
-				return PersistentValue.DereferenceUnbox(RawCorValue);
+				return DereferenceUnbox(RawCorValue);
 			}
 		}
 		
@@ -78,6 +92,27 @@ namespace Debugger
 			}
 		}
 		
+		public Flags VariableFlags {
+			get {
+				return flags;
+			}
+			set {
+				flags = value;
+			}
+		}
+		
+		public bool IsStatic {
+			get {
+				return (flags & Flags.Static) != 0;
+			}
+		}
+		
+		public bool IsPublic {
+			get {
+				return (flags & Flags.Public) != 0;
+			}
+		}
+		
 		public ICorDebugValue SoftReference {
 			get {
 				if (this.HasExpired) throw new DebuggerException("CorValue has expired");
@@ -86,7 +121,7 @@ namespace Debugger
 				if (corValue != null && corValue.Is<ICorDebugHandleValue>()) {
 					return corValue;
 				}
-				corValue = PersistentValue.DereferenceUnbox(corValue);
+				corValue = DereferenceUnbox(corValue);
 				if (corValue != null && corValue.Is<ICorDebugHeapValue2>()) {
 					return corValue.As<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION).CastTo<ICorDebugValue>();
 				} else {
@@ -95,9 +130,19 @@ namespace Debugger
 			}
 		}
 		
-		PersistentValue(NDebugger debugger, IExpirable[] dependencies)
+		Variable(NDebugger debugger, string name, Flags flags, IExpirable[] dependencies)
 		{
 			this.debugger = debugger;
+			this.name = name;
+			this.flags = flags;
+			
+			if (name.StartsWith("<") && name.Contains(">") && name != "<Base class>") {
+				string middle = name.TrimStart('<').Split('>')[0]; // Get text between '<' and '>'
+				if (middle != "") {
+					this.name = middle;
+				}
+			}
+			
 			foreach(IExpirable exp in dependencies) {
 				AddDependency(exp);
 			}
@@ -105,19 +150,19 @@ namespace Debugger
 			debugger.DebuggeeStateChanged += NotifyValueChange;
 		}
 		
-		public PersistentValue(NDebugger debugger, IExpirable[] dependencies, ValueGetter valueGetter):this(debugger, dependencies)
+		public Variable(NDebugger debugger, string name, Flags flags, IExpirable[] dependencies, ValueGetter valueGetter):this(debugger, name, flags, dependencies)
 		{
 			this.corValueGetter = delegate { throw new CannotGetValueException("CorValue not available for custom value"); };
 			this.valueGetter = valueGetter;
 		}
 		
-		public PersistentValue(NDebugger debugger, IExpirable[] dependencies, ICorDebugValue corValue):this(debugger, dependencies)
+		public Variable(NDebugger debugger, string name, Flags flags, IExpirable[] dependencies, ICorDebugValue corValue):this(debugger, name, flags, dependencies)
 		{
 			this.corValueGetter = delegate { return corValue; };
 			this.valueGetter = delegate { return CreateValue(); };
 		}
 		
-		public PersistentValue(NDebugger debugger, IExpirable[] dependencies, CorValueGetter corValueGetter):this(debugger, dependencies)
+		public Variable(NDebugger debugger, string name, Flags flags, IExpirable[] dependencies, CorValueGetter corValueGetter):this(debugger, name, flags, dependencies)
 		{
 			this.corValueGetter = corValueGetter;
 			this.valueGetter = delegate { return CreateValue(); };
@@ -136,7 +181,7 @@ namespace Debugger
 		{
 			if (!isExpired) {
 				isExpired = true;
-				OnExpired(new PersistentValueEventArgs(this));
+				OnExpired(new VariableEventArgs(this));
 				debugger.DebuggeeStateChanged -= NotifyValueChange;
 			}
 		}
@@ -149,11 +194,11 @@ namespace Debugger
 		internal void NotifyValueChange()
 		{
 			if (!isExpired) {
-				OnValueChanged(new PersistentValueEventArgs(this));
+				OnValueChanged(new VariableEventArgs(this));
 			}
 		}
 		
-		protected virtual void OnValueChanged(PersistentValueEventArgs e)
+		protected virtual void OnValueChanged(VariableEventArgs e)
 		{
 			if (ValueChanged != null) {
 				ValueChanged(this, e);

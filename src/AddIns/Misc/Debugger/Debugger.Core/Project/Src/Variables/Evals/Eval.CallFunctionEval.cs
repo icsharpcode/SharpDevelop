@@ -22,8 +22,8 @@ namespace Debugger
 			string containgType;
 			string functionName;
 			ICorDebugFunction corFunction;
-			PersistentValue   thisValue;
-			PersistentValue[] args;
+			Variable          thisValue;
+			Variable[]        args;
 			
 			static List<T> MergeLists<T>(IEnumerable<T> a, IEnumerable<T> b)
 			{
@@ -33,7 +33,7 @@ namespace Debugger
 				return newList;
 			}
 			
-			public CallFunctionEval(NDebugger debugger, string moduleName, string containgType, string functionName, bool reevaluateAfterDebuggeeStateChange, PersistentValue thisValue, PersistentValue[] args)
+			public CallFunctionEval(NDebugger debugger, string moduleName, string containgType, string functionName, bool reevaluateAfterDebuggeeStateChange, Variable thisValue, Variable[] args)
 				:this(debugger, null, reevaluateAfterDebuggeeStateChange, thisValue, args)
 			{
 				this.moduleName = moduleName;
@@ -41,8 +41,8 @@ namespace Debugger
 				this.functionName = functionName;
 			}
 			
-			public CallFunctionEval(NDebugger debugger, ICorDebugFunction corFunction, bool reevaluateAfterDebuggeeStateChange, PersistentValue thisValue, PersistentValue[] args)
-				:base(debugger, reevaluateAfterDebuggeeStateChange, thisValue == null? args : MergeLists(new PersistentValue[] {thisValue}, args).ToArray())
+			public CallFunctionEval(NDebugger debugger, ICorDebugFunction corFunction, bool reevaluateAfterDebuggeeStateChange, Variable thisValue, Variable[] args)
+				:base(debugger, reevaluateAfterDebuggeeStateChange, thisValue == null? args : MergeLists(new Variable[] {thisValue}, args).ToArray())
 			{
 				this.corFunction = corFunction;
 				this.thisValue = thisValue;
@@ -81,7 +81,7 @@ namespace Debugger
 						}
 						corArgs.Add(thisValue.SoftReference);
 					}
-					foreach(PersistentValue arg in args) {
+					foreach(Variable arg in args) {
 						corArgs.Add(arg.SoftReference);
 					}
 				} catch (CannotGetValueException e) {

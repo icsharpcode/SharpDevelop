@@ -447,10 +447,10 @@ namespace Debugger.Tests
 				local = var; break;
 			}
 			Assert.AreEqual("array", local.Name);
-			Assert.AreEqual(true, local.MayHaveSubVariables);
+			Assert.AreEqual(true, local.Value.MayHaveSubVariables);
 			Assert.AreEqual(typeof(ArrayValue), local.Value.GetType());
 			Assert.AreEqual("{System.Int32[5]}", local.Value.AsString);
-			foreach(Variable var in local.SubVariables) {
+			foreach(Variable var in local.Value.SubVariables) {
 				subVars.Add(var);
 			}
 			for(int i = 0; i < 5; i++) {
@@ -475,10 +475,10 @@ namespace Debugger.Tests
 				local = var;
 			}
 			Assert.AreEqual("val", local.Name);
-			Assert.AreEqual(true, local.MayHaveSubVariables);
+			Assert.AreEqual(true, local.Value.MayHaveSubVariables);
 			Assert.AreEqual(typeof(ObjectValue), local.Value.GetType());
 			Assert.AreEqual("{Debugger.Tests.TestPrograms.ObjectValue}", local.Value.AsString);
-			foreach(Variable var in local.SubVariables) {
+			foreach(Variable var in local.Value.SubVariables) {
 				subVars.Add(var);
 			}
 			Assert.AreEqual("privateField", subVars[1].Name);
@@ -515,7 +515,7 @@ namespace Debugger.Tests
 			foreach(Variable var in debugger.SelectedFunction.LocalVariables) {
 				local = var;
 			}
-			foreach(Variable var in local.SubVariables) {
+			foreach(Variable var in local.Value.SubVariables) {
 				subVars.Add(var);
 			}
 			Assert.AreEqual("PrivateProperty", subVars[1].Name);
@@ -563,7 +563,7 @@ namespace Debugger.Tests
 			Assert.AreEqual("form", local.Name);
 			Assert.AreEqual(typeof(Variable), local.GetType());
 			
-			foreach(Variable var in local.SubVariables) {
+			foreach(Variable var in local.Value.SubVariables) {
 				Assert.AreEqual(typeof(UnavailableValue), var.Value.GetType(), "Variable name: " + var.Name);
 				debugger.StartEvaluation();
 				WaitForPause(PausedReason.EvalComplete, null);
@@ -573,7 +573,7 @@ namespace Debugger.Tests
 			debugger.Continue();
 			WaitForPause(PausedReason.Break, null);
 			
-			foreach(Variable var in local.SubVariables) {
+			foreach(Variable var in local.Value.SubVariables) {
 				Assert.AreEqual(typeof(UnavailableValue), var.Value.GetType(), "Variable name: " + var.Name);
 			}
 			debugger.StartEvaluation();
