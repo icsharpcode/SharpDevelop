@@ -857,7 +857,14 @@
 			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="type" use="optional">
+				<xs:attribute name="disabledIcon" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Icon for use when the tool bar item is disabled; currently supported only for items of type SplitButton.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			<xs:attribute name="type" use="optional">
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
 							<xs:enumeration value="Separator" />

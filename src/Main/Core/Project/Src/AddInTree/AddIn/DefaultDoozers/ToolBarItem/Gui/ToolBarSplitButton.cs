@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Drawing;
 using System.Collections;
 using System.Windows.Forms;
 
@@ -17,19 +18,29 @@ namespace ICSharpCode.Core
 		Codon codon;
 		ArrayList subItems;
 		ICommand menuCommand = null;
-
+		Image imgButtonEnabled = null;
+		Image imgButtonDisabled = null;
+		bool buttonEnabled = true;
+		bool dropDownEnabled = true;
+		
 		public ToolBarSplitButton(Codon codon, object caller, ArrayList subItems)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
 			this.caller        = caller;
 			this.codon         = codon;
-			this.subItems			= subItems;
+			this.subItems	   = subItems;
 
 			if (codon.Properties.Contains("label")){
 				Text = StringParser.Parse(codon.Properties["label"]);
 			}
-			if (Image == null && codon.Properties.Contains("icon")) {
-				Image = ResourceService.GetBitmap(StringParser.Parse(codon.Properties["icon"]));
+			if (imgButtonEnabled == null && codon.Properties.Contains("icon")) {
+				imgButtonEnabled = ResourceService.GetBitmap(StringParser.Parse(codon.Properties["icon"]));
+			}
+			if (imgButtonDisabled == null && codon.Properties.Contains("disabledIcon")) {
+				imgButtonDisabled = ResourceService.GetBitmap(StringParser.Parse(codon.Properties["disabledIcon"]));
+			}
+			if (imgButtonDisabled == null) {
+				imgButtonDisabled = imgButtonEnabled;
 			}
 			menuCommand = codon.AddIn.CreateObject(codon.Properties["class"]) as ICommand;
 			menuCommand.Owner = this;
@@ -60,6 +71,9 @@ namespace ICSharpCode.Core
 		}
 		protected override void OnDropDownShow(EventArgs e)
 		{
+			if (!dropDownEnabled) {
+				return;
+			}
 			if (codon != null && !this.DropDown.Visible)
 			{
 				CreateDropDownItems();
@@ -69,10 +83,12 @@ namespace ICSharpCode.Core
 
 		protected override void OnButtonClick(EventArgs e)
 		{
+			if (!buttonEnabled) {
+				return;
+			}
 			base.OnButtonClick(e);
 			menuCommand.Run();
 		}
-		
 		
 		public override bool Enabled {
 			get {
@@ -84,10 +100,36 @@ namespace ICSharpCode.Core
 				bool isEnabled = failedAction != ConditionFailedAction.Disable;
 				
 				if (menuCommand != null && menuCommand is IMenuCommand) {
-					isEnabled &= ((IMenuCommand)menuCommand).IsEnabled;
+					
+					// menuCommand.IsEnabled is checked first so that it's get method can set dropDownEnabled as needed
+					isEnabled &= (((IMenuCommand)menuCommand).IsEnabled || dropDownEnabled);
 				}
 				
 				return isEnabled;
+			}
+		}
+		
+		public bool ButtonEnabled {
+			get {
+				return buttonEnabled;
+			}
+			set {
+				buttonEnabled = value;
+				UpdateButtonImage();
+			}
+		}
+		
+		private void UpdateButtonImage()
+		{
+			Image = buttonEnabled ? imgButtonEnabled : imgButtonDisabled;
+		}
+		
+		public bool DropDownEnabled {
+			get {
+				return dropDownEnabled;
+			}
+			set {
+				dropDownEnabled = value;
 			}
 		}
 		
@@ -100,8 +142,12 @@ namespace ICSharpCode.Core
 					base.Visible = isVisible;
 				}
 				
-				if (this.Visible && codon.Properties.Contains("icon")) {
-					Image = ResourceService.GetBitmap(StringParser.Parse(codon.Properties["icon"]));
+				if (this.Visible) {
+					if (buttonEnabled && imgButtonEnabled!=null) {
+						Image = imgButtonEnabled;
+					} else if (imgButtonDisabled!=null) {
+						Image = imgButtonDisabled;
+					}
 				}
 			}
 		}
