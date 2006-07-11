@@ -151,13 +151,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
-			switch (keyData) {
-				case Keys.F2:
-					StartLabelEdit(SelectedNode as ExtTreeNode);
-					break;
-				case Keys.Delete:
-					DeleteNode(SelectedNode as ExtTreeNode);
-					break;
+			if (!SelectedNode.IsEditing) {
+				switch (keyData) {
+					case Keys.F2:
+						StartLabelEdit(SelectedNode as ExtTreeNode);
+						break;
+					case Keys.Delete:
+						DeleteNode(SelectedNode as ExtTreeNode);
+						break;
+				}
 			}
 			return base.ProcessCmdKey(ref msg, keyData);
 		}
