@@ -303,5 +303,11 @@ namespace ReportSamples
 			MultiPageUnboundPullModel mp = new MultiPageUnboundPullModel();
 			mp.Run();
 		}
+		
+		void UnboundPuskModelToolStripMenuItemClick(object sender, System.EventArgs e)
+		{
+			UnboundPushModel u = new UnboundPushModel();
+			u.Run();
+		}
 	}
 }

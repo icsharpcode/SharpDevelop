@@ -1,53 +1,72 @@
 /*
  * Created by SharpDevelop.
  * User: Forstmeier Helmut
- * Date: 29.06.2006
- * Time: 13:02
+ * Date: 10.07.2006
+ * Time: 13:15
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 
 using System;
-
+using System.Data;
 using System.Windows.Forms;
 
 using SharpReportCore;
 
-namespace ReportSamples{
+namespace ReportSamples
+{
 	/// <summary>
-	/// Description of MultipageUnboundPullModel.
+	/// Description of UnboundPushModel.
 	/// </summary>
-	public class MultiPageUnboundPullModel{
+	public class UnboundPushModel
+	{
 		int rowNr;
-		int rowsPerPage;
-		System.DateTime startTime;
-		System.DateTime endTime;
 		
-		public MultiPageUnboundPullModel(){
+		public UnboundPushModel()
+		{
 		}
 		
 		public void Run() {
-			try{
+			string reportFileName;
+			try
+			{
 				OpenFileDialog dg = new OpenFileDialog();
 				dg.Filter = "SharpReport files|*.srd";
 				dg.Title = "Select a report file: ";
 				if (dg.ShowDialog() == DialogResult.OK){
-					SharpReportCore.SharpReportEngine mn = new SharpReportCore.SharpReportEngine();
-					mn.SectionRendering += new EventHandler<SectionRenderEventArgs>(MultipagePrinting);
-					mn.SectionRendered += new EventHandler<SectionRenderEventArgs>(MultipagePrinted);
-					this.startTime = System.DateTime.Now;
+					SharpReportCore.SharpReportEngine engine = new SharpReportCore.SharpReportEngine();
+					reportFileName = dg.FileName.ToString();
+					DataTable table = SelectData();
 					
-					mn.PreviewStandartReport(dg.FileName.ToString());
+					if (table != null) {
+						engine.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
+						engine.SectionRendered += new EventHandler<SectionRenderEventArgs>(PushPrinted);
+						engine.PreviewPushDataReport(reportFileName,table);
+//						engine.PrintPushDataReport(reportFileName,table);
+					}
 				}
 			}
-			catch(Exception er){
-				MessageBox.Show(er.ToString(),"MainForm");
+			catch (Exception){
 			}
 		}
 		
 		
-		private void MultipagePrinting (object sender,SectionRenderEventArgs e) {
-			System.Console.WriteLine("UnboundPullPrinting");
+		
+		private DataTable SelectData()
+		{
+			OpenFileDialog dg = new OpenFileDialog();
+			dg.Filter = "SharpReport files|*.xsd";
+			dg.Title = "Select a '.xsdfile: ";
+			if (dg.ShowDialog() == DialogResult.OK){
+				DataSet ds = new DataSet();
+				ds.ReadXml(dg.FileName);
+				return ds.Tables[0];
+			}
+			return null;
+		}
+		
+		private void PushPrinting (object sender,SectionRenderEventArgs e) {
+			System.Console.WriteLine("UnboundPushModel");
 			CheckItems(e.Section.Items);
 			switch (e.CurrentSection) {
 				case GlobalEnums.enmSection.ReportHeader:
@@ -58,13 +77,11 @@ namespace ReportSamples{
 					
 					System.Console.WriteLine("\tPageheader");
 					System.Console.WriteLine("");
-					this.rowsPerPage = 0;
 					break;
 					
 				case GlobalEnums.enmSection.ReportDetail:
 				
 					this.rowNr ++;
-					this.rowsPerPage ++;
 					System.Console.WriteLine("\tReportDetail");
 					RowItem ri = e.Section.Items[0] as RowItem;
 					if (ri != null) {
@@ -78,20 +95,13 @@ namespace ReportSamples{
 					
 				case GlobalEnums.enmSection.ReportPageFooter:
 					System.Console.WriteLine("\tPageFooter");
-					BaseDataItem bdi = e.Section.Items.Find("ItemsPerPage") as BaseDataItem;
-					if (bdi != null) {
-						bdi.DbValue = this.rowsPerPage.ToString();
-					}
 					break;
 					
 				case GlobalEnums.enmSection.ReportFooter:
 					System.Console.WriteLine("\tReportFooter");
-					this.endTime = System.DateTime.Now;
-					
-					BaseDataItem b = e.Section.Items.Find("reportDbTextItem1")as BaseDataItem;
+					BaseDataItem b = e.Section.Items.Find("ReportDbTextItem")as BaseDataItem;
 					if (b != null) {
-						b.FormatString = "t";
-						b.DbValue = (this.endTime - this.startTime).ToString();
+						b.DbValue = this.rowNr.ToString();
 					}
 					
 					break;
@@ -101,13 +111,13 @@ namespace ReportSamples{
 			}
 		}
 		
-		private void MultipagePrinted (object sender,SectionRenderEventArgs e) {
+		private void PushPrinted (object sender,SectionRenderEventArgs e) {
 //			System.Console.WriteLine("---Rendering done <{0}>-----",e.CurrentSection);
 		}
 		
 		private void CheckItems (ReportItemCollection items) {
-//			System.Console.WriteLine("\t<{0}> Items",items.Count );
 			foreach (BaseReportItem i in items) {
+//				System.Console.WriteLine("\tItem {0}",i.Name);
 				IContainerItem container = i as IContainerItem;
 				if (container != null) {
 //					System.Console.WriteLine("\t\tContainer found");
