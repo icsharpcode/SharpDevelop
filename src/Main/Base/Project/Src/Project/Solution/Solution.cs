@@ -627,17 +627,34 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void ApplySolutionConfigurationToProjects()
 		{
-			// TODO: Use assignments from project configuration section
-			foreach (IProject p in Projects) {
-				p.Configuration = preferences.ActiveConfiguration;
-			}
+			ApplySolutionConfigurationAndPlatformToProjects();
 		}
 		
 		public void ApplySolutionPlatformToProjects()
 		{
-			// TODO: Use assignments from project configuration section
+			ApplySolutionConfigurationAndPlatformToProjects();
+		}
+		
+		public void ApplySolutionConfigurationAndPlatformToProjects()
+		{
+			string conf = preferences.ActiveConfiguration;
+			string plat = preferences.ActivePlatform;
+			ProjectSection prjSec = GetProjectConfigurationsSection();
+			Dictionary<string, string> dict = new Dictionary<string, string>();
+			foreach (SolutionItem item in prjSec.Items) {
+				dict[item.Name] = item.Location;
+			}
+			string searchKeyPostFix = "." + conf + "|" + plat + ".Build.0";
 			foreach (IProject p in Projects) {
-				p.Platform = preferences.ActivePlatform;
+				string searchKey = p.IdGuid + searchKeyPostFix;
+				string targetConfPlat;
+				if (dict.TryGetValue(searchKey, out targetConfPlat)) {
+					p.Configuration = AbstractProject.GetConfigurationNameFromKey(targetConfPlat);
+					p.Platform = AbstractProject.GetPlatformNameFromKey(targetConfPlat);
+				} else {
+					p.Configuration = conf;
+					p.Platform = plat;
+				}
 			}
 		}
 		

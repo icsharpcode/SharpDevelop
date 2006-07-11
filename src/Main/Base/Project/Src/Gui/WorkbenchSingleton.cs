@@ -52,12 +52,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		static WorkbenchSingleton()
-		{
-			PropertyService.PropertyChanged += new PropertyChangedEventHandler(TrackPropertyChanges);
-			ResourceService.LanguageChanged += delegate { workbench.RedrawAllComponents(); };
-		}
-		
 		/// <remarks>
 		/// This method handles the redraw all event for specific changed IDE properties
 		/// </remarks>
@@ -81,6 +75,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			workbench = new DefaultWorkbench();
 			MessageService.MainForm = workbench;
+			
+			PropertyService.PropertyChanged += new PropertyChangedEventHandler(TrackPropertyChanges);
+			ResourceService.LanguageChanged += delegate { workbench.RedrawAllComponents(); };
 			
 			caller = new STAThreadCaller(workbench);
 			

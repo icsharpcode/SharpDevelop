@@ -90,6 +90,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Is called, when a workbench view was opened
 		/// </summary>
+		/// <example>
+		/// WorkbenchSingleton.WorkbenchCreated += delegate { 
+		/// 	WorkbenchSingleton.Workbench.ViewOpened += ...;
+		/// };
+		/// </example>
 		event ViewContentEventHandler ViewOpened;
 		
 		/// <summary>
