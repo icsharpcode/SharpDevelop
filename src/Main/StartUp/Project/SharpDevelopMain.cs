@@ -258,6 +258,9 @@ namespace ICSharpCode.SharpDevelop
 			AddInTree.ConditionEvaluators.Add("TextContent", new ICSharpCode.SharpDevelop.DefaultEditor.Conditions.TextContentConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("BrowserLocation", new ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserLocationConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("RefactoringProviderSupports", new Refactoring.RefactoringProviderSupportsConditionEvaluator());
+			// TODO: is there a way to automate ConditionEvaluator registration via reflection? or to specify it in the .addin files?
+			AddInTree.ConditionEvaluators.Add("CanNavigateBack", new CanNavigateBackConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("CanNavigateForward", new CanNavigateForwardConditionEvaluator());
 			
 			AddInTree.Doozers.Add("DialogPanel", new DialogPanelDoozer());
 			AddInTree.Doozers.Add("DisplayBinding", new DisplayBindingDoozer());

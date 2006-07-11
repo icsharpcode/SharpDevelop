@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
+using ICSharpCode.Core;
+
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	public abstract class AbstractViewContent : AbstractBaseViewContent, IViewContent
@@ -47,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			FileName  = fileName;
 			IsDirty   = false;
 		}
-						
+		
 		public event EventHandler FileNameChanged;
 		
 		protected virtual void OnFileNameChanged(EventArgs e)
@@ -107,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				isViewOnly = value;
 			}
 		}
-	
+		
 		/// <summary>
 		/// Gets the list of secondary view contents attached to this view content.
 		/// </summary>
@@ -132,6 +134,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public virtual void Load(string fileName)
 		{
 			throw new System.NotImplementedException();
+		}
+		
+		public virtual INavigationPoint BuildNavPoint()
+		{
+			return new DefaultNavigationPoint(this.FileName);
 		}
 		
 		public event EventHandler TitleNameChanged;
@@ -200,8 +207,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (DirtyChanged != null) {
 				DirtyChanged(this, e);
 			}
-		}		
+		}
 		#endregion
-		#endregion			
+		#endregion
 	}
 }

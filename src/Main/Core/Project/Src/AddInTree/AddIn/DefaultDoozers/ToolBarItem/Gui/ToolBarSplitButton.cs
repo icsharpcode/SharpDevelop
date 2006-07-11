@@ -50,6 +50,8 @@ namespace ICSharpCode.Core
 
 		void CreateDropDownItems()
 		{
+			ToolStripItem[] itemsToAdd = null;
+			
 			DropDownItems.Clear();
 			foreach (object item in subItems)
 			{
@@ -65,7 +67,10 @@ namespace ICSharpCode.Core
 				else
 				{
 					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-					DropDownItems.AddRange(submenuBuilder.BuildSubmenu(codon, caller));
+					itemsToAdd = submenuBuilder.BuildSubmenu(codon, caller);
+					if (itemsToAdd!=null) {
+						DropDownItems.AddRange(itemsToAdd);
+					}
 				}
 			}
 		}
@@ -121,6 +126,7 @@ namespace ICSharpCode.Core
 		
 		private void UpdateButtonImage()
 		{
+			//LoggingService.Info("UpdatingButtonImage: buttonEnabled=="+buttonEnabled.ToString());
 			Image = buttonEnabled ? imgButtonEnabled : imgButtonDisabled;
 		}
 		

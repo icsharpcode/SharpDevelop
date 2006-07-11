@@ -776,7 +776,13 @@
     <Compile Include="Src\TextEditor\Gui\Editor\AdvancedHighlighter.cs" />
     <Compile Include="Src\Dom\Implementations\SystemTypes.cs" />
     <Compile Include="Src\Dom\CecilReader.cs" />
+    <Compile Include="Src\Services\NavigationService\DefaultNavigationPoint.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ITextAreaToolTipProvider.cs" />
+    <Compile Include="Src\Services\NavigationService\INavigationPoint.cs" />
+    <Compile Include="Src\Services\NavigationService\NavigationService.cs" />
+    <Compile Include="Src\Commands\NavigationCommands.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\NavigationConditionEvaluators.cs" />
+    <Compile Include="Src\TextEditor\Gui\Editor\TextNavigationPoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
@@ -803,6 +809,7 @@
     </Content>
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
+    <Folder Include="Src\Services\NavigationService" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

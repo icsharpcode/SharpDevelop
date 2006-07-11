@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+using ICSharpCode.Core;
+
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	public delegate void SaveEventHandler(object sender, SaveEventArgs e);
@@ -108,6 +110,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Loads the content from the location <code>fileName</code>
 		/// </summary>
 		void Load(string fileName);
+		
+		/// <summary>
+		/// Builds an <see cref="INavigationPoint"/> for the current position.
+		/// </summary>
+		INavigationPoint BuildNavPoint();
 		
 		/// <summary>
 		/// Is called each time the name for the content has changed.

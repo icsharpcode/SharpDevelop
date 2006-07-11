@@ -225,9 +225,11 @@ namespace ICSharpCode.Core
 			}
 			IViewContent content = window.ViewContent;
 			if (content is IPositionable) {
+				// TODO: enable jumping to a particular view
 				window.SwitchView(0);
 				((IPositionable)content).JumpTo(Math.Max(0, line), Math.Max(0, column));
 			}
+			NavigationService.Log(content.BuildNavPoint());
 			return content;
 		}
 		
@@ -274,6 +276,13 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public static void OnJumpedToFilePosition(string fileName)
+		{
+			if (JumpedToFilePosition != null) {
+				JumpedToFilePosition(null, new FileEventArgs(fileName, false));
+			}
+		}
+		
 		public static event EventHandler<FileRenamingEventArgs> FileRenaming;
 		public static event EventHandler<FileRenameEventArgs> FileRenamed;
 		
@@ -282,5 +291,7 @@ namespace ICSharpCode.Core
 		
 		public static event EventHandler<FileCancelEventArgs> FileReplacing;
 		public static event EventHandler<FileEventArgs> FileReplaced;
+		
+		public static event EventHandler<FileEventArgs> JumpedToFilePosition;
 	}
 }

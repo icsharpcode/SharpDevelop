@@ -1,5 +1,5 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.1.0.1340
+# SharpDevelop 2.1.0.1472
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AddIns", "AddIns", "{14A277EE-7DF1-4529-B639-7D1EF334C1C5}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
@@ -224,6 +224,10 @@ Global
 		{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3EFF50A-ADBF-4FCD-ACE3-081AF1B37F1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3EFF50A-ADBF-4FCD-ACE3-081AF1B37F1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3EFF50A-ADBF-4FCD-ACE3-081AF1B37F1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3EFF50A-ADBF-4FCD-ACE3-081AF1B37F1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -188,6 +188,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			textAreaControl.Document.DocumentChanged += new DocumentEventHandler(TextAreaChangedEvent);
 			textAreaControl.ActiveTextAreaControl.Caret.CaretModeChanged += new EventHandler(CaretModeChanged);
 			textAreaControl.ActiveTextAreaControl.Enter += new EventHandler(CaretUpdate);
+			textAreaControl.ActiveTextAreaControl.Caret.PositionChanged += CaretUpdate;
 			
 			// KSL Start, New lines
 //			textAreaControl.FileNameChanged += new EventHandler(FileNameChangedEvent);
@@ -281,6 +282,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		void TextAreaChangedEvent(object sender, DocumentEventArgs e)
 		{
 			IsDirty = true;
+			NavigationService.ContentChanging(this.textAreaControl, e);
 		}
 		
 		public override void RedrawContent()
@@ -391,6 +393,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 //			textAreaControl.Refresh();
 		}
 		
+		Point GetTextAreaPosition()
+		{
+			return textAreaControl.Document.OffsetToPosition(textAreaControl.ActiveTextAreaControl.Caret.Offset);
+		}
+		
+		public override INavigationPoint BuildNavPoint()
+		{
+			int lineNumber = this.Line;
+			LineSegment lineSegment = textAreaControl.Document.GetLineSegment(lineNumber);
+			string txt = textAreaControl.Document.GetText(lineSegment);
+			return new TextNavigationPoint(this.FileName, lineNumber, this.Column, txt);
+		}
+		
 		void CaretUpdate(object sender, EventArgs e)
 		{
 			CaretChanged(null, null);
@@ -399,15 +414,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void CaretChanged(object sender, EventArgs e)
 		{
-			Point    pos       = textAreaControl.Document.OffsetToPosition(textAreaControl.ActiveTextAreaControl.Caret.Offset);
+			Point    pos       = GetTextAreaPosition();
 			LineSegment line   = textAreaControl.Document.GetLineSegment(pos.Y);
 			
 			StatusBarService.SetCaretPosition(pos.X + 1, pos.Y + 1, textAreaControl.ActiveTextAreaControl.Caret.Offset - line.Offset + 1);
+			NavigationService.Log(this.BuildNavPoint());
 		}
 		
 		void CaretModeChanged(object sender, EventArgs e)
 		{
-			
 			StatusBarService.SetInsertMode(textAreaControl.ActiveTextAreaControl.Caret.CaretMode == CaretMode.InsertMode);
 		}
 		
@@ -423,10 +438,26 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				base.TitleName = Path.GetFileName(value);
 			}
 		}
+		
+		#region IPositionable implementation
 		public void JumpTo(int line, int column)
 		{
 			textAreaControl.ActiveTextAreaControl.JumpTo(line, column);
 		}
+		
+		public int Line {
+			get {
+				return textAreaControl.ActiveTextAreaControl.Caret.Line;
+			}
+		}
+		
+		public int Column {
+			get {
+				return textAreaControl.ActiveTextAreaControl.Caret.Column;
+			}
+		}
+		
+		#endregion
 		
 		public void ForceFoldingUpdate()
 		{

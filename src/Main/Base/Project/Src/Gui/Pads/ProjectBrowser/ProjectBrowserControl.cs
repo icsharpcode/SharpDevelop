@@ -222,7 +222,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		TreeNode FindDeepestOpenNodeForPath(string fileName)
 		{
-			LoggingService.DebugFormatted("Finding Deepest for '{0}'", fileName);
+			//LoggingService.DebugFormatted("Finding Deepest for '{0}'", fileName);
 			Solution solution = ProjectService.OpenSolution;
 			if (solution == null) {
 				return null;
@@ -230,7 +230,7 @@ namespace ICSharpCode.SharpDevelop.Project
 
 			IProject project = solution.FindProjectContainingFile(fileName);
 			if (project == null) {
-				LoggingService.Debug("no IProject found");
+				//LoggingService.Debug("no IProject found");
 				return null;
 			}
 
@@ -282,18 +282,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			if (!targetNode.IsExpanded) {
 				// the targetNode is not expanded so it's as deep as we can go
-				LoggingService.DebugFormatted("target node '{0};{1}' is not expanded.", targetNode, targetNode.Text);
+				//LoggingService.DebugFormatted("target node '{0};{1}' is not expanded.", targetNode, targetNode.Text);
 				return targetNode;
 			}
 
-			LoggingService.Debug("entering depth loop...");
-			LoggingService.DebugFormatted(@"\- looking for '{0}'", relativePath);
-			LoggingService.DebugFormatted(@"\- starting at '{0}'", targetNode != null ? targetNode.Text : "null");
+			//LoggingService.Debug("entering depth loop...");
+			//LoggingService.DebugFormatted(@"\- looking for '{0}'", relativePath);
+			//LoggingService.DebugFormatted(@"\- starting at '{0}'", targetNode != null ? targetNode.Text : "null");
 			
 			string[] targets = relativePath.Trim('/','\\').Split('/', '\\');
 			TreeNode nextNode = null;
 			foreach (string target in targets) {
-				LoggingService.Debug("-- looking for: "+target);
+				//LoggingService.Debug("-- looking for: "+target);
 				nextNode = null;
 				foreach (TreeNode node in targetNode.Nodes) {
 					if (node == null) {
@@ -347,22 +347,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return null;
 		}
-		
-		// TODO: remove this debug code
-//		void LogTreeViewPaths(TreeNodeCollection nodes, int depth)
-//		{
-//			System.Text.StringBuilder sb = null;
-//
-//			foreach (TreeNode node in nodes) {
-//				sb = new System.Text.StringBuilder();
-//				for(int i = 0; i<depth; i++) {
-//					sb.Append("--");
-//				}
-//				sb.Append(node.Text+" ("+node.GetType().Name+")");
-//				LoggingService.Debug(sb.ToString());
-//				LogTreeViewPaths(node.Nodes, depth+1);
-//			}
-//		}
 		#endregion
 		
 		public void ViewSolution(Solution solution)

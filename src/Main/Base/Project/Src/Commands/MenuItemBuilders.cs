@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Text;
 
@@ -20,6 +21,127 @@ using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
+	public class NavigationHistoryMenuBuilder : ISubmenuBuilder
+	{
+		// TODO: refactor BuildSubmenu to add a choice between flat and perfile, eventually per class/method sorting of the list
+		
+		ToolStripItem[] BuildMenuFlat(List<INavigationPoint> points, int additionalItems)
+		{
+			ToolStripItem[] items = new ToolStripItem[points.Count+additionalItems];
+			MenuCommand cmd = null;
+			INavigationPoint p = null;
+			
+			int n = points.Count-1; // the last point
+			int i = 0;
+			while (i<points.Count) {
+				p = points[n-i];
+				cmd = new MenuCommand(p.Description, new EventHandler(NavigateTo));
+				cmd.Tag = p;
+//					if (p == NavigationService.CurrentPosition) {
+//						cmd.Text = "*** "+cmd.Text;
+//					}
+				items[i++] = cmd;
+			}
+			return items;
+		}
+		ToolStripItem[] BuildMenuByFile(List<INavigationPoint> points, int additionalItems)
+		{
+			Dictionary<string, List<INavigationPoint>> files =
+				new Dictionary<string, List<INavigationPoint>>();
+			List<string> fileNames = new List<string>();
+			
+			foreach (INavigationPoint p in points) {
+				if (p.FileName==null) {
+					throw new ApplicationException("should not get here!");
+				}
+				if (!fileNames.Contains(p.FileName)) {
+					fileNames.Add(p.FileName);
+					files.Add(p.FileName, new List<INavigationPoint>());
+				}
+				if (!files[p.FileName].Contains(p)) {
+					files[p.FileName].Add(p);
+				}
+			}
+			
+			fileNames.Sort();
+			
+			ToolStripItem[] items =
+				new ToolStripItem[fileNames.Count + additionalItems];
+			ToolStripMenuItem containerItem = null;
+			MenuCommand cmd = null;
+			int i = 0;
+			
+			foreach (string fname in fileNames) {
+				
+				// create a menu bucket
+				containerItem = new ToolStripMenuItem();
+				containerItem.Text = System.IO.Path.GetFileName(fname);
+				containerItem.ToolTipText = fname;
+				
+				// sort and populate the bucket's contents
+//				files[fname].Sort();
+				foreach(INavigationPoint p in files[fname]) {
+					cmd = new MenuCommand(p.Description, new EventHandler(NavigateTo));
+					cmd.Tag = p;
+					containerItem.DropDownItems.Add(cmd);
+				}
+				
+				// if there's only one nested item, add it 
+				// to the result directly, ignoring the bucket
+//				if (containerItem.DropDownItems.Count==1) {
+//					items[i] = containerItem.DropDownItems[0];
+//					items[i].Text = ((INavigationPoint)items[i].Tag).FullDescription;
+//					i++;
+//				} else {
+//					// add the bucket to the result
+//					items[i++] = containerItem;
+//				}
+					// add the bucket to the result
+					items[i++] = containerItem;
+			}
+			
+			return items;
+		}
+
+		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
+		{
+			MenuCommand cmd = null;
+			if (NavigationService.CanNavigateBack || NavigationService.CanNavigateForwards) {
+				List<INavigationPoint> points = NavigationService.GetListOfPoints();
+
+				//ToolStripItem[] items = BuildMenuFlat(points, numberOfAdditionalItems);
+				ToolStripItem[] items = BuildMenuByFile(points, numberOfAdditionalItems);
+				
+				int i = items.Length - numberOfAdditionalItems;
+				
+				// additional item 1
+				items[i++] = new ToolStripSeparator();
+				
+				// additional item 2
+				cmd = new MenuCommand("Clear Navigation History", new EventHandler(ClearHistory));
+				items[i++] = cmd;
+				
+				return items;
+			}
+			
+			// default is to disable the dropdown feature...
+			return null;
+		}
+
+		int numberOfAdditionalItems = 2;
+		
+		public void NavigateTo(object sender, EventArgs e)
+		{
+			MenuCommand item = (MenuCommand)sender;
+			NavigationService.Go((INavigationPoint)item.Tag);
+		}
+		
+		public void ClearHistory(object sender, EventArgs e)
+		{
+			NavigationService.ClearHistory();
+		}
+	}
+	
 	public class RecentFilesMenuBuilder : ISubmenuBuilder
 	{
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)

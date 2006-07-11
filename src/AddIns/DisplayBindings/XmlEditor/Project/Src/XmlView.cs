@@ -455,6 +455,18 @@ namespace ICSharpCode.XmlEditor
 		{
 			xmlEditor.ActiveTextAreaControl.JumpTo(line, column);
 		}
+		
+		public int Line {
+			get {
+				return xmlEditor.ActiveTextAreaControl.Caret.Line;
+			}
+		}
+		
+		public int Column {
+			get {
+				return xmlEditor.ActiveTextAreaControl.Caret.Column;
+			}
+		}
 
 		#endregion
 

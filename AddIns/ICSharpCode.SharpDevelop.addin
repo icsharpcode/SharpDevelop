@@ -890,6 +890,29 @@
 		<ToolbarItem id    = "ChooseLayout"
 		             type  = "ComboBox"
 		             class = "ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand" />
+		
+		<ToolbarItem id="NavigationSeparator" type="Separator"/>
+		<Condition name="CanNavigateBack" action="Disable">
+			<ToolbarItem id="NavigateBack"
+			           type="SplitButton"
+			           icon="Icons.16x16.NavigateBack"
+			             tooltip="Navigate Back"
+			            disabledIcon="Icons.16x16.NavigateBack"
+			            loadclasslazy="false"
+			            class="ICSharpCode.SharpDevelop.Commands.NavigateBack"
+			            >
+				<MenuItem id="NavigationHistoryBuilder"
+						 type="Builder"
+						 class="ICSharpCode.SharpDevelop.Commands.NavigationHistoryMenuBuilder"/>
+			</ToolbarItem>
+		</Condition>
+		<Condition name="CanNavigateForward" action="Disable">
+			<ToolbarItem id="NavigateForward"
+			      icon="Icons.16x16.NavigateForward"
+			       tooltip="Navigate Forward"
+			       loadclasslazy="false"
+			       class="ICSharpCode.SharpDevelop.Commands.NavigateForward"/>
+		</Condition>
 	</Path>
 	<!-- end toolbars -->
 	

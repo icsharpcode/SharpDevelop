@@ -10,7 +10,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// If a IViewContent object is from the type IPositionable it signals
 	/// that it's a texteditor which could set the caret to a position inside
-	/// a file. 
+	/// a file.
 	/// </summary>
 	public interface IPositionable
 	{
@@ -19,5 +19,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// And pos.X is the column (starting from 0 too).
 		/// </summary>
 		void JumpTo(int line, int column);
+		
+		/// <summary>
+		/// gets the 'caret' position line (starting from 0)
+		/// </summary>
+		int Line {
+			get;
+		}
+
+		/// <summary>
+		/// gets the 'caret' position column (starting from 0)
+		/// </summary>
+		int Column {
+			get;
+		}
 	}
 }
