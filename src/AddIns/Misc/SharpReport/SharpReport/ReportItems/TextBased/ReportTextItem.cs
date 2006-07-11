@@ -36,7 +36,7 @@ namespace SharpReport.ReportItems {
 			visualControl.ContentAlignment = base.ContentAlignment;
 			visualControl.StringTrimming = base.StringTrimming;
 			
-			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+//			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 
 			this.visualControl.LocationChanged += new EventHandler (OnControlChanged);
 			

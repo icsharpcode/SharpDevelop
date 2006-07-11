@@ -260,6 +260,8 @@ namespace SharpReportCore {
 				if (this.dataManager.DataSource != null) {
 					abstr = new RendererFactory().Create (model,dataManager);
 				}
+				abstr.Rendering += new EventHandler<SectionRenderEventArgs>(OnSectionPrinting);
+				abstr.SectionRendered +=new EventHandler<SectionRenderEventArgs>(OnSectionPrinted);
 				
 				return abstr;
 			}

@@ -339,8 +339,9 @@ namespace SharpReport.Designer{
 		
 		private bool CheckDraggedControl (DragEventArgs dea) {
 			string str = this.DragObjectToString (dea);
+			System.Console.WriteLine("ReportSectionControlBase");
+			System.Console.WriteLine("valid {0}",this.designableFactory.Contains(str));
 			return this.designableFactory.Contains(str);
-			
 		}
 		
 		private bool CheckDragElement (System.Windows.Forms.DragEventArgs dea) {

@@ -96,6 +96,8 @@ namespace SharpReport
 //			                                                 GlobalValues.RectangleBitmap());
 			tab.Items.Add (t);
 			
+			
+			//
 			bitmap = ResourceService.GetIcon("Icons.16.16.SharpReport.Line").ToBitmap();
 			t = sideTab.SideTabItemFactory.CreateSideTabItem( ResourceService.GetString("SharpReport.Toolbar.Line"),
 			                                                 GlobalEnums.ReportItemType.ReportLineItem.ToString(),
@@ -105,6 +107,15 @@ namespace SharpReport
 			                                                 GlobalEnums.ReportItemType.ReportCircleItem.ToString(),
 			                                                 GlobalValues.CircleBitmap());
 			tab.Items.Add (t);
+			
+			//Test
+			/*
+			t = sideTab.SideTabItemFactory.CreateSideTabItem( "Table",
+			                                                 GlobalEnums.ReportItemType.ReportTableItem.ToString(),
+			                                                  ResourceService.GetBitmap("Icons.16x16.SharpQuery.Table"));
+			tab.Items.Add (t);
+			*/
+			//
 		}
 		
 		private void AddFunctionElements (AxSideTab tab) {

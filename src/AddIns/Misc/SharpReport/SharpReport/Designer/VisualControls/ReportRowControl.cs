@@ -50,14 +50,8 @@ namespace SharpReport.Designer{
 				                 new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1),
 				                 base.FocusRectangle);
 			}
+			ControlHelper.DrawHeadLine(this,pea);
 
-			StringFormat fmt = GlobalValues.StandartStringFormat();
-			fmt.LineAlignment = StringAlignment.Near;
-			pea.Graphics.DrawString(this.Name,
-			                        this.Font,
-			                        new SolidBrush(this.ForeColor),
-			                        new Rectangle(7,0,pea.ClipRectangle.Width,(int)this.Font.GetHeight(pea.Graphics) + 2),
-			                        fmt);
 		}
 		
 		public override string ToString() {
@@ -84,7 +78,7 @@ namespace SharpReport.Designer{
 			// ReportRectangleControl
 			// 
 			this.BackColor = System.Drawing.Color.White;
-			this.Name = "RowItem";
+			this.Name = "Row";
 			this.Size = new System.Drawing.Size(72, 40);
 		}
 		#endregion

@@ -33,6 +33,7 @@ namespace SharpReportCore {
 		private static string xsdExtension = "xsd";
 		private static string sharpReportStandartFileName = "SharpReport1";
 		private const string unbound = "unbound";
+		private const string tableName = "Table";
 		private const int enlargeControl = 5;
 		
 		#region some usefull functions and methodes
@@ -169,6 +170,13 @@ namespace SharpReportCore {
 		public static string UnboundName {
 			get {return unbound;}
 		}
+		
+		public static string TableName {
+			get {
+				return tableName;
+			}
+		}
+		
 		#endregion
 		
 		#region Message's

@@ -11,17 +11,28 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace SharpReportCore.BaseItems {
+namespace SharpReportCore {
 	/// <summary>
 	/// Description of TableItem.
 	/// </summary>
 	public class TableItem :BaseReportItem,IContainerItem{
 		private Padding padding;
-//		private string tableName;
+		private string tableName;
+		private ReportItemCollection items;
 		
-		public TableItem(){
-		
+		public TableItem():this (GlobalValues.UnboundName){
 		}
+		
+		public TableItem(string tableName){
+			this.tableName = tableName;
+		}
+		
+		#region overrides
+		
+		public override string ToString(){
+			return this.GetType().Name;
+		}
+		#endregion
 		
 		
 		/*
@@ -35,7 +46,10 @@ namespace SharpReportCore.BaseItems {
 //			}
 		}
 		*/
+		
+		
 		#region Interface implementation of 'IContainerItem'
+		
 		public System.Windows.Forms.Padding Padding {
 			get {
 				return this.padding;
@@ -48,7 +62,10 @@ namespace SharpReportCore.BaseItems {
 		
 		public ReportItemCollection Items {
 			get {
-				throw new NotImplementedException();
+				if (this.items == null) {
+					this.items = new ReportItemCollection();
+				}
+				return this.items;
 			}
 		}
 		

@@ -87,6 +87,8 @@
     <Compile Include="Designer\VisualControls\RectTracker.cs" />
     <Compile Include="Designer\VisualControls\ContainerControl.cs" />
     <Compile Include="Designer\VisualControls\ITracker.cs" />
+    <Compile Include="Designer\VisualControls\ReportTableControl.cs" />
+    <Compile Include="ReportItems\TextBased\ReportTableItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Designer" />

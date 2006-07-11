@@ -35,7 +35,7 @@ namespace SharpReport.ReportItems{
 		public ReportRectangleItem():base() {
 			visualControl = new ReportRectangleControl();
 			
-			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
+//			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
 			
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);

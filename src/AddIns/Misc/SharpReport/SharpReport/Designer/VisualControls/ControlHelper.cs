@@ -77,6 +77,19 @@ namespace SharpReport.Designer
 		
 		}
 		
+		
+		
+		public static void DrawHeadLine (Control ctrl, PaintEventArgs pea) {
+			
+			StringFormat fmt = SharpReportCore.GlobalValues.StandartStringFormat();
+			fmt.LineAlignment = StringAlignment.Near;
+			pea.Graphics.DrawString(ctrl.Name,
+			                        ctrl.Font,
+			                        new SolidBrush(ctrl.ForeColor),
+			                        new Rectangle(7,0,pea.ClipRectangle.Width,(int)ctrl.Font.GetHeight(pea.Graphics) + 2),
+			                        fmt);
+		}
+		
 		/// <summary>
 		/// Set the Controls to selected = false, so the Focusrectangle is
 		/// not draw

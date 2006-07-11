@@ -48,7 +48,8 @@ namespace SharpReportCore {
 			ReportLineItem,
 			ReportCircleItem,
 			PageNumber,
-			TodaysDate
+			TodaysDate,
+			ReportTableItem
 		}
 		/// <summary>
 		/// FormSheet means a blank form with Labels, Lines and Checkboxes

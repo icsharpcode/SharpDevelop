@@ -34,6 +34,10 @@ namespace SharpReport {
 		
 		public string CreateName (ReportItemCollection collection,
 		                          string typeName) {
+
+			if (String.IsNullOrEmpty(typeName)) {
+				throw new ArgumentNullException("typeName");
+			}
 			
 			string name = Char.ToLower(typeName[0],
 			                           CultureInfo.InvariantCulture) + typeName.Substring(1);
@@ -42,7 +46,6 @@ namespace SharpReport {
 			while (collection.Find(name + number.ToString(CultureInfo.InvariantCulture)) != null) {
 				++number;
 			}
-			
 			return name + number.ToString();
 		}
 		

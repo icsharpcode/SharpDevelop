@@ -27,6 +27,7 @@ namespace SharpReportCore {
 			static string fnName = "SharpReport.Toolbar.Functions.PageNumber";
 			
 			public BasePageNumber():base(fnName) {
+//				System.Console.WriteLine("!! PageNr created with name {0}",this.Name);
 				
 			}
 			

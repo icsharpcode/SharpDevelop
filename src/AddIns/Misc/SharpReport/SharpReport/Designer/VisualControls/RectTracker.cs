@@ -281,6 +281,7 @@ namespace SharpReport.Designer
 			// convert cursor position to client co-ordinates
 			// do hittest and normalize hit
 			int nHandle = (int)HitTestHandles(MousePoint);
+			System.Console.WriteLine("RectTracker SetCursor {0}",nHandle);
 			if (nHandle < 0)
 				return false;
 

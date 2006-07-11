@@ -44,7 +44,7 @@ namespace SharpReport.ReportItems{
 			visualControl.ContentAlignment = base.ContentAlignment;
 			visualControl.StringTrimming = base.StringTrimming;
 			
-			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+//			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
