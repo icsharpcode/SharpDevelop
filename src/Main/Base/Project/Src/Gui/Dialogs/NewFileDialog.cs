@@ -373,7 +373,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return true;
 		}
 		
-		public void SaveFile(FileDescriptionTemplate newfile, string content)
+		public void SaveFile(FileDescriptionTemplate newfile, string content, byte[] binaryContent)
 		{
 			string parsedFileName = StringParser.Parse(newfile.Name);
 			// Parse twice so that tags used in included standard header are parsed
@@ -382,9 +382,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 				parsedFileName = parsedFileName.Substring(1);
 			if (newfile.IsDependentFile && Path.IsPathRooted(parsedFileName)) {
 				Directory.CreateDirectory(Path.GetDirectoryName(parsedFileName));
-				File.WriteAllText(parsedFileName, parsedContent, ParserService.DefaultFileEncoding);
+				if (binaryContent != null)
+					File.WriteAllBytes(parsedFileName, binaryContent);
+				else
+					File.WriteAllText(parsedFileName, parsedContent, ParserService.DefaultFileEncoding);
 				ParserService.ParseFile(parsedFileName, parsedContent);
 			} else {
+				if (binaryContent != null) {
+					LoggingService.Warn("binary file was skipped");
+					return;
+				}
 				IWorkbenchWindow window = FileService.NewFile(Path.GetFileName(parsedFileName), StringParser.Parse(newfile.Language), parsedContent);
 				if (window == null) {
 					return;
@@ -486,7 +493,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 					ScriptRunner scriptRunner = new ScriptRunner();
 					
 					foreach (FileDescriptionTemplate newfile in item.Template.FileDescriptionTemplates) {
-						SaveFile(newfile, scriptRunner.CompileScript(item.Template, newfile));
+						if (newfile.ContentData != null) {
+							SaveFile(newfile, null, newfile.ContentData);
+						} else {
+							SaveFile(newfile, scriptRunner.CompileScript(item.Template, newfile), null);
+						}
 					}
 					DialogResult = DialogResult.OK;
 				}

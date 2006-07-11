@@ -42,11 +42,13 @@ namespace SearchAndReplace
 						SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.FindPanel.xfrm"));
 						Get<Button>("findAll").Click += FindAllButtonClicked;
 						Get<Button>("bookmarkAll").Click += BookmarkAllButtonClicked;
+						this.ParentForm.AcceptButton = Get<Button>("findNext");
 						break;
 					case SearchAndReplaceMode.Replace:
 						SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ReplacePanel.xfrm"));
 						Get<Button>("replace").Click += ReplaceButtonClicked;
 						Get<Button>("replaceAll").Click += ReplaceAllButtonClicked;
+						this.ParentForm.AcceptButton = Get<Button>("replace");
 						break;
 				}
 				

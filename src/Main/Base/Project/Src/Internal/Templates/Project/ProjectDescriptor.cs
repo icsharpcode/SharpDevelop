@@ -202,11 +202,15 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						if (!Directory.Exists(Path.GetDirectoryName(fileName))) {
 							Directory.CreateDirectory(Path.GetDirectoryName(fileName));
 						}
-						Properties properties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-						
-						StreamWriter sr = new StreamWriter(File.Create(fileName), Encoding.GetEncoding(properties.Get("Encoding", 1252)));
-						sr.Write(StringParser.Parse(StringParser.Parse(file.Content, new string[,] { {"ProjectName", projectCreateInformation.ProjectName}, {"FileName", fileName}})));
-						sr.Close();
+						if (file.ContentData != null) {
+							// Binary content
+							File.WriteAllBytes(fileName, file.ContentData);
+						} else {
+							// Textual content
+							StreamWriter sr = new StreamWriter(File.Create(fileName), ParserService.DefaultFileEncoding);
+							sr.Write(StringParser.Parse(StringParser.Parse(file.Content, new string[,] { {"ProjectName", projectCreateInformation.ProjectName}, {"FileName", fileName}})));
+							sr.Close();
+						}
 					} catch (Exception ex) {
 						StringParser.Properties["fileName"] = fileName;
 						MessageService.ShowError(ex, "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.FileCouldntBeWrittenError}");
