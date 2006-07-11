@@ -99,6 +99,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public virtual void ActivateItem()
 		{
+			this.Toggle();
 		}
 		
 		public virtual void CheckedChanged()
