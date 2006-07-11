@@ -1,11 +1,10 @@
-﻿/*
- * Created by SharpDevelop.
- * User: David
- * Date: 22/06/2006
- * Time: 11:45 PM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="David Alpert" email="david@spinthemoose.com"/>
+//     <version>$Revision:  $</version>
+// </file>
+
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
