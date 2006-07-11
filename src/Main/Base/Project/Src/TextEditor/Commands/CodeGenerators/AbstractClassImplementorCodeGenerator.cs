@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			foreach (IProperty property in currentClass.DefaultReturnType.GetProperties()) {
 				if (property.IsAbstract) {
 					AttributedNode node = CodeGenerator.ConvertMember(property, classFinderContext);
-					node.Modifier &= ~Modifier.Abstract;
+					node.Modifier &= ~(Modifier.Abstract | Modifier.Virtual);
 					node.Modifier |= Modifier.Override;
 					nodes.Add(node);
 				}
@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			foreach (IMethod method in currentClass.DefaultReturnType.GetMethods()) {
 				if (method.IsAbstract) {
 					AttributedNode node = CodeGenerator.ConvertMember(method, classFinderContext);
-					node.Modifier &= ~Modifier.Abstract;
+					node.Modifier &= ~(Modifier.Abstract | Modifier.Virtual);
 					node.Modifier |= Modifier.Override;
 					nodes.Add(node);
 				}
