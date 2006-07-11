@@ -17,12 +17,15 @@
 				<Begin>#</Begin>
 			</Span>
 			
-			<Span name = "DocLineComment" rule = "DocCommentSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
-				<Begin bold = "false" italic = "false" color = "Gray">///</Begin>
+			<Span name = "DocLineComment" rule = "DocCommentSet" bold = "false" italic = "false" color = "Green" stopateol = "true" noescapesequences="true">
+				<Begin bold = "false" italic = "false" color = "Gray">///@!/@</Begin>
 			</Span>
 		  
 		  	<Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
 			   	<Begin>//@!/@</Begin>
+		  	</Span>
+		  	<Span name = "LineComment2" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
+			   	<Begin>////</Begin>
 		  	</Span>
 		  
 			<Span name = "BlockComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "false">
