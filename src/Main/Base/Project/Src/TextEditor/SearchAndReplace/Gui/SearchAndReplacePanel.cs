@@ -40,8 +40,8 @@ namespace SearchAndReplace
 				switch (searchAndReplaceMode) {
 					case SearchAndReplaceMode.Search:
 						SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.FindPanel.xfrm"));
-						Get<Button>("findAll").Click += FindAllButtonClicked;
 						Get<Button>("bookmarkAll").Click += BookmarkAllButtonClicked;
+						Get<Button>("findAll").Click += FindAllButtonClicked;
 						break;
 					case SearchAndReplaceMode.Replace:
 						SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ReplacePanel.xfrm"));
@@ -50,10 +50,12 @@ namespace SearchAndReplace
 						break;
 				}
 				
+				Get<ComboBox>("find").TextChanged += FindPatternChanged;
 				ControlDictionary["findNextButton"].Click     += FindNextButtonClicked;
 				ControlDictionary["lookInBrowseButton"].Click += LookInBrowseButtonClicked;
 				((Form)Parent).AcceptButton = (Button)ControlDictionary["findNextButton"];
 				SetOptions();
+				EnableButtons(HasFindPattern);
 				RightToLeftConverter.ReConvertRecursive(this);
 				ResumeLayout(false);
 			}
@@ -439,6 +441,42 @@ namespace SearchAndReplace
 			} finally {
 				ignoreSelectionChanges = false;
 			}
+		}
+		
+		/// <summary>
+		/// Enables the various find, bookmark and replace buttons 
+		/// depending on whether any find string has been entered. The buttons
+		/// are disabled otherwise.
+		/// </summary>
+		void EnableButtons(bool enabled)
+		{
+			if (searchAndReplaceMode == SearchAndReplaceMode.Replace) {
+				Get<Button>("replace").Enabled = enabled;
+				Get<Button>("replaceAll").Enabled = enabled;
+			} else {
+				Get<Button>("bookmarkAll").Enabled = enabled;
+				Get<Button>("findAll").Enabled = enabled;
+			}
+			ControlDictionary["findNextButton"].Enabled = enabled;
+		}
+		
+		/// <summary>
+		/// Returns true if the string entered in the find or replace text box
+		/// is not an empty string.
+		/// </summary>
+		bool HasFindPattern {
+			get {
+				return Get<ComboBox>("find").Text.Length != 0;
+			}
+		}
+		
+		/// <summary>
+		/// Updates the enabled/disabled state of the search and replace buttons
+		/// after the search or replace text has changed.
+		/// </summary>
+		void FindPatternChanged(object source, EventArgs e)
+		{
+			EnableButtons(HasFindPattern);
 		}
 	}
 }

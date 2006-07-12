@@ -25,6 +25,10 @@ namespace SearchAndReplace
 		public static string SearchPattern  = String.Empty;
 		public static string ReplacePattern = String.Empty;
 		
+		Keys searchKeyboardShortcut = Keys.None;
+		Keys replaceKeyboardShortcut = Keys.None;
+		const string SearchMenuAddInPath = "/SharpDevelop/Workbench/MainMenu/Search";
+
 		static SearchAndReplaceDialog Instance;
 		
 		public static void ShowSingleInstance(SearchAndReplaceMode searchAndReplaceMode)
@@ -82,6 +86,9 @@ namespace SearchAndReplace
 			
 			SetSearchAndReplaceMode();
 			FormLocationHelper.Apply(this, "ICSharpCode.SharpDevelop.Gui.SearchAndReplaceDialog.Location", false);
+			
+			searchKeyboardShortcut = GetKeyboardShortcut(SearchMenuAddInPath, "Find");
+			replaceKeyboardShortcut = GetKeyboardShortcut(SearchMenuAddInPath, "Replace");
 		}
 		
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -94,27 +101,33 @@ namespace SearchAndReplace
 		{
 			if (e.KeyData == Keys.Escape) {
 				Close();
+			} else if (searchKeyboardShortcut == e.KeyData && !searchButton.Checked) {
+				EnableSearchMode(true);
+			} else if (replaceKeyboardShortcut == e.KeyData && !replaceButton.Checked) {
+				EnableSearchMode(false);
 			}
 		}
 		
 		void SearchButtonClick(object sender, EventArgs e)
 		{
 			if (!searchButton.Checked) {
-				searchButton.Checked = true;
-				replaceButton.Checked = false;
-				SetSearchAndReplaceMode();
-				Focus();
+				EnableSearchMode(true);
 			}
 		}
 		
 		void ReplaceButtonClick(object sender, EventArgs e)
 		{
 			if (!replaceButton.Checked) {
-				replaceButton.Checked = true;
-				searchButton.Checked = false;
-				SetSearchAndReplaceMode();
-				Focus();
+				EnableSearchMode(false);
 			}
+		}
+		
+		void EnableSearchMode(bool enable)
+		{
+			searchButton.Checked = enable;
+			replaceButton.Checked = !enable;
+			SetSearchAndReplaceMode();
+			Focus();
 		}
 		
 		void SetSearchAndReplaceMode()
@@ -125,6 +138,23 @@ namespace SearchAndReplace
 			} else {
 				this.ClientSize      = new Size(430, 385);
 			}
+		}
+		
+		/// <summary>
+		/// Gets the keyboard shortcut for the menu item with the given addin tree
+		/// path and given codon id.
+		/// </summary>
+		Keys GetKeyboardShortcut(string path, string id)
+		{
+			AddInTreeNode node = AddInTree.GetTreeNode(path);
+			if (node != null) {
+				foreach (Codon codon in node.Codons) {
+					if (codon.Id == id) {
+						return MenuCommand.ParseShortcut(codon.Properties["shortcut"]);
+					}
+				}
+			}
+			return Keys.None;
 		}
 	}
 }
