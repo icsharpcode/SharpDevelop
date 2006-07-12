@@ -7,8 +7,8 @@
 
 using System;
 using System.Drawing;
+using System.Security.Permissions;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -19,7 +19,7 @@ namespace HtmlHelp2
 {
 	public abstract class HelpToolbarCommand : AbstractCommand
 	{
-		public HtmlHelp2TocPad TocPad
+		public static HtmlHelp2TocPad TocPad
 		{
 			get
 			{
@@ -35,12 +35,14 @@ namespace HtmlHelp2
 			}
 		}
 		
-		public void BringTocPadToFront()
+		public static void BringTocPadToFront()
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2TocPad)).BringPadToFront();
 		}
 	}
 	
+	[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
+	[PermissionSet(SecurityAction.InheritanceDemand, Name="Execution")]
 	public class SyncTocCommand : HelpToolbarCommand
 	{
 		public override void Run()
@@ -50,6 +52,8 @@ namespace HtmlHelp2
 		}
 	}
 	
+	[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
+	[PermissionSet(SecurityAction.InheritanceDemand, Name="Execution")]
 	public class PreviousTopicCommand : HelpToolbarCommand
 	{
 		public override void Run()
@@ -58,7 +62,7 @@ namespace HtmlHelp2
 			{
 				TocPad.GetPrevFromNode();
 			}
-			catch
+			catch (System.ArgumentException)
 			{
 				TocPad.GetPrevFromUrl(Browser.Url.ToString());
 			}
@@ -66,6 +70,8 @@ namespace HtmlHelp2
 		}
 	}
 	
+	[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
+	[PermissionSet(SecurityAction.InheritanceDemand, Name="Execution")]
 	public class NextTopicCommand : HelpToolbarCommand
 	{
 		public override void Run()
@@ -74,7 +80,7 @@ namespace HtmlHelp2
 			{
 				TocPad.GetNextFromNode();
 			}
-			catch
+			catch (System.ArgumentException)
 			{
 				TocPad.GetNextFromUrl(Browser.Url.ToString());
 			}

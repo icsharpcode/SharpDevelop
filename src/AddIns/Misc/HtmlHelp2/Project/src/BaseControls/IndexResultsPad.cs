@@ -9,6 +9,7 @@ namespace HtmlHelp2
 {
 	using System;
 	using System.Collections;
+	using System.Globalization;
 	using System.Windows.Forms;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop;
@@ -118,7 +119,7 @@ namespace HtmlHelp2
 				 string text = StringParser.Parse("${res:AddIns.HtmlHelp2.ResultsOfIndexResults}",
 			 	                                  new string[,]
 			 	                                  {{"0", indexTerm},
-			 	                                   {"1", listView.Items.Count.ToString()},
+			 	                                   {"1", listView.Items.Count.ToString(CultureInfo.InvariantCulture)},
 			 	                                   {"2", (listView.Items.Count == 1)?"${res:AddIns.HtmlHelp2.SingleTopic}":"${res:AddIns.HtmlHelp2.MultiTopic}"}}
 			 	                                 );
 

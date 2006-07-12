@@ -73,48 +73,6 @@ namespace HtmlHelp2.Environment
 				help2Collections.EndUpdate();
 			}
 			return true;
-//			if (help2Collections == null)
-//			{
-//				return false;
-//			}
-//			help2Collections.Items.Clear();
-//			help2Collections.BeginUpdate();
-//			bool result = true;
-//
-//			try
-//			{
-//				string currentDescription = string.Empty;
-//				HxRegistryWalkerClass registryWalker = new HxRegistryWalkerClass();
-//				IHxRegNamespaceList namespaces = registryWalker.get_RegisteredNamespaceList("");
-//
-//				foreach (IHxRegNamespace currentNamespace in namespaces)
-//				{
-//					help2Collections.Items.Add
-//						((string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription));
-//
-//					if (!string.IsNullOrEmpty(selectedHelp2Collection) &&
-//					     string.Compare(selectedHelp2Collection, currentNamespace.Name) == 0)
-//					{
-//						currentDescription =
-//							(string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription);
-//					}
-//				}
-//
-//				if (!string.IsNullOrEmpty(currentDescription))
-//					help2Collections.SelectedIndex = help2Collections.Items.IndexOf(currentDescription);
-//				else
-//					help2Collections.SelectedIndex = 0;
-//			}
-//			catch
-//			{
-//				result = false;
-//			}
-//			finally
-//			{
-//				help2Collections.EndUpdate();
-//			}
-//
-//			return result;
 		}
 
 		public static string GetNamespaceName(string description)
@@ -192,9 +150,7 @@ namespace HtmlHelp2.Environment
 				registryWalker = null;
 			}
 
-			if (registryWalker == null ||
-			    help2Namespaces == null || help2Namespaces.Count == 0 ||
-			    string.IsNullOrEmpty(matchingName))
+			if (registryWalker == null || help2Namespaces == null || help2Namespaces.Count == 0 || string.IsNullOrEmpty(matchingName))
 			{
 				return string.Empty;
 			}
@@ -205,7 +161,7 @@ namespace HtmlHelp2.Environment
 					return currentNamespace.Name;
 				}
 			}
-			return string.Empty;
+			return help2Namespaces.ItemAt(1).Name;
 		}
 
 	}

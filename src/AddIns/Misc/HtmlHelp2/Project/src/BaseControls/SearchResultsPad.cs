@@ -9,6 +9,7 @@ namespace HtmlHelp2
 {
 	using System;
 	using System.Collections;
+	using System.Globalization;
 	using System.Windows.Forms;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop;
@@ -123,7 +124,7 @@ namespace HtmlHelp2
 			string text = StringParser.Parse("${res:AddIns.HtmlHelp2.ResultsOfSearchResults}",
 			                                 new string[,]
 			                                 {{"0", indexTerm},
-			                                 	{"1", listView.Items.Count.ToString()},
+			                                 	{"1", listView.Items.Count.ToString(CultureInfo.InvariantCulture)},
 			                                 	{"2", (listView.Items.Count == 1)?"${res:AddIns.HtmlHelp2.SingleTopic}":"${res:AddIns.HtmlHelp2.MultiTopic}"}}
 			                                );
 
@@ -142,16 +143,19 @@ namespace HtmlHelp2
 
 			public int Compare(object x, object y)
 			{
+				ListViewItem itemA = x as ListViewItem;
+				ListViewItem itemB = y as ListViewItem;
+
 				switch (col)
 				{
 					case 2:
-						int a = Int32.Parse(((ListViewItem)x).SubItems[col].Text);
-						int b = Int32.Parse(((ListViewItem)y).SubItems[col].Text);
+						int a = Int32.Parse(itemA.SubItems[col].Text, CultureInfo.InvariantCulture);
+						int b = Int32.Parse(itemB.SubItems[col].Text, CultureInfo.InvariantCulture);
 						if(a > b) return 1;
 						else if(a < b) return -1;
 						else return 0;
 					default:
-						return String.Compare(((ListViewItem)x).SubItems[col].Text, ((ListViewItem)y).SubItems[col].Text);
+						return string.Compare(itemA.SubItems[col].Text, itemB.SubItems[col].Text);
 				}
 			}
 		}

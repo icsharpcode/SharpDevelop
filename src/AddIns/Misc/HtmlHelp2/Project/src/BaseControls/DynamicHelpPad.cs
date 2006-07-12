@@ -11,6 +11,8 @@ namespace HtmlHelp2
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Drawing;
+	using System.Globalization;
+	using System.Security.Permissions;
 	using System.Windows.Forms;
 	using System.Reflection;
 	using ICSharpCode.Core;
@@ -35,7 +37,7 @@ namespace HtmlHelp2
 
 	public class HtmlHelp2DynamicHelpPad : AbstractPadContent
 	{
-		protected HtmlHelp2DynamicHelpBrowserControl dynamicHelpBrowser;
+		HtmlHelp2DynamicHelpBrowserControl dynamicHelpBrowser;
 		private StringCollection dynamicHelpTerms   = new StringCollection();
 		private Point lastPoint                     = Point.Empty;
 		private string debugPreElement              = String.Empty;
@@ -51,6 +53,7 @@ namespace HtmlHelp2
 			dynamicHelpBrowser.RedrawContent();
 		}
 
+		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
 		public HtmlHelp2DynamicHelpPad()
 		{
 			dynamicHelpBrowser                      = new HtmlHelp2DynamicHelpBrowserControl();
@@ -95,11 +98,11 @@ namespace HtmlHelp2
 				if (this.enableDebugInfo)
 				{
 					this.debugPreElement +=
-						string.Format("<br>Current project language: {0}", SharpDevLanguage.GetPatchedLanguage());
+						string.Format(CultureInfo.InvariantCulture, "<br>Current project language: {0}", SharpDevLanguage.GetPatchedLanguage());
 					dynamicHelpBrowser.CreateDebugPre(this.debugPreElement);
 				}
 			}
-			catch (Exception ex)
+			catch (System.Runtime.InteropServices.COMException ex)
 			{
 				LoggingService.Error("Help 2.0: Dynamic Help Call Exception; " + ex.ToString());
 			}
@@ -122,12 +125,13 @@ namespace HtmlHelp2
 
 			// debug info
 			this.debugPreElement +=
-				string.Format("{0} ({1}): {2} {3}<br>", searchTerm, (keywordSearch)?"Kwd":"DH",
+				string.Format(CultureInfo.InvariantCulture,
+				              "{0} ({1}): {2} {3}<br>", searchTerm, (keywordSearch)?"Kwd":"DH",
 				              topics.Count, (topics.Count==1)?"topic":"topics");
 
 			if (result)
 			{
-				List<IHxTopic> newTopics = this.SortTopics(topics);
+				List<IHxTopic> newTopics = SortTopics(topics);
 				foreach (IHxTopic topic in newTopics)
 				{
 					if ((keywordSearch)?SharpDevLanguage.CheckUniqueTopicLanguage(topic):SharpDevLanguage.CheckTopicLanguage(topic))
@@ -207,7 +211,7 @@ namespace HtmlHelp2
 			// save the current position
 			if(this.lastPoint != null && this.lastPoint == caret.Position) return null;
 			this.lastPoint = caret.Position;
-			this.AddToStringCollection(String.Format("!{0}", expr.Expression));
+			this.AddToStringCollection(string.Format(CultureInfo.InvariantCulture, "!{0}", expr.Expression));
 
 			return ParserService.Resolve(expr, caret.Line + 1, caret.Column + 1, fileName, content);
 		}
@@ -228,24 +232,21 @@ namespace HtmlHelp2
 
 		private void CallDynamicHelpForFormsDesigner(object selectedObject, GridItem selectedItem)
 		{
-			try
+			if (selectedObject == null) return;
+			this.dynamicHelpTerms.Clear();
+
+			Type myObject = selectedObject.GetType();
+			if (selectedItem != null)
 			{
-				if (selectedObject == null) return;
-				this.dynamicHelpTerms.Clear();
-
-				Type myObject = selectedObject.GetType();
-				if (selectedItem != null)
+				foreach (Type type in TypeHandling.FindDeclaringType(myObject, selectedItem.Label))
 				{
-					foreach (Type type in TypeHandling.FindDeclaringType(myObject, selectedItem.Label))
-					{
-						this.AddToStringCollection(String.Format("{0}.{1}", type.FullName, selectedItem.Label));
-					}
+					this.AddToStringCollection(string.Format(CultureInfo.InvariantCulture,
+					                                         "{0}.{1}", type.FullName, selectedItem.Label));
 				}
-				this.AddToStringCollection(myObject.FullName);
-
-				WorkbenchSingleton.SafeThreadAsyncCall(this, "BuildDynamicHelpList");
 			}
-			catch {}
+			this.AddToStringCollection(myObject.FullName);
+
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "BuildDynamicHelpList");
 		}
 		#endregion
 
@@ -271,7 +272,7 @@ namespace HtmlHelp2
 			}
 		}
 
-		private List<IHxTopic> SortTopics(IHxTopicList topics)
+		private static List<IHxTopic> SortTopics(IHxTopicList topics)
 		{
 			if (topics == null || topics.Count == 0)
 			{
@@ -301,7 +302,7 @@ namespace HtmlHelp2
 				return result;
 			}
 
-			private int CompareType(string topicType, IHxTopic x, IHxTopic y)
+			private static int CompareType(string topicType, IHxTopic x, IHxTopic y)
 			{
 				if(x.HasAttribute("TopicType", topicType) && !y.HasAttribute("TopicType", topicType))
 					return -1;
@@ -323,7 +324,7 @@ namespace HtmlHelp2
 	{
 		WebBrowser axWebBrowser      = new WebBrowser();
 		ToolStrip dynamicHelpToolbar = new ToolStrip();
-		int internalIndex            = 0;
+		int internalIndex;
 		string[] toolbarButtons      = new string[] {
 			"${res:AddIns.HtmlHelp2.Contents}",
 			"${res:AddIns.HtmlHelp2.Index}",
@@ -338,11 +339,13 @@ namespace HtmlHelp2
 			}
 		}
 
+		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
 		public HtmlHelp2DynamicHelpBrowserControl()
 		{
 			this.InitializeComponents();
 		}
 
+		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
 		private void InitializeComponents()
 		{
 			Dock = DockStyle.Fill;
@@ -385,9 +388,10 @@ namespace HtmlHelp2
 			}
 		}
 
+		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
 		public void LoadDynamicHelpPage()
 		{
-			string url = String.Format("res://{0}/context", Assembly.GetExecutingAssembly().Location);
+			string url = string.Format(CultureInfo.InvariantCulture, "res://{0}/context", Assembly.GetExecutingAssembly().Location);
 			axWebBrowser.Navigate(url);
 		}
 
@@ -425,7 +429,8 @@ namespace HtmlHelp2
 		#endregion
 
 		#region WebBrowser Scripting
-		public void BuildNewChild(string sectionName, string topicName, string topicUrl)
+		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
+		public void BuildNewChild(string sectionName, string topicName, string topicLink)
 		{
 			HtmlElementCollection children =
 				axWebBrowser.Document.Body.GetElementsByTagName("span");
@@ -441,9 +446,9 @@ namespace HtmlHelp2
 					    contentSpan.TagName == "SPAN" &&
 					    contentSpan.GetAttribute("className") == "content")
 					{
-						if (!this.DoesLinkExist(contentSpan, topicName, topicUrl))
+						if (!DoesLinkExist(contentSpan, topicName, topicLink))
 						{
-							HtmlElement newLink = this.CreateNewLink(topicUrl, topicName);
+							HtmlElement newLink = this.CreateNewLink(topicLink, topicName);
 							if (newLink != null)
 							{
 								contentSpan.AppendChild(newLink);
@@ -469,7 +474,7 @@ namespace HtmlHelp2
 				axWebBrowser.Document.Body.InsertAdjacentElement
 					(HtmlElementInsertionOrientation.BeforeEnd, htmlSection);
 
-				HtmlElement newLink = this.CreateNewLink(topicUrl, topicName);
+				HtmlElement newLink = this.CreateNewLink(topicLink, topicName);
 				if (newLink != null)
 				{
 					linkContent.AppendChild(newLink);
@@ -480,23 +485,26 @@ namespace HtmlHelp2
 			}
 		}
 
+		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
 		private HtmlElement CreateNewSection(string sectionName, out HtmlElement linkNode)
 		{
 			HtmlElement span = axWebBrowser.Document.CreateElement("span");
 			span.SetAttribute("className", "section");
-			span.InnerHtml = String.Format
-				("<img style=\"width:16px;height:16px;margin-right:5px\" id=\"image_{0}\" src=\"open\">" +
+			span.InnerHtml = string.Format
+				(CultureInfo.InvariantCulture,
+				 "<img style=\"width:16px;height:16px;margin-right:5px\" id=\"image_{0}\" src=\"open\">" +
 				 "<b style=\"cursor:auto;\" id=\"{0}\" onclick=\"ExpandCollapse({0})\">{1}</b><br>",
 				 this.internalIndex, sectionName);
 
 			linkNode = axWebBrowser.Document.CreateElement("span");
 			linkNode.SetAttribute("className", "content");
-			linkNode.Id = String.Format("content_{0}", this.internalIndex);
+			linkNode.Id = string.Format(CultureInfo.InvariantCulture, "content_{0}", this.internalIndex);
 			span.AppendChild(linkNode);
 
 			return span;
 		}
 
+		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
 		private HtmlElement CreateNewLink(string topicUrl, string topicName)
 		{
 			HtmlElement span = axWebBrowser.Document.CreateElement("a");
@@ -511,13 +519,15 @@ namespace HtmlHelp2
 			return span;
 		}
 
+		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
 		private HtmlElement CreateABreak()
 		{
 			HtmlElement br = axWebBrowser.Document.CreateElement("br");
 			return br;
 		}
 
-		private bool DoesLinkExist(HtmlElement parentNode, string topicName, string topicUrl)
+		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
+		private static bool DoesLinkExist(HtmlElement parentNode, string topicName, string topicUrl)
 		{
 			HtmlElementCollection links = parentNode.GetElementsByTagName("a");
 			foreach (HtmlElement link in links)
@@ -533,9 +543,10 @@ namespace HtmlHelp2
 
 		private void OnMouseOver(object sender, HtmlElementEventArgs e)
 		{
-			if (sender is HtmlElement)
+			HtmlElement link = sender as HtmlElement;
+			if (link != null)
 			{
-				StatusBarService.SetMessage(((HtmlElement)sender).GetAttribute("src"));
+				StatusBarService.SetMessage(link.GetAttribute("src"));
 			}
 		}
 
@@ -546,13 +557,15 @@ namespace HtmlHelp2
 
 		private void OnLinkClick(object sender, HtmlElementEventArgs e)
 		{
-			if (sender is HtmlElement)
+			HtmlElement link = sender as HtmlElement;
+			if (link != null)
 			{
-				string url = ((HtmlElement)sender).GetAttribute("src");
+				string url = link.GetAttribute("src");
 				if (!string.IsNullOrEmpty(url)) ShowHelpBrowser.OpenHelpView(url);
 			}
 		}
 
+		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
 		public void RemoveAllChildren()
 		{
 			try
@@ -560,7 +573,7 @@ namespace HtmlHelp2
 				this.internalIndex = 0;
 				axWebBrowser.Document.Body.InnerHtml = string.Empty;
 			}
-			catch (Exception ex)
+			catch (System.NotSupportedException ex)
 			{
 				LoggingService.Error("Help 2.0: Clean-up Call Exception; " + ex.ToString());
 			}
@@ -568,6 +581,7 @@ namespace HtmlHelp2
 		#endregion
 
 		#region DebugInfo
+		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
 		public void CreateDebugPre(string debugInformation)
 		{
 			if (!string.IsNullOrEmpty(debugInformation))

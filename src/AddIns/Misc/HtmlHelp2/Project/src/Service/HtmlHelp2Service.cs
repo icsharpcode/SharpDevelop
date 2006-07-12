@@ -8,6 +8,7 @@
 namespace HtmlHelp2.Environment
 {
 	using System;
+	using System.Globalization;
 	using System.IO;
 	using System.Windows.Forms;
 	using System.Xml;
@@ -24,15 +25,13 @@ namespace HtmlHelp2.Environment
 		static IHxRegFilterList namespaceFilters;
 		static IHxQuery fulltextSearch;
 		static IHxIndex dynamicHelp;
-		static string defaultNamespaceName               =
-			Help2RegistryWalker.GetFirstMatchingNamespaceName("MS.NETFramework.v20*");
-		static string currentSelectedFilterQuery         = "";
-		static string currentSelectedFilterName          = "";
+		static string defaultNamespaceName;
+		static string currentSelectedFilterQuery;
+		static string currentSelectedFilterName;
 		static string defaultPage                        = "about:blank";
 		static string searchPage                         = "http://msdn.microsoft.com";
 		static bool dynamicHelpIsBusy;
 		static HtmlHelp2Options config                   = new HtmlHelp2Options();
-
 		
 		HtmlHelp2Environment()
 		{
@@ -40,8 +39,7 @@ namespace HtmlHelp2.Environment
 
 		static HtmlHelp2Environment()
 		{
-			LoadHelp2Config();
-			InitializeNamespace(defaultNamespaceName);
+			InitializeNamespace();
 		}
 
 		#region Properties
@@ -94,24 +92,36 @@ namespace HtmlHelp2.Environment
 		#region Namespace Functions
 		private static void LoadHelp2Config()
 		{
+			if (string.IsNullOrEmpty(defaultNamespaceName))
+			{
+				defaultNamespaceName =
+					Help2RegistryWalker.GetFirstMatchingNamespaceName("MS.NETFramework.v20*");
+			}
+			else
+			{
+				defaultNamespaceName = Help2RegistryWalker.GetFirstNamespace(defaultNamespaceName);
+			}
+			
 			LoadConfiguration();
+
 			if (!string.IsNullOrEmpty(config.SelectedCollection))
 			{
-				defaultNamespaceName = config.SelectedCollection;
+				defaultNamespaceName =
+					Help2RegistryWalker.GetFirstNamespace(config.SelectedCollection);
 			}
 		}
 
 		public static void ReloadNamespace()
 		{
-			LoadHelp2Config();
-			defaultNamespaceName = Help2RegistryWalker.GetFirstNamespace(defaultNamespaceName);
-			InitializeNamespace(defaultNamespaceName);
+			InitializeNamespace();
 			OnNamespaceReloaded(EventArgs.Empty);
 		}
 
-		private static void InitializeNamespace(string namespaceName)
+		private static void InitializeNamespace()
 		{
-			if (string.IsNullOrEmpty(namespaceName))
+			LoadHelp2Config();
+			
+			if (string.IsNullOrEmpty(defaultNamespaceName))
 			{
 				return;
 			}
@@ -130,7 +140,7 @@ namespace HtmlHelp2.Environment
 				currentSelectedFilterName  = string.Empty;
 
 				session                    = new HxSession();
-				session.Initialize(String.Format(null, "ms-help://{0}", namespaceName), 0);
+				session.Initialize(String.Format(CultureInfo.InvariantCulture, "ms-help://{0}", defaultNamespaceName), 0);
 				namespaceFilters           = session.GetFilterList();
 
 				ReloadDefaultPages();

@@ -38,17 +38,17 @@ namespace HtmlHelp2
 			OpenHelpView(topic.URL, topic, hiliteMatchingWords);
 		}
 
-		public static void OpenHelpView(string topicUrl)
+		public static void OpenHelpView(string topicLink)
 		{
-			OpenHelpView(topicUrl, null, false);
+			OpenHelpView(topicLink, null, false);
 		}
 
-		public static void OpenHelpView(string topicUrl, bool hiliteMatchingWords)
+		public static void OpenHelpView(string topicLink, bool hiliteMatchingWords)
 		{
-			OpenHelpView(topicUrl, null, hiliteMatchingWords);
+			OpenHelpView(topicLink, null, hiliteMatchingWords);
 		}
 
-		public static void OpenHelpView(string topicUrl, IHxTopic topic, bool hiliteMatchingWords)
+		public static void OpenHelpView(string topicLink, IHxTopic topic, bool hiliteMatchingWords)
 		{
 			hiliteMatches = hiliteMatchingWords;
 			lastTopic = topic;
@@ -56,7 +56,7 @@ namespace HtmlHelp2
 
 			if (help2Browser != null)
 			{
-				help2Browser.Load(topicUrl);
+				help2Browser.Load(topicLink);
 				help2Browser.WorkbenchWindow.SelectWindow();
 			}
 		}

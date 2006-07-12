@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Security.Permissions;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -22,16 +24,29 @@ namespace HtmlHelp2
 		
 		public override void GoHome(HtmlViewPane pane)
 		{
-			pane.Navigate(HtmlHelp2Environment.DefaultPage);
+			if (pane == null)
+			{
+				throw new ArgumentNullException("pane");
+			}
+			pane.Navigate(new Uri(HtmlHelp2Environment.DefaultPage));
 		}
 		
 		public override void GoSearch(HtmlViewPane pane)
 		{
-			pane.Navigate(HtmlHelp2Environment.SearchPage);
+			if (pane == null)
+			{
+				throw new ArgumentNullException("pane");
+			}
+			pane.Navigate(new Uri(HtmlHelp2Environment.SearchPage));
 		}
 		
+//		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
 		public override void InterceptNavigate(HtmlViewPane pane, WebBrowserNavigatingEventArgs e)
 		{
+			if (pane == null)
+			{
+				throw new ArgumentNullException("pane");
+			}
 			if (scriptObject == null) {
 				scriptObject = new JScriptExternal();
 				LoadHelpState();
@@ -64,9 +79,14 @@ namespace HtmlHelp2
 			}
 			PropertyService.Set("HtmlHelpPersistedJScriptGlobals", lines.ToArray());
 		}
-		
+
+//		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
 		public override void DocumentCompleted(HtmlViewPane pane, WebBrowserDocumentCompletedEventArgs e)
 		{
+			if (pane == null)
+			{
+				throw new ArgumentNullException("pane");
+			}
 			ShowHelpBrowser.HighlightDocument(pane);
 		}
 	}

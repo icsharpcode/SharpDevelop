@@ -13,36 +13,36 @@ namespace HtmlHelp2
 	using ICSharpCode.SharpDevelop.Gui;
 	using ICSharpCode.SharpDevelop.Dom;
 
-	public class MsHelpProvider : HelpProvider
+	public class MSHelpProvider : HelpProvider
 	{
 		public override bool TryShowHelp(string fullTypeName)
 		{
 			LoggingService.Info("Help 2.0: MsHelpProvider.TryShowHelp");
 
-			try
-			{
+//			try
+//			{
 				PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchPad));
 				return ((HtmlHelp2SearchPad)search.PadContent).PerformF1Fts(fullTypeName, true);
-			}
-			catch
-			{
-				return false;
-			}
+//			}
+//			catch
+//			{
+//				return false;
+//			}
 		}
 
 		public override bool TryShowHelpByKeyword(string keyword)
 		{
 			LoggingService.Info("Help 2.0: MsHelpProvider.TryShowHelpByKeyword");
 
-			try
-			{
+//			try
+//			{
 				PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchPad));
 				return ((HtmlHelp2SearchPad)search.PadContent).PerformF1Fts(keyword);
-			}
-			catch
-			{
-				return false;
-			}
+//			}
+//			catch
+//			{
+//				return false;
+//			}
 		}
 	}
 }

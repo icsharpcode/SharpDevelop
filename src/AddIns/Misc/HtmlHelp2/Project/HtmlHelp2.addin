@@ -16,7 +16,7 @@
 	</Path>
 
 	<Path name = "/SharpDevelop/Services/HelpProvider">
-		<Class id = "HtmlHelp2" class = "HtmlHelp2.MsHelpProvider"/>
+		<Class id = "HtmlHelp2" class = "HtmlHelp2.MSHelpProvider"/>
 	</Path>
 
 	<Path name = "/SharpDevelop/Workbench/Pads">

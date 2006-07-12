@@ -7,6 +7,7 @@
 
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Security.Permissions;
 
 // Information about this assembly is defined by the following
 // attributes.
@@ -21,3 +22,5 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCulture("")]
 
 [assembly: System.Runtime.InteropServices.ComVisible(false)]
+[assembly: System.CLSCompliant(false)]
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
