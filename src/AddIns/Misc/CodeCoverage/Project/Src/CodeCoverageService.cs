@@ -38,18 +38,18 @@ namespace ICSharpCode.CodeCoverage
 			}
 			set {
 				CodeCoveragePad pad = CodeCoveragePad.Instance;
-				if (pad != null) {
-					pad.UpdateToolbar();
-				}
 				if (CodeCoverageOptions.CodeCoverageHighlighted != value) {
 					CodeCoverageOptions.CodeCoverageHighlighted = value;
 					if (CodeCoverageResultsExist) {
-						if (CodeCoverageOptions.CodeCoverageHighlighted) {
+						if (value) {
 							ShowCodeCoverage();
 						} else {
 							HideCodeCoverage();
 						}
 					}
+				}
+				if (pad != null) {
+					pad.UpdateToolbar();
 				}
 			}
 		}

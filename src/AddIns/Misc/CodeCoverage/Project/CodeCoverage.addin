@@ -23,6 +23,7 @@
 		     insertafter  = "Bookmarks"
 		     insertbefore = "DefinitionView"
 		     icon         = "CodeCoverage.Icons.16x16.Pad"
+		     shortcut     = "Control|Alt|G"
 		     class        = "ICSharpCode.CodeCoverage.CodeCoveragePad"/>
 	</Path>
 	
@@ -70,5 +71,22 @@
 		<DialogPanel id          = "CodeCoverage"
 		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
 		             class       = "ICSharpCode.CodeCoverage.CodeCoverageProjectOptionsPanel"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit/Format">
+		<MenuItem id          = "ShowCodeCoverage"
+		          insertafter = "Indent" 
+		          label       = "Show Code Co&amp;verage"
+		          type        = "CheckBox"
+		          class       = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+		<MenuItem id           = "ShowCodeCoverage"
+		          insertafter  = "Indent" 
+		          insertbefore = "FileMode"
+		          label        = "Show Code Co&amp;verage"
+		          type         = "CheckBox"
+		          class        = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
 	</Path>
 </AddIn>
