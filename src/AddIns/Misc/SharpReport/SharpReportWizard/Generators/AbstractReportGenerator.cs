@@ -101,6 +101,7 @@ namespace ReportGenerator {
 			} else {
 				section.Items.Add (this.parentItem);
 				IContainerItem containerItem = this.parentItem as IContainerItem;
+
 				this.parentItem.Parent = section;
 				if ( containerItem != null) {
 					this.AddItemsToParent (containerItem,this.ReportItemCollection);
@@ -171,16 +172,15 @@ namespace ReportGenerator {
 		
 		protected void AdjustAllNames () {
 			foreach (BaseSection sec in this.reportModel.SectionCollection) {
-				AdjustNames(sec.Items);
+				BuildProperNames(sec.Items);
 			}
 		}
 		
-		private void AdjustNames (ReportItemCollection items) {
-			
+		private void BuildProperNames (ReportItemCollection items) {
 			foreach (IItemRenderer item in items) {
 				IContainerItem it = item as IContainerItem;
 				if (it != null) {
-					AdjustNames (it.Items);
+					BuildProperNames (it.Items);
 				}
 				item.Name = nameService.CreateName(items,item.Name);
 			}

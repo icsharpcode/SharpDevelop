@@ -147,13 +147,12 @@ namespace ICSharpCode.SharpDevelop.Project
 //				}
 //			}
 			string newFileName = Path.Combine(project.Directory, newName + Path.GetExtension(project.FileName));
-			if (File.Exists(newFileName)) {
-				MessageService.ShowError("The file " + newFileName + " already exists.");
+			
+			if (!FileService.RenameFile(project.FileName, newFileName, false)) {
 				return;
 			}
 			if (project.AssemblyName == project.Name)
 				project.AssemblyName = newName;
-			FileService.RenameFile(project.FileName, newFileName, false);
 			if (File.Exists(project.FileName + ".user"))
 				FileService.RenameFile(project.FileName + ".user", newFileName + ".user", false);
 			foreach (IProject p in ProjectService.OpenSolution.Projects) {

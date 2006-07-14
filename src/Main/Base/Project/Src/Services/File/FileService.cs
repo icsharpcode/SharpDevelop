@@ -192,14 +192,20 @@ namespace ICSharpCode.Core
 				return false;
 			if (!eargs.OperationAlreadyDone) {
 				try {
-					if (isDirectory) {
-						if (Directory.Exists(oldName)) {
-							Directory.Move(oldName, newName);
+					if (isDirectory && Directory.Exists(oldName)) {
+						
+						if (Directory.Exists(newName)) {
+							MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
+							return false;
 						}
-					} else {
-						if (File.Exists(oldName)) {
-							File.Move(oldName, newName);
+						Directory.Move(oldName, newName);
+						
+					} else if (File.Exists(oldName)) {
+						if (File.Exists(newName)) {
+							MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
+							return false;
 						}
+						File.Move(oldName, newName);
 					}
 				} catch (Exception e) {
 					if (isDirectory) {

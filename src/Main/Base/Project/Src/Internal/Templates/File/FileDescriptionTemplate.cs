@@ -19,7 +19,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	{
 		string name;
 		string language;
+		
+		// Either content or contentData is set, the other is null
 		string content;
+		byte[] contentData;
+		
 		string buildAction;
 		string copyToOutputDirectory;
 		string dependentUpon;
@@ -42,7 +46,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			if (xml.HasAttribute("src")) {
 				string fileName = Path.Combine(hintPath, StringParser.Parse(xml.GetAttribute("src")));
 				try {
-					content = File.ReadAllText(fileName);
+					if (xml.HasAttribute("binary") && bool.Parse(xml.GetAttribute("binary"))) {
+						contentData = File.ReadAllBytes(fileName);
+					} else {
+						content = File.ReadAllText(fileName);
+					}
 				} catch (Exception e) {
 					content = "Error reading content from " + fileName + ":\n" + e.ToString();
 					LoggingService.Warn(content);
@@ -92,6 +100,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public string Content {
 			get {
 				return content;
+			}
+		}
+		
+		public byte[] ContentData {
+			get {
+				return contentData;
 			}
 		}
 		

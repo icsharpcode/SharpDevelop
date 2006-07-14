@@ -62,15 +62,15 @@ namespace SharpReportCore {
 			if (this.image != null) {
 				if (this.scaleImageToSize) {
 					g.DrawImageUnscaled(image,0,0);
-					rpea.LocationAfterDraw = new PointF (this.Location.X + this.image.Width,
+					rpea.LocationAfterDraw = new Point (this.Location.X + this.image.Width,
 					                                  this.Location.Y + this.image.Height);
 				} else {
 					SizeF measureSize = base.MeasureReportItem (rpea,this);
 					RectangleF rect =  base.DrawingRectangle (rpea,measureSize);
 					g.DrawImage(image,
 					            rect);
-					rpea.LocationAfterDraw = new PointF (this.Location.X + rect.Width,
-					                                  this.Location.Y + rect.Height);
+					rpea.LocationAfterDraw = new Point (this.Location.X + (int)rect.Width,
+					                                    this.Location.Y + (int)rect.Height);
 				}
 			}
 		}

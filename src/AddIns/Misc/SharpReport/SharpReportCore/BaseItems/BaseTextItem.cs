@@ -28,19 +28,29 @@ namespace SharpReportCore {
 		private string formatString = String.Empty;
 		private StringFormat stringFormat;
 		private StringTrimming stringTrimming;
-		private TextDrawer textDrawer = new TextDrawer();
+		private TextDrawer textDrawer;
+		private StandardFormatter standartFormatter;
 		private ContentAlignment contentAlignment;
 		private RectangleShape shape = new RectangleShape();
 		
 		#region Constructor
 		
 		public BaseTextItem():base() {
-		this.stringFormat = StringFormat.GenericTypographic;
-		this.contentAlignment = ContentAlignment.MiddleLeft;
-		this.stringTrimming = StringTrimming.EllipsisCharacter;
+			this.stringFormat = StringFormat.GenericTypographic;
+			this.contentAlignment = ContentAlignment.MiddleLeft;
+			this.stringTrimming = StringTrimming.EllipsisCharacter;
+			this.textDrawer = new TextDrawer();
+			this.standartFormatter = new StandardFormatter();
 		}
 		
 		#endregion
+		
+		protected string FormatOutput(string valueToFormat,string formatString,
+		                              TypeCode typeCode, string nullValue ){
+			
+			return standartFormatter.FormatItem(valueToFormat,formatString,
+			                                        typeCode,nullValue);			
+		}
 		
 		
 		public override void Render(ReportPageEventArgs rpea) {
@@ -119,7 +129,7 @@ namespace SharpReportCore {
 			                      this.stringTrimming,this.contentAlignment);
 			                      
 			
-			 rpea.LocationAfterDraw = new PointF (this.Location.X + this.Size.Width,
+			 rpea.LocationAfterDraw = new Point (this.Location.X + this.Size.Width,
 			                                  this.Location.Y + this.Size.Height);
 		}
 	
@@ -164,7 +174,7 @@ namespace SharpReportCore {
 		}
 		
 		[Category("Appearance")]
-		public System.Drawing.ContentAlignment ContentAlignment {
+		public virtual System.Drawing.ContentAlignment ContentAlignment {
 			get {
 				return this.contentAlignment;
 			}

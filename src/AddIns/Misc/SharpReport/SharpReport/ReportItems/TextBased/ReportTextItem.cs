@@ -36,9 +36,12 @@ namespace SharpReport.ReportItems {
 			visualControl.ContentAlignment = base.ContentAlignment;
 			visualControl.StringTrimming = base.StringTrimming;
 			
-			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+//			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 
+			this.visualControl.LocationChanged += new EventHandler (OnControlChanged);
+			
 			this.visualControl.Click += new EventHandler(OnControlSelect);
+			this.visualControl.LocationChanged += new EventHandler (OnControlChanged);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
 			this.visualControl.BackColorChanged += new EventHandler (OnControlChanged);
 			this.visualControl.FontChanged += new EventHandler (OnControlChanged);
@@ -49,10 +52,9 @@ namespace SharpReport.ReportItems {
 			base.PropertyChanged += new PropertyChangedEventHandler (BasePropertyChange);
 			
 		}
-		
+	
 		
 		#endregion
-		
 		
 		#region events
 		
@@ -67,7 +69,6 @@ namespace SharpReport.ReportItems {
 			this.visualControl.ContentAlignment = base.ContentAlignment;
 			this.visualControl.StringTrimming = base.StringTrimming;
 			this.visualControl.DrawBorder = base.DrawBorder;
-			
 			this.HandlePropertyChanged(e.PropertyName);
 		}
 		
@@ -76,7 +77,7 @@ namespace SharpReport.ReportItems {
 			base.SuspendLayout();
 			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 			base.ResumeLayout();
-			this.HandlePropertyChanged("OnControlSelected");
+			this.HandlePropertyChanged("OnControlChanged");
 		}
 		
 		
@@ -113,7 +114,7 @@ namespace SharpReport.ReportItems {
 				this.HandlePropertyChanged("Location");
 			}
 		}
-		
+	
 		public override Font Font {
 			get {
 				return base.Font;

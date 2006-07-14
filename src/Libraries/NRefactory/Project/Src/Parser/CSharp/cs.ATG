@@ -1886,7 +1886,7 @@ EmbeddedStatement<out Statement statement>
 		(statement as IfElseStatement).ElseIfSections.AddRange((elseStatement as IfElseStatement).ElseIfSections);
 		(statement as IfElseStatement).FalseStatement = (elseStatement as IfElseStatement).FalseStatement;
 	} .)
-  | "switch" (. List<SwitchSection> switchSections = new List<SwitchSection>(); SwitchSection switchSection; .)
+  | "switch" (. List<SwitchSection> switchSections = new List<SwitchSection>(); .)
 	  "(" Expr<out expr> ")"
 	  "{" SwitchSections<switchSections>
 	  "}"  (. statement = new SwitchStatement(expr, switchSections); .)

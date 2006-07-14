@@ -188,7 +188,8 @@ namespace SharpReport.Designer{
 			baseReportItem.Name = nameService.CreateName(itemCollection,
 			                                             baseReportItem.Name);
 			
-
+System.Console.WriteLine("Report:CustomizeItem Name {0}",baseReportItem.Name);
+			
 			if (baseReportItem.Parent == this.selectedSection) {
 				baseReportItem.Location = new Point(iddea.ItemAtPoint.X,iddea.ItemAtPoint.Y);
 			} else {

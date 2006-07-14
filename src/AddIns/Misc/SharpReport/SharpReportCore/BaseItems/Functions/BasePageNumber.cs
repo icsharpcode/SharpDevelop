@@ -27,16 +27,18 @@ namespace SharpReportCore {
 			static string fnName = "SharpReport.Toolbar.Functions.PageNumber";
 			
 			public BasePageNumber():base(fnName) {
+//				System.Console.WriteLine("!! PageNr created with name {0}",this.Name);
 				
 			}
 			
 			public override void Render(ReportPageEventArgs rpea) {
 				base.Render(rpea);
 				
-				string formattedString = base.FireFormatOutput(rpea.PageNumber.ToString(CultureInfo.InvariantCulture),
-				                                               base.FormatString,"");
+				string formattedString = base.FormatOutput(rpea.PageNumber.ToString(CultureInfo.InvariantCulture),
+				                                           this.FormatString,
+				                                           TypeCode.Int32,
+				                                           "xxxx");
 				
-
 				RectangleF rect = base.PrepareRectangle (rpea,formattedString);
 				//Printout the textpart
 				base.PrintTheStuff (rpea,this.Text,rect);
@@ -44,13 +46,13 @@ namespace SharpReportCore {
 				StringFormat fmt = StringFormat;
 
 				fmt.Alignment = StringAlignment.Far;
-				fmt.LineAlignment = StringAlignment.Near;
-				rpea.PrintPageEventArgs.Graphics.DrawString(rpea.PageNumber.ToString(CultureInfo.InvariantCulture),
-				                                         this.Font,
-				                                         Brushes.Black,
-				                                         rect,
-				                                         fmt);
-				
+				fmt.LineAlignment = StringAlignment.Center;
+
+				rpea.PrintPageEventArgs.Graphics.DrawString(formattedString,
+				                                            this.Font,
+				                                            Brushes.Black,
+				                                            rect,
+				                                            fmt);
 				base.NotiyfyAfterPrint (rpea.LocationAfterDraw);
 			}
 			

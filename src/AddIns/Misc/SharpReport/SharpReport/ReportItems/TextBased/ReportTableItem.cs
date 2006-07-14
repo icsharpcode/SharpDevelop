@@ -1,95 +1,67 @@
 /*
  * Created by SharpDevelop.
- * User: Forstmeier Peter
- * Date: 01.03.2006
- * Time: 14:35
+ * User: Forstmeier Helmut
+ * Date: 09.07.2006
+ * Time: 15:51
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 
 using System;
-using System.Drawing;
 using System.ComponentModel;
 
 using SharpReport.Designer;
 using SharpReportCore;
 
-namespace SharpReport.ReportItems
-{
-	
+namespace SharpReport.ReportItems{
 	/// <summary>
 	/// Description of ReportTableItem.
 	/// </summary>
-	public class ReportRowItem : RowItem ,IDesignable{
-		private ReportRowControl visualControl;
-
+	public class ReportTableItem:TableItem ,IDesignable{
+		private ReportTableControl visualControl;
 		
+			
 		#region Constructor
-		public ReportRowItem():this (GlobalValues.UnboundName){
+		public ReportTableItem():this (GlobalValues.UnboundName){
+			
 		}
 		
-		public ReportRowItem (string tableName):base(tableName) {
+		public ReportTableItem (string tableName):base(tableName) {
 			Setup();
 		}
 		
-		#endregion
-		
-		#region Setup
-		private void Setup(){
-			
-			visualControl = new ReportRowControl();
+		private void Setup (){
+		    visualControl = new ReportTableControl();
 //			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
-			
+//			
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
 			this.visualControl.LocationChanged += new EventHandler (OnControlChanged);
-			this.visualControl.FontChanged += new EventHandler (OnControlChanged);
-			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);
-			this.visualControl.BackColorChanged += new EventHandler (OnAppereanceChanged);
-			//Event from Tracker
+
+
+//			//Event from Tracker
 			this.visualControl.PropertyChanged += new PropertyChangedEventHandler (ControlPropertyChange);
-			
+//			
 			base.PropertyChanged += new PropertyChangedEventHandler (BasePropertyChange);
-			
+//			
 			base.Items.Added += OnAdd;
-			base.Items.Removed += OnRemove;
+			base.Items.Removed += OnRemove; 
+			System.Console.WriteLine("ReporttableItem ctrlName {0}",this.visualControl.Name);
 		}
 		#endregion
-	
 		
-		#region Events for Childs
+		#region List Handling
 		private void ChildSelected(object sender, EventArgs e){
 			if (Selected != null)
 				Selected(sender,e);
 		}	
-		/*
-		private void OnChildControlChanged (object sender, EventArgs e) {
-			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
-			this.HandlePropertyChanged("OnChildControlChanged");
-		}
-			*/
-			
+		
 		private void ChildPropertyChange (object sender, PropertyChangedEventArgs e){
 			if (! base.Suspend) {
 				ItemsHelper.UpdateControlFromTextBase (this.visualControl,this);
 				this.HandlePropertyChanged(e.PropertyName);
 			}
 		}
-	
-		#endregion
-		
-		private void UpdateChilds () {
-			foreach (BaseReportItem br in this.Items) {
-				br.BackColor = this.BackColor;
-				IDesignable des = br as IDesignable;
-				if (des != null) {
-					des.VisualControl.BackColor = this.BackColor;
-				}
-			}
-		}
-		
-		#region EventHandling for this Class
-		
 		
 		private void OnAdd (object sender, CollectionItemEventArgs<IItemRenderer> e){
 			IDesignable des = e.Item as IDesignable;
@@ -109,7 +81,12 @@ namespace SharpReport.ReportItems
 				this.HandlePropertyChanged("OnChildControlRemoved");
 			}
 		}
-	
+		
+		#endregion
+		public override string ToString() {
+			return this.GetType().Name;
+		}
+		#region Events from Control
 		//Tracker
 		
 		private void ControlPropertyChange (object sender, PropertyChangedEventArgs e){
@@ -137,13 +114,14 @@ namespace SharpReport.ReportItems
 			this.SuspendLayout();
 			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 			this.ResumeLayout();
-			UpdateChilds();
+//			UpdateChilds();
 			
 			this.HandlePropertyChanged("OnControlChanged");
 		}
 		
 		private void OnControlSelect(object sender, EventArgs e){
 			if (Selected != null)
+				System.Console.WriteLine("fire selected");
 				Selected(this,e);
 		}	
 		
@@ -176,83 +154,5 @@ namespace SharpReport.ReportItems
 		public new event PropertyChangedEventHandler PropertyChanged;
 		public event EventHandler <EventArgs> Selected;
 		#endregion
-		
-		
-		
-		#region overrides
-		public override Size Size {
-			get {
-				return base.Size;
-			}
-			set {
-				base.Size = value;
-				if (this.visualControl != null) {
-					this.visualControl.Size = value;
-				}
-				this.HandlePropertyChanged("Size");
-			}
-		}
-		
-		public override Point Location {
-			get {
-				return base.Location;
-			}
-			set {
-				base.Location = value;
-				if (this.visualControl != null) {
-					this.visualControl.Location = value;
-				}
-				this.HandlePropertyChanged("Location");
-			}
-		}
-		
-		public override Font Font {
-			get {
-				return base.Font;
-			}
-			set {
-				base.Font = value;
-				if (this.visualControl != null) {
-					this.visualControl.Font = value;
-				}
-				this.HandlePropertyChanged("Font");
-			}
-		}
-		
-		public override string ToString(){
-			return this.GetType().Name;
-		}
-		
-	
-		
-		#endregion
-		
-	/*
-		#region IDisposable
-		public override void Dispose(){
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		
-		~ReportRowItem()
-		{
-			Dispose(false);
-		}
-		
-		protected override void Dispose(bool disposing){
-			try {
-				if (disposing) {
-					
-				}
-			} finally {
-				if (this.visualControl != null) {
-					this.visualControl.Dispose();
-					this.visualControl = null;
-				}
-				base.Dispose();
-			}
-		}
-		#endregion
-*/
 	}
 }

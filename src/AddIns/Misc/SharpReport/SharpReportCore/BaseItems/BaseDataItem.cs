@@ -33,13 +33,16 @@ namespace SharpReportCore {
 		private string dataType;
 		private string nullValue;
 		
+		
 		#region Constructor
 		
 		public BaseDataItem():base() {
+			this.dataType = "System.String";
 		}
 		
 		public BaseDataItem(string columnName):base(){
 			this.columnName = columnName;
+			this.dataType = "System.String";
 		}
 		
 		#endregion
@@ -63,12 +66,17 @@ namespace SharpReportCore {
 		
 		public override void Render(SharpReportCore.ReportPageEventArgs rpea) {
 			
-			// this.DbValue is formatted in the BeforePrintEvent catched in AbstractRenderer
+//			TypeCode tc = Type.GetTypeCode( Type.GetType(this.dataType));
+
+			// TODO this.DbValue should beformatted in the BeforePrintEvent
 			
 			string toPrint = CheckForNullValue();
 			
-			base.Text = base.FireFormatOutput(toPrint,this.FormatString,"");
-//			System.Console.WriteLine("\tBaseDataItem <{0}> / <{1}>",this.Name,this.Text);
+			
+			base.Text = base.FormatOutput(toPrint,
+			                              this.FormatString,
+			                              DataTypeHelper.TypeCodeFromString (this.dataType),
+			                              this.nullValue);
 			base.Render (rpea);
 			
 		}

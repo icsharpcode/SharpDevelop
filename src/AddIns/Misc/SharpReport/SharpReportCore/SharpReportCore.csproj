@@ -83,8 +83,6 @@
     <Compile Include="Interfaces\IItemRenderer.cs" />
     <Compile Include="Interfaces\IOutputStrategy.cs" />
     <Compile Include="Interfaces\IStoreable.cs" />
-    <Compile Include="Printing\Formatter\AbstractFormatter.cs" />
-    <Compile Include="Printing\Formatter\DefaultFormatter.cs" />
     <Compile Include="Printing\Graphics\BaseLine.cs" />
     <Compile Include="Printing\Graphics\BaseShape.cs" />
     <Compile Include="Printing\Graphics\Border.cs" />
@@ -94,7 +92,6 @@
     <Compile Include="Printing\Graphics\RectangleShape.cs" />
     <Compile Include="Printing\Text\TextDrawer.cs" />
     <Compile Include="Printing\AbstractRenderer.cs" />
-    <Compile Include="Printing\FormatOutputEventArgs.cs" />
     <Compile Include="Printing\RenderDataReport.cs" />
     <Compile Include="Printing\RenderFormSheetReport.cs" />
     <Compile Include="Printing\ReportDocument.cs" />
@@ -135,6 +132,9 @@
     <Compile Include="BaseItems\TableItem.cs" />
     <Compile Include="Exceptions\IllegalQueryException.cs" />
     <Compile Include="Events\SectionRenderEventArgs.cs" />
+    <Compile Include="Printing\Text\StandardFormatter.cs" />
+    <Compile Include="BaseClasses\DataTypeHelper.cs" />
+    <Compile Include="Printing\Page.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />
@@ -152,7 +152,6 @@
     <Folder Include="Globals" />
     <Folder Include="Interfaces" />
     <Folder Include="Printing" />
-    <Folder Include="Printing\Formatter" />
     <Folder Include="Printing\Graphics" />
     <Folder Include="Printing\Text" />
     <Folder Include="Visitors" />

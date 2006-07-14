@@ -34,10 +34,11 @@ namespace SharpReport.ReportItems{
 	public ReportCircleItem() : base(){
 			visualControl = new ReportCircleControl();
 			
-			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
+//			ItemsHelper.UpdateBaseFromGraphicControl (this.visualControl,this);
 			
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
+			this.visualControl.LocationChanged += new EventHandler (OnControlChanged);
 			this.visualControl.BackColorChanged += new EventHandler (OnControlChanged);
 			this.visualControl.FontChanged += new EventHandler (OnControlChanged);
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);

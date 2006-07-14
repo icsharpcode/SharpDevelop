@@ -44,10 +44,11 @@ namespace SharpReport.ReportItems{
 			visualControl.ContentAlignment = base.ContentAlignment;
 			visualControl.StringTrimming = base.StringTrimming;
 			
-			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
+//			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
+			this.visualControl.LocationChanged += new EventHandler (OnControlChanged);
 			this.visualControl.BackColorChanged += new EventHandler (OnControlChanged);
 			this.visualControl.FontChanged += new EventHandler (OnControlChanged);
 			this.visualControl.ForeColorChanged += new EventHandler (OnControlChanged);

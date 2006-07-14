@@ -279,8 +279,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void ApplyConfigurationAndReadPreferences()
 		{
-			openSolution.ApplySolutionConfigurationToProjects();
-			openSolution.ApplySolutionPlatformToProjects();
+			openSolution.ApplySolutionConfigurationAndPlatformToProjects();
 			foreach (IProject project in openSolution.Projects) {
 				string file = GetPreferenceFileName(project.FileName);
 				if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
@@ -483,23 +482,25 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static void OnStartBuild(EventArgs e)
+		public static void RaiseEventStartBuild()
 		{
 			if (StartBuild != null) {
-				StartBuild(null, e);
+				StartBuild(null, EventArgs.Empty);
 			}
 		}
 		
-		public static void OnEndBuild()
-		{
-			OnEndBuild(new EventArgs());
-		}
-		
-		static void OnEndBuild(EventArgs e)
+		public static void RaiseEventEndBuild()
 		{
 			if (EndBuild != null) {
-				EndBuild(null, e);
+				EndBuild(null, EventArgs.Empty);
 			}
+		}
+		
+		// TODO: Remove me in Serralongue
+		[Obsolete("Use RaiseEventEndBuild instead")]
+		public static void OnEndBuild()
+		{
+			RaiseEventEndBuild();
 		}
 		
 		public static void RemoveSolutionFolder(string guid)

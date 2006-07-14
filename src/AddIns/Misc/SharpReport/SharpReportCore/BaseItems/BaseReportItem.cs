@@ -31,33 +31,12 @@ namespace SharpReportCore {
 		public event EventHandler<BeforePrintEventArgs> ItemPrinting;
 		public event EventHandler<AfterPrintEventArgs> ItemPrinted;
 		
-		public event EventHandler <FormatOutputEventArgs> FormatOutput;
 		public event EventHandler Disposed;
 		
 		public BaseReportItem() :base(){
 			
 		}
 		
-		#region Event's handling
-		/// <summary>
-		/// Format a string according to his datatype
-		/// </summary>
-		/// <param name="toFormat">The String to Format</param>
-		/// <param name="formatString">the formatString</param>
-		/// <param name="nullValue">Value to return when there is null in toFormat</param>
-		/// <returns></returns>
-		protected string FireFormatOutput(string toFormat,string format, string nullValue) {
-			if (FormatOutput != null) {
-				FormatOutputEventArgs ea = new FormatOutputEventArgs (toFormat,
-				                                                      format,
-				                                                      nullValue);
-				FormatOutput (this,ea);
-				return ea.FormatedValue;
-			}
-			return toFormat;
-		}
-		
-		#endregion
 		
 		#region EventHandling
 		

@@ -495,7 +495,6 @@ namespace SharpReportCore{
 				return reportType;
 			}
 			set {
-				System.Console.WriteLine("ReportType set to {0}",value);
 				if (reportType != value) {
 					reportType = value;
 					this.NotifyPropertyChanged("ReportType");
@@ -626,7 +625,7 @@ namespace SharpReportCore{
 			set {
 				if (dataModel != value) {
 					dataModel = value;
-					System.Console.WriteLine("DataModel type = {0}",this.dataModel.ToString());
+
 					if (this.dataModel != GlobalEnums.enmPushPullModel.FormSheet) {
 						this.reportType = GlobalEnums.enmReportType.DataReport;
 					} else {

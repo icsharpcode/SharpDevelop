@@ -60,11 +60,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (!FileService.CheckFileName(newName))
 					return;
 				string newFileName = Path.Combine(solution.Directory, newName + ".sln");
-				if (File.Exists(newFileName)) {
-					MessageService.ShowErrorFormatted("${res:Global.FileAlreadyExists}", newFileName);
+				if (!FileService.RenameFile(solution.FileName, newFileName, false)) {
 					return;
 				}
-				FileService.RenameFile(solution.FileName, newFileName, false);
 				solution.FileName = newFileName;
 				solution.Name = newName;
 			} finally {

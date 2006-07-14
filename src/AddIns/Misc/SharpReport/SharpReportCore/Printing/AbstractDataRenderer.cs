@@ -37,6 +37,7 @@ namespace SharpReportCore{
 		}
 		
 		#endregion
+		
 		protected int DoItems (ReportPageEventArgs rpea) {
 			IContainerItem container = null;
 			bool hasContainer = false;
@@ -72,9 +73,9 @@ namespace SharpReportCore{
 						item.Parent = section;
 					}
 					item.SectionOffset = section.SectionOffset;
-					base.DrawSingleItem (rpea,item);
+					item.Render(rpea);
 					drawPoint.Y = section.SectionOffset + section.Size.Height;
-					rpea.LocationAfterDraw = new PointF (rpea.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);
+					rpea.LocationAfterDraw = new Point (rpea.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);
 					
 				}
 				if ((section.CanGrow == false)&& (section.CanShrink == false)) {

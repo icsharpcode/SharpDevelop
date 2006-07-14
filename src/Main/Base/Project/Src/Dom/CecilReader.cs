@@ -313,7 +313,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 					
 					m.ReturnType = CreateType(this.ProjectContent, m, method.ReturnType.ReturnType);
-					if (this.ClassType != ClassType.Interface) {
+					if (this.ClassType == ClassType.Interface) {
+						m.Modifiers = ModifierEnum.Public | ModifierEnum.Abstract;
+					} else {
 						m.Modifiers = TranslateModifiers(method);
 					}
 					AddParameters(m, method.Parameters);

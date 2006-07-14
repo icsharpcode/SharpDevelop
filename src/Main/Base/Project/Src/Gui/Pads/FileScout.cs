@@ -365,21 +365,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnAfterLabelEdit(e);
 			
-			if(e.Label == null) {
+			if (e.Label == null || !FileService.CheckFileName(e.Label)) {
 				e.CancelEdit = true;
 				return;
 			}
 			
-			string filename = ((FileListItem)Items[e.Item]).FullName;
-			string newname = Path.GetDirectoryName(filename) + Path.DirectorySeparatorChar + e.Label;
+			string oldFileName = ((FileListItem)Items[e.Item]).FullName;
+			string newFileName = Path.Combine(Path.GetDirectoryName(oldFileName), e.Label);
 			
-			try {
-				File.Move(filename, newname);
-				((FileListItem)Items[e.Item]).FullName = newname;
-			} catch(Exception ex) {
+			if (FileService.RenameFile(oldFileName, newFileName, false)) {
+				((FileListItem)Items[e.Item]).FullName = newFileName;
+			} else {
 				e.CancelEdit = true;
-				
-				MessageService.ShowError(ex, "Rename failed");
 			}
 		}
 		

@@ -134,7 +134,6 @@ namespace SharpReportCore {
 		}
 
 		private void InitDataContainer (ReportSettings settings) {	
-			System.Console.WriteLine("Engine:InitDataContainer ReportType <{0}>",settings.ReportType);
 			if (settings.ReportType == GlobalEnums.enmReportType.DataReport) {
 				if (settings.CommandText != null) {
 					try {
@@ -217,7 +216,7 @@ namespace SharpReportCore {
 					default:
 						throw new SharpReportException ("SharpReportmanager:SetupRenderer -> Unknown Reporttype");
 				}
-				abstr.SectionRendering += new EventHandler<SectionRenderEventArgs>(OnSectionPrinting);
+				abstr.Rendering += new EventHandler<SectionRenderEventArgs>(OnSectionPrinting);
 				abstr.SectionRendered +=new EventHandler<SectionRenderEventArgs>(OnSectionPrinted);
 				return abstr;
 			} catch (Exception) {
@@ -228,8 +227,9 @@ namespace SharpReportCore {
 		
 		private void OnSectionPrinting (object sender,SectionRenderEventArgs e) {
 			if (this.SectionRendering != null) {
+				System.Console.WriteLine("");
 				this.SectionRendering(this,e);
-			} 
+			}
 		}
 		
 		private void OnSectionPrinted (object sender,SectionRenderEventArgs e) {
@@ -260,6 +260,8 @@ namespace SharpReportCore {
 				if (this.dataManager.DataSource != null) {
 					abstr = new RendererFactory().Create (model,dataManager);
 				}
+				abstr.Rendering += new EventHandler<SectionRenderEventArgs>(OnSectionPrinting);
+				abstr.SectionRendered +=new EventHandler<SectionRenderEventArgs>(OnSectionPrinted);
 				
 				return abstr;
 			}
@@ -344,10 +346,6 @@ namespace SharpReportCore {
 				model = ModelFromFile (fileName);
 				if (CheckReportParameters (model,reportParameters)) {
 					renderer = SetupStandartRenderer (model);
-					//				
-//				renderer.SectionRendering += new EventHandler<SectionPrintingEventArgs>(OnTestPrinting);
-//				System.Console.WriteLine("Event should be set");
-
 					if (renderer != null) {
 						PreviewControl.ShowPreview(renderer,1.5,false);
 					}

@@ -64,20 +64,25 @@ namespace ICSharpCode.TextEditor.Document
 		/// </summary>
 		public void ToggleMarkAt(int lineNr)
 		{
+			Bookmark newMark;
+			if (factory != null)
+				newMark = factory.CreateBookmark(document, lineNr);
+			else
+				newMark = new Bookmark(document, lineNr);
+			
+			Type newMarkType = newMark.GetType();
+			
 			for (int i = 0; i < bookmark.Count; ++i) {
 				Bookmark mark = bookmark[i];
-				if (mark.LineNumber == lineNr && mark.CanToggle) {
+				
+				if (mark.LineNumber == lineNr && mark.CanToggle && mark.GetType() == newMarkType) {
 					bookmark.RemoveAt(i);
 					OnRemoved(new BookmarkEventArgs(mark));
 					OnChanged(EventArgs.Empty);
 					return;
 				}
 			}
-			Bookmark newMark;
-			if (factory != null)
-				newMark = factory.CreateBookmark(document, lineNr);
-			else
-				newMark = new Bookmark(document, lineNr);
+			
 			bookmark.Add(newMark);
 			OnAdded(new BookmarkEventArgs(newMark));
 			OnChanged(EventArgs.Empty);

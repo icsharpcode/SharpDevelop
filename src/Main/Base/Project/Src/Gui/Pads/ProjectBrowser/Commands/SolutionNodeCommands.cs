@@ -52,8 +52,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				newProject.Location = FileUtility.GetRelativePath(solutionFolderNode.Solution.Directory, fileName);
 				ProjectService.AddProject(solutionFolderNode, newProject);
 				NodeBuilders.AddProjectNode((TreeNode)solutionFolderNode, newProject).EnsureVisible();
-				solutionFolderNode.Solution.ApplySolutionConfigurationToProjects();
-				solutionFolderNode.Solution.ApplySolutionPlatformToProjects();
+				solutionFolderNode.Solution.ApplySolutionConfigurationAndPlatformToProjects();
 			}
 		}
 		

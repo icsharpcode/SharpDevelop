@@ -20,14 +20,8 @@
 // Peter Forstmeier (Peter.Forstmeier@t-online.de)
 
 using System;
-using System.Data;
 using System.Drawing;
-using System.Globalization;
 using System.Drawing.Printing;
-using System.Windows.Forms;
-using System.Xml;
-	
-using SharpReportCore;
 
 	/// <summary>
 	/// Runs the Report
@@ -48,73 +42,70 @@ namespace SharpReportCore {
 		
 		
 		#region Draw the different report Sections
-		private PointF DoReportHeader (ReportPageEventArgs rpea){
-			PointF endAt = base.MeasureReportHeader (rpea);
+		private void DoReportHeader (ReportPageEventArgs rpea){
 			base.RenderSection (rpea);
-
-			if (base.CheckPageBreakAfter()) {
-				AbstractRenderer.PageBreak(rpea);
-				base.CurrentSection.PageBreakAfter = false;
-				return new PointF();
-			}
-			return endAt;
 		}
 		
-		private PointF DoPageHeader (PointF startAt,ReportPageEventArgs rpea){
-			
-			PointF endAt = base.MeasurePageHeader (startAt,rpea);
+		private void DoPageHeader (PointF startAt,ReportPageEventArgs rpea){
+			this.CurrentSection.SectionOffset = base.Page.PageHeaderRectangle.Location.Y;
 			base.RenderSection (rpea);
-			return endAt;
 		}
 		
 		private void DoPageEnd (ReportPageEventArgs rpea){
+			
 			base.PrintPageEnd(this,rpea);
-			base.MeasurePageEnd (rpea);
+			this.CurrentSection.SectionOffset = base.Page.PageFooterRectangle.Location.Y;
 			base.RenderSection (rpea);
-
 		}
+		
+		
 		
 		//TODO how should we handle ReportFooter, print it on an seperate page ????
 		private void  DoReportFooter (PointF startAt,ReportPageEventArgs rpea){
-			base.MeasureReportFooter(rpea);
+			this.CurrentSection.SectionOffset = base.Page.ReportFooterRectangle.Location.Y;
 			base.RenderSection (rpea);
 			this.RemoveSectionEvents();
 		}
 		
 		#endregion
 		
-		#region test
+		#region print all the sections
 		
 		protected override void PrintReportHeader (object sender, ReportPageEventArgs e) {
 			base.PrintReportHeader (sender,e);
-			this.currentPoint = DoReportHeader (e);
+			DoReportHeader (e);
 		}
 		
 		protected override void PrintPageHeader (object sender, ReportPageEventArgs e) {
 			base.PrintPageHeader (sender,e);
-			this.currentPoint = DoPageHeader (this.currentPoint,e);
-			base.DetailStart = new Point ((int)currentPoint.X,(int)currentPoint.Y);
+			DoPageHeader (this.currentPoint,e);
 		}
-		
-		#endregion
-		
-		
-		#region event's
-		
-		
 		/// <summary>
 		/// Detail Section
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		protected override void BodyStart (object sender,ReportPageEventArgs rpea) {
+//			System.Console.WriteLine("BodyStart");
 			base.BodyStart (sender,rpea);
-			base.CurrentSection.SectionOffset = (int)this.currentPoint.Y + AbstractRenderer.Gap;
-			
-			FitSectionToItems (base.CurrentSection,rpea);
-			base.RenderSection (rpea);
+			this.currentPoint = new PointF (base.CurrentSection.Location.X,
+			                                base.page.DetailStart.Y);
 
 		}
+		
+		protected override void PrintDetail(object sender, ReportPageEventArgs rpea){
+			base.PrintDetail(sender, rpea);
+			this.CurrentSection.SectionOffset = base.Page.PageHeaderRectangle.Bottom;
+			base.RenderSection(rpea);
+			base.RemoveSectionEvents();
+		}
+		
+		protected override void PrintReportFooter(object sender, ReportPageEventArgs rpea){
+			base.PrintReportFooter(sender, rpea);
+			base.RenderSection(rpea);
+			base.RemoveSectionEvents();
+		}
+		
 		/// <summary>
 		/// Print the PageFooter 
 		/// </summary>
@@ -123,12 +114,18 @@ namespace SharpReportCore {
 		protected override void PrintPageEnd(object sender, ReportPageEventArgs rpea) {
 			this.DoPageEnd (rpea);
 		}
+		#endregion
+		
+		
+		#region event's
 		
 		
 		
-		protected override void OnBodyEnd (object sender,ReportPageEventArgs rpea) {
+		
+		
+		protected override void BodyEnd (object sender,ReportPageEventArgs rpea) {
 			
-			base.OnBodyEnd (sender,rpea);
+			base.BodyEnd (sender,rpea);
 			this.DoReportFooter (new PointF(0,base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height),
 			                     rpea);
 		}

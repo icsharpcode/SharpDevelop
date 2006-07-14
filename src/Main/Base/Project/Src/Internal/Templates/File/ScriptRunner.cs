@@ -33,6 +33,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public string CompileScript(FileTemplate item, FileDescriptionTemplate file)
 		{
+			if (file.Content == null)
+				throw new ArgumentException("file must have textual content");
 			Match m = scriptRegex.Match(file.Content);
 			m = m.NextMatch();
 			if (m.Success) {

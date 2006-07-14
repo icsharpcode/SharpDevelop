@@ -66,28 +66,35 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public event EventHandler BuildComplete;
 	}
 	
-	public class Build : AbstractBuildMenuCommand
+	public sealed class Build : AbstractBuildMenuCommand
 	{
 		public override void StartBuild()
 		{
+			ProjectService.RaiseEventStartBuild();
 			ProjectService.OpenSolution.Build(CallbackMethod);
 		}
 		
 		public override void AfterBuild()
 		{
-			ProjectService.OnEndBuild();
+			ProjectService.RaiseEventEndBuild();
 		}
 	}
 	
-	public class Rebuild : Build
+	public sealed class Rebuild : AbstractBuildMenuCommand
 	{
 		public override void StartBuild()
 		{
+			ProjectService.RaiseEventStartBuild();
 			ProjectService.OpenSolution.Rebuild(CallbackMethod);
+		}
+		
+		public override void AfterBuild()
+		{
+			ProjectService.RaiseEventEndBuild();
 		}
 	}
 	
-	public class Clean : AbstractBuildMenuCommand
+	public sealed class Clean : AbstractBuildMenuCommand
 	{
 		public override void StartBuild()
 		{
@@ -95,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 	}
 	
-	public class Publish : AbstractBuildMenuCommand
+	public sealed class Publish : AbstractBuildMenuCommand
 	{
 		public override void StartBuild()
 		{
@@ -138,22 +145,24 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		
 		public override void StartBuild()
 		{
+			ProjectService.RaiseEventStartBuild();
 			this.ProjectToBuild.Build(CallbackMethod, AdditionalProperties);
 		}
 		
 		public override void AfterBuild()
 		{
-			ProjectService.OnEndBuild();
+			ProjectService.RaiseEventEndBuild();
 		}
 	}
 	
-	public class RebuildProject : BuildProject
+	public sealed class RebuildProject : BuildProject
 	{
 		public RebuildProject() {}
 		public RebuildProject(IProject targetProject) : base(targetProject) {}
 		
 		public override void StartBuild()
 		{
+			ProjectService.RaiseEventStartBuild();
 			this.ProjectToBuild.Rebuild(CallbackMethod, AdditionalProperties);
 		}
 	}

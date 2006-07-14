@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
-			if (!SelectedNode.IsEditing) {
+			if (SelectedNode == null || !SelectedNode.IsEditing) {
 				switch (keyData) {
 					case Keys.F2:
 						StartLabelEdit(SelectedNode as ExtTreeNode);
@@ -186,9 +186,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		bool inRefresh;
 		protected override void OnBeforeExpand(TreeViewCancelEventArgs e)
 		{
-			base.OnBeforeExpand(e);
-			if (e.Node == null)
+			if (mouseClickNum == 2) {
+				mouseClickNum = 0; // only intercept first occurrance, don't prevent expansion by ActivateItem on double click
+				e.Cancel = true;
 				return;
+			}
+			base.OnBeforeExpand(e);
+			if (e.Node == null) {
+				return;
+			}
 			try {
 				if (e.Node is ExtTreeNode) {
 					if (((ExtTreeNode)e.Node).IsInitialized == false) {
@@ -224,9 +230,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		
 		protected override void OnBeforeCollapse(TreeViewCancelEventArgs e)
 		{
+			if (mouseClickNum == 2) {
+				mouseClickNum = 0; // only intercept first occurrance, don't prevent collapsing by ActivateItem on double click
+				e.Cancel = true;
+				return;
+			}
 			base.OnBeforeCollapse(e);
 			if (e.Node is ExtTreeNode) {
 				((ExtTreeNode)e.Node).Collapsing();
@@ -268,8 +278,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		int mouseClickNum; // 0 if mouse button is not pressed, otherwise click number (1=normal, 2=double click)
+		
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
+			mouseClickNum = e.Clicks;
 			base.OnMouseDown(e);
 			TreeNode node = GetNodeAt(e.X, e.Y);
 			if (node != null) {
@@ -281,6 +294,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 					SelectedNode = null;
 				}
 			}
+		}
+		
+		protected override void OnMouseUp(MouseEventArgs e)
+		{
+			mouseClickNum = 0;
+			base.OnMouseUp(e);
 		}
 		
 		protected override void OnBeforeSelect(TreeViewCancelEventArgs e)

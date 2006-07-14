@@ -26,6 +26,7 @@ namespace SharpReportCore {
 		public BaseFunction():base() {
 			this.localisedName = "SharpReport.Toolbar.Functions";
 		}
+		
 		public BaseFunction(string friendlyName)
 		{
 			this.localisedName = friendlyName;
@@ -38,7 +39,7 @@ namespace SharpReportCore {
 		
 		
 		#region properties
-		
+		[Browsable(false)]
 		public  string LocalisedName {
 			get {
 				return localisedName;
