@@ -156,6 +156,12 @@ namespace ICSharpCode.Core
 			return items;
 		}
 		
+		// Workaround for Boo compiler (it cannot distinguish between the generic and non-generic method)
+		public ArrayList BuildChildItemsArrayList(object caller)
+		{
+			return BuildChildItems(caller);
+		}
+		
 		public ArrayList BuildChildItems(object caller)
 		{
 			ArrayList items = new ArrayList(codons.Count);

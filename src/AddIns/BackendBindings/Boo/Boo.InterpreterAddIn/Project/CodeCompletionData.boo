@@ -97,7 +97,7 @@ internal class CodeCompletionData(AbstractCompletionData):
 		_entities.Add(entity)
 
 internal class GlobalsCompletionDataProvider(ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.AbstractCompletionDataProvider):
-	_interpreter as InterpreterWrapper
+	_interpreter as InterpreterContext
 	
 	class GlobalCompletionData(AbstractCompletionData):
 		
@@ -112,14 +112,14 @@ internal class GlobalsCompletionDataProvider(ICSharpCode.SharpDevelop.DefaultEdi
 			_imageIndex = imageIndex
 			_description = description
 	
-	def constructor(interpreter as InterpreterWrapper):
+	def constructor(interpreter as InterpreterContext):
 		_interpreter = interpreter
 		
 	override def GenerateCompletionData(fileName as string, textArea as TextArea, charTyped as System.Char) as (ICompletionData):
 		globals = _interpreter.GetGlobals()
 		data = array(ICompletionData, len(globals))
 		for index, key in enumerate(globals):
-			value = _interpreter.GetValue(key)
+			value = null #_interpreter.GetValue(key) TODO
 			delegate = value as System.Delegate
 			if delegate is null:
 				if value is not null:

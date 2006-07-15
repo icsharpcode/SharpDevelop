@@ -106,7 +106,7 @@ namespace ICSharpCode.Core
 		public override bool Equals(object obj)
 		{
 			DefaultNavigationPoint b = obj as DefaultNavigationPoint;
-			if (b == null) return false;
+			if (object.ReferenceEquals(b, null)) return false;
 			return this.FileName == b.FileName;
 		}
 		
@@ -132,7 +132,7 @@ namespace ICSharpCode.Core
 		// violates rule: OverrideMethodsOnComparableTypes.
 		public static bool operator == (DefaultNavigationPoint p1, DefaultNavigationPoint p2)
 		{
-			return p1==null ? p2==null : p1.Equals(p2);
+			return object.Equals(p1, p2); // checks for null and calls p1.Equals(p2)
 		}
 		public static bool operator != (DefaultNavigationPoint p1, DefaultNavigationPoint p2)
 		{

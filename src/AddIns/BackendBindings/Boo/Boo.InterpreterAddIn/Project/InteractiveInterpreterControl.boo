@@ -66,13 +66,15 @@ class InteractiveInterpreterControl(TextEditorControl):
 	_block = System.IO.StringWriter()
 	
 	[getter(Interpreter)]
-	_interpreter = InterpreterWrapper()
+	_interpreter as InterpreterContext
 	
 	_codeCompletionWindow as CodeCompletionWindow
 	
 	_lineHistory as LineHistory
 	
-	def constructor():
+	def constructor([required] interpreter as InterpreterContext):
+		self._interpreter = interpreter
+		
 		self._interpreter.LinePrinted += self.print
 		self._interpreter.Cleared += self.cls
 		self._lineHistory = LineHistory(CurrentLineChanged: _lineHistory_CurrentLineChanged)

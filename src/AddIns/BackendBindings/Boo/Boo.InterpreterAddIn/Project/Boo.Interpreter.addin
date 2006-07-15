@@ -1,6 +1,5 @@
 ﻿<AddIn name        = "Boo Interpreter Console"
        author      = "Daniel Grunwald"
-       copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
        description = "Interactive interpreter for boo">
 	
@@ -19,5 +18,9 @@
 		     icon     = "Boo.ProjectIcon"
 		     shortcut = "Control|Shift|B"
 		     class    = "Boo.InterpreterAddIn.InterpreterPad"/>
+	</Path>
+
+	<Path name="/AddIns/InterpreterAddIn/InterpreterContexts">
+		<Class id="Default" class="Boo.InterpreterAddIn.DefaultBooInterpreterContext"/>
 	</Path>
 </AddIn>
