@@ -17,12 +17,13 @@ namespace Debugger
 	/// abstraction is necessary because the type of a value can change 
 	/// (eg for local variable of type object)
 	/// 
-	/// Expiration: Once value expires it can not be used anymore. Expiration
-	/// is permanet - once value expires it stays expired. Value expires when
-	/// any object specified in constructor expires of when process exits.
+	/// Expiration: Once value expires it can not be used anymore. 
+	/// Expiration is permanet - once value expires it stays expired. 
+	/// Value expires when any object specified in constructor expires 
+	/// or when process exits.
 	/// 
-	/// ValueChange: ValueChange event is called whenever DebugeeState changes
-	/// or when NotifyValueChange() is called.
+	/// ValueChange: ValueChange event is called whenever DebugeeState 
+	/// changes or when NotifyValueChange() is called.
 	/// </summary>
 	public class Variable: IExpirable
 	{
@@ -33,7 +34,7 @@ namespace Debugger
 		public delegate ICorDebugValue CorValueGetter();
 		
 		[Flags] 
-		public enum Flags { Default = Public, None = 0, Public = 1, Static = 2};
+		public enum Flags { Default = Public, None = 0, Public = 1, Static = 2, PublicStatic = Public | Static};
 		
 		
 		NDebugger debugger;
@@ -81,7 +82,7 @@ namespace Debugger
 				try {
 					return valueGetter();
 				} catch (CannotGetValueException e) {
-					return new UnavailableValue(debugger, this, e.Message);
+					return new UnavailableValue(this, e.Message);
 				}
 			}
 		}
@@ -148,18 +149,6 @@ namespace Debugger
 			}
 			AddDependency(debugger.SelectedProcess);
 			debugger.DebuggeeStateChanged += NotifyValueChange;
-		}
-		
-		public Variable(NDebugger debugger, string name, Flags flags, IExpirable[] dependencies, ValueGetter valueGetter):this(debugger, name, flags, dependencies)
-		{
-			this.corValueGetter = delegate { throw new CannotGetValueException("CorValue not available for custom value"); };
-			this.valueGetter = valueGetter;
-		}
-		
-		public Variable(NDebugger debugger, string name, Flags flags, IExpirable[] dependencies, ICorDebugValue corValue):this(debugger, name, flags, dependencies)
-		{
-			this.corValueGetter = delegate { return corValue; };
-			this.valueGetter = delegate { return CreateValue(); };
 		}
 		
 		public Variable(NDebugger debugger, string name, Flags flags, IExpirable[] dependencies, CorValueGetter corValueGetter):this(debugger, name, flags, dependencies)
@@ -242,7 +231,7 @@ namespace Debugger
 			ICorDebugValue corValue = this.CorValue;
 			
 			if (corValue == null) {
-				return new NullValue(debugger, this);
+				return new NullValue(this);
 			}
 			
 			CorElementType type = Value.GetCorType(corValue);
@@ -263,16 +252,16 @@ namespace Debugger
 				case CorElementType.I:
 				case CorElementType.U:
 				case CorElementType.STRING:
-					return new PrimitiveValue(debugger, this);
+					return new PrimitiveValue(this);
 				
 				case CorElementType.ARRAY:
 				case CorElementType.SZARRAY: // Short-cut for single dimension zero lower bound array
-					return new ArrayValue(debugger, this);
+					return new ArrayValue(this);
 				
 				case CorElementType.VALUETYPE:
 				case CorElementType.CLASS:
 				case CorElementType.OBJECT: // Short-cut for Class "System.Object"
-					return new ObjectValue(debugger, this);
+					return new ObjectValue(this);
 				
 				default: // Unknown type
 					throw new CannotGetValueException("Unknown value type");
@@ -282,11 +271,6 @@ namespace Debugger
 	
 	class CannotGetValueException: System.Exception
 	{
-		public CannotGetValueException():this("Unable to get value")
-		{
-			
-		}
-		
 		public CannotGetValueException(string message):base(message)
 		{
 			

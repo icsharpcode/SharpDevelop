@@ -95,44 +95,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public static void AddVariableCollectionToTree(VariableCollection varCollection, TreeListViewItemCollection tree)
 		{
-			TreeListViewItem privateInstanceMenu = new TreeListViewItem(privateMembersName, 0);
-			TreeListViewItem staticMenu = new TreeListViewItem(staticMembersName, 0);
-			TreeListViewItem privateStaticMenu = new TreeListViewItem(privateStaticMembersName, 0);
-			
-			foreach(Variable variable in varCollection) {
-				if (variable.IsPublic) {
-					if (variable.IsStatic) {
-						// Public static
-						if (staticMenu.TreeListView == null) {
-							tree.Add(staticMenu);
-							tree.Sort(false);
-						}
-						staticMenu.Items.Add(new TreeListViewDebuggerItem(variable));
-					} else {
-						// Public instance
-						tree.Add(new TreeListViewDebuggerItem(variable));
-					}
-				} else {
-					if (variable.IsStatic) {
-						// Private static
-						if (staticMenu.TreeListView == null) {
-							tree.Add(staticMenu);
-							tree.Sort(false);
-						}
-						if (privateStaticMenu.TreeListView == null) {
-							staticMenu.Items.Add(privateStaticMenu);
-							staticMenu.Items.Sort(false);
-						}
-						privateStaticMenu.Items.Add(new TreeListViewDebuggerItem(variable));
-					} else {
-						// Private instance
-						if (privateInstanceMenu.TreeListView == null) {
-							tree.Add(privateInstanceMenu);
-							tree.Sort(false);
-						}
-						privateInstanceMenu.Items.Add(new TreeListViewDebuggerItem(variable));
-					}
-				}
+			foreach(VariableCollection sub in varCollection.SubCollections) {
+				VariableCollection subCollection = sub;
+				TreeListViewItem subMenu = new TreeListViewItem("<" + subCollection.Name + ">", 0);
+				subMenu.SubItems.Add(subCollection.Value);
+				tree.Add(subMenu);
+				TreeListViewItem.TreeListViewItemHanlder populate = null;
+				populate = delegate {
+					AddVariableCollectionToTree(subCollection, subMenu.Items);
+					subMenu.AfterExpand -= populate;
+				};
+				subMenu.AfterExpand += populate;
+			}
+			foreach(Variable variable in varCollection.Items) {
+				tree.Add(new TreeListViewDebuggerItem(variable));
 			}
 		}
 		

@@ -490,7 +490,6 @@ namespace Debugger.Tests
 			Assert.AreEqual(false, ((Variable)subVars[1]).IsPublic);
 			Assert.AreEqual(true, ((Variable)subVars[2]).IsPublic);
 			Assert.AreEqual(true, ((Variable)subVars[3]).IsPublic);
-			Assert.AreEqual(true, ((ObjectValue)local.Value).HasBaseClass);
 			baseClass = subVars[0];
 			Assert.AreEqual(typeof(ObjectValue), baseClass.Value.GetType());
 			Assert.AreEqual("{Debugger.Tests.TestPrograms.BaseClass}", baseClass.Value.AsString);

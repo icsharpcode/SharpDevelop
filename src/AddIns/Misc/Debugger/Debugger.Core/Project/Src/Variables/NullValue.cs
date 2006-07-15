@@ -36,7 +36,7 @@ namespace Debugger
 			}
 		}
 
-		internal unsafe NullValue(NDebugger debugger, Variable variable):base(debugger, variable)
+		internal unsafe NullValue(Variable variable):base(variable)
 		{
 			
 		}

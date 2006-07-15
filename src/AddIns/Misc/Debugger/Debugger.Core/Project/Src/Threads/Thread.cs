@@ -118,7 +118,7 @@ namespace Debugger
 				                    "thread" + id,
 				                    Variable.Flags.Default,
 				                    new IExpirable[] {debugger.PauseSession},
-				                    corThread.Object).Value;
+				                    delegate { return corThread.Object;} ).Value;
 			}
 		}
 

@@ -60,7 +60,7 @@ namespace Debugger
 		}
 		
 		
-		internal unsafe ArrayValue(NDebugger debugger, Variable variable):base(debugger, variable)
+		internal unsafe ArrayValue(Variable variable):base(variable)
 		{
 			corElementType = (CorElementType)CorArrayValue.ElementType;
 			
@@ -118,7 +118,7 @@ namespace Debugger
 				elementName += indices[i].ToString() + ",";
 			elementName = elementName.TrimEnd(new char[] {','}) + "]";
 			
-			return new Variable(debugger,
+			return new Variable(Debugger,
 			                    elementName,
 			                    Variable.Flags.Default,
 			                    new IExpirable[] {this.Variable},
@@ -139,7 +139,13 @@ namespace Debugger
 			}
 		}
 		
-		protected override IEnumerable<Variable> GetSubVariables()
+		public override VariableCollection SubVariables {
+			get {
+				return new VariableCollection(GetSubVariables());
+			}
+		}
+		
+		IEnumerable<Variable> GetSubVariables()
 		{
 			uint[] indices = new uint[rank];
 			

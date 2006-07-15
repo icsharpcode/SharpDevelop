@@ -15,12 +15,11 @@ namespace Debugger
 {
 	public abstract class Value: RemotingObjectBase
 	{
-		protected NDebugger debugger;
 		Variable variable;
 		
 		public NDebugger Debugger {
 			get {
-				return debugger;
+				return variable.Debugger;
 			}
 		}
 		
@@ -68,15 +67,10 @@ namespace Debugger
 			get;
 		}
 		
-		public VariableCollection SubVariables {
+		public virtual VariableCollection SubVariables {
 			get {
-				return new VariableCollection(GetSubVariables());
+				return new VariableCollection(new Variable[] {});
 			}
-		}
-		
-		protected virtual IEnumerable<Variable> GetSubVariables()
-		{
-			yield break;
 		}
 		
 		public Variable this[string variableName] {
@@ -88,9 +82,9 @@ namespace Debugger
 			}
 		}
 		
-		protected Value(NDebugger debugger, Variable variable)
+		protected Value(Variable variable)
 		{
-			this.debugger = debugger;
+			if (variable == null) throw new ArgumentNullException("variable");
 			this.variable = variable;
 		}
 		

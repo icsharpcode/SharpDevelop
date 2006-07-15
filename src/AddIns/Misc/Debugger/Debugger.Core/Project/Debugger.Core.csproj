@@ -188,7 +188,7 @@
     <Compile Include="Src\Variables\Evals\NDebugger-Evals.cs" />
     <Compile Include="Src\Variables\ArrayValue.cs" />
     <Compile Include="Src\Variables\NullValue.cs" />
-    <Compile Include="Src\Variables\ObjectValue.cs" />
+    <Compile Include="Src\Variables\ObjectValueClass.cs" />
     <Compile Include="Src\Variables\PrimitiveValue.cs" />
     <Compile Include="Src\Variables\SignatureStream.cs" />
     <Compile Include="Src\Variables\UnavailableValue.cs" />
@@ -380,7 +380,8 @@
     <Compile Include="Src\Boo\InterpreterWrapper.cs" />
     <Compile Include="Src\Variables\Evals\Eval.CallFunctionEval.cs" />
     <Compile Include="Src\Variables\Evals\Eval.NewStringEval.cs" />
-    <Compile Include="Src\Variables\PersistentValue.cs" />
+    <Compile Include="Src\Variables\Variable.cs" />
+    <Compile Include="Src\Variables\ObjectValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

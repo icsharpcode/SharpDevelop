@@ -20,7 +20,7 @@ namespace Debugger
 		Thread            thread;
 		ICorDebugValue    corValue;
 		Value             runtimeValue;
-		ObjectValue       runtimeValueException;
+		ObjectValueClass  runtimeValueException;
 		ExceptionType     exceptionType;
 		SourcecodeSegment location;
 		DateTime          creationTime;
@@ -45,19 +45,10 @@ namespace Debugger
 			                            "$exception",
 			                            Variable.Flags.Default,
 			                            new IExpirable[] {debugger.PauseSession},
-			                            corValue).Value;
-			runtimeValueException = runtimeValue as ObjectValue;
-			if (runtimeValueException != null) {
-				while (runtimeValueException.Type != "System.Exception") {
-					if (runtimeValueException.HasBaseClass == false) {
-						runtimeValueException = null;
-						break;
-					}
-					runtimeValueException = runtimeValueException.BaseClass;
-				}
-				message = runtimeValueException["_message"].Value.AsString;
-			}
-
+			                            delegate { return corValue; } ).Value;
+			runtimeValueException = ((ObjectValue)runtimeValue).GetClass("System.Exception");
+			message = runtimeValueException.SubVariables["_message"].Value.AsString;
+			
 			if (thread.LastFunctionWithLoadedSymbols != null) {
 				location = thread.LastFunctionWithLoadedSymbols.NextStatement;
 			}

@@ -18,6 +18,9 @@ namespace Debugger
 	{
 		public static VariableCollection Empty = new VariableCollection(new Variable[] {});
 		
+		string name;
+		string val;
+		IEnumerable<VariableCollection> subCollectionsEnum;
 		IEnumerable<Variable> collectionEnum;
 		
 		IEnumerator IEnumerable.GetEnumerator()
@@ -27,15 +30,57 @@ namespace Debugger
 		
 		public IEnumerator<Variable> GetEnumerator()
 		{
-			return collectionEnum.GetEnumerator();
+			return Items.GetEnumerator();
+		}
+		
+		public string Name {
+			get {
+				return name;
+			}
+		}
+		
+		public string Value {
+			get {
+				return val;
+			}
+		}
+		
+		public IEnumerable<VariableCollection> SubCollections {
+			get {
+				return subCollectionsEnum;
+			}
+		}
+		
+		public IEnumerable<Variable> Items {
+			get {
+				return collectionEnum;
+			}
+		}
+		
+		public bool IsEmpty {
+			get {
+				foreach(VariableCollection col in SubCollections) {
+					if (!col.IsEmpty) return false;
+				}
+				return !Items.GetEnumerator().MoveNext();
+			}
 		}
 		
 		internal VariableCollection(IEnumerable<Variable> collectionEnum)
+			:this(String.Empty, String.Empty, new VariableCollection[0], collectionEnum)
 		{
+		}
+		
+		public VariableCollection(string name, string val, IEnumerable<VariableCollection> subCollectionsEnum, IEnumerable<Variable> collectionEnum)
+		{
+			this.name = name;
+			this.val = val;
+			this.subCollectionsEnum = subCollectionsEnum;
 			this.collectionEnum = collectionEnum;
 		}
 		
-		public Variable this[string variableName] {
+		
+		public virtual Variable this[string variableName] {
 			get {
 				int index = variableName.IndexOf('.');
 				if (index != -1) {
@@ -47,7 +92,7 @@ namespace Debugger
 						if (v.Name == variableName) return v;
 					}
 				}
-				throw new DebuggerException("Variable \"" + variableName + "\" is not in collection");
+				return null;
 			}
 		}
 		

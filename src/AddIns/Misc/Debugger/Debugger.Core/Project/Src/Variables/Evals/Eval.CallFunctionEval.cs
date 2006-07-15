@@ -75,7 +75,7 @@ namespace Debugger
 							OnError("Can not evaluate on a value which is not an object");
 							return false;
 						}
-						if (corFunction != null && !((ObjectValue)val).IsSuperClass(corFunction.Class)) {
+						if (corFunction != null && !((ObjectValue)val).IsInClassHierarchy(corFunction.Class)) {
 							OnError("Can not evaluate because the object does not contain specified function");
 							return false;
 						}

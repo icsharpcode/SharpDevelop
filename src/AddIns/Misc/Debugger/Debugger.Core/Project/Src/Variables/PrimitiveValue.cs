@@ -51,7 +51,7 @@ namespace Debugger
 			}
 		}
 
-		internal PrimitiveValue(NDebugger debugger, Variable variable):base(debugger, variable)
+		internal PrimitiveValue(Variable variable):base(variable)
 		{
 		}
 

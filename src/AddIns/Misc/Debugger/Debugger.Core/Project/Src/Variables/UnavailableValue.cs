@@ -19,7 +19,7 @@ namespace Debugger
 		public override string AsString {
 			get {
 				return message; 
-			} 
+			}
 		}
 		
 		public override string Type { 
@@ -28,7 +28,7 @@ namespace Debugger
 			} 
 		}
 		
-		internal UnavailableValue(NDebugger debugger, Variable variable, string message):base(debugger, variable)
+		internal UnavailableValue(Variable variable, string message):base(variable)
 		{
 			this.message = message;
 		}

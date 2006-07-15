@@ -177,64 +177,34 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void Populate()
 		{
-			List<Variable> publicStatic = new List<Variable>();
-			List<Variable> publicInstance = new List<Variable>();
-			List<Variable> privateStatic = new List<Variable>();
-			List<Variable> privateInstance = new List<Variable>();
-			
-			foreach(Variable variable in this.Variable.Value.SubVariables) {
-				if (variable.IsPublic) {
-					if (variable.IsStatic) {
-						publicStatic.Add(variable);
-					} else {
-						publicInstance.Add(variable);
-					}
-				} else {
-					if (variable.IsStatic) {
-						privateStatic.Add(variable);
-					} else {
-						privateInstance.Add(variable);
-					}
-				}
-			}
-			
-			this.ChildRows.Clear();
-			// Private Members
-			if (privateInstance.Count > 0) {
-				this.ChildRows.Add(MakeSubMenu("Private Members",
-				                               RowsFromVariables(privateInstance)));
-			}
-			// Static Members
-			if (publicStatic.Count > 0 || privateStatic.Count > 0) {
-				DynamicTreeRow privateStaticSubMenu = MakeSubMenu("Private Static Members",
-				                                                  RowsFromVariables(privateStatic));
-				this.ChildRows.Add(MakeSubMenu("Static Members",
-				                               privateStatic.Count > 0 ? new DynamicListRow[]{privateStaticSubMenu} : new DynamicListRow[]{},
-				                               RowsFromVariables(publicStatic)));
-			}
-			// Public Members
-			this.ChildRows.AddRange(RowsFromVariables(publicInstance));
-			
+			Fill(this, Variable.Value.SubVariables);
 			populated = true;
 		}
 		
-		IEnumerable<DynamicListRow> RowsFromVariables(IEnumerable<Variable> variables)
+		static void Fill(DynamicTreeRow row, VariableCollection collection)
 		{
-			foreach(Variable variable in variables) {
-				yield return new DynamicTreeDebuggerRow(variable);
+			row.ChildRows.Clear();
+			foreach(VariableCollection sub in collection.SubCollections) {
+				VariableCollection subCollection = sub;
+				
+				DynamicTreeRow subMenu = new DynamicTreeRow();
+				DebuggerGridControl.AddColumns(subMenu.ChildColumns);
+				subMenu[2].Text = subCollection.Name;
+				subMenu[3].Text = subCollection.Value;
+				subMenu.ShowMinusWhileExpanded = true;
+				
+				EventHandler<DynamicListEventArgs> populate = null;
+				populate = delegate {
+					Fill(subMenu, subCollection);
+					subMenu.Expanding -= populate;
+				};
+				subMenu.Expanding += populate;
+				
+				row.ChildRows.Add(subMenu);
 			}
-		}
-		
-		DynamicTreeRow MakeSubMenu(string name, params IEnumerable<DynamicListRow>[] elements)
-		{
-			DynamicTreeRow rootRow = new DynamicTreeRow();
-			rootRow.ShowMinusWhileExpanded = true;
-			DebuggerGridControl.AddColumns(rootRow.ChildColumns);
-			rootRow[2].Text = name;
-			foreach(IEnumerable<DynamicListRow> rows in elements) {
-				rootRow.ChildRows.AddRange(rows);
+			foreach(Variable variable in collection.Items) {
+				row.ChildRows.Add(new DynamicTreeDebuggerRow(variable));
 			}
-			return rootRow;
 		}
 	}
 }
