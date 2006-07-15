@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Drawing;
 using System.Collections.Generic;
 
 using ICSharpCode.NRefactory.Parser.AST;
@@ -16,8 +15,8 @@ namespace ICSharpCode.NRefactory.Parser
 	public class LocalLookupVariable
 	{
 		TypeReference typeRef;
-		Point startPos;
-		Point endPos;
+		Location startPos;
+		Location endPos;
 		bool  isConst;
 		
 		public TypeReference TypeRef {
@@ -25,12 +24,12 @@ namespace ICSharpCode.NRefactory.Parser
 				return typeRef;
 			}
 		}
-		public Point StartPos {
+		public Location StartPos {
 			get {
 				return startPos;
 			}
 		}
-		public Point EndPos {
+		public Location EndPos {
 			get {
 				return endPos;
 			}
@@ -42,7 +41,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public LocalLookupVariable(TypeReference typeRef, Point startPos, Point endPos, bool isConst)
+		public LocalLookupVariable(TypeReference typeRef, Location startPos, Location endPos, bool isConst)
 		{
 			this.typeRef = typeRef;
 			this.startPos = startPos;
@@ -74,7 +73,7 @@ namespace ICSharpCode.NRefactory.Parser
 			variables = new Dictionary<string, List<LocalLookupVariable>>(nameComparer);
 		}
 		
-		public void AddVariable(TypeReference typeRef, string name, Point startPos, Point endPos, bool isConst)
+		public void AddVariable(TypeReference typeRef, string name, Location startPos, Location endPos, bool isConst)
 		{
 			if (name == null || name.Length == 0) {
 				return;
@@ -112,7 +111,7 @@ namespace ICSharpCode.NRefactory.Parser
 				AddVariable(localVariableDeclaration.GetTypeForVariable(i),
 				            varDecl.Name,
 				            localVariableDeclaration.StartLocation,
-				            (blockStack.Count == 0) ? new Point(-1, -1) : blockStack.Peek().EndLocation,
+				            (blockStack.Count == 0) ? new Location(-1, -1) : blockStack.Peek().EndLocation,
 				            (localVariableDeclaration.Modifier & Modifier.Const) == Modifier.Const);
 			}
 			return base.Visit(localVariableDeclaration, data);

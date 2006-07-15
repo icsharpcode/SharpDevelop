@@ -49,7 +49,7 @@ namespace NRefactoryToBooConverter
 		void AcceptPoint(int line, int column)
 		{
 			while (available) {
-				Point b = enumerator.Current.StartPosition;
+				Location b = enumerator.Current.StartPosition;
 				if (b.Y < line || (b.Y == line && b.X <= column)) {
 					WriteCurrent();
 				} else {

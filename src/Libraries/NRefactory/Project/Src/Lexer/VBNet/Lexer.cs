@@ -8,7 +8,6 @@
 using System;
 using System.IO;
 using System.Collections;
-using System.Drawing;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
@@ -469,10 +468,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		void ReadPreprocessorDirective()
 		{
-			Point start = new Point(Col - 1, Line);
+			Location start = new Location(Col - 1, Line);
 			string directive = ReadIdent('#');
 			string argument  = ReadToEOL();
-			this.specialTracker.AddPreProcessingDirective(directive, argument.Trim(), start, new Point(start.X + directive.Length + argument.Length, start.Y));
+			this.specialTracker.AddPreProcessingDirective(directive, argument.Trim(), start, new Location(start.X + directive.Length + argument.Length, start.Y));
 		}
 		
 		string ReadDate()
@@ -524,7 +523,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		void ReadComment()
 		{
-			Point startPos = new Point(Col, Line);
+			Location startPos = new Location(Col, Line);
 			sb.Length = 0;
 			StringBuilder curWord = specialCommentHash != null ? new StringBuilder() : null;
 			int missingApostrophes = 2; // no. of ' missing until it is a documentation comment
@@ -559,9 +558,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						string tag = curWord.ToString();
 						curWord.Length = 0;
 						if (specialCommentHash.ContainsKey(tag)) {
-							Point p = new Point(Col, Line);
+							Location p = new Location(Col, Line);
 							string comment = ch + ReadToEOL();
-							tagComments.Add(new TagComment(tag, comment, p, new Point(Col, Line)));
+							tagComments.Add(new TagComment(tag, comment, p, new Location(Col, Line)));
 							sb.Append(comment);
 							break;
 						}
@@ -572,7 +571,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				specialTracker.StartComment(CommentType.SingleLine, startPos);
 			}
 			specialTracker.AddString(sb.ToString());
-			specialTracker.FinishComment(new Point(Col, Line));
+			specialTracker.FinishComment(new Location(Col, Line));
 		}
 		
 		Token ReadOperator(char ch)

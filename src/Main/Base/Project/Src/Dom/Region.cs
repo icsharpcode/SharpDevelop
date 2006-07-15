@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Drawing;
+using Location = ICSharpCode.NRefactory.Parser.Location;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		/// <value>
 		/// if the end column is == -1 the end line is -1 too
-		/// this stands for an unknwon end
+		/// this stands for an unknown end
 		/// </value>
 		public int EndColumn {
 			get {
@@ -58,13 +58,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public DomRegion(Point start, Point end)
+		public DomRegion(Location start, Location end)
 			: this(start.Y, start.X, end.Y, end.X)
-		{
-		}
-		
-		public DomRegion(Point start)
-			: this(start.Y, start.X)
 		{
 		}
 		

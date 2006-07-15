@@ -39,6 +39,8 @@
     <Compile Include="InteractiveInterpreterControl.boo" />
     <Compile Include="InterpreterPad.boo" />
     <Compile Include="InterpreterContext.boo" />
+    <Compile Include="ContextEntry.boo" />
+    <Compile Include="DefaultBooInterpreterContext.boo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

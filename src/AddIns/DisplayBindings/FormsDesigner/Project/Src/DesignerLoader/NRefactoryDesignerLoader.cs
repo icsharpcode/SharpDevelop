@@ -299,7 +299,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		void FixTypeReference(TypeReference type, Point location, ICSharpCode.SharpDevelop.Dom.ICompilationUnit domCu)
+		void FixTypeReference(TypeReference type, Location location, ICSharpCode.SharpDevelop.Dom.ICompilationUnit domCu)
 		{
 			if (type == null)
 				return;

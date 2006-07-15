@@ -7,7 +7,6 @@
 
 using System;
 using System.Text;
-using System.Drawing;
 using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,8 +18,8 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		INode       parent;
 		List<INode> children = new List<INode>();
 		
-		Point startLocation;
-		Point endLocation;
+		Location startLocation;
+		Location endLocation;
 		
 		public INode Parent {
 			get	{
@@ -31,7 +30,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public Point StartLocation {
+		public Location StartLocation {
 			get {
 				return startLocation;
 			}
@@ -40,7 +39,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public Point EndLocation {
+		public Location EndLocation {
 			get {
 				return endLocation;
 			}

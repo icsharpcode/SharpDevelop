@@ -12,80 +12,64 @@ import System.Windows.Forms
 import ICSharpCode.Core
 import ICSharpCode.SharpDevelop.Gui
 
-class ContextEntry:
-	[getter(InterpreterControl)]
-	_ctl as InteractiveInterpreterControl
-	
-	[getter(Context)]
-	_context as InterpreterContext
-	
-	[getter(ToolBarItem)]
-	_item as ToolStripButton
-	
-	_parentPad as InterpreterPad
-	
-	def constructor([required] context as InterpreterContext, [required] parentPad as InterpreterPad):
-		_context = context
-		_parentPad = parentPad
-		
-		_ctl = InteractiveInterpreterControl(context)
-		_ctl.Dock = DockStyle.Fill
-		
-		_item = ToolStripButton(StringParser.Parse(context.Title), context.Image)
-		_item.ToolTipText = context.ToolTipText
-		_item.Visible = context.Visible
-		_item.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText
-		
-		context.ImageChanged += AutoInvoke() do:
-			_item.Image = _context.Image
-		context.TitleChanged += AutoInvoke() do:
-			_item.Text = StringParser.Parse(_context.Title)
-		context.ToolTipTextChanged += AutoInvoke() do:
-			_item.ToolTipText = StringParser.Parse(_context.ToolTipText)
-		context.VisibleChanged += AutoInvoke() do:
-			_item.Visible = _context.Visible
-			_parentPad.UpdateToolBarVisible()
-			if _parentPad.CurrentContext is self and _context.Visible == false:
-				_parentPad.ActivateFirstVisibleContext()
-		_item.Click += def:
-			_parentPad.CurrentContext = self
-	
-	private static def AutoInvoke(what as callable()) as EventHandler:
-		return def(sender as object, e as EventArgs):
-			WorkbenchSingleton.SafeThreadAsyncCall(what)
-
 class InterpreterPad(AbstractPadContent, IClipboardHandler):
-	[getter(Contexts)]
-	_contexts = []
+	public static Instance as InterpreterPad:
+		get:
+			return WorkbenchSingleton.Workbench.GetPad(InterpreterPad).PadContent
 	
+	_contexts = []
 	_currentContext as ContextEntry
 	_toolStrip = ToolStrip(GripStyle: ToolStripGripStyle.Hidden)
 	_panel = Panel()
+	_initDone
 	
 	def constructor():
 		_panel.Controls.Add(_toolStrip)
 		for context as InterpreterContext in AddInTree.GetTreeNode("/AddIns/InterpreterAddIn/InterpreterContexts").BuildChildItemsArrayList(self):
-			newContext = ContextEntry(context, self)
-			_toolStrip.Items.Add(newContext.ToolBarItem)
-			_contexts.Add(newContext)
+			AddInterpreterContext(context)
 		ActivateFirstVisibleContext()
+		UpdateToolBarVisible()
+		_initDone = true
+	
+	def AddInterpreterContext([required] context as InterpreterContext):
+		newContext = ContextEntry(context, self)
+		_toolStrip.Items.Add(newContext.ToolBarItem)
+		_contexts.Add(newContext)
+		UpdateToolBarVisible() if _initDone
+		return newContext
+	
+	def RemoveInterpreterContext([required] context as InterpreterContext):
+		for c as ContextEntry in _contexts:
+			if c.Context is context:
+				RemoveInterpreterContext(c)
+				return
+	
+	def RemoveInterpreterContext([required] context as ContextEntry):
+		_contexts.Remove(context)
+		_toolStrip.Items.Remove(context.ToolBarItem)
+		ActivateFirstVisibleContext() if self.CurrentContext is context
 		UpdateToolBarVisible()
 	
 	def UpdateToolBarVisible():
 		count = 0
-		for c as ContextEntry in self.Contexts:
+		for c as ContextEntry in _contexts:
 			count += 1 if c.Context.Visible
 		_toolStrip.Visible = (count > 1)
 	
 	def ActivateFirstVisibleContext():
-		for c as ContextEntry in self.Contexts:
+		for c as ContextEntry in _contexts:
 			if c.Context.Visible:
 				self.CurrentContext = c
 				return
+		self.CurrentContext = null
 	
 	Control as Control:
 		get:
 			return _panel
+	
+	public Contexts:
+		get:
+			return System.Collections.ArrayList.ReadOnly(_contexts)
 	
 	CurrentContext:
 		get:
@@ -96,9 +80,9 @@ class InterpreterPad(AbstractPadContent, IClipboardHandler):
 				_panel.Controls.Remove(_currentContext.InterpreterControl)
 			if value is not null:
 				_panel.Controls.Add(value.InterpreterControl)
-			_panel.Controls.SetChildIndex(_toolStrip, 1)
+				_panel.Controls.SetChildIndex(_toolStrip, 1)
 			_currentContext = value
-			for c as ContextEntry in self.Contexts:
+			for c as ContextEntry in _contexts:
 				c.ToolBarItem.Checked = c is value
 	
 	CurrentTextArea:

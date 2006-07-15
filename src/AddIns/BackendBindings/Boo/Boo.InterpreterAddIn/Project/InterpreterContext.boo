@@ -49,28 +49,3 @@ abstract class InterpreterContext:
 	virtual def SuggestCodeCompletion(code as string) as (string):
 	"""Gets list of available members for completion on the passed expression. Used for '.' completion"""
 		return null
-
-class DefaultBooInterpreterContext(InterpreterContext):
-	_interpreter as Boo.Lang.Interpreter.InteractiveInterpreter
-	
-	def constructor():
-		self.Image = ICSharpCode.Core.ResourceService.GetBitmap("Boo.ProjectIcon")
-	
-	private def InitInterpreter():
-		_interpreter = Boo.Lang.Interpreter.InteractiveInterpreter(
-								RememberLastValue: true,
-								Print: self.PrintLine)
-		_interpreter.SetValue("cls", RaiseClear)
-		_interpreter.LoopEval("""
-import System
-import System.IO
-import System.Text
-""")
-	
-	def RunCommand(code as string):
-		InitInterpreter() if _interpreter is null
-		_interpreter.LoopEval(code)
-	
-	def GetGlobals():
-		InitInterpreter() if _interpreter is null
-		return _interpreter.globals()

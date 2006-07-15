@@ -8,7 +8,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Parser;
@@ -213,7 +212,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			WithStatement innermost = null;
 			if (lookupTableVisitor.WithStatements != null) {
 				foreach (WithStatement with in lookupTableVisitor.WithStatements) {
-					if (IsInside(new Point(caretColumn, caretLine), with.StartLocation, with.EndLocation)) {
+					if (IsInside(new Location(caretColumn, caretLine), with.StartLocation, with.EndLocation)) {
 						innermost = with;
 					}
 				}
@@ -721,7 +720,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return languageProperties.NameComparer.Equals(name1, name2);
 		}
 		
-		bool IsInside(Point between, Point start, Point end)
+		bool IsInside(Location between, Location start, Location end)
 		{
 			if (between.Y < start.Y || between.Y > end.Y) {
 				return false;
@@ -940,7 +939,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			foreach (LocalLookupVariable v in variables) {
-				if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
+				if (IsInside(new Location(caretColumn, caretLine), v.StartPos, v.EndPos)) {
 					return v;
 				}
 			}
@@ -1012,7 +1011,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 				if (pair.Value != null && pair.Value.Count > 0) {
 					foreach (LocalLookupVariable v in pair.Value) {
-						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
+						if (IsInside(new Location(caretColumn, caretLine), v.StartPos, v.EndPos)) {
 							// convert to a field for display
 							result.Add(CreateLocalVariableField(v, pair.Key));
 							break;

@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Drawing;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
@@ -94,10 +93,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		/// <summary>
 		/// Writes all specials up to the specified location.
 		/// </summary>
-		public void AcceptPoint(Point a)
+		public void AcceptPoint(Location a)
 		{
 			while (available) {
-				Point b = enumerator.Current.StartPosition;
+				Location b = enumerator.Current.StartPosition;
 				if (b.Y < a.Y || (b.Y == a.Y && b.X <= a.X)) {
 					WriteCurrent();
 				} else {

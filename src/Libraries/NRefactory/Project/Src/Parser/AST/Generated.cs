@@ -12,7 +12,6 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using System.Drawing;
 	
 	
 	public class AddHandlerStatement : Statement {
@@ -1459,9 +1458,9 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 		
 		EventRaiseRegion raiseRegion;
 		
-		Point bodyStart;
+		Location bodyStart;
 		
-		Point bodyEnd;
+		Location bodyEnd;
 		
 		public TypeReference TypeReference {
 			get {
@@ -1508,7 +1507,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public Point BodyStart {
+		public Location BodyStart {
 			get {
 				return bodyStart;
 			}
@@ -1517,7 +1516,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public Point BodyEnd {
+		public Location BodyEnd {
 			get {
 				return bodyEnd;
 			}
@@ -1533,8 +1532,8 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			addRegion = EventAddRegion.Null;
 			removeRegion = EventRemoveRegion.Null;
 			raiseRegion = EventRaiseRegion.Null;
-			bodyStart = new Point(-1, -1);
-			bodyEnd = new Point(-1, -1);
+			bodyStart = new Location(-1, -1);
+			bodyEnd = new Location(-1, -1);
 		}
 		
 		public EventDeclaration(TypeReference typeReference, Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string name, List<InterfaceImplementation> interfaceImplementations) : 
@@ -1544,8 +1543,8 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			addRegion = EventAddRegion.Null;
 			removeRegion = EventRemoveRegion.Null;
 			raiseRegion = EventRaiseRegion.Null;
-			bodyStart = new Point(-1, -1);
-			bodyEnd = new Point(-1, -1);
+			bodyStart = new Location(-1, -1);
+			bodyEnd = new Location(-1, -1);
 		}
 		
 		public bool HasAddRegion {
@@ -2243,9 +2242,9 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 		
 		TypeReference typeReference;
 		
-		Point bodyStart;
+		Location bodyStart;
 		
-		Point bodyEnd;
+		Location bodyEnd;
 		
 		PropertyGetRegion getRegion;
 		
@@ -2278,7 +2277,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public Point BodyStart {
+		public Location BodyStart {
 			get {
 				return bodyStart;
 			}
@@ -2287,7 +2286,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public Point BodyEnd {
+		public Location BodyEnd {
 			get {
 				return bodyEnd;
 			}
@@ -2320,8 +2319,8 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			Parameters = parameters;
 			interfaceImplementations = new List<InterfaceImplementation>();
 			typeReference = TypeReference.Null;
-			bodyStart = new Point(-1, -1);
-			bodyEnd = new Point(-1, -1);
+			bodyStart = new Location(-1, -1);
+			bodyEnd = new Location(-1, -1);
 			getRegion = PropertyGetRegion.Null;
 			setRegion = PropertySetRegion.Null;
 		}
@@ -2332,8 +2331,8 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			Parameters = parameters;
 			Modifier = modifier;
 			interfaceImplementations = new List<InterfaceImplementation>();
-			bodyStart = new Point(-1, -1);
-			bodyEnd = new Point(-1, -1);
+			bodyStart = new Location(-1, -1);
+			bodyEnd = new Location(-1, -1);
 			getRegion = PropertyGetRegion.Null;
 			setRegion = PropertySetRegion.Null;
 		}
@@ -3058,9 +3057,9 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 		
 		TypeReference typeReference;
 		
-		Point bodyStart;
+		Location bodyStart;
 		
-		Point bodyEnd;
+		Location bodyEnd;
 		
 		PropertyGetRegion getRegion;
 		
@@ -3084,7 +3083,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public Point BodyStart {
+		public Location BodyStart {
 			get {
 				return bodyStart;
 			}
@@ -3093,7 +3092,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public Point BodyEnd {
+		public Location BodyEnd {
 			get {
 				return bodyEnd;
 			}
@@ -3124,8 +3123,8 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 				base(modifier, attributes, name, parameters) {
 			interfaceImplementations = new List<InterfaceImplementation>();
 			typeReference = TypeReference.Null;
-			bodyStart = new Point(-1, -1);
-			bodyEnd = new Point(-1, -1);
+			bodyStart = new Location(-1, -1);
+			bodyEnd = new Location(-1, -1);
 			getRegion = PropertyGetRegion.Null;
 			setRegion = PropertySetRegion.Null;
 		}
@@ -3806,7 +3805,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 		
 		List<TemplateDefinition> templates;
 		
-		Point bodyStartLocation;
+		Location bodyStartLocation;
 		
 		public string Name {
 			get {
@@ -3844,7 +3843,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public Point BodyStartLocation {
+		public Location BodyStartLocation {
 			get {
 				return bodyStartLocation;
 			}
@@ -3859,7 +3858,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			name = "";
 			baseTypes = new List<TypeReference>();
 			templates = new List<TemplateDefinition>();
-			bodyStartLocation = new Point(-1, -1);
+			bodyStartLocation = new Location(-1, -1);
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {

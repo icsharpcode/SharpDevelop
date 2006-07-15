@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Drawing;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
@@ -22,12 +21,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			get;
 		}
 		
-		Point StartLocation {
+		Location StartLocation {
 			get;
 			set;
 		}
 		
-		Point EndLocation {
+		Location EndLocation {
 			get;
 			set;
 		}

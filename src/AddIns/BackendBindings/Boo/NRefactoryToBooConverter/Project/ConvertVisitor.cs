@@ -47,7 +47,7 @@ namespace NRefactoryToBooConverter
 		{
 			if (node == null)
 				return new B.LexicalInfo(fileName);
-			Point point = node.StartLocation;
+			Location point = node.StartLocation;
 			if (!point.IsEmpty) {
 				lastLexicalInfo = new B.LexicalInfo(fileName, point.Y, point.X);
 			}
@@ -82,7 +82,7 @@ namespace NRefactoryToBooConverter
 			return GetLocation(node.EndLocation);
 		}
 		
-		B.SourceLocation GetLocation(Point point)
+		B.SourceLocation GetLocation(Location point)
 		{
 			return new B.SourceLocation(point.Y, point.X);
 		}

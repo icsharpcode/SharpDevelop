@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Drawing;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -108,7 +107,7 @@ namespace ICSharpCode.NRefactory.Parser
 			                     Arg);
 		}
 		
-		public PreProcessingDirective(string cmd, string arg, Point start, Point end)
+		public PreProcessingDirective(string cmd, string arg, Location start, Location end)
 			: base(start, end)
 		{
 			this.cmd = cmd;

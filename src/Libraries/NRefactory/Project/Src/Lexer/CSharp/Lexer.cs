@@ -8,7 +8,6 @@
 using System;
 using System.IO;
 using System.Collections;
-using System.Drawing;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
@@ -24,10 +23,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		void ReadPreProcessingDirective()
 		{
-			Point start = new Point(Col - 1, Line);
+			Location start = new Location(Col - 1, Line);
 			string directive = ReadIdent('#');
 			string argument  = ReadToEOL();
-			this.specialTracker.AddPreProcessingDirective(directive, argument.Trim(), start, new Point(start.X + directive.Length + argument.Length, start.Y));
+			this.specialTracker.AddPreProcessingDirective(directive, argument.Trim(), start, new Location(start.X + directive.Length + argument.Length, start.Y));
 		}
 		
 		protected override Token Next()
@@ -727,9 +726,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					string tag = curWord.ToString();
 					curWord.Length = 0;
 					if (specialCommentHash.ContainsKey(tag)) {
-						Point p = new Point(Col, Line);
+						Location p = new Location(Col, Line);
 						string comment = ch + ReadToEOL();
-						tagComments.Add(new TagComment(tag, comment, p, new Point(Col, Line)));
+						tagComments.Add(new TagComment(tag, comment, p, new Location(Col, Line)));
 						sb.Append(comment);
 						break;
 					}
@@ -743,9 +742,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			if (skipAllComments) {
 				SkipToEOL();
 			} else {
-				specialTracker.StartComment(commentType, new Point(Col, Line));
+				specialTracker.StartComment(commentType, new Location(Col, Line));
 				specialTracker.AddString(ReadCommentToEOL());
-				specialTracker.FinishComment(new Point(Col, Line));
+				specialTracker.FinishComment(new Location(Col, Line));
 			}
 		}
 		
@@ -761,7 +760,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					}
 				}
 			} else {
-				specialTracker.StartComment(CommentType.Block, new Point(Col, Line));
+				specialTracker.StartComment(CommentType.Block, new Location(Col, Line));
 				while ((nextChar = ReaderRead()) != -1) {
 					char ch = (char)nextChar;
 					
@@ -773,12 +772,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					// End of multiline comment reached ?
 					if (ch == '*' && ReaderPeek() == '/') {
 						ReaderRead();
-						specialTracker.FinishComment(new Point(Col, Line));
+						specialTracker.FinishComment(new Location(Col, Line));
 						return;
 					}
 					specialTracker.AddChar(ch);
 				}
-				specialTracker.FinishComment(new Point(Col, Line));
+				specialTracker.FinishComment(new Location(Col, Line));
 			}
 			// Reached EOF before end of multiline comment.
 			errors.Error(Line, Col, String.Format("Reached EOF before the end of a multiline comment"));

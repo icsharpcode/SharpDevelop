@@ -8,7 +8,6 @@
 // created on 04.08.2003 at 17:49
 using System;
 using System.Text;
-using System.Drawing;
 using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
@@ -271,7 +270,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		DomRegion GetRegion(Point start, Point end)
+		static DomRegion GetRegion(RefParser.Location start, RefParser.Location end)
 		{
 			return new DomRegion(start, end);
 		}
@@ -420,7 +419,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		internal static IParameter CreateParameter(AST.ParameterDeclarationExpression par, IMethod method, IClass currentClass, ICompilationUnit cu)
 		{
 			IReturnType parType = CreateReturnType(par.TypeReference, method, currentClass, cu);
-			DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DomRegion(par.StartLocation, par.EndLocation));
+			DefaultParameter p = new DefaultParameter(par.ParameterName, parType, GetRegion(par.StartLocation, par.EndLocation));
 			p.Modifiers = (ParameterModifiers)par.ParamModifier;
 			return p;
 		}
@@ -428,7 +427,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(AST.MethodDeclaration methodDeclaration, object data)
 		{
 			DomRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
-			DomRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new Point(-1, -1));
+			DomRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : RefParser.Location.Empty);
 			DefaultClass c  = GetCurrentClass();
 			
 			DefaultMethod method = new DefaultMethod(methodDeclaration.Name, null, ConvertModifier(methodDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
@@ -451,7 +450,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DefaultClass c  = GetCurrentClass();
 			DomRegion region     = GetRegion(operatorDeclaration.StartLocation, operatorDeclaration.EndLocation);
-			DomRegion bodyRegion = GetRegion(operatorDeclaration.EndLocation, operatorDeclaration.Body != null ? operatorDeclaration.Body.EndLocation : new Point(-1, -1));
+			DomRegion bodyRegion = GetRegion(operatorDeclaration.EndLocation, operatorDeclaration.Body != null ? operatorDeclaration.Body.EndLocation : RefParser.Location.Empty);
 			
 			DefaultMethod method = new DefaultMethod(operatorDeclaration.Name, CreateReturnType(operatorDeclaration.TypeReference), ConvertModifier(operatorDeclaration.Modifier), region, bodyRegion, c);
 			ConvertAttributes(operatorDeclaration, method);
@@ -468,7 +467,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(AST.ConstructorDeclaration constructorDeclaration, object data)
 		{
 			DomRegion region     = GetRegion(constructorDeclaration.StartLocation, constructorDeclaration.EndLocation);
-			DomRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new Point(-1, -1));
+			DomRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : RefParser.Location.Empty);
 			DefaultClass c = GetCurrentClass();
 			
 			Constructor constructor = new Constructor(ConvertModifier(constructorDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
@@ -486,7 +485,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(AST.DestructorDeclaration destructorDeclaration, object data)
 		{
 			DomRegion region     = GetRegion(destructorDeclaration.StartLocation, destructorDeclaration.EndLocation);
-			DomRegion bodyRegion = GetRegion(destructorDeclaration.EndLocation, destructorDeclaration.Body != null ? destructorDeclaration.Body.EndLocation : new Point(-1, -1));
+			DomRegion bodyRegion = GetRegion(destructorDeclaration.EndLocation, destructorDeclaration.Body != null ? destructorDeclaration.Body.EndLocation : RefParser.Location.Empty);
 			
 			DefaultClass c = GetCurrentClass();
 			

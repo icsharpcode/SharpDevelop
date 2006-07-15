@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Drawing;
 
 namespace ICSharpCode.NRefactory.Parser
 {
@@ -15,8 +14,8 @@ namespace ICSharpCode.NRefactory.Parser
 	/// </summary>
 	public interface ISpecial
 	{
-		Point StartPosition { get; }
-		Point EndPosition { get; }
+		Location StartPosition { get; }
+		Location EndPosition { get; }
 		
 		object AcceptVisitor(ISpecialVisitor visitor, object data);
 	}
@@ -33,21 +32,21 @@ namespace ICSharpCode.NRefactory.Parser
 	{
 		public abstract object AcceptVisitor(ISpecialVisitor visitor, object data);
 		
-		Point startPosition, endPosition;
+		Location startPosition, endPosition;
 		
-		public AbstractSpecial(Point position)
+		public AbstractSpecial(Location position)
 		{
 			this.startPosition = position;
 			this.endPosition = position;
 		}
 		
-		public AbstractSpecial(Point startPosition, Point endPosition)
+		public AbstractSpecial(Location startPosition, Location endPosition)
 		{
 			this.startPosition = startPosition;
 			this.endPosition = endPosition;
 		}
 		
-		public Point StartPosition {
+		public Location StartPosition {
 			get {
 				return startPosition;
 			}
@@ -56,7 +55,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public Point EndPosition {
+		public Location EndPosition {
 			get {
 				return endPosition;
 			}

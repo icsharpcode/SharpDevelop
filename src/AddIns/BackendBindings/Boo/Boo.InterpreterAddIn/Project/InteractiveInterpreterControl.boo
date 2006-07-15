@@ -14,6 +14,7 @@ import System
 import System.Drawing
 import System.IO
 import System.Windows.Forms
+import ICSharpCode.SharpDevelop.Gui
 import ICSharpCode.TextEditor
 import ICSharpCode.TextEditor.Document
 import ICSharpCode.TextEditor.Actions
@@ -75,8 +76,16 @@ class InteractiveInterpreterControl(TextEditorControl):
 	def constructor([required] interpreter as InterpreterContext):
 		self._interpreter = interpreter
 		
-		self._interpreter.LinePrinted += self.print
-		self._interpreter.Cleared += self.cls
+		self._interpreter.LinePrinted += def(line as string):
+			if WorkbenchSingleton.InvokeRequired:
+				WorkbenchSingleton.SafeThreadAsyncCall(self.print, (line,))
+			else:
+				self.print(line)
+		self._interpreter.Cleared += def():
+			if WorkbenchSingleton.InvokeRequired:
+				WorkbenchSingleton.SafeThreadAsyncCall(self.cls)
+			else:
+				self.cls()
 		self._lineHistory = LineHistory(CurrentLineChanged: _lineHistory_CurrentLineChanged)
 		self.Document.HighlightingStrategy = GetBooHighlighting()
 		self.EnableFolding =  false
@@ -132,8 +141,8 @@ class InteractiveInterpreterControl(TextEditorControl):
 		else:
 			_block.WriteLine(code)
 	
-	def print(msg):
-		AppendText("${msg}\r\n")
+	def print(msg as string):
+		AppendText(msg + "\r\n")
 	
 	def prompt():
 		AppendText((">>> ", "... ")[_state])
@@ -196,10 +205,8 @@ class InteractiveInterpreterControl(TextEditorControl):
 		if key == Keys.Enter:
 			try:
 				(SingleLineInputState, BlockInputState)[_state]()
-			except x as System.Reflection.TargetInvocationException:
-				print(x.InnerException)
 			except x:
-				print(x)
+				print(x.ToString())
 			prompt()
 			return true
 			

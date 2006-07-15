@@ -9,7 +9,6 @@ using System;
 using System.Text;
 using System.CodeDom;
 using System.Collections;
-using System.Drawing;
 
 namespace ICSharpCode.NRefactory.Parser
 {
@@ -29,7 +28,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public TagComment(string tag, string comment, Point startPosition, Point endPosition) : base(CommentType.SingleLine, comment, startPosition, endPosition)
+		public TagComment(string tag, string comment, Location startPosition, Location endPosition) : base(CommentType.SingleLine, comment, startPosition, endPosition)
 		{
 			this.tag = tag;
 		}

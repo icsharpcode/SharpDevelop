@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections;
-using System.Drawing;
 using System.Globalization;
 
 namespace ICSharpCode.NRefactory.Parser

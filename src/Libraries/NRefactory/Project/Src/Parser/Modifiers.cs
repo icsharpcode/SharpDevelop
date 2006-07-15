@@ -6,14 +6,13 @@
 // </file>
 
 using ICSharpCode.NRefactory.Parser.AST;
-using System.Drawing;
 
 namespace ICSharpCode.NRefactory.Parser
 {
 	internal class Modifiers
 	{
 		Modifier cur;
-		Point location = new Point(-1, -1);
+		Location location = new Location(-1, -1);
 		
 		public Modifier Modifier {
 			get {
@@ -21,7 +20,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public Point GetDeclarationLocation(Point keywordLocation)
+		public Location GetDeclarationLocation(Location keywordLocation)
 		{
 			if(location.X == -1 && location.Y == -1) {
 				return keywordLocation;
@@ -29,7 +28,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return location;
 		}
 		
-		public Point Location {
+		public Location Location {
 			get {
 				return location;
 			}
@@ -45,7 +44,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return ((cur & m) != 0);
 		}
 		
-		public void Add(Modifier m, Point tokenLocation) 
+		public void Add(Modifier m, Location tokenLocation) 
 		{
 			if(location.X == -1 && location.Y == -1) {
 				location = tokenLocation;
