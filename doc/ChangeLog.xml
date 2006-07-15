@@ -1,4 +1,152 @@
 ﻿<ChangeLog project="SharpDevelop">
+  <Change author="Matt Ward" date="07/12/2006">Search and Replace dialog buttons disabled if no find pattern entered. Search/replace keyboard shortcuts now switch between the search/replace tabs when the search and replace dialog has the focus.</Change>
+  <Change author="Matt Ward" date="07/12/2006">SD2-918. Unit tests window - Run tests right click menu option available when no tests are loaded.</Change>
+  <Change author="Matt Ward" date="07/12/2006">Added keyboard shortcut to open Code Coverage window. Added text editor right click and edit menu options to show/hide code coverage.</Change>
+  <Change author="Mathias Simmack" date="07/12/2006">Help 2.0: more suggestions made by FxCop</Change>
+  <Change author="David Alpert" date="07/11/2006">updated document headers NavigationService additions</Change>
+  <Change author="David Alpert" date="07/11/2006">Added support for IViewContent navigation history (known in the Wiki as Code Navigation).  Basic documentation available in the XML comments for ICSharpCode.Core.NavigationService</Change>
+  <Change author="David Alpert" date="07/11/2006">ToolBarSplitButton now supports disabling the button while leaving the dropdown enabled; addin files can now specify a disabledIcon for a ToolBarSplitButton's button.</Change>
+  <Change author="Daniel Grunwald" date="07/11/2006">Fixed forum-9740 (When renaming an item in a treeview and using the Del key, #D tries to delete the whole item)</Change>
+  <Change author="David Srbecký" date="07/10/2006">PersistentValue merged into Variable</Change>
+  <Change author="David Srbecký" date="07/10/2006">Initial code of boo console</Change>
+  <Change author="David Srbecký" date="07/09/2006">Completely rewritten variable life-time management and updating; 
+Rewritten property evaluation</Change>
+  <Change author="Mathias Simmack" date="07/08/2006">Help 2.0: a few fixes and a first bunch of FxCop suggestions</Change>
+  <Change author="David Srbecký" date="07/07/2006">PersistentValue stored in Values - lifetime of Values increased</Change>
+  <Change author="David Srbecký" date="07/06/2006">Working on PersistentValue</Change>
+  <Change author="David Srbecký" date="07/06/2006">PersistentCorValue merged into PersistentValue</Change>
+  <Change author="David Srbecký" date="07/06/2006">All values are created in PersistentValue</Change>
+  <Change author="David Srbecký" date="07/06/2006">ICorDebugValue of Value stored in PersistentCorValue container 2 (missed file)</Change>
+  <Change author="David Srbecký" date="07/06/2006">ICorDebugValue of Value stored in PersistentCorValue container</Change>
+  <Change author="David Srbecký" date="07/06/2006">ValueGetter delegate wrapped in PersistentValue class</Change>
+  <Change author="David Srbecký" date="07/05/2006">Bugfix: Check function expiration in all callbacks with thread</Change>
+  <Change author="David Srbecký" date="07/05/2006">Fixed SD2-933: No debugger data tip when variable prefixed with "this"</Change>
+  <Change author="David Srbecký" date="07/05/2006">Fixed SD2-864: Exception when starting invalid application</Change>
+  <Change author="David Srbecký" date="07/05/2006">Fixed Forum-9220(cgraefe): Show error message for .NET Framework 1.0 programs</Change>
+  <Change author="David Srbecký" date="07/05/2006">Forum-8944(kama): Added hint for error 0x80131C30</Change>
+  <Change author="David Srbecký" date="07/04/2006">Fixed Forum-8847(asl): Breakpoints can be set within whole method</Change>
+  <Change author="David Srbecký" date="07/04/2006">Fixed Forum-8700(asl): Refactored stepping to increase performance (using StepOut for tracking again)</Change>
+  <Change author="David Srbecký" date="07/04/2006">Fixed Forum-8647(asl): Process post-break callbacks</Change>
+  <Change author="David Srbecký" date="07/04/2006">Fixed Forum-8646(asl): Release tracked COM objects synchronously</Change>
+  <Change author="David Srbecký" date="07/03/2006">Fixed Forum-8643(asl): Reset tracking stepper after evaluation</Change>
+  <Change author="David Srbecký" date="07/03/2006">Fixed Forum-8642(asl): Do not evaluate when native frame is on top of stack</Change>
+  <Change author="David Srbecký" date="07/03/2006">Fixed Forum-8640(asl): 'this' may not be available at native IP</Change>
+  <Change author="Mathias Simmack" date="07/02/2006">Help 2.0: fixed a filter loading problem in the Search panel; changed a few other things</Change>
+  <Change author="Matt Ward" date="06/29/2006">Added 'Find Next Selected' search menu option which will find the next occurrence of the selected text in the document.</Change>
+  <Change author="Mathias Simmack" date="06/28/2006">Help 2.0: rewritten code for the controls to support empty/broken collections without getting errors</Change>
+  <Change author="Mathias Simmack" date="06/26/2006">Help 2.0: a lot of changes in the code</Change>
+  <Change author="Daniel Grunwald" date="06/24/2006">Applied "Providing text editor tooltips using the AddInTree" patch by Christian Hornung.</Change>
+  <Change author="Mathias Simmack" date="06/24/2006">Help 2.0: new config class used</Change>
+  <Change author="Daniel Grunwald" date="06/24/2006">Support alternate new file dialogs (patch by Scott Ferrett)</Change>
+  <Change author="Daniel Grunwald" date="06/24/2006">Fixed build error introduced by merge.</Change>
+  <Change author="Daniel Grunwald" date="06/24/2006">Merged Corsavy r1470:1511 to trunk.</Change>
+  <Change author="Mathias Simmack" date="06/24/2006">Help 2.0: made some changes in the Search pad and Config form code</Change>
+  <Change author="Matt Ward" date="06/24/2006">SD2-721. Can now delete files and folders from the project browser using the delete key.</Change>
+  <Change author="Matt Ward" date="06/24/2006">SD2-856. When indenting xml that is not well formed SharpDevelop no longer displays an error message showing the XmlException.</Change>
+  <Change author="Matt Ward" date="06/24/2006">SD2-843. When editing XML file with url dtd reference whilst having no network connection the WebException is now caught by the XML Editor.</Change>
+  <Change author="Mike Krüger" date="06/21/2006">Fixed SD2-846:Saving XSLT output to a file throws an invalid operation exception</Change>
+  <Change author="Mike Krüger" date="06/21/2006">Fixed SD2-855:Attempting to create event handler for xml form terminates SharpDevelop</Change>
+  <Change author="Mike Krüger" date="06/21/2006">Fixed SD2-845:Null reference exception when attempting to show tooltip for XSLT output</Change>
+  <Change author="Mathias Simmack" date="06/17/2006">fixed some flaws in the TOC and Index control</Change>
+  <Change author="Mathias Simmack" date="06/17/2006">catched an exception with invalid pointers (http://community.sharpdevelop.net/forums/thread/8728.aspx)</Change>
+  <Change author="Mathias Simmack" date="06/17/2006">new SharedAddin template for VBNet</Change>
+  <Change author="Mathias Simmack" date="06/17/2006">new SharedAddin template for VBNet</Change>
+  <Change author="Daniel Grunwald" date="06/16/2006">Applied custom quick class browser patch by Robert Zaunere.</Change>
+  <Change author="Mike Krüger" date="06/16/2006">Fixed vb.net syntax coloring bug</Change>
+  <Change author="Daniel Grunwald" date="06/10/2006">Merged Corsavy r1425:1470 to trunk.</Change>
+  <Change author="Mathias Simmack" date="06/09/2006">new Shared Add-in template for creating add-ins for Office etc.</Change>
+  <Change author="Daniel Grunwald" date="06/06/2006">Prevent exception when Cecil doesn't report a return type for a member.</Change>
+  <Change author="Mathias Simmack" date="06/03/2006">updated HtmlHelp2Options.cs a little bit</Change>
+  <Change author="Mathias Simmack" date="06/03/2006">updated WinFX samples for the WinFX CTP May 2006</Change>
+  <Change author="Daniel Grunwald" date="05/28/2006">Update to new Cecil version, fixes exception when loading mixed-mode assemblies.</Change>
+  <Change author="Daniel Grunwald" date="05/27/2006">Merged Corsavy r1387:1425 to trunk.</Change>
+  <Change author="Daniel Grunwald" date="05/27/2006">Fixed bugs introduced in rev 1423.</Change>
+  <Change author="Daniel Grunwald" date="05/27/2006">Fixed SD2-815: Generic delegate throws null reference exception
+Fixed SD2-819: Disabling code coverage and code analysis addin causes error on showing project properties</Change>
+  <Change author="Daniel Grunwald" date="05/26/2006">Referenced assemblies are now loaded with Mono.Cecil.</Change>
+  <Change author="Daniel Grunwald" date="05/25/2006">Fixed unit tests.</Change>
+  <Change author="Daniel Grunwald" date="05/25/2006">Reduce usage of ProjectContentRegistry.Mscorlib - we'll support multiple mscorlib project contents later (compact framework, older .NET versions etc.)</Change>
+  <Change author="Daniel Grunwald" date="05/24/2006">Add NRefactory demo application.</Change>
+  <Change author="Matt Ward" date="05/23/2006">Turned off overflow checks,Component Inspector error dialog now sends the user to the SharpDevelop bug reporting forum, and removed unused files.</Change>
+  <Change author="Matt Ward" date="05/21/2006">Added Oakland Software's Component Inspector.</Change>
+  <Change author="Daniel Grunwald" date="05/07/2006">BooAdvancedHighlighter: only resolve references that in the visible part of the document</Change>
+  <Change author="Daniel Grunwald" date="05/06/2006">Added support for advanced syntax highlighters.
+Boo: Assignments that introduce new local variables are highlighted.</Change>
+  <Change author="Daniel Grunwald" date="05/06/2006">Add Rename command to refactoring menu.</Change>
+  <Change author="Daniel Grunwald" date="05/06/2006">New feature: Removed unused "using" statements.</Change>
+  <Change author="Daniel Grunwald" date="05/05/2006">Merged Corsavy r1333:1387 to trunk.</Change>
+  <Change author="David Alpert" date="04/23/2006">recent changes to ToolBarDropDownButton are now compatible with previous usage, notably in the SearchAndReplace toolbar.
+AddIn schema now updated to reflect recent addition to ToolbarItemDoozer; new ToolbarItem types are now available via code-completion in AddIn.xsd</Change>
+  <Change author="David Alpert" date="04/23/2006">Applied patch by John Simons:
+- resolves the flicker that appears in the last revision</Change>
+  <Change author="David Alpert" date="04/23/2006">Applied patch by John Simons:
+- adds 4 new ToolbarItem types:
+  - TestBox -&gt; ToolBarTextBox
+  - SplitButton -&gt; ToolBarSplitButton
+  - Label -&gt; ToolBarLabel
+  - Builder -&gt; ISubmenuBuilder
+- also modifies the existing DropDownButton to support subitems like the menu does.
+
+</Change>
+  <Change author="Daniel Grunwald" date="04/22/2006">Serralongue now runs on x64 again (patched DockPanelSuite problem: http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1438642&amp;group_id=110642&amp;atid=659401)</Change>
+  <Change author="Daniel Grunwald" date="04/22/2006">Merged Corsavy r1300:1333 to trunk.</Change>
+  <Change author="Daniel Grunwald" date="04/13/2006">Merged Corsavy r1251:1300 to trunk.</Change>
+  <Change author="Daniel Grunwald" date="04/13/2006">Implemented SD2-706: Opening single files in current SharpDevelop instance</Change>
+  <Change author="Daniel Grunwald" date="04/03/2006">Applied Forms Designer patch by Robert Zaunere.</Change>
+  <Change author="Daniel Grunwald" date="04/03/2006">Default syntax highlighting strategy can be extended - patch by Robert Zaunere.</Change>
+  <Change author="Daniel Grunwald" date="04/03/2006">Class Browser now supports node builders (based on patch by Robert Zaunere)</Change>
+  <Change author="Daniel Grunwald" date="04/02/2006">Merged Corsavy r1227:1251 to trunk.</Change>
+  <Change author="Daniel Grunwald" date="04/01/2006">Fixed exception when typing Ctrl+Space in Boo Interpreter.</Change>
+  <Change author="Daniel Grunwald" date="03/22/2006">Worked on FxCop integration.</Change>
+  <Change author="Daniel Grunwald" date="03/20/2006">Implemented FxCop task.</Change>
+  <Change author="Daniel Grunwald" date="03/19/2006">Merge Corsavy r1208:1227 to trunk.</Change>
+  <Change author="Daniel Grunwald" date="03/11/2006">Add missing dependencies for NSvn.</Change>
+  <Change author="Daniel Grunwald" date="03/11/2006">Merged Corsavy r1195:1208 to trunk:
+  Update to Boo 0.7.6.2160.
+  Fixes SD2-495, SD2-719 and SD2-703.</Change>
+  <Change author="Matt Ward" date="03/09/2006">Validating .xsd files now uses the XmlSchema class which returns better error information.</Change>
+  <Change author="Daniel Grunwald" date="03/04/2006">Merged Corsavy r1183:1195 to trunk:
+Improved VB -&gt; C# converter.
+Add Grouping (only one Column) to SharpReport
+Fixed exception when opening a solution containing web projects.
+Fixed SD2-711: Clear all bookmarks menu option selected when bookmarks pad not visible</Change>
+  <Change author="Daniel Grunwald" date="03/04/2006">SubversionAddIn now shows commands in the project pad context menu; TortoiseSvn is used to display the dialogs.</Change>
+  <Change author="Daniel Grunwald" date="03/03/2006">Update to new NSvn build.</Change>
+  <Change author="Matt Ward" date="03/01/2006">SD2-464.  Added projects and solutions options.</Change>
+  <Change author="Daniel Grunwald" date="02/28/2006">Add Code Analysis AddIn (can control which FxCop rules to run).
+For some reason, FxCop is not being run inside SharpDevelop; but it is when running msbuild.exe from the command line.</Change>
+  <Change author="Daniel Grunwald" date="02/26/2006">Applied IntermediateOutputPath patch by Jeremy Brayton.</Change>
+  <Change author="Matt Ward" date="02/26/2006">SD2-675 - Left/right keys should move the cursor when displaying the code completion window.</Change>
+  <Change author="Daniel Grunwald" date="02/26/2006">Merged Corsavy r1166:1183 to trunk:
+Fixed SD2-695.  Unsetting a breakpoint when viewing an xml document no longer leaves red text behind.
+Fixed SD2-693 - ToolstripContainer designer loading problem
+Fixed SD2-700: Exception when selecting AddIn Manager About option
+Fixed SD2-687: Cannot build entire solution after importing SharpDevelop 1.1 project
+Fixed exception when loading a project when a referenced library was missing dependencies.
+Fixed forum-5455: Importing old Visual Studio projects with non-ASCII characters in system encoding fails.
+Fixed SD2-662, SD2-664 - Replace all inserting incorrect text or getting stuck in an infinite loop.
+Fixed SD2-688: Selecting GAC list items in the Add Components dialog
+Fixed SD2-676: Code completion for a class with many methods can be slow</Change>
+  <Change author="Matt Ward" date="02/25/2006">SD2-704.  The find next button is set to be the default button on the search and replace dialog.</Change>
+  <Change author="Daniel Grunwald" date="02/25/2006">Applied patch by John Simons: Closing an open file tab returns focus to the previously focused tab.</Change>
+  <Change author="Daniel Grunwald" date="02/23/2006">Conditions are now supported in the &lt;Runtime&gt; section of the .addin files. This allows choosing different assemblies based on properties like ${Platform} (Win32 or Win64).
+The new &lt;DisableAddIn&gt; element can be used to disable AddIns completely based on conditions, e.g. when a platform is not supported at all.</Change>
+  <Change author="Matt Ward" date="02/21/2006">PInvoke form now uses the .NET framework's built-in combo box auto-complete, instead of implementing its own.</Change>
+  <Change author="Matt Ward" date="02/21/2006">Added support for NCover's attribute-based type exclusion (command line parameter //ea).  The attributes that will be used to exclude methods or classes can be set in the code coverage project options.  Excluded items will not be displayed in the code coverage pad.</Change>
+  <Change author="Matt Ward" date="02/20/2006">Added format option to the XML menu which will format and indent the entire xml document.</Change>
+  <Change author="Matt Ward" date="02/18/2006">Added extra display options for Code Coverage Pad.  Can now choose to show/hide the visit count list, optionally view the source code next to the coverage tree, or just display the tree on its own.</Change>
+  <Change author="Daniel Grunwald" date="02/18/2006">Merged Corsavy r1138:1166 to trunk.</Change>
+  <Change author="Matt Ward" date="02/16/2006">Modified the MonoCompilerTask class (base class for all mono compiler tasks) so it uses Microsoft's ToolTask class to run the compiler instead of doing all the work itself.</Change>
+  <Change author="Matt Ward" date="02/15/2006">VB.NET projects can now target Mono via the MonoBasic compiler.  All Mono compiler command lines now logged and can be seen when running MSBuild from the command prompt.  Added Gtk# project and file template for VB.NET.</Change>
+  <Change author="Daniel Grunwald" date="02/15/2006">Add quotation marks to batch files -&gt; fixes build if the SharpDevelop path contains a space</Change>
+  <Change author="Matt Ward" date="02/13/2006">VB.NET projects can now target different versions of Microsoft's .NET framework.</Change>
+  <Change author="Daniel Grunwald" date="02/13/2006">Apply our patches to the DockPanel Suite.</Change>
+  <Change author="Daniel Grunwald" date="02/13/2006">Use template file for SharpDevelop.exe.config to prevent Subversion conflicts.</Change>
+  <Change author="Daniel Grunwald" date="02/13/2006">Upgrade to DockPanel Suite 1.0.0.</Change>
+  <Change author="Daniel Grunwald" date="02/12/2006">Add Boo.InterpreterAddIn and SubversionAddIn.
+Use separate directory for storing settings.</Change>
+  <Change author="Daniel Grunwald" date="02/12/2006">Update AssemblyInfo to version 2.1.</Change>
+  <Change author="Christoph Wille" date="02/12/2006">Change log for Beta 2</Change>
   <Change author="Christoph Wille" date="02/12/2006">Modified the sample document for SharpReport. All images are now external to the document (all future documents should follow this guideline, and link to external PNGs instead of embedding images; allows for easier image reuse)</Change>
   <Change author="Daniel Grunwald" date="02/12/2006">Update StringResources</Change>
   <Change author="Daniel Grunwald" date="02/12/2006">Add HtmlPreview and ImageViewer sample AddIns.</Change>
@@ -8,9 +156,9 @@
   <Change author="Daniel Grunwald" date="02/12/2006">Applied patch by Christian Hornung: Forms designer resource loading</Change>
   <Change author="Daniel Grunwald" date="02/12/2006">Infer array literal context from context in FormsDesigner CodeDom converter.
 Updated Boo.Lang.CodeDom.dll -&gt; fixes generation of array literals.</Change>
-  <Change author="peterforstmeier" date="02/12/2006">Changed readme File to RTF, delete bin and bin/Debug</Change>
-  <Change author="peterforstmeier" date="02/12/2006">SharpReport Exampels</Change>
-  <Change author="peterforstmeier" date="02/12/2006">Small changes from FxCop, modifid ConnectionObject.cs</Change>
+  <Change author="Peter Forstmeier" date="02/12/2006">Changed readme File to RTF, delete bin and bin/Debug</Change>
+  <Change author="Peter Forstmeier" date="02/12/2006">SharpReport Exampels</Change>
+  <Change author="Peter Forstmeier" date="02/12/2006">Small changes from FxCop, modifid ConnectionObject.cs</Change>
   <Change author="Christoph Wille" date="02/12/2006">Informational resources document updated</Change>
   <Change author="Christoph Wille" date="02/12/2006">Copyright updated</Change>
   <Change author="Christoph Wille" date="02/12/2006">Old documents deleted (format change)</Change>
@@ -37,7 +185,7 @@ Fixed SD2-684: Cannot open a new form without saving it first.</Change>
   <Change author="Daniel Grunwald" date="02/08/2006">Fixed SD2-666: Code generation for EventHandler produces invalid code
 Fixed SD2-589: Accessing disposed object on shutdown error logged</Change>
   <Change author="Daniel Grunwald" date="02/08/2006">Fixed SD2-680: Exception when deleting the *Designer.cs partial class file</Change>
-  <Change author="peterforstmeier" date="02/08/2006">Better localisation of FieldsExplorer.cs, no dragging of Functions</Change>
+  <Change author="Peter Forstmeier" date="02/08/2006">Better localisation of FieldsExplorer.cs, no dragging of Functions</Change>
   <Change author="Matt Ward" date="02/07/2006">Fixed SD2-678.  Unit testing pad's stop toolbar button is now disabled after a test run has finished.</Change>
   <Change author="David Srbecký" date="02/07/2006">Signature suggested by Ingo Scholtes used for CreateDebuggingInterfaceFromVersion</Change>
   <Change author="Daniel Grunwald" date="02/07/2006">Fixed build error and Forum-4986.</Change>
@@ -46,8 +194,8 @@ Fixed SD2-589: Accessing disposed object on shutdown error logged</Change>
   <Change author="Markus Palme" date="02/07/2006">load resoures when addin is inserted and enabled</Change>
   <Change author="Markus Palme" date="02/07/2006">don't load resources if hintPath is null</Change>
   <Change author="Matt Ward" date="02/07/2006">Moved ProcessRunner and associated classes out of the NAnt and Code Coverage addin and into ICSharpCode.SharpDevelop (Base).</Change>
-  <Change author="peterforstmeier" date="02/07/2006">Fixing Issue SD2-669 from Matt Ward</Change>
-  <Change author="peterforstmeier" date="02/07/2006">Fixing Issue SD2-688 from Matt Ward</Change>
+  <Change author="Peter Forstmeier" date="02/07/2006">Fixing Issue SD2-669 from Matt Ward</Change>
+  <Change author="Peter Forstmeier" date="02/07/2006">Fixing Issue SD2-688 from Matt Ward</Change>
   <Change author="David Srbecký" date="02/07/2006">Console applications run from debug build of #D have their own console</Change>
   <Change author="Markus Palme" date="02/07/2006">bitmap/string resources can now be registered in *.addin files using the tags &lt;BitmapResources&gt; and &lt;StringResources&gt;</Change>
   <Change author="David Srbecký" date="02/07/2006">Implemented SD2-663 - you can copy values from tooltips to clipborad; 
@@ -60,15 +208,15 @@ Reworked breakpoint synchronization.</Change>
   <Change author="David Srbecký" date="02/06/2006">Fixed SD2-649: Breakpoint within anonymous delegate method causes COMException</Change>
   <Change author="Daniel Grunwald" date="02/06/2006">Fixed some NRefactory bugs, added NRefactory unit tests.</Change>
   <Change author="David Srbecký" date="02/06/2006">Fixed SD2-633: Trying to debug a non .NET executable throws an exception</Change>
-  <Change author="davidalpert" date="02/06/2006">Applied patch by John Simons: Closing an open file tab returns focus to the previously focused tab.  Patch edited slightly to use generics &amp; follow DockPane.cs naming conventions.</Change>
-  <Change author="davidalpert" date="02/06/2006">"Save all currently open buffers" option added to OpenFileTab/ContextMenu</Change>
+  <Change author="David Alpert" date="02/06/2006">Applied patch by John Simons: Closing an open file tab returns focus to the previously focused tab.  Patch edited slightly to use generics &amp; follow DockPane.cs naming conventions.</Change>
+  <Change author="David Alpert" date="02/06/2006">"Save all currently open buffers" option added to OpenFileTab/ContextMenu</Change>
   <Change author="Daniel Grunwald" date="02/06/2006">Sort ExtTreeView only when expanding a node for the first time instead of every time a node is expanded.
 OverrideMethodsCodeGenerator now shows methods from base classes when the base class definition is in another part of the class.</Change>
   <Change author="Daniel Grunwald" date="02/05/2006">Fixed SD2-670: Second form resource added if design view switched to from designer partial class</Change>
   <Change author="Daniel Grunwald" date="02/05/2006">Fixed SD2-673: Opening invalid projects raises exception</Change>
   <Change author="Matt Ward" date="02/05/2006">Modified code coverage project guid so SharpDevelop.Tests solution now works.</Change>
   <Change author="Matt Ward" date="02/05/2006">Added missing string resources for Code Coverage addin.</Change>
-  <Change author="peterforstmeier" date="02/05/2006">Further refactoring of ReportGenerator, new Exception MissingModelException.cs added</Change>
+  <Change author="Peter Forstmeier" date="02/05/2006">Further refactoring of ReportGenerator, new Exception MissingModelException.cs added</Change>
   <Change author="Daniel Grunwald" date="02/05/2006">Fixed unit tests.</Change>
   <Change author="Daniel Grunwald" date="02/05/2006">Switch from MbUnit to NUnit:
 Fixes SD2-621 (ExpectedException test failure not added to error list), SD2-408 (Add "Run Test" to member bookmark), SD2-618 (Run test fixture in console with debugger shows no output).</Change>
@@ -87,7 +235,7 @@ Added debugger test: DebuggeeKilled
 </Change>
   <Change author="David Srbecký" date="02/02/2006">Fixed SD2-637: Cannot expand array in debugger tree view; 
 Fixed SD2-612: Debugger exception generated when viewing XmlNamespaceManager members</Change>
-  <Change author="peterforstmeier" date="02/02/2006">Small changes in ReportGenerator and better handling of IDisposable</Change>
+  <Change author="Peter Forstmeier" date="02/02/2006">Small changes in ReportGenerator and better handling of IDisposable</Change>
   <Change author="David Srbecký" date="02/02/2006">Added debugger test: ArrayValue</Change>
   <Change author="Daniel Grunwald" date="02/01/2006">Add JScriptGlobals by John Simons: HtmlHelp settings (e.g. language filter) are now persisted.</Change>
   <Change author="Matt Ward" date="01/31/2006">Added code coverage addin - supports NCover.</Change>
@@ -95,9 +243,9 @@ Fixed SD2-612: Debugger exception generated when viewing XmlNamespaceManager mem
   <Change author="Daniel Grunwald" date="01/30/2006">Patch by Scott Ferrett: List of project file extensions to open when the file was specified on the command line was hardcoded to csproj,vbproj,booproj; now it can be extended using the AddIn tree.</Change>
   <Change author="Daniel Grunwald" date="01/30/2006">Fixed SD2-661: Project browser cannot be navigated with keyboard
 Fixed SD2-578: Changing the "Name" property in the designer does not change the form class name</Change>
-  <Change author="peterforstmeier" date="01/30/2006">FieldsExplorer is invisible until SharpReport run's and update themself from SharpReportView
+  <Change author="Peter Forstmeier" date="01/30/2006">FieldsExplorer is invisible until SharpReport run's and update themself from SharpReportView
 at start and when View's changed</Change>
-  <Change author="davidalpert" date="01/30/2006">Fixed another possible NullReferenceException in recent changes to the project browser.</Change>
+  <Change author="David Alpert" date="01/30/2006">Fixed another possible NullReferenceException in recent changes to the project browser.</Change>
   <Change author="Daniel Grunwald" date="01/29/2006">Fixed SD2-640: Add existing form to project does not add .resx file</Change>
   <Change author="Daniel Grunwald" date="01/29/2006">Applied forms designer patch by Christian Hornung: use the MenuCommandService implementation from the .NET framework.</Change>
   <Change author="Daniel Grunwald" date="01/29/2006">Fixed SD2-639: Renaming a form should rename the resource file</Change>
@@ -108,31 +256,31 @@ at start and when View's changed</Change>
 Fixed SD2-659: No code completion for newly added components to a partial form class</Change>
   <Change author="Daniel Grunwald" date="01/28/2006">Fixed SD2-653: Design tab missing for new form added to project</Change>
   <Change author="Daniel Grunwald" date="01/28/2006">Use default help namespace when help2environment.xml is empty.</Change>
-  <Change author="peterforstmeier" date="01/28/2006">Change delegates to EventHandler&lt;T&gt;</Change>
-  <Change author="peterforstmeier" date="01/27/2006">Fixes from FxCop</Change>
+  <Change author="Peter Forstmeier" date="01/28/2006">Change delegates to EventHandler&lt;T&gt;</Change>
+  <Change author="Peter Forstmeier" date="01/27/2006">Fixes from FxCop</Change>
   <Change author="Daniel Grunwald" date="01/27/2006">Fixed exception when renaming project while project options are opened.</Change>
-  <Change author="peterforstmeier" date="01/27/2006">Folder's are set correctly from ReportWizard</Change>
+  <Change author="Peter Forstmeier" date="01/27/2006">Folder's are set correctly from ReportWizard</Change>
   <Change author="Daniel Grunwald" date="01/25/2006">Fixed path to ngen.
 ${ProductName} now can be used as reference to the name of the product using ICSharpCode.Core.</Change>
   <Change author="Daniel Grunwald" date="01/25/2006">PostInstallTasks now calls ngen for SharpDevelop.exe (and its dependencies).</Change>
-  <Change author="peterforstmeier" date="01/25/2006">More fixes from FxCop</Change>
-  <Change author="peterforstmeier" date="01/24/2006">Applied some rules from FxCop</Change>
+  <Change author="Peter Forstmeier" date="01/25/2006">More fixes from FxCop</Change>
+  <Change author="Peter Forstmeier" date="01/24/2006">Applied some rules from FxCop</Change>
   <Change author="Markus Palme" date="01/23/2006">removed namespace declartions and imports from code</Change>
   <Change author="Daniel Grunwald" date="01/23/2006">The Boo forms designer now supports partial classes.
 VB and Boo templates now use partial classes for the forms designer.</Change>
   <Change author="Markus Palme" date="01/23/2006">added subcategory definitions to vb.net tempates; added singleton and addin templates</Change>
-  <Change author="davidalpert" date="01/23/2006">Grouped code according to interface implementations and added #region wrappers to identify them.
+  <Change author="David Alpert" date="01/23/2006">Grouped code according to interface implementations and added #region wrappers to identify them.
 No change to code or functionality.</Change>
   <Change author="Daniel Grunwald" date="01/23/2006">Fixed SD2-651: Opening a single file displays error message</Change>
   <Change author="Daniel Grunwald" date="01/23/2006">Fixed SD2-650: Find References error with single file open</Change>
   <Change author="Matt Ward" date="01/23/2006">Fixed null reference exception in project browser if the last selected file is null.</Change>
-  <Change author="peterforstmeier" date="01/23/2006">Forgot to clean ReportModel.cs</Change>
-  <Change author="peterforstmeier" date="01/23/2006">Cleanup</Change>
-  <Change author="davidalpert" date="01/23/2006">Improved ProjectBrowser's ability to track the selected file.</Change>
+  <Change author="Peter Forstmeier" date="01/23/2006">Forgot to clean ReportModel.cs</Change>
+  <Change author="Peter Forstmeier" date="01/23/2006">Cleanup</Change>
+  <Change author="David Alpert" date="01/23/2006">Improved ProjectBrowser's ability to track the selected file.</Change>
   <Change author="Daniel Grunwald" date="01/22/2006">Add some strings to the translation database.</Change>
   <Change author="Daniel Grunwald" date="01/22/2006">Include SharpReport in default build.</Change>
   <Change author="Daniel Grunwald" date="01/22/2006">C# form template now uses partial classes. File templates now can use the "DependentUpon" attribute.</Change>
-  <Change author="davidalpert" date="01/21/2006">Fixed small bug introduced by recent changes that entered search results twice for FindAll searches.</Change>
+  <Change author="David Alpert" date="01/21/2006">Fixed small bug introduced by recent changes that entered search results twice for FindAll searches.</Change>
   <Change author="Daniel Grunwald" date="01/21/2006">I forgot to check in some files...</Change>
   <Change author="Daniel Grunwald" date="01/21/2006">Fixed SD2-579: Design tab not always available for partial class forms (patch by Christian Hornung)</Change>
   <Change author="Daniel Grunwald" date="01/21/2006">C# &lt;-&gt; VB converter now converts P/Invoke declarations.</Change>
@@ -141,27 +289,27 @@ No change to code or functionality.</Change>
   <Change author="Matt Ward" date="01/20/2006">Toolbox provider no longer refreshes the project browser pad since new references are added by the project browser itself.  This also fixes a null reference exception that was occuring when the project browser instance was accessed when the pad had not been created.</Change>
   <Change author="Daniel Grunwald" date="01/20/2006">Fixed NRefactory bugs regarding "else if"-statements.</Change>
   <Change author="Daniel Grunwald" date="01/20/2006">Fixed copy-paste into RTF editors when text contained backslash.</Change>
-  <Change author="peterforstmeier" date="01/20/2006">Fixed endless loop for nonsorted Reports, implement a basic checking of CommandText, (check for 'Update' and 'Delete')</Change>
-  <Change author="davidalpert" date="01/20/2006">Recent search results now show in most-recently-displayed-first order.</Change>
+  <Change author="Peter Forstmeier" date="01/20/2006">Fixed endless loop for nonsorted Reports, implement a basic checking of CommandText, (check for 'Update' and 'Delete')</Change>
+  <Change author="David Alpert" date="01/20/2006">Recent search results now show in most-recently-displayed-first order.</Change>
   <Change author="Daniel Grunwald" date="01/19/2006">Added some strings to the translation database.</Change>
   <Change author="Daniel Grunwald" date="01/19/2006">Fixed C# parser bug: cast followed by anonymous method.
 Added "StringResourceToolAddIn" to src/Tools: little AddIn that helps adding resources to our internal translation database.</Change>
-  <Change author="peterforstmeier" date="01/19/2006">Remove RunSharpReport.cs, Extract some Commands for SharpReportView and FieldsExplorer</Change>
+  <Change author="Peter Forstmeier" date="01/19/2006">Remove RunSharpReport.cs, Extract some Commands for SharpReportView and FieldsExplorer</Change>
   <Change author="Daniel Grunwald" date="01/19/2006">Removed Visual Styles workaround that is not needed on .NET 2.0 anymore. This fixes the background color of radio buttons in group boxes when WinXP is used but Visual Styles are disabled.</Change>
   <Change author="Daniel Grunwald" date="01/18/2006">Project converter now converts project settings.</Change>
   <Change author="Matt Ward" date="01/18/2006">User is now prompted for discovery credentials when adding or refreshing a web reference if the server returns a Http status of 401 (Unauthorised).  Tested with basic and NT authentication.</Change>
-  <Change author="peterforstmeier" date="01/17/2006">Add FileTemplate for Sharpreport</Change>
-  <Change author="peterforstmeier" date="01/17/2006">Changed handling of Report Preview</Change>
-  <Change author="peterforstmeier" date="01/17/2006">Modified DatabaseConnections</Change>
+  <Change author="Peter Forstmeier" date="01/17/2006">Add FileTemplate for Sharpreport</Change>
+  <Change author="Peter Forstmeier" date="01/17/2006">Changed handling of Report Preview</Change>
+  <Change author="Peter Forstmeier" date="01/17/2006">Modified DatabaseConnections</Change>
   <Change author="Daniel Grunwald" date="01/16/2006">Added SharpReport</Change>
-  <Change author="davidalpert" date="01/16/2006">SearchResultPanel's 'Select Search Mode' drop-down menu is now generated dynamically from the SearchResultPanelViewMode enum.
+  <Change author="David Alpert" date="01/16/2006">SearchResultPanel's 'Select Search Mode' drop-down menu is now generated dynamically from the SearchResultPanelViewMode enum.
 The drop-down menu now shows which mode is currently selected by setting &amp; updating the ToolStripMenuItem.Checked property of each menu entry.</Change>
-  <Change author="davidalpert" date="01/16/2006">SearchReplaceInFilesManager.ShowSearchResults now calls OnSearchAllFinished to log the results in the 'Show last searches' menu.
+  <Change author="David Alpert" date="01/16/2006">SearchReplaceInFilesManager.ShowSearchResults now calls OnSearchAllFinished to log the results in the 'Show last searches' menu.
 
 Results of RefactoringService features like FindReferences &amp; FindDerivedClasses are now stored &amp; accessible through this menu.
 </Change>
-  <Change author="peterforstmeier" date="01/16/2006">Change in SharpQuery.addin</Change>
-  <Change author="peterforstmeier" date="01/16/2006">Small change in Collections.cs</Change>
+  <Change author="Peter Forstmeier" date="01/16/2006">Change in SharpQuery.addin</Change>
+  <Change author="Peter Forstmeier" date="01/16/2006">Small change in Collections.cs</Change>
   <Change author="Christoph Wille" date="01/16/2006">Changed file names of setup scripts</Change>
   <Change author="Daniel Grunwald" date="01/15/2006">Fixed exception in dynamic help pad when language of current project was unknown (e.g. project file not found)</Change>
   <Change author="Daniel Grunwald" date="01/15/2006">Added SharpQuery.</Change>
@@ -231,10 +379,10 @@ Alt+Ins code generators now use ICSharpCode.SharpDevelop.Refactoring.CodeGenerat
   <Change author="Matt Ward" date="12/24/2005">When checking the project's references, after a control has been dropped onto a form in the designer, the code now ensures that the referenced assembly exists before trying to retrieve the assembly name.  If it does not exist the code tries the GAC.  This handles the case where the HintPath has been set to a folder which does not exist.</Change>
   <Change author="Daniel Grunwald" date="12/23/2005">Fixed C#&lt;-&gt;VB conversion of #if preprocessing directives.</Change>
   <Change author="Daniel Grunwald" date="12/22/2005">Fixed VB lexer crash when "&amp;H" was not followed by a number.</Change>
-  <Change author="Daniel Grunwald" date="12/22/2005">Fixed AltGr-shortcut bug. (AltGr+E now inserts the 'â‚¬' sign instead of showing the exceptions pad).</Change>
+  <Change author="Daniel Grunwald" date="12/22/2005">Fixed AltGr-shortcut bug. (AltGr+E now inserts the '€' sign instead of showing the exceptions pad).</Change>
   <Change author="David Srbecký" date="12/22/2005">Last out parameter used as return value in CorDebugger wrapper; Methods starting with Get or Is converted to properties</Change>
   <Change author="Daniel Grunwald" date="12/21/2005">Fixed NullReferenceException when converting fields without initializer from C# to Boo.</Change>
-  <Change author="davidalpert" date="12/21/2005">Refactored the AbstractMenuCommands in BuildCommands.cs</Change>
+  <Change author="David Alpert" date="12/21/2005">Refactored the AbstractMenuCommands in BuildCommands.cs</Change>
   <Change author="David Srbecký" date="12/20/2005">CorDebugger wrapper used by the debugger</Change>
   <Change author="Markus Palme" date="12/20/2005">worked on vb.net output vistitor: operator declarations</Change>
   <Change author="David Srbecký" date="12/20/2005">Added wrappers for CorDebug</Change>
@@ -360,7 +508,7 @@ Now NDoc can be started with the command "Project &gt; Build documentation with 
   <Change author="Daniel Grunwald" date="11/30/2005">Fixed SD2-577: System.ArgumentException: Value does not fall within the expected range</Change>
   <Change author="Daniel Grunwald" date="11/30/2005">Fixed SD2-585: DataGridView does not appear in Tools | Data tab</Change>
   <Change author="Daniel Grunwald" date="11/29/2005">Add documentation about AddInManager.</Change>
-  <Change author="Daniel Grunwald" date="11/29/2005">Added context menu to AddInManager, put strings into translation database. ChloÃ« (GeneralWizardBackground.png) now uses alpha transparency and looks great in different color profiles.</Change>
+  <Change author="Daniel Grunwald" date="11/29/2005">Added context menu to AddInManager, put strings into translation database. Chloë (GeneralWizardBackground.png) now uses alpha transparency and looks great in different color profiles.</Change>
   <Change author="Daniel Grunwald" date="11/28/2005">Fixed SD2-590: Form Designer does not show child controls of panel</Change>
   <Change author="Daniel Grunwald" date="11/27/2005">Improved AddInManager (updating AddIns now works correctly).
 Form Designer now no longer rewrites fields without modifier, patch by Christian Hornung.</Change>
@@ -793,7 +941,7 @@ Fixed ExpressionFinder bug with identifiers containing underscores.</Change>
   <Change author="David Srbecký" date="08/26/2005">Fixed bug that prevented stepping through anonymous methods.</Change>
   <Change author="Daniel Grunwald" date="08/26/2005">Fixed bug in search pad when document was changed after the search.
 Fixed crash when two classes with the same name were removed from a project content.</Change>
-  <Change author="Daniel Grunwald" date="08/26/2005">Improved overload lookup (but the rules from Â§ 14.4.2.2 are still missing).</Change>
+  <Change author="Daniel Grunwald" date="08/26/2005">Improved overload lookup (but the rules from § 14.4.2.2 are still missing).</Change>
   <Change author="Daniel Grunwald" date="08/26/2005">Add option to choose between "professional" menu style and system menu style.</Change>
   <Change author="Daniel Grunwald" date="08/26/2005">Allow AddIns to add their own string resources to the ResourceService.</Change>
   <Change author="Daniel Grunwald" date="08/26/2005">Fixed bug in InterfaceImplementorCodeGenerator.</Change>

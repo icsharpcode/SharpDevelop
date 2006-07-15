@@ -481,14 +481,13 @@ namespace ICSharpCode.Core
 					}
 				}
 				
-				if (fileContent != null) {
-					parserOutput = parser.Parse(fileProjectContent, fileName, fileContent);
-				} else {
+				if (fileContent == null) {
 					if (!File.Exists(fileName)) {
 						return null;
 					}
-					parserOutput = parser.Parse(fileProjectContent, fileName);
+					fileContent = GetParseableFileContent(fileName);
 				}
+				parserOutput = parser.Parse(fileProjectContent, fileName, fileContent);
 				
 				if (parsings.ContainsKey(fileName)) {
 					ParseInformation parseInformation = parsings[fileName];

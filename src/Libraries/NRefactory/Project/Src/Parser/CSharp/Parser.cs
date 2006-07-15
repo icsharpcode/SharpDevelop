@@ -3886,7 +3886,7 @@ out elseStatement);
 			lexer.NextToken();
 
 #line  1889 "cs.ATG" 
-			List<SwitchSection> switchSections = new List<SwitchSection>(); SwitchSection switchSection; 
+			List<SwitchSection> switchSections = new List<SwitchSection>(); 
 			Expect(20);
 			Expr(
 #line  1890 "cs.ATG" 

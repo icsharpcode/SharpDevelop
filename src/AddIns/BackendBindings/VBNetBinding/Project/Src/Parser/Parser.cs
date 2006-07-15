@@ -91,13 +91,6 @@ namespace VBNetBinding.Parser
 			}
 		}
 		
-		public ICompilationUnit Parse(IProjectContent projectContent, string fileName)
-		{
-			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(fileName, ParserService.DefaultFileEncoding)) {
-				return Parse(p, fileName, projectContent);
-			}
-		}
-		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
 			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguage.VBNet, new StringReader(fileContent))) {

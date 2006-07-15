@@ -21,6 +21,5 @@ using System.Security.Permissions;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: System.Runtime.InteropServices.ComVisible(false)]
 [assembly: System.CLSCompliant(false)]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]

@@ -72,11 +72,6 @@ class InteractiveInterpreterControl(TextEditorControl):
 	
 	_lineHistory as LineHistory
 	
-	// HACK: when the completion window is shown through CTRL+SPACE
-	// it behaves very strangely, the best we can do right now is
-	// to prevent the user from typing
-	_blockKeys = false
-	
 	def constructor():
 		self._interpreter.LinePrinted += self.print
 		self._interpreter.Cleared += self.cls
@@ -183,10 +178,9 @@ class InteractiveInterpreterControl(TextEditorControl):
 					ch)
 		if _codeCompletionWindow is not null:
 			_codeCompletionWindow.Closed += def():
-				_blockKeys = false
+				_codeCompletionWindow = null
 	
 	private def CtrlSpaceComplete():
-		_blockKeys = true
 		ShowCompletionWindow(GlobalsCompletionDataProvider(self._interpreter), char('\0'))
 	
 	private def GetSuggestions():
@@ -236,8 +230,6 @@ class InteractiveInterpreterControl(TextEditorControl):
 		return false
 		
 	private def HandleKeyPress(ch as System.Char) as bool:
-		return true if _blockKeys
-		
 		if InCodeCompletion:
 			_codeCompletionWindow.ProcessKeyEvent(ch)
 		

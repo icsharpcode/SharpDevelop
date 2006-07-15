@@ -367,11 +367,11 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public AttributedNode(List<AttributeSection> attributes) {
+		protected AttributedNode(List<AttributeSection> attributes) {
 			Attributes = attributes;
 		}
 		
-		public AttributedNode(Modifier modifier, List<AttributeSection> attributes) {
+		protected AttributedNode(Modifier modifier, List<AttributeSection> attributes) {
 			Modifier = modifier;
 			Attributes = attributes;
 		}
@@ -1434,7 +1434,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public EventAddRemoveRegion(List<AttributeSection> attributes) : 
+		protected EventAddRemoveRegion(List<AttributeSection> attributes) : 
 				base(attributes) {
 			block = BlockStatement.Null;
 			parameters = new List<ParameterDeclarationExpression>();
@@ -2973,14 +2973,14 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public ParametrizedNode(Modifier modifier, List<AttributeSection> attributes, string name, List<ParameterDeclarationExpression> parameters) : 
+		protected ParametrizedNode(Modifier modifier, List<AttributeSection> attributes, string name, List<ParameterDeclarationExpression> parameters) : 
 				base(attributes) {
 			Modifier = modifier;
 			Name = name;
 			Parameters = parameters;
 		}
 		
-		public ParametrizedNode(Modifier modifier, List<AttributeSection> attributes) : 
+		protected ParametrizedNode(Modifier modifier, List<AttributeSection> attributes) : 
 				base(attributes) {
 			Modifier = modifier;
 			name = "";
@@ -3239,7 +3239,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public PropertyGetSetRegion(BlockStatement block, List<AttributeSection> attributes) : 
+		protected PropertyGetSetRegion(BlockStatement block, List<AttributeSection> attributes) : 
 				base(attributes) {
 			Block = block;
 		}

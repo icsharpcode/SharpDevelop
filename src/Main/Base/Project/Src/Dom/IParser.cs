@@ -40,7 +40,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		bool CanParse(IProject project);
 		
-		ICompilationUnit Parse(IProjectContent projectContent, string fileName);
 		ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent);
 		
 		IResolver CreateResolver();

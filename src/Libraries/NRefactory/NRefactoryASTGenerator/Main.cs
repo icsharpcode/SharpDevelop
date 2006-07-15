@@ -402,7 +402,10 @@ namespace NRefactoryASTGenerator
 			}
 			foreach (ConstructorInfo ctor in type.GetConstructors()) {
 				CodeConstructor c = new CodeConstructor();
-				c.Attributes = MemberAttributes.Public;
+				if (type.IsAbstract)
+					c.Attributes = MemberAttributes.Family;
+				else
+					c.Attributes = MemberAttributes.Public;
 				ctd.Members.Add(c);
 				ConstructorInfo baseCtor = GetBaseCtor(type);
 				foreach(ParameterInfo param in ctor.GetParameters()) {

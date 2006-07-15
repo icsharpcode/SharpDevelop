@@ -9,14 +9,9 @@ using ASTAttribute = ICSharpCode.NRefactory.Parser.AST.Attribute;
 
 COMPILER VBNET
 
-private string assemblyName = null;
 private Stack withStatements;
 private StringBuilder qualidentBuilder = new StringBuilder();
 
-public string ContainingAssembly
-{
-	set { assemblyName = value; }
-}
 Token t
 {
 	[System.Diagnostics.DebuggerStepThrough]

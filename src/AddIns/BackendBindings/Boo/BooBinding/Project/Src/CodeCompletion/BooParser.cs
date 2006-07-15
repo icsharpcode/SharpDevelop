@@ -54,15 +54,6 @@ namespace Grunwald.BooBinding.CodeCompletion
 			return project.Language == BooLanguageBinding.LanguageName;
 		}
 		
-		public ICompilationUnit Parse(IProjectContent projectContent, string fileName)
-		{
-			string content;
-			using (StreamReader reader = new StreamReader(fileName)) {
-				content = reader.ReadToEnd();
-			}
-			return Parse(projectContent, fileName, content);
-		}
-		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
 			LoggingService.Debug("Parse " + fileName);

@@ -17,10 +17,10 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	{
 		string type = "";
 		string systemType = "";
-		int    pointerNestingLevel = 0;
-		int[]  rankSpecifier = null;
+		int    pointerNestingLevel;
+		int[]  rankSpecifier;
 		List<TypeReference> genericTypes = new List<TypeReference>();
-		bool isGlobal = false;
+		bool isGlobal;
 		
 		static Dictionary<string, string> types   = new Dictionary<string, string>();
 		static Dictionary<string, string> vbtypes = new Dictionary<string, string>();
