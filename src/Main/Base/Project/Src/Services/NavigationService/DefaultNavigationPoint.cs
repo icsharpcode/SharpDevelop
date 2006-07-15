@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Drawing;
+using System.Globalization;
 
 namespace ICSharpCode.Core
 {
@@ -24,7 +24,7 @@ namespace ICSharpCode.Core
 		public DefaultNavigationPoint(string fileName) : this(fileName, null) {}
 		public DefaultNavigationPoint(string fileName, object data)
 		{
-			this.fileName = fileName;
+			this.fileName = fileName == null ? String.Empty : fileName;
 			this.data = data;
 		}
 		#endregion
@@ -32,7 +32,8 @@ namespace ICSharpCode.Core
 		#region overrides
 		public override string ToString()
 		{
-			return String.Format("[{0}: {1}]",
+			return String.Format(CultureInfo.CurrentCulture,
+			                     "[{0}: {1}]",
 			                     this.GetType().Name,
 			                     this.Description);
 		}
@@ -47,7 +48,8 @@ namespace ICSharpCode.Core
 		
 		public virtual string Description {
 			get {
-				return String.Format("{0}: {1}", fileName, data);
+				return String.Format(CultureInfo.CurrentCulture,
+				                     "{0}: {1}", fileName, data);
 			}
 		}
 		
@@ -82,7 +84,7 @@ namespace ICSharpCode.Core
 				data = value;
 			}
 		}
-				
+		
 		public virtual void JumpTo()
 		{
 			FileService.JumpToFilePosition(this.FileName, 0, 0);
@@ -90,7 +92,7 @@ namespace ICSharpCode.Core
 		
 		public void FileNameChanged(string newName)
 		{
-			fileName = newName;
+			fileName = newName == null ? String.Empty : newName;
 		}
 		
 		public virtual void ContentChanging(object sender, EventArgs e)
@@ -99,19 +101,7 @@ namespace ICSharpCode.Core
 		}
 		#endregion
 
-		#region IComparable
-		public virtual int CompareTo(object obj)
-		{
-			if (this.GetType() != obj.GetType()) {
-				return this.GetType().Name.CompareTo(obj.GetType().Name);
-			}
-			DefaultNavigationPoint b = obj as DefaultNavigationPoint;
-			return this.FileName.CompareTo(b.FileName);
-		}
-		
-		#endregion
-		
-		#region Equality		
+		#region Equality
 
 		public override bool Equals(object obj)
 		{
@@ -125,6 +115,39 @@ namespace ICSharpCode.Core
 			return this.FileName.GetHashCode();
 		}
 		#endregion
+
+		#region IComparable
+		public virtual int CompareTo(object obj)
+		{
+			if (obj == null) return 1;
+			if (this.GetType() != obj.GetType()) {
+				// if of different types, sort the types by name
+				return this.GetType().Name.CompareTo(obj.GetType().Name);
+			}
+			DefaultNavigationPoint b = obj as DefaultNavigationPoint;
+			return this.FileName.CompareTo(b.FileName);
+		}
+
+		// Omitting any of the following operator overloads
+		// violates rule: OverrideMethodsOnComparableTypes.
+		public static bool operator == (DefaultNavigationPoint p1, DefaultNavigationPoint p2)
+		{
+			return p1==null ? p2==null : p1.Equals(p2);
+		}
+		public static bool operator != (DefaultNavigationPoint p1, DefaultNavigationPoint p2)
+		{
+			return !(p1==p2);
+		}
+		public static bool operator < (DefaultNavigationPoint p1, DefaultNavigationPoint p2)
+		{
+			return p1==null ? p2!=null : (p1.CompareTo(p2) < 0);
+		}
+		public static bool operator > (DefaultNavigationPoint p1, DefaultNavigationPoint p2)
+		{
+			return p1==null ? false : (p1.CompareTo(p2) > 0);
+		}
+		#endregion
+		
 	}
 }
 

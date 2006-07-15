@@ -104,15 +104,15 @@ namespace NavigationServiceTests
 		[Test]
 		/// <summary>
 		/// The <see cref="NavigationService"/> must
-		/// expose a list of points in it's history.
-		/// <see cref="List<T>"/> of type
+		/// expose a list of points in it's history:
+		/// <see cref="ICollection<T>"/> of type
 		/// <see cref="INavigationPoint"/>.
 		/// </summary>
 		/// <remarks>necessary for testing and for menu building</remarks>
 		public void GetListOfPointsTest()
 		{
-			Assert.IsInstanceOfType(typeof(List<INavigationPoint>),
-			                        NavigationService.GetListOfPoints());
+			Assert.IsInstanceOfType(typeof(ICollection<INavigationPoint>),
+			                        NavigationService.Points;
 		}
 		
 		[Test]
@@ -536,6 +536,7 @@ namespace NavigationServiceTests
 		}
 		
 		[Test]
+		[Ignore] // this test disabled on purpose - DA
 		/// <summary>
 		/// The <see cref="NavigationService"/> must
 		/// ignore requests to log a point equivalent

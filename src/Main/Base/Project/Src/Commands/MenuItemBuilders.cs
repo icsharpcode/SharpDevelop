@@ -25,16 +25,17 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		// TODO: refactor BuildSubmenu to add a choice between flat and perfile, eventually per class/method sorting of the list
 		
-		ToolStripItem[] BuildMenuFlat(List<INavigationPoint> points, int additionalItems)
+		ToolStripItem[] BuildMenuFlat(ICollection<INavigationPoint> points, int additionalItems)
 		{
 			ToolStripItem[] items = new ToolStripItem[points.Count+additionalItems];
 			MenuCommand cmd = null;
 			INavigationPoint p = null;
+			List<INavigationPoint> list = new List<INavigationPoint>(points);
 			
 			int n = points.Count-1; // the last point
 			int i = 0;
 			while (i<points.Count) {
-				p = points[n-i];
+				p = list[n-i];
 				cmd = new MenuCommand(p.Description, new EventHandler(NavigateTo));
 				cmd.Tag = p;
 //					if (p == NavigationService.CurrentPosition) {
@@ -44,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			}
 			return items;
 		}
-		ToolStripItem[] BuildMenuByFile(List<INavigationPoint> points, int additionalItems)
+		ToolStripItem[] BuildMenuByFile(ICollection<INavigationPoint> points, int additionalItems)
 		{
 			Dictionary<string, List<INavigationPoint>> files =
 				new Dictionary<string, List<INavigationPoint>>();
@@ -107,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			MenuCommand cmd = null;
 			if (NavigationService.CanNavigateBack || NavigationService.CanNavigateForwards) {
-				List<INavigationPoint> points = NavigationService.GetListOfPoints();
+				ICollection<INavigationPoint> points = NavigationService.Points;
 
 				//ToolStripItem[] items = BuildMenuFlat(points, numberOfAdditionalItems);
 				ToolStripItem[] items = BuildMenuByFile(points, numberOfAdditionalItems);
