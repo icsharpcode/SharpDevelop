@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Parser;
@@ -141,6 +142,24 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
+		public bool Initialize(string fileName, int caretLineNumber, int caretColumn)
+		{
+			this.caretLine   = caretLineNumber;
+			this.caretColumn = caretColumn;
+			
+			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
+			if (parseInfo == null) {
+				return false;
+			}
+			
+			cu = parseInfo.MostRecentCompilationUnit;
+			
+			if (cu != null) {
+				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
+			}
+			return true;
+		}
+		
 		public ResolveResult Resolve(ExpressionResult expressionResult,
 		                             int caretLineNumber,
 		                             int caretColumn,
@@ -149,19 +168,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			string expression = GetFixedExpression(expressionResult);
 			
-			this.caretLine   = caretLineNumber;
-			this.caretColumn = caretColumn;
-			
-			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
-			if (parseInfo == null) {
+			if (!Initialize(fileName, caretLineNumber, caretColumn))
 				return null;
-			}
-			
-			cu = parseInfo.MostRecentCompilationUnit;
-			
-			if (cu != null) {
-				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
-			}
 			
 			Expression expr = null;
 			if (language == SupportedLanguage.VBNet) {
@@ -245,19 +253,47 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
+		public INode ParseCurrentMember(string fileContent)
+		{
+			CompilationUnit cu = ParseCurrentMemberAsCompilationUnit(fileContent);
+			if (cu != null && cu.Children.Count > 0) {
+				TypeDeclaration td = cu.Children[0] as TypeDeclaration;
+				if (td != null && td.Children.Count > 0) {
+					return td.Children[0];
+				}
+			}
+			return null;
+		}
+		
+		public CompilationUnit ParseCurrentMemberAsCompilationUnit(string fileContent)
+		{
+			System.IO.TextReader content = ExtractCurrentMethod(fileContent);
+			if (content != null) {
+				ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser(language, content);
+				p.Parse();
+				return p.CompilationUnit;
+			} else {
+				return null;
+			}
+		}
+		
 		void RunLookupTableVisitor(string fileContent)
 		{
 			lookupTableVisitor = new LookupTableVisitor(languageProperties.NameComparer);
 			
 			callingMember = GetCurrentMember();
 			if (callingMember != null) {
-				System.IO.TextReader content = ExtractMethod(fileContent, callingMember);
-				if (content != null) {
-					ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser(language, content);
-					p.Parse();
-					lookupTableVisitor.Visit(p.CompilationUnit, null);
+				CompilationUnit cu = ParseCurrentMemberAsCompilationUnit(fileContent);
+				if (cu != null) {
+					lookupTableVisitor.Visit(cu, null);
 				}
 			}
+		}
+		
+		public void RunLookupTableVisitor(INode currentMemberNode)
+		{
+			lookupTableVisitor = new LookupTableVisitor(languageProperties.NameComparer);
+			currentMemberNode.AcceptVisitor(lookupTableVisitor, null);
 		}
 		
 		string GetAttributeName(Expression expr)
@@ -310,7 +346,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		ResolveResult ResolveInternal(Expression expr, ExpressionContext context)
+		public ResolveResult ResolveInternal(Expression expr, ExpressionContext context)
 		{
 			TypeVisitor typeVisitor = new TypeVisitor(this);
 			IReturnType type;
@@ -459,12 +495,22 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return ResolveMethod(type, fieldReferenceExpression.FieldName);
 		}
 		
+		public TextReader ExtractCurrentMethod(string fileContent)
+		{
+			if (callingMember == null)
+				callingMember = GetCurrentMember();
+			if (callingMember == null)
+				return null;
+			return ExtractMethod(fileContent, callingMember, language, caretLine);
+		}
+		
 		/// <summary>
 		/// Creates a new class containing only the specified member.
 		/// This is useful because we only want to parse current method for local variables,
 		/// as all fields etc. are already prepared in the AST.
 		/// </summary>
-		System.IO.TextReader ExtractMethod(string fileContent, IMember member)
+		public static TextReader ExtractMethod(string fileContent, IMember member,
+		                                       SupportedLanguage language, int caretLine)
 		{
 			// As the parse information is always some seconds old, the end line could be wrong
 			// if the user just inserted a line in the method.
@@ -998,11 +1044,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			callingMember = GetCurrentMember();
 			if (callingMember != null) {
-				System.IO.TextReader content = ExtractMethod(fileContent, callingMember);
-				if (content != null) {
-					ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser(language, content);
-					p.Parse();
-					lookupTableVisitor.Visit(p.CompilationUnit, null);
+				CompilationUnit parsedCu = ParseCurrentMemberAsCompilationUnit(fileContent);
+				if (cu != null) {
+					lookupTableVisitor.Visit(parsedCu, null);
 				}
 			}
 			

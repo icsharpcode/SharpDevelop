@@ -16,6 +16,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.NRefactory.Parser;
+using AST = ICSharpCode.NRefactory.Parser.AST;
 using CSTokens = ICSharpCode.NRefactory.Parser.CSharp.Tokens;
 
 namespace CSharpBinding
@@ -115,6 +116,17 @@ namespace CSharpBinding
 							}
 						}
 					}
+				} else if (position > 0) {
+					ExpressionResult result = ef.FindFullExpression(documentText, position);
+					
+					if(result.Expression != null) {
+						ResolveResult resolveResult = ParserService.Resolve(result, editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1, editor.FileName, documentText);
+						if (resolveResult != null && resolveResult.ResolvedType != null) {
+							if (ProvideContextCompletion(editor, resolveResult.ResolvedType, ch)) {
+								return true;
+							}
+						}
+					}
 				}
 			} else if (ch == ';') {
 				LineSegment curLine = editor.Document.GetLineSegmentForOffset(cursor);
@@ -157,6 +169,7 @@ namespace CSharpBinding
 			return false;
 		}
 		
+		#region Re-show insight window
 		void ShowInsight(SharpDevelopTextAreaControl editor, MethodInsightDataProvider dp, Stack<ResolveResult> parameters, char charTyped)
 		{
 			int paramCount = parameters.Count;
@@ -202,10 +215,10 @@ namespace CSharpBinding
 			}
 		}
 		
-		void ProvideContextCompletion(SharpDevelopTextAreaControl editor, IReturnType expected, char charTyped)
+		bool ProvideContextCompletion(SharpDevelopTextAreaControl editor, IReturnType expected, char charTyped)
 		{
 			IClass c = expected.GetUnderlyingClass();
-			if (c == null) return;
+			if (c == null) return false;
 			if (c.ClassType == ClassType.Enum) {
 				CtrlSpaceCompletionDataProvider cdp = new CtrlSpaceCompletionDataProvider();
 				cdp.ForceNewExpression = true;
@@ -223,11 +236,14 @@ namespace CSharpBinding
 					}
 				}
 				if (cache.DefaultIndex >= 0) {
-					cache.InsertSpace = true;
+					if (charTyped != ' ') cache.InsertSpace = true;
 					editor.ShowCompletionWindow(cache, charTyped);
+					return true;
 				}
 			}
+			return false;
 		}
+		#endregion
 		
 		bool IsInComment(SharpDevelopTextAreaControl editor)
 		{
@@ -258,6 +274,8 @@ namespace CSharpBinding
 					return true;
 				case "new":
 					return ShowNewCompletion(editor);
+				case "case":
+					return DoCaseCompletion(editor);
 				default:
 					return base.HandleKeyword(editor, word);
 			}
@@ -274,5 +292,47 @@ namespace CSharpBinding
 			}
 			return false;
 		}
+		
+		#region "case"-keyword completion
+		bool DoCaseCompletion(SharpDevelopTextAreaControl editor)
+		{
+			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
+			NRefactoryResolver r = new NRefactoryResolver(SupportedLanguage.CSharp);
+			if (r.Initialize(editor.FileName, caret.Line + 1, caret.Column + 1)) {
+				AST.INode currentMember = r.ParseCurrentMember(editor.Text);
+				if (currentMember != null) {
+					CaseCompletionSwitchFinder ccsf = new CaseCompletionSwitchFinder(caret.Line + 1, caret.Column + 1);
+					currentMember.AcceptVisitor(ccsf, null);
+					if (ccsf.bestStatement != null) {
+						r.RunLookupTableVisitor(currentMember);
+						ResolveResult rr = r.ResolveInternal(ccsf.bestStatement.SwitchExpression, ExpressionContext.Default);
+						if (rr != null && rr.ResolvedType != null) {
+							return ProvideContextCompletion(editor, rr.ResolvedType, ' ');
+						}
+					}
+				}
+			}
+			return false;
+		}
+		
+		private class CaseCompletionSwitchFinder : AbstractAstVisitor
+		{
+			Location caretLocation;
+			internal AST.SwitchStatement bestStatement;
+			
+			public CaseCompletionSwitchFinder(int caretLine, int caretColumn)
+			{
+				caretLocation = new Location(caretColumn, caretLine);
+			}
+			
+			public override object Visit(AST.SwitchStatement switchStatement, object data)
+			{
+				if (switchStatement.StartLocation < caretLocation && caretLocation < switchStatement.EndLocation) {
+					bestStatement = switchStatement;
+				}
+				return base.Visit(switchStatement, data);
+			}
+		}
+		#endregion
 	}
 }
