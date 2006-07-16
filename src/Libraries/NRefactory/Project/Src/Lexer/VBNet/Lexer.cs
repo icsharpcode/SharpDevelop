@@ -17,7 +17,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 {
 	internal class Lexer : AbstractLexer
 	{
-		bool lineEnd = false;
+		bool lineEnd = true;
 		
 		public Lexer(TextReader reader) : base(reader)
 		{
@@ -61,7 +61,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						int x = Col - 1;
 						int y = Line;
 						if (HandleLineEnd(ch)) {
-							if (!lineEnd) {
+							if (lineEnd) {
+								// second line end before getting to a token
+								// -> here was a blank line
+								specialTracker.AddEndOfLine(new Location(x, y));
+							} else {
 								lineEnd = true;
 								return new Token(Tokens.EOL, x, y);
 							}
@@ -706,6 +710,19 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					return new Token(Tokens.QuestionMark, x, y);
 			}
 			return null;
+		}
+		
+		public override void SkipCurrentBlock(int targetToken)
+		{
+			int lastKind = -1;
+			int kind = base.lastToken.kind;
+			while (kind != Tokens.EOF &&
+			       !(lastKind == Tokens.End && kind == targetToken))
+			{
+				lastKind = kind;
+				NextToken();
+				kind = lastToken.kind;
+			}
 		}
 	}
 }

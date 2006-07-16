@@ -9,488 +9,6 @@ using Types = ICSharpCode.NRefactory.Parser.AST.ClassType;
 
 COMPILER CS    /* AW 2002-12-30 renamed from CompilationUnit to CS  */
 
-/*----------------------------- token sets -------------------------------*/
-string        assemblyName     = null;
-StringBuilder qualidentBuilder = new StringBuilder();
-
-public string ContainingAssembly {
-	set {
-		assemblyName = value;
-	}
-}
-
-Token t {
-	[System.Diagnostics.DebuggerStepThrough]
-	get {
-		return lexer.Token;
-	}
-}
-
-Token la {
-	[System.Diagnostics.DebuggerStepThrough]
-	get {
-		return lexer.LookAhead;
-	}
-}
-
-public void Error(string s)
-{
-	if (errDist >= minErrDist) {
-		errors.Error(la.line, la.col, s);
-	}
-	errDist = 0;
-}
-
-public override Expression ParseExpression()
-{
-	lexer.NextToken();
-	Expression expr;
-	Expr(out expr);
-	return expr;
-}
-// Begin ISTypeCast
-bool IsTypeCast()
-{
-	if (la.kind != Tokens.OpenParenthesis) {
-		return false;
-	}
-	if (IsSimpleTypeCast()) {
-		return true;
-	}
-	return GuessTypeCast();
-}
-
-// "(" ( typeKW [ "[" {","} "]" | "*" ] | void  ( "[" {","} "]" | "*" ) ) ")"
-// only for built-in types, all others use GuessTypeCast!
-bool IsSimpleTypeCast ()
-{
-	// assert: la.kind == _lpar
-	lexer.StartPeek();
-	Token pt = lexer.Peek();
-	
-	if (!IsTypeKWForTypeCast(ref pt)) {
-		return false;
-	}
-	if (pt.kind == Tokens.Question)
-		pt = lexer.Peek();
-	return pt.kind == Tokens.CloseParenthesis;
-}
-
-/* !!! Proceeds from current peek position !!! */
-bool IsTypeKWForTypeCast(ref Token pt)
-{
-	if (Tokens.TypeKW[pt.kind]) {
-		pt = lexer.Peek();
-		return IsPointerOrDims(ref pt) && SkipQuestionMark(ref pt);
-	} else if (pt.kind == Tokens.Void) {
-		pt = lexer.Peek();
-		return IsPointerOrDims(ref pt);
-	}
-	return false;
-}
-
-/* !!! Proceeds from current peek position !!! */
-bool IsTypeNameOrKWForTypeCast(ref Token pt)
-{
-	if (IsTypeKWForTypeCast(ref pt))
-		return true;
-	else
-		return IsTypeNameForTypeCast(ref pt);
-}
-
-// TypeName = ident [ "::" ident ] { ["<" TypeNameOrKW { "," TypeNameOrKW } ">" ] "." ident } ["?"] PointerOrDims
-/* !!! Proceeds from current peek position !!! */
-bool IsTypeNameForTypeCast(ref Token pt)
-{
-	// ident
-	if (pt.kind != Tokens.Identifier) {
-		return false;
-	}	
-	pt = Peek();
-	// "::" ident
-	if (pt.kind == Tokens.DoubleColon) {
-		pt = Peek();
-		if (pt.kind != Tokens.Identifier) {
-			return false;
-		}
-		pt = Peek();
-	}
-	// { ["<" TypeNameOrKW { "," TypeNameOrKW } ">" ] "." ident }
-	while (true) {
-		if (pt.kind == Tokens.LessThan) {
-			do {
-				pt = Peek();
-				if (!IsTypeNameOrKWForTypeCast(ref pt)) {
-					return false;
-				}
-			} while (pt.kind == Tokens.Comma);
-			if (pt.kind != Tokens.GreaterThan) {
-				return false;
-			}
-			pt = Peek();
-		}
-		if (pt.kind != Tokens.Dot)
-			break;
-		pt = Peek();
-		if (pt.kind != Tokens.Identifier) {
-			return false;
-		}
-		pt = Peek();
-	}
-	// ["?"]
-	if (pt.kind == Tokens.Question) {
-		pt = Peek();
-	}
-	if (pt.kind == Tokens.Times || pt.kind == Tokens.OpenSquareBracket) {
-		return IsPointerOrDims(ref pt);
-	}
-	return true;
-}
-
-// "(" TypeName ")" castFollower
-bool GuessTypeCast ()
-{
-	// assert: la.kind == _lpar
-	StartPeek();
-	Token pt = Peek();
-
-	if (!IsTypeNameForTypeCast(ref pt)) {
-		return false;
-	}
-	
-	// ")"
-	if (pt.kind != Tokens.CloseParenthesis) {
-		return false;
-	}
-	// check successor
-	pt = Peek();
-	return Tokens.CastFollower[pt.kind] || (Tokens.TypeKW[pt.kind] && lexer.Peek().kind == Tokens.Dot);
-}
-// END IsTypeCast
-
-/* Checks whether the next sequences of tokens is a qualident *
- * and returns the qualident string                           */
-/* !!! Proceeds from current peek position !!! */
-bool IsQualident(ref Token pt, out string qualident)
-{
-	if (pt.kind == Tokens.Identifier) {
-		qualidentBuilder.Length = 0; qualidentBuilder.Append(pt.val);
-		pt = Peek();
-	while (pt.kind == Tokens.Dot || pt.kind == Tokens.DoubleColon) {
-			pt = Peek();
-			if (pt.kind != Tokens.Identifier) {
-				qualident = String.Empty;
-				return false;
-			}
-			qualidentBuilder.Append('.');
-			qualidentBuilder.Append(pt.val);
-			pt = Peek();
-		}
-		qualident = qualidentBuilder.ToString();
-		return true;
-	}
-	qualident = String.Empty;
-	return false;
-}
-
-/* Skips generic type extensions */
-/* !!! Proceeds from current peek position !!! */
-
-/* skip: { "*" | "[" { "," } "]" } */
-/* !!! Proceeds from current peek position !!! */
-bool IsPointerOrDims (ref Token pt)
-{
-	for (;;) {
-		if (pt.kind == Tokens.OpenSquareBracket) {
-			do pt = Peek();
-			while (pt.kind == Tokens.Comma);
-			if (pt.kind != Tokens.CloseSquareBracket) return false;
-		} else if (pt.kind != Tokens.Times) break;
-		pt = Peek();
-	}
-	return true;
-}
-
-/* Return the n-th token after the current lookahead token */
-void StartPeek()
-{
-	lexer.StartPeek();
-}
-
-Token Peek()
-{
-	return lexer.Peek();
-}
-
-Token Peek (int n)
-{
-	lexer.StartPeek();
-	Token x = la;
-	while (n > 0) {
-		x = lexer.Peek();
-		n--;
-	}
-	return x;
-}
-
-/*-----------------------------------------------------------------*
- * Resolver routines to resolve LL(1) conflicts:                   *                                                  *
- * These resolution routine return a boolean value that indicates  *
- * whether the alternative at hand shall be choosen or not.        *
- * They are used in IF ( ... ) expressions.                        *       
- *-----------------------------------------------------------------*/
-
-/* True, if ident is followed by "=" */
-bool IdentAndAsgn ()
-{
-	return la.kind == Tokens.Identifier && Peek(1).kind == Tokens.Assign;
-}
-
-bool IsAssignment () { return IdentAndAsgn(); }
-
-/* True, if ident is followed by ",", "=", or ";" */
-bool IdentAndCommaOrAsgnOrSColon () {
-	int peek = Peek(1).kind;
-	return la.kind == Tokens.Identifier && 
-	       (peek == Tokens.Comma || peek == Tokens.Assign || peek == Tokens.Semicolon);
-}
-bool IsVarDecl () { return IdentAndCommaOrAsgnOrSColon(); }
-
-/* True, if the comma is not a trailing one, *
- * like the last one in: a, b, c,            */
-bool NotFinalComma () {
-	int peek = Peek(1).kind;
-	return la.kind == Tokens.Comma &&
-	       peek != Tokens.CloseCurlyBrace && peek != Tokens.CloseSquareBracket;
-}
-
-/* True, if "void" is followed by "*" */
-bool NotVoidPointer () {
-	return la.kind == Tokens.Void && Peek(1).kind != Tokens.Times;
-}
-
-/* True, if "checked" or "unchecked" are followed by "{" */
-bool UnCheckedAndLBrace () {
-	return la.kind == Tokens.Checked || la.kind == Tokens.Unchecked &&
-	       Peek(1).kind == Tokens.OpenCurlyBrace;
-}
-
-/* True, if "." is followed by an ident */
-bool DotAndIdent () {
-	return la.kind == Tokens.Dot && Peek(1).kind == Tokens.Identifier;
-}
-
-/* True, if ident is followed by ":" */
-bool IdentAndColon () {
-	return la.kind == Tokens.Identifier && Peek(1).kind == Tokens.Colon;
-}
-
-bool IsLabel () { return IdentAndColon(); }
-
-/* True, if ident is followed by "(" */
-bool IdentAndLPar () {
-	return la.kind == Tokens.Identifier && Peek(1).kind == Tokens.OpenParenthesis;
-}
-
-/* True, if "catch" is followed by "(" */
-bool CatchAndLPar () {
-	return la.kind == Tokens.Catch && Peek(1).kind == Tokens.OpenParenthesis;
-}
-bool IsTypedCatch () { return CatchAndLPar(); }
-
-/* True, if "[" is followed by the ident "assembly" */
-bool IsGlobalAttrTarget () {
-	Token pt = Peek(1);
-	return la.kind == Tokens.OpenSquareBracket && 
-	       pt.kind == Tokens.Identifier && pt.val == "assembly";
-}
-
-/* True, if "[" is followed by "," or "]" */
-bool LBrackAndCommaOrRBrack () {
-	int peek = Peek(1).kind;
-	return la.kind == Tokens.OpenSquareBracket &&
-	       (peek == Tokens.Comma || peek == Tokens.CloseSquareBracket);
-}
-
-bool IsDims () { return LBrackAndCommaOrRBrack(); }
-
-/* True, if "[" is followed by "," or "]" */
-/* or if the current token is "*"         */
-bool TimesOrLBrackAndCommaOrRBrack () {
-	return la.kind == Tokens.Times || LBrackAndCommaOrRBrack();
-}
-bool IsPointerOrDims () { return TimesOrLBrackAndCommaOrRBrack(); }
-bool IsPointer () { return la.kind == Tokens.Times; }
-
-
-bool SkipGeneric(ref Token pt)
-{
-	if (pt.kind == Tokens.LessThan) {
-		do {
-			pt = Peek();
-			if (!IsTypeNameOrKWForTypeCast(ref pt)) return false;
-		} while (pt.kind == Tokens.Comma);
-		if (pt.kind != Tokens.GreaterThan) return false;
-		pt = Peek();
-	}
-	return true;
-}
-bool SkipQuestionMark(ref Token pt)
-{
-	if (pt.kind == Tokens.Question) {
-		pt = Peek();
-	}
-	return true;
-}
-
-/* True, if lookahead is a primitive type keyword, or */
-/* if it is a type declaration followed by an ident   */
-bool IsLocalVarDecl () {
-	if (IsYieldStatement()) {
-		return false;
-	}
-	if ((Tokens.TypeKW[la.kind] && Peek(1).kind != Tokens.Dot) || la.kind == Tokens.Void) {
-		return true;
-	}
-	
-	StartPeek();
-	Token pt = la;
-	return IsTypeNameOrKWForTypeCast(ref pt) && pt.kind == Tokens.Identifier;
-}
-
-/* True if lookahead is type parameters (<...>) followed by the specified token */
-bool IsGenericFollowedBy(int token)
-{
-	Token t = la;
-	if (t.kind != Tokens.LessThan) return false;
-	StartPeek();
-	return SkipGeneric(ref t) && t.kind == token;
-}
-
-bool IsExplicitInterfaceImplementation()
-{
-	StartPeek();
-	Token pt = la;
-	pt = Peek();
-	if (pt.kind == Tokens.Dot || pt.kind == Tokens.DoubleColon)
-		return true;
-	if (pt.kind == Tokens.LessThan) {
-		if (SkipGeneric(ref pt))
-			return pt.kind == Tokens.Dot;
-	}
-	return false;
-}
-
-/* True, if lookahead ident is "where" */
-bool IdentIsWhere () {
-	return la.kind == Tokens.Identifier && la.val == "where";
-}
-
-/* True, if lookahead ident is "get" */
-bool IdentIsGet () {
-	return la.kind == Tokens.Identifier && la.val == "get";
-}
-
-/* True, if lookahead ident is "set" */
-bool IdentIsSet () {
-	return la.kind == Tokens.Identifier && la.val == "set";
-}
-
-/* True, if lookahead ident is "add" */
-bool IdentIsAdd () {
-	return la.kind == Tokens.Identifier && la.val == "add";
-}
-
-/* True, if lookahead ident is "remove" */
-bool IdentIsRemove () {
-	return la.kind == Tokens.Identifier && la.val == "remove";
-}
-
-bool IsNotYieldStatement () {
-	return !IsYieldStatement();
-}
-/* True, if lookahead ident is "yield" and than follows a break or return */
-bool IsYieldStatement () {
-	return la.kind == Tokens.Identifier && la.val == "yield" && (Peek(1).kind == Tokens.Return || Peek(1).kind == Tokens.Break);
-}
-
-/* True, if lookahead is a local attribute target specifier, *
- * i.e. one of "event", "return", "field", "method",         *
- *             "module", "param", "property", or "type"      */
-bool IsLocalAttrTarget () {
-	int cur = la.kind;
-	string val = la.val;
-
-	return (cur == Tokens.Event || cur == Tokens.Return ||
-	        (cur == Tokens.Identifier &&
-	         (val == "field" || val == "method"   || val == "module" ||
-	          val == "param" || val == "property" || val == "type"))) &&
-	       Peek(1).kind == Tokens.Colon;
-}
-
-bool IsShiftRight() 
-{
-	Token next = Peek(1);
-	// TODO : Add col test (seems not to work, lexer bug...) :  && la.col == next.col - 1
-	return (la.kind == Tokens.GreaterThan && next.kind == Tokens.GreaterThan);
-}
-
-bool IsTypeReferenceExpression(Expression expr)
-{
-	if (expr is TypeReferenceExpression) return ((TypeReferenceExpression)expr).TypeReference.GenericTypes.Count == 0;
-	while (expr is FieldReferenceExpression) {
-		expr = ((FieldReferenceExpression)expr).TargetObject;
-		if (expr is TypeReferenceExpression) return true;
-	}
-	return expr is IdentifierExpression;
-}
-
-TypeReferenceExpression GetTypeReferenceExpression(Expression expr, List<TypeReference> genericTypes)
-{
-	TypeReferenceExpression	tre = expr as TypeReferenceExpression;
-	if (tre != null) {
-		return new TypeReferenceExpression(new TypeReference(tre.TypeReference.Type, tre.TypeReference.PointerNestingLevel, tre.TypeReference.RankSpecifier, genericTypes));
-	}
-	StringBuilder b = new StringBuilder();
-	if (!WriteFullTypeName(b, expr)) {
-		// there is some TypeReferenceExpression hidden in the expression
-		while (expr is FieldReferenceExpression) {
-			expr = ((FieldReferenceExpression)expr).TargetObject;
-		}
-		tre = expr as TypeReferenceExpression;
-		if (tre != null) {
-			TypeReference typeRef = tre.TypeReference;
-			if (typeRef.GenericTypes.Count == 0) {
-				typeRef = typeRef.Clone();
-				typeRef.Type += "." + b.ToString();
-				typeRef.GenericTypes.AddRange(genericTypes);
-			} else {
-				typeRef = new InnerClassTypeReference(typeRef, b.ToString(), genericTypes);
-			}
-			return new TypeReferenceExpression(typeRef);
-		}
-	}
-	return new TypeReferenceExpression(new TypeReference(b.ToString(), 0, null, genericTypes));
-}
-
-/* Writes the type name represented through the expression into the string builder. */
-/* Returns true when the expression was converted successfully, returns false when */
-/* There was an unknown expression (e.g. TypeReferenceExpression) in it */
-bool WriteFullTypeName(StringBuilder b, Expression expr)
-{
-	FieldReferenceExpression fre = expr as FieldReferenceExpression;
-	if (fre != null) {
-		bool result = WriteFullTypeName(b, fre.TargetObject);
-		if (b.Length > 0) b.Append('.');
-		b.Append(fre.FieldName);
-		return result;
-	} else if (expr is IdentifierExpression) {
-		b.Append(((IdentifierExpression)expr).Identifier);
-		return true;
-	} else {
-		return false;
-	}
-}
 
 /*------------------------------------------------------------------------*
  *----- LEXER TOKEN LIST  ------------------------------------------------*
@@ -652,7 +170,7 @@ UsingDirective
 	string qualident = null; TypeReference aliasedType = null;
 .)
 =
-	"using"                     (. Point startPos = t.Location; .)
+	"using"                     (. Location startPos = t.Location; .)
 	Qualident<out qualident>
 	[ "=" NonArrayType<out aliasedType> ]
 	";"                         (. 
@@ -672,7 +190,7 @@ UsingDirective
 
 GlobalAttributeSection
 =
-	"[" (. Point startPos = t.Location; .) ident
+	"[" (. Location startPos = t.Location; .) ident
 	                            (. if (t.val != "assembly") Error("global attribute target specifier (\"assembly\") expected");
 	                               string attributeTarget = t.val;
 	                               List<ASTAttribute> attributes = new List<ASTAttribute>();
@@ -747,7 +265,7 @@ AttributeSection<out AttributeSection section>
 	
 .)
 =
-	"[" (. Point startPos = t.Location; .) /*--- attribute target specifier: */
+	"[" (. Location startPos = t.Location; .) /*--- attribute target specifier: */
 	[ IF (IsLocalAttrTarget())
 		( "event"                       (. attributeTarget = "event";.)
 		| "return"                      (. attributeTarget = "return";.)
@@ -778,7 +296,7 @@ NamespaceMemberDecl
 	string qualident;
 .)
 = /*--- namespace declaration: */
-	"namespace"                  (. Point startPos = t.Location; .)
+	"namespace"                  (. Location startPos = t.Location; .)
 	Qualident<out qualident>     (. INode node =  new NamespaceDeclaration(qualident);
 	                                node.StartLocation = startPos;
 	                                compilationUnit.AddChild(node);
@@ -1189,7 +707,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 .)
 =
 	/*--- constant declaration: */         (. m.Check(Modifier.Constants); .)
-	"const"                                (.Point startPos = t.Location; .)
+	"const"                                (.Location startPos = t.Location; .)
 	Type<out type> ident                   (. FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier | Modifier.Const);
 	                                          fd.StartLocation = m.GetDeclarationLocation(startPos);
 	                                          VariableDeclaration f = new VariableDeclaration(t.val);
@@ -1205,7 +723,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	
 |   /*--- void method (procedure) declaration: */
 	IF (NotVoidPointer())                (. m.Check(Modifier.PropertysEventsMethods); .)
-	"void"                                 (. Point startPos = t.Location; .)
+	"void"                                 (. Location startPos = t.Location; .)
 	( IF (IsExplicitInterfaceImplementation())
 		TypeName<out explicitInterface, false>
 		(.if (la.kind != Tokens.Dot || Peek(1).kind != Tokens.This) {
@@ -1268,7 +786,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	
 |   /*--- constructor or static contructor declaration: */
 	IF (IdentAndLPar())                  (. m.Check(Modifier.Constructors | Modifier.StaticConstructors); .)
-	ident (. string name = t.val; Point startPos = t.Location; .) "(" [  (. m.Check(Modifier.Constructors); .)
+	ident (. string name = t.val; Location startPos = t.Location; .) "(" [  (. m.Check(Modifier.Constructors); .)
 	FormalParameterList<p>
 	]
 	")" (.ConstructorInitializer init = null;  .)
@@ -1286,12 +804,12 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 |   /*--- conversion operator declaration: */   (. m.Check(Modifier.Operators);
 	                                          if (m.isNone) Error("at least one modifier must be set"); 
 	                                          bool isImplicit = true;
-	                                          Point startPos = Point.Empty;
+	                                          Location startPos = Location.Empty;
 	                                       .)
 	( "implicit" (. startPos = t.Location; .) | "explicit" (. isImplicit = false; startPos = t.Location; .) ) 
 	"operator" Type<out type> (. TypeReference operatorType = type; .) 
 	"(" Type<out type> ident (. string varName = t.val; .) ")"
-	(. Point endPos = t.Location; .)
+	(. Location endPos = t.Location; .)
 	( Block<out stmt> | ";" (. stmt = null; .) )
 	(.
 		
@@ -1313,7 +831,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 |	/*--- inner type declaration: */
 	TypeDecl<m, attributes>
 
-|	Type<out type>                       (. Point startPos = t.Location;  .)
+|	Type<out type>                       (. Location startPos = t.Location;  .)
 	(
 		/*--- operator declaration: */     (. OverloadableOperatorType op;
 		                                      m.Check(Modifier.Operators);
@@ -1329,7 +847,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		                                      }
 		                                   .)*/
 		)
-		(. Point endPos = t.Location; .)
+		(. Location endPos = t.Location; .)
 		")" ( Block<out stmt> | ";" )
 		(.
 			List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
@@ -1359,7 +877,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		
 		/*--- unqualified indexer declaration (without interface name): */
 		|                                  (. m.Check(Modifier.Indexers); .)
-		"this" "[" FormalParameterList<p> "]" (. Point endLocation = t.EndLocation; .) "{" (.
+		"this" "[" FormalParameterList<p> "]" (. Location endLocation = t.EndLocation; .) "{" (.
 			         IndexerDeclaration indexer = new IndexerDeclaration(type, p, m.Modifier, attributes);
 			         indexer.StartLocation = startPos;
 			         indexer.EndLocation   = endLocation;
@@ -1381,7 +899,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			  } .)
 		|	ident (. qualident = t.val; .)
 		)
-		(. Point qualIdentEndLocation = t.EndLocation; .)
+		(. Location qualIdentEndLocation = t.EndLocation; .)
 		
 		(
 			/*--- "not void" method (function) declaration: */
@@ -1434,7 +952,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			         PropertyGetRegion getRegion;
 			         PropertySetRegion setRegion;
 			       .) 
-			  "{" (. Point bodyStart = t.Location; .)
+			  "{" (. Location bodyStart = t.Location; .)
 			  AccessorDecls<out getRegion, out setRegion> 
 			  "}"  (. indexer.BodyStart = bodyStart;
 			          indexer.BodyEnd   = t.EndLocation;
@@ -1450,7 +968,7 @@ ClassMemberDecl<Modifiers m, List<AttributeSection> attributes>
 (. Statement stmt = null; .)
 =
 	StructMemberDecl<m, attributes>
-	| /*--- destructor declaration: */ (. m.Check(Modifier.Destructors); Point startPos = t.Location; .)
+	| /*--- destructor declaration: */ (. m.Check(Modifier.Destructors); Location startPos = t.Location; .)
 	"~" ident                          (. DestructorDeclaration d = new DestructorDeclaration(t.val, m.Modifier, attributes); 
 	                                      d.Modifier = m.Modifier;
 	                                      d.StartLocation = m.GetDeclarationLocation(startPos);
@@ -1472,7 +990,7 @@ InterfaceMemberDecl
 	string name;
 	PropertyGetRegion getBlock;
 	PropertySetRegion setBlock;
-	Point startLocation = new Point(-1, -1);
+	Location startLocation = new Location(-1, -1);
 	List<TemplateDefinition> templates = new List<TemplateDefinition>();
 .)
 =
@@ -1494,7 +1012,7 @@ InterfaceMemberDecl
 		| (
 			Type<out type> (. if (startLocation.X == -1) startLocation = t.Location; .)
 			(
-				ident                  (. name = t.val; Point qualIdentEndLocation = t.EndLocation; .)
+				ident                  (. name = t.val; Location qualIdentEndLocation = t.EndLocation; .)
 				(
 					/*--- interface "not void" method (function) declaration: */
 					/* .NET 2.0 */
@@ -1510,11 +1028,11 @@ InterfaceMemberDecl
 						.)
 					/*--- interface property declaration: */
 					|                   (. PropertyDeclaration pd = new PropertyDeclaration(name, type, mod, attributes); compilationUnit.AddChild(pd); .)
-					"{" (. Point bodyStart = t.Location;.) InterfaceAccessors<out getBlock, out setBlock> "}" (. pd.GetRegion = getBlock; pd.SetRegion = setBlock; pd.StartLocation = startLocation; pd.EndLocation = qualIdentEndLocation; pd.BodyStart = bodyStart; pd.BodyEnd = t.EndLocation; .)
+					"{" (. Location bodyStart = t.Location;.) InterfaceAccessors<out getBlock, out setBlock> "}" (. pd.GetRegion = getBlock; pd.SetRegion = setBlock; pd.StartLocation = startLocation; pd.EndLocation = qualIdentEndLocation; pd.BodyStart = bodyStart; pd.BodyEnd = t.EndLocation; .)
 				)
 				/*--- interface indexer declaration: */
-				| "this" "[" FormalParameterList<parameters> "]" (.Point bracketEndLocation = t.EndLocation; .)  (. IndexerDeclaration id = new IndexerDeclaration(type, parameters, mod, attributes); compilationUnit.AddChild(id); .)
-				"{" (. Point bodyStart = t.Location;.) InterfaceAccessors<out getBlock, out setBlock> "}" (. id.GetRegion = getBlock; id.SetRegion = setBlock; id.StartLocation = startLocation;  id.EndLocation = bracketEndLocation; id.BodyStart = bodyStart; id.BodyEnd = t.EndLocation;.)
+				| "this" "[" FormalParameterList<parameters> "]" (.Location bracketEndLocation = t.EndLocation; .)  (. IndexerDeclaration id = new IndexerDeclaration(type, parameters, mod, attributes); compilationUnit.AddChild(id); .)
+				"{" (. Location bodyStart = t.Location;.) InterfaceAccessors<out getBlock, out setBlock> "}" (. id.GetRegion = getBlock; id.SetRegion = setBlock; id.StartLocation = startLocation;  id.EndLocation = bracketEndLocation; id.BodyStart = bodyStart; id.BodyEnd = t.EndLocation;.)
 			)
 			/*--- interface event declaration: */
 			| "event" (. if (startLocation.X == -1) startLocation = t.Location; .) Type<out type> ident (. EventDeclaration ed = new EventDeclaration(type, t.val, mod, attributes, null);
@@ -1582,7 +1100,7 @@ GetAccessorDecl<out PropertyGetRegion getBlock, List<AttributeSection> attribute
 =
 	ident /* "get" is not a keyword! */
 	(. if (t.val != "get") Error("get expected"); .)
-	(. Point startLocation = t.Location; .)
+	(. Location startLocation = t.Location; .)
 	( Block<out stmt> | ";" )
 	(. getBlock = new PropertyGetRegion((BlockStatement)stmt, attributes); .)
 	(. getBlock.StartLocation = startLocation; getBlock.EndLocation = t.EndLocation; .)
@@ -1593,7 +1111,7 @@ SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attribute
 =
 	ident /* "set" is not a keyword! */
 	(. if (t.val != "set") Error("set expected"); .)
-	(. Point startLocation = t.Location; .)
+	(. Location startLocation = t.Location; .)
 	( Block<out stmt> | ";" )
 	(. setBlock = new PropertySetRegion((BlockStatement)stmt, attributes); .)
 	(. setBlock.StartLocation = startLocation; setBlock.EndLocation = t.EndLocation; .)
@@ -1630,7 +1148,7 @@ InterfaceAccessors<out PropertyGetRegion getBlock, out PropertySetRegion setBloc
 .)
 =
 	{ AttributeSection<out section> (. attributes.Add(section); .) }
-	(. Point startLocation = la.Location; .)
+	(. Location startLocation = la.Location; .)
 	(
 		IF (IdentIsGet()) ident   (. getBlock = new PropertyGetRegion(null, attributes); .)
 		| IF (IdentIsSet()) ident (. setBlock = new PropertySetRegion(null, attributes); .)
@@ -1669,7 +1187,7 @@ Block<out Statement stmt> /* not BlockStatement because of EmbeddedStatement */
 	"{" (. BlockStatement blockStmt = new BlockStatement();
 	       blockStmt.StartLocation = t.EndLocation;
 	       compilationUnit.BlockStart(blockStmt);
-	       if (!parseMethodContents) lexer.SkipCurrentBlock();
+	       if (!parseMethodContents) lexer.SkipCurrentBlock(0);
 	    .)
 	{ Statement }
 	"}" (. 
@@ -1828,7 +1346,7 @@ Statement
 	TypeReference type;
 	Expression expr;
 	Statement stmt = null;
-	Point startPos = la.Location;
+	Location startPos = la.Location;
 .)
 =
 	(
@@ -1900,7 +1418,7 @@ EmbeddedStatement<out Statement statement>
 	  [ Expr<out expr> ] ";"
 	  [ ForIterator<out iterator> ] ")"
 	  EmbeddedStatement<out embeddedStatement> (. statement = new ForStatement(initializer, expr, iterator, embeddedStatement); .)
-  | "foreach" "(" Type<out type> ident     (. string varName = t.val; Point start = t.Location;.)
+  | "foreach" "(" Type<out type> ident     (. string varName = t.val; Location start = t.Location;.)
 	"in" Expr<out expr> ")"
 	EmbeddedStatement<out embeddedStatement> (.  statement = new ForeachStatement(type, varName , expr, embeddedStatement); 
 	                                             statement.EndLocation = t.EndLocation;
@@ -2281,7 +1799,7 @@ AnonymousMethodExpr<out Expression outExpr>
 		Block<out stmt>              (. expr.Body  = (BlockStatement)stmt; .)
 	(. } else { .)
 		"{"
-		(. lexer.SkipCurrentBlock(); .)
+		(. lexer.SkipCurrentBlock(0); .)
 		"}"
 	(. } .)
 	(. expr.EndLocation = t.Location; .)

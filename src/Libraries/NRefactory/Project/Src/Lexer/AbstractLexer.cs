@@ -201,17 +201,6 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected abstract Token Next();
 		
-		/// <summary>
-		/// Skips to the end of the current code block.
-		/// For this, the lexer must have read the next token AFTER the token opening the
-		/// block (so that Lexer.Token is the block-opening token, not Lexer.LookAhead).
-		/// After the call, Lexer.LookAhead will be the block-closing token.
-		/// </summary>
-		public virtual void SkipCurrentBlock()
-		{
-			throw new NotSupportedException();
-		}
-		
 		protected bool IsIdentifierPart(int ch)
 		{
 			if (ch == 95) return true;  // 95 = '_'
@@ -293,5 +282,13 @@ namespace ICSharpCode.NRefactory.Parser
 			col += retStr.Length;
 			return retStr;
 		}
+		
+		/// <summary>
+		/// Skips to the end of the current code block.
+		/// For this, the lexer must have read the next token AFTER the token opening the
+		/// block (so that Lexer.Token is the block-opening token, not Lexer.LookAhead).
+		/// After the call, Lexer.LookAhead will be the block-closing token.
+		/// </summary>
+		public abstract void SkipCurrentBlock(int targetToken);
 	}
 }

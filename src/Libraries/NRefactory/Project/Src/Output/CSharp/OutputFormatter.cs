@@ -118,13 +118,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			switch (comment.CommentType) {
 				case CommentType.Block:
-//					if (forceWriteInPreviousBlock) {
+					if (forceWriteInPreviousBlock) {
 						WriteInPreviousLine("/*" + comment.CommentText + "*/", forceWriteInPreviousBlock);
-//					} else {
-//						PrintText("/*");
-//						PrintText(comment.CommentText);
-//						PrintText("*/");
-//					}
+					} else {
+						PrintSpecialText("/*" + comment.CommentText + "*/");
+					}
 					break;
 				case CommentType.Documentation:
 					WriteLineInPreviousLine("///" + comment.CommentText, forceWriteInPreviousBlock);

@@ -152,6 +152,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
+		/// <summary>
+		/// Prints a text that cannot be inserted before using WriteInPreviousLine
+		/// into the current line
+		/// </summary>
+		protected void PrintSpecialText(string specialText)
+		{
+			lineBeforeLastStart = text.Length;
+			text.Append(specialText);
+			lastLineStart = text.Length;
+		}
+		
 		public void PrintTokenList(ArrayList tokenList)
 		{
 			foreach (int token in tokenList) {

@@ -800,7 +800,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		/// block (so that Lexer.Token is the block-opening token, not Lexer.LookAhead).
 		/// After the call, Lexer.LookAhead will be the block-closing token.
 		/// </summary>
-		public override void SkipCurrentBlock()
+		public override void SkipCurrentBlock(int targetToken)
 		{
 			int braceCount = 0;
 			while (curToken != null) {

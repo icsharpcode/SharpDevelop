@@ -162,5 +162,21 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 	End Function
 End Class");
 		}
+		
+		[Test]
+		public void BlankLinesVB()
+		{
+			TestProgramVB("Imports System\n" +
+			              "\n" +
+			              "Imports System.IO");
+			TestProgramVB("Imports System\n" +
+			              "\n" +
+			              "\n" +
+			              "Imports System.IO");
+			TestProgramVB("\n" +
+			              "' Some comment\n" +
+			              "\n" +
+			              "Imports System.IO");
+		}
 	}
 }

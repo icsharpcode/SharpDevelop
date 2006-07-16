@@ -76,12 +76,12 @@ namespace ICSharpCode.NRefactory.Parser
 		/// <returns>An <see cref="Token"/> object.</returns>
 		Token NextToken();
 		
-		/// <summary>
+				/// <summary>
 		/// Skips to the end of the current code block.
 		/// For this, the lexer must have read the next token AFTER the token opening the
 		/// block (so that Lexer.Token is the block-opening token, not Lexer.LookAhead).
 		/// After the call, Lexer.LookAhead will be the block-closing token.
 		/// </summary>
-		void SkipCurrentBlock();
+		void SkipCurrentBlock(int targetToken);
 	}
 }

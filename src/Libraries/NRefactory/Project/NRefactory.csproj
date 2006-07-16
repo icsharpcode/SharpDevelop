@@ -127,6 +127,8 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\Parser\Location.cs" />
+    <Compile Include="Src\Parser\CSharp\CSharpParser.cs" />
+    <Compile Include="Src\Parser\VBNet\VBNetParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />

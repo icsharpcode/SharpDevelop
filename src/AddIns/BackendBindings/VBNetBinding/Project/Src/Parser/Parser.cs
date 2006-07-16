@@ -101,6 +101,7 @@ namespace VBNetBinding.Parser
 		ICompilationUnit Parse(ICSharpCode.NRefactory.Parser.IParser p, string fileName, IProjectContent projectContent)
 		{
 			p.Lexer.SpecialCommentTags = lexerTags;
+			p.ParseMethodBodies = false;
 			p.Parse();
 			
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);

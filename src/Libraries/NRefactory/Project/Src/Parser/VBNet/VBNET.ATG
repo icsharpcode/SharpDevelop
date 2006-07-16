@@ -8,252 +8,6 @@ using ASTAttribute = ICSharpCode.NRefactory.Parser.AST.Attribute;
 
 COMPILER VBNET
 
-private Stack withStatements;
-private StringBuilder qualidentBuilder = new StringBuilder();
-
-Token t
-{
-	[System.Diagnostics.DebuggerStepThrough]
-	get {
-		return lexer.Token;
-	}
-}
-Token la
-{
-	[System.Diagnostics.DebuggerStepThrough]
-	get {
-		return lexer.LookAhead;
-	}
-}
-
-/* Return the n-th token after the current lookahead token */
-void StartPeek()
-{
-	lexer.StartPeek();
-}
-
-Token Peek()
-{
-	return lexer.Peek();
-}
-
-Token Peek (int n)
-{
-	lexer.StartPeek();
-	Token x = la;
-	while (n > 0) {
-		x = lexer.Peek();
-		n--;
-	}
-	return x;
-}
-
-public void Error(string s)
-{
-	if (errDist >= minErrDist) {
-		errors.Error(la.line, la.col, s);
-	}
-	errDist = 0;
-}
-
-public override Expression ParseExpression()
-{
-	lexer.NextToken();
-	Expression expr;
-	Expr(out expr);
-	return expr;
-}
-
-bool LeaveBlock()
-{
-  int peek = Peek(1).kind;
-  return Tokens.BlockSucc[la.kind] && (la.kind != Tokens.End || peek == Tokens.EOL || peek == Tokens.Colon);
-}
-
-/* True, if "." is followed by an ident */
-bool DotAndIdentOrKw () {
-	int peek = Peek(1).kind;
-	return la.kind == Tokens.Dot && (peek == Tokens.Identifier || peek >= Tokens.AddHandler);
-}
-
-bool IsEndStmtAhead()
-{
-	int peek = Peek(1).kind;
-	return la.kind == Tokens.End && (peek == Tokens.EOL || peek == Tokens.Colon);
-}
-
-bool IsNotClosingParenthesis() {
-	return la.kind != Tokens.CloseParenthesis;
-}
-
-/*
-	True, if ident is followed by "="
-*/
-bool IdentAndAsgn () {
-	if(la.kind == Tokens.Identifier) {
-		if(Peek(1).kind == Tokens.Assign) return true;
-		if(Peek(1).kind == Tokens.Colon && Peek(2).kind == Tokens.Assign) return true;
-	}
-	return false;
-}
-
-/*
-	True, if ident is followed by "=" or by ":" and "="
-*/
-bool IsNamedAssign() {
-//	if(Peek(1).kind == Tokens.Assign) return true; // removed: not in the lang spec
-	if(Peek(1).kind == Tokens.Colon && Peek(2).kind == Tokens.Assign) return true;
-	return false;
-}
-
-bool IsObjectCreation() {
-	return la.kind == Tokens.As && Peek(1).kind == Tokens.New;
-}
-
-/*
-	True, if "<" is followed by the ident "assembly" or "module"
-*/
-bool IsGlobalAttrTarget () {
-	Token pt = Peek(1);
-	return la.kind == Tokens.LessThan && ( string.Equals(pt.val, "assembly", StringComparison.InvariantCultureIgnoreCase) || string.Equals(pt.val, "module", StringComparison.InvariantCultureIgnoreCase));
-}
-
-/*
-	True if the next token is a "(" and is followed by "," or ")"
-*/
-bool IsDims()
-{
-	int peek = Peek(1).kind;
-	return la.kind == Tokens.OpenParenthesis
-						&& (peek == Tokens.Comma || peek == Tokens.CloseParenthesis);
-}
-
-bool IsSize()
-{
-	return la.kind == Tokens.OpenParenthesis;
-}
-
-/*
-	True, if the comma is not a trailing one,
-	like the last one in: a, b, c,
-*/
-bool NotFinalComma() {
-	int peek = Peek(1).kind;
-	return la.kind == Tokens.Comma &&
-		   peek != Tokens.CloseCurlyBrace;
-}
-
-/*
-	True, if the next token is "Else" and this one
-	if followed by "If"
-*/
-bool IsElseIf()
-{
-	int peek = Peek(1).kind;
-	return la.kind == Tokens.Else && peek == Tokens.If;
-}
-
-/*
-	True if the next token is goto and this one is
-	followed by minus ("-") (this is allowd in in
-	error clauses)
-*/
-bool IsNegativeLabelName()
-{
-	int peek = Peek(1).kind;
-	return la.kind == Tokens.GoTo && peek == Tokens.Minus;
-}
-
-/*
-	True if the next statement is a "Resume next" statement
-*/
-bool IsResumeNext()
-{
-	int peek = Peek(1).kind;
-	return la.kind == Tokens.Resume && peek == Tokens.Next;
-}
-
-/*
-	True, if ident/literal integer is followed by ":"
-*/
-bool IsLabel()
-{
-	return (la.kind == Tokens.Identifier || la.kind == Tokens.LiteralInteger)
-			&& Peek(1).kind == Tokens.Colon;
-}
-
-bool IsNotStatementSeparator()
-{
-	return la.kind == Tokens.Colon && Peek(1).kind == Tokens.EOL;
-}
-
-bool IsAssignment ()
-{
-	return IdentAndAsgn();
-}
-
-bool IsMustOverride(Modifiers m)
-{
-	return m.Contains(Modifier.Abstract);
-}
-
-TypeReferenceExpression GetTypeReferenceExpression(Expression expr, List<TypeReference> genericTypes)
-{
-	TypeReferenceExpression	tre = expr as TypeReferenceExpression;
-	if (tre != null) {
-		return new TypeReferenceExpression(new TypeReference(tre.TypeReference.Type, tre.TypeReference.PointerNestingLevel, tre.TypeReference.RankSpecifier, genericTypes));
-	}
-	StringBuilder b = new StringBuilder();
-	if (!WriteFullTypeName(b, expr)) {
-		// there is some TypeReferenceExpression hidden in the expression
-		while (expr is FieldReferenceExpression) {
-			expr = ((FieldReferenceExpression)expr).TargetObject;
-		}
-		tre = expr as TypeReferenceExpression;
-		if (tre != null) {
-			TypeReference typeRef = tre.TypeReference;
-			if (typeRef.GenericTypes.Count == 0) {
-				typeRef = typeRef.Clone();
-				typeRef.Type += "." + b.ToString();
-				typeRef.GenericTypes.AddRange(genericTypes);
-			} else {
-				typeRef = new InnerClassTypeReference(typeRef, b.ToString(), genericTypes);
-			}
-			return new TypeReferenceExpression(typeRef);
-		}
-	}
-	return new TypeReferenceExpression(new TypeReference(b.ToString(), 0, null, genericTypes));
-}
-
-/* Writes the type name represented through the expression into the string builder. */
-/* Returns true when the expression was converted successfully, returns false when */
-/* There was an unknown expression (e.g. TypeReferenceExpression) in it */
-bool WriteFullTypeName(StringBuilder b, Expression expr)
-{
-	FieldReferenceExpression fre = expr as FieldReferenceExpression;
-	if (fre != null) {
-		bool result = WriteFullTypeName(b, fre.TargetObject);
-		if (b.Length > 0) b.Append('.');
-		b.Append(fre.FieldName);
-		return result;
-	} else if (expr is IdentifierExpression) {
-		b.Append(((IdentifierExpression)expr).Identifier);
-		return true;
-	} else {
-		return false;
-	}
-}
-
-/*
-	True, if lookahead is a local attribute target specifier,
-	i.e. one of "event", "return", "field", "method",
-	"module", "param", "property", or "type"
-*/
-bool IsLocalAttrTarget() {
-	// TODO
-	return false;
-}
-
 /* START AUTOGENERATED TOKENS SECTION */
 TOKENS
 	/* ----- terminal classes ----- */
@@ -475,7 +229,6 @@ VBNET
 	(.
 		lexer.NextToken(); // get the first token
 		compilationUnit = new CompilationUnit();
-		withStatements = new Stack();
 	.) =
 	{ EOL }
 	{ OptionStmt }
@@ -486,7 +239,7 @@ VBNET
 	.
 
 OptionStmt (. INode node = null; bool val = true; .) =
-	"Option" (. Point startPos = t.Location; .)
+	"Option" (. Location startPos = t.Location; .)
 	(
 		"Explicit" [ OptionValue<ref val> ]
 		(. node = new OptionDeclaration(OptionType.Explicit, val); .)
@@ -527,7 +280,7 @@ ImportsStmt
 	.) =
 	"Imports"
 	(.
-		Point startPos = t.Location;
+		Location startPos = t.Location;
 		Using u;
 	.)
 	ImportClause<out u> (. if (u != null) { usings.Add(u); } .)
@@ -572,7 +325,7 @@ NamespaceMemberDecl
 	.) =
 	"Namespace"
 	(.
-		Point startPos = t.Location;
+		Location startPos = t.Location;
 	.)
 	Qualident<out qualident>
 	(.
@@ -959,7 +712,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 | /* 9.2.1 */
 	"Sub"
 	(.
-		Point startPos = t.Location;
+		Location startPos = t.Location;
 	.)
 	(
 		(.
@@ -981,7 +734,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				HandlesClause<out handlesClause>
 			)
 		]
-		(. Point endLocation = t.EndLocation; .)
+		(. Location endLocation = t.EndLocation; .)
 		EOL
 		(
 			/* abstract methods without a body */
@@ -1010,22 +763,38 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				methodDeclaration.InterfaceImplementations = implementsClause;
 				
 				compilationUnit.AddChild(methodDeclaration);
-				compilationUnit.BlockStart(methodDeclaration);
 			.)
-			Block<out stmt>
-			(.
-				compilationUnit.BlockEnd();
-				methodDeclaration.Body  = (BlockStatement)stmt;
+			
+			(. if (parseMethodContents) { .)
+				Block<out stmt>
+				"End" "Sub"
+			(. } else {
+				// don't parse method body
+				lexer.SkipCurrentBlock(Tokens.Sub); stmt = new BlockStatement();
+				if (t.kind != Tokens.Sub) throw new ApplicationException("Failed to skip sub");
+			   }
 			.)
-			"End" "Sub" (. methodDeclaration.Body.EndLocation = t.EndLocation; .) EOL 
+			
+			(. methodDeclaration.Body  = (BlockStatement)stmt; .)
+			(. methodDeclaration.Body.EndLocation = t.EndLocation; .) EOL 
 		)
 		/* 9.3 */
 		| "New" [ "(" [ FormalParameterList<p> ] ")" ]
 		(. m.Check(Modifier.Constructors); .)
-		(. Point constructorEndLocation = t.EndLocation; .)
+		(. Location constructorEndLocation = t.EndLocation; .)
 		EOL
-		Block<out stmt>
-		"End" "Sub" (. Point endLocation = t.EndLocation; .) EOL
+		
+		(. if (parseMethodContents) { .)
+			Block<out stmt>
+			"End" "Sub"
+		(. } else {
+			// don't parse method body
+			lexer.SkipCurrentBlock(Tokens.Sub); stmt = new BlockStatement();
+			if (t.kind != Tokens.Sub) throw new ApplicationException("Failed to skip sub");
+		   }
+		.)
+		
+		(. Location endLocation = t.EndLocation; .) EOL
 		(.
 			ConstructorDeclaration cd = new ConstructorDeclaration("New", m.Modifier, p, attributes); 
 			cd.StartLocation = m.GetDeclarationLocation(startPos);
@@ -1041,7 +810,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	(.
 		m.Check(Modifier.VBMethods);
 		string name = String.Empty;
-		Point startPos = t.Location;
+		Location startPos = t.Location;
 		MethodDeclaration methodDeclaration;List<string> handlesClause = null;
 		List<InterfaceImplementation> implementsClause = null;
 		AttributeSection returnTypeAttributeSection = null;
@@ -1095,15 +864,16 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				}
 				
 				compilationUnit.AddChild(methodDeclaration);
-				compilationUnit.BlockStart(methodDeclaration);
-			.)
-			Block<out stmt>
-			(.
-				compilationUnit.BlockEnd();
-				methodDeclaration.Body  = (BlockStatement)stmt;
-			.)
-			"End" "Function" 
-			(.
+			
+				if (parseMethodContents) { .)
+					Block<out stmt>
+					"End" "Function"
+			(.	} else {
+					// don't parse method body
+					lexer.SkipCurrentBlock(Tokens.Function); stmt = new BlockStatement();
+					if (t.kind != Tokens.Function) throw new ApplicationException("Failed to skip function");
+				}
+				methodDeclaration.Body = (BlockStatement)stmt;
 				methodDeclaration.Body.StartLocation = methodDeclaration.EndLocation;
 				methodDeclaration.Body.EndLocation   = t.EndLocation;
 			.)
@@ -1114,7 +884,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	"Declare"
 	(.
 		m.Check(Modifier.VBExternalMethods);
-		Point startPos = t.Location;
+		Location startPos = t.Location;
 		CharsetModifier charsetModifer = CharsetModifier.None;
 		string library = String.Empty;
 		string alias = null;
@@ -1154,7 +924,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	"Event"
 	(.
 		m.Check(Modifier.VBEvents);
-		Point startPos = t.Location;
+		Location startPos = t.Location;
 		EventDeclaration eventDeclaration;
 		string name = String.Empty;
 		List<InterfaceImplementation> implementsClause = null;
@@ -1174,7 +944,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	.)
 	EOL
 | /* 9.6 */
-	(. Point startPos = t.Location; .)
+	(. Location startPos = t.Location; .)
 	(.
 		m.Check(Modifier.Fields);
 		FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
@@ -1212,7 +982,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	"Property"
 	(.
 		m.Check(Modifier.VBProperties);
-		Point startPos = t.Location;
+		Location startPos = t.Location;
 		List<InterfaceImplementation> implementsClause = null;
 	.)
 	Identifier (. string propertyName = t.val; .)
@@ -1260,7 +1030,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		.)
 	)
 |
-	"Custom" (. Point startPos = t.Location; .) "Event"
+	"Custom" (. Location startPos = t.Location; .) "Event"
 	(.
 		m.Check(Modifier.VBCustomEvents);
 		EventAddRemoveRegion eventAccessorDeclaration;
@@ -1321,7 +1091,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	"Operator"
 	(.
 		m.Check(Modifier.VBOperators);
-		Point startPos = t.Location;
+		Location startPos = t.Location;
 		TypeReference returnType = NullTypeReference.Instance;
 		TypeReference operandType = NullTypeReference.Instance;
 		string operandName;
@@ -1342,7 +1112,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			(. parameters.Add(new ParameterDeclarationExpression(operandType, operandName, ParamModifier.In)); .)
 		}
 	")"
-	(. Point endPos = t.EndLocation; .)
+	(. Location endPos = t.EndLocation; .)
 	[ "As" { AttributeSection<out section> (. returnTypeAttributes.Add(section); .) } TypeName<out returnType> (. endPos = t.EndLocation; .) EOL ]
 	Block<out stmt> "End" "Operator" EOL
 	(.
@@ -1487,7 +1257,7 @@ AccessorDecls<out PropertyGetRegion getBlock, out PropertySetRegion setBlock>
 GetAccessorDecl<out PropertyGetRegion getBlock, List<AttributeSection> attributes>
 	(. Statement stmt = null; .) =
 	"Get"
-	(. Point startLocation = t.Location; .)
+	(. Location startLocation = t.Location; .)
 	EOL
 	Block<out stmt>
 	(. getBlock = new PropertyGetRegion((BlockStatement)stmt, attributes); .)
@@ -1502,7 +1272,7 @@ SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attribute
 		Statement stmt = null; List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 	.) =
 	"Set"
-	(. Point startLocation = t.Location; .)
+	(. Location startLocation = t.Location; .)
 	[ "("	[ FormalParameterList<p> ] ")" ]
 	EOL
 	Block<out stmt>
@@ -1820,7 +1590,7 @@ InvocationExpression<ref Expression pexpr>
    List<Expression> parameters = null;
    TypeReference type; .)
 =
-	"(" (. Point start = t.Location; .)
+	"(" (. Location start = t.Location; .)
 	(	"Of"
 		TypeName<out type> (. if (type != null) typeParameters.Add(type); .)
 		{
@@ -2185,7 +1955,7 @@ TypeArgumentList<List<TypeReference> typeArguments>
 .
 
 GlobalAttributeSection =
-	(. Point startPos = t.Location; .)
+	(. Location startPos = t.Location; .)
 	"<" ("Assembly" | "Module")
 		(.  string attributeTarget = t.val.ToLower(System.Globalization.CultureInfo.InvariantCulture);
 			List<ASTAttribute> attributes = new List<ASTAttribute>();
@@ -2260,7 +2030,7 @@ AttributeSection<out AttributeSection section>
 		ASTAttribute attribute;
 		
 	.) =
-	"<" (. Point startPos = t.Location; .)
+	"<" (. Location startPos = t.Location; .)
 	[ IF (IsLocalAttrTarget())
 		( "Event"		(. attributeTarget = "event";.)
 		| "Return"		(. attributeTarget = "return";.)
@@ -2366,7 +2136,7 @@ Block<out Statement stmt>
 Statement
 	(.
 		Statement stmt = null;
-		Point startPos = la.Location;
+		Location startPos = la.Location;
 		string label = String.Empty;
 		
 	.) =
@@ -2507,7 +2277,7 @@ EmbeddedStatement<out Statement statement>
 			Expression group = null;
 			TypeReference typeReference;
 			string        typeName;
-			Point startLocation = t.Location;
+			Location startLocation = t.Location;
 	.)
 	(
 		/* 10.9.3  */
@@ -2846,17 +2616,15 @@ WithStatement<out Statement withStatement>
 		Statement blockStmt = null;
 		Expression expr = null;
 	.) =
-	"With" (. Point start = t.Location; .)
+	"With" (. Location start = t.Location; .)
 	Expr<out expr> EndOfStmt
 	(.
 		withStatement = new WithStatement(expr);
 		withStatement.StartLocation = start;
-		withStatements.Push(withStatement);
 	.)
 	Block<out blockStmt>
 	(.
 		((WithStatement)withStatement).Body = (BlockStatement)blockStmt;
-		withStatements.Pop();
 	.)
 	"End" "With"
 	(. withStatement.EndLocation = t.Location; .)

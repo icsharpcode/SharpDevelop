@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Parser
 		protected const  string errMsgFormat = "-- line {0} col {1}: {2}";  // 0=line, 1=column, 2=text
 		
 		protected Errors errors;
-		protected ILexer lexer;
+		private ILexer lexer;
 		
 		protected int    errDist = minErrDist;
 		

@@ -30,41 +30,7 @@ internal class Parser : AbstractParser
 -->parseRoot
 	}
 	
-	protected void ExpectWeak(int n, int follow)
-	{
-		if (lexer.LookAhead.kind == n) {
-			lexer.NextToken();
-		} else {
-			SynErr(n);
-			while (!StartOf(follow)) {
-				lexer.NextToken();
-			}
-		}
-	}
-	
-	protected bool WeakSeparator(int n, int syFol, int repFol)
-	{
-		bool[] s = new bool[maxT + 1];
-		
-		if (lexer.LookAhead.kind == n) {
-			lexer.NextToken();
-			return true;
-		} else if (StartOf(repFol)) {
-			return false;
-		} else {
-			for (int i = 0; i <= maxT; i++) {
-				s[i] = set[syFol, i] || set[repFol, i] || set[0, i];
-			}
-			SynErr(n);
-			while (!s[lexer.LookAhead.kind]) {
-				lexer.NextToken();
-			}
-			return StartOf(syFol);
-		}
-	}
-	
-	
-	protected bool StartOf(int s)
+	private bool StartOf(int s)
 	{
 		return set[s, lexer.LookAhead.kind];
 	}
