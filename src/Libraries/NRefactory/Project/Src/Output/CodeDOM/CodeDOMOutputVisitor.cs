@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.Parser
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
-			if (type.SystemType == "") {
+			if (string.IsNullOrEmpty(type.SystemType)) {
 				throw new InvalidOperationException("empty type");
 			}
 			
@@ -72,18 +72,8 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		void AddStmt(CodeExpression expr)
-		{
-			if (codeStack.Count == 0)
-				return;
-			CodeStatementCollection stmtCollection = codeStack.Peek();
-			if (stmtCollection != null) {
-				stmtCollection.Add(expr);
-			}
-		}
-		
 		// FIXME: map all modifiers correctly
-		MemberAttributes ConvMemberAttributes(Modifier modifier)
+		static MemberAttributes ConvMemberAttributes(Modifier modifier)
 		{
 			MemberAttributes attr = (MemberAttributes)0;
 			

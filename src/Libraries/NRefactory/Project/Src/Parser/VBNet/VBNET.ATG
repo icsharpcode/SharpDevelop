@@ -1422,7 +1422,7 @@ ArrayInitializer<out Expression outExpr>
 
 Charset<out CharsetModifier charsetModifier>
 	(. charsetModifier = CharsetModifier.None; .) =
-	| "Ansi"		(. charsetModifier = CharsetModifier.ANSI; .)
+	| "Ansi"		(. charsetModifier = CharsetModifier.Ansi; .)
 	| "Auto"		(. charsetModifier = CharsetModifier.Auto; .)
 	| "Unicode"		(. charsetModifier = CharsetModifier.Unicode; .)
 	.
@@ -2002,8 +2002,9 @@ AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> na
 				[":"] "="
 			] Expr<out expr>
 				(.
-					if (expr != null) { if(name == "") positional.Add(expr);
-					else { named.Add(new NamedArgumentExpression(name, expr)); name = ""; }
+					if (expr != null) {
+						if (string.IsNullOrEmpty(name)) { positional.Add(expr); }
+						else { named.Add(new NamedArgumentExpression(name, expr)); name = ""; }
 					}
 				.)
 			{

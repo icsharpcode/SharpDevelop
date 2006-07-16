@@ -131,7 +131,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// <summary>
 		/// Constructor for the abstract lexer class.
 		/// </summary>
-		public AbstractLexer(TextReader reader)
+		protected AbstractLexer(TextReader reader)
 		{
 			this.reader = reader;
 		}
@@ -201,14 +201,14 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected abstract Token Next();
 		
-		protected bool IsIdentifierPart(int ch)
+		protected static bool IsIdentifierPart(int ch)
 		{
 			if (ch == 95) return true;  // 95 = '_'
 			if (ch == -1) return false;
 			return char.IsLetterOrDigit((char)ch); // accept unicode letters
 		}
 		
-		protected bool IsHex(char digit)
+		protected static bool IsHex(char digit)
 		{
 			return Char.IsDigit(digit) || ('A' <= digit && digit <= 'F') || ('a' <= digit && digit <= 'f');
 		}
@@ -252,7 +252,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return false;
 		}
 		
-		protected void SkipToEOL()
+		protected void SkipToEndOfLine()
 		{
 			int nextChar;
 			while ((nextChar = reader.Read()) != -1) {
@@ -262,7 +262,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		protected string ReadToEOL()
+		protected string ReadToEndOfLine()
 		{
 			sb.Length = 0;
 			int nextChar;

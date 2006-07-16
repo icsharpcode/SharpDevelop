@@ -1,17 +1,13 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.Windows.Forms;
-using System.Drawing;
-using System.CodeDom.Compiler;
-using System.Collections;
-using System.IO;
-using System.Diagnostics;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -139,7 +135,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			UpdateToolstripStatus();
 		}
 		
-		public CompilerResults CompilerResults = null;
+		public BuildResults BuildResults = null;
 		
 		void AddTask(Task task)
 		{

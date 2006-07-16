@@ -26,4 +26,11 @@
 		          label = "${res:ICSharpCode.CodeAnalysis.CheckWithFxCop}"
 		          class = "ICSharpCode.CodeAnalysis.CheckCurrentProjectCommand"/>
 	</Path>
+	
+	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalLoggers">
+		<TaskBoundAdditionalLogger
+			id = "FxCopLogger"
+			taskname = "FxCop"
+			class = "ICSharpCode.CodeAnalysis.FxCopLogger"/>
+	</Path>
 </AddIn>

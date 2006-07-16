@@ -38,17 +38,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 		}
 
-		/* Return the n-th token after the current lookahead token */
-		void StartPeek()
-		{
-			lexer.StartPeek();
-		}
-
-		Token Peek()
-		{
-			return lexer.Peek();
-		}
-
 		Token Peek (int n)
 		{
 			lexer.StartPeek();
@@ -96,17 +85,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 
 		bool IsNotClosingParenthesis() {
 			return la.kind != Tokens.CloseParenthesis;
-		}
-
-		/*
-	True, if ident is followed by "="
-		 */
-		bool IdentAndAsgn () {
-			if(la.kind == Tokens.Identifier) {
-				if(Peek(1).kind == Tokens.Assign) return true;
-				if(Peek(1).kind == Tokens.Colon && Peek(2).kind == Tokens.Assign) return true;
-			}
-			return false;
 		}
 
 		/*
@@ -199,12 +177,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			return la.kind == Tokens.Colon && Peek(1).kind == Tokens.EOL;
 		}
 
-		bool IsAssignment ()
-		{
-			return IdentAndAsgn();
-		}
-
-		bool IsMustOverride(Modifiers m)
+		static bool IsMustOverride(Modifiers m)
 		{
 			return m.Contains(Modifier.Abstract);
 		}

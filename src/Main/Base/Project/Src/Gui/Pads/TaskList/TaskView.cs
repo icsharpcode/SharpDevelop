@@ -165,22 +165,15 @@ namespace ICSharpCode.Core
 		
 		public void AddTask(Task task)
 		{
-			string tmpPath;
-			if (task.Project != null && task.FileName != null) {
-				tmpPath = FileUtility.GetRelativePath(task.Project.Directory, task.FileName);
-			} else {
-				tmpPath = task.FileName;
-			}
-			
-			string fileName = tmpPath;
-			string path     = tmpPath;
+			string fileName = task.FileName;
+			string path     = task.FileName;
 			
 			try {
-				fileName = Path.GetFileName(tmpPath);
+				fileName = Path.GetFileName(fileName);
 			} catch (Exception) {}
 			
 			try {
-				path = Path.GetDirectoryName(tmpPath);
+				path = Path.GetDirectoryName(path);
 			} catch (Exception) {}
 			
 			ListViewItem item = new ListViewItem(new string[] {

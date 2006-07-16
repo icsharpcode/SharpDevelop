@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		{
 			Location start = new Location(Col - 1, Line);
 			string directive = ReadIdent('#');
-			string argument  = ReadToEOL();
+			string argument  = ReadToEndOfLine();
 			this.specialTracker.AddPreProcessingDirective(directive, argument.Trim(), start, new Location(start.X + directive.Length + argument.Length, start.Y));
 		}
 		
@@ -715,7 +715,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		string ReadCommentToEOL()
 		{
 			if (specialCommentHash == null) {
-				return ReadToEOL();
+				return ReadToEndOfLine();
 			}
 			sb.Length = 0;
 			StringBuilder curWord = new StringBuilder();
@@ -736,7 +736,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					curWord.Length = 0;
 					if (specialCommentHash.ContainsKey(tag)) {
 						Location p = new Location(Col, Line);
-						string comment = ch + ReadToEOL();
+						string comment = ch + ReadToEndOfLine();
 						tagComments.Add(new TagComment(tag, comment, p, new Location(Col, Line)));
 						sb.Append(comment);
 						break;
@@ -749,7 +749,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		void ReadSingleLineComment(CommentType commentType)
 		{
 			if (skipAllComments) {
-				SkipToEOL();
+				SkipToEndOfLine();
 			} else {
 				specialTracker.StartComment(commentType, new Location(Col, Line));
 				specialTracker.AddString(ReadCommentToEOL());

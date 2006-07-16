@@ -496,13 +496,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		// TODO: Remove me in Serralongue
-		[Obsolete("Use RaiseEventEndBuild instead")]
-		public static void OnEndBuild()
-		{
-			RaiseEventEndBuild();
-		}
-		
 		public static void RemoveSolutionFolder(string guid)
 		{
 			if (OpenSolution == null) {

@@ -7,19 +7,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.CodeDom.Compiler;
 using System.IO;
-using System.Text;
 using System.Threading;
-using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using Microsoft.Build.Framework;
 using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Framework;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public delegate void MSBuildEngineCallback(CompilerResults results);
+	public delegate void MSBuildEngineCallback(BuildResults results);
 	
 	/// <summary>
 	/// Class responsible for building a project using MSBuild.
@@ -29,8 +27,8 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		/// <summary>
 		/// Gets a list of the task names that cause a "Compiling ..." log message.
-		/// The contents of the list can be changed by addins.
-		/// All names must be in lower case!
+		/// You can add items to this list by putting strings into
+		/// "/SharpDevelop/MSBuildEngine/CompileTaskNames".
 		/// </summary>
 		public static readonly List<string> CompileTaskNames;
 		
@@ -41,8 +39,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Gets a list of additional target files that are automatically loaded into all projects.
+		/// You can add items into this list by putting strings into
+		/// "/SharpDevelop/MSBuildEngine/AdditionalTargetFiles"
 		/// </summary>
 		public static readonly List<string> AdditionalTargetFiles;
+		
+		/// <summary>
+		/// Gets a list of additional MSBuild loggers.
+		/// You can register your loggers by putting them into
+		/// "/SharpDevelop/MSBuildEngine/AdditionalLoggers"
+		/// </summary>
+		public static readonly List<IMSBuildAdditionalLogger> AdditionalMSBuildLoggers;
 		
 		static MSBuildEngine()
 		{
@@ -51,6 +58,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				CompileTaskNames[i] = CompileTaskNames[i].ToLowerInvariant();
 			}
 			AdditionalTargetFiles = AddInTree.BuildItems<string>("/SharpDevelop/MSBuildEngine/AdditionalTargetFiles", null, false);
+			AdditionalMSBuildLoggers = AddInTree.BuildItems<IMSBuildAdditionalLogger>("/SharpDevelop/MSBuildEngine/AdditionalLoggers", null, false);
+			
 			MSBuildProperties = new SortedList<string, string>();
 			MSBuildProperties.Add("SharpDevelopBinPath", Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location));
 		}
@@ -59,13 +68,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static int LastErrorCount;
 		public static int LastWarningCount;
 		
-		public static void ShowResults(CompilerResults results)
+		public static void ShowResults(BuildResults results)
 		{
 			if (results != null) {
 				LastErrorCount = 0;
 				LastWarningCount = 0;
 				TaskService.InUpdate = true;
-				foreach (CompilerError error in results.Errors) {
+				foreach (BuildError error in results.Errors) {
 					TaskService.Add(new Task(error));
 					if (error.IsWarning)
 						LastWarningCount++;
@@ -147,6 +156,40 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		BuildError currentErrorOrWarning;
+		
+		/// <summary>
+		/// Gets the last build error/warning created by the default
+		/// SharpDevelop logger.
+		/// </summary>
+		public BuildError CurrentErrorOrWarning {
+			get {
+				return currentErrorOrWarning;
+			}
+		}
+		
+		Stack<string> projectFiles = new Stack<string>();
+		
+		/// <summary>
+		/// Gets the name of the currently building project file.
+		/// </summary>
+		public string CurrentProjectFile {
+			get {
+				if (projectFiles.Count == 0)
+					return null;
+				else
+					return projectFiles.Peek();
+			}
+		}
+		
+		BuildResults currentResults;
+		
+		public BuildResults CurrentResults {
+			get {
+				return currentResults;
+			}
+		}
+		
 		public void Run(string buildFile, MSBuildEngineCallback callback)
 		{
 			Run(buildFile, null, callback);
@@ -157,9 +200,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void Run(string buildFile, string[] targets, MSBuildEngineCallback callback)
 		{
 			if (isRunning) {
-				CompilerResults results = new CompilerResults(null);
-				results.NativeCompilerReturnValue = -42;
-				results.Errors.Add(new CompilerError(null, 0, 0, null, ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning")));
+				BuildResults results = new BuildResults();
+				results.Result = BuildResultCode.MSBuildAlreadyRunning;
+				results.Errors.Add(new BuildError(null, 0, 0, null, ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning")));
 				callback(results);
 			} else {
 				isRunning = true;
@@ -171,7 +214,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		class ThreadStarter
 		{
-			CompilerResults results;
 			string buildFile;
 			string[] targets;
 			MSBuildEngine engine;
@@ -179,8 +221,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public ThreadStarter(string buildFile, string[] targets, MSBuildEngine engine, MSBuildEngineCallback callback)
 			{
-				results = new CompilerResults(null);
-				results.NativeCompilerReturnValue = -1;
+				engine.currentResults = new BuildResults();
 				this.buildFile = buildFile;
 				this.targets = targets;
 				this.engine = engine;
@@ -190,6 +231,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			[STAThread]
 			public void Run()
 			{
+				BuildResults results = this.engine.currentResults;
 				LoggingService.Debug("Run MSBuild on " + buildFile);
 				
 				Engine engine = new Engine(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
@@ -206,8 +248,11 @@ namespace ICSharpCode.SharpDevelop.Project
 					engine.GlobalProperties.SetProperty(entry.Key, entry.Value);
 				}
 				
-				SharpDevelopLogger logger = new SharpDevelopLogger(this.engine, results);
+				SharpDevelopLogger logger = new SharpDevelopLogger(this.engine);
 				engine.RegisterLogger(logger);
+				foreach (IMSBuildAdditionalLogger loggerProvider in MSBuildEngine.AdditionalMSBuildLoggers) {
+					engine.RegisterLogger(loggerProvider.CreateLogger(this.engine));
+				}
 				
 				Microsoft.Build.BuildEngine.Project project = engine.CreateNewProject();
 				try {
@@ -218,16 +263,18 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 					
 					if (engine.BuildProject(project, targets))
-						results.NativeCompilerReturnValue = 0;
+						results.Result = BuildResultCode.Success;
 					else
-						results.NativeCompilerReturnValue = 1;
+						results.Result = BuildResultCode.Error;
 				} catch (ArgumentException ex) {
-					results.NativeCompilerReturnValue = -2;
-					results.Errors.Add(new CompilerError(null, -1, -1, "", ex.Message));
+					results.Result = BuildResultCode.BuildFileError;
+					results.Errors.Add(new BuildError(null, -1, -1, "", ex.Message));
 				} catch (InvalidProjectFileException ex) {
-					results.NativeCompilerReturnValue = -2;
-					results.Errors.Add(new CompilerError(ex.ProjectFile, ex.LineNumber, ex.ColumnNumber, ex.ErrorCode, ex.Message));
+					results.Result = BuildResultCode.BuildFileError;
+					results.Errors.Add(new BuildError(ex.ProjectFile, ex.LineNumber, ex.ColumnNumber, ex.ErrorCode, ex.Message));
 				}
+				
+				logger.FlushCurrentError();
 				
 				LoggingService.Debug("MSBuild finished");
 				MSBuildEngine.isRunning = false;
@@ -235,23 +282,32 @@ namespace ICSharpCode.SharpDevelop.Project
 					WorkbenchSingleton.MainForm.BeginInvoke(callback, results);
 				}
 				engine.UnloadAllProjects();
+				this.engine.currentResults = null;
 			}
 		}
 		
 		class SharpDevelopLogger : ILogger
 		{
 			MSBuildEngine engine;
-			CompilerResults results;
+			BuildResults results;
 			
-			public SharpDevelopLogger(MSBuildEngine engine, CompilerResults results)
+			public SharpDevelopLogger(MSBuildEngine engine)
 			{
 				this.engine = engine;
-				this.results = results;
+				this.results = engine.currentResults;
 			}
 			
 			void AppendText(string text)
 			{
 				engine.MessageView.AppendText(text + "\r\n");
+			}
+			
+			internal void FlushCurrentError()
+			{
+				if (engine.currentErrorOrWarning != null) {
+					AppendText(engine.currentErrorOrWarning.ToString());
+					engine.currentErrorOrWarning = null;
+				}
 			}
 			
 			void OnBuildStarted(object sender, BuildStartedEventArgs e)
@@ -270,30 +326,19 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			
-			Stack<string> projectFiles = new Stack<string>();
-			
 			void OnProjectStarted(object sender, ProjectStartedEventArgs e)
 			{
-				projectFiles.Push(e.ProjectFile);
+				engine.projectFiles.Push(e.ProjectFile);
 				StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildVerb} " + Path.GetFileNameWithoutExtension(e.ProjectFile) + "...");
 			}
 			
 			void OnProjectFinished(object sender, ProjectFinishedEventArgs e)
 			{
-				projectFiles.Pop();
-				if (projectFiles.Count > 0) {
-					StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildVerb} " + Path.GetFileNameWithoutExtension(projectFiles.Peek()) + "...");
+				FlushCurrentError();
+				engine.projectFiles.Pop();
+				if (engine.projectFiles.Count > 0) {
+					StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildVerb} " + Path.GetFileNameWithoutExtension(engine.CurrentProjectFile) + "...");
 				}
-			}
-			
-			void OnTargetStarted(object sender, TargetStartedEventArgs e)
-			{
-				// do not display
-			}
-			
-			void OnTargetFinished(object sender, TargetFinishedEventArgs e)
-			{
-				// do not display
 			}
 			
 			string activeTaskName;
@@ -308,7 +353,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			void OnTaskFinished(object sender, TaskFinishedEventArgs e)
 			{
-				// do not display
+				FlushCurrentError();
 			}
 			
 			void OnError(object sender, BuildErrorEventArgs e)
@@ -325,45 +370,20 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				if (string.Equals(file, activeTaskName, StringComparison.InvariantCultureIgnoreCase)) {
 					file = "";
-				} else if (file.StartsWith("positionof#")) {
-					string memberName = file.Substring(11);
-					file = "";
-					IProject project = ProjectService.GetProject(projectFiles.Peek());
-					if (project != null) {
-						IProjectContent pc = ParserService.GetProjectContent(project);
-						if (pc != null) {
-							Position pos = pc.GetPosition(memberName);
-							if (pos != null && pos.Cu != null) {
-								file = pos.Cu.FileName ?? "";
-								lineNumber = pos.Line;
-								columnNumber = pos.Column;
-							}
-						}
-					}
 				} else {
 					bool isShortFileName = file == Path.GetFileNameWithoutExtension(file);
-					if (projectFiles.Count > 0) {
-						file = Path.Combine(Path.GetDirectoryName(projectFiles.Peek()), file);
+					if (engine.CurrentProjectFile != null) {
+						file = Path.Combine(Path.GetDirectoryName(engine.CurrentProjectFile), file);
 					}
 					if (isShortFileName && !File.Exists(file)) {
 						file = "";
 					}
 				}
-				CompilerError error = new CompilerError(file, lineNumber, columnNumber, code, message);
+				FlushCurrentError();
+				BuildError error = new BuildError(file, lineNumber, columnNumber, code, message);
 				error.IsWarning = isWarning;
-				AppendText(error.ToString());
 				results.Errors.Add(error);
-			}
-			
-			void OnMessage(object sender, BuildMessageEventArgs e)
-			{
-				//if (e.Importance == MessageImportance.High)
-				//	AppendText(e.Message);
-			}
-			
-			void OnCustomEvent(object sender, CustomBuildEventArgs e)
-			{
-				//AppendText(e.Message);
+				engine.currentErrorOrWarning = error;
 			}
 			
 			#region ILogger interface implementation
@@ -395,15 +415,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				eventSource.BuildFinished   += new BuildFinishedEventHandler(OnBuildFinished);
 				eventSource.ProjectStarted  += new ProjectStartedEventHandler(OnProjectStarted);
 				eventSource.ProjectFinished += new ProjectFinishedEventHandler(OnProjectFinished);
-				eventSource.TargetStarted   += new TargetStartedEventHandler(OnTargetStarted);
-				eventSource.TargetFinished  += new TargetFinishedEventHandler(OnTargetFinished);
 				eventSource.TaskStarted     += new TaskStartedEventHandler(OnTaskStarted);
 				eventSource.TaskFinished    += new TaskFinishedEventHandler(OnTaskFinished);
 				
 				eventSource.ErrorRaised     += new BuildErrorEventHandler(OnError);
 				eventSource.WarningRaised   += new BuildWarningEventHandler(OnWarning);
-				eventSource.MessageRaised   += new BuildMessageEventHandler(OnMessage);
-				eventSource.CustomEventRaised += new CustomBuildEventHandler(OnCustomEvent);
 			}
 			
 			public void Shutdown()

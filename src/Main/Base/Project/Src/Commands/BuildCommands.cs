@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.CodeDom.Compiler;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
@@ -53,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 		
-		protected void CallbackMethod(CompilerResults results)
+		protected void CallbackMethod(BuildResults results)
 		{
 			MSBuildEngine.ShowResults(results);
 			AfterBuild();

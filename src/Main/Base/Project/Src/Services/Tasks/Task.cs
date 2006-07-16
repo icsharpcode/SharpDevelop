@@ -1,14 +1,13 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.IO;
 using System.Collections;
-using System.CodeDom.Compiler;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -27,10 +26,10 @@ namespace ICSharpCode.Core
 		string   description;
 		string   fileName;
 		TaskType type;
-		IProject project;
 		int      line;
 		int      column;
-		
+		object contextMenuOwner;
+		string contextMenuAddInTreeEntry;
 
 		public override string ToString()
 		{
@@ -41,13 +40,7 @@ namespace ICSharpCode.Core
 			                     type,
 			                     description);
 		}
-		
-		public IProject Project {
-			get {
-				return project;
-			}
-		}
-		
+			
 		/// <summary>
 		/// The line number of the task. Zero-based (text editor coordinate)
 		/// </summary>
@@ -87,10 +80,22 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public Task(string fileName, string description, int column, int line, TaskType type, IProject project)
-			: this(fileName, description, column, line, type)
-		{
-			this.project = project;
+		public object ContextMenuOwner {
+			get {
+				return contextMenuOwner;
+			}
+			set {
+				contextMenuOwner = value;
+			}
+		}
+		
+		public string ContextMenuAddInTreeEntry {
+			get {
+				return contextMenuAddInTreeEntry;
+			}
+			set {
+				contextMenuAddInTreeEntry = value;
+			}
 		}
 		
 		public Task(string fileName, string description, int column, int line, TaskType type)
@@ -102,13 +107,19 @@ namespace ICSharpCode.Core
 			this.line        = line;
 		}
 		
-		public Task(CompilerError error)
+		public Task(BuildError error)
 		{
 			type         = error.IsWarning ? TaskType.Warning : TaskType.Error;
 			column       = Math.Max(error.Column - 1, 0);
 			line         = Math.Max(error.Line - 1, 0);
-			description  = error.ErrorText + "(" + error.ErrorNumber + ")";
 			fileName     = error.FileName;
+			if (string.IsNullOrEmpty(error.ErrorCode)) {
+				description = error.ErrorText;
+			} else {
+				description = error.ErrorText + "(" + error.ErrorCode + ")";
+			}
+			contextMenuAddInTreeEntry = error.ContextMenuAddInTreeEntry;
+			contextMenuOwner = error;
 		}
 		
 		public void JumpToPosition()

@@ -47,7 +47,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			List<ToolStripItem> list = new List<ToolStripItem>();
 			
 			if (!FindReferencesAndRenameHelper.IsReadOnly(c)) {
-				if (!c.Name.Equals(Path.GetFileNameWithoutExtension(c.CompilationUnit.FileName),
+				if (c.DeclaringType == null &&
+				    !c.Name.Equals(Path.GetFileNameWithoutExtension(c.CompilationUnit.FileName),
 				                   StringComparison.InvariantCultureIgnoreCase))
 				{
 					// File name does not match class name

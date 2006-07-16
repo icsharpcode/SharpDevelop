@@ -21,14 +21,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			this.lexer = (Lexer)lexer;
 		}
 		
-		string        assemblyName     = null;
 		StringBuilder qualidentBuilder = new StringBuilder();
-
-		public string ContainingAssembly {
-			set {
-				assemblyName = value;
-			}
-		}
 
 		Token t {
 			[System.Diagnostics.DebuggerStepThrough]
@@ -323,8 +316,6 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				(peek == Tokens.Comma || peek == Tokens.CloseSquareBracket);
 		}
 
-		bool IsDims () { return LBrackAndCommaOrRBrack(); }
-
 		/* True, if "[" is followed by "," or "]" */
 		/* or if the current token is "*"         */
 		bool TimesOrLBrackAndCommaOrRBrack () {
@@ -417,9 +408,6 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			return la.kind == Tokens.Identifier && la.val == "remove";
 		}
 
-		bool IsNotYieldStatement () {
-			return !IsYieldStatement();
-		}
 		/* True, if lookahead ident is "yield" and than follows a break or return */
 		bool IsYieldStatement () {
 			return la.kind == Tokens.Identifier && la.val == "yield" && (Peek(1).kind == Tokens.Return || Peek(1).kind == Tokens.Break);

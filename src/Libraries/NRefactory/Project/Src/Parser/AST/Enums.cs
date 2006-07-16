@@ -340,7 +340,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		None,
 		Auto,
 		Unicode,
-		ANSI
+		Ansi
 	}
 	
 	///<summary>

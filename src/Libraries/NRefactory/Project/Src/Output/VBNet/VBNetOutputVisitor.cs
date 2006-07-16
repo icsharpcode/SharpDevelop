@@ -1154,7 +1154,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.Unicode);
 					outputFormatter.Space();
 					break;
-				case CharsetModifier.ANSI:
+				case CharsetModifier.Ansi:
 					outputFormatter.PrintToken(Tokens.Ansi);
 					outputFormatter.Space();
 					break;

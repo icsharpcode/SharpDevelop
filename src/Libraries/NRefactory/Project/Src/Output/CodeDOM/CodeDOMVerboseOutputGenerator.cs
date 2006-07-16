@@ -9,12 +9,11 @@ using System;
 using System.IO;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Security.Permissions;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	/// <summary>
-	/// Description of CodeDOMVerboseOutputGenerator.
-	/// </summary>
+	[PermissionSet(SecurityAction.LinkDemand, Name = "FullTrust")]
 	public class CodeDOMVerboseOutputGenerator : System.CodeDom.Compiler.CodeGenerator
 	{
 		#region System.CodeDom.Compiler.CodeGenerator abstract class implementation

@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory.Parser
 	/// <summary>
 	/// Description of Position.
 	/// </summary>
-	public struct Location
+	public struct Location : IComparable<Location>
 	{
 		public static readonly Location Empty = new Location(-1, -1);
 		
@@ -102,6 +102,16 @@ namespace ICSharpCode.NRefactory.Parser
 		public static bool operator >=(Location a, Location b)
 		{
 			return !(a < b);
+		}
+		
+		public int CompareTo(Location other)
+		{
+			if (this == other)
+				return 0;
+			if (this < other)
+				return -1;
+			else
+				return 1;
 		}
 	}
 }

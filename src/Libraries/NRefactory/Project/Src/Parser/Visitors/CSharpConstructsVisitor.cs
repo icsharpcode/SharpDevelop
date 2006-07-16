@@ -77,13 +77,13 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		
-		public override object Visit(IfElseStatement ifStatement, object data)
+		public override object Visit(IfElseStatement ifElseStatement, object data)
 		{
-			base.Visit(ifStatement, data);
-			BinaryOperatorExpression boe = ifStatement.Condition as BinaryOperatorExpression;
-			if (ifStatement.ElseIfSections.Count == 0
-			    && ifStatement.FalseStatement.Count == 0
-			    && ifStatement.TrueStatement.Count == 1
+			base.Visit(ifElseStatement, data);
+			BinaryOperatorExpression boe = ifElseStatement.Condition as BinaryOperatorExpression;
+			if (ifElseStatement.ElseIfSections.Count == 0
+			    && ifElseStatement.FalseStatement.Count == 0
+			    && ifElseStatement.TrueStatement.Count == 1
 			    && boe != null
 			    && boe.Op == BinaryOperatorType.ReferenceInequality
 			    && (IsNullLiteralExpression(boe.Left) || IsNullLiteralExpression(boe.Right))
@@ -92,9 +92,9 @@ namespace ICSharpCode.NRefactory.Parser
 				IdentifierExpression ident = boe.Left as IdentifierExpression;
 				if (ident == null)
 					ident = boe.Right as IdentifierExpression;
-				StatementExpression se = ifStatement.TrueStatement[0] as StatementExpression;
+				StatementExpression se = ifElseStatement.TrueStatement[0] as StatementExpression;
 				if (se == null) {
-					BlockStatement block = ifStatement.TrueStatement[0] as BlockStatement;
+					BlockStatement block = ifElseStatement.TrueStatement[0] as BlockStatement;
 					if (block != null && block.Children.Count == 1) {
 						se = block.Children[0] as StatementExpression;
 					}

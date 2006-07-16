@@ -474,7 +474,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		{
 			Location start = new Location(Col - 1, Line);
 			string directive = ReadIdent('#');
-			string argument  = ReadToEOL();
+			string argument  = ReadToEndOfLine();
 			this.specialTracker.AddPreProcessingDirective(directive, argument.Trim(), start, new Location(start.X + directive.Length + argument.Length, start.Y));
 		}
 		
@@ -563,7 +563,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						curWord.Length = 0;
 						if (specialCommentHash.ContainsKey(tag)) {
 							Location p = new Location(Col, Line);
-							string comment = ch + ReadToEOL();
+							string comment = ch + ReadToEndOfLine();
 							tagComments.Add(new TagComment(tag, comment, p, new Location(Col, Line)));
 							sb.Append(comment);
 							break;

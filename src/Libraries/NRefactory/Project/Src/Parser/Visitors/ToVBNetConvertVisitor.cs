@@ -54,21 +54,21 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		TypeDeclaration currentType;
 		
-		public override object Visit(TypeDeclaration td, object data)
+		public override object Visit(TypeDeclaration typeDeclaration, object data)
 		{
 			TypeDeclaration outerType = currentType;
-			currentType = td;
+			currentType = typeDeclaration;
 			
 			//   Conflicting field/property names -> m_field
 			List<string> properties = new List<string>();
-			foreach (object o in td.Children) {
+			foreach (object o in typeDeclaration.Children) {
 				PropertyDeclaration pd = o as PropertyDeclaration;
 				if (pd != null) {
 					properties.Add(pd.Name);
 				}
 			}
 			List<VariableDeclaration> conflicts = new List<VariableDeclaration>();
-			foreach (object o in td.Children) {
+			foreach (object o in typeDeclaration.Children) {
 				FieldDeclaration fd = o as FieldDeclaration;
 				if (fd != null) {
 					foreach (VariableDeclaration var in fd.Fields) {
@@ -81,8 +81,8 @@ namespace ICSharpCode.NRefactory.Parser
 					}
 				}
 			}
-			new PrefixFieldsVisitor(conflicts, "m_").Run(td);
-			base.Visit(td, data);
+			new PrefixFieldsVisitor(conflicts, "m_").Run(typeDeclaration);
+			base.Visit(typeDeclaration, data);
 			currentType = outerType;
 			
 			return null;
@@ -243,7 +243,7 @@ namespace ICSharpCode.NRefactory.Parser
 									charSet = CharsetModifier.Auto;
 									break;
 								case "Ansi":
-									charSet = CharsetModifier.ANSI;
+									charSet = CharsetModifier.Ansi;
 									break;
 								default:
 									return false;

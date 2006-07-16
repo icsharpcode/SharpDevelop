@@ -783,6 +783,9 @@
     <Compile Include="Src\Commands\NavigationCommands.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\NavigationConditionEvaluators.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\TextNavigationPoint.cs" />
+    <Compile Include="Src\Project\BuildResults.cs" />
+    <Compile Include="Src\Project\BuildError.cs" />
+    <Compile Include="Src\Project\MSBuildAdditionalLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

@@ -41,6 +41,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.Build.Framework" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeAnalysis.addin">
@@ -61,6 +62,7 @@
     <Compile Include="Src\FxCopWrapper.cs" />
     <Compile Include="Src\FxCopRule.cs" />
     <Compile Include="Src\CheckCurrentProjectCommand.cs" />
+    <Compile Include="Src\FxCopLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

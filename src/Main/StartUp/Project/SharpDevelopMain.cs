@@ -273,6 +273,7 @@ namespace ICSharpCode.SharpDevelop
 			AddInTree.Doozers.Add("CodeCompletionBinding", new ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionBindingDoozer());
 			AddInTree.Doozers.Add("Debugger", new DebuggerDoozer());
 			AddInTree.Doozers.Add("Directory", new DirectoryDoozer());
+			AddInTree.Doozers.Add("TaskBoundAdditionalLogger", new TaskBoundAdditionalLoggerDoozer());
 			
 			MenuCommand.LinkCommandCreator = delegate(string link) { return new LinkCommand(link); };
 		}
