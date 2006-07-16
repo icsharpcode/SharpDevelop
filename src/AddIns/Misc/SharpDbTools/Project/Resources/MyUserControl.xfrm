@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="MyUserControl" />
+    <ClientSize value="{Width=230, Height=160}" />
+    <Controls>
+      <System.Windows.Forms.Button>
+        <Name value="testButton" />
+        <Location value="{X=63,Y=97}" />
+        <Text value="A button" />
+        <Size value="{Width=75, Height=23}" />
+        <Anchor value="None" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <TabIndex value="1" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Label>
+        <Name value="label1" />
+        <Location value="{X=38,Y=19}" />
+        <Text value="Hello, World!" />
+        <Size value="{Width=100, Height=23}" />
+        <TabIndex value="0" />
+      </System.Windows.Forms.Label>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

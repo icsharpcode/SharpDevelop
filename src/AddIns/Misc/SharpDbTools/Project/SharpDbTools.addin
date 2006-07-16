@@ -1,0 +1,18 @@
+<AddIn name        = "SharpDbTools"
+       author      = "Dickon Field"
+       url         = ""
+       description = "A collection of components and tools to help develop db-aware apps">
+	
+	<Runtime>
+		<Import assembly = "SharpDbTools.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "SharpDbToolsPad"
+		     category = "Main"
+		     title    = "RDB Server Tools"
+		     icon     = "PadIcons.Output"
+		     shortcut = "Control|Alt|D"
+		     class    = "SharpDbTools.ServerBrowserTool"/>
+	</Path>
+</AddIn>
