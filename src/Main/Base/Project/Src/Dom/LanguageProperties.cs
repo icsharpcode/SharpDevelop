@@ -162,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			public override RefactoringProvider RefactoringProvider {
 				get {
-					return NRefactoryRefactoringProvider.NRefactoryProviderInstance;
+					return NRefactoryRefactoringProvider.NRefactoryCSharpProviderInstance;
 				}
 			}
 			
@@ -244,7 +244,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			public override RefactoringProvider RefactoringProvider {
 				get {
-					return NRefactoryRefactoringProvider.NRefactoryProviderInstance;
+					return NRefactoryRefactoringProvider.NRefactoryVBNetProviderInstance;
 				}
 			}
 			

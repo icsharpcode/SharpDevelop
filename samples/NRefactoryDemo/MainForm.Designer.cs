@@ -40,6 +40,7 @@ namespace NRefactoryDemo
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.transformationComboBox = new System.Windows.Forms.ComboBox();
 			this.applyTransformation = new System.Windows.Forms.Button();
+			this.editNodeButton = new System.Windows.Forms.Button();
 			this.deleteSelectedNode = new System.Windows.Forms.Button();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.arrowUpPictureBox = new System.Windows.Forms.PictureBox();
@@ -51,7 +52,6 @@ namespace NRefactoryDemo
 			this.parseVBButton = new System.Windows.Forms.Button();
 			this.generateCSharpButton = new System.Windows.Forms.Button();
 			this.parseCSharpButton = new System.Windows.Forms.Button();
-			this.editNodeButton = new System.Windows.Forms.Button();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -90,6 +90,7 @@ namespace NRefactoryDemo
 			this.codeTextBox.Location = new System.Drawing.Point(0, 0);
 			this.codeTextBox.Multiline = true;
 			this.codeTextBox.Name = "codeTextBox";
+			this.codeTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
 			this.codeTextBox.Size = new System.Drawing.Size(512, 146);
 			this.codeTextBox.TabIndex = 0;
 			this.codeTextBox.Text = "using System;\r\nclass MainClass\r\n{\r\n  // This is the entry method of the applicati" +
@@ -142,6 +143,16 @@ namespace NRefactoryDemo
 			this.applyTransformation.Text = "Run visitor";
 			this.applyTransformation.UseVisualStyleBackColor = true;
 			this.applyTransformation.Click += new System.EventHandler(this.ApplyTransformationClick);
+			// 
+			// editNodeButton
+			// 
+			this.editNodeButton.Location = new System.Drawing.Point(9, 49);
+			this.editNodeButton.Name = "editNodeButton";
+			this.editNodeButton.Size = new System.Drawing.Size(110, 23);
+			this.editNodeButton.TabIndex = 1;
+			this.editNodeButton.Text = "Edit node";
+			this.editNodeButton.UseVisualStyleBackColor = true;
+			this.editNodeButton.Click += new System.EventHandler(this.EditNodeButtonClick);
 			// 
 			// deleteSelectedNode
 			// 
@@ -253,16 +264,6 @@ namespace NRefactoryDemo
 			this.parseCSharpButton.Text = "Parse C# code";
 			this.parseCSharpButton.UseVisualStyleBackColor = true;
 			this.parseCSharpButton.Click += new System.EventHandler(this.ParseCSharpButtonClick);
-			// 
-			// editNodeButton
-			// 
-			this.editNodeButton.Location = new System.Drawing.Point(9, 49);
-			this.editNodeButton.Name = "editNodeButton";
-			this.editNodeButton.Size = new System.Drawing.Size(110, 23);
-			this.editNodeButton.TabIndex = 1;
-			this.editNodeButton.Text = "Edit node";
-			this.editNodeButton.UseVisualStyleBackColor = true;
-			this.editNodeButton.Click += new System.EventHandler(this.EditNodeButtonClick);
 			// 
 			// MainForm
 			// 

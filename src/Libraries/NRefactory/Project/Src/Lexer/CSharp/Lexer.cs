@@ -757,6 +757,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					if (ch == '*' && ReaderPeek() == '/') {
 						ReaderRead();
 						return;
+					} else {
+						HandleLineEnd(ch);
 					}
 				}
 			} else {
@@ -765,7 +767,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					char ch = (char)nextChar;
 					
 					if (HandleLineEnd(ch)) {
-						specialTracker.AddChar('\n');
+						specialTracker.AddString(Environment.NewLine);
 						continue;
 					}
 					
