@@ -1532,8 +1532,8 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			addRegion = EventAddRegion.Null;
 			removeRegion = EventRemoveRegion.Null;
 			raiseRegion = EventRaiseRegion.Null;
-			bodyStart = new Location(-1, -1);
-			bodyEnd = new Location(-1, -1);
+			bodyStart = Location.Empty;
+			bodyEnd = Location.Empty;
 		}
 		
 		public EventDeclaration(TypeReference typeReference, Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string name, List<InterfaceImplementation> interfaceImplementations) : 
@@ -1543,8 +1543,8 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			addRegion = EventAddRegion.Null;
 			removeRegion = EventRemoveRegion.Null;
 			raiseRegion = EventRaiseRegion.Null;
-			bodyStart = new Location(-1, -1);
-			bodyEnd = new Location(-1, -1);
+			bodyStart = Location.Empty;
+			bodyEnd = Location.Empty;
 		}
 		
 		public bool HasAddRegion {
@@ -2319,8 +2319,8 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			Parameters = parameters;
 			interfaceImplementations = new List<InterfaceImplementation>();
 			typeReference = TypeReference.Null;
-			bodyStart = new Location(-1, -1);
-			bodyEnd = new Location(-1, -1);
+			bodyStart = Location.Empty;
+			bodyEnd = Location.Empty;
 			getRegion = PropertyGetRegion.Null;
 			setRegion = PropertySetRegion.Null;
 		}
@@ -2331,8 +2331,8 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			Parameters = parameters;
 			Modifier = modifier;
 			interfaceImplementations = new List<InterfaceImplementation>();
-			bodyStart = new Location(-1, -1);
-			bodyEnd = new Location(-1, -1);
+			bodyStart = Location.Empty;
+			bodyEnd = Location.Empty;
 			getRegion = PropertyGetRegion.Null;
 			setRegion = PropertySetRegion.Null;
 		}
@@ -3123,8 +3123,8 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 				base(modifier, attributes, name, parameters) {
 			interfaceImplementations = new List<InterfaceImplementation>();
 			typeReference = TypeReference.Null;
-			bodyStart = new Location(-1, -1);
-			bodyEnd = new Location(-1, -1);
+			bodyStart = Location.Empty;
+			bodyEnd = Location.Empty;
 			getRegion = PropertyGetRegion.Null;
 			setRegion = PropertySetRegion.Null;
 		}
@@ -3858,7 +3858,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			name = "";
 			baseTypes = new List<TypeReference>();
 			templates = new List<TemplateDefinition>();
-			bodyStartLocation = new Location(-1, -1);
+			bodyStartLocation = Location.Empty;
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {

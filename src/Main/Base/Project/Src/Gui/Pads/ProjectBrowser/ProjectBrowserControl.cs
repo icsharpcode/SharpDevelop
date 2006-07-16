@@ -140,7 +140,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void RefreshView()
 		{
 			if (treeView.Nodes.Count > 0) {
+				Properties memento = new Properties();
+				StoreViewState(memento);
 				ViewSolution(((AbstractProjectBrowserTreeNode)treeView.Nodes[0]).Solution);
+				ReadViewState(memento);
 			}
 		}
 		
@@ -410,6 +413,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				return propertyContainer;
 			}
+		}
+		
+		/// <summary>
+		/// Writes the current view state into the memento.
+		/// </summary>
+		public void StoreViewState(Properties memento)
+		{
+			memento.Set("ProjectBrowserState", ExtTreeView.GetViewStateString(treeView));
+		}
+		
+		/// <summary>
+		/// Reads the view state from the memento.
+		/// </summary>
+		public void ReadViewState(Properties memento)
+		{
+			ExtTreeView.ApplyViewStateString(memento.Get("ProjectBrowserState", ""), treeView);
 		}
 		
 		#region Windows Forms Designer generated code

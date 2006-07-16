@@ -12,7 +12,7 @@ namespace NRefactoryASTGenerator.AST
 {
 	interface INode {}
 	interface INullable {}
-	struct Point {}
+	struct Location {}
 	
 	enum Modifier { None }
 	

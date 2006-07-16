@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.Parser
 	/// </summary>
 	public struct Location
 	{
-		public static readonly Location Empty = new Location(0, 0);
+		public static readonly Location Empty = new Location(-1, -1);
 		
 		public Location(int column, int line)
 		{

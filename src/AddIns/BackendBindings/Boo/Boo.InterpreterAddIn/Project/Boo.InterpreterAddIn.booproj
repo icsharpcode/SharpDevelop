@@ -50,7 +50,7 @@
       <SpecificVersion>False</SpecificVersion>
     </ProjectReference>
     <Content Include="Boo.Interpreter.addin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
     <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
@@ -62,6 +62,8 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Content Include="PostBuildEvent.proj" />
   </ItemGroup>
   <Import Project="$(BooBinPath)\Boo.Microsoft.Build.targets" />
+  <Import Project="PostBuildEvent.proj" />
 </Project>

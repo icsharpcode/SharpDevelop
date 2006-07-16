@@ -55,7 +55,7 @@ namespace NRefactoryASTGenerator.AST
 		ClassType type;
 		List<TypeReference> baseTypes;
 		List<TemplateDefinition> templates;
-		Point bodyStartLocation;
+		Location bodyStartLocation;
 		
 		public TypeDeclaration(Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
 	}

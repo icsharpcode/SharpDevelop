@@ -48,6 +48,18 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void BlankLine()
+		{
+			TestProgram("using A;\n\nusing B;");
+		}
+		
+		[Test]
+		public void BlankLineAtBeginning()
+		{
+			TestProgram("\nusing A;\n\nusing B;");
+		}
+		
+		[Test]
 		public void SimpleComments()
 		{
 			TestProgram("// before class\n" +
@@ -58,9 +70,10 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			            "// after class");
 		}
 		
-		[Test, Ignore("Requires BlankLine to work correctly")]
+		[Test]
 		public void BlockComment()
 		{
+			System.Diagnostics.Debugger.Break();
 			TestProgram("/* before class */\n" +
 			            "class A\n" +
 			            "{\n" +

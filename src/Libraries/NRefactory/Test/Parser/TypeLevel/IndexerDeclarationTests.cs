@@ -6,13 +6,8 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.IO;
-
-using NUnit.Framework;
-
-using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
+using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.Tests.AST
 {

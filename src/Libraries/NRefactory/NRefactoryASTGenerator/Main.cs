@@ -45,7 +45,6 @@ namespace NRefactoryASTGenerator
 			cns.Imports.Add(new CodeNamespaceImport("System"));
 			cns.Imports.Add(new CodeNamespaceImport("System.Collections.Generic"));
 			cns.Imports.Add(new CodeNamespaceImport("System.Diagnostics"));
-			cns.Imports.Add(new CodeNamespaceImport("System.Drawing"));
 			foreach (Type type in nodeTypes) {
 				if (type.GetCustomAttributes(typeof(CustomImplementationAttribute), false).Length == 0) {
 					CodeTypeDeclaration ctd = new CodeTypeDeclaration(type.Name);
@@ -423,7 +422,7 @@ namespace NRefactoryASTGenerator
 				}
 				// initialize fields that were not initialized by parameter
 				foreach (FieldInfo field in type.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.NonPublic)) {
-					if (field.FieldType.IsValueType && field.FieldType != typeof(Point))
+					if (field.FieldType.IsValueType && field.FieldType != typeof(Location))
 						continue;
 					if (Array.Exists(ctor.GetParameters(), delegate(ParameterInfo p) { return field.Name == p.Name; }))
 						continue;
@@ -456,8 +455,8 @@ namespace NRefactoryASTGenerator
 				}
 			} else if (field.FieldType.FullName.StartsWith("System.Collections.Generic.List")) {
 				code = "new List<" + field.FieldType.GetGenericArguments()[0].Name + ">()";
-			} else if (field.FieldType == typeof(Point)) {
-				code = "new Point(-1, -1)";
+			} else if (field.FieldType == typeof(Location)) {
+				code = "Location.Empty";
 			} else {
 				code = field.FieldType.Name + ".Null";
 			}

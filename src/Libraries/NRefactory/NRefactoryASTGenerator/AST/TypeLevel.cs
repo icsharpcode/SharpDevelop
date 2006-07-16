@@ -95,8 +95,8 @@ namespace NRefactoryASTGenerator.AST
 		EventAddRegion addRegion;
 		EventRemoveRegion removeRegion;
 		EventRaiseRegion raiseRegion;
-		Point bodyStart;
-		Point bodyEnd;
+		Location bodyStart;
+		Location bodyEnd;
 		
 		public EventDeclaration(TypeReference typeReference, string name, Modifier modifier, List<AttributeSection> attributes, List<ParameterDeclarationExpression> parameters)
 			: base(modifier, attributes, name, parameters)
@@ -203,8 +203,8 @@ namespace NRefactoryASTGenerator.AST
 	{
 		List<InterfaceImplementation> interfaceImplementations;
 		TypeReference     typeReference;
-		Point             bodyStart;
-		Point             bodyEnd;
+		Location          bodyStart;
+		Location          bodyEnd;
 		PropertyGetRegion getRegion;
 		PropertySetRegion setRegion;
 		
@@ -254,8 +254,8 @@ namespace NRefactoryASTGenerator.AST
 		List<ParameterDeclarationExpression> parameters;
 		List<InterfaceImplementation> interfaceImplementations;
 		TypeReference     typeReference;
-		Point             bodyStart;
-		Point             bodyEnd;
+		Location          bodyStart;
+		Location          bodyEnd;
 		PropertyGetRegion getRegion;
 		PropertySetRegion setRegion;
 		

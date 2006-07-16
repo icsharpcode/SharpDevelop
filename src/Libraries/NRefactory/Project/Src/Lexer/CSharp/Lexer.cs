@@ -33,6 +33,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		{
 			int nextChar;
 			char ch;
+			bool hadLineEnd = false;
+			if (Line == 1 && Col == 1) hadLineEnd = true; // beginning of document
+			
 			while ((nextChar = ReaderRead()) != -1) {
 				Token token;
 				
@@ -42,7 +45,13 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						continue;
 					case '\r':
 					case '\n':
+						if (hadLineEnd) {
+							// second line end before getting to a token
+							// -> here was a blank line
+							specialTracker.AddEndOfLine(new Location(Line, Col));
+						}
 						HandleLineEnd((char)nextChar);
+						hadLineEnd = true;
 						continue;
 					case '/':
 						int peek = ReaderPeek();

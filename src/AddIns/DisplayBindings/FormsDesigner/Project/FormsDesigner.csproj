@@ -91,7 +91,7 @@
     <Compile Include="Src\Services\UIService.cs" />
     <Compile Include="Src\ToolboxProvider.cs" />
     <None Include="FormsDesigner.addin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <Compile Include="Src\DesignerGenerator\VBNetDesignerGenerator.cs" />
     <Compile Include="Src\DesignerLoader\DesignerLoaderProvider.cs" />
@@ -126,6 +126,8 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Content Include="PostBuildEvent.proj" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <Import Project="PostBuildEvent.proj" />
 </Project>
