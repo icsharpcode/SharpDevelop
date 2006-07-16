@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(BlankLine special, object data)
 		{
-			formatter.NewLine();
+			formatter.PrintBlankLine(ForceWriteInPreviousLine);
 			return data;
 		}
 		
@@ -93,15 +93,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		/// <summary>
 		/// Writes all specials up to the specified location.
 		/// </summary>
-		public void AcceptPoint(Location a)
+		public void AcceptPoint(Location loc)
 		{
-			while (available) {
-				Location b = enumerator.Current.StartPosition;
-				if (b.Y < a.Y || (b.Y == a.Y && b.X <= a.X)) {
-					WriteCurrent();
-				} else {
-					break;
-				}
+			while (available && enumerator.Current.StartPosition <= loc) {
+				WriteCurrent();
 			}
 		}
 		

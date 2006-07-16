@@ -73,13 +73,29 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void BlockComment()
 		{
-			System.Diagnostics.Debugger.Break();
 			TestProgram("/* before class */\n" +
 			            "class A\n" +
 			            "{\n" +
 			            "\t/* in class */\n" +
 			            "}\n" +
 			            "/* after class */");
+		}
+		
+		[Test]
+		public void ComplexCommentMix()
+		{
+			TestProgram("/* before class */\n" +
+			            "// line comment before\n" +
+			            "/* block comment before */\n" +
+			            "class A\n" +
+			            "{\n" +
+			            "\t/* in class */\n" +
+			            "\t// in class 2" +
+			            "\t/* in class 3 */\n" +
+			            "}\n" +
+			            "/* after class */\n" +
+			            "// after class 2\n" +
+			            "/* after class 3*/");
 		}
 		
 		[Test]

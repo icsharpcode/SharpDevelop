@@ -54,5 +54,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		void Indent();
 		void PrintComment(Comment comment, bool forceWriteInPreviousBlock);
 		void PrintPreProcessingDirective(PreProcessingDirective directive, bool forceWriteInPreviousBlock);
+		void PrintBlankLine(bool forceWriteInPreviousBlock);
 	}
 }

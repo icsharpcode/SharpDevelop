@@ -115,13 +115,20 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 		}
 		
+		protected void WriteLineInPreviousLine(string txt, bool forceWriteInPreviousBlock)
+		{
+			WriteInPreviousLine(txt + Environment.NewLine, forceWriteInPreviousBlock);
+		}
+		
 		protected void WriteInPreviousLine(string txt, bool forceWriteInPreviousBlock)
 		{
+			if (txt.Length == 0) return;
+			
 			bool lastCharacterWasNewLine = LastCharacterIsNewLine;
 			if (lastCharacterWasNewLine) {
 				if (forceWriteInPreviousBlock == false) {
-					Indent();
-					text.AppendLine(txt);
+					if (txt != Environment.NewLine) Indent();
+					text.Append(txt);
 					lineBeforeLastStart = lastLineStart;
 					lastLineStart = text.Length;
 					return;
@@ -130,10 +137,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			string lastLine = text.ToString(lastLineStart, text.Length - lastLineStart);
 			text.Remove(lastLineStart, text.Length - lastLineStart);
-			if (forceWriteInPreviousBlock) ++indentationLevel;
-			Indent();
-			if (forceWriteInPreviousBlock) --indentationLevel;
-			text.AppendLine(txt);
+			if (txt != Environment.NewLine) {
+				if (forceWriteInPreviousBlock) ++indentationLevel;
+				Indent();
+				if (forceWriteInPreviousBlock) --indentationLevel;
+			}
+			text.Append(txt);
 			lineBeforeLastStart = lastLineStart;
 			lastLineStart = text.Length;
 			text.Append(lastLine);
@@ -156,9 +165,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public virtual void PrintPreProcessingDirective(PreProcessingDirective directive, bool forceWriteInPreviousBlock)
 		{
 			if (string.IsNullOrEmpty(directive.Arg))
-				WriteInPreviousLine(directive.Cmd, forceWriteInPreviousBlock);
+				WriteLineInPreviousLine(directive.Cmd, forceWriteInPreviousBlock);
 			else
-				WriteInPreviousLine(directive.Cmd + " " + directive.Arg, forceWriteInPreviousBlock);
+				WriteLineInPreviousLine(directive.Cmd + " " + directive.Arg, forceWriteInPreviousBlock);
+		}
+		
+		public void PrintBlankLine(bool forceWriteInPreviousBlock)
+		{
+			WriteInPreviousLine(Environment.NewLine, forceWriteInPreviousBlock);
 		}
 		
 		public abstract void PrintToken(int token);

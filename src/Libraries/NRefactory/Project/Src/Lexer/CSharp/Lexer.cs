@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						if (hadLineEnd) {
 							// second line end before getting to a token
 							// -> here was a blank line
-							specialTracker.AddEndOfLine(new Location(Line, Col));
+							specialTracker.AddEndOfLine(new Location(Col, Line));
 						}
 						HandleLineEnd((char)nextChar);
 						hadLineEnd = true;

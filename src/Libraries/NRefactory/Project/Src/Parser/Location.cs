@@ -47,5 +47,61 @@ namespace ICSharpCode.NRefactory.Parser
 				return x <= 0 && y <= 0;
 			}
 		}
+		
+		public override string ToString()
+		{
+			return string.Format("(Line {1}, Col {0})", this.x, this.y);
+		}
+		
+		public override int GetHashCode()
+		{
+			return unchecked (87 * x.GetHashCode() ^ y.GetHashCode());
+		}
+		
+		public override bool Equals(object obj)
+		{
+			if (!(obj is Location)) return false;
+			return (Location)obj == this;
+		}
+		
+		public static bool operator ==(Location a, Location b)
+		{
+			return a.x == b.x && a.y == b.y;
+		}
+		
+		public static bool operator !=(Location a, Location b)
+		{
+			return a.x != b.x || a.y != b.y;
+		}
+		
+		public static bool operator <(Location a, Location b)
+		{
+			if (a.y < b.y)
+				return true;
+			else if (a.y == b.y)
+				return a.x < b.x;
+			else
+				return false;
+		}
+		
+		public static bool operator >(Location a, Location b)
+		{
+			if (a.y > b.y)
+				return true;
+			else if (a.y == b.y)
+				return a.x > b.x;
+			else
+				return false;
+		}
+		
+		public static bool operator <=(Location a, Location b)
+		{
+			return !(a > b);
+		}
+		
+		public static bool operator >=(Location a, Location b)
+		{
+			return !(a < b);
+		}
 	}
 }

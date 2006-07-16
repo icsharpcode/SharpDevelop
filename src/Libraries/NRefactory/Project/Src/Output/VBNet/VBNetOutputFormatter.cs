@@ -46,13 +46,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			switch (comment.CommentType) {
 				case CommentType.Block:
-					WriteInPreviousLine("'" + comment.CommentText.Replace("\n", "\n'"), forceWriteInPreviousLine);
+					WriteLineInPreviousLine("'" + comment.CommentText.Replace("\n", "\n'"), forceWriteInPreviousLine);
 					break;
 				case CommentType.Documentation:
-					WriteInPreviousLine("'''" + comment.CommentText, forceWriteInPreviousLine);
+					WriteLineInPreviousLine("'''" + comment.CommentText, forceWriteInPreviousLine);
 					break;
 				default:
-					WriteInPreviousLine("'" + comment.CommentText, forceWriteInPreviousLine);
+					WriteLineInPreviousLine("'" + comment.CommentText, forceWriteInPreviousLine);
 					break;
 			}
 		}
