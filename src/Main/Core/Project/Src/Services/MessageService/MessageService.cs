@@ -81,6 +81,13 @@ namespace ICSharpCode.Core
 				msg += "Exception occurred: " + ex.ToString();
 			}
 			
+			if (MessageService.MainForm == null) {
+				// let's try this; don't know if it's threadsafe?  I expect
+				// that MainForm.InvokeRequired can be assumed to be false
+				// if MainForm doesn't exist yet...
+				MessageBox.Show(StringParser.Parse(msg), StringParser.Parse("SharpDevelop: ${res:Global.ErrorText}"), MessageBoxButtons.OK, MessageBoxIcon.Error);			
+			} else {
+			
 			MethodInvoker showError = delegate {
 				MessageBox.Show(MessageService.MainForm, StringParser.Parse(msg), StringParser.Parse("${res:Global.ErrorText}"), MessageBoxButtons.OK, MessageBoxIcon.Error);
 			};
@@ -88,6 +95,7 @@ namespace ICSharpCode.Core
 				MessageService.MainForm.BeginInvoke(showError);;
 			} else {
 				showError();
+			}
 			}
 		}
 		
