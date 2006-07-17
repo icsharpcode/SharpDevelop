@@ -150,11 +150,11 @@ namespace Debugger
 		/// </summary>
 		public event EventHandler<MessageEventArgs> LogMessage;
 
-		protected internal virtual void OnLogMessage(string message)
+		protected internal virtual void OnLogMessage(MessageEventArgs arg)
 		{
 			TraceMessage ("Debugger event: OnLogMessage");
 			if (LogMessage != null) {
-				LogMessage(this, new MessageEventArgs(this, message));
+				LogMessage(this, arg);
 			}
 		}
 

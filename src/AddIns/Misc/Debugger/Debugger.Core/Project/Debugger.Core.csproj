@@ -377,7 +377,6 @@
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugFrame.cs" />
     <Compile Include="Src\Variables\VariableEventArgs.cs" />
     <Compile Include="Src\Debugger\IExpirable.cs" />
-    <Compile Include="Src\Boo\InterpreterWrapper.cs" />
     <Compile Include="Src\Variables\Evals\Eval.CallFunctionEval.cs" />
     <Compile Include="Src\Variables\Evals\Eval.NewStringEval.cs" />
     <Compile Include="Src\Variables\Variable.cs" />
@@ -394,7 +393,6 @@
     <Folder Include="Src\Wrappers\MetaData" />
     <Folder Include="docs" />
     <Content Include="docs\Stepping.txt" />
-    <Folder Include="Src\Boo" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

@@ -12,7 +12,15 @@ namespace Debugger
 	[Serializable]
 	public class MessageEventArgs : DebuggerEventArgs
 	{
+		int level;
 		string message;
+		string category;
+		
+		public int Level {
+			get {
+				return level;
+			}
+		}
 		
 		public string Message {
 			get {
@@ -20,9 +28,22 @@ namespace Debugger
 			}
 		}
 		
-		public MessageEventArgs(NDebugger debugger, string message): base(debugger)
+		public string Category {
+			get {
+				return category;
+			}
+		}
+		
+		public MessageEventArgs(NDebugger debugger, string message): this(debugger, 0, message, String.Empty)
 		{
 			this.message = message;
+		}
+		
+		public MessageEventArgs(NDebugger debugger, int level, string message, string category): base(debugger)
+		{
+			this.level = level;
+			this.message = message;
+			this.category = category;
 		}
 	}
 }

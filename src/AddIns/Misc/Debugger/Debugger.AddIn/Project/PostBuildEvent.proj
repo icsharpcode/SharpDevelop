@@ -1,0 +1,11 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+	<PrepareForRunDependsOn>$(PrepareForRunDependsOn);MyPostBuildTarget</PrepareForRunDependsOn>
+  </PropertyGroup>
+  <ItemGroup>
+	<MyCopyItem Include="$(MSBuildProjectDirectory)\*.addin" />
+  </ItemGroup>
+  <Target Name="MyPostBuildTarget">
+    <Copy SourceFiles="@(MyCopyItem)" DestinationFolder="$(OutputPath)" />
+  </Target>
+</Project>

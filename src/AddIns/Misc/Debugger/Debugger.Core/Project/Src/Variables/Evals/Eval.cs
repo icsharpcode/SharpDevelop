@@ -97,6 +97,13 @@ namespace Debugger
 			}
 		}
 		
+		public static Eval CallFunction(NDebugger debugger, Type type, string functionName, bool reevaluateAfterDebuggeeStateChange, Variable thisValue, Variable[] args)
+		{
+			string moduleName = System.IO.Path.GetFileName(type.Assembly.Location);
+			string containgType = type.FullName;
+			return new CallFunctionEval(debugger, moduleName, containgType, functionName, reevaluateAfterDebuggeeStateChange, thisValue, args);
+		}
+		
 		public static Eval CallFunction(NDebugger debugger, string moduleName, string containgType, string functionName, bool reevaluateAfterDebuggeeStateChange, Variable thisValue, Variable[] args)
 		{
 			return new CallFunctionEval(debugger, moduleName, containgType, functionName, reevaluateAfterDebuggeeStateChange, thisValue, args);

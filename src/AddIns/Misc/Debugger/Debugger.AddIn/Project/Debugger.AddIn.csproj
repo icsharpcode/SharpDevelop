@@ -18,6 +18,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,15 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Client.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Debugger.AddIn.addin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Server.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Pads\BreakPointsPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.cs" />
@@ -77,6 +69,15 @@
     <Compile Include="Src\Pads\DebuggerTreeListView.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Client.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Debugger.AddIn.addin">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Server.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
       <Name>ICSharpCode.TextEditor</Name>
@@ -95,13 +96,16 @@
     <ProjectReference Include="..\..\Debugger.Core\Project\Debugger.Core.csproj">
       <Project>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</Project>
       <Name>Debugger.Core</Name>
-      <Private>True</Private>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </ProjectReference>
     <ProjectReference Include="..\..\TreeListView\Project\TreeListView.csproj">
       <Project>{B08385CD-F0CC-488C-B4F4-EEB34B6D2688}</Project>
       <Name>TreeListView</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Content Include="PostBuildEvent.proj" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <Import Project="PostBuildEvent.proj" />
 </Project>

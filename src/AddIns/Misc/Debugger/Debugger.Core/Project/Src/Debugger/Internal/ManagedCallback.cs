@@ -205,7 +205,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "LogMessage", pThread);
 
-			debugger.OnLogMessage(pMessage);
+			debugger.OnLogMessage(new MessageEventArgs(debugger, lLevel, pMessage, pLogSwitchName));
 
 			ExitCallback_Continue();
 		}

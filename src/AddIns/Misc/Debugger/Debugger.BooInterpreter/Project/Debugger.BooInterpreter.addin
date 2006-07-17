@@ -1,0 +1,25 @@
+﻿<AddIn name        = "Debugger Boo Interpreter"
+       author      = "David Srbecký"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Interactive boo interpreter run in debugee">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.DebuggerBooInterpreter"/>
+		<Dependency addin = "ICSharpCode.BooInterpreter"/>
+		<Dependency addin = "ICSharpCode.Debugger"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "Debugger.BooInterpreter.dll"/>
+		<Import assembly = "$ICSharpCode.BooInterpreter/Boo.Lang.dll"/>
+		<Import assembly = "$ICSharpCode.BooInterpreter/Boo.Lang.Compiler.dll"/>
+		<Import assembly = "$ICSharpCode.BooInterpreter/Boo.Lang.Interpreter.dll"/>
+		<Import assembly = "$ICSharpCode.BooInterpreter/Boo.InterpreterAddIn.dll"/>
+		<Import assembly = "$ICSharpCode.Debugger/Debugger.AddIn.dll"/>
+		<Import assembly = "$ICSharpCode.Debugger/Debugger.Core.dll"/>
+	</Runtime>
+	
+	<Path name="/AddIns/InterpreterAddIn/InterpreterContexts">
+		<Class id="Debugee" class="Debugger.DebugeeInterpreterContext"/>
+	</Path>
+</AddIn>
