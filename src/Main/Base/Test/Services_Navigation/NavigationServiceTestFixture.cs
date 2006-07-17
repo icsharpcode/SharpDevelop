@@ -112,7 +112,7 @@ namespace NavigationServiceTests
 		public void GetListOfPointsTest()
 		{
 			Assert.IsInstanceOfType(typeof(ICollection<INavigationPoint>),
-			                        NavigationService.Points;
+			                        NavigationService.Points);
 		}
 		
 		[Test]
@@ -125,7 +125,7 @@ namespace NavigationServiceTests
 		{
 			NavigationService.ClearHistory(true);
 
-			List<INavigationPoint> history = NavigationService.GetListOfPoints();
+			ICollection<INavigationPoint> history = NavigationService.Points;
 			Assert.AreEqual(0, history.Count);
 		}
 		
