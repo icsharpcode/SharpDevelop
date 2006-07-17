@@ -8,8 +8,9 @@
 using System;
 using System.Collections.Generic;
 
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.Core
@@ -49,14 +50,12 @@ namespace ICSharpCode.Core
 		static bool loggingSuspended; // autoinitialized to false (FxCop)
 		#endregion
 		
+		// TODO: FxCop says "find another way to do this" (ReviewVisibleEventHandlers)
 		static NavigationService()
-		{
-//			history = new LinkedList<INavigationPoint>();
-//			currentNode = null;
-//			loggingSuspended = false;
-			
+		{			
 			WorkbenchSingleton.WorkbenchCreated += WorkbenchCreatedHandler;
 			FileService.FileRenamed += FileService_FileRenamed;
+			ProjectService.SolutionClosed += ProjectService_SolutionClosed;
 		}
 		
 		#region Public Properties
@@ -301,6 +300,11 @@ namespace ICSharpCode.Core
 					p.FileNameChanged(e.TargetFile);
 				}
 			}
+		}
+		
+		static void ProjectService_SolutionClosed(object sender, EventArgs e)
+		{
+			NavigationService.ClearHistory(true);
 		}
 		
 		#endregion
