@@ -125,7 +125,8 @@ namespace ICSharpCode.Core
 		private static void LogInternal(INavigationPoint p)
 		{
 			if (p == null
-			    || p.FileName==null) { // HACK: why/how do we get here?
+			    || p.FileName==null			   // HACK: why/how do we get here?
+			    || p.FileName==String.Empty) { // HACK: why/how do we get here?
 				return;
 			}
 			if (currentNode==null) {

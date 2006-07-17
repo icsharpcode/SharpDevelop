@@ -572,6 +572,22 @@ namespace NavigationServiceTests
 			Assert.IsTrue(NavigationService.CanNavigateForwards);
 		}
 		
+		[Test]
+		/// <summary>
+		/// Addresses <see cref="http://bugtracker.sharpdevelop.net/Default.aspx?p=4&i=939">SD2-939</see>: 
+		/// Code Navigate Back dropdown first menu has a blank filename
+		/// </summary>
+		public void IgnoreBlankFilenamesTest()
+		{
+			Assert.AreEqual(0, NavigationService.Count);
+			
+			INavigationPoint testPoint = new TestNavigationPoint(String.Empty);
+			Assert.AreEqual(String.Empty, testPoint.FileName);
+			
+			NavigationService.Log(testPoint);
+			Assert.AreEqual(0, NavigationService.Count);
+		}
+		
 		#region setup / tear down
 		
 		[SetUp]
