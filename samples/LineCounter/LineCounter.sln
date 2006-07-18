@@ -1,0 +1,16 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.1.0.1394
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineCounter", "LineCounter.csproj", "{880A7EAF-D0B4-46AC-A9B6-B6156512037A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{880A7EAF-D0B4-46AC-A9B6-B6156512037A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{880A7EAF-D0B4-46AC-A9B6-B6156512037A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{880A7EAF-D0B4-46AC-A9B6-B6156512037A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{880A7EAF-D0B4-46AC-A9B6-B6156512037A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal

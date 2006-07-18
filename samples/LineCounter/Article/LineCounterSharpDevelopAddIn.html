@@ -1,0 +1,609 @@
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<head>
+<style>
+                    BODY, P, TD { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt }
+                    H2,H3,H4,H5 { color: #ff9900; font-weight: bold; }
+                    H2 { font-size: 13pt; }
+                    H3 { font-size: 12pt; }
+                    H4 { font-size: 10pt; color: black; }
+                    PRE { BACKGROUND-COLOR: #FBEDBB; FONT-FAMILY: "Courier New", Courier, mono; WHITE-SPACE: pre; }
+                    CODE { COLOR: #990000; FONT-FAMILY: "Courier New", Courier, mono; }
+                </style>
+<link rel="stylesheet" type="text/css" href="http://www.codeproject.com/styles/global.css"></head>
+<body revision='acf4w5gbq8vx_bdf8h26kgddn4:106'>
+
+<ul class="download">
+<li><a href="LineCounterSharpDevelopAddIn/LineCounterSharpDevelopAddIn.zip">Download Source Project (C#) - * KB</a></li>
+<li><a href="LineCounterSharpDevelopAddIn/LineCounter.sdaddin">Download AddIn Installation Package (.sdaddin) - * KB</a></li>
+</ul>
+<br>
+<p>
+  <img src="LineCounterSharpDevelopAddIn/screenshot.png">
+</p>
+<h2>
+  Introduction<br>
+</h2>
+When seeing the article
+<a href="http://www.codeproject.com/useritems/LineCounterAddin.asp" title="Line Counter - Writing a Visual Studio 2005 Add-In">Line
+Counter - Writing a Visual Studio 2005 Add-In</a>
+<a href="http://www.codeproject.com/useritems/LineCounterAddin.asp" target="_blank" title="Line Counter - Writing a Visual Studio 2005 Add-In">[^]</a>,
+I wanted to show you how to write that AddIn for SharpDevelop.<br>
+In this article I will show you how to create an AddIn, but I will not discuss
+the concepts of the SharpDevelop's AddIn architecture here - you can read more
+about that in my article
+<a href="http://www.codeproject.com/csharp/ICSharpCodeCore.asp" title="Building Applications with the SharpDevelop Core">Building
+Applications with the SharpDevelop Core</a>
+<a href="http://www.codeproject.com/csharp/ICSharpCodeCore.asp" target="_blank" title="Building Applications with the SharpDevelop Core">[^]</a>.
+The line counter code is taken from the VS 2005 AddIn written by Jon Rista; the
+counting algorithm itself is from Oz Solomon.<br>
+<br>
+<h2>
+  Creating a new AddIn
+</h2>
+Our AddIn will be a menu entry in the "Tools" menu that opens a document window
+displaying the line counter UI. SharpDevelop already comes with a project
+template for an AddIn extending the "Tools" menu: "Tools menu entry"<br>
+<img src="LineCounterSharpDevelopAddIn/templatetype.png"><br>
+<br>
+We create a SharpDevelop Macro with the name "LineCounter". The "SharpDevelop
+AddIn" template could also be used, but it starts with an AddIn defining a pad
+(a docked tool window like "Projects", "Properties"); the "Tool menu entry"
+AddIn starts with a menu command.<br>
+Now let's look at what SharpDevelop has generated for us:<br>
+We have a project with a few files:<br>
+<img src="LineCounterSharpDevelopAddIn/projectbrowser.png"><br>
+First look at the .addin file:<br>
+The template already defines a menu item in the tools menu, we'll just modify
+the label. And we'll add a new section to the .addin file: the &lt;Manifest&gt;
+section. Our AddIn needs a unique identity - use something like a namespace
+name. Because we don't want lots of AddIns with the identity "AddIn1" around,
+the template does not contain the manifest section by default. The identity is
+not strictly required, but it allows us to use SharpDevelop's AddIn manager for
+our AddIn - and it is also required when other AddIns want to reference your
+AddIn. Because the API between SharpDevelop 2.0.x.y and SharpDevelop 2.1.a.b
+will change a bit, we use the dependency to ensure that our AddIn can only be
+installed into SharpDevelop 2.0.*.*.<br>
+Since our LineCounter will only work when a solution is opened, we put the menu
+item inside a &lt;Condition name="SolutionOpen" action="disable"&gt;<br>
+Here is how the content of LineCounter.addin should look like after these steps:<br>
+<pre>&lt;AddIn name        = "LineCounter"
+       author      = "Daniel Grunwald"
+       url         = "http://www.codeproject.com/useritems/LineCounterSharpDevelopAddIn.asp"
+       description = "Advanced line counter AddIn">
+   
+    &lt;Manifest>
+        &lt;Identity>Grunwald.LineCounter&lt;/Identity>
+        &lt;Dependency addin="SharpDevelop" version="2.0"/>
+    &lt;/Manifest>
+   
+    &lt;Runtime>
+        &lt;Import assembly = "LineCounter.dll"/>
+    &lt;/Runtime>
+   
+    &lt;Path name = "/Workspace/Tools">
+        &lt;!-- disable our menu item if condition "SolutionOpen" is not met -->
+        &lt;Condition name="SolutionOpen" action = "disable">
+            &lt;MenuItem id = "LineCounterCommand1"
+                      label = "Show Line Counter"
+                      class = "Grunwald.LineCounter.ToolCommand1"/>
+        &lt;/Condition>
+    &lt;/Path>
+&lt;/AddIn>
+</pre>Our menu item uses the "class" attribute. When the menu item is
+clicked, SharpDevelop will create an instance of this class and call its Run()
+method. This class is defined the file Command.cs. The example code from the
+template accesses the currently opened text editor and reverses the letters in
+the currently selected text. We are not interested in accessing the text editor,
+so we can delete the content of the Run() method and start writing our own.<br>
+<h2>
+  Testing
+</h2>
+However, first we want to get our AddIn running. For testing, we'll display a
+MessageBox inside Run(). If you now try to compile the AddIn, you'll get errors
+about missing references. This is because the template is missing the assembly
+references to the SharpDevelop libraries - these have to hard-coded paths in
+most cases, so you should add them manually. Add references to
+ICSharpCode.Core.dll and ICSharpCode.SharpDevelop.dll from the bin directory of
+your SharpDevelop installation. ICSharpCode.Core contains the AddIn system, we
+need the base class of our menu command from it. ICSharpCode.SharpDevelop is the
+largest part of SharpDevelop, we'll use the project system from it.<br>
+Make sure you set "Local copy" for the references to
+<span style="FONT-WEIGHT: bold">False</span>.<br>
+<img src="LineCounterSharpDevelopAddIn/properties.png"><br>
+<br>
+You should now be able to successfully compile the project. If you look into the
+bin/Debug directory, you will see a copy of LineCounter.addin, the compiled
+LineCounter.dll and the debug symbols.<br>
+If you want to test your AddIn, you need to register it with SharpDevelop. The
+best way for testing is to copy these files to the AddIns directory of your
+SharpDevelop installation. Restart SharpDevelop to let it load the AddIn. You
+should see the "Line Counter" command in the Tools menu, disabled until you open
+a solution. If you click the menu item, the message box should show up.<br>
+If you want to update your AddIn, you'll need to shutdown SharpDevelop, copy the
+files and restart it. If you do this a few times, you'll probably want to use a
+separate installation of SharpDevelop to develop your AddIn, so you can leave
+your development environment opened. <font size=1>Alternatively, you could use
+Visual Studio to write your AddIn...</font><br>
+<h2>
+  Creating the line counter
+</h2>
+Now to the real work: Implementing the line counter. We want to display the line
+counter user interface as a document, like the start page. Document views in
+SharpDevelop are called <span style="FONT-WEIGHT: bold">ViewContents</span>.
+There are two types of view contents: primary and secondary. A primary view
+content is capable of displaying something on its own; a secondary view content
+extends another view content by displaying multiple tabs in the document -
+SharpDevelop's Windows.Forms designer is a secondary view content. We want to
+display a simple document view, so we'll use a normal (primary) view
+content.<span style="FONT-STYLE: italic"><br>
+<br>
+</span>Showing such a view content is easy:<br>
+<pre>public override void Run()
+{
+    WorkbenchSingleton.Workbench.ShowView(new LineCounterViewContent());
+}
+</pre>
+Now create the new class named LineCounterViewContent. Let it derive from
+ICSharpCode.SharpDevelop.Gui.AbstractViewContent to get default implementations
+for most of the IViewContent members.<br>
+We will need to implement the abstract property Control - here we have to return
+the control to display.<br>
+<pre>
+public class LineCounterViewContent : AbstractViewContent
+{
+    LineCounterBrowser browser = new LineCounterBrowser();
+    public override Control Control {
+        get { return browser; }
+    }
+    public LineCounterViewContent() {
+        this.TitleName = "Line Counter";
+    }
+}
+</pre><br>
+This control is a UserControl copied from the
+<a href="http://www.codeproject.com/useritems/LineCounterAddin.asp" title="Visual Studio Line Counter article">Visual
+Studio Line Counter article</a>
+<a href="http://www.codeproject.com/useritems/LineCounterAddin.asp" target="_blank" title="Visual Studio Line Counter article">[^]</a> &mdash;
+copy LineCounterBrowser.* into the "Src" directory and use "Add existing file"
+to add LineCounterBrowser.cs to the project. SharpDevelop should add
+LineCounterBrowser.Designer.cs and LineCounterBrowser.resx automatically.<br>
+Now we still have to change the parts where the line counter references Visual
+Studio's EnvDTE class and replace them with the appropriate calls to the
+SharpDevelop API.<br>
+<h2>
+  Accessing the project in SharpDevelop
+</h2>
+First fix the using-Statements: remove those importing Visual Studio namespaces.
+Instead we will use:<br>
+<pre>using ICSharpCode.SharpDevelop.Project;</pre>
+Then remove the variable and property referencing the EnvDTE
+object.<br>
+Now move on to the methods. The first method requiring a rewrite is
+"ScanSolution". We can simply get the solution instance from a static class:
+ProjectService.<br>
+<pre>    Solution solution = ProjectService.OpenSolution;
+    if (solution != null)  // OpenSolution is null when no solution is opened
+    {
+        FileInfo fiSolution = new FileInfo(solution.FileName);
+</pre>
+SharpDevelop doesn't need "plural" classes like "Projects", but
+uses the standard .NET collection classes. Unlike Visual Studio,
+solution.Projects returns all projects; including those in solution folders.
+It's implemented as iterator (with yield return), that's why you don't have
+something simple as solution.Projects.Count. As I cannot really imagine
+solutions with thousands of projects, we can just copy the values returned by
+the iterator into a list to have a normal collection to work with.<br>
+<pre>        List&lt;IProject> projects = new List&lt;IProject>(solution.Projects);
+        tsprgTotal.Maximum = projects.Count;
+        tsprgTask.Value = 0;
+        foreach (IProject fiProject in projects) {
+</pre>
+As you might guess, IProject is the interface all projects
+implement. The actual object type depends on the project type - every language
+binding comes with its own project class (but SharpDevelop contains the classes
+AbstractProject and MSBuildProject they can inherit most functionality from).<br>
+The loop body can be simplified quite a bit: SharpDevelop will display its usual
+error handling dialog box for unhandled exceptions, so we don't need to use
+try-catch to redirect them to the debug view (where nobody really reads
+them...). The language ID is a straightforward property of the IProject
+interface, no need to query the CodeModel.<br>
+<pre>        foreach (IProject fiProject in projects) {
+            tsprgTotal.PerformStep();
+            string projName, lang;
+            if (fiProject.FileName.IndexOf("://") != -1)
+            {
+                projName = fiProject.FileName; // this is a web project
+                lang = "{00000001-0000-0000-0000-000000000000}";
+            } else {
+                projName = fiProject.Name;
+                lang = fiProject.TypeGuid;
+            }
+
+            int iconIndex;
+            m_projIconMappings.TryGetValue(lang, out iconIndex); // default icon 0
+            summary = new LineCountSummary(projName, iconIndex);
+            m_summaryList.Add(summary);
+
+            tsprgTask.Maximum = 0;
+            tsprgTotal.Value = 0;
+            ScanProjectItems(fiProject.Items, summary);
+        }
+</pre>
+ScanProjectItems is the next method we'll look at. ProjectItems becomes
+List&lt;ProjectItem&gt;. You'll also need to change the summary since
+SharpDevelop stores all project items in this collection - no need to use
+recursion to get Designer.cs files. In the SharpDevelop model, every project
+item is exactly one file. This simplifies the method greatly:<br>
+<pre>private void ScanProjectItems(List&lt;ProjectItem> projectItems, LineCountSummary summary)
+{
+    tsprgTask.Maximum += projectItems.Count;
+    foreach (ProjectItem projectItem in projectItems)
+    {
+        tsprgTask.PerformStep();
+        if (!(projectItem is FileProjectItem)) {
+            // Skip references and other special MSBuild things
+            continue;
+        }
+        string projectFile = projectItem.FileName;
+        if (!Directory.Exists(projectFile))
+        {
+            int iconIndex = 0;
+            m_fileIconMappings.TryGetValue(Path.GetExtension(projectFile), out iconIndex);
+            summary.FileLineCountInfo.Add(new LineCountInfo(projectFile, iconIndex, summary));
+        }
+    }
+}</pre>
+Now try to compile again. The only thing missing is
+"CodeModelLanguageConstants", a class containing the GUIDs for C#, VB and
+(M)C++. SharpDevelop supports C#, VB, Boo and MSIL projects; this is not
+matching the icons we imported from the Visual Studio AddIn. We'll look for a
+way to get icons directly from SharpDevelop soon; for now just hard-code the
+values for C# and VB:<br>
+<pre>// Map project types to icons for use in the projects list
+m_projIconMappings = new Dictionary&lt;string, int>();
+m_projIconMappings.Add("{00000000-0000-0000-0000-000000000000}", 0);
+m_projIconMappings.Add("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", 1); // C#
+m_projIconMappings.Add("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", 2); // VB
+m_projIconMappings.Add("{00000001-0000-0000-0000-000000000000}", 5);
+</pre>
+<p>
+  This fixes all compile errors. And if you test it, you'll find that it even
+  runs correctly! :-)
+</p>
+<p>
+  Although the extension process is very different in SharpDevelop and Visual
+  Studio; the API is quite similar - after all, both are modelling MSBuild
+  solutions and after a similar feature set. I hope this shows you that porting
+  AddIns from Visual Studio to SharpDevelop isn't very hard and we would like to
+  see more SharpDevelop AddIns in the future.
+</p>
+<p>
+  Here an image showing the AddIn counting itself:
+</p>
+<p>
+  <img src="LineCounterSharpDevelopAddIn/screenshot2.png">
+</p>
+<h2>
+  Possible improvements
+</h2>
+While this is a basic port of the AddIn to SharpDevelop, there are lots of
+possibilities for improvement.<br>
+<h3>
+  Getting Icons from SharpDevelop
+</h3>
+First, we to replace some bad code in AddFileListItem: Remove the code from the
+"TODO: Add image index setting" command to the "lvi.ImageIndex = iconIndex;"
+line and replace it with "lvi.ImageIndex = info.IconIndex;". Now only one
+read-access on the m_fileIconMappings hashtable is left - the one in
+ScanProjectItems.<br>
+Before we can continue, we need to be aware how SharpDevelop deals with icons:<br>
+Menu items are defined in XML and can be shown before the AddIn library is
+loaded. Because of that, resource files can be registered in XML which makes the
+icons inside it available to the ICSharpCode.Core.ResourceService. AddIns like
+language bindings can register such file extensions and project types with such
+icons. SharpDevelop's class IconService provides convenience methods for
+accessing these icons: GetImageForFile or GetImageForProjectType get the icon's
+name by looking up the project type or file extension. If you have an icon name,
+you can use GetBitmap or GetIcon to access it. The ResourceService converts
+between Bitmap and Icon on demand, but it is suggested to use .png bitmaps in
+the resource files and the GetBitmap method to load them.<br>
+This means with these simple IconService methods we can load the bitmap for the
+correct project/file type, just like SharpDevelop's project browser does.<br>
+The line counter code uses image lists with a few predefined images. Because I
+do not want to change it, I will just introduce a new class ImageListHelper that
+can add SharpDevelop icons to an existing image list.<br>
+<pre>public class ImageListHelper
+{
+    ImageList imageList;
+    Dictionary&lt;string, int> dict = new Dictionary&lt;string, int>();
+    
+    public ImageListHelper(ImageList imageList)
+    {
+        if (imageList == null)
+            throw new ArgumentNullException("imageList");
+        this.imageList = imageList;
+    }
+    
+    public int GetIndex(string imageName)
+    {
+        int index;
+        if (!dict.TryGetValue(imageName, out index)) {
+            index = imageList.Images.Count;
+            imageList.Images.Add(IconService.GetBitmap(imageName));
+            dict[imageName] = index;
+        }
+        return index;
+    }
+}
+</pre>
+<span style="FONT-WEIGHT: bold"><span style="FONT-WEIGHT: bold"></span></span>We
+will use two instances of this class to control the two image lists
+imgProjectTypes and imgFileTypes.<br>
+ScanSolution() is getting the icon index from m_projIconMappings - we will
+change this line to use our ImageListHelper instead.<br>
+Replace "m_projIconMappings.TryGetValue(lang, out iconIndex);" with<br>
+<pre>iconIndex = projectImageListHelper.GetIndex(IconService.GetImageForProjectType(fiProject.Language));
+</pre>Do the same for the file icons in ScanProjectItems():<br>
+<pre>iconIndex = fileImageListHelper.GetIndex(IconService.GetImageForFile(projectFile));
+</pre>
+<p>
+  Now the AddIn is using the icons shipping with SharpDevelop and will
+  automatically use the icons of other languages added to SharpDevelop.<br>
+</p>
+<h3>
+  Adding new counting algorithms
+</h3>
+The great thing about the SharpDevelop AddIn infrastructure is that it allows
+one AddIn to extend another. We will modify the Line Counter in such a way that
+it is possible for other AddIns to introduce new counting algorithms. We want to
+lazy-load our counting algorithms only when a file of the specified type is
+encountered.<br>
+This leads to the doozer-descriptor-implementation pattern you will often see
+for extendable SharpDevelop features.<br>
+<br>
+In the AddInTree, one can register classes - we already did this with the
+command for our menu item. We will add a new path to the AddInTree containing
+counting algorithm implementations. We will have to use classes instead of
+methods to be able to register them in the AddInTree, so let's create an
+interface and the classes:<br>
+<pre>public interface ICountingAlgorithm
+{
+    void CountLines(LineCountInfo info);
+}
+
+public class CountingAlgorithmGeneric : ICountingAlgorithm {
+    public void CountLines(LineCountInfo info) {
+        LineCounterBrowser.CountLinesGeneric(info);
+    }
+}
+public class CountingAlgorithmCStyle : ICountingAlgorithm {
+    public void CountLines(LineCountInfo info) {
+        LineCounterBrowser.CountLinesCStyle(info);
+    }
+}
+public class CountingAlgorithmVBStyle : ICountingAlgorithm {
+    public void CountLines(LineCountInfo info) {
+        LineCounterBrowser.CountLinesVBStyle(info);
+    }
+}
+public class CountingAlgorithmXmlStyle : ICountingAlgorithm {
+    public void CountLines(LineCountInfo info) {
+        LineCounterBrowser.CountLinesXMLStyle(info);
+    }
+}
+</pre>The Count* methods in LineCounterBrowser have been changed from
+"private" to "internal static".<br>
+We still need a way to associate the algorithms with file extensions. This is
+done directly in the XML code defining the AddInTree:<br>
+<pre>&lt;Path name = "/AddIns/LineCounter/CountingAlgorithms">
+    &lt;LineCountingAlgorithm
+        id = "Generic"
+        extensions = ".txt;.res;.sql;.cd"
+        class = "LineCounterAddin.CountingAlgorithmGeneric" />
+    &lt;LineCountingAlgorithm
+        id = "CStyle"
+        extensions = ".cs;.vj;.js;.cpp;.cc;.cxx;.c;.hpp;.hh;.hxx;.h;.idl;.odl;.css"
+        class = "LineCounterAddin.CountingAlgorithmCStyle" />
+    &lt;LineCountingAlgorithm
+        id = "VBStyle"
+        extensions = ".vb;.vbs"
+        class = "LineCounterAddin.CountingAlgorithmVBStyle" />
+    &lt;LineCountingAlgorithm
+        id = "XmlStyle"
+        extensions = ".xml;.xsl;.xslt;.xsd;.config;.resx;.aspx;.ascx;.ashx;.asmx;.asax;.html;.html"
+        class = "LineCounterAddin.CountingAlgorithmXmlStyle" />
+&lt;/Path>
+</pre>Because we are using custom attributes, we are using a new codon
+name "LineCountingAlgorithm". Don't be irritated that it's not defined in the
+XML schema for .addin files - we are creating a new possible codon name here;
+the XML schema is just for code completion when editing the .addin file.<br>
+Now how can we define this codon type? Constructing objects from the AddInTree
+is done by the <span style="FONT-WEIGHT: bold">doozers</span> (the name comes
+from
+<a href="http://en.wikipedia.org/wiki/Fraggle_Rock#Doozers" title="Fraggle Rock: Doozers">these
+guys</a>
+<a href="http://en.wikipedia.org/wiki/Fraggle_Rock#Doozers" title="Fraggle Rock: Doozers">[^]</a>).
+This means you have to register a new doozer for line counting algorithms.<br>
+This is done by editing the &lt;Runtime&gt; section of your .addin file:<br>
+<pre>&lt;Import assembly = "LineCounter.dll"&gt;
+    &lt;Doozer name="LineCountingAlgorithm" class="LineCounterAddin.CountingAlgorithmDoozer"/&gt;
+&lt;/Import&gt;
+</pre>The CountingAlgorithmDoozer class has to implement the
+ICSharpCode.Core.IDoozer interface:<br>
+<pre>public class CountingAlgorithmDoozer : IDoozer
+{
+    public bool HandleConditions {
+        get {
+            // our doozer cannot handle conditions, let SharpDevelop
+            // do that for us
+            return false;
+        }
+    }
+   
+    public object BuildItem(object caller, Codon codon, System.Collections.ArrayList subItems)
+    {
+        return new CountingAlgorithmDescriptor(codon.AddIn,
+                                               codon.Properties["extensions"],
+                                               codon.Properties["class"]);
+    }
+}
+</pre>This means our doozer will always build objects of the type
+CountingAlgorithmDescriptor. Let's define that class:<br>
+<pre>public class CountingAlgorithmDescriptor
+{
+    AddIn addIn;
+    string[] extensions;
+    string className;
+   
+    public CountingAlgorithmDescriptor(AddIn addIn, string extensions, string className)
+    {
+        this.addIn = addIn;
+        this.extensions = extensions.ToLowerInvariant().Split(';');
+        this.className = className;
+    }
+   
+    public bool CanCountLines(LineCountInfo info)
+    {
+        return (Array.IndexOf(extensions, info.FileType.ToLowerInvariant()) >= 0);
+    }
+   
+    ICountingAlgorithm cachedAlgorithm;
+   
+    public ICountingAlgorithm GetAlgorithm()
+    {
+        if (cachedAlgorithm == null) {
+            cachedAlgorithm = (ICountingAlgorithm)addIn.CreateObject(className);
+        }
+        return cachedAlgorithm;
+    }
+}
+</pre><br>
+<p>
+  Now only the change to LineCounterBrowser to actually use this code is
+  missing.
+</p>
+We will need a member variable storing the list of existing counting algorithms:<br>
+<pre>List&lt;CountingAlgorithmDescriptor&gt; countingAlgorithms;
+</pre>Initialising this list in the constructor is easy:<br>
+<pre>
+countingAlgorithms = AddInTree.BuildItems&lt;CountingAlgorithmDescriptor>
+                        ("/AddIns/LineCounter/CountingAlgorithms", this);
+// Iterate through algorithms to fill list of known countable types
+foreach (CountingAlgorithmDescriptor desc in countingAlgorithms) {
+    m_countableTypes.AddRange(desc.extensions);
+}
+</pre>
+<p>
+  And finally, replace the usage of m_countAlgorithms in the inner try-catch
+  block in SumSolution() with this code:
+</p>
+<pre>
+    foreach (CountingAlgorithmDescriptor desc in countingAlgorithms) {
+        if (desc.CanCountLines(info)) {
+            desc.GetAlgorithm().CountLines(info);
+            break;
+        }
+    }
+</pre>
+<p>
+  <br>
+</p>
+<p>
+  So, let's reiterate how this extension model works:
+</p>
+<p>
+  When SharpDevelop starts, SharpDevelop only loads your .addin file, but this
+  bit of XML parsing is quite fast. Your .dll is not loaded, but SharpDevelop
+  remembers where it has to look when the CountingAlgorithmDoozer is needed. Now
+  the user opens a solution and clicks on "Tools &gt; Show Line Counter".
+  Launching the menu command will load you AddIn assembly and create an instance
+  of the ToolCommand1 class and call Run() on it. The LineCounterBrowser
+  constructor now calls AddInTree.BuildItems for
+  /AddIns/LineCounter/CountingAlgorithms. To build the items in that path, the
+  doozer is required, so SharpDevelop creates the doozer instance here and uses
+  it to build all items. The doozer does not create instances of the algorithm
+  classes; it only creates a descriptor instance.
+</p>
+<p>
+  Only when counting the lines in a file of any matching extension, the
+  descriptor creates an instance of the class. The "AddIn" stored is the context
+  in which the class name occured - it knows which runtime assemblies were
+  specified in that XML file.<br>
+</p>
+<p>
+  If there were additional algorithms in other assemblies (for example a Boo
+  line counter), those assemblies would be loaded only if you count files in
+  those languages.
+</p>
+<p>
+  This means unused SharpDevelop AddIns use very little memory and startup time
+  (if their extension points are coded properly) - it only takes parsing the
+  XML, storing the resulting codons in a compact object tree where they are
+  mixed with the other AddIns' codons.<br>
+</p>
+<h2>
+  Creating an AddIn installation package
+</h2>
+Now to move to a completely different and much easier topic at the end: we want
+to have an easy way for users to install, update and uninstall our AddIn.<br>
+<br>
+Creating a SharpDevelop AddIn installation package (.sdaddin file) is easy. Just
+create a zip file containing LineCounter.addin and LineCounter.dll and rename
+the zip file to "LineCounter.sdaddin". That really was everything you had to do
+- double-clicking this .sdaddin file will open SharpDevelop's AddIn manager
+where you can install the AddIn with just one click. AddIns installed this way
+will be extracted to %Application Data%\.ICSharpCode\SharpDevelop2\AddIns.<br>
+<br>
+<img src="LineCounterSharpDevelopAddIn/addinmanager.png" title="AddIn Manager screenshot"><br>
+<h2>
+  More AddIn-writing help
+</h2>
+<ul>
+  <li>
+    article
+    <a href="http://www.codeproject.com/csharp/ICSharpCodeCore.asp" title="Building Applications with the SharpDevelop Core">Building
+    Applications with the SharpDevelop Core</a> <a href="http://www.codeproject.com/csharp/ICSharpCodeCore.asp" target="_blank">[^]</a>
+  <li>
+    in the SharpDevelop source code download, look at the directory
+    "doc/technotes"
+  <li>
+    <a href="http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.AddInWritingTutorials" title="Video tutorials">Video
+    tutorials</a> <a href="http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.AddInWritingTutorials" target="_blank">[^]</a>
+  <li>
+    you can ask for help in the
+    <a href="http://community.sharpdevelop.net/forums/" title="SharpDevelop forums">SharpDevelop
+    forums</a> <a href="http://community.sharpdevelop.net/forums/" target="_blank">[^]</a>
+</ul>
+<br>
+<h2>
+  License
+</h2>
+<p>
+  SharpDevelop 2.0 is released under the terms of the GNU Lesser General Public
+  License. In plain English, that means you can use any license you want for
+  your own AddIns and do not have to open-source them. You only have to release
+  modifications to the SharpDevelop libraries.<br>
+</p>
+<h2>
+  Summary
+</h2>
+<p>
+  This article&nbsp;shows you how to start writing SharpDevelop AddIns. It is a
+  complete walkthrough from creating a new project to creating the installation
+  package.
+</p>
+<h2>
+  History
+</h2>
+<ul>
+  <li>
+    18<sup>th</sup> July, 2006: Article published (based on SharpDevelop
+    2.0.0.1591).
+</ul>
+<br>
+<br>
+<br>
+<br>
+<br></body>
+</html>

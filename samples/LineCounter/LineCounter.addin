@@ -1,0 +1,44 @@
+﻿<AddIn name        = "LineCounter"
+       author      = "Daniel Grunwald, based on code by Jon Rista"
+       url         = "http://www.codeproject.com/useritems/LineCounterSharpDevelopAddIn.asp"
+       description = "Advanced line counter AddIn">
+	
+	<Manifest>
+		<Identity name="Grunwald.LineCounter"/>
+		<Dependency addin="SharpDevelop" version="2.0"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "LineCounter.dll">
+			<Doozer name="LineCountingAlgorithm" class="LineCounterAddin.CountingAlgorithmDoozer"/>
+		</Import>
+	</Runtime>
+	
+	<Path name = "/Workspace/Tools">
+		<!-- disable our menu item if condition "SolutionOpen" is not met -->
+		<Condition name="SolutionOpen" action = "disable">
+			<MenuItem id = "LineCounterCommand1"
+			          label = "Show Line Counter"
+			          class = "LineCounterAddin.ToolCommand1"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/AddIns/LineCounter/CountingAlgorithms">
+		<LineCountingAlgorithm
+			id = "Generic"
+			extensions = ".txt;.res;.sql;.cd"
+			class = "LineCounterAddin.CountingAlgorithmGeneric" />
+		<LineCountingAlgorithm
+			id = "CStyle"
+			extensions = ".cs;.vj;.js;.cpp;.cc;.cxx;.c;.hpp;.hh;.hxx;.h;.idl;.odl;.css"
+			class = "LineCounterAddin.CountingAlgorithmCStyle" />
+		<LineCountingAlgorithm
+			id = "VBStyle"
+			extensions = ".vb;.vbs"
+			class = "LineCounterAddin.CountingAlgorithmVBStyle" />
+		<LineCountingAlgorithm
+			id = "XmlStyle"
+			extensions = ".xml;.xsl;.xslt;.xsd;.config;.resx;.aspx;.ascx;.ashx;.asmx;.asax;.html;.html"
+			class = "LineCounterAddin.CountingAlgorithmXmlStyle" />
+	</Path>
+</AddIn>

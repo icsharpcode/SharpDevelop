@@ -1,0 +1,73 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>LineCounterAddin</RootNamespace>
+    <AssemblyName>LineCounter</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{880A7EAF-D0B4-46AC-A9B6-B6156512037A}</ProjectGuid>
+    <OutputPath>..\..\AddIns\</OutputPath>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG,TRACE,IMPR1,IMPR2,IMPR3</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE,IMPR1,IMPR2,IMPR3</DefineConstants>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ICSharpCode.SharpDevelop">
+      <HintPath>..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.Core">
+      <HintPath>..\..\bin\ICSharpCode.Core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LineCounter.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Compile Include="Src\Command.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\LineCounterViewContent.cs" />
+    <Compile Include="Src\LineCounterBrowser.cs" />
+    <Compile Include="Src\LineCounterBrowser.Designer.cs">
+      <DependentUpon>LineCounterBrowser.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Src\LineCounterBrowser.resx">
+      <DependentUpon>LineCounterBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Src\ImageListHelper.cs" />
+    <Compile Include="Src\Extensibility.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>
