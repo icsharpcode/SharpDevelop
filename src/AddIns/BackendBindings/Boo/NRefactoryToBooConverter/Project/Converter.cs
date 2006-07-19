@@ -7,7 +7,7 @@
 
 using System;
 using ICSharpCode.NRefactory.Parser;
-using NR = ICSharpCode.NRefactory.Parser.AST;
+using NR = ICSharpCode.NRefactory.Parser.Ast;
 using Boo.Lang.Compiler;
 using Boo.Lang.Compiler.Ast;
 

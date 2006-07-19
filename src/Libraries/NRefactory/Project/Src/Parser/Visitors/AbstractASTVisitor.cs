@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory.Parser {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using ICSharpCode.NRefactory.Parser.AST;
+	using ICSharpCode.NRefactory.Parser.Ast;
 	
 	
 	public abstract class AbstractAstVisitor : IAstVisitor {
@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return assignmentExpression.Right.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(ICSharpCode.NRefactory.Parser.AST.Attribute attribute, object data) {
+		public virtual object Visit(ICSharpCode.NRefactory.Parser.Ast.Attribute attribute, object data) {
 			Debug.Assert((attribute != null));
 			Debug.Assert((attribute.PositionalArguments != null));
 			Debug.Assert((attribute.NamedArguments != null));
@@ -91,7 +91,7 @@ namespace ICSharpCode.NRefactory.Parser {
 		public virtual object Visit(AttributeSection attributeSection, object data) {
 			Debug.Assert((attributeSection != null));
 			Debug.Assert((attributeSection.Attributes != null));
-			foreach (ICSharpCode.NRefactory.Parser.AST.Attribute o in attributeSection.Attributes) {
+			foreach (ICSharpCode.NRefactory.Parser.Ast.Attribute o in attributeSection.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}

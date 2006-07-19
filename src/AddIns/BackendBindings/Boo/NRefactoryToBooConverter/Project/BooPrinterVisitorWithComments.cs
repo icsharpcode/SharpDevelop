@@ -181,7 +181,7 @@ namespace NRefactoryToBooConverter
 			return null;
 		}
 		
-		object ISpecialVisitor.Visit(PreProcessingDirective special, object data)
+		object ISpecialVisitor.Visit(PreprocessingDirective special, object data)
 		{
 			if (string.IsNullOrEmpty(special.Arg))
 				WriteSpecialText(false, "{0}", special.Cmd);

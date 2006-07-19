@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				VBNetOutputVisitor vbv = new VBNetOutputVisitor();
 				
 				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
-				PreProcessingDirective.CSharpToVB(specials);
+				PreprocessingDirective.CSharpToVB(specials);
 				new CSharpToVBNetConvertVisitor().Visit(p.CompilationUnit, null);
 				using (SpecialNodesInserter.Install(specials, vbv)) {
 					vbv.Visit(p.CompilationUnit, null);

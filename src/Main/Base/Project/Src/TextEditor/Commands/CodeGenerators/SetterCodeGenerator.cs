@@ -8,7 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 using ICSharpCode.TextEditor;
 
 using ICSharpCode.SharpDevelop.Dom;

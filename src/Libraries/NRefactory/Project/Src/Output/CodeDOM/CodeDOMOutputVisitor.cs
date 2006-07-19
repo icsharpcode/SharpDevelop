@@ -12,12 +12,12 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	public class CodeDOMVisitor : AbstractAstVisitor
+	public class CodeDomVisitor : AbstractAstVisitor
 	{
 		Stack<CodeNamespace>  namespaceDeclarations = new Stack<CodeNamespace>();
 		Stack<CodeTypeDeclaration> typeDeclarations = new Stack<CodeTypeDeclaration>();
@@ -858,7 +858,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return false;
 		}
 		
-		CodeTypeReferenceExpression ConvertToTypeReference(FieldReferenceExpression fieldReferenceExpression)
+		static CodeTypeReferenceExpression ConvertToTypeReference(FieldReferenceExpression fieldReferenceExpression)
 		{
 			FieldReferenceExpression primaryReferenceExpression = fieldReferenceExpression;
 			StringBuilder type = new StringBuilder("");

@@ -14,11 +14,11 @@ using System.Globalization;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {
-	public class VBNetOutputVisitor : IOutputASTVisitor
+	public class VBNetOutputVisitor : IOutputAstVisitor
 	{
 		Errors                  errors             = new Errors();
 		VBNetOutputFormatter    outputFormatter;
@@ -81,7 +81,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		string ConvertTypeString(string typeString)
+		static string ConvertTypeString(string typeString)
 		{
 			switch (typeString) {
 				case "System.Boolean":
@@ -201,7 +201,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ICSharpCode.NRefactory.Parser.AST.Attribute attribute, object data)
+		public object Visit(ICSharpCode.NRefactory.Parser.Ast.Attribute attribute, object data)
 		{
 			outputFormatter.PrintIdentifier(attribute.Name);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
@@ -277,7 +277,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		int GetTypeToken(TypeDeclaration typeDeclaration)
+		static int GetTypeToken(TypeDeclaration typeDeclaration)
 		{
 			switch (typeDeclaration.Type) {
 				case ClassType.Class:
@@ -1916,7 +1916,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		
-		string ConvertCharLiteral(char ch)
+		static string ConvertCharLiteral(char ch)
 		{
 			if (Char.IsControl(ch)) {
 				return "Chr(" + ((int)ch) + ")";
@@ -1928,7 +1928,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		string ConvertString(string str)
+		static string ConvertString(string str)
 		{
 			StringBuilder sb = new StringBuilder();
 			foreach (char ch in str) {
@@ -2660,7 +2660,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		
-		bool IsEventHandlerCreation(Expression expr)
+		static bool IsEventHandlerCreation(Expression expr)
 		{
 			if (expr is ObjectCreateExpression) {
 				ObjectCreateExpression oce = (ObjectCreateExpression) expr;
@@ -2671,7 +2671,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return false;
 		}
 		
-		Expression GetEventHandlerMethod(Expression expr)
+		// can only get called if IsEventHandlerCreation returned true for the expression
+		static Expression GetEventHandlerMethod(Expression expr)
 		{
 			ObjectCreateExpression oce = (ObjectCreateExpression)expr;
 			return oce.Parameters[0];

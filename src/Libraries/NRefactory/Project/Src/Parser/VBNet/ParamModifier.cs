@@ -5,16 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.NRefactory.Parser.VB
 {
 	internal class ParamModifiers
 	{
-		ICSharpCode.NRefactory.Parser.AST.ParamModifier cur;
+		ParamModifier cur;
 		Parser   parser;
 		
-		public ICSharpCode.NRefactory.Parser.AST.ParamModifier Modifier {
+		public ParamModifier Modifier {
 			get {
 				return cur;
 			}
@@ -23,12 +23,12 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public ParamModifiers(Parser parser)
 		{
 			this.parser = parser;
-			cur         = ICSharpCode.NRefactory.Parser.AST.ParamModifier.None;
+			cur         = ParamModifier.None;
 		}
 		
-		public bool isNone { get { return cur == ICSharpCode.NRefactory.Parser.AST.ParamModifier.None; } }
+		public bool isNone { get { return cur == ParamModifier.None; } }
 		
-		public void Add(ICSharpCode.NRefactory.Parser.AST.ParamModifier m) 
+		public void Add(ParamModifier m) 
 		{
 			if ((cur & m) == 0) {
 				cur |= m;
@@ -44,8 +44,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		public void Check()
 		{
-			if((cur & ICSharpCode.NRefactory.Parser.AST.ParamModifier.In) != 0 && 
-			   (cur & ICSharpCode.NRefactory.Parser.AST.ParamModifier.Ref) != 0) {
+			if((cur & ParamModifier.In) != 0 && 
+			   (cur & ParamModifier.Ref) != 0) {
 				parser.Error("ByRef and ByVal are not allowed at the same time.");
 			}
 		}

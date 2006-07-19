@@ -11,17 +11,17 @@ using System.Globalization;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	public class PreProcessingDirective : AbstractSpecial
+	public class PreprocessingDirective : AbstractSpecial
 	{
 		public static void VBToCSharp(IList<ISpecial> list)
 		{
 			for (int i = 0; i < list.Count; ++i) {
-				if (list[i] is PreProcessingDirective)
-					list[i] = VBToCSharp((PreProcessingDirective)list[i]);
+				if (list[i] is PreprocessingDirective)
+					list[i] = VBToCSharp((PreprocessingDirective)list[i]);
 			}
 		}
 		
-		public static PreProcessingDirective VBToCSharp(PreProcessingDirective dir)
+		public static PreprocessingDirective VBToCSharp(PreprocessingDirective dir)
 		{
 			string cmd = dir.Cmd.ToLowerInvariant();
 			string arg = dir.Arg;
@@ -40,18 +40,18 @@ namespace ICSharpCode.NRefactory.Parser
 						arg = arg.Substring(0, arg.Length - 5);
 					break;
 			}
-			return new PreProcessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
+			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
 		}
 		
 		public static void CSharpToVB(List<ISpecial> list)
 		{
 			for (int i = 0; i < list.Count; ++i) {
-				if (list[i] is PreProcessingDirective)
-					list[i] = CSharpToVB((PreProcessingDirective)list[i]);
+				if (list[i] is PreprocessingDirective)
+					list[i] = CSharpToVB((PreprocessingDirective)list[i]);
 			}
 		}
 		
-		public static PreProcessingDirective CSharpToVB(PreProcessingDirective dir)
+		public static PreprocessingDirective CSharpToVB(PreprocessingDirective dir)
 		{
 			string cmd = dir.Cmd;
 			string arg = dir.Arg;
@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.Parser
 			if (cmd.Length > 1) {
 				cmd = cmd.Substring(0, 2).ToUpperInvariant() + cmd.Substring(2);
 			}
-			return new PreProcessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
+			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
 		}
 		
 		string cmd;
@@ -107,7 +107,7 @@ namespace ICSharpCode.NRefactory.Parser
 			                     Arg);
 		}
 		
-		public PreProcessingDirective(string cmd, string arg, Location start, Location end)
+		public PreprocessingDirective(string cmd, string arg, Location start, Location end)
 			: base(start, end)
 		{
 			this.cmd = cmd;

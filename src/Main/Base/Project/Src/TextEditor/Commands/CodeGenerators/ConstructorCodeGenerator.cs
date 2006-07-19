@@ -8,10 +8,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Parser.AST;
 
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {

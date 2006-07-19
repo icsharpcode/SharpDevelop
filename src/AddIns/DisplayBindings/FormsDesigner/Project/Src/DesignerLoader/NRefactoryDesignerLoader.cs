@@ -12,13 +12,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
 
@@ -224,14 +223,14 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 			
-			CodeDOMVisitor visitor = new CodeDOMVisitor();
+			CodeDomVisitor visitor = new CodeDomVisitor();
 			visitor.EnvironmentInformationProvider = new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryInformationProvider(formClass.ProjectContent, formClass);
 			visitor.Visit(combinedCu, null);
 			
 			// output generated CodeDOM to the console :
 			#if DEBUG
 			if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
-				CodeDOMVerboseOutputGenerator outputGenerator = new CodeDOMVerboseOutputGenerator();
+				CodeDomVerboseOutputGenerator outputGenerator = new CodeDomVerboseOutputGenerator();
 				outputGenerator.GenerateCodeFromMember(visitor.codeCompileUnit.Namespaces[0].Types[0], Console.Out, null);
 				this.CodeDomProvider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
 			}

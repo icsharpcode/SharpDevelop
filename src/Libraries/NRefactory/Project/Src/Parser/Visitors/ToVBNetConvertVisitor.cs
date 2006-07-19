@@ -12,8 +12,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
-using Attribute = ICSharpCode.NRefactory.Parser.AST.Attribute;
+using ICSharpCode.NRefactory.Parser.Ast;
+using Attribute = ICSharpCode.NRefactory.Parser.Ast.Attribute;
 
 namespace ICSharpCode.NRefactory.Parser
 {
@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		string GetMemberNameOnThisReference(Expression expr)
+		static string GetMemberNameOnThisReference(Expression expr)
 		{
 			IdentifierExpression ident = expr as IdentifierExpression;
 			if (ident != null)
@@ -130,7 +130,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		string GetMethodNameOfDelegateCreation(Expression expr)
+		static string GetMethodNameOfDelegateCreation(Expression expr)
 		{
 			string name = GetMemberNameOnThisReference(expr);
 			if (name != null)
@@ -200,7 +200,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		bool ConvertPInvoke(MethodDeclaration method, ICSharpCode.NRefactory.Parser.AST.Attribute att)
+		bool ConvertPInvoke(MethodDeclaration method, ICSharpCode.NRefactory.Parser.Ast.Attribute att)
 		{
 			if (att.PositionalArguments.Count != 1)
 				return false;

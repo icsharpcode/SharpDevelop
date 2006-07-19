@@ -41,7 +41,7 @@ namespace NRefactoryToBooConverter
 			parser.Parse();
 			specials = parser.Lexer.SpecialTracker.CurrentSpecials;
 			if (settings.IsVisualBasic) {
-				PreProcessingDirective.VBToCSharp(specials);
+				PreprocessingDirective.VBToCSharp(specials);
 			}
 			// abort when file has errors
 			if (errorTrap.count > 0)

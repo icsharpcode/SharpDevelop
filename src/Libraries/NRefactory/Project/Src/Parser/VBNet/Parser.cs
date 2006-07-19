@@ -4,9 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 using ICSharpCode.NRefactory.Parser.VB;
-using ASTAttribute = ICSharpCode.NRefactory.Parser.AST.Attribute;
+using ASTAttribute = ICSharpCode.NRefactory.Parser.Ast.Attribute;
 /*
   Parser.frame file for NRefactory.
  */
@@ -4545,7 +4545,7 @@ out int i) {
 
 	void Attribute(
 #line  1978 "VBNET.ATG" 
-out ICSharpCode.NRefactory.Parser.AST.Attribute attribute) {
+out ASTAttribute attribute) {
 
 #line  1979 "VBNET.ATG" 
 		string name;
@@ -4566,7 +4566,7 @@ positional, named);
 		}
 
 #line  1986 "VBNET.ATG" 
-		attribute  = new ICSharpCode.NRefactory.Parser.AST.Attribute(name, positional, named); 
+		attribute  = new ASTAttribute(name, positional, named); 
 	}
 
 	void AttributeArguments(
@@ -5777,7 +5777,7 @@ out goToStatement);
 
 	void GotoStatement(
 #line  2513 "VBNET.ATG" 
-out ICSharpCode.NRefactory.Parser.AST.GotoStatement goToStatement) {
+out GotoStatement goToStatement) {
 
 #line  2515 "VBNET.ATG" 
 		string label = String.Empty;
@@ -5788,7 +5788,7 @@ out ICSharpCode.NRefactory.Parser.AST.GotoStatement goToStatement) {
 out label);
 
 #line  2520 "VBNET.ATG" 
-		goToStatement = new ICSharpCode.NRefactory.Parser.AST.GotoStatement(label);
+		goToStatement = new GotoStatement(label);
 		
 	}
 

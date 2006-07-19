@@ -12,7 +12,7 @@ using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.CSharp;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {
@@ -173,7 +173,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public abstract void PrintComment(Comment comment, bool forceWriteInPreviousBlock);
 		
-		public virtual void PrintPreProcessingDirective(PreProcessingDirective directive, bool forceWriteInPreviousBlock)
+		public virtual void PrintPreprocessingDirective(PreprocessingDirective directive, bool forceWriteInPreviousBlock)
 		{
 			if (string.IsNullOrEmpty(directive.Arg))
 				WriteLineInPreviousLine(directive.Cmd, forceWriteInPreviousBlock);

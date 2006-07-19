@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
-using ASTAttribute = ICSharpCode.NRefactory.Parser.AST.Attribute;
-using Types = ICSharpCode.NRefactory.Parser.AST.ClassType;
+using ICSharpCode.NRefactory.Parser.Ast;
+using ASTAttribute = ICSharpCode.NRefactory.Parser.Ast.Attribute;
+using Types = ICSharpCode.NRefactory.Parser.Ast.ClassType;
 
 COMPILER CS    /* AW 2002-12-30 renamed from CompilationUnit to CS  */
 
@@ -220,7 +220,7 @@ Attribute<out ASTAttribute attribute>
 	   List<NamedArgumentExpression> named = new List<NamedArgumentExpression>();
 	   string name = (alias != null && alias != "global") ? alias + "." + qualident : qualident;
 	.)
-	[ AttributeArguments<positional, named> ] (. attribute  = new ICSharpCode.NRefactory.Parser.AST.Attribute(name, positional, named);.)
+	[ AttributeArguments<positional, named> ] (. attribute  = new ASTAttribute(name, positional, named);.)
 .
 
 AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> named>

@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.Parser
 		object Visit(ISpecial special, object data);
 		object Visit(BlankLine special, object data);
 		object Visit(Comment special, object data);
-		object Visit(PreProcessingDirective special, object data);
+		object Visit(PreprocessingDirective special, object data);
 	}
 	
 	public abstract class AbstractSpecial : ISpecial

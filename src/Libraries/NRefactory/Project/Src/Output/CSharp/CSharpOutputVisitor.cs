@@ -14,11 +14,11 @@ using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.CSharp;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {
-	public class CSharpOutputVisitor : IOutputASTVisitor
+	public class CSharpOutputVisitor : IOutputAstVisitor
 	{
 		Errors                errors             = new Errors();
 		CSharpOutputFormatter outputFormatter;
@@ -80,7 +80,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		string ConvertTypeString(string typeString)
+		static string ConvertTypeString(string typeString)
 		{
 			switch (typeString) {
 				case "System.Boolean":
@@ -242,7 +242,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ICSharpCode.NRefactory.Parser.AST.Attribute attribute, object data)
+		public object Visit(ICSharpCode.NRefactory.Parser.Ast.Attribute attribute, object data)
 		{
 			outputFormatter.PrintIdentifier(attribute.Name);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
@@ -1582,13 +1582,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		string ConvertCharLiteral(char ch)
+		static string ConvertCharLiteral(char ch)
 		{
 			if (ch == '\'') return "\\'";
 			return ConvertChar(ch);
 		}
 		
-		string ConvertChar(char ch)
+		static string ConvertChar(char ch)
 		{
 			switch (ch) {
 				case '\\':
@@ -1618,7 +1618,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		string ConvertString(string str)
+		static string ConvertString(string str)
 		{
 			StringBuilder sb = new StringBuilder();
 			foreach (char ch in str) {
@@ -1692,7 +1692,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		bool IsNullLiteralExpression(Expression expr)
+		static bool IsNullLiteralExpression(Expression expr)
 		{
 			PrimitiveExpression pe = expr as PrimitiveExpression;
 			if (pe == null) return false;

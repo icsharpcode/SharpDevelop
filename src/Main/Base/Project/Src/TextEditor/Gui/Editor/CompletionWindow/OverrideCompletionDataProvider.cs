@@ -15,7 +15,7 @@ using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {

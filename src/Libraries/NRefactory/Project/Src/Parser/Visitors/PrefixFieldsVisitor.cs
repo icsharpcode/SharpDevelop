@@ -7,7 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.NRefactory.Parser
 {

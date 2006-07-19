@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.NRefactory.Parser
 {
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public AbstractParser(ILexer lexer)
+		protected AbstractParser(ILexer lexer)
 		{
 			this.errors = lexer.Errors;
 			this.lexer  = lexer;

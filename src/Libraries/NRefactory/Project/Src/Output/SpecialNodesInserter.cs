@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {
@@ -41,9 +41,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return data;
 		}
 		
-		public object Visit(PreProcessingDirective special, object data)
+		public object Visit(PreprocessingDirective special, object data)
 		{
-			formatter.PrintPreProcessingDirective(special, ForceWriteInPreviousLine);
+			formatter.PrintPreprocessingDirective(special, ForceWriteInPreviousLine);
 			return data;
 		}
 	}
@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	/// <summary>
 	/// This class inserts specials between INodes.
 	/// </summary>
-	public class SpecialNodesInserter : IDisposable
+	public sealed class SpecialNodesInserter : IDisposable
 	{
 		IEnumerator<ISpecial> enumerator;
 		SpecialOutputVisitor visitor;
@@ -120,7 +120,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		/// Make sure to call Finish() (or Dispose()) on the returned SpecialNodesInserter
 		/// when the output is finished.
 		/// </summary>
-		public static SpecialNodesInserter Install(IEnumerable<ISpecial> specials, IOutputASTVisitor outputVisitor)
+		public static SpecialNodesInserter Install(IEnumerable<ISpecial> specials, IOutputAstVisitor outputVisitor)
 		{
 			SpecialNodesInserter sni = new SpecialNodesInserter(specials, new SpecialOutputVisitor(outputVisitor.OutputFormatter));
 			outputVisitor.NodeTracker.NodeVisiting += sni.AcceptNodeStart;

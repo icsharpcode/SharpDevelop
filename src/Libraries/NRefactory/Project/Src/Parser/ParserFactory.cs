@@ -8,7 +8,7 @@
 using System;
 using System.Text;
 using System.IO;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.NRefactory.Parser
 {

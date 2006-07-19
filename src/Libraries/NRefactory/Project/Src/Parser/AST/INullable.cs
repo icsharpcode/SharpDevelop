@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace ICSharpCode.NRefactory.Parser.AST
+namespace ICSharpCode.NRefactory.Parser.Ast
 {
 	public interface INullable
 	{

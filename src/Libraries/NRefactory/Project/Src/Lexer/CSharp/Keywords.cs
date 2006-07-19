@@ -10,7 +10,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.Parser.CSharp
 {
-	public class Keywords
+	public static class Keywords
 	{
 		static readonly string[] keywordList = {
 			"abstract",

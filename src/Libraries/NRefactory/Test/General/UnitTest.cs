@@ -8,7 +8,7 @@
 using System;
 using System.Reflection;
 using NUnit.Framework;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 using ICSharpCode.NRefactory.Parser;
 
 namespace ICSharpCode.NRefactory.Tests

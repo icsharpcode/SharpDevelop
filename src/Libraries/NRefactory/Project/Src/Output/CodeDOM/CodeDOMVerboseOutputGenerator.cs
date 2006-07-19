@@ -13,8 +13,9 @@ using System.Security.Permissions;
 
 namespace ICSharpCode.NRefactory.Parser
 {
+	[PermissionSet(SecurityAction.InheritanceDemand, Name = "FullTrust")]
 	[PermissionSet(SecurityAction.LinkDemand, Name = "FullTrust")]
-	public class CodeDOMVerboseOutputGenerator : System.CodeDom.Compiler.CodeGenerator
+	public class CodeDomVerboseOutputGenerator : System.CodeDom.Compiler.CodeGenerator
 	{
 		#region System.CodeDom.Compiler.CodeGenerator abstract class implementation
 		protected override string NullToken {

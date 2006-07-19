@@ -11,7 +11,7 @@ using System.IO;
 using System.Text;
 
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.Dom;
 using NR = ICSharpCode.NRefactory.Parser;
@@ -108,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return base.Visit(typeReference, data);
 			}
 			
-			public override object Visit(ICSharpCode.NRefactory.Parser.AST.Attribute attribute, object data)
+			public override object Visit(ICSharpCode.NRefactory.Parser.Ast.Attribute attribute, object data)
 			{
 				list[new PossibleTypeReference(attribute.Name)] = data;
 				list[new PossibleTypeReference(attribute.Name + "Attribute")] = data;
@@ -191,7 +191,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					comments.Add(c);
 				}
 			}
-			IOutputASTVisitor outputVisitor = (language==NR.SupportedLanguage.CSharp) ? new CSharpOutputVisitor() : (IOutputASTVisitor)new VBNetOutputVisitor();
+			IOutputAstVisitor outputVisitor = (language==NR.SupportedLanguage.CSharp) ? new CSharpOutputVisitor() : (IOutputAstVisitor)new VBNetOutputVisitor();
 			using (SpecialNodesInserter.Install(comments, outputVisitor)) {
 				parser.CompilationUnit.AcceptVisitor(outputVisitor, null);
 			}

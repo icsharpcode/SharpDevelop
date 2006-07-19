@@ -6,10 +6,10 @@
 // </file>
 
 using System;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.Tests.AST
+namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
 	public class DeclareDeclarationTests
@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("GetUserName", dd.Name);
 			Assert.AreEqual("advapi32.dll", dd.Library);
 			Assert.AreEqual("GetUserNameA", dd.Alias);
-			Assert.AreEqual(CharsetModifier.ANSI, dd.Charset);
+			Assert.AreEqual(CharsetModifier.Ansi, dd.Charset);
 		}
 		#endregion
 		

@@ -12,14 +12,14 @@ using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.CSharp;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {
 	/// <summary>
 	/// Description of IOutputASTVisitor.
 	/// </summary>
-	public interface IOutputASTVisitor : IAstVisitor
+	public interface IOutputAstVisitor : IAstVisitor
 	{
 		NodeTracker NodeTracker {
 			get;
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		void NewLine();
 		void Indent();
 		void PrintComment(Comment comment, bool forceWriteInPreviousBlock);
-		void PrintPreProcessingDirective(PreProcessingDirective directive, bool forceWriteInPreviousBlock);
+		void PrintPreprocessingDirective(PreprocessingDirective directive, bool forceWriteInPreviousBlock);
 		void PrintBlankLine(bool forceWriteInPreviousBlock);
 	}
 }

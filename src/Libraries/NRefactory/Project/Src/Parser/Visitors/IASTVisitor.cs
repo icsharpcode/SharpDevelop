@@ -10,7 +10,7 @@
 
 namespace ICSharpCode.NRefactory.Parser {
 	using System;
-	using ICSharpCode.NRefactory.Parser.AST;
+	using ICSharpCode.NRefactory.Parser.Ast;
 	
 	
 	public interface IAstVisitor {
@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.Parser {
 		
 		object Visit(AssignmentExpression assignmentExpression, object data);
 		
-		object Visit(ICSharpCode.NRefactory.Parser.AST.Attribute attribute, object data);
+		object Visit(ICSharpCode.NRefactory.Parser.Ast.Attribute attribute, object data);
 		
 		object Visit(AttributeSection attributeSection, object data);
 		

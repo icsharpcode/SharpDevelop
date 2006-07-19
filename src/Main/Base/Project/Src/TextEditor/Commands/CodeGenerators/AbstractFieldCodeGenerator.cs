@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {

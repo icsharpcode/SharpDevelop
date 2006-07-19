@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
-using ASTAttribute = ICSharpCode.NRefactory.Parser.AST.Attribute;
-using Types = ICSharpCode.NRefactory.Parser.AST.ClassType;
+using ICSharpCode.NRefactory.Parser.Ast;
+using ASTAttribute = ICSharpCode.NRefactory.Parser.Ast.Attribute;
+using Types = ICSharpCode.NRefactory.Parser.Ast.ClassType;
 /*
   Parser.frame file for NRefactory.
  */
@@ -291,7 +291,7 @@ positional, named);
 		}
 
 #line  223 "cs.ATG" 
-		attribute  = new ICSharpCode.NRefactory.Parser.AST.Attribute(name, positional, named);
+		attribute  = new ASTAttribute(name, positional, named);
 	}
 
 	void AttributeArguments(

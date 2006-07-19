@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 using Boo.Lang.Compiler;
 using B = Boo.Lang.Compiler.Ast;
 
@@ -156,13 +156,13 @@ namespace NRefactoryToBooConverter
 					AddError(s, "Attribute target not supported");
 					continue;
 				}
-				foreach (ICSharpCode.NRefactory.Parser.AST.Attribute a in s.Attributes) {
+				foreach (ICSharpCode.NRefactory.Parser.Ast.Attribute a in s.Attributes) {
 					col.Add((B.Attribute)Visit(a, null));
 				}
 			}
 		}
 		
-		public object Visit(ICSharpCode.NRefactory.Parser.AST.Attribute a, object data)
+		public object Visit(ICSharpCode.NRefactory.Parser.Ast.Attribute a, object data)
 		{
 			B.Attribute att = new B.Attribute(GetLexicalInfo(a), a.Name);
 			att.EndSourceLocation = GetLocation(a.EndLocation);
@@ -179,7 +179,7 @@ namespace NRefactoryToBooConverter
 		public object Visit(AttributeSection s, object data)
 		{
 			if (s.AttributeTarget.Equals("assembly", StringComparison.OrdinalIgnoreCase)) {
-				foreach (ICSharpCode.NRefactory.Parser.AST.Attribute a in s.Attributes) {
+				foreach (ICSharpCode.NRefactory.Parser.Ast.Attribute a in s.Attributes) {
 					module.AssemblyAttributes.Add((B.Attribute)Visit(a, null));
 				}
 			} else {

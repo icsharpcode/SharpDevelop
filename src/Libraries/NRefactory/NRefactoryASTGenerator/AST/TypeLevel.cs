@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NRefactoryASTGenerator.AST
+namespace NRefactoryASTGenerator.Ast
 {
 	class VariableDeclaration : AbstractNode
 	{

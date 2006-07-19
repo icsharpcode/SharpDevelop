@@ -14,8 +14,8 @@ using System.Reflection;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
-using ICSharpCode.NRefactory.Parser.AST;
-using Attribute = ICSharpCode.NRefactory.Parser.AST.Attribute;
+using ICSharpCode.NRefactory.Parser.Ast;
+using Attribute = ICSharpCode.NRefactory.Parser.Ast.Attribute;
 
 namespace ICSharpCode.NRefactory.Parser
 {
@@ -106,7 +106,7 @@ namespace ICSharpCode.NRefactory.Parser
 			                                                 declareDeclaration.TypeReference, declareDeclaration.Parameters,
 			                                                 declareDeclaration.Attributes);
 			method.Modifier |= Modifier.Extern | Modifier.Static;
-			ICSharpCode.NRefactory.Parser.AST.Attribute att = new Attribute("DllImport", null, null);
+			Attribute att = new Attribute("DllImport", null, null);
 			att.PositionalArguments.Add(CreateStringLiteral(declareDeclaration.Library));
 			if (declareDeclaration.Alias.Length > 0) {
 				att.NamedArguments.Add(new NamedArgumentExpression("EntryPoint", CreateStringLiteral(declareDeclaration.Alias)));

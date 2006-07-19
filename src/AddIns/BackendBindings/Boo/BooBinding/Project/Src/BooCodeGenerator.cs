@@ -8,15 +8,16 @@
 using System;
 using System.IO;
 using System.Text;
-using ICSharpCode.Core;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.NRefactory.Parser.AST;
-using NRefactoryToBooConverter;
+
 using Boo.Lang.Compiler;
 using Boo.Lang.Compiler.Ast;
 using Boo.Lang.Compiler.Ast.Visitors;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.TextEditor.Document;
+using NRefactoryToBooConverter;
 
 namespace Grunwald.BooBinding
 {

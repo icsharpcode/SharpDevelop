@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ICSharpCode.NRefactory.Parser.AST {
+namespace ICSharpCode.NRefactory.Parser.Ast {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
@@ -380,7 +380,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 		
 		string attributeTarget;
 		
-		List<ICSharpCode.NRefactory.Parser.AST.Attribute> attributes;
+		List<ICSharpCode.NRefactory.Parser.Ast.Attribute> attributes;
 		
 		public string AttributeTarget {
 			get {
@@ -391,7 +391,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public List<ICSharpCode.NRefactory.Parser.AST.Attribute> Attributes {
+		public List<ICSharpCode.NRefactory.Parser.Ast.Attribute> Attributes {
 			get {
 				return attributes;
 			}
@@ -400,7 +400,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public AttributeSection(string attributeTarget, List<ICSharpCode.NRefactory.Parser.AST.Attribute> attributes) {
+		public AttributeSection(string attributeTarget, List<ICSharpCode.NRefactory.Parser.Ast.Attribute> attributes) {
 			AttributeTarget = attributeTarget;
 			Attributes = attributes;
 		}

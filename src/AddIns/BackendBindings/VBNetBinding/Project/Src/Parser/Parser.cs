@@ -57,7 +57,7 @@ namespace VBNetBinding.Parser
 		{
 			for (int i = 0; i < tracker.CurrentSpecials.Count; ++i)
 			{
-				ICSharpCode.NRefactory.Parser.PreProcessingDirective directive = tracker.CurrentSpecials[i] as ICSharpCode.NRefactory.Parser.PreProcessingDirective;
+				ICSharpCode.NRefactory.Parser.PreprocessingDirective directive = tracker.CurrentSpecials[i] as ICSharpCode.NRefactory.Parser.PreprocessingDirective;
 				if (directive != null)
 				{
 					if (directive.Cmd.Equals("#region", StringComparison.OrdinalIgnoreCase))
@@ -65,7 +65,7 @@ namespace VBNetBinding.Parser
 						int deep = 1;
 						for (int j = i + 1; j < tracker.CurrentSpecials.Count; ++j)
 						{
-							ICSharpCode.NRefactory.Parser.PreProcessingDirective nextDirective = tracker.CurrentSpecials[j] as ICSharpCode.NRefactory.Parser.PreProcessingDirective;
+							ICSharpCode.NRefactory.Parser.PreprocessingDirective nextDirective = tracker.CurrentSpecials[j] as ICSharpCode.NRefactory.Parser.PreprocessingDirective;
 							if (nextDirective != null)
 							{
 								switch (nextDirective.Cmd.ToLowerInvariant())

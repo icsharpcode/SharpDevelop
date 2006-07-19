@@ -9,7 +9,7 @@ using System;
 using System.CodeDom;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.NRefactory.Tests.Output.CodeDOM.Tests
 {
@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Tests.Output.CodeDOM.Tests
 		[Test]
 		public void TestParenthesizedExpression()
 		{
-			object output = new ParenthesizedExpression(new PrimitiveExpression(5, "5")).AcceptVisitor(new CodeDOMVisitor(), null);
+			object output = new ParenthesizedExpression(new PrimitiveExpression(5, "5")).AcceptVisitor(new CodeDomVisitor(), null);
 			Assert.IsTrue(output is CodePrimitiveExpression);
 		}
 	}

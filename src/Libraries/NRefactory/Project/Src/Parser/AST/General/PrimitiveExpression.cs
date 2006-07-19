@@ -10,8 +10,8 @@ using System.Diagnostics;
 using System.Collections;
 using System.Globalization;
 
-namespace ICSharpCode.NRefactory.Parser.AST {
-	
+namespace ICSharpCode.NRefactory.Parser.Ast
+{
 	public class PrimitiveExpression : Expression
 	{
 		object val;

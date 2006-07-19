@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 using Boo.Lang.Compiler;
 using B = Boo.Lang.Compiler.Ast;
 

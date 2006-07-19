@@ -6,32 +6,15 @@
 // </file>
 
 using System;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Design;
-using System.Reflection;
-using System.Windows.Forms;
-using System.Drawing.Printing;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
+using System.Diagnostics;
+using System.Windows.Forms;
 using System.Xml;
 
-
-
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
-
-using ICSharpCode.FormsDesigner.Services;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
-using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.FormsDesigner
 {

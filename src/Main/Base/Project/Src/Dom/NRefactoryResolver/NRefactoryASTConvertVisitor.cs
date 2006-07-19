@@ -13,7 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using RefParser = ICSharpCode.NRefactory.Parser;
-using AST = ICSharpCode.NRefactory.Parser.AST;
+using AST = ICSharpCode.NRefactory.Parser.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
 

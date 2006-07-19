@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Parser.VB;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.NRefactory.Parser
 {
@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return base.Visit(binaryOperatorExpression, data);
 		}
 		
-		bool IsNullLiteralExpression(Expression expr)
+		static bool IsNullLiteralExpression(Expression expr)
 		{
 			PrimitiveExpression pe = expr as PrimitiveExpression;
 			if (pe == null) return false;

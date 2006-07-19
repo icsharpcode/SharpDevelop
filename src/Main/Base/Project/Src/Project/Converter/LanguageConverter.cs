@@ -13,7 +13,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project.Commands;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
@@ -169,7 +169,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		protected void ConvertFile(FileProjectItem sourceItem, FileProjectItem targetItem,
 		                           string sourceExtension, string targetExtension,
-		                           SupportedLanguage sourceLanguage, IOutputASTVisitor outputVisitor)
+		                           SupportedLanguage sourceLanguage, IOutputAstVisitor outputVisitor)
 		{
 			FixExtensionOfExtraProperties(targetItem, sourceExtension, targetExtension);
 			if (sourceExtension.Equals(Path.GetExtension(sourceItem.FileName), StringComparison.OrdinalIgnoreCase)) {

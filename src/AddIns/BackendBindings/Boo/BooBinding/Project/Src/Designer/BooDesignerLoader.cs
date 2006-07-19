@@ -167,7 +167,7 @@ namespace Grunwald.BooBinding.Designer
 						module.Accept(visitor);
 						
 						// output generated CodeDOM to the console :
-						ICSharpCode.NRefactory.Parser.CodeDOMVerboseOutputGenerator outputGenerator = new ICSharpCode.NRefactory.Parser.CodeDOMVerboseOutputGenerator();
+						ICSharpCode.NRefactory.Parser.CodeDomVerboseOutputGenerator outputGenerator = new ICSharpCode.NRefactory.Parser.CodeDomVerboseOutputGenerator();
 						outputGenerator.GenerateCodeFromMember(visitor.OutputCompileUnit.Namespaces[0].Types[0], Console.Out, null);
 						provider.GenerateCodeFromCompileUnit(visitor.OutputCompileUnit, Console.Out, null);
 						

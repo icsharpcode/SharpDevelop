@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {

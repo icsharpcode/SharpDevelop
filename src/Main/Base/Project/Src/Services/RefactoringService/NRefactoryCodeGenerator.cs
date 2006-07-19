@@ -6,18 +6,18 @@
 // </file>
 
 using System;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	public abstract class NRefactoryCodeGenerator : CodeGenerator
 	{
-		public abstract IOutputASTVisitor CreateOutputVisitor();
+		public abstract IOutputAstVisitor CreateOutputVisitor();
 		
 		public override string GenerateCode(AbstractNode node, string indentation)
 		{
-			IOutputASTVisitor visitor = CreateOutputVisitor();
+			IOutputAstVisitor visitor = CreateOutputVisitor();
 			int indentCount = 0;
 			foreach (char c in indentation) {
 				if (c == '\t')
@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public static readonly CSharpCodeGenerator Instance = new CSharpCodeGenerator();
 		
-		public override IOutputASTVisitor CreateOutputVisitor()
+		public override IOutputAstVisitor CreateOutputVisitor()
 		{
 			return new CSharpOutputVisitor();
 		}
@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public static readonly VBNetCodeGenerator Instance = new VBNetCodeGenerator();
 		
-		public override IOutputASTVisitor CreateOutputVisitor()
+		public override IOutputAstVisitor CreateOutputVisitor()
 		{
 			return new VBNetOutputVisitor();
 		}

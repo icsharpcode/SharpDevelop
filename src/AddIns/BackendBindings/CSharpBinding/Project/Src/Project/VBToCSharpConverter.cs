@@ -8,13 +8,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using ICSharpCode.Core;
+
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
-using ICSharpCode.SharpDevelop.Internal.Templates;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
-using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace CSharpBinding
 {
@@ -40,7 +40,7 @@ namespace CSharpBinding
 		
 		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials)
 		{
-			PreProcessingDirective.VBToCSharp(specials);
+			PreprocessingDirective.VBToCSharp(specials);
 			new VBNetToCSharpConvertVisitor().Visit(compilationUnit, null);
 		}
 		

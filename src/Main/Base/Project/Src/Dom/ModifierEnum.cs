@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using M = ICSharpCode.NRefactory.Parser.AST.Modifier;
+using M = ICSharpCode.NRefactory.Parser.Ast.Modifier;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {

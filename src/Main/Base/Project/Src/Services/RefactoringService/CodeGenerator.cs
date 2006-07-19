@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
@@ -120,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			AttributeSection sec = new AttributeSection(null, null);
 			foreach (IAttribute att in attributes) {
-				sec.Attributes.Add(new ICSharpCode.NRefactory.Parser.AST.Attribute(att.Name, null, null));
+				sec.Attributes.Add(new ICSharpCode.NRefactory.Parser.Ast.Attribute(att.Name, null, null));
 			}
 			List<AttributeSection> resultList = new List<AttributeSection>(1);
 			if (sec.Attributes.Count > 0)

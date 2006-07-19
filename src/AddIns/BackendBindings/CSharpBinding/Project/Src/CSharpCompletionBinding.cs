@@ -6,17 +6,15 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.NRefactory.Parser;
-using AST = ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.TextEditor.Document;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using AST = ICSharpCode.NRefactory.Parser.Ast;
 using CSTokens = ICSharpCode.NRefactory.Parser.CSharp.Tokens;
 
 namespace CSharpBinding

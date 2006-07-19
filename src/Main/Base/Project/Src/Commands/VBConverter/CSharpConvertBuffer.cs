@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 				ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor output = new ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor();
 				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
-				PreProcessingDirective.VBToCSharp(specials);
+				PreprocessingDirective.VBToCSharp(specials);
 				new VBNetToCSharpConvertVisitor().Visit(p.CompilationUnit, null);
 				using (SpecialNodesInserter.Install(specials, output)) {
 					output.Visit(p.CompilationUnit, null);

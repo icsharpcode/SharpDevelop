@@ -531,7 +531,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			sb.Length = 0;
 			StringBuilder curWord = specialCommentHash != null ? new StringBuilder() : null;
 			int missingApostrophes = 2; // no. of ' missing until it is a documentation comment
-			int x = Col;
+			//int x = Col;
 			int y = Line;
 			int nextChar;
 			while ((nextChar = ReaderRead()) != -1) {

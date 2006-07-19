@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory.Parser {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using ICSharpCode.NRefactory.Parser.AST;
+	using ICSharpCode.NRefactory.Parser.Ast;
 	
 	
 	/// <summary>
@@ -136,7 +136,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(ICSharpCode.NRefactory.Parser.AST.Attribute attribute, object data) {
+		public virtual object Visit(ICSharpCode.NRefactory.Parser.Ast.Attribute attribute, object data) {
 			Debug.Assert((attribute != null));
 			Debug.Assert((attribute.PositionalArguments != null));
 			Debug.Assert((attribute.NamedArguments != null));
@@ -169,11 +169,11 @@ namespace ICSharpCode.NRefactory.Parser {
 			Debug.Assert((attributeSection != null));
 			Debug.Assert((attributeSection.Attributes != null));
 			for (int i = 0; i < attributeSection.Attributes.Count; i++) {
-				ICSharpCode.NRefactory.Parser.AST.Attribute o = attributeSection.Attributes[i];
+				ICSharpCode.NRefactory.Parser.Ast.Attribute o = attributeSection.Attributes[i];
 				Debug.Assert(o != null);
 				nodeStack.Push(o);
 				o.AcceptVisitor(this, data);
-				o = (ICSharpCode.NRefactory.Parser.AST.Attribute)nodeStack.Pop();
+				o = (ICSharpCode.NRefactory.Parser.Ast.Attribute)nodeStack.Pop();
 				if (o == null)
 					attributeSection.Attributes.RemoveAt(i--);
 				else

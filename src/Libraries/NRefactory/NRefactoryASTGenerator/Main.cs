@@ -11,7 +11,7 @@ using System.CodeDom;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
-using NRefactoryASTGenerator.AST;
+using NRefactoryASTGenerator.Ast;
 
 namespace NRefactoryASTGenerator
 {
@@ -40,7 +40,7 @@ namespace NRefactoryASTGenerator
 			nodeTypes.Sort(delegate(Type a, Type b) { return a.Name.CompareTo(b.Name); });
 			
 			CodeCompileUnit ccu = new CodeCompileUnit();
-			CodeNamespace cns = new CodeNamespace("ICSharpCode.NRefactory.Parser.AST");
+			CodeNamespace cns = new CodeNamespace("ICSharpCode.NRefactory.Parser.Ast");
 			ccu.Namespaces.Add(cns);
 			cns.Imports.Add(new CodeNamespaceImport("System"));
 			cns.Imports.Add(new CodeNamespaceImport("System.Collections.Generic"));
@@ -99,7 +99,7 @@ namespace NRefactoryASTGenerator
 			cns = new CodeNamespace("ICSharpCode.NRefactory.Parser");
 			ccu.Namespaces.Add(cns);
 			cns.Imports.Add(new CodeNamespaceImport("System"));
-			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Parser.AST"));
+			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Parser.Ast"));
 			cns.Types.Add(CreateAstVisitorInterface(nodeTypes));
 			
 			using (StringWriter writer = new StringWriter()) {
@@ -113,7 +113,7 @@ namespace NRefactoryASTGenerator
 			cns.Imports.Add(new CodeNamespaceImport("System"));
 			cns.Imports.Add(new CodeNamespaceImport("System.Collections.Generic"));
 			cns.Imports.Add(new CodeNamespaceImport("System.Diagnostics"));
-			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Parser.AST"));
+			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Parser.Ast"));
 			cns.Types.Add(CreateAstVisitorClass(nodeTypes, false));
 			
 			using (StringWriter writer = new StringWriter()) {
@@ -127,7 +127,7 @@ namespace NRefactoryASTGenerator
 			cns.Imports.Add(new CodeNamespaceImport("System"));
 			cns.Imports.Add(new CodeNamespaceImport("System.Collections.Generic"));
 			cns.Imports.Add(new CodeNamespaceImport("System.Diagnostics"));
-			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Parser.AST"));
+			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Parser.Ast"));
 			cns.Types.Add(CreateAstVisitorClass(nodeTypes, true));
 			
 			using (StringWriter writer = new StringWriter()) {
@@ -486,7 +486,7 @@ namespace NRefactoryASTGenerator
 				return tr;
 			} else if (type.FullName.StartsWith("NRefactory") || type.FullName.StartsWith("System.Collections")) {
 				if (type.Name == "Attribute")
-					return new CodeTypeReference("ICSharpCode.NRefactory.Parser.AST.Attribute");
+					return new CodeTypeReference("ICSharpCode.NRefactory.Parser.Ast.Attribute");
 				return new CodeTypeReference(type.Name);
 			} else {
 				return new CodeTypeReference(type);

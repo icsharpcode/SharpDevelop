@@ -11,7 +11,7 @@ using System.Collections;
 
 namespace ICSharpCode.NRefactory.Parser.CSharp
 {
-	public sealed class Tokens
+	public static class Tokens
 	{
 		// ----- terminal classes -----
 		public const int EOF                  = 0;

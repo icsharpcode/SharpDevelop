@@ -10,7 +10,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections;
 
-namespace ICSharpCode.NRefactory.Parser.AST
+namespace ICSharpCode.NRefactory.Parser.Ast
 {
 	public class CompilationUnit : AbstractNode
 	{

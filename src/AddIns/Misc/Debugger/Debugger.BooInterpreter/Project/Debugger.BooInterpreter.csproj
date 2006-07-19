@@ -50,6 +50,9 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\DebugeeInterpreterContext.cs" />
     <Compile Include="Src\DebugeeInteractiveInterpreter.cs" />
+    <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />

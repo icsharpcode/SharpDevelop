@@ -11,7 +11,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
-namespace ICSharpCode.NRefactory.Parser.AST
+namespace ICSharpCode.NRefactory.Parser.Ast
 {
 	public class TypeReference : AbstractNode, INullable, ICloneable
 	{
@@ -209,7 +209,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		string GetSystemType(string type)
+		static string GetSystemType(string type)
 		{
 			if (types.ContainsKey(type)) {
 				return types[type];
