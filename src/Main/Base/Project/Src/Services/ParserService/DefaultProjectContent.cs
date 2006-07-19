@@ -815,25 +815,82 @@ namespace ICSharpCode.Core
 		/// Gets the position of a member in this project content (not a referenced one).
 		/// </summary>
 		/// <param name="fullMemberName">Fully qualified member name (always case sensitive).</param>
-		public Position GetPosition(string fullMemberName)
+		public IDecoration GetElement(string fullMemberName)
 		{
 			IClass curClass = GetClass(fullMemberName, 0, LanguageProperties.CSharp, false);
 			if (curClass != null) {
-				return new Position(curClass.CompilationUnit, curClass.Region.BeginLine, curClass.Region.BeginColumn);
+				return curClass;
 			}
-			int pos = fullMemberName.LastIndexOf('.');
+			int pos = fullMemberName.IndexOf('(');
 			if (pos > 0) {
-				string className = fullMemberName.Substring(0, pos);
-				string memberName = fullMemberName.Substring(pos + 1);
-				curClass = GetClass(className, 0, LanguageProperties.CSharp, false);
-				if (curClass != null) {
-					IMember member = curClass.SearchMember(memberName, LanguageProperties.CSharp);
-					if (member != null) {
-						return new Position(member.DeclaringType.CompilationUnit, member.Region.BeginLine, member.Region.BeginColumn);
+				// is method call
+				
+				int colonPos = fullMemberName.LastIndexOf(':');
+				if (colonPos > 0) {
+					fullMemberName = fullMemberName.Substring(0, colonPos);
+				}
+				
+				string memberName = fullMemberName.Substring(0, pos);
+				int pos2 = memberName.LastIndexOf('.');
+				if (pos2 > 0) {
+					string className = memberName.Substring(0, pos2);
+					memberName = memberName.Substring(pos2 + 1);
+					curClass = GetClass(className, 0, LanguageProperties.CSharp, false);
+					if (curClass != null) {
+						IMethod firstMethod = null;
+						foreach (IMethod m in curClass.Methods) {
+							if (m.Name == memberName) {
+								if (firstMethod == null) firstMethod = m;
+								StringBuilder dotnetName = new StringBuilder(m.DotNetName);
+								dotnetName.Append('(');
+								for (int i = 0; i < m.Parameters.Count; i++) {
+									if (i > 0) dotnetName.Append(',');
+									if (m.Parameters[i].ReturnType != null) {
+										dotnetName.Append(m.Parameters[i].ReturnType.DotNetName);
+									}
+								}
+								dotnetName.Append(')');
+								if (dotnetName.ToString() == fullMemberName) {
+									return m;
+								}
+							}
+						}
+					}
+				}
+			} else {
+				pos = fullMemberName.LastIndexOf('.');
+				if (pos > 0) {
+					string className = fullMemberName.Substring(0, pos);
+					string memberName = fullMemberName.Substring(pos + 1);
+					curClass = GetClass(className, 0, LanguageProperties.CSharp, false);
+					if (curClass != null) {
+						// get first method with that name, but prefer method without parameters
+						IMethod firstMethod = null;
+						foreach (IMethod m in curClass.Methods) {
+							if (m.Name == memberName) {
+								if (firstMethod == null || m.Parameters.Count == 0)
+									firstMethod = m;
+							}
+						}
+						return firstMethod;
 					}
 				}
 			}
-			return new Position(null, -1, -1);
+			return null;
+		}
+		
+		public Position GetPosition(string fullMemberName)
+		{
+			IDecoration d = GetElement(fullMemberName);
+			IMember m = d as IMember;
+			IClass c = d as IClass;
+			if (m != null) {
+				return new Position(m.DeclaringType.CompilationUnit, m.Region.BeginLine, m.Region.BeginColumn);
+			} else if (c != null) {
+				return new Position(c.CompilationUnit, c.Region.BeginLine, c.Region.BeginColumn);
+			} else {
+				return new Position(null, -1, -1);
+			}
 		}
 		#endregion
 		

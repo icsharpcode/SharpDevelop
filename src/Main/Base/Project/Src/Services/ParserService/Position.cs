@@ -9,9 +9,6 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.Core
 {
-	/// <summary>
-	/// Used in many methods as parameter, to shorten the parameter lists
-	/// </summary>
 	public class Position
 	{
 		int line = -1;

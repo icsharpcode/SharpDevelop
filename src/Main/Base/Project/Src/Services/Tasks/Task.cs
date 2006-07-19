@@ -23,13 +23,15 @@ namespace ICSharpCode.Core
 	
 	public class Task
 	{
+		public const string DefaultContextMenuAddInTreeEntry = "/SharpDevelop/Pads/ErrorList/TaskContextMenu";
+		
 		string   description;
 		string   fileName;
 		TaskType type;
 		int      line;
 		int      column;
-		object contextMenuOwner;
-		string contextMenuAddInTreeEntry;
+		string contextMenuAddInTreeEntry = DefaultContextMenuAddInTreeEntry;
+		object tag;
 
 		public override string ToString()
 		{
@@ -40,7 +42,7 @@ namespace ICSharpCode.Core
 			                     type,
 			                     description);
 		}
-			
+		
 		/// <summary>
 		/// The line number of the task. Zero-based (text editor coordinate)
 		/// </summary>
@@ -80,21 +82,21 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public object ContextMenuOwner {
-			get {
-				return contextMenuOwner;
-			}
-			set {
-				contextMenuOwner = value;
-			}
-		}
-		
 		public string ContextMenuAddInTreeEntry {
 			get {
 				return contextMenuAddInTreeEntry;
 			}
 			set {
 				contextMenuAddInTreeEntry = value;
+			}
+		}
+		
+		public object Tag {
+			get {
+				return tag;
+			}
+			set {
+				tag = value;
 			}
 		}
 		
@@ -116,10 +118,12 @@ namespace ICSharpCode.Core
 			if (string.IsNullOrEmpty(error.ErrorCode)) {
 				description = error.ErrorText;
 			} else {
-				description = error.ErrorText + "(" + error.ErrorCode + ")";
+				description = error.ErrorText + " (" + error.ErrorCode + ")";
 			}
-			contextMenuAddInTreeEntry = error.ContextMenuAddInTreeEntry;
-			contextMenuOwner = error;
+			if (error.ContextMenuAddInTreeEntry != null) {
+				contextMenuAddInTreeEntry = error.ContextMenuAddInTreeEntry;
+			}
+			tag = error.Tag;
 		}
 		
 		public void JumpToPosition()

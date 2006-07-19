@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class ErrorListPad : AbstractPadContent
+	public class ErrorListPad : AbstractPadContent, IClipboardHandler
 	{
 		static ErrorListPad instance;
 		public static ErrorListPad Instance {
@@ -210,5 +210,36 @@ namespace ICSharpCode.SharpDevelop.Gui
 			taskView.EndUpdate();
 			UpdateToolstripStatus();
 		}
+		
+		#region IClipboardHandler interface implementation
+		public bool EnableCut {
+			get { return false; }
+		}
+		public bool EnableCopy {
+			get { return taskView.TaskIsSelected; }
+		}
+		public bool EnablePaste {
+			get { return false; }
+		}
+		public bool EnableDelete {
+			get { return false; }
+		}
+		public bool EnableSelectAll {
+			get { return true; }
+		}
+		
+		public void Cut() {}
+		public void Paste() {}
+		public void Delete() {}
+		
+		public void Copy()
+		{
+			taskView.CopySelectionToClipboard();
+		}
+		public void SelectAll()
+		{
+			taskView.SelectAll();
+		}
+		#endregion
 	}
 }

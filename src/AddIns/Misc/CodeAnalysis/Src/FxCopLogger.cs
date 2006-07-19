@@ -6,9 +6,10 @@
  */
 
 using System;
-using Microsoft.Build.Framework;
+using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.Framework;
 
 namespace ICSharpCode.CodeAnalysis
 {
@@ -67,24 +68,32 @@ namespace ICSharpCode.CodeAnalysis
 			
 			void OnError(object sender, BuildErrorEventArgs e)
 			{
-				AppendError(e.File, e.LineNumber, e.ColumnNumber, e.Code, e.Message, false);
+				AppendError(e.File, e.LineNumber, e.ColumnNumber, e.Message, false,
+				            e.HelpKeyword, e.Code, e.Subcategory);
 			}
 			
 			void OnWarning(object sender, BuildWarningEventArgs e)
 			{
-				AppendError(e.File, e.LineNumber, e.ColumnNumber, e.Code, e.Message, true);
+				AppendError(e.File, e.LineNumber, e.ColumnNumber, e.Message, true,
+				            e.HelpKeyword, e.Code, e.Subcategory);
 			}
 			
-			void AppendError(string file, int lineNumber, int columnNumber, string code, string message, bool isWarning)
+			void AppendError(string file, int lineNumber, int columnNumber,
+			                 string message, bool isWarning,
+			                 string category, string checkId, string subcategory)
 			{
+				string[] moreData = (subcategory ?? "").Split('|');
 				BuildError err = engine.CurrentErrorOrWarning;
-				if (file.StartsWith("positionof#")) {
-					string memberName = file.Substring(11);
-					file = "";
-					IProject project = ProjectService.GetProject(engine.CurrentProjectFile);
-					if (project != null) {
-						IProjectContent pc = ParserService.GetProjectContent(project);
-						if (pc != null) {
+				if (Path.GetFileName(file) == "SharpDevelop.CodeAnalysis.targets") {
+					err.FileName = null;
+				}
+				IProject project = ProjectService.GetProject(engine.CurrentProjectFile);
+				if (project != null) {
+					IProjectContent pc = ParserService.GetProjectContent(project);
+					if (pc != null) {
+						if (file.StartsWith("positionof#")) {
+							string memberName = file.Substring(11);
+							file = "";
 							Position pos = pc.GetPosition(memberName);
 							if (pos != null && pos.Cu != null) {
 								err.FileName = pos.Cu.FileName ?? "";
@@ -92,9 +101,67 @@ namespace ICSharpCode.CodeAnalysis
 								err.Column = pos.Column;
 							}
 						}
+						
+						if (moreData.Length > 0 && moreData[0].Length > 0) {
+							err.Tag = new FxCopTaskTag(pc, moreData[0], category, checkId);
+							err.ContextMenuAddInTreeEntry = "/SharpDevelop/Pads/ErrorList/CodeAnalysisTaskContextMenu";
+							if (moreData.Length > 1) {
+								(err.Tag as FxCopTaskTag).MessageID = moreData[1];
+							}
+						}
 					}
 				}
 			}
+		}
+	}
+	
+	public class FxCopTaskTag
+	{
+		IProjectContent projectContent;
+		string memberName;
+		string category;
+		string checkID;
+		string messageID;
+		
+		public IProjectContent ProjectContent {
+			get {
+				return projectContent;
+			}
+		}
+		
+		public string MemberName {
+			get {
+				return memberName;
+			}
+		}
+		
+		public string Category {
+			get {
+				return category;
+			}
+		}
+		
+		public string CheckID {
+			get {
+				return checkID;
+			}
+		}
+		
+		public string MessageID {
+			get {
+				return messageID;
+			}
+			set {
+				messageID = value;
+			}
+		}
+		
+		public FxCopTaskTag(IProjectContent projectContent, string memberName, string category, string checkID)
+		{
+			this.projectContent = projectContent;
+			this.memberName = memberName;
+			this.category = category;
+			this.checkID = checkID;
 		}
 	}
 }

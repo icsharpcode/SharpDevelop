@@ -33,4 +33,13 @@
 			taskname = "FxCop"
 			class = "ICSharpCode.CodeAnalysis.FxCopLogger"/>
 	</Path>
+	
+	<Path name="/SharpDevelop/Pads/ErrorList/CodeAnalysisTaskContextMenu">
+		<MenuItem id = "Exclude"
+		          label = "Suppress message"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.CodeAnalysis.SuppressMessageCommand"/>
+		<MenuItem id = "Separator" type = "Separator"/>
+		<Include id="default" path="/SharpDevelop/Pads/ErrorList/TaskContextMenu"/>
+	</Path>
 </AddIn>

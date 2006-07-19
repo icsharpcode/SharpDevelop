@@ -894,24 +894,24 @@
 		<ToolbarItem id="NavigationSeparator" type="Separator"/>
 		<Condition name="CanNavigateBack" action="Disable">
 			<ToolbarItem id="NavigateBack"
-			           type="SplitButton"
-			           icon="Icons.16x16.NavigateBack"
+			             type="SplitButton"
+			             icon="Icons.16x16.NavigateBack"
 			             tooltip="Navigate Back"
-			            disabledIcon="Icons.16x16.NavigateBack"
-			            loadclasslazy="false"
-			            class="ICSharpCode.SharpDevelop.Commands.NavigateBack"
-			            >
+			             disabledIcon="Icons.16x16.NavigateBack"
+			             loadclasslazy="false"
+			             class="ICSharpCode.SharpDevelop.Commands.NavigateBack"
+			>
 				<MenuItem id="NavigationHistoryBuilder"
-						 type="Builder"
-						 class="ICSharpCode.SharpDevelop.Commands.NavigationHistoryMenuBuilder"/>
+				          type="Builder"
+				          class="ICSharpCode.SharpDevelop.Commands.NavigationHistoryMenuBuilder"/>
 			</ToolbarItem>
 		</Condition>
 		<Condition name="CanNavigateForward" action="Disable">
 			<ToolbarItem id="NavigateForward"
-			      icon="Icons.16x16.NavigateForward"
-			       tooltip="Navigate Forward"
-			       loadclasslazy="false"
-			       class="ICSharpCode.SharpDevelop.Commands.NavigateForward"/>
+			             icon="Icons.16x16.NavigateForward"
+			             tooltip="Navigate Forward"
+			             loadclasslazy="false"
+			             class="ICSharpCode.SharpDevelop.Commands.NavigateForward"/>
 		</Condition>
 	</Path>
 	<!-- end toolbars -->
@@ -1750,7 +1750,7 @@
 			<MenuItem id = "FindNextSelected"
 			          label = "${res:XML.MainMenu.SearchMenu.FindNextSelected}"
 			          shortcut = "Control|F3"
-			          class = "SearchAndReplace.FindNextSelected"/>			
+			          class = "SearchAndReplace.FindNextSelected"/>
 			<MenuItem id = "Replace"
 			          label = "${res:XML.MainMenu.SearchMenu.Replace}"
 			          icon = "Icons.16x16.ReplaceIcon"
@@ -2149,5 +2149,13 @@
 	
 	<Path name="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
 		<!-- put project option panels valid for all .NET projects here -->
+	</Path>
+	
+	<Path name="/SharpDevelop/Pads/ErrorList/TaskContextMenu">
+		<MenuItem id = "Copy"
+		          label = "${res:XML.MainMenu.EditMenu.Copy}"
+		          type = "Item"
+		          icon = "Icons.16x16.CopyIcon"
+		          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
 	</Path>
 </AddIn>

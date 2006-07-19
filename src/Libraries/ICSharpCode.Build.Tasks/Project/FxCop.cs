@@ -155,33 +155,37 @@ namespace ICSharpCode.Build.Tasks
 				string issueLine = issueEl.GetAttribute("Line");
 				int issueLineNumber = 0;
 				string issueFullFile = null;
+				
+				// Try to find additional information about this type
+				string memberName = null;
+				XmlNode parent = message.ParentNode;
+				while (parent != null) {
+					if (parent.Name == "Member" || parent.Name == "Type" || parent.Name == "Namespace") {
+						if (memberName == null)
+							memberName = ((XmlElement)parent).GetAttribute("Name");
+						else
+							memberName = ((XmlElement)parent).GetAttribute("Name") + "." + memberName;
+					}
+					parent = parent.ParentNode;
+				}
 				if (issuePath.Length > 0 && issueLine.Length > 0 && issueFile.Length > 0) {
 					issueFullFile = Path.Combine(issuePath, issueFile);
 					issueLineNumber = int.Parse(issueLine, CultureInfo.InvariantCulture);
-				} else {
-					// Try to find additional information about this type
-					string memberName = null;
-					XmlNode parent = message.ParentNode;
-					while (parent != null) {
-						if (parent.Name == "Member" || parent.Name == "Type" || parent.Name == "Namespace") {
-							if (memberName == null)
-								memberName = ((XmlElement)parent).GetAttribute("Name");
-							else
-								memberName = ((XmlElement)parent).GetAttribute("Name") + "." + memberName;
-						}
-						parent = parent.ParentNode;
-					}
-					if (memberName != null) {
-						issueFullFile = "positionof#" + memberName;
-					}
+				} else if (memberName != null) {
+					issueFullFile = "positionof#" + memberName;
 				}
 				
-				issueText = checkId + " : " + category + " : " + issueText;
+				if (message.HasAttribute("TypeName")) {
+					checkId = checkId + ":" + message.GetAttribute("TypeName");
+				}
+				if (message.HasAttribute("Id")) {
+					memberName = memberName + "|" + message.GetAttribute("Id");
+				}
 				
 				if (isWarning) {
-					Log.LogWarning(null, null, checkId, issueFullFile, issueLineNumber, 0, 0, 0, issueText);
+					Log.LogWarning(memberName, checkId, category, issueFullFile, issueLineNumber, 0, 0, 0, issueText);
 				} else {
-					Log.LogError(null, null, checkId, issueFullFile, issueLineNumber, 0, 0, 0, issueText);
+					Log.LogError(memberName, checkId, category, issueFullFile, issueLineNumber, 0, 0, 0, issueText);
 				}
 			}
 			return isWarning;

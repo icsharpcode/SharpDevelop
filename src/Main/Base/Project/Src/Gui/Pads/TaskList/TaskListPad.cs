@@ -7,17 +7,12 @@
 
 using System;
 using System.Windows.Forms;
-using System.Drawing;
-using System.CodeDom.Compiler;
-using System.Collections;
-using System.IO;
-using System.Diagnostics;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class TaskListPad : AbstractPadContent
+	public class TaskListPad : AbstractPadContent, IClipboardHandler
 	{
 		TaskView taskView = new TaskView();
 		
@@ -56,8 +51,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			taskView.ClearTasks();
 		}
 		
-		public CompilerResults CompilerResults = null;
-		
 		void TaskServiceCleared(object sender, EventArgs e)
 		{
 			taskView.ClearTasks();
@@ -87,6 +80,37 @@ namespace ICSharpCode.SharpDevelop.Gui
 			taskView.Invoke(new EventHandler(InternalShowResults));
 //			SelectTaskView(null, null);
 		}
+		
+		#region IClipboardHandler interface implementation
+		public bool EnableCut {
+			get { return false; }
+		}
+		public bool EnableCopy {
+			get { return taskView.TaskIsSelected; }
+		}
+		public bool EnablePaste {
+			get { return false; }
+		}
+		public bool EnableDelete {
+			get { return false; }
+		}
+		public bool EnableSelectAll {
+			get { return true; }
+		}
+		
+		public void Cut() {}
+		public void Paste() {}
+		public void Delete() {}
+		
+		public void Copy()
+		{
+			taskView.CopySelectionToClipboard();
+		}
+		public void SelectAll()
+		{
+			taskView.SelectAll();
+		}
+		#endregion
 	}
 
 }
