@@ -328,7 +328,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (e.Action == TabControlAction.Selected && e.TabPageIndex >= 0) {
 				IBaseViewContent secondaryViewContent = GetSubViewContent(e.TabPageIndex);
 				if (secondaryViewContent != null) {
-					secondaryViewContent.Deselected();
 					secondaryViewContent.SwitchedTo();
 					secondaryViewContent.Selected();
 				}

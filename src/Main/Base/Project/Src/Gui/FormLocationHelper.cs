@@ -28,7 +28,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			form.Closing += delegate {
 				if (isResizable) {
-					PropertyService.Set(propertyName, form.Bounds);
+					if (form.WindowState == FormWindowState.Normal) {
+						PropertyService.Set(propertyName, form.Bounds);
+					}
 				} else {
 					PropertyService.Set(propertyName, form.Location);
 				}
