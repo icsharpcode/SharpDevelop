@@ -13,6 +13,7 @@ namespace ICSharpCode.NRefactory.Parser
 	/// <summary>
 	/// Description of AbstractParser.
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1708:IdentifiersShouldDifferByMoreThanCase")]
 	public abstract class AbstractParser : IParser
 	{
 		protected const  int    minErrDist   = 2;

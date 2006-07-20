@@ -141,6 +141,9 @@ namespace ICSharpCode.Build.Tasks
 		{
 			bool isWarning = true;
 			string checkId = message.GetAttribute("CheckId");
+			if (message.HasAttribute("TypeName")) {
+				checkId = checkId + ":" + message.GetAttribute("TypeName");
+			}
 			string category = message.GetAttribute("Category");
 			foreach (XmlNode node in message.SelectNodes(".//Issue")) {
 				XmlElement issueEl = node as XmlElement;
@@ -175,9 +178,6 @@ namespace ICSharpCode.Build.Tasks
 					issueFullFile = "positionof#" + memberName;
 				}
 				
-				if (message.HasAttribute("TypeName")) {
-					checkId = checkId + ":" + message.GetAttribute("TypeName");
-				}
 				if (message.HasAttribute("Id")) {
 					memberName = memberName + "|" + message.GetAttribute("Id");
 				}

@@ -171,11 +171,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public object Visit(InnerClassTypeReference typeReference, object data)
+		public object Visit(InnerClassTypeReference innerClassTypeReference, object data)
 		{
-			nodeTracker.TrackedVisit(typeReference.BaseType, data);
+			nodeTracker.TrackedVisit(innerClassTypeReference.BaseType, data);
 			outputFormatter.PrintToken(Tokens.Dot);
-			return Visit((TypeReference)typeReference, data); // call Visit(TypeReference, object)
+			return Visit((TypeReference)innerClassTypeReference, data); // call Visit(TypeReference, object)
 		}
 		
 		#region Global scope
@@ -183,7 +183,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintText("<");
-			if (attributeSection.AttributeTarget != null && attributeSection.AttributeTarget != String.Empty) {
+			if (attributeSection.AttributeTarget != null && attributeSection.AttributeTarget.Length > 0) {
 				outputFormatter.PrintIdentifier(attributeSection.AttributeTarget);
 				outputFormatter.PrintToken(Tokens.Colon);
 				outputFormatter.Space();

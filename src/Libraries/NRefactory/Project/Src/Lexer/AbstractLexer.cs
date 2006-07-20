@@ -16,6 +16,7 @@ namespace ICSharpCode.NRefactory.Parser
 	/// <summary>
 	/// This is the base class for the C# and VB.NET lexer
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1708:IdentifiersShouldDifferByMoreThanCase")]
 	public abstract class AbstractLexer : ILexer
 	{
 		TextReader reader;

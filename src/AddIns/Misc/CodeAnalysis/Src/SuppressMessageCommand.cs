@@ -55,6 +55,8 @@ namespace ICSharpCode.CodeAnalysis
 				string code = codegen.GenerateCode(CreateSuppressAttribute(p.Cu, tag), indentation.ToString());
 				if (!code.EndsWith("\n")) code += Environment.NewLine;
 				document.Insert(line.Offset, code);
+				provider.TextEditorControl.ActiveTextAreaControl.Caret.Line = p.Line - 1;
+				provider.TextEditorControl.ActiveTextAreaControl.ScrollToCaret();
 				TaskService.Remove(t);
 				ParserService.ParseViewContent(window.ViewContent);
 			}

@@ -872,7 +872,9 @@ namespace ICSharpCode.Core
 									firstMethod = m;
 							}
 						}
-						return firstMethod;
+						if (firstMethod != null)
+							return firstMethod;
+						return curClass.SearchMember(memberName, LanguageProperties.CSharp);
 					}
 				}
 			}

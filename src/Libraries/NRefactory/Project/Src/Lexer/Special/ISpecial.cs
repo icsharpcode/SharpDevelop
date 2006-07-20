@@ -34,13 +34,13 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		Location startPosition, endPosition;
 		
-		public AbstractSpecial(Location position)
+		protected AbstractSpecial(Location position)
 		{
 			this.startPosition = position;
 			this.endPosition = position;
 		}
 		
-		public AbstractSpecial(Location startPosition, Location endPosition)
+		protected AbstractSpecial(Location startPosition, Location endPosition)
 		{
 			this.startPosition = startPosition;
 			this.endPosition = endPosition;

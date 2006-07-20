@@ -262,25 +262,28 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				string stringValue = prefix + digit + suffix;
 				
 				if (isfloat) {
-					try {
-						return new Token(Tokens.Literal, x, y, stringValue, Single.Parse(digit, CultureInfo.InvariantCulture));
-					} catch (Exception) {
+					float num;
+					if (float.TryParse(digit, NumberStyles.Any, CultureInfo.InvariantCulture, out num)) {
+						return new Token(Tokens.Literal, x, y, stringValue, num);
+					} else {
 						errors.Error(y, x, String.Format("Can't parse float {0}", digit));
 						return new Token(Tokens.Literal, x, y, stringValue, 0f);
 					}
 				}
 				if (isdecimal) {
-					try {
-						return new Token(Tokens.Literal, x, y, stringValue, Decimal.Parse(digit, NumberStyles.Any, CultureInfo.InvariantCulture));
-					} catch (Exception) {
+					decimal num;
+					if (decimal.TryParse(digit, NumberStyles.Any, CultureInfo.InvariantCulture, out num)) {
+						return new Token(Tokens.Literal, x, y, stringValue, num);
+					} else {
 						errors.Error(y, x, String.Format("Can't parse decimal {0}", digit));
 						return new Token(Tokens.Literal, x, y, stringValue, 0m);
 					}
 				}
 				if (isdouble) {
-					try {
-						return new Token(Tokens.Literal, x, y, stringValue, Double.Parse(digit, CultureInfo.InvariantCulture));
-					} catch (Exception) {
+					double num;
+					if (double.TryParse(digit, NumberStyles.Any, CultureInfo.InvariantCulture, out num)) {
+						return new Token(Tokens.Literal, x, y, stringValue, num);
+					} else {
 						errors.Error(y, x, String.Format("Can't parse double {0}", digit));
 						return new Token(Tokens.Literal, x, y, stringValue, 0d);
 					}
@@ -310,32 +313,36 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				
 				if (islong) {
 					if (isunsigned) {
-						try {
-							token = new Token(Tokens.Literal, x, y, stringValue, UInt64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-						} catch (Exception) {
+						ulong num;
+						if (ulong.TryParse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number, CultureInfo.InvariantCulture, out num)) {
+							token = new Token(Tokens.Literal, x, y, stringValue, num);
+						} else {
 							errors.Error(y, x, String.Format("Can't parse unsigned long {0}", digit));
 							token = new Token(Tokens.Literal, x, y, stringValue, 0UL);
 						}
 					} else {
-						try {
-							token = new Token(Tokens.Literal, x, y, stringValue, Int64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-						} catch (Exception) {
+						long num;
+						if (long.TryParse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number, CultureInfo.InvariantCulture, out num)) {
+							token = new Token(Tokens.Literal, x, y, stringValue, num);
+						} else {
 							errors.Error(y, x, String.Format("Can't parse long {0}", digit));
 							token = new Token(Tokens.Literal, x, y, stringValue, 0L);
 						}
 					}
 				} else {
 					if (isunsigned) {
-						try {
-							token = new Token(Tokens.Literal, x, y, stringValue, UInt32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-						} catch (Exception) {
+						uint num;
+						if (uint.TryParse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number, CultureInfo.InvariantCulture, out num)) {
+							token = new Token(Tokens.Literal, x, y, stringValue, num);
+						} else {
 							errors.Error(y, x, String.Format("Can't parse unsigned int {0}", digit));
-							token = new Token(Tokens.Literal, x, y, stringValue, 0U);
+							token = new Token(Tokens.Literal, x, y, stringValue, (uint)0);
 						}
 					} else {
-						try {
-							token = new Token(Tokens.Literal, x, y, stringValue, Int32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-						} catch (Exception) {
+						int num;
+						if (int.TryParse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number, CultureInfo.InvariantCulture, out num)) {
+							token = new Token(Tokens.Literal, x, y, stringValue, num);
+						} else {
 							errors.Error(y, x, String.Format("Can't parse int {0}", digit));
 							token = new Token(Tokens.Literal, x, y, stringValue, 0);
 						}

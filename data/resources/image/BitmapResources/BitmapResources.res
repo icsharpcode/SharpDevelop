@@ -489,6 +489,7 @@ Icons.16x16.SharpReport.Descending = SharpReportIcons\Icons.16x16.SharpReport.De
 Icons.16x16.SharpReport.Function = SharpReportIcons\Icons.16x16.SharpReport.Function.ico
 Icons.16.16.SharpReport.Textbox = SharpReportIcons\Icons.16.16.SharpReport.Textbox.ico
 Icons.16.16.SharpReport.Line = SharpReportIcons\Icons.16.16.SharpReport.Line.ico
+Icons.16x16.SharpReport.Rectangle = SharpReportIcons\Icons.16x16.SharpReport.Rectangle.png
 
 #ViewNavigation icons
 Icons.16x16.NavigateBack                 = NavigationIcons\Icons.16x16.NavigateBack.png

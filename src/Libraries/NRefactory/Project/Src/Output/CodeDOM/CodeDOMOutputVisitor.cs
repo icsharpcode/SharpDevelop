@@ -469,15 +469,15 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		#region Expressions
-		public override object Visit(PrimitiveExpression expression, object data)
+		public override object Visit(PrimitiveExpression primitiveExpression, object data)
 		{
-			return new CodePrimitiveExpression(expression.Value);
+			return new CodePrimitiveExpression(primitiveExpression.Value);
 		}
 		
-		public override object Visit(BinaryOperatorExpression expression, object data)
+		public override object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			CodeBinaryOperatorType op = CodeBinaryOperatorType.Add;
-			switch (expression.Op) {
+			switch (binaryOperatorExpression.Op) {
 				case BinaryOperatorType.Add:
 					op = CodeBinaryOperatorType.Add;
 					break;
@@ -544,14 +544,14 @@ namespace ICSharpCode.NRefactory.Parser
 					op = CodeBinaryOperatorType.BitwiseAnd;
 					break;
 			}
-			return new CodeBinaryOperatorExpression((CodeExpression)expression.Left.AcceptVisitor(this, data),
+			return new CodeBinaryOperatorExpression((CodeExpression)binaryOperatorExpression.Left.AcceptVisitor(this, data),
 			                                        op,
-			                                        (CodeExpression)expression.Right.AcceptVisitor(this, data));
+			                                        (CodeExpression)binaryOperatorExpression.Right.AcceptVisitor(this, data));
 		}
 		
-		public override object Visit(ParenthesizedExpression expression, object data)
+		public override object Visit(ParenthesizedExpression parenthesizedExpression, object data)
 		{
-			return expression.Expression.AcceptVisitor(this, data);
+			return parenthesizedExpression.Expression.AcceptVisitor(this, data);
 		}
 		
 		public override object Visit(InvocationExpression invocationExpression, object data)
@@ -586,12 +586,12 @@ namespace ICSharpCode.NRefactory.Parser
 			return new CodeMethodInvokeExpression(targetExpr, methodName, GetExpressionList(invocationExpression.Arguments));
 		}
 		
-		public override object Visit(IdentifierExpression expression, object data)
+		public override object Visit(IdentifierExpression identifierExpression, object data)
 		{
-			if (!IsLocalVariable(expression.Identifier) && IsField(expression.Identifier)) {
-				return new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), expression.Identifier);
+			if (!IsLocalVariable(identifierExpression.Identifier) && IsField(identifierExpression.Identifier)) {
+				return new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), identifierExpression.Identifier);
 			}
-			return new CodeVariableReferenceExpression(expression.Identifier);
+			return new CodeVariableReferenceExpression(identifierExpression.Identifier);
 		}
 		
 		public override object Visit(UnaryOperatorExpression unaryOperatorExpression, object data)
@@ -860,7 +860,6 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		static CodeTypeReferenceExpression ConvertToTypeReference(FieldReferenceExpression fieldReferenceExpression)
 		{
-			FieldReferenceExpression primaryReferenceExpression = fieldReferenceExpression;
 			StringBuilder type = new StringBuilder("");
 			
 			while (fieldReferenceExpression.TargetObject is FieldReferenceExpression) {

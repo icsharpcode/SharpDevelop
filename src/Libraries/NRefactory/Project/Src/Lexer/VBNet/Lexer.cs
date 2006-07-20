@@ -250,6 +250,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			return Char.ToUpper((char)ReaderPeek(), CultureInfo.InvariantCulture);
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1818:DoNotConcatenateStringsInsideLoops")]
 		Token ReadDigit(char ch, int x)
 		{
 			sb.Length = 0;
