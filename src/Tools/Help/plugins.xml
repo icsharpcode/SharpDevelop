@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<register>
+<register xmlns="http://www.simmack.de/2006/help2">
 	<plugin parent="Corsavy">
 		<child name="MS.NETFramework.v20*"/>
 	</plugin>

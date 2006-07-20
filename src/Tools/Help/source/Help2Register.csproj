@@ -1,0 +1,70 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Help2Register</RootNamespace>
+    <AssemblyName>Help2Register</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{10C38AE6-0491-4677-BA39-5A2A8C704544}</ProjectGuid>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <NoStdLib>False</NoStdLib>
+    <DebugType>None</DebugType>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>false</DebugSymbols>
+    <SignAssembly>False</SignAssembly>
+    <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..</OutputPath>
+    <Optimize>true</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..</OutputPath>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="MSHelpServices">
+      <HintPath>MSHelpServices.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="register.cs" />
+    <Compile Include="HelperClasses\MergeNamespaceClass.cs" />
+    <Compile Include="HelperClasses\PluginSearchClass.cs" />
+    <Compile Include="HelperClasses\RegistrationClass.cs" />
+    <Compile Include="HelperClasses\XmlValidatorClass.cs" />
+    <Compile Include="HelperClasses\XmlHelperClass.cs" />
+    <Compile Include="ItemClasses\NamespaceItemClass.cs" />
+    <Compile Include="ItemClasses\DocumentItemClass.cs" />
+    <Compile Include="ItemClasses\FilterItemClass.cs" />
+    <Compile Include="ItemClasses\PluginItemClass.cs" />
+    <Compile Include="ItemClasses\ICommonItemClass.cs" />
+    <Compile Include="ItemClasses\ItemEventHandling.cs" />
+    <Compile Include="ItemClasses\NamespacesItemClass.cs" />
+    <Compile Include="ItemClasses\PluginsItemClass.cs" />
+    <Compile Include="HelperClasses\ApplicationHelpers.cs" />
+    <Compile Include="HelperClasses\ResourcesHelper.cs" />
+    <EmbeddedResource Include="String.resources" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="HelperClasses" />
+    <Folder Include="ItemClasses" />
+    <Folder Include="Configuration" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

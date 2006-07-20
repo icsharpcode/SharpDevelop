@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified"
+	targetNamespace="http://www.simmack.de/2006/help2"
+	xmlns="http://www.simmack.de/2006/help2"
+>
 	<xs:annotation><xs:documentation>
 		Help 2.0 Registration Validation Schema
 		Copyright (c) 2005 Mathias Simmack

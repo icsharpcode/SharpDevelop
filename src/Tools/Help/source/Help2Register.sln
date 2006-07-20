@@ -1,0 +1,16 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.1.0.1596
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Help2Register", "Help2Register.csproj", "{10C38AE6-0491-4677-BA39-5A2A8C704544}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{10C38AE6-0491-4677-BA39-5A2A8C704544}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10C38AE6-0491-4677-BA39-5A2A8C704544}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10C38AE6-0491-4677-BA39-5A2A8C704544}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10C38AE6-0491-4677-BA39-5A2A8C704544}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal
