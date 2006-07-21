@@ -10,19 +10,16 @@ using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	/// <summary>
-	/// Description of AbstractParser.
-	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1708:IdentifiersShouldDifferByMoreThanCase")]
 	public abstract class AbstractParser : IParser
 	{
-		protected const  int    minErrDist   = 2;
-		protected const  string errMsgFormat = "-- line {0} col {1}: {2}";  // 0=line, 1=column, 2=text
+		protected const int    MinErrDist   = 2;
+		protected const string ErrMsgFormat = "-- line {0} col {1}: {2}";  // 0=line, 1=column, 2=text
 		
 		protected Errors errors;
 		private ILexer lexer;
 		
-		protected int    errDist = minErrDist;
+		protected int    errDist = MinErrDist;
 		
 		protected CompilationUnit compilationUnit;
 		
@@ -70,7 +67,7 @@ namespace ICSharpCode.NRefactory.Parser
 			
 		protected void SynErr(int n)
 		{
-			if (errDist >= minErrDist) {
+			if (errDist >= MinErrDist) {
 				errors.SynErr(lexer.LookAhead.line, lexer.LookAhead.col, n);
 			}
 			errDist = 0;
@@ -78,7 +75,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected void SemErr(string msg)
 		{
-			if (errDist >= minErrDist) {
+			if (errDist >= MinErrDist) {
 				errors.Error(lexer.Token.line, lexer.Token.col, msg);
 			}
 			errDist = 0;
@@ -94,6 +91,7 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		#region System.IDisposable interface implementation
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
 		public void Dispose()
 		{
 			errors = null;

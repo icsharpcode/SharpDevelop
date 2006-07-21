@@ -88,61 +88,61 @@ namespace NRefactoryToBooConverter
 		
 		B.TypeMemberModifiers ConvertModifier(AttributedNode node, B.TypeMemberModifiers defaultVisibility)
 		{
-			Modifier m = node.Modifier;
+			Modifiers m = node.Modifier;
 			B.TypeMemberModifiers r = B.TypeMemberModifiers.None;
-			if ((m & Modifier.Private) != 0)
+			if ((m & Modifiers.Private) != 0)
 				r |= B.TypeMemberModifiers.Private;
-			if ((m & Modifier.Internal) != 0)
+			if ((m & Modifiers.Internal) != 0)
 				r |= B.TypeMemberModifiers.Internal;
-			if ((m & Modifier.Public) != 0)
+			if ((m & Modifiers.Public) != 0)
 				r |= B.TypeMemberModifiers.Public;
-			if ((m & Modifier.Protected) != 0)
+			if ((m & Modifiers.Protected) != 0)
 				r |= B.TypeMemberModifiers.Protected;
 			if (r == B.TypeMemberModifiers.None)
 				r = defaultVisibility;
 			
-			if ((m & Modifier.Abstract) != 0)
+			if ((m & Modifiers.Abstract) != 0)
 				r |= B.TypeMemberModifiers.Abstract;
-			if ((m & Modifier.Virtual) != 0)
+			if ((m & Modifiers.Virtual) != 0)
 				r |= B.TypeMemberModifiers.Virtual;
-			if ((m & Modifier.Sealed) != 0)
+			if ((m & Modifiers.Sealed) != 0)
 				r |= B.TypeMemberModifiers.Final;
-			if ((m & Modifier.Static) != 0) {
+			if ((m & Modifiers.Static) != 0) {
 				r |= B.TypeMemberModifiers.Static;
 			} else if (currentType != null && currentType.IsStatic) {
 				if (!(node is TypeDeclaration))
 					r |= B.TypeMemberModifiers.Static;
 			}
-			if ((m & Modifier.Override) != 0)
+			if ((m & Modifiers.Override) != 0)
 				r |= B.TypeMemberModifiers.Override;
-			if ((m & Modifier.ReadOnly) != 0 && !(node is PropertyDeclaration)) {
+			if ((m & Modifiers.ReadOnly) != 0 && !(node is PropertyDeclaration)) {
 				r |= B.TypeMemberModifiers.Final;
 			}
-			if ((m & Modifier.Const) != 0) {
+			if ((m & Modifiers.Const) != 0) {
 				r |= B.TypeMemberModifiers.Final | B.TypeMemberModifiers.Static;
 			}
-			if ((m & Modifier.New) != 0) {
+			if ((m & Modifiers.New) != 0) {
 				AddError(node, "shadowing is not supported");
 			}
-			if ((m & Modifier.Partial) != 0) {
+			if ((m & Modifiers.Partial) != 0) {
 				r |= B.TypeMemberModifiers.Partial;
 			}
-			if ((m & Modifier.Extern) != 0) {
+			if ((m & Modifiers.Extern) != 0) {
 				// not necessary in Boo
 			}
-			if ((m & Modifier.Volatile) != 0) {
+			if ((m & Modifiers.Volatile) != 0) {
 				AddError(node, "Volatile modifier is not supported");
 			}
-			if ((m & Modifier.Unsafe) != 0) {
+			if ((m & Modifiers.Unsafe) != 0) {
 				AddError(node, "Unsafe modifier is not supported");
 			}
-			if ((m & Modifier.Overloads) != 0) {
+			if ((m & Modifiers.Overloads) != 0) {
 				// not necessary in Boo
 			}
-			if ((m & Modifier.WithEvents) != 0) {
+			if ((m & Modifiers.WithEvents) != 0) {
 				// not necessary in Boo
 			}
-			if ((m & Modifier.Default) != 0) {
+			if ((m & Modifiers.Default) != 0) {
 				ParametrizedNode parametrizedNode = node as ParametrizedNode;
 				string name = null;
 				if (parametrizedNode != null) {

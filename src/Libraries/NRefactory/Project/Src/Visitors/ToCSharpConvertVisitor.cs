@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
 			base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
-			if ((localVariableDeclaration.Modifier & Modifier.Static) == Modifier.Static) {
+			if ((localVariableDeclaration.Modifier & Modifiers.Static) == Modifiers.Static) {
 				INode parent = localVariableDeclaration.Parent;
 				while (parent != null && !IsTypeLevel(parent)) {
 					parent = parent.Parent;
@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.Visitors
 						if (pos >= 0) {
 							FieldDeclaration field = new FieldDeclaration(null);
 							field.TypeReference = localVariableDeclaration.TypeReference;
-							field.Modifier = Modifier.Static;
+							field.Modifier = Modifiers.Static;
 							field.Fields = localVariableDeclaration.Variables;
 							new PrefixFieldsVisitor(field.Fields, "static_" + GetTypeLevelEntityName(parent) + "_").Run(parent);
 							type.Children.Insert(pos + 1, field);

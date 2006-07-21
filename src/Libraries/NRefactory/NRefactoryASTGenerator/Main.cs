@@ -28,7 +28,7 @@ namespace NRefactoryASTGenerator
 				Debug.WriteLine("did not find output directory");
 				return;
 			}
-			if (!File.Exists(visitorsDir + "IASTVisitor.cs")) {
+			if (!File.Exists(visitorsDir + "AbstractAstTransformer.cs")) {
 				Debug.WriteLine("did not find visitor output directory");
 				return;
 			}
@@ -106,7 +106,7 @@ namespace NRefactoryASTGenerator
 			
 			using (StringWriter writer = new StringWriter()) {
 				new Microsoft.CSharp.CSharpCodeProvider().GenerateCodeFromCompileUnit(ccu, writer, settings);
-				File.WriteAllText(visitorsDir + "IAstVisitor.cs", writer.ToString());
+				File.WriteAllText(visitorsDir + "../IAstVisitor.cs", writer.ToString());
 			}
 			
 			ccu = new CodeCompileUnit();

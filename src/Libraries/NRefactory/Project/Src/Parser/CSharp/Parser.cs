@@ -136,7 +136,7 @@ out attribute);
 #line  293 "cs.ATG" 
 		AttributeSection section;
 		List<AttributeSection> attributes = new List<AttributeSection>();
-		Modifiers m = new Modifiers();
+		ModifierList m = new ModifierList();
 		string qualident;
 		
 		if (la.kind == 87) {
@@ -490,76 +490,76 @@ out attribute);
 
 	void TypeModifier(
 #line  639 "cs.ATG" 
-Modifiers m) {
+ModifierList m) {
 		switch (la.kind) {
 		case 88: {
 			lexer.NextToken();
 
 #line  641 "cs.ATG" 
-			m.Add(Modifier.New, t.Location); 
+			m.Add(Modifiers.New, t.Location); 
 			break;
 		}
 		case 97: {
 			lexer.NextToken();
 
 #line  642 "cs.ATG" 
-			m.Add(Modifier.Public, t.Location); 
+			m.Add(Modifiers.Public, t.Location); 
 			break;
 		}
 		case 96: {
 			lexer.NextToken();
 
 #line  643 "cs.ATG" 
-			m.Add(Modifier.Protected, t.Location); 
+			m.Add(Modifiers.Protected, t.Location); 
 			break;
 		}
 		case 83: {
 			lexer.NextToken();
 
 #line  644 "cs.ATG" 
-			m.Add(Modifier.Internal, t.Location); 
+			m.Add(Modifiers.Internal, t.Location); 
 			break;
 		}
 		case 95: {
 			lexer.NextToken();
 
 #line  645 "cs.ATG" 
-			m.Add(Modifier.Private, t.Location); 
+			m.Add(Modifiers.Private, t.Location); 
 			break;
 		}
 		case 118: {
 			lexer.NextToken();
 
 #line  646 "cs.ATG" 
-			m.Add(Modifier.Unsafe, t.Location); 
+			m.Add(Modifiers.Unsafe, t.Location); 
 			break;
 		}
 		case 48: {
 			lexer.NextToken();
 
 #line  647 "cs.ATG" 
-			m.Add(Modifier.Abstract, t.Location); 
+			m.Add(Modifiers.Abstract, t.Location); 
 			break;
 		}
 		case 102: {
 			lexer.NextToken();
 
 #line  648 "cs.ATG" 
-			m.Add(Modifier.Sealed, t.Location); 
+			m.Add(Modifiers.Sealed, t.Location); 
 			break;
 		}
 		case 106: {
 			lexer.NextToken();
 
 #line  649 "cs.ATG" 
-			m.Add(Modifier.Static, t.Location); 
+			m.Add(Modifiers.Static, t.Location); 
 			break;
 		}
 		case 1: {
 			lexer.NextToken();
 
 #line  650 "cs.ATG" 
-			if (t.val == "partial") { m.Add(Modifier.Partial, t.Location); } else { Error("Unexpected identifier"); } 
+			if (t.val == "partial") { m.Add(Modifiers.Partial, t.Location); } else { Error("Unexpected identifier"); } 
 			break;
 		}
 		default: SynErr(130); break;
@@ -568,7 +568,7 @@ Modifiers m) {
 
 	void TypeDecl(
 #line  318 "cs.ATG" 
-Modifiers m, List<AttributeSection> attributes) {
+ModifierList m, List<AttributeSection> attributes) {
 
 #line  320 "cs.ATG" 
 		TypeReference type;
@@ -580,7 +580,7 @@ Modifiers m, List<AttributeSection> attributes) {
 		if (la.kind == 58) {
 
 #line  326 "cs.ATG" 
-			m.Check(Modifier.Classes); 
+			m.Check(Modifiers.Classes); 
 			lexer.NextToken();
 
 #line  327 "cs.ATG" 
@@ -631,7 +631,7 @@ templates);
 		} else if (StartOf(8)) {
 
 #line  350 "cs.ATG" 
-			m.Check(Modifier.StructsInterfacesEnumsDelegates); 
+			m.Check(Modifiers.StructsInterfacesEnumsDelegates); 
 			if (la.kind == 108) {
 				lexer.NextToken();
 
@@ -942,7 +942,7 @@ out type);
 
 #line  460 "cs.ATG" 
 			List<AttributeSection> attributes = new List<AttributeSection>();
-			Modifiers m = new Modifiers();
+			ModifierList m = new ModifierList();
 			
 			while (la.kind == 18) {
 				AttributeSection(
@@ -997,7 +997,7 @@ out typeRef, false);
 
 #line  484 "cs.ATG" 
 			List<AttributeSection> attributes = new List<AttributeSection>();
-			Modifiers m = new Modifiers();
+			ModifierList m = new ModifierList();
 			
 			while (la.kind == 18) {
 				AttributeSection(
@@ -1315,7 +1315,7 @@ out typeArguments, canBeUnbound);
 
 	void MemberModifiers(
 #line  674 "cs.ATG" 
-Modifiers m) {
+ModifierList m) {
 		while (StartOf(15) || 
 #line  691 "cs.ATG" 
 la.kind == Tokens.Identifier && la.val == "partial") {
@@ -1323,84 +1323,84 @@ la.kind == Tokens.Identifier && la.val == "partial") {
 				lexer.NextToken();
 
 #line  677 "cs.ATG" 
-				m.Add(Modifier.Abstract, t.Location); 
+				m.Add(Modifiers.Abstract, t.Location); 
 			} else if (la.kind == 70) {
 				lexer.NextToken();
 
 #line  678 "cs.ATG" 
-				m.Add(Modifier.Extern, t.Location); 
+				m.Add(Modifiers.Extern, t.Location); 
 			} else if (la.kind == 83) {
 				lexer.NextToken();
 
 #line  679 "cs.ATG" 
-				m.Add(Modifier.Internal, t.Location); 
+				m.Add(Modifiers.Internal, t.Location); 
 			} else if (la.kind == 88) {
 				lexer.NextToken();
 
 #line  680 "cs.ATG" 
-				m.Add(Modifier.New, t.Location); 
+				m.Add(Modifiers.New, t.Location); 
 			} else if (la.kind == 93) {
 				lexer.NextToken();
 
 #line  681 "cs.ATG" 
-				m.Add(Modifier.Override, t.Location); 
+				m.Add(Modifiers.Override, t.Location); 
 			} else if (la.kind == 95) {
 				lexer.NextToken();
 
 #line  682 "cs.ATG" 
-				m.Add(Modifier.Private, t.Location); 
+				m.Add(Modifiers.Private, t.Location); 
 			} else if (la.kind == 96) {
 				lexer.NextToken();
 
 #line  683 "cs.ATG" 
-				m.Add(Modifier.Protected, t.Location); 
+				m.Add(Modifiers.Protected, t.Location); 
 			} else if (la.kind == 97) {
 				lexer.NextToken();
 
 #line  684 "cs.ATG" 
-				m.Add(Modifier.Public, t.Location); 
+				m.Add(Modifiers.Public, t.Location); 
 			} else if (la.kind == 98) {
 				lexer.NextToken();
 
 #line  685 "cs.ATG" 
-				m.Add(Modifier.ReadOnly, t.Location); 
+				m.Add(Modifiers.ReadOnly, t.Location); 
 			} else if (la.kind == 102) {
 				lexer.NextToken();
 
 #line  686 "cs.ATG" 
-				m.Add(Modifier.Sealed, t.Location); 
+				m.Add(Modifiers.Sealed, t.Location); 
 			} else if (la.kind == 106) {
 				lexer.NextToken();
 
 #line  687 "cs.ATG" 
-				m.Add(Modifier.Static, t.Location); 
+				m.Add(Modifiers.Static, t.Location); 
 			} else if (la.kind == 118) {
 				lexer.NextToken();
 
 #line  688 "cs.ATG" 
-				m.Add(Modifier.Unsafe, t.Location); 
+				m.Add(Modifiers.Unsafe, t.Location); 
 			} else if (la.kind == 121) {
 				lexer.NextToken();
 
 #line  689 "cs.ATG" 
-				m.Add(Modifier.Virtual, t.Location); 
+				m.Add(Modifiers.Virtual, t.Location); 
 			} else if (la.kind == 123) {
 				lexer.NextToken();
 
 #line  690 "cs.ATG" 
-				m.Add(Modifier.Volatile, t.Location); 
+				m.Add(Modifiers.Volatile, t.Location); 
 			} else {
 				Expect(1);
 
 #line  692 "cs.ATG" 
-				m.Add(Modifier.Partial, t.Location); 
+				m.Add(Modifiers.Partial, t.Location); 
 			}
 		}
 	}
 
 	void ClassMemberDecl(
 #line  967 "cs.ATG" 
-Modifiers m, List<AttributeSection> attributes) {
+ModifierList m, List<AttributeSection> attributes) {
 
 #line  968 "cs.ATG" 
 		Statement stmt = null; 
@@ -1411,7 +1411,7 @@ m, attributes);
 		} else if (la.kind == 27) {
 
 #line  971 "cs.ATG" 
-			m.Check(Modifier.Destructors); Location startPos = t.Location; 
+			m.Check(Modifiers.Destructors); Location startPos = t.Location; 
 			lexer.NextToken();
 			Expect(1);
 
@@ -1442,7 +1442,7 @@ out stmt);
 
 	void StructMemberDecl(
 #line  697 "cs.ATG" 
-Modifiers m, List<AttributeSection> attributes) {
+ModifierList m, List<AttributeSection> attributes) {
 
 #line  699 "cs.ATG" 
 		string qualident = null;
@@ -1457,7 +1457,7 @@ Modifiers m, List<AttributeSection> attributes) {
 		if (la.kind == 59) {
 
 #line  709 "cs.ATG" 
-			m.Check(Modifier.Constants); 
+			m.Check(Modifiers.Constants); 
 			lexer.NextToken();
 
 #line  710 "cs.ATG" 
@@ -1468,7 +1468,7 @@ out type);
 			Expect(1);
 
 #line  711 "cs.ATG" 
-			FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier | Modifier.Const);
+			FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier | Modifiers.Const);
 			fd.StartLocation = m.GetDeclarationLocation(startPos);
 			VariableDeclaration f = new VariableDeclaration(t.val);
 			fd.Fields.Add(f);
@@ -1505,7 +1505,7 @@ out expr);
 NotVoidPointer()) {
 
 #line  725 "cs.ATG" 
-			m.Check(Modifier.PropertysEventsMethods); 
+			m.Check(Modifiers.PropertysEventsMethods); 
 			Expect(122);
 
 #line  726 "cs.ATG" 
@@ -1576,7 +1576,7 @@ out stmt);
 		} else if (la.kind == 68) {
 
 #line  760 "cs.ATG" 
-			m.Check(Modifier.PropertysEventsMethods); 
+			m.Check(Modifiers.PropertysEventsMethods); 
 			lexer.NextToken();
 
 #line  761 "cs.ATG" 
@@ -1641,7 +1641,7 @@ out addBlock, out removeBlock);
 IdentAndLPar()) {
 
 #line  788 "cs.ATG" 
-			m.Check(Modifier.Constructors | Modifier.StaticConstructors); 
+			m.Check(Modifiers.Constructors | Modifiers.StaticConstructors); 
 			Expect(1);
 
 #line  789 "cs.ATG" 
@@ -1650,7 +1650,7 @@ IdentAndLPar()) {
 			if (StartOf(10)) {
 
 #line  789 "cs.ATG" 
-				m.Check(Modifier.Constructors); 
+				m.Check(Modifiers.Constructors); 
 				FormalParameterList(
 #line  790 "cs.ATG" 
 p);
@@ -1662,7 +1662,7 @@ p);
 			if (la.kind == 9) {
 
 #line  793 "cs.ATG" 
-				m.Check(Modifier.Constructors); 
+				m.Check(Modifiers.Constructors); 
 				ConstructorInitializer(
 #line  794 "cs.ATG" 
 out init);
@@ -1686,7 +1686,7 @@ out stmt);
 		} else if (la.kind == 69 || la.kind == 79) {
 
 #line  804 "cs.ATG" 
-			m.Check(Modifier.Operators);
+			m.Check(Modifiers.Operators);
 			if (m.isNone) Error("at least one modifier must be set"); 
 			bool isImplicit = true;
 			Location startPos = Location.Empty;
@@ -1761,7 +1761,7 @@ out type);
 
 #line  836 "cs.ATG" 
 				OverloadableOperatorType op;
-				m.Check(Modifier.Operators);
+				m.Check(Modifiers.Operators);
 				if (m.isNone) Error("at least one modifier must be set");
 				
 				lexer.NextToken();
@@ -1823,7 +1823,7 @@ out stmt);
 IsVarDecl()) {
 
 #line  870 "cs.ATG" 
-				m.Check(Modifier.Fields); 
+				m.Check(Modifiers.Fields); 
 				FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
 				fd.StartLocation = m.GetDeclarationLocation(startPos); 
 				
@@ -1843,7 +1843,7 @@ variableDeclarators);
 			} else if (la.kind == 110) {
 
 #line  879 "cs.ATG" 
-				m.Check(Modifier.Indexers); 
+				m.Check(Modifiers.Indexers); 
 				lexer.NextToken();
 				Expect(18);
 				FormalParameterList(
@@ -1901,7 +1901,7 @@ out explicitInterface, false);
 					if (la.kind == 20 || la.kind == 23) {
 
 #line  906 "cs.ATG" 
-						m.Check(Modifier.PropertysEventsMethods); 
+						m.Check(Modifiers.PropertysEventsMethods); 
 						if (la.kind == 23) {
 							TypeParameterList(
 #line  908 "cs.ATG" 
@@ -1973,7 +1973,7 @@ out getRegion, out setRegion);
 				} else if (la.kind == 15) {
 
 #line  945 "cs.ATG" 
-					m.Check(Modifier.Indexers); 
+					m.Check(Modifiers.Indexers); 
 					lexer.NextToken();
 					Expect(110);
 					Expect(18);
@@ -2018,7 +2018,7 @@ out getRegion, out setRegion);
 		TypeReference type;
 		
 		AttributeSection section;
-		Modifier mod = Modifier.None;
+		Modifiers mod = Modifiers.None;
 		List<AttributeSection> attributes = new List<AttributeSection>();
 		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
 		string name;
@@ -2039,7 +2039,7 @@ out section);
 			lexer.NextToken();
 
 #line  998 "cs.ATG" 
-			mod = Modifier.New; startLocation = t.Location; 
+			mod = Modifiers.New; startLocation = t.Location; 
 		}
 		if (
 #line  1001 "cs.ATG" 
@@ -2346,7 +2346,7 @@ out ParameterDeclarationExpression p) {
 
 #line  611 "cs.ATG" 
 		TypeReference type;
-		ParamModifier mod = ParamModifier.In;
+		ParameterModifiers mod = ParameterModifiers.In;
 		Location start = t.Location;
 		
 		if (la.kind == 92 || la.kind == 99) {
@@ -2354,12 +2354,12 @@ out ParameterDeclarationExpression p) {
 				lexer.NextToken();
 
 #line  617 "cs.ATG" 
-				mod = ParamModifier.Ref; 
+				mod = ParameterModifiers.Ref; 
 			} else {
 				lexer.NextToken();
 
 #line  618 "cs.ATG" 
-				mod = ParamModifier.Out; 
+				mod = ParameterModifiers.Out; 
 			}
 		}
 		Type(
@@ -2384,41 +2384,41 @@ out type);
 		Expect(1);
 
 #line  626 "cs.ATG" 
-		p = new ParameterDeclarationExpression(type, t.val, ParamModifier.Params); 
+		p = new ParameterDeclarationExpression(type, t.val, ParameterModifiers.Params); 
 	}
 
 	void AccessorModifiers(
 #line  629 "cs.ATG" 
-out Modifiers m) {
+out ModifierList m) {
 
 #line  630 "cs.ATG" 
-		m = new Modifiers(); 
+		m = new ModifierList(); 
 		if (la.kind == 95) {
 			lexer.NextToken();
 
 #line  632 "cs.ATG" 
-			m.Add(Modifier.Private, t.Location); 
+			m.Add(Modifiers.Private, t.Location); 
 		} else if (la.kind == 96) {
 			lexer.NextToken();
 
 #line  633 "cs.ATG" 
-			m.Add(Modifier.Protected, t.Location); 
+			m.Add(Modifiers.Protected, t.Location); 
 			if (la.kind == 83) {
 				lexer.NextToken();
 
 #line  634 "cs.ATG" 
-				m.Add(Modifier.Internal, t.Location); 
+				m.Add(Modifiers.Internal, t.Location); 
 			}
 		} else if (la.kind == 83) {
 			lexer.NextToken();
 
 #line  635 "cs.ATG" 
-			m.Add(Modifier.Internal, t.Location); 
+			m.Add(Modifiers.Internal, t.Location); 
 			if (la.kind == 96) {
 				lexer.NextToken();
 
 #line  636 "cs.ATG" 
-				m.Add(Modifier.Protected, t.Location); 
+				m.Add(Modifiers.Protected, t.Location); 
 			}
 		} else SynErr(157);
 	}
@@ -2758,7 +2758,7 @@ out PropertyGetRegion getBlock, out PropertySetRegion setBlock) {
 		AttributeSection section;
 		getBlock = null;
 		setBlock = null; 
-		Modifiers modifiers = null;
+		ModifierList modifiers = null;
 		
 		while (la.kind == 18) {
 			AttributeSection(
@@ -3077,7 +3077,7 @@ IsLabel()) {
 out type);
 
 #line  1357 "cs.ATG" 
-			LocalVariableDeclaration var = new LocalVariableDeclaration(type, Modifier.Const); string ident = null; var.StartLocation = t.Location; 
+			LocalVariableDeclaration var = new LocalVariableDeclaration(type, Modifiers.Const); string ident = null; var.StartLocation = t.Location; 
 			Expect(1);
 
 #line  1358 "cs.ATG" 

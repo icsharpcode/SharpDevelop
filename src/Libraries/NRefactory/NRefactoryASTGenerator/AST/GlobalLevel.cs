@@ -71,10 +71,10 @@ namespace NRefactoryASTGenerator.Ast
 		public Using(string name, TypeReference alias) {}
 	}
 	
-	[IncludeMember("public UsingDeclaration(string nameSpace) : this(nameSpace, null) {}")]
-	[IncludeMember("public UsingDeclaration(string nameSpace, TypeReference alias) {" +
+	[IncludeMember("public UsingDeclaration(string @namespace) : this(@namespace, null) {}")]
+	[IncludeMember("public UsingDeclaration(string @namespace, TypeReference alias) {" +
 	               " usings = new List<Using>(1);" +
-	               " usings.Add(new Using(nameSpace, alias)); " +
+	               " usings.Add(new Using(@namespace, alias)); " +
 	               "}")]
 	class UsingDeclaration : AbstractNode
 	{

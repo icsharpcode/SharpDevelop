@@ -65,8 +65,8 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			// make constructor public if visiblity is not set (unless constructor is static)
-			if ((constructorDeclaration.Modifier & (Modifier.Visibility | Modifier.Static)) == 0)
-				constructorDeclaration.Modifier = Modifier.Public;
+			if ((constructorDeclaration.Modifier & (Modifiers.Visibility | Modifiers.Static)) == 0)
+				constructorDeclaration.Modifier = Modifiers.Public;
 			
 			// MyBase.New() and MyClass.New() calls inside the constructor are converted to :base() and :this()
 			BlockStatement body = constructorDeclaration.Body;
@@ -105,7 +105,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			MethodDeclaration method = new MethodDeclaration(declareDeclaration.Name, declareDeclaration.Modifier,
 			                                                 declareDeclaration.TypeReference, declareDeclaration.Parameters,
 			                                                 declareDeclaration.Attributes);
-			method.Modifier |= Modifier.Extern | Modifier.Static;
+			method.Modifier |= Modifiers.Extern | Modifiers.Static;
 			Attribute att = new Attribute("DllImport", null, null);
 			att.PositionalArguments.Add(CreateStringLiteral(declareDeclaration.Library));
 			if (declareDeclaration.Alias.Length > 0) {
@@ -144,12 +144,12 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
-			if ((methodDeclaration.Modifier & Modifier.Visibility) == 0)
-				methodDeclaration.Modifier |= Modifier.Public;
+			if ((methodDeclaration.Modifier & Modifiers.Visibility) == 0)
+				methodDeclaration.Modifier |= Modifiers.Public;
 			
 			if ("Finalize".Equals(methodDeclaration.Name, StringComparison.InvariantCultureIgnoreCase)
 			    && methodDeclaration.Parameters.Count == 0
-			    && methodDeclaration.Modifier == (Modifier.Protected | Modifier.Override)
+			    && methodDeclaration.Modifier == (Modifiers.Protected | Modifiers.Override)
 			    && methodDeclaration.Body.Children.Count == 1)
 			{
 				TryCatchStatement tcs = methodDeclaration.Body.Children[0] as TryCatchStatement;
@@ -168,7 +168,7 @@ namespace ICSharpCode.NRefactory.Visitors
 						    && (ie.TargetObject as FieldReferenceExpression).TargetObject is BaseReferenceExpression
 						    && "Finalize".Equals((ie.TargetObject as FieldReferenceExpression).FieldName, StringComparison.InvariantCultureIgnoreCase))
 						{
-							DestructorDeclaration des = new DestructorDeclaration("Destructor", Modifier.None, methodDeclaration.Attributes);
+							DestructorDeclaration des = new DestructorDeclaration("Destructor", Modifiers.None, methodDeclaration.Attributes);
 							ReplaceCurrentNode(des);
 							des.Body = (BlockStatement)tcs.StatementBlock;
 							return base.VisitDestructorDeclaration(des, data);
@@ -177,13 +177,13 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 			}
 			
-			if ((methodDeclaration.Modifier & (Modifier.Static | Modifier.Extern)) == Modifier.Static
+			if ((methodDeclaration.Modifier & (Modifiers.Static | Modifiers.Extern)) == Modifiers.Static
 			    && methodDeclaration.Body.Children.Count == 0)
 			{
 				foreach (AttributeSection sec in methodDeclaration.Attributes) {
 					foreach (Attribute att in sec.Attributes) {
 						if ("DllImport".Equals(att.Name, StringComparison.InvariantCultureIgnoreCase)) {
-							methodDeclaration.Modifier |= Modifier.Extern;
+							methodDeclaration.Modifier |= Modifiers.Extern;
 							methodDeclaration.Body = null;
 						}
 					}
@@ -268,14 +268,14 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
-			fieldDeclaration.Modifier &= ~Modifier.Dim; // remove "Dim" flag
+			fieldDeclaration.Modifier &= ~Modifiers.Dim; // remove "Dim" flag
 			return base.VisitFieldDeclaration(fieldDeclaration, data);
 		}
 		
 		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
-			if ((propertyDeclaration.Modifier & Modifier.Visibility) == 0)
-				propertyDeclaration.Modifier = Modifier.Public;
+			if ((propertyDeclaration.Modifier & Modifiers.Visibility) == 0)
+				propertyDeclaration.Modifier = Modifiers.Public;
 			
 			if (propertyDeclaration.HasSetRegion) {
 				string from = "Value";
@@ -312,6 +312,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		static volatile Dictionary<string, Expression> constantTable;
 		static volatile Dictionary<string, Expression> methodTable;
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1802:UseLiteralsWhereAppropriate")]
 		public static readonly string VBAssemblyName = "Microsoft.VisualBasic, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a";
 		
 		static Dictionary<string, Expression> CreateDictionary(params string[] classNames)

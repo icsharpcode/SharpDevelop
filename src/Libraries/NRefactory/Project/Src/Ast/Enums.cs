@@ -10,7 +10,7 @@ using System;
 namespace ICSharpCode.NRefactory.Ast
 {
 	[Flags]
-	public enum Modifier // TODO: Rename to Modifiers
+	public enum Modifiers
 	{
 		None      = 0x0000,
 		
@@ -107,7 +107,7 @@ namespace ICSharpCode.NRefactory.Ast
 	}
 	
 	[Flags]
-	public enum ParamModifier // TODO: Rename to ParamModifiers
+	public enum ParameterModifiers
 	{
 		// Values must be the same as in SharpDevelop's ParameterModifiers
 		None = 0,

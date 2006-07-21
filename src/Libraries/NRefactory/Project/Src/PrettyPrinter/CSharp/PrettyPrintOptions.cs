@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	public class PrettyPrintOptions : AbstractPrettyPrintOptions
 	{
 		#region BraceStyle
-		BraceStyle nameSpaceBraceStyle = BraceStyle.NextLine;
+		BraceStyle namespaceBraceStyle = BraceStyle.NextLine;
 		BraceStyle classBraceStyle     = BraceStyle.NextLine;
 		BraceStyle interfaceBraceStyle = BraceStyle.NextLine;
 		BraceStyle structBraceStyle    = BraceStyle.NextLine;
@@ -55,12 +55,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public BraceStyle NameSpaceBraceStyle {
+		public BraceStyle NamespaceBraceStyle {
 			get {
-				return nameSpaceBraceStyle;
+				return namespaceBraceStyle;
 			}
 			set {
-				nameSpaceBraceStyle = value;
+				namespaceBraceStyle = value;
 			}
 		}
 		
@@ -468,7 +468,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		bool spacesAfterComma     = true;
 		bool spacesBeforeComma    = false;
 		bool spacesAfterSemicolon = true;
-		bool spacesAfterTypeCast  = false;
+		bool spacesAfterTypecast  = false;
 		
 		public bool SpacesAfterComma {
 			get {
@@ -486,12 +486,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				spacesAfterSemicolon = value;
 			}
 		}
-		public bool SpacesAfterTypeCast {
+		public bool SpacesAfterTypecast {
 			get {
-				return spacesAfterTypeCast;
+				return spacesAfterTypecast;
 			}
 			set {
-				spacesAfterTypeCast = value;
+				spacesAfterTypecast = value;
 			}
 		}
 		public bool SpacesBeforeComma {

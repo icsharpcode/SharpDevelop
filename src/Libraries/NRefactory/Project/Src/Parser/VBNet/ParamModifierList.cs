@@ -9,26 +9,26 @@ using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Parser.VB
 {
-	internal class ParamModifiers
+	internal class ParamModifierList
 	{
-		ParamModifier cur;
+		ParameterModifiers cur;
 		Parser   parser;
 		
-		public ParamModifier Modifier {
+		public ParameterModifiers Modifier {
 			get {
 				return cur;
 			}
 		}
 		
-		public ParamModifiers(Parser parser)
+		public ParamModifierList(Parser parser)
 		{
 			this.parser = parser;
-			cur         = ParamModifier.None;
+			cur         = ParameterModifiers.None;
 		}
 		
-		public bool isNone { get { return cur == ParamModifier.None; } }
+		public bool isNone { get { return cur == ParameterModifiers.None; } }
 		
-		public void Add(ParamModifier m) 
+		public void Add(ParameterModifiers m) 
 		{
 			if ((cur & m) == 0) {
 				cur |= m;
@@ -37,15 +37,15 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 		}
 		
-		public void Add(ParamModifiers m)
+		public void Add(ParamModifierList m)
 		{
 			Add(m.cur);
 		}
 		
 		public void Check()
 		{
-			if((cur & ParamModifier.In) != 0 && 
-			   (cur & ParamModifier.Ref) != 0) {
+			if((cur & ParameterModifiers.In) != 0 && 
+			   (cur & ParameterModifiers.Ref) != 0) {
 				parser.Error("ByRef and ByVal are not allowed at the same time.");
 			}
 		}

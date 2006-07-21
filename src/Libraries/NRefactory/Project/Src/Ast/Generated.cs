@@ -353,7 +353,7 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		List<AttributeSection> attributes;
 		
-		Modifier modifier;
+		Modifiers modifier;
 		
 		public List<AttributeSection> Attributes {
 			get {
@@ -364,7 +364,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public Modifier Modifier {
+		public Modifiers Modifier {
 			get {
 				return modifier;
 			}
@@ -377,7 +377,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			Attributes = attributes;
 		}
 		
-		protected AttributedNode(Modifier modifier, List<AttributeSection> attributes) {
+		protected AttributedNode(Modifiers modifier, List<AttributeSection> attributes) {
 			Modifier = modifier;
 			Attributes = attributes;
 		}
@@ -855,13 +855,13 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public ConstructorDeclaration(string name, Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : 
+		public ConstructorDeclaration(string name, Modifiers modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : 
 				base(modifier, attributes, name, parameters) {
 			constructorInitializer = ConstructorInitializer.Null;
 			body = BlockStatement.Null;
 		}
 		
-		public ConstructorDeclaration(string name, Modifier modifier, List<ParameterDeclarationExpression> parameters, ConstructorInitializer constructorInitializer, List<AttributeSection> attributes) : 
+		public ConstructorDeclaration(string name, Modifiers modifier, List<ParameterDeclarationExpression> parameters, ConstructorInitializer constructorInitializer, List<AttributeSection> attributes) : 
 				base(modifier, attributes, name, parameters) {
 			ConstructorInitializer = constructorInitializer;
 			body = BlockStatement.Null;
@@ -1029,7 +1029,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public DeclareDeclaration(string name, Modifier modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string library, string alias, CharsetModifier charset) : 
+		public DeclareDeclaration(string name, Modifiers modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string library, string alias, CharsetModifier charset) : 
 				base(modifier, attributes, name, parameters) {
 			TypeReference = typeReference;
 			Library = library;
@@ -1119,7 +1119,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public DelegateDeclaration(Modifier modifier, List<AttributeSection> attributes) : 
+		public DelegateDeclaration(Modifiers modifier, List<AttributeSection> attributes) : 
 				base(attributes) {
 			Modifier = modifier;
 			name = "?";
@@ -1163,7 +1163,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public DestructorDeclaration(string name, Modifier modifier, List<AttributeSection> attributes) : 
+		public DestructorDeclaration(string name, Modifiers modifier, List<AttributeSection> attributes) : 
 				base(attributes) {
 			Name = name;
 			Modifier = modifier;
@@ -1551,7 +1551,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public EventDeclaration(TypeReference typeReference, string name, Modifier modifier, List<AttributeSection> attributes, List<ParameterDeclarationExpression> parameters) : 
+		public EventDeclaration(TypeReference typeReference, string name, Modifiers modifier, List<AttributeSection> attributes, List<ParameterDeclarationExpression> parameters) : 
 				base(modifier, attributes, name, parameters) {
 			TypeReference = typeReference;
 			interfaceImplementations = new List<InterfaceImplementation>();
@@ -1562,7 +1562,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			bodyEnd = Location.Empty;
 		}
 		
-		public EventDeclaration(TypeReference typeReference, Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string name, List<InterfaceImplementation> interfaceImplementations) : 
+		public EventDeclaration(TypeReference typeReference, Modifiers modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string name, List<InterfaceImplementation> interfaceImplementations) : 
 				base(modifier, attributes, name, parameters) {
 			TypeReference = typeReference;
 			InterfaceImplementations = interfaceImplementations;
@@ -1785,7 +1785,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			fields = new List<VariableDeclaration>();
 		}
 		
-		public FieldDeclaration(List<AttributeSection> attributes, TypeReference typeReference, Modifier modifier) : 
+		public FieldDeclaration(List<AttributeSection> attributes, TypeReference typeReference, Modifiers modifier) : 
 				base(attributes) {
 			TypeReference = typeReference;
 			Modifier = modifier;
@@ -2369,7 +2369,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public IndexerDeclaration(Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : 
+		public IndexerDeclaration(Modifiers modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : 
 				base(attributes) {
 			Modifier = modifier;
 			Parameters = parameters;
@@ -2381,7 +2381,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			setRegion = PropertySetRegion.Null;
 		}
 		
-		public IndexerDeclaration(TypeReference typeReference, List<ParameterDeclarationExpression> parameters, Modifier modifier, List<AttributeSection> attributes) : 
+		public IndexerDeclaration(TypeReference typeReference, List<ParameterDeclarationExpression> parameters, Modifiers modifier, List<AttributeSection> attributes) : 
 				base(attributes) {
 			TypeReference = typeReference;
 			Parameters = parameters;
@@ -2680,7 +2680,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public MethodDeclaration(string name, Modifier modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : 
+		public MethodDeclaration(string name, Modifiers modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : 
 				base(modifier, attributes, name, parameters) {
 			TypeReference = typeReference;
 			body = BlockStatement.Null;
@@ -2852,13 +2852,13 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public OperatorDeclaration(Modifier modifier, List<AttributeSection> attributes, List<ParameterDeclarationExpression> parameters, TypeReference typeReference, ConversionType conversionType) : 
+		public OperatorDeclaration(Modifiers modifier, List<AttributeSection> attributes, List<ParameterDeclarationExpression> parameters, TypeReference typeReference, ConversionType conversionType) : 
 				base(null, modifier, typeReference, parameters, attributes) {
 			ConversionType = conversionType;
 			returnTypeAttributes = new List<AttributeSection>();
 		}
 		
-		public OperatorDeclaration(Modifier modifier, List<AttributeSection> attributes, List<ParameterDeclarationExpression> parameters, TypeReference typeReference, OverloadableOperatorType overloadableOperator) : 
+		public OperatorDeclaration(Modifiers modifier, List<AttributeSection> attributes, List<ParameterDeclarationExpression> parameters, TypeReference typeReference, OverloadableOperatorType overloadableOperator) : 
 				base(null, modifier, typeReference, parameters, attributes) {
 			OverloadableOperator = overloadableOperator;
 			returnTypeAttributes = new List<AttributeSection>();
@@ -2927,7 +2927,7 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		TypeReference typeReference;
 		
-		ParamModifier paramModifier;
+		ParameterModifiers paramModifier;
 		
 		Expression defaultValue;
 		
@@ -2958,7 +2958,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public ParamModifier ParamModifier {
+		public ParameterModifiers ParamModifier {
 			get {
 				return paramModifier;
 			}
@@ -2984,7 +2984,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			defaultValue = Expression.Null;
 		}
 		
-		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParamModifier paramModifier) {
+		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParameterModifiers paramModifier) {
 			TypeReference = typeReference;
 			ParameterName = parameterName;
 			ParamModifier = paramModifier;
@@ -2992,7 +2992,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			defaultValue = Expression.Null;
 		}
 		
-		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParamModifier paramModifier, Expression defaultValue) {
+		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParameterModifiers paramModifier, Expression defaultValue) {
 			TypeReference = typeReference;
 			ParameterName = parameterName;
 			ParamModifier = paramModifier;
@@ -3034,14 +3034,14 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		protected ParametrizedNode(Modifier modifier, List<AttributeSection> attributes, string name, List<ParameterDeclarationExpression> parameters) : 
+		protected ParametrizedNode(Modifiers modifier, List<AttributeSection> attributes, string name, List<ParameterDeclarationExpression> parameters) : 
 				base(attributes) {
 			Modifier = modifier;
 			Name = name;
 			Parameters = parameters;
 		}
 		
-		protected ParametrizedNode(Modifier modifier, List<AttributeSection> attributes) : 
+		protected ParametrizedNode(Modifiers modifier, List<AttributeSection> attributes) : 
 				base(attributes) {
 			Modifier = modifier;
 			name = "";
@@ -3183,7 +3183,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public PropertyDeclaration(Modifier modifier, List<AttributeSection> attributes, string name, List<ParameterDeclarationExpression> parameters) : 
+		public PropertyDeclaration(Modifiers modifier, List<AttributeSection> attributes, string name, List<ParameterDeclarationExpression> parameters) : 
 				base(modifier, attributes, name, parameters) {
 			interfaceImplementations = new List<InterfaceImplementation>();
 			typeReference = TypeReference.Null;
@@ -3206,13 +3206,13 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 		
 
-		public PropertyDeclaration(string name, TypeReference typeReference, Modifier modifier, List<AttributeSection> attributes) : this(modifier, attributes, name, null)
+		public PropertyDeclaration(string name, TypeReference typeReference, Modifiers modifier, List<AttributeSection> attributes) : this(modifier, attributes, name, null)
 		{
 			this.TypeReference = typeReference;
-			if ((modifier & Modifier.ReadOnly) != Modifier.ReadOnly) {
+			if ((modifier & Modifiers.ReadOnly) != Modifiers.ReadOnly) {
 				this.SetRegion = new PropertySetRegion(null, null);
 			}
-			if ((modifier & Modifier.WriteOnly) != Modifier.WriteOnly) {
+			if ((modifier & Modifiers.WriteOnly) != Modifiers.WriteOnly) {
 				this.GetRegion = new PropertyGetRegion(null, null);
 			}
 		}
@@ -3900,7 +3900,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public TypeDeclaration(Modifier modifier, List<AttributeSection> attributes) : 
+		public TypeDeclaration(Modifiers modifier, List<AttributeSection> attributes) : 
 				base(attributes) {
 			Modifier = modifier;
 			name = "";
@@ -4203,9 +4203,9 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 			Usings = usings;
 		}
 		
-public UsingDeclaration(string nameSpace) : this(nameSpace, null) {}
+public UsingDeclaration(string @namespace) : this(@namespace, null) {}
 		
-public UsingDeclaration(string nameSpace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(nameSpace, alias)); }
+public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitUsingDeclaration(this, data);

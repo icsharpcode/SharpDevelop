@@ -101,7 +101,7 @@ namespace NRefactoryToBooConverter
 					break;
 				case ClassType.Module:
 					typeDef = new B.ClassDefinition(GetLexicalInfo(typeDeclaration));
-					typeDeclaration.Modifier |= Modifier.Static;
+					typeDeclaration.Modifier |= Modifiers.Static;
 					break;
 				default:
 					AddError(typeDeclaration, "Unknown class type.");

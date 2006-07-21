@@ -73,34 +73,34 @@ namespace ICSharpCode.NRefactory.Visitors
 		}
 		
 		// FIXME: map all modifiers correctly
-		static MemberAttributes ConvMemberAttributes(Modifier modifier)
+		static MemberAttributes ConvMemberAttributes(Modifiers modifier)
 		{
 			MemberAttributes attr = (MemberAttributes)0;
 			
-			if ((modifier & Modifier.Abstract) != 0)
+			if ((modifier & Modifiers.Abstract) != 0)
 				attr |=  MemberAttributes.Abstract;
-			if ((modifier & Modifier.Const) != 0)
+			if ((modifier & Modifiers.Const) != 0)
 				attr |=  MemberAttributes.Const;
-			if ((modifier & Modifier.Sealed) != 0)
+			if ((modifier & Modifiers.Sealed) != 0)
 				attr |=  MemberAttributes.Final;
-			if ((modifier & Modifier.New) != 0)
+			if ((modifier & Modifiers.New) != 0)
 				attr |=  MemberAttributes.New;
-			if ((modifier & Modifier.Virtual) != 0)
+			if ((modifier & Modifiers.Virtual) != 0)
 				attr |=  MemberAttributes.Overloaded;
-			if ((modifier & Modifier.Override) != 0)
+			if ((modifier & Modifiers.Override) != 0)
 				attr |=  MemberAttributes.Override;
-			if ((modifier & Modifier.Static) != 0)
+			if ((modifier & Modifiers.Static) != 0)
 				attr |=  MemberAttributes.Static;
 			
-			if ((modifier & Modifier.Private) != 0)
+			if ((modifier & Modifiers.Private) != 0)
 				attr |=  MemberAttributes.Private;
-			else if ((modifier & Modifier.Public) != 0)
+			else if ((modifier & Modifiers.Public) != 0)
 				attr |=  MemberAttributes.Public;
-			else if ((modifier & Modifier.Internal) != 0 && (modifier & Modifier.Protected) != 0)
+			else if ((modifier & Modifiers.Internal) != 0 && (modifier & Modifiers.Protected) != 0)
 				attr |=  MemberAttributes.FamilyOrAssembly;
-			else if ((modifier & Modifier.Internal) != 0)
+			else if ((modifier & Modifiers.Internal) != 0)
 				attr |=  MemberAttributes.Assembly;
-			else if ((modifier & Modifier.Protected) != 0)
+			else if ((modifier & Modifiers.Protected) != 0)
 				attr |=  MemberAttributes.Family;
 			
 			return attr;
@@ -200,7 +200,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			for (int i = 0; i < fieldDeclaration.Fields.Count; ++i) {
 				VariableDeclaration field = (VariableDeclaration)fieldDeclaration.Fields[i];
 				
-				if ((fieldDeclaration.Modifier & Modifier.WithEvents) != 0) {
+				if ((fieldDeclaration.Modifier & Modifiers.WithEvents) != 0) {
 					//this.withEventsFields.Add(field);
 				}
 				TypeReference fieldType = fieldDeclaration.GetTypeForField(i);

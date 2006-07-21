@@ -200,7 +200,7 @@ namespace ICSharpCode.FormsDesigner
 			CompilationUnit combinedCu = new CompilationUnit();
 			NamespaceDeclaration nsDecl = new NamespaceDeclaration(formClass.Namespace);
 			combinedCu.AddChild(nsDecl);
-			TypeDeclaration formDecl = new TypeDeclaration(Modifier.Public, null);
+			TypeDeclaration formDecl = new TypeDeclaration(Modifiers.Public, null);
 			nsDecl.AddChild(formDecl);
 			formDecl.Name = formClass.Name;
 			foreach (KeyValuePair<string, CompilationUnit> entry in compilationUnits) {

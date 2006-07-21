@@ -23,7 +23,7 @@
     <FileAlignment>4096</FileAlignment>
     <PreBuildEvent>..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe</PreBuildEvent>
     <RunCodeAnalysis>False</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Design#CA1002;-Microsoft.Design#CA1051;-Microsoft.Design#CA1062;-Microsoft.Globalization#CA1303;-Microsoft.Globalization#CA1305;-Microsoft.Naming#CA1704;-Microsoft.Performance#CA1800;-Microsoft.Performance#CA1805;-Microsoft.Usage#CA2211;-Microsoft.Usage#CA2227</CodeAnalysisRules>
+    <CodeAnalysisRules>-Microsoft.Design#CA1002;-Microsoft.Design#CA1020;-Microsoft.Design#CA1051;-Microsoft.Design#CA1062;-Microsoft.Globalization#CA1303;-Microsoft.Globalization#CA1305;-Microsoft.Naming#CA1704;-Microsoft.Performance#CA1800;-Microsoft.Performance#CA1805;-Microsoft.Usage#CA2211;-Microsoft.Usage#CA2227</CodeAnalysisRules>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Optimize>False</Optimize>
@@ -76,13 +76,12 @@
     </Compile>
     <Compile Include="Src\Parser\CSharp\CSharpParser.cs" />
     <Compile Include="Src\Parser\CSharp\Parser.cs" />
-    <Compile Include="Src\Parser\VBNet\ParamModifier.cs" />
     <Compile Include="Src\Parser\VBNet\Parser.cs" />
     <Compile Include="Src\Parser\VBNet\VBNetParser.cs" />
     <Compile Include="Src\Parser\AbstractParser.cs" />
     <Compile Include="Src\Parser\Errors.cs" />
     <Compile Include="Src\Parser\IParser.cs" />
-    <Compile Include="Src\Parser\Modifiers.cs" />
+    <Compile Include="Src\Parser\ModifierList.cs" />
     <Compile Include="Src\PrettyPrinter\CSharp\CSharpOutputVisitor.cs" />
     <Compile Include="Src\PrettyPrinter\CSharp\OutputFormatter.cs" />
     <Compile Include="Src\PrettyPrinter\CSharp\PrettyPrintOptions.cs" />
@@ -122,13 +121,12 @@
     <Compile Include="Src\Ast\INode.cs" />
     <Compile Include="Src\Ast\INullable.cs" />
     <Compile Include="Src\Ast\TypeReference.cs" />
+    <Compile Include="Src\Parser\VBNet\ParamModifierList.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />
     <Content Include="Src\Lexer\VBNet\KeywordList.txt" />
     <Folder Include="Src\Parser" />
-    <Folder Include="Src\Parser\AST" />
-    <Folder Include="Src\Parser\AST\General" />
     <Folder Include="Src\Parser\CSharp" />
     <Content Include="Src\Parser\CSharp\cs.ATG" />
     <Content Include="Src\Parser\CSharp\trace.txt" />
@@ -142,7 +140,6 @@
     <Content Include="Src\Parser\Frames\trace.txt" />
     <Folder Include="Src\Parser\VBNet" />
     <Content Include="Src\Parser\VBNet\VBNET.ATG" />
-    <Folder Include="Src\Parser\Visitors" />
     <Content Include="Src\Parser\gen.bat" />
     <Folder Include="Src\PrettyPrinter" />
     <Folder Include="Src\PrettyPrinter\CSharp" />

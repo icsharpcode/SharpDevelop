@@ -318,7 +318,7 @@ ImportClause<out Using u>
 /* 6.4.2 */
 NamespaceMemberDecl
 	(.
-		Modifiers m = new Modifiers();
+		ModifierList m = new ModifierList();
 		AttributeSection section;
 		List<AttributeSection> attributes = new List<AttributeSection>();
 		string qualident;
@@ -393,12 +393,12 @@ TypeParameterConstraints<TemplateDefinition template>
 .
 
 /* 6.4.2 */
-NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
+NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 			(.
 				TypeReference typeRef = null;
 				List<TypeReference> baseInterfaces = null;
 			.) =
-	(. m.Check(Modifier.Classes); .)
+	(. m.Check(Modifiers.Classes); .)
 	/* Spec, 7.5 */
 	"Class"
 					(. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
@@ -420,7 +420,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 	.)
 	| "Module"
 		(.
-			m.Check(Modifier.VBModules);
+			m.Check(Modifiers.VBModules);
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
@@ -436,7 +436,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 	.)
 	| "Structure"
 		(.
-			m.Check(Modifier.VBStructures);
+			m.Check(Modifiers.VBStructures);
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
@@ -455,7 +455,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 	| /* 7.4 */
 	"Enum"
 		(.
-			m.Check(Modifier.VBEnums);
+			m.Check(Modifiers.VBEnums);
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 			newType.StartLocation = m.GetDeclarationLocation(t.Location);
 			compilationUnit.AddChild(newType);
@@ -474,7 +474,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 	| /* 7.8 */
 	"Interface"
 		(.
-			m.Check(Modifier.VBInterfacs);
+			m.Check(Modifiers.VBInterfacs);
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 			newType.StartLocation = m.GetDeclarationLocation(t.Location);
 			compilationUnit.AddChild(newType);
@@ -493,7 +493,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 	| /* 7.10 */
 	"Delegate"
 	(.
-		m.Check(Modifier.VBDelegates);
+		m.Check(Modifiers.VBDelegates);
 		DelegateDeclaration delegateDeclr = new DelegateDeclaration(m.Modifier, attributes);
 		delegateDeclr.ReturnType = new TypeReference("", "System.Void");
 		delegateDeclr.StartLocation = m.GetDeclarationLocation(t.Location);
@@ -526,7 +526,7 @@ ClassBody<TypeDeclaration newType>
 	(. AttributeSection section; .) =
 	{
 		(.List<AttributeSection> attributes = new List<AttributeSection>();
-			Modifiers m = new Modifiers();
+			ModifierList m = new ModifierList();
 		.)
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
 		{ MemberModifier<m> }
@@ -540,7 +540,7 @@ StructureBody<TypeDeclaration newType>
 	(. AttributeSection section; .) =
 	{
 		(.List<AttributeSection> attributes = new List<AttributeSection>();
-			Modifiers m = new Modifiers();
+			ModifierList m = new ModifierList();
 		.)
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
 		{ MemberModifier<m> }
@@ -555,7 +555,7 @@ ModuleBody<TypeDeclaration newType>
 	(. AttributeSection section; .) =
 	{
 		(.List<AttributeSection> attributes = new List<AttributeSection>();
-			Modifiers m = new Modifiers();
+			ModifierList m = new ModifierList();
 		.)
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
 		{ MemberModifier<m> }
@@ -588,7 +588,7 @@ InterfaceMemberDecl
 		List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 		List<TemplateDefinition> templates = new List<TemplateDefinition>();
 		AttributeSection section, returnTypeAttributeSection = null;
-		Modifiers mod = new Modifiers();
+		ModifierList mod = new ModifierList();
 		List<AttributeSection> attributes = new List<AttributeSection>();
 		string name;
 	.) =
@@ -598,7 +598,7 @@ InterfaceMemberDecl
 	{ MemberModifier<mod> }
 	(
 		"Event"
-		(. mod.Check(Modifier.VBInterfaceEvents); .)
+		(. mod.Check(Modifiers.VBInterfaceEvents); .)
 		Identifier (. name = t.val; .)
 		[ "(" [ FormalParameterList<p> ] ")" ]
 		[ "As" TypeName<out type> ]
@@ -610,7 +610,7 @@ InterfaceMemberDecl
 		.)
 		|
 		"Sub"
-		(. mod.Check(Modifier.VBInterfaceMethods); .)
+		(. mod.Check(Modifiers.VBInterfaceMethods); .)
 		Identifier (. name = t.val; .)
 		TypeParameterList<templates>
 		[ "(" [ FormalParameterList<p> ] ")" ]
@@ -624,7 +624,7 @@ InterfaceMemberDecl
 		.)
 		|
 		"Function"
-		(. mod.Check(Modifier.VBInterfaceMethods); .)
+		(. mod.Check(Modifiers.VBInterfaceMethods); .)
 		Identifier (. name = t.val; .)
 		TypeParameterList<templates>
 		[ "(" [ FormalParameterList<p> ] ")" ]
@@ -645,7 +645,7 @@ InterfaceMemberDecl
 		EOL
 		|
 		"Property"
-		(. mod.Check(Modifier.VBInterfaceProperties); .)
+		(. mod.Check(Modifiers.VBInterfaceProperties); .)
 		Identifier	(. name = t.val;  .)
 		[ "(" [ FormalParameterList<p> ] ")" ]
 		[ "As" TypeName<out type> ]
@@ -685,7 +685,7 @@ EnumMemberDecl<out FieldDeclaration f>
 	EOL
 	.
 
-ClassMemberDecl<Modifiers m, List<AttributeSection> attributes> =
+ClassMemberDecl<ModifierList m, List<AttributeSection> attributes> =
 	StructureMemberDecl<m, attributes>
 	.
 
@@ -699,7 +699,7 @@ ClassBaseType<out TypeReference typeRef>
 .
 
 /* 7.6.1 */
-StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
+StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	(.
 		TypeReference type = null;
 		List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
@@ -723,7 +723,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		Identifier
 		(.
 			name = t.val;
-			m.Check(Modifier.VBMethods);
+			m.Check(Modifiers.VBMethods);
 		.)
 		TypeParameterList<templates>
 		[ "(" [ FormalParameterList<p> ] ")" ]
@@ -780,7 +780,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		)
 		/* 9.3 */
 		| "New" [ "(" [ FormalParameterList<p> ] ")" ]
-		(. m.Check(Modifier.Constructors); .)
+		(. m.Check(Modifiers.Constructors); .)
 		(. Location constructorEndLocation = t.EndLocation; .)
 		EOL
 		
@@ -808,7 +808,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	/* 9.2.1 */
 	"Function"
 	(.
-		m.Check(Modifier.VBMethods);
+		m.Check(Modifiers.VBMethods);
 		string name = String.Empty;
 		Location startPos = t.Location;
 		MethodDeclaration methodDeclaration;List<string> handlesClause = null;
@@ -883,7 +883,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	/* 9.2.2. */
 	"Declare"
 	(.
-		m.Check(Modifier.VBExternalMethods);
+		m.Check(Modifiers.VBExternalMethods);
 		Location startPos = t.Location;
 		CharsetModifier charsetModifer = CharsetModifier.None;
 		string library = String.Empty;
@@ -923,7 +923,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	/* 9. 4 */
 	"Event"
 	(.
-		m.Check(Modifier.VBEvents);
+		m.Check(Modifiers.VBEvents);
 		Location startPos = t.Location;
 		EventDeclaration eventDeclaration;
 		string name = String.Empty;
@@ -946,7 +946,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 | /* 9.6 */
 	(. Location startPos = t.Location; .)
 	(.
-		m.Check(Modifier.Fields);
+		m.Check(Modifiers.Fields);
 		FieldDeclaration fd = new FieldDeclaration(attributes, null, m.Modifier);
 		fd.StartLocation = m.GetDeclarationLocation(startPos); 
 	.)
@@ -960,8 +960,8 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		compilationUnit.AddChild(fd);
 	.)
 	| /* 9.4 */
-	(. m.Check(Modifier.Fields); .)
-	"Const" (.  m.Add(Modifier.Const, t.Location);  .)
+	(. m.Check(Modifiers.Fields); .)
+	"Const" (.  m.Add(Modifiers.Const, t.Location);  .)
 	(.
 		FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
 		fd.StartLocation = m.GetDeclarationLocation(t.Location);
@@ -981,7 +981,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 | /* 9.7 */
 	"Property"
 	(.
-		m.Check(Modifier.VBProperties);
+		m.Check(Modifiers.VBProperties);
 		Location startPos = t.Location;
 		List<InterfaceImplementation> implementsClause = null;
 	.)
@@ -1032,7 +1032,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 |
 	"Custom" (. Location startPos = t.Location; .) "Event"
 	(.
-		m.Check(Modifier.VBCustomEvents);
+		m.Check(Modifiers.VBCustomEvents);
 		EventAddRemoveRegion eventAccessorDeclaration;
 		EventAddRegion addHandlerAccessorDeclaration = null;
 		EventRemoveRegion removeHandlerAccessorDeclaration = null;
@@ -1090,7 +1090,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	| "Narrowing"		(. opConversionType = ConversionType.Explicit;.) ]
 	"Operator"
 	(.
-		m.Check(Modifier.VBOperators);
+		m.Check(Modifiers.VBOperators);
 		Location startPos = t.Location;
 		TypeReference returnType = NullTypeReference.Instance;
 		TypeReference operandType = NullTypeReference.Instance;
@@ -1103,13 +1103,13 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	OverloadableOperator<out operatorType>
 	"(" [ "ByVal" ] Identifier (. operandName = t.val; .)
 		[ "As" TypeName<out operandType> ]
-		(. parameters.Add(new ParameterDeclarationExpression(operandType, operandName, ParamModifier.In)); .)
+		(. parameters.Add(new ParameterDeclarationExpression(operandType, operandName, ParameterModifiers.In)); .)
 		
 		{
 			","
 			[ "ByVal" ] Identifier (. operandName = t.val; .)
 			[ "As" TypeName<out operandType> ]
-			(. parameters.Add(new ParameterDeclarationExpression(operandType, operandName, ParamModifier.In)); .)
+			(. parameters.Add(new ParameterDeclarationExpression(operandType, operandName, ParameterModifiers.In)); .)
 		}
 	")"
 	(. Location endPos = t.EndLocation; .)
@@ -1255,7 +1255,7 @@ AccessorDecls<out PropertyGetRegion getBlock, out PropertySetRegion setBlock>
 
 /* 9.7.1 */
 GetAccessorDecl<out PropertyGetRegion getBlock, List<AttributeSection> attributes>
-	(. Statement stmt = null; Modifier m; .)
+	(. Statement stmt = null; Modifiers m; .)
 =
 	PropertyAccessorAccessModifier<out m>
 	"Get"
@@ -1274,7 +1274,7 @@ SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attribute
 	(.
 		Statement stmt = null;
 		List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
-		Modifier m;
+		Modifiers m;
 	.)
 =
 	PropertyAccessorAccessModifier<out m>
@@ -1338,12 +1338,14 @@ VariableDeclaratorPartAfterIdentifier<List<VariableDeclaration> fieldDeclaration
 	|
 		[ "As" TypeName<out type>
 		  (.
-			for (int i = fieldDeclaration.Count - 1; i >= 0; i--) {
-				VariableDeclaration vd = fieldDeclaration[i];
-				if (vd.TypeReference.Type.Length > 0) break;
-				TypeReference newType = type.Clone();
-				newType.RankSpecifier = vd.TypeReference.RankSpecifier;
-				vd.TypeReference = newType;
+			if (type != null) {
+				for (int i = fieldDeclaration.Count - 1; i >= 0; i--) {
+					VariableDeclaration vd = fieldDeclaration[i];
+					if (vd.TypeReference.Type.Length > 0) break;
+					TypeReference newType = type.Clone();
+					newType.RankSpecifier = vd.TypeReference.RankSpecifier;
+					vd.TypeReference = newType;
+				}
 			}
 		  .)
 		]
@@ -2112,7 +2114,7 @@ FormalParameterList<List<ParameterDeclarationExpression> parameter>
 FormalParameter<out ParameterDeclarationExpression p>
 	(.
 		TypeReference type = null;
-		ParamModifiers mod = new ParamModifiers(this);
+		ParamModifierList mod = new ParamModifierList(this);
 		Expression expr = null;
 		p = null;ArrayList arrayModifiers = null;
 	.) =
@@ -2187,18 +2189,18 @@ Statement
 /* 10.2 */
 LocalDeclarationStatement<out Statement statement>
 	(.
-		Modifiers m = new Modifiers();
+		ModifierList m = new ModifierList();
 		LocalVariableDeclaration localVariableDeclaration;
 		bool dimfound = false;
 	.) =
 	/* this differs from the spec: dim static x	compiles with vbc. */
 	{
-		"Const" 	(. m.Add(Modifier.Const, t.Location); .)
-		| "Static"	(. m.Add(Modifier.Static, t.Location); .)
+		"Const" 	(. m.Add(Modifiers.Const, t.Location); .)
+		| "Static"	(. m.Add(Modifiers.Static, t.Location); .)
 		| "Dim"		(. dimfound = true; .)
 	}
 	(.
-		if(dimfound && (m.Modifier & Modifier.Const) != 0) {
+		if(dimfound && (m.Modifier & Modifiers.Const) != 0) {
 			Error("Dim is not allowed on constants.");
 		}
 		
@@ -2468,7 +2470,7 @@ EmbeddedStatement<out Statement statement>
 	| "Using"
 		(. Statement block;  .)
 		( IF (Peek(1).kind == Tokens.As)
-			(. LocalVariableDeclaration resourceAquisition = new LocalVariableDeclaration(Modifier.None); .)
+			(. LocalVariableDeclaration resourceAquisition = new LocalVariableDeclaration(Modifiers.None); .)
 			VariableDeclarator<resourceAquisition.Variables>
 			{ ","
 			  VariableDeclarator<resourceAquisition.Variables>
@@ -2766,53 +2768,53 @@ PrimitiveTypeName<out string type>
 	| "SByte"		(. type = "SByte"; .)
 	.
 
-ParameterModifier<ParamModifiers m>
-	= "ByVal"			(. m.Add(ParamModifier.In); .)
-	| "ByRef"			(. m.Add(ParamModifier.Ref); .)
-	| "Optional"		(. m.Add(ParamModifier.Optional); .)
-	| "ParamArray"		(. m.Add(ParamModifier.Params); .)
+ParameterModifier<ParamModifierList m>
+	= "ByVal"			(. m.Add(ParameterModifiers.In); .)
+	| "ByRef"			(. m.Add(ParameterModifiers.Ref); .)
+	| "Optional"		(. m.Add(ParameterModifiers.Optional); .)
+	| "ParamArray"		(. m.Add(ParameterModifiers.Params); .)
 	.
 
-TypeModifier<Modifiers m>
-=	  "Public"			(. m.Add(Modifier.Public, t.Location); .)
-	| "Protected"		(. m.Add(Modifier.Protected, t.Location); .)
-	| "Friend"			(. m.Add(Modifier.Internal, t.Location); .)
-	| "Private"			(. m.Add(Modifier.Private, t.Location); .)
-	| "Shared"			(. m.Add(Modifier.Static, t.Location); .)
-	| "Shadows"			(. m.Add(Modifier.New, t.Location); .)
-	| "MustInherit"		(. m.Add(Modifier.Abstract, t.Location); .)
-	| "NotInheritable"	(. m.Add(Modifier.Sealed, t.Location); .)
-	| "Partial"			(. m.Add(Modifier.Partial, t.Location); .)
+TypeModifier<ModifierList m>
+=	  "Public"			(. m.Add(Modifiers.Public, t.Location); .)
+	| "Protected"		(. m.Add(Modifiers.Protected, t.Location); .)
+	| "Friend"			(. m.Add(Modifiers.Internal, t.Location); .)
+	| "Private"			(. m.Add(Modifiers.Private, t.Location); .)
+	| "Shared"			(. m.Add(Modifiers.Static, t.Location); .)
+	| "Shadows"			(. m.Add(Modifiers.New, t.Location); .)
+	| "MustInherit"		(. m.Add(Modifiers.Abstract, t.Location); .)
+	| "NotInheritable"	(. m.Add(Modifiers.Sealed, t.Location); .)
+	| "Partial"			(. m.Add(Modifiers.Partial, t.Location); .)
 .
 
-MemberModifier<Modifiers m> =
-	  "MustInherit"		(.m.Add(Modifier.Abstract, t.Location);.)
-	| "Default"			(.m.Add(Modifier.Default, t.Location);.)
-	| "Friend"			(.m.Add(Modifier.Internal, t.Location);.)
-	| "Shadows"			(.m.Add(Modifier.New, t.Location);.)
-	| "Overrides"		(.m.Add(Modifier.Override, t.Location);.)
-	| "MustOverride"	(.m.Add(Modifier.Abstract, t.Location);.)
-	| "Private"			(.m.Add(Modifier.Private, t.Location);.)
-	| "Protected"		(.m.Add(Modifier.Protected, t.Location);.)
-	| "Public"			(.m.Add(Modifier.Public, t.Location);.)
-	| "NotInheritable"	(.m.Add(Modifier.Sealed, t.Location);.)
-	| "NotOverridable"	(.m.Add(Modifier.Sealed, t.Location);.)
-	| "Shared"			(.m.Add(Modifier.Static, t.Location);.)
-	| "Overridable"		(.m.Add(Modifier.Virtual, t.Location);.)
-	| "Overloads"		(.m.Add(Modifier.Overloads, t.Location);.)
-	| "ReadOnly"		(.m.Add(Modifier.ReadOnly, t.Location);.)
-	| "WriteOnly"		(.m.Add(Modifier.WriteOnly, t.Location);.)
-	| "WithEvents"		(.m.Add(Modifier.WithEvents, t.Location);.)
-	| "Dim"				(.m.Add(Modifier.Dim, t.Location);.)
+MemberModifier<ModifierList m> =
+	  "MustInherit"		(.m.Add(Modifiers.Abstract, t.Location);.)
+	| "Default"			(.m.Add(Modifiers.Default, t.Location);.)
+	| "Friend"			(.m.Add(Modifiers.Internal, t.Location);.)
+	| "Shadows"			(.m.Add(Modifiers.New, t.Location);.)
+	| "Overrides"		(.m.Add(Modifiers.Override, t.Location);.)
+	| "MustOverride"	(.m.Add(Modifiers.Abstract, t.Location);.)
+	| "Private"			(.m.Add(Modifiers.Private, t.Location);.)
+	| "Protected"		(.m.Add(Modifiers.Protected, t.Location);.)
+	| "Public"			(.m.Add(Modifiers.Public, t.Location);.)
+	| "NotInheritable"	(.m.Add(Modifiers.Sealed, t.Location);.)
+	| "NotOverridable"	(.m.Add(Modifiers.Sealed, t.Location);.)
+	| "Shared"			(.m.Add(Modifiers.Static, t.Location);.)
+	| "Overridable"		(.m.Add(Modifiers.Virtual, t.Location);.)
+	| "Overloads"		(.m.Add(Modifiers.Overloads, t.Location);.)
+	| "ReadOnly"		(.m.Add(Modifiers.ReadOnly, t.Location);.)
+	| "WriteOnly"		(.m.Add(Modifiers.WriteOnly, t.Location);.)
+	| "WithEvents"		(.m.Add(Modifiers.WithEvents, t.Location);.)
+	| "Dim"				(.m.Add(Modifiers.Dim, t.Location);.)
 .
 
-PropertyAccessorAccessModifier<out Modifier m> =
-	(. m = Modifier.None; .)
+PropertyAccessorAccessModifier<out Modifiers m> =
+	(. m = Modifiers.None; .)
 	{(
-		"Public"    (. m |= Modifier.Public; .)
-	 |  "Protected" (. m |= Modifier.Protected; .)
-	 |  "Friend"    (. m |= Modifier.Internal; .)
-	 |  "Private"   (. m |= Modifier.Private; .)
+		"Public"    (. m |= Modifiers.Public; .)
+	 |  "Protected" (. m |= Modifiers.Protected; .)
+	 |  "Friend"    (. m |= Modifiers.Internal; .)
+	 |  "Private"   (. m |= Modifiers.Private; .)
 	)}
 .
 

@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return currentClass.Count == 0 ? null : currentClass.Peek();
 		}
 		
-		ModifierEnum ConvertModifier(AST.Modifier m)
+		ModifierEnum ConvertModifier(AST.Modifiers m)
 		{
 			if (currentClass.Count > 0 && currentClass.Peek().ClassType == ClassType.Interface)
 				return ConvertModifier(m, ModifierEnum.Public);
@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return ConvertModifier(m, ModifierEnum.Private);
 		}
 		
-		ModifierEnum ConvertModifier(AST.Modifier m, ModifierEnum defaultModifier)
+		ModifierEnum ConvertModifier(AST.Modifiers m, ModifierEnum defaultModifier)
 		{
 			ModifierEnum r = (ModifierEnum)m;
 			if (r == ModifierEnum.None)

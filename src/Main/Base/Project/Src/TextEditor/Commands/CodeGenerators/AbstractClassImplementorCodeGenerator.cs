@@ -35,16 +35,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			foreach (IProperty property in currentClass.DefaultReturnType.GetProperties()) {
 				if (property.IsAbstract) {
 					AttributedNode node = CodeGenerator.ConvertMember(property, classFinderContext);
-					node.Modifier &= ~(Modifier.Abstract | Modifier.Virtual);
-					node.Modifier |= Modifier.Override;
+					node.Modifier &= ~(Modifiers.Abstract | Modifiers.Virtual);
+					node.Modifier |= Modifiers.Override;
 					nodes.Add(node);
 				}
 			}
 			foreach (IMethod method in currentClass.DefaultReturnType.GetMethods()) {
 				if (method.IsAbstract) {
 					AttributedNode node = CodeGenerator.ConvertMember(method, classFinderContext);
-					node.Modifier &= ~(Modifier.Abstract | Modifier.Virtual);
-					node.Modifier |= Modifier.Override;
+					node.Modifier &= ~(Modifiers.Abstract | Modifiers.Virtual);
+					node.Modifier |= Modifiers.Override;
 					nodes.Add(node);
 				}
 			}

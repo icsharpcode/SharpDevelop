@@ -9,12 +9,12 @@ using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	internal class Modifiers
+	internal class ModifierList
 	{
-		Modifier cur;
+		Modifiers cur;
 		Location location = new Location(-1, -1);
 		
-		public Modifier Modifier {
+		public Modifiers Modifier {
 			get {
 				return cur;
 			}
@@ -28,23 +28,23 @@ namespace ICSharpCode.NRefactory.Parser
 			return location;
 		}
 		
-		public Location Location {
-			get {
-				return location;
-			}
-			set {
-				location = value;
-			}
-		}
+//		public Location Location {
+//			get {
+//				return location;
+//			}
+//			set {
+//				location = value;
+//			}
+//		}
 		
-		public bool isNone { get { return cur == Modifier.None; } }
+		public bool isNone { get { return cur == Modifiers.None; } }
 		
-		public bool Contains(Modifier m)
+		public bool Contains(Modifiers m)
 		{
 			return ((cur & m) != 0);
 		}
 		
-		public void Add(Modifier m, Location tokenLocation) 
+		public void Add(Modifiers m, Location tokenLocation) 
 		{
 			if(location.X == -1 && location.Y == -1) {
 				location = tokenLocation;
@@ -57,15 +57,15 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public void Add(Modifiers m)
-		{
-			Add(m.cur, m.Location);
-		}
+//		public void Add(Modifiers m)
+//		{
+//			Add(m.cur, m.Location);
+//		}
 		
-		public void Check(Modifier allowed)
+		public void Check(Modifiers allowed)
 		{
-			Modifier wrong = cur & ~allowed;
-			if (wrong != Modifier.None) {
+			Modifiers wrong = cur & ~allowed;
+			if (wrong != Modifiers.None) {
 //				parser.Error("modifier(s) " + wrong + " not allowed here");
 			}
 		}

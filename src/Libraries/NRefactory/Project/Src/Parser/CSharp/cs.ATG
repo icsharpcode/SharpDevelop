@@ -292,7 +292,7 @@ NamespaceMemberDecl
 (.
 	AttributeSection section;
 	List<AttributeSection> attributes = new List<AttributeSection>();
-	Modifiers m = new Modifiers();
+	ModifierList m = new ModifierList();
 	string qualident;
 .)
 = /*--- namespace declaration: */
@@ -315,7 +315,7 @@ NamespaceMemberDecl
 	  TypeDecl<m, attributes>
 .
 
-TypeDecl<Modifiers m, List<AttributeSection> attributes>
+TypeDecl<ModifierList m, List<AttributeSection> attributes>
 (.
 	TypeReference type;
 	List<TypeReference> names;
@@ -323,7 +323,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	string name;
 	List<TemplateDefinition> templates;
 .)
-= /*--- class declaration: */      (. m.Check(Modifier.Classes); .)
+= /*--- class declaration: */      (. m.Check(Modifiers.Classes); .)
 	"class"                        (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 	                                  templates = newType.Templates;
 	                                  compilationUnit.AddChild(newType);
@@ -347,7 +347,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	[ ";" ]                         (. newType.EndLocation = t.Location; 
 	                                   compilationUnit.BlockEnd();
 	                                .)
-| /*--- struct declaration: */  (. m.Check(Modifier.StructsInterfacesEnumsDelegates); .)
+| /*--- struct declaration: */  (. m.Check(Modifiers.StructsInterfacesEnumsDelegates); .)
 	( "struct"                      (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 	                                   templates = newType.Templates;
 	                                   newType.StartLocation = m.GetDeclarationLocation(t.Location);
@@ -458,7 +458,7 @@ ClassBody
 =
 	"{"
 	{                                  (.List<AttributeSection> attributes = new List<AttributeSection>();
-		                                 Modifiers m = new Modifiers();
+		                                 ModifierList m = new ModifierList();
 		                               .)
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
 		MemberModifiers<m>
@@ -482,7 +482,7 @@ StructBody
 =
 	"{"
 	{                                    (.List<AttributeSection> attributes = new List<AttributeSection>();
-		                                   Modifiers m = new Modifiers();
+		                                   ModifierList m = new ModifierList();
 		                                 .)
 		{ AttributeSection<out section>  (. attributes.Add(section); .) }
 		MemberModifiers<m>
@@ -609,13 +609,13 @@ FormalParameterList<List<ParameterDeclarationExpression> parameter>
 FixedParameter<out ParameterDeclarationExpression p>
 (.
 	TypeReference type;
-	ParamModifier mod = ParamModifier.In;
+	ParameterModifiers mod = ParameterModifiers.In;
 	Location start = t.Location;
 .)
 =
 	[
-		"ref"    (. mod = ParamModifier.Ref; .)
-		| "out"  (. mod = ParamModifier.Out; .)
+		"ref"    (. mod = ParameterModifiers.Ref; .)
+		| "out"  (. mod = ParameterModifiers.Out; .)
 	]
 	Type<out type> ident (. p = new ParameterDeclarationExpression(type, t.val, mod); p.StartLocation = start; p.EndLocation = t.Location; .)
 .
@@ -623,31 +623,31 @@ FixedParameter<out ParameterDeclarationExpression p>
 ParameterArray<out ParameterDeclarationExpression p>
 (. TypeReference type; .)
 =
-	"params" Type<out type> ident (. p = new ParameterDeclarationExpression(type, t.val, ParamModifier.Params); .)
+	"params" Type<out type> ident (. p = new ParameterDeclarationExpression(type, t.val, ParameterModifiers.Params); .)
 . 
 
-AccessorModifiers<out Modifiers m>
-(. m = new Modifiers(); .)
+AccessorModifiers<out ModifierList m>
+(. m = new ModifierList(); .)
 =
-	"private"          (. m.Add(Modifier.Private, t.Location); .)
-	| "protected"      (. m.Add(Modifier.Protected, t.Location); .)
-	  ["internal"      (. m.Add(Modifier.Internal, t.Location); .)]
-	| "internal"       (. m.Add(Modifier.Internal, t.Location); .)
-	  ["protected"     (. m.Add(Modifier.Protected, t.Location); .)]
+	"private"          (. m.Add(Modifiers.Private, t.Location); .)
+	| "protected"      (. m.Add(Modifiers.Protected, t.Location); .)
+	  ["internal"      (. m.Add(Modifiers.Internal, t.Location); .)]
+	| "internal"       (. m.Add(Modifiers.Internal, t.Location); .)
+	  ["protected"     (. m.Add(Modifiers.Protected, t.Location); .)]
 .
 
-TypeModifier<Modifiers m>
+TypeModifier<ModifierList m>
 =
-	"new"                              (. m.Add(Modifier.New, t.Location); .)
-	| "public"                         (. m.Add(Modifier.Public, t.Location); .)
-	| "protected"                      (. m.Add(Modifier.Protected, t.Location); .)
-	| "internal"                       (. m.Add(Modifier.Internal, t.Location); .)
-	| "private"                        (. m.Add(Modifier.Private, t.Location); .)
-	| "unsafe"                         (. m.Add(Modifier.Unsafe, t.Location); .)
-	| "abstract"                       (. m.Add(Modifier.Abstract, t.Location); .)
-	| "sealed"                         (. m.Add(Modifier.Sealed, t.Location); .)
-	| "static"                         (. m.Add(Modifier.Static, t.Location); .)
-	| ident                            (. if (t.val == "partial") { m.Add(Modifier.Partial, t.Location); } else { Error("Unexpected identifier"); } .)
+	"new"                              (. m.Add(Modifiers.New, t.Location); .)
+	| "public"                         (. m.Add(Modifiers.Public, t.Location); .)
+	| "protected"                      (. m.Add(Modifiers.Protected, t.Location); .)
+	| "internal"                       (. m.Add(Modifiers.Internal, t.Location); .)
+	| "private"                        (. m.Add(Modifiers.Private, t.Location); .)
+	| "unsafe"                         (. m.Add(Modifiers.Unsafe, t.Location); .)
+	| "abstract"                       (. m.Add(Modifiers.Abstract, t.Location); .)
+	| "sealed"                         (. m.Add(Modifiers.Sealed, t.Location); .)
+	| "static"                         (. m.Add(Modifiers.Static, t.Location); .)
+	| ident                            (. if (t.val == "partial") { m.Add(Modifiers.Partial, t.Location); } else { Error("Unexpected identifier"); } .)
 .
 
 ClassType<out TypeReference typeRef, bool canBeUnbound>
@@ -671,30 +671,30 @@ IntegralType<out string name>          (. name = ""; .)
 	| "char"                           (. name = "char"; .)
 .
 
-MemberModifiers<Modifiers m>
+MemberModifiers<ModifierList m>
 =
 	{
-	  "abstract"                       (. m.Add(Modifier.Abstract, t.Location); .)
-	| "extern"                         (. m.Add(Modifier.Extern, t.Location); .)
-	| "internal"                       (. m.Add(Modifier.Internal, t.Location); .)
-	| "new"                            (. m.Add(Modifier.New, t.Location); .)
-	| "override"                       (. m.Add(Modifier.Override, t.Location); .)
-	| "private"                        (. m.Add(Modifier.Private, t.Location); .)
-	| "protected"                      (. m.Add(Modifier.Protected, t.Location); .)
-	| "public"                         (. m.Add(Modifier.Public, t.Location); .)
-	| "readonly"                       (. m.Add(Modifier.ReadOnly, t.Location); .)
-	| "sealed"                         (. m.Add(Modifier.Sealed, t.Location); .)
-	| "static"                         (. m.Add(Modifier.Static, t.Location); .)
-	| "unsafe"                         (. m.Add(Modifier.Unsafe, t.Location); .)
-	| "virtual"                        (. m.Add(Modifier.Virtual, t.Location); .)
-	| "volatile"                       (. m.Add(Modifier.Volatile, t.Location); .)
+	  "abstract"                       (. m.Add(Modifiers.Abstract, t.Location); .)
+	| "extern"                         (. m.Add(Modifiers.Extern, t.Location); .)
+	| "internal"                       (. m.Add(Modifiers.Internal, t.Location); .)
+	| "new"                            (. m.Add(Modifiers.New, t.Location); .)
+	| "override"                       (. m.Add(Modifiers.Override, t.Location); .)
+	| "private"                        (. m.Add(Modifiers.Private, t.Location); .)
+	| "protected"                      (. m.Add(Modifiers.Protected, t.Location); .)
+	| "public"                         (. m.Add(Modifiers.Public, t.Location); .)
+	| "readonly"                       (. m.Add(Modifiers.ReadOnly, t.Location); .)
+	| "sealed"                         (. m.Add(Modifiers.Sealed, t.Location); .)
+	| "static"                         (. m.Add(Modifiers.Static, t.Location); .)
+	| "unsafe"                         (. m.Add(Modifiers.Unsafe, t.Location); .)
+	| "virtual"                        (. m.Add(Modifiers.Virtual, t.Location); .)
+	| "volatile"                       (. m.Add(Modifiers.Volatile, t.Location); .)
 	| ( IF(la.kind == Tokens.Identifier && la.val == "partial")
-		ident  (. m.Add(Modifier.Partial, t.Location); .)
+		ident  (. m.Add(Modifiers.Partial, t.Location); .)
 	  )
 	}
 .
 
-StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
+StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 (.
 	string qualident = null;
 	TypeReference type;
@@ -706,9 +706,9 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	TypeReference explicitInterface = null;
 .)
 =
-	/*--- constant declaration: */         (. m.Check(Modifier.Constants); .)
+	/*--- constant declaration: */         (. m.Check(Modifiers.Constants); .)
 	"const"                                (.Location startPos = t.Location; .)
-	Type<out type> ident                   (. FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier | Modifier.Const);
+	Type<out type> ident                   (. FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier | Modifiers.Const);
 	                                          fd.StartLocation = m.GetDeclarationLocation(startPos);
 	                                          VariableDeclaration f = new VariableDeclaration(t.val);
 	                                          fd.Fields.Add(f);
@@ -722,7 +722,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	
 	
 |   /*--- void method (procedure) declaration: */
-	IF (NotVoidPointer())                (. m.Check(Modifier.PropertysEventsMethods); .)
+	IF (NotVoidPointer())                (. m.Check(Modifiers.PropertysEventsMethods); .)
 	"void"                                 (. Location startPos = t.Location; .)
 	( IF (IsExplicitInterfaceImplementation())
 		TypeName<out explicitInterface, false>
@@ -757,7 +757,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	                                          methodDeclaration.Body  = (BlockStatement)stmt;
 	                                       .)
 	
-|	/*--- event declaration: */     (. m.Check(Modifier.PropertysEventsMethods); .)
+|	/*--- event declaration: */     (. m.Check(Modifiers.PropertysEventsMethods); .)
 		"event"                     (. EventDeclaration eventDecl = new EventDeclaration(null, null, m.Modifier, attributes, null);
 		                               eventDecl.StartLocation = t.Location;
 		                               compilationUnit.AddChild(eventDecl);
@@ -785,12 +785,12 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		.)
 	
 |   /*--- constructor or static contructor declaration: */
-	IF (IdentAndLPar())                  (. m.Check(Modifier.Constructors | Modifier.StaticConstructors); .)
-	ident (. string name = t.val; Location startPos = t.Location; .) "(" [  (. m.Check(Modifier.Constructors); .)
+	IF (IdentAndLPar())                  (. m.Check(Modifiers.Constructors | Modifiers.StaticConstructors); .)
+	ident (. string name = t.val; Location startPos = t.Location; .) "(" [  (. m.Check(Modifiers.Constructors); .)
 	FormalParameterList<p>
 	]
 	")" (.ConstructorInitializer init = null;  .)
-	[                                      (. m.Check(Modifier.Constructors); .)
+	[                                      (. m.Check(Modifiers.Constructors); .)
 		ConstructorInitializer<out init>
 	] (. 
 	     ConstructorDeclaration cd = new ConstructorDeclaration(name, m.Modifier, p, init, attributes); 
@@ -801,7 +801,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	( Block<out stmt> | ";" ) (. cd.Body = (BlockStatement)stmt; compilationUnit.AddChild(cd); .)
 	
 	
-|   /*--- conversion operator declaration: */   (. m.Check(Modifier.Operators);
+|   /*--- conversion operator declaration: */   (. m.Check(Modifiers.Operators);
 	                                          if (m.isNone) Error("at least one modifier must be set"); 
 	                                          bool isImplicit = true;
 	                                          Location startPos = Location.Empty;
@@ -834,7 +834,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 |	Type<out type>                       (. Location startPos = t.Location;  .)
 	(
 		/*--- operator declaration: */     (. OverloadableOperatorType op;
-		                                      m.Check(Modifier.Operators);
+		                                      m.Check(Modifiers.Operators);
 		                                      if (m.isNone) Error("at least one modifier must be set");
 		                                   .)
 		"operator" OverloadableOperator<out op> (. TypeReference firstType, secondType = null; string secondName = null; .)
@@ -867,7 +867,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		.)
 		
 		/*--- field declaration: */
-	| IF (IsVarDecl())         (. m.Check(Modifier.Fields); 
+	| IF (IsVarDecl())         (. m.Check(Modifiers.Fields); 
 		                          FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
 		                          fd.StartLocation = m.GetDeclarationLocation(startPos); 
 		                       .)
@@ -876,7 +876,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		";"                                (. fd.EndLocation = t.EndLocation; fd.Fields = variableDeclarators; compilationUnit.AddChild(fd); .)
 		
 		/*--- unqualified indexer declaration (without interface name): */
-		|                                  (. m.Check(Modifier.Indexers); .)
+		|                                  (. m.Check(Modifiers.Indexers); .)
 		"this" "[" FormalParameterList<p> "]" (. Location endLocation = t.EndLocation; .) "{" (.
 			         IndexerDeclaration indexer = new IndexerDeclaration(type, p, m.Modifier, attributes);
 			         indexer.StartLocation = startPos;
@@ -903,7 +903,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		
 		(
 			/*--- "not void" method (function) declaration: */
-			(                              (. m.Check(Modifier.PropertysEventsMethods); .)
+			(                              (. m.Check(Modifiers.PropertysEventsMethods); .)
 				/* .NET 2.0 */
 				[ TypeParameterList<templates> ]
 				"(" [ FormalParameterList<p> ] ")" (.
@@ -942,7 +942,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			)
 			
 			/*--- qualified indexer declaration (with interface name): */
-			|                              (. m.Check(Modifier.Indexers); .)
+			|                              (. m.Check(Modifiers.Indexers); .)
 			"." "this" "[" FormalParameterList<p> "]" (.
 			         IndexerDeclaration indexer = new IndexerDeclaration(type, p, m.Modifier, attributes);
 			         indexer.StartLocation = m.GetDeclarationLocation(startPos);
@@ -964,11 +964,11 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	)
 .
 
-ClassMemberDecl<Modifiers m, List<AttributeSection> attributes>
+ClassMemberDecl<ModifierList m, List<AttributeSection> attributes>
 (. Statement stmt = null; .)
 =
 	StructMemberDecl<m, attributes>
-	| /*--- destructor declaration: */ (. m.Check(Modifier.Destructors); Location startPos = t.Location; .)
+	| /*--- destructor declaration: */ (. m.Check(Modifiers.Destructors); Location startPos = t.Location; .)
 	"~" ident                          (. DestructorDeclaration d = new DestructorDeclaration(t.val, m.Modifier, attributes); 
 	                                      d.Modifier = m.Modifier;
 	                                      d.StartLocation = m.GetDeclarationLocation(startPos);
@@ -984,7 +984,7 @@ InterfaceMemberDecl
 	TypeReference type;
 	
 	AttributeSection section;
-	Modifier mod = Modifier.None;
+	Modifiers mod = Modifiers.None;
 	List<AttributeSection> attributes = new List<AttributeSection>();
 	List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
 	string name;
@@ -995,7 +995,7 @@ InterfaceMemberDecl
 .)
 =
 	{ AttributeSection<out section>     (. attributes.Add(section); .)}
-	[ "new" (. mod = Modifier.New; startLocation = t.Location; .) ]
+	[ "new" (. mod = Modifiers.New; startLocation = t.Location; .) ]
 	(
 		/*--- interface void method (procedure) declaration: */
 		IF (NotVoidPointer()) "void" (. if (startLocation.X == -1) startLocation = t.Location; .) ident (. name = t.val; .)
@@ -1067,7 +1067,7 @@ AccessorDecls<out PropertyGetRegion getBlock, out PropertySetRegion setBlock>
 	AttributeSection section;
 	getBlock = null;
 	setBlock = null; 
-	Modifiers modifiers = null;
+	ModifierList modifiers = null;
 .)
 =
 	{ AttributeSection<out section> (. attributes.Add(section); .) }
@@ -1354,7 +1354,7 @@ Statement
 		IF (IsLabel()) ident (. compilationUnit.AddChild(new LabelStatement(t.val)); .)
 		":" Statement
 		/*--- local constant declaration: */
-		| "const" Type<out type> (. LocalVariableDeclaration var = new LocalVariableDeclaration(type, Modifier.Const); string ident = null; var.StartLocation = t.Location; .) 
+		| "const" Type<out type> (. LocalVariableDeclaration var = new LocalVariableDeclaration(type, Modifiers.Const); string ident = null; var.StartLocation = t.Location; .) 
 		  ident (. ident = t.val; .)
 		  "=" Expr<out expr> (. var.Variables.Add(new VariableDeclaration(ident, expr)); .)
 		  { "," ident (. ident = t.val; .) "=" Expr<out expr> (. var.Variables.Add(new VariableDeclaration(ident, expr)); .) }

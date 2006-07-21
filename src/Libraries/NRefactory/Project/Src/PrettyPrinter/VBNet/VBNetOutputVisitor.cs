@@ -223,7 +223,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitUsing(Using u, object data)
+		public object VisitUsing(Using @using, object data)
 		{
 			Debug.Fail("Should never be called. The usings should be handled in Visit(UsingDeclaration)");
 			return null;
@@ -479,10 +479,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			VisitAttributes(fieldDeclaration.Attributes, data);
 			outputFormatter.Indent();
-			if (fieldDeclaration.Modifier == Modifier.None) {
+			if (fieldDeclaration.Modifier == Modifiers.None) {
 				outputFormatter.PrintToken(Tokens.Private);
 				outputFormatter.Space();
-			} else if (fieldDeclaration.Modifier == Modifier.Dim) {
+			} else if (fieldDeclaration.Modifier == Modifiers.Dim) {
 				outputFormatter.PrintToken(Tokens.Dim);
 				outputFormatter.Space();
 			} else {
@@ -535,7 +535,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Indent();
 			OutputModifier(propertyDeclaration.Modifier);
 			
-			if ((propertyDeclaration.Modifier & (Modifier.ReadOnly | Modifier.WriteOnly)) == Modifier.None) {
+			if ((propertyDeclaration.Modifier & (Modifiers.ReadOnly | Modifiers.WriteOnly)) == Modifiers.None) {
 				if (propertyDeclaration.IsReadOnly) {
 					outputFormatter.PrintToken(Tokens.ReadOnly);
 					outputFormatter.Space();
@@ -851,7 +851,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		bool IsAbstract(AttributedNode node)
 		{
-			if ((node.Modifier & Modifier.Abstract) == Modifier.Abstract)
+			if ((node.Modifier & Modifiers.Abstract) == Modifiers.Abstract)
 				return true;
 			return currentType != null && currentType.Type == ClassType.Interface;
 		}
@@ -1315,11 +1315,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
-			if (localVariableDeclaration.Modifier != Modifier.None) {
+			if (localVariableDeclaration.Modifier != Modifiers.None) {
 				OutputModifier(localVariableDeclaration.Modifier);
 			}
 			if (!isUsingResourceAcquisition) {
-				if ((localVariableDeclaration.Modifier & Modifier.Const) == 0) {
+				if ((localVariableDeclaration.Modifier & Modifiers.Const) == 0) {
 					outputFormatter.PrintToken(Tokens.Dim);
 				}
 				outputFormatter.Space();
@@ -2531,24 +2531,24 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#endregion
 		
 		
-		void OutputModifier(ParamModifier modifier)
+		void OutputModifier(ParameterModifiers modifier)
 		{
 			switch (modifier) {
-				case ParamModifier.None:
-				case ParamModifier.In:
+				case ParameterModifiers.None:
+				case ParameterModifiers.In:
 					outputFormatter.PrintToken(Tokens.ByVal);
 					break;
-				case ParamModifier.Out:
+				case ParameterModifiers.Out:
 					errors.Error(-1, -1, String.Format("Out parameter converted to ByRef"));
 					outputFormatter.PrintToken(Tokens.ByRef);
 					break;
-				case ParamModifier.Params:
+				case ParameterModifiers.Params:
 					outputFormatter.PrintToken(Tokens.ParamArray);
 					break;
-				case ParamModifier.Ref:
+				case ParameterModifiers.Ref:
 					outputFormatter.PrintToken(Tokens.ByRef);
 					break;
-				case ParamModifier.Optional:
+				case ParameterModifiers.Optional:
 					outputFormatter.PrintToken(Tokens.Optional);
 					break;
 				default:
@@ -2558,88 +2558,88 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 		}
 		
-		void OutputModifier(Modifier modifier)
+		void OutputModifier(Modifiers modifier)
 		{
 			OutputModifier(modifier, false);
 		}
 		
-		void OutputModifier(Modifier modifier, bool forTypeDecl)
+		void OutputModifier(Modifiers modifier, bool forTypeDecl)
 		{
-			if ((modifier & Modifier.Public) == Modifier.Public) {
+			if ((modifier & Modifiers.Public) == Modifiers.Public) {
 				outputFormatter.PrintToken(Tokens.Public);
 				outputFormatter.Space();
-			} else if ((modifier & Modifier.Private) == Modifier.Private) {
+			} else if ((modifier & Modifiers.Private) == Modifiers.Private) {
 				outputFormatter.PrintToken(Tokens.Private);
 				outputFormatter.Space();
-			} else if ((modifier & (Modifier.Protected | Modifier.Internal)) == (Modifier.Protected | Modifier.Internal)) {
+			} else if ((modifier & (Modifiers.Protected | Modifiers.Internal)) == (Modifiers.Protected | Modifiers.Internal)) {
 				outputFormatter.PrintToken(Tokens.Protected);
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Friend);
 				outputFormatter.Space();
-			} else if ((modifier & Modifier.Internal) == Modifier.Internal) {
+			} else if ((modifier & Modifiers.Internal) == Modifiers.Internal) {
 				outputFormatter.PrintToken(Tokens.Friend);
 				outputFormatter.Space();
-			} else if ((modifier & Modifier.Protected) == Modifier.Protected) {
+			} else if ((modifier & Modifiers.Protected) == Modifiers.Protected) {
 				outputFormatter.PrintToken(Tokens.Protected);
 				outputFormatter.Space();
 			}
 			
-			if ((modifier & Modifier.Static) == Modifier.Static) {
+			if ((modifier & Modifiers.Static) == Modifiers.Static) {
 				outputFormatter.PrintToken(Tokens.Shared);
 				outputFormatter.Space();
 			}
-			if ((modifier & Modifier.Virtual) == Modifier.Virtual) {
+			if ((modifier & Modifiers.Virtual) == Modifiers.Virtual) {
 				outputFormatter.PrintToken(Tokens.Overridable);
 				outputFormatter.Space();
 			}
-			if ((modifier & Modifier.Abstract) == Modifier.Abstract) {
+			if ((modifier & Modifiers.Abstract) == Modifiers.Abstract) {
 				outputFormatter.PrintToken(forTypeDecl ? Tokens.MustInherit : Tokens.MustOverride);
 				outputFormatter.Space();
 			}
-			if ((modifier & Modifier.Override) == Modifier.Override) {
+			if ((modifier & Modifiers.Override) == Modifiers.Override) {
 				outputFormatter.PrintToken(Tokens.Overloads);
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Overrides);
 				outputFormatter.Space();
 			}
-			if ((modifier & Modifier.New) == Modifier.New) {
+			if ((modifier & Modifiers.New) == Modifiers.New) {
 				outputFormatter.PrintToken(Tokens.Shadows);
 				outputFormatter.Space();
 			}
 			
-			if ((modifier & Modifier.Sealed) == Modifier.Sealed) {
+			if ((modifier & Modifiers.Sealed) == Modifiers.Sealed) {
 				outputFormatter.PrintToken(forTypeDecl ? Tokens.NotInheritable : Tokens.NotOverridable);
 				outputFormatter.Space();
 			}
 			
-			if ((modifier & Modifier.ReadOnly) == Modifier.ReadOnly) {
+			if ((modifier & Modifiers.ReadOnly) == Modifiers.ReadOnly) {
 				outputFormatter.PrintToken(Tokens.ReadOnly);
 				outputFormatter.Space();
 			}
-			if ((modifier & Modifier.WriteOnly) == Modifier.WriteOnly) {
+			if ((modifier & Modifiers.WriteOnly) == Modifiers.WriteOnly) {
 				outputFormatter.PrintToken(Tokens.WriteOnly);
 				outputFormatter.Space();
 			}
-			if ((modifier & Modifier.Const) == Modifier.Const) {
+			if ((modifier & Modifiers.Const) == Modifiers.Const) {
 				outputFormatter.PrintToken(Tokens.Const);
 				outputFormatter.Space();
 			}
-			if ((modifier & Modifier.Partial) == Modifier.Partial) {
+			if ((modifier & Modifiers.Partial) == Modifiers.Partial) {
 				outputFormatter.PrintToken(Tokens.Partial);
 				outputFormatter.Space();
 			}
 			
-			if ((modifier & Modifier.Extern) == Modifier.Extern) {
+			if ((modifier & Modifiers.Extern) == Modifiers.Extern) {
 				// not required in VB
 			}
 			
 			// TODO : Volatile
-			if ((modifier & Modifier.Volatile) == Modifier.Volatile) {
+			if ((modifier & Modifiers.Volatile) == Modifiers.Volatile) {
 				errors.Error(-1, -1, String.Format("'Volatile' modifier not convertable"));
 			}
 			
 			// TODO : Unsafe
-			if ((modifier & Modifier.Unsafe) == Modifier.Unsafe) {
+			if ((modifier & Modifiers.Unsafe) == Modifiers.Unsafe) {
 				errors.Error(-1, -1, String.Format("'Unsafe' modifier not convertable"));
 			}
 		}

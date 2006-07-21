@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public override void GenerateCode(List<AbstractNode> nodes, IList items)
 		{
-			ConstructorDeclaration ctor = new ConstructorDeclaration(currentClass.Name, Modifier.Public, null, null);
+			ConstructorDeclaration ctor = new ConstructorDeclaration(currentClass.Name, Modifiers.Public, null, null);
 			ctor.Body = new BlockStatement();
 			foreach (FieldWrapper w in items) {
 				string parameterName = codeGen.GetParameterName(w.Field.Name);

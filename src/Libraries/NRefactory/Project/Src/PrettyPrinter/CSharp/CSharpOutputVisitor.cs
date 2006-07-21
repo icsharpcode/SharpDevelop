@@ -181,11 +181,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public object VisitInnerClassTypeReference(InnerClassTypeReference typeReference, object data)
+		public object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data)
 		{
-			nodeTracker.TrackedVisit(typeReference.BaseType, data);
+			nodeTracker.TrackedVisit(innerClassTypeReference.BaseType, data);
 			outputFormatter.PrintToken(Tokens.Dot);
-			return VisitTypeReference((TypeReference)typeReference, data);
+			return VisitTypeReference((TypeReference)innerClassTypeReference, data);
 		}
 		
 		#region Global scope
@@ -216,7 +216,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (this.prettyPrintOptions.SpacesWithinBrackets) {
 				outputFormatter.Space();
 			}
-			if (attributeSection.AttributeTarget != null && attributeSection.AttributeTarget != String.Empty) {
+			if (!string.IsNullOrEmpty(attributeSection.AttributeTarget)) {
 				outputFormatter.PrintText(attributeSection.AttributeTarget);
 				outputFormatter.PrintToken(Tokens.Colon);
 				outputFormatter.Space();
@@ -267,19 +267,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitUsing(Using u, object data)
+		public object VisitUsing(Using @using, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.Using);
 			outputFormatter.Space();
 			
-			outputFormatter.PrintIdentifier(u.Name);
+			outputFormatter.PrintIdentifier(@using.Name);
 			
-			if (u.IsAlias) {
+			if (@using.IsAlias) {
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Assign);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(u.Alias, data);
+				nodeTracker.TrackedVisit(@using.Alias, data);
 			}
 			
 			outputFormatter.PrintToken(Tokens.Semicolon);
@@ -302,7 +302,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(namespaceDeclaration.Name);
 			
-			outputFormatter.BeginBrace(this.prettyPrintOptions.NameSpaceBraceStyle);
+			outputFormatter.BeginBrace(this.prettyPrintOptions.NamespaceBraceStyle);
 			
 			nodeTracker.TrackedVisitChildren(namespaceDeclaration, data);
 			
@@ -502,7 +502,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			VisitAttributes(propertyDeclaration.Attributes, data);
 			outputFormatter.Indent();
-			propertyDeclaration.Modifier &= ~Modifier.ReadOnly;
+			propertyDeclaration.Modifier &= ~Modifiers.ReadOnly;
 			OutputModifier(propertyDeclaration.Modifier);
 			nodeTracker.TrackedVisit(propertyDeclaration.TypeReference, data);
 			outputFormatter.Space();
@@ -2181,7 +2181,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.OpenParenthesis);
 				nodeTracker.TrackedVisit(castExpression.CastTo, data);
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
-				if (this.prettyPrintOptions.SpacesAfterTypeCast) {
+				if (this.prettyPrintOptions.SpacesAfterTypecast) {
 					outputFormatter.Space();
 				}
 				nodeTracker.TrackedVisit(castExpression.Expression, data);
@@ -2339,25 +2339,25 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#endregion
 		#endregion
 		
-		void OutputModifier(ParamModifier modifier)
+		void OutputModifier(ParameterModifiers modifier)
 		{
 			switch (modifier) {
-				case ParamModifier.None:
-				case ParamModifier.In:
+				case ParameterModifiers.None:
+				case ParameterModifiers.In:
 					break;
-				case ParamModifier.Out:
+				case ParameterModifiers.Out:
 					outputFormatter.PrintToken(Tokens.Out);
 					outputFormatter.Space();
 					break;
-				case ParamModifier.Params:
+				case ParameterModifiers.Params:
 					outputFormatter.PrintToken(Tokens.Params);
 					outputFormatter.Space();
 					break;
-				case ParamModifier.Ref:
+				case ParameterModifiers.Ref:
 					outputFormatter.PrintToken(Tokens.Ref);
 					outputFormatter.Space();
 					break;
-				case ParamModifier.Optional:
+				case ParameterModifiers.Optional:
 					errors.Error(-1, -1, String.Format("Optional parameters aren't supported in C#"));
 					break;
 				default:
@@ -2366,57 +2366,57 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		void OutputModifier(Modifier modifier)
+		void OutputModifier(Modifiers modifier)
 		{
 			ArrayList tokenList = new ArrayList();
-			if ((modifier & Modifier.Unsafe) != 0) {
+			if ((modifier & Modifiers.Unsafe) != 0) {
 				tokenList.Add(Tokens.Unsafe);
 			}
-			if ((modifier & Modifier.Public) != 0) {
+			if ((modifier & Modifiers.Public) != 0) {
 				tokenList.Add(Tokens.Public);
 			}
-			if ((modifier & Modifier.Private) != 0) {
+			if ((modifier & Modifiers.Private) != 0) {
 				tokenList.Add(Tokens.Private);
 			}
-			if ((modifier & Modifier.Protected) != 0) {
+			if ((modifier & Modifiers.Protected) != 0) {
 				tokenList.Add(Tokens.Protected);
 			}
-			if ((modifier & Modifier.Static) != 0) {
+			if ((modifier & Modifiers.Static) != 0) {
 				tokenList.Add(Tokens.Static);
 			}
-			if ((modifier & Modifier.Internal) != 0) {
+			if ((modifier & Modifiers.Internal) != 0) {
 				tokenList.Add(Tokens.Internal);
 			}
-			if ((modifier & Modifier.Override) != 0) {
+			if ((modifier & Modifiers.Override) != 0) {
 				tokenList.Add(Tokens.Override);
 			}
-			if ((modifier & Modifier.Abstract) != 0) {
+			if ((modifier & Modifiers.Abstract) != 0) {
 				tokenList.Add(Tokens.Abstract);
 			}
-			if ((modifier & Modifier.Virtual) != 0) {
+			if ((modifier & Modifiers.Virtual) != 0) {
 				tokenList.Add(Tokens.Virtual);
 			}
-			if ((modifier & Modifier.New) != 0) {
+			if ((modifier & Modifiers.New) != 0) {
 				tokenList.Add(Tokens.New);
 			}
-			if ((modifier & Modifier.Sealed) != 0) {
+			if ((modifier & Modifiers.Sealed) != 0) {
 				tokenList.Add(Tokens.Sealed);
 			}
-			if ((modifier & Modifier.Extern) != 0) {
+			if ((modifier & Modifiers.Extern) != 0) {
 				tokenList.Add(Tokens.Extern);
 			}
-			if ((modifier & Modifier.Const) != 0) {
+			if ((modifier & Modifiers.Const) != 0) {
 				tokenList.Add(Tokens.Const);
 			}
-			if ((modifier & Modifier.ReadOnly) != 0) {
+			if ((modifier & Modifiers.ReadOnly) != 0) {
 				tokenList.Add(Tokens.Readonly);
 			}
-			if ((modifier & Modifier.Volatile) != 0) {
+			if ((modifier & Modifiers.Volatile) != 0) {
 				tokenList.Add(Tokens.Volatile);
 			}
 			outputFormatter.PrintTokenList(tokenList);
 			
-			if ((modifier & Modifier.Partial) != 0) {
+			if ((modifier & Modifiers.Partial) != 0) {
 				outputFormatter.PrintText("partial ");
 			}
 		}

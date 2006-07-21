@@ -144,10 +144,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public const int Volatile             = 123;
 		public const int While                = 124;
 
-		public const int maxToken = 125;
+		public const int MaxToken = 125;
 		static BitArray NewSet(params int[] values)
 		{
-			BitArray bitArray = new BitArray(maxToken);
+			BitArray bitArray = new BitArray(MaxToken);
 			foreach (int val in values) {
 			bitArray[val] = true;
 			}

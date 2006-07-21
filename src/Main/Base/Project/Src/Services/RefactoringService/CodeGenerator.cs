@@ -14,6 +14,7 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using NR = ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
@@ -80,14 +81,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return typeInTargetContext != null && typeInTargetContext.FullyQualifiedName == returnType.FullyQualifiedName;
 		}
 		
-		public static Modifier ConvertModifier(ModifierEnum m)
+		public static Modifiers ConvertModifier(ModifierEnum m)
 		{
-			return (Modifier)m;
+			return (Modifiers)m;
 		}
 		
-		public static ParamModifier ConvertModifier(ParameterModifiers m)
+		public static NR.ParameterModifiers ConvertModifier(Dom.ParameterModifiers m)
 		{
-			return (ParamModifier)m;
+			return (NR.ParameterModifiers)m;
 		}
 		
 		public static UsingDeclaration ConvertUsing(IUsing u)
@@ -334,7 +335,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				property.SetRegion = new PropertySetRegion(block, null);
 			}
 			
-			property.Modifier = Modifier.Public | (property.Modifier & Modifier.Static);
+			property.Modifier = Modifiers.Public | (property.Modifier & Modifiers.Static);
 			return property;
 		}
 		#endregion
@@ -431,7 +432,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			ClassFinder context = new ClassFinder(targetClass, targetClass.Region.BeginLine + 1, 0);
 			TypeReference interfaceReference = ConvertType(interf, context);
-			Modifier modifier = ConvertModifier(implModifier);
+			Modifiers modifier = ConvertModifier(implModifier);
 			List<IEvent> targetClassEvents = targetClass.DefaultReturnType.GetEvents();
 			foreach (IEvent e in interf.GetEvents()) {
 				if (targetClassEvents.Find(delegate(IEvent te) { return e.Name == te.Name; }) == null) {
@@ -482,8 +483,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public virtual AttributedNode GetOverridingMethod(IMember baseMember, ClassFinder targetContext)
 		{
 			AttributedNode node = ConvertMember(baseMember, targetContext);
-			node.Modifier &= ~(Modifier.Virtual | Modifier.Abstract);
-			node.Modifier |= Modifier.Override;
+			node.Modifier &= ~(Modifiers.Virtual | Modifiers.Abstract);
+			node.Modifier |= Modifiers.Override;
 			
 			MethodDeclaration method = node as MethodDeclaration;
 			if (method != null) {
@@ -520,9 +521,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			InvocationExpression ie = new InvocationExpression(methodName, null);
 			foreach (ParameterDeclarationExpression param in method.Parameters) {
 				Expression expr = new IdentifierExpression(param.ParameterName);
-				if (param.ParamModifier == ParamModifier.Ref) {
+				if (param.ParamModifier == NR.ParameterModifiers.Ref) {
 					expr = new DirectionExpression(FieldDirection.Ref, expr);
-				} else if (param.ParamModifier == ParamModifier.Out) {
+				} else if (param.ParamModifier == NR.ParameterModifiers.Out) {
 					expr = new DirectionExpression(FieldDirection.Out, expr);
 				}
 				ie.Arguments.Add(expr);

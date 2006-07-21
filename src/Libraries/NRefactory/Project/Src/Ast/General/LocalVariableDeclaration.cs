@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.Ast
 	public class LocalVariableDeclaration : Statement
 	{
 		TypeReference             typeReference;
-		Modifier                  modifier = Modifier.None;
+		Modifiers                  modifier = Modifiers.None;
 		List<VariableDeclaration> variables = new List<VariableDeclaration>(1);
 		
 		public TypeReference TypeReference {
@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.Ast
 			}
 		}
 		
-		public Modifier Modifier {
+		public Modifiers Modifier {
 			get {
 				return modifier;
 			}
@@ -66,13 +66,13 @@ namespace ICSharpCode.NRefactory.Ast
 			this.TypeReference = typeReference;
 		}
 		
-		public LocalVariableDeclaration(TypeReference typeReference, Modifier modifier)
+		public LocalVariableDeclaration(TypeReference typeReference, Modifiers modifier)
 		{
 			this.TypeReference = typeReference;
 			this.modifier      = modifier;
 		}
 		
-		public LocalVariableDeclaration(Modifier modifier)
+		public LocalVariableDeclaration(Modifiers modifier)
 		{
 			this.typeReference = TypeReference.Null;
 			this.modifier      = modifier;

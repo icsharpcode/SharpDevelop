@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 
 		public void Error(string s)
 		{
-			if (errDist >= minErrDist) {
+			if (errDist >= MinErrDist) {
 				errors.Error(la.line, la.col, s);
 			}
 			errDist = 0;
@@ -177,9 +177,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			return la.kind == Tokens.Colon && Peek(1).kind == Tokens.EOL;
 		}
 
-		static bool IsMustOverride(Modifiers m)
+		static bool IsMustOverride(ModifierList m)
 		{
-			return m.Contains(Modifier.Abstract);
+			return m.Contains(Modifiers.Abstract);
 		}
 
 		TypeReferenceExpression GetTypeReferenceExpression(Expression expr, List<TypeReference> genericTypes)

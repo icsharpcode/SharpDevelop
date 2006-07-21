@@ -160,16 +160,16 @@ namespace NRefactoryToBooConverter
 		B.ParameterDeclaration ConvertParameter(ParameterDeclarationExpression pde, out bool isParams)
 		{
 			B.ParameterDeclaration para = new B.ParameterDeclaration(pde.ParameterName, ConvertTypeReference(pde.TypeReference));
-			if ((pde.ParamModifier & ParamModifier.Optional) != 0) {
+			if ((pde.ParamModifier & ParameterModifiers.Optional) != 0) {
 				AddError(pde, "Optional parameters are not supported.");
 			}
-			if ((pde.ParamModifier & ParamModifier.Out) != 0) {
+			if ((pde.ParamModifier & ParameterModifiers.Out) != 0) {
 				para.Modifiers |= B.ParameterModifiers.Ref;
 			}
-			if ((pde.ParamModifier & ParamModifier.Ref) != 0) {
+			if ((pde.ParamModifier & ParameterModifiers.Ref) != 0) {
 				para.Modifiers |= B.ParameterModifiers.Ref;
 			}
-			isParams = (pde.ParamModifier & ParamModifier.Params) != 0;
+			isParams = (pde.ParamModifier & ParameterModifiers.Params) != 0;
 			ConvertAttributes(pde.Attributes, para.Attributes);
 			return para;
 		}

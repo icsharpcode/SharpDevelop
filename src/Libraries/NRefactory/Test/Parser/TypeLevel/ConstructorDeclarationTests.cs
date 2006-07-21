@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(2, cd.Parameters.Count);
 			Assert.AreEqual("Integer", cd.Parameters[0].TypeReference.Type);
 			Assert.AreEqual("String", cd.Parameters[1].TypeReference.Type);
-			Assert.AreEqual(ParamModifier.Optional, cd.Parameters[1].ParamModifier & ParamModifier.Optional);
+			Assert.AreEqual(ParameterModifiers.Optional, cd.Parameters[1].ParamModifier & ParameterModifiers.Optional);
 		}
 		#endregion 
 	}

@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 
 		public void Error(string s)
 		{
-			if (errDist >= minErrDist) {
+			if (errDist >= MinErrDist) {
 				errors.Error(la.line, la.col, s);
 			}
 			errDist = 0;

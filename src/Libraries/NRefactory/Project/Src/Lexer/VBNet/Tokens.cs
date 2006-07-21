@@ -11,7 +11,7 @@ using System.Collections;
 
 namespace ICSharpCode.NRefactory.Parser.VB
 {
-	public sealed class Tokens
+	public static class Tokens
 	{
 		// ----- terminal classes -----
 		public const int EOF                  = 0;
@@ -224,10 +224,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public const int Partial              = 203;
 		public const int Custom               = 204;
 
-		public const int maxToken = 205;
+		public const int MaxToken = 205;
 		static BitArray NewSet(params int[] values)
 		{
-			BitArray bitArray = new BitArray(maxToken);
+			BitArray bitArray = new BitArray(MaxToken);
 			foreach (int val in values) {
 			bitArray[val] = true;
 			}

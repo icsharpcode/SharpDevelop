@@ -23,22 +23,19 @@ namespace ICSharpCode.NRefactory
 		
 		public static PreprocessingDirective VBToCSharp(PreprocessingDirective dir)
 		{
-			string cmd = dir.Cmd.ToLowerInvariant();
+			string cmd = dir.Cmd;
 			string arg = dir.Arg;
-			switch (cmd) {
-				case "#end":
-					if (arg.ToLowerInvariant().StartsWith("region")) {
-						cmd = "#endregion";
-						arg = "";
-					} else if ("if".Equals(arg, StringComparison.InvariantCultureIgnoreCase)) {
-						cmd = "#endif";
-						arg = "";
-					}
-					break;
-				case "#if":
-					if (arg.ToLowerInvariant().EndsWith(" then"))
-						arg = arg.Substring(0, arg.Length - 5);
-					break;
+			if (cmd.Equals("#end", StringComparison.InvariantCultureIgnoreCase)) {
+				if (arg.ToLowerInvariant().StartsWith("region")) {
+					cmd = "#endregion";
+					arg = "";
+				} else if ("if".Equals(arg, StringComparison.InvariantCultureIgnoreCase)) {
+					cmd = "#endif";
+					arg = "";
+				}
+			} else if (cmd.Equals("#if", StringComparison.InvariantCultureIgnoreCase)) {
+				if (arg.ToLowerInvariant().EndsWith(" then"))
+					arg = arg.Substring(0, arg.Length - 5);
 			}
 			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
 		}

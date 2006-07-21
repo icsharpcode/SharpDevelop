@@ -54,6 +54,7 @@ namespace ICSharpCode.NRefactory.Visitors
 	{
 		Dictionary<string, List<LocalLookupVariable>> variables;
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public Dictionary<string, List<LocalLookupVariable>> Variables {
 			get {
 				return variables;
@@ -112,7 +113,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				            varDecl.Name,
 				            localVariableDeclaration.StartLocation,
 				            (blockStack.Count == 0) ? new Location(-1, -1) : blockStack.Peek().EndLocation,
-				            (localVariableDeclaration.Modifier & Modifier.Const) == Modifier.Const);
+				            (localVariableDeclaration.Modifier & Modifiers.Const) == Modifiers.Const);
 			}
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 		}

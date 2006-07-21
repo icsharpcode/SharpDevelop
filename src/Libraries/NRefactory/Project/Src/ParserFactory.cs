@@ -18,9 +18,9 @@ namespace ICSharpCode.NRefactory
 	}
 	
 	/// <summary>
-	/// Description of IParser.
+	/// Static helper class that constructs lexer and parser objects.
 	/// </summary>
-	public class ParserFactory
+	public static class ParserFactory
 	{
 		public static Parser.ILexer CreateLexer(SupportedLanguage language, TextReader textReader)
 		{

@@ -144,7 +144,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			MethodDeclaration method = new MethodDeclaration(GetAnonymousMethodName(), Modifier.Private, new TypeReference("System.Void"), anonymousMethodExpression.Parameters, null);
+			MethodDeclaration method = new MethodDeclaration(GetAnonymousMethodName(), Modifiers.Private, new TypeReference("System.Void"), anonymousMethodExpression.Parameters, null);
 			method.Body = anonymousMethodExpression.Body;
 			currentType.Children.Add(method);
 			ReplaceCurrentNode(new AddressOfExpression(new IdentifierExpression(method.Name)));
@@ -173,12 +173,12 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
-			if ((methodDeclaration.Modifier & Modifier.Visibility) == 0)
-				methodDeclaration.Modifier |= Modifier.Private;
+			if ((methodDeclaration.Modifier & Modifiers.Visibility) == 0)
+				methodDeclaration.Modifier |= Modifiers.Private;
 			
 			base.VisitMethodDeclaration(methodDeclaration, data);
 			
-			const Modifier externStatic = Modifier.Static | Modifier.Extern;
+			const Modifiers externStatic = Modifiers.Static | Modifiers.Extern;
 			if ((methodDeclaration.Modifier & externStatic) == externStatic
 			    && methodDeclaration.Body.IsNull)
 			{
@@ -261,7 +261,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 			if (setLastError && exactSpelling) {
 				// Only P/Invokes with SetLastError and ExactSpelling can be converted to a DeclareDeclaration
-				const Modifier removeModifiers = Modifier.Static | Modifier.Extern;
+				const Modifiers removeModifiers = Modifiers.Static | Modifiers.Extern;
 				DeclareDeclaration decl = new DeclareDeclaration(method.Name, method.Modifier &~ removeModifiers,
 				                                                 method.TypeReference,
 				                                                 method.Parameters,
@@ -277,16 +277,16 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
-			if ((propertyDeclaration.Modifier & Modifier.Visibility) == 0)
-				propertyDeclaration.Modifier |= Modifier.Private;
+			if ((propertyDeclaration.Modifier & Modifiers.Visibility) == 0)
+				propertyDeclaration.Modifier |= Modifiers.Private;
 			return base.VisitPropertyDeclaration(propertyDeclaration, data);
 		}
 		
 		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			// make constructor private if visiblity is not set (unless constructor is static)
-			if ((constructorDeclaration.Modifier & (Modifier.Visibility | Modifier.Static)) == 0)
-				constructorDeclaration.Modifier |= Modifier.Private;
+			if ((constructorDeclaration.Modifier & (Modifiers.Visibility | Modifiers.Static)) == 0)
+				constructorDeclaration.Modifier |= Modifiers.Private;
 			return base.VisitConstructorDeclaration(constructorDeclaration, data);
 		}
 	}

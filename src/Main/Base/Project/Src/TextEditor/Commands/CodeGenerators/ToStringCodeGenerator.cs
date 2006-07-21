@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			TypeReference stringReference = new TypeReference("System.String");
 			MethodDeclaration method = new MethodDeclaration("ToString",
-			                                                 Modifier.Public | Modifier.Override,
+			                                                 Modifiers.Public | Modifiers.Override,
 			                                                 stringReference,
 			                                                 null, null);
 			method.Body = new BlockStatement();
