@@ -114,7 +114,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				case "System.UInt64":
 					return "ULong";
 				case "System.UInt32":
-					return "UInt";
+					return "UInteger";
 				case "System.UInt16":
 					return "UShort";
 				case "System.SByte":
@@ -589,6 +589,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			VisitAttributes(propertyGetRegion.Attributes, data);
 			outputFormatter.Indent();
+			OutputModifier(propertyGetRegion.Modifier);
 			outputFormatter.PrintToken(Tokens.Get);
 			outputFormatter.NewLine();
 			
@@ -607,6 +608,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			VisitAttributes(propertySetRegion.Attributes, data);
 			outputFormatter.Indent();
+			OutputModifier(propertySetRegion.Modifier);
 			outputFormatter.PrintToken(Tokens.Set);
 			outputFormatter.NewLine();
 			
@@ -2421,7 +2423,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			nodeTracker.TrackedVisit(indexerExpression.TargetObject, data);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			AppendCommaSeparatedList(indexerExpression.Indices);
+			AppendCommaSeparatedList(indexerExpression.Indexes);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}

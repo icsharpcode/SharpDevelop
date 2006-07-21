@@ -549,9 +549,9 @@ namespace ICSharpCode.NRefactory.Parser {
 		public virtual object Visit(IndexerExpression indexerExpression, object data) {
 			Debug.Assert((indexerExpression != null));
 			Debug.Assert((indexerExpression.TargetObject != null));
-			Debug.Assert((indexerExpression.Indices != null));
+			Debug.Assert((indexerExpression.Indexes != null));
 			indexerExpression.TargetObject.AcceptVisitor(this, data);
-			foreach (Expression o in indexerExpression.Indices) {
+			foreach (Expression o in indexerExpression.Indexes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}

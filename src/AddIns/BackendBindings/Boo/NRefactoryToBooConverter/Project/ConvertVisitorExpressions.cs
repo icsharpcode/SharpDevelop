@@ -496,7 +496,7 @@ namespace NRefactoryToBooConverter
 		{
 			B.SlicingExpression s = new B.SlicingExpression(GetLexicalInfo(indexerExpression));
 			s.Target = ConvertExpression(indexerExpression.TargetObject);
-			foreach (Expression expr in indexerExpression.Indices) {
+			foreach (Expression expr in indexerExpression.Indexes) {
 				s.Indices.Add(new B.Slice(ConvertExpression(expr)));
 			}
 			return s;

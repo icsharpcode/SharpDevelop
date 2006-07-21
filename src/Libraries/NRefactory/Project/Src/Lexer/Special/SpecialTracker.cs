@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.Parser
 			currentSpecials.Add(new BlankLine(point));
 		}
 		
-		public void AddPreProcessingDirective(string cmd, string arg, Location start, Location end)
+		public void AddPreprocessingDirective(string cmd, string arg, Location start, Location end)
 		{
 			currentSpecials.Add(new PreprocessingDirective(cmd, arg, start, end));
 		}

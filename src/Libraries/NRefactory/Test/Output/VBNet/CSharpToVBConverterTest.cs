@@ -345,5 +345,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			              "\texample()\n" +
 			              "End While");
 		}
+		
+		[Test]
+		public void UIntVariableDeclaration()
+		{
+			TestStatement("uint s = 0;", "Dim s As UInteger = 0");
+		}
 	}
 }

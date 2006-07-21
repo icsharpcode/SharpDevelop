@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			Location start = new Location(Col - 1, Line);
 			string directive = ReadIdent('#');
 			string argument  = ReadToEndOfLine();
-			this.specialTracker.AddPreProcessingDirective(directive, argument.Trim(), start, new Location(start.X + directive.Length + argument.Length, start.Y));
+			this.specialTracker.AddPreprocessingDirective(directive, argument.Trim(), start, new Location(start.X + directive.Length + argument.Length, start.Y));
 		}
 		
 		protected override Token Next()

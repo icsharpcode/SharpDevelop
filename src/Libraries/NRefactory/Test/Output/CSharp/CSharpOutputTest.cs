@@ -359,5 +359,22 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			TestTypeMember("public static TheBug operator +(TheBug bugNode, TheBug bugNode2) { }");
 			TestTypeMember("public static TheBug operator >>(TheBug bugNode, int b) { }");
 		}
+		
+		[Test]
+		public void PropertyWithAccessorAccessModifiers()
+		{
+			TestTypeMember("public bool ExpectsValue {\n" +
+			               "\tinternal get {\n" +
+			               "\t}\n" +
+			               "\tprotected set {\n" +
+			               "\t}\n" +
+			               "}");
+		}
+		
+		[Test]
+		public void UsingStatementForExistingVariable()
+		{
+			TestStatement("using (obj) {\n}");
+		}
 	}
 }

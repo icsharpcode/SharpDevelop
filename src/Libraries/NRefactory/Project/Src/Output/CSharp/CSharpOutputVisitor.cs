@@ -534,6 +534,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			this.VisitAttributes(propertyGetRegion.Attributes, data);
 			outputFormatter.Indent();
+			OutputModifier(propertyGetRegion.Modifier);
 			outputFormatter.PrintText("get");
 			OutputBlock(propertyGetRegion.Block, prettyPrintOptions.PropertyGetBraceStyle);
 			return null;
@@ -543,6 +544,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			this.VisitAttributes(propertySetRegion.Attributes, data);
 			outputFormatter.Indent();
+			OutputModifier(propertySetRegion.Modifier);
 			outputFormatter.PrintText("set");
 			OutputBlock(propertySetRegion.Block, prettyPrintOptions.PropertySetBraceStyle);
 			return null;
@@ -1723,6 +1725,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
 					outputFormatter.PrintToken(Tokens.CloseParenthesis);
 					return null;
+				case BinaryOperatorType.Power:
+					outputFormatter.PrintText("Math.Pow");
+					if (prettyPrintOptions.BeforeMethodCallParentheses) {
+						outputFormatter.Space();
+					}
+					outputFormatter.PrintToken(Tokens.OpenParenthesis);
+					nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
+					PrintFormattedComma();
+					nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
+					outputFormatter.PrintToken(Tokens.CloseParenthesis);
+					return null;
 			}
 			nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
 			switch (binaryOperatorExpression.Op) {
@@ -1911,6 +1924,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.Space();
 					}
 					break;
+					
 				default:
 					errors.Error(-1, -1, String.Format("Unknown binary operator {0}", binaryOperatorExpression.Op));
 					return null;
@@ -2044,6 +2058,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				case AssignmentOperatorType.BitwiseOr:
 					outputFormatter.PrintToken(Tokens.BitwiseOrAssign);
 					break;
+				case AssignmentOperatorType.Power:
+					outputFormatter.PrintToken(Tokens.Assign);
+					if (this.prettyPrintOptions.AroundAssignmentParentheses) {
+						outputFormatter.Space();
+					}
+					Visit(new BinaryOperatorExpression(assignmentExpression.Left,
+					                                   BinaryOperatorType.Power,
+					                                   assignmentExpression.Right), data);
+					return null;
 				default:
 					errors.Error(-1, -1, String.Format("Unknown assignment operator {0}", assignmentExpression.Op));
 					return null;
@@ -2196,7 +2219,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (this.prettyPrintOptions.SpacesWithinBrackets) {
 				outputFormatter.Space();
 			}
-			AppendCommaSeparatedList(indexerExpression.Indices);
+			AppendCommaSeparatedList(indexerExpression.Indexes);
 			if (this.prettyPrintOptions.SpacesWithinBrackets) {
 				outputFormatter.Space();
 			}

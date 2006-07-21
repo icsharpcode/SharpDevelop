@@ -27,9 +27,9 @@ namespace ICSharpCode.NRefactory.Parser
 			this.prefix = prefix;
 		}
 		
-		public void Run(TypeDeclaration typeDeclaration)
+		public void Run(INode typeDeclaration)
 		{
-			typeDeclaration.AcceptChildren(this, null);
+			typeDeclaration.AcceptVisitor(this, null);
 			foreach (VariableDeclaration decl in fields) {
 				decl.Name = prefix + decl.Name;
 			}

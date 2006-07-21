@@ -238,9 +238,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (!indexers[i].IsIndexer)
 					indexers.RemoveAt(i--);
 			}
-			IReturnType[] parameters = new IReturnType[indexerExpression.Indices.Count];
+			IReturnType[] parameters = new IReturnType[indexerExpression.Indexes.Count];
 			for (int i = 0; i < parameters.Length; i++) {
-				Expression expr = indexerExpression.Indices[i] as Expression;
+				Expression expr = indexerExpression.Indexes[i] as Expression;
 				if (expr != null)
 					parameters[i] = (IReturnType)expr.AcceptVisitor(this, null);
 			}

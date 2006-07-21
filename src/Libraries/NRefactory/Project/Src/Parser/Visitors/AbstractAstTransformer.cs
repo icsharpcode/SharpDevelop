@@ -1001,20 +1001,20 @@ namespace ICSharpCode.NRefactory.Parser {
 		public virtual object Visit(IndexerExpression indexerExpression, object data) {
 			Debug.Assert((indexerExpression != null));
 			Debug.Assert((indexerExpression.TargetObject != null));
-			Debug.Assert((indexerExpression.Indices != null));
+			Debug.Assert((indexerExpression.Indexes != null));
 			nodeStack.Push(indexerExpression.TargetObject);
 			indexerExpression.TargetObject.AcceptVisitor(this, data);
 			indexerExpression.TargetObject = ((Expression)(nodeStack.Pop()));
-			for (int i = 0; i < indexerExpression.Indices.Count; i++) {
-				Expression o = indexerExpression.Indices[i];
+			for (int i = 0; i < indexerExpression.Indexes.Count; i++) {
+				Expression o = indexerExpression.Indexes[i];
 				Debug.Assert(o != null);
 				nodeStack.Push(o);
 				o.AcceptVisitor(this, data);
 				o = (Expression)nodeStack.Pop();
 				if (o == null)
-					indexerExpression.Indices.RemoveAt(i--);
+					indexerExpression.Indexes.RemoveAt(i--);
 				else
-					indexerExpression.Indices[i] = o;
+					indexerExpression.Indexes[i] = o;
 			}
 			return null;
 		}

@@ -416,5 +416,62 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "\treturn " + VBNetConstructsConvertVisitor.FunctionReturnValueName + ";\n" +
 			           "}");
 		}
+		
+		[Test]
+		public void Exponentiation()
+		{
+			TestStatement("i = i ^ 2", "i = Math.Pow(i, 2);");
+			TestStatement("i ^= 2", "i = Math.Pow(i, 2);");
+		}
+		
+		[Test]
+		public void AddNotParenthesis()
+		{
+			TestStatement("a = Not b = c", "a = !(b == c);");
+		}
+		
+		[Test]
+		public void StaticMethodVariable()
+		{
+			TestMember(@"Private Sub Test
+	Static j As Integer = 0
+	j += 1
+End Sub",
+			           @"private void Test()
+{
+	static_Test_j += 1;
+}
+static int static_Test_j = 0;");
+		}
+		
+		[Test]
+		public void StaticMethodVariable2()
+		{
+			TestMember(@"Private Sub Test
+	Static j As Integer = 0
+	j += 1
+End Sub
+Private Sub Test2
+	Static j As Integer = 0
+	j += 2
+End Sub",
+			           @"private void Test()
+{
+	static_Test_j += 1;
+}
+static int static_Test_j = 0;
+private void Test2()
+{
+	static_Test2_j += 2;
+}
+static int static_Test2_j = 0;");
+		}
+		
+		[Test]
+		public void UsingStatementForExistingVariable()
+		{
+			TestStatement("Using sw\nEnd Using",
+			              "using (sw) {\n}");
+		}
 	}
 }

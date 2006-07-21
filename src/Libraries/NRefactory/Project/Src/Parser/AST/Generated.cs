@@ -26,6 +26,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				eventExpression = value ?? Expression.Null;
+				if (!eventExpression.IsNull) eventExpression.Parent = this;
 			}
 		}
 		
@@ -35,6 +36,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				handlerExpression = value ?? Expression.Null;
+				if (!handlerExpression.IsNull) handlerExpression.Parent = this;
 			}
 		}
 		
@@ -62,6 +64,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -99,6 +102,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				body = value ?? BlockStatement.Null;
+				if (!body.IsNull) body.Parent = this;
 			}
 		}
 		
@@ -148,6 +152,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				arrayInitializer = value ?? ArrayInitializerExpression.Null;
+				if (!arrayInitializer.IsNull) arrayInitializer.Parent = this;
 			}
 		}
 		
@@ -256,6 +261,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				left = value ?? Expression.Null;
+				if (!left.IsNull) left.Parent = this;
 			}
 		}
 		
@@ -274,6 +280,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				right = value ?? Expression.Null;
+				if (!right.IsNull) right.Parent = this;
 			}
 		}
 		
@@ -442,6 +449,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				left = value ?? Expression.Null;
+				if (!left.IsNull) left.Parent = this;
 			}
 		}
 		
@@ -460,6 +468,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				right = value ?? Expression.Null;
+				if (!right.IsNull) right.Parent = this;
 			}
 		}
 		
@@ -506,6 +515,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				label = value ?? Expression.Null;
+				if (!label.IsNull) label.Parent = this;
 			}
 		}
 		
@@ -524,6 +534,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				toExpression = value ?? Expression.Null;
+				if (!toExpression.IsNull) toExpression.Parent = this;
 			}
 		}
 		
@@ -586,6 +597,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -652,6 +664,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				statementBlock = value ?? Statement.Null;
+				if (!statementBlock.IsNull) statementBlock.Parent = this;
 			}
 		}
 		
@@ -661,6 +674,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				condition = value ?? Expression.Null;
+				if (!condition.IsNull) condition.Parent = this;
 			}
 		}
 		
@@ -705,6 +719,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -731,6 +746,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				block = value ?? Statement.Null;
+				if (!block.IsNull) block.Parent = this;
 			}
 		}
 		
@@ -775,6 +791,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				condition = value ?? Expression.Null;
+				if (!condition.IsNull) condition.Parent = this;
 			}
 		}
 		
@@ -784,6 +801,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				trueExpression = value ?? Expression.Null;
+				if (!trueExpression.IsNull) trueExpression.Parent = this;
 			}
 		}
 		
@@ -793,6 +811,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				falseExpression = value ?? Expression.Null;
+				if (!falseExpression.IsNull) falseExpression.Parent = this;
 			}
 		}
 		
@@ -832,6 +851,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				body = value ?? BlockStatement.Null;
+				if (!body.IsNull) body.Parent = this;
 			}
 		}
 		
@@ -1139,6 +1159,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				body = value ?? BlockStatement.Null;
+				if (!body.IsNull) body.Parent = this;
 			}
 		}
 		
@@ -1179,6 +1200,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -1210,6 +1232,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				condition = value ?? Expression.Null;
+				if (!condition.IsNull) condition.Parent = this;
 			}
 		}
 		
@@ -1258,6 +1281,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				condition = value ?? Expression.Null;
+				if (!condition.IsNull) condition.Parent = this;
 			}
 		}
 		
@@ -1343,6 +1367,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -1421,6 +1446,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				block = value ?? BlockStatement.Null;
+				if (!block.IsNull) block.Parent = this;
 			}
 		}
 		
@@ -1745,13 +1771,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			if (!typeReference.IsNull) {
 				return typeReference;
 			}
-			
-			for (int i = fieldIndex; i < Fields.Count;++i) {
-				if (!((VariableDeclaration)Fields[i]).TypeReference.IsNull) {
-					return ((VariableDeclaration)Fields[i]).TypeReference;
-				}
-			}
-			return TypeReference.Null;
+			return ((VariableDeclaration)Fields[fieldIndex]).TypeReference;
 		}
 		
 
@@ -1786,6 +1806,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				targetObject = value ?? Expression.Null;
+				if (!targetObject.IsNull) targetObject.Parent = this;
 			}
 		}
 		
@@ -1885,6 +1906,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -1894,6 +1916,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				nextExpression = value ?? Expression.Null;
+				if (!nextExpression.IsNull) nextExpression.Parent = this;
 			}
 		}
 		
@@ -1943,6 +1966,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				start = value ?? Expression.Null;
+				if (!start.IsNull) start.Parent = this;
 			}
 		}
 		
@@ -1952,6 +1976,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				end = value ?? Expression.Null;
+				if (!end.IsNull) end.Parent = this;
 			}
 		}
 		
@@ -1961,6 +1986,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				step = value ?? Expression.Null;
+				if (!step.IsNull) step.Parent = this;
 			}
 		}
 		
@@ -2034,6 +2060,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				condition = value ?? Expression.Null;
+				if (!condition.IsNull) condition.Parent = this;
 			}
 		}
 		
@@ -2072,6 +2099,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -2162,6 +2190,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				condition = value ?? Expression.Null;
+				if (!condition.IsNull) condition.Parent = this;
 			}
 		}
 		
@@ -2376,7 +2405,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		
 		Expression targetObject;
 		
-		List<Expression> indices;
+		List<Expression> indexes;
 		
 		public Expression TargetObject {
 			get {
@@ -2384,21 +2413,22 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				targetObject = value ?? Expression.Null;
+				if (!targetObject.IsNull) targetObject.Parent = this;
 			}
 		}
 		
-		public List<Expression> Indices {
+		public List<Expression> Indexes {
 			get {
-				return indices;
+				return indexes;
 			}
 			set {
-				indices = value ?? new List<Expression>();
+				indexes = value ?? new List<Expression>();
 			}
 		}
 		
-		public IndexerExpression(Expression targetObject, List<Expression> indices) {
+		public IndexerExpression(Expression targetObject, List<Expression> indexes) {
 			TargetObject = targetObject;
-			Indices = indices;
+			Indexes = indexes;
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
@@ -2406,7 +2436,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override string ToString() {
-			return string.Format("[IndexerExpression TargetObject={0} Indices={1}]", TargetObject, GetCollectionString(Indices));
+			return string.Format("[IndexerExpression TargetObject={0} Indexes={1}]", TargetObject, GetCollectionString(Indexes));
 		}
 	}
 	
@@ -2462,6 +2492,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				targetObject = value ?? Expression.Null;
+				if (!targetObject.IsNull) targetObject.Parent = this;
 			}
 		}
 		
@@ -2546,6 +2577,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				lockExpression = value ?? Expression.Null;
+				if (!lockExpression.IsNull) lockExpression.Parent = this;
 			}
 		}
 		
@@ -2590,6 +2622,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				body = value ?? BlockStatement.Null;
+				if (!body.IsNull) body.Parent = this;
 			}
 		}
 		
@@ -2660,6 +2693,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -2912,6 +2946,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				defaultValue = value ?? Expression.Null;
+				if (!defaultValue.IsNull) defaultValue.Parent = this;
 			}
 		}
 		
@@ -2997,6 +3032,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -3025,6 +3061,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				targetObject = value ?? Expression.Null;
+				if (!targetObject.IsNull) targetObject.Parent = this;
 			}
 		}
 		
@@ -3235,6 +3272,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				block = value ?? BlockStatement.Null;
+				if (!block.IsNull) block.Parent = this;
 			}
 		}
 		
@@ -3400,6 +3438,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				eventExpression = value ?? Expression.Null;
+				if (!eventExpression.IsNull) eventExpression.Parent = this;
 			}
 		}
 		
@@ -3409,6 +3448,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				handlerExpression = value ?? Expression.Null;
+				if (!handlerExpression.IsNull) handlerExpression.Parent = this;
 			}
 		}
 		
@@ -3478,6 +3518,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -3541,6 +3582,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -3568,6 +3610,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -3640,6 +3683,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				switchExpression = value ?? Expression.Null;
+				if (!switchExpression.IsNull) switchExpression.Parent = this;
 			}
 		}
 		
@@ -3729,6 +3773,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -3759,6 +3804,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				statementBlock = value ?? Statement.Null;
+				if (!statementBlock.IsNull) statementBlock.Parent = this;
 			}
 		}
 		
@@ -3777,6 +3823,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				finallyBlock = value ?? Statement.Null;
+				if (!finallyBlock.IsNull) finallyBlock.Parent = this;
 			}
 		}
 		
@@ -3909,6 +3956,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -3984,6 +4032,7 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -4016,6 +4065,7 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -4042,6 +4092,7 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 			}
 			set {
 				block = value ?? Statement.Null;
+				if (!block.IsNull) block.Parent = this;
 			}
 		}
 		
@@ -4068,6 +4119,7 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 			}
 			set {
 				block = value ?? Statement.Null;
+				if (!block.IsNull) block.Parent = this;
 			}
 		}
 		
@@ -4173,6 +4225,7 @@ public UsingDeclaration(string nameSpace, TypeReference alias) { usings = new Li
 			}
 			set {
 				resourceAcquisition = value ?? Statement.Null;
+				if (!resourceAcquisition.IsNull) resourceAcquisition.Parent = this;
 			}
 		}
 		
@@ -4213,6 +4266,7 @@ public UsingDeclaration(string nameSpace, TypeReference alias) { usings = new Li
 			}
 			set {
 				initializer = value ?? Expression.Null;
+				if (!initializer.IsNull) initializer.Parent = this;
 			}
 		}
 		
@@ -4264,6 +4318,7 @@ public UsingDeclaration(string nameSpace, TypeReference alias) { usings = new Li
 			}
 			set {
 				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
 			}
 		}
 		
@@ -4273,6 +4328,7 @@ public UsingDeclaration(string nameSpace, TypeReference alias) { usings = new Li
 			}
 			set {
 				body = value ?? BlockStatement.Null;
+				if (!body.IsNull) body.Parent = this;
 			}
 		}
 		
@@ -4300,6 +4356,7 @@ public UsingDeclaration(string nameSpace, TypeReference alias) { usings = new Li
 			}
 			set {
 				statement = value ?? Statement.Null;
+				if (!statement.IsNull) statement.Parent = this;
 			}
 		}
 		

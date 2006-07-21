@@ -947,7 +947,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	(. Location startPos = t.Location; .)
 	(.
 		m.Check(Modifier.Fields);
-		FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
+		FieldDeclaration fd = new FieldDeclaration(attributes, null, m.Modifier);
 		fd.StartLocation = m.GetDeclarationLocation(startPos); 
 	.)
 	IdentifierForFieldDeclaration (. string name = t.val; .)
@@ -1255,13 +1255,16 @@ AccessorDecls<out PropertyGetRegion getBlock, out PropertySetRegion setBlock>
 
 /* 9.7.1 */
 GetAccessorDecl<out PropertyGetRegion getBlock, List<AttributeSection> attributes>
-	(. Statement stmt = null; .) =
+	(. Statement stmt = null; Modifier m; .)
+=
+	PropertyAccessorAccessModifier<out m>
 	"Get"
 	(. Location startLocation = t.Location; .)
 	EOL
 	Block<out stmt>
 	(. getBlock = new PropertyGetRegion((BlockStatement)stmt, attributes); .)
 	"End" "Get"
+	(. getBlock.Modifier = m; .)
 	(. getBlock.StartLocation = startLocation; getBlock.EndLocation = t.EndLocation; .)
 	EOL
 	.
@@ -1269,8 +1272,12 @@ GetAccessorDecl<out PropertyGetRegion getBlock, List<AttributeSection> attribute
 /* 9.7.2 */
 SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attributes>
 	(.
-		Statement stmt = null; List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
-	.) =
+		Statement stmt = null;
+		List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
+		Modifier m;
+	.)
+=
+	PropertyAccessorAccessModifier<out m>
 	"Set"
 	(. Location startLocation = t.Location; .)
 	[ "("	[ FormalParameterList<p> ] ")" ]
@@ -1278,6 +1285,7 @@ SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attribute
 	Block<out stmt>
 	(.
 		setBlock = new PropertySetRegion((BlockStatement)stmt, attributes);
+		setBlock.Modifier = m;
 		setBlock.Parameters = p;
 	.)
 	"End" "Set"
@@ -1328,9 +1336,22 @@ VariableDeclaratorPartAfterIdentifier<List<VariableDeclaration> fieldDeclaration
 			}
 		.)
 	|
-		[ "As" TypeName<out type> ]
+		[ "As" TypeName<out type>
+		  (.
+			for (int i = fieldDeclaration.Count - 1; i >= 0; i--) {
+				VariableDeclaration vd = fieldDeclaration[i];
+				if (vd.TypeReference.Type.Length > 0) break;
+				TypeReference newType = type.Clone();
+				newType.RankSpecifier = vd.TypeReference.RankSpecifier;
+				vd.TypeReference = newType;
+			}
+		  .)
+		]
 		(.
-			if (type != null && dimension != null) {
+			if (type == null && (dimension != null || rank != null)) {
+				type = new TypeReference("");
+			}
+			if (dimension != null) {
 				if(type.RankSpecifier != null) {
 					Error("array rank only allowed one time");
 				} else {
@@ -1344,7 +1365,7 @@ VariableDeclaratorPartAfterIdentifier<List<VariableDeclaration> fieldDeclaration
 					}
 					expr = new ArrayCreateExpression(type, dimension);
 				}
-			} else if (type != null && rank != null) {
+			} else if (rank != null) {
 				if(type.RankSpecifier != null) {
 					Error("array rank only allowed one time");
 				} else {
@@ -1695,7 +1716,12 @@ ComparisonExpr<out Expression outExpr>
 			| "Is"	(. op = BinaryOperatorType.ReferenceEquality; .)
 			| "IsNot" (. op = BinaryOperatorType.ReferenceInequality; .)
 		)
-		ShiftExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
+		(
+			ShiftExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
+		|
+			"Not"
+			ShiftExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, new UnaryOperatorExpression(expr, UnaryOperatorType.Not));  .)
+		)
 	}
 .
 
@@ -2188,7 +2214,7 @@ LocalDeclarationStatement<out Statement statement>
 	(.
 		statement = localVariableDeclaration;
 	.)
-	.
+.
 
 EmbeddedStatement<out Statement statement>
 	(.
@@ -2440,15 +2466,20 @@ EmbeddedStatement<out Statement statement>
 		.)
 	| "Call" SimpleExpr<out expr> (. statement = new StatementExpression(expr); .)
 	| "Using"
-		(. LocalVariableDeclaration resourceAquisition = new LocalVariableDeclaration(Modifier.None); .)
 		(. Statement block;  .)
-		VariableDeclarator<resourceAquisition.Variables>
-		{ ","
-		  VariableDeclarator<resourceAquisition.Variables>
-		}
-		Block<out block>
+		( IF (Peek(1).kind == Tokens.As)
+			(. LocalVariableDeclaration resourceAquisition = new LocalVariableDeclaration(Modifier.None); .)
+			VariableDeclarator<resourceAquisition.Variables>
+			{ ","
+			  VariableDeclarator<resourceAquisition.Variables>
+			}
+			Block<out block>
+			(. statement = new UsingStatement(resourceAquisition, block); .)
+		|	Expr<out expr>
+			Block<out block>
+			(. statement = new UsingStatement(new StatementExpression(expr), block); .)
+		)
 		"End" "Using"
-		(. statement = new UsingStatement(resourceAquisition, block); .)
 .
 
 /* 10.9.2 */
@@ -2773,6 +2804,16 @@ MemberModifier<Modifiers m> =
 	| "WriteOnly"		(.m.Add(Modifier.WriteOnly, t.Location);.)
 	| "WithEvents"		(.m.Add(Modifier.WithEvents, t.Location);.)
 	| "Dim"				(.m.Add(Modifier.Dim, t.Location);.)
+.
+
+PropertyAccessorAccessModifier<out Modifier m> =
+	(. m = Modifier.None; .)
+	{(
+		"Public"    (. m |= Modifier.Public; .)
+	 |  "Protected" (. m |= Modifier.Protected; .)
+	 |  "Friend"    (. m |= Modifier.Internal; .)
+	 |  "Private"   (. m |= Modifier.Private; .)
+	)}
 .
 
 END VBNET.

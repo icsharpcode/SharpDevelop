@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace NRefactoryASTGenerator.Ast
 {
 	[CustomImplementation]
-	abstract class Expression : AbstractNode {}
+	abstract class Expression : AbstractNode, INullable {}
 	
 	[CustomImplementation]
 	class PrimitiveExpression : Expression {}
@@ -189,9 +189,9 @@ namespace NRefactoryASTGenerator.Ast
 	
 	class IndexerExpression : Expression {
 		Expression       targetObject;
-		List<Expression> indices;
+		List<Expression> indexes;
 		
-		public IndexerExpression(Expression targetObject, List<Expression> indices) {}
+		public IndexerExpression(Expression targetObject, List<Expression> indexes) {}
 	}
 	
 	class PointerReferenceExpression : Expression {

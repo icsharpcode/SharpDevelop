@@ -39,6 +39,40 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("myField", ((VariableDeclaration)fd.Fields[0]).Name);
 			Assert.AreEqual(new int[] { 3 } , ((VariableDeclaration)fd.Fields[0]).TypeReference.RankSpecifier);
 		}
-		#endregion 
+		
+		[Test]
+		public void VBNetMultiFieldDeclarationTest()
+		{
+			FieldDeclaration fd = ParseUtilVBNet.ParseTypeMember<FieldDeclaration>("a, b As String");
+			Assert.AreEqual(2, fd.Fields.Count);
+			
+			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
+			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[1]).TypeReference.Type);
+		}
+		
+		[Test]
+		public void VBNetMultiFieldDeclarationTest2()
+		{
+			FieldDeclaration fd = ParseUtilVBNet.ParseTypeMember<FieldDeclaration>("Dim a, b() As String");
+			Assert.AreEqual(2, fd.Fields.Count);
+			
+			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
+			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[1]).TypeReference.Type);
+			Assert.IsFalse(((VariableDeclaration)fd.Fields[0]).TypeReference.IsArrayType);
+			Assert.IsTrue(((VariableDeclaration)fd.Fields[1]).TypeReference.IsArrayType);
+		}
+		
+		[Test]
+		public void VBNetMultiFieldDeclarationTest3()
+		{
+			FieldDeclaration fd = ParseUtilVBNet.ParseTypeMember<FieldDeclaration>("Dim a(), b As String");
+			Assert.AreEqual(2, fd.Fields.Count);
+			
+			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
+			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[1]).TypeReference.Type);
+			Assert.IsTrue(((VariableDeclaration)fd.Fields[0]).TypeReference.IsArrayType);
+			Assert.IsFalse(((VariableDeclaration)fd.Fields[1]).TypeReference.IsArrayType);
+		}
+		#endregion
 	}
 }

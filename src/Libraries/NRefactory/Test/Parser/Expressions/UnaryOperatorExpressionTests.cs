@@ -102,6 +102,24 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void VBNetInEqualsNotTest()
+		{
+			BinaryOperatorExpression e = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>("b <> Not a");
+			Assert.AreEqual(BinaryOperatorType.InEquality, e.Op);
+			UnaryOperatorExpression ue = (UnaryOperatorExpression)e.Right;
+			Assert.AreEqual(UnaryOperatorType.Not, ue.Op);
+		}
+		
+		[Test]
+		public void VBNetNotEqualTest()
+		{
+			UnaryOperatorExpression e = ParseUtilVBNet.ParseExpression<UnaryOperatorExpression>("Not a = b");
+			Assert.AreEqual(UnaryOperatorType.Not, e.Op);
+			BinaryOperatorExpression boe = (BinaryOperatorExpression)e.Expression;
+			Assert.AreEqual(BinaryOperatorType.Equality, boe.Op);
+		}
+		
+		[Test]
 		public void VBNetPlusTest()
 		{
 			VBNetTestUnaryOperatorExpressionTest("+a", UnaryOperatorType.Plus);

@@ -725,7 +725,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public override object Visit(IndexerExpression indexerExpression, object data)
 		{
-			return new CodeIndexerExpression((CodeExpression)indexerExpression.TargetObject.AcceptVisitor(this, data), GetExpressionList(indexerExpression.Indices));
+			return new CodeIndexerExpression((CodeExpression)indexerExpression.TargetObject.AcceptVisitor(this, data), GetExpressionList(indexerExpression.Indexes));
 		}
 		
 		public override object Visit(ThisReferenceExpression thisReferenceExpression, object data)

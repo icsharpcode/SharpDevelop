@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public AbstractOutputFormatter(AbstractPrettyPrintOptions prettyPrintOptions)
+		protected AbstractOutputFormatter(AbstractPrettyPrintOptions prettyPrintOptions)
 		{
 			this.prettyPrintOptions = prettyPrintOptions;
 		}

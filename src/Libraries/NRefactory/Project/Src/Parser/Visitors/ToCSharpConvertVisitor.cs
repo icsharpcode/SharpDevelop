@@ -44,5 +44,48 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 			return base.Visit(eventDeclaration, data);
 		}
+		
+		public override object Visit(LocalVariableDeclaration localVariableDeclaration, object data)
+		{
+			base.Visit(localVariableDeclaration, data);
+			if ((localVariableDeclaration.Modifier & Modifier.Static) == Modifier.Static) {
+				INode parent = localVariableDeclaration.Parent;
+				while (parent != null && !IsTypeLevel(parent)) {
+					parent = parent.Parent;
+				}
+				if (parent != null) {
+					INode type = parent.Parent;
+					if (type != null) {
+						int pos = type.Children.IndexOf(parent);
+						if (pos >= 0) {
+							FieldDeclaration field = new FieldDeclaration(null);
+							field.TypeReference = localVariableDeclaration.TypeReference;
+							field.Modifier = Modifier.Static;
+							field.Fields = localVariableDeclaration.Variables;
+							new PrefixFieldsVisitor(field.Fields, "static_" + GetTypeLevelEntityName(parent) + "_").Run(parent);
+							type.Children.Insert(pos + 1, field);
+							RemoveCurrentNode();
+						}
+					}
+				}
+			}
+			return null;
+		}
+		
+		static bool IsTypeLevel(INode node)
+		{
+			return node is MethodDeclaration || node is PropertyDeclaration || node is EventDeclaration
+				|| node is OperatorDeclaration || node is FieldDeclaration;
+		}
+		
+		static string GetTypeLevelEntityName(INode node)
+		{
+			if (node is ParametrizedNode)
+				return ((ParametrizedNode)node).Name;
+			else if (node is FieldDeclaration)
+				return ((FieldDeclaration)node).Fields[0].Name;
+			else
+				throw new ArgumentException();
+		}
 	}
 }

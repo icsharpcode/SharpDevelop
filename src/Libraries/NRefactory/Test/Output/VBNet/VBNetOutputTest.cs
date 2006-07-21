@@ -275,6 +275,17 @@ End Using");
 		}
 		
 		[Test]
+		public void PropertyWithAccessorAccessModifiers()
+		{
+			TestTypeMember("Public Property ExpectsValue() As Boolean\n" +
+			               "\tPublic Get\n" +
+			               "\tEnd Get\n" +
+			               "\tProtected Set\n" +
+			               "\tEnd Set\n" +
+			               "End Property");
+		}
+		
+		[Test]
 		public void AbstractProperty()
 		{
 			TestTypeMember("Public MustOverride Property ExpectsValue() As Boolean");
@@ -341,6 +352,12 @@ End Using");
 		{
 			TestTypeMember("Public Shared Operator +(ByVal bugNode As TheBug, ByVal bugNode2 As TheBug) As TheBug\nEnd Operator");
 			TestTypeMember("Public Shared Operator >>(ByVal bugNode As TheBug, ByVal b As Integer) As TheBug\nEnd Operator");
+		}
+		
+		[Test]
+		public void UsingStatementForExistingVariable()
+		{
+			TestStatement("Using obj\nEnd Using");
 		}
 	}
 }

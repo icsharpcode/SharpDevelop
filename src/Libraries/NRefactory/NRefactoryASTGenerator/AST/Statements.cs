@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace NRefactoryASTGenerator.Ast
 {
 	[CustomImplementation]
-	abstract class Statement : AbstractNode {}
+	abstract class Statement : AbstractNode, INullable {}
 	
 	[CustomImplementation]
 	abstract class StatementWithEmbeddedStatement : Statement {

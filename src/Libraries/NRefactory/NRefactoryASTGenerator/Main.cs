@@ -397,6 +397,9 @@ namespace NRefactoryASTGenerator
 				else
 					ex = GetDefaultValue("value", field);
 				p.SetStatements.Add(new CodeAssignStatement(new CodeVariableReferenceExpression(field.Name), ex));
+				if (typeof(INode).IsAssignableFrom(field.FieldType) && typeof(INullable).IsAssignableFrom(field.FieldType)) {
+					p.SetStatements.Add(new CodeSnippetStatement("\t\t\t\tif (!" +field.Name+".IsNull) "+field.Name+".Parent = this;"));
+				}
 				ctd.Members.Add(p);
 			}
 			foreach (ConstructorInfo ctor in type.GetConstructors()) {

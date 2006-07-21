@@ -114,13 +114,7 @@ namespace NRefactoryASTGenerator.Ast
 			if (!typeReference.IsNull) {
 				return typeReference;
 			}
-			
-			for (int i = fieldIndex; i < Fields.Count;++i) {
-				if (!((VariableDeclaration)Fields[i]).TypeReference.IsNull) {
-					return ((VariableDeclaration)Fields[i]).TypeReference;
-				}
-			}
-			return TypeReference.Null;
+			return ((VariableDeclaration)Fields[fieldIndex]).TypeReference;
 		}")]
 	[IncludeMember(@"
 		public VariableDeclaration GetVariableDeclaration(string variableName)

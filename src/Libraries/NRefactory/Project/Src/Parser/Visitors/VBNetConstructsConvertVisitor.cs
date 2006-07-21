@@ -390,6 +390,8 @@ namespace ICSharpCode.NRefactory.Parser
 						boe.Op = BinaryOperatorType.ReferenceInequality;
 						ReplaceCurrentNode(pe);
 					}
+				} else if (unaryOperatorExpression.Expression is BinaryOperatorExpression) {
+					unaryOperatorExpression.Expression = new ParenthesizedExpression(unaryOperatorExpression.Expression);
 				}
 			}
 			return null;
