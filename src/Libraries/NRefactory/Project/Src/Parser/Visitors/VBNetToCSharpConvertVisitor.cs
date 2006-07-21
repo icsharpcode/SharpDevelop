@@ -12,9 +12,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory.Visitors
 {
 	/// <summary>
 	/// This class converts VB.NET constructs to their C# equivalents.
@@ -23,9 +23,9 @@ namespace ICSharpCode.NRefactory.Parser
 	/// </summary>
 	public class VBNetToCSharpConvertVisitor : VBNetConstructsConvertVisitor
 	{
-		public override object Visit(CompilationUnit compilationUnit, object data)
+		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
-			base.Visit(compilationUnit, data);
+			base.VisitCompilationUnit(compilationUnit, data);
 			compilationUnit.AcceptVisitor(new ToCSharpConvertVisitor(), data);
 			return null;
 		}

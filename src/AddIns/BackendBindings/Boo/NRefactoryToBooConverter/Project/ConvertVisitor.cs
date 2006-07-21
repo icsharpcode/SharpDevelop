@@ -7,15 +7,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
 using Boo.Lang.Compiler;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 using B = Boo.Lang.Compiler.Ast;
 
 namespace NRefactoryToBooConverter
 {
-	public partial class ConvertVisitor : IAstVisitor
+	public sealed partial class ConvertVisitor : IAstVisitor
 	{
 		string fileName;
 		CompilerErrorCollection errors;
@@ -243,12 +242,12 @@ namespace NRefactoryToBooConverter
 			return null;
 		}
 		
-		public object Visit(TypeReference typeReference, object data)
+		public object VisitTypeReference(TypeReference typeReference, object data)
 		{
 			return ConvertTypeReference(typeReference);
 		}
 		
-		public object Visit(InnerClassTypeReference typeReference, object data)
+		public object VisitInnerClassTypeReference(InnerClassTypeReference typeReference, object data)
 		{
 			return ConvertTypeReference(typeReference);
 		}

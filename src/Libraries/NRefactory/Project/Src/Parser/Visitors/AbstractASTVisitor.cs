@@ -8,16 +8,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ICSharpCode.NRefactory.Parser {
+namespace ICSharpCode.NRefactory.Visitors {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using ICSharpCode.NRefactory.Parser.Ast;
+	using ICSharpCode.NRefactory.Ast;
 	
 	
 	public abstract class AbstractAstVisitor : IAstVisitor {
 		
-		public virtual object Visit(AddHandlerStatement addHandlerStatement, object data) {
+		public virtual object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data) {
 			Debug.Assert((addHandlerStatement != null));
 			Debug.Assert((addHandlerStatement.EventExpression != null));
 			Debug.Assert((addHandlerStatement.HandlerExpression != null));
@@ -25,13 +25,13 @@ namespace ICSharpCode.NRefactory.Parser {
 			return addHandlerStatement.HandlerExpression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(AddressOfExpression addressOfExpression, object data) {
+		public virtual object VisitAddressOfExpression(AddressOfExpression addressOfExpression, object data) {
 			Debug.Assert((addressOfExpression != null));
 			Debug.Assert((addressOfExpression.Expression != null));
 			return addressOfExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(AnonymousMethodExpression anonymousMethodExpression, object data) {
+		public virtual object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data) {
 			Debug.Assert((anonymousMethodExpression != null));
 			Debug.Assert((anonymousMethodExpression.Parameters != null));
 			Debug.Assert((anonymousMethodExpression.Body != null));
@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return anonymousMethodExpression.Body.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(ArrayCreateExpression arrayCreateExpression, object data) {
+		public virtual object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data) {
 			Debug.Assert((arrayCreateExpression != null));
 			Debug.Assert((arrayCreateExpression.CreateType != null));
 			Debug.Assert((arrayCreateExpression.Arguments != null));
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return arrayCreateExpression.ArrayInitializer.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(ArrayInitializerExpression arrayInitializerExpression, object data) {
+		public virtual object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data) {
 			Debug.Assert((arrayInitializerExpression != null));
 			Debug.Assert((arrayInitializerExpression.CreateExpressions != null));
 			foreach (Expression o in arrayInitializerExpression.CreateExpressions) {
@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(AssignmentExpression assignmentExpression, object data) {
+		public virtual object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data) {
 			Debug.Assert((assignmentExpression != null));
 			Debug.Assert((assignmentExpression.Left != null));
 			Debug.Assert((assignmentExpression.Right != null));
@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return assignmentExpression.Right.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(ICSharpCode.NRefactory.Parser.Ast.Attribute attribute, object data) {
+		public virtual object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data) {
 			Debug.Assert((attribute != null));
 			Debug.Assert((attribute.PositionalArguments != null));
 			Debug.Assert((attribute.NamedArguments != null));
@@ -88,22 +88,22 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(AttributeSection attributeSection, object data) {
+		public virtual object VisitAttributeSection(AttributeSection attributeSection, object data) {
 			Debug.Assert((attributeSection != null));
 			Debug.Assert((attributeSection.Attributes != null));
-			foreach (ICSharpCode.NRefactory.Parser.Ast.Attribute o in attributeSection.Attributes) {
+			foreach (ICSharpCode.NRefactory.Ast.Attribute o in attributeSection.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
 			return null;
 		}
 		
-		public virtual object Visit(BaseReferenceExpression baseReferenceExpression, object data) {
+		public virtual object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data) {
 			Debug.Assert((baseReferenceExpression != null));
 			return null;
 		}
 		
-		public virtual object Visit(BinaryOperatorExpression binaryOperatorExpression, object data) {
+		public virtual object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data) {
 			Debug.Assert((binaryOperatorExpression != null));
 			Debug.Assert((binaryOperatorExpression.Left != null));
 			Debug.Assert((binaryOperatorExpression.Right != null));
@@ -111,17 +111,17 @@ namespace ICSharpCode.NRefactory.Parser {
 			return binaryOperatorExpression.Right.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(BlockStatement blockStatement, object data) {
+		public virtual object VisitBlockStatement(BlockStatement blockStatement, object data) {
 			Debug.Assert((blockStatement != null));
 			return blockStatement.AcceptChildren(this, data);
 		}
 		
-		public virtual object Visit(BreakStatement breakStatement, object data) {
+		public virtual object VisitBreakStatement(BreakStatement breakStatement, object data) {
 			Debug.Assert((breakStatement != null));
 			return null;
 		}
 		
-		public virtual object Visit(CaseLabel caseLabel, object data) {
+		public virtual object VisitCaseLabel(CaseLabel caseLabel, object data) {
 			Debug.Assert((caseLabel != null));
 			Debug.Assert((caseLabel.Label != null));
 			Debug.Assert((caseLabel.ToExpression != null));
@@ -129,7 +129,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return caseLabel.ToExpression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(CastExpression castExpression, object data) {
+		public virtual object VisitCastExpression(CastExpression castExpression, object data) {
 			Debug.Assert((castExpression != null));
 			Debug.Assert((castExpression.CastTo != null));
 			Debug.Assert((castExpression.Expression != null));
@@ -137,7 +137,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return castExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(CatchClause catchClause, object data) {
+		public virtual object VisitCatchClause(CatchClause catchClause, object data) {
 			Debug.Assert((catchClause != null));
 			Debug.Assert((catchClause.TypeReference != null));
 			Debug.Assert((catchClause.StatementBlock != null));
@@ -147,29 +147,29 @@ namespace ICSharpCode.NRefactory.Parser {
 			return catchClause.Condition.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(CheckedExpression checkedExpression, object data) {
+		public virtual object VisitCheckedExpression(CheckedExpression checkedExpression, object data) {
 			Debug.Assert((checkedExpression != null));
 			Debug.Assert((checkedExpression.Expression != null));
 			return checkedExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(CheckedStatement checkedStatement, object data) {
+		public virtual object VisitCheckedStatement(CheckedStatement checkedStatement, object data) {
 			Debug.Assert((checkedStatement != null));
 			Debug.Assert((checkedStatement.Block != null));
 			return checkedStatement.Block.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(ClassReferenceExpression classReferenceExpression, object data) {
+		public virtual object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data) {
 			Debug.Assert((classReferenceExpression != null));
 			return null;
 		}
 		
-		public virtual object Visit(CompilationUnit compilationUnit, object data) {
+		public virtual object VisitCompilationUnit(CompilationUnit compilationUnit, object data) {
 			Debug.Assert((compilationUnit != null));
 			return compilationUnit.AcceptChildren(this, data);
 		}
 		
-		public virtual object Visit(ConditionalExpression conditionalExpression, object data) {
+		public virtual object VisitConditionalExpression(ConditionalExpression conditionalExpression, object data) {
 			Debug.Assert((conditionalExpression != null));
 			Debug.Assert((conditionalExpression.Condition != null));
 			Debug.Assert((conditionalExpression.TrueExpression != null));
@@ -179,7 +179,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return conditionalExpression.FalseExpression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(ConstructorDeclaration constructorDeclaration, object data) {
+		public virtual object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data) {
 			Debug.Assert((constructorDeclaration != null));
 			Debug.Assert((constructorDeclaration.Attributes != null));
 			Debug.Assert((constructorDeclaration.Parameters != null));
@@ -197,7 +197,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return constructorDeclaration.Body.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(ConstructorInitializer constructorInitializer, object data) {
+		public virtual object VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data) {
 			Debug.Assert((constructorInitializer != null));
 			Debug.Assert((constructorInitializer.Arguments != null));
 			foreach (Expression o in constructorInitializer.Arguments) {
@@ -207,12 +207,12 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(ContinueStatement continueStatement, object data) {
+		public virtual object VisitContinueStatement(ContinueStatement continueStatement, object data) {
 			Debug.Assert((continueStatement != null));
 			return null;
 		}
 		
-		public virtual object Visit(DeclareDeclaration declareDeclaration, object data) {
+		public virtual object VisitDeclareDeclaration(DeclareDeclaration declareDeclaration, object data) {
 			Debug.Assert((declareDeclaration != null));
 			Debug.Assert((declareDeclaration.Attributes != null));
 			Debug.Assert((declareDeclaration.Parameters != null));
@@ -228,13 +228,13 @@ namespace ICSharpCode.NRefactory.Parser {
 			return declareDeclaration.TypeReference.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(DefaultValueExpression defaultValueExpression, object data) {
+		public virtual object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data) {
 			Debug.Assert((defaultValueExpression != null));
 			Debug.Assert((defaultValueExpression.TypeReference != null));
 			return defaultValueExpression.TypeReference.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(DelegateDeclaration delegateDeclaration, object data) {
+		public virtual object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data) {
 			Debug.Assert((delegateDeclaration != null));
 			Debug.Assert((delegateDeclaration.Attributes != null));
 			Debug.Assert((delegateDeclaration.ReturnType != null));
@@ -256,7 +256,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(DestructorDeclaration destructorDeclaration, object data) {
+		public virtual object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data) {
 			Debug.Assert((destructorDeclaration != null));
 			Debug.Assert((destructorDeclaration.Attributes != null));
 			Debug.Assert((destructorDeclaration.Body != null));
@@ -267,13 +267,13 @@ namespace ICSharpCode.NRefactory.Parser {
 			return destructorDeclaration.Body.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(DirectionExpression directionExpression, object data) {
+		public virtual object VisitDirectionExpression(DirectionExpression directionExpression, object data) {
 			Debug.Assert((directionExpression != null));
 			Debug.Assert((directionExpression.Expression != null));
 			return directionExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(DoLoopStatement doLoopStatement, object data) {
+		public virtual object VisitDoLoopStatement(DoLoopStatement doLoopStatement, object data) {
 			Debug.Assert((doLoopStatement != null));
 			Debug.Assert((doLoopStatement.Condition != null));
 			Debug.Assert((doLoopStatement.EmbeddedStatement != null));
@@ -281,7 +281,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return doLoopStatement.EmbeddedStatement.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(ElseIfSection elseIfSection, object data) {
+		public virtual object VisitElseIfSection(ElseIfSection elseIfSection, object data) {
 			Debug.Assert((elseIfSection != null));
 			Debug.Assert((elseIfSection.Condition != null));
 			Debug.Assert((elseIfSection.EmbeddedStatement != null));
@@ -289,17 +289,17 @@ namespace ICSharpCode.NRefactory.Parser {
 			return elseIfSection.EmbeddedStatement.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(EmptyStatement emptyStatement, object data) {
+		public virtual object VisitEmptyStatement(EmptyStatement emptyStatement, object data) {
 			Debug.Assert((emptyStatement != null));
 			return null;
 		}
 		
-		public virtual object Visit(EndStatement endStatement, object data) {
+		public virtual object VisitEndStatement(EndStatement endStatement, object data) {
 			Debug.Assert((endStatement != null));
 			return null;
 		}
 		
-		public virtual object Visit(EraseStatement eraseStatement, object data) {
+		public virtual object VisitEraseStatement(EraseStatement eraseStatement, object data) {
 			Debug.Assert((eraseStatement != null));
 			Debug.Assert((eraseStatement.Expressions != null));
 			foreach (Expression o in eraseStatement.Expressions) {
@@ -309,13 +309,13 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(ErrorStatement errorStatement, object data) {
+		public virtual object VisitErrorStatement(ErrorStatement errorStatement, object data) {
 			Debug.Assert((errorStatement != null));
 			Debug.Assert((errorStatement.Expression != null));
 			return errorStatement.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(EventAddRegion eventAddRegion, object data) {
+		public virtual object VisitEventAddRegion(EventAddRegion eventAddRegion, object data) {
 			Debug.Assert((eventAddRegion != null));
 			Debug.Assert((eventAddRegion.Attributes != null));
 			Debug.Assert((eventAddRegion.Block != null));
@@ -332,7 +332,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(EventDeclaration eventDeclaration, object data) {
+		public virtual object VisitEventDeclaration(EventDeclaration eventDeclaration, object data) {
 			Debug.Assert((eventDeclaration != null));
 			Debug.Assert((eventDeclaration.Attributes != null));
 			Debug.Assert((eventDeclaration.Parameters != null));
@@ -359,7 +359,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return eventDeclaration.RaiseRegion.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(EventRaiseRegion eventRaiseRegion, object data) {
+		public virtual object VisitEventRaiseRegion(EventRaiseRegion eventRaiseRegion, object data) {
 			Debug.Assert((eventRaiseRegion != null));
 			Debug.Assert((eventRaiseRegion.Attributes != null));
 			Debug.Assert((eventRaiseRegion.Block != null));
@@ -376,7 +376,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(EventRemoveRegion eventRemoveRegion, object data) {
+		public virtual object VisitEventRemoveRegion(EventRemoveRegion eventRemoveRegion, object data) {
 			Debug.Assert((eventRemoveRegion != null));
 			Debug.Assert((eventRemoveRegion.Attributes != null));
 			Debug.Assert((eventRemoveRegion.Block != null));
@@ -393,12 +393,18 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(ExitStatement exitStatement, object data) {
+		public virtual object VisitExitStatement(ExitStatement exitStatement, object data) {
 			Debug.Assert((exitStatement != null));
 			return null;
 		}
 		
-		public virtual object Visit(FieldDeclaration fieldDeclaration, object data) {
+		public virtual object VisitExpressionStatement(ExpressionStatement expressionStatement, object data) {
+			Debug.Assert((expressionStatement != null));
+			Debug.Assert((expressionStatement.Expression != null));
+			return expressionStatement.Expression.AcceptVisitor(this, data);
+		}
+		
+		public virtual object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data) {
 			Debug.Assert((fieldDeclaration != null));
 			Debug.Assert((fieldDeclaration.Attributes != null));
 			Debug.Assert((fieldDeclaration.TypeReference != null));
@@ -415,13 +421,13 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(FieldReferenceExpression fieldReferenceExpression, object data) {
+		public virtual object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data) {
 			Debug.Assert((fieldReferenceExpression != null));
 			Debug.Assert((fieldReferenceExpression.TargetObject != null));
 			return fieldReferenceExpression.TargetObject.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(FixedStatement fixedStatement, object data) {
+		public virtual object VisitFixedStatement(FixedStatement fixedStatement, object data) {
 			Debug.Assert((fixedStatement != null));
 			Debug.Assert((fixedStatement.TypeReference != null));
 			Debug.Assert((fixedStatement.PointerDeclarators != null));
@@ -434,7 +440,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return fixedStatement.EmbeddedStatement.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(ForeachStatement foreachStatement, object data) {
+		public virtual object VisitForeachStatement(ForeachStatement foreachStatement, object data) {
 			Debug.Assert((foreachStatement != null));
 			Debug.Assert((foreachStatement.TypeReference != null));
 			Debug.Assert((foreachStatement.Expression != null));
@@ -446,7 +452,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return foreachStatement.EmbeddedStatement.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(ForNextStatement forNextStatement, object data) {
+		public virtual object VisitForNextStatement(ForNextStatement forNextStatement, object data) {
 			Debug.Assert((forNextStatement != null));
 			Debug.Assert((forNextStatement.Start != null));
 			Debug.Assert((forNextStatement.End != null));
@@ -465,7 +471,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return forNextStatement.EmbeddedStatement.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(ForStatement forStatement, object data) {
+		public virtual object VisitForStatement(ForStatement forStatement, object data) {
 			Debug.Assert((forStatement != null));
 			Debug.Assert((forStatement.Initializers != null));
 			Debug.Assert((forStatement.Condition != null));
@@ -483,23 +489,23 @@ namespace ICSharpCode.NRefactory.Parser {
 			return forStatement.EmbeddedStatement.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(GotoCaseStatement gotoCaseStatement, object data) {
+		public virtual object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data) {
 			Debug.Assert((gotoCaseStatement != null));
 			Debug.Assert((gotoCaseStatement.Expression != null));
 			return gotoCaseStatement.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(GotoStatement gotoStatement, object data) {
+		public virtual object VisitGotoStatement(GotoStatement gotoStatement, object data) {
 			Debug.Assert((gotoStatement != null));
 			return null;
 		}
 		
-		public virtual object Visit(IdentifierExpression identifierExpression, object data) {
+		public virtual object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data) {
 			Debug.Assert((identifierExpression != null));
 			return null;
 		}
 		
-		public virtual object Visit(IfElseStatement ifElseStatement, object data) {
+		public virtual object VisitIfElseStatement(IfElseStatement ifElseStatement, object data) {
 			Debug.Assert((ifElseStatement != null));
 			Debug.Assert((ifElseStatement.Condition != null));
 			Debug.Assert((ifElseStatement.TrueStatement != null));
@@ -521,7 +527,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(IndexerDeclaration indexerDeclaration, object data) {
+		public virtual object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data) {
 			Debug.Assert((indexerDeclaration != null));
 			Debug.Assert((indexerDeclaration.Attributes != null));
 			Debug.Assert((indexerDeclaration.Parameters != null));
@@ -546,7 +552,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return indexerDeclaration.SetRegion.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(IndexerExpression indexerExpression, object data) {
+		public virtual object VisitIndexerExpression(IndexerExpression indexerExpression, object data) {
 			Debug.Assert((indexerExpression != null));
 			Debug.Assert((indexerExpression.TargetObject != null));
 			Debug.Assert((indexerExpression.Indexes != null));
@@ -558,18 +564,18 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(InnerClassTypeReference innerClassTypeReference, object data) {
+		public virtual object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data) {
 			Debug.Assert((innerClassTypeReference != null));
 			return null;
 		}
 		
-		public virtual object Visit(InterfaceImplementation interfaceImplementation, object data) {
+		public virtual object VisitInterfaceImplementation(InterfaceImplementation interfaceImplementation, object data) {
 			Debug.Assert((interfaceImplementation != null));
 			Debug.Assert((interfaceImplementation.InterfaceType != null));
 			return interfaceImplementation.InterfaceType.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(InvocationExpression invocationExpression, object data) {
+		public virtual object VisitInvocationExpression(InvocationExpression invocationExpression, object data) {
 			Debug.Assert((invocationExpression != null));
 			Debug.Assert((invocationExpression.TargetObject != null));
 			Debug.Assert((invocationExpression.Arguments != null));
@@ -586,12 +592,12 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(LabelStatement labelStatement, object data) {
+		public virtual object VisitLabelStatement(LabelStatement labelStatement, object data) {
 			Debug.Assert((labelStatement != null));
 			return null;
 		}
 		
-		public virtual object Visit(LocalVariableDeclaration localVariableDeclaration, object data) {
+		public virtual object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data) {
 			Debug.Assert((localVariableDeclaration != null));
 			Debug.Assert((localVariableDeclaration.TypeReference != null));
 			Debug.Assert((localVariableDeclaration.Variables != null));
@@ -603,7 +609,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(LockStatement lockStatement, object data) {
+		public virtual object VisitLockStatement(LockStatement lockStatement, object data) {
 			Debug.Assert((lockStatement != null));
 			Debug.Assert((lockStatement.LockExpression != null));
 			Debug.Assert((lockStatement.EmbeddedStatement != null));
@@ -611,7 +617,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return lockStatement.EmbeddedStatement.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(MethodDeclaration methodDeclaration, object data) {
+		public virtual object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data) {
 			Debug.Assert((methodDeclaration != null));
 			Debug.Assert((methodDeclaration.Attributes != null));
 			Debug.Assert((methodDeclaration.Parameters != null));
@@ -640,18 +646,18 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(NamedArgumentExpression namedArgumentExpression, object data) {
+		public virtual object VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data) {
 			Debug.Assert((namedArgumentExpression != null));
 			Debug.Assert((namedArgumentExpression.Expression != null));
 			return namedArgumentExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(NamespaceDeclaration namespaceDeclaration, object data) {
+		public virtual object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data) {
 			Debug.Assert((namespaceDeclaration != null));
 			return namespaceDeclaration.AcceptChildren(this, data);
 		}
 		
-		public virtual object Visit(ObjectCreateExpression objectCreateExpression, object data) {
+		public virtual object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data) {
 			Debug.Assert((objectCreateExpression != null));
 			Debug.Assert((objectCreateExpression.CreateType != null));
 			Debug.Assert((objectCreateExpression.Parameters != null));
@@ -663,13 +669,13 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(OnErrorStatement onErrorStatement, object data) {
+		public virtual object VisitOnErrorStatement(OnErrorStatement onErrorStatement, object data) {
 			Debug.Assert((onErrorStatement != null));
 			Debug.Assert((onErrorStatement.EmbeddedStatement != null));
 			return onErrorStatement.EmbeddedStatement.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(OperatorDeclaration operatorDeclaration, object data) {
+		public virtual object VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data) {
 			Debug.Assert((operatorDeclaration != null));
 			Debug.Assert((operatorDeclaration.Attributes != null));
 			Debug.Assert((operatorDeclaration.Parameters != null));
@@ -703,12 +709,12 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(OptionDeclaration optionDeclaration, object data) {
+		public virtual object VisitOptionDeclaration(OptionDeclaration optionDeclaration, object data) {
 			Debug.Assert((optionDeclaration != null));
 			return null;
 		}
 		
-		public virtual object Visit(ParameterDeclarationExpression parameterDeclarationExpression, object data) {
+		public virtual object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data) {
 			Debug.Assert((parameterDeclarationExpression != null));
 			Debug.Assert((parameterDeclarationExpression.Attributes != null));
 			Debug.Assert((parameterDeclarationExpression.TypeReference != null));
@@ -721,24 +727,24 @@ namespace ICSharpCode.NRefactory.Parser {
 			return parameterDeclarationExpression.DefaultValue.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(ParenthesizedExpression parenthesizedExpression, object data) {
+		public virtual object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data) {
 			Debug.Assert((parenthesizedExpression != null));
 			Debug.Assert((parenthesizedExpression.Expression != null));
 			return parenthesizedExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(PointerReferenceExpression pointerReferenceExpression, object data) {
+		public virtual object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data) {
 			Debug.Assert((pointerReferenceExpression != null));
 			Debug.Assert((pointerReferenceExpression.TargetObject != null));
 			return pointerReferenceExpression.TargetObject.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(PrimitiveExpression primitiveExpression, object data) {
+		public virtual object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data) {
 			Debug.Assert((primitiveExpression != null));
 			return null;
 		}
 		
-		public virtual object Visit(PropertyDeclaration propertyDeclaration, object data) {
+		public virtual object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data) {
 			Debug.Assert((propertyDeclaration != null));
 			Debug.Assert((propertyDeclaration.Attributes != null));
 			Debug.Assert((propertyDeclaration.Parameters != null));
@@ -763,7 +769,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return propertyDeclaration.SetRegion.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(PropertyGetRegion propertyGetRegion, object data) {
+		public virtual object VisitPropertyGetRegion(PropertyGetRegion propertyGetRegion, object data) {
 			Debug.Assert((propertyGetRegion != null));
 			Debug.Assert((propertyGetRegion.Attributes != null));
 			Debug.Assert((propertyGetRegion.Block != null));
@@ -774,7 +780,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return propertyGetRegion.Block.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(PropertySetRegion propertySetRegion, object data) {
+		public virtual object VisitPropertySetRegion(PropertySetRegion propertySetRegion, object data) {
 			Debug.Assert((propertySetRegion != null));
 			Debug.Assert((propertySetRegion.Attributes != null));
 			Debug.Assert((propertySetRegion.Block != null));
@@ -791,7 +797,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(RaiseEventStatement raiseEventStatement, object data) {
+		public virtual object VisitRaiseEventStatement(RaiseEventStatement raiseEventStatement, object data) {
 			Debug.Assert((raiseEventStatement != null));
 			Debug.Assert((raiseEventStatement.Arguments != null));
 			foreach (Expression o in raiseEventStatement.Arguments) {
@@ -801,7 +807,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(ReDimStatement reDimStatement, object data) {
+		public virtual object VisitReDimStatement(ReDimStatement reDimStatement, object data) {
 			Debug.Assert((reDimStatement != null));
 			Debug.Assert((reDimStatement.ReDimClauses != null));
 			foreach (InvocationExpression o in reDimStatement.ReDimClauses) {
@@ -811,7 +817,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(RemoveHandlerStatement removeHandlerStatement, object data) {
+		public virtual object VisitRemoveHandlerStatement(RemoveHandlerStatement removeHandlerStatement, object data) {
 			Debug.Assert((removeHandlerStatement != null));
 			Debug.Assert((removeHandlerStatement.EventExpression != null));
 			Debug.Assert((removeHandlerStatement.HandlerExpression != null));
@@ -819,24 +825,24 @@ namespace ICSharpCode.NRefactory.Parser {
 			return removeHandlerStatement.HandlerExpression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(ResumeStatement resumeStatement, object data) {
+		public virtual object VisitResumeStatement(ResumeStatement resumeStatement, object data) {
 			Debug.Assert((resumeStatement != null));
 			return null;
 		}
 		
-		public virtual object Visit(ReturnStatement returnStatement, object data) {
+		public virtual object VisitReturnStatement(ReturnStatement returnStatement, object data) {
 			Debug.Assert((returnStatement != null));
 			Debug.Assert((returnStatement.Expression != null));
 			return returnStatement.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(SizeOfExpression sizeOfExpression, object data) {
+		public virtual object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data) {
 			Debug.Assert((sizeOfExpression != null));
 			Debug.Assert((sizeOfExpression.TypeReference != null));
 			return sizeOfExpression.TypeReference.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(StackAllocExpression stackAllocExpression, object data) {
+		public virtual object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data) {
 			Debug.Assert((stackAllocExpression != null));
 			Debug.Assert((stackAllocExpression.TypeReference != null));
 			Debug.Assert((stackAllocExpression.Expression != null));
@@ -844,18 +850,12 @@ namespace ICSharpCode.NRefactory.Parser {
 			return stackAllocExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(StatementExpression statementExpression, object data) {
-			Debug.Assert((statementExpression != null));
-			Debug.Assert((statementExpression.Expression != null));
-			return statementExpression.Expression.AcceptVisitor(this, data);
-		}
-		
-		public virtual object Visit(StopStatement stopStatement, object data) {
+		public virtual object VisitStopStatement(StopStatement stopStatement, object data) {
 			Debug.Assert((stopStatement != null));
 			return null;
 		}
 		
-		public virtual object Visit(SwitchSection switchSection, object data) {
+		public virtual object VisitSwitchSection(SwitchSection switchSection, object data) {
 			Debug.Assert((switchSection != null));
 			Debug.Assert((switchSection.SwitchLabels != null));
 			foreach (CaseLabel o in switchSection.SwitchLabels) {
@@ -865,7 +865,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return switchSection.AcceptChildren(this, data);
 		}
 		
-		public virtual object Visit(SwitchStatement switchStatement, object data) {
+		public virtual object VisitSwitchStatement(SwitchStatement switchStatement, object data) {
 			Debug.Assert((switchStatement != null));
 			Debug.Assert((switchStatement.SwitchExpression != null));
 			Debug.Assert((switchStatement.SwitchSections != null));
@@ -877,7 +877,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(TemplateDefinition templateDefinition, object data) {
+		public virtual object VisitTemplateDefinition(TemplateDefinition templateDefinition, object data) {
 			Debug.Assert((templateDefinition != null));
 			Debug.Assert((templateDefinition.Attributes != null));
 			Debug.Assert((templateDefinition.Bases != null));
@@ -892,18 +892,18 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(ThisReferenceExpression thisReferenceExpression, object data) {
+		public virtual object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data) {
 			Debug.Assert((thisReferenceExpression != null));
 			return null;
 		}
 		
-		public virtual object Visit(ThrowStatement throwStatement, object data) {
+		public virtual object VisitThrowStatement(ThrowStatement throwStatement, object data) {
 			Debug.Assert((throwStatement != null));
 			Debug.Assert((throwStatement.Expression != null));
 			return throwStatement.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(TryCatchStatement tryCatchStatement, object data) {
+		public virtual object VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data) {
 			Debug.Assert((tryCatchStatement != null));
 			Debug.Assert((tryCatchStatement.StatementBlock != null));
 			Debug.Assert((tryCatchStatement.CatchClauses != null));
@@ -916,7 +916,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return tryCatchStatement.FinallyBlock.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(TypeDeclaration typeDeclaration, object data) {
+		public virtual object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data) {
 			Debug.Assert((typeDeclaration != null));
 			Debug.Assert((typeDeclaration.Attributes != null));
 			Debug.Assert((typeDeclaration.BaseTypes != null));
@@ -936,13 +936,13 @@ namespace ICSharpCode.NRefactory.Parser {
 			return typeDeclaration.AcceptChildren(this, data);
 		}
 		
-		public virtual object Visit(TypeOfExpression typeOfExpression, object data) {
+		public virtual object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data) {
 			Debug.Assert((typeOfExpression != null));
 			Debug.Assert((typeOfExpression.TypeReference != null));
 			return typeOfExpression.TypeReference.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(TypeOfIsExpression typeOfIsExpression, object data) {
+		public virtual object VisitTypeOfIsExpression(TypeOfIsExpression typeOfIsExpression, object data) {
 			Debug.Assert((typeOfIsExpression != null));
 			Debug.Assert((typeOfIsExpression.Expression != null));
 			Debug.Assert((typeOfIsExpression.TypeReference != null));
@@ -950,48 +950,48 @@ namespace ICSharpCode.NRefactory.Parser {
 			return typeOfIsExpression.TypeReference.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(TypeReference typeReference, object data) {
+		public virtual object VisitTypeReference(TypeReference typeReference, object data) {
 			Debug.Assert((typeReference != null));
 			return null;
 		}
 		
-		public virtual object Visit(TypeReferenceExpression typeReferenceExpression, object data) {
+		public virtual object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data) {
 			Debug.Assert((typeReferenceExpression != null));
 			Debug.Assert((typeReferenceExpression.TypeReference != null));
 			return typeReferenceExpression.TypeReference.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(UnaryOperatorExpression unaryOperatorExpression, object data) {
+		public virtual object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data) {
 			Debug.Assert((unaryOperatorExpression != null));
 			Debug.Assert((unaryOperatorExpression.Expression != null));
 			return unaryOperatorExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(UncheckedExpression uncheckedExpression, object data) {
+		public virtual object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data) {
 			Debug.Assert((uncheckedExpression != null));
 			Debug.Assert((uncheckedExpression.Expression != null));
 			return uncheckedExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(UncheckedStatement uncheckedStatement, object data) {
+		public virtual object VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data) {
 			Debug.Assert((uncheckedStatement != null));
 			Debug.Assert((uncheckedStatement.Block != null));
 			return uncheckedStatement.Block.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(UnsafeStatement unsafeStatement, object data) {
+		public virtual object VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data) {
 			Debug.Assert((unsafeStatement != null));
 			Debug.Assert((unsafeStatement.Block != null));
 			return unsafeStatement.Block.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(Using @using, object data) {
+		public virtual object VisitUsing(Using @using, object data) {
 			Debug.Assert((@using != null));
 			Debug.Assert((@using.Alias != null));
 			return @using.Alias.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(UsingDeclaration usingDeclaration, object data) {
+		public virtual object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data) {
 			Debug.Assert((usingDeclaration != null));
 			Debug.Assert((usingDeclaration.Usings != null));
 			foreach (Using o in usingDeclaration.Usings) {
@@ -1001,7 +1001,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return null;
 		}
 		
-		public virtual object Visit(UsingStatement usingStatement, object data) {
+		public virtual object VisitUsingStatement(UsingStatement usingStatement, object data) {
 			Debug.Assert((usingStatement != null));
 			Debug.Assert((usingStatement.ResourceAcquisition != null));
 			Debug.Assert((usingStatement.EmbeddedStatement != null));
@@ -1009,7 +1009,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return usingStatement.EmbeddedStatement.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(VariableDeclaration variableDeclaration, object data) {
+		public virtual object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data) {
 			Debug.Assert((variableDeclaration != null));
 			Debug.Assert((variableDeclaration.Initializer != null));
 			Debug.Assert((variableDeclaration.TypeReference != null));
@@ -1017,7 +1017,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return variableDeclaration.TypeReference.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(WithStatement withStatement, object data) {
+		public virtual object VisitWithStatement(WithStatement withStatement, object data) {
 			Debug.Assert((withStatement != null));
 			Debug.Assert((withStatement.Expression != null));
 			Debug.Assert((withStatement.Body != null));
@@ -1025,7 +1025,7 @@ namespace ICSharpCode.NRefactory.Parser {
 			return withStatement.Body.AcceptVisitor(this, data);
 		}
 		
-		public virtual object Visit(YieldStatement yieldStatement, object data) {
+		public virtual object VisitYieldStatement(YieldStatement yieldStatement, object data) {
 			Debug.Assert((yieldStatement != null));
 			Debug.Assert((yieldStatement.Statement != null));
 			return yieldStatement.Statement.AcceptVisitor(this, data);

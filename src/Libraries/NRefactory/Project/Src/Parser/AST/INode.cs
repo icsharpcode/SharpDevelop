@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.NRefactory.Parser.Ast
+namespace ICSharpCode.NRefactory.Ast
 {
 	public interface INode
 	{

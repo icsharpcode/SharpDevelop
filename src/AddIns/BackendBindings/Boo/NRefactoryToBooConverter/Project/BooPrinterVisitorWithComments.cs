@@ -7,12 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using Boo.Lang.Compiler;
+
 using Boo.Lang.Compiler.Ast;
 using Boo.Lang.Compiler.Ast.Visitors;
-using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory;
 
 namespace NRefactoryToBooConverter
 {

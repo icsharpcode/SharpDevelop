@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.CSharp;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {

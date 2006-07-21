@@ -6,10 +6,9 @@
 // </file>
 
 using System;
-using ICSharpCode.NRefactory.Parser;
-using NR = ICSharpCode.NRefactory.Parser.Ast;
-using Boo.Lang.Compiler;
 using Boo.Lang.Compiler.Ast;
+using ICSharpCode.NRefactory.Visitors;
+using NR = ICSharpCode.NRefactory.Ast;
 
 namespace NRefactoryToBooConverter
 {

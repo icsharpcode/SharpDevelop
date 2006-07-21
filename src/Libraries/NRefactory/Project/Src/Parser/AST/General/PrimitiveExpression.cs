@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Collections;
 using System.Globalization;
 
-namespace ICSharpCode.NRefactory.Parser.Ast
+namespace ICSharpCode.NRefactory.Ast
 {
 	public class PrimitiveExpression : Expression
 	{
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data)
 		{
-			return visitor.Visit(this, data);
+			return visitor.VisitPrimitiveExpression(this, data);
 		}
 		
 		public override string ToString()

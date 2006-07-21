@@ -94,7 +94,7 @@
     <Compile Include="Parser\Statements\LocalVariableDeclarationTests.cs" />
     <Compile Include="Parser\Statements\LockStatementTests.cs" />
     <Compile Include="Parser\Statements\ReturnStatementTests.cs" />
-    <Compile Include="Parser\Statements\StatementExpressionTests.cs" />
+    <Compile Include="Parser\Statements\ExpressionStatementTests.cs" />
     <Compile Include="Parser\Statements\SwitchStatementTests.cs" />
     <Compile Include="Parser\Statements\ThrowStatementTests.cs" />
     <Compile Include="Parser\Statements\TryCatchStatementTests.cs" />

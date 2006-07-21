@@ -10,7 +10,7 @@ using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Tests.Ast
 {

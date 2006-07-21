@@ -7,10 +7,7 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
-using Boo.Lang.Compiler;
+using ICSharpCode.NRefactory.Ast;
 using B = Boo.Lang.Compiler.Ast;
 
 namespace NRefactoryToBooConverter
@@ -66,7 +63,7 @@ namespace NRefactoryToBooConverter
 			return new B.MethodInvocationExpression(MakeReferenceExpression(fullName), arguments);
 		}
 		
-		public object Visit(PrimitiveExpression pe, object data)
+		public object VisitPrimitiveExpression(PrimitiveExpression pe, object data)
 		{
 			object val = pe.Value;
 			if (val == null) {
@@ -125,12 +122,12 @@ namespace NRefactoryToBooConverter
 			return null;
 		}
 		
-		public object Visit(IdentifierExpression identifierExpression, object data)
+		public object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			return new B.ReferenceExpression(GetLexicalInfo(identifierExpression), identifierExpression.Identifier);
 		}
 		
-		public object Visit(FieldReferenceExpression fre, object data)
+		public object VisitFieldReferenceExpression(FieldReferenceExpression fre, object data)
 		{
 			B.Expression target = null;
 			if (fre.TargetObject is TypeReferenceExpression) {
@@ -146,7 +143,7 @@ namespace NRefactoryToBooConverter
 			return new B.MemberReferenceExpression(GetLexicalInfo(fre), target, fre.FieldName);
 		}
 		
-		public object Visit(ClassReferenceExpression classReferenceExpression, object data)
+		public object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data)
 		{
 			// VB's MyClass.Method references methods in the CURRENT class, ignoring overrides!!!
 			// that is supported neither by C# nor Boo.
@@ -194,7 +191,7 @@ namespace NRefactoryToBooConverter
 			}
 		}
 		
-		public object Visit(AssignmentExpression assignmentExpression, object data)
+		public object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			B.Expression left = ConvertExpression(assignmentExpression.Left);
 			B.Expression right = ConvertExpression(assignmentExpression.Right);
@@ -293,7 +290,7 @@ namespace NRefactoryToBooConverter
 			}
 		}
 		
-		public object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
+		public object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			B.Expression left = ConvertExpression(binaryOperatorExpression.Left);
 			B.Expression right = ConvertExpression(binaryOperatorExpression.Right);
@@ -308,7 +305,7 @@ namespace NRefactoryToBooConverter
 			return new B.BinaryExpression(GetLexicalInfo(binaryOperatorExpression), op, left, right);
 		}
 		
-		public object Visit(UnaryOperatorExpression unaryOperatorExpression, object data)
+		public object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			B.Expression expr = ConvertExpression(unaryOperatorExpression.Expression);
 			if (unaryOperatorExpression.Op == UnaryOperatorType.Plus)
@@ -321,12 +318,12 @@ namespace NRefactoryToBooConverter
 			return new B.UnaryExpression(GetLexicalInfo(unaryOperatorExpression), op, expr);
 		}
 		
-		public object Visit(ParenthesizedExpression parenthesizedExpression, object data)
+		public object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
 			return ConvertExpression(parenthesizedExpression.Expression);
 		}
 		
-		public object Visit(InvocationExpression ie, object data)
+		public object VisitInvocationExpression(InvocationExpression ie, object data)
 		{
 			if (ie.TypeArguments != null && ie.TypeArguments.Count > 0) {
 				AddError(ie, "Generic method calls are not supported.");
@@ -357,7 +354,7 @@ namespace NRefactoryToBooConverter
 			return r;
 		}
 		
-		public object Visit(ObjectCreateExpression objectCreateExpression, object data)
+		public object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			TypeReference t = objectCreateExpression.CreateType;
 			if (t.IsArrayType) {
@@ -372,48 +369,48 @@ namespace NRefactoryToBooConverter
 			return mie;
 		}
 		
-		public object Visit(TypeReferenceExpression typeReferenceExpression, object data)
+		public object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
 			return MakeReferenceExpression(typeReferenceExpression.TypeReference);
 		}
 		
-		public object Visit(SizeOfExpression sizeOfExpression, object data)
+		public object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
 		{
 			AddError(sizeOfExpression, "sizeof is not supported.");
 			return null;
 		}
 		
-		public object Visit(DefaultValueExpression defaultValueExpression, object data)
+		public object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 		{
 			AddError(defaultValueExpression, "default() is not supported.");
 			return null;
 		}
 		
-		public object Visit(TypeOfExpression typeOfExpression, object data)
+		public object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
 			return new B.TypeofExpression(GetLexicalInfo(typeOfExpression), ConvertTypeReference(typeOfExpression.TypeReference));
 		}
 		
-		public object Visit(TypeOfIsExpression typeOfIsExpression, object data)
+		public object VisitTypeOfIsExpression(TypeOfIsExpression typeOfIsExpression, object data)
 		{
 			return new B.BinaryExpression(GetLexicalInfo(typeOfIsExpression), B.BinaryOperatorType.TypeTest,
 			                              ConvertExpression(typeOfIsExpression.Expression),
 			                              MakeReferenceExpression(typeOfIsExpression.TypeReference));
 		}
 		
-		public object Visit(AddressOfExpression addressOfExpression, object data)
+		public object VisitAddressOfExpression(AddressOfExpression addressOfExpression, object data)
 		{
 			// Boo can reference methods directly
 			return ConvertExpression(addressOfExpression.Expression);
 		}
 		
-		public object Visit(PointerReferenceExpression pointerReferenceExpression, object data)
+		public object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
 			AddError(pointerReferenceExpression, "Pointers are not supported.");
 			return null;
 		}
 		
-		public object Visit(CastExpression castExpression, object data)
+		public object VisitCastExpression(CastExpression castExpression, object data)
 		{
 			switch (castExpression.CastType) {
 				case CastType.Cast:
@@ -432,29 +429,29 @@ namespace NRefactoryToBooConverter
 			}
 		}
 		
-		public object Visit(StackAllocExpression stackAllocExpression, object data)
+		public object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
 		{
 			AddError(stackAllocExpression, "StackAlloc is not supported.");
 			return null;
 		}
 		
-		public object Visit(ThisReferenceExpression thisReferenceExpression, object data)
+		public object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
 			return new B.SelfLiteralExpression(GetLexicalInfo(thisReferenceExpression));
 		}
 		
-		public object Visit(BaseReferenceExpression baseReferenceExpression, object data)
+		public object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
 		{
 			return new B.SuperLiteralExpression(GetLexicalInfo(baseReferenceExpression));
 		}
 		
-		public object Visit(DirectionExpression directionExpression, object data)
+		public object VisitDirectionExpression(DirectionExpression directionExpression, object data)
 		{
 			// boo does not need to specify the direction when calling out/ref methods
 			return ConvertExpression(directionExpression.Expression);
 		}
 		
-		public object Visit(ArrayCreateExpression arrayCreateExpression, object data)
+		public object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			if (!arrayCreateExpression.ArrayInitializer.IsNull) {
 				B.ArrayLiteralExpression ale = ConvertArrayLiteralExpression(arrayCreateExpression.ArrayInitializer);
@@ -480,7 +477,7 @@ namespace NRefactoryToBooConverter
 			return mie;
 		}
 		
-		public object Visit(ArrayInitializerExpression aie, object data)
+		public object VisitArrayInitializerExpression(ArrayInitializerExpression aie, object data)
 		{
 			return ConvertArrayLiteralExpression(aie);
 		}
@@ -492,7 +489,7 @@ namespace NRefactoryToBooConverter
 			return dims;
 		}
 		
-		public object Visit(IndexerExpression indexerExpression, object data)
+		public object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
 			B.SlicingExpression s = new B.SlicingExpression(GetLexicalInfo(indexerExpression));
 			s.Target = ConvertExpression(indexerExpression.TargetObject);
@@ -502,7 +499,7 @@ namespace NRefactoryToBooConverter
 			return s;
 		}
 		
-		public object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
+		public object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			B.CallableBlockExpression cbe = new B.CallableBlockExpression(GetLexicalInfo(anonymousMethodExpression));
 			cbe.EndSourceLocation = GetLocation(anonymousMethodExpression.EndLocation);
@@ -511,7 +508,7 @@ namespace NRefactoryToBooConverter
 			return cbe;
 		}
 		
-		public object Visit(ConditionalExpression conditionalExpression, object data)
+		public object VisitConditionalExpression(ConditionalExpression conditionalExpression, object data)
 		{
 			B.ConditionalExpression te = new B.ConditionalExpression(GetLexicalInfo(conditionalExpression));
 			te.Condition = ConvertExpression(conditionalExpression.Condition);
@@ -520,14 +517,14 @@ namespace NRefactoryToBooConverter
 			return te;
 		}
 		
-		public object Visit(CheckedExpression checkedExpression, object data)
+		public object VisitCheckedExpression(CheckedExpression checkedExpression, object data)
 		{
 			AddError(checkedExpression, "Using 'checked' inside an expression is not supported by boo, " +
 			         "use the checked {} block instead.");
 			return MakeMethodCall("checked", ConvertExpression(checkedExpression.Expression));
 		}
 		
-		public object Visit(UncheckedExpression uncheckedExpression, object data)
+		public object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
 		{
 			AddError(uncheckedExpression, "Using 'unchecked' inside an expression is not supported by boo, " +
 			         "use the unchecked {} block instead.");

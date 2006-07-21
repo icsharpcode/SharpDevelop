@@ -9,7 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
-using ICSharpCode.NRefactory.Parser.Ast;
+
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
@@ -120,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			AttributeSection sec = new AttributeSection(null, null);
 			foreach (IAttribute att in attributes) {
-				sec.Attributes.Add(new ICSharpCode.NRefactory.Parser.Ast.Attribute(att.Name, null, null));
+				sec.Attributes.Add(new ICSharpCode.NRefactory.Ast.Attribute(att.Name, null, null));
 			}
 			List<AttributeSection> resultList = new List<AttributeSection>(1);
 			if (sec.Attributes.Count > 0)
@@ -329,7 +330,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				BlockStatement block = new BlockStatement();
 				Expression left = new IdentifierExpression(field.Name);
 				Expression right = new IdentifierExpression("value");
-				block.AddChild(new StatementExpression(new AssignmentExpression(left, AssignmentOperatorType.Assign, right)));
+				block.AddChild(new ExpressionStatement(new AssignmentExpression(left, AssignmentOperatorType.Assign, right)));
 				property.SetRegion = new PropertySetRegion(block, null);
 			}
 			
@@ -488,7 +489,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (method != null) {
 				method.Body.Children.Clear();
 				if (method.TypeReference.SystemType == "System.Void") {
-					method.Body.AddChild(new StatementExpression(CreateForwardingMethodCall(method)));
+					method.Body.AddChild(new ExpressionStatement(CreateForwardingMethodCall(method)));
 				} else {
 					method.Body.AddChild(new ReturnStatement(CreateForwardingMethodCall(method)));
 				}
@@ -506,7 +507,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					Expression expr = new AssignmentExpression(field,
 					                                           AssignmentOperatorType.Assign,
 					                                           new IdentifierExpression("value"));
-					property.SetRegion.Block.AddChild(new StatementExpression(expr));
+					property.SetRegion.Block.AddChild(new ExpressionStatement(expr));
 				}
 			}
 			return node;

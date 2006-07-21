@@ -11,8 +11,9 @@ using System;
 using System.Collections.Generic;
 
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
@@ -25,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			this.resolver = resolver;
 		}
 		
-		public override object Visit(PrimitiveExpression primitiveExpression, object data)
+		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
 			if (primitiveExpression.Value == null) {
 				return NullReturnType.Instance;
@@ -34,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		public override object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
+		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			switch (binaryOperatorExpression.Op) {
 				case BinaryOperatorType.NullCoalescing:
@@ -61,12 +62,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		public override object Visit(ParenthesizedExpression parenthesizedExpression, object data)
+		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
 			return parenthesizedExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(InvocationExpression invocationExpression, object data)
+		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
 			IMethodOrProperty m = GetMethod(invocationExpression);
 			if (m == null) {
@@ -87,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 		}
 		
-		public override object Visit(IndexerExpression indexerExpression, object data)
+		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
 			IProperty i = GetIndexer(indexerExpression);
 			if (i != null)
@@ -247,7 +248,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return MemberLookupHelper.FindOverload(indexers.ToArray(), parameters);
 		}
 		
-		public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression == null) {
 				return null;
@@ -289,7 +290,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		public override object Visit(PointerReferenceExpression pointerReferenceExpression, object data)
+		public override object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
 			return null;
 			/*
@@ -306,7 +307,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			 */
 		}
 		
-		public override object Visit(IdentifierExpression identifierExpression, object data)
+		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			if (identifierExpression == null) {
 				return null;
@@ -318,12 +319,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return resolver.DynamicLookup(identifierExpression.Identifier);
 		}
 		
-		public override object Visit(TypeReferenceExpression typeReferenceExpression, object data)
+		public override object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
 			return CreateReturnType(typeReferenceExpression.TypeReference);
 		}
 		
-		public override object Visit(UnaryOperatorExpression unaryOperatorExpression, object data)
+		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			if (unaryOperatorExpression == null) {
 				return null;
@@ -342,37 +343,37 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return expressionType;
 		}
 		
-		public override object Visit(AssignmentExpression assignmentExpression, object data)
+		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			return assignmentExpression.Left.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(SizeOfExpression sizeOfExpression, object data)
+		public override object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
 		{
 			return resolver.ProjectContent.SystemTypes.Int32;
 		}
 		
-		public override object Visit(TypeOfExpression typeOfExpression, object data)
+		public override object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
 			return resolver.ProjectContent.SystemTypes.Type;
 		}
 		
-		public override object Visit(CheckedExpression checkedExpression, object data)
+		public override object VisitCheckedExpression(CheckedExpression checkedExpression, object data)
 		{
 			return checkedExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(UncheckedExpression uncheckedExpression, object data)
+		public override object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
 		{
 			return uncheckedExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(CastExpression castExpression, object data)
+		public override object VisitCastExpression(CastExpression castExpression, object data)
 		{
 			return CreateReturnType(castExpression.CastTo);
 		}
 		
-		public override object Visit(StackAllocExpression stackAllocExpression, object data)
+		public override object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
 		{
 			/*ReturnType returnType = new ReturnType(stackAllocExpression.TypeReference);
 			++returnType.PointerNestingLevel;
@@ -380,7 +381,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		public override object Visit(ClassReferenceExpression classReferenceExpression, object data)
+		public override object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data)
 		{
 			if (resolver.CallingClass == null) {
 				return null;
@@ -388,7 +389,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return resolver.CallingClass.DefaultReturnType;
 		}
 		
-		public override object Visit(ThisReferenceExpression thisReferenceExpression, object data)
+		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
 			if (resolver.CallingClass == null) {
 				return null;
@@ -396,7 +397,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return resolver.CallingClass.DefaultReturnType;
 		}
 		
-		public override object Visit(BaseReferenceExpression baseReferenceExpression, object data)
+		public override object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
 		{
 			if (resolver.CallingClass == null) {
 				return null;
@@ -404,27 +405,27 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return resolver.CallingClass.BaseType;
 		}
 		
-		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
+		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			return CreateReturnType(objectCreateExpression.CreateType);
 		}
 		
-		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)
+		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			return CreateReturnType(arrayCreateExpression.CreateType);
 		}
 		
-		public override object Visit(TypeOfIsExpression typeOfIsExpression, object data)
+		public override object VisitTypeOfIsExpression(TypeOfIsExpression typeOfIsExpression, object data)
 		{
 			return resolver.ProjectContent.SystemTypes.Boolean;
 		}
 		
-		public override object Visit(DefaultValueExpression defaultValueExpression, object data)
+		public override object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 		{
 			return CreateReturnType(defaultValueExpression.TypeReference);
 		}
 		
-		public override object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
+		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(resolver.CompilationUnit);
 			foreach (ParameterDeclarationExpression param in anonymousMethodExpression.Parameters) {
@@ -433,7 +434,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return amrt;
 		}
 		
-		public override object Visit(ArrayInitializerExpression arrayInitializerExpression, object data)
+		public override object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
 			// no calls allowed !!!
 			return null;

@@ -6,15 +6,14 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
-using ICSharpCode.NRefactory.Parser.Ast;
-using ICSharpCode.TextEditor;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {

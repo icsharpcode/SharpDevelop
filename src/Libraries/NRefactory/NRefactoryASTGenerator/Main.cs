@@ -17,6 +17,8 @@ namespace NRefactoryASTGenerator
 {
 	class MainClass
 	{
+		public const string VisitPrefix = "Visit";
+		
 		public static void Main(string[] args)
 		{
 			string directory = "../../../Project/Src/Parser/AST/";
@@ -40,7 +42,7 @@ namespace NRefactoryASTGenerator
 			nodeTypes.Sort(delegate(Type a, Type b) { return a.Name.CompareTo(b.Name); });
 			
 			CodeCompileUnit ccu = new CodeCompileUnit();
-			CodeNamespace cns = new CodeNamespace("ICSharpCode.NRefactory.Parser.Ast");
+			CodeNamespace cns = new CodeNamespace("ICSharpCode.NRefactory.Ast");
 			ccu.Namespaces.Add(cns);
 			cns.Imports.Add(new CodeNamespaceImport("System"));
 			cns.Imports.Add(new CodeNamespaceImport("System.Collections.Generic"));
@@ -70,7 +72,7 @@ namespace NRefactoryASTGenerator
 						method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(object), "data"));
 						method.ReturnType = new CodeTypeReference(typeof(object));
 						CodeExpression ex = new CodeVariableReferenceExpression("visitor");
-						ex = new CodeMethodInvokeExpression(ex, "Visit",
+						ex = new CodeMethodInvokeExpression(ex, VisitPrefix + ctd.Name,
 						                                    new CodeThisReferenceExpression(),
 						                                    new CodeVariableReferenceExpression("data"));
 						method.Statements.Add(new CodeMethodReturnStatement(ex));
@@ -96,10 +98,10 @@ namespace NRefactoryASTGenerator
 			}
 			
 			ccu = new CodeCompileUnit();
-			cns = new CodeNamespace("ICSharpCode.NRefactory.Parser");
+			cns = new CodeNamespace("ICSharpCode.NRefactory");
 			ccu.Namespaces.Add(cns);
 			cns.Imports.Add(new CodeNamespaceImport("System"));
-			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Parser.Ast"));
+			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Ast"));
 			cns.Types.Add(CreateAstVisitorInterface(nodeTypes));
 			
 			using (StringWriter writer = new StringWriter()) {
@@ -108,12 +110,12 @@ namespace NRefactoryASTGenerator
 			}
 			
 			ccu = new CodeCompileUnit();
-			cns = new CodeNamespace("ICSharpCode.NRefactory.Parser");
+			cns = new CodeNamespace("ICSharpCode.NRefactory.Visitors");
 			ccu.Namespaces.Add(cns);
 			cns.Imports.Add(new CodeNamespaceImport("System"));
 			cns.Imports.Add(new CodeNamespaceImport("System.Collections.Generic"));
 			cns.Imports.Add(new CodeNamespaceImport("System.Diagnostics"));
-			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Parser.Ast"));
+			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Ast"));
 			cns.Types.Add(CreateAstVisitorClass(nodeTypes, false));
 			
 			using (StringWriter writer = new StringWriter()) {
@@ -122,12 +124,12 @@ namespace NRefactoryASTGenerator
 			}
 			
 			ccu = new CodeCompileUnit();
-			cns = new CodeNamespace("ICSharpCode.NRefactory.Parser");
+			cns = new CodeNamespace("ICSharpCode.NRefactory.Visitors");
 			ccu.Namespaces.Add(cns);
 			cns.Imports.Add(new CodeNamespaceImport("System"));
 			cns.Imports.Add(new CodeNamespaceImport("System.Collections.Generic"));
 			cns.Imports.Add(new CodeNamespaceImport("System.Diagnostics"));
-			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Parser.Ast"));
+			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Ast"));
 			cns.Types.Add(CreateAstVisitorClass(nodeTypes, true));
 			
 			using (StringWriter writer = new StringWriter()) {
@@ -144,7 +146,7 @@ namespace NRefactoryASTGenerator
 			foreach (Type t in nodeTypes) {
 				if (!t.IsAbstract) {
 					CodeMemberMethod m = new CodeMemberMethod();
-					m.Name = "Visit";
+					m.Name = VisitPrefix + t.Name;
 					m.ReturnType = new CodeTypeReference(typeof(object));
 					m.Parameters.Add(new CodeParameterDeclarationExpression(ConvertType(t), GetFieldName(t.Name)));
 					m.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(object)), "data"));
@@ -211,7 +213,7 @@ namespace NRefactoryASTGenerator
 			foreach (Type type in nodeTypes) {
 				if (!type.IsAbstract) {
 					CodeMemberMethod m = new CodeMemberMethod();
-					m.Name = "Visit";
+					m.Name = VisitPrefix + type.Name;
 					m.Attributes = MemberAttributes.Public;
 					m.ReturnType = new CodeTypeReference(typeof(object));
 					m.Parameters.Add(new CodeParameterDeclarationExpression(ConvertType(type), GetFieldName(type.Name)));
@@ -489,7 +491,7 @@ namespace NRefactoryASTGenerator
 				return tr;
 			} else if (type.FullName.StartsWith("NRefactory") || type.FullName.StartsWith("System.Collections")) {
 				if (type.Name == "Attribute")
-					return new CodeTypeReference("ICSharpCode.NRefactory.Parser.Ast.Attribute");
+					return new CodeTypeReference("ICSharpCode.NRefactory.Ast.Attribute");
 				return new CodeTypeReference(type.Name);
 			} else {
 				return new CodeTypeReference(type);

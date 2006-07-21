@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ICSharpCode.NRefactory.Parser.Ast {
+namespace ICSharpCode.NRefactory.Ast {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitAddHandlerStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitAddressOfExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitAnonymousMethodExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -175,7 +175,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitArrayCreateExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -211,7 +211,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitArrayInitializerExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -291,7 +291,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitAssignmentExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -341,7 +341,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitAttribute(this, data);
 		}
 		
 		public override string ToString() {
@@ -387,7 +387,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		
 		string attributeTarget;
 		
-		List<ICSharpCode.NRefactory.Parser.Ast.Attribute> attributes;
+		List<ICSharpCode.NRefactory.Ast.Attribute> attributes;
 		
 		public string AttributeTarget {
 			get {
@@ -398,7 +398,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 		}
 		
-		public List<ICSharpCode.NRefactory.Parser.Ast.Attribute> Attributes {
+		public List<ICSharpCode.NRefactory.Ast.Attribute> Attributes {
 			get {
 				return attributes;
 			}
@@ -407,13 +407,13 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 			}
 		}
 		
-		public AttributeSection(string attributeTarget, List<ICSharpCode.NRefactory.Parser.Ast.Attribute> attributes) {
+		public AttributeSection(string attributeTarget, List<ICSharpCode.NRefactory.Ast.Attribute> attributes) {
 			AttributeTarget = attributeTarget;
 			Attributes = attributes;
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitAttributeSection(this, data);
 		}
 		
 		public override string ToString() {
@@ -427,7 +427,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitBaseReferenceExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -479,7 +479,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitBinaryOperatorExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -493,7 +493,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitBreakStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -566,7 +566,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitCaseLabel(this, data);
 		}
 		
 		public override string ToString() {
@@ -622,7 +622,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitCastExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -700,7 +700,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitCatchClause(this, data);
 		}
 		
 		public override string ToString() {
@@ -728,7 +728,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitCheckedExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -755,7 +755,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitCheckedStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -769,7 +769,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitClassReferenceExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -822,7 +822,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitConditionalExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -868,7 +868,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitConstructorDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -918,7 +918,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitConstructorInitializer(this, data);
 		}
 		
 		public override string ToString() {
@@ -975,7 +975,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitContinueStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -1038,7 +1038,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitDeclareDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -1065,7 +1065,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitDefaultValueExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -1129,7 +1129,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitDelegateDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -1171,7 +1171,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitDestructorDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -1210,7 +1210,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitDirectionExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -1262,7 +1262,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitDoLoopStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -1291,7 +1291,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitElseIfSection(this, data);
 		}
 		
 		public override string ToString() {
@@ -1305,7 +1305,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitEmptyStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -1319,7 +1319,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitEndStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -1349,7 +1349,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitEraseStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -1376,7 +1376,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitErrorStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -1397,7 +1397,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitEventAddRegion(this, data);
 		}
 		
 		public override string ToString() {
@@ -1592,7 +1592,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitEventDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -1615,7 +1615,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitEventRaiseRegion(this, data);
 		}
 		
 		public override string ToString() {
@@ -1665,7 +1665,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitEventRemoveRegion(this, data);
 		}
 		
 		public override string ToString() {
@@ -1720,11 +1720,38 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitExitStatement(this, data);
 		}
 		
 		public override string ToString() {
 			return string.Format("[ExitStatement ExitType={0}]", ExitType);
+		}
+	}
+	
+	public class ExpressionStatement : Statement {
+		
+		Expression expression;
+		
+		public Expression Expression {
+			get {
+				return expression;
+			}
+			set {
+				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
+			}
+		}
+		
+		public ExpressionStatement(Expression expression) {
+			Expression = expression;
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitExpressionStatement(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[ExpressionStatement Expression={0}]", Expression);
 		}
 	}
 	
@@ -1786,7 +1813,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitFieldDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -1825,7 +1852,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitFieldReferenceExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -1864,7 +1891,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitFixedStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -1937,7 +1964,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitForeachStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -2028,7 +2055,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitForNextStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -2081,7 +2108,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitForStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -2114,7 +2141,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitGotoCaseStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -2140,7 +2167,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitGotoStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -2166,7 +2193,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitIdentifierExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -2254,7 +2281,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitIfElseStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -2391,7 +2418,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitIndexerDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -2432,7 +2459,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitIndexerExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -2470,7 +2497,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitInterfaceImplementation(this, data);
 		}
 		
 		public override string ToString() {
@@ -2533,7 +2560,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitInvocationExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -2559,7 +2586,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitLabelStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -2587,7 +2614,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitLockStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -2663,7 +2690,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitMethodDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -2703,7 +2730,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitNamedArgumentExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -2729,7 +2756,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitNamespaceDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -2767,7 +2794,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitObjectCreateExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -2782,7 +2809,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitOnErrorStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -2844,7 +2871,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitOperatorDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -2884,7 +2911,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitOptionDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -2974,7 +3001,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitParameterDeclarationExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -3041,7 +3068,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitParenthesizedExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -3080,7 +3107,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitPointerReferenceExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -3203,7 +3230,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitPropertyDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -3226,7 +3253,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitPropertyGetRegion(this, data);
 		}
 		
 		public override string ToString() {
@@ -3314,7 +3341,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitPropertySetRegion(this, data);
 		}
 		
 		public override string ToString() {
@@ -3381,7 +3408,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitRaiseEventStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -3419,7 +3446,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitReDimStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -3459,7 +3486,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitRemoveHandlerStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -3501,7 +3528,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitResumeStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -3528,7 +3555,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitReturnStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -3554,7 +3581,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitSizeOfExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -3593,38 +3620,11 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitStackAllocExpression(this, data);
 		}
 		
 		public override string ToString() {
 			return string.Format("[StackAllocExpression TypeReference={0} Expression={1}]", TypeReference, Expression);
-		}
-	}
-	
-	public class StatementExpression : Statement {
-		
-		Expression expression;
-		
-		public Expression Expression {
-			get {
-				return expression;
-			}
-			set {
-				expression = value ?? Expression.Null;
-				if (!expression.IsNull) expression.Parent = this;
-			}
-		}
-		
-		public StatementExpression(Expression expression) {
-			Expression = expression;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[StatementExpression Expression={0}]", Expression);
 		}
 	}
 	
@@ -3634,7 +3634,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitStopStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -3664,7 +3664,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitSwitchSection(this, data);
 		}
 		
 		public override string ToString() {
@@ -3703,7 +3703,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitSwitchStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -3742,7 +3742,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitTemplateDefinition(this, data);
 		}
 		
 		public override string ToString() {
@@ -3756,7 +3756,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitThisReferenceExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -3783,7 +3783,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitThrowStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -3835,7 +3835,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitTryCatchStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -3910,7 +3910,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitTypeDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -3937,7 +3937,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitTypeOfExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -3976,7 +3976,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitTypeOfIsExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -4004,7 +4004,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 public TypeReferenceExpression(string typeName) : this(new TypeReference(typeName)) {}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitTypeReferenceExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -4048,7 +4048,7 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitUnaryOperatorExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -4075,7 +4075,7 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitUncheckedExpression(this, data);
 		}
 		
 		public override string ToString() {
@@ -4102,7 +4102,7 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitUncheckedStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -4129,7 +4129,7 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitUnsafeStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -4178,7 +4178,7 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitUsing(this, data);
 		}
 		
 		public override string ToString() {
@@ -4208,7 +4208,7 @@ public UsingDeclaration(string nameSpace) : this(nameSpace, null) {}
 public UsingDeclaration(string nameSpace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(nameSpace, alias)); }
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitUsingDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -4236,7 +4236,7 @@ public UsingDeclaration(string nameSpace, TypeReference alias) { usings = new Li
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitUsingStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -4299,7 +4299,7 @@ public UsingDeclaration(string nameSpace, TypeReference alias) { usings = new Li
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitVariableDeclaration(this, data);
 		}
 		
 		public override string ToString() {
@@ -4339,7 +4339,7 @@ public UsingDeclaration(string nameSpace, TypeReference alias) { usings = new Li
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitWithStatement(this, data);
 		}
 		
 		public override string ToString() {
@@ -4378,7 +4378,7 @@ public UsingDeclaration(string nameSpace, TypeReference alias) { usings = new Li
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.Visit(this, data);
+			return visitor.VisitYieldStatement(this, data);
 		}
 		
 		public override string ToString() {

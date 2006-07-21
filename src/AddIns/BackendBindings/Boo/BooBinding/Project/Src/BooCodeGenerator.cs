@@ -13,7 +13,7 @@ using Boo.Lang.Compiler;
 using Boo.Lang.Compiler.Ast;
 using Boo.Lang.Compiler.Ast.Visitors;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor.Document;

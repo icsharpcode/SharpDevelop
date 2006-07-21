@@ -12,10 +12,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
-using Attribute = ICSharpCode.NRefactory.Parser.Ast.Attribute;
+using ICSharpCode.NRefactory.Ast;
+using Attribute = ICSharpCode.NRefactory.Ast.Attribute;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory.Visitors
 {
 	/// <summary>
 	/// Converts elements not supported by VB to their VB representation.
@@ -32,9 +32,9 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		List<INode> nodesToMoveToCompilationUnit = new List<INode>();
 		
-		public override object Visit(CompilationUnit compilationUnit, object data)
+		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
-			base.Visit(compilationUnit, data);
+			base.VisitCompilationUnit(compilationUnit, data);
 			for (int i = 0; i < nodesToMoveToCompilationUnit.Count; i++) {
 				compilationUnit.Children.Insert(i, nodesToMoveToCompilationUnit[i]);
 				nodesToMoveToCompilationUnit[i].Parent = compilationUnit;
@@ -42,9 +42,9 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		public override object Visit(UsingDeclaration usingDeclaration, object data)
+		public override object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
-			base.Visit(usingDeclaration, data);
+			base.VisitUsingDeclaration(usingDeclaration, data);
 			if (usingDeclaration.Parent is NamespaceDeclaration) {
 				nodesToMoveToCompilationUnit.Add(usingDeclaration);
 				RemoveCurrentNode();
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		TypeDeclaration currentType;
 		
-		public override object Visit(TypeDeclaration typeDeclaration, object data)
+		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
 			TypeDeclaration outerType = currentType;
 			currentType = typeDeclaration;
@@ -82,7 +82,7 @@ namespace ICSharpCode.NRefactory.Parser
 				}
 			}
 			new PrefixFieldsVisitor(conflicts, "m_").Run(typeDeclaration);
-			base.Visit(typeDeclaration, data);
+			base.VisitTypeDeclaration(typeDeclaration, data);
 			currentType = outerType;
 			
 			return null;
@@ -105,10 +105,10 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public override object Visit(StatementExpression statementExpression, object data)
+		public override object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
-			base.Visit(statementExpression, data);
-			AssignmentExpression ass = statementExpression.Expression as AssignmentExpression;
+			base.VisitExpressionStatement(expressionStatement, data);
+			AssignmentExpression ass = expressionStatement.Expression as AssignmentExpression;
 			if (ass != null && ass.Right is AddressOfExpression) {
 				if (ass.Op == AssignmentOperatorType.Add) {
 					ReplaceCurrentNode(new AddHandlerStatement(ass.Left, ass.Right));
@@ -142,7 +142,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		public override object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
+		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			MethodDeclaration method = new MethodDeclaration(GetAnonymousMethodName(), Modifier.Private, new TypeReference("System.Void"), anonymousMethodExpression.Parameters, null);
 			method.Body = anonymousMethodExpression.Body;
@@ -151,7 +151,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		public override object Visit(AssignmentExpression assignmentExpression, object data)
+		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			if (assignmentExpression.Op == AssignmentOperatorType.Add
 			    || assignmentExpression.Op == AssignmentOperatorType.Subtract)
@@ -168,15 +168,15 @@ namespace ICSharpCode.NRefactory.Parser
 					}
 				}
 			}
-			return base.Visit(assignmentExpression, data);
+			return base.VisitAssignmentExpression(assignmentExpression, data);
 		}
 		
-		public override object Visit(MethodDeclaration methodDeclaration, object data)
+		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			if ((methodDeclaration.Modifier & Modifier.Visibility) == 0)
 				methodDeclaration.Modifier |= Modifier.Private;
 			
-			base.Visit(methodDeclaration, data);
+			base.VisitMethodDeclaration(methodDeclaration, data);
 			
 			const Modifier externStatic = Modifier.Static | Modifier.Extern;
 			if ((methodDeclaration.Modifier & externStatic) == externStatic
@@ -200,7 +200,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		bool ConvertPInvoke(MethodDeclaration method, ICSharpCode.NRefactory.Parser.Ast.Attribute att)
+		bool ConvertPInvoke(MethodDeclaration method, ICSharpCode.NRefactory.Ast.Attribute att)
 		{
 			if (att.PositionalArguments.Count != 1)
 				return false;
@@ -268,26 +268,26 @@ namespace ICSharpCode.NRefactory.Parser
 				                                                 method.Attributes,
 				                                                 libraryName, alias, charSet);
 				ReplaceCurrentNode(decl);
-				base.Visit(decl, null);
+				base.VisitDeclareDeclaration(decl, null);
 				return true;
 			} else {
 				return false;
 			}
 		}
 		
-		public override object Visit(PropertyDeclaration propertyDeclaration, object data)
+		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			if ((propertyDeclaration.Modifier & Modifier.Visibility) == 0)
 				propertyDeclaration.Modifier |= Modifier.Private;
-			return base.Visit(propertyDeclaration, data);
+			return base.VisitPropertyDeclaration(propertyDeclaration, data);
 		}
 		
-		public override object Visit(ConstructorDeclaration constructorDeclaration, object data)
+		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			// make constructor private if visiblity is not set (unless constructor is static)
 			if ((constructorDeclaration.Modifier & (Modifier.Visibility | Modifier.Static)) == 0)
 				constructorDeclaration.Modifier |= Modifier.Private;
-			return base.Visit(constructorDeclaration, data);
+			return base.VisitConstructorDeclaration(constructorDeclaration, data);
 		}
 	}
 }

@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.Parser
 	/// This class implements a keyword map. It implements a digital search trees (tries) to find
 	/// a word.
 	/// </summary>
-	public class LookupTable
+	internal class LookupTable
 	{
 		Node root = new Node(-1, null);
 		bool casesensitive;

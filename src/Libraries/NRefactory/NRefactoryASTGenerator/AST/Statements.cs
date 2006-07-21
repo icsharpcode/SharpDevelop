@@ -122,10 +122,10 @@ namespace NRefactoryASTGenerator.Ast
 		public ReturnStatement(Expression expression) { }
 	}
 	
-	class StatementExpression : Statement {
+	class ExpressionStatement : Statement {
 		Expression expression;
 		
-		public StatementExpression(Expression expression) {}
+		public ExpressionStatement(Expression expression) {}
 	}
 	
 	class SwitchStatement : Statement {

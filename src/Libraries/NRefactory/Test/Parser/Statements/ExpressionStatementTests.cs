@@ -9,24 +9,24 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
-	public class StatementExpressionTests
+	public class ExpressionStatementTests
 	{
 		#region C#
 		[Test]
 		public void CSharpStatementExpressionTest()
 		{
-			StatementExpression stmtExprStmt = ParseUtilCSharp.ParseStatement<StatementExpression>("my.Obj.PropCall;");
+			ExpressionStatement stmtExprStmt = ParseUtilCSharp.ParseStatement<ExpressionStatement>("my.Obj.PropCall;");
 			Assert.IsTrue(stmtExprStmt.Expression is FieldReferenceExpression);
 		}
 		[Test]
 		public void CSharpStatementExpressionTest1()
 		{
-			StatementExpression stmtExprStmt = ParseUtilCSharp.ParseStatement<StatementExpression>("yield.yield;");
+			ExpressionStatement stmtExprStmt = ParseUtilCSharp.ParseStatement<ExpressionStatement>("yield.yield;");
 			Assert.IsTrue(stmtExprStmt.Expression is FieldReferenceExpression);
 		}
 		#endregion

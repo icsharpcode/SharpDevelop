@@ -4,8 +4,8 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace NRefactoryExample
@@ -135,7 +135,7 @@ namespace NRefactoryExample
 			StringReader input = new StringReader(inputTextBox.Text);
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, input);
 			parser.Parse();
-			if (parser.Errors.count > 0) {
+			if (parser.Errors.Count > 0) {
 				outputTextBox.Text = parser.Errors.ErrorOutput;
 				return;
 			}
@@ -143,8 +143,11 @@ namespace NRefactoryExample
 			
 			cu.AcceptVisitor(new WrapperGeneratorVisitor(), null);
 			
-			IOutputASTVisitor output = new CSharpOutputVisitor(); //new VBNetOutputVisitor();
-			cu.AcceptVisitor(output, null);
+			IOutputAstVisitor output = new CSharpOutputVisitor(); //new VBNetOutputVisitor();
+			// SpecialNodesInserter will re-insert the comments into the generated code
+			using (SpecialNodesInserter.Install(parser.Lexer.SpecialTracker.RetrieveSpecials(), output)) {
+				cu.AcceptVisitor(output, null);
+			}
 			outputTextBox.Text = output.Text;
 		}
 	}

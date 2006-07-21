@@ -9,8 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
@@ -41,7 +42,7 @@ namespace CSharpBinding
 		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials)
 		{
 			PreprocessingDirective.VBToCSharp(specials);
-			new VBNetToCSharpConvertVisitor().Visit(compilationUnit, null);
+			compilationUnit.AcceptVisitor(new VBNetToCSharpConvertVisitor(), null);
 		}
 		
 		protected override IProject CreateProject(string targetProjectDirectory, IProject sourceProject)

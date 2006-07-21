@@ -6,22 +6,14 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Threading;
-using System.Drawing;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows.Forms;
-using System.Diagnostics;
+using System.IO;
 
-using System.CodeDom.Compiler;
-
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Core;
-
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
@@ -33,9 +25,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 			
 			if (window != null && window.ViewContent is IEditable) {
 				
-				ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(((IEditable)window.ViewContent).Text));
+				IParser p = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(((IEditable)window.ViewContent).Text));
 				p.Parse();
-				if (p.Errors.count > 0) {
+				if (p.Errors.Count > 0) {
 					MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Convert.CorrectSourceCodeErrors}\n" + p.Errors.ErrorOutput);
 					return;
 				}
@@ -44,9 +36,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 				
 				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
 				PreprocessingDirective.CSharpToVB(specials);
-				new CSharpToVBNetConvertVisitor().Visit(p.CompilationUnit, null);
+				new CSharpToVBNetConvertVisitor().VisitCompilationUnit(p.CompilationUnit, null);
 				using (SpecialNodesInserter.Install(specials, vbv)) {
-					vbv.Visit(p.CompilationUnit, null);
+					vbv.VisitCompilationUnit(p.CompilationUnit, null);
 				}
 				
 				FileService.NewFile("Generated.VB", "VBNET", vbv.Text);

@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Tests.Ast
 {
@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void YieldAsVariableTest()
 		{
-			StatementExpression se = ParseUtilCSharp.ParseStatement<StatementExpression>("yield = 3;");
+			ExpressionStatement se = ParseUtilCSharp.ParseStatement<ExpressionStatement>("yield = 3;");
 			AssignmentExpression ae = se.Expression as AssignmentExpression;
 			
 			Assert.AreEqual(AssignmentOperatorType.Assign, ae.Op);

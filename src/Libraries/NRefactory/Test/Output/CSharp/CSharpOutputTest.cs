@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
-			outputVisitor.Visit(parser.CompilationUnit, null);
+			outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(StripWhitespace(program), StripWhitespace(outputVisitor.Text));
 		}

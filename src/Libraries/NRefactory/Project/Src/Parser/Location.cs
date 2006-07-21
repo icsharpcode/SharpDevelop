@@ -7,10 +7,10 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory
 {
 	/// <summary>
-	/// Description of Position.
+	/// A line/column position.
 	/// </summary>
 	public struct Location : IComparable<Location>
 	{

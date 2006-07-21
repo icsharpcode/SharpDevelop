@@ -10,7 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands

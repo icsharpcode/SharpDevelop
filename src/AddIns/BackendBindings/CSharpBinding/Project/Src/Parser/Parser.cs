@@ -56,12 +56,12 @@ namespace CSharpBinding.Parser
 		void RetrieveRegions(ICompilationUnit cu, ICSharpCode.NRefactory.Parser.SpecialTracker tracker)
 		{
 			for (int i = 0; i < tracker.CurrentSpecials.Count; ++i) {
-				ICSharpCode.NRefactory.Parser.PreprocessingDirective directive = tracker.CurrentSpecials[i] as ICSharpCode.NRefactory.Parser.PreprocessingDirective;
+				ICSharpCode.NRefactory.PreprocessingDirective directive = tracker.CurrentSpecials[i] as ICSharpCode.NRefactory.PreprocessingDirective;
 				if (directive != null) {
 					if (directive.Cmd == "#region") {
 						int deep = 1;
 						for (int j = i + 1; j < tracker.CurrentSpecials.Count; ++j) {
-							ICSharpCode.NRefactory.Parser.PreprocessingDirective nextDirective = tracker.CurrentSpecials[j] as ICSharpCode.NRefactory.Parser.PreprocessingDirective;
+							ICSharpCode.NRefactory.PreprocessingDirective nextDirective = tracker.CurrentSpecials[j] as ICSharpCode.NRefactory.PreprocessingDirective;
 							if (nextDirective != null) {
 								switch (nextDirective.Cmd) {
 									case "#region":
@@ -85,12 +85,12 @@ namespace CSharpBinding.Parser
 		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
-			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguage.CSharp, new StringReader(fileContent))) {
+			using (ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader(fileContent))) {
 				return Parse(p, fileName, projectContent);
 			}
 		}
 		
-		ICompilationUnit Parse(ICSharpCode.NRefactory.Parser.IParser p, string fileName, IProjectContent projectContent)
+		ICompilationUnit Parse(ICSharpCode.NRefactory.IParser p, string fileName, IProjectContent projectContent)
 		{
 			p.Lexer.SpecialCommentTags = lexerTags;
 			p.ParseMethodBodies = false;
@@ -98,9 +98,9 @@ namespace CSharpBinding.Parser
 			
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
 			visitor.Specials = p.Lexer.SpecialTracker.CurrentSpecials;
-			visitor.Visit(p.CompilationUnit, null);
+			visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
-			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
+			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
 			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
 			return visitor.Cu;
@@ -118,7 +118,7 @@ namespace CSharpBinding.Parser
 		
 		public IResolver CreateResolver()
 		{
-			return new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguage.CSharp);
+			return new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver(ICSharpCode.NRefactory.SupportedLanguage.CSharp);
 		}
 		///////// IParser Interface END
 	}

@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		#region Test helper methods
 		ICompilationUnit Parse(string fileName, string fileContent)
 		{
-			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguage.CSharp, new StringReader(fileContent));
+			ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader(fileContent));
 			p.ParseMethodBodies = false;
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
@@ -32,9 +32,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			ParserService.ForceProjectContent(pc);
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
-			visitor.Visit(p.CompilationUnit, null);
+			visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
-			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
+			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			foreach (IClass c in visitor.Cu.Classes) {
 				pc.AddClassToNamespaceList(c);
 			}
@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		
 		ICompilationUnit ParseVB(string fileName, string fileContent)
 		{
-			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguage.VBNet, new StringReader(fileContent));
+			ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(ICSharpCode.NRefactory.SupportedLanguage.VBNet, new StringReader(fileContent));
 			p.ParseMethodBodies = false;
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
@@ -56,9 +56,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			pc.Language = LanguageProperties.VBNet;
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
-			visitor.Visit(p.CompilationUnit, null);
+			visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
-			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
+			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			foreach (IClass c in visitor.Cu.Classes) {
 				pc.AddClassToNamespaceList(c);
 			}
@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguage.CSharp);
+			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.SupportedLanguage.CSharp);
 			return resolver.Resolve(new ExpressionResult(expression),
 			                        line, 0,
 			                        "a.cs",
@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			AddCompilationUnit(ParseVB("a.vb", program), "a.vb");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguage.VBNet);
+			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.SupportedLanguage.VBNet);
 			return resolver.Resolve(new ExpressionResult(expression),
 			                        line, 0,
 			                        "a.vb",
@@ -644,7 +644,7 @@ namespace Root.Child {
 ";
 			AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguage.CSharp);
+			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.SupportedLanguage.CSharp);
 			ArrayList m = resolver.CtrlSpace(7, 0, "a.cs", program, ExpressionContext.Default);
 			Assert.IsTrue(TypeExists(m, "Beta"), "Meta must exist");
 			Assert.IsTrue(TypeExists(m, "Alpha"), "Alpha must exist");

@@ -11,8 +11,9 @@ using System.Collections.Generic;
 using System.IO;
 
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
+using NR = ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
@@ -21,15 +22,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ICompilationUnit cu;
 		IClass callingClass;
 		IMember callingMember;
-		ICSharpCode.NRefactory.Parser.LookupTableVisitor lookupTableVisitor;
+		ICSharpCode.NRefactory.Visitors.LookupTableVisitor lookupTableVisitor;
 		IProjectContent projectContent = null;
 		
-		SupportedLanguage language;
+		NR.SupportedLanguage language;
 		
 		int caretLine;
 		int caretColumn;
 		
-		public SupportedLanguage Language {
+		public NR.SupportedLanguage Language {
 			get {
 				return language;
 			}
@@ -82,15 +83,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		public NRefactoryResolver(SupportedLanguage language)
+		public NRefactoryResolver(NR.SupportedLanguage language)
 		{
 			this.language = language;
 			this.projectContent = ParserService.CurrentProjectContent;
 			switch (language) {
-				case SupportedLanguage.CSharp:
+				case NR.SupportedLanguage.CSharp:
 					languageProperties = LanguageProperties.CSharp;
 					break;
-				case SupportedLanguage.VBNet:
+				case NR.SupportedLanguage.VBNet:
 					languageProperties = LanguageProperties.VBNet;
 					break;
 				default:
@@ -102,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			Expression expr = SpecialConstructs(expression);
 			if (expr == null) {
-				using (ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser(language, new System.IO.StringReader(expression))) {
+				using (NR.IParser p = NR.ParserFactory.CreateParser(language, new System.IO.StringReader(expression))) {
 					expr = p.ParseExpression();
 				}
 			}
@@ -172,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			
 			Expression expr = null;
-			if (language == SupportedLanguage.VBNet) {
+			if (language == NR.SupportedLanguage.VBNet) {
 				if (expression.Length == 0 || expression[0] == '.') {
 					return WithResolve(expression, fileContent);
 				} else if ("global".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
@@ -220,7 +221,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			WithStatement innermost = null;
 			if (lookupTableVisitor.WithStatements != null) {
 				foreach (WithStatement with in lookupTableVisitor.WithStatements) {
-					if (IsInside(new Location(caretColumn, caretLine), with.StartLocation, with.EndLocation)) {
+					if (IsInside(new NR.Location(caretColumn, caretLine), with.StartLocation, with.EndLocation)) {
 						innermost = with;
 					}
 				}
@@ -244,12 +245,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		private class DummyFindVisitor : AbstractAstVisitor {
 			internal const string dummyName = "___withStatementExpressionDummy";
 			internal FieldReferenceExpression result;
-			public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
+			public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 			{
 				IdentifierExpression ie = fieldReferenceExpression.TargetObject as IdentifierExpression;
 				if (ie != null && ie.Identifier == dummyName)
 					result = fieldReferenceExpression;
-				return base.Visit(fieldReferenceExpression, data);
+				return base.VisitFieldReferenceExpression(fieldReferenceExpression, data);
 			}
 		}
 		
@@ -269,7 +270,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			System.IO.TextReader content = ExtractCurrentMethod(fileContent);
 			if (content != null) {
-				ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser(language, content);
+				NR.IParser p = NR.ParserFactory.CreateParser(language, content);
 				p.Parse();
 				return p.CompilationUnit;
 			} else {
@@ -285,7 +286,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (callingMember != null) {
 				CompilationUnit cu = ParseCurrentMemberAsCompilationUnit(fileContent);
 				if (cu != null) {
-					lookupTableVisitor.Visit(cu, null);
+					lookupTableVisitor.VisitCompilationUnit(cu, null);
 				}
 			}
 		}
@@ -510,7 +511,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// as all fields etc. are already prepared in the AST.
 		/// </summary>
 		public static TextReader ExtractMethod(string fileContent, IMember member,
-		                                       SupportedLanguage language, int caretLine)
+		                                       NR.SupportedLanguage language, int caretLine)
 		{
 			// As the parse information is always some seconds old, the end line could be wrong
 			// if the user just inserted a line in the method.
@@ -545,7 +546,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			int endLine = bodyRegion.EndLine;
 			
 			// Fix for SD2-511 (Code completion in inserted line)
-			if (language == SupportedLanguage.CSharp) {
+			if (language == NR.SupportedLanguage.CSharp) {
 				// Do not do this for VB: the parser does not correct create the
 				// ForEachStatement when the method in truncated in the middle
 				// VB does not have the "inserted line looks like variable declaration"-problem
@@ -567,7 +568,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			int length = offset - startOffset;
 			string classDecl, endClassDecl;
-			if (language == SupportedLanguage.VBNet) {
+			if (language == NR.SupportedLanguage.VBNet) {
 				classDecl = "Class A";
 				endClassDecl = "End Class\n";
 			} else {
@@ -741,14 +742,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		Expression SpecialConstructs(string expression)
 		{
-			if (language == SupportedLanguage.VBNet) {
+			if (language == NR.SupportedLanguage.VBNet) {
 				// MyBase and MyClass are no expressions, only MyBase.Identifier and MyClass.Identifier
 				if ("mybase".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
 					return new BaseReferenceExpression();
 				} else if ("myclass".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
 					return new ClassReferenceExpression();
 				} // Global is handled in Resolve() because we don't need an expression for that
-			} else if (language == SupportedLanguage.CSharp) {
+			} else if (language == NR.SupportedLanguage.CSharp) {
 				// generic type names are no expressions, only property access on them is an expression
 				if (expression.EndsWith(">")) {
 					FieldReferenceExpression expr = ParseExpression(expression + ".Prop") as FieldReferenceExpression;
@@ -766,7 +767,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return languageProperties.NameComparer.Equals(name1, name2);
 		}
 		
-		bool IsInside(Location between, Location start, Location end)
+		bool IsInside(NR.Location between, NR.Location start, NR.Location end)
 		{
 			if (between.Y < start.Y || between.Y > end.Y) {
 				return false;
@@ -985,7 +986,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			foreach (LocalLookupVariable v in variables) {
-				if (IsInside(new Location(caretColumn, caretLine), v.StartPos, v.EndPos)) {
+				if (IsInside(new NR.Location(caretColumn, caretLine), v.StartPos, v.EndPos)) {
 					return v;
 				}
 			}
@@ -1012,7 +1013,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent, ExpressionContext context)
 		{
 			ArrayList result = new ArrayList();
-			if (language == SupportedLanguage.VBNet) {
+			if (language == NR.SupportedLanguage.VBNet) {
 				foreach (KeyValuePair<string, string> pair in TypeReference.GetPrimitiveTypesVB()) {
 					string primitive = Char.ToUpper(pair.Key[0]) + pair.Key.Substring(1);
 					if ("System." + primitive != pair.Value) {
@@ -1046,7 +1047,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (callingMember != null) {
 				CompilationUnit parsedCu = ParseCurrentMemberAsCompilationUnit(fileContent);
 				if (cu != null) {
-					lookupTableVisitor.Visit(parsedCu, null);
+					lookupTableVisitor.VisitCompilationUnit(parsedCu, null);
 				}
 			}
 			
@@ -1055,7 +1056,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 				if (pair.Value != null && pair.Value.Count > 0) {
 					foreach (LocalLookupVariable v in pair.Value) {
-						if (IsInside(new Location(caretColumn, caretLine), v.StartPos, v.EndPos)) {
+						if (IsInside(new NR.Location(caretColumn, caretLine), v.StartPos, v.EndPos)) {
 							// convert to a field for display
 							result.Add(CreateLocalVariableField(v, pair.Key));
 							break;

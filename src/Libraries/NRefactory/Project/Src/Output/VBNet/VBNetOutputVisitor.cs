@@ -14,7 +14,7 @@ using System.Globalization;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {
@@ -68,13 +68,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		#region ICSharpCode.NRefactory.Parser.IASTVisitor interface implementation
-		public object Visit(INode node, object data)
-		{
-			errors.Error(-1, -1, String.Format("Visited INode (should NEVER HAPPEN), node is : {0}", node.ToString()));
-			return node.AcceptChildren(this, data);
-		}
-		
-		public object Visit(CompilationUnit compilationUnit, object data)
+		public object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
 			nodeTracker.TrackedVisitChildren(compilationUnit, data);
 			outputFormatter.EndFile();
@@ -123,7 +117,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 
-		public object Visit(TypeReference typeReference, object data)
+		public object VisitTypeReference(TypeReference typeReference, object data)
 		{
 			PrintTypeReferenceWithoutArray(typeReference);
 			if (typeReference.IsArrayType) {
@@ -171,15 +165,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public object Visit(InnerClassTypeReference innerClassTypeReference, object data)
+		public object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data)
 		{
 			nodeTracker.TrackedVisit(innerClassTypeReference.BaseType, data);
 			outputFormatter.PrintToken(Tokens.Dot);
-			return Visit((TypeReference)innerClassTypeReference, data); // call Visit(TypeReference, object)
+			return VisitTypeReference((TypeReference)innerClassTypeReference, data);
 		}
 		
 		#region Global scope
-		public object Visit(AttributeSection attributeSection, object data)
+		public object VisitAttributeSection(AttributeSection attributeSection, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintText("<");
@@ -201,7 +195,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ICSharpCode.NRefactory.Parser.Ast.Attribute attribute, object data)
+		public object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data)
 		{
 			outputFormatter.PrintIdentifier(attribute.Name);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
@@ -218,7 +212,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(NamedArgumentExpression namedArgumentExpression, object data)
+		public object VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
 		{
 			outputFormatter.PrintIdentifier(namedArgumentExpression.Name);
 			outputFormatter.Space();
@@ -229,13 +223,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(Using u, object data)
+		public object VisitUsing(Using u, object data)
 		{
 			Debug.Fail("Should never be called. The usings should be handled in Visit(UsingDeclaration)");
 			return null;
 		}
 		
-		public object Visit(UsingDeclaration usingDeclaration, object data)
+		public object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.Imports);
@@ -257,7 +251,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(NamespaceDeclaration namespaceDeclaration, object data)
+		public object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.Namespace);
@@ -304,7 +298,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public object Visit(TypeDeclaration typeDeclaration, object data)
+		public object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
 			VisitAttributes(typeDeclaration.Attributes, data);
 			
@@ -393,7 +387,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public object Visit(TemplateDefinition templateDefinition, object data)
+		public object VisitTemplateDefinition(TemplateDefinition templateDefinition, object data)
 		{
 			outputFormatter.PrintIdentifier(templateDefinition.Name);
 			if (templateDefinition.Bases.Count > 0) {
@@ -409,7 +403,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(DelegateDeclaration delegateDeclaration, object data)
+		public object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
 		{
 			VisitAttributes(delegateDeclaration.Attributes, data);
 			OutputModifier(delegateDeclaration.Modifier, true);
@@ -442,7 +436,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(OptionDeclaration optionDeclaration, object data)
+		public object VisitOptionDeclaration(OptionDeclaration optionDeclaration, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Option);
 			outputFormatter.Space();
@@ -480,7 +474,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		#region Type level
 		TypeReference currentVariableType;
-		public object Visit(FieldDeclaration fieldDeclaration, object data)
+		public object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
 			
 			VisitAttributes(fieldDeclaration.Attributes, data);
@@ -503,7 +497,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(VariableDeclaration variableDeclaration, object data)
+		public object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data)
 		{
 			outputFormatter.PrintIdentifier(variableDeclaration.Name);
 			
@@ -535,7 +529,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(PropertyDeclaration propertyDeclaration, object data)
+		public object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			VisitAttributes(propertyDeclaration.Attributes, data);
 			outputFormatter.Indent();
@@ -585,7 +579,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(PropertyGetRegion propertyGetRegion, object data)
+		public object VisitPropertyGetRegion(PropertyGetRegion propertyGetRegion, object data)
 		{
 			VisitAttributes(propertyGetRegion.Attributes, data);
 			outputFormatter.Indent();
@@ -604,7 +598,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(PropertySetRegion propertySetRegion, object data)
+		public object VisitPropertySetRegion(PropertySetRegion propertySetRegion, object data)
 		{
 			VisitAttributes(propertySetRegion.Attributes, data);
 			outputFormatter.Indent();
@@ -624,7 +618,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		TypeReference currentEventType = null;
-		public object Visit(EventDeclaration eventDeclaration, object data)
+		public object VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
 		{
 			bool customEvent = eventDeclaration.HasAddRegion  || eventDeclaration.HasRemoveRegion;
 			
@@ -687,7 +681,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public object Visit(EventAddRegion eventAddRegion, object data)
+		public object VisitEventAddRegion(EventAddRegion eventAddRegion, object data)
 		{
 			VisitAttributes(eventAddRegion.Attributes, data);
 			outputFormatter.Indent();
@@ -718,7 +712,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(EventRemoveRegion eventRemoveRegion, object data)
+		public object VisitEventRemoveRegion(EventRemoveRegion eventRemoveRegion, object data)
 		{
 			VisitAttributes(eventRemoveRegion.Attributes, data);
 			outputFormatter.Indent();
@@ -750,7 +744,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(EventRaiseRegion eventRaiseRegion, object data)
+		public object VisitEventRaiseRegion(EventRaiseRegion eventRaiseRegion, object data)
 		{
 			VisitAttributes(eventRaiseRegion.Attributes, data);
 			outputFormatter.Indent();
@@ -782,7 +776,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ParameterDeclarationExpression parameterDeclarationExpression, object data)
+		public object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
 			VisitAttributes(parameterDeclarationExpression.Attributes, data);
 			OutputModifier(parameterDeclarationExpression.ParamModifier);
@@ -794,7 +788,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(MethodDeclaration methodDeclaration, object data)
+		public object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			VisitAttributes(methodDeclaration.Attributes, data);
 			outputFormatter.Indent();
@@ -850,7 +844,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(InterfaceImplementation interfaceImplementation, object data)
+		public object VisitInterfaceImplementation(InterfaceImplementation interfaceImplementation, object data)
 		{
 			throw new InvalidOperationException();
 		}
@@ -862,7 +856,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return currentType != null && currentType.Type == ClassType.Interface;
 		}
 		
-		public object Visit(ConstructorDeclaration constructorDeclaration, object data)
+		public object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			VisitAttributes(constructorDeclaration.Attributes, data);
 			outputFormatter.Indent();
@@ -893,7 +887,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ConstructorInitializer constructorInitializer, object data)
+		public object VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data)
 		{
 			outputFormatter.Indent();
 			if (constructorInitializer.ConstructorInitializerType == ConstructorInitializerType.This) {
@@ -911,7 +905,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(IndexerDeclaration indexerDeclaration, object data)
+		public object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
 		{
 			VisitAttributes(indexerDeclaration.Attributes, data);
 			outputFormatter.Indent();
@@ -955,7 +949,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(DestructorDeclaration destructorDeclaration, object data)
+		public object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintText("Protected Overrides Sub Finalize()");
@@ -1000,7 +994,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(OperatorDeclaration operatorDeclaration, object data)
+		public object VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
 		{
 			VisitAttributes(operatorDeclaration.Attributes, data);
 			outputFormatter.Indent();
@@ -1139,7 +1133,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(DeclareDeclaration declareDeclaration, object data)
+		public object VisitDeclareDeclaration(DeclareDeclaration declareDeclaration, object data)
 		{
 			VisitAttributes(declareDeclaration.Attributes, data);
 			outputFormatter.Indent();
@@ -1202,7 +1196,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#endregion
 		
 		#region Statements
-		public object Visit(BlockStatement blockStatement, object data)
+		public object VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
 			VisitStatementList(blockStatement.Children);
 			return null;
@@ -1241,7 +1235,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public object Visit(AddHandlerStatement addHandlerStatement, object data)
+		public object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.AddHandler);
 			outputFormatter.Space();
@@ -1252,7 +1246,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(RemoveHandlerStatement removeHandlerStatement, object data)
+		public object VisitRemoveHandlerStatement(RemoveHandlerStatement removeHandlerStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.RemoveHandler);
 			outputFormatter.Space();
@@ -1263,7 +1257,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(RaiseEventStatement raiseEventStatement, object data)
+		public object VisitRaiseEventStatement(RaiseEventStatement raiseEventStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.RaiseEvent);
 			outputFormatter.Space();
@@ -1274,7 +1268,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(EraseStatement eraseStatement, object data)
+		public object VisitEraseStatement(EraseStatement eraseStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Erase);
 			outputFormatter.Space();
@@ -1282,7 +1276,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ErrorStatement errorStatement, object data)
+		public object VisitErrorStatement(ErrorStatement errorStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Error);
 			outputFormatter.Space();
@@ -1290,7 +1284,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(OnErrorStatement onErrorStatement, object data)
+		public object VisitOnErrorStatement(OnErrorStatement onErrorStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.On);
 			outputFormatter.Space();
@@ -1300,7 +1294,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ReDimStatement reDimStatement, object data)
+		public object VisitReDimStatement(ReDimStatement reDimStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.ReDim);
 			outputFormatter.Space();
@@ -1313,13 +1307,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(StatementExpression statementExpression, object data)
+		public object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
-			nodeTracker.TrackedVisit(statementExpression.Expression, data);
+			nodeTracker.TrackedVisit(expressionStatement.Expression, data);
 			return null;
 		}
 		
-		public object Visit(LocalVariableDeclaration localVariableDeclaration, object data)
+		public object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
 			if (localVariableDeclaration.Modifier != Modifier.None) {
 				OutputModifier(localVariableDeclaration.Modifier);
@@ -1338,13 +1332,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(EmptyStatement emptyStatement, object data)
+		public object VisitEmptyStatement(EmptyStatement emptyStatement, object data)
 		{
 			outputFormatter.NewLine();
 			return null;
 		}
 		
-		public virtual object Visit(YieldStatement yieldStatement, object data)
+		public virtual object VisitYieldStatement(YieldStatement yieldStatement, object data)
 		{
 			Debug.Assert(yieldStatement != null);
 			Debug.Assert(yieldStatement.Statement != null);
@@ -1352,7 +1346,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ReturnStatement returnStatement, object data)
+		public object VisitReturnStatement(ReturnStatement returnStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Return);
 			if (!returnStatement.Expression.IsNull) {
@@ -1362,7 +1356,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(IfElseStatement ifElseStatement, object data)
+		public object VisitIfElseStatement(IfElseStatement ifElseStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.If);
 			outputFormatter.Space();
@@ -1391,7 +1385,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ElseIfSection elseIfSection, object data)
+		public object VisitElseIfSection(ElseIfSection elseIfSection, object data)
 		{
 			outputFormatter.PrintToken(Tokens.ElseIf);
 			outputFormatter.Space();
@@ -1403,7 +1397,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ForStatement forStatement, object data)
+		public object VisitForStatement(ForStatement forStatement, object data)
 		{
 			// Is converted to {initializer} while <Condition> {Embedded} {Iterators} end while
 			exitTokenStack.Push(Tokens.While);
@@ -1437,14 +1431,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(LabelStatement labelStatement, object data)
+		public object VisitLabelStatement(LabelStatement labelStatement, object data)
 		{
 			outputFormatter.PrintIdentifier(labelStatement.Label);
 			outputFormatter.PrintToken(Tokens.Colon);
 			return null;
 		}
 		
-		public object Visit(GotoStatement gotoStatement, object data)
+		public object VisitGotoStatement(GotoStatement gotoStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.GoTo);
 			outputFormatter.Space();
@@ -1452,7 +1446,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(SwitchStatement switchStatement, object data)
+		public object VisitSwitchStatement(SwitchStatement switchStatement, object data)
 		{
 			exitTokenStack.Push(Tokens.Select);
 			outputFormatter.PrintToken(Tokens.Select);
@@ -1474,7 +1468,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(SwitchSection switchSection, object data)
+		public object VisitSwitchSection(SwitchSection switchSection, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.Case);
@@ -1487,7 +1481,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(CaseLabel caseLabel, object data)
+		public object VisitCaseLabel(CaseLabel caseLabel, object data)
 		{
 			if (caseLabel.IsDefault) {
 				outputFormatter.PrintToken(Tokens.Else);
@@ -1530,7 +1524,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(BreakStatement breakStatement, object data)
+		public object VisitBreakStatement(BreakStatement breakStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Exit);
 			if (exitTokenStack.Count > 0) {
@@ -1540,13 +1534,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(StopStatement stopStatement, object data)
+		public object VisitStopStatement(StopStatement stopStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Stop);
 			return null;
 		}
 		
-		public object Visit(ResumeStatement resumeStatement, object data)
+		public object VisitResumeStatement(ResumeStatement resumeStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Resume);
 			outputFormatter.Space();
@@ -1558,13 +1552,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(EndStatement endStatement, object data)
+		public object VisitEndStatement(EndStatement endStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.End);
 			return null;
 		}
 		
-		public object Visit(ContinueStatement continueStatement, object data)
+		public object VisitContinueStatement(ContinueStatement continueStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Continue);
 			outputFormatter.Space();
@@ -1585,7 +1579,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(GotoCaseStatement gotoCaseStatement, object data)
+		public object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data)
 		{
 			outputFormatter.PrintText("goto case ");
 			if (gotoCaseStatement.IsDefaultCase) {
@@ -1596,7 +1590,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(DoLoopStatement doLoopStatement, object data)
+		public object VisitDoLoopStatement(DoLoopStatement doLoopStatement, object data)
 		{
 			if (doLoopStatement.ConditionPosition == ConditionPosition.None) {
 				errors.Error(-1, -1, String.Format("Unknown condition position for loop : {0}.", doLoopStatement));
@@ -1661,7 +1655,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ForeachStatement foreachStatement, object data)
+		public object VisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
 			exitTokenStack.Push(Tokens.For);
 			outputFormatter.PrintToken(Tokens.For);
@@ -1695,7 +1689,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(LockStatement lockStatement, object data)
+		public object VisitLockStatement(LockStatement lockStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.SyncLock);
 			outputFormatter.Space();
@@ -1713,7 +1707,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		bool isUsingResourceAcquisition;
 		
-		public object Visit(UsingStatement usingStatement, object data)
+		public object VisitUsingStatement(UsingStatement usingStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Using);
 			outputFormatter.Space();
@@ -1733,7 +1727,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(WithStatement withStatement, object data)
+		public object VisitWithStatement(WithStatement withStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.With);
 			outputFormatter.Space();
@@ -1748,7 +1742,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(TryCatchStatement tryCatchStatement, object data)
+		public object VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
 		{
 			exitTokenStack.Push(Tokens.Try);
 			outputFormatter.PrintToken(Tokens.Try);
@@ -1774,7 +1768,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(CatchClause catchClause, object data)
+		public object VisitCatchClause(CatchClause catchClause, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.Catch);
@@ -1805,7 +1799,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ThrowStatement throwStatement, object data)
+		public object VisitThrowStatement(ThrowStatement throwStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Throw);
 			if (!throwStatement.Expression.IsNull) {
@@ -1815,31 +1809,31 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(FixedStatement fixedStatement, object data)
+		public object VisitFixedStatement(FixedStatement fixedStatement, object data)
 		{
 			errors.Error(-1, -1, String.Format("FixedStatement is unsupported"));
 			return nodeTracker.TrackedVisit(fixedStatement.EmbeddedStatement, data);
 		}
 		
-		public object Visit(UnsafeStatement unsafeStatement, object data)
+		public object VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data)
 		{
 			errors.Error(-1, -1, String.Format("UnsafeStatement is unsupported"));
 			return nodeTracker.TrackedVisit(unsafeStatement.Block, data);
 		}
 		
-		public object Visit(CheckedStatement checkedStatement, object data)
+		public object VisitCheckedStatement(CheckedStatement checkedStatement, object data)
 		{
 			errors.Error(-1, -1, String.Format("CheckedStatement is unsupported"));
 			return nodeTracker.TrackedVisit(checkedStatement.Block, data);
 		}
 		
-		public object Visit(UncheckedStatement uncheckedStatement, object data)
+		public object VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data)
 		{
 			errors.Error(-1, -1, String.Format("UncheckedStatement is unsupported"));
 			return nodeTracker.TrackedVisit(uncheckedStatement.Block, data);
 		}
 		
-		public object Visit(ExitStatement exitStatement, object data)
+		public object VisitExitStatement(ExitStatement exitStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Exit);
 			if (exitStatement.ExitType != ExitType.None) {
@@ -1878,7 +1872,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ForNextStatement forNextStatement, object data)
+		public object VisitForNextStatement(ForNextStatement forNextStatement, object data)
 		{
 			exitTokenStack.Push(Tokens.For);
 			outputFormatter.PrintToken(Tokens.For);
@@ -1929,7 +1923,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		#region Expressions
 		
-		public object Visit(ClassReferenceExpression classReferenceExpression, object data)
+		public object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.MyClass);
 			return null;
@@ -1963,7 +1957,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return sb.ToString();
 		}
 		
-		public object Visit(PrimitiveExpression primitiveExpression, object data)
+		public object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
 			object val = primitiveExpression.Value;
 			if (val == null) {
@@ -2008,7 +2002,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
+		public object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			int  op = 0;
 			switch (binaryOperatorExpression.Op) {
@@ -2107,7 +2101,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ParenthesizedExpression parenthesizedExpression, object data)
+		public object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			nodeTracker.TrackedVisit(parenthesizedExpression.Expression, data);
@@ -2115,7 +2109,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(InvocationExpression invocationExpression, object data)
+		public object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
 			nodeTracker.TrackedVisit(invocationExpression.TargetObject, data);
 			if (invocationExpression.TypeArguments != null && invocationExpression.TypeArguments.Count > 0) {
@@ -2131,19 +2125,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(IdentifierExpression identifierExpression, object data)
+		public object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			outputFormatter.PrintIdentifier(identifierExpression.Identifier);
 			return null;
 		}
 		
-		public object Visit(TypeReferenceExpression typeReferenceExpression, object data)
+		public object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
 			nodeTracker.TrackedVisit(typeReferenceExpression.TypeReference, data);
 			return null;
 		}
 		
-		public object Visit(UnaryOperatorExpression unaryOperatorExpression, object data)
+		public object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			switch (unaryOperatorExpression.Op) {
 				case UnaryOperatorType.Not:
@@ -2201,7 +2195,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			throw new System.NotSupportedException();
 		}
 		
-		public object Visit(AssignmentExpression assignmentExpression, object data)
+		public object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			int  op = 0;
 			bool unsupportedOpAssignment = false;
@@ -2285,13 +2279,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(SizeOfExpression sizeOfExpression, object data)
+		public object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
 		{
 			errors.Error(-1, -1, String.Format("SizeOfExpression is unsupported"));
 			return null;
 		}
 		
-		public object Visit(TypeOfExpression typeOfExpression, object data)
+		public object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.GetType);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
@@ -2300,7 +2294,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(DefaultValueExpression defaultValueExpression, object data)
+		public object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Default);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
@@ -2309,7 +2303,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(TypeOfIsExpression typeOfIsExpression, object data)
+		public object VisitTypeOfIsExpression(TypeOfIsExpression typeOfIsExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.TypeOf);
 			outputFormatter.Space();
@@ -2321,7 +2315,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(AddressOfExpression addressOfExpression, object data)
+		public object VisitAddressOfExpression(AddressOfExpression addressOfExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.AddressOf);
 			outputFormatter.Space();
@@ -2329,31 +2323,31 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
+		public object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			errors.Error(-1, -1, String.Format("AnonymousMethodExpression is unsupported"));
 			return null;
 		}
 		
-		public object Visit(CheckedExpression checkedExpression, object data)
+		public object VisitCheckedExpression(CheckedExpression checkedExpression, object data)
 		{
 			errors.Error(-1, -1, String.Format("CheckedExpression is unsupported"));
 			return nodeTracker.TrackedVisit(checkedExpression.Expression, data);
 		}
 		
-		public object Visit(UncheckedExpression uncheckedExpression, object data)
+		public object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
 		{
 			errors.Error(-1, -1, String.Format("UncheckedExpression is unsupported"));
 			return nodeTracker.TrackedVisit(uncheckedExpression.Expression, data);
 		}
 		
-		public object Visit(PointerReferenceExpression pointerReferenceExpression, object data)
+		public object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
 			errors.Error(-1, -1, String.Format("PointerReferenceExpression is unsupported"));
 			return null;
 		}
 		
-		public object Visit(CastExpression castExpression, object data)
+		public object VisitCastExpression(CastExpression castExpression, object data)
 		{
 			if (castExpression.CastType == CastType.Cast) {
 				return PrintCast(Tokens.DirectCast, castExpression);
@@ -2431,13 +2425,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(StackAllocExpression stackAllocExpression, object data)
+		public object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
 		{
 			errors.Error(-1, -1, String.Format("StackAllocExpression is unsupported"));
 			return null;
 		}
 		
-		public object Visit(IndexerExpression indexerExpression, object data)
+		public object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
 			nodeTracker.TrackedVisit(indexerExpression.TargetObject, data);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
@@ -2446,19 +2440,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ThisReferenceExpression thisReferenceExpression, object data)
+		public object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Me);
 			return null;
 		}
 		
-		public object Visit(BaseReferenceExpression baseReferenceExpression, object data)
+		public object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.MyBase);
 			return null;
 		}
 		
-		public object Visit(ObjectCreateExpression objectCreateExpression, object data)
+		public object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.New);
 			outputFormatter.Space();
@@ -2469,7 +2463,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ArrayCreateExpression arrayCreateExpression, object data)
+		public object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.New);
 			outputFormatter.Space();
@@ -2495,7 +2489,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ArrayInitializerExpression arrayInitializerExpression, object data)
+		public object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
 			this.AppendCommaSeparatedList(arrayInitializerExpression.CreateExpressions);
@@ -2503,7 +2497,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
+		public object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
 			nodeTracker.TrackedVisit(fieldReferenceExpression.TargetObject, data);
 			outputFormatter.PrintToken(Tokens.Dot);
@@ -2511,7 +2505,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(DirectionExpression directionExpression, object data)
+		public object VisitDirectionExpression(DirectionExpression directionExpression, object data)
 		{
 			// VB does not need to specify the direction in method calls
 			nodeTracker.TrackedVisit(directionExpression.Expression, data);
@@ -2519,7 +2513,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		
-		public object Visit(ConditionalExpression conditionalExpression, object data)
+		public object VisitConditionalExpression(ConditionalExpression conditionalExpression, object data)
 		{
 			// No representation in VB.NET, but VB conversion is possible.
 			outputFormatter.PrintText("IIf");

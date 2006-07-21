@@ -10,8 +10,8 @@ using System.Collections;
 using System.Windows.Forms;
 using System.Reflection;
 
-using ICSharpCode.NRefactory.Parser.AST;
-using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory;
 
 namespace NRefactoryDemo
 {
@@ -94,7 +94,7 @@ namespace NRefactoryDemo
 		public void ApplyTransformation(IAstVisitor visitor)
 		{
 			if (tree.SelectedNode == tree.Nodes[0]) {
-				visitor.Visit(unit, null);
+				unit.AcceptVisitor(visitor, null);
 				UpdateTree();
 			} else {
 				string name = visitor.GetType().Name;

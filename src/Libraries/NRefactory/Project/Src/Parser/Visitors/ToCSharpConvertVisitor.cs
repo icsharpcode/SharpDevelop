@@ -12,9 +12,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory.Visitors
 {
 	/// <summary>
 	/// Converts elements not supported by C# to their C# representation.
@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.Parser
 		// The following conversions are implemented:
 		//   Public Event EventName(param As String) -> automatic delegate declaration
 		
-		public override object Visit(EventDeclaration eventDeclaration, object data)
+		public override object VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
 		{
 			if (!eventDeclaration.HasAddRegion && !eventDeclaration.HasRaiseRegion && !eventDeclaration.HasRemoveRegion) {
 				if (eventDeclaration.TypeReference.IsNull) {
@@ -42,12 +42,12 @@ namespace ICSharpCode.NRefactory.Parser
 					eventDeclaration.TypeReference = new TypeReference(dd.Name);
 				}
 			}
-			return base.Visit(eventDeclaration, data);
+			return base.VisitEventDeclaration(eventDeclaration, data);
 		}
 		
-		public override object Visit(LocalVariableDeclaration localVariableDeclaration, object data)
+		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
-			base.Visit(localVariableDeclaration, data);
+			base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 			if ((localVariableDeclaration.Modifier & Modifier.Static) == Modifier.Static) {
 				INode parent = localVariableDeclaration.Parent;
 				while (parent != null && !IsTypeLevel(parent)) {

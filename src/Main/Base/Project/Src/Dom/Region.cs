@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using Location = ICSharpCode.NRefactory.Parser.Location;
+using Location = ICSharpCode.NRefactory.Location;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {

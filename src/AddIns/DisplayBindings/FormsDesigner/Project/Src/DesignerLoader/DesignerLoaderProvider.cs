@@ -8,7 +8,7 @@
 using System;
 using System.ComponentModel.Design.Serialization;
 using ICSharpCode.TextEditor;
-using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.FormsDesigner
 {

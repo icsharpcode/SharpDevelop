@@ -7,16 +7,16 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 
 namespace NRefactoryExample
 {
-	public class WrapperGeneratorVisitor : AbstractAstVisitor
+	public class WrapperGeneratorVisitor : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
 	{
-		public override object Visit(TypeDeclaration typeDeclaration, object data)
+		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
-			base.Visit(typeDeclaration, data); // visit methods
+			base.VisitTypeDeclaration(typeDeclaration, data); // visit methods
 			typeDeclaration.Attributes.Clear();
 			typeDeclaration.BaseTypes.Clear();
 			
@@ -45,7 +45,7 @@ namespace NRefactoryExample
 			                                                 AssignmentOperatorType.Assign,
 			                                                 new IdentifierExpression("wrappedObject"));
 			cd.Body = new BlockStatement();
-			cd.Body.AddChild(new StatementExpression(assignment));
+			cd.Body.AddChild(new ExpressionStatement(assignment));
 			typeDeclaration.AddChild(cd);
 			
 			for (int i = 0; i < typeDeclaration.Children.Count; i++) {
@@ -68,9 +68,9 @@ namespace NRefactoryExample
 			
 			return null;
 		}
-		public override object Visit(MethodDeclaration methodDeclaration, object data)
+		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
-			base.Visit(methodDeclaration, data); // visit parameters
+			base.VisitMethodDeclaration(methodDeclaration, data); // visit parameters
 			methodDeclaration.Attributes.Clear();
 			methodDeclaration.Body = new BlockStatement();
 			methodDeclaration.Modifier = Modifier.Public;
@@ -88,14 +88,14 @@ namespace NRefactoryExample
 					IdentifierExpression tmpIdent = new IdentifierExpression("tmp");
 					InvocationExpression ie = CreateMethodCall(methodDeclaration);
 					ie.Arguments.Add(new DirectionExpression(FieldDirection.Out, tmpIdent));
-					methodDeclaration.Body.AddChild(new StatementExpression(ie));
+					methodDeclaration.Body.AddChild(new ExpressionStatement(ie));
 					
 					methodDeclaration.Body.AddChild(new ReturnStatement(tmpIdent));
 					return null;
 				}
 			}
 			
-			methodDeclaration.Body.AddChild(new StatementExpression(CreateMethodCall(methodDeclaration)));
+			methodDeclaration.Body.AddChild(new ExpressionStatement(CreateMethodCall(methodDeclaration)));
 			return null;
 		}
 		static InvocationExpression CreateMethodCall(MethodDeclaration method)
@@ -114,7 +114,7 @@ namespace NRefactoryExample
 		}
 		
 		
-		public override object Visit(ParameterDeclarationExpression parameterDeclarationExpression, object data)
+		public override object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
 			parameterDeclarationExpression.Attributes.Clear();
 			return null;

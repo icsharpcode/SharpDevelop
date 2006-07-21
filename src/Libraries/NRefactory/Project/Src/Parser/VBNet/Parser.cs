@@ -4,9 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Parser.VB;
-using ASTAttribute = ICSharpCode.NRefactory.Parser.Ast.Attribute;
+using ASTAttribute = ICSharpCode.NRefactory.Ast.Attribute;
 /*
   Parser.frame file for NRefactory.
  */
@@ -5537,7 +5537,7 @@ out val);
 			if(expr is FieldReferenceExpression || expr is IdentifierExpression) {
 				expr = new InvocationExpression(expr);
 			}
-			statement = new StatementExpression(expr);
+			statement = new ExpressionStatement(expr);
 			
 			break;
 		}
@@ -5548,7 +5548,7 @@ out val);
 out expr);
 
 #line  2467 "VBNET.ATG" 
-			statement = new StatementExpression(expr); 
+			statement = new ExpressionStatement(expr); 
 			break;
 		}
 		case 188: {
@@ -5586,7 +5586,7 @@ out expr);
 out block);
 
 #line  2480 "VBNET.ATG" 
-				statement = new UsingStatement(new StatementExpression(expr), block); 
+				statement = new UsingStatement(new ExpressionStatement(expr), block); 
 			} else SynErr(260);
 			Expect(88);
 			Expect(188);
@@ -6038,7 +6038,6 @@ out blockStmt);
 	
 	protected override void SynErr(int line, int col, int errorNumber)
 	{
-		errors.count++; 
 		string s;
 		switch (errorNumber) {
 			case 0: s = "EOF expected"; break;

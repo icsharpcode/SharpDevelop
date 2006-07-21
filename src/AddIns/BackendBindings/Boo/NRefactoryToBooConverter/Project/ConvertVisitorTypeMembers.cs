@@ -7,16 +7,14 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
-using Boo.Lang.Compiler;
+using ICSharpCode.NRefactory.Ast;
 using B = Boo.Lang.Compiler.Ast;
 
 namespace NRefactoryToBooConverter
 {
 	partial class ConvertVisitor
 	{
-		public object Visit(FieldDeclaration fieldDeclaration, object data)
+		public object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
 			for (int i = 0; i < fieldDeclaration.Fields.Count; i++) {
 				ConvertField(fieldDeclaration.GetTypeForField(i), fieldDeclaration.Fields[i], fieldDeclaration);
@@ -24,7 +22,7 @@ namespace NRefactoryToBooConverter
 			return null;
 		}
 		
-		public object Visit(VariableDeclaration variableDeclaration, object data)
+		public object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data)
 		{
 			throw new ApplicationException("Visited VariableDeclaration.");
 		}
@@ -87,7 +85,7 @@ namespace NRefactoryToBooConverter
 		
 		B.Method entryPointMethod;
 		
-		public object Visit(MethodDeclaration methodDeclaration, object data)
+		public object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			B.Method m = new B.Method(GetLexicalInfo(methodDeclaration));
 			m.Name = methodDeclaration.Name;
@@ -115,7 +113,7 @@ namespace NRefactoryToBooConverter
 		}
 		
 		
-		public object Visit(ConstructorDeclaration constructorDeclaration, object data)
+		public object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			B.Constructor m = new B.Constructor(GetLexicalInfo(constructorDeclaration));
 			m.Modifiers = ConvertModifier(constructorDeclaration, B.TypeMemberModifiers.Private);
@@ -138,7 +136,7 @@ namespace NRefactoryToBooConverter
 			return m;
 		}
 		
-		public object Visit(DestructorDeclaration destructorDeclaration, object data)
+		public object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
 		{
 			B.Destructor m = new B.Destructor(GetLexicalInfo(destructorDeclaration));
 			ConvertAttributes(destructorDeclaration.Attributes, m.Attributes);
@@ -176,13 +174,13 @@ namespace NRefactoryToBooConverter
 			return para;
 		}
 		
-		public object Visit(ParameterDeclarationExpression parameterDeclarationExpression, object data)
+		public object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
 			bool tmp;
 			return ConvertParameter(parameterDeclarationExpression, out tmp);
 		}
 		
-		public object Visit(PropertyDeclaration propertyDeclaration, object data)
+		public object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			B.Property m = new B.Property(GetLexicalInfo(propertyDeclaration));
 			m.Name = propertyDeclaration.Name;
@@ -213,7 +211,7 @@ namespace NRefactoryToBooConverter
 			return m;
 		}
 		
-		public object Visit(IndexerDeclaration indexerDeclaration, object data)
+		public object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
 		{
 			B.Property m = new B.Property(GetLexicalInfo(indexerDeclaration));
 			
@@ -246,17 +244,17 @@ namespace NRefactoryToBooConverter
 			return m;
 		}
 		
-		public object Visit(PropertyGetRegion propertyGetRegion, object data)
+		public object VisitPropertyGetRegion(PropertyGetRegion propertyGetRegion, object data)
 		{
 			throw new ApplicationException("PropertyGetRegion visited.");
 		}
 		
-		public object Visit(PropertySetRegion propertySetRegion, object data)
+		public object VisitPropertySetRegion(PropertySetRegion propertySetRegion, object data)
 		{
 			throw new ApplicationException("PropertySetRegion visited.");
 		}
 		
-		public object Visit(EventDeclaration eventDeclaration, object data)
+		public object VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
 		{
 			B.Event m = new B.Event(GetLexicalInfo(eventDeclaration));
 			m.Name = eventDeclaration.Name;
@@ -292,33 +290,33 @@ namespace NRefactoryToBooConverter
 			return m;
 		}
 		
-		public object Visit(EventAddRegion eventAddRegion, object data)
+		public object VisitEventAddRegion(EventAddRegion eventAddRegion, object data)
 		{
 			throw new ApplicationException("EventAddRegion visited.");
 		}
 		
-		public object Visit(EventRemoveRegion eventRemoveRegion, object data)
+		public object VisitEventRemoveRegion(EventRemoveRegion eventRemoveRegion, object data)
 		{
 			throw new ApplicationException("EventRemoveRegion visited.");
 		}
 		
-		public object Visit(EventRaiseRegion eventRaiseRegion, object data)
+		public object VisitEventRaiseRegion(EventRaiseRegion eventRaiseRegion, object data)
 		{
 			throw new ApplicationException("EventRaiseRegion visited.");
 		}
 		
-		public object Visit(ConstructorInitializer constructorInitializer, object data)
+		public object VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data)
 		{
 			throw new ApplicationException("ConstructorInitializer visited.");
 		}
 		
-		public object Visit(OperatorDeclaration operatorDeclaration, object data)
+		public object VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
 		{
 			AddError(operatorDeclaration, "Declaring operators is not supported (BOO-223).");
 			return null;
 		}
 		
-		public object Visit(DeclareDeclaration declareDeclaration, object data)
+		public object VisitDeclareDeclaration(DeclareDeclaration declareDeclaration, object data)
 		{
 			throw new NotImplementedException();
 		}

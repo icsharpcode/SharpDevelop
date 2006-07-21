@@ -8,9 +8,9 @@
 using System;
 using System.Text;
 using System.IO;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory
 {
 	public enum SupportedLanguage {
 		CSharp,
@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.Parser
 	/// </summary>
 	public class ParserFactory
 	{
-		public static ILexer CreateLexer(SupportedLanguage language, TextReader textReader)
+		public static Parser.ILexer CreateLexer(SupportedLanguage language, TextReader textReader)
 		{
 			switch (language) {
 				case SupportedLanguage.CSharp:
@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public static IParser CreateParser(SupportedLanguage language, TextReader textReader)
 		{
-			ILexer lexer = CreateLexer(language, textReader);
+			Parser.ILexer lexer = CreateLexer(language, textReader);
 			switch (language) {
 				case SupportedLanguage.CSharp:
 					return new ICSharpCode.NRefactory.Parser.CSharp.Parser(lexer);

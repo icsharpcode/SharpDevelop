@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory
 {
 	/// <summary>
 	/// Interface for all specials.

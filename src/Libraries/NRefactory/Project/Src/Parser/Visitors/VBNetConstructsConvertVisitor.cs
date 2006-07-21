@@ -14,10 +14,10 @@ using System.Reflection;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
-using ICSharpCode.NRefactory.Parser.Ast;
-using Attribute = ICSharpCode.NRefactory.Parser.Ast.Attribute;
+using ICSharpCode.NRefactory.Ast;
+using Attribute = ICSharpCode.NRefactory.Ast.Attribute;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory.Visitors
 {
 	/// <summary>
 	/// Converts special VB constructs to use more general AST classes.
@@ -35,11 +35,11 @@ namespace ICSharpCode.NRefactory.Parser
 		Dictionary<string, string> usings;
 		List<UsingDeclaration> addedUsings;
 		
-		public override object Visit(CompilationUnit compilationUnit, object data)
+		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
 			usings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 			addedUsings = new List<UsingDeclaration>();
-			base.Visit(compilationUnit, data);
+			base.VisitCompilationUnit(compilationUnit, data);
 			int i;
 			for (i = 0; i < compilationUnit.Children.Count; i++) {
 				if (!(compilationUnit.Children[i] is UsingDeclaration))
@@ -54,15 +54,15 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		public override object Visit(Using @using, object data)
+		public override object VisitUsing(Using @using, object data)
 		{
 			if (usings != null && !@using.IsAlias) {
 				usings[@using.Name] = @using.Name;
 			}
-			return base.Visit(@using, data);
+			return base.VisitUsing(@using, data);
 		}
 		
-		public override object Visit(ConstructorDeclaration constructorDeclaration, object data)
+		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			// make constructor public if visiblity is not set (unless constructor is static)
 			if ((constructorDeclaration.Modifier & (Modifier.Visibility | Modifier.Static)) == 0)
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.Parser
 			// MyBase.New() and MyClass.New() calls inside the constructor are converted to :base() and :this()
 			BlockStatement body = constructorDeclaration.Body;
 			if (body != null && body.Children.Count > 0) {
-				StatementExpression se = body.Children[0] as StatementExpression;
+				ExpressionStatement se = body.Children[0] as ExpressionStatement;
 				if (se != null) {
 					InvocationExpression ie = se.Expression as InvocationExpression;
 					if (ie != null) {
@@ -91,15 +91,15 @@ namespace ICSharpCode.NRefactory.Parser
 					}
 				}
 			}
-			return base.Visit(constructorDeclaration, data);
+			return base.VisitConstructorDeclaration(constructorDeclaration, data);
 		}
 		
-		public override object Visit(DeclareDeclaration declareDeclaration, object data)
+		public override object VisitDeclareDeclaration(DeclareDeclaration declareDeclaration, object data)
 		{
 			if (usings != null && !usings.ContainsKey("System.Runtime.InteropServices")) {
 				UsingDeclaration @using = new UsingDeclaration("System.Runtime.InteropServices");
 				addedUsings.Add(@using);
-				base.Visit(@using, data);
+				base.VisitUsingDeclaration(@using, data);
 			}
 			
 			MethodDeclaration method = new MethodDeclaration(declareDeclaration.Name, declareDeclaration.Modifier,
@@ -134,7 +134,7 @@ namespace ICSharpCode.NRefactory.Parser
 			sec.Attributes.Add(att);
 			method.Attributes.Add(sec);
 			ReplaceCurrentNode(method);
-			return base.Visit(method, data);
+			return base.VisitMethodDeclaration(method, data);
 		}
 		
 		static PrimitiveExpression CreateStringLiteral(string text)
@@ -142,7 +142,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return new PrimitiveExpression(text, text);
 		}
 		
-		public override object Visit(MethodDeclaration methodDeclaration, object data)
+		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			if ((methodDeclaration.Modifier & Modifier.Visibility) == 0)
 				methodDeclaration.Modifier |= Modifier.Public;
@@ -159,7 +159,7 @@ namespace ICSharpCode.NRefactory.Parser
 				    && tcs.FinallyBlock is BlockStatement
 				    && tcs.FinallyBlock.Children.Count == 1)
 				{
-					StatementExpression se = tcs.FinallyBlock.Children[0] as StatementExpression;
+					ExpressionStatement se = tcs.FinallyBlock.Children[0] as ExpressionStatement;
 					if (se != null) {
 						InvocationExpression ie = se.Expression as InvocationExpression;
 						if (ie != null
@@ -171,7 +171,7 @@ namespace ICSharpCode.NRefactory.Parser
 							DestructorDeclaration des = new DestructorDeclaration("Destructor", Modifier.None, methodDeclaration.Attributes);
 							ReplaceCurrentNode(des);
 							des.Body = (BlockStatement)tcs.StatementBlock;
-							return base.Visit(des, data);
+							return base.VisitDestructorDeclaration(des, data);
 						}
 					}
 				}
@@ -222,14 +222,14 @@ namespace ICSharpCode.NRefactory.Parser
 				}
 			}
 			
-			return base.Visit(methodDeclaration, data);
+			return base.VisitMethodDeclaration(methodDeclaration, data);
 		}
 		
 		public const string FunctionReturnValueName = "functionReturnValue";
 		
 		static AssignmentExpression GetAssignmentFromStatement(INode statement)
 		{
-			StatementExpression se = statement as StatementExpression;
+			ExpressionStatement se = statement as ExpressionStatement;
 			if (se == null) return null;
 			return se.Expression as AssignmentExpression;
 		}
@@ -253,7 +253,7 @@ namespace ICSharpCode.NRefactory.Parser
 				this.functionName = functionName;
 			}
 			
-			public override object Visit(AssignmentExpression assignmentExpression, object data)
+			public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 			{
 				IdentifierExpression ident = assignmentExpression.Left as IdentifierExpression;
 				if (ident != null) {
@@ -261,18 +261,18 @@ namespace ICSharpCode.NRefactory.Parser
 						ident.Identifier = FunctionReturnValueName;
 					}
 				}
-				return base.Visit(assignmentExpression, data);
+				return base.VisitAssignmentExpression(assignmentExpression, data);
 			}
 		}
 		#endregion
 		
-		public override object Visit(FieldDeclaration fieldDeclaration, object data)
+		public override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
 			fieldDeclaration.Modifier &= ~Modifier.Dim; // remove "Dim" flag
-			return base.Visit(fieldDeclaration, data);
+			return base.VisitFieldDeclaration(fieldDeclaration, data);
 		}
 		
-		public override object Visit(PropertyDeclaration propertyDeclaration, object data)
+		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			if ((propertyDeclaration.Modifier & Modifier.Visibility) == 0)
 				propertyDeclaration.Modifier = Modifier.Public;
@@ -287,7 +287,7 @@ namespace ICSharpCode.NRefactory.Parser
 				propertyDeclaration.SetRegion.AcceptVisitor(new RenameIdentifierVisitor(from, "value"), null);
 			}
 			
-			return base.Visit(propertyDeclaration, data);
+			return base.VisitPropertyDeclaration(propertyDeclaration, data);
 		}
 		
 		class RenameIdentifierVisitor : AbstractAstVisitor
@@ -300,12 +300,12 @@ namespace ICSharpCode.NRefactory.Parser
 				this.to = to;
 			}
 			
-			public override object Visit(IdentifierExpression identifierExpression, object data)
+			public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 			{
 				if (string.Equals(identifierExpression.Identifier, from, StringComparison.InvariantCultureIgnoreCase)) {
 					identifierExpression.Identifier = to;
 				}
-				return base.Visit(identifierExpression, data);
+				return base.VisitIdentifierExpression(identifierExpression, data);
 			}
 		}
 		
@@ -330,7 +330,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return d;
 		}
 		
-		public override object Visit(IdentifierExpression identifierExpression, object data)
+		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			if (constantTable == null) {
 				constantTable = CreateDictionary("Constants");
@@ -339,12 +339,12 @@ namespace ICSharpCode.NRefactory.Parser
 			if (constantTable.TryGetValue(identifierExpression.Identifier, out expr)) {
 				FieldReferenceExpression fre = new FieldReferenceExpression(expr, identifierExpression.Identifier);
 				ReplaceCurrentNode(fre);
-				return base.Visit(fre, data);
+				return base.VisitFieldReferenceExpression(fre, data);
 			}
-			return base.Visit(identifierExpression, data);
+			return base.VisitIdentifierExpression(identifierExpression, data);
 		}
 		
-		public override object Visit(InvocationExpression invocationExpression, object data)
+		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
 			IdentifierExpression ident = invocationExpression.TargetObject as IdentifierExpression;
 			if (ident != null) {
@@ -355,7 +355,7 @@ namespace ICSharpCode.NRefactory.Parser
 					                                                     invocationExpression.Arguments[1],
 					                                                     invocationExpression.Arguments[2]);
 					ReplaceCurrentNode(new ParenthesizedExpression(ce));
-					return base.Visit(ce, data);
+					return base.VisitConditionalExpression(ce, data);
 				}
 				if ("IsNothing".Equals(ident.Identifier, StringComparison.InvariantCultureIgnoreCase)
 				    && invocationExpression.Arguments.Count == 1)
@@ -364,7 +364,7 @@ namespace ICSharpCode.NRefactory.Parser
 					                                                            BinaryOperatorType.ReferenceEquality,
 					                                                            new PrimitiveExpression(null, "null"));
 					ReplaceCurrentNode(new ParenthesizedExpression(boe));
-					return base.Visit(boe, data);
+					return base.VisitBinaryOperatorExpression(boe, data);
 				}
 				if (methodTable == null) {
 					methodTable = CreateDictionary("Conversion", "FileSystem", "Financial", "Information",
@@ -376,12 +376,12 @@ namespace ICSharpCode.NRefactory.Parser
 					invocationExpression.TargetObject = fre;
 				}
 			}
-			return base.Visit(invocationExpression, data);
+			return base.VisitInvocationExpression(invocationExpression, data);
 		}
 		
-		public override object Visit(UnaryOperatorExpression unaryOperatorExpression, object data)
+		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
-			base.Visit(unaryOperatorExpression, data);
+			base.VisitUnaryOperatorExpression(unaryOperatorExpression, data);
 			if (unaryOperatorExpression.Op == UnaryOperatorType.Not) {
 				if (unaryOperatorExpression.Expression is BinaryOperatorExpression) {
 					unaryOperatorExpression.Expression = new ParenthesizedExpression(unaryOperatorExpression.Expression);
@@ -398,7 +398,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		public override object Visit(UsingStatement usingStatement, object data)
+		public override object VisitUsingStatement(UsingStatement usingStatement, object data)
 		{
 			LocalVariableDeclaration lvd = usingStatement.ResourceAcquisition as LocalVariableDeclaration;
 			if (lvd != null && lvd.Variables.Count > 1) {
@@ -411,7 +411,7 @@ namespace ICSharpCode.NRefactory.Parser
 					usingStatement = n;
 				}
 			}
-			return base.Visit(usingStatement, data);
+			return base.VisitUsingStatement(usingStatement, data);
 		}
 	}
 }

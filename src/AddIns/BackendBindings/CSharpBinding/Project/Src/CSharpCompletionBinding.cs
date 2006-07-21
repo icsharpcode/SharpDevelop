@@ -8,13 +8,15 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using AST = ICSharpCode.NRefactory.Parser.Ast;
+using AST = ICSharpCode.NRefactory.Ast;
 using CSTokens = ICSharpCode.NRefactory.Parser.CSharp.Tokens;
 
 namespace CSharpBinding
@@ -323,12 +325,12 @@ namespace CSharpBinding
 				caretLocation = new Location(caretColumn, caretLine);
 			}
 			
-			public override object Visit(AST.SwitchStatement switchStatement, object data)
+			public override object VisitSwitchStatement(AST.SwitchStatement switchStatement, object data)
 			{
 				if (switchStatement.StartLocation < caretLocation && caretLocation < switchStatement.EndLocation) {
 					bestStatement = switchStatement;
 				}
-				return base.Visit(switchStatement, data);
+				return base.VisitSwitchStatement(switchStatement, data);
 			}
 		}
 		#endregion

@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory.Parser.Ast
+namespace ICSharpCode.NRefactory.Ast
 {
 	[Flags]
 	public enum Modifier // TODO: Rename to Modifiers

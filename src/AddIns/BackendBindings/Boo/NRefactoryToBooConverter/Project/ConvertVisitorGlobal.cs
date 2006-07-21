@@ -7,22 +7,14 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
-using Boo.Lang.Compiler;
+using ICSharpCode.NRefactory.Ast;
 using B = Boo.Lang.Compiler.Ast;
 
 namespace NRefactoryToBooConverter
 {
 	partial class ConvertVisitor
 	{
-		public object Visit(INode node, object data)
-		{
-			AddError(node, "Visited INode: " + node);
-			return null;
-		}
-		
-		public object Visit(CompilationUnit compilationUnit, object data)
+		public object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
 			module = new B.Module();
 			module.LexicalInfo = new B.LexicalInfo(fileName, 1, 1);
@@ -53,7 +45,7 @@ namespace NRefactoryToBooConverter
 			return tmp;
 		}
 		
-		public object Visit(NamespaceDeclaration namespaceDeclaration, object data)
+		public object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			if (module.Namespace != null) {
 				AddError(namespaceDeclaration, "Only one namespace declaration per file is supported.");
@@ -64,15 +56,15 @@ namespace NRefactoryToBooConverter
 			return namespaceDeclaration.AcceptChildren(this, data);
 		}
 		
-		public object Visit(UsingDeclaration usingDeclaration, object data)
+		public object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
 			foreach (Using u in usingDeclaration.Usings) {
-				Visit(u, data);
+				VisitUsing(u, data);
 			}
 			return null;
 		}
 		
-		public object Visit(Using @using, object data)
+		public object VisitUsing(Using @using, object data)
 		{
 			B.Import import;
 			if (@using.IsAlias) {
@@ -87,7 +79,7 @@ namespace NRefactoryToBooConverter
 		
 		B.TypeDefinition currentType;
 		
-		public object Visit(TypeDeclaration typeDeclaration, object data)
+		public object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
 			if (typeDeclaration.Templates.Count > 0) {
 				AddError(typeDeclaration, "Generic type definitions are not supported.");
@@ -134,7 +126,7 @@ namespace NRefactoryToBooConverter
 			return typeDef;
 		}
 		
-		public object Visit(DelegateDeclaration delegateDeclaration, object data)
+		public object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
 		{
 			B.CallableDefinition cd = new B.CallableDefinition(GetLexicalInfo(delegateDeclaration));
 			cd.Name = delegateDeclaration.Name;
@@ -156,13 +148,13 @@ namespace NRefactoryToBooConverter
 					AddError(s, "Attribute target not supported");
 					continue;
 				}
-				foreach (ICSharpCode.NRefactory.Parser.Ast.Attribute a in s.Attributes) {
-					col.Add((B.Attribute)Visit(a, null));
+				foreach (ICSharpCode.NRefactory.Ast.Attribute a in s.Attributes) {
+					col.Add((B.Attribute)VisitAttribute(a, null));
 				}
 			}
 		}
 		
-		public object Visit(ICSharpCode.NRefactory.Parser.Ast.Attribute a, object data)
+		public object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute a, object data)
 		{
 			B.Attribute att = new B.Attribute(GetLexicalInfo(a), a.Name);
 			att.EndSourceLocation = GetLocation(a.EndLocation);
@@ -176,11 +168,11 @@ namespace NRefactoryToBooConverter
 			return att;
 		}
 		
-		public object Visit(AttributeSection s, object data)
+		public object VisitAttributeSection(AttributeSection s, object data)
 		{
 			if (s.AttributeTarget.Equals("assembly", StringComparison.OrdinalIgnoreCase)) {
-				foreach (ICSharpCode.NRefactory.Parser.Ast.Attribute a in s.Attributes) {
-					module.AssemblyAttributes.Add((B.Attribute)Visit(a, null));
+				foreach (ICSharpCode.NRefactory.Ast.Attribute a in s.Attributes) {
+					module.AssemblyAttributes.Add((B.Attribute)VisitAttribute(a, null));
 				}
 			} else {
 				AddError(s, "Attribute must have the target 'assembly'");
@@ -190,22 +182,22 @@ namespace NRefactoryToBooConverter
 		
 		// Some classes are handled by their parent (NamedArgumentExpression by Attribute etc.)
 		// so we don't need to implement Visit for them.
-		public object Visit(TemplateDefinition templateDefinition, object data)
+		public object VisitTemplateDefinition(TemplateDefinition templateDefinition, object data)
 		{
 			throw new ApplicationException("Visited TemplateDefinition.");
 		}
 		
-		public object Visit(NamedArgumentExpression namedArgumentExpression, object data)
+		public object VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
 		{
 			throw new ApplicationException("Visited NamedArgumentExpression.");
 		}
 		
-		public object Visit(InterfaceImplementation interfaceImplementation, object data)
+		public object VisitInterfaceImplementation(InterfaceImplementation interfaceImplementation, object data)
 		{
 			throw new ApplicationException("Visited InterfaceImplementation.");
 		}
 		
-		public object Visit(OptionDeclaration optionDeclaration, object data)
+		public object VisitOptionDeclaration(OptionDeclaration optionDeclaration, object data)
 		{
 			AddError(optionDeclaration, "Option statement is not supported.");
 			return null;

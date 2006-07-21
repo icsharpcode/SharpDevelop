@@ -6,20 +6,20 @@
 // </file>
 
 using System;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory
 {
 	/// <summary>
-	/// Description of IParser.
+	/// Parser interface.
 	/// </summary>
 	public interface IParser : IDisposable
 	{
-		Errors Errors {
+		Parser.Errors Errors {
 			get;
 		}
 		
-		ILexer Lexer {
+		Parser.ILexer Lexer {
 			get;
 		}
 		

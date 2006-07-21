@@ -12,14 +12,15 @@ using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
 
-using RefParser = ICSharpCode.NRefactory.Parser;
-using AST = ICSharpCode.NRefactory.Parser.Ast;
+using AST = ICSharpCode.NRefactory.Ast;
+using RefParser = ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
-	public class NRefactoryASTConvertVisitor : RefParser.AbstractAstVisitor
+	public class NRefactoryASTConvertVisitor : AbstractAstVisitor
 	{
 		ICompilationUnit cu;
 		Stack currentNamespace = new Stack();
@@ -142,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		public override object Visit(AST.CompilationUnit compilationUnit, object data)
+		public override object VisitCompilationUnit(AST.CompilationUnit compilationUnit, object data)
 		{
 			if (compilationUnit == null) {
 				return null;
@@ -151,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return cu;
 		}
 		
-		public override object Visit(AST.UsingDeclaration usingDeclaration, object data)
+		public override object VisitUsingDeclaration(AST.UsingDeclaration usingDeclaration, object data)
 		{
 			DefaultUsing us = new DefaultUsing(cu.ProjectContent, GetRegion(usingDeclaration.StartLocation, usingDeclaration.EndLocation));
 			foreach (AST.Using u in usingDeclaration.Usings) {
@@ -161,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return data;
 		}
 		
-		public override object Visit(AST.Using u, object data)
+		public override object VisitUsing(AST.Using u, object data)
 		{
 			Debug.Assert(data is DefaultUsing);
 			DefaultUsing us = (DefaultUsing)data;
@@ -239,7 +240,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return result;
 		}
 		
-		public override object Visit(AST.NamespaceDeclaration namespaceDeclaration, object data)
+		public override object VisitNamespaceDeclaration(AST.NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			string name;
 			if (currentNamespace.Count == 0) {
@@ -275,7 +276,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return new DomRegion(start, end);
 		}
 		
-		public override object Visit(AST.TypeDeclaration typeDeclaration, object data)
+		public override object VisitTypeDeclaration(AST.TypeDeclaration typeDeclaration, object data)
 		{
 			DomRegion region = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
 			DomRegion bodyRegion = GetRegion(typeDeclaration.BodyStartLocation, typeDeclaration.EndLocation);
@@ -366,7 +367,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return typeParameter;
 		}
 		
-		public override object Visit(AST.DelegateDeclaration delegateDeclaration, object data)
+		public override object VisitDelegateDeclaration(AST.DelegateDeclaration delegateDeclaration, object data)
 		{
 			DomRegion region = GetRegion(delegateDeclaration.StartLocation, delegateDeclaration.EndLocation);
 			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, ConvertModifier(delegateDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
@@ -424,7 +425,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return p;
 		}
 		
-		public override object Visit(AST.MethodDeclaration methodDeclaration, object data)
+		public override object VisitMethodDeclaration(AST.MethodDeclaration methodDeclaration, object data)
 		{
 			DomRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
 			DomRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : RefParser.Location.Empty);
@@ -446,7 +447,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		public override object Visit(AST.OperatorDeclaration operatorDeclaration, object data)
+		public override object VisitOperatorDeclaration(AST.OperatorDeclaration operatorDeclaration, object data)
 		{
 			DefaultClass c  = GetCurrentClass();
 			DomRegion region     = GetRegion(operatorDeclaration.StartLocation, operatorDeclaration.EndLocation);
@@ -464,7 +465,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		public override object Visit(AST.ConstructorDeclaration constructorDeclaration, object data)
+		public override object VisitConstructorDeclaration(AST.ConstructorDeclaration constructorDeclaration, object data)
 		{
 			DomRegion region     = GetRegion(constructorDeclaration.StartLocation, constructorDeclaration.EndLocation);
 			DomRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : RefParser.Location.Empty);
@@ -482,7 +483,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		public override object Visit(AST.DestructorDeclaration destructorDeclaration, object data)
+		public override object VisitDestructorDeclaration(AST.DestructorDeclaration destructorDeclaration, object data)
 		{
 			DomRegion region     = GetRegion(destructorDeclaration.StartLocation, destructorDeclaration.EndLocation);
 			DomRegion bodyRegion = GetRegion(destructorDeclaration.EndLocation, destructorDeclaration.Body != null ? destructorDeclaration.Body.EndLocation : RefParser.Location.Empty);
@@ -496,7 +497,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		}
 		
 		
-		public override object Visit(AST.FieldDeclaration fieldDeclaration, object data)
+		public override object VisitFieldDeclaration(AST.FieldDeclaration fieldDeclaration, object data)
 		{
 			DomRegion region = GetRegion(fieldDeclaration.StartLocation, fieldDeclaration.EndLocation);
 			DefaultClass c = GetCurrentClass();
@@ -523,7 +524,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		public override object Visit(AST.PropertyDeclaration propertyDeclaration, object data)
+		public override object VisitPropertyDeclaration(AST.PropertyDeclaration propertyDeclaration, object data)
 		{
 			DomRegion region     = GetRegion(propertyDeclaration.StartLocation, propertyDeclaration.EndLocation);
 			DomRegion bodyRegion = GetRegion(propertyDeclaration.BodyStart,     propertyDeclaration.BodyEnd);
@@ -546,7 +547,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		public override object Visit(AST.EventDeclaration eventDeclaration, object data)
+		public override object VisitEventDeclaration(AST.EventDeclaration eventDeclaration, object data)
 		{
 			DomRegion region     = GetRegion(eventDeclaration.StartLocation, eventDeclaration.EndLocation);
 			DomRegion bodyRegion = GetRegion(eventDeclaration.BodyStart,     eventDeclaration.BodyEnd);
@@ -577,7 +578,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		public override object Visit(AST.IndexerDeclaration indexerDeclaration, object data)
+		public override object VisitIndexerDeclaration(AST.IndexerDeclaration indexerDeclaration, object data)
 		{
 			DomRegion region     = GetRegion(indexerDeclaration.StartLocation, indexerDeclaration.EndLocation);
 			DomRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);

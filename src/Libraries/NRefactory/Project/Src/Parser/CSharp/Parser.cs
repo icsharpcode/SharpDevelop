@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
-using ASTAttribute = ICSharpCode.NRefactory.Parser.Ast.Attribute;
-using Types = ICSharpCode.NRefactory.Parser.Ast.ClassType;
+using ICSharpCode.NRefactory.Ast;
+using ASTAttribute = ICSharpCode.NRefactory.Ast.Attribute;
+using Types = ICSharpCode.NRefactory.Ast.ClassType;
 /*
   Parser.frame file for NRefactory.
  */
@@ -3788,7 +3788,7 @@ out Statement stmt) {
 out expr);
 
 #line  1590 "cs.ATG" 
-		stmt = new StatementExpression(expr); 
+		stmt = new ExpressionStatement(expr); 
 	}
 
 	void TryStatement(
@@ -3845,7 +3845,7 @@ out stmt);
 out expr);
 
 #line  1580 "cs.ATG" 
-			stmt = new StatementExpression(expr); 
+			stmt = new ExpressionStatement(expr); 
 		} else SynErr(175);
 	}
 
@@ -5045,7 +5045,6 @@ out t);
 	
 	protected override void SynErr(int line, int col, int errorNumber)
 	{
-		errors.count++; 
 		string s;
 		switch (errorNumber) {
 			case 0: s = "EOF expected"; break;

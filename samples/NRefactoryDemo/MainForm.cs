@@ -11,8 +11,9 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.NRefactory.Visitors;
 
 namespace NRefactoryDemo
 {
@@ -51,7 +52,10 @@ namespace NRefactoryDemo
 		void SetSpecials(IList<ISpecial> specialsList)
 		{
 			savedSpecialsList = specialsList;
-			specialsLabel.Text = specialsList.Count + " specials saved";
+			if (specialsList.Count == 1)
+				specialsLabel.Text = "1 special saved";
+			else
+				specialsLabel.Text = specialsList.Count + " specials saved";
 		}
 		
 		void ArrowDownPictureBoxPaint(object sender, PaintEventArgs e)
@@ -86,7 +90,7 @@ namespace NRefactoryDemo
 				parser.Parse();
 				SetSpecials(parser.Lexer.SpecialTracker.RetrieveSpecials());
 				astView.Unit = parser.CompilationUnit;
-				if (parser.Errors.count > 0) {
+				if (parser.Errors.Count > 0) {
 					MessageBox.Show(parser.Errors.ErrorOutput, "Parse errors");
 				}
 			}
@@ -102,10 +106,10 @@ namespace NRefactoryDemo
 			GenerateCode(new VBNetOutputVisitor());
 		}
 		
-		void GenerateCode(IOutputASTVisitor outputVisitor)
+		void GenerateCode(IOutputAstVisitor outputVisitor)
 		{
 			using (SpecialNodesInserter.Install(savedSpecialsList, outputVisitor)) {
-				outputVisitor.Visit(astView.Unit, null);
+				astView.Unit.AcceptVisitor(outputVisitor, null);
 			}
 			codeTextBox.Text = outputVisitor.Text.Replace("\t", "  ");
 		}

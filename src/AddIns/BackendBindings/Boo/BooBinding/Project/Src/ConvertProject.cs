@@ -52,7 +52,7 @@ namespace Grunwald.BooBinding
 			string ext = Path.GetExtension(sourceItem.FileName);
 			if (".cs".Equals(ext, StringComparison.OrdinalIgnoreCase) || ".vb".Equals(ext, StringComparison.OrdinalIgnoreCase)) {
 				Module module;
-				IList<ICSharpCode.NRefactory.Parser.ISpecial> specials;
+				IList<ICSharpCode.NRefactory.ISpecial> specials;
 				CompileUnit compileUnit = new CompileUnit();
 				using (StringReader r = new StringReader(ParserService.GetParseableFileContent(sourceItem.FileName))) {
 					module = Parser.ParseModule(compileUnit, r, ConvertBuffer.ApplySettings(sourceItem.VirtualName, errors, warnings), out specials);

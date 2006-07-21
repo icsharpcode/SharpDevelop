@@ -15,7 +15,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor.Document;
-using Ast = ICSharpCode.NRefactory.Parser.Ast;
+using Ast = ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.CodeAnalysis
 {

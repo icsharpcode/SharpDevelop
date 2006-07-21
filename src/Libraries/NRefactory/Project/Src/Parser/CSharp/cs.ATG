@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
-using ASTAttribute = ICSharpCode.NRefactory.Parser.Ast.Attribute;
-using Types = ICSharpCode.NRefactory.Parser.Ast.ClassType;
+using ICSharpCode.NRefactory.Ast;
+using ASTAttribute = ICSharpCode.NRefactory.Ast.Attribute;
+using Types = ICSharpCode.NRefactory.Ast.ClassType;
 
 COMPILER CS    /* AW 2002-12-30 renamed from CompilationUnit to CS  */
 
@@ -1577,7 +1577,7 @@ ResourceAcquisition<out Statement stmt>
 		                  * check if next is Qualident followed by ident          *
 		                  * ==> LocalVariableDecl                                 *
 		                  * new problem: first set of ResourceAcquisition changes */
-		(. stmt = new StatementExpression(expr); .)
+		(. stmt = new ExpressionStatement(expr); .)
 	)
 .
 
@@ -1587,7 +1587,7 @@ StatementExpr<out Statement stmt>
 	Expr<out expr>
 	/* The grammar allows only assignments or method invocations here, */
 	/* but we don't enforce that here */
-	(. stmt = new StatementExpression(expr); .)
+	(. stmt = new ExpressionStatement(expr); .)
 .
 
 Expr<out Expression expr>

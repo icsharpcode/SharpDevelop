@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.SharpDevelop.Refactoring

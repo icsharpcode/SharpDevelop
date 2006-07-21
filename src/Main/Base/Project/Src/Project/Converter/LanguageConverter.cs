@@ -10,11 +10,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project.Commands;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
@@ -176,12 +177,12 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				string code = ParserService.GetParseableFileContent(sourceItem.FileName);
 				IParser p = ParserFactory.CreateParser(sourceLanguage, new StringReader(code));
 				p.Parse();
-				if (p.Errors.count > 0) {
+				if (p.Errors.Count > 0) {
 					conversionLog.AppendLine();
 					conversionLog.AppendLine(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.Convert.IsNotConverted}",
 					                                            new string[,] {{"FileName", sourceItem.FileName}}));
 					conversionLog.AppendLine(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.Convert.ParserErrorCount}",
-					                                            new string[,] {{"ErrorCount", p.Errors.count.ToString()}}));
+					                                            new string[,] {{"ErrorCount", p.Errors.Count.ToString()}}));
 					conversionLog.AppendLine(p.Errors.ErrorOutput);
 					base.ConvertFile(sourceItem, targetItem);
 					return;
@@ -192,17 +193,17 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				ConvertAst(p.CompilationUnit, specials);
 				
 				using (SpecialNodesInserter.Install(specials, outputVisitor)) {
-					outputVisitor.Visit(p.CompilationUnit, null);
+					outputVisitor.VisitCompilationUnit(p.CompilationUnit, null);
 				}
 				
 				p.Dispose();
 				
-				if (outputVisitor.Errors.count > 0) {
+				if (outputVisitor.Errors.Count > 0) {
 					conversionLog.AppendLine();
 					conversionLog.AppendLine(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.Convert.ConverterErrorCount}",
 					                                            new string[,] {
 					                                            	{"FileName", sourceItem.FileName},
-					                                            	{"ErrorCount", outputVisitor.Errors.count.ToString()}
+					                                            	{"ErrorCount", outputVisitor.Errors.Count.ToString()}
 					                                            }));
 					conversionLog.AppendLine(outputVisitor.Errors.ErrorOutput);
 				}

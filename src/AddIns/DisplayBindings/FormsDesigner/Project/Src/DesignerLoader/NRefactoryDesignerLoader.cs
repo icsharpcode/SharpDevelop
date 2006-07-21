@@ -16,8 +16,9 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
 
@@ -182,9 +183,9 @@ namespace ICSharpCode.FormsDesigner
 				
 				string fileContent = ParserService.GetParseableFileContent(fileName);
 				
-				ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new StringReader(fileContent));
+				ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(language, new StringReader(fileContent));
 				p.Parse();
-				if (p.Errors.count > 0) {
+				if (p.Errors.Count > 0) {
 					throw new FormsDesignerLoadException("Syntax errors in " + fileName + ":\r\n" + p.Errors.ErrorOutput);
 				}
 				
@@ -225,7 +226,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			CodeDomVisitor visitor = new CodeDomVisitor();
 			visitor.EnvironmentInformationProvider = new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryInformationProvider(formClass.ProjectContent, formClass);
-			visitor.Visit(combinedCu, null);
+			visitor.VisitCompilationUnit(combinedCu, null);
 			
 			// output generated CodeDOM to the console :
 			#if DEBUG

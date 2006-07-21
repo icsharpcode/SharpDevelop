@@ -8,213 +8,213 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ICSharpCode.NRefactory.Parser {
+namespace ICSharpCode.NRefactory {
 	using System;
-	using ICSharpCode.NRefactory.Parser.Ast;
+	using ICSharpCode.NRefactory.Ast;
 	
 	
 	public interface IAstVisitor {
 		
-		object Visit(AddHandlerStatement addHandlerStatement, object data);
+		object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data);
 		
-		object Visit(AddressOfExpression addressOfExpression, object data);
+		object VisitAddressOfExpression(AddressOfExpression addressOfExpression, object data);
 		
-		object Visit(AnonymousMethodExpression anonymousMethodExpression, object data);
+		object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data);
 		
-		object Visit(ArrayCreateExpression arrayCreateExpression, object data);
+		object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data);
 		
-		object Visit(ArrayInitializerExpression arrayInitializerExpression, object data);
+		object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data);
 		
-		object Visit(AssignmentExpression assignmentExpression, object data);
+		object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data);
 		
-		object Visit(ICSharpCode.NRefactory.Parser.Ast.Attribute attribute, object data);
+		object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data);
 		
-		object Visit(AttributeSection attributeSection, object data);
+		object VisitAttributeSection(AttributeSection attributeSection, object data);
 		
-		object Visit(BaseReferenceExpression baseReferenceExpression, object data);
+		object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data);
 		
-		object Visit(BinaryOperatorExpression binaryOperatorExpression, object data);
+		object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data);
 		
-		object Visit(BlockStatement blockStatement, object data);
+		object VisitBlockStatement(BlockStatement blockStatement, object data);
 		
-		object Visit(BreakStatement breakStatement, object data);
+		object VisitBreakStatement(BreakStatement breakStatement, object data);
 		
-		object Visit(CaseLabel caseLabel, object data);
+		object VisitCaseLabel(CaseLabel caseLabel, object data);
 		
-		object Visit(CastExpression castExpression, object data);
+		object VisitCastExpression(CastExpression castExpression, object data);
 		
-		object Visit(CatchClause catchClause, object data);
+		object VisitCatchClause(CatchClause catchClause, object data);
 		
-		object Visit(CheckedExpression checkedExpression, object data);
+		object VisitCheckedExpression(CheckedExpression checkedExpression, object data);
 		
-		object Visit(CheckedStatement checkedStatement, object data);
+		object VisitCheckedStatement(CheckedStatement checkedStatement, object data);
 		
-		object Visit(ClassReferenceExpression classReferenceExpression, object data);
+		object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data);
 		
-		object Visit(CompilationUnit compilationUnit, object data);
+		object VisitCompilationUnit(CompilationUnit compilationUnit, object data);
 		
-		object Visit(ConditionalExpression conditionalExpression, object data);
+		object VisitConditionalExpression(ConditionalExpression conditionalExpression, object data);
 		
-		object Visit(ConstructorDeclaration constructorDeclaration, object data);
+		object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data);
 		
-		object Visit(ConstructorInitializer constructorInitializer, object data);
+		object VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data);
 		
-		object Visit(ContinueStatement continueStatement, object data);
+		object VisitContinueStatement(ContinueStatement continueStatement, object data);
 		
-		object Visit(DeclareDeclaration declareDeclaration, object data);
+		object VisitDeclareDeclaration(DeclareDeclaration declareDeclaration, object data);
 		
-		object Visit(DefaultValueExpression defaultValueExpression, object data);
+		object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data);
 		
-		object Visit(DelegateDeclaration delegateDeclaration, object data);
+		object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data);
 		
-		object Visit(DestructorDeclaration destructorDeclaration, object data);
+		object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data);
 		
-		object Visit(DirectionExpression directionExpression, object data);
+		object VisitDirectionExpression(DirectionExpression directionExpression, object data);
 		
-		object Visit(DoLoopStatement doLoopStatement, object data);
+		object VisitDoLoopStatement(DoLoopStatement doLoopStatement, object data);
 		
-		object Visit(ElseIfSection elseIfSection, object data);
+		object VisitElseIfSection(ElseIfSection elseIfSection, object data);
 		
-		object Visit(EmptyStatement emptyStatement, object data);
+		object VisitEmptyStatement(EmptyStatement emptyStatement, object data);
 		
-		object Visit(EndStatement endStatement, object data);
+		object VisitEndStatement(EndStatement endStatement, object data);
 		
-		object Visit(EraseStatement eraseStatement, object data);
+		object VisitEraseStatement(EraseStatement eraseStatement, object data);
 		
-		object Visit(ErrorStatement errorStatement, object data);
+		object VisitErrorStatement(ErrorStatement errorStatement, object data);
 		
-		object Visit(EventAddRegion eventAddRegion, object data);
+		object VisitEventAddRegion(EventAddRegion eventAddRegion, object data);
 		
-		object Visit(EventDeclaration eventDeclaration, object data);
+		object VisitEventDeclaration(EventDeclaration eventDeclaration, object data);
 		
-		object Visit(EventRaiseRegion eventRaiseRegion, object data);
+		object VisitEventRaiseRegion(EventRaiseRegion eventRaiseRegion, object data);
 		
-		object Visit(EventRemoveRegion eventRemoveRegion, object data);
+		object VisitEventRemoveRegion(EventRemoveRegion eventRemoveRegion, object data);
 		
-		object Visit(ExitStatement exitStatement, object data);
+		object VisitExitStatement(ExitStatement exitStatement, object data);
 		
-		object Visit(FieldDeclaration fieldDeclaration, object data);
+		object VisitExpressionStatement(ExpressionStatement expressionStatement, object data);
 		
-		object Visit(FieldReferenceExpression fieldReferenceExpression, object data);
+		object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data);
 		
-		object Visit(FixedStatement fixedStatement, object data);
+		object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data);
 		
-		object Visit(ForeachStatement foreachStatement, object data);
+		object VisitFixedStatement(FixedStatement fixedStatement, object data);
 		
-		object Visit(ForNextStatement forNextStatement, object data);
+		object VisitForeachStatement(ForeachStatement foreachStatement, object data);
 		
-		object Visit(ForStatement forStatement, object data);
+		object VisitForNextStatement(ForNextStatement forNextStatement, object data);
 		
-		object Visit(GotoCaseStatement gotoCaseStatement, object data);
+		object VisitForStatement(ForStatement forStatement, object data);
 		
-		object Visit(GotoStatement gotoStatement, object data);
+		object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data);
 		
-		object Visit(IdentifierExpression identifierExpression, object data);
+		object VisitGotoStatement(GotoStatement gotoStatement, object data);
 		
-		object Visit(IfElseStatement ifElseStatement, object data);
+		object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data);
 		
-		object Visit(IndexerDeclaration indexerDeclaration, object data);
+		object VisitIfElseStatement(IfElseStatement ifElseStatement, object data);
 		
-		object Visit(IndexerExpression indexerExpression, object data);
+		object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data);
 		
-		object Visit(InnerClassTypeReference innerClassTypeReference, object data);
+		object VisitIndexerExpression(IndexerExpression indexerExpression, object data);
 		
-		object Visit(InterfaceImplementation interfaceImplementation, object data);
+		object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data);
 		
-		object Visit(InvocationExpression invocationExpression, object data);
+		object VisitInterfaceImplementation(InterfaceImplementation interfaceImplementation, object data);
 		
-		object Visit(LabelStatement labelStatement, object data);
+		object VisitInvocationExpression(InvocationExpression invocationExpression, object data);
 		
-		object Visit(LocalVariableDeclaration localVariableDeclaration, object data);
+		object VisitLabelStatement(LabelStatement labelStatement, object data);
 		
-		object Visit(LockStatement lockStatement, object data);
+		object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data);
 		
-		object Visit(MethodDeclaration methodDeclaration, object data);
+		object VisitLockStatement(LockStatement lockStatement, object data);
 		
-		object Visit(NamedArgumentExpression namedArgumentExpression, object data);
+		object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data);
 		
-		object Visit(NamespaceDeclaration namespaceDeclaration, object data);
+		object VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data);
 		
-		object Visit(ObjectCreateExpression objectCreateExpression, object data);
+		object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data);
 		
-		object Visit(OnErrorStatement onErrorStatement, object data);
+		object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data);
 		
-		object Visit(OperatorDeclaration operatorDeclaration, object data);
+		object VisitOnErrorStatement(OnErrorStatement onErrorStatement, object data);
 		
-		object Visit(OptionDeclaration optionDeclaration, object data);
+		object VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data);
 		
-		object Visit(ParameterDeclarationExpression parameterDeclarationExpression, object data);
+		object VisitOptionDeclaration(OptionDeclaration optionDeclaration, object data);
 		
-		object Visit(ParenthesizedExpression parenthesizedExpression, object data);
+		object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data);
 		
-		object Visit(PointerReferenceExpression pointerReferenceExpression, object data);
+		object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data);
 		
-		object Visit(PrimitiveExpression primitiveExpression, object data);
+		object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data);
 		
-		object Visit(PropertyDeclaration propertyDeclaration, object data);
+		object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data);
 		
-		object Visit(PropertyGetRegion propertyGetRegion, object data);
+		object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data);
 		
-		object Visit(PropertySetRegion propertySetRegion, object data);
+		object VisitPropertyGetRegion(PropertyGetRegion propertyGetRegion, object data);
 		
-		object Visit(RaiseEventStatement raiseEventStatement, object data);
+		object VisitPropertySetRegion(PropertySetRegion propertySetRegion, object data);
 		
-		object Visit(ReDimStatement reDimStatement, object data);
+		object VisitRaiseEventStatement(RaiseEventStatement raiseEventStatement, object data);
 		
-		object Visit(RemoveHandlerStatement removeHandlerStatement, object data);
+		object VisitReDimStatement(ReDimStatement reDimStatement, object data);
 		
-		object Visit(ResumeStatement resumeStatement, object data);
+		object VisitRemoveHandlerStatement(RemoveHandlerStatement removeHandlerStatement, object data);
 		
-		object Visit(ReturnStatement returnStatement, object data);
+		object VisitResumeStatement(ResumeStatement resumeStatement, object data);
 		
-		object Visit(SizeOfExpression sizeOfExpression, object data);
+		object VisitReturnStatement(ReturnStatement returnStatement, object data);
 		
-		object Visit(StackAllocExpression stackAllocExpression, object data);
+		object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data);
 		
-		object Visit(StatementExpression statementExpression, object data);
+		object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data);
 		
-		object Visit(StopStatement stopStatement, object data);
+		object VisitStopStatement(StopStatement stopStatement, object data);
 		
-		object Visit(SwitchSection switchSection, object data);
+		object VisitSwitchSection(SwitchSection switchSection, object data);
 		
-		object Visit(SwitchStatement switchStatement, object data);
+		object VisitSwitchStatement(SwitchStatement switchStatement, object data);
 		
-		object Visit(TemplateDefinition templateDefinition, object data);
+		object VisitTemplateDefinition(TemplateDefinition templateDefinition, object data);
 		
-		object Visit(ThisReferenceExpression thisReferenceExpression, object data);
+		object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data);
 		
-		object Visit(ThrowStatement throwStatement, object data);
+		object VisitThrowStatement(ThrowStatement throwStatement, object data);
 		
-		object Visit(TryCatchStatement tryCatchStatement, object data);
+		object VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data);
 		
-		object Visit(TypeDeclaration typeDeclaration, object data);
+		object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data);
 		
-		object Visit(TypeOfExpression typeOfExpression, object data);
+		object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data);
 		
-		object Visit(TypeOfIsExpression typeOfIsExpression, object data);
+		object VisitTypeOfIsExpression(TypeOfIsExpression typeOfIsExpression, object data);
 		
-		object Visit(TypeReference typeReference, object data);
+		object VisitTypeReference(TypeReference typeReference, object data);
 		
-		object Visit(TypeReferenceExpression typeReferenceExpression, object data);
+		object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data);
 		
-		object Visit(UnaryOperatorExpression unaryOperatorExpression, object data);
+		object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data);
 		
-		object Visit(UncheckedExpression uncheckedExpression, object data);
+		object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data);
 		
-		object Visit(UncheckedStatement uncheckedStatement, object data);
+		object VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data);
 		
-		object Visit(UnsafeStatement unsafeStatement, object data);
+		object VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data);
 		
-		object Visit(Using @using, object data);
+		object VisitUsing(Using @using, object data);
 		
-		object Visit(UsingDeclaration usingDeclaration, object data);
+		object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data);
 		
-		object Visit(UsingStatement usingStatement, object data);
+		object VisitUsingStatement(UsingStatement usingStatement, object data);
 		
-		object Visit(VariableDeclaration variableDeclaration, object data);
+		object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data);
 		
-		object Visit(WithStatement withStatement, object data);
+		object VisitWithStatement(WithStatement withStatement, object data);
 		
-		object Visit(YieldStatement yieldStatement, object data);
+		object VisitYieldStatement(YieldStatement yieldStatement, object data);
 	}
 }

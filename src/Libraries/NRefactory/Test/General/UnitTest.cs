@@ -8,8 +8,9 @@
 using System;
 using System.Reflection;
 using NUnit.Framework;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Visitors;
 
 namespace ICSharpCode.NRefactory.Tests
 {
@@ -61,14 +62,14 @@ namespace ICSharpCode.NRefactory.Tests
 //		}
 		
 		[Test]
-		public void TestIASTVisitor()
+		public void TestIAstVisitor()
 		{
 			Type[] allTypes = typeof(AbstractNode).Assembly.GetTypes();
 			Type visitor = typeof(IAstVisitor);
 			
 			foreach (Type type in allTypes) {
 				if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(INode).FullName) != null && !type.Name.StartsWith("Null")) {
-					MethodInfo methodInfo = visitor.GetMethod("Visit", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.ExactBinding, null, new Type[] {type, typeof(object)}, null);
+					MethodInfo methodInfo = visitor.GetMethod("Visit" + type.Name, BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.ExactBinding, null, new Type[] {type, typeof(object)}, null);
 					Assert.IsNotNull(methodInfo, "Visit with parameter " + type.FullName + " not found");
 					Assert.AreEqual(2, methodInfo.GetParameters().Length);
 					ParameterInfo first = methodInfo.GetParameters()[0];
@@ -89,7 +90,7 @@ namespace ICSharpCode.NRefactory.Tests
 			
 			foreach (Type type in allTypes) {
 				if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(INode).FullName) != null && !type.Name.StartsWith("Null")) {
-					MethodInfo methodInfo = visitor.GetMethod("Visit", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.ExactBinding, null, new Type[] {type, typeof(object)}, null);
+					MethodInfo methodInfo = visitor.GetMethod("Visit" + type.Name, BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.ExactBinding, null, new Type[] {type, typeof(object)}, null);
 					Assert.IsNotNull(methodInfo, "Visit with parameter " + type.FullName + " not found");
 					
 					Assert.AreEqual(2, methodInfo.GetParameters().Length);

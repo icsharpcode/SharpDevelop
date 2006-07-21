@@ -8,9 +8,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using Boo.Lang.Compiler;
 using Boo.Lang.Compiler.Ast;
-using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory;
 
 namespace NRefactoryToBooConverter
 {

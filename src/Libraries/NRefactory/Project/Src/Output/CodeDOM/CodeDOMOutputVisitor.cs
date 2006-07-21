@@ -12,10 +12,10 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory.Visitors
 {
 	public class CodeDomVisitor : AbstractAstVisitor
 	{
@@ -107,7 +107,7 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		#region ICSharpCode.SharpRefactory.Parser.IASTVisitor interface implementation
-		public override object Visit(CompilationUnit compilationUnit, object data)
+		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
 			if (compilationUnit == null) {
 				throw new ArgumentNullException("compilationUnit");
@@ -120,7 +120,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return globalNamespace;
 		}
 		
-		public override object Visit(NamespaceDeclaration namespaceDeclaration, object data)
+		public override object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			CodeNamespace currentNamespace = new CodeNamespace(namespaceDeclaration.Name);
 			//namespaces.Add(currentNamespace);
@@ -137,7 +137,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		public override object Visit(UsingDeclaration usingDeclaration, object data)
+		public override object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
 			foreach (Using u in usingDeclaration.Usings) {
 				namespaceDeclarations.Peek().Imports.Add(new CodeNamespaceImport(u.Name));
@@ -146,12 +146,12 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		
-		public override object Visit(AttributeSection attributeSection, object data)
+		public override object VisitAttributeSection(AttributeSection attributeSection, object data)
 		{
 			return null;
 		}
 		
-		public override object Visit(TypeDeclaration typeDeclaration, object data)
+		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
 			TypeDeclaration oldTypeDeclaration = currentTypeDeclaration;
 			this.currentTypeDeclaration = typeDeclaration;
@@ -181,7 +181,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		public override object Visit(DelegateDeclaration delegateDeclaration, object data)
+		public override object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
 		{
 //			CodeTypeDelegate codeTypeDelegate = new CodeTypeDelegate(delegateDeclaration.Name);
 //			codeTypeDelegate.Parameters
@@ -190,12 +190,12 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		public override object Visit(VariableDeclaration variableDeclaration, object data)
+		public override object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data)
 		{
 			return null;
 		}
 		
-		public override object Visit(FieldDeclaration fieldDeclaration, object data)
+		public override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
 			for (int i = 0; i < fieldDeclaration.Fields.Count; ++i) {
 				VariableDeclaration field = (VariableDeclaration)fieldDeclaration.Fields[i];
@@ -221,7 +221,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		public override object Visit(MethodDeclaration methodDeclaration, object data)
+		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			CodeMemberMethod memberMethod = new CodeMemberMethod();
 			memberMethod.Name = methodDeclaration.Name;
@@ -234,7 +234,7 @@ namespace ICSharpCode.NRefactory.Parser
 			// Add Method Parameters
 			foreach (ParameterDeclarationExpression parameter in methodDeclaration.Parameters)
 			{
-				memberMethod.Parameters.Add((CodeParameterDeclarationExpression)Visit(parameter, data));
+				memberMethod.Parameters.Add((CodeParameterDeclarationExpression)VisitParameterDeclarationExpression(parameter, data));
 			}
 			
 			variables.Clear();
@@ -245,7 +245,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		public override object Visit(ConstructorDeclaration constructorDeclaration, object data)
+		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			CodeMemberMethod memberMethod = new CodeConstructor();
 			
@@ -257,22 +257,22 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		public override object Visit(BlockStatement blockStatement, object data)
+		public override object VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
 			blockStatement.AcceptChildren(this, data);
 			return null;
 		}
 		
-		public override object Visit(StatementExpression statementExpression, object data)
+		public override object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
-			object exp = statementExpression.Expression.AcceptVisitor(this, data);
+			object exp = expressionStatement.Expression.AcceptVisitor(this, data);
 			if (exp is CodeExpression) {
 				AddStmt(new CodeExpressionStatement((CodeExpression)exp));
 			}
 			return exp;
 		}
 		
-		public override object Visit(LocalVariableDeclaration localVariableDeclaration, object data)
+		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
 			CodeVariableDeclarationStatement declStmt = null;
 			
@@ -294,7 +294,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return declStmt;
 		}
 		
-		public override object Visit(EmptyStatement emptyStatement, object data)
+		public override object VisitEmptyStatement(EmptyStatement emptyStatement, object data)
 		{
 			CodeSnippetStatement emptyStmt = new CodeSnippetStatement();
 			
@@ -303,7 +303,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return emptyStmt;
 		}
 		
-		public override object Visit(ReturnStatement returnStatement, object data)
+		public override object VisitReturnStatement(ReturnStatement returnStatement, object data)
 		{
 			CodeMethodReturnStatement returnStmt;
 			if (returnStatement.Expression.IsNull)
@@ -316,7 +316,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return returnStmt;
 		}
 		
-		public override object Visit(IfElseStatement ifElseStatement, object data)
+		public override object VisitIfElseStatement(IfElseStatement ifElseStatement, object data)
 		{
 			CodeConditionStatement ifStmt = new CodeConditionStatement();
 			
@@ -347,7 +347,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return ifStmt;
 		}
 		
-		public override object Visit(ForStatement forStatement, object data)
+		public override object VisitForStatement(ForStatement forStatement, object data)
 		{
 			CodeIterationStatement forLoop = new CodeIterationStatement();
 			
@@ -393,7 +393,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return forLoop;
 		}
 		
-		public override object Visit(LabelStatement labelStatement, object data)
+		public override object VisitLabelStatement(LabelStatement labelStatement, object data)
 		{
 			System.CodeDom.CodeLabeledStatement labelStmt = new CodeLabeledStatement(labelStatement.Label,(CodeStatement)labelStatement.AcceptVisitor(this, data));
 			
@@ -403,7 +403,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return labelStmt;
 		}
 		
-		public override object Visit(GotoStatement gotoStatement, object data)
+		public override object VisitGotoStatement(GotoStatement gotoStatement, object data)
 		{
 			System.CodeDom.CodeGotoStatement gotoStmt = new CodeGotoStatement(gotoStatement.Label);
 			
@@ -413,12 +413,12 @@ namespace ICSharpCode.NRefactory.Parser
 			return gotoStmt;
 		}
 		
-		public override object Visit(SwitchStatement switchStatement, object data)
+		public override object VisitSwitchStatement(SwitchStatement switchStatement, object data)
 		{
 			throw new NotSupportedException("CodeDom does not support Switch Statement");
 		}
 		
-		public override object Visit(TryCatchStatement tryCatchStatement, object data)
+		public override object VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
 		{
 			// add a try-catch-finally
 			CodeTryCatchFinallyStatement tryStmt = new CodeTryCatchFinallyStatement();
@@ -453,7 +453,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return tryStmt;
 		}
 		
-		public override object Visit(ThrowStatement throwStatement, object data)
+		public override object VisitThrowStatement(ThrowStatement throwStatement, object data)
 		{
 			CodeThrowExceptionStatement throwStmt = new CodeThrowExceptionStatement((CodeExpression)throwStatement.Expression.AcceptVisitor(this, data));
 			
@@ -463,18 +463,18 @@ namespace ICSharpCode.NRefactory.Parser
 			return throwStmt;
 		}
 		
-		public override object Visit(FixedStatement fixedStatement, object data)
+		public override object VisitFixedStatement(FixedStatement fixedStatement, object data)
 		{
 			throw new NotSupportedException("CodeDom does not support Fixed Statement");
 		}
 		
 		#region Expressions
-		public override object Visit(PrimitiveExpression primitiveExpression, object data)
+		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
 			return new CodePrimitiveExpression(primitiveExpression.Value);
 		}
 		
-		public override object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
+		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			CodeBinaryOperatorType op = CodeBinaryOperatorType.Add;
 			switch (binaryOperatorExpression.Op) {
@@ -549,12 +549,12 @@ namespace ICSharpCode.NRefactory.Parser
 			                                        (CodeExpression)binaryOperatorExpression.Right.AcceptVisitor(this, data));
 		}
 		
-		public override object Visit(ParenthesizedExpression parenthesizedExpression, object data)
+		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
 			return parenthesizedExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(InvocationExpression invocationExpression, object data)
+		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
 			Expression     target     = invocationExpression.TargetObject;
 			CodeExpression targetExpr;
@@ -586,7 +586,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return new CodeMethodInvokeExpression(targetExpr, methodName, GetExpressionList(invocationExpression.Arguments));
 		}
 		
-		public override object Visit(IdentifierExpression identifierExpression, object data)
+		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			if (!IsLocalVariable(identifierExpression.Identifier) && IsField(identifierExpression.Identifier)) {
 				return new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), identifierExpression.Identifier);
@@ -594,7 +594,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return new CodeVariableReferenceExpression(identifierExpression.Identifier);
 		}
 		
-		public override object Visit(UnaryOperatorExpression unaryOperatorExpression, object data)
+		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			CodeExpression var;
 			
@@ -687,7 +687,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public override object Visit(AssignmentExpression assignmentExpression, object data)
+		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			if (assignmentExpression.Op == AssignmentOperatorType.Add) {
 				AddEventHandler(assignmentExpression.Left, assignmentExpression.Right, data);
@@ -701,44 +701,44 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		public override object Visit(AddHandlerStatement addHandlerStatement, object data)
+		public override object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data)
 		{
 			AddEventHandler(addHandlerStatement.EventExpression, addHandlerStatement.HandlerExpression, data);
 			return null;
 		}
 		
-		public override object Visit(AddressOfExpression addressOfExpression, object data)
+		public override object VisitAddressOfExpression(AddressOfExpression addressOfExpression, object data)
 		{
 			return addressOfExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(TypeOfExpression typeOfExpression, object data)
+		public override object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
 			return new CodeTypeOfExpression(ConvType(typeOfExpression.TypeReference));
 		}
 		
-		public override object Visit(CastExpression castExpression, object data)
+		public override object VisitCastExpression(CastExpression castExpression, object data)
 		{
 			CodeTypeReference typeRef = ConvType(castExpression.CastTo);
 			return new CodeCastExpression(typeRef, (CodeExpression)castExpression.Expression.AcceptVisitor(this, data));
 		}
 		
-		public override object Visit(IndexerExpression indexerExpression, object data)
+		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
 			return new CodeIndexerExpression((CodeExpression)indexerExpression.TargetObject.AcceptVisitor(this, data), GetExpressionList(indexerExpression.Indexes));
 		}
 		
-		public override object Visit(ThisReferenceExpression thisReferenceExpression, object data)
+		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
 			return new CodeThisReferenceExpression();
 		}
 		
-		public override object Visit(BaseReferenceExpression baseReferenceExpression, object data)
+		public override object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
 		{
 			return new CodeBaseReferenceExpression();
 		}
 		
-		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)
+		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			if (arrayCreateExpression.ArrayInitializer == null) {
 				return new CodeArrayCreateExpression(ConvType(arrayCreateExpression.CreateType),
@@ -748,13 +748,13 @@ namespace ICSharpCode.NRefactory.Parser
 			                                     GetExpressionList(arrayCreateExpression.ArrayInitializer.CreateExpressions));
 		}
 		
-		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
+		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			return new CodeObjectCreateExpression(ConvType(objectCreateExpression.CreateType),
 			                                      objectCreateExpression.Parameters == null ? null : GetExpressionList(objectCreateExpression.Parameters));
 		}
 		
-		public override object Visit(ParameterDeclarationExpression parameterDeclarationExpression, object data)
+		public override object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
 			return new CodeParameterDeclarationExpression(ConvType(parameterDeclarationExpression.TypeReference), parameterDeclarationExpression.ParameterName);
 		}
@@ -785,7 +785,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return false;
 		}
 		
-		public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (methodReference) {
 				methodReference = false;

@@ -7,15 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.NRefactory.Parser.Ast;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {

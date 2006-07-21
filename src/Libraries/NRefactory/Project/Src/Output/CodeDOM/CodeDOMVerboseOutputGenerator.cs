@@ -11,7 +11,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Security.Permissions;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory.Visitors
 {
 	[PermissionSet(SecurityAction.InheritanceDemand, Name = "FullTrust")]
 	[PermissionSet(SecurityAction.LinkDemand, Name = "FullTrust")]

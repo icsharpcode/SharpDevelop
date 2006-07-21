@@ -29,7 +29,6 @@ partial class Parser : AbstractParser
 	
 	protected override void SynErr(int line, int col, int errorNumber)
 	{
-		errors.count++; 
 		string s;
 		switch (errorNumber) {
 -->errors

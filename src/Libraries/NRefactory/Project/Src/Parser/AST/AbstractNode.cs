@@ -10,8 +10,9 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Visitors;
 
-namespace ICSharpCode.NRefactory.Parser.Ast
+namespace ICSharpCode.NRefactory.Ast
 {
 	public abstract class AbstractNode : INode
 	{

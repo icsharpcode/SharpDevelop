@@ -12,7 +12,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory;
 using ICSharpCode.FormsDesigner.Services;
 using System.ComponentModel.Design;
 

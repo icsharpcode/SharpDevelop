@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
 			using (SpecialNodesInserter.Install(parser.Lexer.SpecialTracker.RetrieveSpecials(),
 			                                    outputVisitor)) {
-				outputVisitor.Visit(parser.CompilationUnit, null);
+				outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			}
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(program.Replace("\r", ""), outputVisitor.Text.TrimEnd().Replace("\r", ""));
@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
 			using (SpecialNodesInserter.Install(parser.Lexer.SpecialTracker.RetrieveSpecials(),
 			                                    outputVisitor)) {
-				outputVisitor.Visit(parser.CompilationUnit, null);
+				outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			}
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(program.Replace("\r", ""), outputVisitor.Text.TrimEnd().Replace("\r", ""));

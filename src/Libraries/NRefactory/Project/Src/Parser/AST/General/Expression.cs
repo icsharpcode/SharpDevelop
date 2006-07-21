@@ -8,7 +8,7 @@
 using System;
 using System.Collections;
 
-namespace ICSharpCode.NRefactory.Parser.Ast
+namespace ICSharpCode.NRefactory.Ast
 {
 	public abstract class Expression : AbstractNode, INullable
 	{

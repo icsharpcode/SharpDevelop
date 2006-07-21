@@ -10,8 +10,9 @@ using System.Text;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.NRefactory.Visitors;
 
 namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 {
@@ -25,7 +26,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			parser.CompilationUnit.AcceptVisitor(new VBNetToCSharpConvertVisitor(), null);
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
-			outputVisitor.Visit(parser.CompilationUnit, null);
+			outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(expectedOutput, outputVisitor.Text);
 		}

@@ -40,7 +40,7 @@ namespace Grunwald.BooBinding
 				CompilerErrorCollection errors = new CompilerErrorCollection();
 				CompilerWarningCollection warnings = new CompilerWarningCollection();
 				Module module;
-				IList<ICSharpCode.NRefactory.Parser.ISpecial> specials;
+				IList<ICSharpCode.NRefactory.ISpecial> specials;
 				CompileUnit compileUnit = new CompileUnit();
 				using (StringReader r = new StringReader(((IEditable)window.ViewContent).Text)) {
 					string fileName = window.ViewContent.FileName ?? window.ViewContent.UntitledName;
@@ -64,7 +64,7 @@ namespace Grunwald.BooBinding
 		}
 		
 		public static string CreateBooCode(CompilerErrorCollection errors, CompilerWarningCollection warnings,
-		                                   Module module, IList<ICSharpCode.NRefactory.Parser.ISpecial> specials)
+		                                   Module module, IList<ICSharpCode.NRefactory.ISpecial> specials)
 		{
 			using (StringWriter w = new StringWriter()) {
 				foreach (CompilerError error in errors) {

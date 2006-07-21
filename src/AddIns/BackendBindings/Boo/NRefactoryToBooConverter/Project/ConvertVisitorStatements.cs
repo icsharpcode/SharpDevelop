@@ -8,9 +8,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
-using Boo.Lang.Compiler;
+
+using ICSharpCode.NRefactory.Ast;
 using B = Boo.Lang.Compiler.Ast;
 
 namespace NRefactoryToBooConverter
@@ -94,7 +93,7 @@ namespace NRefactoryToBooConverter
 			return b;
 		}
 		
-		public object Visit(BlockStatement blockStatement, object data)
+		public object VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
 			return ConvertBlock(blockStatement);
 		}
@@ -113,29 +112,29 @@ namespace NRefactoryToBooConverter
 			return macro;
 		}
 		
-		public object Visit(FixedStatement fixedStatement, object data)
+		public object VisitFixedStatement(FixedStatement fixedStatement, object data)
 		{
 			AddError(fixedStatement, "FixedStatement is not supported.");
 			return null;
 		}
 		
-		public object Visit(UnsafeStatement unsafeStatement, object data)
+		public object VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data)
 		{
 			AddError(unsafeStatement, "UnsafeStatement is not supported.");
 			return null;
 		}
 		
-		public object Visit(CheckedStatement checkedStatement, object data)
+		public object VisitCheckedStatement(CheckedStatement checkedStatement, object data)
 		{
 			return CreateMacro(checkedStatement, "checked", checkedStatement.Block);
 		}
 		
-		public object Visit(UncheckedStatement uncheckedStatement, object data)
+		public object VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data)
 		{
 			return CreateMacro(uncheckedStatement, "unchecked", uncheckedStatement.Block);
 		}
 		
-		public object Visit(ExitStatement exitStatement, object data)
+		public object VisitExitStatement(ExitStatement exitStatement, object data)
 		{
 			if (exitStatement.ExitType == ExitType.Function || exitStatement.ExitType == ExitType.Sub || exitStatement.ExitType == ExitType.Property) {
 				AddWarning(exitStatement, "ExitStatement is converted to 'return'");
@@ -184,12 +183,12 @@ namespace NRefactoryToBooConverter
 		{
 			Expression var = new IdentifierExpression(forNextStatement.VariableName);
 			List<Statement> initializers = new List<Statement>(1);
-			initializers.Add(new StatementExpression(new AssignmentExpression(var, AssignmentOperatorType.Assign, forNextStatement.Start)));
+			initializers.Add(new ExpressionStatement(new AssignmentExpression(var, AssignmentOperatorType.Assign, forNextStatement.Start)));
 			List<Statement> iterators = new List<Statement>(1);
 			Expression step = forNextStatement.Step;
 			if (step == null || step.IsNull)
 				step = new PrimitiveExpression(1, "1");
-			iterators.Add(new StatementExpression(new AssignmentExpression(var, AssignmentOperatorType.Add, step)));
+			iterators.Add(new ExpressionStatement(new AssignmentExpression(var, AssignmentOperatorType.Add, step)));
 			PrimitiveExpression stepPE = step as PrimitiveExpression;
 			if (stepPE == null || !(stepPE.Value is int)) {
 				AddError(forNextStatement, "Step must be an integer literal");
@@ -205,7 +204,7 @@ namespace NRefactoryToBooConverter
 			return MakeManualLoop(forNextStatement, initializers, B.StatementModifierType.Unless, condition, iterators, forNextStatement.EmbeddedStatement);
 		}
 		
-		public object Visit(ForNextStatement forNextStatement, object data)
+		public object VisitForNextStatement(ForNextStatement forNextStatement, object data)
 		{
 			if (forNextStatement.TypeReference.IsNull)
 				return MakeManualLoop(forNextStatement);
@@ -233,13 +232,13 @@ namespace NRefactoryToBooConverter
 			return fs;
 		}
 		
-		public object Visit(ForStatement forStatement, object data)
+		public object VisitForStatement(ForStatement forStatement, object data)
 		{
 			return MakeManualLoop(forStatement, forStatement.Initializers, B.StatementModifierType.Unless,
 			                      forStatement.Condition, forStatement.Iterator, forStatement.EmbeddedStatement);
 		}
 		
-		public object Visit(DoLoopStatement doLoopStatement, object data)
+		public object VisitDoLoopStatement(DoLoopStatement doLoopStatement, object data)
 		{
 			bool frontCondition = doLoopStatement.ConditionPosition != ConditionPosition.End;
 			bool negateCondition = doLoopStatement.ConditionType == ConditionType.Until;
@@ -266,7 +265,7 @@ namespace NRefactoryToBooConverter
 			return w;
 		}
 		
-		public object Visit(ForeachStatement foreachStatement, object data)
+		public object VisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
 			B.ForStatement fs = new B.ForStatement(GetLexicalInfo(foreachStatement));
 			fs.EndSourceLocation = GetLocation(foreachStatement.EndLocation);
@@ -276,7 +275,7 @@ namespace NRefactoryToBooConverter
 			return fs;
 		}
 		
-		public object Visit(AddHandlerStatement addHandlerStatement, object data)
+		public object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data)
 		{
 			B.Expression expr = new B.BinaryExpression(GetLexicalInfo(addHandlerStatement),
 			                                           B.BinaryOperatorType.InPlaceAddition,
@@ -285,7 +284,7 @@ namespace NRefactoryToBooConverter
 			return new B.ExpressionStatement(expr);
 		}
 		
-		public object Visit(RemoveHandlerStatement removeHandlerStatement, object data)
+		public object VisitRemoveHandlerStatement(RemoveHandlerStatement removeHandlerStatement, object data)
 		{
 			B.Expression expr = new B.BinaryExpression(GetLexicalInfo(removeHandlerStatement),
 			                                           B.BinaryOperatorType.InPlaceSubtraction,
@@ -294,7 +293,7 @@ namespace NRefactoryToBooConverter
 			return new B.ExpressionStatement(expr);
 		}
 		
-		public object Visit(RaiseEventStatement raiseEventStatement, object data)
+		public object VisitRaiseEventStatement(RaiseEventStatement raiseEventStatement, object data)
 		{
 			B.MethodInvocationExpression mie = new B.MethodInvocationExpression(GetLexicalInfo(raiseEventStatement));
 			mie.Target = new B.ReferenceExpression(raiseEventStatement.EventName);
@@ -302,7 +301,7 @@ namespace NRefactoryToBooConverter
 			return new B.ExpressionStatement(mie);
 		}
 		
-		public object Visit(EraseStatement eraseStatement, object data)
+		public object VisitEraseStatement(EraseStatement eraseStatement, object data)
 		{
 			ArrayList statements = new ArrayList();
 			foreach (Expression expr in eraseStatement.Expressions) {
@@ -313,7 +312,7 @@ namespace NRefactoryToBooConverter
 			return statements;
 		}
 		
-		public object Visit(ReDimStatement reDimStatement, object data)
+		public object VisitReDimStatement(ReDimStatement reDimStatement, object data)
 		{
 			// Redim [Preserve] a(newBounds)
 			// without preserve:
@@ -355,14 +354,14 @@ namespace NRefactoryToBooConverter
 			return list;
 		}
 		
-		public object Visit(StatementExpression statementExpression, object data)
+		public object VisitExpressionStatement(ExpressionStatement statementExpression, object data)
 		{
 			B.ExpressionStatement st = new B.ExpressionStatement(GetLexicalInfo(statementExpression));
 			st.Expression = ConvertExpression(statementExpression.Expression);
 			return st;
 		}
 		
-		public object Visit(LocalVariableDeclaration lvd, object data)
+		public object VisitLocalVariableDeclaration(LocalVariableDeclaration lvd, object data)
 		{
 			ArrayList list = new ArrayList();
 			for (int i = 0; i < lvd.Variables.Count; i++) {
@@ -374,17 +373,17 @@ namespace NRefactoryToBooConverter
 			return list;
 		}
 		
-		public object Visit(EmptyStatement emptyStatement, object data)
+		public object VisitEmptyStatement(EmptyStatement emptyStatement, object data)
 		{
 			return null;
 		}
 		
-		public object Visit(ReturnStatement returnStatement, object data)
+		public object VisitReturnStatement(ReturnStatement returnStatement, object data)
 		{
 			return new B.ReturnStatement(GetLexicalInfo(returnStatement), ConvertExpression(returnStatement.Expression), null);
 		}
 		
-		public object Visit(YieldStatement yieldStatement, object data)
+		public object VisitYieldStatement(YieldStatement yieldStatement, object data)
 		{
 			ReturnStatement rs = yieldStatement.Statement as ReturnStatement;
 			if (rs == null)
@@ -392,12 +391,12 @@ namespace NRefactoryToBooConverter
 			return new B.YieldStatement(GetLexicalInfo(yieldStatement), ConvertExpression(rs.Expression));
 		}
 		
-		public object Visit(ThrowStatement throwStatement, object data)
+		public object VisitThrowStatement(ThrowStatement throwStatement, object data)
 		{
 			return new B.RaiseStatement(GetLexicalInfo(throwStatement), ConvertExpression(throwStatement.Expression), null);
 		}
 		
-		public object Visit(IfElseStatement ifElseStatement, object data)
+		public object VisitIfElseStatement(IfElseStatement ifElseStatement, object data)
 		{
 			B.IfStatement ifs = new B.IfStatement(GetLexicalInfo(ifElseStatement));
 			B.IfStatement outerIf = ifs;
@@ -421,7 +420,7 @@ namespace NRefactoryToBooConverter
 			return outerIf;
 		}
 		
-		public object Visit(ElseIfSection elseIfSection, object data)
+		public object VisitElseIfSection(ElseIfSection elseIfSection, object data)
 		{
 			throw new ApplicationException("ElseIfSection visited");
 		}
@@ -431,42 +430,42 @@ namespace NRefactoryToBooConverter
 			return new B.LabelStatement(lastLexicalInfo, name);
 		}
 		
-		public object Visit(LabelStatement labelStatement, object data)
+		public object VisitLabelStatement(LabelStatement labelStatement, object data)
 		{
 			return new B.LabelStatement(GetLexicalInfo(labelStatement), labelStatement.Label);
 		}
 		
-		public object Visit(GotoStatement gotoStatement, object data)
+		public object VisitGotoStatement(GotoStatement gotoStatement, object data)
 		{
 			return new B.GotoStatement(GetLexicalInfo(gotoStatement), new B.ReferenceExpression(gotoStatement.Label));
 		}
 		
-		public object Visit(StopStatement stopStatement, object data)
+		public object VisitStopStatement(StopStatement stopStatement, object data)
 		{
 			return new B.ExpressionStatement(MakeMethodCall("System.Diagnostics.Debugger.Break"));
 		}
 		
-		public object Visit(EndStatement endStatement, object data)
+		public object VisitEndStatement(EndStatement endStatement, object data)
 		{
 			return new B.ExpressionStatement(MakeMethodCall("System.Environment.Exit", new B.IntegerLiteralExpression(0)));
 		}
 		
-		public object Visit(BreakStatement breakStatement, object data)
+		public object VisitBreakStatement(BreakStatement breakStatement, object data)
 		{
 			return new B.BreakStatement(GetLexicalInfo(breakStatement));
 		}
 		
-		public object Visit(ContinueStatement continueStatement, object data)
+		public object VisitContinueStatement(ContinueStatement continueStatement, object data)
 		{
 			return new B.ContinueStatement(GetLexicalInfo(continueStatement));
 		}
 		
-		public object Visit(LockStatement lockStatement, object data)
+		public object VisitLockStatement(LockStatement lockStatement, object data)
 		{
 			return CreateMacro(lockStatement, "lock", lockStatement.EmbeddedStatement, lockStatement.LockExpression);
 		}
 		
-		public object Visit(UsingStatement usingStatement, object data)
+		public object VisitUsingStatement(UsingStatement usingStatement, object data)
 		{
 			LocalVariableDeclaration varDecl = usingStatement.ResourceAcquisition as LocalVariableDeclaration;
 			Expression expr;
@@ -479,7 +478,7 @@ namespace NRefactoryToBooConverter
 				                                AssignmentOperatorType.Assign,
 				                                varDecl.Variables[0].Initializer);
 			} else {
-				StatementExpression se = usingStatement.ResourceAcquisition as StatementExpression;
+				ExpressionStatement se = usingStatement.ResourceAcquisition as ExpressionStatement;
 				if (se == null) {
 					AddError(usingStatement, "Expected: VariableDeclaration or StatementExpression");
 					return null;
@@ -489,30 +488,30 @@ namespace NRefactoryToBooConverter
 			return CreateMacro(usingStatement, "using", usingStatement.EmbeddedStatement, expr);
 		}
 		
-		public object Visit(WithStatement withStatement, object data)
+		public object VisitWithStatement(WithStatement withStatement, object data)
 		{
 			return CreateMacro(withStatement, "with", withStatement.Body, withStatement.Expression);
 		}
 		
-		public object Visit(OnErrorStatement onErrorStatement, object data)
+		public object VisitOnErrorStatement(OnErrorStatement onErrorStatement, object data)
 		{
 			AddError(onErrorStatement, "old VB-style exception handling is not supported.");
 			return null;
 		}
 		
-		public object Visit(ErrorStatement errorStatement, object data)
+		public object VisitErrorStatement(ErrorStatement errorStatement, object data)
 		{
 			AddError(errorStatement, "old VB-style exception handling is not supported.");
 			return null;
 		}
 		
-		public object Visit(ResumeStatement resumeStatement, object data)
+		public object VisitResumeStatement(ResumeStatement resumeStatement, object data)
 		{
 			AddError(resumeStatement, "old VB-style exception handling is not supported.");
 			return null;
 		}
 		
-		public object Visit(TryCatchStatement tryCatchStatement, object data)
+		public object VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
 		{
 			B.TryStatement t = new B.TryStatement(GetLexicalInfo(tryCatchStatement));
 			t.EndSourceLocation = GetLocation(tryCatchStatement.EndLocation);
@@ -536,7 +535,7 @@ namespace NRefactoryToBooConverter
 			return t;
 		}
 		
-		public object Visit(CatchClause catchClause, object data)
+		public object VisitCatchClause(CatchClause catchClause, object data)
 		{
 			throw new ApplicationException("CatchClause visited.");
 		}
@@ -550,7 +549,7 @@ namespace NRefactoryToBooConverter
 		
 		string currentSwitchTempName;
 		
-		public object Visit(SwitchStatement switchStatement, object data)
+		public object VisitSwitchStatement(SwitchStatement switchStatement, object data)
 		{
 			// We have a problem: given is still not implemented in boo.
 			// So here's the if / else workaround:
@@ -600,7 +599,7 @@ namespace NRefactoryToBooConverter
 			return l;
 		}
 		
-		public object Visit(SwitchSection switchSection, object data)
+		public object VisitSwitchSection(SwitchSection switchSection, object data)
 		{
 			B.IfStatement surroundingIf = (B.IfStatement)data;
 			bool isDefault = false;
@@ -658,7 +657,7 @@ namespace NRefactoryToBooConverter
 			return s;
 		}
 		
-		public object Visit(GotoCaseStatement gotoCaseStatement, object data)
+		public object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data)
 		{
 			if (currentSwitchTempName == null) {
 				AddError(gotoCaseStatement, "goto case cannot be used outside switch");
@@ -676,7 +675,7 @@ namespace NRefactoryToBooConverter
 			                           new B.ReferenceExpression(currentSwitchTempName + "_" + labelName));
 		}
 		
-		public object Visit(CaseLabel caseLabel, object data)
+		public object VisitCaseLabel(CaseLabel caseLabel, object data)
 		{
 			throw new ApplicationException("CaseLabel was visited.");
 		}

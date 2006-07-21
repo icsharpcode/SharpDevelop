@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Parser.VB;
-using ASTAttribute = ICSharpCode.NRefactory.Parser.Ast.Attribute;
+using ASTAttribute = ICSharpCode.NRefactory.Ast.Attribute;
 
 COMPILER VBNET
 
@@ -2462,9 +2462,9 @@ EmbeddedStatement<out Statement statement>
 			if(expr is FieldReferenceExpression || expr is IdentifierExpression) {
 				expr = new InvocationExpression(expr);
 			}
-			statement = new StatementExpression(expr);
+			statement = new ExpressionStatement(expr);
 		.)
-	| "Call" SimpleExpr<out expr> (. statement = new StatementExpression(expr); .)
+	| "Call" SimpleExpr<out expr> (. statement = new ExpressionStatement(expr); .)
 	| "Using"
 		(. Statement block;  .)
 		( IF (Peek(1).kind == Tokens.As)
@@ -2477,7 +2477,7 @@ EmbeddedStatement<out Statement statement>
 			(. statement = new UsingStatement(resourceAquisition, block); .)
 		|	Expr<out expr>
 			Block<out block>
-			(. statement = new UsingStatement(new StatementExpression(expr), block); .)
+			(. statement = new UsingStatement(new ExpressionStatement(expr), block); .)
 		)
 		"End" "Using"
 .

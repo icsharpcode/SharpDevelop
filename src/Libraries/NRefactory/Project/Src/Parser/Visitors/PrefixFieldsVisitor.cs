@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory.Visitors
 {
 	/// <summary>
 	/// Prefixes the names of the specified fields with the prefix and replaces the use.
@@ -35,42 +35,42 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public override object Visit(TypeDeclaration typeDeclaration, object data)
+		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
 			Push();
-			object result = base.Visit(typeDeclaration, data);
+			object result = base.VisitTypeDeclaration(typeDeclaration, data);
 			Pop();
 			return result;
 		}
 		
-		public override object Visit(BlockStatement blockStatement, object data)
+		public override object VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
 			Push();
-			object result = base.Visit(blockStatement, data);
+			object result = base.VisitBlockStatement(blockStatement, data);
 			Pop();
 			return result;
 		}
 		
-		public override object Visit(MethodDeclaration methodDeclaration, object data)
+		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			Push();
-			object result = base.Visit(methodDeclaration, data);
+			object result = base.VisitMethodDeclaration(methodDeclaration, data);
 			Pop();
 			return result;
 		}
 		
-		public override object Visit(PropertyDeclaration propertyDeclaration, object data)
+		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			Push();
-			object result = base.Visit(propertyDeclaration, data);
+			object result = base.VisitPropertyDeclaration(propertyDeclaration, data);
 			Pop();
 			return result;
 		}
 		
-		public override object Visit(ConstructorDeclaration constructorDeclaration, object data)
+		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			Push();
-			object result = base.Visit(constructorDeclaration, data);
+			object result = base.VisitConstructorDeclaration(constructorDeclaration, data);
 			Pop();
 			return result;
 		}
@@ -86,30 +86,30 @@ namespace ICSharpCode.NRefactory.Parser
 			curBlock = blocks.Pop();
 		}
 		
-		public override object Visit(VariableDeclaration variableDeclaration, object data)
+		public override object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data)
 		{
 			// process local variables only
 			if (fields.Contains(variableDeclaration)) {
 				return null;
 			}
 			curBlock.Add(variableDeclaration.Name);
-			return base.Visit(variableDeclaration, data);
+			return base.VisitVariableDeclaration(variableDeclaration, data);
 		}
 		
-		public override object Visit(ParameterDeclarationExpression parameterDeclarationExpression, object data)
+		public override object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
 			curBlock.Add(parameterDeclarationExpression.ParameterName);
 			//print("add parameter ${parameterDeclarationExpression.ParameterName} to block")
-			return base.Visit(parameterDeclarationExpression, data);
+			return base.VisitParameterDeclarationExpression(parameterDeclarationExpression, data);
 		}
 		
-		public override object Visit(ForeachStatement foreachStatement, object data)
+		public override object VisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
 			curBlock.Add(foreachStatement.VariableName);
-			return base.Visit(foreachStatement, data);
+			return base.VisitForeachStatement(foreachStatement, data);
 		}
 		
-		public override object Visit(IdentifierExpression identifierExpression, object data)
+		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			string name = identifierExpression.Identifier;
 			foreach (VariableDeclaration var in fields) {
@@ -118,10 +118,10 @@ namespace ICSharpCode.NRefactory.Parser
 					break;
 				}
 			}
-			return base.Visit(identifierExpression, data);
+			return base.VisitIdentifierExpression(identifierExpression, data);
 		}
 		
-		public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
 				string name = fieldReferenceExpression.FieldName;
@@ -132,7 +132,7 @@ namespace ICSharpCode.NRefactory.Parser
 					}
 				}
 			}
-			return base.Visit(fieldReferenceExpression, data);
+			return base.VisitFieldReferenceExpression(fieldReferenceExpression, data);
 		}
 		
 		bool IsLocal(string name)

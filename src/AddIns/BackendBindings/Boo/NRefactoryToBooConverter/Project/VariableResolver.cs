@@ -6,10 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
 namespace NRefactoryToBooConverter
 {

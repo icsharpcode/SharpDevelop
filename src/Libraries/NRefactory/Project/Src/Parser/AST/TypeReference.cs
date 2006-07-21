@@ -11,7 +11,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
-namespace ICSharpCode.NRefactory.Parser.Ast
+namespace ICSharpCode.NRefactory.Ast
 {
 	public class TypeReference : AbstractNode, INullable, ICloneable
 	{
@@ -264,7 +264,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data)
 		{
-			return visitor.Visit(this, data);
+			return visitor.VisitTypeReference(this, data);
 		}
 		
 		public override string ToString()
@@ -373,7 +373,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data)
 		{
-			return visitor.Visit(this, data);
+			return visitor.VisitInnerClassTypeReference(this, data);
 		}
 		
 		/// <summary>

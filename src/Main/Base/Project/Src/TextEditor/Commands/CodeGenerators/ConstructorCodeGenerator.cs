@@ -10,7 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				Expression left  = new FieldReferenceExpression(new ThisReferenceExpression(), w.Field.Name);
 				Expression right = new IdentifierExpression(parameterName);
 				Expression expr  = new AssignmentExpression(left, AssignmentOperatorType.Assign, right);
-				ctor.Body.AddChild(new StatementExpression(expr));
+				ctor.Body.AddChild(new ExpressionStatement(expr));
 			}
 			nodes.Add(ctor);
 		}

@@ -10,7 +10,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections;
 
-namespace ICSharpCode.NRefactory.Parser.Ast
+namespace ICSharpCode.NRefactory.Ast
 {
 	public class CompilationUnit : AbstractNode
 	{
@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.Parser.Ast
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data)
 		{
-			return visitor.Visit(this, data);
+			return visitor.VisitCompilationUnit(this, data);
 		}
 		
 		public override string ToString()

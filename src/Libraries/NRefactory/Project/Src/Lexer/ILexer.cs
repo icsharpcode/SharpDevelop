@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -12,7 +12,7 @@ using System.Collections.Generic;
 namespace ICSharpCode.NRefactory.Parser
 {
 	/// <summary>
-	/// Description of IParser.
+	/// Lexer interface
 	/// </summary>
 	public interface ILexer : IDisposable
 	{

@@ -9,9 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
@@ -34,7 +35,7 @@ namespace VBNetBinding
 		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials)
 		{
 			PreprocessingDirective.CSharpToVB(specials);
-			new CSharpToVBNetConvertVisitor().Visit(compilationUnit, null);
+			compilationUnit.AcceptVisitor(new CSharpToVBNetConvertVisitor(), null);
 		}
 		
 		protected override void CopyProperties(IProject sourceProject, IProject targetProject)

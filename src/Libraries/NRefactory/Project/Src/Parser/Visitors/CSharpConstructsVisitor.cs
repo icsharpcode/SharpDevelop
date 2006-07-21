@@ -11,10 +11,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-using ICSharpCode.NRefactory.Parser.VB;
-using ICSharpCode.NRefactory.Parser.Ast;
+using VB = ICSharpCode.NRefactory.Parser.VB;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory.Visitors
 {
 	/// <summary>
 	/// Converts special C# constructs to use more general AST classes.
@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.Parser
 		// The following conversions should be implemented in the future:
 		//   if (Event != null) Event(this, bla); -> RaiseEvent Event(this, bla)
 		
-		public override object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
+		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			if (binaryOperatorExpression.Op == BinaryOperatorType.Equality || binaryOperatorExpression.Op == BinaryOperatorType.InEquality) {
 				if (IsNullLiteralExpression(binaryOperatorExpression.Left)) {
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.Parser
 					}
 				}
 			}
-			return base.Visit(binaryOperatorExpression, data);
+			return base.VisitBinaryOperatorExpression(binaryOperatorExpression, data);
 		}
 		
 		static bool IsNullLiteralExpression(Expression expr)
@@ -58,28 +58,28 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		
-		public override object Visit(StatementExpression statementExpression, object data)
+		public override object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
-			UnaryOperatorExpression uoe = statementExpression.Expression as UnaryOperatorExpression;
+			UnaryOperatorExpression uoe = expressionStatement.Expression as UnaryOperatorExpression;
 			if (uoe != null) {
 				switch (uoe.Op) {
 					case UnaryOperatorType.Increment:
 					case UnaryOperatorType.PostIncrement:
-						statementExpression.Expression = new AssignmentExpression(uoe.Expression, AssignmentOperatorType.Add, new PrimitiveExpression(1, "1"));
+						expressionStatement.Expression = new AssignmentExpression(uoe.Expression, AssignmentOperatorType.Add, new PrimitiveExpression(1, "1"));
 						break;
 					case UnaryOperatorType.Decrement:
 					case UnaryOperatorType.PostDecrement:
-						statementExpression.Expression = new AssignmentExpression(uoe.Expression, AssignmentOperatorType.Subtract, new PrimitiveExpression(1, "1"));
+						expressionStatement.Expression = new AssignmentExpression(uoe.Expression, AssignmentOperatorType.Subtract, new PrimitiveExpression(1, "1"));
 						break;
 				}
 			}
-			return base.Visit(statementExpression, data);
+			return base.VisitExpressionStatement(expressionStatement, data);
 		}
 		
 		
-		public override object Visit(IfElseStatement ifElseStatement, object data)
+		public override object VisitIfElseStatement(IfElseStatement ifElseStatement, object data)
 		{
-			base.Visit(ifElseStatement, data);
+			base.VisitIfElseStatement(ifElseStatement, data);
 			BinaryOperatorExpression boe = ifElseStatement.Condition as BinaryOperatorExpression;
 			if (ifElseStatement.ElseIfSections.Count == 0
 			    && ifElseStatement.FalseStatement.Count == 0
@@ -92,11 +92,11 @@ namespace ICSharpCode.NRefactory.Parser
 				IdentifierExpression ident = boe.Left as IdentifierExpression;
 				if (ident == null)
 					ident = boe.Right as IdentifierExpression;
-				StatementExpression se = ifElseStatement.TrueStatement[0] as StatementExpression;
+				ExpressionStatement se = ifElseStatement.TrueStatement[0] as ExpressionStatement;
 				if (se == null) {
 					BlockStatement block = ifElseStatement.TrueStatement[0] as BlockStatement;
 					if (block != null && block.Children.Count == 1) {
-						se = block.Children[0] as StatementExpression;
+						se = block.Children[0] as ExpressionStatement;
 					}
 				}
 				if (ident != null && se != null) {
@@ -112,9 +112,9 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-		public override object Visit(ForStatement forStatement, object data)
+		public override object VisitForStatement(ForStatement forStatement, object data)
 		{
-			base.Visit(forStatement, data);
+			base.VisitForStatement(forStatement, data);
 			ConvertForStatement(forStatement);
 			return null;
 		}
@@ -138,7 +138,7 @@ namespace ICSharpCode.NRefactory.Parser
 				return;
 			if (forStatement.Iterator.Count != 1)
 				return;
-			StatementExpression statement = forStatement.Iterator[0] as StatementExpression;
+			ExpressionStatement statement = forStatement.Iterator[0] as ExpressionStatement;
 			if (statement == null)
 				return;
 			AssignmentExpression iterator = statement.Expression as AssignmentExpression;
@@ -189,7 +189,7 @@ namespace ICSharpCode.NRefactory.Parser
 				typeReference = varDecl.GetTypeForVariable(0);
 				start = varDecl.Variables[0].Initializer;
 			} else {
-				statement = forStatement.Initializers[0] as StatementExpression;
+				statement = forStatement.Initializers[0] as ExpressionStatement;
 				if (statement == null)
 					return;
 				AssignmentExpression assign = statement.Expression as AssignmentExpression;

@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Tests.Ast
 {
@@ -97,7 +97,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		#region VB.NET
 		void VBNetTestAssignmentExpression(string program, AssignmentOperatorType op)
 		{
-			StatementExpression se = ParseUtilVBNet.ParseStatement<StatementExpression>(program);
+			ExpressionStatement se = ParseUtilVBNet.ParseStatement<ExpressionStatement>(program);
 			AssignmentExpression ae = se.Expression as AssignmentExpression;
 			Assert.AreEqual(op, ae.Op);
 			

@@ -10,7 +10,7 @@ using System.Text;
 using System.CodeDom;
 using System.Collections;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory
 {
 	public enum CommentType
 	{

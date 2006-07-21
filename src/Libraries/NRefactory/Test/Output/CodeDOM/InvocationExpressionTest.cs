@@ -10,7 +10,8 @@ using System.Collections.Generic;
 using System.CodeDom;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 
 namespace ICSharpCode.NRefactory.Tests.Output.CodeDom.Tests
 {

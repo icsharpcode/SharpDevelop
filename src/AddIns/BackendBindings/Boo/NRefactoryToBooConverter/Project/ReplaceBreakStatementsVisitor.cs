@@ -6,10 +6,7 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using Boo.Lang.Compiler;
 using Boo.Lang.Compiler.Ast;
-using Boo.Lang.Compiler.Ast.Visitors;
 
 namespace NRefactoryToBooConverter
 {

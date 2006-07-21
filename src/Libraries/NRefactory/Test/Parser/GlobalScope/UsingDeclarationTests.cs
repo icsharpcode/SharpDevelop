@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.Tests.Ast
@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			string program = "using\n";
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(program));
 			parser.Parse();
-			Assert.IsTrue(parser.Errors.count > 0);
+			Assert.IsTrue(parser.Errors.Count > 0);
 		}
 		
 		[Test]
@@ -103,7 +103,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			string program = "Imports\n";
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
 			parser.Parse();
-			Assert.IsTrue(parser.Errors.count > 0);
+			Assert.IsTrue(parser.Errors.Count > 0);
 			UsingDeclaration u = (UsingDeclaration)parser.CompilationUnit.Children[0];
 			foreach (Using us in u.Usings) {
 				Assert.IsNotNull(us);
@@ -116,7 +116,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			string program = "Imports ,\n";
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
 			parser.Parse();
-			Assert.IsTrue(parser.Errors.count > 0);
+			Assert.IsTrue(parser.Errors.Count > 0);
 			UsingDeclaration u = (UsingDeclaration)parser.CompilationUnit.Children[0];
 			foreach (Using us in u.Usings) {
 				Assert.IsNotNull(us);

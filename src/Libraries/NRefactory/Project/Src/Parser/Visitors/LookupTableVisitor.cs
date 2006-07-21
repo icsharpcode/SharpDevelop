@@ -8,9 +8,9 @@
 using System;
 using System.Collections.Generic;
 
-using ICSharpCode.NRefactory.Parser.Ast;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.NRefactory.Visitors
 {
 	public class LocalLookupVariable
 	{
@@ -87,23 +87,23 @@ namespace ICSharpCode.NRefactory.Parser
 			list.Add(new LocalLookupVariable(typeRef, startPos, endPos, isConst));
 		}
 		
-		public override object Visit(WithStatement withStatement, object data)
+		public override object VisitWithStatement(WithStatement withStatement, object data)
 		{
 			withStatements.Add(withStatement);
-			return base.Visit(withStatement, data);
+			return base.VisitWithStatement(withStatement, data);
 		}
 		
 		Stack<BlockStatement> blockStack = new Stack<BlockStatement>();
 		
-		public override object Visit(BlockStatement blockStatement, object data)
+		public override object VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
 			blockStack.Push(blockStatement);
-			base.Visit(blockStatement, data);
+			base.VisitBlockStatement(blockStatement, data);
 			blockStack.Pop();
 			return null;
 		}
 		
-		public override object Visit(LocalVariableDeclaration localVariableDeclaration, object data)
+		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
 			for (int i = 0; i < localVariableDeclaration.Variables.Count; ++i) {
 				VariableDeclaration varDecl = (VariableDeclaration)localVariableDeclaration.Variables[i];
@@ -114,21 +114,21 @@ namespace ICSharpCode.NRefactory.Parser
 				            (blockStack.Count == 0) ? new Location(-1, -1) : blockStack.Peek().EndLocation,
 				            (localVariableDeclaration.Modifier & Modifier.Const) == Modifier.Const);
 			}
-			return base.Visit(localVariableDeclaration, data);
+			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 		}
 		
-		public override object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
+		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			foreach (ParameterDeclarationExpression p in anonymousMethodExpression.Parameters) {
 				AddVariable(p.TypeReference, p.ParameterName, anonymousMethodExpression.StartLocation, anonymousMethodExpression.EndLocation, false);
 			}
-			return base.Visit(anonymousMethodExpression, data);
+			return base.VisitAnonymousMethodExpression(anonymousMethodExpression, data);
 		}
 		
 		// ForStatement and UsingStatement use a LocalVariableDeclaration,
 		// so they don't need to be visited separately
 		
-		public override object Visit(ForeachStatement foreachStatement, object data)
+		public override object VisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
 			AddVariable(foreachStatement.TypeReference,
 			            foreachStatement.VariableName,
@@ -147,7 +147,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		
 		
-		public override object Visit(TryCatchStatement tryCatchStatement, object data)
+		public override object VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
 		{
 			if (tryCatchStatement == null) {
 				return data;
