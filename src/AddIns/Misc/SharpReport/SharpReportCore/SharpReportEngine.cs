@@ -227,7 +227,6 @@ namespace SharpReportCore {
 		
 		private void OnSectionPrinting (object sender,SectionRenderEventArgs e) {
 			if (this.SectionRendering != null) {
-				System.Console.WriteLine("");
 				this.SectionRendering(this,e);
 			}
 		}

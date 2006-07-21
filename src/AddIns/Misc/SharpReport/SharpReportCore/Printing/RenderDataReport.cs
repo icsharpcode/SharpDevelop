@@ -101,20 +101,6 @@ namespace SharpReportCore {
 			base.DoItems(rpea);
 		}
 		
-		private bool IsRoomForFooter(Point loc) {
-			Rectangle r =  new Rectangle( base.Page.ReportFooterRectangle.Left,
-			                             loc.Y,
-			                             base.Page.ReportFooterRectangle.Width,
-			                             base.Page.ReportFooterRectangle.Height);
-			
-			Rectangle s = new Rectangle (base.Page.ReportFooterRectangle.Left,
-			                             loc.Y,
-			                             
-			                             base.Page.ReportFooterRectangle.Width,
-			                             base.Page.PageFooterRectangle.Top - loc.Y -1);
-			return s.Contains(r);
-		}
-		
 		#endregion
 
 		#region test
@@ -178,22 +164,19 @@ namespace SharpReportCore {
 		
 		
 		protected override void BodyStart(object sender, ReportPageEventArgs rpea) {
-			System.Console.WriteLine("");
-			System.Console.WriteLine("BodyStart");
 			base.BodyStart (sender,rpea);
 			this.currentPoint = new PointF (base.CurrentSection.Location.X,
 			                                base.page.DetailStart.Y);
 			
 			base.CurrentSection.SectionOffset = (int)this.page.DetailStart.Y + AbstractRenderer.Gap;
-			System.Console.WriteLine("\tAdd SectionEvents");
-			base.AddSectionEvents();
+//			base.AddSectionEvents();
 		}
 		
 		
 		protected override void PrintDetail(object sender, ReportPageEventArgs rpea){
 			Rectangle sectionRect;
 			bool firstOnPage = true;
-
+		
 			base.PrintDetail(sender, rpea);
 			// no loop if there is no data
 			if (! this.dataNavigator.HasMoreData ) {
@@ -249,16 +232,13 @@ namespace SharpReportCore {
 			this.ReportDocument.DetailsDone = true;
 			
 			// test for reportfooter
-			if (!IsRoomForFooter (rpea.LocationAfterDraw)) {
+			if (!base.IsRoomForFooter (rpea.LocationAfterDraw)) {
 				AbstractRenderer.PageBreak(rpea);
 			}
 
 		}
 		
 		protected override void BodyEnd(object sender, ReportPageEventArgs rpea) {
-			System.Console.WriteLine("");
-			System.Console.WriteLine("BodyEnd ");
-
 			base.BodyEnd (sender,rpea);
 			System.Console.WriteLine("\tRemoveEvents reason <finish>");
 			base.RemoveSectionEvents();

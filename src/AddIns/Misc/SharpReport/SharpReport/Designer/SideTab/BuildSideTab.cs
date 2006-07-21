@@ -88,12 +88,12 @@ namespace SharpReport
 			                                                 GlobalEnums.ReportItemType.ReportImageItem.ToString(),
 			                                                 bitmap);
 			tab.Items.Add (t);
-			t = sideTab.SideTabItemFactory.CreateSideTabItem( ResourceService.GetString("SharpReport.Toolbar.Rectangle"),
-			                                                 GlobalEnums.ReportItemType.ReportRectangleItem.ToString(),
-			                                                 ResourceService.GetBitmap("Icons.16x16.SharpReport.Rectangle"));
 //			t = sideTab.SideTabItemFactory.CreateSideTabItem( ResourceService.GetString("SharpReport.Toolbar.Rectangle"),
 //			                                                 GlobalEnums.ReportItemType.ReportRectangleItem.ToString(),
-//			                                                 GlobalValues.RectangleBitmap());
+//			                                                 ResourceService.GetBitmap("Icons.16x16.SharpReport.Rectangle"));
+			t = sideTab.SideTabItemFactory.CreateSideTabItem( ResourceService.GetString("SharpReport.Toolbar.Rectangle"),
+			                                                 GlobalEnums.ReportItemType.ReportRectangleItem.ToString(),
+			                                                 GlobalValues.RectangleBitmap());
 			tab.Items.Add (t);
 			
 			

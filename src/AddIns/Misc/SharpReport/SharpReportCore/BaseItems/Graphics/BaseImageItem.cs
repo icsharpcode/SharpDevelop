@@ -66,7 +66,7 @@ namespace SharpReportCore {
 					                                  this.Location.Y + this.image.Height);
 				} else {
 					SizeF measureSize = base.MeasureReportItem (rpea,this);
-					RectangleF rect =  base.DrawingRectangle (rpea,measureSize);
+					RectangleF rect =  base.DrawingRectangle (measureSize);
 					g.DrawImage(image,
 					            rect);
 					rpea.LocationAfterDraw = new Point (this.Location.X + (int)rect.Width,

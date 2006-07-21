@@ -30,7 +30,7 @@ namespace SharpReportCore {
 		
 		public override void Render(ReportPageEventArgs rpea) {
 			base.Render (rpea);
-			RectangleF rect = base.DrawingRectangle (rpea,this.Size);
+			RectangleF rect = base.DrawingRectangle (this.Size);
 			shape.DrawShape (rpea.PrintPageEventArgs.Graphics,
 			                 new BaseLine (this.ForeColor,base.DashStyle,base.Thickness),
 			                 rect);

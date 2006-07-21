@@ -10,12 +10,11 @@
 
 
 using System;
-using System.Drawing;
 using System.ComponentModel;
-using System.Drawing.Printing;
+using System.Drawing;
 
-using SharpReportCore;	
 using SharpReport.Designer;
+
 	/// <summary>
 	/// This Function print's the PageNumber
 	/// Localise it by just overriding the Text Property

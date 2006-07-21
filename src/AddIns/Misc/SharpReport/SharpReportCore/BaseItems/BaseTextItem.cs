@@ -89,7 +89,7 @@ namespace SharpReportCore {
 		
 		protected RectangleF PrepareRectangle (ReportPageEventArgs rpea,string text) {
 			SizeF measureSize = MeasureReportItem (rpea,text);			
-			RectangleF rect = base.DrawingRectangle (rpea,measureSize);
+			RectangleF rect = base.DrawingRectangle (measureSize);
 			return rect;
 		}
 		

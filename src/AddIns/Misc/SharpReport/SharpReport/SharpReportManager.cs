@@ -189,7 +189,6 @@ namespace SharpReport{
 		/// <param name="model"><see cref="">ReportModel</see></param>
 		/// <param name="showInUserControl"></param>
 		public void ReportPreview (ReportModel model,bool standAlone) {
-			System.Console.WriteLine("Manager:ReportPreview");
 			if (model == null) {
 				throw new ArgumentNullException("model");
 			}
@@ -209,7 +208,6 @@ namespace SharpReport{
 		
 		
 		private AbstractRenderer BuildStandartRenderer (ReportModel model) {
-			System.Console.WriteLine("Manager:BuildStandartRenderr");
 			
 			if (model == null) {
 				throw new ArgumentNullException("model");

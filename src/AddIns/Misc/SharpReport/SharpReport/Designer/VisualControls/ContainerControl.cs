@@ -33,6 +33,7 @@ namespace SharpReport.Designer{
 			base.OnPaint(e);
 		}
 		
+		
 		#region overrides
 	/*
 		protected override CreateParams CreateParams{ 

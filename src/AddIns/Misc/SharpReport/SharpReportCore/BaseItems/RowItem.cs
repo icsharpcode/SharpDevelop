@@ -49,7 +49,7 @@ namespace SharpReportCore{
 		
 		protected RectangleF PrepareRectangle (ReportPageEventArgs e) {
 			SizeF measureSize = new SizeF ((SizeF)this.Size);
-			RectangleF rect = base.DrawingRectangle (e,measureSize);
+			RectangleF rect = base.DrawingRectangle (measureSize);
 			return rect;
 		}
 		
@@ -59,8 +59,7 @@ namespace SharpReportCore{
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
-//			System.Console.WriteLine("");
-//			System.Console.WriteLine("--Start of {0}",this.ToString());
+
 			base.Render(rpea);
 			RectangleF rect = PrepareRectangle (rpea);
 			

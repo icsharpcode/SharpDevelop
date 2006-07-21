@@ -8,11 +8,8 @@
  */
 
 using System;
-using System.Xml;
-using SharpReportCore;
-
-using SharpReport.Designer;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace SharpReport.Visitors{
 	

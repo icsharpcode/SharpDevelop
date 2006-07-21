@@ -32,7 +32,7 @@ namespace SharpReportCore {
 		
 		public override void Render(ReportPageEventArgs rpea) {
 			base.Render(rpea);
-			RectangleF rect = base.DrawingRectangle (rpea,this.Size);
+			RectangleF rect = base.DrawingRectangle (this.Size);
 			
 			shape.FillShape(rpea.PrintPageEventArgs.Graphics,
 			                new SolidFillPattern(this.BackColor),

@@ -181,15 +181,32 @@ namespace SharpReport.Designer{
 		private void CustomizeItem ( ItemDragDropEventArgs iddea,
 		                            ReportItemCollection itemCollection,
 		                            BaseReportItem baseReportItem) {
-			
-			GlobalEnums.ReportItemType rptType = (GlobalEnums.ReportItemType)
-				GlobalEnums.StringToEnum(typeof(GlobalEnums.ReportItemType),iddea.ItemName);
+			System.Console.WriteLine("Report:CustomizeItem");
+//			GlobalEnums.ReportItemType rptType = (GlobalEnums.ReportItemType)
+//				GlobalEnums.StringToEnum(typeof(GlobalEnums.ReportItemType),iddea.ItemName);
 			
 			baseReportItem.Name = nameService.CreateName(itemCollection,
 			                                             baseReportItem.Name);
 			
-System.Console.WriteLine("Report:CustomizeItem Name {0}",baseReportItem.Name);
+			System.Console.WriteLine("\t {0}",baseReportItem.Name);
+			System.Console.WriteLine("\tFont in base {0}",baseReportItem.Font.ToString());
+			System.Console.WriteLine("\t{0}",this.reportSettings.DefaultFont.ToString());
 			
+			System.ComponentModel.TypeConverter converter =
+System.ComponentModel.TypeDescriptor.GetConverter( typeof(Font));
+			string s1 = (string)converter.ConvertTo((this.reportSettings.DefaultFont),typeof(string));
+			string s2 = converter.ConvertToInvariantString(this.reportSettings.DefaultFont);
+			System.Console.WriteLine("{0}",s1);
+			System.Console.WriteLine("{0}",s2);
+			
+			Font f1 = (Font)converter.ConvertFromString(s1);
+			Font f2 = (Font)converter.ConvertFromInvariantString(s2);
+			Font f3 = new Font (f1, FontStyle.Bold |FontStyle.Underline);
+			string s3 = converter.ConvertToInvariantString(f3);
+			System.Console.WriteLine("{0}",s3);
+			System.Console.WriteLine("!!");
+			System.Console.WriteLine("{0} / {1}",f1.Name,f2.Size);
+			System.Console.WriteLine("{0} / {1}",f2.Name,f2.Size);
 			if (baseReportItem.Parent == this.selectedSection) {
 				baseReportItem.Location = new Point(iddea.ItemAtPoint.X,iddea.ItemAtPoint.Y);
 			} else {

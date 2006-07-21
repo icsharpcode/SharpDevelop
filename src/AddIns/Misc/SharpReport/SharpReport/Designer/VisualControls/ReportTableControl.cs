@@ -23,6 +23,9 @@ namespace SharpReport.Designer
 	{
 		private RectangleShape shape = new RectangleShape();
 		private bool drawBorder;
+		private Padding padding = new Padding (5);
+		private ReportRowControl row1;
+		
 		public ReportTableControl()
 		{
 			//
@@ -39,7 +42,23 @@ namespace SharpReport.Designer
 			h = GlobalValues.PreferedSize.Height * 3 + 30;
 			w = (GlobalValues.PreferedSize.Width * 2) + 10;
 
-//			this.Size = new Size(w,h);
+			this.Size = new Size(w,h);
+			this.row1 = new ReportRowControl();
+			this.row1.Location = new Point (this.Padding.Left,this.Padding.Top);
+			this.row1.Size = new Size (this.Width - this.Padding.Left - this.Padding.Right,this.row1.Size.Height);
+			this.row1.BackColor = Color.AliceBlue;
+	
+			this.Controls.Add(row1);
+			
+			this.Resize += new EventHandler(OnResize);
+		}
+		
+		private void OnResize (object sender, EventArgs e) {
+			System.Console.WriteLine("");
+			System.Console.WriteLine("TabaleControl:Resize");
+			System.Console.WriteLine("");
+			this.row1.Location = new Point (this.Padding.Left,this.Padding.Top);
+			this.row1.Size = new Size (this.Width - this.Padding.Left - this.Padding.Right,this.row1.Size.Height);
 		}
 		
 		#region overrides
@@ -53,8 +72,7 @@ namespace SharpReport.Designer
 			
 			ControlHelper.DrawHeadLine(this,pea);
 		}
-		
-		
+	
 		
 		public override string ToString() {
 			
@@ -71,6 +89,7 @@ namespace SharpReport.Designer
 				this.Invalidate();
 			}
 		}
+		
 		#region FormsDesigner
 		
 		/// <summary>
@@ -99,6 +118,7 @@ namespace SharpReport.Designer
 		/// </summary>
 		private void InitializeComponent()
 		{
+			
 			
 			this.SuspendLayout();
 			

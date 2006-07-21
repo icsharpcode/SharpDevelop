@@ -8,12 +8,9 @@
 
 
 using System;
-using System.Globalization;
-using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Printing;
-	
-using SharpReportCore;
+using System.Globalization;
 
 	/// <summary>
 	/// Base Class for Rendering Reports
@@ -82,12 +79,15 @@ namespace SharpReportCore {
 		#region Event handling for SectionRendering
 		
 		protected void AddSectionEvents () {
+			System.Console.WriteLine("AddSectionEvents for <{0}>",this.CurrentSection.Name);
 			this.CurrentSection.SectionPrinting += new EventHandler<SectionEventArgs>(OnSectionPrinting);
 			this.CurrentSection.SectionPrinted += new EventHandler<SectionEventArgs>(OnSectionPrinted);
 		}
 		
 		
 		protected void RemoveSectionEvents () {
+			System.Console.WriteLine("RemoveSectionEvents for <{0}>",this.CurrentSection.Name);
+			System.Console.WriteLine("");
 			this.CurrentSection.SectionPrinting -= new EventHandler<SectionEventArgs>(OnSectionPrinting);
 			this.CurrentSection.SectionPrinted -= new EventHandler<SectionEventArgs>(OnSectionPrinted);
 		}
@@ -98,7 +98,6 @@ namespace SharpReportCore {
 				SectionRenderEventArgs ea = new SectionRenderEventArgs (e.Section,
 				                                                        this.reportDocument.PageNumber,0,
 				                                                        (GlobalEnums.enmSection)this.sectionInUse);
-				BaseSection s = (BaseSection)sender;
 				this.Rendering(this,ea);
 			} 
 		}
@@ -129,6 +128,8 @@ namespace SharpReportCore {
 			                               CultureInfo.InvariantCulture);
 			this.AddSectionEvents();
 		}
+		
+		
 		protected virtual void  BodyStart (object sender,ReportPageEventArgs rpea) {
 //			System.Console.WriteLine("\tAbstract - PrintBodyStart");
 			this.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail,
@@ -140,14 +141,13 @@ namespace SharpReportCore {
 		protected virtual void  PrintDetail (object sender,ReportPageEventArgs rpea) {
 			SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail,
 			                               CultureInfo.InvariantCulture);
-//			this.AddSectionEvents();
-//			System.Console.WriteLine("\tAbstract - PrintDetail");
+			this.AddSectionEvents();
 		}
 		
 		
 		protected virtual void  BodyEnd (object sender,ReportPageEventArgs rpea) {
 //			System.Console.WriteLine("\tAbstarct - PrintBodyEnd");
-		this.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportFooter,
+			this.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportFooter,
 			                                    CultureInfo.InvariantCulture);
 		}
 		
@@ -287,11 +287,24 @@ namespace SharpReportCore {
 			                      this.CurrentSection.Size.Height);                   
 		}
 		
-
+		protected bool IsRoomForFooter(Point loc) {
+//			System.Console.WriteLine("AbstractRenderer:isRoomForFooter");
+			Rectangle r =  new Rectangle( this.page.ReportFooterRectangle.Left,
+			                             loc.Y,
+			                             this.page.ReportFooterRectangle.Width,
+			                             this.page.ReportFooterRectangle.Height);
+			
+			Rectangle s = new Rectangle (this.page.ReportFooterRectangle.Left,
+			                             loc.Y,
+			                             
+			                             this.page.ReportFooterRectangle.Width,
+			                             this.page.PageFooterRectangle.Top - loc.Y -1);
+			return s.Contains(r);
+		}
 		
 		protected virtual int RenderSection (ReportPageEventArgs rpea) {
 			Point drawPoint	= new Point(0,0);
-			
+//			System.Console.WriteLine("AbstarctRenderer:Rendersection <{0}>",this.CurrentSection.Name);
 			if (this.CurrentSection.Visible){
 				this.CurrentSection.Render (rpea);
 				
@@ -299,7 +312,19 @@ namespace SharpReportCore {
 					if (item.Parent == null) {
 						item.Parent = this.CurrentSection;
 					}
+					//test for container
+					IContainerItem	container = item as IContainerItem;
+//					if (container != null) {
+//						System.Console.WriteLine("\tContainer {0}",item.Name);
+//
+//					} else {
+//						System.Console.WriteLine("\tStandart Offset for <{0}>",item.Name);
+//						
+//					}
+					
 					item.SectionOffset = this.CurrentSection.SectionOffset;
+					
+//					System.Console.WriteLine("\trender start at offset {0}",item.SectionOffset);
 					item.Render(rpea);
 					drawPoint.Y = this.CurrentSection.SectionOffset + this.CurrentSection.Size.Height;
 					rpea.LocationAfterDraw = new Point (rpea.LocationAfterDraw.X,
@@ -424,21 +449,9 @@ namespace SharpReportCore {
 				                    0);
 			}
 			page.ReportHeaderRectangle = r1;
-//			System.Console.WriteLine("ReportHeader {0}",page.ReportHeaderRectangle);
 			page.PageHeaderRectangle = this.MeasurePageHeader(r1,e);
-//			System.Console.WriteLine("PageHeader {0}",page.PageHeaderRectangle);
-			page.PageFooterRectangle = this.MeasurePageFooter (e);
-			
-//			System.Console.WriteLine("DrawArea {0}",page.DetailArea);
-			
-//			System.Console.WriteLine("PageFooter {0}",page.PageFooterRectangle);
+			page.PageFooterRectangle = this.MeasurePageFooter (e);			
 			page.ReportFooterRectangle = this.MeasureReportFooter(e);
-//			System.Console.WriteLine("ReportFooter {0}",page.ReportFooterRectangle);
-//			System.Console.WriteLine("DetailStarts {0}",page.DetailStart);
-//			System.Console.WriteLine("");
-//			AbstractRenderer.DebugRectangle (e,page.PageHeaderRectangle);
-//			AbstractRenderer.DebugRectangle (e,page.DetailArea);
-//			AbstractRenderer.DebugRectangle (e,page.PageFooterRectangle);
 		}
 		
 		protected virtual void ReportQueryPage (object sender,QueryPageSettingsEventArgs qpea) {

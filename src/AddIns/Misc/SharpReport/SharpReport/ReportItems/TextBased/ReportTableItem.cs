@@ -8,6 +8,7 @@
  */
 
 using System;
+using System.Drawing;
 using System.ComponentModel;
 
 using SharpReport.Designer;
@@ -28,25 +29,23 @@ namespace SharpReport.ReportItems{
 		
 		public ReportTableItem (string tableName):base(tableName) {
 			Setup();
+			base.Name = this.visualControl.Name;
 		}
 		
 		private void Setup (){
 		    visualControl = new ReportTableControl();
-//			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
-//			
+
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);
 			this.visualControl.LocationChanged += new EventHandler (OnControlChanged);
 
 
 //			//Event from Tracker
-			this.visualControl.PropertyChanged += new PropertyChangedEventHandler (ControlPropertyChange);
-//			
+			this.visualControl.PropertyChanged += new PropertyChangedEventHandler (ControlPropertyChange);			
 			base.PropertyChanged += new PropertyChangedEventHandler (BasePropertyChange);
 //			
 			base.Items.Added += OnAdd;
 			base.Items.Removed += OnRemove; 
-			System.Console.WriteLine("ReporttableItem ctrlName {0}",this.visualControl.Name);
 		}
 		#endregion
 		
@@ -64,17 +63,21 @@ namespace SharpReport.ReportItems{
 		}
 		
 		private void OnAdd (object sender, CollectionItemEventArgs<IItemRenderer> e){
+			System.Console.WriteLine("TableItem:OnAdd");
 			IDesignable des = e.Item as IDesignable;
+			
 			if (des != null) {
 				this.visualControl.Controls.Add (des.VisualControl);
 				des.Selected += ChildSelected;
 				des.PropertyChanged += ChildPropertyChange;
+				System.Console.WriteLine("\t Added <{0}>",e.Item.Name);
 			}
 		}
 		
 		private void OnRemove (object sender, CollectionItemEventArgs<IItemRenderer> e){
-			
+			System.Console.WriteLine("TableItem:OnRemove");
 			IDesignable des = e.Item as IDesignable;
+			System.Console.WriteLine("\t <{0}>",des.Name);
 			if (des != null) {
 				this.visualControl.Controls.Remove(des.VisualControl);
 				des.Selected -= ChildSelected;
@@ -83,9 +86,7 @@ namespace SharpReport.ReportItems{
 		}
 		
 		#endregion
-		public override string ToString() {
-			return this.GetType().Name;
-		}
+		
 		#region Events from Control
 		//Tracker
 		
@@ -138,6 +139,53 @@ namespace SharpReport.ReportItems{
 			}
 		}
 		
+		
+		#endregion
+		
+		#region overrides
+		
+		public override Size Size {
+			get {
+				return base.Size;
+			}
+			set {
+				base.Size = value;
+				if (this.visualControl != null) {
+					this.visualControl.Size = value;
+				}
+				this.HandlePropertyChanged("Size");
+			}
+		}
+		
+		public override Point Location {
+			get {
+				return base.Location;
+			}
+			set {
+				base.Location = value;
+				if (this.visualControl != null) {
+					this.visualControl.Location = value;
+				}
+				this.HandlePropertyChanged("Location");
+			}
+		}
+		
+		public override Font Font {
+			get {
+				return base.Font;
+			}
+			set {
+				base.Font = value;
+				if (this.visualControl != null) {
+					this.visualControl.Font = value;
+				}
+				this.HandlePropertyChanged("Font");
+			}
+		}
+		
+		public override string ToString(){
+			return this.GetType().Name;
+		}
 		
 		#endregion
 		

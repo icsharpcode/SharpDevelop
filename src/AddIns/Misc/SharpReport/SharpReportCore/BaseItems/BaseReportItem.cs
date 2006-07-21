@@ -67,8 +67,7 @@ namespace SharpReportCore {
 		#endregion
 		
 		#region virtual method's
-		protected RectangleF DrawingRectangle (ReportPageEventArgs e,SizeF measureSize) {
-			
+		protected RectangleF DrawingRectangle (SizeF measureSize) {	
 			PointF upperLeft = new PointF (this.Location.X ,
 			                             this.Location.Y + this.SectionOffset);
 			SizeF lowerRight = new SizeF(0,0);
@@ -132,6 +131,7 @@ namespace SharpReportCore {
 				return this.font;
 			}
 			set {
+
 				this.font = value;
 				NotifyPropertyChanged ("Font");
 			}

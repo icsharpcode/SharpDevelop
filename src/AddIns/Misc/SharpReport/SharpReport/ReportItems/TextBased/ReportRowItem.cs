@@ -38,7 +38,6 @@ namespace SharpReport.ReportItems
 		private void Setup(){
 			
 			visualControl = new ReportRowControl();
-//			ItemsHelper.UpdateBaseFromTextControl (this.visualControl,this);
 			
 			this.visualControl.Click += new EventHandler(OnControlSelect);
 			this.visualControl.VisualControlChanged += new EventHandler (OnControlChanged);

@@ -35,58 +35,41 @@ namespace SharpReportCore {
 	public class RenderFormSheetReport : AbstractRenderer {
 
 		private PointF currentPoint = new PointF (0,0);
-
+		
+		#region Constructor
+		
 		public RenderFormSheetReport (ReportModel model):base( model){
 		                             
-		}
-		
-		
-		#region Draw the different report Sections
-		private void DoReportHeader (ReportPageEventArgs rpea){
-			base.RenderSection (rpea);
-		}
-		
-		private void DoPageHeader (PointF startAt,ReportPageEventArgs rpea){
-			this.CurrentSection.SectionOffset = base.Page.PageHeaderRectangle.Location.Y;
-			base.RenderSection (rpea);
-		}
-		
-		private void DoPageEnd (ReportPageEventArgs rpea){
-			
-			base.PrintPageEnd(this,rpea);
-			this.CurrentSection.SectionOffset = base.Page.PageFooterRectangle.Location.Y;
-			base.RenderSection (rpea);
-		}
-		
-		
-		
-		//TODO how should we handle ReportFooter, print it on an seperate page ????
-		private void  DoReportFooter (PointF startAt,ReportPageEventArgs rpea){
-			this.CurrentSection.SectionOffset = base.Page.ReportFooterRectangle.Location.Y;
-			base.RenderSection (rpea);
-			this.RemoveSectionEvents();
 		}
 		
 		#endregion
 		
 		#region print all the sections
-		
-		protected override void PrintReportHeader (object sender, ReportPageEventArgs e) {
-			base.PrintReportHeader (sender,e);
-			DoReportHeader (e);
+		protected override void ReportQueryPage(object sender, QueryPageSettingsEventArgs qpea) {
+			base.ReportQueryPage (sender,qpea);
 		}
 		
-		protected override void PrintPageHeader (object sender, ReportPageEventArgs e) {
-			base.PrintPageHeader (sender,e);
-			DoPageHeader (this.currentPoint,e);
+		protected override void ReportBegin(object sender, PrintEventArgs pea) {
+			base.ReportBegin (sender,pea);
 		}
+		
+		protected override void PrintReportHeader (object sender, ReportPageEventArgs rpea) {
+			base.PrintReportHeader (sender,rpea);
+			base.RenderSection (rpea);
+		}
+		
+		protected override void PrintPageHeader (object sender, ReportPageEventArgs rpea) {
+			base.PrintPageHeader (sender,rpea);
+			this.CurrentSection.SectionOffset = base.Page.PageHeaderRectangle.Location.Y;
+			base.RenderSection (rpea);
+		}
+		
 		/// <summary>
 		/// Detail Section
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		protected override void BodyStart (object sender,ReportPageEventArgs rpea) {
-//			System.Console.WriteLine("BodyStart");
 			base.BodyStart (sender,rpea);
 			this.currentPoint = new PointF (base.CurrentSection.Location.X,
 			                                base.page.DetailStart.Y);
@@ -98,10 +81,17 @@ namespace SharpReportCore {
 			this.CurrentSection.SectionOffset = base.Page.PageHeaderRectangle.Bottom;
 			base.RenderSection(rpea);
 			base.RemoveSectionEvents();
+			base.ReportDocument.DetailsDone = true;
+			
+			// test for reportfooter
+			if (!base.IsRoomForFooter (rpea.LocationAfterDraw)) {
+				AbstractRenderer.PageBreak(rpea);
+			}
 		}
 		
 		protected override void PrintReportFooter(object sender, ReportPageEventArgs rpea){
 			base.PrintReportFooter(sender, rpea);
+			this.CurrentSection.SectionOffset = (int)rpea.LocationAfterDraw.Y;
 			base.RenderSection(rpea);
 			base.RemoveSectionEvents();
 		}
@@ -111,8 +101,11 @@ namespace SharpReportCore {
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
+		
 		protected override void PrintPageEnd(object sender, ReportPageEventArgs rpea) {
-			this.DoPageEnd (rpea);
+			base.PrintPageEnd(this,rpea);
+			this.CurrentSection.SectionOffset = base.Page.PageFooterRectangle.Location.Y;
+			base.RenderSection (rpea);
 		}
 		#endregion
 		
@@ -120,14 +113,15 @@ namespace SharpReportCore {
 		#region event's
 		
 		
-		
-		
-		
 		protected override void BodyEnd (object sender,ReportPageEventArgs rpea) {
-			
+	
+//			System.Console.WriteLine("");
+//			System.Console.WriteLine("BodyEnd ");
+
 			base.BodyEnd (sender,rpea);
-			this.DoReportFooter (new PointF(0,base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height),
-			                     rpea);
+//			System.Console.WriteLine("\tRemoveEvents reason <finish>");
+//			base.RemoveSectionEvents();
+			rpea.PrintPageEventArgs.HasMorePages = false;
 		}
 		
 		

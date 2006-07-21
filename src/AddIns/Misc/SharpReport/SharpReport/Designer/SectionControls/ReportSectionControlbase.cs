@@ -339,8 +339,6 @@ namespace SharpReport.Designer{
 		
 		private bool CheckDraggedControl (DragEventArgs dea) {
 			string str = this.DragObjectToString (dea);
-			System.Console.WriteLine("ReportSectionControlBase");
-			System.Console.WriteLine("valid {0}",this.designableFactory.Contains(str));
 			return this.designableFactory.Contains(str);
 		}
 		
@@ -371,7 +369,9 @@ namespace SharpReport.Designer{
 		void BodyPanelDragEnter(object sender, System.Windows.Forms.DragEventArgs dea){
 			dragAllowed = CheckDragElement(dea);
 			string s = DragObjectToString (dea);
+			
 			this.draggedItem = 	 this.designableFactory.Create(s);
+			
 		}
 		
 		void BodyPanelDragLeave(object sender, System.EventArgs e){
@@ -400,13 +400,25 @@ namespace SharpReport.Designer{
 		
 		private IContainerItem IsValidContainer(DragEventArgs dea) {
 			Point point = new Point(dea.X,dea.Y);
-			
+//			System.Console.WriteLine("ReportSectionControlBase:IsValidContainer");
 			for (int i = 0; i < this.bodyPanel.Controls.Count; i++) {
 				Control c = this.bodyPanel.Controls[i];
 				Rectangle r = c.ClientRectangle;
 				
 				if (r.Contains(c.PointToClient(point))) {
+//					System.Console.WriteLine("\tfound Control {0} ",c.Name);
 					IContainerItem ia = c as IContainerItem;
+					ContainerControl cc = c as ContainerControl;
+					if (cc != null) {
+						System.Console.WriteLine("\tContainerControl {0}",cc.Name);
+					} else {
+//						System.Console.WriteLine("\tNo ContainerControl");
+					}
+//					if (ia != null) {
+//						System.Console.WriteLine("\t\tContainer is {0}",c.Name);
+//					} else {
+//						System.Console.WriteLine("\t\tNo COntainer{0}",c.Name);
+//					}
 					return ia;
 				}
 			}

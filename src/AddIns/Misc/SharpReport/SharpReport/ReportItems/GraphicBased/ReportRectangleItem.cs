@@ -93,8 +93,8 @@ namespace SharpReport.ReportItems{
 		
 		
 		#region overrides
-		public override void Render(SharpReportCore.ReportPageEventArgs e) {
-			base.Render(e);
+		public override void Render(SharpReportCore.ReportPageEventArgs rpea) {
+			base.Render(rpea);
 		}
 		
 		public override void Dispose() {
