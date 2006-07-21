@@ -51,6 +51,7 @@
     <Compile Include="SimpleUnboundPullModel.cs" />
     <Compile Include="MultipageUnboundPullModel.cs" />
     <Compile Include="UnboundPushModel.cs" />
+    <Compile Include="UnboundFormSheet.cs" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft ActiveX Data Objects 2.7 Library">

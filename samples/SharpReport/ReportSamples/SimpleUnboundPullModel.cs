@@ -41,20 +41,20 @@ namespace ReportSamples
 			}
 		}
 		private void SimplePullPrinting (object sender,SectionRenderEventArgs e) {
-			System.Console.WriteLine("UnboundPullPrinting");
+//			System.Console.WriteLine("SimpleUnboundPullPrinting");
 			CheckItems(e.Section.Items);
 			switch (e.CurrentSection) {
 				case GlobalEnums.enmSection.ReportHeader:
-					System.Console.WriteLine("\tI found the ReportHeader");
+//					System.Console.WriteLine("\tI found the ReportHeader");
 					break;
 
 				case GlobalEnums.enmSection.ReportPageHeader:
 					
-					System.Console.WriteLine("\tI found the Pageheader");
+//					System.Console.WriteLine("\tI found the Pageheader");
 					break;
 					
 				case GlobalEnums.enmSection.ReportDetail:
-					System.Console.WriteLine("\tI found the ReportDetail");
+//					System.Console.WriteLine("\tI found the ReportDetail");
 					this.rowNr ++;
 					RowItem ri = e.Section.Items[0] as RowItem;
 					if (ri != null) {
@@ -67,11 +67,11 @@ namespace ReportSamples
 					break;
 					
 				case GlobalEnums.enmSection.ReportPageFooter:
-					System.Console.WriteLine("\tI found the PageFooter");
+//					System.Console.WriteLine("\tI found the PageFooter");
 					break;
 					
 				case GlobalEnums.enmSection.ReportFooter:
-					System.Console.WriteLine("\tI found the ReportFooter");
+//					System.Console.WriteLine("\tI found the ReportFooter");
 					break;
 					
 				default:

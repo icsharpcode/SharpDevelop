@@ -304,10 +304,15 @@ namespace ReportSamples
 			mp.Run();
 		}
 		
-		void UnboundPuskModelToolStripMenuItemClick(object sender, System.EventArgs e)
+		void UnboundPushModelToolStripMenuItemClick(object sender, System.EventArgs e)
 		{
 			UnboundPushModel u = new UnboundPushModel();
 			u.Run();
+		}
+		
+		void UnboundFormSheetToolStripMenuItemClick(object sender, System.EventArgs e){
+			UnboundFormSheet unboundFormSheet = new UnboundFormSheet();
+			unboundFormSheet.Run();
 		}
 	}
 }
