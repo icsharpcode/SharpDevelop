@@ -3539,22 +3539,20 @@ out expr);
 				pexpr = new IdentifierExpression(t.val); 
 				break;
 			}
-			case 10: case 52: case 54: case 65: case 76: case 77: case 84: case 111: case 117: case 133: case 159: case 160: case 165: case 190: case 191: case 192: case 193: {
+			case 52: case 54: case 65: case 76: case 77: case 84: case 111: case 117: case 133: case 159: case 160: case 165: case 190: case 191: case 192: case 193: {
 
 #line  1566 "VBNET.ATG" 
 				string val = String.Empty; 
-				if (StartOf(29)) {
-					if (StartOf(9)) {
-						PrimitiveTypeName(
+				if (StartOf(9)) {
+					PrimitiveTypeName(
 #line  1567 "VBNET.ATG" 
 out val);
-					} else {
-						lexer.NextToken();
+				} else if (la.kind == 133) {
+					lexer.NextToken();
 
 #line  1567 "VBNET.ATG" 
-						val = "Object"; 
-					}
-				}
+					val = "Object"; 
+				} else SynErr(239);
 				Expect(10);
 
 #line  1568 "VBNET.ATG" 
@@ -3586,7 +3584,7 @@ out val);
 
 #line  1572 "VBNET.ATG" 
 					retExpr = new ClassReferenceExpression(); 
-				} else SynErr(239);
+				} else SynErr(240);
 				Expect(10);
 				IdentifierOrKeyword(
 #line  1574 "VBNET.ATG" 
@@ -3636,7 +3634,7 @@ out expr);
 
 #line  1585 "VBNET.ATG" 
 					castType = CastType.TryCast; 
-				} else SynErr(240);
+				} else SynErr(241);
 				Expect(24);
 				Expr(
 #line  1587 "VBNET.ATG" 
@@ -3720,7 +3718,7 @@ out name);
 #line  1598 "VBNET.ATG" 
 ref pexpr);
 			}
-		} else SynErr(241);
+		} else SynErr(242);
 	}
 
 	void PrimitiveTypeName(
@@ -3835,7 +3833,7 @@ out string type) {
 			type = "SByte"; 
 			break;
 		}
-		default: SynErr(242); break;
+		default: SynErr(243); break;
 		}
 	}
 
@@ -3967,7 +3965,7 @@ out TypeReference type) {
 			type = new TypeReference("System.String"); 
 			break;
 		}
-		default: SynErr(243); break;
+		default: SynErr(244); break;
 		}
 	}
 
@@ -4009,7 +4007,7 @@ out name);
 			InvocationExpression(
 #line  1606 "VBNET.ATG" 
 ref pexpr);
-		} else SynErr(244);
+		} else SynErr(245);
 	}
 
 	void InvocationExpression(
@@ -4057,8 +4055,8 @@ out parameters);
 
 #line  1628 "VBNET.ATG" 
 				pexpr = new InvocationExpression(pexpr, parameters, typeParameters); 
-			} else SynErr(245);
-		} else if (StartOf(30)) {
+			} else SynErr(246);
+		} else if (StartOf(29)) {
 			ArgumentList(
 #line  1630 "VBNET.ATG" 
 out parameters);
@@ -4066,7 +4064,7 @@ out parameters);
 
 #line  1632 "VBNET.ATG" 
 			pexpr = new InvocationExpression(pexpr, parameters, typeParameters); 
-		} else SynErr(246);
+		} else SynErr(247);
 
 #line  1634 "VBNET.ATG" 
 		pexpr.StartLocation = start; pexpr.EndLocation = t.Location; 
@@ -4169,7 +4167,7 @@ out Expression outExpr) {
 		ShiftExpr(
 #line  1706 "VBNET.ATG" 
 out outExpr);
-		while (StartOf(31)) {
+		while (StartOf(30)) {
 			switch (la.kind) {
 			case 27: {
 				lexer.NextToken();
@@ -4235,7 +4233,7 @@ out outExpr);
 				break;
 			}
 			}
-			if (StartOf(32)) {
+			if (StartOf(31)) {
 				ShiftExpr(
 #line  1720 "VBNET.ATG" 
 out expr);
@@ -4250,7 +4248,7 @@ out expr);
 
 #line  1723 "VBNET.ATG" 
 				outExpr = new BinaryOperatorExpression(outExpr, op, new UnaryOperatorExpression(expr, UnaryOperatorType.Not));  
-			} else SynErr(247);
+			} else SynErr(248);
 		}
 	}
 
@@ -4530,7 +4528,7 @@ out expr);
 			Expr(
 #line  1873 "VBNET.ATG" 
 out argumentexpr);
-		} else SynErr(248);
+		} else SynErr(249);
 	}
 
 	void QualIdentAndTypeArguments(
@@ -4566,7 +4564,7 @@ canBeUnbound && (la.kind == Tokens.CloseParenthesis || la.kind == Tokens.Comma))
 				TypeArgumentList(
 #line  1929 "VBNET.ATG" 
 typeref.GenericTypes);
-			} else SynErr(249);
+			} else SynErr(250);
 			Expect(25);
 		}
 	}
@@ -4691,7 +4689,7 @@ out name);
 
 #line  2042 "VBNET.ATG" 
 					if (nameFound) Error("no positional argument after named argument"); 
-				} else SynErr(250);
+				} else SynErr(251);
 				Expr(
 #line  2043 "VBNET.ATG" 
 out expr);
@@ -4716,7 +4714,7 @@ out ParameterDeclarationExpression p) {
 		Expression expr = null;
 		p = null;ArrayList arrayModifiers = null;
 		
-		while (StartOf(33)) {
+		while (StartOf(32)) {
 			ParameterModifier(
 #line  2119 "VBNET.ATG" 
 mod);
@@ -4788,7 +4786,7 @@ ParamModifiers m) {
 
 #line  2773 "VBNET.ATG" 
 			m.Add(ParamModifier.Params); 
-		} else SynErr(251);
+		} else SynErr(252);
 	}
 
 	void Statement() {
@@ -4812,21 +4810,21 @@ out label);
 			
 			Expect(13);
 			Statement();
-		} else if (StartOf(34)) {
+		} else if (StartOf(33)) {
 			EmbeddedStatement(
 #line  2176 "VBNET.ATG" 
 out stmt);
 
 #line  2176 "VBNET.ATG" 
 			compilationUnit.AddChild(stmt); 
-		} else if (StartOf(35)) {
+		} else if (StartOf(34)) {
 			LocalDeclarationStatement(
 #line  2177 "VBNET.ATG" 
 out stmt);
 
 #line  2177 "VBNET.ATG" 
 			compilationUnit.AddChild(stmt); 
-		} else SynErr(252);
+		} else SynErr(253);
 
 #line  2180 "VBNET.ATG" 
 		if (stmt != null) {
@@ -4853,7 +4851,7 @@ out string name) {
 
 #line  2561 "VBNET.ATG" 
 			name = t.val; 
-		} else SynErr(253);
+		} else SynErr(254);
 	}
 
 	void EmbeddedStatement(
@@ -4930,7 +4928,7 @@ out Statement statement) {
 				exitType = ExitType.Select; 
 				break;
 			}
-			default: SynErr(254); break;
+			default: SynErr(255); break;
 			}
 
 #line  2245 "VBNET.ATG" 
@@ -5019,7 +5017,7 @@ out embeddedStatement);
 			name = t.val; 
 			if (la.kind == 24) {
 				lexer.NextToken();
-				if (StartOf(30)) {
+				if (StartOf(29)) {
 					ArgumentList(
 #line  2257 "VBNET.ATG" 
 out p);
@@ -5133,7 +5131,7 @@ out expr);
 #line  2299 "VBNET.ATG" 
 				statement = new DoLoopStatement(expr, embeddedStatement, conditionType, ConditionPosition.End);
 				
-			} else SynErr(255);
+			} else SynErr(256);
 			break;
 		}
 		case 98: {
@@ -5226,7 +5224,7 @@ out nextExpr);
 #line  2341 "VBNET.ATG" 
 				statement = new ForNextStatement(typeReference, typeName, start, end, step, embeddedStatement, nextExpressions);
 				
-			} else SynErr(256);
+			} else SynErr(257);
 			break;
 		}
 		case 92: {
@@ -5377,7 +5375,7 @@ out embeddedStatement);
 #line  2401 "VBNET.ATG" 
 				statement = ifStatement;
 				
-			} else if (StartOf(34)) {
+			} else if (StartOf(33)) {
 				EmbeddedStatement(
 #line  2404 "VBNET.ATG" 
 out embeddedStatement);
@@ -5396,7 +5394,7 @@ out embeddedStatement);
 				}
 				if (la.kind == 86) {
 					lexer.NextToken();
-					if (StartOf(34)) {
+					if (StartOf(33)) {
 						EmbeddedStatement(
 #line  2410 "VBNET.ATG" 
 out embeddedStatement);
@@ -5418,7 +5416,7 @@ out embeddedStatement);
 
 #line  2419 "VBNET.ATG" 
 				statement = ifStatement; 
-			} else SynErr(257);
+			} else SynErr(258);
 			break;
 		}
 		case 155: {
@@ -5517,7 +5515,7 @@ out resumeStatement);
 			SimpleExpr(
 #line  2454 "VBNET.ATG" 
 out expr);
-			if (StartOf(36)) {
+			if (StartOf(35)) {
 				AssignmentOperator(
 #line  2456 "VBNET.ATG" 
 out op);
@@ -5531,7 +5529,7 @@ out val);
 
 #line  2457 "VBNET.ATG" 
 				if (mustBeAssignment) Error("error in assignment."); 
-			} else SynErr(258);
+			} else SynErr(259);
 
 #line  2460 "VBNET.ATG" 
 			// a field reference expression that stands alone is a
@@ -5589,12 +5587,12 @@ out block);
 
 #line  2480 "VBNET.ATG" 
 				statement = new UsingStatement(new StatementExpression(expr), block); 
-			} else SynErr(259);
+			} else SynErr(260);
 			Expect(88);
 			Expect(188);
 			break;
 		}
-		default: SynErr(260); break;
+		default: SynErr(261); break;
 		}
 	}
 
@@ -5736,7 +5734,7 @@ out ConditionType conditionType) {
 
 #line  2642 "VBNET.ATG" 
 			conditionType = ConditionType.Until; 
-		} else SynErr(261);
+		} else SynErr(262);
 	}
 
 	void LoopControlVariable(
@@ -5852,7 +5850,7 @@ out goToStatement);
 #line  2538 "VBNET.ATG" 
 			stmt = new OnErrorStatement(new ResumeStatement(true));
 			
-		} else SynErr(262);
+		} else SynErr(263);
 	}
 
 	void GotoStatement(
@@ -5890,7 +5888,7 @@ IsResumeNext()) {
 			resumeStatement = new ResumeStatement(true); 
 		} else if (la.kind == 153) {
 			lexer.NextToken();
-			if (StartOf(37)) {
+			if (StartOf(36)) {
 				LabelName(
 #line  2595 "VBNET.ATG" 
 out label);
@@ -5898,7 +5896,7 @@ out label);
 
 #line  2595 "VBNET.ATG" 
 			resumeStatement = new ResumeStatement(label); 
-		} else SynErr(263);
+		} else SynErr(264);
 	}
 
 	void CaseClause(
@@ -5916,7 +5914,7 @@ out CaseLabel caseClause) {
 
 #line  2617 "VBNET.ATG" 
 			caseClause = new CaseLabel(); 
-		} else if (StartOf(38)) {
+		} else if (StartOf(37)) {
 			if (la.kind == 113) {
 				lexer.NextToken();
 			}
@@ -5963,7 +5961,7 @@ out CaseLabel caseClause) {
 				op = BinaryOperatorType.InEquality; 
 				break;
 			}
-			default: SynErr(264); break;
+			default: SynErr(265); break;
 			}
 			Expr(
 #line  2628 "VBNET.ATG" 
@@ -5986,7 +5984,7 @@ out sexpr);
 #line  2634 "VBNET.ATG" 
 			caseClause = new CaseLabel(expr, sexpr);
 			
-		} else SynErr(265);
+		} else SynErr(266);
 	}
 
 	void CatchClauses(
@@ -6285,30 +6283,31 @@ out blockStmt);
 			case 239: s = "invalid SimpleExpr"; break;
 			case 240: s = "invalid SimpleExpr"; break;
 			case 241: s = "invalid SimpleExpr"; break;
-			case 242: s = "invalid PrimitiveTypeName"; break;
-			case 243: s = "invalid CastTarget"; break;
-			case 244: s = "invalid InvocationOrMemberReferenceExpression"; break;
-			case 245: s = "invalid InvocationExpression"; break;
+			case 242: s = "invalid SimpleExpr"; break;
+			case 243: s = "invalid PrimitiveTypeName"; break;
+			case 244: s = "invalid CastTarget"; break;
+			case 245: s = "invalid InvocationOrMemberReferenceExpression"; break;
 			case 246: s = "invalid InvocationExpression"; break;
-			case 247: s = "invalid ComparisonExpr"; break;
-			case 248: s = "invalid Argument"; break;
-			case 249: s = "invalid QualIdentAndTypeArguments"; break;
-			case 250: s = "invalid AttributeArguments"; break;
-			case 251: s = "invalid ParameterModifier"; break;
-			case 252: s = "invalid Statement"; break;
-			case 253: s = "invalid LabelName"; break;
-			case 254: s = "invalid EmbeddedStatement"; break;
+			case 247: s = "invalid InvocationExpression"; break;
+			case 248: s = "invalid ComparisonExpr"; break;
+			case 249: s = "invalid Argument"; break;
+			case 250: s = "invalid QualIdentAndTypeArguments"; break;
+			case 251: s = "invalid AttributeArguments"; break;
+			case 252: s = "invalid ParameterModifier"; break;
+			case 253: s = "invalid Statement"; break;
+			case 254: s = "invalid LabelName"; break;
 			case 255: s = "invalid EmbeddedStatement"; break;
 			case 256: s = "invalid EmbeddedStatement"; break;
 			case 257: s = "invalid EmbeddedStatement"; break;
 			case 258: s = "invalid EmbeddedStatement"; break;
 			case 259: s = "invalid EmbeddedStatement"; break;
 			case 260: s = "invalid EmbeddedStatement"; break;
-			case 261: s = "invalid WhileOrUntil"; break;
-			case 262: s = "invalid OnErrorStatement"; break;
-			case 263: s = "invalid ResumeStatement"; break;
-			case 264: s = "invalid CaseClause"; break;
+			case 261: s = "invalid EmbeddedStatement"; break;
+			case 262: s = "invalid WhileOrUntil"; break;
+			case 263: s = "invalid OnErrorStatement"; break;
+			case 264: s = "invalid ResumeStatement"; break;
 			case 265: s = "invalid CaseClause"; break;
+			case 266: s = "invalid CaseClause"; break;
 
 			default: s = "error " + errorNumber; break;
 		}
@@ -6349,8 +6348,7 @@ out blockStmt);
 	{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,T,x,T, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
 	{x,x,T,T, T,T,T,T, T,T,T,x, x,x,T,T, T,x,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,T, x,T,T,T, T,x,T,x, x,x,x,T, T,T,T,T, T,T,T,x, T,T,T,x, T,T,T,T, T,T,x,x, x,x,T,x, T,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,T,x, x,x,x,x, x,x,x,T, x,x,x,x, x,T,x,T, x,x,x,x, T,T,x,T, x,T,T,x, x,T,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,x,x,x, x,T,x,x, x,T,x,x, x,T,x,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,T, x,x,x,x, T,x,x},
 	{x,x,T,T, T,T,T,T, T,T,T,x, x,x,T,T, T,x,x,x, x,x,T,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,T, x,T,T,T, T,x,T,x, x,x,x,T, T,T,T,T, T,T,T,x, T,T,T,x, T,T,T,T, T,T,x,x, x,x,T,x, T,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,T,x, x,x,x,x, x,x,x,T, x,x,x,x, x,T,x,T, x,x,x,x, T,T,x,T, x,T,T,x, x,T,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,x,x,x, x,T,x,x, x,T,x,x, x,T,x,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,T, x,x,x,x, T,x,x},
-	{x,x,T,T, T,T,T,T, T,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,T, x,T,T,T, T,x,T,x, x,x,x,T, T,T,T,T, T,T,T,x, T,T,T,x, T,T,T,T, T,T,x,x, x,x,T,x, T,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,T,x, x,x,x,x, x,x,x,T, x,x,x,x, x,T,x,T, x,x,x,x, T,T,x,T, x,x,T,x, x,T,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,x,x,x, x,T,x,x, x,T,x,x, x,T,x,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,T, x,x,x,x, T,x,x},
-	{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,x,T,x, x,x,x,x, x,x,x,x, x,T,x,x, x,x,x,x, x,x,x,x, T,T,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,x, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,x,x,x, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x},
+	{x,x,T,T, T,T,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,T, x,T,T,T, T,x,T,x, x,x,x,T, T,T,T,T, T,T,T,x, T,T,T,x, T,T,T,T, T,T,x,x, x,x,T,x, T,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,T,x, x,x,x,x, x,x,x,T, x,x,x,x, x,T,x,T, x,x,x,x, T,T,x,T, x,x,T,x, x,T,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,x,x,x, x,T,x,x, x,T,x,x, x,T,x,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,T, x,x,x,x, T,x,x},
 	{x,x,T,T, T,T,T,T, T,T,T,x, T,x,T,T, T,x,x,x, x,x,x,x, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,T, x,T,T,T, T,x,T,x, x,x,x,T, T,T,T,T, T,T,T,x, T,T,T,x, T,T,T,T, T,T,x,x, x,x,T,x, T,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,T,x, x,x,x,x, x,x,x,T, x,x,x,x, x,T,x,T, x,x,x,x, T,T,x,T, x,T,T,x, x,T,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,x,x,x, x,T,x,x, x,T,x,x, x,T,x,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,T, x,x,x,x, T,x,x},
 	{x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,T,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
 	{x,x,T,T, T,T,T,T, T,T,T,x, x,x,T,T, T,x,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,T, x,T,T,T, T,x,T,x, x,x,x,T, T,T,T,T, T,T,T,x, T,T,T,x, T,T,T,T, T,T,x,x, x,x,T,x, T,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,T,x, x,x,x,x, x,x,x,T, x,x,x,x, x,T,x,T, x,x,x,x, T,T,x,T, x,x,T,x, x,T,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,x,x,x, x,T,x,x, x,T,x,x, x,T,x,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,T, x,x,x,x, T,x,x},

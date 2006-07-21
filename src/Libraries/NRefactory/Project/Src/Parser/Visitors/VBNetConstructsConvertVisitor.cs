@@ -383,6 +383,9 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 			base.Visit(unaryOperatorExpression, data);
 			if (unaryOperatorExpression.Op == UnaryOperatorType.Not) {
+				if (unaryOperatorExpression.Expression is BinaryOperatorExpression) {
+					unaryOperatorExpression.Expression = new ParenthesizedExpression(unaryOperatorExpression.Expression);
+				}
 				ParenthesizedExpression pe = unaryOperatorExpression.Expression as ParenthesizedExpression;
 				if (pe != null) {
 					BinaryOperatorExpression boe = pe.Expression as BinaryOperatorExpression;
@@ -390,8 +393,6 @@ namespace ICSharpCode.NRefactory.Parser
 						boe.Op = BinaryOperatorType.ReferenceInequality;
 						ReplaceCurrentNode(pe);
 					}
-				} else if (unaryOperatorExpression.Expression is BinaryOperatorExpression) {
-					unaryOperatorExpression.Expression = new ParenthesizedExpression(unaryOperatorExpression.Expression);
 				}
 			}
 			return null;

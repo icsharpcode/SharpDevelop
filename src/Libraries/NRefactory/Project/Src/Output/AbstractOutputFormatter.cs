@@ -100,6 +100,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
+		public bool LastCharacterIsWhiteSpace {
+			get {
+				return text.Length == 0 || char.IsWhiteSpace(text[text.Length - 1]);
+			}
+		}
+		
 		public virtual void NewLine()
 		{
 			if (DoNewLine) {

@@ -351,5 +351,23 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("uint s = 0;", "Dim s As UInteger = 0");
 		}
+		
+		[Test]
+		public void BreakInWhileLoop()
+		{
+			TestStatement("while (test != null) { break; }",
+			              "While test IsNot Nothing\n" +
+			              "\tExit While\n" +
+			              "End While");
+		}
+		
+		[Test]
+		public void BreakInDoLoop()
+		{
+			TestStatement("do { break; } while (test != null);",
+			              "Do\n" +
+			              "\tExit Do\n" +
+			              "Loop While test IsNot Nothing");
+		}
 	}
 }

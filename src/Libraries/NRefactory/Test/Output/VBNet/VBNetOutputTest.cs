@@ -359,5 +359,19 @@ End Using");
 		{
 			TestStatement("Using obj\nEnd Using");
 		}
+		
+		[Test]
+		public void ContinueFor()
+		{
+			TestStatement("Continue For");
+		}
+		
+		[Test]
+		public void WithStatement()
+		{
+			TestStatement("With Ejes\n" +
+			              "\t.AddLine(New Point(Me.ClientSize.Width / 2, 0), (New Point(Me.ClientSize.Width / 2, Me.ClientSize.Height)))\n" +
+			              "End With");
+		}
 	}
 }

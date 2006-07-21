@@ -1564,7 +1564,7 @@ SimpleExpr<out Expression pexpr>
 		|	/* 11.4.2 */ "(" Expr<out expr> ")" 				(. pexpr = new ParenthesizedExpression(expr); .)
 		|	/* 11.4.4 */ Identifier					(. pexpr = new IdentifierExpression(t.val); .)
 		|	(. string val = String.Empty; .)
-			[ PrimitiveTypeName<out val> | "Object" (. val = "Object"; .) ]
+			( PrimitiveTypeName<out val> | "Object" (. val = "Object"; .) )
 			"." (. t.val = ""; .) Identifier (. pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); .)
 		|	"Me"							(. pexpr = new ThisReferenceExpression(); .)
 		|	(. Expression retExpr = null; .)

@@ -3182,10 +3182,11 @@ namespace ICSharpCode.NRefactory.Parser.Ast {
 		public PropertyDeclaration(string name, TypeReference typeReference, Modifier modifier, List<AttributeSection> attributes) : this(modifier, attributes, name, null)
 		{
 			this.TypeReference = typeReference;
-			if ((modifier & Modifier.ReadOnly) == Modifier.ReadOnly) {
-				this.GetRegion = new PropertyGetRegion(null, null);
-			} else if ((modifier & Modifier.WriteOnly) == Modifier.WriteOnly) {
+			if ((modifier & Modifier.ReadOnly) != Modifier.ReadOnly) {
 				this.SetRegion = new PropertySetRegion(null, null);
+			}
+			if ((modifier & Modifier.WriteOnly) != Modifier.WriteOnly) {
+				this.GetRegion = new PropertyGetRegion(null, null);
 			}
 		}
 		

@@ -1567,6 +1567,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(ContinueStatement continueStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Continue);
+			outputFormatter.Space();
+			switch (continueStatement.ContinueType) {
+				case ContinueType.Do:
+					outputFormatter.PrintToken(Tokens.Do);
+					break;
+				case ContinueType.For:
+					outputFormatter.PrintToken(Tokens.For);
+					break;
+				case ContinueType.While:
+					outputFormatter.PrintToken(Tokens.While);
+					break;
+				default:
+					outputFormatter.PrintToken(exitTokenStack.Peek());
+					break;
+			}
 			return null;
 		}
 		
@@ -1583,7 +1598,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(DoLoopStatement doLoopStatement, object data)
 		{
-			exitTokenStack.Push(Tokens.Do);
 			if (doLoopStatement.ConditionPosition == ConditionPosition.None) {
 				errors.Error(-1, -1, String.Format("Unknown condition position for loop : {0}.", doLoopStatement));
 			}
@@ -1591,22 +1605,28 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (doLoopStatement.ConditionPosition == ConditionPosition.Start) {
 				switch (doLoopStatement.ConditionType) {
 					case ConditionType.DoWhile:
+						exitTokenStack.Push(Tokens.Do);
 						outputFormatter.PrintToken(Tokens.Do);
 						outputFormatter.Space();
 						outputFormatter.PrintToken(Tokens.While);
 						break;
 					case ConditionType.While:
+						exitTokenStack.Push(Tokens.While);
 						outputFormatter.PrintToken(Tokens.While);
 						break;
 					case ConditionType.Until:
+						exitTokenStack.Push(Tokens.Do);
 						outputFormatter.PrintToken(Tokens.Do);
 						outputFormatter.Space();
 						outputFormatter.PrintToken(Tokens.While);
 						break;
+					default:
+						throw new InvalidOperationException();
 				}
 				outputFormatter.Space();
 				nodeTracker.TrackedVisit(doLoopStatement.Condition, null);
 			} else {
+				exitTokenStack.Push(Tokens.Do);
 				outputFormatter.PrintToken(Tokens.Do);
 			}
 			
@@ -1629,11 +1649,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					case ConditionType.While:
 					case ConditionType.DoWhile:
 						outputFormatter.PrintToken(Tokens.While);
-						outputFormatter.Space();
 						break;
 					case ConditionType.Until:
 						outputFormatter.PrintToken(Tokens.Until);
-						outputFormatter.Space();
 						break;
 				}
 				outputFormatter.Space();

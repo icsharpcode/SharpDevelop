@@ -1428,7 +1428,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(WithStatement withStatement, object data)
 		{
 			withExpressionStack.Push(withStatement);
-			nodeTracker.TrackedVisit(withStatement.Body, data);
+			nodeTracker.TrackedVisit(withStatement.Body, BraceStyle.EndOfLine);
 			withExpressionStack.Pop();
 			return null;
 		}

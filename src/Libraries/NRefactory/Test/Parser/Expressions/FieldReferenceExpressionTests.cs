@@ -90,6 +90,13 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("myTargetObject", ((IdentifierExpression)fre.TargetObject).Identifier);
 		}
 		
+		[Test]
+		public void VBNetFieldReferenceExpressionWithoutTargetTest()
+		{
+			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>(".myField");
+			Assert.AreEqual("myField", fre.FieldName);
+			Assert.IsTrue(fre.TargetObject.IsNull);
+		}
 		
 		[Test]
 		public void VBNetGenericFieldReferenceExpressionTest()

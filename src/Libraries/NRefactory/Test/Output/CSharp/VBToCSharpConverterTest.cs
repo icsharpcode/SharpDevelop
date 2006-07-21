@@ -161,6 +161,27 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void AbstractProperty1()
+		{
+			TestMember("Public MustOverride Property Salary() As Decimal",
+			           "public abstract decimal Salary {\n\tget;\n\tset;\n}");
+		}
+		
+		[Test]
+		public void AbstractProperty2()
+		{
+			TestMember("Public ReadOnly MustOverride Property Salary() As Decimal",
+			           "public abstract decimal Salary {\n\tget;\n}");
+		}
+		
+		[Test]
+		public void AbstractProperty3()
+		{
+			TestMember("Public WriteOnly MustOverride Property Salary() As Decimal",
+			           "public abstract decimal Salary {\n\tset;\n}");
+		}
+		
+		[Test]
 		public void FieldDeclaredWithDim()
 		{
 			TestMember("Dim f as String",
@@ -431,6 +452,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void NotIsNothing()
+		{
+			TestStatement("a = Not fs Is Nothing",
+			              "a = (fs != null);");
+		}
+		
+		[Test]
 		public void StaticMethodVariable()
 		{
 			TestMember(@"Private Sub Test
@@ -472,6 +500,15 @@ static int static_Test2_j = 0;");
 		{
 			TestStatement("Using sw\nEnd Using",
 			              "using (sw) {\n}");
+		}
+		
+		[Test]
+		public void WithStatementTest()
+		{
+			TestStatement("With Ejes\n" +
+			              "\t.AddLine(p1, p2)\n" +
+			              "End With",
+			              "{\n\tEjes.AddLine(p1, p2);\n}");
 		}
 	}
 }

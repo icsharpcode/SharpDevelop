@@ -49,7 +49,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			switch (style) {
 				case BraceStyle.EndOfLine:
-					Space();
+					if (!LastCharacterIsWhiteSpace) {
+						Space();
+					}
 					PrintToken(Tokens.OpenCurlyBrace);
 					NewLine();
 					++IndentationLevel;
