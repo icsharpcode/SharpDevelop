@@ -21,8 +21,8 @@ namespace NRefactoryASTGenerator
 		
 		public static void Main(string[] args)
 		{
-			string directory = "../../../Project/Src/Parser/AST/";
-			string visitorsDir = "../../../Project/Src/Parser/Visitors/";
+			string directory = "../../../Project/Src/Ast/";
+			string visitorsDir = "../../../Project/Src/Visitors/";
 			Debug.WriteLine("AST Generator running...");
 			if (!File.Exists(directory + "INode.cs")) {
 				Debug.WriteLine("did not find output directory");
