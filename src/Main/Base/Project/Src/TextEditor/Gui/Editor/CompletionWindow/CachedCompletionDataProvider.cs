@@ -44,9 +44,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		public override bool IsInsertionKey(char key)
+		public override CompletionDataProviderKeyResult ProcessKey(char key)
 		{
-			return baseProvider.IsInsertionKey(key);
+			return baseProvider.ProcessKey(key);
+		}
+		
+		public override bool InsertAction(ICompletionData data, TextArea textArea, int insertionOffset, char key)
+		{
+			return baseProvider.InsertAction(data, textArea, insertionOffset, key);
 		}
 		
 		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
@@ -57,6 +62,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				this.DefaultIndex = baseProvider.DefaultIndex;
 			}
 			return completionData;
+		}
+		
+		[Obsolete("Cannot use InsertSpace on CachedCompletionDataProvider, please set it on the underlying provider!")]
+		public new bool InsertSpace {
+			get {
+				return false;
+			}
+			set {
+				throw new NotSupportedException();
+			}
 		}
 	}
 }

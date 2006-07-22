@@ -65,9 +65,28 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// <summary>
 		/// Gets if pressing 'key' should trigger the insertion of the currently selected element.
 		/// </summary>
-		public virtual bool IsInsertionKey(char key)
+		public virtual CompletionDataProviderKeyResult ProcessKey(char key)
 		{
-			return !char.IsLetterOrDigit(key) && key != '_';
+			CompletionDataProviderKeyResult res;
+			if (key == ' ' && insertSpace) {
+				res = CompletionDataProviderKeyResult.BeforeStartKey;
+			} else if (char.IsLetterOrDigit(key) || key == '_') {
+				res = CompletionDataProviderKeyResult.NormalKey;
+			} else {
+				res = CompletionDataProviderKeyResult.InsertionKey;
+			}
+			insertSpace = false;
+			return res;
+		}
+		
+		public virtual bool InsertAction(ICompletionData data, TextArea textArea, int insertionOffset, char key)
+		{
+			if (InsertSpace) {
+				textArea.Document.Insert(insertionOffset++, " ");
+			}
+			textArea.Caret.Position = textArea.Document.OffsetToPosition(insertionOffset);
+			
+			return data.InsertAction(textArea, key);
 		}
 		
 		/// <summary>
@@ -75,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// </summary>
 		public abstract ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped);
 	}
-	
+
 	public abstract class AbstractCodeCompletionDataProvider : AbstractCompletionDataProvider
 	{
 		Hashtable insertedElements           = new Hashtable();

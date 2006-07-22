@@ -222,7 +222,8 @@ namespace CSharpBinding
 			if (c.ClassType == ClassType.Enum) {
 				CtrlSpaceCompletionDataProvider cdp = new CtrlSpaceCompletionDataProvider();
 				cdp.ForceNewExpression = true;
-				CachedCompletionDataProvider cache = new CachedCompletionDataProvider(cdp);
+				ContextCompletionDataProvider cache = new ContextCompletionDataProvider(cdp);
+				cache.activationKey = charTyped;
 				cache.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, charTyped);
 				ICompletionData[] completionData = cache.CompletionData;
 				Array.Sort(completionData);
@@ -236,12 +237,29 @@ namespace CSharpBinding
 					}
 				}
 				if (cache.DefaultIndex >= 0) {
-					if (charTyped != ' ') cache.InsertSpace = true;
+					if (charTyped != ' ') cdp.InsertSpace = true;
 					editor.ShowCompletionWindow(cache, charTyped);
 					return true;
 				}
 			}
 			return false;
+		}
+		
+		private class ContextCompletionDataProvider : CachedCompletionDataProvider
+		{
+			internal char activationKey;
+			
+			internal ContextCompletionDataProvider(ICompletionDataProvider baseProvider) : base(baseProvider)
+			{
+			}
+			
+			public override CompletionDataProviderKeyResult ProcessKey(char key)
+			{
+				if (key == '=' && activationKey == '=')
+					return CompletionDataProviderKeyResult.BeforeStartKey;
+				activationKey = '\0';
+				return base.ProcessKey(key);
+			}
 		}
 		#endregion
 		
@@ -276,6 +294,13 @@ namespace CSharpBinding
 					return ShowNewCompletion(editor);
 				case "case":
 					return DoCaseCompletion(editor);
+				case "return":
+					IMember m = GetCurrentMember(editor);
+					if (m != null) {
+						return ProvideContextCompletion(editor, m.ReturnType, ' ');
+					} else {
+						goto default;
+					}
 				default:
 					return base.HandleKeyword(editor, word);
 			}
@@ -291,6 +316,17 @@ namespace CSharpBinding
 				return true;
 			}
 			return false;
+		}
+		
+		IMember GetCurrentMember(SharpDevelopTextAreaControl editor)
+		{
+			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
+			NRefactoryResolver r = new NRefactoryResolver(SupportedLanguage.CSharp);
+			if (r.Initialize(editor.FileName, caret.Line + 1, caret.Column + 1)) {
+				return r.CallingMember;
+			} else {
+				return null;
+			}
 		}
 		
 		#region "case"-keyword completion

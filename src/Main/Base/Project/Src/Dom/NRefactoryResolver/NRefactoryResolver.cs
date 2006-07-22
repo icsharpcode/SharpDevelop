@@ -158,6 +158,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (cu != null) {
 				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
 			}
+			callingMember = GetCurrentMember();
 			return true;
 		}
 		
@@ -282,7 +283,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			lookupTableVisitor = new LookupTableVisitor(languageProperties.NameComparer);
 			
-			callingMember = GetCurrentMember();
 			if (callingMember != null) {
 				CompilationUnit cu = ParseCurrentMemberAsCompilationUnit(fileContent);
 				if (cu != null) {
@@ -498,8 +498,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public TextReader ExtractCurrentMethod(string fileContent)
 		{
-			if (callingMember == null)
-				callingMember = GetCurrentMember();
 			if (callingMember == null)
 				return null;
 			return ExtractMethod(fileContent, callingMember, language, caretLine);
