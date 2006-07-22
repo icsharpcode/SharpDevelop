@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			cmd.Tag = member;
 			list.Add(cmd);
 			
-			if (member is IField) {
+			if (member is IField && member.DeclaringType.ClassType != ClassType.Enum) {
 				IProperty foundProperty = FindReferencesAndRenameHelper.FindProperty(member as IField);
 				if (foundProperty != null) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToProperty}", GotoTagMember);
