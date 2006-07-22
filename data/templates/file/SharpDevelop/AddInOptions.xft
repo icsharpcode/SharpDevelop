@@ -2,13 +2,13 @@
 <Template author="Mike Krueger" version="1.0">
 	
 	<Config
-		  name        = "AddIn Options"
+		  name        = "${res:Templates.File.#Develop.AddInOptions.Name}"
 		  icon        = "C#.File.FullFile"
 		  category    = "#Develop"
 		  defaultname = "AddInOptions${Number}.cs"
 		  language    = "C#"/>
 	 
-	<Description>This class provides an easy access to persistent properties.</Description>
+	<Description>${res:Templates.File.#Develop.AddInOptions.Description}</Description>
 	
 	<!-- 
 	Special new file templates:
@@ -28,7 +28,7 @@ namespace ${StandardNamespace}
 {
 	public class AddInOptions
 	{
-		public static readonly string OptionsProperty = "${StandardNamespace}.Options";
+		public const string OptionsProperty = "${StandardNamespace}.Options";
 		
 		static Properties properties;
 		
@@ -38,8 +38,8 @@ namespace ${StandardNamespace}
 		}
 		
 		public static event PropertyChangedEventHandler PropertyChanged {
-			add    { Properties.PropertyChanged += value; }
-			remove { Properties.PropertyChanged -= value; }
+			add    { properties.PropertyChanged += value; }
+			remove { properties.PropertyChanged -= value; }
 		}
 		
 //		public static string MyStringProperty {

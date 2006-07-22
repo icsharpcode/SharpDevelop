@@ -136,7 +136,7 @@ namespace NRefactoryDemo
 			// 
 			// applyTransformation
 			// 
-			this.applyTransformation.Location = new System.Drawing.Point(25, 105);
+			this.applyTransformation.Location = new System.Drawing.Point(13, 105);
 			this.applyTransformation.Name = "applyTransformation";
 			this.applyTransformation.Size = new System.Drawing.Size(96, 23);
 			this.applyTransformation.TabIndex = 3;

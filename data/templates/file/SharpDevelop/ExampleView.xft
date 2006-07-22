@@ -32,7 +32,6 @@ namespace ${StandardNamespace}
 	/// </summary>
 	public class ${FileNameWithoutExtension} : AbstractViewContent
 	{
-#region AbstractViewContent requirements
 		/// <summary>
 		/// The <see cref="System.Windows.Forms.Control"/> representing the view
 		/// </summary>
@@ -67,7 +66,7 @@ namespace ${StandardNamespace}
 		/// </summary>
 		public override void RedrawContent()
 		{
-			// TODO: Refresh the whole view control here, renew all resource strings whatever
+			// TODO: Refresh the whole view control here, renew all resource strings
 			//       Note that you do not need to recreate the control.
 		}
 		
@@ -79,7 +78,6 @@ namespace ${StandardNamespace}
 			// TODO: Clean up resources in this method
 			// Control.Dispose();
 		}
-#endregion
 	}
 	
 }

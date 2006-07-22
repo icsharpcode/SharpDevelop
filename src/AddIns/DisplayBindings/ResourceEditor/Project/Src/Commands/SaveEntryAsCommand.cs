@@ -39,16 +39,16 @@ namespace ResourceEditor
 			sdialog.FileName = key;
 			
 			if (item.ResourceValue is Bitmap) {
-				sdialog.Filter 		= "Image files (*.png)|*.png";
+				sdialog.Filter 		= StringParser.Parse("${res:SharpDevelop.FileFilter.ImageFiles} (*.png)|*.png");
 				sdialog.DefaultExt 	= ".png";
 			} else if (item.ResourceValue is Icon) {
-				sdialog.Filter 		= "Icon files (*.ico)|*.ico";
+				sdialog.Filter 		= StringParser.Parse("${res:SharpDevelop.FileFilter.Icons}|*.ico");
 				sdialog.DefaultExt 	= ".ico";
 			} else if (item.ResourceValue is Cursor) {
-				sdialog.Filter 		= "Cursor files (*.cur)|*.cur";
+				sdialog.Filter 		= StringParser.Parse("${res:SharpDevelop.FileFilter.CursorFiles} (*.cur)|*.cur");
 				sdialog.DefaultExt 	= ".cur";
 			} else if (item.ResourceValue is byte[]){
-				sdialog.Filter      = "Binary files (*.*)|*.*";
+				sdialog.Filter      = StringParser.Parse("${res:SharpDevelop.FileFilter.BinaryFiles} (*.*)|*.*");
 				sdialog.DefaultExt  = ".bin";
 			} else {
 				return;
@@ -75,7 +75,7 @@ namespace ResourceEditor
 					fstr.Close();
 				}
 			} catch(Exception ex) {
-				MessageBox.Show(ex.Message, "Can't save resource to " + sdialog.FileName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation); 
+				MessageBox.Show(ex.Message, "Can't save resource to " + sdialog.FileName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			}
 		}
 	}

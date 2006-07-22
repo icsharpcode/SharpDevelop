@@ -23,7 +23,7 @@ namespace NRefactoryExample
 			// add constructor accepting the wrapped object and the field holding the object
 			FieldDeclaration fd = new FieldDeclaration(null, // no attributes
 			                                           new TypeReference(typeDeclaration.Name),
-			                                           Modifier.Private);
+			                                           Modifiers.Private);
 			fd.Fields.Add(new VariableDeclaration("wrappedObject"));
 			typeDeclaration.AddChild(fd);
 			
@@ -33,7 +33,7 @@ namespace NRefactoryExample
 				typeDeclaration.Name = typeDeclaration.Name.Substring(1);
 			}
 			ConstructorDeclaration cd = new ConstructorDeclaration(typeDeclaration.Name,
-			                                                       Modifier.Public,
+			                                                       Modifiers.Public,
 			                                                       new List<ParameterDeclarationExpression>(),
 			                                                       null);
 			cd.Parameters.Add(new ParameterDeclarationExpression(fd.TypeReference,
@@ -73,11 +73,11 @@ namespace NRefactoryExample
 			base.VisitMethodDeclaration(methodDeclaration, data); // visit parameters
 			methodDeclaration.Attributes.Clear();
 			methodDeclaration.Body = new BlockStatement();
-			methodDeclaration.Modifier = Modifier.Public;
+			methodDeclaration.Modifier = Modifiers.Public;
 			
 			if (methodDeclaration.Parameters.Count > 0) {
 				ParameterDeclarationExpression lastParameter = methodDeclaration.Parameters[methodDeclaration.Parameters.Count - 1];
-				if (lastParameter.ParamModifier == ParamModifier.Out) {
+				if (lastParameter.ParamModifier == ParameterModifiers.Out) {
 					methodDeclaration.TypeReference = lastParameter.TypeReference;
 					methodDeclaration.Parameters.RemoveAt(methodDeclaration.Parameters.Count - 1);
 					
@@ -105,7 +105,7 @@ namespace NRefactoryExample
 			InvocationExpression ie = new InvocationExpression(methodName, null);
 			foreach (ParameterDeclarationExpression param in method.Parameters) {
 				Expression expr = new IdentifierExpression(param.ParameterName);
-				if (param.ParamModifier == ParamModifier.Ref) {
+				if (param.ParamModifier == ParameterModifiers.Ref) {
 					expr = new DirectionExpression(FieldDirection.Ref, expr);
 				}
 				ie.Arguments.Add(expr);

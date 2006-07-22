@@ -126,7 +126,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			IProject sourceProject = ProjectService.CurrentProject;
 			string targetProjectDirectory = sourceProject.Directory + ".ConvertedTo" + TargetLanguageName;
 			if (Directory.Exists(targetProjectDirectory)) {
-				MessageService.ShowMessageFormatted("${res:ICSharpCode.SharpDevelop.Commands.Convert.TargetAlreadyExists}", targetProjectDirectory);
+				MessageService.ShowMessageFormatted(translatedTitle, "${res:ICSharpCode.SharpDevelop.Commands.Convert.TargetAlreadyExists}", targetProjectDirectory);
 				return;
 			}
 			conversionLog.Append(ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.Convert.SourceDirectory")).Append(": ");

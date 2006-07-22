@@ -47,12 +47,12 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			sortOrder = 0;
 			this.project = project;
 			this.c       = c;
-			Text         = "Base types";
+			Text         = ResourceService.GetString("MainWindow.Windows.ClassBrowser.BaseTypes");
 			
 			OpenedIcon = "ProjectBrowser.Folder.Open";
 			ClosedIcon = "ProjectBrowser.Folder.Closed";
 			
-			Nodes.Add(new TreeNode(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Pads.ClassScout.LoadingNode}")));
+			Nodes.Add(new TreeNode(ResourceService.GetString("ICSharpCode.SharpDevelop.Gui.Pads.ClassScout.LoadingNode")));
 		}
 		
 		protected override void Initialize()

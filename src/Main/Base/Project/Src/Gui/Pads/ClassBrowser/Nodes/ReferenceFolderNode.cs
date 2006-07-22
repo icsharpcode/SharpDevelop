@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			OpenedIcon = "ProjectBrowser.ReferenceFolder.Open";
 			ClosedIcon = "ProjectBrowser.ReferenceFolder.Closed";
 			
-			Nodes.Add(new TreeNode(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Pads.ClassScout.LoadingNode}")));
+			Nodes.Add(new TreeNode(ResourceService.GetString("ICSharpCode.SharpDevelop.Gui.Pads.ClassScout.LoadingNode")));
 		}
 		
 		protected override void Initialize()
