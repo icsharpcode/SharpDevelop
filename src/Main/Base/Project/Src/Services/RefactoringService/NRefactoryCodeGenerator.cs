@@ -8,6 +8,7 @@
 using System;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
@@ -53,6 +54,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public override IOutputAstVisitor CreateOutputVisitor()
 		{
 			return new VBNetOutputVisitor();
+		}
+		
+		public override PropertyDeclaration CreateProperty(IField field, bool createGetter, bool createSetter)
+		{
+			string propertyName = GetPropertyName(field.Name);
+			if (string.Equals(propertyName, field.Name, StringComparison.InvariantCultureIgnoreCase)) {
+				FindReferencesAndRenameHelper.RenameMember(field, "m_" + field.Name);
+				field = new DefaultField(field.ReturnType, "m_" + field.Name,
+				                         field.Modifiers, field.Region, field.DeclaringType);
+			}
+			return base.CreateProperty(field, createGetter, createSetter);
 		}
 	}
 }
