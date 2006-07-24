@@ -45,10 +45,10 @@ namespace SharpReportCore {
 		
 		#endregion
 		
-		protected string FormatOutput(string valueToFormat,string formatString,
+		protected string FormatOutput(string valueToFormat,string format,
 		                              TypeCode typeCode, string nullValue ){
 			
-			return standartFormatter.FormatItem(valueToFormat,formatString,
+			return standartFormatter.FormatItem(valueToFormat,format,
 			                                        typeCode,nullValue);			
 		}
 		

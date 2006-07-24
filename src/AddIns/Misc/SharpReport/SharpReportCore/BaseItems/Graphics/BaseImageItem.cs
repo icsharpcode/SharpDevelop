@@ -57,6 +57,9 @@ namespace SharpReportCore {
 		#region overrides
 		
 		public override void Render(ReportPageEventArgs rpea) {
+			if (rpea == null) {
+				throw new ArgumentNullException("rpea");
+			}
 			base.Render(rpea);
 			Graphics g = rpea.PrintPageEventArgs.Graphics;
 			if (this.image != null) {

@@ -138,7 +138,7 @@ namespace SharpReport.Designer{
 			visualFooter.ReportItemsHandling += new ItemDragDropEventHandler (OnAddReportItem);
 		}
 		
-		private Rectangle SectionClientArea (SharpReport.Designer.ReportSectionControlBase ctrl) {
+		private  Rectangle SectionClientArea (SharpReport.Designer.ReportSectionControlBase ctrl) {
 			Rectangle rect = new Rectangle();
 			rect.X = ctrl.Location.X;
 			rect.Y = ctrl.Location.Y + ctrl.Head.Height;
@@ -188,25 +188,26 @@ namespace SharpReport.Designer{
 			baseReportItem.Name = nameService.CreateName(itemCollection,
 			                                             baseReportItem.Name);
 			
-			System.Console.WriteLine("\t {0}",baseReportItem.Name);
-			System.Console.WriteLine("\tFont in base {0}",baseReportItem.Font.ToString());
-			System.Console.WriteLine("\t{0}",this.reportSettings.DefaultFont.ToString());
+			baseReportItem.Font = this.reportSettings.DefaultFont;
+		
+//			System.ComponentModel.TypeConverter converter =
+//				System.ComponentModel.TypeDescriptor.GetConverter( typeof(Font));
 			
-			System.ComponentModel.TypeConverter converter =
-System.ComponentModel.TypeDescriptor.GetConverter( typeof(Font));
-			string s1 = (string)converter.ConvertTo((this.reportSettings.DefaultFont),typeof(string));
-			string s2 = converter.ConvertToInvariantString(this.reportSettings.DefaultFont);
-			System.Console.WriteLine("{0}",s1);
-			System.Console.WriteLine("{0}",s2);
+//			string s1 = (string)converter.ConvertTo((this.reportSettings.DefaultFont),typeof(string));
+//			string s2 = converter.ConvertToInvariantString(this.reportSettings.DefaultFont);
+//			System.Console.WriteLine("ConvertTo - {0}",s1);
+//			System.Console.WriteLine("ConvertToInvariantString {0}",s2);
 			
-			Font f1 = (Font)converter.ConvertFromString(s1);
-			Font f2 = (Font)converter.ConvertFromInvariantString(s2);
-			Font f3 = new Font (f1, FontStyle.Bold |FontStyle.Underline);
-			string s3 = converter.ConvertToInvariantString(f3);
-			System.Console.WriteLine("{0}",s3);
-			System.Console.WriteLine("!!");
-			System.Console.WriteLine("{0} / {1}",f1.Name,f2.Size);
-			System.Console.WriteLine("{0} / {1}",f2.Name,f2.Size);
+//			Font f1 = (Font)converter.ConvertFromString(s1);
+//			Font f2 = (Font)converter.ConvertFromInvariantString(s2);
+//			Font f3 = new Font (f1, FontStyle.Bold |FontStyle.Underline);
+//			string s3 = converter.ConvertToInvariantString(f3);
+//			System.Console.WriteLine("ConvertToInvariantString {0}",s3);
+			
+//			System.Console.WriteLine("!!");
+//			System.Console.WriteLine("{0} / {1}",f1.Name,f2.Size);
+//			System.Console.WriteLine("{0} / {1}",f2.Name,f2.Size);
+	
 			if (baseReportItem.Parent == this.selectedSection) {
 				baseReportItem.Location = new Point(iddea.ItemAtPoint.X,iddea.ItemAtPoint.Y);
 			} else {

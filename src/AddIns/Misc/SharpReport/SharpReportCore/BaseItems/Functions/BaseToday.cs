@@ -28,6 +28,9 @@ namespace SharpReportCore {
 		}
 		
 		public override void Render(ReportPageEventArgs rpea) {
+			if (rpea == null) {
+				throw new ArgumentNullException("rpea");
+			}
 			base.Render(rpea);
 			
 			string f;

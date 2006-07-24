@@ -23,11 +23,11 @@ namespace SharpReportCore {
 		
 		//TODO why not TypeCode tc = Type.GetTypeCode( Type.GetType(this.dataType));
 		
-		public string FormatItem (string valueToFormat,string formatString,
+		public string FormatItem (string valueToFormat,string format,
 		                         TypeCode typeCode,string nullValue) {
 			string retValue = String.Empty;
 			
-			if (String.IsNullOrEmpty(formatString)) {
+			if (String.IsNullOrEmpty(format)) {
 				retValue = valueToFormat;
 				return retValue;
 			}
@@ -35,16 +35,16 @@ namespace SharpReportCore {
 			switch (typeCode) {
 				case TypeCode.Int16:
 				case TypeCode.Int32:
-					retValue = IntegerValues (valueToFormat,formatString);
+					retValue = IntegerValues (valueToFormat,format);
 					break;
 				case TypeCode.DateTime:
-					retValue = DateValues(valueToFormat,formatString);
+					retValue = DateValues(valueToFormat,format);
 					break;
 				case TypeCode.Boolean:
-					retValue = BoolValue (valueToFormat,formatString);
+					retValue = BoolValue (valueToFormat,format);
 					break;
 				case TypeCode.Decimal:
-					retValue = DecimalValues (valueToFormat,formatString);
+					retValue = DecimalValues (valueToFormat,format);
 					break;
 					
 				case TypeCode.Double:

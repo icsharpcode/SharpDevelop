@@ -36,9 +36,9 @@ namespace SharpReportCore {
 		}
 		
 		
-		public override GraphicsPath CreatePath(RectangleF rect){
+		public override GraphicsPath CreatePath(RectangleF rectangle){
 			GraphicsPath path1 = new GraphicsPath();
-			path1.AddRectangle(rect);
+			path1.AddRectangle(rectangle);
 			return path1;
 		}
 

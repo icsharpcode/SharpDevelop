@@ -21,17 +21,12 @@
 
 using System;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Globalization;
 using System.Reflection;
-using System.Text;
-using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
-
-using SharpReportCore;
 
 namespace SharpReportCore{
 	/// <summary>
@@ -256,6 +251,17 @@ namespace SharpReportCore{
 				XmlIgnoreAttribute xmlIgnoreAttribute = (XmlIgnoreAttribute)attributes[typeof(XmlIgnoreAttribute)];
 				DefaultValueAttribute defaultValue = (DefaultValueAttribute)attributes[typeof(DefaultValueAttribute)];
 				
+				//CHeck for
+				//	[XmlAttribute("titleFont")]
+				//public string TestName {
+				
+//				XmlAttributeAttribute test = (XmlAttributeAttribute)attributes[typeof(XmlAttributeAttribute)];
+//				if (test != null) {
+//					
+//					System.Windows.Forms.MessageBox.Show (test.AttributeName   + "found");
+//				}
+				
+				
 				if (xmlIgnoreAttribute == null){
 					if (p.CanWrite) {
 						if (defaultValue == null) {
@@ -272,6 +278,7 @@ namespace SharpReportCore{
 					}
 				}
 			}
+//			System.Windows.Forms.MessageBox.Show("fertig");
 		}
 		
 		
@@ -641,7 +648,15 @@ namespace SharpReportCore{
 		#endregion
 		
 		#region OutPut Settings
+		string bla;
 		
+		[XmlAttributeAttribute("titleFont")]
+		public string TestName {
+			get {
+				return "Name = testName";
+			}
+			set { bla = value;}
+		}
 		
 		[Category("Output Settings")]
 		public Font DefaultFont {

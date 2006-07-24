@@ -6,16 +6,12 @@
 // </file>
 
 using System;
-using System.Drawing.Printing;
-using System.Xml;
-using System.Collections;
 using System.Drawing;
-using System.Reflection;
-using System.Windows.Forms;
-using System.ComponentModel;
-using System.Text.RegularExpressions;
 using System.Globalization;
-
+using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using System.Xml;
 
 namespace SharpReportCore {
 	/// <summary>
@@ -143,19 +139,23 @@ namespace SharpReportCore {
 			}
 			return Return;
 		}
-
 		
 		public static void BuildFontElement (Font font, XmlElement fontElement) {
+
+			System.ComponentModel.TypeConverter converter =
+				System.ComponentModel.TypeDescriptor.GetConverter( typeof(Font));
+			string fontString = converter.ConvertToInvariantString(font);
+			
 			XmlAttribute att = fontElement.OwnerDocument.CreateAttribute ("value");
-			string str = XmlFormReader.TypedValueToString (font,CultureInfo.InvariantCulture).Replace (",",".");
-			string fontString = str.Replace (';',',');
 			att.InnerText = fontString;
 			fontElement.Attributes.Append(att);
 		}
 		
+		
 		public static Font MakeFont(string font) {
-			string s = font.Replace(';',',');
-			return (Font)XmlFormReader.StringToTypedValue(s,typeof(Font),CultureInfo.InstalledUICulture);
+			System.ComponentModel.TypeConverter converter =
+				System.ComponentModel.TypeDescriptor.GetConverter( typeof(Font));
+			return (Font)converter.ConvertFromInvariantString(font);
 		}
 		/// <summary>
 		/// Sets a property called propertyName in object <code>o</code> to <code>val</code>. This method performs
@@ -202,8 +202,8 @@ namespace SharpReportCore {
 						propertyInfo.SetValue(o, Color.FromName(color), null);
 					}
 				} else if (propertyInfo.PropertyType == typeof(Font)) {
-					Font fnt = (Font)XmlFormReader.StringToTypedValue (value,typeof(Font),
-					                                                   CultureInfo.InvariantCulture);
+					Font fnt = XmlFormReader.MakeFont(value);
+					
 					if (fnt != null) {
 						propertyInfo.SetValue(o,fnt,null);
 					} else {

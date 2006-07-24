@@ -62,6 +62,9 @@ namespace SharpReportCore {
 		}
 		
 		protected XmlNodeList BuildControlList(XmlElement section) {
+			if (section == null) {
+				throw new ArgumentNullException("section");
+			}
 			return section.SelectNodes (this.nodesQuery);
 		}
 		

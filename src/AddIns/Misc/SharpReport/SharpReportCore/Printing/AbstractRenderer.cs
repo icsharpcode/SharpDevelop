@@ -208,7 +208,7 @@ namespace SharpReportCore {
 		
 		protected Rectangle MeasureReportHeader (PrintPageEventArgs ppea) {
 			if (ppea == null) {
-				throw new ArgumentNullException("rpea");
+				throw new ArgumentNullException("ppea");
 			}
 			
 			Rectangle rect = new Rectangle();
