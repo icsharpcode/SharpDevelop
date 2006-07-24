@@ -36,7 +36,6 @@ namespace ReportSamples
 					engine.SectionRendering += new EventHandler<SectionRenderEventArgs>(UnboundPrinting);
 					engine.SectionRendered += new EventHandler<SectionRenderEventArgs>(UnboundPrinted);
 					engine.PreviewStandartReport(dg.FileName.ToString());
-					
 				}
 			}
 			catch(Exception er)
