@@ -744,7 +744,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					if (specialCommentHash.ContainsKey(tag)) {
 						Location p = new Location(Col, Line);
 						string comment = ch + ReadToEndOfLine();
-						tagComments.Add(new TagComment(tag, comment, p, new Location(Col, Line)));
+						this.TagComments.Add(new TagComment(tag, comment, p, new Location(Col, Line)));
 						sb.Append(comment);
 						break;
 					}
@@ -755,7 +755,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		void ReadSingleLineComment(CommentType commentType)
 		{
-			if (skipAllComments) {
+			if (this.SkipAllComments) {
 				SkipToEndOfLine();
 			} else {
 				specialTracker.StartComment(commentType, new Location(Col, Line));
@@ -767,7 +767,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		void ReadMultiLineComment()
 		{
 			int nextChar;
-			if (skipAllComments) {
+			if (this.SkipAllComments) {
 				while ((nextChar = ReaderRead()) != -1) {
 					char ch = (char)nextChar;
 					if (ch == '*' && ReaderPeek() == '/') {

@@ -34,7 +34,7 @@ partial class Parser : AbstractParser
 -->errors
 			default: s = "error " + errorNumber; break;
 		}
-		errors.Error(line, col, s);
+		this.Errors.Error(line, col, s);
 	}
 	
 	private bool StartOf(int s)

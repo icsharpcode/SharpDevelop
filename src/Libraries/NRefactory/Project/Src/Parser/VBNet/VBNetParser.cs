@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public void Error(string s)
 		{
 			if (errDist >= MinErrDist) {
-				errors.Error(la.line, la.col, s);
+				this.Errors.Error(la.line, la.col, s);
 			}
 			errDist = 0;
 		}

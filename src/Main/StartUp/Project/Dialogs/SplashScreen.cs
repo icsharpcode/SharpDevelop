@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop
 			#else
 			string versionText = VersionText;
 			#endif
-			using (Stream stream = Assembly.GetEntryAssembly().GetManifestResourceStream("Resources.SplashScreen.jpg")) {
+			using (Stream stream = typeof(SplashScreenForm).Assembly.GetManifestResourceStream("Resources.SplashScreen.jpg")) {
 				bitmap = new Bitmap(stream);
 			}
 			this.ClientSize = bitmap.Size;

@@ -6,7 +6,7 @@
        addInManagerHidden = "true">
 	
 	<Manifest>
-		<Identity name = "SharpDevelop" version = "@EntryAssemblyVersion"/>
+		<Identity name = "SharpDevelop" version = "@SharpDevelopCoreVersion"/>
 	</Manifest>
 	
 	<Runtime>

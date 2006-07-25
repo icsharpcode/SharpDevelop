@@ -2432,7 +2432,7 @@ out Statement stmt) {
 		BlockStatement blockStmt = new BlockStatement();
 		blockStmt.StartLocation = t.EndLocation;
 		compilationUnit.BlockStart(blockStmt);
-		if (!parseMethodContents) lexer.SkipCurrentBlock(0);
+		if (!ParseMethodBodies) lexer.SkipCurrentBlock(0);
 		
 		while (StartOf(20)) {
 			Statement();
@@ -5238,7 +5238,7 @@ out t);
 
 			default: s = "error " + errorNumber; break;
 		}
-		errors.Error(line, col, s);
+		this.Errors.Error(line, col, s);
 	}
 	
 	private bool StartOf(int s)

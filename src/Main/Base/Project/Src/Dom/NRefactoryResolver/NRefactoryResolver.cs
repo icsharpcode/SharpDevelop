@@ -976,7 +976,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		LocalLookupVariable SearchVariable(string name)
 		{
-			if (!lookupTableVisitor.Variables.ContainsKey(name))
+			if (lookupTableVisitor == null || !lookupTableVisitor.Variables.ContainsKey(name))
 				return null;
 			List<LocalLookupVariable> variables = lookupTableVisitor.Variables[name];
 			if (variables.Count <= 0) {

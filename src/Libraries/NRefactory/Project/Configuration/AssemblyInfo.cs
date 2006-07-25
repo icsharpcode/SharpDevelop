@@ -9,7 +9,7 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: CLSCompliant(false)]
+[assembly: CLSCompliant(true)]
 [assembly: StringFreezing()]
 
 // Information about this assembly is defined by the following

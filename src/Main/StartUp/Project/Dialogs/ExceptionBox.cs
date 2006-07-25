@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop
 			exceptionTextBox.Text = getClipboardString();
 			
 			try {
-				ResourceManager resources = new ResourceManager("Resources.BitmapResources", Assembly.GetEntryAssembly());
+				ResourceManager resources = new ResourceManager("Resources.BitmapResources", typeof(ExceptionBox).Assembly);
 				this.pictureBox.Image = (Bitmap)resources.GetObject("ErrorReport");
 			} catch {}
 		}
@@ -67,7 +67,9 @@ namespace ICSharpCode.SharpDevelop
 		string getClipboardString()
 		{
 			string str = "";
-			str += ".NET Version        : " + Environment.Version.ToString() + Environment.NewLine;
+			Version v = typeof(ExceptionBox).Assembly.GetName().Version;
+			str += "SharpDevelop Version : " + v.ToString() + Environment.NewLine;
+			str += ".NET Version         : " + Environment.Version.ToString() + Environment.NewLine;
 			str += "OS Version           : " + Environment.OSVersion.ToString() + Environment.NewLine;
 			string cultureName = null;
 			try {
@@ -91,8 +93,8 @@ namespace ICSharpCode.SharpDevelop
 				}
 			} catch {}
 			str += "Working Set Memory   : " + (Environment.WorkingSet / 1024) + "kb" + Environment.NewLine;
-			Version v = Assembly.GetEntryAssembly().GetName().Version;
-			str += "SharpDevelop Version : " + v.Major + "." + v.Minor + "." + v.Build + "." + v.Revision + Environment.NewLine;
+			str += "GC Heap Memory       : " + (GC.GetTotalMemory(false) / 1024) + "kb" + Environment.NewLine;
+			
 			str += Environment.NewLine;
 			
 			if (message != null) {
@@ -122,8 +124,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			CopyInfoToClipboard();
 			
-			Version v = Assembly.GetEntryAssembly().GetName().Version;
-			StartUrl("http://www.icsharpcode.net/OpenSource/SD/BugReporting.aspx?version=" + v.Major + "." + v.Minor + "." + v.Revision + "." + v.Build);
+			StartUrl("http://www.icsharpcode.net/OpenSource/SD/BugReporting.aspx?version=" + RevisionClass.Version + "." + RevisionClass.Revision);
 			
 			/*
 			string text = "This version of SharpDevelop is an internal build, " +

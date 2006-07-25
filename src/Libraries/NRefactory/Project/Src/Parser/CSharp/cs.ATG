@@ -1187,7 +1187,7 @@ Block<out Statement stmt> /* not BlockStatement because of EmbeddedStatement */
 	"{" (. BlockStatement blockStmt = new BlockStatement();
 	       blockStmt.StartLocation = t.EndLocation;
 	       compilationUnit.BlockStart(blockStmt);
-	       if (!parseMethodContents) lexer.SkipCurrentBlock(0);
+	       if (!ParseMethodBodies) lexer.SkipCurrentBlock(0);
 	    .)
 	{ Statement }
 	"}" (. 

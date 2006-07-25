@@ -35,9 +35,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public AboutSharpDevelopTabPage()
 		{
-			Version v = Assembly.GetEntryAssembly().GetName().Version;
-			versionTextBox.Text = v.Major + "." + v.Minor + "." + v.Build;
-			buildTextBox.Text   = v.Revision.ToString();
+			versionTextBox.Text = RevisionClass.Version;
+			buildTextBox.Text   = RevisionClass.Revision;
 			
 			versionLabel.Location = new System.Drawing.Point(8, 8);
 			versionLabel.Text = ResourceService.GetString("Dialog.About.label1Text");

@@ -47,7 +47,7 @@ internal class Parser : AbstractParser
 -->errors
 			default: s = "error " + errorNumber; break;
 		}
-		errors.Error(line, col, s);
+		this.Errors.Error(line, col, s);
 	}
 
 } // end Parser

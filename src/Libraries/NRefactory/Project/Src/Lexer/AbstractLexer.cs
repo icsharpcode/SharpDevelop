@@ -23,6 +23,7 @@ namespace ICSharpCode.NRefactory.Parser
 		int col  = 1;
 		int line = 1;
 		
+		[CLSCompliant(false)]
 		protected Errors errors = new Errors();
 		
 		protected Token lastToken = null;
@@ -31,14 +32,15 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		string[]  specialCommentTags = null;
 		protected Hashtable specialCommentHash  = null;
-		protected List<TagComment> tagComments  = new List<TagComment>();
+		List<TagComment> tagComments  = new List<TagComment>();
 		protected StringBuilder sb              = new StringBuilder();
+		[CLSCompliant(false)]
 		protected SpecialTracker specialTracker = new SpecialTracker();
 		
 		// used for the original value of strings (with escape sequences).
 		protected StringBuilder originalValue = new StringBuilder();
 		
-		protected bool skipAllComments = false;
+		bool skipAllComments = false;
 		
 		public bool SkipAllComments {
 			get {

@@ -103,9 +103,9 @@ namespace ICSharpCode.Core
 			if (version == null || version.Length == 0)
 				return new Version(0,0,0,0);
 			if (version.StartsWith("@")) {
-				if (version == "@EntryAssemblyVersion") {
+				if (version == "@SharpDevelopCoreVersion") {
 					if (entryVersion == null)
-						entryVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+						entryVersion = new Version(RevisionClass.Version + "." + RevisionClass.Revision);
 					return entryVersion;
 				}
 				if (hintPath != null) {

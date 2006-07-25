@@ -15,7 +15,9 @@ namespace ICSharpCode.TextEditor.Document
 	/// </summary>
 	public class AbstractSegment : ISegment
 	{
+		[CLSCompliant(false)]
 		protected int offset = -1;
+		[CLSCompliant(false)]
 		protected int length = -1;
 		
 		#region ICSharpCode.TextEditor.Document.ISegment interface implementation

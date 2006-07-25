@@ -42,16 +42,18 @@ namespace ICSharpCode.Core
 		
 		static StringParser()
 		{
-			Assembly entryAssembly = Assembly.GetEntryAssembly();
 			properties         = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 			stringTagProviders = new Dictionary<string, IStringTagProvider>(StringComparer.InvariantCultureIgnoreCase);
 			propertyObjects    = new Dictionary<string, object>();
+			
 			// entryAssembly == null might happen in unit test mode
+			Assembly entryAssembly = Assembly.GetEntryAssembly();
 			if (entryAssembly != null) {
 				string exeName = entryAssembly.Location;
 				propertyObjects["exe"] = FileVersionInfo.GetVersionInfo(exeName);
 			}
 			properties["USER"] = Environment.UserName;
+			properties["Version"] = RevisionClass.Version + "." + RevisionClass.Revision;
 			
 			// Maybe test for Mono?
 			if (IntPtr.Size == 4) {

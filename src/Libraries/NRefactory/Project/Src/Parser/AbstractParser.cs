@@ -10,20 +10,21 @@ using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1708:IdentifiersShouldDifferByMoreThanCase")]
 	public abstract class AbstractParser : IParser
 	{
 		protected const int    MinErrDist   = 2;
 		protected const string ErrMsgFormat = "-- line {0} col {1}: {2}";  // 0=line, 1=column, 2=text
 		
-		protected Errors errors;
+		
+		private Errors errors;
 		private ILexer lexer;
 		
 		protected int    errDist = MinErrDist;
 		
+		[CLSCompliant(false)]
 		protected CompilationUnit compilationUnit;
 		
-		protected bool parseMethodContents = true;
+		bool parseMethodContents = true;
 		
 		public bool ParseMethodBodies {
 			get {

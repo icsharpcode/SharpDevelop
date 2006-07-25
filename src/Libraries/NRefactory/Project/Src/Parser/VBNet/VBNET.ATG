@@ -765,13 +765,12 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 			
-			(. if (parseMethodContents) { .)
+			(. if (ParseMethodBodies) { .)
 				Block<out stmt>
 				"End" "Sub"
 			(. } else {
 				// don't parse method body
 				lexer.SkipCurrentBlock(Tokens.Sub); stmt = new BlockStatement();
-				if (t.kind != Tokens.Sub) throw new ApplicationException("Failed to skip sub");
 			   }
 			.)
 			
@@ -784,13 +783,12 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		(. Location constructorEndLocation = t.EndLocation; .)
 		EOL
 		
-		(. if (parseMethodContents) { .)
+		(. if (ParseMethodBodies) { .)
 			Block<out stmt>
 			"End" "Sub"
 		(. } else {
 			// don't parse method body
 			lexer.SkipCurrentBlock(Tokens.Sub); stmt = new BlockStatement();
-			if (t.kind != Tokens.Sub) throw new ApplicationException("Failed to skip sub");
 		   }
 		.)
 		
@@ -865,13 +863,12 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				
 				compilationUnit.AddChild(methodDeclaration);
 			
-				if (parseMethodContents) { .)
+				if (ParseMethodBodies) { .)
 					Block<out stmt>
 					"End" "Function"
 			(.	} else {
 					// don't parse method body
 					lexer.SkipCurrentBlock(Tokens.Function); stmt = new BlockStatement();
-					if (t.kind != Tokens.Function) throw new ApplicationException("Failed to skip function");
 				}
 				methodDeclaration.Body = (BlockStatement)stmt;
 				methodDeclaration.Body.StartLocation = methodDeclaration.EndLocation;

@@ -202,9 +202,8 @@ namespace ICSharpCode.StartPage
 			PopulateLeftMenu();
 			LeftMenuSelectedItem = "";
 			
-			Version v = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
-			VersionText   = "milestone " + v.Major + "." + v.Minor;
-			VersionStatus = "Beta";
+			VersionText   = "version " + RevisionClass.Version;
+			VersionStatus = "";
 			
 			RightBoxHtml = "";
 			

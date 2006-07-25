@@ -9,7 +9,7 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: CLSCompliant(false)]
+[assembly: CLSCompliant(true)]
 [assembly: StringFreezing()]
 
 [assembly: AssemblyTitle("ICSharpCode.TextEditor")]
