@@ -7,6 +7,7 @@
 
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Collections.Generic;
 
 namespace SharpDbTools.Model
@@ -28,5 +29,14 @@ namespace SharpDbTools.Model
 		public DbModelInfo()
 		{
 		}
+		
+		public DataTable MetaDataCollections {
+			get {
+				return this.Tables[METADATACOLLECTIONS];
+			}
+		}
+		
+		// TODO: an indexed property of MetaDataCollection
+		//public 
 	}
 }

@@ -14,7 +14,13 @@ using ICSharpCode.Core;
 namespace SharpDbTools.Model
 {
 	/// <summary>
-	/// Description of ConnectionInfo.
+	/// DbConnectionInfo object is in essence a client side cache of database
+	/// connection information that can be used disconnected from the database
+	/// for query editing and validation, database browsing etc.
+	/// 
+	/// It is persisted as an XML element into local storage, and can subsequently
+	/// be either used independently or refreshed from the database server.
+	/// 
 	/// </summary>
 	public class DbConnectionInfo: IConnectionInfo, IDisposable
 	{
@@ -36,24 +42,37 @@ namespace SharpDbTools.Model
 			this.invariantName = invariantName;
 		}
 		
-		public bool HasConnection
-		{
-			get
-			{
+		public string Name {
+			get {
+				return name;
+			}
+		}
+		
+		public string InvariantName {
+			get {
+				return invariantName;
+			}
+		}
+		
+		public string ConnectionString {
+			get {
+				return connectionString;
+			}
+		}
+		
+		public bool HasConnection {
+			get {
 				return !(connection == null);
 			}
 		}
 		
-		public bool HasModel
-		{
-			get
-			{
+		public bool HasModel {
+			get { 
 				return !(dbModel == null);
 			}
 		}
 		
-		public DbConnection Connection
-		{
+		public DbConnection Connection {
 			get {
 				// return connection if defined else try and create it
 				if (connection != null) {
@@ -69,8 +88,7 @@ namespace SharpDbTools.Model
 			}			
 		}
 		
-		public DataSet DbModel
-		{
+		public DataSet DbModel {
 			get
 			{
 				if (dbModel == null)

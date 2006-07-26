@@ -50,15 +50,19 @@
     <EmbeddedResource Include="Resources\MyUserControl.xfrm" />
     <Compile Include="Src\ServerBrowserTool.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\DbProvidersService.cs" />
-    <Compile Include="Src\ConnectionStringDefinitionDialog.cs" />
-    <Compile Include="Src\ConnectionStringDefinitionDialog.Designer.cs" />
-    <EmbeddedResource Include="Src\ConnectionStringDefinitionDialog.resx">
-      <DependentUpon>ConnectionStringDefinitionDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="Src\Model\DbConnectionInfo.cs" />
     <Compile Include="Src\Model\DbModelInfo.cs" />
+    <Compile Include="Src\Connection\ConnectionStringDefinitionDialog.cs" />
+    <EmbeddedResource Include="Src\Connection\ConnectionStringDefinitionDialog.resx">
+      <DependentUpon>ConnectionStringDefinitionDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Src\Connection\ConnectionStringDefinitionDialog.Designer.cs" />
+    <Compile Include="Src\Connection\DbProvidersService.cs" />
+    <Compile Include="Src\ServerBrowserToolController.cs" />
+    <Compile Include="Src\Model\DbConnectionInfoStorage.cs" />
     <Compile Include="Src\Model\IConnectionInfo.cs" />
+    <Compile Include="Src\Viewer\ViewerFactory.cs" />
+    <Compile Include="Src\Viewer\IViewer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Model" />
@@ -71,6 +75,7 @@
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
+    <Folder Include="Src\Viewer" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -18,13 +18,20 @@ namespace SharpDbTools
 	public class ServerBrowserTool : AbstractPadContent
 	{
 		Panel ctl;
+		ServerBrowserToolController controller;
 		
 		/// <summary>
 		/// 
 		/// </summary>
 		public ServerBrowserTool()
 		{
+			controller = new ServerBrowserToolController();
+			TreeView dbTree = new TreeView();
 			ctl = new Panel();
+			ctl.Controls.Add(dbTree);
+			TreeNode node = new TreeNode("test");
+			dbTree.Nodes.Add(node);
+			
 		}
 		
 		/// <summary>
