@@ -9,11 +9,9 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.Globalization;
-using System.ComponentModel;
 using System.Collections;
-using System.Collections.Generic;
-	
+using System.ComponentModel;
+
 /// <summary>
 /// BaseClass for all Datahandling Strategies
 /// </summary>

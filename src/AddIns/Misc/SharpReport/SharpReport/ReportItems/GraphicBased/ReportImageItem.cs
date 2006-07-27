@@ -9,11 +9,16 @@
 //------------------------------------------------------------------------------
 
 using System;
+
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
+
 using SharpReportCore;
-using SharpReport.Designer;	
+//using System.Windows.Forms;
+using System.Windows.Forms.Design;
+
+using SharpReport.Designer;
 	/// <summary>
 	/// 
 	/// </summary>
@@ -141,13 +146,18 @@ namespace SharpReport.ReportItems {
 				this.HandlePropertyChanged("Location");
 			}
 		}
+	
+		[Editor ( typeof(FileNameEditor), typeof(UITypeEditor) ) ]
+		public override string FileName {
+			get {
+				return base.FileName;
+			}
+			set {
+				base.FileName = value;
+			}
+		}
+	
 		
-//		public override Image Image {
-//			get {
-//				return base.Image;
-//			}
-//		}
-//		
 		
 		public override void Dispose() {
 			base.Dispose();

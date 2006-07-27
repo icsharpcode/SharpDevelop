@@ -1,6 +1,6 @@
 /*
  * Created by SharpDevelop.
- * User: Forstmeier Helmut
+ * User: Forstmeier Peter
  * Date: 14.11.2004
  * Time: 17:58
  *

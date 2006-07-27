@@ -21,14 +21,9 @@
 // Peter Forstmeier (Peter.Forstmeier@t-online.de)
 
 using System;
-
-using System.Data;
-using System.Drawing;
 using System.ComponentModel;
-using System.Globalization;
+using System.Drawing;
 using System.Drawing.Printing;
-
-using SharpReportCore;
 
 /// <summary>
 /// Renderer for DataReports
@@ -178,6 +173,7 @@ namespace SharpReportCore {
 			bool firstOnPage = true;
 		
 			base.PrintDetail(sender, rpea);
+		
 			// no loop if there is no data
 			if (! this.dataNavigator.HasMoreData ) {
 				rpea.PrintPageEventArgs.HasMorePages = false;
@@ -188,7 +184,7 @@ namespace SharpReportCore {
 			if (this.ReportDocument.PageNumber ==1) {
 				this.dataNavigator.MoveNext();
 			}
-			
+
 			do {
 				this.dataNavigator.Fill (base.CurrentSection.Items);
 				base.RenderSection (rpea);
@@ -197,7 +193,6 @@ namespace SharpReportCore {
 					base.CurrentSection.SectionOffset = base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height  + 2 * AbstractRenderer.Gap;
 					
 				}
-				
 				
 				base.FitSectionToItems (base.CurrentSection,rpea.PrintPageEventArgs);
 				

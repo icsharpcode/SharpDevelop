@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using System.Reflection;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace SharpReportCore {
 	/// <summary>

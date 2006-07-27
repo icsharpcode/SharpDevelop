@@ -9,6 +9,8 @@
 
 using System;
 using System.ComponentModel;
+//using System.Collections;
+
 namespace SharpReportCore
 {
 	/// <summary>

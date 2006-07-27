@@ -156,6 +156,7 @@ namespace SharpReportCore {
 			}
 		}
 		
+		
 		[Category("Base Settings")]
 		[DefaultValueAttribute ("")]
 		[XmlIgnoreAttribute]
@@ -176,6 +177,7 @@ namespace SharpReportCore {
 				}
 			}
 		}
+	
 		
 		[Category("Output Settings")]
 		[DefaultValueAttribute (true)]
@@ -190,7 +192,7 @@ namespace SharpReportCore {
 				}
 			}
 		}
-		
+
 		
 		[Category("Output Settings")]
 		[XmlIgnoreAttribute]

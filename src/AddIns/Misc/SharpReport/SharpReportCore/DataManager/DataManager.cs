@@ -97,6 +97,7 @@ namespace SharpReportCore {
 		public DataManager(IList dataSource, ReportSettings reportSettings){
 			
 			this.InitDataManager(reportSettings,dataSource);
+			
 			this.dataViewStrategy = new CollectionStrategy ((IList)this.dataSource,
 			                                                this.dataMember,
 			                                                reportSettings);

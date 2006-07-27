@@ -10,21 +10,17 @@
 // Copyright (C) 2005  peter.forstmeier@t-online.de
 
 using System;
-using System.IO;
-//using System.ComponentModel;
-using System.Globalization;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Windows.Forms;
 using System.Data;
+using System.Globalization;
+using System.IO;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-
 using SharpReport;
-using SharpReportCore;
 using SharpReport.Designer;
+using SharpReportCore;
+
 
 namespace SharpReportAddin{
 	/// <summary>
@@ -214,20 +210,21 @@ namespace SharpReportAddin{
 		#region Preview handling
 		
 		private static  DataSet DataSetFromFile () {
-			DataSet ds = new DataSet();
-			ds.Locale = CultureInfo.InvariantCulture;
+
 			using (OpenFileDialog openFileDialog = new OpenFileDialog()){
 				openFileDialog.Filter = GlobalValues.XsdFileFilter;
 				openFileDialog.DefaultExt = GlobalValues.XsdExtension;
 				openFileDialog.AddExtension    = true;
 				if(openFileDialog.ShowDialog() == DialogResult.OK){
 					if (openFileDialog.FileName.Length > 0) {
-						
+						DataSet ds = new DataSet();
 						ds.ReadXml (openFileDialog.FileName);
+						ds.Locale = CultureInfo.InvariantCulture;
+						return ds;
 					}
 				}
 			}
-			return ds;
+			throw new MissingDataSourceException();
 		}
 		
 		private void RunPreview(bool standAlone) {

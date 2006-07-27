@@ -511,6 +511,7 @@ namespace SharpReportCore{
 		
 		
 		#region Sorting,grouping and ReportParameters
+		
 		[Browsable(false)]
 		[XmlIgnoreAttribute]
 		public ColumnCollection AvailableFieldsCollection {
@@ -524,16 +525,16 @@ namespace SharpReportCore{
 		/// <summary>
 		/// Get/Set a Collection of <see cref="SortColumn">SortColumn</see>
 		/// </summary>
+		
 		[Browsable(false)]
 		[XmlIgnoreAttribute]
 		public ColumnCollection SortColumnCollection {
 			get {
 				return sortingCollection;
 			}
-//			set {
-//				sortingCollection = value;
-//			}
 		}
+		
+		
 		[Browsable(false)]
 		[XmlIgnoreAttribute]
 		public ColumnCollection GroupColumnsCollection {
@@ -543,17 +544,6 @@ namespace SharpReportCore{
 				}
 				return groupingsCollection;
 			}
-			/*
-			set {
-				if (this.groupingsCollection == null) {
-					groupingsCollection = new ColumnCollection();
-				}
-				if (groupingsCollection != value) {
-					groupingsCollection = value;
-					this.NotifyPropertyChanged();
-				}
-			}
-			*/
 		}
 		
 		[Browsable(false)]
@@ -648,15 +638,15 @@ namespace SharpReportCore{
 		#endregion
 		
 		#region OutPut Settings
-		string bla;
-		
-		[XmlAttributeAttribute("titleFont")]
-		public string TestName {
-			get {
-				return "Name = testName";
-			}
-			set { bla = value;}
-		}
+//		string bla;
+//		
+//		[XmlAttributeAttribute("titleFont")]
+//		public string TestName {
+//			get {
+//				return "Name = testName";
+//			}
+//			set { bla = value;}
+//		}
 		
 		[Category("Output Settings")]
 		public Font DefaultFont {

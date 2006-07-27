@@ -10,6 +10,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Printing;
+
 namespace SharpReportCore{
 	/// <summary>
 	/// Description of AbstractDataRenderer.
@@ -39,6 +40,7 @@ namespace SharpReportCore{
 		#endregion
 		
 		protected int DoItems (ReportPageEventArgs rpea) {
+
 			IContainerItem container = null;
 			bool hasContainer = false;
 			foreach (BaseReportItem item in this.CurrentSection.Items) {
@@ -69,15 +71,12 @@ namespace SharpReportCore{
 			this.DataNavigator.Fill(container.Items);
 			Point drawPoint	= new Point(0,0);
 			if (section.Visible){
-//				System.Console.WriteLine("\tcall section.Render");
 				section.Render (rpea);
-//				System.Console.WriteLine("\tback from section.Render");
 				foreach (BaseReportItem item in section.Items) {
 					if (item.Parent == null) {
 						item.Parent = section;
 					}
 					item.SectionOffset = section.SectionOffset;
-//					System.Console.WriteLine("\trender <{0}> with Boder set to {1}",item.Name,item.DrawBorder);
 					item.Render(rpea);
 					drawPoint.Y = section.SectionOffset + section.Size.Height;
 					rpea.LocationAfterDraw = new Point (rpea.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);

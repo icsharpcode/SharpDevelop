@@ -288,7 +288,6 @@ namespace SharpReportCore {
 		}
 		
 		protected bool IsRoomForFooter(Point loc) {
-//			System.Console.WriteLine("AbstractRenderer:isRoomForFooter");
 			Rectangle r =  new Rectangle( this.page.ReportFooterRectangle.Left,
 			                             loc.Y,
 			                             this.page.ReportFooterRectangle.Width,
@@ -303,8 +302,8 @@ namespace SharpReportCore {
 		}
 		
 		protected virtual int RenderSection (ReportPageEventArgs rpea) {
+
 			Point drawPoint	= new Point(0,0);
-//			System.Console.WriteLine("AbstarctRenderer:Rendersection <{0}>",this.CurrentSection.Name);
 			if (this.CurrentSection.Visible){
 				this.CurrentSection.Render (rpea);
 				
@@ -312,6 +311,7 @@ namespace SharpReportCore {
 					if (item.Parent == null) {
 						item.Parent = this.CurrentSection;
 					}
+					
 					//test for container
 					IContainerItem	container = item as IContainerItem;
 //					if (container != null) {
@@ -323,8 +323,6 @@ namespace SharpReportCore {
 //					}
 					
 					item.SectionOffset = this.CurrentSection.SectionOffset;
-					
-//					System.Console.WriteLine("\trender start at offset {0}",item.SectionOffset);
 					item.Render(rpea);
 					drawPoint.Y = this.CurrentSection.SectionOffset + this.CurrentSection.Size.Height;
 					rpea.LocationAfterDraw = new Point (rpea.LocationAfterDraw.X,

@@ -9,11 +9,9 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.Globalization;
-using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Design;
-using System.Windows.Forms;
+using System.Globalization;
+
 /// <summary>
 /// Handles the drawing of Images like Bitmap's and so on
 /// </summary>
@@ -91,7 +89,7 @@ namespace SharpReportCore {
 		
 		
 		#region properties
-				
+
 		public virtual string FileName {
 			get {
 				return fileName;
