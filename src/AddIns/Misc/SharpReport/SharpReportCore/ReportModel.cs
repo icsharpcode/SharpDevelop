@@ -106,7 +106,7 @@ namespace SharpReportCore {
 		// this Property is only a shortcut,,otherwise we have
 		// to use 'ReportModel.reportSettings.DataModel'
 		
-		public GlobalEnums.enmPushPullModel DataModel {
+		public GlobalEnums.PushPullModelEnum DataModel {
 			get {
 				return reportSettings.DataModel;
 			}

@@ -124,7 +124,7 @@ namespace SharpReportCore {
 		
 		void CheckReportSettings(ReportSettings settings) {
 			try {
-				if (settings.DataModel != GlobalEnums.enmPushPullModel.PushData) {
+				if (settings.DataModel != GlobalEnums.PushPullModelEnum.PushData) {
 					SqlQueryChecker.Check(settings.CommandText);
 				}
 				

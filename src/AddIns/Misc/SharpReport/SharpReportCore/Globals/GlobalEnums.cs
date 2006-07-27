@@ -26,11 +26,12 @@ namespace SharpReportCore {
 	public class GlobalEnums : object {
 			
 		///<summary>Technics to get the data
-		/// Push : report get'S a ready filld dataset
+		/// Push : report get's a ready filld dataset or something tah implements IList
 		/// Pull : report has to fill data by themself
-		/// FormSheet : FormSheet report
+		/// FormSheet : FormSheet report, just labels and images are allowed
 		/// </summary>
-		public enum enmPushPullModel {
+		/// 
+		public enum PushPullModelEnum {
 			PushData,
 			PullData,
 			FormSheet
@@ -55,7 +56,7 @@ namespace SharpReportCore {
 		/// FormSheet means a blank form with Labels, Lines and Checkboxes
 		/// DataReport handles all Reports with Data
 		/// </summary>
-		public enum enmReportType {
+		public enum ReportTypeEnum {
 			FormSheet,
 			DataReport,
 		}
@@ -70,19 +71,7 @@ namespace SharpReportCore {
 			ReportPageFooter,
 			ReportFooter
 		}
-		/// <summary>
-		/// Output Format
-		/// </summary>
-		public enum enmRenderTo {
-			Text,
-			Pdf
-		}
-		
-		public enum ItemHorizontalAlign {
-			Left,
-			Center,
-			Right
-		}
+
 		
 		///<summary>
 		///Names of the different collections like Sorting,grouping etc
@@ -94,6 +83,13 @@ namespace SharpReportCore {
 			Sortings,
 			Groupings
 		}
+		
+		public enum ImageSourceEnum{
+			File,
+//			DataBase,
+			External
+		}
+		
 		
 		///
   		/// Convert any possible string-Value of a given enumeration

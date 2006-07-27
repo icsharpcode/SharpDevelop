@@ -64,20 +64,20 @@ namespace ReportGenerator{
 		}
 		
 		void DoCreate (ReportModel model) {
-			GlobalEnums.enmPushPullModel dataModel;
+			GlobalEnums.PushPullModelEnum dataModel;
 			dataModel = model.DataModel;
 			switch (dataModel) {
-				case GlobalEnums.enmPushPullModel.PullData:
+				case GlobalEnums.PushPullModelEnum.PullData:
 					customizer.Set("DataRow",GlobalEnums.ReportItemType.ReportRowItem);
 					GeneratePullDataReport generatePullDataReport = new GeneratePullDataReport(customizer,model);
 					generatePullDataReport.GenerateReport();
 					break;
-				case GlobalEnums.enmPushPullModel.PushData:
+				case GlobalEnums.PushPullModelEnum.PushData:
 					customizer.Set("DataRow",GlobalEnums.ReportItemType.ReportRowItem);
 					GeneratePushDataReport generatePushDataReport = new GeneratePushDataReport(customizer,model);
 					generatePushDataReport.GenerateReport();
 					break;
-				case GlobalEnums.enmPushPullModel.FormSheet:
+				case GlobalEnums.PushPullModelEnum.FormSheet:
 					GenerateFormSheetReport generateFormSheetReport = new GenerateFormSheetReport (customizer,model);
 					generateFormSheetReport.GenerateReport();
 					break;

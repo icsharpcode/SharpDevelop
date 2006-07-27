@@ -38,7 +38,7 @@ namespace ReportGenerator {
 			if (reportModel == null) {
 				throw new ArgumentException("reportModel");
 			}
-			if (base.ReportModel.ReportSettings.DataModel != GlobalEnums.enmPushPullModel.PushData) {
+			if (base.ReportModel.ReportSettings.DataModel != GlobalEnums.PushPullModelEnum.PushData) {
 				throw new ArgumentException ("Wrong DataModel in GeneratePushReport");
 			}
 			//we can't use the customizer here
@@ -48,8 +48,8 @@ namespace ReportGenerator {
 		
 		public override void GenerateReport() {
 			
-			base.ReportModel.ReportSettings.ReportType = GlobalEnums.enmReportType.DataReport;
-			base.ReportModel.ReportSettings.DataModel = GlobalEnums.enmPushPullModel.PushData;
+			base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportTypeEnum.DataReport;
+			base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModelEnum.PushData;
 			
 			
 			base.ReportModel.ReportSettings.AvailableFieldsCollection = base.ReportGenerator.ColumnCollection;

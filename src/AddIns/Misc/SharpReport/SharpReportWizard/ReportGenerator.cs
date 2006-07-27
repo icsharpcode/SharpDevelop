@@ -42,11 +42,11 @@ namespace ReportGenerator {
 		private string fileName;
 		private string path;
 		
-		private GlobalEnums.enmReportType reportType;
+		private GlobalEnums.ReportTypeEnum reportType;
 		private GraphicsUnit graphicsUnit;
 		
 		//Database
-		private GlobalEnums.enmPushPullModel dataModel;
+		private GlobalEnums.PushPullModelEnum dataModel;
 
 		private string connectionString;
 		private string catalogName;
@@ -125,7 +125,7 @@ namespace ReportGenerator {
 				reportName = value;
 			}
 		}
-		public SharpReportCore.GlobalEnums.enmReportType ReportType {
+		public SharpReportCore.GlobalEnums.ReportTypeEnum ReportType {
 			get {
 				return reportType;
 			}
@@ -190,7 +190,7 @@ namespace ReportGenerator {
 			}
 		}
 		
-		public SharpReportCore.GlobalEnums.enmPushPullModel DataModel {
+		public SharpReportCore.GlobalEnums.PushPullModelEnum DataModel {
 			get {
 				return dataModel;
 			}

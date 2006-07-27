@@ -9,16 +9,18 @@
 //------------------------------------------------------------------------------
 
 using System;
-
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
-
-using SharpReportCore;
-//using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 using SharpReport.Designer;
+using SharpReportCore;
+
+//using System.Windows.Forms;
+
+
+
 	/// <summary>
 	/// 
 	/// </summary>

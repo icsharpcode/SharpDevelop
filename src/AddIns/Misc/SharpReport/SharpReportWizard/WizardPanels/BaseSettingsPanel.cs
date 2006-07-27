@@ -149,14 +149,14 @@ namespace ReportGenerator{
 			if (initDone) {
 				if (this.radioPullModell.Checked == true) {
 					base.NextWizardPanelID = "PullModel";
-					generator.DataModel = GlobalEnums.enmPushPullModel.PullData;
+					generator.DataModel = GlobalEnums.PushPullModelEnum.PullData;
 					GoOn();
 				} else if (this.radioPushModell.Checked == true){
 					base.NextWizardPanelID = "PushModel";
-					generator.DataModel = GlobalEnums.enmPushPullModel.PushData;
+					generator.DataModel = GlobalEnums.PushPullModelEnum.PushData;
 					GoOn();
 				} else if (this.radioFormSheet.Checked == true){
-					generator.DataModel = GlobalEnums.enmPushPullModel.FormSheet;
+					generator.DataModel = GlobalEnums.PushPullModelEnum.FormSheet;
 					base.EnableNext = false;
 					base.IsLastPanel = true;
 				}

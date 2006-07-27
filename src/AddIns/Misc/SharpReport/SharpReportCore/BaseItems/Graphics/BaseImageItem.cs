@@ -21,14 +21,18 @@ using System.Globalization;
 /// </remarks>
 
 namespace SharpReportCore {
+	
+	
 	public class BaseImageItem : SharpReportCore.BaseGraphicItem {
 		
 		/// <summary>
-		/// Default constructor - initializes all fields to default values
+		/// Default constructor 
 		/// </summary>
+		
 		string fileName;
 		Image image;
 		bool scaleImageToSize;
+		GlobalEnums.ImageSourceEnum imageSource;
 		
 		public BaseImageItem():base() {
 		}
@@ -97,17 +101,34 @@ namespace SharpReportCore {
 			set {
 				fileName = value;
 				this.image = null;
+				this.imageSource = GlobalEnums.ImageSourceEnum.File;
 				LoadImage (fileName);
 				base.NotifyPropertyChanged("FileName");
 			}
 		}
 		
 		/// <summary>
-		/// The Image loaded from a File
+		/// The Image 
 		/// </summary>
 		public  virtual Image Image {
 			get {
 				return image;
+			}
+			set {
+				this.fileName = String.Empty;
+				this.image = value;
+				this.imageSource = GlobalEnums.ImageSourceEnum.External;
+				base.NotifyPropertyChanged("Image");
+			}
+		}
+		
+		/// <summary>
+		/// Where did the image come from
+		/// </summary>
+		/// 
+		public GlobalEnums.ImageSourceEnum ImageSource {
+			get {
+				return imageSource;
 			}
 		}
 		

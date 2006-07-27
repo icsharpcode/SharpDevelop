@@ -48,8 +48,8 @@ namespace SharpReportCore{
 		                                    GraphicsUnit.Point);
 		
 		
-		private GlobalEnums.enmReportType reportType;
-		private GlobalEnums.enmPushPullModel dataModel;
+		private GlobalEnums.ReportTypeEnum reportType;
+		private GlobalEnums.PushPullModelEnum dataModel;
 		
 		private AbstractParametersCollection reportParametersCollection;
 		private ColumnCollection availableFields;
@@ -81,8 +81,8 @@ namespace SharpReportCore{
 			sortingCollection = new ColumnCollection();
 			groupingsCollection = new ColumnCollection();
 			reportParametersCollection = new AbstractParametersCollection();
-			this.reportType = GlobalEnums.enmReportType.FormSheet;
-			this.dataModel = GlobalEnums.enmPushPullModel.FormSheet;
+			this.reportType = GlobalEnums.ReportTypeEnum.FormSheet;
+			this.dataModel = GlobalEnums.PushPullModelEnum.FormSheet;
 		}
 		
 
@@ -497,7 +497,7 @@ namespace SharpReportCore{
 		
 		
 		[Browsable(true), Category("Base Settings")]
-		public GlobalEnums.enmReportType ReportType {
+		public GlobalEnums.ReportTypeEnum ReportType {
 			get {
 				return reportType;
 			}
@@ -615,7 +615,7 @@ namespace SharpReportCore{
 		
 		
 		[Category("Data")]
-		public GlobalEnums.enmPushPullModel DataModel {
+		public GlobalEnums.PushPullModelEnum DataModel {
 			get {
 				return dataModel;
 			}
@@ -623,10 +623,10 @@ namespace SharpReportCore{
 				if (dataModel != value) {
 					dataModel = value;
 
-					if (this.dataModel != GlobalEnums.enmPushPullModel.FormSheet) {
-						this.reportType = GlobalEnums.enmReportType.DataReport;
+					if (this.dataModel != GlobalEnums.PushPullModelEnum.FormSheet) {
+						this.reportType = GlobalEnums.ReportTypeEnum.DataReport;
 					} else {
-						this.reportType = GlobalEnums.enmReportType.FormSheet;
+						this.reportType = GlobalEnums.ReportTypeEnum.FormSheet;
 					}
 					this.NotifyPropertyChanged("DataModel");
 				}

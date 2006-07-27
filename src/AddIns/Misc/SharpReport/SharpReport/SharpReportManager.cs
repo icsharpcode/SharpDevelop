@@ -51,7 +51,7 @@ namespace SharpReport{
 		#region privates
 		
 		private ConnectionObject BuildConnectionObject (ReportSettings settings) {
-			if (settings.ReportType == GlobalEnums.enmReportType.DataReport) {
+			if (settings.ReportType == GlobalEnums.ReportTypeEnum.DataReport) {
 				try {
 					if (settings.ConnectionString.Length > 0) {
 						return new ConnectionObject(settings.ConnectionString);
@@ -75,20 +75,20 @@ namespace SharpReport{
 		private ColumnCollection ReadColumnCollection() {
 			ColumnCollection columnCollecion = new ColumnCollection();
 			switch (baseDesignerControl.ReportModel.DataModel) {
-				case GlobalEnums.enmPushPullModel.FormSheet:
+				case GlobalEnums.PushPullModelEnum.FormSheet:
 					//Plain FormSheet we do nothing for the moment
 					break;
-				case GlobalEnums.enmPushPullModel.PushData:
+				case GlobalEnums.PushPullModelEnum.PushData:
 					//PushData
 					columnCollecion = base.CollectFieldsFromModel(this.baseDesignerControl.ReportModel);
 					break;
-				case GlobalEnums.enmPushPullModel.PullData:
+				case GlobalEnums.PushPullModelEnum.PullData:
 					// PullData, query the Datasource and ask for the available Fields
 					if (base.ConnectionObject == null) {
 						base.ConnectionObject = this.BuildConnectionObject(baseDesignerControl.ReportModel.ReportSettings);
 					}
 
-					if (this.baseDesignerControl.ReportModel.DataModel.Equals(GlobalEnums.enmPushPullModel.PullData)){
+					if (this.baseDesignerControl.ReportModel.DataModel.Equals(GlobalEnums.PushPullModelEnum.PullData)){
 						try {
 							using (DataManager dataManager = new DataManager(base.ConnectionObject,
 							                                                 baseDesignerControl.ReportModel.ReportSettings)) {

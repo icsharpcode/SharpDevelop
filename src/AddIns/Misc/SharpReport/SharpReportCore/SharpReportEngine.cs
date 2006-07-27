@@ -65,7 +65,7 @@ namespace SharpReportCore {
 		#region ParameterHandling
 
 		private bool CheckReportParameters (ReportModel model,ReportParameters reportParameters) {
-			if (model.ReportSettings.ReportType != GlobalEnums.enmReportType.FormSheet) {
+			if (model.ReportSettings.ReportType != GlobalEnums.ReportTypeEnum.FormSheet) {
 				if (this.connectionObject == null) {
 					
 					if (!String.IsNullOrEmpty(model.ReportSettings.ConnectionString)) {
@@ -136,14 +136,14 @@ namespace SharpReportCore {
 		private ReportModel ValidatePushModel (string fileName) {
 			
 			ReportModel model = ModelFromFile (fileName);
-			if (model.ReportSettings.DataModel != GlobalEnums.enmPushPullModel.PushData) {
+			if (model.ReportSettings.DataModel != GlobalEnums.PushPullModelEnum.PushData) {
 				throw new SharpReportException ("PrintPushdataReport: No valid ReportModel");
 			}
 			return model;
 		}
 		
 		private void InitDataContainer (ReportSettings settings) {	
-			if (settings.ReportType == GlobalEnums.enmReportType.DataReport) {
+			if (settings.ReportType == GlobalEnums.ReportTypeEnum.DataReport) {
 				if (settings.CommandText != null) {
 					try {
 						GrapSqlParameters (settings);
@@ -191,11 +191,11 @@ namespace SharpReportCore {
 			try {
 				switch (model.ReportSettings.ReportType) {
 						//FormSheets reports
-					case GlobalEnums.enmReportType.FormSheet:
+					case GlobalEnums.ReportTypeEnum.FormSheet:
 						abstr = new RendererFactory().Create (model,null);
 						break;
 						//Databased reports
-					case GlobalEnums.enmReportType.DataReport :
+					case GlobalEnums.ReportTypeEnum.DataReport :
 						InitDataContainer (model.ReportSettings);
 						if (this.dataManager != null) {
 							if (this.dataManager.DataSource != null) {
@@ -252,10 +252,10 @@ namespace SharpReportCore {
 			if (model == null) {
 				throw new ArgumentNullException("model");
 			}
-			if (model.ReportSettings.ReportType != GlobalEnums.enmReportType.DataReport) {
+			if (model.ReportSettings.ReportType != GlobalEnums.ReportTypeEnum.DataReport) {
 				throw new ArgumentException("SetupPushDataRenderer <No valid ReportModel>");
 			}
-			if (model.ReportSettings.DataModel != GlobalEnums.enmPushPullModel.PushData) {
+			if (model.ReportSettings.DataModel != GlobalEnums.PushPullModelEnum.PushData) {
 				throw new ArgumentException("SetupPushDataRenderer <No valid ReportType>");
 			}
 			
@@ -282,10 +282,10 @@ namespace SharpReportCore {
 			if (model == null) {
 				throw new ArgumentNullException("model");
 			}
-			if (model.ReportSettings.ReportType != GlobalEnums.enmReportType.DataReport) {
+			if (model.ReportSettings.ReportType != GlobalEnums.ReportTypeEnum.DataReport) {
 				throw new ArgumentException("SetupPushDataRenderer <No valid ReportModel>");
 			}
-			if (model.ReportSettings.DataModel != GlobalEnums.enmPushPullModel.PushData) {
+			if (model.ReportSettings.DataModel != GlobalEnums.PushPullModelEnum.PushData) {
 				throw new ArgumentException("SetupPushDataRenderer <No valid ReportType>");
 			}
 			
