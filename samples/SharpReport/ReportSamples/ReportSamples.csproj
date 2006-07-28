@@ -45,13 +45,13 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="SimpleUnboundPullModel.cs" />
     <Compile Include="MultipageUnboundPullModel.cs" />
     <Compile Include="UnboundPushModel.cs" />
     <Compile Include="UnboundFormSheet.cs" />
+    <Compile Include="ContributersList.cs" />
+    <Compile Include="EventLogger.cs" />
+    <EmbeddedResource Include="ImageResource.resx" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft ActiveX Data Objects 2.7 Library">

@@ -1,6 +1,6 @@
 /*
  * Created by SharpDevelop.
- * User: Forstmeier Helmut
+ * User: Forstmeier Peter
  * Date: 08.02.2006
  * Time: 15:24
  * 
@@ -313,6 +313,18 @@ namespace ReportSamples
 		void UnboundFormSheetToolStripMenuItemClick(object sender, System.EventArgs e){
 			UnboundFormSheet unboundFormSheet = new UnboundFormSheet();
 			unboundFormSheet.Run();
+		}
+		
+		void ListDatasourceToolStripMenuItemClick(object sender, System.EventArgs e)
+		{
+			ContributersList r = new ContributersList();
+			r.Run();
+		}
+		
+		void EventLoggerToolStripMenuItemClick(object sender, System.EventArgs e)
+		{
+			EventLogger el = new EventLogger();
+			el.Run();
 		}
 	}
 }

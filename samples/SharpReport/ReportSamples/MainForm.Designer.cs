@@ -40,6 +40,7 @@ namespace ReportSamples
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.formSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.simpleFormsSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.unboundFormSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pullMpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.customersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.employeeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,8 +52,10 @@ namespace ReportSamples
 			this.unboundPullModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.multipageUnboundPullModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.unboundPuskModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.listDatasourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.simpleListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.eventLoggerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-			this.unboundFormSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
 			this.SuspendLayout();
@@ -63,7 +66,8 @@ namespace ReportSamples
 									this.formSheetToolStripMenuItem,
 									this.pullMpToolStripMenuItem,
 									this.pushModelToolStripMenuItem,
-									this.unboundToolStripMenuItem});
+									this.unboundToolStripMenuItem,
+									this.listDatasourceToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(518, 24);
@@ -85,6 +89,13 @@ namespace ReportSamples
 			this.simpleFormsSheetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.simpleFormsSheetToolStripMenuItem.Text = "SimpleFormsSheet";
 			this.simpleFormsSheetToolStripMenuItem.Click += new System.EventHandler(this.SimpleFormsSheetClick);
+			// 
+			// unboundFormSheetToolStripMenuItem
+			// 
+			this.unboundFormSheetToolStripMenuItem.Name = "unboundFormSheetToolStripMenuItem";
+			this.unboundFormSheetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.unboundFormSheetToolStripMenuItem.Text = "UnboundFormSheet";
+			this.unboundFormSheetToolStripMenuItem.Click += new System.EventHandler(this.UnboundFormSheetToolStripMenuItemClick);
 			// 
 			// pullMpToolStripMenuItem
 			// 
@@ -171,16 +182,32 @@ namespace ReportSamples
 			this.unboundPuskModelToolStripMenuItem.Text = "UnboundPushModel";
 			this.unboundPuskModelToolStripMenuItem.Click += new System.EventHandler(this.UnboundPushModelToolStripMenuItemClick);
 			// 
+			// listDatasourceToolStripMenuItem
+			// 
+			this.listDatasourceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+									this.simpleListToolStripMenuItem,
+									this.eventLoggerToolStripMenuItem});
+			this.listDatasourceToolStripMenuItem.Name = "listDatasourceToolStripMenuItem";
+			this.listDatasourceToolStripMenuItem.Size = new System.Drawing.Size(90, 20);
+			this.listDatasourceToolStripMenuItem.Text = "ListDatasource";
+			// 
+			// simpleListToolStripMenuItem
+			// 
+			this.simpleListToolStripMenuItem.Name = "simpleListToolStripMenuItem";
+			this.simpleListToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.simpleListToolStripMenuItem.Text = "ContributersList";
+			this.simpleListToolStripMenuItem.Click += new System.EventHandler(this.ListDatasourceToolStripMenuItemClick);
+			// 
+			// eventLoggerToolStripMenuItem
+			// 
+			this.eventLoggerToolStripMenuItem.Name = "eventLoggerToolStripMenuItem";
+			this.eventLoggerToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.eventLoggerToolStripMenuItem.Text = "EventLogger";
+			this.eventLoggerToolStripMenuItem.Click += new System.EventHandler(this.EventLoggerToolStripMenuItemClick);
+			// 
 			// errorProvider1
 			// 
 			this.errorProvider1.ContainerControl = this;
-			// 
-			// unboundFormSheetToolStripMenuItem
-			// 
-			this.unboundFormSheetToolStripMenuItem.Name = "unboundFormSheetToolStripMenuItem";
-			this.unboundFormSheetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.unboundFormSheetToolStripMenuItem.Text = "UnboundFormSheet";
-			this.unboundFormSheetToolStripMenuItem.Click += new System.EventHandler(this.UnboundFormSheetToolStripMenuItemClick);
 			// 
 			// MainForm
 			// 
@@ -197,6 +224,9 @@ namespace ReportSamples
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.ToolStripMenuItem eventLoggerToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem simpleListToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem listDatasourceToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem unboundFormSheetToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem unboundPuskModelToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem multipageUnboundPullModelToolStripMenuItem;
