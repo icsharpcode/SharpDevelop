@@ -49,6 +49,7 @@ namespace SharpReportCore {
 					                           "Unable to Load {0}",fileName);
 					throw new SharpReportException(str);
 				}
+				
 			} catch (System.OutOfMemoryException) {
 				throw;
 			} catch (System.IO.FileNotFoundException) {
@@ -56,6 +57,26 @@ namespace SharpReportCore {
 			}
 			
 		}
+		
+		/// <summary>
+		/// ToolboxIcon for ReportRectangle
+		/// </summary>
+		/// <returns>Bitmap</returns>
+		
+		private static Bitmap ErrorBitmap(Rectangle rect) {
+			Bitmap b = new Bitmap (rect.Width,rect.Height);
+			using (Graphics g = Graphics.FromImage (b)){
+				g.DrawRectangle (new Pen(Color.Black, 1),
+				                 1,1,rect.Width -2,rect.Height -2);
+				g.DrawString("Image",new Font("Microsoft Sans Serif",
+				                              8),
+				             new SolidBrush(Color.Gray),
+				             new RectangleF(1,1,rect.Width,rect.Height) );
+				
+			}
+			return b;
+		}
+		
 		#region overrides
 		
 		public override void Render(ReportPageEventArgs rpea) {
@@ -64,19 +85,18 @@ namespace SharpReportCore {
 			}
 			base.Render(rpea);
 			Graphics g = rpea.PrintPageEventArgs.Graphics;
-			if (this.image != null) {
-				if (this.scaleImageToSize) {
-					g.DrawImageUnscaled(image,0,0);
-					rpea.LocationAfterDraw = new Point (this.Location.X + this.image.Width,
-					                                  this.Location.Y + this.image.Height);
-				} else {
-					SizeF measureSize = base.MeasureReportItem (rpea,this);
-					RectangleF rect =  base.DrawingRectangle (measureSize);
-					g.DrawImage(image,
-					            rect);
-					rpea.LocationAfterDraw = new Point (this.Location.X + (int)rect.Width,
-					                                    this.Location.Y + (int)rect.Height);
-				}
+			
+			if (this.scaleImageToSize) {
+				g.DrawImageUnscaled(this.Image,0,0);
+				rpea.LocationAfterDraw = new Point (this.Location.X + this.Image.Width,
+				                                    this.Location.Y + this.Image.Height);
+			} else {
+				SizeF measureSize = base.MeasureReportItem (rpea,this);
+				RectangleF rect =  base.DrawingRectangle (measureSize);
+				g.DrawImage(this.Image,
+				            rect);
+				rpea.LocationAfterDraw = new Point (this.Location.X + (int)rect.Width,
+				                                    this.Location.Y + (int)rect.Height);
 			}
 		}
 		
@@ -108,11 +128,16 @@ namespace SharpReportCore {
 		}
 		
 		/// <summary>
-		/// The Image 
+		/// The Image
 		/// </summary>
 		public  virtual Image Image {
 			get {
-				return image;
+				if (this.image != null) {
+					return image;
+				} else {
+					return BaseImageItem.ErrorBitmap(new Rectangle(0,0,this.Size.Width,this.Size.Height));
+				}
+				
 			}
 			set {
 				this.fileName = String.Empty;
