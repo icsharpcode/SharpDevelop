@@ -49,8 +49,7 @@ namespace ICSharpCode.Core
 		
 		/// <summary>
 		/// Gets/Sets the custom error reporter. If this property is null, the default
-		/// messagebox is used (except for debug builds of ICSharpCode.Core, where the
-		/// message is only logged to the LoggingService).
+		/// messagebox is used.
 		/// </summary>
 		public static ShowErrorDelegate CustomErrorReporter {
 			get {

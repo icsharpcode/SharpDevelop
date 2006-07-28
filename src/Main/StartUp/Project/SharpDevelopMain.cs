@@ -9,14 +9,13 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Resources;
-using System.Threading;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Sda;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -30,42 +29,6 @@ namespace ICSharpCode.SharpDevelop
 		public static string[] CommandLineArgs {
 			get {
 				return commandLineArgs;
-			}
-		}
-		
-		static void ShowErrorBox(object sender, ThreadExceptionEventArgs e)
-		{
-			LoggingService.Error("ThreadException caught", e.Exception);
-			ShowErrorBox(e.Exception, null);
-		}
-		
-		static void ShowErrorBox(object sender, UnhandledExceptionEventArgs e)
-		{
-			Exception ex = e.ExceptionObject as Exception;
-			LoggingService.Fatal("UnhandledException caught", ex);
-			if (e.IsTerminating)
-				LoggingService.Fatal("Runtime is terminating because of unhandled exception.");
-			ShowErrorBox(ex, "Unhandled exception", e.IsTerminating);
-		}
-		
-		static void ShowErrorBox(Exception exception, string message)
-		{
-			ShowErrorBox(exception, message, false);
-		}
-		
-		static void ShowErrorBox(Exception exception, string message, bool mustTerminate)
-		{
-			try {
-				using (ExceptionBox box = new ExceptionBox(exception, message, mustTerminate)) {
-					try {
-						box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
-					} catch (InvalidOperationException) {
-						box.ShowDialog();
-					}
-				}
-			} catch (Exception ex) {
-				LoggingService.Warn("Error showing ExceptionBox", ex);
-				MessageBox.Show(exception.ToString());
 			}
 		}
 		
@@ -143,46 +106,20 @@ namespace ICSharpCode.SharpDevelop
 		{
 			LoggingService.Info("Starting SharpDevelop...");
 			try {
+				StartupSettings startup = new StartupSettings();
 				#if DEBUG
-				if (!Debugger.IsAttached) {
-					Application.ThreadException += ShowErrorBox;
-					AppDomain.CurrentDomain.UnhandledException += ShowErrorBox;
-				}
-				#else
-				Application.ThreadException += ShowErrorBox;
-				AppDomain.CurrentDomain.UnhandledException += ShowErrorBox;
-				MessageService.CustomErrorReporter = ShowErrorBox;
+				startup.UseSharpDevelopErrorHandler = !Debugger.IsAttached;
 				#endif
 				
-				// disable RTL: translations for the RTL languages are inactive
-				RightToLeftConverter.RightToLeftLanguages = new string[0];
-				
 				Assembly exe = typeof(SharpDevelopMain).Assembly;
+				startup.ApplicationRootPath = Path.Combine(Path.GetDirectoryName(exe.Location), "..");
+				startup.AllowUserAddIns = true;
+				startup.ConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+				                                       ".ICSharpCode/SharpDevelop2.1");
 				
-				FileUtility.ApplicationRootPath = Path.Combine(Path.GetDirectoryName(exe.Location), "..");
+				startup.AddAddInsFromDirectory(Path.Combine(startup.ApplicationRootPath, "AddIns"));
 				
-				CoreStartup c = new CoreStartup("SharpDevelop");
-				c.ConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-				                                 ".ICSharpCode/SharpDevelop2.1");
-				LoggingService.Info("Starting core services...");
-				c.StartCoreServices();
-				
-				ResourceService.RegisterNeutralStrings(new ResourceManager("Resources.StringResources", exe));
-				ResourceService.RegisterNeutralImages(new ResourceManager("Resources.BitmapResources", exe));
-				
-				RegisterDoozers();
-				
-				StringParser.RegisterStringTagProvider(new SharpDevelopStringTagProvider());
-				
-				LoggingService.Info("Looking for AddIns...");
-				c.AddAddInsFromDirectory(Path.Combine(FileUtility.ApplicationRootPath, "AddIns"));
-				
-				c.ConfigureExternalAddIns(Path.Combine(PropertyService.ConfigDirectory, "AddIns.xml"));
-				c.ConfigureUserAddIns(Path.Combine(PropertyService.ConfigDirectory, "AddInInstallTemp"),
-				                      Path.Combine(PropertyService.ConfigDirectory, "AddIns"));
-				
-				LoggingService.Info("Loading AddInTree...");
-				c.RunInitialization();
+				SharpDevelopHost host = new SharpDevelopHost(AppDomain.CurrentDomain, startup);
 				
 				string[] fileList = SplashScreenForm.GetRequestedFileList();
 				if (fileList.Length > 0) {
@@ -192,37 +129,16 @@ namespace ICSharpCode.SharpDevelop
 					}
 				}
 				
-				LoggingService.Info("Initializing workbench...");
-				// .NET base autostarts
-				// taken out of the add-in tree for performance reasons (every tick in startup counts)
-				WorkbenchSingleton.InitializeWorkbench();
-				
-				// initialize workbench-dependent services:
-				ProjectService.InitializeService();
-				
-				if (SplashScreenForm.SplashScreen != null) {
-					SplashScreenForm.SplashScreen.Dispose();
-				}
-				
-				bool exception = true;
-				// finally start the workbench.
-				try {
-					LoggingService.Info("Starting workbench...");
-					new StartWorkbenchCommand().Run(fileList);
-					exception = false;
-				} finally {
-					LoggingService.Info("Unloading services...");
-					try {
-						ProjectService.CloseSolution();
-						FileService.Unload();
-						PropertyService.Save();
-					} catch (Exception ex) {
-						if (exception)
-							LoggingService.Warn("Exception during unloading after exception", ex);
-						else
-							MessageService.ShowError(ex);
+				host.BeforeRunWorkbench += delegate {
+					if (SplashScreenForm.SplashScreen != null) {
+						SplashScreenForm.SplashScreen.BeginInvoke(new MethodInvoker(SplashScreenForm.SplashScreen.Dispose));
 					}
-				}
+				};
+				
+				WorkbenchSettings workbenchSettings = new WorkbenchSettings();
+				workbenchSettings.RunOnNewThread = false;
+				workbenchSettings.UseTipOfTheDay = true;
+				host.RunWorkbench(workbenchSettings);
 			} finally {
 				LoggingService.Info("Leaving RunApplication()");
 			}
@@ -241,41 +157,6 @@ namespace ICSharpCode.SharpDevelop
 				LoggingService.Error(ex);
 				return false;
 			}
-		}
-		
-		static void RegisterDoozers()
-		{
-			AddInTree.ConditionEvaluators.Add("ActiveContentExtension", new ActiveContentExtensionConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("ActiveViewContentUntitled", new ActiveViewContentUntitledConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("ActiveWindowState", new ActiveWindowStateConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("SolutionOpen", new SolutionOpenConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("DebuggerSupports", new DebuggerSupportsConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("IsProcessRunning", new IsProcessRunningConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("OpenWindowState", new OpenWindowStateConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("WindowActive", new WindowActiveConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("WindowOpen", new WindowOpenConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("ProjectActive", new ProjectActiveConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("TextContent", new ICSharpCode.SharpDevelop.DefaultEditor.Conditions.TextContentConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("BrowserLocation", new ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserLocationConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("RefactoringProviderSupports", new Refactoring.RefactoringProviderSupportsConditionEvaluator());
-			// TODO: is there a way to automate ConditionEvaluator registration via reflection? or to specify it in the .addin files?
-			AddInTree.ConditionEvaluators.Add("CanNavigateBack", new CanNavigateBackConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("CanNavigateForward", new CanNavigateForwardConditionEvaluator());
-			
-			AddInTree.Doozers.Add("DialogPanel", new DialogPanelDoozer());
-			AddInTree.Doozers.Add("DisplayBinding", new DisplayBindingDoozer());
-			AddInTree.Doozers.Add("Pad", new PadDoozer());
-			AddInTree.Doozers.Add("LanguageBinding", new LanguageBindingDoozer());
-			AddInTree.Doozers.Add("Parser", new ParserDoozer());
-			AddInTree.Doozers.Add("EditAction", new ICSharpCode.SharpDevelop.DefaultEditor.Codons.EditActionDoozer());
-			AddInTree.Doozers.Add("SyntaxMode", new ICSharpCode.SharpDevelop.DefaultEditor.Codons.SyntaxModeDoozer());
-			AddInTree.Doozers.Add("BrowserSchemeExtension", new ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer());
-			AddInTree.Doozers.Add("CodeCompletionBinding", new ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionBindingDoozer());
-			AddInTree.Doozers.Add("Debugger", new DebuggerDoozer());
-			AddInTree.Doozers.Add("Directory", new DirectoryDoozer());
-			AddInTree.Doozers.Add("TaskBoundAdditionalLogger", new TaskBoundAdditionalLoggerDoozer());
-			
-			MenuCommand.LinkCommandCreator = delegate(string link) { return new LinkCommand(link); };
 		}
 	}
 }

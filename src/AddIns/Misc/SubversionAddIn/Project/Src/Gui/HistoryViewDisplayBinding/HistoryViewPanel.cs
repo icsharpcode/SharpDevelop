@@ -68,6 +68,7 @@ namespace ICSharpCode.Svn
 			Controls.Add(mainTab);
 			
 			Thread logMessageThread = new Thread(new ThreadStart(GetLogMessages));
+			logMessageThread.Name = "svnLogMessage";
 			logMessageThread.IsBackground = true;
 			logMessageThread.Start();
 		}

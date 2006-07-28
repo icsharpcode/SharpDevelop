@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 namespace ICSharpCode.FormsDesigner
 {
 	[Serializable()]
-	public class FormsDesignerLoadException : ApplicationException
+	public class FormsDesignerLoadException : Exception
 	{
 		public FormsDesignerLoadException() : base()
 		{

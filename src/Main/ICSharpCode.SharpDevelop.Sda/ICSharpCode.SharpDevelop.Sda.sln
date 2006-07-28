@@ -1,0 +1,6 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.1.0.1602
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Sda", "ICSharpCode.SharpDevelop.Sda.csproj", "{80318B5F-A25D-45AB-8A95-EF31D2370A4C}"
+EndProject
+Global
+EndGlobal

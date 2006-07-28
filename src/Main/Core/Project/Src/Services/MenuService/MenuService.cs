@@ -90,7 +90,10 @@ namespace ICSharpCode.Core
 		
 		public static void ShowContextMenu(object owner, string addInTreePath, Control parent, int x, int y)
 		{
-			CreateContextMenu(owner, addInTreePath).Show(parent, new Point(x, y));
+			ContextMenuStrip menu = CreateContextMenu(owner, addInTreePath);
+			if (menu != null) {
+				menu.Show(parent, new Point(x, y));
+			}
 		}
 		
 		class QuickInsertMenuHandler

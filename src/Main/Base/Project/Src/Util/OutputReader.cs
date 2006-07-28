@@ -36,6 +36,7 @@ namespace ICSharpCode.SharpDevelop.Util
 		public void Start()
 		{
 			thread = new Thread(new ThreadStart(ReadOutput));
+			thread.Name = "OutputReader";
 			thread.Start();
 		}
 		

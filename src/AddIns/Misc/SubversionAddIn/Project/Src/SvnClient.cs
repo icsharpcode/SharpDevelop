@@ -186,6 +186,7 @@ namespace ICSharpCode.Svn
 			WriteMid(operationName);
 			
 			Thread thread = new Thread(new ThreadStart(new ThreadStartWrapper(threadStart).Start));
+			thread.Name = "SvnOperation";
 			thread.IsBackground = true;
 			inOperationForm = new InOperationDialog(operationName, thread);
 			inOperationForm.Owner = (Form)WorkbenchSingleton.Workbench;

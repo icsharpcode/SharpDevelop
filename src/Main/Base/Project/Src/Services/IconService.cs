@@ -32,6 +32,7 @@ namespace ICSharpCode.Core
 		static IconService()
 		{
 			Thread myThread = new Thread(new ThreadStart(LoadThread));
+			myThread.Name = "IconLoader";
 			myThread.IsBackground = true;
 			myThread.Priority = ThreadPriority.Normal;
 			myThread.Start();

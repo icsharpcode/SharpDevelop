@@ -1,11 +1,12 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
+using System.Runtime.Serialization;
 
 namespace ICSharpCode.SharpDevelop.Util
 {
@@ -13,10 +14,22 @@ namespace ICSharpCode.SharpDevelop.Util
 	/// An exception thrown by a <see cref="ProcessRunner"/>
 	/// instance.
 	/// </summary>
+	[Serializable()]
 	public class ProcessRunnerException : ApplicationException
 	{
-		public ProcessRunnerException(string message)
-			: base(message)
+		public ProcessRunnerException() : base()
+		{
+		}
+		
+		public ProcessRunnerException(string message) : base(message)
+		{
+		}
+		
+		public ProcessRunnerException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
+		
+		protected ProcessRunnerException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

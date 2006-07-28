@@ -107,6 +107,7 @@ namespace ICSharpCode.Core
 				}
 			}
 			loadSolutionProjectsThread = new Thread(new ThreadStart(LoadSolutionProjects));
+			loadSolutionProjectsThread.Name = "loadSolutionProjects";
 			loadSolutionProjectsThread.Priority = ThreadPriority.BelowNormal;
 			loadSolutionProjectsThread.IsBackground = true;
 			loadSolutionProjectsThread.Start();
@@ -244,6 +245,7 @@ namespace ICSharpCode.Core
 		{
 			abortParserUpdateThread = false;
 			Thread parserThread = new Thread(new ThreadStart(ParserUpdateThread));
+			parserThread.Name = "parser";
 			parserThread.Priority = ThreadPriority.BelowNormal;
 			parserThread.IsBackground  = true;
 			parserThread.Start();
@@ -301,13 +303,12 @@ namespace ICSharpCode.Core
 			object[] workbench;
 			try {
 				workbench = (object[])WorkbenchSingleton.SafeThreadCall(typeof(ParserService), "GetWorkbench");
-			} catch (ObjectDisposedException) {
+			} catch (InvalidOperationException) { // includes ObjectDisposedException
 				// maybe workbench has been disposed while waiting for the SafeThreadCall
-				LoggingService.Warn("ObjectDisposedException while trying to invoke GetWorkbench()");
-				if (abortParserUpdateThread)
-					return; // abort this thread
-				else
-					throw;  // some other error -> re-raise
+				// can occur after workbench unload or after aborting SharpDevelop with
+				// Application.Exit()
+				LoggingService.Warn("InvalidOperationException while trying to invoke GetWorkbench()");
+				return; // abort this thread
 			}
 			if (workbench != null) {
 				IEditable editable = workbench[0] as IEditable;

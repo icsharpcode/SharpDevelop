@@ -6,13 +6,15 @@
 // </file>
 
 using System;
+using System.Runtime.Serialization;
 
 namespace ICSharpCode.NAntAddIn
 {
 	/// <summary>
-	/// The exception that is thrown when a non-fatal 
+	/// The exception that is thrown when a non-fatal
 	/// error occurs in the NAnt add-in.
 	/// </summary>
+	[Serializable()]
 	public class NAntAddInException : ApplicationException
 	{
 		public NAntAddInException()
@@ -21,6 +23,14 @@ namespace ICSharpCode.NAntAddIn
 		
 		public NAntAddInException(string message)
 			: base(message)
+		{
+		}
+		
+		public NAntAddInException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
+		
+		protected NAntAddInException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

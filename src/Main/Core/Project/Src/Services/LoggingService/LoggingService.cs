@@ -15,7 +15,7 @@ namespace ICSharpCode.Core
 {
 	public static class LoggingService
 	{
-		static readonly ILog log = LogManager.GetLogger(typeof(LoggingService));
+		static ILog log = LogManager.GetLogger(typeof(LoggingService));
 		
 		static LoggingService()
 		{

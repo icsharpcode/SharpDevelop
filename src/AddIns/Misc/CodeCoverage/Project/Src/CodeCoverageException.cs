@@ -6,14 +6,16 @@
 // </file>
 
 using System;
+using System.Runtime.Serialization;
 
 namespace ICSharpCode.CodeCoverage
 {
 	/// <summary>
-	/// The exception that is thrown when a non-fatal 
+	/// The exception that is thrown when a non-fatal
 	/// error occurs in the code coverage add-in.
 	/// </summary>
-	public class CodeCoverageException : ApplicationException
+	[Serializable()]
+	public class CodeCoverageException : Exception
 	{
 		public CodeCoverageException()
 		{
@@ -21,6 +23,14 @@ namespace ICSharpCode.CodeCoverage
 		
 		public CodeCoverageException(string message)
 			: base(message)
+		{
+		}
+		
+		public CodeCoverageException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
+		
+		protected CodeCoverageException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

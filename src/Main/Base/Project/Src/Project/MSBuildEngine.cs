@@ -207,6 +207,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			} else {
 				isRunning = true;
 				Thread thread = new Thread(new ThreadStarter(buildFile, targets, this, callback).Run);
+				thread.Name = "MSBuildEngine";
 				thread.SetApartmentState(ApartmentState.STA);
 				thread.Start();
 			}

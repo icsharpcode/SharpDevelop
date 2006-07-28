@@ -10,7 +10,36 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly=":ICSharpCode.SharpDevelop"/>
+		<Import assembly=":ICSharpCode.SharpDevelop">
+			<ConditionEvaluator name="ActiveContentExtension" class="ICSharpCode.Core.ActiveContentExtensionConditionEvaluator"/>
+			<ConditionEvaluator name="ActiveViewContentUntitled" class="ICSharpCode.Core.ActiveViewContentUntitledConditionEvaluator"/>
+			<ConditionEvaluator name="ActiveWindowState" class="ICSharpCode.Core.ActiveWindowStateConditionEvaluator"/>
+			<ConditionEvaluator name="SolutionOpen" class="ICSharpCode.Core.SolutionOpenConditionEvaluator"/>
+			<ConditionEvaluator name="DebuggerSupports" class="ICSharpCode.Core.DebuggerSupportsConditionEvaluator"/>
+			<ConditionEvaluator name="IsProcessRunning" class="ICSharpCode.Core.IsProcessRunningConditionEvaluator"/>
+			<ConditionEvaluator name="OpenWindowState" class="ICSharpCode.Core.OpenWindowStateConditionEvaluator"/>
+			<ConditionEvaluator name="WindowActive" class="ICSharpCode.Core.WindowActiveConditionEvaluator"/>
+			<ConditionEvaluator name="WindowOpen" class="ICSharpCode.Core.WindowOpenConditionEvaluator"/>
+			<ConditionEvaluator name="ProjectActive" class="ICSharpCode.Core.ProjectActiveConditionEvaluator"/>
+			<ConditionEvaluator name="TextContent" class="ICSharpCode.SharpDevelop.DefaultEditor.Conditions.TextContentConditionEvaluator"/>
+			<ConditionEvaluator name="BrowserLocation" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserLocationConditionEvaluator"/>
+			<ConditionEvaluator name="RefactoringProviderSupports" class="ICSharpCode.SharpDevelop.Refactoring.RefactoringProviderSupportsConditionEvaluator"/>
+			<ConditionEvaluator name="CanNavigateBack" class="ICSharpCode.Core.CanNavigateBackConditionEvaluator"/>
+			<ConditionEvaluator name="CanNavigateForward" class="ICSharpCode.Core.CanNavigateForwardConditionEvaluator"/>
+			
+			<Doozer name="DialogPanel" class="ICSharpCode.Core.DialogPanelDoozer"/>
+			<Doozer name="DisplayBinding" class="ICSharpCode.Core.DisplayBindingDoozer"/>
+			<Doozer name="Pad" class="ICSharpCode.Core.PadDoozer"/>
+			<Doozer name="LanguageBinding" class="ICSharpCode.Core.LanguageBindingDoozer"/>
+			<Doozer name="Parser" class="ICSharpCode.Core.ParserDoozer"/>
+			<Doozer name="EditAction" class="ICSharpCode.SharpDevelop.DefaultEditor.Codons.EditActionDoozer"/>
+			<Doozer name="SyntaxMode" class="ICSharpCode.SharpDevelop.DefaultEditor.Codons.SyntaxModeDoozer"/>
+			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
+			<Doozer name="CodeCompletionBinding" class="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionBindingDoozer"/>
+			<Doozer name="Debugger" class="ICSharpCode.Core.DebuggerDoozer"/>
+			<Doozer name="Directory" class="ICSharpCode.Core.DirectoryDoozer"/>
+			<Doozer name="TaskBoundAdditionalLogger" class="ICSharpCode.SharpDevelop.Project.TaskBoundAdditionalLoggerDoozer"/>
+		</Import>
 		<Import assembly=":ICSharpCode.TextEditor"/>
 	</Runtime>
 	

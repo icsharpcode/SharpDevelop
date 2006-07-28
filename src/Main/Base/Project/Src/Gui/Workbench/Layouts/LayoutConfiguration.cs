@@ -96,11 +96,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 					PropertyService.Set("Workbench.CurrentLayout", value);
 					WorkbenchSingleton.Workbench.WorkbenchLayout.LoadConfiguration();
 					OnLayoutChanged(EventArgs.Empty);
-					#if DEBUG
-					GC.Collect();
-					GC.WaitForPendingFinalizers();
-					GC.Collect();
-					#endif
 				}
 			}
 		}
@@ -148,20 +143,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		
-		static LayoutConfiguration()
+		internal static void LoadLayoutConfiguration()
 		{
-			LoadLayoutConfiguration();
-		}
-		
-		static void LoadLayoutConfiguration()
-		{
-			
-			string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
-			if (File.Exists(Path.Combine(configPath, configFile))) {
-				LoadLayoutConfiguration(Path.Combine(configPath, configFile));
+			if (Layouts.Count == 0) {
+				string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
+				if (File.Exists(Path.Combine(configPath, configFile))) {
+					LoadLayoutConfiguration(Path.Combine(configPath, configFile));
+				}
+				string dataPath = Path.Combine(PropertyService.DataDirectory, "resources" + Path.DirectorySeparatorChar + "layouts");
+				if (File.Exists(Path.Combine(dataPath, configFile))) {
+					LoadLayoutConfiguration(Path.Combine(dataPath, configFile));
+				}
 			}
-			string dataPath   = Path.Combine(PropertyService.DataDirectory, "resources" + Path.DirectorySeparatorChar + "layouts");
-			LoadLayoutConfiguration(Path.Combine(dataPath, configFile));
 		}
 		
 		static void LoadLayoutConfiguration(string layoutConfig)

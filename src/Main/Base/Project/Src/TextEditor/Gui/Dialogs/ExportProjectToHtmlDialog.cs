@@ -485,6 +485,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			StartExporting();
 			exportFilesThread = new Thread(new ThreadStart(ExportFilesThread));
+			exportFilesThread.Name = "exportFiles";
 			exportFilesThread.IsBackground  = true;
 			exportFilesThread.Start();
 		}

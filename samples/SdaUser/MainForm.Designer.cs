@@ -1,0 +1,136 @@
+﻿/*
+ * Created by SharpDevelop.
+ * User: Daniel Grunwald
+ * Date: 26.07.2006
+ * Time: 19:49
+ */
+namespace SdaUser
+{
+	partial class MainForm : System.Windows.Forms.Form
+	{
+		/// <summary>
+		/// Designer variable used to keep track of non-visual components.
+		/// </summary>
+		private System.ComponentModel.IContainer components = null;
+		
+		/// <summary>
+		/// Disposes resources used by the form.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing) {
+				if (components != null) {
+					components.Dispose();
+				}
+			}
+			base.Dispose(disposing);
+		}
+		
+		/// <summary>
+		/// This method is required for Windows Forms designer support.
+		/// Do not change the method contents inside the source code editor. The Forms designer might
+		/// not be able to load this method if it was changed manually.
+		/// </summary>
+		private void InitializeComponent()
+		{
+			this.runButton = new System.Windows.Forms.Button();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.closeButton = new System.Windows.Forms.Button();
+			this.visibleCheckBox = new System.Windows.Forms.CheckBox();
+			this.unloadHostDomainButton = new System.Windows.Forms.Button();
+			this.openFileButton = new System.Windows.Forms.Button();
+			this.groupBox1.SuspendLayout();
+			this.SuspendLayout();
+			// 
+			// runButton
+			// 
+			this.runButton.Location = new System.Drawing.Point(28, 57);
+			this.runButton.Name = "runButton";
+			this.runButton.Size = new System.Drawing.Size(221, 31);
+			this.runButton.TabIndex = 0;
+			this.runButton.Text = "Run Integrated SharpDevelop";
+			this.runButton.UseVisualStyleBackColor = true;
+			this.runButton.Click += new System.EventHandler(this.RunButtonClick);
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Controls.Add(this.closeButton);
+			this.groupBox1.Controls.Add(this.visibleCheckBox);
+			this.groupBox1.Enabled = false;
+			this.groupBox1.Location = new System.Drawing.Point(12, 130);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(268, 92);
+			this.groupBox1.TabIndex = 1;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "groupBox1";
+			// 
+			// closeButton
+			// 
+			this.closeButton.Location = new System.Drawing.Point(6, 50);
+			this.closeButton.Name = "closeButton";
+			this.closeButton.Size = new System.Drawing.Size(123, 23);
+			this.closeButton.TabIndex = 1;
+			this.closeButton.Text = "Close Workbench";
+			this.closeButton.UseVisualStyleBackColor = true;
+			this.closeButton.Click += new System.EventHandler(this.CloseButtonClick);
+			// 
+			// visibleCheckBox
+			// 
+			this.visibleCheckBox.Checked = true;
+			this.visibleCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.visibleCheckBox.Location = new System.Drawing.Point(6, 20);
+			this.visibleCheckBox.Name = "visibleCheckBox";
+			this.visibleCheckBox.Size = new System.Drawing.Size(256, 24);
+			this.visibleCheckBox.TabIndex = 0;
+			this.visibleCheckBox.Text = "WorkbenchVisible";
+			this.visibleCheckBox.UseVisualStyleBackColor = true;
+			this.visibleCheckBox.CheckedChanged += new System.EventHandler(this.VisibleCheckBoxCheckedChanged);
+			// 
+			// unloadHostDomainButton
+			// 
+			this.unloadHostDomainButton.Enabled = false;
+			this.unloadHostDomainButton.Location = new System.Drawing.Point(28, 94);
+			this.unloadHostDomainButton.Name = "unloadHostDomainButton";
+			this.unloadHostDomainButton.Size = new System.Drawing.Size(221, 23);
+			this.unloadHostDomainButton.TabIndex = 2;
+			this.unloadHostDomainButton.Text = "Unload SharpDevelop AppDomain";
+			this.unloadHostDomainButton.UseVisualStyleBackColor = true;
+			this.unloadHostDomainButton.Click += new System.EventHandler(this.UnloadHostDomainButtonClick);
+			// 
+			// openFileButton
+			// 
+			this.openFileButton.Location = new System.Drawing.Point(18, 243);
+			this.openFileButton.Name = "openFileButton";
+			this.openFileButton.Size = new System.Drawing.Size(75, 23);
+			this.openFileButton.TabIndex = 3;
+			this.openFileButton.Text = "Open File";
+			this.openFileButton.UseVisualStyleBackColor = true;
+			this.openFileButton.Click += new System.EventHandler(this.OpenFileButtonClick);
+			// 
+			// MainForm
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.ClientSize = new System.Drawing.Size(292, 334);
+			this.Controls.Add(this.openFileButton);
+			this.Controls.Add(this.unloadHostDomainButton);
+			this.Controls.Add(this.groupBox1);
+			this.Controls.Add(this.runButton);
+			this.Name = "MainForm";
+			this.Text = "SdaUser";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainFormFormClosing);
+			this.groupBox1.ResumeLayout(false);
+			this.ResumeLayout(false);
+		}
+		private System.Windows.Forms.Button openFileButton;
+		private System.Windows.Forms.Button unloadHostDomainButton;
+		private System.Windows.Forms.Button closeButton;
+		private System.Windows.Forms.CheckBox visibleCheckBox;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.Button runButton;
+	}
+}

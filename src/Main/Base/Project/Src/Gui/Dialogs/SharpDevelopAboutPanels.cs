@@ -6,17 +6,11 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.ComponentModel;
-using System.Windows.Forms;
-using System.Resources;
-using System.IO;
-using System.Text;
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -84,8 +78,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		[Serializable()]
 		class ClownFishException : System.Exception
 		{
+			public ClownFishException() : base()
+			{
+			}
+			
+			public ClownFishException(string message) : base(message)
+			{
+			}
+			
+			public ClownFishException(string message, Exception innerException) : base(message, innerException)
+			{
+			}
+			
+			protected ClownFishException(SerializationInfo info, StreamingContext context) : base(info, context)
+			{
+			}
 		}
 		
 		void ThrowExceptionButtonClick(object sender, EventArgs e)

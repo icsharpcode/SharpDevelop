@@ -73,6 +73,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static void InitializeWorkbench()
 		{
+			LayoutConfiguration.LoadLayoutConfiguration();
+			
 			workbench = new DefaultWorkbench();
 			MessageService.MainForm = workbench;
 			

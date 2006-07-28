@@ -8,9 +8,11 @@
 using System;
 using ICSharpCode.Core;
 using SharpQuery.SchemaClass;
+using System.Runtime.Serialization;
 
 namespace SharpQuery.Exceptions
 {
+	[Serializable()]
 	public class ConnectionStringException : Exception
 	{
 		public ConnectionStringException()
@@ -38,6 +40,13 @@ namespace SharpQuery.Exceptions
 			       + message)
 		{
 		}
+		
+		public ConnectionStringException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
+		
+		protected ConnectionStringException(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
+		}
 	}
-
 }

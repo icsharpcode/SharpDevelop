@@ -8,9 +8,11 @@
 using System;
 using ICSharpCode.Core;
 using SharpQuery.SchemaClass;
+using System.Runtime.Serialization;
 
 namespace SharpQuery.Exceptions
 {
+	[Serializable()]
 	public class ExecuteProcedureException : Exception
 	{
 		public ExecuteProcedureException()
@@ -36,6 +38,14 @@ namespace SharpQuery.Exceptions
 			       + "-----------------"
 			       + "\n\r"
 			       + message)
+		{
+		}
+		
+		public ExecuteProcedureException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
+		
+		protected ExecuteProcedureException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

@@ -10,7 +10,7 @@
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>Resources\StartUp.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <ApplicationIcon>.\Resources\SharpDevelop.ico</ApplicationIcon>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <BaseAddress>4194304</BaseAddress>
@@ -20,6 +20,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>Full</DebugType>
@@ -42,18 +44,13 @@
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dialogs\SplashScreen.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SharpDevelopMain.cs" />
-    <Compile Include="Dialogs\ExceptionBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <EmbeddedResource Include="Resources\BitmapResources.resources" />
-    <None Include="Resources\StartUp.snk" />
     <None Include="SharpDevelop.exe.manifest">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -81,6 +78,10 @@
       <Link>Configuration\GlobalAssemblyInfo.template</Link>
     </Content>
     <Content Include="app.template.config" />
+    <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Sda\ICSharpCode.SharpDevelop.Sda.csproj">
+      <Project>{80318B5F-A25D-45AB-8A95-EF31D2370A4C}</Project>
+      <Name>ICSharpCode.SharpDevelop.Sda</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

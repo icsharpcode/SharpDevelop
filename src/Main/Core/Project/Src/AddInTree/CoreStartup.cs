@@ -76,9 +76,24 @@ namespace ICSharpCode.Core
 			MessageService.ProductName = applicationName;
 		}
 		
+		/// <summary>
+		/// Find AddIns by searching all .addin files recursively in <paramref name="addInDir"/>.
+		/// </summary>
 		public void AddAddInsFromDirectory(string addInDir)
 		{
+			if (addInDir == null)
+				throw new ArgumentNullException("addInDir");
 			addInFiles.AddRange(FileUtility.SearchDirectory(addInDir, "*.addin"));
+		}
+		
+		/// <summary>
+		/// Add the specified .addin file.
+		/// </summary>
+		public void AddAddInFile(string addInFile)
+		{
+			if (addInFile == null)
+				throw new ArgumentNullException("addInFile");
+			addInFiles.Add(addInFile);
 		}
 		
 		public void ConfigureExternalAddIns(string addInConfigurationFile)

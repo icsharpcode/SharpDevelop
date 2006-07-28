@@ -7,18 +7,22 @@
 
 // project created on 2/6/2003 at 11:10 AM
 using System;
-using System.Windows.Forms;
 using System.Diagnostics;
-using System.Resources;
-using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Threading;
 using System.Globalization;
+using System.Resources;
+using System.Threading;
+using System.Windows.Forms;
+
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Sda
 {
-	public class ExceptionBox : System.Windows.Forms.Form
+	/// <summary>
+	/// Form used to display display unhandled errors in SharpDevelop.
+	/// </summary>
+	public class ExceptionBox : Form
 	{
 		private System.Windows.Forms.TextBox exceptionTextBox;
 		private System.Windows.Forms.CheckBox copyErrorCheckBox;
@@ -32,6 +36,60 @@ namespace ICSharpCode.SharpDevelop
 		Exception exceptionThrown;
 		string message;
 		
+		internal static void RegisterExceptionBoxForUnhandledExceptions()
+		{
+			Application.ThreadException += ShowErrorBox;
+			AppDomain.CurrentDomain.UnhandledException += ShowErrorBox;
+			MessageService.CustomErrorReporter = ShowErrorBox;
+		}
+		
+		static void ShowErrorBox(object sender, ThreadExceptionEventArgs e)
+		{
+			LoggingService.Error("ThreadException caught", e.Exception);
+			ShowErrorBox(e.Exception, null);
+		}
+		
+		[SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters")]
+		static void ShowErrorBox(object sender, UnhandledExceptionEventArgs e)
+		{
+			Exception ex = e.ExceptionObject as Exception;
+			LoggingService.Fatal("UnhandledException caught", ex);
+			if (e.IsTerminating)
+				LoggingService.Fatal("Runtime is terminating because of unhandled exception.");
+			ShowErrorBox(ex, "Unhandled exception", e.IsTerminating);
+		}
+		
+		static void ShowErrorBox(Exception exception, string message)
+		{
+			ShowErrorBox(exception, message, false);
+		}
+		
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		static void ShowErrorBox(Exception exception, string message, bool mustTerminate)
+		{
+			try {
+				using (ExceptionBox box = new ExceptionBox(exception, message, mustTerminate)) {
+					try {
+						box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+					} catch (InvalidOperationException) {
+						box.ShowDialog();
+					}
+				}
+			} catch (Exception ex) {
+				LoggingService.Warn("Error showing ExceptionBox", ex);
+				MessageBox.Show(exception.ToString(), message, MessageBoxButtons.OK,
+				                MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+			}
+		}
+		
+		/// <summary>
+		/// Creates a new ExceptionBox instance.
+		/// </summary>
+		/// <param name="e">The exception to display</param>
+		/// <param name="message">An additional message to display</param>
+		/// <param name="mustTerminate">If <paramref name="mustTerminate"/> is true, the
+		/// continue button is not available.</param>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public ExceptionBox(Exception e, string message, bool mustTerminate)
 		{
 			this.exceptionThrown = e;
@@ -51,8 +109,7 @@ namespace ICSharpCode.SharpDevelop
 			exceptionTextBox.Text = getClipboardString();
 			
 			try {
-				ResourceManager resources = new ResourceManager("Resources.BitmapResources", typeof(ExceptionBox).Assembly);
-				this.pictureBox.Image = (Bitmap)resources.GetObject("ErrorReport");
+				this.pictureBox.Image = ResourceService.GetBitmap("ErrorReport");
 			} catch {}
 		}
 		
@@ -64,6 +121,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		string getClipboardString()
 		{
 			string str = "";
@@ -114,6 +172,7 @@ namespace ICSharpCode.SharpDevelop
 					Thread th = new Thread((ThreadStart)delegate {
 					                       	ClipboardWrapper.SetText(getClipboardString());
 					                       });
+					th.Name = "CopyInfoToClipboard";
 					th.SetApartmentState(ApartmentState.STA);
 					th.Start();
 				}
@@ -155,6 +214,7 @@ namespace ICSharpCode.SharpDevelop
 			 */
 		}
 		
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		static void StartUrl(string url)
 		{
 			try {
@@ -172,11 +232,14 @@ namespace ICSharpCode.SharpDevelop
 		
 		void CloseButtonClick(object sender, EventArgs e)
 		{
-			if (MessageBox.Show(StringParser.Parse("${res:ICSharpCode.SharpDevelop.ExceptionBox.QuitWarning}"), "SharpDevelop", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes) {
+			if (MessageBox.Show(StringParser.Parse("${res:ICSharpCode.SharpDevelop.ExceptionBox.QuitWarning}"), MessageService.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly)
+			    == DialogResult.Yes)
+			{
 				Application.Exit();
 			}
 		}
 		
+		[SuppressMessage("Microsoft.Globalization", "CA1303")]
 		void InitializeComponent()
 		{
 			this.closeButton = new System.Windows.Forms.Button();

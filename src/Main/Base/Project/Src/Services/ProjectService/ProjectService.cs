@@ -57,12 +57,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void InitializeService()
 		{
-			if (initialized)
-				throw new InvalidOperationException("ProjectService already is initialized");
-			initialized = true;
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += ActiveWindowChanged;
-			FileService.FileRenamed += FileServiceFileRenamed;
-			FileService.FileRemoved += FileServiceFileRemoved;
+			if (!initialized) {
+				initialized = true;
+				WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += ActiveWindowChanged;
+				FileService.FileRenamed += FileServiceFileRenamed;
+				FileService.FileRemoved += FileServiceFileRemoved;
+			}
 		}
 
 		/// <summary>
@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return null;
 		}
-
+		
 		public static void LoadSolutionOrProject(string fileName)
 		{
 			IProjectLoader loader = GetProjectLoader(fileName);

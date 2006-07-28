@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Project;
@@ -61,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			Get<TextBox>("xmlDocumentation").Enabled = Get<CheckBox>("xmlDocumentation").Checked;
 			if (Get<CheckBox>("xmlDocumentation").Checked) {
 				if (Get<TextBox>("xmlDocumentation").Text.Length == 0) {
-					Get<TextBox>("xmlDocumentation").Text = FileUtility.GetRelativePath(baseDirectory, project.OutputAssemblyFullPath) + ".xml";
+					Get<TextBox>("xmlDocumentation").Text = Path.ChangeExtension(FileUtility.GetRelativePath(baseDirectory, project.OutputAssemblyFullPath), ".xml");
 				}
 			} else {
 				Get<TextBox>("xmlDocumentation").Text = "";

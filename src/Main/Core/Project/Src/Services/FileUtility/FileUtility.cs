@@ -45,7 +45,7 @@ namespace ICSharpCode.Core
 		// Call it only when necessary. (see IsEqualFile)
 		
 		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar, Path.VolumeSeparatorChar };
-		static string applicationRootPath = Environment.CurrentDirectory;
+		static string applicationRootPath = AppDomain.CurrentDomain.BaseDirectory;
 		const string fileNameRegEx = @"^([a-zA-Z]:)?[^:]+$";
 		
 		public static string ApplicationRootPath {
@@ -165,7 +165,7 @@ namespace ICSharpCode.Core
 			// Optimized for performance:
 			//return Path.GetFullPath(fileName1.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).ToLower() == Path.GetFullPath(fileName2.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).ToLower();
 			
-			if (fileName1.Length == 0 || fileName2.Length == 0) return false;
+			if (string.IsNullOrEmpty(fileName1) || string.IsNullOrEmpty(fileName2)) return false;
 			
 			char lastChar;
 			lastChar = fileName1[fileName1.Length - 1];
