@@ -50,7 +50,6 @@
     <EmbeddedResource Include="Resources\MyUserControl.xfrm" />
     <Compile Include="Src\ServerBrowserTool.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\Model\DbConnectionInfo.cs" />
     <Compile Include="Src\Model\DbModelInfo.cs" />
     <Compile Include="Src\Connection\ConnectionStringDefinitionDialog.cs" />
     <EmbeddedResource Include="Src\Connection\ConnectionStringDefinitionDialog.resx">
@@ -59,10 +58,9 @@
     <Compile Include="Src\Connection\ConnectionStringDefinitionDialog.Designer.cs" />
     <Compile Include="Src\Connection\DbProvidersService.cs" />
     <Compile Include="Src\ServerBrowserToolController.cs" />
-    <Compile Include="Src\Model\DbConnectionInfoStorage.cs" />
-    <Compile Include="Src\Model\IConnectionInfo.cs" />
     <Compile Include="Src\Viewer\ViewerFactory.cs" />
     <Compile Include="Src\Viewer\IViewer.cs" />
+    <Compile Include="Src\Model\DbModelInfoFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Model" />

@@ -27,7 +27,7 @@ namespace SharpDbTools.Viewer
 		}
 		
 		public static IViewer GetViewer(string metaDataCollectionName, 
-		                                DbConnectionInfo connectionInfo)
+		                                object connectionInfo)
 		{
 			return null;
 		}

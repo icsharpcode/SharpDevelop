@@ -29,8 +29,17 @@ namespace SharpDbTools
 			TreeView dbTree = new TreeView();
 			ctl = new Panel();
 			ctl.Controls.Add(dbTree);
-			TreeNode node = new TreeNode("test");
-			dbTree.Nodes.Add(node);
+			
+			// initialise browser tree
+			
+			dbTree.BeginUpdate();
+			//dbTree.Tag = "Connections";
+			TreeNode connection1 = new TreeNode("Test");
+			TreeNode[] childNodes = new TreeNode[1];
+			childNodes[0] = connection1;
+			TreeNode topNode = new TreeNode("Connections", childNodes);
+			dbTree.Nodes.Add(topNode);
+			dbTree.EndUpdate();
 			
 		}
 		

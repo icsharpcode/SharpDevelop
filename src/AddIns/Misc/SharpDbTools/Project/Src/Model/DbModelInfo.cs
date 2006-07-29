@@ -22,12 +22,25 @@ namespace SharpDbTools.Model
 	/// retrieved from its persisted data. This is intended to allow work to progress against the
 	/// DbModel without requiring a connection to its RDB server.
 	/// </summary>
+	/// 
 	public class DbModelInfo: DataSet
 	{
 		public const string METADATACOLLECTIONS = "MetaDataCollections";
 		
-		public DbModelInfo()
+		public string Name {
+			get {
+				DataTable table = this.Tables["ConnectionInfo"];
+				string name = (string)table.Rows[0]["name"];
+				return name;
+			}
+		}
+		
+		public DbModelInfo(string name, string invariantName, string connectionString)
 		{
+			DataTable table = this.Tables.Add("Connection");
+			table.Columns.Add("name", typeof(string));
+			table.Columns.Add("invariantName", typeof(string));
+			table.Columns.Add("connectionString", typeof(string));
 		}
 		
 		public DataTable MetaDataCollections {
@@ -36,7 +49,14 @@ namespace SharpDbTools.Model
 			}
 		}
 		
-		// TODO: an indexed property of MetaDataCollection
-		//public 
+		public DataTable this[string collectionName] {
+			get {
+				return this.Tables[collectionName];
+			}
+		}
+		
+//		public bool HasModel {
+//			get;
+//		}
 	}
 }
