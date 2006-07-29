@@ -44,7 +44,7 @@ namespace ReportSamples{
 					list.Add(new LastFirst("Matt","Ward","NUnit"));
 					list.Add(new LastFirst("Troy","Simson","Prg."));
 					list.Add(new LastFirst("Peter","Forstmeier","SharpReport"));
-					list.Add(new LastFirst("David","Albert","Prg."));
+					list.Add(new LastFirst("David","Alpert","Prg."));
 					
 //					list.Add(new LastFirst("Sylvana","Schmid"));
 					
