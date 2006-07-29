@@ -227,6 +227,45 @@ namespace ICSharpCode.SharpDevelop.Sda
 		}
 		#endregion
 		
+		#region CreateInstanceInTargetDomain
+		/// <summary>
+		/// Gets the AppDomain used to host SharpDevelop.
+		/// </summary>
+		public AppDomain AppDomain {
+			get {
+				return appDomain;
+			}
+		}
+		
+		/// <summary>
+		/// Creates an instance of the specified type argument in the target AppDomain.
+		/// </summary>
+		/// <param name="arguments">Arguments to pass to the constructor of <paramref name="type"/>.</param>
+		/// <returns>The constructed object.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+		public T CreateInstanceInTargetDomain<T>(params object[] arguments) where T : MarshalByRefObject
+		{
+			Type type = typeof(T);
+			return (T)appDomain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName, arguments);
+		}
+		
+		/// <summary>
+		/// Creates an instance of the specified type in the target AppDomain.
+		/// </summary>
+		/// <param name="type">Type to create an instance of.</param>
+		/// <param name="arguments">Arguments to pass to the constructor of <paramref name="type"/>.</param>
+		/// <returns>The constructed object.</returns>
+		[SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters")]
+		public object CreateInstanceInTargetDomain(Type type, params object[] arguments)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			if (typeof(MarshalByRefObject).IsAssignableFrom(type) == false)
+				throw new ArgumentException("type does not inherit from MarshalByRefObject", "type");
+			return appDomain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName, arguments);
+		}
+		#endregion
+		
 		#region Callback Events
 		System.ComponentModel.ISynchronizeInvoke invokeTarget;
 		

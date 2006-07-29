@@ -39,5 +39,10 @@
     <Compile Include="Main.cs" />
     <None Include="Readme.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="UpdateAssemblyInfo.exe.manifest">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
