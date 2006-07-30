@@ -50,7 +50,7 @@ namespace SharpDbTools.Model
 			return dbModel;
 		}
 		
-		public DbModelInfo Load(string name)
+		public DbModelInfo LoadFromConnection(string name)
 		{
 			// get the DbModelInfo
 			
@@ -100,9 +100,11 @@ namespace SharpDbTools.Model
 			// TODO: save the 	
 		}
 		
-		public void RetrieveFromFiles()
+		public void LoadFromFiles()
 		{
 			// TODO: load DbModelInfo's from file system
 		}
+		
+		
 	}
 }
