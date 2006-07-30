@@ -314,6 +314,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		/// <summary>
+		/// Closes and disposes a <see cref="IPadContent"/>.
+		/// </summary>
+		public void UnloadPad(PadDescriptor content)
+		{
+			PadContentCollection.Remove(content);
+			
+			if (layout != null) {
+				layout.UnloadPad(content);
+			}
+			content.Dispose();
+		}
+		
 		public void UpdateRenderer()
 		{
 			bool pro = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.UseProfessionalRenderer", true);

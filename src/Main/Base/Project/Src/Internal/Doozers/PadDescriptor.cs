@@ -11,20 +11,54 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Description of PadDescriptor.
+	/// Describes a pad.
 	/// </summary>
 	public class PadDescriptor : IDisposable
 	{
-		Codon       codon;
+		string @class;
+		string title;
+		string icon;
+		string category;
+		string shortcut;
+		
+		AddIn addIn;
+		Type padType;
+		
 		IPadContent padContent;
 		bool        padContentCreated;
+		
+		/// <summary>
+		/// Creates a new pad descriptor from the AddIn tree.
+		/// </summary>
+		public PadDescriptor(Codon codon)
+		{
+			addIn = codon.AddIn;
+			shortcut = codon.Properties["shortcut"];
+			category = codon.Properties["category"];
+			icon = codon.Properties["icon"];
+			title = codon.Properties["title"];
+			@class = codon.Properties["class"];
+		}
+		
+		/// <summary>
+		/// Creates a pad descriptor for the specified pad type.
+		/// </summary>
+		public PadDescriptor(Type padType, string title, string icon)
+		{
+			this.padType = padType;
+			this.@class = padType.FullName;
+			this.title = title;
+			this.icon = icon;
+			this.category = "none";
+			this.shortcut = "";
+		}
 		
 		/// <summary>
 		/// Returns the title of the pad.
 		/// </summary>
 		public string Title {
 			get {
-				return codon.Properties["title"];
+				return title;
 			}
 		}
 		
@@ -34,7 +68,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public string Icon {
 			get {
-				return codon.Properties["icon"];
+				return icon;
 			}
 		}
 		
@@ -44,7 +78,12 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public string Category {
 			get {
-				return codon.Properties["category"];
+				return category;
+			}
+			set {
+				if (value == null)
+					throw new ArgumentNullException("value");
+				category = value;
 			}
 		}
 		
@@ -53,13 +92,21 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public string Shortcut {
 			get {
-				return codon.Properties["shortcut"];
+				return shortcut;
+			}
+			set {
+				if (value == null)
+					throw new ArgumentNullException("value");
+				shortcut = value;
 			}
 		}
 		
+		/// <summary>
+		/// Gets the name of the pad class.
+		/// </summary>
 		public string Class {
 			get {
-				return codon.Properties["class"];
+				return @class;
 			}
 		}
 		
@@ -99,7 +146,11 @@ namespace ICSharpCode.Core
 			#endif
 			if (!padContentCreated) {
 				padContentCreated = true;
-				padContent = (IPadContent)codon.AddIn.CreateObject(Class);
+				if (addIn != null) {
+					padContent = (IPadContent)addIn.CreateObject(Class);
+				} else {
+					padContent = (IPadContent)Activator.CreateInstance(padType);
+				}
 			}
 		}
 		
@@ -111,11 +162,6 @@ namespace ICSharpCode.Core
 				WorkbenchSingleton.Workbench.WorkbenchLayout.ShowPad(this);
 			}
 			WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this);
-		}
-		
-		public PadDescriptor(Codon codon)
-		{
-			this.codon = codon;
 		}
 	}
 }

@@ -333,9 +333,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			boldFont            = ResourceService.LoadFont("Tahoma", 9, FontStyle.Bold);
 			italicFont          = ResourceService.LoadFont("Tahoma", 9, FontStyle.Italic);
 			
-			monospacedFont       = ResourceService.LoadFont("Courier New", 10);
-			boldMonospacedFont   = ResourceService.LoadFont("Courier New", 10, FontStyle.Bold);
-			italicMonospacedFont = ResourceService.LoadFont("Courier New", 10, FontStyle.Italic);
+			monospacedFont       = ResourceService.DefaultMonospacedFont;
+			boldMonospacedFont   = ResourceService.LoadDefaultMonospacedFont(FontStyle.Bold);
+			italicMonospacedFont = ResourceService.LoadDefaultMonospacedFont(FontStyle.Italic);
 		}
 		#endregion
 		

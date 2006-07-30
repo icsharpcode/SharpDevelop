@@ -66,6 +66,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void ShowPad(PadDescriptor content);
 		
 		/// <summary>
+		/// Closes and disposes a <see cref="IPadContent"/>.
+		/// </summary>
+		void UnloadPad(PadDescriptor content);
+		
+		/// <summary>
 		/// Returns a pad from a specific type.
 		/// </summary>
 		PadDescriptor GetPad(Type type);
@@ -83,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Re-initializes all components of the workbench, should be called
 		/// when a special property is changed that affects layout stuff.
-		/// (like language change) 
+		/// (like language change)
 		/// </summary>
 		void RedrawAllComponents();
 		
@@ -91,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Is called, when a workbench view was opened
 		/// </summary>
 		/// <example>
-		/// WorkbenchSingleton.WorkbenchCreated += delegate { 
+		/// WorkbenchSingleton.WorkbenchCreated += delegate {
 		/// 	WorkbenchSingleton.Workbench.ViewOpened += ...;
 		/// };
 		/// </example>

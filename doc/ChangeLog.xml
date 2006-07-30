@@ -1,4 +1,69 @@
 ﻿<ChangeLog project="SharpDevelop">
+  <Change author="Daniel Grunwald" date="07/28/2006">Add ICSharpCode.SharpDevelop.Sda and SdaUser example application.</Change>
+  <Change author="Peter Forstmeier" date="07/28/2006">Samples for IList as DataSource, EventLogger is a Report that shows dynamic use of images in a Report,ContributersList shows a couple of Contributers </Change>
+  <Change author="Peter Forstmeier" date="07/28/2006">Iamges can be set/changed at runtime</Change>
+  <Change author="Peter Forstmeier" date="07/27/2006">More fixes from FxCop</Change>
+  <Change author="Peter Forstmeier" date="07/27/2006">Work on Collections as DataSource. Fixed some stuff from FxCop</Change>
+  <Change author="dickonfield" date="07/26/2006">work in progress - added more detail around connection, metadata and object view management</Change>
+  <Change author="Daniel Grunwald" date="07/25/2006">Remove unnecessary usage of Assembly.GetEntryAssembly</Change>
+  <Change author="Peter Forstmeier" date="07/24/2006">Fixed a problem with Fonts, make some changes from FxCop</Change>
+  <Change author="Peter Forstmeier" date="07/24/2006">Update SharpReport Examples</Change>
+  <Change author="Daniel Grunwald" date="07/22/2006">Implemented enum completion after "return".</Change>
+  <Change author="Daniel Grunwald" date="07/22/2006">Fixed SD2-920: Refactoring menu options for enums contains invalid options</Change>
+  <Change author="Daniel Grunwald" date="07/22/2006">When creating a property in VB, rename the field if it would conflict with the property name (fixes SD2-947)</Change>
+  <Change author="Daniel Grunwald" date="07/22/2006">Fixed some translation issues.</Change>
+  <Change author="Daniel Grunwald" date="07/21/2006">SD2-945: Typing a declaration of two or more variables in the same line (VB) throws exception</Change>
+  <Change author="Daniel Grunwald" date="07/21/2006">Move files to match new namespace structure.</Change>
+  <Change author="Daniel Grunwald" date="07/21/2006">Improved NRefactory public API (moving classes to other namespaces etc.)</Change>
+  <Change author="Peter Forstmeier" date="07/21/2006">Fixed Unbound printing for FormSheet Reports</Change>
+  <Change author="Daniel Grunwald" date="07/21/2006">Fixed SD2-891: Content of VB 'With' statement not converted correctly to C#
+Fixed SD2-894: Abstract properties declaration not converted correctly from VB to C#
+Fixed SD2-895: VB 'Not' operator is not converted correctly to C#
+Fixed SD2-901: VB 'Continue' statement not converted correctly from C#
+Fixed SD2-902: C# 'break' statement not converted correctly to VB</Change>
+  <Change author="Peter Forstmeier" date="07/21/2006">Move samples to SharpDevelop2.1</Change>
+  <Change author="Daniel Grunwald" date="07/21/2006">Fixed SD2-930: VB exponential operator not converted to C#
+Fixed SD2-879: Folding breaks with consecutive operators in VB code
+Fixed SD2-906: Folding breaks on VB property declaration
+Fixed SD2-921: Definitions in one line converted incorrectly from VB to C#
+Fixed SD2-903: 'Using' statement not converted correctly from VB to C#
+Fixed SD2-890: 'uint' type converted incorrectly from C# to VB
+Fixed SD2-907: static method level variables are not translated from VB to C#</Change>
+  <Change author="Mathias Simmack" date="07/20/2006">uploaded a new version of my Help 2.0 register tool including its source</Change>
+  <Change author="Daniel Grunwald" date="07/20/2006">Merged missing SharpReport resources from Corsavy.
+Fixed some bugs in code analysis-AddIn.</Change>
+  <Change author="dickonfield" date="07/19/2006">added addin file</Change>
+  <Change author="Daniel Grunwald" date="07/19/2006">Add "Suppress message" command to FxCop warnings on the error list</Change>
+  <Change author="dickonfield" date="07/19/2006">Added SharpDbTools project to the SharpDevelop.sln</Change>
+  <Change author="Daniel Grunwald" date="07/19/2006">Fixed some FxCop warnings in NRefactory.</Change>
+  <Change author="Daniel Grunwald" date="07/19/2006">Fixed SD2-922: RegEx window not restoring its size after been maximized</Change>
+  <Change author="David Srbecký" date="07/17/2006">Added Debugger.BooInterpreter</Change>
+  <Change author="David Alpert" date="07/17/2006">Fixed SD2-937</Change>
+  <Change author="David Alpert" date="07/17/2006">Fixed SD2-939</Change>
+  <Change author="David Alpert" date="07/17/2006">possible workaround to SD2-941.
+i couldn't reproduce the problem illustrated in SD2-941, but instead this addresses the crash when BooBinding tries to reference FormsDesigner if the FormsDesigner.addin file does not exist.</Change>
+  <Change author="David Alpert" date="07/17/2006">Fixed the following build errors for the SharpDevelop.Tests solution:
+Main\Base\Test\Services_Navigation\NavigationServiceTestFixture.cs(115,52)
+: error CS1026: ) expected
+Main\Base\Test\Services_Navigation\NavigationServiceTestFixture.cs(128,55)
+: error CS0117: 'ICSharpCode.Core.NavigationService' does not contain a definition for 'GetListOfPoints'
+</Change>
+  <Change author="dickonfield" date="07/16/2006" />
+  <Change author="Daniel Grunwald" date="07/16/2006">Allow AddIns to customize the MSBuild logger.</Change>
+  <Change author="Daniel Grunwald" date="07/16/2006">Implemented SD2-572: Enum autocomplete</Change>
+  <Change author="Daniel Grunwald" date="07/16/2006">Implemented SD2-446: Support skipping method bodies in VB Lexer.</Change>
+  <Change author="Daniel Grunwald" date="07/16/2006">NRefactory now preserves blank lines.</Change>
+  <Change author="Daniel Grunwald" date="07/16/2006">Work around MSBuild CopyToOutputDirectory bug.
+Fixed NRefactory unit tests.</Change>
+  <Change author="Daniel Grunwald" date="07/16/2006">New feature: move class to file</Change>
+  <Change author="David Srbecký" date="07/15/2006">ObjectValue split into ObjectValue and ObjectValueClass; 
+Variable submenus implemented in Debugger.Core</Change>
+  <Change author="Daniel Grunwald" date="07/15/2006">NRefactory: use Location structure instead of System.Drawing.Point for source positions.</Change>
+  <Change author="Daniel Grunwald" date="07/15/2006">Boo.InterpreterAddIn now can host multiple interpreters</Change>
+  <Change author="Daniel Grunwald" date="07/15/2006">Some FxCop suggestions to NRefactory.</Change>
+  <Change author="Daniel Grunwald" date="07/15/2006">Update to log4net 1.2.10.</Change>
+  <Change author="David Alpert" date="07/15/2006">Fixed suggestions by FxCop for NavigationService; </Change>
+  <Change author="Daniel Grunwald" date="07/14/2006">Merged Corsavy r1517:1567 to trunk.</Change>
   <Change author="Matt Ward" date="07/12/2006">Search and Replace dialog buttons disabled if no find pattern entered. Search/replace keyboard shortcuts now switch between the search/replace tabs when the search and replace dialog has the focus.</Change>
   <Change author="Matt Ward" date="07/12/2006">SD2-918. Unit tests window - Run tests right click menu option available when no tests are loaded.</Change>
   <Change author="Matt Ward" date="07/12/2006">Added keyboard shortcut to open Code Coverage window. Added text editor right click and edit menu options to show/hide code coverage.</Change>

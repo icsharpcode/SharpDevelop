@@ -127,7 +127,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			properties = (Properties)PropertyService.Get(OutputWindowOptionsPanel.OutputWindowsProperty, new Properties());
 			
-			textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", ResourceService.CourierNew10.ToString()).ToString());
+			textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString()).ToString());
 			properties.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
 			
 			//textEditorControl.ActiveTextAreaControl.TextArea.DoubleClick += TextEditorControlDoubleClick;
@@ -367,7 +367,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ToolbarService.UpdateToolbar(toolStrip);
 			}
 			if (e.Key == "DefaultFont") {
-				textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", ResourceService.CourierNew10.ToString()).ToString());
+				textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString()).ToString());
 			}
 		}
 		

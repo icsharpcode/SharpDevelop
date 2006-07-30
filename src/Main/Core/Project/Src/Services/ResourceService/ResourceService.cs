@@ -215,13 +215,28 @@ namespace ICSharpCode.Core
 		}
 		
 		#region Font loading
-		static Font courierNew10;
+		static Font defaultMonospacedFont;
 		
-		public static Font CourierNew10 {
+		public static Font DefaultMonospacedFont {
 			get {
-				if (courierNew10 == null)
-					courierNew10 = LoadFont("Courier New", 10);
-				return courierNew10;
+				if (defaultMonospacedFont == null) {
+					defaultMonospacedFont = LoadDefaultMonospacedFont(FontStyle.Regular);
+				}
+				return defaultMonospacedFont;
+			}
+		}
+		
+		/// <summary>
+		/// Loads the default monospaced font (Consolas or Courier New).
+		/// </summary>
+		public static Font LoadDefaultMonospacedFont(FontStyle style)
+		{
+			if (Environment.OSVersion.Platform == PlatformID.Win32NT
+			    && Environment.OSVersion.Version.Major >= 6)
+			{
+				return LoadFont("Consolas", 10, style);
+			} else {
+				return LoadFont("Courier New", 10, style);
 			}
 		}
 		

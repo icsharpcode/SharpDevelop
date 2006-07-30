@@ -99,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			((ComboBox)ControlDictionary["textEncodingComboBox"]).SelectedIndex = encodingIndex;
 			encoding = CharacterEncodings.GetEncodingByIndex(encodingIndex).CodePage;
 			
-			Font currentFont = ParseFont(((Properties)CustomizationObject).Get("DefaultFont", ResourceService.CourierNew10.ToString()).ToString());
+			Font currentFont = ParseFont(((Properties)CustomizationObject).Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString()).ToString());
 			
 			for (int i = 6; i <= 24; ++i) {
 				((ComboBox)ControlDictionary["fontSizeComboBox"]).Items.Add(i);
@@ -219,7 +219,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 				return new Font(descr[1], Single.Parse(descr[3]));
 			} catch (Exception ex) {
 				LoggingService.Warn(ex);
-				return ResourceService.CourierNew10;
+				return ResourceService.DefaultMonospacedFont;
 			}
 		}
 	}

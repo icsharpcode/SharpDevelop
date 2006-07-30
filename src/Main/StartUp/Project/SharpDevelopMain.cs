@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop
 				startup.ApplicationRootPath = Path.Combine(Path.GetDirectoryName(exe.Location), "..");
 				startup.AllowUserAddIns = true;
 				startup.ConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-				                                       ".ICSharpCode/SharpDevelop2.1");
+				                                       "ICSharpCode/SharpDevelop2.1");
 				
 				startup.AddAddInsFromDirectory(Path.Combine(startup.ApplicationRootPath, "AddIns"));
 				

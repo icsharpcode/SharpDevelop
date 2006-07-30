@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			ControlDictionary["FontGroupBox"].Controls.Add(fontSelectionPanel);
 			((CheckBox)ControlDictionary["wordWrapCheckBox"]).Checked = properties.Get("WordWrap", true);
 			
-			fontSelectionPanel.CurrentFontString = properties.Get("DefaultFont", ResourceService.CourierNew10.ToString()).ToString();
+			fontSelectionPanel.CurrentFontString = properties.Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString()).ToString();
 		}
 		
 		public override bool StorePanelContents()

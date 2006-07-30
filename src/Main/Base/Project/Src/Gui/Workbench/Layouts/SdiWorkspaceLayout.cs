@@ -469,6 +469,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		public void UnloadPad(PadDescriptor padContent)
+		{
+			if (padContent != null && contentHash.ContainsKey(padContent.Class)) {
+				contentHash[padContent.Class].Close();
+				contentHash[padContent.Class].Dispose();
+				contentHash.Remove(padContent.Class);
+			}
+		}
+		
 		public void ActivatePad(PadDescriptor padContent)
 		{
 			if (padContent != null && contentHash.ContainsKey(padContent.Class)) {

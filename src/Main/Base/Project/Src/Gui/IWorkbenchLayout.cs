@@ -11,7 +11,7 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
-	/// The IWorkbenchLayout object is responsible for the layout of 
+	/// The IWorkbenchLayout object is responsible for the layout of
 	/// the workspace, it shows the contents, chooses the IWorkbenchWindow
 	/// implementation etc. it could be attached/detached at the runtime
 	/// to a workbench.
@@ -48,9 +48,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void ActivatePad(string fullyQualifiedTypeName);
 		
 		/// <summary>
-		/// Hides a new <see cref="IPadContent"/>.
+		/// Hides a <see cref="IPadContent"/>.
 		/// </summary>
 		void HidePad(PadDescriptor content);
+		
+		/// <summary>
+		/// Closes and disposes a <see cref="IPadContent"/>.
+		/// </summary>
+		void UnloadPad(PadDescriptor content);
 		
 		/// <summary>
 		/// returns true, if padContent is visible;

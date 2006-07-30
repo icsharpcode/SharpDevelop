@@ -31,10 +31,6 @@ namespace SdaUser
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-			
-			//
-			// TODO: Add constructor code after the InitializeComponent() call.
-			//
 		}
 		
 		void RunButtonClick(object sender, EventArgs e)
@@ -109,6 +105,7 @@ namespace SdaUser
 			using (OpenFileDialog dlg = new OpenFileDialog()) {
 				if (dlg.ShowDialog() == DialogResult.OK) {
 					if (runButton.Enabled) {
+						// create host with InitialFile set
 						runButton.Enabled = false;
 						unloadHostDomainButton.Enabled = true;
 						
@@ -116,10 +113,32 @@ namespace SdaUser
 						wbSettings.InitialFileList.Add(dlg.FileName);
 						RunWorkbench(wbSettings);
 					} else if (host != null) {
-						host.OpenDocument(dlg.FileName);
+						if (host.IsSolutionOrProject(dlg.FileName)) {
+							// won't occur because no project types are defined
+							// in our reduces .addin file.
+							host.OpenProject(dlg.FileName);
+						} else {
+							host.OpenDocument(dlg.FileName);
+						}
 					}
 				}
 			}
+		}
+		
+		/// <summary>
+		/// This demonstrates how to access SharpDevelop's internals from the host application.
+		/// </summary>
+		void MakeTransparentButtonClick(object sender, System.EventArgs e)
+		{
+			// We need to use a wrapper class to cross the AppDomain barrier.
+			// The assembly containing the wrapper class will be loaded to both AppDomains.
+			// Therefore we don't use our possibly large main application, but a special
+			// assembly just for the interaction.
+			
+			SharpDevelopInteraction.InteractionClass obj;
+			obj = host.CreateInstanceInTargetDomain<SharpDevelopInteraction.InteractionClass>();
+			
+			obj.MakeTransparent();
 		}
 	}
 }

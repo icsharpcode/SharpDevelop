@@ -14,4 +14,15 @@
 			/>
 		</dependentAssembly>
 	</dependency>
+	
+	<trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+		<security>
+			<requestedPrivileges>
+				<!-- this section tells Vista that SharpDevelop runs correctly in standard -->
+				<!-- user mode and does not need file/registry virtualization -->
+				<requestedExecutionLevel level="asInvoker" uiAccess="false"/>
+				<!-- (uiAccess should be used only for UI Accessibility applications) -->
+			</requestedPrivileges>
+		</security>
+	</trustInfo>
 </assembly>

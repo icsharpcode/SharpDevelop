@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return new Font(descr[1], Single.Parse(descr[3]));
 			} catch (Exception ex) {
 				LoggingService.Warn(ex);
-				return ResourceService.CourierNew10;
+				return ResourceService.DefaultMonospacedFont;
 			}
 		}
 		

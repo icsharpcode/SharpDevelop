@@ -37,7 +37,7 @@ namespace ICSharpCode.Svn
 			changesList  = Get<ListView>("changes");
 			revisionList.SelectedIndexChanged += RevisionListViewSelectionChanged;
 			ControlDictionary["commentRichTextBox"].Enabled = false;
-			ControlDictionary["commentRichTextBox"].Font = ResourceService.CourierNew10;
+			ControlDictionary["commentRichTextBox"].Font = ResourceService.DefaultMonospacedFont;
 			
 			// Work around WinForms/XmlForms bug:
 			ControlDictionary["splitter1"].Height = 3;

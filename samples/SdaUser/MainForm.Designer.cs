@@ -36,6 +36,7 @@ namespace SdaUser
 		{
 			this.runButton = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.makeTransparentButton = new System.Windows.Forms.Button();
 			this.closeButton = new System.Windows.Forms.Button();
 			this.visibleCheckBox = new System.Windows.Forms.CheckBox();
 			this.unloadHostDomainButton = new System.Windows.Forms.Button();
@@ -55,18 +56,28 @@ namespace SdaUser
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
+			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 									| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Controls.Add(this.makeTransparentButton);
 			this.groupBox1.Controls.Add(this.closeButton);
 			this.groupBox1.Controls.Add(this.visibleCheckBox);
 			this.groupBox1.Enabled = false;
-			this.groupBox1.Location = new System.Drawing.Point(12, 130);
+			this.groupBox1.Location = new System.Drawing.Point(12, 123);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(268, 92);
+			this.groupBox1.Size = new System.Drawing.Size(268, 82);
 			this.groupBox1.TabIndex = 1;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "groupBox1";
+			// 
+			// makeTransparentButton
+			// 
+			this.makeTransparentButton.Location = new System.Drawing.Point(135, 50);
+			this.makeTransparentButton.Name = "makeTransparentButton";
+			this.makeTransparentButton.Size = new System.Drawing.Size(112, 23);
+			this.makeTransparentButton.TabIndex = 2;
+			this.makeTransparentButton.Text = "Make Transparent";
+			this.makeTransparentButton.UseVisualStyleBackColor = true;
+			this.makeTransparentButton.Click += new System.EventHandler(this.MakeTransparentButtonClick);
 			// 
 			// closeButton
 			// 
@@ -103,7 +114,7 @@ namespace SdaUser
 			// 
 			// openFileButton
 			// 
-			this.openFileButton.Location = new System.Drawing.Point(18, 243);
+			this.openFileButton.Location = new System.Drawing.Point(18, 223);
 			this.openFileButton.Name = "openFileButton";
 			this.openFileButton.Size = new System.Drawing.Size(75, 23);
 			this.openFileButton.TabIndex = 3;
@@ -115,7 +126,7 @@ namespace SdaUser
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(292, 334);
+			this.ClientSize = new System.Drawing.Size(292, 255);
 			this.Controls.Add(this.openFileButton);
 			this.Controls.Add(this.unloadHostDomainButton);
 			this.Controls.Add(this.groupBox1);
@@ -126,6 +137,7 @@ namespace SdaUser
 			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.Button makeTransparentButton;
 		private System.Windows.Forms.Button openFileButton;
 		private System.Windows.Forms.Button unloadHostDomainButton;
 		private System.Windows.Forms.Button closeButton;
