@@ -33,10 +33,9 @@ namespace Debugger
 			this.message = message;
 		}
 
-		public override bool MayHaveSubVariables {
-			get {
-				return false;
-			}
+		protected override bool GetMayHaveSubVariables()
+		{
+			return false;
 		}
 	}
 }

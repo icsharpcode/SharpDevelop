@@ -63,14 +63,35 @@ namespace Debugger
 			}
 		}
 		
-		public abstract bool MayHaveSubVariables {
-			get;
+		public bool MayHaveSubVariables {
+			get {
+				#if DEBUG
+				return true;
+				#else
+				return GetMayHaveSubVariables();
+				#endif
+			}
 		}
 		
-		public virtual VariableCollection SubVariables {
+		protected abstract bool GetMayHaveSubVariables();
+		
+		public VariableCollection SubVariables {
 			get {
-				return new VariableCollection(new Variable[] {});
+				VariableCollection subVars = GetSubVariables();
+				#if DEBUG
+				return new VariableCollection(subVars.Name,
+				                              subVars.Value,
+				                              Util.MergeLists(variable.GetDebugInfo(), subVars.SubCollections).ToArray(),
+				                              subVars.Items);
+				#else
+				return subVars;
+				#endif
 			}
+		}
+		
+		protected virtual VariableCollection GetSubVariables()
+		{
+			return new VariableCollection(new Variable[] {});
 		}
 		
 		public Variable this[string variableName] {

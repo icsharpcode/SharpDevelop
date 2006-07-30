@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 
 using Debugger.Wrappers.CorDebug;
 
@@ -266,6 +267,73 @@ namespace Debugger
 				default: // Unknown type
 					throw new CannotGetValueException("Unknown value type");
 			}
+		}
+		
+		public VariableCollection GetDebugInfo()
+		{
+			return GetDebugInfo(this.RawCorValue);
+		}
+		
+		public static VariableCollection GetDebugInfo(ICorDebugValue corValue)
+		{
+			List<VariableCollection> items = new List<VariableCollection>();
+			
+			if (corValue.Is<ICorDebugValue>()) {
+				List<VariableCollection> more = new List<VariableCollection>();
+				more.Add(new VariableCollection("type", ((CorElementType)corValue.Type).ToString()));
+				more.Add(new VariableCollection("size", corValue.Size.ToString()));
+				more.Add(new VariableCollection("address", corValue.Address.ToString("X")));
+				items.Add(new VariableCollection("ICorDebugValue", "", more, null));
+			}
+			if (corValue.Is<ICorDebugValue2>())         items.Add(new VariableCollection("ICorDebugValue2", "", null, null));
+			if (corValue.Is<ICorDebugGenericValue>()) {
+				List<VariableCollection> more = new List<VariableCollection>();
+				try {
+					byte[] bytes = corValue.CastTo<ICorDebugGenericValue>().RawValue;
+					for(int i = 0; i < bytes.Length; i += 8) {
+						string val = "";
+						for(int j = i; j < bytes.Length && j < i + 8; j++) {
+							val += bytes[j].ToString("X2") + " ";
+						}
+						more.Add(new VariableCollection("data" + i.ToString("X2"), val));
+					}
+				} catch (ArgumentException) {
+					more.Add(new VariableCollection("data", "N/A"));
+				}
+				items.Add(new VariableCollection("ICorDebugGenericValue", "", more, null));
+			}
+			if (corValue.Is<ICorDebugReferenceValue>()) {
+				List<VariableCollection> more = new List<VariableCollection>();
+				ICorDebugReferenceValue refValue = corValue.CastTo<ICorDebugReferenceValue>();
+				bool isNull = refValue.IsNull != 0;
+				more.Add(new VariableCollection("isNull", isNull.ToString()));
+				if (!isNull) {
+					more.Add(new VariableCollection("address", refValue.Value.ToString("X")));
+					VariableCollection deRef = GetDebugInfo(refValue.Dereference());
+					more.Add(new VariableCollection("dereferenced", deRef.Value, deRef.SubCollections, deRef.Items));
+				}
+				items.Add(new VariableCollection("ICorDebugReferenceValue", "", more, null));
+			}
+			if (corValue.Is<ICorDebugHeapValue>())      items.Add(new VariableCollection("ICorDebugHeapValue", "", null, null));
+			if (corValue.Is<ICorDebugHeapValue2>())     items.Add(new VariableCollection("ICorDebugHeapValue2", "", null, null));
+			if (corValue.Is<ICorDebugObjectValue>()) {
+				List<VariableCollection> more = new List<VariableCollection>();
+				bool isValue = corValue.CastTo<ICorDebugObjectValue>().IsValueClass != 0;
+				more.Add(new VariableCollection("isValue", isValue.ToString()));
+				items.Add(new VariableCollection("ICorDebugObjectValue", "", more, null));
+			}
+			if (corValue.Is<ICorDebugObjectValue2>())   items.Add(new VariableCollection("ICorDebugObjectValue2", "", null, null));
+			if (corValue.Is<ICorDebugBoxValue>()) {
+				List<VariableCollection> more = new List<VariableCollection>();
+				VariableCollection unboxed = GetDebugInfo(corValue.CastTo<ICorDebugBoxValue>().Object.CastTo<ICorDebugValue>());
+				more.Add(new VariableCollection("unboxed", unboxed.Value, unboxed.SubCollections, unboxed.Items));
+				items.Add(new VariableCollection("ICorDebugBoxValue", "", more, null));
+			}
+			if (corValue.Is<ICorDebugStringValue>())    items.Add(new VariableCollection("ICorDebugStringValue", "", null, null));
+			if (corValue.Is<ICorDebugArrayValue>())     items.Add(new VariableCollection("ICorDebugArrayValue", "", null, null));
+			if (corValue.Is<ICorDebugHandleValue>())    items.Add(new VariableCollection("ICorDebugHandleValue", "", null, null));
+			
+			return new VariableCollection("$debugInfo", ((CorElementType)corValue.Type).ToString(), items.ToArray(), null);
 		}
 	}
 	

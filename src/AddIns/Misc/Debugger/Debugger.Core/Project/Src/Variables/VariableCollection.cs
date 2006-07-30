@@ -59,10 +59,8 @@ namespace Debugger
 		
 		public bool IsEmpty {
 			get {
-				foreach(VariableCollection col in SubCollections) {
-					if (!col.IsEmpty) return false;
-				}
-				return !Items.GetEnumerator().MoveNext();
+				return !SubCollections.GetEnumerator().MoveNext() &&
+				       !Items.GetEnumerator().MoveNext();
 			}
 		}
 		
@@ -71,12 +69,24 @@ namespace Debugger
 		{
 		}
 		
+		public VariableCollection(string name, string val):this(name, val, null, null)
+		{
+		}
+		
 		public VariableCollection(string name, string val, IEnumerable<VariableCollection> subCollectionsEnum, IEnumerable<Variable> collectionEnum)
 		{
 			this.name = name;
 			this.val = val;
-			this.subCollectionsEnum = subCollectionsEnum;
-			this.collectionEnum = collectionEnum;
+			if (subCollectionsEnum != null) {
+				this.subCollectionsEnum = subCollectionsEnum;
+			} else {
+				this.subCollectionsEnum = new VariableCollection[0];
+			}
+			if (collectionEnum != null) {
+				this.collectionEnum = collectionEnum;
+			} else {
+				this.collectionEnum = new Variable[0];
+			}
 		}
 		
 		

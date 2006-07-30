@@ -133,19 +133,17 @@ namespace Debugger
 			}
 		}
 		
-		public override bool MayHaveSubVariables {
-			get {
-				return true;
-			}
+		protected override bool GetMayHaveSubVariables()
+		{
+			return true;
 		}
 		
-		public override VariableCollection SubVariables {
-			get {
-				return new VariableCollection(GetSubVariables());
-			}
+		protected override VariableCollection GetSubVariables()
+		{
+			return new VariableCollection(GetSubVariablesEnum());
 		}
 		
-		IEnumerable<Variable> GetSubVariables()
+		IEnumerable<Variable> GetSubVariablesEnum()
 		{
 			uint[] indices = new uint[rank];
 			

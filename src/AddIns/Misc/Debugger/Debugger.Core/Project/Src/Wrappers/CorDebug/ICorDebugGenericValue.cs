@@ -12,6 +12,24 @@ namespace Debugger.Wrappers.CorDebug
 	
 	public partial class ICorDebugGenericValue
 	{
+		public unsafe Byte[] RawValue {
+			get {
+				Byte[] retValue = new Byte[(int)Size];
+				IntPtr pValue = Marshal.AllocHGlobal(retValue.Length);
+				GetValue(pValue);
+				Marshal.Copy(pValue, retValue, 0, retValue.Length);
+				Marshal.FreeHGlobal(pValue);
+				return retValue;
+			}
+			set {
+				if (Size != value.Length) throw new ArgumentException("Incorrect length");
+				IntPtr pValue = Marshal.AllocHGlobal(value.Length);
+				Marshal.Copy(value, 0, pValue, value.Length);
+				SetValue(pValue);
+				Marshal.FreeHGlobal(pValue);
+			}
+		}
+		
 		public unsafe object Value {
 			get {
 				object retValue;

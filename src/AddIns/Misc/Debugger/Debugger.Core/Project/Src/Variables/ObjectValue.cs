@@ -78,16 +78,14 @@ namespace Debugger
 			}
 		}
 		
-		public override bool MayHaveSubVariables {
-			get {
-				return true;
-			}
+		protected override bool GetMayHaveSubVariables()
+		{
+			return true;
 		}
 		
-		public override VariableCollection SubVariables {
-			get {
-				return topClass.SubVariables;
-			}
+		protected override VariableCollection GetSubVariables()
+		{
+			return topClass.SubVariables;
 		}
 	}
 }

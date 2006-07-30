@@ -55,10 +55,9 @@ namespace Debugger
 		{
 		}
 
-		public override bool MayHaveSubVariables {
-			get {
-				return false;
-			}
+		protected override bool GetMayHaveSubVariables()
+		{
+			return false;
 		}
 	}
 }

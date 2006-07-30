@@ -381,6 +381,7 @@
     <Compile Include="Src\Variables\Evals\Eval.NewStringEval.cs" />
     <Compile Include="Src\Variables\Variable.cs" />
     <Compile Include="Src\Variables\ObjectValue.cs" />
+    <Compile Include="Src\Debugger\Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

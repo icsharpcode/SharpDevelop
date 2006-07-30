@@ -192,6 +192,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				subMenu[2].Text = subCollection.Name;
 				subMenu[3].Text = subCollection.Value;
 				subMenu.ShowMinusWhileExpanded = true;
+				subMenu.ShowPlus = !subCollection.IsEmpty;
 				
 				EventHandler<DynamicListEventArgs> populate = null;
 				populate = delegate {

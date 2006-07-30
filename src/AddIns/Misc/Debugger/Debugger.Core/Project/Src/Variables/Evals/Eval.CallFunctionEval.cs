@@ -25,14 +25,6 @@ namespace Debugger
 			Variable          thisValue;
 			Variable[]        args;
 			
-			static List<T> MergeLists<T>(IEnumerable<T> a, IEnumerable<T> b)
-			{
-				List<T> newList = new List<T>();
-				if (a != null) newList.AddRange(a);
-				if (b != null) newList.AddRange(b);
-				return newList;
-			}
-			
 			public CallFunctionEval(NDebugger debugger, string moduleName, string containgType, string functionName, bool reevaluateAfterDebuggeeStateChange, Variable thisValue, Variable[] args)
 				:this(debugger, null, reevaluateAfterDebuggeeStateChange, thisValue, args)
 			{
@@ -42,7 +34,7 @@ namespace Debugger
 			}
 			
 			public CallFunctionEval(NDebugger debugger, ICorDebugFunction corFunction, bool reevaluateAfterDebuggeeStateChange, Variable thisValue, Variable[] args)
-				:base(debugger, reevaluateAfterDebuggeeStateChange, thisValue == null? args : MergeLists(new Variable[] {thisValue}, args).ToArray())
+				:base(debugger, reevaluateAfterDebuggeeStateChange, thisValue == null? args : Util.MergeLists(new Variable[] {thisValue}, args).ToArray())
 			{
 				this.corFunction = corFunction;
 				this.thisValue = thisValue;
