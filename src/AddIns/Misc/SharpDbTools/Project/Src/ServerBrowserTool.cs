@@ -25,10 +25,12 @@ namespace SharpDbTools
 		/// </summary>
 		public ServerBrowserTool()
 		{
-			controller = new ServerBrowserToolController();
+			controller = ServerBrowserToolController.GetInstance();
 			TreeView dbTree = new TreeView();
 			ctl = new Panel();
 			ctl.Controls.Add(dbTree);
+			
+			dbTree.Dock = DockStyle.Fill;
 			
 			// initialise browser tree
 			

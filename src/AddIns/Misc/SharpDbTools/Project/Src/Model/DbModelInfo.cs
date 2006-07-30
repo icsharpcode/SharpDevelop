@@ -29,14 +29,34 @@ namespace SharpDbTools.Model
 		
 		public string Name {
 			get {
-				DataTable table = this.Tables["ConnectionInfo"];
-				string name = (string)table.Rows[0]["name"];
+				DataTable table = this.Tables[TableNames.ConnectionInfo];
+				string name = (string)table.Rows[0][ColumnNames.Name];
 				return name;
+			}
+		}
+		
+		public string InvariantName {
+			get {
+				DataTable table = this.Tables[TableNames.ConnectionInfo];
+				string invariantName = (string)table.Rows[0][ColumnNames.InvariantName];
+				return invariantName;
+			}
+		}
+		
+		public string ConnectionString {
+			get {
+				DataTable table = this.Tables[TableNames.ConnectionInfo];
+				string connectionString = (string)table.Rows[0][ColumnNames.InvariantName];
+				return connectionString;
 			}
 		}
 		
 		public DbModelInfo(string name, string invariantName, string connectionString)
 		{
+			// create a table in the DbModelInfo to hold this initial info.
+			// this creates a consistent representation of the data and makes
+			// it easier to serialise it
+			
 			DataTable table = this.Tables.Add("Connection");
 			table.Columns.Add("name", typeof(string));
 			table.Columns.Add("invariantName", typeof(string));

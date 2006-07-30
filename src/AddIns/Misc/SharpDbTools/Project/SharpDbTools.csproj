@@ -60,7 +60,9 @@
     <Compile Include="Src\ServerBrowserToolController.cs" />
     <Compile Include="Src\Viewer\ViewerFactory.cs" />
     <Compile Include="Src\Viewer\IViewer.cs" />
-    <Compile Include="Src\Model\DbModelInfoFactory.cs" />
+    <Compile Include="Src\Model\DbModelInfoService.cs" />
+    <Compile Include="Src\Model\TableNames.cs" />
+    <Compile Include="Src\Model\ColumnNames.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Model" />
