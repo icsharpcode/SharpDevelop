@@ -54,9 +54,5 @@ namespace SharpDbTools.Model
 				return this.Tables[collectionName];
 			}
 		}
-		
-//		public bool HasModel {
-//			get;
-//		}
 	}
 }
