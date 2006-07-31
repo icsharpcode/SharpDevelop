@@ -34,15 +34,15 @@ namespace ReportSamples{
 					TestList list = new TestList();
 					
 					list.Add(new LastFirst("Bernhard","Spuida","Core"));
-					list.Add(new LastFirst("Daniel","Grünwald","Core"));
-					list.Add(new LastFirst("Cristoph","Wille","Core"));
+					list.Add(new LastFirst("Daniel","Grunwald","Core"));
+					list.Add(new LastFirst("Christoph","Wille","Core"));
 					
 					list.Add(new LastFirst("Markus","Palme","Prg."));
 					list.Add(new LastFirst("Georg","Brandl","Prg."));
 					list.Add(new LastFirst("David","Srbecky","Debugger"));
 					list.Add(new LastFirst("Dickon","Field","DBTools"));
 					list.Add(new LastFirst("Matt","Ward","NUnit"));
-					list.Add(new LastFirst("Troy","Simson","Prg."));
+					list.Add(new LastFirst("Troy","Simpson","Prg."));
 					list.Add(new LastFirst("Peter","Forstmeier","SharpReport"));
 					list.Add(new LastFirst("David","Alpert","Prg."));
 					
