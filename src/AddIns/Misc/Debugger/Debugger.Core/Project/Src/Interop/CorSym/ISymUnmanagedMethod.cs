@@ -1,7 +1,7 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="David Srbeck�" email="dsrbecky@gmail.com"/>
+//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -38,4 +38,3 @@ namespace Debugger.Interop.CorSym
         void GetSequencePoints([In] uint cPoints, out uint pcPoints, [Out, MarshalAs(UnmanagedType.LPArray)] uint[] offsets, [Out, MarshalAs(UnmanagedType.LPArray)] ISymUnmanagedDocument[] documents, [Out, MarshalAs(UnmanagedType.LPArray)] uint[] lines, [Out, MarshalAs(UnmanagedType.LPArray)] uint[] columns, [Out, MarshalAs(UnmanagedType.LPArray)] uint[] endLines, [Out, MarshalAs(UnmanagedType.LPArray)] uint[] endColumns);
     }
 }
-

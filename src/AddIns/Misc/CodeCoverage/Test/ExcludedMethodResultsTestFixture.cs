@@ -50,4 +50,3 @@ namespace ICSharpCode.CodeCoverage.Tests
 		}
 	}
 }
-

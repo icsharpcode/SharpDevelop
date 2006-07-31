@@ -1,11 +1,9 @@
-/*
- * Created by SharpDevelop.
- * User: Forstmeier Peter
- * Date: 14.11.2004
- * Time: 17:58
- *
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Peter Forstmeier" email="peter.forstmeier@t-online.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.Data;

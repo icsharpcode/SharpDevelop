@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="John Simons" email="johnsimons007@yahoo.com.au"/>
-//     <version>$Revision: 1 $</version>
+//     <version>$Revision$</version>
 // </file>
 
 using System;

@@ -138,6 +138,9 @@ namespace ICSharpCode.SharpDevelop
 				WorkbenchSettings workbenchSettings = new WorkbenchSettings();
 				workbenchSettings.RunOnNewThread = false;
 				workbenchSettings.UseTipOfTheDay = true;
+				for (int i = 0; i < fileList.Length; i++) {
+					workbenchSettings.InitialFileList.Add(fileList[i]);
+				}
 				host.RunWorkbench(workbenchSettings);
 			} finally {
 				LoggingService.Info("Leaving RunApplication()");

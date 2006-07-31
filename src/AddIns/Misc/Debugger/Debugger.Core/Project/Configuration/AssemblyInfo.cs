@@ -17,4 +17,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription("Library for debugging .NET applications")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]		
+[assembly: AssemblyCulture("")]

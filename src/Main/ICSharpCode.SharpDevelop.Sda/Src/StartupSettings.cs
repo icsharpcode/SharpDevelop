@@ -1,9 +1,9 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Daniel Grunwald
- * Date: 26.07.2006
- * Time: 19:45
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.Collections.Generic;

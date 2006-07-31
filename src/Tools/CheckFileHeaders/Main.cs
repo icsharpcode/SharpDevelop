@@ -66,6 +66,10 @@ namespace CheckFileHeaders
 					continue;
 				if (subdir.EndsWith("AddIns\\Misc\\Debugger\\TreeListView\\Project"))
 					continue;
+				if (subdir.EndsWith("AddIns\\Misc\\SharpReport"))
+					continue;
+				if (subdir.EndsWith("AddIns\\Misc\\ComponentInspector"))
+					continue;
 				count += Run(subdir);
 			}
 			return count;
@@ -201,6 +205,14 @@ namespace CheckFileHeaders
 				case "Forstmeier Peter":
 					author = "Peter Forstmeier";
 					return "peter.forstmeier@t-online.de";
+				case "John Simons":
+					return "johnsimons007@yahoo.com.au";
+				case "Dickon Field":
+					return "";
+				case "Robert Zaunere":
+					return "";
+				case "Christian Hornung":
+					return "";
 				case "none":
 					return "";
 				default:
@@ -231,7 +243,7 @@ namespace CheckFileHeaders
 		}
 		
 		#region AnalyzeHeader
-		Regex xmlRegex = new Regex(@"<owner name=""(\w[\w\s]*\w)"" email=""([\w\s@\.]*)""\s?/>");
+		Regex xmlRegex = new Regex(@"<owner name=""(\w[\w\s]*\w)"" email=""([\w\s@\.\-]*)""\s?/>");
 		Regex sdRegex = new Regex(@"\* User: (.*)");
 		
 		// Returns:

@@ -43,4 +43,3 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 		}
 	}
 }
-

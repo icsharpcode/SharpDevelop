@@ -1,4 +1,11 @@
-﻿using System;
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="David Alpert" email="david@spinthemoose.com"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
 using System.IO;
 using System.Xml;
 

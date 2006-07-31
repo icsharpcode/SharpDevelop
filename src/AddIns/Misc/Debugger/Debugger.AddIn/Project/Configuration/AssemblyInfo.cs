@@ -17,4 +17,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription("Debugger for SharpDevelop")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]		
+[assembly: AssemblyCulture("")]

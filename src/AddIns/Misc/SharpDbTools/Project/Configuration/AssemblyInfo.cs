@@ -1,3 +1,10 @@
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Dickon Field" email=""/>
+//     <version>$Revision$</version>
+// </file>
+
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -24,4 +31,3 @@ using System.Runtime.CompilerServices;
 // numbers with the '*' character (the default):
 
 [assembly: AssemblyVersion("1.0.*")]
-
