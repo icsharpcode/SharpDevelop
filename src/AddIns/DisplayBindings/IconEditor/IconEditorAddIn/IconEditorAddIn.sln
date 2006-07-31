@@ -1,0 +1,6 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.1.0.1634
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconEditorAddIn", "IconEditorAddIn.csproj", "{DFB936AD-90EE-4B4F-941E-4F4A636F0D92}"
+EndProject
+Global
+EndGlobal

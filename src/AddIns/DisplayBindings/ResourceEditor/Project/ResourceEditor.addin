@@ -11,6 +11,13 @@
 		<Import assembly="ResourceEditor.dll"/>
 	</Runtime>
 	
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "Resources"
+		            insertbefore="AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.ResourceFiles} (*.resx;*.resources)"
+		            extensions = "*.resx;*.resources"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "ResourceEditor"
 		                class = "ResourceEditor.ResourceEditorDisplayBinding"

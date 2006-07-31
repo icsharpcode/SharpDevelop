@@ -18,7 +18,7 @@
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id         = "BooProject"
 		            insertbefore="AllFiles"
-		            name       = "${res:SharpDevelop.FileFilter.BooPrjFiles}"
+		            name       = "${res:SharpDevelop.FileFilter.BooPrjFiles} (*.booproj)"
 		            class      = "ICSharpCode.SharpDevelop.Project.LoadProject"
 		            extensions = "*.booproj"/>
 	</Path>

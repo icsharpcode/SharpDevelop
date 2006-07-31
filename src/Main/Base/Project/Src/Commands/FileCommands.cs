@@ -212,36 +212,26 @@ namespace ICSharpCode.SharpDevelop.Commands
 				string[] fileFilters  = (string[])(AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string));
 				fdiag.Filter          = String.Join("|", fileFilters);
 				bool foundFilter      = false;
-				// search filter like in the current selected project
-				// TODO: remove duplicate code (FolderNodeCommands has the same)
-				
-				IProject project = ProjectService.CurrentProject;
-				
-				if (project != null) {
-					LanguageBindingDescriptor languageCodon = LanguageBindingService.GetCodonPerLanguageName(project.Language);
-					
-					for (int i = 0; !foundFilter && i < fileFilters.Length; ++i) {
-						for (int j = 0; !foundFilter && j < languageCodon.Supportedextensions.Length; ++j) {
-							if (fileFilters[i].IndexOf(languageCodon.Supportedextensions[j]) >= 0) {
-								fdiag.FilterIndex = i + 1;
-								foundFilter       = true;
-								break;
-							}
-						}
-					}
-				}
 				
 				// search filter like in the current open file
 				if (!foundFilter) {
 					IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 					if (window != null) {
-						for (int i = 0; i < fileFilters.Length; ++i) {
-							if (fileFilters[i].IndexOf(Path.GetExtension(window.ViewContent.FileName == null ? window.ViewContent.UntitledName : window.ViewContent.FileName)) >= 0) {
-								fdiag.FilterIndex = i + 1;
-								break;
+						string extension = Path.GetExtension(window.ViewContent.FileName == null ? window.ViewContent.UntitledName : window.ViewContent.FileName);
+						if (string.IsNullOrEmpty(extension) == false) {
+							for (int i = 0; i < fileFilters.Length; ++i) {
+								if (fileFilters[i].IndexOf(extension) >= 0) {
+									fdiag.FilterIndex = i + 1;
+									foundFilter = true;
+									break;
+								}
 							}
 						}
 					}
+				}
+				
+				if (!foundFilter) {
+					fdiag.FilterIndex = fileFilters.Length;
 				}
 				
 				fdiag.Multiselect     = true;

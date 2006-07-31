@@ -23,6 +23,14 @@
 		            name = "${res:SharpDevelop.FileFilter.VBNetFiles}"
 		            extensions = "*.vb"/>
 	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
+		<FileFilter id         = "VBNetProject"
+		            insertbefore="AllFiles"
+		            name       = "${res:SharpDevelop.FileFilter.VBNetPrjFiles} (*.vbproj)"
+		            class      = "ICSharpCode.SharpDevelop.Project.LoadProject"
+		            extensions = "*.vbproj"/>
+	</Path>
 
 	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
 		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
