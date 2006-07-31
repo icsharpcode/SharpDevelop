@@ -21,6 +21,7 @@ namespace UpdateAssemblyInfo
 		const string globalAssemblyInfo = "Main/GlobalAssemblyInfo.cs";
 		const string configTemplateFile = "Main/StartUp/Project/app.template.config";
 		const string configFile         = "Main/StartUp/Project/SharpDevelop.exe.config";
+		const string configFile2        = "Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config";
 		
 		public static int Main(string[] args)
 		{
@@ -76,7 +77,7 @@ namespace UpdateAssemblyInfo
 				content = r.ReadToEnd();
 			}
 			content = content.Replace("$INSERTVERSION$", fullVersionNumber);
-			if (File.Exists(configFile)) {
+			if (File.Exists(configFile) && File.Exists(configFile2)) {
 				using (StreamReader r = new StreamReader(configFile)) {
 					if (r.ReadToEnd() == content) {
 						// nothing changed, do not overwrite file to prevent recompilation
@@ -86,6 +87,9 @@ namespace UpdateAssemblyInfo
 				}
 			}
 			using (StreamWriter w = new StreamWriter(configFile, false, Encoding.UTF8)) {
+				w.Write(content);
+			}
+			using (StreamWriter w = new StreamWriter(configFile2, false, Encoding.UTF8)) {
 				w.Write(content);
 			}
 		}
