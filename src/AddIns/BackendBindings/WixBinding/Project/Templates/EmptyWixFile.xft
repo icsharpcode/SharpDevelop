@@ -1,0 +1,25 @@
+﻿<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+	<Config name    = "Empty Setup Document"
+		icon        = "Icons.32x32.XMLFileIcon"
+		category    = "Setup"
+		defaultname = "Setup${Number}.wxs"
+		language    = "XML"/>
+	 
+	<Description>Creates an empty setup document.</Description>
+
+	<Files>
+		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+	<Product Name="" 
+	         Manufacturer="" 
+	         Id="${GUID}" 
+	         Language="1033" 
+	         Version="1.0.0.0">
+		<Package Id="${GUID}"/>
+	</Product>
+</Wix>]]>
+		</File>
+	</Files>
+	<AdditionalOptions/>
+</Template>

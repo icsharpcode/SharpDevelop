@@ -1,39 +1,70 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
 // </file>
 
+using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
+
 using System;
-using System.IO;
-using System.Drawing;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Internal.Project;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.WixBinding
 {
-	public class CompilerParametersPanel : AbstractOptionPanel
-	{
-		WixCompilerParameters compilerParameters = null;
-		
+	public class CompilerParametersPanel : AbstractProjectOptionPanel
+	{	
 		public override void LoadPanelContents()
 		{
-			this.compilerParameters = (WixCompilerParameters)((Properties)CustomizationObject).Get("Config");
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.WixBinding.Resources.CompilerParametersPanel.xfrm"));
+			InitializeHelper();
 			
-			System.Windows.Forms.PropertyGrid grid = new System.Windows.Forms.PropertyGrid();
-			grid.Dock = DockStyle.Fill;
-			grid.SelectedObject = compilerParameters;
-			Controls.Add(grid);
+			ConfigurationGuiBinding b;
+			b = helper.BindString("outputPathTextBox", "OutputPath");
+			b.CreateLocationButton("outputPathTextBox");
+			ConnectBrowseFolder("outputPathBrowseButton", "outputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
+
+			b = helper.BindString("baseOutputPathTextBox", "BaseOutputPath");
+			b.CreateLocationButton("baseOutputPathTextBox");
+			ConnectBrowseFolder("baseOutputPathBrowseButton", "baseOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
+			
+			b = helper.BindString("intermediateOutputPathTextBox", "IntermediateOutputPath");
+			b.CreateLocationButton("intermediateOutputPathTextBox");
+			ConnectBrowseFolder("intermediateOutputPathBrowseButton", "intermediateOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
+			
+			b = helper.BindString("wixToolPathTextBox", "WixToolPath");
+			ConnectBrowseFolder("wixToolPathBrowseButton", "wixToolPathTextBox", String.Empty);
+			
+			b = helper.BindString("wixMSBuildExtensionsPathTextBox", "WixMSBuildExtensionsPath");
+			ConnectBrowseFolder("wixMSBuildExtensionsPathBrowseButton", "wixMSBuildExtensionsPathTextBox", String.Empty);
+
+			InitWarnings();
+
+			helper.AddConfigurationSelector(this);
 		}
 		
-		public override bool StorePanelContents()
+		void InitWarnings()
 		{
-			return true;
+			ConfigurationGuiBinding b;
+			b = helper.BindStringEnum("warningLevelComboBox", "WarningLevel",
+			                          "4",
+			                          new StringPair("0", "0"),
+			                          new StringPair("1", "1"),
+			                          new StringPair("2", "2"),
+			                          new StringPair("3", "3"));
+			ChooseStorageLocationButton locationButton = b.CreateLocationButtonInPanel("errorsAndWarningsGroupBox");
+			b = helper.BindString("suppressWarningsTextBox", "NoWarn");
+			b.RegisterLocationButton(locationButton);
+			
+			b = helper.BindBoolean("treatWarningsAsErrorsCheckBox", "TreatWarningsAsErrors", false);
+			b.RegisterLocationButton(locationButton);
 		}
 	}
 }

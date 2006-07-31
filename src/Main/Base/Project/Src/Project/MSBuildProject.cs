@@ -341,7 +341,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		void Start(string program, bool withDebugging)
+		protected void Start(string program, bool withDebugging)
 		{
 			ProcessStartInfo psi = new ProcessStartInfo();
 			psi.FileName = Path.Combine(Directory, program);

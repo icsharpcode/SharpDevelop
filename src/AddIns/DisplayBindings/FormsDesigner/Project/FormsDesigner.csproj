@@ -104,6 +104,7 @@
     </Compile>
     <Compile Include="Src\Gui\OptionPanels\GeneralOptions.cs" />
     <EmbeddedResource Include="Resources\WindowsFormsGeneralOptions.xfrm" />
+    <Compile Include="Src\Services\DesignerSerializationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

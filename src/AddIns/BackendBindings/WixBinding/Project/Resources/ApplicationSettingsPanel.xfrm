@@ -1,0 +1,123 @@
+﻿<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="ApplicationSettingsPanel" />
+    <ClientSize value="{Width=465, Height=370}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="projectInformationGroupBox" />
+        <Location value="8, 136" />
+        <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.ProjectInformation}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="440, 115" />
+        <TabIndex value="7" />
+        <Controls>
+          <System.Windows.Forms.TextBox>
+            <Name value="outputFileNameTextBox" />
+            <TabIndex value="5" />
+            <ReadOnly value="True" />
+            <Size value="322, 21" />
+            <Location value="112, 76" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="label3" />
+            <Location value="6, 76" />
+            <Text value="Output filename:" />
+            <TextAlign value="MiddleRight" />
+            <Size value="100, 23" />
+            <TabIndex value="4" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="projectFileTextBox" />
+            <TabIndex value="3" />
+            <ReadOnly value="True" />
+            <Size value="322, 21" />
+            <Location value="112, 49" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="projectFileLabel" />
+            <Location value="6, 49" />
+            <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.ProjectFile}" />
+            <TextAlign value="MiddleRight" />
+            <Size value="100, 23" />
+            <TabIndex value="2" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="projectFolderTextBox" />
+            <TabIndex value="1" />
+            <ReadOnly value="True" />
+            <Size value="322, 21" />
+            <Location value="112, 22" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="projectFolderLabel" />
+            <Location value="6, 22" />
+            <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.ProjectFolder}" />
+            <TextAlign value="MiddleRight" />
+            <Size value="100, 23" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.Button>
+        <Name value="localizedStringFileBrowseButton" />
+        <Location value="414, 109" />
+        <Text value="..." />
+        <Anchor value="Top, Right" />
+      	<UseVisualStyleBackColor value="True" />
+        <Size value="40, 21" />
+        <TabIndex value="6" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Label>
+        <Name value="localizedStringFileLabel" />
+        <Location value="8, 93" />
+        <Text value="Localized string file:" />
+        <Anchor value="Top, Left, Right" />
+        <TextAlign value="BottomLeft" />
+        <Size value="446, 15" />
+        <TabIndex value="4" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.TextBox>
+        <Name value="localizedStringFileTextBox" />
+        <TabIndex value="5" />
+        <Size value="400, 21" />
+        <Location value="8, 109" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.ComboBox>
+        <Name value="outputTypeComboBox" />
+        <Size value="218, 21" />
+        <TabIndex value="3" />
+        <FormattingEnabled value="True" />
+        <DropDownStyle value="DropDownList" />
+        <Location value="8, 68" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.Label>
+        <Name value="outputTypeLabel" />
+        <Location value="8, 52" />
+        <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.OutputType}" />
+        <TextAlign value="BottomLeft" />
+        <Size value="218, 16" />
+        <TabIndex value="2" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.TextBox>
+        <Name value="outputNameTextBox" />
+        <TabIndex value="1" />
+        <Size value="446, 21" />
+        <Location value="8, 24" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="outputNameLabel" />
+        <Location value="8, 8" />
+        <Text value="Output name:" />
+        <Anchor value="Top, Left, Right" />
+        <TextAlign value="BottomLeft" />
+        <Size value="446, 16" />
+        <TabIndex value="0" />
+      </System.Windows.Forms.Label>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

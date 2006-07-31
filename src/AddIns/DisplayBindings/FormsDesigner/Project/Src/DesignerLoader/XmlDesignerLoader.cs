@@ -13,12 +13,12 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using System.Xml;
 
+using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.FormsDesigner
 {
-	
 	public class XmlDesignerLoader : BasicDesignerLoader, IObjectCreator
 	{
 		TextEditorControl textEditorControl;
@@ -43,6 +43,7 @@ namespace ICSharpCode.FormsDesigner
 			this.host = host;
 			host.AddService(typeof(INameCreationService), new NameCreationService(host));
 			host.AddService(typeof(ComponentSerializationService), new CodeDomComponentSerializationService((IServiceProvider)host));
+			host.AddService(typeof(IDesignerSerializationService), new DesignerSerializationService((IServiceProvider)host));
 			base.BeginLoad(host);
 		}
 		
@@ -135,6 +136,6 @@ namespace ICSharpCode.FormsDesigner
 					throw new System.Exception("Invalid name " + name);
 				}
 			}
-		}
+		}	
 	}
 }

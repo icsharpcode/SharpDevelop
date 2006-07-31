@@ -1,33 +1,23 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
-using System.IO;
-using System.Diagnostics;
-using System.Collections;
-using System.Reflection;
-using System.Resources;
-using System.Windows.Forms;
-using System.Xml;
 using System.CodeDom.Compiler;
-using System.Threading;
-
-using ICSharpCode.SharpDevelop.Internal.Project;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using System.IO;
+using System.Xml;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.WixBinding
 {
 	public class WixLanguageBinding : ILanguageBinding
 	{
-		public const string LanguageName = "WIX";
-		
-		WixExecutionManager executionManager = new WixExecutionManager();
-		WixCompilerManager  compilerManager  = new WixCompilerManager();
+		public const string LanguageName = "Wix";
 		
 		public string Language {
 			get {
@@ -35,58 +25,41 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
-		public void Execute(string filename, bool debug)
+		public void Execute(string fileName, bool debug)
 		{
-			Debug.Assert(executionManager != null);
-			executionManager.Execute(filename, debug);
-		}
-		
-		public void Execute(IProject project, bool debug)
-		{
-			Debug.Assert(executionManager != null);
-			executionManager.Execute(project, debug);
 		}
 		
 		public string GetCompiledOutputName(string fileName)
 		{
-			Debug.Assert(compilerManager != null);
-			return compilerManager.GetCompiledOutputName(fileName);
-		}
-		
-		public string GetCompiledOutputName(IProject project)
-		{
-			Debug.Assert(compilerManager != null);
-			return compilerManager.GetCompiledOutputName(project);
+			return String.Empty;
 		}
 		
 		public bool CanCompile(string fileName)
 		{
-			Debug.Assert(compilerManager != null);
-			return compilerManager.CanCompile(fileName);
+			string ext = Path.GetExtension(fileName);
+			if (ext == null) {
+				return false;
+			}
+			return ext.Equals(".wxs", StringComparison.OrdinalIgnoreCase);
 		}
 		
-		public ICompilerResult CompileFile(string fileName)
+		public CompilerResults CompileFile(string fileName)
 		{
-			Debug.Assert(compilerManager != null);
-			WixCompilerParameters param = new WixCompilerParameters();
-			param.OutputAssembly = Path.ChangeExtension(fileName, ".msi");
-			return compilerManager.CompileFile(fileName, param);
+			return null;
 		}
 		
-		public ICompilerResult CompileProject(IProject project)
+		public IProject LoadProject(string fileName, string projectName)
 		{
-			Debug.Assert(compilerManager != null);
-			return compilerManager.CompileProject(project);
-		}
-		
-		public ICompilerResult RecompileProject(IProject project)
-		{
-			return CompileProject(project);
+			return new WixProject(fileName, projectName);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info, XmlElement projectOptions)
 		{
-			return new WixProject(info, projectOptions);
+			WixProject p = new WixProject(info);
+			if (projectOptions != null) {
+				p.ImportOptions(projectOptions.Attributes);
+			}
+			return p;
 		}
 	}
 }

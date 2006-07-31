@@ -1,0 +1,25 @@
+﻿<SharpDevelopControlLibrary version="1.1.0">
+  <Assemblies>
+    <Assembly assembly="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Assembly assembly="WixBinding, Culture=neutral" path=".\..\AddIns\AddIns\BackendBindings\WixBinding"/>
+  </Assemblies>
+  <Categories>
+    <Category name="Setup Dialog Controls" enabled="True">
+      <ToolComponent class="System.Windows.Forms.Button" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.CheckBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ComboBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.GroupBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.Label" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ListBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ListView" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.MaskedTextBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.PictureBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ProgressBar" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.RadioButton" assembly="0" enabled="True" />
+      <ToolComponent class="ICSharpCode.WixBinding.RadioButtonGroupBox" assembly="1" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.RichTextBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.TextBox" assembly="0" enabled="True" /> 
+      <ToolComponent class="System.Windows.Forms.TreeView" assembly="0" enabled="True" />
+    </Category>
+  </Categories>
+</SharpDevelopControlLibrary>

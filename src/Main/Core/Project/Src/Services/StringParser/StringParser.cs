@@ -185,6 +185,8 @@ namespace ICSharpCode.Core
 				return DateTime.Now.ToShortTimeString();
 			if (propertyName.Equals("ProductName", StringComparison.OrdinalIgnoreCase))
 				return MessageService.ProductName;
+			if (propertyName.Equals("GUID", StringComparison.OrdinalIgnoreCase))
+				return Guid.NewGuid().ToString().ToUpperInvariant();
 			
 			if (customTags != null) {
 				for (int j = 0; j < customTags.GetLength(0); ++j) {

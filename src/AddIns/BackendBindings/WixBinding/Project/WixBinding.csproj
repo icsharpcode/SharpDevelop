@@ -12,12 +12,21 @@
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>131596288</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <OutputPath>..\..\..\..\..\AddIns\AddIns\BackendBindings\WixBinding\</OutputPath>
+    <DebugType>Full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>False</DebugSymbols>
@@ -31,32 +40,54 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="ICSharpCode.Core.dll">
-      <HintPath>..\..\..\..\..\bin\ICSharpCode.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ICSharpCode.TextEditor.dll">
-      <HintPath>..\..\..\..\..\bin\ICSharpCode.TextEditor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ICSharpCode.XmlForms.dll">
-      <HintPath>..\..\..\..\..\bin\ICSharpCode.XmlForms.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="SharpDevelop.Base.dll">
-      <HintPath>..\..\..\..\..\bin\SharpDevelop.Base.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="System.Design" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\WixLanguageBinding.cs" />
-    <Compile Include="Src\WixCompilerManager.cs" />
-    <Compile Include="Src\WixExecutionManager.cs" />
-    <Compile Include="Src\Project\WixCompilerParameters.cs" />
     <Compile Include="Src\Project\WixProject.cs" />
     <Compile Include="Src\Gui\CompilerParametersPanel.cs" />
     <Compile Include="Src\Gui\LinkerParametersPanel.cs" />
-    <Compile Include="Src\AssemblyInfo.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Src\Gui\ApplicationSettingsPanel.cs" />
+    <EmbeddedResource Include="Resources\ApplicationSettingsPanel.xfrm" />
+    <EmbeddedResource Include="Resources\CompilerParametersPanel.xfrm" />
+    <EmbeddedResource Include="Resources\LinkerParametersPanel.xfrm" />
+    <Compile Include="Src\Gui\PreprocessorVariablesPanel.cs" />
+    <Compile Include="Src\Gui\NameValueListEditor.cs" />
+    <Compile Include="Src\Gui\SemicolonSeparatedNameValueListBinding.cs" />
+    <Compile Include="Src\Project\WixLibraryProjectItem.cs" />
+    <Compile Include="Src\Project\WixProjectNodeBuilder.cs" />
+    <Compile Include="Src\Project\WixLibraryFolderNode.cs" />
+    <Compile Include="Src\Project\WixLibraryNode.cs" />
+    <Compile Include="Src\Commands\AddWixLibraryToProject.cs" />
+    <Compile Include="Src\WixDocument.cs" />
+    <Compile Include="Src\WixNamespaceManager.cs" />
+    <Compile Include="Src\Gui\SetupDialogListView.cs" />
+    <Compile Include="Src\Gui\SetupDialogListPad.cs" />
+    <Compile Include="Src\Commands\OpenDialogCommand.cs" />
+    <Compile Include="Src\Commands\ViewDialogXmlCommand.cs" />
+    <Compile Include="Src\Gui\SetupDialogListViewItem.cs" />
+    <Compile Include="Src\Gui\WixDialogDesignerDisplayBinding.cs" />
+    <Compile Include="Src\Gui\WixDialogDesigner.cs" />
+    <Compile Include="Src\WixBindingService.cs" />
+    <Compile Include="Src\Gui\WixDialogDesignerGenerator.cs" />
+    <Compile Include="Src\Gui\WixDialogDesignerLoaderProvider.cs" />
+    <Compile Include="Src\Gui\WixDialogDesignerLoader.cs" />
+    <Compile Include="Src\WixDialog.cs" />
+    <Compile Include="Src\IComponentCreator.cs" />
+    <Compile Include="Src\Gui\SetupDialogErrorListViewItem.cs" />
+    <Compile Include="Src\IFileLoader.cs" />
+    <Compile Include="Src\NameValuePairCollection.cs" />
+    <Compile Include="Src\NameValuePair.cs" />
+    <Compile Include="Src\IWixDialogDesigner.cs" />
+    <Compile Include="Src\WixPropertyParser.cs" />
+    <Compile Include="Src\Gui\SetupDialogControlsSideTab.cs" />
+    <Compile Include="Src\Gui\RadioButtonGroupBox.cs" />
+    <Compile Include="Src\WixDialogException.cs" />
+    <Compile Include="Src\WixDocumentLineSegment.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="WixBinding.addin">
@@ -65,6 +96,51 @@
     <Content Include="Templates\WixProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <Folder Include="Configuration" />
+    <Content Include="..\..\..\..\Tools\wix\wix.targets">
+      <Link>wix.targets</Link>
+    </Content>
+    <Folder Include="Resources" />
+    <Folder Include="Src\Commands" />
+    <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <Content Include="PostBuildEvent.proj" />
+    <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
+      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
+      <Name>FormsDesigner</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <Content Include="Templates\EmptyWixFile.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\WixDialog.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <Content Include="Templates\EmptyWixProject.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SetupDialogControlLibrary.sdcl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <Import Project="PostBuildEvent.proj" />
 </Project>

@@ -1,36 +1,157 @@
 <AddIn name        = "WiX binding"
-       author      = "Mike Krueger"
-       copyright   = "GPL"
-       url         = "http://www.icsharpcode.net"
-       description = "Binding for the WiX installer."
-       version     = "1.0.0">
+       author      = "Matt Ward"
+       copyright   = "prj:///doc/copyright.txt"
+       url         = "http://icsharpcode.net"
+       description = "Binding for the WiX installer.">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.WixBinding"/>
+		<Dependency addin = "ICSharpCode.FormsDesigner"/>
+	</Manifest>
 	
 	<Runtime>
+		<Import assembly = "$ICSharpCode.FormsDesigner/FormsDesigner.dll"/>
 		<Import assembly = "WixBinding.dll"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	
+	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
+		<FileFilter id           = "WixProject"
+		            insertbefore = "AllFiles"
+		            name         = "WiX Project Files (*.wixproj)"
+		            class        = "ICSharpCode.SharpDevelop.Project.LoadProject"
+		            extensions   = "*.wixproj"/>
+	</Path>
+	
+
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "Wix"
-		            insertafter="SharpDevelop XFrms"
 		            insertbefore="AllFiles"
-		            name = "Wix Files (*.wxs)"
-		            extensions = "*.wxs"/>
+		            name = "WiX files (*.wxs;*.wxi))"
+		            extensions = "*.wxs;*.wxi"/>
 	</Path>
 
-	<Path name = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
-		<Condition activeproject="WIX">
-			<DialogPanel id = "WixCompilerParametersPanel"
-			             label = "Compiler"
-			             class = "ICSharpCode.WixBinding.CompilerParametersPanel"/>
-			<DialogPanel id = "WixLinkerParametersPanel"
-			             label = "Linker"
-			             class = "ICSharpCode.WixBinding.LinkerParametersPanel"/>
-		</Condition>
+	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
+		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
+		<String id="light" text = "light"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/BackendBindings/Templates">
+		<Directory id = "WiX" path = "./Templates" />
+	</Path>
+
+	<Path name = "/AddIns/FileTypeRegisterer/FileTypes">
+		<FiletypeAssociation
+			id = "wixproj"
+			insertafter = "sln"
+			insertbefore = "sdaddin"
+			autoRegister = "True"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/prjx.ico"
+			text = "WiX Project"/>
+	</Path>
+	
+	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/Wix">
+		<DialogPanel id = "ApplicationSettings"
+			         label = "Application"
+			         class = "ICSharpCode.WixBinding.ApplicationSettingsPanel"/>
+		<DialogPanel id    = "BuildEvents"
+		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
+		<DialogPanel id = "WixCompiler"
+			         label = "${res:Dialog.ProjectOptions.BuildOptions}"
+			         class = "ICSharpCode.WixBinding.CompilerParametersPanel"/>
+		<!--<DialogPanel id = "WixLinker"
+			         label = "Linking"
+			         class = "ICSharpCode.WixBinding.LinkerParametersPanel"/>-->
+		<DialogPanel id    = "DebugOptions"
+		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
+		<DialogPanel id    = "PreprocessorVariables"
+		             label = "Preprocessing"
+		             class = "ICSharpCode.WixBinding.PreprocessorVariablesPanel"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding id    = "Wix"
-		                 supportedextensions = ".wxs"
-		                 class = "ICSharpCode.WixBinding.WixLanguageBinding" />
+		<LanguageBinding id                   = "Wix"
+		                 guid                 = "{CFEE4113-1246-4D54-95CB-156813CB8593}"
+		                 supportedextensions  = ".wxs"
+		                 projectfileextension = ".wixproj"
+		                 class                = "ICSharpCode.WixBinding.WixLanguageBinding" />
+	</Path>
+
+	<Path name = "/SharpDevelop/Views/ProjectBrowser/NodeBuilders">
+		<Class id = "WixProjectBuilder"
+		       insertbefore = "DefaultBuilder"
+		       class = "ICSharpCode.WixBinding.WixProjectNodeBuilder"/>
+	</Path>
+	
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
+		<Condition name = "ProjectActive" activeproject="Wix">
+			<MenuItem id = "AddWixLibrary"
+			          label = "Add WiX Library"
+			          insertafter = "AddWebReference"
+			          insertbefore = "AddSeparator"
+			          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
+		</Condition>	       
+	</Path>
+	
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixLibraryFolderNode">
+		<MenuItem id = "AddWixLibrary"
+		          label = "Add WiX Library"
+		          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
+	</Path>
+	
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixLibraryNode">
+		<MenuItem id = "Remove"
+		          label = "${res:Global.RemoveButtonText}"
+		          type = "Item"
+		          icon  = "Icons.16x16.DeleteIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>		
+		<MenuItem id = "PropertiesSeparator" type = "Separator"/>
+		<MenuItem id    = "Properties"
+		          icon  = "Icons.16x16.PropertiesIcon"
+		          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Project">
+		<Condition name = "ProjectActive" activeproject="Wix">
+			<MenuItem id = "AddWixLibrary"
+			          label = "Add WiX Library"
+			          insertafter = "AddWebReference"
+			          insertbefore = "AddSeparator"
+			          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
+		</Condition>
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "WixSetupDialogListPad"
+		     category     = "Tools"
+		     title        = "Setup Dialogs"
+		     icon         = "Setup.Icons.16x16.SetupDialogsPad"
+		     insertafter  = "NAntPad"
+		     insertbefore = "UnitTestingPad"
+		     class        = "ICSharpCode.WixBinding.SetupDialogListPad"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Pads/WixSetupDialogListPad/ContextMenu">
+		<Condition name = "Ownerstate" ownerstate = "ItemSelected" action = "Disable">
+			<MenuItem id = "OpenDialog"
+				icon  = "Icons.16x16.OpenFileIcon"
+				label = "${res:ProjectComponent.ContextMenu.Open}"
+		    	class = "ICSharpCode.WixBinding.OpenDialogCommand"/>
+			<MenuItem id = "ViewCode"
+				label = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
+				icon = "Icons.16x16.FormsDesigner.ViewCode"
+				class = "ICSharpCode.WixBinding.ViewDialogXmlCommand"/>
+		</Condition>
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id    = "WixDialogDesigner"
+		                type  = "Secondary"
+		                class = "ICSharpCode.WixBinding.WixDialogDesignerDisplayBinding"
+		                fileNamePattern = "\.(wxs|wxi)$"/>
 	</Path>
 </AddIn>

@@ -27,7 +27,7 @@ namespace ICSharpCode.XmlEditor
 	/// <summary>
 	/// Wrapper class for the XmlEditor used when displaying the xml file.
 	/// </summary>
-	public class XmlView : AbstractViewContent, IEditable, IClipboardHandler, IParseInformationListener, IMementoCapable, IPrintable, ITextEditorControlProvider, IPositionable
+	public class XmlView : AbstractViewContent, IEditable, IClipboardHandler, IParseInformationListener, IMementoCapable, IPrintable, ITextEditorControlProvider, IPositionable, IUndoHandler
 	{
 		/// <summary>
 		/// The language handled by this view.
@@ -247,7 +247,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public bool EnableRedo {
 			get {
-				return xmlEditor.EnableUndo;
+				return xmlEditor.EnableRedo;
 			}
 		}
 		

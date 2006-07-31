@@ -1,14 +1,10 @@
 <?xml version="1.0"?>
-<Template originator   = "Mike Krueger"
-          created      = "06/10/2001"
-          lastModified = "02/01/2003">
-	
-	<!-- Template Header -->
+<Template originator   = "Mike Krueger">	
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.SetupProject.Name}</Name>
 		<Category>Setup</Category>
 		<Icon>Icons.32x32.EmptyProjectIcon</Icon>
-		<LanguageName>WIX</LanguageName>
+		<LanguageName>Wix</LanguageName>
 		<Description>${res:Templates.Project.SetupProject.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -25,25 +21,22 @@
 		
 		<Project name = "${ProjectName}" directory = ".">
 			<Options/>
+			<PropertyGroup>
+					<DefineConstants>DATADIR=$(SharpDevelopBinPath)\..\data\resources\InstallerBitmaps</DefineConstants>
+			</PropertyGroup>
 			<Files>
-				<File name="Setup.wxs"><![CDATA[<?xml version='1.0'?>
-<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>
-	
-	<Product
-		Id           = 'A0AB2551-A579-42D3-9A90-D6424B3AC2CD'
-		Name         = 'Your Application'
-		Language     = '1033'
-		Version      = '1.0.0.0'
-		Manufacturer = 'Your Company'
-	>
-		
-		<Package
-			Id               = 'A0AB2551-A579-42D3-9A90-D6424B3AC2CD'
-			Description      = '#Description'
-			Comments         = 'Comments'
-			InstallerVersion = '200'
-			Compressed       = 'yes'
-		/>
+				<File name="Setup.wxs"><![CDATA[<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+	<Product Id="${GUID}"
+		Name="Your Application"
+		Language="1033"
+		Version="1.0.0.0"
+		Manufacturer="Your Company">
+		<Package Id="${GUID}"
+			Description="#Description"
+			Comments="Comments"
+			InstallerVersion="200"
+			Compressed="yes"/>
 		
 		<Property Id="AcceptLicense">No</Property>
 		
@@ -70,15 +63,23 @@
 		<Property Id="Button_No">&amp;No</Property>
 		<!--END BUTTON TEXTS-->
 		
-		<CustomAction Id="SET_TARGETDIR" Property="TARGETDIR" Value="[ProgramFilesFolder]\[ProductName]" Execute="firstSequence" />
+		<CustomAction Id="SET_INSTALLDIR" Property="INSTALLDIR" Value="[INSTALLDIR]" Execute="firstSequence" />
 		
 		<!-- INSTALL DESCRIPTION -->
-		<Media Id='1' Cabinet='contents.cab' EmbedCab='yes' />
+		<Media Id="1" Cabinet="contents.cab" EmbedCab="yes" />
 		
-		<Directory Id='TARGETDIR' Name='SourceDir'>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder" Name="PFiles">
+				<Directory Id="INSTALLDIR" Name="YourApp" LongName="Your Application">
+					<Component Id="MyComponent" Guid="${GUID}" DiskId="1">
+						<File Id="LicenseFile" Name="license.rtf" Source="license.rtf"/>
+					</Component>
+				</Directory>
+			</Directory>
 		</Directory>
 		
-		<Feature Id='MyFeature' Title='Required Files' Level='1'>
+		<Feature Id="MyFeature" Title="Required Files" Level="1">
+			<ComponentRef Id="MyComponent" />
 		</Feature>
 		
 		<!-- END INSTALL DESCRIPTION -->
@@ -104,7 +105,7 @@
 				<Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" FixedSize="yes" TabSkip="no" Text="dialog.bmp" />
 				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Back]" />
 				
-				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
+				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
 				
 				<Control Id="Description" Type="Text" X="135" Y="70" Width="220" Height="90" Transparent="yes" NoPrefix="yes">
 					<Text>The installer will guide you through the steps required to install [ProductName] on your computer.</Text>
@@ -131,13 +132,13 @@
 					<Publish Event="SpawnDialog" Value="CancelDialog">1</Publish>
 				</Control>
 				
-				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
 				
 				<Control Id="AgreementText" Type="ScrollableText" X="20" Y="60" Width="330" Height="120" Sunken="yes" TabSkip="no">
-					<Text src="$(sys.SOURCEFILEDIR)/license.rtf"/>
+					<Text SourceFile="$(sys.SOURCEFILEDIR)/license.rtf"/>
 				</Control>
 				
-				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
 				<Control Id="BottomLine" Type="Line" X="4" Y="234" Width="370" Height="0" />
 				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
 					<Text>Please read the following license agreement carefully!</Text>
@@ -146,10 +147,10 @@
 					<Text>[TitleFont]End-User License Agreement</Text>
 				</Control>
 			</Dialog>
-			<RadioGroup Property="AcceptLicense">
-				<RadioButton Text="I &amp;accept the terms in the License Agreement" X="5" Y="0" Width="300" Height="15">Yes</RadioButton>
-				<RadioButton Text="I &amp;do not accept the terms in the License Agreement" X="5" Y="20" Width="300" Height="15">No</RadioButton>
-			</RadioGroup>
+			<RadioButtonGroup Property="AcceptLicense">
+				<RadioButton Text="I &amp;accept the terms in the License Agreement" X="5" Y="0" Width="300" Height="15" Value="Yes"/>
+				<RadioButton Text="I &amp;do not accept the terms in the License Agreement" X="5" Y="20" Width="300" Height="15"  Value="No"/>
+			</RadioButtonGroup>
 			
 			<Dialog Id="SelectFolderDialog" Width="370" Height="270" Title="[ProductName]" TrackDiskSpace="yes">
 				<Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[Button_Next]">
@@ -164,10 +165,10 @@
 					<Publish Event="NewDialog" Value="ViewLicenseAgreement">1</Publish>
 				</Control>
 				
-				<Control Id="FolderEdit" Type="PathEdit" X="18" Y="126" Width="252" Height="18" Property="TARGETDIR" Sunken="yes" />
+				<Control Id="FolderEdit" Type="PathEdit" X="18" Y="126" Width="252" Height="18" Property="INSTALLDIR" Sunken="yes" />
 				
 				<Control Id="Browse" Type="PushButton" X="276" Y="126" Width="90" Height="18" Text="[Button_Browse]">
-					<Publish Property="_BrowseProperty" Value="TARGETDIR">1</Publish>
+					<Publish Property="_BrowseProperty" Value="INSTALLDIR">1</Publish>
 					<Publish Event="SpawnDialog" Value="BrowseDialog">1</Publish>
 				</Control>
 					
@@ -175,7 +176,7 @@
 					<Text>To install in this folder, click "Next". To install to a different folder, enter it below or click "Browse".</Text>
 				</Control>
 				
-				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" Text="banner.bmp" />
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" FixedSize="yes" Text="banner.bmp" />
 				
 				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
 				
@@ -205,7 +206,7 @@
 					<Publish Event="SpawnDialog" Value="CancelDialog">1</Publish>
 				</Control>
 				
-				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
 				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[Button_Back]">
 					<!--					<Publish Event="NewDialog" Value="AdminInstallPointDlg">InstallMode = "Server Image"</Publish>
 					<Publish Event="NewDialog" Value="CustomizeDlg">InstallMode = "Custom" OR InstallMode = "Change"</Publish>
@@ -216,7 +217,7 @@
 				<Control Id="Text" Type="Text" X="25" Y="70" Width="320" Height="80">
 					<Text>Click Install to begin the installation.  If you want to review or change any of your installation settings, click Back.  Click Cancel to exit the wizard.</Text>
 				</Control>
-				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
 				<Control Id="BottomLine" Type="Line" X="4" Y="234" Width="370" Height="0" />
 				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
 					<Text>The [Wizard] is ready to begin the [InstallMode] installation</Text>
@@ -230,7 +231,7 @@
 				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[Button_Cancel]">
 					<Publish Event="SpawnDialog" Value="CancelDialog">1</Publish>
 				</Control>
-				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
 				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Back]" />
 				<Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Next]" />
 				<Control Id="Text" Type="Text" X="35" Y="65" Width="300" Height="20">
@@ -287,9 +288,9 @@
 				</Control>
 				<Control Id="DirectoryList" Type="DirectoryList" X="25" Y="83" Width="320" Height="110" Property="_BrowseProperty" Sunken="yes" Indirect="yes" TabSkip="no" />
 				<Control Id="PathLabel" Type="Text" X="25" Y="205" Width="59" Height="10" TabSkip="no" Text="&amp;Folder name:" />
-				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
-				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
-				<Control Id="BottomLine" Type="Line" X="4" Y="234" Width="370" Height="0" />
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+				<Control Id="BottomLine" Type="Line" X="4" Y="234" Width="366" Height="0" />
 				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
 					<Text>Browse to the destination folder</Text>
 				</Control>
@@ -306,7 +307,7 @@
 				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Cancel]" />
 				<Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" FixedSize="yes" TabSkip="no" Text="dialog.bmp" />
 				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Back]" />
-				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
+				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
 				<Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
 					<Text>[BigFont][ProductName] installation was interrupted</Text>
 				</Control>
@@ -338,11 +339,11 @@
 				<Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[Button_OK]">
 					<Publish Event="EndDialog" Value="Return">1</Publish>
 				</Control>
-				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
 				<Control Id="Text" Type="Text" X="20" Y="53" Width="330" Height="40">
 					<Text>The highlighted volumes do not have enough disk space available for the currently selected features.  You can either remove some files from the highlighted volumes, or choose to install less features onto local drive(s), or select different destination drive(s).</Text>
 				</Control>
-				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
 				<Control Id="BottomLine" Type="Line" X="4" Y="234" Width="370" Height="0" />
 				<Control Id="Description" Type="Text" X="20" Y="20" Width="280" Height="20" Transparent="yes" NoPrefix="yes">
 					<Text>Disk space required for the installation exceeds available disk space.</Text>
@@ -363,7 +364,7 @@
 					<Publish Event="EnableRollback" Value="False">1</Publish>
 					<Publish Event="EndDialog" Value="Return">1</Publish>
 				</Control>
-				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
 				<Control Id="Text" Type="Text" X="20" Y="53" Width="330" Height="40">
 					<Text>The highlighted volumes do not have enough disk space available for the currently selected features.  You can either remove some files from the highlighted volumes, or choose to install less features onto local drive(s), or select different destination drive(s).</Text>
 				</Control>
@@ -379,7 +380,7 @@
 					<Text>{120}{70}{70}{70}{70}</Text>
 				</Control>
 				<Control Id="Text2" Type="Text" X="20" Y="94" Width="330" Height="40">
-					<Text>Alternatively, you may choose to disable the installer's rollback functionality.  This allows the installer to restore your computer's original state should the installation be interrupted in any way.  Click Yes if you wish to take the risk to disable rollback.</Text>
+					<Text>Alternatively, you may choose to disable the installer"s rollback functionality.  This allows the installer to restore your computer"s original state should the installation be interrupted in any way.  Click Yes if you wish to take the risk to disable rollback.</Text>
 				</Control>
 			</Dialog>
 			
@@ -390,7 +391,7 @@
 				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Cancel]" />
 				<Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" FixedSize="yes" TabSkip="no" Text="dialog.bmp" />
 				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Back]" />
-				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
+				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
 				<Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
 					<Text>[BigFont][ProductName] ended prematurely</Text>
 				</Control>
@@ -404,7 +405,7 @@
 			<!-- END DIALOG DEFINITION -->
 			
 			<InstallUISequence>
-				<Custom Action="SET_TARGETDIR" Before="CostInitialize">TARGETDIR=""</Custom>
+				<Custom Action="SET_INSTALLDIR" Before="CostInitialize">INSTALLDIR=""</Custom>
 				
 				<Show Dialog="WelcomeDialog" After="MigrateFeatureStates" />
 				
@@ -416,7 +417,7 @@
 			</InstallUISequence>
 			
 			<AdminUISequence>
-				<Custom Action="SET_TARGETDIR" Before="CostInitialize">TARGETDIR=""</Custom>
+				<Custom Action="SET_INSTALLDIR" Before="CostInitialize">INSTALLDIR=""</Custom>
 				
 				<Show Dialog="WelcomeDialog" After="CostFinalize" />
 				
@@ -434,15 +435,15 @@
 		<InstallExecuteSequence>
 		</InstallExecuteSequence>
 		
-		<Binary Id="dialog.bmp" src = "$(var.DATADIR)/resources/InstallerBitmaps/default-dialog.bmp" />
-		<Binary Id="banner.bmp" src = "$(var.DATADIR)/resources/InstallerBitmaps/default-banner.bmp" />
-		<Binary Id="info.bmp"   src = "$(var.DATADIR)/resources/InstallerBitmaps/info.bmp" />
-		<Binary Id="up.bmp"     src = "$(var.DATADIR)/resources/InstallerBitmaps/up.bmp" />
-		<Binary Id="new.bmp"    src = "$(var.DATADIR)/resources/InstallerBitmaps/new.bmp" />
+		<Binary Id="dialog.bmp" SourceFile="$(var.DATADIR)/default-dialog.bmp" />
+		<Binary Id="banner.bmp" SourceFile="$(var.DATADIR)/default-banner.bmp" />
+		<Binary Id="info.bmp"   SourceFile="$(var.DATADIR)/info.bmp" />
+		<Binary Id="up.bmp"     SourceFile="$(var.DATADIR)/up.bmp" />
+		<Binary Id="new.bmp"    SourceFile="$(var.DATADIR)/new.bmp" />
 	</Product>
 </Wix>
 ]]></File>
-				<File name="license.rtf"><![CDATA[{\rtf1\ansi\ansicpg1252\deff0\deflang1031{\fonttbl{\f0\fswiss\fcharset0 Arial;}}
+				<File name="license.rtf" buildAction="None"><![CDATA[{\rtf1\ansi\ansicpg1252\deff0\deflang1031{\fonttbl{\f0\fswiss\fcharset0 Arial;}}
 {\*\generator Msftedit 5.41.21.2500;}\viewkind4\uc1\pard\lang1033\f0\fs20 Your License goes here.\lang1031\par
 }]]></File>
 			</Files>

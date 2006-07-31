@@ -496,4 +496,5 @@ Icons.16x16.NavigateBack                 = NavigationIcons\Icons.16x16.NavigateB
 Icons.16x16.NavigateBack.disabled        = NavigationIcons\Icons.16x16.NavigateBack.disabled.png
 Icons.16x16.NavigateForward              = NavigationIcons\Icons.16x16.NavigateForward.png
 
-
+#Setup icons (Wix)
+Setup.Icons.16x16.SetupDialogsPad = SetupIcons\Setup.Icons.16x16.SetupDialogsPad.png

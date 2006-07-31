@@ -1,0 +1,5 @@
+﻿<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="LinkerParametersPanel" />
+  </System.Windows.Forms.UserControl>
+</Components>

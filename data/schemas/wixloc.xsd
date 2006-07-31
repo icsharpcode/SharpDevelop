@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'
+    targetNamespace='http://schemas.microsoft.com/wix/2003/11/localization'
+              xmlns='http://schemas.microsoft.com/wix/2003/11/localization'>
+    <xs:annotation>
+        <xs:documentation>
+            Copyright (c) Microsoft Corporation.  All rights reserved.
+            
+            The use and distribution terms for this software are covered by the
+            Common Public License 1.0 (http://opensource.org/licenses/cpl.php)
+            which can be found in the file CPL.TXT at the root of this distribution.
+            By using this software in any fashion, you are agreeing to be bound by
+            the terms of this license.
+            
+            You must not remove this notice, or any other, from this software.
+
+            Schema for describing Windows Installer Xml Localization files (.wxl).
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name='WixLocalization'>
+        <xs:complexType>
+            <xs:sequence minOccurs='0' maxOccurs="unbounded">
+                <xs:element ref='String'/>
+            </xs:sequence>
+            <xs:attribute name='Codepage' type='xs:int' use='optional'>
+                <xs:annotation>
+                    <xs:documentation>Codepage for the resulting database.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name='String'>
+        <xs:complexType mixed='true'>
+            <xs:attribute name='Id' type='xs:string' use='required'>
+                <xs:annotation>
+                    <xs:documentation>Identity of the resource.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

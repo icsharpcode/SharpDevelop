@@ -1,39 +1,29 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
-using System.IO;
-using System.Drawing;
 using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Internal.Project;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.WixBinding
 {
-	public class LinkerParametersPanel : AbstractOptionPanel
+	public class LinkerParametersPanel : AbstractProjectOptionPanel
 	{
-		WixCompilerParameters compilerParameters = null;
-		
 		public override void LoadPanelContents()
 		{
-			this.compilerParameters = (WixCompilerParameters)((Properties)CustomizationObject).Get("Config");
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.WixBinding.Resources.LinkerParametersPanel.xfrm"));
+			InitializeHelper();
 			
-			System.Windows.Forms.PropertyGrid grid = new System.Windows.Forms.PropertyGrid();
-			grid.Dock = DockStyle.Fill;
-			grid.SelectedObject = compilerParameters;
-			Controls.Add(grid);
-		}
-		
-		public override bool StorePanelContents()
-		{
-			return true;
+			helper.AddConfigurationSelector(this);
 		}
 	}
 }

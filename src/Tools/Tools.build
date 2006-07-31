@@ -2,9 +2,9 @@
 	<ItemGroup>
 		<NDocFiles Include="ndoc\bin\*"/>
 		<WixFiles Include="wix\*"/>
-		<WixCaFiles Include="wix\ca\*"/>
 		<WixDocFiles Include="wix\doc\*"/>
-		<WixLibFiles Include="wix\doc\*"/>
+		<WixLibFiles Include="wix\lib\*"/>
+		<WixIncFiles Include="wix\inc\*"/>
 		<NUnitFiles Include="NUnit\*"/>
 		<HelpToolFiles Include="Help\*"/>
 		<!-- <ToolProject Include="GacUtil2\GacUtil2.csproj" /> -->
@@ -14,12 +14,10 @@
 	
 	<Target Name="Build">
 		<Copy SourceFiles="@(NDocFiles)" DestinationFolder="..\..\bin\Tools\NDoc"/>
-		<!--
 		<Copy SourceFiles="@(WixFiles)" DestinationFolder="..\..\bin\Tools\Wix"/>
-		<Copy SourceFiles="@(WixCaFiles)" DestinationFolder="..\..\bin\Tools\Wix\ca"/>
 		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc"/>
+		<Copy SourceFiles="@(WixIncFiles)" DestinationFolder="..\..\bin\Tools\Wix\inc"/>
 		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib"/>
-		-->
 		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit"/>
 		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools"/>
 		

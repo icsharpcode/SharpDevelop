@@ -55,8 +55,9 @@ ReportGenerator:		0x7880000 - 0x78a1000
 StartPage:			0x7900000 - 0x791e000
 UnitTesting:			0x7980000 - 0x799b000
 Mono.Cecil:			0x7a00000 - 0x7b38000
+WixBinding:			0x7d80000 - 0x7dc2000
 
-Next free address:		0x7d80000
+Next free address:		0x7e80000
 
 
 

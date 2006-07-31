@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 // Information about this assembly is defined by the following
 // attributes.
@@ -7,14 +8,18 @@ using System.Runtime.CompilerServices;
 // change them to the information which is associated with the assembly
 // you compile.
 
-[assembly: AssemblyTitle("Wix Binding")]
-[assembly: AssemblyDescription("Wix installer binding for #develop")]
+[assembly: AssemblyTitle("WixBinding.Tests")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("www.icsharpcode.net")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("(c) 2004 Mike Krueger")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("WixBinding.Tests")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
+// This sets the default COM visibility of types in the assembly to invisible.
+// If you need to expose a type to COM, use [ComVisible(true)] on that type.
+[assembly: ComVisible(false)]
 
 // The assembly version has following format :
 //
@@ -24,9 +29,3 @@ using System.Runtime.CompilerServices;
 // numbers with the '*' character (the default):
 
 [assembly: AssemblyVersion("2.0.0.1")]
-
-// The following attributes specify the key for the sign of your assembly. See the
-// .NET Framework documentation for more information about signing.
-// This is not required, if you don't want signing let these attributes like they're.
-[assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile("")]

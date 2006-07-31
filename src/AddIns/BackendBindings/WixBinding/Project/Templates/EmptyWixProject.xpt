@@ -1,0 +1,44 @@
+﻿<?xml version="1.0"?>
+<Template originator="Matt Ward">	
+	<TemplateConfiguration>
+		<Name>Empty Setup Project</Name>
+		<Category>Setup</Category>
+		<Icon>Icons.32x32.EmptyProjectIcon</Icon>
+		<LanguageName>Wix</LanguageName>
+		<Description>Creates an empty setup project.</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Setup.wxs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options/>
+			<Files>
+				<File name="Setup.wxs"><![CDATA[<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+	<Product Id="${GUID}"
+		Name=""
+		Language="1033"
+		Version="1.0.0.0"
+		Manufacturer="">
+		<Package Id="${GUID}"
+			Description=""
+			Comments= "Comments"
+			InstallerVersion="200"
+			Compressed="yes"
+		/>
+	</Product>
+</Wix>
+]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

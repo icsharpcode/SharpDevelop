@@ -1,0 +1,24 @@
+﻿<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+	<Config name    = "Setup Dialog"
+		icon        = "Icons.32x32.XMLFileIcon"
+		category    = "Setup"
+		defaultname = "Dialog${Number}.wxs"
+		language    = "XML"/>
+	 
+	<Description>Creates a setup dialog.</Description>
+
+	<Files>
+		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+	<Fragment>
+		<UI>
+			<Dialog Id="NewDialog" Width="370" Height="270" Title="New Dialog">
+			</Dialog>
+		</UI>
+	</Fragment>
+</Wix>]]>
+		</File>
+	</Files>
+	<AdditionalOptions/>
+</Template>
