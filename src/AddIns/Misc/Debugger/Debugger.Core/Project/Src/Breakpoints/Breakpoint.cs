@@ -104,15 +104,11 @@ namespace Debugger
 			HadBeenSet = false;
 		}
 		
-		public bool SetBreakpoint()
+		public bool SetBreakpoint(Module module)
 		{
-			if (hadBeenSet) {
-				return true;
-			}
-
 			ICorDebugFunction corFunction;
 			int ilOffset;
-			if (!sourcecodeSegment.GetFunctionAndOffset(debugger, false, out corFunction, out ilOffset)) {
+			if (!sourcecodeSegment.GetFunctionAndOffset(module, false, out corFunction, out ilOffset)) {
 				return false;
 			}
 			

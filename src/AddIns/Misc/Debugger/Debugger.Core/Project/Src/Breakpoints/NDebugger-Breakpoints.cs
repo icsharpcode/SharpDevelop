@@ -63,23 +63,25 @@ namespace Debugger
 					return breakpoint;
 				}
 			}
-
+			
 			throw new DebuggerException("Breakpoint is not in collection");
 		}
-
+		
 		internal Breakpoint AddBreakpoint(Breakpoint breakpoint)  
 		{
 			breakpointCollection.Add(breakpoint);
-
-			breakpoint.SetBreakpoint();
+			
+			foreach(Module module in this.Modules) {
+				breakpoint.SetBreakpoint(module);
+			}
 			breakpoint.Changed += new EventHandler<BreakpointEventArgs>(OnBreakpointStateChanged);
 			breakpoint.Hit += new EventHandler<BreakpointEventArgs>(OnBreakpointHit);
-
+			
 			OnBreakpointAdded(breakpoint);
-
+			
 			return breakpoint;
 		}
-
+		
 		public Breakpoint AddBreakpoint(string filename, int line)
 		{
 			return AddBreakpoint(new SourcecodeSegment(filename, line), true);
@@ -89,13 +91,13 @@ namespace Debugger
 		{
 			return AddBreakpoint(new Breakpoint(this, segment, breakpointEnabled));
 		}
-
+		
 		public void RemoveBreakpoint(Breakpoint breakpoint)  
 		{
 			breakpoint.Changed -= new EventHandler<BreakpointEventArgs>(OnBreakpointStateChanged);
 			breakpoint.Hit -= new EventHandler<BreakpointEventArgs>(OnBreakpointHit);
-	
-            breakpoint.Enabled = false;
+			
+			breakpoint.Enabled = false;
 			breakpointCollection.Remove( breakpoint );
 			OnBreakpointRemoved( breakpoint);
 		}
@@ -123,7 +125,7 @@ namespace Debugger
 			collection.AddRange(breakpointCollection);
 			
 			foreach (Breakpoint b in collection) {
-				b.SetBreakpoint();
+				b.SetBreakpoint(e.Module);
 			}
 		}
 	}

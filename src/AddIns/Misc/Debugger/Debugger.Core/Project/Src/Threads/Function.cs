@@ -331,7 +331,7 @@ namespace Debugger
 			SourcecodeSegment suggestion = new SourcecodeSegment(filename, line, column, column);
 			ICorDebugFunction corFunction;
 			int ilOffset;
-			if (!suggestion.GetFunctionAndOffset(debugger, false, out corFunction, out ilOffset)) {
+			if (!suggestion.GetFunctionAndOffset(this.Module, false, out corFunction, out ilOffset)) {
 				return null;
 			} else {
 				if (corFunction.Token != methodProps.Token) {

@@ -153,50 +153,27 @@ namespace Debugger
 		}
 		
 		// Returns true if found
-		internal bool GetFunctionAndOffset(NDebugger debugger, bool normailize, out ICorDebugFunction function, out int ilOffset)
+		internal bool GetFunctionAndOffset(Module module, bool normailize, out ICorDebugFunction function, out int ilOffset)
 		{
 			function = null;
 			ilOffset = 0;
 			
-			Module                 module     = null;
-			ISymUnmanagedReader    symReader  = null;
-			ISymUnmanagedDocument  symDoc     = null;
+			ISymUnmanagedReader symReader = module.SymReader;
+			if (symReader == null) {
+				return false; // No symbols
+			}
 			
-			// Try to get doc from moduleFilename
-			if (moduleFilename != null) {
-				try {
-					module = debugger.GetModule(ModuleFilename);
-					symReader = module.SymReader;
-					symDoc = symReader.GetDocument(SourceFullFilename,Guid.Empty,Guid.Empty,Guid.Empty);
-				} catch {}
-			}
-
-			// search all modules
+			ISymUnmanagedDocument symDoc = null;
+			symDoc = symReader.GetDocument(SourceFullFilename, Guid.Empty, Guid.Empty, Guid.Empty);
 			if (symDoc == null) {
-				foreach (Module m in debugger.Modules) {
-					module    = m;
-					symReader = m.SymReader;
-					if (symReader == null) {
-						continue;
-					}
-
-					symDoc = symReader.GetDocument(SourceFullFilename,Guid.Empty,Guid.Empty,Guid.Empty);
-
-					if (symDoc != null) {
-						break;
-					}
-				}
-			}
-
-			if (symDoc == null) {
-				return false; //Not found
+				return false; // Does not use source file
 			}
 			
 			uint validLine;
 			try {
 				validLine = symDoc.FindClosestLine((uint)StartLine);
 			} catch {
-				return false; //Not found
+				return false; // Not on a vaild point
 			}
 			if (validLine != StartLine && normailize) {
 				StartLine = (int)validLine;
