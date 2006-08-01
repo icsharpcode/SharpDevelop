@@ -121,6 +121,11 @@ namespace ICSharpCode.TextEditor.Document
 			endLine = Math.Min(document.TotalNumberOfLines - 1, Math.Max(endLine, 0));
 			ISegment endLineSegment   = document.GetLineSegment(endLine);
 			
+			// Prevent the region from completely disappearing
+			if (string.IsNullOrEmpty(foldText)) {
+				foldText = "...";
+			}
+			
 			this.FoldType = foldType;
 			this.foldText = foldText;
 			this.offset = startLineSegment.Offset + Math.Min(startColumn, startLineSegment.Length);
