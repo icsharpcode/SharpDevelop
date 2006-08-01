@@ -102,7 +102,7 @@ namespace Debugger
 						if (v.Name == variableName) return v;
 					}
 				}
-				return null;
+				throw new DebuggerException("Variable \"" + variableName + "\" is not in collection");
 			}
 		}
 		

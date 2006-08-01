@@ -127,18 +127,20 @@ namespace Debugger
 		void BeforeGetValue(string name)
 		{
 			// PrintLine("BeforeGetValue: " + name);
-			Variable localVar = debugger.LocalVariables[name];
-			if (localVar != null) {
+			try {
+				Variable localVar = debugger.LocalVariables[name];
 				PrintLine("Warning: 'Getting of local variables not implemented'");
+			} catch (DebuggerException) {
 			}
 		}
 		
 		void AfterSetValue(string name)
 		{
 			//PrintLine("AfterSetValue: " + name);
-			Variable localVar = debugger.LocalVariables[name];
-			if (localVar != null) {
+			try {
+				Variable localVar = debugger.LocalVariables[name];
 				PrintLine("Warning: 'Setting of local variables not implemented'");
+			} catch (DebuggerException) {
 			}
 		}
 		
