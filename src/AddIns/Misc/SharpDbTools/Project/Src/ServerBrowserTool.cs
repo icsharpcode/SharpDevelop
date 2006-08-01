@@ -87,3 +87,31 @@ namespace SharpDbTools
 		}
 	}
 }
+
+/// <summary>
+/// Hosts a list of ConnectionNodes corresponding to the available
+/// DbModelInfo's
+/// </summary>
+class DatabaseServerNode : TreeNode
+{
+	
+}
+
+
+/// <summary>
+/// Adds context menu behaviour to save/update etc the corresponding
+/// DbModelInfo and to host a list of MetadataNodes for the DbModelInfo
+/// </summary>
+class ConnectionNode : TreeNode
+{
+	
+}
+
+/// <summary>
+/// Adds behaviour to display a list of db objects corresponding to
+/// its metadata type
+/// </summary>
+class MetadataNode : TreeNode
+{
+	
+}
