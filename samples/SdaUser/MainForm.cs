@@ -17,6 +17,7 @@ namespace SdaUser
 {
 	public partial class MainForm
 	{
+		#region Application Startup
 		[STAThread]
 		public static void Main(string[] args)
 		{
@@ -32,7 +33,9 @@ namespace SdaUser
 			//
 			InitializeComponent();
 		}
+		#endregion
 		
+		#region RunWorkbench
 		void RunButtonClick(object sender, EventArgs e)
 		{
 			Run();
@@ -69,7 +72,9 @@ namespace SdaUser
 			
 			host.RunWorkbench(wbSettings);
 		}
+		#endregion
 		
+		#region MainForm Events
 		void VisibleCheckBoxCheckedChanged(object sender, System.EventArgs e)
 		{
 			host.WorkbenchVisible = visibleCheckBox.Checked;
@@ -92,12 +97,16 @@ namespace SdaUser
 				}
 			}
 		}
+		#endregion
 		
 		void UnloadHostDomainButtonClick(object sender, System.EventArgs e)
 		{
 			unloadHostDomainButton.Enabled = false;
 			host.UnloadDomain();
 			host = null;
+			
+			// disable the group box so no events are fired
+			groupBox1.Enabled = false;
 		}
 		
 		void OpenFileButtonClick(object sender, System.EventArgs e)
