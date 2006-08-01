@@ -10,7 +10,7 @@
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id       = "SharpDbToolsPad"
 		     category = "Main"
-		     title    = "Database Server Tools"
+		     title    = "Server Tool"
 		     icon     = "PadIcons.Output"
 		     shortcut = "Control|Alt|D"
 		     class    = "SharpDbTools.ServerBrowserTool"/>

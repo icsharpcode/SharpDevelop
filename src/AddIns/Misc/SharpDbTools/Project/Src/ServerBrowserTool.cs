@@ -20,7 +20,8 @@ namespace SharpDbTools
 {
 	/// <summary>
 	/// Enables a user to browse metadata associated with a db server and to open resources
-	/// referenced therein.
+	/// referenced therein. The intention is to extend this to other server processes over
+	/// time.
 	/// </summary>
 	public class ServerBrowserTool : AbstractPadContent
 	{
@@ -32,6 +33,7 @@ namespace SharpDbTools
 		/// </summary>
 		public ServerBrowserTool()
 		{
+			LoggingService.Debug("Loading ServerBrowserTool");
 			controller = ServerBrowserToolController.GetInstance();
 			TreeView dbTree = new TreeView();
 			ctl = new Panel();
@@ -43,10 +45,16 @@ namespace SharpDbTools
 			
 			dbTree.BeginUpdate();
 			//dbTree.Tag = "Connections";
+			ContextMenuStrip cMenu = new ContextMenuStrip();
+			ToolStripMenuItem menuItem = new ToolStripMenuItem("Save");
+			cMenu.Items.AddRange(new ToolStripMenuItem[] {menuItem} );
+			                                              
 			TreeNode connection1 = new TreeNode("Test");
+			connection1.ContextMenuStrip = cMenu;
+			
 			TreeNode[] childNodes = new TreeNode[1];
 			childNodes[0] = connection1;
-			TreeNode topNode = new TreeNode("Connections", childNodes);
+			TreeNode topNode = new TreeNode("Database Connections", childNodes);
 			dbTree.Nodes.Add(topNode);
 			dbTree.EndUpdate();
 			

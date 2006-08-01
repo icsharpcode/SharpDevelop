@@ -17,6 +17,8 @@ using SharpDbTools.Connection;
 using System.Data;
 using System.Data.Common;
 using System.Collections.Generic;
+using System.IO;
+using ICSharpCode.Core;
 
 namespace SharpDbTools.Model
 {
@@ -30,6 +32,8 @@ namespace SharpDbTools.Model
 	public class DbModelInfoService
 	{
 		static DbModelInfoService instance = new DbModelInfoService();
+		static string saveLocation = null;
+		const string dbFilesDir = "DbTools";
 		
 		SortedList<string, DbModelInfo> cache;
 		
@@ -65,8 +69,7 @@ namespace SharpDbTools.Model
 			bool exists = cache.TryGetValue(name, out modelInfo);
 			if (!exists)
 			{
-				// TODO: add details to exception
-				
+				// TODO: more detail...
 				throw new KeyNotFoundException();
 			}
 			
@@ -104,12 +107,43 @@ namespace SharpDbTools.Model
 		
 		public void Save(string name)
 		{
-			// TODO: save the 	
+			string path = GetSaveLocation();
+			DbModelInfo modelInfo = null;
+			this.cache.TryGetValue(name, out modelInfo);
+			if (modelInfo != null) {
+				string modelName = modelInfo.Name;
+				// write to a file in 'path' called <name>.metadata
+				// TODO: may want to consider ways of making this more resilient
+				string filePath = @path + name + ".metadata";
+				LoggingService.Debug("writing metadata to: " + filePath);
+				if (File.Exists(filePath)) {
+					File.Delete(filePath);
+				}
+				using (StreamWriter sw = File.CreateText(filePath)) {
+					string xml = modelInfo.GetXml();
+					sw.Write(xml);
+					sw.Flush();
+				}
+			}
+			LoggingService.Debug("DbModelInfo with name: " + name + " not found");
 		}
 		
 		public void LoadFromFiles()
 		{
 			// TODO: load DbModelInfo's from file system
+		}
+		
+		private static string GetSaveLocation()
+		{
+			// append the path of the directory for saving Db files
+			
+			if (saveLocation == null) {
+				lock(saveLocation) {
+					string configDir = PropertyService.ConfigDirectory;
+					saveLocation = configDir + dbFilesDir;
+				}
+			}
+			return saveLocation;			
 		}
 		
 		
