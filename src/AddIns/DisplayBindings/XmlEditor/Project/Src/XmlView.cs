@@ -101,6 +101,14 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static string[] GetXmlFileExtensions()
 		{
+			foreach (ParserDescriptor parser in (ParserDescriptor[])AddInTree.BuildItems("/Workspace/Parser", null, false).ToArray(typeof(ParserDescriptor))) {
+				if (parser.Codon.Id == "XmlFoldingParser") {
+					return parser.Supportedextensions;
+				}
+			}
+
+			// Did not find the XmlFoldingParser so default to those files defined by the
+			// HighlightingManager.
 			IHighlightingStrategy strategy = HighlightingManager.Manager.FindHighlighter(XmlView.Language);
 			if (strategy != null) {
 				return strategy.Extensions;
@@ -165,16 +173,21 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public override string FileName {
 			set {
-				if (Path.GetExtension(FileName) != Path.GetExtension(value)) {
+				string extension = Path.GetExtension(value);
+				if (Path.GetExtension(FileName) != extension) {
 					if (xmlEditor.Document.HighlightingStrategy != null) {
-						xmlEditor.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(value);
+						if (XmlView.IsXmlFileExtension(extension)) {
+							xmlEditor.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(XmlView.Language);
+						} else {
+							xmlEditor.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(value);
+						}
 						xmlEditor.Refresh();
 					}
 				}
 				base.FileName  = value;
 				base.TitleName = Path.GetFileName(value);
 				
-				SetDefaultSchema(Path.GetExtension(value));
+				SetDefaultSchema(extension);
 			}
 		}
 		
@@ -302,7 +315,7 @@ namespace ICSharpCode.XmlEditor
 		public override void Load(string fileName)
 		{
 			xmlEditor.IsReadOnly = IsFileReadOnly(fileName);
-			xmlEditor.LoadFile(fileName);
+			xmlEditor.LoadFile(fileName, false, true);
 			FileName  = fileName;
 			TitleName = Path.GetFileName(fileName);
 			IsDirty     = false;
@@ -487,19 +500,12 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		static bool IsXmlFileExtension(string extension)
 		{
-			bool isXmlFileExtension = false;
-			
-			IHighlightingStrategy strategy = HighlightingManager.Manager.FindHighlighter(XmlView.Language);
-			if (strategy != null) {
-				foreach (string currentExtension in strategy.Extensions) {
-					if (String.Compare(extension, currentExtension, true) == 0) {
-						isXmlFileExtension = true;
-						break;
-					}
+			foreach (string currentExtension in GetXmlFileExtensions()) {
+				if (String.Compare(extension, currentExtension, true) == 0) {
+					return true;
 				}
 			}
-			
-			return isXmlFileExtension;
+			return false;
 		}
 		
 		/// <summary>

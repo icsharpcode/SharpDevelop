@@ -76,7 +76,8 @@ namespace ICSharpCode.XmlEditor
 		/// </remarks>
 		public static XmlSchemaAssociation GetSchemaAssociation(string extension)
 		{			
-			string property = Properties.Get("ext" + extension, "");
+			extension = extension.ToLower();
+			string property = Properties.Get("ext" + extension, String.Empty);
 			XmlSchemaAssociation association = null;
 			
 			if (property.Length > 0) {
