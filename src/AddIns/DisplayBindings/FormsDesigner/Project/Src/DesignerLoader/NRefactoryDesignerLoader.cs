@@ -274,6 +274,9 @@ namespace ICSharpCode.FormsDesigner
 						// remove all methods except InitializeComponents
 						if ((method.Name == "InitializeComponents" || method.Name == "InitializeComponent") && method.Parameters.Count == 0) {
 							method.Name = "InitializeComponent";
+							if (foundInitMethod) {
+								throw new FormsDesignerLoadException("There are multiple InitializeComponent methods in the class. Designer cannot be loaded.");
+							}
 							foundInitMethod = true;
 						} else {
 							typeDecl.Children.RemoveAt(i--);

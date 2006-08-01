@@ -164,6 +164,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			base.OnFileNameChanged(e);
 			textAreaControl.FileName = base.FileName;
+			SetWatcher(); // update file name the watcher looks at
 		}
 		
 		public void Undo()
