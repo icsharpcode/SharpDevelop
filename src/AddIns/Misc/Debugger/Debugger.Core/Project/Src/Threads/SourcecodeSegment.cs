@@ -213,8 +213,13 @@ namespace Debugger
 			}
 			
 			// Check that StartLine is within the method
-			uint start = symMethod.SequencePoints[0].Line;
-			uint end = symMethod.SequencePoints[symMethod.SequencePointCount - 1].EndLine;
+			uint start = uint.MaxValue;
+			uint end = uint.MinValue;
+			foreach(SequencePoint sqPoint in symMethod.SequencePoints) {
+				if (sqPoint.Line == 0xFEEFEE) continue;
+				start = Math.Min(start, sqPoint.Line);
+				end = Math.Max(end, sqPoint.EndLine);
+			}
 			if (StartLine < start || StartLine > end) return false;
 			
 			function = module.CorModule.GetFunctionFromToken(symMethod.Token);
