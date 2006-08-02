@@ -63,13 +63,17 @@ namespace StringResourceToolAddIn
 			
 			SetText(textArea, resourceName, text);
 			
-			string path = Path.Combine(sdSrcPath, "Tools/StringResourceTool/bin/Debug");
-			ProcessStartInfo info = new ProcessStartInfo(path + "/StringResourceTool.exe",
+			string path = Path.GetFullPath(Path.Combine(sdSrcPath, "Tools/StringResourceTool/bin/Debug"));
+			ProcessStartInfo info = new ProcessStartInfo(path + "\\StringResourceTool.exe",
 			                                             "\"" + resourceName + "\" "
 			                                             + "\"" + text + "\" "
 			                                             + "\"" + purpose + "\"");
 			info.WorkingDirectory = path;
-			Process.Start(info);
+			try {
+				Process.Start(info);
+			} catch (Exception ex) {
+				MessageService.ShowError(ex, "Error starting " + info.FileName);
+			}
 		}
 		
 		void SetText(TextArea textArea, string resourceName, string oldText)

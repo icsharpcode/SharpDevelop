@@ -296,7 +296,45 @@ namespace ICSharpCode.SharpDevelop.Project
 			string solutionFile = Path.ChangeExtension(fileName, ".sln");
 			if (File.Exists(solutionFile)) {
 				LoadSolution(solutionFile);
-				return;
+				
+				if (openSolution != null) {
+					bool found = false;
+					foreach (IProject p in openSolution.Projects) {
+						if (FileUtility.IsEqualFileName(fileName, p.FileName)) {
+							found = true;
+							break;
+						}
+					}
+					if (found == false) {
+						string[,] parseArgs = {{"SolutionName", Path.GetFileName(solutionFile)}, {"ProjectName", Path.GetFileName(fileName)}};
+						int res = MessageService.ShowCustomDialog(MessageService.ProductName,
+						                                          StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject}", parseArgs),
+						                                          0, 2,
+						                                          StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject.AddProjectToSolution}", parseArgs),
+						                                          StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject.CreateNewSolution}", parseArgs),
+						                                          "${res:Global.IgnoreButtonText}");
+						if (res == 0) {
+							// Add project to solution
+							Commands.AddExitingProjectToSolution.AddProject((ISolutionFolderNode)ProjectBrowserPad.Instance.SolutionNode, fileName);
+							SaveSolution();
+							return;
+						} else if (res == 1) {
+							CloseSolution();
+							try {
+								File.Copy(solutionFile, Path.ChangeExtension(solutionFile, ".old.sln"), true);
+							} catch (IOException){}
+						} else {
+							// ignore, just open the solution
+							return;
+						}
+					} else {
+						// opened solution instead and correctly found the project
+						return;
+					}
+				} else {
+					// some problem during opening, abort
+					return;
+				}
 			}
 			Solution solution = new Solution();
 			solution.Name = Path.GetFileNameWithoutExtension(fileName);
