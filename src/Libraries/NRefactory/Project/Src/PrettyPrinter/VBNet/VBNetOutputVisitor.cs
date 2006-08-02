@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="none" email=""/>
+//     <owner name="Daniel Grunwald" email=""/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -65,6 +65,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter = new VBNetOutputFormatter(prettyPrintOptions);
 			nodeTracker     = new NodeTracker(this);
+		}
+		
+		void Error(string text, Location position)
+		{
+			errors.Error(position.Y, position.X, text);
+		}
+		
+		void UnsupportedNode(INode node)
+		{
+			Error(node.GetType().Name + " is unsupported", node.StartLocation);
 		}
 		
 		#region ICSharpCode.NRefactory.Parser.IASTVisitor interface implementation
@@ -779,7 +789,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
 			VisitAttributes(parameterDeclarationExpression.Attributes, data);
-			OutputModifier(parameterDeclarationExpression.ParamModifier);
+			OutputModifier(parameterDeclarationExpression.ParamModifier, parameterDeclarationExpression.StartLocation);
 			outputFormatter.PrintIdentifier(parameterDeclarationExpression.ParameterName);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
@@ -1074,10 +1084,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					op = Tokens.LessEqual;
 					break;
 				case OverloadableOperatorType.Increment:
-					errors.Error(-1, -1, "Increment operator is not supported in Visual Basic");
+					Error("Increment operator is not supported in Visual Basic", operatorDeclaration.StartLocation);
 					break;
 				case OverloadableOperatorType.Decrement:
-					errors.Error(-1, -1, "Decrement operator is not supported in Visual Basic");
+					Error("Decrement operator is not supported in Visual Basic", operatorDeclaration.StartLocation);
 					break;
 				case OverloadableOperatorType.IsTrue:
 					outputFormatter.PrintText("IsTrue");
@@ -1340,9 +1350,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public virtual object VisitYieldStatement(YieldStatement yieldStatement, object data)
 		{
-			Debug.Assert(yieldStatement != null);
-			Debug.Assert(yieldStatement.Statement != null);
-			errors.Error(-1, -1, "Yield is not supported in Visual Basic");
+			UnsupportedNode(yieldStatement);
 			return null;
 		}
 		
@@ -1593,7 +1601,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object VisitDoLoopStatement(DoLoopStatement doLoopStatement, object data)
 		{
 			if (doLoopStatement.ConditionPosition == ConditionPosition.None) {
-				errors.Error(-1, -1, String.Format("Unknown condition position for loop : {0}.", doLoopStatement));
+				Error(String.Format("Unknown condition position for loop : {0}.", doLoopStatement), doLoopStatement.StartLocation);
 			}
 			
 			if (doLoopStatement.ConditionPosition == ConditionPosition.Start) {
@@ -1811,25 +1819,25 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object VisitFixedStatement(FixedStatement fixedStatement, object data)
 		{
-			errors.Error(-1, -1, String.Format("FixedStatement is unsupported"));
+			UnsupportedNode(fixedStatement);
 			return nodeTracker.TrackedVisit(fixedStatement.EmbeddedStatement, data);
 		}
 		
 		public object VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data)
 		{
-			errors.Error(-1, -1, String.Format("UnsafeStatement is unsupported"));
+			UnsupportedNode(unsafeStatement);
 			return nodeTracker.TrackedVisit(unsafeStatement.Block, data);
 		}
 		
 		public object VisitCheckedStatement(CheckedStatement checkedStatement, object data)
 		{
-			errors.Error(-1, -1, String.Format("CheckedStatement is unsupported"));
+			UnsupportedNode(checkedStatement);
 			return nodeTracker.TrackedVisit(checkedStatement.Block, data);
 		}
 		
 		public object VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data)
 		{
-			errors.Error(-1, -1, String.Format("UncheckedStatement is unsupported"));
+			UnsupportedNode(uncheckedStatement);
 			return nodeTracker.TrackedVisit(uncheckedStatement.Block, data);
 		}
 		
@@ -1864,7 +1872,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.Select);
 						break;
 					default:
-						errors.Error(-1, -1, String.Format("Unsupported exit type : {0}", exitStatement.ExitType));
+						Error(String.Format("Unsupported exit type : {0}", exitStatement.ExitType), exitStatement.StartLocation);
 						break;
 				}
 			}
@@ -2187,12 +2195,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					
 				case UnaryOperatorType.Star:
 					outputFormatter.PrintToken(Tokens.Times);
-					break;
+					return null;
 				case UnaryOperatorType.BitWiseAnd:
 					outputFormatter.PrintToken(Tokens.AddressOf);
-					break;
+					return null;
+				default:
+					Error("unknown unary operator: " + unaryOperatorExpression.Op.ToString(), unaryOperatorExpression.StartLocation);
+					return null;
 			}
-			throw new System.NotSupportedException();
 		}
 		
 		public object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
@@ -2281,7 +2291,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
 		{
-			errors.Error(-1, -1, String.Format("SizeOfExpression is unsupported"));
+			UnsupportedNode(sizeOfExpression);
 			return null;
 		}
 		
@@ -2325,25 +2335,25 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			errors.Error(-1, -1, String.Format("AnonymousMethodExpression is unsupported"));
+			UnsupportedNode(anonymousMethodExpression);
 			return null;
 		}
 		
 		public object VisitCheckedExpression(CheckedExpression checkedExpression, object data)
 		{
-			errors.Error(-1, -1, String.Format("CheckedExpression is unsupported"));
+			UnsupportedNode(checkedExpression);
 			return nodeTracker.TrackedVisit(checkedExpression.Expression, data);
 		}
 		
 		public object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
 		{
-			errors.Error(-1, -1, String.Format("UncheckedExpression is unsupported"));
+			UnsupportedNode(uncheckedExpression);
 			return nodeTracker.TrackedVisit(uncheckedExpression.Expression, data);
 		}
 		
 		public object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
-			errors.Error(-1, -1, String.Format("PointerReferenceExpression is unsupported"));
+			UnsupportedNode(pointerReferenceExpression);
 			return null;
 		}
 		
@@ -2427,7 +2437,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
 		{
-			errors.Error(-1, -1, String.Format("StackAllocExpression is unsupported"));
+			UnsupportedNode(stackAllocExpression);
 			return null;
 		}
 		
@@ -2531,7 +2541,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#endregion
 		
 		
-		void OutputModifier(ParameterModifiers modifier)
+		void OutputModifier(ParameterModifiers modifier, Location position)
 		{
 			switch (modifier) {
 				case ParameterModifiers.None:
@@ -2539,7 +2549,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.ByVal);
 					break;
 				case ParameterModifiers.Out:
-					errors.Error(-1, -1, String.Format("Out parameter converted to ByRef"));
+					Error("Out parameter converted to ByRef", position);
 					outputFormatter.PrintToken(Tokens.ByRef);
 					break;
 				case ParameterModifiers.Params:
@@ -2552,7 +2562,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.Optional);
 					break;
 				default:
-					errors.Error(-1, -1, String.Format("Unsupported modifier : {0}", modifier));
+					Error(String.Format("Unsupported modifier : {0}", modifier), position);
 					break;
 			}
 			outputFormatter.Space();
@@ -2635,12 +2645,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			// TODO : Volatile
 			if ((modifier & Modifiers.Volatile) == Modifiers.Volatile) {
-				errors.Error(-1, -1, String.Format("'Volatile' modifier not convertable"));
+				Error("'Volatile' modifier not convertable", Location.Empty);
 			}
 			
 			// TODO : Unsafe
 			if ((modifier & Modifiers.Unsafe) == Modifiers.Unsafe) {
-				errors.Error(-1, -1, String.Format("'Unsafe' modifier not convertable"));
+				Error("'Unsafe' modifier not convertable", Location.Empty);
 			}
 		}
 		
