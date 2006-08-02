@@ -511,5 +511,12 @@ static int static_Test2_j = 0;");
 			              "End With",
 			              "{\n\tEjes.AddLine(p1, p2);\n}");
 		}
+		
+		[Test]
+		public void StructureWithImplicitPublicField()
+		{
+			TestMember("Public Structure Example \n Dim x As Object \n End Structure",
+			           "public struct Example\n{\n\tpublic object x;\n}");
+		}
 	}
 }

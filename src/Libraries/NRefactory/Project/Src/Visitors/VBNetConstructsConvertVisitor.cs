@@ -34,6 +34,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		Dictionary<string, string> usings;
 		List<UsingDeclaration> addedUsings;
+		bool isInStructure;
 		
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
@@ -62,11 +63,20 @@ namespace ICSharpCode.NRefactory.Visitors
 			return base.VisitUsing(@using, data);
 		}
 		
+		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
+		{
+			bool oldIsInStructure = isInStructure;
+			isInStructure = typeDeclaration.Type == ClassType.Struct;
+			base.VisitTypeDeclaration(typeDeclaration, data);
+			isInStructure = oldIsInStructure;
+			return null;
+		}
+		
 		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			// make constructor public if visiblity is not set (unless constructor is static)
 			if ((constructorDeclaration.Modifier & (Modifiers.Visibility | Modifiers.Static)) == 0)
-				constructorDeclaration.Modifier = Modifiers.Public;
+				constructorDeclaration.Modifier |= Modifiers.Public;
 			
 			// MyBase.New() and MyClass.New() calls inside the constructor are converted to :base() and :this()
 			BlockStatement body = constructorDeclaration.Body;
@@ -269,13 +279,17 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
 			fieldDeclaration.Modifier &= ~Modifiers.Dim; // remove "Dim" flag
+			if (isInStructure) {
+				if ((fieldDeclaration.Modifier & Modifiers.Visibility) == 0)
+					fieldDeclaration.Modifier |= Modifiers.Public;
+			}
 			return base.VisitFieldDeclaration(fieldDeclaration, data);
 		}
 		
 		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			if ((propertyDeclaration.Modifier & Modifiers.Visibility) == 0)
-				propertyDeclaration.Modifier = Modifiers.Public;
+				propertyDeclaration.Modifier |= Modifiers.Public;
 			
 			if (propertyDeclaration.HasSetRegion) {
 				string from = "Value";
