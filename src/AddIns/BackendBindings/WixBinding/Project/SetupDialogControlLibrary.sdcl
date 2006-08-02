@@ -1,7 +1,7 @@
 ﻿<SharpDevelopControlLibrary version="1.1.0">
   <Assemblies>
     <Assembly assembly="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <Assembly assembly="WixBinding, Culture=neutral" path=".\..\AddIns\AddIns\BackendBindings\WixBinding"/>
+    <Assembly assembly="WixBinding, Culture=neutral" path="${addinpath:ICSharpCode.WixBinding}"/>
   </Assemblies>
   <Categories>
     <Category name="Setup Dialog Controls" enabled="True">

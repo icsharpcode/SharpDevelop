@@ -31,7 +31,12 @@ namespace ICSharpCode.WixBinding
 		{
 			ComponentLibraryLoader loader = new ComponentLibraryLoader();
 			loader.LoadToolComponentLibrary(ToolComponentLibraryFileName);
+			
+			// Fix WixBinding assembly hint path.
 			Category category = (Category)loader.Categories[0];
+			foreach (ToolComponent toolComponent in category.ToolComponents) {
+				toolComponent.HintPath = StringParser.Parse(toolComponent.HintPath);
+			}
 			return new SetupDialogControlsSideTab(SharpDevelopSideBar.SideBar, category, ToolboxProvider.ToolboxService);
 		}
 		

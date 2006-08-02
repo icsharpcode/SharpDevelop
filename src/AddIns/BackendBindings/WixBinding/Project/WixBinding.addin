@@ -27,7 +27,7 @@
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "Wix"
 		            insertbefore="AllFiles"
-		            name = "WiX files (*.wxs;*.wxi))"
+		            name = "WiX files (*.wxs;*.wxi)"
 		            extensions = "*.wxs;*.wxi"/>
 	</Path>
 
