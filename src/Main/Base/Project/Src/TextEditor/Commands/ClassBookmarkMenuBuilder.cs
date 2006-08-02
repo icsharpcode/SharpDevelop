@@ -62,6 +62,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 							cmd = new MenuCommand("Rename file to " + Path.GetFileName(correctFileName),
 							                      delegate {
 							                      	FileService.RenameFile(c.CompilationUnit.FileName, correctFileName, false);
+							                      	if (c.ProjectContent.Project != null) {
+							                      		c.ProjectContent.Project.Save();
+							                      	}
 							                      });
 							list.Add(cmd);
 						} else if (language.RefactoringProvider.SupportsCreateNewFileLikeExisting && language.RefactoringProvider.SupportsGetFullCodeRangeForType) {
