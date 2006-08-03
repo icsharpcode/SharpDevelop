@@ -109,12 +109,12 @@ namespace SharpReport
 			tab.Items.Add (t);
 			
 			//Test
-			/*
-			t = sideTab.SideTabItemFactory.CreateSideTabItem( "Table",
-			                                                 GlobalEnums.ReportItemType.ReportTableItem.ToString(),
-			                                                  ResourceService.GetBitmap("Icons.16x16.SharpQuery.Table"));
-			tab.Items.Add (t);
-			*/
+//			
+//			t = sideTab.SideTabItemFactory.CreateSideTabItem( "Table",
+//			                                                 GlobalEnums.ReportItemType.ReportTableItem.ToString(),
+//			                                                  ResourceService.GetBitmap("Icons.16x16.SharpQuery.Table"));
+//			tab.Items.Add (t);
+		
 			//
 		}
 		

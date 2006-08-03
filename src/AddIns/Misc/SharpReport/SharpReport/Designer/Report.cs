@@ -189,24 +189,18 @@ namespace SharpReport.Designer{
 			                                             baseReportItem.Name);
 			
 			baseReportItem.Font = this.reportSettings.DefaultFont;
-		
-//			System.ComponentModel.TypeConverter converter =
-//				System.ComponentModel.TypeDescriptor.GetConverter( typeof(Font));
 			
-//			string s1 = (string)converter.ConvertTo((this.reportSettings.DefaultFont),typeof(string));
-//			string s2 = converter.ConvertToInvariantString(this.reportSettings.DefaultFont);
-//			System.Console.WriteLine("ConvertTo - {0}",s1);
-//			System.Console.WriteLine("ConvertToInvariantString {0}",s2);
+			IContainerItem ic = baseReportItem as IContainerItem;
 			
-//			Font f1 = (Font)converter.ConvertFromString(s1);
-//			Font f2 = (Font)converter.ConvertFromInvariantString(s2);
-//			Font f3 = new Font (f1, FontStyle.Bold |FontStyle.Underline);
-//			string s3 = converter.ConvertToInvariantString(f3);
-//			System.Console.WriteLine("ConvertToInvariantString {0}",s3);
-			
-//			System.Console.WriteLine("!!");
-//			System.Console.WriteLine("{0} / {1}",f1.Name,f2.Size);
-//			System.Console.WriteLine("{0} / {1}",f2.Name,f2.Size);
+			if (ic != null) {
+				ic.Padding = this.reportSettings.Padding;
+				System.Console.WriteLine("CustomizeItem: Padding set to {0}",ic.Padding);
+//				System.Console.WriteLine("1)item size = {0}",baseReportItem.Size);
+//				baseReportItem.Size = new Size(baseReportItem.Size.Width,
+//				                               ic.Padding.Top + ic.Padding.Bottom + baseReportItem.Font.Height + 2);
+//				
+//			System.Console.WriteLine("2)item size = {0}",baseReportItem.Size);
+			}
 	
 			if (baseReportItem.Parent == this.selectedSection) {
 				baseReportItem.Location = new Point(iddea.ItemAtPoint.X,iddea.ItemAtPoint.Y);

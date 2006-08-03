@@ -7,24 +7,22 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-
-using SharpReportAddin;
 
 /// <summary>
 /// Description of AbstractExplorerCommand
 /// </summary>
 namespace SharpReportAddin.Commands{	
 	public abstract class AbstractExplorerCommand : AbstractMenuCommand{
-		FieldsExplorer fieldsExplorer = null;
-		
+
+		ReportExplorer reportExplorer = null;
 		protected AbstractExplorerCommand(){
-			Type type = typeof(FieldsExplorer);
-			fieldsExplorer = (SharpReportAddin.FieldsExplorer)WorkbenchSingleton.Workbench.GetPad(type).PadContent;
-			if (fieldsExplorer == null) {
+			
+//			Type type = typeof(ReportExplorer);
+//			this.reportExplorer = (SharpReportAddin.ReportExplorer)WorkbenchSingleton.Workbench.GetPad(type).PadContent;
+			this.reportExplorer = (SharpReportAddin.ReportExplorer)WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorer)).PadContent;
+			if (reportExplorer == null) {
 				throw new NullReferenceException ("AbstractExplorerCommand : No FieldExplorer Pad  available");
 			}
 		}
@@ -34,7 +32,7 @@ namespace SharpReportAddin.Commands{
 		/// </summary>				
 		public override bool IsEnabled {
 			get{
-				if (fieldsExplorer != null) {
+				if (reportExplorer != null) {
 					return true;
 				}
 				return false;
@@ -42,11 +40,10 @@ namespace SharpReportAddin.Commands{
 			set{}
 		}
 		
-		public FieldsExplorer FieldsExplorer {
+		public ReportExplorer ReportExplorer {
 			get {
-				return fieldsExplorer;
+				return reportExplorer;
 			}
 		}
-		
 	}
 }

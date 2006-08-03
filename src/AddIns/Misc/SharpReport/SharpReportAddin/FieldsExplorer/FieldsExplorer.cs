@@ -10,18 +10,13 @@
 
 
 using System;
-using System.IO;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Reflection;
 using System.Windows.Forms;
-using System.ComponentModel;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-
-
 using SharpReport;
 using SharpReportCore;
 
@@ -118,6 +113,7 @@ namespace SharpReportAddin {
 				}
 			}
 		}
+		
 		void TreeViewItemDrag (object sender,ItemDragEventArgs e) {
 			
 			if (e.Item is ColumnsTreeNode) {
@@ -182,6 +178,7 @@ namespace SharpReportAddin {
 		
 		
 		private void FillExplorer () {
+			System.Console.WriteLine("FillExplorer");
 			this.FillTree();
 			this.ExpandAll();
 			isFilled = true;
@@ -221,6 +218,7 @@ namespace SharpReportAddin {
 		#endregion
 		
 		private void NotifyReportView() {
+			System.Console.WriteLine("NotifyReportView");
 			if (this.isFilled) {
 				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is SharpReportView) {
 					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.IsDirty = true;
@@ -229,8 +227,8 @@ namespace SharpReportAddin {
 		}
 		
 		#region PadEvents
-		private void OnUpdateExplorerWindow (object sender,EventArgs e) {
-			
+		private void old_OnUpdateExplorerWindow (object sender,EventArgs e) {
+			System.Console.WriteLine("FieldsExplorer:OnUpdateExplorerWindow");
 			if (WorkbenchSingleton.Workbench.ActiveContent != null) {
 				
 				Type type = WorkbenchSingleton.Workbench.ActiveContent.GetType();
@@ -242,10 +240,11 @@ namespace SharpReportAddin {
 						}
 						WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving -= OnViewSaving;
 						WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving += OnViewSaving;
-						
+						System.Console.WriteLine("\tget Explorerpad");
 						PadDescriptor pad =
 							WorkbenchSingleton.Workbench.GetPad(typeof(FieldsExplorer));
 						if (pad != null) {
+							System.Console.WriteLine("\tget View");
 							SharpReportView view =
 								WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent
 								as SharpReportView;
@@ -254,6 +253,7 @@ namespace SharpReportAddin {
 								this.reportModel = view.ReportManager.BaseDesignControl.ReportModel;
 								if (this.reportModel != null) {
 									this.FillExplorer();
+									System.Console.WriteLine("\tShow The Pad");
 									WorkbenchSingleton.Workbench.ShowPad(pad);
 									pad.BringPadToFront();
 								}
@@ -272,6 +272,7 @@ namespace SharpReportAddin {
 		
 		
 		private void OnViewSaving (object sender, EventArgs e) {
+			System.Console.WriteLine("FiedlsExplorer:OnViewSaving");
 			if (this.isFilled) {
 				UpdateSorting();
 				UpdateGrouping();
@@ -419,6 +420,7 @@ namespace SharpReportAddin {
 		}
 		
 		private void FillTree () {
+			System.Console.WriteLine("FillTree");
 			this.BeginUpdate();
 			SetAvailableFields();
 			SetGroupFields();
@@ -431,7 +433,7 @@ namespace SharpReportAddin {
 		
 		
 		void BuildNodes() {
-
+			System.Console.WriteLine("BuildNodes");
 			BeginUpdate();
 			this.Nodes.Clear();
 			TreeNode root = new TreeNode(ResourceService.GetString("SharpReport.FieldsExplorer.Title"));		
@@ -512,13 +514,13 @@ namespace SharpReportAddin {
 			}
 		}
 		
-		public string Icon {
+		public string s_Icon {
 			get {
 				return "FileIcons.XmlIcon";
 			}
 		}
 		
-		public string Category {
+		public string s_Category {
 			get {
 				return String.Empty;
 			}
@@ -569,8 +571,10 @@ namespace SharpReportAddin {
 		
 		
 		public FieldsExplorer() {
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += OnUpdateExplorerWindow;
-
+//			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += OnUpdateExplorerWindow;
+//			WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.DirtyChanged += old_OnUpdateExplorerWindow;
+			System.Console.WriteLine("");
+			System.Console.WriteLine("Init FieldsExplorer");
 			LabelEdit     = true;
 			AllowDrop     = true;
 			HideSelection = false;

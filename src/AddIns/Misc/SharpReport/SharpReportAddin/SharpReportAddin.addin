@@ -32,16 +32,18 @@
 		            extensions="*.srd"/>
 	</Path>
 	
-	<!-- FieldsExplorer -->
-	<Path name ="/SharpDevelop/Workbench/Pads">
-			<Pad id="fieldsexplorer"
+	<!-- ReportExplorer -->
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+			<Pad id="pad1"
+			     category = "Tools"
 			     icon="Icons.16x16.SharpQuery.Refresh"
-			     title = "${res:SharpReport.FieldsExplorer.Title}"
+			     title = "ReportExplorer"
 			     shortcut = "Control|Alt|F"
-			     class="SharpReportAddin.FieldsExplorer"/>
+			     class="SharpReportAddin.ReportExplorer"/>
 	</Path>
 	
-	<!-- ContectMenu Section -->
+	<!-- DesignerContectMenu Section -->
 	<Path name ="/SharpReport/ContextMenu/Section">
 		<MenuItem id="settings" label="${res:SharpReport.ContextMenu.Settings}" class="SharpReportAddin.Commands.ShowSettings"/>
 		<MenuItem id="preview" label="${res:SharpReport.ContextMenu.Preview}" class="SharpReportAddin.Commands.RunPreview"/>
@@ -54,7 +56,7 @@
  		-->
 	</Path>
 
-	 <!-- ContextMenu Items -->
+	 <!-- DesignerContextMenu Items -->
    <Path name ="/SharpReport/ContextMenu/Items">
       <MenuItem id="cut" label="${res:SharpReport.ContextMenu.Cut}" class="SharpReportAddin.Commands.CutReportItem"/>
      <!--
@@ -62,7 +64,7 @@
    		-->
    </Path>
 
-   <!-- Fields Explorer ContextMenu's -->
+   <!-- ReportExplorer ContextMenu's -->
 	<Path name ="/SharpReport/ContextMenu/ContextMenu/FieldsExplorer/SectionTreeNode">
 		<MenuItem id="removenodes"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Section.Clear}"
@@ -77,7 +79,9 @@
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.ToggleSort}"
 		          class="SharpReportAddin.Commands.ToogleOrder"/>
 	</Path>
-
+	
+	<!-- Start SharpReport from MainMenu -->
+	
 	<Path name = "/Workspace/Tools">
 		<MenuItem id       = "ReportGeneratorPad"
 		          label = "${res:SharpReport.ReportGenerator}"
@@ -85,4 +89,6 @@
 		          shortcut = "Control|Alt|T"
 		          class    = "SharpReportAddin.Commands.RunSharpReport"/>
 	</Path>
+
+	
 </AddIn>

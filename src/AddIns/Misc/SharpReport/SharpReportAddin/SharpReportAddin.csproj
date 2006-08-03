@@ -59,6 +59,8 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="FieldsExplorer\ReportExplorer.cs" />
+    <Compile Include="FieldsExplorer\ExplorerTree.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands" />

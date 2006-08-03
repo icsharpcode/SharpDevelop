@@ -41,6 +41,7 @@ namespace SharpReport.Designer{
 		
 		#region overrides
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea){
+			System.Console.WriteLine("Row:OnPaint");
 			base.OnPaint(pea);
 			base.DrawEdges (pea,
 			                new Rectangle(0,5,this.ClientSize.Width - 1,this.ClientSize.Height - 6) );

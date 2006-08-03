@@ -35,6 +35,7 @@ namespace SharpReportCore{
 		
 		public RowItem(string tableName){
 			this.tableName = tableName;
+			this.padding = new Padding(5);
 //			this.Items.Added += OnAdded;
 		}
 		
