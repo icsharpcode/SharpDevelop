@@ -95,12 +95,12 @@ namespace Debugger
 					if ((uint)e.ErrorCode == 0x80131C26) {
 						OnError("Can not evaluate in optimized code");
 						return false;
+					} else {
+						throw;
 					}
 				}
 				
 				EvalState = EvalState.Evaluating;
-				
-				OnEvalStarted(new EvalEventArgs(this));
 				
 				return true;
 			}

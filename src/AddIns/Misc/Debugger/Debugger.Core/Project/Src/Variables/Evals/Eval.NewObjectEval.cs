@@ -16,13 +16,13 @@ namespace Debugger
 {
 	public partial class Eval 
 	{
-		class NewStringEval: Eval
+		class NewObjectEval: Eval
 		{
-			string textToCreate;
+			ICorDebugClass classToCreate;
 			
-			public NewStringEval(NDebugger debugger, string textToCreate):base(debugger, false, new IExpirable[] {})
+			public NewObjectEval(NDebugger debugger, ICorDebugClass classToCreate):base(debugger, false, new IExpirable[] {})
 			{
-				this.textToCreate = textToCreate;
+				this.classToCreate = classToCreate;
 			}
 			
 			internal override bool SetupEvaluation(Thread targetThread)
@@ -38,7 +38,7 @@ namespace Debugger
 				corEval = targetThread.CorThread.CreateEval();
 				
 				try {
-					corEval.NewString(textToCreate);
+					corEval.NewObjectNoConstructor(classToCreate);
 				} catch (COMException e) {
 					if ((uint)e.ErrorCode == 0x80131C26) {
 						OnError("Can not evaluate in optimized code");

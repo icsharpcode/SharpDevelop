@@ -11,7 +11,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	class Stepper
+	public class Stepper
 	{
 		public enum StepperOperation {Idle, StepIn, StepOver, StepOut};
 			
@@ -87,7 +87,7 @@ namespace Debugger
 			}
 		}
 		
-		public bool IsCorStepper(ICorDebugStepper corStepper)
+		internal bool IsCorStepper(ICorDebugStepper corStepper)
 		{
 			return this.corStepper == corStepper;
 		}

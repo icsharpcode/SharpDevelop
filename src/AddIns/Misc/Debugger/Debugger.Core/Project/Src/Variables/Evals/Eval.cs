@@ -32,9 +32,6 @@ namespace Debugger
 		DebugeeState      debugeeStateOfResult;
 		string            error;
 		
-		public event EventHandler<EvalEventArgs> EvalStarted;
-		public event EventHandler<EvalEventArgs> EvalComplete;
-		
 		public NDebugger Debugger {
 			get {
 				return debugger;
@@ -49,7 +46,6 @@ namespace Debugger
 				evalState = value;
 				if (Evaluated) {
 					debugeeStateOfResult = debugger.DebugeeState;
-					OnEvalComplete(new EvalEventArgs(this));
 				}
 				variablele.NotifyValueChange();
 			}
@@ -119,6 +115,11 @@ namespace Debugger
 			return new NewStringEval(debugger, textToCreate);
 		}
 		
+		public static Eval NewObject(NDebugger debugger, ICorDebugClass classToCreate)
+		{
+			return new NewObjectEval(debugger, classToCreate);
+		}
+		
 		ICorDebugValue GetCorValue()
 		{
 			switch(this.EvalState) {
@@ -136,10 +137,7 @@ namespace Debugger
 		public void ScheduleEvaluation()
 		{
 			if (Evaluated || EvalState == EvalState.WaitingForRequest) {
-				debugger.AddEval(this);
-				debugger.MTA2STA.AsyncCall(delegate {
-				                           	if (debugger.IsPaused) debugger.StartEvaluation();
-				                           });
+				debugger.PerformEval(this);
 				EvalState = EvalState.EvaluationScheduled;
 			}
 		}
@@ -161,20 +159,6 @@ namespace Debugger
 		{
 			error = msg;
 			EvalState = EvalState.EvaluatedError;
-		}
-		
-		protected virtual void OnEvalStarted(EvalEventArgs e)
-		{
-			if (EvalStarted != null) {
-				EvalStarted(this, e);
-			}
-		}
-		
-		protected virtual void OnEvalComplete(EvalEventArgs e)
-		{
-			if (EvalComplete != null) {
-				EvalComplete(this, e);
-			}
 		}
 		
 		internal void NotifyEvaluationComplete(bool successful) 

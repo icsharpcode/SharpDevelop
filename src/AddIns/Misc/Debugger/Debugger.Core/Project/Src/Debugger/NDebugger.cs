@@ -49,6 +49,15 @@ namespace Debugger
 				return managedCallback;
 			}
 		}
+		
+		public bool SkipEventsDuringEvaluation {
+			get {
+				return managedCallback.SkipEventsDuringEvaluation;
+			}
+			set {
+				managedCallback.SkipEventsDuringEvaluation = value;
+			}
+		}
 
 		public NDebugger()
 		{
@@ -127,7 +136,6 @@ namespace Debugger
 			pauseSession = null;
 			
 			pendingEvalsCollection.Clear();
-			evaluating = false;
 			
 			TraceMessage("Reset done");
 			

@@ -24,10 +24,20 @@ namespace Debugger
 	{
 		NDebugger debugger;
 		bool pauseProcessInsteadOfContinue;
+		bool skipEventsDuringEvaluation;
 		
 		public NDebugger Debugger {
 			get {
 				return debugger;
+			}
+		}
+		
+		public bool SkipEventsDuringEvaluation {
+			get {
+				return skipEventsDuringEvaluation;
+			}
+			set {
+				skipEventsDuringEvaluation = value;
 			}
 		}
 		
@@ -86,7 +96,7 @@ namespace Debugger
 		
 		void ExitCallback_Paused()
 		{
-			if (debugger.Evaluating) {
+			if (debugger.Evaluating && skipEventsDuringEvaluation) {
 				// Ignore events during property evaluation
 				ExitCallback_Continue();
 			} else {
@@ -236,12 +246,10 @@ namespace Debugger
 			// Let the eval know it that the CorEval has finished
 			// this will also remove the eval form PendingEvals collection
 			Eval eval = debugger.GetEval(corEval);
-			if (eval != null) {
-				eval.NotifyEvaluationComplete(!exception);
-			}
+			eval.NotifyEvaluationComplete(!exception);
+			debugger.NotifyEvaluationComplete(eval);
 			
-			if (debugger.PendingEvals.Count > 0) {
-				debugger.SetupNextEvaluation(debugger.GetThread(pThread));
+			if (debugger.SetupNextEvaluation()) {
 				ExitCallback_Continue();
 			} else {
 				ExitCallback_Paused();

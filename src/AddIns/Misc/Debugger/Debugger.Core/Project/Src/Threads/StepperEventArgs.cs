@@ -10,7 +10,7 @@ using System;
 namespace Debugger
 {
 	[Serializable]
-	class StepperEventArgs: DebuggerEventArgs
+	public class StepperEventArgs: DebuggerEventArgs
 	{
 		Stepper stepper;
 		
