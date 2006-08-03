@@ -46,7 +46,6 @@
     <Compile Include="Commands\SectionContextCommands.cs" />
     <Compile Include="FieldsExplorer\AbstractFieldsNode.cs" />
     <Compile Include="FieldsExplorer\ColumnsTreeNode.cs" />
-    <Compile Include="FieldsExplorer\FieldsExplorer.cs" />
     <Compile Include="FieldsExplorer\SectionTreeNode.cs" />
     <Compile Include="ParameterInput.cs" />
     <Compile Include="SharpReportDisplayBinding.cs" />
