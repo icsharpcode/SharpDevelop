@@ -24,6 +24,7 @@ namespace Debugger
 	{
 		NDebugger debugger;
 		Variable interpreter;
+		Variable interpreter_localVariable;
 		
 		public DebugeeInterpreterContext()
 		{
@@ -66,6 +67,7 @@ namespace Debugger
 			assembly = LoadAssembly(typeof(DebugeeInteractiveInterpreter).Assembly.Location);
 			Variable interpreterType = Eval.NewString(debugger, typeof(DebugeeInteractiveInterpreter).FullName).EvaluateNow();
 			interpreter = Eval.CallFunction(debugger, typeof(Assembly), "CreateInstance", false, assembly, new Variable[] {interpreterType}).EvaluateNow();
+			interpreter_localVariable = interpreter.Value.SubVariables["localVariable"];
 			RunCommand(
 				"import System\n" + 
 				"import System.IO\n" +
@@ -117,8 +119,8 @@ namespace Debugger
 					case "DebugeeInterpreterContext.BeforeGetValue":
 						BeforeGetValue(e.Message);
 						break;
-					case "DebugeeInterpreterContext.AfterSetValue":
-						AfterSetValue(e.Message);
+					case "DebugeeInterpreterContext.BeforeSetValue":
+						BeforeSetValue(e.Message);
 						break;
 				}
 			}
@@ -126,34 +128,38 @@ namespace Debugger
 		
 		void BeforeGetValue(string name)
 		{
-			// PrintLine("BeforeGetValue: " + name);
+			Variable localVar;
 			try {
-				Variable localVar = debugger.LocalVariables[name];
-				PrintLine("Warning: 'Getting of local variables not implemented'");
+				localVar = debugger.LocalVariables[name];
 			} catch (DebuggerException) {
+				return;
 			}
+			PrintLine("Getting local variable " + name);
+			// First, get out of GC unsafe point
+			Stepper stepOut = new Stepper(debugger.SelectedThread.LastFunction, "Boo interperter");
+			stepOut.PauseWhenComplete = true;
+			stepOut.StepComplete  += delegate {
+				debugger.MTA2STA.AsyncCall(delegate {
+					if (!interpreter_localVariable.SetValue(localVar)) {
+						PrintLine("Getting of local variable " + name + " failed");
+					}
+					debugger.SkipEventsDuringEvaluation = true;
+				});
+			};
+			debugger.SkipEventsDuringEvaluation = false;
+			stepOut.StepOut();
 		}
 		
-		void AfterSetValue(string name)
+		void BeforeSetValue(string name)
 		{
-			//PrintLine("AfterSetValue: " + name);
+			Variable localVar;
 			try {
-				Variable localVar = debugger.LocalVariables[name];
-				PrintLine("Warning: 'Setting of local variables not implemented'");
+				localVar = debugger.LocalVariables[name];
 			} catch (DebuggerException) {
+				return;
 			}
-		}
-		
-		void SetValueInternal(string valueName, Variable newValue)
-		{
-			Variable name = Eval.NewString(debugger, valueName).Result;
-			Eval.CallFunction(debugger, typeof(DebugeeInteractiveInterpreter), "SetValueInternal", false, interpreter, new Variable[] {name, newValue}).ScheduleEvaluation();
-		}
-		
-		Variable GetValueInternal(string valueName)
-		{
-			Variable name = Eval.NewString(debugger, valueName).EvaluateNow();
-			return Eval.CallFunction(debugger, typeof(DebugeeInteractiveInterpreter), "GetValueInternal", false, interpreter, new Variable[] {name}).EvaluateNow();
+			PrintLine("Setting local variable " + name);
+			localVar.SetValue(interpreter_localVariable);
 		}
 	}
 }

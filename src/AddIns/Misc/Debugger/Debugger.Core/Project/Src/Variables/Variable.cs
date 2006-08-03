@@ -269,6 +269,27 @@ namespace Debugger
 			}
 		}
 		
+		public bool SetValue(Variable newVariable)
+		{
+			ICorDebugValue corValue = this.RawCorValue;
+			ICorDebugValue newCorValue = newVariable.RawCorValue;
+			if (newCorValue.Type == (uint)CorElementType.BYREF) {
+				newCorValue = newCorValue.As<ICorDebugReferenceValue>().Dereference();
+			}
+			
+			if (corValue.Is<ICorDebugReferenceValue>()) {
+				if (newCorValue.Is<ICorDebugObjectValue>()) {
+					ICorDebugClass corClass = newCorValue.As<ICorDebugObjectValue>().Class;
+					ICorDebugValue box = Eval.NewObject(debugger, corClass).EvaluateNow().RawCorValue;
+					newCorValue = box;
+				}
+				corValue.CastTo<ICorDebugReferenceValue>().SetValue(newCorValue.CastTo<ICorDebugReferenceValue>().Value);
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
 		public VariableCollection GetDebugInfo()
 		{
 			return GetDebugInfo(this.RawCorValue);

@@ -22,15 +22,31 @@ namespace Debugger
 			base.Declare(name, type);
 		}
 		
-		public override object GetValue(string name)
+		public object localVariable;
+		
+		void DoCommand(string command, string param)
 		{
-			System.Diagnostics.Debugger.Log(0xB00, "DebugeeInterpreterContext.BeforeGetValue", name);
-			return base.GetValue(name);
+			System.Diagnostics.Debugger.Log(0xB00, command, param);
 		}
 		
-		public object GetValueInternal(string name)
+		public override object GetValue(string name)
 		{
-			return base.GetValue(name);
+			DoCommand("DebugeeInterpreterContext.BeforeGetValue", name);
+			object locVar = localVariable;
+			if (locVar != null) {
+				localVariable = null;
+				return locVar;
+			} else {
+				return base.GetValue(name);
+			}
+		}
+		
+		public override object SetValue(string name, object val)
+		{
+			localVariable = val;
+			DoCommand("DebugeeInterpreterContext.BeforeSetValue", name);
+			localVariable = null;
+			return base.SetValue(name, val);
 		}
 		
 		public override Type Lookup(string name)
@@ -41,18 +57,6 @@ namespace Debugger
 		public override void SetLastValue(object val)
 		{
 			base.SetLastValue(val);
-		}
-		
-		public override object SetValue(string name, object val)
-		{
-			object ret = base.SetValue(name, val);
-			System.Diagnostics.Debugger.Log(0xB00, "DebugeeInterpreterContext.AfterSetValue", name);
-			return ret;
-		}
-		
-		public object SetValueInternal(string name, object val)
-		{
-			return base.SetValue(name, val);
 		}
 	}
 }
