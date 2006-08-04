@@ -57,12 +57,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			this.variable = variable;
 			this.Shown += delegate {
-				this.variable.ValueChanged += Update;
+				this.variable.Changed += Update;
 				dirty = true;
 				DoInPausedState( delegate { Update(); } );
 			};
 			this.Hidden += delegate {
-				this.variable.ValueChanged -= Update;
+				this.variable.Changed -= Update;
 			};
 			
 			DebuggerGridControl.AddColumns(this.ChildColumns);
@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			Update();
 		}
 		
-		void Update(object sender, VariableEventArgs e)
+		void Update(object sender, DebuggerEventArgs e)
 		{
 			dirty = true;
 			Update();

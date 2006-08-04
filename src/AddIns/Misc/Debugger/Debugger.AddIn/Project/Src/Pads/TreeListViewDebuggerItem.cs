@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			this.variable = variable;
 			
-			variable.ValueChanged += delegate { dirty = true; Update(); };
+			variable.Changed += delegate { dirty = true; Update(); };
 			variable.Expired += delegate { this.Remove(); };
 			
 			SubItems.Add("");
