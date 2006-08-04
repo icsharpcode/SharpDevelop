@@ -44,17 +44,7 @@ namespace SharpDbTools
 			// initialise browser tree
 			
 			dbTree.BeginUpdate();
-			//dbTree.Tag = "Connections";
-			ContextMenuStrip cMenu = new ContextMenuStrip();
-			ToolStripMenuItem menuItem = new ToolStripMenuItem("Save");
-			cMenu.Items.AddRange(new ToolStripMenuItem[] {menuItem} );
-			                                              
-			TreeNode connection1 = new TreeNode("Test");
-			connection1.ContextMenuStrip = cMenu;
-			
-			TreeNode[] childNodes = new TreeNode[1];
-			childNodes[0] = connection1;
-			TreeNode topNode = new TreeNode("Database Connections", childNodes);
+			DatabaseServerNode topNode = new DatabaseServerNode();
 			dbTree.Nodes.Add(topNode);
 			dbTree.EndUpdate();
 			
@@ -90,10 +80,67 @@ namespace SharpDbTools
 
 /// <summary>
 /// Hosts a list of ConnectionNodes corresponding to the available
-/// DbModelInfo's
+/// DbModelInfo's and supports the addition and deletion of
+/// ConnectionNodes.
 /// </summary>
 class DatabaseServerNode : TreeNode
 {
+	public DatabaseServerNode()
+	{
+		this.Text = "Database Connections";
+		
+		ContextMenuStrip cMenu = new ContextMenuStrip();
+		ToolStripMenuItem addConnectionMenuItem = 
+			new ToolStripMenuItem("Add Connection");
+		addConnectionMenuItem.Click += new EventHandler(AddConnectionClickHandler);
+		
+		ToolStripMenuItem deleteConnectionMenuItem = 
+			new ToolStripMenuItem("Delete Connection");
+		deleteConnectionMenuItem.Click += new EventHandler(DeleteConnectionClickHandler);
+		
+		ToolStripMenuItem saveMetadataMenuItem =
+			new ToolStripMenuItem("Save All");
+		saveMetadataMenuItem.Click += new EventHandler(SaveMetadataClickHandler);
+		
+		
+		cMenu.Items.AddRange(new ToolStripMenuItem[] 
+		                     {	
+		                     	addConnectionMenuItem,
+		                     	deleteConnectionMenuItem,
+		                     	saveMetadataMenuItem
+		                     } 
+		                    );
+		this.ContextMenuStrip = cMenu;
+	}
+	
+	/// <summary>
+	/// Uses a dialog to get the logical name of a new Connection then
+	/// adds a new DbModelInfo for it to the cache and updates the DatabaseServer 
+	/// Tree.
+	/// </summary>
+	/// <param name="sender"></param>
+	/// <param name="e"></param>
+	public void AddConnectionClickHandler(object sender, EventArgs e)
+	{
+		LoggingService.Debug("add connection clicked");
+		
+		// get the logical name of the new connection
+		
+		// add a new DbModelInfo to the cache
+		
+		// add a new Node below this one for the Connection
+		
+	}
+	
+	public void DeleteConnectionClickHandler(object sender, EventArgs e)
+	{
+		LoggingService.Debug("delete connection clicked");
+	}
+	
+	public void SaveMetadataClickHandler(object sender, EventArgs e)
+	{
+		LoggingService.Debug("save all metadata clicked");
+	}
 	
 }
 
@@ -103,7 +150,27 @@ class DatabaseServerNode : TreeNode
 /// DbModelInfo and to host a list of MetadataNodes for the DbModelInfo
 /// </summary>
 class ConnectionNode : TreeNode
-{
+{	
+	public ConnectionNode(string name)
+	{
+		this.Text = name;
+		this.Tag = name;
+	}
+	
+	/// <summary>
+	/// Changes the logical name of this connection. This is just for the convenience
+	/// of the user: the connection properties and metadata can remain the same
+	/// but the DbModelInfoService needs to be notified to make changes to the cache
+	/// and file for its DbModelInfo.
+	/// </summary>
+	public void ChangeName() {}
+	
+	/// <summary>
+	/// Uses the ConnectionStringDefinitionDialog to change the properties
+	/// of this connection.
+	/// Note that by doing this the metadata for the connection must be cleared.
+	/// </summary>
+	public void ChangeConnectionProperties() {}
 	
 }
 

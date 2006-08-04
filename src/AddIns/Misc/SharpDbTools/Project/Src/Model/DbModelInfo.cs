@@ -58,16 +58,34 @@ namespace SharpDbTools.Model
 			}
 		}
 		
-		public DbModelInfo(string name, string invariantName, string connectionString)
+		public DbModelInfo() : base()
+		{
+		}
+		
+		public DbModelInfo(string name) : base()
+		{
+			DataTable table = CreateConnectionTable();
+			// add the first and only column of this table;
+			table.Rows.Add(new object[] {name, null, null});		
+		}
+		
+		public DbModelInfo(string name, string invariantName, string connectionString): base()
+		{
+			DataTable table = CreateConnectionTable();
+			// add the first and only column of this table;
+			table.Rows.Add(new object[] {name, invariantName, connectionString});
+		}
+		
+		private DataTable CreateConnectionTable()
 		{
 			// create a table in the DbModelInfo to hold this initial info.
 			// this creates a consistent representation of the data and makes
 			// it easier to serialise it
-			
-			DataTable table = this.Tables.Add("Connection");
-			table.Columns.Add("name", typeof(string));
-			table.Columns.Add("invariantName", typeof(string));
-			table.Columns.Add("connectionString", typeof(string));
+			DataTable table = this.Tables.Add(TableNames.ConnectionInfo);
+			table.Columns.Add(ColumnNames.Name, typeof(string));
+			table.Columns.Add(ColumnNames.InvariantName, typeof(string));
+			table.Columns.Add(ColumnNames.ConnectionString, typeof(string));
+			return table;
 		}
 		
 		public DataTable MetaDataCollections {

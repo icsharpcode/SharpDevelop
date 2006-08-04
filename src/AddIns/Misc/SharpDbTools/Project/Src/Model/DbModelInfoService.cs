@@ -29,39 +29,31 @@ namespace SharpDbTools.Model
 	/// - adding for new connection data (name, invariant name, connection string)
 	/// - saving to files
 	/// </summary>
-	public class DbModelInfoService
+	public static class DbModelInfoService
 	{
-		static DbModelInfoService instance = new DbModelInfoService();
 		static string saveLocation = null;
-		const string dbFilesDir = "DbTools";
+		const string dbFilesDir = "DbTools";	
+		static SortedList<string, DbModelInfo> cache = new SortedList<string, DbModelInfo>();
 		
-		SortedList<string, DbModelInfo> cache;
-		
-		DbModelInfoService()
-		{
-			cache = new SortedList<string, DbModelInfo>();
-		}
-		
-		public static DbModelInfoService GetInstance()
-		{
-			return instance;
-		}
-		
-		public DbModelInfo Create(string name, string invariantName, string connectionString)
+		public static DbModelInfo Add(string name, string invariantName, string connectionString)
 		{
 			// TODO: add validation on name; invariant name
 			// assume that connection string is valid - if it fails an exception will be thrown later
 			// this allows partially defined connection strings at least to be saved and worked on later
-			
 			DbModelInfo dbModel = new DbModelInfo(name, invariantName, connectionString);
 			
 			// add to cache
 			cache.Add(name, dbModel);
-			
 			return dbModel;
 		}
 		
-		public DbModelInfo LoadFromConnection(string name)
+		public static DbModelInfo GetDbModelInfo(string name) {
+				DbModelInfo modelInfo = null;
+				bool exists = cache.TryGetValue(name, out modelInfo);
+				return modelInfo;
+		}
+		
+		public static DbModelInfo LoadMetadataFromConnection(string name)
 		{
 			// get the DbModelInfo
 			
@@ -105,11 +97,11 @@ namespace SharpDbTools.Model
 			return modelInfo;
 		}
 		
-		public void Save(string name)
+		public static void SaveToFile(string name)
 		{
 			string path = GetSaveLocation();
 			DbModelInfo modelInfo = null;
-			this.cache.TryGetValue(name, out modelInfo);
+			cache.TryGetValue(name, out modelInfo);
 			if (modelInfo != null) {
 				string modelName = modelInfo.Name;
 				// write to a file in 'path' called <name>.metadata
@@ -123,14 +115,32 @@ namespace SharpDbTools.Model
 					string xml = modelInfo.GetXml();
 					sw.Write(xml);
 					sw.Flush();
+					sw.Close();
 				}
 			}
 			LoggingService.Debug("DbModelInfo with name: " + name + " not found");
 		}
 		
-		public void LoadFromFiles()
+		public static void LoadFromFiles()
 		{
-			// TODO: load DbModelInfo's from file system
+			// load DbModelInfo's from file system
+			string saveLocation = GetSaveLocation();
+			string[] files = Directory.GetFiles(saveLocation);
+			cache.Clear();
+			for (int i = 0; i < files.Length; i++) {
+				DbModelInfo nextModel = LoadFromFile(@saveLocation + files[i]);
+				cache.Add(nextModel.Name, nextModel);
+			}
+		}
+		
+		private static DbModelInfo LoadFromFile(string filePath)
+		{
+			StreamReader reader = File.OpenText(filePath);
+			string xml = reader.ReadToEnd();
+			reader.Close();
+			DbModelInfo nextModel = new DbModelInfo();
+			nextModel.ReadXml(xml);
+			return nextModel;
 		}
 		
 		private static string GetSaveLocation()
@@ -145,7 +155,5 @@ namespace SharpDbTools.Model
 			}
 			return saveLocation;			
 		}
-		
-		
 	}
 }
