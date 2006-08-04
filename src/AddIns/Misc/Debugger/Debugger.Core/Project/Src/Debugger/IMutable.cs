@@ -9,19 +9,8 @@ using System;
 
 namespace Debugger
 {
-	public class VariableEventArgs: DebuggerEventArgs
+	public interface IMutable
 	{
-		Variable variable;
-		
-		public Variable Variable {
-			get {
-				return variable;
-			}
-		}
-		
-		public VariableEventArgs(Variable variable): base(variable.Debugger)
-		{
-			this.variable = variable;
-		}
+		event EventHandler<DebuggerEventArgs> Changed;
 	}
 }

@@ -22,11 +22,8 @@ namespace Debugger
 	/// Expiration is permanet - once value expires it stays expired. 
 	/// Value expires when any object specified in constructor expires 
 	/// or when process exits.
-	/// 
-	/// ValueChange: ValueChange event is called whenever DebugeeState 
-	/// changes or when NotifyValueChange() is called.
 	/// </summary>
-	public class Variable: IExpirable
+	public class Variable: IExpirable, IMutable
 	{
 		/// <summary>
 		/// Delegate that is used to get value. This delegate may be called at any time and should never return null.
@@ -44,11 +41,12 @@ namespace Debugger
 		Flags flags;
 		CorValueGetter corValueGetter;
 		ValueGetter valueGetter;
+		IMutable[] mutateDependencies;
 		
 		bool isExpired = false;
 		
 		public event EventHandler Expired;
-		public event EventHandler<VariableEventArgs> ValueChanged;
+		public event EventHandler<DebuggerEventArgs> Changed;
 		
 		public NDebugger Debugger {
 			get {
@@ -132,33 +130,35 @@ namespace Debugger
 			}
 		}
 		
-		Variable(NDebugger debugger, string name, Flags flags, IExpirable[] dependencies)
+		public Variable(NDebugger debugger, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies, CorValueGetter corValueGetter)
 		{
 			this.debugger = debugger;
 			this.name = name;
-			this.flags = flags;
-			
 			if (name.StartsWith("<") && name.Contains(">") && name != "<Base class>") {
 				string middle = name.TrimStart('<').Split('>')[0]; // Get text between '<' and '>'
 				if (middle != "") {
 					this.name = middle;
 				}
 			}
+			this.flags = flags;
 			
-			foreach(IExpirable exp in dependencies) {
-				AddDependency(exp);
+			foreach(IExpirable exp in expireDependencies) {
+				AddExpireDependency(exp);
 			}
-			AddDependency(debugger.SelectedProcess);
-			debugger.DebuggeeStateChanged += NotifyValueChange;
-		}
-		
-		public Variable(NDebugger debugger, string name, Flags flags, IExpirable[] dependencies, CorValueGetter corValueGetter):this(debugger, name, flags, dependencies)
-		{
+			AddExpireDependency(debugger.SelectedProcess);
+			
+			this.mutateDependencies = mutateDependencies;
+			if (!this.HasExpired) {
+				foreach(IMutable mut in mutateDependencies) {
+					AddMutateDependency(mut);
+				}
+			}
+			
 			this.corValueGetter = corValueGetter;
 			this.valueGetter = delegate { return CreateValue(); };
 		}
 		
-		void AddDependency(IExpirable dependency)
+		void AddExpireDependency(IExpirable dependency)
 		{
 			if (dependency.HasExpired) {
 				MakeExpired();
@@ -167,31 +167,38 @@ namespace Debugger
 			}
 		}
 		
+		void AddMutateDependency(IMutable dependency)
+		{
+			dependency.Changed += DependencyChanged;
+		}
+		
 		void MakeExpired()
 		{
 			if (!isExpired) {
 				isExpired = true;
 				OnExpired(new VariableEventArgs(this));
-				debugger.DebuggeeStateChanged -= NotifyValueChange;
+				foreach(IMutable mut in mutateDependencies) {
+					mut.Changed -= DependencyChanged;
+				}
 			}
 		}
 		
-		void NotifyValueChange(object sender, DebuggerEventArgs e)
+		void DependencyChanged(object sender, DebuggerEventArgs e)
 		{
-			NotifyValueChange();
+			NotifyChange();
 		}
 		
-		internal void NotifyValueChange()
+		internal void NotifyChange()
 		{
 			if (!isExpired) {
-				OnValueChanged(new VariableEventArgs(this));
+				OnChanged(new VariableEventArgs(this));
 			}
 		}
 		
-		protected virtual void OnValueChanged(VariableEventArgs e)
+		protected virtual void OnChanged(DebuggerEventArgs e)
 		{
-			if (ValueChanged != null) {
-				ValueChanged(this, e);
+			if (Changed != null) {
+				Changed(this, e);
 			}
 		}
 		

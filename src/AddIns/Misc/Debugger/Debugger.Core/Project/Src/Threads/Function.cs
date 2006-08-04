@@ -382,6 +382,7 @@ namespace Debugger
 				                    "this",
 				                    Variable.Flags.Default,
 				                    new IExpirable[] {this},
+				                    new IMutable[] {},
 				                    delegate { return ThisCorValue; });
 			}
 		}
@@ -438,6 +439,7 @@ namespace Debugger
 			                    GetParameterName(index),
 			                    Variable.Flags.Default,
 			                    new IExpirable[] {this},
+			                    new IMutable[] {debugger.DebugeeState},
 			                    delegate { return GetArgumentCorValue(index); } );
 		}
 		
@@ -493,6 +495,7 @@ namespace Debugger
 			                    symVar.Name,
 			                    Variable.Flags.Default,
 			                    new IExpirable[] {this},
+			                    new IMutable[] {debugger.DebugeeState},
 			                    delegate { return GetCorValueOfLocalVariable(symVar); });
 		}
 		

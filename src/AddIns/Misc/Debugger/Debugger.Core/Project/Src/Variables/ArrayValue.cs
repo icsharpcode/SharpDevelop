@@ -122,6 +122,7 @@ namespace Debugger
 			                    elementName,
 			                    Variable.Flags.Default,
 			                    new IExpirable[] {this.Variable},
+			                    new IMutable[] {this.Variable},
 			                    delegate { return GetCorValueOfItem(indices); });
 		}
 		

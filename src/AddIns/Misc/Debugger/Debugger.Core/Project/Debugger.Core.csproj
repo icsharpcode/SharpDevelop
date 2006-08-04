@@ -383,6 +383,7 @@
     <Compile Include="Src\Variables\ObjectValue.cs" />
     <Compile Include="Src\Debugger\Util.cs" />
     <Compile Include="Src\Variables\Evals\Eval.NewObjectEval.cs" />
+    <Compile Include="Src\Debugger\IMutable.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

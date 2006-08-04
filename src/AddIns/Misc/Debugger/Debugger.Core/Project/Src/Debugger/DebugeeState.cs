@@ -13,11 +13,27 @@ namespace Debugger
 	/// Unique identifier of the state of the debugee.
 	/// Changes when debuggee is stepped, but not when properity is evaluated.
 	/// </summary>
-	public class DebugeeState: IExpirable
+	public class DebugeeState: IExpirable, IMutable
 	{
+		NDebugger debugger;
 		bool hasExpired = false;
 		
 		public event EventHandler Expired;
+		
+		public event EventHandler<DebuggerEventArgs> Changed {
+			add {
+				debugger.DebuggeeStateChanged += value;
+			}
+			remove {
+				debugger.DebuggeeStateChanged -= value;
+			}
+		}
+		
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
 		
 		public bool HasExpired {
 			get {
@@ -33,6 +49,11 @@ namespace Debugger
 					Expired(this, EventArgs.Empty);
 				}
 			}
+		}
+		
+		public DebugeeState(NDebugger debugger)
+		{
+			this.debugger = debugger;
 		}
 	}
 }

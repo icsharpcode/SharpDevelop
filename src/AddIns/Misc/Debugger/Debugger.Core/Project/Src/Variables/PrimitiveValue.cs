@@ -47,7 +47,7 @@ namespace Debugger
 				} else {
 					(CorValue.CastTo<ICorDebugGenericValue>()).Value = newValue;
 				}
-				this.Variable.NotifyValueChange();
+				this.Variable.NotifyChange();
 			}
 		}
 

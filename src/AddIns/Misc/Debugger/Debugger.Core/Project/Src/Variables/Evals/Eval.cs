@@ -47,7 +47,7 @@ namespace Debugger
 				if (Evaluated) {
 					debugeeStateOfResult = debugger.DebugeeState;
 				}
-				variablele.NotifyValueChange();
+				variablele.NotifyChange();
 			}
 		}
 		
@@ -81,11 +81,12 @@ namespace Debugger
 			                      String.Empty,
 			                      Variable.Flags.Default,
 			                      dependencies,
+			                      reevaluateAfterDebuggeeStateChange? new IMutable[] {debugger.DebugeeState}: new IMutable[0],
 			                      delegate { return GetCorValue(); });
 			
 			foreach(IExpirable dependency in dependencies) {
 				if (dependency is Variable) {
-					((Variable)dependency).ValueChanged += delegate { EvalState = EvalState.WaitingForRequest; };
+					((Variable)dependency).Changed += delegate { EvalState = EvalState.WaitingForRequest; };
 				}
 			}
 			if (reevaluateAfterDebuggeeStateChange) {

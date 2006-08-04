@@ -45,6 +45,7 @@ namespace Debugger
 			                            "$exception",
 			                            Variable.Flags.Default,
 			                            new IExpirable[] {debugger.PauseSession},
+			                            new IMutable[] {},
 			                            delegate { return corValue; } ).Value;
 			runtimeValueException = ((ObjectValue)runtimeValue).GetClass("System.Exception");
 			message = runtimeValueException.SubVariables["_message"].Value.AsString;

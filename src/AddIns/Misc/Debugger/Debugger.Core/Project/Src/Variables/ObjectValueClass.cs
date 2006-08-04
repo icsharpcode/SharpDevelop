@@ -142,6 +142,7 @@ namespace Debugger
 				                          (field.IsStatic ? Variable.Flags.Static : Variable.Flags.None) |
 				                          (field.IsPublic ? Variable.Flags.Public : Variable.Flags.None),
 				                          new IExpirable[] {this.objectValue.Variable},
+				                          new IMutable[] {this.objectValue.Variable},
 				                          delegate { return GetCorValueOfField(field); });
 			}
 		}

@@ -166,7 +166,7 @@ namespace Debugger
 		internal void Pause()
 		{
 			if (PausedReason != PausedReason.EvalComplete) {
-				DebugeeState = new DebugeeState();
+				DebugeeState = new DebugeeState(this);
 			}
 			
 			OnDebuggingPaused();
