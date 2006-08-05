@@ -921,7 +921,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			public override SystemTypes SystemTypes {
 				get {
-					return ProjectContentRegistry.CurrentProjectContent.SystemTypes;
+					return HostCallback.GetCurrentProjectContent().SystemTypes;
 				}
 			}
 		}

@@ -34,6 +34,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		};
 		
 		/// <summary>
+		/// Get the current project content.
+		/// </summary>
+		public static Func<IProjectContent> GetCurrentProjectContent = delegate {
+			throw new NotImplementedException("GetCurrentProjectContent was not implemented by the host.");
+		};
+		
+		/// <summary>
 		/// Rename the member (first argument) to the new name (second argument).
 		/// Returns true on success, false on failure.
 		/// </summary>

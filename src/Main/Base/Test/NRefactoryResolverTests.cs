@@ -29,7 +29,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			DefaultProjectContent pc = new DefaultProjectContent();
 			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
 			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
-			ProjectContentRegistry.CurrentProjectContent = pc;
+			HostCallback.GetCurrentProjectContent = delegate {
+				return pc;
+			};
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
 			visitor.VisitCompilationUnit(p.CompilationUnit, null);
@@ -50,7 +52,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			p.ParseMethodBodies = false;
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
-			ProjectContentRegistry.CurrentProjectContent = pc;
+			HostCallback.GetCurrentProjectContent = delegate {
+				return pc;
+			};
 			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
 			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
 			pc.Language = LanguageProperties.VBNet;

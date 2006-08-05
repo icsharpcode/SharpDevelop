@@ -30,19 +30,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		static IProjectContent currentProjectContent;
-		
-		public static IProjectContent CurrentProjectContent {
-			get {
-				return currentProjectContent;
-			}
-			set {
-				if (value == null)
-					throw new ArgumentNullException("value");
-				currentProjectContent = value;
-			}
-		}
-		
 		public static IProjectContent Mscorlib {
 			get {
 				if (mscorlibContent != null) return mscorlibContent;

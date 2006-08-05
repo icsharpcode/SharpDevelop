@@ -23,6 +23,10 @@ namespace ICSharpCode.SharpDevelop
 			HostCallback.RenameMember = Refactoring.FindReferencesAndRenameHelper.RenameMember;
 			HostCallback.ShowMessage = MessageService.ShowMessage;
 			
+			HostCallback.GetCurrentProjectContent = delegate {
+				return ParserService.CurrentProjectContent;
+			};
+			
 			HostCallback.ShowError = delegate(string message, Exception ex) {
 				MessageService.ShowError(ex, message);
 			};
