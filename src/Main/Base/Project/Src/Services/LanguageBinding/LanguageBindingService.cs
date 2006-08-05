@@ -23,6 +23,14 @@ namespace ICSharpCode.Core
 			bindings = AddInTree.BuildItems<LanguageBindingDescriptor>("/SharpDevelop/Workbench/LanguageBindings", null, false);
 		}
 		
+		/// <summary>
+		/// Overwrites the list of used bindings. Used for unit tests.
+		/// </summary>
+		public static void SetBindings(IList<LanguageBindingDescriptor> bindings)
+		{
+			LanguageBindingService.bindings = bindings;
+		}
+		
 		public static string GetProjectFileExtension(string languageName)
 		{
 			LanguageBindingDescriptor descriptor = GetCodonPerLanguageName(languageName);
@@ -50,7 +58,7 @@ namespace ICSharpCode.Core
 		public static LanguageBindingDescriptor GetCodonPerLanguageName(string languagename)
 		{
 			foreach (LanguageBindingDescriptor binding in bindings) {
-				if (binding.Binding.Language == languagename) {
+				if (binding.Language == languagename) {
 					return binding;
 				}
 			}

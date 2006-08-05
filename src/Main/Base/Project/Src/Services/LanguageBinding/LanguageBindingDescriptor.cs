@@ -25,6 +25,10 @@ namespace ICSharpCode.Core
 			get {
 				if (binding == null) {
 					binding = (ILanguageBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
+					if (binding != null) {
+						if (binding.Language != this.Language)
+							throw new InvalidOperationException("The Language property of the language binding must be equal to the id of the LanguageBinding codon!");
+					}
 				}
 				return binding;
 			}

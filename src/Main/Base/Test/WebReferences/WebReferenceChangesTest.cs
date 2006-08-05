@@ -78,6 +78,8 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			contractRef.ClientProtocol.Documents.Add(contractRef.Url, desc);
 			protocol.References.Add(contractRef);
 			
+			WebReferenceTestHelper.InitializeLanguageBindings();
+			
 			SD.WebReference webReference = new SD.WebReference(project, "http://localhost/new.asmx", "localhost", "ProxyNamespace", protocol);
 			changes = webReference.GetChanges(project);
 		}
