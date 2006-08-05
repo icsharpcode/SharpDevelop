@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {
-	internal class ReflectionClass : DefaultClass
+	public class ReflectionClass : DefaultClass
 	{
 		const BindingFlags flags = BindingFlags.Instance  |
 			BindingFlags.Static    |

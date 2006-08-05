@@ -52,9 +52,9 @@ namespace Grunwald.BooBinding.Tests
 		{
 			DefaultProjectContent pc = new DefaultProjectContent();
 			lastPC = pc;
-			ParserService.ForceProjectContent(pc);
+			ProjectContentRegistry.CurrentProjectContent = pc;
 			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
-			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(new ReferenceProjectItem(null, "System.Windows.Forms")));
+			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
 			pc.ReferencedContents.Add(booLangPC);
 			ICompilationUnit cu = new BooParser().Parse(pc, fileName, prog);
 			ParserService.UpdateParseInformation(cu, fileName, false, false);

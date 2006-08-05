@@ -121,12 +121,10 @@ namespace ICSharpCode.SharpDevelop.Tests
 			
 			CheckClass(c);
 			MemoryStream memory = new MemoryStream();
-			DomPersistence.ReadWriteHelper helper = new DomPersistence.ReadWriteHelper(new BinaryWriter(memory));
-			helper.WriteProjectContent((ReflectionProjectContent)cu.ProjectContent);
+			DomPersistence.WriteProjectContent((ReflectionProjectContent)cu.ProjectContent, memory);
 			
 			memory.Position = 0;
-			helper = new DomPersistence.ReadWriteHelper(new BinaryReader(memory));
-			foreach (IClass c2 in helper.ReadProjectContent().Classes) {
+			foreach (IClass c2 in DomPersistence.LoadProjectContent(memory).Classes) {
 				CheckClass(c2);
 			}
 		}

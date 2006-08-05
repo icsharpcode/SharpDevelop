@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		string updateFromUrl = "http://localhost/test.asmx";
 		
 		[Test]
-		[ExpectedException(typeof(NotImplementedException))]
+		[ExpectedException(typeof(NotSupportedException))]
 		public void NotSupportedProjectLanguage()
 		{
 			project = new MSBuildProject();

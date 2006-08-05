@@ -28,8 +28,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
 			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
-			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(new ReferenceProjectItem(null, "System.Windows.Forms")));
-			ParserService.ForceProjectContent(pc);
+			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
+			ProjectContentRegistry.CurrentProjectContent = pc;
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
 			visitor.VisitCompilationUnit(p.CompilationUnit, null);
@@ -50,9 +50,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			p.ParseMethodBodies = false;
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
-			ParserService.ForceProjectContent(pc);
+			ProjectContentRegistry.CurrentProjectContent = pc;
 			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
-			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(new ReferenceProjectItem(null, "System.Windows.Forms")));
+			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
 			pc.Language = LanguageProperties.VBNet;
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
@@ -68,6 +68,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		
 		void AddCompilationUnit(ICompilationUnit parserOutput, string fileName)
 		{
+			HostCallback.GetParseInformation = ParserService.GetParseInformation;
 			ParserService.UpdateParseInformation(parserOutput, fileName, false, false);
 		}
 		
@@ -75,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.SupportedLanguage.CSharp);
+			NRefactoryResolver resolver = new NRefactoryResolver(lastPC);
 			return resolver.Resolve(new ExpressionResult(expression),
 			                        line, 0,
 			                        "a.cs",
@@ -86,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			AddCompilationUnit(ParseVB("a.vb", program), "a.vb");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.SupportedLanguage.VBNet);
+			NRefactoryResolver resolver = new NRefactoryResolver(lastPC);
 			return resolver.Resolve(new ExpressionResult(expression),
 			                        line, 0,
 			                        "a.vb",
@@ -644,7 +645,7 @@ namespace Root.Child {
 ";
 			AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.SupportedLanguage.CSharp);
+			NRefactoryResolver resolver = new NRefactoryResolver(lastPC);
 			ArrayList m = resolver.CtrlSpace(7, 0, "a.cs", program, ExpressionContext.Default);
 			Assert.IsTrue(TypeExists(m, "Beta"), "Meta must exist");
 			Assert.IsTrue(TypeExists(m, "Alpha"), "Alpha must exist");

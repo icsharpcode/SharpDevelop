@@ -51,6 +51,10 @@
       <Name>ICSharpCode.SharpDevelop</Name>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

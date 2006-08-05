@@ -48,9 +48,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			                               + ".dat");
 			AddFileNameToCacheIndex(Path.GetFileName(fileName), pc);
 			using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write)) {
-				using (BinaryWriter writer = new BinaryWriter(fs)) {
-					new ReadWriteHelper(writer).WriteProjectContent(pc);
-				}
+				WriteProjectContent(pc, fs);
 			}
 			return fileName;
 		}
@@ -69,21 +67,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static ReflectionProjectContent LoadProjectContent(string cacheFileName)
 		{
-			ReflectionProjectContent pc;
 			using (FileStream fs = new FileStream(cacheFileName, FileMode.Open, FileAccess.Read)) {
-				using (BinaryReader reader = new BinaryReader(fs)) {
-					try {
-						pc = new ReadWriteHelper(reader).ReadProjectContent();
-					} catch (EndOfStreamException) {
-						LoggingService.Warn("Read dom: EndOfStreamException");
-						return null;
-					}
-				}
+				return LoadProjectContent(fs);
 			}
-			if (pc != null) {
-				pc.InitializeSpecialClasses();
-			}
-			return pc;
 		}
 		#endregion
 		
@@ -163,6 +149,38 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} while (pos >= 0);
 			SaveCacheIndex(l);
 			cacheIndex = l;
+		}
+		#endregion
+		
+		#region Saving / Loading without cache
+		/// <summary>
+		/// Saves the project content to the stream.
+		/// </summary>
+		public static void WriteProjectContent(ReflectionProjectContent pc, Stream stream)
+		{
+			BinaryWriter writer = new BinaryWriter(stream);
+			new ReadWriteHelper(writer).WriteProjectContent(pc);
+			// do not close the stream
+		}
+		
+		/// <summary>
+		/// Load a project content from a stream.
+		/// </summary>
+		public static ReflectionProjectContent LoadProjectContent(Stream stream)
+		{
+			ReflectionProjectContent pc;
+			BinaryReader reader = new BinaryReader(stream);
+				try {
+					pc = new ReadWriteHelper(reader).ReadProjectContent();
+					if (pc != null) {
+						pc.InitializeSpecialClasses();
+					}
+					return pc;
+				} catch (EndOfStreamException) {
+					LoggingService.Warn("Read dom: EndOfStreamException");
+					return null;
+				}
+			// do not close the stream
 		}
 		#endregion
 		

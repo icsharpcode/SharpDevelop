@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	public class MemberLookupHelperTests
 	{
 		IProjectContent msc = ProjectContentRegistry.Mscorlib;
-		IProjectContent swf = ProjectContentRegistry.GetProjectContentForReference(new ReferenceProjectItem(null, "System.Windows.Forms"));
+		IProjectContent swf = ProjectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms");
 		
 		public IReturnType DictionaryRT {
 			get {
