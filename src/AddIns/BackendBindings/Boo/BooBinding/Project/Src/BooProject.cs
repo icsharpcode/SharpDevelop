@@ -78,16 +78,16 @@ namespace Grunwald.BooBinding
 		{
 			ParseProjectContent pc = base.CreateProjectContent();
 			ReferenceProjectItem systemItem = new ReferenceProjectItem(this, "System");
-			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(systemItem));
+			pc.ReferencedContents.Add(ParserService.GetProjectContentForReference(systemItem));
 			ReferenceProjectItem booLangItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Builtins).Assembly.Location);
-			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(booLangItem));
+			pc.ReferencedContents.Add(ParserService.GetProjectContentForReference(booLangItem));
 			if (BooCompilerPC == null) {
 				ReferenceProjectItem booCompilerItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Compiler.AbstractAstAttribute).Assembly.Location);
-				BooCompilerPC = ProjectContentRegistry.GetProjectContentForReference(booCompilerItem);
+				BooCompilerPC = ParserService.GetProjectContentForReference(booCompilerItem);
 			}
 			if (BooUsefulPC == null) {
 				ReferenceProjectItem booUsefulItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Useful.Attributes.SingletonAttribute).Assembly.Location);
-				BooUsefulPC = ProjectContentRegistry.GetProjectContentForReference(booUsefulItem);
+				BooUsefulPC = ParserService.GetProjectContentForReference(booUsefulItem);
 			}
 			pc.DefaultImports = new DefaultUsing(pc);
 			pc.DefaultImports.Usings.Add("Boo.Lang");

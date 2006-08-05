@@ -47,7 +47,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			// ToArray to prevent an exception if the collection changes.
 			foreach (Assembly asm in TypeResolutionService.DesignerAssemblies.ToArray()) {
 				if (excludeGlobalTypes) {
-					if (FileUtility.IsBaseDirectory(ReflectionProjectContent.GacRootPath, asm.Location)) {
+					if (FileUtility.IsBaseDirectory(GacInterop.GacRootPath, asm.Location)) {
 						continue;
 					}
 				}

@@ -126,7 +126,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		protected virtual void SetupDataProvider(string fileName, IDocument document, ExpressionResult expressionResult, int caretLineNumber, int caretColumn)
 		{
 			bool constructorInsight = false;
-			if (expressionResult.Context == ExpressionContext.Attribute) {
+			if (expressionResult.Context.IsAttributeContext) {
 				constructorInsight = true;
 			} else if (expressionResult.Context.IsObjectCreation) {
 				constructorInsight = true;

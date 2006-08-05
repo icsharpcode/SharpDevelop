@@ -121,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 					foreach (TreeNode node in classBrowserTreeView.Nodes) {
 						AbstractProjectNode prjNode = node as AbstractProjectNode;
 						ICompilationUnit nonNullUnit = units[1] ?? units[0];
-						IProject project = nonNullUnit.ProjectContent.Project;
+						IProject project = (IProject)nonNullUnit.ProjectContent.Project;
 						if (prjNode != null && prjNode.Project.IsFileInProject(nonNullUnit.FileName)) {
 							prjNode.UpdateParseInformation(units[0], units[1]);
 						}
@@ -136,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			lock (pending) {
 				pending.Add(new ICompilationUnit[] { e.ParseInformation.BestCompilationUnit as ICompilationUnit, e.CompilationUnit});
 			}
-			WorkbenchSingleton.SafeThreadAsyncCall(new MethodInvoker(UpdateThread));
+			WorkbenchSingleton.SafeThreadAsyncCall(UpdateThread);
 		}
 		
 		#region Navigation

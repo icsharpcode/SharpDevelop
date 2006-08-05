@@ -78,7 +78,7 @@ class InteractiveInterpreterControl(TextEditorControl):
 		
 		self._interpreter.LinePrinted += def(line as string):
 			if WorkbenchSingleton.InvokeRequired:
-				WorkbenchSingleton.SafeThreadAsyncCall(self.print, (line,))
+				WorkbenchSingleton.SafeThreadAsyncCall({ self.print(line) })
 			else:
 				self.print(line)
 		self._interpreter.Cleared += def():

@@ -53,7 +53,7 @@ namespace ICSharpCode.Core
 				propertyObjects["exe"] = FileVersionInfo.GetVersionInfo(exeName);
 			}
 			properties["USER"] = Environment.UserName;
-			properties["Version"] = RevisionClass.Version + "." + RevisionClass.Revision;
+			properties["Version"] = RevisionClass.FullVersion;
 			
 			// Maybe test for Mono?
 			if (IntPtr.Size == 4) {

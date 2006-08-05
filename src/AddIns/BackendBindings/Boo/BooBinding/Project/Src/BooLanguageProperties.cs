@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
 namespace Grunwald.BooBinding
 {
@@ -14,7 +15,7 @@ namespace Grunwald.BooBinding
 	{
 		public readonly static BooLanguageProperties Instance = new BooLanguageProperties();
 		
-		public BooLanguageProperties() : base(StringComparer.InvariantCulture, BooCodeGenerator.Instance) {}
+		public BooLanguageProperties() : base(StringComparer.InvariantCulture) {}
 		
 		public override bool SupportsExtensionMethods {
 			get {
@@ -46,9 +47,15 @@ namespace Grunwald.BooBinding
 			}
 		}
 		
-		public override ICSharpCode.SharpDevelop.Refactoring.RefactoringProvider RefactoringProvider {
+		public override RefactoringProvider RefactoringProvider {
 			get {
 				return CodeCompletion.BooRefactoringProvider.BooProvider;
+			}
+		}
+		
+		public override CodeGenerator CodeGenerator {
+			get {
+				return BooCodeGenerator.Instance;
 			}
 		}
 	}

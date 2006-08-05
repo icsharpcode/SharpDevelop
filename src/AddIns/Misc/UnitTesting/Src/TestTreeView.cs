@@ -79,10 +79,10 @@ namespace ICSharpCode.UnitTesting
 				}
 			};
 			loader.Events.TestLoaded += delegate(object sender, TestEventArgs e) {
-				WorkbenchSingleton.SafeThreadAsyncCall((MethodInvoker)UpdateProjectTitles);
+				WorkbenchSingleton.SafeThreadAsyncCall(UpdateProjectTitles);
 			};
 			loader.Events.RunStarting += delegate(object sender, TestEventArgs e) {
-				WorkbenchSingleton.SafeThreadAsyncCall((MethodInvoker)OnRunStarting);
+				WorkbenchSingleton.SafeThreadAsyncCall(OnRunStarting);
 			};
 			loader.Events.TestOutput += delegate(object sender, TestEventArgs e) {
 				// This method interceps StdOut/StdErr from the tests
@@ -143,7 +143,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			Task task = CreateTask(type, message, fullTestName, stackTrace);
 			if (task != null) {
-				WorkbenchSingleton.SafeThreadAsyncCall(typeof(TaskService), "Add", task);
+				WorkbenchSingleton.SafeThreadAsyncCall(TaskService.Add, task);
 			}
 		}
 		
@@ -342,7 +342,7 @@ namespace ICSharpCode.UnitTesting
 			get {
 				IClass fixture = SelectedFixtureClass;
 				if (fixture != null)
-					return fixture.ProjectContent.Project;
+					return (IProject)fixture.ProjectContent.Project;
 				TreeNode node = SelectedNode;
 				if (node == null)
 					return null;

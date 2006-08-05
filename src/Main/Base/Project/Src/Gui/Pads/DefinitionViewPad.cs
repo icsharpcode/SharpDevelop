@@ -62,8 +62,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ResolveResult res = ResolveAtCaret(e);
 			if (res == null) return;
 			FilePosition pos = res.GetDefinitionPosition();
-			if (pos == null) return;
-			WorkbenchSingleton.SafeThreadAsyncCall(new OpenFileDelegate(OpenFile), pos);
+			if (pos.IsEmpty) return;
+			WorkbenchSingleton.SafeThreadAsyncCall(OpenFile, pos);
 		}
 		
 		ResolveResult ResolveAtCaret(ParserUpdateStepEventArgs e)
@@ -86,16 +86,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return ParserService.Resolve(expr, caret.Line + 1, caret.Column + 1, fileName, content);
 		}
 		
-		delegate void OpenFileDelegate(FilePosition pos);
-		
 		FilePosition oldPosition;
 		
 		void OpenFile(FilePosition pos)
 		{
 			if (pos.Equals(oldPosition)) return;
 			oldPosition = pos;
-			if (pos.Filename != ctl.FileName)
-				ctl.LoadFile(pos.Filename, true, true); // TODO: get AutoDetectEncoding from settings
+			if (pos.FileName != ctl.FileName)
+				ctl.LoadFile(pos.FileName, true, true); // TODO: get AutoDetectEncoding from settings
 			ctl.ActiveTextAreaControl.ScrollTo(int.MaxValue); // scroll completely down
 			ctl.ActiveTextAreaControl.Caret.Line = pos.Line - 1;
 			ctl.ActiveTextAreaControl.ScrollToCaret(); // scroll up to search position

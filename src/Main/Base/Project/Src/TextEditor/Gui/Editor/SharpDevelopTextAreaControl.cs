@@ -298,7 +298,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					}
 				}
 				
-				if (ICSharpCode.SharpDevelop.Dom.CodeCompletionOptions.EnableCodeCompletion) {
+				if (CodeCompletionOptions.EnableCodeCompletion) {
 					foreach (ICodeCompletionBinding ccBinding in CodeCompletionBindings) {
 						if (ccBinding.HandleKeyPress(this, ch))
 							return false;

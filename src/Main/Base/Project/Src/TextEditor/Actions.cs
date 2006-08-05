@@ -73,14 +73,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 			ResolveResult result = ParserService.Resolve(expression, caretLineNumber, caretColumn, textEditorControl.FileName, textContent);
 			if (result != null) {
 				FilePosition pos = result.GetDefinitionPosition();
-				if (pos != null) {
+				if (pos.IsEmpty == false) {
 					try {
 						if (pos.Position.IsEmpty)
-							FileService.OpenFile(pos.Filename);
+							FileService.OpenFile(pos.FileName);
 						else
-							FileService.JumpToFilePosition(pos.Filename, pos.Position.X - 1, pos.Position.Y - 1);
+							FileService.JumpToFilePosition(pos.FileName, pos.Position.X - 1, pos.Position.Y - 1);
 					} catch (Exception ex) {
-						MessageService.ShowError(ex, "Error jumping to '" + pos.Filename + "'.");
+						MessageService.ShowError(ex, "Error jumping to '" + pos.FileName + "'.");
 					}
 				}
 			}

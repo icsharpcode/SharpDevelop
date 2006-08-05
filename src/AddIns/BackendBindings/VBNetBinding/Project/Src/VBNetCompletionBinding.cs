@@ -6,19 +6,16 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.TextEditor;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.TextEditor.Document;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using VBTokens = ICSharpCode.NRefactory.Parser.VB.Tokens;
 
 namespace VBNetBinding
@@ -216,7 +213,7 @@ namespace VBNetBinding
 			                                         editor.Document.TextContent);
 			if (rr != null && rr.ResolvedType != null) {
 				ClassFinder context = new ClassFinder(editor.FileName, editor.ActiveTextAreaControl.Caret.Line, t1.col);
-				if (ICSharpCode.SharpDevelop.Refactoring.CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
+				if (CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
 					VBNetAmbience.Instance.ConversionFlags = ConversionFlags.None;
 				else
 					VBNetAmbience.Instance.ConversionFlags = ConversionFlags.UseFullyQualifiedNames;

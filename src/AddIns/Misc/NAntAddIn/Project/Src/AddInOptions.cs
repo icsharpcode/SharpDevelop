@@ -7,7 +7,6 @@
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using System;
 using System.Diagnostics;
 using System.IO;

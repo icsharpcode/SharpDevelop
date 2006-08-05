@@ -199,11 +199,11 @@ namespace ICSharpCode.Svn
 			if (done) {
 				return;
 			}
-			WorkbenchSingleton.SafeThreadCall(this, "WriteMid", "Done");
+			WorkbenchSingleton.SafeThreadCall(WriteMid, "Done");
 			try {
 				if (inOperationForm != null) {
 					inOperationForm.Operation = null;
-					WorkbenchSingleton.SafeThreadCall(inOperationForm, "Close");
+					WorkbenchSingleton.SafeThreadCall(inOperationForm.Close);
 					inOperationForm = null;
 				}
 			} catch (Exception e) {

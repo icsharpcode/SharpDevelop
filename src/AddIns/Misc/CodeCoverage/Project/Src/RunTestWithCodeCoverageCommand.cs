@@ -163,12 +163,12 @@ namespace ICSharpCode.CodeCoverage
 		{
 			if (!File.Exists(fileName)) {
 				Task task = new Task(String.Empty, String.Concat(StringParser.Parse("${res:ICSharpCode.CodeCoverage.NoCodeCoverageResultsGenerated}"), " ", fileName), 0, 0, TaskType.Error);
-				WorkbenchSingleton.SafeThreadAsyncCall(typeof(TaskService), "Add", new object[] {task});
+				WorkbenchSingleton.SafeThreadAsyncCall(TaskService.Add, task);
 				return;
 			}
 			
 			CodeCoverageResults results = new CodeCoverageResults(fileName);
-			WorkbenchSingleton.SafeThreadAsyncCall(typeof(CodeCoverageService), "ShowResults", new object[] {results});
+			WorkbenchSingleton.SafeThreadAsyncCall(CodeCoverageService.ShowResults, results);
 		}
 		
 		/// <summary>
@@ -203,7 +203,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			PadDescriptor padDescriptor = WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad));
 			if (padDescriptor != null) {
-				WorkbenchSingleton.SafeThreadAsyncCall(padDescriptor, "BringPadToFront");
+				WorkbenchSingleton.SafeThreadAsyncCall(padDescriptor.BringPadToFront);
 			}
 		}
 		

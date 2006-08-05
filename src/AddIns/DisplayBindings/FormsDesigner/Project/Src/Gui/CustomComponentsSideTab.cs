@@ -48,7 +48,11 @@ namespace ICSharpCode.FormsDesigner.Gui
 			foreach (IProjectContent pc in ParserService.AllProjectContentsWithReferences) {
 				if (pc.Project == null) {
 					ReflectionProjectContent rpc = pc as ReflectionProjectContent;
-					if (rpc == null || rpc.IsGacAssembly)
+					if (rpc == null)
+						continue;
+					if (rpc.AssemblyFullName == typeof(object).Assembly.FullName)
+						continue;
+					if (FileUtility.IsBaseDirectory(GacInterop.GacRootPath, rpc.AssemblyLocation))
 						continue;
 				}
 				foreach (IClass c in pc.Classes) {

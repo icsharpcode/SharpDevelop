@@ -14,11 +14,11 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Core
 {
-	public class StatusBarService
+	public static class StatusBarService
 	{
 		static SdStatusBar statusBar = null;
 		
-		static StatusBarService()
+		internal static void Initialize()
 		{
 			statusBar = new SdStatusBar();
 		}

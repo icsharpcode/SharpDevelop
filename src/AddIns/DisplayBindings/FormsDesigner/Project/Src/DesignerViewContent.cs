@@ -203,7 +203,7 @@ namespace ICSharpCode.FormsDesigner
 			if (selectionService != null) {
 				Control ctl = selectionService.PrimarySelection as Control;
 				if (ctl != null) {
-					ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(ctl.GetType().FullName);
+					ICSharpCode.SharpDevelop.HelpProvider.ShowHelp(ctl.GetType().FullName);
 				}
 			}
 		}

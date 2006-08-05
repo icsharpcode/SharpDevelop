@@ -44,7 +44,7 @@ namespace ICSharpCode.Svn.Commands
 		
 		protected void Callback()
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall((MethodInvoker)CallbackInvoked);
+			WorkbenchSingleton.SafeThreadAsyncCall(CallbackInvoked);
 		}
 		
 		void CallbackInvoked()

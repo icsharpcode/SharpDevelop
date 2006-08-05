@@ -91,7 +91,7 @@ namespace ICSharpCode.Svn
 				// if exceptions aren't caught here, they force SD to exit
 				if (ex is SvnClientException || ex is System.Runtime.InteropServices.SEHException) {
 					LoggingService.Warn(ex);
-					WorkbenchSingleton.SafeThreadAsyncCall(infoPanel, "ShowError", ex);
+					WorkbenchSingleton.SafeThreadAsyncCall(infoPanel.ShowError, ex);
 				} else {
 					MessageService.ShowError(ex);
 				}
@@ -100,8 +100,8 @@ namespace ICSharpCode.Svn
 		
 		void ReceiveLogMessage(LogMessage logMessage)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(infoPanel, "AddLogMessage", logMessage);
-			WorkbenchSingleton.SafeThreadAsyncCall(diffPanel, "AddLogMessage", logMessage);
+			WorkbenchSingleton.SafeThreadAsyncCall(infoPanel.AddLogMessage, logMessage);
+			WorkbenchSingleton.SafeThreadAsyncCall(diffPanel.AddLogMessage, logMessage);
 		}
 	}
 }

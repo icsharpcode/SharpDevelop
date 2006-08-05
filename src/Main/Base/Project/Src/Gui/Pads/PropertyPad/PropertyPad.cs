@@ -333,11 +333,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (c != null) {
 						foreach (ICSharpCode.SharpDevelop.Dom.IProperty p in c.DefaultReturnType.GetProperties()) {
 							if (gridItem.PropertyDescriptor.Name == p.Name) {
-								ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(p);
+								HelpProvider.ShowHelp(p);
 								return;
 							}
 						}
-						ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(c);
+						HelpProvider.ShowHelp(c);
 					}
 				}
 			}

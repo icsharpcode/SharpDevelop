@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		{
 			isInitialized = true;
 			
-			IProjectContent pc = ProjectContentRegistry.GetProjectContentForReference(item);
+			IProjectContent pc = ParserService.GetProjectContentForReference(item);
 			if (pc != null) {
 				Nodes.Clear();
 				foreach (IClass c in pc.Classes) {

@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				MethodWrapper other = (MethodWrapper)obj;
 				if (method.Name != other.method.Name)
 					return false;
-				return 0 == ICSharpCode.SharpDevelop.DiffUtility.Compare(method.Parameters, other.method.Parameters);
+				return 0 == DiffUtility.Compare(method.Parameters, other.method.Parameters);
 			}
 			
 			public override int GetHashCode()

@@ -89,10 +89,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			RenameMember(member, newName);
 		}
 		
-		public static void RenameMember(IMember member, string newName)
+		public static bool RenameMember(IMember member, string newName)
 		{
 			List<Reference> list = RefactoringService.FindReferences(member, null);
-			if (list == null) return;
+			if (list == null) return false;
 			FindReferencesAndRenameHelper.RenameReferences(list, newName);
 			
 			if (member is IField) {
@@ -109,6 +109,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 				}
 			}
+			return true;
 		}
 		
 		internal static IProperty FindProperty(IField field)

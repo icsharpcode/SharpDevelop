@@ -49,7 +49,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			return string.Equals(Path.GetExtension(fileName), ".boo", StringComparison.InvariantCultureIgnoreCase);
 		}
 		
-		public bool CanParse(IProject project)
+		public bool CanParse(IDomProject project)
 		{
 			return project.Language == BooLanguageBinding.LanguageName;
 		}
@@ -145,7 +145,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					} else {
 						foreach (string tag in lexerTags) {
 							if (text.StartsWith(tag)) {
-								Tag tagComment = new Tag(tag, new DomRegion(line, commentStartColumn));
+								TagComment tagComment = new TagComment(tag, new DomRegion(line, commentStartColumn));
 								tagComment.CommentString = text.Substring(tag.Length);
 								cu.TagComments.Add(tagComment);
 								break;

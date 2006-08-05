@@ -29,22 +29,11 @@ namespace ICSharpCode.Core
 		public static IProjectContent CurrentProjectContent {
 			[DebuggerStepThrough]
 			get {
-				if (forcedContent != null) return forcedContent;
-				
 				if (ProjectService.CurrentProject == null || !projectContents.ContainsKey(ProjectService.CurrentProject)) {
 					return DefaultProjectContent;
 				}
 				return projectContents[ProjectService.CurrentProject];
 			}
-		}
-		
-		static IProjectContent forcedContent;
-		/// <summary>
-		/// Used for unit tests ONLY!!
-		/// </summary>
-		public static void ForceProjectContent(IProjectContent content)
-		{
-			forcedContent = content;
 		}
 		
 		/// <summary>
@@ -102,7 +91,7 @@ namespace ICSharpCode.Core
 				if (!loadSolutionProjectsThread.Join(50)) {
 					// loadSolutionProjects might be waiting for main thread, so give it
 					// a chance to complete asynchronous calls
-					WorkbenchSingleton.SafeThreadAsyncCall((ThreadStart)OnSolutionLoaded);
+					WorkbenchSingleton.SafeThreadAsyncCall(OnSolutionLoaded);
 					return;
 				}
 			}
@@ -146,7 +135,7 @@ namespace ICSharpCode.Core
 					MessageService.ShowError(e, "Error while retrieving project contents from " + project);
 				}
 			}
-			WorkbenchSingleton.SafeThreadAsyncCall((ThreadStart)ProjectService.ParserServiceCreatedProjectContents);
+			WorkbenchSingleton.SafeThreadAsyncCall(ProjectService.ParserServiceCreatedProjectContents);
 			int workAmount = 0;
 			foreach (ParseProjectContent newContent in createdContents) {
 				if (abortLoadSolutionProjectsThread) return;
@@ -302,7 +291,7 @@ namespace ICSharpCode.Core
 		{
 			object[] workbench;
 			try {
-				workbench = (object[])WorkbenchSingleton.SafeThreadCall(typeof(ParserService), "GetWorkbench");
+				workbench = WorkbenchSingleton.SafeThreadFunction<object[]>(GetWorkbench);
 			} catch (InvalidOperationException) { // includes ObjectDisposedException
 				// maybe workbench has been disposed while waiting for the SafeThreadCall
 				// can occur after workbench unload or after aborting SharpDevelop with
@@ -429,7 +418,7 @@ namespace ICSharpCode.Core
 			};
 			foreach (string defaultReference in defaultReferences) {
 				ReferenceProjectItem item = new ReferenceProjectItem(null, defaultReference);
-				IProjectContent pc = ProjectContentRegistry.GetProjectContentForReference(item);
+				IProjectContent pc = ParserService.GetProjectContentForReference(item);
 				if (pc != null) {
 					defaultProjectContent.ReferencedContents.Add(pc);
 				}
@@ -492,11 +481,14 @@ namespace ICSharpCode.Core
 				
 				if (parsings.ContainsKey(fileName)) {
 					ParseInformation parseInformation = parsings[fileName];
-					fileProjectContent.UpdateCompilationUnit(parseInformation.MostRecentCompilationUnit, parserOutput as ICompilationUnit, fileName, updateCommentTags);
+					fileProjectContent.UpdateCompilationUnit(parseInformation.MostRecentCompilationUnit, parserOutput, fileName);
 				} else {
-					fileProjectContent.UpdateCompilationUnit(null, parserOutput, fileName, updateCommentTags);
+					fileProjectContent.UpdateCompilationUnit(null, parserOutput, fileName);
 				}
-				return UpdateParseInformation(parserOutput as ICompilationUnit, fileName, updateCommentTags, fireUpdate);
+				if (updateCommentTags) {
+					TaskService.UpdateCommentTags(fileName, parserOutput.TagComments);
+				}
+				return UpdateParseInformation(parserOutput, fileName, updateCommentTags, fireUpdate);
 			} catch (Exception e) {
 				MessageService.ShowError(e);
 			}
@@ -661,5 +653,29 @@ namespace ICSharpCode.Core
 		
 		public static event ParseInformationEventHandler ParseInformationUpdated;
 		public static event EventHandler LoadSolutionProjectsThreadEnded;
+		
+		public static IProjectContent GetExistingProjectContentForReference(ReferenceProjectItem item)
+		{
+			if (item is ProjectReferenceProjectItem) {
+				if (((ProjectReferenceProjectItem)item).ReferencedProject == null)
+				{
+					return null;
+				}
+				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
+			}
+			return ProjectContentRegistry.GetExistingProjectContentForReference(item.Include, item.FileName);
+		}
+		
+		public static IProjectContent GetProjectContentForReference(ReferenceProjectItem item)
+		{
+			if (item is ProjectReferenceProjectItem) {
+				if (((ProjectReferenceProjectItem)item).ReferencedProject == null)
+				{
+					return null;
+				}
+				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
+			}
+			return ProjectContentRegistry.GetProjectContentForReference(item.Include, item.FileName);
+		}
 	}
 }

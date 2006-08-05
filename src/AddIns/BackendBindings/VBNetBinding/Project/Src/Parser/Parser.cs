@@ -48,7 +48,7 @@ namespace VBNetBinding.Parser
 			return Path.GetExtension(fileName).Equals(".VB", StringComparison.OrdinalIgnoreCase);
 		}
 		
-		public bool CanParse(IProject project)
+		public bool CanParse(IDomProject project)
 		{
 			return project.Language == "VBNet";
 		}
@@ -131,7 +131,7 @@ namespace VBNetBinding.Parser
 			foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in tagComments)
 			{
 				DomRegion tagRegion = new DomRegion(tagComment.StartPosition.Y, tagComment.StartPosition.X);
-				ICSharpCode.SharpDevelop.Dom.Tag tag = new ICSharpCode.SharpDevelop.Dom.Tag(tagComment.Tag, tagRegion);
+				ICSharpCode.SharpDevelop.Dom.TagComment tag = new ICSharpCode.SharpDevelop.Dom.TagComment(tagComment.Tag, tagRegion);
 				tag.CommentString = tagComment.CommentText;
 				cu.TagComments.Add(tag);
 			}
@@ -139,7 +139,7 @@ namespace VBNetBinding.Parser
 		
 		public IResolver CreateResolver()
 		{
-			return new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver(ICSharpCode.NRefactory.SupportedLanguage.VBNet);
+			return new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver(ParserService.CurrentProjectContent);
 		}
 		///////// IParser Interface END
 	}

@@ -286,7 +286,7 @@ namespace ICSharpCode.NAntAddIn.Commands
 			// Update task list.
 			TaskCollection tasks = NAntOutputParser.Parse(outputText);
 			foreach (Task task in tasks) {
-				WorkbenchSingleton.SafeThreadAsyncCall(typeof(TaskService), "Add", new object[] {task});
+				WorkbenchSingleton.SafeThreadAsyncCall(TaskService.Add, task);
 			}
 			
 			// Bring task list to front.
@@ -294,7 +294,7 @@ namespace ICSharpCode.NAntAddIn.Commands
 				IWorkbench workbench = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench;
 				PadDescriptor padDescriptor = workbench.GetPad(typeof(ErrorListPad));		
 				if (padDescriptor != null) {
-					WorkbenchSingleton.SafeThreadAsyncCall(padDescriptor, "BringPadToFront");
+					WorkbenchSingleton.SafeThreadAsyncCall(padDescriptor.BringPadToFront);
 				}
 			}			
         }

@@ -135,16 +135,16 @@ namespace ICSharpCode.UnitTesting
 			
 			if (!File.Exists(resultFile)) {
 				Task task = new Task("", "No NUnit results file generated: " + resultFile, 0, 0, TaskType.Error);
-				WorkbenchSingleton.SafeThreadAsyncCall(typeof(TaskService), "Add", task);
+				WorkbenchSingleton.SafeThreadAsyncCall(TaskService.Add, task);
 				return;
 			}
 			
 			try {
 				NUnitResults results = new NUnitResults(resultFile);
-				WorkbenchSingleton.SafeThreadAsyncCall(typeof(TaskService), "AddRange", results.Tasks);
+				WorkbenchSingleton.SafeThreadAsyncCall(TaskService.AddRange, results.Tasks);
 			} catch (System.Xml.XmlException ex) {
 				Task task = new Task(resultFile, "Invalid NUnit results file: " + ex.Message, ex.LineNumber, ex.LinePosition, TaskType.Error);
-				WorkbenchSingleton.SafeThreadAsyncCall(typeof(TaskService), "Add", task);
+				WorkbenchSingleton.SafeThreadAsyncCall(TaskService.Add, task);
 			}
 		}
 	}

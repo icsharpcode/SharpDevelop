@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public AboutSharpDevelopTabPage()
 		{
-			versionTextBox.Text = RevisionClass.Version;
+			versionTextBox.Text = RevisionClass.Major + "." + RevisionClass.Minor + "." + RevisionClass.Build;
 			buildTextBox.Text   = RevisionClass.Revision;
 			
 			versionLabel.Location = new System.Drawing.Point(8, 8);

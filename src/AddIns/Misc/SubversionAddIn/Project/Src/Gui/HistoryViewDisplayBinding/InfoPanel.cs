@@ -165,7 +165,7 @@ namespace ICSharpCode.Svn
 				}
 				loadChangedPathsItem = null;
 				isLoadingChangedPaths = false;
-				WorkbenchSingleton.SafeThreadAsyncCall(this, "RevisionListViewSelectionChanged", null, null);
+				WorkbenchSingleton.SafeThreadAsyncCall<object, EventArgs>(this.RevisionListViewSelectionChanged, null, EventArgs.Empty);
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
@@ -178,7 +178,7 @@ namespace ICSharpCode.Svn
 		
 		void ReceiveAllChangedPaths(LogMessage logMessage)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(this, "ReceiveAllChangedPathsInvoked", logMessage);
+			WorkbenchSingleton.SafeThreadAsyncCall(this.ReceiveAllChangedPathsInvoked, logMessage);
 		}
 		
 		void ReceiveAllChangedPathsInvoked(LogMessage logMessage)

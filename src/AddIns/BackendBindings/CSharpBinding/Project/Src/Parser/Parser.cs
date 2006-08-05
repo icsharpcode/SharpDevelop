@@ -48,7 +48,7 @@ namespace CSharpBinding.Parser
 			return Path.GetExtension(fileName).Equals(".CS", StringComparison.OrdinalIgnoreCase);
 		}
 		
-		public bool CanParse(IProject project)
+		public bool CanParse(IDomProject project)
 		{
 			return project.Language == "C#";
 		}
@@ -110,7 +110,7 @@ namespace CSharpBinding.Parser
 		{
 			foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in tagComments) {
 				DomRegion tagRegion = new DomRegion(tagComment.StartPosition.Y, tagComment.StartPosition.X);
-				ICSharpCode.SharpDevelop.Dom.Tag tag = new ICSharpCode.SharpDevelop.Dom.Tag(tagComment.Tag, tagRegion);
+				ICSharpCode.SharpDevelop.Dom.TagComment tag = new ICSharpCode.SharpDevelop.Dom.TagComment(tagComment.Tag, tagRegion);
 				tag.CommentString = tagComment.CommentText;
 				cu.TagComments.Add(tag);
 			}
@@ -118,7 +118,7 @@ namespace CSharpBinding.Parser
 		
 		public IResolver CreateResolver()
 		{
-			return new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver(ICSharpCode.NRefactory.SupportedLanguage.CSharp);
+			return new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver(ParserService.CurrentProjectContent);
 		}
 		///////// IParser Interface END
 	}

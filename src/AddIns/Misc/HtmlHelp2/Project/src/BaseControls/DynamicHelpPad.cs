@@ -187,7 +187,7 @@ namespace HtmlHelp2
 				this.AddToStringCollection(0, types.ResolvedClass.FullyQualifiedName);
 			}
 
-			WorkbenchSingleton.SafeThreadAsyncCall(this, "BuildDynamicHelpList");
+			WorkbenchSingleton.SafeThreadAsyncCall(BuildDynamicHelpList);
 		}
 
 		private ResolveResult ResolveAtCaret(ParserUpdateStepEventArgs e)
@@ -246,7 +246,7 @@ namespace HtmlHelp2
 			}
 			this.AddToStringCollection(myObject.FullName);
 
-			WorkbenchSingleton.SafeThreadAsyncCall(this, "BuildDynamicHelpList");
+			WorkbenchSingleton.SafeThreadAsyncCall(BuildDynamicHelpList);
 		}
 		#endregion
 

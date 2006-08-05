@@ -183,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		{
 			CopyInfoToClipboard();
 			
-			StartUrl("http://www.icsharpcode.net/OpenSource/SD/BugReporting.aspx?version=" + RevisionClass.Version + "." + RevisionClass.Revision);
+			StartUrl("http://www.icsharpcode.net/OpenSource/SD/BugReporting.aspx?version=" + RevisionClass.FullVersion);
 			
 			/*
 			string text = "This version of SharpDevelop is an internal build, " +

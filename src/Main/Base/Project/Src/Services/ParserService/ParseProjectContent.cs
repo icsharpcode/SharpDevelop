@@ -38,7 +38,7 @@ namespace ICSharpCode.Core
 		
 		IProject project;
 		
-		public override IProject Project {
+		public override IDomProject Project {
 			get {
 				return project;
 			}
@@ -68,15 +68,17 @@ namespace ICSharpCode.Core
 				}
 			}
 			UpdateReferenceInterDependencies();
-			WorkbenchSingleton.SafeThreadAsyncCall(this, "OnReferencedContentsChanged", EventArgs.Empty);
+			WorkbenchSingleton.SafeThreadAsyncCall(new Action<EventArgs>(OnReferencedContentsChanged),
+			                                       EventArgs.Empty);
 		}
 		
 		void UpdateReferenceInterDependencies()
 		{
 			// Use ToArray because the collection could be modified inside the loop
 			IProjectContent[] referencedContents;
-			lock (this.referencedContents) {
-				referencedContents = this.referencedContents.ToArray();
+			lock (this.ReferencedContents) {
+				referencedContents = new IProjectContent[this.ReferencedContents.Count];
+				this.ReferencedContents.CopyTo(referencedContents, 0);
 			}
 			foreach (IProjectContent referencedContent in referencedContents) {
 				if (referencedContent is ReflectionProjectContent) {
@@ -88,16 +90,17 @@ namespace ICSharpCode.Core
 		void AddReference(ReferenceProjectItem reference, bool updateInterDependencies)
 		{
 			try {
-				IProjectContent referencedContent = ProjectContentRegistry.GetProjectContentForReference(reference);
+				IProjectContent referencedContent = ParserService.GetProjectContentForReference(reference);
 				if (referencedContent != null) {
-					lock (this.referencedContents) {
-						this.referencedContents.Add(referencedContent);
+					lock (this.ReferencedContents) {
+						this.ReferencedContents.Add(referencedContent);
 					}
 				}
 				if (updateInterDependencies) {
 					UpdateReferenceInterDependencies();
 				}
-				WorkbenchSingleton.SafeThreadAsyncCall(this, "OnReferencedContentsChanged", EventArgs.Empty);
+				WorkbenchSingleton.SafeThreadAsyncCall(new Action<EventArgs>(OnReferencedContentsChanged),
+				                                       EventArgs.Empty);
 			} catch (Exception e) {
 				MessageService.ShowError(e);
 			}
@@ -169,7 +172,7 @@ namespace ICSharpCode.Core
 			ReferenceProjectItem reference = e.ProjectItem as ReferenceProjectItem;
 			if (reference != null) {
 				try {
-					IProjectContent referencedContent = ProjectContentRegistry.GetExistingProjectContentForReference(reference);
+					IProjectContent referencedContent = ParserService.GetExistingProjectContentForReference(reference);
 					if (referencedContent != null) {
 						lock (ReferencedContents) {
 							ReferencedContents.Remove(referencedContent);
@@ -236,8 +239,9 @@ namespace ICSharpCode.Core
 				StatusBarService.ProgressMonitor.TaskName = "${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing} " + project.Name + "...";
 				
 				IProjectContent[] referencedContents;
-				lock (this.referencedContents) {
-					referencedContents = this.referencedContents.ToArray();
+				lock (this.ReferencedContents) {
+					referencedContents = new IProjectContent[this.ReferencedContents.Count];
+					this.ReferencedContents.CopyTo(referencedContents, 0);
 				}
 				
 				foreach (IProjectContent referencedContent in referencedContents) {

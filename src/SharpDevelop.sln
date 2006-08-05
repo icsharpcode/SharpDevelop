@@ -1,5 +1,5 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.1.0.1634
+# SharpDevelop 2.1.0.1646
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AddIns", "AddIns", "{14A277EE-7DF1-4529-B639-7D1EF334C1C5}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
@@ -129,6 +129,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{5A3EBEBA-0560-41C1-966B-23F7D03A5486}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Dom", "Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj", "{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Sda", "Main\ICSharpCode.SharpDevelop.Sda\ICSharpCode.SharpDevelop.Sda.csproj", "{80318B5F-A25D-45AB-8A95-EF31D2370A4C}"
 EndProject
@@ -354,6 +356,10 @@ Global
 		{DFB936AD-90EE-4B4F-941E-4F4A636F0D92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DFB936AD-90EE-4B4F-941E-4F4A636F0D92}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DFB936AD-90EE-4B4F-941E-4F4A636F0D92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CE5B42B7-6E8C-4385-9E97-F4023FC16BF2} = {14A277EE-7DF1-4529-B639-7D1EF334C1C5}
@@ -412,5 +418,6 @@ Global
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {5A3EBEBA-0560-41C1-966B-23F7D03A5486}
 		{2748AD25-9C63-4E12-877B-4DCE96FBED54} = {5A3EBEBA-0560-41C1-966B-23F7D03A5486}
 		{80318B5F-A25D-45AB-8A95-EF31D2370A4C} = {5A3EBEBA-0560-41C1-966B-23F7D03A5486}
+		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3} = {5A3EBEBA-0560-41C1-966B-23F7D03A5486}
 	EndGlobalSection
 EndGlobal

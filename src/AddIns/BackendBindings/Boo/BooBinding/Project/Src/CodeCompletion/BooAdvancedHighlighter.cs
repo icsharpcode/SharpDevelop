@@ -84,7 +84,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 						this.declarations = visitor.declarations; // volatile access!
 					}
 				}
-				WorkbenchSingleton.SafeThreadAsyncCall((System.Threading.ThreadStart)MarkOutstanding);
+				WorkbenchSingleton.SafeThreadAsyncCall(MarkOutstanding);
 			}
 		}
 		

@@ -21,8 +21,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 {
 	internal sealed class CallHelper : MarshalByRefObject
 	{
-		private static readonly object[] emptyObjectArray = new object[0];
-		
 		SharpDevelopHost.CallbackHelper callback;
 		bool useSharpDevelopErrorHandler;
 		
@@ -150,9 +148,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 		}
 		#endregion
 		
-		delegate T Func<T>();
-		delegate T Func<S, T>(S arg);
-		
 		public List<Document> OpenDocuments {
 			get {
 				List<Document> l = new List<Document>();
@@ -180,7 +175,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public Document OpenDocument(string fileName)
 		{
 			if (WorkbenchSingleton.InvokeRequired) {
-				return (Document)WorkbenchSingleton.SafeThreadCall(new Func<string, Document>(OpenDocumentInternal), new object[] { fileName });
+				return WorkbenchSingleton.SafeThreadFunction<string, Document>(OpenDocumentInternal, fileName);
 			} else {
 				return OpenDocumentInternal(fileName);
 			}
@@ -193,7 +188,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public void OpenProject(string fileName)
 		{
 			if (WorkbenchSingleton.InvokeRequired) {
-				WorkbenchSingleton.SafeThreadCall(new Action<string>(OpenProjectInternal), new object[] { fileName });
+				WorkbenchSingleton.SafeThreadCall(OpenProjectInternal, fileName);
 			} else {
 				OpenProjectInternal(fileName);
 			}
@@ -211,7 +206,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public bool CloseWorkbench(bool force)
 		{
 			if (WorkbenchSingleton.InvokeRequired) {
-				return (bool)WorkbenchSingleton.SafeThreadCall(new Func<bool, bool>(CloseWorkbenchInternal), new object[] { force });
+				return WorkbenchSingleton.SafeThreadFunction<bool, bool>(CloseWorkbenchInternal, force);
 			} else {
 				return CloseWorkbenchInternal(force);
 			}
@@ -235,14 +230,14 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public bool WorkbenchVisible {
 			get {
 				if (WorkbenchSingleton.InvokeRequired) {
-					return (bool)WorkbenchSingleton.SafeThreadCall(new Func<bool>(GetWorkbenchVisibleInternal), emptyObjectArray);
+					return WorkbenchSingleton.SafeThreadFunction<bool>(GetWorkbenchVisibleInternal);
 				} else {
 					return GetWorkbenchVisibleInternal();
 				}
 			}
 			set {
 				if (WorkbenchSingleton.InvokeRequired) {
-					WorkbenchSingleton.SafeThreadCall(new Action<bool>(SetWorkbenchVisibleInternal), new object[] { value });
+					WorkbenchSingleton.SafeThreadCall(SetWorkbenchVisibleInternal, value);
 				} else {
 					SetWorkbenchVisibleInternal(value);
 				}

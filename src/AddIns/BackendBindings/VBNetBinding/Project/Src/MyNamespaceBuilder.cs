@@ -65,7 +65,7 @@ namespace VBNetBinding
 			                                     ModifierEnum.Public | ModifierEnum.Static,
 			                                     DomRegion.Empty, DomRegion.Empty, c));
 			cu.Classes.Add(c);
-			pc.UpdateCompilationUnit(null, cu, cu.FileName, false);
+			pc.UpdateCompilationUnit(null, cu, cu.FileName);
 		}
 		
 		static IClass CreateMyApplication(ICompilationUnit cu, IProject project, string ns)

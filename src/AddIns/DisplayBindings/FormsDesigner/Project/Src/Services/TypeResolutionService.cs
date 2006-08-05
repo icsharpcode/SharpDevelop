@@ -114,18 +114,23 @@ namespace ICSharpCode.FormsDesigner.Services
 				if (rpc is ParseProjectContent) {
 					LoadAssembly(rpc);
 				} else if (rpc is ReflectionProjectContent) {
-					if (!(rpc as ReflectionProjectContent).IsGacAssembly)
+					ReflectionProjectContent rrpc = (ReflectionProjectContent)rpc;
+					if (rrpc.AssemblyFullName != typeof(object).FullName
+					    && !FileUtility.IsBaseDirectory(GacInterop.GacRootPath, rrpc.AssemblyLocation))
+					{
 						LoadAssembly(rpc);
+					}
 				}
 			}
 			
 			if (pc.Project != null) {
 				return LoadAssembly(pc.Project.OutputAssemblyFullPath);
 			} else if (pc is ReflectionProjectContent) {
-				if ((pc as ReflectionProjectContent).IsGacAssembly)
-					return LoadAssembly(new AssemblyName((pc as ReflectionProjectContent).AssemblyFullName), false);
+				ReflectionProjectContent rpc = (ReflectionProjectContent)pc;
+				if (FileUtility.IsBaseDirectory(GacInterop.GacRootPath, rpc.AssemblyLocation))
+					return LoadAssembly(new AssemblyName(rpc.AssemblyFullName), false);
 				else
-					return LoadAssembly((pc as ReflectionProjectContent).AssemblyLocation);
+					return LoadAssembly(rpc.AssemblyLocation);
 			} else {
 				return null;
 			}

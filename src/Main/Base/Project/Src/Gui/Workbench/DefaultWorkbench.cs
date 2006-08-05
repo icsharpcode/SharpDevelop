@@ -204,9 +204,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				} else {
 					m.Result = new IntPtr(RESULT_FILES_HANDLED);
 					try {
-						WorkbenchSingleton.SafeThreadAsyncCall((MethodInvoker)delegate { SetForegroundWindow(WorkbenchSingleton.MainForm.Handle) ; });
+						WorkbenchSingleton.SafeThreadAsyncCall(delegate { SetForegroundWindow(WorkbenchSingleton.MainForm.Handle) ; });
 						foreach (string file in File.ReadAllLines(Path.Combine(Path.GetTempPath(), "sd" + fileNumber + ".tmp"))) {
-							WorkbenchSingleton.SafeThreadAsyncCall(new Converter<string, IWorkbenchWindow>(FileService.OpenFile), new object[] { file });
+							WorkbenchSingleton.SafeThreadAsyncCall(delegate(string openFileName) { FileService.OpenFile(openFileName); }, file);
 						}
 					} catch (Exception ex) {
 						LoggingService.Warn(ex);

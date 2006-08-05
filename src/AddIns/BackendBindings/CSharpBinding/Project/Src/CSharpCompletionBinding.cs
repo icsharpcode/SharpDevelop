@@ -11,8 +11,10 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
@@ -154,7 +156,7 @@ namespace CSharpBinding
 						                                         editor.Document.TextContent);
 						if (rr != null && rr.ResolvedType != null) {
 							ClassFinder context = new ClassFinder(editor.FileName, editor.ActiveTextAreaControl.Caret.Line, t.col);
-							if (ICSharpCode.SharpDevelop.Refactoring.CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
+							if (CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
 								CSharpAmbience.Instance.ConversionFlags = ConversionFlags.None;
 							else
 								CSharpAmbience.Instance.ConversionFlags = ConversionFlags.UseFullyQualifiedNames;
@@ -321,7 +323,7 @@ namespace CSharpBinding
 		IMember GetCurrentMember(SharpDevelopTextAreaControl editor)
 		{
 			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
-			NRefactoryResolver r = new NRefactoryResolver(SupportedLanguage.CSharp);
+			NRefactoryResolver r = new NRefactoryResolver(ParserService.CurrentProjectContent);
 			if (r.Initialize(editor.FileName, caret.Line + 1, caret.Column + 1)) {
 				return r.CallingMember;
 			} else {
@@ -333,7 +335,7 @@ namespace CSharpBinding
 		bool DoCaseCompletion(SharpDevelopTextAreaControl editor)
 		{
 			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
-			NRefactoryResolver r = new NRefactoryResolver(SupportedLanguage.CSharp);
+			NRefactoryResolver r = new NRefactoryResolver(ParserService.CurrentProjectContent);
 			if (r.Initialize(editor.FileName, caret.Line + 1, caret.Column + 1)) {
 				AST.INode currentMember = r.ParseCurrentMember(editor.Text);
 				if (currentMember != null) {

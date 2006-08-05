@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			
-			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(document, cu.Usings, newUsings);
+			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new TextEditorDocument(document), cu.Usings, newUsings);
 		}
 	}
 }

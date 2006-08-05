@@ -35,7 +35,7 @@ namespace CSharpBinding.Parser
 				return new ExpressionResult(expression.Substring(4).TrimStart(), GetCreationContext(), null);
 			}
 			if (IsInAttribute(inText, offset))
-				return new ExpressionResult(expression, ExpressionContext.Attribute);
+				return new ExpressionResult(expression, ExpressionContext.GetAttribute(ParserService.CurrentProjectContent));
 			return new ExpressionResult(expression);
 		}
 		

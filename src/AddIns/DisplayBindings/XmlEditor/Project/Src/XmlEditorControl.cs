@@ -171,7 +171,7 @@ namespace ICSharpCode.XmlEditor
 		
 		bool IsCodeCompletionEnabled {
 			get {
-				return ICSharpCode.SharpDevelop.Dom.CodeCompletionOptions.EnableCodeCompletion;
+				return ICSharpCode.SharpDevelop.CodeCompletionOptions.EnableCodeCompletion;
 			}
 		}
 		

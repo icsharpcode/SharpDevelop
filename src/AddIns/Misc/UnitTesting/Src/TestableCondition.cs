@@ -62,7 +62,7 @@ namespace ICSharpCode.UnitTesting
 			}
 			IMember m = GetMember(caller);
 			IClass c = (m != null) ? m.DeclaringType : GetClass(caller);
-			return c.ProjectContent.Project;
+			return (ICSharpCode.SharpDevelop.Project.IProject)c.ProjectContent.Project;
 		}
 		
 		public bool IsValid(object caller, Condition condition)

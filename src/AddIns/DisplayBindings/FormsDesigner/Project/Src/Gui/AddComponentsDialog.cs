@@ -18,6 +18,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using MSjogren.GacTool.FusionNative;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.FormsDesigner.Gui
@@ -51,26 +52,9 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void PrintGACCache()
 		{
-			IApplicationContext applicationContext = null;
-			IAssemblyEnum assemblyEnum = null;
-			IAssemblyName assemblyName = null;
-			
-			Fusion.CreateAssemblyEnum(out assemblyEnum, null, null, 2, 0);
-			
-			while (assemblyEnum.GetNextAssembly(out applicationContext, out assemblyName, 0) == 0) {
-				uint nChars = 0;
-				assemblyName.GetDisplayName(null, ref nChars, 0);
-				
-				StringBuilder sb = new StringBuilder((int)nChars);
-				assemblyName.GetDisplayName(sb, ref nChars, 0);
-				
-				string[] info = sb.ToString().Split(',');
-				
-				string name    = info[0];
-				string version = info[1].Substring(info[1].LastIndexOf('=') + 1);
-				
-				ListViewItem item = new ListViewItem(new string[] {name, version});
-				item.Tag = sb.ToString();
+			foreach (GacInterop.AssemblyListEntry asm in GacInterop.GetAssemblyList()) {
+				ListViewItem item = new ListViewItem(new string[] {asm.Name, asm.Version});
+				item.Tag = asm.FullName;
 				((ListView)ControlDictionary["gacListView"]).Items.Add(item);
 			}
 		}

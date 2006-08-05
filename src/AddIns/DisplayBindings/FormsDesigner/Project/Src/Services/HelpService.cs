@@ -72,7 +72,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		public void ShowHelpFromKeyword(string helpKeyword)
 		{
-			ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelpByKeyword(helpKeyword);
+			ICSharpCode.SharpDevelop.HelpProvider.ShowHelpByKeyword(helpKeyword);
 		}
 		public void ShowGeneralHelp()
 		{
@@ -80,7 +80,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		}
 		public void ShowHelp()
 		{
-			ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(f1Keyword);
+			ICSharpCode.SharpDevelop.HelpProvider.ShowHelp(f1Keyword);
 		}
 		
 		public void ShowHelpFromUrl(string helpURL)

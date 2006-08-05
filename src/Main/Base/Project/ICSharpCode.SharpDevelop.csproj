@@ -52,10 +52,6 @@
     <Reference Include="System.XML" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Engine" />
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\Libraries\Mono.Cecil\Mono.Cecil.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Internal\ExternalTool\ExternalTool.cs" />
@@ -88,28 +84,6 @@
     <Compile Include="Src\Services\LanguageBinding\ILanguageBinding.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectCreateInformation.cs" />
     <Compile Include="Src\Services\LanguageBinding\LanguageBindingService.cs" />
-    <Compile Include="Src\Dom\ICompilationUnit.cs" />
-    <Compile Include="Src\Dom\IClass.cs" />
-    <Compile Include="Src\Dom\Region.cs" />
-    <Compile Include="Src\Dom\IField.cs" />
-    <Compile Include="Src\Dom\IReturnType.cs" />
-    <Compile Include="Src\Dom\IProperty.cs" />
-    <Compile Include="Src\Dom\IEvent.cs" />
-    <Compile Include="Src\Dom\IComment.cs" />
-    <Compile Include="Src\Dom\IMethod.cs" />
-    <Compile Include="Src\Dom\ClassType.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultClass.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultProperty.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultField.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultEvent.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultComment.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultMethod.cs" />
-    <Compile Include="Src\Dom\IParameter.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultParameter.cs" />
-    <Compile Include="Src\Dom\IAttribute.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultAttribute.cs" />
-    <Compile Include="Src\Dom\Implementations\AbstractReturnType.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultCompilationUnit.cs" />
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingDoozer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CombineOpenEvaluator.cs" />
@@ -117,27 +91,10 @@
     <Compile Include="Src\Services\Language\Language.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ProjectActiveEvaluator.cs" />
-    <Compile Include="Src\Dom\IUsing.cs" />
-    <Compile Include="Src\Dom\ModifierEnum.cs" />
-    <Compile Include="Src\Dom\IDecoration.cs" />
-    <Compile Include="Src\Dom\ParameterModifiers.cs" />
-    <Compile Include="Src\Dom\Implementations\AbstractDecoration.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultUsing.cs" />
-    <Compile Include="Src\Dom\IParser.cs" />
-    <Compile Include="Src\Dom\ReflectionLayer\ReflectionClass.cs" />
-    <Compile Include="Src\Dom\ReflectionLayer\ReflectionField.cs" />
-    <Compile Include="Src\Dom\ReflectionLayer\ReflectionProperty.cs" />
-    <Compile Include="Src\Dom\ReflectionLayer\ReflectionMethod.cs" />
-    <Compile Include="Src\Dom\ReflectionLayer\ReflectionParameter.cs" />
-    <Compile Include="Src\Dom\ReflectionLayer\ReflectionEvent.cs" />
-    <Compile Include="Src\Dom\ReflectionLayer\ReflectionReturnType.cs" />
-    <Compile Include="Src\Dom\Tag.cs" />
     <Compile Include="Src\Services\AmbienceService\IAmbience.cs" />
     <Compile Include="Src\Services\AmbienceService\NetAmbience.cs" />
     <Compile Include="Src\Services\AmbienceService\AmbienceReflectionDecorator.cs" />
     <Compile Include="Src\Services\AmbienceService\AbstractAmbience.cs" />
-    <Compile Include="Src\Services\ParserService\ParseInformation.cs" />
-    <Compile Include="Src\Services\ParserService\AssemblyInformation.cs" />
     <Compile Include="Src\Services\AmbienceService\AmbienceService.cs" />
     <Compile Include="Src\Services\AmbienceService\CodeDOMGeneratorUtility.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WindowOpenEvaluator.cs" />
@@ -195,7 +152,6 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\DirtyFilesDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\FolderDialog.cs" />
-    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\FusionNative.cs" />
     <Compile Include="Src\Gui\Dialogs\NewFileDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -290,9 +246,6 @@
     <Compile Include="Src\Gui\ContentInterfaces\IParsableContent.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\ICustomizedCommands.cs" />
     <Compile Include="Src\Commands\VBConverter\ConvertBuffer.cs" />
-    <Compile Include="Src\Dom\Implementations\AbstractNamedEntity.cs" />
-    <Compile Include="Src\Dom\Implementations\AbstractMember.cs" />
-    <Compile Include="Src\Dom\IMember.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedObject.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedPropertyDescriptor.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedPropertyAttribute.cs" />
@@ -324,14 +277,12 @@
     </Compile>
     <Compile Include="Src\Internal\Templates\StandardHeaders.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedProperty.cs" />
-    <Compile Include="Src\Dom\IExpressionFinder.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\IsProcessRunningEvaluator.cs" />
     <Compile Include="Src\Internal\Doozers\PadDoozer.cs" />
     <Compile Include="Src\Gui\Dialogs\InputBox.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategory.cs" />
-    <Compile Include="Src\Services\ParserService\Position.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -351,10 +302,6 @@
     </Compile>
     <Compile Include="Src\Gui\Pads\CompilerMessageView\FileLineReference.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\OutputTextLineParser.cs" />
-    <Compile Include="Src\Dom\IResolver.cs" />
-    <Compile Include="Src\Dom\NRefactoryResolver\NRefactoryResolver.cs" />
-    <Compile Include="Src\Dom\NRefactoryResolver\TypeVisitor.cs" />
-    <Compile Include="Src\Dom\NRefactoryResolver\NRefactoryASTConvertVisitor.cs" />
     <Compile Include="Src\Gui\Components\FontSelectionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -373,7 +320,6 @@
     <Compile Include="Src\Services\ParserService\ParseInformationEventHandler.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectConfigurationEventHandler.cs" />
-    <Compile Include="Src\Internal\DiffUtility.cs" />
     <Compile Include="Src\Commands\DebugCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\AbstractProjectBrowserTreeNode.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\ProjectBrowserControl.cs">
@@ -400,7 +346,6 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ToolbarCommands.cs" />
     <Compile Include="Src\Services\LanguageBinding\LanguageBindingDescriptor.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingDescriptor.cs" />
-    <Compile Include="Src\Dom\FoldingRegion.cs" />
     <Compile Include="Src\Services\ParserService\Doozer\ParserDoozer.cs" />
     <Compile Include="Src\Services\ParserService\Doozer\ParserDescriptor.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\IPropertyValueCreator.cs" />
@@ -421,8 +366,6 @@
     <Compile Include="Src\Gui\Pads\ErrorList\ErrorListPad.cs" />
     <Compile Include="Src\Gui\Pads\ErrorList\ErrorListToolbarCommands.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\CompilerMessageViewToolbarCommands.cs" />
-    <Compile Include="Src\Services\ParserService\DefaultProjectContent.cs" />
-    <Compile Include="Src\Services\ParserService\IProjectContent.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\ClassBrowser.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\ClassBrowserToolbarCommands.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\Nodes\ProjectNode.cs" />
@@ -605,11 +548,7 @@
     <Compile Include="Src\TextEditor\XmlFormattingStrategy.cs" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\Project\AbstractProject.cs" />
-    <Compile Include="Src\Dom\XmlDoc.cs" />
-    <Compile Include="Src\Services\ParserService\ProjectContentRegistry.cs" />
-    <Compile Include="Src\Dom\ResolveResult.cs" />
     <Compile Include="Src\TextEditor\Commands\NavigationCommands.cs" />
-    <Compile Include="Src\Dom\FilePosition.cs" />
     <Compile Include="Src\Project\MSBuildEngine.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CodeCompletionBinding.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
@@ -639,15 +578,6 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Dom\ITypeParameter.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultTypeParameter.cs" />
-    <Compile Include="Src\Dom\Implementations\ProxyReturnType.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultReturnType.cs" />
-    <Compile Include="Src\Dom\Implementations\GetClassReturnType.cs" />
-    <Compile Include="Src\Dom\Implementations\GenericReturnType.cs" />
-    <Compile Include="Src\Dom\Implementations\ArrayReturnType.cs" />
-    <Compile Include="Src\Dom\Implementations\ConstructedReturnType.cs" />
-    <Compile Include="Src\Dom\LanguageProperties.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\SchemeExtension.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\ExtendedWebBrowser.cs">
       <SubType>Component</SubType>
@@ -659,30 +589,22 @@
     <Compile Include="Src\Services\RefactoringService\Reference.cs" />
     <Compile Include="Src\Services\ProjectService\ParseableFileContentEnumerator.cs" />
     <Compile Include="Src\Services\ParserService\ParseProjectContent.cs" />
-    <Compile Include="Src\Services\ParserService\ReflectionProjectContent.cs" />
-    <Compile Include="Src\Dom\Implementations\SearchClassReturnType.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\AbstractCompletionDataProvider.cs" />
-    <Compile Include="Src\Dom\ExpressionContext.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CachedCompletionDataProvider.cs" />
-    <Compile Include="Src\Dom\Implementations\CompoundClass.cs" />
     <Compile Include="Src\Project\Items\ImportProjectItem.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\AttributesDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CtrlSpaceCompletionDataProvider.cs" />
-    <Compile Include="Src\Dom\Implementations\CombinedReturnType.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionDataUsageCache.cs" />
     <EmbeddedResource Include="Resources\CodeCompletionOptionPanel.xfrm" />
     <Compile Include="Src\TextEditor\Gui\OptionPanels\CodeCompletionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Dom\CodeCompletionOptions.cs" />
     <Compile Include="Src\Services\Debugger\CurrentLineBookmark.cs" />
-    <Compile Include="Src\Dom\ClassFinder.cs" />
     <Compile Include="Src\TextEditor\Commands\ClassBookmarkMenuBuilder.cs" />
     <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchStrategy\BoyerMooreSearchStrategy.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserCommands.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerDoozer.cs" />
-    <Compile Include="Src\Dom\HelpProvider.cs" />
     <Compile Include="Src\Project\Solution\SolutionPreferences.cs" />
     <Compile Include="Src\Project\ConfigurationGuiHelper.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\ICanBeDirty.cs" />
@@ -701,7 +623,6 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\FullscreenPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Dom\MemberLookupHelper.cs" />
     <Compile Include="Src\Gui\Components\AutoHide\AutoHideMenuStripContainer.cs" />
     <Compile Include="Src\Gui\Components\AutoHide\AutoHideStatusStripContainer.cs" />
     <Compile Include="Src\Gui\Components\AutoHide\AutoHideContainer.cs" />
@@ -709,14 +630,8 @@
     <Compile Include="Src\Services\RefactoringService\FindReferencesAndRenameHelper.cs" />
     <Compile Include="Src\Internal\Doozers\DirectoryDoozer.cs" />
     <Compile Include="Src\Gui\Components\StringListEditor.cs" />
-    <Compile Include="Src\Dom\Implementations\NullReturnType.cs" />
-    <Compile Include="Src\Dom\Implementations\AnonymousMethodReturnType.cs" />
     <Compile Include="Src\Project\ConfigurationGuiBinding.cs" />
     <Compile Include="Src\Project\ChooseStorageLocationButton.cs" />
-    <Compile Include="Src\Dom\ReflectionLayer\ReflectionLoader.cs" />
-    <Compile Include="Src\Dom\ReflectionLayer\DomPersistence.cs" />
-    <Compile Include="Src\Services\RefactoringService\CodeGenerator.cs" />
-    <Compile Include="Src\Services\RefactoringService\NRefactoryCodeGenerator.cs" />
     <Compile Include="Src\Gui\TreeGrid\CollectionWithEvents.cs" />
     <Compile Include="Src\Gui\TreeGrid\DynamicList.cs" />
     <Compile Include="Src\Gui\TreeGrid\DynamicListColumn.cs" />
@@ -741,7 +656,6 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\WebReferenceNode.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\WebReferenceChanges.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\CodeGenerationForm.cs" />
-    <Compile Include="Src\Dom\NRefactoryResolver\NRefactoryInformationProvider.cs" />
     <Compile Include="Src\Project\Converter\LanguageConverter.cs" />
     <Compile Include="Src\Gui\Dialogs\TemplateCategoryComparer.cs" />
     <Compile Include="Src\Internal\Templates\TemplateCategorySortOrderFile.cs" />
@@ -768,14 +682,10 @@
     <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\IClassNodeBuilder.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\IProjectNodeBuilder.cs" />
     <Compile Include="Src\TextEditor\SearchAndReplace\Engine\TextSelection.cs" />
-    <Compile Include="Src\Services\RefactoringService\RefactoringProvider.cs" />
-    <Compile Include="Src\Services\RefactoringService\NRefactoryRefactoringProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\NamespaceRefactoringService.cs" />
     <Compile Include="Src\Services\RefactoringService\RefactorMenu.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\AdvancedHighlightingStrategy.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\AdvancedHighlighter.cs" />
-    <Compile Include="Src\Dom\Implementations\SystemTypes.cs" />
-    <Compile Include="Src\Dom\CecilReader.cs" />
     <Compile Include="Src\Services\NavigationService\DefaultNavigationPoint.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ITextAreaToolTipProvider.cs" />
     <Compile Include="Src\Services\NavigationService\INavigationPoint.cs" />
@@ -786,6 +696,10 @@
     <Compile Include="Src\Project\BuildResults.cs" />
     <Compile Include="Src\Project\BuildError.cs" />
     <Compile Include="Src\Project\MSBuildAdditionalLogger.cs" />
+    <Compile Include="Src\Services\HelpProvider.cs" />
+    <Compile Include="Src\Services\ParserService\CodeCompletionOptions.cs" />
+    <Compile Include="Src\Services\RefactoringService\TextEditorDocument.cs" />
+    <Compile Include="Src\Services\ParserService\DomHostCallback.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
@@ -813,6 +727,10 @@
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
     <Folder Include="Src\Services\NavigationService" />
+    <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

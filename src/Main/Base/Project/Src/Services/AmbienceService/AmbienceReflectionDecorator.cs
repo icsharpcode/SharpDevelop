@@ -88,6 +88,7 @@ namespace ICSharpCode.Core
 			this.conv = conv;
 		}
 		
+		/*
 		public string Convert(Type type)
 		{
 			return conv.Convert(new ReflectionClass(null, type, type.FullName.Replace('+', '.'), null));
@@ -117,6 +118,7 @@ namespace ICSharpCode.Core
 		{
 			return conv.Convert(new ReflectionParameter(param, null));
 		}
+		*/
 		
 		public ArrayList LinkArrayList {
 			get {

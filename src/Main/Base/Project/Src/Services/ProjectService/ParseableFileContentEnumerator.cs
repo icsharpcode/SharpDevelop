@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (isOnMainThread)
 					content = GetFileContentFromOpenFile(fileName);
 				else
-					content = (string)WorkbenchSingleton.SafeThreadCall(this, "GetFileContentFromOpenFile", fileName);
+					content = WorkbenchSingleton.SafeThreadFunction<string, string>(GetFileContentFromOpenFile, fileName);
 				if (content != null)
 					return content;
 			}
@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		bool IsFileOpen(string fileName)
 		{
 			if (viewContentCollection == null) {
-				viewContentCollection = (IViewContent[])WorkbenchSingleton.SafeThreadCall(this, "GetViewContentCollection");
+				viewContentCollection = WorkbenchSingleton.SafeThreadFunction<IViewContent[]>(GetViewContentCollection);
 			}
 			foreach (IViewContent content in viewContentCollection) {
 				string contentName = content.IsUntitled ? content.UntitledName : content.FileName;

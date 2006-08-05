@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static CompilerMessageView Instance {
 			get {
 				if (instance == null)
-					WorkbenchSingleton.SafeThreadCall((MethodInvoker)InitializeInstance);
+					WorkbenchSingleton.SafeThreadCall(InitializeInstance);
 				return instance;
 			}
 		}
@@ -183,7 +183,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void CategoryTextCleared(object sender, EventArgs e)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(this, "ClearText", sender);
+			WorkbenchSingleton.SafeThreadAsyncCall(new Action<MessageViewCategory>(ClearText),
+			                                       (MessageViewCategory)sender);
 		}
 		void ClearText(MessageViewCategory category)
 		{
@@ -195,7 +196,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void CategoryTextSet(object sender, TextEventArgs e)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(this, "SetText", (MessageViewCategory)sender, e.Text);
+			WorkbenchSingleton.SafeThreadAsyncCall(new Action<MessageViewCategory, string>(SetText),
+			                                       (MessageViewCategory)sender, e.Text);
 		}
 		
 		object appendCallLock = new object();
@@ -205,10 +207,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			lock (appendCallLock) {
 				pendingAppendCalls += 1;
+				MessageViewCategory cat = (MessageViewCategory)sender;
 				if (pendingAppendCalls < 5) {
-					WorkbenchSingleton.SafeThreadAsyncCall(this, "AppendText", sender, ((MessageViewCategory)sender).Text, e.Text);
+					WorkbenchSingleton.SafeThreadAsyncCall(new Action<MessageViewCategory, string, string>(AppendText),
+					                                       cat, cat.Text, e.Text);
 				} else if (pendingAppendCalls == 5) {
-					WorkbenchSingleton.SafeThreadAsyncCall(this, "AppendTextCombined", sender);
+					WorkbenchSingleton.SafeThreadAsyncCall(new Action<MessageViewCategory>(AppendTextCombined),
+					                                       cat);
 				}
 			}
 		}

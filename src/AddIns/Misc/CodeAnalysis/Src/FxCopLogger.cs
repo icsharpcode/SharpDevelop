@@ -10,6 +10,7 @@ using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Framework;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.CodeAnalysis
 {
@@ -94,9 +95,9 @@ namespace ICSharpCode.CodeAnalysis
 						if (file.StartsWith("positionof#")) {
 							string memberName = file.Substring(11);
 							file = "";
-							Position pos = pc.GetPosition(memberName);
-							if (pos != null && pos.Cu != null) {
-								err.FileName = pos.Cu.FileName ?? "";
+							FilePosition pos = pc.GetPosition(memberName);
+							if (pos.IsEmpty == false && pos.CompilationUnit != null) {
+								err.FileName = pos.FileName ?? "";
 								err.Line = pos.Line;
 								err.Column = pos.Column;
 							} else {

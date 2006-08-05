@@ -16,6 +16,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.SharpDevelop.Project;
@@ -63,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 							                      delegate {
 							                      	FileService.RenameFile(c.CompilationUnit.FileName, correctFileName, false);
 							                      	if (c.ProjectContent.Project != null) {
-							                      		c.ProjectContent.Project.Save();
+							                      		((IProject)c.ProjectContent.Project).Save();
 							                      	}
 							                      });
 							list.Add(cmd);
@@ -117,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IWorkbenchWindow window = FileService.NewFile(newFileName, "Text", newCode);
 			window.ViewContent.Save(newFileName);
 			
-			IProject project = c.ProjectContent.Project;
+			IProject project = (IProject)c.ProjectContent.Project;
 			if (project != null) {
 				FileProjectItem projectItem = new FileProjectItem(project, ItemType.Compile);
 				projectItem.FileName = newFileName;
@@ -129,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		static string ExtractCode(IClass c, DomRegion codeRegion, int indentationLine)
 		{
-			IDocument doc = GetDocument(c);
+			ICSharpCode.TextEditor.Document.IDocument doc = GetDocument(c);
 			if (indentationLine < 0) indentationLine = 0;
 			if (indentationLine >= doc.TotalNumberOfLines) indentationLine = doc.TotalNumberOfLines - 1;
 			
@@ -182,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				if (interf != null && interf.ClassType == ClassType.Interface) {
 					IReturnType rtCopy = rt; // copy for access by anonymous method
 					EventHandler eh = delegate {
-						IDocument d = GetDocument(c);
+						TextEditorDocument d = new TextEditorDocument(GetDocument(c));
 						if (d != null)
 							codeGen.ImplementInterface(rtCopy, d, explicitImpl, modifier, c);
 						ParserService.ParseCurrentViewContent();
@@ -217,7 +218,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		static IDocument GetDocument(IClass c)
+		static ICSharpCode.TextEditor.Document.IDocument GetDocument(IClass c)
 		{
 			IWorkbenchWindow win = FileService.OpenFile(c.CompilationUnit.FileName);
 			if (win == null) return null;

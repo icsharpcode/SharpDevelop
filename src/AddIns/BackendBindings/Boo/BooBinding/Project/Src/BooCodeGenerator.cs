@@ -15,8 +15,8 @@ using Boo.Lang.Compiler.Ast.Visitors;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor.Document;
 using NRefactoryToBooConverter;
 
 namespace Grunwald.BooBinding

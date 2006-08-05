@@ -118,13 +118,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public string Text {
 			get {
 				if (WorkbenchSingleton.InvokeRequired)
-					return (string)WorkbenchSingleton.SafeThreadCall(this, "GetText", null);
+					return WorkbenchSingleton.SafeThreadFunction<string>(GetText);
 				else
 					return GetText();
 			}
 			set {
 				if (WorkbenchSingleton.InvokeRequired)
-					WorkbenchSingleton.SafeThreadCall(this, "SetText", value);
+					WorkbenchSingleton.SafeThreadCall(SetText, value);
 				else
 					SetText(value);
 			}
@@ -216,11 +216,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				ResolveResult result = ParserService.Resolve(expressionResult, textArea.Caret.Line + 1, textArea.Caret.Column + 1, textAreaControl.FileName, textContent);
 				TypeResolveResult trr = result as TypeResolveResult;
 				if (trr != null) {
-					ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(trr.ResolvedClass);
+					HelpProvider.ShowHelp(trr.ResolvedClass);
 				}
 				MemberResolveResult mrr = result as MemberResolveResult;
 				if (mrr != null) {
-					ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(mrr.ResolvedMember);
+					HelpProvider.ShowHelp(mrr.ResolvedMember);
 				}
 			}
 		}
@@ -477,7 +477,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public void ParseInformationUpdated(ParseInformation parseInfo)
 		{
 			if (textAreaControl.TextEditorProperties.EnableFolding) {
-				WorkbenchSingleton.SafeThreadAsyncCall(this, "ParseInformationUpdatedInvoked", parseInfo);
+				WorkbenchSingleton.SafeThreadAsyncCall(ParseInformationUpdatedInvoked, parseInfo);
 			}
 		}
 		

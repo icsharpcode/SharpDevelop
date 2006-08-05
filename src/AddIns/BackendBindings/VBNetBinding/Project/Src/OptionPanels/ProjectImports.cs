@@ -9,14 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
-
-using VBNetBinding;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace VBNetBinding.OptionPanels
 {

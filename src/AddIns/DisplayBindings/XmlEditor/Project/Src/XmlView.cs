@@ -5,12 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using System;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -21,6 +15,13 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.XPath;
 using System.Xml.Xsl;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -38,8 +39,6 @@ namespace ICSharpCode.XmlEditor
 		/// Output window category name.
 		/// </summary>
 		public static readonly string CategoryName = "XML";
-
-		delegate void RefreshDelegate(AbstractMargin margin);
 
 		XmlEditorControl xmlEditor = new XmlEditorControl();
 		FileSystemWatcher watcher;
@@ -280,13 +279,13 @@ namespace ICSharpCode.XmlEditor
 		public string Text {
 			get {
 				if (WorkbenchSingleton.InvokeRequired)
-					return (string)WorkbenchSingleton.SafeThreadCall(this, "GetText", null);
+					return WorkbenchSingleton.SafeThreadFunction<string>(GetText);
 				else
 					return GetText();
 			}
 			set {
 				if (WorkbenchSingleton.InvokeRequired)
-					WorkbenchSingleton.SafeThreadCall(this, "SetText", value);
+					WorkbenchSingleton.SafeThreadCall(SetText, value);
 				else
 					SetText(value);
 			}
@@ -406,7 +405,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public void ParseInformationUpdated(ParseInformation parseInfo)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall((MethodInvoker)UpdateFolding);
+			WorkbenchSingleton.SafeThreadAsyncCall(UpdateFolding);
 		}
 		
 		#endregion
@@ -522,7 +521,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void RefreshMargin()
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall((RefreshDelegate)xmlEditor.ActiveTextAreaControl.TextArea.Refresh,
+			WorkbenchSingleton.SafeThreadAsyncCall(xmlEditor.ActiveTextAreaControl.TextArea.Refresh,
 			                                       xmlEditor.ActiveTextAreaControl.TextArea.FoldMargin);
 		}
 		

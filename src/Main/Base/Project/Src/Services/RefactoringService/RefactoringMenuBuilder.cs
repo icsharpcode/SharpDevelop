@@ -15,6 +15,7 @@ using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
@@ -182,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (definitions.Contains(c.DotNetName)) return null;
 				definitions.Add(c.DotNetName);
 			}
-			return MakeItem(c.FullyQualifiedName, new ClassNode(c.ProjectContent.Project, c), c.CompilationUnit, c.Region);
+			return MakeItem(c.FullyQualifiedName, new ClassNode((IProject)c.ProjectContent.Project, c), c.CompilationUnit, c.Region);
 		}
 		
 		ToolStripMenuItem MakeItemInternal(string title, int imageIndex, ICompilationUnit cu, DomRegion region)

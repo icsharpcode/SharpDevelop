@@ -202,7 +202,7 @@ namespace ICSharpCode.StartPage
 			PopulateLeftMenu();
 			LeftMenuSelectedItem = "";
 			
-			VersionText   = "version " + RevisionClass.Version;
+			VersionText   = "version " + RevisionClass.FullVersion;
 			VersionStatus = "";
 			
 			RightBoxHtml = "";

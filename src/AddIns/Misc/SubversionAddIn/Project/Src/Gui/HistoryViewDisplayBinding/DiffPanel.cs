@@ -76,7 +76,7 @@ namespace ICSharpCode.Svn
 			                               outStream,
 			                               errStream);
 			output = Encoding.Default.GetString(outStream.ToArray());
-			WorkbenchSingleton.SafeThreadCall(this, "SetOutput");
+			WorkbenchSingleton.SafeThreadCall(SetOutput);
 		}
 		
 		void SetOutput()

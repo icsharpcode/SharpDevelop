@@ -266,7 +266,7 @@ namespace ICSharpCode.NAntAddIn.Gui
 		
 		void NAntExited(object sender, NAntExitEventArgs e)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(this, "UpdateToolbar");
+			WorkbenchSingleton.SafeThreadAsyncCall(UpdateToolbar);
 		}
 	}
 }

@@ -52,7 +52,7 @@ namespace ICSharpCode.UnitTesting
 			treeView.RunStarted  += ThreadedUpdateToolbar;
 			treeView.RunFinished += ThreadedUpdateToolbar;
 			treeView.RunFinished += delegate {
-				WorkbenchSingleton.SafeThreadAsyncCall((MethodInvoker)ShowErrorList);
+				WorkbenchSingleton.SafeThreadAsyncCall(ShowErrorList);
 			};
 			
 			ctl.Controls.Add(treeView);
@@ -123,7 +123,7 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Loads the assemblies if they are not already loaded.
 		/// </summary>
-		public void LoadAssemblyList(MethodInvoker callback)
+		public void LoadAssemblyList(Action callback)
 		{
 			if (autoLoadItems) {
 				if (callback != null)
@@ -133,7 +133,7 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		public void ReloadAssemblyList(MethodInvoker callback)
+		public void ReloadAssemblyList(Action callback)
 		{
 			autoLoadItems = true;
 			treeView.UnloadTestAssemblies();
@@ -192,7 +192,7 @@ namespace ICSharpCode.UnitTesting
 		
 		void ThreadedUpdateToolbar(object sender, EventArgs e)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall((MethodInvoker)UpdateToolbar);
+			WorkbenchSingleton.SafeThreadAsyncCall(UpdateToolbar);
 		}
 		
 		void UpdateToolbar()

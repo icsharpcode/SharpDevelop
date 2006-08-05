@@ -105,7 +105,7 @@ namespace ICSharpCode.Core
 			if (version.StartsWith("@")) {
 				if (version == "@SharpDevelopCoreVersion") {
 					if (entryVersion == null)
-						entryVersion = new Version(RevisionClass.Version + "." + RevisionClass.Revision);
+						entryVersion = new Version(RevisionClass.FullVersion);
 					return entryVersion;
 				}
 				if (hintPath != null) {

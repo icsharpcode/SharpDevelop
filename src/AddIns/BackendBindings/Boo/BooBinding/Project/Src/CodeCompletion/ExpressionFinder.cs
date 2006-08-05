@@ -213,7 +213,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				IClass c = o as IClass;
 				if (c != null && c.IsAbstract)
 					return false;
-				if (ExpressionContext.Attribute.ShowEntry(o))
+				if (ExpressionContext.GetAttribute(ParserService.CurrentProjectContent).ShowEntry(o))
 					return true;
 				if (c == null)
 					return false;

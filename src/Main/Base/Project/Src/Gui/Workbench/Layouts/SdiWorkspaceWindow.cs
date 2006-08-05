@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (WorkbenchSingleton.InvokeRequired) {
 						// the window might have been disposed just here, invoke on the
 						// Workbench instead
-						selectedIndex = (int)WorkbenchSingleton.SafeThreadCall(this, "GetSelectedIndex");
+						selectedIndex = WorkbenchSingleton.SafeThreadFunction<int>(GetSelectedIndex);
 					} else {
 						selectedIndex = GetSelectedIndex();
 					}
@@ -203,7 +203,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void LoadSolutionProjectsThreadEndedEvent(object sender, EventArgs e)
 		{
 			// do not invoke on this: it's possible that "this" is disposed while this method is executing
-			WorkbenchSingleton.SafeThreadAsyncCall(new MethodInvoker(this.RefreshSecondaryViewContents));
+			WorkbenchSingleton.SafeThreadAsyncCall(this.RefreshSecondaryViewContents);
 		}
 		
 		public IViewContent ViewContent {

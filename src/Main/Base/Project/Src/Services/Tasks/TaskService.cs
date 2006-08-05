@@ -158,18 +158,18 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static void UpdateCommentTags(string fileName, List<Tag> tagComments)
+		public static void UpdateCommentTags(string fileName, List<TagComment> tagComments)
 		{
 			if (fileName == null || tagComments == null) {
 				return;
 			}
-			WorkbenchSingleton.SafeThreadAsyncCall(typeof(TaskService), "UpdateCommentTagsInvoked", fileName, tagComments);
+			WorkbenchSingleton.SafeThreadAsyncCall(UpdateCommentTagsInvoked, fileName, tagComments);
 		}
 		
-		static void UpdateCommentTagsInvoked(string fileName, List<Tag> tagComments)
+		static void UpdateCommentTagsInvoked(string fileName, List<TagComment> tagComments)
 		{
 			List<Task> newTasks = new List<Task>();
-			foreach (Tag tag in tagComments) {
+			foreach (TagComment tag in tagComments) {
 				newTasks.Add(new Task(fileName,
 				                      tag.Key + tag.CommentString,
 				                      tag.Region.BeginColumn - 1,

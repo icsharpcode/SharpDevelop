@@ -13,8 +13,8 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor.Document;
 using Ast = ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.CodeAnalysis
@@ -31,19 +31,19 @@ namespace ICSharpCode.CodeAnalysis
 				CodeGenerator codegen = tag.ProjectContent.Language.CodeGenerator;
 				if (codegen == null)
 					continue;
-				Position p = tag.ProjectContent.GetPosition(tag.MemberName);
-				if (p == null || p.Cu == null || p.Cu.FileName == null || p.Line <= 0)
+				FilePosition p = tag.ProjectContent.GetPosition(tag.MemberName);
+				if (p.CompilationUnit == null || p.FileName == null || p.Line <= 0)
 					continue;
-				IWorkbenchWindow window = FileService.OpenFile(p.Cu.FileName);
+				IWorkbenchWindow window = FileService.OpenFile(p.FileName);
 				if (window == null)
 					continue;
 				ITextEditorControlProvider provider = window.ViewContent as ITextEditorControlProvider;
 				if (provider == null)
 					continue;
-				IDocument document = provider.TextEditorControl.Document;
+				IDocument document = new TextEditorDocument(provider.TextEditorControl.Document);
 				if (p.Line >= document.TotalNumberOfLines)
 					continue;
-				LineSegment line = document.GetLineSegment(p.Line - 1);
+				IDocumentLine line = document.GetLine(p.Line);
 				StringBuilder indentation = new StringBuilder();
 				for (int i = line.Offset; i < document.TextLength; i++) {
 					char c = document.GetCharAt(i);
@@ -52,7 +52,7 @@ namespace ICSharpCode.CodeAnalysis
 					else
 						break;
 				}
-				string code = codegen.GenerateCode(CreateSuppressAttribute(p.Cu, tag), indentation.ToString());
+				string code = codegen.GenerateCode(CreateSuppressAttribute(p.CompilationUnit, tag), indentation.ToString());
 				if (!code.EndsWith("\n")) code += Environment.NewLine;
 				document.Insert(line.Offset, code);
 				provider.TextEditorControl.ActiveTextAreaControl.Caret.Line = p.Line - 1;

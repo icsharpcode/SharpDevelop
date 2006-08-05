@@ -24,7 +24,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		Module
 	}
 	
-	public interface IProject : ISolutionFolder, IDisposable, IMementoCapable
+	public interface IProject : ISolutionFolder, IDisposable, IMementoCapable,
+		ICSharpCode.SharpDevelop.Dom.IDomProject
 	{
 		List<ProjectItem> Items {
 			get;
@@ -43,9 +44,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		bool IsDirty {
 			get;
 			set;
-		}
-		string Language {
-			get;
 		}
 		
 		ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
@@ -82,20 +80,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
-		string OutputAssemblyFullPath {
-			get;
-		}
-		
 		string IntermediateOutputFullPath {
 			get;
 		}
 		
 		OutputType OutputType {
-			get;
-			set;
-		}
-		
-		string RootNamespace {
 			get;
 			set;
 		}

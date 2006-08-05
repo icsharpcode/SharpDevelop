@@ -257,7 +257,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void fileDeleted(object sender, FileSystemEventArgs e)
 		{
-			MethodInvoker method = delegate {
+			Action method = delegate {
 				foreach(FileListItem fileItem in Items)
 				{
 					if(fileItem.FullName.Equals(e.FullPath, StringComparison.OrdinalIgnoreCase)) {
@@ -271,7 +271,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void fileChanged(object sender, FileSystemEventArgs e)
 		{
-			MethodInvoker method = delegate {
+			Action method = delegate {
 				foreach(FileListItem fileItem in Items)
 				{
 					if(fileItem.FullName.Equals(e.FullPath, StringComparison.OrdinalIgnoreCase)) {
@@ -293,7 +293,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void fileCreated(object sender, FileSystemEventArgs e)
 		{
-			MethodInvoker method = delegate {
+			Action method = delegate {
 				FileInfo info = new FileInfo(e.FullPath);
 				
 				ListViewItem fileItem = Items.Add(new FileListItem(e.FullPath));
@@ -309,7 +309,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void fileRenamed(object sender, RenamedEventArgs e)
 		{
-			MethodInvoker method = delegate {
+			Action method = delegate {
 				foreach(FileListItem fileItem in Items)
 				{
 					if(fileItem.FullName.Equals(e.OldFullPath, StringComparison.OrdinalIgnoreCase)) {

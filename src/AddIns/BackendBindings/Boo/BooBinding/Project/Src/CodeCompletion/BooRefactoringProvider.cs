@@ -7,7 +7,7 @@
 
 using System;
 using System.IO;
-using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {

@@ -74,6 +74,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static void InitializeWorkbench()
 		{
 			LayoutConfiguration.LoadLayoutConfiguration();
+			StatusBarService.Initialize();
+			DomHostCallback.Register(); // must be called after StatusBarService.Initialize()
 			
 			workbench = new DefaultWorkbench();
 			MessageService.MainForm = workbench;
@@ -198,9 +200,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// operation, which can result in a dead-lock when the main thread waits for a lock
 		/// held by this thread!
 		/// </summary>
-		public static object SafeThreadCall(object target, string methodName, params object[] arguments)
+		public static R SafeThreadFunction<R>(Func<R> method)
 		{
-			return caller.Call(target, methodName, arguments);
+			return (R)caller.Call(method, new object[0]);
 		}
 		
 		/// <summary>
@@ -208,25 +210,81 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// operation, which can result in a dead-lock when the main thread waits for a lock
 		/// held by this thread!
 		/// </summary>
-		public static object SafeThreadCall(Delegate method, params object[] arguments)
+		public static R SafeThreadFunction<A, R>(Func<A, R> method, A arg1)
 		{
-			return caller.Call(method, arguments);
+			return (R)caller.Call(method, new object[] { arg1 });
+		}
+		
+		/// <summary>
+		/// Makes a call GUI threadsafe. WARNING: This method waits for the result of the
+		/// operation, which can result in a dead-lock when the main thread waits for a lock
+		/// held by this thread!
+		/// </summary>
+		public static void SafeThreadCall(Action method)
+		{
+			caller.Call(method, new object[0]);
+		}
+		
+		/// <summary>
+		/// Makes a call GUI threadsafe. WARNING: This method waits for the result of the
+		/// operation, which can result in a dead-lock when the main thread waits for a lock
+		/// held by this thread!
+		/// </summary>
+		public static void SafeThreadCall<A>(Action<A> method, A arg1)
+		{
+			caller.Call(method, new object[] { arg1 });
+		}
+		
+		/// <summary>
+		/// Makes a call GUI threadsafe. WARNING: This method waits for the result of the
+		/// operation, which can result in a dead-lock when the main thread waits for a lock
+		/// held by this thread!
+		/// </summary>
+		public static void SafeThreadCall<A, B>(Action<A, B> method, A arg1, B arg2)
+		{
+			caller.Call(method, new object[] { arg1, arg2 });
+		}
+		
+		/// <summary>
+		/// Makes a call GUI threadsafe. WARNING: This method waits for the result of the
+		/// operation, which can result in a dead-lock when the main thread waits for a lock
+		/// held by this thread!
+		/// </summary>
+		public static void SafeThreadCall<A, B, C>(Action<A, B, C> method, A arg1, B arg2, C arg3)
+		{
+			caller.Call(method, new object[] { arg1, arg2, arg3 });
 		}
 		
 		/// <summary>
 		/// Makes a call GUI threadsafe without waiting for the returned value.
 		/// </summary>
-		public static void SafeThreadAsyncCall(object target, string methodName, params object[] arguments)
+		public static void SafeThreadAsyncCall(Action method)
 		{
-			caller.BeginCall(target, methodName, arguments);
+			caller.BeginCall(method, new object[0]);
 		}
 		
 		/// <summary>
 		/// Makes a call GUI threadsafe without waiting for the returned value.
 		/// </summary>
-		public static void SafeThreadAsyncCall(Delegate method, params object[] arguments)
+		public static void SafeThreadAsyncCall<A>(Action<A> method, A arg1)
 		{
-			caller.BeginCall(method, arguments);
+			caller.BeginCall(method, new object[] { arg1 });
+		}
+		
+		/// <summary>
+		/// Makes a call GUI threadsafe without waiting for the returned value.
+		/// </summary>
+		public static void SafeThreadAsyncCall<A, B>(Action<A, B> method, A arg1, B arg2)
+		{
+			caller.BeginCall(method, new object[] { arg1, arg2 });
+		}
+		
+		/// <summary>
+		/// Makes a call GUI threadsafe without waiting for the returned value.
+		/// </summary>
+		public static void SafeThreadAsyncCall<A, B, C>(Action<A, B, C> method, A arg1, B arg2, C arg3)
+		{
+			caller.BeginCall(method, new object[] { arg1, arg2, arg3 });
 		}
 		#endregion
 		

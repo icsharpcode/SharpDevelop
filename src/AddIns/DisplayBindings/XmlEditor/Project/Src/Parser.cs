@@ -61,7 +61,7 @@ namespace ICSharpCode.XmlEditor
 			return compilationUnit;
 		}
 		
-		public bool CanParse(IProject project)
+		public bool CanParse(IDomProject project)
 		{
 			return false;
 		}
