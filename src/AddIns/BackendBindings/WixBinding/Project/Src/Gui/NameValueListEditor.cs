@@ -120,7 +120,7 @@ namespace ICSharpCode.WixBinding
 			// 
 			// valueColumn
 			// 
-			this.valueColumn.HeaderText = "ValueColumn";
+			this.valueColumn.HeaderText = "Value";
 			this.valueColumn.Name = "valueColumn";
 			this.valueColumn.Width = 400;
 			// 

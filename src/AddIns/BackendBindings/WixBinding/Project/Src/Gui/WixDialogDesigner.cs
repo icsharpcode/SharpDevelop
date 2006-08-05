@@ -289,9 +289,12 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		WixProject GetProject()
 		{
-			foreach (IProject project in ProjectService.OpenSolution.Projects) {
-				if (project.IsFileInProject(base.viewContent.FileName)) {
-					return project as WixProject;
+			Solution openSolution = ProjectService.OpenSolution;
+			if (openSolution != null) {
+				foreach (IProject project in openSolution.Projects) {
+					if (project.IsFileInProject(base.viewContent.FileName)) {
+						return project as WixProject;
+					}
 				}
 			}
 			return null;

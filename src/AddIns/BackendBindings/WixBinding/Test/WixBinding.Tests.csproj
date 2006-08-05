@@ -142,6 +142,7 @@
     <Compile Include="DialogXmlGeneration\ListViewItemAddedTestFixture.cs" />
     <Compile Include="DialogXmlGeneration\ListViewItemRemovedTestFixture.cs" />
     <Compile Include="DialogXmlGeneration\ListViewAddedTestFixture.cs" />
+    <Compile Include="Document\GetValueWithNoProjectTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\WixBinding.csproj">

@@ -419,7 +419,10 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public string GetValue(string name)
 		{
-			return project.GetVariable(name);
+			if (project != null) {
+				return project.GetVariable(name);
+			}
+			return null;
 		}
 		
 		/// <summary>
