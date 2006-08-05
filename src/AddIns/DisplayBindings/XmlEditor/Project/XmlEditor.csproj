@@ -107,6 +107,12 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\FormatXmlCommand.cs" />
+    <Compile Include="Src\XPathQueryPad.cs" />
+    <Compile Include="Src\XPathQueryControl.cs" />
+    <Compile Include="Src\XmlNamespace.cs" />
+    <Compile Include="Src\XPathNodeMatch.cs" />
+    <Compile Include="Src\XPathNodeTextMarker.cs" />
+    <Compile Include="Src\RemoveXPathHighlightingCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

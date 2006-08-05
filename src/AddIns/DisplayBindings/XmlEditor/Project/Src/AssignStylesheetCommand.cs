@@ -23,7 +23,7 @@ namespace ICSharpCode.XmlEditor
 		public override void Run()
 		{
 			// Get active xml document.
-			XmlView xmlView = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as XmlView;
+			XmlView xmlView = XmlView.ActiveXmlView;
 			if (xmlView != null) {
 				
 				// Prompt user for filename.
@@ -38,8 +38,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public static string BrowseForStylesheetFile()
 		{
-			using (OpenFileDialog dialog = new OpenFileDialog())
-			{
+			using (OpenFileDialog dialog = new OpenFileDialog()) {
 				dialog.AddExtension = true;
 				dialog.Multiselect = false;
 				dialog.CheckFileExists = true;

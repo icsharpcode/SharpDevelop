@@ -245,6 +245,7 @@ PadIcons.LoadedModules							  = PadIcons\LoadedModules.png
 PadIcons.LocalVariables							  = PadIcons\LocalVariables.png
 PadIcons.Threads								  = PadIcons\Threads.png
 PadIcons.Exceptions								  = PadIcons\Exceptions.png
+PadIcons.XPathQuery								  = PadIcons\XPathQuery.png
 
 #SharpQuery icons
 Icons.16x16.SharpQuery.DataBaseRoot             = SharpQueryIcons\Icons.16x16.SharpQuery.Database.png

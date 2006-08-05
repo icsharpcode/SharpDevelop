@@ -24,7 +24,7 @@ namespace ICSharpCode.XmlEditor
 		public override void Run()
 		{
 			// Find active XmlView.
-			XmlView xmlView = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as XmlView;
+			XmlView xmlView = XmlView.ActiveXmlView;
 			if (xmlView != null) {
 				// Validate the xml.
 				xmlView.ValidateXml();

@@ -5,9 +5,17 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 using System;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -15,13 +23,6 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.XPath;
 using System.Xml.Xsl;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -63,6 +64,32 @@ namespace ICSharpCode.XmlEditor
 			XmlSchemaManager.UserSchemaRemoved += new EventHandler(UserSchemaRemoved);
 		}
 
+		/// <summary>
+		/// Gets the active XmlView.
+		/// </summary>
+		/// <returns><see langword="null"/> if the active view is not an XmlView.</returns>
+		public static XmlView ActiveXmlView {
+			get {
+				IWorkbench workbench = WorkbenchSingleton.Workbench;
+				if (workbench != null) {
+					IWorkbenchWindow window = workbench.ActiveWorkbenchWindow;
+					if (window != null) {
+						return window.ActiveViewContent as XmlView;
+					}
+				}
+				return null;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether the active view is an XmlView.
+		/// </summary>
+		public static bool IsXmlViewActive {
+			get {
+				return ActiveXmlView != null;
+			}
+		}
+		
 		public override string TabPageText {
 			get {
 				return "XML";
@@ -114,6 +141,53 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			return new string[0];
+		}
+		
+		/// <summary>
+		/// Finds the xml nodes that match the specified xpath.
+		/// </summary>
+		/// <returns>An array of XPathNodeMatch items. These include line number 
+		/// and line position information aswell as the node found.</returns>
+		public static XPathNodeMatch[] SelectNodes(string xml, string xpath, ReadOnlyCollection<XmlNamespace> namespaces)
+		{
+			XPathDocument doc = new XPathDocument(new StringReader(xml));
+			XPathNavigator navigator = doc.CreateNavigator();
+			
+			// Add namespaces.
+			XmlNamespaceManager namespaceManager = new XmlNamespaceManager(navigator.NameTable);
+			foreach (XmlNamespace xmlNamespace in namespaces) {
+				namespaceManager.AddNamespace(xmlNamespace.Prefix, xmlNamespace.Uri);
+			}
+	
+			// Run the xpath query.                                                        
+			XPathNodeIterator iterator = navigator.Select(xpath, namespaceManager);
+			
+			List<XPathNodeMatch> nodes = new List<XPathNodeMatch>();
+			while (iterator.MoveNext()) {
+				nodes.Add(new XPathNodeMatch(iterator.Current));
+			}			
+			return nodes.ToArray();
+		}
+		
+		/// <summary>
+		/// Finds the xml nodes that match the specified xpath.
+		/// </summary>
+		/// <returns>An array of XPathNodeMatch items. These include line number 
+		/// and line position information aswell as the node found.</returns>
+		public static XPathNodeMatch[] SelectNodes(string xml, string xpath)
+		{
+			List<XmlNamespace> list = new List<XmlNamespace>();
+			return SelectNodes(xml, xpath, new ReadOnlyCollection<XmlNamespace>(list));
+		}
+		
+		/// <summary>
+		/// Finds the xml nodes in the current document that match the specified xpath.
+		/// </summary>
+		/// <returns>An array of XPathNodeMatch items. These include line number 
+		/// and line position information aswell as the node found.</returns>
+		public XPathNodeMatch[] SelectNodes(string xpath, ReadOnlyCollection<XmlNamespace> namespaces)
+		{
+			return SelectNodes(Text, xpath, namespaces);
 		}
 		
 		/// <summary>
@@ -197,7 +271,6 @@ namespace ICSharpCode.XmlEditor
 			get {
 				return stylesheetFileName;
 			}
-			
 			set {
 				stylesheetFileName = value;
 			}
@@ -265,7 +338,6 @@ namespace ICSharpCode.XmlEditor
 		
 		// ParserUpdateThread uses the text property via IEditable, I had an exception
 		// because multiple threads were accessing the GapBufferStrategy at the same time.
-		
 		internal string GetText()
 		{
 			return xmlEditor.Document.TextContent;
@@ -278,16 +350,18 @@ namespace ICSharpCode.XmlEditor
 		
 		public string Text {
 			get {
-				if (WorkbenchSingleton.InvokeRequired)
+				if (WorkbenchSingleton.InvokeRequired) {
 					return WorkbenchSingleton.SafeThreadFunction<string>(GetText);
-				else
+				} else {
 					return GetText();
+				}
 			}
 			set {
-				if (WorkbenchSingleton.InvokeRequired)
+				if (WorkbenchSingleton.InvokeRequired) {
 					WorkbenchSingleton.SafeThreadCall(SetText, value);
-				else
+				} else {
 					SetText(value);
+				}
 			}
 		}
 		
@@ -604,8 +678,9 @@ namespace ICSharpCode.XmlEditor
 		{
 			if(e.ChangeType != WatcherChangeTypes.Deleted) {
 				wasChangedExternally = true;
-				if (xmlEditor.IsHandleCreated)
+				if (xmlEditor.IsHandleCreated) {
 					xmlEditor.BeginInvoke(new MethodInvoker(OnFileChangedEventInvoked));
+				}
 			}
 		}
 		

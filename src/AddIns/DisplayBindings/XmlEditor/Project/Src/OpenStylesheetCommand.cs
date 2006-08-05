@@ -20,7 +20,7 @@ namespace ICSharpCode.XmlEditor
 	{
 		public override void Run()
 		{
-			XmlView xmlView = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as XmlView;
+			XmlView xmlView = XmlView.ActiveXmlView;
 			if (xmlView != null) {
 				if (xmlView.StylesheetFileName != null) {
 					try {

@@ -128,6 +128,9 @@
 		          label = "${res:XML.TextAreaContextMenu.Indent}"
 		          shortcut = "Control|I"
 		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
+		<MenuItem id = "HideXPathResults"
+			      label = "Hide &amp;XPath Results"
+			      class = "ICSharpCode.XmlEditor.RemoveXPathHighlightingCommand"/>
 		<MenuItem id = "FileMode" label = "${res:XML.TextAreaContextMenu.FileMode}" type="Menu">
 			<MenuItem id = "HighlightBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.HighlightingTypeBuilder" />
 		</MenuItem>
@@ -153,5 +156,25 @@
 	
 	<Path path = "/AddIns/XmlEditor/EditActions">
 		<EditAction id = "XmlCompletionPopup" class = "ICSharpCode.XmlEditor.CodeCompletionPopupCommand"  keys = "Control|Space"/>
+	</Path>
+
+	<!-- XPath Query pad -->
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id = "XPathQueryPad" 
+		     category = "Tools"
+		     icon = "PadIcons.XPathQuery"
+		     title = "XPath Query"
+		     insertafter = "UnitTestingPad"
+		     class = "ICSharpCode.XmlEditor.XPathQueryPad"/>
+	</Path>
+
+	<!-- Menu options to turn off XPath Query result highlighting -->
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit/Format">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.XmlEditor.XmlView">
+			<MenuItem id = "RemoveXPathHighlighting"
+			          insertafter = "ShowCodeCoverage" 
+			          label = "Hide &amp;XPath Results"
+			          class = "ICSharpCode.XmlEditor.RemoveXPathHighlightingCommand"/>
+		</Condition>
 	</Path>
 </AddIn>

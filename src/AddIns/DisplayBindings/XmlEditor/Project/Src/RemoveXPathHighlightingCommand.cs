@@ -1,28 +1,24 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
 //     <version>$Revision$</version>
 // </file>
+using System;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
-using System.IO;
-using System.Xml;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.XmlEditor
 {
-	/// <summary>
-	/// Pretty prints the xml.
-	/// </summary>
-	public class FormatXmlCommand : AbstractMenuCommand
+	public class RemoveXPathHighlightingCommand : AbstractMenuCommand
 	{
 		public override void Run()
 		{
-			// Find active XmlView.
-			XmlView xmlView = XmlView.ActiveXmlView;
-			if (xmlView != null) {
-				xmlView.FormatXml();
+			XPathQueryPad pad = XPathQueryPad.Instance;
+			if (pad != null) {
+				pad.RemoveXPathHighlighting();
 			}
 		}
 	}
