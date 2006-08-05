@@ -68,7 +68,7 @@ namespace Grunwald.BooBinding
 		
 		public override bool CanCompile(string fileName)
 		{
-			return new BooLanguageBinding().CanCompile(fileName);
+			return string.Equals(Path.GetExtension(fileName), ".boo", StringComparison.OrdinalIgnoreCase);
 		}
 		
 		internal static IProjectContent BooCompilerPC;

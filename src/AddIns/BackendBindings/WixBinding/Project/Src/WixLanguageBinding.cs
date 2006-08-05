@@ -6,12 +6,10 @@
 // </file>
 
 using System;
-using System.CodeDom.Compiler;
-using System.IO;
 using System.Xml;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.WixBinding
 {
@@ -23,29 +21,6 @@ namespace ICSharpCode.WixBinding
 			get {
 				return LanguageName;
 			}
-		}
-		
-		public void Execute(string fileName, bool debug)
-		{
-		}
-		
-		public string GetCompiledOutputName(string fileName)
-		{
-			return String.Empty;
-		}
-		
-		public bool CanCompile(string fileName)
-		{
-			string ext = Path.GetExtension(fileName);
-			if (ext == null) {
-				return false;
-			}
-			return ext.Equals(".wxs", StringComparison.OrdinalIgnoreCase);
-		}
-		
-		public CompilerResults CompileFile(string fileName)
-		{
-			return null;
 		}
 		
 		public IProject LoadProject(string fileName, string projectName)

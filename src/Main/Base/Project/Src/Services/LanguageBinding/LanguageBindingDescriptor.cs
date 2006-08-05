@@ -16,7 +16,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Core
 {
-	public class LanguageBindingDescriptor 
+	public class LanguageBindingDescriptor
 	{
 		ILanguageBinding binding = null;
 		Codon codon;
@@ -53,9 +53,17 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public string[] Supportedextensions {
+		string[] codeFileExtensions;
+		
+		public string[] CodeFileExtensions {
 			get {
-				return codon.Properties["supportedextensions"].Split(';');
+				if (codeFileExtensions == null) {
+					if (codon.Properties["supportedextensions"].Length == 0)
+						codeFileExtensions = new string[0];
+					else
+						codeFileExtensions = codon.Properties["supportedextensions"].ToLowerInvariant().Split(';');
+				}
+				return codeFileExtensions;
 			}
 		}
 		

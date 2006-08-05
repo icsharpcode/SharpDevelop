@@ -47,6 +47,12 @@ namespace Grunwald.BooBinding
 			}
 		}
 		
+		public override bool SupportsImplicitInterfaceImplementation {
+			get {
+				return true;
+			}
+		}
+		
 		public override RefactoringProvider RefactoringProvider {
 			get {
 				return CodeCompletion.BooRefactoringProvider.BooProvider;
@@ -56,6 +62,12 @@ namespace Grunwald.BooBinding
 		public override CodeGenerator CodeGenerator {
 			get {
 				return BooCodeGenerator.Instance;
+			}
+		}
+		
+		public override System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
+			get {
+				return new Boo.Lang.CodeDom.BooCodeProvider();
 			}
 		}
 	}

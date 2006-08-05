@@ -8,19 +8,10 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Diagnostics;
-using System.Collections;
-using System.Reflection;
-using System.Resources;
-using System.Windows.Forms;
-using System.Xml;
-using System.CodeDom.Compiler;
-using System.Threading;
 
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Internal.Templates;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace VBNetBinding
 {
@@ -88,7 +79,7 @@ namespace VBNetBinding
 		
 		public override bool CanCompile(string fileName)
 		{
-			return new VBNetLanguageBinding().CanCompile(fileName);
+			return string.Equals(Path.GetExtension(fileName), ".vb", StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

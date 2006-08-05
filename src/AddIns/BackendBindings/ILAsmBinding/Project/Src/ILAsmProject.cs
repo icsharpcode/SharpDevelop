@@ -1,11 +1,12 @@
 // <file>
-//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
-//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
+using System.IO;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -30,7 +31,7 @@ namespace ICSharpCode.ILAsmBinding
 		
 		public override bool CanCompile(string fileName)
 		{
-			return new ILAsmLanguageBinding().CanCompile(fileName);
+			return string.Equals(".il", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase);
 		}
 	}
 }

@@ -6,19 +6,10 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Diagnostics;
-using System.Collections;
-using System.Reflection;
-using System.Resources;
-using System.Windows.Forms;
 using System.Xml;
-using System.CodeDom.Compiler;
-using System.Threading;
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace Grunwald.BooBinding
 {
@@ -32,31 +23,6 @@ namespace Grunwald.BooBinding
 			}
 		}
 		
-		#region routines for single file compilation
-		public bool CanCompile(string fileName)
-		{
-			string ext = Path.GetExtension(fileName);
-			if (ext == null)
-				return false;
-			return string.Equals(ext, ".BOO", StringComparison.InvariantCultureIgnoreCase);
-		}
-		
-		public string GetCompiledOutputName(string fileName)
-		{
-			return Path.ChangeExtension(fileName, ".exe");
-		}
-		
-		public CompilerResults CompileFile(string fileName)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Execute(string fileName, bool debug)
-		{
-			throw new NotImplementedException(); // only needed for single-file compilation
-		}
-		#endregion
-		
 		public IProject LoadProject(string fileName, string projectName)
 		{
 			return new BooProject(fileName, projectName);
@@ -68,6 +34,12 @@ namespace Grunwald.BooBinding
 			if (projectOptions != null)
 				p.ImportOptions(projectOptions.Attributes);
 			return p;
+		}
+		
+		public LanguageProperties LanguageProperties {
+			get {
+				return BooLanguageProperties.Instance;
+			}
 		}
 	}
 }

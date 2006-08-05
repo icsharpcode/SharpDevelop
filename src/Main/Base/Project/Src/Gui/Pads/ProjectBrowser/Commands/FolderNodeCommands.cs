@@ -56,8 +56,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				LanguageBindingDescriptor languageCodon = LanguageBindingService.GetCodonPerLanguageName(project.Language);
 				if (languageCodon != null) {
 					for (int i = 0; i < fileFilters.Length; ++i) {
-						for (int j = 0; j < languageCodon.Supportedextensions.Length; ++j) {
-							if (fileFilters[i].ToUpperInvariant().IndexOf(languageCodon.Supportedextensions[j].ToUpperInvariant()) >= 0) {
+						for (int j = 0; j < languageCodon.CodeFileExtensions.Length; ++j) {
+							if (fileFilters[i].ToUpperInvariant().IndexOf(languageCodon.CodeFileExtensions[j].ToUpperInvariant()) >= 0) {
 								return i + 1;
 							}
 						}

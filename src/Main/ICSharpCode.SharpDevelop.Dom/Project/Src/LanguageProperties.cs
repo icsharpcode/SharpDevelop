@@ -12,7 +12,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public class LanguageProperties
 	{
+		/// <summary>
+		/// A case-sensitive dummy language that returns false for all Supports.. properties,
+		/// uses a dummy code generator and refactoring provider and returns null for CodeDomProvider.
+		/// </summary>
+		public readonly static LanguageProperties None = new LanguageProperties(StringComparer.InvariantCulture);
+		
+		/// <summary>
+		/// C# 2.0 language properties.
+		/// </summary>
 		public readonly static LanguageProperties CSharp = new CSharpProperties();
+		
+		/// <summary>
+		/// VB.Net 8 language properties.
+		/// </summary>
 		public readonly static LanguageProperties VBNet = new VBNetProperties();
 		
 		public LanguageProperties(StringComparer nameComparer)
@@ -41,9 +54,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		/// <summary>
+		/// Gets the CodeDomProvider for this language. Can return null!
+		/// </summary>
 		public virtual System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
 			get {
-				return DummyCodeDomProvider.Instance;
+				return null;
 			}
 		}
 		
@@ -139,7 +155,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		public virtual bool SupportsImplicitInterfaceImplementation {
 			get {
-				return true;
+				return false;
 			}
 		}
 		
@@ -198,6 +214,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
+			public override System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
+				get {
+					return new Microsoft.CSharp.CSharpCodeProvider();
+				}
+			}
+			
+			public override bool SupportsImplicitInterfaceImplementation {
+				get {
+					return true;
+				}
+			}
+			
 			public override string ToString()
 			{
 				return "[LanguageProperties: C#]";
@@ -227,12 +255,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			public override bool ImportModules {
 				get {
 					return true;
-				}
-			}
-			
-			public override bool SupportsImplicitInterfaceImplementation {
-				get {
-					return false;
 				}
 			}
 			
