@@ -23,7 +23,7 @@ using System.Windows.Forms;
 /// </remarks>
 namespace SharpReportAddin {
 	
-	public class AbstractFieldsNode : TreeNode {
+	internal class AbstractFieldsNode : TreeNode {
 		
 		private string contextmenuAddinTreePath = String.Empty;
 		

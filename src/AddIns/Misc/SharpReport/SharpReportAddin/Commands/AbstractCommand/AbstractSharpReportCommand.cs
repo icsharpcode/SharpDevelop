@@ -22,7 +22,7 @@ using ICSharpCode.SharpDevelop.Gui;
 /// </remarks>
 namespace SharpReportAddin.Commands {
 	public abstract class AbstractSharpReportCommand : AbstractMenuCommand {
-		SharpReportView view = null;
+		SharpReportView view;
 		
 		/// <summary>
 		/// get a instance of SharpReportView
@@ -32,7 +32,7 @@ namespace SharpReportAddin.Commands {
 			try {
 				view = (SharpReportView)WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent;
 				if (view == null) {
-					throw new NullReferenceException ("AbstractSharpCommand : No view available");
+					throw new SharpReportCore.SharpReportException("No View");
 				}
 			} catch (Exception) {
 				throw;

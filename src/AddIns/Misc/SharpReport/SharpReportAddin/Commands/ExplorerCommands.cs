@@ -12,7 +12,7 @@ using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-
+using SharpReportCore;
 /// <summary>
 /// This class'es handles all the commands used by the
 /// <see cref="ReportExplorer"></see>
@@ -23,6 +23,39 @@ using ICSharpCode.SharpDevelop.Gui;
 /// </remarks>
 
 namespace SharpReportAddin.Commands {
+	/// <summary>
+	/// Fill and BringToFront
+	/// </summary>
+	public class ShowAndFillExplorer : AbstractExplorerCommand{
+		ReportModel reportModel;
+		
+		public override void Run(){
+			if (this.reportModel == null) {
+				throw new ArgumentNullException("reportModel");
+			}
+			base.ReportExplorerPad.BringPadToFront();
+			base.ReportExplorer.ReportModel = this.reportModel;
+		}
+		
+		public ReportModel ReportModel {
+			set {
+				reportModel = value;
+			}
+		}
+		
+	}
+	
+	/// <summary>
+	/// ShutDown Explorer
+	/// </summary>
+	public class HideExplorer:AbstractExplorerCommand{
+		
+		public override void Run(){
+			WorkbenchSingleton.Workbench.WorkbenchLayout.HidePad(base.ReportExplorerPad);
+		}
+		
+	}
+	
 	/// <summary>
 	/// Clear and rebuild the ExplorerTree
 	/// </summary>

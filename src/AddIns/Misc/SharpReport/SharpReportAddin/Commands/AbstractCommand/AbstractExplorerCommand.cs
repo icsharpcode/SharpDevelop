@@ -16,17 +16,15 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace SharpReportAddin.Commands{	
 	public abstract class AbstractExplorerCommand : AbstractMenuCommand{
 
-		ReportExplorer reportExplorer = null;
+		ReportExplorer reportExplorer;
 		protected AbstractExplorerCommand(){
-			
-//			Type type = typeof(ReportExplorer);
-//			this.reportExplorer = (SharpReportAddin.ReportExplorer)WorkbenchSingleton.Workbench.GetPad(type).PadContent;
 			this.reportExplorer = (SharpReportAddin.ReportExplorer)WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorer)).PadContent;
 			if (reportExplorer == null) {
-				throw new NullReferenceException ("AbstractExplorerCommand : No FieldExplorer Pad  available");
+				throw new SharpReportCore.SharpReportException("Explorer");
 			}
 		}
-			/// <summary>
+		
+		/// <summary>
 		/// Enabled or disabled the command
 		/// <remarks> /remarks>
 		/// </summary>				
@@ -40,9 +38,15 @@ namespace SharpReportAddin.Commands{
 			set{}
 		}
 		
-		public ReportExplorer ReportExplorer {
+		protected ReportExplorer ReportExplorer {
 			get {
 				return reportExplorer;
+			}
+		}
+		
+		protected PadDescriptor ReportExplorerPad {
+			get{
+				return WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorer));
 			}
 		}
 	}

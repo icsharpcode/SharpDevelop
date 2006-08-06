@@ -22,7 +22,7 @@ using SharpReportAddin;
 	/// 	created on - 05.06.2005 18:54:33
 	/// </remarks>
 namespace SharpReportAddin {
-	public class ColumnsTreeNode : SharpReportAddin.AbstractFieldsNode {
+	internal class ColumnsTreeNode : SharpReportAddin.AbstractFieldsNode {
 		ListSortDirection listSortDirection;
 		
 		public ColumnsTreeNode(string nodeName):this(nodeName,ListSortDirection.Ascending) {

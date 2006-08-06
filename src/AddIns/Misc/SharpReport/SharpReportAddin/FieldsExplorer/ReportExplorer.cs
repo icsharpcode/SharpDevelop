@@ -31,6 +31,7 @@ namespace SharpReportAddin
 		/// </summary>
 		
 		public ReportExplorer():base(){
+			System.Console.WriteLine("InitExplorer");
 			this.contentPanel.Controls.Add(this.treeView);
 			this.treeView.ItemDrag += TreeViewItemDrag;
 			this.treeView.DragDrop += TreeViewDragDrop;
@@ -77,17 +78,23 @@ namespace SharpReportAddin
 		
 		
 		void TreeViewDragDrop (object sender,DragEventArgs e) {
+			
 			if(e.Data.GetDataPresent("SharpReportAddin.ColumnsTreeNode", false)){
 				Point pt = this.treeView.PointToClient (new Point( e.X,e.Y));
 
 				SectionTreeNode node = this.treeView.GetNodeAt (pt) as SectionTreeNode;
+				
 				if (node != null) {
+					// If we dragdrop to GroupNode, remove all subnods in SortNode
+					if (this.treeView.IsGroupNode(node)) {
+						this.treeView.ClearSortNode();
+					} 
 					
 					ColumnsTreeNode t = (ColumnsTreeNode)e.Data.GetData("SharpReportAddin.ColumnsTreeNode", true);
 					ColumnsTreeNode dest = new ColumnsTreeNode (t.Text);
 
 					// Useless to add a node twice
-					if (!this.treeView.CheckForExist (node,dest)) {
+					if (!ExplorerTree.CheckForExist (node,dest)) {
 						dest.SortDirection = ListSortDirection.Ascending;
 						dest.ImageIndex = this.treeView.AscendingIcon;
 						dest.SelectedImageIndex = this.treeView.AscendingIcon;
@@ -100,19 +107,7 @@ namespace SharpReportAddin
 			}
 		}
 		
-//		private static bool CheckForExist (SectionTreeNode sec,ColumnsTreeNode col) {
-//			if (sec.Nodes.Count > 0) {
-//				for (int i = 0;i < sec.Nodes.Count ;i++ ) {
-//					if (sec.Nodes[i].Text == col.Text) {
-//						return true;
-//					}
-//				}
-//			} else {
-//				return false;
-//			}
-//			return false;
-//		}
-		
+
 		
 		#endregion
 		

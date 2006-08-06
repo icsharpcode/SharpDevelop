@@ -150,14 +150,15 @@ namespace SharpReportAddin{
 			if (e.Content is SharpReportView) {
 				WorkbenchSingleton.Workbench.ViewClosed -= new ViewContentEventHandler(ShutDownView);
 			}
+			
 			//Allways hide the pad
-			PadDescriptor pad =
-				WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorer));
-			if (pad != null) {
-				WorkbenchSingleton.Workbench.WorkbenchLayout.HidePad(pad);
-				ClearAndRebuildExplorer cmd = new ClearAndRebuildExplorer();
-				cmd.Run();
-			}
+
+			HideExplorer he = new HideExplorer();
+			he.Run();
+			
+			ClearAndRebuildExplorer cmd = new ClearAndRebuildExplorer();
+			cmd.Run();
+
 		}
 		
 		
@@ -239,6 +240,7 @@ namespace SharpReportAddin{
 		
 		private void RunPreview(bool standAlone) {
 			base.OnSaving(EventArgs.Empty);
+			this.UpdateModelFromExplorer();
 			try {
 				switch (designerControl.ReportModel.DataModel) {
 						case GlobalEnums.PushPullModelEnum.FormSheet : {
@@ -285,7 +287,6 @@ namespace SharpReportAddin{
 			reportManager.ParametersRequest +=  new EventHandler<SharpReportParametersEventArgs>(OnParametersRequest);
 			
 			reportManager.ReportPreview (designerControl.ReportModel, standAlone);
-			
 		}
 		
 		#endregion
@@ -357,10 +358,9 @@ namespace SharpReportAddin{
 		}
 		
 		//Something was dropped on the designer
+		
 		private void OnItemDragDrop (object sender,ItemDragDropEventArgs e) {
 			base.IsDirty = true;
-			System.Console.WriteLine("View ItemDragDrop");
-			System.Console.WriteLine("\tcall OnPropertyChanged");
 			this.OnPropertyChanged (this,new System.ComponentModel.PropertyChangedEventArgs("Item Dragged"));
 		}
 		
@@ -368,13 +368,6 @@ namespace SharpReportAddin{
 		                                System.ComponentModel.PropertyChangedEventArgs e) {
 			base.IsDirty = true;
 			OnObjectSelected (this,EventArgs.Empty);
-			System.Console.WriteLine("View:ProperytChanged");
-			PadDescriptor pad =
-				WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorer));
-			if (pad != null) {
-				System.Console.WriteLine("\tpad is loaded - call üad:RedrawContent");
-				pad.RedrawContent();
-			}
 		}
 	
 		private void OnModelFileNameChanged (object sender,EventArgs e) {
@@ -396,11 +389,13 @@ namespace SharpReportAddin{
 				if (PropertyPad.Grid != null) {
 					PropertyPad.Grid.SelectedObject = designerControl.ReportControl.SelectedObject;
 				}
-				
 			}
 		}
 	
-		
+		private void UpdateModelFromExplorer () {
+			ReportExplorer re = (SharpReportAddin.ReportExplorer)WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorer)).PadContent;
+			re.Update(designerControl.ReportModel);
+		}
 		#endregion
 		
 		#region Calls from outside commands
@@ -513,9 +508,7 @@ namespace SharpReportAddin{
 		/// <param name="fileName"></param>
 		public override void Save(string fileName) {
 			try {
-				ReportExplorer re = (SharpReportAddin.ReportExplorer)WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorer)).PadContent;
-				re.Update(designerControl.ReportModel);
-				
+				UpdateModelFromExplorer ();
 				designerControl.ReportModel.ReportSettings.FileName = fileName;
 				
 				if (FileUtility.IsValidFileName(fileName)) {
@@ -573,11 +566,10 @@ namespace SharpReportAddin{
 				}
 				
 				this.designerControl.ReportModel.ReportSettings.AvailableFieldsCollection = reportManager.AvailableFieldsCollection;				
-				
-				PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorer));
-				ReportExplorer re = (ReportExplorer)pad.PadContent;
-				pad.BringPadToFront();
-				re.ReportModel = this.designerControl.ReportModel;
+			
+				ShowAndFillExplorer se = new ShowAndFillExplorer();
+				se.ReportModel = this.designerControl.ReportModel;
+				se.Run();
 
 			} catch (Exception e) {
 				MessageService.ShowError(e,"SharpReportView:Load");
@@ -638,7 +630,10 @@ namespace SharpReportAddin{
 				if (this.designerControl != null) {
 					this.designerControl.Dispose();
 				}
-
+				
+				if (this.tabControl != null) {
+					this.tabControl.Dispose();
+				}
 				if (this.panel != null) {
 					this.panel.Dispose();
 				}

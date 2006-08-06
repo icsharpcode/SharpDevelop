@@ -20,7 +20,7 @@ using System.Windows.Forms;
 /// 	created on - 05.06.2005 18:40:31
 /// </remarks>
 namespace SharpReportAddin {
-	public class SectionTreeNode : SharpReportAddin.AbstractFieldsNode {
+	internal class SectionTreeNode : SharpReportAddin.AbstractFieldsNode {
 		
 		public SectionTreeNode(string nodeName) {
 			this.Text = nodeName;

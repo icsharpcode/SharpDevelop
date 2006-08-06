@@ -72,7 +72,16 @@ namespace SharpReportAddin{
 				}
 			}
 		}
-		public  bool CheckForExist (SectionTreeNode sec,ColumnsTreeNode col) {
+		
+		public void ClearSortNode() {
+			this.nodeSorting.Nodes.Clear();
+		}
+		
+		public  bool IsGroupNode (SectionTreeNode node) {
+			return (node == this.nodeGrouping);
+		}
+		
+		public static bool CheckForExist (SectionTreeNode sec,ColumnsTreeNode col) {
 			if (sec.Nodes.Count > 0) {
 				for (int i = 0;i < sec.Nodes.Count ;i++ ) {
 					if (sec.Nodes[i].Text == col.Text) {
@@ -147,7 +156,6 @@ namespace SharpReportAddin{
 		public void CollectModel (ReportModel model) {
 			UpdateSorting(model);
 			UpdateGrouping(model);
-			MessageBox.Show (model.DetailSection.Items.Count.ToString());
 		}
 		
 		public void ClearAndFill() {

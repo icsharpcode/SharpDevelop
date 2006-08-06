@@ -206,7 +206,6 @@ namespace SharpReport{
 		
 		
 		private AbstractRenderer BuildStandartRenderer (ReportModel model) {
-			
 			if (model == null) {
 				throw new ArgumentNullException("model");
 			}

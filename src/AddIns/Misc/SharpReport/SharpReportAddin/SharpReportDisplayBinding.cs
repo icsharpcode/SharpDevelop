@@ -20,8 +20,8 @@
 using System;
 using System.Globalization;
 using ICSharpCode.Core;
-
-using SharpReportCore;
+using SharpReportCore; 
+using SharpReportAddin.Commands;
 /// <summary>
 /// Displaybinding for SharpReport
 /// </summary>
@@ -45,6 +45,10 @@ namespace SharpReportAddin {
 						view.UpdateView(true);							
 						view.Selected();							
 						view.ShowReportSettings();	
+						System.Console.WriteLine("Call Command");
+						ShowAndFillExplorer se = new ShowAndFillExplorer();
+						se.ReportModel = view.DesignerControl.ReportModel;
+						se.Run();
 						return view;
 					} catch (SharpReportException) {
 						if (view != null) {
@@ -75,7 +79,9 @@ namespace SharpReportAddin {
 			if (GlobalValues.IsValidPrinter() == true) {
 				SharpReportView view = new SharpReportView();
 				try {
-					StatusBarService.SetMessage (String.Format("File : {0}",fileName));
+					
+					StatusBarService.SetMessage (String.Format(CultureInfo.CurrentCulture,
+					                                           "File : {0}",fileName));
 					                             
 					view.Load (fileName);
 					view.UpdateView (false);
