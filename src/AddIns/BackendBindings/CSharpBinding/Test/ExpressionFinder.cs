@@ -37,6 +37,7 @@ class Main {
 		foreach (TypeName varName in ((CastTo)castTarget).PropertyOnCastExpression) {
 			
 		}
+		throw new NotFoundException();
 	}
 }";
 		
@@ -126,6 +127,12 @@ class Main {
 		public void IdentifierBeforeKeyword()
 		{
 			FindFull(program2, "arName", "varName", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void NewException()
+		{
+			FindFull(program2, "otFoundException", "NotFoundException()", ExpressionContext.TypeDerivingFrom(ProjectContentRegistry.Mscorlib.GetClass("System.Exception"), true));
 		}
 	}
 }

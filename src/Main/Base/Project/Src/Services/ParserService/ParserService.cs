@@ -423,19 +423,21 @@ namespace ICSharpCode.Core
 					defaultProjectContent.ReferencedContents.Add(pc);
 				}
 			}
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += delegate {
-				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-					string file = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName
-						?? WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.UntitledName;
-					if (file != null) {
-						IParser parser = GetParser(file);
-						if (parser != null && parser.Language != null) {
-							defaultProjectContent.Language = parser.Language;
-							defaultProjectContent.DefaultImports = parser.Language.CreateDefaultImports(defaultProjectContent);
+			if (WorkbenchSingleton.Workbench != null) {
+				WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += delegate {
+					if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
+						string file = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName
+							?? WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.UntitledName;
+						if (file != null) {
+							IParser parser = GetParser(file);
+							if (parser != null && parser.Language != null) {
+								defaultProjectContent.Language = parser.Language;
+								defaultProjectContent.DefaultImports = parser.Language.CreateDefaultImports(defaultProjectContent);
+							}
 						}
 					}
-				}
-			};
+				};
+			}
 		}
 		
 		public static ParseInformation ParseFile(string fileName, string fileContent, bool updateCommentTags, bool fireUpdate)

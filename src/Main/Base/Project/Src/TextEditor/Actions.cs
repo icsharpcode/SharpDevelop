@@ -78,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 						if (pos.Position.IsEmpty)
 							FileService.OpenFile(pos.FileName);
 						else
-							FileService.JumpToFilePosition(pos.FileName, pos.Position.X - 1, pos.Position.Y - 1);
+							FileService.JumpToFilePosition(pos.FileName, pos.Line - 1, pos.Column - 1);
 					} catch (Exception ex) {
 						MessageService.ShowError(ex, "Error jumping to '" + pos.FileName + "'.");
 					}

@@ -95,8 +95,7 @@ namespace CSharpBinding.Parser
 				}
 			} else {
 				UnGet();
-				ReadNextToken();
-				if (curTokenType == Ident && lastIdentifier == "throw") {
+				if (ReadIdentifier(GetNextNonWhiteSpace()) == "throw") {
 					return ExpressionContext.TypeDerivingFrom(ParserService.CurrentProjectContent.GetClass("System.Exception"), true);
 				}
 			}

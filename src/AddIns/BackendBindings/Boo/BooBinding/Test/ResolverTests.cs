@@ -52,7 +52,7 @@ namespace Grunwald.BooBinding.Tests
 		{
 			DefaultProjectContent pc = new DefaultProjectContent();
 			lastPC = pc;
-			ProjectContentRegistry.CurrentProjectContent = pc;
+			HostCallback.GetCurrentProjectContent = delegate { return pc; };
 			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
 			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
 			pc.ReferencedContents.Add(booLangPC);
