@@ -179,16 +179,16 @@ namespace Debugger
 			foreach(MethodProps m in Methods) {
 				MethodProps method = m; // One per scope/delegate
 				if (method.HasSpecialName && method.Name.StartsWith("get_") && method.Name != "get_Item") {
-					Eval eval = Eval.CallFunction(debugger,
-					                              Module.CorModule.GetFunctionFromToken(method.Token),
-					                              true, // reevaluateAfterDebuggeeStateChange
-					                              method.IsStatic? null : this.objectValue.Variable,
-					                              new Variable[] {});
-					Variable var = eval.Result;
-					var.Name = method.Name.Remove(0, 4);
-					var.VariableFlags = (method.IsStatic ? Variable.Flags.Static : Variable.Flags.None) |
-					                    (method.IsPublic ? Variable.Flags.Public : Variable.Flags.None);
-					yield return var;
+					Variable.Flags flags = (method.IsStatic ? Variable.Flags.Static : Variable.Flags.None) |
+					                       (method.IsPublic ? Variable.Flags.Public : Variable.Flags.None);
+					yield return new CallFunctionEval(debugger,
+					                                  method.Name.Remove(0, 4),
+					                                  flags,
+					                                  new IExpirable[] {this.objectValue.Variable},
+					                                  new IMutable[] {debugger.DebugeeState},
+					                                  Module.CorModule.GetFunctionFromToken(method.Token),
+					                                  method.IsStatic ? null : this.objectValue.Variable, // this
+					                                  new Variable[] {}); // args
 				}
 			}
 		}

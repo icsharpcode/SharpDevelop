@@ -28,19 +28,17 @@ namespace Debugger
 		/// <summary>
 		/// Delegate that is used to get value. This delegate may be called at any time and should never return null.
 		/// </summary>
-		public delegate Value ValueGetter();
 		public delegate ICorDebugValue CorValueGetter();
 		
 		[Flags] 
 		public enum Flags { Default = Public, None = 0, Public = 1, Static = 2, PublicStatic = Public | Static};
 		
 		
-		NDebugger debugger;
+		protected NDebugger debugger;
 		
 		string name;
 		Flags flags;
 		CorValueGetter corValueGetter;
-		ValueGetter valueGetter;
 		IMutable[] mutateDependencies;
 		
 		bool isExpired = false;
@@ -69,7 +67,7 @@ namespace Debugger
 			}
 		}
 		
-		ICorDebugValue RawCorValue {
+		protected virtual ICorDebugValue RawCorValue {
 			get {
 				if (this.HasExpired) throw new CannotGetValueException("CorValue has expired");
 				return corValueGetter();
@@ -79,7 +77,7 @@ namespace Debugger
 		public Value Value {
 			get {
 				try {
-					return valueGetter();
+					return CreateValue();
 				} catch (CannotGetValueException e) {
 					return new UnavailableValue(this, e.Message);
 				}
@@ -155,7 +153,6 @@ namespace Debugger
 			}
 			
 			this.corValueGetter = corValueGetter;
-			this.valueGetter = delegate { return CreateValue(); };
 		}
 		
 		void AddExpireDependency(IExpirable dependency)
@@ -188,7 +185,7 @@ namespace Debugger
 			NotifyChange();
 		}
 		
-		internal void NotifyChange()
+		internal virtual void NotifyChange()
 		{
 			if (!isExpired) {
 				OnChanged(new VariableEventArgs(this));

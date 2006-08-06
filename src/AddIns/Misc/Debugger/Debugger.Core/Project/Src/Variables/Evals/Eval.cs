@@ -19,35 +19,24 @@ namespace Debugger
 	/// <summary>
 	/// This class holds information about function evaluation.
 	/// </summary>
-	public abstract partial class Eval 
+	public abstract partial class Eval: Variable
 	{
-		NDebugger debugger;
+		protected class EvalSetartException: System.Exception
+		{
+			public EvalSetartException(string msg):base(msg)
+			{
+			}
+		}
 		
-		Variable          variablele;
-		
-		ICorDebugEval     corEval;
-		bool              reevaluateAfterDebuggeeStateChange;
+		protected ICorDebugEval corEval;
 		EvalState         evalState = EvalState.WaitingForRequest;
 		ICorDebugValue    result;
 		DebugeeState      debugeeStateOfResult;
 		string            error;
 		
-		public NDebugger Debugger {
-			get {
-				return debugger;
-			}
-		}
-		
 		public EvalState EvalState {
 			get {
 				return evalState;
-			}
-			protected set {
-				evalState = value;
-				if (Evaluated) {
-					debugeeStateOfResult = debugger.DebugeeState;
-				}
-				variablele.NotifyChange();
 			}
 		}
 		
@@ -60,78 +49,71 @@ namespace Debugger
 			}
 		}
 		
-		public Variable Result {
-			get {
-				return variablele;
-			}
-		}
-		
 		internal ICorDebugEval CorEval {
 			get {
 				return corEval;
 			}
 		}
 		
-		protected Eval(NDebugger debugger, bool reevaluateAfterDebuggeeStateChange, IExpirable[] dependencies)
+		protected Eval(NDebugger debugger, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies)
+			:base(debugger, name, flags, expireDependencies, mutateDependencies, null)
 		{
-			this.debugger = debugger;
-			this.reevaluateAfterDebuggeeStateChange = reevaluateAfterDebuggeeStateChange;
-			
-			variablele = new Variable(debugger,
-			                      String.Empty,
-			                      Variable.Flags.Default,
-			                      dependencies,
-			                      reevaluateAfterDebuggeeStateChange? new IMutable[] {debugger.DebugeeState}: new IMutable[0],
-			                      delegate { return GetCorValue(); });
-			
-			foreach(IExpirable dependency in dependencies) {
-				if (dependency is Variable) {
-					((Variable)dependency).Changed += delegate { EvalState = EvalState.WaitingForRequest; };
-				}
-			}
-			if (reevaluateAfterDebuggeeStateChange) {
-				debugger.DebuggeeStateChanged += delegate { EvalState = EvalState.WaitingForRequest; };
-			}
 		}
 		
-		public static Eval CallFunction(NDebugger debugger, Type type, string functionName, bool reevaluateAfterDebuggeeStateChange, Variable thisValue, Variable[] args)
+		internal override void NotifyChange()
+		{
+			evalState = EvalState.WaitingForRequest;
+			base.NotifyChange();
+		}
+		
+		public static Eval CallFunction(NDebugger debugger, Type type, string functionName, Variable thisValue, Variable[] args)
 		{
 			string moduleName = System.IO.Path.GetFileName(type.Assembly.Location);
+			Module module = debugger.GetModule(moduleName);
 			string containgType = type.FullName;
-			return new CallFunctionEval(debugger, moduleName, containgType, functionName, reevaluateAfterDebuggeeStateChange, thisValue, args);
-		}
-		
-		public static Eval CallFunction(NDebugger debugger, string moduleName, string containgType, string functionName, bool reevaluateAfterDebuggeeStateChange, Variable thisValue, Variable[] args)
-		{
-			return new CallFunctionEval(debugger, moduleName, containgType, functionName, reevaluateAfterDebuggeeStateChange, thisValue, args);
-		}
-		
-		public static Eval CallFunction(NDebugger debugger, ICorDebugFunction corFunction, bool reevaluateAfterDebuggeeStateChange, Variable thisValue, Variable[] args)
-		{
-			return new CallFunctionEval(debugger, corFunction, reevaluateAfterDebuggeeStateChange, thisValue, args);
+			ICorDebugFunction corFunction = module.GetMethod(containgType, functionName, args.Length);
+			return new CallFunctionEval(debugger,
+			                            "Function call: " + containgType + "." + functionName,
+			                            Variable.Flags.Default,
+			                            new IExpirable[] {},
+			                            new IMutable[] {},
+			                            corFunction,
+			                            thisValue,
+			                            args);
 		}
 		
 		public static Eval NewString(NDebugger debugger, string textToCreate)
 		{
-			return new NewStringEval(debugger, textToCreate);
+			return new NewStringEval(debugger,
+			                         "New string: " + textToCreate,
+			                         Variable.Flags.Default,
+			                         new IExpirable[] {},
+			                         new IMutable[] {},
+			                         textToCreate);
 		}
 		
 		public static Eval NewObject(NDebugger debugger, ICorDebugClass classToCreate)
 		{
-			return new NewObjectEval(debugger, classToCreate);
+			return new NewObjectEval(debugger,
+			                         "New object: " + classToCreate.Token,
+			                         Variable.Flags.Default,
+			                         new IExpirable[] {},
+			                         new IMutable[] {},
+			                         classToCreate);
 		}
 		
-		ICorDebugValue GetCorValue()
-		{
-			switch(this.EvalState) {
-				case EvalState.WaitingForRequest: ScheduleEvaluation(); goto case EvalState.EvaluationScheduled;
-				case EvalState.EvaluationScheduled: throw new CannotGetValueException("Evaluation pending");
-				case EvalState.Evaluating: throw new CannotGetValueException("Evaluating...");
-				case EvalState.EvaluatedSuccessfully: return result;
-				case EvalState.EvaluatedException: return result;
-				case EvalState.EvaluatedNoResult: throw new CannotGetValueException("No return value");
-				case EvalState.EvaluatedError: throw new CannotGetValueException(error);
-				default: throw new DebuggerException("Unknown state");
+		protected override ICorDebugValue RawCorValue {
+			get {
+				switch(this.EvalState) {
+					case EvalState.WaitingForRequest: ScheduleEvaluation(); goto case EvalState.EvaluationScheduled;
+					case EvalState.EvaluationScheduled: throw new CannotGetValueException("Evaluation pending");
+					case EvalState.Evaluating: throw new CannotGetValueException("Evaluating...");
+					case EvalState.EvaluatedSuccessfully: return result;
+					case EvalState.EvaluatedException: return result;
+					case EvalState.EvaluatedNoResult: throw new CannotGetValueException("No return value");
+					case EvalState.EvaluatedError: throw new CannotGetValueException(error);
+					default: throw new DebuggerException("Unknown state");
+				}
 			}
 		}
 		
@@ -139,12 +121,43 @@ namespace Debugger
 		{
 			if (Evaluated || EvalState == EvalState.WaitingForRequest) {
 				debugger.PerformEval(this);
-				EvalState = EvalState.EvaluationScheduled;
+				evalState = EvalState.EvaluationScheduled;
+				OnChanged(new EvalEventArgs(this));
 			}
 		}
 		
 		/// <returns>True if setup was successful</returns>
-		internal abstract bool SetupEvaluation(Thread targetThread);
+		internal bool SetupEvaluation(Thread targetThread)
+		{
+			debugger.AssertPaused();
+			
+			if (targetThread.IsLastFunctionNative) {
+				OnError("Can not evaluate because native frame is on top of stack");
+			}
+			
+			// TODO: What if this thread is not suitable?
+			corEval = targetThread.CorThread.CreateEval();
+			
+			try {
+				StartEvaluation();
+			} catch (EvalSetartException e) {
+				OnError(e.Message);
+				return false;
+			} catch (COMException e) {
+				if ((uint)e.ErrorCode == 0x80131C26) {
+					OnError("Can not evaluate in optimized code");
+					return false;
+				} else {
+					throw;
+				}
+			}
+			
+			evalState = EvalState.Evaluating;
+			
+			return true;
+		}
+		
+		protected abstract void StartEvaluation();
 		
 		public Variable EvaluateNow()
 		{
@@ -153,29 +166,35 @@ namespace Debugger
 				debugger.WaitForPause();
 				debugger.WaitForPause();
 			}
-			return Result;
+			return this;
 		}
 		
 		protected void OnError(string msg)
 		{
 			error = msg;
-			EvalState = EvalState.EvaluatedError;
+			result = null;
+			debugeeStateOfResult = debugger.DebugeeState;
+			evalState = EvalState.EvaluatedError;
+			OnChanged(new EvalEventArgs(this));
 		}
 		
 		internal void NotifyEvaluationComplete(bool successful) 
 		{
+			error = null;
 			// Eval result should be ICorDebugHandleValue so it should survive Continue()
 			result = corEval.Result;
+			debugeeStateOfResult = debugger.DebugeeState;
 			
 			if (result == null) {
-				EvalState = EvalState.EvaluatedNoResult;
+				evalState = EvalState.EvaluatedNoResult;
 			} else {
 				if (successful) {
-					EvalState = EvalState.EvaluatedSuccessfully;
+					evalState = EvalState.EvaluatedSuccessfully;
 				} else {
-					EvalState = EvalState.EvaluatedException;
+					evalState = EvalState.EvaluatedException;
 				}
 			}
+			OnChanged(new EvalEventArgs(this));
 		}
 	}
 }

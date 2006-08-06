@@ -66,7 +66,7 @@ namespace Debugger
 			// Debugger.BooInterpreter.dll
 			assembly = LoadAssembly(typeof(DebugeeInteractiveInterpreter).Assembly.Location);
 			Variable interpreterType = Eval.NewString(debugger, typeof(DebugeeInteractiveInterpreter).FullName).EvaluateNow();
-			interpreter = Eval.CallFunction(debugger, typeof(Assembly), "CreateInstance", false, assembly, new Variable[] {interpreterType}).EvaluateNow();
+			interpreter = Eval.CallFunction(debugger, typeof(Assembly), "CreateInstance", assembly, new Variable[] {interpreterType}).EvaluateNow();
 			interpreter_localVariable = interpreter.Value.SubVariables["localVariable"];
 			RunCommand(
 				"import System\n" + 
@@ -81,7 +81,7 @@ namespace Debugger
 		Variable LoadAssembly(string path)
 		{
 			Variable assemblyPath = Eval.NewString(debugger, path).EvaluateNow();
-			Variable assembly = Eval.CallFunction(debugger, typeof(Assembly), "LoadFrom", false, null, new Variable[] {assemblyPath}).EvaluateNow();
+			Variable assembly = Eval.CallFunction(debugger, typeof(Assembly), "LoadFrom", null, new Variable[] {assemblyPath}).EvaluateNow();
 			return assembly;
 		}
 		
@@ -89,7 +89,7 @@ namespace Debugger
 		{
 			if (CanLoadInterpreter) {
 				Variable cmd = Eval.NewString(debugger, code).EvaluateNow();
-				Eval.CallFunction(debugger, typeof(InteractiveInterpreter), "LoopEval", false, interpreter, new Variable[] {cmd}).EvaluateNow();
+				Eval.CallFunction(debugger, typeof(InteractiveInterpreter), "LoopEval", interpreter, new Variable[] {cmd}).EvaluateNow();
 			}
 		}
 		
@@ -102,7 +102,7 @@ namespace Debugger
 		{
 			if (CanLoadInterpreter) {
 				Variable cmd = Eval.NewString(debugger, code).EvaluateNow();
-				Eval.CallFunction(debugger, typeof(AbstractInterpreter), "SuggestCodeCompletion", false, interpreter, new Variable[] {cmd}).EvaluateNow();
+				Eval.CallFunction(debugger, typeof(AbstractInterpreter), "SuggestCodeCompletion", interpreter, new Variable[] {cmd}).EvaluateNow();
 				return null;
 			} else {
 				return null;
