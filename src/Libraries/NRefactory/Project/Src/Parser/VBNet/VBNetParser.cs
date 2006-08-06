@@ -238,5 +238,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			// TODO
 			return false;
 		}
+		
+		void EnsureIsZero(Expression expr)
+		{
+			if (!(expr is PrimitiveExpression) || (expr as PrimitiveExpression).StringValue != "0")
+				Error("lower bound of array must be zero");
+		}
 	}
 }

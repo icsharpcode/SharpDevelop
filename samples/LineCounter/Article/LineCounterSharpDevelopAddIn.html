@@ -13,21 +13,25 @@
 <link rel="stylesheet" type="text/css" href="http://www.codeproject.com/styles/global.css"></head>
 <body revision='acf4w5gbq8vx_bdf8h26kgddn4:106'>
 
-<ul class="download">
-<li><a href="LineCounterSharpDevelopAddIn/LineCounterSharpDevelopAddIn.zip">Download Source Project (C#) - * KB</a></li>
-<li><a href="LineCounterSharpDevelopAddIn/LineCounter.sdaddin">Download AddIn Installation Package (.sdaddin) - * KB</a></li>
+<!-- Article Starts - DO NOT ADD HTML/BODY START TAGS-->
+
+<!-- Download Links -->
+<ul class=download>
+<li><a href='LineCounterSDAddIn/LineCounterSDAddIn.zip'>Download source files - 36 Kb</a></li>
+<li><a href="LineCounterSDAddIn/LineCountersdaddin.zip">Download AddIn Installation Package (.sdaddin) - 26 Kb</a></li>
 </ul>
 <br>
 <p>
-  <img src="LineCounterSharpDevelopAddIn/screenshot.png">
+  <img src="LineCounterSDAddIn/screenshot.png">
 </p>
 <h2>
-  Introduction<br>
+  Introduction
 </h2>
 When seeing the article
 <a href="http://www.codeproject.com/useritems/LineCounterAddin.asp" title="Line Counter - Writing a Visual Studio 2005 Add-In">Line
 Counter - Writing a Visual Studio 2005 Add-In</a>
-<a href="http://www.codeproject.com/useritems/LineCounterAddin.asp" target="_blank" title="Line Counter - Writing a Visual Studio 2005 Add-In">[^]</a>,
+<a href="http://www.codeproject.com/useritems/LineCounterAddin.asp" target="_blank" title="Line Counter - Writing a Visual Studio 2005 Add-In">[^]</a>
+written by Jon Rista,
 I wanted to show you how to write that AddIn for SharpDevelop.<br>
 In this article I will show you how to create an AddIn, but I will not discuss
 the concepts of the SharpDevelop's AddIn architecture here - you can read more
@@ -36,23 +40,24 @@ about that in my article
 Applications with the SharpDevelop Core</a>
 <a href="http://www.codeproject.com/csharp/ICSharpCodeCore.asp" target="_blank" title="Building Applications with the SharpDevelop Core">[^]</a>.
 The line counter code is taken from the VS 2005 AddIn written by Jon Rista; the
-counting algorithm itself is from Oz Solomon.<br>
+counting algorithm itself is from Oz Solomon.<br> I will discuss every of my changes to the code in this article - after all, there aren't so many changes required.
 <br>
 <h2>
   Creating a new AddIn
 </h2>
 Our AddIn will be a menu entry in the "Tools" menu that opens a document window
-displaying the line counter UI. SharpDevelop already comes with a project
-template for an AddIn extending the "Tools" menu: "Tools menu entry"<br>
-<img src="LineCounterSharpDevelopAddIn/templatetype.png"><br>
+displaying the line counter UI. While it is possible to develop SharpDevelop AddIns in Visual Studio, you can get
+started a lot faster if you use SharpDevelop because it already comes with a project
+template for an AddIn extending the "Tools" menu: "Tools menu entry".<br>
+<img src="LineCounterSDAddIn/templatetype.png"><br>
 <br>
-We create a SharpDevelop Macro with the name "LineCounter". The "SharpDevelop
+We create a SharpDevelop AddIn with the name "LineCounter". The "SharpDevelop
 AddIn" template could also be used, but it starts with an AddIn defining a pad
 (a docked tool window like "Projects", "Properties"); the "Tool menu entry"
 AddIn starts with a menu command.<br>
 Now let's look at what SharpDevelop has generated for us:<br>
 We have a project with a few files:<br>
-<img src="LineCounterSharpDevelopAddIn/projectbrowser.png"><br>
+<img src="LineCounterSDAddIn/projectbrowser.png"><br>
 First look at the .addin file:<br>
 The template already defines a menu item in the tools menu, we'll just modify
 the label. And we'll add a new section to the .addin file: the &lt;Manifest&gt;
@@ -69,7 +74,7 @@ item inside a &lt;Condition name="SolutionOpen" action="disable"&gt;<br>
 Here is how the content of LineCounter.addin should look like after these steps:<br>
 <pre>&lt;AddIn name        = "LineCounter"
        author      = "Daniel Grunwald"
-       url         = "http://www.codeproject.com/useritems/LineCounterSharpDevelopAddIn.asp"
+       url         = "http://www.codeproject.com/useritems/LineCounterSDAddIn.asp"
        description = "Advanced line counter AddIn">
    
     &lt;Manifest>
@@ -92,7 +97,7 @@ Here is how the content of LineCounter.addin should look like after these steps:
 &lt;/AddIn>
 </pre>Our menu item uses the "class" attribute. When the menu item is
 clicked, SharpDevelop will create an instance of this class and call its Run()
-method. This class is defined the file Command.cs. The example code from the
+method. This class is defined in the file Command.cs. The example code from the
 template accesses the currently opened text editor and reverses the letters in
 the currently selected text. We are not interested in accessing the text editor,
 so we can delete the content of the Run() method and start writing our own.<br>
@@ -105,19 +110,20 @@ about missing references. This is because the template is missing the assembly
 references to the SharpDevelop libraries - these have to hard-coded paths in
 most cases, so you should add them manually. Add references to
 ICSharpCode.Core.dll and ICSharpCode.SharpDevelop.dll from the bin directory of
-your SharpDevelop installation. ICSharpCode.Core contains the AddIn system, we
-need the base class of our menu command from it. ICSharpCode.SharpDevelop is the
-largest part of SharpDevelop, we'll use the project system from it.<br>
+your SharpDevelop installation. ICSharpCode.Core contains the AddIn system,
+and also the base class for our menu command.
+ICSharpCode.SharpDevelop is the largest part of SharpDevelop, it contains
+the project system and many other things.<br>
 Make sure you set "Local copy" for the references to
-<span style="FONT-WEIGHT: bold">False</span>.<br>
-<img src="LineCounterSharpDevelopAddIn/properties.png"><br>
+<b>False</b>.<br>
+<img src="LineCounterSDAddIn/properties.png"><br>
 <br>
 You should now be able to successfully compile the project. If you look into the
 bin/Debug directory, you will see a copy of LineCounter.addin, the compiled
 LineCounter.dll and the debug symbols.<br>
 If you want to test your AddIn, you need to register it with SharpDevelop. The
 best way for testing is to copy these files to the AddIns directory of your
-SharpDevelop installation. Restart SharpDevelop to let it load the AddIn. You
+SharpDevelop installation. Restart SharpDevelop to load the AddIn. You
 should see the "Line Counter" command in the Tools menu, disabled until you open
 a solution. If you click the menu item, the message box should show up.<br>
 If you want to update your AddIn, you'll need to shutdown SharpDevelop, copy the
@@ -130,15 +136,15 @@ Visual Studio to write your AddIn...</font><br>
 </h2>
 Now to the real work: Implementing the line counter. We want to display the line
 counter user interface as a document, like the start page. Document views in
-SharpDevelop are called <span style="FONT-WEIGHT: bold">ViewContents</span>.
+SharpDevelop are called <b>ViewContents</b>.
 There are two types of view contents: primary and secondary. A primary view
 content is capable of displaying something on its own; a secondary view content
 extends another view content by displaying multiple tabs in the document -
 SharpDevelop's Windows.Forms designer is a secondary view content. We want to
 display a simple document view, so we'll use a normal (primary) view
-content.<span style="FONT-STYLE: italic"><br>
+content.<br>
 <br>
-</span>Showing such a view content is easy:<br>
+Showing such a view content is easy:<br>
 <pre>public override void Run()
 {
     WorkbenchSingleton.Workbench.ShowView(new LineCounterViewContent());
@@ -274,7 +280,7 @@ m_projIconMappings.Add("{00000001-0000-0000-0000-000000000000}", 5);
 <p>
   Although the extension process is very different in SharpDevelop and Visual
   Studio; the API is quite similar - after all, both are modelling MSBuild
-  solutions and after a similar feature set. I hope this shows you that porting
+  solutions and a similar feature set. I hope this shows you that porting
   AddIns from Visual Studio to SharpDevelop isn't very hard and we would like to
   see more SharpDevelop AddIns in the future.
 </p>
@@ -282,7 +288,7 @@ m_projIconMappings.Add("{00000001-0000-0000-0000-000000000000}", 5);
   Here an image showing the AddIn counting itself:
 </p>
 <p>
-  <img src="LineCounterSharpDevelopAddIn/screenshot2.png">
+  <img src="LineCounterSDAddIn/screenshot2.png">
 </p>
 <h2>
   Possible improvements
@@ -337,7 +343,7 @@ can add SharpDevelop icons to an existing image list.<br>
     }
 }
 </pre>
-<span style="FONT-WEIGHT: bold"><span style="FONT-WEIGHT: bold"></span></span>We
+We
 will use two instances of this class to control the two image lists
 imgProjectTypes and imgFileTypes.<br>
 ScanSolution() is getting the icon index from m_projIconMappings - we will
@@ -419,7 +425,7 @@ name "LineCountingAlgorithm". Don't be irritated that it's not defined in the
 XML schema for .addin files - we are creating a new possible codon name here;
 the XML schema is just for code completion when editing the .addin file.<br>
 Now how can we define this codon type? Constructing objects from the AddInTree
-is done by the <span style="FONT-WEIGHT: bold">doozers</span> (the name comes
+is done by the <b>doozers</b> (the name comes
 from
 <a href="http://en.wikipedia.org/wiki/Fraggle_Rock#Doozers" title="Fraggle Rock: Doozers">these
 guys</a>
@@ -480,8 +486,7 @@ CountingAlgorithmDescriptor. Let's define that class:<br>
 }
 </pre><br>
 <p>
-  Now only the change to LineCounterBrowser to actually use this code is
-  missing.
+  Now the LineCounterBrowser code has to be changed to use the code we just wrote.
 </p>
 We will need a member variable storing the list of existing counting algorithms:<br>
 <pre>List&lt;CountingAlgorithmDescriptor&gt; countingAlgorithms;
@@ -555,7 +560,7 @@ the zip file to "LineCounter.sdaddin". That really was everything you had to do
 where you can install the AddIn with just one click. AddIns installed this way
 will be extracted to %Application Data%\.ICSharpCode\SharpDevelop2\AddIns.<br>
 <br>
-<img src="LineCounterSharpDevelopAddIn/addinmanager.png" title="AddIn Manager screenshot"><br>
+<img src="LineCounterSDAddIn/addinmanager.png" title="AddIn Manager screenshot"><br>
 <h2>
   More AddIn-writing help
 </h2>
@@ -589,7 +594,7 @@ will be extracted to %Application Data%\.ICSharpCode\SharpDevelop2\AddIns.<br>
   Summary
 </h2>
 <p>
-  This article&nbsp;shows you how to start writing SharpDevelop AddIns. It is a
+  This article shows you how to start writing SharpDevelop AddIns. It is a
   complete walkthrough from creating a new project to creating the installation
   package.
 </p>
@@ -601,9 +606,7 @@ will be extracted to %Application Data%\.ICSharpCode\SharpDevelop2\AddIns.<br>
     18<sup>th</sup> July, 2006: Article published (based on SharpDevelop
     2.0.0.1591).
 </ul>
-<br>
-<br>
-<br>
-<br>
-<br></body>
+
+
+</body>
 </html>

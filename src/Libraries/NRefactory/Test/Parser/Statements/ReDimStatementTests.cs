@@ -16,11 +16,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 	[TestFixture]
 	public class ReDimStatementTests
 	{
-		#region C#
-		// No C# representation
-		#endregion
-		
-		#region VB.NET
 		[Test]
 		public void VBNetReDimStatementTest()
 		{
@@ -51,10 +46,8 @@ Class X
 		ReDim sTransform(2, iTransformType - 1)
 		ReDim Preserve _Items(_Count)
 		ReDim Preserve _Items(nCapacity)
-		ReDim Preserve _Items(_Count)
-		ReDim Preserve _Items(nCapacity)
-		ReDim Preserve _Items(_Count)
-		ReDim Preserve _Items(nCapacity)
+		ReDim Preserve _Items(0 To _Count)
+		ReDim Preserve _Items(0 To nCapacity)
 		ReDim sU(m - 1, n - 1)
 		ReDim sW(n - 1)
 		ReDim sV(n - 1, n - 1)
@@ -65,30 +58,22 @@ Class X
 		If (IsNothing(ColLengths)) Then ReDim ColLengths(0)
 		If (ColLengths.Length = (SubItem + 1)) Then ReDim Preserve ColLengths(SubItem + 1)
 		ReDim sTransform(2, iTransformType - 1)
-		ReDim Preserve _Items(_Count)
-		ReDim Preserve _Items(nCapacity)
-		ReDim Preserve _Items(_Count)
-		ReDim Preserve _Items(nCapacity)
-		ReDim Preserve _Items(_Count)
-		ReDim Preserve _Items(nCapacity)
 		ReDim Preserve Samples(Samples.GetUpperBound(0) + 1)
 		ReDim Samples(0)
 		ReDim BaseCssContent(BaseCssContentRows - 1)
 		ReDim mabtRxBuf(Bytes2Read - 1)
-		ReDim mabtRxBuf(Bytes2Read - 1)
 		ReDim Preserve primarykey(primarykey.Length)
-		ReDim Preserve primarykey(primarykey.Length)
-		ReDim Preserve IntArray(10, 10, 20)
 		ReDim Preserve IntArray(10, 10, 15)
 		ReDim X(10, 10)
-		ReDim Preserve IntArray(10, 10, 20)
+		ReDim Preserve IntArray(0 To 10, 10, 0 To 20)
 		ReDim Preserve IntArray(10, 10, 15)
-		ReDim X(10, 10)
+		ReDim X(0 To 10, 0 To 10)
+		ReDim GetMe().IntArray(0 To 10, 10, 0 To 20)
+		ReDim GetMe(ExplicitParameter := 3).IntArray(0 To 10, 10, 0 To 20)
+		ReDim SomeType(Of Integer).IntArray(0 To 10, 10, 0 To 20)
 	End Sub
 End Class";
 			TypeDeclaration typeDeclaration = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
 		}
-
-		#endregion
 	}
 }

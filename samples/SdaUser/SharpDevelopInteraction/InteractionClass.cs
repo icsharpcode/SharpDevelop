@@ -24,7 +24,7 @@ namespace SharpDevelopInteraction
 	{
 		public void MakeTransparent()
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(new MethodInvoker(MakeTransparentInternal));
+			WorkbenchSingleton.SafeThreadAsyncCall(MakeTransparentInternal);
 		}
 		
 		void MakeTransparentInternal()

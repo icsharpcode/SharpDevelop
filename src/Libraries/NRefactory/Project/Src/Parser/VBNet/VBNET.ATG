@@ -1392,19 +1392,13 @@ InitializationRankList<out List<Expression> rank>
 	Expression expr = null;
 .) =
 	Expr<out expr>
-	[	"To"
-		(.	if (!(expr is PrimitiveExpression) || (expr as PrimitiveExpression).StringValue != "0")
-			Error("lower bound of array must be zero");
-		.)
+	[	"To" (. EnsureIsZero(expr); .)
 		Expr<out expr>
 	]
 	(. if (expr != null) { rank.Add(expr); } .)
 	{	","
 		Expr<out expr>
-		[	"To"
-			(.	if (!(expr is PrimitiveExpression) || (expr as PrimitiveExpression).StringValue != "0")
-				Error("lower bound of array must be zero");
-			.)
+		[	"To" (. EnsureIsZero(expr); .)
 			Expr<out expr>
 		]
 		(. if (expr != null) { rank.Add(expr); } .)
@@ -1540,6 +1534,15 @@ AssignmentOperator<out AssignmentOperatorType op>
 
 /* 11.4 */
 SimpleExpr<out Expression pexpr>
+=
+	SimpleNonInvocationExpression<out pexpr>
+	{		(. string name; .)
+		"." IdentifierOrKeyword<out name> (. pexpr = new FieldReferenceExpression(pexpr, name); .)
+	|	InvocationExpression<ref pexpr>
+	}
+.
+
+SimpleNonInvocationExpression<out Expression pexpr>
 (.
 	Expression expr;
 	TypeReference type = null;
@@ -1590,19 +1593,10 @@ SimpleExpr<out Expression pexpr>
 		|	/* 11.5.1 */ "GetType" "(" GetTypeTypeName<out type> ")"	(. pexpr = new TypeOfExpression(type); .)
 		|	/* 11.5.2 */ "TypeOf" SimpleExpr<out expr> "Is" TypeName<out type> (. pexpr = new TypeOfIsExpression(expr, type); .)
 		)
-		{ InvocationOrMemberReferenceExpression<ref pexpr> }
 	|
 		/* this form only occurs in WithStatements*/
-		"." IdentifierOrKeyword<out name> (. pexpr = new FieldReferenceExpression(pexpr, name);.)
-		{ InvocationOrMemberReferenceExpression<ref pexpr> }
+		"." IdentifierOrKeyword<out name> (. pexpr = new FieldReferenceExpression(null, name);.)
 	)
-.
-
-InvocationOrMemberReferenceExpression<ref Expression pexpr>
-(. string name; .)
-=
-	"." IdentifierOrKeyword<out name> (. pexpr = new FieldReferenceExpression(pexpr, name); .)
-|	InvocationExpression<ref pexpr>
 .
 
 InvocationExpression<ref Expression pexpr>
@@ -1820,13 +1814,16 @@ ObjectCreateExpression<out Expression oce>
 	List<Expression> arguments = null;
 	ArrayList dimensions = null;
 	oce = null;
+	bool canBeNormal; bool canBeReDim;
 .) =
 	"New" NonArrayTypeName<out type, false>
-	["(" ArgumentList<out arguments> ")"
+	["(" NormalOrReDimArgumentList<out arguments, out canBeNormal, out canBeReDim> ")"
 		[ IF (la.kind == Tokens.OpenParenthesis)
-		  ArrayTypeModifiers<out dimensions>
-		  ArrayInitializer<out initializer>
-		| ArrayInitializer<out initializer> ]
+			ArrayTypeModifiers<out dimensions>
+			ArrayInitializer<out initializer>
+		|	ArrayInitializer<out initializer>
+		]
+		(. if (canBeReDim && !canBeNormal && initializer == null) initializer = new ArrayInitializerExpression(); .)
 	]
 	(.
 		if (type == null) type = new TypeReference("Object"); // fallback type on parser errors
@@ -1855,6 +1852,31 @@ ArgumentList<out List<Expression> arguments>
 		(. if (expr == null) expr = Expression.Null; .)
 	}
 	(. if (expr != null) arguments.Add(expr); .)
+.
+
+/* argument list that hasn't decided if it is method call or array initialisation */
+NormalOrReDimArgumentList<out List<Expression> arguments, out bool canBeNormal, out bool canBeRedim>
+	(.
+		arguments = new List<Expression>();
+		canBeNormal = true; canBeRedim = !IsNamedAssign();
+		Expression expr = null;
+	.)
+=
+	[ Argument<out expr>
+	  [ "To" (. EnsureIsZero(expr); canBeNormal = false; .)
+	    Expr<out expr>
+	] ]
+	{ ","
+		(. if (expr == null) canBeRedim = false; .)
+		(. arguments.Add(expr ?? Expression.Null); expr = null; .)
+		(. canBeRedim &= !IsNamedAssign(); .)
+		[ Argument<out expr>
+		  [ "To" (. EnsureIsZero(expr); canBeNormal = false; .)
+		    Expr<out expr>
+		] ]
+		(. if (expr == null) { canBeRedim = false; expr = Expression.Null; } .)
+	}
+	(. if (expr != null) arguments.Add(expr); else canBeRedim = false; .)
 .
 
 /* Spec, 11.8 */
@@ -2344,14 +2366,14 @@ EmbeddedStatement<out Statement statement>
 	"Error" Expr<out expr> 				(. statement = new ErrorStatement(expr); .)
 	| /* 10.12.1 */
 	"ReDim" (. bool isPreserve = false; .) [ "Preserve" (. isPreserve = true; .) ]
-	Expr<out expr>
+	ReDimClause<out expr>
 	(.
 		ReDimStatement reDimStatement = new ReDimStatement(isPreserve);
 		statement = reDimStatement;
 		InvocationExpression redimClause = expr as InvocationExpression;
 		if (redimClause != null) { reDimStatement.ReDimClauses.Add(redimClause); }
 	.)
-	{ "," Expr<out expr>
+	{ "," ReDimClause<out expr>
 		(. redimClause = expr as InvocationExpression; .)
 		(. if (redimClause != null) { reDimStatement.ReDimClauses.Add(redimClause); } .)
 	}
@@ -2561,27 +2583,28 @@ LabelName<out string name>
 	.
 
 /* 12.12.1 */
-/*
-ReDimClause<out ReDimClause clause>
-	(.
-		Expression initializer = null;
-		Expression arrayInitializer = null;
-		string name;
-	.) =
-	[Expr<out initializer> "." ]
-	Qualident<out name>
-	(.
-		clause = new ReDimClause(name);
-	.)
-	"(" Expr<out initializer>
-	(.
-		clause.Initializers.Add(initializer);
-	.)
-	{ "," Expr<out initializer> (. clause.Initializers.Add(initializer); .) }
+ReDimClause<out Expression expr>
+=
+	SimpleNonInvocationExpression<out expr>
+	ReDimClauseInternal<ref expr>
+.
+
+ReDimClauseInternal<ref Expression expr>
+(. List<Expression> arguments; bool canBeNormal; bool canBeRedim; string name; .)
+=
+	{	"." IdentifierOrKeyword<out name> (. expr = new FieldReferenceExpression(expr, name); .)
+	|  IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
+		InvocationExpression<ref expr>
+	}
+	"("
+	NormalOrReDimArgumentList<out arguments, out canBeNormal, out canBeRedim>
 	")"
-	[ ArrayInitializer<out arrayInitializer> ]
-	.
-*/
+	(.	expr = new InvocationExpression(expr, arguments);
+		if (canBeRedim == false || canBeNormal && (la.kind == Tokens.Dot || la.kind == Tokens.OpenParenthesis)) {
+			ReDimClauseInternal(ref expr);
+		}
+	.)
+.
 
 /* 10.10.2.3 */
 ResumeStatement<out ResumeStatement resumeStatement>
