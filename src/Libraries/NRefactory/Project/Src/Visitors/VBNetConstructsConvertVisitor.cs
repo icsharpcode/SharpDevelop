@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.Visitors
 	{
 		// The following conversions are implemented:
 		//   MyBase.New() and MyClass.New() calls inside the constructor are converted to :base() and :this()
-		//   Add Public Modifier to methods and properties
+		//   Add Public Modifier to inner types, methods, properties and fields in structures
 		//   Override Finalize => Destructor
 		//   IIF(cond, true, false) => ConditionalExpression
 		//   Built-in methods => Prefix with class name
@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		Dictionary<string, string> usings;
 		List<UsingDeclaration> addedUsings;
-		bool isInStructure;
+		TypeDeclaration currentTypeDeclaration;
 		
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
@@ -65,11 +65,30 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
-			bool oldIsInStructure = isInStructure;
-			isInStructure = typeDeclaration.Type == ClassType.Struct;
+			// fix default visibility of inner classes
+			if (currentTypeDeclaration != null && (typeDeclaration.Modifier & Modifiers.Visibility) == 0)
+				typeDeclaration.Modifier |= Modifiers.Public;
+			
+			TypeDeclaration oldTypeDeclaration = currentTypeDeclaration;
+			currentTypeDeclaration = typeDeclaration;
 			base.VisitTypeDeclaration(typeDeclaration, data);
-			isInStructure = oldIsInStructure;
+			currentTypeDeclaration = oldTypeDeclaration;
 			return null;
+		}
+		
+		public override object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
+		{
+			// fix default visibility of inner classes
+			if (currentTypeDeclaration != null && (delegateDeclaration.Modifier & Modifiers.Visibility) == 0)
+				delegateDeclaration.Modifier |= Modifiers.Public;
+			
+			return base.VisitDelegateDeclaration(delegateDeclaration, data);
+		}
+		
+		bool IsClassType(ClassType c)
+		{
+			if (currentTypeDeclaration == null) return false;
+			return currentTypeDeclaration.Type == c;
 		}
 		
 		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
@@ -115,6 +134,8 @@ namespace ICSharpCode.NRefactory.Visitors
 			MethodDeclaration method = new MethodDeclaration(declareDeclaration.Name, declareDeclaration.Modifier,
 			                                                 declareDeclaration.TypeReference, declareDeclaration.Parameters,
 			                                                 declareDeclaration.Attributes);
+			if ((method.Modifier & Modifiers.Visibility) == 0)
+				method.Modifier |= Modifiers.Public;
 			method.Modifier |= Modifiers.Extern | Modifiers.Static;
 			Attribute att = new Attribute("DllImport", null, null);
 			att.PositionalArguments.Add(CreateStringLiteral(declareDeclaration.Library));
@@ -154,7 +175,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
-			if ((methodDeclaration.Modifier & Modifiers.Visibility) == 0)
+			if (!IsClassType(ClassType.Interface) && (methodDeclaration.Modifier & Modifiers.Visibility) == 0)
 				methodDeclaration.Modifier |= Modifiers.Public;
 			
 			if ("Finalize".Equals(methodDeclaration.Name, StringComparison.InvariantCultureIgnoreCase)
@@ -279,16 +300,24 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
 			fieldDeclaration.Modifier &= ~Modifiers.Dim; // remove "Dim" flag
-			if (isInStructure) {
+			if (IsClassType(ClassType.Struct)) {
 				if ((fieldDeclaration.Modifier & Modifiers.Visibility) == 0)
 					fieldDeclaration.Modifier |= Modifiers.Public;
 			}
 			return base.VisitFieldDeclaration(fieldDeclaration, data);
 		}
 		
+		public override object VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
+		{
+			if (!IsClassType(ClassType.Interface) && (eventDeclaration.Modifier & Modifiers.Visibility) == 0)
+				eventDeclaration.Modifier |= Modifiers.Public;
+			
+			return base.VisitEventDeclaration(eventDeclaration, data);
+		}
+		
 		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
-			if ((propertyDeclaration.Modifier & Modifiers.Visibility) == 0)
+			if (!IsClassType(ClassType.Interface) && (propertyDeclaration.Modifier & Modifiers.Visibility) == 0)
 				propertyDeclaration.Modifier |= Modifiers.Public;
 			
 			if (propertyDeclaration.HasSetRegion) {

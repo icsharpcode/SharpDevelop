@@ -51,6 +51,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return ConvertModifier(m, ModifierEnum.Private);
 		}
 		
+		ModifierEnum ConvertTypeModifier(AST.Modifiers m)
+		{
+			if (this.IsVisualBasic)
+				return ConvertModifier(m, ModifierEnum.Public);
+			if (currentClass.Count > 0)
+				return ConvertModifier(m, ModifierEnum.Private);
+			else
+				return ConvertModifier(m, ModifierEnum.Internal);
+		}
+		
 		ModifierEnum ConvertModifier(AST.Modifiers m, ModifierEnum defaultVisibility)
 		{
 			ModifierEnum r = (ModifierEnum)m;
@@ -282,7 +292,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DomRegion region = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
 			DomRegion bodyRegion = GetRegion(typeDeclaration.BodyStartLocation, typeDeclaration.EndLocation);
 			
-			DefaultClass c = new DefaultClass(cu, TranslateClassType(typeDeclaration.Type), ConvertModifier(typeDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
+			DefaultClass c = new DefaultClass(cu, TranslateClassType(typeDeclaration.Type), ConvertTypeModifier(typeDeclaration.Modifier), region, GetCurrentClass());
 			c.BodyRegion = bodyRegion;
 			ConvertAttributes(typeDeclaration, c);
 			c.Documentation = GetDocumentation(region.BeginLine, typeDeclaration.Attributes);
@@ -371,7 +381,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object VisitDelegateDeclaration(AST.DelegateDeclaration delegateDeclaration, object data)
 		{
 			DomRegion region = GetRegion(delegateDeclaration.StartLocation, delegateDeclaration.EndLocation);
-			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, ConvertModifier(delegateDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
+			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, ConvertTypeModifier(delegateDeclaration.Modifier), region, GetCurrentClass());
 			c.Documentation = GetDocumentation(region.BeginLine, delegateDeclaration.Attributes);
 			ConvertAttributes(delegateDeclaration, c);
 			CreateDelegate(c, delegateDeclaration.Name, delegateDeclaration.ReturnType,

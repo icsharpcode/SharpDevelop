@@ -370,5 +370,42 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			              "\tExit Do\n" +
 			              "Loop While test IsNot Nothing");
 		}
+		
+		[Test]
+		public void StructFieldVisibility()
+		{
+			TestMember("public struct A { int field; }",
+			           "Public Structure A\n" +
+			           "\tPrivate field As Integer\n" +
+			           "End Structure");
+		}
+		
+		[Test]
+		public void InnerClassVisibility()
+		{
+			TestMember("class Inner\n{\n}",
+			           "Private Class Inner\n" +
+			           "End Class");
+		}
+		
+		[Test]
+		public void InnerDelegateVisibility()
+		{
+			TestMember("delegate void Test();",
+			           "Private Delegate Sub Test()");
+		}
+		
+		[Test]
+		public void InterfaceVisibility()
+		{
+			TestMember("public interface ITest {\n" +
+			           "  void Test();\n" +
+			           "  string Name { get; set; }\n" +
+			           "}",
+			           "Public Interface ITest\n" +
+			           "\tSub Test()\n" +
+			           "\tProperty Name() As String\n" +
+			           "End Interface");
+		}
 	}
 }

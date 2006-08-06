@@ -69,13 +69,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			CompletionDataProviderKeyResult res;
 			if (key == ' ' && insertSpace) {
+				insertSpace = false; // insert space only once
 				res = CompletionDataProviderKeyResult.BeforeStartKey;
 			} else if (char.IsLetterOrDigit(key) || key == '_') {
+				insertSpace = false; // don't insert space if user types normally
 				res = CompletionDataProviderKeyResult.NormalKey;
 			} else {
+				// do not reset insertSpace when doing an insertion!
 				res = CompletionDataProviderKeyResult.InsertionKey;
 			}
-			insertSpace = false;
 			return res;
 		}
 		

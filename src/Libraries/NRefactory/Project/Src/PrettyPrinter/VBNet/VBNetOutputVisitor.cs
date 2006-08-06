@@ -424,6 +424,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
 		{
 			VisitAttributes(delegateDeclaration.Attributes, data);
+			
+			outputFormatter.Indent();
 			OutputModifier(delegateDeclaration.Modifier, true);
 			outputFormatter.PrintToken(Tokens.Delegate);
 			outputFormatter.Space();

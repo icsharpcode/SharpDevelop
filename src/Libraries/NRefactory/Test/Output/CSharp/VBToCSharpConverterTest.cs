@@ -210,17 +210,17 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestMember("Declare Function SendMessage Lib \"user32.dll\" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As UIntPtr, ByVal lParam As IntPtr) As IntPtr",
 			           "[DllImport(\"user32.dll\", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]\n" +
-			           "static extern IntPtr SendMessage(IntPtr hWnd, int Msg, UIntPtr wParam, IntPtr lParam);",
+			           "public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, UIntPtr wParam, IntPtr lParam);",
 			           "System.Runtime.InteropServices");
 			
 			TestMember("Declare Unicode Function SendMessage Lib \"user32.dll\" Alias \"SendMessageW\" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As UIntPtr, ByVal lParam As IntPtr) As IntPtr",
 			           "[DllImport(\"user32.dll\", EntryPoint = \"SendMessageW\", CharSet = CharSet.Unicode, SetLastError = true, ExactSpelling = true)]\n" +
-			           "static extern IntPtr SendMessage(IntPtr hWnd, int Msg, UIntPtr wParam, IntPtr lParam);",
+			           "public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, UIntPtr wParam, IntPtr lParam);",
 			           "System.Runtime.InteropServices");
 			
 			TestMember("Declare Auto Function SendMessage Lib \"user32.dll\" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As UIntPtr, ByVal lParam As IntPtr) As IntPtr",
 			           "[DllImport(\"user32.dll\", CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]\n" +
-			           "static extern IntPtr SendMessage(IntPtr hWnd, int Msg, UIntPtr wParam, IntPtr lParam);",
+			           "public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, UIntPtr wParam, IntPtr lParam);",
 			           "System.Runtime.InteropServices");
 			
 			TestMember("<DllImport(\"user32.dll\", CharSet:=CharSet.Auto)> _\n" +
@@ -517,6 +517,37 @@ static int static_Test2_j = 0;");
 		{
 			TestMember("Public Structure Example \n Dim x As Object \n End Structure",
 			           "public struct Example\n{\n\tpublic object x;\n}");
+		}
+		
+		[Test]
+		public void InnerClassVisibility()
+		{
+			TestMember("Class Inner \n End Class",
+			           "public class Inner\n{\n}");
+		}
+		
+		[Test]
+		public void InnerDelegateVisibility()
+		{
+			TestMember("Delegate Sub Test()",
+			           "public delegate void Test();");
+		}
+		
+		[Test]
+		public void InterfaceVisibility()
+		{
+			TestMember("Public Interface ITest\n" +
+			           "\tSub Test()\n" +
+			           "\tProperty Name As String\n" +
+			           "End Interface",
+			           "public interface ITest\n" +
+			           "{\n" +
+			           "\tvoid Test();\n" +
+			           "\tstring Name {\n" +
+			           "\t\tget;\n" +
+			           "\t\tset;\n" +
+			           "\t}\n" +
+			           "}");
 		}
 	}
 }

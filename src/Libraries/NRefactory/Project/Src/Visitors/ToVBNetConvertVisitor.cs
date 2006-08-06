@@ -56,6 +56,10 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
+			// fix default inner type visibility
+			if (currentType != null && (typeDeclaration.Modifier & Modifiers.Visibility) == 0)
+				typeDeclaration.Modifier |= Modifiers.Private;
+			
 			TypeDeclaration outerType = currentType;
 			currentType = typeDeclaration;
 			
@@ -86,6 +90,15 @@ namespace ICSharpCode.NRefactory.Visitors
 			currentType = outerType;
 			
 			return null;
+		}
+		
+		public override object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
+		{
+			// fix default inner type visibility
+			if (currentType != null && (delegateDeclaration.Modifier & Modifiers.Visibility) == 0)
+				delegateDeclaration.Modifier |= Modifiers.Private;
+			
+			return base.VisitDelegateDeclaration(delegateDeclaration, data);
 		}
 		
 		string GetAnonymousMethodName()
@@ -171,9 +184,15 @@ namespace ICSharpCode.NRefactory.Visitors
 			return base.VisitAssignmentExpression(assignmentExpression, data);
 		}
 		
+		bool IsClassType(ClassType c)
+		{
+			if (currentType == null) return false;
+			return currentType.Type == c;
+		}
+		
 		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
-			if ((methodDeclaration.Modifier & Modifiers.Visibility) == 0)
+			if (!IsClassType(ClassType.Interface) && (methodDeclaration.Modifier & Modifiers.Visibility) == 0)
 				methodDeclaration.Modifier |= Modifiers.Private;
 			
 			base.VisitMethodDeclaration(methodDeclaration, data);
@@ -277,9 +296,16 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
-			if ((propertyDeclaration.Modifier & Modifiers.Visibility) == 0)
+			if (!IsClassType(ClassType.Interface) && (propertyDeclaration.Modifier & Modifiers.Visibility) == 0)
 				propertyDeclaration.Modifier |= Modifiers.Private;
 			return base.VisitPropertyDeclaration(propertyDeclaration, data);
+		}
+		
+		public override object VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
+		{
+			if (!IsClassType(ClassType.Interface) && (eventDeclaration.Modifier & Modifiers.Visibility) == 0)
+				eventDeclaration.Modifier |= Modifiers.Private;
+			return base.VisitEventDeclaration(eventDeclaration, data);
 		}
 		
 		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
