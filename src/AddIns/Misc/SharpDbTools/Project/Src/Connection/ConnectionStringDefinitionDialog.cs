@@ -125,7 +125,7 @@ namespace SharpDbTools.Connection
 		
 		void ProgressTimerTick(object sender, System.EventArgs e)
 		{
-			this.Invoke(new EventHandler(UpdateProgressBar));
+			this.BeginInvoke(new EventHandler(UpdateProgressBar));
 		}
 		
 		void UpdateProgressBar(object sender, EventArgs e)

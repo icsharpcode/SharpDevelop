@@ -63,6 +63,13 @@
     <Compile Include="Src\Model\DbModelInfoService.cs" />
     <Compile Include="Src\Model\TableNames.cs" />
     <Compile Include="Src\Model\ColumnNames.cs" />
+    <Compile Include="Src\GetConnectionLogicalNameDialog.cs" />
+    <Compile Include="Src\GetConnectionLogicalNameDialog.Designer.cs">
+      <DependentUpon>GetConnectionLogicalNameDialog.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Src\GetConnectionLogicalNameDialog.resx">
+      <DependentUpon>GetConnectionLogicalNameDialog.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Model" />

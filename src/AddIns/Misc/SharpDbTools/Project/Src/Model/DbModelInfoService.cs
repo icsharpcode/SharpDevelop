@@ -35,6 +35,12 @@ namespace SharpDbTools.Model
 		const string dbFilesDir = "DbTools";	
 		static SortedList<string, DbModelInfo> cache = new SortedList<string, DbModelInfo>();
 		
+		public static IList<string> Names {
+			get {
+				return cache.Keys;
+			}
+		}
+		
 		public static DbModelInfo Add(string name, string invariantName, string connectionString)
 		{
 			// TODO: add validation on name; invariant name
@@ -52,7 +58,7 @@ namespace SharpDbTools.Model
 				bool exists = cache.TryGetValue(name, out modelInfo);
 				return modelInfo;
 		}
-		
+				
 		public static DbModelInfo LoadMetadataFromConnection(string name)
 		{
 			// get the DbModelInfo
