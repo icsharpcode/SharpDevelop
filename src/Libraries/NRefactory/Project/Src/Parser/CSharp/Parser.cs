@@ -5012,19 +5012,19 @@ out TypeReference type) {
 			lexer.NextToken();
 
 #line  2038 "cs.ATG" 
-			type = new TypeReference("struct"); 
+			type = TypeReference.StructConstraint; 
 		} else if (la.kind == 58) {
 			lexer.NextToken();
 
 #line  2039 "cs.ATG" 
-			type = new TypeReference("struct"); 
+			type = TypeReference.ClassConstraint; 
 		} else if (la.kind == 88) {
 			lexer.NextToken();
 			Expect(20);
 			Expect(21);
 
 #line  2040 "cs.ATG" 
-			type = new TypeReference("struct"); 
+			type = TypeReference.NewConstraint; 
 		} else if (StartOf(9)) {
 			Type(
 #line  2041 "cs.ATG" 

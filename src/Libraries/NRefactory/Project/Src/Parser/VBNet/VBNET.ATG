@@ -382,14 +382,22 @@ TypeParameterConstraints<TemplateDefinition template>
 	"As"
 	(
 		"{"
-		TypeName<out constraint> (. if (constraint != null) { template.Bases.Add(constraint); } .)
+		TypeParameterConstraint<out constraint> (. if (constraint != null) { template.Bases.Add(constraint); } .)
 		{
 			","
-			TypeName<out constraint> (. if (constraint != null) { template.Bases.Add(constraint); } .)
+			TypeParameterConstraint<out constraint> (. if (constraint != null) { template.Bases.Add(constraint); } .)
 		}
 		"}"
-		| TypeName<out constraint> (. if (constraint != null) { template.Bases.Add(constraint); } .)
+		| TypeParameterConstraint<out constraint> (. if (constraint != null) { template.Bases.Add(constraint); } .)
 	)
+.
+
+TypeParameterConstraint<out TypeReference constraint>
+(. constraint = null; .)
+=	"Class"		(. constraint = TypeReference.ClassConstraint; .)
+|	"Structure"	(. constraint = TypeReference.StructConstraint; .)
+|	"New"		(. constraint = TypeReference.NewConstraint; .)
+|	TypeName<out constraint>
 .
 
 /* 6.4.2 */

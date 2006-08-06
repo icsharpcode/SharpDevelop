@@ -376,5 +376,23 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("using (obj) {\n}");
 		}
+		
+		[Test]
+		public void NewConstraint()
+		{
+			TestProgram("public struct Rational<T, O> where O : IRationalMath<T>, new()\n{\n}");
+		}
+		
+		[Test]
+		public void StructConstraint()
+		{
+			TestProgram("public struct Rational<T, O> where O : struct\n{\n}");
+		}
+		
+		[Test]
+		public void ClassConstraint()
+		{
+			TestProgram("public struct Rational<T, O> where O : class\n{\n}");
+		}
 	}
 }

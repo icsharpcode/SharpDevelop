@@ -15,6 +15,10 @@ namespace ICSharpCode.NRefactory.Ast
 {
 	public class TypeReference : AbstractNode, INullable, ICloneable
 	{
+		public static readonly TypeReference StructConstraint = new TypeReference("constraint: struct");
+		public static readonly TypeReference ClassConstraint = new TypeReference("constraint: class");
+		public static readonly TypeReference NewConstraint = new TypeReference("constraint: new");
+		
 		string type = "";
 		string systemType = "";
 		int    pointerNestingLevel;
@@ -211,6 +215,8 @@ namespace ICSharpCode.NRefactory.Ast
 		
 		static string GetSystemType(string type)
 		{
+			if (types == null) return type;
+			
 			if (types.ContainsKey(type)) {
 				return types[type];
 			}

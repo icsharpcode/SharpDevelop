@@ -2035,9 +2035,9 @@ TypeParameterConstraintsClause<List<TemplateDefinition> templates>
 TypeParameterConstraintsClauseBase<out TypeReference type>
 (. TypeReference t; type = null; .)
 =
-	"struct"          (. type = new TypeReference("struct"); .)
-	| "class"         (. type = new TypeReference("struct"); .)
-	| "new" "(" ")"   (. type = new TypeReference("struct"); .)
+	"struct"          (. type = TypeReference.StructConstraint; .)
+	| "class"         (. type = TypeReference.ClassConstraint; .)
+	| "new" "(" ")"   (. type = TypeReference.NewConstraint; .)
 	| Type<out t>     (. type = t; .)
 .
 

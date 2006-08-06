@@ -373,5 +373,23 @@ End Using");
 			              "\t.AddLine(New Point(Me.ClientSize.Width / 2, 0), (New Point(Me.ClientSize.Width / 2, Me.ClientSize.Height)))\n" +
 			              "End With");
 		}
+		
+		[Test]
+		public void NewConstraint()
+		{
+			TestProgram("Public Class Rational(Of T, O As {IRationalMath(Of T), New})\nEnd Class");
+		}
+		
+		[Test]
+		public void StructConstraint()
+		{
+			TestProgram("Public Class Rational(Of T, O As {IRationalMath(Of T), Structure})\nEnd Class");
+		}
+		
+		[Test]
+		public void ClassConstraint()
+		{
+			TestProgram("Public Class Rational(Of T, O As {IRationalMath(Of T), Class})\nEnd Class");
+		}
 	}
 }

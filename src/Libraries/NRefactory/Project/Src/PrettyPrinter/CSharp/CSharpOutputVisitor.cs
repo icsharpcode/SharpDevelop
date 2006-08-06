@@ -128,9 +128,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object VisitTypeReference(TypeReference typeReference, object data)
 		{
-			PrintTypeReferenceWithoutArray(typeReference);
-			if (typeReference.IsArrayType) {
-				PrintArrayRank(typeReference.RankSpecifier, 0);
+			if (typeReference == TypeReference.ClassConstraint) {
+				outputFormatter.PrintToken(Tokens.Class);
+			} else if (typeReference == TypeReference.StructConstraint) {
+				outputFormatter.PrintToken(Tokens.Struct);
+			} else if (typeReference == TypeReference.NewConstraint) {
+				outputFormatter.PrintToken(Tokens.New);
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			} else {
+				PrintTypeReferenceWithoutArray(typeReference);
+				if (typeReference.IsArrayType) {
+					PrintArrayRank(typeReference.RankSpecifier, 0);
+				}
 			}
 			return null;
 		}
