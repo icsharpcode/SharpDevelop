@@ -43,17 +43,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		ModifierEnum ConvertModifier(AST.Modifiers m)
 		{
-			if (currentClass.Count > 0 && currentClass.Peek().ClassType == ClassType.Interface)
+			if (this.IsVisualBasic)
+				return ConvertModifier(m, ModifierEnum.Public);
+			else if (currentClass.Count > 0 && currentClass.Peek().ClassType == ClassType.Interface)
 				return ConvertModifier(m, ModifierEnum.Public);
 			else
 				return ConvertModifier(m, ModifierEnum.Private);
 		}
 		
-		ModifierEnum ConvertModifier(AST.Modifiers m, ModifierEnum defaultModifier)
+		ModifierEnum ConvertModifier(AST.Modifiers m, ModifierEnum defaultVisibility)
 		{
 			ModifierEnum r = (ModifierEnum)m;
-			if (r == ModifierEnum.None)
-				return defaultModifier;
+			if ((r & ModifierEnum.VisibilityMask) == ModifierEnum.None)
+				return r | defaultVisibility;
 			else
 				return r;
 		}
@@ -495,11 +497,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
+		bool IsVisualBasic {
+			get {
+				return cu.ProjectContent.Language == LanguageProperties.VBNet;
+			}
+		}
 		
 		public override object VisitFieldDeclaration(AST.FieldDeclaration fieldDeclaration, object data)
 		{
 			DomRegion region = GetRegion(fieldDeclaration.StartLocation, fieldDeclaration.EndLocation);
 			DefaultClass c = GetCurrentClass();
+			ModifierEnum modifier = ConvertModifier(fieldDeclaration.Modifier,
+			                                        (c.ClassType == ClassType.Struct && this.IsVisualBasic)
+			                                        ? ModifierEnum.Public : ModifierEnum.Private);
 			string doku = GetDocumentation(region.BeginLine, fieldDeclaration.Attributes);
 			if (currentClass.Count > 0) {
 				for (int i = 0; i < fieldDeclaration.Fields.Count; ++i) {
@@ -510,7 +520,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						retType = c.DefaultReturnType;
 					else
 						retType = CreateReturnType(fieldDeclaration.GetTypeForField(i));
-					DefaultField f = new DefaultField(retType, field.Name, ConvertModifier(fieldDeclaration.Modifier), region, c);
+					DefaultField f = new DefaultField(retType, field.Name, modifier, region, c);
 					ConvertAttributes(fieldDeclaration, f);
 					f.Documentation = doku;
 					if (c.ClassType == ClassType.Enum) {
