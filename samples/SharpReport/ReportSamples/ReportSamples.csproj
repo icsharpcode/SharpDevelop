@@ -52,6 +52,13 @@
     <Compile Include="ContributersList.cs" />
     <Compile Include="EventLogger.cs" />
     <EmbeddedResource Include="ImageResource.resx" />
+    <Compile Include="BaseSample.cs" />
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="SimpleReports.cs" />
+    <Compile Include="MissingConnection.cs" />
+    <Compile Include="SimpleUnbound.cs" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft ActiveX Data Objects 2.7 Library">

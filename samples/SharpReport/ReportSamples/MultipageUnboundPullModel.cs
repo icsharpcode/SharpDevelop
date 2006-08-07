@@ -8,7 +8,6 @@
  */
 
 using System;
-
 using System.Windows.Forms;
 
 using SharpReportCore;
@@ -17,7 +16,7 @@ namespace ReportSamples{
 	/// <summary>
 	/// Description of MultipageUnboundPullModel.
 	/// </summary>
-	public class MultiPageUnboundPullModel{
+	public class MultiPageUnboundPullModel :BaseSample{
 		int rowNr;
 		int rowsPerPage;
 		System.DateTime startTime;
@@ -26,18 +25,17 @@ namespace ReportSamples{
 		public MultiPageUnboundPullModel(){
 		}
 		
-		public void Run() {
+		public override void Run() {
+			
 			try{
-				OpenFileDialog dg = new OpenFileDialog();
-				dg.Filter = "SharpReport files|*.srd";
-				dg.Title = "Select a report file: ";
-				if (dg.ShowDialog() == DialogResult.OK){
+				base.Run();
+				if (!String.IsNullOrEmpty(base.ReportName)) {
+					MessageBox.Show("got it");
 					SharpReportCore.SharpReportEngine mn = new SharpReportCore.SharpReportEngine();
-					mn.SectionRendering += new EventHandler<SectionRenderEventArgs>(MultipagePrinting);
-					mn.SectionRendered += new EventHandler<SectionRenderEventArgs>(MultipagePrinted);
-					this.startTime = System.DateTime.Now;
-					
-					mn.PreviewStandartReport(dg.FileName.ToString());
+					base.Engine.SectionRendering += new EventHandler<SectionRenderEventArgs>(MultipagePrinting);
+					base.Engine.SectionRendered += new EventHandler<SectionRenderEventArgs>(MultipagePrinted);
+					this.startTime = System.DateTime.Now;					
+					base.Engine.PreviewStandartReport(base.ReportName);
 				}
 			}
 			catch(Exception er){

@@ -42,7 +42,6 @@ namespace ReportSamples
 			this.simpleFormsSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.unboundFormSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pullMpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.customersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.employeeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.missingConnectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pushModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -100,26 +99,18 @@ namespace ReportSamples
 			// pullMpToolStripMenuItem
 			// 
 			this.pullMpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.customersToolStripMenuItem,
 									this.employeeToolStripMenuItem,
 									this.missingConnectionToolStripMenuItem});
 			this.pullMpToolStripMenuItem.Name = "pullMpToolStripMenuItem";
 			this.pullMpToolStripMenuItem.Size = new System.Drawing.Size(65, 20);
 			this.pullMpToolStripMenuItem.Text = "PullModell";
 			// 
-			// customersToolStripMenuItem
-			// 
-			this.customersToolStripMenuItem.Name = "customersToolStripMenuItem";
-			this.customersToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
-			this.customersToolStripMenuItem.Text = "Customers";
-			this.customersToolStripMenuItem.Click += new System.EventHandler(this.CustomersClick);
-			// 
 			// employeeToolStripMenuItem
 			// 
 			this.employeeToolStripMenuItem.Name = "employeeToolStripMenuItem";
 			this.employeeToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
-			this.employeeToolStripMenuItem.Text = "Employee";
-			this.employeeToolStripMenuItem.Click += new System.EventHandler(this.EmployeeClick);
+			this.employeeToolStripMenuItem.Text = "PullModel";
+			this.employeeToolStripMenuItem.Click += new System.EventHandler(this.PullModelClick);
 			// 
 			// missingConnectionToolStripMenuItem
 			// 
@@ -139,9 +130,9 @@ namespace ReportSamples
 			// emlpoyeesToolStripMenuItem
 			// 
 			this.emlpoyeesToolStripMenuItem.Name = "emlpoyeesToolStripMenuItem";
-			this.emlpoyeesToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-			this.emlpoyeesToolStripMenuItem.Text = "Employees-Push";
-			this.emlpoyeesToolStripMenuItem.Click += new System.EventHandler(this.EmployeesPushClick);
+			this.emlpoyeesToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+			this.emlpoyeesToolStripMenuItem.Text = "SimplePush";
+			this.emlpoyeesToolStripMenuItem.Click += new System.EventHandler(this.SimplePushClick);
 			// 
 			// unboundToolStripMenuItem
 			// 
@@ -158,7 +149,7 @@ namespace ReportSamples
 			// 
 			this.unboundToolStripMenuItem1.Name = "unboundToolStripMenuItem1";
 			this.unboundToolStripMenuItem1.Size = new System.Drawing.Size(218, 22);
-			this.unboundToolStripMenuItem1.Text = "Unbound";
+			this.unboundToolStripMenuItem1.Text = "SimpleUnbound";
 			this.unboundToolStripMenuItem1.Click += new System.EventHandler(this.UnboundToolStripMenuItem1Click);
 			// 
 			// unboundPullModelToolStripMenuItem
@@ -237,7 +228,6 @@ namespace ReportSamples
 		private System.Windows.Forms.ToolStripMenuItem emlpoyeesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem missingConnectionToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem employeeToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem customersToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem simpleFormsSheetToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem pushModelToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem pullMpToolStripMenuItem;
