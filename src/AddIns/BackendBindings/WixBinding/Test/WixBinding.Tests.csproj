@@ -57,7 +57,6 @@
     <Compile Include="Utils\WixBindingTestsHelper.cs" />
     <Compile Include="Utils\MockViewContent.cs" />
     <Compile Include="Utils\MockTextEditorViewContent.cs" />
-    <Compile Include="Project\WixInstallerPathTestFixture.cs" />
     <Compile Include="Project\WixNodeBuilderCanBuildWixProjectTestFixture.cs" />
     <Compile Include="Utils\WixLibraryFolderNodeTester.cs" />
     <Compile Include="Gui\WixProjectWithLibraryItemsTestFixture.cs" />
@@ -143,6 +142,7 @@
     <Compile Include="DialogXmlGeneration\ListViewItemRemovedTestFixture.cs" />
     <Compile Include="DialogXmlGeneration\ListViewAddedTestFixture.cs" />
     <Compile Include="Document\GetValueWithNoProjectTestFixture.cs" />
+    <Compile Include="Project\WixInstallerPathTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\WixBinding.csproj">

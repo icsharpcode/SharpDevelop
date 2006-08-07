@@ -29,5 +29,17 @@ namespace WixBinding.Tests.Project
 			
 			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\Test.msi", project.InstallerFullPath);
 		}
+		
+		[Test]
+		public void OutputNameDifferentToProjectName()
+		{
+			ProjectCreateInformation info = new ProjectCreateInformation();
+			info.ProjectName = "Test";
+			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
+			WixProject project = new WixProject(info);
+			project.BaseConfiguration["OutputName"] = "ChangedName";
+			
+			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\ChangedName.msi", project.InstallerFullPath);
+		}
 	}
 }

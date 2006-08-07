@@ -97,7 +97,8 @@ namespace ICSharpCode.WixBinding
 			get {
 				string outputPath = GetProperty("OutputPath");
 				string outputType = GetProperty("OutputType");
-				string fileName = String.Concat(Name, GetInstallerExtension(outputType));
+				string outputName = GetProperty("OutputName");
+				string fileName = String.Concat(outputName, GetInstallerExtension(outputType));
 				return Path.Combine(Path.Combine(Directory, outputPath), fileName);
 			}
 		}
