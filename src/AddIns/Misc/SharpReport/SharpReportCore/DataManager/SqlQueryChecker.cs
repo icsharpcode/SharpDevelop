@@ -16,7 +16,6 @@ namespace SharpReportCore{
 	/// This Class checks for invalid SqlStatements
 	/// </summary>
 	internal class SqlQueryChecker{
-		internal string noValidMessage = "Query should start with 'Select'";
 		
 		private SqlQueryChecker () {
 		}

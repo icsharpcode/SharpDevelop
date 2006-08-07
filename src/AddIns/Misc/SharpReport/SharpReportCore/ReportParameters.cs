@@ -51,9 +51,9 @@ namespace SharpReportCore {
 				}
 				return sqlParameters;
 			}
-			set {
-				sqlParameters = value;
-			}
+//			set {
+//				sqlParameters = value;
+//			}
 		}
 		
 		public ColumnCollection SortColumnCollection {
@@ -63,9 +63,9 @@ namespace SharpReportCore {
 				}
 				return sortColumnCollection;
 			}
-			set {
-				sortColumnCollection = value;
-			}
+//			set {
+//				sortColumnCollection = value;
+//			}
 		}
 		
 	}

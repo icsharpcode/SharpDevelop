@@ -78,7 +78,7 @@ namespace SharpReport{
 					break;
 				case GlobalEnums.PushPullModelEnum.PushData:
 					//PushData
-					columnCollecion = base.CollectFieldsFromModel(this.baseDesignerControl.ReportModel);
+					columnCollecion = SharpReportEngine.CollectFieldsFromModel(this.baseDesignerControl.ReportModel);
 					break;
 				case GlobalEnums.PushPullModelEnum.PullData:
 					// PullData, query the Datasource and ask for the available Fields

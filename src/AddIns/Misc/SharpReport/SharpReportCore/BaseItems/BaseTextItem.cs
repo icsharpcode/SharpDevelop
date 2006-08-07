@@ -29,7 +29,7 @@ namespace SharpReportCore {
 		private StringFormat stringFormat;
 		private StringTrimming stringTrimming;
 		private TextDrawer textDrawer;
-		private StandardFormatter standartFormatter;
+//		private StandardFormatter standartFormatter;
 		private ContentAlignment contentAlignment;
 		private RectangleShape shape = new RectangleShape();
 		
@@ -40,7 +40,6 @@ namespace SharpReportCore {
 			this.contentAlignment = ContentAlignment.MiddleLeft;
 			this.stringTrimming = StringTrimming.EllipsisCharacter;
 			this.textDrawer = new TextDrawer();
-			this.standartFormatter = new StandardFormatter();
 		}
 		
 		#endregion
@@ -48,7 +47,7 @@ namespace SharpReportCore {
 		protected string FormatOutput(string valueToFormat,string format,
 		                              TypeCode typeCode, string nullValue ){
 			
-			return standartFormatter.FormatItem(valueToFormat,format,
+			return StandardFormatter.FormatItem(valueToFormat,format,
 			                                        typeCode,nullValue);			
 		}
 		
@@ -188,7 +187,7 @@ namespace SharpReportCore {
 		[XmlIgnoreAttribute]
 		public virtual StringFormat StringFormat {
 			get {
-				return this.textDrawer.BuildStringFormat (this.StringTrimming,
+				return TextDrawer.BuildStringFormat (this.StringTrimming,
 				                                          this.ContentAlignment);
 			}
 		}

@@ -43,6 +43,9 @@ namespace SharpReportCore {
 		                       RectangleF rectangle,
 		                       StringFormat stringFormat) {
 			
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
 			graphics.DrawString(text,
 			             font,
 			             brush,
@@ -65,15 +68,11 @@ namespace SharpReportCore {
 		}
 		
 		
-		public StringFormat BuildStringFormat(StringTrimming stringTrimming,ContentAlignment alignment){
+		public static StringFormat BuildStringFormat(StringTrimming stringTrimming,ContentAlignment alignment){
 			StringFormat format = StringFormat.GenericTypographic;
 			format.Trimming = stringTrimming;
 			format.FormatFlags = StringFormatFlags.LineLimit;
 
-//			if (base.RightToLeft)
-//			{
-//				format1.FormatFlags |= StringFormatFlags.DirectionRightToLeft;
-//			}
 			
 			if (alignment <= ContentAlignment.MiddleCenter){
 				switch (alignment){

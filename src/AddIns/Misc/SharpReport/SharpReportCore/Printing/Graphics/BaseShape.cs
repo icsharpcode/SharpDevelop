@@ -35,12 +35,17 @@ namespace SharpReportCore {
 		
 		public void FillShape (Graphics graphics, Brush brush,RectangleF rectangle) {
 			
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
 			GraphicsPath path1 = this.CreatePath(rectangle);
 			graphics.FillPath(brush, path1);
 
 		}
 		public void FillShape (Graphics graphics,AbstractFillPattern fillPattern,RectangleF rectangle) {
-			
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
 			if (fillPattern != null){
 				using (Brush brush = fillPattern.CreateBrush(rectangle)){
 					if (brush != null){
@@ -54,17 +59,23 @@ namespace SharpReportCore {
 		
 		
 		
-		public void DrawShape(Graphics g, BaseLine line, RectangleF rectangle){
+		public void DrawShape(Graphics graphics, BaseLine line, RectangleF rectangle){
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
 			using (Pen pen = line.CreatePen()){
 				if (pen != null){
-					this.new_DrawShape(g, pen, rectangle);
+					this.new_DrawShape(graphics, pen, rectangle);
 				}
 			}
 		}
 	
-		public void new_DrawShape(Graphics g, Pen pen, RectangleF rectangle){
+		public void new_DrawShape(Graphics graphics, Pen pen, RectangleF rectangle){
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
 			GraphicsPath path1 = this.CreatePath(rectangle);
-			g.DrawPath(pen, path1);
+			graphics.DrawPath(pen, path1);
 		}
 
 

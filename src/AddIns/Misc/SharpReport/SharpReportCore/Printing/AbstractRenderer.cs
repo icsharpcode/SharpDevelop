@@ -31,8 +31,6 @@ namespace SharpReportCore {
 		
 		private int sectionInUse;
 	
-	
-		private StandardFormatter standartFormatter;
 		private bool cancel;		
 		
 		public event EventHandler<SectionRenderEventArgs> Rendering;
@@ -47,7 +45,6 @@ namespace SharpReportCore {
 			this.reportSettings = model.ReportSettings;
 			this.sections = model.SectionCollection;
 			Init();
-			standartFormatter = new StandardFormatter();
 		}
 		
 		public virtual void SetupRenderer () {
@@ -117,13 +114,13 @@ namespace SharpReportCore {
 		
 		#region SharpReport Events
 		
-		protected virtual void PrintReportHeader (object sender, ReportPageEventArgs e) {
+		protected virtual void PrintReportHeader (object sender, ReportPageEventArgs rpea) {
 			SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportHeader,
 			                               CultureInfo.InvariantCulture);
 			this.AddSectionEvents();
 		}
 		
-		protected virtual void PrintPageHeader (object sender, ReportPageEventArgs e) {
+		protected virtual void PrintPageHeader (object sender, ReportPageEventArgs rpea) {
 			SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader,
 			                               CultureInfo.InvariantCulture);
 			this.AddSectionEvents();

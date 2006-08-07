@@ -120,6 +120,9 @@ namespace SharpReportCore{
 	public class ReportSectionCollection: List<BaseReportObject>{
 		
 		public BaseReportObject Find (string columnName) {
+			if (String.IsNullOrEmpty(columnName)) {
+				throw new ArgumentNullException("columnName");
+			}
 			for (int i = 0;i < this.Count ; i ++) {
 				BaseReportObject col = this[i];
 				if (String.Compare(col.Name.ToLower(CultureInfo.CurrentCulture),

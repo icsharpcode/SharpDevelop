@@ -29,7 +29,7 @@ namespace SharpReportCore {
 	
 		DbType	dataType;
 		object defaultValue;
-//		bool allowBlank;
+
 		ParameterDirection  parameterDirection = ParameterDirection.InputOutput;
 	
 		#region Constructor
@@ -182,15 +182,6 @@ namespace SharpReportCore {
 			}
 		}
 
-
-//		/// <summary>
-//		/// Is a Blank value allowed
-//		/// </summary>
-//		public bool AllowBlank {
-//			get {
-//				return allowBlank;
-//			}
-//		}
 		/// <summary>
 		/// When no value is entered, use this value
 		/// </summary>

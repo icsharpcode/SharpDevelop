@@ -37,7 +37,7 @@ using System.Drawing.Printing;
 namespace SharpReportCore {
 	public class RenderDataReport : AbstractDataRenderer {
 
-		private PointF currentPoint;
+//		private PointF currentPoint;
 		private DataNavigator dataNavigator;
 
 		
@@ -89,8 +89,7 @@ namespace SharpReportCore {
 			base.DoItems(rpea);
 		}
 		
-		//TODO how should we handle ReportFooter, print it on an seperate page ????
-		private void  DoReportFooter (PointF startAt,ReportPageEventArgs rpea){
+		private void  DoReportFooter (ReportPageEventArgs rpea){
 			this.CurrentSection.SectionOffset = (int)rpea.LocationAfterDraw.Y;
 			base.RenderSection (rpea);
 			base.DoItems(rpea);
@@ -100,15 +99,15 @@ namespace SharpReportCore {
 
 		#region test
 		
-		protected override void PrintReportHeader (object sender, ReportPageEventArgs e) {
-			base.PrintReportHeader (sender,e);
-			DoReportHeader (e);
+		protected override void PrintReportHeader (object sender, ReportPageEventArgs rpea) {
+			base.PrintReportHeader (sender,rpea);
+			DoReportHeader (rpea);
 			base.RemoveSectionEvents();
 		}
 		
-		protected override void PrintPageHeader (object sender, ReportPageEventArgs e) {
-			base.PrintPageHeader (sender,e);
-			DoPageHeader(e);
+		protected override void PrintPageHeader (object sender, ReportPageEventArgs rpea) {
+			base.PrintPageHeader (sender,rpea);
+			DoPageHeader(rpea);
 			base.RemoveSectionEvents();
 		}
 		
@@ -124,9 +123,7 @@ namespace SharpReportCore {
 //			DebugFooterRectangle(rpea);
 			this.CurrentSection.SectionOffset = (int)rpea.LocationAfterDraw.Y;
 			base.PrintReportFooter(sender, rpea);
-			DoReportFooter (new PointF(0,
-			                           base.CurrentSection.SectionOffset + base.CurrentSection.Size.Height),
-			                rpea);
+			this.DoReportFooter(rpea);
 			base.RemoveSectionEvents();
 		}
 		
@@ -160,8 +157,8 @@ namespace SharpReportCore {
 		
 		protected override void BodyStart(object sender, ReportPageEventArgs rpea) {
 			base.BodyStart (sender,rpea);
-			this.currentPoint = new PointF (base.CurrentSection.Location.X,
-			                                base.page.DetailStart.Y);
+//			this.currentPoint = new PointF (base.CurrentSection.Location.X,
+//			                                base.page.DetailStart.Y);
 			
 			base.CurrentSection.SectionOffset = (int)this.page.DetailStart.Y + AbstractRenderer.Gap;
 //			base.AddSectionEvents();
@@ -208,8 +205,7 @@ namespace SharpReportCore {
 					return;
 				}
 				
-				int i = base.DoItems(rpea);
-				this.currentPoint = new PointF (base.CurrentSection.Location.X, i);
+				base.DoItems(rpea);
 				firstOnPage = false;
 
 				if (this.dataNavigator.CurrentRow < this.dataNavigator.Count -1) {

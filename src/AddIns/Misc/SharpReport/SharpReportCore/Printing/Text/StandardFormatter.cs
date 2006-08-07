@@ -15,15 +15,15 @@ using System.Globalization;
 /// </summary>
 namespace SharpReportCore {
 	
-	public class StandardFormatter : object {
+	internal class StandardFormatter : object {
 		
-		
-		public StandardFormatter() {
+		private StandardFormatter() {
+			
 		}
 		
 		//TODO why not TypeCode tc = Type.GetTypeCode( Type.GetType(this.dataType));
 		
-		public string FormatItem (string valueToFormat,string format,
+		public static string FormatItem (string valueToFormat,string format,
 		                         TypeCode typeCode,string nullValue) {
 			string retValue = String.Empty;
 			
@@ -35,16 +35,16 @@ namespace SharpReportCore {
 			switch (typeCode) {
 				case TypeCode.Int16:
 				case TypeCode.Int32:
-					retValue = IntegerValues (valueToFormat,format);
+					retValue = StandardFormatter.IntegerValues (valueToFormat,format);
 					break;
 				case TypeCode.DateTime:
-					retValue = DateValues(valueToFormat,format);
+					retValue = StandardFormatter.DateValues(valueToFormat,format);
 					break;
 				case TypeCode.Boolean:
-					retValue = BoolValue (valueToFormat,format);
+					retValue = StandardFormatter.BoolValue (valueToFormat,format);
 					break;
 				case TypeCode.Decimal:
-					retValue = DecimalValues (valueToFormat,format);
+					retValue = StandardFormatter.DecimalValues (valueToFormat,format);
 					break;
 					
 				case TypeCode.Double:
@@ -64,23 +64,8 @@ namespace SharpReportCore {
 		}
 
 		
-		///<summary>Looks witch formatting Class to use, call the approbiate formatter
-		/// and update the DbValue with the formatted String value
-		/// </summary>
-		///<param name="item">A ReportDataItem</param>
-		/// 
-		public string FormatItem (BaseDataItem item) {
-			
-			if (item == null) {
-				throw new ArgumentNullException("item");
-			}
-			return FormatItem(item.DbValue,item.FormatString,
-			                  Type.GetTypeCode( Type.GetType(item.DataType)),
-			                  item.NullValue);
-			
-		}
 		
-		private string BoolValue (string toFormat, string format){
+		private static string BoolValue (string toFormat, string format){
 			string str = String.Empty;
 			try {
 				bool b = bool.Parse (toFormat);
@@ -92,7 +77,7 @@ namespace SharpReportCore {
 			return str;
 		}
 		
-		private  string IntegerValues(string toFormat, string format) {
+		private static string IntegerValues(string toFormat, string format) {
 			string str = String.Empty;
 			if (StandardFormatter.CheckValue (toFormat)) {
 				try {
@@ -112,7 +97,7 @@ namespace SharpReportCore {
 			return str;
 		}
 		
-		private  string DecimalValues(string toFormat, string format) {
+		private static string DecimalValues(string toFormat, string format) {
 			string str = String.Empty;
 			if (StandardFormatter.CheckValue (toFormat)) {
 				try {
@@ -132,7 +117,7 @@ namespace SharpReportCore {
 			return str;
 		}
 		
-		private  string DateValues(string toFormat, string format) {
+		private static string DateValues(string toFormat, string format) {
 			try {
 				DateTime date = DateTime.Parse (toFormat.Trim(),
 				                                CultureInfo.CurrentCulture.DateTimeFormat);

@@ -115,7 +115,7 @@ namespace SharpReportCore{
 		/// <param name="reader">See XMLFormReader</param>
 		/// <param name="parElement">XmlElement ReportParameter</param>
 		/// <param name="item"><see cref="ReportParameter"</param>
-		private void BuildReportParameter(XmlFormReader reader,
+		private static void BuildReportParameter(XmlFormReader reader,
 		                                  XmlElement parElement,
 		                                  SharpReportCore.AbstractParameter item) {
 			
@@ -192,7 +192,7 @@ namespace SharpReportCore{
 							XmlElement elem = node as XmlElement;
 							if (elem != null) {
 								SqlParameter parameter = new SqlParameter();
-								BuildReportParameter (xmlReader,
+								ReportSettings.BuildReportParameter (xmlReader,
 								                      elem,
 								                      parameter);
 								reportParametersCollection.Add(parameter);
@@ -308,7 +308,7 @@ namespace SharpReportCore{
 		}
 		
 		
-		private void SaveCollectionItems (XmlElement xmlSaveTo,AbstractColumn column,PropertyInfo [] prop) {
+		private static void SaveCollectionItems (XmlElement xmlSaveTo,AbstractColumn column,PropertyInfo [] prop) {
 			XmlElement xmlProperty = null;
 			XmlAttribute attPropValue;
 			foreach (PropertyInfo p in prop) {
@@ -352,7 +352,7 @@ namespace SharpReportCore{
 					Type type = column.GetType();
 					PropertyInfo [] prop = type.GetProperties();
 					XmlElement ctrl = xmlSection.OwnerDocument.CreateElement ("sorting");
-					SaveCollectionItems(ctrl,column,prop);
+					ReportSettings.SaveCollectionItems(ctrl,column,prop);
 					xmlSection.AppendChild(ctrl);
 				}
 			} catch (Exception) {
@@ -366,7 +366,7 @@ namespace SharpReportCore{
 					Type type = column.GetType();
 					PropertyInfo [] prop = type.GetProperties();
 					XmlElement ctrl = xmlSection.OwnerDocument.CreateElement ("grouping");
-					SaveCollectionItems(ctrl,column,prop);
+					ReportSettings.SaveCollectionItems(ctrl,column,prop);
 					xmlSection.AppendChild(ctrl);
 				}
 			} catch (Exception) {
@@ -380,7 +380,7 @@ namespace SharpReportCore{
 					Type type = column.GetType();
 					PropertyInfo [] prop = type.GetProperties();
 					XmlElement ctrl = xmlSection.OwnerDocument.CreateElement ("column");
-					SaveCollectionItems(ctrl,column,prop);
+					ReportSettings.SaveCollectionItems(ctrl,column,prop);
 					xmlSection.AppendChild(ctrl);
 				}
 			} catch (Exception) {
@@ -486,9 +486,9 @@ namespace SharpReportCore{
 			 */
 		}
 		
-		public float DrawAreaHeight (ReportPageEventArgs rpea){
-			return 0;
-		}
+//		public float DrawAreaHeight (ReportPageEventArgs rpea){
+//			return 0;
+//		}
 		
 		#endregion
 		

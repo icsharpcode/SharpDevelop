@@ -32,11 +32,10 @@ namespace SharpReportCore {
 		}
 		
 		
-		protected  SizeF MeasureReportItem (SharpReportCore.ReportPageEventArgs rpea,IItemRenderer item) {
+		protected static SizeF MeasureReportItem (IItemRenderer item) {
 			if (item == null) {
-				throw new ArgumentNullException("item","BaseGraphicItem");
+				throw new ArgumentNullException("item");
 			}
-			
 			return new SizeF (item.Size.Width,item.Size.Height);
 		}
 		

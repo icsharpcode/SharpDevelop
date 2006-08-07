@@ -102,37 +102,10 @@ namespace SharpReportCore {
 		}
 		
 		
-		private static void SetSqlParameters (ReportModel model,AbstractParametersCollection sqlParams) {
-			if ((sqlParams == null)||(sqlParams.Count == 0)) {
-				return;
-			}
-			model.ReportSettings.SqlParametersCollection.Clear();
-			model.ReportSettings.SqlParametersCollection.AddRange(sqlParams);
-		}
-		
-		
-		
-		private static void SetCustomSorting (ReportModel model,ColumnCollection sortParams) {
-			if ((sortParams == null)||(sortParams.Count == 0)) {
-				return;
-			}
-			model.ReportSettings.SortColumnCollection.Clear();
-			model.ReportSettings.SortColumnCollection.AddRange(sortParams);
-		}
-		
-		
 		#endregion
 		
 		#region Setup for print/preview
-		/*
-		private static  bool CheckForPushModel (ReportModel model) {
-			if (model.ReportSettings.DataModel == GlobalEnums.enmPushPullModel.PushData) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-*/
+		
 		private ReportModel ValidatePushModel (string fileName) {
 			
 			ReportModel model = ModelFromFile (fileName);
@@ -166,7 +139,7 @@ namespace SharpReportCore {
 		}
 		
 		
-		protected ColumnCollection CollectFieldsFromModel(ReportModel model){
+		protected static ColumnCollection CollectFieldsFromModel(ReportModel model){
 			if (model == null) {
 				throw new ArgumentNullException("model");
 			}
@@ -508,6 +481,7 @@ namespace SharpReportCore {
 			}
 		}
 		
+		/*
 		/// <summary>
 		/// Print a PullModel Report
 		/// </summary>
@@ -538,7 +512,7 @@ namespace SharpReportCore {
 				throw;
 			}
 		}
-		
+		*/
 		
 		/// <summary>
 		/// Print a PushModel Report, if <see cref="UseStandartPrinter"></see> in
@@ -580,7 +554,7 @@ namespace SharpReportCore {
 		/// <param name="fileName"></param>
 		/// <returns><see cref="ReportModel"></see></returns>
 		
-		protected ReportModel ModelFromFile (string fileName) {
+		protected static ReportModel ModelFromFile (string fileName) {
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}

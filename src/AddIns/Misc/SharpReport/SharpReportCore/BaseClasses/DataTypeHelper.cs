@@ -18,7 +18,9 @@ namespace SharpReportCore
 		
 		//TODO why not use 
 		// TypeCode tc = Type.GetTypeCode( Type.GetType("System.String"));
-		
+		private DataTypeHelper () {
+			
+		}
 		internal static TypeCode TypeCodeFromString (string type) {
 			TypeCode tc;
 			
@@ -66,7 +68,7 @@ namespace SharpReportCore
 			return tc;
 		}
 		
-		static internal bool IsNumber(TypeCode tc){
+		internal static  bool IsNumber(TypeCode tc){
 			
 			switch (tc){
 				case TypeCode.Int32:
