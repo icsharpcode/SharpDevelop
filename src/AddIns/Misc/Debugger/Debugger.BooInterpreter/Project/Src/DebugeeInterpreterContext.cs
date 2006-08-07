@@ -65,8 +65,8 @@ namespace Debugger
 			assembly = LoadAssembly(path);
 			// Debugger.BooInterpreter.dll
 			assembly = LoadAssembly(typeof(DebugeeInteractiveInterpreter).Assembly.Location);
-			Variable interpreterType = Eval.NewString(debugger, typeof(DebugeeInteractiveInterpreter).FullName).EvaluateNow();
-			interpreter = Eval.CallFunction(debugger, typeof(Assembly), "CreateInstance", assembly, new Variable[] {interpreterType}).EvaluateNow();
+			Variable interpreterType = Eval.NewString(debugger, typeof(DebugeeInteractiveInterpreter).FullName);
+			interpreter = Eval.CallFunction(debugger, typeof(Assembly), "CreateInstance", assembly, new Variable[] {interpreterType});
 			interpreter_localVariable = interpreter.Value.SubVariables["localVariable"];
 			RunCommand(
 				"import System\n" + 
@@ -80,16 +80,16 @@ namespace Debugger
 		
 		Variable LoadAssembly(string path)
 		{
-			Variable assemblyPath = Eval.NewString(debugger, path).EvaluateNow();
-			Variable assembly = Eval.CallFunction(debugger, typeof(Assembly), "LoadFrom", null, new Variable[] {assemblyPath}).EvaluateNow();
+			Variable assemblyPath = Eval.NewString(debugger, path);
+			Variable assembly = Eval.CallFunction(debugger, typeof(Assembly), "LoadFrom", null, new Variable[] {assemblyPath});
 			return assembly;
 		}
 		
 		public override void RunCommand(string code)
 		{
 			if (CanLoadInterpreter) {
-				Variable cmd = Eval.NewString(debugger, code).EvaluateNow();
-				Eval.CallFunction(debugger, typeof(InteractiveInterpreter), "LoopEval", interpreter, new Variable[] {cmd}).EvaluateNow();
+				Variable cmd = Eval.NewString(debugger, code);
+				Eval.CallFunction(debugger, typeof(InteractiveInterpreter), "LoopEval", interpreter, new Variable[] {cmd});
 			}
 		}
 		
@@ -101,8 +101,8 @@ namespace Debugger
 		public override string[] SuggestCodeCompletion(string code)
 		{
 			if (CanLoadInterpreter) {
-				Variable cmd = Eval.NewString(debugger, code).EvaluateNow();
-				Eval.CallFunction(debugger, typeof(AbstractInterpreter), "SuggestCodeCompletion", interpreter, new Variable[] {cmd}).EvaluateNow();
+				Variable cmd = Eval.NewString(debugger, code);
+				Eval.CallFunction(debugger, typeof(AbstractInterpreter), "SuggestCodeCompletion", interpreter, new Variable[] {cmd});
 				return null;
 			} else {
 				return null;

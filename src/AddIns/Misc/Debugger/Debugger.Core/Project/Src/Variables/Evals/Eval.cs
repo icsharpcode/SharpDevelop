@@ -75,7 +75,10 @@ namespace Debugger
 			OnChanged(new EvalEventArgs(this));
 		}
 		
-		public static Eval CallFunction(NDebugger debugger, Type type, string functionName, Variable thisValue, Variable[] args)
+		/// <summary>
+		/// Synchronously calls a function and returns its return value
+		/// </summary>
+		public static Variable CallFunction(NDebugger debugger, Type type, string functionName, Variable thisValue, Variable[] args)
 		{
 			string moduleName = System.IO.Path.GetFileName(type.Assembly.Location);
 			Module module = debugger.GetModule(moduleName);
@@ -88,27 +91,33 @@ namespace Debugger
 			                            new IMutable[] {},
 			                            corFunction,
 			                            thisValue,
-			                            args);
+			                            args).EvaluateNow();
 		}
 		
-		public static Eval NewString(NDebugger debugger, string textToCreate)
+		/// <summary>
+		/// Synchronously creates a new string
+		/// </summary>
+		public static Variable NewString(NDebugger debugger, string textToCreate)
 		{
 			return new NewStringEval(debugger,
 			                         "New string: " + textToCreate,
 			                         Variable.Flags.Default,
 			                         new IExpirable[] {},
 			                         new IMutable[] {},
-			                         textToCreate);
+			                         textToCreate).EvaluateNow();
 		}
 		
-		public static Eval NewObject(NDebugger debugger, ICorDebugClass classToCreate)
+		/// <summary>
+		/// Synchronously creates a new object
+		/// </summary>
+		public static Variable NewObject(NDebugger debugger, ICorDebugClass classToCreate)
 		{
 			return new NewObjectEval(debugger,
 			                         "New object: " + classToCreate.Token,
 			                         Variable.Flags.Default,
 			                         new IExpirable[] {},
 			                         new IMutable[] {},
-			                         classToCreate);
+			                         classToCreate).EvaluateNow();
 		}
 		
 		protected override ICorDebugValue RawCorValue {
@@ -129,7 +138,8 @@ namespace Debugger
 		public void ScheduleEvaluation()
 		{
 			if (Evaluated || State == EvalState.WaitingForRequest) {
-				debugger.PerformEval(this);
+				debugger.ScheduleEval(this);
+				debugger.MTA2STA.AsyncCall(delegate { debugger.StartEvaluation(); });
 				SetState(EvalState.EvaluationScheduled, null, null);
 			}
 		}

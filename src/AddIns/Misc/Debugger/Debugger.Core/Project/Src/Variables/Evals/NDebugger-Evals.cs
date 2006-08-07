@@ -30,13 +30,10 @@ namespace Debugger
 		
 		/// <summary>
 		/// Adds eval to a list of pending evals.
-		/// The evaluation of pending evals should be started by calling StartEvaluation in paused stated.
-		/// The the debugger will continue until all evals are done and will stop with PausedReason.AllEvalsComplete
 		/// </summary>
-		internal void PerformEval(Eval eval)
+		internal void ScheduleEval(Eval eval)
 		{
 			pendingEvalsCollection.Enqueue(eval);
-			this.MTA2STA.AsyncCall(delegate { StartEvaluation(); });
 		}
 		
 		public void StartEvaluation()

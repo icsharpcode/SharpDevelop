@@ -310,7 +310,7 @@ namespace Debugger
 			if (corValue.Is<ICorDebugReferenceValue>()) {
 				if (newCorValue.Is<ICorDebugObjectValue>()) {
 					ICorDebugClass corClass = newCorValue.As<ICorDebugObjectValue>().Class;
-					ICorDebugValue box = Eval.NewObject(debugger, corClass).EvaluateNow().RawCorValue;
+					ICorDebugValue box = Eval.NewObject(debugger, corClass).RawCorValue;
 					newCorValue = box;
 				}
 				corValue.CastTo<ICorDebugReferenceValue>().SetValue(newCorValue.CastTo<ICorDebugReferenceValue>().Value);
