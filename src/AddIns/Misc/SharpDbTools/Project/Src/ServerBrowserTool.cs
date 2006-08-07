@@ -16,6 +16,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using SharpDbTools.Model;
+using SharpDbTools.Connection;
 
 namespace SharpDbTools
 {
@@ -113,15 +114,33 @@ namespace SharpDbTools
 		/// Rebuilds the database connection tree.
 		/// Should only be called from a delegate via Invoke or BeginInvoke.
 		/// </summary>
-		public void RebuildDbConnectionNode()
+		public void RebuildDbConnectionsNode()
 		{
 			// Rebuild each of the root nodes in the ServerToolTreeView
 			this.BeginUpdate();
 			dbNode.Nodes.Clear();
 			foreach (string name in DbModelInfoService.Names) {
-				dbNode.Nodes.Add(new TreeNode(name));
+				TreeNode dbModelInfoNode = CreateDbModelInfoNode(name);
+				dbNode.Nodes.Add(dbModelInfoNode);
 			}
 			this.EndUpdate();
+		}
+		
+		public TreeNode CreateDbModelInfoNode(string name)
+		{
+			TreeNode treeNode = new TreeNode(name);
+			// create and add the menustrip for this node
+			DbModelInfoContextMenuStrip cMenu = new DbModelInfoContextMenuStrip(treeNode);
+			ToolStripMenuItem setConnectionStringMenuItem = 
+				new ToolStripMenuItem("Set Connection String");
+			setConnectionStringMenuItem.Click += new EventHandler(SetConnectionStringOnDbModelInfoClickHandler);
+			cMenu.Items.AddRange(new ToolStripMenuItem[] 
+			                     {
+			                     	setConnectionStringMenuItem
+			                     });
+	
+			treeNode.ContextMenuStrip = cMenu;
+			return treeNode;
 		}
 		
 		/// <summary>
@@ -149,7 +168,7 @@ namespace SharpDbTools
 			DbModelInfoService.Add(logicalName, null, null);
 			
 			// rebuild the database server node
-			this.BeginInvoke(new MethodInvoker(this.RebuildDbConnectionNode));
+			this.BeginInvoke(new MethodInvoker(this.RebuildDbConnectionsNode));
 		}
 		
 		public void DeleteDbConnectionClickHandler(object sender, EventArgs e)
@@ -160,9 +179,57 @@ namespace SharpDbTools
 		public void SaveDbModelInfoClickHandler(object sender, EventArgs e)
 		{
 			LoggingService.Debug("save all metadata clicked");
-		}	
+		}
+		
+		public void SetConnectionStringOnDbModelInfoClickHandler(object sender, EventArgs e)
+		{
+			ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
 
-	}	
+			DbModelInfoContextMenuStrip toolStrip = menuItem.Owner as DbModelInfoContextMenuStrip;
+			TreeNode node = toolStrip.TreeNode;
+			string connectionLogicalName = node.Text;
+			LoggingService.Debug("add connection string clicked for item with name: " + node.Text);
+			
+			// use the ConnectionStringDefinitionDialog to get a connection string and invariant name
+			ConnectionStringDefinitionDialog definitionDialog = new ConnectionStringDefinitionDialog();
+			DialogResult result = definitionDialog.ShowDialog();
+			
+			// if the dialog was submitted and connection string has changed then clear the DbModelInfo metadata
+			// note that is is not required for the Connection string to be valid - it may be work
+			// in progress and a user might want to save a partially formed connection string
+			if (result == DialogResult.OK) {
+				DbModelInfo dbModelInfo = DbModelInfoService.GetDbModelInfo(connectionLogicalName);
+				string connectionString = dbModelInfo.ConnectionString;
+				string newConnectionString = definitionDialog.ConnectionString;
+				
+				if (connectionString == null && newConnectionString != null) {
+					//dbModelInfo.ConnectionString = newConnectionString;
+					//dbModelInfo.InvariantName = // TODO: START HERE sort out invariant name
+				} //else 
+			}
+			
+			// if the dialog was cancelled then do nothing
+			 
+			
+		}
+
+	}
+	
+	class DbModelInfoContextMenuStrip : ContextMenuStrip
+	{
+		TreeNode treeNodeAttached;
+		
+		public DbModelInfoContextMenuStrip(TreeNode treeNodeAttached) : base()
+		{
+			this.treeNodeAttached = treeNodeAttached;		
+		}
+		
+		public TreeNode TreeNode {
+			get {
+				return treeNodeAttached;
+			}
+		}
+	}
 }
 
 

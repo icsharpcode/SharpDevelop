@@ -30,6 +30,7 @@ namespace SharpDbTools.Connection
 		ToolStripProgressBar connectionTestProgressBar = new ToolStripProgressBar();
 		ConnectionTestBackgroundWorker testConnectionBackgroundWorker;
 		string resultMessage;
+		ConnectionTestState connectionTestState = ConnectionTestState.UnTested;
 		
 		public ConnectionStringDefinitionDialog()
 		{
@@ -44,6 +45,12 @@ namespace SharpDbTools.Connection
 			this.connectionTestProgressBar.Step = 10;
 			this.connectionTestProgressBar.Minimum = 0;
 			this.connectionTestProgressBar.Maximum = 150;
+		}
+		
+		public ConnectionTestState ConnectionTestState {
+			get {
+				return this.connectionTestState;
+			}
 		}
 		
 		public string ResultMessage
@@ -90,6 +97,7 @@ namespace SharpDbTools.Connection
 		
 		void CancelButtonClick(object sender, System.EventArgs e)
 		{
+			this.DialogResult = DialogResult.Cancel;
 			this.Close();
 		}
 		
@@ -143,7 +151,8 @@ namespace SharpDbTools.Connection
 		
 		void ResetTestResultTextBox()
 		{
-			this.testResultTextBox.Text = "";	
+			this.testResultTextBox.Text = "";
+			this.connectionTestState = ConnectionTestState.UnTested;
 		}
 		
 		void TestConnectionBackgroundWorkerDoWork(object sender, DoWorkEventArgs e)
@@ -168,10 +177,12 @@ namespace SharpDbTools.Connection
 
 				connection.Open();				
 				e.Result = "Connection Succeeded";
+				connectionTestState = ConnectionTestState.TestSucceeded;
 			}
 			catch(Exception ex)
 			{
 				e.Result = "Connection Failed: " + ex.Message;
+				connectionTestState = ConnectionTestState.TestFailed;
 			}
 			finally
 			{
@@ -198,8 +209,16 @@ namespace SharpDbTools.Connection
 		
 		void SubmitButtonClick(object sender, System.EventArgs e)
 		{
+			this.DialogResult = DialogResult.OK;
 			this.Close();			
 		}
+	}
+	
+	public enum ConnectionTestState
+	{
+		UnTested,
+		TestFailed,
+		TestSucceeded
 	}
 	
 	class ConnectionTestBackgroundWorker: BackgroundWorker
