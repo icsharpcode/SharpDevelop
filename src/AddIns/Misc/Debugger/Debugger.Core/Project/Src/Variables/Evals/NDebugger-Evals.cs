@@ -39,7 +39,7 @@ namespace Debugger
 			this.MTA2STA.AsyncCall(delegate { StartEvaluation(); });
 		}
 		
-		void StartEvaluation()
+		public void StartEvaluation()
 		{
 			if (this.IsPaused) {
 				if (this.SetupNextEvaluation()) {

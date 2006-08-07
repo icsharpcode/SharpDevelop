@@ -21,31 +21,29 @@ namespace Debugger
 	/// </summary>
 	public abstract partial class Eval: Variable
 	{
-		protected class EvalSetartException: System.Exception
+		protected class EvalSetupException: System.Exception
 		{
-			public EvalSetartException(string msg):base(msg)
+			public EvalSetupException(string msg):base(msg)
 			{
 			}
 		}
 		
 		protected ICorDebugEval corEval;
-		EvalState         evalState = EvalState.WaitingForRequest;
-		ICorDebugValue    result;
-		DebugeeState      debugeeStateOfResult;
-		string            error;
+		EvalState currentState = EvalState.WaitingForRequest;
+		string    currentErrorMsg;
 		
-		public EvalState EvalState {
+		public EvalState State {
 			get {
-				return evalState;
+				return currentState;
 			}
 		}
 		
 		public bool Evaluated {
 			get {
-				return evalState == EvalState.EvaluatedSuccessfully ||
-				       evalState == EvalState.EvaluatedException ||
-				       evalState == EvalState.EvaluatedNoResult ||
-				       evalState == EvalState.EvaluatedError;
+				return currentState == EvalState.EvaluatedSuccessfully ||
+				       currentState == EvalState.EvaluatedException ||
+				       currentState == EvalState.EvaluatedNoResult ||
+				       currentState == EvalState.EvaluatedError;
 			}
 		}
 		
@@ -60,10 +58,21 @@ namespace Debugger
 		{
 		}
 		
-		internal override void NotifyChange()
+		protected override void ClearCurrentValue()
 		{
-			evalState = EvalState.WaitingForRequest;
-			base.NotifyChange();
+			currentState = EvalState.WaitingForRequest;
+			currentErrorMsg = null;
+			base.ClearCurrentValue();
+		}
+		
+		public void SetState(EvalState currentState, string currentErrorMsg, ICorDebugValue currentCorValue)
+		{
+			ClearCurrentValue();
+			this.currentState = currentState;
+			this.currentErrorMsg = currentErrorMsg;
+			this.currentCorValue = currentCorValue;
+			this.currentCorValuePauseSession = debugger.PauseSession;
+			OnChanged(new EvalEventArgs(this));
 		}
 		
 		public static Eval CallFunction(NDebugger debugger, Type type, string functionName, Variable thisValue, Variable[] args)
@@ -104,14 +113,14 @@ namespace Debugger
 		
 		protected override ICorDebugValue RawCorValue {
 			get {
-				switch(this.EvalState) {
+				switch(this.State) {
 					case EvalState.WaitingForRequest: ScheduleEvaluation(); goto case EvalState.EvaluationScheduled;
 					case EvalState.EvaluationScheduled: throw new CannotGetValueException("Evaluation pending");
 					case EvalState.Evaluating: throw new CannotGetValueException("Evaluating...");
-					case EvalState.EvaluatedSuccessfully: return result;
-					case EvalState.EvaluatedException: return result;
+					case EvalState.EvaluatedSuccessfully: return currentCorValue;
+					case EvalState.EvaluatedException: return currentCorValue;
 					case EvalState.EvaluatedNoResult: throw new CannotGetValueException("No return value");
-					case EvalState.EvaluatedError: throw new CannotGetValueException(error);
+					case EvalState.EvaluatedError: throw new CannotGetValueException(currentErrorMsg);
 					default: throw new DebuggerException("Unknown state");
 				}
 			}
@@ -119,10 +128,9 @@ namespace Debugger
 		
 		public void ScheduleEvaluation()
 		{
-			if (Evaluated || EvalState == EvalState.WaitingForRequest) {
+			if (Evaluated || State == EvalState.WaitingForRequest) {
 				debugger.PerformEval(this);
-				evalState = EvalState.EvaluationScheduled;
-				OnChanged(new EvalEventArgs(this));
+				SetState(EvalState.EvaluationScheduled, null, null);
 			}
 		}
 		
@@ -131,37 +139,37 @@ namespace Debugger
 		{
 			debugger.AssertPaused();
 			
-			if (targetThread.IsLastFunctionNative) {
-				OnError("Can not evaluate because native frame is on top of stack");
-			}
-			
-			// TODO: What if this thread is not suitable?
-			corEval = targetThread.CorThread.CreateEval();
-			
 			try {
-				StartEvaluation();
-			} catch (EvalSetartException e) {
-				OnError(e.Message);
-				return false;
-			} catch (COMException e) {
-				if ((uint)e.ErrorCode == 0x80131C26) {
-					OnError("Can not evaluate in optimized code");
-					return false;
-				} else {
-					throw;
+				if (targetThread.IsLastFunctionNative) {
+					throw new EvalSetupException("Can not evaluate because native frame is on top of stack");
 				}
+				
+				// TODO: What if this thread is not suitable?
+				corEval = targetThread.CorThread.CreateEval();
+				
+				try {
+					StartEvaluation();
+				} catch (COMException e) {
+					if ((uint)e.ErrorCode == 0x80131C26) {
+						throw new EvalSetupException("Can not evaluate in optimized code");
+					} else {
+						throw;
+					}
+				}
+				
+				SetState(EvalState.Evaluating, null, null);
+				return true;
+			} catch (EvalSetupException e) {
+				SetState(EvalState.EvaluatedError, e.Message, null);
+				return false;
 			}
-			
-			evalState = EvalState.Evaluating;
-			
-			return true;
 		}
 		
 		protected abstract void StartEvaluation();
 		
 		public Variable EvaluateNow()
 		{
-			while (EvalState == EvalState.WaitingForRequest) {
+			while (State == EvalState.WaitingForRequest) {
 				ScheduleEvaluation();
 				debugger.WaitForPause();
 				debugger.WaitForPause();
@@ -169,32 +177,19 @@ namespace Debugger
 			return this;
 		}
 		
-		protected void OnError(string msg)
-		{
-			error = msg;
-			result = null;
-			debugeeStateOfResult = debugger.DebugeeState;
-			evalState = EvalState.EvaluatedError;
-			OnChanged(new EvalEventArgs(this));
-		}
-		
 		internal void NotifyEvaluationComplete(bool successful) 
 		{
-			error = null;
 			// Eval result should be ICorDebugHandleValue so it should survive Continue()
-			result = corEval.Result;
-			debugeeStateOfResult = debugger.DebugeeState;
 			
-			if (result == null) {
-				evalState = EvalState.EvaluatedNoResult;
+			if (corEval.Result == null) {
+				SetState(EvalState.EvaluatedNoResult, null, null);
 			} else {
 				if (successful) {
-					evalState = EvalState.EvaluatedSuccessfully;
+					SetState(EvalState.EvaluatedSuccessfully, null, corEval.Result);
 				} else {
-					evalState = EvalState.EvaluatedException;
+					SetState(EvalState.EvaluatedException, null, corEval.Result);
 				}
 			}
-			OnChanged(new EvalEventArgs(this));
 		}
 	}
 }

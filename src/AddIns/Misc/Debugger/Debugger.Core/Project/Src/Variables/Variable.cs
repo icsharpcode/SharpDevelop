@@ -18,10 +18,17 @@ namespace Debugger
 	/// abstraction is necessary because the type of a value can change 
 	/// (eg for local variable of type object)
 	/// 
+	/// Value is a container for Variable which makes it possible to
+	/// access specific properties of current value (eg array)
+	/// 
 	/// Expiration: Once value expires it can not be used anymore. 
 	/// Expiration is permanet - once value expires it stays expired. 
 	/// Value expires when any object specified in constructor expires 
 	/// or when process exits.
+	/// 
+	/// Mutation: As long as any dependecy does not mutate the last
+	/// obteined value is still considered up to date. (If continue is
+	/// called and internal value is neutred new copy will be obatined)
 	/// </summary>
 	public class Variable: IExpirable, IMutable
 	{
@@ -40,6 +47,10 @@ namespace Debugger
 		Flags flags;
 		CorValueGetter corValueGetter;
 		IMutable[] mutateDependencies;
+		
+		protected Value          currentValue;
+		protected ICorDebugValue currentCorValue;
+		protected PauseSession   currentCorValuePauseSession;
 		
 		bool isExpired = false;
 		
@@ -70,17 +81,24 @@ namespace Debugger
 		protected virtual ICorDebugValue RawCorValue {
 			get {
 				if (this.HasExpired) throw new CannotGetValueException("CorValue has expired");
-				return corValueGetter();
+				if (currentCorValue == null || (currentCorValuePauseSession != debugger.PauseSession && !currentCorValue.Is<ICorDebugHandleValue>())) {
+					currentCorValue = corValueGetter();
+					currentCorValuePauseSession = debugger.PauseSession;
+				}
+				return currentCorValue;
 			}
 		}
 		
 		public Value Value {
 			get {
-				try {
-					return CreateValue();
-				} catch (CannotGetValueException e) {
-					return new UnavailableValue(this, e.Message);
+				if (currentValue == null) {
+					try {
+						currentValue = CreateValue();
+					} catch (CannotGetValueException e) {
+						currentValue = new UnavailableValue(this, e.Message);
+					}
 				}
+				return currentValue;
 			}
 		}
 		
@@ -185,8 +203,16 @@ namespace Debugger
 			NotifyChange();
 		}
 		
-		internal virtual void NotifyChange()
+		protected virtual void ClearCurrentValue()
 		{
+			currentValue = null;
+			currentCorValue = null;
+			currentCorValuePauseSession = null;
+		}
+		
+		internal void NotifyChange()
+		{
+			ClearCurrentValue();
 			if (!isExpired) {
 				OnChanged(new VariableEventArgs(this));
 			}

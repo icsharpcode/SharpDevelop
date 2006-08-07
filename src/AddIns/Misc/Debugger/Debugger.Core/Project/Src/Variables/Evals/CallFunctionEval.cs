@@ -35,10 +35,10 @@ namespace Debugger
 				if (thisValue != null) {
 					Value val = thisValue.Value;
 					if (!(val is ObjectValue)) {
-						throw new EvalSetartException("Can not evaluate on a value which is not an object");
+						throw new EvalSetupException("Can not evaluate on a value which is not an object");
 					}
 					if (!((ObjectValue)val).IsInClassHierarchy(corFunction.Class)) {
-						throw new EvalSetartException("Can not evaluate because the object does not contain specified function");
+						throw new EvalSetupException("Can not evaluate because the object does not contain specified function");
 					}
 					corArgs.Add(thisValue.SoftReference);
 				}
@@ -46,7 +46,7 @@ namespace Debugger
 					corArgs.Add(arg.SoftReference);
 				}
 			} catch (CannotGetValueException e) {
-				throw new EvalSetartException(e.Message);
+				throw new EvalSetupException(e.Message);
 			}
 			
 			corEval.CallFunction(corFunction, (uint)corArgs.Count, corArgs.ToArray());
