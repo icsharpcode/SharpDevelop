@@ -48,13 +48,48 @@ namespace SharpDbTools.Model
 				string invariantName = (string)table.Rows[0][ColumnNames.InvariantName];
 				return invariantName;
 			}
+			set {
+				DataTable table = this.Tables[TableNames.ConnectionInfo];
+				string invariantName = (string)table.Rows[0][ColumnNames.InvariantName];
+				string name = this.Name;
+				string connectionString = this.ConnectionString;
+				
+				if (invariantName == null) {
+					table.Rows[0][ColumnNames.InvariantName] = value;	
+				}
+				
+				// if invariant has changed must clear any existing metadata
+				else if (!(invariantName.Equals(value))) {
+					// clear tables
+					this.Tables.Clear();
+					DataTable newTable = CreateConnectionTable();
+					// add the first and only column of this table;
+					newTable.Rows.Add(new object[] {name, invariantName, connectionString});
+				}				
+			}
 		}
 		
 		public string ConnectionString {
 			get {
 				DataTable table = this.Tables[TableNames.ConnectionInfo];
-				string connectionString = (string)table.Rows[0][ColumnNames.InvariantName];
+				string connectionString = (string)table.Rows[0][ColumnNames.ConnectionString];
 				return connectionString;
+			}
+			set {
+				DataTable table = this.Tables[TableNames.ConnectionInfo];
+				string invariantName = (string)table.Rows[0][ColumnNames.InvariantName];
+				string name = this.Name;
+				string connectionString = this.ConnectionString;
+				
+				if (connectionString == null) {
+					table.Rows[0][ColumnNames.ConnectionString] = value;	
+				}
+				else if (!(connectionString.Equals(value))) {
+					this.Tables.Clear();
+					DataTable newTable = CreateConnectionTable();
+					// add the first and only column of this table;
+					newTable.Rows.Add(new object[] {name, invariantName, connectionString});
+				}
 			}
 		}
 		

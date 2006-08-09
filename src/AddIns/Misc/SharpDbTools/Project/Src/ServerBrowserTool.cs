@@ -194,25 +194,28 @@ namespace SharpDbTools
 			ConnectionStringDefinitionDialog definitionDialog = new ConnectionStringDefinitionDialog();
 			DialogResult result = definitionDialog.ShowDialog();
 			
+			// if the dialog was cancelled then do nothing
+			if (result == DialogResult.Cancel) {
+				return;
+			}
+			
 			// if the dialog was submitted and connection string has changed then clear the DbModelInfo metadata
 			// note that is is not required for the Connection string to be valid - it may be work
 			// in progress and a user might want to save a partially formed connection string
-			if (result == DialogResult.OK) {
-				DbModelInfo dbModelInfo = DbModelInfoService.GetDbModelInfo(connectionLogicalName);
-				string connectionString = dbModelInfo.ConnectionString;
-				string newConnectionString = definitionDialog.ConnectionString;
-				
-				if (connectionString == null && newConnectionString != null) {
-					//dbModelInfo.ConnectionString = newConnectionString;
-					//dbModelInfo.InvariantName = // TODO: START HERE sort out invariant name
-				} //else 
+
+			DbModelInfo dbModelInfo = DbModelInfoService.GetDbModelInfo(connectionLogicalName);
+			string connectionString = dbModelInfo.ConnectionString;
+			string newConnectionString = definitionDialog.ConnectionString;
+			
+			if (newConnectionString == null) {
+				return;
 			}
 			
-			// if the dialog was cancelled then do nothing
-			 
-			
+			if ((connectionString == null) || (!((newConnectionString.Equals(connectionString)))))  {
+				dbModelInfo.ConnectionString = newConnectionString;
+				dbModelInfo.InvariantName = definitionDialog.InvariantName;
+			}
 		}
-
 	}
 	
 	class DbModelInfoContextMenuStrip : ContextMenuStrip

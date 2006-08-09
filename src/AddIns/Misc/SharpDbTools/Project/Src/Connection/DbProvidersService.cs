@@ -32,6 +32,9 @@ namespace SharpDbTools.Connection
 		private static DbProvidersService me = new DbProvidersService();
 		private static Boolean initialized = false;
 		private Dictionary<string, DbProviderFactory> factories = new Dictionary<string, DbProviderFactory>();
+		
+		// This is only valid witin one session - do not persist
+		private Dictionary<string, string> invariantByNameLookup = new Dictionary<string, string>();
 		private List<string> names = new List<string>();
 		
 		private DbProvidersService()
@@ -47,7 +50,10 @@ namespace SharpDbTools.Connection
 			
 			foreach(DataRow row in rows)
 			{
+				// TODO: factory out string literals for column names
 				string name = (string)row["Name"];
+				string invariantName = (string)row["InvariantName"];
+				invariantByNameLookup.Add(name, invariantName);
 				//factoryData.Add(name, row);
 				DbProviderFactory factory = DbProviderFactories.GetFactory(row);
 				names.Add(name);
@@ -71,6 +77,12 @@ namespace SharpDbTools.Connection
 			{
 				return names[i];
 			}
+		}
+		
+		public string GetInvariantName(string name) {
+			string invariantName = null;
+			invariantByNameLookup.TryGetValue(name, out invariantName);
+			return invariantName;
 		}
 		
 		public DbProviderFactory this[string name]

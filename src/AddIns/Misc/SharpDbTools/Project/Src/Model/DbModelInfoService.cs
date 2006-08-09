@@ -41,6 +41,13 @@ namespace SharpDbTools.Model
 			}
 		}
 		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name">The user readable name of the provider</param>
+		/// <param name="invariantName">the identifying name of the provider</param>
+		/// <param name="connectionString">the connection string for this connection</param>
+		/// <returns></returns>
 		public static DbModelInfo Add(string name, string invariantName, string connectionString)
 		{
 			// TODO: add validation on name; invariant name
@@ -51,6 +58,11 @@ namespace SharpDbTools.Model
 			// add to cache
 			cache.Add(name, dbModel);
 			return dbModel;
+		}
+		
+		public static void Remove(string name)
+		{
+			cache.Remove(name);
 		}
 		
 		public static DbModelInfo GetDbModelInfo(string name) {

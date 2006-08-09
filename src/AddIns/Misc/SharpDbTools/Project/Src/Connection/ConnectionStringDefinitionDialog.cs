@@ -30,6 +30,7 @@ namespace SharpDbTools.Connection
 		ToolStripProgressBar connectionTestProgressBar = new ToolStripProgressBar();
 		ConnectionTestBackgroundWorker testConnectionBackgroundWorker;
 		string resultMessage;
+		string invariantName;
 		ConnectionTestState connectionTestState = ConnectionTestState.UnTested;
 		
 		public ConnectionStringDefinitionDialog()
@@ -45,6 +46,15 @@ namespace SharpDbTools.Connection
 			this.connectionTestProgressBar.Step = 10;
 			this.connectionTestProgressBar.Minimum = 0;
 			this.connectionTestProgressBar.Maximum = 150;
+		}
+		
+		public string InvariantName {
+			get {
+				return this.invariantName;
+			}
+			set {
+				this.invariantName = value;
+			}
 		}
 		
 		public ConnectionTestState ConnectionTestState {
@@ -209,6 +219,10 @@ namespace SharpDbTools.Connection
 		
 		void SubmitButtonClick(object sender, System.EventArgs e)
 		{
+			string name = (string)this.providerTypeComboBox.SelectedItem;
+			DbProvidersService service = DbProvidersService.GetDbProvidersService();
+			this.InvariantName = service.GetInvariantName(name);
+			
 			this.DialogResult = DialogResult.OK;
 			this.Close();			
 		}
