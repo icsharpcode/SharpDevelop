@@ -50,8 +50,6 @@
     <Compile Include="Src\Breakpoints\BreakpointEventArgs.cs" />
     <Compile Include="Src\Breakpoints\NDebugger-Breakpoints.cs" />
     <Compile Include="Src\Debugger\DebuggerEvents\DebuggerEventArgs.cs" />
-    <Compile Include="Src\Debugger\DebuggerEvents\DebuggingIsResumingEventArgs.cs" />
-    <Compile Include="Src\Debugger\DebuggerEvents\DebuggingPausedEventArgs.cs" />
     <Compile Include="Src\Debugger\DebuggerEvents\MessageEventArgs.cs" />
     <Compile Include="Src\Debugger\DebuggerEvents\PausedReason.cs" />
     <Compile Include="Src\Debugger\Exceptions.cs" />
@@ -384,6 +382,7 @@
     <Compile Include="Src\Debugger\Util.cs" />
     <Compile Include="Src\Variables\Evals\NewObjectEval.cs" />
     <Compile Include="Src\Debugger\IMutable.cs" />
+    <Compile Include="Src\Debugger\ExceptionEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

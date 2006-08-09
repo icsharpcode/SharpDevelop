@@ -44,11 +44,17 @@ namespace Debugger
 		
 		void PerformAllCalls()
 		{
-			lock (pendingCalls) {
-				while (pendingCalls.Count > 0) {
-					pendingCalls.Dequeue()();
+			while (true) {
+				MethodInvoker nextMethod;
+				lock (pendingCalls) {
+					if (pendingCalls.Count > 0) {
+						nextMethod = pendingCalls.Dequeue();
+					} else {
+						pendingCallsNotEmpty.Reset();
+						return;
+					}
 				}
-				pendingCallsNotEmpty.Reset();
+				nextMethod();
 			}
 		}
 		

@@ -256,6 +256,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			debugger.ProcessStarted          += ProcessStarted;
 			debugger.ProcessExited           += ProcessExited;
 			debugger.DebuggingPaused         += DebuggingPaused;
+			debugger.ExceptionThrown         += ExceptionThrown;
 			debugger.DebuggeeStateChanged    += DebuggeeStateChanged;
 			debugger.DebuggingResumed        += DebuggingResumed;
 
@@ -328,30 +329,31 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		void DebuggingPaused(object sender, DebuggingPausedEventArgs e)
+		void DebuggingPaused(object sender, DebuggerEventArgs e)
 		{
 			OnIsProcessRunningChanged(EventArgs.Empty);
+		}
+		
+		void ExceptionThrown(object sender, ExceptionEventArgs e)
+		{
+			if (e.Exception.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED) {
+				// Ignore the exception
+				e.Continue = true;
+				return;
+			}
 			
-			if (e.Reason == PausedReason.Exception) {
-				if (debugger.SelectedThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED) {
-					// Ignore the exception
-					e.ResumeDebuggingAfterEvent();
+			JumpToCurrentLine();
+			
+			switch (ExceptionForm.Show(e.Exception)) {
+				case ExceptionForm.Result.Break: 
+					break;
+				case ExceptionForm.Result.Continue:
+					e.Continue = true;
 					return;
-				}
-				
-				JumpToCurrentLine();
-				
-				switch (ExceptionForm.Show(debugger.SelectedThread.CurrentException)) {
-					case ExceptionForm.Result.Break: 
-						break;
-					case ExceptionForm.Result.Continue:
-						e.ResumeDebuggingAfterEvent();
-						return;
-					case ExceptionForm.Result.Ignore:
-						debugger.SelectedThread.InterceptCurrentException();
-						e.ResumeDebuggingAfterEvent(); // HACK: Start interception
-						break;
-				}
+				case ExceptionForm.Result.Ignore:
+					debugger.SelectedThread.InterceptCurrentException();
+					e.Continue = true; // HACK: Start interception
+					break;
 			}
 		}
 		

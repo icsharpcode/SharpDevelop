@@ -137,19 +137,6 @@ namespace Debugger
 			debugger.PauseSession = new PauseSession(PausedReason.ForcedBreak);
 			debugger.SelectedProcess = this;
 			
-			if (this.SelectedThread == null && this.Threads.Count > 0) {
-				this.SelectedThread = this.Threads[0];
-			}
-			
-			if (debugger.SelectedThread != null) {
-				// Disable all steppers - do not Deactivate since function tracking still needs them
-				foreach(Stepper s in debugger.SelectedThread.Steppers) {
-					s.PauseWhenComplete = false;
-				}
-				
-				debugger.SelectedThread.SelectedFunction = debugger.SelectedThread.LastFunctionWithLoadedSymbols;
-			}
-			
 			debugger.Pause();
 		}
 		

@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (Variable.Debugger.IsPaused) {
 				action();
 			} else {
-				EventHandler<DebuggingPausedEventArgs> onDebuggingPaused = null;
+				EventHandler<DebuggerEventArgs> onDebuggingPaused = null;
 				onDebuggingPaused = delegate {
 					action();
 					Variable.Debugger.DebuggingPaused -= onDebuggingPaused;

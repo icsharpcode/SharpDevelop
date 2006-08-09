@@ -26,8 +26,9 @@ namespace Debugger
 		
 		Process selectedProcess;
 		
+		public event EventHandler<ExceptionEventArgs> ExceptionThrown;
 		public event EventHandler<DebuggerEventArgs> DebuggingResumed;
-		public event EventHandler<DebuggingPausedEventArgs> DebuggingPaused;
+		public event EventHandler<DebuggerEventArgs> DebuggingPaused;
 		public event EventHandler<DebuggerEventArgs> DebuggeeStateChanged;
 		
 		public bool PauseOnHandledException {
@@ -36,6 +37,13 @@ namespace Debugger
 			}
 			set {
 				pauseOnHandledException = value;
+			}
+		}
+		
+		protected virtual void OnExceptionThrown(ExceptionEventArgs e)
+		{
+			if (ExceptionThrown != null) {
+				ExceptionThrown(this, e);
 			}
 		}
 		
@@ -51,11 +59,7 @@ namespace Debugger
 		{
 			TraceMessage ("Debugger event: OnDebuggingPaused (" + PausedReason.ToString() + ")");
 			if (DebuggingPaused != null) {
-				DebuggingPausedEventArgs args = new DebuggingPausedEventArgs(this, PausedReason);
-				DebuggingPaused(this, args);
-				if (args.ResumeDebugging) {
-					Continue();
-				}
+				DebuggingPaused(this, new DebuggerEventArgs(this));
 			}
 		}
 		
@@ -116,14 +120,6 @@ namespace Debugger
 			get {
 				return debugeeState;
 			}
-			private set {
-				DebugeeState oldDebugeeState = debugeeState;
-				debugeeState = value;
-				OnDebuggeeStateChanged();
-				if (oldDebugeeState != null) {
-					oldDebugeeState.NotifyHasExpired();
-				}
-			}
 		}
 		
 		public void AssertPaused()
@@ -165,14 +161,36 @@ namespace Debugger
 		
 		internal void Pause()
 		{
-			if (PausedReason != PausedReason.EvalComplete) {
-				DebugeeState = new DebugeeState(this);
+			if (this.SelectedThread == null && this.Threads.Count > 0) {
+				this.SelectedProcess.SelectedThread = this.Threads[0];
 			}
 			
+			if (this.SelectedThread != null) {
+				// Disable all steppers - do not Deactivate since function tracking still needs them
+				foreach(Stepper s in this.SelectedThread.Steppers) {
+					s.PauseWhenComplete = false;
+				}
+				
+				this.SelectedThread.SelectedFunction = this.SelectedThread.LastFunctionWithLoadedSymbols;
+			}
+			
+			if (PausedReason != PausedReason.EvalComplete) {
+				DebugeeState oldDebugeeState = debugeeState;
+				debugeeState = new DebugeeState(this);
+				OnDebuggeeStateChanged();
+				if (oldDebugeeState != null) {
+					oldDebugeeState.NotifyHasExpired();
+				}
+			}
 			OnDebuggingPaused();
-			
+			if (PausedReason == PausedReason.Exception) {
+				ExceptionEventArgs args = new ExceptionEventArgs(this, SelectedThread.CurrentException);
+				OnExceptionThrown(args);
+				if (args.Continue) {
+					this.Continue();
+				}
+			}
 			// Debugger state is unknown after calling OnDebuggingPaused (it may be resumed)
-			
 			if (IsPaused) {
 				pausedHandle.Set();
 			}

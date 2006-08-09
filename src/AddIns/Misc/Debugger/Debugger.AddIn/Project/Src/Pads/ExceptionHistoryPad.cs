@@ -69,11 +69,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				exceptions.Clear();
 				RefreshPad();
 			};
-			debuggerCore.DebuggingPaused += delegate (object sender, DebuggingPausedEventArgs e) {
-				if (e.Reason == PausedReason.Exception) {
-					exceptions.Add(debuggerCore.SelectedThread.CurrentException);
-					RefreshPad();
-				}
+			debuggerCore.ExceptionThrown += delegate (object sender, ExceptionEventArgs e) {
+				exceptions.Add(e.Exception);
+				RefreshPad();
 			};
 		}
 		
