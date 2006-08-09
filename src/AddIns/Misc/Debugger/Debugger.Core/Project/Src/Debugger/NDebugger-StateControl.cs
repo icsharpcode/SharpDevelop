@@ -19,9 +19,8 @@ namespace Debugger
 	public partial class NDebugger
 	{
 		bool pauseOnHandledException = false;
-		ManualResetEvent pausedHandle = new ManualResetEvent(false);
+		internal ManualResetEvent pausedHandle = new ManualResetEvent(false);
 		
-		PauseSession pauseSession;
 		DebugeeState debugeeState;
 		
 		Process selectedProcess;
@@ -47,7 +46,7 @@ namespace Debugger
 			}
 		}
 		
-		protected virtual void OnDebuggingResumed()
+		internal virtual void OnDebuggingResumed()
 		{
 			TraceMessage ("Debugger event: OnDebuggingResumed()");
 			if (DebuggingResumed != null) {
@@ -101,15 +100,13 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary>
-		/// Indentification of the current debugger session. This value changes whenever debugger is continued
-		/// </summary>
 		public PauseSession PauseSession {
 			get {
-				return pauseSession;
-			}
-			internal set {
-				pauseSession = value;
+				if (SelectedProcess == null) {
+					return null;
+				} else {
+					return SelectedProcess.PauseSession;
+				}
 			}
 		}
 		
@@ -138,13 +135,13 @@ namespace Debugger
 		
 		public bool IsPaused {
 			get {
-				return (pauseSession != null);
+				return (PauseSession != null);
 			}
 		}
 		
 		public bool IsRunning {
 			get {
-				return (pauseSession == null);
+				return !IsPaused;
 			}
 		}
 		
@@ -155,11 +152,11 @@ namespace Debugger
 		public PausedReason PausedReason {
 			get {
 				AssertPaused();
-				return pauseSession.PausedReason;
+				return PauseSession.PausedReason;
 			}
 		}
 		
-		internal void Pause()
+		internal void Pause(bool debuggeeStateChanged)
 		{
 			if (this.SelectedThread == null && this.Threads.Count > 0) {
 				this.SelectedProcess.SelectedThread = this.Threads[0];
@@ -174,7 +171,7 @@ namespace Debugger
 				this.SelectedThread.SelectedFunction = this.SelectedThread.LastFunctionWithLoadedSymbols;
 			}
 			
-			if (PausedReason != PausedReason.EvalComplete) {
+			if (debuggeeStateChanged) {
 				DebugeeState oldDebugeeState = debugeeState;
 				debugeeState = new DebugeeState(this);
 				OnDebuggeeStateChanged();
@@ -194,18 +191,6 @@ namespace Debugger
 			if (IsPaused) {
 				pausedHandle.Set();
 			}
-		}
-		
-		internal void Resume()
-		{
-			if (IsRunning) {
-				throw new DebuggerException("Already resumed");
-			}
-
-			pauseSession.NotifyHasExpired();
-			pauseSession = null;
-			OnDebuggingResumed();
-			pausedHandle.Reset();
 		}
 		
 		/// <summary>

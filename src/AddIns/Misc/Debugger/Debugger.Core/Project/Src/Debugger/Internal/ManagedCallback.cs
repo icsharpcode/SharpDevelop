@@ -24,20 +24,10 @@ namespace Debugger
 	{
 		NDebugger debugger;
 		bool pauseProcessInsteadOfContinue;
-		bool skipEventsDuringEvaluation;
 		
 		public NDebugger Debugger {
 			get {
 				return debugger;
-			}
-		}
-		
-		public bool SkipEventsDuringEvaluation {
-			get {
-				return skipEventsDuringEvaluation;
-			}
-			set {
-				skipEventsDuringEvaluation = value;
 			}
 		}
 		
@@ -65,8 +55,7 @@ namespace Debugger
 				} else {
 					pauseProcessInsteadOfContinue = false;
 				}
-				debugger.SelectedProcess.IsRunning = false;
-				debugger.PauseSession = new PauseSession(pausedReason);
+				debugger.SelectedProcess.NotifyPaused(new PauseSession(pausedReason));
 			} else {
 				throw new DebuggerException("Invalid state at the start of callback");
 			}
@@ -96,11 +85,11 @@ namespace Debugger
 		
 		void ExitCallback_Paused()
 		{
-			if (debugger.Evaluating && skipEventsDuringEvaluation) {
+			if (debugger.Evaluating) {
 				// Ignore events during property evaluation
 				ExitCallback_Continue();
 			} else {
-				debugger.Pause();
+				debugger.Pause(debugger.PauseSession.PausedReason != PausedReason.EvalComplete);
 			}
 		}
 		

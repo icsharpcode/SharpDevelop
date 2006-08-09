@@ -21,7 +21,7 @@ namespace Debugger
 		ICorDebugProcess corProcess;
 
 		Thread selectedThread;
-		bool isProcessRunning = true;
+		PauseSession pauseSession;
 		
 		bool hasExpired = false;
 		
@@ -43,6 +43,19 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary>
+		/// Indentification of the current debugger session. This value changes whenever debugger is continued
+		/// </summary>
+		public PauseSession PauseSession {
+			get {
+				return pauseSession;
+			}
+		}
+		
+		internal void NotifyPaused(PauseSession pauseSession)
+		{
+			this.pauseSession = pauseSession;
+		}
 		
 		public NDebugger Debugger {
 			get {
@@ -127,27 +140,25 @@ namespace Debugger
 		
 		internal void Break()
 		{
-			if (!isProcessRunning) {
-				throw new DebuggerException("Invalid operation");
-			}
+			AssertRunning();
 			
 			corProcess.Stop(5000); // TODO: Hardcoded value
 			
-			isProcessRunning = false;
-			debugger.PauseSession = new PauseSession(PausedReason.ForcedBreak);
+			pauseSession = new PauseSession(PausedReason.ForcedBreak);
 			debugger.SelectedProcess = this;
 			
-			debugger.Pause();
+			debugger.Pause(true);
 		}
 		
 		public void Continue()
 		{
-			if (isProcessRunning) {
-				throw new DebuggerException("Invalid operation");
-			}
+			AssertPaused();
+
+			pauseSession.NotifyHasExpired();
+			pauseSession = null;
+			debugger.OnDebuggingResumed();
+			debugger.pausedHandle.Reset();
 			
-			debugger.Resume();
-			isProcessRunning = true;
 			corProcess.Continue(0);
 		}
 		
@@ -164,23 +175,27 @@ namespace Debugger
 
 		public bool IsRunning { 
 			get {
-				return isProcessRunning;
-			}
-			internal set {
-				isProcessRunning = value;
+				return pauseSession == null;
 			}
 		}
 		
 		public bool IsPaused {
 			get {
-				return !isProcessRunning;
+				return !IsRunning;
 			}
 		}
 		
 		public void AssertPaused()
 		{
-			if (!IsPaused) {
+			if (IsRunning) {
 				throw new DebuggerException("Process is not paused.");
+			}
+		}
+		
+		public void AssertRunning()
+		{
+			if (IsPaused) {
+				throw new DebuggerException("Process is not running.");
 			}
 		}
 	}

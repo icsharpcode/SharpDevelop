@@ -137,16 +137,14 @@ namespace Debugger
 			PrintLine("Getting local variable " + name);
 			// First, get out of GC unsafe point
 			Stepper stepOut = new Stepper(debugger.SelectedThread.LastFunction, "Boo interperter");
-			stepOut.PauseWhenComplete = true;
 			stepOut.StepComplete  += delegate {
 				debugger.MTA2STA.AsyncCall(delegate {
 					if (!interpreter_localVariable.SetValue(localVar)) {
 						PrintLine("Getting of local variable " + name + " failed");
 					}
-					debugger.SkipEventsDuringEvaluation = true;
+					debugger.Continue();
 				});
 			};
-			debugger.SkipEventsDuringEvaluation = false;
 			stepOut.StepOut();
 		}
 		

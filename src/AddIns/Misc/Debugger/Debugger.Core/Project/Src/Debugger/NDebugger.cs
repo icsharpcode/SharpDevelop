@@ -50,15 +50,6 @@ namespace Debugger
 			}
 		}
 		
-		public bool SkipEventsDuringEvaluation {
-			get {
-				return managedCallback.SkipEventsDuringEvaluation;
-			}
-			set {
-				managedCallback.SkipEventsDuringEvaluation = value;
-			}
-		}
-
 		public NDebugger()
 		{
 			if (ApartmentState.STA == System.Threading.Thread.CurrentThread.GetApartmentState()) {
@@ -133,7 +124,6 @@ namespace Debugger
 			
 			selectedProcess = null;
 			pausedHandle.Reset();
-			pauseSession = null;
 			
 			pendingEvalsCollection.Clear();
 			
