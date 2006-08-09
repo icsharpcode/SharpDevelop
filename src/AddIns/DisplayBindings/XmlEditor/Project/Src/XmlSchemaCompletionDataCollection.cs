@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using System;
 using System.Collections;
@@ -204,6 +205,20 @@ namespace ICSharpCode.XmlEditor
 		public void Remove(XmlSchemaCompletionData val)
 		{
 			List.Remove(val);
+		}
+		
+		/// <summary>
+		/// Gets the schema completion data with the same filename.
+		/// </summary>
+		/// <returns><see langword="null"/> if no matching schema found.</returns>
+		public XmlSchemaCompletionData GetSchemaFromFileName(string fileName)
+		{
+			foreach (XmlSchemaCompletionData schema in this) {
+				if (FileUtility.IsEqualFileName(schema.FileName, fileName)) {
+					return schema;
+				}
+			}
+			return null;
 		}
 		
 		/// <summary>

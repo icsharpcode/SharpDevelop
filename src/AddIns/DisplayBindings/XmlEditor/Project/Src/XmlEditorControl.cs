@@ -51,7 +51,7 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the schemas that the xml editor will use.
 		/// </summary>
 		/// <remarks>
-		/// Probably should have NOT a 'set' property, but allowing one
+		/// Probably should NOT have a 'set' property, but allowing one
 		/// allows us to share the completion data amongst multiple
 		/// xml editor controls.
 		/// </remarks>

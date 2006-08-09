@@ -48,6 +48,13 @@ namespace XmlEditor.Tests.Parser
 			string xml = "<foo a=\" ";
 			Assert.IsTrue(XmlParser.IsInsideAttributeValue(xml, xml.Length));
 		}
+		
+		[Test]
+		public void DoubleQuotesTest5()
+		{
+			string xml = "<foo a=\"\"";
+			Assert.IsTrue(XmlParser.IsInsideAttributeValue(xml, 8));
+		}
 
 		[Test]
 		public void NoXmlElementStart()
@@ -97,6 +104,5 @@ namespace XmlEditor.Tests.Parser
 			string xml = "<foo a=\"''\"";
 			Assert.IsFalse(XmlParser.IsInsideAttributeValue(xml, xml.Length));
 		}
-		
 	}
 }

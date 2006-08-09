@@ -131,6 +131,9 @@
 		<MenuItem id = "HideXPathResults"
 			      label = "Hide &amp;XPath Results"
 			      class = "ICSharpCode.XmlEditor.RemoveXPathHighlightingCommand"/>
+		<MenuItem id = "GoToDefinition"
+			      label = "${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
+			      class = "ICSharpCode.XmlEditor.GoToSchemaDefinitionCommand"/>
 		<MenuItem id = "FileMode" label = "${res:XML.TextAreaContextMenu.FileMode}" type="Menu">
 			<MenuItem id = "HighlightBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.HighlightingTypeBuilder" />
 		</MenuItem>
@@ -156,6 +159,7 @@
 	
 	<Path path = "/AddIns/XmlEditor/EditActions">
 		<EditAction id = "XmlCompletionPopup" class = "ICSharpCode.XmlEditor.CodeCompletionPopupCommand"  keys = "Control|Space"/>
+		<EditAction id = "GoToDefinition" class = "ICSharpCode.XmlEditor.GoToSchemaDefinitionEditAction" keys = "Control|Enter"/>
 	</Path>
 
 	<!-- XPath Query pad -->

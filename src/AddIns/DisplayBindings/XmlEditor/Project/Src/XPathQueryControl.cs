@@ -38,7 +38,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// The total number of xpath queries to remember.
 		/// </summary>
-		const int xpathQueryHistoryLimit = 5;
+		const int xpathQueryHistoryLimit = 20;
 		
 		bool ignoreXPathTextChanges;
 		

@@ -23,7 +23,7 @@ namespace XmlEditor.Tests.Parser
 		public void SuccessTest1()
 		{
 			string text = "<foo xmlns='" + namespaceURI + "' ><";
-			elementPath = XmlParser.GetParentElementPath(text, text.Length);
+			elementPath = XmlParser.GetParentElementPath(text);
 			
 			expectedElementPath = new XmlElementPath();
 			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
@@ -35,7 +35,7 @@ namespace XmlEditor.Tests.Parser
 		public void SuccessTest2()
 		{
 			string text = "<foo xmlns='" + namespaceURI + "' ><bar></bar><";			
-			elementPath = XmlParser.GetParentElementPath(text, text.Length);
+			elementPath = XmlParser.GetParentElementPath(text);
 			
 			expectedElementPath = new XmlElementPath();
 			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
@@ -47,7 +47,7 @@ namespace XmlEditor.Tests.Parser
 		public void SuccessTest3()
 		{
 			string text = "<foo xmlns='" + namespaceURI + "' ><bar/><";
-			elementPath = XmlParser.GetParentElementPath(text, text.Length);
+			elementPath = XmlParser.GetParentElementPath(text);
 			
 			expectedElementPath = new XmlElementPath();
 			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
@@ -59,7 +59,7 @@ namespace XmlEditor.Tests.Parser
 		public void SuccessTest4()
 		{
 			string text = "<bar xmlns='http://test.com'><foo xmlns='" + namespaceURI + "' ><";
-			elementPath = XmlParser.GetParentElementPath(text, text.Length);
+			elementPath = XmlParser.GetParentElementPath(text);
 			
 			expectedElementPath = new XmlElementPath();
 			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));

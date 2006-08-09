@@ -103,6 +103,22 @@
     <Compile Include="XPathQuery\XPathQueryHistoryTestFixture.cs" />
     <Compile Include="XPathQuery\XPathNodeTextMarkerTests.cs" />
     <Compile Include="Utils\MockDocument.cs" />
+    <Compile Include="Parser\ActiveElementUnderCursorTests.cs" />
+    <Compile Include="Parser\AttributeNameUnderCursorTests.cs" />
+    <Compile Include="Schema\FindAttributeFromComplexTypeTestFixture.cs" />
+    <Compile Include="Schema\XmlSchemaNamespaceTests.cs" />
+    <Compile Include="FindSchemaObject\ElementSelectedTestFixture.cs" />
+    <Compile Include="FindSchemaObject\AttributeSelectedTestFixture.cs" />
+    <Compile Include="FindSchemaObject\ElementReferenceSelectedTestFixture.cs" />
+    <Compile Include="Schema\GetSchemaFromFileNameTestFixture.cs" />
+    <Compile Include="Parser\AttributeValueUnderCursorTests.cs" />
+    <Compile Include="FindSchemaObject\ElementReferenceWithPrefixSelectedTestFixture.cs" />
+    <Compile Include="FindSchemaObject\AttributeReferenceSelectedTestFixture.cs" />
+    <Compile Include="FindSchemaObject\GroupReferenceSelectedTestFixture.cs" />
+    <Compile Include="FindSchemaObject\AttributeGroupReferenceSelectedTestFixture.cs" />
+    <Compile Include="FindSchemaObject\ElementTypeSelectedTestFixture.cs" />
+    <Compile Include="FindSchemaObject\ElementTypeWithPrefixSelectedTestFixture.cs" />
+    <Compile Include="FindSchemaObject\AttributeTypeSelectedTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Schema\" />
@@ -128,6 +144,7 @@
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
+    <Folder Include="FindSchemaObject" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

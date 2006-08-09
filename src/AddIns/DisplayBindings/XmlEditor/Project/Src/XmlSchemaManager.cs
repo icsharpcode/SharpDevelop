@@ -8,6 +8,7 @@
 using ICSharpCode.Core;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Xml;
 
 namespace ICSharpCode.XmlEditor
@@ -18,6 +19,8 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class XmlSchemaManager
 	{
+		public const string XmlSchemaNamespace = "http://www.w3.org/2001/XMLSchema";
+		
 		static XmlSchemaCompletionDataCollection schemas = null;
 		static XmlSchemaManager manager = null;
 		
@@ -29,6 +32,15 @@ namespace ICSharpCode.XmlEditor
 		{
 		}
 	
+		/// <summary>
+		/// Determines whether the specified namespace is actually the W3C namespace for
+		/// XSD files.
+		/// </summary>
+		public static bool IsXmlSchemaNamespace(string schemaNamespace)
+		{
+			return schemaNamespace == XmlSchemaNamespace;
+		}
+		
 		/// <summary>
 		/// Gets the schemas that SharpDevelop knows about.
 		/// </summary>
@@ -122,7 +134,7 @@ namespace ICSharpCode.XmlEditor
 		void ReadSchemas()
 		{
 			// MSBuild schemas are in framework directory:
-			ReadSchemas(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory(), true);
+			ReadSchemas(RuntimeEnvironment.GetRuntimeDirectory(), true);
 			ReadSchemas(SchemaFolder, true);
 			ReadSchemas(UserSchemaFolder, false);
 		}

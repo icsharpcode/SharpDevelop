@@ -191,6 +191,57 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
+		/// Gets the XmlSchemaObject that defines the currently selected xml element or
+		/// attribute.
+		/// </summary>
+		/// <param name="text">The complete xml text.</param>
+		/// <param name="index">The current cursor index.</param>
+		/// <param name="provider">The completion data provider</param>
+		public static XmlSchemaObject GetSchemaObjectSelected(string xml, int index, XmlCompletionDataProvider provider)
+		{
+			return GetSchemaObjectSelected(xml, index, provider, null);
+		}
+		
+		/// <summary>
+		/// Gets the XmlSchemaObject that defines the currently selected xml element or
+		/// attribute.
+		/// </summary>
+		/// <param name="text">The complete xml text.</param>
+		/// <param name="index">The current cursor index.</param>
+		/// <param name="provider">The completion data provider</param>
+		/// <param name="currentSchemaCompletionData">This is the schema completion data for the
+		/// schema currently being displayed. This can be null if the document is
+		/// not a schema.</param>
+		public static XmlSchemaObject GetSchemaObjectSelected(string xml, int index, XmlCompletionDataProvider provider, XmlSchemaCompletionData currentSchemaCompletionData)
+		{
+			// Find element under cursor.
+			XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(xml, index);
+			string attributeName = XmlParser.GetAttributeNameAtIndex(xml, index);
+			
+			// Find schema definition object.
+			XmlSchemaCompletionData schemaCompletionData = provider.FindSchema(path);
+			XmlSchemaObject schemaObject = null;
+			if (schemaCompletionData != null) {
+				XmlSchemaElement element = schemaCompletionData.FindElement(path);
+				schemaObject = element;
+				if (element != null) {
+					if (attributeName.Length > 0) {
+						XmlSchemaAttribute attribute = schemaCompletionData.FindAttribute(element, attributeName);
+						if (attribute != null) {
+							if (currentSchemaCompletionData != null) {
+								schemaObject = GetSchemaObjectReferenced(xml, index, provider, currentSchemaCompletionData, element, attribute);
+							} else {
+								schemaObject = attribute;
+							}
+						}
+					}
+					return schemaObject;
+				}
+			}	
+			return null;
+		}
+		
+		/// <summary>
 		/// Validates the xml against known schemas.
 		/// </summary>
 		public void ValidateXml()
@@ -316,6 +367,25 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		/// <summary>
+		/// Finds the definition of the xml element or attribute under the cursor
+		/// in the corresponding schema and then displays that schema and the definition
+		/// found.
+		/// </summary>
+		public void GoToSchemaDefinition()
+		{
+			// Find schema object for selected xml element or attribute.
+			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(xmlEditor.SchemaCompletionDataItems, xmlEditor.DefaultSchemaCompletionData, xmlEditor.DefaultNamespacePrefix);
+			XmlSchemaCompletionData currentSchemaCompletionData = provider.FindSchemaFromFileName(FileName);
+			XmlSchemaObject schemaObject = GetSchemaObjectSelected(Text, xmlEditor.ActiveTextAreaControl.Caret.Offset, provider, currentSchemaCompletionData);
+			
+			// Open schema.
+			if (schemaObject != null && schemaObject.SourceUri != null && schemaObject.SourceUri.Length > 0) {
+				string fileName = schemaObject.SourceUri.Replace("file:///", String.Empty);
+				FileService.JumpToFilePosition(fileName, schemaObject.LineNumber - 1, schemaObject.LinePosition - 1);
+			}
+		}
+		
 		#region IEditable interface
 		
 		public IClipboardHandler ClipboardHandler {
@@ -413,6 +483,13 @@ namespace ICSharpCode.XmlEditor
 			OnSaved(new SaveEventArgs(true));
 		}
 		
+		public override INavigationPoint BuildNavPoint()
+		{
+			int line = Line;
+			LineSegment lineSegment = xmlEditor.Document.GetLineSegment(line);
+			string text = xmlEditor.Document.GetText(lineSegment);
+			return new TextNavigationPoint(FileName, line, Column, text);
+		}
 		
 		#endregion
 		
@@ -1040,6 +1117,107 @@ namespace ICSharpCode.XmlEditor
 				}
 				return false;
 			}
+		}
+		
+		/// <summary>
+		/// Checks whether the element belongs to the XSD namespace.
+		/// </summary>
+		static bool IsXmlSchemaNamespace(XmlSchemaElement element)
+		{
+			XmlQualifiedName qualifiedName = element.QualifiedName;
+			if (qualifiedName != null) {
+				return XmlSchemaManager.IsXmlSchemaNamespace(qualifiedName.Namespace);
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// If the attribute value found references another item in the schema
+		/// return this instead of the attribute schema object. For example, if the
+		/// user can select the attribute value and the code will work out the schema object pointed to by the ref
+		/// or type attribute:
+		///
+		/// xs:element ref="ref-name"
+		/// xs:attribute type="type-name"
+		/// </summary>
+		/// <returns>
+		/// The <paramref name="attribute"/> if no schema object was referenced.
+		/// </returns>
+		static XmlSchemaObject GetSchemaObjectReferenced(string xml, int index, XmlCompletionDataProvider provider, XmlSchemaCompletionData currentSchemaCompletionData, XmlSchemaElement element, XmlSchemaAttribute attribute)
+		{
+			XmlSchemaObject schemaObject = null;
+			if (IsXmlSchemaNamespace(element)) {
+				// Find attribute value.
+				string attributeValue = XmlParser.GetAttributeValueAtIndex(xml, index);
+				if (attributeValue.Length == 0) {
+					return attribute;
+				}
+		
+				if (attribute.Name == "ref") {
+					schemaObject = FindSchemaObjectReference(attributeValue, provider, currentSchemaCompletionData, element.Name);
+				} else if (attribute.Name == "type") {
+					schemaObject = FindSchemaObjectType(attributeValue, provider, currentSchemaCompletionData, element.Name);
+				}
+			}
+			
+			if (schemaObject != null) {
+				return schemaObject;
+			}
+			return attribute;
+		}
+		
+		/// <summary>
+		/// Attempts to locate the reference name in the specified schema.
+		/// </summary>
+		/// <param name="name">The reference to look up.</param>
+		/// <param name="schemaCompletionData">The schema completion data to use to
+		/// find the reference.</param>
+		/// <param name="elementName">The element to determine what sort of reference it is
+		/// (e.g. group, attribute, element).</param>
+		/// <returns><see langword="null"/> if no match can be found.</returns>
+		static XmlSchemaObject FindSchemaObjectReference(string name, XmlCompletionDataProvider provider, XmlSchemaCompletionData schemaCompletionData, string elementName)
+		{
+			QualifiedName qualifiedName = schemaCompletionData.CreateQualifiedName(name);
+			XmlSchemaCompletionData qualifiedNameSchema = provider.FindSchema(qualifiedName.Namespace);
+			if (qualifiedNameSchema != null) {
+				schemaCompletionData = qualifiedNameSchema;
+			}
+			switch (elementName) {
+				case "element":
+					return schemaCompletionData.FindElement(qualifiedName);
+				case "attribute":
+					return schemaCompletionData.FindAttribute(qualifiedName.Name);
+				case "group":
+					return schemaCompletionData.FindGroup(qualifiedName.Name);
+				case "attributeGroup":
+					return schemaCompletionData.FindAttributeGroup(qualifiedName.Name);
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Attempts to locate the type name in the specified schema.
+		/// </summary>
+		/// <param name="name">The type to look up.</param>
+		/// <param name="schemaCompletionData">The schema completion data to use to
+		/// find the type.</param>
+		/// <param name="elementName">The element to determine what sort of type it is
+		/// (e.g. group, attribute, element).</param>
+		/// <returns><see langword="null"/> if no match can be found.</returns>
+		static XmlSchemaObject FindSchemaObjectType(string name, XmlCompletionDataProvider provider, XmlSchemaCompletionData schemaCompletionData, string elementName)
+		{
+			QualifiedName qualifiedName = schemaCompletionData.CreateQualifiedName(name);
+			XmlSchemaCompletionData qualifiedNameSchema = provider.FindSchema(qualifiedName.Namespace);
+			if (qualifiedNameSchema != null) {
+				schemaCompletionData = qualifiedNameSchema;
+			}
+			switch (elementName) {
+				case "element":
+					return schemaCompletionData.FindComplexType(qualifiedName);
+				case "attribute":
+					return schemaCompletionData.FindSimpleType(qualifiedName.Name);
+			}
+			return null;
 		}
 	}
 }

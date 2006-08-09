@@ -113,6 +113,8 @@
     <Compile Include="Src\XPathNodeMatch.cs" />
     <Compile Include="Src\XPathNodeTextMarker.cs" />
     <Compile Include="Src\RemoveXPathHighlightingCommand.cs" />
+    <Compile Include="Src\GoToSchemaDefinitionCommand.cs" />
+    <Compile Include="Src\GoToSchemaDefinitionEditAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

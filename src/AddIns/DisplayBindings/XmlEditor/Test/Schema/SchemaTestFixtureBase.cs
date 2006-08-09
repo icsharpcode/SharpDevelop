@@ -13,63 +13,6 @@ using System.IO;
 
 namespace XmlEditor.Tests.Schema
 {
-//	public abstract class SchemaTestFixtureBase
-//	{		
-//		/// <summary>
-//		/// Checks whether the specified name exists in the completion data.
-//		/// </summary>
-//		protected bool Contains(ICompletionData[] items, string name)
-//		{
-//			bool Contains = false;
-//			
-//			foreach (ICompletionData data in items) {
-//				if (data.Text[0] == name) {
-//					Contains = true;
-//					break;
-//				}
-//			}
-//				
-//			return Contains;
-//		}
-//		
-//		/// <summary>
-//		/// Checks whether the completion data specified by name has
-//		/// the correct description.
-//		/// </summary>
-//		protected bool ContainsDescription(ICompletionData[] items, string name, string description)
-//		{
-//			bool Contains = false;
-//			
-//			foreach (ICompletionData data in items) {
-//				if (data.Text[0] == name) {
-//					if (data.Description == description) {
-//						Contains = true;
-//						break;						
-//					}
-//				}
-//			}
-//				
-//			return Contains;
-//		}		
-//		
-//		/// <summary>
-//		/// Gets a count of the number of occurrences of a particular name
-//		/// in the completion data.
-//		/// </summary>
-//		protected int GetItemCount(ICompletionData[] items, string name)
-//		{
-//			int count = 0;
-//			
-//			foreach (ICompletionData data in items) {
-//				if (data.Text[0] == name) {
-//					++count;
-//				}
-//			}
-//			
-//			return count;
-//		}
-//	}
-	
 	public abstract class SchemaTestFixtureBase
 	{		
 		XmlSchemaCompletionData schemaCompletionData;
