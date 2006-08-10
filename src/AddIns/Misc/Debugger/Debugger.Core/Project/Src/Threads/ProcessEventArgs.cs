@@ -20,7 +20,7 @@ namespace Debugger
 			}
 		}
 
-		public ProcessEventArgs(Process process): base(process.Debugger)
+		public ProcessEventArgs(Process process): base(process == null ? null : process.Debugger)
 		{
 			this.process = process;
 		}

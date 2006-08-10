@@ -130,17 +130,17 @@ namespace Debugger
 		/// </summary>
 		public event EventHandler<MessageEventArgs> DebuggerTraceMessage;
 		
-		protected internal virtual void OnDebuggerTraceMessage(string message)
+		protected internal virtual void OnDebuggerTraceMessage(MessageEventArgs e)
 		{
 			if (DebuggerTraceMessage != null) {
-				DebuggerTraceMessage(this, new MessageEventArgs(null, message));
+				DebuggerTraceMessage(this, e);
 			}
 		}
 		
 		internal void TraceMessage(string message)
 		{
 			System.Diagnostics.Debug.WriteLine("Debugger:" + message);
-			OnDebuggerTraceMessage(message);
+			OnDebuggerTraceMessage(new MessageEventArgs(null, message));
 		}
 		
 		public void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)

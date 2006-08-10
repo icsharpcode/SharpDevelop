@@ -216,22 +216,10 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary>
-		/// Internal: Used to debug the debugger library.
-		/// </summary>
-		public event EventHandler<MessageEventArgs> DebuggerTraceMessage;
-		
-		protected internal virtual void OnDebuggerTraceMessage(string message)
-		{
-			if (DebuggerTraceMessage != null) {
-				DebuggerTraceMessage(this, new MessageEventArgs(this, message));
-			}
-		}
-		
 		internal void TraceMessage(string message)
 		{
 			System.Diagnostics.Debug.WriteLine("Debugger:" + message);
-			OnDebuggerTraceMessage(message);
+			debugger.OnDebuggerTraceMessage(new MessageEventArgs(this, message));
 		}
 		
 		public SourcecodeSegment NextStatement { 

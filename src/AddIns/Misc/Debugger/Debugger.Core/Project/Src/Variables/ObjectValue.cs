@@ -19,6 +19,7 @@ namespace Debugger
 	public class ObjectValue: Value
 	{
 		ObjectValueClass topClass;
+		Variable toStringText;
 		
 		public override string AsString {
 			get {
@@ -26,8 +27,14 @@ namespace Debugger
 			}
 		}
 		
+		public Variable ToStringText {
+			get {
+				return toStringText;
+			}
+		}
+		
 		public override string Type { 
-			get{ 
+			get {
 				return topClass.Type;
 			} 
 		}
@@ -67,6 +74,16 @@ namespace Debugger
 		internal ObjectValue(Variable variable):base(variable)
 		{
 			topClass = new ObjectValueClass(this, this.CorValue.As<ICorDebugObjectValue>().Class);
+			Module module = GetClass("System.Object").Module;
+			ICorDebugFunction corFunction = module.GetMethod("System.Object", "ToString", 0);
+			toStringText = new CallFunctionEval(this.Process,
+			                                    "ToString()",
+			                                    Variable.Flags.Default,
+			                                    new IExpirable[] {this.Variable},
+			                                    new IMutable[] {this.Variable},
+			                                    corFunction,
+			                                    this.Variable,
+			                                    new Variable[] {});
 		}
 		
 		internal bool IsCorValueCompatible {

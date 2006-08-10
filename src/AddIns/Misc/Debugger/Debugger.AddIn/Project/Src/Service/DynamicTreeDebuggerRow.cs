@@ -95,6 +95,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			this[3].AllowLabelEdit = variable.Value is PrimitiveValue &&
 			                         variable.Value.ManagedType != typeof(string) &&
 			                         !ShowValuesInHexadecimal;
+			ObjectValue objValue = variable.Value as ObjectValue;
+			if (objValue != null) {
+				objValue.ToStringText.Changed -= Update;
+				objValue.ToStringText.Changed += Update;
+				this[3].Text = objValue.ToStringText.Value.AsString;
+			}
 			
 			this.ShowPlus = variable.Value.MayHaveSubVariables;
 			this.ShowMinusWhileExpanded = true;
