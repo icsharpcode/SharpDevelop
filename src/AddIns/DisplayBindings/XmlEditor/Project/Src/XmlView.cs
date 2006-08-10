@@ -150,7 +150,9 @@ namespace ICSharpCode.XmlEditor
 		/// and line position information aswell as the node found.</returns>
 		public static XPathNodeMatch[] SelectNodes(string xml, string xpath, ReadOnlyCollection<XmlNamespace> namespaces)
 		{
-			XPathDocument doc = new XPathDocument(new StringReader(xml));
+			XmlTextReader xmlReader = new XmlTextReader(new StringReader(xml));
+			xmlReader.XmlResolver = null;
+			XPathDocument doc = new XPathDocument(xmlReader);
 			XPathNavigator navigator = doc.CreateNavigator();
 			
 			// Add namespaces.

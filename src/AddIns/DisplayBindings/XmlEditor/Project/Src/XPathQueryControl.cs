@@ -8,6 +8,7 @@
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using System;
 using System.Drawing;
@@ -303,6 +304,7 @@ namespace ICSharpCode.XmlEditor
 			this.xPathResultsListView.View = System.Windows.Forms.View.Details;
 			this.xPathResultsListView.ItemActivate += new System.EventHandler(this.XPathResultsListViewItemActivate);
 			this.xPathResultsListView.SelectedIndexChanged += new System.EventHandler(this.XPathResultsListViewSelectedIndexChanged);
+			this.xPathResultsListView.Click += new System.EventHandler(this.XPathResultsListViewClick);
 			// 
 			// matchColumnHeader
 			// 
@@ -544,7 +546,7 @@ namespace ICSharpCode.XmlEditor
 			if (moveCaret == MoveCaret.ByJumping) {
 				JumpTo(fileName, node.LineNumber, node.LinePosition);
 			} else {
-				ScrollTo(fileName, node.LineNumber, node.LinePosition);
+				ScrollTo(fileName, node.LineNumber, node.LinePosition, node.Value.Length);
 			}
 		}
 		
@@ -564,12 +566,30 @@ namespace ICSharpCode.XmlEditor
 			FileService.JumpToFilePosition(fileName, line, column);
 		}
 		
-		void ScrollTo(string fileName, int line, int column)
+		/// <summary>
+		/// Scrolls to the specified line and column and also selects the given
+		/// length of text at this location.
+		/// </summary>
+		void ScrollTo(string fileName, int line, int column, int length)
 		{
 			XmlView view = XmlView.ActiveXmlView;
 			if (view != null && IsFileNameMatch(view)) {
-				view.TextEditorControl.ActiveTextAreaControl.ScrollTo(line, column);
+				TextAreaControl textAreaControl = view.TextEditorControl.ActiveTextAreaControl;
+				if (length > 0 && line < textAreaControl.Document.TotalNumberOfLines) {
+					SelectionManager selectionManager = textAreaControl.SelectionManager;
+					selectionManager.ClearSelection();
+					Point startPos = new Point(column, line);
+					Point endPos = new Point(column + length, line);
+					selectionManager.SetSelection(startPos, endPos);
+				}
+				line = Math.Min(line, textAreaControl.Document.TotalNumberOfLines - 1);
+				textAreaControl.ScrollTo(line, column);
 			}
+		}
+		
+		void ScrollTo(string fileName, int line, int column)
+		{
+			ScrollTo(fileName, line, column, 0);
 		}
 		
 		/// <summary>
@@ -652,6 +672,11 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		void XPathResultsListViewSelectedIndexChanged(object sender, EventArgs e)
+		{
+			ScrollToResultLocation();
+		}
+		
+		void XPathResultsListViewClick(object sender, EventArgs e)
 		{
 			ScrollToResultLocation();
 		}
