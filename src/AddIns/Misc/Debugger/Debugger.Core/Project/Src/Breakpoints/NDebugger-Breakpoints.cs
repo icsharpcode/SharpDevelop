@@ -71,8 +71,10 @@ namespace Debugger
 		{
 			breakpointCollection.Add(breakpoint);
 			
-			foreach(Module module in this.Modules) {
-				breakpoint.SetBreakpoint(module);
+			foreach(Process process in this.Processes) {
+				foreach(Module module in process.Modules) {
+					breakpoint.SetBreakpoint(module);
+				}
 			}
 			breakpoint.Changed += new EventHandler<BreakpointEventArgs>(OnBreakpointStateChanged);
 			breakpoint.Hit += new EventHandler<BreakpointEventArgs>(OnBreakpointHit);
@@ -117,7 +119,7 @@ namespace Debugger
 			breakpointCollection.Clear();
 		}
 
-		internal void SetBreakpointsInModule(object sender, ModuleEventArgs e) 
+		internal void SetBreakpointsInModule(Module module) 
 		{
 			// This is in case that the client modifies the collection as a response to set breakpoint
 			// NB: If client adds new breakpoint, it will be set directly as a result of his call, not here (because module is already loaded)
@@ -125,7 +127,7 @@ namespace Debugger
 			collection.AddRange(breakpointCollection);
 			
 			foreach (Breakpoint b in collection) {
-				b.SetBreakpoint(e.Module);
+				b.SetBreakpoint(module);
 			}
 		}
 	}

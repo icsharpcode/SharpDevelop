@@ -52,8 +52,6 @@ namespace Debugger
 				mta2sta.CallMethod = CallMethod.DirectCall;
 			}
 			
-			this.ModuleLoaded += SetBreakpointsInModule;
-			
 			Wrappers.ResourceManager.TraceMessagesEnabled = false;
 			Wrappers.ResourceManager.TraceMessage += delegate (object s, MessageEventArgs e) { 
 				TraceMessage(e.Message);
@@ -135,7 +133,7 @@ namespace Debugger
 		protected internal virtual void OnDebuggerTraceMessage(string message)
 		{
 			if (DebuggerTraceMessage != null) {
-				DebuggerTraceMessage(this, new MessageEventArgs(this, message));
+				DebuggerTraceMessage(this, new MessageEventArgs(null, message));
 			}
 		}
 		

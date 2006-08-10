@@ -18,7 +18,7 @@ namespace Debugger
 		List<Process> processCollection = new List<Process>();
 		
 		// Is set as long as the process count is zero
-		ManualResetEvent noProcessesHandle = new ManualResetEvent(true);
+		internal ManualResetEvent noProcessesHandle = new ManualResetEvent(true);
 
 		public event EventHandler<ProcessEventArgs> ProcessStarted;
 		public event EventHandler<ProcessEventArgs> ProcessExited;

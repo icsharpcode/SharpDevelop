@@ -23,8 +23,6 @@ namespace Debugger
 		
 		DebugeeState debugeeState;
 		
-		Process selectedProcess;
-		
 		public event EventHandler<ExceptionEventArgs> ExceptionThrown;
 		public event EventHandler<ProcessEventArgs> DebuggingResumed;
 		public event EventHandler<ProcessEventArgs> DebuggingPaused;
@@ -144,7 +142,7 @@ namespace Debugger
 		/// </summary>
 		public void WaitForPause()
 		{
-			if (this.MTA2STA.SoftWait(PausedHandle, noProcessesHandle) == 1) {
+			if (debugger.MTA2STA.SoftWait(PausedHandle, debugger.noProcessesHandle) == 1) {
 				throw new DebuggerException("Process exited before pausing");
 			}
 		}
@@ -154,7 +152,7 @@ namespace Debugger
 		/// </summary>
 		public void WaitForPrecessExit()
 		{
-			this.MTA2STA.SoftWait(noProcessesHandle);
+			debugger.MTA2STA.SoftWait(debugger.noProcessesHandle);
 		}
 		
 		/// <summary>

@@ -68,6 +68,7 @@ namespace Debugger
 			module.OrderOfLoading = lastAssignedModuleOrderOfLoading;
 			lastAssignedModuleOrderOfLoading++;
 			moduleCollection.Add(module);
+			debugger.SetBreakpointsInModule(module);
 			OnModuleLoaded(module);
 		}
 

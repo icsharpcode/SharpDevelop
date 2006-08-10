@@ -64,7 +64,7 @@ namespace Debugger
 		
 		public ObjectValueClass(ObjectValue objectValue, ICorDebugClass corClass)
 		{
-			this.process = objectValue.Debugger;
+			this.process = objectValue.Process;
 			this.objectValue = objectValue;
 			this.module = process.GetModule(corClass.Module);
 			this.corClass = corClass;

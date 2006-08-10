@@ -197,11 +197,9 @@ namespace Debugger
 		}
 		
 		
-		string debuggeeVersion;
-		
 		public string DebuggeeVersion {
 			get {
-				return debuggeeVersion;
+				return debugger.DebuggeeVersion;
 			}
 		}
 		

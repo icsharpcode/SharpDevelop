@@ -139,7 +139,7 @@ namespace Debugger
 		{
 			if (Evaluated || State == EvalState.WaitingForRequest) {
 				process.ScheduleEval(this);
-				process.MTA2STA.AsyncCall(delegate { process.StartEvaluation(); });
+				process.Debugger.MTA2STA.AsyncCall(delegate { process.StartEvaluation(); });
 				SetState(EvalState.EvaluationScheduled, null, null);
 			}
 		}
