@@ -29,7 +29,7 @@ namespace Debugger
 			}
 		}
 		
-		public ExceptionEventArgs(NDebugger debugger, Exception exception):base(debugger)
+		public ExceptionEventArgs(Process process, Exception exception):base(process)
 		{
 			this.exception = exception;
 		}

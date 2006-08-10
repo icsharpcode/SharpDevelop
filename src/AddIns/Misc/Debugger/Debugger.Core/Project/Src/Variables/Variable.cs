@@ -41,7 +41,7 @@ namespace Debugger
 		public enum Flags { Default = Public, None = 0, Public = 1, Static = 2, PublicStatic = Public | Static};
 		
 		
-		protected NDebugger debugger;
+		protected Process process;
 		
 		string name;
 		Flags flags;
@@ -57,9 +57,9 @@ namespace Debugger
 		public event EventHandler Expired;
 		public event EventHandler<DebuggerEventArgs> Changed;
 		
-		public NDebugger Debugger {
+		public Process Process {
 			get {
-				return debugger;
+				return process;
 			}
 		}
 		
@@ -81,9 +81,9 @@ namespace Debugger
 		protected virtual ICorDebugValue RawCorValue {
 			get {
 				if (this.HasExpired) throw new CannotGetValueException("CorValue has expired");
-				if (currentCorValue == null || (currentCorValuePauseSession != debugger.PauseSession && !currentCorValue.Is<ICorDebugHandleValue>())) {
+				if (currentCorValue == null || (currentCorValuePauseSession != process.PauseSession && !currentCorValue.Is<ICorDebugHandleValue>())) {
 					currentCorValue = corValueGetter();
-					currentCorValuePauseSession = debugger.PauseSession;
+					currentCorValuePauseSession = process.PauseSession;
 				}
 				return currentCorValue;
 			}
@@ -146,9 +146,9 @@ namespace Debugger
 			}
 		}
 		
-		public Variable(NDebugger debugger, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies, CorValueGetter corValueGetter)
+		public Variable(Process process, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies, CorValueGetter corValueGetter)
 		{
-			this.debugger = debugger;
+			this.process = process;
 			this.name = name;
 			if (name.StartsWith("<") && name.Contains(">") && name != "<Base class>") {
 				string middle = name.TrimStart('<').Split('>')[0]; // Get text between '<' and '>'
@@ -161,7 +161,7 @@ namespace Debugger
 			foreach(IExpirable exp in expireDependencies) {
 				AddExpireDependency(exp);
 			}
-			AddExpireDependency(debugger.SelectedProcess);
+			AddExpireDependency(process.SelectedProcess);
 			
 			this.mutateDependencies = mutateDependencies;
 			if (!this.HasExpired) {
@@ -310,7 +310,7 @@ namespace Debugger
 			if (corValue.Is<ICorDebugReferenceValue>()) {
 				if (newCorValue.Is<ICorDebugObjectValue>()) {
 					ICorDebugClass corClass = newCorValue.As<ICorDebugObjectValue>().Class;
-					ICorDebugValue box = Eval.NewObject(debugger, corClass).RawCorValue;
+					ICorDebugValue box = Eval.NewObject(process, corClass).RawCorValue;
 					newCorValue = box;
 				}
 				corValue.CastTo<ICorDebugReferenceValue>().SetValue(newCorValue.CastTo<ICorDebugReferenceValue>().Value);

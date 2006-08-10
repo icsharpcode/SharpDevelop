@@ -20,7 +20,7 @@ namespace Debugger
 			}
 		}
 		
-		public ThreadEventArgs(Thread thread): base(thread.Debugger)
+		public ThreadEventArgs(Thread thread): base(thread.Process)
 		{
 			this.thread = thread;
 		}

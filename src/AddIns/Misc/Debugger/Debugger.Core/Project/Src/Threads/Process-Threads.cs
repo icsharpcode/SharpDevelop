@@ -12,7 +12,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class NDebugger
+	public partial class Process
 	{
 		List<Thread> threadCollection = new List<Thread>();
 

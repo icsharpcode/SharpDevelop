@@ -16,13 +16,12 @@ namespace Debugger
 {
 	public partial class Thread: RemotingObjectBase
 	{
-		NDebugger debugger;
+		Process process;
 
 		ICorDebugThread corThread;
 
 		internal ExceptionType currentExceptionType;
 
-		Process process;
 		List<Stepper> steppers = new List<Stepper>();
 
 		uint id;
@@ -33,9 +32,9 @@ namespace Debugger
 
 		Function selectedFunction;
 		
-		public NDebugger Debugger {
+		public Process Process {
 			get {
-				return debugger;
+				return process;
 			}
 		}
 
@@ -63,12 +62,6 @@ namespace Debugger
 				currentExceptionType = value;
 			}
 		}
-
-		public Process Process {
-			get {
-				return process;
-			}
-		}
 		
 		public ICorDebugThread CorThread {
 			get {
@@ -76,13 +69,13 @@ namespace Debugger
 			}
 		}
 
-		internal Thread(NDebugger debugger, ICorDebugThread corThread)
+		internal Thread(Process process, ICorDebugThread corThread)
 		{
-			this.debugger = debugger;
+			this.process = process;
 			this.corThread = corThread;
 			id = corThread.ID;
 			
-			this.process = debugger.GetProcess(corThread.Process);
+			this.process = process.GetProcess(corThread.Process);
 		}
 		
 		public bool Suspended {
@@ -114,10 +107,10 @@ namespace Debugger
 				if (!HasBeenLoaded) throw new DebuggerException("Thread has not started jet");
 				process.AssertPaused();
 				
-				return new Variable(debugger,
+				return new Variable(process,
 				                    "thread" + id,
 				                    Variable.Flags.Default,
-				                    new IExpirable[] {debugger.PauseSession},
+				                    new IExpirable[] {process.PauseSession},
 				                    new IMutable[] {},
 				                    delegate { return corThread.Object;} ).Value;
 			}
@@ -238,7 +231,7 @@ namespace Debugger
 		// See docs\Stepping.txt
 		internal void CheckExpirationOfFunctions()
 		{
-			if (debugger.Evaluating) return;
+			if (process.Evaluating) return;
 			
 			ICorDebugChainEnum corChainEnum = corThread.EnumerateChains();
 			uint maxChainIndex = corChainEnum.Count - 1;

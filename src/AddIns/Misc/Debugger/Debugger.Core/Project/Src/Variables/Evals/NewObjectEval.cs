@@ -18,8 +18,8 @@ namespace Debugger
 	{
 		ICorDebugClass classToCreate;
 		
-		public NewObjectEval(NDebugger debugger, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies, ICorDebugClass classToCreate)
-			:base(debugger, name, flags, expireDependencies, mutateDependencies)
+		public NewObjectEval(Process process, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies, ICorDebugClass classToCreate)
+			:base(process, name, flags, expireDependencies, mutateDependencies)
 		{
 			this.classToCreate = classToCreate;
 		}

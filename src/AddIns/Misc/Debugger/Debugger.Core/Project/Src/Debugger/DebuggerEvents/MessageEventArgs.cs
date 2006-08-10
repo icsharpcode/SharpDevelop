@@ -34,12 +34,12 @@ namespace Debugger
 			}
 		}
 		
-		public MessageEventArgs(NDebugger debugger, string message): this(debugger, 0, message, String.Empty)
+		public MessageEventArgs(Process process, string message): this(process, 0, message, String.Empty)
 		{
 			this.message = message;
 		}
 		
-		public MessageEventArgs(NDebugger debugger, int level, string message, string category): base(debugger)
+		public MessageEventArgs(Process process, int level, string message, string category): base(process)
 		{
 			this.level = level;
 			this.message = message;

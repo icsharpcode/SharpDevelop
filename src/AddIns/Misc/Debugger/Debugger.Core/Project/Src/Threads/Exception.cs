@@ -16,7 +16,7 @@ namespace Debugger
 {	
 	public class Exception: RemotingObjectBase
 	{
-		NDebugger         debugger;
+		Process           process;
 		Thread            thread;
 		ICorDebugValue    corValue;
 		Value             runtimeValue;
@@ -28,23 +28,23 @@ namespace Debugger
 		string            type;
 		string            message;
 		
-		public NDebugger Debugger {
+		public Process Process {
 			get {
-				return debugger;
+				return process;
 			}
 		}
 		
 		internal Exception(Thread thread)
 		{
 			creationTime = DateTime.Now;
-			this.debugger = thread.Debugger;
+			this.process = thread.Process;
 			this.thread = thread;
 			corValue = thread.CorThread.CurrentException;
 			exceptionType = thread.CurrentExceptionType;
-			runtimeValue = new Variable(debugger,
+			runtimeValue = new Variable(process,
 			                            "$exception",
 			                            Variable.Flags.Default,
-			                            new IExpirable[] {debugger.PauseSession},
+			                            new IExpirable[] {process.PauseSession},
 			                            new IMutable[] {},
 			                            delegate { return corValue; } ).Value;
 			runtimeValueException = ((ObjectValue)runtimeValue).GetClass("System.Exception");

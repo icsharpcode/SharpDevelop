@@ -163,15 +163,15 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void DoInPausedState(MethodInvoker action)
 		{
-			if (Variable.Debugger.IsPaused) {
+			if (Variable.Process.IsPaused) {
 				action();
 			} else {
 				EventHandler<DebuggerEventArgs> onDebuggingPaused = null;
 				onDebuggingPaused = delegate {
 					action();
-					Variable.Debugger.DebuggingPaused -= onDebuggingPaused;
+					Variable.Process.DebuggingPaused -= onDebuggingPaused;
 				};
-				Variable.Debugger.DebuggingPaused += onDebuggingPaused;
+				Variable.Process.DebuggingPaused += onDebuggingPaused;
 			}
 		}
 		

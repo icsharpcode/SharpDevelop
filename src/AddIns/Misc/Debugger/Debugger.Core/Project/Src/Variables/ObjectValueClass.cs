@@ -18,7 +18,7 @@ namespace Debugger
 {
 	public class ObjectValueClass: RemotingObjectBase
 	{
-		NDebugger debugger;
+		Process process;
 		
 		ObjectValue objectValue;
 		
@@ -64,9 +64,9 @@ namespace Debugger
 		
 		public ObjectValueClass(ObjectValue objectValue, ICorDebugClass corClass)
 		{
-			this.debugger = objectValue.Debugger;
+			this.process = objectValue.Debugger;
 			this.objectValue = objectValue;
-			this.module = debugger.GetModule(corClass.Module);
+			this.module = process.GetModule(corClass.Module);
 			this.corClass = corClass;
 			this.classProps = Module.MetaData.GetTypeDefProps(corClass.Token);
 		}
@@ -123,7 +123,7 @@ namespace Debugger
 		
 		public ObjectValueClass BaseClass {
 			get {
-				ICorDebugClass superClass = GetSuperClass(debugger, corClass);
+				ICorDebugClass superClass = GetSuperClass(process, corClass);
 				if (superClass != null) {
 					return new ObjectValueClass(objectValue, superClass);
 				} else {
@@ -137,7 +137,7 @@ namespace Debugger
 			foreach(FieldProps f in Module.MetaData.EnumFields(ClassToken)) {
 				FieldProps field = f; // One per scope/delegate
 				if (field.IsStatic && field.IsLiteral) continue; // Skip field
-				yield return new Variable(debugger,
+				yield return new Variable(process,
 				                          field.Name,
 				                          (field.IsStatic ? Variable.Flags.Static : Variable.Flags.None) |
 				                          (field.IsPublic ? Variable.Flags.Public : Variable.Flags.None),
@@ -153,8 +153,8 @@ namespace Debugger
 
 			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
 			ICorDebugFrame curFrame = null;
-			if (debugger.IsPaused && debugger.SelectedThread != null && debugger.SelectedThread.LastFunction != null && debugger.SelectedThread.LastFunction.CorILFrame != null) {
-				curFrame = debugger.SelectedThread.LastFunction.CorILFrame.CastTo<ICorDebugFrame>();
+			if (process.IsPaused && process.SelectedThread != null && process.SelectedThread.LastFunction != null && process.SelectedThread.LastFunction.CorILFrame != null) {
+				curFrame = process.SelectedThread.LastFunction.CorILFrame.CastTo<ICorDebugFrame>();
 			}
 			
 			try {
@@ -181,11 +181,11 @@ namespace Debugger
 				if (method.HasSpecialName && method.Name.StartsWith("get_") && method.Name != "get_Item") {
 					Variable.Flags flags = (method.IsStatic ? Variable.Flags.Static : Variable.Flags.None) |
 					                       (method.IsPublic ? Variable.Flags.Public : Variable.Flags.None);
-					yield return new CallFunctionEval(debugger,
+					yield return new CallFunctionEval(process,
 					                                  method.Name.Remove(0, 4),
 					                                  flags,
 					                                  new IExpirable[] {this.objectValue.Variable},
-					                                  new IMutable[] {debugger.DebugeeState},
+					                                  new IMutable[] {process.DebugeeState},
 					                                  Module.CorModule.GetFunctionFromToken(method.Token),
 					                                  method.IsStatic ? null : this.objectValue.Variable, // this
 					                                  new Variable[] {}); // args
@@ -193,9 +193,9 @@ namespace Debugger
 			}
 		}
 		
-		protected static ICorDebugClass GetSuperClass(NDebugger debugger, ICorDebugClass currClass)
+		protected static ICorDebugClass GetSuperClass(Process process, ICorDebugClass currClass)
 		{
-			Module currModule = debugger.GetModule(currClass.Module);
+			Module currModule = process.GetModule(currClass.Module);
 			uint superToken = currModule.MetaData.GetTypeDefProps(currClass.Token).SuperClassToken;
 			
 			// It has no base class
@@ -210,7 +210,7 @@ namespace Debugger
 			if ((superToken & 0xFF000000) == 0x01000000) {
 				string fullTypeName = currModule.MetaData.GetTypeRefProps(superToken).Name;
 				
-				foreach (Module superModule in debugger.Modules) {
+				foreach (Module superModule in process.Modules) {
 					// TODO: Does not work for nested
 					// TODO: preservesig
 					try	{

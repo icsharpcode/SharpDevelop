@@ -20,8 +20,8 @@ namespace Debugger
 		Variable          thisValue;
 		Variable[]        args;
 		
-		public CallFunctionEval(NDebugger debugger, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies, ICorDebugFunction corFunction, Variable thisValue, Variable[] args)
-			:base(debugger, name, flags, expireDependencies, mutateDependencies)
+		public CallFunctionEval(Process process, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies, ICorDebugFunction corFunction, Variable thisValue, Variable[] args)
+			:base(process, name, flags, expireDependencies, mutateDependencies)
 		{
 			this.corFunction = corFunction;
 			this.thisValue = thisValue;

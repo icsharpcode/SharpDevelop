@@ -23,9 +23,9 @@ namespace Debugger
 		
 		public event EventHandler<StepperEventArgs> StepComplete;
 		
-		public NDebugger Debugger {
+		public Process Process {
 			get {
-				return function.Debugger;
+				return function.Process;
 			}
 		}
 		

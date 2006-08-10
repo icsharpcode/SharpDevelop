@@ -17,9 +17,9 @@ namespace Debugger
 	{
 		Variable variable;
 		
-		public NDebugger Debugger {
+		public Process Process {
 			get {
-				return variable.Debugger;
+				return variable.Process;
 			}
 		}
 		

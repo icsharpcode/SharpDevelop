@@ -15,23 +15,23 @@ namespace Debugger
 	/// </summary>
 	public class DebugeeState: IExpirable, IMutable
 	{
-		NDebugger debugger;
+		Process process;
 		bool hasExpired = false;
 		
 		public event EventHandler Expired;
 		
 		public event EventHandler<DebuggerEventArgs> Changed {
 			add {
-				debugger.DebuggeeStateChanged += value;
+				process.DebuggeeStateChanged += value;
 			}
 			remove {
-				debugger.DebuggeeStateChanged -= value;
+				process.DebuggeeStateChanged -= value;
 			}
 		}
 		
-		public NDebugger Debugger {
+		public Process Process {
 			get {
-				return debugger;
+				return process;
 			}
 		}
 		
@@ -51,9 +51,9 @@ namespace Debugger
 			}
 		}
 		
-		public DebugeeState(NDebugger debugger)
+		public DebugeeState(Process process)
 		{
-			this.debugger = debugger;
+			this.process = process;
 		}
 	}
 }

@@ -18,8 +18,8 @@ namespace Debugger
 	{
 		string textToCreate;
 		
-		public NewStringEval(NDebugger debugger, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies, string textToCreate)
-			:base(debugger, name, flags, expireDependencies, mutateDependencies)
+		public NewStringEval(Process process, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies, string textToCreate)
+			:base(process, name, flags, expireDependencies, mutateDependencies)
 		{
 			this.textToCreate = textToCreate;
 		}

@@ -20,7 +20,7 @@ namespace Debugger
 			}
 		}
 		
-		public ModuleEventArgs(Module module): base(module.Debugger)
+		public ModuleEventArgs(Module module): base(module.Process)
 		{
 			this.module = module;
 		}

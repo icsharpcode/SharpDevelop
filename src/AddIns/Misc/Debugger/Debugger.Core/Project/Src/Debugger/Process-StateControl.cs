@@ -16,7 +16,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class NDebugger
+	public partial class Process
 	{
 		bool pauseOnHandledException = false;
 		internal ManualResetEvent pausedHandle = new ManualResetEvent(false);

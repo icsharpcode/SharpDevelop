@@ -17,7 +17,7 @@ namespace Debugger
 {
 	public class Module: RemotingObjectBase, IDisposable
 	{
-		NDebugger debugger;
+		Process process;
 		
 		bool   unloaded = false;
 		string fullPath;
@@ -27,9 +27,9 @@ namespace Debugger
 		ISymUnmanagedReader symReader;
 		MetaData metaData;
 		
-		public NDebugger Debugger {
+		public Process Process {
 			get {
-				return debugger;
+				return process;
 			}
 		}
 		
@@ -125,9 +125,9 @@ namespace Debugger
 			return corModule.GetFunctionFromToken(token);
 		}
 		
-		internal Module(NDebugger debugger, ICorDebugModule pModule)
+		internal Module(Process process, ICorDebugModule pModule)
 		{
-			this.debugger = debugger;
+			this.process = process;
 			
 			corModule = pModule;
 			

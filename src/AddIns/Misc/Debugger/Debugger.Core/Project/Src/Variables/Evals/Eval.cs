@@ -53,8 +53,8 @@ namespace Debugger
 			}
 		}
 		
-		protected Eval(NDebugger debugger, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies)
-			:base(debugger, name, flags, expireDependencies, mutateDependencies, null)
+		protected Eval(Process process, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies)
+			:base(process, name, flags, expireDependencies, mutateDependencies, null)
 		{
 		}
 		
@@ -71,20 +71,20 @@ namespace Debugger
 			this.currentState = currentState;
 			this.currentErrorMsg = currentErrorMsg;
 			this.currentCorValue = currentCorValue;
-			this.currentCorValuePauseSession = debugger.PauseSession;
+			this.currentCorValuePauseSession = process.PauseSession;
 			OnChanged(new EvalEventArgs(this));
 		}
 		
 		/// <summary>
 		/// Synchronously calls a function and returns its return value
 		/// </summary>
-		public static Variable CallFunction(NDebugger debugger, Type type, string functionName, Variable thisValue, Variable[] args)
+		public static Variable CallFunction(Process process, Type type, string functionName, Variable thisValue, Variable[] args)
 		{
 			string moduleName = System.IO.Path.GetFileName(type.Assembly.Location);
-			Module module = debugger.GetModule(moduleName);
+			Module module = process.GetModule(moduleName);
 			string containgType = type.FullName;
 			ICorDebugFunction corFunction = module.GetMethod(containgType, functionName, args.Length);
-			return new CallFunctionEval(debugger,
+			return new CallFunctionEval(process,
 			                            "Function call: " + containgType + "." + functionName,
 			                            Variable.Flags.Default,
 			                            new IExpirable[] {},
@@ -97,9 +97,9 @@ namespace Debugger
 		/// <summary>
 		/// Synchronously creates a new string
 		/// </summary>
-		public static Variable NewString(NDebugger debugger, string textToCreate)
+		public static Variable NewString(Process process, string textToCreate)
 		{
-			return new NewStringEval(debugger,
+			return new NewStringEval(process,
 			                         "New string: " + textToCreate,
 			                         Variable.Flags.Default,
 			                         new IExpirable[] {},
@@ -110,9 +110,9 @@ namespace Debugger
 		/// <summary>
 		/// Synchronously creates a new object
 		/// </summary>
-		public static Variable NewObject(NDebugger debugger, ICorDebugClass classToCreate)
+		public static Variable NewObject(Process process, ICorDebugClass classToCreate)
 		{
-			return new NewObjectEval(debugger,
+			return new NewObjectEval(process,
 			                         "New object: " + classToCreate.Token,
 			                         Variable.Flags.Default,
 			                         new IExpirable[] {},
@@ -138,8 +138,8 @@ namespace Debugger
 		public void ScheduleEvaluation()
 		{
 			if (Evaluated || State == EvalState.WaitingForRequest) {
-				debugger.ScheduleEval(this);
-				debugger.MTA2STA.AsyncCall(delegate { debugger.StartEvaluation(); });
+				process.ScheduleEval(this);
+				process.MTA2STA.AsyncCall(delegate { process.StartEvaluation(); });
 				SetState(EvalState.EvaluationScheduled, null, null);
 			}
 		}
@@ -147,7 +147,7 @@ namespace Debugger
 		/// <returns>True if setup was successful</returns>
 		internal bool SetupEvaluation(Thread targetThread)
 		{
-			debugger.AssertPaused();
+			process.AssertPaused();
 			
 			try {
 				if (targetThread.IsLastFunctionNative) {
@@ -181,8 +181,8 @@ namespace Debugger
 		{
 			while (State == EvalState.WaitingForRequest) {
 				ScheduleEvaluation();
-				debugger.WaitForPause();
-				debugger.WaitForPause();
+				process.WaitForPause();
+				process.WaitForPause();
 			}
 			return this;
 		}

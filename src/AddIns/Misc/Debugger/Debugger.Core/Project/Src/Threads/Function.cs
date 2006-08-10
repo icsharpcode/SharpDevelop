@@ -18,7 +18,7 @@ namespace Debugger
 {
 	public class Function: RemotingObjectBase, IExpirable
 	{	
-		NDebugger debugger;
+		Process process;
 		
 		Module module;
 		ICorDebugFunction corFunction;
@@ -33,9 +33,9 @@ namespace Debugger
 		
 		MethodProps methodProps;
 		
-		public NDebugger Debugger {
+		public Process Process {
 			get {
-				return debugger;
+				return process;
 			}
 		}
 
@@ -99,7 +99,7 @@ namespace Debugger
 		{
 			if (!steppedOut) {
 				steppedOut = true;
-				debugger.TraceMessage("Function " + this.ToString() + " expired");
+				process.TraceMessage("Function " + this.ToString() + " expired");
 				if (Expired != null) {
 					Expired(this, e);
 				}
@@ -108,12 +108,12 @@ namespace Debugger
 		
 		internal Function(Thread thread, FrameID frameID, ICorDebugILFrame corILFrame)
 		{
-			this.debugger = thread.Debugger;
+			this.process = thread.Process;
 			this.thread = thread;
 			this.frameID = frameID;
 			this.CorILFrame = corILFrame;
 			corFunction = corILFrame.Function;
-			module = debugger.GetModule(corFunction.Module);
+			module = process.GetModule(corFunction.Module);
 			
 			methodProps = module.MetaData.GetMethodProps(corFunction.Token);
 			
@@ -122,7 +122,7 @@ namespace Debugger
 			stepOutStepper.StepOut();
 			stepOutStepper.PauseWhenComplete = false;
 			
-			debugger.TraceMessage("Function " + this.ToString() + " created");
+			process.TraceMessage("Function " + this.ToString() + " created");
 		}
 		
 		public override string ToString()
@@ -133,7 +133,7 @@ namespace Debugger
 		internal ICorDebugILFrame CorILFrame {
 			get {
 				if (HasExpired) throw new DebuggerException("Function has expired");
-				if (corILFramePauseSession != debugger.PauseSession) {
+				if (corILFramePauseSession != process.PauseSession) {
 					CorILFrame = thread.GetFrameAt(frameID).As<ICorDebugILFrame>();
 				}
 				return corILFrame;
@@ -141,7 +141,7 @@ namespace Debugger
 			set {
 				if (value == null) throw new DebuggerException("Can not set frame to null");
 				corILFrame = value;
-				corILFramePauseSession = debugger.PauseSession;
+				corILFramePauseSession = process.PauseSession;
 			}
 		}
 		
@@ -188,7 +188,7 @@ namespace Debugger
 		public void StepOut()
 		{
 			new Stepper(this, "Function step out").StepOut();
-			debugger.Continue();
+			process.Continue();
 		}
 
 		private unsafe void Step(bool stepIn)
@@ -213,7 +213,7 @@ namespace Debugger
 				new Stepper(this, "Function step over").StepOver(nextSt.StepRanges);
 			}
 			
-			debugger.Continue();
+			process.Continue();
 		}
 		
 		/// <summary>
@@ -326,7 +326,7 @@ namespace Debugger
 		
 		SourcecodeSegment SetIP(bool simulate, string filename, int line, int column)
 		{
-			debugger.AssertPaused();
+			process.AssertPaused();
 			
 			SourcecodeSegment suggestion = new SourcecodeSegment(filename, line, column, column);
 			ICorDebugFunction corFunction;
@@ -343,8 +343,8 @@ namespace Debugger
 						} else {
 							// invalidates all frames and chains for the current thread
 							CorILFrame.SetIP((uint)ilOffset);
-							debugger.SelectedProcess.NotifyPaused(new PauseSession(PausedReason.SetIP));
-							debugger.Pause(false);
+							process.SelectedProcess.NotifyPaused(new PauseSession(PausedReason.SetIP));
+							process.Pause(false);
 						}
 					} catch {
 						return null;
@@ -378,7 +378,7 @@ namespace Debugger
 		
 		public Variable ThisVariable {
 			get {
-				return new Variable(debugger,
+				return new Variable(process,
 				                    "this",
 				                    Variable.Flags.Default,
 				                    new IExpirable[] {this},
@@ -435,11 +435,11 @@ namespace Debugger
 		
 		public Variable GetArgumentVariable(int index)
 		{
-			return new Variable(debugger,
+			return new Variable(process,
 			                    GetParameterName(index),
 			                    Variable.Flags.Default,
 			                    new IExpirable[] {this},
-			                    new IMutable[] {debugger.DebugeeState},
+			                    new IMutable[] {process.DebugeeState},
 			                    delegate { return GetArgumentCorValue(index); } );
 		}
 		
@@ -491,11 +491,11 @@ namespace Debugger
 		
 		Variable GetLocalVariable(ISymUnmanagedVariable symVar)
 		{
-			return new Variable(debugger,
+			return new Variable(process,
 			                    symVar.Name,
 			                    Variable.Flags.Default,
 			                    new IExpirable[] {this},
-			                    new IMutable[] {debugger.DebugeeState},
+			                    new IMutable[] {process.DebugeeState},
 			                    delegate { return GetCorValueOfLocalVariable(symVar); });
 		}
 		

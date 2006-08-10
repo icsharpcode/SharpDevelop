@@ -64,7 +64,7 @@
     <Compile Include="Src\Interop enums\CorTokenType.cs" />
     <Compile Include="Src\Modules\Module.cs" />
     <Compile Include="Src\Modules\ModuleEventArgs.cs" />
-    <Compile Include="Src\Modules\NDebugger-Modules.cs" />
+    <Compile Include="Src\Modules\Process-Modules.cs" />
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\AsyncMessageResponseSink.cs" />
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\MyProxy.cs" />
     <Compile Include="Src\Debugger\Internal\RemotingObjectBase.cs" />
@@ -72,7 +72,7 @@
     <Compile Include="Src\Threads\ExceptionType.cs" />
     <Compile Include="Src\Threads\Function.cs" />
     <Compile Include="Src\Threads\NDebugger-Processes.cs" />
-    <Compile Include="Src\Threads\NDebugger-Threads.cs" />
+    <Compile Include="Src\Threads\Process-Threads.cs" />
     <Compile Include="Src\Threads\Process.cs" />
     <Compile Include="Src\Threads\ProcessEventArgs.cs" />
     <Compile Include="Src\Threads\SourcecodeSegment.cs" />
@@ -85,7 +85,7 @@
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\PrivateEventHandlersClientChannelSinkProvider.cs" />
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\EventForwarder.cs" />
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\PrivateEventHandlersClientChannelSink.cs" />
-    <Compile Include="Src\Debugger\NDebugger-StateControl.cs" />
+    <Compile Include="Src\Debugger\Process-StateControl.cs" />
     <Compile Include="Src\Interop\CorDebug\_COR_IL_MAP.cs" />
     <Compile Include="Src\Interop\CorDebug\_COR_VERSION.cs" />
     <Compile Include="Src\Interop\CorDebug\_FILETIME.cs" />
@@ -183,7 +183,7 @@
     <Compile Include="Src\Interop\MetaData\COR_FIELD_OFFSET.cs" />
     <Compile Include="Src\Variables\Evals\Eval.cs" />
     <Compile Include="Src\Variables\Evals\EvalEventArgs.cs" />
-    <Compile Include="Src\Variables\Evals\NDebugger-Evals.cs" />
+    <Compile Include="Src\Variables\Evals\Process-Evals.cs" />
     <Compile Include="Src\Variables\ArrayValue.cs" />
     <Compile Include="Src\Variables\NullValue.cs" />
     <Compile Include="Src\Variables\ObjectValueClass.cs" />

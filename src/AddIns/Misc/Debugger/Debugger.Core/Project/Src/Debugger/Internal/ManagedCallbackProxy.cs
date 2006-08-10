@@ -25,18 +25,18 @@ namespace Debugger
 {
 	class ManagedCallbackProxy : ICorDebugManagedCallbacks
 	{
-		NDebugger debugger;
+		Process process;
 		ManagedCallback realCallback;
 		
-		public NDebugger Debugger {
+		public Process Process {
 			get {
-				return debugger;
+				return process;
 			}
 		}
 		
 		public ManagedCallbackProxy(ManagedCallback realCallback)
 		{
-			this.debugger = realCallback.Debugger;
+			this.debugger = realCallback.Process;
 			this.realCallback = realCallback;
 		}
 		
