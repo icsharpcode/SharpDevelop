@@ -23,6 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public partial class RunningThreadsPad : DebuggerPad
 	{
 		ListView  runningThreadsList;
+		Debugger.Process debuggedProcess;
 		
 		ColumnHeader id          = new ColumnHeader();
 		ColumnHeader name        = new ColumnHeader();
@@ -68,33 +69,60 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 
-		protected override void RegisterDebuggerEvents()
+		protected override void SelectProcess(Debugger.Process process)
 		{
-			debuggerCore.DebuggeeStateChanged += delegate { RefreshPad(); };
-			debuggerCore.ThreadStarted += delegate(object sender, ThreadEventArgs e) {
-				AddThread(e.Thread);
-			};
-			debuggerCore.ThreadStateChanged += delegate(object sender, ThreadEventArgs e) {
-				RefreshThread(e.Thread);
-			};
-			debuggerCore.ThreadExited += delegate(object sender, ThreadEventArgs e) {
-				RemoveThread(e.Thread);
-			};
+			if (debuggedProcess != null) {
+				debuggedProcess.DebuggeeStateChanged -= debuggedProcess_DebuggeeStateChanged;
+				debuggedProcess.ThreadStarted        -= debuggedProcess_ThreadStarted;
+				debuggedProcess.ThreadStateChanged   -= debuggedProcess_ThreadStateChanged;
+				debuggedProcess.ThreadExited         -= debuggedProcess_ThreadExited;
+			}
+			debuggedProcess = process;
+			if (debuggedProcess != null) {
+				debuggedProcess.DebuggeeStateChanged += debuggedProcess_DebuggeeStateChanged;
+				debuggedProcess.ThreadStarted        += debuggedProcess_ThreadStarted;
+				debuggedProcess.ThreadStateChanged   += debuggedProcess_ThreadStateChanged;
+				debuggedProcess.ThreadExited         += debuggedProcess_ThreadExited;
+			}
+			runningThreadsList.Clear();
+			RefreshPad();
+		}
+		
+		void debuggedProcess_DebuggeeStateChanged(object sender, ProcessEventArgs e)
+		{
+			RefreshPad();
+		}
+		
+		void debuggedProcess_ThreadStarted(object sender, ThreadEventArgs e)
+		{
+			AddThread(e.Thread);
+		}
+		
+		void debuggedProcess_ThreadStateChanged(object sender, ThreadEventArgs e)
+		{
+			RefreshThread(e.Thread);
+		}
+		
+		void debuggedProcess_ThreadExited(object sender, ThreadEventArgs e)
+		{
+			RemoveThread(e.Thread);
 		}
 		
 		public override void RefreshPad()
 		{
-			foreach (Thread t in debuggerCore.Threads) {
-				RefreshThread(t);
+			if (debuggedProcess != null) {
+				foreach (Thread t in debuggedProcess.Threads) {
+					RefreshThread(t);
+				}
 			}
 		}
 
 		void RunningThreadsListItemActivate(object sender, EventArgs e)
 		{
-			if (debuggerCore.IsPaused) {
-				if (debuggerCore.SelectedProcess != null) {
-					debuggerCore.SelectedProcess.SelectedThread = (Thread)(runningThreadsList.SelectedItems[0].Tag);
-					debuggerCore.OnDebuggeeStateChanged(); // Force refresh of pads
+			if (debuggedProcess.IsPaused) {
+				if (debuggedProcess != null) {
+					debuggedProcess.SelectedThread = (Thread)(runningThreadsList.SelectedItems[0].Tag);
+					debuggedProcess.OnDebuggeeStateChanged(); // Force refresh of pads
 				}
 			} else {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");

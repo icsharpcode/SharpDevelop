@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				}
 				bool suspended = (selItems[0].Tag as Thread).Suspended;
 				
-				if (!debuggerCore.IsPaused) {
+				if (!debuggedProcess.IsPaused) {
 					MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotFreezeWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.Freeze}");
 					return;
 				}

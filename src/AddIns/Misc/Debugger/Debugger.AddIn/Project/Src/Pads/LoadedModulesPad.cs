@@ -22,6 +22,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public class LoadedModulesPad : DebuggerPad
 	{
 		ListView  loadedModulesList;
+		Debugger.Process debuggedProcess;
 		
 		ColumnHeader name        = new ColumnHeader();
 		ColumnHeader address     = new ColumnHeader();
@@ -75,39 +76,59 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 		
-		protected override void RegisterDebuggerEvents()
+		protected override void SelectProcess(Debugger.Process process)
 		{
-			debuggerCore.ModuleLoaded += AddModule;
-			debuggerCore.ModuleUnloaded += RemoveModule;
+			if (debuggedProcess != null) {
+				debuggedProcess.ModuleLoaded -= debuggedProcess_ModuleLoaded;
+				debuggedProcess.ModuleUnloaded -= debuggedProcess_ModuleUnloaded;
+			}
+			debuggedProcess = process;
+			if (debuggedProcess != null) {
+				debuggedProcess.ModuleLoaded += debuggedProcess_ModuleLoaded;
+				debuggedProcess.ModuleUnloaded += debuggedProcess_ModuleUnloaded;
+			}
+			RefreshPad();
 		}
-
+		
+		void debuggedProcess_ModuleLoaded(object sender, ModuleEventArgs e)
+		{
+			AddModule(e.Module);
+		}
+		
+		void debuggedProcess_ModuleUnloaded(object sender, ModuleEventArgs e)
+		{
+			RemoveModule(e.Module);
+		}
+		
 		public override void RefreshPad()
 		{
-            loadedModulesList.Items.Clear();
-            foreach(Module m in debuggerCore.Modules) {
-                AddModule(this, new ModuleEventArgs(m));
-            }
+			loadedModulesList.Items.Clear();
+			if (debuggedProcess != null) {
+				foreach(Module module in debuggedProcess.Modules) {
+					AddModule(module);
+				}
+			}
 		}
-
-		void AddModule(object sender, ModuleEventArgs e) 
+		
+		void AddModule(Module module)
 		{
-			ListViewItem newItem = new ListViewItem(new string[] {e.Module.Filename,
-			                                                      String.Format("{0:X8}", e.Module.BaseAdress),
-			                                                      e.Module.DirectoryName,
-			                                                      e.Module.OrderOfLoading.ToString(),
+			ListViewItem newItem = new ListViewItem(new string[] {module.Filename,
+			                                                      String.Format("{0:X8}", module.BaseAdress),
+			                                                      module.DirectoryName,
+			                                                      module.OrderOfLoading.ToString(),
 			                                                      "",
 			                                                      "",
 			                                                      "",
-			                                                      StringParser.Parse(e.Module.SymbolsLoaded ? "${res:MainWindow.Windows.Debug.HasSymbols}" : "${res:MainWindow.Windows.Debug.HasNoSymbols}")
+			                                                      StringParser.Parse(module.SymbolsLoaded ? "${res:MainWindow.Windows.Debug.HasSymbols}" : "${res:MainWindow.Windows.Debug.HasNoSymbols}")
 			                                                     });
-			newItem.Tag = e.Module;
+			newItem.Tag = module;
 			loadedModulesList.Items.Add(newItem);
 		}
 
-		void RemoveModule(object sender, ModuleEventArgs e) 
+		void RemoveModule(Module module)
 		{
 			foreach (ListViewItem item in loadedModulesList.Items) {
-				if (item.Tag == e.Module) {
+				if (item.Tag == module) {
 					item.Remove();
 				}
 			}

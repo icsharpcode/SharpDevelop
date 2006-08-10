@@ -23,6 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public class ExceptionHistoryPad : DebuggerPad
 	{
 		ListView  exceptionHistoryList;
+		Debugger.Process debuggedProcess;
 		
 		List<Debugger.Exception> exceptions = new List<Debugger.Exception>();
 		
@@ -62,17 +63,23 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			location.Text  = ResourceService.GetString("AddIns.HtmlHelp2.Location");
 		}
 		
-		
-		protected override void RegisterDebuggerEvents()
+		protected override void SelectProcess(Debugger.Process process)
 		{
-			debuggerCore.ProcessExited += delegate {
-				exceptions.Clear();
-				RefreshPad();
-			};
-			debuggerCore.ExceptionThrown += delegate (object sender, ExceptionEventArgs e) {
-				exceptions.Add(e.Exception);
-				RefreshPad();
-			};
+			if (debuggedProcess != null) {
+				debuggedProcess.ExceptionThrown -= debuggedProcess_ExceptionThrown;
+			}
+			debuggedProcess = process;
+			if (debuggedProcess != null) {
+				debuggedProcess.ExceptionThrown += debuggedProcess_ExceptionThrown;
+			}
+			exceptions.Clear();
+			RefreshPad();
+		}
+		
+		void debuggedProcess_ExceptionThrown(object sender, ExceptionEventArgs e)
+		{
+			exceptions.Add(e.Exception);
+			RefreshPad();
 		}
 		
 		void ExceptionHistoryListItemActivate(object sender, EventArgs e)

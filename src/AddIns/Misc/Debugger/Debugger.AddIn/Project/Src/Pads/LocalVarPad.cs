@@ -23,6 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public class LocalVarPad : DebuggerPad
 	{
 		DebuggerTreeListView localVarList;
+		Debugger.Process debuggedProcess;
 		
 		ColumnHeader name = new ColumnHeader();
 		ColumnHeader val  = new ColumnHeader();
@@ -77,17 +78,30 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.Visible = true;
 		}
 		
-		
-		protected override void RegisterDebuggerEvents()
+		protected override void SelectProcess(Debugger.Process process)
 		{
-			debuggerCore.DebuggeeStateChanged += delegate { RefreshPad(); };
+			if (debuggedProcess != null) {
+				debuggedProcess.DebuggeeStateChanged -= debuggedProcess_DebuggeeStateChanged;
+			}
+			debuggedProcess = process;
+			if (debuggedProcess != null) {
+				debuggedProcess.DebuggeeStateChanged += debuggedProcess_DebuggeeStateChanged;
+			}
+			RefreshPad();
+		}
+		
+		void debuggedProcess_DebuggeeStateChanged(object sender, ProcessEventArgs e)
+		{
+			RefreshPad();
 		}
 		
 		public override void RefreshPad()
 		{
 			localVarList.BeginUpdate();
 			localVarList.Items.Clear();
-			AddVariableCollectionToTree(debuggerCore.LocalVariables, localVarList.Items);
+			if (debuggedProcess != null) {
+				AddVariableCollectionToTree(debuggedProcess.LocalVariables, localVarList.Items);
+			}
 			localVarList.EndUpdate();
 		}
 		
@@ -114,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void localVarList_BeforeExpand(object sender, TreeListViewCancelEventArgs e)
 		{
-			if (debuggerCore.IsPaused) {
+			if (debuggedProcess.IsPaused) {
 				if (e.Item is TreeListViewDebuggerItem) {
 					((TreeListViewDebuggerItem)e.Item).BeforeExpand();
 				}

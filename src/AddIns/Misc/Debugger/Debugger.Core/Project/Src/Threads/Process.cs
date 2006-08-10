@@ -136,7 +136,7 @@ namespace Debugger
 			return new Process(debugger, outProcess);
 		}
 		
-		internal void Break()
+		public void Break()
 		{
 			AssertRunning();
 			

@@ -22,7 +22,7 @@ namespace Debugger
 {
 	public class DebugeeInterpreterContext: InterpreterContext
 	{
-		NDebugger debugger;
+		Process process;
 		Variable interpreter;
 		Variable interpreter_localVariable;
 		
@@ -50,14 +50,14 @@ namespace Debugger
 				PrintLine("Error: 'Incompatible debugger'");
 				return false;
 			}
-			if (!winDebugger.IsDebugging) {
+			if (winDebugger.DebuggedProcess == null) {
 				PrintLine("Error: 'No program is debugged'");
 				return false;
 			}
-			debugger = winDebugger.DebuggerCore;
-			debugger.SelectedProcess.Expired += delegate { interpreter = null; };
-			debugger.LogMessage -= OnDebuggerLogMessage;
-			debugger.LogMessage += OnDebuggerLogMessage;
+			process = winDebugger.DebuggedProcess;
+			process.Expired += delegate { interpreter = null; };
+			process.LogMessage -= OnDebuggerLogMessage;
+			process.LogMessage += OnDebuggerLogMessage;
 			
 			Variable assembly;
 			// Boo.Lang.Interpreter.dll
@@ -65,8 +65,8 @@ namespace Debugger
 			assembly = LoadAssembly(path);
 			// Debugger.BooInterpreter.dll
 			assembly = LoadAssembly(typeof(DebugeeInteractiveInterpreter).Assembly.Location);
-			Variable interpreterType = Eval.NewString(debugger, typeof(DebugeeInteractiveInterpreter).FullName);
-			interpreter = Eval.CallFunction(debugger, typeof(Assembly), "CreateInstance", assembly, new Variable[] {interpreterType});
+			Variable interpreterType = Eval.NewString(process, typeof(DebugeeInteractiveInterpreter).FullName);
+			interpreter = Eval.CallFunction(process, typeof(Assembly), "CreateInstance", assembly, new Variable[] {interpreterType});
 			interpreter_localVariable = interpreter.Value.SubVariables["localVariable"];
 			RunCommand(
 				"import System\n" + 
@@ -80,16 +80,16 @@ namespace Debugger
 		
 		Variable LoadAssembly(string path)
 		{
-			Variable assemblyPath = Eval.NewString(debugger, path);
-			Variable assembly = Eval.CallFunction(debugger, typeof(Assembly), "LoadFrom", null, new Variable[] {assemblyPath});
+			Variable assemblyPath = Eval.NewString(process, path);
+			Variable assembly = Eval.CallFunction(process, typeof(Assembly), "LoadFrom", null, new Variable[] {assemblyPath});
 			return assembly;
 		}
 		
 		public override void RunCommand(string code)
 		{
 			if (CanLoadInterpreter) {
-				Variable cmd = Eval.NewString(debugger, code);
-				Eval.CallFunction(debugger, typeof(InteractiveInterpreter), "LoopEval", interpreter, new Variable[] {cmd});
+				Variable cmd = Eval.NewString(process, code);
+				Eval.CallFunction(process, typeof(InteractiveInterpreter), "LoopEval", interpreter, new Variable[] {cmd});
 			}
 		}
 		
@@ -101,8 +101,8 @@ namespace Debugger
 		public override string[] SuggestCodeCompletion(string code)
 		{
 			if (CanLoadInterpreter) {
-				Variable cmd = Eval.NewString(debugger, code);
-				Eval.CallFunction(debugger, typeof(AbstractInterpreter), "SuggestCodeCompletion", interpreter, new Variable[] {cmd});
+				Variable cmd = Eval.NewString(process, code);
+				Eval.CallFunction(process, typeof(AbstractInterpreter), "SuggestCodeCompletion", interpreter, new Variable[] {cmd});
 				return null;
 			} else {
 				return null;
@@ -130,19 +130,19 @@ namespace Debugger
 		{
 			Variable localVar;
 			try {
-				localVar = debugger.LocalVariables[name];
+				localVar = process.LocalVariables[name];
 			} catch (DebuggerException) {
 				return;
 			}
 			PrintLine("Getting local variable " + name);
 			// First, get out of GC unsafe point
-			Stepper stepOut = new Stepper(debugger.SelectedThread.LastFunction, "Boo interperter");
+			Stepper stepOut = new Stepper(process.SelectedThread.LastFunction, "Boo interperter");
 			stepOut.StepComplete  += delegate {
-				debugger.MTA2STA.AsyncCall(delegate {
+				process.Debugger.MTA2STA.AsyncCall(delegate {
 					if (!interpreter_localVariable.SetValue(localVar)) {
 						PrintLine("Getting of local variable " + name + " failed");
 					}
-					debugger.Continue();
+					process.Continue();
 				});
 			};
 			stepOut.StepOut();
@@ -152,7 +152,7 @@ namespace Debugger
 		{
 			Variable localVar;
 			try {
-				localVar = debugger.LocalVariables[name];
+				localVar = process.LocalVariables[name];
 			} catch (DebuggerException) {
 				return;
 			}

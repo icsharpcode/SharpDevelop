@@ -23,6 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public partial class CallStackPad : DebuggerPad
 	{
 		ListView  callStackList;
+		Debugger.Process debuggedProcess;
 		
 		ColumnHeader name     = new ColumnHeader();
 		ColumnHeader language = new ColumnHeader();
@@ -59,20 +60,31 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 
-		protected override void RegisterDebuggerEvents()
+		protected override void SelectProcess(Debugger.Process process)
 		{
-			debuggerCore.DebuggeeStateChanged += delegate { RefreshPad(); };
-			debuggerCore.ProcessExited += delegate { callStackList.Items.Clear(); };
+			if (debuggedProcess != null) {
+				debuggedProcess.DebuggeeStateChanged -= debuggedProcess_DebuggeeStateChanged;
+			}
+			debuggedProcess = process;
+			if (debuggedProcess != null) {
+				debuggedProcess.DebuggeeStateChanged += debuggedProcess_DebuggeeStateChanged;
+			}
+			RefreshPad();
+		}
+		
+		void debuggedProcess_DebuggeeStateChanged(object sender, ProcessEventArgs e)
+		{
+			RefreshPad();
 		}
 		
 		void CallStackListItemActivate(object sender, EventArgs e)
 		{
-			if (debuggerCore.IsPaused) {
+			if (debuggedProcess.IsPaused) {
 				Function f = (Function)(callStackList.SelectedItems[0].Tag);
 				if (f.HasSymbols) {
-					if (debuggerCore.SelectedThread != null) {
-						debuggerCore.SelectedThread.SelectedFunction = f;
-						debuggerCore.OnDebuggeeStateChanged(); // Force refresh of pads
+					if (debuggedProcess.SelectedThread != null) {
+						debuggedProcess.SelectedThread.SelectedFunction = f;
+						debuggedProcess.OnDebuggeeStateChanged(); // Force refresh of pads
 					}
 				} else {
 					MessageService.ShowMessage("${res:MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbols}", "${res:MainWindow.Windows.Debug.CallStack.FunctionSwitch}");
@@ -92,8 +104,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			callStackList.BeginUpdate();
 			callStackList.Items.Clear();
-			if (debuggerCore != null && debuggerCore.SelectedThread != null && debuggerCore.IsPaused) {
-				foreach (Function f in debuggerCore.SelectedThread.Callstack) {
+			if (debuggedProcess != null && debuggedProcess.SelectedThread != null && debuggedProcess.IsPaused) {
+				foreach (Function f in debuggedProcess.SelectedThread.Callstack) {
 					ListViewItem item;
 					if (f.HasSymbols || showExternalMethods) {
 						// Show the method in the list

@@ -40,10 +40,27 @@ namespace ICSharpCode.SharpDevelop.Services
 		Properties properties;
 		
 		bool serviceInitialized = false;
-				
+		
+		Debugger.Process debuggedProcess;
+		
+		public event EventHandler<ProcessEventArgs> ProcessSelected;
+		
 		public NDebugger DebuggerCore {
 			get {
 				return debugger;
+			}
+		}
+		
+		public Debugger.Process DebuggedProcess {
+			get {
+				return debuggedProcess;
+			}
+		}
+		
+		protected virtual void OnProcessSelected(ProcessEventArgs e)
+		{
+			if (ProcessSelected != null) {
+				ProcessSelected(this, e);
 			}
 		}
 		
@@ -63,18 +80,18 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			properties = PropertyService.Get("DebuggerProperties", new Properties());
 		}
-
+		
 		#region IDebugger Members
-
+		
 		public bool IsDebugging { 
 			get { 
-				return serviceInitialized && (debugger.Processes.Count > 0);
+				return serviceInitialized && debuggedProcess != null;
 			} 
 		}
 		
 		public bool IsProcessRunning { 
 			get { 
-				return IsDebugging && debugger.IsRunning; 
+				return IsDebugging && debuggedProcess.IsRunning; 
 			} 
 		}
 		
@@ -94,63 +111,64 @@ namespace ICSharpCode.SharpDevelop.Services
 			} else if (version == null || version.Length == 0) {
 				MessageBox.Show("Can not get .NET Framework version of program. Check that the program is managed assembly.");
 			} else {
-				debugger.Start(processStartInfo.FileName,
-				               processStartInfo.WorkingDirectory,
-							   processStartInfo.Arguments);
+				Debugger.Process process = debugger.Start(processStartInfo.FileName,
+				                                          processStartInfo.WorkingDirectory,
+				                                          processStartInfo.Arguments);
+				SelectProcess(process);
 			}
 		}
-
+		
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
 		{
 			System.Diagnostics.Process.Start(processStartInfo);
 		}
-
+		
 		public void Stop()
 		{
-			debugger.Terminate();
+			debuggedProcess.Terminate();
 		}
 		
 		// ExecutionControl:
 		
 		public void Break()
 		{
-			debugger.Break();
+			debuggedProcess.Break();
 		}
 		
 		public void Continue()
 		{
-			debugger.Continue();
+			debuggedProcess.Continue();
 		}
-
+		
 		// Stepping:
-
+		
 		public void StepInto()
 		{
-			if (debugger.SelectedFunction == null || debugger.IsRunning) {
+			if (debuggedProcess.SelectedFunction == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}", "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
-				debugger.StepInto();
+				debuggedProcess.StepInto();
 			}
 		}
 		
 		public void StepOver()
 		{
-			if (debugger.SelectedFunction == null || debugger.IsRunning) {
+			if (debuggedProcess.SelectedFunction == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}", "${res:XML.MainMenu.DebugMenu.StepOver.Description}");
 			} else {
-				debugger.StepOver();
+				debuggedProcess.StepOver();
 			}
 		}
 		
 		public void StepOut()
 		{
-			if (debugger.SelectedFunction == null || debugger.IsRunning) {
+			if (debuggedProcess.SelectedFunction == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}", "${res:XML.MainMenu.DebugMenu.StepOut}");
 			} else {
-				debugger.StepOut();
+				debuggedProcess.StepOut();
 			}
 		}
-
+		
 		public event EventHandler DebugStarted;
 		public event EventHandler DebugStopped;
 		public event EventHandler IsProcessRunningChanged;
@@ -168,9 +186,9 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public Variable GetVariableFromName(string variableName)
 		{
-			if (debugger == null || debugger.IsRunning) return null;
+			if (debuggedProcess == null || debuggedProcess.IsRunning) return null;
 			
-			VariableCollection collection = debugger.LocalVariables;
+			VariableCollection collection = debuggedProcess.LocalVariables;
 			
 			if (collection == null) return null;
 			
@@ -214,8 +232,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public bool CanSetInstructionPointer(string filename, int line, int column)
 		{
-			if (debugger != null && debugger.IsPaused && debugger.SelectedFunction != null) {
-				SourcecodeSegment seg = debugger.SelectedFunction.CanSetIP(filename, line, column);
+			if (debuggedProcess != null && debuggedProcess.IsPaused && debuggedProcess.SelectedFunction != null) {
+				SourcecodeSegment seg = debuggedProcess.SelectedFunction.CanSetIP(filename, line, column);
 				return seg != null;
 			} else {
 				return false;
@@ -225,7 +243,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		public bool SetInstructionPointer(string filename, int line, int column)
 		{
 			if (CanSetInstructionPointer(filename, line, column)) {
-				SourcecodeSegment seg = debugger.SelectedFunction.SetIP(filename, line, column);
+				SourcecodeSegment seg = debuggedProcess.SelectedFunction.SetIP(filename, line, column);
 				return seg != null;
 			} else {
 				return false;
@@ -248,22 +266,17 @@ namespace ICSharpCode.SharpDevelop.Services
 				string path = RemotingConfigurationHelpper.GetLoadedAssemblyPath("Debugger.Core.dll");
 				new RemotingConfigurationHelpper(path).Configure();
 			}
-
+			
 			debugger = new NDebugger();
-
-			debugger.LogMessage              += LogMessage;
-			debugger.DebuggerTraceMessage    += TraceMessage;
-			debugger.ProcessStarted          += ProcessStarted;
-			debugger.ProcessExited           += ProcessExited;
-			debugger.DebuggingPaused         += DebuggingPaused;
-			debugger.ExceptionThrown         += ExceptionThrown;
-			debugger.DebuggeeStateChanged    += DebuggeeStateChanged;
-			debugger.DebuggingResumed        += DebuggingResumed;
-
+			
+			debugger.DebuggerTraceMessage    += debugger_TraceMessage;
+			debugger.ProcessStarted          += debugger_ProcessStarted;
+			debugger.ProcessExited           += debugger_ProcessExited;
+			
 			DebuggerService.BreakPointAdded  += delegate (object sender, BreakpointBookmarkEventArgs e) {
 				AddBreakpoint(e.BreakpointBookmark);
 			};
-
+			
 			foreach (BreakpointBookmark b in DebuggerService.Breakpoints) {
 				AddBreakpoint(b);
 			}
@@ -271,10 +284,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (Initialize != null) {
 				Initialize(this, null);  
 			}
-
+			
 			serviceInitialized = true;
 		}
-
+		
 		void AddBreakpoint(BreakpointBookmark bookmark)
 		{
 			SourcecodeSegment seg = new SourcecodeSegment(bookmark.FileName, bookmark.LineNumber + 1); 
@@ -300,41 +313,64 @@ namespace ICSharpCode.SharpDevelop.Services
 				breakpoint.Enabled = bookmark.IsEnabled;
 			};
 		}
-
+		
 		void LogMessage(object sender, MessageEventArgs e)
 		{
 			DebuggerService.PrintDebugMessage(e.Message);
 		}
 		
-		void TraceMessage(object sender, MessageEventArgs e)
+		void debugger_TraceMessage(object sender, MessageEventArgs e)
 		{
 			LoggingService.Debug("Debugger: " + e.Message);
 		}
 		
-		void ProcessStarted(object sender, ProcessEventArgs e)
+		void debugger_ProcessStarted(object sender, ProcessEventArgs e)
 		{
 			if (debugger.Processes.Count == 1) {
 				if (DebugStarted != null) {
 					DebugStarted(this, EventArgs.Empty);
 				}
 			}
+			e.Process.LogMessage += LogMessage;
 		}
-
-		void ProcessExited(object sender, ProcessEventArgs e)
+		
+		void debugger_ProcessExited(object sender, ProcessEventArgs e)
 		{
 			if (debugger.Processes.Count == 0) {
 				if (DebugStopped != null) {
 					DebugStopped(this, e);
 				}
+				SelectProcess(null);
+			} else {
+				SelectProcess(debugger.Processes[0]);
 			}
 		}
 		
-		void DebuggingPaused(object sender, ProcessEventArgs e)
+		public void SelectProcess(Debugger.Process process)
+		{
+			if (debuggedProcess != null) {
+				debuggedProcess.DebuggingPaused         -= debuggedProcess_DebuggingPaused;
+				debuggedProcess.ExceptionThrown         -= debuggedProcess_ExceptionThrown;
+				debuggedProcess.DebuggeeStateChanged    -= debuggedProcess_DebuggeeStateChanged;
+				debuggedProcess.DebuggingResumed        -= debuggedProcess_DebuggingResumed;
+			}
+			debuggedProcess = process;
+			if (debuggedProcess != null) {
+				debuggedProcess.DebuggingPaused         += debuggedProcess_DebuggingPaused;
+				debuggedProcess.ExceptionThrown         += debuggedProcess_ExceptionThrown;
+				debuggedProcess.DebuggeeStateChanged    += debuggedProcess_DebuggeeStateChanged;
+				debuggedProcess.DebuggingResumed        += debuggedProcess_DebuggingResumed;
+			}
+			JumpToCurrentLine();
+			OnProcessSelected(new ProcessEventArgs(process));
+		}
+		
+		void debuggedProcess_DebuggingPaused(object sender, ProcessEventArgs e)
 		{
 			OnIsProcessRunningChanged(EventArgs.Empty);
 		}
 		
-		void ExceptionThrown(object sender, ExceptionEventArgs e)
+		void debuggedProcess_ExceptionThrown(object sender, ExceptionEventArgs e)
 		{
 			if (e.Exception.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED) {
 				// Ignore the exception
@@ -351,32 +387,33 @@ namespace ICSharpCode.SharpDevelop.Services
 					e.Continue = true;
 					return;
 				case ExceptionForm.Result.Ignore:
-					debugger.SelectedThread.InterceptCurrentException();
+					e.Process.SelectedThread.InterceptCurrentException();
 					e.Continue = true; // HACK: Start interception
 					break;
 			}
 		}
 		
-		void DebuggeeStateChanged(object sender, ProcessEventArgs e)
+		void debuggedProcess_DebuggeeStateChanged(object sender, ProcessEventArgs e)
 		{
 			JumpToCurrentLine();
 		}
 		
-		void DebuggingResumed(object sender, ProcessEventArgs e)
+		void debuggedProcess_DebuggingResumed(object sender, ProcessEventArgs e)
 		{
-			if (!debugger.Evaluating) {
+			if (!e.Process.Evaluating) {
 				DebuggerService.RemoveCurrentLineMarker();
 			}
 		}
-
+		
 		public void JumpToCurrentLine()
 		{
 			WorkbenchSingleton.MainForm.Activate();
-			SourcecodeSegment nextStatement = debugger.NextStatement;
-			if (nextStatement == null) {
-				DebuggerService.RemoveCurrentLineMarker();
-			} else {
-				DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
+			DebuggerService.RemoveCurrentLineMarker();
+			if (debuggedProcess != null) {
+				SourcecodeSegment nextStatement = debuggedProcess.NextStatement;
+				if (nextStatement != null) {
+					DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
+				}
 			}
 		}
 	}

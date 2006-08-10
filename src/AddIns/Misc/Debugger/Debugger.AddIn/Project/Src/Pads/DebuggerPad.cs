@@ -16,7 +16,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public abstract class DebuggerPad: AbstractPadContent
 	{
 		protected WindowsDebugger debugger;
-		protected NDebugger debuggerCore;
 		
 		public DebuggerPad()
 		{
@@ -24,13 +23,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			InitializeComponents();
 			
-			if (debugger.ServiceInitialized) {
-				InitializeDebugger();
-			} else {
-				debugger.Initialize += delegate {
-					InitializeDebugger();
-				};
-			}
+			debugger.ProcessSelected += delegate(object sender, ProcessEventArgs e) {
+				SelectProcess(e.Process);
+			};
+			SelectProcess(debugger.DebuggedProcess);
 		}
 		
 		protected virtual void InitializeComponents()
@@ -38,16 +34,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 		}
 		
-		void InitializeDebugger()
-		{
-			debuggerCore = debugger.DebuggerCore;
-
-			RegisterDebuggerEvents();
-			
-			RefreshPad();
-		}
-		
-		protected virtual void RegisterDebuggerEvents()
+		protected virtual void SelectProcess(Debugger.Process process)
 		{
 			
 		}

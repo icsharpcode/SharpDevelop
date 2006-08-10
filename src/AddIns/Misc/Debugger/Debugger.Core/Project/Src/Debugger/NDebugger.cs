@@ -151,11 +151,12 @@ namespace Debugger
 			process.Start();
 		}
 		
-		public void Start(string filename, string workingDirectory, string arguments)		
+		public Process Start(string filename, string workingDirectory, string arguments)		
 		{
 			InitDebugger(GetProgramVersion(filename));
 			Process process = Process.CreateProcess(this, filename, workingDirectory, arguments);
 			AddProcess(process);
+			return process;
 		}
 	}
 }
