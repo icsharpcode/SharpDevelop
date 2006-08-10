@@ -20,6 +20,9 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
+	/// <summary>
+	/// Handles all callbacks of a given process
+	/// </summary>
 	class ManagedCallback
 	{
 		Process process;
@@ -39,6 +42,7 @@ namespace Debugger
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugProcess pProcess)
 		{
 			process.TraceMessage("Callback: " + name);
+			System.Diagnostics.Debug.Assert(process.CorProcess == pProcess);
 			// Check state
 			if (process.IsRunning ||
 				// After break is pressed we may receive some messages that were already queued
@@ -46,7 +50,6 @@ namespace Debugger
 				// ExitProcess may be called at any time when debuggee is killed
 				name == "ExitProcess") {
 				
-				process = process.GetProcess(pProcess);
 				if (process.IsPaused && process.PauseSession.PausedReason == PausedReason.ForcedBreak) {
 					process.TraceMessage("Processing post-break callback");
 					// Continue the break, process is still breaked because of the callback
@@ -394,14 +397,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "ExitProcess", pProcess);
 			
-			Process process = process.GetProcess(pProcess);
-			
-			process.RemoveProcess(process);
-			
-			if (process.Processes.Count == 0) {
-				// Exit callback and then terminate the debugger
-				process.MTA2STA.AsyncCall( delegate { process.TerminateDebugger(); } );
-			}
+			process.NotifyHasExpired();
 		}
 		
 		#endregion

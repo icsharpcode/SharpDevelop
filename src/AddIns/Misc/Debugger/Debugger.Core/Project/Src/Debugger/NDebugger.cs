@@ -19,7 +19,7 @@ namespace Debugger
 	public partial class NDebugger: RemotingObjectBase
 	{
 		ICorDebug                  corDebug;
-		ManagedCallback            managedCallback;
+		ManagedCallbackSwitch      managedCallbackSwitch;
 		ManagedCallbackProxy       managedCallbackProxy;
 		
 		MTA2STA mta2sta = new MTA2STA();
@@ -41,12 +41,6 @@ namespace Debugger
 		public string DebuggeeVersion {
 			get {
 				return debuggeeVersion;
-			}
-		}
-		
-		internal ManagedCallback ManagedCallback {
-			get {
-				return managedCallback;
 			}
 		}
 		
@@ -105,8 +99,8 @@ namespace Debugger
 			
 			corDebug = new ICorDebug(NativeMethods.CreateDebuggingInterfaceFromVersion(3, this.debuggeeVersion));
 			
-			managedCallback = new ManagedCallback(this);
-			managedCallbackProxy = new ManagedCallbackProxy(managedCallback);
+			managedCallbackSwitch = new ManagedCallbackSwitch(this);
+			managedCallbackProxy = new ManagedCallbackProxy(this, managedCallbackSwitch);
 			
 			corDebug.Initialize();
 			corDebug.SetManagedHandler(new ICorDebugManagedCallback(managedCallbackProxy));

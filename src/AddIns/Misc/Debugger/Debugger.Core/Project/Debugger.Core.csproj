@@ -383,6 +383,7 @@
     <Compile Include="Src\Variables\Evals\NewObjectEval.cs" />
     <Compile Include="Src\Debugger\IMutable.cs" />
     <Compile Include="Src\Debugger\ExceptionEventArgs.cs" />
+    <Compile Include="Src\Debugger\Internal\ManagedCallbackSwitch.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

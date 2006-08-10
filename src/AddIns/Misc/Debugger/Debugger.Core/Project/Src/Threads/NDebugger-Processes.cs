@@ -49,9 +49,12 @@ namespace Debugger
 		internal void RemoveProcess(Process process)
 		{
 			processCollection.Remove(process);
-			process.NotifyHasExpired();
 			OnProcessExited(process);
 			// noProcessesHandle is set in NDebugger.TerminateDebugger
+			if (processCollection.Count == 0) {
+				// Exit callback and then terminate the debugger
+				this.MTA2STA.AsyncCall( delegate { this.TerminateDebugger(); } );
+			}
 		}
 
 		protected virtual void OnProcessStarted(Process process)

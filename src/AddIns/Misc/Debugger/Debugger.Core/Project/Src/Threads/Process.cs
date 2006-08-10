@@ -17,9 +17,10 @@ namespace Debugger
 	public partial class Process: RemotingObjectBase, IExpirable
 	{
 		NDebugger debugger;
-
+		
 		ICorDebugProcess corProcess;
-
+		ManagedCallback callbackInterface;
+		
 		Thread selectedThread;
 		PauseSession pauseSession;
 		
@@ -40,6 +41,7 @@ namespace Debugger
 				if (Expired != null) {
 					Expired(this, new ProcessEventArgs(this));
 				}
+				debugger.RemoveProcess(this);
 			}
 		}
 		
@@ -62,11 +64,19 @@ namespace Debugger
 				return debugger;
 			}
 		}
-
+		
+		internal ManagedCallback CallbackInterface {
+			get {
+				return callbackInterface;
+			}
+		}
+		
 		internal Process(NDebugger debugger, ICorDebugProcess corProcess)
 		{
 			this.debugger = debugger;
 			this.corProcess = corProcess;
+			
+			this.callbackInterface = new ManagedCallback(this);
 		}
 
 		internal ICorDebugProcess CorProcess {
@@ -187,6 +197,13 @@ namespace Debugger
 		}
 		
 		
+		string debuggeeVersion;
+		
+		public string DebuggeeVersion {
+			get {
+				return debuggeeVersion;
+			}
+		}
 		
 		/// <summary>
 		/// Fired when System.Diagnostics.Trace.WriteLine() is called in debuged process
