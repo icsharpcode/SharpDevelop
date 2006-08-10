@@ -55,7 +55,7 @@ namespace Debugger
 		bool isExpired = false;
 		
 		public event EventHandler Expired;
-		public event EventHandler<DebuggerEventArgs> Changed;
+		public event EventHandler<ProcessEventArgs> Changed;
 		
 		public Process Process {
 			get {
@@ -161,7 +161,7 @@ namespace Debugger
 			foreach(IExpirable exp in expireDependencies) {
 				AddExpireDependency(exp);
 			}
-			AddExpireDependency(process.SelectedProcess);
+			AddExpireDependency(process);
 			
 			this.mutateDependencies = mutateDependencies;
 			if (!this.HasExpired) {
@@ -198,7 +198,7 @@ namespace Debugger
 			}
 		}
 		
-		void DependencyChanged(object sender, DebuggerEventArgs e)
+		void DependencyChanged(object sender, ProcessEventArgs e)
 		{
 			NotifyChange();
 		}
@@ -218,7 +218,7 @@ namespace Debugger
 			}
 		}
 		
-		protected virtual void OnChanged(DebuggerEventArgs e)
+		protected virtual void OnChanged(ProcessEventArgs e)
 		{
 			if (Changed != null) {
 				Changed(this, e);

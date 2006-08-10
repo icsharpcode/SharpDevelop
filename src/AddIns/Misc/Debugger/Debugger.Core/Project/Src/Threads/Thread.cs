@@ -74,8 +74,6 @@ namespace Debugger
 			this.process = process;
 			this.corThread = corThread;
 			id = corThread.ID;
-			
-			this.process = process.GetProcess(corThread.Process);
 		}
 		
 		public bool Suspended {

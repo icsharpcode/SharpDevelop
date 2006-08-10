@@ -9,7 +9,7 @@ using System;
 
 namespace Debugger
 {
-	public class ExceptionEventArgs: DebuggerEventArgs
+	public class ExceptionEventArgs: ProcessEventArgs
 	{
 		bool @continue;
 		Exception exception;

@@ -38,7 +38,7 @@ namespace Debugger
 			if(!hasExpired) {
 				hasExpired = true;
 				if (Expired != null) {
-					Expired(this, new DebuggerEventArgs(debugger));
+					Expired(this, new ProcessEventArgs(this));
 				}
 			}
 		}
@@ -81,18 +81,6 @@ namespace Debugger
 			}
 			set {
 				selectedThread = value;
-			}
-		}
-
-		public IList<Thread> Threads {
-			get {
-				List<Thread> threads = new List<Thread>();
-				foreach(Thread thread in debugger.Threads) {
-					if (thread.Process == this) {
-						threads.Add(thread);
-					}
-				}
-				return threads;
 			}
 		}
 		
@@ -145,9 +133,8 @@ namespace Debugger
 			corProcess.Stop(5000); // TODO: Hardcoded value
 			
 			pauseSession = new PauseSession(PausedReason.ForcedBreak);
-			debugger.SelectedProcess = this;
 			
-			debugger.Pause(true);
+			Pause(true);
 		}
 		
 		public void Continue()
@@ -156,8 +143,8 @@ namespace Debugger
 
 			pauseSession.NotifyHasExpired();
 			pauseSession = null;
-			debugger.OnDebuggingResumed();
-			debugger.pausedHandle.Reset();
+			OnDebuggingResumed();
+			pausedHandle.Reset();
 			
 			corProcess.Continue(0);
 		}
@@ -196,6 +183,59 @@ namespace Debugger
 		{
 			if (IsPaused) {
 				throw new DebuggerException("Process is not running.");
+			}
+		}
+		
+		
+		
+		/// <summary>
+		/// Fired when System.Diagnostics.Trace.WriteLine() is called in debuged process
+		/// </summary>
+		public event EventHandler<MessageEventArgs> LogMessage;
+		
+		protected internal virtual void OnLogMessage(MessageEventArgs arg)
+		{
+			TraceMessage ("Debugger event: OnLogMessage");
+			if (LogMessage != null) {
+				LogMessage(this, arg);
+			}
+		}
+		
+		/// <summary>
+		/// Internal: Used to debug the debugger library.
+		/// </summary>
+		public event EventHandler<MessageEventArgs> DebuggerTraceMessage;
+		
+		protected internal virtual void OnDebuggerTraceMessage(string message)
+		{
+			if (DebuggerTraceMessage != null) {
+				DebuggerTraceMessage(this, new MessageEventArgs(this, message));
+			}
+		}
+		
+		internal void TraceMessage(string message)
+		{
+			System.Diagnostics.Debug.WriteLine("Debugger:" + message);
+			OnDebuggerTraceMessage(message);
+		}
+		
+		public SourcecodeSegment NextStatement { 
+			get {
+				if (SelectedFunction == null || IsRunning) {
+					return null;
+				} else {
+					return SelectedFunction.NextStatement;
+				}
+			}
+		}
+		
+		public VariableCollection LocalVariables { 
+			get {
+				if (SelectedFunction == null || IsRunning) {
+					return VariableCollection.Empty;
+				} else {
+					return SelectedFunction.Variables;
+				}
 			}
 		}
 	}

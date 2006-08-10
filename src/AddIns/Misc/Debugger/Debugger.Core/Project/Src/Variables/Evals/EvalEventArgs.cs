@@ -10,7 +10,7 @@ using System;
 namespace Debugger 
 {	
 	[Serializable]
-	public class EvalEventArgs : DebuggerEventArgs
+	public class EvalEventArgs : ProcessEventArgs
 	{
 		Eval eval;
 		

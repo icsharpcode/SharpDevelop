@@ -26,9 +26,9 @@ namespace Debugger
 		Process selectedProcess;
 		
 		public event EventHandler<ExceptionEventArgs> ExceptionThrown;
-		public event EventHandler<DebuggerEventArgs> DebuggingResumed;
-		public event EventHandler<DebuggerEventArgs> DebuggingPaused;
-		public event EventHandler<DebuggerEventArgs> DebuggeeStateChanged;
+		public event EventHandler<ProcessEventArgs> DebuggingResumed;
+		public event EventHandler<ProcessEventArgs> DebuggingPaused;
+		public event EventHandler<ProcessEventArgs> DebuggeeStateChanged;
 		
 		public bool PauseOnHandledException {
 			get {
@@ -50,7 +50,7 @@ namespace Debugger
 		{
 			TraceMessage ("Debugger event: OnDebuggingResumed()");
 			if (DebuggingResumed != null) {
-				DebuggingResumed(this, new DebuggerEventArgs(this));
+				DebuggingResumed(this, new ProcessEventArgs(this));
 			}
 		}
 		
@@ -58,7 +58,7 @@ namespace Debugger
 		{
 			TraceMessage ("Debugger event: OnDebuggingPaused (" + PausedReason.ToString() + ")");
 			if (DebuggingPaused != null) {
-				DebuggingPaused(this, new DebuggerEventArgs(this));
+				DebuggingPaused(this, new ProcessEventArgs(this));
 			}
 		}
 		
@@ -67,26 +67,7 @@ namespace Debugger
 		{
 			TraceMessage ("Debugger event: OnDebuggeeStateChanged (" + PausedReason.ToString() + ")");
 			if (DebuggeeStateChanged != null) {
-				DebuggeeStateChanged(this, new DebuggerEventArgs(this));
-			}
-		}
-		
-		public Process SelectedProcess {
-			get {
-				return selectedProcess;
-			}
-			set {
-				selectedProcess = value;
-			}
-		}
-		
-		public Thread SelectedThread {
-			get {
-				if (SelectedProcess == null) {
-					return null;
-				} else {
-					return SelectedProcess.SelectedThread;
-				}
+				DebuggeeStateChanged(this, new ProcessEventArgs(this));
 			}
 		}
 		
@@ -100,48 +81,12 @@ namespace Debugger
 			}
 		}
 		
-		public PauseSession PauseSession {
-			get {
-				if (SelectedProcess == null) {
-					return null;
-				} else {
-					return SelectedProcess.PauseSession;
-				}
-			}
-		}
-		
 		/// <summary>
 		/// Indentification of the state of the debugee. This value changes whenever the state of the debugee significatntly changes
 		/// </summary>
 		public DebugeeState DebugeeState {
 			get {
 				return debugeeState;
-			}
-		}
-		
-		public void AssertPaused()
-		{
-			if (!IsPaused) {
-				throw new DebuggerException("Debugger is not paused.");
-			}
-		}
-		
-		public void AssertRunning()
-		{
-			if (IsPaused) {
-				throw new DebuggerException("Debugger is not running.");
-			}
-		}
-		
-		public bool IsPaused {
-			get {
-				return (PauseSession != null);
-			}
-		}
-		
-		public bool IsRunning {
-			get {
-				return !IsPaused;
 			}
 		}
 		
@@ -159,7 +104,7 @@ namespace Debugger
 		internal void Pause(bool debuggeeStateChanged)
 		{
 			if (this.SelectedThread == null && this.Threads.Count > 0) {
-				this.SelectedProcess.SelectedThread = this.Threads[0];
+				this.SelectedThread = this.Threads[0];
 			}
 			
 			if (this.SelectedThread != null) {
@@ -221,40 +166,19 @@ namespace Debugger
 			}
 		}
 		
-		public void Break()
-		{
-			foreach(Process p in Processes) {
-				if (p.IsRunning) {
-					p.Break();
-				}
-			}
-		}
-
 		public void StepInto()
 		{
 			SelectedFunction.StepInto();
 		}
-
+		
 		public void StepOver()
 		{
 			SelectedFunction.StepOver();
 		}
-
+		
 		public void StepOut()
 		{
 			SelectedFunction.StepOut();
-		}
-
-		public void Continue()
-		{
-			SelectedProcess.Continue();
-		}
-
-		public void Terminate()
-		{
-			foreach(Process p in Processes) {
-				p.Terminate();
-			}
 		}
 	}
 }

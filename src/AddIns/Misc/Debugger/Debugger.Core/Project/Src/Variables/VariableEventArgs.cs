@@ -9,7 +9,7 @@ using System;
 
 namespace Debugger
 {
-	public class VariableEventArgs: DebuggerEventArgs
+	public class VariableEventArgs: ProcessEventArgs
 	{
 		Variable variable;
 		

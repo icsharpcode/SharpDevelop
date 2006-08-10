@@ -118,7 +118,7 @@ namespace Debugger
 				elementName += indices[i].ToString() + ",";
 			elementName = elementName.TrimEnd(new char[] {','}) + "]";
 			
-			return new Variable(Debugger,
+			return new Variable(Process,
 			                    elementName,
 			                    Variable.Flags.Default,
 			                    new IExpirable[] {this.Variable},

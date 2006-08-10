@@ -20,7 +20,7 @@ namespace Debugger
 		
 		public event EventHandler Expired;
 		
-		public event EventHandler<DebuggerEventArgs> Changed {
+		public event EventHandler<ProcessEventArgs> Changed {
 			add {
 				process.DebuggeeStateChanged += value;
 			}

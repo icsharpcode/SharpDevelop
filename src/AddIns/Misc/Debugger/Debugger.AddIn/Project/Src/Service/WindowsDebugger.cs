@@ -329,7 +329,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		void DebuggingPaused(object sender, DebuggerEventArgs e)
+		void DebuggingPaused(object sender, ProcessEventArgs e)
 		{
 			OnIsProcessRunningChanged(EventArgs.Empty);
 		}
@@ -357,12 +357,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		void DebuggeeStateChanged(object sender, DebuggerEventArgs e)
+		void DebuggeeStateChanged(object sender, ProcessEventArgs e)
 		{
 			JumpToCurrentLine();
 		}
 		
-		void DebuggingResumed(object sender, DebuggerEventArgs e)
+		void DebuggingResumed(object sender, ProcessEventArgs e)
 		{
 			if (!debugger.Evaluating) {
 				DebuggerService.RemoveCurrentLineMarker();

@@ -10,7 +10,7 @@ using System;
 namespace Debugger 
 {	
 	[Serializable]
-	public class ModuleEventArgs : DebuggerEventArgs
+	public class ModuleEventArgs : ProcessEventArgs
 	{
 		Module module;
 		

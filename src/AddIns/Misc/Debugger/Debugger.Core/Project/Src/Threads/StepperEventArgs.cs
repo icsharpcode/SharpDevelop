@@ -10,7 +10,7 @@ using System;
 namespace Debugger
 {
 	[Serializable]
-	public class StepperEventArgs: DebuggerEventArgs
+	public class StepperEventArgs: ProcessEventArgs
 	{
 		Stepper stepper;
 		
@@ -20,7 +20,7 @@ namespace Debugger
 			}
 		}
 		
-		public StepperEventArgs(Stepper stepper): base(stepper.Debugger)
+		public StepperEventArgs(Stepper stepper): base(stepper.Process)
 		{
 			this.stepper = stepper;
 		}

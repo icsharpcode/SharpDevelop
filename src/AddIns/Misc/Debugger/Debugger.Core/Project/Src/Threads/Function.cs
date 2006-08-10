@@ -343,7 +343,7 @@ namespace Debugger
 						} else {
 							// invalidates all frames and chains for the current thread
 							CorILFrame.SetIP((uint)ilOffset);
-							process.SelectedProcess.NotifyPaused(new PauseSession(PausedReason.SetIP));
+							process.NotifyPaused(new PauseSession(PausedReason.SetIP));
 							process.Pause(false);
 						}
 					} catch {

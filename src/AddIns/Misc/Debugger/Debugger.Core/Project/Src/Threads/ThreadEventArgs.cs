@@ -10,7 +10,7 @@ using System;
 namespace Debugger 
 {	
 	[Serializable]
-	public class ThreadEventArgs : DebuggerEventArgs
+	public class ThreadEventArgs : ProcessEventArgs
 	{
 		Thread thread;
 		

@@ -11,6 +11,6 @@ namespace Debugger
 {
 	public interface IMutable
 	{
-		event EventHandler<DebuggerEventArgs> Changed;
+		event EventHandler<ProcessEventArgs> Changed;
 	}
 }

@@ -31,7 +31,7 @@ namespace Debugger
 				return mta2sta;
 			}
 		}
-
+		
 		internal ICorDebug CorDebug {
 			get {
 				return corDebug;
@@ -44,7 +44,7 @@ namespace Debugger
 			}
 		}
 		
-        internal ManagedCallback ManagedCallback {
+		internal ManagedCallback ManagedCallback {
 			get {
 				return managedCallback;
 			}
@@ -116,16 +116,7 @@ namespace Debugger
 		
 		internal void TerminateDebugger()
 		{
-			ClearModules();
-			
 			ResetBreakpoints();
-			
-			ClearThreads();
-			
-			selectedProcess = null;
-			pausedHandle.Reset();
-			
-			pendingEvalsCollection.Clear();
 			
 			TraceMessage("Reset done");
 			
@@ -142,41 +133,26 @@ namespace Debugger
 			noProcessesHandle.Set();
 		}
 		
-		
-		/// <summary>
-		/// Fired when System.Diagnostics.Trace.WriteLine() is called in debuged process
-		/// </summary>
-		public event EventHandler<MessageEventArgs> LogMessage;
-
-		protected internal virtual void OnLogMessage(MessageEventArgs arg)
-		{
-			TraceMessage ("Debugger event: OnLogMessage");
-			if (LogMessage != null) {
-				LogMessage(this, arg);
-			}
-		}
-
 		/// <summary>
 		/// Internal: Used to debug the debugger library.
 		/// </summary>
 		public event EventHandler<MessageEventArgs> DebuggerTraceMessage;
-
+		
 		protected internal virtual void OnDebuggerTraceMessage(string message)
 		{
 			if (DebuggerTraceMessage != null) {
 				DebuggerTraceMessage(this, new MessageEventArgs(this, message));
 			}
 		}
-
+		
 		internal void TraceMessage(string message)
 		{
 			System.Diagnostics.Debug.WriteLine("Debugger:" + message);
 			OnDebuggerTraceMessage(message);
 		}
-
-
+		
 		public void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)
-		{		
+		{
 			System.Diagnostics.Process process;
 			process = new System.Diagnostics.Process();
 			process.StartInfo = psi;
@@ -188,26 +164,6 @@ namespace Debugger
 			InitDebugger(GetProgramVersion(filename));
 			Process process = Process.CreateProcess(this, filename, workingDirectory, arguments);
 			AddProcess(process);
-		}
-
-		public SourcecodeSegment NextStatement { 
-			get {
-				if (SelectedFunction == null || IsRunning) {
-					return null;
-				} else {
-					return SelectedFunction.NextStatement;
-				}
-			}
-		}
-		
-		public VariableCollection LocalVariables { 
-			get {
-				if (SelectedFunction == null || IsRunning) {
-					return VariableCollection.Empty;
-				} else {
-					return SelectedFunction.Variables;
-				}
-			}
 		}
 	}
 }

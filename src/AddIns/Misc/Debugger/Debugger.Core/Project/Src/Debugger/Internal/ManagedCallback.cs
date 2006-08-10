@@ -46,16 +46,16 @@ namespace Debugger
 				// ExitProcess may be called at any time when debuggee is killed
 				name == "ExitProcess") {
 				
-				process.SelectedProcess = process.GetProcess(pProcess);
+				process = process.GetProcess(pProcess);
 				if (process.IsPaused && process.PauseSession.PausedReason == PausedReason.ForcedBreak) {
 					process.TraceMessage("Processing post-break callback");
 					// Continue the break, process is still breaked because of the callback
-					process.SelectedProcess.Continue();
+					process.Continue();
 					pauseProcessInsteadOfContinue = true;
 				} else {
 					pauseProcessInsteadOfContinue = false;
 				}
-				process.SelectedProcess.NotifyPaused(new PauseSession(pausedReason));
+				process.NotifyPaused(new PauseSession(pausedReason));
 			} else {
 				throw new DebuggerException("Invalid state at the start of callback");
 			}
@@ -69,9 +69,9 @@ namespace Debugger
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugThread pThread)
 		{
 			EnterCallback(pausedReason, name, pThread.Process);
-			process.SelectedProcess.SelectedThread = process.GetThread(pThread);
+			process.SelectedThread = process.GetThread(pThread);
 			// Remove expired functions from the callstack cache
-			process.SelectedProcess.SelectedThread.CheckExpirationOfFunctions();
+			process.SelectedThread.CheckExpirationOfFunctions();
 		}
 		
 		void ExitCallback_Continue()
@@ -79,7 +79,7 @@ namespace Debugger
 			if (pauseProcessInsteadOfContinue) {
 				ExitCallback_Paused();
 			} else {
-				process.SelectedProcess.Continue();
+				process.Continue();
 			}
 		}
 		

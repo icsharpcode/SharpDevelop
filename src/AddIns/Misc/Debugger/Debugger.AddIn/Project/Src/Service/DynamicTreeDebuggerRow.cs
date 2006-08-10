@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			Update();
 		}
 		
-		void Update(object sender, DebuggerEventArgs e)
+		void Update(object sender, ProcessEventArgs e)
 		{
 			dirty = true;
 			Update();
@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (Variable.Process.IsPaused) {
 				action();
 			} else {
-				EventHandler<DebuggerEventArgs> onDebuggingPaused = null;
+				EventHandler<ProcessEventArgs> onDebuggingPaused = null;
 				onDebuggingPaused = delegate {
 					action();
 					Variable.Process.DebuggingPaused -= onDebuggingPaused;

@@ -10,7 +10,7 @@ using System;
 namespace Debugger 
 {	
 	[Serializable]
-	public class ValueEventArgs : DebuggerEventArgs
+	public class ValueEventArgs : ProcessEventArgs
 	{
 		Value val;
 		
@@ -20,7 +20,7 @@ namespace Debugger
 			}
 		}
 		
-		public ValueEventArgs(Value val): base(val.Debugger)
+		public ValueEventArgs(Value val): base(val.Process)
 		{
 			this.val = val;
 		}
