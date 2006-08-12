@@ -37,7 +37,7 @@ namespace SharpDbTools.Model
 		public string Name {
 			get {
 				DataTable table = this.Tables[TableNames.ConnectionInfo];
-				string name = (string)table.Rows[0][ColumnNames.Name];
+				string name = table.Rows[0][ColumnNames.Name] as string;
 				return name;
 			}
 		}
@@ -45,12 +45,12 @@ namespace SharpDbTools.Model
 		public string InvariantName {
 			get {
 				DataTable table = this.Tables[TableNames.ConnectionInfo];
-				string invariantName = (string)table.Rows[0][ColumnNames.InvariantName];
+				string invariantName = table.Rows[0][ColumnNames.InvariantName] as string;
 				return invariantName;
 			}
 			set {
 				DataTable table = this.Tables[TableNames.ConnectionInfo];
-				string invariantName = (string)table.Rows[0][ColumnNames.InvariantName];
+				string invariantName = table.Rows[0][ColumnNames.InvariantName] as string;
 				string name = this.Name;
 				string connectionString = this.ConnectionString;
 				
@@ -72,12 +72,12 @@ namespace SharpDbTools.Model
 		public string ConnectionString {
 			get {
 				DataTable table = this.Tables[TableNames.ConnectionInfo];
-				string connectionString = (string)table.Rows[0][ColumnNames.ConnectionString];
+				string connectionString = table.Rows[0][ColumnNames.ConnectionString] as string;
 				return connectionString;
 			}
 			set {
 				DataTable table = this.Tables[TableNames.ConnectionInfo];
-				string invariantName = (string)table.Rows[0][ColumnNames.InvariantName];
+				string invariantName = table.Rows[0][ColumnNames.InvariantName] as string;
 				string name = this.Name;
 				string connectionString = this.ConnectionString;
 				

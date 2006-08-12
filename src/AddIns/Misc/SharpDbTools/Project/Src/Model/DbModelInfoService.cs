@@ -32,6 +32,7 @@ namespace SharpDbTools.Model
 	public static class DbModelInfoService
 	{
 		static string saveLocation = null;
+		static object lockObject = new Object();
 		const string dbFilesDir = "DbTools";	
 		static SortedList<string, DbModelInfo> cache = new SortedList<string, DbModelInfo>();
 		
@@ -124,7 +125,7 @@ namespace SharpDbTools.Model
 				string modelName = modelInfo.Name;
 				// write to a file in 'path' called <name>.metadata
 				// TODO: may want to consider ways of making this more resilient
-				string filePath = @path + name + ".metadata";
+				string filePath = path + @"\" + name + ".metadata";
 				LoggingService.Debug("writing metadata to: " + filePath);
 				if (File.Exists(filePath)) {
 					File.Delete(filePath);
@@ -136,7 +137,13 @@ namespace SharpDbTools.Model
 					sw.Close();
 				}
 			}
-			LoggingService.Debug("DbModelInfo with name: " + name + " not found");
+		}
+		
+		public static void SaveAll()
+		{
+			foreach (string name in cache.Keys) {
+				SaveToFile(name);
+			}
 		}
 		
 		public static void LoadFromFiles()
@@ -166,10 +173,13 @@ namespace SharpDbTools.Model
 			// append the path of the directory for saving Db files
 			
 			if (saveLocation == null) {
-				lock(saveLocation) {
+				lock(lockObject) {
 					string configDir = PropertyService.ConfigDirectory;
-					saveLocation = configDir + dbFilesDir;
+					saveLocation = configDir + @"\" + dbFilesDir;
 				}
+			}
+			if (!Directory.Exists(saveLocation)) {
+				Directory.CreateDirectory(@saveLocation);
 			}
 			return saveLocation;			
 		}

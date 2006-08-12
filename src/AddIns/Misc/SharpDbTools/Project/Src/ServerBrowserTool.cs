@@ -179,6 +179,7 @@ namespace SharpDbTools
 		public void SaveDbModelInfoClickHandler(object sender, EventArgs e)
 		{
 			LoggingService.Debug("save all metadata clicked");
+			DbModelInfoService.SaveAll();
 		}
 		
 		public void SetConnectionStringOnDbModelInfoClickHandler(object sender, EventArgs e)
