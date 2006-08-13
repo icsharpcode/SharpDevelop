@@ -153,18 +153,16 @@ namespace SharpDbTools.Model
 			string[] files = Directory.GetFiles(saveLocation);
 			cache.Clear();
 			for (int i = 0; i < files.Length; i++) {
-				DbModelInfo nextModel = LoadFromFile(@saveLocation + files[i]);
+				DbModelInfo nextModel = LoadFromFile(@files[i]);
 				cache.Add(nextModel.Name, nextModel);
 			}
 		}
 		
 		private static DbModelInfo LoadFromFile(string filePath)
 		{
-			StreamReader reader = File.OpenText(filePath);
-			string xml = reader.ReadToEnd();
-			reader.Close();
+			LoggingService.Debug("loading DbModelInfo from filePath: " + filePath);
 			DbModelInfo nextModel = new DbModelInfo();
-			nextModel.ReadXml(xml);
+			nextModel.ReadXml(filePath);
 			return nextModel;
 		}
 		
@@ -176,6 +174,7 @@ namespace SharpDbTools.Model
 				lock(lockObject) {
 					string configDir = PropertyService.ConfigDirectory;
 					saveLocation = configDir + @"\" + dbFilesDir;
+					saveLocation = saveLocation.Replace("/", @"\");
 				}
 			}
 			if (!Directory.Exists(saveLocation)) {

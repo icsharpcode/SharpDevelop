@@ -78,7 +78,7 @@ namespace SharpDbTools
 		public ServerToolTreeView(): base()
 		{
 			dbNode = new TreeNode();
-			dbNode.Text = "Database Connections";
+			dbNode.Text = "Database Explorer";
 			dbNode.Tag = "DatabaseConnections";
 			
 			// create the context menu for the database server node
@@ -105,8 +105,14 @@ namespace SharpDbTools
 			                    );
 			dbNode.ContextMenuStrip = cMenu;
 			
+			// TODO: NEXT: put this and the Rebuild... behaviour into a view builder; 
+			
+			// this is the wrong place for this, but lets give it a go...
+			DbModelInfoService.LoadFromFiles();
+			
 			this.BeginUpdate();
 			this.Nodes.Add(dbNode);
+			RebuildDbConnectionsNode();
 			this.EndUpdate();
 		}
 		
@@ -140,6 +146,25 @@ namespace SharpDbTools
 			                     });
 	
 			treeNode.ContextMenuStrip = cMenu;
+			
+			// create sub TreeNodes for the connection string and invariant name if they exist
+			DbModelInfo modelInfo = DbModelInfoService.GetDbModelInfo(name);
+			string connectionString = modelInfo.ConnectionString;
+			string invariantName = modelInfo.InvariantName;
+			
+			TreeNode attributesNode = new TreeNode("Connection Properties");
+			treeNode.Nodes.Add(attributesNode);
+			
+			if (connectionString != null) {
+				TreeNode cstringNode = new TreeNode("Connection String: " + connectionString);
+				attributesNode.Nodes.Add(cstringNode);
+			}
+			
+			if (invariantName != null) {
+				TreeNode invNameNode = new TreeNode("Invariant Name: " + invariantName);
+				attributesNode.Nodes.Add(invNameNode);
+			}
+			
 			return treeNode;
 		}
 		
