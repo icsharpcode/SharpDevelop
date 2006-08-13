@@ -51,7 +51,7 @@ namespace SharpReportCore{
 		private GlobalEnums.ReportTypeEnum reportType;
 		private GlobalEnums.PushPullModelEnum dataModel;
 		
-		private AbstractParametersCollection reportParametersCollection;
+		private SqlParametersCollection reportParametersCollection;
 		private ColumnCollection availableFields;
 		private ColumnCollection groupingsCollection;
 		private ColumnCollection sortingCollection;
@@ -80,7 +80,7 @@ namespace SharpReportCore{
 			this.availableFields = new ColumnCollection();
 			sortingCollection = new ColumnCollection();
 			groupingsCollection = new ColumnCollection();
-			reportParametersCollection = new AbstractParametersCollection();
+			reportParametersCollection = new SqlParametersCollection();
 			this.reportType = GlobalEnums.ReportTypeEnum.FormSheet;
 			this.dataModel = GlobalEnums.PushPullModelEnum.FormSheet;
 		}
@@ -548,17 +548,17 @@ namespace SharpReportCore{
 		
 		[Browsable(false)]
 		[XmlIgnoreAttribute]
-		public AbstractParametersCollection SqlParametersCollection
+		public SqlParametersCollection SqlParametersCollection
 		{
 			get{
 				if (reportParametersCollection == null) {
-					reportParametersCollection = new AbstractParametersCollection();
+					reportParametersCollection = new SqlParametersCollection();
 				}
 				return reportParametersCollection;
 			}
 			set {
 				if (reportParametersCollection == null) {
-					reportParametersCollection = new AbstractParametersCollection();
+					reportParametersCollection = new SqlParametersCollection();
 				}
 				if (reportParametersCollection != value) {
 					reportParametersCollection = value;

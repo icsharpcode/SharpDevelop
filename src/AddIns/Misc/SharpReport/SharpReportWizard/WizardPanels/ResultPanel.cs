@@ -45,8 +45,7 @@ namespace ReportGenerator{
 		private ReportGenerator generator;
 		private Properties customizer;
 		private ReportModel model;
-		private SharpQuerySchemaClassCollection parametersClass;
-		
+
 		private DataSet resultDataSet;
 		private ReportItemCollection colDetail;
 		private ColumnCollection abstractColumns;
@@ -65,69 +64,36 @@ namespace ReportGenerator{
 		private DataSet FillGrid() {
 			this.grdQuery.DataSource = null;
 			this.txtSqlString.Text = null;
-	
+			try {
+				SqlQueryChecker.Check(model.ReportSettings.CommandType,
+				                      model.ReportSettings.CommandText);
+			} catch (IllegalQueryException) {
+				throw;
+			}
 			DataSet dataSet = new DataSet();
 			dataSet.Locale = CultureInfo.CurrentCulture;
 			this.txtSqlString.Text = model.ReportSettings.CommandText;
-			
 			if (model.ReportSettings.CommandType == CommandType.StoredProcedure){
 				
 				if (generator.SharpQueryProcedure == null) {
 					throw new NullReferenceException("ResultPanel:FillGrid");
 				}
-				System.Console.WriteLine("\tStoredProcedure {0}",generator.SharpQueryProcedure.Name);
-				SharpQueryProcedure proc = generator.SharpQueryProcedure;
+
+				SharpQueryProcedure procedure = generator.SharpQueryProcedure;
 				
-				// we have some Parameters, to get them we use the Dialogfrom SharpQuery
-				if (proc.GetSchemaParameters() != null && proc.GetSchemaParameters().Count > 0) {
-					SharpQuerySchemaClassCollection tmp = proc.GetSchemaParameters();
-					SharpQueryParameterCollection parameters = null;
-					if (tmp.Count == 1 && tmp[0] is SharpQueryNotSupported) {
-						parameters = new SharpQueryParameterCollection();
-					}
-					else{
-						parameters = new SharpQueryParameterCollection();
-						foreach (SharpQueryParameter par in tmp){
-							parameters.Add(par);
-						}
-					}
-//					SharpQueryParameterCollection parameters = new SharpQueryParameterCollection(tmp);
-					System.Console.WriteLine("\t\t # of params {0}",parameters.Count);
-					if (parameters != null && parameters.Count > 0){
-						
-						using (SQLParameterInput inputform = new SQLParameterInput(parameters)){
-							if ( inputform.ShowDialog() != DialogResult.OK ){
-								parametersClass = null;
-							}else{
-								parametersClass	= parameters.ToBaseSchemaCollection();
-								if (parametersClass != null) {
-									dataSet = (DataSet) proc.Execute(0,parametersClass);
-									generator.Parameters = parametersClass;
-								}
-							}
-						}
-					}
-					
+				if (procedure.GetSchemaParameters() != null && procedure.GetSchemaParameters().Count > 0) {
+					// from here
+					dataSet = ExecuteStoredProcWithParameters (procedure);
 				} else {
-					System.Console.WriteLine("\t\t No params");
-					try {
-						// Stored Proc without Parameters
-						dataSet = (DataSet) proc.Execute(0,proc.GetSchemaParameters());
-					} catch (Exception) {
-						throw;
-					}
-					
+					dataSet = ExecuteStoredProc (procedure);
 				}
 			}
 			
 			// from here we create from an SqlString like "Select...."
 			if (model.ReportSettings.CommandType == CommandType.Text){
-				System.Console.WriteLine("\tCommandText");
 				try {
-					generator.Parameters = null;
 					this.txtSqlString.Text = model.ReportSettings.CommandText;
 					dataSet = BuildFromSqlString(model.ReportSettings);
-					
 				} catch (OleDbException) {
 					throw;
 				}
@@ -136,9 +102,125 @@ namespace ReportGenerator{
 				}
 			}
 			CreateCollections (dataSet);
-			
 			return dataSet;
 		}
+		
+		
+		
+		private DataSet CreateDataSet() {
+			DataSet dataSet = new DataSet();
+			dataSet.Locale = CultureInfo.CurrentCulture;
+			return dataSet;
+		}
+		
+		private OleDbCommand BuildCommand () {
+			ConnectionObject con = new ConnectionObject(this.model.ReportSettings.ConnectionString);
+			OleDbCommand command = null;
+			if (con != null) {
+				command = ((OleDbConnection)con.Connection).CreateCommand();
+				command.CommandText = this.model.ReportSettings.CommandText;
+				command.CommandType = this.model.ReportSettings.CommandType;
+				return command;
+			}
+			throw new MissingDataSourceException();
+		}
+		
+		private DataSet ExecuteStoredProc (SharpQueryProcedure procedure) {
+			DataSet dataSet = this.CreateDataSet();
+
+			OleDbCommand command = null;
+			try {
+				command = this.BuildCommand();
+				OleDbDataAdapter adapter = new OleDbDataAdapter(command);
+				adapter.Fill(dataSet);
+				
+			} catch (Exception) {
+				throw;
+			}finally {
+				if (command.Connection.State == ConnectionState.Open) {
+					command.Connection.Close();
+				} 
+			}
+			return dataSet;
+		}
+		
+		private DataSet ExecuteStoredProcWithParameters (SharpQueryProcedure procedure) {
+			
+			SharpQuerySchemaClassCollection tmp = procedure.GetSchemaParameters();
+			
+			SqlParameterConverter converter = new SqlParameterConverter();
+			SqlParametersCollection sqlParamsCollection = new SqlParametersCollection();
+			if (converter.CanConvertFrom(typeof(SharpQuerySchemaClassCollection))) {
+				if (converter.CanConvertTo(null,typeof(SqlParametersCollection))){
+					sqlParamsCollection = (SqlParametersCollection)converter.ConvertTo(null,
+					                                                  CultureInfo.InstalledUICulture,
+					                                                  tmp,
+					                                                  typeof(SqlParametersCollection));
+					
+				}
+			}
+			
+			if (sqlParamsCollection.Count > 0){
+				using (ParameterDialog inputform = new ParameterDialog(sqlParamsCollection)) {
+					if ( inputform.ShowDialog() != DialogResult.OK ){
+						return null;
+					}else{
+						DataSet dataSet = this.CreateDataSet();
+
+						OleDbCommand command = this.BuildCommand();
+						try {
+							OleDbDataAdapter adapter = new OleDbDataAdapter(command);
+							OleDbParameter oleDBPar = null;
+							
+							foreach (SqlParameter rpPar in sqlParamsCollection){
+								if (rpPar.DataType != System.Data.DbType.Binary) {
+									oleDBPar = new OleDbParameter(rpPar.ParameterName,
+									                              rpPar.DataType);
+									oleDBPar.Value = rpPar.ParameterValue;
+								} else {
+									oleDBPar = new OleDbParameter(rpPar.ParameterName,
+									                              System.Data.DbType.Binary);
+								}
+								
+								oleDBPar.Direction = rpPar.ParameterDirection;
+								command.Parameters.Add(oleDBPar);
+							}
+							generator.Parameters = sqlParamsCollection;
+							adapter.Fill (dataSet);
+							return dataSet;
+						} catch (Exception) {
+							throw;
+						} finally {
+							if (command.Connection.State == ConnectionState.Open) {
+								command.Connection.Close();
+							} 
+						}
+					}
+				}
+			}
+			return null;
+		}
+		
+		private DataSet BuildFromSqlString (ReportSettings settings) {
+			
+			DataSet dataSet = this.CreateDataSet();
+			OleDbCommand command = this.BuildCommand();
+		
+			try {
+				OleDbDataAdapter adapter = new OleDbDataAdapter(command);
+				adapter.Fill(dataSet);
+				return dataSet;
+			} catch (Exception) {
+				throw;
+			} finally {
+				if (command.Connection.State == ConnectionState.Open) {
+					command.Connection.Close();
+				} 
+			}
+		}
+		
+		
+		
 		
 		private void CreateCollections (DataSet dataSet) {
 			using  (AutoReport auto = new AutoReport()){
@@ -147,27 +229,7 @@ namespace ReportGenerator{
 			}
 		}
 		
-		private static DataSet BuildFromSqlString(ReportSettings settings) {
-			OLEDBConnectionWrapper con = null;
-			DataSet ds = null;
-			if (settings.CommandText.IndexOf("?") > 0) {
-				throw new NotSupportedException ("Parameters in SqlText are not supportet");
-			}
-			
-			try {
-				con = new OLEDBConnectionWrapper(settings.ConnectionString);
-				con.Open();
-				if (con.IsOpen) {
-					ds = (DataSet)con.ExecuteSQL(settings.CommandText,0);
-					return ds;
-				}
-			} catch (Exception) {
-				throw;
-			} finally {
-				con.Close();
-			}
-			return null;
-		}
+		
 		#endregion
 		
 		#region Create a *.Xsd File
@@ -222,10 +284,11 @@ namespace ReportGenerator{
 					this.resultDataSet.Locale = CultureInfo.InvariantCulture;
 					this.model = generator.FillReportModel(new ReportModel());
 					this.resultDataSet =  FillGrid();
+					
 					if (this.resultDataSet != null) {
 						this.grdQuery.DataSource = this.resultDataSet.Tables[0];
-						
 					}
+					
 					base.EnableNext = true;
 					base.EnableFinish = true;
 				} catch (Exception e) {

@@ -8,6 +8,7 @@
  */
 
 using System;
+using System.Data;
 using System.Globalization;
 using System.Windows.Forms;
 
@@ -15,16 +16,19 @@ namespace SharpReportCore{
 	/// <summary>
 	/// This Class checks for invalid SqlStatements
 	/// </summary>
-	internal class SqlQueryChecker{
+	public sealed class SqlQueryChecker{
 		
 		private SqlQueryChecker () {
 		}
 		
-		public static void Check (string queryString) {
-			if (!String.IsNullOrEmpty(queryString)) {
-				queryString = queryString.ToUpper(CultureInfo.CurrentCulture);
-				if (queryString.IndexOf("SELECT") < 0) {
-					throw new SharpReportCore.IllegalQueryException();
+		public static void Check (CommandType commandType,string queryString) {
+			if (commandType == CommandType.Text) {
+				if (!String.IsNullOrEmpty(queryString)) {
+					queryString = queryString.ToUpper(CultureInfo.CurrentCulture);
+
+					if (!queryString.StartsWith("SELECT")) {
+						throw new SharpReportCore.IllegalQueryException();
+					}
 				}
 			}
 		}

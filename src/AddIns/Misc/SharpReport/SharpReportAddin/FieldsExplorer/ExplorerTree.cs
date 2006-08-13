@@ -8,9 +8,9 @@
  */
 
 using System;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.ComponentModel;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -300,7 +300,7 @@ namespace SharpReportAddin{
 			}
 		}
 		
-		private void SetParamFields (AbstractParametersCollection collection){
+		private void SetParamFields (SqlParametersCollection collection){
 			ColumnsTreeNode node;
 			
 			this.nodeParams.Nodes.Clear();

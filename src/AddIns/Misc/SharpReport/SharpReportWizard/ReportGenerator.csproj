@@ -61,6 +61,7 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="SqlParameterConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Generators" />

@@ -13,11 +13,8 @@
 	/// </summary>
 using System;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-
-using SharpReport;
 using SharpReportCore;
 
 namespace ReportGenerator{
@@ -84,27 +81,7 @@ namespace ReportGenerator{
 			}
 		}
 		
-		/*
-		public class WriteXsdComplete : AbstractMenuCommand {
-			public override void Run() {
-				ResultPanel resultPanel = base.Owner as ResultPanel;
-				if (resultPanel != null) {
-					resultPanel.SaveXsdFile (false);
-				}
-				
-			}
-		}
 		
-		public class WriteXsdSchema : AbstractMenuCommand {
-			public override void Run() {
-				ResultPanel resultPanel = base.Owner as ResultPanel;
-				if (resultPanel != null) {
-					resultPanel.SaveXsdFile (true);
-				}
-				
-			}
-		}
-		 */
 	}
 	public class WriteXsdComplete : AbstractMenuCommand {
 		public override void Run() {

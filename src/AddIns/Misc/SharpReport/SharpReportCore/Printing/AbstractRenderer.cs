@@ -73,6 +73,7 @@ namespace SharpReportCore {
 			reportDocument.RenderPageEnd += new EventHandler<ReportPageEventArgs> (PrintPageEnd);
 			reportDocument.RenderReportEnd += new EventHandler<ReportPageEventArgs> (PrintReportFooter);
 		}
+		
 		#region Event handling for SectionRendering
 		
 		protected void AddSectionEvents () {

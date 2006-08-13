@@ -39,9 +39,9 @@ namespace SharpReportCore {
 		
 		int pageNumber;
 		bool detailsDone;
-		
+		bool reportHasData;
 		public ReportDocument():base() {
-			
+			this.reportHasData = true;
 		}
 		
 		
@@ -83,24 +83,28 @@ namespace SharpReportCore {
 			if (BodyStart != null) {
 				BodyStart (this,pea);
 			}
-//
-			if (this.RenderDetails != null) {
-				this.RenderDetails(this,pea);
-			}
+			System.Console.WriteLine("ReportDocumnet:'NoData' = {0}",this.reportHasData);
 			
-			
-			if (pea.ForceNewPage) {
-				if (RenderPageEnd != null) {
-					RenderPageEnd (this,pea);
+			if (this.reportHasData == true) {
+				if (this.RenderDetails != null) {
+					this.RenderDetails(this,pea);
+				}
+				
+				
+				if (pea.ForceNewPage) {
+					if (RenderPageEnd != null) {
+						RenderPageEnd (this,pea);
+						return;
+					}
+					pea.ForceNewPage = false;
 					return;
 				}
-				pea.ForceNewPage = false;
-				return;
+				
+				if (BodyEnd != null) {
+					BodyEnd (this,pea);
+				}
 			}
 			
-			if (BodyEnd != null) {
-				BodyEnd (this,pea);
-			}
 			
 			// ReportFooter
 			if (this.detailsDone) {
@@ -123,74 +127,6 @@ namespace SharpReportCore {
 		}
 		
 		
-		/*
-		protected override void OnPrintPage(PrintPageEventArgs e){
-			pageNumber ++;
-			base.OnPrintPage(e);
-			
-			
-			ReportPageEventArgs pea = new ReportPageEventArgs (e,pageNumber,
-			                                                   false,Point.Empty);
-			
-			
-			// ReportHeader only on first page
-			if (this.pageNumber == 1) {
-				if (this.RenderReportHeader != null) {
-					this.RenderReportHeader(this,pea);
-				}
-			}
-			
-			// allway draw PageHeader
-			
-			if (this.RenderPageHeader != null) {
-				this.RenderPageHeader (this,pea);
-			}
-			
-			// Details
-			
-			if (!this.detailsDone) {
-				if (BodyStart != null) {
-					BodyStart (this,pea);
-				}
-				
-				if (this.RenderDetails != null) {
-					this.RenderDetails(this,pea);
-				}
-			}
-			
-			if (pea.ForceNewPage) {
-				if (RenderPageEnd != null) {
-					RenderPageEnd (this,pea);
-					return;
-				}
-				pea.ForceNewPage = false;
-				return;
-			}
-			
-			// ReportFooter
-			
-			if (this.detailsDone) {
-				if (BodyEnd != null) {
-					BodyEnd (this,pea);
-					this.RenderReportEnd(this,pea);
-					
-					if (pea.ForceNewPage) {
-						e.HasMorePages = true;
-						pea.ForceNewPage = false;
-
-					}
-				}
-			}
-			
-			//PageFooter
-			if (RenderPageEnd != null) {
-				RenderPageEnd (this,pea);
-				e.HasMorePages = false;
-				return;
-			}
-		}
-	*/
-		
 		protected override void OnEndPrint(PrintEventArgs e){
 			base.OnEndPrint(e);
 		}
@@ -212,6 +148,12 @@ namespace SharpReportCore {
 			}
 		}
 		
+		public bool ReportHasData {
+			set {
+				reportHasData = value;
+				this.detailsDone = true;
+			}
+		}
 		
 		#endregion
 	}

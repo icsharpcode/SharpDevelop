@@ -49,11 +49,10 @@ namespace ReportGenerator {
 				base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportTypeEnum.DataReport;
 				base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModelEnum.PullData;
 				
-				
 				this.ReportModel.ReportSettings.AvailableFieldsCollection = 
 					(ColumnCollection)base.Customizer.Get ("ColumnCollection");;
-					
-				base.GenerateReport();	
+				base.GenerateReport();
+
 				base.HeaderColumnsFromReportItems (base.ReportModel.PageHeader);
 				base.BuildDataSection (base.ReportModel.DetailSection);
 

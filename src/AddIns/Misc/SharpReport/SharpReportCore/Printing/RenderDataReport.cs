@@ -83,7 +83,6 @@ namespace SharpReportCore {
 		
 		
 		private void DoPageEnd (ReportPageEventArgs rpea){
-//			System.Console.WriteLine("DoPageEnd");
 			this.CurrentSection.SectionOffset = base.Page.PageFooterRectangle.Location.Y;
 			base.RenderSection (rpea);
 			base.DoItems(rpea);
@@ -143,8 +142,7 @@ namespace SharpReportCore {
 		}
 		
 		protected override void ReportBegin(object sender, PrintEventArgs pea) {
-//			System.Console.WriteLine("");
-//			System.Console.WriteLine("ReportBegin (BeginPrint)");
+
 			base.ReportBegin (sender,pea);
 			base.DataManager.ListChanged += new EventHandler<ListChangedEventArgs> (OnListChanged);
 			dataNavigator = base.DataManager.GetNavigator;
@@ -157,18 +155,20 @@ namespace SharpReportCore {
 		
 		protected override void BodyStart(object sender, ReportPageEventArgs rpea) {
 			base.BodyStart (sender,rpea);
-//			this.currentPoint = new PointF (base.CurrentSection.Location.X,
-//			                                base.page.DetailStart.Y);
+//			System.Console.WriteLine("BodyStart with {0}",this.dataNavigator.Count);
 			
+			if (this.dataNavigator.Count == 0){
+				this.ReportDocument.ReportHasData = false;
+			}
+				
 			base.CurrentSection.SectionOffset = (int)this.page.DetailStart.Y + AbstractRenderer.Gap;
-//			base.AddSectionEvents();
 		}
 		
 		
 		protected override void PrintDetail(object sender, ReportPageEventArgs rpea){
 			Rectangle sectionRect;
 			bool firstOnPage = true;
-		
+//			System.Console.WriteLine("PrintDetail");
 			base.PrintDetail(sender, rpea);
 		
 			// no loop if there is no data

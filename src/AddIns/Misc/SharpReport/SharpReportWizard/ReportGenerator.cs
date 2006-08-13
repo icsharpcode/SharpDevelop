@@ -9,21 +9,12 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.Drawing;
-using System.ComponentModel;
-using System.Globalization;
-
-	
 using System.Data;
-using System.Data.OleDb;
-	
-using SharpReport;
-using SharpReportCore;
-	
-using SharpQuery;
-using SharpQuery.Collections;
+using System.Drawing;
+
 using SharpQuery.SchemaClass;
-	
+using SharpReportCore;
+
 /// <summary>
 /// This class creates settings for a report
 /// </summary>
@@ -31,7 +22,7 @@ using SharpQuery.SchemaClass;
 /// 	created by - Forstmeier Peter
 /// 	created on - 28.01.2005 10:31:01
 /// </remarks>
-using System.Windows.Forms;
+
 
 namespace ReportGenerator {	
 	public class ReportGenerator : object,IDisposable {
@@ -57,8 +48,8 @@ namespace ReportGenerator {
 		private ReportItemCollection reportItemCollection;
 		private ColumnCollection columnCollection;
 		
-		private SharpQuerySchemaClassCollection queryParameters;
-		public ReportGenerator() {	
+		private SqlParametersCollection queryParameters;
+		public ReportGenerator() {
 		}
 		
 		public ReportModel FillReportModel (ReportModel model) {
@@ -75,37 +66,10 @@ namespace ReportGenerator {
 			model.ReportSettings.CommandText = this.sqlString;
 			model.ReportSettings.CommandType = this.commandType;
 			model.ReportSettings.DataModel = this.dataModel;
+			model.ReportSettings.SqlParametersCollection = this.queryParameters;
 			return model;
 		}
 		
-		/// <summary>
-		/// This methode build the ReportParameterCollection we use in ReportSettings
-		/// from the queryParameters
-		/// </summary>
-		/// <returns></returns>
-		public   AbstractParametersCollection BuildSqlParameterList(){			
-			if (this.queryParameters != null && this.queryParameters.Count > 0) {
-				AbstractParametersCollection paramCol = new  AbstractParametersCollection();
-				SqlParameter reportPar;
-				
-				SharpQueryParameter sqPar = null;
-				for (int i = 0;i < this.queryParameters.Count ;i++ ) {
-					sqPar = (SharpQueryParameter) this.queryParameters[i];
-					reportPar =  new SqlParameter (sqPar.Name,
-					                               sqPar.DataType,
-					                              null,
-					                               String.Empty,
-					                               sqPar.Type);
-					
-					reportPar.DefaultValue = sqPar.Value;
-					paramCol.Add(reportPar);
-					
-				}
-				return paramCol;
-			}
-			return null;
-			
-		}
 		
 		
 		#region BaseSettingsPanel property's
@@ -200,13 +164,12 @@ namespace ReportGenerator {
 		}
 		
 
-		
-		public SharpQuerySchemaClassCollection Parameters {
+		public SqlParametersCollection Parameters {
 			get {
 				return queryParameters;
 			}
 			set {
-				queryParameters = value;
+				this.queryParameters = value;
 			}
 		}
 		

@@ -28,7 +28,7 @@ namespace SharpReportCore {
 	public class SqlParameter : AbstractParameter {
 	
 		DbType	dataType;
-		object defaultValue;
+		object parameterValue;
 
 		ParameterDirection  parameterDirection = ParameterDirection.InputOutput;
 	
@@ -55,9 +55,9 @@ namespace SharpReportCore {
 		
 			base.ParameterName = parameterName;
 			this.DataType = dataType;
-			this.defaultValue = value;
-			base.Nullable = false;
-			base.Prompt = prompt;
+//			base.DefaultValue = value;
+//			base.Nullable = false;
+//			base.Prompt = prompt;
 			this.parameterDirection = parameterDirection;
 		}
 		
@@ -72,51 +72,51 @@ namespace SharpReportCore {
 				case DbType.AnsiString				:
 				case DbType.AnsiStringFixedLength	:
 				case DbType.String					:
-				case DbType.StringFixedLength		: this.defaultValue = value; break;
+				case DbType.StringFixedLength		: this.parameterValue = value; break;
 					
 				case DbType.Boolean					: {
 					
-					this.defaultValue = bool.Parse( value);
+					this.parameterValue = bool.Parse( value);
 					break;
 					}
 				                                                      
 					
 				case DbType.SByte					: {
-					this.defaultValue = sbyte.Parse( value,
+					this.parameterValue = sbyte.Parse( value,
 					                                CultureInfo.CurrentCulture );
 					break;
 				}
 				case DbType.Byte					:{
-						this.defaultValue = byte.Parse( value ,
+						this.parameterValue = byte.Parse( value ,
 					                               CultureInfo.CurrentCulture );
 					break;
 				}
 				case DbType.Int16					: {
-					this.defaultValue = short.Parse( value,CultureInfo.CurrentCulture  ); break;
+					this.parameterValue = short.Parse( value,CultureInfo.CurrentCulture  ); break;
 				}
 				case DbType.Int32					: {
-					this.defaultValue = int.Parse( value,CultureInfo.CurrentCulture  ); 
+					this.parameterValue = int.Parse( value,CultureInfo.CurrentCulture  ); 
 					break;
 				}
 				case DbType.Int64					: {
-					this.defaultValue = long.Parse( value,CultureInfo.CurrentCulture  );
+					this.parameterValue = long.Parse( value,CultureInfo.CurrentCulture  );
 					break;
 				}
-				case DbType.UInt16				: this.defaultValue = ushort.Parse( value,CultureInfo.CurrentCulture  ); break;
-				case DbType.UInt32				: this.defaultValue = uint.Parse( value,CultureInfo.CurrentCulture  ); break;
-				case DbType.UInt64				: this.defaultValue = long.Parse( value,CultureInfo.CurrentCulture  ); break;
+				case DbType.UInt16				: this.parameterValue = ushort.Parse( value,CultureInfo.CurrentCulture  ); break;
+				case DbType.UInt32				: this.parameterValue = uint.Parse( value,CultureInfo.CurrentCulture  ); break;
+				case DbType.UInt64				: this.parameterValue = long.Parse( value,CultureInfo.CurrentCulture  ); break;
 					
 				case DbType.Date					:
 				case DbType.DateTime				:
-				case DbType.Time					: this.defaultValue = DateTime.Parse( value,CultureInfo.CurrentCulture  ); break;
+				case DbType.Time					: this.parameterValue = DateTime.Parse( value,CultureInfo.CurrentCulture  ); break;
 					
-				case DbType.Decimal				: this.defaultValue = decimal.Parse( value ,CultureInfo.CurrentCulture ); break;
+				case DbType.Decimal				: this.parameterValue = decimal.Parse( value ,CultureInfo.CurrentCulture ); break;
 				case DbType.Currency				:
 				case DbType.VarNumeric			:
-				case DbType.Double				: this.defaultValue = double.Parse( value ,CultureInfo.CurrentCulture ); break;
-				case DbType.Single				: this.defaultValue = float.Parse( value,CultureInfo.CurrentCulture  );  break;
+				case DbType.Double				: this.parameterValue = double.Parse( value ,CultureInfo.CurrentCulture ); break;
+				case DbType.Single				: this.parameterValue = float.Parse( value,CultureInfo.CurrentCulture  );  break;
 					
-				case DbType.Guid					: this.defaultValue = new Guid( value ); break;
+				case DbType.Guid					: this.parameterValue = new Guid( value ); break;
 				default								: {
 					throw new ArgumentOutOfRangeException("value");
 				}
@@ -143,53 +143,51 @@ namespace SharpReportCore {
 					case DbType.AnsiStringFixedLength	:
 					case DbType.String					:
 					case DbType.StringFixedLength		:{
-							this.defaultValue = new string( (char[])null );
+							this.parameterValue = new string( (char[])null );
 							break;
 					}
 						//array type
-					case DbType.Binary				: this.defaultValue = new byte[8000]; break;
+					case DbType.Binary				: this.parameterValue = new byte[8000]; break;
 						//bool type
-					case DbType.Boolean				: this.defaultValue = new bool(); break;
+					case DbType.Boolean				: this.parameterValue = new bool(); break;
 						//interger type
-					case DbType.SByte					: this.defaultValue = new sbyte(); break;
-					case DbType.Byte					: this.defaultValue = new byte(); break;
-					case DbType.Int16					: this.defaultValue = new short(); break;
-					case DbType.Int32					: this.defaultValue = new int(); break;
-					case DbType.Int64					: this.defaultValue = new long(); break;
-					case DbType.UInt16				: this.defaultValue = new ushort(); break;
-					case DbType.UInt32				: this.defaultValue = new uint(); break;
-					case DbType.UInt64				: this.defaultValue = new long(); break;
+					case DbType.SByte					: this.parameterValue = new sbyte(); break;
+					case DbType.Byte					: this.parameterValue = new byte(); break;
+					case DbType.Int16					: this.parameterValue = new short(); break;
+					case DbType.Int32					: this.parameterValue = new int(); break;
+					case DbType.Int64					: this.parameterValue = new long(); break;
+					case DbType.UInt16				: this.parameterValue = new ushort(); break;
+					case DbType.UInt32				: this.parameterValue = new uint(); break;
+					case DbType.UInt64				: this.parameterValue = new long(); break;
 						//Date type
 					case DbType.Date					:
 					case DbType.DateTime				:
 					case DbType.Time					:{
-							this.defaultValue = new DateTime();
+							this.parameterValue = new DateTime();
 							break;
 						}
 						//float type
-					case DbType.Decimal				: this.defaultValue = new decimal(); break;
+					case DbType.Decimal				: this.parameterValue = new decimal(); break;
 					case DbType.Currency				:
 					case DbType.VarNumeric			:
-					case DbType.Double				: this.defaultValue = new double(); break;
-					case DbType.Single				: this.defaultValue = new float(); break;
+					case DbType.Double				: this.parameterValue = new double(); break;
+					case DbType.Single				: this.parameterValue = new float(); break;
 						//user defined
-					case DbType.Object				: this.defaultValue = new object(); break;
+					case DbType.Object				: this.parameterValue = new object(); break;
 						//Guid
-					case DbType.Guid					: this.defaultValue = new Guid(); break;
+					case DbType.Guid					: this.parameterValue = new Guid(); break;
 					default								: throw new ArgumentOutOfRangeException("value");
 				}
 				
 			}
 		}
 
-		/// <summary>
-		/// When no value is entered, use this value
-		/// </summary>
-		public override object DefaultValue {
+	
+		public object ParameterValue {
 			get {
-				return defaultValue;
+				return parameterValue;
 			}
-			set {
+			set{
 				SetValue (value.ToString());
 			}
 		}

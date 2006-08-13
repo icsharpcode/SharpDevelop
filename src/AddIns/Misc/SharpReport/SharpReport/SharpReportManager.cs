@@ -333,7 +333,7 @@ namespace SharpReport{
 		/// Collection of Parameters for the Report
 		/// </summary>
 		
-		public AbstractParametersCollection SqlParametersCollection{
+		public SqlParametersCollection SqlParametersCollection{
 			get {
 				return this.baseDesignerControl.ReportModel.ReportSettings.SqlParametersCollection;
 			}

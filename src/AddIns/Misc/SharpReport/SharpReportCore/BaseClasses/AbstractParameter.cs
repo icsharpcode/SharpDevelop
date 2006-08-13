@@ -22,26 +22,10 @@ namespace SharpReportCore {
 	public class AbstractParameter : object {
 	
 		string parameterName;
-		string prompt;
-		bool nullable;
-		object defaultValue;
 		
 		public AbstractParameter() {
 		}
 		
-		
-		/// <summary>
-		/// Did we allow a null Value for this Parameter
-		/// </summary>
-		/// 
-		public bool Nullable {
-			get {
-				return nullable;
-			}
-			set {
-				nullable = value;
-			}
-		}
 		
 		/// <summary>
 		/// Name of the Parameter
@@ -53,27 +37,6 @@ namespace SharpReportCore {
 			}
 			set {
 				parameterName = value;
-			}
-		}
-		
-		/// <summary>
-		/// Display this string within a Custom Dialog for parameter entry
-		/// </summary>
-		public string Prompt {
-			get {
-				return prompt;
-			}
-			set {
-				prompt = value;
-			}
-		}
-		
-		public virtual object DefaultValue {
-			get {
-				return defaultValue;
-			}
-			set {
-				defaultValue = value;
 			}
 		}
 		

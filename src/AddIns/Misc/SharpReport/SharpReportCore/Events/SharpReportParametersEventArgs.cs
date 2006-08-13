@@ -10,7 +10,6 @@
 
 namespace SharpReportCore {
 	using System;
-	using System.Data;
 	
 	/// <summary>
 	/// This Event is fired when SharpReport need Parameters to run a Query
@@ -24,7 +23,7 @@ namespace SharpReportCore {
 	
 	public class SharpReportParametersEventArgs : System.EventArgs {
 		
-		AbstractParametersCollection sqlParametersCollection;
+		SqlParametersCollection sqlParametersCollection;
 		string reportName;
 		
 		public SharpReportParametersEventArgs () {
@@ -34,7 +33,7 @@ namespace SharpReportCore {
 		/// <summary>
 		/// The ParametersCollection
 		/// </summary>
-		public AbstractParametersCollection SqlParametersCollection {
+		public SqlParametersCollection SqlParametersCollection {
 			get {
 				return sqlParametersCollection;
 			}

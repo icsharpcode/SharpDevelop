@@ -315,10 +315,10 @@ namespace SharpReportAddin{
 		/// </summary>
 		
 		private void OnParametersRequest (object sender,SharpReportParametersEventArgs e) {
-			AbstractParametersCollection collection = e.SqlParametersCollection;
+			SqlParametersCollection collection = e.SqlParametersCollection;
 			if (collection != null && collection.Count > 0) {
-				using (ParameterInput parameterInput = new ParameterInput (e.ReportName,collection)){
-					DialogResult result = parameterInput.ShowDialog();
+				using (ParameterDialog dlg = new ParameterDialog(e.SqlParametersCollection)){
+					DialogResult result = dlg.ShowDialog();
 				}
 			}
 		}

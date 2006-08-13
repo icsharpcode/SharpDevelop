@@ -52,13 +52,14 @@ namespace SharpReportCore {
 			}
 			try {
 				this.connectionObject = connectionObject;
+				this.reportSettings = reportSettings;
 				CheckConnection (this.connectionObject);
-				
 				CheckReportSettings(reportSettings);
 				CheckDataSource(this.FillDataSet().Tables[0]);
 
 				this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
 				                                          reportSettings);
+				
 				this.dataViewStrategy.ListChanged += new EventHandler <ListChangedEventArgs> (NotifyListChanged);
 //			this.dataViewStrategy.GroupChanged += new EventHandler<GroupChangedEventArgs> (OnGroupChange);
 			}
@@ -125,7 +126,7 @@ namespace SharpReportCore {
 		void CheckReportSettings(ReportSettings settings) {
 			try {
 				if (settings.DataModel != GlobalEnums.PushPullModelEnum.PushData) {
-					SqlQueryChecker.Check(settings.CommandText);
+					SqlQueryChecker.Check(settings.CommandType,settings.CommandText);
 				}
 				
 			} catch (IllegalQueryException) {
@@ -208,7 +209,6 @@ namespace SharpReportCore {
 				if (this.connection.State == ConnectionState.Closed) {
 					this.connection.Open();
 				}
-
 				OleDbCommand command = ((OleDbConnection)this.connection).CreateCommand();
 				command.CommandText = reportSettings.CommandText;
 				command.CommandType = reportSettings.CommandType;
@@ -245,7 +245,7 @@ namespace SharpReportCore {
 					if (rpPar.DataType != System.Data.DbType.Binary) {
 						oleDBPar = new OleDbParameter(rpPar.ParameterName,
 						                              rpPar.DataType);
-						oleDBPar.Value = rpPar.DefaultValue;
+						oleDBPar.Value = rpPar.ParameterValue;
 					} else {
 						oleDBPar = new OleDbParameter(rpPar.ParameterName,
 						                              System.Data.DbType.Binary);

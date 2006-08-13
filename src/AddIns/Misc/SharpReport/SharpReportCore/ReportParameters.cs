@@ -22,7 +22,7 @@ namespace SharpReportCore {
 	public class ReportParameters : object {
 		
 		private ConnectionObject connectionObject;
-		private AbstractParametersCollection sqlParameters;
+		private SqlParametersCollection sqlParameters;
 		private ColumnCollection sortColumnCollection;
 		
 		
@@ -44,10 +44,10 @@ namespace SharpReportCore {
 			}
 		}
 		
-		public AbstractParametersCollection SqlParameters {
+		public SqlParametersCollection SqlParameters {
 			get {
 				if (this.sqlParameters == null) {
-					this.sqlParameters = new AbstractParametersCollection();
+					this.sqlParameters = new SqlParametersCollection();
 				}
 				return sqlParameters;
 			}

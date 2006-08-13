@@ -94,6 +94,7 @@
     <Compile Include="Designer\VisualControls\ITracker.cs" />
     <Compile Include="Designer\VisualControls\ReportTableControl.cs" />
     <Compile Include="ReportItems\TextBased\ReportTableItem.cs" />
+    <Compile Include="ParameterDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Designer" />
