@@ -159,8 +159,9 @@ namespace SharpReportCore {
 			
 			if (this.dataNavigator.Count == 0){
 				this.ReportDocument.ReportHasData = false;
-			}
-				
+				PrintNoDataMessage(rpea.PrintPageEventArgs);
+			
+			}	
 			base.CurrentSection.SectionOffset = (int)this.page.DetailStart.Y + AbstractRenderer.Gap;
 		}
 		

@@ -193,7 +193,6 @@ namespace SharpReport{
 			
 			try {
 				AbstractRenderer abstr = this.BuildStandartRenderer (model);
-
 				if (abstr != null) {
 					PreviewControl.ShowPreview (abstr,1.5,standAlone);
 				}
@@ -217,7 +216,8 @@ namespace SharpReport{
 		}
 		
 		
-		public AbstractRenderer GetRendererForPushDataReports (ReportModel model,DataSet dataSet) {
+		public AbstractRenderer GetRendererForPushDataReports (ReportModel model,
+		                                                       DataSet dataSet) {
 			if (model == null) {
 				throw new ArgumentNullException("model");
 			}

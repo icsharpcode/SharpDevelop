@@ -39,7 +39,7 @@ namespace SharpReportCore{
 		
 		private string connectionString;
 		private string commandText;
-		
+		private string noDataMessage = "No Data for this Report";
 		private System.Data.CommandType commandType;
 		
 		private Font defaultFont = new Font("Microsoft Sans Serif",
@@ -633,6 +633,15 @@ namespace SharpReportCore{
 			}
 		}
 		
+		[Category("Data")]
+		public string NoDataMessage {
+			get {
+				return noDataMessage;
+			}
+			set {
+				noDataMessage = value;
+			}
+		}
 		
 		
 		#endregion

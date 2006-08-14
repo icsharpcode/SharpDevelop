@@ -41,7 +41,6 @@ namespace SharpReportCore {
 		private ConnectionObject connectionObject;
 		private DataManager dataManager;
 		
-		public event EventHandler <SharpReportEventArgs> NoData;
 		public event EventHandler <SharpReportParametersEventArgs> ParametersRequest;
 		/// <summary>
 		/// This event is fired before a Section is Rendered, you can use 
@@ -158,7 +157,7 @@ namespace SharpReportCore {
 		
 		
 		protected SharpReportCore.AbstractRenderer SetupStandartRenderer (ReportModel model) {
-	
+
 			AbstractRenderer abstr = null;
 			try {
 				switch (model.ReportSettings.ReportType) {
@@ -173,29 +172,13 @@ namespace SharpReportCore {
 							if (this.dataManager.DataSource != null) {
 								abstr = new RendererFactory().Create (model,dataManager);
 							}
-							
-						} else {
-							if (NoData != null) {
-								SharpReportEventArgs e = new SharpReportEventArgs();
-								e.PageNumber = 0;
-								e.Cancel = false;
-								NoData (this,e);
-								if (e.Cancel == true) {
-									// If we cancel, we have to create an instance of any kind of renderer
-									//to set the cancel flag to true
-									abstr = new RendererFactory().Create (model,null);
-									abstr.Cancel = true;
-								} else {
-									// Print the report only as Formsheet -> only Text and Graphic Items
-									abstr = new RendererFactory().Create (model,null);
-								}
-							}
-						}
+						} 
 						
 						break;
 					default:
 						throw new SharpReportException ("SharpReportmanager:SetupRenderer -> Unknown Reporttype");
 				}
+				
 				abstr.Rendering += new EventHandler<SectionRenderEventArgs>(OnSectionPrinting);
 				abstr.SectionRendered +=new EventHandler<SectionRenderEventArgs>(OnSectionPrinted);
 				return abstr;
@@ -234,12 +217,12 @@ namespace SharpReportCore {
 			AbstractRenderer abstr = null;
 			
 			this.dataManager = new DataManager (list,model.ReportSettings);
-			
 			if (this.dataManager != null) {
 				this.dataManager.DataBind();
 				if (this.dataManager.DataSource != null) {
 					abstr = new RendererFactory().Create (model,dataManager);
 				}
+				
 				abstr.Rendering += new EventHandler<SectionRenderEventArgs>(OnSectionPrinting);
 				abstr.SectionRendered +=new EventHandler<SectionRenderEventArgs>(OnSectionPrinted);
 				return abstr;
@@ -270,6 +253,7 @@ namespace SharpReportCore {
 				if (this.dataManager.DataSource != null) {
 					abstr = new RendererFactory().Create (model,dataManager);
 				}
+				
 				abstr.Rendering += new EventHandler<SectionRenderEventArgs>(OnSectionPrinting);
 				abstr.SectionRendered +=new EventHandler<SectionRenderEventArgs>(OnSectionPrinted);
 				
@@ -290,12 +274,12 @@ namespace SharpReportCore {
 		/// <returns></returns>
 		
 		protected AbstractRenderer AbstractRenderer (ReportModel model) {
+			
 			if (model == null) {
 				throw new MissingModelException();
 			}
 			try {
-				AbstractRenderer abstr = SetupStandartRenderer(model);
-				return abstr;
+				return SetupStandartRenderer(model);
 			} catch (Exception) {
 				throw;
 			}
@@ -480,38 +464,7 @@ namespace SharpReportCore {
 			}
 		}
 		
-		/*
-		/// <summary>
-		/// Print a PullModel Report
-		/// </summary>
-		/// <param name="fileName"></param>
-		/// <param name="dataTable"></param>
-		/// <param name="showPrintDialog">if set to true, show the <see cref="PrintDialog"></see>
-		/// </param>
-		[Obsolete("Use public void PrintPushDataReport (string fileName,DataTable dataTable)")]
-
-		public void PrintPushDataReport (string fileName,
-		                                 DataTable dataTable,
-		                                 bool showPrintDialog) {
-			
-			if (String.IsNullOrEmpty(fileName)) {
-				throw new ArgumentNullException("fileName");
-			}
-			if (dataTable == null) {
-				throw new ArgumentNullException("dataTable");
-			}
-
-			AbstractRenderer renderer = null;
-			try {
-				ReportModel model = this.ValidatePushModel(fileName);
-				renderer = SetupPushDataRenderer (model,dataTable);
-				SharpReportEngine.ReportToPrinter(renderer,model);
-				
-			} catch (Exception) {
-				throw;
-			}
-		}
-		*/
+		
 		
 		/// <summary>
 		/// Print a PushModel Report, if <see cref="UseStandartPrinter"></see> in

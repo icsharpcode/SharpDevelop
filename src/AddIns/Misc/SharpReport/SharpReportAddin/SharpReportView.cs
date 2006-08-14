@@ -280,9 +280,7 @@ namespace SharpReportAddin{
 		
 		
 		private void PreviewStandartReport(bool standAlone){
-			reportManager.NoData -= new EventHandler<SharpReportEventArgs> (OnNoDataForReport);
-			reportManager.NoData += new EventHandler<SharpReportEventArgs> (OnNoDataForReport);
-			
+
 			reportManager.ParametersRequest -= new EventHandler<SharpReportParametersEventArgs> (OnParametersRequest);
 			reportManager.ParametersRequest +=  new EventHandler<SharpReportParametersEventArgs>(OnParametersRequest);
 			
@@ -292,21 +290,6 @@ namespace SharpReportAddin{
 		#endregion
 		
 		#region Events
-		void OnNoDataForReport (object sender,SharpReportEventArgs e) {
-			DialogResult result = MessageBox.Show("This Report contains no Data. Show it as FormSheet",
-			                                      "SharpReport",
-			                                      MessageBoxButtons.OKCancel,
-			                                      MessageBoxIcon.Warning,
-			                                      MessageBoxDefaultButton.Button1);
-			switch(result) {
-				case DialogResult.OK:
-					e.Cancel = false;
-					break;
-				case DialogResult.Cancel:
-					e.Cancel = true;
-					break;
-			}
-		}
 		
 		///<summary>This Event is called if the Report need's Parameters to run a Query,
 		/// you can take this as an example how to react to an request for Parameters
@@ -415,12 +398,10 @@ namespace SharpReportAddin{
 		/// Show's Report in PreviewControl
 		/// </summary>
 		
-		public void OnPreviewClick () {
-			reportManager.NoData -= new EventHandler<SharpReportEventArgs> (OnNoDataForReport);
-			reportManager.NoData += new EventHandler<SharpReportEventArgs> (OnNoDataForReport);
-			
+		public void OnPreviewClick () {			
 			reportManager.ParametersRequest -= new EventHandler<SharpReportParametersEventArgs> (OnParametersRequest);
 			reportManager.ParametersRequest +=  new EventHandler<SharpReportParametersEventArgs>(OnParametersRequest);
+
 			base.OnSaving(EventArgs.Empty);
 			this.RunPreview(false);
 		}

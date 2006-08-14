@@ -48,7 +48,7 @@ namespace SharpReportCore{
 		private void ShowPreviewWithUserControl (AbstractRenderer renderer,double zoomFaktor) {
 			
 			System.Drawing.Printing.PrintDocument  doc = renderer.ReportDocument;
-			
+			printPreviewControl1.InvalidatePreview();
 			printPreviewControl1.Document = null;
 			printPreviewControl1.Document = doc;
 
@@ -60,7 +60,8 @@ namespace SharpReportCore{
 		private void ShowPreviewWithDialog (AbstractRenderer renderer,double zoomFaktor) {
 			
 			System.Drawing.Printing.PrintDocument  doc = renderer.ReportDocument;
-		
+			
+			printPreviewControl1.InvalidatePreview();
 			previewDlg.Document = doc;
 			previewDlg.Text	= renderer.ReportSettings.ReportName;
 			previewDlg.Text = renderer.ReportSettings.ReportName;

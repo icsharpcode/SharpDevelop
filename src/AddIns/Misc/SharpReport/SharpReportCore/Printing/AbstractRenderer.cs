@@ -173,6 +173,14 @@ namespace SharpReportCore {
 			pea.ForceNewPage = true;
 		}
 		
+		protected void PrintNoDataMessage(PrintPageEventArgs e){
+			e.Graphics.DrawString(this.reportSettings.NoDataMessage,			                                            
+			                                            this.ReportSettings.DefaultFont,
+			                                            new SolidBrush(Color.Black),
+			                                            page.DetailArea);
+			
+		}
+		
 		#region Debugg Code
 		///<summary>
 		/// Use this function to draw controlling rectangles

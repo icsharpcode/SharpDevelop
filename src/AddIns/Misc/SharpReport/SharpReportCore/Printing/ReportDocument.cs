@@ -83,7 +83,6 @@ namespace SharpReportCore {
 			if (BodyStart != null) {
 				BodyStart (this,pea);
 			}
-			System.Console.WriteLine("ReportDocumnet:'NoData' = {0}",this.reportHasData);
 			
 			if (this.reportHasData == true) {
 				if (this.RenderDetails != null) {
