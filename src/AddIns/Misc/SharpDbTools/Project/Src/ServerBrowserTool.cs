@@ -13,6 +13,7 @@
 
 using System;
 using System.Windows.Forms;
+using System.Data.Common;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using SharpDbTools.Model;
@@ -136,13 +137,22 @@ namespace SharpDbTools
 		{
 			TreeNode treeNode = new TreeNode(name);
 			// create and add the menustrip for this node
+			
 			DbModelInfoContextMenuStrip cMenu = new DbModelInfoContextMenuStrip(treeNode);
+			
+			// create menu items
 			ToolStripMenuItem setConnectionStringMenuItem = 
 				new ToolStripMenuItem("Set Connection String");
 			setConnectionStringMenuItem.Click += new EventHandler(SetConnectionStringOnDbModelInfoClickHandler);
+			
+			ToolStripMenuItem loadMetadataMenuItem =
+				new ToolStripMenuItem("Load Metadata from Connection");
+			loadMetadataMenuItem.Click += new EventHandler(LoadMetadataClickHandler);
+			
 			cMenu.Items.AddRange(new ToolStripMenuItem[] 
 			                     {
-			                     	setConnectionStringMenuItem
+			                     	setConnectionStringMenuItem,
+			                     	loadMetadataMenuItem	
 			                     });
 	
 			treeNode.ContextMenuStrip = cMenu;
@@ -207,14 +217,19 @@ namespace SharpDbTools
 			DbModelInfoService.SaveAll();
 		}
 		
-		public void SetConnectionStringOnDbModelInfoClickHandler(object sender, EventArgs e)
+		private static string getConnectionName(object sender)
 		{
 			ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
-
 			DbModelInfoContextMenuStrip toolStrip = menuItem.Owner as DbModelInfoContextMenuStrip;
 			TreeNode node = toolStrip.TreeNode;
 			string connectionLogicalName = node.Text;
-			LoggingService.Debug("add connection string clicked for item with name: " + node.Text);
+			return connectionLogicalName;
+		}
+		
+		public void SetConnectionStringOnDbModelInfoClickHandler(object sender, EventArgs e)
+		{
+			string connectionLogicalName = getConnectionName(sender);
+			LoggingService.Debug("add connection string clicked for item with name: " + connectionLogicalName);
 			
 			// use the ConnectionStringDefinitionDialog to get a connection string and invariant name
 			ConnectionStringDefinitionDialog definitionDialog = new ConnectionStringDefinitionDialog();
@@ -237,9 +252,24 @@ namespace SharpDbTools
 				return;
 			}
 			
-			if ((connectionString == null) || (!((newConnectionString.Equals(connectionString)))))  {
-				dbModelInfo.ConnectionString = newConnectionString;
-				dbModelInfo.InvariantName = definitionDialog.InvariantName;
+			dbModelInfo.ConnectionString = newConnectionString;
+			dbModelInfo.InvariantName = definitionDialog.InvariantName;
+			
+			// rebuild the database explorer node
+			this.BeginInvoke(new MethodInvoker(this.RebuildDbConnectionsNode));
+		}
+		
+		public void LoadMetadataClickHandler(object sender, EventArgs args)
+		{
+			string connectionLogicalName = getConnectionName(sender);
+			LoggingService.Debug("load metadata from connection clicked for connection with name: "
+			                     + connectionLogicalName);
+			try {	
+				DbModelInfoService.LoadMetadataFromConnection(connectionLogicalName);
+			}
+			catch(DbException e) {
+				MessageService.ShowError(e, 
+				"An Exception was thrown while trying to connect to: " + connectionLogicalName);                       
 			}
 		}
 	}

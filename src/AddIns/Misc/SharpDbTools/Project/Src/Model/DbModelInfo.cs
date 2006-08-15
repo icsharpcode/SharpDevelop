@@ -34,6 +34,24 @@ namespace SharpDbTools.Model
 	{
 		public const string METADATACOLLECTIONS = "MetaDataCollections";
 		
+		public DbModelInfo() : base()
+		{
+		}
+		
+		public DbModelInfo(string name) : base()
+		{
+			DataTable table = CreateConnectionInfoTable();
+			// add the first and only column of this table;
+			table.Rows.Add(new object[] {name, null, null});		
+		}
+		
+		public DbModelInfo(string name, string invariantName, string connectionString): base()
+		{
+			DataTable table = CreateConnectionInfoTable();
+			// add the first and only column of this table;
+			table.Rows.Add(new object[] {name, invariantName, connectionString});
+		}
+		
 		public string Name {
 			get {
 				DataTable table = this.Tables[TableNames.ConnectionInfo];
@@ -61,8 +79,8 @@ namespace SharpDbTools.Model
 				// if invariant has changed must clear any existing metadata
 				else if (!(invariantName.Equals(value))) {
 					// clear tables
-					this.Tables.Clear();
-					DataTable newTable = CreateConnectionTable();
+					this.Clear();
+					DataTable newTable = CreateConnectionInfoTable();
 					// add the first and only column of this table;
 					newTable.Rows.Add(new object[] {name, invariantName, connectionString});
 				}				
@@ -77,41 +95,37 @@ namespace SharpDbTools.Model
 			}
 			set {
 				DataTable table = this.Tables[TableNames.ConnectionInfo];
-				string invariantName = table.Rows[0][ColumnNames.InvariantName] as string;
-				string name = this.Name;
 				string connectionString = this.ConnectionString;
-				
 				if (connectionString == null) {
 					table.Rows[0][ColumnNames.ConnectionString] = value;	
 				}
 				else if (!(connectionString.Equals(value))) {
-					this.Tables.Clear();
-					DataTable newTable = CreateConnectionTable();
+					string invariantName = this.InvariantName;
+					string name = this.Name;
+					this.Clear();
 					// add the first and only column of this table;
-					newTable.Rows.Add(new object[] {name, invariantName, connectionString});
+					table.Rows.Add(new object[] {name, invariantName, value});
 				}
 			}
 		}
 		
-		public DbModelInfo() : base()
+		public void SetConnectionInfo(string invariantName, string connectionString)
 		{
+			string name = this.Name;
+			SetConnectionInfo(name, invariantName, connectionString);
 		}
 		
-		public DbModelInfo(string name) : base()
+		public void SetConnectionInfo(string name, string invariantName, 
+		                              string connectionString)
 		{
-			DataTable table = CreateConnectionTable();
+			this.Clear();
+			DataTable table = CreateConnectionInfoTable();
 			// add the first and only column of this table;
-			table.Rows.Add(new object[] {name, null, null});		
+			table.Rows.Add(new object[] {name, invariantName, connectionString});			
+
 		}
 		
-		public DbModelInfo(string name, string invariantName, string connectionString): base()
-		{
-			DataTable table = CreateConnectionTable();
-			// add the first and only column of this table;
-			table.Rows.Add(new object[] {name, invariantName, connectionString});
-		}
-		
-		private DataTable CreateConnectionTable()
+		private DataTable CreateConnectionInfoTable()
 		{
 			// create a table in the DbModelInfo to hold this initial info.
 			// this creates a consistent representation of the data and makes
@@ -121,6 +135,17 @@ namespace SharpDbTools.Model
 			table.Columns.Add(ColumnNames.InvariantName, typeof(string));
 			table.Columns.Add(ColumnNames.ConnectionString, typeof(string));
 			return table;
+		}
+		
+		public void ClearMetaData()
+		{
+			DataTable metadataCollectionsTable = this.MetaDataCollections;
+			if (metadataCollectionsTable != null) {
+				foreach (DataRow collectionRow in metadataCollectionsTable.Rows) {
+					String collectionName = (string)collectionRow[0];
+					this.Tables.Remove(collectionName);
+				}
+			}
 		}
 		
 		public DataTable MetaDataCollections {

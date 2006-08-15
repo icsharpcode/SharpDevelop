@@ -90,20 +90,26 @@ namespace SharpDbTools.Model
 			string connectionString = modelInfo.ConnectionString;				
 			
 			// get a connection - wait until a connection has been successfully made
-			// until clearing the DbModelInfo
+			// before clearing the DbModelInfo
 			
 			DbProvidersService factoryService = DbProvidersService.GetDbProvidersService();
-			DbProviderFactory factory = factoryService[invariantName];
+			DbProviderFactory factory = factoryService.GetFactoryByInvariantName(invariantName);
 			DbConnection connection = factory.CreateConnection();
 			
-			// TODO: clear the DbModelInfo prior to refreshing from the connection
+			
+			modelInfo.ClearMetaData();
 			
 			// reload the metadata from the connection
 			// get the Schema table
-			
 			connection.ConnectionString = connectionString;
+
+			connection.Open();
 			DataTable schemaInfo = connection.GetSchema();
+			connection.Close();
 			
+			// clear the DbModelInfo prior to refreshing from the connection
+			modelInfo.ClearMetaData();
+
 			// iterate through the rows in it - the first column of each is a
 			// schema info collection name that can be retrieved as a DbTable
 			// Add each one to the DbModel DataSet

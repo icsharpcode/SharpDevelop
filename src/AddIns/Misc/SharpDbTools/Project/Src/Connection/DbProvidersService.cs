@@ -32,6 +32,7 @@ namespace SharpDbTools.Connection
 		private static DbProvidersService me = new DbProvidersService();
 		private static Boolean initialized = false;
 		private Dictionary<string, DbProviderFactory> factories = new Dictionary<string, DbProviderFactory>();
+		private Dictionary<string, DbProviderFactory> factoriesByInvariantName = new Dictionary<string, DbProviderFactory>();
 		
 		// This is only valid witin one session - do not persist
 		private Dictionary<string, string> invariantByNameLookup = new Dictionary<string, string>();
@@ -44,13 +45,12 @@ namespace SharpDbTools.Connection
 		private void Initialize()
 		{
 			// get a complete list of config data for DbProviderFactories, indexed by name
-			
 			DataTable providerFactoriesTable = DbProviderFactories.GetFactoryClasses();
 			DataRow[] rows = providerFactoriesTable.Select();
 			
 			foreach(DataRow row in rows)
 			{
-				// TODO: factory out string literals for column names
+				// TODO: factor out string literals for column names
 				string name = (string)row["Name"];
 				string invariantName = (string)row["InvariantName"];
 				invariantByNameLookup.Add(name, invariantName);
@@ -58,6 +58,7 @@ namespace SharpDbTools.Connection
 				DbProviderFactory factory = DbProviderFactories.GetFactory(row);
 				names.Add(name);
 				factories.Add(name, factory);
+				factoriesByInvariantName.Add(invariantName, factory);
 			}
 
 			initialized = true;
@@ -95,6 +96,13 @@ namespace SharpDbTools.Connection
 			{
 				factories[name] = value;
 			}
+		}
+		
+		public DbProviderFactory GetFactoryByInvariantName(string invariantName)
+		{
+			DbProviderFactory factory = null;
+			this.factoriesByInvariantName.TryGetValue(invariantName, out factory);
+			return factory;
 		}
 		
 		public static DbProvidersService GetDbProvidersService()
