@@ -21,6 +21,7 @@ namespace ICSharpCode.WixBinding
 	/// </summary>
 	public class WixDialog
 	{
+		WixBinaries binaries;
 		XmlElement dialogElement;
 		WixDocument document;
 		Button acceptButton;
@@ -48,13 +49,24 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		/// <param name="dialogElement">The dialog XML element loaded from
 		/// the Wix document</param>
-		public WixDialog(WixDocument document, XmlElement dialogElement)
+		public WixDialog(WixDocument document, XmlElement dialogElement) : 
+			this(document, dialogElement, null)
+		{
+		}
+		
+		/// <summary>
+		/// Creates a new instance of the Wix Dialog class.
+		/// </summary>
+		/// <param name="dialogElement">The dialog XML element loaded from
+		/// the Wix document</param>
+		public WixDialog(WixDocument document, XmlElement dialogElement, WixBinaries binaries)
 		{
 			this.document = document;
 			this.dialogElement = dialogElement;
+			this.binaries = binaries;
 			namespaceManager = new WixNamespaceManager(dialogElement.OwnerDocument.NameTable);
 		}
-		
+
 		/// <summary>
 		/// Gets the Windows Installer User Interface unit. This is the factor that 
 		/// is used to convert dialog widths and heights specified in the Wix document
@@ -400,7 +412,7 @@ namespace ICSharpCode.WixBinding
 		PictureBox CreatePictureBox(XmlElement controlElement, IComponentCreator componentCreator)
 		{
 			PictureBox pictureBox = (PictureBox)CreateControl(typeof(PictureBox), controlElement, componentCreator);
-			pictureBox.Image = document.GetBitmapFromId(controlElement.GetAttribute("Text"));
+			pictureBox.Image = GetBitmapFromId(controlElement.GetAttribute("Text"));
 			pictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
 			pictureBoxesAdded.Add(pictureBox);
 			return pictureBox;
@@ -1120,6 +1132,15 @@ namespace ICSharpCode.WixBinding
 			XmlElement element = dialogElement.OwnerDocument.CreateElement(name, WixNamespaceManager.Namespace);
 			parentElement.AppendChild(element);
 			return element;
+		}
+	
+		Bitmap GetBitmapFromId(string id)
+		{			
+			if (binaries != null) {
+				string fileName = binaries.GetBinaryFileName(id);
+				return document.GetBitmapFromFileName(fileName);
+			} 
+			return document.GetBitmapFromId(id);
 		}
 	}
 }

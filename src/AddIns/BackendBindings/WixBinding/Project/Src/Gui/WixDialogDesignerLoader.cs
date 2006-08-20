@@ -77,7 +77,7 @@ namespace ICSharpCode.WixBinding
 			// Get dialog element.
 			WixDocument document = CreateWixDocument();
 			document.LoadXml(designer.GetDocumentXml());
-			wixDialog = document.GetDialog(designer.DialogId);
+			wixDialog = document.GetDialog(designer.DialogId, new WorkbenchTextFileReader());
 			if (wixDialog == null) {
 				throw new FormsDesignerLoadException(String.Concat("Unable to find dialog with an id of '", designer.DialogId, "'."));
 			}

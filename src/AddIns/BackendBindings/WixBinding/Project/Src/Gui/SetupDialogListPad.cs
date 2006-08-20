@@ -109,7 +109,7 @@ namespace ICSharpCode.WixBinding
 			WixProject openWixProject = ProjectService.CurrentProject as WixProject;
 			if (openWixProject != null) {
 				bool clearedErrorList = false;
-				foreach (FileProjectItem wixFile in openWixProject.WixFileProjectItems) {
+				foreach (FileProjectItem wixFile in openWixProject.WixFiles) {
 					if (File.Exists(wixFile.FileName)) {
 						try {
 							AddDialogListItems(wixFile.FileName);
@@ -135,7 +135,8 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		void AddDialogListItems(string fileName)
 		{
-			using (TextReader reader = WixBindingService.GetWixDocumentText(fileName)) {
+			WorkbenchTextFileReader workbenchTextFileReader = new WorkbenchTextFileReader();
+			using (TextReader reader = workbenchTextFileReader.Create(fileName)) {
 				setupDialogListView.AddDialogs(fileName, WixDocument.GetDialogIds(reader));
 			}
 		}

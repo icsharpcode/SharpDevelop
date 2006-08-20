@@ -31,9 +31,9 @@ namespace WixBinding.Tests.Document
 				"\t\t\t<Dialog Id='WelcomeDialog' Height='100' Width='200'>\r\n" +
 				"\t\t\t</Dialog>\r\n" +
 				"\t\t</UI>\r\n" +
-				"\t</Product>\r\n" +
+				"\t</Fragment>\r\n" +
 				"</Wix>";
-			DomRegion region = WixDocument.GetDialogElementRegion(new StringReader(xml), "WelcomeDialog");
+			DomRegion region = WixDocument.GetElementRegion(new StringReader(xml), "Dialog", "WelcomeDialog");
 			DomRegion expectedRegion = new DomRegion(3, 3, 4, 11);
 			Assert.AreEqual(expectedRegion, region);
 		}
@@ -48,7 +48,7 @@ namespace WixBinding.Tests.Document
 				"\t\t</UI>\r\n" +
 				"\t</Fragment>\r\n" +
 				"</Wix>";
-			DomRegion region = WixDocument.GetDialogElementRegion(new StringReader(xml), "WelcomeDialog");
+			DomRegion region = WixDocument.GetElementRegion(new StringReader(xml), "Dialog", "WelcomeDialog");
 			DomRegion expectedRegion = new DomRegion(3, 0, 3, 35);
 			Assert.AreEqual(expectedRegion, region);
 		}
@@ -63,8 +63,41 @@ namespace WixBinding.Tests.Document
 				"\t\t</UI>\r\n" +
 				"\t</Fragment>\r\n" +
 				"</Wix>";
-			DomRegion region = WixDocument.GetDialogElementRegion(new StringReader(xml), "WelcomeDialog");
+			DomRegion region = WixDocument.GetElementRegion(new StringReader(xml), "Dialog", "WelcomeDialog");
 			DomRegion expectedRegion = new DomRegion(3, 0, 3, 27);
+			Assert.AreEqual(expectedRegion, region);
+		}
+	
+		[Test]
+		public void ElementStartsImmediatelyAfterDialogEndElement()
+		{
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+				"\t<Fragment>\r\n" +
+				"\t\t<UI>\r\n" +
+				"<Dialog Id='WelcomeDialog'></Dialog><Property/>\r\n" +
+				"\t\t</UI>\r\n" +
+				"\t</Fragment>\r\n" +
+				"</Wix>";
+			DomRegion region = WixDocument.GetElementRegion(new StringReader(xml), "Dialog", "WelcomeDialog");
+			DomRegion expectedRegion = new DomRegion(3, 0, 3, 35);
+			Assert.AreEqual(expectedRegion, region);
+		}
+		
+		[Test]
+		public void TwoDialogs()
+		{
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+				"\t<Fragment>\r\n" +
+				"\t\t<UI>\r\n" +
+				"\t\t\t<Dialog Id='IgnoreThisDialog' Height='100' Width='200'>\r\n" +
+				"\t\t\t</Dialog>\r\n" +
+				"\t\t\t<Dialog Id='WelcomeDialog' Height='100' Width='200'>\r\n" +
+				"\t\t\t</Dialog>\r\n" +
+				"\t\t</UI>\r\n" +
+				"\t</Fragment>\r\n" +
+				"</Wix>";
+			DomRegion region = WixDocument.GetElementRegion(new StringReader(xml), "Dialog", "WelcomeDialog");
+			DomRegion expectedRegion = new DomRegion(5, 3, 6, 11);
 			Assert.AreEqual(expectedRegion, region);
 		}
 	}

@@ -22,18 +22,28 @@ namespace WixBinding.Tests.Document
 		public void WxsFile()
 		{
 			Assert.IsTrue(WixDocument.IsWixFileName("foo.wxs"));
+			Assert.IsTrue(WixDocument.IsWixSourceFileName("foo.wxs"));
 		}
 		
 		[Test]
 		public void WxsFileUppercase()
 		{
 			Assert.IsTrue(WixDocument.IsWixFileName(@"src\FOO.WXS"));
+			Assert.IsTrue(WixDocument.IsWixSourceFileName(@"src\FOO.WXS"));
 		}
 		
 		[Test]
 		public void WxiFile()
 		{
 			Assert.IsTrue(WixDocument.IsWixFileName("foo.wxi"));
+			Assert.IsFalse(WixDocument.IsWixSourceFileName("foo.wxi"));
+		}
+		
+		[Test]
+		public void NullFileName()
+		{
+			Assert.IsFalse(WixDocument.IsWixFileName(null));
+			Assert.IsFalse(WixDocument.IsWixSourceFileName(null));
 		}
 	}
 }

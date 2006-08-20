@@ -27,7 +27,6 @@ namespace ICSharpCode.WixBinding
 	public class WixDialogDesigner : FormsDesignerViewContent, IWixDialogDesigner
 	{
 		string dialogId = String.Empty;
-		string originalTitleName = String.Empty;
 		WixProject wixProject;
 		SetupDialogControlsSideTab setupDialogControlsSideTab;
 		
@@ -80,7 +79,6 @@ namespace ICSharpCode.WixBinding
 				base.Selected();
 			} else {
 				// Need to open the designer.
-				originalTitleName = base.viewContent.TitleName;
 				DialogId = id;
 				OpenDesigner();
 			}
@@ -104,7 +102,6 @@ namespace ICSharpCode.WixBinding
 		{			
 			try {
 				if (!ignoreDialogIdSelectedInTextEditor) {
-					originalTitleName = base.viewContent.TitleName;
 					string dialogId = GetDialogIdSelectedInTextEditor();
 					if (dialogId == null) {
 						dialogId = GetFirstDialogIdInTextEditor();
@@ -168,7 +165,6 @@ namespace ICSharpCode.WixBinding
 			}
 			set {
 				dialogId = value;
-				UpdateTitleName(dialogId);
 			}
 		}
 			
@@ -256,26 +252,6 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
-		/// <summary>
-		/// Gets the view's title name when displaying the specified dialog.
-		/// </summary>
-		static string GetTitleName(string title, string dialogId)
-		{
-			return String.Concat(title, " [", dialogId, "]");
-		}
-		
-		/// <summary>
-		/// Updates the view's title with the dialog id.
-		/// </summary>
-		void UpdateTitleName(string dialogId)
-		{
-			if (dialogId != null) {
-				base.viewContent.TitleName = GetTitleName(originalTitleName, dialogId);
-			} else {
-				base.viewContent.TitleName = originalTitleName;
-			}
-		}
-		
 		void AddToErrorList(XmlException ex)
 		{
 			TaskService.ClearExceptCommentTasks();
@@ -313,7 +289,7 @@ namespace ICSharpCode.WixBinding
 				if (dialogId != null) {
 					TextAreaControl textArea = ActiveTextAreaControl;
 					if (textArea != null) {
-						Location location = WixDocument.GetDialogStartElementLocation(new StringReader(textArea.Document.TextContent), dialogId);
+						Location location = WixDocument.GetStartElementLocation(new StringReader(textArea.Document.TextContent), "Dialog", dialogId);
 						textArea.JumpTo(location.Y);
 					}
 				}

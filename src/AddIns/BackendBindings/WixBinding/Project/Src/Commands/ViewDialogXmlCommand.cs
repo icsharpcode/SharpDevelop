@@ -54,14 +54,14 @@ namespace ICSharpCode.WixBinding
 		static Location GetDialogElementLocation(string fileName, string id)
 		{
 			try {
-				using (TextReader reader = WixBindingService.GetWixDocumentText(fileName)) {
-					return WixDocument.GetDialogStartElementLocation(reader, id);
+				WorkbenchTextFileReader workbenchTextFileReader = new WorkbenchTextFileReader();
+				using (TextReader reader = workbenchTextFileReader.Create(fileName)) {
+					return WixDocument.GetStartElementLocation(reader, "Dialog", id);
 				}
 			} catch (XmlException ex) {
 				WixBindingService.ShowErrorInErrorList(fileName, ex);
 			}
 			return Location.Empty;
 		}
-
 	}
 }

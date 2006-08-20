@@ -40,10 +40,10 @@ namespace WixBinding.Tests.Document
 			progressDialogId = dialogIds[1];
 			
 			reader = new StringReader(GetWixXml());
-			welcomeDialogLocation = WixDocument.GetDialogStartElementLocation(reader, welcomeDialogId);
+			welcomeDialogLocation = WixDocument.GetStartElementLocation(reader, "Dialog", welcomeDialogId);
 		
 			reader = new StringReader(GetWixXml());
-			missingDialogLocation = WixDocument.GetDialogStartElementLocation(reader, "missingDialogId");
+			missingDialogLocation = WixDocument.GetStartElementLocation(reader, "Dialog", "missingDialogId");
 		}
 		
 		[Test]

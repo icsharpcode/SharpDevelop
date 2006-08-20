@@ -16,32 +16,12 @@ using System.Xml;
 
 namespace ICSharpCode.WixBinding
 {
-	public sealed class WixBindingService
+	public sealed class WixBindingService 
 	{
 		WixBindingService()
 		{
 		}
-		
-		/// <summary>
-		/// Gets the Wix document text either from the open text editor or from the 
-		/// file system.
-		/// </summary>
-		public static TextReader GetWixDocumentText(string fileName)
-		{
-			// Get the text from the document if it is currently being viewed.
-			IWorkbenchWindow openWindow = FileService.GetOpenFile(fileName);
-			if (openWindow != null) {
-				ITextEditorControlProvider textEditorProvider = openWindow.ViewContent as ITextEditorControlProvider;
-				if (textEditorProvider != null) {
-					return new StringReader(textEditorProvider.TextEditorControl.Text);
-				}
-			}
-			
-			// Load the text from the file.
-			FileStream s = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-			return new StreamReader(s, true);
-		}
-		
+	
 		/// <summary>
 		/// Clears the error list and the output messages.
 		/// </summary>

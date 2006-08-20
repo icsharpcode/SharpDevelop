@@ -31,6 +31,8 @@ namespace ICSharpCode.WixBinding
 		public const string DefaultTargetsFile = @"$(WixMSBuildExtensionsPath)\wix.targets";
 		public const string FileNameExtension = ".wixproj";
 		
+		delegate bool IsFileNameMatch(string fileName);
+		
 		public WixProject(string fileName, string projectName)
 		{
 			Name = projectName;
@@ -127,18 +129,18 @@ namespace ICSharpCode.WixBinding
 		/// Returns the file project items that are Wix documents based on 
 		/// their filename.
 		/// </summary>
-		public ReadOnlyCollection<FileProjectItem> WixFileProjectItems {
+		public ReadOnlyCollection<FileProjectItem> WixFiles {
 			get {
-				List<FileProjectItem> items = new List<FileProjectItem>();
-				foreach (ProjectItem projectItem in Items) {
-					FileProjectItem fileProjectItem = projectItem as FileProjectItem;
-					if (fileProjectItem != null) {
-						if (WixDocument.IsWixFileName(fileProjectItem.FileName)) {
-							items.Add(fileProjectItem);
-						}
-					}
-				}
-				return new ReadOnlyCollection<FileProjectItem>(items);
+				return GetMatchingFiles(WixDocument.IsWixFileName);
+			}
+		}
+		
+		/// <summary>
+		/// Returns the file project items that are Wix source files (.wxs).
+		/// </summary>
+		public ReadOnlyCollection<FileProjectItem> WixSourceFiles {
+			get {
+				return GetMatchingFiles(WixDocument.IsWixSourceFileName);
 			}
 		}
 		
@@ -198,6 +200,24 @@ namespace ICSharpCode.WixBinding
 
 			FileName = Path.GetFullPath(information.OutputProjectFileName);
 			imports.Add(DefaultTargetsFile);
+		}
+		
+		/// <summary>
+		/// Returns a collection of FileProjectItems that match using the
+		/// IsFileNameMatch delegate.
+		/// </summary>
+		ReadOnlyCollection<FileProjectItem> GetMatchingFiles(IsFileNameMatch match)
+		{
+			List<FileProjectItem> items = new List<FileProjectItem>();
+			foreach (ProjectItem projectItem in Items) {
+				FileProjectItem fileProjectItem = projectItem as FileProjectItem;
+				if (fileProjectItem != null) {
+					if (match(fileProjectItem.FileName)) {
+						items.Add(fileProjectItem);
+					}
+				}
+			}
+			return new ReadOnlyCollection<FileProjectItem>(items);
 		}
 	}
 }

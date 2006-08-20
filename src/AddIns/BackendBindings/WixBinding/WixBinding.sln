@@ -1,5 +1,5 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.0.0.1590
+# SharpDevelop 2.0.0.1697
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixBinding", "Project\WixBinding.csproj", "{e1b288a2-08ee-4318-8bbb-8ab72c69e33e}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixBinding.Tests", "Test\WixBinding.Tests.csproj", "{388E7B64-0393-4EB4-A3E3-5C474F141853}"
@@ -17,6 +17,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsUI", "..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj", "{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Dom", "..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj", "{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlEditor", "..\..\DisplayBindings\XmlEditor\Project\XmlEditor.csproj", "{6B717BD1-CD5E-498C-A42E-9E6A4584DC48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

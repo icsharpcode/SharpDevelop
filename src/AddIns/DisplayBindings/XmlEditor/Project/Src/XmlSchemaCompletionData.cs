@@ -367,6 +367,18 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
+		/// Converts the element to a complex type if possible.
+		/// </summary>
+		public XmlSchemaComplexType GetElementAsComplexType(XmlSchemaElement element)
+		{
+			XmlSchemaComplexType complexType = element.SchemaType as XmlSchemaComplexType;
+			if (complexType == null) {
+				complexType = FindNamedType(schema, element.SchemaTypeName);
+			}
+			return complexType;
+		}
+		
+		/// <summary>
 		/// Handler for schema validation errors.
 		/// </summary>
 		void SchemaValidation(object source, ValidationEventArgs e)
@@ -746,19 +758,6 @@ namespace ICSharpCode.XmlEditor
 
 			return data;
 		}		
-		
-		/// <summary>
-		/// Converts the element to a complex type if possible.
-		/// </summary>
-		XmlSchemaComplexType GetElementAsComplexType(XmlSchemaElement element)
-		{
-			XmlSchemaComplexType complexType = element.SchemaType as XmlSchemaComplexType;
-			if (complexType == null) {
-				complexType = FindNamedType(schema, element.SchemaTypeName);
-			}
-			
-			return complexType;
-		}
 		
 		XmlCompletionDataCollection GetAttributeCompletionData(XmlSchemaObjectCollection attributes)
 		{

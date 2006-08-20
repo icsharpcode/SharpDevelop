@@ -948,7 +948,6 @@ namespace ICSharpCode.XmlEditor
 				if (xmlEditor.TextEditorProperties.ConvertTabsToSpaces) {
 					writer.Indentation = xmlEditor.TextEditorProperties.TabIndent;
 					writer.IndentChar = ' ';
-					;
 				} else {
 					writer.Indentation = 1;
 					writer.IndentChar = '\t';
@@ -958,8 +957,7 @@ namespace ICSharpCode.XmlEditor
 				writer.Flush();
 
 				indentedText = indentedXmlWriter.ToString();
-			}
-			catch(Exception) {
+			} catch(Exception) {
 				indentedText = xml;
 			}
 

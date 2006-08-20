@@ -143,6 +143,49 @@
     <Compile Include="DialogXmlGeneration\ListViewAddedTestFixture.cs" />
     <Compile Include="Document\GetValueWithNoProjectTestFixture.cs" />
     <Compile Include="Project\WixInstallerPathTests.cs" />
+    <Compile Include="Project\GetWixSourceFileProjectItemsTestFixture.cs" />
+    <Compile Include="PackageFiles\NoWixSourceFileInProjectTestFixture.cs" />
+    <Compile Include="Utils\MockWixPackageFilesView.cs" />
+    <Compile Include="DialogXmlGeneration\DialogXmlWritingTestFixture.cs" />
+    <Compile Include="PackageFiles\SingleWixSourceFileInProjectTestFixture.cs" />
+    <Compile Include="Document\RootDirectoryTestFixture.cs" />
+    <Compile Include="Document\NoRootDirectoryTestFixture.cs" />
+    <Compile Include="Document\NoProductDirectoryTestFixture.cs" />
+    <Compile Include="PackageFiles\ElementSelectedTestFixture.cs" />
+    <Compile Include="PackageFiles\ElementDeselectedTestFixture.cs" />
+    <Compile Include="PackageFiles\WixAttributeTypeTests.cs" />
+    <Compile Include="PackageFiles\TwoWixSourceFilesInProjectTestFixture.cs" />
+    <Compile Include="PackageFiles\WixSourceFileWithErrorsIgnoredTestFixture.cs" />
+    <Compile Include="PackageFiles\TwoWixSourceFilesWithErrorsTestFixture.cs" />
+    <Compile Include="PackageFiles\AttributeValueChangedTestFixture.cs" />
+    <Compile Include="PackageFiles\MissingFileAttributesTestFixture.cs" />
+    <Compile Include="PackageFiles\EmptyAttributesRemovedTestFixture.cs" />
+    <Compile Include="PackageFiles\AddDirectoryTestFixture.cs" />
+    <Compile Include="PackageFiles\NoRootDirectoryInWixProductFileTestFixture.cs" />
+    <Compile Include="PackageFiles\NoWixProductFileTestFixture.cs" />
+    <Compile Include="PackageFiles\SaveChangesTestFixture.cs" />
+    <Compile Include="PackageFiles\PackageFilesTestFixtureBase.cs" />
+    <Compile Include="PackageFiles\NoChangesToSaveTestFixture.cs" />
+    <Compile Include="PackageFiles\RemoveDirectoryTestFixture.cs" />
+    <Compile Include="PackageFiles\AllowedChildElementsTestFixture.cs" />
+    <Compile Include="PackageFiles\WixSchemaTests.cs" />
+    <Compile Include="PackageFiles\RemoveWhenNothingSelectedTestFixture.cs" />
+    <Compile Include="PackageFiles\AddFilesTestFixture.cs" />
+    <Compile Include="PackageFiles\ShortFileNameGeneratorTests.cs" />
+    <Compile Include="PackageFiles\FileIdGenerationTests.cs" />
+    <Compile Include="Document\WixDocumentWithNamespacePrefixTestFixture.cs" />
+    <Compile Include="Document\ChildDirectoriesTestFixture.cs" />
+    <Compile Include="PropertyGrid\WixXmlAttributePropertyDescriptorTestFixture.cs" />
+    <Compile Include="PropertyGrid\WixXmlAttributeTypeDescriptorTestFixture.cs" />
+    <Compile Include="PackageFiles\AddComponentTestFixture.cs" />
+    <Compile Include="Document\GetDirectoryElementRegionTests.cs" />
+    <Compile Include="Document\GetProductEndElementLocationTests.cs" />
+    <Compile Include="Document\NonRootDirectoryTestFixture.cs" />
+    <Compile Include="Document\RootDirectoryRefTestFixture.cs" />
+    <Compile Include="PackageFiles\TargetDirectoryRefTestFixture.cs" />
+    <Compile Include="PackageFiles\AddDirectoryToDirectoryRefTestFixture.cs" />
+    <Compile Include="Document\GetBinaryFileNameFromProjectTestFixture.cs" />
+    <Compile Include="DialogLoading\BitmapFromProjectTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\WixBinding.csproj">
@@ -186,6 +229,20 @@
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
+    <Folder Include="PackageFiles" />
+    <ProjectReference Include="..\..\..\DisplayBindings\XmlEditor\Project\XmlEditor.csproj">
+      <Project>{6B717BD1-CD5E-498C-A42E-9E6A4584DC48}</Project>
+      <Name>XmlEditor</Name>
+    </ProjectReference>
+    <Content Include="..\..\..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll">
+      <Link>ICSharpCode.SharpDevelop.Dom.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\..\..\AddIns\AddIns\DisplayBindings\XmlEditor\XmlEditor.dll">
+      <Link>XmlEditor.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Folder Include="PropertyGrid" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

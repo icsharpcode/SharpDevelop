@@ -11,13 +11,6 @@
 	<Files>
 		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
-	<Product Name="" 
-	         Manufacturer="" 
-	         Id="${GUID}" 
-	         Language="1033" 
-	         Version="1.0.0.0">
-		<Package Id="${GUID}"/>
-	</Product>
 </Wix>]]>
 		</File>
 	</Files>

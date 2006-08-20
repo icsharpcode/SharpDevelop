@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 
@@ -22,11 +23,11 @@ namespace ICSharpCode.WixBinding
 	/// <summary>
 	/// A Wix document (.wxs or .wxi).
 	/// </summary>
-	public class WixDocument : IWixPropertyValueProvider
+	public class WixDocument : XmlDocument, IWixPropertyValueProvider
 	{
 		public const string WixSourceFileExtension = ".wxs";
 		public const string WixIncludeFileExtension = ".wxi";
-		
+				
 		/// <summary>
 		/// Class used to store the line number and dialog id of the 
 		/// dialog element start tag.
@@ -71,7 +72,6 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
-		XmlDocument document;
 		WixNamespaceManager namespaceManager;
 		IFileLoader fileLoader;
 		WixProject project;
@@ -95,6 +95,16 @@ namespace ICSharpCode.WixBinding
 			this.fileLoader = fileLoader;
 			if (fileLoader == null) {
 				throw new ArgumentException("Cannot be null.", "fileLoader");
+			}
+			namespaceManager = new WixNamespaceManager(NameTable);			
+		}
+		
+		/// <summary>
+		/// Gets the project that this document belongs to.
+		/// </summary>
+		public WixProject Project {
+			get {
+				return project;
 			}
 		}
 		
@@ -136,7 +146,6 @@ namespace ICSharpCode.WixBinding
 		{
 			using (reader) {
 				List<string> dialogIds = new List<string>();
-			
 				object dialogElementName = reader.NameTable.Add("Dialog");
 				while (reader.Read()) {
 					switch (reader.NodeType) {
@@ -152,32 +161,80 @@ namespace ICSharpCode.WixBinding
 		}
 
 		/// <summary>
-		/// Gets the line and column where the specified dialog element starts. The column
-		/// returns is from the first character of the element name just inside the start
-		/// tag.
+		/// Gets the line and column where the specified element starts. The column
+		/// returned is the column containing the opening tag (&lt;).
 		/// </summary>
-		public static Location GetDialogStartElementLocation(TextReader reader, string dialogId)
+		/// <param name="name">The element name.</param>
+		/// <param name="id">The id attribute value.</param>
+		public static Location GetStartElementLocation(TextReader reader, string name, string id)
 		{
 			XmlTextReader xmlReader = new XmlTextReader(reader);
-			return GetDialogStartElementLocation(xmlReader, dialogId);			
+			return GetStartElementLocation(xmlReader, name, id);			
 		}
 		
 		/// <summary>
-		/// Gets the line and column where the specified dialog element starts. The column
-		/// returns is from the first character of the element name just inside the start
-		/// tag.
+		/// Gets the line and column where the specified element starts. The column
+		/// returned is the column containing the opening tag (&lt;).
 		/// </summary>
-		public static Location GetDialogStartElementLocation(XmlTextReader reader, string dialogId)
+		/// <param name="name">The element name.</param>
+		/// <param name="id">The id attribute value.</param>
+		public static Location GetStartElementLocation(XmlTextReader reader, string name, string id)
 		{
 			using (reader) {			
-				object dialogElementName = reader.NameTable.Add("Dialog");
+				object elementName = reader.NameTable.Add(name);
 				while (reader.Read()) {
 					switch (reader.NodeType) {
 						case XmlNodeType.Element:
-							if (IsElementMatch(dialogElementName, reader.LocalName)) {
-								Location location = GetStartElementLocationIfMatch(reader, dialogId);
+							if (IsElementMatch(elementName, reader.LocalName)) {
+								Location location = GetStartElementLocationIfMatch(reader, id);
 								if (!location.IsEmpty) {
 									return location;
+								}
+							}
+							break;
+					}
+				}
+			}
+			return Location.Empty;
+		}
+		
+		/// <summary>
+		/// Gets the line and column where the specified element ends. The column
+		/// returned is the column containing the opening tag (&lt;) of the end element.
+		/// </summary>
+		/// <param name="name">The element name.</param>
+		/// <param name="id">The id attribute value.</param>
+		public static Location GetEndElementLocation(TextReader reader, string name, string id)
+		{
+			XmlTextReader xmlReader = new XmlTextReader(reader);
+			return GetEndElementLocation(xmlReader, name, id);			
+		}
+		
+		/// <summary>
+		/// Gets the line and column where the specified element ends. The column
+		/// returned is the column containing the opening tag (&lt;) of the end element.
+		/// </summary>
+		/// <param name="name">The element name.</param>
+		/// <param name="id">The id attribute value.</param>
+		public static Location GetEndElementLocation(XmlTextReader reader, string name, string id)
+		{
+			using (reader) {	
+				bool startElementFound = false;
+				object elementName = reader.NameTable.Add(name);
+				while (reader.Read()) {
+					switch (reader.NodeType) {
+						case XmlNodeType.Element:
+							if (IsElementMatch(elementName, reader.LocalName)) {
+								Location location = GetStartElementLocationIfMatch(reader, id);
+								startElementFound = !location.IsEmpty;
+							}
+							break;
+						case XmlNodeType.EndElement:
+							if (startElementFound) {
+								if (IsElementMatch(elementName, reader.LocalName)) {
+									// Take off an extra 2 from the line position so we get the 
+									// correct column for the < tag rather than the element name.
+									return new Location(reader.LinePosition - 3, reader.LineNumber - 1);
 								}
 							}
 							break;
@@ -221,9 +278,9 @@ namespace ICSharpCode.WixBinding
 								if (line < reader.LineNumber) {
 									return null;
 								} else if (line == reader.LineNumber) {
-									return GetDialogIdFromCurrentNode(reader);
+									return GetIdFromCurrentNode(reader);
 								} else if (reader.IsStartElement()) {
-									dialogStartElement = new DialogStartElement(reader.LineNumber, GetDialogIdFromCurrentNode(reader));
+									dialogStartElement = new DialogStartElement(reader.LineNumber, GetIdFromCurrentNode(reader));
 								}
 							}
 							break;
@@ -231,8 +288,7 @@ namespace ICSharpCode.WixBinding
 							if (IsElementMatch(dialogElementName, reader.LocalName)) {
 								if (line > dialogStartElement.Line && line <= reader.LineNumber) {
 									return dialogStartElement.Id;
-								} else {
-								}
+								} 
 							}
 							break;
 					}
@@ -247,6 +303,9 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public static bool IsWixFileName(string fileName)
 		{
+			if (fileName == null) {
+				return false;
+			}
 			string extension = Path.GetExtension(fileName.ToLowerInvariant());
 			switch (extension) {
 				case WixSourceFileExtension:
@@ -258,51 +317,11 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Gets the region (start line, column to end line, column) of the dialog xml
-		/// element. This includes the start and end tags, the start column is the column
-		/// containing the start tag and the end column is the column containing the final
-		/// end tag marker.
+		/// Checks whether the file extension is for a Wix source file (.wxs).
 		/// </summary>
-		public static DomRegion GetDialogElementRegion(TextReader reader, string dialogId)
+		public static bool IsWixSourceFileName(string fileName)
 		{
-			XmlTextReader xmlReader = new XmlTextReader(reader);
-			return GetDialogElementRegion(xmlReader, dialogId);			
-		}
-		
-		/// <summary>
-		/// Gets the region (start line, column to end line, column) of the dialog xml
-		/// element. This includes the start and end tags, the start column is the column
-		/// containing the start tag and the end column is the column containing the final
-		/// end tag marker.
-		/// </summary>
-		public static DomRegion GetDialogElementRegion(XmlTextReader reader, string dialogId)
-		{
-			Location startLocation = Location.Empty;
-			
-			using (reader) {			
-				object dialogElementName = reader.NameTable.Add("Dialog");
-				while (reader.Read()) {
-					switch (reader.NodeType) {
-						case XmlNodeType.Element:
-							if (IsElementMatch(dialogElementName, reader.LocalName)) {
-								bool isEmptyElement = reader.IsEmptyElement;
-								startLocation = GetStartElementLocationIfMatch(reader, dialogId);
-								if (!startLocation.IsEmpty && isEmptyElement) {
-									Location endLocation = GetEmptyElementEnd(reader);
-									return new DomRegion(startLocation, endLocation);							
-								}
-							}
-							break;
-						case XmlNodeType.EndElement:
-							if (!startLocation.IsEmpty && IsElementMatch(dialogElementName, reader.LocalName)) {
-								Location endLocation = GetEndElementEnd(reader);
-								return new DomRegion(startLocation, endLocation);
-							}
-							break;
-					}
-				}
-			}
-			return DomRegion.Empty;
+			return String.Compare(Path.GetExtension(fileName), WixSourceFileExtension, true) == 0;
 		}
 		
 		/// <summary>
@@ -333,15 +352,86 @@ namespace ICSharpCode.WixBinding
 			}
 			return new WixDocumentLineSegment(startOffset, length);
 		}
-				
+		
 		/// <summary>
-		/// Loads the Wix document.
+		/// Creates an XML fragment string for the specified element.
 		/// </summary>
-		public void LoadXml(string xml)
+		/// <param name="lineTerminator">The line terminator.</param>
+		/// <param name="tabsToSpaces">Indicates whether tabs will be converted to spaces.</param>
+		/// <param name="tabIndent">The indent to be used when converting tabs to spaces.</param>
+		/// <returns>An XML fragment string without any Wix namespace attributes.</returns>
+		public static string GetXml(XmlElement element, string lineTerminator, bool tabsToSpaces, int tabIndent)
 		{
-			document = new XmlDocument();
-			document.LoadXml(xml);
-			namespaceManager = new WixNamespaceManager(document.NameTable);
+			StringBuilder xml = new StringBuilder();
+			StringWriter stringWriter = new StringWriter(xml);
+			XmlWriterSettings xmlWriterSettings = CreateXmlWriterSettings(lineTerminator, tabsToSpaces, tabIndent);
+			using (XmlWriter xmlWriter = XmlTextWriter.Create(stringWriter, xmlWriterSettings)) {
+				element.WriteTo(xmlWriter);
+			}
+			return xml.ToString().Replace(String.Concat(" xmlns=\"", WixNamespaceManager.Namespace, "\""), String.Empty);;
+		}
+		
+		/// <summary>
+		/// Gets the region (start line, column to end line, column) of the xml
+		/// element that has the specified id. This includes the start and end tags, the start column is the column
+		/// containing the start tag and the end column is the column containing the final
+		/// end tag marker.
+		/// </summary>
+		/// <param name="name">The name of the element.</param>
+		/// <param name="id">The id attribute value of the element.</param>
+		public static DomRegion GetElementRegion(TextReader reader, string name, string id)
+		{
+			XmlTextReader xmlTextReader = new XmlTextReader(reader);
+			return GetElementRegion(xmlTextReader, name, id);
+		}
+		
+		/// <summary>
+		/// Gets the region (start line, column to end line, column) of the xml
+		/// element that has the specified id. This includes the start and end tags, the start column is the column
+		/// containing the start tag and the end column is the column containing the final
+		/// end tag marker.
+		/// </summary>
+		/// <param name="name">The name of the element.</param>
+		/// <param name="id">The id attribute value of the element.</param>
+		public static DomRegion GetElementRegion(XmlTextReader reader, string name, string id)
+		{
+			Location startLocation = Location.Empty;
+			
+			using (reader) {			
+				int nestedElementsCount = -1;
+				object elementName = reader.NameTable.Add(name);
+				while (reader.Read()) {
+					switch (reader.NodeType) {
+						case XmlNodeType.Element:
+							if (IsElementMatch(elementName, reader.LocalName)) {
+								if (nestedElementsCount == -1) {
+									bool isEmptyElement = reader.IsEmptyElement;
+									startLocation = GetStartElementLocationIfMatch(reader, id);
+									if (!startLocation.IsEmpty) {
+										nestedElementsCount = 0;
+										if (isEmptyElement) {
+											Location endLocation = GetEmptyElementEnd(reader);
+											return new DomRegion(startLocation, endLocation);
+										}
+									}
+								} else if (!reader.IsEmptyElement) {
+									++nestedElementsCount;
+								}
+							}
+							break;
+						case XmlNodeType.EndElement:
+							if (!startLocation.IsEmpty && IsElementMatch(elementName, reader.LocalName)) {
+								if (nestedElementsCount == 0) {
+									Location endLocation = GetEndElementEnd(reader);
+									return new DomRegion(startLocation, endLocation);
+								}
+								--nestedElementsCount;
+							}
+							break;
+					}
+				}
+			}
+			return DomRegion.Empty;
 		}
 		
 		/// <summary>
@@ -353,10 +443,27 @@ namespace ICSharpCode.WixBinding
 		/// with the specified id can be found.</returns>
 		public WixDialog GetDialog(string id)
 		{
-			string xpath = String.Concat("//w:Dialog[@Id='", id, "']");
-			XmlElement dialogElement = (XmlElement)document.SelectSingleNode(xpath, namespaceManager);
+			XmlElement dialogElement = GetDialogElement(id);
 			if (dialogElement != null) {
 				return new WixDialog(this, dialogElement);
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Gets a WixDialog object for the specified dialog id.
+		/// </summary>
+		/// <param name="id">The id of the dialog.</param>
+		/// <param name="reader">The text file reader to use when looking up
+		/// binary filenames.</param>
+		/// <returns>A <see cref="WixDialog"/> for the dialog id
+		/// found; otherwise <see langword="null"/> if no dialog
+		/// with the specified id can be found.</returns>
+		public WixDialog GetDialog(string id, ITextFileReader reader)
+		{
+			XmlElement dialogElement = GetDialogElement(id);
+			if (dialogElement != null) {
+				return new WixDialog(this, dialogElement, new WixBinaries(this, reader));
 			}
 			return null;
 		}
@@ -368,22 +475,9 @@ namespace ICSharpCode.WixBinding
 		public string GetBinaryFileName(string id)
 		{
 			string xpath = String.Concat("//w:Binary[@Id='", id, "']");
-			XmlElement binaryElement = (XmlElement)document.SelectSingleNode(xpath, namespaceManager);
+			WixBinaryElement binaryElement = (WixBinaryElement)SelectSingleNode(xpath, namespaceManager);
 			if (binaryElement != null) {
-				string binaryFileName;
-				if (binaryElement.HasAttribute("SourceFile")) {
-					binaryFileName = binaryElement.GetAttribute("SourceFile");
-				} else {
-					binaryFileName = binaryElement.GetAttribute("src");
-				}
-				
-				binaryFileName = WixPropertyParser.Parse(binaryFileName, this);
-				
-				// If we have the Wix document filename return the full filename.
-				if (fileName.Length > 0) {
-					return Path.Combine(Path.GetDirectoryName(fileName), binaryFileName);
-				}
-				return binaryFileName;
+				return binaryElement.FileName;
 			}
 			return null;
 		}
@@ -394,8 +488,16 @@ namespace ICSharpCode.WixBinding
 		public Bitmap GetBitmapFromId(string id)
 		{
 			string bitmapFileName = GetBinaryFileName(id);
-			if (bitmapFileName != null) {
-				return fileLoader.GetBitmap(bitmapFileName);
+			return GetBitmapFromFileName(bitmapFileName);
+		}
+		
+		/// <summary>
+		/// Loads the bitmap.
+		/// </summary>
+		public Bitmap GetBitmapFromFileName(string fileName)
+		{
+			if (fileName != null) {
+				return fileLoader.GetBitmap(fileName);
 			}
 			return null;
 		}
@@ -407,7 +509,7 @@ namespace ICSharpCode.WixBinding
 		public string GetProperty(string name)
 		{
 			string xpath = String.Concat("//w:Property[@Id='", name, "']");
-			XmlElement textStyleElement = (XmlElement)document.SelectSingleNode(xpath, namespaceManager);
+			XmlElement textStyleElement = (XmlElement)SelectSingleNode(xpath, namespaceManager);
 			if (textStyleElement != null) {
 				return textStyleElement.InnerText;
 			}
@@ -415,7 +517,7 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Gets the variable value from the WixProject.
+		/// Gets the preprocessor variable value from the WixProject.
 		/// </summary>
 		public string GetValue(string name)
 		{
@@ -426,22 +528,135 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
+		/// Gets the top SOURCEDIR directory.
+		/// </summary>
+		public WixDirectoryElement RootDirectory {
+			get {
+				string xpath = String.Concat("//w:Product/w:Directory[@Id='", WixDirectoryElement.RootDirectoryId, "']");
+				return (WixDirectoryElement)SelectSingleNode(xpath, namespaceManager);
+			}
+		}
+		
+		/// <summary>
+		/// Gets a reference to the root directory.
+		/// </summary>
+		public WixDirectoryRefElement RootDirectoryRef {
+			get {
+				string xpath = String.Concat("//w:DirectoryRef[@Id='", WixDirectoryElement.RootDirectoryId, "']");
+				return (WixDirectoryRefElement)SelectSingleNode(xpath, namespaceManager);
+			}
+		}
+		
+		/// <summary>
+		/// The Wix document contains the Product element.
+		/// </summary>
+		public bool IsProductDocument {
+			get {
+				return Product != null;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the prefix used for the Wix namespace.
+		/// </summary>
+		public string WixNamespacePrefix {
+			get {
+				XmlElement documentElement = DocumentElement;
+				if (documentElement != null) {
+					return documentElement.GetPrefixOfNamespace(WixNamespaceManager.Namespace);
+				}
+				return String.Empty;
+			}
+		}
+		
+		/// <summary>
+		/// Adds a new root directory.
+		/// </summary>
+		public WixDirectoryElement AddRootDirectory()
+		{
+			WixDirectoryElement rootDirectory = WixDirectoryElement.CreateRootDirectory(this);
+			return (WixDirectoryElement)Product.AppendChild(rootDirectory);
+		}
+		
+		/// <summary>
+		/// Creates a new Xml element belonging to the Wix namespace.
+		/// </summary>
+		public XmlElement CreateWixElement(string name)
+		{
+			return CreateElement(WixNamespacePrefix, name, WixNamespaceManager.Namespace);
+		}
+		
+		/// <summary>
+		/// Saves the document to the location specified by WixDocument.FileName.
+		/// </summary>
+		public void Save(string lineTerminator, bool tabsToSpaces, int tabIndent)
+		{
+			XmlWriterSettings xmlWriterSettings = CreateXmlWriterSettings(lineTerminator, tabsToSpaces, tabIndent);
+			using (XmlWriter xmlWriter = XmlTextWriter.Create(fileName, xmlWriterSettings)) {
+				Save(xmlWriter);
+			}
+		}
+		
+		/// <summary>
+		/// Gets the Product element.
+		/// </summary>
+		public XmlElement Product {
+			get {
+				return (XmlElement)SelectSingleNode("w:Wix/w:Product", namespaceManager);
+			}
+		}
+		
+		/// <summary>
+		/// Gets the binary elements defined in this document.
+		/// </summary>
+		public WixBinaryElement[] GetBinaries()
+		{
+			List<WixBinaryElement> binaries = new List<WixBinaryElement>();
+			foreach (WixBinaryElement element in SelectNodes("//w:Binary", namespaceManager)) {
+				binaries.Add(element);
+			}
+			return binaries.ToArray();
+		}
+		
+		/// <summary>
+		/// Creates custom Wix elements for certain elements such as Directory and File.
+		/// </summary>
+		public override XmlElement CreateElement(string prefix, string localName, string namespaceURI)
+		{
+			if (namespaceURI == WixNamespaceManager.Namespace) {
+				switch (localName) {
+					case WixDirectoryElement.DirectoryElementName:
+						return new WixDirectoryElement(this);
+					case WixComponentElement.ComponentElementName:
+						return new WixComponentElement(this);
+					case WixFileElement.FileElementName:
+						return new WixFileElement(this);
+					case WixDirectoryRefElement.DirectoryRefElementName:
+						return new WixDirectoryRefElement(this);
+					case WixBinaryElement.BinaryElementName:
+						return new WixBinaryElement(this);
+				}
+			}
+			return base.CreateElement(prefix, localName, namespaceURI);
+		}
+		
+		/// <summary>
 		/// Reads the dialog id and adds it to the list of dialogs found so far.
 		/// </summary>
 		/// <param name="reader">An XmlReader which is currently at the dialog start element.</param>
 		static void AddDialogId(XmlReader reader, List<string> dialogIds)
 		{
-			string id = GetDialogIdFromCurrentNode(reader);
+			string id = GetIdFromCurrentNode(reader);
 			if (id.Length > 0) {
 				dialogIds.Add(id);
 			}
 		}
 		
 		/// <summary>
-		/// Gets the dialog id for the current dialog element.
+		/// Gets the id for the current element.
 		/// </summary>
-		/// <param name="reader">An XmlReader which is currently at the dialog start element.</param>
-		static string GetDialogIdFromCurrentNode(XmlReader reader)
+		/// <param name="reader">An XmlReader which is currently at the start element.</param>
+		static string GetIdFromCurrentNode(XmlReader reader)
 		{
 			if (reader.MoveToAttribute("Id")) {
 				if (reader.Value != null) {
@@ -474,7 +689,7 @@ namespace ICSharpCode.WixBinding
 			int line = reader.LineNumber - 1;	
 			int column = reader.LinePosition - 2; // Take off 2 to so the '<' is located.
 
-			if (id == GetDialogIdFromCurrentNode(reader)) {
+			if (id == GetIdFromCurrentNode(reader)) {
 				return new Location(column, line);
 			}
 			return Location.Empty;
@@ -490,10 +705,15 @@ namespace ICSharpCode.WixBinding
 			reader.ReadEndElement();
 			int line = reader.LineNumber - 1;
 			
-			// Take off two as we have moved passed the end tag
-			// column.
-			int column = reader.LinePosition - 2; 
+			// Take off two as we have moved passed the end tag column.
+			int column = reader.LinePosition - 2;
 			
+			// If ReadEndElement has moved to the start of another element
+			// take off one from the column value otherwise the column
+			// value includes the start tag of the next element.
+			if (reader.NodeType == XmlNodeType.Element) {
+				--column;
+			}
 			return new Location(column, line);
 		}
 		
@@ -511,6 +731,35 @@ namespace ICSharpCode.WixBinding
 			// column.
 			int column = reader.LinePosition - 2;
 			return new Location(column, line);
+		}
+		
+		/// <summary>
+		/// Creates an XmlWriterSettings based on the text editor properties.
+		/// </summary>
+		static XmlWriterSettings CreateXmlWriterSettings(string lineTerminator, bool tabsToSpaces, int tabIndent)
+		{
+			XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
+			xmlWriterSettings.CloseOutput = true;
+			xmlWriterSettings.Indent = true;
+			xmlWriterSettings.NewLineChars = lineTerminator;
+			xmlWriterSettings.OmitXmlDeclaration = true;
+			
+			if (tabsToSpaces) {
+				string spaces = " ";
+				xmlWriterSettings.IndentChars = spaces.PadRight(tabIndent);
+			} else {
+				xmlWriterSettings.IndentChars = "\t";
+			}
+			return xmlWriterSettings;
+		}
+		
+		/// <summary>
+		/// Gets the dialog element with the specified id.
+		/// </summary>
+		XmlElement GetDialogElement(string id)
+		{
+			string xpath = String.Concat("//w:Dialog[@Id='", id, "']");
+			return (XmlElement)SelectSingleNode(xpath, namespaceManager);
 		}
 	}
 }

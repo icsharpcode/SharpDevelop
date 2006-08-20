@@ -14,13 +14,14 @@ using WixBinding.Tests.Utils;
 namespace WixBinding.Tests.Project
 {
 	/// <summary>
-	/// Tests that the WixProject.GetWixFileProjectItems method only returns
+	/// Tests that the WixProject.WixFiles property only returns
 	/// FileProjectItems that have a Wix document file extension.
 	/// </summary>
 	[TestFixture]
 	public class GetWixFileProjectItemsTestFixture
 	{
-		FileProjectItem wixFileProjectItem;
+		FileProjectItem wixSourceFileProjectItem;
+		FileProjectItem wixIncludeFileProjectItem;
 		int wixFileProjectItemCount;
 		
 		[TestFixtureSetUp]
@@ -40,24 +41,35 @@ namespace WixBinding.Tests.Project
 			item.Include = "setup.wxs";
 			p.Items.Add(item);
 			
+			item = new FileProjectItem(p, ItemType.Compile);
+			item.Include = "components.wxi";
+			p.Items.Add(item);
+			
 			wixFileProjectItemCount = 0;
 			
-			foreach (FileProjectItem fileItem in p.WixFileProjectItems) {
+			foreach (FileProjectItem fileItem in p.WixFiles) {
 				wixFileProjectItemCount++;
-				wixFileProjectItem = fileItem;
 			}
+			wixSourceFileProjectItem = p.WixFiles[0];
+			wixIncludeFileProjectItem = p.WixFiles[1];
 		}
 		
 		[Test]
-		public void OneWixFileProjectItem()
+		public void TwoWixFileProjectItems()
 		{
-			Assert.AreEqual(1, wixFileProjectItemCount);
+			Assert.AreEqual(2, wixFileProjectItemCount);
 		}
 		
 		[Test]
-		public void WixFileProjectItemInclude()
+		public void WixSourceFileProjectItem()
 		{
-			Assert.AreEqual("setup.wxs", wixFileProjectItem.Include);
+			Assert.AreEqual("setup.wxs", wixSourceFileProjectItem.Include);
+		}
+		
+		[Test]
+		public void WixIncludeFileProjectItem()
+		{
+			Assert.AreEqual("components.wxi", wixIncludeFileProjectItem.Include);
 		}
 	}
 }
