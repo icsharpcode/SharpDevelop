@@ -23,5 +23,6 @@ namespace SharpDbTools.Model
 	{
 		public const string MetaDataCollections = "MetaDataCollections";
 		public const string ConnectionInfo = "ConnectionInfo";
+		public static string[] PrimaryObjects = new string[] { "Tables", "Procedures",  "Functions", "Views", "Users" };
 	}
 }

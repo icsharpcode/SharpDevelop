@@ -13,7 +13,10 @@
 
 using System;
 using System.Windows.Forms;
+using System.Data;
 using System.Data.Common;
+using System.Collections.Generic;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using SharpDbTools.Model;
@@ -73,14 +76,36 @@ namespace SharpDbTools
 	}
 	
 	class ServerToolTreeView : TreeView
-	{
-		TreeNode dbNode;
-		
+	{		
 		public ServerToolTreeView(): base()
+		{				
+			// this is the wrong place for this, but lets give it a go...
+			DbModelInfoService.LoadNamesFromFiles();
+			Rebuild();
+
+		}
+		
+		/// <summary>
+		/// Rebuilds the database connection tree.
+		/// Should only be called from a delegate via Invoke or BeginInvoke.
+		/// </summary>
+		public void Rebuild()
 		{
-			dbNode = new TreeNode();
-			dbNode.Text = "Database Explorer";
-			dbNode.Tag = "DatabaseConnections";
+			this.BeginUpdate();
+			// TODO: put the Rebuild... behaviour into a view builder;
+			TreeNode dbNode = null;
+			TreeNode[] dbNodes = this.Nodes.Find("DatabaseExplorer", true);
+			
+			// lets assume there is only one with this above name
+			if (dbNodes.Length == 0) {
+				LoggingService.Debug("could not find DatabaseExplorer Node, so creating it now");
+				dbNode = new TreeNode();
+				dbNode.Text = "Database Explorer";
+				dbNode.Name = "DatabaseExplorer";
+				this.Nodes.Add(dbNode);
+			} else {
+				dbNode = dbNodes[0];
+			}
 			
 			// create the context menu for the database server node
 			ContextMenuStrip cMenu = new ContextMenuStrip();
@@ -105,29 +130,15 @@ namespace SharpDbTools
 			                     } 
 			                    );
 			dbNode.ContextMenuStrip = cMenu;
-			
-			// TODO: NEXT: put this and the Rebuild... behaviour into a view builder; 
-			
-			// this is the wrong place for this, but lets give it a go...
-			DbModelInfoService.LoadFromFiles();
-			
-			this.BeginUpdate();
-			this.Nodes.Add(dbNode);
-			RebuildDbConnectionsNode();
-			this.EndUpdate();
-		}
-		
-		/// <summary>
-		/// Rebuilds the database connection tree.
-		/// Should only be called from a delegate via Invoke or BeginInvoke.
-		/// </summary>
-		public void RebuildDbConnectionsNode()
-		{
+
 			// Rebuild each of the root nodes in the ServerToolTreeView
-			this.BeginUpdate();
 			dbNode.Nodes.Clear();
 			foreach (string name in DbModelInfoService.Names) {
 				TreeNode dbModelInfoNode = CreateDbModelInfoNode(name);
+				TreeNode connectionNode = CreateConnectionPropertiesNode(name);
+				TreeNode metadataNode = CreateMetaDataNode(name);
+				dbModelInfoNode.Nodes.Add(connectionNode);
+				dbModelInfoNode.Nodes.Add(metadataNode);
 				dbNode.Nodes.Add(dbModelInfoNode);
 			}
 			this.EndUpdate();
@@ -145,26 +156,42 @@ namespace SharpDbTools
 				new ToolStripMenuItem("Set Connection String");
 			setConnectionStringMenuItem.Click += new EventHandler(SetConnectionStringOnDbModelInfoClickHandler);
 			
-			ToolStripMenuItem loadMetadataMenuItem =
+			ToolStripMenuItem loadMetadataFromConnectionMenuItem =
 				new ToolStripMenuItem("Load Metadata from Connection");
-			loadMetadataMenuItem.Click += new EventHandler(LoadMetadataClickHandler);
+			loadMetadataFromConnectionMenuItem.Click += new EventHandler(LoadMetadataFromConnectionClickHandler);
+			
+			ToolStripMenuItem loadMetadataFromFileMenuItem =
+				new ToolStripMenuItem("Load Metadata from File");
+			loadMetadataFromFileMenuItem.Click += new EventHandler(LoadMetadataFromFileClickHandler);
+			
 			
 			cMenu.Items.AddRange(new ToolStripMenuItem[] 
 			                     {
 			                     	setConnectionStringMenuItem,
-			                     	loadMetadataMenuItem	
+			                     	loadMetadataFromConnectionMenuItem,
+			                     	loadMetadataFromFileMenuItem
 			                     });
 	
 			treeNode.ContextMenuStrip = cMenu;
-			
+			return treeNode;
+		}
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns>a TreeNode representation of the connection properties
+		/// of the connection</returns>
+		public TreeNode CreateConnectionPropertiesNode(string name)
+		{
 			// create sub TreeNodes for the connection string and invariant name if they exist
 			DbModelInfo modelInfo = DbModelInfoService.GetDbModelInfo(name);
+			if (name == null) throw new KeyNotFoundException();
 			string connectionString = modelInfo.ConnectionString;
 			string invariantName = modelInfo.InvariantName;
 			
 			TreeNode attributesNode = new TreeNode("Connection Properties");
-			treeNode.Nodes.Add(attributesNode);
-			
+				
 			if (connectionString != null) {
 				TreeNode cstringNode = new TreeNode("Connection String: " + connectionString);
 				attributesNode.Nodes.Add(cstringNode);
@@ -175,7 +202,43 @@ namespace SharpDbTools
 				attributesNode.Nodes.Add(invNameNode);
 			}
 			
-			return treeNode;
+			return attributesNode;
+		}
+		
+		public TreeNode CreateMetaDataNode(string name)
+		{
+			TreeNode metaNode = new TreeNode("Db Objects");
+			metaNode.Name = name + ":MetaData";
+			DbModelInfo info = DbModelInfoService.GetDbModelInfo(name);
+			DataTable metadataCollectionsTable = info.Tables[TableNames.MetaDataCollections];
+			if (metadataCollectionsTable != null) {
+				for (int i = 0; i < TableNames.PrimaryObjects.Length; i++) {
+					string metadataCollectionName = TableNames.PrimaryObjects[i];
+					DataTable metaCollectionTable = info.Tables[metadataCollectionName];
+					LoggingService.Debug("found metadata collection: " + metadataCollectionName);
+					TreeNode collectionNode = new TreeNode(metadataCollectionName);
+					collectionNode.Name = name + ":Collection:" + metadataCollectionName;
+					metaNode.Nodes.Add(collectionNode);
+					foreach (DataRow dbObjectRow in metaCollectionTable.Rows) {
+						TreeNode objectNode = null;
+						if (dbObjectRow.ItemArray.Length > 1) {
+							objectNode = new TreeNode((string)dbObjectRow[1]);
+							objectNode.Name = name + ":Object:" + (string)dbObjectRow[1];
+						} else {
+							objectNode = new TreeNode((string)dbObjectRow[0]);
+							objectNode.Name = name + ":Object:" + (string)dbObjectRow[0];
+						}
+						
+//						TreeNode ownerNode = new TreeNode("Owner: " + (string)dbObjectRow["OWNER"]);
+//						TreeNode typeNode = new TreeNode("Type: " + (string)dbObjectRow["TYPE"]);
+//						// TODO: add fields to each Table
+//						TreeNode fieldsNode = new TreeNode("Fields [TODO]");
+//						objectNode.Nodes.AddRange(new TreeNode[] {ownerNode, typeNode, fieldsNode });
+						collectionNode.Nodes.Add(objectNode);
+					}
+				}	
+			}
+			return metaNode;
 		}
 		
 		/// <summary>
@@ -203,7 +266,7 @@ namespace SharpDbTools
 			DbModelInfoService.Add(logicalName, null, null);
 			
 			// rebuild the database server node
-			this.BeginInvoke(new MethodInvoker(this.RebuildDbConnectionsNode));
+			this.BeginInvoke(new MethodInvoker(this.Rebuild));
 		}
 		
 		public void DeleteDbConnectionClickHandler(object sender, EventArgs e)
@@ -215,6 +278,14 @@ namespace SharpDbTools
 		{
 			LoggingService.Debug("save all metadata clicked");
 			DbModelInfoService.SaveAll();
+		}
+		
+		public void LoadMetadataFromFileClickHandler(object sender, EventArgs e)
+		{
+			LoggingService.Debug("load metadata from file clicked");
+			string logicalConnectionName = getConnectionName(sender);
+			DbModelInfoService.LoadFromFile(logicalConnectionName);
+			this.BeginInvoke(new MethodInvoker(this.Rebuild));
 		}
 		
 		private static string getConnectionName(object sender)
@@ -256,10 +327,10 @@ namespace SharpDbTools
 			dbModelInfo.InvariantName = definitionDialog.InvariantName;
 			
 			// rebuild the database explorer node
-			this.BeginInvoke(new MethodInvoker(this.RebuildDbConnectionsNode));
+			this.BeginInvoke(new MethodInvoker(this.Rebuild));
 		}
 		
-		public void LoadMetadataClickHandler(object sender, EventArgs args)
+		public void LoadMetadataFromConnectionClickHandler(object sender, EventArgs args)
 		{
 			string connectionLogicalName = getConnectionName(sender);
 			LoggingService.Debug("load metadata from connection clicked for connection with name: "

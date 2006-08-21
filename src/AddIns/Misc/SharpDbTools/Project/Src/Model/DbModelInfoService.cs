@@ -152,6 +152,25 @@ namespace SharpDbTools.Model
 			}
 		}
 		
+		public static void LoadNamesFromFiles()
+		{
+			// load DbModelInfo's from file system
+			string saveLocation = GetSaveLocation();
+			LoggingService.Debug("looking for metadata files at: " + saveLocation);
+			string[] files = Directory.GetFileSystemEntries(saveLocation);
+
+			cache.Clear();
+			for (int i = 0; i < files.Length; i++) {
+				LoggingService.Debug("found to load metadata from: " + files[i]);
+				int start = files[i].LastIndexOf('\\');
+				int end = files[i].LastIndexOf('.');
+				start++;
+				string name = files[i].Substring(start, end - start);
+				DbModelInfo nextModel = new DbModelInfo(name);
+				cache.Add(nextModel.Name, nextModel);
+			}	
+		}
+		
 		public static void LoadFromFiles()
 		{
 			// load DbModelInfo's from file system
@@ -159,17 +178,27 @@ namespace SharpDbTools.Model
 			string[] files = Directory.GetFiles(saveLocation);
 			cache.Clear();
 			for (int i = 0; i < files.Length; i++) {
-				DbModelInfo nextModel = LoadFromFile(@files[i]);
+				DbModelInfo nextModel = LoadFromFileAtPath(@files[i]);
 				cache.Add(nextModel.Name, nextModel);
 			}
 		}
 		
-		private static DbModelInfo LoadFromFile(string filePath)
+		private static DbModelInfo LoadFromFileAtPath(string filePath)
 		{
 			LoggingService.Debug("loading DbModelInfo from filePath: " + filePath);
 			DbModelInfo nextModel = new DbModelInfo();
 			nextModel.ReadXml(filePath);
 			return nextModel;
+		}
+		
+		public static void LoadFromFile(string logicalConnectionName)
+		{
+			LoggingService.Debug("loading DbModelInfo for name: " + logicalConnectionName);
+			string saveLocation = GetSaveLocation();
+			string path = saveLocation + "\\" + logicalConnectionName + ".metadata";
+			DbModelInfo info = LoadFromFileAtPath(path);
+			cache.Remove(logicalConnectionName);
+			cache.Add(logicalConnectionName, info);
 		}
 		
 		private static string GetSaveLocation()
