@@ -49,6 +49,17 @@ namespace ICSharpCode.Core
 				Set(property, value);
 			}
 		}
+
+		public string[] Elements
+		{
+			get
+			{
+				List<string> ret = new List<string>();
+				foreach (KeyValuePair<string, object> property in properties)
+					ret.Add(property.Key);
+				return ret.ToArray();
+			}
+		}
 		
 		public object Get(string property)
 		{
@@ -73,6 +84,14 @@ namespace ICSharpCode.Core
 		public bool Contains(string property)
 		{
 			return properties.ContainsKey(property);
+		}
+
+		public int Count
+		{
+			get
+			{
+				return properties.Count;
+			}
 		}
 		
 		public bool Remove(string property)
