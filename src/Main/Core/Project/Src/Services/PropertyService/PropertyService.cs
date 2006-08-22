@@ -23,6 +23,14 @@ namespace ICSharpCode.Core
 		
 		static Properties properties;
 		
+		public static bool Initialized
+		{
+			get
+			{
+				return properties != null;
+			}
+		}
+
 		public static void InitializeService(string configDirectory, string dataDirectory, string propertiesName)
 		{
 			if (properties != null)
