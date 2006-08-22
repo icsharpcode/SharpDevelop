@@ -499,6 +499,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data)
 		{
 			outputFormatter.PrintIdentifier(variableDeclaration.Name);
+			if (!variableDeclaration.FixedArrayInitialization.IsNull) {
+				outputFormatter.PrintToken(Tokens.OpenSquareBracket);
+				nodeTracker.TrackedVisit(variableDeclaration.FixedArrayInitialization, data);
+				outputFormatter.PrintToken(Tokens.CloseSquareBracket);
+			}
 			if (!variableDeclaration.Initializer.IsNull) {
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Assign);
@@ -2423,6 +2428,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			if ((modifier & Modifiers.Volatile) != 0) {
 				tokenList.Add(Tokens.Volatile);
+			}
+			if ((modifier & Modifiers.Fixed) != 0) {
+				tokenList.Add(Tokens.Fixed);
 			}
 			outputFormatter.PrintTokenList(tokenList);
 			

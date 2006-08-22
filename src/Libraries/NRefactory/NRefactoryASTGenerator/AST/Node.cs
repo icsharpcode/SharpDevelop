@@ -14,7 +14,7 @@ namespace NRefactoryASTGenerator.Ast
 	interface INullable {}
 	struct Location {}
 	
-	enum Modifier { None }
+	enum Modifiers { None }
 	
 	[CustomImplementation]
 	abstract class AbstractNode : INode {}
@@ -22,10 +22,10 @@ namespace NRefactoryASTGenerator.Ast
 	abstract class AttributedNode : AbstractNode
 	{
 		List<AttributeSection> attributes;
-		Modifier               modifier;
+		Modifiers               modifier;
 		
 		public AttributedNode(List<AttributeSection> attributes) {}
-		public AttributedNode(Modifier modifier, List<AttributeSection> attributes) {}
+		public AttributedNode(Modifiers modifier, List<AttributeSection> attributes) {}
 	}
 	
 	abstract class ParametrizedNode : AttributedNode
@@ -33,12 +33,12 @@ namespace NRefactoryASTGenerator.Ast
 		string name;
 		List<ParameterDeclarationExpression> parameters;
 		
-		public ParametrizedNode(Modifier modifier, List<AttributeSection> attributes,
+		public ParametrizedNode(Modifiers modifier, List<AttributeSection> attributes,
 		                        string name, List<ParameterDeclarationExpression> parameters)
 			: base(modifier, attributes)
 		{}
 		
-		public ParametrizedNode(Modifier modifier, List<AttributeSection> attributes)
+		public ParametrizedNode(Modifiers modifier, List<AttributeSection> attributes)
 			: base(modifier, attributes)
 		{}
 	}

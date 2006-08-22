@@ -526,10 +526,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					AST.VariableDeclaration field = (AST.VariableDeclaration)fieldDeclaration.Fields[i];
 					
 					IReturnType retType;
-					if (c.ClassType == ClassType.Enum)
+					if (c.ClassType == ClassType.Enum) {
 						retType = c.DefaultReturnType;
-					else
+					} else {
 						retType = CreateReturnType(fieldDeclaration.GetTypeForField(i));
+						if (!field.FixedArrayInitialization.IsNull)
+							retType = new ArrayReturnType(cu.ProjectContent, retType, 1);
+					}
 					DefaultField f = new DefaultField(retType, field.Name, modifier, region, c);
 					ConvertAttributes(fieldDeclaration, f);
 					f.Documentation = doku;

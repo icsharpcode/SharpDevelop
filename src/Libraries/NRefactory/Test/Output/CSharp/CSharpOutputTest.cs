@@ -394,5 +394,23 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestProgram("public struct Rational<T, O> where O : class\n{\n}");
 		}
+		
+		[Test]
+		public void FixedStructField()
+		{
+			TestProgram(@"unsafe struct CrudeMessage
+{
+	public fixed byte data[256];
+}");
+		}
+		
+		[Test]
+		public void FixedStructField2()
+		{
+			TestProgram(@"unsafe struct CrudeMessage
+{
+	fixed byte data[4 * sizeof(int)], data2[10];
+}");
+		}
 	}
 }

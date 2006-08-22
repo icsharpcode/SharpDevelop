@@ -38,7 +38,7 @@ namespace NRefactoryASTGenerator.Ast
 		List<ParameterDeclarationExpression> parameters;
 		List<TemplateDefinition> templates;
 		
-		public DelegateDeclaration(Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
+		public DelegateDeclaration(Modifiers modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
 	}
 	
 	enum ClassType { Class }
@@ -57,7 +57,7 @@ namespace NRefactoryASTGenerator.Ast
 		List<TemplateDefinition> templates;
 		Location bodyStartLocation;
 		
-		public TypeDeclaration(Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
+		public TypeDeclaration(Modifiers modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
 	}
 	
 	[IncludeBoolProperty("IsAlias", "return !alias.IsNull;")]

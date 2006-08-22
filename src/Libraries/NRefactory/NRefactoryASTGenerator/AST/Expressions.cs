@@ -16,19 +16,19 @@ namespace NRefactoryASTGenerator.Ast
 	[CustomImplementation]
 	class PrimitiveExpression : Expression {}
 	
-	enum ParamModifier { In }
+	enum ParameterModifiers { In }
 	
 	class ParameterDeclarationExpression : Expression {
 		List<AttributeSection> attributes;
 		[QuestionMarkDefault]
 		string         parameterName;
 		TypeReference  typeReference;
-		ParamModifier  paramModifier;
+		ParameterModifiers  paramModifier;
 		Expression     defaultValue;
 		
 		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName) {}
-		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParamModifier paramModifier) {}
-		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParamModifier paramModifier, Expression defaultValue) {}
+		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParameterModifiers paramModifier) {}
+		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParameterModifiers paramModifier, Expression defaultValue) {}
 	}
 	
 	class NamedArgumentExpression : Expression {

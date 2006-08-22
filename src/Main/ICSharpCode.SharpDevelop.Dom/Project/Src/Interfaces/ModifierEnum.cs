@@ -40,6 +40,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		Overloads  = M.Overloads, // VB specific
 		WithEvents = M.WithEvents, // VB specific
 		Default    = M.Default, // VB specific
+		Fixed      = M.Fixed,
 		
 		Synthetic = M.Synthetic,
 		

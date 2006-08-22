@@ -252,13 +252,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 
 		bool IsAssignment () { return IdentAndAsgn(); }
 
-		/* True, if ident is followed by ",", "=", or ";" */
-		bool IdentAndCommaOrAsgnOrSColon () {
+		/* True, if ident is followed by ",", "=", "[" or ";" */
+		bool IsVarDecl () {
 			int peek = Peek(1).kind;
 			return la.kind == Tokens.Identifier &&
-				(peek == Tokens.Comma || peek == Tokens.Assign || peek == Tokens.Semicolon);
+				(peek == Tokens.Comma || peek == Tokens.Assign || peek == Tokens.Semicolon || peek == Tokens.OpenSquareBracket);
 		}
-		bool IsVarDecl () { return IdentAndCommaOrAsgnOrSColon(); }
 
 		/* True, if the comma is not a trailing one, *
 		 * like the last one in: a, b, c,            */

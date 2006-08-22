@@ -104,7 +104,7 @@ namespace NRefactoryASTGenerator.Ast
 	[CustomImplementation]
 	class LocalVariableDeclaration : Statement {
 		TypeReference             typeReference;
-		Modifier                  modifier;
+		Modifiers                  modifier;
 		List<VariableDeclaration> variables;
 	}
 	

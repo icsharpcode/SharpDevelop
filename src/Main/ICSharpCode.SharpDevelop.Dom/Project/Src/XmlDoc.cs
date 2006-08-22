@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		void ReadMembersSection(XmlTextReader reader)
+		void ReadMembersSection(XmlReader reader)
 		{
 			while (reader.Read()) {
 				switch (reader.NodeType) {
@@ -246,17 +246,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		#endregion
 		
-		public static XmlDoc Load(TextReader textReader)
+		public static XmlDoc Load(XmlReader reader)
 		{
 			XmlDoc newXmlDoc = new XmlDoc();
-			using (XmlTextReader reader = new XmlTextReader(textReader)) {
-				while (reader.Read()) {
-					if (reader.IsStartElement()) {
-						switch (reader.LocalName) {
-							case "members":
-								newXmlDoc.ReadMembersSection(reader);
-								break;
-						}
+			while (reader.Read()) {
+				if (reader.IsStartElement()) {
+					switch (reader.LocalName) {
+						case "members":
+							newXmlDoc.ReadMembersSection(reader);
+							break;
 					}
 				}
 			}
@@ -283,8 +281,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			using (TextReader textReader = File.OpenText(fileName)) {
-				doc = Load(textReader);
+			try {
+				using (XmlTextReader xmlReader = new XmlTextReader(fileName)) {
+					doc = Load(xmlReader);
+				}
+			} catch (XmlException ex) {
+				LoggingService.Warn("Error loading XmlDoc", ex);
+				return new XmlDoc();
 			}
 			
 			if (doc.xmlDescription.Count > cacheLength * 2) {

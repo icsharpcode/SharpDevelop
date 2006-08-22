@@ -15,6 +15,7 @@ namespace NRefactoryASTGenerator.Ast
 		string     name;
 		Expression initializer;
 		TypeReference typeReference;
+		Expression fixedArrayInitialization;
 		
 		public VariableDeclaration(string name) {}
 		public VariableDeclaration(string name, Expression initializer) {}
@@ -26,13 +27,13 @@ namespace NRefactoryASTGenerator.Ast
 		ConstructorInitializer constructorInitializer;
 		BlockStatement         body;
 		
-		public ConstructorDeclaration(string name, Modifier modifier,
+		public ConstructorDeclaration(string name, Modifiers modifier,
 		                              List<ParameterDeclarationExpression> parameters,
 		                              List<AttributeSection> attributes)
 			: base(modifier, attributes, name, parameters)
 		{}
 		
-		public ConstructorDeclaration(string name, Modifier modifier,
+		public ConstructorDeclaration(string name, Modifiers modifier,
 		                              List<ParameterDeclarationExpression> parameters,
 		                              ConstructorInitializer constructorInitializer,
 		                              List<AttributeSection> attributes)
@@ -98,12 +99,12 @@ namespace NRefactoryASTGenerator.Ast
 		Location bodyStart;
 		Location bodyEnd;
 		
-		public EventDeclaration(TypeReference typeReference, string name, Modifier modifier, List<AttributeSection> attributes, List<ParameterDeclarationExpression> parameters)
+		public EventDeclaration(TypeReference typeReference, string name, Modifiers modifier, List<AttributeSection> attributes, List<ParameterDeclarationExpression> parameters)
 			: base(modifier, attributes, name, parameters)
 		{ }
 		
 		// for VB:
-		public EventDeclaration(TypeReference typeReference, Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string name, List<InterfaceImplementation> interfaceImplementations)
+		public EventDeclaration(TypeReference typeReference, Modifiers modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string name, List<InterfaceImplementation> interfaceImplementations)
 			: base(modifier, attributes, name, parameters)
 		{ }
 	}
@@ -135,7 +136,7 @@ namespace NRefactoryASTGenerator.Ast
 		public FieldDeclaration(List<AttributeSection> attributes) : base(attributes) {}
 		
 		// for all other cases
-		public FieldDeclaration(List<AttributeSection> attributes, TypeReference typeReference, Modifier modifier)
+		public FieldDeclaration(List<AttributeSection> attributes, TypeReference typeReference, Modifiers modifier)
 			: base(modifier, attributes)
 		{}
 	}
@@ -148,7 +149,7 @@ namespace NRefactoryASTGenerator.Ast
 		List<InterfaceImplementation> interfaceImplementations;
 		List<TemplateDefinition> templates;
 		
-		public MethodDeclaration(string name, Modifier modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : base(modifier, attributes, name, parameters) {}
+		public MethodDeclaration(string name, Modifiers modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : base(modifier, attributes, name, parameters) {}
 	}
 	
 	enum ConversionType { None }
@@ -162,7 +163,7 @@ namespace NRefactoryASTGenerator.Ast
 		List<AttributeSection> returnTypeAttributes;
 		OverloadableOperatorType overloadableOperator;
 		
-		public OperatorDeclaration(Modifier modifier,
+		public OperatorDeclaration(Modifiers modifier,
 		                           List<AttributeSection> attributes,
 		                           List<ParameterDeclarationExpression> parameters,
 		                           TypeReference typeReference,
@@ -170,7 +171,7 @@ namespace NRefactoryASTGenerator.Ast
 			: base(null, modifier, typeReference, parameters, attributes)
 		{}
 		
-		public OperatorDeclaration(Modifier modifier,
+		public OperatorDeclaration(Modifiers modifier,
 		                           List<AttributeSection> attributes,
 		                           List<ParameterDeclarationExpression> parameters,
 		                           TypeReference typeReference,
@@ -184,13 +185,13 @@ namespace NRefactoryASTGenerator.Ast
 	[IncludeBoolProperty("IsReadOnly", "return HasGetRegion && !HasSetRegion;")]
 	[IncludeBoolProperty("IsWriteOnly", "return !HasGetRegion && HasSetRegion;")]
 	[IncludeMember(@"
-		public PropertyDeclaration(string name, TypeReference typeReference, Modifier modifier, List<AttributeSection> attributes) : this(modifier, attributes, name, null)
+		public PropertyDeclaration(string name, TypeReference typeReference, Modifiers modifier, List<AttributeSection> attributes) : this(modifier, attributes, name, null)
 		{
 			this.TypeReference = typeReference;
-			if ((modifier & Modifier.ReadOnly) != Modifier.ReadOnly) {
+			if ((modifier & Modifiers.ReadOnly) != Modifiers.ReadOnly) {
 				this.SetRegion = new PropertySetRegion(null, null);
 			}
-			if ((modifier & Modifier.WriteOnly) != Modifier.WriteOnly) {
+			if ((modifier & Modifiers.WriteOnly) != Modifiers.WriteOnly) {
 				this.GetRegion = new PropertyGetRegion(null, null);
 			}
 		}")]
@@ -203,7 +204,7 @@ namespace NRefactoryASTGenerator.Ast
 		PropertyGetRegion getRegion;
 		PropertySetRegion setRegion;
 		
-		public PropertyDeclaration(Modifier modifier, List<AttributeSection> attributes,
+		public PropertyDeclaration(Modifiers modifier, List<AttributeSection> attributes,
 		                           string name, List<ParameterDeclarationExpression> parameters)
 			: base(modifier, attributes, name, parameters)
 		{}
@@ -237,7 +238,7 @@ namespace NRefactoryASTGenerator.Ast
 		string         name;
 		BlockStatement body;
 		
-		public DestructorDeclaration(string name, Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
+		public DestructorDeclaration(string name, Modifiers modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
 	}
 	
 	[IncludeBoolProperty("HasGetRegion", "return !getRegion.IsNull;")]
@@ -254,11 +255,11 @@ namespace NRefactoryASTGenerator.Ast
 		PropertyGetRegion getRegion;
 		PropertySetRegion setRegion;
 		
-		public IndexerDeclaration(Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes)
+		public IndexerDeclaration(Modifiers modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes)
 			: base(modifier, attributes)
 		{}
 		
-		public IndexerDeclaration(TypeReference typeReference, List<ParameterDeclarationExpression> parameters, Modifier modifier, List<AttributeSection> attributes)
+		public IndexerDeclaration(TypeReference typeReference, List<ParameterDeclarationExpression> parameters, Modifiers modifier, List<AttributeSection> attributes)
 			: base(modifier, attributes)
 		{}
 	}
@@ -272,7 +273,7 @@ namespace NRefactoryASTGenerator.Ast
 		CharsetModifier charset;
 		TypeReference   typeReference;
 		
-		public DeclareDeclaration(string name, Modifier modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string library, string alias, CharsetModifier charset)
+		public DeclareDeclaration(string name, Modifiers modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string library, string alias, CharsetModifier charset)
 			: base(modifier, attributes, name, parameters)
 		{}
 	}

@@ -685,6 +685,7 @@ MemberModifiers<ModifierList m>
 	| "readonly"                       (. m.Add(Modifiers.ReadOnly, t.Location); .)
 	| "sealed"                         (. m.Add(Modifiers.Sealed, t.Location); .)
 	| "static"                         (. m.Add(Modifiers.Static, t.Location); .)
+	| "fixed"                          (. m.Add(Modifiers.Fixed, t.Location); .)
 	| "unsafe"                         (. m.Add(Modifiers.Unsafe, t.Location); .)
 	| "virtual"                        (. m.Add(Modifiers.Virtual, t.Location); .)
 	| "volatile"                       (. m.Add(Modifiers.Volatile, t.Location); .)
@@ -867,12 +868,28 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		.)
 		
 		/*--- field declaration: */
-	| IF (IsVarDecl())         (. m.Check(Modifiers.Fields); 
-		                          FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
-		                          fd.StartLocation = m.GetDeclarationLocation(startPos); 
-		                       .)
-		VariableDeclarator<variableDeclarators>
-		{ "," VariableDeclarator<variableDeclarators> }
+	| IF (IsVarDecl())
+	    (.	m.Check(Modifiers.Fields);
+			FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
+			fd.StartLocation = m.GetDeclarationLocation(startPos); 
+		.)
+		( IF (m.Contains(Modifiers.Fixed))
+			VariableDeclarator<variableDeclarators>
+			"["
+			Expr<out expr> (. if (variableDeclarators.Count > 0)
+								variableDeclarators[variableDeclarators.Count-1].FixedArrayInitialization = expr; .)
+			"]"
+			{	","
+				VariableDeclarator<variableDeclarators>
+				"["
+				Expr<out expr> (. if (variableDeclarators.Count > 0)
+									variableDeclarators[variableDeclarators.Count-1].FixedArrayInitialization = expr; .)
+				"]"
+			}
+		|	/* non-fixed field */
+			VariableDeclarator<variableDeclarators>
+			{ "," VariableDeclarator<variableDeclarators> }
+		)
 		";"                                (. fd.EndLocation = t.EndLocation; fd.Fields = variableDeclarators; compilationUnit.AddChild(fd); .)
 		
 		/*--- unqualified indexer declaration (without interface name): */
