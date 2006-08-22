@@ -158,7 +158,12 @@ namespace Debugger
 
 		public void NameChange(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
-			GetProcessCallbackInterface(pAppDomain).NameChange(pAppDomain, pThread);
+			if (pAppDomain != null) {
+				GetProcessCallbackInterface(pAppDomain).NameChange(pAppDomain, pThread);
+			}
+			if (pThread != null) {
+				GetProcessCallbackInterface(pThread.Process).NameChange(pAppDomain, pThread);
+			}
 		}
 
 		public void CreateThread(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
