@@ -276,8 +276,20 @@ namespace SharpDbTools
 		
 		public void SaveDbModelInfoClickHandler(object sender, EventArgs e)
 		{
-			LoggingService.Debug("save all metadata clicked");
-			DbModelInfoService.SaveAll();
+			// save each DbModelInfo separately, confirming overwrite where necessary
+			LoggingService.Debug("save all metadata clicked - will iterate through each and attempt to save");
+			IList<string> names = DbModelInfoService.Names;
+			foreach (string name in names) {
+				bool saved = DbModelInfoService.SaveToFile(name, false);
+				if (!saved) {
+					DialogResult result = MessageBox.Show("Overwrite existing file for connection: " + name + "?", 
+					                "File exists for connection", MessageBoxButtons.YesNo,
+					                MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+					if (result.Equals(DialogResult.Yes)) {
+						DbModelInfoService.SaveToFile(name, true);
+					}
+				}
+			}
 		}
 		
 		public void LoadMetadataFromFileClickHandler(object sender, EventArgs e)

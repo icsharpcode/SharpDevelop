@@ -122,7 +122,14 @@ namespace SharpDbTools.Model
 			return modelInfo;
 		}
 		
-		public static void SaveToFile(string name)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name">the logical name of the DbModelInfo to save to a file</param>
+		/// <param name="overwriteExistingFile">if true, any existing file will be overwritten</param>
+		/// <returns>true if the DbModelInfo was saved, false if not. It will not be saved if
+		/// either overwriteExistingFile is set to true, and there is an existing file</returns>
+		public static bool SaveToFile(string name, bool overwriteExistingFile)
 		{
 			string path = GetSaveLocation();
 			DbModelInfo modelInfo = null;
@@ -134,21 +141,28 @@ namespace SharpDbTools.Model
 				string filePath = path + @"\" + name + ".metadata";
 				LoggingService.Debug("writing metadata to: " + filePath);
 				if (File.Exists(filePath)) {
-					File.Delete(filePath);
+				    	if (overwriteExistingFile) {
+				    		File.Delete(filePath);	
+				    	} else {
+				    		return false;
+				    	}
 				}
 				using (StreamWriter sw = File.CreateText(filePath)) {
 					string xml = modelInfo.GetXml();
 					sw.Write(xml);
 					sw.Flush();
 					sw.Close();
+					return true;
 				}
+			} else {
+				throw new DbModelInfoDoesNotExistException(name);
 			}
 		}
 		
 		public static void SaveAll()
 		{
 			foreach (string name in cache.Keys) {
-				SaveToFile(name);
+				SaveToFile(name, true);
 			}
 		}
 		
@@ -216,6 +230,22 @@ namespace SharpDbTools.Model
 				Directory.CreateDirectory(@saveLocation);
 			}
 			return saveLocation;			
+		}
+	}
+	
+	public class DbModelInfoDoesNotExistException: ApplicationException
+	{
+		string name;
+		
+		public DbModelInfoDoesNotExistException(string dbModelInfoName): base()
+		{
+			this.name = dbModelInfoName;	
+		}
+		
+		public string Name {
+			get {
+				return name;
+			}
 		}
 	}
 }
