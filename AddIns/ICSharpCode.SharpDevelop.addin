@@ -495,7 +495,7 @@
 			          label = "${res:Global.RemoveButtonText}"
 			          type  = "Item"
 			          icon  = "Icons.16x16.DeleteIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.ExcludeFileFromProject"/>
 		</Condition>
 		<ComplexCondition>
 			<Not>
@@ -546,7 +546,7 @@
 			          label = "${res:Global.RemoveButtonText}"
 			          type  = "Item"
 			          icon  = "Icons.16x16.DeleteIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.ExcludeFileFromProject"/>
 		</Condition>
 		<ComplexCondition>
 			<Not>
@@ -574,7 +574,7 @@
 			          label = "${res:Global.RemoveButtonText}"
 			          type  = "Item"
 			          icon  = "Icons.16x16.DeleteIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.ExcludeFileFromProject"/>
 		</Condition>
 		<ComplexCondition>
 			<Not>

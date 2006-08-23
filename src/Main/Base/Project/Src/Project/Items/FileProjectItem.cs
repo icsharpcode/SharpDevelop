@@ -1,13 +1,14 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.ComponentModel;
 using System.IO;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -108,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public bool IsLink {
 			get {
-				return base.Properties.IsSet("Link");
+				return base.Properties.IsSet("Link") || !FileUtility.IsBaseDirectory(this.Project.Directory, this.FileName);
 			}
 		}
 		
@@ -120,10 +121,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public string VirtualName {
 			get {
-				if (IsLink)
+				if (base.Properties.IsSet("Link"))
 					return base.Properties["Link"];
-				else
+				else if (FileUtility.IsBaseDirectory(this.Project.Directory, this.FileName))
 					return this.Include;
+				else
+					return Path.GetFileName(this.Include);
 			}
 		}
 		
