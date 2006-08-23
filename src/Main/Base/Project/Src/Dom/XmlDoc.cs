@@ -230,16 +230,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public static XmlDoc Load(TextReader textReader)
 		{
 			XmlDoc newXmlDoc = new XmlDoc();
-			using (XmlTextReader reader = new XmlTextReader(textReader)) {
-				while (reader.Read()) {
-					if (reader.IsStartElement()) {
-						switch (reader.LocalName) {
-							case "members":
-								newXmlDoc.ReadMembersSection(reader);
-								break;
+			try {
+				using (XmlTextReader reader = new XmlTextReader(textReader)) {
+					while (reader.Read()) {
+						if (reader.IsStartElement()) {
+							switch (reader.LocalName) {
+								case "members":
+									newXmlDoc.ReadMembersSection(reader);
+									break;
+							}
 						}
 					}
 				}
+			} catch (XmlException ex) {
+				LoggingService.Warn("Error reading XML documentation file", ex);
 			}
 			return newXmlDoc;
 		}
