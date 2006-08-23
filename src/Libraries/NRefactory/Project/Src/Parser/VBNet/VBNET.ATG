@@ -635,14 +635,22 @@ TypeParameterConstraints<TemplateDefinition template>
 	"As"
 	(
 		"{"
-		TypeName<out constraint> (. if (constraint != null) { template.Bases.Add(constraint); } .)
+		TypeParameterConstraint<out constraint> (. if (constraint != null) { template.Bases.Add(constraint); } .)
 		{
 			","
-			TypeName<out constraint> (. if (constraint != null) { template.Bases.Add(constraint); } .)
+			TypeParameterConstraint<out constraint> (. if (constraint != null) { template.Bases.Add(constraint); } .)
 		}
 		"}"
-		| TypeName<out constraint> (. if (constraint != null) { template.Bases.Add(constraint); } .)
+		| TypeParameterConstraint<out constraint> (. if (constraint != null) { template.Bases.Add(constraint); } .)
 	)
+.
+
+TypeParameterConstraint<out TypeReference constraint>
+(. constraint = null; .)
+=	"Class"		(. constraint = new TypeReference("class"); .)
+|	"Structure"	(. constraint = new TypeReference("struct"); .)
+|	"New"		(. constraint = new TypeReference("new"); .)
+|	TypeName<out constraint>
 .
 
 /* 6.4.2 */
@@ -1130,8 +1138,8 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	(
 			"Sub"
 			Identifier				(. name = t.val; .)
-			"Lib" LiteralString		(. library = t.literalValue.ToString(); .)
-			["Alias" LiteralString	(. alias = t.literalValue.ToString(); .)]
+			"Lib" LiteralString		(. library = t.literalValue as string; .)
+			["Alias" LiteralString	(. alias = t.literalValue as string; .)]
 			[ "("	[ FormalParameterList<p> ] ")" ]
 			EOL
 			(.
@@ -1143,8 +1151,8 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		|
 			"Function" 
 			Identifier					(. name = t.val; .)
-			"Lib" LiteralString		(. library = t.literalValue.ToString(); .)
-			["Alias" LiteralString	(. alias = t.literalValue.ToString(); .)]
+			"Lib" LiteralString		(. library = t.literalValue as string; .)
+			["Alias" LiteralString	(. alias = t.literalValue as string; .)]
 			[ "("	[ FormalParameterList<p> ] ")" ]
 			["As" TypeName<out type> ]
 			EOL

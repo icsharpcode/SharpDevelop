@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		Overloads  = 0x10000, // VB specific
 		WithEvents = 0x20000, // VB specific
 		Default    = 0x40000, // VB specific
-		
+		Fixed      = 0x80000,
 		
 		Synthetic  = 0x200000,
 		/// <summary>Only for VB properties.</summary>
@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		VBInterfaceProperties			= New | Overloads | ReadOnly | WriteOnly | Default,
 		VBInterfaceEnums				= New,
 		
-		Fields                          = New | Visibility | Static   | ReadOnly | Volatile,
+		Fields                          = New | Visibility | Static   | ReadOnly | Volatile | Fixed,
 		PropertysEventsMethods          = New | Visibility | Static   | Virtual  | Sealed   | Override | Abstract | Extern,
 		Indexers                        = New | Visibility | Virtual  | Sealed   | Override | Abstract | Extern,
 		Operators                       = Public | Static | Extern,
