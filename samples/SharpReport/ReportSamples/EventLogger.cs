@@ -15,7 +15,7 @@ using System.Resources;
 using System.Windows.Forms;
 
 using SharpReportCore;
-using System.Reflection;
+
 //using System.Collections.Generic;
 
 namespace ReportSamples
@@ -27,62 +27,53 @@ namespace ReportSamples
 	/// <summary>
 	/// Description of EventLogger.
 	/// </summary>
-	public class EventLogger
+	public class EventLogger:BaseSample
 	{
 		ImageList imageList ;
-		public EventLogger()
+		public EventLogger():base()
 		{
 		}
 
-		public void Run() {
+		public override void Run() {
 			EventLog ev = new EventLog();
 			ev.Log = "System";
 			ev.MachineName = ".";  // Lokale Maschine
-			
 			FillImageList();
 
-			string reportFileName;
-	
 			try
 			{
-				OpenFileDialog dg = new OpenFileDialog();
-				dg.Filter = "SharpReport files|*.srd";
-				dg.Title = "Select a report file: ";
-				if (dg.ShowDialog() == DialogResult.OK){
-					SharpReportCore.SharpReportEngine engine = new SharpReportCore.SharpReportEngine();
-					reportFileName = dg.FileName.ToString();
-// EventLog dosn#t implement IList, so we have to convert it to the 'cheapest'
-// IList implementaion
+				base.Run();
+				if (!String.IsNullOrEmpty(base.ReportName)) {
+					// EventLog dosn't implement IList, so we have to convert it to the 'cheapest'
+					// IList implementaion
 					ArrayList ar = new ArrayList();
 					ar.AddRange(ev.Entries);
 					
+					SharpReportCore.SharpReportEngine engine = new SharpReportCore.SharpReportEngine();
+					
 					engine.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
 					engine.SectionRendered += new EventHandler<SectionRenderEventArgs>(PushPrinted);
-					engine.PreviewPushDataReport(reportFileName,ar);
-					
+					engine.PreviewPushDataReport(base.ReportName,ar);
 				}
+				
 			}
-			catch (Exception){
-			}
+		
+		catch (Exception e){
+			MessageBox.Show(e.Message,this.ToString());
+		}
 
 		}
 		
 		private void PushPrinting (object sender,SectionRenderEventArgs e) {
-//			System.Console.WriteLine("SimpleUnboundPullPrinting");
-//			CheckItems(e.Section.Items);
+
 			switch (e.CurrentSection) {
 				case GlobalEnums.enmSection.ReportHeader:
-//					System.Console.WriteLine("\tI found the ReportHeader");
 					break;
 
 				case GlobalEnums.enmSection.ReportPageHeader:
-					
-//					System.Console.WriteLine("\tI found the Pageheader");
 					break;
 					
 				case GlobalEnums.enmSection.ReportDetail:
-//					System.Console.WriteLine("\tI found the ReportDetail");
-//					this.rowNr ++;
 					RowItem ri = e.Section.Items[0] as RowItem;
 					if (ri != null) {
 						BaseDataItem r = (BaseDataItem)ri.Items.Find("reportDbTextItem1");
@@ -105,11 +96,9 @@ namespace ReportSamples
 					break;
 					
 				case GlobalEnums.enmSection.ReportPageFooter:
-//					System.Console.WriteLine("\tI found the PageFooter");
 					break;
 					
 				case GlobalEnums.enmSection.ReportFooter:
-//					System.Console.WriteLine("\tI found the ReportFooter");
 					break;
 					
 				default:

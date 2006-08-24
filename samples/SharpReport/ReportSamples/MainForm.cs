@@ -39,18 +39,25 @@ namespace ReportSamples
 			//
 			InitializeComponent();
 			
-			//
-			// TODO: Add constructor code after the InitializeComponent() call.
-			//
 		}
 		
-		void SimpleFormsSheetClick(object sender, System.EventArgs e)
+		#region FormsSheet
+		
+		void SimpleFormsSheet(object sender, System.EventArgs e)
 		{
 			SimplePullModel simplePull = new SimplePullModel();
 			simplePull.Run();
 		}
 		
+		void UnboundFormSheet(object sender, System.EventArgs e){
+			UnboundFormSheet unboundFormSheet = new UnboundFormSheet();
+			unboundFormSheet.Run();
+		}
 		
+		
+		#endregion
+		
+		#region PullModel
 		
 		void PullModelClick(object sender, System.EventArgs e)
 		{
@@ -65,50 +72,70 @@ namespace ReportSamples
 			missingConnection.Run();
 		}
 		
+		#endregion
+		
+		#region PushModel
+		
 		void SimplePushClick(object sender, System.EventArgs e)
 		{
 			SimplePushModel simplePush = new SimplePushModel();
 			simplePush.Run();
 		}
 		
-		void UnboundToolStripMenuItem1Click(object sender, System.EventArgs e)
-		{
-			SimpleUnbound simpleUnbound = new SimpleUnbound();
-			simpleUnbound.Run();
-		}
+		#endregion
 		
-		void UnboundPullModelToolStripMenuItemClick(object sender, System.EventArgs e){
+		#region Unbound
+
+		
+		void UnboundPullModelClick(object sender, System.EventArgs e){
 			SimpleUnboundPullModel sm = new SimpleUnboundPullModel();
 			sm.Run();
 		}
 		
-		void MultipageUnboundPullModelToolStripMenuItemClick(object sender, System.EventArgs e)
+		void MultiPageUnboundPullModelClick(object sender, System.EventArgs e)
 		{
 			MultiPageUnboundPullModel mp = new MultiPageUnboundPullModel();
 			mp.Run();
 		}
 		
-		void UnboundPushModelToolStripMenuItemClick(object sender, System.EventArgs e)
+		void UnboundPushModelClick(object sender, System.EventArgs e)
 		{
 			UnboundPushModel u = new UnboundPushModel();
 			u.Run();
 		}
 		
-		void UnboundFormSheetToolStripMenuItemClick(object sender, System.EventArgs e){
-			UnboundFormSheet unboundFormSheet = new UnboundFormSheet();
-			unboundFormSheet.Run();
-		}
+		#endregion
 		
-		void ListDatasourceToolStripMenuItemClick(object sender, System.EventArgs e)
+		#region List as DataSource
+		void ContributersListClick(object sender, System.EventArgs e)
 		{
 			ContributersList r = new ContributersList();
 			r.Run();
 		}
 		
-		void EventLoggerToolStripMenuItemClick(object sender, System.EventArgs e)
+		void EventLoggerClick(object sender, System.EventArgs e)
 		{
 			EventLogger el = new EventLogger();
 			el.Run();
 		}
+		
+		#endregion
+		
+		#region MSDE
+		
+		void NorthWindSalesByYearClick(object sender, System.EventArgs e)
+		{
+			NorthWindSalesByYear northWindSalesByYear = new NorthWindSalesByYear();
+			northWindSalesByYear.Run();
+		}
+		
+		void CustOrdersDetailClick(object sender, System.EventArgs e)
+		{
+			CustOrdersOrdersDetail custOrderDetail = new CustOrdersOrdersDetail();
+			custOrderDetail.Run();
+		}
+		#endregion
+		
+		
 	}
 }

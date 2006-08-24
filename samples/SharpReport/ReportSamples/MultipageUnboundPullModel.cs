@@ -30,7 +30,6 @@ namespace ReportSamples{
 			try{
 				base.Run();
 				if (!String.IsNullOrEmpty(base.ReportName)) {
-					MessageBox.Show("got it");
 					SharpReportCore.SharpReportEngine mn = new SharpReportCore.SharpReportEngine();
 					base.Engine.SectionRendering += new EventHandler<SectionRenderEventArgs>(MultipagePrinting);
 					base.Engine.SectionRendered += new EventHandler<SectionRenderEventArgs>(MultipagePrinted);
@@ -39,23 +38,19 @@ namespace ReportSamples{
 				}
 			}
 			catch(Exception er){
-				MessageBox.Show(er.ToString(),"MainForm");
+				MessageBox.Show(er.ToString(),this.ToString());
 			}
 		}
 		
 		
 		private void MultipagePrinting (object sender,SectionRenderEventArgs e) {
-//			System.Console.WriteLine("UnboundPullPrinting");
 			CheckItems(e.Section.Items);
 			switch (e.CurrentSection) {
 				case GlobalEnums.enmSection.ReportHeader:
-//					System.Console.WriteLine("\tReportHeader");
 					break;
 
 				case GlobalEnums.enmSection.ReportPageHeader:
-					
-//					System.Console.WriteLine("\tPageheader");
-					System.Console.WriteLine("");
+										System.Console.WriteLine("");
 					this.rowsPerPage = 0;
 					break;
 					
@@ -63,7 +58,7 @@ namespace ReportSamples{
 				
 					this.rowNr ++;
 					this.rowsPerPage ++;
-//					System.Console.WriteLine("\tReportDetail");
+
 					RowItem ri = e.Section.Items[0] as RowItem;
 					if (ri != null) {
 						if (this.rowNr %2 == 0) {
@@ -75,7 +70,6 @@ namespace ReportSamples{
 					break;
 					
 				case GlobalEnums.enmSection.ReportPageFooter:
-//					System.Console.WriteLine("\tPageFooter");
 					BaseDataItem bdi = e.Section.Items.Find("ItemsPerPage") as BaseDataItem;
 					if (bdi != null) {
 						bdi.DbValue = this.rowsPerPage.ToString();
@@ -83,7 +77,6 @@ namespace ReportSamples{
 					break;
 					
 				case GlobalEnums.enmSection.ReportFooter:
-//					System.Console.WriteLine("\tReportFooter");
 					this.endTime = System.DateTime.Now;
 					
 					BaseDataItem b = e.Section.Items.Find("reportDbTextItem1")as BaseDataItem;

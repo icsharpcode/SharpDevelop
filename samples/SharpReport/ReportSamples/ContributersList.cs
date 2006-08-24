@@ -8,58 +8,58 @@
  */
 
 using System;
-using System.Windows.Forms;
+using System.ComponentModel;
 using System.Collections.Generic;
+using System.Windows.Forms;
+using SharpReportCore;
 
 namespace ReportSamples{
 	/// <summary>
 	/// Description of ReportFromCollection.
 	/// </summary>
-	public class ContributersList
+	public class ContributersList:BaseSample
 	{
 		public ContributersList(){
 		}
 		
-		public void Run () {
-			string reportFileName;
+		public override void Run () {
+			
 			try
 			{
-				OpenFileDialog dg = new OpenFileDialog();
-				dg.Filter = "SharpReport files|*.srd";
-				dg.Title = "Select a report file: ";
-				if (dg.ShowDialog() == DialogResult.OK){
-					SharpReportCore.SharpReportEngine engine = new SharpReportCore.SharpReportEngine();
-					reportFileName = dg.FileName.ToString();
-
-					TestList list = new TestList();
-					
-					list.Add(new LastFirst("Bernhard","Spuida","Core"));
-					list.Add(new LastFirst("Daniel","Grunwald","Core"));
-					list.Add(new LastFirst("Christoph","Wille","Core"));
-					
-					list.Add(new LastFirst("Markus","Palme","Prg."));
-					list.Add(new LastFirst("Georg","Brandl","Prg."));
-					list.Add(new LastFirst("David","Srbecky","Debugger"));
-					list.Add(new LastFirst("Dickon","Field","DBTools"));
-					list.Add(new LastFirst("Matt","Ward","NUnit"));
-					list.Add(new LastFirst("Troy","Simpson","Prg."));
-					list.Add(new LastFirst("Peter","Forstmeier","SharpReport"));
-					list.Add(new LastFirst("David","Alpert","Prg."));
-					
-//					list.Add(new LastFirst("Sylvana","Schmid"));
-					
-
-//						engine.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
-//						engine.SectionRendered += new EventHandler<SectionRenderEventArgs>(PushPrinted);
-					engine.PreviewPushDataReport(reportFileName,list);
-
-//					}
+				base.Run();
+				if (!String.IsNullOrEmpty(base.ReportName)) {
+					TestList list = CreateTestList();
+					base.Engine.PreviewPushDataReport(base.ReportName,list);
 				}
+				
 			}
-			catch (Exception){
+			
+			catch (Exception e){
+				MessageBox.Show(e.Message,this.ToString());
 			}
 		}
+			
+		
+		
+		private TestList CreateTestList () {
+			TestList list = new TestList();
+			
+			list.Add(new LastFirst("Bernhard","Spuida","Core"));
+			list.Add(new LastFirst("Daniel","Grunwald","Core"));
+			list.Add(new LastFirst("Christoph","Wille","Core"));
+			
+			list.Add(new LastFirst("Markus","Palme","Prg."));
+			list.Add(new LastFirst("Georg","Brandl","Prg."));
+			list.Add(new LastFirst("David","Srbecky","Debugger"));
+			list.Add(new LastFirst("Dickon","Field","DBTools"));
+			list.Add(new LastFirst("Matt","Ward","NUnit"));
+			list.Add(new LastFirst("Troy","Simpson","Prg."));
+			list.Add(new LastFirst("Peter","Forstmeier","SharpReport"));
+			list.Add(new LastFirst("David","Alpert","Prg."));
+			return list;
+		}
 	}
+	
 	
 	public class LastFirst {
 		string last;

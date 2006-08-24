@@ -41,12 +41,13 @@ namespace ReportSamples
 					if (table != null) {
 						engine.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
 						engine.SectionRendered += new EventHandler<SectionRenderEventArgs>(PushPrinted);
-//						engine.PreviewPushDataReport(reportFileName,table);
-						engine.PrintPushDataReport(reportFileName,table);
+						engine.PreviewPushDataReport(reportFileName,table);
+//						engine.PrintPushDataReport(reportFileName,table);
 					}
 				}
 			}
-			catch (Exception){
+			catch (Exception e){
+				MessageBox.Show(e.Message,this.ToString());
 			}
 		}
 		

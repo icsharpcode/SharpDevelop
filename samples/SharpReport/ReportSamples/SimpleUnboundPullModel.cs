@@ -38,7 +38,7 @@ namespace ReportSamples
 				}
 			}
 			catch(Exception er){
-				MessageBox.Show(er.ToString(),"MainForm");
+				MessageBox.Show(er.ToString(),this.ToString());
 			}
 		}
 		private void SimplePullPrinting (object sender,SectionRenderEventArgs e) {

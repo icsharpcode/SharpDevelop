@@ -17,32 +17,26 @@ namespace ReportSamples
 	/// <summary>
 	/// Description of UnboundFormSheet.
 	/// </summary>
-	public class UnboundFormSheet
+	public class UnboundFormSheet:BaseSample
 	{
-		public UnboundFormSheet()
+		public UnboundFormSheet():base()
 		{
 		
 		}
 		
-		public void Run() {
-			try
-			{
-				OpenFileDialog dg = new OpenFileDialog();
-				dg.Filter = "SharpReport files|*.srd";
-				dg.Title = "Select a report file: ";
+		public override void Run()
+		{
+			try {
 				
-				if (dg.ShowDialog() == DialogResult.OK){
-					SharpReportCore.SharpReportEngine engine = new SharpReportCore.SharpReportEngine();
-					engine.SectionRendering += new EventHandler<SectionRenderEventArgs>(UnboundPrinting);
-					engine.SectionRendered += new EventHandler<SectionRenderEventArgs>(UnboundPrinted);
-					engine.PreviewStandartReport(dg.FileName.ToString());
-				}
-			}
-			catch(Exception er)
-			{
-				MessageBox.Show(er.ToString(),"MainForm");
+				base.Run();
+				base.Engine.SectionRendering += new EventHandler<SectionRenderEventArgs>(UnboundPrinting);
+				base.Engine.SectionRendered += new EventHandler<SectionRenderEventArgs>(UnboundPrinted);
+				base.Engine.PreviewStandartReport(base.ReportName);
+			} catch (Exception e) {
+				MessageBox.Show(e.Message,this.ToString());
 			}
 		}
+		
 		
 		private void UnboundPrinting (object sender,SectionRenderEventArgs e) {
 			System.Console.WriteLine("UnboundFormSheet");
