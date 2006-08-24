@@ -26,7 +26,7 @@ using System.ServiceProcess;
 /// </remarks>
 	
 namespace SharpReportCore {
-		public  class GlobalValues : object {
+		public sealed class GlobalValues : object {
 		
 		private static string sharpReportString = "SharpReport";
 		private static string sharpReportExtension = ".srd";
@@ -35,6 +35,12 @@ namespace SharpReportCore {
 		private const string unbound = "unbound";
 		private const string tableName = "Table";
 		private const int enlargeControl = 5;
+		
+		
+		private GlobalValues() {
+			
+		}
+		
 		
 		#region some usefull functions and methodes
 		

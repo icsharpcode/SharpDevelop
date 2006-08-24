@@ -174,7 +174,10 @@ namespace SharpReportCore {
 		}
 		
 		protected void PrintNoDataMessage(PrintPageEventArgs e){
-			e.Graphics.DrawString(this.reportSettings.NoDataMessage,			                                            
+			if (e == null) {
+				throw new ArgumentNullException("e");
+			}
+			e.Graphics.DrawString(this.reportSettings.NoDataMessage,
 			                                            this.ReportSettings.DefaultFont,
 			                                            new SolidBrush(Color.Black),
 			                                            page.DetailArea);

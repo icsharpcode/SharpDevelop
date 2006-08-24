@@ -48,7 +48,7 @@ namespace ReportGenerator {
 		
 		public override void GenerateReport() {
 			
-			base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportTypeEnum.DataReport;
+			base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportType.DataReport;
 			base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModelEnum.PushData;
 			
 			

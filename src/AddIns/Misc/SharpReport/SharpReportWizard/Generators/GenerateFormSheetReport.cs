@@ -35,7 +35,7 @@ namespace ReportGenerator
 		}
 		
 		public override void GenerateReport() {
-			base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportTypeEnum.FormSheet;
+			base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportType.FormSheet;
 			base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModelEnum.FormSheet;
 			base.GenerateReport();	
 			base.AdjustAllNames();

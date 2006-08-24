@@ -23,8 +23,11 @@ using System.Windows.Forms;
 	/// </remarks>
 	/// 
 namespace SharpReportCore {	
-	public class GlobalEnums : object {
+	public sealed class GlobalEnums : object {
 			
+			private GlobalEnums() {
+				
+			}
 		///<summary>Technics to get the data
 		/// Push : report get's a ready filld dataset or something tah implements IList
 		/// Pull : report has to fill data by themself
@@ -56,7 +59,7 @@ namespace SharpReportCore {
 		/// FormSheet means a blank form with Labels, Lines and Checkboxes
 		/// DataReport handles all Reports with Data
 		/// </summary>
-		public enum ReportTypeEnum {
+		public enum ReportType {
 			FormSheet,
 			DataReport,
 		}

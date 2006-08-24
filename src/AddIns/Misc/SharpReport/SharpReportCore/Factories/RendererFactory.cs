@@ -34,10 +34,10 @@ namespace SharpReportCore {
 		public  AbstractRenderer Create(ReportModel model,DataManager container) {
 			if (model != null) {
 				switch (model.ReportSettings.ReportType) {
-						case GlobalEnums.ReportTypeEnum.FormSheet :{
+						case GlobalEnums.ReportType.FormSheet :{
 							return new RenderFormSheetReport(model);
 						}
-						case GlobalEnums.ReportTypeEnum.DataReport:{
+						case GlobalEnums.ReportType.DataReport:{
 							return new RenderDataReport(model,container);
 						}
 				}

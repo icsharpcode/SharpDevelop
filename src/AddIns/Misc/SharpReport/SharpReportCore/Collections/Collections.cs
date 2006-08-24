@@ -72,6 +72,9 @@ namespace SharpReportCore{
 		}
 		
 		public IItemRenderer Find (string itemName) {
+			if (String.IsNullOrEmpty(itemName)) {
+			    	throw new ArgumentNullException("itemName");
+			}
 			for (int i = 0;i < this.Count ; i ++) {
 				IItemRenderer col = this[i];
 				if (String.Compare(col.Name.ToLower(CultureInfo.CurrentCulture),
@@ -143,6 +146,9 @@ namespace SharpReportCore{
 		public event EventHandler<CollectionItemEventArgs<BaseDataItem>> Removed;
 		
 		public BaseDataItem Find (string columnName) {
+			if (String.IsNullOrEmpty(columnName)) {
+			    	throw new ArgumentNullException("columnName");
+			}
 			for (int i = 0;i < this.Count ; i ++) {
 				BaseDataItem col = this[i];
 				if (String.Compare(col.Name.ToLower(CultureInfo.CurrentCulture),
@@ -189,6 +195,9 @@ namespace SharpReportCore{
 		
 		
 		public AbstractColumn Find (string columnName) {
+			if (String.IsNullOrEmpty(columnName)){
+			    	throw new ArgumentNullException("columnName");
+			}
 			for (int i = 0;i < this.Count ; i ++) {
 				AbstractColumn col = (AbstractColumn)this[i];
 				if (String.Compare(col.ColumnName.ToLower(CultureInfo.CurrentCulture),

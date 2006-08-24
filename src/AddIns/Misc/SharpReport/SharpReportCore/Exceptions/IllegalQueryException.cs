@@ -9,12 +9,16 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
+
 namespace SharpReportCore
 {
 	/// <summary>
 	/// IllegalQueryException is thrown when a QueryString contains other statements as
 	/// Select. So it should not happen do alter a Database while doing a Query with SharpReport
 	/// </summary>
+	
+	[SerializableAttribute]
 	public class IllegalQueryException: System.Exception{
 		private const  string message = "Query should start with 'Select'";
 		
@@ -45,6 +49,16 @@ namespace SharpReportCore
 				}
 			}
 		}
-		
+ 		
+		[SecurityPermissionAttribute(SecurityAction.Demand,
+          SerializationFormatter = true)]
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context){
+			if (info == null) {
+				throw new ArgumentNullException("info");
+			}
+			info.AddValue("errorMessage", this.ErrorMessage);
+			base.GetObjectData(info, context);
+		}
 	}
 }

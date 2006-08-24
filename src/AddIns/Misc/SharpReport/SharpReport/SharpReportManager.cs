@@ -49,7 +49,7 @@ namespace SharpReport{
 		#region privates
 		
 		private ConnectionObject BuildConnectionObject (ReportSettings settings) {
-			if (settings.ReportType == GlobalEnums.ReportTypeEnum.DataReport) {
+			if (settings.ReportType == GlobalEnums.ReportType.DataReport) {
 				try {
 					if (settings.ConnectionString.Length > 0) {
 						return new ConnectionObject(settings.ConnectionString);

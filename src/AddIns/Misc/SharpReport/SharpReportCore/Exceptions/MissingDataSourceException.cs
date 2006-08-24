@@ -10,6 +10,8 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
+
 /// <summary>
 /// Throwen when no valid SharpReportCore is available or when SharpReportCore == null
 /// </summary>
@@ -48,5 +50,15 @@ namespace SharpReportCore {
 			}
 		}
 		
+		[SecurityPermissionAttribute(SecurityAction.Demand,
+          SerializationFormatter = true)]
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context){
+			if (info == null) {
+				throw new ArgumentNullException("info");
+			}
+			info.AddValue("errorMessage", this.errorMessage);
+			base.GetObjectData(info, context);
+		}
 	}
 }

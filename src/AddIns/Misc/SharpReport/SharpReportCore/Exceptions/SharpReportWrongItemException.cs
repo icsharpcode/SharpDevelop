@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 using System;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 /// <summary>
 /// This Exception is throw if an unknown Items should be created
@@ -47,5 +48,15 @@ namespace SharpReportCore {
 			}
 		}
 		
+		[SecurityPermissionAttribute(SecurityAction.Demand,
+          SerializationFormatter = true)]
+		
+		public override void GetObjectData(SerializationInfo info, StreamingContext context){
+			if (info == null) {
+				throw new ArgumentNullException("info");
+			}
+			info.AddValue("errorMessage", this.errorMessage);
+			base.GetObjectData(info, context);
+		}
 	}
 }

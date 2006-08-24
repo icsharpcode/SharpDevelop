@@ -161,10 +161,10 @@ namespace SharpReportCore {
 		/// Sets a property called propertyName in object <code>o</code> to <code>val</code>. This method performs
 		/// all neccessary casts.
 		/// </summary>
-		public void SetValue(object o, string propertyName, string value)
+		public void SetValue(object obj, string propertyName, string value)
 		{
 			try {
-				PropertyInfo propertyInfo = o.GetType().GetProperty(propertyName);
+				PropertyInfo propertyInfo = obj.GetType().GetProperty(propertyName);
 
 				if (value.StartsWith("{") && value.EndsWith("}")) {
 					value = value.Substring(1, value.Length - 2);
@@ -172,10 +172,10 @@ namespace SharpReportCore {
 	
 					if (propertyInfo.CanWrite) {
 						Type type = propertyInfo.GetType();				
-						propertyObject = propertyInfo.GetValue(o, null);					
+						propertyObject = propertyInfo.GetValue(obj, null);					
 					} 
 					else {
-						propertyObject = propertyInfo.GetValue(o, null);
+						propertyObject = propertyInfo.GetValue(obj, null);
 					}
 					Match match = propertySet.Match(value);
 					while (true) {
@@ -187,33 +187,33 @@ namespace SharpReportCore {
 					}
 					
 					if (propertyInfo.CanWrite) {
-						propertyInfo.SetValue(o, propertyObject, null);
+						propertyInfo.SetValue(obj, propertyObject, null);
 					}
 				} else if (propertyInfo.PropertyType.IsEnum) {
-					propertyInfo.SetValue(o, Enum.Parse(propertyInfo.PropertyType, value), null);
+					propertyInfo.SetValue(obj, Enum.Parse(propertyInfo.PropertyType, value), null);
 					
 				} else if (propertyInfo.PropertyType == typeof(Color)) {
 					string color = value.Substring(value.IndexOf('[') + 1).Replace("]", "");
 					string[] argb = color.Split(',', '=');
 					if (argb.Length > 1) {		
 						CultureInfo ci = CultureInfo.CurrentCulture;
-						propertyInfo.SetValue(o, Color.FromArgb(Int32.Parse(argb[1],ci), Int32.Parse(argb[3],ci), Int32.Parse(argb[5],ci), Int32.Parse(argb[7],ci)), null);
+						propertyInfo.SetValue(obj, Color.FromArgb(Int32.Parse(argb[1],ci), Int32.Parse(argb[3],ci), Int32.Parse(argb[5],ci), Int32.Parse(argb[7],ci)), null);
 					} else {
-						propertyInfo.SetValue(o, Color.FromName(color), null);
+						propertyInfo.SetValue(obj, Color.FromName(color), null);
 					}
 				} else if (propertyInfo.PropertyType == typeof(Font)) {
 					Font fnt = XmlFormReader.MakeFont(value);
 					
 					if (fnt != null) {
-						propertyInfo.SetValue(o,fnt,null);
+						propertyInfo.SetValue(obj,fnt,null);
 					} else {
-						propertyInfo.SetValue(o, SystemInformation.MenuFont, null);
+						propertyInfo.SetValue(obj, SystemInformation.MenuFont, null);
 					}
 				} 
 				else {
 					if (value.Length > 0) {
 						if (propertyInfo.CanWrite) {
-							propertyInfo.SetValue(o,
+							propertyInfo.SetValue(obj,
 							                      Convert.ChangeType(value,
 							                                            propertyInfo.PropertyType,
 							                                           CultureInfo.CurrentCulture),

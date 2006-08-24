@@ -82,7 +82,7 @@ namespace SharpReportCore {
 		#region Building Groups
 		
 		private static void WriteToIndexFile (SharpIndexCollection destination,BaseComparer comparer) {
-			SortComparer sc = comparer as SortComparer;
+//			SortComparer sc = comparer as SortComparer;
 //			if (sc != null) {
 //				System.Console.WriteLine("\t {0} - <{1}>",comparer.ListIndex, comparer.ObjectArray[0].ToString());
 //			} else {

@@ -21,12 +21,12 @@ namespace SharpReportCore{
 		private SqlQueryChecker () {
 		}
 		
-		public static void Check (CommandType commandType,string queryString) {
+		public static void Check (CommandType commandType,string commandText) {
 			if (commandType == CommandType.Text) {
-				if (!String.IsNullOrEmpty(queryString)) {
-					queryString = queryString.ToUpper(CultureInfo.CurrentCulture);
+				if (!String.IsNullOrEmpty(commandText)) {
+					commandText = commandText.ToUpper(CultureInfo.CurrentCulture);
 
-					if (!queryString.StartsWith("SELECT")) {
+					if (!commandText.StartsWith("SELECT")) {
 						throw new SharpReportCore.IllegalQueryException();
 					}
 				}

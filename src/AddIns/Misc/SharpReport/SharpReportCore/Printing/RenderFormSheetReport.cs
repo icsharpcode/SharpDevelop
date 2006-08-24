@@ -34,7 +34,6 @@ using System.Drawing.Printing;
 namespace SharpReportCore {
 	public class RenderFormSheetReport : AbstractRenderer {
 
-		private PointF currentPoint = new PointF (0,0);
 		
 		#region Constructor
 		
@@ -71,9 +70,6 @@ namespace SharpReportCore {
 		/// <param name="e"></param>
 		protected override void BodyStart (object sender,ReportPageEventArgs rpea) {
 			base.BodyStart (sender,rpea);
-			this.currentPoint = new PointF (base.CurrentSection.Location.X,
-			                                base.page.DetailStart.Y);
-
 		}
 		
 		protected override void PrintDetail(object sender, ReportPageEventArgs rpea){

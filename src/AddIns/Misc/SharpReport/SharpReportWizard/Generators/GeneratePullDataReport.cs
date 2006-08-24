@@ -46,7 +46,7 @@ namespace ReportGenerator {
 		#region ReportGenerator.IReportGenerator interface implementation
 		public override void GenerateReport() {
 			try {
-				base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportTypeEnum.DataReport;
+				base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportType.DataReport;
 				base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModelEnum.PullData;
 				
 				this.ReportModel.ReportSettings.AvailableFieldsCollection = 

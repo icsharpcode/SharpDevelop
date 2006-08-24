@@ -142,12 +142,18 @@ namespace SharpReportCore {
 		}
 		
 		public bool DetailsDone {
+			get {
+				return this.detailsDone;
+			}
 			set {
 				detailsDone = value;
 			}
 		}
 		
 		public bool ReportHasData {
+			get {
+				return this.reportHasData;
+			}
 			set {
 				reportHasData = value;
 				this.detailsDone = true;

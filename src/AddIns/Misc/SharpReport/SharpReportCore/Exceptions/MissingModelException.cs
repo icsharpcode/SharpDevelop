@@ -9,6 +9,8 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
+
 /// <summary>
 /// Description of MissingModelException.
 /// </summary>
@@ -33,5 +35,14 @@ namespace SharpReportCore{
 		                                StreamingContext context) : base(info, context){
 			// Implement type-specific serialization constructor logic.
 		}
+		
+		[SecurityPermissionAttribute(SecurityAction.Demand, 
+          SerializationFormatter = true)]
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+		}
+		
 	}
 }

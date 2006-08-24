@@ -11,7 +11,8 @@
 
 using System;
 using System.Runtime.Serialization;
-	
+using System.Security.Permissions;
+
 	/// <summary>
 	/// This Class throws the Standart SharpReport Error
 	/// </summary>
@@ -47,6 +48,18 @@ namespace SharpReportCore {
 				return errorMessage;
 			}
 		}
+		
+		 [SecurityPermissionAttribute(SecurityAction.Demand, 
+          SerializationFormatter = true)]
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context){
+			if (info == null) {
+				throw new ArgumentNullException("info");
+			}
+			info.AddValue("errorMessage", this.errorMessage);
+			base.GetObjectData(info, context);
+		}
+		
 	}
 
 }

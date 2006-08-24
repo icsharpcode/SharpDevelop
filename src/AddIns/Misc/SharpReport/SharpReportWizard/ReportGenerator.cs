@@ -33,7 +33,7 @@ namespace ReportGenerator {
 		private string fileName;
 		private string path;
 		
-		private GlobalEnums.ReportTypeEnum reportType;
+		private GlobalEnums.ReportType reportType;
 		private GraphicsUnit graphicsUnit;
 		
 		//Database
@@ -89,7 +89,7 @@ namespace ReportGenerator {
 				reportName = value;
 			}
 		}
-		public SharpReportCore.GlobalEnums.ReportTypeEnum ReportType {
+		public SharpReportCore.GlobalEnums.ReportType ReportType {
 			get {
 				return reportType;
 			}

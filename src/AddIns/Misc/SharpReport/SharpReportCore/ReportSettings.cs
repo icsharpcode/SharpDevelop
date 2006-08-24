@@ -48,7 +48,7 @@ namespace SharpReportCore{
 		                                    GraphicsUnit.Point);
 		
 		
-		private GlobalEnums.ReportTypeEnum reportType;
+		private GlobalEnums.ReportType reportType;
 		private GlobalEnums.PushPullModelEnum dataModel;
 		
 		private SqlParametersCollection reportParametersCollection;
@@ -81,7 +81,7 @@ namespace SharpReportCore{
 			sortingCollection = new ColumnCollection();
 			groupingsCollection = new ColumnCollection();
 			reportParametersCollection = new SqlParametersCollection();
-			this.reportType = GlobalEnums.ReportTypeEnum.FormSheet;
+			this.reportType = GlobalEnums.ReportType.FormSheet;
 			this.dataModel = GlobalEnums.PushPullModelEnum.FormSheet;
 		}
 		
@@ -93,7 +93,7 @@ namespace SharpReportCore{
 		/// <param name="reader">See XMLFormReader</param>
 		/// <param name="item">AbstractColumn</param>
 		/// <param name="ctrlElem">Element witch contains the values</param>
-		private  void BuildAbstractColumn (XmlFormReader reader,
+		private static void BuildAbstractColumn (XmlFormReader reader,
 		                                   XmlElement ctrlElem,
 		                                   AbstractColumn item) {
 			
@@ -164,7 +164,7 @@ namespace SharpReportCore{
 							XmlElement elem = node as XmlElement;
 							if (elem != null) {
 								AbstractColumn abstr = new AbstractColumn();
-								BuildAbstractColumn (xmlReader,elem,abstr);
+								ReportSettings.BuildAbstractColumn (xmlReader,elem,abstr);
 								this.availableFields.Add(abstr);
 							}
 						}
@@ -179,7 +179,7 @@ namespace SharpReportCore{
 							XmlElement elem = node as XmlElement;
 							if (elem != null) {
 								SortColumn sc = new SortColumn();
-								BuildAbstractColumn (xmlReader,elem,sc);
+								ReportSettings.BuildAbstractColumn (xmlReader,elem,sc);
 								sortingCollection.Add(sc);
 							}
 						}
@@ -193,7 +193,7 @@ namespace SharpReportCore{
 							XmlElement elem = node as XmlElement;
 							if (elem != null) {
 								GroupColumn gc = new GroupColumn();
-								BuildAbstractColumn (xmlReader,elem,gc);
+								ReportSettings.BuildAbstractColumn (xmlReader,elem,gc);
 								groupingsCollection.Add(gc);
 							}
 						}
@@ -315,7 +315,8 @@ namespace SharpReportCore{
 			}
 			else {
 				attPropValue = section.OwnerDocument.CreateAttribute ("value");
-				attPropValue.InnerText = Convert.ToString(prop.GetValue(this,null));
+				attPropValue.InnerText = Convert.ToString(prop.GetValue(this,null),
+				                                          CultureInfo.InvariantCulture);
 				
 				xmlProperty.Attributes.Append(attPropValue);
 			}
@@ -330,7 +331,8 @@ namespace SharpReportCore{
 				if (p.CanWrite) {
 					xmlProperty = xmlSaveTo.OwnerDocument.CreateElement (p.Name);
 					attPropValue = xmlSaveTo.OwnerDocument.CreateAttribute ("value");
-					attPropValue.InnerText = Convert.ToString(p.GetValue(column,null));
+					attPropValue.InnerText = Convert.ToString(p.GetValue(column,null),
+					                                         CultureInfo.InvariantCulture);
 					xmlProperty.Attributes.Append(attPropValue);
 					xmlSaveTo.AppendChild(xmlProperty);
 				}
@@ -349,7 +351,8 @@ namespace SharpReportCore{
 						if (p.CanWrite) {
 							xmlProperty = xmlParam.OwnerDocument.CreateElement(p.Name);
 							attPropValue = xmlParam.OwnerDocument.CreateAttribute ("value");
-							attPropValue.InnerText = Convert.ToString(p.GetValue(rPar,null));
+							attPropValue.InnerText = Convert.ToString(p.GetValue(rPar,null),
+							                                         CultureInfo.InvariantCulture);
 							xmlProperty.Attributes.Append(attPropValue);
 							xmlElem.AppendChild(xmlProperty);
 						}
@@ -512,7 +515,7 @@ namespace SharpReportCore{
 		
 		
 		[Browsable(true), Category("Base Settings")]
-		public GlobalEnums.ReportTypeEnum ReportType {
+		public GlobalEnums.ReportType ReportType {
 			get {
 				return reportType;
 			}
@@ -639,9 +642,9 @@ namespace SharpReportCore{
 					dataModel = value;
 
 					if (this.dataModel != GlobalEnums.PushPullModelEnum.FormSheet) {
-						this.reportType = GlobalEnums.ReportTypeEnum.DataReport;
+						this.reportType = GlobalEnums.ReportType.DataReport;
 					} else {
-						this.reportType = GlobalEnums.ReportTypeEnum.FormSheet;
+						this.reportType = GlobalEnums.ReportType.FormSheet;
 					}
 					this.NotifyPropertyChanged("DataModel");
 				}

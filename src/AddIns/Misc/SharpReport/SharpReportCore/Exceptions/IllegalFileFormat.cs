@@ -10,7 +10,8 @@
 
 using System;
 using System.Runtime.Serialization;
-	
+using System.Security.Permissions;
+
 	/// <summary>
 	/// This exception is throw'n when something is wrong with the File Format
 	/// </summary>
@@ -21,11 +22,11 @@ using System.Runtime.Serialization;
 namespace SharpReportCore {	
 	[Serializable()]
 	public class IllegalFileFormatException : System.Exception {
-		static string errMess = "<aus code> Could not read file , file corrupt (SharpReportFile is improperly formatted)";
 		
+		static string errorMessage = "<aus code> Could not read file , file corrupt (SharpReportFile is improperly formatted)";
 		private string localisedMessage = String.Empty;
 		
-		public IllegalFileFormatException():base (errMess){
+		public IllegalFileFormatException():base (errorMessage){
 		}
 		
 		public IllegalFileFormatException(string errorMessage,
@@ -51,10 +52,21 @@ namespace SharpReportCore {
 		}
 		
 		
-		public string ErrorMessage {
+		public static string ErrorMessage {
 			get {
-				return errMess;
+				return errorMessage;
 			}
+		}
+ 		[SecurityPermissionAttribute(SecurityAction.Demand, 
+          SerializationFormatter = true)]
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context){
+			if (info == null) {
+				throw new ArgumentNullException("info");
+			}
+			info.AddValue("errorMessage", IllegalFileFormatException.errorMessage);
+			info.AddValue("localisedMessage", this.localisedMessage);
+			base.GetObjectData(info, context);
 		}
 	}
 }
