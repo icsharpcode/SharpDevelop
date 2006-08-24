@@ -11,6 +11,7 @@ using System;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -235,30 +236,19 @@ namespace SharpReportAddin{
 		private void SetAvailableFields (ReportModel model) {
 			
 			this.nodeAvailableFields.Nodes.Clear();
-
+			
+			
 			foreach (AbstractColumn af in model.ReportSettings.AvailableFieldsCollection){
+				
 				ColumnsTreeNode node = new ColumnsTreeNode(af.ColumnName);
 				node.Tag = this.nodeAvailableFields;
 				
 				//we don't like ContextMenu here
 				node.ContextmenuAddinTreePath = "";
-				switch (model.ReportSettings.CommandType) {
-						case CommandType.Text:{
-							node.ImageIndex = columnIcon;
-							node.SelectedImageIndex = columnIcon;
-							break;
-						}
-						case CommandType.StoredProcedure: {
-							node.ImageIndex = storedprocIcon ;
-							node.SelectedImageIndex = storedprocIcon ;
-							break;
-						}
-						default:{
-							node.ImageIndex = columnIcon;
-							node.SelectedImageIndex = columnIcon;
-							break;
-						}
-				}
+				// and a node is a node, otherwise we cant't dragdrop
+				node.ImageIndex = columnIcon;
+				node.SelectedImageIndex = columnIcon;
+				
 				this.nodeAvailableFields.Nodes.Add(node);
 			}
 
@@ -305,13 +295,17 @@ namespace SharpReportAddin{
 			
 			this.nodeParams.Nodes.Clear();
 			foreach (SqlParameter par in collection) {
-				node = new ColumnsTreeNode(par.ParameterName);
-					node.Tag = par;
-					// No ContextMenu for Parameters
-					node.ContextmenuAddinTreePath = String.Empty;
-					node.SelectedImageIndex = columnIcon;
-					node.ImageIndex = columnIcon;
-					this.nodeParams.Nodes.Add (node);
+				StringBuilder sb = new StringBuilder(par.ParameterName);
+				sb.Append(" {");
+				sb.Append(par.DataType);
+				sb.Append("}");
+				node = new ColumnsTreeNode(sb.ToString());
+				node.Tag = par;
+				// No ContextMenu for Parameters
+				node.ContextmenuAddinTreePath = String.Empty;
+				node.SelectedImageIndex = columnIcon;
+				node.ImageIndex = columnIcon;
+				this.nodeParams.Nodes.Add (node);
 			}
 		}
 		

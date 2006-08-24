@@ -31,7 +31,6 @@ namespace SharpReportAddin
 		/// </summary>
 		
 		public ReportExplorer():base(){
-			System.Console.WriteLine("InitExplorer");
 			this.contentPanel.Controls.Add(this.treeView);
 			this.treeView.ItemDrag += TreeViewItemDrag;
 			this.treeView.DragDrop += TreeViewDragDrop;
@@ -41,15 +40,13 @@ namespace SharpReportAddin
 		#region DragDrop
 		
 		void TreeViewItemDrag (object sender,ItemDragEventArgs e) {
-			
-			if (e.Item is ColumnsTreeNode) {
-				ColumnsTreeNode node = (ColumnsTreeNode)e.Item;
-				// for now, only dragging of Columns is allowed
+			ColumnsTreeNode node = (ColumnsTreeNode)e.Item;
+			if (node != null) {
 				if (node.ImageIndex == this.treeView.ColumnIcon) {
 					this.treeView.SelectedNode = node;
 					if (node != null) {
 						this.treeView.DoDragDrop(node.DragDropDataObject,
-						                DragDropEffects.Copy | DragDropEffects.Scroll);
+						                         DragDropEffects.Copy | DragDropEffects.Scroll);
 					}
 				}
 			}
