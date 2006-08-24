@@ -19,15 +19,32 @@ namespace ICSharpCode.WixBinding
 	public class WixTreeNode : ExtTreeNode, IOwnerState
 	{
 		XmlElement element;
+		ExtTreeNode dummyChildNode = null;
 		
 		public WixTreeNode(XmlElement element)
 		{
 			this.element = element;
+			sortOrder = 10;
+			
+			if (element.HasChildNodes) {
+				dummyChildNode = new ExtTreeNode();
+				dummyChildNode.AddTo(this);
+			}
 		}
 		
 		public Enum InternalState {
 			get {
 				return WixPackageFilesTreeView.InternalState;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether this tree node has been initialized. If it has been
+		/// initialized then all the child nodes have been added to this node.
+		/// </summary>
+		public bool IsInitialized {
+			get {
+				return isInitialized;
 			}
 		}
 		
@@ -59,6 +76,21 @@ namespace ICSharpCode.WixBinding
 			get {
 				return (WixPackageFilesTreeView)TreeView;
 			}
+		}
+		
+		/// <summary>
+		/// Adds child nodes to this tree node.
+		/// </summary>
+		protected override void Initialize()
+		{
+			base.Initialize();
+			
+			if (dummyChildNode != null) {
+				Nodes.Remove(dummyChildNode);
+				dummyChildNode = null;
+			}
+			
+			WixTreeNodeBuilder.AddNodes(this, element.ChildNodes);
 		}
 	}
 }

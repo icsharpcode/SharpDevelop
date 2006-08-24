@@ -1,0 +1,192 @@
+﻿<!-- Installer for SharpDevelop -->
+<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+	<Product Id="A0AB2551-A579-42D3-9A90-D6424B3AC2CD"
+		Name="SharpDevelop 2.1"
+		Manufacturer="ic#code"
+		Language="1033"
+		Codepage="1252"
+		UpgradeCode="A1F371B6-4218-4F60-B01E-C996DF461B10"
+		Version="2.1.0.0">
+		
+		<Package Id="DFC87BE9-A5A6-434D-97BA-F34BB1C1C1A7"
+			Description="SharpDevelop"
+			InstallerVersion="200"
+			Compressed="yes"/>
+		
+		<!-- Conditions to be satisfied before the installer begins.-->
+		<!-- 
+			Check for .NET 2.0 
+			http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msinetassemblysupport.asp
+		-->
+		<Condition Message="This setup requires the .NET Framework 2.0 or higher.">
+			MsiNetAssemblySupport &gt;= "2.0.50727"
+		</Condition>
+		
+		<!-- 
+			Check for the operating system is at least Windows 2000 (VersionNT = 500). 
+			http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/operating_system_property_values.asp		
+		-->
+		<Condition Message="The operating system you are using is not supported by SharpDevelop (95/98/ME/NT3.x/NT4.x).">
+			VersionNT &gt;= 500
+		</Condition>
+		
+		<!-- 
+			Check the user has elevated permissions. We need admin rights to NGen 
+			SharpDevelop.exe, to install NUnit into the GAC and to register the Help 
+			collection. 
+
+			At the moment we do not need admin rights since the installer only tries
+			to NGen and add NUnit to the GAC if we have admin rights. So as long
+			as the user does not try to install it into Program Files then the
+			install will finish successfully. 
+
+			In order to get the NGen conditionally executed when the user has admin
+			rights we had to use a custom version of Wix's NetFxExtension.wxs file
+			where the custom actions conditions have been altered.
+
+			The old Setup.exe displays a RunAs dialog only because when it is named 
+			"Setup.exe". So do we display an error message or let the installation
+			fail? The failure message is obscure so a message is before launching
+			is probably better.
+		-->
+		<!-- Not used since the install will work without admin rights.
+		<Condition Message="Administrator rights are required to install SharpDevelop.">
+			Privileged
+		</Condition> -->
+		
+		<!-- 
+			Install for all users.
+
+			Using ALLUSERS=2 means SharpDevelop can be installed by a non-admin. 
+			In this case it will be a per-user installation installed into the 
+			user's personal profile. 
+
+			(The installer will be adding assemblies to the GAC and using NGen 
+			on SharpDevelop.exe if and only if the user has admin rights)
+
+			http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/allusers.asp
+		-->
+		<Property Id="ALLUSERS">2</Property>
+
+		<!-- 
+			Support entries shown when clicking "Click here for support information"
+			in Control Panel's Add/Remove Programs
+
+			http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/configuration_properties.asp
+		-->
+		<Property Id="ARPCONTACT">http://icsharpcode.net/OpenSource/SD/ContactUs.asp</Property>
+		<Property Id="ARPHELPLINK">http://community.sharpdevelop.net/forums/</Property>
+		<Property Id="ARPURLINFOABOUT">http://icsharpcode.net/OpenSource/SD/</Property>
+		<Property Id="ARPURLUPDATEINFO">http://icsharpcode.net/OpenSource/SD/Download/</Property>
+		<Property Id="ARPREADME" Value="[DocFolder]\readme.rtf"/>
+		
+		<!-- Suppress the Modify button in the Control Panel's Add/Remove Programs -->
+		<!-- 
+			Temporarily disabled whilst using the WixUI library 
+			<Property Id="ARPNOMODIFY">1</Property> 
+		-->
+
+		<!-- Puts SharpDevelop icon in Control Panel's Add/Remove Programs -->
+		<Property Id="ARPPRODUCTICON">SharpDevelopIcon.exe</Property>
+		<Icon Id="SharpDevelopIcon.exe" SourceFile="..\Main\StartUp\Project\Resources\SharpDevelop.ico"/>
+		
+		<!-- 
+			Source media for the installation. 
+ 			Specifies a single cab file to be embedded in the installer's .msi. 
+		-->
+		<Media Id="1" Cabinet="contents.cab" EmbedCab="yes"/>
+	
+		<!-- Installation directory and files are defined in Files.wxs -->
+		<Directory Id="TARGETDIR" Name="SourceDir"/>
+		
+		<!-- 
+			Currently just one core feature to install everything. 
+			Source code will become a separate feature. Perhaps all the add-ins too could
+			each be a feature if the user wants to heavily customise the installation.
+		-->
+		<Feature Id="Complete" Level="1">
+			<ComponentRef Id="SharpDevelopExe"/>
+			<ComponentRef Id="SharpDevelopCoreFiles"/>
+			<ComponentRef Id="SharpDevelopDocFiles"/>
+			<ComponentRef Id="SharpDevelopTechNoteFiles"/>
+			<ComponentRef Id="ComponentInspectorFiles"/>
+			<ComponentRef Id="SharpDevelopProgramMenuItems"/>
+			<ComponentRef Id="DesktopFolderItems"/>
+			<ComponentRef Id="NDocFiles"/>
+			<ComponentRef Id="WixFiles"/>
+			<ComponentRef Id="WixBitmapFiles"/>
+			<ComponentRef Id="WixDocFiles"/>
+			<ComponentRef Id="WixIncFiles"/>
+			<ComponentRef Id="WixLibFiles"/>
+			<ComponentRef Id="NUnitFiles"/>
+			<ComponentRef Id="NUnitCoreDll"/>
+			<ComponentRef Id="NUnitFrameworkDll"/>
+			<ComponentRef Id="NUnitCoreGacDll"/>
+			<ComponentRef Id="NUnitFrameworkGacDll"/>
+			<ComponentRef Id="ConversionStyleSheetFiles"/>
+			<ComponentRef Id="TextLibOptionsFiles"/>
+			<ComponentRef Id="OptionsFiles"/>
+			<ComponentRef Id="CssFiles"/>
+			<ComponentRef Id="InstallerBitmapFiles"/>
+			<ComponentRef Id="LanguageBitmapFiles"/>
+			<ComponentRef Id="LayoutFiles"/>
+			<ComponentRef Id="StartPageLayoutBlueFiles"/>
+			<ComponentRef Id="StartPageLayoutBrownFiles"/>
+			<ComponentRef Id="StartPageLayoutCommonFiles"/>
+			<ComponentRef Id="StartPageLayoutGreenFiles"/>
+			<ComponentRef Id="StartPageLayoutOrangeFiles"/>
+			<ComponentRef Id="StartPageLayoutRedFiles"/>
+			<ComponentRef Id="StartPageLayoutFiles"/>
+			<ComponentRef Id="StringResourceFiles"/>
+			<ComponentRef Id="SchemaFiles"/>
+			<ComponentRef Id="CSharpFileTemplates"/>
+			<ComponentRef Id="VBNetFileTemplates"/>
+			<ComponentRef Id="MiscFileTemplates"/>
+			<ComponentRef Id="SharpDevelopFileTemplates"/>
+			<ComponentRef Id="CSharpProjectTemplates"/>
+			<ComponentRef Id="MiscProjectTemplates"/>
+			<ComponentRef Id="VBNetProjectTemplates"/>
+			<ComponentRef Id="ExampleProjectTemplate"/>
+			<ComponentRef Id="ICSharpCode.SharpDevelop.addin"/>
+			<ComponentRef Id="BooTemplateFiles"/>
+			<ComponentRef Id="BooBindingFiles"/>
+			<ComponentRef Id="CSharpBindingFiles"/>
+			<ComponentRef Id="ILAsmTemplates"/>
+			<ComponentRef Id="ILAsmBindingFiles"/>
+			<ComponentRef Id="VBNetBindingFiles"/>
+			<ComponentRef Id="WixBindingFiles"/>
+			<ComponentRef Id="WixBindingTemplates"/>
+			<ComponentRef Id="FormsDesignerFiles"/>
+			<ComponentRef Id="IconEditorFiles"/>
+			<ComponentRef Id="ResourceEditorFiles"/>
+			<ComponentRef Id="XmlEditorFiles"/>
+			<ComponentRef Id="AddInManagerFiles"/>
+			<ComponentRef Id="AddInScoutFiles"/>
+			<ComponentRef Id="CodeAnalysisFiles"/>
+			<ComponentRef Id="CodeCoverageFiles"/>
+			<ComponentRef Id="ComponentInspectorAddInFiles"/>
+			<ComponentRef Id="DebuggerAddInFiles"/>
+			<ComponentRef Id="FiletypeIcons"/>
+			<ComponentRef Id="FiletypeRegistererFiles"/>
+			<ComponentRef Id="HighlightingEditorFiles"/>
+			<ComponentRef Id="HtmlHelp2Files"/>
+			<ComponentRef Id="MonoAddInFiles"/>
+			<ComponentRef Id="NAntAddInFiles"/>
+			<ComponentRef Id="PInvokeAddInFiles"/>
+			<ComponentRef Id="RegExToolkitFiles"/>
+			<ComponentRef Id="SharpDbToolsFiles"/>
+			<ComponentRef Id="SharpQueryFiles"/>
+			<ComponentRef Id="SharpReportFiles"/>
+			<ComponentRef Id="StartPageAddInFiles"/>
+			<ComponentRef Id="SubversionAddInFiles"/>
+			<ComponentRef Id="UnitTestingAddInFiles"/>
+			<ComponentRef Id="SyntaxModesFiles"/>
+			<ComponentRef Id="SharpDevelopWebsiteShortcut"/>
+			<ComponentRef Id="SharpDevelopAppPathRegistrySetting"/>
+		</Feature>
+			
+		<!-- Using WixUI temporarily -->
+		<Property Id="WIXUI_INSTALLDIR">INSTALLDIR</Property>
+		<UIRef Id="WixUI_InstallDir"/>
+	</Product>
+</Wix>

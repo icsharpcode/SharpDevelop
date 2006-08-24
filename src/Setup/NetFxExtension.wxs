@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (c) Microsoft Corporation.  All rights reserved.
+    
+    The use and distribution terms for this software are covered by the
+    Common Public License 1.0 (http://opensource.org/licenses/cpl.php)
+    which can be found in the file CPL.TXT at the root of this distribution.
+    By using this software in any fashion, you are agreeing to be bound by
+    the terms of this license.
+    
+    You must not remove this notice, or any other, from this software.
+
+    Module.MSM - example source code for Merge Module from "Getting Started" in help
+
+	(Modified slightly for SharpDevelop - the NGen custom actions are only executed if the
+    user has administrator privileges)
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+
+    <Fragment>
+        <!-- will be set to 1 if the .NET Framework 1.1 is installed -->
+        <Property Id="NETFRAMEWORK11">
+            <RegistrySearch Id="NetFramework11" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v1.1.4322" Name="Install" Type="raw" />
+        </Property>
+    </Fragment>
+
+    <Fragment>
+        <Property Id="NETFRAMEWORK20">
+            <!-- set to 1 if the .NET Framework 2.0 is installed -->
+            <RegistrySearch Id="NetFramework20" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v2.0.50727" Name="Install" Type="raw" />
+        </Property>
+    </Fragment>
+
+    <Fragment>
+        <!-- location of the .NET Framework 1.1 SDK installation root -->
+        <Property Id="NETFRAMEWORK11SDKDIR">
+            <RegistrySearch Id="NetFramework11SDKDir" Root="HKLM" Key="Software\Microsoft\.NETFramework" Name="sdkInstallRootv1.1" Type="raw" />
+        </Property>
+    </Fragment>
+
+    <Fragment>
+        <!-- location of the .NET Framework 2.0 SDK installation root -->
+        <Property Id="NETFRAMEWORK20SDKDIR">
+            <RegistrySearch Id="NetFramework20SDKDir" Root="HKLM" Key="Software\Microsoft\.NETFramework" Name="sdkInstallRootv2.0" Type="raw" />
+        </Property>
+    </Fragment>
+
+    <!-- NetFx NativeImage Custom Action Definitions -->
+    <Fragment>
+        <Property Id="NetFxVersion" Value="v2.0.50727" />
+
+        <IgnoreModularization Name="NetFxScheduleNativeImage" Type="Action" />
+        <IgnoreModularization Name="NetFxExecuteNativeImage" Type="Action" />
+
+        <CustomAction Id="NetFxScheduleNativeImage" BinaryKey="NetFxCA" DllEntry="SchedNetFx" Execute="immediate" Return="check" />
+        <CustomAction Id="NetFxExecuteNativeImage" BinaryKey="NetFxCA" DllEntry="ExecNetFx" Execute="deferred" Impersonate="no" Return="check" />
+        <CustomAction Id="NetFxExecuteNativeImageCommit" BinaryKey="NetFxCA" DllEntry="ExecNetFx" Execute="commit" Impersonate="no" Return="check" />
+
+        <InstallExecuteSequence>
+            <Custom Action="NetFxScheduleNativeImage" Before="InstallFiles">Privileged</Custom>
+            <Custom Action="NetFxExecuteNativeImage" After="MsiPublishAssemblies">Privileged AND DISABLEROLLBACK = 1</Custom>
+            <Custom Action="NetFxExecuteNativeImageCommit" After="MsiPublishAssemblies">Privileged AND DISABLEROLLBACK &lt;&gt; 1</Custom>
+        </InstallExecuteSequence>
+    </Fragment>
+
+    <!-- NetFx Custom Action DLL Definitions -->
+    <Fragment>
+        <Binary Id="NetFxCA" SourceFile="netfxca.dll" />
+    </Fragment>
+</Wix>

@@ -57,6 +57,12 @@ namespace WixBinding.Tests.Document
 		{
 			Assert.AreEqual("MyAppSrc", myAppDirectory.SourceName);
 		}
+		
+		[Test]
+		public void MyAppDirectoryName()
+		{
+			Assert.AreEqual("My Application", myAppDirectory.DirectoryName);
+		}
 
 		[Test]
 		public void ProgramFilesDirectoryHasOneChildDirectory()
@@ -71,9 +77,15 @@ namespace WixBinding.Tests.Document
 		}
 		
 		[Test]
+		public void TestDirectoryName()
+		{
+			Assert.AreEqual("App", testDirectory.DirectoryName);
+		}
+		
+		[Test]
 		public void ProgramFilesDirectoryName()
 		{
-			Assert.AreEqual("PFiles", programFilesDirectory.DirectoryName);
+			Assert.AreEqual("Program Files", programFilesDirectory.DirectoryName);
 		}
 		
 		string GetWixXml()
@@ -86,11 +98,11 @@ namespace WixBinding.Tests.Document
 				"\t         Id='????????-????-????-????-????????????'>\r\n" +
 				"\t\t<Package/>\r\n" +
 				"\t\t<Directory Id=\"TARGETDIR\" SourceName=\"SourceDir\">\r\n" +
-				"\t\t\t<Directory Id=\"ProgramFiles\" Name=\"PFiles\">\r\n" +
-				"\t\t\t\t<Directory Id=\"MyApp\" SourceName=\"MyAppSrc\">\r\n" +
+				"\t\t\t<Directory Id=\"ProgramFilesFolder\" Name=\"PFiles\">\r\n" +
+				"\t\t\t\t<Directory Id=\"MyApp\" SourceName=\"MyAppSrc\" Name=\"MyApp\" LongName=\"My Application\">\r\n" +
 				"\t\t\t\t</Directory>\r\n" +
 				"\t\t\t</Directory>\r\n" +
-				"\t\t\t<Directory Id=\"Test\" SourceName=\"Test\"/>\r\n" +
+				"\t\t\t<Directory Id=\"Test\" SourceName=\"Test\" Name=\"App\"/>\r\n" +
 				"\t\t</Directory>\r\n" +
 				"\t</Product>\r\n" +
 				"</Wix>";

@@ -14,13 +14,14 @@ namespace ICSharpCode.WixBinding
 	/// <summary>
 	/// Utility class that converts from long filenames to DOS 8.3 filenames based on the
 	/// rough algorithm outlined here: http://support.microsoft.com/kb/142982/EN-US/
+	/// apart from using an underscore instead of a '~'.
 	/// </summary>
 	public sealed class ShortFileName
 	{
 		const int MaximumFileNameWithoutExtensionLength = 8;
 		
 		/// <summary>
-		/// The filename length to use when appending "~1" to it.
+		/// The filename length to use when appending "_1" to it.
 		/// </summary>
 		const int FileNameWithoutExtensionTruncatedLength = 6;
 		
@@ -97,7 +98,7 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Truncates the filename start and adds "~N" where N produces a filename that
+		/// Truncates the filename start and adds "_N" where N produces a filename that
 		/// does not exist.
 		/// </summary>
 		static string GetTruncatedFileName(string fileNameStart, string extension, FileNameExists getFileNameExists)
@@ -112,7 +113,7 @@ namespace ICSharpCode.WixBinding
 					fileNameStart = fileNameStart.Substring(0, fileNameStart.Length - 1);
 					divisor *= divisor;
 				}
-				truncatedFileName = String.Concat(fileNameStart, "~", count.ToString(), extension).ToUpperInvariant();
+				truncatedFileName = String.Concat(fileNameStart, "_", count.ToString(), extension).ToUpperInvariant();
 			} while (getFileNameExists(truncatedFileName));
 			
 			return truncatedFileName;

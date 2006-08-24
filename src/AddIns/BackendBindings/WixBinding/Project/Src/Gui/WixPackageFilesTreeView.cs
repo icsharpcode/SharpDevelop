@@ -80,9 +80,8 @@ namespace ICSharpCode.WixBinding
 		public void AddDirectories(WixDirectoryElement[] directories)
 		{
 			foreach (WixDirectoryElement directory in directories) {
-				AddNode(null, directory);
+				WixTreeNodeBuilder.AddNode(this, directory);
 			}
-			ExpandAll();
 		}
 		
 		/// <summary>
@@ -103,9 +102,17 @@ namespace ICSharpCode.WixBinding
 		/// root node.</remarks>
 		public void AddElement(XmlElement element)
 		{
-			ExtTreeNode selectedNode = (ExtTreeNode)SelectedNode;
-			ExtTreeNode addedNode = AddNode(selectedNode, element);
-			addedNode.Expand();
+			WixTreeNode selectedNode = (WixTreeNode)SelectedNode;
+			if (selectedNode == null) {
+				 WixTreeNodeBuilder.AddNode(this, element);
+			} else {
+				if (selectedNode.IsInitialized) {
+					 WixTreeNodeBuilder.AddNode(selectedNode, element);
+				} else {
+					// Initializing the node will add all the child elements.
+					selectedNode.PerformInitialization();
+				}
+			}
 		}
 		
 		/// <summary>
@@ -144,52 +151,7 @@ namespace ICSharpCode.WixBinding
 				OnSelectedElementChanged();
 			}
 		}
-		
-		/// <summary>
-		/// Adds a new tree node containing the xml element to the specified
-		/// nodes collection.
-		/// </summary>
-		ExtTreeNode AddNode(ExtTreeNode parentNode, XmlElement element)
-		{
-			ExtTreeNode node = CreateNode(element);
-			if (parentNode != null) {
-				node.AddTo(parentNode);
-			} else {
-				node.AddTo(this);
-			}
-			AddNodes(node, element.ChildNodes);
-			return node;
-		}
-		
-		/// <summary>
-		/// Adds all the elements.
-		/// </summary>
-		void AddNodes(ExtTreeNode parentNode, XmlNodeList nodes)
-		{
-			foreach (XmlNode childNode in nodes) {
-				XmlElement childElement = childNode as XmlElement;
-				if (childElement != null) {
-					AddNode(parentNode, childElement);
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Creates a tree node from the specified element.
-		/// </summary>
-		ExtTreeNode CreateNode(XmlElement element)
-		{
-			switch (element.LocalName) {
-				case "Directory":
-					return new WixDirectoryTreeNode((WixDirectoryElement)element);
-				case "Component":
-					return new WixComponentTreeNode((WixComponentElement)element);
-				case "File":
-					return new WixFileTreeNode((WixFileElement)element);
-			}
-			return new UnknownWixTreeNode(element);
-		}
-		
+	
 		void OnSelectedElementChanged()
 		{
 			if (SelectedElementChanged != null) {
@@ -208,15 +170,23 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// Finds the node that represents the specified xml element.
 		/// </summary>
+		/// <remarks>
+		/// This currently looks in nodes that have been opened. Really it
+		/// should explore the entire tree, but child nodes are only added if the
+		/// node is expanded.
+		/// </remarks>
 		WixTreeNode FindNode(TreeNodeCollection nodes, XmlElement element)
 		{
-			foreach (WixTreeNode node in nodes) {
-				if (NodeHasElement(node, element)) {
-					return node;
-				} else {
-					WixTreeNode foundNode = FindNode(node.Nodes, element);
-					if (foundNode != null) {
-						return foundNode;
+			foreach (ExtTreeNode node in nodes) {
+				WixTreeNode wixTreeNode = node as WixTreeNode;
+				if (wixTreeNode != null) {
+					if (NodeHasElement(wixTreeNode, element)) {
+						return wixTreeNode;
+					} else {
+						WixTreeNode foundNode = FindNode(wixTreeNode.Nodes, element);
+						if (foundNode != null) {
+							return foundNode;
+						}
 					}
 				}
 			}

@@ -82,7 +82,7 @@ namespace WixBinding.Tests.PackageFiles
 		[Test]
 		public void ExeFileShortName()
 		{
-			Assert.AreEqual("TESTAP~1.EXE", exeFileElement.GetAttribute("Name"));
+			Assert.AreEqual("TESTAP_1.EXE", exeFileElement.GetAttribute("Name"));
 		}
 		
 		[Test]

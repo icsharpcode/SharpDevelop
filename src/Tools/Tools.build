@@ -2,6 +2,7 @@
 	<ItemGroup>
 		<NDocFiles Include="ndoc\bin\*"/>
 		<WixFiles Include="wix\*"/>
+		<WixBitmapFiles Include="wix\Bitmaps\*"/>
 		<WixDocFiles Include="wix\doc\*"/>
 		<WixLibFiles Include="wix\lib\*"/>
 		<WixIncFiles Include="wix\inc\*"/>
@@ -16,6 +17,7 @@
 		<Copy SourceFiles="@(NDocFiles)" DestinationFolder="..\..\bin\Tools\NDoc"/>
 		<Copy SourceFiles="@(WixFiles)" DestinationFolder="..\..\bin\Tools\Wix"/>
 		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc"/>
+		<Copy SourceFiles="@(WixBitmapFiles)" DestinationFolder="..\..\bin\Tools\Wix\Bitmaps"/>
 		<Copy SourceFiles="@(WixIncFiles)" DestinationFolder="..\..\bin\Tools\Wix\inc"/>
 		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib"/>
 		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit"/>

@@ -1,0 +1,42 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputName>SharpDevelop</OutputName>
+    <OutputType>package</OutputType>
+    <WixToolPath Condition=" '$(WixToolPath)' == '' ">$(SharpDevelopBinPath)\Tools\Wix</WixToolPath>
+    <ToolPath Condition=" '$(ToolPath)' == '' ">$(WixToolPath)</ToolPath>
+    <WixMSBuildExtensionsPath>$(SharpDevelopBinPath)\Tools\Wix</WixMSBuildExtensionsPath>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <RootNamespace>SharpDevelop.Setup</RootNamespace>
+    <ProjectGuid>{FFC0F136-2F91-4F2E-8D8B-DD435F01A7E6}</ProjectGuid>
+    <OutputPath>bin\</OutputPath>
+    <WarningLevel>0</WarningLevel>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <LocalizedStringFile>..\..\bin\Tools\Wix\WixUI_en-us.wxl</LocalizedStringFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <BaseOutputPath>obj\</BaseOutputPath>
+    <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <BaseOutputPath>obj\</BaseOutputPath>
+    <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Setup.wxs" />
+    <Compile Include="Files.wxs" />
+    <WixLibrary Include="..\..\bin\Tools\Wix\wixui.wixlib" />
+    <Compile Include="NetFxExtension.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <CompileExtension Include="WixNetFxExtension">
+      <Class>Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler</Class>
+    </CompileExtension>
+    <LibExtension Include="WixNetFxExtension">
+      <Class>Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler</Class>
+    </LibExtension>
+    <LinkExtension Include="WixNetFxExtension">
+      <Class>Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler</Class>
+    </LinkExtension>
+  </ItemGroup>
+  <Import Project="$(WixMSBuildExtensionsPath)\wix.targets" />
+</Project>

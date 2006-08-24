@@ -126,6 +126,7 @@
     <Compile Include="Src\WixDirectoryElementBase.cs" />
     <Compile Include="Src\WixBinaries.cs" />
     <Compile Include="Src\WixBinaryElement.cs" />
+    <Compile Include="Src\Gui\WixTreeNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="WixBinding.addin">

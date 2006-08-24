@@ -57,7 +57,7 @@ namespace WixBinding.Tests.PackageFiles
 		public void FileNameTooLong()
 		{
 			string name = "abcdefgh0.txt";
-			Assert.AreEqual("ABCDEF~1.TXT", ShortFileName.Convert(name));
+			Assert.AreEqual("ABCDEF_1.TXT", ShortFileName.Convert(name));
 		}
 		
 		[Test]
@@ -72,7 +72,7 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			string name = "abcdefghij.txt";
 			returnFileNameExistsCount = 1;
-			Assert.AreEqual("ABCDEF~2.TXT", ShortFileName.Convert(name, GetFileNameExists));
+			Assert.AreEqual("ABCDEF_2.TXT", ShortFileName.Convert(name, GetFileNameExists));
 		}
 		
 		[Test]
@@ -80,7 +80,7 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			string name = "abcdefghij.txt";
 			returnFileNameExistsCount = 9;
-			Assert.AreEqual("ABCDE~10.TXT", ShortFileName.Convert(name, GetFileNameExists));
+			Assert.AreEqual("ABCDE_10.TXT", ShortFileName.Convert(name, GetFileNameExists));
 		}
 		
 		[Test]
@@ -88,7 +88,7 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			string name = "abcdefghij.txt";
 			returnFileNameExistsCount = 99;
-			Assert.AreEqual("ABCD~100.TXT", ShortFileName.Convert(name, GetFileNameExists));
+			Assert.AreEqual("ABCD_100.TXT", ShortFileName.Convert(name, GetFileNameExists));
 		}
 
 		

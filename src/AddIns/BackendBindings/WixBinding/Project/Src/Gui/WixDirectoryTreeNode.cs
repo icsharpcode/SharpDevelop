@@ -21,6 +21,7 @@ namespace ICSharpCode.WixBinding
 			ContextmenuAddinTreePath = "/AddIns/WixBinding/PackageFilesView/ContextMenu/DirectoryTreeNode";
 			SetIcon(closedImage);
 			Refresh();
+			sortOrder = 0;
 		}	
 		
 		public override void Refresh()
