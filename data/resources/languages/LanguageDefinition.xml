@@ -8,7 +8,7 @@
 	<!--<Languages name="Chinese (BIG5)"                code="cn-big"   page=""  icon="chinalg.png" />-->
 	<Languages name="Chinese (GB)"                  code="cn-gb"    page=""  icon="chinalg.png" />
 	<Languages name="Czech"                         code="cz"       page=""  icon="czech.png" />
-	<!--<Languages name="Danish"                        code="dk"       page=""  icon="denmark.png" />-->
+	<Languages name="Danish"                        code="dk"       page=""  icon="denmark.png" />
 	<Languages name="Dutch"                         code="nl"       page=""  icon="netherlands.png" />
 	<!--<Languages name="Finnish"                       code="fi"       page=""  icon="finnish.png" />-->
 	<Languages name="French"                        code="fr"       page=""  icon="france.png" />

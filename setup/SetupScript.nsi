@@ -1,7 +1,7 @@
 !verbose 3
 
 !define PRODUCT_NAME "SharpDevelop2"
-!define PRODUCT_VERSION "2.0"
+!define PRODUCT_VERSION "2.0.1"
 !define PRODUCT_PUBLISHER "ic#code"
 !define PRODUCT_WEB_SITE "http://www.icsharpcode.net/opensource/sd/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\SharpDevelop.exe"
