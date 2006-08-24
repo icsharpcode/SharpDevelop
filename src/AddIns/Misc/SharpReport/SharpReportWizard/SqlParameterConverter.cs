@@ -54,8 +54,7 @@ namespace ReportGenerator
 				foreach (SharpQueryParameter par in tmp){
 					SqlParameter reportPar = new SqlParameter();
 					reportPar =  new SqlParameter (par.Name,
-					                               par.DataType,
-					                               null,
+					                               par.DataType,					                
 					                               String.Empty,
 					                               par.Type);
 					

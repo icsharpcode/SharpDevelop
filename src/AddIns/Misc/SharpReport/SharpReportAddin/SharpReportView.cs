@@ -280,7 +280,6 @@ namespace SharpReportAddin{
 		
 		
 		private void PreviewStandartReport(bool standAlone){
-
 			reportManager.ParametersRequest -= new EventHandler<SharpReportParametersEventArgs> (OnParametersRequest);
 			reportManager.ParametersRequest +=  new EventHandler<SharpReportParametersEventArgs>(OnParametersRequest);
 			

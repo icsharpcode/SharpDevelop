@@ -61,30 +61,33 @@ namespace SharpReportCore {
 		}
 		
 		#region ParameterHandling
-
-		private bool CheckReportParameters (ReportModel model,ReportParameters reportParameters) {
-			if (model.ReportSettings.ReportType != GlobalEnums.ReportTypeEnum.FormSheet) {
-				if (this.connectionObject == null) {
-					
-					if (!String.IsNullOrEmpty(model.ReportSettings.ConnectionString)) {
-						this.connectionObject = new ConnectionObject (model.ReportSettings.ConnectionString);
-					}
-					
-					if (reportParameters != null) {
-						this.connectionObject = reportParameters.ConnectionObject;
-					}
-					
-					if (this.connectionObject.Connection != null) {
-						return true;
-					} else {
-						throw new SharpReportException("SharpReportEngine:CheckReportParameters : No valid Connection");
-					}
+		
+		private void UpdateSqlParameters (ReportModel model,
+		                                  SqlParametersCollection sqlParameters) {
+			if (sqlParameters != null) {
+				foreach (SqlParameter sourcePar in sqlParameters) {
+					SqlParameter destinationPar = model.ReportSettings.SqlParametersCollection.Find(sourcePar.ParameterName);
+					destinationPar.ParameterValue = sourcePar.ParameterValue;
 				}
-			} else {
-				return true;
 			}
-			return false;
 		}
+		
+		private void CheckAllReportParameters (ReportModel model,
+		                                       ReportParameters reportParameters) {
+			
+			if (this.connectionObject == null) {
+				
+				if (!String.IsNullOrEmpty(model.ReportSettings.ConnectionString)) {
+					this.connectionObject = new ConnectionObject (model.ReportSettings.ConnectionString);
+				}
+			}
+			if (reportParameters != null) {
+				this.connectionObject = reportParameters.ConnectionObject;
+				UpdateSqlParameters (model,reportParameters.SqlParameters);
+			}
+			
+		}
+		
 		
 		
 		void GrapSqlParameters (ReportSettings settings) {
@@ -301,6 +304,7 @@ namespace SharpReportCore {
 				model = ModelFromFile (fileName);
 				ReportParameters pars = new ReportParameters();
 				pars.ConnectionObject = null;
+	
 				pars.SqlParameters.AddRange (model.ReportSettings.SqlParametersCollection);
 				return pars;
 			} catch (Exception) {
@@ -334,18 +338,18 @@ namespace SharpReportCore {
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
-
+			
 			ReportModel model = null;
 			AbstractRenderer renderer = null;
 			try {
 				
 				model = ModelFromFile (fileName);
-				if (CheckReportParameters (model,reportParameters)) {
-					renderer = SetupStandartRenderer (model);
-					if (renderer != null) {
-						PreviewControl.ShowPreview(renderer,1.5,false);
-					}
+				CheckAllReportParameters (model,reportParameters);
+				renderer = SetupStandartRenderer (model);
+				if (renderer != null) {
+					PreviewControl.ShowPreview(renderer,1.5,false);
 				}
+				
 			} catch (Exception) {
 				throw;
 			}
@@ -455,10 +459,10 @@ namespace SharpReportCore {
 			AbstractRenderer renderer = null;
 			try {
 				model = ModelFromFile (fileName);
-				if (CheckReportParameters (model,reportParameters)) {
-					renderer = SetupStandartRenderer (model);
-					SharpReportEngine.ReportToPrinter (renderer,model);
-				}
+				CheckAllReportParameters (model,reportParameters);
+				renderer = SetupStandartRenderer (model);
+				SharpReportEngine.ReportToPrinter (renderer,model);
+				
 			} catch (Exception) {
 				throw;
 			}

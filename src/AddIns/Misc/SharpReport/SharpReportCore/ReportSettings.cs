@@ -115,21 +115,36 @@ namespace SharpReportCore{
 		/// <param name="reader">See XMLFormReader</param>
 		/// <param name="parElement">XmlElement ReportParameter</param>
 		/// <param name="item"><see cref="ReportParameter"</param>
-		private static void BuildReportParameter(XmlFormReader reader,
-		                                  XmlElement parElement,
-		                                  SharpReportCore.AbstractParameter item) {
-			
+//		private static void BuildReportParameter(XmlFormReader reader,
+//		                                  XmlElement parElement,
+//		                                  SharpReportCore.AbstractParameter item) {
+//			
+//			XmlNodeList nodeList = parElement.ChildNodes;
+//			foreach (XmlNode node in nodeList) {
+//				XmlElement elem = node as XmlElement;
+//				if (elem != null) {
+//					if (elem.HasAttribute("value")) {
+//						reader.SetValue ((SqlParameter)item,elem.Name,elem.GetAttribute("value"));
+//					}
+//				}
+//			}
+//		}
+		
+		private static SqlParameter BuildReportParameter (XmlFormReader reader,
+		                                           XmlElement parElement) {
+			SqlParameter parameter = new SqlParameter();
 			XmlNodeList nodeList = parElement.ChildNodes;
 			foreach (XmlNode node in nodeList) {
 				XmlElement elem = node as XmlElement;
 				if (elem != null) {
 					if (elem.HasAttribute("value")) {
-						reader.SetValue ((SqlParameter)item,elem.Name,elem.GetAttribute("value"));
+						reader.SetValue (parameter,elem.Name,elem.GetAttribute("value"));
 					}
 				}
 			}
+			return parameter;
 		}
-		
+			
 		#endregion
 		
 		#region RestoreItems
@@ -191,15 +206,15 @@ namespace SharpReportCore{
 						foreach( XmlNode node in nodeList) {
 							XmlElement elem = node as XmlElement;
 							if (elem != null) {
-								SqlParameter parameter = new SqlParameter();
-								ReportSettings.BuildReportParameter (xmlReader,
-								                      elem,
-								                      parameter);
+								SqlParameter parameter = ReportSettings.BuildReportParameter (xmlReader,
+								                                                              elem);
+								
+								
 								reportParametersCollection.Add(parameter);
 							}
 						}
 						break;
-					}					
+					}
 			}
 		}
 		

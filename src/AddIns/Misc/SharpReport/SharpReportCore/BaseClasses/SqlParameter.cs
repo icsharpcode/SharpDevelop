@@ -41,23 +41,21 @@ namespace SharpReportCore {
 		
 		public SqlParameter(string parameterName,
 		                    DbType dataType,
-		                    object value)
-			:this(parameterName,dataType,value,String.Empty,ParameterDirection.Input){
+		                    object parameterValue)
+			:this(parameterName,dataType,parameterValue,ParameterDirection.Input){
 			
 		}
 		
 		
 		public SqlParameter(string parameterName,
 		                    DbType dataType,
-		                    object value,
-		                    string prompt,
+		                    object parameterValue,
 		                    ParameterDirection parameterDirection):base(){
-		
+			
 			base.ParameterName = parameterName;
 			this.DataType = dataType;
-//			base.DefaultValue = value;
-//			base.Nullable = false;
-//			base.Prompt = prompt;
+			this.parameterValue = parameterValue;
+
 			this.parameterDirection = parameterDirection;
 		}
 		

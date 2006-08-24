@@ -63,19 +63,15 @@ namespace SharpReport{
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.cancelButton = new System.Windows.Forms.Button();
 			this.okButton = new System.Windows.Forms.Button();
-			this.groupBox = new System.Windows.Forms.GroupBox();
-			this.label2 = new System.Windows.Forms.Label();
-			this.label1 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
 			this.tableLayoutPanel1.SuspendLayout();
-			this.groupBox.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// dataGrid1
 			// 
 			this.dataGrid1.DataMember = "";
 			this.dataGrid1.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-			this.dataGrid1.Location = new System.Drawing.Point(46, 87);
+			this.dataGrid1.Location = new System.Drawing.Point(48, 26);
 			this.dataGrid1.Name = "dataGrid1";
 			this.dataGrid1.Size = new System.Drawing.Size(363, 120);
 			this.dataGrid1.TabIndex = 1;
@@ -88,7 +84,7 @@ namespace SharpReport{
 			this.tableLayoutPanel1.Controls.Add(this.cancelButton, 1, 0);
 			this.tableLayoutPanel1.Controls.Add(this.okButton, 0, 0);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.tableLayoutPanel1.Location = new System.Drawing.Point(10, 233);
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(10, 175);
 			this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(10, 3, 10, 3);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			this.tableLayoutPanel1.RowCount = 1;
@@ -119,40 +115,13 @@ namespace SharpReport{
 			this.okButton.Text = "Ok";
 			this.okButton.UseVisualStyleBackColor = true;
 			// 
-			// groupBox
-			// 
-			this.groupBox.Controls.Add(this.label2);
-			this.groupBox.Controls.Add(this.label1);
-			this.groupBox.Location = new System.Drawing.Point(46, 13);
-			this.groupBox.Name = "groupBox";
-			this.groupBox.Size = new System.Drawing.Size(363, 56);
-			this.groupBox.TabIndex = 5;
-			this.groupBox.TabStop = false;
-			// 
-			// label2
-			// 
-			this.label2.Location = new System.Drawing.Point(109, 17);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(248, 17);
-			this.label2.TabIndex = 5;
-			this.label2.Text = "label2";
-			// 
-			// label1
-			// 
-			this.label1.Location = new System.Drawing.Point(6, 17);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(97, 17);
-			this.label1.TabIndex = 3;
-			this.label1.Text = "Stored Procedure:";
-			// 
 			// ParameterDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
-			this.ClientSize = new System.Drawing.Size(477, 273);
+			this.ClientSize = new System.Drawing.Size(477, 215);
 			this.ControlBox = false;
-			this.Controls.Add(this.groupBox);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Controls.Add(this.dataGrid1);
 			this.Name = "ParameterDialog";
@@ -162,15 +131,11 @@ namespace SharpReport{
 			this.Text = "ParameterDialog";
 			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
 			this.tableLayoutPanel1.ResumeLayout(false);
-			this.groupBox.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
-		private System.Windows.Forms.GroupBox groupBox;
-		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Button okButton;
 		private System.Windows.Forms.Button cancelButton;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.DataGrid dataGrid1;
 		#endregion
 	}

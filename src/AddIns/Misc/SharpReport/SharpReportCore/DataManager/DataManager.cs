@@ -215,7 +215,7 @@ namespace SharpReportCore {
 				// We have to check if there are parameters for this Query, if so
 				// add them to the command
 				
-				BuildQueryParameters(command,reportSettings);
+				BuildOleDbParameters(command,reportSettings.SqlParametersCollection);
 				
 				OleDbDataAdapter adapter = new OleDbDataAdapter(command);
 				
@@ -234,14 +234,12 @@ namespace SharpReportCore {
 		}
 		
 		
-		private static void BuildQueryParameters (OleDbCommand cmd,ReportSettings reportSettings) {
-			if (reportSettings.SqlParametersCollection != null && reportSettings.SqlParametersCollection.Count > 0) {
-				SqlParameter rpPar;
+		private static void BuildOleDbParameters (OleDbCommand cmd,SqlParametersCollection sqlParametersCollection) {
+			if (sqlParametersCollection != null && sqlParametersCollection.Count > 0) {
+
 				OleDbParameter oleDBPar = null;
 				
-				for (int i = 0;i < reportSettings.SqlParametersCollection.Count ; i++) {
-					rpPar  = (SqlParameter)reportSettings.SqlParametersCollection[i];
-
+				foreach (SqlParameter rpPar in  sqlParametersCollection) {
 					if (rpPar.DataType != System.Data.DbType.Binary) {
 						oleDBPar = new OleDbParameter(rpPar.ParameterName,
 						                              rpPar.DataType);
@@ -253,8 +251,8 @@ namespace SharpReportCore {
 					
 					oleDBPar.Direction = rpPar.ParameterDirection;
 					cmd.Parameters.Add(oleDBPar);
-					
 				}
+				
 			}
 		}
 		
