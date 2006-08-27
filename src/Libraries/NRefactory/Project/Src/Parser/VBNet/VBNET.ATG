@@ -2609,7 +2609,10 @@ ReDimClauseInternal<ref Expression expr>
 	")"
 	(.	expr = new InvocationExpression(expr, arguments);
 		if (canBeRedim == false || canBeNormal && (la.kind == Tokens.Dot || la.kind == Tokens.OpenParenthesis)) {
-			ReDimClauseInternal(ref expr);
+			if (this.Errors.Count == 0) {
+				// don't recurse on parse errors - could result in endless recursion
+				ReDimClauseInternal(ref expr);
+			}
 		}
 	.)
 .
