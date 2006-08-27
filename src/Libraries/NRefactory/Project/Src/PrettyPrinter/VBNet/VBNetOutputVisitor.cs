@@ -2321,10 +2321,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 		{
-			outputFormatter.PrintToken(Tokens.Default);
-			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			nodeTracker.TrackedVisit(defaultValueExpression.TypeReference, data);
-			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			// assigning nothing to a generic type in VB compiles to a DefaultValueExpression
+			outputFormatter.PrintToken(Tokens.Nothing);
 			return null;
 		}
 		
