@@ -442,7 +442,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (allowUntitledFiles) {
 					fileName = GenerateCurrentFileName();
 				} else {
-					fileName = ControlDictionary["fileNameTextBox"].Text;
+					fileName = ControlDictionary["fileNameTextBox"].Text.Trim();
+					if (!FileUtility.IsValidFileName(fileName)
+					    || fileName.IndexOf(Path.AltDirectorySeparatorChar) >= 0
+					    || fileName.IndexOf(Path.DirectorySeparatorChar) >= 0)
+					{
+						MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", fileName}}));
+						return;
+					}
 					if (Path.GetExtension(fileName).Length == 0) {
 						fileName += Path.GetExtension(item.Template.DefaultName);
 					}
