@@ -1,11 +1,12 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="none" email=""/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
+using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
@@ -22,6 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			SetupFromXmlResource("ProjectOptions.BuildEvents.xfrm");
 			
 			InitializeHelper();
+			baseDirectory = Path.GetDirectoryName(project.OutputAssemblyFullPath);
 			
 			ConnectBrowseButton("preBuildEventBrowseButton",
 			                    "preBuildEventTextBox",

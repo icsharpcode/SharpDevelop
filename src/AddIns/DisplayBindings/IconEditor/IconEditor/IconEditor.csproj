@@ -15,11 +15,13 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <PreBuildEvent>..\..\..\..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe</PreBuildEvent>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\IconEditor\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
-    <OutputPath>bin\Debug\</OutputPath>
     <Optimize>False</Optimize>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
@@ -29,7 +31,6 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
-    <OutputPath>bin\Release\</OutputPath>
     <Optimize>True</Optimize>
     <DefineConstants>TRACE</DefineConstants>
     <DebugSymbols>False</DebugSymbols>
