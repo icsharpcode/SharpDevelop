@@ -110,23 +110,13 @@ namespace ICSharpCode.FormsDesigner.Gui
 		protected override IComponent[] CreateComponentsCore(IDesignerHost host)
 		{
 			Init();
-			TypeResolutionService.AddAssemblyResolver();
-			try {
-				return base.CreateComponentsCore(host);
-			} finally {
-				TypeResolutionService.RemoveAssemblyResolver();
-			}
+			return base.CreateComponentsCore(host);
 		}
 		
 		protected override IComponent[] CreateComponentsCore(IDesignerHost host, System.Collections.IDictionary defaultValues)
 		{
 			Init();
-			TypeResolutionService.AddAssemblyResolver();
-			try {
-				return base.CreateComponentsCore(host, defaultValues);
-			} finally {
-				TypeResolutionService.RemoveAssemblyResolver();
-			}
+			return base.CreateComponentsCore(host, defaultValues);
 		}
 	}
 }

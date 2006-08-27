@@ -132,9 +132,7 @@ namespace ICSharpCode.FormsDesigner
 			designerResourceService.Host = Host;
 			
 			DesignerLoader designerLoader = loaderProvider.CreateLoader(generator);
-			TypeResolutionService.AddAssemblyResolver();
 			designSurface.BeginLoad(designerLoader);
-			TypeResolutionService.RemoveAssemblyResolver();
 			
 			generator.Attach(this);
 			

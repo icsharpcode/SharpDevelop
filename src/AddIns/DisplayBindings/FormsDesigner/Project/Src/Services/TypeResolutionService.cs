@@ -44,6 +44,9 @@ namespace ICSharpCode.FormsDesigner.Services
 			DesignerAssemblies.Add(ProjectContentRegistry.SystemAssembly);
 			DesignerAssemblies.Add(typeof(System.Drawing.Point).Assembly);
 			DesignerAssemblies.Add(typeof(System.Windows.Forms.Design.AnchorEditor).Assembly);
+			RegisterVSDesignerWorkaround();
+			AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolveEventHandler;
+			
 		}
 		
 		[System.Runtime.InteropServices.DllImport("kernel32.dll")]
@@ -224,15 +227,6 @@ namespace ICSharpCode.FormsDesigner.Services
 					}
 				}
 				
-				AddAssemblyResolver();
-				try {
-					asm.GetTypes(); // force loading references etc.
-				} catch {
-					// some assemblies cause strange exceptions in Reflection...
-				} finally {
-					RemoveAssemblyResolver();
-				}
-
 				lock (designerAssemblies) {
 					if (!designerAssemblies.Contains(asm))
 						designerAssemblies.Insert(0, asm);
@@ -426,17 +420,6 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 		}
 		#endregion
-		
-		public static void AddAssemblyResolver()
-		{
-			RegisterVSDesignerWorkaround();
-			AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolveEventHandler;
-		}
-		
-		public static void RemoveAssemblyResolver()
-		{
-			AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolveEventHandler;
-		}
 		
 		static Assembly AssemblyResolveEventHandler(object sender, ResolveEventArgs args)
 		{
