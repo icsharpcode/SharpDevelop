@@ -120,21 +120,24 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				
 				// filter 'illegal' chars from standard namespace
 				if (newProjectName != null && newProjectName.Length > 0) {
-					char ch = newProjectName[0];
-					// can only begin with a letter or '_'
-					if (!Char.IsLetter(ch)) {
-						standardNamespace.Append('_');
-					} else {
-						standardNamespace.Append(ch);
-					}
-					for (int i = 1; i < newProjectName.Length; ++i) {
-						ch = newProjectName[i];
-						// can only contain letters, digits or '_'
-						if (!Char.IsLetterOrDigit(ch) && ch != '.') {
-							standardNamespace.Append('_');
+					char ch = '.';
+					for (int i = 0; i < newProjectName.Length; ++i) {
+						if (ch == '.') {
+							// at beginning or after '.', only a letter or '_' is allowed
+							ch = newProjectName[i];
+							if (!Char.IsLetter(ch)) {
+								standardNamespace.Append('_');
+							} else {
+								standardNamespace.Append(ch);
+							}
 						} else {
-							standardNamespace.Append(ch);
-							
+							ch = newProjectName[i];
+							// can only contain letters, digits or '_'
+							if (!Char.IsLetterOrDigit(ch) && ch != '.') {
+								standardNamespace.Append('_');
+							} else {
+								standardNamespace.Append(ch);
+							}
 						}
 					}
 				}

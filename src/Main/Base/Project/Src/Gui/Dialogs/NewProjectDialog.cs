@@ -263,9 +263,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			}
 			
 			
-			string solution = ((TextBox)ControlDictionary["solutionNameTextBox"]).Text;
-			string name     = ((TextBox)ControlDictionary["nameTextBox"]).Text;
-			string location = ((TextBox)ControlDictionary["locationTextBox"]).Text;
+			string solution = ((TextBox)ControlDictionary["solutionNameTextBox"]).Text.Trim();
+			string name     = ((TextBox)ControlDictionary["nameTextBox"]).Text.Trim();
+			string location = ((TextBox)ControlDictionary["locationTextBox"]).Text.Trim();
 			if (!FileUtility.IsValidFileName(solution)
 			    || solution.IndexOf(Path.DirectorySeparatorChar) >= 0
 			    || solution.IndexOf(Path.AltDirectorySeparatorChar) >= 0
