@@ -29,9 +29,10 @@ namespace ICSharpCode.Svn
 			return new ICSharpCode.SharpDevelop.Gui.ISecondaryViewContent[] { new HistoryView(viewContent) };
 		}
 		
-		private class SvnHelper {
+		private static class SvnHelper {
 			// load NSvn.Core only when a directory actually contains the ".svn" folder
 			static Client client;
+			static bool firstSvnClientException = true;
 			
 			internal static bool IsVersionControlled(string fileName)
 			{
@@ -39,8 +40,17 @@ namespace ICSharpCode.Svn
 					LoggingService.Info("SVN: HistoryViewDisplayBinding initializes client");
 					client = new Client();
 				}
-				Status status = client.SingleStatus(Path.GetFullPath(fileName));
-				return status != null && status.Entry != null;
+				try {
+					Status status = client.SingleStatus(Path.GetFullPath(fileName));
+					return status != null && status.Entry != null;
+				} catch (SvnClientException ex) {
+					if (firstSvnClientException) {
+						firstSvnClientException = false;
+						MessageService.ShowWarning("An error occurred while getting the Subversion status: " + ex.Message);
+					} else {
+						LoggingService.Warn("Svn: IsVersionControlled Exception", ex);
+					}
+				}
 			}
 		}
 		
@@ -49,8 +59,10 @@ namespace ICSharpCode.Svn
 			if (content.IsUntitled || content.FileName == null || !File.Exists(content.FileName)) {
 				return false;
 			}
-			string svnDir = Path.Combine(Path.GetDirectoryName(content.FileName), ".svn");
-			if (!Directory.Exists(svnDir))
+			string baseDir = Path.GetDirectoryName(content.FileName);
+			string svnDir1 = Path.Combine(baseDir, ".svn");
+			string svnDir2 = Path.Combine(baseDir, "_svn");
+			if (!Directory.Exists(svnDir1) && !Directory.Exists(svnDir2))
 				return false;
 			return SvnHelper.IsVersionControlled(content.FileName);
 		}

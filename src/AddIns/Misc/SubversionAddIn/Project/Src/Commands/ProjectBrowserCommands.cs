@@ -135,7 +135,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			PropertyDictionary pd = SvnClient.Instance.Client.PropGet("svn:ignore", Path.GetDirectoryName(filename), Revision.Working, false);
+			PropertyDictionary pd = SvnClient.Instance.Client.PropGet("svn:ignore", Path.GetDirectoryName(filename), Revision.Working, Recurse.None);
 			if (pd != null) {
 				string shortFileName = Path.GetFileName(filename);
 				foreach (Property p in pd.Values) {
@@ -149,7 +149,7 @@ namespace ICSharpCode.Svn.Commands
 						}
 					}
 					SvnClient.Instance.Client.PropSet(new Property(p.Name, b.ToString()),
-					                                  Path.GetDirectoryName(filename), false);
+					                                  Path.GetDirectoryName(filename), Recurse.None);
 				}
 				MessageService.ShowMessage(shortFileName + " was removed from the ignore list.");
 				Callback();

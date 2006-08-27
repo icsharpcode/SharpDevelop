@@ -70,7 +70,7 @@ namespace ICSharpCode.Svn
 			                               fromRevision,
 			                               fileName,
 			                               toRevision,
-			                               false,
+			                               Recurse.None,
 			                               false,
 			                               true,
 			                               outStream,

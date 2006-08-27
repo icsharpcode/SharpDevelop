@@ -6,73 +6,24 @@
 	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.0  (Win32)">
 	<META NAME="AUTHOR" CONTENT="Daniel Grunwald">
 	<META NAME="CREATED" CONTENT="20051129;18411803">
-	<META NAME="CHANGED" CONTENT="20051129;18415575">
 </HEAD>
 <BODY LANG="en-US" DIR="LTR">
 <H1>Assembly Versioning in SharpDevelop</H1>
 <H2>How the versions are set</H2>
 <P>The assemblyInfo.cs files are updated by the tool
-&quot;UpdateAssemblyInfo&quot;. &quot;UpdateAssemblyInfo Startup&quot;
-runs as pre-compile target and always set's SharpDevelop.exe's
-revision to the subversion revision number. That number is displayed
-in the splash screen, error dialog and about dialog. 
+&quot;UpdateAssemblyInfo&quot;. UpdateAssemblyInfo
+runs as pre-compile target and always sets the number in GlobalAssemblyInfo.cs
+to the subversion revision number. That number is displayed
+in the splash screen, error dialog and about dialog.
+It is also used as assembly version.
 </P>
-<P>The libraries (Core, SharpDevelop, TextEditor, NRefactoring,
-Addins) however are a little different. Their assemblyinfos are not
-&quot;templated&quot; like the one in Startup, but directly included
-in the repository. However, we don't want to re-commit them on every
-commit. Therefore, the versioning is different. 
-</P>
-<P>&quot;ReleaseBuild.bat&quot; updates their AssemblyInfo, too; but
-the normal &quot;build.bat&quot; doesn't. In the repository, they are
-always included with the version number &quot;2.0.0.1&quot;. When
-doing a releasebuild, this version is replaced by the major version
-from Startup + the subversion revision number. (That means if you
-want to change from &quot;2.0.0.x&quot; to &quot;2.0.1.x&quot;, you
-only have to change Startup\AssemblyInfo.<B>template</B>) 
-</P>
-<P>If you now want to commit local repository changes, you have to
-revert the assembly infos back to &quot;2.0.0.1&quot; first. This is
-done by the file &quot;resetAssemblyInfo.bat&quot;. 
-</P>
-<P STYLE="margin-bottom: 0cm">So in conclusion, the assemblies are
-versioned like this: 
-</P>
-<TABLE CELLPADDING=2 CELLSPACING=2>
-	<TR>
-		<TH>
-			<P>&nbsp;</P>
-		</TH>
-		<TH>
-			<P>Debug</P>
-		</TH>
-		<TH>
-			<P>Release</P>
-		</TH>
-	</TR>
-	<TR>
-		<TH>
-			<P>SharpDevelop.exe</P>
-		</TH>
-		<TD>
-			<P>2.x.y.r</P>
-		</TD>
-		<TD>
-			<P>2.x.y.r</P>
-		</TD>
-	</TR>
-	<TR>
-		<TH>
-			<P>Libraries</P>
-		</TH>
-		<TD>
-			<P>2.x.0.1</P>
-		</TD>
-		<TD>
-			<P>2.x.y.r</P>
-		</TD>
-	</TR>
-</TABLE>
+<p>
+The revision number is retrieved by running a function in NSvn.Core.dll equivalent to "svn info"
+in the "src" folder.
+When this doesn't work (e.g. in an exported tree like the source code download on the build server), the
+content of the file src/REVISION is used as revision number.
+When even this fails, the revision '9999' is used.
+</p>
 <H2>Publisher Policy</H2>
 <P>While the assembly versioning schema is not so important inside
 SharpDevelop, it is important for 3rd party addins because the main
@@ -81,17 +32,24 @@ assembly compiled against a strong-named assembly can only be used
 with exactly the version of the library it was compiled with. 
 </P>
 <P>This means if a 3rd-party addin was compiled against version
-2.0.1.a, it cannot bind to version 2.0.1.b or 2.0.2.c; even if it
+2.1.0.a, it cannot bind to version 2.0.0.b or 2.0.1.c; even if it
 would run without problems. Therefore, SharpDevelop.exe.config
 contains binding redirects for the strong-named libraries that addins
 would want to reference. 
 </P>
-<P>The binding redirects always redirect from version 2.x.0.1 to the
-current version. That means 3rd-party addins must be compiled against
-a debug version of SharpDevelop (after executing
-&quot;resetAssemblyInfo.bat&quot;) and they will bind to every
-SharpDevelop version (and if the classes used by the addin stayed
-binary compatible, it will even run with every SharpDevelop version).
+<P>The binding redirects always redirect requests of a version in the range
+from some past version containing large breaking changes to the current version.
+We will not do such changes anymore after the first release candidate of a SharpDevelop version,
+so after the release of SharpDevelop x.y RC1, all future SharpDevelop x.y.*.* versions will be
+in large parts binary compatible.
+<br>
+For example, SharpDevevelop 2.1.0.1708 uses this redirection:</P>
+<pre>&lt;bindingRedirect oldVersion="2.1.0.1661-2.1.0.1708" newVersion="2.1.0.1708"/&gt;</pre>
+<P>
+That means if you want to release a 3rd-party AddIn (AddIn that is not shipped with SharpDevelop),
+compile it against the oldest SharpDevelop version you want your AddIn to run with.<br>
+An AddIn compiled against 2.1.0.1800 will run with 2.1.0.1801 (and hopefully even with 2.1.23.45678),
+but an AddIn compiled against 2.1.0.1801 will fail to load in SharpDevelop 2.1.0.1800.
 </P>
 </BODY>
 </HTML>

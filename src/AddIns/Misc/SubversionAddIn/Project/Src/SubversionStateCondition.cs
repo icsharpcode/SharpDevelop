@@ -95,7 +95,7 @@ namespace ICSharpCode.Svn
 			} else {
 				status = SvnClient.Instance.Client.SingleStatus(fileName).TextStatus.ToString();
 				if (status == "Unversioned") {
-					PropertyDictionary pd = SvnClient.Instance.Client.PropGet("svn:ignore", Path.GetDirectoryName(fileName), Revision.Working, false);
+					PropertyDictionary pd = SvnClient.Instance.Client.PropGet("svn:ignore", Path.GetDirectoryName(fileName), Revision.Working, Recurse.None);
 					if (pd != null) {
 						string shortFileName = Path.GetFileName(fileName);
 						foreach (Property p in pd.Values) {

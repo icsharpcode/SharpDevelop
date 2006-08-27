@@ -68,8 +68,6 @@ namespace UpdateAssemblyInfo
 			}
 		}
 		
-		static Regex BindingRedirect = new Regex(@"<bindingRedirect oldVersion=""2.0.0.1"" newVersion=""[\d\.]+""/>");
-		
 		static void UpdateRedirectionConfig(string fullVersionNumber)
 		{
 			string content;
@@ -101,12 +99,23 @@ namespace UpdateAssemblyInfo
 			using (StreamReader r = new StreamReader(templateFile)) {
 				string line;
 				while ((line = r.ReadLine()) != null) {
-					const string search = "string Version = \"";
+					string search = "string Major = \"";
 					int pos = line.IndexOf(search);
 					if (pos >= 0) {
 						int e = line.IndexOf('"', pos + search.Length + 1);
 						version = line.Substring(pos + search.Length, e - pos - search.Length);
-						break;
+					}
+					search = "string Minor = \"";
+					pos = line.IndexOf(search);
+					if (pos >= 0) {
+						int e = line.IndexOf('"', pos + search.Length + 1);
+						version = version + "." + line.Substring(pos + search.Length, e - pos - search.Length);
+					}
+					search = "string Build = \"";
+					pos = line.IndexOf(search);
+					if (pos >= 0) {
+						int e = line.IndexOf('"', pos + search.Length + 1);
+						version = version + "." + line.Substring(pos + search.Length, e - pos - search.Length);
 					}
 				}
 			}

@@ -11,6 +11,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using NSvn.Common;
 using NSvn.Core;
 
 namespace ICSharpCode.Svn.Commands
@@ -60,7 +61,7 @@ namespace ICSharpCode.Svn.Commands
 			try {
 				if (AddInOptions.AutomaticallyAddFiles) {
 					if (!CanBeVersionControlled(e.FileName)) return;
-					SvnClient.Instance.Client.Add(Path.GetFullPath(e.FileName), false);
+					SvnClient.Instance.Client.Add(Path.GetFullPath(e.FileName), Recurse.None);
 				}
 			} catch (Exception ex) {
 				MessageService.ShowError("File added exception: " + ex);
@@ -102,7 +103,7 @@ namespace ICSharpCode.Svn.Commands
 					case StatusKind.Replaced:
 						if (MessageService.AskQuestion("The file has local modifications. Do you really want to remove it?")) {
 							// modified files cannot be deleted, so we need to revert the changes first
-							SvnClient.Instance.Client.Revert(new string[] { fullName }, e.IsDirectory);
+							SvnClient.Instance.Client.Revert(new string[] { fullName }, e.IsDirectory ? Recurse.Full : Recurse.None);
 						} else {
 							e.Cancel = true;
 							return;
@@ -115,7 +116,7 @@ namespace ICSharpCode.Svn.Commands
 								return;
 							}
 						}
-						SvnClient.Instance.Client.Revert(new string[] { fullName }, e.IsDirectory);
+						SvnClient.Instance.Client.Revert(new string[] { fullName }, e.IsDirectory ? Recurse.Full : Recurse.None);
 						return;
 					default:
 						MessageService.ShowError("The file/directory cannot be removed because it is in subversion status '" + status.TextStatus + "'.");
@@ -152,7 +153,7 @@ namespace ICSharpCode.Svn.Commands
 						} else if (e.IsDirectory) {
 							goto default;
 						} else {
-							SvnClient.Instance.Client.Revert(new string[] { fullSource }, false);
+							SvnClient.Instance.Client.Revert(new string[] { fullSource }, Recurse.None);
 							FileService.FileRenamed += new AutoAddAfterRenameHelper(e).Renamed;
 						}
 						return;
@@ -186,7 +187,7 @@ namespace ICSharpCode.Svn.Commands
 					return;
 				if (args.SourceFile != e.SourceFile || args.TargetFile != e.TargetFile)
 					return;
-				SvnClient.Instance.Client.Add(e.TargetFile, false);
+				SvnClient.Instance.Client.Add(e.TargetFile, Recurse.None);
 			}
 		}
 	}

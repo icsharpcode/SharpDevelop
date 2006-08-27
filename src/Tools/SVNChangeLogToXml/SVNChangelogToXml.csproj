@@ -66,17 +66,16 @@
       <Link>LibAprUtil.Dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\LibDB42.dll">
-      <Link>LibDB42.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\msvcp70.dll">
       <Link>msvcp70.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\LibDB44.dll">
+      <Link>LibDB44.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\msvcr70.dll">
       <Link>msvcr70.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
