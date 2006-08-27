@@ -1,10 +1,130 @@
 ﻿<ChangeLog project="SharpDevelop">
+  <Change author="Daniel Grunwald" date="08/27/2006">Fixed SD2-917: Added project items not checked for illegal names</Change>
+  <Change author="Daniel Grunwald" date="08/27/2006">Fixed SD2-1018: Nameing projects with especial characters makes them unable to run.</Change>
+  <Change author="Daniel Grunwald" date="08/27/2006">Fixed SD2-1020: Nameing project folders with ';' makes the solution unable to run.</Change>
+  <Change author="Daniel Grunwald" date="08/27/2006">Fixed SD2-996: C# assigned generic variables not converted correctly to VB.</Change>
+  <Change author="Daniel Grunwald" date="08/27/2006">Fixed SD2-1021: Alias for namespaces not converted correctly between C#&lt;--&gt;VB.NET for base types.</Change>
+  <Change author="Daniel Grunwald" date="08/27/2006">Fixed SD2-1027: #Develop closes while typeing VB 'ReDim' statement.</Change>
+  <Change author="Daniel Grunwald" date="08/27/2006">Fixed SD2-1029: Clean build after deleting GlobalAssemblyInfo.cs fails</Change>
+  <Change author="Daniel Grunwald" date="08/27/2006">Applied forms designer assembly loading patch by Alex Prudkiy.</Change>
+  <Change author="Daniel Grunwald" date="08/27/2006">Add Notify Icon and Struct template by Justin Dearing.
+The resource file template now creates .resx files by default.</Change>
+  <Change author="Daniel Grunwald" date="08/27/2006">Fix build error.</Change>
+  <Change author="Daniel Grunwald" date="08/27/2006">Fixed SD2-1023: SharpDevelop.exe.config bindingRedirect contains question marks
+Update to new NSvn version (can now use Subversion 1.4 working copies)
+Update StringResources.</Change>
+  <Change author="Peter Forstmeier" date="08/24/2006">ColumnNodes in ReportExplorer can be DragDropped </Change>
+  <Change author="Matt Ward" date="08/24/2006">Added a new Wix based installer for SharpDevelop. Improved performance of Wix files tree view, it now only adds child nodes when a node is expanded. Short filename generator now uses underscore instead of the tilde character preventing candle compilation warnings. User friendly names displayed in Wix files tree view for special folders (e.g. Program Files).</Change>
+  <Change author="Peter Forstmeier" date="08/24/2006">Fixes from FxCop</Change>
+  <Change author="Peter Forstmeier" date="08/24/2006">Remove unused Reports</Change>
+  <Change author="Peter Forstmeier" date="08/24/2006">Update Examples Reports using StoredProcedures with Parameters (SQl Server + Northwind) added</Change>
+  <Change author="Peter Forstmeier" date="08/24/2006">Worked on ParameterHandling for StoredProcedures (SQl Server)</Change>
+  <Change author="Scott Ferrett" date="08/24/2006">#D core assemblies are only compatible with versions 1661 and later.</Change>
+  <Change author="Daniel Grunwald" date="08/24/2006">Update to Cecil 0.4.3.</Change>
+  <Change author="Daniel Grunwald" date="08/23/2006">SD2-1000: Deleting the ".." folder visible when the project contains incorrectly linked files deletes the whole parent directory</Change>
+  <Change author="David Srbecký" date="08/22/2006">Bugfix (Alex): pAppDomain can be null in NameChange callback</Change>
+  <Change author="Dickon Field" date="08/22/2006">minor changes to ensure that the user is prompted when an attempt it made to overwrite and existing local metadata file</Change>
+  <Change author="Daniel Grunwald" date="08/22/2006">C# parser bug: fixed arrays in unsafe structs are now parsed correctly
+XmlDoc.Load now does not throw an exception for invalid XML files.</Change>
+  <Change author="Scott Ferrett" date="08/22/2006">Allow lists of unknown items to be retrieved from the property service.</Change>
+  <Change author="Scott Ferrett" date="08/22/2006">Allow applications that use the SharpDevelop core to detect if the property service has been initialized, when there are no addins in the system.</Change>
+  <Change author="Scott Ferrett" date="08/22/2006">You could not include a partial XML file in an .addin file using the "Include" element</Change>
+  <Change author="Dickon Field" date="08/21/2006">ServerBrowserTool now shows meta data for db objects such as Tables, Procedures etc. Loading of metadata from files is now invoked from right click menu for each connection rather than at start up. Beware will overwrite saved metadata if SaveAll invoked while 'empty' DbModelInfos are loaded.</Change>
+  <Change author="Matt Ward" date="08/20/2006">Added a basic Wix directory, component and file editor - consists of a explorer-like tree view and property editor. Made the Wix project template more modular - separate files for the product, the user interface sequence, the component files and each dialog. Wix dialog designer can now find bitmap files defined in a different file to the dialog but part of the project.</Change>
+  <Change author="Dickon Field" date="08/15/2006">now has features: 1. can set/reset connection string for a connection, retrieve metadata, and save it, although it is not displayed in the UI. Beware! Metadata is currently unconstrained and consequently huge - a simple Oracle Express db is 67Mb of data in serialised xml form.</Change>
+  <Change author="Peter Forstmeier" date="08/14/2006">If a Report has no Data, SharpReport prints a message, this message can be set within the ReportSettings, so no localisation is needed.</Change>
+  <Change author="Dickon Field" date="08/13/2006">More wip: ServerBrowserTool now loads and displays basic DbModelInfos using user's home dir</Change>
+  <Change author="Peter Forstmeier" date="08/13/2006">Work on &lt;http://community.sharpdevelop.net/forums/thread/10479.aspx&gt; (Reports with StoredProcedures and Parameters), add a new Dialog for Parameter entry, did some refactoring to eleminate parts of SharpQuery</Change>
+  <Change author="Dickon Field" date="08/12/2006">Various fixes: can now add a ConnectionString to a DbModelInfo using the corresponding TreeNode, and SaveAll saves the content of each DbModelInfo to the user's home directory</Change>
+  <Change author="David Srbecký" date="08/10/2006">Show ToString() text in tooltip</Change>
+  <Change author="David Srbecký" date="08/10/2006">Moving functionality from NDebugger to Process - rewritten Debugger.AddIn to the process based model</Change>
+  <Change author="Matt Ward" date="08/10/2006">Currently selected xpath query result list item is highlighted in the XML editor. Fixed FileNotFound exception when running xpath queries on XMLSchema.xsd. Fixed exception that could occur when scrolling to the selected node when the XML had been removed.</Change>
+  <Change author="David Srbecký" date="08/10/2006">Moving functionality from NDebugger to Process - Debugger.Core compiles again</Change>
+  <Change author="David Srbecký" date="08/10/2006">Moving functionality from NDebugger to Process - added ManagedCallbackSwitch
+
+</Change>
+  <Change author="David Srbecký" date="08/10/2006">Moving functionality from NDebugger to Process - using ProcessEventArgs
+
+</Change>
+  <Change author="David Srbecký" date="08/10/2006">Moving functionality from NDebugger to Process - rename debugger to process</Change>
+  <Change author="David Srbecký" date="08/09/2006">Store PauseSession per process</Change>
+  <Change author="Dickon Field" date="08/09/2006">Further mods to ServerBrowserTool and ConnectionStringDefinitionDialog to enable attaching connection strings to logical database connections - not currently working</Change>
+  <Change author="Matt Ward" date="08/09/2006">Added Goto Definition support for an XML schema. XML editor now supports navigation points. Xml query history now set to 20 items.</Change>
+  <Change author="David Srbecký" date="08/09/2006">Added ExceptionThrown event; Some code moved to NDebugger.Pause</Change>
+  <Change author="Dickon Field" date="08/07/2006">additions to ServerBrowserTool and updates to ConnectionStringDefinitionDialog to modified connection string associated with a database connection</Change>
+  <Change author="David Srbecký" date="08/07/2006">Synchronous eval calls</Change>
+  <Change author="Matt Ward" date="08/07/2006">Changed the WiX project to use the OutputName MSBuild property as the .msi filename and not the project name to match how the WiX MSBuild tasks work.</Change>
+  <Change author="David Srbecký" date="08/07/2006">Caching of variables</Change>
+  <Change author="Peter Forstmeier" date="08/07/2006">Working on samples</Change>
+  <Change author="Peter Forstmeier" date="08/07/2006">Fixes from FxCop</Change>
+  <Change author="David Srbecký" date="08/06/2006">Eval derives from Variable</Change>
+  <Change author="Daniel Grunwald" date="08/06/2006">Fixed SD2-992: C# Interface public elements are converted to VB as Privates ones.
+Fixed default visibility of inner types.</Change>
+  <Change author="Daniel Grunwald" date="08/06/2006">"throw new" now only shows types deriving from Exception.</Change>
+  <Change author="Daniel Grunwald" date="08/06/2006">Fixed SD2-964: Public VB structure variables are recognized as private ones.</Change>
+  <Change author="Daniel Grunwald" date="08/06/2006">Fixed SD2-968: C# to VB conversion error for generic structures.</Change>
+  <Change author="Peter Forstmeier" date="08/06/2006">Work on ReportExplorer, fixes from FxCop</Change>
+  <Change author="Daniel Grunwald" date="08/06/2006">Fixed SD2-971: Correct VB arrays declaration and redim-statements are recognized as code errors.</Change>
+  <Change author="Daniel Grunwald" date="08/06/2006">Add LineCounter AddIn to samples.</Change>
+  <Change author="Dickon Field" date="08/06/2006">More WIP: addition of DbModelInfos to cache and refresh of ServerBrowserTool</Change>
+  <Change author="Daniel Grunwald" date="08/05/2006">Fixed code-completion bug (NullReferenceException) introduced in rev. 1661
+</Change>
+  <Change author="Daniel Grunwald" date="08/05/2006">Fix web reference unit tests by initializing the LanguageBindingService with dummy data.</Change>
+  <Change author="Daniel Grunwald" date="08/05/2006">Fixed code-completion unit tests.</Change>
+  <Change author="Daniel Grunwald" date="08/05/2006">Web references in Boo projects are now supported.</Change>
+  <Change author="Matt Ward" date="08/05/2006">Added an XPath Query pad - can be used to run xpaths on the active XML document and highlights the resulting matches.</Change>
+  <Change author="Daniel Grunwald" date="08/05/2006">Put ICSharpCode.SharpDevelop.Dom in a separate assembly.
+WorkbenchSingleton.SafeThreadCall is now a generic method to check that the types of the arguments match the parameter types expected by the delegate.</Change>
+  <Change author="Matt Ward" date="08/05/2006">Fixed null reference exception that occurred if the WiX dialog designer was switched to when no WiX project was open.</Change>
+  <Change author="David Srbecký" date="08/04/2006">Set Revision svn keyword; forgot to commit two files</Change>
+  <Change author="David Srbecký" date="08/04/2006">Created IMutable interface to propagate Changed event of variables</Change>
+  <Change author="Dickon Field" date="08/04/2006">More WIP - updates to DbModelInfo, DbModelInfoService and ServerBrowserTool</Change>
+  <Change author="David Srbecký" date="08/03/2006">Started getting of local variables for boo</Change>
+  <Change author="David Srbecký" date="08/03/2006">Added NewObjectEval; 
+Removed some eval events</Change>
+  <Change author="Peter Forstmeier" date="08/03/2006">Modify SharpReportAddin.csproj</Change>
+  <Change author="Peter Forstmeier" date="08/03/2006">Delete unused FieldsExplorer/FieldsExplorer.cs</Change>
+  <Change author="Peter Forstmeier" date="08/03/2006">Better usage for ReportExplorer</Change>
+  <Change author="Daniel Grunwald" date="08/02/2006">Fixed SD2-960: Rename file from class view does not update project</Change>
+  <Change author="Daniel Grunwald" date="08/02/2006">Fixed SD2-869: When opening a project with solution, ensure the solution contains the project</Change>
+  <Change author="Matt Ward" date="08/02/2006">The WiX controls sidetab now sets the hint path using the addinpath string parser property. Fixes the exception that occurred on opening the toolbox when SharpDevelop's working directory was not the bin folder.</Change>
+  <Change author="Daniel Grunwald" date="08/02/2006">Fixed SD2-963: Incorrect VB to C# convertion for public structure variables</Change>
+  <Change author="Daniel Grunwald" date="08/02/2006">Fixed SD2-967: Buffer convertion from C# to VB throws exception if C# code contains the 'fixed' keyword.</Change>
+  <Change author="Dickon Field" date="08/01/2006">added prototype classes for various node types that will make up the Database part of the ServerBrowserTool</Change>
+  <Change author="Dickon Field" date="08/01/2006">some updates to addin file, DbModelInfoService and ServerBrowserTool</Change>
+  <Change author="Daniel Grunwald" date="08/01/2006">Fixed SD2-904 by displaying an error message if a class contains multiple InitializeComponents methods.</Change>
+  <Change author="Daniel Grunwald" date="08/01/2006">Prevent fold markers from disappearing if they have no text (fixes SD2-977)</Change>
+  <Change author="Matt Ward" date="08/01/2006">File extensions that are to be opened in the XML Editor are now defined in the XmlEditor.addin file and not by the text editor library. This means that a user can add a new extension by editing the XmlEditor.addin file without needing to edit and recompile the text editor library.</Change>
+  <Change author="Christoph Wille" date="08/01/2006">#region formatting, fixes</Change>
+  <Change author="David Srbecký" date="08/01/2006">Propagate errors from VariableCollection indexer by exception</Change>
+  <Change author="David Srbecký" date="08/01/2006">Fixed setting of breakpoints for multiple appdomains</Change>
+  <Change author="David Srbecký" date="08/01/2006">Fixed setting of breakpoints in methods with compiler generated code</Change>
+  <Change author="Daniel Grunwald" date="07/31/2006">Add IconEditor AddIn (can currently only view icons, modifying them will be added later)
+Supported icon formats:
+- classic (AND mask + XOR mask)
+- XP (.bmp with embedded alpha channel)
+- Vista (Embedded .PNG files, high-resolution icons up to 256x256)
+The viewer also supports all the quirks I could find in my icon collection - 32x31 icons, monochrome icons with transparency, icons where color depth in IconHeader is wrong.</Change>
+  <Change author="Matt Ward" date="07/31/2006">Updated WixBinding - added a custom WiX project type (.wixproj) which uses MSBuild to create the installer, added a simple dialog designer, added a setup dialogs list pad, updated to WiX 2.0.4221. StringParser can now expand GUIDs. Added new DesignerSerializationService used by XmlDesignerLoader to fix SD2-599 - cut, copy and paste not working when designing XML forms.</Change>
+  <Change author="Daniel Grunwald" date="07/31/2006">Automatically create ICSharpCode.SharpDevelop.Sda.dll.config from app.template.config</Change>
+  <Change author="Daniel Grunwald" date="07/31/2006">Fix file headers: set svn:keywords=Revision on all files; apply file header to all files; make all files UTF-8.</Change>
+  <Change author="Christoph Wille" date="07/31/2006">Updated contributors list</Change>
+  <Change author="Dickon Field" date="07/30/2006">Minor change to DbModelInfoService</Change>
+  <Change author="Dickon Field" date="07/30/2006">More work in progress on DbModelInfo and ServerBrowserTool</Change>
+  <Change author="Dickon Field" date="07/30/2006">Added DbModelInfoFactory.cs</Change>
+  <Change author="David Srbecký" date="07/30/2006">Added some debugging info into debug tooltips</Change>
+  <Change author="Daniel Grunwald" date="07/30/2006">Make Consolas the default font on Vista.
+Allow runtime pad creation.
+Ad SharpDevelopInteraction example to SdaUser.</Change>
+  <Change author="Dickon Field" date="07/29/2006">settled on DataSet to represent connection and model info. removed ConnectionInfo</Change>
+  <Change author="Daniel Grunwald" date="07/29/2006">Add UpdateAssemblyInfo.exe.manifest - prevents UAC popups when compiling SharpDevelop on Vista</Change>
+  <Change author="David Alpert" date="07/29/2006">corrected spelling of my name ;-)</Change>
   <Change author="Daniel Grunwald" date="07/28/2006">Add ICSharpCode.SharpDevelop.Sda and SdaUser example application.</Change>
   <Change author="Peter Forstmeier" date="07/28/2006">Samples for IList as DataSource, EventLogger is a Report that shows dynamic use of images in a Report,ContributersList shows a couple of Contributers </Change>
   <Change author="Peter Forstmeier" date="07/28/2006">Iamges can be set/changed at runtime</Change>
   <Change author="Peter Forstmeier" date="07/27/2006">More fixes from FxCop</Change>
   <Change author="Peter Forstmeier" date="07/27/2006">Work on Collections as DataSource. Fixed some stuff from FxCop</Change>
-  <Change author="dickonfield" date="07/26/2006">work in progress - added more detail around connection, metadata and object view management</Change>
+  <Change author="Dickon Field" date="07/26/2006">work in progress - added more detail around connection, metadata and object view management</Change>
   <Change author="Daniel Grunwald" date="07/25/2006">Remove unnecessary usage of Assembly.GetEntryAssembly</Change>
   <Change author="Peter Forstmeier" date="07/24/2006">Fixed a problem with Fonts, make some changes from FxCop</Change>
   <Change author="Peter Forstmeier" date="07/24/2006">Update SharpReport Examples</Change>
@@ -32,9 +152,9 @@ Fixed SD2-907: static method level variables are not translated from VB to C#</C
   <Change author="Mathias Simmack" date="07/20/2006">uploaded a new version of my Help 2.0 register tool including its source</Change>
   <Change author="Daniel Grunwald" date="07/20/2006">Merged missing SharpReport resources from Corsavy.
 Fixed some bugs in code analysis-AddIn.</Change>
-  <Change author="dickonfield" date="07/19/2006">added addin file</Change>
+  <Change author="Dickon Field" date="07/19/2006">added addin file</Change>
   <Change author="Daniel Grunwald" date="07/19/2006">Add "Suppress message" command to FxCop warnings on the error list</Change>
-  <Change author="dickonfield" date="07/19/2006">Added SharpDbTools project to the SharpDevelop.sln</Change>
+  <Change author="Dickon Field" date="07/19/2006">Added SharpDbTools project to the SharpDevelop.sln</Change>
   <Change author="Daniel Grunwald" date="07/19/2006">Fixed some FxCop warnings in NRefactory.</Change>
   <Change author="Daniel Grunwald" date="07/19/2006">Fixed SD2-922: RegEx window not restoring its size after been maximized</Change>
   <Change author="David Srbecký" date="07/17/2006">Added Debugger.BooInterpreter</Change>
@@ -48,7 +168,7 @@ Main\Base\Test\Services_Navigation\NavigationServiceTestFixture.cs(115,52)
 Main\Base\Test\Services_Navigation\NavigationServiceTestFixture.cs(128,55)
 : error CS0117: 'ICSharpCode.Core.NavigationService' does not contain a definition for 'GetListOfPoints'
 </Change>
-  <Change author="dickonfield" date="07/16/2006" />
+  <Change author="Dickon Field" date="07/16/2006" />
   <Change author="Daniel Grunwald" date="07/16/2006">Allow AddIns to customize the MSBuild logger.</Change>
   <Change author="Daniel Grunwald" date="07/16/2006">Implemented SD2-572: Enum autocomplete</Change>
   <Change author="Daniel Grunwald" date="07/16/2006">Implemented SD2-446: Support skipping method bodies in VB Lexer.</Change>

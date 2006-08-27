@@ -72,10 +72,11 @@
     </Content>
     <Content Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\LibDB44.dll">
       <Link>LibDB44.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\msvcr70.dll">
       <Link>msvcr70.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
