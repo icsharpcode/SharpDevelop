@@ -100,19 +100,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		private class STAThreadCaller
 		{
-			delegate object PerformCallDelegate(object target, string methodName, object[] arguments);
-			
 			Control ctl;
-			PerformCallDelegate performCallDelegate;
-			
-			#if DEBUG
-			string callerStack;
-			#endif
 			
 			public STAThreadCaller(Control ctl)
 			{
 				this.ctl = ctl;
-				performCallDelegate = new PerformCallDelegate(DoPerformCall);
 			}
 			
 			public object Call(Delegate method, object[] arguments)
@@ -123,69 +115,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return ctl.Invoke(method, arguments);
 			}
 			
-			public object Call(object target, string methodName, object[] arguments)
-			{
-				if (target == null) {
-					throw new ArgumentNullException("target");
-				}
-				
-				#if DEBUG
-				callerStack = Environment.StackTrace;
-				#endif
-				
-				return ctl.Invoke(performCallDelegate, new object[] {target, methodName, arguments});
-			}
-			
 			public void BeginCall(Delegate method, object[] arguments)
 			{
 				if (method == null) {
 					throw new ArgumentNullException("method");
 				}
 				ctl.BeginInvoke(method, arguments);
-			}
-			
-			public void BeginCall(object target, string methodName, object[] arguments)
-			{
-				if (target == null) {
-					throw new ArgumentNullException("target");
-				}
-				
-				#if DEBUG
-				callerStack = Environment.StackTrace;
-				#endif
-				
-				ctl.BeginInvoke(performCallDelegate, new object[] {target, methodName, arguments});
-			}
-			
-			object DoPerformCall(object target, string methodName, object[] arguments)
-			{
-				MethodInfo methodInfo = null;
-				if (target is Type) {
-					methodInfo = ((Type)target).GetMethod(methodName, BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
-				} else {
-					methodInfo = target.GetType().GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-				}
-				
-				if (methodInfo == null) {
-					throw new System.ArgumentException("method not found : " + methodName);
-				} else {
-					try {
-						if (target is Type) {
-							return methodInfo.Invoke(null, arguments);
-						} else {
-							return methodInfo.Invoke(target, arguments);
-						}
-					} catch (Exception ex) {
-						if (ex is TargetInvocationException && ex.InnerException != null) {
-							ex = ex.InnerException;
-						}
-						MessageService.ShowError(ex, "Exception got.");
-						#if DEBUG
-						LoggingService.Info("Stacktrace of source thread:\n" + callerStack);
-						#endif
-					}
-				}
-				return null;
 			}
 		}
 		

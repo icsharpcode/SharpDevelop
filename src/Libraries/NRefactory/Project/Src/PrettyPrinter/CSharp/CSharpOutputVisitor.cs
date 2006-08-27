@@ -24,8 +24,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		CSharpOutputFormatter outputFormatter;
 		PrettyPrintOptions    prettyPrintOptions = new PrettyPrintOptions();
 		NodeTracker           nodeTracker;
-//		Stack<WithStatement> withExpressionStack = new Stack<WithStatement>();
-		Stack withExpressionStack = new Stack();
+		Stack<WithStatement> withExpressionStack = new Stack<WithStatement>();
+		bool printFullSystemType;
 		
 		public string Text {
 			get {
@@ -176,7 +176,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintText("?");
 			} else {
 				if (typeReference.SystemType.Length > 0) {
-					outputFormatter.PrintText(ConvertTypeString(typeReference.SystemType));
+					if (printFullSystemType) {
+						outputFormatter.PrintIdentifier(typeReference.SystemType);
+					} else {
+						outputFormatter.PrintText(ConvertTypeString(typeReference.SystemType));
+					}
 				} else {
 					outputFormatter.PrintText(typeReference.Type);
 				}
@@ -289,7 +293,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Assign);
 				outputFormatter.Space();
+				printFullSystemType = true;
 				nodeTracker.TrackedVisit(@using.Alias, data);
+				printFullSystemType = false;
 			}
 			
 			outputFormatter.PrintToken(Tokens.Semicolon);

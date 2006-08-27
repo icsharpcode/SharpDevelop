@@ -25,6 +25,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		VBNetPrettyPrintOptions prettyPrintOptions = new VBNetPrettyPrintOptions();
 		NodeTracker             nodeTracker;
 		TypeDeclaration         currentType;
+		bool printFullSystemType;
 		
 		Stack<int> exitTokenStack = new Stack<int>();
 		
@@ -152,6 +153,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			if (typeReference.Type == null || typeReference.Type.Length ==0) {
 				outputFormatter.PrintText("Void");
+			} else if (printFullSystemType) {
+				outputFormatter.PrintIdentifier(typeReference.SystemType);
 			} else {
 				string shortTypeName = ConvertTypeString(typeReference.SystemType);
 				if (shortTypeName != null) {
@@ -258,7 +261,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.Assign);
 					outputFormatter.Space();
+					printFullSystemType = true;
 					nodeTracker.TrackedVisit(((Using)usingDeclaration.Usings[i]).Alias, data);
+					printFullSystemType = false;
 				}
 				if (i + 1 < usingDeclaration.Usings.Count) {
 					outputFormatter.PrintToken(Tokens.Comma);

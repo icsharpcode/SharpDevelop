@@ -407,5 +407,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "\tProperty Name() As String\n" +
 			           "End Interface");
 		}
+				
+		[Test]
+		public void ImportAliasPrimitiveType()
+		{
+			TestProgram("using T = System.Boolean;", "Imports T = System.Boolean\r\n");
+		}
 	}
 }

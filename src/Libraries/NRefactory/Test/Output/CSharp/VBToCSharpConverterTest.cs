@@ -549,5 +549,11 @@ static int static_Test2_j = 0;");
 			           "\t}\n" +
 			           "}");
 		}
+		
+		[Test]
+		public void ImportAliasPrimitiveType()
+		{
+			TestProgram("Imports T = System.Boolean", "using T = System.Boolean;\r\n");
+		}
 	}
 }
