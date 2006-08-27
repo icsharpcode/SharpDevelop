@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected void SetupProject(string projectFileName)
 		{
 			this.FileName = Path.GetFullPath(projectFileName);
-			using (MSBuildFileReader reader = new MSBuildFileReader(projectFileName)) {
+			using (XmlTextReader reader = new XmlTextReader(projectFileName)) {
 				reader.WhitespaceHandling = WhitespaceHandling.Significant;
 				reader.Namespaces = false;
 				reader.MoveToContent(); // we have to skip over the XmlDeclaration (if it exists)
@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Project
 								ProjectItem.ReadItemGroup(reader, this, Items);
 								break;
 							case "Import":
-								string import = reader.GetAttribute("Project");
+								string import = ProjectItem.MSBuildUnescape(reader.GetAttribute("Project"));
 								Imports.Add(import);
 								break;
 							default:
@@ -124,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			string userSettingsFileName = projectFileName + ".user";
 			if (File.Exists(userSettingsFileName)) {
-				using (MSBuildFileReader reader = new MSBuildFileReader(userSettingsFileName)) {
+				using (XmlTextReader reader = new XmlTextReader(userSettingsFileName)) {
 					reader.WhitespaceHandling = WhitespaceHandling.Significant;
 					reader.Namespaces = false;
 					reader.MoveToContent(); // we have to skip over the XmlDeclaration (if it exists)
@@ -179,7 +179,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				Dictionary<string, PropertyGroup> configurations = isUserFile ? this.userConfigurations : this.configurations;
 				
 				string conditionProperty = match.Result("${property}");
-				string configuration = match.Result("${value}");
+				string configuration = ProjectItem.MSBuildUnescape(match.Result("${value}"));
 				if (conditionProperty == "$(Configuration)|$(Platform)") {
 					// configuration is ok
 				} else if (conditionProperty == "$(Configuration)") {
@@ -211,7 +211,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!System.IO.Directory.Exists(outputDirectory)) {
 				System.IO.Directory.CreateDirectory(outputDirectory);
 			}
-			using (MSBuildFileWriter writer = new MSBuildFileWriter(fileName, Encoding.UTF8)) {
+			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8)) {
 				writer.Formatting = Formatting.Indented;
 				writer.Namespaces = false;
 				
@@ -267,7 +267,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				foreach (string import in Imports) {
 					writer.WriteStartElement("Import");
-					writer.WriteAttributeString("Project", import);
+					writer.WriteAttributeString("Project", ProjectItem.MSBuildEscape(import));
 					writer.WriteEndElement();
 				}
 				
@@ -276,7 +276,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			string userSettingsFileName = fileName + ".user";
 			if (userConfigurations.Count > 0 || UserBaseConfiguration.PropertyCount > 0 || File.Exists(userSettingsFileName)) {
-				using (MSBuildFileWriter writer = new MSBuildFileWriter(userSettingsFileName, Encoding.UTF8)) {
+				using (XmlTextWriter writer = new XmlTextWriter(userSettingsFileName, Encoding.UTF8)) {
 					writer.Formatting = Formatting.Indented;
 					writer.Namespaces = false;
 					writer.WriteStartElement("Project");
@@ -290,7 +290,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static void SaveProperties(MSBuildFileWriter writer, PropertyGroup baseConfiguration, Dictionary<string, PropertyGroup> configurations)
+		static void SaveProperties(XmlWriter writer, PropertyGroup baseConfiguration, Dictionary<string, PropertyGroup> configurations)
 		{
 			if (baseConfiguration.PropertyCount > 0) {
 				writer.WriteStartElement("PropertyGroup");
@@ -304,22 +304,22 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				writer.WriteStartElement("PropertyGroup");
 				if (entry.Key.StartsWith("*|")) {
-					writer.WriteAttributeString("Condition", " '$(Platform)' == '" + entry.Key.Substring(2) + "' ");
+					writer.WriteAttributeString("Condition", " '$(Platform)' == '" + ProjectItem.MSBuildEscape(entry.Key.Substring(2)) + "' ");
 				} else if (entry.Key.EndsWith("|*")) {
-					writer.WriteAttributeString("Condition", " '$(Configuration)' == '" + entry.Key.Substring(0, entry.Key.Length - 2) + "' ");
+					writer.WriteAttributeString("Condition", " '$(Configuration)' == '" + ProjectItem.MSBuildEscape(entry.Key.Substring(0, entry.Key.Length - 2)) + "' ");
 				} else {
-					writer.WriteAttributeString("Condition", " '$(Configuration)|$(Platform)' == '" + entry.Key + "' ");
+					writer.WriteAttributeString("Condition", " '$(Configuration)|$(Platform)' == '" + ProjectItem.MSBuildEscape(entry.Key) + "' ");
 				}
 				entry.Value.WriteProperties(writer);
 				writer.WriteEndElement();
 			}
 		}
 		
-		static void SaveUnknownXmlSections(MSBuildFileWriter writer, List<string> unknownElements)
+		static void SaveUnknownXmlSections(XmlWriter writer, List<string> unknownElements)
 		{
 			foreach (string element in unknownElements) {
 				// round-trip xml text again for better formatting
-				MSBuildFileReader reader = new MSBuildFileReader(new StringReader(element));
+				XmlTextReader reader = new XmlTextReader(new StringReader(element));
 				writer.WriteNode(reader, false);
 				reader.Close();
 			}

@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.Globalization;
+using System.Text;
 using System.IO;
 using System.ComponentModel;
 using System.Collections.Generic;
@@ -138,10 +140,60 @@ namespace ICSharpCode.SharpDevelop.Project
 			                     Properties);
 		}
 		
+		public static string MSBuildEscape(string text)
+		{
+			StringBuilder b = null;
+			for (int i = 0; i < text.Length; i++) {
+				char c = text[i];
+				if (c == '%') {
+					if (b == null) b = new StringBuilder(text, 0, i, text.Length + 6);
+					b.Append("%25");
+				} else if (c == ';') {
+					if (b == null) b = new StringBuilder(text, 0, i, text.Length + 6);
+					b.Append("%3b");
+				} else {
+					if (b != null) {
+						b.Append(c);
+					}
+				}
+			}
+			if (b != null)
+				return b.ToString();
+			else
+				return text;
+		}
+		
+		public static string MSBuildUnescape(string text)
+		{
+			StringBuilder b = null;
+			for (int i = 0; i < text.Length; i++) {
+				char c = text[i];
+				if (c == '%' && i + 2 < text.Length) {
+					if (b == null) b = new StringBuilder(text, 0, i, text.Length + 6);
+					string a = text[i + 1].ToString() + text[i + 2].ToString();
+					int num;
+					if (int.TryParse(a, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out num)) {
+						b.Append((char)num);
+						i += 2;
+					} else {
+						b.Append('%');
+					}
+				} else {
+					if (b != null) {
+						b.Append(c);
+					}
+				}
+			}
+			if (b != null)
+				return b.ToString();
+			else
+				return text;
+		}
+		
 		public static ProjectItem ReadItem(XmlReader reader, IProject project, string itemType)
 		{
 			ProjectItem newItem = project != null ? project.CreateProjectItem(itemType) : ProjectItemFactory.CreateProjectItem(project, itemType);
-			newItem.Include  = reader.GetAttribute("Include");
+			newItem.Include = MSBuildUnescape(reader.GetAttribute("Include"));
 			if (!reader.IsEmptyElement) {
 				PropertyGroup.ReadProperties(reader, newItem.Properties, itemType);
 			}
@@ -152,12 +204,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		internal void WriteItem(XmlWriter writer)
 		{
 			writer.WriteStartElement(Tag);
-			writer.WriteAttributeString("Include", Include);
-			Properties.WriteProperties(writer);
+			writer.WriteAttributeString("Include", MSBuildEscape(Include));
+			this.Properties.WriteProperties(writer);
 			writer.WriteEndElement();
 		}
 		
-		internal static void ReadItemGroup(XmlTextReader reader, IProject project, List<ProjectItem> items)
+		internal static void ReadItemGroup(XmlReader reader, IProject project, List<ProjectItem> items)
 		{
 			if (reader.IsEmptyElement) {
 				return;

@@ -161,7 +161,7 @@ namespace ICSharpCode.SharpDevelop.Project
 								properties[propertyName] = null;
 								goto reLoop;
 							}
-							properties[propertyName] = reader.Value.Trim();
+							properties[propertyName] = ProjectItem.MSBuildUnescape(reader.Value.Trim());
 						}
 						break;
 				}
@@ -178,7 +178,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				
 				if (entry.Value != null) {
-					writer.WriteValue(entry.Value);
+					writer.WriteValue(ProjectItem.MSBuildEscape(entry.Value));
 				}
 				writer.WriteEndElement();
 			}

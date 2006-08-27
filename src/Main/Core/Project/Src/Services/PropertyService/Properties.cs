@@ -180,7 +180,7 @@ namespace ICSharpCode.Core
 			return l;
 		}
 		
-		public void WriteProperties(XmlTextWriter writer)
+		public void WriteProperties(XmlWriter writer)
 		{
 			foreach (KeyValuePair<string, object> entry in properties) {
 				object val = entry.Value;
@@ -206,7 +206,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		void WriteValue(XmlTextWriter writer, object val)
+		void WriteValue(XmlWriter writer, object val)
 		{
 			if (val != null) {
 				if (val is string) {

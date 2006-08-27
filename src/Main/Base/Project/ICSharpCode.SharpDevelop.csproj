@@ -646,7 +646,6 @@
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\OverrideCompletionDataProvider.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskView.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPad.cs" />
-    <Compile Include="Src\Project\MSBuildFile.cs" />
     <Compile Include="Src\Gui\FormLocationHelper.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AddWebReferenceDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\WebServicesView.cs" />
