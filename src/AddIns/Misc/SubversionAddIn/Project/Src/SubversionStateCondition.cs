@@ -25,15 +25,15 @@ namespace ICSharpCode.Svn
 		{
 			FileNode node = ProjectBrowserPad.Instance.SelectedNode as FileNode;
 			if (node != null) {
-				return RegisterEventsCommand.CanBeVersionControlled(node.FileName);
+				return RegisterEventsCommand.CanBeVersionControlledFile(node.FileName);
 			}
 			DirectoryNode dir = ProjectBrowserPad.Instance.SelectedNode as DirectoryNode;
 			if (dir != null) {
-				return Directory.Exists(Path.Combine(dir.Directory, ".svn"));
+				return Commands.RegisterEventsCommand.CanBeVersionControlledDirectory(dir.Directory);
 			}
 			SolutionNode sol = ProjectBrowserPad.Instance.SelectedNode as SolutionNode;
 			if (sol != null) {
-				return Directory.Exists(Path.Combine(sol.Solution.Directory, ".svn"));
+				return Commands.RegisterEventsCommand.CanBeVersionControlledDirectory(sol.Solution.Directory);
 			}
 			return false;
 		}

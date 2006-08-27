@@ -38,10 +38,14 @@ namespace ICSharpCode.Svn.Commands
 			node.AcceptVisitor(visitor, null);
 		}
 		
-		internal static bool CanBeVersionControlled(string fileName)
+		internal static bool CanBeVersionControlledFile(string fileName)
 		{
-			string svnDir = Path.Combine(Path.GetDirectoryName(fileName), ".svn");
-			return Directory.Exists(svnDir);
+			return CanBeVersionControlledDirectory(Path.GetDirectoryName(fileName));
+		}
+		
+		internal static bool CanBeVersionControlledDirectory(string directory)
+		{
+			return Directory.Exists(Path.Combine(directory, ".svn")) || Directory.Exists(Path.Combine(directory, "_svn"));
 		}
 		
 		void FileSaved(object sender, FileNameEventArgs e)
@@ -49,7 +53,7 @@ namespace ICSharpCode.Svn.Commands
 			ProjectBrowserPad pad = ProjectBrowserPad.Instance;
 			if (pad == null) return;
 			string fileName = e.FileName;
-			if (!CanBeVersionControlled(fileName)) return;
+			if (!CanBeVersionControlledFile(fileName)) return;
 			FileNode node = pad.ProjectBrowserControl.FindFileNode(fileName);
 			if (node == null) return;
 			OverlayIconManager.Enqueue(node);
@@ -60,7 +64,7 @@ namespace ICSharpCode.Svn.Commands
 		{
 			try {
 				if (AddInOptions.AutomaticallyAddFiles) {
-					if (!CanBeVersionControlled(e.FileName)) return;
+					if (!CanBeVersionControlledFile(e.FileName)) return;
 					SvnClient.Instance.Client.Add(Path.GetFullPath(e.FileName), Recurse.None);
 				}
 			} catch (Exception ex) {
@@ -72,7 +76,7 @@ namespace ICSharpCode.Svn.Commands
 		{
 			if (e.Cancel) return;
 			string fullName = Path.GetFullPath(e.FileName);
-			if (!CanBeVersionControlled(fullName)) return;
+			if (!CanBeVersionControlledFile(fullName)) return;
 			if (e.IsDirectory) {
 				// show "cannot delete directories" message even if
 				// AutomaticallyDeleteFiles (see below) is off!
@@ -134,7 +138,7 @@ namespace ICSharpCode.Svn.Commands
 		{
 			if (e.Cancel) return;
 			string fullSource = Path.GetFullPath(e.SourceFile);
-			if (!CanBeVersionControlled(fullSource)) return;
+			if (!CanBeVersionControlledFile(fullSource)) return;
 			try {
 				Status status = SvnClient.Instance.Client.SingleStatus(fullSource);
 				switch (status.TextStatus) {

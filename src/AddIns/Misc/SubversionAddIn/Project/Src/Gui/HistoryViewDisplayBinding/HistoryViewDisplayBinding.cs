@@ -34,6 +34,10 @@ namespace ICSharpCode.Svn
 			static Client client;
 			static bool firstSvnClientException = true;
 			
+			// prevent initialization of SvnHelper and therefore Client (and NSvn.Core.dll) unless it is
+			// really required
+			static SvnHelper() {}
+			
 			internal static bool IsVersionControlled(string fileName)
 			{
 				if (client == null) {
@@ -50,6 +54,7 @@ namespace ICSharpCode.Svn
 					} else {
 						LoggingService.Warn("Svn: IsVersionControlled Exception", ex);
 					}
+					return false;
 				}
 			}
 		}
@@ -59,12 +64,11 @@ namespace ICSharpCode.Svn
 			if (content.IsUntitled || content.FileName == null || !File.Exists(content.FileName)) {
 				return false;
 			}
-			string baseDir = Path.GetDirectoryName(content.FileName);
-			string svnDir1 = Path.Combine(baseDir, ".svn");
-			string svnDir2 = Path.Combine(baseDir, "_svn");
-			if (!Directory.Exists(svnDir1) && !Directory.Exists(svnDir2))
+			if (Commands.RegisterEventsCommand.CanBeVersionControlledFile(content.FileName)) {
+				return SvnHelper.IsVersionControlled(content.FileName);
+			} else {
 				return false;
-			return SvnHelper.IsVersionControlled(content.FileName);
+			}
 		}
 	}
 }

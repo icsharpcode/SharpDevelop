@@ -19,7 +19,7 @@ namespace ICSharpCode.Svn
 	{
 		public override object Visit(SolutionNode node, object data)
 		{
-			if (Directory.Exists(Path.Combine(node.Solution.Directory, ".svn"))) {
+			if (Commands.RegisterEventsCommand.CanBeVersionControlledDirectory(node.Solution.Directory)) {
 				OverlayIconManager.Enqueue(node);
 			}
 			return node.AcceptChildren(this, data);
@@ -32,7 +32,7 @@ namespace ICSharpCode.Svn
 		
 		public override object Visit(DirectoryNode node, object data)
 		{
-			if (Directory.Exists(Path.Combine(node.Directory, ".svn"))) {
+			if (Commands.RegisterEventsCommand.CanBeVersionControlledDirectory(node.Directory)) {
 				OverlayIconManager.Enqueue(node);
 				return node.AcceptChildren(this, data);
 			}
