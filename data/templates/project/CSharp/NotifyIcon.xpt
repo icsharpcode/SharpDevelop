@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<Template originator   = "Justin Dearing"
+          created      = "25/07/2006"
+          lastModified = "30/07/2006">
+    
+    <!-- Template Header -->
+    <TemplateConfiguration>
+        <Name>${res:Templates.Project.SysTrayIcon.Name}</Name>
+        <Category>C#</Category>
+        <Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
+        <Icon>C#.Project.Form</Icon>
+        <LanguageName>C#</LanguageName>
+        <Description>${res:Templates.Project.SysTrayIcon.Description}</Description>
+    </TemplateConfiguration>
+    
+    <!-- Actions -->
+    <Actions>
+        <Open filename = "SysTrayIcon.cs"/>
+    </Actions>
+    
+    <Combine name = "${ProjectName}" directory = ".">
+        <Options>
+            <StartupProject>${ProjectName}</StartupProject>
+        </Options>
+        
+        <Project name = "${ProjectName}" directory = ".">
+            <Options OutputType = "WinExe" />
+
+            <ProjectItems>
+                <Reference Include="System" />
+                <Reference Include="System.Data" />
+                <Reference Include="System.Drawing" />
+                <Reference Include="System.Windows.Forms" />
+                <Reference Include="System.Xml" />
+            </ProjectItems>
+            
+            <Files>
+        <File name="SysTrayIcon.cs" language="C#"><![CDATA[${StandardHeader.C#}
+using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Threading;
+using System.Windows.Forms;
+
+namespace ${StandardNamespace}
+{
+	public sealed class SysTrayIcon
+	{
+		private System.Windows.Forms.NotifyIcon trayIcon;
+		private System.Windows.Forms.ContextMenu sysTrayMenu;
+		
+		#region Initialize icon and menu
+		public SysTrayIcon()
+		{
+			trayIcon = new NotifyIcon();
+			sysTrayMenu = new ContextMenu(InitializeMenu());
+			
+			trayIcon.DoubleClick += TrayIconDoubleClick;
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SysTrayIcon));
+			trayIcon.Icon = (Icon)resources.GetObject("$this.Icon");
+			trayIcon.ContextMenu = sysTrayMenu;
+		}
+		
+		private MenuItem[] InitializeMenu()
+		{
+			MenuItem[] menu = new MenuItem[] {
+				new MenuItem("About", menuAboutClick),
+				new MenuItem("Exit", menuExitClick)
+			};
+			return menu;
+		}
+		#endregion
+		
+		#region Main - Program entry point
+		/// <summary>Program entry point.</summary>
+		/// <param name="args">Command Line Arguments</param>
+		[STAThread]
+		public static void Main(string[] args)
+		{
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+			
+			bool isFirstInstance;
+			// Please use a unique name for the mutex to prevent conflicts with other programs
+			using (Mutex mtx = new Mutex(true, "${StandardNamespace}", out isFirstInstance)) {
+				if (isFirstInstance) {
+					SysTrayIcon sysTrayIcon = new SysTrayIcon();
+					sysTrayIcon.trayIcon.Visible = true;
+					Application.Run();
+					sysTrayIcon.trayIcon.Dispose();
+				} else {
+					// The application is already running
+					
+				}
+			} // releases the Mutex
+		}
+		#endregion
+		
+		#region Event Handlers
+		private void menuAboutClick(object sender, EventArgs e)
+		{
+			MessageBox.Show("About This Application");
+		}
+		
+		private void menuExitClick(object sender, EventArgs e)
+		{
+			Application.Exit();
+		}
+		
+		private void TrayIconDoubleClick(object sender, EventArgs e)
+		{
+			MessageBox.Show("The icon was double clicked");
+		}
+		#endregion
+	}
+}
+]]>
+</File>
+        <File name="SysTrayIcon.resx" src="NotifyIconResources.resx" buildAction="EmbeddedResource" dependentUpon="SysTrayIcon.cs" />
+        <File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
+            </Files>
+        </Project>
+    </Combine>
+</Template>

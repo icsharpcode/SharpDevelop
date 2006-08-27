@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<Template author="Justin Dearing" version="1.1">
+	
+	<Config
+		  name        = "${res:Templates.File.EmptyStruct.Name}"
+		  icon        = "C#.File.NewClass"
+		  category    = "C#"
+		  defaultname = "Struct${Number}.cs"
+		  language    = "C#"/>
+	
+	<Description>${res:Templates.File.EmptyStruct.Description}</Description>
+	
+	<!--
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+		${ClassName}               -> Struct name (generally FileNameWithoutExtension w/o 'bad' characters)
+	 -->
+	<Files>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+
+using System;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of ${ClassName}.
+	/// </summary>
+	public struct ${ClassName} : IEquatable<${ClassName}>
+	{
+		int member; // this is just an example member, replace it with your own struct members!
+		
+		#region Equals and GetHashCode implementation
+		// The code in this region is useful if you want to use this structure in collections.
+		// If you don't need it, you can just remove the region and the ": IEquatable<${ClassName}>" declaration.
+		
+		public override bool Equals(object obj)
+		{
+			if (obj is ${ClassName})
+				return Equals((${ClassName})obj); // use Equals method below
+			else
+				return false;
+		}
+		
+		public bool Equals(${ClassName} other)
+		{
+			// add comparisions for all members here
+			return this.member == other.member;
+		}
+		
+		public override int GetHashCode()
+		{
+			// combine the hash codes of all members here (e.g. with XOR operator ^)
+			return member.GetHashCode();
+		}
+		
+		public static bool operator ==(${ClassName} lhs, ${ClassName} rhs)
+		{
+			return lhs.Equals(rhs);
+		}
+		
+		public static bool operator !=(${ClassName} lhs, ${ClassName} rhs)
+		{
+			return !(lhs.Equals(rhs)); // use operator == and negate result
+		}
+		#endregion
+	}
+}
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

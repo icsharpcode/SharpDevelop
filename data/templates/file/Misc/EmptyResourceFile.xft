@@ -5,7 +5,7 @@
 		  name        = "${res:Templates.File.Resource.EmptyResourceFile.Name}"
 		  icon        = "Icons.32x32.ResourceFileIcon"
 		  category    = "${res:Templates.File.Categories.Misc}"
-		  defaultname = "Resource${Number}.resources"
+		  defaultname = "Resource${Number}.resx"
 		  language    = "ResourceFiles"/>
 	 
 	<Description>${res:Templates.File.Resource.EmptyResourceFile.Description}</Description>
