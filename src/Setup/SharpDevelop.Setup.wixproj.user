@@ -1,0 +1,9 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SetupProductBuildVersion>1</SetupProductBuildVersion>
+    <SetupProductCodeGuid>A0AB2551-A579-42D3-9A90-D6424B3AC2CD</SetupProductCodeGuid>
+    <SetupPackageCodeGuid>DFC87BE9-A5A6-434D-97BA-F34BB1C1C1A7</SetupPackageCodeGuid>
+    <OutputName>SharpDevelop2_2.1.0.$(SetupProductBuildVersion)</OutputName>
+    <DefineConstants>PACKAGECODEGUID=$(SetupPackageCodeGuid);PRODUCTCODEGUID=$(SetupProductCodeGuid);PRODUCTBUILDVERSION=$(SetupProductBuildVersion)</DefineConstants>
+  </PropertyGroup>
+</Project>

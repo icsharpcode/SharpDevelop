@@ -8,7 +8,7 @@
 					<Directory Id="INSTALLDIR" Name="2.1">
 						<Directory Id="BinFolder" Name="bin">
 							<Component Id="SharpDevelopExe" Guid="F632C62C-A4DD-4507-9678-C7DCFF4DBC8C" DiskId="1">
-								<File Id="SharpDevelop.exe" Name="SharpDev.exe" LongName="SharpDevelop.exe" Source="..\..\bin\SharpDevelop.exe">
+								<File Id="SharpDevelop.exe" Name="SharpDev.exe" LongName="SharpDevelop.exe" Source="..\..\bin\SharpDevelop.exe" Assembly=".net" AssemblyApplication="SharpDevelop.exe" AssemblyManifest="SharpDevelop.exe" KeyPath="yes">
 									<!-- 
 										NGens SharpDevelop.exe. Needs the NetFx extension (WixNetFxExtension.dll),
  										library (netfx.wixlib) and custom actions (netfxca.dll).
@@ -108,20 +108,14 @@
 									</Extension>
 								</ProgId>
 							</Component>
-							<Component Id="SharpDevelopCoreFiles" Guid="E94FCC8C-9741-45EF-AFDA-9F9CF02BF3F7" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.Build.Tasks.dll" Name="ICBuild.dll" Id="ICSharpCode.Build.Tasks.dll" LongName="ICSharpCode.Build.Tasks.dll" />
-								<File Source="..\..\bin\ICSharpCode.Core.dll" Name="ICCore.DLL" Id="ICSharpCode.Core.dll" LongName="ICSharpCode.Core.dll" />
-								<File Source="..\..\bin\ICSharpCode.Core.xml" Name="ICCore.XML" Id="ICSharpCode.Core.xml" LongName="ICSharpCode.Core.xml" />
-								<File Source="..\..\bin\ICSharpCode.NRefactory.dll" Name="ICNef.DLL" Id="ICSharpCode.NRefactory.dll" LongName="ICSharpCode.NRefactory.dll" />
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.dll" Name="ICSharp.DLL" Id="ICSharpCode.SharpDevelop.dll" LongName="ICSharpCode.SharpDevelop.dll" />
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Dom.dll" Name="ICDom.DLL" Id="ICSharpCode.SharpDevelop.Dom.dll" LongName="ICSharpCode.SharpDevelop.Dom.dll" />
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll" Name="ICsda.dll" Id="ICSharpCode.SharpDevelop.Sda.dll" LongName="ICSharpCode.SharpDevelop.Sda.dll" />
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll.config" Name="ICSda.con" Id="ICSharpCode.SharpDevelop.Sda.dll.config" LongName="ICSharpCode.SharpDevelop.Sda.dll.config" />
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.xml" Name="ICSda.XML" Id="ICSharpCode.SharpDevelop.Sda.xml" LongName="ICSharpCode.SharpDevelop.Sda.xml" />
-								<File Source="..\..\bin\ICSharpCode.TextEditor.dll" Name="ICText.DLL" Id="ICSharpCode.TextEditor.dll" LongName="ICSharpCode.TextEditor.dll" />
-								<File Source="..\..\bin\log4net.dll" Name="log4net.dll" Id="log4net.dll" />
-								<File Source="..\..\bin\Mono.Cecil.dll" Name="cecil.DLL" Id="Mono.Cecil.dll" LongName="Mono.Cecil.dll" />
-								<File Source="..\..\bin\MonoReflectionLoader.dll" Name="monoref.DLL" Id="MonoReflectionLoader.dll" LongName="MonoReflectionLoader.dll" />
+							<Component Id="SharpDevelopExeFiles" Guid="B9427DC8-6C86-4D1A-B3DC-1B0E0F1F1DC1" DiskId="1">
+								<File Source="..\..\bin\SharpDevelop.exe.config" Name="sharpdev.con" Id="SharpDevelop.exe.config" LongName="SharpDevelop.exe.config" />
+								<File Source="..\..\bin\SharpDevelop.exe.manifest" Name="sharpdev.man" Id="SharpDevelop.exe.manifest" LongName="SharpDevelop.exe.manifest" />
+							</Component>
+							<Component Id="ICSharpCodeBuildTasksDll" Guid="E94FCC8C-9741-45EF-AFDA-9F9CF02BF3F7" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.Build.Tasks.dll" Name="ICBuild.dll" Id="ICSharpCode.Build.Tasks.dll" LongName="ICSharpCode.Build.Tasks.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Build.Tasks.dll" AssemblyManifest="ICSharpCode.Build.Tasks.dll" KeyPath="yes"/>
+							</Component>
+							<Component Id="BuildTasksTargetFiles" Guid="5BED648E-FF11-4E6A-A966-0901FA915BA8" DiskId="1">
 								<File Source="..\..\bin\SharpDevelop.Build.Common.targets" Name="Common.tgt" Id="SharpDevelop.Build.Common.targets" LongName="SharpDevelop.Build.Common.targets" />
 								<File Source="..\..\bin\SharpDevelop.Build.CSharp.targets" Name="CSharp.tgt" Id="SharpDevelop.Build.CSharp.targets" LongName="SharpDevelop.Build.CSharp.targets" />
 								<File Source="..\..\bin\SharpDevelop.Build.Mono.Gmcs.targets" Name="Gmcs.tgt" Id="SharpDevelop.Build.Mono.Gmcs.targets" LongName="SharpDevelop.Build.Mono.Gmcs.targets" />
@@ -130,75 +124,189 @@
 								<File Source="..\..\bin\SharpDevelop.Build.MSIL.targets" Name="Msil.tgt" Id="SharpDevelop.Build.MSIL.targets" LongName="SharpDevelop.Build.MSIL.targets" />
 								<File Source="..\..\bin\SharpDevelop.Build.VisualBasic.targets" Name="VB.tgt" Id="SharpDevelop.Build.VisualBasic.targets" LongName="SharpDevelop.Build.VisualBasic.targets" />
 								<File Source="..\..\bin\SharpDevelop.CodeAnalysis.targets" Name="analysis.tgt" Id="SharpDevelop.CodeAnalysis.targets" LongName="SharpDevelop.CodeAnalysis.targets" />
-								<File Source="..\..\bin\SharpDevelop.exe.config" Name="sharpdev.con" Id="SharpDevelop.exe.config" LongName="SharpDevelop.exe.config" />
-								<File Source="..\..\bin\SharpDevelop.exe.manifest" Name="sharpdev.man" Id="SharpDevelop.exe.manifest" LongName="SharpDevelop.exe.manifest" />
-								<File Source="..\..\bin\WeifenLuo.WinFormsUI.Docking.dll" Name="WEIFEN.DLL" Id="WeifenLuo.WinFormsUI.Docking.dll" LongName="WeifenLuo.WinFormsUI.Docking.dll" />
+							</Component>
+							<Component Id="ICSharpCodeCoreDll" Guid="DFD67330-0F6D-4069-9B03-90E2BB7B9273" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.Core.dll" Name="ICCore.DLL" Id="ICSharpCode.Core.dll" LongName="ICSharpCode.Core.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Core.dll" AssemblyManifest="ICSharpCode.Core.dll" KeyPath="yes"/>
+							</Component>
+							<Component Id="ICSharpCodeNRefactoryDll" Guid="53FE6482-01C2-45DE-9929-A84510CDF39C" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.NRefactory.dll" Name="ICNef.DLL" Id="ICSharpCode.NRefactory.dll" LongName="ICSharpCode.NRefactory.dll" Assembly=".net" AssemblyApplication="ICSharpCode.NRefactory.dll" AssemblyManifest="ICSharpCode.NRefactory.dll" KeyPath="yes"/>
+							</Component>
+							<Component Id="ICSharpCodeSharpDevelopDll" Guid="CC2E4AAB-58C0-40B7-B440-1D7F65EED379" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.SharpDevelop.dll" Name="ICSharp.DLL" Id="ICSharpCode.SharpDevelop.dll" LongName="ICSharpCode.SharpDevelop.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.dll" AssemblyManifest="ICSharpCode.SharpDevelop.dll" KeyPath="yes"/>
+							</Component>
+							<Component Id="ICSharpCodeSharpDevelopDomdll" Guid="3F7DB0E5-6755-419B-85E1-6A52372D25FA" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Dom.dll" Name="ICDom.DLL" Id="ICSharpCode.SharpDevelop.Dom.dll" LongName="ICSharpCode.SharpDevelop.Dom.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Dom.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Dom.dll" KeyPath="yes"/>
+							</Component>
+							<Component Id="ICSharpCodeSharpDevelopSdaFiles" Guid="12B16781-2FFE-4E80-A78E-73F1425991BF" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll" Name="ICsda.dll" Id="ICSharpCode.SharpDevelop.Sda.dll" LongName="ICSharpCode.SharpDevelop.Sda.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Sda.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Sda.dll" KeyPath="yes"/>
+								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll.config" Name="ICSda.con" Id="ICSharpCode.SharpDevelop.Sda.dll.config" LongName="ICSharpCode.SharpDevelop.Sda.dll.config" />
+							</Component>
+							<Component Id="ICSharpCodeTextEditorDll" Guid="E67D85A5-A891-4E61-9980-C1F1523C7972" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.TextEditor.dll" Name="ICText.DLL" Id="ICSharpCode.TextEditor.dll" LongName="ICSharpCode.TextEditor.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Sda.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Sda.dll" KeyPath="yes"/>
+							</Component>
+							<Component Id="log4netDll" Guid="0CE6ECAC-3C96-419E-9EA9-01F95C2C17BC" DiskId="1">
+								<File Source="..\..\bin\log4net.dll" Name="log4net.dll" Id="log4net.dll" Assembly=".net" AssemblyApplication="log4net.dll" AssemblyManifest="log4net.dll" KeyPath="yes"/>
+							</Component>
+							<Component Id="MonoCecilDll" Guid="F714FD47-9E0A-488F-8F44-11C0220721E3" DiskId="1">
+								<File Source="..\..\bin\Mono.Cecil.dll" Name="cecil.DLL" Id="Mono.Cecil.dll" LongName="Mono.Cecil.dll" Assembly=".net" AssemblyApplication="Mono.Cecil.dll" AssemblyManifest="Mono.Cecil.dll" KeyPath="yes"/>
+							</Component>
+							<Component Id="MonoReflectionLoaderDll" Guid="00076C86-4CBA-4359-AEC3-85DFA054A69E" DiskId="1">
+								<File Source="..\..\bin\MonoReflectionLoader.dll" Name="monoref.DLL" Id="MonoReflectionLoader.dll" LongName="MonoReflectionLoader.dll" Assembly=".net" AssemblyApplication="MonoReflectionLoader.dll" AssemblyManifest="MonoReflectionLoader.dll" KeyPath="yes"/>
+							</Component>
+							<Component Id="WeifenLuoWinFormsUIDockingDll" Guid="AB160125-2828-434E-8810-BE642A77B0E5" DiskId="1">
+								<File Source="..\..\bin\WeifenLuo.WinFormsUI.Docking.dll" Name="WEIFEN.DLL" Id="WeifenLuo.WinFormsUI.Docking.dll" LongName="WeifenLuo.WinFormsUI.Docking.dll" Assembly=".net" AssemblyApplication="WeifenLuo.WinFormsUI.Docking.dll" AssemblyManifest="WeifenLuo.WinFormsUI.Docking.dll" KeyPath="yes"/>
 							</Component>
 							<Directory Id="ToolsFolder" Name="Tools">
 								<Directory Id="ComponentInspectorFolder" LongName="ComponentInspector" Name="CompInsp">
-									<Component Guid="E4175768-82FD-45F4-8E7D-BB4031E97454" Id="ComponentInspectorFiles" DiskId="1">
-										<File Source="..\..\bin\Tools\ComponentInspector\ComponentInspector.Core.dll" Name="cicore.dll" Id="Tools.ComponentInspector.Core.dll" LongName="ComponentInspector.Core.dll" />
-										<File Source="..\..\bin\Tools\ComponentInspector\ComponentInspector.exe" Name="compinsp.exe" Id="ComponentInspector.exe" LongName="ComponentInspector.exe" />
+									<Component Guid="E4175768-82FD-45F4-8E7D-BB4031E97454" Id="ComponentInspectorCoreDll" DiskId="1">
+										<File Source="..\..\bin\Tools\ComponentInspector\ComponentInspector.Core.dll" Name="cicore.dll" Id="Tools.ComponentInspector.Core.dll" LongName="ComponentInspector.Core.dll" Assembly=".net" AssemblyApplication="Tools.ComponentInspector.Core.dll" AssemblyManifest="Tools.ComponentInspector.Core.dll" KeyPath="yes" />
+									</Component>
+									<Component Guid="59BEBE19-6AF1-4557-88C5-ED0B935EAE1C" Id="ComponentInspectorExe" DiskId="1">
+										<File Source="..\..\bin\Tools\ComponentInspector\ComponentInspector.exe" Name="compinsp.exe" Id="ComponentInspector.exe" LongName="ComponentInspector.exe" Assembly=".net" AssemblyApplication="ComponentInspector.exe" AssemblyManifest="ComponentInspector.exe" KeyPath="yes" />
 										<File Source="..\..\bin\Tools\ComponentInspector\ComponentInspector.exe.config" Name="compinsp.cfg" Id="ComponentInspector.exe.config" LongName="ComponentInspector.exe.config" />
-										<File Source="..\..\bin\Tools\ComponentInspector\ICSharpCode.Core.dll" Name="icscore.dll" Id="ComponentInspector.ICSharpCode.Core.dll" LongName="ICSharpCode.Core.dll" />
-										<File Source="..\..\bin\Tools\ComponentInspector\log4net.dll" Name="log4net.dll" Id="ComponentInspector.log4net.dll" />
+									</Component>
+									<Component Guid="F2643529-834A-4EDE-B0C2-36E0A031E997" Id="ComponentInspectorICSharpCodeCoreDll" DiskId="1">
+										<File Source="..\..\bin\Tools\ComponentInspector\ICSharpCode.Core.dll" Name="icscore.dll" Id="ComponentInspector.ICSharpCode.Core.dll" LongName="ICSharpCode.Core.dll" Assembly=".net" AssemblyApplication="ComponentInspector.ICSharpCode.Core.dll" AssemblyManifest="ComponentInspector.ICSharpCode.Core.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="ComponentInspectorLog4NetDll" Guid="56394DB5-3D3A-47ED-B99A-24AB2D0C5E88" DiskId="1">
+										<File Source="..\..\bin\Tools\ComponentInspector\log4net.dll" Name="log4net.dll" Id="ComponentInspector.log4net.dll" Assembly=".net" AssemblyApplication="ComponentInspector.log4net.dll" AssemblyManifest="ComponentInspector.log4net.dll" KeyPath="yes"/>
 									</Component>
 								</Directory>
 								<Directory Id="NDocFolder" Name="NDoc">
-									<Component Guid="9949F648-9A56-44FF-830A-84E69067960A" Id="NDocFiles" DiskId="1">
+									<Component Guid="9949F648-9A56-44FF-830A-84E69067960A" Id="NDocMSHelpCompilerDll" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\Interop.MSHelpCompiler.dll" Name="imshc.dll" Id="Interop.MSHelpCompiler.dll" LongName="Interop.MSHelpCompiler.dll" Assembly=".net" AssemblyApplication="Interop.MSHelpCompiler.dll" AssemblyManifest="Interop.MSHelpCompiler.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NDocCoreDll" Guid="BF737A93-534B-4F21-9D61-26429397E6C5" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\NDoc.Core.dll" Name="ndcore.dll" Id="NDoc.Core.dll" LongName="NDoc.Core.dll" Assembly=".net" AssemblyApplication="NDoc.Core.dll" AssemblyManifest="NDoc.Core.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NDocDocumenterIntellisenseDll" Guid="A7AF6CA5-5212-4C6C-9A64-C8A0896C1B8B" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Intellisense.dll" Name="nddi.dll" Id="NDoc.Documenter.Intellisense.dll" LongName="NDoc.Documenter.Intellisense.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.Intellisense.dll" AssemblyManifest="NDoc.Documenter.Intellisense.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NDocDocumenterJavaDocDll" Guid="D0DEBB76-B53B-4370-BB35-379202F06E02" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.JavaDoc.dll" Name="ndjd.dll" Id="NDoc.Documenter.JavaDoc.dll" LongName="NDoc.Documenter.JavaDoc.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.JavaDoc.dll" AssemblyManifest="NDoc.Documenter.JavaDoc.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NDocDocumenterLatexDll" Guid="D109A803-9057-4763-AFC0-FC86E3297D41" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Latex.dll" Name="nddl.dll" Id="NDoc.Documenter.Latex.dll" LongName="NDoc.Documenter.Latex.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.Latex.dll" AssemblyManifest="NDoc.Documenter.Latex.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NDocDocumenterLinearHtmlDll" Guid="FF26AE7B-72C9-4C95-A6D7-2C2967FB32FF" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.LinearHtml.dll" Name="nddlh.dll" Id="NDoc.Documenter.LinearHtml.dll" LongName="NDoc.Documenter.LinearHtml.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.LinearHtml.dll" AssemblyManifest="NDoc.Documenter.LinearHtml.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NDocDocumenterMsdn2Dll" Guid="C95C3278-EF9E-4633-A6D4-A530925A9F4C" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Msdn2.dll" Name="nddm2.dll" Id="NDoc.Documenter.Msdn2.dll" LongName="NDoc.Documenter.Msdn2.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.Msdn2.dll" AssemblyManifest="NDoc.Documenter.Msdn2.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NDocDocumenterMsdnDll" Guid="0DB24405-64BD-4DC6-8072-14F4A88EB27E" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Msdn.dll" Name="nddm.dll" Id="NDoc.Documenter.Msdn.dll" LongName="NDoc.Documenter.Msdn.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.Msdn.dll" AssemblyManifest="NDoc.Documenter.Msdn.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NDocDocumenterNativeHtmlHelp2Dll" Guid="D25910E9-A585-4CE8-8CB6-FAB47DF959F5" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.NativeHtmlHelp2.dll" Name="nddnhh.dll" Id="NDoc.Documenter.NativeHtmlHelp2.dll" LongName="NDoc.Documenter.NativeHtmlHelp2.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.NativeHtmlHelp2.dll" AssemblyManifest="NDoc.Documenter.NativeHtmlHelp2.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NDocDocumenterXmlDll" Guid="CAAAA822-BD7C-405D-A836-D51D824E1924" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Xml.dll" Name="nddx.dll" Id="NDoc.Documenter.Xml.dll" LongName="NDoc.Documenter.Xml.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.Xml.dll" AssemblyManifest="NDoc.Documenter.Xml.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NDocExtendedUIDll" Guid="6F87B911-E2B9-4250-97EC-C1FBF0CF6F04" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\NDoc.ExtendedUI.dll" Name="dneui.dll" Id="NDoc.ExtendedUI.dll" LongName="NDoc.ExtendedUI.dll" Assembly=".net" AssemblyApplication="NDoc.ExtendedUI.dll" AssemblyManifest="NDoc.ExtendedUI.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NDocVisualStudioDll" Guid="51657055-2768-431C-971C-A1D6476CF5B6" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\NDoc.VisualStudio.dll" Name="ndvs.dll" Id="NDoc.VisualStudio.dll" LongName="NDoc.VisualStudio.dll" Assembly=".net" AssemblyApplication="NDoc.VisualStudio.dll" AssemblyManifest="NDoc.VisualStudio.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NDocConsoleExe" Guid="BC452BE8-85F2-4FED-9F25-8D6ABCA0660D" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\NDocConsole.exe" Name="ndcons.exe" Id="NDocConsole.exe" LongName="NDocConsole.exe" Assembly=".net" AssemblyApplication="NDocConsole.exe" AssemblyManifest="NDocConsole.exe" KeyPath="yes" />
+									</Component>
+									<Component Id="NDocGuiExe" Guid="6B6B1B57-EA70-40F0-9415-DD50D77D9F20" DiskId="1">
+										<File Source="..\..\bin\Tools\NDoc\NDocGui.exe" Name="NDocGui.exe" Id="NDocGui.exe" Assembly=".net" AssemblyApplication="NDocGui.exe" AssemblyManifest="NDocGui.exe" KeyPath="yes" />
 										<File Source="..\..\bin\Tools\NDoc\NDocGui.exe.manifest" Name="ndgui.man" Id="NDocGui.exe.manifest" LongName="NDocGui.exe.manifest" />
-										<File Source="..\..\bin\Tools\NDoc\Interop.MSHelpCompiler.dll" Name="imshc.dll" Id="Interop.MSHelpCompiler.dll" LongName="Interop.MSHelpCompiler.dll" />
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Core.dll" Name="ndcore.dll" Id="NDoc.Core.dll" LongName="NDoc.Core.dll" />
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Intellisense.dll" Name="nddi.dll" Id="NDoc.Documenter.Intellisense.dll" LongName="NDoc.Documenter.Intellisense.dll" />
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.JavaDoc.dll" Name="ndjd.dll" Id="NDoc.Documenter.JavaDoc.dll" LongName="NDoc.Documenter.JavaDoc.dll" />
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Latex.dll" Name="nddl.dll" Id="NDoc.Documenter.Latex.dll" LongName="NDoc.Documenter.Latex.dll" />
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.LinearHtml.dll" Name="nddlh.dll" Id="NDoc.Documenter.LinearHtml.dll" LongName="NDoc.Documenter.LinearHtml.dll" />
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Msdn2.dll" Name="nddm2.dll" Id="NDoc.Documenter.Msdn2.dll" LongName="NDoc.Documenter.Msdn2.dll" />
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Msdn.dll" Name="nddm.dll" Id="NDoc.Documenter.Msdn.dll" LongName="NDoc.Documenter.Msdn.dll" />
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.NativeHtmlHelp2.dll" Name="nddnhh.dll" Id="NDoc.Documenter.NativeHtmlHelp2.dll" LongName="NDoc.Documenter.NativeHtmlHelp2.dll" />
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Xml.dll" Name="nddx.dll" Id="NDoc.Documenter.Xml.dll" LongName="NDoc.Documenter.Xml.dll" />
-										<File Source="..\..\bin\Tools\NDoc\NDoc.ExtendedUI.dll" Name="dneui.dll" Id="NDoc.ExtendedUI.dll" LongName="NDoc.ExtendedUI.dll" />
-										<File Source="..\..\bin\Tools\NDoc\NDoc.VisualStudio.dll" Name="ndvs.dll" Id="NDoc.VisualStudio.dll" LongName="NDoc.VisualStudio.dll" />
-										<File Source="..\..\bin\Tools\NDoc\NDocConsole.exe" Name="ndcons.exe" Id="NDocConsole.exe" LongName="NDocConsole.exe" />
-										<File Source="..\..\bin\Tools\NDoc\NDocGui.exe" Name="NDocGui.exe" Id="NDocGui.exe" />
 									</Component>
 								</Directory>
 								<Directory Id="WixFolder" Name="Wix">
-									<Component Guid="78F8DB04-62B1-4A2F-A0D5-D8D890FE5D02" Id="WixFiles" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixVSExtension.dll" Name="WIXVSE_1.DLL" Id="WixVSExtension.dll" LongName="WixVSExtension.dll" />
-										<File Source="..\..\bin\Tools\Wix\candle.exe" Name="candle.exe" Id="candle.exe" />
+									<Component Guid="78F8DB04-62B1-4A2F-A0D5-D8D890FE5D02" Id="WixVSExtension" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\WixVSExtension.dll" Name="WIXVSE_1.DLL" Id="WixVSExtension.dll" LongName="WixVSExtension.dll" Assembly=".net" AssemblyApplication="WixVSExtension.dll" AssemblyManifest="WixVSExtension.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="CandleExe" Guid="F76A6F0B-FE35-428A-9DFA-ED1BEB5322AF" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\candle.exe" Name="candle.exe" Id="candle.exe" Assembly=".net" AssemblyApplication="candle.exe" AssemblyManifest="candle.exe" KeyPath="yes" />
 										<File Source="..\..\bin\Tools\Wix\candle.exe.config" Name="CANDLE_1.CON" Id="candle.exe.config" LongName="candle.exe.config" />
+									</Component>
+									<Component Id="WixLicenseFiles" Guid="35784338-0E6A-4046-A82F-79BCE7549F08" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\CPL.TXT" Name="CPL.TXT" Id="CPL.TXT" />
-										<File Source="..\..\bin\Tools\Wix\dark.exe" Name="dark.exe" Id="dark.exe" />
-										<File Source="..\..\bin\Tools\Wix\dark.exe.config" Name="DARKEXE.CON" Id="dark.exe.config" LongName="dark.exe.config" />
 										<File Source="..\..\bin\Tools\Wix\License.rtf" Name="License.rtf" Id="License.rtf" />
-										<File Source="..\..\bin\Tools\Wix\light.exe" Name="light.exe" Id="light.exe" />
+									</Component>
+									<Component Id="DarkExe" Guid="45BAAB13-6E19-42DA-80BE-8C44EAD8A24E" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\dark.exe" Name="dark.exe" Id="dark.exe" Assembly=".net" AssemblyApplication="dark.exe" AssemblyManifest="dark.exe" KeyPath="yes" />
+										<File Source="..\..\bin\Tools\Wix\dark.exe.config" Name="DARKEXE.CON" Id="dark.exe.config" LongName="dark.exe.config" />
+									</Component>
+									<Component Id="LightExe" Guid="FFC7503F-A9BC-484C-BA88-4C0F700329DE" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\light.exe" Name="light.exe" Id="light.exe" Assembly=".net" AssemblyApplication="light.exe" AssemblyManifest="light.exe" KeyPath="yes" />
 										<File Source="..\..\bin\Tools\Wix\light.exe.config" Name="LIGHT_1.CON" Id="light.exe.config" LongName="light.exe.config" />
-										<File Source="..\..\bin\Tools\Wix\lit.exe" Name="lit.exe" Id="lit.exe" />
+									</Component>
+									<Component Id="LitExe" Guid="58312D82-CA9F-432C-BDE4-B96C6CC4EB22" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\lit.exe" Name="lit.exe" Id="lit.exe" Assembly=".net" AssemblyApplication="lit.exe" AssemblyManifest="lit.exe" KeyPath="yes" />
 										<File Source="..\..\bin\Tools\Wix\lit.exe.config" Name="LITEXE.CON" Id="lit.exe.config" LongName="lit.exe.config" />
+									</Component>
+									<Component Id="MergeModDll" Guid="2A3A1AA5-CB60-410A-B488-64F0A99682FF" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\mergemod.dll" Name="mergemod.dll" Id="mergemod.dll" />
-										<File Source="..\..\bin\Tools\Wix\Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" Name="MICROS_1.DLL" Id="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" LongName="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" />
+									</Component>
+									<Component Id="MicrosoftToolsWindowsInstallerXmlNAntTasksDll" Guid="BD16E99F-24CB-4D91-A763-5F513A528DBD" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" Name="MICROS_1.DLL" Id="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" LongName="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" Assembly=".net" AssemblyApplication="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" AssemblyManifest="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NetFxWixLib" Guid="CE847BC0-E9B2-41A1-A117-A9C0F22BD044" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\netfx.wixlib" Name="netfx.lib" LongName="netfix.wixlib" Id="netfx.wixlib" />
+									</Component>
+									<Component Id="NetFxCaDll" Guid="F5970A44-7122-4660-ABCD-821360690CCC" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\netfxca.dll" Name="netfxca.dll" Id="netfxca.dll" />
+									</Component>
+									<Component Id="PcaExecDll" Guid="978F8CBF-CB97-492F-B787-C4C9049AAFCD" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\pcaexec.dll" Name="pcaexec.dll" Id="pcaexec.dll" />
-										<File Source="..\..\bin\Tools\Wix\pcaext.dll" Name="pcaext.dll" Id="pcaext.dll" />
+									</Component>
+									<Component Id="PcaExtDll" Guid="993733F6-DE48-4723-B1BF-6BC9BD395AEF" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\pcaext.dll" Name="pcaext.dll" Id="pcaext.dll" Assembly=".net" AssemblyApplication="pcaext.dll" AssemblyManifest="pcaext.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="PcaSchedDll" Guid="4296DDD0-93F0-4341-AAAC-9D64B7974EE7" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\pcasched.dll" Name="pcasched.dll" Id="pcasched.dll" />
+									</Component>
+									<Component Id="PubCaWixLib" Guid="FA9D7586-CE64-45EF-B8F4-8104B53BA7D2" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\pubca.wixlib" Name="pubca.lib" LongName="pubca.wixlib" Id="pubca.wixlib" />
+									</Component>
+									<Component Id="ScaWixLib" Guid="97C97B61-27B2-4520-8406-AFD3C0627081" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\sca.wixlib" Name="sca.lib" Id="sca.wixlib" LongName="sca.wixlib" />
+									</Component>
+									<Component Id="ScaExecDll" Guid="D70C24FA-5F7D-45A1-BABD-A0A7B4092A89" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\scaexec.dll" Name="scaexec.dll" Id="scaexec.dll" />
+									</Component>
+									<Component Id="ScashedDll" Guid="91C414F4-B73A-4E47-9640-490E71FE1A40" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\scasched.dll" Name="scasched.dll" Id="scasched.dll" />
-										<File Source="..\..\bin\Tools\Wix\tallow.exe" Name="tallow.exe" Id="tallow.exe" />
+									</Component>
+									<Component Id="TallowExe" Guid="9B3C159E-FB00-40EE-B1FB-2B2C7595DF62" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\tallow.exe" Name="tallow.exe" Id="tallow.exe" Assembly=".net" AssemblyApplication="tallow.exe" AssemblyManifest="tallow.exe" KeyPath="yes" />
 										<File Source="..\..\bin\Tools\Wix\tallow.exe.config" Name="tallow.con" Id="tallow.exe.config" LongName="tallow.exe.config" />
+									</Component>
+									<Component Id="VsWixLib" Guid="1ED216D8-645D-469F-A973-E0B5CABC3DB5" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\vs.wixlib" Name="vs.wix" Id="vs.wixlib" LongName="vs.wixlib" />
+									</Component>
+									<Component Id="WInteropDll" Guid="55EC9E38-B9E5-40E0-9B13-959154F215AB" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\winterop.dll" Name="winterop.dll" Id="winterop.dll" />
-										<File Source="..\..\bin\Tools\Wix\wix.dll" Name="wix.dll" Id="wix.dll" />
-										<File Source="..\..\bin\Tools\Wix\wix.targets" Name="wix.tgt" Id="wix.targets" LongName="wix.targets" />
+									</Component>
+									<Component Id="WixDll" Guid="C0A01A75-4EED-49D5-BAC4-B218236D4524" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\wix.dll" Name="wix.dll" Id="wix.dll" Assembly=".net" AssemblyApplication="wix.dll" AssemblyManifest="wix.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="WixCaDll" Guid="1AABACFE-4672-4860-AA10-E43E8AD24BB8" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\wixca.dll" Name="wixca.dll" Id="wixca.dll" />
+									</Component>
+									<Component Id="WixCaWixLib" Guid="F3328E11-920B-4506-8514-A99C5E6B0E7A" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\wixca.wixlib" Name="wixca.lib" Id="wixca.wixlib" LongName="wixca.wixlib"/>
-										<File Source="..\..\bin\Tools\Wix\WixCop.exe" Name="WixCop.exe" Id="WixCop.exe" />
-										<File Source="..\..\bin\Tools\Wix\WixNetFxExtension.dll" Name="wixnet.dll" Id="WixNetFxExtension.dll" LongName="WixNetFxExtension.dll" />
-										<File Source="..\..\bin\Tools\Wix\WixTasks.dll" Name="WixTasks.dll" Id="WixTasks.dll" />
+									</Component>
+									<Component Id="WixCopExe" Guid="9DB7F19E-E737-46FC-A07B-1EEB7C710680" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\WixCop.exe" Name="WixCop.exe" Id="WixCop.exe" Assembly=".net" AssemblyApplication="WixCop.exe" AssemblyManifest="WixCop.exe" KeyPath="yes" />
+									</Component>
+									<Component Id="WixNetFxExtensionDll" Guid="CED55A4E-1F05-471F-8EA5-73277E3EFEFA" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\WixNetFxExtension.dll" Name="wixnet.dll" Id="WixNetFxExtension.dll" LongName="WixNetFxExtension.dll" Assembly=".net" AssemblyApplication="WixNetFxExtension.dll" AssemblyManifest="WixNetFxExtension.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="WixTasksDll" Guid="B07D86EB-BB9A-4FD6-A882-2F0537AB21B5" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\wix.targets" Name="wix.tgt" Id="wix.targets" LongName="wix.targets" />
+										<File Source="..\..\bin\Tools\Wix\WixTasks.dll" Name="WixTasks.dll" Id="WixTasks.dll" Assembly=".net" AssemblyApplication="WixTasks.dll" AssemblyManifest="WixTasks.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="WixUiWixLib" Guid="EC84F252-770A-457F-8701-99C93684D6B6" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\wixui.wixlib" Name="wixui.lib" LongName="wixui.wixlib" Id="wixui.wixlib" />
+									</Component>
+									<Component Id="WixLocalisationFiles" Guid="D9799E27-DE1B-40A4-BF76-F5DA7FEE22C0" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\WixUI_de-de.wxl" Name="wixuide.wxl" Id="WixUI_de_de.wxl" LongName="WixUI_de-de.wxl" />
 										<File Source="..\..\bin\Tools\Wix\WixUI_en-us.wxl" Name="wixuien.wxs" Id="WixUI_en_us.wxl" LongName="WixUI_en-us.wxl" />
 										<File Source="..\..\bin\Tools\Wix\WixUI_es-es.wxl" Name="wixuies.wxl" Id="WixUI_es_es.wxl" LongName="WixUI_es-es.wxl" />
@@ -247,13 +355,21 @@
 									</Directory>
 								</Directory>
 								<Directory Id="NUnitFolder" Name="NUnit">
-									<Component Guid="264B36E0-A168-432B-A227-F628D0159370" Id="NUnitFiles" DiskId="1">
-										<File Source="..\..\bin\Tools\NUnit\nunit.core.extensions.dll" Name="nucext.dll" Id="nunit.core.extensions.dll" LongName="nunit.core.extensions.dll" />
-										<File Source="..\..\bin\Tools\NUnit\nunit.uikit.dll" Name="nuuikit.dll" Id="nunit.uikit.dll" LongName="nunit.uikit.dll" />
-										<File Source="..\..\bin\Tools\NUnit\nunit.util.dll" Name="nuutil.dll" Id="nunit.util.dll" LongName="nunit.util.dll" />
-										<File Source="..\..\bin\Tools\NUnit\nunit-console.exe" Name="nucons.exe" Id="nunit_console.exe" LongName="nunit-console.exe" />
+									<Component Guid="264B36E0-A168-432B-A227-F628D0159370" Id="NUnitCoreExtensionsDll" DiskId="1">
+										<File Source="..\..\bin\Tools\NUnit\nunit.core.extensions.dll" Name="nucext.dll" Id="nunit.core.extensions.dll" LongName="nunit.core.extensions.dll" Assembly=".net" AssemblyApplication="nunit.core.extensions.dll" AssemblyManifest="nunit.core.extensions.dll" KeyPath="yes" />
+									</Component>
+									<Component Guid="77AD4995-2B2B-4E93-86B2-78FEF44A2E23" Id="NUnitUiKitDll" DiskId="1">
+										<File Source="..\..\bin\Tools\NUnit\nunit.uikit.dll" Name="nuuikit.dll" Id="nunit.uikit.dll" LongName="nunit.uikit.dll" Assembly=".net" AssemblyApplication="nunit.uikit.dll" AssemblyManifest="nunit.uikit.dll" KeyPath="yes" />
+									</Component>
+									<Component Guid="05C2C035-FD03-4E68-B4B4-A20906FEBA9E" Id="NUnitUtilDll" DiskId="1">
+										<File Source="..\..\bin\Tools\NUnit\nunit.util.dll" Name="nuutil.dll" Id="nunit.util.dll" LongName="nunit.util.dll" Assembly=".net" AssemblyApplication="nunit.util.dll" AssemblyManifest="nunit.util.dll" KeyPath="yes" />
+									</Component>
+									<Component Guid="108E9A75-72D2-40FA-B65C-EFB5ECADB245" Id="NUnitConsoleFiles" DiskId="1">
+										<File Source="..\..\bin\Tools\NUnit\nunit-console.exe" Name="nucons.exe" Id="nunit_console.exe" LongName="nunit-console.exe" Assembly=".net" AssemblyApplication="nunit_console.exe" AssemblyManifest="nunit_console.exe" KeyPath="yes" />
 										<File Source="..\..\bin\Tools\NUnit\nunit-console.exe.config" Name="nucons.con" Id="nunit_console.exe.config" LongName="nunit-console.exe.config" />
-										<File Source="..\..\bin\Tools\NUnit\nunit-console-runner.dll" Name="nucrun.dll" Id="nunit_console_runner.dll" LongName="nunit-console-runner.dll" />
+									</Component>
+									<Component Guid="D27CF2E9-B836-4581-8FF3-23D1154FC9B8" Id="NunitConsoleRunnerDll" DiskId="1">
+										<File Source="..\..\bin\Tools\NUnit\nunit-console-runner.dll" Name="nucrun.dll" Id="nunit_console_runner.dll" LongName="nunit-console-runner.dll" Assembly=".net" AssemblyApplication="nunit_console_runner.dll" AssemblyManifest="nunit_console_runner.dll" KeyPath="yes" />
 									</Component>
 									<Component Guid="6485334C-163C-479E-9ACE-8E738D9BDB96" Id="NUnitCoreDll" DiskId="1">
 										<File Source="..\..\bin\Tools\NUnit\nunit.core.dll" Name="nucore.dll" Id="nunit.core.dll" LongName="nunit.core.dll" />
@@ -635,28 +751,48 @@
 												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\FormsProject.xpt" Name="FORMSP_1.XPT" Id="FormsProject.xpt" LongName="FormsProject.xpt" />
 											</Component>
 										</Directory>
-										<Component Guid="208A468E-646B-4A34-A066-97DA55008ED4" Id="BooBindingFiles" DiskId="1">
+										<Component Guid="208A468E-646B-4A34-A066-97DA55008ED4" Id="BooBindingAddInDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Interpreter.addin" Name="BOOIN_1.ADD" Id="Boo.Interpreter.addin" LongName="Boo.Interpreter.addin" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.InterpreterAddIn.dll" Name="BOOIN_1.DLL" Id="Boo.InterpreterAddIn.dll" LongName="Boo.InterpreterAddIn.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.CodeDom.dll" Name="BOOLA_1.DLL" Id="Boo.Lang.CodeDom.dll" LongName="Boo.Lang.CodeDom.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Compiler.dll" Name="BOOLA_2.DLL" Id="Boo.Lang.Compiler.dll" LongName="Boo.Lang.Compiler.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.dll" Name="BooLang.dll" LongName="Boo.Lang.dll" Id="Boo.Lang.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Interpreter.dll" Name="BOOLA_3.DLL" Id="Boo.Lang.Interpreter.dll" LongName="Boo.Lang.Interpreter.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Parser.dll" Name="BOOLA_4.DLL" Id="Boo.Lang.Parser.dll" LongName="Boo.Lang.Parser.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Useful.dll" Name="BOOLA_5.DLL" Id="Boo.Lang.Useful.dll" LongName="Boo.Lang.Useful.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.InterpreterAddIn.dll" Name="BOOIN_1.DLL" Id="Boo.InterpreterAddIn.dll" LongName="Boo.InterpreterAddIn.dll" Assembly=".net" AssemblyApplication="Boo.InterpreterAddIn.dll" AssemblyManifest="Boo.InterpreterAddIn.dll" KeyPath="yes" />
+										</Component>
+										<Component Id="BooLangCodeDomDll" Guid="4AAA804F-6175-4C23-8A72-4B452EDD5CDF" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.CodeDom.dll" Name="BOOLA_1.DLL" Id="Boo.Lang.CodeDom.dll" LongName="Boo.Lang.CodeDom.dll" Assembly=".net" AssemblyApplication="Boo.Lang.CodeDom.dll" AssemblyManifest="Boo.Lang.CodeDom.dll" KeyPath="yes" />
+										</Component>
+										<Component Id="BooLangCompilerDll" Guid="601BA36D-B290-41A9-91A9-B97646A132E9" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Compiler.dll" Name="BOOLA_2.DLL" Id="Boo.Lang.Compiler.dll" LongName="Boo.Lang.Compiler.dll" Assembly=".net" AssemblyApplication="Boo.Lang.Compiler.dll" AssemblyManifest="Boo.Lang.Compiler.dll" KeyPath="yes" />
+										</Component>
+										<Component Id="BooLangDll" Guid="80FA218A-9E89-4703-A5D2-705071A04096" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.dll" Name="BooLang.dll" LongName="Boo.Lang.dll" Id="Boo.Lang.dll" Assembly=".net" AssemblyApplication="Boo.Lang.dll" AssemblyManifest="Boo.Lang.dll" KeyPath="yes" />
+										</Component>
+										<Component Id="BooLangInterpreterDll" Guid="BD78B601-D070-46EF-A07D-39945161F399" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Interpreter.dll" Name="BOOLA_3.DLL" Id="Boo.Lang.Interpreter.dll" LongName="Boo.Lang.Interpreter.dll" Assembly=".net" AssemblyApplication="Boo.Lang.Interpreter.dll" AssemblyManifest="Boo.Lang.Interpreter.dll" KeyPath="yes" />
+										</Component>
+										<Component Id="BooLangParserDll" Guid="A82A9C7A-7F1D-4AF1-BA30-0EFC3B87987D" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Parser.dll" Name="BOOLA_4.DLL" Id="Boo.Lang.Parser.dll" LongName="Boo.Lang.Parser.dll" Assembly=".net" AssemblyApplication="Boo.Lang.Parser.dll" AssemblyManifest="Boo.Lang.Parser.dll" KeyPath="yes" />
+										</Component>
+										<Component Id="BooLangUsefulDll" Guid="0CAA6615-B9EE-42EE-9B4B-ABB714B4A989" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Useful.dll" Name="BOOLA_5.DLL" Id="Boo.Lang.Useful.dll" LongName="Boo.Lang.Useful.dll" Assembly=".net" AssemblyApplication="Boo.Lang.Useful.dll" AssemblyManifest="Boo.Lang.Useful.dll" KeyPath="yes" />
+										</Component>
+										<Component Id="BooBuildTasksDll" Guid="4D7B1FD8-1835-425E-BAB9-C45CDD81D11A" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.targets" Name="BOOMI_1.TAR" Id="Boo.Microsoft.Build.targets" LongName="Boo.Microsoft.Build.targets" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.Tasks.dll" Name="BOOMI_1.DLL" Id="Boo.Microsoft.Build.Tasks.dll" LongName="Boo.Microsoft.Build.Tasks.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.Tasks.dll" Name="BOOMI_1.DLL" Id="Boo.Microsoft.Build.Tasks.dll" LongName="Boo.Microsoft.Build.Tasks.dll" Assembly=".net" AssemblyApplication="Boo.Microsoft.Build.Tasks.dll" AssemblyManifest="Boo.Microsoft.Build.Tasks.dll" KeyPath="yes" />
+										</Component>
+										<Component Id="BooBindingDll" Guid="38DDCB00-D3F8-4658-B463-8DA6CB597B66" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\BooBinding.addin" Name="BOOBIN_1.ADD" Id="BooBinding.addin" LongName="BooBinding.addin" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\BooBinding.dll" Name="BOOBIN_1.DLL" Id="BooBinding.dll" LongName="BooBinding.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.exe" Name="booc.exe" Id="booc.exe" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\BooBinding.dll" Name="BOOBIN_1.DLL" Id="BooBinding.dll" LongName="BooBinding.dll" Assembly=".net" AssemblyApplication="BooBinding.dll" AssemblyManifest="BooBinding.dll" KeyPath="yes" />
+										</Component>
+										<Component Id="BoocExe" Guid="41237AF5-CDDF-41E2-9DE4-0317D05CB840" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.exe" Name="booc.exe" Id="booc.exe" Assembly=".net" AssemblyApplication="booc.exe" AssemblyManifest="booc.exe" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.exe.config" Name="BOOCEXE.CON" Id="booc.exe.config" LongName="booc.exe.config" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.rsp" Name="booc.rsp" Id="booc.rsp" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\NRefactoryToBooConverter.dll" Name="NREFAC_1.DLL" Id="NRefactoryToBooConverter.dll" LongName="NRefactoryToBooConverter.dll" />
+										</Component>
+										<Component Id="NRefactoryToBooConverterDll" Guid="EC246CDF-A2C2-4BCF-81DB-CDDFFF42AA92" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\NRefactoryToBooConverter.dll" Name="NREFAC_1.DLL" Id="NRefactoryToBooConverter.dll" LongName="NRefactoryToBooConverter.dll" Assembly=".net" AssemblyApplication="NRefactoryToBooConverter.dll" AssemblyManifest="NRefactoryToBooConverter.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="CSharpBindingFolder" LongName="CSharpBinding" Name="CSharp">
 										<Component Guid="1E6F20EC-6BF4-45C0-AE99-319FBF568BD1" Id="CSharpBindingFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\CSharpBinding\CSharpBinding.dll" Name="CSHARP_1.DLL" Id="CSharpBinding.dll" LongName="CSharpBinding.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\CSharpBinding\CSharpBinding.dll" Name="CSHARP_1.DLL" Id="CSharpBinding.dll" LongName="CSharpBinding.dll" Assembly=".net" AssemblyApplication="CSharpBinding.dll" AssemblyManifest="CSharpBinding.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\CSharpBinding\CSharpBinding.addin" Name="CSHARP_1.ADD" Id="CSharpBinding.addin" LongName="CSharpBinding.addin" />
 										</Component>
 									</Directory>
@@ -667,19 +803,19 @@
 											</Component>
 										</Directory>
 										<Component Guid="494441F4-63E9-4A3E-82D6-026A966BCD11" Id="ILAsmBindingFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\ILAsmBinding\ILAsmBinding.dll" Name="ILASMB_1.DLL" Id="ILAsmBinding.dll" LongName="ILAsmBinding.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\ILAsmBinding\ILAsmBinding.dll" Name="ILASMB_1.DLL" Id="ILAsmBinding.dll" LongName="ILAsmBinding.dll" Assembly=".net" AssemblyApplication="ILAsmBinding.dll" AssemblyManifest="ILAsmBinding.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\ILAsmBinding\ILAsmBinding.addin" Name="ILASMB_1.ADD" Id="ILAsmBinding.addin" LongName="ILAsmBinding.addin" />
 										</Component>
 									</Directory>
 									<Directory Id="VBNetBindingFolder" LongName="VBNetBinding" Name="VBNet">
 										<Component Guid="0F51B5A5-517F-40B3-932A-A0A693926E67" Id="VBNetBindingFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\VBNetBinding\VBNetBinding.dll" Name="VBNETB_1.DLL" Id="VBNetBinding.dll" LongName="VBNetBinding.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\VBNetBinding\VBNetBinding.dll" Name="VBNETB_1.DLL" Id="VBNetBinding.dll" LongName="VBNetBinding.dll" Assembly=".net" AssemblyApplication="VBNetBinding.dll" AssemblyManifest="VBNetBinding.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\VBNetBinding\VBNetBinding.addin" Name="VBNETB_1.ADD" Id="VBNetBinding.addin" LongName="VBNetBinding.addin" />
 										</Component>
 									</Directory>
 									<Directory Id="WixBindingFolder" LongName="WixBinding" Name="Wix">
 										<Component Guid="A54D7821-BBFD-49E9-8FFB-1AB224E25521" Id="WixBindingFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\WixBinding.dll" Name="WIXBIN_1.DLL" Id="WixBinding.dll" LongName="WixBinding.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\WixBinding.dll" Name="WIXBIN_1.DLL" Id="WixBinding.dll" LongName="WixBinding.dll" Assembly=".net" AssemblyApplication="WixBinding.dll" AssemblyManifest="WixBinding.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\SetupDialogControlLibrary.sdcl" Name="SETUPD_1.SDC" Id="SetupDialogControlLibrary.sdcl" LongName="SetupDialogControlLibrary.sdcl" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\WixBinding.addin" Name="WIXBIN_1.ADD" Id="WixBinding.addin" LongName="WixBinding.addin" />
 										</Component>
@@ -696,55 +832,61 @@
 								<Directory Id="DisplayBindingsFolder" Name="display" LongName="DisplayBindings">
 									<Directory Id="FormsDesignerFolder" LongName="FormsDesigner" Name="Forms">
 										<Component Guid="14E454AB-8F83-4FB3-9EDE-92B7D5333998" Id="FormsDesignerFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\FormsDesigner\FormsDesigner.dll" Name="FORMSD_1.DLL" Id="FormsDesigner.dll" LongName="FormsDesigner.dll" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\FormsDesigner\FormsDesigner.dll" Name="FORMSD_1.DLL" Id="FormsDesigner.dll" LongName="FormsDesigner.dll" Assembly=".net" AssemblyApplication="FormsDesigner.dll" AssemblyManifest="FormsDesigner.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\FormsDesigner\FormsDesigner.addin" Name="FORMSD_1.ADD" Id="FormsDesigner.addin" LongName="FormsDesigner.addin" />
 										</Component>
 									</Directory>
 									<Directory Id="IconEditorFolder" LongName="IconEditor" Name="IconEd">
-										<Component Guid="A6F985C3-09A5-4650-9A8E-239BBC737B10" Id="IconEditorFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\IconEditor\ICSharpCode.IconEditorAddIn.dll" Name="ICSHAR_2.DLL" Id="ICSharpCode.IconEditorAddIn.dll" LongName="ICSharpCode.IconEditorAddIn.dll" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\IconEditor\IconEditor.exe" Name="ICONED_1.EXE" Id="IconEditor.exe" LongName="IconEditor.exe" />
+										<Component Guid="13031705-82B1-46D8-8749-453A6A313A3B" Id="IconEditorExe" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\IconEditor\IconEditor.exe" Name="ICONED_1.EXE" Id="IconEditor.exe" LongName="IconEditor.exe" Assembly=".net" AssemblyApplication="IconEditor.exe" AssemblyManifest="IconEditor.exe" KeyPath="yes" />
+										</Component>
+										<Component Guid="A6F985C3-09A5-4650-9A8E-239BBC737B10" Id="IconEditorAddInFiles" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\IconEditor\ICSharpCode.IconEditorAddIn.dll" Name="ICSHAR_2.DLL" Id="ICSharpCode.IconEditorAddIn.dll" LongName="ICSharpCode.IconEditorAddIn.dll" Assembly=".net" AssemblyApplication="ICSharpCode.IconEditorAddIn.dll" AssemblyManifest="ICSharpCode.IconEditorAddIn.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\IconEditor\IconEditorAddIn.addin" Name="ICONED_1.ADD" Id="IconEditorAddIn.addin" LongName="IconEditorAddIn.addin" />
 										</Component>
 									</Directory>
 									<Directory Id="ResourceEditorFolder" LongName="ResourceEditor" Name="ResEd">
 										<Component Guid="010A8620-382C-477B-9330-51A8B6C48A7A" Id="ResourceEditorFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\ResourceEditor\ResourceEditor.dll" Name="RESOUR_1.DLL" Id="ResourceEditor.dll" LongName="ResourceEditor.dll" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ResourceEditor\ResourceEditor.dll" Name="RESOUR_1.DLL" Id="ResourceEditor.dll" LongName="ResourceEditor.dll" Assembly=".net" AssemblyApplication="ResourceEditor.dll" AssemblyManifest="ResourceEditor.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ResourceEditor\ResourceEditor.addin" Name="RESOUR_1.ADD" Id="ResourceEditor.addin" LongName="ResourceEditor.addin" />
 										</Component>
 									</Directory>
 									<Directory Id="XmlEditorFolder" LongName="XmlEditor" Name="XmlEdit">
 										<Component Guid="BD0B4E5B-CBED-49A0-850C-3EA8DFCF3B17" Id="XmlEditorFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\XmlEditor\XmlEditor.dll" Name="XMLEDI_1.DLL" Id="XmlEditor.dll" LongName="XmlEditor.dll" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\XmlEditor\XmlEditor.dll" Name="XMLEDI_1.DLL" Id="XmlEditor.dll" LongName="XmlEditor.dll" Assembly=".net" AssemblyApplication="XmlEditor.dll" AssemblyManifest="XmlEditor.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\XmlEditor\XmlEditor.addin" Name="XMLEDI_1.ADD" Id="XmlEditor.addin" LongName="XmlEditor.addin" />
 										</Component>
 									</Directory>
 								</Directory>
 								<Directory Id="MiscAddInsFolder" Name="Misc">
 									<Directory Id="AddInManagerFolder" LongName="AddInManager" Name="AddMan">
+										<Component Guid="AA44E205-CCE8-46F3-B84B-D031BDB3570D" Id="AddInManagerSharpZipLibDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\AddInManager\ICSharpCode.SharpZipLib.dll" Name="ICSHAR_3.DLL" Id="ICSharpCode.SharpZipLib.dll" LongName="ICSharpCode.SharpZipLib.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpZipLib.dll" AssemblyManifest="ICSharpCode.SharpZipLib.dll" KeyPath="yes" />
+										</Component>
 										<Component Guid="DCC79FDD-A759-4CEE-A62E-C715738ABB9A" Id="AddInManagerFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\AddInManager\ICSharpCode.SharpZipLib.dll" Name="ICSHAR_3.DLL" Id="ICSharpCode.SharpZipLib.dll" LongName="ICSharpCode.SharpZipLib.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\AddInManager\AddInManager.addin" Name="ADDINM_1.ADD" Id="AddInManager.addin" LongName="AddInManager.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\AddInManager\ICSharpCode.AddInManager.dll" Name="ICSHAR_4.DLL" Id="ICSharpCode.AddInManager.dll" LongName="ICSharpCode.AddInManager.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\AddInManager\ICSharpCode.AddInManager.dll" Name="ICSHAR_4.DLL" Id="ICSharpCode.AddInManager.dll" LongName="ICSharpCode.AddInManager.dll" Assembly=".net" AssemblyApplication="ICSharpCode.AddInManager.dll" AssemblyManifest="ICSharpCode.AddInManager.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="AddInScoutFolder" Name="AddScout" LongName="AddinScout">
 										<Component Guid="815D3708-5A0A-4B8E-BB72-66DF8E851917" Id="AddInScoutFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\AddinScout\AddinScout.dll" Name="ADDINS_1.DLL" Id="AddinScout.dll" LongName="AddinScout.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\AddinScout\AddinScout.dll" Name="ADDINS_1.DLL" Id="AddinScout.dll" LongName="AddinScout.dll" Assembly=".net" AssemblyApplication="AddinScout.dll" AssemblyManifest="AddinScout.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\Misc\AddinScout\AddInScout.addin" Name="ADDINS_1.ADD" Id="AddInScout.addin" LongName="AddInScout.addin" />
 										</Component>
 									</Directory>
 									<Directory Id="CodeAnalysisFolder" LongName="CodeAnalysis" Name="Analysis">
 										<Component Guid="6CF33D51-953D-4E5F-840C-7FDCFD757520" Id="CodeAnalysisFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\CodeAnalysis\CodeAnalysis.dll" Name="CODEAN_1.DLL" Id="CodeAnalysis.dll" LongName="CodeAnalysis.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\CodeAnalysis\CodeAnalysis.dll" Name="CODEAN_1.DLL" Id="CodeAnalysis.dll" LongName="CodeAnalysis.dll" Assembly=".net" AssemblyApplication="CodeAnalysis.dll" AssemblyManifest="CodeAnalysis.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\Misc\CodeAnalysis\CodeAnalysis.addin" Name="CODEAN_1.ADD" Id="CodeAnalysis.addin" LongName="CodeAnalysis.addin" />
 										</Component>
 									</Directory>
 									<Directory Id="ComponentInspectorAddInFolder" LongName="ComponentInspector" Name="CompInsp">
-										<Component Guid="C3CBE9CD-ED60-4B07-9082-D5D31755C388" Id="ComponentInspectorAddInFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\ComponentInspector\ComponentInspector.Core.dll" Name="COMPON_1.DLL" Id="ComponentInspector.Core.dll" LongName="ComponentInspector.Core.dll" />
+										<Component Guid="2056340F-5471-422D-8901-9DC385D145AA" Id="ComponentInspectorAddInCoreDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\ComponentInspector\ComponentInspector.Core.dll" Name="COMPON_1.DLL" Id="ComponentInspector.Core.dll" LongName="ComponentInspector.Core.dll" Assembly=".net" AssemblyApplication="ComponentInspector.Core.dll" AssemblyManifest="ComponentInspector.Core.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="C3CBE9CD-ED60-4B07-9082-D5D31755C388" Id="ComponentInspectorAddInDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\ComponentInspector\ComponentInspector.addin" Name="COMPON_1.ADD" Id="ComponentInspector.addin" LongName="ComponentInspector.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\ComponentInspector\ComponentInspector.AddIn.dll" Name="COMPON_2.DLL" Id="ComponentInspector.AddIn.dll" LongName="ComponentInspector.AddIn.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\ComponentInspector\ComponentInspector.AddIn.dll" Name="COMPON_2.DLL" Id="ComponentInspector.AddIn.dll" LongName="ComponentInspector.AddIn.dll" Assembly=".net" AssemblyApplication="ComponentInspector.AddIn.dll" AssemblyManifest="ComponentInspector.AddIn.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="DebuggerFolder" LongName="Debugger" Name="Debug">
@@ -774,14 +916,14 @@
 											</Component>
 										</Directory>
 										<Component Guid="6FF1EF46-B5FF-444D-879F-0E56640CABD7" Id="FiletypeRegistererFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\FiletypeRegisterer\ICSharpCode.FiletypeRegisterer.dll" Name="ICSHAR_1.DLL" Id="ICSharpCode.FiletypeRegisterer.dll" LongName="ICSharpCode.FiletypeRegisterer.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\FiletypeRegisterer\ICSharpCode.FiletypeRegisterer.dll" Name="ICSHAR_1.DLL" Id="ICSharpCode.FiletypeRegisterer.dll" LongName="ICSharpCode.FiletypeRegisterer.dll" Assembly=".net" AssemblyApplication="ICSharpCode.FiletypeRegisterer.dll" AssemblyManifest="ICSharpCode.FiletypeRegisterer.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\Misc\FiletypeRegisterer\FiletypeRegisterer.addin" Name="FILETY_1.ADD" Id="FiletypeRegisterer.addin" LongName="FiletypeRegisterer.addin" />
 										</Component>
 									</Directory>
 									<Directory Id="HighlightingEditorFolder" LongName="HighlightingEditor" Name="Highlite">
 										<Component Guid="6F792AF7-4622-40DF-8CE3-270D66A7A7EC" Id="HighlightingEditorFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\HighlightingEditor\HighlightingEditor.addin" Name="HIGHLI_1.ADD" Id="HighlightingEditor.addin" LongName="HighlightingEditor.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\HighlightingEditor\HighlightingEditor.dll" Name="HIGHLI_1.DLL" Id="HighlightingEditor.dll" LongName="HighlightingEditor.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\HighlightingEditor\HighlightingEditor.dll" Name="HIGHLI_1.DLL" Id="HighlightingEditor.dll" LongName="HighlightingEditor.dll" Assembly=".net" AssemblyApplication="HighlightingEditor.dll" AssemblyManifest="HighlightingEditor.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="HtmlHelpFolder" LongName="HtmlHelp2" Name="Help">
@@ -798,81 +940,107 @@
 									<Directory Id="MonoAddInFolder" LongName="MonoAddIn" Name="Mono">
 										<Component Guid="1BF9CC7D-360C-4F48-A407-9CAF86BE85E7" Id="MonoAddInFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\MonoAddIn\MonoAddIn.addin" Name="MONOAD_1.ADD" Id="MonoAddIn.addin" LongName="MonoAddIn.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\MonoAddIn\MonoAddIn.dll" Name="MONOAD_1.DLL" Id="MonoAddIn.dll" LongName="MonoAddIn.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\MonoAddIn\MonoAddIn.dll" Name="MONOAD_1.DLL" Id="MonoAddIn.dll" LongName="MonoAddIn.dll" Assembly=".net" AssemblyApplication="MonoAddIn.dll" AssemblyManifest="MonoAddIn.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="NAntAddInFolder" LongName="NAntAddIn" Name="NAnt">
 										<Component Guid="36B5B3BF-49CD-4EFA-B749-136F4ECD6492" Id="NAntAddInFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\NAntAddIn\NAnt.addin" Name="NAnt.add" Id="NAnt.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\NAntAddIn\NAntAddIn.dll" Name="NANTAD_1.DLL" Id="NAntAddIn.dll" LongName="NAntAddIn.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\NAntAddIn\NAntAddIn.dll" Name="NANTAD_1.DLL" Id="NAntAddIn.dll" LongName="NAntAddIn.dll" Assembly=".net" AssemblyApplication="NAntAddIn.dll" AssemblyManifest="NAntAddIn.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="PInvokeAddInFolder" LongName="PInvokeAddIn" Name="PInvoke">
 										<Component Guid="09DC988A-373E-4147-BA35-AF6BF0047B1A" Id="PInvokeAddInFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\PInvokeAddIn\signatures.xml" Name="SIGNAT_1.XML" Id="signatures.xml" LongName="signatures.xml" />
 											<File Source="..\..\AddIns\AddIns\Misc\PInvokeAddIn\PInvoke.addin" Name="PINVOKE.ADD" Id="PInvoke.addin" LongName="PInvoke.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\PInvokeAddIn\PInvokeAddIn.dll" Name="PINVOK_1.DLL" Id="PInvokeAddIn.dll" LongName="PInvokeAddIn.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\PInvokeAddIn\PInvokeAddIn.dll" Name="PINVOK_1.DLL" Id="PInvokeAddIn.dll" LongName="PInvokeAddIn.dll" Assembly=".net" AssemblyApplication="PInvokeAddIn.dll" AssemblyManifest="PInvokeAddIn.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="RegExToolkitFolder" Name="RegExpTk">
 										<Component Guid="B934ABC3-AD9B-4DC3-B0EE-1CA5AF2B8F82" Id="RegExToolkitFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\RegExpTk\RegExpTk.addin" Name="REGEXPTK.ADD" Id="RegExpTk.addin" LongName="RegExpTk.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\RegExpTk\RegExpTk.dll" Name="RegExpTk.dll" Id="RegExpTk.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\RegExpTk\RegExpTk.dll" Name="RegExpTk.dll" Id="RegExpTk.dll" Assembly=".net" AssemblyApplication="RegExpTk.dll" AssemblyManifest="RegExpTk.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="SharpDbToolsFolder" LongName="SharpDbTools" Name="SharpDb">
 										<Component Guid="575D909D-CC33-42CE-B0B8-BB2451F73745" Id="SharpDbToolsFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SharpDbTools\SharpDbTools.addin" Name="SHARPD_1.ADD" Id="SharpDbTools.addin" LongName="SharpDbTools.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\SharpDbTools\SharpDbTools.dll" Name="SHARPD_1.DLL" Id="SharpDbTools.dll" LongName="SharpDbTools.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDbTools\SharpDbTools.dll" Name="SHARPD_1.DLL" Id="SharpDbTools.dll" LongName="SharpDbTools.dll" Assembly=".net" AssemblyApplication="SharpDbTools.dll" AssemblyManifest="SharpDbTools.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="SharpQueryFolder" LongName="SharpQuery" Name="Query">
-										<Component Guid="94E2FFCE-B59A-4CB8-90C5-A68FEE705DBA" Id="SharpQueryFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpQuery\SharpQuery.dll" Name="SHARPQ_1.DLL" Id="SharpQuery.dll" LongName="SharpQuery.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SharpQuery\Interop.MSDASC.dll" Name="INTERO_1.DLL" Id="Interop.MSDASC.dll" LongName="Interop.MSDASC.dll" />
+										<Component Guid="94E2FFCE-B59A-4CB8-90C5-A68FEE705DBA" Id="SharpQueryDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpQuery\SharpQuery.dll" Name="SHARPQ_1.DLL" Id="SharpQuery.dll" LongName="SharpQuery.dll" Assembly=".net" AssemblyApplication="SharpQuery.dll" AssemblyManifest="SharpQuery.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\Misc\SharpQuery\SharpQuery.addin" Name="SHARPQ_1.ADD" Id="SharpQuery.addin" LongName="SharpQuery.addin" />
+										</Component>
+										<Component Id="SharpQueryInteropMSDASCDll" Guid="8DA4305C-74C1-4DB7-BE05-9ED5B92ADA73" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpQuery\Interop.MSDASC.dll" Name="INTERO_1.DLL" Id="Interop.MSDASC.dll" LongName="Interop.MSDASC.dll" Assembly=".net" AssemblyApplication="Interop.MSDASC.dll" AssemblyManifest="Interop.MSDASC.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="SharpReportFolder" LongName="SharpReport" Name="Report">
-										<Component Guid="FCC330AE-1BA6-49AB-8D75-6B056EEBD00D" Id="SharpReportFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\SharpReportCore.dll" Name="SHARPR_1.DLL" Id="SharpReportCore.dll" LongName="SharpReportCore.dll" />
+										<Component Guid="FCC330AE-1BA6-49AB-8D75-6B056EEBD00D" Id="SharpReportCoreDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\SharpReportCore.dll" Name="SHARPR_1.DLL" Id="SharpReportCore.dll" LongName="SharpReportCore.dll" Assembly=".net" AssemblyApplication="SharpReportCore.dll" AssemblyManifest="SharpReportCore.dll" KeyPath="yes" />
+										</Component>
+										<Component Id="ReportGeneratorDll" Guid="4A37F852-2BBC-40C5-AF32-6DAB8DB5075A" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\ReportGenerator.dll" Name="REPORT_1.DLL" Id="ReportGenerator.dll" LongName="ReportGenerator.dll" Assembly=".net" AssemblyApplication="ReportGenerator.dll" AssemblyManifest="ReportGenerator.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\ReportGenerator.addin" Name="REPORT_1.ADD" Id="ReportGenerator.addin" LongName="ReportGenerator.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\ReportGenerator.dll" Name="REPORT_1.DLL" Id="ReportGenerator.dll" LongName="ReportGenerator.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\SharpReport.dll" Name="SHARPR_2.DLL" Id="SharpReport.dll" LongName="SharpReport.dll" />
+										</Component>
+										<Component Id="SharpReportDll" Guid="00331644-0A6F-4469-AEE5-2FCEED4F1651" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\SharpReport.dll" Name="SHARPR_2.DLL" Id="SharpReport.dll" LongName="SharpReport.dll" Assembly=".net" AssemblyApplication="SharpReport.dll" AssemblyManifest="SharpReport.dll" KeyPath="yes" />
+										</Component>
+										<Component Id="SharpReportAddInDll" Guid="9EC747D8-EA22-4C6B-8694-D7FA8029AE46" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\SharpReportAddin.addin" Name="SHARPR_1.ADD" Id="SharpReportAddin.addin" LongName="SharpReportAddin.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\SharpReportAddin.dll" Name="SHARPR_3.DLL" Id="SharpReportAddin.dll" LongName="SharpReportAddin.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\SharpReportAddin.dll" Name="SHARPR_3.DLL" Id="SharpReportAddin.dll" LongName="SharpReportAddin.dll" Assembly=".net" AssemblyApplication="SharpReportAddin.dll" AssemblyManifest="SharpReportAddin.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="StartPageAddInFolder" LongName="StartPage" Name="StartPg">
 										<Component Guid="220967E5-D5AA-4207-9757-79599222D5CF" Id="StartPageAddInFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\StartPage\StartPage.dll" Name="STARTP_1.DLL" Id="StartPage.dll" LongName="StartPage.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\StartPage\StartPage.dll" Name="STARTP_1.DLL" Id="StartPage.dll" LongName="StartPage.dll" Assembly=".net" AssemblyApplication="StartPage.dll" AssemblyManifest="StartPage.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\Misc\StartPage\StartPage.addin" Name="STARTP_1.ADD" Id="StartPage.addin" LongName="StartPage.addin" />
 										</Component>
 									</Directory>
 									<Directory Id="SubversionAddInFolder" LongName="SubversionAddIn" Name="Svn">
-										<Component Guid="C9B1D523-5674-4398-9073-20F57B45DD46" Id="SubversionAddInFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\Utils.dll" Name="Utils.dll" Id="Utils.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\ICSharpCode.Svn.addin" Name="ICSHAR_1.ADD" Id="ICSharpCode.Svn.addin" LongName="ICSharpCode.Svn.addin" />
+										<Component Id="SubversionUtilsDll" Guid="0FEF5BBC-A97C-4BB9-BEC2-759388E5572D" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\Utils.dll" Name="Utils.dll" Id="Utils.dll" Assembly=".net" AssemblyApplication="NSvn.Common.dll" AssemblyManifest="NSvn.Common.dll" KeyPath="yes" />
+										</Component>
+										<Component Id="SubversionLibAprDll" Guid="E4EE12A6-0766-4C85-8E28-7D7DEFC3AFEE" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\LIBAPR.DLL" Name="LIBAPR.DLL" Id="LIBAPR.DLL" />
+										</Component>
+										<Component Id="SubversionAprIconvDll" Guid="1494C120-502D-4108-897F-14BD0D601DD1" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\LibAprIconv.Dll" Name="LIBAPR_1.DLL" Id="LibAprIconv.Dll" LongName="LibAprIconv.Dll" />
+										</Component>
+										<Component Id="SubversionLibAprUtilDll" Guid="7F963E06-7BF6-4D95-B6C7-443A5A8FC739" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\LibAprUtil.Dll" Name="LIBAPR_2.DLL" Id="LibAprUtil.Dll" LongName="LibAprUtil.Dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\LibDB42.dll" Name="LibDB42.dll" Id="LibDB42.dll" />
+										</Component>
+										<Component Id="SubversionLibDb44Dll" Guid="6A86A5F7-1E80-465D-82F4-B8064663F83A" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\LibDB44.dll" Name="LibDB42.dll" Id="LibDB42.dll" />
+										</Component>
+										<Component Id="SubversionMsvcp70Dll" Guid="E4612BC7-DA35-403D-BCFE-BC04D797D801" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\msvcp70.dll" Name="msvcp70.dll" Id="msvcp70.dll" />
+										</Component>
+										<Component Id="SubversionMsvcr70Dll" Guid="993F3D8A-DB4E-433E-92E4-FB46AF71488D" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\msvcr70.dll" Name="msvcr70.dll" Id="msvcr70.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\NSvn.Common.dll" Name="NSVNC_1.DLL" Id="NSvn.Common.dll" LongName="NSvn.Common.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\NSvn.Core.dll" Name="NSVNC_2.DLL" Id="NSvn.Core.dll" LongName="NSvn.Core.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\SubversionAddIn.dll" Name="SUBVER_1.DLL" Id="SubversionAddIn.dll" LongName="SubversionAddIn.dll" />
+										</Component>
+										<Component Id="NSvnCommonDll" Guid="53B4D3C6-5A80-496E-8926-3A7060766068" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\NSvn.Common.dll" Name="NSVNC_1.DLL" Id="NSvn.Common.dll" LongName="NSvn.Common.dll" Assembly=".net" AssemblyApplication="NSvn.Common.dll" AssemblyManifest="NSvn.Common.dll" KeyPath="yes" />
+										</Component>
+										<Component Id="NSvnCoreDll" Guid="5989C307-D92E-4973-89E0-2509E3306C09" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\NSvn.Core.dll" Name="NSVNC_2.DLL" Id="NSvn.Core.dll" LongName="NSvn.Core.dll" Assembly=".net" AssemblyApplication="NSvn.Core.dll" AssemblyManifest="NSvn.Core.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="C9B1D523-5674-4398-9073-20F57B45DD46" Id="SubversionAddInDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\SubversionAddIn.dll" Name="SUBVER_1.DLL" Id="SubversionAddIn.dll" LongName="SubversionAddIn.dll" Assembly=".net" AssemblyApplication="SubversionAddIn.dll" AssemblyManifest="SubversionAddIn.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\ICSharpCode.Svn.addin" Name="ICSHAR_1.ADD" Id="ICSharpCode.Svn.addin" LongName="ICSharpCode.Svn.addin" />
 										</Component>
 									</Directory>
 									<Directory Id="UnitTestingFolder" LongName="UnitTesting" Name="UnitTest">
 										<Component Guid="F2F7F12D-1920-49BC-86B0-65B5A1B76516" Id="UnitTestingAddInFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\UnitTesting\UnitTesting.dll" Name="unittest.DLL" Id="UnitTesting.dll" LongName="UnitTesting.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\UnitTesting\UnitTesting.addin" Name="unittest.ADD" Id="UnitTesting.addin" LongName="UnitTesting.addin" />
+											<File Source="..\..\AddIns\AddIns\Misc\UnitTesting\UnitTesting.dll" Name="unittest.dll" Id="UnitTesting.dll" LongName="UnitTesting.dll" Assembly=".net" AssemblyApplication="UnitTesting.dll" AssemblyManifest="UnitTesting.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\AddIns\Misc\UnitTesting\UnitTesting.addin" Name="unittest.add" Id="UnitTesting.addin" LongName="UnitTesting.addin" />
 										</Component>
 									</Directory>
 									<Directory Id="CodeCoverageFolder" LongName="CodeCoverage" Name="Cover">
 										<Component Guid="86A8B8D1-9FFD-46A4-84F8-2BD530E1F83E" Id="CodeCoverageFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\CodeCoverage\CodeCoverage.dll" Name="ccover.dll" Id="CodeCoverage.dll" LongName="CodeCoverage.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\CodeCoverage\CodeCoverage.dll" Name="ccover.dll" Id="CodeCoverage.dll" LongName="CodeCoverage.dll" Assembly=".net" AssemblyApplication="CodeCoverage.dll" AssemblyManifest="CodeCoverage.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\Misc\CodeCoverage\CodeCoverage.addin" Name="ccover.add" Id="CodeCoverage.addin" LongName="CodeCoverage.addin" />
 										</Component>
 									</Directory>
@@ -880,13 +1048,14 @@
 							</Directory>
 						</Directory>
 						<Component Guid="5212F79E-568F-426D-AFD2-FC93914D5CE9" Id="SharpDevelopWebsiteShortcut" DiskId="1">
-							<!-- 
+							<!--
 								The choice here is to either use the IniFile element to
  								generate the two website shortcuts or create a 
 								SharpDevelop.url file on disk and use a File element and
-								link to the file instead.
+								link to the file instead. We will use a file otherwise an
+								upgrade will not remove the existing website shortcut.
 							-->
-							<IniFile Id="SharpDevelop.url" Key="URL" Action="addLine" Directory="INSTALLDIR" LongName="SharpDevelop.url" Name="SharpDev.url" Value="http://www.icsharpcode.net/opensource/sd/" Section="InternetShortcut" />
+							<File Id="SharpDevelop.url" KeyPath="yes" Name="SharpDev.url" LongName="SharpDevelop.url" Source="SharpDevelop.url" />
 							<!-- 
 								ICE18 - Force the empty folder to be created. Even though it
 								has sub folders the validator flags this as an error.
@@ -916,7 +1085,7 @@
 						-->
 						<Registry Id="SharpDevelopExeStartMenuShortcutRegistryKey" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop2"/>
 						<Shortcut Name="SharpDev" LongName="SharpDevelop" Target="[!SharpDevelop.exe]" Id="SharpDevelopExeStartMenuShortcut" WorkingDirectory="BinFolder" Icon="SharpDevelopIcon.exe" Directory="SharpDevelopProgramMenuFolder" />
-						<IniFile Action="addLine" Directory="SharpDevelopProgramMenuFolder" Id="Website" Key="URL" Name="Website.url" Section="InternetShortcut" Value="http://www.icsharpcode.net/opensource/sd/" />
+						<Shortcut Name="Website" Target="[!SharpDevelop.url]" Id="SharpDevelopUrlStartMenuShortcut" WorkingDirectory="BinFolder" Directory="SharpDevelopProgramMenuFolder" />
 						<!--
 							Fix ICE64 by adding a remove folder element 
 							http://windowssdk.msdn.microsoft.com/en-us/library/ms704358.aspx

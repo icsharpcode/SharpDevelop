@@ -1,6 +1,5 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <OutputName>SharpDevelop</OutputName>
     <OutputType>package</OutputType>
     <WixToolPath Condition=" '$(WixToolPath)' == '' ">$(SharpDevelopBinPath)\Tools\Wix</WixToolPath>
     <ToolPath Condition=" '$(ToolPath)' == '' ">$(WixToolPath)</ToolPath>
@@ -12,6 +11,8 @@
     <WarningLevel>0</WarningLevel>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <LocalizedStringFile>..\..\bin\Tools\Wix\WixUI_en-us.wxl</LocalizedStringFile>
+    <PreBuildEvent>..\Tools\UpdateSetupInfo\bin\UpdateSetupInfo.exe</PreBuildEvent>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <BaseOutputPath>obj\</BaseOutputPath>
@@ -26,6 +27,7 @@
     <Compile Include="Files.wxs" />
     <WixLibrary Include="..\..\bin\Tools\Wix\wixui.wixlib" />
     <Compile Include="NetFxExtension.wxs" />
+    <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <CompileExtension Include="WixNetFxExtension">
@@ -38,5 +40,6 @@
       <Class>Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler</Class>
     </LinkExtension>
   </ItemGroup>
+  <Import Project="$(MSBuildProjectFullPath).user" />
   <Import Project="$(WixMSBuildExtensionsPath)\wix.targets" />
 </Project>

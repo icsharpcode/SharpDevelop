@@ -1,0 +1,141 @@
+﻿
+SharpDevelop Setup Build Server Rules 
+-------------------------------------
+
+All new .msi files are treated as major upgrades on the build server:
+
+http://msdn.microsoft.com/library/en-us/msi/setup/major_upgrades.asp
+
+1) Package code always changes for a new revision.
+2) Product version is updated with the revision number.
+3) Product code changed for a new revision.
+4) Msi filename changed on each build. It includes the SharpDevelop version and revision.
+
+Guid generation
+---------------
+
+The Guid generation is a pre-build step. This step runs the UpdateSetupInfo 
+tool. This tool creates new guids for the product code and the package code. It 
+also reads the current revision number and updates the installation. All this
+information is stored in the SharpDevelop.Setup.wixproj.user file which is
+generated each time when run from the build server. The Wix setup documents
+have preprocessor variables $(var) that map to MSBuild properties. These MSBuild
+properties are stored in the SharpDevelop.Setup.wixproj.user file. 
+
+The SharpDevelop.Setup.wixproj.user file is in the repository since but it is not
+committed on each build. Therefore the Product Code guid is not stored anywhere 
+apart from the .msi itself. This maybe us a problem. The Upgrade Code is the 
+important guid and that is in the main Setup.wxs file and should not be changed. 
+It will be changed for SharpDevelop 3.0.
+
+The UpdateSetupInfo tool is not used when building the SharpDevelop.Setup project, 
+this prevents us recreating Guids each time when building the project 
+from inside SharpDevelop. The buildSetup.bat does use the tool. The build server
+also uses the tool.
+
+The UpdateSetupInfo tool uses a template file SharpDevelop.Setup.wixproj.user.template 
+which is stored in the repository and has placeholders for the guids and revision
+number.
+
+If the build server generates two installer packages with the same revision number 
+but different Product code guids then the user can install two instances of
+SharpDevelop 2.1 on their machine which we do not want. The UpdateSetupInfo
+tool hopefully prevents this by not updating the product code guid if the
+revision number has not changed. The last used revision number is stored
+in the Setup\bin\REVISION file.
+
+Why major instead of minor?
+---------------------------
+
+It allows us to make large changes to the installer, completely restructuring the
+features, components, and renaming the .msi filename. Just renaming the .msi filename on
+its own means the product code guid has to change. However the main reason is that
+to use a minor upgrade so it upgrades the existing installation you have to use a command 
+line like:
+
+msiexec /i SharpDevelop.msi REINSTALL=ALL REINSTALLMODE=vomus
+
+Otherwise you just get a message informing you that there is an existing installation.
+A major upgrade is more user friendly and will not need such a command line, it should
+install just by double clicking the .msi.
+
+SharpDevelop Setup Rules
+------------------------
+
+1) Each assembly (.exe, .dll) added gets its own Component. This includes any files that 
+logically belong to it (e.g. .config, .addin), but not any assemblies it uses (.exe, .dll).
+
+For an added assembly the File element should look like:
+
+<File Id="SharpDevelopExeId" 
+	Name="SharpDev.exe" 
+	LongName="SharpDevelop.exe" 
+	Source="..\..\bin\SharpDevelop.exe" 
+	Assembly=".net" 
+	AssemblyApplication="SharpDevelopExeId" 
+	AssemblyManifest="SharpDevelopExeId" 
+	KeyPath="yes"/>
+	
+Note that the Id is typically just the filename, but the in the example I have 
+emphasised that AssemblyApplication and AssemblyManifest refer to the file id.
+		
+Windows Installer References
+----------------------------
+
+Windows Installer has a lot of rules that need to be followed when creating
+setup packages. The main ones to look at the rules for adding/removing components.
+
+The documentation is a bit confusing, some parts say that you need to generate
+a new Component Guid when you add/remove a resource (file, registry, etc)
+to/from a component. Other parts say that with Windows Installer v2 you can 
+add/remove resources without needing to regenerate a new guid.
+
+SharpDevelop's installer will not allow side-by-side installations of
+SharpDevelop 2.1. Each new installer will be able to upgrade all previous versions
+from 2.1.0 upwards. Disallowing side-by-side installations should prevent any 
+problems if component Guids are not altered when they should be (see 
+What Happens if the Component Rules are Broken?) 
+
+SharpDevelop component rules:
+
+1) Never the same resource into two different components.
+2) All resources in a component must be installed into the same directory.
+3) When adding a new file to an existing directory put it inside its own new
+component. That is if a previous version of the installer has been released.
+If you're adding a completely new addin this does not apply, each .exe and .dll
+should be in its own component, but other files can be grouped.
+4) Removing a file. According to the docs:
+
+"you must also change the name or target location every resource in the component."
+
+This is not a problem for .exe and .dlls since they should be in their own
+component so you just remove the entire component. If you may remove
+the resource at some point in the future, put it into its own component.
+
+If you have to remove a file from an existing component change its guid and
+hope nothing breaks.
+
+Setup Package Validation
+------------------------
+
+Also use Orca (Part of the Windows 2003 Platform SDK) to test validate the
+created msi file. Do not ignore any errors. Warnings need to be understood
+before being ignored. ICE33 warnings can be ignored - see the Setup.wxs
+file for more details.
+
+http://msdn.microsoft.com/library/en-us/msi/setup/organizing_applications_into_components.asp
+http://msdn.microsoft.com/library/en-us/msi/setup/changing_the_component_code.asp
+http://msdn.microsoft.com/library/en-us/msi/setup/what_happens_if_the_component_rules_are_broken.asp
+http://msdn.microsoft.com/library/en-us/msi/setup/defining_installer_components.asp
+http://msdn.microsoft.com/library/en-us/msi/setup/assemblies.asp
+http://msdn.microsoft.com/library/en-us/msi/setup/patching_and_upgrades.asp
+http://msdn.microsoft.com/library/en-us/msi/setup/changing_the_product_code.asp
+http://msdn.microsoft.com/library/en-us/msi/setup/minor_upgrades.asp
+
+Rob Mensching also has some information about the component rules on his blog:
+
+Windows Installer Components Introduction 
+http://blogs.msdn.com/robmen/archive/2003/10/04/56479.aspx 
+
+Component Rules 101
+http://blogs.msdn.com/robmen/archive/2003/10/18/56497.aspx

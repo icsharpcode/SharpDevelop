@@ -1,0 +1,9 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SetupProductBuildVersion>$INSERTPRODUCTBUILDVERSION$</SetupProductBuildVersion>
+    <SetupProductCodeGuid>$INSERTPRODUCTCODEGUID$</SetupProductCodeGuid>
+    <SetupPackageCodeGuid>$INSERTPACKAGECODEGUID$</SetupPackageCodeGuid>
+    <OutputName>SharpDevelop2_2.1.0.$(SetupProductBuildVersion)</OutputName>
+    <DefineConstants>PACKAGECODEGUID=$(SetupPackageCodeGuid);PRODUCTCODEGUID=$(SetupProductCodeGuid);PRODUCTBUILDVERSION=$(SetupProductBuildVersion)</DefineConstants>
+  </PropertyGroup>
+</Project>

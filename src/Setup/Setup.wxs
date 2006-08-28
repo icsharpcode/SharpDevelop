@@ -1,17 +1,38 @@
-﻿<!-- Installer for SharpDevelop -->
+﻿<!-- 
+	Installer for SharpDevelop.
+-->
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
-	<Product Id="A0AB2551-A579-42D3-9A90-D6424B3AC2CD"
+	<!-- 
+		Windows Installer only recognises 3 digits for the product version (Major.Minor.Build) 
+		so the third digit must be the Subversion revision. 
+	-->
+	<Product Id="$(var.PRODUCTCODEGUID)"
 		Name="SharpDevelop 2.1"
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
 		UpgradeCode="A1F371B6-4218-4F60-B01E-C996DF461B10"
-		Version="2.1.0.0">
+		Version="2.1.$(var.PRODUCTBUILDVERSION)">
 		
-		<Package Id="DFC87BE9-A5A6-434D-97BA-F34BB1C1C1A7"
-			Description="SharpDevelop"
-			InstallerVersion="200"
+		<Package Id="$(var.PACKAGECODEGUID)"
+			Description="SharpDevelop 2.1.0.$(var.PRODUCTBUILDVERSION)"
+			InstallerVersion="300"
 			Compressed="yes"/>
+		
+		<!-- Upgrade information -->
+		<Upgrade Id="A1F371B6-4218-4F60-B01E-C996DF461B10">
+			<!-- Checks for older versions -->
+			<UpgradeVersion Minimum="2.1.0"
+				IncludeMinimum="yes"
+				Maximum="2.1.$(var.PRODUCTBUILDVERSION)"
+				IncludeMaximum="no" 
+				Property="PREVIOUSVERSIONFOUND"/>
+			<!-- Checks for newer versions -->
+			<UpgradeVersion OnlyDetect="yes"
+				Property="NEWERVERSIONFOUND"
+        		Minimum="2.1.$(var.PRODUCTBUILDVERSION)"
+				IncludeMinimum="no"/>
+		</Upgrade>
 		
 		<!-- Conditions to be satisfied before the installer begins.-->
 		<!-- 
@@ -78,7 +99,6 @@
 		<Property Id="ARPHELPLINK">http://community.sharpdevelop.net/forums/</Property>
 		<Property Id="ARPURLINFOABOUT">http://icsharpcode.net/OpenSource/SD/</Property>
 		<Property Id="ARPURLUPDATEINFO">http://icsharpcode.net/OpenSource/SD/Download/</Property>
-		<Property Id="ARPREADME" Value="[DocFolder]\readme.rtf"/>
 		
 		<!-- Suppress the Modify button in the Control Panel's Add/Remove Programs -->
 		<!-- 
@@ -105,88 +125,220 @@
 			each be a feature if the user wants to heavily customise the installation.
 		-->
 		<Feature Id="Complete" Level="1">
-			<ComponentRef Id="SharpDevelopExe"/>
-			<ComponentRef Id="SharpDevelopCoreFiles"/>
-			<ComponentRef Id="SharpDevelopDocFiles"/>
-			<ComponentRef Id="SharpDevelopTechNoteFiles"/>
-			<ComponentRef Id="ComponentInspectorFiles"/>
-			<ComponentRef Id="SharpDevelopProgramMenuItems"/>
-			<ComponentRef Id="DesktopFolderItems"/>
-			<ComponentRef Id="NDocFiles"/>
-			<ComponentRef Id="WixFiles"/>
-			<ComponentRef Id="WixBitmapFiles"/>
-			<ComponentRef Id="WixDocFiles"/>
-			<ComponentRef Id="WixIncFiles"/>
-			<ComponentRef Id="WixLibFiles"/>
-			<ComponentRef Id="NUnitFiles"/>
-			<ComponentRef Id="NUnitCoreDll"/>
-			<ComponentRef Id="NUnitFrameworkDll"/>
-			<ComponentRef Id="NUnitCoreGacDll"/>
-			<ComponentRef Id="NUnitFrameworkGacDll"/>
-			<ComponentRef Id="ConversionStyleSheetFiles"/>
-			<ComponentRef Id="TextLibOptionsFiles"/>
-			<ComponentRef Id="OptionsFiles"/>
-			<ComponentRef Id="CssFiles"/>
-			<ComponentRef Id="InstallerBitmapFiles"/>
-			<ComponentRef Id="LanguageBitmapFiles"/>
-			<ComponentRef Id="LayoutFiles"/>
-			<ComponentRef Id="StartPageLayoutBlueFiles"/>
-			<ComponentRef Id="StartPageLayoutBrownFiles"/>
-			<ComponentRef Id="StartPageLayoutCommonFiles"/>
-			<ComponentRef Id="StartPageLayoutGreenFiles"/>
-			<ComponentRef Id="StartPageLayoutOrangeFiles"/>
-			<ComponentRef Id="StartPageLayoutRedFiles"/>
-			<ComponentRef Id="StartPageLayoutFiles"/>
-			<ComponentRef Id="StringResourceFiles"/>
-			<ComponentRef Id="SchemaFiles"/>
-			<ComponentRef Id="CSharpFileTemplates"/>
-			<ComponentRef Id="VBNetFileTemplates"/>
-			<ComponentRef Id="MiscFileTemplates"/>
-			<ComponentRef Id="SharpDevelopFileTemplates"/>
-			<ComponentRef Id="CSharpProjectTemplates"/>
-			<ComponentRef Id="MiscProjectTemplates"/>
-			<ComponentRef Id="VBNetProjectTemplates"/>
-			<ComponentRef Id="ExampleProjectTemplate"/>
-			<ComponentRef Id="ICSharpCode.SharpDevelop.addin"/>
-			<ComponentRef Id="BooTemplateFiles"/>
-			<ComponentRef Id="BooBindingFiles"/>
-			<ComponentRef Id="CSharpBindingFiles"/>
-			<ComponentRef Id="ILAsmTemplates"/>
-			<ComponentRef Id="ILAsmBindingFiles"/>
-			<ComponentRef Id="VBNetBindingFiles"/>
-			<ComponentRef Id="WixBindingFiles"/>
-			<ComponentRef Id="WixBindingTemplates"/>
-			<ComponentRef Id="FormsDesignerFiles"/>
-			<ComponentRef Id="IconEditorFiles"/>
-			<ComponentRef Id="ResourceEditorFiles"/>
-			<ComponentRef Id="XmlEditorFiles"/>
-			<ComponentRef Id="AddInManagerFiles"/>
-			<ComponentRef Id="AddInScoutFiles"/>
-			<ComponentRef Id="CodeAnalysisFiles"/>
-			<ComponentRef Id="CodeCoverageFiles"/>
-			<ComponentRef Id="ComponentInspectorAddInFiles"/>
-			<ComponentRef Id="DebuggerAddInFiles"/>
-			<ComponentRef Id="FiletypeIcons"/>
-			<ComponentRef Id="FiletypeRegistererFiles"/>
-			<ComponentRef Id="HighlightingEditorFiles"/>
-			<ComponentRef Id="HtmlHelp2Files"/>
-			<ComponentRef Id="MonoAddInFiles"/>
-			<ComponentRef Id="NAntAddInFiles"/>
-			<ComponentRef Id="PInvokeAddInFiles"/>
-			<ComponentRef Id="RegExToolkitFiles"/>
-			<ComponentRef Id="SharpDbToolsFiles"/>
-			<ComponentRef Id="SharpQueryFiles"/>
-			<ComponentRef Id="SharpReportFiles"/>
-			<ComponentRef Id="StartPageAddInFiles"/>
-			<ComponentRef Id="SubversionAddInFiles"/>
-			<ComponentRef Id="UnitTestingAddInFiles"/>
-			<ComponentRef Id="SyntaxModesFiles"/>
-			<ComponentRef Id="SharpDevelopWebsiteShortcut"/>
-			<ComponentRef Id="SharpDevelopAppPathRegistrySetting"/>
+			<!-- 
+				The SharpDevelop application. This may at some point in the distant
+				future be further subdivided into addin features, but doing this
+				will mean a new ProductCode will need to be generated.
+			-->
+			<Feature Id="SharpDevelop" Level="1">
+				<ComponentRef Id="SharpDevelopExe"/>
+				<ComponentRef Id="SharpDevelopExeFiles"/>
+				<ComponentRef Id="SharpDevelopDocFiles"/>
+				<ComponentRef Id="ICSharpCodeBuildTasksDll"/>
+				<ComponentRef Id="BuildTasksTargetFiles"/>
+				<ComponentRef Id="ICSharpCodeCoreDll"/>
+				<ComponentRef Id="ICSharpCodeNRefactoryDll"/>
+				<ComponentRef Id="ICSharpCodeSharpDevelopDll"/>
+				<ComponentRef Id="ICSharpCodeSharpDevelopDomdll"/>
+				<ComponentRef Id="ICSharpCodeSharpDevelopSdaFiles"/>
+				<ComponentRef Id="ICSharpCodeTextEditorDll"/>
+				<ComponentRef Id="log4netDll"/>
+				<ComponentRef Id="MonoCecilDll"/>
+				<ComponentRef Id="MonoReflectionLoaderDll"/>
+				<ComponentRef Id="WeifenLuoWinFormsUIDockingDll"/>
+				<ComponentRef Id="SharpDevelopTechNoteFiles"/>
+				<ComponentRef Id="ComponentInspectorExe"/>
+				<ComponentRef Id="ComponentInspectorCoreDll"/>
+				<ComponentRef Id="ComponentInspectorICSharpCodeCoreDll"/>
+				<ComponentRef Id="ComponentInspectorLog4NetDll"/>
+				<ComponentRef Id="SharpDevelopProgramMenuItems"/>
+				<ComponentRef Id="DesktopFolderItems"/>
+				<ComponentRef Id="NDocGuiExe"/>
+				<ComponentRef Id="NDocMSHelpCompilerDll"/>
+				<ComponentRef Id="NDocCoreDll"/>
+				<ComponentRef Id="NDocDocumenterIntellisenseDll"/>
+				<ComponentRef Id="NDocDocumenterJavaDocDll"/>
+				<ComponentRef Id="NDocDocumenterLatexDll"/>
+				<ComponentRef Id="NDocDocumenterMsdn2Dll"/>
+				<ComponentRef Id="NDocDocumenterMsdnDll"/>
+				<ComponentRef Id="NDocDocumenterLinearHtmlDll"/>
+				<ComponentRef Id="NDocDocumenterNativeHtmlHelp2Dll"/>
+				<ComponentRef Id="NDocDocumenterXmlDll"/>
+				<ComponentRef Id="NDocExtendedUIDll"/>
+				<ComponentRef Id="NDocVisualStudioDll"/>
+				<ComponentRef Id="NDocConsoleExe"/>
+				<ComponentRef Id="WixLicenseFiles"/>
+				<ComponentRef Id="WixBitmapFiles"/>
+				<ComponentRef Id="WixDocFiles"/>
+				<ComponentRef Id="WixIncFiles"/>
+				<ComponentRef Id="WixLibFiles"/>
+				<ComponentRef Id="WixVSExtension"/>
+				<ComponentRef Id="CandleExe"/>
+				<ComponentRef Id="DarkExe"/>
+				<ComponentRef Id="LightExe"/>
+				<ComponentRef Id="LitExe"/>
+				<ComponentRef Id="MergeModDll"/>
+				<ComponentRef Id="MicrosoftToolsWindowsInstallerXmlNAntTasksDll"/>
+				<ComponentRef Id="NetFxWixLib"/>
+				<ComponentRef Id="NetFxCaDll"/>
+				<ComponentRef Id="PcaExecDll"/>
+				<ComponentRef Id="PcaExtDll"/>
+				<ComponentRef Id="PcaSchedDll"/>
+				<ComponentRef Id="PubCaWixLib"/>
+				<ComponentRef Id="ScaWixLib"/>
+				<ComponentRef Id="ScaExecDll"/>
+				<ComponentRef Id="ScashedDll"/>
+				<ComponentRef Id="TallowExe"/>
+				<ComponentRef Id="VsWixLib"/>
+				<ComponentRef Id="WInteropDll"/>
+				<ComponentRef Id="WixDll"/>
+				<ComponentRef Id="WixCaDll"/>
+				<ComponentRef Id="WixCaWixLib"/>
+				<ComponentRef Id="WixCopExe"/>
+				<ComponentRef Id="WixNetFxExtensionDll"/>
+				<ComponentRef Id="WixTasksDll"/>
+				<ComponentRef Id="WixUiWixLib"/>
+				<ComponentRef Id="WixLocalisationFiles"/>
+				<ComponentRef Id="NUnitCoreExtensionsDll"/>
+				<ComponentRef Id="NUnitUiKitDll"/>
+				<ComponentRef Id="NUnitUtilDll"/>
+				<ComponentRef Id="NUnitConsoleFiles"/>
+				<ComponentRef Id="NUnitCoreDll"/>
+				<ComponentRef Id="NUnitFrameworkDll"/>
+				<ComponentRef Id="NUnitCoreGacDll"/>
+				<ComponentRef Id="NUnitFrameworkGacDll"/>
+				<ComponentRef Id="NunitConsoleRunnerDll"/>
+				<ComponentRef Id="ConversionStyleSheetFiles"/>
+				<ComponentRef Id="TextLibOptionsFiles"/>
+				<ComponentRef Id="OptionsFiles"/>
+				<ComponentRef Id="CssFiles"/>
+				<ComponentRef Id="InstallerBitmapFiles"/>
+				<ComponentRef Id="LanguageBitmapFiles"/>
+				<ComponentRef Id="LayoutFiles"/>
+				<ComponentRef Id="StartPageLayoutBlueFiles"/>
+				<ComponentRef Id="StartPageLayoutBrownFiles"/>
+				<ComponentRef Id="StartPageLayoutCommonFiles"/>
+				<ComponentRef Id="StartPageLayoutGreenFiles"/>
+				<ComponentRef Id="StartPageLayoutOrangeFiles"/>
+				<ComponentRef Id="StartPageLayoutRedFiles"/>
+				<ComponentRef Id="StartPageLayoutFiles"/>
+				<ComponentRef Id="StringResourceFiles"/>
+				<ComponentRef Id="SchemaFiles"/>
+				<ComponentRef Id="CSharpFileTemplates"/>
+				<ComponentRef Id="VBNetFileTemplates"/>
+				<ComponentRef Id="MiscFileTemplates"/>
+				<ComponentRef Id="SharpDevelopFileTemplates"/>
+				<ComponentRef Id="CSharpProjectTemplates"/>
+				<ComponentRef Id="MiscProjectTemplates"/>
+				<ComponentRef Id="VBNetProjectTemplates"/>
+				<ComponentRef Id="ExampleProjectTemplate"/>
+				<ComponentRef Id="ICSharpCode.SharpDevelop.addin"/>
+				<ComponentRef Id="BooTemplateFiles"/>
+				<ComponentRef Id="BooBindingDll"/>
+				<ComponentRef Id="BoocExe"/>
+				<ComponentRef Id="NRefactoryToBooConverterDll"/>
+				<ComponentRef Id="BooBuildTasksDll"/>
+				<ComponentRef Id="BooLangUsefulDll"/>
+				<ComponentRef Id="BooLangParserDll"/>
+				<ComponentRef Id="BooLangInterpreterDll"/>
+				<ComponentRef Id="BooLangDll"/>
+				<ComponentRef Id="BooLangCompilerDll"/>
+				<ComponentRef Id="BooLangCodeDomDll"/>
+				<ComponentRef Id="BooBindingAddInDll"/>
+				<ComponentRef Id="CSharpBindingFiles"/>
+				<ComponentRef Id="ILAsmTemplates"/>
+				<ComponentRef Id="ILAsmBindingFiles"/>
+				<ComponentRef Id="VBNetBindingFiles"/>
+				<ComponentRef Id="WixBindingFiles"/>
+				<ComponentRef Id="WixBindingTemplates"/>
+				<ComponentRef Id="FormsDesignerFiles"/>
+				<ComponentRef Id="IconEditorAddInFiles"/>
+				<ComponentRef Id="IconEditorExe"/>
+				<ComponentRef Id="ResourceEditorFiles"/>
+				<ComponentRef Id="XmlEditorFiles"/>
+				<ComponentRef Id="AddInManagerFiles"/>
+				<ComponentRef Id="AddInManagerSharpZipLibDll"/>
+				<ComponentRef Id="AddInScoutFiles"/>
+				<ComponentRef Id="CodeAnalysisFiles"/>
+				<ComponentRef Id="CodeCoverageFiles"/>
+				<ComponentRef Id="ComponentInspectorAddInDll"/>
+				<ComponentRef Id="ComponentInspectorAddInCoreDll"/>
+				<ComponentRef Id="DebuggerAddInFiles"/>
+				<ComponentRef Id="FiletypeIcons"/>
+				<ComponentRef Id="FiletypeRegistererFiles"/>
+				<ComponentRef Id="HighlightingEditorFiles"/>
+				<ComponentRef Id="HtmlHelp2Files"/>
+				<ComponentRef Id="MonoAddInFiles"/>
+				<ComponentRef Id="NAntAddInFiles"/>
+				<ComponentRef Id="PInvokeAddInFiles"/>
+				<ComponentRef Id="RegExToolkitFiles"/>
+				<ComponentRef Id="SharpDbToolsFiles"/>
+				<ComponentRef Id="SharpQueryDll"/>
+				<ComponentRef Id="SharpQueryInteropMSDASCDll"/>
+				<ComponentRef Id="SharpReportCoreDll"/>
+				<ComponentRef Id="SharpReportDll"/>
+				<ComponentRef Id="ReportGeneratorDll"/>
+				<ComponentRef Id="SharpReportAddInDll"/>
+				<ComponentRef Id="StartPageAddInFiles"/>
+				<ComponentRef Id="SubversionAddInDll"/>
+				<ComponentRef Id="SubversionUtilsDll"/>
+				<ComponentRef Id="SubversionLibAprDll"/>
+				<ComponentRef Id="SubversionAprIconvDll"/>
+				<ComponentRef Id="SubversionLibAprUtilDll"/>
+				<ComponentRef Id="SubversionLibDb44Dll"/>
+				<ComponentRef Id="SubversionMsvcp70Dll"/>
+				<ComponentRef Id="SubversionMsvcr70Dll"/>
+				<ComponentRef Id="NSvnCommonDll"/>
+				<ComponentRef Id="NSvnCoreDll"/>
+				<ComponentRef Id="UnitTestingAddInFiles"/>
+				<ComponentRef Id="SyntaxModesFiles"/>
+				<ComponentRef Id="SharpDevelopWebsiteShortcut"/>
+				<ComponentRef Id="SharpDevelopAppPathRegistrySetting"/>
+			</Feature>
 		</Feature>
 			
 		<!-- Using WixUI temporarily -->
 		<Property Id="WIXUI_INSTALLDIR">INSTALLDIR</Property>
 		<UIRef Id="WixUI_InstallDir"/>
+	
+		<!-- 
+			If a newer version of SharpDevelop 2.1 is installed show an
+			error message.
+	
+			This message is not displayed immediately, the FindRelatedProducts 
+			action occurs well into the installation after the user has
+			configured everything.
+		-->
+		<CustomAction Id="NoDowngrade" Error="A later version of [ProductName] is already installed." />
+
+		<!-- Add RemoveExistingProducts action to install sequence so upgrades can work -->
+		<InstallExecuteSequence>
+			<!-- 
+				Display an error message if a newer version found.
+				
+				Since the installer completely removes the existing SharpDevelop 2.1
+				downgrades would work without any problems, but for now we 
+				inform the user that a newer version already exists.
+ 			-->
+			<Custom Action="NoDowngrade" After="FindRelatedProducts">NEWERVERSIONFOUND</Custom>
+			<!-- 
+				Removes the older version of SharpDevelop 2.1, if we are upgrading,
+				before installing the new version.
+
+				Unfortunately the user is not informed of this upgrade. I think
+				we need a custom dialog showing the old installation located and
+				the fact that it is going to be upgraded.
+
+				The best place to do this is after InstallFinalize however if we
+				do it then after we have removed a file from an addin, and changed
+				the Component Guid, the modified component is not installed. So
+				we make sure SharpDevelop is completely removed before installing
+				the newer version. This also covers us if we accidentally
+				modify a component but do not change its Guid.
+
+				http://msdn.microsoft.com/library/en-us/msi/setup/removeexistingproducts_action.asp
+			-->
+			<RemoveExistingProducts Before="InstallInitialize"/>
+		</InstallExecuteSequence>
 	</Product>
 </Wix>
