@@ -391,15 +391,13 @@ namespace CSharpBinding.FormattingStrategy
 				case ':':
 				case ')':
 				case ']':
-					
 				case '}':
 				case '{':
-					return textArea.Document.FormattingStrategy.IndentLine(textArea, lineNr);
-				case '\n':
-					if (lineNr <= 0) {
-						return IndentLine(textArea, lineNr);
+					if (textArea.Document.TextEditorProperties.IndentStyle == IndentStyle.Smart) {
+						return textArea.Document.FormattingStrategy.IndentLine(textArea, lineNr);
 					}
-					
+					break;
+				case '\n':
 					string  lineAboveText = lineAbove == null ? "" : textArea.Document.GetText(lineAbove);
 					//// curLine might have some text which should be added to indentation
 					curLineText = "";

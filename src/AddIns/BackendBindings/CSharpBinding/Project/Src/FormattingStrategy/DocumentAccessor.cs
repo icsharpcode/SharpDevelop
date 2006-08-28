@@ -33,7 +33,7 @@ namespace CSharpBinding.FormattingStrategy
 	}
 	
 	#region DocumentAccessor
-	public class DocumentAccessor : IDocumentAccessor
+	public sealed class DocumentAccessor : IDocumentAccessor
 	{
 		IDocument doc;
 		
@@ -113,7 +113,7 @@ namespace CSharpBinding.FormattingStrategy
 	#endregion
 	
 	#region FileAccessor
-	public class FileAccessor : IDisposable, IDocumentAccessor
+	public sealed class FileAccessor : IDisposable, IDocumentAccessor
 	{
 		public bool Dirty {
 			get {
@@ -132,16 +132,12 @@ namespace CSharpBinding.FormattingStrategy
 		ArrayList lines = new ArrayList();
 		bool dirty = false;
 		
-		System.Text.Encoding encoding;
-		
 		string filename;
 		public FileAccessor(string filename)
 		{
 			this.filename = filename;
-			f = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.None);
-			// TODO: Auto-detect encoding
-			encoding = System.Text.Encoding.GetEncoding("ISO-8859-1");
-			r = new StreamReader(f, encoding);
+			f = new FileStream(filename, FileMode.Open, FileAccess.Read);
+			r = ICSharpCode.TextEditor.Util.FileReader.OpenStream(f, ICSharpCode.Core.ParserService.DefaultFileEncoding, ICSharpCode.Core.ParserService.DefaultFileEncoding);
 		}
 		
 		int num = 0;
@@ -180,6 +176,7 @@ namespace CSharpBinding.FormattingStrategy
 		
 		public void Close()
 		{
+			System.Text.Encoding encoding = r.CurrentEncoding;
 			r.Close();
 			f.Close();
 			if (dirty) {
@@ -191,6 +188,67 @@ namespace CSharpBinding.FormattingStrategy
 				}
 				f.Close();
 			}
+		}
+	}
+	#endregion
+	
+	#region StringAccessor
+	public sealed class StringAccessor : IDocumentAccessor
+	{
+		public bool Dirty {
+			get {
+				return dirty;
+			}
+		}
+		
+		public bool ReadOnly {
+			get {
+				return false;
+			}
+		}
+		
+		StringReader r;
+		StringWriter w;
+		bool dirty = false;
+		
+		public string CodeOutput {
+			get {
+				return w.ToString();
+			}
+		}
+		
+		public StringAccessor(string code)
+		{
+			r = new StringReader(code);
+			w = new StringWriter();
+		}
+		
+		int num = 0;
+		
+		public int LineNumber {
+			get { return num; }
+		}
+		
+		string text = "";
+		
+		public string Text {
+			get {
+				return text;
+			}
+			set {
+				dirty = true;
+				text = value;
+			}
+		}
+		
+		public bool Next()
+		{
+			if (num > 0) {
+				w.WriteLine(text);
+			}
+			text = r.ReadLine();
+			++num;
+			return text != null;
 		}
 	}
 	#endregion

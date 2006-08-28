@@ -6,19 +6,19 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpBinding.FormattingStrategy
 {
-	public class IndentationSettings
+	public sealed class IndentationSettings
 	{
 		public string IndentString = "\t";
 		/// <summary>Leave empty lines empty.</summary>
 		public bool LeaveEmptyLines = true;
 	}
 	
-	public class IndentationReformatter
+	public sealed class IndentationReformatter
 	{
 		public struct Block
 		{
@@ -46,7 +46,7 @@ namespace CSharpBinding.FormattingStrategy
 		}
 		
 		StringBuilder wordBuilder;
-		Stack blocks; // blocks contains all blocks outside of the current
+		Stack<Block> blocks; // blocks contains all blocks outside of the current
 		Block block;  // block is the current block
 		
 		bool inString = false;
@@ -71,7 +71,7 @@ namespace CSharpBinding.FormattingStrategy
 		public void Init()
 		{
 			wordBuilder = new StringBuilder();
-			blocks = new Stack();
+			blocks = new Stack<Block>();
 			block = new Block();
 			block.InnerIndent = "";
 			block.OuterIndent = "";
@@ -224,10 +224,10 @@ namespace CSharpBinding.FormattingStrategy
 					case '}':
 						while (block.Bracket != '{') {
 							if (blocks.Count == 0) break;
-							block = (Block)blocks.Pop();
+							block = blocks.Pop();
 						}
 						if (blocks.Count == 0) break;
-						block = (Block)blocks.Pop();
+						block = blocks.Pop();
 						block.Continuation = false;
 						block.OneLineBlock = false;
 						break;
@@ -241,13 +241,13 @@ namespace CSharpBinding.FormattingStrategy
 						block.Indent(set,
 						             (oldBlock.OneLineBlock ? set.IndentString : "") +
 						             (oldBlock.Continuation ? set.IndentString : "") +
-						             new String(' ', i + 1));
+						             (i == line.Length - 1 ? set.IndentString : new String(' ', i + 1)));
 						block.Bracket = c;
 						break;
 					case ')':
 						if (blocks.Count == 0) break;
 						if (block.Bracket == '(') {
-							block = (Block)blocks.Pop();
+							block = blocks.Pop();
 							if (IsSingleStatementKeyword(block.LastWord))
 								block.Continuation = false;
 						}
@@ -255,7 +255,7 @@ namespace CSharpBinding.FormattingStrategy
 					case ']':
 						if (blocks.Count == 0) break;
 						if (block.Bracket == '[')
-							block = (Block)blocks.Pop();
+							block = blocks.Pop();
 						break;
 					case ';':
 					case ',':
