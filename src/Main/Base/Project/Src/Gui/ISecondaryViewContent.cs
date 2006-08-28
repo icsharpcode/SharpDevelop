@@ -22,5 +22,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void NotifyBeforeSave();
 		
 		void NotifyAfterSave(bool successful);
+		
+		void NotifyFileNameChanged();
 	}
 }

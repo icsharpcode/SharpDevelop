@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -30,7 +30,6 @@ namespace ICSharpCode.FormsDesigner
 		protected bool failedDesignerInitialize;
 		
 		protected IViewContent viewContent;
-		protected Dictionary<string, DesignerResourceService.ResourceStorage> resources = new Dictionary<string, DesignerResourceService.ResourceStorage>();
 		protected ITextEditorControlProvider textAreaControlProvider;
 		
 		Panel p = new Panel();
@@ -92,7 +91,6 @@ namespace ICSharpCode.FormsDesigner
 			
 			this.viewContent             = viewContent;
 			this.textAreaControlProvider = viewContent as ITextEditorControlProvider;
-			
 		}
 		
 		public override void SwitchedTo()
@@ -113,7 +111,7 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(IHelpService), new HelpService());
 			serviceContainer.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
 			
-			designerResourceService = new DesignerResourceService(viewContent.FileName, this.resources);
+			designerResourceService = new DesignerResourceService(viewContent.FileName);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IResourceService), designerResourceService);
 			AmbientProperties ambientProperties = new AmbientProperties();
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
@@ -349,10 +347,19 @@ namespace ICSharpCode.FormsDesigner
 		
 		public override void NotifyAfterSave(bool successful)
 		{
+			base.NotifyAfterSave(successful);
 			if (successful) {
 				if (designerResourceService != null) {
-					designerResourceService.Save();
+					designerResourceService.Save(viewContent.FileName);
 				}
+			}
+		}
+		
+		public override void NotifyFileNameChanged()
+		{
+			base.NotifyFileNameChanged();
+			if (designerResourceService != null) {
+				designerResourceService.FormFileName = viewContent.FileName;
 			}
 		}
 		

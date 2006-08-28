@@ -30,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.successful = successful;
 		}
 	}
+	
 	/// <summary>
 	/// IViewContent is the base interface for all editable data
 	/// inside SharpDevelop.
@@ -120,6 +121,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Is called each time the name for the content has changed.
 		/// </summary>
 		event EventHandler TitleNameChanged;
+		
+		event EventHandler FileNameChanged;
 		
 		event EventHandler     Saving;
 		event SaveEventHandler Saved;

@@ -19,5 +19,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public virtual void NotifyAfterSave(bool successful)
 		{
 		}
+		
+		public virtual void NotifyFileNameChanged()
+		{
+		}
 	}
 }

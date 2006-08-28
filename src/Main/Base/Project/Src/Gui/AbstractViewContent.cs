@@ -54,6 +54,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected virtual void OnFileNameChanged(EventArgs e)
 		{
+			foreach (ISecondaryViewContent svc in SecondaryViewContents) {
+				svc.NotifyFileNameChanged();
+			}
 			if (FileNameChanged != null) {
 				FileNameChanged(this, e);
 			}

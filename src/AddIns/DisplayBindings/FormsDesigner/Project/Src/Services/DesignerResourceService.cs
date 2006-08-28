@@ -26,18 +26,27 @@ namespace ICSharpCode.FormsDesigner.Services
 	public class DesignerResourceService : System.ComponentModel.Design.IResourceService , IDisposable
 	{
 		IDesignerHost host;
+		string formFileName;
 		
-		string FileName  = String.Empty;
+		public string FormFileName {
+			get {
+				return formFileName;
+			}
+			set {
+				formFileName = value;
+			}
+		}
+		
+		// Culture name (or empty string) => Resources
+		Dictionary<string, DesignerResourceService.ResourceStorage> resources = new Dictionary<string, DesignerResourceService.ResourceStorage>();
 		
 		#region ResourceStorage
 		public class ResourceStorage
 		{
 			MemoryStream stream;
 			IResourceWriter writer;
-
-			public IProject     project = null;
-			string fileName;
 			byte[] buffer;
+			ResourceType type = ResourceType.Resx;
 			
 			/// <summary>
 			/// true, if the currently stored resource is not empty.
@@ -50,12 +59,6 @@ namespace ICSharpCode.FormsDesigner.Services
 				}
 			}
 			
-			public ResourceStorage(string fileName, IProject project)
-			{
-				this.project = project;
-				this.fileName = fileName;
-			}
-
 			public void Dispose()
 			{
 				if (this.stream != null) {
@@ -90,16 +93,17 @@ namespace ICSharpCode.FormsDesigner.Services
 			/// Returns a new resource reader for this resource based on the most recent
 			/// version available (either in memory or on disk).
 			/// </summary>
-			public IResourceReader GetReader()
+			public IResourceReader GetReader(string resourceFileName)
 			{
 				if (this.GetBuffer() == null) {
-					if (File.Exists(this.fileName)) {
-						return CreateResourceReader(this.fileName, GetResourceType(this.fileName));
+					if (File.Exists(resourceFileName)) {
+						type = GetResourceType(resourceFileName);
+						return CreateResourceReader(resourceFileName, type);
 					} else {
 						return null;
 					}
 				} else {
-					return CreateResourceReader(new MemoryStream(this.buffer, false), GetResourceType(this.fileName));
+					return CreateResourceReader(new MemoryStream(this.buffer, false), type);
 				}
 			}
 			
@@ -112,7 +116,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			public IResourceWriter GetWriter()
 			{
 				this.stream = new MemoryStream();
-				this.writer = CreateResourceWriter(this.stream, GetResourceType(this.fileName));
+				this.writer = CreateResourceWriter(this.stream, type);
 				return this.writer;
 			}
 
@@ -131,15 +135,11 @@ namespace ICSharpCode.FormsDesigner.Services
 		};
 
 		// In ResourceMemoryStreams are stored:
-		// Key: "true" file names from the project
+		// Key: Culture name (empty string for invariant culture)
 		// Value: ResourceStorage, where the resources are stored
-		// If the file is read, after
-		// calculating of the "true" file name, it looks for MemoryStream
-		// uses it if it exists.
 		// Memory streams are cleared, when WriteSerialization will start
 		// or File in the editor will be reloaded from the disc and of
 		// course in Dispose of the service
-		protected Dictionary<string, ResourceStorage> resources = null;
 		public Dictionary<string, ResourceStorage> Resources
 		{
 			get {
@@ -158,33 +158,30 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 		}
 
-		public DesignerResourceService(string fileName, Dictionary<string, ResourceStorage> resources)
+		public DesignerResourceService(string formFileName)
 		{
-			this.FileName = fileName;
-			this.resources = resources;
+			this.formFileName = formFileName;
 		}
 
-		IProject _project;
-		
-		IProject GetProject()
+		static IProject GetProject(string formFileName)
 		{
-			if (_project == null && ProjectService.OpenSolution != null && FileName != null)
-				_project = ProjectService.OpenSolution.FindProjectContainingFile(FileName);
-			return _project;
+			if (ProjectService.OpenSolution != null && formFileName != null)
+				return ProjectService.OpenSolution.FindProjectContainingFile(formFileName);
+			else
+				return null;
 		}
 		
 		#region System.ComponentModel.Design.IResourceService interface implementation
-		public System.Resources.IResourceWriter GetResourceWriter(System.Globalization.CultureInfo info)
+		public System.Resources.IResourceWriter GetResourceWriter(CultureInfo info)
 		{
 			try {
-				LoggingService.Debug("ResourceWriter requested for culture: "+info.ToString());
-				string fileName = CalcResourceFileName(info);
+				LoggingService.Debug("ResourceWriter requested for culture: " + info.ToString());
 				ResourceStorage resourceStorage;
-				if (resources.ContainsKey(fileName)) {
-					resourceStorage = resources[fileName];
+				if (resources.ContainsKey(info.Name)) {
+					resourceStorage = resources[info.Name];
 				} else {
-					resourceStorage = new ResourceStorage(fileName, GetProject());
-					resources[fileName] = resourceStorage;
+					resourceStorage = new ResourceStorage();
+					resources[info.Name] = resourceStorage;
 				}
 				return resourceStorage.GetWriter();
 			} catch (Exception e) {
@@ -197,15 +194,14 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			try {
 				LoggingService.Debug("ResourceReader requested for culture: "+info.ToString());
-				string fileName = CalcResourceFileName(info);
 				ResourceStorage resourceStorage;
-				if (resources != null && resources.ContainsKey(fileName)) {
-					resourceStorage = resources[fileName];
+				if (resources != null && resources.ContainsKey(info.Name)) {
+					resourceStorage = resources[info.Name];
 				} else {
-					resourceStorage = new ResourceStorage(fileName, GetProject());
-					resources[fileName] = resourceStorage;
+					resourceStorage = new ResourceStorage();
+					resources[info.Name] = resourceStorage;
 				}
-				return resourceStorage.GetReader();
+				return resourceStorage.GetReader(CalcResourceFileName(formFileName, info.Name));
 			} catch (Exception e) {
 				MessageService.ShowError(e);
 				return null;
@@ -213,24 +209,26 @@ namespace ICSharpCode.FormsDesigner.Services
 		}
 		#endregion
 
-		public void Save()
+		public void Save(string formFileName)
 		{
+			this.formFileName = formFileName;
 			if (resources != null) {
 				foreach (KeyValuePair<string, ResourceStorage> entry in resources) {
-					string resourceFileName = entry.Key;
+					string cultureName = entry.Key;
+					string resourceFileName = CalcResourceFileName(formFileName, cultureName);
 					FileUtility.ObservedSave(new NamedFileOperationDelegate(entry.Value.Save), resourceFileName, FileErrorPolicy.Inform);
 					
-					IProject project = GetProject();
+					IProject project = GetProject(formFileName);
 					
 					// Add this resource file to the project
 					if (entry.Value.ContainsData && project != null && !project.IsFileInProject(resourceFileName)) {
 						FileProjectItem newFileProjectItem = new FileProjectItem(project, ItemType.EmbeddedResource);
-						newFileProjectItem.DependentUpon = Path.GetFileName(FileName);
+						newFileProjectItem.DependentUpon = Path.GetFileName(formFileName);
 						newFileProjectItem.Include = FileUtility.GetRelativePath(project.Directory, resourceFileName);
 						ProjectService.AddProjectItem(project, newFileProjectItem);
 						
 						PadDescriptor pd = WorkbenchSingleton.Workbench.GetPad(typeof(ProjectBrowserPad));
-						FileNode formFileNode = ((ProjectBrowserPad)pd.PadContent).ProjectBrowserControl.FindFileNode(FileName);
+						FileNode formFileNode = ((ProjectBrowserPad)pd.PadContent).ProjectBrowserControl.FindFileNode(formFileName);
 						if (formFileNode != null) {
 							LoggingService.Info("FormFileNode found, adding subitem");
 							FileNode fileNode = new FileNode(resourceFileName, FileNodeStatus.BehindFile);
@@ -243,13 +241,13 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 		}
 
-		protected string CalcResourceFileName(System.Globalization.CultureInfo info)
+		protected static string CalcResourceFileName(string formFileName, string cultureName)
 		{
 			StringBuilder resourceFileName = null;
-			IProject project = GetProject();
+			IProject project = GetProject(formFileName);
 			
-			if (FileName != null && FileName != String.Empty) {
-				resourceFileName = new StringBuilder(Path.GetDirectoryName(FileName));
+			if (formFileName != null && formFileName != String.Empty) {
+				resourceFileName = new StringBuilder(Path.GetDirectoryName(formFileName));
 			} else if (project != null) {
 				resourceFileName = new StringBuilder(project.Directory);
 			} else {
@@ -258,11 +256,11 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			resourceFileName.Append(Path.DirectorySeparatorChar);
 			string sourceFileName = null;
-			if (project != null && this.FileName != null) {
+			if (project != null && formFileName != null) {
 				// Try to find the source file name by using the project dependencies first.
 				FileProjectItem sourceItem = project.Items.Find(delegate(ProjectItem item) {
 				                                                	FileProjectItem fpi = item as FileProjectItem;
-				                                                	return fpi != null && fpi.FileName != null && FileUtility.IsEqualFileName(fpi.FileName, this.FileName);
+				                                                	return fpi != null && fpi.FileName != null && FileUtility.IsEqualFileName(fpi.FileName, formFileName);
 				                                                }) as FileProjectItem;
 				if (sourceItem != null && sourceItem.DependentUpon != null && sourceItem.DependentUpon.Length > 0) {
 					sourceFileName = Path.GetFileNameWithoutExtension(sourceItem.DependentUpon);
@@ -272,20 +270,20 @@ namespace ICSharpCode.FormsDesigner.Services
 				// If the source file name cannot be found using the project dependencies,
 				// assume the resource file name to be equal to the current source file name.
 				// Remove the ".Designer" part if present.
-				sourceFileName = Path.GetFileNameWithoutExtension(this.FileName);
+				sourceFileName = Path.GetFileNameWithoutExtension(formFileName);
 				if (sourceFileName != null && sourceFileName.ToLowerInvariant().EndsWith(".designer")) {
 					sourceFileName = sourceFileName.Substring(0, sourceFileName.Length - 9);
 				}
 			}
 			resourceFileName.Append(sourceFileName);
 			
-			if (info != null && info.Name.Length > 0) {
+			if (!string.IsNullOrEmpty(cultureName)) {
 				resourceFileName.Append('.');
-				resourceFileName.Append(info.Name);
+				resourceFileName.Append(cultureName);
 			}
 			
 			// Use .resources filename if file exists.
-			if (File.Exists(String.Concat(resourceFileName.ToString(), ".resources"))) {
+			if (File.Exists(resourceFileName.ToString() + ".resources")) {
 				resourceFileName.Append(".resources");
 			} else {
 				resourceFileName.Append(".resx");
