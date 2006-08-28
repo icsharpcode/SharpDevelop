@@ -1,34 +1,50 @@
 using System;
-using System.Data;
-using System.Diagnostics;
-using System.Reflection;
-using System.Collections;
 using System.ComponentModel;
-
-
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace SharpReportCore
 {
 	/// <summary>
-	/// This class act'S as a IndexList to
+	/// This class act's as a IndexList to
 	/// <see cref="SharpBaseList"></see>
 	/// </summary>
-	public class SharpIndexCollection :List<BaseComparer> {
+	public class SharpIndexCollection :List<BaseComparer> ,IEnumerable<BaseComparer>{
 		string name;
 		int currentPosition;
 		
-		public SharpIndexCollection():this ("SharpIndexList"){	
+		public SharpIndexCollection():this ("IndexList"){
 		}
 		
 		public SharpIndexCollection(string name){
 			this.name = name;
 		}
+		#region IEnumerable implementation
+		
+		IEnumerator<BaseComparer> IEnumerable<BaseComparer>.GetEnumerator()
+		{
+			System.Console.WriteLine("IndexList IEnumerable<BaseComparer>.GetEnumerator()" );
+			//return new MyEnumerator(this);
+			
+			for (int i =0;i < this.Count;i++){
+				yield return this[i];
+			}
+			
+		}
+		
+		IEnumerator IEnumerable.GetEnumerator(){
+			System.Console.WriteLine("IndexList IEnumerable.GetEnumerator()" );
+			return ((IEnumerable<BaseComparer>)this).GetEnumerator();
+		}
+		
+		#endregion
 		
 		
 		#region properties
-	
+		
 		public int CurrentPosition {
 			get {
 				return currentPosition;
@@ -43,9 +59,56 @@ namespace SharpReportCore
 				return name;
 			}
 		}
-		
-		
 		#endregion
+	/*
+		class MyEnumerator : IEnumerator<BaseComparer>{
+			SharpIndexCollection index;
+			int current;
+			
+			public MyEnumerator(SharpIndexCollection index)
+			{
+				System.Console.WriteLine("Constr:MyEnumerator");
+				this.index = index;
+				this.current = -1;
+			}
+			
+			public BaseComparer Current {
+				get {
+					System.Console.WriteLine("\tBaseComparer Current");
+					if (this.current == -1) {
+						throw new InvalidOperationException("SharpArrayList:Current");
+					}
+					return this.index[this.current];
+				}
+			}
+			
+			object IEnumerator.Current {
+				get {
+					System.Console.WriteLine("IEnumerator.Current");
+					IEnumerator<BaseComparer> enumerator = this;
+					return enumerator.Current;
+				}
+			}
+			
+			public void Dispose()
+			{
+				throw new NotImplementedException();
+			}
+			
+			public bool MoveNext()
+			{
+				System.Console.WriteLine("IndexList:MoveNext");
+				this.current++;
+				return(this.current < this.index.Count);
+			}
+			
+			public void Reset()
+			{
+				this.current = -1;
+			}
+			
+		}
+		*/
 	}
 	
 	/// <summary>
@@ -114,7 +177,7 @@ namespace SharpReportCore
 				Add(t);
 			}
 		}
-	
+		
 		
 		public void Clear(){
 			list = new Collection<T>();
@@ -139,7 +202,7 @@ namespace SharpReportCore
 		}
 		#region ITypedList Member
 
-		public PropertyDescriptorCollection GetItemProperties(PropertyDescriptor[] listAccessors){			
+		public PropertyDescriptorCollection GetItemProperties(PropertyDescriptor[] listAccessors){
 			if (listAccessors != null && listAccessors.Length > 0){
 				Type t = this.elementType;
 				
@@ -157,7 +220,7 @@ namespace SharpReportCore
 		}
 		
 		public static Type GetElementType(IList list, Type parentType, string propertyName)
-		{			
+		{
 			SharpDataCollection<T> al = null;
 			object element = null;
 			al = CheckForArrayList(list);

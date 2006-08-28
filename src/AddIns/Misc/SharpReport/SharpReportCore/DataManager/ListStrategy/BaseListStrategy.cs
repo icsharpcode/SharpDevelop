@@ -21,6 +21,9 @@ using System.ComponentModel;
 /// </remarks>
 
 namespace SharpReportCore {	
+	
+	public delegate BaseComparer IndexerDelegate(ColumnCollection col,int i,object[] values);
+	
 	public abstract class BaseListStrategy :IDataViewStrategy,IEnumerator {
 		private bool isSorted;
 		private bool isFiltered;
@@ -70,6 +73,9 @@ namespace SharpReportCore {
 		public SharpIndexCollection IndexList {
 			get {
 				return indexList;
+			}
+			set {
+				this.indexList = value;
 			}
 		}
 		
@@ -149,6 +155,17 @@ namespace SharpReportCore {
 		}
 		
 		#endregion
+		
+		#region Sorting delegates
+		
+		protected static BaseComparer PlainIndexBuilder (ColumnCollection columns,int row,object[] values) {
+		// We insert only the RowNr as a dummy value
+			values[0] = row;
+			return new BaseComparer(columns, row, values);
+		}
+		
+		#endregion
+		
 		
 		protected static void CheckSortArray (SharpIndexCollection arr,string text){
 
@@ -258,14 +275,9 @@ namespace SharpReportCore {
 		
 		}
 		
-		
-	
-		
 		public virtual void Sort() {
 			this.indexList.Clear();
 		}
-		
-	
 		
 		public virtual void Bind() {
 			

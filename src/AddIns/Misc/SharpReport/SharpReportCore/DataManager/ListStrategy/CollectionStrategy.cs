@@ -14,7 +14,7 @@ using System.Globalization;
 
 /// <summary>
 /// This Class handles all List's with IList
-/// Access to Data is allway#s done by using the 'IndexList'
+/// Access to Data is allway's done by using the 'IndexList'
 /// </summary>
 
 namespace SharpReportCore {
@@ -29,7 +29,8 @@ namespace SharpReportCore {
 		
 		private SharpDataCollection<object> baseList;
 
-
+		#region Constructor
+		
 		public CollectionStrategy(IList list,string dataMember,ReportSettings reportSettings):base(reportSettings) {
 
 			if (list.Count > 0) {
@@ -43,7 +44,10 @@ namespace SharpReportCore {
 			this.listProperties = this.baseList.GetItemProperties(null);
 		}
 
-
+		#endregion
+		
+		#region build grouping
+		
 		private void BuildGroup(){
 
 			try {
@@ -51,7 +55,7 @@ namespace SharpReportCore {
 				
 				if (base.ReportSettings.GroupColumnsCollection != null) {
 					if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
-						this.BuildSortIndex (groupedArray,base.ReportSettings.GroupColumnsCollection);
+						groupedArray = this.BuildSortIndex (base.ReportSettings.GroupColumnsCollection);
 					}
 				}
 
@@ -83,6 +87,10 @@ namespace SharpReportCore {
 			}
 		}
 		
+		#endregion
+		
+		#region build sorting
+		
 		private PropertyDescriptor[] BuildSortProperties (ColumnCollection col){
 			PropertyDescriptor[] sortProperties = new PropertyDescriptor[col.Count];
 			PropertyDescriptorCollection c = this.baseList.GetItemProperties(null);
@@ -100,8 +108,9 @@ namespace SharpReportCore {
 			return sortProperties;
 		}
 		
-		#region Index Building
-		private  void BuildSortIndex(SharpIndexCollection arrayList,ColumnCollection col) {
+		
+		private  SharpIndexCollection BuildSortIndex(ColumnCollection col) {
+			SharpIndexCollection arrayList = new SharpIndexCollection();
 			PropertyDescriptor[] sortProperties = BuildSortProperties (col);
 			for (int rowIndex = 0; rowIndex < this.baseList.Count; rowIndex++){
 				object rowItem = this.baseList[rowIndex];
@@ -125,30 +134,20 @@ namespace SharpReportCore {
 				arrayList.Add(new SortComparer(col, rowIndex, values));
 			}
 			arrayList.Sort();
+			return arrayList;
 		}
-		
-		
-		
 		
 		// if we have no sorting, we build the indexlist as well, so we don't need to
-		//check each time we reasd data if we have to go directly or by IndexList
-		private  void BuildPlainIndex(SharpIndexCollection arrayList,ColumnCollection col) {
-			
-			PropertyDescriptor[] sortProperties = new PropertyDescriptor[1];
-			PropertyDescriptorCollection c = this.baseList.GetItemProperties(null);
-			PropertyDescriptor descriptor = c[0];
-			sortProperties[0] = descriptor;
-			
+		
+		private SharpIndexCollection IndexBuilder(IndexerDelegate indexer,ColumnCollection col) {
+			SharpIndexCollection arrayList = new SharpIndexCollection();
 			for (int rowIndex = 0; rowIndex < this.baseList.Count; rowIndex++){
 				object[] values = new object[1];
-				
-				// We insert only the RowNr as a dummy value
-				values[0] = rowIndex;
-				arrayList.Add(new BaseComparer(col, rowIndex, values));
+				BaseComparer bc = indexer(col,rowIndex,values);
+				arrayList.Add(bc);
 			}
-			
+			return arrayList;
 		}
-	
 	
 		#endregion
 		
@@ -193,15 +192,13 @@ namespace SharpReportCore {
 			base.Sort();
 			if ((base.ReportSettings.SortColumnCollection != null)) {
 				if (base.ReportSettings.SortColumnCollection.Count > 0) {
-					this.BuildSortIndex (base.IndexList,
-					                     base.ReportSettings.SortColumnCollection);
-					
+					base.IndexList = this.BuildSortIndex (base.ReportSettings.SortColumnCollection);
 					
 					base.IsSorted = true;
 //					BaseListStrategy.CheckSortArray (base.IndexList,"TableStrategy - CheckSortArray");
 				} else {
-					this.BuildPlainIndex(base.IndexList,
-					                     base.ReportSettings.SortColumnCollection);
+					SharpReportCore.IndexerDelegate t = new SharpReportCore.IndexerDelegate(BaseListStrategy.PlainIndexBuilder);
+					base.IndexList = this.IndexBuilder(t,base.ReportSettings.SortColumnCollection);
 					base.IsSorted = false;
 				}
 			}

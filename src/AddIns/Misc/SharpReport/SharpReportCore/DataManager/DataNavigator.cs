@@ -9,7 +9,7 @@
 
 using System;
 using System.ComponentModel;
-//using System.Collections;
+using System.Collections;
 
 namespace SharpReportCore
 {
@@ -17,7 +17,8 @@ namespace SharpReportCore
 	/// Description of DataNavigator.
 	/// </summary>
 	
-	public class DataNavigator :IDataNavigator{
+	
+	public class DataNavigator :IDataNavigator,IEnumerable{
 		IDataViewStrategy store;
 		GroupSeperator groupSeperator;
 		
@@ -107,6 +108,71 @@ namespace SharpReportCore
 		public object Current {
 			get {
 				return this.store.Current;
+			}
+		}
+		
+		#endregion
+		/*
+		public delegate void TestDelegate(string s);
+		public delegate bool TestBoolDelegate(string s,string ss);
+		
+		public SharpIndexCollection PlainDelegate (TestDelegate t) {
+			SharpIndexCollection cl = new SharpIndexCollection("Filtered");
+System.Collections.IEnumerable e = (this as System.Collections.IEnumerable);
+			System.Collections.IEnumerator en = e.GetEnumerator();
+			while(en.MoveNext()){
+				System.Console.WriteLine("\twhile");
+				t("x");
+			}
+			
+			return cl;
+		}
+	
+		public SharpIndexCollection BoolDelegate (TestBoolDelegate t) {
+			SharpIndexCollection cl = new SharpIndexCollection("Filtered");
+			System.Collections.IEnumerable e = (this as System.Collections.IEnumerable);
+			System.Collections.IEnumerator en = e.GetEnumerator();
+			while(en.MoveNext()){
+				System.Console.WriteLine("\t{0}",en.Current);
+				if (t("x","y")) {
+				    	System.Console.WriteLine("added");
+				}
+			}
+			return cl;
+		}
+		*/
+		
+		/*
+		public void Scroll() {
+			System.Console.WriteLine("");
+			System.Console.WriteLine("----Scroll did we need this -----");
+			System.Collections.IEnumerable e = (store as System.Collections.IEnumerable);
+			System.Collections.IEnumerator en = e.GetEnumerator();
+			while (en.MoveNext()){
+				System.Console.WriteLine("{0} ",en.Current);
+			}
+			System.Console.WriteLine("----");
+		}
+		*/
+		
+		#region IEnumarable
+		public System.Collections.IEnumerable RangeTester(int start, int end)
+        {
+			System.Console.WriteLine("RangeIterator Range form {0} to {1}",start,end);
+			for (int i = start; i <= end; i++)
+            {
+            	IDataViewStrategy d = this.store as IDataViewStrategy;
+            	d.CurrentRow = i;
+            	yield return this.Current;
+            }
+        }
+
+		
+		IEnumerator IEnumerable.GetEnumerator(){
+			System.Console.WriteLine("Navi:IEnumerable.GetEnumerator() {0}",this.Count);
+				for (int i =0;i < this.Count;i++){
+				this.store.MoveNext();
+				yield return this.Current;
 			}
 		}
 		
