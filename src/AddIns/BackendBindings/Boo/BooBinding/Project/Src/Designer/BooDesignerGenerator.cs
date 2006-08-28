@@ -114,6 +114,11 @@ namespace Grunwald.BooBinding.Designer
 			StringBuilder b = new StringBuilder();
 			b.AppendLine(indentation);
 			b.AppendLine(indentation + "private def " + eventMethodName + "(" + param + "):");
+			if (string.IsNullOrEmpty(body)) {
+				if (ICSharpCode.FormsDesigner.Gui.OptionPanels.GeneralOptionsPanel.InsertTodoComment) {
+					body = "// TODO: Implement " + eventMethodName;
+				}
+			}
 			b.AppendLine(indentation + "\t" + body);
 			return b.ToString();
 		}

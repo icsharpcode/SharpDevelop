@@ -29,6 +29,16 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 			((CheckBox)ControlDictionary["smartTagAutoShowCheckBox"]).Checked        = PropertyService.Get("FormsDesigner.DesignerOptions.ObjectBoundSmartTagAutoShow", true);
 			((CheckBox)ControlDictionary["inPlaceEditCheckBox"]).Checked             = PropertyService.Get("FormsDesigner.DesignerOptions.EnableInSituEditing", true);
 			((CheckBox)ControlDictionary["useSmartTagsCheckBox"]).Checked            = PropertyService.Get("FormsDesigner.DesignerOptions.UseSmartTags", true);
+			((CheckBox)ControlDictionary["insertTodoCommentCheckBox"]).Checked       = InsertTodoComment;
+		}
+		
+		public static bool InsertTodoComment {
+			get {
+				return PropertyService.Get("FormsDesigner.DesignerOptions.InsertTodoComment", false);
+			}
+			set {
+				PropertyService.Set("FormsDesigner.DesignerOptions.InsertTodoComment", value);
+			}
 		}
 		
 		public override bool StorePanelContents()
@@ -38,6 +48,7 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 			PropertyService.Set("FormsDesigner.DesignerOptions.ObjectBoundSmartTagAutoShow", ((CheckBox)ControlDictionary["smartTagAutoShowCheckBox"]).Checked);
 			PropertyService.Set("FormsDesigner.DesignerOptions.EnableInSituEditing", ((CheckBox)ControlDictionary["inPlaceEditCheckBox"]).Checked);
 			PropertyService.Set("FormsDesigner.DesignerOptions.UseSmartTags", ((CheckBox)ControlDictionary["useSmartTagsCheckBox"]).Checked);
+			InsertTodoComment = ((CheckBox)ControlDictionary["insertTodoCommentCheckBox"]).Checked;
 			
 			return true;
 		}
