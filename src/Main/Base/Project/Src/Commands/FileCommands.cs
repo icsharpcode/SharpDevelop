@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			if (ProjectService.CurrentProject != null) {
+			if (ProjectBrowserPad.Instance.CurrentProject != null) {
 				if (MessageService.ShowCustomDialog("${res:Dialog.NewFile.AddToProjectQuestionTitle}",
 				                                    "${res:Dialog.NewFile.AddToProjectQuestion}",
 				                                    "${res:Dialog.NewFile.AddToProjectQuestionProject}",

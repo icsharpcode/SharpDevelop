@@ -311,6 +311,7 @@ namespace CSharpBinding.FormattingStrategy
 		{
 			LineSegment curLine   = textArea.Document.GetLineSegment(lineNr);
 			LineSegment lineAbove = lineNr > 0 ? textArea.Document.GetLineSegment(lineNr - 1) : null;
+			string terminator = textArea.TextEditorProperties.LineTerminator;
 			
 			//// local string for curLine segment
 			string curLineText="";
@@ -322,9 +323,11 @@ namespace CSharpBinding.FormattingStrategy
 					object member = GetMemberAfter(textArea, lineNr);
 					if (member != null) {
 						StringBuilder sb = new StringBuilder();
-						sb.Append(" <summary>\n");
+						sb.Append(" <summary>");
+						sb.Append(terminator);
 						sb.Append(indentation);
-						sb.Append("/// \n");
+						sb.Append("/// ");
+						sb.Append(terminator);
 						sb.Append(indentation);
 						sb.Append("/// </summary>");
 						
@@ -332,7 +335,7 @@ namespace CSharpBinding.FormattingStrategy
 							IMethod method = (IMethod)member;
 							if (method.Parameters != null && method.Parameters.Count > 0) {
 								for (int i = 0; i < method.Parameters.Count; ++i) {
-									sb.Append("\n");
+									sb.Append(terminator);
 									sb.Append(indentation);
 									sb.Append("/// <param name=\"");
 									sb.Append(method.Parameters[i].Name);
@@ -340,7 +343,7 @@ namespace CSharpBinding.FormattingStrategy
 								}
 							}
 							if (method.ReturnType != null && !method.IsConstructor && method.ReturnType.FullyQualifiedName != "System.Void") {
-								sb.Append("\n");
+								sb.Append(terminator);
 								sb.Append(indentation);
 								sb.Append("/// <returns></returns>");
 							}
@@ -467,7 +470,7 @@ namespace CSharpBinding.FormattingStrategy
 						string oldLineText = TextUtilities.GetLineAsString(textArea.Document, lineNr - 1);
 						if (oldLineText.EndsWith("{")) {
 							if (NeedCurlyBracket(textArea.Document.TextContent)) {
-								textArea.Document.Insert(curLine.Offset + curLine.Length, "\n}");
+								textArea.Document.Insert(curLine.Offset + curLine.Length, terminator + "}");
 								IndentLine(textArea, lineNr + 1);
 							}
 						}

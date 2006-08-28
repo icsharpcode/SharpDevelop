@@ -254,7 +254,7 @@ namespace VBNetBinding.FormattingStrategy
 		
 		public override int FormatLine(TextArea textArea, int lineNr, int cursorOffset, char ch)
 		{
-			
+			string terminator = textArea.TextEditorProperties.LineTerminator;
 			doCasing = PropertyService.Get("VBBinding.TextEditor.EnableCasing", true);
 			doInsertion = PropertyService.Get("VBBinding.TextEditor.EnableEndConstructs", true);
 			
@@ -274,9 +274,11 @@ namespace VBNetBinding.FormattingStrategy
 						object member = GetMemberAfter(textArea, lineNr);
 						if (member != null) {
 							StringBuilder sb = new StringBuilder();
-							sb.Append(" <summary>\n");
+							sb.Append(" <summary>");
+							sb.Append(terminator);
 							sb.Append(indentation);
-							sb.Append("''' \n");
+							sb.Append("''' ");
+							sb.Append(terminator);
 							sb.Append(indentation);
 							sb.Append("''' </summary>");
 							
@@ -284,7 +286,7 @@ namespace VBNetBinding.FormattingStrategy
 								IMethod method = (IMethod)member;
 								if (method.Parameters != null && method.Parameters.Count > 0) {
 									for (int i = 0; i < method.Parameters.Count; ++i) {
-										sb.Append("\n");
+										sb.Append(terminator);
 										sb.Append(indentation);
 										sb.Append("''' <param name=\"");
 										sb.Append(method.Parameters[i].Name);
@@ -292,7 +294,7 @@ namespace VBNetBinding.FormattingStrategy
 									}
 								}
 								if (method.ReturnType != null && !method.IsConstructor && method.ReturnType.FullyQualifiedName != "System.Void") {
-									sb.Append("\n");
+									sb.Append(terminator);
 									sb.Append(indentation);
 									sb.Append("''' <returns></returns>");
 								}
@@ -348,7 +350,7 @@ namespace VBNetBinding.FormattingStrategy
 							if (Regex.IsMatch(texttoreplace.Trim(), statement.StartRegex, RegexOptions.IgnoreCase)) {
 								string indentation = GetIndentation(textArea, lineNr - 1);
 								if (isEndStatementNeeded(textArea, statement, lineNr)) {
-									textArea.Document.Insert(textArea.Caret.Offset, "\n" + indentation + statement.EndStatement);
+									textArea.Document.Insert(textArea.Caret.Offset, terminator + indentation + statement.EndStatement);
 									++undoCount;
 								}
 								for (int i = 0; i < statement.IndentPlus; i++) {
