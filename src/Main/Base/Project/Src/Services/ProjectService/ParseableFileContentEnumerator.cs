@@ -81,9 +81,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			// Loading the source files is done asynchronously:
 			// While one file is parsed, the next is already loaded from disk.
-			string res = project.GetParseableFileContent(fileName);
-			if (res != null)
-				return res;
+			if (project != null) {
+				string res = project.GetParseableFileContent(fileName);
+				if (res != null)
+					return res;
+			}
 			
 			// load file
 			Encoding tmp = defaultEncoding;
