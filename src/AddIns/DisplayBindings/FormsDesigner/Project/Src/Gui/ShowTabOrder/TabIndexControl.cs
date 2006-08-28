@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+/*
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -100,3 +101,4 @@ namespace ICSharpCode.FormsDesigner
 		}
 	}
 }
+*/

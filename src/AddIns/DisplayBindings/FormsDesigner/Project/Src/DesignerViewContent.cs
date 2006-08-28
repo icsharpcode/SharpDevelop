@@ -146,6 +146,11 @@ namespace ICSharpCode.FormsDesigner
 			ISelectionService selectionService = (ISelectionService)designSurface.GetService(typeof(ISelectionService));
 			selectionService.SelectionChanged  += SelectionChangedHandler;
 			
+			if (IsTabOrderMode) { // fixes SD2-1015
+				tabOrderMode = false; // let ShowTabOrder call the designer command again
+				ShowTabOrder();
+			}
+			
 			LoggingService.Info("Form Designer: END INITIALIZE");
 		}
 		

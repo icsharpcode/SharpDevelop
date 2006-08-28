@@ -46,9 +46,8 @@ namespace ICSharpCode.SharpDevelop
 			#else
 			string versionText = VersionText;
 			#endif
-			using (Stream stream = typeof(SplashScreenForm).Assembly.GetManifestResourceStream("Resources.SplashScreen.jpg")) {
-				bitmap = new Bitmap(stream);
-			}
+			// Stream must be kept open for the lifetime of the bitmap
+			bitmap = new Bitmap(typeof(SplashScreenForm).Assembly.GetManifestResourceStream("Resources.SplashScreen.jpg"));
 			this.ClientSize = bitmap.Size;
 			using (Font font = new Font("Sans Serif", 4)) {
 				using (Graphics g = Graphics.FromImage(bitmap)) {
