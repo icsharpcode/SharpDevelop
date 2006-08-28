@@ -37,15 +37,15 @@
 		<ToolbarItem id      = "CodeCoveragePadDisplayOptions"
 		             type    = "DropDownButton"
 		             icon    = "Icons.16x16.Options"
-		             tooltip = "Display Options"
+		             tooltip = "${res:ICSharpCode.CodeCoverage.DisplayOptions}"
 		             class   = "ICSharpCode.CodeCoverage.ShowDisplayOptionsDropDown">
 			<MenuItem id    = "ShowVisitCountOption"
 			          type  = "CheckBox"
-			          label = "Show Visit Count"
+			          label = "${res:ICSharpCode.CodeCoverage.ShowVisitCount}"
 			          class = "ICSharpCode.CodeCoverage.ShowVisitCountCommand"/>
 			<MenuItem id    = "ShowSourceCodeOption"
 			          type  = "CheckBox"
-			          label = "Show Source Code"
+			          label = "${res:ICSharpCode.CodeCoverage.ShowSourceCode}"
 			          class = "ICSharpCode.CodeCoverage.ShowSourceCodeCommand"/>
 		</ToolbarItem>
 	</Path>
@@ -76,7 +76,7 @@
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit/Format">
 		<MenuItem id          = "ShowCodeCoverage"
 		          insertafter = "Indent" 
-		          label       = "Show Code Co&amp;verage"
+		          label       = "${res:ICSharpCode.CodeCoverage.ShowCoverage}"
 		          type        = "CheckBox"
 		          class       = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
 	</Path>
@@ -85,7 +85,7 @@
 		<MenuItem id           = "ShowCodeCoverage"
 		          insertafter  = "Indent" 
 		          insertbefore = "FileMode"
-		          label        = "Show Code Co&amp;verage"
+		          label        = "${res:ICSharpCode.CodeCoverage.ShowCoverage}"
 		          type         = "CheckBox"
 		          class        = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
 	</Path>

@@ -283,7 +283,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void BrowseButtonClick(object sender, EventArgs e)
 		{
 			FolderDialog fdiag = new FolderDialog();
-			if (fdiag.DisplayDialog("Select folder") == DialogResult.OK) {
+			if (fdiag.DisplayDialog("${res:Dialog.ProjectOptions.SelectFolderTitle}") == DialogResult.OK) {
 				string path = fdiag.Path;
 				if (!path.EndsWith("\\") && !path.EndsWith("/"))
 					path += "\\";

@@ -119,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				items[i++] = new ToolStripSeparator();
 				
 				// additional item 2
-				cmd = new MenuCommand("Clear Navigation History", new EventHandler(ClearHistory));
+				cmd = new MenuCommand("${res:XML.MainMenu.Navigation.ClearHistory}", new EventHandler(ClearHistory));
 				items[i++] = cmd;
 				
 				return items;

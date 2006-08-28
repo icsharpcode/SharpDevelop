@@ -28,8 +28,8 @@ namespace Debugger
 		
 		public DebugeeInterpreterContext()
 		{
-			this.Title = "Debuggee";
-			this.ToolTipText = "Runs commands in the debugged progam";
+			this.Title = "${res:ICSharpCode.BooInterpreter.Debuggee.Title}";
+			this.ToolTipText = "${res:ICSharpCode.BooInterpreter.Debuggee.ToolTip}";
 			this.Image = ICSharpCode.Core.ResourceService.GetBitmap("Boo.ProjectIcon");
 		}
 		
@@ -42,16 +42,16 @@ namespace Debugger
 		bool InjectInterpreter()
 		{
 			if (!DebuggerService.IsDebuggerLoaded) {
-				PrintLine("Error: 'Debugger is not loaded'");
+				PrintLine("${res:ICSharpCode.BooInterpreter.Debuggee.ErrorDebuggerNotLoaded}");
 				return false;
 			}
 			WindowsDebugger winDebugger = DebuggerService.CurrentDebugger as WindowsDebugger;
 			if (winDebugger == null) {
-				PrintLine("Error: 'Incompatible debugger'");
+				PrintLine("${res:ICSharpCode.BooInterpreter.Debuggee.ErrorIncompatibleDebugger}");
 				return false;
 			}
 			if (winDebugger.DebuggedProcess == null) {
-				PrintLine("Error: 'No program is debugged'");
+				PrintLine("${res:ICSharpCode.BooInterpreter.Debuggee.ErrorNoProgramDebugged}");
 				return false;
 			}
 			process = winDebugger.DebuggedProcess;

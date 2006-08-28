@@ -53,7 +53,7 @@ namespace ICSharpCode.CodeAnalysis
 			public void Initialize(IEventSource eventSource)
 			{
 				this.eventSource = eventSource;
-				engine.MessageView.AppendText("Running FxCop on " + Path.GetFileNameWithoutExtension(engine.CurrentProjectFile) + "\r\n");
+				engine.MessageView.AppendText("${res:ICSharpCode.CodeAnalysis.RunningFxCopOn} " + Path.GetFileNameWithoutExtension(engine.CurrentProjectFile) + "\r\n");
 				eventSource.ErrorRaised += OnError;
 				eventSource.WarningRaised += OnWarning;
 			}

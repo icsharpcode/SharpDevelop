@@ -13,7 +13,7 @@
       <System.Windows.Forms.Label>
         <Name value="excludedAttributesListLabel" />
         <Location value="{X=12,Y=69}" />
-        <Text value="Excluded Attributes:" />
+        <Text value="${res:ICSharpCode.CodeCoverage.ProjectOptionsPanel.ExcludeAttributes}:" />
         <Anchor value="Top, Left, Right" />
         <Size value="{Width=317, Height=20}" />
         <TabIndex value="2" />

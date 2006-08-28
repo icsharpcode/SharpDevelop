@@ -920,7 +920,7 @@
 			<ToolbarItem id="NavigateBack"
 			             type="SplitButton"
 			             icon="Icons.16x16.NavigateBack"
-			             tooltip="Navigate Back"
+			             tooltip="${res:XML.MainMenu.Navigation.Back}"
 			             disabledIcon="Icons.16x16.NavigateBack"
 			             loadclasslazy="false"
 			             class="ICSharpCode.SharpDevelop.Commands.NavigateBack"
@@ -933,7 +933,7 @@
 		<Condition name="CanNavigateForward" action="Disable">
 			<ToolbarItem id="NavigateForward"
 			             icon="Icons.16x16.NavigateForward"
-			             tooltip="Navigate Forward"
+			             tooltip="${res:XML.MainMenu.Navigation.Forward}"
 			             loadclasslazy="false"
 			             class="ICSharpCode.SharpDevelop.Commands.NavigateForward"/>
 		</Condition>
