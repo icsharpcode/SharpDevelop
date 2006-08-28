@@ -63,7 +63,13 @@ namespace SharpDbTools.Model
 		public string InvariantName {
 			get {
 				DataTable table = this.Tables[TableNames.ConnectionInfo];
-				string invariantName = table.Rows[0][ColumnNames.InvariantName] as string;
+				string invariantName = null;
+				try {
+					invariantName = table.Rows[0][ColumnNames.InvariantName] as string;	
+				}
+				catch(ArgumentException e) {
+					// see comment below - it is correct to bury this exception
+				}
 				return invariantName;
 			}
 			set {
@@ -90,7 +96,15 @@ namespace SharpDbTools.Model
 		public string ConnectionString {
 			get {
 				DataTable table = this.Tables[TableNames.ConnectionInfo];
-				string connectionString = table.Rows[0][ColumnNames.ConnectionString] as string;
+				string connectionString = null;
+				try {
+					connectionString = table.Rows[0][ColumnNames.ConnectionString] as string;	
+				}
+				catch(ArgumentException e) {
+					// this simply indicates that this attribute was not defined when the
+					// DbModelInfo was saved, returning null makes sense here - so it is
+					// correct to bury this exception
+				}
 				return connectionString;
 			}
 			set {

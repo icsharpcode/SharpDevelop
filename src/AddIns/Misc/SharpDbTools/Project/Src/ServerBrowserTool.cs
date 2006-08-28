@@ -149,7 +149,7 @@ namespace SharpDbTools
 			TreeNode treeNode = new TreeNode(name);
 			// create and add the menustrip for this node
 			
-			DbModelInfoContextMenuStrip cMenu = new DbModelInfoContextMenuStrip(treeNode);
+			NodeAwareContextMenuStrip cMenu = new NodeAwareContextMenuStrip(treeNode);
 			
 			// create menu items
 			ToolStripMenuItem setConnectionStringMenuItem = 
@@ -224,10 +224,22 @@ namespace SharpDbTools
 						if (dbObjectRow.ItemArray.Length > 1) {
 							objectNode = new TreeNode((string)dbObjectRow[1]);
 							objectNode.Name = name + ":Object:" + (string)dbObjectRow[1];
+							// TODO: >>>>>>> NEXT: building Describe invocation will need to be somewhere around here
 						} else {
 							objectNode = new TreeNode((string)dbObjectRow[0]);
 							objectNode.Name = name + ":Object:" + (string)dbObjectRow[0];
 						}
+						// HACK All this building stuff needs to be externalise I think						
+						if (metadataCollectionName.Equals("Tables")) {
+							// add the handler to invoke describer
+							NodeAwareContextMenuStrip cMenu = new NodeAwareContextMenuStrip(objectNode);
+							ToolStripMenuItem invokeDescriberMenuItem = new ToolStripMenuItem("Describe");
+							invokeDescriberMenuItem.Click += new EventHandler(DescribeTableClickHandler);
+							cMenu.Items.Add(invokeDescriberMenuItem);
+							objectNode.ContextMenuStrip = cMenu;
+						}
+						    	
+						    
 						
 //						TreeNode ownerNode = new TreeNode("Owner: " + (string)dbObjectRow["OWNER"]);
 //						TreeNode typeNode = new TreeNode("Type: " + (string)dbObjectRow["TYPE"]);
@@ -303,7 +315,7 @@ namespace SharpDbTools
 		private static string getConnectionName(object sender)
 		{
 			ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
-			DbModelInfoContextMenuStrip toolStrip = menuItem.Owner as DbModelInfoContextMenuStrip;
+			NodeAwareContextMenuStrip toolStrip = menuItem.Owner as NodeAwareContextMenuStrip;
 			TreeNode node = toolStrip.TreeNode;
 			string connectionLogicalName = node.Text;
 			return connectionLogicalName;
@@ -355,13 +367,18 @@ namespace SharpDbTools
 				"An Exception was thrown while trying to connect to: " + connectionLogicalName);                       
 			}
 		}
+		
+		public void DescribeTableClickHandler(object sender, EventArgs args)
+		{
+			LoggingService.Debug("describe table clicked for: ");
+		}
 	}
 	
-	class DbModelInfoContextMenuStrip : ContextMenuStrip
+	class NodeAwareContextMenuStrip : ContextMenuStrip
 	{
 		TreeNode treeNodeAttached;
 		
-		public DbModelInfoContextMenuStrip(TreeNode treeNodeAttached) : base()
+		public NodeAwareContextMenuStrip(TreeNode treeNodeAttached) : base()
 		{
 			this.treeNodeAttached = treeNodeAttached;		
 		}
