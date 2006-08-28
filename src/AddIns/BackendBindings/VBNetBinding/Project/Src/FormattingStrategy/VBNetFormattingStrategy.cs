@@ -37,27 +37,29 @@ namespace VBNetBinding.FormattingStrategy
 		
 		public VBFormattingStrategy()
 		{
-			
 			statements = new ArrayList();
-			statements.Add(new VBStatement("^if.*?(then| _)$", "^end ?if$", "End If", 1));
-			statements.Add(new VBStatement("\\bclass \\w+$", "^end class$", "End Class", 1));
-			statements.Add(new VBStatement(@"\bnamespace \w+(\.\w+)*$", "^end namespace$", "End Namespace", 1));
-			statements.Add(new VBStatement("\\bmodule \\w+$", "^end module$", "End Module", 1));
-			statements.Add(new VBStatement("\\bstructure \\w+$", "^end structure$", "End Structure", 1));
-			statements.Add(new VBStatement("^while ", "^end while$", "End While", 1));
-			statements.Add(new VBStatement("^select case", "^end select$", "End Select", 2));
-			statements.Add(new VBStatement(@"(?<!\b(mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bsub \w+", @"^end\s+sub$", "End Sub", 1));
-			statements.Add(new VBStatement(@"(?<!\bmustoverride (readonly |writeonly )?)\bproperty \w+", @"^end\s+property$", "End Property", 1));
-			statements.Add(new VBStatement(@"(?<!\b(mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bfunction \w+", @"^end\s+function$", "End Function", 1));
-			statements.Add(new VBStatement("\\bfor .*?$", "^next( \\w+)?$", "Next", 1));
-			statements.Add(new VBStatement("^synclock .*?$", "^end synclock$", "End SyncLock", 1));
-			statements.Add(new VBStatement("^get$", "^end get$", "End Get", 1));
-			statements.Add(new VBStatement("^with .*?$", "^end with$", "End With", 1));
-			statements.Add(new VBStatement("^set(\\s*\\(.*?\\))?$", "^end set$", "End Set", 1));
-			statements.Add(new VBStatement("^try$", "^end try$", "End Try", 1));
-			statements.Add(new VBStatement("^do .+?$", "^loop$", "Loop", 1));
-			statements.Add(new VBStatement("^do$", "^loop .+?$", "Loop While ", 1));
-			statements.Add(new VBStatement("\\benum .*?$", "^end enum$", "End Enum", 1));
+			statements.Add(new VBStatement(@"^if.*?(then|\s+_)$", "^end ?if$", "End If", 1));
+			statements.Add(new VBStatement(@"\bclass\s+\w+$", "^end class$", "End Class", 1));
+			statements.Add(new VBStatement(@"\bnamespace\s+\w+(\.\w+)*$", "^end namespace$", "End Namespace", 1));
+			statements.Add(new VBStatement(@"\bmodule\s+\w+$", "^end module$", "End Module", 1));
+			statements.Add(new VBStatement(@"\bstructure\s+\w+$", "^end structure$", "End Structure", 1));
+			statements.Add(new VBStatement(@"^while\s+", "^end while$", "End While", 1));
+			statements.Add(new VBStatement(@"^select case", "^end select$", "End Select", 2));
+			statements.Add(new VBStatement(@"(?<!\b(mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bsub\s+\w+", @"^end\s+sub$", "End Sub", 1));
+			statements.Add(new VBStatement(@"(?<!\bmustoverride (readonly |writeonly )?)\bproperty\s+\w+", @"^end\s+property$", "End Property", 1));
+			statements.Add(new VBStatement(@"(?<!\b(mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bfunction\s+\w+", @"^end\s+function$", "End Function", 1));
+			statements.Add(new VBStatement(@"\bfor\s+.*?$", "^next( \\w+)?$", "Next", 1));
+			statements.Add(new VBStatement(@"^synclock\s+.*?$", "^end synclock$", "End SyncLock", 1));
+			statements.Add(new VBStatement(@"^get$", "^end get$", "End Get", 1));
+			statements.Add(new VBStatement(@"^with\s+.*?$", "^end with$", "End With", 1));
+			statements.Add(new VBStatement(@"^set(\s*\(.*?\))?$", "^end set$", "End Set", 1));
+			statements.Add(new VBStatement(@"^try$", "^end try$", "End Try", 1));
+			statements.Add(new VBStatement(@"^do\s+.+?$", "^loop$", "Loop", 1));
+			statements.Add(new VBStatement(@"^do$", "^loop .+?$", "Loop While ", 1));
+			statements.Add(new VBStatement(@"\benum\s+\w+$", "^end enum$", "End Enum", 1));
+			statements.Add(new VBStatement(@"\binterface\s+\w+$", "^end interface$", "End Interface", 1));
+			statements.Add(new VBStatement(@"\busing\s+", "^end using$", "End Using", 1));
+			statements.Add(new VBStatement(@"^#region\s+", "^#end region$", "#End Region", 0));
 			
 			keywords = new StringCollection();
 			keywords.AddRange(new string[] {
