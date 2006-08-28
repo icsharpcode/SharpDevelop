@@ -419,5 +419,15 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("T oldValue = default(T);", "Dim oldValue As T = Nothing");
 		}
+		
+		[Test]
+		public void StaticClass()
+		{
+			TestProgram("public static class Test {}", @"Public NotInheritable Class Test
+	Private Sub New()
+	End Sub
+End Class
+");
+		}
 	}
 }

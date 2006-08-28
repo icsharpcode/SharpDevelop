@@ -39,7 +39,7 @@
 		-->
 	</Target>
 	
-	<Target Name="Rebuild" DependsOnTargets="Clean;Build"/>
+	<Target Name="Rebuild" DependsOnTargets="Build"/>
 	
 	<ItemGroup>
 		<PrepareReleaseProject Include="SVNChangeLogToXml\SVNChangeLogToXml.csproj" />

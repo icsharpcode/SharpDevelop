@@ -63,6 +63,12 @@ namespace ICSharpCode.NRefactory.Visitors
 			TypeDeclaration outerType = currentType;
 			currentType = typeDeclaration;
 			
+			if ((typeDeclaration.Modifier & Modifiers.Static) == Modifiers.Static) {
+				typeDeclaration.Modifier &= ~Modifiers.Static;
+				typeDeclaration.Modifier |= Modifiers.Sealed;
+				typeDeclaration.Children.Insert(0, new ConstructorDeclaration("#ctor", Modifiers.Private, null, null));
+			}
+			
 			//   Conflicting field/property names -> m_field
 			List<string> properties = new List<string>();
 			foreach (object o in typeDeclaration.Children) {

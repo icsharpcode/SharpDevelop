@@ -40,12 +40,12 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
+    <Reference Include="Microsoft.Build.Framework" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
     <Compile Include="Src\VBNetAmbience.cs" />
-    <Compile Include="Src\VBNetBindingExecutionManager.cs" />
     <Compile Include="Src\VBNetLanguageBinding.cs" />
     <Compile Include="Src\FormattingStrategy\VBNetFormattingStrategy.cs" />
     <Compile Include="Src\OptionPanels\BuildOptions.cs">
@@ -69,6 +69,7 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\VbcEncodingFixingLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
