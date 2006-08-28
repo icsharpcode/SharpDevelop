@@ -405,22 +405,26 @@ namespace ICSharpCode.Core
 		static void CreateDefaultProjectContent()
 		{
 			LoggingService.Info("Creating default project content");
-			LoggingService.Debug("Stacktrace is:\n" + Environment.StackTrace);
+			//LoggingService.Debug("Stacktrace is:\n" + Environment.StackTrace);
 			defaultProjectContent = new DefaultProjectContent();
 			defaultProjectContent.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
-			string[] defaultReferences = new string[] {
-				"System",
-				"System.Data",
-				"System.Drawing",
-				"System.Windows.Forms",
-				"System.XML",
-				"Microsoft.VisualBasic",
-			};
+			Thread t = new Thread(new ThreadStart(CreateDefaultProjectContentReferences));
+			t.IsBackground = true;
+			t.Priority = ThreadPriority.BelowNormal;
+			t.Name = "CreateDefaultPC";
+			t.Start();
+		}
+		
+		static void CreateDefaultProjectContentReferences()
+		{
+			IList<string> defaultReferences = AddInTree.BuildItems<string>("/SharpDevelop/Services/ParserService/SingleFileGacReferences", null, false);
 			foreach (string defaultReference in defaultReferences) {
 				ReferenceProjectItem item = new ReferenceProjectItem(null, defaultReference);
 				IProjectContent pc = ParserService.GetProjectContentForReference(item);
 				if (pc != null) {
-					defaultProjectContent.ReferencedContents.Add(pc);
+					lock (defaultProjectContent.ReferencedContents) {
+						defaultProjectContent.ReferencedContents.Add(pc);
+					}
 				}
 			}
 			if (WorkbenchSingleton.Workbench != null) {

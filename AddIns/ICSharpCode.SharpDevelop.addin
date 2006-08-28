@@ -2182,4 +2182,12 @@
 		          icon = "Icons.16x16.CopyIcon"
 		          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
 	</Path>
+	
+	<Path name="/SharpDevelop/Services/ParserService/SingleFileGacReferences">
+		<String id = "System" text = "System"/>
+		<String id = "System.Data" text = "System.Data"/>
+		<String id = "System.Drawing" text = "System.Drawing"/>
+		<String id = "System.Windows.Forms" text = "System.Windows.Forms"/>
+		<String id = "System.Xml" text = "System.Xml"/>
+	</Path>
 </AddIn>

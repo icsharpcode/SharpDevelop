@@ -112,4 +112,8 @@
 		                 projectfileextension = ".vbproj"
 		                 class                = "VBNetBinding.VBNetLanguageBinding" />
 	</Path>
+	
+	<Path name="/SharpDevelop/Services/ParserService/SingleFileGacReferences">
+		<String id = "Microsoft.VisualBasic" text = "Microsoft.VisualBasic"/>
+	</Path>
 </AddIn>

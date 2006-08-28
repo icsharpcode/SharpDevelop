@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory
 		{
 			string cmd = dir.Cmd;
 			string arg = dir.Arg;
-			if (cmd.Equals("#end", StringComparison.InvariantCultureIgnoreCase)) {
+			if (cmd.Equals("#End", StringComparison.InvariantCultureIgnoreCase)) {
 				if (arg.ToLowerInvariant().StartsWith("region")) {
 					cmd = "#endregion";
 					arg = "";
@@ -33,7 +33,9 @@ namespace ICSharpCode.NRefactory
 					cmd = "#endif";
 					arg = "";
 				}
-			} else if (cmd.Equals("#if", StringComparison.InvariantCultureIgnoreCase)) {
+			} else if (cmd.Equals("#Region", StringComparison.InvariantCultureIgnoreCase)) {
+				cmd = "#region";
+			} else if (cmd.Equals("#If", StringComparison.InvariantCultureIgnoreCase)) {
 				if (arg.ToLowerInvariant().EndsWith(" then"))
 					arg = arg.Substring(0, arg.Length - 5);
 			}
@@ -54,6 +56,7 @@ namespace ICSharpCode.NRefactory
 			string arg = dir.Arg;
 			switch (cmd) {
 				case "#region":
+					cmd = "#Region";
 					if (!arg.StartsWith("\"")) {
 						arg = "\"" + arg.Trim() + "\"";
 					}
