@@ -47,6 +47,21 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			parser.Dispose();
 		}
 		
+		void TestProgramCS2VB(string programCS, string programVB)
+		{
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(programCS));
+			parser.Parse();
+			Assert.AreEqual("", parser.Errors.ErrorOutput);
+			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
+			using (SpecialNodesInserter.Install(parser.Lexer.SpecialTracker.RetrieveSpecials(),
+			                                    outputVisitor)) {
+				outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
+			}
+			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
+			Assert.AreEqual(programVB.Replace("\r", ""), outputVisitor.Text.TrimEnd().Replace("\r", ""));
+			parser.Dispose();
+		}
+		
 		[Test]
 		public void BlankLine()
 		{
@@ -177,6 +192,18 @@ End Class");
 			              "' Some comment\n" +
 			              "\n" +
 			              "Imports System.IO");
+		}
+		
+		[Test]
+		public void CommentAfterAttribute()
+		{
+			TestProgramCS2VB("class A { [PreserveSig] public void B(// comment\nint c) {} }",
+			                 "Class A\n" +
+			                 "\t\t' comment\n" +
+			                 "\t<PreserveSig()> _\n" +
+			                 "\tPublic Sub B(ByVal c As Integer)\n" +
+			                 "\tEnd Sub\n" +
+			                 "End Class");
 		}
 	}
 }

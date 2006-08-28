@@ -212,16 +212,16 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "End Sub");
 		}
 		
-		[Test]
+		[Test, Ignore]
 		public void AnonymousMethodInVarDeclaration()
 		{
-			TestMember("void A() { SomeDelegate i = delegate(int argument) { return argument * 2; }; }",
+			TestMember("void A() { Converter<int, int> i = delegate(int argument) { return argument * 2; }; }",
 			           "Private Sub A()\n" +
-			           "\tDim i As SomeDelegate = AddressOf ConvertedAnonymousMethod1\n" +
+			           "\tDim i As Converter(Of Integer, Integer) = AddressOf ConvertedAnonymousMethod1\n" +
 			           "End Sub\n" +
-			           "Private Sub ConvertedAnonymousMethod1(ByVal argument As Integer)\n" +
+			           "Private Function ConvertedAnonymousMethod1(ByVal argument As Integer) As Integer\n" +
 			           "\tReturn argument * 2\n" +
-			           "End Sub");
+			           "End Function");
 		}
 		
 		[Test]

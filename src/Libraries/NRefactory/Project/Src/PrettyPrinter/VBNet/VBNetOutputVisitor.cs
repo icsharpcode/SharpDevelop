@@ -206,13 +206,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			Debug.Assert(attributeSection.Attributes != null);
 			AppendCommaSeparatedList(attributeSection.Attributes);
 			
+			outputFormatter.PrintText(">");
+			
 			if ("assembly".Equals(attributeSection.AttributeTarget, StringComparison.InvariantCultureIgnoreCase)
 			    || "module".Equals(attributeSection.AttributeTarget, StringComparison.InvariantCultureIgnoreCase)) {
-				outputFormatter.PrintText(">");
+				outputFormatter.NewLine();
 			} else {
-				outputFormatter.PrintText("> _");
+				outputFormatter.PrintLineContinuation();
 			}
-			outputFormatter.NewLine();
+			
 			return null;
 		}
 		
@@ -2676,8 +2678,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.Comma);
 						outputFormatter.Space();
 						if ((i + 1) % 6 == 0) {
-							outputFormatter.PrintText("_ ");
-							outputFormatter.NewLine();
+							outputFormatter.PrintLineContinuation();
 							outputFormatter.Indent();
 							outputFormatter.PrintText("\t");
 						}

@@ -21,9 +21,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	/// </summary>
 	public abstract class AbstractOutputFormatter : IOutputFormatter
 	{
-		int           indentationLevel = 0;
-		StringBuilder text = new StringBuilder();
+		internal StringBuilder text = new StringBuilder();
 		
+		int           indentationLevel = 0;
 		bool          indent         = true;
 		bool          doNewLine      = true;
 		AbstractPrettyPrintOptions prettyPrintOptions;
@@ -91,8 +91,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			text.Append(' ');
 		}
 		
-		int lastLineStart = 0;
-		int lineBeforeLastStart = 0;
+		internal int lastLineStart = 0;
+		internal int lineBeforeLastStart = 0;
 		
 		public bool LastCharacterIsNewLine {
 			get {

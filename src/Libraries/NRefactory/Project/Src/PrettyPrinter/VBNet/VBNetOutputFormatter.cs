@@ -1,13 +1,13 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Parser;
@@ -55,6 +55,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					WriteLineInPreviousLine("'" + comment.CommentText, forceWriteInPreviousBlock);
 					break;
 			}
+		}
+		
+		public void PrintLineContinuation()
+		{
+			if (!LastCharacterIsWhiteSpace)
+				Space();
+			PrintText("_\r\n");
 		}
 	}
 }
