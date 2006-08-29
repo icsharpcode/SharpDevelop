@@ -58,6 +58,12 @@ namespace UpdateSetupInfo
 		/// </summary>
 		string previousRevisionFileName;
 		
+		/// <summary>
+		/// The folder that contains the last revision number used to update the 
+		/// template.
+		/// </summary>
+		string previousRevisionFolder;
+		
 		public UpdateApplication()
 		{
 			// Work out filenames.
@@ -67,7 +73,8 @@ namespace UpdateSetupInfo
 			
 			setupTemplateFullFileName = Path.Combine(setupProjectFolder, SetupTemplateFileName);
 			setupProjectUserFullFileName = Path.Combine(setupProjectFolder, SetupProjectUserFileName);
-			previousRevisionFileName = Path.Combine(setupProjectFolder, @"bin\REVISION");
+			previousRevisionFolder = Path.Combine(setupProjectFolder, @"bin");
+			previousRevisionFileName = Path.Combine(previousRevisionFolder, "REVISION");
 			
 			// Set current directory to a folder that is in the repository.
 			Environment.CurrentDirectory = setupProjectFolder;
@@ -156,6 +163,9 @@ namespace UpdateSetupInfo
 		/// </summary>
 		void SaveRevision(string revision)
 		{
+			if (!Directory.Exists(previousRevisionFolder)) {
+				Directory.CreateDirectory(previousRevisionFolder);
+			}
 			using (StreamWriter writer = new StreamWriter(previousRevisionFileName, false, Encoding.UTF8)) {
 				writer.Write(revision);
 			}
