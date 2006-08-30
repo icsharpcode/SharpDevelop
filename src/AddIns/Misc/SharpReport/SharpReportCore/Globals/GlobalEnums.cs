@@ -34,7 +34,7 @@ namespace SharpReportCore {
 		/// FormSheet : FormSheet report, just labels and images are allowed
 		/// </summary>
 		/// 
-		public enum PushPullModelEnum {
+		public enum PushPullModel {
 			PushData,
 			PullData,
 			FormSheet
@@ -80,14 +80,14 @@ namespace SharpReportCore {
 		///Names of the different collections like Sorting,grouping etc
 		/// </summary>
 		
-		public enum enmParamCollectionName{
+		public enum ParamCollectionName{
 			AvailableColumns,
 			SqlParams,
 			Sortings,
 			Groupings
 		}
 		
-		public enum ImageSourceEnum{
+		public enum ImageSource{
 			File,
 //			DataBase,
 			External

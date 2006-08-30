@@ -73,20 +73,20 @@ namespace SharpReport{
 		private ColumnCollection ReadColumnCollection() {
 			ColumnCollection columnCollecion = new ColumnCollection();
 			switch (baseDesignerControl.ReportModel.DataModel) {
-				case GlobalEnums.PushPullModelEnum.FormSheet:
+				case GlobalEnums.PushPullModel.FormSheet:
 					//Plain FormSheet we do nothing for the moment
 					break;
-				case GlobalEnums.PushPullModelEnum.PushData:
+				case GlobalEnums.PushPullModel.PushData:
 					//PushData
 					columnCollecion = SharpReportEngine.CollectFieldsFromModel(this.baseDesignerControl.ReportModel);
 					break;
-				case GlobalEnums.PushPullModelEnum.PullData:
+				case GlobalEnums.PushPullModel.PullData:
 					// PullData, query the Datasource and ask for the available Fields
 					if (base.ConnectionObject == null) {
 						base.ConnectionObject = this.BuildConnectionObject(baseDesignerControl.ReportModel.ReportSettings);
 					}
 
-					if (this.baseDesignerControl.ReportModel.DataModel.Equals(GlobalEnums.PushPullModelEnum.PullData)){
+					if (this.baseDesignerControl.ReportModel.DataModel.Equals(GlobalEnums.PushPullModel.PullData)){
 						try {
 							using (DataManager dataManager = new DataManager(base.ConnectionObject,
 							                                                 baseDesignerControl.ReportModel.ReportSettings)) {

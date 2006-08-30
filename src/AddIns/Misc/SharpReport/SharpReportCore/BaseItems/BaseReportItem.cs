@@ -145,9 +145,6 @@ namespace SharpReportCore {
             GC.SuppressFinalize(this);
 		}
 		
-		~BaseReportItem(){
-			Dispose(false);
-		}
 		
 		protected override void Dispose(bool disposing) {
 			try {

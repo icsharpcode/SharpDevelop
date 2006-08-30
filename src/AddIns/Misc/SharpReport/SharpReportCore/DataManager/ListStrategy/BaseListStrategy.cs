@@ -22,9 +22,9 @@ using System.ComponentModel;
 
 namespace SharpReportCore {	
 	
-	public delegate BaseComparer IndexerDelegate(ColumnCollection col,int i,object[] values);
+	public delegate BaseComparer IndexerBuilderEventHandler(ColumnCollection col,int i,object[] values);
 	
-	public abstract class BaseListStrategy :IDataViewStrategy,IEnumerator {
+	internal  abstract class BaseListStrategy :IDataViewStrategy,IEnumerator {
 		private bool isSorted;
 		private bool isFiltered;
 		private bool isGrouped;

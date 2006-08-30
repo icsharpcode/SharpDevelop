@@ -10,6 +10,7 @@
 
 
 using System;
+using System.Globalization;
 using System.Xml;
 using System.Windows.Forms;
 
@@ -70,7 +71,10 @@ namespace SharpReportCore {
 					SetReportItems(baseSection,null,ctrlList);
 					
 				}else {
-					throw new System.Xml.XmlException ("Report : SetSection Wrong Node in Report");
+					string s = String.Format(CultureInfo.CurrentCulture,
+					                         "{0} {1}",
+					                         this.GetType().ToString());
+					throw new SharpReportException(s);
 				}
 			}
 		}

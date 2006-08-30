@@ -21,8 +21,8 @@ using System.Data;
 ///</remarks>
 
 namespace SharpReportCore {
-//	public delegate void IndexerDelegate(int i,object[] values);
-	public class TableStrategy : BaseListStrategy,IEnumerable<BaseComparer> {
+
+	internal sealed class TableStrategy : BaseListStrategy,IEnumerable<BaseComparer> {
 		
 		DataTable table;
 		DataView view = new DataView();
@@ -54,7 +54,7 @@ namespace SharpReportCore {
 
 						if (value != null && value != DBNull.Value){
 							if (!(value is IComparable)){
-								throw new InvalidOperationException("ReportDataSource:BuildSortArray - > This type doesn't support IComparable." + value.ToString());
+								throw new InvalidOperationException(value.ToString());
 							}
 							
 							values[criteriaIndex] = value;
@@ -74,7 +74,7 @@ namespace SharpReportCore {
 		
 		// if we have no sorting, we build the indexlist as well
 			
-		private SharpIndexCollection IndexBuilder(IndexerDelegate indexer,ColumnCollection col) {
+		private SharpIndexCollection IndexBuilder(IndexerBuilderEventHandler indexer,ColumnCollection col) {
 			SharpIndexCollection arrayList = new SharpIndexCollection();
 			for (int rowIndex = 0; rowIndex < this.view.Count; rowIndex++){
 				object[] values = new object[1];
@@ -203,7 +203,7 @@ namespace SharpReportCore {
 //					base.IndexList = this.IndexBuilder(sort,base.ReportSettings.SortColumnCollection);
 					base.IsSorted = true;
 				} else {
-					SharpReportCore.IndexerDelegate unsort = new SharpReportCore.IndexerDelegate(BaseListStrategy.PlainIndexBuilder);
+					SharpReportCore.IndexerBuilderEventHandler unsort = new SharpReportCore.IndexerBuilderEventHandler(BaseListStrategy.PlainIndexBuilder);
 					base.IndexList = this.IndexBuilder(unsort,base.ReportSettings.SortColumnCollection);
 					base.IsSorted = false;
 				}
@@ -284,10 +284,6 @@ namespace SharpReportCore {
 		public override  void Dispose(){
 			this.Dispose(true);
 			GC.SuppressFinalize(this);
-		}
-		
-		~TableStrategy(){
-			Dispose(false);
 		}
 		
 		protected override void Dispose(bool disposing){

@@ -37,7 +37,7 @@ namespace ReportGenerator {
 		private GraphicsUnit graphicsUnit;
 		
 		//Database
-		private GlobalEnums.PushPullModelEnum dataModel;
+		private GlobalEnums.PushPullModel dataModel;
 
 		private string connectionString;
 		private string catalogName;
@@ -154,7 +154,7 @@ namespace ReportGenerator {
 			}
 		}
 		
-		public SharpReportCore.GlobalEnums.PushPullModelEnum DataModel {
+		public SharpReportCore.GlobalEnums.PushPullModel DataModel {
 			get {
 				return dataModel;
 			}

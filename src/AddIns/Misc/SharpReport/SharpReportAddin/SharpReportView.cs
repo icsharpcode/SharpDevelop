@@ -243,15 +243,15 @@ namespace SharpReportAddin{
 			this.UpdateModelFromExplorer();
 			try {
 				switch (designerControl.ReportModel.DataModel) {
-						case GlobalEnums.PushPullModelEnum.FormSheet : {
+						case GlobalEnums.PushPullModel.FormSheet : {
 							PreviewStandartReport(standAlone);
 							break;
 						}
-						case GlobalEnums.PushPullModelEnum.PullData:{
+						case GlobalEnums.PushPullModel.PullData:{
 							PreviewStandartReport(standAlone);
 							break;
 						}
-						case GlobalEnums.PushPullModelEnum.PushData:{
+						case GlobalEnums.PushPullModel.PushData:{
 							PreviewPushReport (standAlone);
 							break;
 						}
@@ -565,7 +565,7 @@ namespace SharpReportAddin{
 		public System.Drawing.Printing.PrintDocument PrintDocument {
 			get {
 				AbstractRenderer renderer;
-				if (this.designerControl.ReportModel.DataModel == GlobalEnums.PushPullModelEnum.PushData) {
+				if (this.designerControl.ReportModel.DataModel == GlobalEnums.PushPullModel.PushData) {
 					renderer = reportManager.GetRendererForPushDataReports(this.designerControl.ReportModel,
 					                                                       SharpReportView.DataSetFromFile());
 					

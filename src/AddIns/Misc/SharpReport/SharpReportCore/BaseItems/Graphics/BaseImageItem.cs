@@ -32,7 +32,7 @@ namespace SharpReportCore {
 		string fileName;
 		Image image;
 		bool scaleImageToSize;
-		GlobalEnums.ImageSourceEnum imageSource;
+		GlobalEnums.ImageSource imageSource;
 		
 		public BaseImageItem():base() {
 		}
@@ -121,7 +121,7 @@ namespace SharpReportCore {
 			set {
 				fileName = value;
 				this.image = null;
-				this.imageSource = GlobalEnums.ImageSourceEnum.File;
+				this.imageSource = GlobalEnums.ImageSource.File;
 				LoadImage (fileName);
 				base.NotifyPropertyChanged("FileName");
 			}
@@ -142,7 +142,7 @@ namespace SharpReportCore {
 			set {
 				this.fileName = String.Empty;
 				this.image = value;
-				this.imageSource = GlobalEnums.ImageSourceEnum.External;
+				this.imageSource = GlobalEnums.ImageSource.External;
 				base.NotifyPropertyChanged("Image");
 			}
 		}
@@ -151,7 +151,7 @@ namespace SharpReportCore {
 		/// Where did the image come from
 		/// </summary>
 		/// 
-		public GlobalEnums.ImageSourceEnum ImageSource {
+		public GlobalEnums.ImageSource ImageSource {
 			get {
 				return imageSource;
 			}

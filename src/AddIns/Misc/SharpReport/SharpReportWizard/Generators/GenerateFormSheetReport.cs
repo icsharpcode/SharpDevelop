@@ -28,7 +28,7 @@ namespace ReportGenerator
 			if (reportModel == null) {
 				throw new ArgumentException("reportModel");
 			}
-			if (base.ReportModel.ReportSettings.DataModel != GlobalEnums.PushPullModelEnum.FormSheet) {
+			if (base.ReportModel.ReportSettings.DataModel != GlobalEnums.PushPullModel.FormSheet) {
 				throw new ArgumentException ("Wrong DataModel in GeneratePullDataReport");
 			}
 			base.ReportItemCollection.Clear();
@@ -36,7 +36,7 @@ namespace ReportGenerator
 		
 		public override void GenerateReport() {
 			base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportType.FormSheet;
-			base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModelEnum.FormSheet;
+			base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModel.FormSheet;
 			base.GenerateReport();	
 			base.AdjustAllNames();
 		}

@@ -120,9 +120,6 @@ namespace SharpReportCore {
 			GC.SuppressFinalize(this);
 		}
 		
-		~BaseSection(){
-			Dispose(false);
-		}
 		
 		protected override void Dispose(bool disposing) {
 			try {

@@ -125,7 +125,7 @@ namespace SharpReportCore {
 		
 		void CheckReportSettings(ReportSettings settings) {
 			try {
-				if (settings.DataModel != GlobalEnums.PushPullModelEnum.PushData) {
+				if (settings.DataModel != GlobalEnums.PushPullModel.PushData) {
 					SqlQueryChecker.Check(settings.CommandType,settings.CommandText);
 				}
 				
@@ -280,11 +280,11 @@ namespace SharpReportCore {
 				this.ListChanged (this,e);
 			}
 		}
-		
+		/*
 		private void NotifyGroupChanging () {
-//			if (this.GroupChanging!= null) {
-//				this.GroupChanging (this,EventArgs.Empty);
-//			}		
+			if (this.GroupChanging!= null) {
+				this.GroupChanging (this,EventArgs.Empty);
+			}		
 		}
 		
 		
@@ -296,9 +296,11 @@ namespace SharpReportCore {
 			}
 		}
 		
+		
 		private void OnGroupChange (object sender,GroupChangedEventArgs e) {
 			this.NotifyGroupChanging();
 		}
+		*/
 		#endregion
 		
 		public string DataMember {

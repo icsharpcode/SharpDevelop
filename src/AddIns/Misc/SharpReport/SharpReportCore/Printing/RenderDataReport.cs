@@ -162,7 +162,7 @@ namespace SharpReportCore {
 				PrintNoDataMessage(rpea.PrintPageEventArgs);
 			
 			}	
-			base.CurrentSection.SectionOffset = (int)this.page.DetailStart.Y + AbstractRenderer.Gap;
+			base.CurrentSection.SectionOffset = (int)base.Page.DetailStart.Y + AbstractRenderer.Gap;
 		}
 		
 		

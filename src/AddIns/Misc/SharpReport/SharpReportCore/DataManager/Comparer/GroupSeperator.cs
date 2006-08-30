@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 using System;
 using System.Text;
+using System.Globalization;
 using System.ComponentModel;
 using SharpReportCore;
 	
@@ -57,8 +58,15 @@ namespace SharpReportCore {
 			if (value == null)
 				throw new ArgumentNullException("value");
 			
-			if (value.ObjectArray.Length != base.ObjectArray.Length)
-				throw new InvalidOperationException("Differnet size of compare data");
+			if (value.ObjectArray.Length != base.ObjectArray.Length){
+				string s = String.Format(CultureInfo.CurrentCulture,
+				                         "{0} {1} {2}",
+				                         this.GetType().ToString(),
+				                         value.ObjectArray.Length,
+				                         base.ObjectArray.Length);
+				throw new SharpReportException(s);
+			}
+				
 			
 			int compare = 0;
 			
@@ -90,8 +98,15 @@ namespace SharpReportCore {
 				}
 				
 				
-				if (leftValue.GetType() != rightValue.GetType())
-					throw new InvalidOperationException("Compare of different types is not supported");
+				if (leftValue.GetType() != rightValue.GetType()){
+					string s = String.Format(CultureInfo.CurrentCulture,
+					                         "{0} {1} {2}",this.GetType().ToString(),
+					                         leftValue.GetType().ToString(),
+					                         rightValue.GetType().ToString());
+					
+					throw new SharpReportException(s);
+				}
+					
 				
 				if (leftValue.GetType() == typeof(string))
 				{
@@ -168,8 +183,8 @@ namespace SharpReportCore {
 	
 		#endregion
 		
-		public override string ToString (){
-			return this.typeName;
-		}
+//		public override string ToString (){
+//			return this.typeName;
+//		}
 	}
 }

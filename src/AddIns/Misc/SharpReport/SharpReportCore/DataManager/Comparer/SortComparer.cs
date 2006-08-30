@@ -9,6 +9,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Reflection;
 using SharpReportCore;	
 
@@ -60,9 +61,14 @@ namespace SharpReportCore {
 				}
 				
 				
-				if (leftValue.GetType() != rightValue.GetType())
-					throw new InvalidOperationException("Compare of different types is not supported");
-				
+				if (leftValue.GetType() != rightValue.GetType()){
+					string s = String.Format(CultureInfo.CurrentCulture,
+					                         "{0} {1} {2}",this.GetType().ToString(),
+					                         leftValue.GetType().ToString(),
+					                         rightValue.GetType().ToString());
+					
+					throw new SharpReportException(s);
+				}
 				if (leftValue.GetType() == typeof(string))
 				{
 					compare = String.Compare((string)leftValue, (string)rightValue,

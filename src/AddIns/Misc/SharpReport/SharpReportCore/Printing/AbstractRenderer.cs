@@ -36,7 +36,7 @@ namespace SharpReportCore {
 		public event EventHandler<SectionRenderEventArgs> Rendering;
 		public event EventHandler<SectionRenderEventArgs> SectionRendered;
 		
-		public Page page;
+		private Page page;
 		
 		protected AbstractRenderer(ReportModel model){
 			if (model == null) {

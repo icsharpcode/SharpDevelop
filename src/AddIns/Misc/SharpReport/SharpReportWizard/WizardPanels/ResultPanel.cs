@@ -8,25 +8,20 @@
  */
 
 using System;
-using System.Globalization;
 using System.Data;
 using System.Data.OleDb;
-using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Forms;
 using System.Xml;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
+using SharpQuery.Collections;
+using SharpQuery.SchemaClass;
 
 using SharpReport;
 using SharpReportCore;
-using ICSharpCode.SharpDevelop.Gui;
-
-using SharpQuery.SchemaClass;
-using SharpQuery.Connection;
-using SharpQuery.Gui.DataView;
-using SharpQuery.Collections;
 
 namespace ReportGenerator{
 	/// <summary>

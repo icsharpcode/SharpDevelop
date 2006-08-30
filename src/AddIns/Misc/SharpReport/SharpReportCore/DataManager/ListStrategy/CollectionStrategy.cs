@@ -18,7 +18,7 @@ using System.Globalization;
 /// </summary>
 
 namespace SharpReportCore {
-	public class CollectionStrategy : BaseListStrategy {
+	internal class CollectionStrategy : BaseListStrategy {
 		// Holds the plain Data
 		
 		private Type	itemType;
@@ -139,7 +139,7 @@ namespace SharpReportCore {
 		
 		// if we have no sorting, we build the indexlist as well, so we don't need to
 		
-		private SharpIndexCollection IndexBuilder(IndexerDelegate indexer,ColumnCollection col) {
+		private SharpIndexCollection IndexBuilder(IndexerBuilderEventHandler indexer,ColumnCollection col) {
 			SharpIndexCollection arrayList = new SharpIndexCollection();
 			for (int rowIndex = 0; rowIndex < this.baseList.Count; rowIndex++){
 				object[] values = new object[1];
@@ -197,7 +197,7 @@ namespace SharpReportCore {
 					base.IsSorted = true;
 //					BaseListStrategy.CheckSortArray (base.IndexList,"TableStrategy - CheckSortArray");
 				} else {
-					SharpReportCore.IndexerDelegate t = new SharpReportCore.IndexerDelegate(BaseListStrategy.PlainIndexBuilder);
+					SharpReportCore.IndexerBuilderEventHandler t = new SharpReportCore.IndexerBuilderEventHandler(BaseListStrategy.PlainIndexBuilder);
 					base.IndexList = this.IndexBuilder(t,base.ReportSettings.SortColumnCollection);
 					base.IsSorted = false;
 				}
@@ -263,9 +263,6 @@ namespace SharpReportCore {
 			GC.SuppressFinalize(this);
 		}
 		
-		~CollectionStrategy(){
-			Dispose(false);
-		}
 		
 		protected override void Dispose(bool disposing){
 			try {
@@ -273,6 +270,9 @@ namespace SharpReportCore {
 					if (this.baseList != null) {
 						this.baseList.Clear();
 						this.baseList = null;
+					}
+					if (this.listProperties != null) {
+						this.listProperties = null;
 					}
 				}
 			} finally {

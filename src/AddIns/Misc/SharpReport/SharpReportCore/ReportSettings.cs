@@ -49,7 +49,7 @@ namespace SharpReportCore{
 		
 		
 		private GlobalEnums.ReportType reportType;
-		private GlobalEnums.PushPullModelEnum dataModel;
+		private GlobalEnums.PushPullModel dataModel;
 		
 		private SqlParametersCollection reportParametersCollection;
 		private ColumnCollection availableFields;
@@ -82,7 +82,7 @@ namespace SharpReportCore{
 			groupingsCollection = new ColumnCollection();
 			reportParametersCollection = new SqlParametersCollection();
 			this.reportType = GlobalEnums.ReportType.FormSheet;
-			this.dataModel = GlobalEnums.PushPullModelEnum.FormSheet;
+			this.dataModel = GlobalEnums.PushPullModel.FormSheet;
 		}
 		
 
@@ -155,9 +155,9 @@ namespace SharpReportCore{
 				return;
 			}
 			
-			switch ((GlobalEnums.enmParamCollectionName)GlobalEnums.StringToEnum(typeof(GlobalEnums.enmParamCollectionName),xmlCol.Name)) {
+			switch ((GlobalEnums.ParamCollectionName)GlobalEnums.StringToEnum(typeof(GlobalEnums.ParamCollectionName),xmlCol.Name)) {
 					
-					case GlobalEnums.enmParamCollectionName.AvailableColumns: {
+					case GlobalEnums.ParamCollectionName.AvailableColumns: {
 						XmlNodeList nodeList = xmlCol.ChildNodes;
 						this.availableFields.Clear();
 						foreach (XmlNode node in nodeList) {
@@ -171,7 +171,7 @@ namespace SharpReportCore{
 						break;
 					}
 					
-					case GlobalEnums.enmParamCollectionName.Sortings:{
+					case GlobalEnums.ParamCollectionName.Sortings:{
 						
 						XmlNodeList nodeList = xmlCol.ChildNodes;
 						this.sortingCollection.Clear();
@@ -186,7 +186,7 @@ namespace SharpReportCore{
 						break;
 					}
 					
-					case GlobalEnums.enmParamCollectionName.Groupings:{
+					case GlobalEnums.ParamCollectionName.Groupings:{
 						XmlNodeList nodeList = xmlCol.ChildNodes;
 						this.groupingsCollection.Clear();
 						foreach (XmlNode node in nodeList) {
@@ -200,7 +200,7 @@ namespace SharpReportCore{
 						break;
 					}
 					
-					case 	GlobalEnums.enmParamCollectionName.SqlParams:{
+					case 	GlobalEnums.ParamCollectionName.SqlParams:{
 						XmlNodeList nodeList = xmlCol.ChildNodes;
 						this.reportParametersCollection.Clear();
 						foreach( XmlNode node in nodeList) {
@@ -415,24 +415,24 @@ namespace SharpReportCore{
 			
 			XmlElement section = doc.CreateElement ("section");
 			if (this.availableFields.Count > 0) {
-				XmlElement xmlAvailableFields = doc.CreateElement(GlobalEnums.enmParamCollectionName.AvailableColumns.ToString());
+				XmlElement xmlAvailableFields = doc.CreateElement(GlobalEnums.ParamCollectionName.AvailableColumns.ToString());
 				AvailableFieldsToXml (xmlAvailableFields);
 				section.AppendChild(xmlAvailableFields);
 			}
 			if (this.sortingCollection.Count > 0) {
-				XmlElement xmlSortColumns = doc.CreateElement (GlobalEnums.enmParamCollectionName.Sortings.ToString());
+				XmlElement xmlSortColumns = doc.CreateElement (GlobalEnums.ParamCollectionName.Sortings.ToString());
 				SortColumnsToXml (xmlSortColumns);
 				section.AppendChild(xmlSortColumns);
 			}
 			
 			if (this.groupingsCollection.Count > 0){
-				XmlElement xmlGroupColumns = doc.CreateElement (GlobalEnums.enmParamCollectionName.Groupings.ToString());
+				XmlElement xmlGroupColumns = doc.CreateElement (GlobalEnums.ParamCollectionName.Groupings.ToString());
 				GroupColumnsToXml(xmlGroupColumns);
 				section.AppendChild(xmlGroupColumns);
 			}
 
 			if (reportParametersCollection.Count > 0) {
-				XmlElement xmlSqlParams = doc.CreateElement (GlobalEnums.enmParamCollectionName.SqlParams.ToString());
+				XmlElement xmlSqlParams = doc.CreateElement (GlobalEnums.ParamCollectionName.SqlParams.ToString());
 				SqlParamsToXml(xmlSqlParams);
 				section.AppendChild(xmlSqlParams);
 			}
@@ -633,7 +633,7 @@ namespace SharpReportCore{
 		
 		
 		[Category("Data")]
-		public GlobalEnums.PushPullModelEnum DataModel {
+		public GlobalEnums.PushPullModel DataModel {
 			get {
 				return dataModel;
 			}
@@ -641,7 +641,7 @@ namespace SharpReportCore{
 				if (dataModel != value) {
 					dataModel = value;
 
-					if (this.dataModel != GlobalEnums.PushPullModelEnum.FormSheet) {
+					if (this.dataModel != GlobalEnums.PushPullModel.FormSheet) {
 						this.reportType = GlobalEnums.ReportType.DataReport;
 					} else {
 						this.reportType = GlobalEnums.ReportType.FormSheet;

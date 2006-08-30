@@ -110,7 +110,7 @@ namespace SharpReportCore {
 		private static ReportModel ValidatePushModel (string fileName) {
 			
 			ReportModel model = ModelFromFile (fileName);
-			if (model.ReportSettings.DataModel != GlobalEnums.PushPullModelEnum.PushData) {
+			if (model.ReportSettings.DataModel != GlobalEnums.PushPullModel.PushData) {
 				throw new SharpReportException ("PrintPushdataReport: No valid ReportModel");
 			}
 			return model;
@@ -213,7 +213,7 @@ namespace SharpReportCore {
 			if (model.ReportSettings.ReportType != GlobalEnums.ReportType.DataReport) {
 				throw new ArgumentException("SetupPushDataRenderer <No valid ReportModel>");
 			}
-			if (model.ReportSettings.DataModel != GlobalEnums.PushPullModelEnum.PushData) {
+			if (model.ReportSettings.DataModel != GlobalEnums.PushPullModel.PushData) {
 				throw new ArgumentException("SetupPushDataRenderer <No valid ReportType>");
 			}
 			
@@ -243,7 +243,7 @@ namespace SharpReportCore {
 			if (model.ReportSettings.ReportType != GlobalEnums.ReportType.DataReport) {
 				throw new ArgumentException("SetupPushDataRenderer <No valid ReportModel>");
 			}
-			if (model.ReportSettings.DataModel != GlobalEnums.PushPullModelEnum.PushData) {
+			if (model.ReportSettings.DataModel != GlobalEnums.PushPullModel.PushData) {
 				throw new ArgumentException("SetupPushDataRenderer <No valid ReportType>");
 			}
 			
