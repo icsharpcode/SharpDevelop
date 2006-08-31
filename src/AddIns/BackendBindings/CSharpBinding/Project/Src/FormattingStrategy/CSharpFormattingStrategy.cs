@@ -351,7 +351,7 @@ namespace CSharpBinding.FormattingStrategy
 						textArea.Document.Insert(cursorOffset, sb.ToString());
 						
 						textArea.Refresh();
-						textArea.Caret.Position = textArea.Document.OffsetToPosition(cursorOffset + indentation.Length + "/// ".Length + " <summary>\n".Length);
+						textArea.Caret.Position = textArea.Document.OffsetToPosition(cursorOffset + indentation.Length + "/// ".Length + " <summary>".Length + terminator.Length);
 						return 0;
 					}
 				}
