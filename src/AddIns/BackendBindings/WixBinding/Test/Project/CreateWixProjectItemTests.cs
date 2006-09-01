@@ -35,5 +35,29 @@ namespace WixBinding.Tests.Project
 			ProjectItem item = p.CreateProjectItem("WixLibrary");
 			Assert.IsInstanceOfType(typeof(WixLibraryProjectItem), item);
 		}
+		
+		[Test]
+		public void CreateWixCompilerExtensionProjectItem()
+		{
+			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
+			ProjectItem item = p.CreateProjectItem("CompileExtension");
+			Assert.IsInstanceOfType(typeof(WixCompilerExtensionProjectItem), item);
+		}
+		
+		[Test]
+		public void CreateWixLinkerExtensionProjectItem()
+		{
+			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
+			ProjectItem item = p.CreateProjectItem("LinkExtension");
+			Assert.IsInstanceOfType(typeof(WixLinkerExtensionProjectItem), item);
+		}
+		
+		[Test]
+		public void CreateWixLibraryExtensionProjectItem()
+		{
+			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
+			ProjectItem item = p.CreateProjectItem("LibExtension");
+			Assert.IsInstanceOfType(typeof(WixLibraryExtensionProjectItem), item);
+		}
 	}
 }

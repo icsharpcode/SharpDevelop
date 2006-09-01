@@ -127,6 +127,16 @@
     <Compile Include="Src\WixBinaries.cs" />
     <Compile Include="Src\WixBinaryElement.cs" />
     <Compile Include="Src\Gui\WixTreeNodeBuilder.cs" />
+    <Compile Include="Src\Gui\WixCompilerExtensionPicker.cs" />
+    <Compile Include="Src\Gui\WixCompilerExtensionBinding.cs" />
+    <Compile Include="Src\Project\WixCompilerExtensionProjectItem.cs" />
+    <Compile Include="Src\Project\WixExtensionProjectItem.cs" />
+    <Compile Include="Src\Project\WixLinkerExtensionProjectItem.cs" />
+    <Compile Include="Src\Project\WixLibraryExtensionProjectItem.cs" />
+    <Compile Include="Src\Gui\AddCompilerExtensionsDialog.cs" />
+    <Compile Include="Src\Project\WixCompilerExtensionName.cs" />
+    <EmbeddedResource Include="Resources\LibraryParametersPanel.xfrm" />
+    <Compile Include="Src\Gui\LibraryParametersPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="WixBinding.addin">

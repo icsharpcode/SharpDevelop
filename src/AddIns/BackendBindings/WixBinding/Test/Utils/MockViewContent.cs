@@ -35,6 +35,7 @@ namespace WixBinding.Tests.Utils
 		public event EventHandler Saving;
 		public event SaveEventHandler Saved;
 		public event EventHandler DirtyChanged;
+		public event EventHandler FileNameChanged;
 		
 		public string UntitledName {
 			get {
@@ -197,6 +198,12 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
+		protected virtual void OnFileNameChanged(EventArgs e)
+		{
+			if (FileNameChanged != null) {
+				FileNameChanged(this, e);
+			}
+		}
 		
 		#endregion
 	}

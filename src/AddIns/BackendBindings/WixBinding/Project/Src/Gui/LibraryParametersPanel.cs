@@ -16,23 +16,23 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.WixBinding
 {
-	public class LinkerParametersPanel : AbstractProjectOptionPanel
+	public class LibraryParametersPanel : AbstractProjectOptionPanel
 	{
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.WixBinding.Resources.LinkerParametersPanel.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.WixBinding.Resources.LibraryParametersPanel.xfrm"));
 			InitializeHelper();
 			
 			// Add the extension picker in manually since the anchoring does not
-			// work if we add the picker into the XML of the LinkerParametersPanel.xfrm file.
+			// work if we add the picker into the XML of the LibraryParametersPanel.xfrm file.
 			WixCompilerExtensionPicker extensionPicker = new WixCompilerExtensionPicker();
 			extensionPicker.Dock = DockStyle.Fill;
 			ControlDictionary["compilerExtensionsGroupBox"].Controls.Add(extensionPicker);
 			extensionPicker.ExtensionsChanged += CompilerExtensionsChanged;
-			
+
 			WixCompilerExtensionBinding b = new WixCompilerExtensionBinding(extensionPicker);
-			helper.AddBinding("LinkExtension", b);
-		
+			helper.AddBinding("LibExtension", b);
+			
 			helper.AddConfigurationSelector(this);
 		}
 		

@@ -86,6 +86,12 @@ namespace ICSharpCode.WixBinding
 			switch (itemType) {
 				case "WixLibrary":
 					return new WixLibraryProjectItem(this);
+				case "CompileExtension":
+					return new WixCompilerExtensionProjectItem(this);
+				case "LibExtension":
+					return new WixLibraryExtensionProjectItem(this);
+				case "LinkExtension":
+					return new WixLinkerExtensionProjectItem(this);
 				default:
 					return ProjectItemFactory.CreateProjectItem(this, itemType);
 			}
@@ -141,6 +147,33 @@ namespace ICSharpCode.WixBinding
 		public ReadOnlyCollection<FileProjectItem> WixSourceFiles {
 			get {
 				return GetMatchingFiles(WixDocument.IsWixSourceFileName);
+			}
+		}
+		
+		/// <summary>
+		/// Returns the compiler extension project items.
+		/// </summary>
+		public ReadOnlyCollection<WixExtensionProjectItem> WixCompilerExtensions {
+			get {
+				return GetExtensions(typeof(WixCompilerExtensionProjectItem));
+			}
+		}
+		
+		/// <summary>
+		/// Returns the linker extension project items.
+		/// </summary>
+		public ReadOnlyCollection<WixExtensionProjectItem> WixLinkerExtensions {
+			get {
+				return GetExtensions(typeof(WixLinkerExtensionProjectItem));
+			}
+		}
+		
+		/// <summary>
+		/// Returns the library extension project items.
+		/// </summary>
+		public ReadOnlyCollection<WixExtensionProjectItem> WixLibraryExtensions {
+			get {
+				return GetExtensions(typeof(WixLibraryExtensionProjectItem));
 			}
 		}
 		
@@ -218,6 +251,24 @@ namespace ICSharpCode.WixBinding
 				}
 			}
 			return new ReadOnlyCollection<FileProjectItem>(items);
+		}
+		
+		/// <summary>
+		/// Returns a collection of compiler extension items that match the specified
+		/// type.
+		/// </summary>
+		ReadOnlyCollection<WixExtensionProjectItem> GetExtensions(Type type)
+		{
+			List<WixExtensionProjectItem> items = new List<WixExtensionProjectItem>();
+			foreach (ProjectItem projectItem in Items) {
+				WixExtensionProjectItem item = projectItem as WixExtensionProjectItem;
+				if (item != null) {
+					if (item.GetType() == type) {
+						items.Add(item);
+					}
+				}
+			}
+			return new ReadOnlyCollection<WixExtensionProjectItem>(items);
 		}
 	}
 }

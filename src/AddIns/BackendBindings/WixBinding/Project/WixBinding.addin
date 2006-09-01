@@ -62,12 +62,15 @@
 		<DialogPanel id = "WixCompiler"
 			         label = "${res:Dialog.ProjectOptions.BuildOptions}"
 			         class = "ICSharpCode.WixBinding.CompilerParametersPanel"/>
-		<!--<DialogPanel id = "WixLinker"
-			         label = "Linking"
-			         class = "ICSharpCode.WixBinding.LinkerParametersPanel"/>-->
 		<DialogPanel id    = "DebugOptions"
 		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
+		<DialogPanel id = "WixLibrary"
+			         label = "Library"
+			         class = "ICSharpCode.WixBinding.LibraryParametersPanel"/>
+		<DialogPanel id = "WixLinker"
+			         label = "Linking"
+			         class = "ICSharpCode.WixBinding.LinkerParametersPanel"/>
 		<DialogPanel id    = "PreprocessorVariables"
 		             label = "Preprocessing"
 		             class = "ICSharpCode.WixBinding.PreprocessorVariablesPanel"/>
@@ -217,5 +220,15 @@
 			label = "${res:Global.RemoveButtonText}"
 			icon  = "Icons.16x16.DeleteIcon"
 			class = "ICSharpCode.WixBinding.RemoveElementCommand"/>
+	</Path>
+	
+	<!-- 
+		Standard compiler extensions. These are displayed in the add 
+		compiler extensions dialog.
+ 	-->
+	<Path name="/AddIns/WixBinding/CompilerExtensions">
+		<String id="NetFx" text="Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension|.NET Framework Extension"/>
+		<String id="PubCa" text="Microsoft.Tools.WindowsInstallerXml.PcaCompiler, pcaext|COM+ and Message Queue Extension (pubca)"/>
+		<String id="VS" text="Microsoft.Tools.WindowsInstallerXml.Extensions.VSCompiler, WixVSExtension|Visual Studio Extension"/>
 	</Path>
 </AddIn>

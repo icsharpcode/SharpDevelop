@@ -45,6 +45,16 @@ namespace ICSharpCode.WixBinding
 			b = helper.BindString("wixMSBuildExtensionsPathTextBox", "WixMSBuildExtensionsPath");
 			ConnectBrowseFolder("wixMSBuildExtensionsPathBrowseButton", "wixMSBuildExtensionsPathTextBox", String.Empty);
 
+			// Add the extension picker in manually since the anchoring does not
+			// work if we add the picker into the XML of the CompilerParametersPanel.xfrm file.
+			WixCompilerExtensionPicker extensionPicker = new WixCompilerExtensionPicker();
+			extensionPicker.Dock = DockStyle.Fill;
+			ControlDictionary["compilerExtensionsGroupBox"].Controls.Add(extensionPicker);
+			extensionPicker.ExtensionsChanged += CompilerExtensionsChanged;
+
+			b = new WixCompilerExtensionBinding(extensionPicker);
+			helper.AddBinding("CompileExtension", b);
+
 			InitWarnings();
 
 			helper.AddConfigurationSelector(this);
@@ -65,6 +75,11 @@ namespace ICSharpCode.WixBinding
 			
 			b = helper.BindBoolean("treatWarningsAsErrorsCheckBox", "TreatWarningsAsErrors", false);
 			b.RegisterLocationButton(locationButton);
+		}
+		
+		void CompilerExtensionsChanged(object source, EventArgs e)
+		{
+			IsDirty = true;
 		}
 	}
 }

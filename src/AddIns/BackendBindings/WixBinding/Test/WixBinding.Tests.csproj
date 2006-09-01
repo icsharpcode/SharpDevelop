@@ -187,6 +187,8 @@
     <Compile Include="Document\GetBinaryFileNameFromProjectTestFixture.cs" />
     <Compile Include="DialogLoading\BitmapFromProjectTestFixture.cs" />
     <Compile Include="Document\DirectoryNameTests.cs" />
+    <Compile Include="Project\GetWixCompilerExtensionsTestFixture.cs" />
+    <Compile Include="Project\WixCompilerExtensionNameTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\WixBinding.csproj">
