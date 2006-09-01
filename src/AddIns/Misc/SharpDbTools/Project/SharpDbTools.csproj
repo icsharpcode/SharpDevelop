@@ -70,6 +70,13 @@
     <EmbeddedResource Include="Src\GetConnectionLogicalNameDialog.resx">
       <DependentUpon>GetConnectionLogicalNameDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <Compile Include="Src\Viewer\TableDescribeForm.Designer.cs">
+      <DependentUpon>TableDescribeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Viewer\TableDescribeForm.cs" />
+    <EmbeddedResource Include="Src\Viewer\TableDescribeForm.resx">
+      <DependentUpon>TableDescribeForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Model" />

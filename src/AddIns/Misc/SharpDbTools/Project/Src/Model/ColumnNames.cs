@@ -24,5 +24,6 @@ namespace SharpDbTools.Model
 		public const string InvariantName = "invariantName";
 		public const string Name = "name";
 		public const string ConnectionString = "connectionString";
+		public const string TableName = "TABLE_NAME";
 	}
 }

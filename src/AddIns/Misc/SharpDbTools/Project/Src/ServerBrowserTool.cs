@@ -21,6 +21,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using SharpDbTools.Model;
 using SharpDbTools.Connection;
+using SharpDbTools.Viewer;
 
 namespace SharpDbTools
 {
@@ -147,6 +148,7 @@ namespace SharpDbTools
 		public TreeNode CreateDbModelInfoNode(string name)
 		{
 			TreeNode treeNode = new TreeNode(name);
+			treeNode.Tag = "ConnectionRoot";
 			// create and add the menustrip for this node
 			
 			NodeAwareContextMenuStrip cMenu = new NodeAwareContextMenuStrip(treeNode);
@@ -317,6 +319,9 @@ namespace SharpDbTools
 			ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
 			NodeAwareContextMenuStrip toolStrip = menuItem.Owner as NodeAwareContextMenuStrip;
 			TreeNode node = toolStrip.TreeNode;
+			while ((node.Tag == null) || (!node.Tag.Equals("ConnectionRoot"))) {
+				node = node.Parent;				       	
+			}
 			string connectionLogicalName = node.Text;
 			return connectionLogicalName;
 		}
@@ -370,7 +375,14 @@ namespace SharpDbTools
 		
 		public void DescribeTableClickHandler(object sender, EventArgs args)
 		{
-			LoggingService.Debug("describe table clicked for: ");
+			string logicalConnectionName = getConnectionName(sender);
+			ToolStripMenuItem item = sender as ToolStripMenuItem;
+			NodeAwareContextMenuStrip s = item.Owner as NodeAwareContextMenuStrip;
+			string tableName = s.TreeNode.Text;
+			LoggingService.Debug("describe table clicked for: " + logicalConnectionName + " and table name: " + tableName);
+			DataTable tableInfo = DbModelInfoService.GetTableInfo(logicalConnectionName, tableName);
+			TableDescribeForm describeForm = new TableDescribeForm(tableInfo);
+			describeForm.Show();
 		}
 	}
 	

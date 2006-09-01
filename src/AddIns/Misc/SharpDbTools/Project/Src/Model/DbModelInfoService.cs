@@ -71,6 +71,25 @@ namespace SharpDbTools.Model
 				bool exists = cache.TryGetValue(name, out modelInfo);
 				return modelInfo;
 		}
+		
+		public static DataTable GetTableInfo(string modelName, string tableName)
+		{
+			LoggingService.Debug("-->GetTableInfo");
+			DbModelInfo modelInfo = GetDbModelInfo(modelName);
+			DataTable columnTable = modelInfo.Tables[TableNames.Columns];
+			DataRow[] columnsMetadata = columnTable.Select(ColumnNames.TableName + "='" + tableName + "'");
+			LoggingService.Debug("found: " + columnsMetadata.Length + " columns belonging to table: " + tableName);
+			DataTable tableInfo = columnTable.Copy();
+			tableInfo.Clear();
+			foreach (DataRow r in columnsMetadata) {
+				DataRow newRow = tableInfo.NewRow();
+				newRow.ItemArray = r.ItemArray;
+				tableInfo.Rows.Add(newRow);
+				tableInfo.AcceptChanges();
+			}
+			return tableInfo;
+
+		}
 				
 		public static DbModelInfo LoadMetadataFromConnection(string name)
 		{
