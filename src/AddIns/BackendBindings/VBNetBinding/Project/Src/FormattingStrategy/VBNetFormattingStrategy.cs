@@ -7,8 +7,7 @@
 
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Drawing;
@@ -29,15 +28,16 @@ namespace VBNetBinding.FormattingStrategy
 	/// </summary>
 	public class VBFormattingStrategy : DefaultFormattingStrategy
 	{
-		ArrayList statements;
-		StringCollection keywords;
+		List<VBStatement> statements;
+		VBStatement interfaceStatement;
+		IList<string> keywords;
 		
 		bool doCasing;
 		bool doInsertion;
 		
 		public VBFormattingStrategy()
 		{
-			statements = new ArrayList();
+			statements = new List<VBStatement>();
 			statements.Add(new VBStatement(@"^if.*?(then|\s+_)$", "^end ?if$", "End If", 1));
 			statements.Add(new VBStatement(@"\bclass\s+\w+$", "^end class$", "End Class", 1));
 			statements.Add(new VBStatement(@"\bnamespace\s+\w+(\.\w+)*$", "^end namespace$", "End Namespace", 1));
@@ -45,9 +45,9 @@ namespace VBNetBinding.FormattingStrategy
 			statements.Add(new VBStatement(@"\bstructure\s+\w+$", "^end structure$", "End Structure", 1));
 			statements.Add(new VBStatement(@"^while\s+", "^end while$", "End While", 1));
 			statements.Add(new VBStatement(@"^select case", "^end select$", "End Select", 2));
-			statements.Add(new VBStatement(@"(?<!\b(mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bsub\s+\w+", @"^end\s+sub$", "End Sub", 1));
+			statements.Add(new VBStatement(@"(?<!\b(delegate|mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bsub\s+\w+", @"^end\s+sub$", "End Sub", 1));
 			statements.Add(new VBStatement(@"(?<!\bmustoverride (readonly |writeonly )?)\bproperty\s+\w+", @"^end\s+property$", "End Property", 1));
-			statements.Add(new VBStatement(@"(?<!\b(mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bfunction\s+\w+", @"^end\s+function$", "End Function", 1));
+			statements.Add(new VBStatement(@"(?<!\b(delegate|mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bfunction\s+\w+", @"^end\s+function$", "End Function", 1));
 			statements.Add(new VBStatement(@"\bfor\s+.*?$", "^next( \\w+)?$", "Next", 1));
 			statements.Add(new VBStatement(@"^synclock\s+.*?$", "^end synclock$", "End SyncLock", 1));
 			statements.Add(new VBStatement(@"^get$", "^end get$", "End Get", 1));
@@ -57,53 +57,53 @@ namespace VBNetBinding.FormattingStrategy
 			statements.Add(new VBStatement(@"^do\s+.+?$", "^loop$", "Loop", 1));
 			statements.Add(new VBStatement(@"^do$", "^loop .+?$", "Loop While ", 1));
 			statements.Add(new VBStatement(@"\benum\s+\w+$", "^end enum$", "End Enum", 1));
-			statements.Add(new VBStatement(@"\binterface\s+\w+$", "^end interface$", "End Interface", 1));
+			interfaceStatement = new VBStatement(@"\binterface\s+\w+$", "^end interface$", "End Interface", 1);
+			statements.Add(interfaceStatement);
 			statements.Add(new VBStatement(@"\busing\s+", "^end using$", "End Using", 1));
 			statements.Add(new VBStatement(@"^#region\s+", "^#end region$", "#End Region", 0));
 			
-			keywords = new StringCollection();
-			keywords.AddRange(new string[] {
-			                  	"AddHandler", "AddressOf", "Alias", "And",
-			                  	"AndAlso", "As", "Boolean", "ByRef",
-			                  	"Byte", "ByVal", "Call", "Case",
-			                  	"Catch", "CBool", "CByte", "CChar",
-			                  	"CDate", "CDbl", "CDec", "Char",
-			                  	"CInt", "Class", "CLng", "CObj",
-			                  	"Const", "Continue", "CSByte", "CShort",
-			                  	"CSng", "CStr", "CType", "CUInt",
-			                  	"CULng", "CUShort", "Date", "Decimal",
-			                  	"Declare", "Default", "Delegate", "Dim",
-			                  	"DirectCast", "Do", "Double", "Each",
-			                  	"Else", "ElseIf", "End", "EndIf", // EndIf special case: converted to "End If"
-			                  	"Enum", "Erase", "Error", "Event",
-			                  	"Exit", "False", "Finally", "For",
-			                  	"Friend", "Function", "Get", "GetType",
-			                  	"Global", "GoSub", "GoTo", "Handles",
-			                  	"If", "Implements", "Imports", "In",
-			                  	"Inherits", "Integer", "Interface", "Is",
-			                  	"IsNot", "Let", "Lib", "Like",
-			                  	"Long", "Loop", "Me", "Mod",
-			                  	"Module", "MustInherit", "MustOverride", "MyBase",
-			                  	"MyClass", "Namespace", "Narrowing", "New",
-			                  	"Next", "Not", "Nothing", "NotInheritable",
-			                  	"NotOverridable", "Object", "Of", "On",
-			                  	"Operator", "Option", "Optional", "Or",
-			                  	"OrElse", "Overloads", "Overridable", "Overrides",
-			                  	"ParamArray", "Partial", "Private", "Property",
-			                  	"Protected", "Public", "RaiseEvent", "ReadOnly",
-			                  	"ReDim", "REM", "RemoveHandler", "Resume",
-			                  	"Return", "SByte", "Select", "Set",
-			                  	"Shadows", "Shared", "Short", "Single",
-			                  	"Static", "Step", "Stop", "String",
-			                  	"Structure", "Sub", "SyncLock", "Then",
-			                  	"Throw", "To", "True", "Try",
-			                  	"TryCast", "TypeOf", "UInteger", "ULong",
-			                  	"UShort", "Using", "Variant", "Wend",
-			                  	"When", "While", "Widening", "With",
-			                  	"WithEvents", "WriteOnly", "Xor",
-			                  	// these are not keywords, but context dependend
-			                  	"Until", "Ansi", "Unicode", "Region", "Preserve"
-			                  });
+			keywords = new string[] {
+				"AddHandler", "AddressOf", "Alias", "And",
+				"AndAlso", "As", "Boolean", "ByRef",
+				"Byte", "ByVal", "Call", "Case",
+				"Catch", "CBool", "CByte", "CChar",
+				"CDate", "CDbl", "CDec", "Char",
+				"CInt", "Class", "CLng", "CObj",
+				"Const", "Continue", "CSByte", "CShort",
+				"CSng", "CStr", "CType", "CUInt",
+				"CULng", "CUShort", "Date", "Decimal",
+				"Declare", "Default", "Delegate", "Dim",
+				"DirectCast", "Do", "Double", "Each",
+				"Else", "ElseIf", "End", "EndIf", // EndIf special case: converted to "End If"
+				"Enum", "Erase", "Error", "Event",
+				"Exit", "False", "Finally", "For",
+				"Friend", "Function", "Get", "GetType",
+				"Global", "GoSub", "GoTo", "Handles",
+				"If", "Implements", "Imports", "In",
+				"Inherits", "Integer", "Interface", "Is",
+				"IsNot", "Let", "Lib", "Like",
+				"Long", "Loop", "Me", "Mod",
+				"Module", "MustInherit", "MustOverride", "MyBase",
+				"MyClass", "Namespace", "Narrowing", "New",
+				"Next", "Not", "Nothing", "NotInheritable",
+				"NotOverridable", "Object", "Of", "On",
+				"Operator", "Option", "Optional", "Or",
+				"OrElse", "Overloads", "Overridable", "Overrides",
+				"ParamArray", "Partial", "Private", "Property",
+				"Protected", "Public", "RaiseEvent", "ReadOnly",
+				"ReDim", "REM", "RemoveHandler", "Resume",
+				"Return", "SByte", "Select", "Set",
+				"Shadows", "Shared", "Short", "Single",
+				"Static", "Step", "Stop", "String",
+				"Structure", "Sub", "SyncLock", "Then",
+				"Throw", "To", "True", "Try",
+				"TryCast", "TypeOf", "UInteger", "ULong",
+				"UShort", "Using", "Variant", "Wend",
+				"When", "While", "Widening", "With",
+				"WithEvents", "WriteOnly", "Xor",
+				// these are not keywords, but context dependend
+				"Until", "Ansi", "Unicode", "Region", "Preserve"
+			};
 		}
 		
 		/// <summary>
@@ -346,10 +346,11 @@ namespace VBNetBinding.FormattingStrategy
 								texttoreplace += " Then";
 							}
 						}
-						foreach (VBStatement statement in statements) {
+						foreach (VBStatement statement_ in statements) {
+							VBStatement statement = statement_; // allow passing statement byref
 							if (Regex.IsMatch(texttoreplace.Trim(), statement.StartRegex, RegexOptions.IgnoreCase)) {
 								string indentation = GetIndentation(textArea, lineNr - 1);
-								if (isEndStatementNeeded(textArea, statement, lineNr)) {
+								if (isEndStatementNeeded(textArea, ref statement, lineNr)) {
 									textArea.Document.Insert(textArea.Caret.Offset, terminator + indentation + statement.EndStatement);
 									++undoCount;
 								}
@@ -532,15 +533,25 @@ namespace VBNetBinding.FormattingStrategy
 			return !inString;
 		}
 		
-		bool isEndStatementNeeded(TextArea textArea, VBStatement statement, int lineNr)
+		bool isEndStatementNeeded(TextArea textArea, ref VBStatement statement, int lineNr)
 		{
 			int count = 0;
+			bool inInterface = false;
 			
 			for (int i = 0; i < textArea.Document.TotalNumberOfLines; i++) {
 				LineSegment line = textArea.Document.GetLineSegment(i);
 				string lineText = textArea.Document.GetText(line.Offset, line.Length).Trim();
 				
-				if (lineText.StartsWith("'")) {
+				if (statement != interfaceStatement) {
+					if (Regex.IsMatch(lineText, interfaceStatement.StartRegex, RegexOptions.IgnoreCase)) {
+						inInterface = true;
+					} else if (Regex.IsMatch(lineText, interfaceStatement.EndRegex, RegexOptions.IgnoreCase)){
+						inInterface = false;
+					}
+				}
+				
+				//Omits comments and contents of interfaces
+				if (lineText.StartsWith("'") || inInterface) {
 					continue;
 				}
 				
@@ -549,6 +560,10 @@ namespace VBNetBinding.FormattingStrategy
 				} else if (Regex.IsMatch(lineText, statement.EndRegex, RegexOptions.IgnoreCase)) {
 					count--;
 				}
+			}
+			if (inInterface) {
+				// set IndentPlus to 0
+				statement = new VBStatement(statement.StartRegex, statement.EndRegex, statement.EndStatement, 0);
 			}
 			return count > 0;
 		}

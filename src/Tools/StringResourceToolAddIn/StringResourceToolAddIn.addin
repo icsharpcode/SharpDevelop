@@ -1,7 +1,6 @@
 ﻿<AddIn name        = "StringResourceToolAddIn"
        author      = "Daniel Grunwald"
-       url         = ""
-       description = "TODO: Put description here">
+       description = "Provides a shortcut (Ctrl+Shift+R) to upload the selected text into the translation database">
 	
 	<Manifest>
 		<Identity name="ICSharpCode.Internal.StringResourceToolAddIn" version="@StringResourceToolAddIn.dll"/>
