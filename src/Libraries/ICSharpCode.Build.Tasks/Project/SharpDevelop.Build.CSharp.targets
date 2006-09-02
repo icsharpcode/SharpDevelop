@@ -69,4 +69,14 @@
 	<!-- Mono imports -->
 	<Import Condition=" '$(TargetFrameworkVersion)' == 'Mono v1.1' " Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.Mcs.targets"/>
 	<Import Condition=" '$(TargetFrameworkVersion)' == 'Mono v2.0' " Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.Gmcs.targets"/>
+	
+	<!-- Compact framework default platform values -->
+	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'CF 1.0' Or '$(TargetFrameworkVersion)' == 'CF 2.0' ">
+		<PlatformFamilyName Condition=" '$(PlatformFamilyName)' == '' ">PocketPC</PlatformFamilyName>
+    	<PlatformID Condition=" '$(PlatformID)' == '' ">WinCE</PlatformID>
+	</PropertyGroup>
+	
+	<!-- Compact framework imports -->
+	<Import Condition=" '$(TargetFrameworkVersion)' == 'CF 1.0' " Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets"/>
+	<Import Condition=" '$(TargetFrameworkVersion)' == 'CF 2.0' " Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets"/>
 </Project>

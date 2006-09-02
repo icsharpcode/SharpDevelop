@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using Microsoft.Win32;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -13,17 +14,24 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop
 {
-	/// <summary>
-	/// Project content registry for .NET 1.0 and .NET 1.1 assemblies.
-	/// </summary>
-	public abstract class Net1xProjectContentRegistry : ProjectContentRegistry
+	public class NetCF20ProjectContentRegistry : ProjectContentRegistry
 	{
-		protected abstract string DotnetVersion { get; }
-		
 		public override IProjectContent Mscorlib {
 			get {
 				return GetProjectContentForReference("mscorlib", "mscorlib");
 			}
+		}
+		
+		static string GetInstallFolder()
+		{
+			const string regkey = @"SOFTWARE\Microsoft\.NETCompactFramework\v2.0.0.0\WindowsCE\AssemblyFoldersEx";
+			RegistryKey key = Registry.LocalMachine.OpenSubKey(regkey);
+			if (key != null) {
+				string dir = key.GetValue(null) as string;
+				key.Close();
+				return dir;
+			}
+			return null;
 		}
 		
 		protected override IProjectContent LoadProjectContent(string itemInclude, string itemFileName)
@@ -31,8 +39,8 @@ namespace ICSharpCode.SharpDevelop
 			if (File.Exists(itemFileName)) {
 				return ParserService.DefaultProjectContentRegistry.GetProjectContentForReference(itemInclude, itemFileName);
 			}
-			string netPath = Path.Combine(FileUtility.NETFrameworkInstallRoot, DotnetVersion);
-			if (File.Exists(Path.Combine(netPath, "mscorlib.dll"))) {
+			string netPath = GetInstallFolder();
+			if (!string.IsNullOrEmpty(netPath) && File.Exists(Path.Combine(netPath, "mscorlib.dll"))) {
 				string shortName = itemInclude;
 				int pos = shortName.IndexOf(',');
 				if (pos > 0)
@@ -45,25 +53,12 @@ namespace ICSharpCode.SharpDevelop
 					return CecilReader.LoadAssembly(Path.Combine(netPath, shortName), this);
 				}
 			} else {
-				string message = "Warning: Target .NET Framework version " + DotnetVersion + " is not installed." + Environment.NewLine;
+				string message = "Warning: .NET Compact Framework SDK is not installed." + Environment.NewLine;
 				if (!TaskService.BuildMessageViewCategory.Text.Contains(message)) {
 					TaskService.BuildMessageViewCategory.AppendText(message);
 				}
 			}
 			return ParserService.DefaultProjectContentRegistry.GetProjectContentForReference(itemInclude, itemFileName);
-		}
-	}
-	
-	public class Net10ProjectContentRegistry : Net1xProjectContentRegistry
-	{
-		protected override string DotnetVersion {
-			get { return "v1.0.3705"; }
-		}
-	}
-	public class Net11ProjectContentRegistry : Net1xProjectContentRegistry
-	{
-		protected override string DotnetVersion {
-			get { return "v1.1.4322"; }
 		}
 	}
 }

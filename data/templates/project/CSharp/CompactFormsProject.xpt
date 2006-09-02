@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-<Template originator   = "Mike Krueger"
-          created      = "06/10/2001"
-          lastModified = "14/01/2006">
+<Template originator = "Daniel Grunwald">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -38,10 +36,11 @@
 			<PropertyGroup>
 				<PlatformFamilyName>PocketPC</PlatformFamilyName>
 				<PlatformID>WinCE</PlatformID>
+				<TargetFrameworkVersion>CF 2.0</TargetFrameworkVersion>
 			</PropertyGroup>
 			
 			<Imports clear="true">
-				<Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.Targets" />
+				<Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets" />
 			</Imports>
 			
 			<Files>

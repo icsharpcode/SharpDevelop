@@ -2205,6 +2205,9 @@
 			<Condition name = "CompareProjectProperty" property = "TargetFrameworkVersion" equals = "v1.1">
 				<ProjectContentRegistry id="Net11" class="ICSharpCode.SharpDevelop.Net11ProjectContentRegistry"/>
 			</Condition>
+			<Condition name = "CompareProjectProperty" property = "TargetFrameworkVersion" equals = "CF 2.0">
+				<ProjectContentRegistry id="NetCF20" class="ICSharpCode.SharpDevelop.NetCF20ProjectContentRegistry"/>
+			</Condition>
 		</ComplexCondition>
 	</Path>
 </AddIn>

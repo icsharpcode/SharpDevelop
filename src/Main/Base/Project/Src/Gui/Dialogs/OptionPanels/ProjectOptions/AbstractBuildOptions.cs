@@ -218,9 +218,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			targetFrameworkBinding = helper.BindStringEnum("targetFrameworkComboBox", TargetFrameworkProperty,
 			                                               "",
 			                                               new StringPair("", "Default (.NET 2.0)"),
-			                                               new StringPair("v1.0", ".NET 1.0"),
-			                                               new StringPair("v1.1", ".NET 1.1"),
-			                                               new StringPair("v2.0", ".NET 2.0"),
+			                                               new StringPair("v1.0", ".NET Framework 1.0"),
+			                                               new StringPair("v1.1", ".NET Framework 1.1"),
+			                                               new StringPair("v2.0", ".NET Framework 2.0"),
+			                                               new StringPair("CF 1.0", "Compact Framework 1.0"),
+			                                               new StringPair("CF 2.0", "Compact Framework 2.0"),
 			                                               new StringPair("Mono v1.1", "Mono 1.1"),
 			                                               new StringPair("Mono v2.0", "Mono 2.0"));
 			targetFrameworkBinding.CreateLocationButton("targetFrameworkLabel");

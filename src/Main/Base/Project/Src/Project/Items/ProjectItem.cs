@@ -142,6 +142,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static string MSBuildEscape(string text)
 		{
+			return MSBuildEscape(text, false);
+		}
+		
+		public static string MSBuildEscape(string text, bool escapeSemicolon)
+		{
 			StringBuilder b = null;
 			for (int i = 0; i < text.Length; i++) {
 				char c = text[i];
@@ -169,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			for (int i = 0; i < text.Length; i++) {
 				char c = text[i];
 				if (c == '%' && i + 2 < text.Length) {
-					if (b == null) b = new StringBuilder(text, 0, i, text.Length + 6);
+					if (b == null) b = new StringBuilder(text, 0, i, text.Length);
 					string a = text[i + 1].ToString() + text[i + 2].ToString();
 					int num;
 					if (int.TryParse(a, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out num)) {
@@ -204,7 +209,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		internal void WriteItem(XmlWriter writer)
 		{
 			writer.WriteStartElement(Tag);
-			writer.WriteAttributeString("Include", MSBuildEscape(Include));
+			writer.WriteAttributeString("Include", MSBuildEscape(Include, true));
 			this.Properties.WriteProperties(writer);
 			writer.WriteEndElement();
 		}

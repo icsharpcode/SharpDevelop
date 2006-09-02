@@ -703,6 +703,7 @@
     <Compile Include="Src\Services\ParserService\Doozer\ProjectContentRegistryDoozer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CompareProjectPropertyConditionEvaluator.cs" />
     <Compile Include="Src\Services\ParserService\Net1xProjectContentRegistry.cs" />
+    <Compile Include="Src\Services\ParserService\NetCFProjectContentRegistry.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
