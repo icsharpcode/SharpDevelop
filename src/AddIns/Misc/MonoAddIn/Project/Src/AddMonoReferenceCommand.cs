@@ -31,11 +31,11 @@ namespace ICSharpCode.MonoAddIn
 			using (SelectMonoReferenceDialog selDialog = new SelectMonoReferenceDialog(project)) {
 				if (selDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 
-					MonoProjectContentLoader.CreateMonoProjectContent(project);
+					/*MonoProjectContentLoader.CreateMonoProjectContent(project);
 					
 					foreach (ReferenceProjectItem gacReference in selDialog.GacReferences) {
 						MonoProjectContentLoader.AddGacReference(gacReference.Include);
-					}
+					}*/
 				
 					foreach (ReferenceProjectItem reference in selDialog.ReferenceInformations) {
 						ProjectService.AddProjectItem(project, reference);

@@ -6,17 +6,16 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Collections;
 using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
 using ICSharpCode.TextEditor.Document;
-using ICSharpCode.Core;
 
 namespace CSharpBinding.FormattingStrategy
 {

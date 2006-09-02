@@ -2,13 +2,13 @@
 <Template author="Justin Dearing" version="1.1">
 	
 	<Config
-		  name        = "${res:Templates.File.EmptyStruct.Name}"
+		  name        = "${res:Templates.File.Struct.Name}"
 		  icon        = "C#.File.NewClass"
 		  category    = "C#"
 		  defaultname = "Struct${Number}.cs"
 		  language    = "C#"/>
 	
-	<Description>${res:Templates.File.EmptyStruct.Description}</Description>
+	<Description>${res:Templates.File.Struct.Description}</Description>
 	
 	<!--
 	Special new file templates:

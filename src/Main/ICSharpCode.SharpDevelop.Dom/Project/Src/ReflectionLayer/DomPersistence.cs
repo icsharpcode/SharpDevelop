@@ -16,32 +16,35 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// <summary>
 	/// This class can write Dom entity into a binary file for fast loading.
 	/// </summary>
-	public static class DomPersistence
+	public sealed class DomPersistence
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 6;
+		public const short FileVersion = 7;
 		
-		#region Cache management
-		#if DEBUG
-		const string tempPathName = "SharpDevelop/DomCacheDebug";
-		#else
-		const string tempPathName = "SharpDevelop/DomCache";
-		#endif
+		ProjectContentRegistry registry;
+		string cacheDirectory;
 		
-		static string MakeTempPath()
-		{
-			string tempPath = Path.Combine(Path.GetTempPath(), tempPathName);
-			if (!Directory.Exists(tempPath))
-				Directory.CreateDirectory(tempPath);
-			return tempPath;
+		internal string CacheDirectory {
+			get {
+				return cacheDirectory;
+			}
 		}
 		
-		public static string SaveProjectContent(ReflectionProjectContent pc)
+		internal DomPersistence(string cacheDirectory, ProjectContentRegistry registry)
+		{
+			this.cacheDirectory = cacheDirectory;
+			this.registry = registry;
+			
+			cacheIndex = LoadCacheIndex();
+		}
+		
+		#region Cache management
+		public string SaveProjectContent(ReflectionProjectContent pc)
 		{
 			string assemblyFullName = pc.AssemblyFullName;
 			int pos = assemblyFullName.IndexOf(',');
-			string fileName = Path.Combine(MakeTempPath(),
+			string fileName = Path.Combine(cacheDirectory,
 			                               assemblyFullName.Substring(0, pos)
 			                               + "." + assemblyFullName.GetHashCode().ToString("x", CultureInfo.InvariantCulture)
 			                               + "." + pc.AssemblyLocation.GetHashCode().ToString("x", CultureInfo.InvariantCulture)
@@ -53,11 +56,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return fileName;
 		}
 		
-		public static ReflectionProjectContent LoadProjectContentByAssemblyName(string assemblyName)
+		public ReflectionProjectContent LoadProjectContentByAssemblyName(string assemblyName)
 		{
 			string cacheFileName;
 			if (CacheIndex.TryGetValue(assemblyName, out cacheFileName)) {
-				cacheFileName = Path.Combine(MakeTempPath(), cacheFileName);
+				cacheFileName = Path.Combine(cacheDirectory, cacheFileName);
 				if (File.Exists(cacheFileName)) {
 					return LoadProjectContent(cacheFileName);
 				}
@@ -65,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return null;
 		}
 		
-		public static ReflectionProjectContent LoadProjectContent(string cacheFileName)
+		public ReflectionProjectContent LoadProjectContent(string cacheFileName)
 		{
 			using (FileStream fs = new FileStream(cacheFileName, FileMode.Open, FileAccess.Read)) {
 				return LoadProjectContent(fs);
@@ -74,20 +77,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#endregion
 		
 		#region Cache index
-		static string GetIndexFileName() { return Path.Combine(MakeTempPath(), "index.dat"); }
+		string GetIndexFileName() { return Path.Combine(cacheDirectory, "index.dat"); }
 		
-		static Dictionary<string, string> cacheIndex;
+		Dictionary<string, string> cacheIndex;
 		
-		static Dictionary<string, string> CacheIndex {
+		Dictionary<string, string> CacheIndex {
 			get {
-				if (cacheIndex == null) {
-					cacheIndex = LoadCacheIndex();
-				}
 				return cacheIndex;
 			}
 		}
 		
-		static Dictionary<string, string> LoadCacheIndex()
+		Dictionary<string, string> LoadCacheIndex()
 		{
 			string indexFile = GetIndexFileName();
 			Dictionary<string, string> list = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
@@ -117,7 +117,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return list;
 		}
 		
-		static void SaveCacheIndex(Dictionary<string, string> cacheIndex)
+		void SaveCacheIndex(Dictionary<string, string> cacheIndex)
 		{
 			string indexFile = GetIndexFileName();
 			using (FileStream fs = new FileStream(indexFile, FileMode.Create, FileAccess.Write)) {
@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		static void AddFileNameToCacheIndex(string cacheFile, ReflectionProjectContent pc)
+		void AddFileNameToCacheIndex(string cacheFile, ReflectionProjectContent pc)
 		{
 			Dictionary<string, string> l = LoadCacheIndex();
 			l[pc.AssemblyLocation] = cacheFile;
@@ -166,20 +166,25 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Load a project content from a stream.
 		/// </summary>
-		public static ReflectionProjectContent LoadProjectContent(Stream stream)
+		public ReflectionProjectContent LoadProjectContent(Stream stream)
+		{
+			return LoadProjectContent(stream, registry);
+		}
+		
+		internal static ReflectionProjectContent LoadProjectContent(Stream stream, ProjectContentRegistry registry)
 		{
 			ReflectionProjectContent pc;
 			BinaryReader reader = new BinaryReader(stream);
-				try {
-					pc = new ReadWriteHelper(reader).ReadProjectContent();
-					if (pc != null) {
-						pc.InitializeSpecialClasses();
-					}
-					return pc;
-				} catch (EndOfStreamException) {
-					LoggingService.Warn("Read dom: EndOfStreamException");
-					return null;
+			try {
+				pc = new ReadWriteHelper(reader).ReadProjectContent(registry);
+				if (pc != null) {
+					pc.InitializeSpecialClasses();
 				}
+				return pc;
+			} catch (EndOfStreamException) {
+				LoggingService.Warn("Read dom: EndOfStreamException");
+				return null;
+			}
 			// do not close the stream
 		}
 		#endregion
@@ -254,7 +259,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				this.reader = reader;
 			}
 			
-			public ReflectionProjectContent ReadProjectContent()
+			public ReflectionProjectContent ReadProjectContent(ProjectContentRegistry registry)
 			{
 				if (reader.ReadInt64() != FileMagic) {
 					LoggingService.Warn("Read dom: wrong magic");
@@ -278,7 +283,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				for (int i = 0; i < referencedAssemblies.Length; i++) {
 					referencedAssemblies[i] = new AssemblyName(reader.ReadString());
 				}
-				this.pc = new ReflectionProjectContent(assemblyName, assemblyLocation, referencedAssemblies);
+				this.pc = new ReflectionProjectContent(assemblyName, assemblyLocation, referencedAssemblies, registry);
 				if (ReadClasses()) {
 					return pc;
 				} else {

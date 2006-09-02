@@ -19,7 +19,7 @@ namespace ICSharpCode.Core
 	}
 		
 	/// <summary>
-	/// Description of ICondition.
+	/// Interface for single condition or complex condition.
 	/// </summary>
 	public interface ICondition
 	{

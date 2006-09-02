@@ -8,10 +8,12 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.Core;
 
 namespace Grunwald.BooBinding
 {
@@ -24,6 +26,8 @@ namespace Grunwald.BooBinding
 		{
 			Language = "Boo";
 			LanguageProperties = BooLanguageProperties.Instance;
+			reparseSensitiveProperties.Add("Ducky");
+			
 			if (!initialized) {
 				initialized = true;
 				MSBuildEngine.MSBuildProperties.Add("BooBinPath", BooBinPath);
@@ -106,15 +110,6 @@ namespace Grunwald.BooBinding
 		public bool Ducky {
 			get {
 				return GetProperty("Ducky", false);
-			}
-		}
-		
-		public override void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocations location)
-		{
-			bool oldDucky = Ducky;
-			base.SetProperty(configurationName, platform, property, value, location);
-			if (Ducky != oldDucky) {
-				ParserService.Reparse(this);
 			}
 		}
 	}

@@ -7,7 +7,7 @@
 
 using System;
 using System.Text;
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace CSharpBinding.Parser

@@ -11,9 +11,7 @@ using System.Xml;
 
 namespace ICSharpCode.Core
 {
-	/// <summary>
-	/// Description of Codon.
-	/// </summary>
+	
 	public class Condition : ICondition
 	{
 		string                name;

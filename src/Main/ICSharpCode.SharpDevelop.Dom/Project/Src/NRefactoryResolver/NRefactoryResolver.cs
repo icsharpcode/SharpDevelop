@@ -991,7 +991,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IClass GetPrimitiveClass(string systemType, string newName)
 		{
-			IClass c = ProjectContentRegistry.Mscorlib.GetClass(systemType);
+			IClass c = projectContent.GetClass(systemType);
 			DefaultClass c2 = new DefaultClass(c.CompilationUnit, newName);
 			c2.ClassType = c.ClassType;
 			c2.Modifiers = c.Modifiers;

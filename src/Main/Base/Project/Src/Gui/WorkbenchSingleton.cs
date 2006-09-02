@@ -76,6 +76,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			LayoutConfiguration.LoadLayoutConfiguration();
 			StatusBarService.Initialize();
 			DomHostCallback.Register(); // must be called after StatusBarService.Initialize()
+			ParserService.InitializeParserService();
 			
 			workbench = new DefaultWorkbench();
 			MessageService.MainForm = workbench;

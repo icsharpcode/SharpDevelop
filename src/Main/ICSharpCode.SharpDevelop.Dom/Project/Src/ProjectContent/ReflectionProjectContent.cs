@@ -23,27 +23,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		AssemblyName[] referencedAssemblies;
 		ICompilationUnit assemblyCompilationUnit;
 		string assemblyLocation;
+		ProjectContentRegistry registry;
 		
 		public string AssemblyLocation {
 			get {
 				return assemblyLocation;
 			}
 		}
-		
-		/*
-		public bool IsGacAssembly {
-			get {
-				return assemblyLocation == typeof(object).Assembly.Location
-					|| FileUtility.IsBaseDirectory(GacRootPath, assemblyLocation);
-			}
-		}
-		
-		public static string GacRootPath {
-			get {
-				return MSjogren.GacTool.FusionNative.Fusion.GacRootPath;
-			}
-		}
-		*/
 		
 		public string AssemblyFullName {
 			get {
@@ -63,13 +49,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionProjectContent(Assembly assembly)
-			: this(assembly, assembly.Location)
+		public ReflectionProjectContent(Assembly assembly, ProjectContentRegistry registry)
+			: this(assembly, assembly.Location, registry)
 		{
 		}
 		
-		public ReflectionProjectContent(Assembly assembly, string assemblyLocation)
-			: this(assembly.FullName, assemblyLocation, assembly.GetReferencedAssemblies())
+		public ReflectionProjectContent(Assembly assembly, string assemblyLocation, ProjectContentRegistry registry)
+			: this(assembly.FullName, assemblyLocation, assembly.GetReferencedAssemblies(), registry)
 		{
 			foreach (Type type in assembly.GetExportedTypes()) {
 				string name = type.FullName;
@@ -80,8 +66,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			InitializeSpecialClasses();
 		}
 		
-		public ReflectionProjectContent(string assemblyFullName, string assemblyLocation, AssemblyName[] referencedAssemblies)
+		public ReflectionProjectContent(string assemblyFullName, string assemblyLocation, AssemblyName[] referencedAssemblies, ProjectContentRegistry registry)
 		{
+			if (assemblyFullName == null)
+				throw new ArgumentNullException("assemblyFullName");
+			if (assemblyLocation == null)
+				throw new ArgumentNullException("assemblyLocation");
+			if (registry == null)
+				throw new ArgumentNullException("registry");
+			
+			this.registry = registry;
 			this.assemblyFullName = assemblyFullName;
 			this.referencedAssemblies = referencedAssemblies;
 			this.assemblyLocation = assemblyLocation;
@@ -94,8 +88,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 				fileName = LookupLocalizedXmlDoc(Path.Combine(runtimeDirectory, Path.GetFileName(assemblyLocation)));
 			}
 			
-			if (fileName != null) {
-				this.XmlDoc = XmlDoc.Load(fileName);
+			if (fileName != null && registry.persistence != null) {
+				this.XmlDoc = XmlDoc.Load(fileName, Path.Combine(registry.persistence.CacheDirectory, "XmlDoc"));
 			}
 		}
 		
@@ -107,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		bool initialized = false;
-		ArrayList missingNames;
+		List<AssemblyName> missingNames;
 		
 		public void InitializeReferences()
 		{
@@ -115,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (initialized) {
 				if (missingNames != null) {
 					for (int i = 0; i < missingNames.Count; i++) {
-						IProjectContent content = ProjectContentRegistry.GetExistingProjectContent((AssemblyName)missingNames[i]);
+						IProjectContent content = registry.GetExistingProjectContent(missingNames[i]);
 						if (content != null) {
 							changed = true;
 							lock (ReferencedContents) {
@@ -128,22 +122,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 						missingNames = null;
 					}
 				}
-				if (changed)
-					OnReferencedContentsChanged(EventArgs.Empty);
-				return;
-			}
-			initialized = true;
-			foreach (AssemblyName name in referencedAssemblies) {
-				IProjectContent content = ProjectContentRegistry.GetExistingProjectContent(name);
-				if (content != null) {
-					changed = true;
-					lock (ReferencedContents) {
-						ReferencedContents.Add(content);
+			} else {
+				initialized = true;
+				foreach (AssemblyName name in referencedAssemblies) {
+					IProjectContent content = registry.GetExistingProjectContent(name);
+					if (content != null) {
+						changed = true;
+						lock (ReferencedContents) {
+							ReferencedContents.Add(content);
+						}
+					} else {
+						if (missingNames == null)
+							missingNames = new List<AssemblyName>();
+						missingNames.Add(name);
 					}
-				} else {
-					if (missingNames == null)
-						missingNames = new ArrayList();
-					missingNames.Add(name);
 				}
 			}
 			if (changed)

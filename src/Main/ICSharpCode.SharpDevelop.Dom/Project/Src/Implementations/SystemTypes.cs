@@ -74,12 +74,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 	}
 	
-	internal class VoidClass : DefaultClass
+	internal sealed class VoidClass : DefaultClass
 	{
 		internal static readonly string VoidName = typeof(void).FullName;
 		public static readonly VoidClass Instance = new VoidClass();
 		
-		public VoidClass()
+		private VoidClass()
 			: base(DefaultCompilationUnit.DummyCompilationUnit, VoidName)
 		{
 		}
@@ -90,11 +90,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 	}
 	
-	public class VoidReturnType : AbstractReturnType
+	public sealed class VoidReturnType : AbstractReturnType
 	{
 		public static readonly VoidReturnType Instance = new VoidReturnType();
 		
-		public VoidReturnType()
+		private VoidReturnType()
 		{
 			FullyQualifiedName = VoidClass.VoidName;
 		}

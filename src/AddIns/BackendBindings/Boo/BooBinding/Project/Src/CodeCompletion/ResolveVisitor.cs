@@ -547,8 +547,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 			node.Expression.Accept(this);
 			
 			if (resolveResult != null) {
-				IClass enumerable = ProjectContentRegistry.Mscorlib.GetClass("System.Collections.Generic.IEnumerable", 1);
-				MakeResult(new ConstructedReturnType(enumerable.DefaultReturnType, new IReturnType[] { resolveResult.ResolvedType }));
+				IReturnType enumerable = new GetClassReturnType(projectContent, "System.Collections.Generic.IEnumerable", 1);
+				MakeResult(new ConstructedReturnType(enumerable, new IReturnType[] { resolveResult.ResolvedType }));
 			} else {
 				MakeResult(new GetClassReturnType(projectContent, "System.Collections.IEnumerable", 0));
 			}

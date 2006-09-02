@@ -11,7 +11,7 @@ using System.Collections;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Compares two strings (case sensitive).
+	/// Compares two strings.
 	/// The strings are passed through the StringParser, so it is possible to compare
 	/// SharpDevelop properties.<br/>
 	/// Useful if you want to run a command only when a setting is active to prevent

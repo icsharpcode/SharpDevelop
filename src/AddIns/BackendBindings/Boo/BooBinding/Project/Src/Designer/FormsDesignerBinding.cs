@@ -9,10 +9,11 @@ using System;
 using System.IO;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.FormsDesigner;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.FormsDesigner;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 
 namespace Grunwald.BooBinding.Designer

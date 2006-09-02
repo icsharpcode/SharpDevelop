@@ -13,6 +13,7 @@ using System.Reflection;
 
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Gui;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -21,8 +22,8 @@ namespace ICSharpCode.FormsDesigner
 {
 	public class ToolboxProvider
 	{
-		static ICSharpCode.FormsDesigner.Services.ToolboxService         toolboxService = null;
-		public static ArrayList       SideTabs = new ArrayList();
+		static ICSharpCode.FormsDesigner.Services.ToolboxService toolboxService = null;
+		public static ArrayList SideTabs = new ArrayList();
 		
 		static ComponentLibraryLoader componentLibraryLoader = new ComponentLibraryLoader();
 		

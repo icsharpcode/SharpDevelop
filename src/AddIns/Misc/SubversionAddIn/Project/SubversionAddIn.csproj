@@ -14,7 +14,7 @@
     <DebugSymbols>True</DebugSymbols>
     <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SubversionAddin\</OutputPath>
     <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG%3bTRACE</DefineConstants>
     <DebugType>Full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

@@ -6,20 +6,17 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Design;
-using System.Reflection;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.Drawing.Design;
+using System.Reflection;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.FormsDesigner.Services;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {

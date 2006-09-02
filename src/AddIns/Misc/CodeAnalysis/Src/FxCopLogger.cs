@@ -7,10 +7,10 @@
 
 using System;
 using System.IO;
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Framework;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.CodeAnalysis
 {

@@ -104,9 +104,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					newItem.Tag = new ProjectReferenceProjectItem(configureProject, (IProject)tag);
 					break;
 				case ReferenceType.Gac:
-					ReferenceProjectItem gacReference = new ReferenceProjectItem(configureProject);
-					gacReference.Include = referenceLocation;
-					newItem.Tag = gacReference;
+					newItem.Tag = new ReferenceProjectItem(configureProject, referenceLocation);
 					break;
 				case ReferenceType.Assembly:
 					ReferenceProjectItem assemblyReference = new ReferenceProjectItem(configureProject);

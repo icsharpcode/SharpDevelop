@@ -11,6 +11,7 @@ using System.IO;
 
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop;
 
 namespace CSharpBinding.FormattingStrategy
 {
@@ -137,7 +138,7 @@ namespace CSharpBinding.FormattingStrategy
 		{
 			this.filename = filename;
 			f = new FileStream(filename, FileMode.Open, FileAccess.Read);
-			r = ICSharpCode.TextEditor.Util.FileReader.OpenStream(f, ICSharpCode.Core.ParserService.DefaultFileEncoding, ICSharpCode.Core.ParserService.DefaultFileEncoding);
+			r = ICSharpCode.TextEditor.Util.FileReader.OpenStream(f, ParserService.DefaultFileEncoding, ParserService.DefaultFileEncoding);
 		}
 		
 		int num = 0;

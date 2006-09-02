@@ -6,18 +6,9 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Diagnostics;
-using System.IO;
-
-using ICSharpCode.Core;
-
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 
-using ICSharpCode.SharpDevelop.Gui;
-
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public delegate void ParseInformationEventHandler(object sender, ParseInformationEventArgs e);
 	

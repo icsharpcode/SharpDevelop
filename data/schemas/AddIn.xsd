@@ -94,9 +94,11 @@
 			<xs:element ref="MenuItem" />
 			<xs:element ref="Pad" />
 			<xs:element ref="Parser" />
+			<xs:element ref="Registry" />
 			<xs:element ref="SchemeExtension" />
 			<xs:element ref="String" />
 			<xs:element ref="SyntaxMode" />
+			<xs:element ref="TaskBoundAdditionalLogger" />
 			<xs:element ref="ToolbarItem" />
 		</xs:choice>
 		<xs:attribute name="name" type="xs:string" use="required" />
@@ -122,7 +124,9 @@
 			<xs:attribute name="equals" type="xs:string" use="optional" />
 			<xs:attribute name="openwindow" type="xs:string" use="optional" />
 			<xs:attribute name="options" type="xs:string" use="optional" />
+			<xs:attribute name="property" type="xs:string" use="optional" />
 			<xs:attribute name="string" type="xs:string" use="optional" />
+			<xs:attribute name="supports" type="xs:string" use="optional" />
 			<xs:attribute name="textcontent" type="xs:string" use="optional" />
 			<xs:attribute name="urlRegex" type="xs:string" use="optional" />
 		</xs:extension>
@@ -163,9 +167,11 @@
 			<xs:element ref="MenuItem" />
 			<xs:element ref="Pad" />
 			<xs:element ref="Parser" />
+			<xs:element ref="Registry" />
 			<xs:element ref="SchemeExtension" />
 			<xs:element ref="String" />
 			<xs:element ref="SyntaxMode" />
+			<xs:element ref="TaskBoundAdditionalLogger" />
 			<xs:element ref="ToolbarItem" />
 		</xs:choice>
 	</xs:complexType>
@@ -610,13 +616,13 @@
 							<xs:enumeration value="Item" />
 							<xs:enumeration value="Command" />
 							<xs:enumeration value="Menu" />
-							<xs:enumeration value="Builder"/>
+							<xs:enumeration value="Builder" />
 						</xs:restriction>
 					</xs:simpleType>
 					<xs:annotation>
 						<xs:documentation>
 			This attribute must be one of these values:
-			Separator, CheckBox, Item (=Command), Menu (=with subitems), 
+			Separator, CheckBox, Item=Command, Menu (=with subitems),
 			Builder (=class implementing ISubmenuBuilder).
 			Default: Command.
 			</xs:documentation>
@@ -759,6 +765,26 @@
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:complexType name="Registry">
+		<xs:complexContent>
+			<xs:extension base="AbstractCodon">
+				<xs:attribute name="class" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Name of the ProjectContentRegistry class.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Registry" type="Registry">
+		<xs:annotation>
+			<xs:documentation>
+			Creates RegistryDescriptor objects for the parsing service.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:complexType name="SchemeExtension">
 		<xs:complexContent>
 			<xs:extension base="AbstractCodon">
@@ -841,6 +867,35 @@
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:complexType name="TaskBoundAdditionalLogger">
+		<xs:complexContent>
+			<xs:extension base="AbstractCodon">
+				<xs:attribute name="class" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Name of the IMSBuildAdditionalLogger class.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="taskname" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Specifies the name of the MSBuild task that must be running for
+			this logger to be active.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="TaskBoundAdditionalLogger" type="TaskBoundAdditionalLogger">
+		<xs:annotation>
+			<xs:documentation>
+			Creates IMSBuildAdditionalLogger objects that are only
+			activated when a specific MSBuild task is running.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:complexType name="ToolbarItem">
 		<xs:complexContent>
 			<xs:extension base="AbstractCodon">
@@ -850,6 +905,13 @@
 					<xs:element ref="MenuItem" />
 					<xs:element ref="Include" />
 				</xs:choice>
+				<xs:attribute name="label" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Label of the tool bar item.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 				<xs:attribute name="icon" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
@@ -857,33 +919,20 @@
 			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="disabledIcon" use="optional" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-			Icon for use when the tool bar item is disabled; currently supported only for items of type SplitButton.
-			</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-			<xs:attribute name="type" use="optional">
+				<xs:attribute name="type" use="optional">
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
 							<xs:enumeration value="Separator" />
 							<xs:enumeration value="CheckBox" />
 							<xs:enumeration value="Item" />
 							<xs:enumeration value="ComboBox" />
-							<xs:enumeration value="TextBox" />
-							<xs:enumeration value="Label" />
 							<xs:enumeration value="DropDownButton" />
-							<xs:enumeration value="SplitButton" />						
-							<xs:enumeration value="Builder" />						
 						</xs:restriction>
 					</xs:simpleType>
 					<xs:annotation>
 						<xs:documentation>
 			This attribute must be one of these values:
-			Separator, CheckBox, Item, ComboBox, DropDownButton,
-			ComboBox, TextBox, Label, DropDownButton,
-			SplitButton (=Command with MenuItem subitems)
+			Separator, CheckBox, Item, ComboBox, DropDownButton
 			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
@@ -892,13 +941,6 @@
 						<xs:documentation>
 			Only for the type "Item". When set to false, the command class is loaded
 			immediately instead of the usual lazy-loading.
-			</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="label" use="optional" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-			Label of the tool bar item.
 			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>

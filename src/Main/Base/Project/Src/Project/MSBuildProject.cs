@@ -495,5 +495,71 @@ namespace ICSharpCode.SharpDevelop.Project
 			                     Name,
 			                     Items.Count);
 		}
+		
+		/// <summary>
+		/// A list of project properties whose change causes reparsing of references and
+		/// files.
+		/// </summary>
+		protected readonly List<string> reparseSensitiveProperties = new List<string>();
+		
+		[ReadOnly(true)]
+		[LocalizedProperty("${res:Dialog.ProjectOptions.Platform}")]
+		public override string Platform {
+			get {
+				return base.Platform;
+			}
+			set {
+				if (base.Platform != value) {
+					SetPlatformOrConfiguration(true, value);
+				}
+			}
+		}
+		
+		[ReadOnly(true)]
+		[LocalizedProperty("${res:Dialog.ProjectOptions.Configuration}")]
+		public override string Configuration {
+			get {
+				return base.Configuration;
+			}
+			set {
+				if (base.Configuration != value) {
+					SetPlatformOrConfiguration(false, value);
+				}
+			}
+		}
+		
+		void SetPlatformOrConfiguration(bool platform, string newValue)
+		{
+			Dictionary<string, string> reparseSensitiveValues = new Dictionary<string, string>();
+			foreach (string p in reparseSensitiveProperties) {
+				reparseSensitiveValues[p] = GetProperty(p);
+			}
+			
+			if (platform)
+				base.Platform = newValue;
+			else
+				base.Configuration = newValue;
+			
+			foreach (string p in reparseSensitiveProperties) {
+				if (reparseSensitiveValues[p] != GetProperty(p)) {
+					ParserService.Reparse(this, true, true);
+					break;
+				}
+			}
+		}
+		
+		public override void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocations location)
+		{
+			if (reparseSensitiveProperties.Contains(property)) {
+				string oldValue = GetProperty(property);
+				base.SetProperty(configurationName, platform, property, value, location);
+				if (oldValue != GetProperty(property)) {
+					// change had an effect on current configuration
+					ParserService.Reparse(this, true, true);
+				}
+			} else {
+				base.SetProperty(configurationName, platform, property, value, location);
+			}
+		}
 	}
 }

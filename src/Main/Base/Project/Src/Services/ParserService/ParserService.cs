@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -13,18 +13,55 @@ using System.IO;
 using System.Text;
 using System.Threading;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public static class ParserService
 	{
-		static ParserDescriptor[] parser;
+		static IList<ParserDescriptor> parser;
+		static IList<ProjectContentRegistryDescriptor> registries;
 		
 		static Dictionary<IProject, IProjectContent> projectContents = new Dictionary<IProject, IProjectContent>();
 		static Dictionary<string, ParseInformation> parsings = new Dictionary<string, ParseInformation>();
+		static ProjectContentRegistry defaultProjectContentRegistry = new ProjectContentRegistry();
+		
+		static string domPersistencePath;
+		
+		internal static void InitializeParserService()
+		{
+			if (parser == null) {
+				parser = AddInTree.BuildItems<ParserDescriptor>("/Workspace/Parser", null, false);
+				registries = AddInTree.BuildItems<ProjectContentRegistryDescriptor>("/Workspace/ProjectContentRegistry", null, false);
+				
+				domPersistencePath = Path.Combine(Path.GetTempPath(), "SharpDevelop" + RevisionClass.MainVersion);
+				#if DEBUG
+				domPersistencePath = Path.Combine(domPersistencePath, "Debug");
+				#endif
+				Directory.CreateDirectory(domPersistencePath);
+				defaultProjectContentRegistry.ActivatePersistence(domPersistencePath);
+				
+				ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the cache directory used for DOM persistence.
+		/// </summary>
+		public static string DomPersistencePath {
+			get {
+				return domPersistencePath;
+			}
+		}
+		
+		public static ProjectContentRegistry DefaultProjectContentRegistry {
+			get {
+				return defaultProjectContentRegistry;
+			}
+		}
 		
 		public static IProjectContent CurrentProjectContent {
 			[DebuggerStepThrough]
@@ -53,22 +90,20 @@ namespace ICSharpCode.Core
 				foreach (IProjectContent pc in AllProjectContents) {
 					yield return pc;
 				}
-				foreach (IProjectContent pc in ProjectContentRegistry.GetLoadedProjectContents()) {
+				foreach (IProjectContent pc in defaultProjectContentRegistry.GetLoadedProjectContents()) {
 					yield return pc;
 				}
 			}
 		}
 		
-		static ParserService()
-		{
-			parser = (ParserDescriptor[])AddInTree.BuildItems("/Workspace/Parser", null, false).ToArray(typeof(ParserDescriptor));
-			
-			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
-		}
-		
 		static void ProjectServiceSolutionClosed(object sender, EventArgs e)
 		{
 			abortLoadSolutionProjectsThread = true;
+			
+			lock (reParse1) { // clear queue of reparse thread
+				reParse1.Clear();
+				reParse2.Clear();
+			}
 			lock (projectContents) {
 				foreach (IProjectContent content in projectContents.Values) {
 					content.Dispose();
@@ -90,7 +125,8 @@ namespace ICSharpCode.Core
 					throw new InvalidOperationException("Cannot open new combine without closing old combine!");
 				if (!loadSolutionProjectsThread.Join(50)) {
 					// loadSolutionProjects might be waiting for main thread, so give it
-					// a chance to complete asynchronous calls
+					// a chance to complete safethread calls by putting this method at
+					// the end of the invoking queue
 					WorkbenchSingleton.SafeThreadAsyncCall(OnSolutionLoaded);
 					return;
 				}
@@ -167,21 +203,77 @@ namespace ICSharpCode.Core
 			StatusBarService.ProgressMonitor.Done();
 		}
 		
-		static void ReparseProject(object state)
+		#region Reparse projects
+		static Queue<ParseProjectContent> reParse1 = new Queue<ParseProjectContent>();
+		static Queue<ParseProjectContent> reParse2 = new Queue<ParseProjectContent>();
+		static Thread reParseThread;
+		
+		static void ReparseProjects()
 		{
-			ParseProjectContent newContent = (ParseProjectContent)state;
-			StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", newContent.GetInitializationWorkAmount());
-			newContent.ReInitialize2();
-			StatusBarService.ProgressMonitor.Done();
+			Thread.Sleep(100); // enable main thread to fill the queues completely
+			bool parsing = false;
+			ParseProjectContent job;
+			
+			while (true) {
+				// get next job
+				lock (reParse1) {
+					if (reParse1.Count > 0) {
+						if (parsing) {
+							StatusBarService.ProgressMonitor.Done();
+						}
+						parsing = false;
+						job = reParse1.Dequeue();
+					} else if (reParse2.Count > 0) {
+						if (!parsing) {
+							int workAmount = 0;
+							foreach (ParseProjectContent ppc in reParse2) {
+								workAmount += ppc.GetInitializationWorkAmount();
+							}
+							StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount);
+						}
+						parsing = true;
+						job = reParse2.Dequeue();
+					} else {
+						// all jobs done
+						reParseThread = null;
+						if (parsing) {
+							StatusBarService.ProgressMonitor.Done();
+						}
+						return;
+					}
+				}
+				
+				// execute job
+				if (parsing) {
+					job.ReInitialize2();
+				} else {
+					job.ReInitialize1();
+				}
+			}
 		}
 		
-		public static void Reparse(IProject project)
+		public static void Reparse(IProject project, bool initReferences, bool parseCode)
 		{
 			ParseProjectContent pc = GetProjectContent(project) as ParseProjectContent;
 			if (pc != null) {
-				ThreadPool.QueueUserWorkItem(ReparseProject, pc);
+				lock (reParse1) {
+					if (initReferences && !reParse1.Contains(pc)) {
+						reParse1.Enqueue(pc);
+					}
+					if (parseCode && !reParse2.Contains(pc)) {
+						reParse2.Enqueue(pc);
+					}
+					if (reParseThread == null) {
+						reParseThread = new Thread(new ThreadStart(ReparseProjects));
+						reParseThread.Name = "reParse";
+						reParseThread.Priority = ThreadPriority.BelowNormal;
+						reParseThread.IsBackground = true;
+						reParseThread.Start();
+					}
+				}
 			}
 		}
+		#endregion
 		
 		internal static IProjectContent CreateProjectContentForAddedProject(IProject project)
 		{
@@ -252,8 +344,8 @@ namespace ICSharpCode.Core
 		static void ParserUpdateThread()
 		{
 			LoggingService.Info("ParserUpdateThread started");
-			// preload mscorlib, we're going to need it anyway
-			IProjectContent dummyVar = ProjectContentRegistry.Mscorlib;
+			// preload mscorlib, we're going to need it probably
+			IProjectContent dummyVar = defaultProjectContentRegistry.Mscorlib;
 			
 			while (!abortParserUpdateThread) {
 				try {
@@ -407,7 +499,7 @@ namespace ICSharpCode.Core
 			LoggingService.Info("Creating default project content");
 			//LoggingService.Debug("Stacktrace is:\n" + Environment.StackTrace);
 			defaultProjectContent = new DefaultProjectContent();
-			defaultProjectContent.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
+			defaultProjectContent.ReferencedContents.Add(defaultProjectContentRegistry.Mscorlib);
 			Thread t = new Thread(new ThreadStart(CreateDefaultProjectContentReferences));
 			t.IsBackground = true;
 			t.Priority = ThreadPriority.BelowNormal;
@@ -660,6 +752,24 @@ namespace ICSharpCode.Core
 		public static event ParseInformationEventHandler ParseInformationUpdated;
 		public static event EventHandler LoadSolutionProjectsThreadEnded;
 		
+		public static ProjectContentRegistry GetRegistryForReference(ReferenceProjectItem item)
+		{
+			if (item is ProjectReferenceProjectItem || item.Project == null) {
+				return defaultProjectContentRegistry;
+			}
+			foreach (ProjectContentRegistryDescriptor registry in registries) {
+				if (registry.UseRegistryForProject(item.Project)) {
+					ProjectContentRegistry r = registry.Registry;
+					if (r != null) {
+						return r;
+					} else {
+						return defaultProjectContentRegistry; // fallback when class not found
+					}
+				}
+			}
+			return defaultProjectContentRegistry;
+		}
+		
 		public static IProjectContent GetExistingProjectContentForReference(ReferenceProjectItem item)
 		{
 			if (item is ProjectReferenceProjectItem) {
@@ -669,7 +779,7 @@ namespace ICSharpCode.Core
 				}
 				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
 			}
-			return ProjectContentRegistry.GetExistingProjectContentForReference(item.Include, item.FileName);
+			return GetRegistryForReference(item).GetExistingProjectContent(item.Include, item.FileName);
 		}
 		
 		public static IProjectContent GetProjectContentForReference(ReferenceProjectItem item)
@@ -681,7 +791,7 @@ namespace ICSharpCode.Core
 				}
 				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
 			}
-			return ProjectContentRegistry.GetProjectContentForReference(item.Include, item.FileName);
+			return GetRegistryForReference(item).GetProjectContentForReference(item.Include, item.FileName);
 		}
 	}
 }

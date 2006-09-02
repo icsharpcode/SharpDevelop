@@ -1,22 +1,18 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
-using System.Xml;
 using System.IO;
-using System.Collections;
-using System.Reflection;
-using System.CodeDom.Compiler;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
-	public class ParserDescriptor 
+	public sealed class ParserDescriptor 
 	{
 		IParser parser = null;
 		string[] supportedExtensions = null;

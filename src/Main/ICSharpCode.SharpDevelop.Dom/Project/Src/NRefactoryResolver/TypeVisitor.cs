@@ -493,7 +493,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (t == null) {
 				if (reference.Type != reference.SystemType) {
 					// keyword-type like void, int, string etc.
-					t = ProjectContentRegistry.Mscorlib.GetClass(reference.SystemType).DefaultReturnType;
+					IClass c = projectContent.GetClass(reference.SystemType);
+					if (c != null)
+						t = c.DefaultReturnType;
+					else
+						t = new GetClassReturnType(projectContent, reference.SystemType, 0);
 				} else {
 					int typeParameterCount = reference.GenericTypes.Count;
 					if (useLazyReturnType) {

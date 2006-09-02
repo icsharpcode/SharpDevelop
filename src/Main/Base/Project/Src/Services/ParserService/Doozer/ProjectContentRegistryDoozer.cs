@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -12,22 +12,21 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
-	/// Creates ParserDescriptor objects for the parsing service.
+	/// Creates ProjectContentRegistryDescriptor objects for the parsing service.
 	/// </summary>
-	/// <attribute name="supportedextensions">
-	/// Semicolon-separated list of file extensions for which the parser is used. (e.g. ".boo")
-	/// </attribute>
-	/// <attribute name="projectfileextension">
-	/// File extension of project files. (e.g. ".booproj")
-	/// </attribute>
 	/// <attribute name="class">
-	/// Name of the IParser class.
+	/// Name of the ProjectContentRegistry class.
 	/// </attribute>
-	/// <usage>Only in /Workspace/Parser</usage>
+	/// <usage>Only in /Workspace/ProjectContentRegistry</usage>
 	/// <returns>
-	/// An ParserDescriptor object that wraps the IParser object.
+	/// An RegistryDescriptor object that wraps a ProjectContentRegistry object.
 	/// </returns>
-	public sealed class ParserDoozer : IDoozer
+	/// <conditions>Conditions are handled by the item, the condition "caller" will be the project to which
+	/// the references requiring the registry belong to.
+	/// You should always use the &lt;ProjectActive&gt; condition to restrict the project type
+	/// your registry is used for.
+	/// </conditions>
+	public sealed class ProjectContentRegistryDoozer : IDoozer
 	{
 		/// <summary>
 		/// Gets if the doozer handles codon conditions on its own.
@@ -35,7 +34,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public bool HandleConditions {
 			get {
-				return false;
+				return true;
 			}
 		}
 		
@@ -45,7 +44,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
 		{
-			return new ParserDescriptor(codon);
+			return new ProjectContentRegistryDescriptor(codon);
 		}
 	}
 }

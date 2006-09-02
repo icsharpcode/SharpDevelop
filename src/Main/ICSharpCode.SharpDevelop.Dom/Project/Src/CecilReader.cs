@@ -15,8 +15,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public static class CecilReader
 	{
-		public static ReflectionProjectContent LoadAssembly(string fileName)
+		public static ReflectionProjectContent LoadAssembly(string fileName, ProjectContentRegistry registry)
 		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			if (registry == null)
+				throw new ArgumentNullException("registry");
 			LoggingService.Info("Cecil: Load from " + fileName);
 			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
 				AssemblyDefinition asm = AssemblyFactory.GetAssembly(fs);
@@ -24,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (AssemblyNameReference anr in asm.MainModule.AssemblyReferences) {
 					referencedAssemblies.Add(new AssemblyName(anr.FullName));
 				}
-				return new CecilProjectContent(asm.Name.FullName, fileName, referencedAssemblies.ToArray(), asm.MainModule.Types);
+				return new CecilProjectContent(asm.Name.FullName, fileName, referencedAssemblies.ToArray(), asm.MainModule.Types, registry);
 			}
 		}
 		
@@ -119,8 +123,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		private sealed class CecilProjectContent : ReflectionProjectContent
 		{
 			public CecilProjectContent(string fullName, string fileName, AssemblyName[] referencedAssemblies,
-			                           TypeDefinitionCollection types)
-				: base(fullName, fileName, referencedAssemblies)
+			                           TypeDefinitionCollection types, ProjectContentRegistry registry)
+				: base(fullName, fileName, referencedAssemblies, registry)
 			{
 				foreach (TypeDefinition td in types) {
 					if ((td.Attributes & TypeAttributes.Public) == TypeAttributes.Public) {

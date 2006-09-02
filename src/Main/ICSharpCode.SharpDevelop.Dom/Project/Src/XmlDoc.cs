@@ -41,30 +41,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		const int cacheLength = 150; // number of strings to cache when working in file-mode
 		
-		#if DEBUG
-		const string tempPathName = "SharpDevelop" + RevisionClass.MainVersion
-			+ "/DocumentationCacheDebug";
-		#else
-		const string tempPathName = "SharpDevelop" + RevisionClass.MainVersion
-			+ "/DocumentationCache";
-		#endif
-		
-		static string cachePath = Path.Combine(Path.GetTempPath(), tempPathName);
-		
-		/// <summary>
-		/// Gets/Sets the directory the documentation files are cached in.
-		/// </summary>
-		public static string CachePath {
-			get {
-				return cachePath;
-			}
-			set {
-				if (string.IsNullOrEmpty(value))
-					throw new ArgumentNullException("value");
-				cachePath = value;
-			}
-		}
-		
 		void ReadMembersSection(XmlReader reader)
 		{
 			while (reader.Read()) {
@@ -261,7 +237,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return newXmlDoc;
 		}
 		
-		public static XmlDoc Load(string fileName)
+		public static XmlDoc Load(string fileName, string cachePath)
 		{
 			LoggingService.Debug("Loading XmlDoc for " + fileName);
 			Directory.CreateDirectory(cachePath);

@@ -6,17 +6,16 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Dom;
+
 using ICSharpCode.Core;
-using System.Diagnostics;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
 
 namespace ICSharpCode.FormsDesigner.Services

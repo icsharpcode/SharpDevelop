@@ -1,5 +1,6 @@
 To be on the safe side and leave enough space for the future,
 the in-memory size of an assembly used here should be 8 times the disk image size.
+That should allow an assembly to grow to more than twice its old size without having to update this list.
 
 Sysinternals Processexplorer can show relocated assemblies in yellow in the DLL View.
 
@@ -12,14 +13,16 @@ def AddModule(kbsize as int):
 def AddModules(*names as (string)):
 	for name in names:
 		System.Console.Write("${name}:\t")
-		AddModule(System.IO.FileInfo("d:\\corsavy\\sharpdevelop\\bin\\" + name + ".dll").Length / 1024)
+		AddModule(System.IO.FileInfo("d:\\serralongue\\sharpdevelop\\bin\\" + name + ".dll").Length / 1024)
+
+All addresses are between 0x0500 0000 and 0x0fff ffff
 
 AssemblyName:			startaddress - endaddress
 ICSharpCode.Core:		0x5000000 - 0x504e000
 ICSharpCode.SharpDevelop:	0x5100000 - 0x5472000
 ICSharpCode.NRefactory:		0x5a80000 - 0x5b9a000
 ICSharpCode.TextEditor:		0x5d80000 - 0x5e67000
-MonoReflectionLoader:		0x6000000 - 0x600c000
+ICSharpCode.SharpDevelop.Sda:	0x6000000 - 0x601e000
 WeifenLuo.WinFormsUI.Docking:	0x6080000 - 0x6107000
 ICSharpCode.Build.Tasks:	0x6200000 - 0x621b000
 
@@ -56,9 +59,10 @@ StartPage:			0x7900000 - 0x791e000
 UnitTesting:			0x7980000 - 0x799b000
 Mono.Cecil:			0x7a00000 - 0x7b38000
 WixBinding:			0x7d80000 - 0x7dc2000
+ICSharpCode.SharpDevelop.Dom:	0x7e80000 - 0x7f19000
+CodeAnalysis:			0x8000000 - 0x8021000
+IconEditor:			0x8080000 - 0x80a1000
+IconEditor.AddIn:		0x8100000 - 0x810c000
+SharpDbTools:			0x8180000 - 0x819e000
 
-Next free address:		0x7e80000
-
-
-
-
+Next free address:		0x8240000

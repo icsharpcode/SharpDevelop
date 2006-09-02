@@ -898,7 +898,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		#endregion
 		
-		[Obsolete("This event now does not call of the main thread!")]
 		public event EventHandler ReferencedContentsChanged;
 		
 		protected virtual void OnReferencedContentsChanged(EventArgs e)

@@ -23,8 +23,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	/// </summary>
 	public class AttributesDataProvider : CtrlSpaceCompletionDataProvider
 	{
-		public AttributesDataProvider()
-			: this(ExpressionContext.TypeDerivingFrom(ProjectContentRegistry.Mscorlib.GetClass("System.Attribute"), true))
+		public AttributesDataProvider(IProjectContent pc)
+			: this(ExpressionContext.TypeDerivingFrom(pc.GetClass("System.Attribute"), true))
 		{
 		}
 		

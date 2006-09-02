@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 				Nodes.Clear();
 				ReferenceFolderNode referencesNode = new ReferenceFolderNode(Project);
 				referencesNode.AddTo(this);
-				projectContent.ReferencedContentsChanged += delegate { referencesNode.UpdateReferenceNodes(); };
+				projectContent.ReferencedContentsChanged += delegate { WorkbenchSingleton.SafeThreadAsyncCall(referencesNode.UpdateReferenceNodes); };
 				foreach (ProjectItem item in Project.Items) {
 					switch (item.ItemType) {
 						case ItemType.Reference:

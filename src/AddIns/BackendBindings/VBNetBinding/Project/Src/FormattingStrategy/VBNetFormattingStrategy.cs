@@ -6,19 +6,17 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
 using System.Drawing;
 using System.Text;
-
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Actions;
-using ICSharpCode.TextEditor;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Text.RegularExpressions;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Actions;
+using ICSharpCode.TextEditor.Document;
 
 namespace VBNetBinding.FormattingStrategy
 {
@@ -548,6 +546,11 @@ namespace VBNetBinding.FormattingStrategy
 					} else if (Regex.IsMatch(lineText, interfaceStatement.EndRegex, RegexOptions.IgnoreCase)){
 						inInterface = false;
 					}
+					
+					if (i == lineNr && inInterface) {
+						// set IndentPlus to 0
+						statement = new VBStatement(statement.StartRegex, statement.EndRegex, statement.EndStatement, 0);
+					}
 				}
 				
 				//Omits comments and contents of interfaces
@@ -561,10 +564,7 @@ namespace VBNetBinding.FormattingStrategy
 					count--;
 				}
 			}
-			if (inInterface) {
-				// set IndentPlus to 0
-				statement = new VBStatement(statement.StartRegex, statement.EndRegex, statement.EndStatement, 0);
-			}
+			
 			return count > 0;
 		}
 		

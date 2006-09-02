@@ -6,15 +6,10 @@
 // </file>
 
 using System;
-using System.Text;
 using System.IO;
-using System.Drawing;
-using System.Collections;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
-//using ICSharpCode.NRefactory.Parser;
 
 namespace VBNetBinding.Parser
 {
@@ -139,7 +134,7 @@ namespace VBNetBinding.Parser
 		
 		public IResolver CreateResolver()
 		{
-			return new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver(ParserService.CurrentProjectContent);
+			return new NRefactoryResolver(ParserService.CurrentProjectContent);
 		}
 		///////// IParser Interface END
 	}

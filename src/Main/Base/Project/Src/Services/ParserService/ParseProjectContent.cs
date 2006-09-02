@@ -7,14 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public class ParseProjectContent : DefaultProjectContent
 	{
@@ -23,16 +20,11 @@ namespace ICSharpCode.Core
 			ParseProjectContent newProjectContent = new ParseProjectContent();
 			newProjectContent.project = project;
 			newProjectContent.Language = project.LanguageProperties;
-			newProjectContent.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
 			newProjectContent.initializing = true;
-			return newProjectContent;
-		}
-		
-		public static ParseProjectContent Create(IProject project)
-		{
-			ParseProjectContent newProjectContent = CreateUninitalized(project);
-			newProjectContent.Initialize1();
-			newProjectContent.Initialize2();
+			IProjectContent mscorlib = ParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib;
+			if (mscorlib != null) {
+				newProjectContent.ReferencedContents.Add(mscorlib);
+			}
 			return newProjectContent;
 		}
 		
@@ -68,8 +60,24 @@ namespace ICSharpCode.Core
 				}
 			}
 			UpdateReferenceInterDependencies();
-			WorkbenchSingleton.SafeThreadAsyncCall(new Action<EventArgs>(OnReferencedContentsChanged),
-			                                       EventArgs.Empty);
+			OnReferencedContentsChanged(EventArgs.Empty);
+		}
+		
+		internal void ReInitialize1()
+		{
+			lock (ReferencedContents) {
+				ReferencedContents.Clear();
+				IProjectContent mscorlib = ParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib;
+				if (mscorlib != null) {
+					ReferencedContents.Add(mscorlib);
+				}
+			}
+			// prevent adding event handler twice
+			ProjectService.ProjectItemAdded   -= OnProjectItemAdded;
+			ProjectService.ProjectItemRemoved -= OnProjectItemRemoved;
+			initializing = true;
+			Initialize1();
+			initializing = false;
 		}
 		
 		void UpdateReferenceInterDependencies()
@@ -99,8 +107,7 @@ namespace ICSharpCode.Core
 				if (updateInterDependencies) {
 					UpdateReferenceInterDependencies();
 				}
-				WorkbenchSingleton.SafeThreadAsyncCall(new Action<EventArgs>(OnReferencedContentsChanged),
-				                                       EventArgs.Empty);
+				OnReferencedContentsChanged(EventArgs.Empty);
 			} catch (Exception e) {
 				MessageService.ShowError(e);
 			}

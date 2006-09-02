@@ -28,17 +28,24 @@ namespace CSharpBinding
 			}
 		}
 		
+		void Init()
+		{
+			Language = "C#";
+			reparseSensitiveProperties.Add("TargetFrameworkVersion");
+			reparseSensitiveProperties.Add("DefineConstants");
+		}
+		
 		public CSharpProject(string fileName, string projectName)
 		{
 			this.Name = projectName;
-			Language = "C#";
+			Init();
 			SetupProject(fileName);
 			IdGuid = BaseConfiguration["ProjectGuid"];
 		}
 		
 		public CSharpProject(ProjectCreateInformation info)
 		{
-			Language = "C#";
+			Init();
 			Create(info);
 		}
 		

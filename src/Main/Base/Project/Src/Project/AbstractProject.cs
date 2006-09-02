@@ -240,7 +240,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		[ReadOnly(true)]
 		[LocalizedProperty("${res:Dialog.ProjectOptions.Platform}")]
-		public string Platform {
+		public virtual string Platform {
 			get {
 				return activePlatform;
 			}

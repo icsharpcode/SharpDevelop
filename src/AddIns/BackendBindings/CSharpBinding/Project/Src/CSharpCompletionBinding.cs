@@ -65,7 +65,7 @@ namespace CSharpBinding
 				if (TextUtilities.FindPrevWordStart(editor.Document, cursor) <= line.Offset) {
 					// [ is first character on the line
 					// -> Attribute completion
-					editor.ShowCompletionWindow(new AttributesDataProvider(), ch);
+					editor.ShowCompletionWindow(new AttributesDataProvider(ParserService.CurrentProjectContent), ch);
 					return true;
 				}
 			} else if (ch == ',' && CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled) {

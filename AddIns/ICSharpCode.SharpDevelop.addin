@@ -26,12 +26,14 @@
 			<ConditionEvaluator name="RefactoringProviderSupports" class="ICSharpCode.SharpDevelop.Refactoring.RefactoringProviderSupportsConditionEvaluator"/>
 			<ConditionEvaluator name="CanNavigateBack" class="ICSharpCode.Core.CanNavigateBackConditionEvaluator"/>
 			<ConditionEvaluator name="CanNavigateForward" class="ICSharpCode.Core.CanNavigateForwardConditionEvaluator"/>
+			<ConditionEvaluator name="CompareProjectProperty" class="ICSharpCode.SharpDevelop.CompareProjectPropertyConditionEvaluator"/>
 			
 			<Doozer name="DialogPanel" class="ICSharpCode.Core.DialogPanelDoozer"/>
 			<Doozer name="DisplayBinding" class="ICSharpCode.Core.DisplayBindingDoozer"/>
 			<Doozer name="Pad" class="ICSharpCode.Core.PadDoozer"/>
 			<Doozer name="LanguageBinding" class="ICSharpCode.Core.LanguageBindingDoozer"/>
-			<Doozer name="Parser" class="ICSharpCode.Core.ParserDoozer"/>
+			<Doozer name="Parser" class="ICSharpCode.SharpDevelop.ParserDoozer"/>
+			<Doozer name="ProjectContentRegistry" class="ICSharpCode.SharpDevelop.ProjectContentRegistryDoozer"/>
 			<Doozer name="EditAction" class="ICSharpCode.SharpDevelop.DefaultEditor.Codons.EditActionDoozer"/>
 			<Doozer name="SyntaxMode" class="ICSharpCode.SharpDevelop.DefaultEditor.Codons.SyntaxModeDoozer"/>
 			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
@@ -2189,5 +2191,20 @@
 		<String id = "System.Drawing" text = "System.Drawing"/>
 		<String id = "System.Windows.Forms" text = "System.Windows.Forms"/>
 		<String id = "System.Xml" text = "System.Xml"/>
+	</Path>
+	
+	<Path name = "/Workspace/ProjectContentRegistry">
+		<ComplexCondition>
+			<Or>
+				<Condition name = "ProjectActive" activeproject="C#"/>
+				<Condition name = "ProjectActive" activeproject="VBNet"/>
+			</Or>
+			<Condition name = "CompareProjectProperty" property = "TargetFrameworkVersion" equals = "v1.0">
+				<ProjectContentRegistry id="Net10" class="ICSharpCode.SharpDevelop.Net10ProjectContentRegistry"/>
+			</Condition>
+			<Condition name = "CompareProjectProperty" property = "TargetFrameworkVersion" equals = "v1.1">
+				<ProjectContentRegistry id="Net11" class="ICSharpCode.SharpDevelop.Net11ProjectContentRegistry"/>
+			</Condition>
+		</ComplexCondition>
 	</Path>
 </AddIn>

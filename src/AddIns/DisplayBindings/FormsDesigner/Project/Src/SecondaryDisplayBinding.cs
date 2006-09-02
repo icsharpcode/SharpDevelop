@@ -7,14 +7,12 @@
 
 using System;
 using System.IO;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.NRefactory;
-using ICSharpCode.FormsDesigner.Services;
-using System.ComponentModel.Design;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FormsDesigner
 {

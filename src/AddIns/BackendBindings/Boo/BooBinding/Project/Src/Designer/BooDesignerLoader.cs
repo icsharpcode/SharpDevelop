@@ -6,26 +6,21 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.ComponentModel.Design;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
+using System.IO;
 using System.Text;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
 
+using Boo.Lang.Compiler.Ast;
+using Boo.Lang.Parser;
 using ICSharpCode.Core;
+using ICSharpCode.FormsDesigner;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
-
-using ICSharpCode.FormsDesigner;
-using ICSharpCode.FormsDesigner.Services;
-using Boo.Lang.Parser;
-using Boo.Lang.Compiler.Ast;
 
 namespace Grunwald.BooBinding.Designer
 {

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace Grunwald.BooBinding.CodeCompletion

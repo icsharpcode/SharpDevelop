@@ -699,6 +699,10 @@
     <Compile Include="Src\Services\ParserService\CodeCompletionOptions.cs" />
     <Compile Include="Src\Services\RefactoringService\TextEditorDocument.cs" />
     <Compile Include="Src\Services\ParserService\DomHostCallback.cs" />
+    <Compile Include="Src\Services\ParserService\Doozer\ProjectContentRegistryDescriptor.cs" />
+    <Compile Include="Src\Services\ParserService\Doozer\ProjectContentRegistryDoozer.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\CompareProjectPropertyConditionEvaluator.cs" />
+    <Compile Include="Src\Services\ParserService\Net1xProjectContentRegistry.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

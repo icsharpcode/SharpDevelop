@@ -18,13 +18,27 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return "ReflectionLoader in " + AppDomain.CurrentDomain.FriendlyName;
 		}
 		
-		public string LoadAndCreateDatabase(string fileName, string include)
+		public Assembly ReflectionLoadGacAssembly(string partialName, bool reflectionOnly)
+		{
+			if (reflectionOnly) {
+				AssemblyName name = GacInterop.FindBestMatchingAssemblyName(partialName);
+				if (name == null)
+					return null;
+				return Assembly.ReflectionOnlyLoad(name.FullName);
+			} else {
+				#pragma warning disable 618
+				return Assembly.LoadWithPartialName(partialName);
+				#pragma warning restore 618
+			}
+		}
+		
+		public string LoadAndCreateDatabase(string fileName, string include, string cacheDirectory)
 		{
 			try {
-				ReflectionProjectContent content = LoadProjectContent(fileName, include);
+				ReflectionProjectContent content = LoadProjectContent(fileName, include, new ProjectContentRegistry());
 				if (content == null)
 					return null;
-				return DomPersistence.SaveProjectContent(content);
+				return new DomPersistence(cacheDirectory, null).SaveProjectContent(content);
 			} catch (Exception ex) {
 				if (ex is FileLoadException) {
 					LoggingService.Info(ex);
@@ -35,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		ReflectionProjectContent LoadProjectContent(string fileName, string include)
+		ReflectionProjectContent LoadProjectContent(string fileName, string include, ProjectContentRegistry registry)
 		{
 			fileName = Path.GetFullPath(fileName);
 			LoggingService.Debug("Trying to load " + fileName);
@@ -45,11 +59,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			try {
 				if (File.Exists(fileName)) {
 					assembly = Assembly.ReflectionOnlyLoadFrom(fileName);
-					return new ReflectionProjectContent(assembly, fileName);
+					return new ReflectionProjectContent(assembly, fileName, registry);
 				}
-				assembly = ProjectContentRegistry.LoadGacAssembly(include, true);
+				assembly = ReflectionLoadGacAssembly(include, true);
 				if (assembly != null)
-					return new ReflectionProjectContent(assembly);
+					return new ReflectionProjectContent(assembly, registry);
 				else
 					throw new FileLoadException("Assembly not found.");
 			} catch (BadImageFormatException ex) {

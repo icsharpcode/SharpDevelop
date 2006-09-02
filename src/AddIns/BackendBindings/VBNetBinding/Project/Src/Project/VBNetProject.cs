@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.IO;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -75,6 +76,8 @@ namespace VBNetBinding
 			Language = "VBNet";
 			LanguageProperties = ICSharpCode.SharpDevelop.Dom.LanguageProperties.VBNet;
 			BuildConstantSeparator = ',';
+			reparseSensitiveProperties.Add("TargetFrameworkVersion");
+			reparseSensitiveProperties.Add("DefineConstants");
 		}
 		
 		public override bool CanCompile(string fileName)
