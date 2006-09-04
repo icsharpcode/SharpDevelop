@@ -19,7 +19,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
     <Optimize>False</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG%3bTRACE</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
@@ -189,6 +189,14 @@
     <Compile Include="Document\DirectoryNameTests.cs" />
     <Compile Include="Project\GetWixCompilerExtensionsTestFixture.cs" />
     <Compile Include="Project\WixCompilerExtensionNameTests.cs" />
+    <Compile Include="PackageFiles\ComponentDiskIdSetBeforeFilesAddedTestFixture.cs" />
+    <Compile Include="Document\ExistingFileIdGenerationTests.cs" />
+    <Compile Include="Document\ExistingShortFileNameTests.cs" />
+    <Compile Include="Document\AddRootDirectoryWithNoProductElementTestFixture.cs" />
+    <Compile Include="DirectoryImport\AddDirectoryTestFixture.cs" />
+    <Compile Include="DirectoryImport\AddSubDirectoryTestFixture.cs" />
+    <Compile Include="PackageFiles\GenerateComponentIdTests.cs" />
+    <Compile Include="DirectoryImport\DuplicateComponentIdTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\WixBinding.csproj">
@@ -246,6 +254,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Folder Include="PropertyGrid" />
+    <Folder Include="DirectoryImport" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

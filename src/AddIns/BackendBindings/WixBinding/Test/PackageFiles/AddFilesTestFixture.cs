@@ -30,7 +30,7 @@ namespace WixBinding.Tests.PackageFiles
 		string readmeFileName;
 		
 		[SetUp]
-		public void SetUpFixture()
+		public void Init()
 		{
 			base.InitFixture();
 			componentElement = (XmlElement)editor.Document.RootDirectory.ChildNodes[0].ChildNodes[0].ChildNodes[0];
@@ -119,6 +119,12 @@ namespace WixBinding.Tests.PackageFiles
 		public void ReadmeFileElementAddedToView()
 		{
 			Assert.AreSame(view.ElementsAdded[1], readmeFileElement);
+		}
+		
+		[Test]
+		public void ComponentElementDiskId()
+		{
+			Assert.AreEqual("1", componentElement.GetAttribute("DiskId"));
 		}
 
 		protected override string GetWixXml()

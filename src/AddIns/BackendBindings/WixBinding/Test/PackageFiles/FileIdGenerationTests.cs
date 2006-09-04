@@ -8,12 +8,23 @@
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
+using System.Xml;
 
 namespace WixBinding.Tests.PackageFiles
 {
 	[TestFixture]
 	public class FileIdGenerationTests
 	{
+		WixDocument doc;
+		
+		[TestFixtureSetUp]
+		public void SetupFixture()
+		{
+			doc = new WixDocument();
+			doc.FileName = @"C:\Projects\Setup\Setup.wxs";
+			doc.LoadXml("<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'/>");
+		}
+		
 		[Test]
 		public void ShortFileName()
 		{
@@ -26,7 +37,6 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			Assert.AreEqual(String.Empty, WixFileElement.GenerateId(null));
 		}
-		
 		
 		[Test]
 		public void TruncatedShortFileName()
@@ -54,6 +64,13 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			string fileName = "AEèSTAP.TXT";
 			Assert.AreEqual("AE_STAP.TXT", WixFileElement.GenerateId(fileName));
+		}
+		
+		[Test]
+		public void NewWixFileElement()
+		{
+			WixFileElement fileElement = new WixFileElement(doc, @"C:\Projects\Setup\Files\readme.txt");
+			Assert.AreEqual("readme.txt", fileElement.Id);
 		}
 	}
 }

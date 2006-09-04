@@ -90,8 +90,14 @@ namespace WixBinding.Tests.PackageFiles
 			returnFileNameExistsCount = 99;
 			Assert.AreEqual("ABCD_100.TXT", ShortFileName.Convert(name, GetFileNameExists));
 		}
-
 		
+		[Test]
+		public void PeriodsRemovedFromFileNameStart()
+		{
+			string name = "boo.exe.config";
+			Assert.AreEqual("BOOEXE.CON", ShortFileName.Convert(name));
+		}
+
 		bool GetFileNameExists(string fileName)
 		{
 			if (returnFileNameExistsCount == 0) {
@@ -100,6 +106,5 @@ namespace WixBinding.Tests.PackageFiles
 			--returnFileNameExistsCount;
 			return true;
 		}
-		
 	}
 }

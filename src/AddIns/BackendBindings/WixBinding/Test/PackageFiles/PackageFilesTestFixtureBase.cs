@@ -21,7 +21,7 @@ namespace WixBinding.Tests.PackageFiles
 	/// one setup.wxs file, creates the WixPackageEditor and calls its ShowPackageFiles
 	/// method.
 	/// </summary>
-	public class PackageFilesTestFixtureBase : ITextFileReader, IWixDocumentWriter
+	public class PackageFilesTestFixtureBase : ITextFileReader, IWixDocumentWriter, IDirectoryReader
 	{
 		protected WixPackageFilesEditor editor;
 		protected MockWixPackageFilesView view;
@@ -35,7 +35,7 @@ namespace WixBinding.Tests.PackageFiles
 			item.Include = "Setup.wxs";
 			project.Items.Add(item);
 			view = new MockWixPackageFilesView();
-			editor = new WixPackageFilesEditor(view, this, this);
+			editor = new WixPackageFilesEditor(view, this, this, this);
 			editor.ShowFiles(project);
 		}
 		
@@ -61,6 +61,16 @@ namespace WixBinding.Tests.PackageFiles
 				}
 			}
 			return null;
+		}
+	
+		public virtual string[] GetFiles(string path)
+		{
+			return new string[0];
+		}
+		
+		public virtual string[] GetDirectories(string path)
+		{
+			return new string[0];
 		}
 	}
 }

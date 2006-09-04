@@ -19,6 +19,8 @@ namespace ICSharpCode.WixBinding
 	public class WixFileElement : XmlElement
 	{		
 		public const string FileElementName = "File";
+		
+		WixComponentElement parentComponent;
 
 		public WixFileElement(WixDocument document)
 			: base(document.WixNamespacePrefix, FileElementName, WixNamespaceManager.Namespace, document)
@@ -27,6 +29,12 @@ namespace ICSharpCode.WixBinding
 		
 		public WixFileElement(WixDocument document, string fileName) : this(document)
 		{
+			Init(fileName);
+		}
+		
+		public WixFileElement(WixComponentElement component, string fileName) : this((WixDocument)component.OwnerDocument)
+		{
+			parentComponent = component;
 			Init(fileName);
 		}
 		
@@ -50,6 +58,11 @@ namespace ICSharpCode.WixBinding
 			return id.ToString();
 		}
 		
+		/// <summary>
+		/// Gets the filename where the resource being added to the setup 
+		/// package can be found. Typically this isrelative to the Wix document the
+		/// File element is a part of.
+		/// </summary>
 		public string Source {
 			get {
 				return GetAttribute("Source");
@@ -60,7 +73,7 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Gets the short name of the file.
+		/// Gets the short name (8.3) of the file.
 		/// </summary>
 		public string ShortName {
 			get {
@@ -80,6 +93,9 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
+		/// <summary>
+		/// The is the filename that will be used when installing the file.
+		/// </summary>
 		public string LongName {
 			get {
 				return GetAttribute("LongName");
@@ -154,17 +170,66 @@ namespace ICSharpCode.WixBinding
 			string idFileName = shortFileName;
 			if (shortFileName.Length > ShortFileName.MaximumFileNameLength) {
 				longFileName = shortFileName;
-				shortFileName = ShortFileName.Convert(shortFileName);
+				shortFileName = ShortFileName.Convert(shortFileName, ShortFileNameExists);
 				idFileName = longFileName;
 			}
 			
-			
 			ShortName = shortFileName;
-			Id = GenerateId(idFileName);
+			Id = GenerateUniqueId(Path.GetDirectoryName(fileName), idFileName);
 			
 			if (longFileName != null) {
 				LongName = longFileName;				
 			} 
+		}
+		
+		/// <summary>
+		/// Generates a unique id for the entire document that this file element
+		/// belongs to.
+		/// </summary>
+		/// <param name="parentDirectory">The full path of the parent directory
+		/// for the filename.</param>
+		/// <param name="fileName">The name of the file to generate a unique
+		/// id for. This does not include any path.</param>
+		string GenerateUniqueId(string parentDirectory, string fileName)
+		{
+			string id = GenerateId(fileName);
+			WixDocument document = (WixDocument)OwnerDocument;
+			if (!document.FileIdExists(id)) {
+				return id;
+			}
+			
+			// Add the file's parent directory to the id.
+			string parentDirectoryName = WixDirectoryElement.GetLastDirectoryName(parentDirectory);
+			if (parentDirectoryName.Length > 0) {
+				id = String.Concat(parentDirectoryName, ".", id);
+				if (!document.FileIdExists(id)) {
+					return id;
+				}
+				fileName = id;
+			}
+			
+			// Add a number to the file name until we get a unique id.
+			int count = 0;
+			string idStart = Path.GetFileNameWithoutExtension(fileName);
+			string extension = Path.GetExtension(fileName);
+			do {
+				++count;
+				id = String.Concat(idStart, count, extension);
+			} while (document.FileIdExists(id));
+			
+			return id;
+		}
+		
+		/// <summary>
+		/// Determines if the short filename already exists in the document.
+		/// </summary>
+		bool ShortFileNameExists(string fileName)
+		{
+			if (parentComponent == null) {
+				return false;
+			}
+			WixDirectoryElement directoryElement = parentComponent.ParentNode as WixDirectoryElement;
+			return directoryElement.ShortFileNameExists(fileName);
 		}
 	}
 }

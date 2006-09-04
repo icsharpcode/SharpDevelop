@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 
 namespace ICSharpCode.WixBinding
@@ -27,6 +28,15 @@ namespace ICSharpCode.WixBinding
 		public static bool IsDirectoryElement(string name)
 		{
 			return name == DirectoryElementName;
+		}
+		
+		/// <summary>
+		/// Returns the last directory specified in the path 
+		/// </summary>
+		public static string GetLastDirectoryName(string path)
+		{
+			int index = path.LastIndexOf(Path.DirectorySeparatorChar);
+			return path.Substring(index + 1);
 		}
 		
 		/// <summary>
@@ -106,6 +116,17 @@ namespace ICSharpCode.WixBinding
 				}
 				return ShortName;
 			}
+		}
+		
+		/// <summary>
+		/// Checks to see if a File element exists with the specified
+		/// short filename.
+		/// </summary>
+		public bool ShortFileNameExists(string fileName)
+		{
+			string xpath = String.Concat("w:Component/w:File[@Name='", fileName, "']");
+			XmlNodeList nodes = SelectNodes(xpath, new WixNamespaceManager(OwnerDocument.NameTable));
+			return nodes.Count > 0;
 		}
 		
 		/// <summary>

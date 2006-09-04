@@ -49,7 +49,7 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// Converts a long filename to a short 8.3 filename.
 		/// </summary>
-		/// <param name="fileName">The long filename</param>
+		/// <param name="fileName">The long filename.</param>
 		/// <returns>The converted 8.3 filename. If the filename includes a
 		/// starting path then this is stripped from the returned value.</returns>
 		public static string Convert(string fileName, FileNameExists getFileNameExists)
@@ -127,6 +127,16 @@ namespace ICSharpCode.WixBinding
 			return false;
 		}
 		
+		/// <summary>
+		/// Returns whether the character is considered a valid character
+		/// for the starting part of the filename (i.e. not including the extension).
+		/// </summary>
+		/// <remarks>
+		/// We include the period character here to avoid ICE03 invalid filename
+		/// errors.
+		/// 
+		/// http://msdn.microsoft.com/library/en-us/msi/setup/ice03.asp 
+		/// </remarks>
 		static bool IsValidShortFileNameChar(char ch)
 		{
 			switch (ch) {
@@ -136,6 +146,7 @@ namespace ICSharpCode.WixBinding
 				case ';':
 				case '=':
 				case ',':
+				case '.':
 					return false;
 			}
 			return true;

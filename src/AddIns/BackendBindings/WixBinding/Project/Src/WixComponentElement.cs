@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.IO;
 using System.Xml;
 
 namespace ICSharpCode.WixBinding
@@ -37,6 +38,24 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
+		public string DiskId {
+			get {
+				return GetAttribute("DiskId");
+			}
+			set {
+				SetAttribute("DiskId", value);
+			}
+		}
+		
+		/// <summary>
+		/// Checks whether the disk id has already been set for this component.
+		/// </summary>
+		public bool HasDiskId {
+			get {
+				return HasAttribute("DiskId");
+			}
+		}
+		
 		/// <summary>
 		/// Generates a new guid for this component element.
 		/// </summary>
@@ -50,8 +69,77 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public WixFileElement AddFile(string fileName)
 		{
-			WixFileElement fileElement = new WixFileElement((WixDocument)OwnerDocument, fileName);
+			WixFileElement fileElement = new WixFileElement(this, fileName);
 			return (WixFileElement)AppendChild(fileElement);
+		}
+		
+		/// <summary>
+		/// Creates an id from the filename.
+		/// </summary>
+		/// <remarks>
+		/// Takes the filename, removes all periods, and 
+		/// capitalises the first character and first extension character.
+		/// </remarks>
+		/// <param name="document">The Wix document is used to make sure the
+		/// id generated is unique for that document.</param>
+		/// <param name="fileName">The full filename including the directory to
+		/// use when generating the id.</param>
+		public static string GenerateIdFromFileName(WixDocument document, string fileName)
+		{
+			string id = GenerateIdFromFileName(fileName);
+			if (!document.ComponentIdExists(id)) {
+				return id;
+			}
+			
+			// Add the parent folder to the id.
+			string parentDirectory = WixDirectoryElement.GetLastDirectoryName(Path.GetDirectoryName(fileName));
+			parentDirectory = FirstCharacterToUpperInvariant(parentDirectory);
+			id = String.Concat(parentDirectory, id);
+			if (!document.ComponentIdExists(id)) {
+				return id;
+			}
+			
+			// Add a number to the end until we generate a unique id.
+			int count = 0;
+			string baseId = id;
+			do {
+				++count;
+				id = String.Concat(baseId, count);
+			} while (document.ComponentIdExists(id));
+			
+			return id;
+		}
+		
+		/// <summary>
+		/// Creates an id from the filename.
+		/// </summary>
+		/// <remarks>
+		/// Takes the filename, removes all periods, and 
+		/// capitalises the first character and first extension character.
+		/// </remarks>
+		public static string GenerateIdFromFileName(string fileName)
+		{
+			string fileNameNoExtension = Path.GetFileNameWithoutExtension(fileName);
+			string idStart = String.Empty;
+			if (fileNameNoExtension.Length > 0) {
+				idStart = FirstCharacterToUpperInvariant(fileNameNoExtension);
+			}
+			
+			// Remove period from extension and uppercase first extension char.
+			string extension = Path.GetExtension(fileName);
+			string idEnd = String.Empty;
+			if (extension.Length > 1) {
+				idEnd = FirstCharacterToUpperInvariant(extension.Substring(1));
+			}
+			return String.Concat(idStart, idEnd);
+		}
+		
+		/// <summary>
+		/// Upper cases first character of string.
+		/// </summary>
+		static string FirstCharacterToUpperInvariant(string s)
+		{
+			return String.Concat(s.Substring(0, 1).ToUpperInvariant(), s.Substring(1));
 		}
 	}
 }

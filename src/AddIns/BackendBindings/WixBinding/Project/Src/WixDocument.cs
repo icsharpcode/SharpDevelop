@@ -574,8 +574,16 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public WixDirectoryElement AddRootDirectory()
 		{
+			// Add product element if it does not exist.	
+			XmlElement productElement = Product;
+			if (productElement == null) {
+				productElement = CreateWixElement("Product");
+				DocumentElement.AppendChild(productElement);
+			}
+			
+			// Add root directory.
 			WixDirectoryElement rootDirectory = WixDirectoryElement.CreateRootDirectory(this);
-			return (WixDirectoryElement)Product.AppendChild(rootDirectory);
+			return (WixDirectoryElement)productElement.AppendChild(rootDirectory);
 		}
 		
 		/// <summary>
@@ -638,6 +646,24 @@ namespace ICSharpCode.WixBinding
 				}
 			}
 			return base.CreateElement(prefix, localName, namespaceURI);
+		}
+		
+		/// <summary>
+		/// Checks to see if a File element exists with the specified id in this
+		/// document.
+		/// </summary>
+		public bool FileIdExists(string id)
+		{
+			return ElementIdExists(WixFileElement.FileElementName, id);
+		}
+		
+		/// <summary>
+		/// Checks to see if a Component element exists with the specified id in this
+		/// document.
+		/// </summary>
+		public bool ComponentIdExists(string id)
+		{
+			return ElementIdExists(WixComponentElement.ComponentElementName, id);
 		}
 		
 		/// <summary>
@@ -760,6 +786,16 @@ namespace ICSharpCode.WixBinding
 		{
 			string xpath = String.Concat("//w:Dialog[@Id='", id, "']");
 			return (XmlElement)SelectSingleNode(xpath, namespaceManager);
+		}
+		
+		/// <summary>
+		/// Checks to see if an element exists with the specified Id attribute.
+		/// </summary>
+		bool ElementIdExists(string elementName, string id)
+		{
+			string xpath = String.Concat("//w:", elementName, "[@Id='", id, "']");
+			XmlNodeList nodes = SelectNodes(xpath, new WixNamespaceManager(NameTable));
+			return nodes.Count > 0;
 		}
 	}
 }

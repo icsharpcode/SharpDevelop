@@ -137,6 +137,7 @@
     <Compile Include="Src\Project\WixCompilerExtensionName.cs" />
     <EmbeddedResource Include="Resources\LibraryParametersPanel.xfrm" />
     <Compile Include="Src\Gui\LibraryParametersPanel.cs" />
+    <Compile Include="Src\IDirectoryReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="WixBinding.addin">
