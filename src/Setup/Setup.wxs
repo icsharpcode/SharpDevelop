@@ -144,7 +144,6 @@
 				<ComponentRef Id="ICSharpCodeTextEditorDll"/>
 				<ComponentRef Id="log4netDll"/>
 				<ComponentRef Id="MonoCecilDll"/>
-				<ComponentRef Id="MonoReflectionLoaderDll"/>
 				<ComponentRef Id="WeifenLuoWinFormsUIDockingDll"/>
 				<ComponentRef Id="SharpDevelopTechNoteFiles"/>
 				<ComponentRef Id="ComponentInspectorExe"/>

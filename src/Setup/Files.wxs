@@ -150,9 +150,6 @@
 							<Component Id="MonoCecilDll" Guid="F714FD47-9E0A-488F-8F44-11C0220721E3" DiskId="1">
 								<File Source="..\..\bin\Mono.Cecil.dll" Name="cecil.DLL" Id="Mono.Cecil.dll" LongName="Mono.Cecil.dll" Assembly=".net" AssemblyApplication="Mono.Cecil.dll" AssemblyManifest="Mono.Cecil.dll" KeyPath="yes"/>
 							</Component>
-							<Component Id="MonoReflectionLoaderDll" Guid="00076C86-4CBA-4359-AEC3-85DFA054A69E" DiskId="1">
-								<File Source="..\..\bin\MonoReflectionLoader.dll" Name="monoref.DLL" Id="MonoReflectionLoader.dll" LongName="MonoReflectionLoader.dll" Assembly=".net" AssemblyApplication="MonoReflectionLoader.dll" AssemblyManifest="MonoReflectionLoader.dll" KeyPath="yes"/>
-							</Component>
 							<Component Id="WeifenLuoWinFormsUIDockingDll" Guid="AB160125-2828-434E-8810-BE642A77B0E5" DiskId="1">
 								<File Source="..\..\bin\WeifenLuo.WinFormsUI.Docking.dll" Name="WEIFEN.DLL" Id="WeifenLuo.WinFormsUI.Docking.dll" LongName="WeifenLuo.WinFormsUI.Docking.dll" Assembly=".net" AssemblyApplication="WeifenLuo.WinFormsUI.Docking.dll" AssemblyManifest="WeifenLuo.WinFormsUI.Docking.dll" KeyPath="yes"/>
 							</Component>
@@ -1013,7 +1010,7 @@
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\LibAprUtil.Dll" Name="LIBAPR_2.DLL" Id="LibAprUtil.Dll" LongName="LibAprUtil.Dll" />
 										</Component>
 										<Component Id="SubversionLibDb44Dll" Guid="6A86A5F7-1E80-465D-82F4-B8064663F83A" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\LibDB44.dll" Name="LibDB42.dll" Id="LibDB42.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\LibDB44.dll" Name="LibDB44.dll" Id="LibDB44.dll" />
 										</Component>
 										<Component Id="SubversionMsvcp70Dll" Guid="E4612BC7-DA35-403D-BCFE-BC04D797D801" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\msvcp70.dll" Name="msvcp70.dll" Id="msvcp70.dll" />
