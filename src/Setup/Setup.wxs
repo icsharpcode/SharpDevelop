@@ -114,7 +114,7 @@
 			Source media for the installation. 
  			Specifies a single cab file to be embedded in the installer's .msi. 
 		-->
-		<Media Id="1" Cabinet="contents.cab" EmbedCab="yes"/>
+		<Media Id="1" Cabinet="contents.cab" EmbedCab="yes" CompressionLevel="high"/>
 	
 		<!-- Installation directory and files are defined in Files.wxs -->
 		<Directory Id="TARGETDIR" Name="SourceDir"/>
