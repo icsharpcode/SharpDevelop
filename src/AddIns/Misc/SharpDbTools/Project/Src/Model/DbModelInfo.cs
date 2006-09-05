@@ -67,7 +67,7 @@ namespace SharpDbTools.Model
 				try {
 					invariantName = table.Rows[0][ColumnNames.InvariantName] as string;	
 				}
-				catch(ArgumentException e) {
+				catch(ArgumentException) {
 					// see comment below - it is correct to bury this exception
 				}
 				return invariantName;
@@ -100,7 +100,7 @@ namespace SharpDbTools.Model
 				try {
 					connectionString = table.Rows[0][ColumnNames.ConnectionString] as string;	
 				}
-				catch(ArgumentException e) {
+				catch(ArgumentException) {
 					// this simply indicates that this attribute was not defined when the
 					// DbModelInfo was saved, returning null makes sense here - so it is
 					// correct to bury this exception

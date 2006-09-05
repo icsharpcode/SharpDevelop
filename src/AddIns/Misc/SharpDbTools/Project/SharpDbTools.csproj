@@ -70,6 +70,9 @@
     <EmbeddedResource Include="Src\GetConnectionLogicalNameDialog.resx">
       <DependentUpon>GetConnectionLogicalNameDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Model" />

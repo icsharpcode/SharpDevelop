@@ -153,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (c == '%') {
 					if (b == null) b = new StringBuilder(text, 0, i, text.Length + 6);
 					b.Append("%25");
-				} else if (c == ';') {
+				} else if (escapeSemicolon && c == ';') {
 					if (b == null) b = new StringBuilder(text, 0, i, text.Length + 6);
 					b.Append("%3b");
 				} else {
