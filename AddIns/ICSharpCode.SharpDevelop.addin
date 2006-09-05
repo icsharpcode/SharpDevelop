@@ -1265,6 +1265,17 @@
 			          type = "Item"
 			          loadclasslazy = "false"
 			          class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+				<MenuItem id = "Insert" label = "${res:XML.MainMenu.EditMenu.Insert}" type="Menu">
+					<MenuItem id = "InsertColor"
+					          label = "${res:XML.MainMenu.ToolMenu.InsColor}"
+					          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowColorDialog"/>
+					<MenuItem id       = "InsertGuid"
+					          shortcut = "Control|Shift|G"
+					          label    = "${res:XML.MainMenu.ToolMenu.InsGUID}"
+					          class    = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.InsertGuidCommand"/>
+				</MenuItem>
+			</Condition>
 			<MenuItem id = "SelectAll"
 			          label = "${res:XML.MainMenu.EditMenu.SelectAll}"
 			          type = "Item"
@@ -1495,30 +1506,21 @@
 					<Condition name = "WindowActive" activewindow="ICSharpCode.FormsDesigner.FormsDesignerViewContent"/>
 					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
 				</Or>
-				<Condition name="ActiveContentExtension" activeextension=".cs" action = "Disable">
-					<MenuItem id = "ConvertBuffer"
-					          label = "${res:XML.MainMenu.ToolMenu.ConvertBufferToVBNET}"
-					          class = "ICSharpCode.SharpDevelop.Commands.VBConvertBuffer"/>
-				</Condition>
-				<Condition name="ActiveContentExtension" activeextension=".vb" action = "Disable">
-					<MenuItem id = "ConvertCSharpBuffer"
-					          label = "${res:XML.MainMenu.ToolMenu.ConvertBufferToCSharp}"
-					          class = "ICSharpCode.SharpDevelop.Commands.CSharpConvertBuffer"/>
-				</Condition>
+				<MenuItem id = "ConvertCode" label = "${res:XML.MainMenu.ToolMenu.ConvertCodeTo}" type="Menu">
+					<Condition name="ActiveContentExtension" activeextension=".vb" action = "Disable">
+						<MenuItem id = "CSharp"
+						          label = "C#"
+						          class = "ICSharpCode.SharpDevelop.Commands.CSharpConvertBuffer"/>
+					</Condition>
+					<Condition name="ActiveContentExtension" activeextension=".cs" action = "Disable">
+						<MenuItem id = "VBNet"
+						          label = "VB.NET"
+						          class = "ICSharpCode.SharpDevelop.Commands.VBConvertBuffer"/>
+					</Condition>
+				</MenuItem>
 			</ComplexCondition>
 			
-			<MenuItem id = "Separator3" type = "Separator" />
-			
 			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
-				<MenuItem id = "InsertColor"
-				          label = "${res:XML.MainMenu.ToolMenu.InsColor}"
-				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowColorDialog"/>
-				<MenuItem id       = "InsertGuid"
-				          shortcut = "Control|Shift|G"
-				          label    = "${res:XML.MainMenu.ToolMenu.InsGUID}"
-				          class    = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.InsertGuidCommand"/>
-				<MenuItem id = "Separator4" type = "Separator" />
-				
 				<MenuItem id = "GenerateCodeAction"
 				          label = "${res:XML.MainMenu.ToolMenu.GenerateCode}"
 				          shortcut = "Alt|Insert"

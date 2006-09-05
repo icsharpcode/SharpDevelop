@@ -137,22 +137,15 @@
 		                 class                = "Grunwald.BooBinding.BooLanguageBinding" />
 	</Path>
 
-	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools/ConvertCode">
 		<ComplexCondition action = "Disable">
-			<And>
-				<Or>
-					<Condition name = "WindowActive" activewindow="ICSharpCode.FormsDesigner.FormsDesignerViewContent"/>
-					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
-				</Or>
-				<Or>
-					<Condition name="ActiveContentExtension" activeextension=".cs"/>
-					<Condition name="ActiveContentExtension" activeextension=".vb"/>
-				</Or>
-			</And>
+			<Or>
+				<Condition name="ActiveContentExtension" activeextension=".cs"/>
+				<Condition name="ActiveContentExtension" activeextension=".vb"/>
+			</Or>
 			<MenuItem id = "ConvertBufferToBoo"
-			          insertbefore = "ConvertBuffer"
-			          insertafter = "Separator2"
-			          label = "${res:XML.MainMenu.ToolMenu.ConvertBufferToBoo}"
+			          insertbefore = "CSharp"
+			          label = "Boo"
 			          class = "Grunwald.BooBinding.ConvertBuffer"/>
 		</ComplexCondition>
 	</Path>

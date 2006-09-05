@@ -251,7 +251,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				wasChangedExternally = false;
 				
 				string message = StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}", new string[,] {{"File", Path.GetFullPath(textAreaControl.FileName)}});
-				if (MessageBox.Show(message,
+				if (IsDirty == false ||
+				    MessageBox.Show(message,
 				                    StringParser.Parse("${res:MainWindow.DialogName}"),
 				                    MessageBoxButtons.YesNo,
 				                    MessageBoxIcon.Question) == DialogResult.Yes) {
