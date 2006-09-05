@@ -35,6 +35,7 @@ namespace ResourceEditor
 		ColumnHeader content  = new ColumnHeader();
 		
 		Dictionary<string, ResourceItem> resources = new Dictionary<string, ResourceItem>();
+		Dictionary<string, ResourceItem> metadata = new Dictionary<string, ResourceItem>();
 		ImageList images = new ImageList();
 		
 		UndoStack undoStack = null;
@@ -129,6 +130,11 @@ namespace ResourceEditor
 						if (!resources.ContainsKey(n.Key.ToString()))
 							resources.Add(n.Key.ToString(), new ResourceItem(n.Key.ToString(), n.Value));
 					
+					n = rx.GetMetadataEnumerator();
+					while (n.MoveNext()) 
+						if (!metadata.ContainsKey(n.Key.ToString()))
+							metadata.Add(n.Key.ToString(), new ResourceItem(n.Key.ToString(), n.Value));
+					
 					rx.Close();
 					break;
 				case ".resources":
@@ -164,6 +170,12 @@ namespace ResourceEditor
 						if (entry.Value != null) {
 							ResourceItem item = entry.Value;
 							rxw.AddResource(item.Name, item.ResourceValue);
+						}
+					}
+					foreach (KeyValuePair<string, ResourceItem> entry in metadata) {
+						if (entry.Value != null) {
+							ResourceItem item = entry.Value;
+							rxw.AddMetadata(item.Name, item.ResourceValue);
 						}
 					}
 					rxw.Generate();
