@@ -19,22 +19,18 @@ using WixBinding.Tests.Utils;
 namespace WixBinding.Tests.DirectoryImport
 {
 	/// <summary>
-	/// Adds several directories and its contained files to the setup package.
-	/// The original package has no directories, only the root directory is
-	/// defined.
+	/// Tests that files and folders are ignored if they are on the package editor's 
+	/// ignore list.
 	/// </summary>
 	[TestFixture]
-	public class AddDirectoryTestFixture : PackageFilesTestFixtureBase
+	public class ExcludedItemsTestFixture : PackageFilesTestFixtureBase
 	{			
 		WixDirectoryElement appDirectoryElement;
-		WixComponentElement myAppExeFileComponentElement;
-		WixFileElement myAppExeFileElement;
 		WixDirectoryElement docsDirectoryElement;
 		WixDirectoryElement srcDirectoryElement;
-		WixDirectoryElement cssDirectoryElement;
 		WixFileElement readmeFileElement;
 		string docsDirectory = @"C:\Projects\Test\MyApp\docs";
-		string cssDirectory = @"C:\Projects\Test\MyApp\docs\css";
+		string objDirectory = @"C:\Projects\Test\MyApp\docs\obj";
 		string srcDirectory = @"C:\Projects\Test\MyApp\src";
 		string directory = @"C:\Projects\Test\MyApp";
 		string myAppExeFile = "MyApp.exe";
@@ -45,121 +41,35 @@ namespace WixBinding.Tests.DirectoryImport
 		public void SetUpFixture()
 		{
 			base.InitFixture();
+			editor.ExcludedItems.AddRange(new string[] {"readme.txt", "obj"});
 			editor.AddDirectory(directory);
 			
 			WixNamespaceManager nsManager = new WixNamespaceManager(editor.Document.NameTable);
 			appDirectoryElement = (WixDirectoryElement)editor.Document.RootDirectory.FirstChild;
-			myAppExeFileComponentElement = (WixComponentElement)appDirectoryElement.SelectSingleNode("w:Component", nsManager);
-			myAppExeFileElement = (WixFileElement)myAppExeFileComponentElement.LastChild;
 			docsDirectoryElement = (WixDirectoryElement)appDirectoryElement.SelectSingleNode("w:Directory[@Name='docs']", nsManager);
 			srcDirectoryElement = (WixDirectoryElement)appDirectoryElement.SelectSingleNode("w:Directory[@Name='src']", nsManager);
-			cssDirectoryElement = (docsDirectoryElement.GetDirectories())[0];
 			readmeFileElement = (WixFileElement)docsDirectoryElement.SelectSingleNode("w:Component/w:File[@Name='readme.txt']", nsManager);
 		}
 		
 		[Test]
-		public void IsDirty()
+		public void ReadmeFileNotAdded()
 		{
-			Assert.IsTrue(view.IsDirty);
+			Assert.IsNull(readmeFileElement);
 		}
 		
 		[Test]
-		public void DirectoryElementAddedToView()
+		public void ObjDirectoryNotAdded()
 		{
-			Assert.IsInstanceOfType(typeof(WixDirectoryElement), view.ElementsAdded[0]);
+			Assert.AreEqual(0, docsDirectoryElement.GetDirectories().Length);
 		}
-		
-		[Test]
-		public void AppDirectoryName()
-		{
-			Assert.AreEqual("MyApp", appDirectoryElement.ShortName);
-		}
-		
-		[Test]
-		public void AppDirectoryLongName()
-		{
-			Assert.AreEqual(String.Empty, appDirectoryElement.LongName);
-		}
-		
-		[Test]
-		public void AppDirectoryLongNameAttributeDoesNotExist()
-		{
-			Assert.IsFalse(appDirectoryElement.HasAttribute("LongName"));
-		}
-		
-		[Test]
-		public void AppDirectoryId()
-		{
-			Assert.AreEqual("MyApp", appDirectoryElement.Id);
-		}
-		
-		[Test]
-		public void AppDirectoryHasChildComponent()
-		{
-			Assert.IsNotNull(myAppExeFileComponentElement);
-		}
-		
-		[Test]
-		public void AppExeComponentDiskId()
-		{
-			Assert.AreEqual("1", myAppExeFileComponentElement.DiskId);
-		}
-		
-		[Test]
-		public void AppExeFileElementShortName()
-		{
-			Assert.AreEqual("MyApp.exe", myAppExeFileElement.ShortName);
-		}
-		
-		[Test]
-		public void AppExeFileElementId()
-		{
-			Assert.AreEqual("MyApp.exe", myAppExeFileElement.Id);
-		}
-		
-		[Test]
-		public void AddExeSourceFile()
-		{
-			Assert.AreEqual(@"MyApp\MyApp.exe", myAppExeFileElement.Source);
-		}
-		
-		[Test]
-		public void DocDirectoryElementExists()
-		{
-			Assert.IsNotNull(docsDirectoryElement);
-		}
-		
-		[Test]
-		public void SrcDirectoryElementExists()
-		{
-			Assert.IsNotNull(srcDirectoryElement);
-		}
-		
-		[Test]
-		public void CssDirectoryElementExists()
-		{
-			Assert.IsNotNull(cssDirectoryElement);
-		}
-		
-		[Test]
-		public void ReadmeFileElementExists()
-		{
-			Assert.IsNotNull(readmeFileElement);
-		}
-		
-		[Test]
-		public void AppExeComponentId()
-		{
-			Assert.AreEqual("MyAppExe", myAppExeFileComponentElement.Id);
-		}
-		
+
 		public override string[] GetFiles(string path)
 		{
 			if (path == docsDirectory) {
 				return docFiles;
 			} else if (path == srcDirectory) {
 				return srcFiles;
-			} else if (path == cssDirectory) {
+			} else if (path == objDirectory) {
 				return new string[0];
 			}
 			return new string[] {myAppExeFile};
@@ -170,7 +80,7 @@ namespace WixBinding.Tests.DirectoryImport
 			if (path == directory) {
 				return new string[] {docsDirectory, srcDirectory};
 			} else if (path == docsDirectory) {
-				return new string[] {cssDirectory};
+				return new string[] {objDirectory};
 			}
 			return new string[0];
 		}

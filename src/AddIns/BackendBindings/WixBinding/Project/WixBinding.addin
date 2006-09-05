@@ -188,6 +188,9 @@
 	</Path>	
 	
 	<Path name = "/AddIns/WixBinding/PackageFilesView/ContextMenu/DirectoryTreeNode">
+		<MenuItem id = "AddDirectory"
+			label = "Add Directory..."
+			class = "ICSharpCode.WixBinding.AddDirectoryCommand"/>
 		<Include path = "/AddIns/WixBinding/PackageFilesView/ContextMenu/Common"/>
 	</Path>
 	
@@ -207,7 +210,20 @@
 	</Path>
 
 	<Path name = "/AddIns/WixBinding/PackageFilesView/ContextMenu/Common">
-		<Condition name = "Ownerstate" ownerstate = "ChildElementsAllowed" action = "Exclude">
+		<ComplexCondition action = "Exclude">
+			<Or>
+				<Condition name = "Ownerstate" ownerstate = "NothingSelected"/> 
+				<Condition name = "Ownerstate" ownerstate = "NothingSelectedAndChildElementsAllowed"/>
+			</Or>
+			<MenuItem id = "AddDirectory"
+				label = "Add Directory..."
+				class = "ICSharpCode.WixBinding.AddDirectoryCommand"/>
+		</ComplexCondition>
+		<ComplexCondition action = "Exclude">
+			<Or>
+				<Condition name = "Ownerstate" ownerstate = "ChildElementsAllowed"/> 
+				<Condition name = "Ownerstate" ownerstate = "NothingSelectedAndChildElementsAllowed"/>
+			</Or>
 			<MenuItem id="AddChildElements"
 				label = "Add"
 				type = "Menu">
@@ -215,11 +231,17 @@
 					 type = "Builder"
 					 class = "ICSharpCode.WixBinding.AddChildElementsMenuBuilder"/>
 			</MenuItem>
-		</Condition>
-		<MenuItem id = "Remove"
-			label = "${res:Global.RemoveButtonText}"
-			icon  = "Icons.16x16.DeleteIcon"
-			class = "ICSharpCode.WixBinding.RemoveElementCommand"/>
+		</ComplexCondition>
+		<ComplexCondition action = "Exclude">
+			<Or>
+				<Condition name = "Ownerstate" ownerstate = "ChildElementsAllowed"/> 
+				<Condition name = "Ownerstate" ownerstate = "NoChildElementsAllowed"/>
+			</Or>
+			<MenuItem id = "Remove"
+				label = "${res:Global.RemoveButtonText}"
+				icon  = "Icons.16x16.DeleteIcon"
+				class = "ICSharpCode.WixBinding.RemoveElementCommand"/>
+		</ComplexCondition>
 	</Path>
 	
 	<!-- 
@@ -230,5 +252,14 @@
 		<String id="NetFx" text="Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension|.NET Framework Extension"/>
 		<String id="PubCa" text="Microsoft.Tools.WindowsInstallerXml.PcaCompiler, pcaext|COM+ and Message Queue Extension (pubca)"/>
 		<String id="VS" text="Microsoft.Tools.WindowsInstallerXml.Extensions.VSCompiler, WixVSExtension|Visual Studio Extension"/>
+	</Path>
+
+	<!-- 
+		List of filenames and folder names that will excluded
+		when adding directories to the setup package
+	-->
+	<Path name="/AddIns/WixBinding/ExcludedItems">
+		<String id="svn" text=".svn"/>
+		<String id="obj" text="obj"/>
 	</Path>
 </AddIn>

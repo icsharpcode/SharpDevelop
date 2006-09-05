@@ -27,7 +27,7 @@ namespace WixBinding.Tests.DirectoryImport
 		WixDirectoryElement appDirectoryElement;
 		WixFileElement exeFileElement;
 		WixFileElement readmeFileElement;
-		string directory = @"C:\Projects\Setup\MyApp";
+		string directory = @"C:\Projects\Setup\MyApplication";
 		string[] files = new string[] {"MyApp.exe", "readme.txt"};
 		
 		[TestFixtureSetUp]
@@ -58,7 +58,13 @@ namespace WixBinding.Tests.DirectoryImport
 		[Test]
 		public void AppDirectoryName()
 		{
-			Assert.AreEqual("MyApp", appDirectoryElement.ShortName);
+			Assert.AreEqual("MyApplic", appDirectoryElement.ShortName);
+		}
+		
+		[Test]
+		public void AppDirectoryLongName()
+		{
+			Assert.AreEqual("MyApplication", appDirectoryElement.LongName);
 		}
 		
 		[Test]

@@ -120,7 +120,7 @@
     <Compile Include="Src\Gui\WixPackageFilesTreeView.cs" />
     <Compile Include="Src\Commands\AddElementCommand.cs" />
     <Compile Include="Src\Commands\RemoveElementCommand.cs" />
-    <Compile Include="Src\Gui\AddFilesToComponentCommand.cs" />
+    <Compile Include="Src\Commands\AddFilesToComponentCommand.cs" />
     <Compile Include="Src\WixComponentElement.cs" />
     <Compile Include="Src\WixDirectoryRefElement.cs" />
     <Compile Include="Src\WixDirectoryElementBase.cs" />
@@ -138,6 +138,7 @@
     <EmbeddedResource Include="Resources\LibraryParametersPanel.xfrm" />
     <Compile Include="Src\Gui\LibraryParametersPanel.cs" />
     <Compile Include="Src\IDirectoryReader.cs" />
+    <Compile Include="Src\Commands\AddDirectoryCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="WixBinding.addin">

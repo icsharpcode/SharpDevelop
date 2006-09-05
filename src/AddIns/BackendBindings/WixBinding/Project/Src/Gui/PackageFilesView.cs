@@ -134,6 +134,9 @@ namespace ICSharpCode.WixBinding
 			packageFilesControl.RemoveSelectedElement();
 		}
 		
+		/// <summary>
+		/// Adds files to the selected Component element tree node.
+		/// </summary>
 		public void AddFiles()
 		{
 			packageFilesControl.AddFiles();
@@ -142,6 +145,15 @@ namespace ICSharpCode.WixBinding
 		public void ShowFiles()
 		{
 			packageFilesControl.ShowFiles(project, this, this);
+		}
+		
+		/// <summary>
+		/// Adds a directory and all its contents to the selected Directory
+		/// element tree node.
+		/// </summary>
+		public void AddDirectory()
+		{
+			packageFilesControl.AddDirectory();
 		}
 		
 		/// <summary>

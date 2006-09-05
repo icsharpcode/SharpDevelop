@@ -40,7 +40,7 @@ namespace ICSharpCode.WixBinding
 		/// does then the FileNameExists delegate is called repeatedly until it 
 		/// finds a filename that does not exist.
 		/// </summary>
-		public delegate bool FileNameExists(string fileName);
+		public delegate bool NameExists(string name);
 		
 		ShortFileName()
 		{
@@ -52,7 +52,7 @@ namespace ICSharpCode.WixBinding
 		/// <param name="fileName">The long filename.</param>
 		/// <returns>The converted 8.3 filename. If the filename includes a
 		/// starting path then this is stripped from the returned value.</returns>
-		public static string Convert(string fileName, FileNameExists getFileNameExists)
+		public static string Convert(string fileName, NameExists getFileNameExists)
 		{
 			if (fileName == null) {
 				return String.Empty;
@@ -98,25 +98,55 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Truncates the filename start and adds "_N" where N produces a filename that
-		/// does not exist.
+		/// Gets the unique name string by adding a digit until a unique name is
+		/// produced. The name string itself will be truncated as the number
+		/// increases in size to make sure the total length of the string is 
+		/// always equal to start.Length + 1.
 		/// </summary>
-		static string GetTruncatedFileName(string fileNameStart, string extension, FileNameExists getFileNameExists)
+		/// <param name="start">The string to be used at the start of the </param>
+		/// <param name="getNameExists">Method called to check that the
+		/// name does not already exist.</param>
+		public static string GetUniqueName(string start, NameExists getNameExists)
+		{
+			return GetUniqueName(start, String.Empty, String.Empty, getNameExists);
+		}
+		
+		/// <summary>
+		/// Gets the unique name string by adding a digit until a unique name is
+		/// produced. The name string itself will be truncated as the number
+		/// increases in size to make sure the total length of the string is 
+		/// always equal to start.Length + numberPrefix.Length + 1 + end.Length.
+		/// </summary>
+		/// <param name="start">The string to be used at the start of the </param>
+		/// <param name="numberPrefix">The string to be prefixed to the number.</param>
+		/// <param name="end">The string to be added after the number.</param>
+		/// <param name="getNameExists">Method called to check that the
+		/// name does not already exist.</param>
+		public static string GetUniqueName(string start, string numberPrefix, string end, NameExists getNameExists)
 		{
 			int count = 0;
-			string truncatedFileName;
+			string truncatedName;
 			int divisor = 10;
 			do { 
 				++count;
 				int removeCharCount = count / divisor;
 				if (removeCharCount > 0) {
-					fileNameStart = fileNameStart.Substring(0, fileNameStart.Length - 1);
+					start = start.Substring(0, start.Length - 1);
 					divisor *= divisor;
 				}
-				truncatedFileName = String.Concat(fileNameStart, "_", count.ToString(), extension).ToUpperInvariant();
-			} while (getFileNameExists(truncatedFileName));
-			
-			return truncatedFileName;
+				truncatedName = String.Concat(start, numberPrefix, count.ToString(), end);
+			} while (getNameExists(truncatedName));
+
+			return truncatedName;
+		}
+		
+		/// <summary>
+		/// Truncates the filename start and adds "_N" where N produces a filename that
+		/// does not exist.
+		/// </summary>
+		static string GetTruncatedFileName(string fileNameStart, string extension, NameExists getFileNameExists)
+		{
+			return GetUniqueName(fileNameStart.ToUpperInvariant(), "_", extension.ToUpperInvariant(), getFileNameExists);
 		}
 		
 		/// <summary>

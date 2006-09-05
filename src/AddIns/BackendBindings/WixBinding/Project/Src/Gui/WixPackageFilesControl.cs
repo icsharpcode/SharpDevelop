@@ -5,8 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -220,7 +222,25 @@ namespace ICSharpCode.WixBinding
 		{
 			this.project = project;
 			editor = new WixPackageFilesEditor(this, fileReader, documentWriter);
+			editor.ExcludedItems.AddRange(GetExcludedItems());
 			editor.ShowFiles(project);
+		}
+		
+		/// <summary>
+		/// Allows the user to browse for a directory and add it to the setup package.
+		/// </summary>
+		public void AddDirectory()
+		{
+			// Save selected node since displaying a dialog will change it
+			// if no node is selected.
+			TreeNode selectedNode = packageFilesTreeView.SelectedNode;
+			
+			// Allow the user to select a directory.
+			FolderDialog dialog = new FolderDialog();
+			if (dialog.DisplayDialog("Add Directory") == DialogResult.OK) {
+				packageFilesTreeView.SelectedNode = selectedNode;
+				editor.AddDirectory(dialog.Path);
+			}
 		}
 		
 		/// <summary>
@@ -392,6 +412,12 @@ namespace ICSharpCode.WixBinding
 			dialog.Filter = "All Files (*.*)|*.*";
 			dialog.Title = "Add files...";
 			return dialog;
+		}
+		
+		string[] GetExcludedItems()
+		{
+			List<string> extensions = AddInTree.BuildItems<string>("/AddIns/WixBinding/ExcludedItems", this);
+			return extensions.ToArray();
 		}
 	}
 }

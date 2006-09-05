@@ -62,6 +62,19 @@ namespace WixBinding.Tests.PackageFiles
 		}
 		
 		[Test]
+		public void DirectoryShortName()
+		{
+			Assert.AreEqual(String.Empty, directoryElement.GetAttribute("Name"));
+		}
+		
+		[Test]
+		public void DirectoryLongName()
+		{
+			Assert.AreEqual(String.Empty, directoryElement.GetAttribute("LongName"));
+		}
+
+		
+		[Test]
 		public void SecondDirectoryAdded()
 		{
 			Assert.IsNotNull(secondDirectoryElement);

@@ -34,7 +34,11 @@ namespace ICSharpCode.WixBinding
 		
 		public Enum InternalState {
 			get {
-				return WixPackageFilesTreeView.InternalState;
+				WixPackageFilesTreeView treeView = WixPackageFilesTreeView;
+				if (treeView != null) {
+					return treeView.InternalState;
+				}
+				return WixPackageFilesTreeView.WixPackageFilesTreeViewState.None;
 			}
 		}
 		

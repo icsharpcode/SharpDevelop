@@ -197,6 +197,8 @@
     <Compile Include="DirectoryImport\AddSubDirectoryTestFixture.cs" />
     <Compile Include="PackageFiles\GenerateComponentIdTests.cs" />
     <Compile Include="DirectoryImport\DuplicateComponentIdTestFixture.cs" />
+    <Compile Include="DirectoryImport\DuplicateShortDirectoryNameTestFixture.cs" />
+    <Compile Include="DirectoryImport\ExcludedItemsTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\WixBinding.csproj">

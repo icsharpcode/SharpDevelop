@@ -19,9 +19,13 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// The possible states of the tree view.
 		/// </summary>
+		[Flags]
 		public enum WixPackageFilesTreeViewState {
-			NoChildElementsAllowed = 0,
-			ChildElementsAllowed = 1
+			None = 0,
+			NoChildElementsAllowed = 0x1,
+			ChildElementsAllowed = 0x2,
+			NothingSelected = 0x4,
+			NothingSelectedAndChildElementsAllowed = 0x8
 		}
 		
 		StringCollection allowedChildElements = new StringCollection();
@@ -41,10 +45,17 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public Enum InternalState {
 			get {
-				if (allowedChildElements.Count > 0) {
+				bool itemSelected = SelectedElement != null;
+				bool childElementsAllowed = allowedChildElements.Count > 0;
+				
+				if (childElementsAllowed && itemSelected) {
 					return WixPackageFilesTreeViewState.ChildElementsAllowed;
+				} else if (childElementsAllowed) {
+					return WixPackageFilesTreeViewState.NothingSelectedAndChildElementsAllowed;
+				} else if (itemSelected) {
+					return WixPackageFilesTreeViewState.NoChildElementsAllowed;
 				}
-				return WixPackageFilesTreeViewState.NoChildElementsAllowed;
+				return WixPackageFilesTreeViewState.NothingSelected;
 			}
 		}
 		

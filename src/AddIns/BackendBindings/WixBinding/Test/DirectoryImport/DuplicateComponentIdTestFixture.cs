@@ -42,12 +42,8 @@ namespace WixBinding.Tests.DirectoryImport
 			
 			WixNamespaceManager nsManager = new WixNamespaceManager(editor.Document.NameTable);
 			appDirectoryElement = (WixDirectoryElement)editor.Document.RootDirectory.SelectSingleNode("w:Directory[@Name='MyApp']", nsManager);;
-			XmlNode fileElement = appDirectoryElement.SelectSingleNode("w:Component/w:File[@Name='readme.txt']", nsManager);
-			readmeComponentElement = (WixComponentElement)fileElement.ParentNode;
-			
-			fileElement = appDirectoryElement.SelectSingleNode("w:Component/w:File[@Name='license.txt']", nsManager);
-			licenseComponentElement = (WixComponentElement)fileElement.ParentNode;
-			
+			readmeComponentElement = (WixComponentElement)appDirectoryElement.SelectSingleNode("w:Component[w:File/@Name='readme.txt']", nsManager);
+			licenseComponentElement = (WixComponentElement)appDirectoryElement.SelectSingleNode("w:Component[w:File/@Name='license.txt']", nsManager);	
 			exeComponentElement = (WixComponentElement)appDirectoryElement.SelectSingleNode("w:Component[w:File/@Name='MyApp.exe']", nsManager);
 		}
 
