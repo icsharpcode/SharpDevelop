@@ -40,10 +40,6 @@ namespace ICSharpCode.XmlEditor
 				// Create a new file and display the generated schema.
 				string fileName = GenerateSchemaFileName(xmlView.TitleName);
 				OpenNewXmlFile(fileName, schema);
-				
-				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.SelectWindow();
-				}
 			}
 		}
 		

@@ -40,9 +40,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 				nfd.Owner = (Form)WorkbenchSingleton.Workbench;
 				nfd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
 			}
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.SelectWindow();
-			}
 		}
 	}
 	
@@ -75,8 +72,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 						SaveFileAs sfa = new SaveFileAs();
 						sfa.Run();
 					} else {
-						
-						
 						ProjectService.MarkFileDirty(window.ViewContent.FileName);
 						FileUtility.ObservedSave(new FileOperationDelegate(window.ViewContent.Save), window.ViewContent.FileName, FileErrorPolicy.ProvideAlternative);
 					}
@@ -90,9 +85,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			
 			if (window != null && window.ViewContent.FileName != null && !window.ViewContent.IsViewOnly) {
-				
 				if (MessageService.AskQuestion("${res:ICSharpCode.SharpDevelop.Commands.ReloadFile.ReloadFileQuestion}")) {
 					Properties memento = null;
 					if (window.ViewContent is IMementoCapable) {
@@ -112,7 +105,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			
 			if (window != null) {
 				if (window.ViewContent.IsViewOnly) {
 					return;
@@ -136,17 +128,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 					}
 					
 					if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-						string fileName = fdiag.FileName;
-						
-						
-						
+						string fileName = fdiag.FileName;						
 						if (!FileService.CheckFileName(fileName)) {
 							return;
-						}
-						
+						}			
 						if (FileUtility.ObservedSave(new NamedFileOperationDelegate(window.ViewContent.Save), fileName) == FileOperationResult.OK) {
-							FileService.RecentOpen.AddLastFile(fileName);
-							
+							FileService.RecentOpen.AddLastFile(fileName);			
 							MessageService.ShowMessage(fileName, "${res:ICSharpCode.SharpDevelop.Commands.SaveFile.FileSaved}");
 						}
 					}
@@ -173,7 +160,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 						using (SaveFileDialog fdiag = new SaveFileDialog()) {
 							fdiag.OverwritePrompt = true;
 							fdiag.AddExtension    = true;
-							
 							fdiag.Filter          = String.Join("|", (string[])(AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(null)).ToArray(typeof(string)));
 							
 							if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
@@ -258,7 +244,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			
 			if (window != null) {
 				if (window.ViewContent is IPrintable) {
 					PrintDocument pdoc = ((IPrintable)window.ViewContent).PrintDocument;
@@ -271,11 +256,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 							}
 						}
 					} else {
-						
 						MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError}");
 					}
 				} else {
-					
 					MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Print.CantPrintWindowContentError}");
 				}
 			}
@@ -288,7 +271,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			try {
 				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-				
 				if (window != null) {
 					if (window.ViewContent is IPrintable) {
 						using (PrintDocument pdoc = ((IPrintable)window.ViewContent).PrintDocument) {
@@ -299,14 +281,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 								ppd.Document  = pdoc;
 								ppd.Show();
 							} else {
-								
 								MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError}");
 							}
 						}
 					}
 				}
-			} catch (System.Drawing.Printing.InvalidPrinterException) {
-			}
+			} catch (InvalidPrinterException) {}
 		}
 	}
 	
@@ -315,7 +295,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			try {
-				
 				FileService.RecentOpen.ClearRecentFiles();
 			} catch {}
 		}
@@ -326,7 +305,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			try {
-				
 				FileService.RecentOpen.ClearRecentProjects();
 			} catch {}
 		}
