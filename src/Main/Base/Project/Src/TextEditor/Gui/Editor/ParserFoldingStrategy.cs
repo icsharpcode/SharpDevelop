@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (cRegion.IsEmpty) cRegion = c.Region;
 			if (cRegion.BeginLine < cRegion.EndLine) {
 				FoldMarker newFoldMarker = new FoldMarker(document, cRegion.BeginLine - 1, cRegion.BeginColumn - 1,
-				                               cRegion.EndLine - 1, cRegion.EndColumn, FoldType.TypeBody);
+				                                          cRegion.EndLine - 1, cRegion.EndColumn, c.ClassType == ClassType.Enum ? FoldType.MemberBody : FoldType.TypeBody);
 				if (newFoldMarker.Length > 0) {
 					foldMarkers.Add(newFoldMarker);
 				}
