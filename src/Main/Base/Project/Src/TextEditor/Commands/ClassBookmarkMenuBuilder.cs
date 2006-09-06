@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					{
 						if (c.CompilationUnit.Classes.Count == 1) {
 							// Rename file to ##
-							cmd = new MenuCommand("Rename file to " + Path.GetFileName(correctFileName),
+							cmd = new MenuCommand(StringParser.Parse("${res:SharpDevelop.Refactoring.RenameFileTo}", new string[,] {{ "FileName", Path.GetFileName(correctFileName) }}),
 							                      delegate {
 							                      	FileService.RenameFile(c.CompilationUnit.FileName, correctFileName, false);
 							                      	if (c.ProjectContent.Project != null) {
@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 							list.Add(cmd);
 						} else if (language.RefactoringProvider.SupportsCreateNewFileLikeExisting && language.RefactoringProvider.SupportsGetFullCodeRangeForType) {
 							// Move class to file ##
-							cmd = new MenuCommand("Move class to file " + Path.GetFileName(correctFileName),
+							cmd = new MenuCommand(StringParser.Parse("${res:SharpDevelop.Refactoring.MoveClassToFile}", new string[,] {{ "FileName", Path.GetFileName(correctFileName) }}),
 							                      delegate {
 							                      	MoveClassToFile(c, correctFileName);
 							                      });
@@ -261,14 +261,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 				results.Add(res);
 			}
-			SearchInFilesManager.ShowSearchResults("Classes deriving from " + c.Name, results);
+			SearchInFilesManager.ShowSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new string[,] {{ "Name", c.Name }}),
+			                                       results);
 		}
 		
 		void FindReferences(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IClass c = (IClass)item.Tag;
-			FindReferencesAndRenameHelper.ShowAsSearchResults("References to " + c.Name, RefactoringService.FindReferences(c, null));
+			FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}", new string[,] {{ "Name", c.Name }}),
+			                                                  RefactoringService.FindReferences(c, null));
 		}
 	}
 }

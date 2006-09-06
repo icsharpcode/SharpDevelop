@@ -1315,11 +1315,11 @@
 		<Condition name="RefactoringProviderSupports" supports="*">
 			<MenuItem id = "Refactor" label = "${res:XML.MainMenu.RefactorMenu}" type="Menu">
 				<MenuItem id    = "Rename"
-				          label = "Rename"
+				          label = "${res:SharpDevelop.Refactoring.RenameCommand}"
 				          class = "ICSharpCode.SharpDevelop.Refactoring.RenameCommand" />
 				<Condition name="RefactoringProviderSupports" supports="FindUnusedUsingDeclarations">
 					<MenuItem id    = "RemoveUnusedUsings"
-					          label = "Removed unused import statements"
+					          label = "${res:SharpDevelop.Refactoring.RemoveUnusedImports}"
 					          class = "ICSharpCode.SharpDevelop.Refactoring.RemoveUnusedUsingsCommand" />
 				</Condition>
 			</MenuItem>

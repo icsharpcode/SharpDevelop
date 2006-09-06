@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		
 		static void ShowSourceCodeErrors(string errors)
 		{
-			HostCallback.ShowMessage("The operation cannot be performed because your source code contains errors:\n" + errors);
+			HostCallback.ShowMessage("${res:SharpDevelop.Refactoring.CannotPerformOperationBecauseOfSyntaxErrors}\n" + errors);
 		}
 		
 		NR.IParser ParseFile(string fileContent)
