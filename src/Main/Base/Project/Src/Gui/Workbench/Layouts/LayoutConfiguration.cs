@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
@@ -18,18 +18,31 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class LayoutConfiguration
 	{
-		readonly static string configFile = "LayoutConfig.xml";
-		public static ArrayList Layouts = new ArrayList();
-		public static string[]  DefaultLayouts = new string[] {
+		const string DataLayoutSubPath = "resources/layouts";
+		const string configFile = "LayoutConfig.xml";
+		public static readonly List<LayoutConfiguration> Layouts = new List<LayoutConfiguration>();
+		
+		public static string[] DefaultLayouts = new string[] {
 			"Default",
 			"Debug",
 			"Plain"
 		};
+		
 		string name;
 		string fileName;
 		string displayName = null;
 		
 		bool   readOnly;
+		bool   custom;
+		
+		public bool Custom {
+			get {
+				return custom;
+			}
+			set {
+				custom = value;
+			}
+		}
 		
 		public string FileName {
 			get {
@@ -67,16 +80,28 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public LayoutConfiguration()
+		LayoutConfiguration()
 		{
-			
 		}
 		
-		LayoutConfiguration(XmlElement el)
+		LayoutConfiguration(XmlElement el, bool custom)
 		{
 			name       = el.GetAttribute("name");
 			fileName   = el.GetAttribute("file");
 			readOnly   = Boolean.Parse(el.GetAttribute("readonly"));
+			this.custom = custom;
+		}
+		
+		public static LayoutConfiguration CreateCustom(string name)
+		{
+			LayoutConfiguration l = new LayoutConfiguration();
+			l.name = name;
+			l.fileName = Path.GetRandomFileName() + ".xml";
+			File.Copy(Path.Combine(Path.Combine(PropertyService.DataDirectory, DataLayoutSubPath), "Default.xml"),
+			          Path.Combine(Path.Combine(PropertyService.ConfigDirectory, "layouts"), l.fileName));
+			l.custom = true;
+			Layouts.Add(l);
+			return l;
 		}
 		
 		public override string ToString()
@@ -113,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static string CurrentLayoutTemplateFileName {
 			get {
-				string dataPath = Path.Combine(PropertyService.DataDirectory, "resources" + Path.DirectorySeparatorChar + "layouts");
+				string dataPath = Path.Combine(PropertyService.DataDirectory, DataLayoutSubPath);
 				LayoutConfiguration current = CurrentLayout;
 				if (current != null) {
 					return Path.Combine(dataPath, current.FileName);
@@ -145,25 +170,41 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		internal static void LoadLayoutConfiguration()
 		{
-			if (Layouts.Count == 0) {
-				string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
-				if (File.Exists(Path.Combine(configPath, configFile))) {
-					LoadLayoutConfiguration(Path.Combine(configPath, configFile));
-				}
-				string dataPath = Path.Combine(PropertyService.DataDirectory, "resources" + Path.DirectorySeparatorChar + "layouts");
-				if (File.Exists(Path.Combine(dataPath, configFile))) {
-					LoadLayoutConfiguration(Path.Combine(dataPath, configFile));
-				}
+			Layouts.Clear();
+			string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
+			if (File.Exists(Path.Combine(configPath, configFile))) {
+				LoadLayoutConfiguration(Path.Combine(configPath, configFile), true);
+			}
+			string dataPath = Path.Combine(PropertyService.DataDirectory, DataLayoutSubPath);
+			if (File.Exists(Path.Combine(dataPath, configFile))) {
+				LoadLayoutConfiguration(Path.Combine(dataPath, configFile), false);
 			}
 		}
 		
-		static void LoadLayoutConfiguration(string layoutConfig)
+		static void LoadLayoutConfiguration(string layoutConfig, bool custom)
 		{
 			XmlDocument doc = new XmlDocument();
 			doc.Load(layoutConfig);
 			
 			foreach (XmlElement el in doc.DocumentElement.ChildNodes) {
-				Layouts.Add(new LayoutConfiguration(el));
+				Layouts.Add(new LayoutConfiguration(el, custom));
+			}
+		}
+		
+		public static void SaveCustomLayoutConfiguration()
+		{
+			string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
+			using (XmlTextWriter w = new XmlTextWriter(Path.Combine(configPath, configFile), System.Text.Encoding.UTF8)) {
+				w.Formatting = Formatting.Indented;
+				w.WriteStartElement("LayoutConfig");
+				foreach (LayoutConfiguration lc in Layouts) {
+					w.WriteStartElement("Layout");
+					w.WriteAttributeString("name", lc.name);
+					w.WriteAttributeString("file", lc.fileName);
+					w.WriteAttributeString("readonly", lc.readOnly.ToString());
+					w.WriteEndElement();
+				}
+				w.WriteEndElement();
 			}
 		}
 		
