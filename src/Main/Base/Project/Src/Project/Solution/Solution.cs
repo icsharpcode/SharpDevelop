@@ -648,8 +648,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				string searchKey = p.IdGuid + searchKeyPostFix;
 				string targetConfPlat;
 				if (dict.TryGetValue(searchKey, out targetConfPlat)) {
-					p.Configuration = AbstractProject.GetConfigurationNameFromKey(targetConfPlat);
-					p.Platform = AbstractProject.GetPlatformNameFromKey(targetConfPlat);
+					if (targetConfPlat.IndexOf('|') > 0) {
+						p.Configuration = AbstractProject.GetConfigurationNameFromKey(targetConfPlat);
+						p.Platform = AbstractProject.GetPlatformNameFromKey(targetConfPlat);
+					} else {
+						p.Configuration = targetConfPlat;
+						p.Platform = plat;
+					}
 				} else {
 					p.Configuration = conf;
 					p.Platform = plat;
