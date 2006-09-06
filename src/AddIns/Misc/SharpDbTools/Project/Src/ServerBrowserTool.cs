@@ -381,8 +381,11 @@ namespace SharpDbTools
 			string tableName = s.TreeNode.Text;
 			LoggingService.Debug("describe table clicked for: " + logicalConnectionName + " and table name: " + tableName);
 			DataTable tableInfo = DbModelInfoService.GetTableInfo(logicalConnectionName, tableName);
+			//DataSet dbModelInfo = DbModelInfoService.GetDbModelInfo(logicalConnectionName);
 //			TableDescribeForm describeForm = new TableDescribeForm(tableInfo);
 //			describeForm.Show();
+			TableDescribeViewContent tableDescribeViewContent = new TableDescribeViewContent(tableInfo, tableName);
+			WorkbenchSingleton.Workbench.ShowView(tableDescribeViewContent);
 		}
 	}
 	

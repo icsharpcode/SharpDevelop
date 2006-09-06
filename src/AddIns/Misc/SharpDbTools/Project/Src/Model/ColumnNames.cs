@@ -25,5 +25,10 @@ namespace SharpDbTools.Model
 		public const string Name = "name";
 		public const string ConnectionString = "connectionString";
 		public const string TableName = "TABLE_NAME";
+		public static string[] TableTableFieldsToDisplay = 
+			new string [] {"COLUMN_NAME", "DATATYPE", 
+			"LENGTH", "PRECISION", "SCALE", "NULLABLE"};
+		public static string[] TableTableFieldsColumnHeaders =
+			new string[] { "Column", "Type", "Length", "Precision", "Scale", "Nullable" };
 	}
 }

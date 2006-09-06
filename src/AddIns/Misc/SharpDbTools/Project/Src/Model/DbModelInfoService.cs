@@ -79,8 +79,12 @@ namespace SharpDbTools.Model
 			DataTable columnTable = modelInfo.Tables[TableNames.Columns];
 			DataRow[] columnsMetadata = columnTable.Select(ColumnNames.TableName + "='" + tableName + "'");
 			LoggingService.Debug("found: " + columnsMetadata.Length + " columns belonging to table: " + tableName);
-			DataTable tableInfo = columnTable.Copy();
-			tableInfo.Clear();
+			DataTable tableInfo = new DataTable();
+			DataColumnCollection cols = columnTable.Columns;
+			foreach (DataColumn c in cols) {
+				DataColumn nc = new DataColumn(c.ColumnName, c.DataType);	
+				tableInfo.Columns.Add(nc);
+			}
 			foreach (DataRow r in columnsMetadata) {
 				DataRow newRow = tableInfo.NewRow();
 				newRow.ItemArray = r.ItemArray;
