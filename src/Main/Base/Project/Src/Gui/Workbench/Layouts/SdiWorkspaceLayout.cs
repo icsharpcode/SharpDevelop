@@ -245,8 +245,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 					IViewContent activeView = GetActiveView();
 					dockPanel.ActiveDocumentChanged -= new EventHandler(ActiveMdiChanged);
 					
-					DetachPadContents(true);
-					DetachViewContents(true);
+					DetachPadContents(false);
+					DetachViewContents(false);
 					dockPanel.ActiveDocumentChanged += new EventHandler(ActiveMdiChanged);
 					
 					LoadLayoutConfiguration();
@@ -448,7 +448,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			if (!contentHash.ContainsKey(content.Class)) {
 				DockContent newContent = CreateContent(content);
-				newContent.Show(dockPanel);
+				// TODO: read the default dock state from the PadDescriptor
+				newContent.Show(dockPanel, DockState.Hidden);
 			} else {
 				contentHash[content.Class].Show();
 			}

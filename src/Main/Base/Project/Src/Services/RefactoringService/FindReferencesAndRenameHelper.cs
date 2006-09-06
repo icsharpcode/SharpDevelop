@@ -255,8 +255,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			List<IViewContent> modifiedContents = new List<IViewContent>();
 			List<Modification> modifications = new List<Modification>();
 			foreach (Reference r in list) {
-				FileService.OpenFile(r.FileName);
-				IViewContent viewContent = FileService.GetOpenFile(r.FileName).ViewContent;
+				IViewContent viewContent = FileService.OpenFile(r.FileName).ViewContent;
 				if (!modifiedContents.Contains(viewContent)) {
 					modifiedContents.Add(viewContent);
 				}

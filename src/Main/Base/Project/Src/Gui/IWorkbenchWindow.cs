@@ -47,8 +47,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		*/
 		
-				/// <summary>
+		/// <summary>
 		/// The current view content which is shown inside this window.
+		/// This method is thread-safe.
 		/// </summary>
 		IBaseViewContent ActiveViewContent {
 			get;

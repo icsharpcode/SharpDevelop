@@ -198,11 +198,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 				w.Formatting = Formatting.Indented;
 				w.WriteStartElement("LayoutConfig");
 				foreach (LayoutConfiguration lc in Layouts) {
-					w.WriteStartElement("Layout");
-					w.WriteAttributeString("name", lc.name);
-					w.WriteAttributeString("file", lc.fileName);
-					w.WriteAttributeString("readonly", lc.readOnly.ToString());
-					w.WriteEndElement();
+					if (lc.custom) {
+						w.WriteStartElement("Layout");
+						w.WriteAttributeString("name", lc.name);
+						w.WriteAttributeString("file", lc.fileName);
+						w.WriteAttributeString("readonly", lc.readOnly.ToString());
+						w.WriteEndElement();
+					}
 				}
 				w.WriteEndElement();
 			}

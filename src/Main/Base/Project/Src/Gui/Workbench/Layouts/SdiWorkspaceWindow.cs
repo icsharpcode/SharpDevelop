@@ -56,6 +56,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		/// <summary>
+		/// The current view content which is shown inside this window.
+		/// This method is thread-safe.
+		/// </summary>
 		public IBaseViewContent ActiveViewContent {
 			get {
 				if (viewTabControl != null) {
@@ -317,7 +321,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		IBaseViewContent GetSubViewContent(int index)
 		{
-			if (index == 0)
+			if (index == 0 || content == null)
 				return content;
 			else
 				return content.SecondaryViewContents[index - 1];
