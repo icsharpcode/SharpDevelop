@@ -411,14 +411,29 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				AbstractProjectBrowserTreeNode parentNode = fileNodeDictionary[fileName];
 				pair.Key.Parent.Nodes.Remove(pair.Key);
-				pair.Key.AddTo(parentNode);
-				if (pair.Key.FileNodeStatus != FileNodeStatus.Missing) {
-					pair.Key.FileNodeStatus = FileNodeStatus.BehindFile;
+				if (NodeIsParent(parentNode, pair.Key)) {
+					// is pair.Key a parent of parentNode?
+					// if yes, we have a parent cycle - break it by adding one node to the directory
+					pair.Key.AddTo(this);
+				} else {
+					pair.Key.AddTo(parentNode);
+					if (pair.Key.FileNodeStatus != FileNodeStatus.Missing) {
+						pair.Key.FileNodeStatus = FileNodeStatus.BehindFile;
+					}
 				}
 			}
 			base.Initialize();
 		}
-
+		
+		static bool NodeIsParent(TreeNode childNode, TreeNode parentNode)
+		{
+			do {
+				if (childNode == parentNode) return true;
+				childNode = childNode.Parent;
+			} while (childNode != null);
+			return false;
+		}
+		
 		protected void BaseInitialize()
 		{
 			base.Initialize();
