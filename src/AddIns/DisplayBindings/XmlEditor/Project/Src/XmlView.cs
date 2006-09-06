@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
@@ -369,6 +370,32 @@ namespace ICSharpCode.XmlEditor
 			} else {
 				ShowErrorList();
 			}
+		}
+		
+		/// <summary>
+		/// Creates a schema based on the xml content.
+		/// </summary>
+		/// <returns>A generated schema or null if the xml content is not
+		/// well formed.</returns>
+		public string CreateSchema()
+		{
+			TaskService.ClearExceptCommentTasks();
+			if (IsWellFormed) {
+				string schema;
+				using (DataSet dataSet = new DataSet()) {
+					dataSet.ReadXml(new StringReader(Text), XmlReadMode.InferSchema);
+					EncodedStringWriter writer = new EncodedStringWriter(xmlEditor.TextEditorProperties.Encoding);
+					XmlTextWriter xmlWriter = CreateXmlTextWriter(writer);
+					dataSet.WriteXmlSchema(xmlWriter);
+					schema = writer.ToString();
+					writer.Close();
+					xmlWriter.Close();
+				}
+				return schema;
+			} else {
+				ShowErrorList();
+			}
+			return null;
 		}
 		
 		/// <summary>
@@ -946,15 +973,7 @@ namespace ICSharpCode.XmlEditor
 				reader.WhitespaceHandling = WhitespaceHandling.None;
 
 				StringWriter indentedXmlWriter = new StringWriter();
-				XmlTextWriter writer = new XmlTextWriter(indentedXmlWriter);
-				if (xmlEditor.TextEditorProperties.ConvertTabsToSpaces) {
-					writer.Indentation = xmlEditor.TextEditorProperties.TabIndent;
-					writer.IndentChar = ' ';
-				} else {
-					writer.Indentation = 1;
-					writer.IndentChar = '\t';
-				}
-				writer.Formatting = Formatting.Indented;
+				XmlTextWriter writer = CreateXmlTextWriter(indentedXmlWriter);
 				writer.WriteNode(reader, false);
 				writer.Flush();
 
@@ -964,6 +983,20 @@ namespace ICSharpCode.XmlEditor
 			}
 
 			return indentedText;
+		}
+		
+		XmlTextWriter CreateXmlTextWriter(TextWriter textWriter)
+		{
+			XmlTextWriter writer = new XmlTextWriter(textWriter);
+			if (xmlEditor.TextEditorProperties.ConvertTabsToSpaces) {
+				writer.Indentation = xmlEditor.TextEditorProperties.TabIndent;
+				writer.IndentChar = ' ';
+			} else {
+				writer.Indentation = 1;
+				writer.IndentChar = '\t';
+			}
+			writer.Formatting = Formatting.Indented;
+			return writer;
 		}
 		
 		/// <summary>
@@ -976,11 +1009,7 @@ namespace ICSharpCode.XmlEditor
 					Document.LoadXml(Text);
 					return true;
 				} catch(XmlException ex) {
-					string fileName = FileName;
-					if (fileName == null || fileName.Length == 0) {
-						fileName = TitleName;
-					}
-					AddTask(fileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
+					AddTask(xmlEditor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
 				}
 				return false;
 			}

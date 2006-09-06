@@ -10,7 +10,6 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop;
 using System;
-using System.Data;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -32,46 +31,14 @@ namespace ICSharpCode.XmlEditor
 			// Find active XmlView.
 			XmlView xmlView = XmlView.ActiveXmlView;
 			if (xmlView != null) {
-				
 				// Create a schema based on the xml.
-				SharpDevelopTextEditorProperties properties = xmlView.TextEditorControl.TextEditorProperties as SharpDevelopTextEditorProperties;
-				string schema = CreateSchema(xmlView.TextEditorControl.Document.TextContent, xmlView.TextEditorControl.Encoding, properties.ConvertTabsToSpaces, properties.TabIndent);
-				
-				// Create a new file and display the generated schema.
-				string fileName = GenerateSchemaFileName(xmlView.TitleName);
-				OpenNewXmlFile(fileName, schema);
-			}
-		}
-		
-		/// <summary>
-		/// Creates a schema based on the xml content.
-		/// </summary>
-		/// <returns>A generated schema.</returns>
-		string CreateSchema(string xml, Encoding encoding, bool convertTabsToSpaces, int tabIndent)
-		{
-			string schema = String.Empty;
-			
-			using (DataSet dataSet = new DataSet()) {
-				dataSet.ReadXml(new StringReader(xml), XmlReadMode.InferSchema);
-				EncodedStringWriter writer = new EncodedStringWriter(encoding);
-				XmlTextWriter xmlWriter = new XmlTextWriter(writer);
-				
-				xmlWriter.Formatting = Formatting.Indented;
-				if (convertTabsToSpaces) {
-					xmlWriter.Indentation = tabIndent;
-					xmlWriter.IndentChar = ' ';
-				} else {
-					xmlWriter.Indentation = 1;
-					xmlWriter.IndentChar = '\t';
+				string schema = xmlView.CreateSchema();
+				if (schema != null) {
+					// Create a new file and display the generated schema.
+					string fileName = GenerateSchemaFileName(xmlView.TextEditorControl.FileName);
+					OpenNewXmlFile(fileName, schema);
 				}
-				
-				dataSet.WriteXmlSchema(xmlWriter);
-				schema = writer.ToString();
-				writer.Close();
-				xmlWriter.Close();
 			}
-			
-			return schema;
 		}
 		
 		/// <summary>
