@@ -71,7 +71,7 @@ namespace SharpDbTools.Model
 				}
 				catch(ArgumentException) {
 					// see comment below - it is correct to bury this exception
-					LoggingService.Info("InvariantName property was accessed while undefined" + e);
+					//LoggingService.Info("InvariantName property was accessed while undefined" + e);
 				}
 				return invariantName;
 			}
@@ -107,7 +107,7 @@ namespace SharpDbTools.Model
 					// this simply indicates that this attribute was not defined when the
 					// DbModelInfo was saved, returning null makes sense here - so it is
 					// correct to bury this exception
-					LoggingService.Info("InvariantName property was accessed while undefined" + e);
+					//LoggingService.Info("InvariantName property was accessed while undefined" + e);
 				}
 				return connectionString;
 			}
