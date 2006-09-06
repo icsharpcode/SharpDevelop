@@ -168,6 +168,8 @@ namespace ICSharpCode.Svn
 			{
 				try {
 					innerDelegate();
+				} catch (ThreadAbortException) {
+					// don't show error message, silently cancel thread
 				} catch (Exception e) {
 					SvnClient.Instance.OperationDone();
 					
