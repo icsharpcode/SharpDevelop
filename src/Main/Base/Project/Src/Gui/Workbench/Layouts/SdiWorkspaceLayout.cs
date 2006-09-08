@@ -449,7 +449,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (!contentHash.ContainsKey(content.Class)) {
 				DockContent newContent = CreateContent(content);
 				// TODO: read the default dock state from the PadDescriptor
-				newContent.Show(dockPanel, DockState.Hidden);
+				// we'll also need to allow for default-hidden (HideOnClose) contents
+				// which seems to be not possible using any Show overload.
+				newContent.Show(dockPanel);
 			} else {
 				contentHash[content.Class].Show();
 			}
