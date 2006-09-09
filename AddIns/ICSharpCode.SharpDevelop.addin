@@ -1784,7 +1784,14 @@
 			          icon = "Icons.16x16.ReplaceIcon"
 			          shortcut = "Control|R"
 			          class = "SearchAndReplace.Replace"/>
-			
+			<MenuItem id = "SearchIncremental"
+			          label = "Incremental Search"
+			          shortcut = "Control|E"
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunIncrementalSearch"/>
+			<MenuItem id = "SearchReverseIncremental"
+			          label = "Reverse Incremental Search"
+			          shortcut = "Control|Shift|E"
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunReverseIncrementalSearch"/>
 			<MenuItem id = "SearchInFilesSeparator" type = "Separator" />
 			<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable"> -->
 			<MenuItem id = "ToggleBookmark"
