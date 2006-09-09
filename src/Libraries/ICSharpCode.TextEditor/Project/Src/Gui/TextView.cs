@@ -52,12 +52,6 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		public override Cursor Cursor {
-			get {
-				return Cursors.IBeam;
-			}
-		}
-		
 		public int FirstPhysicalLine {
 			get {
 				return textArea.VirtualTop.Y / fontHeight;
@@ -113,6 +107,7 @@ namespace ICSharpCode.TextEditor
 				StringFormatFlags.NoWrap |
 				StringFormatFlags.NoClip;
 			
+			base.Cursor = Cursors.IBeam;
 			OptionsChanged();
 		}
 		

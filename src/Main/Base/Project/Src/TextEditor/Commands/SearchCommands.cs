@@ -42,4 +42,38 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 	}
+	
+	public class RunIncrementalSearch : AbstractMenuCommand
+	{
+		static IncrementalSearch incrementalSearch;
+		
+		public override void Run()
+		{
+			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			if (window != null) {
+				ITextEditorControlProvider textEditorControlProvider = window.ActiveViewContent as ITextEditorControlProvider;
+				if (textEditorControlProvider != null) {
+					if (incrementalSearch != null) {
+						incrementalSearch.Dispose();
+					}
+					incrementalSearch = new IncrementalSearch(textEditorControlProvider.TextEditorControl, Forwards);
+				}
+			}
+		}
+		
+		protected virtual bool Forwards {
+			get { 
+				return true;
+			}
+		}
+	}
+	
+	public class RunReverseIncrementalSearch : RunIncrementalSearch
+	{
+		protected override bool Forwards {
+			get { 
+				return false;
+			}
+		}
+	}
 }

@@ -512,9 +512,14 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
+		public bool IsEditAction(Keys keyData)
+		{
+			return editactions.ContainsKey(keyData);
+		}
+		
 		internal IEditAction GetEditAction(Keys keyData)
 		{
-			if (!editactions.ContainsKey(keyData)) {
+			if (!IsEditAction(keyData)) {
 				return null;
 			}
 			return (IEditAction)editactions[keyData];

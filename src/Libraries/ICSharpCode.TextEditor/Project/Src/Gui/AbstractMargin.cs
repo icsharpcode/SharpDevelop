@@ -24,6 +24,8 @@ namespace ICSharpCode.TextEditor
 	/// </summary>
 	public abstract class AbstractMargin
 	{
+		Cursor cursor = Cursors.Default;
+		
 		[CLSCompliant(false)]
 		protected Rectangle drawingPosition = new Rectangle(0, 0, 0, 0);
 		[CLSCompliant(false)]
@@ -58,7 +60,10 @@ namespace ICSharpCode.TextEditor
 		
 		public virtual Cursor Cursor {
 			get {
-				return Cursors.Default;
+				return cursor;
+			}
+			set {
+				cursor = value;
 			}
 		}
 		

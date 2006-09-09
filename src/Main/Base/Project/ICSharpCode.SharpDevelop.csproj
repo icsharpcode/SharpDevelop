@@ -704,6 +704,9 @@
     <Compile Include="Src\Internal\ConditionEvaluators\CompareProjectPropertyConditionEvaluator.cs" />
     <Compile Include="Src\Services\ParserService\Net1xProjectContentRegistry.cs" />
     <Compile Include="Src\Services\ParserService\NetCFProjectContentRegistry.cs" />
+    <Compile Include="Src\TextEditor\Gui\Editor\IncrementalSearch.cs" />
+    <EmbeddedResource Include="Resources\IncrementalSearchCursor.cur" />
+    <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

@@ -90,6 +90,11 @@ namespace ICSharpCode.Core
 			statusBar.SetMessage(image, StringParser.Parse(message));
 		}
 		
+		public static void SetMessage(string message, bool highlighted)
+		{
+			statusBar.SetMessage(message, highlighted);
+		}
+		
 		static bool   wasError    = false;
 		static string lastMessage = "";
 		

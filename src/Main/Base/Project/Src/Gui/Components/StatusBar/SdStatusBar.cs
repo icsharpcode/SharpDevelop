@@ -101,6 +101,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SetMessage(string message)
 		{
+			SetMessage(message, false);
+		}
+		
+		public void SetMessage(string message, bool highlighted)
+		{
+			if (highlighted) {
+				txtStatusBarPanel.BackColor = SystemColors.Highlight;
+				txtStatusBarPanel.ForeColor = Color.White;		
+			} else if (txtStatusBarPanel.BackColor == SystemColors.Highlight) {
+				txtStatusBarPanel.BackColor = SystemColors.Control;
+				txtStatusBarPanel.ForeColor = SystemColors.ControlText;
+			}
+
 			currentMessage = message;
 			if (this.IsHandleCreated)
 				BeginInvoke(new MethodInvoker(UpdateText));
