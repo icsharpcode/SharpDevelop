@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			EnableIncrementalSearchCursor();
 			
 			// Get text to search and initial search position.
-			text = textEditor.Document.TextContent.ToLowerInvariant();
+			text = textEditor.Document.TextContent;
 			startIndex = TextArea.Caret.Offset;
 			originalStartIndex = startIndex;
 		
@@ -191,18 +191,36 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		/// <summary>
 		/// Looks for the string from the last position we searched from. The
-		/// search is case insensitive. The search can be either forwards
+		/// search is case insensitive if all the characters of the search
+		/// string are lower case. If one of the search characters is upper case
+		/// then the search is case sensitive. The search can be either forwards
 		/// or backwards.
 		/// </summary>
-		int FindText(string s, int startIndex, bool forwards)
+		int FindText(string find, int startIndex, bool forwards)
 		{
-			string find = s.ToLowerInvariant();
+			StringComparison stringComparison = GetStringComparisonType(find);
 			if (forwards) {
-				return text.IndexOf(find, startIndex);
+				return text.IndexOf(find, startIndex, stringComparison);
 			}
 			// Reverse search. 
 			string searchText = GetReverseSearchText(startIndex + find.Length);
-			return searchText.LastIndexOf(find);
+			return searchText.LastIndexOf(find, stringComparison);
+		}
+		
+		/// <summary>
+		/// Gets whether the search string comparision should be case
+		/// sensitive. If all the characters of the find string are lower case
+		/// then the search is case insensitive. If any character is upper case
+		/// then the search is case sensitive.
+		/// </summary>
+		StringComparison GetStringComparisonType(string find)
+		{
+			foreach (char c in find) {
+				if (Char.IsUpper(c)) {
+					return StringComparison.InvariantCulture;
+				}
+			}
+			return StringComparison.InvariantCultureIgnoreCase;
 		}
 		
 		/// <summary>
@@ -211,7 +229,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		string GetReverseSearchText(int endIndex)
 		{
 			if (endIndex < text.Length) {
-				return text.Substring(0, endIndex + 1);
+				return text.Substring(0, endIndex);
 			}
 			endIndex = text.Length - 1;
 			if (endIndex >= 0) {
