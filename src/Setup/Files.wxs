@@ -639,6 +639,9 @@
 											<File Source="..\..\data\templates\file\CSharp\CSharp.WPFUserControl.xft" Name="CSHAR_16.XFT" Id="CSharp.WPFUserControl.xft" LongName="CSharp.WPFUserControl.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.WPFWindow.xft" Name="CSHAR_17.XFT" Id="CSharp.WPFWindow.xft" LongName="CSharp.WPFWindow.xft" />
 										</Component>
+										<Component Guid="16055582-32EE-4418-A06B-488AC5EC79E4" Id="CSharpStructTemplate" DiskId="1">
+											<File Source="..\..\data\templates\file\CSharp\CSharp.Struct.xft" Name="CSSTRUCT.XFT" Id="CSharp.Struct.xft" LongName="CSharp.Struct.xft"/>
+										</Component>
 									</Directory>
 									<Directory Id="MiscFileTemplatesFolder" Name="Misc">
 										<Component Guid="2BDF0836-B3D9-4B96-8F9F-59477B0C6F21" Id="MiscFileTemplates" DiskId="1">
@@ -700,6 +703,13 @@
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopMacro.xpt" Name="SHARPD_2.XPT" Id="CSharpSharpDevelopMacro.xpt" LongName="SharpDevelopMacro.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\WebpageProject.xpt" Name="WEBPAG_1.XPT" Id="CSharpWebpageProject.xpt" LongName="WebpageProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\WPFApplication.xpt" Name="WPFAPP_1.XPT" Id="CSharpWPFApplication.xpt" LongName="WPFApplication.xpt" />
+										</Component>
+										<Component Guid="2EBDC2FE-A2C9-4023-BC86-0E688B5897A3" Id="CSharpNotifyIconProjectTemplate" DiskId="1">
+											<File Source="..\..\data\templates\project\CSharp\NotifyIcon.xpt" Name="NOTIFY.XPT" Id="NotifyIcon.xpt" LongName="NotifyIcon.xpt" />
+											<File Source="..\..\data\templates\project\CSharp\NotifyIconResources.resx" Name="NOTIFY.RES" Id="NotifyIconResources.resx" LongName="NotifyIconResources.resx" />
+										</Component>
+										<Component Guid="7D1DCA03-CB13-4516-B232-028F53B096BF" Id="CSharpWebServiceProjectTemplate" DiskId="1">
+											<File Source="..\..\data\templates\project\CSharp\WebService.xpt" Name="WEBSRVC.XPT" Id="WebService.xpt" LongName="WebService.xpt"/>
 										</Component>
 									</Directory>
 									<Directory Id="MiscProjectTemplatesFolder" Name="Misc">
