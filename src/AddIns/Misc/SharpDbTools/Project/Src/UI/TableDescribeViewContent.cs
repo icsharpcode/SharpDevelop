@@ -10,10 +10,10 @@ using System.Data;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Gui;
-using SharpDbTools.Model;
+using SharpDbTools.Data;
 
 
-namespace SharpDbTools.Viewer
+namespace SharpDbTools.Forms
 {
 	/// <summary>
 	/// Description of TableDescribeViewContent.

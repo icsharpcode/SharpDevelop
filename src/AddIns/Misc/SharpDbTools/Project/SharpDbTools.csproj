@@ -21,7 +21,7 @@
     <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
     <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpDbTools\</OutputPath>
     <Optimize>False</Optimize>
-    <DefineConstants>DEBUG%3bTRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
@@ -44,40 +44,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SharpDbTools.addin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <EmbeddedResource Include="Resources\MyUserControl.xfrm" />
-    <Compile Include="Src\ServerBrowserTool.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\Model\DbModelInfo.cs" />
-    <Compile Include="Src\Connection\ConnectionStringDefinitionDialog.cs" />
-    <EmbeddedResource Include="Src\Connection\ConnectionStringDefinitionDialog.resx">
+    <Compile Include="Src\Service\DbModelInfo.cs" />
+    <Compile Include="Src\Service\DbModelInfoService.cs" />
+    <Compile Include="Src\Service\TableNames.cs" />
+    <Compile Include="Src\Service\ColumnNames.cs" />
+    <Compile Include="Src\UI\TableDescribeViewContent.cs" />
+    <Compile Include="Src\Service\DbProvidersService.cs" />
+    <Compile Include="Src\UI\GetConnectionLogicalNameDialog.cs" />
+    <Compile Include="Src\UI\GetConnectionLogicalNameDialog.Designer.cs">
+      <DependentUpon>GetConnectionLogicalNameDialog.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Src\UI\GetConnectionLogicalNameDialog.resx">
+      <DependentUpon>GetConnectionLogicalNameDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Src\UI\ServerBrowserTool.cs" />
+    <Compile Include="Src\UI\ConnectionStringDefinitionDialog.cs" />
+    <EmbeddedResource Include="Src\UI\ConnectionStringDefinitionDialog.resx">
       <DependentUpon>ConnectionStringDefinitionDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Include="Src\Connection\ConnectionStringDefinitionDialog.Designer.cs" />
-    <Compile Include="Src\Connection\DbProvidersService.cs" />
-    <Compile Include="Src\ServerBrowserToolController.cs" />
-    <Compile Include="Src\Viewer\ViewerFactory.cs" />
-    <Compile Include="Src\Viewer\IViewer.cs" />
-    <Compile Include="Src\Model\DbModelInfoService.cs" />
-    <Compile Include="Src\Model\TableNames.cs" />
-    <Compile Include="Src\Model\ColumnNames.cs" />
-    <Compile Include="Src\GetConnectionLogicalNameDialog.cs" />
-    <Compile Include="Src\GetConnectionLogicalNameDialog.Designer.cs">
-      <DependentUpon>GetConnectionLogicalNameDialog.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="Src\GetConnectionLogicalNameDialog.resx">
-      <DependentUpon>GetConnectionLogicalNameDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Src\Viewer\TableDescribeViewContent.cs" />
+    <Compile Include="Src\UI\ConnectionStringDefinitionDialog.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Src\Model" />
-    <Folder Include="Src\Connection" />
+    <Folder Include="Src\Service" />
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -86,7 +76,7 @@
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
-    <Folder Include="Src\Viewer" />
+    <Folder Include="Src\UI" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

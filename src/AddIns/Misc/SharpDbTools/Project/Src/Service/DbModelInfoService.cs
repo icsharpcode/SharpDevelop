@@ -13,14 +13,13 @@
  */
 
 using System;
-using SharpDbTools.Connection;
 using System.Data;
 using System.Data.Common;
 using System.Collections.Generic;
 using System.IO;
 using ICSharpCode.Core;
 
-namespace SharpDbTools.Model
+namespace SharpDbTools.Data
 {
 	/// <summary>
 	/// Manages a collection of DbModelInfo:
@@ -116,33 +115,43 @@ namespace SharpDbTools.Model
 			// before clearing the DbModelInfo
 			
 			DbProvidersService factoryService = DbProvidersService.GetDbProvidersService();
-			DbProviderFactory factory = factoryService.GetFactoryByInvariantName(invariantName);
-			DbConnection connection = factory.CreateConnection();
-			
-			
-			modelInfo.ClearMetaData();
-			
-			// reload the metadata from the connection
-			// get the Schema table
-			connection.ConnectionString = connectionString;
-
-			connection.Open();
-			DataTable schemaInfo = connection.GetSchema();
-			connection.Close();
-			
-			// clear the DbModelInfo prior to refreshing from the connection
-			modelInfo.ClearMetaData();
-
-			// iterate through the rows in it - the first column of each is a
-			// schema info collection name that can be retrieved as a DbTable
-			// Add each one to the DbModel DataSet
-			
-			foreach (DataRow collectionRow in schemaInfo.Rows) {
-				String collectionName = (string)collectionRow[0];
-				DataTable nextMetaData = connection.GetSchema(collectionName);
-				modelInfo.Merge(nextMetaData);
+			DbConnection connection = null;
+			try {
+				
+				DbProviderFactory factory = factoryService.GetFactoryByInvariantName(invariantName);
+				connection = factory.CreateConnection();
+				
+				
+				modelInfo.ClearMetaData();
+				
+				// reload the metadata from the connection
+				// get the Schema table
+				connection.ConnectionString = connectionString;
+	
+				connection.Open();
+				DataTable schemaInfo = connection.GetSchema();
+				
+				// clear the DbModelInfo prior to refreshing from the connection
+				modelInfo.ClearMetaData();
+	
+				// iterate through the rows in it - the first column of each is a
+				// schema info collection name that can be retrieved as a DbTable
+				// Add each one to the DbModel DataSet
+				
+				foreach (DataRow collectionRow in schemaInfo.Rows) {
+					String collectionName = (string)collectionRow[0];
+					DataTable nextMetaData = connection.GetSchema(collectionName);
+					modelInfo.Merge(nextMetaData);
+				}
+				return modelInfo;
 			}
-			return modelInfo;
+			catch(Exception e) {
+				LoggingService.Fatal("Exception caught while trying to retrieve database metadata: " + e);
+				throw e;
+			}
+			finally {
+				connection.Close();
+			}
 		}
 		
 		/// <summary>

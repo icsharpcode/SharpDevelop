@@ -14,7 +14,7 @@
 
 using System;
 
-namespace SharpDbTools.Model
+namespace SharpDbTools.Data
 {
 	/// <summary>
 	/// Description of Tables.

@@ -19,7 +19,7 @@ using System.Collections.Generic;
 
 using ICSharpCode.Core;
 
-namespace SharpDbTools.Model
+namespace SharpDbTools.Data
 {
 	/// <summary>
 	/// DbModel is a DataSet containing the metadata tables returned from a DbConnection.
