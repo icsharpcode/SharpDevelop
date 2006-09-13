@@ -19,7 +19,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>
-    <DefineConstants>DEBUG%3bTRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
@@ -135,7 +135,7 @@
     <Compile Include="Events\SectionRenderEventArgs.cs" />
     <Compile Include="Printing\Text\StandardFormatter.cs" />
     <Compile Include="BaseClasses\DataTypeHelper.cs" />
-    <Compile Include="Printing\Page.cs" />
+    <Compile Include="Printing\SectionBounds.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />
