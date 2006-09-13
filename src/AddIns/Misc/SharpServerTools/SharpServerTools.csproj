@@ -51,10 +51,6 @@
   <ItemGroup>
     <Folder Include="Src" />
     <Folder Include="Src\Forms" />
-    <ProjectReference Include="..\SharpDbTools\Project\SharpDbTools.csproj">
-      <Project>{413A467D-7EA1-4C40-B10B-D6832B94DD6E}</Project>
-      <Name>SharpDbTools</Name>
-    </ProjectReference>
     <Content Include="SharpServerTools.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -67,6 +63,10 @@
       <Name>ICSharpCode.SharpDevelop</Name>
     </ProjectReference>
     <Folder Include="Src\Configuration" />
+    <ProjectReference Include="SharpDbTools\SharpDbTools.csproj">
+      <Project>{3794F3B7-018A-4C45-9849-17DDBB1644FA}</Project>
+      <Name>SharpDbTools</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
