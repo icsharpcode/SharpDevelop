@@ -65,7 +65,6 @@
     <Compile Include="Src\GUI\AbstractSharpQueryNode.cs" />
     <Compile Include="Src\GUI\SharpQueryDataView.cs" />
     <Compile Include="Src\GUI\SQLParameterInput.cs">
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\GUI\ISharpQueryNode.cs" />
     <Compile Include="Src\GUI\SharpQueryPad.cs" />
