@@ -63,6 +63,9 @@ namespace SharpReportCore {
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
 			}
+			if (line == null) {
+				throw new ArgumentNullException("line");
+			}
 			using (Pen pen = line.CreatePen()){
 				if (pen != null){
 					this.new_DrawShape(graphics, pen, rectangle);

@@ -59,7 +59,7 @@ namespace SharpReportCore {
 		
 		protected override void PrintPageHeader (object sender, ReportPageEventArgs rpea) {
 			base.PrintPageHeader (sender,rpea);
-			this.CurrentSection.SectionOffset = base.Page.PageHeaderRectangle.Location.Y;
+			this.CurrentSection.SectionOffset = base.SectionBounds.PageHeaderRectangle.Location.Y;
 			base.RenderSection (rpea);
 		}
 		
@@ -74,7 +74,7 @@ namespace SharpReportCore {
 		
 		protected override void PrintDetail(object sender, ReportPageEventArgs rpea){
 			base.PrintDetail(sender, rpea);
-			this.CurrentSection.SectionOffset = base.Page.PageHeaderRectangle.Bottom;
+			this.CurrentSection.SectionOffset = base.SectionBounds.PageHeaderRectangle.Bottom;
 			base.RenderSection(rpea);
 			base.RemoveSectionEvents();
 			base.ReportDocument.DetailsDone = true;
@@ -100,7 +100,7 @@ namespace SharpReportCore {
 		
 		protected override void PrintPageEnd(object sender, ReportPageEventArgs rpea) {
 			base.PrintPageEnd(this,rpea);
-			this.CurrentSection.SectionOffset = base.Page.PageFooterRectangle.Location.Y;
+			this.CurrentSection.SectionOffset = base.SectionBounds.PageFooterRectangle.Location.Y;
 			base.RenderSection (rpea);
 		}
 		#endregion

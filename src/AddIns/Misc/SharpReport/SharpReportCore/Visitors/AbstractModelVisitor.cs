@@ -47,6 +47,9 @@ namespace SharpReportCore {
 		protected BaseReportItem MakeItem (XmlElement elem,IContainerItem parent,
 		                                  BaseSection section,IItemRenderer itemRenderer) {
 			
+			if (section == null) {
+				throw new ArgumentNullException("section");
+			}
 			BaseReportItem item = (BaseReportItem)itemRenderer;
 			item.SuspendLayout();
 			XmlHelper.SetReportItemValues (xmlFormReader,elem,item);

@@ -32,6 +32,10 @@ namespace SharpReportCore {
 				return retValue;
 			}
 			
+			if (String.IsNullOrEmpty(valueToFormat)) {
+				return nullValue;
+			}
+			
 			switch (typeCode) {
 				case TypeCode.Int16:
 				case TypeCode.Int32:

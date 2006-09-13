@@ -75,7 +75,7 @@ namespace SharpReportCore {
 		}
 		
 		private void DoPageHeader (ReportPageEventArgs rpea){
-			this.CurrentSection.SectionOffset = base.Page.PageHeaderRectangle.Location.Y;
+			this.CurrentSection.SectionOffset = base.SectionBounds.PageHeaderRectangle.Location.Y;
 			base.RenderSection (rpea);
 			base.DoItems(rpea);
 		}
@@ -83,7 +83,7 @@ namespace SharpReportCore {
 		
 		
 		private void DoPageEnd (ReportPageEventArgs rpea){
-			this.CurrentSection.SectionOffset = base.Page.PageFooterRectangle.Location.Y;
+			this.CurrentSection.SectionOffset = base.SectionBounds.PageFooterRectangle.Location.Y;
 			base.RenderSection (rpea);
 			base.DoItems(rpea);
 		}
@@ -162,7 +162,7 @@ namespace SharpReportCore {
 				PrintNoDataMessage(rpea.PrintPageEventArgs);
 			
 			}	
-			base.CurrentSection.SectionOffset = (int)base.Page.DetailStart.Y + AbstractRenderer.Gap;
+			base.CurrentSection.SectionOffset = (int)base.SectionBounds.DetailStart.Y + AbstractRenderer.Gap;
 		}
 		
 		
@@ -192,14 +192,14 @@ namespace SharpReportCore {
 					
 				}
 				
-				base.FitSectionToItems (base.CurrentSection,rpea.PrintPageEventArgs);
+				AbstractRenderer.FitSectionToItems (base.CurrentSection,rpea.PrintPageEventArgs);
 				
 				sectionRect = new Rectangle (rpea.PrintPageEventArgs.MarginBounds.Left,
 				                             base.CurrentSection.SectionOffset,
 				                             rpea.PrintPageEventArgs.MarginBounds.Width,
 				                             base.CurrentSection.Size.Height);
 				
-				if (!base.Page.DetailArea.Contains(sectionRect)) {
+				if (!base.SectionBounds.DetailArea.Contains(sectionRect)) {
 					AbstractRenderer.PageBreak(rpea);
 					System.Console.WriteLine("DataRenderer:RemoveEvents reason <PageBreak>");
 					this.RemoveSectionEvents();

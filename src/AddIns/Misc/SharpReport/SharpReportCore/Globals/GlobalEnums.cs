@@ -99,6 +99,9 @@ namespace SharpReportCore {
   		/// type to its internal representation.
    
   		public static object StringToEnum( Type type, string value ) {
+  			if (type == null) {
+  				throw new ArgumentNullException("type");
+  			}
   			foreach ( FieldInfo fi in type.GetFields() ){
   				if ( fi.Name == value ){
   					return fi.GetValue( null );

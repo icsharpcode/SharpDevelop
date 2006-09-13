@@ -55,6 +55,9 @@ namespace SharpReportCore {
 		
 		#region SharpReport.DelegatesInterfaces.IModel interface implementation
 		public void Accept(IModelVisitor visitor) {
+			if (visitor == null) {
+				throw new ArgumentNullException("visitor");
+			}
 			visitor.Visit (this);
 		}
 		#endregion

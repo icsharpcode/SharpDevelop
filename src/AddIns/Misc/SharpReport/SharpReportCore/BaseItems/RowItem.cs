@@ -48,7 +48,7 @@ namespace SharpReportCore{
 		#region overrides
 		
 		
-		protected RectangleF PrepareRectangle (ReportPageEventArgs e) {
+		protected RectangleF PrepareRectangle () {
 			SizeF measureSize = new SizeF ((SizeF)this.Size);
 			RectangleF rect = base.DrawingRectangle (measureSize);
 			return rect;
@@ -62,7 +62,7 @@ namespace SharpReportCore{
 			}
 
 			base.Render(rpea);
-			RectangleF rect = PrepareRectangle (rpea);
+			RectangleF rect = PrepareRectangle ();
 			
 			shape.FillShape(rpea.PrintPageEventArgs.Graphics,
 			                new SolidFillPattern(this.BackColor),

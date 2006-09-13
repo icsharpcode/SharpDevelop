@@ -36,7 +36,7 @@ namespace SharpReportCore {
 		public event EventHandler<SectionRenderEventArgs> Rendering;
 		public event EventHandler<SectionRenderEventArgs> SectionRendered;
 		
-		private Page page;
+		private SectionBounds sectionBounds;
 		
 		protected AbstractRenderer(ReportModel model){
 			if (model == null) {
@@ -180,7 +180,7 @@ namespace SharpReportCore {
 			e.Graphics.DrawString(this.reportSettings.NoDataMessage,
 			                                            this.ReportSettings.DefaultFont,
 			                                            new SolidBrush(Color.Black),
-			                                            page.DetailArea);
+			                                            sectionBounds.DetailArea);
 			
 		}
 		
@@ -196,23 +196,24 @@ namespace SharpReportCore {
 			}
 			rpea.Graphics.DrawRectangle (Pens.Black,rectangle);
 		}
-		
-		public void DebugFooterRectangle (ReportPageEventArgs rpea) {
-			Rectangle r =  new Rectangle( this.page.ReportFooterRectangle.Left,
-			                             rpea.LocationAfterDraw.Y,
-			                             this.page.ReportFooterRectangle.Width,
-			                             this.page.ReportFooterRectangle.Height);
+		/*
+		public void old_DebugFooterRectangle (ReportPageEventArgs rpea) {
 			
-			Rectangle s = new Rectangle (this.page.ReportFooterRectangle.Left,
+			Rectangle r =  new Rectangle( this.pageBounderys.ReportFooterRectangle.Left,
+			                             rpea.LocationAfterDraw.Y,
+			                             this.pageBounderys.ReportFooterRectangle.Width,
+			                             this.pageBounderys.ReportFooterRectangle.Height);
+			
+			Rectangle s = new Rectangle (this.pageBounderys.ReportFooterRectangle.Left,
 			                             rpea.LocationAfterDraw.Y,
 			                             
-			                             this.page.ReportFooterRectangle.Width,
-			                             this.page.PageFooterRectangle.Top - rpea.LocationAfterDraw.Y -1);
+			                             this.pageBounderys.ReportFooterRectangle.Width,
+			                             this.pageBounderys.PageFooterRectangle.Top - rpea.LocationAfterDraw.Y -1);
 			
 			AbstractRenderer.DebugRectangle(rpea.PrintPageEventArgs,r);
 			AbstractRenderer.DebugRectangle(rpea.PrintPageEventArgs,s);
 		}
-		
+		*/
 		#endregion
 		
 		protected Rectangle MeasureReportHeader (PrintPageEventArgs ppea) {
@@ -228,7 +229,7 @@ namespace SharpReportCore {
 
 				if (this.CurrentSection.Items.Count > 0) {
 					this.CurrentSection.SectionOffset = reportSettings.DefaultMargins.Top;
-					FitSectionToItems (this.CurrentSection,ppea);
+					AbstractRenderer.FitSectionToItems (this.CurrentSection,ppea);
 
 					rect = new Rectangle(reportSettings.DefaultMargins.Left,
 					                     reportSettings.DefaultMargins.Top,
@@ -264,7 +265,7 @@ namespace SharpReportCore {
 				this.CurrentSection.SectionOffset = reportSettings.DefaultMargins.Top;
 			}
 
-			FitSectionToItems (this.CurrentSection,rpea);
+			AbstractRenderer.FitSectionToItems (this.CurrentSection,rpea);
 			return new Rectangle (startAfter.Left,
 			                      startAfter.Bottom + Gap,
 			                      rpea.MarginBounds.Width,
@@ -276,7 +277,7 @@ namespace SharpReportCore {
 			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageFooter,
 			                               CultureInfo.InvariantCulture);
 			this.CurrentSection.SectionOffset = reportSettings.PageSettings.Bounds.Height - reportSettings.DefaultMargins.Top - reportSettings.DefaultMargins.Bottom;
-			FitSectionToItems (this.CurrentSection,e);
+			AbstractRenderer.FitSectionToItems (this.CurrentSection,e);
 			return new Rectangle(reportSettings.DefaultMargins.Left,
 			                     this.CurrentSection.SectionOffset,
 			                      e.MarginBounds.Width,
@@ -289,7 +290,7 @@ namespace SharpReportCore {
 		private Rectangle MeasureReportFooter (PrintPageEventArgs ppea) {
 			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportFooter,
 			                                   CultureInfo.InvariantCulture);
-			FitSectionToItems (this.CurrentSection,ppea);
+			AbstractRenderer.FitSectionToItems (this.CurrentSection,ppea);
 			return new Rectangle (reportSettings.DefaultMargins.Left,
 			                      this.CurrentSection.SectionOffset,
 			                      ppea.MarginBounds.Width,
@@ -297,16 +298,16 @@ namespace SharpReportCore {
 		}
 		
 		protected bool IsRoomForFooter(Point loc) {
-			Rectangle r =  new Rectangle( this.page.ReportFooterRectangle.Left,
+			Rectangle r =  new Rectangle( this.sectionBounds.ReportFooterRectangle.Left,
 			                             loc.Y,
-			                             this.page.ReportFooterRectangle.Width,
-			                             this.page.ReportFooterRectangle.Height);
+			                             this.sectionBounds.ReportFooterRectangle.Width,
+			                             this.sectionBounds.ReportFooterRectangle.Height);
 			
-			Rectangle s = new Rectangle (this.page.ReportFooterRectangle.Left,
+			Rectangle s = new Rectangle (this.sectionBounds.ReportFooterRectangle.Left,
 			                             loc.Y,
 			                             
-			                             this.page.ReportFooterRectangle.Width,
-			                             this.page.PageFooterRectangle.Top - loc.Y -1);
+			                             this.sectionBounds.ReportFooterRectangle.Width,
+			                             this.sectionBounds.PageFooterRectangle.Top - loc.Y -1);
 			return s.Contains(r);
 		}
 		
@@ -349,7 +350,7 @@ namespace SharpReportCore {
 		}
 		
 		#region privates
-		protected void FitSectionToItems (BaseSection section,PrintPageEventArgs rpea){
+		protected static void FitSectionToItems (BaseSection section,PrintPageEventArgs rpea){
 			if (section == null) {
 				throw new ArgumentNullException("section");
 			}
@@ -440,7 +441,7 @@ namespace SharpReportCore {
 		
 		#region PrintDocument Events
 		private void ReportPageStart (object sender, PrintPageEventArgs e) {
-			if (this.page == null) {
+			if (this.sectionBounds == null) {
 				throw new ArgumentException("page");
 			}
 			
@@ -448,26 +449,26 @@ namespace SharpReportCore {
 			
 			if (this.reportDocument.PageNumber == 1) {
 				r1 = this.MeasureReportHeader(e);
-				page.ReportHeaderRectangle = r1;
+				sectionBounds.ReportHeaderRectangle = r1;
 			} else {
 				r1 = new Rectangle (reportSettings.DefaultMargins.Left,
 				                    reportSettings.DefaultMargins.Top,
 				                    e.MarginBounds.Width,
 				                    0);
 			}
-			page.ReportHeaderRectangle = r1;
-			page.PageHeaderRectangle = this.MeasurePageHeader(r1,e);
-			page.PageFooterRectangle = this.MeasurePageFooter (e);			
-			page.ReportFooterRectangle = this.MeasureReportFooter(e);
+			sectionBounds.ReportHeaderRectangle = r1;
+			sectionBounds.PageHeaderRectangle = this.MeasurePageHeader(r1,e);
+			sectionBounds.PageFooterRectangle = this.MeasurePageFooter (e);			
+			sectionBounds.ReportFooterRectangle = this.MeasureReportFooter(e);
 		}
 		
 		protected virtual void ReportQueryPage (object sender,QueryPageSettingsEventArgs qpea) {
 			qpea.PageSettings.Margins = reportSettings.DefaultMargins;
 			
 			if (this.reportDocument.PageNumber == 1) {
-				page = new Page (true);
+				sectionBounds = new SectionBounds (true);
 			} else {
-				page = new Page (false);
+				sectionBounds = new SectionBounds (false);
 			}
 			
 		}
@@ -536,12 +537,12 @@ namespace SharpReportCore {
 			}
 		}
 		
-		protected Page Page {
+		protected SectionBounds SectionBounds {
 			get {
-				return page;
+				return sectionBounds;
 			}
 			set {
-				page = value;
+				sectionBounds = value;
 			}
 		}
 		

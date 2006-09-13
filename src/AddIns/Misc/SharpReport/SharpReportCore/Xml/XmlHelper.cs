@@ -100,6 +100,10 @@ namespace SharpReportCore {
 		public static void SetSectionValues (XmlFormReader reader,
 		                                     XmlElement element,
 		                                     BaseReportObject section) {
+			
+			if (element == null) {
+				throw new ArgumentNullException("element");
+			}
 			XmlNodeList nodeList = element.ChildNodes;
 			
 			foreach (XmlNode node in nodeList) {
@@ -123,6 +127,10 @@ namespace SharpReportCore {
 		public static void SetReportItemValues (XmlFormReader reader,
 		                                 XmlElement ctrlElem,
 		                                BaseReportItem item) {
+			
+			if (item == null) {
+				throw new ArgumentNullException("item");
+			}
 			
 			item.SuspendLayout();
 			try {
