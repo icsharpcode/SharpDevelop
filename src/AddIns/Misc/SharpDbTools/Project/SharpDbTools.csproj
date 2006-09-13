@@ -46,28 +46,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\MyUserControl.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\Service\DbModelInfo.cs" />
-    <Compile Include="Src\Service\DbModelInfoService.cs" />
-    <Compile Include="Src\Service\TableNames.cs" />
-    <Compile Include="Src\Service\ColumnNames.cs" />
-    <Compile Include="Src\UI\TableDescribeViewContent.cs" />
-    <Compile Include="Src\Service\DbProvidersService.cs" />
-    <Compile Include="Src\UI\GetConnectionLogicalNameDialog.cs" />
-    <Compile Include="Src\UI\GetConnectionLogicalNameDialog.Designer.cs">
-      <DependentUpon>GetConnectionLogicalNameDialog.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="Src\UI\GetConnectionLogicalNameDialog.resx">
-      <DependentUpon>GetConnectionLogicalNameDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="Src\UI\ServerBrowserTool.cs" />
-    <Compile Include="Src\UI\ConnectionStringDefinitionDialog.cs" />
-    <EmbeddedResource Include="Src\UI\ConnectionStringDefinitionDialog.resx">
-      <DependentUpon>ConnectionStringDefinitionDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="Src\UI\ConnectionStringDefinitionDialog.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Src\Service" />
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -76,7 +56,6 @@
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
-    <Folder Include="Src\UI" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
