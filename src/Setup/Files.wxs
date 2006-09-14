@@ -969,12 +969,6 @@
 											<File Source="..\..\AddIns\AddIns\Misc\RegExpTk\RegExpTk.dll" Name="RegExpTk.dll" Id="RegExpTk.dll" Assembly=".net" AssemblyApplication="RegExpTk.dll" AssemblyManifest="RegExpTk.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
-									<Directory Id="SharpDbToolsFolder" LongName="SharpDbTools" Name="SharpDb">
-										<Component Guid="575D909D-CC33-42CE-B0B8-BB2451F73745" Id="SharpDbToolsFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpDbTools\SharpDbTools.addin" Name="SHARPD_1.ADD" Id="SharpDbTools.addin" LongName="SharpDbTools.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\SharpDbTools\SharpDbTools.dll" Name="SHARPD_1.DLL" Id="SharpDbTools.dll" LongName="SharpDbTools.dll" Assembly=".net" AssemblyApplication="SharpDbTools.dll" AssemblyManifest="SharpDbTools.dll" KeyPath="yes" />
-										</Component>
-									</Directory>
 									<Directory Id="SharpQueryFolder" LongName="SharpQuery" Name="Query">
 										<Component Guid="94E2FFCE-B59A-4CB8-90C5-A68FEE705DBA" Id="SharpQueryDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SharpQuery\SharpQuery.dll" Name="SHARPQ_1.DLL" Id="SharpQuery.dll" LongName="SharpQuery.dll" Assembly=".net" AssemblyApplication="SharpQuery.dll" AssemblyManifest="SharpQuery.dll" KeyPath="yes" />
