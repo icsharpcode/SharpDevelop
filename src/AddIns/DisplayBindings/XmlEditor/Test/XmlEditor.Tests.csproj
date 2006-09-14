@@ -119,6 +119,21 @@
     <Compile Include="FindSchemaObject\ElementTypeSelectedTestFixture.cs" />
     <Compile Include="FindSchemaObject\ElementTypeWithPrefixSelectedTestFixture.cs" />
     <Compile Include="FindSchemaObject\AttributeTypeSelectedTestFixture.cs" />
+    <Compile Include="Tree\ViewInvalidXmlDocumentTestFixture.cs" />
+    <Compile Include="Utils\MockXmlTreeView.cs" />
+    <Compile Include="Tree\DocumentElementOnlyTestFixture.cs" />
+    <Compile Include="Tree\XmlTreeViewTestFixtureBase.cs" />
+    <Compile Include="Tree\RootNodeAddedToTreeControlTestFixture.cs" />
+    <Compile Include="Tree\ExpandChildNodesInTreeControlTestFixture.cs" />
+    <Compile Include="Tree\XmlElementSelectedTestFixture.cs" />
+    <Compile Include="Tree\XmlTextSelectedTestFixture.cs" />
+    <Compile Include="Tree\XmlTextTreeNodeTextTests.cs" />
+    <Compile Include="Tree\GetXmlAttributePropertyDescriptorTestFixture.cs" />
+    <Compile Include="Tree\XmlAttributeTypeDescriptorTestFixture.cs" />
+    <Compile Include="Tree\XmlElementTreeNodeTests.cs" />
+    <Compile Include="Tree\TreeControlViewStateTestFixture.cs" />
+    <Compile Include="Tree\AttributeChangedTestFixture.cs" />
+    <Compile Include="Tree\TextNodeTextChangedTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Schema\" />
@@ -145,6 +160,7 @@
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
     <Folder Include="FindSchemaObject" />
+    <Folder Include="Tree" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

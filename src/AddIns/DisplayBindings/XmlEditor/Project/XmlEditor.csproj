@@ -115,6 +115,17 @@
     <Compile Include="Src\RemoveXPathHighlightingCommand.cs" />
     <Compile Include="Src\GoToSchemaDefinitionCommand.cs" />
     <Compile Include="Src\GoToSchemaDefinitionEditAction.cs" />
+    <Compile Include="Src\XmlTreeEditor.cs" />
+    <Compile Include="Src\IXmlTreeView.cs" />
+    <Compile Include="Src\XmlTreeView.cs" />
+    <Compile Include="Src\XmlTreeViewContainerControl.cs" />
+    <Compile Include="Src\XmlTreeViewControl.cs" />
+    <EmbeddedResource Include="Resources\XmlElementTreeNodeIcon.png" />
+    <Compile Include="Src\XmlElementTreeNode.cs" />
+    <Compile Include="Src\XmlTextTreeNode.cs" />
+    <EmbeddedResource Include="Resources\XmlTextTreeNodeIcon.png" />
+    <Compile Include="Src\XmlAttributePropertyDescriptor.cs" />
+    <Compile Include="Src\XmlAttributeTypeDescriptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

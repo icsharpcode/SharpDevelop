@@ -49,6 +49,7 @@ namespace ICSharpCode.XmlEditor
 		bool wasChangedExternally;
 		static MessageViewCategory category;
 		string stylesheetFileName;
+		XmlTreeView xmlTreeView;
 				
 		public XmlView()
 		{
@@ -65,6 +66,9 @@ namespace ICSharpCode.XmlEditor
 			XmlEditorAddInOptions.PropertyChanged += PropertyChanged;
 			XmlSchemaManager.UserSchemaAdded += new EventHandler(UserSchemaAdded);
 			XmlSchemaManager.UserSchemaRemoved += new EventHandler(UserSchemaRemoved);
+
+			xmlTreeView = new XmlTreeView(this);
+			SecondaryViewContents.Add(xmlTreeView);
 		}
 
 		/// <summary>
@@ -364,9 +368,7 @@ namespace ICSharpCode.XmlEditor
 			TaskService.ClearExceptCommentTasks();
 			
 			if (IsWellFormed) {
-				string xml = SimpleFormat(IndentedFormat(Text));
-				xmlEditor.Document.Replace(0, xmlEditor.Document.TextLength, xml);
-				UpdateFolding();
+				ReplaceAll(Text);
 			} else {
 				ShowErrorList();
 			}
@@ -415,6 +417,29 @@ namespace ICSharpCode.XmlEditor
 				string fileName = schemaObject.SourceUri.Replace("file:///", String.Empty);
 				FileService.JumpToFilePosition(fileName, schemaObject.LineNumber - 1, schemaObject.LinePosition - 1);
 			}
+		}
+		
+		/// <summary>
+		/// Checks that the xml is well formed. Any errors are displayed in the
+		/// errors list.
+		/// </summary>
+		public void CheckIsWellFormed()
+		{
+			TaskService.ClearExceptCommentTasks();
+			if (!IsWellFormed) {
+				ShowErrorList();
+			}
+		}
+		
+		/// <summary>
+		/// Replaces the entire text of the xml view with the xml in the
+		/// specified. The xml will be formatted.
+		/// </summary>
+		public void ReplaceAll(string xml)
+		{
+			string formattedXml = SimpleFormat(IndentedFormat(xml));
+			xmlEditor.Document.Replace(0, xmlEditor.Document.TextLength, formattedXml);
+			UpdateFolding();
 		}
 		
 		#region IEditable interface
@@ -604,9 +629,8 @@ namespace ICSharpCode.XmlEditor
 					xmlEditor.Document.HighlightingStrategy = highlightingStrategy;
 				}
 			}
-			xmlEditor.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine = properties.Get("VisibleLine", 0);
-			
-			xmlEditor.Document.FoldingManager.DeserializeFromString(properties.Get("Foldings", ""));
+			xmlEditor.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine = properties.Get("VisibleLine", 0);		
+			xmlEditor.Document.FoldingManager.DeserializeFromString(properties.Get("Foldings", String.Empty));
 		}
 		
 		public Properties CreateMemento()
@@ -1005,7 +1029,7 @@ namespace ICSharpCode.XmlEditor
 		bool IsWellFormed {
 			get {
 				try	{
-					XmlDocument Document = new XmlDocument( );
+					XmlDocument Document = new XmlDocument();
 					Document.LoadXml(Text);
 					return true;
 				} catch(XmlException ex) {
