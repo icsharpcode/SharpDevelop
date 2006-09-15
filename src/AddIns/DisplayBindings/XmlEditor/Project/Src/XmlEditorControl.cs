@@ -42,6 +42,8 @@ namespace ICSharpCode.XmlEditor
 			Document.FoldingManager.FoldingStrategy = new XmlFoldingStrategy();
 			TextEditorProperties = new SharpDevelopTextEditorProperties();
 			
+			Document.BookmarkManager.Factory = new SDBookmarkFactory(Document.BookmarkManager);
+			Document.BookmarkManager.Added   += new ICSharpCode.TextEditor.Document.BookmarkEventHandler(BookmarkAdded);
 			Document.BookmarkManager.Removed += new ICSharpCode.TextEditor.Document.BookmarkEventHandler(BookmarkRemoved);
 			
 			GenerateEditActions();
@@ -343,6 +345,19 @@ namespace ICSharpCode.XmlEditor
 			ICSharpCode.SharpDevelop.Bookmarks.SDBookmark b = e.Bookmark as ICSharpCode.SharpDevelop.Bookmarks.SDBookmark;
 			if (b != null) {
 				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.RemoveMark(b);
+			}
+		}
+		
+		/// <summary>
+		/// Have to add the bookmark to the BookmarkManager otherwise the bookmark is
+		/// not remembered when re-opening the file and does not show in the 
+		/// bookmark manager.
+		/// </summary>
+		void BookmarkAdded(object sender, ICSharpCode.TextEditor.Document.BookmarkEventArgs e)
+		{
+			ICSharpCode.SharpDevelop.Bookmarks.SDBookmark b = e.Bookmark as ICSharpCode.SharpDevelop.Bookmarks.SDBookmark;
+			if (b != null) {
+				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.AddMark(b);
 			}
 		}
 	}

@@ -57,7 +57,7 @@ namespace ICSharpCode.XmlEditor
 			
 			xmlEditor.SchemaCompletionDataItems = XmlSchemaManager.SchemaCompletionDataItems;
 			xmlEditor.Document.DocumentChanged += new DocumentEventHandler(DocumentChanged);
-			
+
 			xmlEditor.ActiveTextAreaControl.Caret.CaretModeChanged += new EventHandler(CaretModeChanged);
 			xmlEditor.ActiveTextAreaControl.Enter += new EventHandler(CaretUpdate);
 			((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Activated += new EventHandler(GotFocusEvent);
@@ -518,6 +518,13 @@ namespace ICSharpCode.XmlEditor
 			FileName  = fileName;
 			TitleName = Path.GetFileName(fileName);
 			IsDirty     = false;
+			
+			// Add bookmarks.
+			foreach (ICSharpCode.SharpDevelop.Bookmarks.SDBookmark bookmark in ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetBookmarks(fileName)) {
+				bookmark.Document = xmlEditor.Document;
+				xmlEditor.Document.BookmarkManager.Marks.Add(bookmark);
+			}
+
 			UpdateFolding();
 			SetWatcher();
 		}
@@ -692,6 +699,8 @@ namespace ICSharpCode.XmlEditor
 		{
 			base.OnFileNameChanged(e);
 			xmlEditor.FileName = base.FileName;
+			ICSharpCode.SharpDevelop.Bookmarks.SDBookmarkFactory factory = (ICSharpCode.SharpDevelop.Bookmarks.SDBookmarkFactory)xmlEditor.Document.BookmarkManager.Factory;
+			factory.ChangeFilename(base.FileName);
 		}
 		
 		static bool IsFileReadOnly(string fileName)
