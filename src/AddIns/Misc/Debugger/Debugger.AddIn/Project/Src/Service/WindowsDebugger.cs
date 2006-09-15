@@ -39,8 +39,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		Properties properties;
 		
-		bool serviceInitialized = false;
-		
 		Debugger.Process debuggedProcess;
 		
 		public event EventHandler<ProcessEventArgs> ProcessSelected;
@@ -72,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public bool ServiceInitialized {
 			get {
-				return serviceInitialized;
+				return debugger != null;
 			}
 		}
 		
@@ -83,15 +81,20 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		#region IDebugger Members
 		
+		string errorDebugging      = "Can not preform action because some process is debugged.";
+		string errorNotDebugging   = "Can not preform action because no process is debugged.";
+		string errorProcessRunning = "Can not preform action because process is running.";
+		string errorProcessPaused  = "Can not preform action because process is paused.";
+		
 		public bool IsDebugging { 
 			get { 
-				return serviceInitialized && debuggedProcess != null;
+				return ServiceInitialized && debuggedProcess != null;
 			} 
 		}
 		
 		public bool IsProcessRunning { 
 			get { 
-				return IsDebugging && debuggedProcess.IsRunning; 
+				return IsDebugging && debuggedProcess.IsRunning;
 			} 
 		}
 		
@@ -102,7 +105,11 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void Start(ProcessStartInfo processStartInfo)
 		{
-			if (!serviceInitialized) {
+			if (IsDebugging) {
+				MessageService.ShowMessage(errorDebugging);
+				return;
+			}
+			if (!ServiceInitialized) {
 				InitializeService();
 			}
 			string version = debugger.GetProgramVersion(processStartInfo.FileName);
@@ -125,6 +132,10 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void Stop()
 		{
+			if (!IsDebugging) {
+				MessageService.ShowMessage(errorNotDebugging);
+				return;
+			}
 			debuggedProcess.Terminate();
 		}
 		
@@ -132,11 +143,27 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void Break()
 		{
+			if (!IsDebugging) {
+				MessageService.ShowMessage(errorNotDebugging);
+				return;
+			}
+			if (!IsProcessRunning) {
+				MessageService.ShowMessage(errorProcessPaused);
+				return;
+			}
 			debuggedProcess.Break();
 		}
 		
 		public void Continue()
 		{
+			if (!IsDebugging) {
+				MessageService.ShowMessage(errorNotDebugging);
+				return;
+			}
+			if (IsProcessRunning) {
+				MessageService.ShowMessage(errorProcessRunning);
+				return;
+			}
 			debuggedProcess.Continue();
 		}
 		
@@ -144,6 +171,10 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void StepInto()
 		{
+			if (!IsDebugging) {
+				MessageService.ShowMessage(errorNotDebugging);
+				return;
+			}
 			if (debuggedProcess.SelectedFunction == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}", "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
@@ -153,6 +184,10 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void StepOver()
 		{
+			if (!IsDebugging) {
+				MessageService.ShowMessage(errorNotDebugging);
+				return;
+			}
 			if (debuggedProcess.SelectedFunction == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}", "${res:XML.MainMenu.DebugMenu.StepOver.Description}");
 			} else {
@@ -162,6 +197,10 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void StepOut()
 		{
+			if (!IsDebugging) {
+				MessageService.ShowMessage(errorNotDebugging);
+				return;
+			}
 			if (debuggedProcess.SelectedFunction == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}", "${res:XML.MainMenu.DebugMenu.StepOut}");
 			} else {
@@ -284,8 +323,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (Initialize != null) {
 				Initialize(this, null);  
 			}
-			
-			serviceInitialized = true;
 		}
 		
 		void AddBreakpoint(BreakpointBookmark bookmark)
