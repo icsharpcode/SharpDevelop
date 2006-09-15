@@ -50,7 +50,7 @@ namespace Debugger
 				// ExitProcess may be called at any time when debuggee is killed
 				name == "ExitProcess") {
 				
-				if (process.IsPaused && process.PauseSession.PausedReason == PausedReason.ForcedBreak) {
+				if (process.IsPaused && process.PauseSession.PausedReason == PausedReason.ForcedBreak && name != "ExitProcess") {
 					process.TraceMessage("Processing post-break callback");
 					// Continue the break, process is still breaked because of the callback
 					process.Continue();
