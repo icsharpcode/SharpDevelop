@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
@@ -118,9 +119,15 @@ namespace ICSharpCode.SharpDevelop.Sda
 				StartWorkbenchCommand wbc = new StartWorkbenchCommand();
 				wbc.AllowTipOfTheDay = wbSettings.UseTipOfTheDay;
 				callback.BeforeRunWorkbench();
-				wbc.Run(wbSettings.InitialFileList);
-			} catch (Exception ex) {
-				exception = ex;
+				if (Debugger.IsAttached) {
+					wbc.Run(wbSettings.InitialFileList);
+				} else {
+					try {
+						wbc.Run(wbSettings.InitialFileList);
+					} catch (Exception ex) {
+						exception = ex;
+					}
+				}
 			} finally {
 				LoggingService.Info("Unloading services...");
 				try {
