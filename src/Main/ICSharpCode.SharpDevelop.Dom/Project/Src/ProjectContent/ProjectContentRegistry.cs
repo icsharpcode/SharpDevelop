@@ -234,6 +234,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				
 				if (pc != null) {
+					ReflectionProjectContent reflectionProjectContent = pc as ReflectionProjectContent;
+					if (reflectionProjectContent != null && reflectionProjectContent.AssemblyFullName != null) {
+						contents[reflectionProjectContent.AssemblyFullName] = pc;
+					}
 					contents[itemInclude] = pc;
 					contents[itemFileName] = pc;
 				}
