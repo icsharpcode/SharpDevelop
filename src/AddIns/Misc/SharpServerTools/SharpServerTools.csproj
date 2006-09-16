@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>SharpServerTools</RootNamespace>
@@ -63,10 +63,6 @@
       <Name>ICSharpCode.SharpDevelop</Name>
     </ProjectReference>
     <Folder Include="Src\Configuration" />
-    <ProjectReference Include="SharpDbTools\SharpDbTools.csproj">
-      <Project>{3794F3B7-018A-4C45-9849-17DDBB1644FA}</Project>
-      <Name>SharpDbTools</Name>
-    </ProjectReference>
     <ProjectReference Include="SharpDbTools\SharpDbTools.csproj">
       <Project>{F2CC804D-5A9C-4875-A423-4FB9A5D07018}</Project>
       <Name>SharpDbTools</Name>
