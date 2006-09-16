@@ -122,7 +122,9 @@ namespace ICSharpCode.SharpDevelop.Services
 			try {
 				val.Primitive = newValue;
 			} catch (NotSupportedException) {
-				MessageBox.Show(WorkbenchSingleton.MainForm, "Can not covert " + newValue + " to " + val.ManagedType.ToString(), "Can not set value");
+				string format = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CannotSetValue");
+				string msg = String.Format(format, newValue, val.ManagedType.ToString());
+				MessageService.ShowMessage(msg ,"${MainWindow.Windows.Debug.LocalVariables.CannotSetValue.Title}");
 			}
 		}
 		
@@ -133,7 +135,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				
 				ToolStripMenuItem copyItem;
 				copyItem = new ToolStripMenuItem();
-				copyItem.Text = "Copy value to clipboard";
+				copyItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CopyToClipboard");
 				copyItem.Checked = false;
 				copyItem.Click += delegate {
 					ClipboardWrapper.SetText(((DynamicListItem)sender).Text);
@@ -141,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				
 				ToolStripMenuItem hewView;
 				hewView = new ToolStripMenuItem();
-				hewView.Text = "Show values in hexadecimal";
+				hewView.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.ShowInHexadecimal");
 				hewView.Checked = ShowValuesInHexadecimal;
 				hewView.Click += delegate {
 					ShowValuesInHexadecimal = !ShowValuesInHexadecimal;

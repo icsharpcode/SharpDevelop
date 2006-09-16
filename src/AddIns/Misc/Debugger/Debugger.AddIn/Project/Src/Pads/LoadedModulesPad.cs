@@ -66,13 +66,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public override void RedrawContent()
 		{
 			name.Text         = StringParser.Parse("${res:Global.Name}");
-			address.Text      = StringParser.Parse("${res:MainWindow.Windows.Debug.AddressColumn}");
+			address.Text      = StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.AddressColumn}");
 			path.Text         = StringParser.Parse("${res:Global.Path}");
-			order.Text        = StringParser.Parse("${res:MainWindow.Windows.Debug.OrderColumn}");
-			version.Text      = StringParser.Parse("${res:MainWindow.Windows.Debug.VersionColumn}");
-			program.Text      = StringParser.Parse("${res:MainWindow.Windows.Debug.ProgramColumn}");
-			timestamp.Text    = StringParser.Parse("${res:MainWindow.Windows.Debug.TimestampColumn}");
-			information.Text  = StringParser.Parse("${res:MainWindow.Windows.Debug.InformationColumn}");
+			order.Text        = StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.OrderColumn}");
+			version.Text      = StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.VersionColumn}");
+			program.Text      = StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.ProgramColumn}");
+			timestamp.Text    = StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.TimestampColumn}");
+			information.Text  = StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.SymbolsColumn}");
 		}
 		
 		
@@ -119,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			                                                      "",
 			                                                      "",
 			                                                      "",
-			                                                      StringParser.Parse(module.SymbolsLoaded ? "${res:MainWindow.Windows.Debug.HasSymbols}" : "${res:MainWindow.Windows.Debug.HasNoSymbols}")
+			                                                      StringParser.Parse(module.SymbolsLoaded ? "${res:MainWindow.Windows.Debug.Modules.HasSymbols}" : "${res:MainWindow.Windows.Debug.Modules.HasNoSymbols}")
 			                                                     });
 			newItem.Tag = module;
 			loadedModulesList.Items.Add(newItem);

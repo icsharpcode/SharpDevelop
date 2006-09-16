@@ -901,11 +901,11 @@
 						             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand"/>
 						<ToolbarItem id      = "Step into"
 						             icon    = "Icons.16x16.Debug.StepInto"
-						             tooltip = "${res:XML.MainMenu.DebugMenu.StepInto}"
+						             tooltip = "${res:XML.MainMenu.DebugMenu.StepInto.Description}"
 						             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand"/>
 						<ToolbarItem id      = "Step out"
 						             icon    = "Icons.16x16.Debug.StepOut"
-						             tooltip = "${res:XML.MainMenu.DebugMenu.StepOut}"
+						             tooltip = "${res:XML.MainMenu.DebugMenu.StepOut.Description}"
 						             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
 					</Condition>
 				</Condition>
@@ -1470,7 +1470,7 @@
 					<Condition name="IsProcessRunning"  isprocessrunning = "False" isdebugging = "True" action = "Disable">
 						<MenuItem id = "BeforeSteppingSeparator" type = "Separator" />
 						<MenuItem id       = "Step over"
-						          label    = "${res:XML.MainMenu.DebugMenu.Step}"
+						          label    = "${res:XML.MainMenu.DebugMenu.StepOver}"
 						          icon     = "Icons.16x16.Debug.StepOver"
 						          shortcut = "F10"
 						          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand"/>

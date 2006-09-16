@@ -81,10 +81,11 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		#region IDebugger Members
 		
-		string errorDebugging      = "Can not preform action because some process is debugged.";
-		string errorNotDebugging   = "Can not preform action because no process is debugged.";
-		string errorProcessRunning = "Can not preform action because process is running.";
-		string errorProcessPaused  = "Can not preform action because process is paused.";
+		string errorDebugging      = "${XML.MainMenu.DebugMenu.Error.Debugging}";
+		string errorNotDebugging   = "${XML.MainMenu.DebugMenu.Error.NotDebugging}";
+		string errorProcessRunning = "${XML.MainMenu.DebugMenu.Error.ProcessRunning}";
+		string errorProcessPaused  = "${XML.MainMenu.DebugMenu.Error.ProcessPaused}";
+		string errorCannotStepNoActiveFunction = "${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}";
 		
 		public bool IsDebugging { 
 			get { 
@@ -114,9 +115,9 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			string version = debugger.GetProgramVersion(processStartInfo.FileName);
 			if (version.StartsWith("v1.0")) {
-				MessageBox.Show("Debugging of .NET Framework 1.0 programs is not supported");
+				MessageService.ShowMessage("${XML.MainMenu.DebugMenu.Error.Net10NotSupported}");
 			} else if (version == null || version.Length == 0) {
-				MessageBox.Show("Can not get .NET Framework version of program. Check that the program is managed assembly.");
+				MessageService.ShowMessage("${XML.MainMenu.DebugMenu.Error.BadAssembly}");
 			} else {
 				Debugger.Process process = debugger.Start(processStartInfo.FileName,
 				                                          processStartInfo.WorkingDirectory,
@@ -133,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void Stop()
 		{
 			if (!IsDebugging) {
-				MessageService.ShowMessage(errorNotDebugging);
+				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.Stop}");
 				return;
 			}
 			debuggedProcess.Terminate();
@@ -144,11 +145,11 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void Break()
 		{
 			if (!IsDebugging) {
-				MessageService.ShowMessage(errorNotDebugging);
+				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.Break}");
 				return;
 			}
 			if (!IsProcessRunning) {
-				MessageService.ShowMessage(errorProcessPaused);
+				MessageService.ShowMessage(errorProcessPaused, "${res:XML.MainMenu.DebugMenu.Break}");
 				return;
 			}
 			debuggedProcess.Break();
@@ -157,11 +158,11 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void Continue()
 		{
 			if (!IsDebugging) {
-				MessageService.ShowMessage(errorNotDebugging);
+				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.Continue}");
 				return;
 			}
 			if (IsProcessRunning) {
-				MessageService.ShowMessage(errorProcessRunning);
+				MessageService.ShowMessage(errorProcessRunning, "${res:XML.MainMenu.DebugMenu.Continue}");
 				return;
 			}
 			debuggedProcess.Continue();
@@ -172,11 +173,11 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void StepInto()
 		{
 			if (!IsDebugging) {
-				MessageService.ShowMessage(errorNotDebugging);
+				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.StepInto}");
 				return;
 			}
 			if (debuggedProcess.SelectedFunction == null || debuggedProcess.IsRunning) {
-				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}", "${res:XML.MainMenu.DebugMenu.StepInto}");
+				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
 				debuggedProcess.StepInto();
 			}
@@ -185,11 +186,11 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void StepOver()
 		{
 			if (!IsDebugging) {
-				MessageService.ShowMessage(errorNotDebugging);
+				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.StepOver}");
 				return;
 			}
 			if (debuggedProcess.SelectedFunction == null || debuggedProcess.IsRunning) {
-				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}", "${res:XML.MainMenu.DebugMenu.StepOver.Description}");
+				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepOver}");
 			} else {
 				debuggedProcess.StepOver();
 			}
@@ -198,11 +199,11 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void StepOut()
 		{
 			if (!IsDebugging) {
-				MessageService.ShowMessage(errorNotDebugging);
+				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.StepOut}");
 				return;
 			}
 			if (debuggedProcess.SelectedFunction == null || debuggedProcess.IsRunning) {
-				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}", "${res:XML.MainMenu.DebugMenu.StepOut}");
+				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepOut}");
 			} else {
 				debuggedProcess.StepOut();
 			}

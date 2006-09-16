@@ -136,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 									name += argValue;
 								}
 								if (parameterName == null && argValue == null) {
-									name += "n/a";
+									name += ResourceService.GetString("Global.NA");
 								}
 								if (i < f.ArgumentCount - 1) {
 									name += ", ";
@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						if (lastItemIsExternalMethod) {
 							continue;
 						} else {
-							item = new ListViewItem(new string[] { "[External methods]", "" });
+							item = new ListViewItem(new string[] { ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods"), "" });
 							lastItemIsExternalMethod = true;
 						}
 					}

@@ -153,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					if (location != null) {
 						item.SubItems.Add(location.Name);
 					} else {
-						item.SubItems.Add("N/A");
+						item.SubItems.Add(ResourceService.GetString("Global.NA"));
 					}
 					switch (thread.Priority) {
 						case System.Threading.ThreadPriority.Highest:

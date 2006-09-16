@@ -111,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				if (exception.Location != null) {
 					location = exception.Location.SourceFilename + ":" + exception.Location.StartLine;
 				} else {
-					location = "n/a";
+					location = ResourceService.GetString("Global.NA");
 				}
 				location += " (type=" + exception.ExceptionType.ToString() + ")";
 				ListViewItem item = new ListViewItem(new string[] {exception.CreationTime.ToLongTimeString() , exception.Type + " - " + exception.Message, location});
