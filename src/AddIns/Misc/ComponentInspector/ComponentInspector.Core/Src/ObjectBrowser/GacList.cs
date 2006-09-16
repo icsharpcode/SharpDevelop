@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -38,13 +39,11 @@ namespace NoGoop.ObjBrowser
             int iconIndex = PresentationMap.GetInfo(GetType())._iconIndex;
 
 			MenuItem open = new MenuItem();
-			open.Text = "&Open";
+			open.Text = StringParser.Parse("${res:ComponentInspector.GacList.OpenMenuItem}");
 			open.Click += new EventHandler(OpenClick);
             ContextMenu.MenuItems.Add(open);
 
-            String gacDir;
-
-            gacDir = Environment.GetEnvironmentVariable("SystemRoot")
+            String gacDir = Environment.GetEnvironmentVariable("SystemRoot")
                 + @"\assembly\GAC";
 
             DirectoryInfo gacDI = new DirectoryInfo(gacDir);
@@ -56,8 +55,7 @@ namespace NoGoop.ObjBrowser
             int maxCultureWidth = 0;
             int maxKeyWidth = 0;
 
-            foreach (DirectoryInfo di in assemblies)
-            {
+            foreach (DirectoryInfo di in assemblies) {
                 int width;
 
                 ListViewItem li = new ListViewItem(di.Name);
@@ -105,31 +103,30 @@ namespace NoGoop.ObjBrowser
 
             ColumnHeader ch;
             ch = new ColumnHeader();
-            ch.Text = "Global Assembly Name";
+            ch.Text = StringParser.Parse("${res:ComponentInspector.GacList.GlobalAssemblyNameColumn}");
             ch.TextAlign = HorizontalAlignment.Left;
             ch.Width = maxNameWidth + PADDING;
             Columns.Add(ch);
 
             ch = new ColumnHeader();
-            ch.Text = "Version";
+            ch.Text = StringParser.Parse("${res:ComponentInspector.GacList.VersionColumn}");
             ch.TextAlign = HorizontalAlignment.Left;
             ch.Width = maxVersionWidth + PADDING;
             Columns.Add(ch);
 
             ch = new ColumnHeader();
-            ch.Text = "Culture";
+            ch.Text = StringParser.Parse("${res:ComponentInspector.GacList.CultureColumn}");
             ch.TextAlign = HorizontalAlignment.Left;
             ch.Width = maxCultureWidth + PADDING;
             Columns.Add(ch);
 
             ch = new ColumnHeader();
-            ch.Text = "Public Key Token";
+            ch.Text = StringParser.Parse("${res:ComponentInspector.GacList.PublicKeyTokenColumn}");
             ch.TextAlign = HorizontalAlignment.Left;
             ch.Width = maxKeyWidth + PADDING;
             Columns.Add(ch);
 
             View = View.Details;
-
         }
 
         protected void OpenClick(object sender, EventArgs e)

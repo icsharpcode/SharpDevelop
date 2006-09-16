@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0"?>
 <Template author="Matt Ward" version="1.0">
-	<Config name    = "Empty Setup Document"
+	<Config name    = "${res:Templates.File.Wix.WixFile.Name}"
 		icon        = "Icons.32x32.XMLFileIcon"
-		category    = "Setup"
+		category    = "${res:Templates.File.Categories.Setup}"
 		defaultname = "Setup${Number}.wxs"
 		language    = "XML"/>
 	 
-	<Description>Creates an empty setup document.</Description>
+	<Description>${res:Templates.File.Wix.WixFile.Description}</Description>
 
 	<Files>
 		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0"?>

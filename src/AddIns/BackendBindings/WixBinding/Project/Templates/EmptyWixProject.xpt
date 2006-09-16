@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0"?>
 <Template originator="Matt Ward">	
 	<TemplateConfiguration>
-		<Name>Empty Setup Project</Name>
-		<Category>Setup</Category>
+		<Name>${res:Templates.File.Wix.WixProject.Name}</Name>
+		<Category>${res:Templates.File.Categories.Setup}</Category>
 		<Icon>Icons.32x32.EmptyProjectIcon</Icon>
 		<LanguageName>Wix</LanguageName>
-		<Description>Creates an empty setup project.</Description>
+		<Description>${res:Templates.File.Wix.WixProject.Description}</Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

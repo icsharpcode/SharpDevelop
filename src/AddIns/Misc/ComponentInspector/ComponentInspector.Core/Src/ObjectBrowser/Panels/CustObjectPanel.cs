@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
+
 using System;
 using System.Collections;
 using System.Drawing;
@@ -44,7 +46,7 @@ namespace NoGoop.ObjBrowser.Panels
 			Panel panel;
 			Label l;
 
-			Text = "Object Tree";
+			Text = StringParser.Parse("${res:ComponentInspector.InspectorMenu.ObjectTreeOptionsPanel.Title}");
 
 			// Other panel
 			panel = new Panel();
@@ -55,18 +57,18 @@ namespace NoGoop.ObjBrowser.Panels
 			_hexDisplayCheck = new CheckBox();
 			_hexDisplayCheck.Location = new Point(10, 0);
 			_hexDisplayCheck.Width = FIELD_WIDTH;
-			_hexDisplayCheck.Text = "Display integers in hex";
+			_hexDisplayCheck.Text = StringParser.Parse("${res:ComponentInspector.ObjectTreeOptionsPanel.DisplayIntegersInHexCheckBox}");
 			panel.Controls.Add(_hexDisplayCheck);
 
 			_showBaseClassNamesCheck = new CheckBox();
 			_showBaseClassNamesCheck.Location = new Point(10, 20);
 			_showBaseClassNamesCheck.Width = FIELD_WIDTH;
-			_showBaseClassNamesCheck.Text = "Show base class names";
+			_showBaseClassNamesCheck.Text = StringParser.Parse("${res:ComponentInspector.CustomObjectPanel.ShowBaseClassNamesCheckBox}");
 			panel.Controls.Add(_showBaseClassNamesCheck);
 
 			l = new Label();
 			l.Dock = DockStyle.Top;
-			l.Text = "Other";
+			l.Text = StringParser.Parse("${res:ComponentInspector.CustomObjectPanel.OtherLabel}");
 			l.AutoSize = true;
 			Controls.Add(l);
 
@@ -80,14 +82,14 @@ namespace NoGoop.ObjBrowser.Panels
 			_showMemberCategoriesCheck = new CheckBox();
 			_showMemberCategoriesCheck.Location = new Point(10, 0);
 			_showMemberCategoriesCheck.Width = FIELD_WIDTH;
-			_showMemberCategoriesCheck.Text = "Show member categories";
+			_showMemberCategoriesCheck.Text = StringParser.Parse("${res:ComponentInspector.ObjectTreeOptionsPanel.ShowMemberCategoriesCheckBox}");
 			_showMemberCategoriesCheck.Click +=  new EventHandler(ShowCatClicked);
 			panel.Controls.Add(_showMemberCategoriesCheck);
 
 			_showBaseCategoriesCheck = new CheckBox();
 			_showBaseCategoriesCheck.Location = new Point(10, 20);
 			_showBaseCategoriesCheck.Width = FIELD_WIDTH;
-			_showBaseCategoriesCheck.Text = "Show base class category";
+			_showBaseCategoriesCheck.Text = StringParser.Parse("${res:ComponentInspector.ObjectTreeOptionsPanel.ShowBaseClassCategoryCheckBox}");
 			_showBaseCategoriesCheck.Click += new EventHandler(ShowCatClicked);
 			panel.Controls.Add(_showBaseCategoriesCheck);
 
@@ -101,7 +103,7 @@ namespace NoGoop.ObjBrowser.Panels
 			_showCatCountPanel.Controls.Add(_showCategoriesCount);
 			l = new Label();
 			l.Dock = DockStyle.Left;
-			l.Text = "When number of members exceeds";
+			l.Text = StringParser.Parse("${res:ComponentInspector.ObjectTreeOptionsPanel.CategoryCountLabel}");
 			l.AutoSize = true;
 			//l.Width = 150;
 			_showCatCountPanel.Controls.Add(l);
@@ -111,12 +113,12 @@ namespace NoGoop.ObjBrowser.Panels
 			_showObjectAsBaseCheck = new CheckBox();
 			_showObjectAsBaseCheck.Location = new Point(10, 65);
 			_showObjectAsBaseCheck.Width = FIELD_WIDTH;
-			_showObjectAsBaseCheck.Text = "Show Object members in base class category";
+			_showObjectAsBaseCheck.Text = StringParser.Parse("${res:ComponentInspector.CustomObjectPanel.ShowObjectAsBaseCheckBox}");
 			panel.Controls.Add(_showObjectAsBaseCheck);
 
 			l = new Label();
 			l.Dock = DockStyle.Top;
-			l.Text = "Categories";
+			l.Text = StringParser.Parse("${res:ComponentInspector.ObjectTreeOptionsPanel.CategoriesGroupBox}");
 			l.AutoSize = true;
 			Controls.Add(l);
 
@@ -130,24 +132,24 @@ namespace NoGoop.ObjBrowser.Panels
 			_showBaseClassesCheck = new CheckBox();
 			_showBaseClassesCheck.Location = new Point(10, 0);
 			_showBaseClassesCheck.Width = FIELD_WIDTH;
-			_showBaseClassesCheck.Text = "Base class members";
+			_showBaseClassesCheck.Text = StringParser.Parse("${res:ComponentInspector.ObjectTreeOptionsPanel.ShowBaseClassMembersCheckBox}");
 			panel.Controls.Add(_showBaseClassesCheck);
 
 			_showPublicOnlyCheck = new CheckBox();
 			_showPublicOnlyCheck.Location = new Point(10, 20);
 			_showPublicOnlyCheck.Width = FIELD_WIDTH;
-			_showPublicOnlyCheck.Text = "Public members only";
+			_showPublicOnlyCheck.Text = StringParser.Parse("${res:ComponentInspector.CustomObjectPanel.ShowPublicMembersCheckBox}");
 			panel.Controls.Add(_showPublicOnlyCheck);
 
 			_showPropMethCheck = new CheckBox();
 			_showPropMethCheck.Location = new Point(10, 40);
 			_showPropMethCheck.Width = FIELD_WIDTH;
-			_showPropMethCheck.Text = "Property/Event accessor methods";
+			_showPropMethCheck.Text = StringParser.Parse("${res:ComponentInspector.ObjectTreeOptionsPanel.ShowPropertyAccessorsMethodsCheckBox}");
 			panel.Controls.Add(_showPropMethCheck);
 
 			l = new Label();
 			l.Dock = DockStyle.Top;
-			l.Text = "Show";
+			l.Text = StringParser.Parse("${res:ComponentInspector.CustomObjectPanel.ShowLabel}");
 			l.AutoSize = true;
 			Controls.Add(l);
 
@@ -161,27 +163,27 @@ namespace NoGoop.ObjBrowser.Panels
 			// Add these using fixed locations
 			_showFieldsCheck = new CheckBox();
 			_showFieldsCheck.Location = new Point(10, 0);
-			_showFieldsCheck.Text = "Fields";
+			_showFieldsCheck.Text = StringParser.Parse("${res:ComponentInspector.ObjectTreeOptionsPanel.ShowFieldsCheckBox}");
 			panel.Controls.Add(_showFieldsCheck);
 
 			_showPropertiesCheck = new CheckBox();
 			_showPropertiesCheck.Location = new Point(10, 20);
-			_showPropertiesCheck.Text = "Properties";
+			_showPropertiesCheck.Text = StringParser.Parse("${res:ComponentInspector.ObjectTreeOptionsPanel.ShowPropertiesCheckBox}");
 			panel.Controls.Add(_showPropertiesCheck);
 
 			_showMethodsCheck = new CheckBox();
 			_showMethodsCheck.Location = new Point(120, 0);
-			_showMethodsCheck.Text = "Methods";
+			_showMethodsCheck.Text = StringParser.Parse("${res:ComponentInspector.ObjectTreeOptionsPanel.ShowMethodsCheckBox}");
 			panel.Controls.Add(_showMethodsCheck);
 
 			_showEventsCheck = new CheckBox();
 			_showEventsCheck.Location = new Point(120, 20);
-			_showEventsCheck.Text = "Events";
+			_showEventsCheck.Text = StringParser.Parse("${res:ComponentInspector.ObjectTreeOptionsPanel.ShowEventsCheckBox}");
 			panel.Controls.Add(_showEventsCheck);
 
 			l = new Label();
 			l.Dock = DockStyle.Top;
-			l.Text = "Show Members";
+			l.Text = StringParser.Parse("${res:ComponentInspector.ObjectTreeOptionsPanel.ShowMembersGroupBox}");
 			l.AutoSize = true;
 			Controls.Add(l);
 

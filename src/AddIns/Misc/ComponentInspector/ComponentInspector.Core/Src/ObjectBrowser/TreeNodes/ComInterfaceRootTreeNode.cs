@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -60,15 +61,13 @@ namespace NoGoop.ObjBrowser.TreeNodes
 
         public override String GetName()
 		{
-            return "Interfaces";
+            return StringParser.Parse("${res:ComponentInspector.ComInterfaceRootTreeNode.Text}");
 		}
 
         public override void GetDetailText()
 		{
             base.GetDetailText();
 		}
-
-
 	}
 
 }

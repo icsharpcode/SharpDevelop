@@ -71,7 +71,7 @@ namespace ICSharpCode.WixBinding
 			IDocument document = view.Document;
 			DomRegion region = WixDocument.GetElementRegion(new StringReader(document.TextContent), "Dialog", dialogId);
 			if (region.IsEmpty) {
-				throw new FormsDesignerLoadException(String.Concat("Could not find dialog id '", dialogId, "' in the document."));
+				throw new FormsDesignerLoadException(String.Format(StringParser.Parse("${res:ICSharpCode.WixBinding.DialogDesignerGenerator.DialogIdNotFoundMessage}"), dialogId));
 			}
 			// Get the replacement dialog xml.
 			ITextEditorProperties properties = view.TextEditorControl.TextEditorProperties;

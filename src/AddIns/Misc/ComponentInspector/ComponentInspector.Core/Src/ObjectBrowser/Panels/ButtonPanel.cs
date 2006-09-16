@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Drawing;
@@ -32,7 +33,7 @@ namespace NoGoop.ObjBrowser.Panels
 			l.Dock = DockStyle.Fill;
 			Controls.Add(l);
 
-			Button ok = Utils.MakeButton("OK");
+			Button ok = Utils.MakeButton(StringParser.Parse("${res:Global.OKButtonText}"));
 			ok.Dock = DockStyle.Right;
 			ok.DialogResult = DialogResult.OK;
 			parent.AcceptButton = ok;
@@ -45,15 +46,13 @@ namespace NoGoop.ObjBrowser.Panels
 				l.Width = 5;
 				Controls.Add(l);
 
-				Button cancel = Utils.MakeButton("Cancel");
+				Button cancel = Utils.MakeButton(StringParser.Parse("${res:Global.CancelButtonText}"));
 				cancel.Dock = DockStyle.Right;
 				cancel.DialogResult = DialogResult.Cancel;
 				Controls.Add(cancel);
 			}
 
 			Height = Utils.BUTTON_HEIGHT;
-
 		}
-
 	}
 }

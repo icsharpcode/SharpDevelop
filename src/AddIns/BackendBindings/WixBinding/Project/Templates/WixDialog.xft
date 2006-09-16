@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0"?>
 <Template author="Matt Ward" version="1.0">
-	<Config name    = "Setup Dialog"
+	<Config name    = "${res:Templates.File.Wix.WixDialog.Name}"
 		icon        = "Icons.32x32.XMLFileIcon"
-		category    = "Setup"
+		category    = "${res:Templates.File.Categories.Setup}"
 		defaultname = "Dialog${Number}.wxs"
 		language    = "XML"/>
 	 
-	<Description>Creates a setup dialog.</Description>
+	<Description>${res:Templates.File.Wix.WixDialog.Description}</Description>
 
 	<Files>
 		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0"?>

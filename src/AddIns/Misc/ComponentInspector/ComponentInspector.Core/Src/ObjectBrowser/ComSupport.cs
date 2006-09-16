@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -85,7 +86,7 @@ namespace NoGoop.ObjBrowser
 			
 			// Favorite/recently accessed typelibs
 			_favTypeLibNode = new BrowserTreeNode();
-			_favTypeLibNode.Text = "Favorite/Recently Accessed Type Libraries";
+			_favTypeLibNode.Text = StringParser.Parse("${res:ComponentInspector.ComTreeNode.Text}");
 			_favTypeLibNode.ChildrenAlreadyAdded = true;
 			_favTypeLibNode.SetPresInfo(PresentationMap.COM_FOLDER_TYPELIB);
 			_typeLibNode = new ComTypeLibRootTreeNode();
@@ -101,7 +102,7 @@ namespace NoGoop.ObjBrowser
 			_appIdNode = new ComAppIdRootTreeNode();
 			_appIdNode.NodeOrder = 6;
 			_registeredNode = new BrowserTreeNode();
-			_registeredNode.Text = "Registry";
+			_registeredNode.Text = StringParser.Parse("${res:ComponentInspector.Registry.Text}");
 			_registeredNode.ChildrenAlreadyAdded = true;
 			_registeredNode.SetPresInfo(PresentationMap.FOLDER_CLOSED);
 			_comTree.AddNode(_favTypeLibNode);
@@ -219,7 +220,7 @@ namespace NoGoop.ObjBrowser
 			// Running objects - added to object tree
 			if (_runningObjInfo == null) {
 				_runningObjInfo = ObjectInfoFactory.GetObjectInfo(false, new ArrayList());
-				_runningObjInfo.ObjectName = "COM Running Objects";
+				_runningObjInfo.ObjectName = StringParser.Parse("${res:ComponentInspector.ComRunningObjectsTreeNode.Text}");
 				tlNode = new ObjectTreeNode(true, _runningObjInfo);
 				// The children are explicitly added here
 				tlNode.ChildrenAlreadyAdded = true;
@@ -235,8 +236,8 @@ namespace NoGoop.ObjBrowser
 				tlNode.InvalidateNode();
 			}
 			ProgressDialog progress = new ProgressDialog();
-			progress.Setup("Adding COM Running Objects",
-						  "Please wait while I add COM running objects",
+			progress.Setup(StringParser.Parse("${res:ComponentInspector.ProgressDialog.AddingRunningComObjectsDialogTitle}"),
+						  StringParser.Parse("${res:ComponentInspector.ProgressDialog.AddingRunningComObjectsMessage}"),
 						  ComObjectInfo.GetRunningObjectCount(),
 						  ProgressDialog.HAS_PROGRESS_TEXT,
 						  ProgressDialog.FINAL);

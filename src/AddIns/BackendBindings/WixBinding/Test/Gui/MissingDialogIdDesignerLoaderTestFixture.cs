@@ -5,12 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Resources;
 using System.Windows.Forms;
 using WixBinding.Tests.Utils;
 
@@ -23,6 +25,12 @@ namespace WixBinding.Tests.Gui
 	[TestFixture]
 	public class MissingDialogIdDesignerLoaderTestFixture : IWixDialogDesigner
 	{
+		[TestFixtureSetUp]
+		public void SetupFixture()
+		{
+			ResourceManager rm = new ResourceManager("WixBinding.Tests.Strings", GetType().Assembly);
+			ResourceService.RegisterNeutralStrings(rm);
+		}
 		[Test]
 		[ExpectedException(typeof(FormsDesignerLoadException), "Unable to find dialog with an id of 'MissingDialog'.")]
 		public void LoadMissingDialog()
@@ -31,7 +39,6 @@ namespace WixBinding.Tests.Gui
 			MockDesignerLoaderHost loaderHost = new MockDesignerLoaderHost();
 			loader.BeginLoad(loaderHost);
 		}
-		
 		
 		string IWixDialogDesigner.DialogId {
 			get {

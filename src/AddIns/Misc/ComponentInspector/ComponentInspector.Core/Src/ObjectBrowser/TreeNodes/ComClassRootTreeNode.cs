@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -60,12 +61,10 @@ namespace NoGoop.ObjBrowser.TreeNodes
             // Assume there are classes on the system
             return true;
         }
-
-
-
+        
         public override String GetName()
 		{
-            return "Classes";
+            return StringParser.Parse("${res:ComponentInspector.ComClassRootTreeNode.Text}");
 		}
 
         public override void GetDetailText()

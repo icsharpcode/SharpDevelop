@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
+
 using System;
 using System.Collections;
 using System.Drawing;
@@ -35,7 +37,7 @@ namespace NoGoop.ObjBrowser.Panels
 		{
 			Label l;
 
-			Text = "Directories";
+			Text = StringParser.Parse("${res:ComponentInspector.CustDirectoriesPanel.Title}");
 			Width = 400;
 
 			// Padding
@@ -44,8 +46,8 @@ namespace NoGoop.ObjBrowser.Panels
 			l.Height = 5;
 			Controls.Add(l);
 
-			_appDir = BuildDirPanel(this, "Application Working Directory");
-			_comDir = BuildDirPanel(this, "ActiveX Converted Assemblies");
+			_appDir = BuildDirPanel(this, StringParser.Parse("${res:ComponentInspector.CustDirectoriesPanel.ApplicationWorkingFolder}"));
+			_comDir = BuildDirPanel(this,  StringParser.Parse("${res:ComponentInspector.CustDirectoriesPanel.ConvertedAssembliesFolder}"));
 		}
 
 		protected TextBox BuildDirPanel(Control parent, String name)

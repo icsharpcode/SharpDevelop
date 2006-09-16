@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -88,7 +89,7 @@ namespace NoGoop.Controls
 			_headerPanel.Height = COLUMN_HEADER_HEIGHT;
 			_headerPanel.Width = INITIAL_COL_WIDTH;
 			_headerPanel.BorderStyle = BorderStyle.Fixed3D;
-			_headerPanel.Text = "Name";
+			_headerPanel.Text = StringParser.Parse("${res:ComponentInspector.TreeListPanel.HeaderPanel}");
 			_topPanel.Controls.Add(_headerPanel);
 			SetupSizes();
 			Controls.Add(_treeView);

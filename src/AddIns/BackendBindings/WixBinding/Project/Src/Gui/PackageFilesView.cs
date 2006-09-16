@@ -41,7 +41,7 @@ namespace ICSharpCode.WixBinding
 		{
 			packageFilesControl = new WixPackageFilesControl();
 			packageFilesControl.DirtyChanged += PackageFilesControlDirtyChanged;
-			TitleName = "Setup Files";
+			TitleName = StringParser.Parse("${res:ICSharpCode.WixBinding.PackageFilesView.Title}");
 			this.project = project;
 			FileName = "Dummy.filename";
 			

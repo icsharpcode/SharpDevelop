@@ -5,10 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
+using System.Resources;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Gui
@@ -20,6 +22,13 @@ namespace WixBinding.Tests.Gui
 	[TestFixture]
 	public class NoDialogIdSpecifiedForDesignerLoaderTestFixture : IWixDialogDesigner
 	{
+		[TestFixtureSetUp]
+		public void SetupFixture()
+		{
+			ResourceManager rm = new ResourceManager("WixBinding.Tests.Strings", GetType().Assembly);
+			ResourceService.RegisterNeutralStrings(rm);
+		}
+		
 		[Test]
 		[ExpectedException(typeof(FormsDesignerLoadException), "No setup dialog selected in Wix document. Please move the cursor inside a dialog element or use the Setup Dialogs window to open a dialog.")]
 		public void NoDialogIdSpecified()

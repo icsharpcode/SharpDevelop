@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Reflection;
@@ -24,7 +25,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 
 		public GettingStartedDialog() : base(!INCLUDE_BUTTONS)
 		{
-			Text = "Getting Started";
+			Text = StringParser.Parse("${res:ComponentInspector.GettingStartedDialog.Title}");
 
 			String descText;
 
@@ -32,22 +33,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 				HasProduct(NogoopLicense.PRODUCT_COM_COMPINSP))
 			{*/
 				Height = 400;
-				descText = 
-					"The Inspector can view or manipulate any ActiveX/COM "
-					+ "object.\n\n"
-
-					+ "Browse the COM running objects using the object "
-					+ "tree at the left.  Right click a member of the object "
-					+ "tree to invoke a method.\n\n"
-					
-					+ "Browse through the installed COM components "
-					+ "in the ActiveX/COM tab.\n\n"
-
-					+ "Open a type library or control file using the Open menu.\n\n"
-
-					+ "To create/manipulate a ActiveX/COM object, drag a "
-					+ "class within a TypeLib/Control to the object tree or "
-					+ "design surface.";
+				descText = StringParser.Parse("${res:ComponentInspector.GettingStartedDialog.Information}");
 			/*}
 			else
 			{
@@ -86,7 +72,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_checkBox.Dock = DockStyle.Left;
 			_checkBox.FlatStyle = FlatStyle.System;
 			_checkBox.Checked = true;
-			_checkBox.Text = "Show this Dialog";
+			_checkBox.Text = StringParser.Parse("${res:ComponentInspector.GettingStartedDialog.ShowThisDialogCheckBox}");
 			_checkBox.TextAlign = ContentAlignment.TopLeft;
 			_checkBox.CheckAlign = ContentAlignment.TopLeft;
 			_checkBox.Width = 100;

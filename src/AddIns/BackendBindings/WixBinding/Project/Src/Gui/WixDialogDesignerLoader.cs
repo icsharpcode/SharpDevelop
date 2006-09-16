@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.FormsDesigner.Services;
 using System;
@@ -71,7 +72,7 @@ namespace ICSharpCode.WixBinding
 		{
 			// Check dialog id.
 			if (designer.DialogId == null) {
-				throw new FormsDesignerLoadException("No setup dialog selected in Wix document. Please move the cursor inside a dialog element or use the Setup Dialogs window to open a dialog.");
+				throw new FormsDesignerLoadException(StringParser.Parse("${res:ICSharpCode.WixBinding.WixDialogDesigner.NoDialogSelectedInDocumentMessage}"));
 			}
 			
 			// Get dialog element.
@@ -79,7 +80,7 @@ namespace ICSharpCode.WixBinding
 			document.LoadXml(designer.GetDocumentXml());
 			wixDialog = document.GetDialog(designer.DialogId, new WorkbenchTextFileReader());
 			if (wixDialog == null) {
-				throw new FormsDesignerLoadException(String.Concat("Unable to find dialog with an id of '", designer.DialogId, "'."));
+				throw new FormsDesignerLoadException(String.Format(StringParser.Parse("${res:ICSharpCode.WixBinding.DialogDesignerGenerator.DialogIdNotFoundMessage}"), designer.DialogId));
 			}
 			
 			host.AddService(typeof(ComponentSerializationService), new CodeDomComponentSerializationService((IServiceProvider)host));

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -98,12 +99,12 @@ namespace NoGoop.ObjBrowser
 
 			_eventLogTabPage = new TabPage();
 			_eventLogTabPage.Controls.Add(this);
-			_eventLogTabPage.Text = "Event Log";
+			_eventLogTabPage.Text = StringParser.Parse("${res:ComponentInspector.EventLogList.EventsTab}");
 			_eventLogTabPage.BorderStyle = BorderStyle.None;
 
 			_eventsBeingLoggedTabPage = new TabPage();
 			_eventsBeingLoggedTabPage.Controls.Add(_eblText);
-			_eventsBeingLoggedTabPage.Text = "Events Being Logged";
+			_eventsBeingLoggedTabPage.Text = StringParser.Parse("${res:ComponentInspector.EventLogList.EventsBeingLoggedTab}");
 			_eventsBeingLoggedTabPage.BorderStyle = BorderStyle.None;
 
 			_loggerInstanceHash = new Hashtable();
@@ -111,12 +112,12 @@ namespace NoGoop.ObjBrowser
 			_loggerTypeHash = new Hashtable();
 
 			MenuItem mi = new MenuItem();
-			mi.Text = "&Clear";
+			mi.Text = StringParser.Parse("${res:ComponentInspector.EventLogList.ClearMenuItem}");
 			mi.Click += new EventHandler(DeleteClick);
 			ContextMenu.MenuItems.Add(mi);
 
 			mi = new MenuItem();
-			mi.Text = "Clear &All";
+			mi.Text = StringParser.Parse("${res:ComponentInspector.EventLogList.ClearAllMenuItem}");
 			mi.Click += new EventHandler(DeleteAllClick);
 			ContextMenu.MenuItems.Add(mi);
 
@@ -124,25 +125,25 @@ namespace NoGoop.ObjBrowser
 			// Keep in sync with the position constants above
 			ColumnHeader ch;
 			ch = new ColumnHeader();
-			ch.Text = "Event";
+			ch.Text = StringParser.Parse("${res:ComponentInspector.EventLogList.EventColumnHeader}");
 			ch.TextAlign = HorizontalAlignment.Left;
 			ch.Width = 90;
 			Columns.Add(ch);
 
 			ch = new ColumnHeader();
-			ch.Text = "Parameters";
+			ch.Text = StringParser.Parse("${res:ComponentInspector.EventLogList.ParametersColumnHeader}");
 			ch.TextAlign = HorizontalAlignment.Left;
 			ch.Width = 215;
 			Columns.Add(ch);
 
 			ch = new ColumnHeader();
-			ch.Text = "Inc";
+			ch.Text = StringParser.Parse("${res:ComponentInspector.EventLogList.IncrementColumnHeader}");
 			ch.TextAlign = HorizontalAlignment.Left;
 			ch.Width = 35;
 			Columns.Add(ch);
 
 			ch = new ColumnHeader();
-			ch.Text = "Time";
+			ch.Text = StringParser.Parse("${res:ComponentInspector.EventLogList.TimeColumnHeader}");
 			ch.TextAlign = HorizontalAlignment.Left;
 			ch.Width = 75;
 			Columns.Add(ch);
@@ -163,10 +164,7 @@ namespace NoGoop.ObjBrowser
 		{
 			_eventsBeingLogged = new ListView();
 
-			String desc = "\nYou are not logging any events.\n\n"
-				+ "To begin logging events, select an object or an event "
-				+ "in the Objects panel, and either right-click or use the "
-				+ "Action menu to enable event logging.";
+			String desc = StringParser.Parse("${res:ComponentInspector.EventLogList.NoEventsBeingLoggedMessage}");
 
 			_eblText = Utils.MakeDescText(desc, Parent);
 			_eblText.Dock = DockStyle.Fill;
@@ -177,12 +175,12 @@ namespace NoGoop.ObjBrowser
 			MenuItem mi;
 
 			mi = new MenuItem();
-			mi.Text = "&Stop Logging";
+			mi.Text = StringParser.Parse("${res:ComponentInspector.EventLogList.StopLoggingMenuItem}");
 			mi.Click += new EventHandler(EBLDeleteClick);
 			_eventsBeingLogged.ContextMenu.MenuItems.Add(mi);
 
 			mi = new MenuItem();
-			mi.Text = "Stop &All Logging";
+			mi.Text = StringParser.Parse("${res:ComponentInspector.EventLogList.StopAllLoggingMenuItem}");
 			mi.Click += new EventHandler(EBLDeleteAllClick);
 			_eventsBeingLogged.ContextMenu.MenuItems.Add(mi);
 
@@ -194,7 +192,7 @@ namespace NoGoop.ObjBrowser
 			_eventsBeingLogged.Columns.Add(ch);
 
 			ch = new ColumnHeader();
-			ch.Text = "Event";
+			ch.Text = StringParser.Parse("${res:ComponentInspector.EventLogList.EventColumnHeader}");
 			ch.TextAlign = HorizontalAlignment.Left;
 			ch.Width = 200;
 			_eventsBeingLogged.Columns.Add(ch);

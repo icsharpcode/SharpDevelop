@@ -24,6 +24,7 @@ namespace ICSharpCode.WixBinding
 		public WixCompilerExtensionPicker()
 		{
 			InitializeComponent();
+			InitStrings();
 		}
 		
 		/// <summary>
@@ -174,6 +175,11 @@ namespace ICSharpCode.WixBinding
 		void ExtensionsTextBoxTextChanged(object sender, EventArgs e)
 		{
 			OnExtensionsChanged();
+		}
+		
+		void InitStrings()
+		{
+			addButton.Text = StringParser.Parse("${res:ICSharpCode.WixBinding.WixCompilerExtensionPicker.AddButton}");
 		}
 	}
 }

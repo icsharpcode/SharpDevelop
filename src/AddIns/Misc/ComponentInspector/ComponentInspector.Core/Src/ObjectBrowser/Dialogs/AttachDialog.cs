@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Drawing;
@@ -30,7 +31,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			Panel panel;
 			Label l;
 
-			Text = "Attach";
+			Text = StringParser.Parse("${res:ComponentInspector.AttachDialog.Title}");
 			
 			panel = new Panel();
 			panel.Dock = DockStyle.Top;
@@ -42,7 +43,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			panel.Controls.Add(_process);
 			l = new Label();
 			l.Dock = DockStyle.Left;
-			l.Text = "Process";
+			l.Text = StringParser.Parse("${res:ComponentInspector.AttachDialog.ProcessLabel}");
 			l.AutoSize = true;
 			panel.Controls.Add(l);
 
@@ -60,7 +61,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 				ObjectBrowser.Debugger.Attach(processId);
 			} catch (Exception ex) {
 				ErrorDialog.Show(ex, 
-								 "Error attaching to process " + processId,
+				                 String.Format(StringParser.Parse("${res:ComponentInspector.AttachDialog.AttachFailedMessage}"), processId),
 								 MessageBoxIcon.Error);
 			}
 		}

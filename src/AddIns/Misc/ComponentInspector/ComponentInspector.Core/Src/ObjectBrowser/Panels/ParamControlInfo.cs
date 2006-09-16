@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -139,7 +140,7 @@ namespace NoGoop.ObjBrowser.Panels
 			{
 				Label l = new Label();
 				l.Dock = DockStyle.Top;
-				l.Text = "(separate strings with spaces)";
+				l.Text = StringParser.Parse("${res:ComponentInspector.ParamControlInfo.SeparateStringsWithSpaces}");
 				l.AutoSize = true;
 				controls.Add(l);
 				return l.Height;
@@ -406,13 +407,13 @@ namespace NoGoop.ObjBrowser.Panels
 				Label l = new Label();
 				l.TextAlign = ContentAlignment.TopRight;
 				l.Dock = DockStyle.Right;
-				l.Text = "select object";
+				l.Text = StringParser.Parse("${res:ComponentInspector.ParamControlInfo.SelectObjectLabel}");
 				l.AutoSize = true;
 				p.Controls.Add(l);
 
 				l = new Label();
 				l.Dock = DockStyle.Left;
-				l.Text = "value";
+				l.Text = StringParser.Parse("${res:ComponentInspector.ParamControlInfo.ValueLabel}");
 				l.AutoSize = true;
 				p.Controls.Add(l);
 

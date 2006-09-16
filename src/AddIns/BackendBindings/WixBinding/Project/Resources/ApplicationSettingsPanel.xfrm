@@ -22,7 +22,7 @@
           <System.Windows.Forms.Label>
             <Name value="label3" />
             <Location value="6, 76" />
-            <Text value="Output filename:" />
+            <Text value="${res:ICSharpCode.WixBinding.ApplicationsSettingsPanel.OutputFileNameLabel}" />
             <TextAlign value="MiddleRight" />
             <Size value="100, 23" />
             <TabIndex value="4" />
@@ -112,7 +112,7 @@
       <System.Windows.Forms.Label>
         <Name value="outputNameLabel" />
         <Location value="8, 8" />
-        <Text value="Output name:" />
+        <Text value="${res:ICSharpCode.WixBinding.ApplicationSettings.OutputNameLabel}" />
         <Anchor value="Top, Left, Right" />
         <TextAlign value="BottomLeft" />
         <Size value="446, 16" />

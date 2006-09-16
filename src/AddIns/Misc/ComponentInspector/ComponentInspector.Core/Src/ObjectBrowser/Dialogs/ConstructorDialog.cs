@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Reflection;
@@ -19,24 +20,18 @@ namespace NoGoop.ObjBrowser.Dialogs
 
 	internal class ConstructorDialog : Dialog
 	{
-
-
 		internal ConstructorDialog() : base()
 		{
 		}
 
 		internal static ConstructorInfo GetConstructor(ConstructorInfo[] ci)
 		{
-
 			ConstructorDialog d = new ConstructorDialog();
-			d.Text = "Select a Constructor";
+			d.Text = StringParser.Parse("${res:ComponentInspector.ConstructorDialog.Title}");
 
 			TextBox tb = new TextBox();
 			tb.Dock = DockStyle.Fill;
-			tb.Text = "If you select a constructor with parameters, "
-				+ "after you hit OK, please fill in the parameters and "
-				+ "then drag the selected "
-				+ "constructor to where you want this object to be created.";
+			tb.Text = StringParser.Parse("${res:ComponentInspector.ConstructorDialog.Information}");
 			tb.BorderStyle = BorderStyle.None;
 			tb.Multiline = true;
 			tb.AutoSize = true;

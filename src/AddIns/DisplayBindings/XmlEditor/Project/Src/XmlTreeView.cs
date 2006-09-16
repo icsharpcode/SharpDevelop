@@ -36,7 +36,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public override string TabPageText {
 			get {
-				return "XML Tree";
+				return StringParser.Parse("${res:ICSharpCode.XmlEditor.XmlTreeView.Title}");
 			}
 		}
 		

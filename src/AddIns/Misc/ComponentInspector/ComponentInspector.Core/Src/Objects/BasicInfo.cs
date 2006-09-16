@@ -78,94 +78,73 @@ namespace NoGoop.Obj
 		// information associated with this type has been displayed.
 		protected bool              _displayedIdentifier;
 		
-		internal virtual String Name
-		{
-			get
-				{
-					return _name;
-				}
-			set
-				{
-					if (value == null)
-						throw new NullReferenceException();
-					_name = value;
-				}
+		internal virtual String Name {
+			get {
+				return _name;
+			}
+			set {
+				if (value == null)
+					throw new NullReferenceException();
+				_name = value;
+			}
 		}      
 		
-		internal virtual String PrintName
-		{
-			get
-				{
-					return _printName;
-				}
-			set
-				{
-					if (value == null)
-						throw new NullReferenceException();
-					_printName = value;
-				}
+		internal virtual String PrintName {
+			get {
+				return _printName;
+			}
+			set {
+				if (value == null)
+					throw new NullReferenceException();
+				_printName = value;
+			}
 		}      
 		
-		internal String DocString
-		{
-			get
-				{
-					return _docString;
-				}
-			set
-				{
-					if (value == null && _name == null)
-						throw new NullReferenceException();
-					_docString = value;
-				}
+		internal String DocString {
+			get {
+				return _docString;
+			}
+			set {
+				if (value == null && _name == null)
+					throw new NullReferenceException();
+				_docString = value;
+			}
 		}       
 		
-		internal BrowserTreeNode TreeNode
-		{
-			get
-				{
-					return _treeNode;
-				}
-			set
-				{
-					_treeNode = value;
-				}
+		internal BrowserTreeNode TreeNode {
+			get {
+				return _treeNode;
+			}
+			set {
+				_treeNode = value;
+			}
 		}       
 		
-		internal TypeLibrary TypeLib
-		{
-			get
-				{
-					return _typeLib;
-				}
-			set
-				{
-					_typeLib = value;
-				}
+		internal TypeLibrary TypeLib {
+			get {
+				return _typeLib;
+			}
+			set {
+				_typeLib = value;
+			}
 		}      
 		
-		internal virtual PresentationInfo PresInfo
-		{
-			get
-				{
-					return _presInfo;
-				}
+		internal virtual PresentationInfo PresInfo {
+			get {
+				return _presInfo;
+			}
 		}
 		
-		internal virtual ArrayList Members
-		{
-			get
-				{
-					return _members;
-				}
+		internal virtual ArrayList Members {
+			get {
+				return _members;
+			}
 		}
 		
-		internal virtual Hashtable MemberNames
-		{
-			get
-				{
-					return _memberNames;
-				}
+		internal virtual Hashtable MemberNames {
+			get {
+				return _memberNames;
+			}
 		}
 		
 		internal BasicInfo()
@@ -183,8 +162,7 @@ namespace NoGoop.Obj
 			_regKey = regKey;
 		}
 		
-		internal BasicInfo(RegistryKey regKey,
-						   String guidStr) : this(regKey)
+		internal BasicInfo(RegistryKey regKey, String guidStr) : this(regKey)
 		{
 			InitGuid(guidStr, new Guid(guidStr));
 		}
@@ -253,8 +231,7 @@ namespace NoGoop.Obj
 		public virtual ISearchMaterializer GetSearchMaterializer
 			(ISearcher searcher)
 		{
-			return new ComSearchMaterializer
-				((Stack)searcher.SearchStack.Clone());
+			return new ComSearchMaterializer((Stack)searcher.SearchStack.Clone());
 		}
 		
 		public virtual int GetImageIndex()
@@ -291,8 +268,7 @@ namespace NoGoop.Obj
 			return _members;
 		}
 		
-		protected void InitGuid(String guidStr,
-								Guid guid)
+		protected void InitGuid(String guidStr, Guid guid)
 		{
 			if (guidStr != null && 
 				!guidStr.Equals("") &&
@@ -549,8 +525,7 @@ namespace NoGoop.Obj
 				return Name;
 			if (DocString != null)
 				return DocString;
-			throw new Exception("(bug, report this), GetName() called "
-								+ " but no name available: " + this);
+			return String.Empty;
 		}
 		
 		public override string ToString()

@@ -73,36 +73,36 @@ namespace NoGoop.ObjBrowser
 			open.Text = StringParser.Parse("${res:XML.MainMenu.FileMenu.Open}");
 			open.Click += new System.EventHandler(OpenClick);
 			ToolStripMenuItem close = new ToolStripMenuItem();
-			close.Text = "&Close";
+			close.Text = StringParser.Parse("${res:Global.CloseButtonText}");
 			close.Enabled = false;
 			close.Click += new EventHandler(CloseClick);
 
 			ToolStripMenuItem exit = new ToolStripMenuItem();
-			exit.Text = "E&xit";
+			exit.Text = StringParser.Parse("${res:XML.MainMenu.FileMenu.Exit}");
 			exit.Click += new System.EventHandler(ExitClick);
 
 			ToolStripMenuItem fileMenuItem = new ToolStripMenuItem();
 			fileMenuItem.DropDownItems.AddRange(new ToolStripMenuItem[] {open, close, exit});
-			fileMenuItem.Text = "&File";
+			fileMenuItem.Text = StringParser.Parse("${res:XML.MainMenu.FileMenu}");
 
 			ToolStripMenuItem viewMenuItem = new ToolStripMenuItem();
 			ToolStripMenuItem mi = new ToolStripMenuItem();
-			mi.Text = "&Object Tree...";
+			mi.Text = StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.ObjectTreeMenuItem}");
 			mi.Click += new System.EventHandler(CustObjectClick);
 			viewMenuItem.DropDownItems.Add(mi);
 
 			mi = new ToolStripMenuItem();
-			mi.Text = "&Type Handlers...";
+			mi.Text = StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.TypeHandlersMenuItem}");
 			mi.Click += new System.EventHandler(CustTypeHandlerClick);
 			viewMenuItem.DropDownItems.Add(mi);
 
 			mi = new ToolStripMenuItem();
-			mi.Text = "&Panels...";
+			mi.Text = StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.PanelsMenuItem}");
 			mi.Click += new System.EventHandler(CustPanelClick);
 			viewMenuItem.DropDownItems.Add(mi);
 
 			mi = new ToolStripMenuItem();
-			mi.Text = "&Directories...";
+			mi.Text = StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.DirectoriesMenuItem}");
 			mi.Click += new System.EventHandler(CustDirClick);
 			viewMenuItem.DropDownItems.Add(mi);
 
@@ -114,22 +114,22 @@ namespace NoGoop.ObjBrowser
 			// Create the customization form
 			_customizeForm = new CustomizeDialog();
 
-			viewMenuItem.Text = "&Options";
+			viewMenuItem.Text = StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.OptionsMenuItem}");
 
 			ToolStripMenuItem actionMenu = new ToolStripMenuItem();
-			actionMenu.Text = "&Action";
+			actionMenu.Text = StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.ActionMenuItem}");
 			ActionMenuHelper actionMenuHelper = new ActionMenuHelper(close);
 			actionMenuHelper.BuildActionMenu(actionMenu);
 			ActionMenuHelper.Helper = actionMenuHelper;
 
 			ToolStripMenuItem editMenu = new ToolStripMenuItem();
-			editMenu.Text = "&Edit";
+			editMenu.Text = StringParser.Parse("${res:XML.MainMenu.EditMenu}");
 			actionMenuHelper.BuildEditMenu(editMenu);
 			editMenu.DropDownItems.Add("-");
 
 			// Create the find form
 			mi = new ToolStripMenuItem();
-			mi.Text = "&Find...";
+			mi.Text = StringParser.Parse("${res:ComponentInspector.InspectorMenu.Find}");
 			mi.ShortcutKeys = Keys.Control | Keys.F;
 			mi.Click += new System.EventHandler(FindClick);
 			editMenu.DropDownItems.Add(mi);
@@ -140,7 +140,7 @@ namespace NoGoop.ObjBrowser
 			ToolStripMenuItem remoteMenuItem = new ToolStripMenuItem();
 			remoteMenuItem.Text = "&Development";
 			mi = new ToolStripMenuItem();
-			mi.Text = "&Attach...";
+			mi.Text = StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.AttachMenuItem}");
 			mi.Click += new System.EventHandler(AttachClick);
 			remoteMenuItem.DropDownItems.Add(mi);
 
@@ -148,21 +148,21 @@ namespace NoGoop.ObjBrowser
 			_tracingForm = new TracingDialog();
 
 			mi = new ToolStripMenuItem();
-			mi.Text = "&Tracing...";
+			mi.Text = StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.TracingMenuItem}");
 			mi.Click += new System.EventHandler(TracingClick);
 			remoteMenuItem.DropDownItems.Add(mi);
 
 			ToolStripMenuItem about = new ToolStripMenuItem();
-			about.Text = "&About...";
+			about.Text = StringParser.Parse("${res:XML.MainMenu.HelpMenu.About}");
 			about.Click += new System.EventHandler(AboutClick);
 
 			ToolStripMenuItem help = new ToolStripMenuItem();
-			help.Text = "&Help...";
+			help.Text = StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.ShowHelpMenuItem}");
 			help.Click += new System.EventHandler(HelpClick);
 
 			ToolStripMenuItem helpMenuItem = new ToolStripMenuItem();
 			helpMenuItem.DropDownItems.AddRange(new ToolStripMenuItem[] {help, about});
-			helpMenuItem.Text = "&Help";
+			helpMenuItem.Text = StringParser.Parse("${res:XML.MainMenu.HelpMenu}");
 
 			MainMenuStrip = new MenuStrip();
 			Controls.Add(MainMenuStrip);
@@ -182,15 +182,15 @@ namespace NoGoop.ObjBrowser
 				OpenFileDialog ofd = new OpenFileDialog();
 
 				String filterString =
-						"ActiveX Files (.tlb, *.olb, *.ocx, *.dll)" 
-						+ "|*.tlb;*.olb;*.ocx;*.dll|";
+					StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.ActiveXFilesFilterName} (.tlb, *.olb, *.ocx, *.dll)" 
+					    + "|*.tlb;*.olb;*.ocx;*.dll|");
 				filterString += 
-					"Assembly Files (*.exe, *.dll)|*.exe;*.dll";
-				filterString += "|All Files (*.*)|*.*";
+					StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.AssemblyFilesFilterName} (*.exe, *.dll)|*.exe;*.dll");
+				filterString += StringParser.Parse("|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 				ofd.Filter = filterString;
 				ofd.FilterIndex = 1 ;
 				ofd.RestoreDirectory = true ;
-				ofd.Title = "Select a File to Open";
+				ofd.Title = StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.OpenFileDialogTitle}");
 
 				if (ofd.ShowDialog() == DialogResult.OK) {
 					// Returns true if worked

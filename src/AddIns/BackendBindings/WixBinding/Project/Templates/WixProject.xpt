@@ -2,7 +2,7 @@
 <Template originator   = "Mike Krueger">	
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.SetupProject.Name}</Name>
-		<Category>Setup</Category>
+		<Category>${res:Templates.File.Categories.Setup}</Category>
 		<Icon>Icons.32x32.EmptyProjectIcon</Icon>
 		<LanguageName>Wix</LanguageName>
 		<Description>${res:Templates.Project.SetupProject.Description}</Description>

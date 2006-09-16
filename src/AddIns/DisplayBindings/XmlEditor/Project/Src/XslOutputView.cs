@@ -43,7 +43,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public override string TitleName {
 			get {
-				return "XSLT Output";
+				return StringParser.Parse("${res:ICSharpCode.XmlEditor.XslOutputView.Title}");
 			}
 			set {
 			}

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Drawing;
@@ -31,24 +32,24 @@ namespace NoGoop.ObjBrowser.Panels
 		{
 			Label l;
 
-			Text = "Panels";
+			Text = StringParser.Parse("${res:ComponentInspector.GeneralOptionsPanel.PanelsGroupBox}");
 
 			_showAssyPanelCheck = new CheckBox();
 			_showAssyPanelCheck.Location = new Point(10, 10);
 			_showAssyPanelCheck.Width = FIELD_WIDTH;
-			_showAssyPanelCheck.Text = "Show Assembly Panel";
+			_showAssyPanelCheck.Text = StringParser.Parse("${res:ComponentInspector.GeneralOptionsPanel.ShowAssemblyPanelCheckBox}");
 			Controls.Add(_showAssyPanelCheck);
 
 			_showControlPanelCheck = new CheckBox();
 			_showControlPanelCheck.Location = new Point(10, 30);
 			_showControlPanelCheck.Width = FIELD_WIDTH;
-			_showControlPanelCheck.Text = "Show Controls Panel";
+			_showControlPanelCheck.Text = StringParser.Parse("${res:ComponentInspector.GeneralOptionsPanel.ShowControlsPanelCheckBox}");
 			Controls.Add(_showControlPanelCheck);
 
 			_showGacPanelCheck = new CheckBox();
 			_showGacPanelCheck.Location = new Point(10, 50);
 			_showGacPanelCheck.Width = FIELD_WIDTH;
-			_showGacPanelCheck.Text = "Show GAC Panel";
+			_showGacPanelCheck.Text = StringParser.Parse("${res:ComponentInspector.GeneralOptionsPanel.ShowGacPanelCheckBox}");
 			Controls.Add(_showGacPanelCheck);
 
 			// Padding

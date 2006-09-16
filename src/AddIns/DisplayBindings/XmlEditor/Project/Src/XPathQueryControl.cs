@@ -51,6 +51,7 @@ namespace ICSharpCode.XmlEditor
 		public XPathQueryControl()
 		{
 			InitializeComponent();
+			InitStrings();
 			InitImageList();
 			xPathComboBox.KeyDown += XPathComboBoxKeyDown;
 			InitAutoCompleteMode();
@@ -470,7 +471,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void AddNoXPathResult()
 		{
-			xPathResultsListView.Items.Add("XPath query found 0 items.");
+			xPathResultsListView.Items.Add(StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.NoXPathResultsMessage}"));
 		}
 		
 		void AddErrorResult(XmlException ex)
@@ -483,7 +484,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void AddErrorResult(XPathException ex)
 		{
-			ListViewItem item = new ListViewItem(String.Concat("XPath: ", ex.Message), ErrorImageIndex);
+			ListViewItem item = new ListViewItem(String.Concat(StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.XPathLabel}"), " ", ex.Message), ErrorImageIndex);
 			item.Tag = ex;
 			xPathResultsListView.Items.Add(item);
 		}
@@ -493,6 +494,18 @@ namespace ICSharpCode.XmlEditor
 			try {
 				imageList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Error"));
 			} catch (ResourceNotFoundException) { }
+		}
+		
+		void InitStrings()
+		{
+			lineColumnHeader.Text = StringParser.Parse("${res:CompilerResultView.LineText}");
+			matchColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.XPathMatchColumnHeaderTitle}");
+			prefixColumn.HeaderText = StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.PrefixColumnHeaderTitle}");
+			namespaceColumn.HeaderText = StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.NamespaceColumnHeaderTitle}");
+			queryButton.Text = StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.QueryButton}");
+			xPathLabel.Text = StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.XPathLabel}");
+			xPathResultsTabPage.Text = StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.ResultsTab}");
+			namespacesTabPage.Text = StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.NamespacesTab}");
 		}
 		
 		void InitAutoCompleteMode()

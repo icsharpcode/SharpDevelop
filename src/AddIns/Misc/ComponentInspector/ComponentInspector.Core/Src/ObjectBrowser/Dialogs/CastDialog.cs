@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Reflection;
@@ -54,9 +55,9 @@ namespace NoGoop.ObjBrowser.Dialogs
 			Activated += new EventHandler(ActivateHandler);
 
 			if (_memberInfo != null)
-				Text = "Cast for " + _memberInfo.ToString();
+				Text = StringParser.Parse("${res:ComponentInspector.CastDialog.CastForTitle} ") + _memberInfo.ToString();
 			else
-				Text = "Cast";
+				Text = StringParser.Parse("${res:ComponentInspector.CastDialog.CastTitle}");
 			Width = 400;
 			Height = 170;
 
@@ -68,7 +69,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			if (_memberInfo != null) {
 				_rememberCheck = new CheckBox();
 				_rememberCheck.Dock = DockStyle.Top;
-				_rememberCheck.Text = "Remember cast across sessions?";
+				_rememberCheck.Text = StringParser.Parse("${res:ComponentInspector.CastDialog.RememberCastCheckBox}");
 				if (_castInfo != null)
 					_rememberCheck.Checked = _castInfo.Perm;
 				else
@@ -94,7 +95,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 
 			l = new Label();
 			l.Dock = DockStyle.Left;
-			l.Text = "Cast to ";
+			l.Text = StringParser.Parse("${res:ComponentInspector.CastDialog.CastToLabel} ");
 			l.AutoSize = true;
 			textPanel.Controls.Add(l);
 
@@ -107,7 +108,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			l.Dock = DockStyle.Fill;
 			bp.Controls.Add(l);
 
-			Button ok = Utils.MakeButton("OK");
+			Button ok = Utils.MakeButton(StringParser.Parse("${res:Global.OKButtonText}"));
 			ok.Dock = DockStyle.Right;
 			ok.DialogResult = DialogResult.OK;
 			AcceptButton = ok;
@@ -115,14 +116,14 @@ namespace NoGoop.ObjBrowser.Dialogs
 
 			if (_castInfo != null)
 			{
-				Button b = Utils.MakeButton("Remove");
+				Button b = Utils.MakeButton(StringParser.Parse("${res:Global.RemoveButtonText}"));
 				b.Dock = DockStyle.Right;
 				b.DialogResult = DialogResult.OK;
 				b.Click += new EventHandler(RemoveClick);
 				bp.Controls.Add(b);
 			}
 
-			Button cancel = Utils.MakeButton("Cancel");
+			Button cancel = Utils.MakeButton(StringParser.Parse("${res:Global.CancelButtonText}"));
 			cancel.Dock = DockStyle.Right;
 			cancel.DialogResult = DialogResult.Cancel;
 			bp.Controls.Add(cancel);
@@ -163,16 +164,14 @@ namespace NoGoop.ObjBrowser.Dialogs
 					castType = ReflectionHelper.GetType(_textBox.Text);
 				} catch (Exception ex) {
 					ErrorDialog.Show(ex,
-									 "Error determining type of cast",
+					                 StringParser.Parse("${res:ComponentInspector.CastDialog.DetermineTypeOfCastFailedMessage}"),
 									 MessageBoxIcon.Error);
 					continue;
 				}
 
 				if (castType == null) {
-					ErrorDialog.Show("Cannot find type " + _textBox.Text
-									 + " in any of the assemblies currently "
-									 + "open.",
-									 "Cannot find type " + _textBox.Text,
+					ErrorDialog.Show(String.Format(StringParser.Parse("${res:ComponentInspector.CastDialog.CannotFindTypeInAssembliesMessage}"), _textBox.Text),
+									 StringParser.Parse("${res:ComponentInspector.CastDialog.CannotFindType} ") + _textBox.Text,
 									 MessageBoxIcon.Error);
 					continue;
 				}
@@ -193,8 +192,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 					}
 				} catch (Exception ex) {
 					ErrorDialog.Show(ex,
-									 "Cast type incompatible with "
-									 + "object's type",
+					                 StringParser.Parse("${res:ComponentInspector.CastDialog.TypeIncompatibleMessage}"),
 									 MessageBoxIcon.Error);
 					continue;
 				}

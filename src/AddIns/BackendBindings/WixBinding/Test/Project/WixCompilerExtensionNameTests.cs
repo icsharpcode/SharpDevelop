@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
@@ -18,6 +19,21 @@ namespace WixBinding.Tests.Project
 		public void DisplayName()
 		{
 			WixCompilerExtensionName name = WixCompilerExtensionName.CreateFromString("ClassName, AssemblyName|DisplayName");
+			Assert.AreEqual("DisplayName", name.DisplayName);
+			Assert.AreEqual("ClassName", name.ClassName);
+			Assert.AreEqual("AssemblyName", name.AssemblyName);
+		}
+		
+		[Test]
+		public void StringParsed()
+		{
+			string stringPropertyName = "WixCompilerExtensionNameTests.StringParsedTest.Text";
+			if (StringParser.Properties.ContainsKey(stringPropertyName)) {
+				StringParser.Properties.Remove(stringPropertyName);
+			}
+			StringParser.Properties.Add(stringPropertyName, "DisplayName");
+			
+			WixCompilerExtensionName name = WixCompilerExtensionName.CreateFromString("ClassName, AssemblyName|${WixCompilerExtensionNameTests.StringParsedTest.Text}");
 			Assert.AreEqual("DisplayName", name.DisplayName);
 			Assert.AreEqual("ClassName", name.ClassName);
 			Assert.AreEqual("AssemblyName", name.AssemblyName);

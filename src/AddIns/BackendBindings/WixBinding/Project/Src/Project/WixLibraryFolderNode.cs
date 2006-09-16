@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using System;
 
@@ -20,7 +21,7 @@ namespace ICSharpCode.WixBinding
 		public WixLibraryFolderNode(IProject project)
 		{
 			this.project = project;
-			Text = "WiX Libraries";
+			Text = StringParser.Parse("${res:ICSharpCode.WixBinding.WixLibraryFolderNode.Text}");
 			OpenedImage = "ProjectBrowser.ReferenceFolder.Open";
 			ClosedImage = "ProjectBrowser.ReferenceFolder.Closed";
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixLibraryFolderNode";

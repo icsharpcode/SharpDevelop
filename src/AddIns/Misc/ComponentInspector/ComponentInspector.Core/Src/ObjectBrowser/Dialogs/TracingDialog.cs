@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -31,7 +32,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			Panel panel;
 			Label l;
 
-			Text = "Set Trace Level";
+			Text = StringParser.Parse("${res:ComponentInspector.TracingDialog.Title}");
 			
 			panel = new Panel();
 			panel.Dock = DockStyle.Top;
@@ -43,7 +44,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			panel.Controls.Add(_level);
 			l = new Label();
 			l.Dock = DockStyle.Left;
-			l.Text = "Trace Level";
+			l.Text = StringParser.Parse("${res:ComponentInspector.TracingDialog.TraceLevelLabel}");
 			l.AutoSize = true;
 			panel.Controls.Add(l);
 		}

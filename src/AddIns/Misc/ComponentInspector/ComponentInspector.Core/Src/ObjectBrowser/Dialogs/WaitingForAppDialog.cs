@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Reflection;
@@ -22,17 +23,10 @@ namespace NoGoop.ObjBrowser.Dialogs
 
 		internal WaitingForAppDialog() : base(!INCLUDE_BUTTONS)
 		{
-			Text = "Waiting for Application to Start";
+			Text = StringParser.Parse("${res:ComponentInspector.WaitingForAppDialog.Title}");
 			Height = 150;
 
-			String descText;
-
-
-			descText = 
-				"Waiting for application to start. "
-				+ "If the application fails to start (or you "
-				+ "become tired of waiting), "
-				+ "you may cancel by pressing Cancel.";
+			String descText = StringParser.Parse("${res:ComponentInspector.WaitingForAppDialog.Information}");
 
 			_textBox = Utils.MakeDescText(descText, this);
 			_textBox.Dock = DockStyle.Fill;
@@ -49,7 +43,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			l.Dock = DockStyle.Fill;
 			bottomPanel.Controls.Add(l);
 
-			Button cancel = Utils.MakeButton("Cancel");
+			Button cancel = Utils.MakeButton(StringParser.Parse("${res:Global.CancelButtonText}"));
 			cancel.Dock = DockStyle.Right;
 			cancel.DialogResult = DialogResult.Cancel;
 			bottomPanel.Controls.Add(cancel);

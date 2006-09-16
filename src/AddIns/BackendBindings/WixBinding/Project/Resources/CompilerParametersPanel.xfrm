@@ -6,7 +6,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="compilerExtensionsGroupBox" />
         <Location value="3, 289" />
-        <Text value="Extensions" />
+        <Text value="${res:ICSharpCode.WixBinding.CompilerParametersPanel.CompilerExtensionsGroupBox}" />
         <Anchor value="Top, Left, Right" />
         <Size value="502, 175" />
         <TabIndex value="3" />
@@ -23,7 +23,7 @@
             <CheckAlign value="MiddleRight" />
             <TextAlign value="MiddleRight" />
             <Location value="12, 66" />
-            <Text value="Treat warnings as errors:" />
+            <Text value="${res:ICSharpCode.WixBinding.CompilerParametersPanel.TreatWarningsAsErrorsCheckBox}" />
             <TabIndex value="5" />
             <Size value="190, 24" />
             <UseVisualStyleBackColor value="True" />
@@ -88,7 +88,7 @@
           <System.Windows.Forms.Label>
             <Name value="wixMSBuildExtensionsPathLabel" />
             <Location value="6, 59" />
-            <Text value="Wix MSBuild extensions path:" />
+            <Text value="${res:ICSharpCode.WixBinding.CompilerParametersPanel.WixMSBuildExtensionsPathLabel}" />
             <Anchor value="Top, Left, Right" />
             <TextAlign value="BottomLeft" />
             <Size value="490, 16" />
@@ -113,7 +113,7 @@
           <System.Windows.Forms.Label>
             <Name value="wixToolPathLabel" />
             <Location value="6, 17" />
-            <Text value="Wix tool path:" />
+            <Text value="${res:ICSharpCode.WixBinding.CompilerParametersPanel.WixToolPathLabel}" />
             <Anchor value="Top, Left, Right" />
             <TextAlign value="BottomLeft" />
             <Size value="490, 15" />

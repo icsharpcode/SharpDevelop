@@ -6,7 +6,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="categoriesGroupBox" />
         <Location value="{X=10,Y=194}" />
-        <Text value="Categories" />
+        <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.CategoriesGroupBox}" />
         <Anchor value="Top, Left, Right" />
         <Size value="{Width=362, Height=118}" />
         <TabIndex value="2" />
@@ -16,7 +16,7 @@
             <Location value="{X=5,Y=83}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <Text value="Show Object members in base class category" />
+            <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.ShowObjectAsBaseClassCheckBox}" />
             <TabIndex value="4" />
             <Size value="{Width=301, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -34,7 +34,7 @@
           <System.Windows.Forms.Label>
             <Name value="categoryCountLabel" />
             <Location value="{X=22,Y=62}" />
-            <Text value="When number of members exceeds" />
+            <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.CategoryCountLabel}" />
             <Size value="{Width=225, Height=20}" />
             <TabIndex value="2" />
           </System.Windows.Forms.Label>
@@ -43,7 +43,7 @@
             <Location value="{X=6,Y=41}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <Text value="Show base class categories" />
+            <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.ShowBaseClassCategoryCheckBox}" />
             <TabIndex value="1" />
             <Size value="{Width=319, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -53,7 +53,7 @@
             <Location value="{X=6,Y=20}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <Text value="Show member categories" />
+            <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.ShowMemberCategoriesCheckBox}" />
             <TabIndex value="0" />
             <Size value="{Width=319, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -63,7 +63,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="showGroupBox" />
         <Location value="{X=10,Y=93}" />
-        <Text value="Show" />
+        <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.ShowGroupBox}" />
         <Anchor value="Top, Left, Right" />
         <Size value="{Width=363, Height=92}" />
         <TabIndex value="1" />
@@ -71,7 +71,7 @@
           <System.Windows.Forms.CheckBox>
             <Name value="displayIntegersInHexCheckBox" />
             <Location value="{X=172,Y=41}" />
-            <Text value="Integers in hex" />
+            <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.DisplayIntegersInHexCheckBox}" />
             <TabIndex value="4" />
             <Size value="{Width=168, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -79,7 +79,7 @@
           <System.Windows.Forms.CheckBox>
             <Name value="showBaseClassNamesCheckBox" />
             <Location value="{X=172,Y=20}" />
-            <Text value="Base class names" />
+            <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.ShowBaseClassNamesCheckBox}" />
             <TabIndex value="3" />
             <Size value="{Width=168, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -87,7 +87,7 @@
           <System.Windows.Forms.CheckBox>
             <Name value="showPropertyAccessorsMethodsCheckBox" />
             <Location value="{X=6,Y=62}" />
-            <Text value="Property/Event accessor methods" />
+            <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.ShowPropertyAccessorsMethodsCheckBox}" />
             <TabIndex value="2" />
             <Size value="{Width=334, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -97,7 +97,7 @@
             <Location value="{X=6,Y=41}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <Text value="Public members only" />
+            <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.ShowPublicMembersOnlyCheckBox}" />
             <TabIndex value="1" />
             <Size value="{Width=160, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -107,7 +107,7 @@
             <Location value="{X=6,Y=20}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <Text value="Base class members" />
+            <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.ShowBaseClassMembersCheckBox}" />
             <TabIndex value="0" />
             <Size value="{Width=160, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -117,7 +117,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="showMembersGroupBox" />
         <Location value="{X=10,Y=11}" />
-        <Text value="Show Members" />
+        <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.ShowMembersGroupBox}" />
         <Anchor value="Top, Left, Right" />
         <Size value="{Width=364, Height=73}" />
         <TabIndex value="0" />
@@ -127,7 +127,7 @@
             <Location value="{X=172,Y=41}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <Text value="Events" />
+            <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.ShowEventsCheckBox}" />
             <TabIndex value="3" />
             <Size value="{Width=146, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -137,7 +137,7 @@
             <Location value="{X=172,Y=20}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <Text value="Methods" />
+            <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.ShowMethodsCheckBox}" />
             <TabIndex value="2" />
             <Size value="{Width=146, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -147,7 +147,7 @@
             <Location value="{X=6,Y=41}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <Text value="Properties" />
+            <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.ShowPropertiesCheckBox}" />
             <TabIndex value="1" />
             <Size value="{Width=146, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -157,7 +157,7 @@
             <Location value="{X=6,Y=20}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <Text value="Fields" />
+            <Text value="${res:ComponentInspector.ObjectTreeOptionsPanel.ShowFieldsCheckBox}" />
             <TabIndex value="0" />
             <Size value="{Width=146, Height=20}" />
             <UseVisualStyleBackColor value="True" />

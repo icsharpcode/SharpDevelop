@@ -166,12 +166,12 @@ namespace ICSharpCode.WixBinding
 		
 		public void ShowNoSourceFileFoundMessage(string projectName)
 		{
-			ShowErrorMessage(String.Concat("No Wix file (.wxs) found in '", projectName, "' project."));
+			ShowErrorMessage(String.Format(StringParser.Parse("${res:ICSharpCode.WixBinding.PackageFilesView.NoWixFileFoundInProjectMessage}"), projectName));
 		}
 		
 		public void ShowSourceFilesContainErrorsMessage()
 		{
-			ShowErrorMessage(String.Concat("Unable to find setup files. Wix files contain errors."));
+			ShowErrorMessage(StringParser.Parse("${res:ICSharpCode.WixBinding.PackageFilesView.AllWixFilesContainErrorsMessage}"));
 		}
 		
 		/// <summary>
@@ -237,7 +237,7 @@ namespace ICSharpCode.WixBinding
 			
 			// Allow the user to select a directory.
 			FolderDialog dialog = new FolderDialog();
-			if (dialog.DisplayDialog("Add Directory") == DialogResult.OK) {
+			if (dialog.DisplayDialog("${res:ICSharpCode.WixBinding.PackageFilesView.AddDirectoryDialog.Title}") == DialogResult.OK) {
 				packageFilesTreeView.SelectedNode = selectedNode;
 				editor.AddDirectory(dialog.Path);
 			}
@@ -409,8 +409,8 @@ namespace ICSharpCode.WixBinding
 		{
 			OpenFileDialog dialog = new OpenFileDialog();
 			dialog.Multiselect = true;
-			dialog.Filter = "All Files (*.*)|*.*";
-			dialog.Title = "Add files...";
+			dialog.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+			dialog.Title = StringParser.Parse("${res:ICSharpCode.WixBinding.PackageFilesView.AddFilesDialog.Title}");
 			return dialog;
 		}
 		

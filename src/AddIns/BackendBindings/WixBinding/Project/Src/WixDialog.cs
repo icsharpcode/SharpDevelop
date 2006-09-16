@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.ComponentModel;
 using System.Collections;
@@ -244,12 +245,12 @@ namespace ICSharpCode.WixBinding
 		{
 			XmlAttribute attribute = element.Attributes[name];
 			if (attribute == null) {
-				string message = String.Format("Required attribute '{0}' is missing.", name);
+				string message = String.Format(StringParser.Parse("${res:ICSharpCode.WixBinding.WixDialog.RequiredAttributeMissingMessage}"), name);
 				throw new WixDialogException(message, element.Name, element.GetAttribute("Id"));
 			}
 			int attributeValue;
 			if (!Int32.TryParse(attribute.Value, out attributeValue)) {
-				string message = String.Format("The {0} attribute's value, '{1}', is not a legal integer value.", name, attribute.Value);
+				string message = String.Format(StringParser.Parse("${res:ICSharpCode.WixBinding.WixDialog.IllegalAttributeIntegerValue}"), name, attribute.Value);
 				throw new WixDialogException(message, element.Name, element.GetAttribute("Id"));
 			}
 			return attributeValue;

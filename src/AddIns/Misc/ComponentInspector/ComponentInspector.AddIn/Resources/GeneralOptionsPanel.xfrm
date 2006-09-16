@@ -13,7 +13,7 @@
           <System.Windows.Forms.CheckBox>
             <Name value="automaticallyGetComPropertiesCheckBox" />
             <Location value="{X=6,Y=41}" />
-            <Text value="Automatically get COM properties" />
+            <Text value="${res:ComponentInspector.GeneralOptionsPanel.AutomaticallyGetComPropertiesCheckBox}" />
             <TabIndex value="1" />
             <Size value="{Width=357, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -21,7 +21,7 @@
           <System.Windows.Forms.CheckBox>
             <Name value="getRunningComObjectsAtStartupCheckBox" />
             <Location value="{X=6,Y=20}" />
-            <Text value="Get COM running objects at startup" />
+            <Text value="${res:ComponentInspector.GeneralOptionsPanel.GetRunningComObjectsAtStartupCheckBox}" />
             <TabIndex value="0" />
             <Size value="{Width=357, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -31,7 +31,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="panelsGroupBox" />
         <Location value="{X=10,Y=10}" />
-        <Text value="Panels" />
+        <Text value="${res:ComponentInspector.GeneralOptionsPanel.PanelsGroupBox}" />
         <Anchor value="Top, Left, Right" />
         <Size value="{Width=382, Height=88}" />
         <TabIndex value="0" />
@@ -39,7 +39,7 @@
           <System.Windows.Forms.CheckBox>
             <Name value="showGacPanelCheckBox" />
             <Location value="{X=6,Y=62}" />
-            <Text value="Show GAC Panel" />
+            <Text value="${res:ComponentInspector.GeneralOptionsPanel.ShowGacPanelCheckBox}" />
             <TabIndex value="2" />
             <Size value="{Width=357, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -49,7 +49,7 @@
             <Location value="{X=6,Y=41}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <Text value="Show Controls Panel" />
+            <Text value="${res:ComponentInspector.GeneralOptionsPanel.ShowControlsPanelCheckBox}" />
             <TabIndex value="1" />
             <Size value="{Width=357, Height=20}" />
             <UseVisualStyleBackColor value="True" />
@@ -59,7 +59,7 @@
             <Location value="{X=6,Y=20}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <Text value="Show Assembly Panel" />
+            <Text value="${res:ComponentInspector.GeneralOptionsPanel.ShowAssemblyPanelCheckBox}" />
             <TabIndex value="0" />
             <Size value="{Width=357, Height=20}" />
             <UseVisualStyleBackColor value="True" />

@@ -93,19 +93,19 @@ namespace NoGoop.Controls
 			SetText();
 			Panel buttonPanel = new Panel();
 			buttonPanel.Dock = DockStyle.Bottom;
-			Button ok = Utils.MakeButton("OK");
+			Button ok = Utils.MakeButton(StringParser.Parse("${res:Global.OKButtonText}"));
 			ok.Dock = DockStyle.Right;
 			ok.DialogResult = DialogResult.OK;
 			buttonPanel.Height = Utils.BUTTON_HEIGHT;
 			buttonPanel.Controls.Add(ok);
 			if (_details != null) {
-				_moreInfo = Utils.MakeButton("More Information");
+				_moreInfo = Utils.MakeButton(StringParser.Parse("${res:ComponentInspector.ErrorDialog.MoreInformationButton}"));
 				_moreInfo.Dock = DockStyle.Right;
 				_moreInfo.Click += new EventHandler(MoreInfoClickedHandler);
 				buttonPanel.Height = Utils.BUTTON_HEIGHT;
 				buttonPanel.Controls.Add(_moreInfo);
 			}
-			Button bug = Utils.MakeButton("Report as Bug");
+			Button bug = Utils.MakeButton(StringParser.Parse("${res:ComponentInspector.ErrorDialog.ReportAsBugButton}"));
 			bug.Dock = DockStyle.Right;
 			bug.Click += new EventHandler(BugClickedHandler);
 			buttonPanel.Height = Utils.BUTTON_HEIGHT;
@@ -270,9 +270,9 @@ namespace NoGoop.Controls
 		{
 			_detailIsDisplayed = !_detailIsDisplayed;
 			if (_detailIsDisplayed)
-				_moreInfo.Text = "Less Information";
+				_moreInfo.Text = StringParser.Parse("${res:ComponentInspector.ErrorDialog.LessInformationButton}");
 			else
-				_moreInfo.Text = "More Information";
+				_moreInfo.Text = StringParser.Parse("${res:ComponentInspector.ErrorDialog.MoreInformationButton}");
 			SetText();
 		}
 		

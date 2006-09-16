@@ -65,7 +65,7 @@ namespace ICSharpCode.WixBinding
 			OpenFileDialog dialog = new OpenFileDialog();
 			dialog.AddExtension    = true;
 			dialog.FilterIndex     = 0;
-			dialog.Filter          = "WiX Library Files (*.wixlib)|*.wixlib|All Files (*.*)|*.*";
+			dialog.Filter          = "${res:ICSharpCode.WixBinding.AddWixLibraryToProject.WixLibraryFileFilterName} (*.wixlib)|*.wixlib|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
 			dialog.Multiselect     = true;
 			dialog.CheckFileExists = true;
 			dialog.Title = StringParser.Parse("${res:ProjectComponent.ContextMenu.AddExistingFiles}");

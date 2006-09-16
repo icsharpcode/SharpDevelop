@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -24,7 +25,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 		internal AboutDialog()
 		{
 			Label l;
-			Text = "About";
+			Text = StringParser.Parse("${res:ComponentInspector.AboutDialog.Title}");
 
 			DockPadding.All = 10;
 			StartPosition = FormStartPosition.CenterParent;
@@ -41,7 +42,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			l.Dock = DockStyle.Fill;
 			bp.Controls.Add(l);
 
-			Button ok = Utils.MakeButton("OK");
+			Button ok = Utils.MakeButton(StringParser.Parse("${res:Global.OKButtonText}"));
 			ok.Dock = DockStyle.Right;
 			ok.DialogResult = DialogResult.OK;
 			bp.Controls.Add(ok);
@@ -76,7 +77,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			l = new Label();
 			l.Dock = DockStyle.Top;
 			l.AutoSize = true;
-			l.Text = "Version: " + ObjectBrowser.CODEBASE_VERSION;
+			l.Text = StringParser.Parse("${res:ComponentInspector.AboutDialog.VersionLabel}") + " " + ObjectBrowser.CODEBASE_VERSION;
 			Controls.Add(l);
 
 			// Spacing

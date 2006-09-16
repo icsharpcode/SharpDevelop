@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -37,7 +38,7 @@ namespace NoGoop.ObjBrowser
 	{
 		const int    WIDTH_UNITS  = 5;
 		const int    HEIGHT_UNITS = 6;
-		const string TOP_OBJ_NAME = "Top Level Objects";
+		string TOP_OBJ_NAME;
 				
 		internal const bool   INTERNAL = true;
 		internal const string CODEBASE_VERSION = Version.VERSION;
@@ -139,6 +140,7 @@ namespace NoGoop.ObjBrowser
 		
 		public ObjectBrowser(bool showStatusPanel, bool tabbedLayout)
 		{
+			TOP_OBJ_NAME = StringParser.Parse("${res:ComponentInspector.ObjectBrowser.TopLevelObjects}");
 			int start = Environment.TickCount;
 			_objBrowser = this;
 			InitTypeHandlers();
@@ -267,7 +269,7 @@ namespace NoGoop.ObjBrowser
 			ComponentInspectorProperties.TypeHandlerChanged += ObjectTreeInvalidated;
 				
 			ColumnHeader ch = new ColumnHeader();
-			ch.Text = "Value";
+			ch.Text = StringParser.Parse("${res:ComponentInspector.ObjectBrowser.ValueColumnHeader}");
 			ch.TextAlign = HorizontalAlignment.Left;
 			_objTree.Columns.Add(ch);
 			_objTree.BorderStyle = BorderStyle.None;
@@ -292,7 +294,7 @@ namespace NoGoop.ObjBrowser
 			// panel that's the parent of the tree
 			_objTreePanel.Controls.Add(_objTree.Panel);
 			_objTreePanel.BorderStyle = BorderStyle.Fixed3D;
-			new PanelLabel(_objTreePanel, "Objects");
+			new PanelLabel(_objTreePanel, StringParser.Parse("${res:ComponentInspector.ObjectBrowser.ObjectsTreePanel}"));
 
 			// Image panel
 			_imagePanel =  NoGoop.ObjBrowser.ImagePanel.CreateImagePanel(objTreeWidth, !tabbedLayout);
@@ -321,7 +323,7 @@ namespace NoGoop.ObjBrowser
 			paramPanel.Width = _params.Width;
 			paramPanel.Controls.Add(_params);
 			paramPanel.BorderStyle = BorderStyle.Fixed3D;
-			new PanelLabel(paramPanel, "Parameters");
+			new PanelLabel(paramPanel, StringParser.Parse("${res:ComponentInspector.ObjectBrowser.ParametersPanel}"));
 
 			Splitter propImageSplitter = new Splitter();
 			propImageSplitter.Dock = DockStyle.Left;
@@ -353,7 +355,7 @@ namespace NoGoop.ObjBrowser
 			if (tabbedLayout) {
 				_objTreeTabPage = new TabPage();
 				_objTreeTabPage.Controls.Add(_objTreePanel);
-				_objTreeTabPage.Text = "Objects";
+				_objTreeTabPage.Text = StringParser.Parse("${res:ComponentInspector.ObjectBrowser.ObjectsTreePanel}");
 				_objTreeTabPage.BorderStyle = BorderStyle.None;
 			}
 
@@ -364,7 +366,7 @@ namespace NoGoop.ObjBrowser
 			_outputList.BorderStyle = BorderStyle.None;
 			TabPage outputTabPage = new TabPage();
 			outputTabPage.Controls.Add(_outputList);
-			outputTabPage.Text = "Output";
+			outputTabPage.Text = StringParser.Parse("${res:ComponentInspector.ObjectBrowser.OutputTab}");
 			outputTabPage.BorderStyle = BorderStyle.None;
 			
 			_tabControl = new TabControl();

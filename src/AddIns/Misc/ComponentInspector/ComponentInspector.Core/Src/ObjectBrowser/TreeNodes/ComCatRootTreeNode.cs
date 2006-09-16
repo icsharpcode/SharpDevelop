@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -76,7 +77,7 @@ namespace NoGoop.ObjBrowser.TreeNodes
 
         public override String GetName()
 		{
-            return "Component Categories";
+            return StringParser.Parse("${res:ComponentInspector.ComCategoryRootTreeNode.Text}");
 		}
 
         public override void GetDetailText()

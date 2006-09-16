@@ -36,7 +36,7 @@
       <System.Windows.Forms.Label>
         <Name value="informationLabel" />
         <Location value="{X=12,Y=13}" />
-        <Text value="Type handlers present the classes marked below in a more convenient manner, suppressing unnecessary details." />
+        <Text value="${res:ComponentInspector.TypeHandlerOptionsPanel.InformationLabel}" />
         <Anchor value="Top, Left, Right" />
         <Size value="{Width=366, Height=62}" />
         <TabIndex value="0" />

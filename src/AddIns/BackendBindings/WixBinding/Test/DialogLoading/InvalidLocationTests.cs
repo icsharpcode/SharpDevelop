@@ -5,10 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
 using System.Drawing;
+using System.Resources;
 using System.Windows.Forms;
 using System.Xml;
 using WixBinding;
@@ -23,6 +25,13 @@ namespace WixBinding.Tests.DialogLoading
 	[TestFixture]
 	public class InvalidLocationTests
 	{
+		[TestFixtureSetUp]
+		public void SetupFixture()
+		{
+			ResourceManager rm = new ResourceManager("WixBinding.Tests.Strings", GetType().Assembly);
+			ResourceService.RegisterNeutralStrings(rm);
+		}
+		
 		[Test]
 		public void MissingX()
 		{

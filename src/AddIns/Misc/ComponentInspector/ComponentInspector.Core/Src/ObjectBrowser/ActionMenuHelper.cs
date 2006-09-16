@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -53,11 +54,11 @@ namespace NoGoop.ObjBrowser
 		protected const int LAST =              CAST;
 		protected ToolStripMenuItem[] _menuItem = new ToolStripMenuItem[LAST + 1];
 		protected EventHandler[] _oldHandler = new EventHandler[LAST + 1];
-		protected const String SGETPROP =       "&Get Property";
-		protected const String SSETPROP =       "&Set Property";
-		protected const String SSETFIELD =      "Set &Field";
-		protected const String SINVOKEMETH =    "Invoke &Method";
-		protected const String SCREATEOBJ =     "Create O&bject";
+		protected static String SGETPROP;
+		protected static String SSETPROP;
+		protected static String SSETFIELD;
+		protected static String SINVOKEMETH;
+		protected static String SCREATEOBJ;
 		ToolStripMenuItem _closeMenuItem;
 		
 		internal static ActionMenuHelper Helper {
@@ -76,6 +77,7 @@ namespace NoGoop.ObjBrowser
 		internal ActionMenuHelper(ToolStripMenuItem closeMenuItem)
 		{
 			_closeMenuItem = closeMenuItem;
+			InitStrings();
 		}
 		
 		internal static String CalcInvokeActionName(IMenuTreeNode node, bool set)
@@ -136,26 +138,26 @@ namespace NoGoop.ObjBrowser
 			menu.Add(new ToolStripSeparator());
 			_menuItem[CREATEOBJ] = new ToolStripMenuItem(SCREATEOBJ);
 			menu.Add(_menuItem[CREATEOBJ]);
-			_menuItem[CAST] = new ToolStripMenuItem("Cast");
+			_menuItem[CAST] = new ToolStripMenuItem(StringParser.Parse("${res:ComponentInspector.ActionMenu.CastMenuItem}"));
 			menu.Add(_menuItem[CAST]);
-			_menuItem[DESIGNSURFACE] = new ToolStripMenuItem("On Design Surface");
+			_menuItem[DESIGNSURFACE] = new ToolStripMenuItem(StringParser.Parse("${res:ComponentInspector.ActionMenu.OnDesignSurfaceMenuItem}"));
 			_menuItem[DESIGNSURFACE].Checked = true;
 			menu.Add(_menuItem[DESIGNSURFACE]);
 			menu.Add(new ToolStripSeparator());
-			_menuItem[EVENTLOGGING] = new ToolStripMenuItem("&Event Logging");
+			_menuItem[EVENTLOGGING] = new ToolStripMenuItem(StringParser.Parse("${res:ComponentInspector.ActionMenu.EventLoggingMenuItem}"));
 			_menuItem[EVENTLOGGING].Checked = false;
 			menu.Add(_menuItem[EVENTLOGGING]);
 			menu.Add(new ToolStripSeparator());
-			_menuItem[REMOVEFAVORITE] = new ToolStripMenuItem("Remove from Favorites");
+			_menuItem[REMOVEFAVORITE] = new ToolStripMenuItem(StringParser.Parse("${res:ComponentInspector.ActionMenu.RemoveFromFavouritesMenuItem}"));
 			menu.Add(_menuItem[REMOVEFAVORITE]);
 			//_menuItem[CONVERT] = new MenuItem("Convert TypeLib");
 			//menu.MenuItems.Add(_menuItem[CONVERT]);
-			_menuItem[REGISTER] = new ToolStripMenuItem("Register TypeLib");
+			_menuItem[REGISTER] = new ToolStripMenuItem(StringParser.Parse("${res:ComponentInspector.ActionMenu.RegisterTypeLibMenuItem}"));
 			menu.Add(_menuItem[REGISTER]);
-			_menuItem[UNREGISTER] = new ToolStripMenuItem("Un-register TypeLib");
+			_menuItem[UNREGISTER] = new ToolStripMenuItem(StringParser.Parse("${res:ComponentInspector.ActionMenu.UnregisterTypeLibMenuItem}"));
 			menu.Add(_menuItem[UNREGISTER]);
 			menu.Add(new ToolStripSeparator());
-			_menuItem[REFRESHCOMRUNNING] = new ToolStripMenuItem("Refresh COM Running Objs");
+			_menuItem[REFRESHCOMRUNNING] = new ToolStripMenuItem(StringParser.Parse("${res:ComponentInspector.ActionMenu.RefreshRunningComObjectsMenuItem}"));
 			// Always enabled
 			_menuItem[REFRESHCOMRUNNING].Enabled = true;
 			SetHandler(REFRESHCOMRUNNING, new EventHandler(ComSupport.RefreshComRunning));
@@ -181,9 +183,9 @@ namespace NoGoop.ObjBrowser
 			menu.Add(new ToolStripSeparator());
 			//_menuItem[RENAME] = new MenuItem("Rename");
 			//menu.MenuItems.Add(_menuItem[RENAME]);
-			_menuItem[DELETE] = new ToolStripMenuItem("Delete");
+			_menuItem[DELETE] = new ToolStripMenuItem(StringParser.Parse("${res:Global.Delete}"));
 			menu.Add(_menuItem[DELETE]);
-			_menuItem[CLOSE] = new ToolStripMenuItem("Close");
+			_menuItem[CLOSE] = new ToolStripMenuItem(StringParser.Parse("${res:Global.CloseButtonText}"));
 			menu.Add(_menuItem[CLOSE]);
 			Disable();
 			return menu.ToArray();
@@ -202,17 +204,17 @@ namespace NoGoop.ObjBrowser
 		ToolStripMenuItem[] GetBuildEditMenu()
 		{
 			List<ToolStripMenuItem> menu = new List<ToolStripMenuItem>();
-			_menuItem[CUT] = new ToolStripMenuItem("Cu&t Object");
+			_menuItem[CUT] = new ToolStripMenuItem(StringParser.Parse("${res:ComponentInspector.ActionMenu.CutObjectMenuItem}"));
 			_menuItem[CUT].ShortcutKeys = Keys.Control | Keys.X;
 			menu.Add(_menuItem[CUT]);
-			_menuItem[COPY] = new ToolStripMenuItem("&Copy Object");
+			_menuItem[COPY] = new ToolStripMenuItem(StringParser.Parse("${res:ComponentInspector.ActionMenu.CopyObjectMenuItem}"));
 			_menuItem[COPY].ShortcutKeys = Keys.Control | Keys.C;
 			menu.Add(_menuItem[COPY]);
-			_menuItem[COPY_TEXT] = new ToolStripMenuItem("Copy T&ext");
+			_menuItem[COPY_TEXT] = new ToolStripMenuItem(StringParser.Parse("${res:ComponentInspector.ActionMenu.CopyTextMenuItem}"));
 			menu.Add(_menuItem[COPY_TEXT]);
-			_menuItem[COPY_VALUE] = new ToolStripMenuItem("Copy &Value Text");
+			_menuItem[COPY_VALUE] = new ToolStripMenuItem(StringParser.Parse("${res:ComponentInspector.ActionMenu.CopyValueTextMenuItem}"));
 			menu.Add(_menuItem[COPY_VALUE]);
-			_menuItem[PASTE] = new ToolStripMenuItem("&Paste Object");
+			_menuItem[PASTE] = new ToolStripMenuItem(StringParser.Parse("${res:ComponentInspector.ActionMenu.PasteObjectMenuItem}"));
 			_menuItem[PASTE].ShortcutKeys = Keys.Control | Keys.V;
 			menu.Add(_menuItem[PASTE]);
 			Disable();
@@ -372,6 +374,15 @@ namespace NoGoop.ObjBrowser
 					_menuItem[REMOVEFAVORITE].Enabled = true;
 					SetHandler(REMOVEFAVORITE, new EventHandler(tree.RemoveFavoriteClick));
 				}
+		}
+		
+		void InitStrings()
+		{
+			SGETPROP = StringParser.Parse("${res:ComponentInspector.GetPropertyMenuItem}");
+			SSETPROP = StringParser.Parse("${res:ComponentInspector.SetPropertyMenuItem}");
+			SSETFIELD = StringParser.Parse("${res:ComponentInspector.SetFieldMenuItem}");
+			SINVOKEMETH = StringParser.Parse("${res:ComponentInspector.InvokeMethodMenuItem}");
+			SCREATEOBJ = StringParser.Parse("${res:ComponentInspector.CreateObjectMenuItem}");
 		}
 	}
 }

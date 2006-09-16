@@ -5,6 +5,7 @@
 //	 <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -20,14 +21,10 @@ using NoGoop.Util;
 
 namespace NoGoop.ObjBrowser.TreeNodes
 {
-
 	internal class ComRootTreeNode : BrowserTreeNode
 	{
-
 		protected ProgressDialog			_progress;
-
 		protected SortedList				_allChildren;
-
 
 		// Properties to be set by the subclass
 		protected RegistryKey			   _baseKey;
@@ -35,8 +32,7 @@ namespace NoGoop.ObjBrowser.TreeNodes
 		// The name to be displayed in the progress dialog
 		protected String					_progressName;
 
-
-		internal ComRootTreeNode() : base()
+		internal ComRootTreeNode()
 		{
 			_allChildren = new SortedList();
 			PostConstructor();
@@ -45,8 +41,7 @@ namespace NoGoop.ObjBrowser.TreeNodes
 
 		// Used to get the basic info that is used by this type
 		// of node
-		protected virtual Object ProcessChild(RegistryKey key,
-											  String subKeyName)
+		protected virtual Object ProcessChild(RegistryKey key, String subKeyName)
 		{
 			// For subclassing
 			return null;
@@ -77,9 +72,8 @@ namespace NoGoop.ObjBrowser.TreeNodes
 			
 				// Show the progress of both reading the interfaces and
 				// building the tree
-				_progress.Setup("Getting " + _progressName + " Information",
-							   "Please wait while I get the " 
-								+ _progressName + " information",
+				_progress.Setup(String.Format(StringParser.Parse("${res:ComponentInspector.ProgressDialog.GettingInformationDialogTitle}"), _progressName),
+							   String.Format(StringParser.Parse("${res:ComponentInspector.ProgressDialog.GettingInformationMessage}"), _progressName),
 							   keys.Length * 2,
 							   !ProgressDialog.HAS_PROGRESS_TEXT,
 							   ProgressDialog.FINAL);

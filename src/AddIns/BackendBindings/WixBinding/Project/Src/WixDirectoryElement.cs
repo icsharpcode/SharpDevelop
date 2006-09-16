@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -136,53 +137,31 @@ namespace ICSharpCode.WixBinding
 		{
 			switch (id) {
 				case "ProgramFilesFolder":
-					return "Program Files";
 				case "AdminToolsFolder":
-					return "Admin Tools";
 				case "AppDataFolder":
-					return "App Data";
 				case "CommonAppDataFolder":
-					return "Common App Data";		
 				case "CommonFiles64Folder":
-					return "Common Files 64";
 				case "CommonFilesFolder":
-					return "Common Files";
 				case "DesktopFolder":
-					return "Desktop";
 				case "FavoritesFolder":
-					return "Favorites";
 				case "FontsFolder":
-					return "Fonts";
 				case "LocalAppDataFolder":
-					return "Local App Data";
 				case "MyPicturesFolder":
-					return "My Pictures";		
 				case "PersonalFolder":
-					return "Personal";
 				case "ProgramFiles64Folder":
-					return "Program Files 64";
 				case "ProgramMenuFolder":
-					return "Program Menu";
 				case "SendToFolder":
-					return "Send To";
 				case "StartMenuFolder":
-					return "Start Menu";
 				case "StartupFolder":
-					return "Startup";
 				case "System16Folder":
-					return "System 16";
 				case "System64Folder":
-					return "System 64";
 				case "SystemFolder":
-					return "System";
 				case "TempFolder":
-					return "Temp";
 				case "TemplateFolder":
-					return "Templates";
+				case "WindowsVolume":
+					return StringParser.Parse(String.Concat("${res:ICSharpCode.WixBinding.WixDirectoryElement.", id, "}"));
 				case "WindowsFolder":
 					return "Windows";
-				case "WindowsVolume":
-					return "Windows Volume";
 			}
 			return null;
 		}

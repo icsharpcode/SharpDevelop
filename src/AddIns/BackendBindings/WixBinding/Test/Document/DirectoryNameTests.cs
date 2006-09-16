@@ -5,15 +5,24 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
+using System.Resources;
 
 namespace WixBinding.Tests.Document
 {
 	[TestFixture]
 	public class DirectoryNameTests
 	{
+		[TestFixtureSetUp]
+		public void SetupFixture()
+		{
+			ResourceManager rm = new ResourceManager("WixBinding.Tests.Strings", GetType().Assembly);
+			ResourceService.RegisterNeutralStrings(rm);
+		}
+
 		[Test]
 		public void AdminToolsFolder()
 		{
@@ -23,13 +32,13 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void AppDataFolder()
 		{
-			Assert.AreEqual("App Data", WixDirectoryElement.GetSystemDirectory("AppDataFolder"));
+			Assert.AreEqual("Application Data", WixDirectoryElement.GetSystemDirectory("AppDataFolder"));
 		}
 		
 		[Test]
 		public void CommonAppDataFolder()
 		{
-			Assert.AreEqual("Common App Data", WixDirectoryElement.GetSystemDirectory("CommonAppDataFolder"));
+			Assert.AreEqual("Common Application Data", WixDirectoryElement.GetSystemDirectory("CommonAppDataFolder"));
 		}
 		
 		[Test]
@@ -65,7 +74,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void LocalAppDataFolder()
 		{
-			Assert.AreEqual("Local App Data", WixDirectoryElement.GetSystemDirectory("LocalAppDataFolder"));
+			Assert.AreEqual("Local Application Data", WixDirectoryElement.GetSystemDirectory("LocalAppDataFolder"));
 		}
 		
 		[Test]
@@ -83,7 +92,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void ProgramFiles64Folder()
 		{
-			Assert.AreEqual("Program Files 64", WixDirectoryElement.GetSystemDirectory("ProgramFiles64Folder"));
+			Assert.AreEqual("Program Files (x64)", WixDirectoryElement.GetSystemDirectory("ProgramFiles64Folder"));
 		}
 		
 		[Test]
@@ -113,13 +122,13 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void System16Folder()
 		{
-			Assert.AreEqual("System 16", WixDirectoryElement.GetSystemDirectory("System16Folder"));
+			Assert.AreEqual("System (x16)", WixDirectoryElement.GetSystemDirectory("System16Folder"));
 		}
 		
 		[Test]
 		public void System64Folder()
 		{
-			Assert.AreEqual("System 64", WixDirectoryElement.GetSystemDirectory("System64Folder"));
+			Assert.AreEqual("System (x64)", WixDirectoryElement.GetSystemDirectory("System64Folder"));
 		}
 		
 		[Test]

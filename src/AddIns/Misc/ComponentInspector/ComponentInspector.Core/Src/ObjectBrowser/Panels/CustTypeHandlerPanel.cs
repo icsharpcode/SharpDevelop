@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Drawing;
@@ -28,7 +29,7 @@ namespace NoGoop.ObjBrowser.Panels
 		{
 			Label l;
 
-			Text = "Type Handlers";
+			Text = StringParser.Parse("${res:ComponentInspector.InspectorMenu.TypeHandlerOptionsPanel.Title}");
 
 			ICollection typeHandlers = TypeHandlerManager.Instance.GetTypeHandlers();
 
@@ -45,9 +46,7 @@ namespace NoGoop.ObjBrowser.Panels
 			l = new Label();
 			l.Dock = DockStyle.Top;
 			l.Height = 50;
-			l.Text = "Type handlers present the classes marked below "
-				+ "in a more convenient manner, suppressing unnecessary "
-				+ "details. ";
+			l.Text = StringParser.Parse("${res:ComponentInspector.TypeHandlerOptionsPanel.InformationLabel}");
 			Controls.Add(l);
 
 			// Padding

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 
 namespace ICSharpCode.WixBinding
@@ -83,6 +84,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public static WixCompilerExtensionName CreateFromString(string s)
 		{
+			s = StringParser.Parse(s);
 			int index = s.IndexOf("|");
 			if (index >= 0) {
 				string qualifiedName = s.Substring(0, index);

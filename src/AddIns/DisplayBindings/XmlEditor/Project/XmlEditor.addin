@@ -129,7 +129,7 @@
 		          shortcut = "Control|I"
 		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
 		<MenuItem id = "HideXPathResults"
-			      label = "Hide &amp;XPath Results"
+			      label = "${res:ICSharpCode.XmlEditor.HideXPathResults}"
 			      class = "ICSharpCode.XmlEditor.RemoveXPathHighlightingCommand"/>
 		<MenuItem id = "GoToDefinition"
 			      label = "${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
@@ -167,7 +167,7 @@
 		<Pad id = "XPathQueryPad" 
 		     category = "Tools"
 		     icon = "PadIcons.XPathQuery"
-		     title = "XPath Query"
+		     title = "${res:ICSharpCode.XmlEditor.XPathQueryPad.Title}"
 		     insertafter = "UnitTestingPad"
 		     class = "ICSharpCode.XmlEditor.XPathQueryPad"/>
 	</Path>
@@ -177,7 +177,7 @@
 		<Condition name = "WindowActive" activewindow="ICSharpCode.XmlEditor.XmlView">
 			<MenuItem id = "RemoveXPathHighlighting"
 			          insertafter = "ShowCodeCoverage" 
-			          label = "Hide &amp;XPath Results"
+			          label = "${res:ICSharpCode.XmlEditor.HideXPathResults}"
 			          class = "ICSharpCode.XmlEditor.RemoveXPathHighlightingCommand"/>
 		</Condition>
 	</Path>

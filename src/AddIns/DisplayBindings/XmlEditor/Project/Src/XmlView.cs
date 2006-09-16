@@ -862,7 +862,6 @@ namespace ICSharpCode.XmlEditor
 		/// window.</param>
 		void OutputWindowWriteLine(string message)
 		{
-			LoggingService.Info("WriteLine message=" + message);
 			Category.AppendText(String.Concat(message, Environment.NewLine));
 		}
 		

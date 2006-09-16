@@ -6,7 +6,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="compilerExtensionsGroupBox" />
         <Location value="3, 15" />
-        <Text value="Extensions" />
+        <Text value="${res:ICSharpCode.WixBinding.CompilerParametersPanel.CompilerExtensionsGroupBox}" />
         <Anchor value="Top, Left, Right" />
         <Size value="596, 175" />
         <TabIndex value="0" />

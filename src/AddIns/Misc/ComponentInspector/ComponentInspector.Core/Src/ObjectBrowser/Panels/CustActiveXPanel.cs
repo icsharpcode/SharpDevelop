@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
+
 using System;
 using System.Collections;
 using System.Drawing;
@@ -34,13 +36,13 @@ namespace NoGoop.ObjBrowser.Panels
 			_getRunningPanelCheck = new CheckBox();
 			_getRunningPanelCheck.Location = new Point(10, 10);
 			_getRunningPanelCheck.Width = FIELD_WIDTH;
-			_getRunningPanelCheck.Text = "Get COM Running Objects at Startup";
+			_getRunningPanelCheck.Text = StringParser.Parse("${res:ComponentInspector.CustomActiveXPanel.GetRunningComObjectsCheckBox}");
 			Controls.Add(_getRunningPanelCheck);
 
 			_autoInvokeCheck = new CheckBox();
 			_autoInvokeCheck.Location = new Point(10, 30);
 			_autoInvokeCheck.Width = FIELD_WIDTH;
-			_autoInvokeCheck.Text = "Automatically Get COM Properties";
+			_autoInvokeCheck.Text = StringParser.Parse("${res:ComponentInspector.CustomActiveXPanel.AutomaticallyGetPropertiesCheckBox}");
 			Controls.Add(_autoInvokeCheck);
 
 			// Padding

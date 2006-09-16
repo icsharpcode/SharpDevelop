@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -26,6 +27,7 @@ namespace ICSharpCode.WixBinding
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
+			InitStrings();
 		}
 		
 		public event EventHandler ListChanged;
@@ -187,6 +189,12 @@ namespace ICSharpCode.WixBinding
 		void Sort()
 		{
 			dataGridView.Sort(nameColumn, ListSortDirection.Ascending);
+		}
+		
+		void InitStrings()
+		{
+			nameColumn.HeaderText = StringParser.Parse("${res:ICSharpCode.WixBinding.NameValueListEditor.NameColumn}");
+			valueColumn.HeaderText = StringParser.Parse("${res:ICSharpCode.WixBinding.NameValueListEditor.ValueColumn}");
 		}
 	}
 }

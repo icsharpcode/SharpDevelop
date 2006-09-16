@@ -15,7 +15,7 @@
 	<Path name="/Workspace/Tools">
 		<MenuItem id="ShowComponentInspector"
 		          insertafter="ShowAddInScout"
-		          label="Component Inspector" 
+		          label="${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}" 
 		          class="ICSharpCode.ComponentInspector.AddIn.ShowComponentInspectorCommand"/>
 	</Path>
 
@@ -24,17 +24,17 @@
 				<MenuItem id="ComponentInspector"
 				          insertafter="Tools"
 				          insertbefore="Window"
-				          label="&amp;Inspector"
+				          label="${res:ComponentInspector.MainMenu.InspectorMenu}"
 				          type="Menu">
 				<MenuItem id="OpenAssembly"
-				          label="&amp;Open Assembly..."
+				          label="${res:ComponentInspector.InspectorMenu.OpenAssembly}"
 				          class="ICSharpCode.ComponentInspector.AddIn.OpenAssemblyCommand"/>
 				<MenuItem id="CloseAssembly"
-				          label="Close &amp;Assembly..."
+				          label="${res:ComponentInspector.InspectorMenu.CloseAssembly}"
 				          class="ICSharpCode.ComponentInspector.AddIn.CloseAssemblyCommand"/>
 				<MenuItem id="FindSeparator" type="Separator"/>
 				<MenuItem id="Find"
-				          label="&amp;Find..."
+				          label="${res:ComponentInspector.InspectorMenu.Find}"
 				          class="ICSharpCode.ComponentInspector.AddIn.FindCommand"/>
 			</MenuItem>
 		</Condition>
@@ -46,13 +46,13 @@
 		             insertafter="CodingOptions"
 		             insertbefore="TextEditorOptions">
 			<DialogPanel id="GeneralOptionsPanel"
-			             label="General"
+			             label="${res:Dialog.Options.IDEOptions.TextEditor.General.PanelName}"
 			             class="ICSharpCode.ComponentInspector.AddIn.GeneralOptionsPanel"/>
 			<DialogPanel id="ObjectTreeOptionsPanel"
-			             label="Object Tree"
+			             label="${res:ComponentInspector.InspectorMenu.ObjectTreeOptionsPanel.Title}"
 			             class="ICSharpCode.ComponentInspector.AddIn.ObjectTreeOptionsPanel"/>
 			<DialogPanel id="TypeHandlerOptionsPanel"
-			             label="Type Handlers"
+			             label="${res:ComponentInspector.InspectorMenu.TypeHandlerOptionsPanel.Title}"
 			             class="ICSharpCode.ComponentInspector.AddIn.TypeHandlerOptionsPanel"/>
 		</DialogPanel>
 	</Path>

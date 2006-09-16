@@ -18,11 +18,11 @@ using ICSharpCode.Core;
 namespace ICSharpCode.WixBinding
 {
 	public enum WixOutputType {
-		[Description("Installation Package (.msi)")]
+		[Description("${res:ICSharpCode.WixBinding.ProjectOptions.OutputType.Installer} (.msi)")]
 		package,
-		[Description("Merge Module (.msm)")]
+		[Description("${res:ICSharpCode.WixBinding.ProjectOptions.OutputType.MergeModule} (.msm)")]
 		module,
-		[Description("WiX Library (.wixlib)")]
+		[Description("${res:ICSharpCode.WixBinding.ProjectOptions.OutputType.WixLibrary} (.wixlib)")]
 		library
 	}
 	

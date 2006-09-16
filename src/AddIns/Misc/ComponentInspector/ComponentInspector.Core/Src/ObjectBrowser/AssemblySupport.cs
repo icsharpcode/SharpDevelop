@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -107,19 +108,19 @@ namespace NoGoop.ObjBrowser
 			_assyTree = new BrowserTree();
 			SetupTree(_assyTree);
 			_assyRootNode = new BrowserTreeNode();
-			_assyRootNode.Text = "Opened Assemblies";
+			_assyRootNode.Text = StringParser.Parse("${res:ComponentInspector.AssemblyTreeNode.Text}");
 			_assyRootNode.ChildrenAlreadyAdded = true;
 			_assyRootNode.SetPresInfo(PresentationMap.FOLDER_CLOSED);
 			_assyTree.AddNode(_assyRootNode);
 			_assyTabPage = new TabPage();
 			_assyTabPage.Controls.Add(_assyTree);
-			_assyTabPage.Text = "Assemblies/Types";
+			_assyTabPage.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.AssembliesRadioButton}");
 			_assyTabPage.BorderStyle = BorderStyle.None;
 			_controlTree = new ControlTree();
 			SetupTree(_controlTree);
 			_controlTabPage = new TabPage();
 			_controlTabPage.Controls.Add(_controlTree);
-			_controlTabPage.Text = "Controls";
+			_controlTabPage.Text = StringParser.Parse("${res:ComponentInspector.ControlsTab}");
 			_controlTabPage.BorderStyle = BorderStyle.None;
 			_assemblies = ComponentInspectorProperties.PreviouslyOpenedAssemblies;
 		}
@@ -214,8 +215,8 @@ namespace NoGoop.ObjBrowser
 			if (_assemblies.Count == 0)
 				return;
 			ProgressDialog progressDialog = new ProgressDialog();
-			progressDialog.Setup("Loading Remembered Assemblies",
-				"Please wait while I load the previously opened assemblies.",
+			progressDialog.Setup(StringParser.Parse("${res:ComponentInspector.ProgressDialog.LoadingPreviouslyOpenedAssembliesDialogTitle}"),
+				StringParser.Parse("${res:ComponentInspector.ProgressDialog.LoadingPreviouslyOpenedAssembliesMessage}"),
 				_assemblies.Count, 
 				ProgressDialog.HAS_PROGRESS_TEXT,
 				ProgressDialog.FINAL);

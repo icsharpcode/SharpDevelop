@@ -44,7 +44,7 @@ namespace ICSharpCode.WixBinding
 			if (!location.IsEmpty) {
 				FileService.JumpToFilePosition(fileName, location.Y, location.X);
 			} else {
-				MessageService.ShowErrorFormatted("Unable to find '{0}' in {1}", new string[] {dialogId, Path.GetFileName(fileName)});
+				MessageService.ShowErrorFormatted(StringParser.Parse("${res:ICSharpCode.WixBinding.ViewDialogXml.DialogIdNotFoundMessage}"), new string[] {dialogId, Path.GetFileName(fileName)});
 			}
 		}
 		

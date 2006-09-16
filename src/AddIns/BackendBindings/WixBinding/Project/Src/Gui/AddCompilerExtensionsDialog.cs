@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -32,6 +33,7 @@ namespace ICSharpCode.WixBinding
 		public AddCompilerExtensionsDialog(WixCompilerExtensionName[] currentExtensions, WixCompilerExtensionName[] standardExtensions)
 		{
 			InitializeComponent();
+			InitStrings();
 			this.currentExtensions.AddRange(currentExtensions);
 			AddStandardExtensions(standardExtensions);
 		}
@@ -198,6 +200,13 @@ namespace ICSharpCode.WixBinding
 					}
 				}
 			}
+		}
+		
+		void InitStrings()
+		{
+			okButton.Text = StringParser.Parse("${res:Global.OKButtonText}");
+			cancelButton.Text = StringParser.Parse("${res:Global.CancelButtonText}");
+			Text = StringParser.Parse("${res:ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title}");
 		}
 	}
 }

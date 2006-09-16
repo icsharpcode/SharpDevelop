@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -52,9 +53,8 @@ namespace NoGoop.ObjBrowser.TreeNodes
         protected override ICollection GetChildren()
         {
             ProgressDialog progress = new ProgressDialog();
-            progress.Setup("Getting Type Library Information",
-                           "Please wait while I get the " 
-                           + "Type Library information",
+            progress.Setup(String.Format(StringParser.Parse("${res:ComponentInspector.ProgressDialog.GettingInformationDialogTitle}"), "Type Library"),
+						   String.Format(StringParser.Parse("${res:ComponentInspector.ProgressDialog.GettingInformationMessage}"), "Type Library"),
                            TypeLibrary.GetRegisteredTypeLibsCount(),
                            !ProgressDialog.HAS_PROGRESS_TEXT,
                            ProgressDialog.FINAL);
@@ -79,7 +79,7 @@ namespace NoGoop.ObjBrowser.TreeNodes
 
         public override String GetName()
 		{
-            return "Type Libraries";
+            return StringParser.Parse("${res:ComponentInspector.ComTypeLibraryRootTreeNode.Text}");
 		}
 
         public override void GetDetailText()

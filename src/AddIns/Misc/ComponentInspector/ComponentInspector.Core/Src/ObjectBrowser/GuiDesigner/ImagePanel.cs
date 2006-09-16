@@ -5,6 +5,7 @@
 //	 <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -72,7 +73,7 @@ namespace NoGoop.ObjBrowser
 			if (showDesignModeCheckButton) {
 				_checkLabel = new Label();
 				_checkLabel.Dock = DockStyle.Left;
-				_checkLabel.Text = "Design Mode";
+				_checkLabel.Text = StringParser.Parse("${res:ComponentInspector.ImagePanel.DesignModeLabel}");
 				_checkLabel.AutoSize = true;
 				_desLabelPanel.Controls.Add(_checkLabel);
 
@@ -92,7 +93,7 @@ namespace NoGoop.ObjBrowser
 
 			Label panelName = new Label();
 			panelName.Dock = DockStyle.Right;
-			panelName.Text = "Control Design Surface";
+			panelName.Text = StringParser.Parse("${res:ComponentInspector.ImagePanel.ControlDesignSurfaceLabel}");
 			panelName.AutoSize = true;
 			_desLabelPanel.Controls.Add(panelName);
 

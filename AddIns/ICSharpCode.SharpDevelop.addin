@@ -1785,11 +1785,11 @@
 			          shortcut = "Control|R"
 			          class = "SearchAndReplace.Replace"/>
 			<MenuItem id = "SearchIncremental"
-			          label = "Incremental Search"
+			          label = "${res:XML.MainMenu.SearchMenu.IncrementalSearch}"
 			          shortcut = "Control|E"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunIncrementalSearch"/>
 			<MenuItem id = "SearchReverseIncremental"
-			          label = "Reverse Incremental Search"
+			          label = "${res:XML.MainMenu.SearchMenu.ReverseIncrementalSearch}"
 			          shortcut = "Control|Shift|E"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunReverseIncrementalSearch"/>
 			<MenuItem id = "SearchInFilesSeparator" type = "Separator" />

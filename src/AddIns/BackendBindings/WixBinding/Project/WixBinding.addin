@@ -19,7 +19,7 @@
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id           = "WixProject"
 		            insertbefore = "AllFiles"
-		            name         = "WiX Project Files (*.wixproj)"
+		            name         = "${res:ICSharpCode.WixBinding.WixProjectFilesFilterName} (*.wixproj)"
 		            class        = "ICSharpCode.SharpDevelop.Project.LoadProject"
 		            extensions   = "*.wixproj"/>
 	</Path>
@@ -27,7 +27,7 @@
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "Wix"
 		            insertbefore="AllFiles"
-		            name = "WiX files (*.wxs;*.wxi)"
+		            name = "${res:ICSharpCode.WixBinding.WixFileFilterName} (*.wxs;*.wxi)"
 		            extensions = "*.wxs;*.wxi"/>
 	</Path>
 
@@ -48,13 +48,13 @@
 			insertbefore = "sdaddin"
 			autoRegister = "True"
 			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/prjx.ico"
-			text = "WiX Project"/>
+			text = "${res:ICSharpCode.WixBinding.WixProjectFileAssociation}"/>
 	</Path>
 	
 	<!-- Project options panels -->
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/Wix">
 		<DialogPanel id = "ApplicationSettings"
-			         label = "Application"
+			         label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
 			         class = "ICSharpCode.WixBinding.ApplicationSettingsPanel"/>
 		<DialogPanel id    = "BuildEvents"
 		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
@@ -66,13 +66,13 @@
 		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
 		<DialogPanel id = "WixLibrary"
-			         label = "Library"
+			         label = "${res:ICSharpCode.WixBinding.LibraryParametersPanel}"
 			         class = "ICSharpCode.WixBinding.LibraryParametersPanel"/>
 		<DialogPanel id = "WixLinker"
-			         label = "Linking"
+			         label = "${res:ICSharpCode.WixBinding.LinkerParametersPanel}"
 			         class = "ICSharpCode.WixBinding.LinkerParametersPanel"/>
 		<DialogPanel id    = "PreprocessorVariables"
-		             label = "Preprocessing"
+		             label = "${res:ICSharpCode.WixBinding.PreprocessorVariablesPanel}"
 		             class = "ICSharpCode.WixBinding.PreprocessorVariablesPanel"/>
 	</Path>
 	
@@ -94,7 +94,7 @@
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
 		<Condition name = "ProjectActive" activeproject="Wix">
 			<MenuItem id = "AddWixLibrary"
-			          label = "Add WiX Library"
+			          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixLibrary}"
 			          insertafter = "AddWebReference"
 			          insertbefore = "AddSeparator"
 			          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
@@ -103,7 +103,7 @@
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixLibraryFolderNode">
 		<MenuItem id = "AddWixLibrary"
-		          label = "Add WiX Library"
+		          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixLibrary}"
 		          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
 	</Path>
 	
@@ -125,7 +125,7 @@
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Project">
 		<Condition name = "ProjectActive" activeproject="Wix">
 			<MenuItem id = "AddWixLibrary"
-			          label = "Add WiX Library"
+			          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixLibrary}"
 			          insertafter = "AddWebReference"
 			          insertbefore = "AddSeparator"
 			          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
@@ -135,7 +135,7 @@
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id           = "WixSetupDialogListPad"
 		     category     = "Setup"
-		     title        = "Setup Dialogs"
+		     title        = "${res:ICSharpCode.WixBinding.SetupDialogListPad.Title}"
 		     icon         = "Setup.Icons.16x16.SetupDialogsPad"
 		     class        = "ICSharpCode.WixBinding.SetupDialogListPad"/>
 	</Path>
@@ -162,7 +162,7 @@
 
 	<!-- Setup menu items that are created in the View menu -->
 	<Path name = "/SharpDevelop/Workbench/MainMenu/View">
-		<MenuItem id = "Setup" label = "Setup" type = "Menu" insertbefore = "Tools">
+		<MenuItem id = "Setup" label = "${res:XML.MainMenu.ViewMenu.SetupMenu}" type = "Menu" insertbefore = "Tools">
 			<MenuItem id = "SetupViewMenuBuilder"
 				type  = "Builder"
 				class = "ICSharpCode.WixBinding.SetupViewMenuBuilder" />
@@ -172,11 +172,11 @@
 	<Path name = "/AddIns/WixBinding/View">
 		<Condition name = "ProjectActive" activeproject="Wix" action = "Disable">
 			<MenuItem id = "ViewSetupDialogs"
-				label = "Dialogs"
+				label = "${res:XML.MainMenu.ViewMenu.SetupMenu.DialogsMenu}"
 				icon = "Setup.Icons.16x16.SetupDialogsPad"
 				class = "ICSharpCode.WixBinding.ViewSetupDialogsCommand"/>
 			<MenuItem id = "ViewSetupFiles"
-				label = "Files" 
+				label = "${res:XML.MainMenu.ViewMenu.SetupMenu.FilesMenu}" 
 				icon = "Icons.FileScoutIcon"
 				class = "ICSharpCode.WixBinding.ViewSetupFilesCommand"/>
 		</Condition>
@@ -189,14 +189,14 @@
 	
 	<Path name = "/AddIns/WixBinding/PackageFilesView/ContextMenu/DirectoryTreeNode">
 		<MenuItem id = "AddDirectory"
-			label = "Add Directory..."
+			label = "${res:ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddDirectory}"
 			class = "ICSharpCode.WixBinding.AddDirectoryCommand"/>
 		<Include path = "/AddIns/WixBinding/PackageFilesView/ContextMenu/Common"/>
 	</Path>
 	
 	<Path name = "/AddIns/WixBinding/PackageFilesView/ContextMenu/ComponentTreeNode">
 		<MenuItem id = "AddFiles"
-			label = "Add Files..."
+			label = "${res:ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddFiles}"
 			class = "ICSharpCode.WixBinding.AddFilesToComponentCommand"/>
 		<Include path = "/AddIns/WixBinding/PackageFilesView/ContextMenu/Common"/>
 	</Path>
@@ -216,7 +216,7 @@
 				<Condition name = "Ownerstate" ownerstate = "NothingSelectedAndChildElementsAllowed"/>
 			</Or>
 			<MenuItem id = "AddDirectory"
-				label = "Add Directory..."
+				label = "${res:ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddDirectory}"
 				class = "ICSharpCode.WixBinding.AddDirectoryCommand"/>
 		</ComplexCondition>
 		<ComplexCondition action = "Exclude">
@@ -249,9 +249,9 @@
 		compiler extensions dialog.
  	-->
 	<Path name="/AddIns/WixBinding/CompilerExtensions">
-		<String id="NetFx" text="Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension|.NET Framework Extension"/>
-		<String id="PubCa" text="Microsoft.Tools.WindowsInstallerXml.PcaCompiler, pcaext|COM+ and Message Queue Extension (pubca)"/>
-		<String id="VS" text="Microsoft.Tools.WindowsInstallerXml.Extensions.VSCompiler, WixVSExtension|Visual Studio Extension"/>
+		<String id="NetFx" text="Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension|${res:ICSharpCode.WixBinding.WixNetFxExtensionTitle}"/>
+		<String id="PubCa" text="Microsoft.Tools.WindowsInstallerXml.PcaCompiler, pcaext|${res:ICSharpCode.WixBinding.WixPubcaExtensionTitle}"/>
+		<String id="VS" text="Microsoft.Tools.WindowsInstallerXml.Extensions.VSCompiler, WixVSExtension|${res:ICSharpCode.WixBinding.WixVisualStudioExtensionTitle}"/>
 	</Path>
 
 	<!-- 

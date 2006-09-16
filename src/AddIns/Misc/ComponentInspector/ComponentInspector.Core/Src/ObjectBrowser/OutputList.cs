@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -33,13 +34,13 @@ namespace NoGoop.ObjBrowser
 			ContextMenu = new ContextMenu();
 
 			MenuItem clear = new MenuItem();
-			clear.Text = "&Clear";
+			clear.Text = StringParser.Parse("${res:ComponentInspector.EventLogList.ClearMenuItem}");
 			clear.Click += new EventHandler(ClearClick);
 			ContextMenu.MenuItems.Add(clear);
 
 			ColumnHeader ch;
 			ch = new ColumnHeader();
-			ch.Text = "Output";
+			ch.Text = StringParser.Parse("${res:ComponentInspector.OutputList.OutputColumnHeader}");
 			ch.TextAlign = HorizontalAlignment.Left;
 			Columns.Add(ch);
 

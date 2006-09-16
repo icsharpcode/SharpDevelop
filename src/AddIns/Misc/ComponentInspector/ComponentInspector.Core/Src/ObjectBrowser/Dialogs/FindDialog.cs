@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Reflection;
@@ -64,7 +65,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 
 		public FindDialog() : base(!INCLUDE_BUTTONS)
 		{
-			Text = "Find";
+			Text = StringParser.Parse("${res:ComponentInspector.FindDialog.Title}");
 			FormBorderStyle = FormBorderStyle.SizableToolWindow;
 			ControlBox = false;
 			StartPosition = FormStartPosition.CenterParent;
@@ -96,7 +97,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			label = new Label();
 			label.Location = new Point(8, 16);
 			label.Size = new Size(72, 30);
-			label.Text = "Starting with:";
+			label.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.StartingWithLabel}");
 			label.TextAlign = ContentAlignment.TopRight;
 			Controls.Add(label);
 
@@ -114,7 +115,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			label = new Label();
 			label.Location = new Point(8, 48);
 			label.Size = new Size(72, 13);
-			label.Text = "Find what:";
+			label.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.FindWhatLabel}");
 			label.TextAlign = ContentAlignment.MiddleRight;
 			Controls.Add(label);
 
@@ -138,7 +139,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			label.AutoSize = true;
 			label.Location = new Point(10, 0);
 			label.Size = new Size(40, 13);
-			label.Text = "Find In";
+			label.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.FindIn}");
 			label.TextAlign = ContentAlignment.MiddleRight;
 			selectionPanel.Controls.Add(label);
 
@@ -152,7 +153,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_treeObj = new RadioButton();
 			_treeObj.Location = new Point(5, 8);
 			_treeObj.Size = new Size(120, 15);
-			_treeObj.Text = "Object Tree";
+			_treeObj.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.ObjectTreeRadioButtonText}");
 			_treeObj.TabIndex = 0;
 			_treeObj.Click += new EventHandler(TreeSelectClick);
 			panel.Controls.Add(_treeObj);
@@ -160,7 +161,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_treeAssy = new RadioButton();
 			_treeAssy.Location = new Point(5, 23);
 			_treeAssy.Size = new Size(120, 15);
-			_treeAssy.Text = "Assemblies/Types";
+			_treeAssy.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.AssembliesRadioButton}");
 			_treeAssy.TabIndex = 0;
 			_treeAssy.Click += new EventHandler(TreeSelectClick);
 			panel.Controls.Add(_treeAssy);
@@ -180,7 +181,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			label.AutoSize = true;
 			label.Location = new Point(135, 0);
 			label.Size = new Size(40, 13);
-			label.Text = "Levels";
+			label.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.LevelsLabel}");
 			label.TextAlign = ContentAlignment.MiddleRight;
 			selectionPanel.Controls.Add(label);
 
@@ -194,7 +195,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_levelAll = new RadioButton();
 			_levelAll.Location = new Point(5, 8);
 			_levelAll.Size = new Size(110, 15);
-			_levelAll.Text = "All levels";
+			_levelAll.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.AllLevelsLabel}");
 			_levelAll.Checked = true;
 			_levelAll.TabIndex = 0;
 			panel.Controls.Add(_levelAll);
@@ -202,7 +203,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_levelSelect = new RadioButton();
 			_levelSelect.Location = new Point(5, 23);
 			_levelSelect.Size = new Size(80, 15);
-			_levelSelect.Text = "Only down";
+			_levelSelect.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.LevelSelectOnlyDownLabel}");
 			_levelSelect.TabIndex = 1;
 			panel.Controls.Add(_levelSelect);
 
@@ -214,7 +215,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 
 			label = new Label();
 			label.Location = new Point(48, 38);
-			label.Text = "levels";
+			label.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.LevelsLabel}");
 			panel.Controls.Add(label);
 
 			//
@@ -224,7 +225,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_objTreeLabel.Location = new Point(250, 0);
 			_objTreeLabel.Size = new Size(64, 16);
 			_objTreeLabel.TabIndex = 17;
-			_objTreeLabel.Text = "Object Tree";
+			_objTreeLabel.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.ObjectTreeRadioButtonText}");
 			selectionPanel.Controls.Add(_objTreeLabel);
 
 			_objTreePanel = new Panel();
@@ -238,7 +239,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_objTreeName = new CheckBox();
 			_objTreeName.Location = new Point(5, 8);
 			_objTreeName.Size = new Size(110, 15);
-			_objTreeName.Text = "Name";
+			_objTreeName.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.ObjectTreeNameCheckBox}");
 			_objTreeName.Checked = true;
 			_objTreeName.TabIndex = 0;
 			_objTreePanel.Controls.Add(_objTreeName);
@@ -246,7 +247,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_objTreeValue = new CheckBox();
 			_objTreeValue.Location = new Point(5, 23);
 			_objTreeValue.Size = new Size(110, 15);
-			_objTreeValue.Text = "Value";
+			_objTreeValue.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.ObjectTreeValueCheckBox}");
 			_objTreeValue.TabIndex = 1;
 			_objTreePanel.Controls.Add(_objTreeValue);
 
@@ -258,7 +259,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			label.Location = new Point(343, 0);
 			label.Size = new Size(35, 13);
 			label.TabIndex = 7;
-			label.Text = "Match";
+			label.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.MatchLabel}");
 			selectionPanel.Controls.Add(label);
 
 			panel = new Panel();
@@ -272,21 +273,21 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_fullName.Location = new Point(5, 8);
 			_fullName.Size = new Size(110, 15);
 			_fullName.Checked = true;
-			_fullName.Text = "Full Name";
+			_fullName.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.FullNameLabel}");
 			_fullName.TabIndex = 1;
 			panel.Controls.Add(_fullName);
 			
 			_startsWith = new RadioButton();
 			_startsWith.Location = new Point(5, 23);
 			_startsWith.Size = new Size(110, 15);
-			_startsWith.Text = "Starts With";
+			_startsWith.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.StartsWithRadioButton}");
 			_startsWith.TabIndex = 1;
 			panel.Controls.Add(_startsWith);
 
 			_contains = new RadioButton();
 			_contains.Location = new Point(5, 38);
 			_contains.Size = new Size(110, 15);
-			_contains.Text = "Contains";
+			_contains.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.ContainsRadioButton}");
 			_contains.TabIndex = 1;
 			panel.Controls.Add(_contains);
 
@@ -312,13 +313,13 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_foundList.ItemActivate += new EventHandler(ShowClick);
 
 			MenuItem mi = new MenuItem();
-			mi.Text = "Show Item";
+			mi.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.ShowItemMenuItem}");
 			mi.Click += new EventHandler(ShowClick);
 			_foundList.ContextMenu = new ContextMenu();
 			_foundList.ContextMenu.MenuItems.Add(mi);
 
 			_foundListColumn = new ColumnHeader();
-			_foundListColumn.Text = "Item";
+			_foundListColumn.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.FoundListColumnHeader}");
 			_foundListColumn.TextAlign = HorizontalAlignment.Left;
 			_foundListColumn.Width = _foundList.ClientSize.Width;
 			_foundList.Columns.Add(_foundListColumn);
@@ -348,7 +349,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_findButton.Location = new Point(ClientSize.Width - _findButton.Width - 8, 16);
 			_findButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 			_findButton.TabIndex = 5;
-			_findButton.Text = "Find";
+			_findButton.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.FindButton}");
 			_findButton.Click += new EventHandler(FindClick);
 			Controls.Add(_findButton);
 
@@ -356,7 +357,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_closeButton.Location = new Point(ClientSize.Width - _closeButton.Width - 8, 48);
 			_closeButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 			_closeButton.TabIndex = 10;
-			_closeButton.Text = "Close";
+			_closeButton.Text = StringParser.Parse("${res:Global.CloseButtonText}");
 			_closeButton.Click += new EventHandler(CloseClick);
 			Controls.Add(_closeButton);
 
@@ -364,7 +365,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_cancelButton.Location = new Point(ClientSize.Width - _cancelButton.Width - 8, 80);
 			_cancelButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 			_cancelButton.TabIndex = 15;
-			_cancelButton.Text = "Cancel";
+			_cancelButton.Text = StringParser.Parse("${res:Global.CloseButtonText}");
 			_cancelButton.Click += new EventHandler(CancelClick);
 			Controls.Add(_cancelButton);
 
@@ -372,7 +373,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_helpButton.Location = new Point(ClientSize.Width - _helpButton.Width - 8, 112);
 			_helpButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 			_helpButton.TabIndex = 20;
-			_helpButton.Text = "Help";
+			_helpButton.Text = StringParser.Parse("${res:Global.HelpButtonText}");
 			_helpButton.Click += new EventHandler(HelpClick);
 			Controls.Add(_helpButton);
 
@@ -396,9 +397,8 @@ namespace NoGoop.ObjBrowser.Dialogs
 			if (node == null) {
 				Close();
 				_instance = null;
-				ErrorDialog.Show("You must select a node in some tree; "
-				                 + "the find will begin with that node.",
-				                 "Please Select Tree Node",
+				ErrorDialog.Show(StringParser.Parse("${res:ComponentInspector.FindDialog.NoTreeNodeSelectedMessage}"),
+				                 StringParser.Parse("${res:ComponentInspector.FindDialog.NoTreeNodeSelectedDialogTitle}"),
 				                 MessageBoxIcon.Error);
 				return;
 			}
@@ -461,9 +461,8 @@ namespace NoGoop.ObjBrowser.Dialogs
 			// Got to have one of them
 			if (!(useName || useValue)) {
 				ErrorDialog.Show
-					("Please select one or both of Name or "
-					 + "Value when searching the Object tree",
-					 "Please Select Name/Value",
+					(StringParser.Parse("${res:ComponentInspector.FindDialog.SelectNameOrValueMessage}"),
+					 StringParser.Parse("${res:ComponentInspector.FindDialog.SelectNameOrValueDialogTitle}"),
 					 MessageBoxIcon.Error);
 				SetButtons(false);
 				return;
@@ -495,7 +494,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 
 			if (_foundList.Items.Count == 0) {
 				ListViewItem li = new ListViewItem();
-				li.Text = "No items found";
+				li.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.NoItemsFoundMessage}");
 				_foundList.Items.Add(li);
 			}
 
@@ -567,7 +566,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 
 			// Show it as its found
 			if ((_lookingNodeCount % 10) == 0) {
-				_lookingLabel.Text = "Looking at:";
+				_lookingLabel.Text = StringParser.Parse("${res:ComponentInspector.FindDialog.LookingAtLabel}");
 				_lookingNode.Text = finder.GetFullName();
 				Application.DoEvents();
 			}
@@ -660,7 +659,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 				_objTreePanel.Enabled = false;
 				_objTreeLabel.Enabled = false;
 				tree = AssemblySupport.AssyTree;
-				treeName = "Assemblies/Types";
+				treeName = StringParser.Parse("${res:ComponentInspector.FindDialog.AssembliesRadioButton}");
 			} else if (sender == _treeAx) {
 				_objTreePanel.Enabled = false;
 				_objTreeLabel.Enabled = false;
@@ -673,10 +672,8 @@ namespace NoGoop.ObjBrowser.Dialogs
 				_startingNode.Tag = tree.SelectedNode;
 			} else {
 				Close();
-				ErrorDialog.Show("You must select a node in the "
-				                 + treeName + " tree; "
-				                 + "the find will begin with that node.",
-				                 "Please Select Node in " + treeName + " Tree",
+				ErrorDialog.Show(String.Format(StringParser.Parse("${res:ComponentInspector.FindDialog.SelectNodeInTreeNameMessage}"), treeName),
+				                StringParser.Parse("${res:ComponentInspector.FindDialog.NoTreeNodeSelectedDialogTitle}"),
 				                 MessageBoxIcon.Error);
 			}
 		}
