@@ -63,6 +63,12 @@ namespace Debugger
 			}
 		}
 		
+		public bool IsAtSafePoint {
+			get {
+				return corThread.UserState != CorDebugUserState.USER_UNSAFE_POINT;
+			}
+		}
+		
 		public ICorDebugThread CorThread {
 			get {
 				return corThread;

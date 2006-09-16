@@ -153,6 +153,9 @@ namespace Debugger
 				if (targetThread.IsLastFunctionNative) {
 					throw new EvalSetupException("Can not evaluate because native frame is on top of stack");
 				}
+				if (!targetThread.IsAtSafePoint) {
+					throw new EvalSetupException("Can not evaluate because thread is not at a safe point");
+				}
 				
 				// TODO: What if this thread is not suitable?
 				corEval = targetThread.CorThread.CreateEval();
