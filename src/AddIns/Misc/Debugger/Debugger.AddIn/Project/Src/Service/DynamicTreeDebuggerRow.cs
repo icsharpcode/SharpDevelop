@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Debugger;
 using ICSharpCode.Core;
@@ -122,9 +123,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			try {
 				val.Primitive = newValue;
 			} catch (NotSupportedException) {
-				string format = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CannotSetValue");
+				string format = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CannotSetValue.BadFormat");
 				string msg = String.Format(format, newValue, val.ManagedType.ToString());
 				MessageService.ShowMessage(msg ,"${MainWindow.Windows.Debug.LocalVariables.CannotSetValue.Title}");
+			} catch (COMException) {
+				// COMException (0x80131330): Cannot perfrom SetValue on non-leaf frames.
+				// Happens if trying to set value after exception is breaked
+				MessageService.ShowMessage("${MainWindow.Windows.Debug.LocalVariables.CannotSetValue.UnknownError}",
+				                           "${MainWindow.Windows.Debug.LocalVariables.CannotSetValue.Title}");
 			}
 		}
 		
