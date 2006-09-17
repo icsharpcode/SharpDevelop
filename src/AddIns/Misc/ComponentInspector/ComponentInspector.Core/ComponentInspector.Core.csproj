@@ -22,7 +22,7 @@
     <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
     <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\ComponentInspector\</OutputPath>
     <Optimize>False</Optimize>
-    <DefineConstants>DEBUG%3bTRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>

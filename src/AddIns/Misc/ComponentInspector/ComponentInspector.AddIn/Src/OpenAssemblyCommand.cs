@@ -22,7 +22,7 @@ namespace ICSharpCode.ComponentInspector.AddIn
 			
 			using (OpenFileDialog dialog  = new OpenFileDialog()) {
 				dialog.CheckFileExists = true;
-				dialog.Filter = StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.AssemblyFilesFilterName} (*.exe;*.dll)|(*.exe;*.dll)|${res:edit	SharpDevelop.FileFilter.AllFiles}|(*.*)");
+				dialog.Filter = StringParser.Parse("${res:ComponentInspector.ObjectBrowserForm.AssemblyFilesFilterName} (*.exe;*.dll)|*.exe;*.dll|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 				dialog.FilterIndex = 0;
 				if (DialogResult.OK == dialog.ShowDialog()) {
 					ComponentInspectorView.Instance.OpenFile(dialog.FileName);

@@ -70,7 +70,7 @@ namespace NoGoop.ObjBrowser
 			}
 		}
 		
-		internal ActionMenuHelper()
+		internal ActionMenuHelper() : this(null)
 		{
 		}
 		

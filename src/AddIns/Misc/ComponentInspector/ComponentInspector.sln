@@ -1,5 +1,5 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.1.0.1298
+# SharpDevelop 2.1.0.1782
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComponentInspector", "ComponentInspector\ComponentInspector.csproj", "{000E4F64-5D0D-4EB1-B0BF-1A62ADBC6EAD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComponentInspector.AddIn", "ComponentInspector.AddIn\ComponentInspector.AddIn.csproj", "{869951D5-A0D6-4DC6-9F1D-E6B9A12AC446}"
@@ -15,6 +15,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsUI", "..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj", "{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactory", "..\..\..\Libraries\NRefactory\Project\NRefactory.csproj", "{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Dom", "..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj", "{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,5 +56,9 @@ Global
 		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal
