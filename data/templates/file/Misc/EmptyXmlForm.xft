@@ -2,13 +2,13 @@
 <Template author="Mike Krueger" version="1.0">
 	
 	<Config
-		  name        = "Xml Form"
+		  name        = "${res:Templates.File.Xml.EmptyXmlForm.Name}"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "${res:Templates.File.Categories.Misc}"
 		  defaultname = "XmlForm${Number}.xfrm"
 		  language    = "XmlForm"/>
 	 
-	<Description>Creates an empty xml form.</Description>
+	<Description>${res:Templates.File.Xml.EmptyXmlForm.Description}</Description>
 
 	<Files>
 		<File name="${FullName}" language="XmlForm"><![CDATA[<Components version="1.0">

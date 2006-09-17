@@ -1,29 +1,29 @@
 <StandardProperties version="1.0">
 	<Property name = "StandardHeader.C#">/*
- * Created by SharpDevelop.
- * User: ${USER}
- * Date: ${DATE}
- * Time: ${TIME}
+ * ${res:XML.StandardHeader.CreatedBySharpDevelop}
+ * ${res:XML.StandardHeader.User} ${USER}
+ * ${res:XML.StandardHeader.Date} ${DATE}
+ * ${res:XML.StandardHeader.Time} ${TIME}
  * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
+ * ${res:XML.StandardHeader.HowToChangeTemplateInformation}
  */</Property>
 
 	<Property name = "StandardHeader.VBNET">'
-' Created by SharpDevelop.
-' User: ${USER}
-' Date: ${DATE}
-' Time: ${TIME}
+' ${res:XML.StandardHeader.CreatedBySharpDevelop}
+' ${res:XML.StandardHeader.User} ${USER}
+' ${res:XML.StandardHeader.Date} ${DATE}
+' ${res:XML.StandardHeader.Time} ${TIME}
 ' 
-' To change this template use Tools | Options | Coding | Edit Standard Headers.
+' ${res:XML.StandardHeader.HowToChangeTemplateInformation}
 '</Property>
 
 	<Property name = "StandardHeader.C++.NET">/*
- * Created by SharpDevelop.
- * User: ${USER}
- * Date: ${DATE}
- * Time: ${TIME}
+ * ${res:XML.StandardHeader.CreatedBySharpDevelop}
+ * ${res:XML.StandardHeader.User} ${USER}
+ * ${res:XML.StandardHeader.Date} ${DATE}
+ * ${res:XML.StandardHeader.Time} ${TIME}
  * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
+ * ${res:XML.StandardHeader.HowToChangeTemplateInformation}
  */</Property>
 
 </StandardProperties>

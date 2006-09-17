@@ -29,7 +29,7 @@ namespace ICSharpCode.WixBinding
 			b.CreateLocationButton("outputNameTextBox");
 			Get<TextBox>("outputName").TextChanged += RefreshOutputFileNameTextBox;
 			
-			ConnectBrowseButton("localizedStringFileBrowseButton", "localizedStringFileTextBox", "Wix Localization Files|*.wxl|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+			ConnectBrowseButton("localizedStringFileBrowseButton", "localizedStringFileTextBox", "${res:ICSharpCode.WixBinding.WixLocalizationFileFilterName} (*.wxl)|*.wxl|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 			b = helper.BindString("localizedStringFileTextBox", "LocalizedStringFile");
 			b.CreateLocationButton("localizedStringFileTextBox");
 			

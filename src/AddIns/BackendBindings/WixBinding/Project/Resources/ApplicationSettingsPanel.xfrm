@@ -73,7 +73,7 @@
       <System.Windows.Forms.Label>
         <Name value="localizedStringFileLabel" />
         <Location value="8, 93" />
-        <Text value="Localized string file:" />
+        <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.LocalizedStringFileLabel}" />
         <Anchor value="Top, Left, Right" />
         <TextAlign value="BottomLeft" />
         <Size value="446, 15" />
