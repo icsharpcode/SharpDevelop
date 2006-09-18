@@ -42,16 +42,16 @@ namespace Debugger
 		bool InjectInterpreter()
 		{
 			if (!DebuggerService.IsDebuggerLoaded) {
-				PrintLine("${res:ICSharpCode.BooInterpreter.Debuggee.ErrorDebuggerNotLoaded}");
+				PrintLine(ResourceService.GetString("ICSharpCode.BooInterpreter.Debuggee.ErrorDebuggerNotLoaded"));
 				return false;
 			}
 			WindowsDebugger winDebugger = DebuggerService.CurrentDebugger as WindowsDebugger;
 			if (winDebugger == null) {
-				PrintLine("${res:ICSharpCode.BooInterpreter.Debuggee.ErrorIncompatibleDebugger}");
+				PrintLine(ResourceService.GetString("ICSharpCode.BooInterpreter.Debuggee.ErrorIncompatibleDebugger"));
 				return false;
 			}
 			if (winDebugger.DebuggedProcess == null) {
-				PrintLine("${res:ICSharpCode.BooInterpreter.Debuggee.ErrorNoProgramDebugged}");
+				PrintLine(ResourceService.GetString("ICSharpCode.BooInterpreter.Debuggee.ErrorNoProgramDebugged"));
 				return false;
 			}
 			process = winDebugger.DebuggedProcess;

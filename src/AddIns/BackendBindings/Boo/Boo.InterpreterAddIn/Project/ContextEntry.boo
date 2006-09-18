@@ -32,7 +32,7 @@ class ContextEntry:
 		_ctl.Dock = DockStyle.Fill
 		
 		_item = ToolStripButton(StringParser.Parse(context.Title), context.Image)
-		_item.ToolTipText = context.ToolTipText
+		_item.ToolTipText = StringParser.Parse(context.ToolTipText)
 		_item.Visible = context.Visible
 		_item.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText
 		

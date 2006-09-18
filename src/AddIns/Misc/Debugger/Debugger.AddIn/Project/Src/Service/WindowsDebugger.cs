@@ -81,10 +81,10 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		#region IDebugger Members
 		
-		string errorDebugging      = "${XML.MainMenu.DebugMenu.Error.Debugging}";
-		string errorNotDebugging   = "${XML.MainMenu.DebugMenu.Error.NotDebugging}";
-		string errorProcessRunning = "${XML.MainMenu.DebugMenu.Error.ProcessRunning}";
-		string errorProcessPaused  = "${XML.MainMenu.DebugMenu.Error.ProcessPaused}";
+		string errorDebugging      = "${res:XML.MainMenu.DebugMenu.Error.Debugging}";
+		string errorNotDebugging   = "${res:XML.MainMenu.DebugMenu.Error.NotDebugging}";
+		string errorProcessRunning = "${res:XML.MainMenu.DebugMenu.Error.ProcessRunning}";
+		string errorProcessPaused  = "${res:XML.MainMenu.DebugMenu.Error.ProcessPaused}";
 		string errorCannotStepNoActiveFunction = "${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}";
 		
 		public bool IsDebugging { 
@@ -115,9 +115,9 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			string version = debugger.GetProgramVersion(processStartInfo.FileName);
 			if (version.StartsWith("v1.0")) {
-				MessageService.ShowMessage("${XML.MainMenu.DebugMenu.Error.Net10NotSupported}");
+				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.Net10NotSupported}");
 			} else if (version == null || version.Length == 0) {
-				MessageService.ShowMessage("${XML.MainMenu.DebugMenu.Error.BadAssembly}");
+				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.BadAssembly}");
 			} else {
 				Debugger.Process process = debugger.Start(processStartInfo.FileName,
 				                                          processStartInfo.WorkingDirectory,
