@@ -26,9 +26,6 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static SplashScreenForm SplashScreen {
 			get {
-				if (splashScreen == null) {
-					splashScreen = new SplashScreenForm();
-				}
 				return splashScreen;
 			}
 		}
@@ -55,6 +52,12 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 			BackgroundImage = bitmap;
+		}
+		
+		public static void ShowSplashScreen()
+		{
+			splashScreen = new SplashScreenForm();
+			splashScreen.Show();
 		}
 		
 		protected override void Dispose(bool disposing)

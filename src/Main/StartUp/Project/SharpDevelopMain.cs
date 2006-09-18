@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 			
 			if (!noLogo) {
-				SplashScreenForm.SplashScreen.Show();
+				SplashScreenForm.ShowSplashScreen();
 			}
 			try {
 				RunApplication();
