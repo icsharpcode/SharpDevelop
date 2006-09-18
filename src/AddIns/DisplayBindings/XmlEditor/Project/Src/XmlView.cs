@@ -377,23 +377,17 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Creates a schema based on the xml content.
 		/// </summary>
-		/// <returns>A generated schema or null if the xml content is not
+		/// <returns>A set of generated schemas or null if the xml content is not
 		/// well formed.</returns>
-		public string CreateSchema()
+		public string[] InferSchema()
 		{
 			TaskService.ClearExceptCommentTasks();
 			if (IsWellFormed) {
-				string schema;
-				using (DataSet dataSet = new DataSet()) {
-					dataSet.ReadXml(new StringReader(Text), XmlReadMode.InferSchema);
-					EncodedStringWriter writer = new EncodedStringWriter(xmlEditor.TextEditorProperties.Encoding);
-					XmlTextWriter xmlWriter = CreateXmlTextWriter(writer);
-					dataSet.WriteXmlSchema(xmlWriter);
-					schema = writer.ToString();
-					writer.Close();
-					xmlWriter.Close();
+				using (XmlTextReader reader = new XmlTextReader(new StringReader(Text))) {
+					XmlSchemaInference schemaInference = new XmlSchemaInference();
+					XmlSchemaSet schemaSet = schemaInference.InferSchema(reader);
+					return GetSchemas(schemaSet);
 				}
-				return schema;
 			} else {
 				ShowErrorList();
 			}
@@ -1281,6 +1275,24 @@ namespace ICSharpCode.XmlEditor
 					return schemaCompletionData.FindSimpleType(qualifiedName.Name);
 			}
 			return null;
+		}
+		
+		/// <summary>
+		/// Converts a set of schemas to a string array, each array item 
+		/// contains the schema converted to a string.
+		/// </summary>
+		string[] GetSchemas(XmlSchemaSet schemaSet)
+		{
+			List<string> schemas = new List<string>();
+			foreach (XmlSchema schema in schemaSet.Schemas()) {
+				using (EncodedStringWriter writer = new EncodedStringWriter(xmlEditor.TextEditorProperties.Encoding)) {
+					using (XmlTextWriter xmlWriter = CreateXmlTextWriter(writer)) {
+						schema.Write(xmlWriter);
+						schemas.Add(writer.ToString());
+					}
+				}
+			}
+			return schemas.ToArray();
 		}
 	}
 }

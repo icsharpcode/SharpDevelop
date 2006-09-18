@@ -32,11 +32,13 @@ namespace ICSharpCode.XmlEditor
 			XmlView xmlView = XmlView.ActiveXmlView;
 			if (xmlView != null) {
 				// Create a schema based on the xml.
-				string schema = xmlView.CreateSchema();
-				if (schema != null) {
-					// Create a new file and display the generated schema.
-					string fileName = GenerateSchemaFileName(xmlView.TextEditorControl.FileName);
-					OpenNewXmlFile(fileName, schema);
+				string[] schemas = xmlView.InferSchema();
+				if (schemas != null) {
+					// Create a new file for each generated schema.
+					for (int i = 0; i < schemas.Length; ++i) {
+						string fileName = GenerateSchemaFileName(xmlView.TextEditorControl.FileName, i + 1);
+						OpenNewXmlFile(fileName, schemas[i]);
+					}
 				}
 			}
 		}
@@ -50,22 +52,16 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Generates an xsd filename based on the name of the original xml
-		/// file.  If a file with the same name is already open in SharpDevelop
-		/// then a new name is generated (e.g. MyXml1.xsd).
+		/// Generates an xsd filename based on the name of the original xml file.
 		/// </summary>
-		string GenerateSchemaFileName(string xmlFileName)
+		string GenerateSchemaFileName(string xmlFileName, int count)
 		{
 			string baseFileName = Path.GetFileNameWithoutExtension(xmlFileName);
 			string schemaFileName = String.Concat(baseFileName, ".xsd");
-			
-			int count = 1;
-			while (FileService.IsOpen(schemaFileName)) {
-				schemaFileName = String.Concat(baseFileName, count.ToString(), ".xsd");
-				++count;
+			if (count == 1) {
+				return schemaFileName;
 			}
-			
-			return schemaFileName;
+			return schemaFileName = String.Concat(baseFileName, count.ToString(), ".xsd");
 		}
 	}
 }
