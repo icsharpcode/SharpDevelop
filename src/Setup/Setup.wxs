@@ -7,7 +7,7 @@
 		so the third digit must be the Subversion revision. 
 	-->
 	<Product Id="$(var.PRODUCTCODEGUID)"
-		Name="SharpDevelop 2.1"
+		Name="SharpDevelop 2.1 Beta 1"
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
