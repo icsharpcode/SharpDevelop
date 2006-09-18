@@ -155,6 +155,7 @@ namespace ICSharpCode.Core
 						Image = imgButtonDisabled;
 					}
 				}
+				base.Enabled = this.Enabled; // fix for SD2-938 suggested by Matt Ward
 			}
 		}
 		
