@@ -18,6 +18,7 @@ namespace ICSharpCode.XmlEditor
 	{
 		public XslOutputView()
 		{
+			UntitledName = TitleName;
 		}
 		
 		public static XslOutputView Instance {
