@@ -136,6 +136,7 @@
     <Compile Include="Printing\Text\StandardFormatter.cs" />
     <Compile Include="BaseClasses\DataTypeHelper.cs" />
     <Compile Include="Printing\SectionBounds.cs" />
+    <Compile Include="Printing\MeasurementService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />

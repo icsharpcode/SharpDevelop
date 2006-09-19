@@ -43,7 +43,7 @@ namespace SharpReportCore {
 		
 		public event EventHandler <SharpReportParametersEventArgs> ParametersRequest;
 		/// <summary>
-		/// This event is fired before a Section is Rendered, you can use 
+		/// This event is fired before a Section is Rendered, you can use
 		/// it to modify items to be printed
 		/// </summary>
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
@@ -63,7 +63,7 @@ namespace SharpReportCore {
 		#region ParameterHandling
 		
 		private static void UpdateSqlParameters (ReportModel model,
-		                                  SqlParametersCollection sqlParameters) {
+		                                         SqlParametersCollection sqlParameters) {
 			if (sqlParameters != null) {
 				foreach (SqlParameter sourcePar in sqlParameters) {
 					SqlParameter destinationPar = model.ReportSettings.SqlParametersCollection.Find(sourcePar.ParameterName);
@@ -72,20 +72,24 @@ namespace SharpReportCore {
 			}
 		}
 		
+		
 		private void CheckAllReportParameters (ReportModel model,
 		                                       ReportParameters reportParameters) {
 			
-			if (this.connectionObject == null) {
+			if (reportParameters != null) {
+				if (reportParameters.ConnectionObject != null) {
+					this.connectionObject = reportParameters.ConnectionObject;
+					UpdateSqlParameters (model,reportParameters.SqlParameters);
+					return;
+				}
 				
+			}
+			if (this.connectionObject == null) {
+
 				if (!String.IsNullOrEmpty(model.ReportSettings.ConnectionString)) {
 					this.connectionObject = new ConnectionObject (model.ReportSettings.ConnectionString);
 				}
 			}
-			if (reportParameters != null) {
-				this.connectionObject = reportParameters.ConnectionObject;
-				UpdateSqlParameters (model,reportParameters.SqlParameters);
-			}
-			
 		}
 		
 		
@@ -116,7 +120,7 @@ namespace SharpReportCore {
 			return model;
 		}
 		
-		private void InitDataContainer (ReportSettings settings) {	
+		private void InitDataContainer (ReportSettings settings) {
 			if (settings.ReportType == GlobalEnums.ReportType.DataReport) {
 				if (settings.CommandText != null) {
 					try {
@@ -124,7 +128,7 @@ namespace SharpReportCore {
 						
 						if (this.connectionObject != null) {
 							this.dataManager = new DataManager(this.connectionObject,
-							                                        settings);
+							                                   settings);
 							
 							this.dataManager.DataBind();
 						}
@@ -175,7 +179,7 @@ namespace SharpReportCore {
 							if (this.dataManager.DataSource != null) {
 								abstr = new RendererFactory().Create (model,dataManager);
 							}
-						} 
+						}
 						
 						break;
 					default:
@@ -186,7 +190,7 @@ namespace SharpReportCore {
 				abstr.SectionRendered +=new EventHandler<SectionRenderEventArgs>(OnSectionPrinted);
 				return abstr;
 			} catch (Exception) {
-				throw; 
+				throw;
 			}
 			
 		}
@@ -200,10 +204,10 @@ namespace SharpReportCore {
 		private void OnSectionPrinted (object sender,SectionRenderEventArgs e) {
 			if (this.SectionRendered != null) {
 				this.SectionRendered (this,e);
-			} 
+			}
 		}
 		
-	
+		
 		protected SharpReportCore.AbstractRenderer SetupPushDataRenderer (ReportModel model,
 		                                                                  IList list) {
 			
@@ -233,7 +237,7 @@ namespace SharpReportCore {
 			return null;
 		}
 		
-	
+		
 		protected SharpReportCore.AbstractRenderer SetupPushDataRenderer (ReportModel model,
 		                                                                  DataTable dataTable) {
 			
@@ -304,7 +308,7 @@ namespace SharpReportCore {
 				model = ModelFromFile (fileName);
 				ReportParameters pars = new ReportParameters();
 				pars.ConnectionObject = null;
-	
+				
 				pars.SqlParameters.AddRange (model.ReportSettings.SqlParametersCollection);
 				return pars;
 			} catch (Exception) {
@@ -354,9 +358,43 @@ namespace SharpReportCore {
 				throw;
 			}
 		}
+		/*
+		public SharpReportCore.Exporters.PageBuilder_A BuildPages_A (string fileName,ReportParameters reportParameters) {
+
+			try {
+				RendererFactory rf = new RendererFactory();
+				ReportModel model = ModelFromFile (fileName);
+				
+				CheckAllReportParameters (model,reportParameters);
+				this.InitDataContainer (model.ReportSettings);
+
+				SharpReportCore.Exporters.PageBuilder_A builder = 
+					new SharpReportCore.Exporters.PageBuilder_A(model,dataManager);
+				builder.Go();
+				return builder;
+			} catch (Exception ) {
+				throw;
+			}
+		}
 		
-		
-		
+		public SharpReportCore.Exporters.PageBuilder_B BuildPages_B (string fileName,ReportParameters reportParameters) {
+
+			try {
+				RendererFactory rf = new RendererFactory();
+				ReportModel model = ModelFromFile (fileName);
+				
+				CheckAllReportParameters (model,reportParameters);
+				this.InitDataContainer (model.ReportSettings);
+
+				SharpReportCore.Exporters.PageBuilder_B builder = 
+					new SharpReportCore.Exporters.PageBuilder_B(model,dataManager);
+//				builder.ReportDocument.PrintController = new System.Drawing.Printing.PreviewPrintController();
+				return builder;
+			} catch (Exception ) {
+				throw;
+			}
+		}
+		*/
 		/// <summary>
 		/// Preview a "PushModel - Report"
 		/// </summary>
@@ -397,7 +435,7 @@ namespace SharpReportCore {
 
 				renderer = this.SetupPushDataRenderer (model,list);
 				
-				if (renderer != null) {				
+				if (renderer != null) {
 					PreviewControl.ShowPreview(renderer,1.5,false);
 				}
 				
@@ -517,7 +555,7 @@ namespace SharpReportCore {
 			
 			try {
 				ReportModel model = new ReportModel();
-				SharpReportCore.LoadModelVisitor modelVisitor = new SharpReportCore.LoadModelVisitor(model,fileName);                                                                                    
+				SharpReportCore.LoadModelVisitor modelVisitor = new SharpReportCore.LoadModelVisitor(model,fileName);
 				model.Accept (modelVisitor);
 				return model;
 			} catch (Exception) {

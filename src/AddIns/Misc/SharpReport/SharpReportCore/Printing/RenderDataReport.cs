@@ -192,7 +192,7 @@ namespace SharpReportCore {
 					
 				}
 				
-				AbstractRenderer.FitSectionToItems (base.CurrentSection,rpea.PrintPageEventArgs);
+				MeasurementService.FitSectionToItems (base.CurrentSection,rpea.PrintPageEventArgs.Graphics);
 				
 				sectionRect = new Rectangle (rpea.PrintPageEventArgs.MarginBounds.Left,
 				                             base.CurrentSection.SectionOffset,

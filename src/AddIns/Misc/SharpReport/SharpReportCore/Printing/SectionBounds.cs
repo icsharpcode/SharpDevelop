@@ -9,6 +9,7 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Printing;
 
 namespace SharpReportCore{
 	/// <summary>
@@ -22,11 +23,96 @@ namespace SharpReportCore{
 		Rectangle reportFooterRectangle;
 		
 		bool firstpage;
+		int gap;
 		
-		public SectionBounds(bool firstPage){
-			this.firstpage = firstPage;
+		PageSettings pageSettings;
+
+		public SectionBounds(PageSettings pageSettings,bool firstpage,int gap){
+			this.firstpage = firstpage;
+			this.pageSettings = pageSettings;
+			this.gap = gap;
 		}
 		
+		public Rectangle MeasureReportHeader (BaseSection section,Graphics graphics) {
+			if (section == null) {
+				throw new ArgumentNullException("section");
+			}
+			
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
+			
+			if (this.gap == 0) {
+				gap = 1;
+			}
+			
+			Point top = new Point(this.pageSettings.Margins.Left,this.pageSettings.Margins.Top);
+			Size size = Size.Empty;
+
+			if (section.Items.Count > 0) {
+				section.SectionOffset = this.pageSettings.Bounds.Top;
+				MeasurementService.FitSectionToItems (section,graphics);
+				size = new Size(this.MarginBounds.Width,section.Size.Height + gap);
+				
+			} else {
+				size = new Size(this.MarginBounds.Width,0);
+			}
+			return new Rectangle(top,size);
+		}
+		
+		
+		public void MeasurePageHeader (BaseSection section,Rectangle startAfter,Graphics graphics,int pageNr) {
+			
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
+			
+			if (pageNr == 1){
+				section.SectionOffset = (int)startAfter.Top + this.gap;
+			} else {
+				section.SectionOffset = this.pageSettings.Margins.Top;
+			}
+
+			MeasurementService.FitSectionToItems (section,graphics);
+			this.pageHeaderRectangle =  new Rectangle (startAfter.Left,
+			                                             startAfter.Bottom + this.gap,
+			                                             this.MarginBounds.Width,
+			                                             section.Size.Height + this.gap);
+
+		}
+		
+		
+		public void  MeasurePageFooter (BaseSection section,Graphics graphics) {
+			
+			section.SectionOffset = this.pageSettings.Bounds.Height - this.pageSettings.Margins.Top - this.pageSettings.Margins.Bottom;
+			MeasurementService.FitSectionToItems (section,graphics);
+			this.pageFooterRectangle =  new Rectangle(this.pageSettings.Margins.Left,
+			                                          section.SectionOffset,
+			                                          this.MarginBounds.Width,
+			                                          section.Size.Height);
+		}
+		
+		
+		public Rectangle MeasureReportFooter (BaseSection section,Graphics graphics) {
+			
+			MeasurementService.FitSectionToItems (section,graphics);
+			return new Rectangle (this.pageSettings.Margins.Left,
+			                      section.SectionOffset,
+			                      this.MarginBounds.Width,
+			                      section.Size.Height);                   
+		}
+		
+		#region Properties
+	
+		public Rectangle MarginBounds  {
+			get {
+				Rectangle r = new Rectangle(this.pageSettings.Margins.Left,
+				                            this.pageSettings.Margins.Top,
+				                            this.pageSettings.Bounds.Width - this.pageSettings.Margins.Left - this.pageSettings.Margins.Right,
+				                            this.pageSettings.Bounds.Height - this.pageSettings.Margins.Top - this.pageSettings.Margins.Bottom);
+				return r;
+			}
+		}
 		
 		public Rectangle ReportHeaderRectangle {
 			get {
@@ -106,5 +192,6 @@ namespace SharpReportCore{
 			}
 		}
 		
+		#endregion
 	}
 }
