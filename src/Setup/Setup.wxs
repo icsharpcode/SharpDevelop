@@ -278,8 +278,6 @@
 				<ComponentRef Id="SharpQueryInteropMSDASCDll"/>
 				<ComponentRef Id="SharpReportCoreDll"/>
 				<ComponentRef Id="SharpReportDll"/>
-				<ComponentRef Id="SharpDbToolsDll"/>
-				<ComponentRef Id="SharpServerToolsDll"/>
 				<ComponentRef Id="ReportGeneratorDll"/>
 				<ComponentRef Id="SharpReportAddInDll"/>
 				<ComponentRef Id="StartPageAddInFiles"/>
