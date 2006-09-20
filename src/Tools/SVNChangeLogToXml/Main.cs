@@ -31,7 +31,13 @@ class MainClass
 			if (args.Length == 1 && args[0] == "--REVISION") {
 				CreateRevisionFile();
 			}
-			ConvertChangeLog();
+			
+			int start = 2;
+			if(args.Length == 2 && args[0] == "--START")
+			{
+				Int32.TryParse(args[1], out start);
+			}
+			ConvertChangeLog(start);
 			return 0;
 		} catch (Exception ex) {
 			Console.WriteLine(ex);
@@ -49,7 +55,7 @@ class MainClass
 		}
 	}
 	
-	static void ConvertChangeLog()
+	static void ConvertChangeLog(int startRevision)
 	{
 		Console.WriteLine("Reading SVN changelog, this might take a while...");
 		
@@ -63,7 +69,7 @@ class MainClass
 		xmlWriter.Formatting = Formatting.Indented;
 		xmlWriter.WriteStartDocument();
 		xmlWriter.WriteStartElement("log");
-		client.Log(new string[] {".."}, Revision.Base, Revision.FromNumber(2), false, false,
+		client.Log(new string[] {".."}, Revision.Base, Revision.FromNumber(startRevision), false, false,
 		           delegate(LogMessage message) {
 		           	xmlWriter.WriteStartElement("logentry");
 		           	xmlWriter.WriteAttributeString("revision", message.Revision.ToString(System.Globalization.CultureInfo.InvariantCulture));
