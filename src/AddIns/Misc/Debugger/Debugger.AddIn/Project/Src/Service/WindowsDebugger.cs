@@ -425,8 +425,11 @@ namespace ICSharpCode.SharpDevelop.Services
 					e.Continue = true;
 					return;
 				case ExceptionForm.Result.Ignore:
-					e.Process.SelectedThread.InterceptCurrentException();
-					e.Continue = true; // HACK: Start interception
+					if (e.Process.SelectedThread.InterceptCurrentException()) {
+						e.Continue = true; // HACK: Start interception
+					} else {
+						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}", "${res:MainWindow.Windows.Debug.ExceptionForm.Title}");
+					}
 					break;
 			}
 		}

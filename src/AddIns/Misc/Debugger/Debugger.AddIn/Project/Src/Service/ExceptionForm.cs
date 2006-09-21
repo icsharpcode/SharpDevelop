@@ -129,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.MinimizeBox = false;
 			this.Name = "ExceptionForm";
 			this.ShowInTaskbar = false;
-			this.Text = "${res:MainWindow.Windows.Debug.ExceptionHistory.Exception}";
+			this.Text = "${res:MainWindow.Windows.Debug.ExceptionForm.Title}";
 			this.TopMost = true;
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
 			this.ResumeLayout(false);

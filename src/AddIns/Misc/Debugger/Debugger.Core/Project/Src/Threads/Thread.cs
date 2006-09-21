@@ -133,11 +133,13 @@ namespace Debugger
 			}
 		}
 		
-		public void InterceptCurrentException()
+		public bool InterceptCurrentException()
 		{
-			if (corThread.Is<ICorDebugThread2>()) { // Is the debuggee .NET 2.0?
-				corThread.CastTo<ICorDebugThread2>().InterceptCurrentException(LastFunction.CorILFrame.CastTo<ICorDebugFrame>());
-			}
+			if (!corThread.Is<ICorDebugThread2>()) return false; // Is the debuggee .NET 2.0?
+			if (LastFunction == null) return false; // Is frame available?  It is not at StackOverflow
+			
+			corThread.CastTo<ICorDebugThread2>().InterceptCurrentException(LastFunction.CorILFrame.CastTo<ICorDebugFrame>());
+			return true;
 		}
 		
 		internal Stepper GetStepper(ICorDebugStepper corStepper)
