@@ -418,7 +418,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			JumpToCurrentLine();
 			
-			switch (ExceptionForm.Show(e.Exception)) {
+			Debugger.Process process = this.DebuggedProcess;
+			
+			ExceptionForm.Result result = ExceptionForm.Show(e.Exception);
+			
+			// If the process was killed while the exception form was shown
+			if (process.HasExpired) return;
+			
+			switch (result) {
 				case ExceptionForm.Result.Break: 
 					break;
 				case ExceptionForm.Result.Continue:
