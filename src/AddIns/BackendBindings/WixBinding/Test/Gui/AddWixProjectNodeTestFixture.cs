@@ -5,12 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
 using System.Windows.Forms;
+using System.Resources;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Gui
@@ -31,6 +33,9 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			ResourceManager rm = new ResourceManager("WixBinding.Tests.Strings", GetType().Assembly);
+			ResourceService.RegisterNeutralStrings(rm);
+
 			wixProject = WixBindingTestsHelper.CreateEmptyWixProject();
 			parentNode = new TreeNode();
 			WixProjectNodeBuilder builder = new WixProjectNodeBuilder();
