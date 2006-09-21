@@ -64,8 +64,7 @@
     <Compile Include="Src\Exceptions\SharpQueryAbstractException.cs" />
     <Compile Include="Src\GUI\AbstractSharpQueryNode.cs" />
     <Compile Include="Src\GUI\SharpQueryDataView.cs" />
-    <Compile Include="Src\GUI\SQLParameterInput.cs">
-    </Compile>
+    <Compile Include="Src\GUI\SQLParameterInput.cs" />
     <Compile Include="Src\GUI\ISharpQueryNode.cs" />
     <Compile Include="Src\GUI\SharpQueryPad.cs" />
     <Compile Include="Src\Collections.cs" />

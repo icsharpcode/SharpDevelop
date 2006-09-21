@@ -24,7 +24,7 @@
     <DebugType>Full</DebugType>
     <NoWarn>108</NoWarn>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
-    <DefineConstants>DEBUG%3bTRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Optimize>False</Optimize>
   </PropertyGroup>
