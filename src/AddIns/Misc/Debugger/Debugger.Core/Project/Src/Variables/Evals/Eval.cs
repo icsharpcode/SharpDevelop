@@ -165,7 +165,9 @@ namespace Debugger
 				} catch (COMException e) {
 					if ((uint)e.ErrorCode == 0x80131C26) {
 						throw new EvalSetupException("Can not evaluate in optimized code");
-					} else {
+					} else if ((uint)e.ErrorCode == 0x80131C28) {
+						throw new EvalSetupException("Object is in wrong AppDomain");
+					}else {
 						throw;
 					}
 				}
