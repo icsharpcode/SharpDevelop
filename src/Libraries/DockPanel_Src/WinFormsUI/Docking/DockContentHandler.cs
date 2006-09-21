@@ -608,6 +608,9 @@ namespace WeifenLuo.WinFormsUI
 					Form.Activate();
 				else if (!Form.ContainsFocus)
 				{
+					if (DockHelper.IsDockStateAutoHide(DockState) && DockPanel.ActiveAutoHideContent != Content)
+						DockPanel.ActiveAutoHideContent = Content;
+
 					if (Contains(ActiveWindowHandle))
 						User32.SetFocus(ActiveWindowHandle);
 
