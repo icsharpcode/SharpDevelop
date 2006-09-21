@@ -138,8 +138,16 @@ namespace Debugger
 			if (!corThread.Is<ICorDebugThread2>()) return false; // Is the debuggee .NET 2.0?
 			if (LastFunction == null) return false; // Is frame available?  It is not at StackOverflow
 			
-			corThread.CastTo<ICorDebugThread2>().InterceptCurrentException(LastFunction.CorILFrame.CastTo<ICorDebugFrame>());
-			return true;
+			try {
+				corThread.CastTo<ICorDebugThread2>().InterceptCurrentException(LastFunction.CorILFrame.CastTo<ICorDebugFrame>());
+				return true;
+			} catch (COMException e) {
+				// 0x80131C02: Cannot intercept this exception
+				if ((uint)e.ErrorCode == 0x80131C02) {
+					return false;
+				}
+				throw;
+			}
 		}
 		
 		internal Stepper GetStepper(ICorDebugStepper corStepper)
