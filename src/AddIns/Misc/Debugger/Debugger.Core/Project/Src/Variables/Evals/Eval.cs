@@ -167,6 +167,9 @@ namespace Debugger
 						throw new EvalSetupException("Can not evaluate in optimized code");
 					} else if ((uint)e.ErrorCode == 0x80131C28) {
 						throw new EvalSetupException("Object is in wrong AppDomain");
+					} else if ((uint)e.ErrorCode == 0x8013130A) {
+						// Happens on getting of Sytem.Threading.Thread.ManagedThreadId; See SD2-1116
+						throw new EvalSetupException("Function does not have IL code");
 					}else {
 						throw;
 					}
