@@ -28,14 +28,17 @@ class MainClass
 				Console.WriteLine("Working directory must be SharpDevelop\\src or SharpDevelop\\bin!");
 				return 2;
 			}
-			if (args.Length == 1 && args[0] == "--REVISION") {
-				CreateRevisionFile();
-			}
-			
+
 			int start = 2;
-			if(args.Length == 2 && args[0] == "--START")
+			for(int i = 0; i < args.Length; i++)
 			{
-				Int32.TryParse(args[1], out start);
+				if(args[i] == "--REVISION")
+				{
+					CreateRevisionFile();
+				}
+				else if(args[i] == "--START") {
+					Int32.TryParse(args[i + 1], out start);
+				}
 			}
 			ConvertChangeLog(start);
 			return 0;
