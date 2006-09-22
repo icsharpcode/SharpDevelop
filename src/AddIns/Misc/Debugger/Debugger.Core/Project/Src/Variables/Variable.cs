@@ -234,24 +234,32 @@ namespace Debugger
 		
 		internal static ICorDebugValue DereferenceUnbox(ICorDebugValue corValue)
 		{
-			if (corValue.Is<ICorDebugReferenceValue>()) {
-				int isNull = corValue.CastTo<ICorDebugReferenceValue>().IsNull;
-				if (isNull == 0) {
-					ICorDebugValue dereferencedValue;
-					try {
-						dereferencedValue = (corValue.CastTo<ICorDebugReferenceValue>()).Dereference();
-					} catch {
-						// Error during dereferencing
-						return null;
-					}
-					return DereferenceUnbox(dereferencedValue); // Try again
+			// Method arguments can be passed 'by ref'
+			if (corValue.Type == (uint)CorElementType.BYREF) {
+				corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
+			}
+			
+			// Pointers may be used in 'unsafe' code - CorElementType.PTR
+			// Classes need to be dereferenced
+			while (corValue.Is<ICorDebugReferenceValue>()) {
+				ICorDebugReferenceValue refValue = corValue.CastTo<ICorDebugReferenceValue>();
+				if (refValue.IsNull != 0) {
+					return null; // Reference is null
 				} else {
-					return null;
+					try {
+						corValue = refValue.Dereference();
+						// TODO: Investigate: Must not acutally be null
+						//       eg. Assembly.AssemblyHandle   See SD2-1117
+						if (corValue == null) return null; // Dereference() returned null
+					} catch {
+						return null; // Error during dereferencing
+					}
 				}
 			}
 			
+			// Unbox value types
 			if (corValue.Is<ICorDebugBoxValue>()) {
-				return DereferenceUnbox(corValue.CastTo<ICorDebugBoxValue>().Object.CastTo<ICorDebugValue>()); // Try again
+				corValue = corValue.CastTo<ICorDebugBoxValue>().Object.CastTo<ICorDebugValue>();
 			}
 			
 			return corValue;
@@ -360,8 +368,13 @@ namespace Debugger
 				more.Add(new VariableCollection("isNull", isNull.ToString()));
 				if (!isNull) {
 					more.Add(new VariableCollection("address", refValue.Value.ToString("X")));
-					VariableCollection deRef = GetDebugInfo(refValue.Dereference());
-					more.Add(new VariableCollection("dereferenced", deRef.Value, deRef.SubCollections, deRef.Items));
+					if (refValue.Dereference() != null) {
+						VariableCollection deRef = GetDebugInfo(refValue.Dereference());
+						more.Add(new VariableCollection("dereferenced", deRef.Value, deRef.SubCollections, deRef.Items));
+					} else {
+						more.Add(new VariableCollection("dereferenced", "N/A", null, null));
+					}
+					
 				}
 				items.Add(new VariableCollection("ICorDebugReferenceValue", "", more, null));
 			}
