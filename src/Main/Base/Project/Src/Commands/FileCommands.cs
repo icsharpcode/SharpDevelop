@@ -91,7 +91,16 @@ namespace ICSharpCode.SharpDevelop.Commands
 					if (window.ViewContent is IMementoCapable) {
 						memento = ((IMementoCapable)window.ViewContent).CreateMemento();
 					}
-					window.ViewContent.Load(window.ViewContent.FileName);
+					try
+					{
+						window.ViewContent.Load(window.ViewContent.FileName);
+					}
+					catch(FileNotFoundException)
+					{
+						MessageService.ShowWarning("${res:ICSharpCode.SharpDevelop.Commands.ReloadFile.FileDeletedMessage}");
+						return;
+					}
+					
 					if (memento != null) {
 						((IMementoCapable)window.ViewContent).SetMemento(memento);
 					}
@@ -128,12 +137,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 					}
 					
 					if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-						string fileName = fdiag.FileName;						
+						string fileName = fdiag.FileName;
 						if (!FileService.CheckFileName(fileName)) {
 							return;
-						}			
+						}
 						if (FileUtility.ObservedSave(new NamedFileOperationDelegate(window.ViewContent.Save), fileName) == FileOperationResult.OK) {
-							FileService.RecentOpen.AddLastFile(fileName);			
+							FileService.RecentOpen.AddLastFile(fileName);
 							MessageService.ShowMessage(fileName, "${res:ICSharpCode.SharpDevelop.Commands.SaveFile.FileSaved}");
 						}
 					}
