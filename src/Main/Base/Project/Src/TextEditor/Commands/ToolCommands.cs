@@ -87,14 +87,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 
 			LineSegment line = textAreaControl.Document.GetLineSegment(startLine);
 			string curLine   = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
-			if (!curLine.StartsWith("///") && ! curLine.StartsWith("'@")) {
+			if (!curLine.StartsWith("///") && ! curLine.StartsWith("'''")) {
 				return;
 			}
 
 			while (startLine > 0) {
 				line    = textAreaControl.Document.GetLineSegment(startLine);
 				curLine = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
-				if (curLine.StartsWith("///") || curLine.StartsWith("'@")) {
+				if (curLine.StartsWith("///") || curLine.StartsWith("'''")) {
 					--startLine;
 				} else {
 					break;
@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			while (endLine < textAreaControl.Document.TotalNumberOfLines - 1) {
 				line    = textAreaControl.Document.GetLineSegment(endLine);
 				curLine = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
-				if (curLine.StartsWith("///") || curLine.StartsWith("'@")) {
+				if (curLine.StartsWith("///") || curLine.StartsWith("'''")) {
 					++endLine;
 				} else {
 					break;
