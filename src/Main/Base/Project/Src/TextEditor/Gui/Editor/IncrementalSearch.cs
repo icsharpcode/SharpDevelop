@@ -22,8 +22,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		TextEditorControl textEditor;
 		Cursor previousCursor;
 		IFormattingStrategy previousFormattingStrategy;
-		string forwardsIncrementalSearchStartMessage = "Incremental Search: ";
-		string reverseIncrementalSearchStartMessage = "Reverse Incremental Search: ";
 		string incrementalSearchStartMessage;
 		
 		StringBuilder searchText = new StringBuilder();
@@ -32,6 +30,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		int originalStartIndex;
 		Cursor cursor;
 		bool passedEndOfDocument;
+		
+		bool codeCompletionEnabled;
 		
 		// Indicates whether this is a forward search or a reverse search.
 		bool forwards = true;
@@ -63,13 +63,18 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// forward from the cursor or backwards.</param>
 		public IncrementalSearch(TextEditorControl textEditor, bool forwards)
 		{
+			
 			this.forwards = forwards;
 			if (forwards) {
-				incrementalSearchStartMessage = forwardsIncrementalSearchStartMessage;
+				incrementalSearchStartMessage = StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ForwardsSearchStatusBarMessage} ");
 			} else {
-				incrementalSearchStartMessage = reverseIncrementalSearchStartMessage;
+				incrementalSearchStartMessage = StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ReverseSearchStatusBarMessage} ");
 			}
 			this.textEditor = textEditor;
+			
+			// Disable code completion.
+			codeCompletionEnabled = CodeCompletionOptions.EnableCodeCompletion;
+			CodeCompletionOptions.EnableCodeCompletion = false;
 			
 			AddFormattingStrategy();
 			
@@ -127,6 +132,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void StopIncrementalSearch()
 		{
+			// Reset code completion state.
+			CodeCompletionOptions.EnableCodeCompletion = codeCompletionEnabled;
 			Dispose();
 		}
 		
@@ -159,8 +166,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			string find = searchText.ToString();
 			int index = FindText(find, startIndex, forwards);
-			if (index == -1 && find.Length == 1) {
-				// First character so allow wrap around.
+			if (index == -1) {
 				index = FindText(find, GetWrapAroundStartIndex(), forwards);
 				passedEndOfDocument = true;
 			}
@@ -261,9 +267,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					searchText.Remove(length - 1, 1);
 					// Run search back at original starting point.
 					startIndex = originalStartIndex;
-					if (length == 1) {
-						passedEndOfDocument = false;
-					}
+					passedEndOfDocument = false;
 					RunSearch();
 					return true;
 				} else {
@@ -289,7 +293,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		void ShowTextFound(string find)
 		{
 			if (passedEndOfDocument) {
-				ShowMessage(String.Concat(find, " (passed end of document)"), true);
+				ShowMessage(String.Concat(find, StringParser.Parse(" ${res:ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.PassedEndOfDocumentStatusBarMessage}")), true);
 			} else {
 				ShowMessage(find, false);
 			}
@@ -310,7 +314,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// </summary>
 		void ShowTextNotFound(string find)
 		{
-			ShowMessage(String.Concat(find, " (not found)"), true);
+			ShowMessage(String.Concat(find, StringParser.Parse(" ${res:ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.NotFoundStatusBarMessage}")), true);
 		}
 	
 		/// <summary>
