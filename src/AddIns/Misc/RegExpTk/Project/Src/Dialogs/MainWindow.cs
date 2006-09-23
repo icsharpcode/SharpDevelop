@@ -183,8 +183,6 @@ namespace Plugins.RegExpTk {
 				error = true;
 			}
 			
-			
-			
 			string file_ = ((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text;
 			
 			if(! FileUtility.IsValidFileName(((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text)) {
@@ -223,7 +221,7 @@ namespace Plugins.RegExpTk {
 				return;
 			}
 			
-			RegexCompilationInfo  rci = new RegexCompilationInfo(((TextBox)ControlDictionary["RegularExpressionCompileTextBox"]).Text,
+			RegexCompilationInfo rci = new RegexCompilationInfo(((TextBox)ControlDictionary["RegularExpressionCompileTextBox"]).Text,
 			                                                     options,
 			                                                     ((TextBox)ControlDictionary["ClassNameCompileTextBox"]).Text,
 			                                                     ((TextBox)ControlDictionary["NamespaceCompileTextBox"]).Text,
@@ -238,9 +236,10 @@ namespace Plugins.RegExpTk {
 				Regex.CompileToAssembly(rciArray, asmName);
 			} catch (ArgumentException ae) {
 				MessageService.ShowError(ResourceService.GetString("RegExpTk.Messages.CompilationError") + " " + ae.Message);
+				return;
 			}
 			
-			string aboluteFileName =  Path.GetFullPath(((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text);
+			string aboluteFileName = Path.GetFullPath(((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text);
 			((StatusBar)ControlDictionary["StatusBar"]).Text = ResourceService.GetString("RegExpTk.Messages.FileCreated") + " " + aboluteFileName;
 		}
 		
