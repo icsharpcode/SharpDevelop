@@ -196,7 +196,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		void NameTextChanged(object sender, EventArgs e)
 		{
 			if (!((CheckBox)ControlDictionary["createSeparateDirCheckBox"]).Checked) {
-				((TextBox)ControlDictionary["solutionNameTextBox"]).Text = ((TextBox)ControlDictionary["nameTextBox"]).Text;
+				((TextBox)ControlDictionary["solutionNameTextBox"]).Text = ((TextBox)ControlDictionary["nameTextBox"]).Text.Trim();
 			}
 		}
 		
@@ -204,7 +204,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			get {
 				string name = String.Empty;
 				if (((CheckBox)ControlDictionary["createSeparateDirCheckBox"]).Checked) {
-					name += Path.DirectorySeparatorChar + ((TextBox)ControlDictionary["solutionNameTextBox"]).Text;
+					name += Path.DirectorySeparatorChar + ((TextBox)ControlDictionary["solutionNameTextBox"]).Text.Trim();
 				}
 				return ProjectLocation + name;
 			}
@@ -213,8 +213,8 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		string ProjectLocation {
 			get {
 				string location = ((TextBox)ControlDictionary["locationTextBox"]).Text.TrimEnd('\\', '/', Path.DirectorySeparatorChar);
-				string name     = ((TextBox)ControlDictionary["nameTextBox"]).Text;
-				return location + (((CheckBox)ControlDictionary["autoCreateSubDirCheckBox"]).Checked ? Path.DirectorySeparatorChar + name : "");
+				string name     = ((TextBox)ControlDictionary["nameTextBox"]).Text.Trim();
+				return location.Trim() + (((CheckBox)ControlDictionary["autoCreateSubDirCheckBox"]).Checked ? Path.DirectorySeparatorChar + name : String.Empty);
 			}
 		}
 		
@@ -302,7 +302,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				cinfo.CombinePath     = ProjectLocation;
 				cinfo.ProjectBasePath = ProjectSolution;
 				
-				cinfo.ProjectName     = ((TextBox)ControlDictionary["nameTextBox"]).Text;
+				cinfo.ProjectName     = name;
 				
 				NewCombineLocation = item.Template.CreateProject(cinfo);
 				if (NewCombineLocation == null || NewCombineLocation.Length == 0) {
