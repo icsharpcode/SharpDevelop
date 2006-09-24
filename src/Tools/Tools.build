@@ -47,7 +47,7 @@
 	
 	<Target Name="PrepareRelease">
 		<MSBuild Projects="@(PrepareReleaseProject)" Targets="Build"/>
-		<Exec Command="SVNChangelogToXml.exe --REVISION" WorkingDirectory = "SVNChangeLogToXml\bin\Release" Timeout = "60000" IgnoreExitCode = "false"/>
+		<Exec Command="SVNChangelogToXml.exe --REVISION --START 1139" WorkingDirectory = "SVNChangeLogToXml\bin\Release" Timeout = "60000" IgnoreExitCode = "false"/>
 		<RemoveDir Directories="SVNChangeLogToXml\bin" />
 		<RemoveDir Directories="SVNChangeLogToXml\obj" />
 	</Target>
