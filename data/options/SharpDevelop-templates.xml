@@ -56,6 +56,54 @@
     <CodeTemplate template="scwl" description="System.Console.WriteLine">System.Console.WriteLine(${Selection}|);</CodeTemplate>
     <CodeTemplate template="scw" description="System.Console.Write">System.Console.Write(${Selection}|);</CodeTemplate>
   </CodeTemplateGroup>
+	<CodeTemplateGroup extensions=".vb">
+    <CodeTemplate template="classp" description="class declaration (public)">Public Class |
+	${Selection}
+End Class</CodeTemplate>
+    <CodeTemplate template="forb" description="for block">For i As Integer = 0 To |
+	${Selection}
+Next</CodeTemplate>
+    <CodeTemplate template="ifb" description="if statement">If | Then
+	${Selection}
+End If</CodeTemplate>
+    <CodeTemplate template="ife" description="if else">If | Then
+	${Selection}
+Else
+	
+End If</CodeTemplate>
+    <CodeTemplate template="selectd" description="Select Case statement (with default)">Select Case |
+	Case 
+	
+	Case Else
+		${Selection}
+End Select</CodeTemplate>
+    <CodeTemplate template="selects" description="Select Case statement">Select Case |
+	Case
+		${Selection}
+End Select</CodeTemplate>
+    <CodeTemplate template="tryc" description="try / catch">Try
+	${Selection}|
+Catch ex As System.Exception
+	
+End Try</CodeTemplate>
+    <CodeTemplate template="trycf" description="try / catch / finally">Try
+	${Selection}|
+Catch ex As System.Exception
+	
+Finally
+	
+End Try</CodeTemplate>
+    <CodeTemplate template="tryf" description="try / finally">Try
+	${Selection}|
+Finally
+	
+End Try</CodeTemplate>
+    <CodeTemplate template="whileb" description="while">While |
+	${Selection}
+End While</CodeTemplate>
+    <CodeTemplate template="scwl" description="System.Console.WriteLine">System.Console.WriteLine(${Selection}|)</CodeTemplate>
+    <CodeTemplate template="scw" description="System.Console.Write">System.Console.Write(${Selection}|)</CodeTemplate>
+  </CodeTemplateGroup>
   <CodeTemplateGroup extensions=".html;.htm">
     <CodeTemplate template="boldb" description="bold block">&lt;b&gt;|${Selection}&lt;/b&gt;</CodeTemplate>
     <CodeTemplate template="commentb" description="comment block">&lt;!--|${Selection}--&gt;</CodeTemplate>
