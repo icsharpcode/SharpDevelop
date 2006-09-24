@@ -260,12 +260,11 @@ namespace ICSharpCode.TextEditor
 				return;
 			}
 			
-			
 			if (textArea.TextView.DrawingPosition.Contains(mousepos.X, mousepos.Y)) {
 				gotmousedown = true;
 				button = e.Button;
 				
-				if ((DateTime.Now - lastTime).Milliseconds < SystemInformation.DoubleClickTime) {
+				if (button == MouseButtons.Left && (DateTime.Now - lastTime).Milliseconds < SystemInformation.DoubleClickTime) {
 					int deltaX   = Math.Abs(lastmousedownpos.X - e.X);
 					int deltaY   = Math.Abs(lastmousedownpos.Y - e.Y);
 					if (deltaX <= SystemInformation.DoubleClickSize.Width &&
@@ -281,7 +280,6 @@ namespace ICSharpCode.TextEditor
 				
 				lastTime = DateTime.Now;
 				lastmousedownpos = mousedownpos = new Point(e.X, e.Y);
-				
 				
 				if (button == MouseButtons.Left) {
 					FoldMarker marker = textArea.TextView.GetFoldMarkerFromPosition(mousepos.X - textArea.TextView.DrawingPosition.X,
@@ -303,7 +301,6 @@ namespace ICSharpCode.TextEditor
 						clickedOnSelectedText = false;
 						
 						int offset = textArea.Document.PositionToOffset(realmousepos);
-						
 						
 						if (textArea.SelectionManager.HasSomethingSelected &&
 						    textArea.SelectionManager.IsSelected(offset)) {
