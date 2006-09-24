@@ -383,14 +383,17 @@ namespace ICSharpCode.XmlEditor
 		{
 			TaskService.ClearExceptCommentTasks();
 			if (IsWellFormed) {
-				using (XmlTextReader reader = new XmlTextReader(new StringReader(Text))) {
-					XmlSchemaInference schemaInference = new XmlSchemaInference();
-					XmlSchemaSet schemaSet = schemaInference.InferSchema(reader);
-					return GetSchemas(schemaSet);
+				try {
+					using (XmlTextReader reader = new XmlTextReader(new StringReader(Text))) {
+						XmlSchemaInference schemaInference = new XmlSchemaInference();
+						XmlSchemaSet schemaSet = schemaInference.InferSchema(reader);
+						return GetSchemas(schemaSet);
+					}
+				} catch (XmlSchemaInferenceException ex) {
+					AddTask(xmlEditor.FileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
 				}
-			} else {
-				ShowErrorList();
-			}
+			} 
+			ShowErrorList();
 			return null;
 		}
 		
