@@ -2,6 +2,7 @@
   <System.Windows.Forms.UserControl>
     <Name value="CompilerParametersPanel" />
     <ClientSize value="{Width=508, Height=573}" />
+    <AutoScroll value="True" />
     <Controls>
       <System.Windows.Forms.GroupBox>
         <Name value="compilerExtensionsGroupBox" />
@@ -64,7 +65,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="wixGroupBox" />
         <Location value="3, 177" />
-        <Text value="Wix" />
+        <Text value="WiX" />
         <Anchor value="Top, Left, Right" />
         <Size value="502, 106" />
         <TabIndex value="1" />
