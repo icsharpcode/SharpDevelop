@@ -58,26 +58,26 @@ namespace ICSharpCode.NAntAddIn
 		/// or just the name of the executable (nant.exe) in which
 		/// case it is assumed that NAnt is on the path.
 		/// </remarks>
-		public static string NAntFileName
-		{
+		public static string NAntFileName {
 			get {
 				return (string)Properties.Get(NAntFileNameProperty, DefaultNAntFileName);
 			}
-			
 			set {
-				Properties.Set(NAntFileNameProperty, value);
+				if (String.IsNullOrEmpty(value)) {
+					Properties.Set(NAntFileNameProperty, DefaultNAntFileName);
+				} else {
+					Properties.Set(NAntFileNameProperty, value);
+				}
 			}
 		}
 		
 		/// <summary>
 		/// Gets the NAnt command line arguments.
 		/// </summary>
-		public static string NAntArguments
-		{
+		public static string NAntArguments {
 			get {
 				return (string)Properties.Get(NAntArgumentsProperty, String.Empty);
 			}
-			
 			set {
 				Properties.Set(NAntArgumentsProperty, value);
 			}
@@ -86,12 +86,10 @@ namespace ICSharpCode.NAntAddIn
 		/// <summary>
 		/// Gets the NAnt -verbose setting.
 		/// </summary>
-		public static bool Verbose
-		{
+		public static bool Verbose {
 			get {
 				return (bool)Properties.Get(VerboseProperty, false);
-			}
-			
+			}	
 			set {
 				Properties.Set(VerboseProperty, value);
 			}
@@ -100,12 +98,10 @@ namespace ICSharpCode.NAntAddIn
 		/// <summary>
 		/// Gets the NAnt show logo setting.
 		/// </summary>
-		public static bool ShowLogo
-		{
+		public static bool ShowLogo {
 			get {
 				return (bool)Properties.Get(ShowLogoProperty, false);
-			}
-			
+			}	
 			set {
 				Properties.Set(ShowLogoProperty, value);
 			}
@@ -114,12 +110,10 @@ namespace ICSharpCode.NAntAddIn
 		/// <summary>
 		/// Gets the NAnt -quiet setting.
 		/// </summary>
-		public static bool Quiet
-		{
+		public static bool Quiet {
 			get {
 				return (bool)Properties.Get(QuietProperty, false);
 			}
-			
 			set {
 				Properties.Set(QuietProperty, value);
 			}
@@ -128,12 +122,10 @@ namespace ICSharpCode.NAntAddIn
 		/// <summary>
 		/// Gets the NAnt -debug setting.
 		/// </summary>
-		public static bool DebugMode
-		{
+		public static bool DebugMode {
 			get {
 				return (bool)Properties.Get(DebugModeProperty, false);
 			}
-			
 			set {
 				Properties.Set(DebugModeProperty, value);
 			}

@@ -166,11 +166,20 @@ namespace ICSharpCode.SharpDevelop.Util
 			
 			if (ProcessExited != null) {
 				process.EnableRaisingEvents = true;
-				process.Exited += new EventHandler(OnProcessExited);
+				process.Exited += OnProcessExited;
 			}
 
-			process.Start();
-			
+			bool started = false;
+			try {
+				process.Start();
+				started = true;
+			} finally {
+				if (!started) {
+					process.Exited -= OnProcessExited;			
+					process = null;
+				}
+			}
+				
 			standardOutputReader = new OutputReader(process.StandardOutput);
 			if (OutputLineReceived != null) {
 				standardOutputReader.LineReceived += new LineReceivedEventHandler(OnOutputLineReceived);

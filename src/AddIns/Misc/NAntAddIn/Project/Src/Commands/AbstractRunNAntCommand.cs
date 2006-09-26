@@ -13,6 +13,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Util;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 
@@ -32,6 +33,9 @@ namespace ICSharpCode.NAntAddIn.Commands
 		/// The default NAnt build file extension.
 		/// </summary>
 		public static readonly string NAntBuildFileExtension = ".build";
+		
+		const int Win32FileNotFoundErrorCode = 2;
+		const int Win32PathNotFoundErrorCode = 3;
 		
 		static MessageViewCategory category;
 		static NAntRunner runner;
@@ -173,13 +177,20 @@ namespace ICSharpCode.NAntAddIn.Commands
 			CategoryWriteLine(StringParser.Parse("${res:ICSharpCode.NAntAddIn.AbstractRunNAntCommand.RunningNAntMessage}"));
 			CategoryWriteLine(runner.CommandLine);
 			
-			runner.Start();
+			try {
+				runner.Start();
+			} catch (Win32Exception ex) {
+				if (ex.NativeErrorCode == Win32FileNotFoundErrorCode || ex.NativeErrorCode == Win32PathNotFoundErrorCode) {
+					throw new NAntAddInException(GetNAntNotFoundErrorMessage(AddInOptions.NAntFileName), ex);
+				} else {
+					throw;
+				}
+			}
 		}	
         
         /// <summary>
         /// Gets any extra arguments from the NAnt pad's text box.
         /// </summary>
-        /// <returns></returns>
         protected string GetPadTextBoxArguments()
         {
         	string arguments = String.Empty;
@@ -231,7 +242,6 @@ namespace ICSharpCode.NAntAddIn.Commands
         /// <summary>
         /// Writes a line of text to the output window.
         /// </summary>
-        /// <param name="message"></param>
         void CategoryWriteLine(string message)
         {
         	Category.AppendText(String.Concat(message, Environment.NewLine));
@@ -254,19 +264,13 @@ namespace ICSharpCode.NAntAddIn.Commands
 		/// or null.</returns>
 		ProjectItem GetFirstMatchingFile(IProject project, string extension)
 		{
-			ProjectItem matchedProjectItem = null;
-			
 			foreach (ProjectItem projectItem in project.Items) {
-				
 				string projectFileNameExtension = Path.GetExtension(projectItem.FileName);
-				
 				if (String.Compare(projectFileNameExtension, extension, true) == 0) {
-				    	matchedProjectItem = projectItem;
-				    	break;
+					return projectItem;
 				}
 			}
-			
-			return matchedProjectItem;
+			return null;
 		}        
 		
 		/// <summary>
@@ -302,6 +306,12 @@ namespace ICSharpCode.NAntAddIn.Commands
         void OutputLineReceived(object sender, LineReceivedEventArgs e)
         {
         	CategoryWriteLine(e.Line);
+        }
+        
+        string GetNAntNotFoundErrorMessage(string fileName)
+        {
+        	string formatString = StringParser.Parse("${res:ICSharpCode.NAntAddIn.AbstractRunNAntCommand.NAntExeNotFoundMessage}");
+        	return String.Format(formatString, fileName);
         }
 	}
 }
