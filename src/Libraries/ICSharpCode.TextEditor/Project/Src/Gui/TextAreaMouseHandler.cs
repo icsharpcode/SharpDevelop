@@ -33,7 +33,7 @@ namespace ICSharpCode.TextEditor
 		static readonly Point nilPoint = new Point(-1, -1);
 		Point mousedownpos       = nilPoint;
 		Point lastmousedownpos   = nilPoint;
-		Point selectionStartPos  = nilPoint;
+		public static Point selectionStartPos  = nilPoint;
 		
 		bool gotmousedown = false;
 		bool dodragdrop = false;
@@ -138,7 +138,17 @@ namespace ICSharpCode.TextEditor
 		
 		void TextAreaMouseMove(object sender, MouseEventArgs e)
 		{
-			ShowHiddenCursor();
+            // honour the starting selection strategy
+            switch(SelectFrom.where) {
+                case WhereFrom.Gutter:
+                    moveGutter(sender, e);
+                    break;
+
+                case WhereFrom.TArea:
+                    break;
+
+            }
+            ShowHiddenCursor();
 			if (dodragdrop) {
 				dodragdrop = false;
 				return;
@@ -251,7 +261,7 @@ namespace ICSharpCode.TextEditor
 		DateTime lastTime = DateTime.Now;
 		void OnMouseDown(object sender, MouseEventArgs e)
 		{
-			if (dodragdrop) {
+            if (dodragdrop) {
 				return;
 			}
 			
@@ -262,6 +272,7 @@ namespace ICSharpCode.TextEditor
 			
 			if (textArea.TextView.DrawingPosition.Contains(mousepos.X, mousepos.Y)) {
 				gotmousedown = true;
+                SelectFrom.where = WhereFrom.TArea;
 				button = e.Button;
 				
 				if (button == MouseButtons.Left && (DateTime.Now - lastTime).Milliseconds < SystemInformation.DoubleClickTime) {
@@ -412,5 +423,128 @@ namespace ICSharpCode.TextEditor
 			doubleclick = true;
 			
 		}
+
+		bool selectionGutterDirectionDown = true; // direction of gutter selection affects whether a selection starts at the start of a line or at the end of a line
+        int gutterlastmoveline = -1; // last gutter movement line
+        public int gutterxstart = 0; // if initial selection is made from the gutter then set to zero, otherwise take the original starting position (from a mouse or keyboard select)
+        void moveGutter(object sender, MouseEventArgs e) 
+        {
+            MouseButtons mouseButtons = e.Button;
+            if (mouseButtons == MouseButtons.Left)
+            {
+                bool directionChanged = false; // gone from a downward moving selection to an upward, or vice-versa
+                int realline = textArea.TextView.GetLogicalLine(mousepos);
+                Point realmousepos = new Point(0, realline);
+
+                // avoid reprocessing the same selected line (prevent flicker)
+                if (gutterlastmoveline == realmousepos.Y)
+                    return;
+                else
+                {
+                    if (realmousepos.Y < selectionStartPos.Y)
+                    {
+                        // we need to record when the behaviour changes
+                        // used down further
+                        if (selectionGutterDirectionDown)
+                            directionChanged = true;
+
+                        // determine the selection strategy
+                        selectionGutterDirectionDown = false;
+                    }
+                    else
+                    {
+                        // we need to record when the behaviour changes
+                        // used down further
+                        if (!selectionGutterDirectionDown)
+                            directionChanged = true;
+
+                        // determine the selection strategy
+                        selectionGutterDirectionDown = true;
+                    }
+
+                    gutterlastmoveline = realmousepos.Y;
+                }
+
+                // between 1st and last lines - last line is handled differently
+                if (realmousepos.Y < textArea.Document.TotalNumberOfLines - 1)
+                {
+                    if (selectionStartPos.Y == realmousepos.Y)
+                    {
+                        // this setselection defaults for a upward moving selection
+                        textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, realmousepos, new Point(selectionStartPos.X, realmousepos.Y + 1)));
+                    }
+                    else if (selectionStartPos.Y < realmousepos.Y && textArea.SelectionManager.HasSomethingSelected)
+                    {
+                        // this fixes the selection for moving the selection down
+                        if (directionChanged)
+                        {
+                            textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, selectionStartPos, new Point(selectionStartPos.X, selectionStartPos.Y)));
+                            // this enforces the screen area update
+                            textArea.SelectionManager.ExtendSelection(textArea.SelectionManager.SelectionCollection[0].EndPosition, new Point(0, realmousepos.Y + 1));
+                        }
+                        else
+                        {
+                            // selection is extended to the end of the current line
+                            textArea.SelectionManager.ExtendSelection(textArea.SelectionManager.SelectionCollection[0].EndPosition, new Point(0, realmousepos.Y + 1));
+                        }
+                    }
+                    else
+                    {
+                        // when something is already selected we must repect the existing selection
+                        if (textArea.SelectionManager.HasSomethingSelected)
+                        {
+                            // this fixes the selection for moving the selection up
+                            if (realmousepos.Y < selectionStartPos.Y && directionChanged) // the first time an upward selection moves above the first selection line
+                            {
+                                textArea.SelectionManager.ClearSelection();
+                                selectionStartPos = new Point(selectionStartPos.X, TextAreaMouseHandler.selectionStartPos.Y);
+
+                                if ((Control.ModifierKeys & Keys.Shift) != 0 && selectionStartPos.X != 0)
+                                {
+                                    // shift-click
+                                    textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, selectionStartPos, new Point(selectionStartPos.X, selectionStartPos.Y)));
+                                }
+                                else
+                                {
+                                    textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, selectionStartPos, new Point(selectionStartPos.X, selectionStartPos.Y + 1)));
+                                }
+                                textArea.SelectionManager.ExtendSelection(new Point(selectionStartPos.X, selectionStartPos.Y), new Point(realmousepos.X, realmousepos.Y));
+                            }
+                            else
+                            {
+                                textArea.SelectionManager.ExtendSelection(textArea.Caret.Position, realmousepos);
+                            }
+                        }
+                    }
+
+                    if (realmousepos.Y >= selectionStartPos.Y) // at or below starting selection, place the cursor on the next line
+                        textArea.Caret.Position = new Point(0, realmousepos.Y + 1);
+                    else // prior lines to starting selection, place the cursor on the same line as the new selection
+                        textArea.Caret.Position = new Point(0, realmousepos.Y);
+                }
+                else
+                {
+                    if (realmousepos.Y == textArea.Document.TotalNumberOfLines - 1)
+                    {
+                        // selection is last line of text
+                        textArea.SelectionManager.ClearSelection();
+                        textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, new Point(selectionStartPos.X, selectionStartPos.Y), new Point(textArea.Document.GetLineSegment(realline).Length + 1, realline)));
+                        textArea.Caret.Position = new Point(textArea.Document.GetLineSegment(realline).Length + 1, realline);
+                    }
+                }
+            }
+            else
+                gutterlastmoveline = -1;
+        }
 	}
+
+    public class SelectFrom {
+        public static int where = WhereFrom.None;
+    }
+
+    public class WhereFrom {
+        public const int None = 0;
+        public const int Gutter = 1;
+        public const int TArea = 2;
+    }
 }

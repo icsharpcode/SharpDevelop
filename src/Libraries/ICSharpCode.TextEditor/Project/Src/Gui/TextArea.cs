@@ -404,7 +404,13 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		protected override void OnMouseMove(MouseEventArgs e)
+        // external interface to the attached event
+        public void doMouseMove(System.Windows.Forms.MouseEventArgs e)
+        {
+            OnMouseMove(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
 			if (!toolTipRectangle.Contains(e.Location)) {
