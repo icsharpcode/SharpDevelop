@@ -265,7 +265,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					    || (property.SetMethod != null && IsVisible(property.SetMethod.Attributes)))
 					{
 						DefaultProperty p = new DefaultProperty(this, property.Name);
-						if (this.ClassType != ClassType.Interface) {
+						if (this.ClassType == ClassType.Interface) {
+							p.Modifiers = ModifierEnum.Public | ModifierEnum.Abstract;
+						} else {
 							p.Modifiers = TranslateModifiers(property);
 						}
 						p.ReturnType = CreateType(this.ProjectContent, this, property.PropertyType);
@@ -282,7 +284,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (EventDefinition eventDef in type.Events) {
 					if (eventDef.AddMethod != null && IsVisible(eventDef.AddMethod.Attributes)) {
 						DefaultEvent e = new DefaultEvent(this, eventDef.Name);
-						if (this.ClassType != ClassType.Interface) {
+						if (this.ClassType == ClassType.Interface) {
+							e.Modifiers = ModifierEnum.Public | ModifierEnum.Abstract;
+						} else {
 							e.Modifiers = TranslateModifiers(eventDef);
 						}
 						e.ReturnType = CreateType(this.ProjectContent, this, eventDef.EventType);
