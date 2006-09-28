@@ -93,7 +93,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				MenuService.ShowContextMenu(this, contextMenuPath, (Control)sender, e.X, e.Y);
 			};
 			newControl.TextArea.KeyEventHandler += new ICSharpCode.TextEditor.KeyEventHandler(HandleKeyPress);
-			newControl.Caret.PositionChanged += new EventHandler(CaretPositionChanged);
 			newControl.TextArea.ClipboardHandler.CopyText += new CopyTextEventHandler(ClipboardHandlerCopyText);
 			
 //			newControl.TextArea.IconBarMargin.Painted   += new MarginPaintEventHandler(PaintIconBarBreakPoints);
@@ -174,11 +173,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					ActivateQuickClassBrowserOnDemand();
 				}
 			}
-		}
-		
-		void CaretPositionChanged(object sender, EventArgs e)
-		{
-			StatusBarService.SetCaretPosition(ActiveTextAreaControl.TextArea.TextView.GetVisualColumn(ActiveTextAreaControl.Caret.Line, ActiveTextAreaControl.Caret.Column), ActiveTextAreaControl.Caret.Line, ActiveTextAreaControl.Caret.Column);
 		}
 		
 		void GenerateEditActions()

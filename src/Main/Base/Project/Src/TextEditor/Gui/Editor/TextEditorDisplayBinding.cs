@@ -395,11 +395,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 //			textAreaControl.Refresh();
 		}
 		
-		Point GetTextAreaPosition()
-		{
-			return textAreaControl.Document.OffsetToPosition(textAreaControl.ActiveTextAreaControl.Caret.Offset);
-		}
-		
 		public override INavigationPoint BuildNavPoint()
 		{
 			int lineNumber = this.Line;
@@ -416,10 +411,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void CaretChanged(object sender, EventArgs e)
 		{
-			Point    pos       = GetTextAreaPosition();
-			LineSegment line   = textAreaControl.Document.GetLineSegment(pos.Y);
-			
-			StatusBarService.SetCaretPosition(pos.X + 1, pos.Y + 1, textAreaControl.ActiveTextAreaControl.Caret.Offset - line.Offset + 1);
+			TextAreaControl activeTextAreaControl = textAreaControl.ActiveTextAreaControl;
+			int line = activeTextAreaControl.Caret.Line;
+			int col = activeTextAreaControl.Caret.Column;
+			StatusBarService.SetCaretPosition(activeTextAreaControl.TextArea.TextView.GetVisualColumn(line, col), line, col);
 			NavigationService.Log(this.BuildNavPoint());
 		}
 		

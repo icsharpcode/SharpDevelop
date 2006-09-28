@@ -56,16 +56,17 @@ namespace ICSharpCode.XmlEditor
 			xmlEditor.Dock = DockStyle.Fill;
 			
 			xmlEditor.SchemaCompletionDataItems = XmlSchemaManager.SchemaCompletionDataItems;
-			xmlEditor.Document.DocumentChanged += new DocumentEventHandler(DocumentChanged);
+			xmlEditor.Document.DocumentChanged += DocumentChanged;
 
-			xmlEditor.ActiveTextAreaControl.Caret.CaretModeChanged += new EventHandler(CaretModeChanged);
-			xmlEditor.ActiveTextAreaControl.Enter += new EventHandler(CaretUpdate);
-			((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Activated += new EventHandler(GotFocusEvent);
+			xmlEditor.ActiveTextAreaControl.Caret.CaretModeChanged += CaretModeChanged;
+			xmlEditor.ActiveTextAreaControl.Caret.PositionChanged += CaretChanged;
+			xmlEditor.ActiveTextAreaControl.Enter += CaretUpdate;
+			((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Activated += GotFocusEvent;
 			
 			// Listen for changes to the xml editor properties.
 			XmlEditorAddInOptions.PropertyChanged += PropertyChanged;
-			XmlSchemaManager.UserSchemaAdded += new EventHandler(UserSchemaAdded);
-			XmlSchemaManager.UserSchemaRemoved += new EventHandler(UserSchemaRemoved);
+			XmlSchemaManager.UserSchemaAdded += UserSchemaAdded;
+			XmlSchemaManager.UserSchemaRemoved += UserSchemaRemoved;
 
 			xmlTreeView = new XmlTreeView(this);
 			SecondaryViewContents.Add(xmlTreeView);
@@ -759,9 +760,10 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void CaretChanged(object sender, EventArgs e)
 		{
-			Point pos = xmlEditor.Document.OffsetToPosition(xmlEditor.ActiveTextAreaControl.Caret.Offset);
-			LineSegment line = xmlEditor.Document.GetLineSegment(pos.Y);
-			StatusBarService.SetCaretPosition(pos.X + 1, pos.Y + 1, xmlEditor.ActiveTextAreaControl.Caret.Offset - line.Offset + 1);
+			TextAreaControl activeTextAreaControl = xmlEditor.ActiveTextAreaControl;
+			int line = activeTextAreaControl.Caret.Line;
+			int col = activeTextAreaControl.Caret.Column;
+			StatusBarService.SetCaretPosition(activeTextAreaControl.TextArea.TextView.GetVisualColumn(line, col), line, col);
 		}
 		
 		/// <summary>
@@ -824,7 +826,9 @@ namespace ICSharpCode.XmlEditor
 		
 		void OnFileChangedEventInvoked()
 		{
+			Console.WriteLine("XmlView.OnFileChangedEventInvoked");
 			if (((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Focused) {
+				Console.WriteLine("OnFileChangedEventInvoked - Workbench has focus");
 				GotFocusEvent(this, EventArgs.Empty);
 			}
 		}

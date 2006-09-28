@@ -114,7 +114,6 @@ namespace ICSharpCode.XmlEditor
 			newControl.ContextMenuStrip = MenuService.CreateContextMenu(this, contextMenuPath);
 			newControl.SelectionManager.SelectionChanged += new EventHandler(SelectionChanged);
 			newControl.Document.DocumentChanged += new DocumentEventHandler(DocumentChanged);
-			newControl.Caret.PositionChanged += new EventHandler(CaretPositionChanged);
 			newControl.TextArea.ClipboardHandler.CopyText += new CopyTextEventHandler(ClipboardHandlerCopyText);
 			
 			newControl.MouseWheel += new MouseEventHandler(TextAreaMouseWheel);
@@ -229,12 +228,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			SideBarView.PutInClipboardRing(e.Text);
 		}
-		
-		void CaretPositionChanged(object sender, EventArgs e)
-		{
-			StatusBarService.SetCaretPosition(ActiveTextAreaControl.TextArea.TextView.GetVisualColumn(ActiveTextAreaControl.Caret.Line, ActiveTextAreaControl.Caret.Column), ActiveTextAreaControl.Caret.Line, ActiveTextAreaControl.Caret.Column);
-		}
-		
+	
 		void TextAreaMouseWheel(object sender, MouseEventArgs e)
 		{
 			TextAreaControl textAreaControl = (TextAreaControl)sender;
