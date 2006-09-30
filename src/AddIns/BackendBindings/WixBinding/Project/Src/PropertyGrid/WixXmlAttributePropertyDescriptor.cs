@@ -9,6 +9,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Design;
+using System.Windows.Forms.Design;
 
 namespace ICSharpCode.WixBinding
 {
@@ -22,7 +24,7 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// Creates a new instance of the WixXmlAttributePropertyDescriptor class.
 		/// </summary>
-		public WixXmlAttributePropertyDescriptor(WixXmlAttribute wixXmlAttribute) : base(wixXmlAttribute.Name, new Attribute[0])
+		public WixXmlAttributePropertyDescriptor(WixXmlAttribute wixXmlAttribute) : base(wixXmlAttribute.Name, GetAttributes(wixXmlAttribute))
 		{
 			this.wixXmlAttribute = wixXmlAttribute;
 		}
@@ -90,5 +92,24 @@ namespace ICSharpCode.WixBinding
 		{
 			return true;
 		}	
+		
+		/// <summary>
+		/// Gets the attributes for the property descriptor based on the
+		/// WixXmlAttribute.
+		/// </summary>
+		/// <remarks>Adds an EditorAttribute for types (e.g. AutogenUuid)
+		/// that have a custom UITypeEditor.</remarks>
+		static Attribute[] GetAttributes(WixXmlAttribute wixXmlAttribute)
+		{
+			List<Attribute> attributes = new List<Attribute>();
+			switch (wixXmlAttribute.AttributeType) {
+				case WixXmlAttributeType.ComponentGuid:
+				case WixXmlAttributeType.AutogenUuid:
+				case WixXmlAttributeType.Uuid:
+					attributes.Add(new EditorAttribute(typeof(GuidEditor), typeof(UITypeEditor)));
+					break;
+			}
+			return attributes.ToArray();
+		}
 	}
 }

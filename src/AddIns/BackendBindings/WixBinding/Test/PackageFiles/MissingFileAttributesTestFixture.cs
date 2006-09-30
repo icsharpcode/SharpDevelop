@@ -30,11 +30,8 @@ namespace WixBinding.Tests.PackageFiles
 		public void ElementHasNoAttributes()
 		{
 			XmlElement element = doc.CreateElement("File", WixNamespaceManager.Namespace);
-			string[] attributeNames = new string[] {"Foo", "Bar"};
-			WixXmlAttributeCollection attributes = WixXmlAttribute.GetAttributes(element, attributeNames);
-			Assert.IsNotNull(attributes[0]);
-			Assert.IsNotNull(attributes[1]);
-			Assert.AreEqual(2, attributes.Count);
+			WixXmlAttributeCollection attributes = schema.GetAttributes(element);
+			Assert.IsTrue(attributes.Count > 0);
 		}
 		
 		[Test]
@@ -42,21 +39,25 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			XmlElement element = doc.CreateElement("File", WixNamespaceManager.Namespace);
 			element.SetAttribute("Id", "Test");
-			string[] attributeNames = new string[] {"Id"};
-			WixXmlAttributeCollection attributes = WixXmlAttribute.GetAttributes(element, attributeNames);
-			Assert.AreEqual(1, attributes.Count);
-			Assert.IsNotNull(attributes[0]);
+			WixXmlAttributeCollection attributes = schema.GetAttributes(element);
+			
+			int idAttributeCount = 0;
+			foreach (WixXmlAttribute attribute in attributes) {
+				if (attribute.Name 	== "Id") {
+					idAttributeCount++;
+				}
+			}
+			Assert.AreEqual(1, idAttributeCount);
 		}
 		
 		[Test]
 		public void UnknownElementAttribute()
 		{
 			XmlElement element = doc.CreateElement("File", WixNamespaceManager.Namespace);
-			element.SetAttribute("Id", "Test");
-			string[] attributeNames = new string[0];
-			WixXmlAttributeCollection attributes = WixXmlAttribute.GetAttributes(element, attributeNames);
-			Assert.AreEqual(1, attributes.Count);
-			Assert.IsNotNull(attributes[0]);
+			element.SetAttribute("Test", "TestValue");
+			WixXmlAttributeCollection attributes = schema.GetAttributes(element);
+			Assert.IsTrue(attributes.Count > 1);
+			Assert.IsNotNull(attributes["Test"]);
 		}
 	}
 }

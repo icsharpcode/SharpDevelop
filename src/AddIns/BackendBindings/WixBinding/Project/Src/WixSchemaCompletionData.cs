@@ -44,7 +44,7 @@ namespace ICSharpCode.WixBinding
 		/// The method assumes the element is defined in the root of the schema
 		/// (i.e. is accessible via the XmlSchema.Elements property).
 		/// </remarks>
-		public string[] GetAttributes(string elementName)
+		public string[] GetAttributeNames(string elementName)
 		{
 			List<string> attributes = GetItems(elementName, GetAttributeCompletionData);
 			
@@ -57,11 +57,53 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
+		/// Gets the attributes for the specified element. Also adds any standard
+		/// attributes for the element which are not set.
+		/// </summary>
+		public WixXmlAttributeCollection GetAttributes(XmlElement element)
+		{
+			WixXmlAttributeCollection attributes = new WixXmlAttributeCollection();
+			string elementName = element.Name;
+			foreach (XmlAttribute attribute in element.Attributes) {
+				string attributeName = attribute.Name;
+				WixXmlAttributeType type = GetWixAttributeType(elementName, attributeName);
+				WixXmlAttribute wixAttribute = new WixXmlAttribute(attributeName, attribute.Value, type);
+				attributes.Add(wixAttribute);
+			}
+			attributes.AddRange(GetMissingAttributes(elementName, attributes, GetAttributeNames(elementName)));
+			return attributes;
+		}
+		
+		/// <summary>
 		/// Returns the deprecated attributes for the specified element name.
 		/// </summary>
 		public string[] GetDeprecatedAttributes(string elementName)
 		{
 			return FindDeprecatedAttributes(elementName).ToArray();
+		}
+		
+		/// <summary>
+		/// Returns the qualified name of the attribute's type.
+		/// </summary>
+		public QualifiedName GetAttributeType(string elementName, string attributeName)
+		{
+			XmlElementPath path = GetPath(elementName);
+			XmlSchemaElement element = FindElement(path);
+			if (element != null) {
+				XmlSchemaComplexType complexType = GetElementAsComplexType(element);
+				if (complexType != null) {
+					foreach (XmlSchemaAttribute attribute in complexType.Attributes) {
+						if (attribute.Name == attributeName) {
+							XmlQualifiedName name = attribute.SchemaTypeName;
+							if (name != null) {
+								return new QualifiedName(name.Name, name.Namespace);
+							}
+							return null;
+						}
+					}
+				}
+			}
+			return null;
 		}
 		
 		/// <summary>
@@ -163,6 +205,38 @@ namespace ICSharpCode.WixBinding
 				}
 			}
 			return attributes;
+		}
+		
+		WixXmlAttributeType GetWixAttributeType(string elementName, string attributeName)
+		{
+			QualifiedName attributeTypeName = GetAttributeType(elementName, attributeName);
+			if (attributeTypeName != null) {
+				switch (attributeTypeName.Name) {
+					case "autogenuuid":
+						return WixXmlAttributeType.AutogenUuid;
+					case "uuid":
+						return WixXmlAttributeType.Uuid;
+					case "ComponentGuid":
+						return WixXmlAttributeType.ComponentGuid;
+				}
+			}
+			return WixXmlAttributeType.Text;
+		}
+		
+		/// <summary>
+		/// Gets the attributes that have not been added to the 
+		/// <paramref name="attributes"/>.
+		/// </summary>		
+		WixXmlAttributeCollection GetMissingAttributes(string elementName, WixXmlAttributeCollection existingAttributes, string[] attributes)
+		{
+			WixXmlAttributeCollection missingAttributes = new WixXmlAttributeCollection();
+			foreach (string name in attributes) {
+				if (existingAttributes[name] == null) {
+					WixXmlAttributeType type = GetWixAttributeType(elementName, name);
+					missingAttributes.Add(new WixXmlAttribute(name, type));
+				}
+			}
+			return missingAttributes;
 		}
 	}
 }

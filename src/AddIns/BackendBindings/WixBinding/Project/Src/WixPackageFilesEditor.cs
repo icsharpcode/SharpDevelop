@@ -135,7 +135,7 @@ namespace ICSharpCode.WixBinding
 			view.AllowedChildElements.Clear();
 			view.Attributes.Clear();
 			if (element != null) {
-				view.Attributes.AddRange(WixXmlAttribute.GetAttributes(element, WixSchemaCompletionData.GetAttributes(element.Name)));
+				view.Attributes.AddRange(WixSchemaCompletionData.GetAttributes(element));
 				view.AllowedChildElements.AddRange(WixSchemaCompletionData.GetChildElements(element.Name));
 			} else {
 				view.AllowedChildElements.Add("Directory");

@@ -30,10 +30,11 @@ namespace ICSharpCode.WixBinding
 			this.type = type;
 		}
 		
-		public WixXmlAttribute(string name) : this(name, String.Empty, WixXmlAttributeType.Text)
+		public WixXmlAttribute(string name, WixXmlAttributeType type) 
+			: this(name, String.Empty, type)
 		{
 		}
-		
+
 		/// <summary>
 		/// Gets the name of the attribute.
 		/// </summary>
@@ -66,38 +67,6 @@ namespace ICSharpCode.WixBinding
 			get {
 				return type;
 			}
-		}
-		
-		/// <summary>
-		/// Gets the attributes for the specified element. Also adds any standard
-		/// attributes for the element which are not set.
-		/// </summary>
-		/// <param name="attributes"/>All attributes that should exist in the returned
-		/// attribute collection</param>
-		public static WixXmlAttributeCollection GetAttributes(XmlElement element, string[] attributeNames)
-		{
-			WixXmlAttributeCollection attributes = new WixXmlAttributeCollection();
-			foreach (XmlAttribute attribute in element.Attributes) {
-				WixXmlAttribute wixAttribute = new WixXmlAttribute(attribute.Name, attribute.Value, WixXmlAttributeType.Text);
-				attributes.Add(wixAttribute);
-			}
-			attributes.AddRange(GetMissingAttributes(attributes, attributeNames));
-			return attributes;
-		}
-		
-		/// <summary>
-		/// Gets the attributes that have not been added to the 
-		/// <paramref name="existingAttributes"/>.
-		/// </summary>		
-		static WixXmlAttributeCollection GetMissingAttributes(WixXmlAttributeCollection existingAttributes, string[] attributes)
-		{
-			WixXmlAttributeCollection missingAttributes = new WixXmlAttributeCollection();
-			foreach (string name in attributes) {
-				if (existingAttributes[name] == null) {
-					missingAttributes.Add(new WixXmlAttribute(name));
-				}
-			}
-			return missingAttributes;
 		}
 	}
 }

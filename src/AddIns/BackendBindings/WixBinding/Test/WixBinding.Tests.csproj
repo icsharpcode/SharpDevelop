@@ -203,6 +203,10 @@
     <Compile Include="DirectoryImport\DuplicateShortDirectoryNameTestFixture.cs" />
     <Compile Include="DirectoryImport\ExcludedItemsTestFixture.cs" />
     <EmbeddedResource Include="Strings.resx" />
+    <Compile Include="PropertyGrid\GuidTypeEditorTestFixture.cs" />
+    <Compile Include="Utils\MockServiceProvider.cs" />
+    <Compile Include="Utils\MockWindowsFormsEditorService.cs" />
+    <Compile Include="PropertyGrid\GuidPropertyDescriptorTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\WixBinding.csproj">

@@ -6,8 +6,10 @@
 // </file>
 
 using ICSharpCode.WixBinding;
+using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using System;
+using System.Xml.Schema;
 
 namespace WixBinding.Tests.PackageFiles
 {
@@ -35,7 +37,7 @@ namespace WixBinding.Tests.PackageFiles
 		[Test]
 		public void DirectoryElementAttributes()
 		{
-			string[] attributes = schema.GetAttributes("Directory");
+			string[] attributes = schema.GetAttributeNames("Directory");
 			Assert.IsTrue(attributes.Length > 0);
 			Assert.Contains("Id", attributes);
 			Assert.Contains("FileSource", attributes);
@@ -44,7 +46,7 @@ namespace WixBinding.Tests.PackageFiles
 		[Test]
 		public void SrcAttributeExcluded()
 		{
-			string[] attributes = schema.GetAttributes("Directory");
+			string[] attributes = schema.GetAttributeNames("Directory");
 			Assert.IsTrue(attributes.Length > 0);
 			foreach (string attribute in attributes) {
 				Assert.IsFalse(attribute == "src");
@@ -57,6 +59,13 @@ namespace WixBinding.Tests.PackageFiles
 			string[] attributes = schema.GetDeprecatedAttributes("UpgradeImage");
 			Assert.Contains("src", attributes);
 			Assert.Contains("srcPatch", attributes);
+		}
+		
+		[Test]
+		public void ProductAutogenuuidAttributeType()
+		{
+			QualifiedName attributeName = schema.GetAttributeType("Product", "Id");
+			Assert.AreEqual("autogenuuid", attributeName.Name);
 		}
 	}
 }

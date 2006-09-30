@@ -11,6 +11,9 @@ namespace ICSharpCode.WixBinding
 {
 	public enum WixXmlAttributeType
 	{
+		AutogenUuid,
+		ComponentGuid,
+		Uuid,
 		Text
 	}
 }
