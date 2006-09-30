@@ -55,7 +55,10 @@ namespace ICSharpCode.TextEditor
 		
 		SelectionManager selectionManager;
 		Caret            caret;
-		
+
+        public Point mousepos = new Point(0, 0);
+        //public Point selectionStartPos = new Point(0,0);
+
 		bool disposed;
 		
 		[Browsable(false)]
@@ -179,7 +182,7 @@ namespace ICSharpCode.TextEditor
 			this.motherTextEditorControl    = motherTextEditorControl;
 			
 			caret            = new Caret(this);
-			selectionManager = new SelectionManager(Document);
+			selectionManager = new SelectionManager(Document, this);
 			
 			this.textAreaClipboardHandler = new TextAreaClipboardHandler(this);
 			
@@ -298,8 +301,13 @@ namespace ICSharpCode.TextEditor
 		
 		protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
 		{
+            // this corrects weird problems when text is selected,
+            // then a menu item is selected, then the text is 
+            // clicked again - it correctly synchronises the
+            // click position
+            mousepos = new Point(e.X, e.Y);
+
 			base.OnMouseDown(e);
-			
 			CloseToolTip();
 			
 			foreach (AbstractMargin margin in leftMargins) {
@@ -307,7 +315,7 @@ namespace ICSharpCode.TextEditor
 					margin.HandleMouseDown(new Point(e.X, e.Y), e.Button);
 				}
 			}
-		}
+        }
 		
 		
 		// static because the mouse can only be in one text area and we don't want to have

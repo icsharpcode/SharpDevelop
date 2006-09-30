@@ -18,7 +18,11 @@ namespace ICSharpCode.TextEditor.Document
 	/// </summary>
 	public class SelectionManager : IDisposable
 	{
+        public Point selectionStart;
 		IDocument document;
+        TextArea textArea;
+        public SelectFrom selectFrom = new SelectFrom();
+
 		List<ISelection> selectionCollection = new List<ISelection>();
 		
 		/// <value>
@@ -70,8 +74,18 @@ namespace ICSharpCode.TextEditor.Document
 			this.document = document;
 			document.DocumentChanged += new DocumentEventHandler(DocumentChanged);
 		}
-		
-		public void Dispose()
+
+        /// <summary>
+        /// Creates a new instance of <see cref="SelectionManager"/>
+        /// </summary>
+        public SelectionManager(IDocument document, TextArea textArea)
+        {
+            this.document = document;
+            this.textArea = textArea;
+            document.DocumentChanged += new DocumentEventHandler(DocumentChanged);
+        }
+
+        public void Dispose()
 		{
 			if (this.document != null) {
 				document.DocumentChanged -= new DocumentEventHandler(DocumentChanged);
@@ -154,7 +168,14 @@ namespace ICSharpCode.TextEditor.Document
 					}
 				} else {
 					if (selection.StartPosition != newPosition) {
-						selection.StartPosition = newPosition;
+                        // we're back to the line we started from and it was a gutter selection
+                        if (selectFrom.where == WhereFrom.Gutter && newPosition.Y >= selectionStart.Y)
+                        {
+    						selection.StartPosition = selectionStart;
+                            selection.EndPosition = NextValidPosition(selection.StartPosition.Y);
+                        } else {
+    						selection.StartPosition = newPosition;
+                        }
 						changed = true;
 					}
 				}
@@ -179,8 +200,30 @@ namespace ICSharpCode.TextEditor.Document
 						    selection.StartPosition   != newPosition) {
 							changed = true;
 						}
-						selection.EndPosition     = selection.StartPosition;
-						selection.StartPosition   = newPosition;
+                        if (selectFrom.where == WhereFrom.Gutter)
+                        {
+                            if (selectFrom.first == WhereFrom.Gutter)
+                            {
+                                if(newPosition.Y == selectionStart.Y) {
+                                    selection.EndPosition = NextValidPosition(selection.StartPosition.Y);
+						            selection.StartPosition   = new Point(0, newPosition.Y);
+                                } else {
+                                    selection.EndPosition = NextValidPosition(selection.StartPosition.Y);
+						            selection.StartPosition   = newPosition;
+                                }
+                            } else {
+                                if(newPosition.Y == selectionStart.Y) {
+                                    selection.EndPosition = NextValidPosition(selection.StartPosition.Y);
+						            selection.StartPosition   = new Point(selectionStart.X, newPosition.Y);
+                                } else {
+                                    selection.EndPosition = new Point(selectionStart.X, selection.StartPosition.Y);
+						            selection.StartPosition   = newPosition;
+                                }
+                            }
+                        } else {
+						    selection.EndPosition     = selection.StartPosition;
+						    selection.StartPosition   = newPosition;
+                        }
 						changed = true;
 					} else {
 						if (selection.EndPosition != newPosition) {
@@ -210,7 +253,20 @@ namespace ICSharpCode.TextEditor.Document
 				OnSelectionChanged(EventArgs.Empty);
 			}
 		}
-		void ClearWithoutUpdate()
+
+        // retrieve the next available line
+        // - checks that there are more lines available after the current one
+        // - if there are then the next line is returned
+        // - if there are NOT then the last position on the given line is returned
+        public Point NextValidPosition(int line)
+        {
+            if (line < document.TotalNumberOfLines - 1)
+                return new Point(0, line + 1);
+            else
+                return new Point(document.GetLineSegment(document.TotalNumberOfLines - 1).Length + 1, line);
+        }
+
+        void ClearWithoutUpdate()
 		{
 			while (selectionCollection.Count > 0) {
 				ISelection selection = selectionCollection[selectionCollection.Count - 1];
@@ -224,7 +280,16 @@ namespace ICSharpCode.TextEditor.Document
 		/// </remarks>
 		public void ClearSelection()
 		{
-			ClearWithoutUpdate();
+            Point mousepos;
+            mousepos = textArea.mousepos;
+            // this is the most logical place to reset selection starting
+            // positions because it is always called before a new selection
+            selectFrom.first = selectFrom.where;
+            selectionStart = textArea.TextView.GetLogicalPosition(mousepos.X - textArea.TextView.DrawingPosition.X, mousepos.Y - textArea.TextView.DrawingPosition.Y);
+            if(selectFrom.where == WhereFrom.Gutter)
+                selectionStart.X = 0;
+
+            ClearWithoutUpdate();
 			document.CommitUpdate();
 		}
 		
@@ -384,4 +449,21 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public event EventHandler SelectionChanged;
 	}
+
+    // selection initiated from...
+    public class SelectFrom {
+        public int where = WhereFrom.None; // last selection initiator
+        public int first = WhereFrom.None; // first selection initiator
+
+        public SelectFrom()
+        {
+        }
+    }
+
+    // selection initiated from type...
+    public class WhereFrom {
+        public const int None = 0;
+        public const int Gutter = 1;
+        public const int TArea = 2;
+    }
 }

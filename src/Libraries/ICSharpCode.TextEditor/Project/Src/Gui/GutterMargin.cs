@@ -92,39 +92,40 @@ namespace ICSharpCode.TextEditor
 				}
 			}
 		}
-		
+
 		public override void HandleMouseDown(Point mousepos, MouseButtons mouseButtons)
 		{
-            SelectFrom.where = WhereFrom.Gutter;
+            Point selectionStartPos;
+
+            textArea.SelectionManager.selectFrom.where = WhereFrom.Gutter;
 			int realline = textArea.TextView.GetLogicalLine(mousepos);
 			if (realline >= 0 && realline < textArea.Document.TotalNumberOfLines) {
+                // shift-select
 				if((Control.ModifierKeys & Keys.Shift) != 0) {
                     if(!textArea.SelectionManager.HasSomethingSelected && realline != textArea.Caret.Position.Y) {
                         if (realline >= textArea.Caret.Position.Y)
                         { // at or below starting selection, place the cursor on the next line
                             // nothing is selected so make a new selection from cursor
-                            TextAreaMouseHandler.selectionStartPos = textArea.Caret.Position;
-                            textArea.SelectionManager.ClearSelection();
+                            selectionStartPos = textArea.Caret.Position;
                             // whole line selection - start of line to start of next line
                             if (realline < textArea.Document.TotalNumberOfLines - 1)
                             {
-                                textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, TextAreaMouseHandler.selectionStartPos, new Point(0, realline + 1)));
+                                textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, selectionStartPos, new Point(0, realline + 1)));
                                 textArea.Caret.Position = new Point(0, realline + 1);
                             }
                             else
                             {
-                                textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, TextAreaMouseHandler.selectionStartPos, new Point(textArea.Document.GetLineSegment(realline).Length + 1, realline)));
+                                textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, selectionStartPos, new Point(textArea.Document.GetLineSegment(realline).Length + 1, realline)));
                                 textArea.Caret.Position = new Point(textArea.Document.GetLineSegment(realline).Length + 1, realline);
                             }
                         }
                         else
                         { // prior lines to starting selection, place the cursor on the same line as the new selection
                             // nothing is selected so make a new selection from cursor
-                            TextAreaMouseHandler.selectionStartPos = textArea.Caret.Position;
-                            textArea.SelectionManager.ClearSelection();
+                            selectionStartPos = textArea.Caret.Position;
                             // whole line selection - start of line to start of next line
-                            textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, TextAreaMouseHandler.selectionStartPos, new Point(TextAreaMouseHandler.selectionStartPos.X, TextAreaMouseHandler.selectionStartPos.Y)));
-                            textArea.SelectionManager.ExtendSelection(new Point(TextAreaMouseHandler.selectionStartPos.X, TextAreaMouseHandler.selectionStartPos.Y), new Point(0, realline));
+                            textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, selectionStartPos, new Point(selectionStartPos.X, selectionStartPos.Y)));
+                            textArea.SelectionManager.ExtendSelection(new Point(selectionStartPos.X, selectionStartPos.Y), new Point(0, realline));
                             textArea.Caret.Position = new Point(0, realline);
                         }
                     }
@@ -134,19 +135,24 @@ namespace ICSharpCode.TextEditor
                         MouseEventArgs e = new MouseEventArgs(mouseButtons, 1, mousepos.X, mousepos.Y, 0);
                         textArea.doMouseMove(e);
                     }
-				} else {
-					TextAreaMouseHandler.selectionStartPos = new Point(0, realline);
+				} else { // this is a new selection with no shift-key
+                    // sync the textareamousehandler mouse location
+                    // (fixes problem with clicking out into a menu then back to the gutter whilst
+                    // there is a selection)
+                    textArea.mousepos = mousepos;
+
+                    selectionStartPos = new Point(0, realline);
 					textArea.SelectionManager.ClearSelection();
                     // whole line selection - start of line to start of next line
                     if (realline < textArea.Document.TotalNumberOfLines - 1)
                     {
-                        textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, TextAreaMouseHandler.selectionStartPos, new Point(TextAreaMouseHandler.selectionStartPos.X, TextAreaMouseHandler.selectionStartPos.Y + 1)));
-                        textArea.Caret.Position = new Point(TextAreaMouseHandler.selectionStartPos.X, TextAreaMouseHandler.selectionStartPos.Y + 1);
+                        textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, selectionStartPos, new Point(selectionStartPos.X, selectionStartPos.Y + 1)));
+                        textArea.Caret.Position = new Point(selectionStartPos.X, selectionStartPos.Y + 1);
                     }
                     else
                     {
-                        textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, new Point(0, realline), new Point(textArea.Document.GetLineSegment(realline).Length + 1, TextAreaMouseHandler.selectionStartPos.Y)));
-                        textArea.Caret.Position = new Point(textArea.Document.GetLineSegment(realline).Length + 1, TextAreaMouseHandler.selectionStartPos.Y);
+                        textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, new Point(0, realline), new Point(textArea.Document.GetLineSegment(realline).Length + 1, selectionStartPos.Y)));
+                        textArea.Caret.Position = new Point(textArea.Document.GetLineSegment(realline).Length + 1, selectionStartPos.Y);
                     }
                 }
 			}
