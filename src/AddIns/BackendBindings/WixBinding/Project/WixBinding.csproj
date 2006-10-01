@@ -141,6 +141,9 @@
     <Compile Include="Src\Commands\AddDirectoryCommand.cs" />
     <Compile Include="Src\PropertyGrid\GuidEditor.cs" />
     <Compile Include="Src\PropertyGrid\GuidEditorListBox.cs" />
+    <Compile Include="Src\PropertyGrid\RelativeFileNameEditor.cs" />
+    <Compile Include="Src\PropertyGrid\DropDownEditor.cs" />
+    <Compile Include="Src\PropertyGrid\DropDownEditorListBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="WixBinding.addin">

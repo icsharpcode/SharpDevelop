@@ -9,6 +9,7 @@ using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using System;
+using System.ComponentModel;
 
 namespace WixBinding.Tests.Utils
 {
@@ -24,7 +25,6 @@ namespace WixBinding.Tests.Utils
 		/// <summary>
 		/// Creates a WixProject that contains no WixObject or WixLibrary items.
 		/// </summary>
-		/// <returns></returns>
 		public static WixProject CreateEmptyWixProject()
 		{
 			ProjectCreateInformation info = new ProjectCreateInformation();
@@ -32,6 +32,20 @@ namespace WixBinding.Tests.Utils
 			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
 
 			return new WixProject(info);
+		}
+		
+		/// <summary>
+		/// Returns the EditorAttribute in the AttributeCollection.
+		/// </summary>
+		public static EditorAttribute GetEditorAttribute(AttributeCollection attributes)
+		{
+			foreach (Attribute attribute in attributes) {
+				EditorAttribute editorAttribute = attribute as EditorAttribute;
+				if (editorAttribute != null) {
+					return editorAttribute;
+				}
+			}
+			return null;
 		}
 	}
 }

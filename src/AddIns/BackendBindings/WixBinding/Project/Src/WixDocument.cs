@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
@@ -664,6 +665,32 @@ namespace ICSharpCode.WixBinding
 		public bool ComponentIdExists(string id)
 		{
 			return ElementIdExists(WixComponentElement.ComponentElementName, id);
+		}
+		
+		/// <summary>
+		/// Returns the full path based on the location of 
+		/// this WixDocument.
+		/// </summary>
+		public string GetFullPath(string relativePath)
+		{
+			if (fileName != null && fileName.Length > 0) {
+				string basePath = Path.GetDirectoryName(fileName);
+				return FileUtility.GetAbsolutePath(basePath, relativePath);
+			}
+			return relativePath;
+		}
+		
+		/// <summary>
+		/// Returns the relative path based on the location of 
+		/// this WixDocument.
+		/// </summary>
+		public string GetRelativePath(string fullPath)
+		{
+			if (fileName != null && fileName.Length > 0) {
+				string basePath = Path.GetDirectoryName(fileName);
+				return FileUtility.GetRelativePath(basePath, fullPath);
+			}
+			return fullPath;
 		}
 		
 		/// <summary>

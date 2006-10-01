@@ -24,11 +24,17 @@ namespace WixBinding.Tests.PropertyGrid
 			wixXmlAttribute = new WixXmlAttribute("LongName", "InitialValue", WixXmlAttributeType.Text);
 			pd = new WixXmlAttributePropertyDescriptor(wixXmlAttribute);
 		}
-				
+	
 		[Test]
 		public void Name()
 		{
 			Assert.AreEqual("LongName", pd.Name);
+		}
+		
+		[Test]
+		public void WixXmlAttributeSet()
+		{
+			Assert.IsTrue(Object.ReferenceEquals(wixXmlAttribute, pd.WixXmlAttribute));
 		}
 		
 		[Test]

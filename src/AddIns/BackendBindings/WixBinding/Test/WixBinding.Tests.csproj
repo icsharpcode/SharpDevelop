@@ -207,6 +207,10 @@
     <Compile Include="Utils\MockServiceProvider.cs" />
     <Compile Include="Utils\MockWindowsFormsEditorService.cs" />
     <Compile Include="PropertyGrid\GuidPropertyDescriptorTestFixture.cs" />
+    <Compile Include="PropertyGrid\FileNamePropertyDescriptorTestFixture.cs" />
+    <Compile Include="PackageFiles\GetRelativeFileNameTestFixture.cs" />
+    <Compile Include="PropertyGrid\DropDownTypeEditorTestFixture.cs" />
+    <Compile Include="PropertyGrid\DropDownPropertyDescriptorTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\WixBinding.csproj">

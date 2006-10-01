@@ -41,6 +41,12 @@ namespace ICSharpCode.WixBinding
 			return new PropertyDescriptorCollection(properties.ToArray());
 		}
 		
+		public WixXmlAttribute WixXmlAttribute {
+			get {
+				return wixXmlAttribute;
+			}
+		}
+		
 		public override Type ComponentType {
 			get {
 				return wixXmlAttribute.GetType();
@@ -107,6 +113,14 @@ namespace ICSharpCode.WixBinding
 				case WixXmlAttributeType.AutogenUuid:
 				case WixXmlAttributeType.Uuid:
 					attributes.Add(new EditorAttribute(typeof(GuidEditor), typeof(UITypeEditor)));
+					break;
+				case WixXmlAttributeType.FileName:
+					attributes.Add(new EditorAttribute(typeof(RelativeFileNameEditor), typeof(UITypeEditor)));
+					break;
+				case WixXmlAttributeType.Text:
+					if (wixXmlAttribute.HasValues) {
+						attributes.Add(new EditorAttribute(typeof(DropDownEditor), typeof(UITypeEditor)));
+					}
 					break;
 			}
 			return attributes.ToArray();

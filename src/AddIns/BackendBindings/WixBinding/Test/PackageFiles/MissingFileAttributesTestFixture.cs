@@ -16,13 +16,13 @@ namespace WixBinding.Tests.PackageFiles
 	[TestFixture]
 	public class MissingAttributesTests
 	{
-		XmlDocument doc;
+		WixDocument doc;
 		WixSchemaCompletionData schema = new WixSchemaCompletionData();
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			doc = new XmlDocument();
+			doc = new WixDocument();
 			doc.LoadXml("<Wix xmlns='" + WixNamespaceManager.Namespace + "'/>");
 		}
 		
@@ -32,6 +32,7 @@ namespace WixBinding.Tests.PackageFiles
 			XmlElement element = doc.CreateElement("File", WixNamespaceManager.Namespace);
 			WixXmlAttributeCollection attributes = schema.GetAttributes(element);
 			Assert.IsTrue(attributes.Count > 0);
+			Assert.IsTrue(Object.ReferenceEquals(attributes[0].Document, doc));
 		}
 		
 		[Test]

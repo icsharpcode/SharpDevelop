@@ -25,7 +25,7 @@ namespace ICSharpCode.WixBinding
 		ITextFileReader fileReader;
 		IWixDocumentWriter documentWriter;
 		IDirectoryReader directoryReader;
-		WixDocument document;
+		static WixDocument document;
 		WixSchemaCompletionData wixSchemaCompletionData;
 		bool usingRootDirectoryRef;
 		StringCollection excludedItems = new StringCollection();
@@ -58,6 +58,7 @@ namespace ICSharpCode.WixBinding
 		/// from the editor.</param>
 		public WixPackageFilesEditor(IWixPackageFilesView view, ITextFileReader fileReader, IWixDocumentWriter documentWriter, IDirectoryReader directoryReader)
 		{
+			document = null;
 			this.view = view;
 			this.fileReader = fileReader;
 			this.documentWriter = documentWriter;
@@ -79,6 +80,7 @@ namespace ICSharpCode.WixBinding
 		public void ShowFiles(WixProject project)
 		{
 			// Look for Wix document containing root directory.
+			document = null;
 			if (project.WixSourceFiles.Count > 0) {
 				bool errors = false;
 				WixDocument currentDocument = null;

@@ -31,9 +31,12 @@ namespace WixBinding.Tests.Utils
 			controlType = control.GetType();
 			
 			if (newValueSet) {
-				GuidEditorListBox listBox = control as GuidEditorListBox;
-				if (listBox != null) {
-					listBox.Guid = newValue;
+				GuidEditorListBox guidListBox = control as GuidEditorListBox;
+				DropDownEditorListBox dropDownListBox = control as DropDownEditorListBox;
+				if (guidListBox != null) {
+					guidListBox.Guid = newValue;
+				} else if (dropDownListBox != null) {
+					dropDownListBox.Value = newValue;
 				}
 			}
 		}

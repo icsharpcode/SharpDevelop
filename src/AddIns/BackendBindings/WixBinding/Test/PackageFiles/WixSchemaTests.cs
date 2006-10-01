@@ -67,5 +67,14 @@ namespace WixBinding.Tests.PackageFiles
 			QualifiedName attributeName = schema.GetAttributeType("Product", "Id");
 			Assert.AreEqual("autogenuuid", attributeName.Name);
 		}
+		
+		[Test]
+		public void ComponentKeyPathAttributeValues()
+		{
+			string[] values = schema.GetAttributeValues("Component", "KeyPath");
+			Assert.AreEqual(2, values.Length);
+			Assert.Contains("yes", values);
+			Assert.Contains("no", values);
+		}
 	}
 }

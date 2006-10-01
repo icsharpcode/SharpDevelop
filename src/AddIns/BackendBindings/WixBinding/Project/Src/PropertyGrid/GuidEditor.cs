@@ -16,41 +16,27 @@ namespace ICSharpCode.WixBinding
 	/// <summary>
 	/// Property grid editor for Guids
 	/// </summary>
-	public class GuidEditor : UITypeEditor
+	public class GuidEditor : DropDownEditor
 	{
 		public GuidEditor()
 		{
 		}
 		
-		/// <summary>
-		/// Returns the drop down style.
-		/// </summary>
-		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+		protected override Control CreateDropDownControl(ITypeDescriptorContext context, IWindowsFormsEditorService editorService)
 		{
-			return UITypeEditorEditStyle.DropDown;
+			return new GuidEditorListBox(editorService);
 		}
 		
-		/// <summary>
-		/// Shows the Guid editor control in the drop down so the user
-		/// can change the Guid.
-		/// </summary>
-		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+		protected override void SetValue(Control control, object value)
 		{
-			IWindowsFormsEditorService editorService = null;
-			
-			if (provider != null) {
-				editorService = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
-			}
-			
-			if (editorService != null) {
-				using (GuidEditorListBox listBox = new GuidEditorListBox(editorService)) {
-					listBox.Guid = (string)value;
-					editorService.DropDownControl(listBox);
-					value = listBox.Guid;
-				}
-			}
-			
-			return value;
+			GuidEditorListBox listBox = (GuidEditorListBox)control;
+			listBox.Guid = (string)value;
+		}
+		
+		protected override object GetValue(Control control)
+		{
+			GuidEditorListBox listBox = (GuidEditorListBox)control;
+			return listBox.Guid;
 		}
 	}
 }

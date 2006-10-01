@@ -11,6 +11,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.Windows.Forms.Design;
+using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.PropertyGrid
 {
@@ -25,7 +26,7 @@ namespace WixBinding.Tests.PropertyGrid
 		{
 			WixXmlAttribute attribute = new WixXmlAttribute("Id", WixXmlAttributeType.ComponentGuid);
 			propertyDescriptor = new WixXmlAttributePropertyDescriptor(attribute);
-			editorAttribute = GetEditorAttribute(propertyDescriptor.Attributes);
+			editorAttribute = WixBindingTestsHelper.GetEditorAttribute(propertyDescriptor.Attributes);
 		}
 		
 		[Test]
@@ -51,7 +52,7 @@ namespace WixBinding.Tests.PropertyGrid
 		{
 			WixXmlAttribute attribute = new WixXmlAttribute("Id", WixXmlAttributeType.AutogenUuid);
 			propertyDescriptor = new WixXmlAttributePropertyDescriptor(attribute);
-			EditorAttribute editorAttribute = GetEditorAttribute(propertyDescriptor.Attributes);
+			EditorAttribute editorAttribute = WixBindingTestsHelper.GetEditorAttribute(propertyDescriptor.Attributes);
 			
 			Assert.IsNotNull(editorAttribute);
 			Assert.AreEqual(typeof(GuidEditor).AssemblyQualifiedName, editorAttribute.EditorTypeName);
@@ -62,22 +63,10 @@ namespace WixBinding.Tests.PropertyGrid
 		{
 			WixXmlAttribute attribute = new WixXmlAttribute("Id", WixXmlAttributeType.Uuid);
 			propertyDescriptor = new WixXmlAttributePropertyDescriptor(attribute);
-			EditorAttribute editorAttribute = GetEditorAttribute(propertyDescriptor.Attributes);
+			EditorAttribute editorAttribute = WixBindingTestsHelper.GetEditorAttribute(propertyDescriptor.Attributes);
 			
 			Assert.IsNotNull(editorAttribute);
 			Assert.AreEqual(typeof(GuidEditor).AssemblyQualifiedName, editorAttribute.EditorTypeName);
-		}
-
-		
-		static EditorAttribute GetEditorAttribute(AttributeCollection attributes)
-		{
-			foreach (Attribute attribute in attributes) {
-				EditorAttribute editorAttribute = attribute as EditorAttribute;
-				if (editorAttribute != null) {
-					return editorAttribute;
-				}
-			}
-			return null;
 		}
 	}
 }

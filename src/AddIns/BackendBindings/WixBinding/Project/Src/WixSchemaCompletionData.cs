@@ -67,11 +67,26 @@ namespace ICSharpCode.WixBinding
 			foreach (XmlAttribute attribute in element.Attributes) {
 				string attributeName = attribute.Name;
 				WixXmlAttributeType type = GetWixAttributeType(elementName, attributeName);
-				WixXmlAttribute wixAttribute = new WixXmlAttribute(attributeName, attribute.Value, type);
+				WixDocument document = GetWixDocument(element);
+				string[] attributeValues = GetAttributeValues(elementName, attributeName);
+				WixXmlAttribute wixAttribute = new WixXmlAttribute(attributeName, attribute.Value, type, attributeValues, document);
 				attributes.Add(wixAttribute);
 			}
-			attributes.AddRange(GetMissingAttributes(elementName, attributes, GetAttributeNames(elementName)));
+			attributes.AddRange(GetMissingAttributes(element, attributes, GetAttributeNames(elementName)));
 			return attributes;
+		}
+		
+		/// <summary>
+		/// Gets the attribute values allowed for the specified attribute.
+		/// </summary>
+		public string[] GetAttributeValues(string elementName, string attributeName)
+		{
+			XmlElementPath path = GetPath(elementName);
+			List<string> values = new List<string>();
+			foreach (ICompletionData data in GetAttributeValueCompletionData(path, attributeName)) {
+				values.Add(data.Text);
+			}
+			return values.ToArray();
 		}
 		
 		/// <summary>
@@ -220,6 +235,14 @@ namespace ICSharpCode.WixBinding
 						return WixXmlAttributeType.ComponentGuid;
 				}
 			}
+			
+			if (elementName == "File") {
+				switch (attributeName) {
+					case "Source":
+					case "src":
+						return WixXmlAttributeType.FileName;
+				}
+			}
 			return WixXmlAttributeType.Text;
 		}
 		
@@ -227,16 +250,28 @@ namespace ICSharpCode.WixBinding
 		/// Gets the attributes that have not been added to the 
 		/// <paramref name="attributes"/>.
 		/// </summary>		
-		WixXmlAttributeCollection GetMissingAttributes(string elementName, WixXmlAttributeCollection existingAttributes, string[] attributes)
+		WixXmlAttributeCollection GetMissingAttributes(XmlElement element, WixXmlAttributeCollection existingAttributes, string[] attributes)
 		{
 			WixXmlAttributeCollection missingAttributes = new WixXmlAttributeCollection();
 			foreach (string name in attributes) {
 				if (existingAttributes[name] == null) {
+					string elementName = element.Name;
 					WixXmlAttributeType type = GetWixAttributeType(elementName, name);
-					missingAttributes.Add(new WixXmlAttribute(name, type));
+					string[] attributeValues = GetAttributeValues(elementName, name);
+					WixDocument document = GetWixDocument(element);
+					missingAttributes.Add(new WixXmlAttribute(name, type, attributeValues, document));
 				}
 			}
 			return missingAttributes;
+		}
+		
+		/// <summary>
+		/// Gets the WixDocument from the XmlElement if it is associated with
+		/// a WixDocument.
+		/// </summary>
+		WixDocument GetWixDocument(XmlElement element)
+		{
+			return element.OwnerDocument as WixDocument;
 		}
 	}
 }

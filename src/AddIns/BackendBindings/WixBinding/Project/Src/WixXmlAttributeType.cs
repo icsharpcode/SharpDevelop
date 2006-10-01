@@ -13,6 +13,7 @@ namespace ICSharpCode.WixBinding
 	{
 		AutogenUuid,
 		ComponentGuid,
+		FileName,
 		Uuid,
 		Text
 	}
