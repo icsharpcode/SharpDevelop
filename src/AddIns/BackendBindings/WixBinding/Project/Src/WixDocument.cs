@@ -10,6 +10,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.XmlEditor;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -475,7 +476,7 @@ namespace ICSharpCode.WixBinding
 		/// <returns><see langword="null"/> if the id cannot be found.</returns>
 		public string GetBinaryFileName(string id)
 		{
-			string xpath = String.Concat("//w:Binary[@Id='", id, "']");
+			string xpath = String.Concat("//w:Binary[@Id='", XmlEncode(id), "']");
 			WixBinaryElement binaryElement = (WixBinaryElement)SelectSingleNode(xpath, namespaceManager);
 			if (binaryElement != null) {
 				return binaryElement.FileName;
@@ -509,7 +510,7 @@ namespace ICSharpCode.WixBinding
 		/// <returns>The property value if it is found; an empty string otherwise.</returns>
 		public string GetProperty(string name)
 		{
-			string xpath = String.Concat("//w:Property[@Id='", name, "']");
+			string xpath = String.Concat("//w:Property[@Id='", XmlEncode(name), "']");
 			XmlElement textStyleElement = (XmlElement)SelectSingleNode(xpath, namespaceManager);
 			if (textStyleElement != null) {
 				return textStyleElement.InnerText;
@@ -811,7 +812,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		XmlElement GetDialogElement(string id)
 		{
-			string xpath = String.Concat("//w:Dialog[@Id='", id, "']");
+			string xpath = String.Concat("//w:Dialog[@Id='", XmlEncode(id), "']");
 			return (XmlElement)SelectSingleNode(xpath, namespaceManager);
 		}
 		
@@ -820,9 +821,15 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		bool ElementIdExists(string elementName, string id)
 		{
-			string xpath = String.Concat("//w:", elementName, "[@Id='", id, "']");
+			string xpath = String.Concat("//w:", elementName, "[@Id='", XmlEncode(id), "']");
 			XmlNodeList nodes = SelectNodes(xpath, new WixNamespaceManager(NameTable));
 			return nodes.Count > 0;
+		}
+		
+		static string XmlEncode(string item)
+		{
+			char quoteChar = '\'';
+			return XmlEncoder.Encode(item, quoteChar);
 		}
 	}
 }

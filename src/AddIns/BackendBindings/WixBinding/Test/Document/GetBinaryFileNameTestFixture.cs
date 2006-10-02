@@ -48,6 +48,12 @@ namespace WixBinding.Tests.Document
 		}
 		
 		[Test]
+		public void SingleQuoteInBinaryFileName()
+		{
+			Assert.AreEqual(null, document.GetBinaryFileName("test'id"));
+		}
+		
+		[Test]
 		[ExpectedException(typeof(ArgumentException))]
 		public void PassingFileLoaderIntoWixDocument()
 		{

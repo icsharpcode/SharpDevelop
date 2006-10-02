@@ -134,6 +134,7 @@
     <Compile Include="Tree\TreeControlViewStateTestFixture.cs" />
     <Compile Include="Tree\AttributeChangedTestFixture.cs" />
     <Compile Include="Tree\TextNodeTextChangedTestFixture.cs" />
+    <Compile Include="XPathQuery\EncodeXPathParameterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Schema\" />

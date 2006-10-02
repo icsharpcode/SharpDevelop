@@ -126,6 +126,7 @@
     <EmbeddedResource Include="Resources\XmlTextTreeNodeIcon.png" />
     <Compile Include="Src\XmlAttributePropertyDescriptor.cs" />
     <Compile Include="Src\XmlAttributeTypeDescriptor.cs" />
+    <Compile Include="Src\XmlEncoder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

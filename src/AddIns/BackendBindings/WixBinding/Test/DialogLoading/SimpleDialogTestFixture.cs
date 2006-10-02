@@ -27,11 +27,12 @@ namespace WixBinding.Tests.DialogLoading
 		Size clientSize;
 		bool maximizeBox;
 		bool minimizeBox;
+		WixDocument doc;
 
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			WixDocument doc = new WixDocument();
+			doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
 			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
 			using (Form simpleDialog = wixDialog.CreateDialog()) {
@@ -79,6 +80,12 @@ namespace WixBinding.Tests.DialogLoading
 		public void MaximizeBox()
 		{
 			Assert.IsFalse(maximizeBox);
+		}
+		
+		[Test]
+		public void DialogIdWithSingleQuote()
+		{
+			Assert.IsNull(doc.GetDialog("Test'Id"));
 		}
 				
 		string GetWixXml()

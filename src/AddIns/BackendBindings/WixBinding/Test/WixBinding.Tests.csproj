@@ -211,6 +211,13 @@
     <Compile Include="PackageFiles\GetRelativeFileNameTestFixture.cs" />
     <Compile Include="PropertyGrid\DropDownTypeEditorTestFixture.cs" />
     <Compile Include="PropertyGrid\DropDownPropertyDescriptorTestFixture.cs" />
+    <Compile Include="DirectoryImport\AddDirectoryWithSpecialXmlCharsTestFixture.cs" />
+    <Compile Include="DirectoryImport\ShortFileNameExistsWithSpecialXmlCharsTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\RadioButtonGroupPropertyWithSpecialXmlCharTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ListBoxPropertyWithSpecialXmlCharsTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ComboBoxPropertyWithSpecialXmlCharsTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ListViewPropertyWithSpecialXmlCharsTestFixture.cs" />
+    <Compile Include="DialogLoading\TextStyleNameWithSpecialXmlCharsTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\WixBinding.csproj">

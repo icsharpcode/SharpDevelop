@@ -6,6 +6,7 @@
 // </file>
 
 using ICSharpCode.Core;
+using ICSharpCode.XmlEditor;
 using System;
 using System.ComponentModel;
 using System.Collections;
@@ -458,7 +459,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		XmlNodeList GetRadioButtonElements(string property)
 		{
-			string xpath = String.Concat("//w:RadioButtonGroup[@Property='", property, "']/w:RadioButton");
+			string xpath = String.Concat("//w:RadioButtonGroup[@Property='", XmlEncode(property), "']/w:RadioButton");
 			return dialogElement.SelectNodes(xpath, namespaceManager);
 		}
 		
@@ -603,7 +604,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		Font GetTextStyleFont(string name, Font defaultFont)
 		{
-			string xpath = String.Concat("//w:TextStyle[@Id='", name, "']");
+			string xpath = String.Concat("//w:TextStyle[@Id='", XmlEncode(name), "']");
 			XmlElement textStyleElement = (XmlElement)dialogElement.SelectSingleNode(xpath, namespaceManager);
 			if (textStyleElement != null) {
 				return CreateTextStyleFont(textStyleElement);
@@ -825,7 +826,7 @@ namespace ICSharpCode.WixBinding
 		{
 			XmlElement controlElement = UpdateControlElement(parentLocation, control);
 			string property = controlElement.GetAttribute("Property");
-			string xpath = String.Concat("//w:RadioButtonGroup[@Property='", property, "']");
+			string xpath = String.Concat("//w:RadioButtonGroup[@Property='", XmlEncode(property), "']");
 			XmlElement radioButtonGroupElement = (XmlElement)controlElement.SelectSingleNode(xpath, namespaceManager);
 			if (radioButtonGroupElement == null) {
 				radioButtonGroupElement = AppendChildElement(controlElement, "RadioButtonGroup", control.PropertyName);
@@ -991,7 +992,7 @@ namespace ICSharpCode.WixBinding
 			string elementName = controlElement.GetAttribute("Type");
 
 			// Add list items.
-			string xpath = String.Concat("//w:", elementName, "[@Property='", property, "']/w:ListItem");
+			string xpath = String.Concat("//w:", elementName, "[@Property='", XmlEncode(property), "']/w:ListItem");
 			foreach (XmlElement itemElement in dialogElement.SelectNodes(xpath, namespaceManager)) {
 				items.Add(GetControlText(itemElement));
 			}			
@@ -1004,7 +1005,7 @@ namespace ICSharpCode.WixBinding
 		{
 			XmlElement controlElement = UpdateControlElement(parentLocation, control);
 			string property = controlElement.GetAttribute("Property");
-			string xpath = String.Concat("//w:ListBox[@Property='", property, "']");
+			string xpath = String.Concat("//w:ListBox[@Property='", XmlEncode(property), "']");
 			XmlElement listBoxElement = (XmlElement)controlElement.SelectSingleNode(xpath, namespaceManager);
 			if (listBoxElement == null) {
 				listBoxElement = AppendChildElement(controlElement, "ListBox", property);
@@ -1043,7 +1044,7 @@ namespace ICSharpCode.WixBinding
 		{
 			XmlElement controlElement = UpdateControlElement(parentLocation, control);
 			string property = controlElement.GetAttribute("Property");
-			string xpath = String.Concat("//w:ComboBox[@Property='", property, "']");
+			string xpath = String.Concat("//w:ComboBox[@Property='", XmlEncode(property), "']");
 			XmlElement comboBoxElement = (XmlElement)controlElement.SelectSingleNode(xpath, namespaceManager);
 			if (comboBoxElement == null) {
 				comboBoxElement = AppendChildElement(controlElement, "ComboBox", property);
@@ -1082,7 +1083,7 @@ namespace ICSharpCode.WixBinding
 		{
 			XmlElement controlElement = UpdateControlElement(parentLocation, control);
 			string property = controlElement.GetAttribute("Property");
-			string xpath = String.Concat("//w:ListView[@Property='", property, "']");
+			string xpath = String.Concat("//w:ListView[@Property='", XmlEncode(property), "']");
 			XmlElement listViewElement = (XmlElement)controlElement.SelectSingleNode(xpath, namespaceManager);
 			if (listViewElement == null) {
 				listViewElement = AppendChildElement(controlElement, "ListView", property);
@@ -1142,6 +1143,12 @@ namespace ICSharpCode.WixBinding
 				return document.GetBitmapFromFileName(fileName);
 			} 
 			return document.GetBitmapFromId(id);
+		}
+		
+		static string XmlEncode(string item)
+		{
+			char quoteChar = '\'';
+			return XmlEncoder.Encode(item, quoteChar);
 		}
 	}
 }

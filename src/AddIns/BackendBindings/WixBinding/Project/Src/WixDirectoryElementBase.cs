@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.XmlEditor;
 using System;
 using System.Collections.Generic;
 using System.Xml;
@@ -97,7 +98,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		bool ShortNameExists(string name)
 		{
-			string xpath = String.Concat("w:Directory[@Name='", name, "']");
+			string xpath = String.Concat("w:Directory[@Name='", XmlEncoder.Encode(name, '\''), "']");
 			XmlNodeList nodes = SelectNodes(xpath, new WixNamespaceManager(OwnerDocument.NameTable));
 			return nodes.Count > 0;
 		}

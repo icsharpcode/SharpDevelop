@@ -6,6 +6,7 @@
 // </file>
 
 using ICSharpCode.Core;
+using ICSharpCode.XmlEditor;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -125,7 +126,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public bool ShortFileNameExists(string fileName)
 		{
-			string xpath = String.Concat("w:Component/w:File[@Name='", fileName, "']");
+			string xpath = String.Concat("w:Component/w:File[@Name='", XmlEncoder.Encode(fileName, '\''), "']");
 			XmlNodeList nodes = SelectNodes(xpath, new WixNamespaceManager(OwnerDocument.NameTable));
 			return nodes.Count > 0;
 		}

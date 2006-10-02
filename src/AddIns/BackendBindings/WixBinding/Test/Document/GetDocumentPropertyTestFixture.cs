@@ -39,6 +39,13 @@ namespace WixBinding.Tests.Document
 		{
 			Assert.AreEqual(String.Empty, doc.GetProperty("MissingProperty"));
 		}		
+		
+		[Test]
+		public void PropertyWithSingleQuoteInName()
+		{
+			Assert.AreEqual(String.Empty, doc.GetProperty("Test'Property"));
+		}
+		
 		string GetWixXml()
 		{
 			return "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +

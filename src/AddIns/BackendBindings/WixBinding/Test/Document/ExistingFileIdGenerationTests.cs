@@ -78,6 +78,12 @@ namespace WixBinding.Tests.Document
 			Assert.AreEqual("doc.license1.txt", fileElement.Id);
 		}
 
+		[Test]
+		public void FileIdWithSingleQuote()
+		{
+			Assert.IsFalse(doc.FileIdExists("lice'nse.txt"));
+		}
+		
 		string GetWixXml()
 		{
 			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2003/01/wi\">\r\n" +
