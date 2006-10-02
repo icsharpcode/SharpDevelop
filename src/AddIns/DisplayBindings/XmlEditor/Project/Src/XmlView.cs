@@ -899,7 +899,7 @@ namespace ICSharpCode.XmlEditor
 		void PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			string extension = Path.GetExtension(xmlEditor.FileName).ToLowerInvariant();
-			if (e.Key == extension) {
+			if (e.Key == String.Concat("ext", extension)) {
 				SetDefaultSchema(extension);
 			} else if (e.Key == XmlEditorAddInOptions.ShowAttributesWhenFoldedPropertyName) {
 				UpdateFolding();
