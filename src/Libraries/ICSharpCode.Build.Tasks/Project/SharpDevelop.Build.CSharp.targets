@@ -25,6 +25,15 @@
 		<SharpDevelopUseMicrosoftFramework>true</SharpDevelopUseMicrosoftFramework>		
 	</PropertyGroup>
 	
+	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'CF 1.0' ">
+		<TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
+		<SharpDevelopUseCompactFramework>true</SharpDevelopUseCompactFramework>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'CF 2.0' ">
+		<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+		<SharpDevelopUseCompactFramework>true</SharpDevelopUseCompactFramework>
+	</PropertyGroup>
+	
 	<!-- Use Microsoft's C# standard targets -->
 	<Import Condition=" '$(SharpDevelopUseMicrosoftFramework)' == 'true' " Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 	
@@ -71,12 +80,14 @@
 	<Import Condition=" '$(TargetFrameworkVersion)' == 'Mono v2.0' " Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.Gmcs.targets"/>
 	
 	<!-- Compact framework default platform values -->
-	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'CF 1.0' Or '$(TargetFrameworkVersion)' == 'CF 2.0' ">
+	<PropertyGroup Condition=" '$(SharpDevelopUseCompactFramework)' == 'true' ">
 		<PlatformFamilyName Condition=" '$(PlatformFamilyName)' == '' ">PocketPC</PlatformFamilyName>
     	<PlatformID Condition=" '$(PlatformID)' == '' ">WinCE</PlatformID>
 	</PropertyGroup>
 	
 	<!-- Compact framework imports -->
-	<Import Condition=" '$(TargetFrameworkVersion)' == 'CF 1.0' " Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets"/>
-	<Import Condition=" '$(TargetFrameworkVersion)' == 'CF 2.0' " Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets"/>
+	<Import Condition=" ('$(TargetFrameworkVersion)' == 'v1.0') And ('$(SharpDevelopUseCompactFramework)' == 'true') "
+	        Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets"/>
+	<Import Condition=" ('$(TargetFrameworkVersion)' == 'v2.0') And ('$(SharpDevelopUseCompactFramework)' == 'true') "
+	        Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets"/>
 </Project>
