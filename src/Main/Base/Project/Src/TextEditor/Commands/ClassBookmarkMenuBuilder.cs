@@ -49,6 +49,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			if (!FindReferencesAndRenameHelper.IsReadOnly(c)) {
 				if (c.DeclaringType == null &&
+				    !c.BodyRegion.IsEmpty &&
 				    !c.Name.Equals(Path.GetFileNameWithoutExtension(c.CompilationUnit.FileName),
 				                   StringComparison.InvariantCultureIgnoreCase))
 				{
@@ -131,8 +132,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		static string ExtractCode(IClass c, DomRegion codeRegion, int indentationLine)
 		{
 			ICSharpCode.TextEditor.Document.IDocument doc = GetDocument(c);
-			if (indentationLine < 0) indentationLine = 0;
-			if (indentationLine >= doc.TotalNumberOfLines) indentationLine = doc.TotalNumberOfLines - 1;
+			if (indentationLine < 1) indentationLine = 1;
+			if (indentationLine >= doc.TotalNumberOfLines) indentationLine = doc.TotalNumberOfLines;
 			
 			LineSegment segment = doc.GetLineSegment(indentationLine - 1);
 			string mainLine = doc.GetText(segment);
