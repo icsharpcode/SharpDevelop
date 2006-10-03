@@ -63,7 +63,6 @@
     <Compile Include="Src\Resolver\ICSharpCodeCoreResourceResolver.cs" />
     <Compile Include="Src\Resolver\INRefactoryResourceResolver.cs" />
     <Compile Include="Src\Resolver\IResourceResolver.cs" />
-    <Compile Include="Src\Resolver\NodeTrackingAstVisitor.cs" />
     <Compile Include="Src\Resolver\NRefactoryAstCacheService.cs" />
     <Compile Include="Src\Resolver\NRefactoryResourceResolver.cs" />
     <Compile Include="Src\Resolver\PositionTrackingAstVisitor.cs" />

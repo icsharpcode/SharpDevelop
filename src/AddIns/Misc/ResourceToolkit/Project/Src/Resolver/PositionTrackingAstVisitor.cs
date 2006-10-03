@@ -21,7 +21,7 @@ namespace Hornung.ResourceToolkit.Resolver
 	/// Provides contextual position information while iterating through
 	/// the AST and the ability to resolve expressions in-place.
 	/// </summary>
-	public abstract class PositionTrackingAstVisitor : NodeTrackingAstVisitor
+	public abstract class PositionTrackingAstVisitor : ICSharpCode.NRefactory.Visitors.NodeTrackingAstVisitor
 	{
 		
 		private Stack<INode> parentNodes;

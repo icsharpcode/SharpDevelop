@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Hornung.ResourceToolkit.Resolver {
+namespace ICSharpCode.NRefactory.Visitors {
 	using System;
 	using ICSharpCode.NRefactory.Ast;
 	
@@ -19,10 +19,11 @@ namespace Hornung.ResourceToolkit.Resolver {
 	/// BeginVisit and EndVisit for each node being visited.
 	/// </summary>
 	/// <remarks>
-	/// To enable the tracking functionality, you must override
-	/// the TrackedVisit methods instead of the Visit methods!
+	/// base.Visit(node, data) calls this.TrackedVisit(node, data), so if
+	/// you want to visit child nodes using the default visiting behaviour,
+	/// use base.TrackedVisit(parentNode, data).
 	/// </remarks>
-	public abstract class NodeTrackingAstVisitor : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor {
+	public abstract class NodeTrackingAstVisitor : AbstractAstVisitor {
 		
 		protected virtual void BeginVisit(INode node) {
 		}
@@ -30,707 +31,707 @@ namespace Hornung.ResourceToolkit.Resolver {
 		protected virtual void EndVisit(INode node) {
 		}
 		
-		public override object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data) {
+		public sealed override object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data) {
 			this.BeginVisit(addHandlerStatement);
 			object result = this.TrackedVisit(addHandlerStatement, data);
 			this.EndVisit(addHandlerStatement);
 			return result;
 		}
 		
-		public override object VisitAddressOfExpression(AddressOfExpression addressOfExpression, object data) {
+		public sealed override object VisitAddressOfExpression(AddressOfExpression addressOfExpression, object data) {
 			this.BeginVisit(addressOfExpression);
 			object result = this.TrackedVisit(addressOfExpression, data);
 			this.EndVisit(addressOfExpression);
 			return result;
 		}
 		
-		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data) {
+		public sealed override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data) {
 			this.BeginVisit(anonymousMethodExpression);
 			object result = this.TrackedVisit(anonymousMethodExpression, data);
 			this.EndVisit(anonymousMethodExpression);
 			return result;
 		}
 		
-		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data) {
+		public sealed override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data) {
 			this.BeginVisit(arrayCreateExpression);
 			object result = this.TrackedVisit(arrayCreateExpression, data);
 			this.EndVisit(arrayCreateExpression);
 			return result;
 		}
 		
-		public override object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data) {
+		public sealed override object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data) {
 			this.BeginVisit(arrayInitializerExpression);
 			object result = this.TrackedVisit(arrayInitializerExpression, data);
 			this.EndVisit(arrayInitializerExpression);
 			return result;
 		}
 		
-		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data) {
+		public sealed override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data) {
 			this.BeginVisit(assignmentExpression);
 			object result = this.TrackedVisit(assignmentExpression, data);
 			this.EndVisit(assignmentExpression);
 			return result;
 		}
 		
-		public override object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data) {
+		public sealed override object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data) {
 			this.BeginVisit(attribute);
 			object result = this.TrackedVisit(attribute, data);
 			this.EndVisit(attribute);
 			return result;
 		}
 		
-		public override object VisitAttributeSection(AttributeSection attributeSection, object data) {
+		public sealed override object VisitAttributeSection(AttributeSection attributeSection, object data) {
 			this.BeginVisit(attributeSection);
 			object result = this.TrackedVisit(attributeSection, data);
 			this.EndVisit(attributeSection);
 			return result;
 		}
 		
-		public override object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data) {
+		public sealed override object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data) {
 			this.BeginVisit(baseReferenceExpression);
 			object result = this.TrackedVisit(baseReferenceExpression, data);
 			this.EndVisit(baseReferenceExpression);
 			return result;
 		}
 		
-		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data) {
+		public sealed override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data) {
 			this.BeginVisit(binaryOperatorExpression);
 			object result = this.TrackedVisit(binaryOperatorExpression, data);
 			this.EndVisit(binaryOperatorExpression);
 			return result;
 		}
 		
-		public override object VisitBlockStatement(BlockStatement blockStatement, object data) {
+		public sealed override object VisitBlockStatement(BlockStatement blockStatement, object data) {
 			this.BeginVisit(blockStatement);
 			object result = this.TrackedVisit(blockStatement, data);
 			this.EndVisit(blockStatement);
 			return result;
 		}
 		
-		public override object VisitBreakStatement(BreakStatement breakStatement, object data) {
+		public sealed override object VisitBreakStatement(BreakStatement breakStatement, object data) {
 			this.BeginVisit(breakStatement);
 			object result = this.TrackedVisit(breakStatement, data);
 			this.EndVisit(breakStatement);
 			return result;
 		}
 		
-		public override object VisitCaseLabel(CaseLabel caseLabel, object data) {
+		public sealed override object VisitCaseLabel(CaseLabel caseLabel, object data) {
 			this.BeginVisit(caseLabel);
 			object result = this.TrackedVisit(caseLabel, data);
 			this.EndVisit(caseLabel);
 			return result;
 		}
 		
-		public override object VisitCastExpression(CastExpression castExpression, object data) {
+		public sealed override object VisitCastExpression(CastExpression castExpression, object data) {
 			this.BeginVisit(castExpression);
 			object result = this.TrackedVisit(castExpression, data);
 			this.EndVisit(castExpression);
 			return result;
 		}
 		
-		public override object VisitCatchClause(CatchClause catchClause, object data) {
+		public sealed override object VisitCatchClause(CatchClause catchClause, object data) {
 			this.BeginVisit(catchClause);
 			object result = this.TrackedVisit(catchClause, data);
 			this.EndVisit(catchClause);
 			return result;
 		}
 		
-		public override object VisitCheckedExpression(CheckedExpression checkedExpression, object data) {
+		public sealed override object VisitCheckedExpression(CheckedExpression checkedExpression, object data) {
 			this.BeginVisit(checkedExpression);
 			object result = this.TrackedVisit(checkedExpression, data);
 			this.EndVisit(checkedExpression);
 			return result;
 		}
 		
-		public override object VisitCheckedStatement(CheckedStatement checkedStatement, object data) {
+		public sealed override object VisitCheckedStatement(CheckedStatement checkedStatement, object data) {
 			this.BeginVisit(checkedStatement);
 			object result = this.TrackedVisit(checkedStatement, data);
 			this.EndVisit(checkedStatement);
 			return result;
 		}
 		
-		public override object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data) {
+		public sealed override object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data) {
 			this.BeginVisit(classReferenceExpression);
 			object result = this.TrackedVisit(classReferenceExpression, data);
 			this.EndVisit(classReferenceExpression);
 			return result;
 		}
 		
-		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data) {
+		public sealed override object VisitCompilationUnit(CompilationUnit compilationUnit, object data) {
 			this.BeginVisit(compilationUnit);
 			object result = this.TrackedVisit(compilationUnit, data);
 			this.EndVisit(compilationUnit);
 			return result;
 		}
 		
-		public override object VisitConditionalExpression(ConditionalExpression conditionalExpression, object data) {
+		public sealed override object VisitConditionalExpression(ConditionalExpression conditionalExpression, object data) {
 			this.BeginVisit(conditionalExpression);
 			object result = this.TrackedVisit(conditionalExpression, data);
 			this.EndVisit(conditionalExpression);
 			return result;
 		}
 		
-		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data) {
+		public sealed override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data) {
 			this.BeginVisit(constructorDeclaration);
 			object result = this.TrackedVisit(constructorDeclaration, data);
 			this.EndVisit(constructorDeclaration);
 			return result;
 		}
 		
-		public override object VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data) {
+		public sealed override object VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data) {
 			this.BeginVisit(constructorInitializer);
 			object result = this.TrackedVisit(constructorInitializer, data);
 			this.EndVisit(constructorInitializer);
 			return result;
 		}
 		
-		public override object VisitContinueStatement(ContinueStatement continueStatement, object data) {
+		public sealed override object VisitContinueStatement(ContinueStatement continueStatement, object data) {
 			this.BeginVisit(continueStatement);
 			object result = this.TrackedVisit(continueStatement, data);
 			this.EndVisit(continueStatement);
 			return result;
 		}
 		
-		public override object VisitDeclareDeclaration(DeclareDeclaration declareDeclaration, object data) {
+		public sealed override object VisitDeclareDeclaration(DeclareDeclaration declareDeclaration, object data) {
 			this.BeginVisit(declareDeclaration);
 			object result = this.TrackedVisit(declareDeclaration, data);
 			this.EndVisit(declareDeclaration);
 			return result;
 		}
 		
-		public override object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data) {
+		public sealed override object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data) {
 			this.BeginVisit(defaultValueExpression);
 			object result = this.TrackedVisit(defaultValueExpression, data);
 			this.EndVisit(defaultValueExpression);
 			return result;
 		}
 		
-		public override object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data) {
+		public sealed override object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data) {
 			this.BeginVisit(delegateDeclaration);
 			object result = this.TrackedVisit(delegateDeclaration, data);
 			this.EndVisit(delegateDeclaration);
 			return result;
 		}
 		
-		public override object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data) {
+		public sealed override object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data) {
 			this.BeginVisit(destructorDeclaration);
 			object result = this.TrackedVisit(destructorDeclaration, data);
 			this.EndVisit(destructorDeclaration);
 			return result;
 		}
 		
-		public override object VisitDirectionExpression(DirectionExpression directionExpression, object data) {
+		public sealed override object VisitDirectionExpression(DirectionExpression directionExpression, object data) {
 			this.BeginVisit(directionExpression);
 			object result = this.TrackedVisit(directionExpression, data);
 			this.EndVisit(directionExpression);
 			return result;
 		}
 		
-		public override object VisitDoLoopStatement(DoLoopStatement doLoopStatement, object data) {
+		public sealed override object VisitDoLoopStatement(DoLoopStatement doLoopStatement, object data) {
 			this.BeginVisit(doLoopStatement);
 			object result = this.TrackedVisit(doLoopStatement, data);
 			this.EndVisit(doLoopStatement);
 			return result;
 		}
 		
-		public override object VisitElseIfSection(ElseIfSection elseIfSection, object data) {
+		public sealed override object VisitElseIfSection(ElseIfSection elseIfSection, object data) {
 			this.BeginVisit(elseIfSection);
 			object result = this.TrackedVisit(elseIfSection, data);
 			this.EndVisit(elseIfSection);
 			return result;
 		}
 		
-		public override object VisitEmptyStatement(EmptyStatement emptyStatement, object data) {
+		public sealed override object VisitEmptyStatement(EmptyStatement emptyStatement, object data) {
 			this.BeginVisit(emptyStatement);
 			object result = this.TrackedVisit(emptyStatement, data);
 			this.EndVisit(emptyStatement);
 			return result;
 		}
 		
-		public override object VisitEndStatement(EndStatement endStatement, object data) {
+		public sealed override object VisitEndStatement(EndStatement endStatement, object data) {
 			this.BeginVisit(endStatement);
 			object result = this.TrackedVisit(endStatement, data);
 			this.EndVisit(endStatement);
 			return result;
 		}
 		
-		public override object VisitEraseStatement(EraseStatement eraseStatement, object data) {
+		public sealed override object VisitEraseStatement(EraseStatement eraseStatement, object data) {
 			this.BeginVisit(eraseStatement);
 			object result = this.TrackedVisit(eraseStatement, data);
 			this.EndVisit(eraseStatement);
 			return result;
 		}
 		
-		public override object VisitErrorStatement(ErrorStatement errorStatement, object data) {
+		public sealed override object VisitErrorStatement(ErrorStatement errorStatement, object data) {
 			this.BeginVisit(errorStatement);
 			object result = this.TrackedVisit(errorStatement, data);
 			this.EndVisit(errorStatement);
 			return result;
 		}
 		
-		public override object VisitEventAddRegion(EventAddRegion eventAddRegion, object data) {
+		public sealed override object VisitEventAddRegion(EventAddRegion eventAddRegion, object data) {
 			this.BeginVisit(eventAddRegion);
 			object result = this.TrackedVisit(eventAddRegion, data);
 			this.EndVisit(eventAddRegion);
 			return result;
 		}
 		
-		public override object VisitEventDeclaration(EventDeclaration eventDeclaration, object data) {
+		public sealed override object VisitEventDeclaration(EventDeclaration eventDeclaration, object data) {
 			this.BeginVisit(eventDeclaration);
 			object result = this.TrackedVisit(eventDeclaration, data);
 			this.EndVisit(eventDeclaration);
 			return result;
 		}
 		
-		public override object VisitEventRaiseRegion(EventRaiseRegion eventRaiseRegion, object data) {
+		public sealed override object VisitEventRaiseRegion(EventRaiseRegion eventRaiseRegion, object data) {
 			this.BeginVisit(eventRaiseRegion);
 			object result = this.TrackedVisit(eventRaiseRegion, data);
 			this.EndVisit(eventRaiseRegion);
 			return result;
 		}
 		
-		public override object VisitEventRemoveRegion(EventRemoveRegion eventRemoveRegion, object data) {
+		public sealed override object VisitEventRemoveRegion(EventRemoveRegion eventRemoveRegion, object data) {
 			this.BeginVisit(eventRemoveRegion);
 			object result = this.TrackedVisit(eventRemoveRegion, data);
 			this.EndVisit(eventRemoveRegion);
 			return result;
 		}
 		
-		public override object VisitExitStatement(ExitStatement exitStatement, object data) {
+		public sealed override object VisitExitStatement(ExitStatement exitStatement, object data) {
 			this.BeginVisit(exitStatement);
 			object result = this.TrackedVisit(exitStatement, data);
 			this.EndVisit(exitStatement);
 			return result;
 		}
 		
-		public override object VisitExpressionStatement(ExpressionStatement expressionStatement, object data) {
+		public sealed override object VisitExpressionStatement(ExpressionStatement expressionStatement, object data) {
 			this.BeginVisit(expressionStatement);
 			object result = this.TrackedVisit(expressionStatement, data);
 			this.EndVisit(expressionStatement);
 			return result;
 		}
 		
-		public override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data) {
+		public sealed override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data) {
 			this.BeginVisit(fieldDeclaration);
 			object result = this.TrackedVisit(fieldDeclaration, data);
 			this.EndVisit(fieldDeclaration);
 			return result;
 		}
 		
-		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data) {
+		public sealed override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data) {
 			this.BeginVisit(fieldReferenceExpression);
 			object result = this.TrackedVisit(fieldReferenceExpression, data);
 			this.EndVisit(fieldReferenceExpression);
 			return result;
 		}
 		
-		public override object VisitFixedStatement(FixedStatement fixedStatement, object data) {
+		public sealed override object VisitFixedStatement(FixedStatement fixedStatement, object data) {
 			this.BeginVisit(fixedStatement);
 			object result = this.TrackedVisit(fixedStatement, data);
 			this.EndVisit(fixedStatement);
 			return result;
 		}
 		
-		public override object VisitForeachStatement(ForeachStatement foreachStatement, object data) {
+		public sealed override object VisitForeachStatement(ForeachStatement foreachStatement, object data) {
 			this.BeginVisit(foreachStatement);
 			object result = this.TrackedVisit(foreachStatement, data);
 			this.EndVisit(foreachStatement);
 			return result;
 		}
 		
-		public override object VisitForNextStatement(ForNextStatement forNextStatement, object data) {
+		public sealed override object VisitForNextStatement(ForNextStatement forNextStatement, object data) {
 			this.BeginVisit(forNextStatement);
 			object result = this.TrackedVisit(forNextStatement, data);
 			this.EndVisit(forNextStatement);
 			return result;
 		}
 		
-		public override object VisitForStatement(ForStatement forStatement, object data) {
+		public sealed override object VisitForStatement(ForStatement forStatement, object data) {
 			this.BeginVisit(forStatement);
 			object result = this.TrackedVisit(forStatement, data);
 			this.EndVisit(forStatement);
 			return result;
 		}
 		
-		public override object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data) {
+		public sealed override object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data) {
 			this.BeginVisit(gotoCaseStatement);
 			object result = this.TrackedVisit(gotoCaseStatement, data);
 			this.EndVisit(gotoCaseStatement);
 			return result;
 		}
 		
-		public override object VisitGotoStatement(GotoStatement gotoStatement, object data) {
+		public sealed override object VisitGotoStatement(GotoStatement gotoStatement, object data) {
 			this.BeginVisit(gotoStatement);
 			object result = this.TrackedVisit(gotoStatement, data);
 			this.EndVisit(gotoStatement);
 			return result;
 		}
 		
-		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data) {
+		public sealed override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data) {
 			this.BeginVisit(identifierExpression);
 			object result = this.TrackedVisit(identifierExpression, data);
 			this.EndVisit(identifierExpression);
 			return result;
 		}
 		
-		public override object VisitIfElseStatement(IfElseStatement ifElseStatement, object data) {
+		public sealed override object VisitIfElseStatement(IfElseStatement ifElseStatement, object data) {
 			this.BeginVisit(ifElseStatement);
 			object result = this.TrackedVisit(ifElseStatement, data);
 			this.EndVisit(ifElseStatement);
 			return result;
 		}
 		
-		public override object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data) {
+		public sealed override object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data) {
 			this.BeginVisit(indexerDeclaration);
 			object result = this.TrackedVisit(indexerDeclaration, data);
 			this.EndVisit(indexerDeclaration);
 			return result;
 		}
 		
-		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data) {
+		public sealed override object VisitIndexerExpression(IndexerExpression indexerExpression, object data) {
 			this.BeginVisit(indexerExpression);
 			object result = this.TrackedVisit(indexerExpression, data);
 			this.EndVisit(indexerExpression);
 			return result;
 		}
 		
-		public override object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data) {
+		public sealed override object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data) {
 			this.BeginVisit(innerClassTypeReference);
 			object result = this.TrackedVisit(innerClassTypeReference, data);
 			this.EndVisit(innerClassTypeReference);
 			return result;
 		}
 		
-		public override object VisitInterfaceImplementation(InterfaceImplementation interfaceImplementation, object data) {
+		public sealed override object VisitInterfaceImplementation(InterfaceImplementation interfaceImplementation, object data) {
 			this.BeginVisit(interfaceImplementation);
 			object result = this.TrackedVisit(interfaceImplementation, data);
 			this.EndVisit(interfaceImplementation);
 			return result;
 		}
 		
-		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data) {
+		public sealed override object VisitInvocationExpression(InvocationExpression invocationExpression, object data) {
 			this.BeginVisit(invocationExpression);
 			object result = this.TrackedVisit(invocationExpression, data);
 			this.EndVisit(invocationExpression);
 			return result;
 		}
 		
-		public override object VisitLabelStatement(LabelStatement labelStatement, object data) {
+		public sealed override object VisitLabelStatement(LabelStatement labelStatement, object data) {
 			this.BeginVisit(labelStatement);
 			object result = this.TrackedVisit(labelStatement, data);
 			this.EndVisit(labelStatement);
 			return result;
 		}
 		
-		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data) {
+		public sealed override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data) {
 			this.BeginVisit(localVariableDeclaration);
 			object result = this.TrackedVisit(localVariableDeclaration, data);
 			this.EndVisit(localVariableDeclaration);
 			return result;
 		}
 		
-		public override object VisitLockStatement(LockStatement lockStatement, object data) {
+		public sealed override object VisitLockStatement(LockStatement lockStatement, object data) {
 			this.BeginVisit(lockStatement);
 			object result = this.TrackedVisit(lockStatement, data);
 			this.EndVisit(lockStatement);
 			return result;
 		}
 		
-		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data) {
+		public sealed override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data) {
 			this.BeginVisit(methodDeclaration);
 			object result = this.TrackedVisit(methodDeclaration, data);
 			this.EndVisit(methodDeclaration);
 			return result;
 		}
 		
-		public override object VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data) {
+		public sealed override object VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data) {
 			this.BeginVisit(namedArgumentExpression);
 			object result = this.TrackedVisit(namedArgumentExpression, data);
 			this.EndVisit(namedArgumentExpression);
 			return result;
 		}
 		
-		public override object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data) {
+		public sealed override object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data) {
 			this.BeginVisit(namespaceDeclaration);
 			object result = this.TrackedVisit(namespaceDeclaration, data);
 			this.EndVisit(namespaceDeclaration);
 			return result;
 		}
 		
-		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data) {
+		public sealed override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data) {
 			this.BeginVisit(objectCreateExpression);
 			object result = this.TrackedVisit(objectCreateExpression, data);
 			this.EndVisit(objectCreateExpression);
 			return result;
 		}
 		
-		public override object VisitOnErrorStatement(OnErrorStatement onErrorStatement, object data) {
+		public sealed override object VisitOnErrorStatement(OnErrorStatement onErrorStatement, object data) {
 			this.BeginVisit(onErrorStatement);
 			object result = this.TrackedVisit(onErrorStatement, data);
 			this.EndVisit(onErrorStatement);
 			return result;
 		}
 		
-		public override object VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data) {
+		public sealed override object VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data) {
 			this.BeginVisit(operatorDeclaration);
 			object result = this.TrackedVisit(operatorDeclaration, data);
 			this.EndVisit(operatorDeclaration);
 			return result;
 		}
 		
-		public override object VisitOptionDeclaration(OptionDeclaration optionDeclaration, object data) {
+		public sealed override object VisitOptionDeclaration(OptionDeclaration optionDeclaration, object data) {
 			this.BeginVisit(optionDeclaration);
 			object result = this.TrackedVisit(optionDeclaration, data);
 			this.EndVisit(optionDeclaration);
 			return result;
 		}
 		
-		public override object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data) {
+		public sealed override object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data) {
 			this.BeginVisit(parameterDeclarationExpression);
 			object result = this.TrackedVisit(parameterDeclarationExpression, data);
 			this.EndVisit(parameterDeclarationExpression);
 			return result;
 		}
 		
-		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data) {
+		public sealed override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data) {
 			this.BeginVisit(parenthesizedExpression);
 			object result = this.TrackedVisit(parenthesizedExpression, data);
 			this.EndVisit(parenthesizedExpression);
 			return result;
 		}
 		
-		public override object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data) {
+		public sealed override object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data) {
 			this.BeginVisit(pointerReferenceExpression);
 			object result = this.TrackedVisit(pointerReferenceExpression, data);
 			this.EndVisit(pointerReferenceExpression);
 			return result;
 		}
 		
-		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data) {
+		public sealed override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data) {
 			this.BeginVisit(primitiveExpression);
 			object result = this.TrackedVisit(primitiveExpression, data);
 			this.EndVisit(primitiveExpression);
 			return result;
 		}
 		
-		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data) {
+		public sealed override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data) {
 			this.BeginVisit(propertyDeclaration);
 			object result = this.TrackedVisit(propertyDeclaration, data);
 			this.EndVisit(propertyDeclaration);
 			return result;
 		}
 		
-		public override object VisitPropertyGetRegion(PropertyGetRegion propertyGetRegion, object data) {
+		public sealed override object VisitPropertyGetRegion(PropertyGetRegion propertyGetRegion, object data) {
 			this.BeginVisit(propertyGetRegion);
 			object result = this.TrackedVisit(propertyGetRegion, data);
 			this.EndVisit(propertyGetRegion);
 			return result;
 		}
 		
-		public override object VisitPropertySetRegion(PropertySetRegion propertySetRegion, object data) {
+		public sealed override object VisitPropertySetRegion(PropertySetRegion propertySetRegion, object data) {
 			this.BeginVisit(propertySetRegion);
 			object result = this.TrackedVisit(propertySetRegion, data);
 			this.EndVisit(propertySetRegion);
 			return result;
 		}
 		
-		public override object VisitRaiseEventStatement(RaiseEventStatement raiseEventStatement, object data) {
+		public sealed override object VisitRaiseEventStatement(RaiseEventStatement raiseEventStatement, object data) {
 			this.BeginVisit(raiseEventStatement);
 			object result = this.TrackedVisit(raiseEventStatement, data);
 			this.EndVisit(raiseEventStatement);
 			return result;
 		}
 		
-		public override object VisitReDimStatement(ReDimStatement reDimStatement, object data) {
+		public sealed override object VisitReDimStatement(ReDimStatement reDimStatement, object data) {
 			this.BeginVisit(reDimStatement);
 			object result = this.TrackedVisit(reDimStatement, data);
 			this.EndVisit(reDimStatement);
 			return result;
 		}
 		
-		public override object VisitRemoveHandlerStatement(RemoveHandlerStatement removeHandlerStatement, object data) {
+		public sealed override object VisitRemoveHandlerStatement(RemoveHandlerStatement removeHandlerStatement, object data) {
 			this.BeginVisit(removeHandlerStatement);
 			object result = this.TrackedVisit(removeHandlerStatement, data);
 			this.EndVisit(removeHandlerStatement);
 			return result;
 		}
 		
-		public override object VisitResumeStatement(ResumeStatement resumeStatement, object data) {
+		public sealed override object VisitResumeStatement(ResumeStatement resumeStatement, object data) {
 			this.BeginVisit(resumeStatement);
 			object result = this.TrackedVisit(resumeStatement, data);
 			this.EndVisit(resumeStatement);
 			return result;
 		}
 		
-		public override object VisitReturnStatement(ReturnStatement returnStatement, object data) {
+		public sealed override object VisitReturnStatement(ReturnStatement returnStatement, object data) {
 			this.BeginVisit(returnStatement);
 			object result = this.TrackedVisit(returnStatement, data);
 			this.EndVisit(returnStatement);
 			return result;
 		}
 		
-		public override object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data) {
+		public sealed override object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data) {
 			this.BeginVisit(sizeOfExpression);
 			object result = this.TrackedVisit(sizeOfExpression, data);
 			this.EndVisit(sizeOfExpression);
 			return result;
 		}
 		
-		public override object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data) {
+		public sealed override object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data) {
 			this.BeginVisit(stackAllocExpression);
 			object result = this.TrackedVisit(stackAllocExpression, data);
 			this.EndVisit(stackAllocExpression);
 			return result;
 		}
 		
-		public override object VisitStopStatement(StopStatement stopStatement, object data) {
+		public sealed override object VisitStopStatement(StopStatement stopStatement, object data) {
 			this.BeginVisit(stopStatement);
 			object result = this.TrackedVisit(stopStatement, data);
 			this.EndVisit(stopStatement);
 			return result;
 		}
 		
-		public override object VisitSwitchSection(SwitchSection switchSection, object data) {
+		public sealed override object VisitSwitchSection(SwitchSection switchSection, object data) {
 			this.BeginVisit(switchSection);
 			object result = this.TrackedVisit(switchSection, data);
 			this.EndVisit(switchSection);
 			return result;
 		}
 		
-		public override object VisitSwitchStatement(SwitchStatement switchStatement, object data) {
+		public sealed override object VisitSwitchStatement(SwitchStatement switchStatement, object data) {
 			this.BeginVisit(switchStatement);
 			object result = this.TrackedVisit(switchStatement, data);
 			this.EndVisit(switchStatement);
 			return result;
 		}
 		
-		public override object VisitTemplateDefinition(TemplateDefinition templateDefinition, object data) {
+		public sealed override object VisitTemplateDefinition(TemplateDefinition templateDefinition, object data) {
 			this.BeginVisit(templateDefinition);
 			object result = this.TrackedVisit(templateDefinition, data);
 			this.EndVisit(templateDefinition);
 			return result;
 		}
 		
-		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data) {
+		public sealed override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data) {
 			this.BeginVisit(thisReferenceExpression);
 			object result = this.TrackedVisit(thisReferenceExpression, data);
 			this.EndVisit(thisReferenceExpression);
 			return result;
 		}
 		
-		public override object VisitThrowStatement(ThrowStatement throwStatement, object data) {
+		public sealed override object VisitThrowStatement(ThrowStatement throwStatement, object data) {
 			this.BeginVisit(throwStatement);
 			object result = this.TrackedVisit(throwStatement, data);
 			this.EndVisit(throwStatement);
 			return result;
 		}
 		
-		public override object VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data) {
+		public sealed override object VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data) {
 			this.BeginVisit(tryCatchStatement);
 			object result = this.TrackedVisit(tryCatchStatement, data);
 			this.EndVisit(tryCatchStatement);
 			return result;
 		}
 		
-		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data) {
+		public sealed override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data) {
 			this.BeginVisit(typeDeclaration);
 			object result = this.TrackedVisit(typeDeclaration, data);
 			this.EndVisit(typeDeclaration);
 			return result;
 		}
 		
-		public override object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data) {
+		public sealed override object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data) {
 			this.BeginVisit(typeOfExpression);
 			object result = this.TrackedVisit(typeOfExpression, data);
 			this.EndVisit(typeOfExpression);
 			return result;
 		}
 		
-		public override object VisitTypeOfIsExpression(TypeOfIsExpression typeOfIsExpression, object data) {
+		public sealed override object VisitTypeOfIsExpression(TypeOfIsExpression typeOfIsExpression, object data) {
 			this.BeginVisit(typeOfIsExpression);
 			object result = this.TrackedVisit(typeOfIsExpression, data);
 			this.EndVisit(typeOfIsExpression);
 			return result;
 		}
 		
-		public override object VisitTypeReference(TypeReference typeReference, object data) {
+		public sealed override object VisitTypeReference(TypeReference typeReference, object data) {
 			this.BeginVisit(typeReference);
 			object result = this.TrackedVisit(typeReference, data);
 			this.EndVisit(typeReference);
 			return result;
 		}
 		
-		public override object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data) {
+		public sealed override object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data) {
 			this.BeginVisit(typeReferenceExpression);
 			object result = this.TrackedVisit(typeReferenceExpression, data);
 			this.EndVisit(typeReferenceExpression);
 			return result;
 		}
 		
-		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data) {
+		public sealed override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data) {
 			this.BeginVisit(unaryOperatorExpression);
 			object result = this.TrackedVisit(unaryOperatorExpression, data);
 			this.EndVisit(unaryOperatorExpression);
 			return result;
 		}
 		
-		public override object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data) {
+		public sealed override object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data) {
 			this.BeginVisit(uncheckedExpression);
 			object result = this.TrackedVisit(uncheckedExpression, data);
 			this.EndVisit(uncheckedExpression);
 			return result;
 		}
 		
-		public override object VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data) {
+		public sealed override object VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data) {
 			this.BeginVisit(uncheckedStatement);
 			object result = this.TrackedVisit(uncheckedStatement, data);
 			this.EndVisit(uncheckedStatement);
 			return result;
 		}
 		
-		public override object VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data) {
+		public sealed override object VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data) {
 			this.BeginVisit(unsafeStatement);
 			object result = this.TrackedVisit(unsafeStatement, data);
 			this.EndVisit(unsafeStatement);
 			return result;
 		}
 		
-		public override object VisitUsing(Using @using, object data) {
+		public sealed override object VisitUsing(Using @using, object data) {
 			this.BeginVisit(@using);
 			object result = this.TrackedVisit(@using, data);
 			this.EndVisit(@using);
 			return result;
 		}
 		
-		public override object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data) {
+		public sealed override object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data) {
 			this.BeginVisit(usingDeclaration);
 			object result = this.TrackedVisit(usingDeclaration, data);
 			this.EndVisit(usingDeclaration);
 			return result;
 		}
 		
-		public override object VisitUsingStatement(UsingStatement usingStatement, object data) {
+		public sealed override object VisitUsingStatement(UsingStatement usingStatement, object data) {
 			this.BeginVisit(usingStatement);
 			object result = this.TrackedVisit(usingStatement, data);
 			this.EndVisit(usingStatement);
 			return result;
 		}
 		
-		public override object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data) {
+		public sealed override object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data) {
 			this.BeginVisit(variableDeclaration);
 			object result = this.TrackedVisit(variableDeclaration, data);
 			this.EndVisit(variableDeclaration);
 			return result;
 		}
 		
-		public override object VisitWithStatement(WithStatement withStatement, object data) {
+		public sealed override object VisitWithStatement(WithStatement withStatement, object data) {
 			this.BeginVisit(withStatement);
 			object result = this.TrackedVisit(withStatement, data);
 			this.EndVisit(withStatement);
 			return result;
 		}
 		
-		public override object VisitYieldStatement(YieldStatement yieldStatement, object data) {
+		public sealed override object VisitYieldStatement(YieldStatement yieldStatement, object data) {
 			this.BeginVisit(yieldStatement);
 			object result = this.TrackedVisit(yieldStatement, data);
 			this.EndVisit(yieldStatement);
