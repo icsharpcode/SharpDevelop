@@ -555,5 +555,11 @@ static int static_Test2_j = 0;");
 		{
 			TestProgram("Imports T = System.Boolean", "using T = System.Boolean;\r\n");
 		}
+		
+		[Test]
+		public void GlobalTypeReference()
+		{
+			TestStatement("Dim a As Global.System.String", "global::System.String a;");
+		}
 	}
 }

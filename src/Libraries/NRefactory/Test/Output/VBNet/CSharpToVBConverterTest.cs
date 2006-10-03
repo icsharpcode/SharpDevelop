@@ -429,5 +429,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 End Class
 ");
 		}
+		
+		[Test]
+		public void GlobalTypeReference()
+		{
+			TestStatement("global::System.String a;", "Dim a As Global.System.String");
+		}
 	}
 }

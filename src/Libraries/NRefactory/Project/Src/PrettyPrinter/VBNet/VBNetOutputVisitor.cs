@@ -153,7 +153,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			if (typeReference.Type == null || typeReference.Type.Length ==0) {
 				outputFormatter.PrintText("Void");
-			} else if (printFullSystemType) {
+			} else if (printFullSystemType || typeReference.IsGlobal) {
 				outputFormatter.PrintIdentifier(typeReference.SystemType);
 			} else {
 				string shortTypeName = ConvertTypeString(typeReference.SystemType);

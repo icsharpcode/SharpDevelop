@@ -167,16 +167,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (typeReference.IsGlobal) {
 				outputFormatter.PrintText("global::");
 			}
-			if (typeReference.Type == null || typeReference.Type.Length ==0) {
+			if (typeReference.Type == null || typeReference.Type.Length == 0) {
 				outputFormatter.PrintText("void");
 			} else if (typeReference.SystemType == "System.Nullable" && typeReference.GenericTypes != null
-			           && typeReference.GenericTypes.Count == 1)
+			           && typeReference.GenericTypes.Count == 1 && !typeReference.IsGlobal)
 			{
 				nodeTracker.TrackedVisit(typeReference.GenericTypes[0], null);
 				outputFormatter.PrintText("?");
 			} else {
 				if (typeReference.SystemType.Length > 0) {
-					if (printFullSystemType) {
+					if (printFullSystemType || typeReference.IsGlobal) {
 						outputFormatter.PrintIdentifier(typeReference.SystemType);
 					} else {
 						outputFormatter.PrintText(ConvertTypeString(typeReference.SystemType));
