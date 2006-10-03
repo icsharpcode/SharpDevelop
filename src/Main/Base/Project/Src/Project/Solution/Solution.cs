@@ -624,42 +624,68 @@ namespace ICSharpCode.SharpDevelop.Project
 			return platformNames;
 		}
 		
-		public void ApplySolutionConfigurationToProjects()
-		{
-			ApplySolutionConfigurationAndPlatformToProjects();
-		}
-		
-		public void ApplySolutionPlatformToProjects()
-		{
-			ApplySolutionConfigurationAndPlatformToProjects();
-		}
-		
 		public void ApplySolutionConfigurationAndPlatformToProjects()
 		{
-			string conf = preferences.ActiveConfiguration;
-			string plat = preferences.ActivePlatform;
-			ProjectSection prjSec = GetProjectConfigurationsSection();
-			Dictionary<string, string> dict = new Dictionary<string, string>();
-			foreach (SolutionItem item in prjSec.Items) {
-				dict[item.Name] = item.Location;
+			foreach (ProjectConfigurationPlatformMatching l in
+			         GetActiveConfigurationsAndPlatformsForProjects(preferences.ActiveConfiguration,
+			                                                        preferences.ActivePlatform))
+			{
+				l.Project.Configuration = l.Configuration;
+				l.Project.Platform = l.Platform;
 			}
-			string searchKeyPostFix = "." + conf + "|" + plat + ".Build.0";
+		}
+		
+		internal class ProjectConfigurationPlatformMatching
+		{
+			public readonly IProject Project;
+			public string Configuration;
+			public string Platform;
+			public SolutionItem SolutionItem;
+			
+			public ProjectConfigurationPlatformMatching(IProject project, string configuration, string platform, SolutionItem solutionItem)
+			{
+				this.Project = project;
+				this.Configuration = configuration;
+				this.Platform = platform;
+				this.SolutionItem = solutionItem;
+			}
+		}
+		
+		internal List<ProjectConfigurationPlatformMatching>
+			GetActiveConfigurationsAndPlatformsForProjects(string solutionConfiguration, string solutionPlatform)
+		{
+			List<ProjectConfigurationPlatformMatching> results = new List<ProjectConfigurationPlatformMatching>();
+			ProjectSection prjSec = GetProjectConfigurationsSection();
+			Dictionary<string, SolutionItem> dict = new Dictionary<string, SolutionItem>();
+			foreach (SolutionItem item in prjSec.Items) {
+				dict[item.Name] = item;
+			}
+			string searchKeyPostFix = "." + solutionConfiguration + "|" + solutionPlatform + ".Build.0";
 			foreach (IProject p in Projects) {
 				string searchKey = p.IdGuid + searchKeyPostFix;
-				string targetConfPlat;
-				if (dict.TryGetValue(searchKey, out targetConfPlat)) {
+				SolutionItem solutionItem;
+				if (dict.TryGetValue(searchKey, out solutionItem)) {
+					string targetConfPlat = solutionItem.Location;
 					if (targetConfPlat.IndexOf('|') > 0) {
-						p.Configuration = AbstractProject.GetConfigurationNameFromKey(targetConfPlat);
-						p.Platform = AbstractProject.GetPlatformNameFromKey(targetConfPlat);
+						string conf = AbstractProject.GetConfigurationNameFromKey(targetConfPlat);
+						string plat = AbstractProject.GetPlatformNameFromKey(targetConfPlat);
+						results.Add(new ProjectConfigurationPlatformMatching(p, conf, plat, solutionItem));
 					} else {
-						p.Configuration = targetConfPlat;
-						p.Platform = plat;
+						results.Add(new ProjectConfigurationPlatformMatching(p, targetConfPlat, solutionPlatform, solutionItem));
 					}
 				} else {
-					p.Configuration = conf;
-					p.Platform = plat;
+					results.Add(new ProjectConfigurationPlatformMatching(p, solutionConfiguration, solutionPlatform, null));
 				}
 			}
+			return results;
+		}
+		
+		internal SolutionItem CreateMatchingItem(string solutionConfiguration, string solutionPlatform, IProject project)
+		{
+			SolutionItem item = new SolutionItem(project.IdGuid + "." + solutionConfiguration + "|"
+			                                     + solutionPlatform + ".Build.0", "");
+			GetProjectConfigurationsSection().Items.Add(item);
+			return item;
 		}
 		
 		static Solution solutionBeingLoaded;

@@ -203,7 +203,19 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			ToolStripMenuItem item = (ToolStripMenuItem)sender;
 			ProjectService.OpenSolution.Preferences.ActiveConfiguration = item.Text;
-			ProjectService.OpenSolution.ApplySolutionConfigurationToProjects();
+			ProjectService.OpenSolution.ApplySolutionConfigurationAndPlatformToProjects();
+		}
+	}
+	
+	public class EditConfigurationsCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			using (SolutionConfigurationEditor sce = new SolutionConfigurationEditor()) {
+				sce.ShowDialog();
+				ProjectService.OpenSolution.Save();
+				ProjectService.OpenSolution.ApplySolutionConfigurationAndPlatformToProjects();
+			}
 		}
 	}
 }

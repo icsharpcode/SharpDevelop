@@ -170,10 +170,6 @@
     <Compile Include="Src\Gui\Dialogs\WordCountDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\CombineConfiguration\CombineConfigurationPanel.cs" />
-    <Compile Include="Src\Gui\Dialogs\CombineConfiguration\CombineDependencyPanel.cs" />
-    <Compile Include="Src\Gui\Dialogs\CombineConfiguration\CombineStartupPanel.cs" />
-    <Compile Include="Src\Gui\Dialogs\CombineConfiguration\ConfigurationManager.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\EditTemplateDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -704,6 +700,13 @@
     <Compile Include="Src\Internal\ConditionEvaluators\CompareProjectPropertyConditionEvaluator.cs" />
     <Compile Include="Src\Services\ParserService\Net1xProjectContentRegistry.cs" />
     <Compile Include="Src\Services\ParserService\NetCFProjectContentRegistry.cs" />
+    <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.Designer.cs">
+      <DependentUpon>SolutionConfigurationEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.cs" />
+    <EmbeddedResource Include="Src\Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.resx">
+      <DependentUpon>SolutionConfigurationEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Include="Src\TextEditor\Gui\Editor\IncrementalSearch.cs" />
     <EmbeddedResource Include="Resources\IncrementalSearchCursor.cur" />
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
@@ -738,6 +741,7 @@
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
+    <Folder Include="Src\Gui\Dialogs\SolutionConfiguration" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

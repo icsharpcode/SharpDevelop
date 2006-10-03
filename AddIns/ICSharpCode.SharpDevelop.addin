@@ -1403,6 +1403,9 @@
 				          type = "Menu">
 					<MenuItem id = "ConfigurationBuilder" type = "Builder" class = "ICSharpCode.SharpDevelop.Project.Commands.SetConfigurationMenuBuilder"/>
 				</MenuItem>
+				<MenuItem id = "EditConfigurations"
+				          label = "Edit configurations/platforms"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.EditConfigurationsCommand"/>
 			</ComplexCondition>
 		</MenuItem> <!-- end BUILD menu -->
 		

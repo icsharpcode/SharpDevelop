@@ -532,16 +532,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Dot);
 			}
 			outputFormatter.PrintIdentifier(propertyDeclaration.Name);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
+			
+			outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle);
+			
 			nodeTracker.TrackedVisit(propertyDeclaration.GetRegion, data);
 			nodeTracker.TrackedVisit(propertyDeclaration.SetRegion, data);
-			--outputFormatter.IndentationLevel;
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
-			outputFormatter.NewLine();
+			
+			outputFormatter.EndBrace();
 			return null;
 		}
 		
