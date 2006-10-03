@@ -171,7 +171,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return LoadProjectContent(stream, registry);
 		}
 		
-		internal static ReflectionProjectContent LoadProjectContent(Stream stream, ProjectContentRegistry registry)
+		public static ReflectionProjectContent LoadProjectContent(Stream stream, ProjectContentRegistry registry)
 		{
 			ReflectionProjectContent pc;
 			BinaryReader reader = new BinaryReader(stream);

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using CSharpBinding.Parser;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace CSharpBinding.Tests
@@ -130,10 +131,9 @@ class Main {
 		}
 		
 		[Test]
-		[Ignore("Temporarily ignored - code no longer compiles")]
 		public void NewException()
 		{
-//			FindFull(program2, "otFoundException", "NotFoundException()", ExpressionContext.TypeDerivingFrom(ProjectContentRegistry.Mscorlib.GetClass("System.Exception"), true));
+			FindFull(program2, "otFoundException", "NotFoundException()", ExpressionContext.TypeDerivingFrom(ParserService.DefaultProjectContentRegistry.Mscorlib.GetClass("System.Exception"), true));
 		}
 	}
 }

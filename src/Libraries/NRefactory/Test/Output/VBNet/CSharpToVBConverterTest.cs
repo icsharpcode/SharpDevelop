@@ -212,7 +212,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "End Sub");
 		}
 		
-		[Test, Ignore]
+		[Test, Ignore("NRefactory cannot guess the anonymous method's return type")]
 		public void AnonymousMethodInVarDeclaration()
 		{
 			TestMember("void A() { Converter<int, int> i = delegate(int argument) { return argument * 2; }; }",

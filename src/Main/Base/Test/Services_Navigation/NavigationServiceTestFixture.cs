@@ -477,7 +477,6 @@ namespace NavigationServiceTests
 		}
 		
 		[Test]
-		[Ignore("System.NullReferenceException: Object reference not set to an instance of an object.")]
 		/// <summary>
 		/// The <see cref="NavigationService"/> must
 		/// expose a method to generate an 
