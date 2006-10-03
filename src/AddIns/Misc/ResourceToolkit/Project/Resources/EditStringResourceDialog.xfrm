@@ -1,0 +1,73 @@
+﻿<Components version="1.0">
+  <System.Windows.Forms.Form>
+    <Name value="EditStringResourceDialog" />
+    <FormBorderStyle value="FixedDialog" />
+    <AcceptButton value="okButton [System.Windows.Forms.Button], Text: ${res:Global.OKButtonText}" />
+    <MinimizeBox value="False" />
+    <ShowInTaskbar value="False" />
+    <Text value="${res:Hornung.ResourceToolkit.EditStringResourceDialog.Caption}" />
+    <MaximizeBox value="False" />
+    <ClientSize value="{Width=364, Height=224}" />
+    <CancelButton value="cancelButton [System.Windows.Forms.Button], Text: ${res:Global.CancelButtonText}" />
+    <ShowIcon value="False" />
+    <Controls>
+      <System.Windows.Forms.TextBox>
+        <Name value="valueTextBox" />
+        <TabIndex value="5" />
+        <Multiline value="True" />
+        <AcceptsReturn value="True" />
+        <Size value="{Width=340, Height=89}" />
+        <Location value="{X=12,Y=94}" />
+        <Anchor value="Top, Bottom, Left, Right" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="valueLabel" />
+        <Location value="{X=12,Y=68}" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="${res:Hornung.ResourceToolkit.ValueLabel}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=340, Height=23}" />
+        <TabIndex value="4" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.TextBox>
+        <Name value="keyTextBox" />
+        <TabIndex value="3" />
+        <Size value="{Width=340, Height=21}" />
+        <Location value="{X=12,Y=35}" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="keyLabel" />
+        <Location value="{X=12,Y=9}" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="${res:Hornung.ResourceToolkit.KeyLabel}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=340, Height=23}" />
+        <TabIndex value="2" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Button>
+        <Name value="cancelButton" />
+        <DialogResult value="Cancel" />
+        <Location value="{X=277,Y=189}" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="${res:Global.CancelButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <CausesValidation value="False" />
+        <UseVisualStyleBackColor value="True" />
+        <Size value="{Width=75, Height=23}" />
+        <TabIndex value="1" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="okButton" />
+        <DialogResult value="OK" />
+        <Location value="{X=196,Y=189}" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="${res:Global.OKButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <UseVisualStyleBackColor value="True" />
+        <Size value="{Width=75, Height=23}" />
+        <TabIndex value="0" />
+      </System.Windows.Forms.Button>
+    </Controls>
+  </System.Windows.Forms.Form>
+</Components>

@@ -1,0 +1,132 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Hornung.ResourceToolkit</RootNamespace>
+    <AssemblyName>Hornung.ResourceToolkit</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{461606BD-E824-4D0A-8CBA-01810B1F5E02}</ProjectGuid>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\ResourceToolkit\</OutputPath>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Src\CodeCompletion\AbstractNRefactoryResourceCodeCompletionBinding.cs" />
+    <Compile Include="Src\CodeCompletion\CSharpResourceCodeCompletionBinding.cs" />
+    <Compile Include="Src\CodeCompletion\ICSharpCodeCoreResourceCodeCompletionBinding.cs" />
+    <Compile Include="Src\CodeCompletion\NewResourceCodeCompletionData.cs" />
+    <Compile Include="Src\CodeCompletion\ResourceCodeCompletionData.cs" />
+    <Compile Include="Src\CodeCompletion\ResourceCodeCompletionDataProvider.cs" />
+    <Compile Include="Src\CodeCompletion\VBNetResourceCodeCompletionBinding.cs" />
+    <Compile Include="Src\Commands\RefactoringCommands.cs" />
+    <Compile Include="Src\Commands\TextEditorContextMenuBuilder.cs" />
+    <Compile Include="Src\Gui\EditStringResourceDialog.cs" />
+    <Compile Include="Src\Gui\UnusedResourceKeysViewContent.cs" />
+    <Compile Include="Src\Refactoring\AnyResourceReferenceFinder.cs" />
+    <Compile Include="Src\Refactoring\IResourceReferenceFinder.cs" />
+    <Compile Include="Src\Refactoring\ResourceRefactoringService.cs" />
+    <Compile Include="Src\Refactoring\SpecificResourceReferenceFinder.cs" />
+    <Compile Include="Src\Resolver\AbstractResourceResolver.cs" />
+    <Compile Include="Src\Resolver\BclNRefactoryResourceResolver.cs" />
+    <Compile Include="Src\Resolver\ICSharpCodeCoreNRefactoryResourceResolver.cs" />
+    <Compile Include="Src\Resolver\ICSharpCodeCoreResourceResolver.cs" />
+    <Compile Include="Src\Resolver\INRefactoryResourceResolver.cs" />
+    <Compile Include="Src\Resolver\IResourceResolver.cs" />
+    <Compile Include="Src\Resolver\NodeTrackingAstVisitor.cs" />
+    <Compile Include="Src\Resolver\NRefactoryAstCacheService.cs" />
+    <Compile Include="Src\Resolver\NRefactoryResourceResolver.cs" />
+    <Compile Include="Src\Resolver\PositionTrackingAstVisitor.cs" />
+    <Compile Include="Src\Resolver\PropertyFieldAssociationVisitor.cs" />
+    <Compile Include="Src\Resolver\ResourceResolveResult.cs" />
+    <Compile Include="Src\ResourceFileContent\DefaultBclResourceFileContentFactory.cs" />
+    <Compile Include="Src\ResourceFileContent\DefaultFileLocalizedResourcesFinder.cs" />
+    <Compile Include="Src\ResourceFileContent\ILocalizedResourcesFinder.cs" />
+    <Compile Include="Src\ResourceFileContent\IMultiResourceFileContent.cs" />
+    <Compile Include="Src\ResourceFileContent\IResourceFileContent.cs" />
+    <Compile Include="Src\ResourceFileContent\IResourceFileContentFactory.cs" />
+    <Compile Include="Src\ResourceFileContent\MergedResourceFileContent.cs" />
+    <Compile Include="Src\ResourceFileContent\ResourceFileContentRegistry.cs" />
+    <Compile Include="Src\ResourceFileContent\ResourcesResourceFileContent.cs" />
+    <Compile Include="Src\ResourceFileContent\ResXResourceFileContent.cs" />
+    <Compile Include="Src\ToolTips\ResourceToolTipProvider.cs" />
+    <Compile Include="Src\ProjectFileDictionaryService.cs" />
+    <Compile Include="Src\ResourceResolverService.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <Content Include="Hornung.ResourceToolkit.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Folder Include="Src" />
+    <Folder Include="Src\CodeCompletion" />
+    <Folder Include="Src\Commands" />
+    <Folder Include="Src\Gui" />
+    <Folder Include="Src\Refactoring" />
+    <Folder Include="Src\Resolver" />
+    <Folder Include="Src\ResourceFileContent" />
+    <Folder Include="Src\ToolTips" />
+    <Folder Include="Resources" />
+    <Content Include="Resources\EditStringResourceDialog.xfrm" />
+    <Folder Include="Configuration" />
+    <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>
