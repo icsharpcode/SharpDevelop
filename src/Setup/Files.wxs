@@ -969,6 +969,12 @@
 											<File Source="..\..\AddIns\AddIns\Misc\RegExpTk\RegExpTk.dll" Name="RegExpTk.dll" Id="RegExpTk.dll" Assembly=".net" AssemblyApplication="RegExpTk.dll" AssemblyManifest="RegExpTk.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
+									<Directory Id="ResourceToolkitFolder" LongName="ResourceToolkit" Name="ResTkit">
+										<Component Guid="E36C699F-353D-41CC-975B-E18BEB885BA0" Id="ResourceToolkitFiles" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\ResourceToolkit\Hornung.ResourceToolkit.addin" Name="RESTKT.ADD" Id="Hornung.ResourceToolkit.addin" LongName="Hornung.ResourceToolkit.addin" />
+											<File Source="..\..\AddIns\AddIns\Misc\ResourceToolkit\Hornung.ResourceToolkit.dll" Name="RESTKT.DLL" Id="Hornung.ResourceToolkit.dll" LongName="Hornung.ResourceToolkit.dll" Assembly=".net" AssemblyApplication="Hornung.ResourceToolkit.dll" AssemblyManifest="Hornung.ResourceToolkit.dll" KeyPath="yes" />
+										</Component>
+									</Directory>
 									<Directory Id="SharpServerTools" LongName="SharpServerTools" Name="SServer">
 										<Component Id="SharpServerToolsDll" Guid="D695B3F3-2CEB-45A3-B5C6-B1F5CDF8517F" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\SharpServerTools.dll" Name="SHARPS_1.DLL" Id="SharpServerTools.dll" LongName="SharpServerTools.dll" Assembly=".net" AssemblyApplication="SharpServerTools.dll" AssemblyManifest="SharpServerTools.dll" KeyPath="yes" />

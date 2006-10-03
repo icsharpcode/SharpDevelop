@@ -274,6 +274,7 @@
 				<ComponentRef Id="NAntAddInFiles"/>
 				<ComponentRef Id="PInvokeAddInFiles"/>
 				<ComponentRef Id="RegExToolkitFiles"/>
+				<ComponentRef Id="ResourceToolkitFiles"/>
 				<ComponentRef Id="SharpQueryDll"/>
 				<ComponentRef Id="SharpQueryInteropMSDASCDll"/>
 				<ComponentRef Id="SharpReportCoreDll"/>
