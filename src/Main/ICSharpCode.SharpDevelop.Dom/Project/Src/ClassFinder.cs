@@ -20,6 +20,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IClass callingClass;
 		IProjectContent projectContent;
 		
+		public IClass CallingClass {
+			get {
+				return callingClass;
+			}
+		}
+		
+		public IProjectContent ProjectContent {
+			get {
+				return projectContent;
+			}
+		}
+		
 		public ClassFinder(string fileName, string fileContent, int offset)
 		{
 			caretLine = 0;
@@ -68,11 +80,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		void Init(string fileName)
 		{
 			ParseInformation parseInfo = HostCallback.GetParseInformation(fileName);
-			if (parseInfo == null) {
-				return;
+			if (parseInfo != null) {
+				cu = parseInfo.MostRecentCompilationUnit;
 			}
-			
-			cu = parseInfo.MostRecentCompilationUnit;
 			
 			if (cu != null) {
 				callingClass = cu.GetInnermostClass(caretLine, caretColumn);

@@ -167,6 +167,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return "[";
 			}
 		}
+		
+		public virtual bool IsClassWithImplicitlyStaticMembers(IClass c)
+		{
+			return false;
+		}
 		#endregion
 		
 		#region Code-completion filters
@@ -268,6 +273,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				get {
 					return "(";
 				}
+			}
+			
+			public override bool IsClassWithImplicitlyStaticMembers(IClass c)
+			{
+				return c.ClassType == ClassType.Module;
 			}
 			
 			public override bool ShowInNamespaceCompletion(IClass c)

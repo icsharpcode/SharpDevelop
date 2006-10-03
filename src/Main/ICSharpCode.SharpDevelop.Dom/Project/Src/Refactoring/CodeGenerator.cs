@@ -90,9 +90,14 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			return typeInTargetContext != null && typeInTargetContext.FullyQualifiedName == returnType.FullyQualifiedName;
 		}
 		
-		public static Modifiers ConvertModifier(ModifierEnum m)
+		public static Modifiers ConvertModifier(ModifierEnum modifiers, ClassFinder targetContext)
 		{
-			return (Modifiers)m;
+			if (targetContext != null && targetContext.ProjectContent != null && targetContext.CallingClass != null) {
+				if (targetContext.ProjectContent.Language.IsClassWithImplicitlyStaticMembers(targetContext.CallingClass)) {
+					return ((Modifiers)modifiers) & ~Modifiers.Static;
+				}
+			}
+			return (Modifiers)modifiers;
 		}
 		
 		public static NR.ParameterModifiers ConvertModifier(Dom.ParameterModifiers m)
@@ -163,13 +168,13 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		{
 			if (m.IsConstructor) {
 				return new ConstructorDeclaration(m.Name,
-				                                  ConvertModifier(m.Modifiers),
+				                                  ConvertModifier(m.Modifiers, targetContext),
 				                                  ConvertParameters(m.Parameters, targetContext),
 				                                  ConvertAttributes(m.Attributes, targetContext));
 			} else {
 				MethodDeclaration md;
 				md = new MethodDeclaration(m.Name,
-				                           ConvertModifier(m.Modifiers),
+				                           ConvertModifier(m.Modifiers, targetContext),
 				                           ConvertType(m.ReturnType, targetContext),
 				                           ConvertParameters(m.Parameters, targetContext),
 				                           ConvertAttributes(m.Attributes, targetContext));
@@ -201,7 +206,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				IndexerDeclaration md;
 				md = new IndexerDeclaration(ConvertType(p.ReturnType, targetContext),
 				                            ConvertParameters(p.Parameters, targetContext),
-				                            ConvertModifier(p.Modifiers),
+				                            ConvertModifier(p.Modifiers, targetContext),
 				                            ConvertAttributes(p.Attributes, targetContext));
 				md.Parameters = ConvertParameters(p.Parameters, targetContext);
 				if (p.CanGet) md.GetRegion = new PropertyGetRegion(CreateNotImplementedBlock(), null);
@@ -209,7 +214,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				return md;
 			} else {
 				PropertyDeclaration md;
-				md = new PropertyDeclaration(ConvertModifier(p.Modifiers),
+				md = new PropertyDeclaration(ConvertModifier(p.Modifiers, targetContext),
 				                             ConvertAttributes(p.Attributes, targetContext),
 				                             p.Name,
 				                             ConvertParameters(p.Parameters, targetContext));
@@ -224,7 +229,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		{
 			TypeReference type = ConvertType(f.ReturnType, targetContext);
 			FieldDeclaration fd = new FieldDeclaration(ConvertAttributes(f.Attributes, targetContext),
-			                                           type, ConvertModifier(f.Modifiers));
+			                                           type, ConvertModifier(f.Modifiers, targetContext));
 			fd.Fields.Add(new VariableDeclaration(f.Name, null, type));
 			return fd;
 		}
@@ -233,7 +238,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		{
 			return new EventDeclaration(ConvertType(e.ReturnType, targetContext),
 			                            e.Name,
-			                            ConvertModifier(e.Modifiers),
+			                            ConvertModifier(e.Modifiers, targetContext),
 			                            ConvertAttributes(e.Attributes, targetContext),
 			                            null);
 		}
@@ -324,8 +329,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		
 		public virtual PropertyDeclaration CreateProperty(IField field, bool createGetter, bool createSetter)
 		{
+			ClassFinder targetContext = new ClassFinder(field);
 			string name = GetPropertyName(field.Name);
-			PropertyDeclaration property = new PropertyDeclaration(ConvertModifier(field.Modifiers),
+			PropertyDeclaration property = new PropertyDeclaration(ConvertModifier(field.Modifiers, targetContext),
 			                                                       null,
 			                                                       name,
 			                                                       null);
@@ -351,9 +357,10 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		#region Generate Changed Event
 		public virtual void CreateChangedEvent(IProperty property, IDocument document)
 		{
+			ClassFinder targetContext = new ClassFinder(property);
 			string name = property.Name + "Changed";
 			EventDeclaration ed = new EventDeclaration(new TypeReference("EventHandler"), name,
-			                                           ConvertModifier(property.Modifiers & (ModifierEnum.VisibilityMask | ModifierEnum.Static))
+			                                           ConvertModifier(property.Modifiers & (ModifierEnum.VisibilityMask | ModifierEnum.Static), targetContext)
 			                                           , null, null);
 			InsertCodeAfter(property, document, ed);
 			
@@ -395,7 +402,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			else
 				modifier = ModifierEnum.Protected | ModifierEnum.Virtual;
 			MethodDeclaration method = new MethodDeclaration("On" + e.Name,
-			                                                 ConvertModifier(modifier),
+			                                                 ConvertModifier(modifier, context),
 			                                                 new TypeReference("System.Void"),
 			                                                 parameters, null);
 			
@@ -440,7 +447,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		{
 			ClassFinder context = new ClassFinder(targetClass, targetClass.Region.BeginLine + 1, 0);
 			TypeReference interfaceReference = ConvertType(interf, context);
-			Modifiers modifier = ConvertModifier(implModifier);
+			Modifiers modifier = ConvertModifier(implModifier, context);
 			List<IEvent> targetClassEvents = targetClass.DefaultReturnType.GetEvents();
 			foreach (IEvent e in interf.GetEvents()) {
 				if (targetClassEvents.Find(delegate(IEvent te) { return e.Name == te.Name; }) == null) {
