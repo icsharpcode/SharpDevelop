@@ -45,8 +45,7 @@ namespace ICSharpCode.XmlEditor
 		public static readonly string CategoryName = "XML";
 
 		XmlEditorControl xmlEditor = new XmlEditorControl();
-		FileSystemWatcher watcher;
-		bool wasChangedExternally;
+		TextEditorDisplayBindingWrapper.FileChangeWatcher watcher;
 		static MessageViewCategory category;
 		string stylesheetFileName;
 		XmlTreeView xmlTreeView;
@@ -61,7 +60,7 @@ namespace ICSharpCode.XmlEditor
 			xmlEditor.ActiveTextAreaControl.Caret.CaretModeChanged += CaretModeChanged;
 			xmlEditor.ActiveTextAreaControl.Caret.PositionChanged += CaretChanged;
 			xmlEditor.ActiveTextAreaControl.Enter += CaretUpdate;
-			((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Activated += GotFocusEvent;
+			watcher = new TextEditorDisplayBindingWrapper.FileChangeWatcher(this);
 			
 			// Listen for changes to the xml editor properties.
 			XmlEditorAddInOptions.PropertyChanged += PropertyChanged;
@@ -293,7 +292,7 @@ namespace ICSharpCode.XmlEditor
 		public override void Dispose()
 		{
 			base.Dispose();
-			((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Activated -= new EventHandler(GotFocusEvent);
+			watcher.Dispose();
 			
 			XmlEditorAddInOptions.PropertyChanged -= PropertyChanged;
 			XmlSchemaManager.UserSchemaAdded -= new EventHandler(UserSchemaAdded);
@@ -524,23 +523,20 @@ namespace ICSharpCode.XmlEditor
 			}
 
 			UpdateFolding();
-			SetWatcher();
+			watcher.SetWatcher(fileName);
 		}
 		
 		public override void Save(string fileName)
 		{
 			OnSaving(EventArgs.Empty);
-
-			if (watcher != null) {
-				watcher.EnableRaisingEvents = false;
-			}
+			watcher.Disable();
 
 			xmlEditor.SaveFile(fileName);
 			FileName = fileName;
 			TitleName = Path.GetFileName(fileName);
 			IsDirty = false;
 			
-			SetWatcher();
+			watcher.SetWatcher(fileName);
 			OnSaved(new SaveEventArgs(true));
 		}
 		
@@ -772,65 +768,6 @@ namespace ICSharpCode.XmlEditor
 		void CaretModeChanged(object sender, EventArgs e)
 		{
 			StatusBarService.SetInsertMode(xmlEditor.ActiveTextAreaControl.Caret.CaretMode == CaretMode.InsertMode);
-		}
-		
-		/// <summary>
-		/// Creates the file system watcher.
-		/// </summary>
-		void SetWatcher()
-		{
-			try {
-				if (this.watcher == null) {
-					this.watcher = new FileSystemWatcher();
-					this.watcher.Changed += new FileSystemEventHandler(this.OnFileChangedEvent);
-				} else {
-					this.watcher.EnableRaisingEvents = false;
-				}
-				this.watcher.Path = Path.GetDirectoryName(xmlEditor.FileName);
-				this.watcher.Filter = Path.GetFileName(xmlEditor.FileName);
-				this.watcher.NotifyFilter = NotifyFilters.LastWrite;
-				this.watcher.EnableRaisingEvents = true;
-			} catch (Exception) {
-				watcher = null;
-			}
-		}
-		
-		/// <summary>
-		/// Shows the "File was changed" dialog if the file was
-		/// changed externally.
-		/// </summary>
-		void GotFocusEvent(object sender, EventArgs e)
-		{
-			lock (this) {
-				if (wasChangedExternally) {
-					wasChangedExternally = false;
-					string message = StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}", new string[,] {{"File", Path.GetFullPath(xmlEditor.FileName)}});
-					if (MessageService.AskQuestion(message, "${res:MainWindow.DialogName}")) {
-						Load(xmlEditor.FileName);
-					} else {
-						IsDirty = true;
-					}
-				}
-			}
-		}
-		
-		void OnFileChangedEvent(object sender, FileSystemEventArgs e)
-		{
-			if(e.ChangeType != WatcherChangeTypes.Deleted) {
-				wasChangedExternally = true;
-				if (xmlEditor.IsHandleCreated) {
-					xmlEditor.BeginInvoke(new MethodInvoker(OnFileChangedEventInvoked));
-				}
-			}
-		}
-		
-		void OnFileChangedEventInvoked()
-		{
-			Console.WriteLine("XmlView.OnFileChangedEventInvoked");
-			if (((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Focused) {
-				Console.WriteLine("OnFileChangedEventInvoked - Workbench has focus");
-				GotFocusEvent(this, EventArgs.Empty);
-			}
 		}
 		
 		/// <summary>

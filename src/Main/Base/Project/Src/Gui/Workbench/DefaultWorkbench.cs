@@ -34,6 +34,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		List<PadDescriptor>  viewContentCollection    = new List<PadDescriptor>();
 		List<IViewContent> workbenchContentCollection = new List<IViewContent>();
 		
+		bool isActiveWindow; // Gets whether SharpDevelop is the active application in Windows
+		
 		bool closeAll = false;
 		
 		bool            fullscreen;
@@ -75,6 +77,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			set {
 				Text = value;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether SharpDevelop is the active application in Windows.
+		/// </summary>
+		public bool IsActiveWindow {
+			get {
+				return isActiveWindow;
 			}
 		}
 		
@@ -688,5 +699,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public event ViewContentEventHandler ViewOpened;
 		public event ViewContentEventHandler ViewClosed;
 		public event EventHandler ActiveWorkbenchWindowChanged;
+		
+		protected override void OnActivated(EventArgs e)
+		{
+			isActiveWindow = true;
+			base.OnActivated(e);
+		}
+		
+		protected override void OnDeactivate(EventArgs e)
+		{
+			isActiveWindow = false;
+			base.OnDeactivate(e);
+		}
 	}
 }

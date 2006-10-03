@@ -56,6 +56,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
+		/// Gets whether SharpDevelop is the active application in Windows.
+		/// </summary>
+		bool IsActiveWindow {
+			get;
+		}
+		
+		/// <summary>
 		/// Inserts a new <see cref="IViewContent"/> object in the workspace.
 		/// </summary>
 		void ShowView(IViewContent content);
