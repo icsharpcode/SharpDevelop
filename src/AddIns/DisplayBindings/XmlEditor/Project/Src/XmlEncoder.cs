@@ -48,7 +48,6 @@ namespace ICSharpCode.XmlEditor
 		class XmlEncoderTextWriter : EncodedStringWriter
 		{
 			StringBuilder markup = new StringBuilder();
-			bool saveMarkupText;
 			
 			public XmlEncoderTextWriter() : base(Encoding.UTF8)
 			{
@@ -60,13 +59,12 @@ namespace ICSharpCode.XmlEditor
 			/// </summary>
 			public void BeginMarkup()
 			{
-				saveMarkupText = true;
 				markup = new StringBuilder();
 			}
 			
 			public void EndMarkup()
 			{
-				saveMarkupText = false;
+				BeginMarkup();
 			}
 			
 			/// <summary>
