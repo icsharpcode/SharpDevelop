@@ -185,7 +185,7 @@ namespace NRefactoryASTGenerator.Ast
 	[IncludeBoolProperty("IsReadOnly", "return HasGetRegion && !HasSetRegion;")]
 	[IncludeBoolProperty("IsWriteOnly", "return !HasGetRegion && HasSetRegion;")]
 	[IncludeMember(@"
-		public PropertyDeclaration(string name, TypeReference typeReference, Modifiers modifier, List<AttributeSection> attributes) : this(modifier, attributes, name, null)
+		internal PropertyDeclaration(string name, TypeReference typeReference, Modifiers modifier, List<AttributeSection> attributes) : this(modifier, attributes, name, null)
 		{
 			this.TypeReference = typeReference;
 			if ((modifier & Modifiers.ReadOnly) != Modifiers.ReadOnly) {

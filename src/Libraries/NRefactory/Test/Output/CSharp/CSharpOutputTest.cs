@@ -314,6 +314,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void SetOnlyProperty()
+		{
+			TestTypeMember("public bool ExpectsValue { set { DoSomething(value); } }");
+		}
+		
+		[Test]
 		public void AbstractMethod()
 		{
 			TestTypeMember("public abstract void Run();");

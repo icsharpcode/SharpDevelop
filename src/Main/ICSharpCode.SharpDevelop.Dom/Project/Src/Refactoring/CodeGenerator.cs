@@ -209,11 +209,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				return md;
 			} else {
 				PropertyDeclaration md;
-				md = new PropertyDeclaration(p.Name,
-				                             ConvertType(p.ReturnType, targetContext),
-				                             ConvertModifier(p.Modifiers),
-				                             ConvertAttributes(p.Attributes, targetContext));
-				md.Parameters = ConvertParameters(p.Parameters, targetContext);
+				md = new PropertyDeclaration(ConvertModifier(p.Modifiers),
+				                             ConvertAttributes(p.Attributes, targetContext),
+				                             p.Name,
+				                             ConvertParameters(p.Parameters, targetContext));
+				md.TypeReference = ConvertType(p.ReturnType, targetContext);
 				if (p.CanGet) md.GetRegion = new PropertyGetRegion(CreateNotImplementedBlock(), null);
 				if (p.CanSet) md.SetRegion = new PropertySetRegion(CreateNotImplementedBlock(), null);
 				return md;
@@ -325,9 +325,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		public virtual PropertyDeclaration CreateProperty(IField field, bool createGetter, bool createSetter)
 		{
 			string name = GetPropertyName(field.Name);
-			PropertyDeclaration property = new PropertyDeclaration(name,
-			                                                       ConvertType(field.ReturnType, new ClassFinder(field)),
-			                                                       ConvertModifier(field.Modifiers), null);
+			PropertyDeclaration property = new PropertyDeclaration(ConvertModifier(field.Modifiers),
+			                                                       null,
+			                                                       name,
+			                                                       null);
+			property.TypeReference = ConvertType(field.ReturnType, new ClassFinder(field));
 			if (createGetter) {
 				BlockStatement block = new BlockStatement();
 				block.AddChild(new ReturnStatement(new IdentifierExpression(field.Name)));
