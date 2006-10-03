@@ -106,7 +106,7 @@ namespace Grunwald.BooBinding.Designer
 		{
 			lastTextContent = TextContent;
 			
-			ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
+			ParseInformation parseInfo = ParserService.ParseFile(textEditorControl.FileName, textEditorControl.Text, false, true);
 			// ensure that there are no syntax errors in the file:
 			Module mainModule = Parse(textEditorControl.FileName, lastTextContent);
 			
@@ -127,6 +127,18 @@ namespace Grunwald.BooBinding.Designer
 				throw new FormsDesignerLoadException("formClass.BaseClass returned null.");
 			cld.BaseTypes.Add(new SimpleTypeReference(formClass.BaseClass.FullyQualifiedName));
 			
+			string fileName = initMethod.DeclaringType.CompilationUnit.FileName;
+			Module parsedModule;
+			if (FileUtility.IsEqualFileName(fileName, textEditorControl.FileName)) {
+				parsedModule = mainModule;
+			} else {
+				string fileContent = ParserService.GetParseableFileContent(fileName);
+				parsedModule = Parse(fileName, fileContent);
+				
+				// Update list of fields in designer file. Fixes SD2-973.
+				ParserService.ParseFile(fileName, fileContent, false, true);
+			}
+			
 			foreach (IField f in formClass.Fields) {
 				if (f.ReturnType.IsDefaultReturnType) {
 					Field field = new Field();
@@ -135,13 +147,6 @@ namespace Grunwald.BooBinding.Designer
 					cld.Members.Add(field);
 				}
 			}
-			
-			string fileName = initMethod.DeclaringType.CompilationUnit.FileName;
-			Module parsedModule;
-			if (FileUtility.IsEqualFileName(fileName, textEditorControl.FileName))
-				parsedModule = mainModule;
-			else
-				parsedModule = Parse(fileName, ParserService.GetParseableFileContent(fileName));
 			
 			// Now find InitializeComponent in parsed module and put it into our new module
 			foreach (TypeMember m in parsedModule.Members) {
@@ -156,15 +161,19 @@ namespace Grunwald.BooBinding.Designer
 					{
 						cld.Members.Add(method);
 						
+						#if DEBUG
 						Console.WriteLine(module.ToCodeString());
+						#endif
 						
 						CodeDomVisitor visitor = new CodeDomVisitor(parseInfo.MostRecentCompilationUnit.ProjectContent);
 						module.Accept(visitor);
 						
+						#if DEBUG
 						// output generated CodeDOM to the console :
 						ICSharpCode.NRefactory.Visitors.CodeDomVerboseOutputGenerator outputGenerator = new ICSharpCode.NRefactory.Visitors.CodeDomVerboseOutputGenerator();
 						outputGenerator.GenerateCodeFromMember(visitor.OutputCompileUnit.Namespaces[0].Types[0], Console.Out, null);
 						provider.GenerateCodeFromCompileUnit(visitor.OutputCompileUnit, Console.Out, null);
+						#endif
 						
 						return visitor.OutputCompileUnit;
 					}
