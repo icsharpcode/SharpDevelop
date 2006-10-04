@@ -163,7 +163,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			
 			if (typeDeclaration.BaseTypes != null) {
 				foreach (TypeReference typeRef in typeDeclaration.BaseTypes) {
-					codeTypeDeclaration.BaseTypes.Add(new CodeTypeReference(typeRef.Type));
+					codeTypeDeclaration.BaseTypes.Add(ConvType(typeRef));
 				}
 			}
 			

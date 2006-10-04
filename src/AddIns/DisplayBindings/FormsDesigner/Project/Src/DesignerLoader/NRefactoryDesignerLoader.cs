@@ -157,6 +157,13 @@ namespace ICSharpCode.FormsDesigner
 			return parts;
 		}
 		
+		// Steps to load the designer:
+		// - Parse main file
+		// - Find other files containing parts of the form
+		// - Parse all files and look for fields (for controls) and InitializeComponents method
+		// - Create CodeDom objects for fields and InitializeComponents statements
+		// - If debug build and Ctrl pressed, output CodeDom to console
+		// - Return CodeDom objects to the .NET designer
 		protected override CodeCompileUnit Parse()
 		{
 			LoggingService.Debug("NRefactoryDesignerLoader.Parse()");
