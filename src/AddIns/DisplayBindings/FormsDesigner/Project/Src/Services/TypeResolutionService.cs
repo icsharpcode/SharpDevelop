@@ -311,7 +311,13 @@ namespace ICSharpCode.FormsDesigner.Services
 				if (type == null) {
 					IProjectContent pc = this.CallingProject;
 					if (pc != null) {
-						IClass foundClass = pc.GetClass(name.Replace('+', '.'));
+						// find assembly containing type by using SharpDevelop.Dom
+						IClass foundClass;
+						if (name.Contains("`")) {
+							foundClass = pc.GetClass(name.Substring(0, name.IndexOf('`')).Replace('+', '.'));
+						} else {
+							foundClass = pc.GetClass(name.Replace('+', '.'));
+						}
 						if (foundClass != null) {
 							Assembly assembly = LoadAssembly(foundClass.ProjectContent);
 							if (assembly != null) {
