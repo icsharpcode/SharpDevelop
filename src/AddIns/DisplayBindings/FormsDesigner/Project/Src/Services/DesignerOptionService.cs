@@ -11,6 +11,7 @@ using System.Drawing;
 using System.ComponentModel.Design;
 using System.Windows.Forms.Design;
 using ICSharpCode.Core;
+using ICSharpCode.FormsDesigner.Gui.OptionPanels;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
@@ -35,11 +36,11 @@ namespace ICSharpCode.FormsDesigner.Services
 			this.showGrid   = PropertyService.Get("FormsDesigner.DesignerOptions.ShowGrid", true);
 			this.snapToGrid = PropertyService.Get("FormsDesigner.DesignerOptions.SnapToGrid", true);
 			
-			this.useSmartTags = PropertyService.Get("FormsDesigner.DesignerOptions.UseSmartTags", false);
+			this.useSmartTags = GeneralOptionsPanel.UseSmartTags;
 			this.useSnapLines = PropertyService.Get("FormsDesigner.DesignerOptions.UseSnapLines", true);
 
 			this.enableInSituEditing         = PropertyService.Get("FormsDesigner.DesignerOptions.EnableInSituEditing", true);
-			this.objectBoundSmartTagAutoShow = PropertyService.Get("FormsDesigner.DesignerOptions.ObjectBoundSmartTagAutoShow", true);
+			this.objectBoundSmartTagAutoShow = GeneralOptionsPanel.SmartTagAutoShow;
 			this.useOptimizedCodeGeneration  = PropertyService.Get("FormsDesigner.DesignerOptions.UseOptimizedCodeGeneration", true);
 		}
 		
