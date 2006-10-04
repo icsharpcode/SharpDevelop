@@ -107,18 +107,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			if (!String.IsNullOrEmpty(code)) {
 				
 				// Now resolve the expression in the current context.
-				#if DEBUG
-				LoggingService.Debug("ResourceToolkit: PositionTrackingAstVisitor: Resolving an expression, code (re-generated): '"+code+"'");
-				#endif
 				ResolveResult rr = ParserService.Resolve(new ExpressionResult(code, ExpressionContext.Default), this.CurrentNodeStartLocation.Y-1, this.CurrentNodeStartLocation.X, memberInThisFile.DeclaringType.CompilationUnit.FileName, ParserService.GetParseableFileContent(memberInThisFile.DeclaringType.CompilationUnit.FileName));
-				
-				#if DEBUG
-				if (rr != null) {
-					LoggingService.Debug("ResourceToolkit: PositionTrackingAstVisitor: The expression resolved to: "+rr.ToString());
-				} else {
-					LoggingService.Debug("ResourceToolkit: PositionTrackingAstVisitor: The expression could not be resolved.");
-				}
-				#endif
 				
 				return rr;
 				

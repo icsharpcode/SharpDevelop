@@ -35,9 +35,6 @@ namespace Hornung.ResourceToolkit.ToolTips
 			ResourceResolveResult result = ResourceResolverService.Resolve(textArea.MotherTextEditorControl.FileName, doc, logicPos.Y, logicPos.X);
 			
 			if (result != null && result.ResourceFileContent != null) {
-				#if DEBUG
-				LoggingService.Debug("ResourceToolkit: Providing ToolTipInfo");
-				#endif
 				return new ToolTipInfo(ResourceResolverService.FormatResourceDescription(result.ResourceFileContent, result.Key));
 			}
 			

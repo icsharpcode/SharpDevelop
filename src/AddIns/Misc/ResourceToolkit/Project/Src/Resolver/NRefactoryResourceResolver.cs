@@ -114,9 +114,6 @@ namespace Hornung.ResourceToolkit.Resolver
 			ExpressionResult result = ef.FindFullExpression(document.TextContent, caretOffset);
 			
 			if (result.Expression == null) {
-				#if DEBUG
-				LoggingService.Debug("ResourceToolkit: NRefactoryResourceResolver could not find expression on first try");
-				#endif
 				// may happen if in string
 				while (--caretOffset > 0 && (result = ef.FindFullExpression(document.TextContent, caretOffset)).Expression == null) {
 					if (document.GetLineNumberForOffset(caretOffset) != caretLine) {
@@ -154,10 +151,6 @@ namespace Hornung.ResourceToolkit.Resolver
 				
 				return rrr;
 				
-			} else {
-				#if DEBUG
-				LoggingService.Debug("ResourceToolkit: NRefactoryResourceResolver could not find an expression");
-				#endif
 			}
 			
 			return null;
@@ -171,16 +164,8 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// </summary>
 		static ResourceResolveResult TryResolve(ExpressionResult result, Expression expr, int caretLine, int caretColumn, string fileName, string fileContent)
 		{
-			#if DEBUG
-			LoggingService.Debug("ResourceToolkit: NRefactoryResourceResolver trying to resolve expression: "+result.ToString());
-			#endif
-			
 			ResolveResult rr = ParserService.Resolve(result, caretLine, caretColumn, fileName, fileContent);
 			if (rr != null) {
-				
-				#if DEBUG
-				LoggingService.Debug("ResourceToolkit: NRefactoryResourceResolver: The expression resolved to: "+rr.ToString());
-				#endif
 				
 				ResourceResolveResult rrr;
 				foreach (INRefactoryResourceResolver resolver in Resolvers) {
