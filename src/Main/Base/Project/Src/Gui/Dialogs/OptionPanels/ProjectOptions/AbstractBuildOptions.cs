@@ -24,13 +24,26 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	{
 		protected void InitBaseIntermediateOutputPath()
 		{
-			helper.BindString("baseIntermediateOutputPathTextBox", "BaseIntermediateOutputPath").CreateLocationButton("baseIntermediateOutputPathTextBox");
+			helper.BindString(Get<TextBox>("baseIntermediateOutputPath"),
+			                  "BaseIntermediateOutputPath",
+			                  delegate { return @"obj\"; }
+			                 ).CreateLocationButton("baseIntermediateOutputPathTextBox");
 			ConnectBrowseFolder("baseIntermediateOutputPathBrowseButton", "baseIntermediateOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
 		}
 		
 		protected void InitIntermediateOutputPath()
 		{
-			helper.BindString("intermediateOutputPathTextBox", "IntermediateOutputPath").CreateLocationButton("intermediateOutputPathTextBox");
+			ConfigurationGuiBinding binding = helper.BindString(
+				Get<TextBox>("intermediateOutputPath"),
+				"IntermediateOutputPath",
+				delegate {
+					PropertyStorageLocations l;
+					return Path.Combine(helper.GetProperty("BaseIntermediateOutputPath", @"obj\", out l),
+					                    helper.Configuration);
+				}
+			);
+			binding.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
+			binding.CreateLocationButton("intermediateOutputPathTextBox");
 			ConnectBrowseFolder("intermediateOutputPathBrowseButton", "intermediateOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
 		}
 		

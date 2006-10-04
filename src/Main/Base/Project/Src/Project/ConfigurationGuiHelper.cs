@@ -206,15 +206,22 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Bind string to TextBox or ComboBox
+		static Func<string> GetEmptyString = delegate { return ""; };
+		
 		public ConfigurationGuiBinding BindString(string control, string property)
 		{
-			return BindString(controlDictionary[control], property);
+			return BindString(controlDictionary[control], property, GetEmptyString);
 		}
 		
 		public ConfigurationGuiBinding BindString(Control control, string property)
 		{
+			return BindString(control, property, GetEmptyString);
+		}
+		
+		public ConfigurationGuiBinding BindString(Control control, string property, Func<string> defaultValueProvider)
+		{
 			if (control is TextBoxBase || control is ComboBox) {
-				SimpleTextBinding binding = new SimpleTextBinding(control);
+				SimpleTextBinding binding = new SimpleTextBinding(control, defaultValueProvider);
 				AddBinding(property, binding);
 				control.TextChanged += ControlValueChanged;
 				if (control is ComboBox) {
@@ -237,20 +244,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		class SimpleTextBinding : ConfigurationGuiBinding
 		{
 			Control control;
+			Func<string> defaultValueProvider;
 			
-			public SimpleTextBinding(Control control)
+			public SimpleTextBinding(Control control, Func<string> defaultValueProvider)
 			{
+				this.defaultValueProvider = defaultValueProvider;
 				this.control = control;
 			}
 			
 			public override void Load()
 			{
-				control.Text = Get("");
+				control.Text = Get(defaultValueProvider());
 			}
 			
 			public override bool Save()
 			{
-				Set(control.Text);
+				if (control.Text == defaultValueProvider())
+					Set("");
+				else
+					Set(control.Text);
 				return true;
 			}
 		}

@@ -43,8 +43,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			BaseConfiguration.SetIsGuarded("Platform", true);
 			
 			configurations["Debug|*"] = new PropertyGroup();
-			configurations["Debug|*"]["BaseIntermediateOutputPath"] = @"obj\";
-			configurations["Debug|*"]["IntermediateOutputPath"] = @"obj\Debug\";
 			if (information.CreateProjectWithDefaultOutputPath) {
 				configurations["Debug|*"]["OutputPath"] = @"bin\Debug\";
 			}
@@ -54,8 +52,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			configurations["Debug|*"]["DebugType"] = "Full";
 			
 			configurations["Release|*"] = new PropertyGroup();
-			configurations["Release|*"]["BaseIntermediateOutputPath"] = @"obj\";
-			configurations["Release|*"]["IntermediateOutputPath"] = @"obj\Release\";
 			if (information.CreateProjectWithDefaultOutputPath) {
 				configurations["Release|*"]["OutputPath"] = @"bin\Release\";
 			}

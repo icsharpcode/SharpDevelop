@@ -156,6 +156,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void Set<T>(T value)
 		{
+			if (location == PropertyStorageLocations.Unknown) {
+				location = defaultLocation;
+			}
 			helper.SetProperty(property, value, location);
 		}
 		
