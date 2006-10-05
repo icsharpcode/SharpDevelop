@@ -14,7 +14,7 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Svn
 {
-	public class TortoiseSvnNotFoundForm : XmlForm
+	public class TortoiseSvnNotFoundForm : BaseSharpDevelopForm
 	{		
 		public TortoiseSvnNotFoundForm()
 		{
