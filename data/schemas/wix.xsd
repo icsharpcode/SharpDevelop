@@ -4183,6 +4183,17 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
+            <xs:attribute name="DisableRegistryReflection" type="YesNoType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Set this attribute to 'yes' in order to disable registry reflection on all existing and
+                        new registry keys affected by this component.
+                        When set to 'yes', the Windows Installer calls the RegDisableReflectionKey on each key
+                        being accessed by the component.
+                        This bit is available with Windows Installer version 4.0 and is ignored on 32-bit systems.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
             <xs:attribute name="DiskId" type="xs:string">
                 <xs:annotation>
                     <xs:documentation>
@@ -6444,6 +6455,19 @@
             <xs:attribute name="HasBorder" type="YesNoType">
                 <xs:annotation><xs:documentation>only valid for RadioButton Controls</xs:documentation></xs:annotation>
             </xs:attribute>
+            <xs:attribute name="ElevationShield" type="YesNoType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Only valid for PushButton controls.
+                        This attribute adds the User Account Control (UAC) elevation icon (shield icon) to the PushButton control.
+                        If this attribute's value is 'yes' and the installation is not yet running with elevated privileges,
+                        the pushbutton control is created using the User Account Control (UAC) elevation icon (shield icon).
+                        If this attribute's value is 'yes' and the installation is already running with elevated privileges,
+                        the pushbutton control is created using the other icon attributes.
+                        Otherwise, the pushbutton control is created using the other icon attributes.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
 
@@ -7798,7 +7822,7 @@
             </xs:attribute>
             <xs:attribute name="User" type="xs:string">
             </xs:attribute>
-            <xs:attribute name="BinaryKey" type="xs:string" use="required">
+            <xs:attribute name="BinaryKey" type="xs:string">
                 <xs:annotation>
                     <xs:documentation>Reference to Binary stream that contains the SQL script to execute.  Only valid if no Binary child element.</xs:documentation>
                 </xs:annotation>
