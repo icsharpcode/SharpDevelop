@@ -23,8 +23,8 @@ GNU General Public License.
 NAnt.xsd
 --------
 
-NAnt 0.85 RC 3 schema.
-http://nant.sourceforge.net/release/0.85-rc3/nant.xsd
+NAnt 0.85 RC 4 schema.
+http://nant.sourceforge.net/release/0.85-rc4/nant.xsd
 GNU General Public License.
 
 Wix.xsd

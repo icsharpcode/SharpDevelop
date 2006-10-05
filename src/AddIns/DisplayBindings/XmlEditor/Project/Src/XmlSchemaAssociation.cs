@@ -92,7 +92,7 @@ namespace ICSharpCode.XmlEditor
 					association = new XmlSchemaAssociation(extension, @"urn:app-config");
 					break;
 				case ".build":
-					association = new XmlSchemaAssociation(extension, @"http://nant.sf.net/release/0.85-rc3/nant.xsd");
+					association = new XmlSchemaAssociation(extension, @"http://nant.sf.net/release/0.85-rc4/nant.xsd");
 					break;
 				case ".addin":
 					association = new XmlSchemaAssociation(extension, @"http://www.icsharpcode.net/2005/addin");
