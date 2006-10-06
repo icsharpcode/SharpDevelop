@@ -46,6 +46,9 @@ namespace ResourceEditor
 		public int ImageIndex
 		{
 			get {
+				if (this.resourceValue == null) {
+					return -1;
+				}
 				switch(this.resourceValue.GetType().ToString()) {
 					case "System.String":
 						return 0;
@@ -65,6 +68,10 @@ namespace ResourceEditor
 		
 		public override string ToString()
 		{
+			if (ResourceValue == null) {
+				return "(Nothing/null)";
+			}
+			
 			string type = ResourceValue.GetType().FullName;
 			string tmp = String.Empty;
 			

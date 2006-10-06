@@ -219,7 +219,7 @@ namespace ResourceEditor
 				ResourceItem item = entry.Value;
 				
 				string tmp  = item.ToString();
-				string type = item.ResourceValue.GetType().FullName;
+				string type = item.ResourceValue == null ? "(Nothing/null)" : item.ResourceValue.GetType().FullName;
 				
 				ListViewItem lv = new ListViewItem(new String[] {item.Name, type, tmp}, item.ImageIndex);
 				Items.Add(lv);
