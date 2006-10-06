@@ -223,9 +223,6 @@ namespace Hornung.ResourceToolkit.Resolver
 		public static string GetICSharpCodeCoreHostResourceFileName(string sourceFileName)
 		{
 			IProject project = ProjectFileDictionaryService.GetProjectForFile(sourceFileName);
-			if (project == null || String.IsNullOrEmpty(project.Directory)) {
-				return null;
-			}
 			
 			// Get SD directory using the reference to ICSharpCode.Core
 			string coreAssemblyFullPath = GetICSharpCodeCoreFullPath(project);
@@ -261,6 +258,10 @@ namespace Hornung.ResourceToolkit.Resolver
 		
 		static string GetICSharpCodeCoreFullPath(IProject sourceProject)
 		{
+			if (sourceProject == null) {
+				return null;
+			}
+			
 			string coreAssemblyFullPath = null;
 			
 			if (sourceProject.Name.Equals("ICSharpCode.Core", StringComparison.InvariantCultureIgnoreCase)) {

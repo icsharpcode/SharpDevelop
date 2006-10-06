@@ -85,6 +85,10 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\Conditions\SolutionContainsProjectOrReferenceConditionEvaluator.cs" />
+    <Compile Include="Src\Gui\UnusedResourceKeysCommands.cs" />
+    <Compile Include="Src\Gui\IFilter.cs" />
+    <Compile Include="Src\Gui\IFilterHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
@@ -126,6 +130,7 @@
       <Name>NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Src\Conditions" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

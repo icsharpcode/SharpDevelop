@@ -10,11 +10,11 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "Hornung.ResourceToolkit.dll"/>
+		<Import assembly = "Hornung.ResourceToolkit.dll">
+			<ConditionEvaluator name="SolutionContainsProjectOrReference" class="Hornung.ResourceToolkit.Conditions.SolutionContainsProjectOrReferenceConditionEvaluator"/>
+		</Import>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
-	
-	<StringResources file = "Resources\StringResources.resources" />
 	
 	<!-- Code completion -->
 	
@@ -74,6 +74,13 @@
 	<!-- Unused resource keys toolbar -->
 	
 	<Path name="/AddIns/ResourceToolkit/ViewContent/UnusedResourceKeys/Toolbar">
+		<Condition name="SolutionContainsProjectOrReference" itemName="ICSharpCode.Core" action="Exclude">
+			<ToolbarItem id      = "HideICSharpCodeCoreHostResources"
+			             type    = "CheckBox"
+			             label   = "${res:Hornung.ResourceToolkit.UnusedResourceKeys.HideICSharpCodeCoreHostResourcesTitle}"
+			             tooltip = "${res:Hornung.ResourceToolkit.UnusedResourceKeys.HideICSharpCodeCoreHostResourcesTooltip}"
+			             class   = "Hornung.ResourceToolkit.Gui.UnusedResourceKeysHideICSharpCodeCoreHostResourcesCommand" />
+		</Condition>
 	</Path>
 	
 	<!-- Unused resource keys context menu -->

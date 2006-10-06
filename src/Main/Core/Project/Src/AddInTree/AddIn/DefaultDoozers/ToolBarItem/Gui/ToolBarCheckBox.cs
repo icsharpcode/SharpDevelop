@@ -23,6 +23,12 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public object Caller {
+			get {
+				return caller;
+			}
+		}
+		
 		public string Description {
 			get {
 				return description;
@@ -50,6 +56,7 @@ namespace ICSharpCode.Core
 			if (menuCommand == null) {
 				MessageService.ShowError("Can't create toolbar checkbox : " + codon.Id);
 			}
+			menuCommand.Owner = this;
 			
 			if (codon.Properties.Contains("label")){
 				Text = StringParser.Parse(codon.Properties["label"]);

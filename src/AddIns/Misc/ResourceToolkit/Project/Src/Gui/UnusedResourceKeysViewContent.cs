@@ -22,11 +22,12 @@ namespace Hornung.ResourceToolkit.Gui
 	/// <summary>
 	/// Displays unused resource keys in a list and allows the user to delete them.
 	/// </summary>
-	public class UnusedResourceKeysViewContent : AbstractViewContent, IClipboardHandler
+	public class UnusedResourceKeysViewContent : AbstractViewContent, IClipboardHandler, IFilterHost<KeyValuePair<string, string>>
 	{
 		readonly ICollection<KeyValuePair<string, string>> unusedKeys;
 		Panel panel;
 		ListView listView;
+		ToolStrip toolStrip;
 		
 		public override System.Windows.Forms.Control Control {
 			get {
@@ -74,7 +75,6 @@ namespace Hornung.ResourceToolkit.Gui
 			this.ListView.Columns.Add(StringParser.Parse("${res:Hornung.ResourceToolkit.FileName}"), 60);
 			this.ListView.Columns.Add(StringParser.Parse("${res:Hornung.ResourceToolkit.Key}"), 140);
 			this.ListView.Columns.Add(StringParser.Parse("${res:Hornung.ResourceToolkit.Value}"), 140);
-			this.ListView.CheckBoxes = true;
 			this.ListView.View = View.Details;
 			this.ListView.FullRowSelect = true;
 			this.ListView.ShowItemToolTips = true;
@@ -90,9 +90,10 @@ namespace Hornung.ResourceToolkit.Gui
 			this.ListView.HandleCreated += this.ListViewHandleCreated;
 			this.ListView.ContextMenuStrip = MenuService.CreateContextMenu(this, "/AddIns/ResourceToolkit/ViewContent/UnusedResourceKeys/ListViewContextMenu");
 			
-			ToolStrip toolStrip = ToolbarService.CreateToolStrip(this, "/AddIns/ResourceToolkit/ViewContent/UnusedResourceKeys/Toolbar");
-			toolStrip.Dock = DockStyle.Top;
-			toolStrip.Stretch = true;
+			this.toolStrip = ToolbarService.CreateToolStrip(this, "/AddIns/ResourceToolkit/ViewContent/UnusedResourceKeys/Toolbar");
+			this.toolStrip.Dock = DockStyle.Top;
+			this.toolStrip.Stretch = true;
+			this.toolStrip.VisibleChanged += this.ToolStripVisibleChanged;
 			
 			this.panel.Controls.Add(this.ListView);
 			this.panel.Controls.Add(toolStrip);
@@ -102,16 +103,32 @@ namespace Hornung.ResourceToolkit.Gui
 		void ListViewHandleCreated(object sender, EventArgs e)
 		{
 			this.ListView.HandleCreated -= this.ListViewHandleCreated;
-			this.ListView.BeginInvoke(new Action<ICollection<KeyValuePair<string, string>>>(this.FillListView), this.UnusedKeys);
+			this.FillListView();
+		}
+		
+		void ToolStripVisibleChanged(object sender, EventArgs e)
+		{
+			if (this.toolStrip.Visible) {
+				this.toolStrip.VisibleChanged -= this.ToolStripVisibleChanged;
+				ToolbarService.UpdateToolbar(this.toolStrip);
+			}
 		}
 		
 		public override void Dispose()
 		{
 			this.panel.Controls.Clear();
-			this.ListView.Dispose();
-			this.listView = null;
-			this.panel.Dispose();
-			this.panel = null;
+			if (this.toolStrip != null) {
+				this.toolStrip.Dispose();
+				this.toolStrip = null;
+			}
+			if (this.listView != null) {
+				this.listView.Dispose();
+				this.listView = null;
+			}
+			if (this.panel != null) {
+				this.panel.Dispose();
+				this.panel = null;
+			}
 			base.Dispose();
 		}
 		
@@ -127,25 +144,47 @@ namespace Hornung.ResourceToolkit.Gui
 			}
 		}
 		
+		bool fillListViewQueued = false;
+		
 		/// <summary>
-		/// Fills the list view with the specified resource keys.
+		/// Fills the list view with all unused resource keys that match the current filter after processing the message queue.
 		/// </summary>
-		/// <param name="resources">A collection of key/value pairs where the values are the resource file names and the keys are the resource keys.</param>
-		public void FillListView(ICollection<KeyValuePair<string, string>> resources)
+		public void FillListView()
+		{
+			if (!this.fillListViewQueued) {
+				this.fillListViewQueued = true;
+				this.ListView.BeginInvoke(new MethodInvoker(this.FillListViewInternal));
+			}
+		}
+		
+		/// <summary>
+		/// Fills the list view with all unused resource keys that match the current filter.
+		/// </summary>
+		void FillListViewInternal()
 		{
 			Application.DoEvents();
 			Cursor oldCursor = Cursor.Current;
 			Cursor.Current = Cursors.WaitCursor;
+			
 			try {
 				
 				this.ListView.Items.Clear();
 				this.ListView.Groups.Clear();
+				// Suspend sorting to improve performance
+				System.Collections.IComparer comparer = this.ListView.ListViewItemSorter;
+				this.ListView.ListViewItemSorter = null;
 				this.ListView.BeginUpdate();
 				
 				Dictionary<string, ListViewGroup> fileGroups = new Dictionary<string, ListViewGroup>();
 				
 				// Create the ListViewItems.
-				foreach (KeyValuePair<string, string> entry in resources) {
+				foreach (KeyValuePair<string, string> entry in this.UnusedKeys) {
+					
+					// Skip if any filter rejects this item.
+					if (!this.ItemMatchesCurrentFilter(entry)) {
+						continue;
+					}
+					
 					IResourceFileContent c = ResourceFileContentRegistry.GetResourceFileContent(entry.Value);
 					object o;
 					
@@ -172,12 +211,70 @@ namespace Hornung.ResourceToolkit.Gui
 					this.ListView.Items.Add(item);
 				}
 				
+				this.ListView.ListViewItemSorter = comparer;
 				this.ListView.EndUpdate();
 				
 			} finally {
+				this.fillListViewQueued = false;
 				Cursor.Current = oldCursor;
 			}
 		}
+		
+		#region Filter
+		
+		readonly List<IFilter<KeyValuePair<string, string>>> filters = new List<IFilter<KeyValuePair<string, string>>>();
+		
+		/// <summary>
+		/// Registers a new filter with the filter host, if the filter is not already registered,
+		/// or signals that the filter condition of the specified filter has changed.
+		/// </summary>
+		/// <param name="filter">The filter to be registered.</param>
+		/// <exception cref="ArgumentNullException">The <paramref name="filter"/> parameter is <c>null</c>.</exception>
+		public void RegisterFilter(IFilter<KeyValuePair<string, string>> filter)
+		{
+			if (filter == null) {
+				throw new ArgumentNullException("filter");
+			}
+			
+			if (!this.filters.Contains(filter)) {
+				this.filters.Add(filter);
+			}
+			
+			this.FillListView();
+		}
+		
+		/// <summary>
+		/// Removes the specified filter from the filter host, if it is currently registered there.
+		/// </summary>
+		/// <param name="filter">The filter to be removed.</param>
+		/// <exception cref="ArgumentNullException">The <paramref name="filter"/> parameter is <c>null</c>.</exception>
+		public void UnregisterFilter(IFilter<KeyValuePair<string, string>> filter)
+		{
+			if (filter == null) {
+				throw new ArgumentNullException("filter");
+			}
+			
+			this.filters.Remove(filter);
+			
+			this.FillListView();
+		}
+		
+		/// <summary>
+		/// Determines whether the specified resource should be included in the list
+		/// according to the current filter.
+		/// </summary>
+		/// <returns><c>true</c>, if the resource should be included in the list view, otherwise <c>false</c>.</returns>
+		bool ItemMatchesCurrentFilter(KeyValuePair<string, string> item)
+		{
+			foreach (IFilter<KeyValuePair<string, string>> filter in this.filters) {
+				if (!filter.IsMatch(item)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		#endregion
 		
 		// ********************************************************************************************************************************
 		
