@@ -74,19 +74,27 @@ namespace ICSharpCode.CodeAnalysis
 			}
 		}
 		
+		public static bool IsFxCopPath(string fxCopPath)
+		{
+			if (string.IsNullOrEmpty(fxCopPath))
+				return false;
+			else
+				return File.Exists(Path.Combine(fxCopPath, "FxCopCommon.dll"));
+		}
+		
 		public static string FindFxCopPath()
 		{
-			string fxCopPath = PropertyService.Get("CodeAnalysis.FxCopPath");
-			if (fxCopPath.Length > 0 && File.Exists(Path.Combine(fxCopPath, "FxCopCommon.dll"))) {
+			string fxCopPath = AnalysisIdeOptionsPanel.FxCopPath;
+			if (IsFxCopPath(fxCopPath)) {
 				return fxCopPath;
 			}
 			// Code duplication: FxCop.cs in ICSharpCode.Build.Tasks
 			fxCopPath = FromRegistry(Registry.CurrentUser.OpenSubKey(@"Software\Classes\FxCopProject\Shell\Open\Command"));
-			if (fxCopPath.Length > 0 && File.Exists(Path.Combine(fxCopPath, "FxCopCommon.dll"))) {
+			if (IsFxCopPath(fxCopPath)) {
 				return fxCopPath;
 			}
 			fxCopPath = FromRegistry(Registry.ClassesRoot.OpenSubKey(@"FxCopProject\Shell\Open\Command"));
-			if (fxCopPath.Length > 0 && File.Exists(Path.Combine(fxCopPath, "FxCopCommon.dll"))) {
+			if (IsFxCopPath(fxCopPath)) {
 				return fxCopPath;
 			}
 			return null;

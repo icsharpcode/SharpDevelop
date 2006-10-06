@@ -36,10 +36,17 @@
 	
 	<Path name="/SharpDevelop/Pads/ErrorList/CodeAnalysisTaskContextMenu">
 		<MenuItem id = "Exclude"
-		          label = "Suppress message"
+		          label = "${res:ICSharpCode.CodeAnalysis.SuppressMessage}"
 		          loadclasslazy = "false"
 		          class = "ICSharpCode.CodeAnalysis.SuppressMessageCommand"/>
 		<MenuItem id = "Separator" type = "Separator"/>
 		<Include id="default" path="/SharpDevelop/Pads/ErrorList/TaskContextMenu"/>
+	</Path>
+	
+	<!-- Options panel -->
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<DialogPanel id    = "CodeAnalysisOptionPanel"
+		       	     label = "${res:ICSharpCode.CodeAnalysis}"
+		       	     class = "ICSharpCode.CodeAnalysis.AnalysisIdeOptionsPanel"/>
 	</Path>
 </AddIn>

@@ -153,6 +153,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			if (cu != null) {
 				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
+				if (cu.ProjectContent != null) {
+					this.ProjectContent = cu.ProjectContent;
+				}
 			}
 			callingMember = GetCurrentMember();
 			return true;

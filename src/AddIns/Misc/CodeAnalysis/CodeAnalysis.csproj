@@ -64,6 +64,8 @@
     <Compile Include="Src\CheckCurrentProjectCommand.cs" />
     <Compile Include="Src\FxCopLogger.cs" />
     <Compile Include="Src\SuppressMessageCommand.cs" />
+    <Compile Include="Src\AnalysisIdeOptionsPanel.cs" />
+    <EmbeddedResource Include="Resources\AnalysisIdeOptionPanel.xfrm" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -89,6 +91,7 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Resources" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
