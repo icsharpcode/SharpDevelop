@@ -92,8 +92,9 @@ namespace ICSharpCode.CodeCoverage
 		
 		void SelectCustomColour(ColorPickerComboBox comboBox)
 		{
-			using (ColorDialog colorDialog = new ColorDialog()) {
+			using (SharpDevelopColorDialog colorDialog = new SharpDevelopColorDialog()) {
 				colorDialog.FullOpen = true;
+				colorDialog.Color = comboBox.SelectedColor;
 				if (colorDialog.ShowDialog() == DialogResult.OK) {
 					comboBox.SelectedColor = colorDialog.Color;	
 				}

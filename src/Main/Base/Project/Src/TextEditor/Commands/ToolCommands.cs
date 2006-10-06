@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 			TextEditorControl textarea = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
 			
-			using (ColorDialog cd = new ColorDialog()) {
+			using (SharpDevelopColorDialog cd = new SharpDevelopColorDialog()) {
 				if (cd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					string ext = Path.GetExtension(textarea.FileName).ToLowerInvariant();
 					string colorstr;

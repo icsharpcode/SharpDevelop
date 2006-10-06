@@ -87,6 +87,7 @@
     <Compile Include="Services_Navigation\INavigationPointTextFixture.cs" />
     <Compile Include="Services_Navigation\TestNavigationPoint.cs" />
     <Compile Include="Services_Navigation\NavigationServiceTestFixture.cs" />
+    <Compile Include="SharpDevelopColorDialogTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\ICSharpCode.SharpDevelop.csproj">

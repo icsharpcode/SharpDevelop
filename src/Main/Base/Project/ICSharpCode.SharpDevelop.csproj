@@ -710,6 +710,7 @@
     <Compile Include="Src\TextEditor\Gui\Editor\IncrementalSearch.cs" />
     <EmbeddedResource Include="Resources\IncrementalSearchCursor.cur" />
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
+    <Compile Include="Src\Gui\Dialogs\SharpDevelopColorDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
