@@ -17,20 +17,20 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	public class SharpDevelopTextEditorProperties : ITextEditorProperties
 	{
-		static 
-		Properties properties;
+		static Properties properties;
+		static FontContainer fontContainer;
 		
 		static SharpDevelopTextEditorProperties()
 		{
 			Properties properties2 = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-	 		FontContainer.DefaultFont = FontContainer.ParseFont(properties2.Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString()));
+			fontContainer = new FontContainer(FontContainer.ParseFont(properties2.Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString())));
 			properties2.PropertyChanged += new PropertyChangedEventHandler(CheckFontChange);
 		}
 		
 		static void CheckFontChange(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Key == "DefaultFont") {
-				FontContainer.DefaultFont = FontContainer.ParseFont(e.NewValue.ToString());
+				fontContainer.DefaultFont = FontContainer.ParseFont(e.NewValue.ToString());
 			}
 		}
 		
@@ -274,11 +274,21 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public Font Font {
 			get {
-				return FontContainer.DefaultFont;
+				return fontContainer.DefaultFont;
 			}
 			set {
 				properties.Set("DefaultFont", value.ToString());
-				FontContainer.DefaultFont = value;
+				fontContainer.DefaultFont = value;
+			}
+		}
+		FontContainer ITextEditorProperties.FontContainer {
+			get {
+				return fontContainer;
+			}
+		}
+		public static FontContainer FontContainer {
+			get {
+				return fontContainer;
 			}
 		}
 		

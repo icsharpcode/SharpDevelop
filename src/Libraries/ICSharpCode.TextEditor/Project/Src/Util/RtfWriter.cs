@@ -51,7 +51,7 @@ namespace ICSharpCode.TextEditor.Util
 		static void BuildFontTable(IDocument doc, StringBuilder rtf)
 		{
 			rtf.Append(@"{\fonttbl");
-			rtf.Append(@"{\f0\fmodern\fprq1\fcharset0 " + FontContainer.DefaultFont.Name + ";}");
+			rtf.Append(@"{\f0\fmodern\fprq1\fcharset0 " + doc.TextEditorProperties.Font.Name + ";}");
 			rtf.Append("}");
 		}
 		
@@ -107,28 +107,28 @@ namespace ICSharpCode.TextEditor.Util
 										escapeSequence = true;
 									}
 									
-									if (oldItalic != word.Font.Italic) {
-										if (word.Font.Italic) {
+									if (oldItalic != word.Italic) {
+										if (word.Italic) {
 											rtf.Append(@"\i");
 										} else {
 											rtf.Append(@"\i0");
 										}
-										oldItalic = word.Font.Italic;
+										oldItalic = word.Italic;
 										escapeSequence = true;
 									}
 									
-									if (oldBold != word.Font.Bold) {
-										if (word.Font.Bold) {
+									if (oldBold != word.Bold) {
+										if (word.Bold) {
 											rtf.Append(@"\b");
 										} else {
 											rtf.Append(@"\b0");
 										}
-										oldBold = word.Font.Bold;
+										oldBold = word.Bold;
 										escapeSequence = true;
 									}
 									
 									if (firstLine) {
-										rtf.Append(@"\f0\fs" + (FontContainer.DefaultFont.Size * 2));
+										rtf.Append(@"\f0\fs" + (textArea.TextEditorProperties.Font.Size * 2));
 										firstLine = false;
 									}
 									if (escapeSequence) {

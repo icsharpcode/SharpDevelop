@@ -33,14 +33,14 @@ namespace ICSharpCode.TextEditor
 	{
 		int          fontHeight;
 		//Hashtable    charWitdh           = new Hashtable();
-		StringFormat measureStringFormat = (StringFormat)StringFormat.GenericTypographic.Clone();
+		//StringFormat measureStringFormat = (StringFormat)StringFormat.GenericTypographic.Clone();
 		Highlight    highlight;
 		int          physicalColumn = 0; // used for calculating physical column during paint
 		
 		public void Dispose()
 		{
 			measureCache.Clear();
-			measureStringFormat.Dispose();
+			//measureStringFormat.Dispose();
 		}
 		
 		public Highlight Highlight {
@@ -101,11 +101,11 @@ namespace ICSharpCode.TextEditor
 		
 		public TextView(TextArea textArea) : base(textArea)
 		{
-			measureStringFormat.LineAlignment = StringAlignment.Near;
+			/*measureStringFormat.LineAlignment = StringAlignment.Near;
 			measureStringFormat.FormatFlags   = StringFormatFlags.MeasureTrailingSpaces |
 				StringFormatFlags.FitBlackBox |
 				StringFormatFlags.NoWrap |
-				StringFormatFlags.NoClip;
+				StringFormatFlags.NoClip;*/
 			
 			base.Cursor = Cursors.IBeam;
 			OptionsChanged();
@@ -113,8 +113,9 @@ namespace ICSharpCode.TextEditor
 		
 		static int GetFontHeight(Font font)
 		{
-			int h = font.Height;
-			return (h < 16) ? h + 1 : h;
+			int height1 = TextRenderer.MeasureText("_", font).Height;
+			int height2 = (int)Math.Ceiling(font.GetHeight());
+			return Math.Max(height1, height2) + 1;
 		}
 		
 		float spaceWidth;
@@ -145,9 +146,9 @@ namespace ICSharpCode.TextEditor
 		
 		public void OptionsChanged()
 		{
-			this.lastFont = TextEditorProperties.Font;
+			this.lastFont = TextEditorProperties.FontContainer.RegularFont;
 			this.fontHeight = GetFontHeight(lastFont);
-			// use mininum width - in some fonts, space has no width but kerning is used instead
+			// use minimum width - in some fonts, space has no width but kerning is used instead
 			// -> DivideByZeroException
 			this.spaceWidth = Math.Max(GetWidth(' ', lastFont), 1);
 			// tab should have the width of 4*'x'
@@ -162,7 +163,7 @@ namespace ICSharpCode.TextEditor
 			}
 			
 			// Just to ensure that fontHeight and char widths are always correct...
-			if (lastFont != TextEditorProperties.Font) {
+			if (lastFont != TextEditorProperties.FontContainer.RegularFont) {
 				OptionsChanged();
 				base.TextArea.BeginInvoke(new MethodInvoker(base.TextArea.Refresh));
 			}
@@ -307,11 +308,11 @@ namespace ICSharpCode.TextEditor
 			g.FillRectangle(backgroundBrush, rect);
 			
 			physicalColumn += text.Length;
-			g.DrawString(text,
-			             textArea.Font,
-			             BrushRegistry.GetBrush(drawSelected ? selectionColor.Color : Color.Gray),
-			             rect,
-			             measureStringFormat);
+			DrawString(g,
+			           text,
+			           textArea.Font,
+			           drawSelected ? selectionColor.Color : Color.Gray,
+			           rect.X, rect.Y);
 			g.DrawRectangle(BrushRegistry.GetPen(drawSelected ? Color.DarkGray : Color.Gray), rect.X, rect.Y, rect.Width, rect.Height);
 			
 			// Bugfix for the problem - of overdrawn right rectangle lines.
@@ -411,6 +412,7 @@ namespace ICSharpCode.TextEditor
 			
 			TextWord currentWord;
 			TextWord nextCurrentWord = null;
+			FontContainer fontContainer = TextEditorProperties.FontContainer;
 			for (int wordIdx = 0; wordIdx < currentLine.Words.Count; wordIdx++) {
 				currentWord = currentLine.Words[wordIdx];
 				if (currentWordOffset < startColumn) {
@@ -534,7 +536,7 @@ namespace ICSharpCode.TextEditor
 					float wordWidth = DrawDocumentWord(g,
 					                                   currentWord.Word,
 					                                   new Point((int)physicalXPos, lineRectangle.Y),
-					                                   currentWord.Font,
+					                                   currentWord.GetFont(fontContainer),
 					                                   wordForeColor,
 					                                   wordBackBrush);
 					wordRectangle = new RectangleF(physicalXPos, lineRectangle.Y, wordWidth, lineRectangle.Height);
@@ -598,12 +600,12 @@ namespace ICSharpCode.TextEditor
 			g.FillRectangle(backBrush, //num == 0 ? Brushes.LightBlue : num == 1 ? Brushes.LightGreen : Brushes.Yellow,
 			                new RectangleF(position.X, position.Y, (float)Math.Ceiling(wordWidth + 1), FontHeight));
 			
-			g.DrawString(word,
-			             font,
-			             BrushRegistry.GetBrush(foreColor),
-			             position.X,
-			             position.Y,
-			             measureStringFormat);
+			DrawString(g,
+			           word,
+			           font,
+			           foreColor,
+			           position.X,
+			           position.Y);
 			return wordWidth;
 		}
 		
@@ -625,15 +627,15 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		Dictionary<WordFontPair, float> measureCache = new Dictionary<WordFontPair, float>();
+		Dictionary<WordFontPair, int> measureCache = new Dictionary<WordFontPair, int>();
 		
 		// split words after 1000 characters. Fixes GDI+ crash on very longs words, for example
 		// a 100 KB Base64-file without any line breaks.
 		const int MaximumWordLength = 1000;
 		
-		float MeasureStringWidth(Graphics g, string word, Font font)
+		int MeasureStringWidth(Graphics g, string word, Font font)
 		{
-			float width;
+			int width;
 			
 			if (word == null || word.Length == 0)
 				return 0;
@@ -659,15 +661,12 @@ namespace ICSharpCode.TextEditor
 			// txt.GetPositionFromCharIndex(txt.SelectionStart)
 			// (Verdana 10, highlighting makes GetP... bold) -> note the space between 'x' and '('
 			// this also fixes "jumping" characters when selecting in non-monospace fonts
-			Rectangle rect = new Rectangle(0, 0, 32768, 1000);
-			CharacterRange[] ranges = { new CharacterRange(0, word.Length) };
-			Region[] regions = new Region[1];
-			measureStringFormat.SetMeasurableCharacterRanges (ranges);
-			regions = g.MeasureCharacterRanges (word, font, rect, measureStringFormat);
-			width = regions[0].GetBounds(g).Right;
+			width = TextRenderer.MeasureText(g, word, font, new Size(short.MaxValue, short.MaxValue), textFormatFlags).Width;
 			measureCache.Add(new WordFontPair(word, font), width);
 			return width;
 		}
+		
+		const TextFormatFlags textFormatFlags = TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix;
 		#endregion
 		
 		#region Conversion Functions
@@ -803,7 +802,7 @@ namespace ICSharpCode.TextEditor
 						paintPos += (column - oldColumn) * spaceWidth;
 						break;
 					default:
-						paintPos += GetWidth(ch, TextEditorProperties.Font);
+						paintPos += GetWidth(ch, TextEditorProperties.FontContainer.RegularFont);
 						++column;
 						break;
 				}
@@ -877,7 +876,7 @@ namespace ICSharpCode.TextEditor
 						paintPos += (column - oldColumn) * WideSpaceWidth;
 						break;
 					default:
-						paintPos += GetWidth(ch, TextEditorProperties.Font);
+						paintPos += GetWidth(ch, TextEditorProperties.FontContainer.RegularFont);
 						++column;
 						break;
 				}
@@ -905,6 +904,7 @@ namespace ICSharpCode.TextEditor
 			if (words == null) return 0;
 			int wordCount = words.Count;
 			int wordOffset = 0;
+			FontContainer fontContainer = TextEditorProperties.FontContainer;
 			for (int i = 0; i < wordCount; i++) {
 				TextWord word = words[i];
 				if (wordOffset >= end)
@@ -924,7 +924,7 @@ namespace ICSharpCode.TextEditor
 						int wordStart = Math.Max(wordOffset, start);
 						int wordLength = Math.Min(wordOffset + word.Length, end) - wordStart;
 						string text = Document.GetText(currentLine.Offset + wordStart, wordLength);
-						drawingPos += MeasureStringWidth(g, text, word.Font ?? TextEditorProperties.Font);
+						drawingPos += MeasureStringWidth(g, text, word.GetFont(fontContainer) ?? fontContainer.RegularFont);
 						break;
 				}
 				wordOffset += word.Length;
@@ -1023,7 +1023,7 @@ namespace ICSharpCode.TextEditor
 				drawingPos += CountColumns(ref column, foldEnd, f.StartColumn, f.StartLine, g);
 				foldEnd = f.EndColumn;
 				column += f.FoldText.Length;
-				drawingPos += MeasureStringWidth(g, f.FoldText, TextEditorProperties.Font);
+				drawingPos += MeasureStringWidth(g, f.FoldText, TextEditorProperties.FontContainer.RegularFont);
 			}
 			drawingPos += CountColumns(ref column, foldEnd, logicalColumn, logicalLine, g);
 			g.Dispose();
@@ -1038,33 +1038,38 @@ namespace ICSharpCode.TextEditor
 			g.DrawRectangle(Pens.Blue, rect);
 		}
 		
+		void DrawString(Graphics g, string text, Font font, Color color, float x, float y)
+		{
+			TextRenderer.DrawText(g, text, font, new Point((int)x, (int)y), color, textFormatFlags);
+		}
+		
 		void DrawInvalidLineMarker(Graphics g, float x, float y)
 		{
 			HighlightColor invalidLinesColor = textArea.Document.HighlightingStrategy.GetColorFor("InvalidLines");
-			g.DrawString("~", invalidLinesColor.Font, BrushRegistry.GetBrush(invalidLinesColor.Color), x, y, measureStringFormat);
+			DrawString(g, "~", invalidLinesColor.GetFont(TextEditorProperties.FontContainer), invalidLinesColor.Color, x, y);
 		}
 		
 		void DrawSpaceMarker(Graphics g, Color color, float x, float y)
 		{
 			HighlightColor spaceMarkerColor = textArea.Document.HighlightingStrategy.GetColorFor("SpaceMarkers");
-			g.DrawString("\u00B7", spaceMarkerColor.Font, BrushRegistry.GetBrush(color), x, y, measureStringFormat);
+			DrawString(g, "\u00B7", spaceMarkerColor.GetFont(TextEditorProperties.FontContainer), color, x, y);
 		}
 		
 		void DrawTabMarker(Graphics g, Color color, float x, float y)
 		{
 			HighlightColor tabMarkerColor   = textArea.Document.HighlightingStrategy.GetColorFor("TabMarkers");
-			g.DrawString("\u00BB", tabMarkerColor.Font, BrushRegistry.GetBrush(color), x, y, measureStringFormat);
+			DrawString(g, "\u00BB", tabMarkerColor.GetFont(TextEditorProperties.FontContainer), color, x, y);
 		}
 		
 		float DrawEOLMarker(Graphics g, Color color, Brush backBrush, float x, float y)
 		{
-			float width = GetWidth('\u00B6', TextEditorProperties.Font);
+			HighlightColor eolMarkerColor = textArea.Document.HighlightingStrategy.GetColorFor("EOLMarkers");
+			
+			float width = GetWidth('\u00B6', eolMarkerColor.GetFont(TextEditorProperties.FontContainer));
 			g.FillRectangle(backBrush,
 			                new RectangleF(x, y, width, fontHeight));
 			
-			HighlightColor eolMarkerColor = textArea.Document.HighlightingStrategy.GetColorFor("EOLMarkers");
-			
-			g.DrawString("\u00B6", eolMarkerColor.Font, BrushRegistry.GetBrush(color), x, y, measureStringFormat);
+			DrawString(g, "\u00B6", eolMarkerColor.GetFont(TextEditorProperties.FontContainer), color, x, y);
 			return width;
 		}
 		

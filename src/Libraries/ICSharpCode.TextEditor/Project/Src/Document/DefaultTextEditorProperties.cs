@@ -23,6 +23,16 @@ namespace ICSharpCode.TextEditor.Document
 		DocumentSelectionMode documentSelectionMode = DocumentSelectionMode.Normal;
 		Encoding              encoding              = System.Text.Encoding.UTF8;
 		BracketMatchingStyle  bracketMatchingStyle  = BracketMatchingStyle.After;
+		FontContainer fontContainer;
+		static Font DefaultFont;
+		
+		public DefaultTextEditorProperties()
+		{
+			if (DefaultFont == null) {
+				DefaultFont = new Font("Courier New", 10);
+			}
+			this.fontContainer = new FontContainer(DefaultFont);
+		}
 		
 		bool        allowCaretBeyondEOL = false;
 		
@@ -270,10 +280,16 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public Font Font {
 			get {
-				return FontContainer.DefaultFont;
+				return fontContainer.DefaultFont;
 			}
 			set {
-				FontContainer.DefaultFont = value;
+				fontContainer.DefaultFont = value;
+			}
+		}
+		
+		public FontContainer FontContainer {
+			get {
+				return fontContainer;
 			}
 		}
 		
@@ -293,6 +309,6 @@ namespace ICSharpCode.TextEditor.Document
 			set {
 				useCustomLine = value;
 			}
-		}		
+		}
 	}
 }

@@ -23,67 +23,78 @@ namespace ICSharpCode.TextEditor.Document
 	/// </summary>
 	public class FontContainer
 	{
-		static Font defaultfont    = null;
-		static Font boldfont       = null;
-		static Font italicfont     = null;
-		static Font bolditalicfont = null;
+		Font defaultFont;
+		Font regularfont, boldfont, italicfont, bolditalicfont;
 		
 		/// <value>
-		/// The bold version of the base font
+		/// The scaled, bold version of the base font
 		/// </value>
-		public static Font BoldFont {
+		public Font RegularFont {
 			get {
-				Debug.Assert(boldfont != null, "ICSharpCode.TextEditor.Document.FontContainer : boldfont == null");
+				return regularfont;
+			}
+		}
+		
+		/// <value>
+		/// The scaled, bold version of the base font
+		/// </value>
+		public Font BoldFont {
+			get {
 				return boldfont;
 			}
 		}
 		
 		/// <value>
-		/// The italic version of the base font
+		/// The scaled, italic version of the base font
 		/// </value>
-		public static Font ItalicFont {
+		public Font ItalicFont {
 			get {
-				Debug.Assert(italicfont != null, "ICSharpCode.TextEditor.Document.FontContainer : italicfont == null");
 				return italicfont;
 			}
 		}
 		
 		/// <value>
-		/// The bold/italic version of the base font
+		/// The scaled, bold/italic version of the base font
 		/// </value>
-		public static Font BoldItalicFont {
+		public Font BoldItalicFont {
 			get {
-				Debug.Assert(bolditalicfont != null, "ICSharpCode.TextEditor.Document.FontContainer : bolditalicfont == null");
 				return bolditalicfont;
+			}
+		}
+		
+		static float twipsPerPixelY;
+		
+		public static float TwipsPerPixelY {
+			get {
+				if (twipsPerPixelY == 0) {
+					using (Bitmap bmp = new Bitmap(1,1)) {
+						using (Graphics g = Graphics.FromImage(bmp)) {
+							twipsPerPixelY = 1440 / g.DpiY;
+						}
+					}
+				}
+				return twipsPerPixelY;
 			}
 		}
 		
 		/// <value>
 		/// The base font
 		/// </value>
-		public static Font DefaultFont {
+		public Font DefaultFont {
 			get {
-				return defaultfont;
+				return defaultFont;
 			}
 			set {
-////// Alex: free resources properly
-//				if (defaultfont!=null) defaultfont.Dispose();
-				defaultfont    = value;
-//				if (boldfont!=null) boldfont.Dispose();
-				boldfont       = new Font(defaultfont, FontStyle.Bold);
-//				if (italicfont!=null) italicfont.Dispose();
-				italicfont     = new Font(defaultfont, FontStyle.Italic);
-//				if (bolditalicfont!=null) bolditalicfont.Dispose();
-				bolditalicfont = new Font(defaultfont, FontStyle.Bold | FontStyle.Italic);
+				// 1440 twips is one inch
+				int pixelSize = (int)(value.SizeInPoints * 20 / TwipsPerPixelY);
+				
+				defaultFont    = value;
+				regularfont    = new Font(value.FontFamily, pixelSize * TwipsPerPixelY / 20f, FontStyle.Regular);
+				boldfont       = new Font(regularfont, FontStyle.Bold);
+				italicfont     = new Font(regularfont, FontStyle.Italic);
+				bolditalicfont = new Font(regularfont, FontStyle.Bold | FontStyle.Italic);
 			}
 		}
-		
-//		static void CheckFontChange(object sender, PropertyEventArgs e)
-//		{
-//			if (e.Key == "DefaultFont") {
-//				DefaultFont = ParseFont(e.NewValue.ToString());
-//			}
-//		}
 		
 		public static Font ParseFont(string font)
 		{
@@ -91,9 +102,9 @@ namespace ICSharpCode.TextEditor.Document
 			return new Font(descr[1], Single.Parse(descr[3]));
 		}
 		
-		static FontContainer()
+		public FontContainer(Font defaultFont)
 		{
-			DefaultFont = new Font("Courier New", 10);
+			this.DefaultFont = defaultFont;
 		}
 	}
 }

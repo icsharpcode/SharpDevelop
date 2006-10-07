@@ -248,16 +248,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 							Color c = word.Color;
 							string colorstr = c.R + ", " + c.G + ", " + c.B;
 							
-							if (word.Font.Italic) {
+							if (word.Italic) {
 								colorstr = "i" + colorstr;
 							}
-							if (word.Font.Bold) {
+							if (word.Bold) {
 								colorstr = "b" + colorstr;
 							}
 							if (Spans[colorstr] == null) {
 								Spans[colorstr] = "span" + ++curSpanNumber;
 							}
-							bool newColor = c != curColor || oldItalic != word.Font.Italic || oldBold != word.Font.Bold;
+							bool newColor = c != curColor || oldItalic != word.Italic || oldBold != word.Bold;
 							if (newColor) {
 								if (!firstSpan) {
 									curFileStream.Write("</span>" );
@@ -271,8 +271,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 							
 							if (newColor) {
 								curColor = c;
-								oldItalic = word.Font.Italic;
-								oldBold = word.Font.Bold;
+								oldItalic = word.Italic;
+								oldBold = word.Bold;
 							}
 						break;
 					}

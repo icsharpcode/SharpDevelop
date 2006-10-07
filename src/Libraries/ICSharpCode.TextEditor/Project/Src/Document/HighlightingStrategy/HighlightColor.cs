@@ -18,7 +18,7 @@ using System.Xml;
 namespace ICSharpCode.TextEditor.Document
 {
 	/// <summary>
-	/// A color used for highlighting 
+	/// A color used for highlighting
 	/// </summary>
 	public class HighlightColor
 	{
@@ -94,21 +94,20 @@ namespace ICSharpCode.TextEditor.Document
 		/// <value>
 		/// The font used
 		/// </value>
-		public Font Font {
-			get {
-				if (Bold) {
-					return Italic ? FontContainer.BoldItalicFont : FontContainer.BoldFont;
-				}
-				return Italic ? FontContainer.ItalicFont : FontContainer.DefaultFont;
+		public Font GetFont(FontContainer fontContainer)
+		{
+			if (Bold) {
+				return Italic ? fontContainer.BoldItalicFont : fontContainer.BoldFont;
 			}
+			return Italic ? fontContainer.ItalicFont : fontContainer.RegularFont;
 		}
 		
 		Color ParseColorString(string colorName)
 		{
 			string[] cNames = colorName.Split('*');
-			PropertyInfo myPropInfo = typeof(System.Drawing.SystemColors).GetProperty(cNames[0], BindingFlags.Public | 
-			                                                                                     BindingFlags.Instance | 
-			                                                                                     BindingFlags.Static);
+			PropertyInfo myPropInfo = typeof(System.Drawing.SystemColors).GetProperty(cNames[0], BindingFlags.Public |
+			                                                                          BindingFlags.Instance |
+			                                                                          BindingFlags.Static);
 			Color c = (Color)myPropInfo.GetValue(null, null);
 			
 			if (cNames.Length == 2) {
@@ -247,7 +246,7 @@ namespace ICSharpCode.TextEditor.Document
 			
 			this.systemColor  = true;
 			systemColorName   = systemColor;
-		
+			
 			systemBgColor     = true;
 			systemBgColorName = systemBackgroundColor;
 			
@@ -275,10 +274,10 @@ namespace ICSharpCode.TextEditor.Document
 		/// </summary>
 		public override string ToString()
 		{
-			return "[HighlightColor: Bold = " + Bold + 
-			                      ", Italic = " + Italic + 
-			                      ", Color = " + Color + 
-			                      ", BackgroundColor = " + BackgroundColor + "]";
+			return "[HighlightColor: Bold = " + Bold +
+				", Italic = " + Italic +
+				", Color = " + Color +
+				", BackgroundColor = " + BackgroundColor + "]";
 		}
 	}
 }

@@ -312,6 +312,7 @@ namespace ICSharpCode.TextEditor
 			float fontHeight = Font.GetHeight(g);
 //			bool  gotNonWhitespace = false;
 			curTabIndent = 0;
+			FontContainer fontContainer = TextEditorProperties.FontContainer;
 			foreach (TextWord word in line.Words) {
 				switch (word.Type) {
 					case TextWordType.Space:
@@ -331,7 +332,7 @@ namespace ICSharpCode.TextEditor
 //							gotNonWhitespace = true;
 //							curTabIndent    += TabIndent * primaryTextArea.TextArea.TextView.GetWidth(' ');
 //						}
-						SizeF drawingSize = g.MeasureString(word.Word, word.Font, new SizeF(maxWidth, fontHeight * 100), printingStringFormat);
+						SizeF drawingSize = g.MeasureString(word.Word, word.GetFont(fontContainer), new SizeF(maxWidth, fontHeight * 100), printingStringFormat);
 						Advance(ref xPos, ref yPos, maxWidth, drawingSize.Width, fontHeight);
 						break;
 				}
@@ -346,6 +347,7 @@ namespace ICSharpCode.TextEditor
 //			bool  gotNonWhitespace = false;
 			curTabIndent = 0 ;
 			
+			FontContainer fontContainer = TextEditorProperties.FontContainer;
 			foreach (TextWord word in line.Words) {
 				switch (word.Type) {
 					case TextWordType.Space:
@@ -365,8 +367,8 @@ namespace ICSharpCode.TextEditor
 //							gotNonWhitespace = true;
 //							curTabIndent    += TabIndent * primaryTextArea.TextArea.TextView.GetWidth(' ');
 //						}
-						g.DrawString(word.Word, word.Font, BrushRegistry.GetBrush(word.Color), xPos + margin.X, yPos);
-						SizeF drawingSize = g.MeasureString(word.Word, word.Font, new SizeF(margin.Width, fontHeight * 100), printingStringFormat);
+						g.DrawString(word.Word, word.GetFont(fontContainer), BrushRegistry.GetBrush(word.Color), xPos + margin.X, yPos);
+						SizeF drawingSize = g.MeasureString(word.Word, word.GetFont(fontContainer), new SizeF(margin.Width, fontHeight * 100), printingStringFormat);
 						Advance(ref xPos, ref yPos, margin.Width, drawingSize.Width, fontHeight);
 						break;
 				}

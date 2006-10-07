@@ -84,7 +84,7 @@ namespace ICSharpCode.TextEditor
 					
 					if (curLine < textArea.Document.TotalNumberOfLines) {
 						g.DrawString((curLine + 1).ToString(),
-						             lineNumberPainterColor.Font,
+						             lineNumberPainterColor.GetFont(TextEditorProperties.FontContainer),
 						             drawBrush,
 						             backgroundRectangle,
 						             numberStringFormat);

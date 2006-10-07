@@ -43,10 +43,9 @@ namespace ICSharpCode.TextEditor.Document
 				base.SyntaxColor = color;
 			}
 			
-			public override Font Font {
-				get {
-					return null;
-				}
+			public override Font GetFont(FontContainer fontContainer)
+			{
+				return null;
 			}
 			
 			public override TextWordType Type {
@@ -73,10 +72,9 @@ namespace ICSharpCode.TextEditor.Document
 				base.SyntaxColor = color;
 			}
 			
-			public override Font Font {
-				get {
-					return null;
-				}
+			public override Font GetFont(FontContainer fontContainer)
+			{
+				return null;
 			}
 			
 			public override TextWordType Type {
@@ -160,10 +158,9 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		public virtual Font Font {
-			get {
-				return color.Font;
-			}
+		public virtual Font GetFont(FontContainer fontContainer)
+		{
+			return color.GetFont(fontContainer);
 		}
 		
 		public Color Color {
@@ -172,6 +169,24 @@ namespace ICSharpCode.TextEditor.Document
 					return Color.Black;
 				else
 					return color.Color;
+			}
+		}
+		
+		public bool Bold {
+			get {
+				if (color == null)
+					return false;
+				else
+					return color.Bold;
+			}
+		}
+		
+		public bool Italic {
+			get {
+				if (color == null)
+					return false;
+				else
+					return color.Italic;
 			}
 		}
 		
@@ -215,7 +230,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// </summary>
 		public override string ToString()
 		{
-			return "[TextWord: Word = " + Word + ", Font = " + Font + ", Color = " + Color + "]";
+			return "[TextWord: Word = " + Word + ", Color = " + Color + "]";
 		}
 	}
 }

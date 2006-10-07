@@ -53,7 +53,7 @@ namespace ICSharpCode.TextEditor
 					} else if (word.Type == TextWordType.Tab) {
 						words.Add(SimpleTextWord.Tab);
 					} else {
-						words.Add(new SimpleTextWord(TextWordType.Word, word.Word, word.Font.Bold, word.Color));
+						words.Add(new SimpleTextWord(TextWordType.Word, word.Word, word.Bold, word.Color));
 					}
 				}
 			} else {

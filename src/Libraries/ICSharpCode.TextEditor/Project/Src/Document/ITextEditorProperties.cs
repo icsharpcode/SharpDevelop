@@ -148,6 +148,10 @@ namespace ICSharpCode.TextEditor.Document
 			set;
 		}
 		
+		FontContainer FontContainer {
+			get;
+		}
+		
 		BracketMatchingStyle  BracketMatchingStyle { // is wrapped in text editor control
 			get;
 			set;

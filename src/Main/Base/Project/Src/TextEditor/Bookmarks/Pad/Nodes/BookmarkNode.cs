@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 							xPos += DrawDocumentWord(g,
 							                         word.Word,
 							                         new PointF(xPos, yPos),
-							                         word.Font.Style == FontStyle.Bold ? BoldMonospacedFont : MonospacedFont,
+							                         word.Bold ? BoldMonospacedFont : MonospacedFont,
 							                         GetTextColor(state, word.Color)
 							                        );
 							logicalX += word.Word.Length;
