@@ -93,23 +93,28 @@ namespace ICSharpCode.Svn
 			if (fileName == lastTestFileName) {
 				status = lastTestStatus;
 			} else {
-				status = SvnClient.Instance.Client.SingleStatus(fileName).TextStatus.ToString();
-				if (status == "Unversioned") {
-					PropertyDictionary pd = SvnClient.Instance.Client.PropGet("svn:ignore", Path.GetDirectoryName(fileName), Revision.Working, Recurse.None);
-					if (pd != null) {
-						string shortFileName = Path.GetFileName(fileName);
-						foreach (Property p in pd.Values) {
-							using (StreamReader r = new StreamReader(new MemoryStream(p.Data))) {
-								string line;
-								while ((line = r.ReadLine()) != null) {
-									if (string.Equals(line, shortFileName, StringComparison.InvariantCultureIgnoreCase)) {
-										status = "Ignored";
-										break;
+				try {
+					status = SvnClient.Instance.Client.SingleStatus(fileName).TextStatus.ToString();
+					if (status == "Unversioned") {
+						PropertyDictionary pd = SvnClient.Instance.Client.PropGet("svn:ignore", Path.GetDirectoryName(fileName), Revision.Working, Recurse.None);
+						if (pd != null) {
+							string shortFileName = Path.GetFileName(fileName);
+							foreach (Property p in pd.Values) {
+								using (StreamReader r = new StreamReader(new MemoryStream(p.Data))) {
+									string line;
+									while ((line = r.ReadLine()) != null) {
+										if (string.Equals(line, shortFileName, StringComparison.InvariantCultureIgnoreCase)) {
+											status = "Ignored";
+											break;
+										}
 									}
 								}
 							}
 						}
 					}
+				} catch (SvnClientException ex) {
+					LoggingService.Warn("Error getting status of " + fileName, ex);
+					status = "Unversioned";
 				}
 				LoggingService.Debug("Status of " + fileName + " is " + status);
 				lastTestFileName = fileName;

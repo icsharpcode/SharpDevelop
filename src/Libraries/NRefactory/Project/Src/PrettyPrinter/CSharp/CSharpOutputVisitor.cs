@@ -66,6 +66,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			nodeTracker     = new NodeTracker(this);
 		}
 		
+		void Error(INode node, string message)
+		{
+			outputFormatter.PrintText(" // ERROR: " + message + Environment.NewLine);
+			errors.Error(node.StartLocation.Y, node.StartLocation.X, message);
+		}
+		
+		void NotSupported(INode node)
+		{
+			Error(node, "Not supported in C#: " + node.GetType().Name);
+		}
+		
 		#region ICSharpCode.NRefactory.Parser.IASTVisitor interface implementation
 		public object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
@@ -470,7 +481,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object VisitOptionDeclaration(OptionDeclaration optionDeclaration, object data)
 		{
-			errors.Error(-1, -1, String.Format("OptionDeclaration is unsupported"));
+			NotSupported(optionDeclaration);
 			return null;
 		}
 		#endregion
@@ -611,13 +622,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object VisitEventRaiseRegion(EventRaiseRegion eventRaiseRegion, object data)
 		{
 			// VB.NET only
+			NotSupported(eventRaiseRegion);
 			return null;
 		}
 		
 		public object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
 			VisitAttributes(parameterDeclarationExpression.Attributes, data);
-			OutputModifier(parameterDeclarationExpression.ParamModifier);
+			OutputModifier(parameterDeclarationExpression.ParamModifier, parameterDeclarationExpression);
 			nodeTracker.TrackedVisit(parameterDeclarationExpression.TypeReference, data);
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(parameterDeclarationExpression.ParameterName);
@@ -757,7 +769,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.Minus);
 						break;
 					default:
-						errors.Error(-1, -1, operatorDeclaration.OverloadableOperator.ToString() + " is not supported as overloadable operator");
+						Error(operatorDeclaration, operatorDeclaration.OverloadableOperator.ToString() + " is not supported as overloadable operator");
 						break;
 				}
 			}
@@ -868,7 +880,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object VisitDeclareDeclaration(DeclareDeclaration declareDeclaration, object data)
 		{
-			errors.Error(-1, -1, "DeclareDeclaration is unsupported");
+			NotSupported(declareDeclaration);
 			return null;
 		}
 		#endregion
@@ -971,29 +983,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object VisitErrorStatement(ErrorStatement errorStatement, object data)
 		{
-			errors.Error(-1, -1, String.Format("ErrorStatement is unsupported"));
+			NotSupported(errorStatement);
 			return null;
 		}
 		
 		public object VisitOnErrorStatement(OnErrorStatement onErrorStatement, object data)
 		{
-			errors.Error(-1, -1, String.Format("OnErrorStatement is unsupported"));
+			NotSupported(onErrorStatement);
 			return null;
 		}
 		
 		public object VisitReDimStatement(ReDimStatement reDimStatement, object data)
 		{
-			// TODO: implement me
-			errors.Error(-1, -1, String.Format("ReDimStatement is unsupported"));
+			NotSupported(reDimStatement);
 			return null;
 		}
-		
-//		public object VisitReDimClause(ReDimClause reDimClause, object data)
-//		{
-//			// TODO: implement me
-//			errors.Error(-1, -1, String.Format("ReDimClause is unsupported"));
-//			return null;
-//		}
 		
 		public object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
@@ -1247,7 +1251,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Case);
 				outputFormatter.Space();
 				if (caseLabel.BinaryOperatorType != BinaryOperatorType.None) {
-					errors.Error(-1, -1, String.Format("Case labels with binary operators are unsupported : {0}", caseLabel.BinaryOperatorType));
+					Error(caseLabel, String.Format("Case labels with binary operators are unsupported : {0}", caseLabel.BinaryOperatorType));
 				}
 				nodeTracker.TrackedVisit(caseLabel.Label, data);
 			}
@@ -1296,7 +1300,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object VisitResumeStatement(ResumeStatement resumeStatement, object data)
 		{
-			errors.Error(-1, -1, String.Format("Resume statement is unsupported."));
+			NotSupported(resumeStatement);
 			return null;
 		}
 		
@@ -1357,7 +1361,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object VisitDoLoopStatement(DoLoopStatement doLoopStatement, object data)
 		{
 			if (doLoopStatement.ConditionPosition == ConditionPosition.None) {
-				errors.Error(-1, -1, String.Format("Unknown condition position for loop : {0}.", doLoopStatement));
+				Error(doLoopStatement, String.Format("Unknown condition position for loop : {0}.", doLoopStatement));
 			}
 			
 			if (doLoopStatement.ConditionPosition == ConditionPosition.Start) {
@@ -1591,8 +1595,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#region Expressions
 		public object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data)
 		{
-			// TODO: implement me (if possible)
-			errors.Error(-1, -1, String.Format("Unsupported expression : {0}", classReferenceExpression));
+			NotSupported(classReferenceExpression);
 			return null;
 		}
 		
@@ -1938,7 +1941,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 					
 				default:
-					errors.Error(-1, -1, String.Format("Unknown binary operator {0}", binaryOperatorExpression.Op));
+					Error(binaryOperatorExpression, String.Format("Unknown binary operator {0}", binaryOperatorExpression.Op));
 					return null;
 			}
 			nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
@@ -2021,7 +2024,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.BitwiseAnd);
 					break;
 				default:
-					errors.Error(-1, -1, String.Format("Unknown unary operator {0}", unaryOperatorExpression.Op));
+					Error(unaryOperatorExpression, String.Format("Unknown unary operator {0}", unaryOperatorExpression.Op));
 					return null;
 			}
 			nodeTracker.TrackedVisit(unaryOperatorExpression.Expression, data);
@@ -2080,7 +2083,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					                                                           assignmentExpression.Right), data);
 					return null;
 				default:
-					errors.Error(-1, -1, String.Format("Unknown assignment operator {0}", assignmentExpression.Op));
+					Error(assignmentExpression, String.Format("Unknown assignment operator {0}", assignmentExpression.Op));
 					return null;
 			}
 			if (this.prettyPrintOptions.AroundAssignmentParentheses) {
@@ -2357,7 +2360,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#endregion
 		#endregion
 		
-		void OutputModifier(ParameterModifiers modifier)
+		void OutputModifier(ParameterModifiers modifier, INode node)
 		{
 			switch (modifier) {
 				case ParameterModifiers.None:
@@ -2376,10 +2379,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.Space();
 					break;
 				case ParameterModifiers.Optional:
-					errors.Error(-1, -1, String.Format("Optional parameters aren't supported in C#"));
+					Error(node, String.Format("Optional parameters aren't supported in C#"));
 					break;
 				default:
-					errors.Error(-1, -1, String.Format("Unsupported modifier : {0}", modifier));
+					Error(node, String.Format("Unsupported modifier : {0}", modifier));
 					break;
 			}
 		}
