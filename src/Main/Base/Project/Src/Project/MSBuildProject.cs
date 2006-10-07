@@ -24,7 +24,22 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		List<string> unknownXmlSections     = new List<string>();
 		List<string> userUnknownXmlSections = new List<string>();
+		List<MSBuildImport> imports         = new List<MSBuildImport>();
+		
 		protected char BuildConstantSeparator = ';';
+		
+		/// <summary>
+		/// Gets the list of MSBuild Imports.
+		/// </summary>
+		/// <returns>
+		/// List of Import filenames, <example>$(MSBuildBinPath)\Microsoft.VisualBasic.targets</example>
+		/// </returns>
+		[Browsable(false)]
+		public List<MSBuildImport> Imports {
+			get {
+				return imports;
+			}
+		}
 		
 		public MSBuildProject()
 		{
@@ -106,7 +121,11 @@ namespace ICSharpCode.SharpDevelop.Project
 								ProjectItem.ReadItemGroup(reader, this, Items);
 								break;
 							case "Import":
-								string import = ProjectItem.MSBuildUnescape(reader.GetAttribute("Project"));
+								string project = reader.GetAttribute("Project");
+								MSBuildImport import = new MSBuildImport(ProjectItem.MSBuildUnescape(project));
+								if (reader.GetAttribute("Condition") != null) {
+									import.Condition = reader.GetAttribute("Condition");
+								}
 								Imports.Add(import);
 								break;
 							default:
@@ -142,16 +161,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void ExpandWildcards()
 		{
-			for (int i = 0; i < items.Count; i++) {
-				ProjectItem item = items[i];
+			for (int i = 0; i < Items.Count; i++) {
+				ProjectItem item = Items[i];
 				if (item.Include.IndexOf('*') >= 0 && item is FileProjectItem) {
-					items.RemoveAt(i--);
+					Items.RemoveAt(i--);
 					try {
 						string path = Path.Combine(this.Directory, Path.GetDirectoryName(item.Include));
 						foreach (string file in System.IO.Directory.GetFiles(path, Path.GetFileName(item.Include))) {
 							ProjectItem n = item.Clone();
 							n.Include = FileUtility.GetRelativePath(this.Directory, file);
-							items.Insert(++i, n);
+							Items.Insert(++i, n);
 						}
 					} catch (Exception ex) {
 						MessageService.ShowError(ex, "Error expanding wildcards in " + item.Include);
@@ -224,7 +243,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				List<ProjectItem> projectFiles = new List<ProjectItem>();
 				List<ProjectItem> other        = new List<ProjectItem>();
 				
-				foreach (ProjectItem item in this.items) {
+				foreach (ProjectItem item in this.Items) {
 					switch (item.ItemType) {
 						case ItemType.Reference:
 							references.Add(item);
@@ -261,9 +280,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				SaveUnknownXmlSections(writer, unknownXmlSections);
 				
-				foreach (string import in Imports) {
+				foreach (MSBuildImport import in Imports) {
 					writer.WriteStartElement("Import");
-					writer.WriteAttributeString("Project", ProjectItem.MSBuildEscape(import));
+					writer.WriteAttributeString("Project", ProjectItem.MSBuildEscape(import.Project));
+					if (import.Condition != null) {
+						writer.WriteAttributeString("Condition", import.Condition);
+					}
 					writer.WriteEndElement();
 				}
 				
@@ -476,7 +498,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Clean(MSBuildEngineCallback callback, IDictionary<string, string> additionalProperties)
 		{
 			RunMSBuild("Clean", callback, additionalProperties);
-			isDirty = true;
+			this.IsDirty = true;
 		}
 		
 		public override void Publish(MSBuildEngineCallback callback, IDictionary<string, string> additionalProperties)

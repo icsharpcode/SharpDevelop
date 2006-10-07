@@ -27,8 +27,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected Dictionary<string, PropertyGroup> configurations     = new Dictionary<string, PropertyGroup>();
 		protected Dictionary<string, PropertyGroup> userConfigurations = new Dictionary<string, PropertyGroup>();
 		
-		protected List<ProjectItem> items   = new List<ProjectItem>();
-		protected List<string>      imports = new List<string>();
+		readonly List<ProjectItem>    items           = new List<ProjectItem>();
 		readonly List<ProjectSection> projectSections = new List<ProjectSection>();
 		
 		string fileName;
@@ -117,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		protected bool isDirty = false;
+		bool isDirty = false;
 		
 		[Browsable(false)]
 		public bool IsDirty {
@@ -161,19 +160,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		public List<ProjectSection> ProjectSections {
 			get {
 				return projectSections;
-			}
-		}
-		
-		/// <summary>
-		/// Gets the list of MSBuild Imports.
-		/// </summary>
-		/// <returns>
-		/// List of Import filenames, <example>$(MSBuildBinPath)\Microsoft.VisualBasic.targets</example>
-		/// </returns>
-		[Browsable(false)]
-		public List<string> Imports {
-			get {
-				return imports;
 			}
 		}
 		
@@ -737,8 +723,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				item.Dispose();
 			}
 			items.Clear();
-			
-			imports.Clear();
 		}
 		#endregion
 		

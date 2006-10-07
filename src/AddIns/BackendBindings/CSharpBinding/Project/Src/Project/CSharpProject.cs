@@ -54,7 +54,7 @@ namespace CSharpBinding
 		protected override void Create(ProjectCreateInformation information)
 		{
 			base.Create(information);
-			imports.Add(DefaultTargetsFile);
+			this.Imports.Add(new MSBuildImport(DefaultTargetsFile));
 			SetProperty("Debug", null, "CheckForOverflowUnderflow", "True", PropertyStorageLocations.ConfigurationSpecific);
 			SetProperty("Release", null, "CheckForOverflowUnderflow", "False", PropertyStorageLocations.ConfigurationSpecific);
 		}

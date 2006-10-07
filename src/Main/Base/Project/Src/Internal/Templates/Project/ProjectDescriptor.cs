@@ -161,11 +161,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 				
 				// Add Imports
-				if (clearExistingImports) {
-					((AbstractProject)project).Imports.Clear();
-				}
-				foreach(string projectImport in projectImports) {
-					((AbstractProject)project).Imports.Add(projectImport);
+				if (project is MSBuildProject) {
+					if (clearExistingImports) {
+						((MSBuildProject)project).Imports.Clear();
+					}
+					foreach (string projectImport in projectImports) {
+						((MSBuildProject)project).Imports.Add(new MSBuildImport(projectImport));
+					}
 				}
 				
 				foreach (PropertyGroup pg in propertyGroups) {

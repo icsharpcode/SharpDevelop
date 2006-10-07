@@ -57,7 +57,7 @@ namespace VBNetBinding
 		{
 			InitVB();
 			Create(info);
-			imports.Add(DefaultTargetsFile);
+			this.Imports.Add(new MSBuildImport(DefaultTargetsFile));
 		}
 		
 		public override ParseProjectContent CreateProjectContent()

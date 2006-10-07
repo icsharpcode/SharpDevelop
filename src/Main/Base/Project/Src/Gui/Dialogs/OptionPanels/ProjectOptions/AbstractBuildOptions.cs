@@ -252,13 +252,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						}
 					}
 				}
-				for (int i = 0; i < project.Imports.Count; i++) {
+				foreach (MSBuildImport import in project.Imports) {
 					if (needExtensions) {
-						if (defaultTargets.Equals(project.Imports[i], StringComparison.InvariantCultureIgnoreCase))
-							project.Imports[i] = extendedTargets;
+						if (defaultTargets.Equals(import.Project, StringComparison.InvariantCultureIgnoreCase))
+							import.Project = extendedTargets;
 					} else {
-						if (extendedTargets.Equals(project.Imports[i], StringComparison.InvariantCultureIgnoreCase))
-							project.Imports[i] = defaultTargets;
+						if (extendedTargets.Equals(import.Project, StringComparison.InvariantCultureIgnoreCase))
+							import.Project = defaultTargets;
 					}
 				}
 			};

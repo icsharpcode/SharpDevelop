@@ -232,7 +232,7 @@ namespace ICSharpCode.WixBinding
 			configurations["Release|*"]["OutputPath"] = @"bin\Release\";
 
 			FileName = Path.GetFullPath(information.OutputProjectFileName);
-			imports.Add(DefaultTargetsFile);
+			this.Imports.Add(new MSBuildImport(DefaultTargetsFile));
 		}
 		
 		/// <summary>
