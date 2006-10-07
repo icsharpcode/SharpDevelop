@@ -170,8 +170,8 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// Finds all unused resource keys in all resource files that are referenced
 		/// in code at least once in the whole solution.
 		/// </summary>
-		/// <returns>A collection of key/value pairs where the values are the resource file names and the keys are the unused resource keys.</returns>
-		public static ICollection<KeyValuePair<string, string>> FindUnusedKeys()
+		/// <returns>A collection of <see cref="ResourceItem"/> classes that represent the unused resource keys.</returns>
+		public static ICollection<ResourceItem> FindUnusedKeys()
 		{
 			List<Reference> references = FindAllReferences();
 			if (references == null) {
@@ -179,7 +179,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 			}
 			
 			DateTime startTime = DateTime.UtcNow;
-			List<KeyValuePair<string, string>> unused = new List<KeyValuePair<string, string>>();
+			List<ResourceItem> unused = new List<ResourceItem>();
 			
 			// Get a list of all referenced resource files.
 			// Generate a dictonary of resource file names and the
@@ -207,7 +207,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 				#endif
 				foreach (KeyValuePair<string, object> entry in ResourceFileContentRegistry.GetResourceFileContent(fileName).Data) {
 					if (!referencedKeys[fileName].Contains(entry.Key)) {
-						unused.Add(new KeyValuePair<string, string>(entry.Key, fileName));
+						unused.Add(new ResourceItem(fileName, entry.Key));
 					}
 				}
 			}
@@ -224,6 +224,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// Asks the user for a new name.
 		/// </summary>
 		/// <param name="rrr">The resource to be renamed.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "ICSharpCode.Core.MessageService.ShowInputBox(System.String,System.String,System.String)")]
 		public static void Rename(ResourceResolveResult rrr)
 		{
 			string newKey = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:Hornung.ResourceToolkit.RenameResourceText}", rrr.Key);
@@ -275,7 +276,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// Gets a list of names of files which can possibly contain resource references.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-		public static List<string> GetPossibleFiles()
+		public static ICollection<string> GetPossibleFiles()
 		{
 			List<string> files = new List<string>();
 			
@@ -307,7 +308,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 				
 			}
 			
-			return files;
+			return files.AsReadOnly();
 		}
 		
 		/// <summary>

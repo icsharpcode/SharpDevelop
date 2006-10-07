@@ -228,6 +228,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// Initializes a new instance of the <see cref="PropertyFieldAssociationVisitor"/> class.
 		/// </summary>
 		/// <param name="field">The field to find the associated property for.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "System.ArgumentException.#ctor(System.String,System.String)")]
 		public PropertyFieldAssociationVisitor(IField field) : base()
 		{
 			if (field == null) {

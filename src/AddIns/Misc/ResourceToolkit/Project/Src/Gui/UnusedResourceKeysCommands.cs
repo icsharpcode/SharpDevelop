@@ -17,7 +17,7 @@ namespace Hornung.ResourceToolkit.Gui
 	/// <summary>
 	/// Hides or shows the ICSharpCode.Core host resources in an UnusedResourceKeysViewContent.
 	/// </summary>
-	public class UnusedResourceKeysHideICSharpCodeCoreHostResourcesCommand : AbstractCheckableMenuCommand, IFilter<KeyValuePair<string, string>>
+	public class UnusedResourceKeysHideICSharpCodeCoreHostResourcesCommand : AbstractCheckableMenuCommand, IFilter<ResourceItem>
 	{
 		string icSharpCodeCoreHostResourceFileName;
 		
@@ -25,7 +25,7 @@ namespace Hornung.ResourceToolkit.Gui
 		{
 			base.Run();
 			
-			IFilterHost<KeyValuePair<string, string>> host = ((ToolBarCheckBox)this.Owner).Caller as IFilterHost<KeyValuePair<string, string>>;
+			IFilterHost<ResourceItem> host = ((ToolBarCheckBox)this.Owner).Caller as IFilterHost<ResourceItem>;
 			if (host != null) {
 				if (this.IsChecked) {
 					this.icSharpCodeCoreHostResourceFileName = ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreHostResourceFileName(null);
@@ -41,9 +41,9 @@ namespace Hornung.ResourceToolkit.Gui
 		/// </summary>
 		/// <param name="item">The item to test.</param>
 		/// <returns><c>true</c>, if the specified item matches the current filter criteria, otherwise <c>false</c>.</returns>
-		public bool IsMatch(KeyValuePair<string, string> item)
+		public bool IsMatch(ResourceItem item)
 		{
-			return !FileUtility.IsEqualFileName(item.Value, this.icSharpCodeCoreHostResourceFileName);
+			return !FileUtility.IsEqualFileName(item.FileName, this.icSharpCodeCoreHostResourceFileName);
 		}
 	}
 }

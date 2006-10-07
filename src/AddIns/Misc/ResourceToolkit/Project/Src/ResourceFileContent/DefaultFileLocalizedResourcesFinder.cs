@@ -35,7 +35,7 @@ namespace Hornung.ResourceToolkit.ResourceFileContent
 			string culture = Path.GetExtension(fileNameWithoutExtension);
 			if (!String.IsNullOrEmpty(culture)) {
 				try {
-					CultureInfo dummy = CultureInfo.GetCultureInfo(culture);
+					CultureInfo.GetCultureInfo(culture);
 					// the specified file is a localized resource file itself
 					LoggingService.Debug("ResourceToolkit: DefaultFileLocalizedResourcesFinder.GetLocalizedContents: Returning null for file '"+fileName+"' because it has been detected as being a localized resource file itself.");
 					return null;

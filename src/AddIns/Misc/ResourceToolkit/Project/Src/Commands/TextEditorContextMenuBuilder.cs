@@ -74,6 +74,7 @@ namespace Hornung.ResourceToolkit.Commands
 		
 		// ********************************************************************************************************************************
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "ICSharpCode.Core.MessageService.ShowWarning(System.String)")]
 		void EditResource(object sender, EventArgs e)
 		{
 			MenuCommand cmd = sender as MenuCommand;

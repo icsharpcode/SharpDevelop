@@ -22,7 +22,7 @@ namespace Hornung.ResourceToolkit.Resolver
 	/// </summary>
 	public static class NRefactoryAstCacheService
 	{
-		static bool cacheEnabled = false;
+		static bool cacheEnabled;
 		static Dictionary<string, CompilationUnit> cachedAstInfo = new Dictionary<string, CompilationUnit>();
 		
 		/// <summary>
@@ -38,6 +38,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// Enables the AST cache.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">The AST cache is already enabled.</exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "System.InvalidOperationException.#ctor(System.String)")]
 		public static void EnableCache()
 		{
 			if (CacheEnabled) {

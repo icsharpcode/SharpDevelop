@@ -89,6 +89,7 @@
     <Compile Include="Src\Gui\UnusedResourceKeysCommands.cs" />
     <Compile Include="Src\Gui\IFilter.cs" />
     <Compile Include="Src\Gui\IFilterHost.cs" />
+    <Compile Include="Src\ResourceItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">

@@ -28,6 +28,7 @@ namespace Hornung.ResourceToolkit.ResourceFileContent
 		/// <param name="masterContent">The master resource file content.</param>
 		/// <param name="otherContents">Additional resource file contents.</param>
 		/// <exception cref="ArgumentException">The cultures of the specified resource file contents do not match.</exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "System.ArgumentException.#ctor(System.String)")]
 		public MergedResourceFileContent(IResourceFileContent masterContent, IResourceFileContent[] otherContents)
 		{
 			this.masterContent = masterContent;
@@ -123,6 +124,7 @@ namespace Hornung.ResourceToolkit.ResourceFileContent
 		/// Modify the value of an existing entry.
 		/// </summary>
 		/// <exception cref="ArgumentException">The specified key does not exist.</exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "System.ArgumentException.#ctor(System.String,System.String)")]
 		public void SetValue(string key, object value)
 		{
 			if (this.masterContent.ContainsKey(key)) {
@@ -145,6 +147,7 @@ namespace Hornung.ResourceToolkit.ResourceFileContent
 		/// <param name="oldName">The old name of the resource key to rename.</param>
 		/// <param name="newName">The new name of the resource key.</param>
 		/// <exception cref="ArgumentException">The specified key does not exist or the new key does already exist.</exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "System.ArgumentException.#ctor(System.String,System.String)")]
 		public void RenameKey(string oldName, string newName)
 		{
 			if (this.masterContent.ContainsKey(oldName)) {
@@ -166,6 +169,7 @@ namespace Hornung.ResourceToolkit.ResourceFileContent
 		/// </summary>
 		/// <param name="key">The resource key to remove.</param>
 		/// <exception cref="ArgumentException">The specified key does not exist.</exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "System.ArgumentException.#ctor(System.String,System.String)")]
 		public void RemoveKey(string key)
 		{
 			if (this.masterContent.ContainsKey(key)) {

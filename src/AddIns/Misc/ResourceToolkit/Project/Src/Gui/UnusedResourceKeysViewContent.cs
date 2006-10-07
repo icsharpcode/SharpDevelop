@@ -22,9 +22,9 @@ namespace Hornung.ResourceToolkit.Gui
 	/// <summary>
 	/// Displays unused resource keys in a list and allows the user to delete them.
 	/// </summary>
-	public class UnusedResourceKeysViewContent : AbstractViewContent, IClipboardHandler, IFilterHost<KeyValuePair<string, string>>
+	public class UnusedResourceKeysViewContent : AbstractViewContent, IClipboardHandler, IFilterHost<ResourceItem>
 	{
-		readonly ICollection<KeyValuePair<string, string>> unusedKeys;
+		readonly ICollection<ResourceItem> unusedKeys;
 		Panel panel;
 		ListView listView;
 		ToolStrip toolStrip;
@@ -47,7 +47,7 @@ namespace Hornung.ResourceToolkit.Gui
 		/// <summary>
 		/// Gets a collection of key/value pairs where the values are the resource file names and the keys are the unused resource keys.
 		/// </summary>
-		public ICollection<KeyValuePair<string, string>> UnusedKeys {
+		public ICollection<ResourceItem> UnusedKeys {
 			get {
 				return this.unusedKeys;
 			}
@@ -56,8 +56,8 @@ namespace Hornung.ResourceToolkit.Gui
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UnusedResourceKeysViewContent"/> class.
 		/// </summary>
-		/// <param name="unusedKeys">A collection of key/value pairs where the values are the resource file names and the keys are the unused resource keys.</param>
-		public UnusedResourceKeysViewContent(ICollection<KeyValuePair<string, string>> unusedKeys)
+		/// <param name="unusedKeys">A collection of <see cref="ResourceItem"/> classes that represent the unused resource keys to display.</param>
+		public UnusedResourceKeysViewContent(ICollection<ResourceItem> unusedKeys)
 			: base(StringParser.Parse("${res:Hornung.ResourceToolkit.UnusedResourceKeys.Title}"))
 		{
 			LoggingService.Debug("ResourceToolkit: Creating new UnusedResourceKeysViewContent");
@@ -144,7 +144,7 @@ namespace Hornung.ResourceToolkit.Gui
 			}
 		}
 		
-		bool fillListViewQueued = false;
+		bool fillListViewQueued;
 		
 		/// <summary>
 		/// Fills the list view with all unused resource keys that match the current filter after processing the message queue.
@@ -178,32 +178,32 @@ namespace Hornung.ResourceToolkit.Gui
 				Dictionary<string, ListViewGroup> fileGroups = new Dictionary<string, ListViewGroup>();
 				
 				// Create the ListViewItems.
-				foreach (KeyValuePair<string, string> entry in this.UnusedKeys) {
+				foreach (ResourceItem entry in this.UnusedKeys) {
 					
 					// Skip if any filter rejects this item.
 					if (!this.ItemMatchesCurrentFilter(entry)) {
 						continue;
 					}
 					
-					IResourceFileContent c = ResourceFileContentRegistry.GetResourceFileContent(entry.Value);
+					IResourceFileContent c = ResourceFileContentRegistry.GetResourceFileContent(entry.FileName);
 					object o;
 					
 					// only add the file name to save space
 					// and show the full path as tooltip
-					ListViewItem item = new ListViewItem(Path.GetFileName(entry.Value));
-					item.ToolTipText = entry.Value;
+					ListViewItem item = new ListViewItem(Path.GetFileName(entry.FileName));
+					item.ToolTipText = entry.FileName;
 					item.SubItems.Add(entry.Key);
 					if (c.TryGetValue(entry.Key, out o)) {
 						item.SubItems.Add((o ?? (object)"<<null>>").ToString());
 					} else {
-						throw new InvalidOperationException("The key '"+entry.Key+"' in file '"+entry.Value+"' does not exist although it was reported as unused.");
+						throw new InvalidOperationException("The key '"+entry.Key+"' in file '"+entry.FileName+"' does not exist although it was reported as unused.");
 					}
 					
 					// Use ListViewGroups to group by file names
 					ListViewGroup grp;
-					if (!fileGroups.TryGetValue(entry.Value, out grp)) {
-						grp = new ListViewGroup(entry.Value);
-						fileGroups.Add(entry.Value, grp);
+					if (!fileGroups.TryGetValue(entry.FileName, out grp)) {
+						grp = new ListViewGroup(entry.FileName);
+						fileGroups.Add(entry.FileName, grp);
 						this.ListView.Groups.Add(grp);
 					}
 					grp.Items.Add(item);
@@ -222,7 +222,7 @@ namespace Hornung.ResourceToolkit.Gui
 		
 		#region Filter
 		
-		readonly List<IFilter<KeyValuePair<string, string>>> filters = new List<IFilter<KeyValuePair<string, string>>>();
+		readonly List<IFilter<ResourceItem>> filters = new List<IFilter<ResourceItem>>();
 		
 		/// <summary>
 		/// Registers a new filter with the filter host, if the filter is not already registered,
@@ -230,7 +230,7 @@ namespace Hornung.ResourceToolkit.Gui
 		/// </summary>
 		/// <param name="filter">The filter to be registered.</param>
 		/// <exception cref="ArgumentNullException">The <paramref name="filter"/> parameter is <c>null</c>.</exception>
-		public void RegisterFilter(IFilter<KeyValuePair<string, string>> filter)
+		public void RegisterFilter(IFilter<ResourceItem> filter)
 		{
 			if (filter == null) {
 				throw new ArgumentNullException("filter");
@@ -248,7 +248,7 @@ namespace Hornung.ResourceToolkit.Gui
 		/// </summary>
 		/// <param name="filter">The filter to be removed.</param>
 		/// <exception cref="ArgumentNullException">The <paramref name="filter"/> parameter is <c>null</c>.</exception>
-		public void UnregisterFilter(IFilter<KeyValuePair<string, string>> filter)
+		public void UnregisterFilter(IFilter<ResourceItem> filter)
 		{
 			if (filter == null) {
 				throw new ArgumentNullException("filter");
@@ -264,9 +264,9 @@ namespace Hornung.ResourceToolkit.Gui
 		/// according to the current filter.
 		/// </summary>
 		/// <returns><c>true</c>, if the resource should be included in the list view, otherwise <c>false</c>.</returns>
-		bool ItemMatchesCurrentFilter(KeyValuePair<string, string> item)
+		bool ItemMatchesCurrentFilter(ResourceItem item)
 		{
-			foreach (IFilter<KeyValuePair<string, string>> filter in this.filters) {
+			foreach (IFilter<ResourceItem> filter in this.filters) {
 				if (!filter.IsMatch(item)) {
 					return false;
 				}
@@ -325,6 +325,7 @@ namespace Hornung.ResourceToolkit.Gui
 			throw new NotImplementedException();
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Body")]
 		public void Delete()
 		{
 			if (this.ListView.SelectedItems.Count > 0) {

@@ -55,6 +55,7 @@ namespace Hornung.ResourceToolkit.Gui
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Hornung.ResourceToolkit.Resources.EditStringResourceDialog.xfrm"));
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "ICSharpCode.Core.MessageService.ShowWarning(System.String)")]
 		void KeyValidating(object sender, CancelEventArgs e)
 		{
 			TextBox textBox = (TextBox)sender;

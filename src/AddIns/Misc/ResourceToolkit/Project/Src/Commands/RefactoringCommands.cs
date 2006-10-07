@@ -36,7 +36,7 @@ namespace Hornung.ResourceToolkit.Commands
 	{
 		public override void Run()
 		{
-			ICollection<KeyValuePair<string, string>> unusedKeys = ResourceRefactoringService.FindUnusedKeys();
+			ICollection<ResourceItem> unusedKeys = ResourceRefactoringService.FindUnusedKeys();
 			
 			if (unusedKeys == null) {
 				return;
