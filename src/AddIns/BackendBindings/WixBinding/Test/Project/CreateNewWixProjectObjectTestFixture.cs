@@ -59,7 +59,15 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void Imports()
 		{
-			Assert.IsTrue(project.Imports.Contains(WixProject.DefaultTargetsFile));
+			MSBuildImport wixProjectImport = new MSBuildImport(WixProject.DefaultTargetsFile);
+			bool found = false;
+			foreach (MSBuildImport import in project.Imports) {
+				if (import.Project == wixProjectImport.Project) {
+					found = true;
+					break;
+				}
+			}
+			Assert.IsTrue(found);
 		}
 		
 		[Test]
