@@ -447,6 +447,7 @@ namespace ICSharpCode.XmlEditor
 			} catch (XmlException xmlEx) {
 				AddErrorResult(xmlEx);
 			} finally {
+				BringResultsTabToFront();
 				view.TextEditorControl.Refresh();
 			}
 		}
@@ -454,6 +455,11 @@ namespace ICSharpCode.XmlEditor
 		void ClearResults()
 		{
 			xPathResultsListView.Items.Clear();
+		}
+		
+		void BringResultsTabToFront()
+		{
+			tabControl.SelectedTab = tabControl.TabPages[0];
 		}
 		
 		void AddXPathResults(XPathNodeMatch[] nodes)
