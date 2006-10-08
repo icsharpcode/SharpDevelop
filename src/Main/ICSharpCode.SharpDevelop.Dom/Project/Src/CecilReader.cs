@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			foreach (CustomAttribute att in attributes) {
 				DefaultAttribute a = new DefaultAttribute(att.Constructor.DeclaringType.FullName);
-				// TODO: attribute arguments
+				// TODO: add only attributes marked "important", and include attribute arguments
 				list.Add(a);
 			}
 		}
@@ -197,11 +197,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 					modifiers |= ModifierEnum.Abstract;
 				}
 				
-				if ((td.Attributes & TypeAttributes.NestedPublic) == TypeAttributes.NestedPublic) {
+				if ((td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPublic) {
 					modifiers |= ModifierEnum.Public;
-				} else if ((td.Attributes & TypeAttributes.NestedFamily) == TypeAttributes.NestedFamily) {
+				} else if ((td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedFamily) {
 					modifiers |= ModifierEnum.Protected;
-				} else if ((td.Attributes & TypeAttributes.NestedFamORAssem) == TypeAttributes.NestedFamORAssem) {
+				} else if ((td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedFamORAssem) {
 					modifiers |= ModifierEnum.Protected;
 				} else {
 					modifiers |= ModifierEnum.Public;
@@ -235,9 +235,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				
 				foreach (TypeDefinition nestedType in type.NestedTypes) {
-					if ((nestedType.Attributes & TypeAttributes.NestedPublic) == TypeAttributes.NestedPublic)
+					TypeAttributes visibility = nestedType.Attributes & TypeAttributes.VisibilityMask;
+					if (visibility == TypeAttributes.NestedPublic || visibility == TypeAttributes.NestedFamily
+					    || visibility == TypeAttributes.NestedFamORAssem)
 					{
-						// NestedFamily somehow also finds internal inner classes (e.g. Environment.ResourceHelper)
 						string name = nestedType.Name;
 						int pos = name.LastIndexOf('/');
 						if (pos > 0)
@@ -252,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				
 				foreach (FieldDefinition field in type.Fields) {
-					if (IsVisible(field.Attributes)) {
+					if (IsVisible(field.Attributes) && !field.IsSpecialName) {
 						DefaultField f = new DefaultField(this, field.Name);
 						f.Modifiers = TranslateModifiers(field);
 						f.ReturnType = CreateType(this.ProjectContent, this, field.FieldType);

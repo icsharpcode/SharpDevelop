@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// An &lt;Import&gt;-node in an MSBuild file.
 	/// </summary>
-	public class MSBuildImport : ICloneable
+	public class MSBuildImport : ICloneable, IEquatable<MSBuildImport>
 	{
 		string project;
 		string condition;
@@ -47,6 +47,24 @@ namespace ICSharpCode.SharpDevelop.Project
 			MSBuildImport n = new MSBuildImport(this.Project);
 			n.Condition = this.Condition;
 			return n;
+		}
+		
+		public sealed override bool Equals(object obj)
+		{
+			return Equals(obj as MSBuildImport);
+		}
+		
+		public override int GetHashCode()
+		{
+			return this.Project.GetHashCode() ^ (this.Condition ?? "").GetHashCode();
+		}
+		
+		public virtual bool Equals(MSBuildImport obj)
+		{
+			if (obj == null)
+				return false;
+			else
+				return obj.Condition == this.Condition && obj.Project == this.Project;
 		}
 	}
 }
