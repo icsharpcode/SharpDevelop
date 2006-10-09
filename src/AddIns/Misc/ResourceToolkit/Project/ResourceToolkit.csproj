@@ -90,6 +90,7 @@
     <Compile Include="Src\Gui\IFilter.cs" />
     <Compile Include="Src\Gui\IFilterHost.cs" />
     <Compile Include="Src\ResourceItem.cs" />
+    <EmbeddedResource Include="Resources\EditStringResourceDialog.xfrm" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
@@ -119,7 +120,6 @@
     <Folder Include="Src\ResourceFileContent" />
     <Folder Include="Src\ToolTips" />
     <Folder Include="Resources" />
-    <Content Include="Resources\EditStringResourceDialog.xfrm" />
     <Folder Include="Configuration" />
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>

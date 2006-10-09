@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 using ICSharpCode.Core;
@@ -262,11 +263,22 @@ namespace Hornung.ResourceToolkit.Resolver
 								#endif
 								
 								if ((fileName = FindResourceFileName(fpi.FileName)) != null) {
-									return fileName;
+									// Prefer culture-invariant resource file
+									// over localized resource file
+									IResourceFileContent rfc = ResourceFileContentRegistry.GetResourceFileContent(fileName);
+									if (rfc.Culture.Equals(CultureInfo.InvariantCulture)) {
+										return fileName;
+									}
 								}
 								
 							}
 						}
+					}
+					
+					// Fall back to any found resource file
+					// if no culture-invariant resource file was found
+					if (fileName != null) {
+						return fileName;
 					}
 					
 					// Find resource files with the same name as the source file
