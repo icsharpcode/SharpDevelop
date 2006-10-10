@@ -156,6 +156,7 @@ namespace NRefactoryASTGenerator.Ast
 	class AnonymousMethodExpression : Expression {
 		List<ParameterDeclarationExpression> parameters;
 		BlockStatement body;
+		bool hasParameterList;
 	}
 	
 	class CheckedExpression : Expression {

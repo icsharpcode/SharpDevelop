@@ -91,13 +91,14 @@ namespace NRefactoryASTGenerator.Ast
 	[IncludeBoolProperty("HasRaiseRegion",  "return !raiseRegion.IsNull;")]
 	class EventDeclaration : ParametrizedNode
 	{
-		TypeReference   typeReference;
+		TypeReference typeReference;
 		List<InterfaceImplementation> interfaceImplementations;
 		EventAddRegion addRegion;
 		EventRemoveRegion removeRegion;
 		EventRaiseRegion raiseRegion;
 		Location bodyStart;
 		Location bodyEnd;
+		Expression initializer;
 		
 		public EventDeclaration(TypeReference typeReference, string name, Modifiers modifier, List<AttributeSection> attributes, List<ParameterDeclarationExpression> parameters)
 			: base(modifier, attributes, name, parameters)

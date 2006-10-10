@@ -144,7 +144,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void Property()
 		{
 			TestMember("ReadOnly Property A()\nGet\nReturn Nothing\nEnd Get\nEnd Property",
-			           "public object A {\n\tget {\n\t\treturn null;\n\t}\n}");
+			           "public object A {\n\tget { return null; }\n}");
 		}
 		
 		[Test]

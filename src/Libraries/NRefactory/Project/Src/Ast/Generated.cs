@@ -87,6 +87,8 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		BlockStatement body;
 		
+		bool hasParameterList;
+		
 		public List<ParameterDeclarationExpression> Parameters {
 			get {
 				return parameters;
@@ -106,6 +108,15 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
+		public bool HasParameterList {
+			get {
+				return hasParameterList;
+			}
+			set {
+				hasParameterList = value;
+			}
+		}
+		
 		public AnonymousMethodExpression() {
 			parameters = new List<ParameterDeclarationExpression>();
 			body = BlockStatement.Null;
@@ -116,7 +127,7 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 		
 		public override string ToString() {
-			return string.Format("[AnonymousMethodExpression Parameters={0} Body={1}]", GetCollectionString(Parameters), Body);
+			return string.Format("[AnonymousMethodExpression Parameters={0} Body={1} HasParameterList={2}]", GetCollectionString(Parameters), Body, HasParameterList);
 		}
 	}
 	
@@ -1488,6 +1499,8 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		Location bodyEnd;
 		
+		Expression initializer;
+		
 		public TypeReference TypeReference {
 			get {
 				return typeReference;
@@ -1551,6 +1564,16 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
+		public Expression Initializer {
+			get {
+				return initializer;
+			}
+			set {
+				initializer = value ?? Expression.Null;
+				if (!initializer.IsNull) initializer.Parent = this;
+			}
+		}
+		
 		public EventDeclaration(TypeReference typeReference, string name, Modifiers modifier, List<AttributeSection> attributes, List<ParameterDeclarationExpression> parameters) : 
 				base(modifier, attributes, name, parameters) {
 			TypeReference = typeReference;
@@ -1560,6 +1583,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			raiseRegion = EventRaiseRegion.Null;
 			bodyStart = Location.Empty;
 			bodyEnd = Location.Empty;
+			initializer = Expression.Null;
 		}
 		
 		public EventDeclaration(TypeReference typeReference, Modifiers modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string name, List<InterfaceImplementation> interfaceImplementations) : 
@@ -1571,6 +1595,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			raiseRegion = EventRaiseRegion.Null;
 			bodyStart = Location.Empty;
 			bodyEnd = Location.Empty;
+			initializer = Expression.Null;
 		}
 		
 		public bool HasAddRegion {
@@ -1597,8 +1622,8 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		public override string ToString() {
 			return string.Format("[EventDeclaration TypeReference={0} InterfaceImplementations={1} AddRegion={2} Re" +
-					"moveRegion={3} RaiseRegion={4} BodyStart={5} BodyEnd={6} Name={7} Parameters={8}" +
-					" Attributes={9} Modifier={10}]", TypeReference, GetCollectionString(InterfaceImplementations), AddRegion, RemoveRegion, RaiseRegion, BodyStart, BodyEnd, Name, GetCollectionString(Parameters), GetCollectionString(Attributes), Modifier);
+					"moveRegion={3} RaiseRegion={4} BodyStart={5} BodyEnd={6} Initializer={7} Name={8" +
+					"} Parameters={9} Attributes={10} Modifier={11}]", TypeReference, GetCollectionString(InterfaceImplementations), AddRegion, RemoveRegion, RaiseRegion, BodyStart, BodyEnd, Initializer, Name, GetCollectionString(Parameters), GetCollectionString(Attributes), Modifier);
 		}
 	}
 	

@@ -70,6 +70,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void EventWithInitializer()
+		{
+			TestTypeMember("public event EventHandler Click = delegate { };");
+		}
+		
+		[Test]
 		public void Field()
 		{
 			TestTypeMember("int a;");
@@ -324,6 +330,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestTypeMember("public abstract void Run();");
 			TestTypeMember("public abstract bool Run();");
+		}
+		
+		[Test]
+		public void AnonymousMethod()
+		{
+			TestStatement("Func b = delegate { return true; };");
+			TestStatement("Func a = delegate() { return false; };");
 		}
 		
 		[Test]

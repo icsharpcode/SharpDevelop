@@ -27,6 +27,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			AnonymousMethodExpression ame = Parse("delegate {}");
 			Assert.AreEqual(0, ame.Parameters.Count);
 			Assert.AreEqual(0, ame.Body.Children.Count);
+			Assert.IsFalse(ame.HasParameterList);
 		}
 		
 		[Test]
@@ -45,6 +46,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			AnonymousMethodExpression ame = Parse("delegate() {}");
 			Assert.AreEqual(0, ame.Parameters.Count);
 			Assert.AreEqual(0, ame.Body.Children.Count);
+			Assert.IsTrue(ame.HasParameterList);
 		}
 		
 		[Test]

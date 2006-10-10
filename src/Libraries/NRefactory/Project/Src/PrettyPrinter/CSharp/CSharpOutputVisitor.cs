@@ -559,7 +559,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Indent();
 			OutputModifier(propertyGetRegion.Modifier);
 			outputFormatter.PrintText("get");
-			OutputBlock(propertyGetRegion.Block, prettyPrintOptions.PropertyGetBraceStyle);
+			OutputBlockAllowInline(propertyGetRegion.Block, prettyPrintOptions.PropertyGetBraceStyle);
 			return null;
 		}
 		
@@ -569,7 +569,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Indent();
 			OutputModifier(propertySetRegion.Modifier);
 			outputFormatter.PrintText("set");
-			OutputBlock(propertySetRegion.Block, prettyPrintOptions.PropertySetBraceStyle);
+			OutputBlockAllowInline(propertySetRegion.Block, prettyPrintOptions.PropertySetBraceStyle);
 			return null;
 		}
 		
@@ -589,6 +589,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			outputFormatter.PrintIdentifier(eventDeclaration.Name);
+			
+			if (!eventDeclaration.Initializer.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Assign);
+				outputFormatter.Space();
+				nodeTracker.TrackedVisit(eventDeclaration.Initializer, data);
+			}
+			
 			if (eventDeclaration.AddRegion.IsNull && eventDeclaration.RemoveRegion.IsNull) {
 				outputFormatter.PrintToken(Tokens.Semicolon);
 				outputFormatter.NewLine();
@@ -606,7 +614,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			VisitAttributes(eventAddRegion.Attributes, data);
 			outputFormatter.Indent();
 			outputFormatter.PrintText("add");
-			OutputBlock(eventAddRegion.Block, prettyPrintOptions.EventAddBraceStyle);
+			OutputBlockAllowInline(eventAddRegion.Block, prettyPrintOptions.EventAddBraceStyle);
 			return null;
 		}
 		
@@ -615,7 +623,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			VisitAttributes(eventRemoveRegion.Attributes, data);
 			outputFormatter.Indent();
 			outputFormatter.PrintText("remove");
-			OutputBlock(eventRemoveRegion.Block, prettyPrintOptions.EventRemoveBraceStyle);
+			OutputBlockAllowInline(eventRemoveRegion.Block, prettyPrintOptions.EventRemoveBraceStyle);
 			return null;
 		}
 		
@@ -904,6 +912,46 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.EndBrace();
 			}
 			nodeTracker.EndNode(blockStatement);
+		}
+		
+		void OutputBlockAllowInline(BlockStatement blockStatement, BraceStyle braceStyle)
+		{
+			OutputBlockAllowInline(blockStatement, braceStyle, true);
+		}
+		
+		void OutputBlockAllowInline(BlockStatement blockStatement, BraceStyle braceStyle, bool useNewLine)
+		{
+			if (!blockStatement.IsNull
+			    && (
+			    	blockStatement.Children.Count == 0
+			    	|| blockStatement.Children.Count == 1
+			    	&& (blockStatement.Children[0] is ExpressionStatement
+			    	    || blockStatement.Children[0] is ReturnStatement
+			    	   )))
+			{
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
+				outputFormatter.Space();
+				if (blockStatement.Children.Count != 0) {
+					bool doIndent  = outputFormatter.DoIndent;
+					bool doNewLine = outputFormatter.DoNewLine;
+					outputFormatter.DoIndent  = false;
+					outputFormatter.DoNewLine = false;
+					
+					nodeTracker.TrackedVisit(blockStatement.Children[0], null);
+					
+					outputFormatter.DoIndent  = doIndent;
+					outputFormatter.DoNewLine = doNewLine;
+					
+					outputFormatter.Space();
+				}
+				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+				if (useNewLine) {
+					outputFormatter.NewLine();
+				}
+			} else {
+				OutputBlock(blockStatement, braceStyle);
+			}
 		}
 		
 		public object VisitBlockStatement(BlockStatement blockStatement, object data)
@@ -2149,11 +2197,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintToken(Tokens.Delegate);
 			
-			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			AppendCommaSeparatedList(anonymousMethodExpression.Parameters);
-			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			OutputBlock(anonymousMethodExpression.Body, this.prettyPrintOptions.MethodBraceStyle);
-			
+			if (anonymousMethodExpression.Parameters.Count > 0 || anonymousMethodExpression.HasParameterList) {
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				AppendCommaSeparatedList(anonymousMethodExpression.Parameters);
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			}
+			OutputBlockAllowInline(anonymousMethodExpression.Body, this.prettyPrintOptions.MethodBraceStyle, false);
 			return null;
 		}
 		

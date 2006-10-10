@@ -672,6 +672,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			nodeTracker.TrackedVisit(eventDeclaration.TypeReference, data);
 			
 			PrintInterfaceImplementations(eventDeclaration.InterfaceImplementations);
+			
+			if (!eventDeclaration.Initializer.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Assign);
+				outputFormatter.Space();
+				nodeTracker.TrackedVisit(eventDeclaration.Initializer, data);
+			}
+			
 			outputFormatter.NewLine();
 			
 			if (customEvent) {

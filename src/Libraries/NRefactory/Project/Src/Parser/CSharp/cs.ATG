@@ -775,6 +775,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		|	ident (. qualident = t.val; .)
 		)
 		(. eventDecl.Name = qualident; eventDecl.EndLocation = t.EndLocation; .)
+		[   "=" Expr<out expr> (. eventDecl.Initializer = expr; .) ]
 		[	"{" (. eventDecl.BodyStart = t.Location; .)
 			EventAccessorDecls<out addBlock, out removeBlock> 
 			"}" (. eventDecl.BodyEnd   = t.EndLocation; .)
@@ -1809,6 +1810,7 @@ AnonymousMethodExpr<out Expression outExpr>
 		"("
 		[ FormalParameterList<p> (. expr.Parameters = p; .) ]
 		")"
+		(. expr.HasParameterList = true; .)
 	]
 	/*--- ParseExpression doesn't set a compilation unit, */
 	/*--- so we can't use block then -> skip body of anonymous method */
