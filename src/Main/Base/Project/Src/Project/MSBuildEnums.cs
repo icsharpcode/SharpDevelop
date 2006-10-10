@@ -13,16 +13,18 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public enum RunPostBuildEvent {
+	public enum RunPostBuildEvent
+	{
+		[Description("${res:Dialog.ProjectOptions.RunPostBuildEvent.OnSuccessfulBuild}")]
+		OnBuildSuccess,
 		[Description("${res:Dialog.ProjectOptions.RunPostBuildEvent.Always}")]
 		Always,
-		[Description("${res:Dialog.ProjectOptions.RunPostBuildEvent.OnSuccessfulBuild}")]
-		OnSuccessfulBuild,
 		[Description("${res:Dialog.ProjectOptions.RunPostBuildEvent.OnOutputUpdated}")]
 		OnOutputUpdated
 	}
 	
-	public enum DebugSymbolType {
+	public enum DebugSymbolType
+	{
 		[Description("${res:Dialog.ProjectOptions.DebugSymbolType.None}")]
 		None,
 		[Description("${res:Dialog.ProjectOptions.DebugSymbolType.Full}")]
@@ -31,7 +33,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		PdbOnly
 	}
 	
-	public enum StartAction {
+	public enum StartAction
+	{
 		Project,
 		Program,
 		StartURL

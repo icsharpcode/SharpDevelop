@@ -369,7 +369,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region Bind enum to ComboBox
 		/// <summary>
-		/// Bind enum to ComboBox
+		/// Bind enum to ComboBox. Assumes the first enum member is the default.
 		/// </summary>
 		public ConfigurationGuiBinding BindEnum<T>(string control, string property, params T[] values) where T : struct
 		{
@@ -377,7 +377,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
-		/// Bind enum to ComboBox
+		/// Bind enum to ComboBox. Assumes the first enum member is the default.
 		/// </summary>
 		public ConfigurationGuiBinding BindEnum<T>(Control control, string property, params T[] values) where T : struct
 		{

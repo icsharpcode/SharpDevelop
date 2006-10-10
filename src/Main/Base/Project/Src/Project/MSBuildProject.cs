@@ -29,6 +29,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected char BuildConstantSeparator = ';';
 		
 		/// <summary>
+		/// A list of project properties whose change causes reparsing of references and
+		/// files.
+		/// </summary>
+		protected readonly List<string> reparseSensitiveProperties = new List<string>();
+		
+		/// <summary>
+		/// A list of project properties that are saved after the normal properties.
+		/// Use this for properties that could reference other properties, e.g.
+		/// PostBuildEvent references OutputPath.
+		/// </summary>
+		protected readonly List<string> lastSavedProperties = new List<string>(new string[]
+		                                                                       {"PostBuildEvent",
+		                                                                       	"PreBuildEvent"});
+		
+		/// <summary>
 		/// Gets the list of MSBuild Imports.
 		/// </summary>
 		/// <returns>
@@ -236,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				writer.WriteAttributeString("xmlns", "http://schemas.microsoft.com/developer/msbuild/2003");
 				BaseConfiguration["ProjectGuid"] = IdGuid;
 				
-				SaveProperties(writer, BaseConfiguration, configurations);
+				SaveProperties(writer, BaseConfiguration, configurations, 1);
 				
 				List<ProjectItem> references   = new List<ProjectItem>();
 				List<ProjectItem> imports      = new List<ProjectItem>();
@@ -289,6 +304,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					writer.WriteEndElement();
 				}
 				
+				SaveProperties(writer, BaseConfiguration, configurations, 2);
+				
 				writer.WriteEndElement();
 			}
 			
@@ -300,36 +317,52 @@ namespace ICSharpCode.SharpDevelop.Project
 					writer.WriteStartElement("Project");
 					writer.WriteAttributeString("xmlns", "http://schemas.microsoft.com/developer/msbuild/2003");
 					
-					SaveProperties(writer, UserBaseConfiguration, userConfigurations);
+					SaveProperties(writer, UserBaseConfiguration, userConfigurations, 1);
 					SaveUnknownXmlSections(writer, userUnknownXmlSections);
+					SaveProperties(writer, UserBaseConfiguration, userConfigurations, 2);
+					
 					
 					writer.WriteEndElement();
 				}
 			}
 		}
 		
-		static void SaveProperties(XmlWriter writer, PropertyGroup baseConfiguration, Dictionary<string, PropertyGroup> configurations)
+		void SaveProperties(XmlWriter writer, PropertyGroup baseConfiguration, Dictionary<string, PropertyGroup> configurations, int runNumber)
 		{
+			Predicate<KeyValuePair<string, string>> filterPredicate;
+			if (runNumber == 1) {
+				filterPredicate = delegate(KeyValuePair<string, string> property) {
+					return !lastSavedProperties.Contains(property.Key);
+				};
+			} else {
+				filterPredicate = delegate(KeyValuePair<string, string> property) {
+					return lastSavedProperties.Contains(property.Key);
+				};
+			}
+			
 			if (baseConfiguration.PropertyCount > 0) {
-				writer.WriteStartElement("PropertyGroup");
-				baseConfiguration.WriteProperties(writer);
-				writer.WriteEndElement();
+				PropertyGroup.WriteProperties(writer,
+				                              string.Empty,
+				                              Linq.Where(baseConfiguration, filterPredicate),
+				                              baseConfiguration.IsGuardedProperty);
 			}
 			foreach (KeyValuePair<string, PropertyGroup> entry in configurations) {
 				// Skip empty groups
 				if (entry.Value.PropertyCount == 0) {
 					continue;
 				}
-				writer.WriteStartElement("PropertyGroup");
+				string condition;
 				if (entry.Key.StartsWith("*|")) {
-					writer.WriteAttributeString("Condition", " '$(Platform)' == '" + ProjectItem.MSBuildEscape(entry.Key.Substring(2)) + "' ");
+					condition = " '$(Platform)' == '" + ProjectItem.MSBuildEscape(entry.Key.Substring(2)) + "' ";
 				} else if (entry.Key.EndsWith("|*")) {
-					writer.WriteAttributeString("Condition", " '$(Configuration)' == '" + ProjectItem.MSBuildEscape(entry.Key.Substring(0, entry.Key.Length - 2)) + "' ");
+					condition = " '$(Configuration)' == '" + ProjectItem.MSBuildEscape(entry.Key.Substring(0, entry.Key.Length - 2)) + "' ";
 				} else {
-					writer.WriteAttributeString("Condition", " '$(Configuration)|$(Platform)' == '" + ProjectItem.MSBuildEscape(entry.Key) + "' ");
+					condition = " '$(Configuration)|$(Platform)' == '" + ProjectItem.MSBuildEscape(entry.Key) + "' ";
 				}
-				entry.Value.WriteProperties(writer);
-				writer.WriteEndElement();
+				PropertyGroup.WriteProperties(writer,
+				                              condition,
+				                              Linq.Where(entry.Value, filterPredicate),
+				                              entry.Value.IsGuardedProperty);
 			}
 		}
 		
@@ -513,12 +546,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			                     Name,
 			                     Items.Count);
 		}
-		
-		/// <summary>
-		/// A list of project properties whose change causes reparsing of references and
-		/// files.
-		/// </summary>
-		protected readonly List<string> reparseSensitiveProperties = new List<string>();
 		
 		[ReadOnly(true)]
 		[LocalizedProperty("${res:Dialog.ProjectOptions.Platform}")]
