@@ -975,15 +975,6 @@
 											<File Source="..\..\AddIns\AddIns\Misc\ResourceToolkit\Hornung.ResourceToolkit.dll" Name="RESTKT.DLL" Id="Hornung.ResourceToolkit.dll" LongName="Hornung.ResourceToolkit.dll" Assembly=".net" AssemblyApplication="Hornung.ResourceToolkit.dll" AssemblyManifest="Hornung.ResourceToolkit.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
-									<Directory Id="SharpServerTools" LongName="SharpServerTools" Name="SServer">
-										<Component Id="SharpServerToolsDll" Guid="D695B3F3-2CEB-45A3-B5C6-B1F5CDF8517F" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\SharpServerTools.dll" Name="SHARPS_1.DLL" Id="SharpServerTools.dll" LongName="SharpServerTools.dll" Assembly=".net" AssemblyApplication="SharpServerTools.dll" AssemblyManifest="SharpServerTools.dll" KeyPath="yes" />
-											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\SharpServerTools.addin" Name="SHARPS_1.ADD" Id="SharpServerTools.addin" LongName="SharpServerTools.addin" />
-										</Component>
-										<Component Id="SharpDbToolsDll" Guid="BCD652BD-E69D-4CC0-AD40-7AAFF2DB209F" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\SharpDbTools.dll" Name="SHARPD_1.DLL" Id="SharpDbTools.dll" LongName="SharpDbTools.dll" Assembly=".net" AssemblyApplication="SharpDbTools.dll" AssemblyManifest="SharpDbTools.dll" KeyPath="yes" />
-										</Component>
-									</Directory>
 									<Directory Id="SharpQueryFolder" LongName="SharpQuery" Name="Query">
 										<Component Guid="94E2FFCE-B59A-4CB8-90C5-A68FEE705DBA" Id="SharpQueryDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SharpQuery\SharpQuery.dll" Name="SHARPQ_1.DLL" Id="SharpQuery.dll" LongName="SharpQuery.dll" Assembly=".net" AssemblyApplication="SharpQuery.dll" AssemblyManifest="SharpQuery.dll" KeyPath="yes" />
