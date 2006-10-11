@@ -39,6 +39,13 @@ namespace WixBinding.Tests.PackageFiles
 			Assert.IsFalse(view.IsNoSourceFileFoundMessageDisplayed);
 		}
 		
+		[Test]
+		public void ShowDiff()
+		{
+			editor.ShowDiff();
+			Assert.IsTrue(view.IsNoDifferencesFoundMessageDisplayed);
+		}
+		
 		protected override string GetWixXml()
 		{
 			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2003/01/wi\">\r\n" +

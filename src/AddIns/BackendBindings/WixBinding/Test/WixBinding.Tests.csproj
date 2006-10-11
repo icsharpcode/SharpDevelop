@@ -218,6 +218,17 @@
     <Compile Include="DialogXmlGeneration\ComboBoxPropertyWithSpecialXmlCharsTestFixture.cs" />
     <Compile Include="DialogXmlGeneration\ListViewPropertyWithSpecialXmlCharsTestFixture.cs" />
     <Compile Include="DialogLoading\TextStyleNameWithSpecialXmlCharsTestFixture.cs" />
+    <Compile Include="Diff\NoDifferentFilesTestFixture.cs" />
+    <Compile Include="Document\ChildComponentsTestFixture.cs" />
+    <Compile Include="Document\ChildFilesTestFixture.cs" />
+    <Compile Include="Diff\OneNewFileTestFixture.cs" />
+    <Compile Include="Diff\OneMissingFileTestFixture.cs" />
+    <Compile Include="PackageFiles\NoDiffShownTestFixture.cs" />
+    <Compile Include="PackageFiles\OneNewFileDiffTestFixture.cs" />
+    <Compile Include="DirectoryImport\ExcludedNamesTests.cs" />
+    <Compile Include="Diff\ExcludedFilesTestFixture.cs" />
+    <Compile Include="Diff\SameFileReferencedTwiceTestFixture.cs" />
+    <Compile Include="Project\CanCompileTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\WixBinding.csproj">
@@ -276,6 +287,7 @@
     </Content>
     <Folder Include="PropertyGrid" />
     <Folder Include="DirectoryImport" />
+    <Folder Include="Diff" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

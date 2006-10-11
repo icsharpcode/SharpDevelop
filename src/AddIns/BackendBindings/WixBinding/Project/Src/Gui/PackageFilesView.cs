@@ -156,6 +156,16 @@ namespace ICSharpCode.WixBinding
 			packageFilesControl.AddDirectory();
 		}
 		
+		public void ShowDiff()
+		{
+			packageFilesControl.ShowDiff();
+		}
+		
+		public void HideDiff()
+		{
+			packageFilesControl.IsDiffVisible = false;
+		}
+		
 		/// <summary>
 		/// Gets the package files view that is already open and displaying the files
 		/// for the specified project.

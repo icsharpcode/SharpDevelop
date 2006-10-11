@@ -72,5 +72,10 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			return new string[0];
 		}
+		
+		public bool DirectoryExists(string path)
+		{
+			return true;
+		}
 	}
 }

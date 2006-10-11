@@ -144,6 +144,13 @@
     <Compile Include="Src\PropertyGrid\RelativeFileNameEditor.cs" />
     <Compile Include="Src\PropertyGrid\DropDownEditor.cs" />
     <Compile Include="Src\PropertyGrid\DropDownEditorListBox.cs" />
+    <Compile Include="Src\WixPackageFilesDiff.cs" />
+    <Compile Include="Src\WixPackageFilesDiffResult.cs" />
+    <Compile Include="Src\DirectoryReader.cs" />
+    <Compile Include="Src\Commands\ShowDiffCommand.cs" />
+    <Compile Include="Src\Gui\WixPackageFilesDiffControl.cs" />
+    <Compile Include="Src\Commands\HideDiffCommand.cs" />
+    <Compile Include="Src\ExcludedNames.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="WixBinding.addin">

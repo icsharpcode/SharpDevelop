@@ -18,6 +18,7 @@ namespace WixBinding.Tests.Utils
 	{
 		bool noSourceFileFoundMessageDisplayed;
 		bool sourceFilesContainErrorsMessageDisplayed;
+		bool noDifferencesFoundMessageDisplayed;
 		string projectName;
 		WixDirectoryElement rootDirectory;
 		bool selectedItemAccessed;
@@ -30,6 +31,7 @@ namespace WixBinding.Tests.Utils
 		bool attributesChangedCalled;
 		List<XmlElement> directoriesAdded = new List<XmlElement>();
 		bool clearDirectoriesCalled;
+		WixPackageFilesDiffResult[] diffResults;
 		
 		public MockWixPackageFilesView()
 		{
@@ -44,6 +46,11 @@ namespace WixBinding.Tests.Utils
 		public void ShowSourceFilesContainErrorsMessage()
 		{
 			sourceFilesContainErrorsMessageDisplayed = true;
+		}
+		
+		public void ShowNoDifferenceFoundMessage()
+		{
+			noDifferencesFoundMessageDisplayed = true;
 		}
 		
 		public WixDirectoryElement RootDirectory {
@@ -119,6 +126,11 @@ namespace WixBinding.Tests.Utils
 			clearDirectoriesCalled = true;
 		}
 		
+		public void ShowDiffResults(WixPackageFilesDiffResult[] diffResults)
+		{
+			this.diffResults = diffResults;
+		}
+		
 		/// <summary>
 		/// Gets whether the No source file found error message is displayed in the
 		/// view.
@@ -178,6 +190,18 @@ namespace WixBinding.Tests.Utils
 		public bool IsClearDirectoriesCalled {
 			get {
 				return clearDirectoriesCalled;
+			}
+		}
+		
+		public bool IsNoDifferencesFoundMessageDisplayed {
+			get {
+				return noDifferencesFoundMessageDisplayed;
+			}
+		}
+		
+		public WixPackageFilesDiffResult[] DiffResults {
+			get {
+				return diffResults;
 			}
 		}
 	}

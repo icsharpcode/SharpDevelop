@@ -21,6 +21,7 @@ namespace ICSharpCode.WixBinding
 	public class WixPackageFilesControl : System.Windows.Forms.UserControl, IWixPackageFilesView
 	{
 		bool errorMessageTextBoxVisible;
+		bool diffVisible;
 		WixPackageFilesEditor editor;
 		bool dirty;
 		WixProject project;
@@ -30,6 +31,7 @@ namespace ICSharpCode.WixBinding
 		public WixPackageFilesControl()
 		{
 			InitializeComponent();
+			diffControl.ContextMenuStrip = MenuService.CreateContextMenu(this, "/AddIns/WixBinding/WixPackageFilesDiffControl/ContextMenu");
 		}
 		
 		public delegate void DirtyChangedEventHandler(object source, EventArgs e);
@@ -66,6 +68,25 @@ namespace ICSharpCode.WixBinding
 					errorMessageTextBox.BringToFront();
 				} else {
 					errorMessageTextBox.SendToBack();
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Shows or hides the diff panel.
+		/// </summary>
+		public bool IsDiffVisible {
+			get {
+				return diffVisible;
+			}
+			set {
+				if (diffVisible != value) {
+					diffVisible = value;
+					if (diffVisible) {
+						ShowDiffPanel();
+					} else {
+						HideDiffPanel();
+					}
 				}
 			}
 		}
@@ -173,7 +194,7 @@ namespace ICSharpCode.WixBinding
 		{
 			ShowErrorMessage(StringParser.Parse("${res:ICSharpCode.WixBinding.PackageFilesView.AllWixFilesContainErrorsMessage}"));
 		}
-		
+				
 		/// <summary>
 		/// Removes the selected element from the view only. The document is not
 		/// changed by this method.
@@ -250,6 +271,31 @@ namespace ICSharpCode.WixBinding
 		{
 			editor.Save();
 		}
+		
+		public void ShowNoDifferenceFoundMessage()
+		{
+			IsDiffVisible = true;
+			diffControl.ShowNoDiffMessage();
+		}
+		
+		/// <summary>
+		/// Shows the specified diff results.
+		/// </summary>
+		public void ShowDiffResults(WixPackageFilesDiffResult[] diffResults)
+		{
+			IsDiffVisible = true;
+			diffControl.ShowDiffResults(diffResults);
+		}
+		
+		/// <summary>
+		/// Determines any differences between the files defined in the
+		/// Wix document and the files on the file system and displays
+		/// the results.
+		/// </summary>
+		public void ShowDiff()
+		{
+			editor.ShowDiff();
+		}
 					
 		/// <summary>
 		/// Disposes resources used by the control.
@@ -285,9 +331,13 @@ namespace ICSharpCode.WixBinding
 			this.packageFilesTreeView = new ICSharpCode.WixBinding.WixPackageFilesTreeView();
 			this.propertyGrid = new System.Windows.Forms.PropertyGrid();
 			this.errorMessageTextBox = new System.Windows.Forms.RichTextBox();
+			this.diffSplitContainer = new System.Windows.Forms.SplitContainer();
+			this.diffControl = new ICSharpCode.WixBinding.WixPackageFilesDiffControl();
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
 			this.splitContainer.SuspendLayout();
+			this.diffSplitContainer.Panel2.SuspendLayout();
+			this.diffSplitContainer.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// splitContainer
@@ -304,6 +354,7 @@ namespace ICSharpCode.WixBinding
 			// 
 			this.splitContainer.Panel2.Controls.Add(this.propertyGrid);
 			this.splitContainer.Panel2.Controls.Add(this.errorMessageTextBox);
+			this.splitContainer.Panel2.Controls.Add(this.diffSplitContainer);
 			this.splitContainer.Size = new System.Drawing.Size(561, 328);
 			this.splitContainer.SplitterDistance = 186;
 			this.splitContainer.TabIndex = 0;
@@ -320,6 +371,7 @@ namespace ICSharpCode.WixBinding
 			this.packageFilesTreeView.Location = new System.Drawing.Point(0, 0);
 			this.packageFilesTreeView.Name = "packageFilesTreeView";
 			this.packageFilesTreeView.NodeSorter = extTreeViewComparer1;
+			this.packageFilesTreeView.SelectedElement = null;
 			this.packageFilesTreeView.SelectedImageIndex = 0;
 			this.packageFilesTreeView.Size = new System.Drawing.Size(186, 328);
 			this.packageFilesTreeView.TabIndex = 0;
@@ -347,6 +399,29 @@ namespace ICSharpCode.WixBinding
 			this.errorMessageTextBox.TabIndex = 2;
 			this.errorMessageTextBox.Text = "";
 			// 
+			// diffSplitContainer
+			// 
+			this.diffSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.diffSplitContainer.Location = new System.Drawing.Point(0, 0);
+			this.diffSplitContainer.Name = "diffSplitContainer";
+			this.diffSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+			// 
+			// diffSplitContainer.Panel2
+			// 
+			this.diffSplitContainer.Panel2.Controls.Add(this.diffControl);
+			this.diffSplitContainer.Size = new System.Drawing.Size(371, 328);
+			this.diffSplitContainer.SplitterDistance = 159;
+			this.diffSplitContainer.TabIndex = 3;
+			this.diffSplitContainer.TabStop = false;
+			// 
+			// diffControl
+			// 
+			this.diffControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.diffControl.Location = new System.Drawing.Point(0, 0);
+			this.diffControl.Name = "diffControl";
+			this.diffControl.Size = new System.Drawing.Size(371, 165);
+			this.diffControl.TabIndex = 0;
+			// 
 			// WixPackageFilesControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -357,8 +432,12 @@ namespace ICSharpCode.WixBinding
 			this.splitContainer.Panel1.ResumeLayout(false);
 			this.splitContainer.Panel2.ResumeLayout(false);
 			this.splitContainer.ResumeLayout(false);
+			this.diffSplitContainer.Panel2.ResumeLayout(false);
+			this.diffSplitContainer.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+		private ICSharpCode.WixBinding.WixPackageFilesDiffControl diffControl;
+		private System.Windows.Forms.SplitContainer diffSplitContainer;
 		private System.Windows.Forms.RichTextBox errorMessageTextBox;
 		private System.Windows.Forms.PropertyGrid propertyGrid;
 		private ICSharpCode.WixBinding.WixPackageFilesTreeView packageFilesTreeView;
@@ -418,6 +497,36 @@ namespace ICSharpCode.WixBinding
 		{
 			List<string> extensions = AddInTree.BuildItems<string>("/AddIns/WixBinding/ExcludedItems", this);
 			return extensions.ToArray();
+		}
+		
+		void ShowDiffPanel()
+		{
+			// Add property grid to split container.
+			splitContainer.Panel2.Controls.Remove(propertyGrid);
+			diffSplitContainer.Panel1.Controls.Add(propertyGrid);			
+			
+			// Fix the tab order.
+			diffSplitContainer.TabStop = true;
+
+			// Bring the split container to the front.
+			diffSplitContainer.BringToFront();
+		}
+		
+		void HideDiffPanel()
+		{
+			// Remove the property grid from the split container back to 
+			// this control.
+			diffSplitContainer.Panel1.Controls.Remove(propertyGrid);			
+			splitContainer.Panel2.Controls.Add(propertyGrid);
+
+			// Fix the tab order.
+			diffSplitContainer.TabStop = false;
+			
+			// Send the diff split container to the back.
+			diffSplitContainer.SendToBack();
+			
+			// Bring the property grid back to the front.
+			propertyGrid.BringToFront();
 		}
 	}
 }

@@ -60,7 +60,7 @@ namespace ICSharpCode.WixBinding
 		
 		/// <summary>
 		/// Gets the filename where the resource being added to the setup 
-		/// package can be found. Typically this isrelative to the Wix document the
+		/// package can be found. Typically this is relative to the Wix document the
 		/// File element is a part of.
 		/// </summary>
 		public string Source {
@@ -102,6 +102,22 @@ namespace ICSharpCode.WixBinding
 			}
 			set {
 				SetAttribute("LongName", value);
+			}
+		}
+		
+		/// <summary>
+		/// Gets the full path to the file. If the parent WixDocument
+		/// has no filename then the relative path as stored in the 
+		/// wix document is returned.
+		/// </summary>
+		public string FileName {
+			get {
+				WixDocument document = OwnerDocument as WixDocument;
+				if (document != null && !String.IsNullOrEmpty(document.FileName)) {
+					string directory = Path.GetDirectoryName(document.FileName);
+					return Path.GetFullPath(Path.Combine(directory, Source));
+				}
+				return Source;
 			}
 		}
 		

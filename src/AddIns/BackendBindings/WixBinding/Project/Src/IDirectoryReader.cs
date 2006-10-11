@@ -25,5 +25,10 @@ namespace ICSharpCode.WixBinding
 		/// Gets the directories in the specified path.
 		/// </summary>
 		string[] GetDirectories(string path);
+		
+		/// <summary>
+		/// Checks whether the specified directory exists.
+		/// </summary>
+		bool DirectoryExists(string path);
 	}
 }

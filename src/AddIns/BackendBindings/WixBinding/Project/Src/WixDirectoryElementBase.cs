@@ -54,6 +54,21 @@ namespace ICSharpCode.WixBinding
 			}
 			return directories.ToArray();
 		}
+		
+		/// <summary>
+		/// Gets any child component elements.
+		/// </summary>
+		public WixComponentElement[] GetComponents()
+		{
+			List<WixComponentElement> components = new List<WixComponentElement>();
+			foreach (XmlNode childNode in ChildNodes) {
+				WixComponentElement childElement = childNode as WixComponentElement;
+				if (childElement != null) {
+					components.Add(childElement);
+				}
+			}
+			return components.ToArray();
+		}
 
 		/// <summary>
 		/// Adds a new directory with the specified name and id. A short name

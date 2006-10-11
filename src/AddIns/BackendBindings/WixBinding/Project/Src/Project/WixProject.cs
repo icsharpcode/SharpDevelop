@@ -204,6 +204,18 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
+		/// Checks whether the specified file can be compiled by the
+		/// Wix project.
+		/// </summary>
+		/// <returns>
+		/// <see langword="true"/> if the file is a WiX source file (.wxs)
+		/// or a WiX include file (.wxi).</returns>
+		public override bool CanCompile(string fileName)
+		{
+			return WixDocument.IsWixFileName(fileName);
+		}
+		
+		/// <summary>
 		/// Creates a WixProject with the default settings in its MSBuild file.
 		/// </summary>
 		protected override void Create(ProjectCreateInformation information)

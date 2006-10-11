@@ -30,7 +30,7 @@ namespace ICSharpCode.WixBinding
 		/// files could not be read because they contain errors.
 		/// </summary>
 		void ShowSourceFilesContainErrorsMessage();
-		
+				
 		/// <summary>
 		/// Adds the directories that will be displayed. Each directory may contain its
 		/// own directories.
@@ -77,5 +77,16 @@ namespace ICSharpCode.WixBinding
 		/// Gets the element names that can be added as children to the selected element.
 		/// </summary>
 		StringCollection AllowedChildElements {get;}
+		
+		/// <summary>
+		/// Displays the message that no difference was found between
+		/// the files in the Wix document and those on the file system.
+		/// </summary>
+		void ShowNoDifferenceFoundMessage();
+		
+		/// <summary>
+		/// Displays the diff results.
+		/// </summary>
+		void ShowDiffResults(WixPackageFilesDiffResult[] diffResults);
 	}
 }

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
@@ -132,6 +133,21 @@ namespace ICSharpCode.WixBinding
 				idEnd = FirstCharacterToUpperInvariant(extension.Substring(1));
 			}
 			return String.Concat(idStart, idEnd);
+		}
+		
+		/// <summary>
+		/// Gets any child file elements.
+		/// </summary>
+		public WixFileElement[] GetFiles()
+		{
+			List<WixFileElement> files = new List<WixFileElement>();
+			foreach (XmlNode childNode in ChildNodes) {
+				WixFileElement childElement = childNode as WixFileElement;
+				if (childElement != null) {
+					files.Add(childElement);
+				}
+			}
+			return files.ToArray();
 		}
 		
 		/// <summary>

@@ -191,6 +191,9 @@
 		<MenuItem id = "AddDirectory"
 			label = "${res:ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddDirectory}"
 			class = "ICSharpCode.WixBinding.AddDirectoryCommand"/>
+		<MenuItem id = "Diff"
+				label = "Diff"
+				class = "ICSharpCode.WixBinding.ShowDiffCommand"/>
 		<Include path = "/AddIns/WixBinding/PackageFilesView/ContextMenu/Common"/>
 	</Path>
 	
@@ -218,6 +221,9 @@
 			<MenuItem id = "AddDirectory"
 				label = "${res:ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddDirectory}"
 				class = "ICSharpCode.WixBinding.AddDirectoryCommand"/>
+			<MenuItem id = "Diff"
+				label = "Diff"
+				class = "ICSharpCode.WixBinding.ShowDiffCommand"/>
 		</ComplexCondition>
 		<ComplexCondition action = "Exclude">
 			<Or>
@@ -244,6 +250,12 @@
 		</ComplexCondition>
 	</Path>
 	
+	<Path name = "/AddIns/WixBinding/WixPackageFilesDiffControl/ContextMenu">
+		<MenuItem id = "HideDiffControl"
+			label = "${res:Global.CloseButtonText}"
+			class = "ICSharpCode.WixBinding.HideDiffCommand"/>
+	</Path>
+	
 	<!-- 
 		Standard compiler extensions. These are displayed in the add 
 		compiler extensions dialog.
@@ -261,5 +273,6 @@
 	<Path name="/AddIns/WixBinding/ExcludedItems">
 		<String id="svn" text=".svn"/>
 		<String id="obj" text="obj"/>
+		<String id="pdb" text="*.pdb"/>
 	</Path>
 </AddIn>

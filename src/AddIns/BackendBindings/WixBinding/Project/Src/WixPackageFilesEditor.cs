@@ -28,23 +28,7 @@ namespace ICSharpCode.WixBinding
 		static WixDocument document;
 		WixSchemaCompletionData wixSchemaCompletionData;
 		bool usingRootDirectoryRef;
-		StringCollection excludedItems = new StringCollection();
-		
-		/// <summary>
-		/// Gets the files and directories in the specified path.
-		/// </summary>
-		class DefaultDirectoryReader : IDirectoryReader
-		{
-			public string[] GetFiles(string path)
-			{
-				return Directory.GetFiles(path);
-			}
-			
-			public string[] GetDirectories(string path)
-			{
-				return Directory.GetDirectories(path);
-			}
-		}
+		ExcludedNames excludedNames = new ExcludedNames();
 		
 		/// <summary>
 		/// Creates a new instance of the WixPackageFilesEditor.
@@ -70,7 +54,7 @@ namespace ICSharpCode.WixBinding
 		/// the default directory reader which just uses the Directory class.
 		/// </summary>
 		public WixPackageFilesEditor(IWixPackageFilesView view, ITextFileReader fileReader, IWixDocumentWriter documentWriter)
-			: this(view, fileReader, documentWriter, new DefaultDirectoryReader())
+			: this(view, fileReader, documentWriter, new DirectoryReader())
 		{
 		}
 		
@@ -227,9 +211,39 @@ namespace ICSharpCode.WixBinding
 		/// List of files and directory names that will be excluded when
 		/// adding a directory to the package.
 		/// </summary>
-		public StringCollection ExcludedItems {
+		public ExcludedNames ExcludedItems {
 			get {
-				return excludedItems;
+				return excludedNames;
+			}
+		}
+		
+		/// <summary>
+		/// Works out any differences betweent the files specified in 
+		/// the Wix document and the files on the file system and
+		/// shows the differences.
+		/// </summary>
+		public void ShowDiff()
+		{
+			WixPackageFilesDiff diff = new WixPackageFilesDiff(directoryReader);
+			diff.ExcludedFileNames.Add(excludedNames);
+			
+			WixDirectoryElementBase directoryElement = view.SelectedElement as WixDirectoryElementBase;
+			if (directoryElement == null) {
+				directoryElement = RootDirectoryElement;
+			}
+			
+			// Directory element selected?
+			if (directoryElement == null) {
+				view.ShowNoDifferenceFoundMessage();
+				return;
+			}
+			
+			// Show diff results
+			WixPackageFilesDiffResult[] diffResults = diff.Compare(directoryElement);
+			if (diffResults.Length > 0) {
+				view.ShowDiffResults(diffResults);
+			} else {
+				view.ShowNoDifferenceFoundMessage();
 			}
 		}
 		
@@ -298,18 +312,28 @@ namespace ICSharpCode.WixBinding
 		WixDirectoryElement AddDirectory(WixDirectoryElementBase parentElement, string name)
 		{
 			if (parentElement == null) {
-				if (usingRootDirectoryRef) {
-					parentElement = document.RootDirectoryRef;
-				} else {
-					parentElement = document.RootDirectory;
-					if (parentElement == null) {
-						parentElement = document.AddRootDirectory();
-					}
+				parentElement = RootDirectoryElement;
+				if (parentElement == null) {
+					parentElement = document.AddRootDirectory();
 				}
 			}
 			return parentElement.AddDirectory(name);
 		}
 		
+		/// <summary>
+		/// Gets the root directory element being used in the document.
+		/// Takes into account whether the WixDocument is using a 
+		/// DirectoryRef element.
+		/// </summary>
+		WixDirectoryElementBase RootDirectoryElement {
+			get {
+				if (usingRootDirectoryRef) {
+					return document.RootDirectoryRef;
+				}
+				return document.RootDirectory;
+			}
+		}
+
 		WixSchemaCompletionData WixSchemaCompletionData {
 			get {
 				if (wixSchemaCompletionData == null) {
@@ -391,7 +415,7 @@ namespace ICSharpCode.WixBinding
 		void AddFiles(WixDirectoryElement directoryElement, string directory)
 		{
 			foreach (string fileName in DirectoryReader.GetFiles(directory)) {
-				if (!IsExcluded(fileName)) {
+				if (!excludedNames.IsExcluded(fileName)) {
 					string path = Path.Combine(directory, fileName);
 					string id = WixComponentElement.GenerateIdFromFileName(document, path);
 					WixComponentElement component = AddComponent(directoryElement, id);
@@ -416,7 +440,7 @@ namespace ICSharpCode.WixBinding
 		{
 			foreach (string subDirectory in DirectoryReader.GetDirectories(directory)) {
 				string subDirectoryName = WixDirectoryElement.GetLastDirectoryName(subDirectory);
-				if (!IsExcluded(subDirectoryName)) {
+				if (!excludedNames.IsExcluded(subDirectoryName)) {
 					WixDirectoryElement subDirectoryElement = AddDirectory(directoryElement, subDirectoryName);
 					AddFiles(subDirectoryElement, subDirectory);
 					
@@ -424,15 +448,6 @@ namespace ICSharpCode.WixBinding
 					AddDirectoryContents(subDirectoryElement, subDirectory);
 				}
 			}
-		}
-		
-		/// <summary>
-		/// Checks whether the specified filename or directory name should be 
-		/// excluded.
-		/// </summary>
-		bool IsExcluded(string name)
-		{
-			return excludedItems.Contains(name);
 		}
 	}
 }
