@@ -1,0 +1,6 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.1.0.1900
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OracleDbToolsProvider", "OracleDbToolsProvider.csproj", "{DFA70EAA-3285-4BC0-BCA7-EBEC4D67FC9B}"
+EndProject
+Global
+EndGlobal

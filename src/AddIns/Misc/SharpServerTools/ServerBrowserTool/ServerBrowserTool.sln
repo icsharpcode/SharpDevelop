@@ -1,0 +1,6 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.1.0.1900
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerBrowserTool", "ServerBrowserTool.csproj", "{D721EAA4-8A40-4EF0-A011-5862159BE621}"
+EndProject
+Global
+EndGlobal

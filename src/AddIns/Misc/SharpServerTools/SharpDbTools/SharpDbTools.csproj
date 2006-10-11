@@ -1,0 +1,76 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SharpDbTools</RootNamespace>
+    <AssemblyName>SharpDbTools</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{93B2D6DF-7588-40C0-8A35-CA0DD7328FC3}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Src\Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Forms\TableDescribeViewContent.cs" />
+    <Compile Include="Src\Forms\ConnectionStringDefinitionDialog.cs" />
+    <Compile Include="Src\Forms\ConnectionStringDefinitionDialog.Designer.cs" />
+    <Compile Include="Src\Forms\DatabaseExplorerTreeNode.cs" />
+    <Compile Include="Src\Forms\DbModelInfoTreeNode.cs" />
+    <Compile Include="Src\Forms\FormsArtefactFactories.cs" />
+    <Compile Include="Src\Forms\FormsArtefactFactory.cs" />
+    <Compile Include="Src\Forms\GetConnectionLogicalNameDialog.cs" />
+    <Compile Include="Src\Forms\GetConnectionLogicalNameDialog.Designer.cs" />
+    <EmbeddedResource Include="Src\Forms\ConnectionStringDefinitionDialog.resx">
+      <DependentUpon>ConnectionStringDefinitionDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Src\Forms\GetConnectionLogicalNameDialog.resx">
+      <DependentUpon>GetConnectionLogicalNameDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Src\Data\TableNames.cs" />
+    <Compile Include="Src\Data\ColumnNames.cs" />
+    <Compile Include="Src\Data\DbModelInfo.cs" />
+    <Compile Include="Src\Data\DbModelInfoService.cs" />
+    <Compile Include="Src\Data\DbProvidersService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src" />
+    <Folder Include="Src\Configuration" />
+    <Folder Include="Src\Data" />
+    <Folder Include="Src\Forms" />
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ServerBrowserTool\ServerBrowserTool.csproj">
+      <Project>{D721EAA4-8A40-4EF0-A011-5862159BE621}</Project>
+      <Name>ServerBrowserTool</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>
