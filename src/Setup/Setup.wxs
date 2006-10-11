@@ -169,6 +169,8 @@
 				<ComponentRef Id="WixLicenseFiles"/>
 				<ComponentRef Id="WixBitmapFiles"/>
 				<ComponentRef Id="WixDocFiles"/>
+				<ComponentRef Id="NetFxSchema"/>
+				<ComponentRef Id="VSExtensionSchema"/>
 				<ComponentRef Id="WixIncFiles"/>
 				<ComponentRef Id="WixLibFiles"/>
 				<ComponentRef Id="WixVSExtension"/>

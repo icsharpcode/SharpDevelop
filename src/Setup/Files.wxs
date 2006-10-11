@@ -326,6 +326,12 @@
 											<File Source="..\..\bin\Tools\Wix\doc\wix.xsd" Name="wix.xsd" Id="wix.xsd" />
 											<File Source="..\..\bin\Tools\Wix\doc\wixloc.xsd" Name="wixloc.xsd" Id="wixloc.xsd" />
 										</Component>
+										<Component Guid="709867E5-F226-4ADF-8204-E77ED2F67EEC" Id="NetFxSchema" DiskId="1">
+											<File Source="..\..\bin\Tools\Wix\doc\netfx.xsd" Name="netfx.xsd" Id="netfx.xsd" />
+										</Component>
+										<Component Guid="6CF70F72-AB78-4122-BC7F-0CA6B3CC6E97" Id="VSExtensionSchema" DiskId="1">
+											<File Source="..\..\bin\Tools\Wix\doc\vs.xsd" Name="vs.xsd" Id="vs.xsd" />
+										</Component>
 									</Directory>
 									<Directory Id="WixIncFolder" Name="inc">
 										<Component Guid="07E93366-FFBD-4C7A-AF4B-F557EC5B42DD" Id="WixIncFiles" DiskId="1">
@@ -1062,7 +1068,7 @@
 								link to the file instead. We will use a file otherwise an
 								upgrade will not remove the existing website shortcut.
 							-->
-							<File Id="SharpDevelop.url" KeyPath="yes" Name="SharpDev.url" LongName="SharpDevelop.url" Source="SharpDevelop.url" />
+							<File Id="SharpDevelop.url" KeyPath="yes" Name="SharpDev.url" LongName="SharpDevelop.url" Source="Files\SharpDevelop.url" />
 							<!-- 
 								ICE18 - Force the empty folder to be created. Even though it
 								has sub folders the validator flags this as an error.
