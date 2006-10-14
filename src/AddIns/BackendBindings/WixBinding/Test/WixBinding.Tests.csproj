@@ -229,6 +229,7 @@
     <Compile Include="Diff\ExcludedFilesTestFixture.cs" />
     <Compile Include="Diff\SameFileReferencedTwiceTestFixture.cs" />
     <Compile Include="Project\CanCompileTests.cs" />
+    <Compile Include="DirectoryImport\AddDirectoryWithInvalidIdCharsTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\WixBinding.csproj">

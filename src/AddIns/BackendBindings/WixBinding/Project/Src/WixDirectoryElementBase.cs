@@ -77,7 +77,7 @@ namespace ICSharpCode.WixBinding
 		public WixDirectoryElement AddDirectory(string name)
 		{
 			WixDirectoryElement directoryElement = new WixDirectoryElement((WixDocument)OwnerDocument);
-			directoryElement.Id = name;
+			directoryElement.Id = WixFileElement.GenerateId(name);
 			SetDirectoryName(directoryElement, name);
 			return (WixDirectoryElement)AppendChild(directoryElement);
 		}

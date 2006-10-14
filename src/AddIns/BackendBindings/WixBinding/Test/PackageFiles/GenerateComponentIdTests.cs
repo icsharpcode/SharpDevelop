@@ -47,5 +47,12 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			Assert.AreEqual(String.Empty, WixComponentElement.GenerateIdFromFileName(String.Empty));
 		}
+		
+		[Test]
+		public void Hyphen()
+		{
+			string fileName = "a-b.txt";
+			Assert.AreEqual("A_bTxt", WixComponentElement.GenerateIdFromFileName(fileName));
+		}
 	}
 }

@@ -132,7 +132,7 @@ namespace ICSharpCode.WixBinding
 			if (extension.Length > 1) {
 				idEnd = FirstCharacterToUpperInvariant(extension.Substring(1));
 			}
-			return String.Concat(idStart, idEnd);
+			return WixFileElement.GenerateId(String.Concat(idStart, idEnd));
 		}
 		
 		/// <summary>
