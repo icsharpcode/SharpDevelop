@@ -184,7 +184,7 @@ namespace ICSharpCode.WixBinding
 			string longFileName = null;
 			string shortFileName = Path.GetFileName(sourceFileName);
 			string idFileName = shortFileName;
-			if (shortFileName.Length > ShortFileName.MaximumFileNameLength) {
+			if (ShortFileName.IsLongFileName(shortFileName)) {
 				longFileName = shortFileName;
 				shortFileName = ShortFileName.Convert(shortFileName, ShortFileNameExists);
 				idFileName = longFileName;
@@ -217,7 +217,7 @@ namespace ICSharpCode.WixBinding
 			// Add the file's parent directory to the id.
 			string parentDirectoryName = WixDirectoryElement.GetLastDirectoryName(parentDirectory);
 			if (parentDirectoryName.Length > 0) {
-				id = String.Concat(parentDirectoryName, ".", id);
+				id = String.Concat(WixFileElement.GenerateId(parentDirectoryName), ".", id);
 				if (!document.FileIdExists(id)) {
 					return id;
 				}

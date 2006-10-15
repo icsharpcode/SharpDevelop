@@ -97,6 +97,18 @@ namespace WixBinding.Tests.PackageFiles
 			string name = "boo.exe.config";
 			Assert.AreEqual("BOOEXE.CON", ShortFileName.Convert(name));
 		}
+		
+		[Test]
+		public void NullFileNameIsNotTooLong()
+		{
+			Assert.IsFalse(ShortFileName.IsLongFileName(null));
+		}
+		
+		[Test]
+		public void EmptyStringIsNotTooLong()
+		{
+			Assert.IsFalse(ShortFileName.IsLongFileName(String.Empty));
+		}
 
 		bool GetFileNameExists(string fileName)
 		{

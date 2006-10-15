@@ -31,17 +31,19 @@ namespace WixBinding.Tests.DirectoryImport
 		WixComponentElement readmeComponentElement;
 		WixComponentElement licenseComponentElement;
 		WixComponentElement exeComponentElement;
+		WixNamespaceManager nsManager;
 		string directory = @"C:\Projects\Test\MyApp";
+		string directory2 = @"C:\Projects\Test\a-app";
 		string[] files = new string[] {"MyApp.exe", "readme.txt", "license.txt"};
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		[SetUp]
+		public void Init()
 		{
 			base.InitFixture();
 			editor.AddDirectory(directory);
 			
-			WixNamespaceManager nsManager = new WixNamespaceManager(editor.Document.NameTable);
-			appDirectoryElement = (WixDirectoryElement)editor.Document.RootDirectory.SelectSingleNode("w:Directory[@Name='MyApp']", nsManager);;
+			nsManager = new WixNamespaceManager(editor.Document.NameTable);
+			appDirectoryElement = (WixDirectoryElement)editor.Document.RootDirectory.SelectSingleNode("w:Directory[@Name='MyApp']", nsManager);
 			readmeComponentElement = (WixComponentElement)appDirectoryElement.SelectSingleNode("w:Component[w:File/@Name='readme.txt']", nsManager);
 			licenseComponentElement = (WixComponentElement)appDirectoryElement.SelectSingleNode("w:Component[w:File/@Name='license.txt']", nsManager);	
 			exeComponentElement = (WixComponentElement)appDirectoryElement.SelectSingleNode("w:Component[w:File/@Name='MyApp.exe']", nsManager);
@@ -68,9 +70,23 @@ namespace WixBinding.Tests.DirectoryImport
 			Assert.AreEqual("MyAppMyAppExe2", exeComponentElement.Id);
 		}
 		
+		[Test]
+		public void AddDirectoryWithHyphen()
+		{
+			view.SelectedElement = null;
+			editor.AddDirectory(directory2);
+						
+			WixDirectoryElement directoryElement = (WixDirectoryElement)editor.Document.RootDirectory.SelectSingleNode("w:Directory[@Name='a-app']", nsManager);
+			WixComponentElement exeComponentElement = (WixComponentElement)directoryElement.SelectSingleNode("w:Component[w:File/@Name='MyApp.exe']", nsManager);
+
+			Assert.AreEqual("A_appMyAppExe", exeComponentElement.Id);
+		}
+		
 		public override string[] GetFiles(string path)
 		{
 			if (path == directory) {
+				return files;
+			} else if (path == directory2) {
 				return files;
 			}
 			return new string[0];

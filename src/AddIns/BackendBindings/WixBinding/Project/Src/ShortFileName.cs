@@ -141,6 +141,23 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
+		/// Determines whether the specified filename is a long name
+		/// and should be converted into a short name.
+		/// </summary>
+		public static bool IsLongFileName(string fileName)
+		{
+			if (fileName == null) {
+				return false;
+			}
+
+			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+			string extension = Path.GetExtension(fileName);
+
+			return fileNameWithoutExtension.Length > MaximumFileNameWithoutExtensionLength ||
+				extension.Length > MaximumFileNameExtensionLength;
+		}
+		
+		/// <summary>
 		/// Truncates the filename start and adds "_N" where N produces a filename that
 		/// does not exist.
 		/// </summary>

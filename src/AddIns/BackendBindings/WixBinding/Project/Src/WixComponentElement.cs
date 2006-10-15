@@ -95,6 +95,7 @@ namespace ICSharpCode.WixBinding
 			// Add the parent folder to the id.
 			string parentDirectory = WixDirectoryElement.GetLastDirectoryName(Path.GetDirectoryName(fileName));
 			parentDirectory = FirstCharacterToUpperInvariant(parentDirectory);
+			parentDirectory = WixFileElement.GenerateId(parentDirectory);
 			id = String.Concat(parentDirectory, id);
 			if (!document.ComponentIdExists(id)) {
 				return id;

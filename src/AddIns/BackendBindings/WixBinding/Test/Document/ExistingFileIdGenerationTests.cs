@@ -84,6 +84,14 @@ namespace WixBinding.Tests.Document
 			Assert.IsFalse(doc.FileIdExists("lice'nse.txt"));
 		}
 		
+		[Test]
+		public void FileIdAlreadyExistsAndParentDirectoryUsingHyphen()
+		{
+			WixFileElement fileElement = new WixFileElement(doc, @"C:/Projects/Setup/a-docs/readme.rtf");
+			Assert.AreEqual("a_docs.readme.rtf", fileElement.Id);
+		}
+
+		
 		string GetWixXml()
 		{
 			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2003/01/wi\">\r\n" +
@@ -104,6 +112,7 @@ namespace WixBinding.Tests.Document
 				"\t\t\t\t\t\t\t<File Source=\"doc\\license.txt\" Name=\"license.txt\" Id=\"license.txt\" />\r\n" +
 				"\t\t\t\t\t\t\t<File Source=\"doc\\readme.rtf\" Name=\"readme.rtf\" Id=\"readme.rtf\" />\r\n" +
 				"\t\t\t\t\t\t\t<File Source=\"doc\\SharpDevelopInfoResources.txt\" Name=\"Resource.txt\" Id=\"SharpDevelopInfoResources.txt\" LongName=\"SharpDevelopInfoResources.txt\" />\r\n" +
+				"\t\t\t\t\t\t\t<File Source=\"a-docs\\readme.rtf\" Name=\"readme.rtf\" Id=\"readme.rtf\" />\r\n" +
 				"\t\t\t\t\t\t</Component>\r\n" +
 				"\t\t\t\t\t</Directory>\r\n" +
 				"\t\t\t</Directory>\r\n" +

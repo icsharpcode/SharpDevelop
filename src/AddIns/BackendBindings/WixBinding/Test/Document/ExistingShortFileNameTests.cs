@@ -50,6 +50,30 @@ namespace WixBinding.Tests.Document
 			WixFileElement fileElement = (WixFileElement)myAppComponent.LastChild;
 			Assert.AreEqual("CHANGE_1.XML", fileElement.ShortName);
 		}
+		
+		/// <summary>
+		/// Tests that the short name generated is correct when
+		/// the file extension has only two characters.
+		/// </summary>
+		[Test]
+		public void TwoCharacterExtension()
+		{
+			myAppComponent.AddFile(@"C:\Projects\Setup\doc\ebcdic-it.so");
+			WixFileElement fileElement = (WixFileElement)myAppComponent.LastChild;
+			Assert.AreEqual("EBCDIC_1.SO", fileElement.ShortName);
+		}
+		
+		/// <summary>
+		/// Tests that the short name generated is correct when
+		/// the file extension has more than three characters.
+		/// </summary>
+		[Test]
+		public void FourCharacterExtension()
+		{
+			myAppComponent.AddFile(@"C:\Projects\Setup\doc\abc.text");
+			WixFileElement fileElement = (WixFileElement)myAppComponent.LastChild;
+			Assert.AreEqual("ABC.TEX", fileElement.ShortName);
+		}		
 
 		string GetWixXml()
 		{
