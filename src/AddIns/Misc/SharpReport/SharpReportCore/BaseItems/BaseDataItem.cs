@@ -14,7 +14,7 @@ using System.Drawing;
 using System.ComponentModel;
 using System.Xml.Serialization;
 
-using SharpReportCore;
+using SharpReportCore.Exporters;
 	
 	
 /// <summary>
@@ -25,7 +25,8 @@ using SharpReportCore;
 /// 	created on - 22.08.2005 00:12:59
 /// </remarks>
 namespace SharpReportCore {	
-	public class BaseDataItem : SharpReportCore.BaseTextItem,IItemRenderer {
+	public class BaseDataItem : SharpReportCore.BaseTextItem,IItemRenderer,
+								IExportColumnBuilder {
 		
 		private string columnName;
 		private string baseTableName;
@@ -48,6 +49,7 @@ namespace SharpReportCore {
 		#endregion
 		
 		#region privates
+		
 		//TODO Need a much better handling for 'null' values
 		
 		private string CheckForNullValue() {
@@ -63,6 +65,21 @@ namespace SharpReportCore {
 	
 		#endregion
 		
+		#region IExportColumnBuilder  implementation
+//		public new IPerformLine  CreateExportColumn(Graphics graphics)
+		public new BaseExportColumn  CreateExportColumn(Graphics graphics)
+		{
+			string toPrint = CheckForNullValue();
+			BaseStyleDecorator st = base.CreateItemStyle(graphics);
+			ExportText item = new ExportText(st,false);
+			item.Text = base.FormatOutput(toPrint,
+			                              this.FormatString,
+			                              DataTypeHelper.TypeCodeFromString (this.dataType),
+			                              this.nullValue);
+			return item;
+		}
+		
+		#endregion
 		
 		public override void Render(SharpReportCore.ReportPageEventArgs rpea) {
 			

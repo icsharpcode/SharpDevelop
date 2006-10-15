@@ -26,7 +26,17 @@ namespace SharpReportCore{
 		int gap;
 		
 		PageSettings pageSettings;
+		public SectionBounds(PageSettings pageSettings)
+		{
+			this.pageSettings = pageSettings;
+			this.firstpage = true;
+			this.gap = 1;
+		}
+		public SectionBounds(PageSettings pageSettings,bool firstpage ):this(pageSettings,firstpage,0)
+		{
 
+		}
+	
 		public SectionBounds(PageSettings pageSettings,bool firstpage,int gap){
 			this.firstpage = firstpage;
 			this.pageSettings = pageSettings;
@@ -61,13 +71,13 @@ namespace SharpReportCore{
 		}
 		
 		
-		public void MeasurePageHeader (BaseSection section,Rectangle startAfter,Graphics graphics,int pageNr) {
+		public void MeasurePageHeader (BaseSection section,Rectangle startAfter,Graphics graphics) {
 			
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
 			}
 			
-			if (pageNr == 1){
+			if (this.firstpage){
 				section.SectionOffset = (int)startAfter.Top + this.gap;
 			} else {
 				section.SectionOffset = this.pageSettings.Margins.Top;
@@ -75,10 +85,9 @@ namespace SharpReportCore{
 
 			MeasurementService.FitSectionToItems (section,graphics);
 			this.pageHeaderRectangle =  new Rectangle (startAfter.Left,
-			                                             startAfter.Bottom + this.gap,
-			                                             this.MarginBounds.Width,
-			                                             section.Size.Height + this.gap);
-
+			                                           startAfter.Bottom + this.gap,
+			                                           this.MarginBounds.Width,
+			                                           section.Size.Height + this.gap);
 		}
 		
 		
@@ -191,6 +200,16 @@ namespace SharpReportCore{
 				return firstpage;
 			}
 		}
+		
+		public int Gap {
+			get {
+				return gap;
+			}
+			set {
+				gap = value;
+			}
+		}
+		
 		
 		#endregion
 	}

@@ -304,8 +304,8 @@ namespace SharpReportCore {
 			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageHeader,
 			                               CultureInfo.InvariantCulture);
 			
-			this.sectionBounds.MeasurePageHeader(this.CurrentSection,
-			                                     rectangle,graphics,reportDocument.PageNumber);
+			this.sectionBounds.MeasurePageHeader(this.CurrentSection,rectangle,graphics);
+			                                     
 			
 			//PageFooter
 			sectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportPageFooter,

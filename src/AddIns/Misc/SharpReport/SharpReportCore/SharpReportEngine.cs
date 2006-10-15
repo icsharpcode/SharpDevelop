@@ -106,7 +106,14 @@ namespace SharpReportCore {
 			
 		}
 		
-		
+		private void InitPageBuilder (ReportModel reportModel,ReportParameters reportParameters ) {
+			CheckAllReportParameters (reportModel,reportParameters);
+			this.InitDataContainer (reportModel.ReportSettings);
+			if (this.dataManager == null) {
+				throw new MissingDataManagerException();
+			}
+		}
+			
 		#endregion
 		
 		#region Setup for print/preview
@@ -358,43 +365,43 @@ namespace SharpReportCore {
 				throw;
 			}
 		}
-		/*
-		public SharpReportCore.Exporters.PageBuilder_A BuildPages_A (string fileName,ReportParameters reportParameters) {
-
-			try {
-				RendererFactory rf = new RendererFactory();
-				ReportModel model = ModelFromFile (fileName);
-				
-				CheckAllReportParameters (model,reportParameters);
-				this.InitDataContainer (model.ReportSettings);
-
-				SharpReportCore.Exporters.PageBuilder_A builder = 
-					new SharpReportCore.Exporters.PageBuilder_A(model,dataManager);
-				builder.Go();
-				return builder;
-			} catch (Exception ) {
-				throw;
+		
+		public SharpReportCore.Exporters.PageBuilder CreatePageBuilder (ReportModel reportModel) {
+			if (reportModel == null) {
+				throw new ArgumentNullException("reportModel");
 			}
+			this.InitPageBuilder(reportModel,null);
+//			CheckAllReportParameters (reportModel,null);
+//			this.InitDataContainer (reportModel.ReportSettings);
+//			if (this.dataManager == null) {
+//				throw new MissingDataManagerException();
+//			}
+			SharpReportCore.Exporters.PageBuilder builder =
+				new SharpReportCore.Exporters.PageBuilder(reportModel,dataManager);
+
+			return builder;
 		}
 		
-		public SharpReportCore.Exporters.PageBuilder_B BuildPages_B (string fileName,ReportParameters reportParameters) {
+		public SharpReportCore.Exporters.PageBuilder CreatePageBuilder (string fileName,ReportParameters reportParameters) {
 
 			try {
-				RendererFactory rf = new RendererFactory();
 				ReportModel model = ModelFromFile (fileName);
-				
-				CheckAllReportParameters (model,reportParameters);
-				this.InitDataContainer (model.ReportSettings);
+				this.InitPageBuilder(model,reportParameters);
+//				CheckAllReportParameters (model,reportParameters);
+//				this.InitDataContainer (model.ReportSettings);
+//				if (this.dataManager == null) {
+//					throw new MissingDataManagerException();
+//				}
+				SharpReportCore.Exporters.PageBuilder builder =
+					new SharpReportCore.Exporters.PageBuilder(model,dataManager);
 
-				SharpReportCore.Exporters.PageBuilder_B builder = 
-					new SharpReportCore.Exporters.PageBuilder_B(model,dataManager);
-//				builder.ReportDocument.PrintController = new System.Drawing.Printing.PreviewPrintController();
 				return builder;
+				
 			} catch (Exception ) {
 				throw;
 			}
 		}
-		*/
+	
 		/// <summary>
 		/// Preview a "PushModel - Report"
 		/// </summary>

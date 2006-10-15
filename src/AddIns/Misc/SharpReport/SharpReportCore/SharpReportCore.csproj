@@ -137,6 +137,15 @@
     <Compile Include="BaseClasses\DataTypeHelper.cs" />
     <Compile Include="Printing\SectionBounds.cs" />
     <Compile Include="Printing\MeasurementService.cs" />
+    <Compile Include="Exporter\SinglePage.cs" />
+    <Compile Include="Exporter\PageBuilder.cs" />
+    <Compile Include="Exporter\BaseStyleDecorator.cs" />
+    <Compile Include="Exporter\ExportItemsConverter.cs" />
+    <Compile Include="Exceptions\MissingDataManagerException.cs" />
+    <Compile Include="Exporter\ExportColumns\BaseExportColumn.cs" />
+    <Compile Include="Exporter\ExportColumns\ExportContainer.cs" />
+    <Compile Include="Exporter\ExportColumns\ExportText.cs" />
+    <Compile Include="Exporter\ExportColumns\IExportColumnBuilder .cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />
@@ -160,6 +169,8 @@
     <Folder Include="Xml" />
     <Folder Include="Configuration" />
     <Folder Include="BaseClasses" />
+    <Folder Include="Exporter" />
+    <Folder Include="Exporter\ExportColumns" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -13,13 +13,14 @@ using System.Drawing.Drawing2D;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using SharpReportCore.Exporters;
 
 namespace SharpReportCore{
 	/// <summary>
 	/// Description of BaseRowItem.
 	/// </summary>
 	
-	public class RowItem:BaseReportItem,IContainerItem{
+	public class RowItem:BaseReportItem,IContainerItem,IExportColumnBuilder{
 		private string tableName;
 		
 		private ReportItemCollection items;
@@ -47,6 +48,29 @@ namespace SharpReportCore{
 		*/
 		#region overrides
 		
+		#region IExportColumnBuilder  implementation
+		
+//		public IPerformLine CreateExportColumn(Graphics graphics){
+		public BaseExportColumn CreateExportColumn(Graphics graphics){	
+			BaseStyleDecorator st = this.CreateItemStyle(graphics);
+			
+			ExportContainer item = new ExportContainer(st);
+			return item;
+		}
+
+		protected BaseStyleDecorator CreateItemStyle (Graphics g) {
+			BaseStyleDecorator style = new BaseStyleDecorator();
+			
+			style.BackColor = this.BackColor;
+//			style.Font = this.Font;
+			style.ForeColor = this.ForeColor;
+			style.Location = this.Location;
+			style.Size = this.Size;
+			style.DrawBorder = this.DrawBorder;
+			return style;
+		}
+		
+		#endregion
 		
 		protected RectangleF PrepareRectangle () {
 			SizeF measureSize = new SizeF ((SizeF)this.Size);

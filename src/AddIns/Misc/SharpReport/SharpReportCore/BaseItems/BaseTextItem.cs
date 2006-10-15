@@ -12,7 +12,7 @@ using System.Drawing;
 using System.ComponentModel;
 using System.Xml.Serialization;	
 
-using SharpReportCore;
+using SharpReportCore.Exporters;
 	
 /// <summary>
 /// This class is the BaseClass  for all TextBased Items 
@@ -22,15 +22,16 @@ using SharpReportCore;
 
 namespace SharpReportCore {
 	
-	public class BaseTextItem : SharpReportCore.BaseReportItem,IItemRenderer {
+	public class BaseTextItem : SharpReportCore.BaseReportItem,IItemRenderer,IExportColumnBuilder {
 		private string text;
 
 		private string formatString = String.Empty;
 		private StringFormat stringFormat;
 		private StringTrimming stringTrimming;
-		private TextDrawer textDrawer;
-//		private StandardFormatter standartFormatter;
 		private ContentAlignment contentAlignment;
+		
+		private TextDrawer textDrawer;
+
 		private RectangleShape shape = new RectangleShape();
 		
 		#region Constructor
@@ -40,6 +41,48 @@ namespace SharpReportCore {
 			this.contentAlignment = ContentAlignment.MiddleLeft;
 			this.stringTrimming = StringTrimming.EllipsisCharacter;
 			this.textDrawer = new TextDrawer();
+		}
+		
+		#endregion
+		
+		#region IExportColumnBuilder  implementation
+		
+//		public IPerformLine CreateExportColumn(Graphics graphics){
+		public BaseExportColumn CreateExportColumn(Graphics graphics){	
+			BaseStyleDecorator st = this.CreateItemStyle(graphics);
+//			TextDecorator st = (TextDecorator)this.CreateItemStyle(graphics);
+			ExportText item = new ExportText(st,false);
+			
+			item.Text = this.text;
+			return item;
+		}
+	
+		#endregion
+		
+		#region IExportColumnBuilder implementation
+		
+		protected BaseStyleDecorator CreateItemStyle (Graphics g) {
+			BaseStyleDecorator style = new BaseStyleDecorator();
+//			TextStyleDecorator style = new TextStyleDecorator();
+			SizeF measureSizeF = new SizeF ();
+			measureSizeF = g.MeasureString(text,
+			                               this.Font,
+			                               this.Size.Width,
+			                               this.stringFormat);
+			RectangleF rect = base.DrawingRectangle (measureSizeF);
+			
+			style.BackColor = this.BackColor;
+			style.Font = this.Font;
+			style.ForeColor = this.ForeColor;
+			style.Location = this.Location;
+			style.Size = this.Size;
+			style.DrawBorder = this.DrawBorder;
+			
+			style.StringFormat = this.stringFormat;
+			style.StringTrimming = this.stringTrimming;
+			style.ContentAlignment = this.contentAlignment;
+			
+			return style;
 		}
 		
 		#endregion
