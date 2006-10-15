@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<xs:schema xmlns:nant="http://nant.sf.net/release/0.85-rc4/nant.xsd" elementFormDefault="qualified" targetNamespace="http://nant.sf.net/release/0.85-rc4/nant.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:nant="http://nant.sf.net/release/0.85/nant.xsd" elementFormDefault="qualified" targetNamespace="http://nant.sf.net/release/0.85/nant.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:annotation>
-    <xs:documentation>NAnt schema generated at 06/02/2006 21:10:38</xs:documentation>
+    <xs:documentation>NAnt schema generated at 10/14/2006 16:12:51</xs:documentation>
   </xs:annotation>
   <xs:complexType name="NAnt.Core.TaskContainer">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -688,6 +688,7 @@
     <xs:attribute name="debug" use="optional" />
     <xs:attribute name="doc" use="optional" />
     <xs:attribute name="imports" use="optional" />
+    <xs:attribute name="nostdlib" use="optional" />
     <xs:attribute name="optioncompare" use="optional" />
     <xs:attribute name="optionexplicit" use="optional" />
     <xs:attribute name="optionoptimize" use="optional" />
@@ -1161,6 +1162,7 @@
     <xs:attribute name="keycontainer" use="optional" />
     <xs:attribute name="strictref" use="optional" />
     <xs:attribute name="sysarray" use="optional" />
+    <xs:attribute name="transform" use="optional" />
     <xs:attribute name="typelib" use="required" />
     <xs:attribute name="unsafe" use="optional" />
     <xs:attribute name="timeout" use="optional" />
