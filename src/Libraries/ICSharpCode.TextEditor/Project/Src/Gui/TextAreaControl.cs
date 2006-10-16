@@ -263,6 +263,8 @@ namespace ICSharpCode.TextEditor
 					hRuler = new HRuler(textArea);
 					Controls.Add(hRuler);
 					ResizeTextArea();
+				} else {
+					hRuler.Invalidate();
 				}
 			} else {
 				if (hRuler != null) {

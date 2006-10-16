@@ -666,7 +666,8 @@ namespace ICSharpCode.TextEditor
 			return width;
 		}
 		
-		const TextFormatFlags textFormatFlags = TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix;
+		const TextFormatFlags textFormatFlags =
+			TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix | TextFormatFlags.PreserveGraphicsClipping;
 		#endregion
 		
 		#region Conversion Functions
