@@ -10,7 +10,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Data;
 
-using SharpDbTools.Forms;
 using SharpDbTools.Data;
 
 using SharpServerTools.Forms;
@@ -19,16 +18,14 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace SharpDbTools.Oracle.Forms
+namespace SharpDbTools.Forms
 {
 	/// <summary>
 	/// specialisation of the TreeNode to add context menu and click handling
 	/// to invoke the DescribeTable component for Oracle tables.
-	/// Does not change any data or metadata content so does not need to be
-	/// a ServerExplorerTreeNode
 	/// </summary>
 	
-	class TableTreeNode: TreeNode
+	public class TableTreeNode: TreeNode
 	{
 		string logicalConnectionName;
 		
@@ -49,7 +46,13 @@ namespace SharpDbTools.Oracle.Forms
 			string tableName = s.TreeNode.Text;
 			LoggingService.Debug("describe table clicked for: " + logicalConnectionName + " and table name: " + tableName);
 			DataTable tableInfo = DbModelInfoService.GetTableInfo(logicalConnectionName, tableName);
-			TableDescribeViewContent tableDescribeViewContent = new TableDescribeViewContent(tableInfo, tableName);
+			string invariantName = DbModelInfoService.GetDbModelInfo(logicalConnectionName).InvariantName;
+			// TODO: get field names and column header names from factory
+			FormsArtefactFactory factory = FormsArtefactFactories.GetFactory(invariantName);
+			
+			TableDescribeViewContent tableDescribeViewContent =
+				new TableDescribeViewContent(tableInfo, tableName, factory.GetDescribeTableFieldNames(),
+				                             factory.GetDescribeTableColumnHeaderNames());
 			WorkbenchSingleton.Workbench.ShowView(tableDescribeViewContent);
 		}
 	}

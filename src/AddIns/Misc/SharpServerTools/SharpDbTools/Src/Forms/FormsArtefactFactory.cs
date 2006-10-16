@@ -20,5 +20,7 @@ namespace SharpDbTools.Forms
 		}
 		
 		public abstract TreeNode CreateMetaDataNode(string name);
+		public abstract string[] GetDescribeTableFieldNames();
+		public abstract string[] GetDescribeTableColumnHeaderNames();
 	}
 }

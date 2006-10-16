@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\Forms\TableTreeNode.cs" />
     <Compile Include="Src\Forms\OracleFormsArtefactFactory.cs" />
   </ItemGroup>
   <ItemGroup>

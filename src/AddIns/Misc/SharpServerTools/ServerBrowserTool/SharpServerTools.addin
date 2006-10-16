@@ -21,4 +21,10 @@
 		     shortcut = "Control|Alt|D"
 		     class    = "SharpServerTools.Forms.ServerBrowserTool"/>
 	</Path>
+
+	<Path name = "/SharpServerTools/SharpDbTools/FormsArtefactFactory">
+		<Class id       = "System.Data.OracleClient"
+		     class    = "SharpDbTools.Oracle.Forms.OracleFormsArtefactFactory"/>
+	</Path>
+
 </AddIn>

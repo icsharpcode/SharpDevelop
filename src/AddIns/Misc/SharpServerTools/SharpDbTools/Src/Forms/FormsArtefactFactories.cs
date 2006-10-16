@@ -6,7 +6,12 @@
  */
 
 using System;
+using System.Collections;
+
+
 using ICSharpCode.Core;
+
+using System.Collections.Generic;
 
 
 namespace SharpDbTools.Forms
@@ -14,10 +19,22 @@ namespace SharpDbTools.Forms
 	/// <summary>
 	/// Description of FormsArtefactFactories.
 	/// </summary>
-	public class FormsArtefactFactories
+	public static class FormsArtefactFactories
 	{
-		public FormsArtefactFactories()
+		public const string FORMS_ARTEFACT_FACTORIES_PATH = "/SharpServerTools/SharpDbTools/FormsArtefactFactory";
+		public static Dictionary<string, FormsArtefactFactory> factories = new Dictionary<string, FormsArtefactFactory>();
+		
+		static FormsArtefactFactories()
 		{
+			AddInTreeNode node = 
+				AddInTree.GetTreeNode(FORMS_ARTEFACT_FACTORIES_PATH);
+			List<Codon> codons = node.Codons;
+			foreach (Codon codon in codons) {
+				// create an instance of the relevant FormsArtefactFactory indexed by invariant name
+				string invariant = codon.Id;
+				FormsArtefactFactory factory = (FormsArtefactFactory)node.BuildChildItem(invariant, null, null);
+				factories.Add(invariant, factory);
+			}
 		}
 		
 		public static FormsArtefactFactory GetFactory(string invariantName)
@@ -27,18 +44,27 @@ namespace SharpDbTools.Forms
 			// to test this base it on hardcoded strings for the type of the factory
 			
 			// TODO: drive this from the AddIn tree
-			switch (invariantName)
-			{
-				case "System.Data.OracleClient":
-					Type type = Type.GetType("SharpDbTools.Oracle.Forms.OracleFormsArtefactFactory, OracleDbToolsProvider");
-					FormsArtefactFactory factory = (FormsArtefactFactory)Activator.CreateInstance(type);
-					LoggingService.Debug("Found FormsArtefactFactory for: " + invariantName);
-					return factory;
-				default:
-					LoggingService.Debug("Failed to find FormsArtefactFactory for: " + invariantName);
-					throw new ArgumentException("There is no FormsArtefactFactory for invariant name: " + 
-					                           invariantName);
+			
+			FormsArtefactFactory factory = null;
+			factories.TryGetValue(invariantName, out factory);
+			if (factory == null) {
+				throw new ArgumentException("No FormsArtefactFactory found for InvariantName: "
+				                            + invariantName);
 			}
+			return factory;
+			
+//			switch (invariantName)
+//			{
+//				case "System.Data.OracleClient":
+//					Type type = Type.GetType("SharpDbTools.Oracle.Forms.OracleFormsArtefactFactory, OracleDbToolsProvider");
+//					FormsArtefactFactory factory = (FormsArtefactFactory)Activator.CreateInstance(type);
+//					LoggingService.Debug("Found FormsArtefactFactory for: " + invariantName);
+//					return factory;
+//				default:
+//					LoggingService.Debug("Failed to find FormsArtefactFactory for: " + invariantName);
+//					throw new ArgumentException("There is no FormsArtefactFactory for invariant name: " + 
+//					                           invariantName);
+//			}
 			
 			
 			// TODO: retrieve the relevant factory from file-base config

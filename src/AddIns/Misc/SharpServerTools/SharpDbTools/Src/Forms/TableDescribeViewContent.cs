@@ -24,7 +24,10 @@ namespace SharpDbTools.Forms
 		DataGridView tableInfoDataGridView;
 		
 		
-		public TableDescribeViewContent(DataTable tableInfo, string tableName) : base("table: " + tableName)
+		public TableDescribeViewContent(DataTable tableInfo, 
+		                                string tableName,
+		                                string[] fieldsToDisplay,
+		                                string[] columnHeaderNames) : base("table: " + tableName)
 		{		
 			this.tableInfo = tableInfo;
 			this.tableInfoDataGridView = new DataGridView();
@@ -36,12 +39,10 @@ namespace SharpDbTools.Forms
 			v.DataSource = this.tableInfo;
 			//v.DataMember = TableNames.Columns;
 			
-			string[] fieldsToDisplay = ColumnNames.TableTableFieldsToDisplay;
-			string[] fieldColumnNames = ColumnNames.TableTableFieldsColumnHeaders;
 			for (int i = 0; i < fieldsToDisplay.Length; i++ ) {
 				DataGridViewColumn c = new DataGridViewTextBoxColumn();
 				c.DataPropertyName = fieldsToDisplay[i];
-				c.Name = fieldColumnNames[i];
+				c.Name = columnHeaderNames[i];
 				v.Columns.Add(c);
 			}
 			v.AllowUserToAddRows = false;

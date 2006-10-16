@@ -53,6 +53,7 @@
     <Compile Include="Src\Data\DbModelInfo.cs" />
     <Compile Include="Src\Data\DbModelInfoService.cs" />
     <Compile Include="Src\Data\DbProvidersService.cs" />
+    <Compile Include="Src\Forms\TableTreeNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />

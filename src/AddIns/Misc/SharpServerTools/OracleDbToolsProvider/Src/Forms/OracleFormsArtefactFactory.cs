@@ -36,7 +36,6 @@ namespace SharpDbTools.Oracle.Forms
 			// create root node of the metadata collections tree
 			
 			TreeNode metaNode = new TreeNode("Db Objects");
-			metaNode.Name = logicalConnectionName + ":MetaData";
 			
 			// retrieve the metadata for this logical connection name
 			
@@ -85,6 +84,23 @@ namespace SharpDbTools.Oracle.Forms
 			}
 			return metaNode;
 		}
+		
+		public override string[] GetDescribeTableFieldNames() 
+		{
+				return tableFieldsToDisplay;
+		}
+		public override string[] GetDescribeTableColumnHeaderNames() 
+		{
+				return tableFieldsColumnHeaders;
+		}
+		
+		private static string[] tableFieldsToDisplay = 
+			new string [] {"COLUMN_NAME", "DATATYPE", 
+			"LENGTH", "PRECISION", "SCALE", "NULLABLE"};
+		private static string[] tableFieldsColumnHeaders =
+			new string[] { "Column", "Type", "Length", "Precision", "Scale", "Nullable" };
+
+
 	}
 	
 }
