@@ -8,6 +8,7 @@
 using System;
 using System.Windows.Forms;
 using System.Collections;
+using System.Collections.Generic;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -42,7 +43,7 @@ namespace SharpServerTools.Forms
 				if (s != null) {
 					s.RebuildRequiredEvent += new RebuildRequiredEventHandler(RebuildRequiredNotify);
 				}
-				this.Nodes.Add(dbExplorerNode);
+				this.Nodes.Add(treeNode);
 			}
 			
 //			Type dbExplorerType = Type.GetType("SharpDbTools.Forms.DatabaseExplorerTreeNode, SharpDbTools");
