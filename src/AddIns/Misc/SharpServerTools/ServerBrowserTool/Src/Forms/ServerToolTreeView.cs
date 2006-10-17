@@ -21,15 +21,35 @@ namespace SharpServerTools.Forms
 	/// maintaining this model/s of underlying services.
 	/// </summary>
 	public class ServerToolTreeView : TreeView, IRebuildable
-	{		
+	{
+		public const string SERVERTOOL_PATH = "/SharpServerTools/ServerTool";
+		
 		public ServerToolTreeView(): base()
 		{
-			// TODO: iterate through plugins retrieved from AddIn Tree
-			Type dbExplorerType = Type.GetType("SharpDbTools.Forms.DatabaseExplorerTreeNode, SharpDbTools");
-			TreeNode dbExplorerNode = (TreeNode)Activator.CreateInstance(dbExplorerType);
-			IRequiresRebuildSource s = dbExplorerNode as IRequiresRebuildSource;
-			s.RebuildRequiredEvent += new RebuildRequiredEventHandler(RebuildRequiredNotify);
-			this.Nodes.Add(dbExplorerNode);
+			
+			AddInTreeNode node = 
+			AddInTree.GetTreeNode(SERVERTOOL_PATH);
+			List<Codon> codons = node.Codons;
+			foreach (Codon codon in codons) {
+				// create an instance of the relevant ServerTool TreeNode
+				string id = codon.Id;
+				TreeNode treeNode = (TreeNode)node.BuildChildItem(id, null, null);
+				IRequiresRebuildSource s = treeNode as IRequiresRebuildSource;
+				
+				// a ServerTool plugin can register to be refreshed by the ServerToolTreeView
+				// control by implementing the IRequiresRebuildSource interface
+				
+				if (s != null) {
+					s.RebuildRequiredEvent += new RebuildRequiredEventHandler(RebuildRequiredNotify);
+				}
+				this.Nodes.Add(dbExplorerNode);
+			}
+			
+//			Type dbExplorerType = Type.GetType("SharpDbTools.Forms.DatabaseExplorerTreeNode, SharpDbTools");
+//			TreeNode dbExplorerNode = (TreeNode)Activator.CreateInstance(dbExplorerType);
+//			IRequiresRebuildSource s = dbExplorerNode as IRequiresRebuildSource;
+//			s.RebuildRequiredEvent += new RebuildRequiredEventHandler(RebuildRequiredNotify);
+//			this.Nodes.Add(dbExplorerNode);
 		}
 		
 		public void RebuildChildren(IEnumerable children)

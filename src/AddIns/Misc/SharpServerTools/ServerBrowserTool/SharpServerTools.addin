@@ -27,4 +27,10 @@
 		     class    = "SharpDbTools.Oracle.Forms.OracleFormsArtefactFactory"/>
 	</Path>
 
+	<Path name = "/SharpServerTools/ServerTool">
+		<Class id       = "DatabaseExplorer"
+		     class    = "SharpDbTools.Forms.DatabaseExplorerTreeNode"/>
+	</Path>
+
+
 </AddIn>
