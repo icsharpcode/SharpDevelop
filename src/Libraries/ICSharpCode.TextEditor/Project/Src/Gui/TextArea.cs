@@ -56,8 +56,8 @@ namespace ICSharpCode.TextEditor
 		SelectionManager selectionManager;
 		Caret            caret;
 
-        public Point mousepos = new Point(0, 0);
-        //public Point selectionStartPos = new Point(0,0);
+		internal Point mousepos = new Point(0, 0);
+		//public Point selectionStartPos = new Point(0,0);
 
 		bool disposed;
 		
@@ -301,11 +301,11 @@ namespace ICSharpCode.TextEditor
 		
 		protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
 		{
-            // this corrects weird problems when text is selected,
-            // then a menu item is selected, then the text is 
-            // clicked again - it correctly synchronises the
-            // click position
-            mousepos = new Point(e.X, e.Y);
+			// this corrects weird problems when text is selected,
+			// then a menu item is selected, then the text is
+			// clicked again - it correctly synchronises the
+			// click position
+			mousepos = new Point(e.X, e.Y);
 
 			base.OnMouseDown(e);
 			CloseToolTip();
@@ -315,7 +315,7 @@ namespace ICSharpCode.TextEditor
 					margin.HandleMouseDown(new Point(e.X, e.Y), e.Button);
 				}
 			}
-        }
+		}
 		
 		
 		// static because the mouse can only be in one text area and we don't want to have
@@ -412,13 +412,13 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-        // external interface to the attached event
-        public void doMouseMove(System.Windows.Forms.MouseEventArgs e)
-        {
-            OnMouseMove(e);
-        }
+		// external interface to the attached event
+		internal void RaiseMouseMove(MouseEventArgs e)
+		{
+			OnMouseMove(e);
+		}
 
-        protected override void OnMouseMove(MouseEventArgs e)
+		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
 			if (!toolTipRectangle.Contains(e.Location)) {
@@ -545,6 +545,11 @@ namespace ICSharpCode.TextEditor
 				return KeyEventHandler(ch);
 			}
 			return false;
+		}
+		
+		protected override bool IsInputChar(char charCode)
+		{
+			return true;
 		}
 		
 		public void SimulateKeyPress(char ch)
