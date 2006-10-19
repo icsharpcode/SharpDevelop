@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<Template author="Mike Krueger" version="1.0">
+<Template author="Mike Krueger" version="1.0.1">
 	
 	<Config
 		  name        = "${res:Templates.File.UnitTest.Name}"
@@ -50,10 +50,10 @@
 		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
 <% if (ConditionalClass) { %>#if TEST
 <% } %>
-using System;
 using NUnit.Framework;
+using System;
 
-namespace ${StandardNamespace}.Tests
+namespace ${StandardNamespace}
 {
 	[TestFixture]
 	public class ${ClassName}
