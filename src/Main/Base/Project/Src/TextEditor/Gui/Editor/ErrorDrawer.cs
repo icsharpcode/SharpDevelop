@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			: base(offset, length, TextMarkerType.WaveLine, (task.TaskType == TaskType.Error) ? Color.Red : Color.Orange)
 		{
 			this.task = task;
-			base.ToolTip = task.Description.Replace("&", "&&&");
+			base.ToolTip = task.Description;
 		}
 	}
 	
