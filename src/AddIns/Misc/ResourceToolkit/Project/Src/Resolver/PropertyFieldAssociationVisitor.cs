@@ -100,8 +100,24 @@ namespace Hornung.ResourceToolkit.Resolver
 			if (this.associatedMember == null &&	// skip if already found to improve performance
 			    this.currentContext == VisitorContext.PropertyGetRegion && data != null) {
 				
+				// Fix some type casting and parenthesized expressions
+				Expression expr = returnStatement.Expression;
+				while (true) {
+					CastExpression ce = expr as CastExpression;
+					if (ce != null) {
+						expr = ce.Expression;
+						continue;
+					}
+					ParenthesizedExpression pe = expr as ParenthesizedExpression;
+					if (pe != null) {
+						expr = pe.Expression;
+						continue;
+					}
+					break;
+				}
+				
 				// Resolve the expression.
-				MemberResolveResult mrr = this.Resolve(returnStatement.Expression, this.memberToFind) as MemberResolveResult;
+				MemberResolveResult mrr = this.Resolve(expr, this.memberToFind.DeclaringType.CompilationUnit.FileName) as MemberResolveResult;
 				if (mrr != null && mrr.ResolvedMember is IField) {
 					
 					PropertyDeclaration pd;
@@ -124,7 +140,7 @@ namespace Hornung.ResourceToolkit.Resolver
 						if (this.memberToFind.CompareTo(mrr.ResolvedMember) == 0) {
 							
 							// Resolve the property.
-							MemberResolveResult prr = ParserService.Resolve(new ExpressionResult(pd.Name, ExpressionContext.Default), pd.StartLocation.Y-1, pd.StartLocation.X, this.memberToFind.DeclaringType.CompilationUnit.FileName, ParserService.GetParseableFileContent(this.memberToFind.DeclaringType.CompilationUnit.FileName)) as MemberResolveResult;
+							MemberResolveResult prr = NRefactoryAstCacheService.ResolveLowLevel(this.memberToFind.DeclaringType.CompilationUnit.FileName, pd.StartLocation.Y, pd.StartLocation.X+1, null, pd.Name, ExpressionContext.Default) as MemberResolveResult;
 							if (prr != null) {
 								
 								#if DEBUG
@@ -160,7 +176,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			    assignmentExpression.Op == AssignmentOperatorType.Assign && data != null) {
 				
 				// Resolve the expression.
-				MemberResolveResult mrr = this.Resolve(assignmentExpression.Left, this.memberToFind) as MemberResolveResult;
+				MemberResolveResult mrr = this.Resolve(assignmentExpression.Left, this.memberToFind.DeclaringType.CompilationUnit.FileName) as MemberResolveResult;
 				if (mrr != null && mrr.ResolvedMember is IField && !((IField)mrr.ResolvedMember).IsLocalVariable) {
 					
 					PropertyDeclaration pd;
@@ -183,7 +199,7 @@ namespace Hornung.ResourceToolkit.Resolver
 						if (this.memberToFind.CompareTo(mrr.ResolvedMember) == 0) {
 							
 							// Resolve the property.
-							MemberResolveResult prr = ParserService.Resolve(new ExpressionResult(pd.Name, ExpressionContext.Default), pd.StartLocation.Y-1, pd.StartLocation.X, this.memberToFind.DeclaringType.CompilationUnit.FileName, ParserService.GetParseableFileContent(this.memberToFind.DeclaringType.CompilationUnit.FileName)) as MemberResolveResult;
+							MemberResolveResult prr = NRefactoryAstCacheService.ResolveLowLevel(this.memberToFind.DeclaringType.CompilationUnit.FileName, pd.StartLocation.Y, pd.StartLocation.X+1, null, pd.Name, ExpressionContext.Default) as MemberResolveResult;
 							if (prr != null) {
 								
 								#if DEBUG

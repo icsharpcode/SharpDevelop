@@ -128,23 +128,30 @@ namespace Hornung.ResourceToolkit.Resolver
 				
 				ResourceResolveResult rrr = null;
 				
-				// The full expression is parsed here because
-				// we will need to modify the result in the next step.
-				Expression expr = null;
 				SupportedLanguage? language = GetFileLanguage(fileName);
-				if (language != null) {
-					using(ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser(language.Value, new StringReader(result.Expression))) {
-						if (parser != null) {
-							expr = parser.ParseExpression();
-						}
-					}
+				if (language == null) {
+					return null;
 				}
 				
 				// The resolve routine needs the member which contains the actual member being referenced.
 				// If a complete expression is given, the expression needs to be reduced to
 				// the member reference.
+				Expression fullExpr = null;
 				while (result.Expression != null && result.Expression.Length > 0) {
-					if ((rrr = TryResolve(result, expr, caretLine, caretColumn, fileName, document.TextContent)) != null) {
+					Expression expr = null;
+					using(ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser(language.Value, new StringReader(result.Expression))) {
+						if (parser != null) {
+							expr = parser.ParseExpression();
+						}
+					}
+					
+					if (expr == null) {
+						break;
+					}
+					if (fullExpr == null) {
+						fullExpr = expr;
+					}
+					if ((rrr = TryResolve(result, expr, fullExpr, caretLine, caretColumn, fileName, document.TextContent)) != null) {
 						break;
 					}
 					result.Expression = ef.RemoveLastPart(result.Expression);
@@ -163,14 +170,14 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// Tries to resolve the resource reference using all available
 		/// NRefactory resource resolvers.
 		/// </summary>
-		static ResourceResolveResult TryResolve(ExpressionResult result, Expression expr, int caretLine, int caretColumn, string fileName, string fileContent)
+		static ResourceResolveResult TryResolve(ExpressionResult result, Expression expr, Expression fullExpr, int caretLine, int caretColumn, string fileName, string fileContent)
 		{
-			ResolveResult rr = ParserService.Resolve(result, caretLine, caretColumn, fileName, fileContent);
+			ResolveResult rr = NRefactoryAstCacheService.ResolveLowLevel(fileName, caretLine+1, caretColumn+1, null, result.Expression, expr, result.Context);
 			if (rr != null) {
 				
 				ResourceResolveResult rrr;
 				foreach (INRefactoryResourceResolver resolver in Resolvers) {
-					if ((rrr = resolver.Resolve(result, expr, rr, caretLine, caretColumn, fileName, fileContent)) != null) {
+					if ((rrr = resolver.Resolve(result, fullExpr, rr, caretLine, caretColumn, fileName, fileContent)) != null) {
 						return rrr;
 					}
 				}

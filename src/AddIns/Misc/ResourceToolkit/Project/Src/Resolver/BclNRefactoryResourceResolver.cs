@@ -15,6 +15,7 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 
 using Hornung.ResourceToolkit.ResourceFileContent;
 
@@ -32,7 +33,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// Tries to find a resource reference in the specified expression.
 		/// </summary>
 		/// <param name="expressionResult">The ExpressionResult for the expression.</param>
-		/// <param name="expr">The AST representation of the expression.</param>
+		/// <param name="expr">The AST representation of the full expression.</param>
 		/// <param name="resolveResult">SharpDevelop's ResolveResult for the expression.</param>
 		/// <param name="caretLine">The line where the expression is located.</param>
 		/// <param name="caretColumn">The column where the expression is located.</param>
@@ -46,13 +47,15 @@ namespace Hornung.ResourceToolkit.Resolver
 			MemberResolveResult mrr = resolveResult as MemberResolveResult;
 			if (mrr != null) {
 				rfc = ResolveResourceFileContent(mrr.ResolvedMember);
-			}
-			
-			LocalResolveResult lrr = resolveResult as LocalResolveResult;
-			if (lrr != null) {
-				if (!lrr.IsParameter) {
-					rfc = ResolveResourceFileContent(lrr.Field);
+			} else {
+				
+				LocalResolveResult lrr = resolveResult as LocalResolveResult;
+				if (lrr != null) {
+					if (!lrr.IsParameter) {
+						rfc = ResolveResourceFileContent(lrr.Field);
+					}
 				}
+				
 			}
 			
 			
@@ -68,6 +71,26 @@ namespace Hornung.ResourceToolkit.Resolver
 		
 		// ********************************************************************************************************************************
 		
+		#region ResourceFileContent mapping cache
+		
+		static Dictionary<IMember, IResourceFileContent> cachedResourceFileContentMappings;
+		
+		static BclNRefactoryResourceResolver()
+		{
+			cachedResourceFileContentMappings = new Dictionary<IMember, IResourceFileContent>(new MemberEqualityComparer());
+			NRefactoryAstCacheService.CacheEnabledChanged += NRefactoryCacheEnabledChanged;
+		}
+		
+		static void NRefactoryCacheEnabledChanged(object sender, EventArgs e)
+		{
+			if (!NRefactoryAstCacheService.CacheEnabled) {
+				// Clear cache when disabled.
+				cachedResourceFileContentMappings.Clear();
+			}
+		}
+		
+		#endregion
+		
 		/// <summary>
 		/// Tries to determine the resource file content which is referenced by the
 		/// resource manager which is assigned to the specified member.
@@ -79,33 +102,49 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// </returns>
 		static IResourceFileContent ResolveResourceFileContent(IMember member)
 		{
-			if (member != null && member.ReturnType != null) {
-				if (IsResourceManager(member.ReturnType) && member.DeclaringType != null && member.DeclaringType.CompilationUnit != null) {
+			if (member != null && member.ReturnType != null &&
+			    member.DeclaringType != null && member.DeclaringType.CompilationUnit != null) {
+				
+				IResourceFileContent content;
+				if (!NRefactoryAstCacheService.CacheEnabled || !cachedResourceFileContentMappings.TryGetValue(member, out content)) {
 					
 					string declaringFileName = member.DeclaringType.CompilationUnit.FileName;
 					if (declaringFileName != null) {
-						
-						SupportedLanguage? language = NRefactoryResourceResolver.GetFileLanguage(declaringFileName);
-						if (language == null) {
-							return null;
-						}
-						
-						CompilationUnit cu = NRefactoryAstCacheService.GetFullAst(language.Value, declaringFileName);
-						if (cu != null) {
+						if (IsResourceManager(member.ReturnType, declaringFileName)) {
 							
-							ResourceManagerInitializationFindVisitor visitor = new ResourceManagerInitializationFindVisitor(member);
-							cu.AcceptVisitor(visitor, null);
-							if (visitor.FoundFileName != null) {
+							SupportedLanguage? language = NRefactoryResourceResolver.GetFileLanguage(declaringFileName);
+							if (language == null) {
+								return null;
+							}
+							
+							CompilationUnit cu = NRefactoryAstCacheService.GetFullAst(language.Value, declaringFileName);
+							if (cu != null) {
 								
-								return ResourceFileContentRegistry.GetResourceFileContent(visitor.FoundFileName);
+								ResourceManagerInitializationFindVisitor visitor = new ResourceManagerInitializationFindVisitor(member);
+								cu.AcceptVisitor(visitor, null);
+								if (visitor.FoundFileName != null) {
+									
+									content = ResourceFileContentRegistry.GetResourceFileContent(visitor.FoundFileName);
+									
+									if (NRefactoryAstCacheService.CacheEnabled && content != null) {
+										cachedResourceFileContentMappings.Add(member, content);
+									}
+									
+									return content;
+									
+								}
 								
 							}
 							
 						}
-						
 					}
 					
+					return null;
+					
 				}
+				
+				return content;
+				
 			}
 			return null;
 		}
@@ -114,9 +153,21 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// Determines if the specified type is a ResourceManager type that can
 		/// be handled by this resolver.
 		/// </summary>
-		static bool IsResourceManager(IReturnType type)
+		static bool IsResourceManager(IReturnType type, string sourceFileName)
 		{
-			IClass resourceManager = ParserService.CurrentProjectContent.GetClass("System.Resources.ResourceManager");
+			IProject p = ProjectFileDictionaryService.GetProjectForFile(sourceFileName);
+			IProjectContent pc;
+			if (p == null) {
+				pc = ParserService.CurrentProjectContent;
+			} else {
+				pc = ParserService.GetProjectContent(p);
+			}
+			
+			if (pc == null) {
+				return false;
+			}
+			
+			IClass resourceManager = pc.GetClass("System.Resources.ResourceManager");
 			if (resourceManager == null) {
 				return false;
 			}
@@ -143,6 +194,9 @@ namespace Hornung.ResourceToolkit.Resolver
 			
 			readonly IMember resourceManagerMember;
 			readonly bool isLocalVariable;
+			
+			bool triedToResolvePropertyAssociation;
+			IField resourceManagerFieldAccessedByProperty;
 			
 			CompilationUnit compilationUnit;
 			
@@ -188,6 +242,12 @@ namespace Hornung.ResourceToolkit.Resolver
 			
 			public override object TrackedVisit(VariableDeclaration variableDeclaration, object data)
 			{
+				// Resolving anything here only makes sense
+				// if this declaration actually has an initializer.
+				if (variableDeclaration.Initializer.IsNull) {
+					return base.TrackedVisit(variableDeclaration, data);
+				}
+				
 				LocalVariableDeclaration localVariableDeclaration = data as LocalVariableDeclaration;
 				if (this.isLocalVariable && localVariableDeclaration != null) {
 					if (variableDeclaration.Name == this.resourceManagerMember.Name) {
@@ -202,20 +262,42 @@ namespace Hornung.ResourceToolkit.Resolver
 						
 					}
 				}
+				
 				FieldDeclaration fieldDeclaration = data as FieldDeclaration;
 				if (!this.isLocalVariable && fieldDeclaration != null) {
-					if (variableDeclaration.Name == this.resourceManagerMember.Name) {
-						// Make sure we got the right declaration by comparing the positions.
-						// Both must have the same start position.
-						if (fieldDeclaration.StartLocation.X == this.resourceManagerMember.Region.BeginColumn && fieldDeclaration.StartLocation.Y == this.resourceManagerMember.Region.BeginLine) {
+					// Make sure we got the right declaration by comparing the positions.
+					// Both must have the same start position.
+					if (variableDeclaration.Name == this.resourceManagerMember.Name &&
+					    fieldDeclaration.StartLocation.X == this.resourceManagerMember.Region.BeginColumn && fieldDeclaration.StartLocation.Y == this.resourceManagerMember.Region.BeginLine) {
+						
+						#if DEBUG
+						LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found field declaration: "+fieldDeclaration.ToString()+" at "+fieldDeclaration.StartLocation.ToString());
+						#endif
+						data = true;
+						
+					} else {
+						
+						// This field might be referred to by a property
+						// that we are looking for.
+						// This association is cached in the
+						// resourceManagerFieldAccessedByProperty field
+						// to improve performance.
+						this.TryResolveResourceManagerProperty();
+						
+						if (this.resourceManagerFieldAccessedByProperty != null &&
+						    fieldDeclaration.StartLocation.X == this.resourceManagerFieldAccessedByProperty.Region.BeginColumn &&
+						    fieldDeclaration.StartLocation.Y == this.resourceManagerFieldAccessedByProperty.Region.BeginLine) {
+							
 							#if DEBUG
-							LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found field declaration: "+fieldDeclaration.ToString()+" at "+fieldDeclaration.StartLocation.ToString());
+							LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found field declaration (via associated property): "+fieldDeclaration.ToString()+" at "+fieldDeclaration.StartLocation.ToString());
 							#endif
 							data = true;
+							
 						}
 						
 					}
 				}
+				
 				return base.TrackedVisit(variableDeclaration, data);
 			}
 			
@@ -226,15 +308,29 @@ namespace Hornung.ResourceToolkit.Resolver
 				    (!this.isLocalVariable || this.resourceManagerMember.Region.IsInside(this.CurrentNodeStartLocation.Y, this.CurrentNodeStartLocation.X))	// skip if local variable is out of scope
 				   ) {
 					
-					MemberResolveResult mrr = this.Resolve(assignmentExpression.Left, this.resourceManagerMember) as MemberResolveResult;
-					if (mrr != null) {
+					IMember resolvedMember = null;
+					ResolveResult rr = this.Resolve(assignmentExpression.Left, this.resourceManagerMember.DeclaringType.CompilationUnit.FileName);
+					if (rr != null) {
+						// Support both local variables and member variables
+						MemberResolveResult mrr = rr as MemberResolveResult;
+						if (mrr != null) {
+							resolvedMember = mrr.ResolvedMember;
+						} else {
+							LocalResolveResult lrr = rr as LocalResolveResult;
+							if (lrr != null) {
+								resolvedMember = lrr.Field;
+							}
+						}
+					}
+					
+					if (resolvedMember != null) {
 						
 						#if DEBUG
-						LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver: Resolved member: "+mrr.ResolvedMember.ToString());
+						LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver: Resolved member: "+resolvedMember.ToString());
 						#endif
 						
 						// HACK: The GetType()s are necessary because the DOM IComparable implementations try to cast the parameter object to their own interface type which may fail.
-						if (mrr.ResolvedMember.GetType().Equals(this.resourceManagerMember.GetType()) && mrr.ResolvedMember.CompareTo(this.resourceManagerMember) == 0) {
+						if (resolvedMember.GetType().Equals(this.resourceManagerMember.GetType()) && resolvedMember.CompareTo(this.resourceManagerMember) == 0) {
 							
 							#if DEBUG
 							LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found assignment to field: "+assignmentExpression.ToString());
@@ -245,35 +341,28 @@ namespace Hornung.ResourceToolkit.Resolver
 							// there is a possible relationship between the return types
 							// of the resolved member and the member we are looking for.
 						} else if (this.compilationUnit != null && !this.isLocalVariable &&
-						           (
-						            mrr.ResolvedMember.ReturnType.Equals(this.resourceManagerMember.ReturnType) ||
-						            (
-						             mrr.ResolvedMember.ReturnType.GetUnderlyingClass() != null && this.resourceManagerMember.ReturnType.GetUnderlyingClass() != null &&
-						             (
-						              mrr.ResolvedMember.ReturnType.GetUnderlyingClass().IsTypeInInheritanceTree(this.resourceManagerMember.ReturnType.GetUnderlyingClass()) ||
-						              this.resourceManagerMember.ReturnType.GetUnderlyingClass().IsTypeInInheritanceTree(mrr.ResolvedMember.ReturnType.GetUnderlyingClass())
-						             )
-						            )
-						           )) {
+						           IsTypeRelationshipPossible(resolvedMember, this.resourceManagerMember)) {
 							
-							if (this.resourceManagerMember is IProperty && mrr.ResolvedMember is IField) {
+							if (this.resourceManagerMember is IProperty && resolvedMember is IField) {
 								// Find out if the resourceManagerMember is a property whose get block returns the value of the resolved member.
 								
-								PropertyFieldAssociationVisitor visitor = new PropertyFieldAssociationVisitor((IProperty)this.resourceManagerMember);
-								this.compilationUnit.AcceptVisitor(visitor, null);
-								if (visitor.AssociatedField != null && visitor.AssociatedField.CompareTo(mrr.ResolvedMember) == 0) {
+								// We might already have found this association in the
+								// resourceManagerFieldAccessedByProperty field.
+								this.TryResolveResourceManagerProperty();
+								
+								if (this.resourceManagerFieldAccessedByProperty != null && this.resourceManagerFieldAccessedByProperty.CompareTo(resolvedMember) == 0) {
 									#if DEBUG
 									LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found assignment to field: "+assignmentExpression.ToString());
 									#endif
 									data = true;
 								}
 								
-							} else if (this.resourceManagerMember is IField && mrr.ResolvedMember is IProperty) {
+							} else if (this.resourceManagerMember is IField && resolvedMember is IProperty) {
 								// Find out if the resolved member is a property whose set block assigns the value to the resourceManagerMember.
 								
 								PropertyFieldAssociationVisitor visitor = new PropertyFieldAssociationVisitor((IField)this.resourceManagerMember);
 								this.compilationUnit.AcceptVisitor(visitor, null);
-								if (visitor.AssociatedProperty != null && visitor.AssociatedProperty.CompareTo(mrr.ResolvedMember) == 0) {
+								if (visitor.AssociatedProperty != null && visitor.AssociatedProperty.CompareTo(resolvedMember) == 0) {
 									#if DEBUG
 									LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found assignment to property: "+assignmentExpression.ToString());
 									#endif
@@ -290,6 +379,35 @@ namespace Hornung.ResourceToolkit.Resolver
 				return base.TrackedVisit(assignmentExpression, data);
 			}
 			
+			/// <summary>
+			/// If the resourceManagerMember is a property, this method tries
+			/// to find the field that this property is associated to.
+			/// This association is cached in the
+			/// resourceManagerFieldAccessedByProperty field
+			/// to improve performance.
+			/// </summary>
+			void TryResolveResourceManagerProperty()
+			{
+				if (this.resourceManagerFieldAccessedByProperty == null && !this.triedToResolvePropertyAssociation) {
+					
+					// Don't try this more than once in the same CompilationUnit
+					this.triedToResolvePropertyAssociation = true;
+					
+					IProperty prop = this.resourceManagerMember as IProperty;
+					if (prop != null) {
+						
+						// Resolve the property association.
+						PropertyFieldAssociationVisitor visitor = new PropertyFieldAssociationVisitor(prop);
+						this.compilationUnit.AcceptVisitor(visitor, null);
+						
+						// Store the association in the instance field.
+						this.resourceManagerFieldAccessedByProperty = visitor.AssociatedField;
+						
+					}
+					
+				}
+			}
+			
 			public override object TrackedVisit(ObjectCreateExpression objectCreateExpression, object data)
 			{
 				if (data as bool? ?? false) {
@@ -300,7 +418,7 @@ namespace Hornung.ResourceToolkit.Resolver
 					
 					// Resolve the constructor.
 					// A type derived from the declaration type is also allowed.
-					MemberResolveResult mrr = this.Resolve(objectCreateExpression, this.resourceManagerMember) as MemberResolveResult;
+					MemberResolveResult mrr = this.Resolve(objectCreateExpression, this.resourceManagerMember.DeclaringType.CompilationUnit.FileName) as MemberResolveResult;
 					
 					#if DEBUG
 					if (mrr != null) {
@@ -345,7 +463,7 @@ namespace Hornung.ResourceToolkit.Resolver
 							// Support typeof(...)
 							TypeOfExpression t = param as TypeOfExpression;
 							if (t != null && this.PositionAvailable) {
-								TypeResolveResult trr = this.Resolve(new TypeReferenceExpression(t.TypeReference), this.resourceManagerMember) as TypeResolveResult;
+								TypeResolveResult trr = this.Resolve(new TypeReferenceExpression(t.TypeReference), this.resourceManagerMember.DeclaringType.CompilationUnit.FileName) as TypeResolveResult;
 								if (trr != null) {
 									
 									#if DEBUG
@@ -376,6 +494,27 @@ namespace Hornung.ResourceToolkit.Resolver
 		}
 		
 		#endregion
+		
+		/// <summary>
+		/// Determines whether there is a possible relationship between the
+		/// return types of member1 and member2.
+		/// </summary>
+		public static bool IsTypeRelationshipPossible(IMember member1, IMember member2)
+		{
+			if (member1.ReturnType.Equals(member2.ReturnType)) {
+				return true;
+			}
+			IClass class1;
+			IClass class2;
+			if ((class1 = member1.ReturnType.GetUnderlyingClass()) == null) {
+				return false;
+			}
+			if ((class2 = member2.ReturnType.GetUnderlyingClass()) == null) {
+				return false;
+			}
+			return class1.IsTypeInInheritanceTree(class2) ||
+				class2.IsTypeInInheritanceTree(class1);
+		}
 		
 		// ********************************************************************************************************************************
 		

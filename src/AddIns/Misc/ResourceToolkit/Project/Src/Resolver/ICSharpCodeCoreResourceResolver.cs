@@ -207,13 +207,20 @@ namespace Hornung.ResourceToolkit.Resolver
 				return null;
 			}
 			
-			string localFile;
-			foreach (string relativePath in AddInTree.BuildItems<string>("/AddIns/ResourceToolkit/ICSharpCodeCoreResourceResolver/LocalResourcesLocations", null, false)) {
-				if ((localFile = FindICSharpCodeCoreResourceFile(Path.GetFullPath(Path.Combine(project.Directory, relativePath)))) != null) {
-					return localFile;
+			string localFile = null;
+			
+			if (!NRefactoryAstCacheService.CacheEnabled || !cachedLocalResourceFiles.TryGetValue(project, out localFile)) {
+				foreach (string relativePath in AddInTree.BuildItems<string>("/AddIns/ResourceToolkit/ICSharpCodeCoreResourceResolver/LocalResourcesLocations", null, false)) {
+					if ((localFile = FindICSharpCodeCoreResourceFile(Path.GetFullPath(Path.Combine(project.Directory, relativePath)))) != null) {
+						if (NRefactoryAstCacheService.CacheEnabled) {
+							cachedLocalResourceFiles.Add(project, localFile);
+						}
+						break;
+					}
 				}
 			}
-			return null;
+			
+			return localFile;
 		}
 		
 		/// <summary>
@@ -223,37 +230,45 @@ namespace Hornung.ResourceToolkit.Resolver
 		public static string GetICSharpCodeCoreHostResourceFileName(string sourceFileName)
 		{
 			IProject project = ProjectFileDictionaryService.GetProjectForFile(sourceFileName);
+			string hostFile = null;
 			
-			// Get SD directory using the reference to ICSharpCode.Core
-			string coreAssemblyFullPath = GetICSharpCodeCoreFullPath(project);
-			
-			if (coreAssemblyFullPath == null) {
-				// Look for the ICSharpCode.Core project using all available projects.
-				if (ProjectService.OpenSolution != null) {
-					foreach (IProject p in ProjectService.OpenSolution.Projects) {
-						if ((coreAssemblyFullPath = GetICSharpCodeCoreFullPath(p)) != null) {
-							break;
+			if (project == null ||
+			    !NRefactoryAstCacheService.CacheEnabled || !cachedHostResourceFiles.TryGetValue(project, out hostFile)) {
+				
+				// Get SD directory using the reference to ICSharpCode.Core
+				string coreAssemblyFullPath = GetICSharpCodeCoreFullPath(project);
+				
+				if (coreAssemblyFullPath == null) {
+					// Look for the ICSharpCode.Core project using all available projects.
+					if (ProjectService.OpenSolution != null) {
+						foreach (IProject p in ProjectService.OpenSolution.Projects) {
+							if ((coreAssemblyFullPath = GetICSharpCodeCoreFullPath(p)) != null) {
+								break;
+							}
 						}
 					}
 				}
-			}
-			
-			if (coreAssemblyFullPath != null) {
+				
+				if (coreAssemblyFullPath == null) {
+					return null;
+				}
 				
 				#if DEBUG
 				LoggingService.Debug("ResourceToolkit: ICSharpCodeCoreResourceResolver coreAssemblyFullPath = "+coreAssemblyFullPath);
 				#endif
 				
-				string hostFile;
 				foreach (string relativePath in AddInTree.BuildItems<string>("/AddIns/ResourceToolkit/ICSharpCodeCoreResourceResolver/HostResourcesLocations", null, false)) {
 					if ((hostFile = FindICSharpCodeCoreResourceFile(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(coreAssemblyFullPath), relativePath)))) != null) {
-						return hostFile;
+						if (NRefactoryAstCacheService.CacheEnabled && project != null) {
+							cachedHostResourceFiles.Add(project, hostFile);
+						}
+						break;
 					}
 				}
 				
 			}
 			
-			return null;
+			return hostFile;
 		}
 		
 		static string GetICSharpCodeCoreFullPath(IProject sourceProject)
@@ -296,5 +311,27 @@ namespace Hornung.ResourceToolkit.Resolver
 			return coreAssemblyFullPath;
 		}
 		
+		#region ICSharpCode.Core resource file mapping cache
+		
+		static Dictionary<IProject, string> cachedLocalResourceFiles;
+		static Dictionary<IProject, string> cachedHostResourceFiles;
+		
+		static ICSharpCodeCoreResourceResolver()
+		{
+			cachedLocalResourceFiles = new Dictionary<IProject, string>();
+			cachedHostResourceFiles = new Dictionary<IProject, string>();
+			NRefactoryAstCacheService.CacheEnabledChanged += NRefactoryCacheEnabledChanged;
+		}
+		
+		static void NRefactoryCacheEnabledChanged(object sender, EventArgs e)
+		{
+			if (!NRefactoryAstCacheService.CacheEnabled) {
+				// Clear cache when disabled.
+				cachedLocalResourceFiles.Clear();
+				cachedHostResourceFiles.Clear();
+			}
+		}
+		
+		#endregion
 	}
 }

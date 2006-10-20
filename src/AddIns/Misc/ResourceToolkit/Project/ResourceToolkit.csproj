@@ -91,6 +91,8 @@
     <Compile Include="Src\Gui\IFilterHost.cs" />
     <Compile Include="Src\ResourceItem.cs" />
     <EmbeddedResource Include="Resources\EditStringResourceDialog.xfrm" />
+    <Compile Include="Src\Resolver\MemberFindAstVisitor.cs" />
+    <Compile Include="Src\Resolver\MemberEqualityComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">

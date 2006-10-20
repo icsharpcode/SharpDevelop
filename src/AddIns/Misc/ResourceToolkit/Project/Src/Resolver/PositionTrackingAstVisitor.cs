@@ -82,40 +82,33 @@ namespace Hornung.ResourceToolkit.Resolver
 		
 		// ********************************************************************************************************************************
 		
+		private CompilationUnit compilationUnit;
+		
+		public override object TrackedVisit(CompilationUnit compilationUnit, object data)
+		{
+			this.compilationUnit = compilationUnit;
+			return base.TrackedVisit(compilationUnit, data);
+		}
+		
+		// ********************************************************************************************************************************
+		
 		/// <summary>
 		/// Resolves an expression in the current node's context.
 		/// </summary>
 		/// <param name="expression">The expression to be resolved.</param>
-		/// <param name="memberInThisFile">Any member declared in the source file in question. Used to get the language, file name and file content.</param>
-		public ResolveResult Resolve(Expression expression, IMember memberInThisFile)
+		/// <param name="fileName">The file name of the source file that contains the expression to be resolved.</param>
+		public ResolveResult Resolve(Expression expression, string fileName)
 		{
 			if (!this.PositionAvailable) {
-				LoggingService.Debug("ResourceToolkit: PositionTrackingAstVisitor: Resolve failed due to position information being unavailable. Expression: "+expression.ToString());
+				LoggingService.Info("ResourceToolkit: PositionTrackingAstVisitor: Resolve failed due to position information being unavailable. Expression: "+expression.ToString());
 				return null;
 			}
 			
-			// In order to resolve expression, we need the original code.
-			// HACK: To get the code belonging to this expression, we pass it through the code generator.
-			// (Is there a better way?)
+			#if DEBUG
+			LoggingService.Debug("ResourceToolkit: PositionTrackingAstVisitor: Using this parent node for resolve: "+this.parentNodes.Peek().ToString());
+			#endif
 			
-			string code = null;
-			LanguageProperties lp = NRefactoryResourceResolver.GetLanguagePropertiesForMember(memberInThisFile);
-			if (lp != null && lp.CodeGenerator != null) {
-				code = lp.CodeGenerator.GenerateCode(expression, String.Empty);
-			}
-			
-			if (!String.IsNullOrEmpty(code)) {
-				
-				// Now resolve the expression in the current context.
-				ResolveResult rr = ParserService.Resolve(new ExpressionResult(code, ExpressionContext.Default), this.CurrentNodeStartLocation.Y-1, this.CurrentNodeStartLocation.X, memberInThisFile.DeclaringType.CompilationUnit.FileName, ParserService.GetParseableFileContent(memberInThisFile.DeclaringType.CompilationUnit.FileName));
-				
-				return rr;
-				
-			} else {
-				LoggingService.Debug("ResourceToolkit: PositionTrackingAstVisitor could not re-generate code for the expression: "+expression.ToString());
-			}
-			
-			return null;
+			return NRefactoryAstCacheService.ResolveLowLevel(fileName, this.CurrentNodeStartLocation.Y, this.CurrentNodeStartLocation.X+1, this.compilationUnit, null, expression, ExpressionContext.Default);
 		}
 		
 		// ********************************************************************************************************************************

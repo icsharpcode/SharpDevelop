@@ -28,7 +28,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// Tries to find a resource reference in the specified expression.
 		/// </summary>
 		/// <param name="expressionResult">The ExpressionResult for the expression.</param>
-		/// <param name="expr">The AST representation of the expression.</param>
+		/// <param name="expr">The AST representation of the full expression.</param>
 		/// <param name="resolveResult">SharpDevelop's ResolveResult for the expression.</param>
 		/// <param name="caretLine">The line where the expression is located.</param>
 		/// <param name="caretColumn">The column where the expression is located.</param>
