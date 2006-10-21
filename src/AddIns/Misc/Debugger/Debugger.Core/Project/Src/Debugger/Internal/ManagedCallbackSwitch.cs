@@ -57,6 +57,15 @@ namespace Debugger
 		public ManagedCallback GetProcessCallbackInterface(ICorDebugProcess pProcess)
 		{
 			Process process = debugger.GetProcess(pProcess);
+			try {
+				int isRunning = process.CorProcess.IsRunning;
+			} catch (COMException e) {
+				// 0x80131301: Process was terminated
+				if ((uint)e.ErrorCode == 0x80131301) {
+					process.TraceMessage("Ingoring callback of exited process");
+					return null;
+				}
+			}
 			return process.CallbackInterface;
 		}
 		
@@ -64,33 +73,51 @@ namespace Debugger
 		
 		public void StepComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugStepper pStepper, CorDebugStepReason reason)
 		{
-			GetProcessCallbackInterface(pAppDomain).StepComplete(pAppDomain, pThread, pStepper, reason);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.StepComplete(pAppDomain, pThread, pStepper, reason);
+			}
 		}
 		
 		// Do not pass the pBreakpoint parameter as ICorDebugBreakpoint - marshaling of it fails in .NET 1.1
 		public void Breakpoint(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, IntPtr pBreakpoint)
 		{
-			GetProcessCallbackInterface(pAppDomain).Breakpoint(pAppDomain, pThread, pBreakpoint);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.Breakpoint(pAppDomain, pThread, pBreakpoint);
+			}
 		}
 		
 		public void BreakpointSetError(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugBreakpoint pBreakpoint, uint dwError)
 		{
-			GetProcessCallbackInterface(pAppDomain).BreakpointSetError(pAppDomain, pThread, pBreakpoint, dwError);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.BreakpointSetError(pAppDomain, pThread, pBreakpoint, dwError);
+			}
 		}
 		
 		public unsafe void Break(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
-			GetProcessCallbackInterface(pAppDomain).Break(pAppDomain, pThread);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.Break(pAppDomain, pThread);
+			}
 		}
 
 		public void ControlCTrap(ICorDebugProcess pProcess)
 		{
-			GetProcessCallbackInterface(pProcess).ControlCTrap(pProcess);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pProcess);
+			if (managedCallback != null) {
+				managedCallback.ControlCTrap(pProcess);
+			}
 		}
 
 		public unsafe void Exception(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int unhandled)
 		{
-			GetProcessCallbackInterface(pAppDomain).Exception(pAppDomain, pThread, unhandled);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.Exception(pAppDomain, pThread, unhandled);
+			}
 		}
 
 		#endregion
@@ -99,37 +126,58 @@ namespace Debugger
 
 		public void LogSwitch(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int lLevel, uint ulReason, string pLogSwitchName, string pParentName)
 		{
-			GetProcessCallbackInterface(pAppDomain).LogSwitch(pAppDomain, pThread, lLevel, ulReason, pLogSwitchName, pParentName);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.LogSwitch(pAppDomain, pThread, lLevel, ulReason, pLogSwitchName, pParentName);
+			}
 		}
 		
 		public void LogMessage(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int lLevel, string pLogSwitchName, string pMessage)
 		{
-			GetProcessCallbackInterface(pAppDomain).LogMessage(pAppDomain, pThread, lLevel, pLogSwitchName, pMessage);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.LogMessage(pAppDomain, pThread, lLevel, pLogSwitchName, pMessage);
+			}
 		}
 
 		public void EditAndContinueRemap(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pFunction, int fAccurate)
 		{
-			GetProcessCallbackInterface(pAppDomain).EditAndContinueRemap(pAppDomain, pThread, pFunction, fAccurate);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.EditAndContinueRemap(pAppDomain, pThread, pFunction, fAccurate);
+			}
 		}
 		
 		public void EvalException(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval)
 		{
-			GetProcessCallbackInterface(pAppDomain).EvalException(pAppDomain, pThread, corEval);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.EvalException(pAppDomain, pThread, corEval);
+			}
 		}
 		
 		public void EvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval)
 		{
-			GetProcessCallbackInterface(pAppDomain).EvalComplete(pAppDomain, pThread, corEval);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.EvalComplete(pAppDomain, pThread, corEval);
+			}
 		}
 		
 		public void DebuggerError(ICorDebugProcess pProcess, int errorHR, uint errorCode)
 		{
-			GetProcessCallbackInterface(pProcess).DebuggerError(pProcess, errorHR, errorCode);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pProcess);
+			if (managedCallback != null) {
+				managedCallback.DebuggerError(pProcess, errorHR, errorCode);
+			}
 		}
 
 		public void UpdateModuleSymbols(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule, IStream pSymbolStream)
 		{
-			GetProcessCallbackInterface(pAppDomain).UpdateModuleSymbols(pAppDomain, pModule, pSymbolStream);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.UpdateModuleSymbols(pAppDomain, pModule, pSymbolStream);
+			}
 		}
 
 		#endregion
@@ -138,42 +186,64 @@ namespace Debugger
 
 		public void CreateProcess(ICorDebugProcess pProcess)
 		{
-			GetProcessCallbackInterface(pProcess).CreateProcess(pProcess);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pProcess);
+			if (managedCallback != null) {
+				managedCallback.CreateProcess(pProcess);
+			}
 		}
 
 		public void CreateAppDomain(ICorDebugProcess pProcess, ICorDebugAppDomain pAppDomain)
 		{
-			GetProcessCallbackInterface(pProcess).CreateAppDomain(pProcess, pAppDomain);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pProcess);
+			if (managedCallback != null) {
+				managedCallback.CreateAppDomain(pProcess, pAppDomain);
+			}
 		}
 
 		public void LoadAssembly(ICorDebugAppDomain pAppDomain, ICorDebugAssembly pAssembly)
 		{
-			GetProcessCallbackInterface(pAppDomain).LoadAssembly(pAppDomain, pAssembly);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.LoadAssembly(pAppDomain, pAssembly);
+			}
 		}
 
 		public unsafe void LoadModule(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule)
 		{
-			GetProcessCallbackInterface(pAppDomain).LoadModule(pAppDomain, pModule);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.LoadModule(pAppDomain, pModule);
+			}
 		}
 
 		public void NameChange(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
+			ManagedCallback managedCallback = null;
 			if (pAppDomain != null) {
-				GetProcessCallbackInterface(pAppDomain).NameChange(pAppDomain, pThread);
+				managedCallback = GetProcessCallbackInterface(pAppDomain);
 			}
 			if (pThread != null) {
-				GetProcessCallbackInterface(pThread.Process).NameChange(pAppDomain, pThread);
+				managedCallback = GetProcessCallbackInterface(pThread.Process);
+			}
+			if (managedCallback != null) {
+				managedCallback.NameChange(pAppDomain, pThread);
 			}
 		}
 
 		public void CreateThread(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
-			GetProcessCallbackInterface(pAppDomain).CreateThread(pAppDomain, pThread);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.CreateThread(pAppDomain, pThread);
+			}
 		}
 
 		public void LoadClass(ICorDebugAppDomain pAppDomain, ICorDebugClass c)
 		{
-			GetProcessCallbackInterface(pAppDomain).LoadClass(pAppDomain, c);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.LoadClass(pAppDomain, c);
+			}
 		}
 
 		#endregion
@@ -182,32 +252,50 @@ namespace Debugger
 
 		public void UnloadClass(ICorDebugAppDomain pAppDomain, ICorDebugClass c)
 		{
-			GetProcessCallbackInterface(pAppDomain).UnloadClass(pAppDomain, c);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.UnloadClass(pAppDomain, c);
+			}
 		}
 
 		public void UnloadModule(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule)
 		{
-			GetProcessCallbackInterface(pAppDomain).UnloadModule(pAppDomain, pModule);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.UnloadModule(pAppDomain, pModule);
+			}
 		}
 
 		public void UnloadAssembly(ICorDebugAppDomain pAppDomain, ICorDebugAssembly pAssembly)
 		{
-			GetProcessCallbackInterface(pAppDomain).UnloadAssembly(pAppDomain, pAssembly);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.UnloadAssembly(pAppDomain, pAssembly);
+			}
 		}
 
 		public void ExitThread(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
-			GetProcessCallbackInterface(pAppDomain).ExitThread(pAppDomain, pThread);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.ExitThread(pAppDomain, pThread);
+			}
 		}
 
 		public void ExitAppDomain(ICorDebugProcess pProcess, ICorDebugAppDomain pAppDomain)
 		{
-			GetProcessCallbackInterface(pProcess).ExitAppDomain(pProcess, pAppDomain);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pProcess);
+			if (managedCallback != null) {
+				managedCallback.ExitAppDomain(pProcess, pAppDomain);
+			}
 		}
 		
 		public void ExitProcess(ICorDebugProcess pProcess)
 		{
-			GetProcessCallbackInterface(pProcess).ExitProcess(pProcess);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pProcess);
+			if (managedCallback != null) {
+				managedCallback.ExitProcess(pProcess);
+			}
 		}
 		
 		#endregion
@@ -216,42 +304,66 @@ namespace Debugger
 		
 		public void ChangeConnection(ICorDebugProcess pProcess, uint dwConnectionId)
 		{
-			GetProcessCallbackInterface(pProcess).ChangeConnection(pProcess, dwConnectionId);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pProcess);
+			if (managedCallback != null) {
+				managedCallback.ChangeConnection(pProcess, dwConnectionId);
+			}
 		}
 
 		public void CreateConnection(ICorDebugProcess pProcess, uint dwConnectionId, IntPtr pConnName)
 		{
-			GetProcessCallbackInterface(pProcess).CreateConnection(pProcess, dwConnectionId, pConnName);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pProcess);
+			if (managedCallback != null) {
+				managedCallback.CreateConnection(pProcess, dwConnectionId, pConnName);
+			}
 		}
 
 		public void DestroyConnection(ICorDebugProcess pProcess, uint dwConnectionId)
 		{
-			GetProcessCallbackInterface(pProcess).DestroyConnection(pProcess, dwConnectionId);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pProcess);
+			if (managedCallback != null) {
+				managedCallback.DestroyConnection(pProcess, dwConnectionId);
+			}
 		}
 
 		public void Exception2(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFrame pFrame, uint nOffset, CorDebugExceptionCallbackType exceptionType, uint dwFlags)
 		{
-			GetProcessCallbackInterface(pAppDomain).Exception2(pAppDomain, pThread, pFrame, nOffset, exceptionType, dwFlags);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.Exception2(pAppDomain, pThread, pFrame, nOffset, exceptionType, dwFlags);
+			}
 		}
 
 		public void ExceptionUnwind(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
 		{
-			GetProcessCallbackInterface(pAppDomain).ExceptionUnwind(pAppDomain, pThread, dwEventType, dwFlags);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.ExceptionUnwind(pAppDomain, pThread, dwEventType, dwFlags);
+			}
 		}
 
 		public void FunctionRemapComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pFunction)
 		{
-			GetProcessCallbackInterface(pAppDomain).FunctionRemapComplete(pAppDomain, pThread, pFunction);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.FunctionRemapComplete(pAppDomain, pThread, pFunction);
+			}
 		}
 
 		public void FunctionRemapOpportunity(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pOldFunction, ICorDebugFunction pNewFunction, uint oldILOffset)
 		{
-			GetProcessCallbackInterface(pAppDomain).FunctionRemapOpportunity(pAppDomain, pThread, pOldFunction, pNewFunction, oldILOffset);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
+			if (managedCallback != null) {
+				managedCallback.FunctionRemapOpportunity(pAppDomain, pThread, pOldFunction, pNewFunction, oldILOffset);
+			}
 		}
 
 		public void MDANotification(ICorDebugController c, ICorDebugThread t, ICorDebugMDA mda)
 		{
-			GetProcessCallbackInterface(c).MDANotification(c, t, mda);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(c);
+			if (managedCallback != null) {
+				managedCallback.MDANotification(c, t, mda);
+			}
 		}
 
 		#endregion

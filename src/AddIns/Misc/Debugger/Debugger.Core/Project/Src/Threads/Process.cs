@@ -168,9 +168,14 @@ namespace Debugger
 		public void Terminate()
 		{
 			// Resume stoped tread
-			if (corProcess.IsRunning == 0) {
-				corProcess.Continue(0); // TODO: Remove this...
+			if (this.IsRunning) {
+				// We might get more callbacks so we should maintain consistent sate
+				this.Continue(); // TODO: Remove this...
 			}
+			
+			// Expose race condition - drain callback queue
+			System.Threading.Thread.Sleep(0);
+			
 			// Stop&terminate - both must be called
 			corProcess.Stop(5000); // TODO: ...and this
 			corProcess.Terminate(0);
