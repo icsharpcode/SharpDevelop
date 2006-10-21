@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				debuggedProcess.DebuggeeStateChanged += debuggedProcess_DebuggeeStateChanged;
 				debuggedProcess.ThreadStarted        += debuggedProcess_ThreadStarted;
 			}
-			runningThreadsList.Clear();
+			runningThreadsList.Items.Clear();
 			RefreshPad();
 		}
 		
