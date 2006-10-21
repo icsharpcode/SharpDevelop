@@ -168,7 +168,7 @@ namespace Debugger
 		public void Terminate()
 		{
 			// Resume stoped tread
-			if (this.IsRunning) {
+			if (this.IsPaused) {
 				// We might get more callbacks so we should maintain consistent sate
 				this.Continue(); // TODO: Remove this...
 			}
