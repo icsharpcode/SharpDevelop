@@ -301,9 +301,11 @@ namespace Debugger
 			} catch (COMException e) {
 				// 0x8013132D: The state of the thread is invalid.
 				// 0x8013134F: Object is in a zombie state
+				// 0x80131301: Process was terminated.
 				if ((uint)e.ErrorCode == 0x8013132D ||
-				    (uint)e.ErrorCode == 0x8013134F) {
-
+				    (uint)e.ErrorCode == 0x8013134F ||
+				    (uint)e.ErrorCode == 0x80131301) {
+					
 					this.Expire();
 					return;
 				} else throw;
