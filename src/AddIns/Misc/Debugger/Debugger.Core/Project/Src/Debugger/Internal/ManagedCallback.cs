@@ -58,6 +58,12 @@ namespace Debugger
 				} else {
 					pauseProcessInsteadOfContinue = false;
 				}
+				
+				// Remove expired threads and functions
+				foreach(Thread thread in process.Threads) {
+					thread.CheckExpiration();
+				}
+				
 				process.NotifyPaused(new PauseSession(pausedReason));
 			} else {
 				throw new DebuggerException("Invalid state at the start of callback");
@@ -73,8 +79,6 @@ namespace Debugger
 		{
 			EnterCallback(pausedReason, name, pThread.Process);
 			process.SelectedThread = process.GetThread(pThread);
-			// Remove expired functions from the callstack cache
-			process.SelectedThread.CheckExpirationOfFunctions();
 		}
 		
 		void ExitCallback_Continue()
@@ -294,90 +298,85 @@ namespace Debugger
 		public unsafe void LoadModule(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule)
 		{
 			EnterCallback(PausedReason.Other, "LoadModule", pAppDomain);
-
+			
 			process.AddModule(pModule);
-
+			
 			ExitCallback_Continue();
 		}
-
+		
 		public void NameChange(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
-			if (pAppDomain != null)	{
-
+			if (pAppDomain != null) {
+				
 				EnterCallback(PausedReason.Other, "NameChange: pAppDomain", pAppDomain);
-
+				
 				ExitCallback_Continue();
-
+				
 			}
 			if (pThread != null) {
-
+				
 				EnterCallback(PausedReason.Other, "NameChange: pThread", pThread);
-
+				
 				Thread thread = process.GetThread(pThread);
 				thread.HasBeenLoaded = true;
-
+				
 				ExitCallback_Continue();
-
+				
 			}
 		}
-
+		
 		public void CreateThread(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
 			// We can not use pThread since it has not been added yet
 			// and we continue from this callback anyway
-			EnterCallback(PausedReason.Other, "CreateThread", pAppDomain);
-
+			EnterCallback(PausedReason.Other, "CreateThread " + pThread.ID, pAppDomain);
+			
 			process.AddThread(pThread);
-
+			
 			ExitCallback_Continue();
 		}
-
+		
 		public void LoadClass(ICorDebugAppDomain pAppDomain, ICorDebugClass c)
 		{
 			EnterCallback(PausedReason.Other, "LoadClass", pAppDomain);
-
+			
 			ExitCallback_Continue();
 		}
-
+		
 		#endregion
-
+		
 		#region Exit of Application
-
+		
 		public void UnloadClass(ICorDebugAppDomain pAppDomain, ICorDebugClass c)
 		{
 			EnterCallback(PausedReason.Other, "UnloadClass", pAppDomain);
-
+			
 			ExitCallback_Continue();
 		}
-
+		
 		public void UnloadModule(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule)
 		{
 			EnterCallback(PausedReason.Other, "UnloadModule", pAppDomain);
-
+			
 			process.RemoveModule(pModule);
-
+			
 			ExitCallback_Continue();
 		}
-
+		
 		public void UnloadAssembly(ICorDebugAppDomain pAppDomain, ICorDebugAssembly pAssembly)
 		{
 			EnterCallback(PausedReason.Other, "UnloadAssembly", pAppDomain);
-
+			
 			ExitCallback_Continue();
 		}
-
+		
 		public void ExitThread(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
-			EnterCallback(PausedReason.Other, "ExitThread", pThread);
-
-			Thread thread = process.GetThread(pThread);
-
-			process.RemoveThread(thread);
-
-			if (thread.Process.SelectedThread == thread) {
-				thread.Process.SelectedThread = null;
-			}
-
+			// It seems that ICorDebugThread is still not dead and can be used
+			EnterCallback(PausedReason.Other, "ExitThread " + pThread.ID, pThread);
+			
+			process.GetThread(pThread).NotifyNativeThreadExited();
+			
 			try {
 				ExitCallback_Continue();
 			} catch (COMException e) {
@@ -385,11 +384,11 @@ namespace Debugger
 				process.TraceMessage("Continue failed in ExitThread callback: " + e.Message);
 			}
 		}
-
+		
 		public void ExitAppDomain(ICorDebugProcess pProcess, ICorDebugAppDomain pAppDomain)
 		{
 			EnterCallback(PausedReason.Other, "ExitAppDomain", pAppDomain);
-
+			
 			ExitCallback_Continue();
 		}
 		

@@ -143,6 +143,12 @@ namespace Debugger
 			corProcess.Stop(5000); // TODO: Hardcoded value
 			
 			pauseSession = new PauseSession(PausedReason.ForcedBreak);
+
+			// TODO: Code duplication from enter callback
+			// Remove expired threads and functions
+			foreach(Thread thread in this.Threads) {
+				thread.CheckExpiration();
+			}
 			
 			Pause(true);
 		}

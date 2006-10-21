@@ -74,15 +74,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (debuggedProcess != null) {
 				debuggedProcess.DebuggeeStateChanged -= debuggedProcess_DebuggeeStateChanged;
 				debuggedProcess.ThreadStarted        -= debuggedProcess_ThreadStarted;
-				debuggedProcess.ThreadStateChanged   -= debuggedProcess_ThreadStateChanged;
-				debuggedProcess.ThreadExited         -= debuggedProcess_ThreadExited;
 			}
 			debuggedProcess = process;
 			if (debuggedProcess != null) {
 				debuggedProcess.DebuggeeStateChanged += debuggedProcess_DebuggeeStateChanged;
 				debuggedProcess.ThreadStarted        += debuggedProcess_ThreadStarted;
-				debuggedProcess.ThreadStateChanged   += debuggedProcess_ThreadStateChanged;
-				debuggedProcess.ThreadExited         += debuggedProcess_ThreadExited;
 			}
 			runningThreadsList.Clear();
 			RefreshPad();
@@ -96,16 +92,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void debuggedProcess_ThreadStarted(object sender, ThreadEventArgs e)
 		{
 			AddThread(e.Thread);
-		}
-		
-		void debuggedProcess_ThreadStateChanged(object sender, ThreadEventArgs e)
-		{
-			RefreshThread(e.Thread);
-		}
-		
-		void debuggedProcess_ThreadExited(object sender, ThreadEventArgs e)
-		{
-			RemoveThread(e.Thread);
 		}
 		
 		public override void RefreshPad()
@@ -133,6 +119,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			runningThreadsList.Items.Add(new ListViewItem(thread.ID.ToString()));
 			RefreshThread(thread);
+			thread.StateChanged += delegate {
+				RefreshThread(thread);
+			};
+			thread.Expired += delegate {
+				RemoveThread(thread);
+			};
 		}
 		
 		void RefreshThread(Thread thread)

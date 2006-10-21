@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -14,7 +15,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class Thread: RemotingObjectBase
+	public partial class Thread: RemotingObjectBase, IExpirable
 	{
 		Process process;
 
@@ -29,8 +30,20 @@ namespace Debugger
 		ThreadPriority lastPriority = ThreadPriority.Normal;
 		string lastName = string.Empty;
 		bool hasBeenLoaded = false;
+		
+		bool hasExpired = false;
+		bool nativeThreadExited = false;
 
 		Function selectedFunction;
+		
+		public event EventHandler Expired;
+		public event EventHandler<ThreadEventArgs> NativeThreadExited;
+		
+		public bool HasExpired {
+			get {
+				return hasExpired;
+			}
+		}
 		
 		public Process Process {
 			get {
@@ -44,7 +57,7 @@ namespace Debugger
 			}
 			set {
 				hasBeenLoaded = value;
-				OnThreadStateChanged();
+				OnStateChanged();
 			}
 		}
 
@@ -65,32 +78,69 @@ namespace Debugger
 		
 		public bool IsAtSafePoint {
 			get {
-				return corThread.UserState != CorDebugUserState.USER_UNSAFE_POINT;
+				return CorThread.UserState != CorDebugUserState.USER_UNSAFE_POINT;
 			}
 		}
 		
 		public ICorDebugThread CorThread {
 			get {
+				if (nativeThreadExited) {
+					throw new DebuggerException("Native thread has exited");
+				}
 				return corThread;
 			}
 		}
-
+		
 		internal Thread(Process process, ICorDebugThread corThread)
 		{
 			this.process = process;
 			this.corThread = corThread;
-			id = corThread.ID;
+			this.id = CorThread.ID;
+		}
+		
+		void Expire()
+		{
+			Debug.Assert(!this.hasExpired);
+			
+			process.TraceMessage("Thread " + this.ID + " expired");
+			this.hasExpired = true;
+			OnExpired(new ThreadEventArgs(this));
+			if (process.SelectedThread == this) {
+				process.SelectedThread = null;
+			}
+		}
+		
+		protected virtual void OnExpired(EventArgs e)
+		{
+			if (Expired != null) {
+				Expired(this, e);
+			}
+		}
+		
+		internal void NotifyNativeThreadExited()
+		{
+			if (!this.hasExpired) Expire();
+			
+			nativeThreadExited = true;
+			OnNativeThreadExited(new ThreadEventArgs(this));
+		}
+		
+		protected virtual void OnNativeThreadExited(ThreadEventArgs e)
+		{
+			if (NativeThreadExited != null) {
+				NativeThreadExited(this, e);
+			}
 		}
 		
 		public bool Suspended {
 			get {
 				if (process.IsRunning) return lastSuspendedState;
 				
-				lastSuspendedState = (corThread.DebugState == CorDebugThreadState.THREAD_SUSPEND);
+				lastSuspendedState = (CorThread.DebugState == CorDebugThreadState.THREAD_SUSPEND);
 				return lastSuspendedState;
 			}
 			set {
-				corThread.SetDebugState((value==true)?CorDebugThreadState.THREAD_SUSPEND:CorDebugThreadState.THREAD_RUN);
+				CorThread.SetDebugState((value==true)?CorDebugThreadState.THREAD_SUSPEND:CorDebugThreadState.THREAD_RUN);
 			}
 		}
 		
@@ -116,7 +166,7 @@ namespace Debugger
 				                    Variable.Flags.Default,
 				                    new IExpirable[] {process.PauseSession},
 				                    new IMutable[] {},
-				                    delegate { return corThread.Object;} ).Value;
+				                    delegate { return CorThread.Object;} ).Value;
 			}
 		}
 
@@ -135,11 +185,11 @@ namespace Debugger
 		
 		public bool InterceptCurrentException()
 		{
-			if (!corThread.Is<ICorDebugThread2>()) return false; // Is the debuggee .NET 2.0?
+			if (!CorThread.Is<ICorDebugThread2>()) return false; // Is the debuggee .NET 2.0?
 			if (LastFunction == null) return false; // Is frame available?  It is not at StackOverflow
 			
 			try {
-				corThread.CastTo<ICorDebugThread2>().InterceptCurrentException(LastFunction.CorILFrame.CastTo<ICorDebugFrame>());
+				CorThread.CastTo<ICorDebugThread2>().InterceptCurrentException(LastFunction.CorILFrame.CastTo<ICorDebugFrame>());
 				return true;
 			} catch (COMException e) {
 				// 0x80131C02: Cannot intercept this exception
@@ -165,16 +215,17 @@ namespace Debugger
 				return steppers;
 			}
 		}
-
-		public event EventHandler<ThreadEventArgs> ThreadStateChanged;
-
-		protected void OnThreadStateChanged()
+		
+		public event EventHandler<ThreadEventArgs> StateChanged;
+		
+		protected void OnStateChanged()
 		{
-			if (ThreadStateChanged != null)
-				ThreadStateChanged(this, new ThreadEventArgs(this));
+			if (StateChanged != null) {
+				StateChanged(this, new ThreadEventArgs(this));
+			}
 		}
-
-
+		
+		
 		public override string ToString()
 		{
 			return String.Format("ID = {0,-10} Name = {1,-20} Suspended = {2,-8}", ID, Name, Suspended);
@@ -191,7 +242,7 @@ namespace Debugger
 			get {
 				process.AssertPaused();
 				
-				foreach(ICorDebugChain corChain in corThread.EnumerateChains().Enumerator) {
+				foreach(ICorDebugChain corChain in CorThread.EnumerateChains().Enumerator) {
 					if (corChain.IsManaged == 0) continue; // Only managed ones
 					foreach(ICorDebugFrame corFrame in corChain.EnumerateFrames().Enumerator) {
 						if (corFrame.Is<ICorDebugILFrame>()) {
@@ -227,7 +278,7 @@ namespace Debugger
 		{
 			process.AssertPaused();
 			
-			ICorDebugChainEnum corChainEnum = corThread.EnumerateChains();
+			ICorDebugChainEnum corChainEnum = CorThread.EnumerateChains();
 			if (frameID.ChainIndex >= corChainEnum.Count) throw new ArgumentException("Chain index too big", "chainIndex");
 			corChainEnum.Skip(corChainEnum.Count - frameID.ChainIndex - 1);
 			
@@ -243,25 +294,39 @@ namespace Debugger
 		}
 		
 		// See docs\Stepping.txt
-		internal void CheckExpirationOfFunctions()
+		internal void CheckExpiration()
 		{
+			try {
+				ICorDebugChainEnum chainEnum = CorThread.EnumerateChains();
+			} catch (COMException e) {
+				// 0x8013132D: The state of the thread is invalid.
+				// 0x8013134F: Object is in a zombie state
+				if ((uint)e.ErrorCode == 0x8013132D ||
+				    (uint)e.ErrorCode == 0x8013134F) {
+
+					this.Expire();
+					return;
+				} else throw;
+			}
+			
 			if (process.Evaluating) return;
 			
-			ICorDebugChainEnum corChainEnum = corThread.EnumerateChains();
-			uint maxChainIndex = corChainEnum.Count - 1;
+			ICorDebugChainEnum corChainEnum = CorThread.EnumerateChains();
+			int maxChainIndex = (int)corChainEnum.Count - 1;
 			
 			ICorDebugFrameEnum corFrameEnum = corChainEnum.Next().EnumerateFrames();
-			uint maxFrameIndex = corFrameEnum.Count - 1;
+			// corFrameEnum.Count can return 0 in ExitThread callback
+			int maxFrameIndex = (int)corFrameEnum.Count - 1;
 			
 			ICorDebugFrame lastFrame = corFrameEnum.Next();
 			
 			// Check the token of the current function - function can change if there are multiple handlers for an event
 			Function function;
 			if (lastFrame != null && 
-			    functionCache.TryGetValue(new FrameID(maxChainIndex, maxFrameIndex), out function) &&
+			    functionCache.TryGetValue(new FrameID((uint)maxChainIndex, (uint)maxFrameIndex), out function) &&
 			    function.Token != lastFrame.FunctionToken) {
 				
-				functionCache.Remove(new FrameID(maxChainIndex, maxFrameIndex));
+				functionCache.Remove(new FrameID((uint)maxChainIndex, (uint)maxFrameIndex));
 				function.OnExpired(EventArgs.Empty);
 			}
 
@@ -315,6 +380,19 @@ namespace Debugger
 					return function;
 				}
 				return null;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the first function that was called on thread
+		/// </summary>
+		public Function FirstFunction {
+			get {
+				Function first = null;
+				foreach(Function function in Callstack) {
+					first = function;
+				}
+				return first;
 			}
 		}
 		
