@@ -8,11 +8,10 @@
 using System;
 using System.Windows.Forms;
 using System.Data.Common;
+using System.ComponentModel;
 
 using ICSharpCode.Core;
-
 using SharpServerTools.Forms;
-
 using SharpDbTools.Data;
 
 namespace SharpDbTools.Forms
@@ -26,8 +25,14 @@ namespace SharpDbTools.Forms
 	/// </summary>
 	public class DbModelInfoTreeNode: TreeNode, IRequiresRebuildSource
 	{
+		BackgroundWorker loadMetadataFromFileBackgroundWorker;
+		
 		public DbModelInfoTreeNode(string name): base(name)
-		{		
+		{
+			// use tag to carry the logical connection name
+			
+			this.Tag = name;
+			
 			// create and add the menustrip for this node
 			
 			NodeAwareContextMenuStrip cMenu = new NodeAwareContextMenuStrip(this);
@@ -187,8 +192,28 @@ namespace SharpDbTools.Forms
 		private void LoadMetadataFromFileClickHandler(object sender, EventArgs e)
 		{
 			LoggingService.Debug("load metadata from file clicked");
-			string logicalConnectionName = this.Text;
-			DbModelInfoService.LoadFromFile(logicalConnectionName);
+			this.loadMetadataFromFileBackgroundWorker = new BackgroundWorker();
+			loadMetadataFromFileBackgroundWorker.DoWork += new DoWorkEventHandler(this.LoadMetadataFromFileDoWork);
+			loadMetadataFromFileBackgroundWorker.RunWorkerCompleted += 
+				new RunWorkerCompletedEventHandler(this.LoadMetadataFromFileFinished);
+			string logicalConnectionName = (string)this.Tag;
+			this.Text = logicalConnectionName + ": loading...";
+			this.ContextMenuStrip.Enabled = false;
+			this.loadMetadataFromFileBackgroundWorker.RunWorkerAsync(logicalConnectionName);
+		}
+		
+		private void LoadMetadataFromFileDoWork(object sender, DoWorkEventArgs args)
+		{
+			string logicalConnectionName = args.Argument as string;
+			if (logicalConnectionName != null) {
+				DbModelInfoService.LoadFromFile(logicalConnectionName);	
+			}
+		}
+		
+		private void LoadMetadataFromFileFinished(object sender, RunWorkerCompletedEventArgs args)
+		{
+			this.Text = (string)this.Tag;
+			this.ContextMenuStrip.Enabled = true;
 			this.FireRebuildRequired();
 		}
 		
