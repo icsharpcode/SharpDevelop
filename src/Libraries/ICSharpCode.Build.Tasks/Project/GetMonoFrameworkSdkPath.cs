@@ -39,7 +39,7 @@ namespace ICSharpCode.Build.Tasks
 				System.Diagnostics.Debug.WriteLine("MonoSdk: " + path);
 				return true;
 			}
-			Log.LogError("Mono is not installed.");
+			Log.LogError(Resources.MonoIsNotInstalled);
 			return false;
 	
 		}

@@ -75,7 +75,7 @@ namespace ICSharpCode.ComponentInspector.AddIn
 		
 		public override string TitleName {
 			get {
-				return "Component Inspector";
+				return "${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}";
 			}
 			set {
 			}

@@ -83,11 +83,11 @@ namespace ICSharpCode.Build.Tasks
 		{
 			if (string.IsNullOrEmpty(ToolPath)) {
 				string path = FindFxCopPath();
-				Log.LogMessage(MessageImportance.High, "Running Code Analysis...");
+				Log.LogMessage(MessageImportance.High, Resources.RunningCodeAnalysis);
 				if (path != null) {
 					ToolPath = path;
 				} else {
-					Log.LogError("SharpDevelop cannot find FxCop. Please specify the MSBuild property 'FxCopDir'.");
+					Log.LogError(Resources.CannotFindFxCop);
 					return false;
 				}
 			}
@@ -122,7 +122,7 @@ namespace ICSharpCode.Build.Tasks
 							result &= LogMessage(el);
 						}
 					} catch (XmlException e) {
-						Log.LogError("Cannot read FxCop log file: " + e.Message);
+						Log.LogError(Resources.CannotReadFxCopLogFile + " " + e.Message);
 					}
 				}
 				return result;

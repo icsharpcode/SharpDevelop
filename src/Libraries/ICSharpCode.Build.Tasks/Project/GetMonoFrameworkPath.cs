@@ -53,7 +53,7 @@ namespace ICSharpCode.Build.Tasks
 				System.Diagnostics.Debug.WriteLine("MonoFrameworkPath: " + path);
 				return true;
 			}
-			Log.LogError("Mono is not installed.");
+			Log.LogError(Resources.MonoIsNotInstalled);
 			return false;
 		}
 		
@@ -75,7 +75,7 @@ namespace ICSharpCode.Build.Tasks
 			} else if (frameworkVersion == TargetMonoFrameworkVersion20) {
 				return TargetMonoFrameworkVersion.Version20;
 			}
-			throw new ArgumentException(String.Concat("Unknown Target Mono Framework Version: ", frameworkVersion));
+			throw new ArgumentException(Resources.UnknownTargetMonoFrameworkVersion + " " + frameworkVersion);
 		}
 	}
 }

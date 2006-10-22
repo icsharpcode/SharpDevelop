@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (c == null) {
 					ShowUnknownSymbolError();
 				} else if (c.CompilationUnit.FileName == null) {
-					MessageService.ShowMessage("The type cannot be renamed because it is not defined in user code.");
+					ShowNoUserCodeError();
 				} else {
 					FindReferencesAndRenameHelper.RenameClass(c);
 				}
@@ -133,7 +133,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		static void ShowUnknownSymbolError()
 		{
-			MessageService.ShowMessage("The element at the caret position cannot be renamed.");
+			MessageService.ShowMessage("${res:SharpDevelop.Refactoring.CannotRenameElement}");
+		}
+		static void ShowNoUserCodeError()
+		{
+			MessageService.ShowMessage("${res:SharpDevelop.Refactoring.CannotRenameBecauseNotUserCode}");
 		}
 		
 		static void Rename(IMember member)
@@ -141,7 +145,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (member == null) {
 				ShowUnknownSymbolError();
 			} else if (member.DeclaringType.CompilationUnit.FileName == null) {
-				MessageService.ShowMessage("The member cannot be renamed because it is not defined in user code.");
+				ShowNoUserCodeError();
 			} else {
 				FindReferencesAndRenameHelper.RenameMember(member);
 			}

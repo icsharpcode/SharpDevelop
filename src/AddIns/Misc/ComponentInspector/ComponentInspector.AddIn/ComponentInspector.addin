@@ -42,7 +42,7 @@
 
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
 		<DialogPanel id="ComponentInspectorOptions"
-		             label="Component Inspector"
+		             label="${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}"
 		             insertafter="CodingOptions"
 		             insertbefore="TextEditorOptions">
 			<DialogPanel id="GeneralOptionsPanel"

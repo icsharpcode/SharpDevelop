@@ -404,7 +404,7 @@ namespace ICSharpCode.CodeAnalysis
 				ed.ManualOrder = false;
 				ed.BrowseForDirectory = true;
 				ed.AutoAddAfterBrowse = true;
-				ed.TitleText = "${res:ICSharpCode.CodeAnalysis.ProjectOptions.ChooseRuleAssemblyDirectory}";
+				ed.TitleText = StringParser.Parse("${res:ICSharpCode.CodeAnalysis.ProjectOptions.ChooseRuleAssemblyDirectory}");
 				
 				ed.LoadList(GetRuleAssemblyList(false));
 				FlowLayoutPanel p = new FlowLayoutPanel();

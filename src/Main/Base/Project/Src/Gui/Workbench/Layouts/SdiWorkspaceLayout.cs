@@ -32,14 +32,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 		ToolStripContainer toolStripContainer;
 		AutoHideMenuStripContainer mainMenuContainer;
 		AutoHideStatusStripContainer statusStripContainer;
+		static bool firstTimeError = true; // TODO: Debug statement only, remove me
 		
 		public IWorkbenchWindow ActiveWorkbenchwindow {
 			get {
-				if (dockPanel == null || dockPanel.ActiveDocument == null)  {
+				if (dockPanel == null)  {
 					return null;
 				}
+				
+				// TODO: Debug statements only, remove me
+				if (dockPanel.ActiveDocument != null && !(dockPanel.ActiveDocument is IWorkbenchWindow)) {
+					if (firstTimeError) {
+						MessageBox.Show("ActiveDocument was " + dockPanel.ActiveDocument.GetType().FullName);
+						firstTimeError = false;
+					}
+				}
+				
 				IWorkbenchWindow window = dockPanel.ActiveDocument as IWorkbenchWindow;
-				if (window.IsDisposed) {
+				if (window == null || window.IsDisposed) {
 					return null;
 				}
 				return window;

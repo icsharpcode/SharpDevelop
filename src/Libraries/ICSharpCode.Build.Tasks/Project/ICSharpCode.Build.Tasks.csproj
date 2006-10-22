@@ -85,6 +85,7 @@
     <Compile Include="MonoBasicCompilerResultsParser.cs" />
     <Compile Include="MonoCSharpCompilerTask.cs" />
     <Compile Include="FxCop.cs" />
+    <Compile Include="Resources.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SharpDevelop.Build.CSharp.targets">

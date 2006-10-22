@@ -32,7 +32,10 @@ namespace ICSharpCode.SharpDevelop
 			};
 			
 			HostCallback.BeginAssemblyLoad = delegate(string shortName) {
-				StatusBarService.ProgressMonitor.BeginTask("Loading " + shortName + "...", 100);
+				StatusBarService.ProgressMonitor.BeginTask(
+					StringParser.Parse("${res:ICSharpCode.SharpDevelop.LoadingFile}", new string[,] {{"Filename", shortName}}),
+					100
+				);
 			};
 			HostCallback.FinishAssemblyLoad = StatusBarService.ProgressMonitor.Done;
 			
@@ -45,9 +48,12 @@ namespace ICSharpCode.SharpDevelop
 		static void ShowAssemblyLoadError(string fileName, string include, string message)
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
-			TaskService.BuildMessageViewCategory.AppendText("Error loading code-completion information for "
-			                                                + include + " from " + fileName
-			                                                + ":\r\n" + message + "\r\n");
+			TaskService.BuildMessageViewCategory.AppendText(
+				StringParser.Parse(
+					"${res:ICSharpCode.SharpDevelop.ErrorLoadingCodeCompletionInformation}",
+					new string[,] { {"Assembly", include}, {"Filename", fileName}}
+				) + "\r\n" + message + "\r\n"
+			);
 		}
 	}
 }
