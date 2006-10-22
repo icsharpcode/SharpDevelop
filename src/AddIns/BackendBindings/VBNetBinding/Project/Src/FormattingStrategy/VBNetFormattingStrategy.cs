@@ -148,8 +148,10 @@ namespace VBNetBinding.FormattingStrategy
 					for (int i = 0; i < statement.IndentPlus; ++i) {
 						RemoveIndent(b);
 					}
-					if (doCasing && !statement.EndStatement.EndsWith(" "))
-						curLineText = statement.EndStatement;
+					// We cannot reset curLineText like this - it would remove
+					// comments after the EndStatement, see SD2-1142
+					//if (doCasing && !statement.EndStatement.EndsWith(" "))
+					//	curLineText = statement.EndStatement;
 					matched = true;
 				}
 				if (Regex.IsMatch(texttoreplace, statement.StartRegex, RegexOptions.IgnoreCase)) {

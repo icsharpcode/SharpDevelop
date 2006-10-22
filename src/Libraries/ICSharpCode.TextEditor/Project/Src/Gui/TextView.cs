@@ -632,6 +632,7 @@ namespace ICSharpCode.TextEditor
 		// split words after 1000 characters. Fixes GDI+ crash on very longs words, for example
 		// a 100 KB Base64-file without any line breaks.
 		const int MaximumWordLength = 1000;
+		const int MaximumCacheSize = 2000;
 		
 		int MeasureStringWidth(Graphics g, string word, Font font)
 		{
@@ -652,7 +653,7 @@ namespace ICSharpCode.TextEditor
 			if (measureCache.TryGetValue(new WordFontPair(word, font), out width)) {
 				return width;
 			}
-			if (measureCache.Count > 1000) {
+			if (measureCache.Count > MaximumCacheSize) {
 				measureCache.Clear();
 			}
 			
@@ -661,11 +662,15 @@ namespace ICSharpCode.TextEditor
 			// txt.GetPositionFromCharIndex(txt.SelectionStart)
 			// (Verdana 10, highlighting makes GetP... bold) -> note the space between 'x' and '('
 			// this also fixes "jumping" characters when selecting in non-monospace fonts
+			// [...]
+			// Replaced GDI+ measurement with GDI measurement: faster and even more exact
 			width = TextRenderer.MeasureText(g, word, font, new Size(short.MaxValue, short.MaxValue), textFormatFlags).Width;
 			measureCache.Add(new WordFontPair(word, font), width);
 			return width;
 		}
 		
+		// Important: Some flags combinations work on WinXP, but not on Win2000.
+		// Make sure to test changes here on all operating systems.
 		const TextFormatFlags textFormatFlags =
 			TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix | TextFormatFlags.PreserveGraphicsClipping;
 		#endregion

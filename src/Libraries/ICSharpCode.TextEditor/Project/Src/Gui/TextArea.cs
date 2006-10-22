@@ -547,6 +547,7 @@ namespace ICSharpCode.TextEditor
 			return false;
 		}
 		
+		// Fixes SD2-747: Form containing the text editor and a button with a shortcut
 		protected override bool IsInputChar(char charCode)
 		{
 			return true;
