@@ -26,6 +26,12 @@ namespace XmlEditor.Tests.Utils
 		List<string> selectNewAttributesList = new List<string>();
 		List<string> selectedNewAttributesToReturn = new List<string>();
 		string selectedAttribute = null;
+		bool selectNewElementsCalled = false;
+		List<string> selectedNewElementsToReturn = new List<string>();
+		List<string> selectNewElementsList = new List<string>();
+		List<XmlElement> childElementsAdded = new List<XmlElement>();
+		List<XmlElement> elementsInsertedBefore = new List<XmlElement>();
+		List<XmlElement> elementsInsertedAfter = new List<XmlElement>();
 		
 		public MockXmlTreeView()
 		{
@@ -107,6 +113,28 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
+		public string[] SelectNewElements(string[] elements)
+		{
+			selectNewElementsCalled = true;
+			selectNewElementsList.AddRange(elements);
+			return selectedNewElementsToReturn.ToArray();
+		}
+		
+		public void AppendChildElement(XmlElement element)
+		{
+			childElementsAdded.Add(element);
+		}
+		
+		public void InsertElementBefore(XmlElement element)
+		{
+			elementsInsertedBefore.Add(element);
+		}
+		
+		public void InsertElementAfter(XmlElement element)
+		{
+			elementsInsertedAfter.Add(element);
+		}
+
 		public string TextContent {
 			get {
 				return textContentDisplayed;
@@ -169,6 +197,68 @@ namespace XmlEditor.Tests.Utils
 		public List<string> SelectNewAttributesList {
 			get {
 				return selectNewAttributesList;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether the SelectNewElements method was called. 
+		/// </summary>
+		public bool IsSelectNewElementsCalled {
+			get {
+				return selectNewElementsCalled;
+			}
+			set {
+				selectNewElementsCalled = value;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the set of elements that will be returned from the
+		/// SelectNewElements method.
+		/// </summary>
+		public List<string> SelectedNewElementsToReturn {
+			get {
+				return selectedNewElementsToReturn;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the list of elements passed to the 
+		/// SelectNewElement method.
+		/// </summary>
+		public List<string> SelectNewElementsList {
+			get {
+				return selectNewElementsList;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the child elements added via the AppendChildElement
+		/// method.
+		/// </summary>
+		public List<XmlElement> ChildElementsAdded {
+			get {
+				return childElementsAdded;
+			}
+		}
+
+		/// <summary>
+		/// Returns the elements added via the InsertElementBefore
+		/// method.
+		/// </summary>
+		public List<XmlElement> ElementsInsertedBefore {
+			get {
+				return elementsInsertedBefore;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the elements added via the InsertElementAfter
+		/// method.
+		/// </summary>
+		public List<XmlElement> ElementsInsertedAfter {
+			get {
+				return elementsInsertedAfter;
 			}
 		}
 	}

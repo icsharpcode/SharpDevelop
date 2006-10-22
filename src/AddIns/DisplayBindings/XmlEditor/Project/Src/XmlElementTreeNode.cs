@@ -38,7 +38,7 @@ namespace ICSharpCode.XmlEditor
 			get {
 				return element;
 			}
-		}
+		}	
 		
 		/// <summary>
 		/// Adds child elements to this tree node.

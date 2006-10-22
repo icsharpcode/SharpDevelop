@@ -131,6 +131,11 @@
     <Compile Include="Src\AddAttributeDialog.cs" />
     <Compile Include="Src\AddAttributeCommand.cs" />
     <Compile Include="Src\RemoveAttributeCommand.cs" />
+    <EmbeddedResource Include="Resources\AddElementDialog.xfrm" />
+    <Compile Include="Src\AddElementDialog.cs" />
+    <Compile Include="Src\AddChildElementCommand.cs" />
+    <Compile Include="Src\InsertElementBeforeCommand.cs" />
+    <Compile Include="Src\InsertElementAfterCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

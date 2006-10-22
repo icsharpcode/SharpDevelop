@@ -1,25 +1,25 @@
 ﻿<Components version="1.0">
   <System.Windows.Forms.Form>
-    <Name value="AddAttributeDialog" />
+    <Name value="AddElementDialog" />
     <MinimizeBox value="False" />
     <StartPosition value="CenterParent" />
     <MinimumSize value="191, 155" />
     <ShowInTaskbar value="False" />
-    <Text value="${res:ICSharpCode.XmlEditor.AddAttributeDialog.Title}" />
+    <Text value="${res:ICSharpCode.XmlEditor.AddElementDialog.Title}" />
     <MaximizeBox value="False" />
     <ClientSize value="{Width=289, Height=244}" />
     <ShowIcon value="False" />
     <Controls>
       <System.Windows.Forms.Label>
-        <Name value="label1" />
+        <Name value="customElementLabel" />
         <Location value="5, 179" />
-        <Text value="${res:ICSharpCode.XmlEditor.AddAttributeDialog.CustomAttributeLabel}" />
+        <Text value="${res:ICSharpCode.XmlEditor.AddElementDialog.CustomElementLabel}" />
         <Anchor value="Bottom, Left" />
         <Size value="82, 23" />
         <TabIndex value="1" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.TextBox>
-        <Name value="attributeTextBox" />
+        <Name value="elementTextBox" />
         <TabIndex value="2" />
         <Size value="183, 21" />
         <Location value="100, 179" />
@@ -46,7 +46,7 @@
         <TabIndex value="4" />
       </System.Windows.Forms.Button>
       <System.Windows.Forms.ListBox>
-        <Name value="attributesListBox" />
+        <Name value="elementsListBox" />
         <Size value="289, 173" />
         <TabIndex value="0" />
         <Sorted value="True" />

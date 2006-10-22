@@ -134,6 +134,72 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
+		/// Adds a new child element to the selected element.
+		/// </summary>
+		public void AddChildElement()
+		{
+			XmlElement selectedElement = view.SelectedElement;
+			if (selectedElement != null) {
+				string[] elementNames = GetChildElements(selectedElement);
+				string[] selectedElementNames = view.SelectNewElements(elementNames);
+				if (selectedElementNames.Length > 0) {
+					view.IsDirty = true;
+					foreach (string elementName in selectedElementNames) {
+						XmlElement newElement = document.CreateElement(elementName, selectedElement.NamespaceURI);
+						selectedElement.AppendChild(newElement);
+						view.AppendChildElement(newElement);
+					}
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Inserts an element before the currently selected element.
+		/// </summary>
+		public void InsertElementBefore()
+		{
+			XmlElement selectedElement = view.SelectedElement;
+			if (selectedElement != null) {
+				XmlElement parentElement = selectedElement.ParentNode as XmlElement;
+				if (parentElement != null) {
+					string[] elementNames = GetChildElements(parentElement);
+					string[] selectedElementNames = view.SelectNewElements(elementNames);
+					if (selectedElementNames.Length > 0) {
+						view.IsDirty = true;
+						foreach (string elementName in selectedElementNames) {
+							XmlElement newElement = document.CreateElement(elementName, parentElement.NamespaceURI);
+							parentElement.InsertBefore(newElement, selectedElement);
+							view.InsertElementBefore(newElement);
+						}
+					}
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Inserts an element after the currently selected element.
+		/// </summary>
+		public void InsertElementAfter()
+		{
+			XmlElement selectedElement = view.SelectedElement;
+			if (selectedElement != null) {
+				XmlElement parentElement = selectedElement.ParentNode as XmlElement;
+				if (parentElement != null) {
+					string[] elementNames = GetChildElements(parentElement);
+					string[] selectedElementNames = view.SelectNewElements(elementNames);
+					if (selectedElementNames.Length > 0) {
+						view.IsDirty = true;
+						foreach (string elementName in selectedElementNames) {
+							XmlElement newElement = document.CreateElement(elementName, parentElement.NamespaceURI);
+							parentElement.InsertAfter(newElement, selectedElement);
+							view.InsertElementAfter(newElement);
+						}
+					}
+				}
+			}
+		}
+		
+		/// <summary>
 		/// Gets the missing attributes for the specified element based 
 		/// on its associated schema.
 		/// </summary>
@@ -172,6 +238,25 @@ namespace ICSharpCode.XmlEditor
 				parentElement = parentElement.ParentNode as XmlElement;
 			}
 			return path;
+		}
+		
+		/// <summary>
+		/// Returns a list of elements that can be children of the 
+		/// specified element.
+		/// </summary>
+		string[] GetChildElements(XmlElement element)
+		{
+			XmlElementPath elementPath = GetElementPath(element);
+			
+			List<string> elements = new List<string>();
+			XmlSchemaCompletionData schemaCompletionData = completionDataProvider.FindSchema(elementPath);
+			if (schemaCompletionData != null) {
+				ICompletionData[] completionData = schemaCompletionData.GetChildElementCompletionData(elementPath);
+				foreach (ICompletionData elementCompletionData in completionData) {					
+					elements.Add(elementCompletionData.Text);
+				}
+			}
+			return elements.ToArray();	
 		}
 	}
 }

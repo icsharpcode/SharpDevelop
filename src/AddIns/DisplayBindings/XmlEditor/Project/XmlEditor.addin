@@ -196,4 +196,26 @@
 				class = "ICSharpCode.XmlEditor.RemoveAttributeCommand"/>
 		</Condition>
 	</Path>
+
+	<Path name = "/AddIns/XmlEditor/XmlTree/ContextMenu">
+		<ComplexCondition action = "Disable">
+			<And>
+				<Condition name = "Ownerstate" ownerstate = "ElementSelected"/>
+				<Not>
+					<Condition name = "Ownerstate" ownerstate = "RootElementSelected"/>
+				</Not>
+			</And>
+			<MenuItem id = "InsertElementBefore"
+				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertElementBeforeMenuLabel}"
+				class = "ICSharpCode.XmlEditor.InsertElementBeforeCommand"/>
+			<MenuItem id = "InsertElementAfter"
+				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertElementAfterMenuLabel}"
+				class = "ICSharpCode.XmlEditor.InsertElementAfterCommand"/>
+		</ComplexCondition>	
+		<Condition name = "Ownerstate" ownerstate = "ElementSelected" action = "Disable">
+			<MenuItem id = "AddChildElement"
+				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddChildElementMenuLabel}"
+				class = "ICSharpCode.XmlEditor.AddChildElementCommand"/>
+		</Condition>		
+	</Path>
 </AddIn>

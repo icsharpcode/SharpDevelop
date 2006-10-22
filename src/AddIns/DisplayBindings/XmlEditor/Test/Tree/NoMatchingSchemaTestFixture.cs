@@ -31,6 +31,7 @@ namespace XmlEditor.Tests.Tree
 			mockXmlTreeView.SelectedElement = bodyElement;
 
 			editor.AddAttribute();
+			editor.AddChildElement();
 		}
 		
 		/// <summary>
@@ -40,6 +41,15 @@ namespace XmlEditor.Tests.Tree
 		public void ViewAddAttributeCalled()
 		{
 			Assert.IsTrue(mockXmlTreeView.IsSelectNewAttributesCalled);
+		}
+		
+		/// <summary>
+		/// Can still add a new element even if there is no associated schema.
+		/// </summary>
+		[Test]
+		public void ViewSelectNewElementsCalled()
+		{
+			Assert.IsTrue(mockXmlTreeView.IsSelectNewElementsCalled);
 		}
 		
 		protected override string GetXml()

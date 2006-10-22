@@ -71,6 +71,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			AddTo(view.Nodes);
 		}
 		
+		public void Insert(int index, TreeNode parentNode)
+		{
+			internalParent = parentNode;
+			parentNode.Nodes.Insert(index, this);
+		}
+		
 		void AddTo(TreeNodeCollection nodes)
 		{
 			nodes.Add(this);

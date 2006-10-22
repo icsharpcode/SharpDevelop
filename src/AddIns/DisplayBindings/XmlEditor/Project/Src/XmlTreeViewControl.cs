@@ -25,6 +25,11 @@ namespace ICSharpCode.XmlEditor
 		const string ViewStatePropertyName = "XmlTreeViewControl.ViewState";
 
 		XmlElement documentElement;
+
+		enum InsertionMode {
+			Before = 0,
+			After = 1
+		}
 		
 		public XmlTreeViewControl()
 		{
@@ -50,7 +55,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public XmlElement SelectedElement {
 			get {
-				XmlElementTreeNode xmlElementTreeNode = SelectedNode as XmlElementTreeNode;
+				XmlElementTreeNode xmlElementTreeNode = SelectedElementNode;
 				if (xmlElementTreeNode != null) {
 					return xmlElementTreeNode.XmlElement;
 				}
@@ -96,6 +101,45 @@ namespace ICSharpCode.XmlEditor
 		{
 			ExtTreeView.ApplyViewStateString(properties.Get(ViewStatePropertyName, String.Empty), this);
 		}
+		
+		/// <summary>
+		/// Appends a new child element to the currently selected node.
+		/// </summary>
+		public void AppendChildElement(XmlElement element)
+		{
+			XmlElementTreeNode selectedNode = SelectedElementNode;
+			if (selectedNode != null) {
+				XmlElementTreeNode newNode = new XmlElementTreeNode(element);
+				newNode.AddTo(selectedNode);
+				selectedNode.Expand();
+			}
+		}
+		
+		/// <summary>
+		/// Inserts a new element node before the currently selected
+		/// node.
+		/// </summary>
+		public void InsertElementBefore(XmlElement element)
+		{
+			InsertElement(element, InsertionMode.Before);
+		}
+		
+		/// <summary>
+		/// Inserts a new element node after the currently selected
+		/// node.
+		/// </summary>
+		public void InsertElementAfter(XmlElement element)
+		{
+			InsertElement(element, InsertionMode.After);
+		}
+		
+		protected override void OnMouseDown(MouseEventArgs e)
+		{
+			base.OnMouseDown(e);
+			if (SelectedNode == null) {
+				this.OnAfterSelect(new TreeViewEventArgs(null, TreeViewAction.ByMouse));
+			}
+		}
 
 		void ShowDocumentElement()
 		{
@@ -106,11 +150,27 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		protected override void OnMouseDown(MouseEventArgs e)
+		XmlElementTreeNode SelectedElementNode {
+			get {
+				return SelectedNode as XmlElementTreeNode;
+			}
+		}
+		
+		/// <summary>
+		/// Inserts a new element node either before or after the 
+		/// currently selected element node.
+		/// </summary>
+		void InsertElement(XmlElement element, InsertionMode insertionMode)
 		{
-			base.OnMouseDown(e);
-			if (SelectedNode == null) {
-				this.OnAfterSelect(new TreeViewEventArgs(null, TreeViewAction.ByMouse));
+			XmlElementTreeNode selectedNode = SelectedElementNode;
+			if (selectedNode != null) {
+				XmlElementTreeNode parentNode = (XmlElementTreeNode)selectedNode.Parent;
+				XmlElementTreeNode newNode = new XmlElementTreeNode(element);
+				int index = parentNode.Nodes.IndexOf(selectedNode);
+				if (insertionMode == InsertionMode.After) {
+					index++;
+				}
+				newNode.Insert(index, parentNode);
 			}
 		}
 	}

@@ -138,6 +138,11 @@
     <Compile Include="Tree\AddAttributeTestFixture.cs" />
     <Compile Include="Tree\NoMatchingSchemaTestFixture.cs" />
     <Compile Include="Tree\RemoveAttributeTestFixture.cs" />
+    <Compile Include="Tree\AddChildElementTestFixture.cs" />
+    <Compile Include="Tree\ExplicitNamespaceTestFixture.cs" />
+    <Compile Include="Tree\InsertElementBeforeTestFixture.cs" />
+    <Compile Include="Tree\AddElementsToTreeControlTestFixture.cs" />
+    <Compile Include="Tree\InsertElementAfterTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Schema\" />

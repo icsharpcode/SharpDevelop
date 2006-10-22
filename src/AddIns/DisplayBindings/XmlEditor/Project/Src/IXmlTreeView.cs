@@ -67,12 +67,42 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		/// <param name="attributes">The list of attributes to
 		/// be displayed to the user.</param>
-		/// <returns>The attributes selected; otherwise null.</returns>
+		/// <returns>The attributes selected; otherwise an empty 
+		/// collection.</returns>
 		string[] SelectNewAttributes(string[] attributes);
 		
 		/// <summary>
 		/// Gets the name of the selected attribute.
 		/// </summary>
 		string SelectedAttribute {get;}
+		
+		/// <summary>
+		/// Shows the add element dialog and allows the user
+		/// to select a new element to be added to the selected
+		/// xml element, either added as a child, inserted before
+		/// or after.
+		/// </summary>
+		/// <param name="attributes">The list of elements to
+		/// be displayed to the user.</param>
+		/// <returns>The attributes elements; otherwise an empty 
+		/// collection.</returns>
+		string[] SelectNewElements(string[] elements);
+		
+		/// <summary>
+		/// Appends the child element to the currently selected element.
+		/// </summary>
+		void AppendChildElement(XmlElement element);
+		
+		/// <summary>
+		/// Inserts the specified element before the currently selected
+		/// element.
+		/// </summary>
+		void InsertElementBefore(XmlElement element);
+		
+		/// <summary>
+		/// Inserts the specified element after the currently selected
+		/// element.
+		/// </summary>
+		void InsertElementAfter(XmlElement element);
 	}
 }

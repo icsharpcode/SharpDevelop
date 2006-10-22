@@ -28,6 +28,7 @@ namespace ICSharpCode.XmlEditor
 			this.xmlView = xmlView;
 			treeViewContainer.DirtyChanged += TreeViewContainerDirtyChanged;
 			treeViewContainer.AttributesGrid.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/AttributesGrid/ContextMenu");
+			treeViewContainer.TreeView.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/ContextMenu");
 		}
 		
 		public override Control Control {

@@ -15,8 +15,8 @@ using System.Xml;
 namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
-	/// This user control holds both the XmlTreeViewControl and the 
-	/// attributes property grid in a split container. This is separate from 
+	/// This user control holds both the XmlTreeViewControl and the
+	/// attributes property grid in a split container. This is separate from
 	/// the XmlTreeView class so we can use the forms designer to design this control.
 	/// </summary>
 	public class XmlTreeViewContainerControl : System.Windows.Forms.UserControl, IXmlTreeView, IOwnerState
@@ -31,7 +31,8 @@ namespace ICSharpCode.XmlEditor
 		public enum XmlTreeViewContainerControlState {
 			Nothing             = 0,
 			ElementSelected     = 1,
-			AttributeSelected   = 2
+			RootElementSelected = 2,
+			AttributeSelected   = 4
 		}
 		
 		public event EventHandler DirtyChanged;
@@ -47,6 +48,9 @@ namespace ICSharpCode.XmlEditor
 				XmlTreeViewContainerControlState state = XmlTreeViewContainerControlState.Nothing;
 				if (SelectedElement != null) {
 					state |= XmlTreeViewContainerControlState.ElementSelected;
+					if (SelectedElement == DocumentElement) {
+						state |= XmlTreeViewContainerControlState.RootElementSelected;
+					}
 				}
 				if (SelectedAttribute != null) {
 					state |= XmlTreeViewContainerControlState.AttributeSelected;
@@ -108,7 +112,7 @@ namespace ICSharpCode.XmlEditor
 				}
 			}
 		}
-	
+		
 		public XmlTreeViewControl TreeView {
 			get {
 				return xmlElementTreeView;
@@ -143,7 +147,7 @@ namespace ICSharpCode.XmlEditor
 			editor = new XmlTreeEditor(this, completionDataProvider);
 			editor.LoadXml(xml);
 			
-			// Expand document element node. 
+			// Expand document element node.
 			if (xmlElementTreeView.Nodes.Count > 0) {
 				xmlElementTreeView.Nodes[0].Expand();
 			}
@@ -176,7 +180,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Shows the xml element's text content after the user has 
+		/// Shows the xml element's text content after the user has
 		/// selected the text node.
 		/// </summary>
 		public void ShowTextContent(string text)
@@ -218,7 +222,7 @@ namespace ICSharpCode.XmlEditor
 		public string SelectedAttribute {
 			get {
 				GridItem gridItem = attributesGrid.SelectedGridItem;
-				if (IsAttributesGridVisible && gridItem != null) {
+				if (IsAttributesGridVisible && gridItem != null && gridItem.PropertyDescriptor != null) {
 					return gridItem.PropertyDescriptor.Name;
 				}
 				return null;
@@ -258,7 +262,74 @@ namespace ICSharpCode.XmlEditor
 		{
 			editor.RemoveAttribute();
 		}
-					
+		
+		/// <summary>
+		/// Shows the add element dialog so the user can choose one or more
+		/// new elements to be added to the selected element.
+		/// </summary>
+		/// <param name="attributes">The list of elements the user
+		/// can choose from.</param>
+		/// <returns>The elements selected by the user.</returns>
+		public string[] SelectNewElements(string[] elements)
+		{
+			using (AddElementDialog addElementDialog = new AddElementDialog(elements)) {
+				if (addElementDialog.ShowDialog() == DialogResult.OK) {
+					return addElementDialog.ElementNames;
+				}
+				return new string[0];
+			}
+		}
+		
+		/// <summary>
+		/// Appends a new child element to the currently selected element.
+		/// </summary>
+		public void AppendChildElement(XmlElement element)
+		{
+			xmlElementTreeView.AppendChildElement(element);
+		}
+		
+		/// <summary>
+		/// Adds a new child element to the selected element.
+		/// </summary>
+		public void AddChildElement()
+		{
+			editor.AddChildElement();
+		}
+		
+		/// <summary>
+		/// Inserts an element before the currently selected element.
+		/// </summary>
+		public void InsertElementBefore()
+		{
+			editor.InsertElementBefore();
+		}
+
+		/// <summary>
+		/// Inserts the specified element before the currently selected
+		/// element.
+		/// </summary>
+		public void InsertElementBefore(XmlElement element)
+		{
+			xmlElementTreeView.InsertElementBefore(element);
+		}
+		
+		/// <summary>
+		/// Inserts an element after the currently selected element.
+		/// </summary>
+		public void InsertElementAfter()
+		{
+			editor.InsertElementAfter();
+		}
+		
+		/// <summary>
+		/// Inserts the specified element after the currently selected
+		/// element.
+		/// </summary>
+		public void InsertElementAfter(XmlElement element)
+		{
+			xmlElementTreeView.InsertElementAfter(element);
+		}
+		
 		/// <summary>
 		/// Disposes resources used by the control.
 		/// </summary>
@@ -449,7 +520,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Gets or sets whether the attributes grid is visible. 
+		/// Gets or sets whether the attributes grid is visible.
 		/// </summary>
 		bool IsAttributesGridVisible {
 			get {
@@ -470,7 +541,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Gets or sets whether the text node text box is visible. 
+		/// Gets or sets whether the text node text box is visible.
 		/// </summary>
 		bool IsTextBoxVisible {
 			get {
