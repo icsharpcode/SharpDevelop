@@ -118,25 +118,25 @@ namespace ICSharpCode.TextEditor
 			return Math.Max(height1, height2) + 1;
 		}
 		
-		float spaceWidth;
+		int spaceWidth;
 		
 		/// <summary>
 		/// Gets the width of a space character.
 		/// This value can be quite small in some fonts - consider using WideSpaceWidth instead.
 		/// </summary>
-		public float SpaceWidth {
+		public int SpaceWidth {
 			get {
 				return spaceWidth;
 			}
 		}
 		
-		float wideSpaceWidth;
+		int wideSpaceWidth;
 		
 		/// <summary>
 		/// Gets the width of a 'wide space' (=one quarter of a tab, if tab is set to 4 spaces).
 		/// On monospaced fonts, this is the same value as spaceWidth.
 		/// </summary>
-		public float WideSpaceWidth {
+		public int WideSpaceWidth {
 			get {
 				return wideSpaceWidth;
 			}
@@ -211,7 +211,7 @@ namespace ICSharpCode.TextEditor
 				return;
 			}
 			
-			float physicalXPos = lineRectangle.X;
+			int physicalXPos = lineRectangle.X;
 			// there can't be a folding wich starts in an above line and ends here, because the line is a new one,
 			// there must be a return before this line.
 			int column = 0;
@@ -295,32 +295,31 @@ namespace ICSharpCode.TextEditor
 			return BrushRegistry.GetBrush(bgColor);
 		}
 		
-		float PaintFoldingText(Graphics g, int lineNumber, float physicalXPos, Rectangle lineRectangle, string text, bool drawSelected)
+		const int additionalFoldTextSize = 1;
+		
+		int PaintFoldingText(Graphics g, int lineNumber, int physicalXPos, Rectangle lineRectangle, string text, bool drawSelected)
 		{
 			// TODO: get font and color from the highlighting file
 			HighlightColor      selectionColor  = textArea.Document.HighlightingStrategy.GetColorFor("Selection");
 			Brush               bgColorBrush    = drawSelected ? BrushRegistry.GetBrush(selectionColor.BackgroundColor) : GetBgColorBrush(lineNumber);
 			Brush               backgroundBrush = textArea.Enabled ? bgColorBrush : SystemBrushes.InactiveBorder;
 			
-			float wordWidth = MeasureStringWidth(g, text, textArea.Font);
-			RectangleF rect = new RectangleF(physicalXPos, lineRectangle.Y, wordWidth, lineRectangle.Height - 1);
+			Font font = textArea.TextEditorProperties.FontContainer.RegularFont;
+			
+			int wordWidth = MeasureStringWidth(g, text, font) + additionalFoldTextSize;
+			Rectangle rect = new Rectangle(physicalXPos, lineRectangle.Y, wordWidth, lineRectangle.Height - 1);
 			
 			g.FillRectangle(backgroundBrush, rect);
 			
 			physicalColumn += text.Length;
 			DrawString(g,
 			           text,
-			           textArea.Font,
+			           font,
 			           drawSelected ? selectionColor.Color : Color.Gray,
-			           rect.X, rect.Y);
+			           rect.X + 1, rect.Y);
 			g.DrawRectangle(BrushRegistry.GetPen(drawSelected ? Color.DarkGray : Color.Gray), rect.X, rect.Y, rect.Width, rect.Height);
 			
-			// Bugfix for the problem - of overdrawn right rectangle lines.
-			float ceiling = (float)Math.Ceiling(physicalXPos + wordWidth);
-			if (ceiling - (physicalXPos + wordWidth) < 0.5) {
-				++ceiling;
-			}
-			return ceiling;
+			return physicalXPos + wordWidth + 1;
 		}
 		
 		struct MarkerToDraw {
@@ -390,7 +389,7 @@ namespace ICSharpCode.TextEditor
 			return null;
 		}
 		
-		float PaintLinePart(Graphics g, int lineNumber, int startColumn, int endColumn, Rectangle lineRectangle, float physicalXPos)
+		int PaintLinePart(Graphics g, int lineNumber, int startColumn, int endColumn, Rectangle lineRectangle, int physicalXPos)
 		{
 			bool  drawLineMarker  = DrawLineMarkerAtLine(lineNumber);
 			Brush backgroundBrush = textArea.Enabled ? GetBgColorBrush(lineNumber) : SystemBrushes.InactiveBorder;
@@ -508,7 +507,7 @@ namespace ICSharpCode.TextEditor
 				if (currentWord.Type == TextWordType.Space) {
 					++physicalColumn;
 					
-					wordRectangle = new RectangleF(physicalXPos, lineRectangle.Y, (float)Math.Ceiling(SpaceWidth), lineRectangle.Height);
+					wordRectangle = new RectangleF(physicalXPos, lineRectangle.Y, SpaceWidth, lineRectangle.Height);
 					g.FillRectangle(wordBackBrush, wordRectangle);
 					
 					if (TextEditorProperties.ShowSpaces) {
@@ -520,12 +519,12 @@ namespace ICSharpCode.TextEditor
 					physicalColumn += TextEditorProperties.TabIndent;
 					physicalColumn = (physicalColumn / TextEditorProperties.TabIndent) * TextEditorProperties.TabIndent;
 					// go to next tabstop
-					float physicalTabEnd = (int)((physicalXPos + MinTabWidth - lineRectangle.X)
-					                             / WideSpaceWidth / TextEditorProperties.TabIndent)
+					int physicalTabEnd = ((physicalXPos + MinTabWidth - lineRectangle.X)
+					                      / WideSpaceWidth / TextEditorProperties.TabIndent)
 						* WideSpaceWidth * TextEditorProperties.TabIndent + lineRectangle.X;
 					physicalTabEnd += WideSpaceWidth * TextEditorProperties.TabIndent;
 					
-					wordRectangle = new RectangleF(physicalXPos, lineRectangle.Y, (float)Math.Ceiling(physicalTabEnd - physicalXPos), lineRectangle.Height);
+					wordRectangle = new RectangleF(physicalXPos, lineRectangle.Y, physicalTabEnd - physicalXPos, lineRectangle.Height);
 					g.FillRectangle(wordBackBrush, wordRectangle);
 					
 					if (TextEditorProperties.ShowTabs) {
@@ -533,12 +532,12 @@ namespace ICSharpCode.TextEditor
 					}
 					physicalXPos = physicalTabEnd;
 				} else {
-					float wordWidth = DrawDocumentWord(g,
-					                                   currentWord.Word,
-					                                   new Point((int)physicalXPos, lineRectangle.Y),
-					                                   currentWord.GetFont(fontContainer),
-					                                   wordForeColor,
-					                                   wordBackBrush);
+					int wordWidth = DrawDocumentWord(g,
+					                                 currentWord.Word,
+					                                 new Point(physicalXPos, lineRectangle.Y),
+					                                 currentWord.GetFont(fontContainer),
+					                                 wordForeColor,
+					                                 wordBackBrush);
 					wordRectangle = new RectangleF(physicalXPos, lineRectangle.Y, wordWidth, lineRectangle.Height);
 					physicalXPos += wordWidth;
 				}
@@ -575,17 +574,17 @@ namespace ICSharpCode.TextEditor
 			return physicalXPos;
 		}
 		
-		float DrawDocumentWord(Graphics g, string word, Point position, Font font, Color foreColor, Brush backBrush)
+		int DrawDocumentWord(Graphics g, string word, Point position, Font font, Color foreColor, Brush backBrush)
 		{
 			if (word == null || word.Length == 0) {
-				return 0f;
+				return 0;
 			}
 			
 			if (word.Length > MaximumWordLength) {
-				float width = 0;
+				int width = 0;
 				for (int i = 0; i < word.Length; i += MaximumWordLength) {
 					Point pos = position;
-					pos.X += (int)width;
+					pos.X += width;
 					if (i + MaximumWordLength < word.Length)
 						width += DrawDocumentWord(g, word.Substring(i, MaximumWordLength), pos, font, foreColor, backBrush);
 					else
@@ -594,11 +593,11 @@ namespace ICSharpCode.TextEditor
 				return width;
 			}
 			
-			float wordWidth = MeasureStringWidth(g, word, font);
+			int wordWidth = MeasureStringWidth(g, word, font);
 			
 			//num = ++num % 3;
 			g.FillRectangle(backBrush, //num == 0 ? Brushes.LightBlue : num == 1 ? Brushes.LightGreen : Brushes.Yellow,
-			                new RectangleF(position.X, position.Y, (float)Math.Ceiling(wordWidth + 1), FontHeight));
+			                new RectangleF(position.X, position.Y, wordWidth + 1, FontHeight));
 			
 			DrawString(g,
 			           word,
@@ -676,31 +675,31 @@ namespace ICSharpCode.TextEditor
 		#endregion
 		
 		#region Conversion Functions
-		Dictionary<Font, Dictionary<char, float>> fontBoundCharWidth = new Dictionary<Font, Dictionary<char, float>>();
+		Dictionary<Font, Dictionary<char, int>> fontBoundCharWidth = new Dictionary<Font, Dictionary<char, int>>();
 		
-		public float GetWidth(char ch, Font font)
+		public int GetWidth(char ch, Font font)
 		{
 			if (!fontBoundCharWidth.ContainsKey(font)) {
-				fontBoundCharWidth.Add(font, new Dictionary<char, float>());
+				fontBoundCharWidth.Add(font, new Dictionary<char, int>());
 			}
 			if (!fontBoundCharWidth[font].ContainsKey(ch)) {
 				using (Graphics g = textArea.CreateGraphics()) {
 					return GetWidth(g, ch, font);
 				}
 			}
-			return (float)fontBoundCharWidth[font][ch];
+			return fontBoundCharWidth[font][ch];
 		}
 		
-		public float GetWidth(Graphics g, char ch, Font font)
+		public int GetWidth(Graphics g, char ch, Font font)
 		{
 			if (!fontBoundCharWidth.ContainsKey(font)) {
-				fontBoundCharWidth.Add(font, new Dictionary<char, float>());
+				fontBoundCharWidth.Add(font, new Dictionary<char, int>());
 			}
 			if (!fontBoundCharWidth[font].ContainsKey(ch)) {
 				//Console.WriteLine("Calculate character width: " + ch);
 				fontBoundCharWidth[font].Add(ch, MeasureStringWidth(g, ch.ToString(), font));
 			}
-			return (float)fontBoundCharWidth[font][ch];
+			return fontBoundCharWidth[font][ch];
 		}
 		
 		public int GetVisualColumn(int logicalLine, int logicalColumn)
@@ -896,7 +895,7 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		const float MinTabWidth = 4;
+		const int MinTabWidth = 4;
 		
 		float CountColumns(ref int column, int start, int end, int logicalLine, Graphics g)
 		{
@@ -1029,6 +1028,7 @@ namespace ICSharpCode.TextEditor
 				drawingPos += CountColumns(ref column, foldEnd, f.StartColumn, f.StartLine, g);
 				foldEnd = f.EndColumn;
 				column += f.FoldText.Length;
+				drawingPos += additionalFoldTextSize;
 				drawingPos += MeasureStringWidth(g, f.FoldText, TextEditorProperties.FontContainer.RegularFont);
 			}
 			drawingPos += CountColumns(ref column, foldEnd, logicalColumn, logicalLine, g);
@@ -1044,34 +1044,34 @@ namespace ICSharpCode.TextEditor
 			g.DrawRectangle(Pens.Blue, rect);
 		}
 		
-		void DrawString(Graphics g, string text, Font font, Color color, float x, float y)
+		void DrawString(Graphics g, string text, Font font, Color color, int x, int y)
 		{
-			TextRenderer.DrawText(g, text, font, new Point((int)x, (int)y), color, textFormatFlags);
+			TextRenderer.DrawText(g, text, font, new Point(x, y), color, textFormatFlags);
 		}
 		
-		void DrawInvalidLineMarker(Graphics g, float x, float y)
+		void DrawInvalidLineMarker(Graphics g, int x, int y)
 		{
 			HighlightColor invalidLinesColor = textArea.Document.HighlightingStrategy.GetColorFor("InvalidLines");
 			DrawString(g, "~", invalidLinesColor.GetFont(TextEditorProperties.FontContainer), invalidLinesColor.Color, x, y);
 		}
 		
-		void DrawSpaceMarker(Graphics g, Color color, float x, float y)
+		void DrawSpaceMarker(Graphics g, Color color, int x, int y)
 		{
 			HighlightColor spaceMarkerColor = textArea.Document.HighlightingStrategy.GetColorFor("SpaceMarkers");
 			DrawString(g, "\u00B7", spaceMarkerColor.GetFont(TextEditorProperties.FontContainer), color, x, y);
 		}
 		
-		void DrawTabMarker(Graphics g, Color color, float x, float y)
+		void DrawTabMarker(Graphics g, Color color, int x, int y)
 		{
 			HighlightColor tabMarkerColor   = textArea.Document.HighlightingStrategy.GetColorFor("TabMarkers");
 			DrawString(g, "\u00BB", tabMarkerColor.GetFont(TextEditorProperties.FontContainer), color, x, y);
 		}
 		
-		float DrawEOLMarker(Graphics g, Color color, Brush backBrush, float x, float y)
+		int DrawEOLMarker(Graphics g, Color color, Brush backBrush, int x, int y)
 		{
 			HighlightColor eolMarkerColor = textArea.Document.HighlightingStrategy.GetColorFor("EOLMarkers");
 			
-			float width = GetWidth('\u00B6', eolMarkerColor.GetFont(TextEditorProperties.FontContainer));
+			int width = GetWidth('\u00B6', eolMarkerColor.GetFont(TextEditorProperties.FontContainer));
 			g.FillRectangle(backBrush,
 			                new RectangleF(x, y, width, fontHeight));
 			

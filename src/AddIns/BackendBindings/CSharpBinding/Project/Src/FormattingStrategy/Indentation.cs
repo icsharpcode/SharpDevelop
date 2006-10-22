@@ -215,10 +215,21 @@ namespace CSharpBinding.FormattingStrategy
 						block.OneLineBlock = false;
 						blocks.Push(block);
 						block.StartLine = doc.LineNumber;
-						if (block.LastWord == "switch")
+						if (block.LastWord == "switch") {
 							block.Indent(set, set.IndentString + set.IndentString);
-						else
+						} else if (oldBlock.OneLineBlock) {
+							// Inside a one-line-block is another statement
+							// with a full block: indent the inner full block
+							// by one additional level
+							block.Indent(set, set.IndentString + set.IndentString);
+							block.OuterIndent += set.IndentString;
+							// Indent current line if it starts with the '{' character
+							if (i == 0) {
+								oldBlock.InnerIndent += set.IndentString;
+							}
+						} else {
 							block.Indent(set);
+						}
 						block.Bracket = '{';
 						break;
 					case '}':
