@@ -217,7 +217,9 @@ namespace CSharpBinding.FormattingStrategy
 						block.StartLine = doc.LineNumber;
 						if (block.LastWord == "switch") {
 							block.Indent(set, set.IndentString + set.IndentString);
-						} else if (oldBlock.OneLineBlock) {
+							/* oldBlock refers to the previous line, not the previous block
+							 * The block we want is not available anymore because it was never pushed.
+							 * } else if (oldBlock.OneLineBlock) {
 							// Inside a one-line-block is another statement
 							// with a full block: indent the inner full block
 							// by one additional level
@@ -226,7 +228,7 @@ namespace CSharpBinding.FormattingStrategy
 							// Indent current line if it starts with the '{' character
 							if (i == 0) {
 								oldBlock.InnerIndent += set.IndentString;
-							}
+							}*/
 						} else {
 							block.Indent(set);
 						}
