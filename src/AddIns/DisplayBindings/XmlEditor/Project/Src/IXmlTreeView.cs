@@ -60,5 +60,19 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		XmlText SelectedTextNode {get;}
 
+		/// <summary>
+		/// Shows the add attribute dialog and allows the user
+		/// to select a new attribute to be added to the selected
+		/// xml element.
+		/// </summary>
+		/// <param name="attributes">The list of attributes to
+		/// be displayed to the user.</param>
+		/// <returns>The attributes selected; otherwise null.</returns>
+		string[] SelectNewAttributes(string[] attributes);
+		
+		/// <summary>
+		/// Gets the name of the selected attribute.
+		/// </summary>
+		string SelectedAttribute {get;}
 	}
 }

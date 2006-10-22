@@ -20,13 +20,35 @@ namespace XmlEditor.Tests.Tree
 		public void InitFixture()
 		{
 			mockXmlTreeView = new MockXmlTreeView();
-			editor = new XmlTreeEditor(mockXmlTreeView);
+			XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(SchemaDataItems, DefaultSchemaCompletionData, DefaultNamespacePrefix);
+			editor = new XmlTreeEditor(mockXmlTreeView, completionDataProvider);
 			editor.LoadXml(GetXml());
 		}
 		
 		protected virtual string GetXml()
 		{
 			return String.Empty;
+		}
+		
+		protected virtual XmlSchemaCompletionDataCollection SchemaDataItems {
+			get {
+				return new XmlSchemaCompletionDataCollection();
+			}
+		}
+	
+		protected virtual XmlSchemaCompletionData DefaultSchemaCompletionData {
+			get {
+				return null;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the default element prefix.
+		/// </summary>
+		protected virtual string DefaultNamespacePrefix {
+			get {
+				return String.Empty;
+			}
 		}
 	}
 }

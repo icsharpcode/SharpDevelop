@@ -22,6 +22,10 @@ namespace XmlEditor.Tests.Utils
 		string textContentDisplayed;
 		XmlText selectedTextNode;
 		bool dirty;
+		bool selectNewAttributesCalled = false;
+		List<string> selectNewAttributesList = new List<string>();
+		List<string> selectedNewAttributesToReturn = new List<string>();
+		string selectedAttribute = null;
 		
 		public MockXmlTreeView()
 		{
@@ -86,6 +90,22 @@ namespace XmlEditor.Tests.Utils
 		{
 			textContentDisplayed = text;
 		}
+				
+		public string[] SelectNewAttributes(string[] attributes)
+		{
+			selectNewAttributesCalled = true;
+			selectNewAttributesList.AddRange(attributes);
+			return selectedNewAttributesToReturn.ToArray();
+		}
+		
+		public string SelectedAttribute {
+			get {
+				return selectedAttribute;
+			}
+			set {
+				selectedAttribute = value;
+			}
+		}
 		
 		public string TextContent {
 			get {
@@ -117,6 +137,38 @@ namespace XmlEditor.Tests.Utils
 		public XmlException NotWellFormedExceptionPassed {
 			get {
 				return notWellFormedException;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether the SelectNewAttributes method has been called.
+		/// </summary>
+		public bool IsSelectNewAttributesCalled {
+			get {
+				return selectNewAttributesCalled;
+			}
+			set {
+				selectNewAttributesCalled = value;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the set of attributes that will be returned from the
+		/// SelectNewAttributes method.
+		/// </summary>
+		public List<string> SelectedNewAttributesToReturn {
+			get {
+				return selectedNewAttributesToReturn;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the list of attributes passed to the 
+		/// SelectNewAttribute method.
+		/// </summary>
+		public List<string> SelectNewAttributesList {
+			get {
+				return selectNewAttributesList;
 			}
 		}
 	}

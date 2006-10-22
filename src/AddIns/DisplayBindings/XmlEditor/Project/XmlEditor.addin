@@ -181,4 +181,19 @@
 			          class = "ICSharpCode.XmlEditor.RemoveXPathHighlightingCommand"/>
 		</Condition>
 	</Path>
+
+	<!-- XML Tree context menu options -->
+	<Path name = "/AddIns/XmlEditor/XmlTree/AttributesGrid/ContextMenu">
+		<Condition name = "Ownerstate" ownerstate="ElementSelected" action="Disable">
+			<MenuItem id = "AddAttribute"
+				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddAttributeMenuLabel}"
+				class = "ICSharpCode.XmlEditor.AddAttributeCommand"/>
+		</Condition>
+		<Condition name = "Ownerstate" ownerstate="AttributeSelected" action="Disable">
+			<MenuItem id = "RemoveAttribute"
+				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.RemoveAttributeMenuLabel}"
+				icon = "Icons.16x16.DeleteIcon"
+				class = "ICSharpCode.XmlEditor.RemoveAttributeCommand"/>
+		</Condition>
+	</Path>
 </AddIn>

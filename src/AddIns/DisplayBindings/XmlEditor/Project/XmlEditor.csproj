@@ -127,6 +127,10 @@
     <Compile Include="Src\XmlAttributePropertyDescriptor.cs" />
     <Compile Include="Src\XmlAttributeTypeDescriptor.cs" />
     <Compile Include="Src\XmlEncoder.cs" />
+    <EmbeddedResource Include="Resources\AddAttributeDialog.xfrm" />
+    <Compile Include="Src\AddAttributeDialog.cs" />
+    <Compile Include="Src\AddAttributeCommand.cs" />
+    <Compile Include="Src\RemoveAttributeCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

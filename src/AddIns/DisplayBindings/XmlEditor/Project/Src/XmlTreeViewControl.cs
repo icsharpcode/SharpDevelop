@@ -96,13 +96,21 @@ namespace ICSharpCode.XmlEditor
 		{
 			ExtTreeView.ApplyViewStateString(properties.Get(ViewStatePropertyName, String.Empty), this);
 		}
-				
+
 		void ShowDocumentElement()
 		{
 			Nodes.Clear();
 			if (documentElement != null) {
 				XmlElementTreeNode node = new XmlElementTreeNode(documentElement);
 				node.AddTo(this);
+			}
+		}
+		
+		protected override void OnMouseDown(MouseEventArgs e)
+		{
+			base.OnMouseDown(e);
+			if (SelectedNode == null) {
+				this.OnAfterSelect(new TreeViewEventArgs(null, TreeViewAction.ByMouse));
 			}
 		}
 	}

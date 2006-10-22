@@ -5,7 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using System;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace ICSharpCode.XmlEditor
@@ -18,10 +20,12 @@ namespace ICSharpCode.XmlEditor
 	{
 		IXmlTreeView view;
 		XmlDocument document;
+		XmlCompletionDataProvider completionDataProvider;
 		
-		public XmlTreeEditor(IXmlTreeView view)
+		public XmlTreeEditor(IXmlTreeView view, XmlCompletionDataProvider completionDataProvider)
 		{
 			this.view = view;
+			this.completionDataProvider = completionDataProvider;
 		}
 		
 		/// <summary>
@@ -83,6 +87,41 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
+		/// Adds one or more new attribute to the selected element.
+		/// </summary>
+		public void AddAttribute()
+		{
+			XmlElement selectedElement = view.SelectedElement;
+			if (selectedElement != null) {
+				string[] attributesNames = GetMissingAttributes(selectedElement);
+				string[] selectedAttributeNames = view.SelectNewAttributes(attributesNames);
+				if (selectedAttributeNames.Length > 0) {
+					foreach (string attributeName in selectedAttributeNames) {
+						selectedElement.SetAttribute(attributeName, String.Empty);
+					}
+					view.IsDirty = true;
+					view.ShowAttributes(selectedElement.Attributes);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Removes the selected attribute from the xml document.
+		/// </summary>
+		public void RemoveAttribute()
+		{
+			XmlElement selectedElement = view.SelectedElement;
+			if (selectedElement != null) {
+				string attribute = view.SelectedAttribute;
+				if (attribute != null) {
+					selectedElement.RemoveAttribute(attribute);
+					view.IsDirty = true;
+					view.ShowAttributes(selectedElement.Attributes);
+				}
+			}
+		}
+		
+		/// <summary>
 		/// The text content has been changed in the view.
 		/// </summary>
 		public void TextContentChanged()
@@ -92,6 +131,47 @@ namespace ICSharpCode.XmlEditor
 				view.IsDirty = true;
 				textNode.Value = view.TextContent;
 			}
+		}
+		
+		/// <summary>
+		/// Gets the missing attributes for the specified element based 
+		/// on its associated schema.
+		/// </summary>
+		string[] GetMissingAttributes(XmlElement element)
+		{
+			XmlElementPath elementPath = GetElementPath(element);
+
+			List<string> attributes = new List<string>();
+			XmlSchemaCompletionData schemaCompletionData = completionDataProvider.FindSchema(elementPath);
+			if (schemaCompletionData != null) {
+				ICompletionData[] completionData = schemaCompletionData.GetAttributeCompletionData(elementPath);
+				foreach (ICompletionData attributeCompletionData in completionData) {					
+					// Ignore existing attributes.
+					string attributeName = attributeCompletionData.Text;
+					if (!element.HasAttribute(attributeName)) {
+						attributes.Add(attributeName);
+					}
+				}
+			}
+			return attributes.ToArray();
+		}
+		
+		/// <summary>
+		/// Returns the path to the specified element starting from the
+		/// root element.
+		/// </summary>
+		XmlElementPath GetElementPath(XmlElement element)
+		{
+			XmlElementPath path = new XmlElementPath();
+			XmlElement parentElement = element;
+			while (parentElement != null) {
+				QualifiedName name = new QualifiedName(parentElement.LocalName, parentElement.NamespaceURI, parentElement.Prefix);
+				path.Elements.Insert(0, name);
+				
+				// Move to parent element.
+				parentElement = parentElement.ParentNode as XmlElement;
+			}
+			return path;
 		}
 	}
 }

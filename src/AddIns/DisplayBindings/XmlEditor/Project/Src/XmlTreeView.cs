@@ -21,11 +21,13 @@ namespace ICSharpCode.XmlEditor
 		XmlTreeViewContainerControl treeViewContainer = new XmlTreeViewContainerControl();
 		XmlView xmlView;
 		bool disposed;
+		bool ignoreDirtyChange;
 		
 		public XmlTreeView(XmlView xmlView)
 		{
 			this.xmlView = xmlView;
 			treeViewContainer.DirtyChanged += TreeViewContainerDirtyChanged;
+			treeViewContainer.AttributesGrid.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/AttributesGrid/ContextMenu");
 		}
 		
 		public override Control Control {
@@ -40,6 +42,20 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		public override void NotifyBeforeSave()
+		{
+			Deselecting();
+		}
+		
+		public override void NotifyAfterSave(bool successful)
+		{
+			if (!successful) {
+				ignoreDirtyChange = true;
+				treeViewContainer.IsDirty = xmlView.IsDirty;
+				ignoreDirtyChange = false;
+			}
+		}
+		
 		public override void Dispose()
 		{
 			if (!disposed) {
@@ -50,7 +66,9 @@ namespace ICSharpCode.XmlEditor
 		
 		public override void Selected()
 		{
-			treeViewContainer.LoadXml(xmlView.Text);
+			XmlEditorControl xmlEditor = xmlView.XmlEditor;
+			XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(xmlEditor.SchemaCompletionDataItems, xmlEditor.DefaultSchemaCompletionData, xmlEditor.DefaultNamespacePrefix);
+			treeViewContainer.LoadXml(xmlView.Text, completionDataProvider);
 			xmlView.CheckIsWellFormed();
 		}
 		
@@ -59,7 +77,9 @@ namespace ICSharpCode.XmlEditor
 			if (!disposed) {
 				if (treeViewContainer.IsDirty) {
 					xmlView.ReplaceAll(treeViewContainer.Document.OuterXml);
+					ignoreDirtyChange = true;
 					treeViewContainer.IsDirty = false;
+					ignoreDirtyChange = false;
 				}
 			}
 		}
@@ -75,7 +95,9 @@ namespace ICSharpCode.XmlEditor
 		
 		void TreeViewContainerDirtyChanged(object source, EventArgs e)
 		{
-			xmlView.IsDirty = treeViewContainer.IsDirty;
+			if (!ignoreDirtyChange) {
+				xmlView.IsDirty = treeViewContainer.IsDirty;
+			}
 		}
 	}
 }

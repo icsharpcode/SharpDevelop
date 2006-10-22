@@ -103,6 +103,12 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		public XmlEditorControl XmlEditor {
+			get {
+				return xmlEditor;
+			}
+		}
+		
 		/// <summary>
 		/// Loads the string content into the view.
 		/// </summary>

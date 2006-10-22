@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -18,7 +19,7 @@ namespace ICSharpCode.XmlEditor
 	/// attributes property grid in a split container. This is separate from 
 	/// the XmlTreeView class so we can use the forms designer to design this control.
 	/// </summary>
-	public class XmlTreeViewContainerControl : System.Windows.Forms.UserControl, IXmlTreeView
+	public class XmlTreeViewContainerControl : System.Windows.Forms.UserControl, IXmlTreeView, IOwnerState
 	{
 		XmlTreeEditor editor;
 		bool dirty;
@@ -26,12 +27,38 @@ namespace ICSharpCode.XmlEditor
 		bool attributesGridVisible = true;
 		bool textBoxVisible;
 		
+		[Flags]
+		public enum XmlTreeViewContainerControlState {
+			Nothing             = 0,
+			ElementSelected     = 1,
+			AttributeSelected   = 2
+		}
+		
 		public event EventHandler DirtyChanged;
 		
 		public XmlTreeViewContainerControl()
 		{
 			InitializeComponent();
 			InitImages();
+		}
+		
+		public Enum InternalState {
+			get {
+				XmlTreeViewContainerControlState state = XmlTreeViewContainerControlState.Nothing;
+				if (SelectedElement != null) {
+					state |= XmlTreeViewContainerControlState.ElementSelected;
+				}
+				if (SelectedAttribute != null) {
+					state |= XmlTreeViewContainerControlState.AttributeSelected;
+				}
+				return state;
+			}
+		}
+		
+		public PropertyGrid AttributesGrid {
+			get {
+				return attributesGrid;
+			}
 		}
 		
 		/// <summary>
@@ -42,7 +69,9 @@ namespace ICSharpCode.XmlEditor
 				return dirty;
 			}
 			set {
+				bool previousDirty = dirty;
 				dirty = value;
+				OnXmlChanged(previousDirty);
 			}
 		}
 		
@@ -105,17 +134,16 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Displays the specified xml as a tree.
 		/// </summary>
-		public void LoadXml(string xml)
+		public void LoadXml(string xml, XmlCompletionDataProvider completionDataProvider)
 		{
 			textBox.Clear();
 			IsAttributesGridVisible = true;
 			ClearAttributes();
 			
-			editor = new XmlTreeEditor(this);
+			editor = new XmlTreeEditor(this, completionDataProvider);
 			editor.LoadXml(xml);
 			
-			// Expand document element node. This ensures that the view state
-			// can be restored since the child nodes are lazily added.
+			// Expand document element node. 
 			if (xmlElementTreeView.Nodes.Count > 0) {
 				xmlElementTreeView.Nodes[0].Expand();
 			}
@@ -182,6 +210,53 @@ namespace ICSharpCode.XmlEditor
 			get {
 				return xmlElementTreeView.SelectedTextNode;
 			}
+		}
+		
+		/// <summary>
+		/// Gets the name of the attribute currently selected.
+		/// </summary>
+		public string SelectedAttribute {
+			get {
+				GridItem gridItem = attributesGrid.SelectedGridItem;
+				if (IsAttributesGridVisible && gridItem != null) {
+					return gridItem.PropertyDescriptor.Name;
+				}
+				return null;
+			}
+		}
+		
+		/// <summary>
+		/// Shows the add attribute dialog so the user can add a new
+		/// attribute to the XML tree.
+		/// </summary>
+		public void AddAttribute()
+		{
+			editor.AddAttribute();
+		}
+		
+		/// <summary>
+		/// Shows the add attribute dialog so the user can choose one or more
+		/// new attributes to be added to the selected element.
+		/// </summary>
+		/// <param name="attributes">The list of attributes the user
+		/// can choose from.</param>
+		/// <returns>The attributes selected by the user.</returns>
+		public string[] SelectNewAttributes(string[] attributes)
+		{
+			using (AddAttributeDialog addAttributeDialog = new AddAttributeDialog(attributes)) {
+				if (addAttributeDialog.ShowDialog() == DialogResult.OK) {
+					return addAttributeDialog.AttributeNames;
+				}
+				return new string[0];
+			}
+		}
+		
+		/// <summary>
+		/// Removes the currently selected attribute.
+		/// </summary>
+		public void RemoveAttribute()
+		{
+			editor.RemoveAttribute();
 		}
 					
 		/// <summary>
