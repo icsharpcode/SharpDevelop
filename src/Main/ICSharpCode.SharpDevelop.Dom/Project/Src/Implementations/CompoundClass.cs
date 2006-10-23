@@ -49,11 +49,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.Region = parts[0].Region;
 			
 			ModifierEnum modifier = ModifierEnum.None;
+			const ModifierEnum defaultClassVisibility = ModifierEnum.Internal;
 			this.BaseTypes.Clear();
 			this.TypeParameters.Clear();
 			this.Attributes.Clear();
 			foreach (IClass part in parts) {
-				modifier |= part.Modifiers;
+				if ((part.Modifiers & ModifierEnum.VisibilityMask) != defaultClassVisibility) {
+					modifier |= part.Modifiers;
+				} else {
+					modifier |= part.Modifiers &~ ModifierEnum.VisibilityMask;
+				}
 				foreach (IReturnType rt in part.BaseTypes) {
 					if (!rt.IsDefaultReturnType || rt.FullyQualifiedName != "System.Object") {
 						this.BaseTypes.Add(rt);
@@ -65,6 +70,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (IAttribute attribute in part.Attributes) {
 					this.Attributes.Add(attribute);
 				}
+			}
+			if ((modifier & ModifierEnum.VisibilityMask) == ModifierEnum.None) {
+				modifier |= defaultClassVisibility;
 			}
 			this.Modifiers = modifier;
 		}

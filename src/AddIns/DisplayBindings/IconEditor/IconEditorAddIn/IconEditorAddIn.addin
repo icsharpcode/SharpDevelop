@@ -1,7 +1,7 @@
-﻿<AddIn name        = "IconEditorAddIn"
+﻿<AddIn name        = "IconViewerAddIn"
        author      = "Daniel Grunwald"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Allows editing of .ico files inside SharpDevelop">
+       description = "Allows viewing .ico files inside SharpDevelop">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.IconEditor"/>

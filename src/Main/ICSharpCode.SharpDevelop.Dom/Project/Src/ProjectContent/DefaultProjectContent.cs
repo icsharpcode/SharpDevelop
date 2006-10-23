@@ -620,7 +620,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				NamespaceStruct ns = dict[nameSpace];
 				int newCapacity = list.Count + ns.Classes.Count + ns.SubNamespaces.Count;
 				if (list.Capacity < newCapacity)
-					list.Capacity = newCapacity;
+					list.Capacity = Math.Max(list.Count * 2, newCapacity);
 				foreach (IClass c in ns.Classes) {
 					if (c is GenericClassContainer) {
 						foreach (IClass realClass in ((GenericClassContainer)c).RealClasses) {
