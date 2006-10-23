@@ -46,6 +46,7 @@
     <Compile Include="Src\Forms\RebuildRequiredEvents.cs" />
     <Compile Include="Src\Forms\ServerBrowserTool.cs" />
     <Compile Include="Src\Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Forms\ProgressEllipsis.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />

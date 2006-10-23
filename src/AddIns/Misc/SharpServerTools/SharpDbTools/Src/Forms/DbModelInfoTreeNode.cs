@@ -25,7 +25,12 @@ namespace SharpDbTools.Forms
 	/// </summary>
 	public class DbModelInfoTreeNode: TreeNode, IRequiresRebuildSource
 	{
-		BackgroundWorker loadMetadataFromFileBackgroundWorker;
+		BackgroundWorker backgroundWorker;
+		ProgressEllipsis progress;
+		Timer timer;
+		const string fileLoadMessage = ": loading from file";
+		const string connectionLoadMessage = ": loading from connection";
+		string message;
 		
 		public DbModelInfoTreeNode(string name): base(name)
 		{
@@ -65,6 +70,11 @@ namespace SharpDbTools.Forms
 			TreeNode dbNode = CreateMetaDataNode(this.LogicalConnectionName);
 			this.Nodes.Add(connectionPropsNode);
 			this.Nodes.Add(dbNode);
+			
+			timer = new Timer();
+			timer.Interval = 1000;
+			timer.Tick += new EventHandler(this.TimerClick);
+			progress = new ProgressEllipsis(4);
 		}
 		
 		public string LogicalConnectionName {
@@ -192,16 +202,37 @@ namespace SharpDbTools.Forms
 		private void LoadMetadataFromFileClickHandler(object sender, EventArgs e)
 		{
 			LoggingService.Debug("load metadata from file clicked");
-			this.loadMetadataFromFileBackgroundWorker = new BackgroundWorker();
-			loadMetadataFromFileBackgroundWorker.DoWork += new DoWorkEventHandler(this.LoadMetadataFromFileDoWork);
-			loadMetadataFromFileBackgroundWorker.RunWorkerCompleted += 
-				new RunWorkerCompletedEventHandler(this.LoadMetadataFromFileFinished);
+			this.backgroundWorker = new BackgroundWorker();
+			backgroundWorker.DoWork += new DoWorkEventHandler(this.LoadMetadataFromFileDoWork);
+			backgroundWorker.RunWorkerCompleted += 
+				new RunWorkerCompletedEventHandler(this.LoadMetadataFinished);
 			string logicalConnectionName = (string)this.Tag;
-			this.Text = logicalConnectionName + ": loading...";
+			this.message = logicalConnectionName + fileLoadMessage;
 			this.ContextMenuStrip.Enabled = false;
-			this.loadMetadataFromFileBackgroundWorker.RunWorkerAsync(logicalConnectionName);
+			timer.Start();
+			this.backgroundWorker.RunWorkerAsync(logicalConnectionName);
 		}
 		
+		private void TimerClick(object sender, EventArgs eventArgs)
+		{
+			string ellipsis = progress.Text;
+			progress.performStep();
+			string displayMsg = this.message + ellipsis;
+			SetText(displayMsg);
+			
+		}
+
+		delegate void TextSetterDelegate(string text);
+		
+		public void SetText(string text)
+		{
+			if (this.TreeView.InvokeRequired) {
+				this.TreeView.Invoke(new TextSetterDelegate(this.SetText), new object[] { text });
+				return;
+			}
+			this.Text = text;
+		}
+
 		private void LoadMetadataFromFileDoWork(object sender, DoWorkEventArgs args)
 		{
 			string logicalConnectionName = args.Argument as string;
@@ -210,26 +241,47 @@ namespace SharpDbTools.Forms
 			}
 		}
 		
-		private void LoadMetadataFromFileFinished(object sender, RunWorkerCompletedEventArgs args)
+		private void LoadMetadataFinished(object sender, RunWorkerCompletedEventArgs args)
 		{
+			if (this.TreeView.InvokeRequired) {
+				this.TreeView.Invoke(new EventHandler<RunWorkerCompletedEventArgs>
+				                     (this.LoadMetadataFinished));
+				return;
+			} 
+			this.timer.Stop();
 			this.Text = (string)this.Tag;
 			this.ContextMenuStrip.Enabled = true;
+			this.backgroundWorker.Dispose();
+			this.backgroundWorker = null;
 			this.FireRebuildRequired();
 		}
 		
 		private void LoadMetadataFromConnectionClickHandler(object sender, EventArgs args)
 		{
-			string connectionLogicalName = this.Text;
-			LoggingService.Debug("load metadata from connection clicked for connection with name: "
-			                     + connectionLogicalName);
-			try {	
-				DbModelInfoService.LoadMetadataFromConnection(connectionLogicalName);
+			LoggingService.Debug("load metadata from connection clicked");
+			this.backgroundWorker = new BackgroundWorker();
+			backgroundWorker.DoWork += new DoWorkEventHandler(this.LoadMetadataFromConnectionDoWork);
+			backgroundWorker.RunWorkerCompleted += 
+				new RunWorkerCompletedEventHandler(this.LoadMetadataFinished);
+			string logicalConnectionName = (string)this.Tag;
+			this.message = logicalConnectionName + connectionLoadMessage;
+			this.ContextMenuStrip.Enabled = false;
+			timer.Start();
+			this.backgroundWorker.RunWorkerAsync(logicalConnectionName);
+		}
+		
+		private void LoadMetadataFromConnectionDoWork(object sender, DoWorkEventArgs args)
+		{
+			string connectionLogicalName = args.Argument as string;
+			if (connectionLogicalName != null) {
+				try {	
+					DbModelInfoService.LoadMetadataFromConnection(connectionLogicalName);
+				}
+				catch(DbException e) {
+					MessageService.ShowError(e, 
+					"An Exception was thrown while trying to connect to: " + connectionLogicalName);                       
+				}
 			}
-			catch(DbException e) {
-				MessageService.ShowError(e, 
-				"An Exception was thrown while trying to connect to: " + connectionLogicalName);                       
-			}
-			this.FireRebuildRequired();
 		}
 	}
 }
