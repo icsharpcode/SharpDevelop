@@ -13,6 +13,7 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.WixBinding
 {
+	/*
 	/// <summary>
 	/// Builds the View | Setup menu items.
 	/// </summary>
@@ -54,4 +55,5 @@ namespace ICSharpCode.WixBinding
 			return item;
 		}
 	}
+	*/
 }

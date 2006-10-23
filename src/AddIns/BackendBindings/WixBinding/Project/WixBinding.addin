@@ -163,9 +163,10 @@
 	<!-- Setup menu items that are created in the View menu -->
 	<Path name = "/SharpDevelop/Workbench/MainMenu/View">
 		<MenuItem id = "Setup" label = "${res:XML.MainMenu.ViewMenu.SetupMenu}" type = "Menu" insertbefore = "Tools">
-			<MenuItem id = "SetupViewMenuBuilder"
+			<!--<MenuItem id = "SetupViewMenuBuilder"
 				type  = "Builder"
-				class = "ICSharpCode.WixBinding.SetupViewMenuBuilder" />
+				class = "ICSharpCode.WixBinding.SetupViewMenuBuilder" />-->
+			<Include id="View" path="/AddIns/WixBinding/View"/>
 		</MenuItem>
 	</Path>
 	
