@@ -915,7 +915,7 @@ namespace ICSharpCode.XmlEditor
 		static string Transform(string input, string transform)
 		{
 			StringReader inputString = new StringReader(input);
-			XPathDocument sourceDocument = new XPathDocument(inputString);
+			XmlTextReader sourceDocument = new XmlTextReader(inputString);
 
 			StringReader transformString = new StringReader(transform);
 			XPathDocument transformDocument = new XPathDocument(transformString);
