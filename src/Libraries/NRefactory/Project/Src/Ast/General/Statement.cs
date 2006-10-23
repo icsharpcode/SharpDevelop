@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.Ast
 		
 		public static Statement CheckNull(Statement statement)
 		{
-			return statement == null ? NullStatement.Instance : statement;
+			return statement ?? NullStatement.Instance;
 		}
 	}
 	
@@ -51,15 +51,11 @@ namespace ICSharpCode.NRefactory.Ast
 		static NullStatement nullStatement = new NullStatement();
 		
 		public override bool IsNull {
-			get {
-				return true;
-			}
+			get { return true; }
 		}
 		
 		public static NullStatement Instance {
-			get {
-				return nullStatement;
-			}
+			get { return nullStatement; }
 		}
 		
 		NullStatement()

@@ -18,7 +18,7 @@ using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {
-	public class CSharpOutputVisitor : IOutputAstVisitor
+	public sealed class CSharpOutputVisitor : IOutputAstVisitor
 	{
 		Errors                errors             = new Errors();
 		CSharpOutputFormatter outputFormatter;
@@ -1077,7 +1077,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public virtual object VisitYieldStatement(YieldStatement yieldStatement, object data)
+		public object VisitYieldStatement(YieldStatement yieldStatement, object data)
 		{
 			Debug.Assert(yieldStatement != null);
 			Debug.Assert(yieldStatement.Statement != null);

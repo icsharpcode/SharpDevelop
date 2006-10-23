@@ -344,6 +344,8 @@ namespace ICSharpCode.SharpDevelop
 		static void ParserUpdateThread()
 		{
 			LoggingService.Info("ParserUpdateThread started");
+			Thread.Sleep(750);
+			
 			// preload mscorlib, we're going to need it probably
 			IProjectContent dummyVar = defaultProjectContentRegistry.Mscorlib;
 			

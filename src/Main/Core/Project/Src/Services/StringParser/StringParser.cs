@@ -226,13 +226,45 @@ namespace ICSharpCode.Core
 						return null;
 					}
 				case "PROPERTY":
-					return PropertyService.Get(propertyName);
+					return GetProperty(propertyName);
 				default:
 					if (propertyObjects.ContainsKey(prefix)) {
 						return Get(propertyObjects[prefix], propertyName);
 					} else {
 						return null;
 					}
+			}
+		}
+		
+		/// <summary>
+		/// Allow special syntax to retrieve property values:
+		/// ${property:PropertyName}
+		/// ${property:PropertyName??DefaultValue}
+		/// ${property:ContainerName/PropertyName}
+		/// ${property:ContainerName/PropertyName??DefaultValue}
+		/// A container is a Properties instance stored in the PropertyService. This is
+		/// used by many AddIns to group all their properties into one container.
+		/// </summary>
+		static string GetProperty(string propertyName)
+		{
+			string defaultValue = "";
+			int pos = propertyName.LastIndexOf("??");
+			if (pos >= 0) {
+				defaultValue = propertyName.Substring(pos + 2);
+				propertyName = propertyName.Substring(0, pos);
+			}
+			pos = propertyName.IndexOf('/');
+			if (pos >= 0) {
+				Properties properties = PropertyService.Get(propertyName.Substring(0, pos), new Properties());
+				propertyName = propertyName.Substring(pos + 1);
+				pos = propertyName.IndexOf('/');
+				while (pos >= 0) {
+					properties = properties.Get(propertyName.Substring(0, pos), new Properties());
+					propertyName = propertyName.Substring(pos + 1);
+				}
+				return properties.Get(propertyName, defaultValue);
+			} else {
+				return PropertyService.Get(propertyName, defaultValue);
 			}
 		}
 		

@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Ast
 		Internal  = 0x0002,
 		Protected = 0x0004,
 		Public    = 0x0008,
-		Dim	      = 0x0010,	// VB.NET SPECIFIC
+		Dim	      = 0x0010,	// VB.NET SPECIFIC, for fields/local variables only
 		
 		// Scope
 		Abstract  = 0x0010,  // == 	MustOverride/MustInherit
@@ -45,6 +45,7 @@ namespace ICSharpCode.NRefactory.Ast
 		Default    = 0x40000, // VB specific
 		Fixed      = 0x80000, // C# specific (fixed size arrays in unsafe structs)
 		
+		/// <summary>Generated code, not part of parsed code</summary>
 		Synthetic  = 0x200000,
 		/// <summary>Only for VB properties.</summary>
 		WriteOnly  = 0x400000, // VB specific
@@ -236,7 +237,9 @@ namespace ICSharpCode.NRefactory.Ast
 		PostIncrement,
 		PostDecrement,
 		
+		/// <summary>Dereferencing pointer</summary>
 		Star,
+		/// <summary>Get address of</summary>
 		BitWiseAnd
 	}
 	

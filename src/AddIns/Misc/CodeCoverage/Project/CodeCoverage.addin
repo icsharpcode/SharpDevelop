@@ -3,7 +3,7 @@
        url         = "http://ncover.org"
        description = "Code Coverage AddIn for SharpDevelop using NCover">
 	
-	<Manifest> 
+	<Manifest>
 		<Identity   name  = "ICSharpCode.CodeCoverage"/>
 		<Dependency addin = "ICSharpCode.UnitTesting"/>
 	</Manifest>
@@ -17,7 +17,7 @@
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
-		<Pad id           = "CodeCoveragePad" 
+		<Pad id           = "CodeCoveragePad"
 		     category     = "Tools"
 		     title        = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
 		     insertafter  = "Bookmarks"
@@ -52,9 +52,9 @@
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id          = "CodeCoverageOptionsPanel"
-		       	     label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
+		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
 		             insertafter = "NAnt"
-		       	     class       = "ICSharpCode.CodeCoverage.CodeCoverageOptionsPanel"/>
+		             class       = "ICSharpCode.CodeCoverage.CodeCoverageOptionsPanel"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/UnitTestingPad/CommonTestCommands">
@@ -72,20 +72,22 @@
 		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
 		             class       = "ICSharpCode.CodeCoverage.CodeCoverageProjectOptionsPanel"/>
 	</Path>
-
+	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit/Format">
 		<MenuItem id          = "ShowCodeCoverage"
-		          insertafter = "Indent" 
+		          insertafter = "Indent"
 		          label       = "${res:ICSharpCode.CodeCoverage.ShowCoverage}"
+		          checked     = "${property:CodeCoverage.Options/CodeCoverageHighlighted??False}"
 		          type        = "CheckBox"
 		          class       = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
 	</Path>
-
+	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
 		<MenuItem id           = "ShowCodeCoverage"
-		          insertafter  = "Indent" 
+		          insertafter  = "Indent"
 		          insertbefore = "FileMode"
 		          label        = "${res:ICSharpCode.CodeCoverage.ShowCoverage}"
+		          checked      = "${property:CodeCoverage.Options/CodeCoverageHighlighted??False}"
 		          type         = "CheckBox"
 		          class        = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
 	</Path>

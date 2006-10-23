@@ -21,6 +21,8 @@ namespace ICSharpCode.CodeCoverage
 		public static readonly string NotVisitedColorProperty         = "NotVisitedColor";
 		public static readonly string NotVisitedForeColorProperty     = "NotVisitedForeColor";
 		public static readonly string NCoverFileNameProperty          = "NCoverFileName";
+		
+		// This name is also referenced by CodeCoverage.addin
 		public static readonly string CodeCoverageHighlightedProperty = "CodeCoverageHighlighted";
 		public static readonly string ShowSourceCodePanelProperty     = "ShowSourceCodePanel";
 		public static readonly string ShowVisitCountPanelProperty     = "ShowVisitCountPanel";
@@ -29,14 +31,14 @@ namespace ICSharpCode.CodeCoverage
 		static Properties properties;
 
 		static CodeCoverageOptions()
- 		{
+		{
 			properties = PropertyService.Get(OptionsProperty, new Properties());
 		}
 
- 		public static Properties Properties {
+		public static Properties Properties {
 			get {
 				return properties;
- 			}
+			}
 		}
 		
 		/// <summary>
@@ -99,10 +101,10 @@ namespace ICSharpCode.CodeCoverage
 			set {
 				Properties.Set<Color>(VisitedColorProperty, value);
 			}
-		}	
+		}
 		
 		/// <summary>
-		/// Gets the foreground colour that will be used when highlighting 
+		/// Gets the foreground colour that will be used when highlighting
 		/// visited code.
 		/// </summary>
 		public static Color VisitedForeColor
@@ -114,7 +116,7 @@ namespace ICSharpCode.CodeCoverage
 			set {
 				Properties.Set<Color>(VisitedForeColorProperty, value);
 			}
-		}	
+		}
 		
 		/// <summary>
 		/// Gets the colour that will be used when highlighting code that has not
@@ -129,10 +131,10 @@ namespace ICSharpCode.CodeCoverage
 			set {
 				Properties.Set<Color>(NotVisitedColorProperty, value);
 			}
-		}	
+		}
 		
 		/// <summary>
-		/// Gets the foreground colour that will be used when highlighting 
+		/// Gets the foreground colour that will be used when highlighting
 		/// code that has not been visited.
 		/// </summary>
 		public static Color NotVisitedForeColor
@@ -144,6 +146,6 @@ namespace ICSharpCode.CodeCoverage
 			set {
 				Properties.Set<Color>(NotVisitedForeColorProperty, value);
 			}
-		}	
+		}
 	}
 }

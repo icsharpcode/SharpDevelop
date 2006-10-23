@@ -21,15 +21,20 @@ namespace ICSharpCode.Core
 		string description   = String.Empty;
 		ICheckableMenuCommand menuCommand = null;
 		
+		void CreateMenuCommand()
+		{
+			if (menuCommand == null) {
+				try {
+					menuCommand = (ICheckableMenuCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
+				} catch (Exception e) {
+					MessageService.ShowError(e, "Can't create menu command : " + codon.Id);
+				}
+			}
+		}
+		
 		public ICheckableMenuCommand MenuCommand {
 			get {
-				if (menuCommand == null) {
-					try {
-						menuCommand = (ICheckableMenuCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
-					} catch (Exception e) {
-						MessageService.ShowError(e, "Can't create menu command : " + codon.Id);
-					}
-				}
+				CreateMenuCommand();
 				return menuCommand;
 			}
 		}
@@ -80,8 +85,14 @@ namespace ICSharpCode.Core
 			if (codon != null) {
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
 				this.Visible = failedAction != ConditionFailedAction.Exclude;
-				if (MenuCommand != null) {
-					Checked = MenuCommand.IsChecked;
+				if (menuCommand == null && !string.IsNullOrEmpty(codon.Properties["checked"])) {
+					Checked = string.Equals(StringParser.Parse(codon.Properties["checked"]),
+					                        bool.TrueString, StringComparison.OrdinalIgnoreCase);
+				} else {
+					CreateMenuCommand();
+					if (menuCommand != null) {
+						Checked = menuCommand.IsChecked;
+					}
 				}
 			}
 		}

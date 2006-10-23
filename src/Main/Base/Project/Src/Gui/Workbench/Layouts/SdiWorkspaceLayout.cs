@@ -41,12 +41,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				
 				// TODO: Debug statements only, remove me
+				#if DEBUG
 				if (dockPanel.ActiveDocument != null && !(dockPanel.ActiveDocument is IWorkbenchWindow)) {
 					if (firstTimeError) {
 						MessageBox.Show("ActiveDocument was " + dockPanel.ActiveDocument.GetType().FullName);
 						firstTimeError = false;
 					}
 				}
+				#endif
 				
 				IWorkbenchWindow window = dockPanel.ActiveDocument as IWorkbenchWindow;
 				if (window == null || window.IsDisposed) {
