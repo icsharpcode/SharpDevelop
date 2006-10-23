@@ -318,6 +318,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			// we need to specify UTF8 because MsBuild needs the BOM
 			using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.UTF8)) {
+				sw.WriteLine();
 				sw.WriteLine("Microsoft Visual Studio Solution File, Format Version 9.00");
 				sw.WriteLine("# SharpDevelop " + RevisionClass.FullVersion);
 				sw.Write(projectSection.ToString());
@@ -405,7 +406,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			bool needsConversion = false;
 			
-			using (StreamReader sr = File.OpenText(fileName)) {
+			// read solution files using system encoding, but detect UTF8 if BOM is present
+			using (StreamReader sr = new StreamReader(fileName, Encoding.Default, true)) {
 				string line = GetFirstNonCommentLine(sr);
 				Match match = versionPattern.Match(line);
 				if (!match.Success) {
