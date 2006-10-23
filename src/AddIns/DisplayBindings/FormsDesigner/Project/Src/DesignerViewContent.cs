@@ -111,7 +111,14 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(IHelpService), new HelpService());
 			serviceContainer.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
 			
-			designerResourceService = new DesignerResourceService(viewContent.FileName);
+			// Do not re-initialize the resource service on every load
+			// because of SD2-1107.
+			// The service holds cached resource file contents which
+			// may not have been written to disk yet if the user switched
+			// between source and design view without saving.
+			if (designerResourceService == null) {
+				designerResourceService = new DesignerResourceService(viewContent.FileName);
+			}
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IResourceService), designerResourceService);
 			AmbientProperties ambientProperties = new AmbientProperties();
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
