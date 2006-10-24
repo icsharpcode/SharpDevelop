@@ -22,9 +22,7 @@ namespace ICSharpCode.SharpDevelop
 			newProjectContent.Language = project.LanguageProperties;
 			newProjectContent.initializing = true;
 			IProjectContent mscorlib = ParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib;
-			if (mscorlib != null) {
-				newProjectContent.ReferencedContents.Add(mscorlib);
-			}
+			newProjectContent.AddReferencedContent(mscorlib);
 			return newProjectContent;
 		}
 		
@@ -67,10 +65,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			lock (ReferencedContents) {
 				ReferencedContents.Clear();
-				IProjectContent mscorlib = ParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib;
-				if (mscorlib != null) {
-					ReferencedContents.Add(mscorlib);
-				}
+				AddReferencedContent(ParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib);
 			}
 			// prevent adding event handler twice
 			ProjectService.ProjectItemAdded   -= OnProjectItemAdded;
@@ -98,12 +93,7 @@ namespace ICSharpCode.SharpDevelop
 		void AddReference(ReferenceProjectItem reference, bool updateInterDependencies)
 		{
 			try {
-				IProjectContent referencedContent = ParserService.GetProjectContentForReference(reference);
-				if (referencedContent != null) {
-					lock (this.ReferencedContents) {
-						this.ReferencedContents.Add(referencedContent);
-					}
-				}
+				AddReferencedContent(ParserService.GetProjectContentForReference(reference));
 				if (updateInterDependencies) {
 					UpdateReferenceInterDependencies();
 				}

@@ -898,6 +898,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		#endregion
 		
+		public void AddReferencedContent(IProjectContent pc)
+		{
+			if (pc != null) {
+				lock (this.ReferencedContents) {
+					this.ReferencedContents.Add(pc);
+				}
+			}
+		}
+		
 		public event EventHandler ReferencedContentsChanged;
 		
 		protected virtual void OnReferencedContentsChanged(EventArgs e)

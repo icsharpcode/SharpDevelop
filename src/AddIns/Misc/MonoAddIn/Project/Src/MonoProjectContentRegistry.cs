@@ -24,7 +24,11 @@ namespace ICSharpCode.MonoAddIn
 			if (assemblyName != null && assemblyName.FileName != null) {
 				return CecilReader.LoadAssembly(assemblyName.FileName, this);
 			} else {
-				HostCallback.ShowAssemblyLoadError(itemFileName, itemInclude, "");
+				if (MonoToolLocationHelper.IsMonoInstalled) {
+					HostCallback.ShowAssemblyLoadError(itemFileName, itemInclude, "Could not find assembly in Mono's GAC.");
+				} else {
+					HostCallback.ShowAssemblyLoadError(itemFileName, itemInclude, "Could not find assembly in Mono's GAC - Mono is not installed.");
+				}
 				return null;
 			}
 		}

@@ -501,7 +501,7 @@ namespace ICSharpCode.SharpDevelop
 			LoggingService.Info("Creating default project content");
 			//LoggingService.Debug("Stacktrace is:\n" + Environment.StackTrace);
 			defaultProjectContent = new DefaultProjectContent();
-			defaultProjectContent.ReferencedContents.Add(defaultProjectContentRegistry.Mscorlib);
+			defaultProjectContent.AddReferencedContent(defaultProjectContentRegistry.Mscorlib);
 			Thread t = new Thread(new ThreadStart(CreateDefaultProjectContentReferences));
 			t.IsBackground = true;
 			t.Priority = ThreadPriority.BelowNormal;
@@ -514,12 +514,7 @@ namespace ICSharpCode.SharpDevelop
 			IList<string> defaultReferences = AddInTree.BuildItems<string>("/SharpDevelop/Services/ParserService/SingleFileGacReferences", null, false);
 			foreach (string defaultReference in defaultReferences) {
 				ReferenceProjectItem item = new ReferenceProjectItem(null, defaultReference);
-				IProjectContent pc = ParserService.GetProjectContentForReference(item);
-				if (pc != null) {
-					lock (defaultProjectContent.ReferencedContents) {
-						defaultProjectContent.ReferencedContents.Add(pc);
-					}
-				}
+				defaultProjectContent.AddReferencedContent(ParserService.GetProjectContentForReference(item));
 			}
 			if (WorkbenchSingleton.Workbench != null) {
 				WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += delegate {

@@ -82,9 +82,9 @@ namespace Grunwald.BooBinding
 		{
 			ParseProjectContent pc = base.CreateProjectContent();
 			ReferenceProjectItem systemItem = new ReferenceProjectItem(this, "System");
-			pc.ReferencedContents.Add(ParserService.GetProjectContentForReference(systemItem));
+			pc.AddReferencedContent(ParserService.GetProjectContentForReference(systemItem));
 			ReferenceProjectItem booLangItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Builtins).Assembly.Location);
-			pc.ReferencedContents.Add(ParserService.GetProjectContentForReference(booLangItem));
+			pc.AddReferencedContent(ParserService.GetProjectContentForReference(booLangItem));
 			if (BooCompilerPC == null) {
 				ReferenceProjectItem booCompilerItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Compiler.AbstractAstAttribute).Assembly.Location);
 				BooCompilerPC = ParserService.GetProjectContentForReference(booCompilerItem);
