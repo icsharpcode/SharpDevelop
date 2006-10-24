@@ -561,5 +561,11 @@ static int static_Test2_j = 0;");
 		{
 			TestStatement("Dim a As Global.System.String", "global::System.String a;");
 		}
+		
+		[Test]
+		public void FieldReferenceOnCastExpression()
+		{
+			TestStatement("CType(obj, IDisposable).Dispose()", "((IDisposable)obj).Dispose();");
+		}
 	}
 }

@@ -2354,7 +2354,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				target = ((WithStatement)withExpressionStack.Peek()).Expression;
 			}
 			
+			if (target is BinaryOperatorExpression || target is CastExpression) {
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			}
 			nodeTracker.TrackedVisit(target, data);
+			if (target is BinaryOperatorExpression || target is CastExpression) {
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			}
 			outputFormatter.PrintToken(Tokens.Dot);
 			outputFormatter.PrintIdentifier(fieldReferenceExpression.FieldName);
 			return null;

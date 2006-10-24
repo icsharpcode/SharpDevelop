@@ -431,10 +431,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 			//LoggingService.Debug("Method: " + node.FullName + " (" + node.Modifiers + ")");
 			DefaultMethod method = new DefaultMethod(node.Name, null, GetModifier(node), GetRegion(node), GetClientRegion(node), OuterClass);
 			
-			// Removed, the newer Boo builds implement extension methods differently
-//			if ((node.ImplementationFlags & AST.MethodImplementationFlags.Extension) == AST.MethodImplementationFlags.Extension) {
-//				method.IsExtensionMethod = true;
-//			}
+			foreach (AST.Attribute a in node.Attributes) {
+				if (a.Name == "Extension" || a.Name == "Boo.Lang.Extension"
+				    || a.Name == "ExtensionAttribute" || a.Name == "Boo.Lang.ExtensionAttribute")
+				{
+					method.IsExtensionMethod = true;
+				}
+			}
 			
 			ConvertAttributes(node, method);
 			ConvertTemplates(node, method);
