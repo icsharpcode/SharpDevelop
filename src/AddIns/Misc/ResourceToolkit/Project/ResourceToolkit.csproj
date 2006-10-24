@@ -16,6 +16,8 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <CodeAnalysisRules>-Microsoft.Design#CA1020</CodeAnalysisRules>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
@@ -93,6 +95,7 @@
     <EmbeddedResource Include="Resources\EditStringResourceDialog.xfrm" />
     <Compile Include="Src\Resolver\MemberFindAstVisitor.cs" />
     <Compile Include="Src\Resolver\MemberEqualityComparer.cs" />
+    <Compile Include="Src\CodeCompletion\ICSharpCodeCoreTagCompletionDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">

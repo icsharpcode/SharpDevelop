@@ -19,7 +19,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 {
 	/// <summary>
 	/// Provides code completion for inserting resource keys
-	/// for ICSharpCode.Core resources references ("${res:...}").
+	/// for ICSharpCode.Core resources references ("${res: ... }").
 	/// </summary>
 	public class ICSharpCodeCoreResourceCodeCompletionBinding : DefaultCodeCompletionBinding
 	{
@@ -57,6 +57,18 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 						editor.ShowCompletionWindow(new ResourceCodeCompletionDataProvider(content, null, null), ch);
 						return true;
 					}
+					
+				}
+				
+			} else if (ch == '$') {
+				
+				// Provide ${res: as code completion
+				// in an ICSharpCode.Core application
+				if (ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreHostResourceFileName(editor.FileName) != null ||
+				    ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreLocalResourceFileName(editor.FileName) != null) {
+					
+					editor.ShowCompletionWindow(new ICSharpCodeCoreTagCompletionDataProvider(), ch);
+					return true;
 					
 				}
 				

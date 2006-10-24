@@ -20,7 +20,7 @@ namespace Hornung.ResourceToolkit.Resolver
 {
 	/// <summary>
 	/// Resolves references to resources that are accessed using ICSharpCode.Core
-	/// ("${res:...}").
+	/// ("${res: ... }").
 	/// </summary>
 	public class ICSharpCodeCoreResourceResolver : AbstractResourceResolver
 	{
