@@ -26,13 +26,14 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			if (ProjectBrowserPad.Instance.CurrentProject != null) {
-				if (MessageService.ShowCustomDialog("${res:Dialog.NewFile.AddToProjectQuestionTitle}",
-				                                    "${res:Dialog.NewFile.AddToProjectQuestion}",
-				                                    "${res:Dialog.NewFile.AddToProjectQuestionProject}",
-				                                    "${res:Dialog.NewFile.AddToProjectQuestionStandalone}")
-				    == 0)
-				{
+				int result = MessageService.ShowCustomDialog("${res:Dialog.NewFile.AddToProjectQuestionTitle}",
+				                                             "${res:Dialog.NewFile.AddToProjectQuestion}",
+				                                             "${res:Dialog.NewFile.AddToProjectQuestionProject}",
+				                                             "${res:Dialog.NewFile.AddToProjectQuestionStandalone}");
+				if (result == 0) {
 					ProjectBrowserPad.Instance.CurrentProject.AddNewItemsToProject();
+					return;
+				} else if (result == -1) {
 					return;
 				}
 			}
