@@ -370,9 +370,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		DefaultTypeParameter ConvertConstraints(AST.TemplateDefinition template, DefaultTypeParameter typeParameter)
 		{
 			foreach (AST.TypeReference typeRef in template.Bases) {
-				IReturnType rt = CreateReturnType(typeRef);
-				if (rt != null) {
-					typeParameter.Constraints.Add(rt);
+				if (typeRef == AST.TypeReference.NewConstraint) {
+					typeParameter.HasConstructableConstraint = true;
+				} else if (typeRef == AST.TypeReference.ClassConstraint) {
+					typeParameter.HasReferenceTypeConstraint = true;
+				} else if (typeRef == AST.TypeReference.StructConstraint) {
+					typeParameter.HasValueTypeConstraint = true;
+				} else {
+					IReturnType rt = CreateReturnType(typeRef);
+					if (rt != null) {
+						typeParameter.Constraints.Add(rt);
+					}
 				}
 			}
 			return typeParameter;

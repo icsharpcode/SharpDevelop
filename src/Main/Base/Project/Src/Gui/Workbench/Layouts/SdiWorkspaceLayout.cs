@@ -32,7 +32,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		ToolStripContainer toolStripContainer;
 		AutoHideMenuStripContainer mainMenuContainer;
 		AutoHideStatusStripContainer statusStripContainer;
+		#if DEBUG
 		static bool firstTimeError = true; // TODO: Debug statement only, remove me
+		#endif
 		
 		public IWorkbenchWindow ActiveWorkbenchwindow {
 			get {

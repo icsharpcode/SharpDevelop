@@ -184,6 +184,18 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("MyInterface", md.InterfaceImplementations[0].InterfaceType.Type);
 			Assert.AreEqual("System.String", md.InterfaceImplementations[0].InterfaceType.GenericTypes[0].SystemType);
 		}
+		
+		[Test]
+		public void CSharpIncompleteConstraintsTest()
+		{
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>(
+				"void a<T>() where T { }", true /* expect errors */
+			);
+			Assert.AreEqual("a", md.Name);
+			Assert.AreEqual(1, md.Templates.Count);
+			Assert.AreEqual("T", md.Templates[0].Name);
+			Assert.AreEqual(0, md.Templates[0].Bases.Count);
+		}
 		#endregion
 		
 		#region VB.NET

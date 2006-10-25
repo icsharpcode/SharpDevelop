@@ -44,8 +44,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IList<IReturnType> Constraints { get; }
 		
 		/// <summary>
-		/// Gets if the type parameter has the 'new' constraint.
+		/// Gets if the type parameter has the 'new()' constraint.
 		/// </summary>
-		bool HasConstructableContraint { get; }
+		bool HasConstructableConstraint { get; }
+		
+		/// <summary>
+		/// Gets if the type parameter has the 'class' constraint.
+		/// </summary>
+		bool HasReferenceTypeConstraint { get; }
+		
+		/// <summary>
+		/// Gets if the type parameter has the 'struct' constraint.
+		/// </summary>
+		bool HasValueTypeConstraint { get; }
 	}
 }

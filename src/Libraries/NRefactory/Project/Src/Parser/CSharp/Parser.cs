@@ -912,7 +912,7 @@ out type);
 				break;
 			}
 		}
-		if ( td != null) { td.Bases.Add(type); }
+		if ( td != null && type != null) { td.Bases.Add(type); }
 		
 		while (la.kind == 14) {
 			lexer.NextToken();
@@ -928,7 +928,7 @@ out type);
 					break;
 				}
 			}
-			if ( td != null) { td.Bases.Add(type); }
+			if ( td != null && type != null) { td.Bases.Add(type); }
 			
 		}
 	}

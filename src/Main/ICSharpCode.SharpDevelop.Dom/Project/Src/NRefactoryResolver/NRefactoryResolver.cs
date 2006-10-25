@@ -1065,12 +1065,28 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return result;
 		}
 		
+		static void AddTypeParametersForCtrlSpace(ArrayList result, IEnumerable<ITypeParameter> typeParameters)
+		{
+			foreach (ITypeParameter p in typeParameters) {
+				DefaultClass c = DefaultTypeParameter.GetDummyClassForTypeParameter(p);
+				if (p.Method != null) {
+					c.Documentation = "Type parameter of " + p.Method.Name;
+				} else {
+					c.Documentation = "Type parameter of " + p.Class.Name;
+				}
+				result.Add(c);
+			}
+		}
+		
 		public static void AddContentsFromCalling(ArrayList result, IClass callingClass, IMember callingMember)
 		{
 			IMethodOrProperty methodOrProperty = callingMember as IMethodOrProperty;
 			if (methodOrProperty != null) {
 				foreach (IParameter p in methodOrProperty.Parameters) {
 					result.Add(new DefaultField.ParameterField(p.ReturnType, p.Name, methodOrProperty.Region, callingClass));
+				}
+				if (callingMember is IMethod) {
+					AddTypeParametersForCtrlSpace(result, ((IMethod)callingMember).TypeParameters);
 				}
 			}
 			
@@ -1079,6 +1095,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				inStatic = callingMember.IsStatic;
 			
 			if (callingClass != null) {
+				AddTypeParametersForCtrlSpace(result, callingClass.TypeParameters);
+				
 				ArrayList members = new ArrayList();
 				IReturnType t = callingClass.DefaultReturnType;
 				members.AddRange(t.GetMethods());

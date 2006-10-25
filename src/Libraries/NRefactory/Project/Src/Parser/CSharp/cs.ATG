@@ -2037,7 +2037,7 @@ TypeParameterConstraintsClause<List<TemplateDefinition> templates>
 	                                                		break;
 	                                                	}
 	                                                }
-	                                                if ( td != null) { td.Bases.Add(type); }
+	                                                if ( td != null && type != null) { td.Bases.Add(type); }
 	                                             .)
 	{ "," TypeParameterConstraintsClauseBase<out type> (.
 	                                                    td = null;
@@ -2047,7 +2047,7 @@ TypeParameterConstraintsClause<List<TemplateDefinition> templates>
 	                                                    		break;
 	                                                    	}
 	                                                    }
-	                                                    if ( td != null) { td.Bases.Add(type); }
+	                                                    if ( td != null && type != null) { td.Bases.Add(type); }
 	                                                   .) }
 .
 

@@ -20,8 +20,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 		}
 		
-		public Constructor(ModifierEnum m, IReturnType returnType)
-			: base("#ctor", returnType, m, DomRegion.Empty, DomRegion.Empty, null)
+		public Constructor(ModifierEnum m, IReturnType returnType, IClass declaringType)
+			: base("#ctor", returnType, m, DomRegion.Empty, DomRegion.Empty, declaringType)
 		{
 		}
 		

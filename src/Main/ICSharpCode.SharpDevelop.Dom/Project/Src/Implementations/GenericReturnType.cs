@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IReturnType rt = o as IReturnType;
 			if (rt == null || !rt.IsGenericReturnType)
-			    return false;
+				return false;
 			return typeParameter.Equals(rt.CastToGenericReturnType().typeParameter);
 		}
 		
@@ -94,13 +94,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			List<IMethod> list = base.GetMethods();
 			if (list != null) {
-				for (int i = 0; i < list.Count; i++) {
-					if (list[i].IsStatic) {
-						list.RemoveAt(i--);
-					}
-				}
-				if (typeParameter.HasConstructableContraint) {
-					list.Add(new Constructor(ModifierEnum.Public, this));
+				list.RemoveAll(delegate(IMethod m) { return m.IsStatic || m.IsConstructor; });
+				if (typeParameter.HasConstructableConstraint || typeParameter.HasValueTypeConstraint) {
+					list.Add(new Constructor(ModifierEnum.Public, this,
+					                         DefaultTypeParameter.GetDummyClassForTypeParameter(typeParameter)));
 				}
 			}
 			return list;

@@ -286,6 +286,9 @@ namespace ICSharpCode.Core
 				}
 				o = arr;
 				properties[property] = o; // store for future look up
+			} else if (!(o is string) && typeof(T) == typeof(string)) {
+				TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
+				o = c.ConvertToInvariantString(o);
 			}
 			try {
 				return (T)o;
