@@ -196,6 +196,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void CategoryChange(object sender, TreeViewEventArgs e)
 		{
 			((ListView)ControlDictionary["templateListView"]).Items.Clear();
+			HidePropertyGrid();
 			if (((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode != null) {
 				foreach (TemplateItem item in ((Category)((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode).Templates) {
 					((ListView)ControlDictionary["templateListView"]).Items.Add(item);
