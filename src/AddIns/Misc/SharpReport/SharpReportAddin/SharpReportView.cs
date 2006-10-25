@@ -32,9 +32,9 @@ namespace SharpReportAddin{
 		private SharpReportManager reportManager;
 		
 		private BaseDesignerControl designerControl;
+		private SharpReportCore.ReportViewer.PreviewControl reportViewer;
 		private	TabControl tabControl;
-		private TabPage designerPage;
-		private TabPage previewPage;
+
 		
 		// SideBar
 		private AxSideTab sideTabItem = null;
@@ -48,8 +48,10 @@ namespace SharpReportAddin{
 		void InitView() {
 			try {
 				reportManager = new SharpReportManager();
+				
 				panel = new Panel();
 				panel.AutoScroll = true;
+				panel.Dock = DockStyle.Fill;
 				CreateTabControl();
 				SharpReportView.BuildToolBarItems();
 				if (PropertyPad.Grid != null) {
@@ -85,7 +87,20 @@ namespace SharpReportAddin{
 		
 		#endregion
 		
+			#region Control
 		
+		private BaseDesignerControl CreateDesignerControl() {
+			BaseDesignerControl ctrl = reportManager.BaseDesignControl;
+			ctrl.SuspendLayout();
+			ctrl.ReportControl.Width = ctrl.ReportModel.ReportSettings.PageSettings.Bounds.Width;
+			ctrl.ReportControl.ObjectSelected +=new EventHandler <EventArgs>(OnObjectSelected);
+			ctrl.ReportControl.DesignViewChanged += new ItemDragDropEventHandler (OnItemDragDrop);
+			ctrl.DesignerDirty += new System.ComponentModel.PropertyChangedEventHandler (OnPropertyChanged);
+			ctrl.ResumeLayout();
+			return ctrl;
+		}
+		
+		#endregion
 		
 		#region SideBar Handling
 		
@@ -141,7 +156,7 @@ namespace SharpReportAddin{
 					}
 				}
 				sb.Refresh();
-			} 
+			}
 		}
 		
 		
@@ -164,80 +179,89 @@ namespace SharpReportAddin{
 		
 		#endregion
 		
-		
-		#region Control
+		#region TabControl including Events
 		
 		void CreateTabControl() {
-			tabControl = new TabControl();
-			tabControl.SelectedIndexChanged += new EventHandler (OnTabPageChanged);
-			
-			designerPage = new TabPage();
 
-			designerControl = CreateDesignerControl();
-			designerPage.Controls.Add (designerControl);
-			//create only the TabPage, no Controls are added
-			previewPage = new TabPage ();
-			tabControl.TabPages.Add (designerPage);
-			tabControl.TabPages.Add (previewPage);
+			this.tabControl = BuildDesignerTab.BuildTabControl();
 			
-			tabControl.Alignment = TabAlignment.Bottom;
+			this.tabControl.SelectedIndexChanged += new EventHandler (OnTabPageChanged);
+			this.tabControl.Selecting += new TabControlCancelEventHandler(OnTabPageSelecting);
 			
-			panel.Dock = DockStyle.Fill;
-			panel.AutoScroll = true;
-			
-			tabControl.Dock = DockStyle.Fill;
-
-			panel.Controls.Add (tabControl);
+			this.designerControl = CreateDesignerControl();
+			this.tabControl.TabPages[0].Controls.Add (this.designerControl);
+		
+			this.panel.Controls.Add (this.tabControl);
 			SetHeadLines();
-			
-		}
-		//We set all captions in one method, so we can react much easier on changing of lanuages
-		void SetHeadLines(){
-			designerPage.Text = ResourceService.GetString("SharpReport.Design");
-			previewPage.Text = ResourceService.GetString("SharpReport.Preview");
-			this.OnTabPageChanged (this,EventArgs.Empty);
-			this.designerControl.Localise();
-			
 		}
 		
-		private BaseDesignerControl CreateDesignerControl() {
-			BaseDesignerControl ctrl = reportManager.BaseDesignControl;
-			ctrl.SuspendLayout();
-			ctrl.ReportControl.Width = ctrl.ReportModel.ReportSettings.PageSettings.Bounds.Width;
-			ctrl.ReportControl.AutoScroll = true;
-			ctrl.Dock = DockStyle.Fill;
-			ctrl.ResumeLayout();
+		//We set all captions in one method, so we can react much easier on changing of lanuages
+		void SetHeadLines(){
+			this.tabControl.TabPages[0].Text = ResourceService.GetString("SharpReport.Design");
+			this.tabControl.TabPages[1].Text = ResourceService.GetString("SharpReport.Preview");
+			this.tabControl.TabPages[2].Text = "ReportViewer";
+			this.OnTabPageChanged (this,EventArgs.Empty);
+			this.designerControl.Localise();
+		}
+		void SetTabTitel (string name) {
+			base.TitleName = String.Format(CultureInfo.CurrentCulture,
+			                               "{0} [{1}]",name,this.tabControl.SelectedTab.Text);
+		}
+		
+		private void OnTabPageSelecting (object sender,TabControlCancelEventArgs e) {
+			switch (e.TabPageIndex) {
+				case 0:
+					break;
+				case 1:
+					if (e.TabPage.Controls.Count == 0) {
+						e.TabPage.Controls.Add(reportManager.PreviewControl);
+					}
+					break;
+				case 2:
+					if (e.TabPage.Controls.Count == 0) {
+						this.reportViewer = new SharpReportCore.ReportViewer.PreviewControl();
+						this.reportViewer.Dock = DockStyle.Fill;
+						this.reportViewer.PageSettings = new System.Drawing.Printing.PageSettings();
+						e.TabPage.Controls.Add(this.reportViewer);
+						
+					}
+					break;
+			}
+		}
+		
+		private void OnTabPageChanged (object sender, EventArgs e) {
 			
-			ctrl.ReportControl.ObjectSelected +=new EventHandler <EventArgs>(OnObjectSelected);
-			
-			ctrl.ReportControl.DesignViewChanged += new ItemDragDropEventHandler (OnItemDragDrop);
-			ctrl.DesignerDirty += new System.ComponentModel.PropertyChangedEventHandler (OnPropertyChanged);
-			return ctrl;
+			string name;
+			if (String.IsNullOrEmpty(base.FileName)) {
+				base.UntitledName = GlobalValues.SharpReportPlainFileName;
+				base.TitleName = GlobalValues.SharpReportPlainFileName;
+				base.FileName = GlobalValues.SharpReportPlainFileName;
+				name = base.TitleName;
+			} else {
+				name = Path.GetFileName (base.FileName);
+			}
+			SetTabTitel (name);
+			switch (tabControl.SelectedIndex) {
+				case 0 :
+					break;
+				case 1:
+					RunPreview(true);
+					this.tabControl.SelectedTab.Visible = true;
+					break;
+				case 2:
+					FillReportViewer();
+					break;
+				default:
+					
+					break;
+			}
 		}
 		
 		#endregion
 		
-		
-		#region Preview handling
-		
-		private static  DataSet DataSetFromFile () {
 
-			using (OpenFileDialog openFileDialog = new OpenFileDialog()){
-				openFileDialog.Filter = GlobalValues.XsdFileFilter;
-				openFileDialog.DefaultExt = GlobalValues.XsdExtension;
-				openFileDialog.AddExtension    = true;
-				if(openFileDialog.ShowDialog() == DialogResult.OK){
-					if (openFileDialog.FileName.Length > 0) {
-						DataSet ds = new DataSet();
-						ds.ReadXml (openFileDialog.FileName);
-						ds.Locale = CultureInfo.InvariantCulture;
-						return ds;
-					}
-				}
-			}
-			throw new MissingDataSourceException();
-		}
-		
+		#region Preview handling
+	
 		private void RunPreview(bool standAlone) {
 			base.OnSaving(EventArgs.Empty);
 			this.UpdateModelFromExplorer();
@@ -269,7 +293,9 @@ namespace SharpReportAddin{
 		
 		private void PreviewPushReport (bool standAlone){
 			try {
-				DataSet ds = SharpReportView.DataSetFromFile ();
+				DataSetFromXSDCommand cmd = new DataSetFromXSDCommand	();
+				cmd.Run();
+				DataSet ds = cmd.DataSet;
 				reportManager.ReportPreviewPushData(designerControl.ReportModel,
 				                                    ds,
 				                                    standAlone);
@@ -288,6 +314,23 @@ namespace SharpReportAddin{
 		
 		#endregion
 		
+		#region ReportViewer
+		
+		private void FillReportViewer() {
+			System.Console.WriteLine("FillReportViewer");
+			System.Console.WriteLine("\tsetup pagebuilder{0}",DateTime.Now);
+			SharpReportCore.Exporters.PageBuilder pb = reportManager.CreatePageBuilder (designerControl.ReportModel);
+			System.Console.WriteLine("\tstart createreport{0}",DateTime.Now);
+			pb.CreateReport();
+			System.Console.WriteLine("\treport created {0}",DateTime.Now);
+			SharpReportCore.Exporters.SinglePage sp= pb.FirstPage;
+			System.Console.WriteLine("\tPages {0} SinglePage : Items {0}",pb.Pages.Count,sp.Items.Count);
+
+			this.reportViewer.Pages = pb.Pages;
+		}
+		#endregion
+		
+		
 		#region Events
 		
 		///<summary>This Event is called if the Report need's Parameters to run a Query,
@@ -305,39 +348,7 @@ namespace SharpReportAddin{
 			}
 		}
 		
-		void SetTabTitel (string name) {
-			base.TitleName = String.Format(CultureInfo.CurrentCulture,
-			                               "{0} [{1}]",name,this.tabControl.SelectedTab.Text);
-		}
 		
-		private void OnTabPageChanged (object sender, EventArgs e) {
-			
-			string name;
-			if (String.IsNullOrEmpty(base.FileName)) {
-				base.UntitledName = GlobalValues.SharpReportPlainFileName;
-				base.TitleName = GlobalValues.SharpReportPlainFileName;
-				base.FileName = GlobalValues.SharpReportPlainFileName;
-				name = base.TitleName;
-			} else {
-				name = Path.GetFileName (base.FileName);
-			}
-			SetTabTitel (name);
-			switch (tabControl.SelectedIndex) {
-				case 0 :
-					break;
-				case 1:
-					//Create the preview Control only when needed
-					if (tabControl.SelectedTab.Controls.Count == 0 ){
-						tabControl.SelectedTab.Controls.Add(reportManager.PreviewControl);
-					}
-					RunPreview(true);
-					this.previewPage.Visible = true;
-					break;
-				default:
-					
-					break;
-			}
-		}
 		
 		//Something was dropped on the designer
 		
@@ -351,7 +362,7 @@ namespace SharpReportAddin{
 			base.IsDirty = true;
 			OnObjectSelected (this,EventArgs.Empty);
 		}
-	
+		
 		private void OnModelFileNameChanged (object sender,EventArgs e) {
 			base.FileName = designerControl.ReportModel.ReportSettings.FileName;
 			if (designerControl.ReportModel.ReportSettings.InitDone) {
@@ -373,7 +384,7 @@ namespace SharpReportAddin{
 				}
 			}
 		}
-	
+		
 		private void UpdateModelFromExplorer () {
 			ReportExplorer re = (SharpReportAddin.ReportExplorer)WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorer)).PadContent;
 			re.Update(designerControl.ReportModel);
@@ -397,7 +408,7 @@ namespace SharpReportAddin{
 		/// Show's Report in PreviewControl
 		/// </summary>
 		
-		public void OnPreviewClick () {			
+		public void OnPreviewClick () {
 			reportManager.ParametersRequest -= new EventHandler<SharpReportParametersEventArgs> (OnParametersRequest);
 			reportManager.ParametersRequest +=  new EventHandler<SharpReportParametersEventArgs>(OnParametersRequest);
 
@@ -408,7 +419,7 @@ namespace SharpReportAddin{
 		/// <summary>
 		/// Remove the selected Item from <see cref="BaseDesignerControl"></see>
 		/// </summary>
-	
+		
 		public void RemoveSelectedItem () {
 			this.designerControl.RemoveSelectedItem ();
 		}
@@ -428,7 +439,7 @@ namespace SharpReportAddin{
 		}
 		
 		/// <summary>
-		/// Tells the <see cref="BaseDesignerControl"></see> to fire an Event if 
+		/// Tells the <see cref="BaseDesignerControl"></see> to fire an Event if
 		/// something in the report layout changes
 		/// </summary>
 		
@@ -479,6 +490,7 @@ namespace SharpReportAddin{
 		}
 		
 		public override void RedrawContent() {
+			
 			SetHeadLines();
 		}
 		
@@ -528,15 +540,16 @@ namespace SharpReportAddin{
 			}
 		}
 		
-	
+		
 		/// <summary>
 		/// Loads a new file into View
 		/// </summary>
 		/// <param name="fileName">A valid Filename</param>
 		public override void Load(string fileName){
+
 			try {
 				designerControl.ReportControl.ObjectSelected -= new EventHandler <EventArgs>(OnObjectSelected);
-				reportManager.LoadFromFile (fileName);
+				reportManager.LoadFromFile (fileName);	
 				base.FileName = fileName;
 				designerControl.ReportModel.ReportSettings.FileName = fileName;
 				designerControl.ReportControl.ObjectSelected += new EventHandler <EventArgs>(OnObjectSelected);
@@ -544,13 +557,12 @@ namespace SharpReportAddin{
 					PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
 					PropertyPad.Grid.Refresh();
 				}
-				
-				this.designerControl.ReportModel.ReportSettings.AvailableFieldsCollection = reportManager.AvailableFieldsCollection;				
-			
+					
+				this.designerControl.ReportModel.ReportSettings.AvailableFieldsCollection = reportManager.AvailableFieldsCollection;
 				ShowAndFillExplorer se = new ShowAndFillExplorer();
 				se.ReportModel = this.designerControl.ReportModel;
 				se.Run();
-
+	
 			} catch (Exception e) {
 				MessageService.ShowError(e,"SharpReportView:Load");
 				throw ;
@@ -566,8 +578,11 @@ namespace SharpReportAddin{
 			get {
 				AbstractRenderer renderer;
 				if (this.designerControl.ReportModel.DataModel == GlobalEnums.PushPullModel.PushData) {
+					DataSetFromXSDCommand cmd = new DataSetFromXSDCommand();
+					cmd.Run();
+					DataSet dataSet = cmd.DataSet;
 					renderer = reportManager.GetRendererForPushDataReports(this.designerControl.ReportModel,
-					                                                       SharpReportView.DataSetFromFile());
+					                                                       dataSet);
 					
 				} else {
 					try {
@@ -609,6 +624,10 @@ namespace SharpReportAddin{
 				}
 				if (this.designerControl != null) {
 					this.designerControl.Dispose();
+				}
+				
+				if (this.reportViewer != null) {
+					this.reportViewer.Dispose();
 				}
 				
 				if (this.tabControl != null) {

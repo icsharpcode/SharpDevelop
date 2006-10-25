@@ -28,6 +28,7 @@ namespace SharpReportCore.Exporters{
 		public ExportText ConvertToLineItems (IItemRenderer r) {
 			IExportColumnBuilder lineBuilder = r as IExportColumnBuilder;
 			ExportText lineItem = null;
+			
 			if (lineBuilder != null) {
 
 				lineItem = (ExportText)lineBuilder.CreateExportColumn(this.graphics);

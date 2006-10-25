@@ -9,10 +9,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.Drawing;
-
 using System.Drawing.Printing;
 
 namespace SharpReportCore.Exporters
@@ -28,8 +25,8 @@ namespace SharpReportCore.Exporters
 		DataNavigator dataNavigator; 
 		ExportItemsConverter lineItemsConverter;
 		
-//		public delegate List <IPerformLine> ConverterDelegate (LineItemsConverter c,BaseSection s,SinglePage p);
 		public delegate List <BaseExportColumn> ConverterDelegate (BaseSection s,SinglePage p);
+		
 		#region Constructor
 		public PageBuilder () {
 			pages = new List<SinglePage>();
@@ -48,28 +45,7 @@ namespace SharpReportCore.Exporters
 		
 		#endregion
 		
-		#region template
-		/*
-		// Events from ReportDocument
-			reportDocument.QueryPageSettings += new QueryPageSettingsEventHandler (ReportQueryPage);
-			reportDocument.BeginPrint += new PrintEventHandler(ReportBegin);
-			reportDocument.PrintPage += new PrintPageEventHandler(ReportPageStart);
-			reportDocument.EndPrint += new PrintEventHandler(ReportEnd);
-
-			// homemade events
-			reportDocument.BodyStart += new EventHandler<ReportPageEventArgs> (BodyStart);
-			
-			reportDocument.BodyEnd += new EventHandler<ReportPageEventArgs> (BodyEnd);
-
-			//
-			reportDocument.RenderReportHeader += new EventHandler<ReportPageEventArgs> (PrintReportHeader);
-			reportDocument.RenderPageHeader += new EventHandler<ReportPageEventArgs> (PrintPageHeader);
-			reportDocument.RenderDetails += new EventHandler<ReportPageEventArgs> (PrintDetail);
-			reportDocument.RenderPageEnd += new EventHandler<ReportPageEventArgs> (PrintPageEnd);
-			reportDocument.RenderReportEnd += new EventHandler<ReportPageEventArgs> (PrintReportFooter);
 		
-		 */
-		#endregion
 		
 		private SinglePage CreateNewPage () {
 			PageSettings ps = this.reportModel.ReportSettings.PageSettings;
@@ -87,13 +63,8 @@ namespace SharpReportCore.Exporters
 	
 		private void BuildReportHeader (SinglePage page) {
 			BaseSection section = this.reportModel.ReportHeader;
-//			System.Console.WriteLine("ReportHeader with {0} items ",section.Items.Count);
 			
-//			LineItemsConverter conv = new LineItemsConverter(graphics);
 			this.lineItemsConverter.Offset = page.SectionBounds.ReportHeaderRectangle.Top;
-			System.Console.WriteLine("ReportHeader start at {0} with {1} items",
-			                         this.lineItemsConverter.Offset,
-			                        section.Items.Count);
 			List <BaseExportColumn>l = section.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
 			page.Items.AddRange(l);
 
@@ -101,18 +72,13 @@ namespace SharpReportCore.Exporters
 		
 		private void BuildPageHeader (SinglePage page) {
 			BaseSection section = this.reportModel.PageHeader;
-//			System.Console.WriteLine("PageHeader with {0} items ",section.Items.Count);
 
-//			LineItemsConverter conv = new LineItemsConverter(graphics);
 			this.lineItemsConverter.Offset = page.SectionBounds.PageHeaderRectangle.Top;
-			System.Console.WriteLine("Page Header start at {0} with {1} Items",
-			                         this.lineItemsConverter.Offset,
-			                        section.Items.Count);
+//			System.Console.WriteLine("Page Header start at {0} with {1} Items",
+//			                         this.lineItemsConverter.Offset,
+//			                        section.Items.Count);
 			List <BaseExportColumn>l = section.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
 			page.Items.AddRange(l);
-			
-//			System.Console.WriteLine("\tList<string> {0}",l.Count);
-//			System.Console.WriteLine("\tpages.items.coun {0}",page.Items.Count);
 		}
 		
 		
@@ -133,9 +99,6 @@ namespace SharpReportCore.Exporters
 			BaseSection section = this.reportModel.DetailSection;
 			section.SectionOffset = page.SectionBounds.DetailStart.Y;
 			do {
-				
-				
-				
 				dataNavigator.Fill(section.Items);
 				
 				if (!firstOnPage) {
@@ -169,7 +132,7 @@ namespace SharpReportCore.Exporters
 			this.lineItemsConverter.Offset = section.SectionOffset;
 			
 			if (builder != null) {
-				System.Console.WriteLine("Create RowList with Location {0}",this.lineItemsConverter.Offset);
+//				System.Console.WriteLine("Create RowList with Location {0} ",this.lineItemsConverter.Offset);
 				
 				Graphics g = reportModel.ReportSettings.PageSettings.PrinterSettings.CreateMeasurementGraphics();
 				
@@ -180,11 +143,17 @@ namespace SharpReportCore.Exporters
 				// reread
 				this.dataNavigator.Fill(containerItem.Items);
 				List <BaseExportColumn> childList = containerItem.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
-
+				
+				//Adjust childitems to Location within container
+				if (childList.Count > 0) {
+					childList.ForEach(delegate(BaseExportColumn item){
+					                  	Point p = new Point (lineItem.StyleDecorator.Location.X + item.StyleDecorator.Location.X,
+					                  	                     lineItem.StyleDecorator.Location.Y + item.StyleDecorator.Location.Y);
+					                  	item.StyleDecorator.Location = p;
+					                  });
+				}
 				lineItem.Items.AddRange(childList);
-				
-				childList.ForEach(display);
-				
+
 				List <BaseExportColumn> containerList = new List<BaseExportColumn>();
 				containerList.Add (lineItem);
 				g.Dispose();
@@ -193,12 +162,13 @@ namespace SharpReportCore.Exporters
 			return null;
 		}
 		
+		
+		
 		private List <BaseExportColumn> DoJob (BaseSection section,SinglePage page) {
 
 			this.lineItemsConverter.Offset = section.SectionOffset;
-			System.Console.WriteLine("Plain Item {0}/{1}",section.SectionOffset,page.SectionBounds.DetailStart);
 			List <BaseExportColumn>list = section.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
-			
+			/*
 			if (list.Count > 0) {
 				
 				bool istrue = list.TrueForAll(delegate(BaseExportColumn item){
@@ -213,7 +183,7 @@ namespace SharpReportCore.Exporters
 				                           	return true;
 				                           });
 			}
-//			list.ForEach(display);
+			*/
 			return list;
 		}
 		
@@ -233,9 +203,6 @@ namespace SharpReportCore.Exporters
 			BaseSection section = this.reportModel.PageFooter;
 			                  
 			this.lineItemsConverter.Offset = page.SectionBounds.PageFooterRectangle.Top;
-//			System.Console.WriteLine("Page Footer start at {0} with {1} Items",
-//			                         this.lineItemsConverter.Offset,
-//			                        section.Items.Count);
 			List <BaseExportColumn>l = section.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
 			page.Items.AddRange(l);
 		}
@@ -293,8 +260,14 @@ namespace SharpReportCore.Exporters
 				}
 				return null;
 			}
-			
 		}
+		
+		public List<SinglePage> Pages {
+			get {
+				return pages;
+			}
+		}
+		
 	}
 
 }

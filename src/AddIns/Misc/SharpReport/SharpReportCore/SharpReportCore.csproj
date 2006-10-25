@@ -146,6 +146,14 @@
     <Compile Include="Exporter\ExportColumns\ExportContainer.cs" />
     <Compile Include="Exporter\ExportColumns\ExportText.cs" />
     <Compile Include="Exporter\ExportColumns\IExportColumnBuilder .cs" />
+    <Compile Include="ReportViewer\ReportViewer.cs" />
+    <Compile Include="ReportViewer\ReportViewer.Designer.cs">
+      <DependentUpon>ReportViewer.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="ReportViewer\ReportViewer.resx">
+      <DependentUpon>ReportViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Exporter\ExporterCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />
@@ -171,6 +179,11 @@
     <Folder Include="BaseClasses" />
     <Folder Include="Exporter" />
     <Folder Include="Exporter\ExportColumns" />
+    <Folder Include="ReportViewer" />
+    <Folder Include="ReportViewer\Resources" />
+    <Content Include="ReportViewer\Resources\Icons.16x16.Print.png" />
+    <Content Include="ReportViewer\Resources\Icons.16x16.BrowserBefore.png" />
+    <Content Include="ReportViewer\Resources\Icons.16x16.BrowserAfter.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

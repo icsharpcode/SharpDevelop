@@ -8,16 +8,17 @@
  */
 
 using System;
+
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Printing;
 
 namespace SharpReportCore.Exporters
 {
 		
-	public class SinglePage
-	{
-//		List<IPerformLine> items;
+	public class SinglePage{
+		
 		ExporterCollection<BaseExportColumn> items;
 		SectionBounds sectionBounds;
 		
@@ -29,7 +30,6 @@ namespace SharpReportCore.Exporters
 		public SinglePage(SectionBounds sectionBounds)
 		{
 			this.sectionBounds = sectionBounds;
-//			items = new List <IPerformLine>();
 			items = new ExporterCollection<BaseExportColumn>();
 		}
 		
@@ -57,7 +57,6 @@ namespace SharpReportCore.Exporters
 
 			this.sectionBounds.MeasurePageHeader(reportModel.PageHeader,
 			                                     rectangle,graphics);
-//
 			
 			//PageFooter
 			
@@ -93,9 +92,5 @@ namespace SharpReportCore.Exporters
 		}
 		
 	}
-	
-	public class ExporterCollection<T> : List<T>
-		where T : BaseExportColumn {
-		
-	}
+
 }

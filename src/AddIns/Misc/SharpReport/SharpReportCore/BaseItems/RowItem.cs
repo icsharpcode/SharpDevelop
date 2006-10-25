@@ -50,7 +50,6 @@ namespace SharpReportCore{
 		
 		#region IExportColumnBuilder  implementation
 		
-//		public IPerformLine CreateExportColumn(Graphics graphics){
 		public BaseExportColumn CreateExportColumn(Graphics graphics){	
 			BaseStyleDecorator st = this.CreateItemStyle(graphics);
 			
@@ -62,7 +61,6 @@ namespace SharpReportCore{
 			BaseStyleDecorator style = new BaseStyleDecorator();
 			
 			style.BackColor = this.BackColor;
-//			style.Font = this.Font;
 			style.ForeColor = this.ForeColor;
 			style.Location = this.Location;
 			style.Size = this.Size;

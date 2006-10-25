@@ -280,8 +280,11 @@ namespace SharpReport{
 		/// <param name="fileName">Valid Filename with .xml or .sdr Extension</param>
 		
 		public void LoadFromFile(string fileName){
+		
 			SharpReport.Visitors.LoadReportVisitor loadVisitor = new SharpReport.Visitors.LoadReportVisitor(fileName);
+			//TODO Thsi methiod takes aprox 2 secounds
 			this.baseDesignerControl.Accept(loadVisitor);
+				
 			this.baseDesignerControl.ReportModel.ReportSettings.FileName = fileName;
 			reportModel = this.baseDesignerControl.ReportModel;
 		}
@@ -346,6 +349,8 @@ namespace SharpReport{
 			get {
 				if (this.baseDesignerControl == null) {
 					this.baseDesignerControl = new BaseDesignerControl();
+					this.baseDesignerControl.ReportControl.AutoScroll = true;
+					this.baseDesignerControl.Dock = DockStyle.Fill;
 				}
 				return this.baseDesignerControl;
 			}

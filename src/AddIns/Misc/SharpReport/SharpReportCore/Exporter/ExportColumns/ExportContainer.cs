@@ -16,7 +16,7 @@ namespace SharpReportCore.Exporters
 	/// </summary>
 	public class ExportContainer:BaseExportColumn
 	{
-//		List<IPerformLine> items;
+
 		ExporterCollection<BaseExportColumn> items;
 		public ExportContainer():base(){
 			base.IsContainer = true;

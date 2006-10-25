@@ -8,9 +8,11 @@
  */
 
 using System;
-
+using System.Windows.Forms;
+using System.Globalization;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using SharpReportCore;
 
 namespace SharpReportAddin.Commands{
 	
@@ -31,5 +33,30 @@ namespace SharpReportAddin.Commands{
 				}
 			}
 		}
+	}
+	
+	
+	public class DataSetFromXSDCommand:AbstractCommand{
+		System.Data.DataSet ds;
+		public override void Run()
+		{
+			using (OpenFileDialog openFileDialog = new OpenFileDialog()){
+				openFileDialog.Filter = GlobalValues.XsdFileFilter;
+				openFileDialog.DefaultExt = GlobalValues.XsdExtension;
+				openFileDialog.AddExtension    = true;
+				if(openFileDialog.ShowDialog() == DialogResult.OK){
+					if (openFileDialog.FileName.Length > 0) {
+						this.ds = new System.Data.DataSet();
+						this.ds.ReadXml (openFileDialog.FileName);
+						this.ds.Locale = CultureInfo.InvariantCulture;
+					}
+				}
+			}
+		}
+		
+		public System.Data.DataSet DataSet {
+			get { return ds; }
+		}
+		
 	}
 }
