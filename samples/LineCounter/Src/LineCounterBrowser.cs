@@ -14,6 +14,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop;
 
 namespace LineCounterAddin
 {

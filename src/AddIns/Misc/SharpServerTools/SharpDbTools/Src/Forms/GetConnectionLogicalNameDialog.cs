@@ -1,8 +1,9 @@
-/*
- * User: dickon
- * Date: 04/08/2006
- * Time: 22:21
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Dickon Field" email=""/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 

@@ -1,11 +1,9 @@
-/*
- * Created by SharpDevelop.
- * User: tfssetup
- * Date: 10/27/2006
- * Time: 9:29 AM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.Diagnostics;

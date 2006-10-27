@@ -5,13 +5,6 @@
 //     <version>$Revision: 1784 $</version>
 // </file>
 
-/*
- * User: dickon
- * Date: 30/07/2006
- * Time: 23:35
- * 
- */
-
 using System;
 
 namespace SharpDbTools.Data

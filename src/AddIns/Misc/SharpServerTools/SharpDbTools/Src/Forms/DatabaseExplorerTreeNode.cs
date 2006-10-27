@@ -1,9 +1,9 @@
-/*
- * User: dickon
- * Date: 23/09/2006
- * Time: 22:50
- * 
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Dickon Field" email=""/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.Collections.Generic;

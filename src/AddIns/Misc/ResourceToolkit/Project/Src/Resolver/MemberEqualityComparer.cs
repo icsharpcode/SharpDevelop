@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Christian Hornung" email="c-hornung@gmx.de"/>
+//     <owner name="Christian Hornung" email=""/>
 //     <version>$Revision$</version>
 // </file>
 

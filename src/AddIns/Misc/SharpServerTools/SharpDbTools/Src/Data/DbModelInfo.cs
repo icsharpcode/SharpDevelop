@@ -5,13 +5,6 @@
 //     <version>$Revision: 1784 $</version>
 // </file>
 
-/*
- * User: Dickon Field
- * Date: 10/07/2006
- * Time: 09:12
- * 
- */
-
 using System;
 using System.Data;
 

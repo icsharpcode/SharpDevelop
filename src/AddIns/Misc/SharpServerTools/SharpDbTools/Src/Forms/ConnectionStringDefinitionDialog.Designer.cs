@@ -1,13 +1,10 @@
-﻿/*
- * Responsibilities:<br>
- * <br>
- * Collaboration:<br>
- * <br>
- * User: ${USER}
- * Date: ${DATE}
- * Time: ${TIME}
- * 
- */
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Dickon Field" email=""/>
+//     <version>$Revision$</version>
+// </file>
+
 namespace SharpDbTools.Forms
 {
 	partial class ConnectionStringDefinitionDialog : System.Windows.Forms.Form

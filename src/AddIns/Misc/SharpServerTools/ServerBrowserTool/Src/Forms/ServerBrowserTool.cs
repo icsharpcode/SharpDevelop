@@ -2,14 +2,8 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Dickon Field" email=""/>
-//     <version>$Revision: 1766 $</version>
+//     <version>$Revision$</version>
 // </file>
-
-/*
- * User: Dickon Field
- * Date: 12/06/2006
- * Time: 06:25
- */
 
 using System;
 using System.Windows.Forms;
@@ -68,8 +62,3 @@ namespace SharpServerTools.Forms
 		}
 	}
 }
-
-
-
-
-

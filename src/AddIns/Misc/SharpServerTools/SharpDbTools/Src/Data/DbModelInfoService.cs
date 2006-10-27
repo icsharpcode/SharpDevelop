@@ -5,13 +5,6 @@
 //     <version>$Revision: 1784 $</version>
 // </file>
 
-/*
- * User: dickon
- * Date: 28/07/2006
- * Time: 21:55
- * 
- */
-
 using System;
 using System.Collections.Generic;
 using System.Data;

@@ -1,6 +1,6 @@
 // <file>
-//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
-//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
@@ -56,14 +56,6 @@ namespace CheckFileHeaders
 				if (Path.GetFullPath(subdir).EndsWith("src\\Tools"))
 					continue;
 				// Disabled addins:
-				if (subdir.EndsWith("AddIns\\BackendBindings\\CPPNetBinding"))
-					continue;
-				if (subdir.EndsWith("AddIns\\BackendBindings\\ILAsmBinding"))
-					continue;
-				if (subdir.EndsWith("AddIns\\BackendBindings\\WixBinding"))
-					continue;
-				if (subdir.EndsWith("AddIns\\DisplayBindings\\AssemblyScout"))
-					continue;
 				if (subdir.EndsWith("AddIns\\Misc\\Debugger\\TreeListView\\Project"))
 					continue;
 				if (subdir.EndsWith("AddIns\\Misc\\SharpReport"))

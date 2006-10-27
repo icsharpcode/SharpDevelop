@@ -5,17 +5,6 @@
 //     <version>$Revision: 1697 $</version>
 // </file>
 
-/*
- * Responsibilities:<br>
- * <br>
- * Collaboration:<br>
- * <br>
- * User: Dickon Field
- * Date: 21/05/2006
- * Time: 23:19
- * 
- */
-
 using System;
 using System.Collections.Generic;
 using System.Data;
