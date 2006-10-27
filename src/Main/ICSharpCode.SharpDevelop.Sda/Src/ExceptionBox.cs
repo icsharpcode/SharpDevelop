@@ -184,34 +184,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 			CopyInfoToClipboard();
 			
 			StartUrl("http://www.icsharpcode.net/OpenSource/SD/BugReporting.aspx?version=" + RevisionClass.FullVersion);
-			
-			/*
-			string text = "This version of SharpDevelop is an internal build, " +
-				"not a released version.\n" +
-				"Please report problems in the internal builds to the " +
-				"SVN-SharpDevelop-Users mailing list.";
-			
-			int result = MessageService.ShowCustomDialog("SharpDevelop", text,
-			                                             "Join the list", "Write mail", "Cancel");
-			if (result == 0) {
-				StartUrl("http://www.glengamoi.com/mailman/listinfo/icsharpcode.svn-sharpdevelop-users");
-			} else if (result == 1) {
-				// clipboard text is too long to be inserted into the mail-url
-				string exceptionTitle = "";
-				Exception ex = exceptionThrown;
-				if (ex != null) {
-					try {
-						while (ex.InnerException != null) ex = ex.InnerException;
-						exceptionTitle = " (" + ex.GetType().Name + ")";
-					} catch {}
-				}
-				string url = "mailto:icsharpcode.svn-sharpdevelop-users@glengamoi.com?subject=Bug Report"
-					+ Uri.EscapeDataString(exceptionTitle)
-					+ "&body="
-					+ Uri.EscapeDataString("Write an English description on how to reproduce the error and paste the exception text.");
-				StartUrl(url);
-			}
-			 */
 		}
 		
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]

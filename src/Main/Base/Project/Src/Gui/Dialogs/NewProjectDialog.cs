@@ -313,47 +313,12 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				}
 				
 				NewProjectLocation = cinfo.CreatedProjects.Count > 0 ? cinfo.CreatedProjects[0] : "";
-				
 				DialogResult = DialogResult.OK;
-				/*
-						if (item.Template.LanguageName != null && item.Template.LanguageName.Length > 0)  {
-							
-						}
-						
-						if (item.Template.WizardPath != null) {
-							Properties customizer = new Properties();
-							customizer.Set("Template", item.Template);
-							customizer.Set("Creator",  this);
-							WizardDialog wizard = new WizardDialog("Project Wizard", customizer, item.Template.WizardPath);
-							if (wizard.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-								DialogResult = DialogResult.OK;
-							}
-						}
-						
-						NewCombineLocation = FileUtility.GetDirectoryNameWithSeparator(ProjectLocation) + ((TextBox)ControlDictionary["nameTextBox"]).Text + ".cmbx";
-						
-						if (File.Exists(NewCombineLocation)) {
-							DialogResult result = MessageBox.Show("Combine file " + NewCombineLocation + " already exists, do you want to overwrite\nthe existing file ?", "File already exists", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-							switch(result) {
-								case DialogResult.Yes:
-									cmb.SaveCombine(NewCombineLocation);
-									break;
-								case DialogResult.No:
-									break;
-							}
-						} else {
-							cmb.SaveCombine(NewCombineLocation);
-						}
-					} else {
-						MessageBox.Show(ResourceService.GetString("Dialog.NewProject.EmptyProjectFieldWarning"), "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-					}
-				 */
 			}
 		}
 		
 		void BrowseDirectories(object sender, EventArgs e)
 		{
-			// Changes Shankar
 			FolderDialog fd = new FolderDialog();
 			if (fd.DisplayDialog("${res:Dialog.NewProject.SelectDirectoryForProject}") == DialogResult.OK) {
 				((TextBox)ControlDictionary["locationTextBox"]).Text = fd.Path;

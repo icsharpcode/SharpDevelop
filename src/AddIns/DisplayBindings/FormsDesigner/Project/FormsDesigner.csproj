@@ -71,10 +71,6 @@
     <Compile Include="Src\Gui\RenameCategoryDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\ShowTabOrder\ITabOrder.cs" />
-    <Compile Include="Src\Gui\ShowTabOrder\TabIndexControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Src\Gui\SideTabDesigner.cs" />
     <Compile Include="Src\Gui\SideTabItemDesigner.cs" />
     <Compile Include="Src\Services\DefaultServiceContainer.cs" />

@@ -39,15 +39,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// returns null if no sub view contents are attached.
-		/// </summary>
-		/*
-		ArrayList SubViewContents {
-			get;
-		}
-		*/
-		
-		/// <summary>
 		/// The current view content which is shown inside this window.
 		/// This method is thread-safe.
 		/// </summary>

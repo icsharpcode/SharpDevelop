@@ -92,37 +92,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			MouseUp                  += new MouseEventHandler(SetContextMenu);
 			sideTabContent.MouseUp   += new MouseEventHandler(SetItemContextMenu);
 			
-			/*
-			deleteMenuHeaderItem = new IconMenuItem(mainwindow, ResourceService.GetString("SideBarComponent.ContextMenu.DeleteTab"), new EventHandler(DeleteTabHeader));
-			moveUpMenuHeaderItem = new IconMenuItem(mainwindow, ResourceService.GetString("SideBarComponent.ContextMenu.MoveTabUp"), new EventHandler(MoveTabUp));
-			moveDownMenuHeaderItem = new IconMenuItem(mainwindow, ResourceService.GetString("SideBarComponent.ContextMenu.MoveTabDown"), new EventHandler(MoveTabDown));
-			
-			moveItemTabUpMenuHeaderItem = new IconMenuItem(mainwindow, ResourceService.GetString("SideBarComponent.ContextMenu.MoveTabUp"), new EventHandler(MoveActiveTabUp));
-			moveItemTabDownMenuHeaderItem = new IconMenuItem(mainwindow, ResourceService.GetString("SideBarComponent.ContextMenu.MoveTabDown"), new EventHandler(MoveActiveTabDown));
-			
-			ContextMenu = new ContextMenu(new MenuItem[] {
-				deleteMenuHeaderItem,
-				new IconMenuItem(mainwindow, ResourceService.GetString("SideBarComponent.ContextMenu.RenameTab"), new EventHandler(RenameTabHeader)),
-				new IconMenuItem(mainwindow, "-"),
-				new IconMenuItem(mainwindow, ResourceService.GetString("SideBarComponent.ContextMenu.AddTab"), new EventHandler(AddTabHeader)),
-				new IconMenuItem(mainwindow, "-"),
-				moveUpMenuHeaderItem,
-				moveDownMenuHeaderItem
-			});
-			
-			
-			
-			sideTabContent.MouseMove += new MouseEventHandler(MoveItem);
-			
-			sideTabContent.ContextMenu = new ContextMenu(new MenuItem[] {
-					new IconMenuItem(mainwindow, ResourceService.GetString("SideBarComponent.ContextMenu.RenameTabItem"), new EventHandler(RenameTabItem)),
-					new IconMenuItem(mainwindow, ResourceService.GetString("SideBarComponent.ContextMenu.DeleteTabItem"), new EventHandler(DeleteTabItem)),
-					new IconMenuItem(mainwindow, "-"),
-					moveItemTabUpMenuHeaderItem,
-					moveItemTabDownMenuHeaderItem
-			});
-			*/
-			
 			foreach (TextTemplate template in TextTemplate.TextTemplates) {
 				AxSideTab tab = new AxSideTab(this, template.Name);
 				tab.CanSaved  = false;

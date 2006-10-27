@@ -21,12 +21,4 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 	}
-	/*
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			
-			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
-				return;
-			}
-			TextEditorControl textEditorControl = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
-	*/
 }

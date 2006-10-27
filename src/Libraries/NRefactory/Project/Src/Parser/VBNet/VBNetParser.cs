@@ -88,10 +88,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		}
 
 		/*
-	True, if ident is followed by "=" or by ":" and "="
+			True, if ident is followed by "=" or by ":" and "="
 		 */
 		bool IsNamedAssign() {
-//	if(Peek(1).kind == Tokens.Assign) return true; // removed: not in the lang spec
 			if(Peek(1).kind == Tokens.Colon && Peek(2).kind == Tokens.Assign) return true;
 			return false;
 		}
@@ -101,7 +100,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		}
 
 		/*
-	True, if "<" is followed by the ident "assembly" or "module"
+			True, if "<" is followed by the ident "assembly" or "module"
 		 */
 		bool IsGlobalAttrTarget () {
 			Token pt = Peek(1);
@@ -109,7 +108,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		}
 
 		/*
-	True if the next token is a "(" and is followed by "," or ")"
+			True if the next token is a "(" and is followed by "," or ")"
 		 */
 		bool IsDims()
 		{
@@ -124,8 +123,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		}
 
 		/*
-	True, if the comma is not a trailing one,
-	like the last one in: a, b, c,
+			True, if the comma is not a trailing one,
+			like the last one in: a, b, c,
 		 */
 		bool NotFinalComma() {
 			int peek = Peek(1).kind;
@@ -134,8 +133,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		}
 
 		/*
-	True, if the next token is "Else" and this one
-	if followed by "If"
+			True, if the next token is "Else" and this one
+			if followed by "If"
 		 */
 		bool IsElseIf()
 		{

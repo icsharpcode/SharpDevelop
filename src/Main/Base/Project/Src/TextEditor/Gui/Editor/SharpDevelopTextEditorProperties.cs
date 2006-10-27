@@ -310,12 +310,5 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				useCustomLine = value;
 			}
 		}
-
-		/*
-		<Property key="DoubleBuffer" value="True" />
-        <Property key="ShowErrors" value="True" />
-        <Property key="" value="True" />
-        <Property key="AutoInsertTemplates" value="True" />
-        <Property key="IndentationSize" value="4" />		 * */
 	}
 }

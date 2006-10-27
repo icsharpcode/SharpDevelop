@@ -49,47 +49,5 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 		}
-		
-		/*
-		public bool CaretOffsetChanged()
-		{
-			bool closeDataProvider = textArea.Caret.Offset <= initialOffset;
-			
-			if (!closeDataProvider) {
-				bool insideChar   = false;
-				bool insideString = false;
-				for (int offset = initialOffset; offset < Math.Min(textArea.Caret.Offset, document.TextLength); ++offset) {
-					char ch = document.GetCharAt(offset);
-					switch (ch) {
-						case '\'':
-							insideChar = !insideChar;
-							break;
-						case '"':
-							insideString = !insideString;
-							break;
-						case ']':
-						case '}':
-						case '{':
-						case ';':
-							if (!(insideChar || insideString)) {
-								return true;
-							}
-							break;
-					}
-				}
-			}
-			
-			return closeDataProvider;
-		}
-		
-		public bool CharTyped()
-		{
-			int offset = textArea.Caret.Offset - 1;
-			if (offset >= 0) {
-				return document.GetCharAt(offset) == ']';
-			}
-			return false;
-		}
-		 */
 	}
 }

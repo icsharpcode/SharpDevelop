@@ -19,17 +19,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string Name {
 			get;
 		}
-		
-		/*
-		 * These properties are not stored in DomPersistence and cannot not be used!
-		List<AttributeArgument> PositionalArguments {
-			get;
-		}
-		
-		SortedList<string, AttributeArgument> NamedArguments {
-			get;
-		}
-		*/
 	}
 	
 	public enum AttributeTarget

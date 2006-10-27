@@ -69,7 +69,6 @@
     <Compile Include="Src\Services\File\RecentOpen.cs" />
     <Compile Include="Src\Services\Language\LanguageService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WindowActiveEvaluator.cs" />
-    <Compile Include="Src\Internal\ConditionEvaluators\ProjectOpenEvaluator.cs" />
     <Compile Include="Src\Internal\Doozers\DefaultDialogPanelDescriptor.cs" />
     <Compile Include="Src\Internal\Doozers\DialogPanelDoozer.cs" />
     <Compile Include="Src\Internal\Doozers\IDialogPanel.cs" />

@@ -116,7 +116,6 @@
     <Compile Include="Src\Gui\WixComponentTreeNode.cs" />
     <Compile Include="Src\Gui\WixFileTreeNode.cs" />
     <Compile Include="Src\Gui\AddChildElementsMenuBuilder.cs" />
-    <Compile Include="Src\Gui\SetupViewMenuBuilder.cs" />
     <Compile Include="Src\Gui\WixPackageFilesTreeView.cs" />
     <Compile Include="Src\Commands\AddElementCommand.cs" />
     <Compile Include="Src\Commands\RemoveElementCommand.cs" />
