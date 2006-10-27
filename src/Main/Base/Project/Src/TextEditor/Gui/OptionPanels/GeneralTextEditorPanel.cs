@@ -31,36 +31,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 	{
 		int encoding = Encoding.UTF8.CodePage;
 		
-		class FontDescriptor
-		{
-			FontFamily fontFamily;
-			internal string Name;
-			internal bool IsMonospaced;
-			
-			public FontDescriptor(FontFamily fontFamily)
-			{
-				this.fontFamily = fontFamily;
-				this.Name = fontFamily.Name;
-			}
-			
-			internal void DetectMonospaced(Graphics g)
-			{
-				this.IsMonospaced = DetectMonospaced(g, fontFamily);
-			}
-			
-			static bool DetectMonospaced(Graphics g, FontFamily fontFamily)
-			{
-				using (Font f = new Font(fontFamily, 10)) {
-					// determine if the length of i == m because I see no other way of
-					// getting if a font is monospaced or not.
-					int w1 = TextRenderer.MeasureText("i.", f).Width;
-					int w2 = TextRenderer.MeasureText("mw", f).Width;
-					return w1 == w2;
-				}
-			}
-		}
-		
 		ComboBox fontListComboBox, fontSizeComboBox;
+		FontSelectionPanelHelper helper;
 		
 		public override void LoadPanelContents()
 		{
@@ -92,134 +64,33 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			for (int i = 6; i <= 24; ++i) {
 				fontSizeComboBox.Items.Add(i);
 			}
+			
 			fontSizeComboBox.TextChanged += new EventHandler(UpdateFontPreviewLabel);
 			fontSizeComboBox.Enabled = false;
 			
 			fontListComboBox.Enabled = false;
 			fontListComboBox.TextChanged += new EventHandler(UpdateFontPreviewLabel);
 			fontListComboBox.SelectedIndexChanged += new EventHandler(UpdateFontPreviewLabel);
-			fontListComboBox.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.MeasureComboBoxItem);
-			fontListComboBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ComboBoxDrawItem);
 			
-			boldComboBoxFont = new Font(ControlDictionary["fontListComboBox"].Font, FontStyle.Bold);
+			Font currentFont = FontSelectionPanel.ParseFont(((Properties)CustomizationObject).Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString()).ToString());
+			helper = new FontSelectionPanelHelper(fontSizeComboBox, fontListComboBox, currentFont);
 			
-//			GeneralTextEditorPanel.selectedFont = ParseFont(ControlDictionary["fontNameDisplayTextBox"].Text);
-//
-//			ControlDictionary["browseButton"].Click += new EventHandler(SelectFontEvent);
+			fontListComboBox.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(helper.MeasureComboBoxItem);
+			fontListComboBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(helper.ComboBoxDrawItem);
+			
 			UpdateFontPreviewLabel(null, null);
-			
-			Thread thread = new Thread(DetectMonospacedThread);
-			thread.IsBackground = true;
-			thread.Start();
-		}
-		
-		void DetectMonospacedThread()
-		{
-			Thread.Sleep(0); // first allow UI thread to do some work
-			DebugTimer.Start();
-			InstalledFontCollection installedFontCollection = new InstalledFontCollection();
-			Font currentFont = ParseFont(((Properties)CustomizationObject).Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString()).ToString());
-			List<FontDescriptor> fonts = new List<FontDescriptor>();
-			
-			int index = 0;
-			foreach (FontFamily fontFamily in installedFontCollection.Families) {
-				if (fontFamily.IsStyleAvailable(FontStyle.Regular) && fontFamily.IsStyleAvailable(FontStyle.Bold)  && fontFamily.IsStyleAvailable(FontStyle.Italic)) {
-					if (fontFamily.Name == currentFont.Name) {
-						index = fonts.Count;
-					}
-					fonts.Add(new FontDescriptor(fontFamily));
-				}
-			}
-			DebugTimer.Stop("Getting installed fonts");
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					fontListComboBox.Items.AddRange(fonts.ToArray());
-					fontListComboBox.SelectedIndex = index;
-					fontListComboBox.Enabled = true;
-					fontSizeComboBox.Text = currentFont.Size.ToString();
-					fontSizeComboBox.Enabled = true;
-				});
-			DebugTimer.Start();
-			using (Bitmap newBitmap = new Bitmap(1, 1)) {
-				using (Graphics g  = Graphics.FromImage(newBitmap)) {
-					foreach (FontDescriptor fd in fonts) {
-						fd.DetectMonospaced(g);
-					}
-				}
-			}
-			DebugTimer.Stop("Detect Monospaced");
-			fontListComboBox.Invalidate();
-		}
-		
-		void MeasureComboBoxItem(object sender, System.Windows.Forms.MeasureItemEventArgs e)
-		{
-			ComboBox comboBox = (ComboBox)sender;
-			if (e.Index >= 0) {
-				FontDescriptor fontDescriptor = (FontDescriptor)comboBox.Items[e.Index];
-				SizeF size = e.Graphics.MeasureString(fontDescriptor.Name, comboBox.Font);
-				e.ItemWidth  = (int)size.Width;
-				e.ItemHeight = (int)comboBox.Font.Height;
-			}
-		}
-		
-		static StringFormat drawStringFormat = new StringFormat(StringFormatFlags.NoWrap);
-		static Font         boldComboBoxFont;
-		
-		void ComboBoxDrawItem(object sender, System.Windows.Forms.DrawItemEventArgs e)
-		{
-			ComboBox comboBox = (ComboBox)sender;
-			e.DrawBackground();
-			
-			Rectangle drawingRect = new Rectangle(e.Bounds.X,
-			                                      e.Bounds.Y,
-			                                      e.Bounds.Width,
-			                                      e.Bounds.Height);
-			
-			Brush drawItemBrush = SystemBrushes.WindowText;
-			if ((e.State & DrawItemState.Selected) == DrawItemState.Selected) {
-				drawItemBrush = SystemBrushes.HighlightText;
-			}
-			
-			if (comboBox.Enabled == false) {
-				e.Graphics.DrawString(ResourceService.GetString("ICSharpCode.SharpDevelop.Gui.Pads.ClassScout.LoadingNode"),
-				                      comboBox.Font,
-				                      drawItemBrush,
-				                      drawingRect,
-				                      drawStringFormat);
-			} else if (e.Index >= 0) {
-				FontDescriptor fontDescriptor = (FontDescriptor)comboBox.Items[e.Index];
-				e.Graphics.DrawString(fontDescriptor.Name,
-				                      fontDescriptor.IsMonospaced ? boldComboBoxFont : comboBox.Font,
-				                      drawItemBrush,
-				                      drawingRect,
-				                      drawStringFormat);
-			}
-			e.DrawFocusRectangle();
+			helper.StartThread();
 		}
 		
 		Font CurrentFont {
 			get {
-				if (!fontListComboBox.Enabled)
-					return null;
-				int fontSize = 10;
-				try {
-					fontSize = Math.Max(6, Int32.Parse(ControlDictionary["fontSizeComboBox"].Text));
-				} catch (Exception) {}
-				
-				FontDescriptor fontDescriptor = (FontDescriptor)fontListComboBox.Items[fontListComboBox.SelectedIndex];
-				
-				return new Font(fontDescriptor.Name,
-				                fontSize);
+				return helper.GetSelectedFont();
 			}
 		}
 		
 		void UpdateFontPreviewLabel(object sender, EventArgs e)
 		{
-			Font currentFont = CurrentFont;
-			ControlDictionary["fontPreviewLabel"].Visible = currentFont != null;
-			if (currentFont != null) {
-				ControlDictionary["fontPreviewLabel"].Font = currentFont;
-			}
+			helper.UpdateFontPreviewLabel(ControlDictionary["fontPreviewLabel"]);
 		}
 		
 		public override bool StorePanelContents()
