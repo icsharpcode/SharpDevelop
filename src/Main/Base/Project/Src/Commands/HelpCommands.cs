@@ -59,17 +59,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 	
-	public class ViewTipOfTheDay : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			using (TipOfTheDayDialog totdd = new TipOfTheDayDialog()) {
-				totdd.Owner = (Form)WorkbenchSingleton.Workbench;
-				totdd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
-			}
-		}
-	}
-	
 	public class AboutSharpDevelop : AbstractMenuCommand
 	{
 		public override void Run()

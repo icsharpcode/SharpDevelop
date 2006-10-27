@@ -161,9 +161,6 @@
     <Compile Include="Src\Gui\Dialogs\TabbedOptions.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\TipOfTheDay.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\TreeViewOptions.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -19,23 +19,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		const string workbenchMemento = "WorkbenchMemento";
 		
-		public bool AllowTipOfTheDay = true;
-		public bool TipOfTheDayDefault = true;
-		
-		/// <remarks>
-		/// The worst workaround in the whole project
-		/// </remarks>
-		void ShowTipOfTheDay(object sender, EventArgs e)
-		{
-			Application.Idle -= ShowTipOfTheDay;
-			
-			// show tip of the day
-			if (PropertyService.Get("ShowTipsAtStartup", TipOfTheDayDefault)) {
-				ViewTipOfTheDay dview = new ViewTipOfTheDay();
-				dview.Run();
-			}
-		}
-		
 		class FormKeyHandler : IMessageFilter
 		{
 			const int keyPressedMessage          = 0x100;
@@ -96,10 +79,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			Form f = (Form)WorkbenchSingleton.Workbench;
 			f.Show();
-			
-			if (AllowTipOfTheDay) {
-				Application.Idle += ShowTipOfTheDay;
-			}
 			
 			bool didLoadCombineOrFile = false;
 			

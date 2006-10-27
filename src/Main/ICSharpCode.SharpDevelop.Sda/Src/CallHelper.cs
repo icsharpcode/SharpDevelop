@@ -117,7 +117,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 			// finally start the workbench.
 			try {
 				StartWorkbenchCommand wbc = new StartWorkbenchCommand();
-				wbc.AllowTipOfTheDay = wbSettings.UseTipOfTheDay;
 				callback.BeforeRunWorkbench();
 				if (Debugger.IsAttached) {
 					wbc.Run(wbSettings.InitialFileList);
