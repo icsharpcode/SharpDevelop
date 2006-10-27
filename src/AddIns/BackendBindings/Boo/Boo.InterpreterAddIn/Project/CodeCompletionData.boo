@@ -15,6 +15,7 @@ import ICSharpCode.TextEditor.Actions
 import ICSharpCode.TextEditor.Gui.CompletionWindow
 import Boo.Lang.Interpreter
 import Boo.Lang.Compiler.TypeSystem
+import ICSharpCode.SharpDevelop
 
 internal class AbstractCompletionData(ICompletionData, IComparable):
 	Priority as double:

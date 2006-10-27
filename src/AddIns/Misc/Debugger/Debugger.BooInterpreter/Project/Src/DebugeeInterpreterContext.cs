@@ -17,6 +17,7 @@ using Debugger.Wrappers.MetaData;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace Debugger
 {
