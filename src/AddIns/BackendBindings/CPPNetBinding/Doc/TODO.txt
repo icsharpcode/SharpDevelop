@@ -1,3 +1,0 @@
-- dependencies should be maintained during editing
-- folding
-- autocomplete

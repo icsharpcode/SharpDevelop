@@ -8,7 +8,6 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -226,7 +225,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			BuiltinListSelectedIndexChanged(this, EventArgs.Empty);
 		}
 		
-		ArrayList errors = new ArrayList();
+		List<ValidationEventArgs> errors = new List<ValidationEventArgs>();
 		
 		private SchemeNode LoadFile(XmlTextReader reader, bool userList)
 		{

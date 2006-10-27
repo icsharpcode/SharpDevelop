@@ -7,7 +7,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.TextEditor.Undo
 {
@@ -17,7 +17,7 @@ namespace ICSharpCode.TextEditor.Undo
 	/// </summary>
 	public class UndoQueue : IUndoableOperation
 	{
-		ArrayList undolist = new ArrayList();
+		List<IUndoableOperation> undolist = new List<IUndoableOperation>();
 		
 		/// <summary>
 		/// </summary>
@@ -38,14 +38,14 @@ namespace ICSharpCode.TextEditor.Undo
 		public void Undo()
 		{
 			for (int i = 0; i < undolist.Count; ++i) {
-				((IUndoableOperation)undolist[i]).Undo();
+				undolist[i].Undo();
 			}
 		}
 		
 		public void Redo()
 		{
 			for (int i = undolist.Count - 1 ; i >= 0 ; --i) {
-				((IUndoableOperation)undolist[i]).Redo();
+				undolist[i].Redo();
 			}
 		}		
 	}

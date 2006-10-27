@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using ICSharpCode.TextEditor;
@@ -130,7 +130,7 @@ namespace CSharpBinding.FormattingStrategy
 		
 		FileStream f;
 		StreamReader r;
-		ArrayList lines = new ArrayList();
+		List<string> lines = new List<string>();
 		bool dirty = false;
 		
 		string filename;

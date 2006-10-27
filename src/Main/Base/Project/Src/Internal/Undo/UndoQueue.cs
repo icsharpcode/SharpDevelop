@@ -7,7 +7,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Internal.Undo
 {
@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Undo
 	/// </summary>
 	public class UndoQueue : IUndoableOperation
 	{
-		ArrayList undolist = new ArrayList();
+		List<IUndoableOperation> undolist = new List<IUndoableOperation>();
 		
 		public UndoQueue(UndoStack stack, int numops)
 		{
@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Undo
 		public void Undo()
 		{
 			for (int i = 0; i < undolist.Count; ++i) {
-				((IUndoableOperation)undolist[i]).Undo();
+				undolist[i].Undo();
 			}
 		}
 		

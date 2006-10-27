@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Drawing.Design;
 using System.IO;
 using System.Reflection;
@@ -23,7 +23,7 @@ namespace ICSharpCode.FormsDesigner
 	public class ToolboxProvider
 	{
 		static ICSharpCode.FormsDesigner.Services.ToolboxService toolboxService = null;
-		public static ArrayList SideTabs = new ArrayList();
+		public static List<AxSideTab> SideTabs = new List<AxSideTab>();
 		
 		static ComponentLibraryLoader componentLibraryLoader = new ComponentLibraryLoader();
 		

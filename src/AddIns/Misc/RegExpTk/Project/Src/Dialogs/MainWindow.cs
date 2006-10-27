@@ -9,7 +9,7 @@
 // the compile stuff
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Drawing;
@@ -66,7 +66,7 @@ namespace Plugins.RegExpTk {
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.RegExpTkMainForm.xfrm"));
 			
-			ArrayList quickies = new ArrayList();
+			List<QuickInsert> quickies = new List<QuickInsert>();
 			quickies.Add(new QuickInsert("${res:RegExpTk.RegExpMenu.UngreedyStar}", "*?"));
 			quickies.Add(new QuickInsert("${res:RegExpTk.RegExpMenu.WordCharacter}", "\\w"));
 			quickies.Add(new QuickInsert("${res:RegExpTk.RegExpMenu.NonWordCharacter}", "\\W"));

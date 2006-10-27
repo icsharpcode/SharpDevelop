@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -85,27 +85,27 @@ namespace ICSharpCode.PInvokeAddIn
         	XmlDocument doc = new XmlDocument();
         	doc.Load(configFile);
         	
-        	ArrayList moduleArrayList = new ArrayList();
-        	ArrayList functionArrayList = new ArrayList();
+        	List<string> moduleList = new List<string>();
+        	List<string> functionList = new List<string>();
         	
         	foreach(XmlElement moduleElement in doc.DocumentElement.SelectNodes("//module"))
         	{
         		XmlAttribute moduleName = (XmlAttribute)moduleElement.SelectSingleNode("@name");
-        		moduleArrayList.Add(moduleName.Value);
+        		moduleList.Add(moduleName.Value);
         		
         		foreach(XmlAttribute functionName in moduleElement.SelectNodes("function/@name"))
         		{
-        			functionArrayList.Add(functionName.Value);
+        			functionList.Add(functionName.Value);
         		}
         	}
 
-        	moduleNames = new string[moduleArrayList.Count];
-        	moduleArrayList.Sort();
-        	moduleArrayList.CopyTo(moduleNames);
+        	moduleNames = new string[moduleList.Count];
+        	moduleList.Sort();
+        	moduleList.CopyTo(moduleNames);
         	
-        	functionNames = new string[functionArrayList.Count];
-        	functionArrayList.Sort();
-        	functionArrayList.CopyTo(functionNames);
+        	functionNames = new string[functionList.Count];
+        	functionList.Sort();
+        	functionList.CopyTo(functionNames);
         }
 	}
 }

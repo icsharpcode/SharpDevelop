@@ -7,7 +7,7 @@
 
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
@@ -133,13 +133,11 @@ namespace ICSharpCode.StartPage
 			set { m_bShowContentBar = value; }
 		}
 		
-		private ArrayList TopMenu;
-		private ArrayList LeftMenu;
+		private List<MenuItem> TopMenu;
+		private List<MenuItem> LeftMenu;
 
 		public virtual void PopulateTopMenu()
 		{
-			
-			
 			TopMenu.Add(new MenuItem(StringParser.Parse("${res:StartPage.StartMenu.Name}"),      "startpage://Start"));
 			TopMenu.Add(new MenuItem(StringParser.Parse("${res:StartPage.ChangeLogMenu.Name}"),  "startpage://ChangeLog"));
 			TopMenu.Add(new MenuItem(StringParser.Parse("${res:StartPage.AuthorsMenu.Name}"),    "startpage://Authors"));
@@ -148,11 +146,6 @@ namespace ICSharpCode.StartPage
 		
 		public virtual void PopulateLeftMenu()
 		{
-//			LeftMenu.Add(new MenuItem("Start",       "/OpenSource/SD/AnnouncementList.asp"));
-//			LeftMenu.Add(new MenuItem("ChangeLog",   "/OpenSource/SD/WhatsNew.asp"));
-//			LeftMenu.Add(new MenuItem("Authors",     "/OpenSource/SD/NewsHistory.asp"));
-//			LeftMenu.Add(new MenuItem("Readme",      "/OpenSource/SD/NewsHistory.asp"));
-//			LeftMenu.Add(new MenuItem("Help Wanted", "/pub/relations/"));
 		}
 		
 		public string TopMenuSelectedItem
@@ -194,11 +187,11 @@ namespace ICSharpCode.StartPage
 		{
 			ColorScheme = ICSharpCode.StartPage.ColorScheme.brown;
 			
-			TopMenu = new ArrayList();
+			TopMenu = new List<MenuItem>();
 			PopulateTopMenu();
 			TopMenuSelectedItem = "Home";
 
-			LeftMenu = new ArrayList();
+			LeftMenu = new List<MenuItem>();
 			PopulateLeftMenu();
 			LeftMenuSelectedItem = "";
 			

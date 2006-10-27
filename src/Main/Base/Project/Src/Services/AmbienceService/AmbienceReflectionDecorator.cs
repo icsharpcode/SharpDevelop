@@ -88,47 +88,6 @@ namespace ICSharpCode.Core
 			this.conv = conv;
 		}
 		
-		/*
-		public string Convert(Type type)
-		{
-			return conv.Convert(new ReflectionClass(null, type, type.FullName.Replace('+', '.'), null));
-		}
-		
-		public string Convert(FieldInfo field)
-		{
-			return conv.Convert(new ReflectionField(field, null));
-		}
-		
-		public string Convert(PropertyInfo property)
-		{
-			return conv.Convert(new ReflectionProperty(property, null));
-		}
-		
-		public string Convert(EventInfo e)
-		{
-			return conv.Convert(new ReflectionEvent(e, null));
-		}
-		
-		public string Convert(MethodBase m)
-		{
-			return conv.Convert(new ReflectionMethod(m, null));
-		}
-		
-		public string Convert(ParameterInfo param)
-		{
-			return conv.Convert(new ReflectionParameter(param, null));
-		}
-		*/
-		
-		public ArrayList LinkArrayList {
-			get {
-				return conv.LinkArrayList;
-			}
-			set {
-				conv.LinkArrayList = value;
-			}
-		}
-		
 		public string WrapAttribute(string attribute)
 		{
 			return conv.WrapAttribute(attribute);

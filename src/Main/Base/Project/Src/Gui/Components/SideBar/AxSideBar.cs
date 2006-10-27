@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -929,15 +929,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public class SideTabCollection : ICollection, IEnumerable
+		public class SideTabCollection : ICollection<AxSideTab>, IEnumerable<AxSideTab>
 		{
-			ArrayList list = new ArrayList();
+			List<AxSideTab> list = new List<AxSideTab>();
 			AxSideTab dragOverTab;
 			AxSideBar sideBar;
 			
 			public AxSideTab this[int index] {
 				get {
-					return (AxSideTab)list[index];
+					return list[index];
 				}
 				set {
 					list[index] = value;
@@ -980,15 +980,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			public virtual AxSideTab Add(AxSideTab item)
+			public virtual void Add(AxSideTab item)
 			{
 				list.Add(item);
-				return item;
 			}
 			
 			public virtual AxSideTab Add(string name)
 			{
-				return Add(sideBar.SideTabFactory.CreateSideTab(sideBar, name));
+				AxSideTab tab = sideBar.SideTabFactory.CreateSideTab(sideBar, name);
+				Add(tab);
+				return tab;
 			}
 			
 			public virtual void Clear()
@@ -1001,7 +1002,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return list.Contains(item);
 			}
 			
-			public IEnumerator GetEnumerator()
+			public IEnumerator<AxSideTab> GetEnumerator()
+			{
+				return list.GetEnumerator();
+			}
+			
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 			{
 				return list.GetEnumerator();
 			}
@@ -1013,7 +1019,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			public void CopyTo(Array dest, int index)
 			{
-				list.CopyTo(dest, index);
+				list.CopyTo((AxSideTab[])dest, index);
 			}
 			
 			public virtual AxSideTab Insert(int index, AxSideTab item)
@@ -1027,7 +1033,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return Insert(index, sideBar.SideTabFactory.CreateSideTab(sideBar, name));
 			}
 			
-			public virtual void Remove(AxSideTab item)
+			public bool Remove(AxSideTab item)
 			{
 				if (item == sideBar.ActiveTab) {
 					int index =  IndexOf(item);
@@ -1039,19 +1045,30 @@ namespace ICSharpCode.SharpDevelop.Gui
 						sideBar.ActiveTab = null;
 					}
 				}
-				list.Remove(item);
+				return list.Remove(item);
 			}
 			
 			public virtual void RemoveAt(int index)
 			{
 				list.RemoveAt(index);
 			}
+			
+			public bool IsReadOnly {
+				get {
+					return false;
+				}
+			}
+			
+			public void CopyTo(AxSideTab[] array, int arrayIndex)
+			{
+				list.CopyTo(array, arrayIndex);
+			}
 		}
 	}
 	
 	public class SpecialDataObject : System.Windows.Forms.IDataObject
 	{
-		ArrayList dataObjects = new ArrayList();
+		List<object> dataObjects = new List<object>();
 		public object GetData(string format)
 		{
 			return GetData(format, true);

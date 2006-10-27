@@ -8,7 +8,7 @@
 using System;
 using System.Drawing;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.TextEditor.Undo
 {
@@ -17,8 +17,8 @@ namespace ICSharpCode.TextEditor.Undo
 	/// </summary>
 	public class UndoStack
 	{
-		Stack undostack = new Stack();
-		Stack redostack = new Stack();
+		Stack<IUndoableOperation> undostack = new Stack<IUndoableOperation>();
+		Stack<IUndoableOperation> redostack = new Stack<IUndoableOperation>();
 		
 		public TextEditorControlBase TextEditorControl = null;
 		
@@ -36,7 +36,7 @@ namespace ICSharpCode.TextEditor.Undo
 		/// <summary>
 		/// This property is EXCLUSIVELY for the UndoQueue class, don't USE it
 		/// </summary>
-		internal Stack _UndoStack {
+		internal Stack<IUndoableOperation> _UndoStack {
 			get {
 				return undostack;
 			}

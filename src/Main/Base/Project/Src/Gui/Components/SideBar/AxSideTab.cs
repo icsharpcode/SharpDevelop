@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -400,9 +400,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 
-		public class SideTabItemCollection : ICollection, IEnumerable
+		public class SideTabItemCollection : ICollection<AxSideTabItem>, IEnumerable<AxSideTabItem>
 		{
-			ArrayList list = new ArrayList();
+			List<AxSideTabItem> list = new List<AxSideTabItem>();
 			ISideTabItemFactory sideTabItemFactory = new DefaultSideTabItemFactory();
 			
 			public event SideTabItemEventHandler ItemRemoved;
@@ -457,12 +457,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			public virtual AxSideTabItem Add(AxSideTabItem item)
+			public virtual void Add(AxSideTabItem item)
 			{
 				list.Add(item);
-				return item;
 			}
-			
+						
 			public virtual AxSideTabItem Add(string name, object content)
 			{
 				return Add(name, content, -1);
@@ -472,7 +471,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			{
 				AxSideTabItem item = sideTabItemFactory.CreateSideTabItem(name, imageIndex);
 				item.Tag = content;
-				return Add(item);
+				Add(item);
+				return item;
 			}
 			
 			public virtual void Clear()
@@ -485,7 +485,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return list.Contains(item);
 			}
 			
-			public IEnumerator GetEnumerator()
+			public IEnumerator<AxSideTabItem> GetEnumerator()
+			{
+				return list.GetEnumerator();
+			}
+			
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 			{
 				return list.GetEnumerator();
 			}
@@ -497,7 +502,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			public void CopyTo(Array dest, int index)
 			{
-				list.CopyTo(dest, index);
+				list.CopyTo((AxSideTabItem[])dest, index);
 			}
 			
 			public virtual AxSideTabItem Insert(int index, AxSideTabItem item)
@@ -518,10 +523,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return Insert(index, item);
 			}
 			
-			public virtual void Remove(AxSideTabItem item)
+			public virtual bool Remove(AxSideTabItem item)
 			{
-				list.Remove(item);
+				bool r = list.Remove(item);
 				OnItemRemoved(item);
+				return r;
 			}
 			
 			public virtual void RemoveAt(int index)
@@ -539,6 +545,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (ItemRemoved != null) {
 					ItemRemoved(this, new SideTabItemEventArgs(item));
 				}
+			}
+			
+			public bool IsReadOnly {
+				get {
+					return false;
+				}
+			}
+			
+			public void CopyTo(AxSideTabItem[] array, int arrayIndex)
+			{
+				throw new NotImplementedException();
 			}
 		}
 	}

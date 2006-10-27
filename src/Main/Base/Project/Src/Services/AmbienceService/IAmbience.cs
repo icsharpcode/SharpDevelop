@@ -21,7 +21,6 @@ namespace ICSharpCode.Core
 		ShowModifiers          = 4,
 		ShowInheritanceList    = 8,
 		IncludeHTMLMarkup      = 32,
-		UseLinkArrayList       = 64,
 		QualifiedNamesOnlyForReturnTypes = 128,
 		IncludeBodies                    = 256,
 		ShowReturnType                   = 512,
@@ -37,13 +36,6 @@ namespace ICSharpCode.Core
 		      ShowModifiers | 
 		      ShowReturnType |
 		      ShowInheritanceList,
-		      
-		AssemblyScoutDefaults = StandardConversionFlags |
-		                        ShowAccessibility |	
-		                        QualifiedNamesOnlyForReturnTypes |
-		                        IncludeHTMLMarkup |
-		                        ShowReturnType|
-		                        UseLinkArrayList,
 	}
 	
 	public interface IAmbience
@@ -72,7 +64,5 @@ namespace ICSharpCode.Core
 		string WrapComment(string comment);
 		
 		string GetIntrinsicTypeName(string dotNetTypeName);
-		
-		ArrayList LinkArrayList { get; set; }
 	}
 }

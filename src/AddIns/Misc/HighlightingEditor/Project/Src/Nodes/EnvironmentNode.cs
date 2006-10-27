@@ -29,9 +29,10 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		
 		public EnvironmentNode(XmlElement el)
 		{
-			ArrayList envColors            = new ArrayList();
-			ArrayList envColorNames        = new ArrayList();
-			ArrayList envColorDescriptions = new ArrayList();
+			List<EditorHighlightColor> envColors = new List<EditorHighlightColor>();
+			List<string> envColorNames = new List<string>();
+			List<string> envColorDescriptions = new List<string>();
+			
 			if (el != null) {
 				foreach (XmlNode node in el.ChildNodes) {
 					if (node is XmlElement) {
@@ -55,9 +56,9 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 				}
 			}
 			
-			EnvironmentNode.ColorNames = (string[])envColorNames.ToArray(typeof(string));
-			this.ColorDescs = (string[])envColorDescriptions.ToArray(typeof(string));
-			this.Colors     = (EditorHighlightColor[])envColors.ToArray(typeof(EditorHighlightColor));
+			EnvironmentNode.ColorNames = envColorNames.ToArray();
+			this.ColorDescs = envColorDescriptions.ToArray();
+			this.Colors = envColors.ToArray();
 			StringParser.Parse(ColorDescs);
 			
 			Text = ResNodeName("EnvironmentColors");

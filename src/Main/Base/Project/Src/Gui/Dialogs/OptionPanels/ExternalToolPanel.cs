@@ -7,7 +7,7 @@
 
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
@@ -146,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public override bool StorePanelContents()
 		{
-			ArrayList newlist = new ArrayList();
+			List<ExternalTool> newlist = new List<ExternalTool>();
 			foreach (ExternalTool tool in ((ListBox)ControlDictionary["toolListBox"]).Items) {
 				if (!FileUtility.IsValidFileName(tool.Command)) {
 					MessageService.ShowError(String.Format("The command of tool \"{0}\" is invalid.", tool.MenuCommand));

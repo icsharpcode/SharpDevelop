@@ -7,7 +7,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Internal.Undo
 {
@@ -16,8 +16,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Undo
 	/// </summary>
 	public class UndoStack
 	{
-		Stack undostack = new Stack();
-		Stack redostack = new Stack();
+		Stack<IUndoableOperation> undostack = new Stack<IUndoableOperation>();
+		Stack<IUndoableOperation> redostack = new Stack<IUndoableOperation>();
 		
 		public event EventHandler ActionUndone;
 		public event EventHandler ActionRedone;
@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Undo
 		/// <summary>
 		/// This property is EXCLUSIVELY for the UndoQueue class, don't USE it
 		/// </summary>
-		internal Stack _UndoStack {
+		internal Stack<IUndoableOperation> _UndoStack {
 			get {
 				return undostack;
 			}

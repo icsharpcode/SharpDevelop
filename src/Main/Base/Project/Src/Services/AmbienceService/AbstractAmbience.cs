@@ -66,12 +66,6 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public bool UseLinkArrayList {
-			get {
-				return (conversionFlags & ConversionFlags.UseLinkArrayList) == ConversionFlags.UseLinkArrayList;
-			}
-		}
-		
 		public bool UseFullyQualifiedMemberNames {
 			get {
 				return UseFullyQualifiedNames && !((conversionFlags & ConversionFlags.QualifiedNamesOnlyForReturnTypes) == ConversionFlags.QualifiedNamesOnlyForReturnTypes);
