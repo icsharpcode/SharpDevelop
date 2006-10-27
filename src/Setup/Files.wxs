@@ -442,7 +442,6 @@
 						<Directory Id="DataFolder" Name="data">
 							<Directory Id="ConversionStyleSheetsFolder" LongName="ConversionStyleSheets" Name="convss">
 								<Component Guid="EEC59BAB-23BE-4FD3-8788-4A6023A6B394" Id="ConversionStyleSheetFiles" DiskId="1">
-									<File Source="..\..\data\ConversionStyleSheets\ConvertPrjx10to11.xsl" Name="CONVER_1.XSL" Id="ConvertPrjx10to11.xsl" LongName="ConvertPrjx10to11.xsl" />
 									<File Source="..\..\data\ConversionStyleSheets\CSharp_prjx2csproj.xsl" Name="CSHARP_1.XSL" Id="CSharp_prjx2csproj.xsl" LongName="CSharp_prjx2csproj.xsl" />
 									<File Source="..\..\data\ConversionStyleSheets\CSharp_prjx2csproj_user.xsl" Name="CSHARP_2.XSL" Id="CSharp_prjx2csproj_user.xsl" LongName="CSharp_prjx2csproj_user.xsl" />
 									<File Source="..\..\data\ConversionStyleSheets\ShowChangeLog.xsl" Name="SHOWCH_1.XSL" Id="ShowChangeLog.xsl" LongName="ShowChangeLog.xsl" />
@@ -456,7 +455,6 @@
 								<Component Guid="A716BD06-421C-4379-B99F-3E7874C1FDC7" Id="SyntaxModesFiles" DiskId="1">
 									<File Source="..\..\data\modes\C64CSharp.xshd" Name="C64CSH_1.XSH" Id="C64CSharp.xshd" LongName="C64CSharp.xshd" />
 									<File Source="..\..\data\modes\CSharp-Mode-VSEnh.xshd" Name="CSHARP_1.XSH" Id="CSharp_Mode_VSEnh.xshd" LongName="CSharp-Mode-VSEnh.xshd" />
-									<File Source="..\..\data\modes\Jay-Mode.xshd" Name="JAY-MODE.XSH" Id="Jay_Mode.xshd" LongName="Jay-Mode.xshd" />
 								</Component>
 							</Directory>
 							<Directory Id="OptionsFolder" Name="options">
@@ -474,7 +472,6 @@
 									<File Source="..\..\data\options\SharpDevelop-templates.xml" Name="SHARPD_2.XML" Id="SharpDevelop_templates.xml" LongName="SharpDevelop-templates.xml" />
 									<File Source="..\..\data\options\SharpDevelop-tools.xml" Name="SHARPD_3.XML" Id="SharpDevelop_tools.xml" LongName="SharpDevelop-tools.xml" />
 									<File Source="..\..\data\options\StandardHeader.xml" Name="STANDA_1.XML" Id="StandardHeader.xml" LongName="StandardHeader.xml" />
-									<File Source="..\..\data\options\TipsOfTheDay.xml" Name="TIPSOF_1.XML" Id="TipsOfTheDay.xml" LongName="TipsOfTheDay.xml" />
 								</Component>
 							</Directory>
 							<Directory Id="ResourcesFolder" LongName="resources" Name="resource">
