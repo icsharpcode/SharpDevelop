@@ -116,6 +116,7 @@ namespace ICSharpCode.TextEditor
 		}
 		
 		[Browsable(true)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
 		public override string Text {
 			get {
 				return Document.TextContent;
