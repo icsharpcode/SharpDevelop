@@ -710,6 +710,7 @@
     <Compile Include="Src\Gui\Dialogs\SharpDevelopColorDialog.cs" />
     <Compile Include="Src\Project\MSBuildImport.cs" />
     <Compile Include="Src\Util\Linq.cs" />
+    <Compile Include="Src\Util\DebugTimer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
