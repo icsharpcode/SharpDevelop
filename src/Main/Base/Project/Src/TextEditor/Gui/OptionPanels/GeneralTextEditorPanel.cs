@@ -115,6 +115,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 		
 		void DetectMonospacedThread()
 		{
+			Thread.Sleep(0); // first allow UI thread to do some work
 			DebugTimer.Start();
 			InstalledFontCollection installedFontCollection = new InstalledFontCollection();
 			Font currentFont = ParseFont(((Properties)CustomizationObject).Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString()).ToString());
@@ -168,18 +169,25 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 		{
 			ComboBox comboBox = (ComboBox)sender;
 			e.DrawBackground();
-			if (e.Index >= 0) {
+			
+			Rectangle drawingRect = new Rectangle(e.Bounds.X,
+			                                      e.Bounds.Y,
+			                                      e.Bounds.Width,
+			                                      e.Bounds.Height);
+			
+			Brush drawItemBrush = SystemBrushes.WindowText;
+			if ((e.State & DrawItemState.Selected) == DrawItemState.Selected) {
+				drawItemBrush = SystemBrushes.HighlightText;
+			}
+			
+			if (comboBox.Enabled == false) {
+				e.Graphics.DrawString(ResourceService.GetString("ICSharpCode.SharpDevelop.Gui.Pads.ClassScout.LoadingNode"),
+				                      comboBox.Font,
+				                      drawItemBrush,
+				                      drawingRect,
+				                      drawStringFormat);
+			} else if (e.Index >= 0) {
 				FontDescriptor fontDescriptor = (FontDescriptor)comboBox.Items[e.Index];
-				Rectangle drawingRect = new Rectangle(e.Bounds.X,
-				                                      e.Bounds.Y,
-				                                      e.Bounds.Width,
-				                                      e.Bounds.Height);
-				
-				Brush drawItemBrush = SystemBrushes.WindowText;
-				if ((e.State & DrawItemState.Selected) == DrawItemState.Selected) {
-					drawItemBrush = SystemBrushes.HighlightText;
-				}
-				
 				e.Graphics.DrawString(fontDescriptor.Name,
 				                      fontDescriptor.IsMonospaced ? boldComboBoxFont : comboBox.Font,
 				                      drawItemBrush,

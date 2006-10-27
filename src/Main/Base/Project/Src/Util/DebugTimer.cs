@@ -13,21 +13,31 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop
 {
+	/// <summary>
+	/// Provides static helpers methods that measure time from
+	/// Start() to Stop() and output the timespan to the logging service.
+	/// Calls to DebugTimer are only compiled in debug builds.
+	/// [Conditional("DEBUG")]
+	/// </summary>
 	public static class DebugTimer
 	{
-		static int startTime;
+		[ThreadStatic]
+		static Stopwatch stopWatch;
 		
 		[Conditional("DEBUG")]
 		public static void Start()
 		{
-			startTime = Environment.TickCount;
+			if (stopWatch == null) {
+				stopWatch = new Stopwatch();
+			}
+			stopWatch.Start();
 		}
 		
 		[Conditional("DEBUG")]
 		public static void Stop(string desc)
 		{
-			int stopTime = Environment.TickCount;
-			LoggingService.Debug('"' + desc + "\" took " + (stopTime - startTime) + " ms");
+			stopWatch.Stop();
+			LoggingService.Debug("\"" + desc + "\" took " + (stopWatch.ElapsedMilliseconds) + " ms");
 		}
 	}
 }
