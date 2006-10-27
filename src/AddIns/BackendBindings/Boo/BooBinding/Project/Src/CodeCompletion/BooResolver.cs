@@ -13,7 +13,6 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using AST = Boo.Lang.Compiler.Ast;
-using NRResolver = ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {
@@ -204,7 +203,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return new NamespaceResolveResult(callingClass, callingMember, "");
 			}
 			
-			ResolveResult rr = NRResolver.GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, this.caretLine, this.caretColumn, expressionResult.Expression);
+			ResolveResult rr = CtrlSpaceResolveHelper.GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, this.caretLine, this.caretColumn, expressionResult.Expression);
 			if (rr != null) return rr;
 			
 			AST.Expression expr;
@@ -302,11 +301,11 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return null;
 			if (context == ExpressionContext.Importable) {
 				pc.AddNamespaceContents(result, "", pc.Language, true);
-				NRResolver.AddUsing(result, pc.DefaultImports, pc);
+				CtrlSpaceResolveHelper.AddUsing(result, pc.DefaultImports, pc);
 				return result;
 			}
 			
-			NRResolver.AddContentsFromCalling(result, callingClass, callingMember);
+			CtrlSpaceResolveHelper.AddContentsFromCalling(result, callingClass, callingMember);
 			AddImportedNamespaceContents(result);
 			
 			if (BooProject.BooCompilerPC != null) {
@@ -359,7 +358,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (c != null) list.Add(c);
 			}
 			list.Add(new DuckClass(cu));
-			NRResolver.AddImportedNamespaceContents(list, cu, callingClass);
+			CtrlSpaceResolveHelper.AddImportedNamespaceContents(list, cu, callingClass);
 		}
 		
 		internal class DuckClass : DefaultClass

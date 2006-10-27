@@ -10,11 +10,12 @@
 	<Runtime>
 		<Import assembly = "CSharpBinding.dll"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop.Dom"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
 		<Class id    = "C#"
-		       class = "ICSharpCode.Core.CSharpAmbience"/>
+		       class = "ICSharpCode.SharpDevelop.Dom.CSharp.CSharpAmbience"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert">

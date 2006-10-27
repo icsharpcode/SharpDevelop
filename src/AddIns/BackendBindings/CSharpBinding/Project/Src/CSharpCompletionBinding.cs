@@ -14,8 +14,9 @@ using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Dom.CSharp;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using AST = ICSharpCode.NRefactory.Ast;
@@ -27,7 +28,7 @@ namespace CSharpBinding
 	{
 		public override bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
 		{
-			Parser.ExpressionFinder ef = new Parser.ExpressionFinder(editor.FileName);
+			CSharpExpressionFinder ef = new CSharpExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
 			ExpressionContext context = null;
 			if (ch == '(') {
@@ -267,7 +268,7 @@ namespace CSharpBinding
 		
 		bool IsInComment(SharpDevelopTextAreaControl editor)
 		{
-			Parser.ExpressionFinder ef = new Parser.ExpressionFinder(editor.FileName);
+			CSharpExpressionFinder ef = new CSharpExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset - 1;
 			return ef.FilterComments(editor.Document.GetText(0, cursor + 1), ref cursor) == null;
 		}
@@ -310,7 +311,7 @@ namespace CSharpBinding
 		
 		bool ShowNewCompletion(SharpDevelopTextAreaControl editor)
 		{
-			Parser.ExpressionFinder ef = new Parser.ExpressionFinder(editor.FileName);
+			CSharpExpressionFinder ef = new CSharpExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
 			ExpressionContext context = ef.FindExpression(editor.Document.GetText(0, cursor) + " T.", cursor + 2).Context;
 			if (context.IsObjectCreation) {

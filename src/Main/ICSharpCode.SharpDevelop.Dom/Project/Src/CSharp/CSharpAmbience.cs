@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision$</version>
+//     <version>$Revision: 1423 $</version>
 // </file>
 
 using System;
@@ -10,96 +10,105 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.Core;
-
-namespace VBNetBinding
+namespace ICSharpCode.SharpDevelop.Dom.CSharp
 {
-	public class VBNetAmbience :  AbstractAmbience
+	public class CSharpAmbience : AbstractAmbience
 	{
 		static string[,] typeConversionList = new string[,] {
-			{"System.String",  "String"},
-			{"System.Single",  "Single"},
-			{"System.Int16",   "Short"},
-			{"System.Void",    "Void"},
-			{"System.Object",  "Object"},
-			{"System.Int64",   "Long"},
-			{"System.Int32",   "Integer"},
-			{"System.Double",  "Double"},
-			{"System.Char",    "Char"},
-			{"System.Boolean", "Boolean"},
-			{"System.Byte",    "Byte"},
-			{"System.Decimal", "Decimal"},
-			{"System.DateTime",  "Date"},
+			{"System.Void",    "void"},
+			{"System.Object",  "object"},
+			{"System.Boolean", "bool"},
+			{"System.Byte",    "byte"},
+			{"System.SByte",   "sbyte"},
+			{"System.Char",    "char"},
+			{"System.Enum",    "enum"},
+			{"System.Int16",   "short"},
+			{"System.Int32",   "int"},
+			{"System.Int64",   "long"},
+			{"System.UInt16",  "ushort"},
+			{"System.UInt32",  "uint"},
+			{"System.UInt64",  "ulong"},
+			{"System.Single",  "float"},
+			{"System.Double",  "double"},
+			{"System.Decimal", "decimal"},
+			{"System.String",  "string"}
 		};
 		
 		static Hashtable typeConversionTable = new Hashtable();
 		
-		static VBNetAmbience()
+		public static Hashtable TypeConversionTable {
+			get {
+				return typeConversionTable;
+			}
+		}
+		
+		static CSharpAmbience instance;
+		
+		public static CSharpAmbience Instance {
+			get {
+				if (instance == null) instance = new CSharpAmbience();
+				return instance;
+			}
+		}
+		
+		static CSharpAmbience()
 		{
 			for (int i = 0; i < typeConversionList.GetLength(0); ++i) {
 				typeConversionTable[typeConversionList[i, 0]] = typeConversionList[i, 1];
 			}
 		}
 		
-		static VBNetAmbience instance;
-		
-		public static VBNetAmbience Instance {
-			get {
-				if (instance == null) instance = new VBNetAmbience();
-				return instance;
-			}
-		}
-		
-		string GetModifier(IDecoration decoration)
+		bool ModifierIsSet(ModifierEnum modifier, ModifierEnum query)
 		{
-			StringBuilder builder = new StringBuilder();
-			
-			if (IncludeHTMLMarkup) {
-				builder.Append("<i>");
-			}
-			
-			if (decoration.IsStatic) {
-				builder.Append("Shared ");
-			}
-			if (decoration.IsAbstract) {
-				builder.Append("MustOverride ");
-			} else if (decoration.IsSealed) {
-				builder.Append("NotOverridable ");
-			} else if (decoration.IsVirtual) {
-				builder.Append("Overridable ");
-			} else if (decoration.IsOverride) {
-				builder.Append("Overrides ");
-			} else if (decoration.IsNew) {
-				builder.Append("Shadows ");
-			}
-			
-			if (IncludeHTMLMarkup) {
-				builder.Append("</i>");
-			}
-			
-			return builder.ToString();
+			return (modifier & query) == query;
 		}
 		
 		public override string Convert(ModifierEnum modifier)
 		{
-			StringBuilder builder = new StringBuilder();
 			if (ShowAccessibility) {
-				if ((modifier & ModifierEnum.Public) == ModifierEnum.Public) {
-					builder.Append("Public");
-				} else if ((modifier & ModifierEnum.Private) == ModifierEnum.Private) {
-					builder.Append("Private");
-				} else if ((modifier & (ModifierEnum.Protected | ModifierEnum.Internal)) == (ModifierEnum.Protected | ModifierEnum.Internal)) {
-					builder.Append("Protected Friend");
-				} else if ((modifier & ModifierEnum.Internal) == ModifierEnum.Internal) {
-					builder.Append("Friend");
-				} else if ((modifier & ModifierEnum.Protected) == ModifierEnum.Protected) {
-					builder.Append("Protected");
+				if (ModifierIsSet(modifier, ModifierEnum.Public)) {
+					return "public ";
+				} else if (ModifierIsSet(modifier, ModifierEnum.Private)) {
+					return "private ";
+				} else if (ModifierIsSet(modifier, ModifierEnum.ProtectedAndInternal)) {
+					return "protected internal ";
+				} else if (ModifierIsSet(modifier, ModifierEnum.Internal)) {
+					return "internal ";
+				} else if (ModifierIsSet(modifier, ModifierEnum.Protected)) {
+					return "protected ";
 				}
-				builder.Append(' ');
 			}
-			return builder.ToString();
+			
+			return string.Empty;
 		}
+		
+		string GetModifier(IDecoration decoration)
+		{
+			string ret = "";
+			
+			if (IncludeHTMLMarkup) {
+				ret += "<i>";
+			}
+			
+			if (decoration.IsStatic) {
+				ret += "static ";
+			} else if (decoration.IsSealed) {
+				ret += "sealed ";
+			} else if (decoration.IsVirtual) {
+				ret += "virtual ";
+			} else if (decoration.IsOverride) {
+				ret += "override ";
+			} else if (decoration.IsNew) {
+				ret += "new ";
+			}
+			
+			if (IncludeHTMLMarkup) {
+				ret += "</i>";
+			}
+			
+			return ret;
+		}
+		
 		
 		public override string Convert(IClass c)
 		{
@@ -113,11 +122,18 @@ namespace VBNetBinding
 			
 			if (ShowModifiers) {
 				if (c.IsSealed) {
-					if (c.ClassType == ClassType.Class) {
-						builder.Append("NotInheritable ");
+					switch (c.ClassType) {
+						case ClassType.Delegate:
+						case ClassType.Struct:
+						case ClassType.Enum:
+							break;
+							
+						default:
+							builder.Append("sealed ");
+							break;
 					}
 				} else if (c.IsAbstract && c.ClassType != ClassType.Interface) {
-					builder.Append("MustInherit ");
+					builder.Append("abstract ");
 				}
 			}
 			
@@ -128,38 +144,31 @@ namespace VBNetBinding
 			if (ShowModifiers) {
 				switch (c.ClassType) {
 					case ClassType.Delegate:
-						builder.Append("Delegate ");
-						if (ShowReturnType) {
-							foreach (IMethod m in c.Methods) {
-								if (m.Name != "Invoke") {
-									continue;
-								}
-								
-								if (m.ReturnType == null || m.ReturnType.FullyQualifiedName == "System.Void") {
-									builder.Append("Sub");
-								} else {
-									builder.Append("Function");
-								}
-							}
-						}
+						builder.Append("delegate");
 						break;
 					case ClassType.Class:
-						builder.Append("Class");
-						break;
 					case ClassType.Module:
-						builder.Append("Module");
+						builder.Append("class");
 						break;
 					case ClassType.Struct:
-						builder.Append("Structure");
+						builder.Append("struct");
 						break;
 					case ClassType.Interface:
-						builder.Append("Interface");
+						builder.Append("interface");
 						break;
 					case ClassType.Enum:
-						builder.Append("Enum");
+						builder.Append("enum");
 						break;
 				}
 				builder.Append(' ');
+			}
+			if (ShowReturnType && c.ClassType == ClassType.Delegate) {
+				foreach(IMethod m in c.Methods) {
+					if (m.Name != "Invoke") continue;
+					
+					builder.Append(Convert(m.ReturnType));
+					builder.Append(' ');
+				}
 			}
 			
 			if (IncludeHTMLMarkup) {
@@ -175,21 +184,20 @@ namespace VBNetBinding
 			if (IncludeHTMLMarkup) {
 				builder.Append("</b>");
 			}
-			
 			if (c.TypeParameters.Count > 0) {
-				builder.Append("(Of ");
+				builder.Append('<');
 				for (int i = 0; i < c.TypeParameters.Count; ++i) {
 					if (i > 0) builder.Append(", ");
 					builder.Append(c.TypeParameters[i].Name);
 				}
-				builder.Append(')');
+				builder.Append('>');
 			}
 			
 			if (ShowReturnType && c.ClassType == ClassType.Delegate) {
-				builder.Append("(");
+				builder.Append(" (");
 				if (IncludeHTMLMarkup) builder.Append("<br>");
 				
-				foreach (IMethod m in c.Methods) {
+				foreach(IMethod m in c.Methods) {
 					if (m.Name != "Invoke") continue;
 					
 					for (int i = 0; i < m.Parameters.Count; ++i) {
@@ -197,28 +205,15 @@ namespace VBNetBinding
 						
 						builder.Append(Convert(m.Parameters[i]));
 						if (i + 1 < m.Parameters.Count) builder.Append(", ");
-
+						
 						if (IncludeHTMLMarkup) builder.Append("<br>");
 					}
 				}
-
-				builder.Append(")");
+				builder.Append(')');
 				
-				foreach (IMethod m in c.Methods) {
-					if (m.Name != "Invoke") continue;
-					
-					if (m.ReturnType == null || m.ReturnType.FullyQualifiedName == "System.Void") {
-					} else {
-						if (ShowReturnType) {
-							builder.Append(" As ");
-							builder.Append(Convert(m.ReturnType));
-						}
-					}
-				}
-
 			} else if (ShowInheritanceList) {
 				if (c.BaseTypes.Count > 0) {
-					builder.Append(" Inherits ");
+					builder.Append(" : ");
 					for (int i = 0; i < c.BaseTypes.Count; ++i) {
 						builder.Append(c.BaseTypes[i]);
 						if (i + 1 < c.BaseTypes.Count) {
@@ -228,37 +223,16 @@ namespace VBNetBinding
 				}
 			}
 			
+			if (IncludeBodies) {
+				builder.Append("\n{");
+			}
+			
 			return builder.ToString();
 		}
 		
 		public override string ConvertEnd(IClass c)
 		{
-			StringBuilder builder = new StringBuilder();
-			
-			builder.Append("End ");
-			
-			switch (c.ClassType) {
-				case ClassType.Delegate:
-					builder.Append("Delegate");
-					break;
-				case ClassType.Class:
-					builder.Append("Class");
-					break;
-				case ClassType.Module:
-					builder.Append("Module");
-					break;
-				case ClassType.Struct:
-					builder.Append("Structure");
-					break;
-				case ClassType.Interface:
-					builder.Append("Interface");
-					break;
-				case ClassType.Enum:
-					builder.Append("Enum");
-					break;
-			}
-			
-			return builder.ToString();
+			return "}";
 		}
 		
 		public override string Convert(IField field)
@@ -273,14 +247,26 @@ namespace VBNetBinding
 			
 			if (ShowModifiers) {
 				if (field.IsConst) {
-					builder.Append("Const ");
+					builder.Append("const ");
 				} else if (field.IsStatic) {
-					builder.Append("Shared ");
+					builder.Append("static ");
+				}
+				
+				if (field.IsReadonly) {
+					builder.Append("readonly ");
 				}
 			}
 			
 			if (IncludeHTMLMarkup) {
 				builder.Append("</i>");
+			}
+			
+			if (field.ReturnType != null  && ShowReturnType) {
+				builder.Append(Convert(field.ReturnType));
+				builder.Append(' ');
+			}
+			
+			if (IncludeHTMLMarkup) {
 				builder.Append("<b>");
 			}
 			
@@ -294,10 +280,7 @@ namespace VBNetBinding
 				builder.Append("</b>");
 			}
 			
-			if (field.ReturnType != null && ShowReturnType) {
-				builder.Append(" As ");
-				builder.Append(Convert(field.ReturnType));
-			}
+			if (IncludeBodies) builder.Append(";");
 			
 			return builder.ToString();
 		}
@@ -312,34 +295,37 @@ namespace VBNetBinding
 				builder.Append(GetModifier(property));
 			}
 			
+			if (property.ReturnType != null && ShowReturnType) {
+				builder.Append(Convert(property.ReturnType));
+				builder.Append(' ');
+			}
+			
 			if (property.IsIndexer) {
-				builder.Append("Default ");
-			}
-			
-			if (property.CanGet && !property.CanSet) {
-				builder.Append("ReadOnly ");
-			}
-			
-			if (property.CanSet && !property.CanGet) {
-				builder.Append("WriteOnly ");
-			}
-			
-			if (IncludeHTMLMarkup) {
-				builder.Append("<b>");
-			}
-			
-			if (UseFullyQualifiedMemberNames) {
-				builder.Append(property.FullyQualifiedName);
+				if (property.DeclaringType != null) {
+					if (UseFullyQualifiedMemberNames) {
+						builder.Append(property.DeclaringType.FullyQualifiedName);
+					} else {
+						builder.Append(property.DeclaringType.Name);
+					}
+					builder.Append('.');
+				}
+				builder.Append("this");
 			} else {
-				builder.Append(property.Name);
-			}
-			
-			if (IncludeHTMLMarkup) {
-				builder.Append("</b>");
+				if (IncludeHTMLMarkup) {
+					builder.Append("<b>");
+				}
+				if (UseFullyQualifiedMemberNames) {
+					builder.Append(property.FullyQualifiedName);
+				} else {
+					builder.Append(property.Name);
+				}
+				if (IncludeHTMLMarkup) {
+					builder.Append("</b>");
+				}
 			}
 			
 			if (property.Parameters.Count > 0) {
-				builder.Append("(");
+				builder.Append(property.IsIndexer ? '[' : '(');
 				if (IncludeHTMLMarkup) builder.Append("<br>");
 				
 				for (int i = 0; i < property.Parameters.Count; ++i) {
@@ -351,12 +337,20 @@ namespace VBNetBinding
 					if (IncludeHTMLMarkup) builder.Append("<br>");
 				}
 				
-				builder.Append(')');
+				builder.Append(property.IsIndexer ? ']' : ')');
 			}
 			
-			if (property.ReturnType != null && ShowReturnType) {
-				builder.Append(" As ");
-				builder.Append(Convert(property.ReturnType));
+			if (IncludeBodies) {
+				builder.Append(" { ");
+				
+				if (property.CanGet) {
+					builder.Append("get; ");
+				}
+				if (property.CanSet) {
+					builder.Append("set; ");
+				}
+				
+				builder.Append(" } ");
 			}
 			
 			return builder.ToString();
@@ -372,7 +366,12 @@ namespace VBNetBinding
 				builder.Append(GetModifier(e));
 			}
 			
-			builder.Append("Event ");
+			builder.Append("event ");
+			
+			if (e.ReturnType != null && ShowReturnType) {
+				builder.Append(Convert(e.ReturnType));
+				builder.Append(' ');
+			}
 			
 			if (IncludeHTMLMarkup) {
 				builder.Append("<b>");
@@ -388,10 +387,7 @@ namespace VBNetBinding
 				builder.Append("</b>");
 			}
 			
-			if (e.ReturnType != null && ShowReturnType) {
-				builder.Append(" As ");
-				builder.Append(Convert(e.ReturnType));
-			}
+			if (IncludeBodies) builder.Append(";");
 			
 			return builder.ToString();
 		}
@@ -404,41 +400,46 @@ namespace VBNetBinding
 			if (ShowModifiers) {
 				builder.Append(GetModifier(m));
 			}
-			if (ShowReturnType) {
-				if (m.ReturnType == null || m.ReturnType.FullyQualifiedName == "System.Void") {
-					builder.Append("Sub ");
-				} else {
-					builder.Append("Function ");
-				}
-			}
-
-			string dispName = UseFullyQualifiedMemberNames ? m.FullyQualifiedName : m.Name;
-			if (m.Name == "#ctor" || m.Name == "#cctor" || m.IsConstructor) {
-				dispName = "New";
+			
+			if (m.ReturnType != null && ShowReturnType) {
+				builder.Append(Convert(m.ReturnType));
+				builder.Append(' ');
 			}
 			
 			if (IncludeHTMLMarkup) {
 				builder.Append("<b>");
 			}
 			
-			builder.Append(dispName);
+			if (m.IsConstructor) {
+				if (m.DeclaringType != null) {
+					builder.Append(m.DeclaringType.Name);
+				} else {
+					builder.Append(m.Name);
+				}
+			} else {
+				if (UseFullyQualifiedMemberNames) {
+					builder.Append(m.FullyQualifiedName);
+				} else {
+					builder.Append(m.Name);
+				}
+			}
 			
 			if (IncludeHTMLMarkup) {
 				builder.Append("</b>");
 			}
 			
 			if (m.TypeParameters.Count > 0) {
-				builder.Append("(Of ");
+				builder.Append('<');
 				for (int i = 0; i < m.TypeParameters.Count; ++i) {
 					if (i > 0) builder.Append(", ");
 					builder.Append(m.TypeParameters[i].Name);
 				}
-				builder.Append(')');
+				builder.Append('>');
 			}
 			
 			builder.Append("(");
 			if (IncludeHTMLMarkup) builder.Append("<br>");
-
+			
 			for (int i = 0; i < m.Parameters.Count; ++i) {
 				if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
 				builder.Append(Convert(m.Parameters[i]));
@@ -450,21 +451,23 @@ namespace VBNetBinding
 			
 			builder.Append(')');
 			
-			if (ShowReturnType && m.ReturnType != null && m.ReturnType.FullyQualifiedName != "System.Void") {
-				builder.Append(" As ");
-				builder.Append(Convert(m.ReturnType));
+			if (IncludeBodies) {
+				if (m.DeclaringType != null) {
+					if (m.DeclaringType.ClassType == ClassType.Interface) {
+						builder.Append(";");
+					} else {
+						builder.Append(" {");
+					}
+				} else {
+					builder.Append(" {");
+				}
 			}
-			
 			return builder.ToString();
 		}
 		
 		public override string ConvertEnd(IMethod m)
 		{
-			if (m.ReturnType == null || m.ReturnType.FullyQualifiedName == "System.Void") {
-				return "End Sub";
-			} else {
-				return "End Function";
-			}
+			return "}";
 		}
 		
 		public override string Convert(IReturnType returnType)
@@ -493,65 +496,64 @@ namespace VBNetBinding
 		void UnpackNestedType(StringBuilder builder, IReturnType returnType)
 		{
 			if (returnType.IsArrayReturnType) {
-				builder.Append('(');
+				builder.Append('[');
 				int dimensions = returnType.CastToArrayReturnType().ArrayDimensions;
 				for (int i = 1; i < dimensions; ++i) {
 					builder.Append(',');
 				}
-				builder.Append(')');
+				builder.Append(']');
 				UnpackNestedType(builder, returnType.CastToArrayReturnType().ArrayElementType);
 			} else if (returnType.IsConstructedReturnType) {
 				UnpackNestedType(builder, returnType.CastToConstructedReturnType().UnboundType);
-				builder.Append("(Of ");
+				builder.Append('<');
 				IList<IReturnType> ta = returnType.CastToConstructedReturnType().TypeArguments;
 				for (int i = 0; i < ta.Count; ++i) {
 					if (i > 0) builder.Append(", ");
 					builder.Append(Convert(ta[i]));
 				}
-				builder.Append(')');
+				builder.Append('>');
 			}
 		}
 		
 		public override string Convert(IParameter param)
 		{
 			StringBuilder builder = new StringBuilder();
-			if (ShowParameterNames) {
-				if (IncludeHTMLMarkup) {
-					builder.Append("<i>");
-				}
-				
-				if (param.IsOptional) {
-					builder.Append("Optional ");
-				}
-				if (param.IsRef || param.IsOut) {
-					builder.Append("ByRef ");
-				} else if (param.IsParams) {
-					builder.Append("ParamArray ");
-				}
-				if (IncludeHTMLMarkup) {
-					builder.Append("</i>");
-				}
-				
-				
-				builder.Append(param.Name);
-				builder.Append(" As ");
+			
+			if (IncludeHTMLMarkup) {
+				builder.Append("<i>");
 			}
-
+			
+			if (param.IsRef) {
+				builder.Append("ref ");
+			} else if (param.IsOut) {
+				builder.Append("out ");
+			} else if (param.IsParams) {
+				builder.Append("params ");
+			}
+			
+			if (IncludeHTMLMarkup) {
+				builder.Append("</i>");
+			}
+			
 			builder.Append(Convert(param.ReturnType));
 			
+			if (ShowParameterNames) {
+				builder.Append(' ');
+				builder.Append(param.Name);
+			}
 			return builder.ToString();
 		}
-
+		
 		public override string WrapAttribute(string attribute)
 		{
-			return "<" + attribute + ">";
+			return "[" + attribute + "]";
 		}
 		
 		public override string WrapComment(string comment)
 		{
-			return "' " + comment;
+			return "// " + comment;
 		}
-		
+
 		public override string GetIntrinsicTypeName(string dotNetTypeName)
 		{
 			if (typeConversionTable[dotNetTypeName] != null) {
@@ -559,6 +561,6 @@ namespace VBNetBinding
 			}
 			return dotNetTypeName;
 		}
+		
 	}
-	
 }

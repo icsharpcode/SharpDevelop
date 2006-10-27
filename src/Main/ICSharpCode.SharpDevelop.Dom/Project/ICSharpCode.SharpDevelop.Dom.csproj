@@ -144,6 +144,12 @@
     <Compile Include="Src\Refactoring\RefactoringProvider.cs" />
     <Compile Include="Src\Refactoring\NRefactoryRefactoringProvider.cs" />
     <Compile Include="Src\GacInterop.cs" />
+    <Compile Include="Src\CtrlSpaceResolveHelper.cs" />
+    <Compile Include="Src\CSharp\CSharpAmbience.cs" />
+    <Compile Include="Src\Ambience.cs" />
+    <Compile Include="Src\CSharp\ExpressionFinder.cs" />
+    <Compile Include="Src\VBNet\VBNetAmbience.cs" />
+    <Compile Include="Src\VBNet\ExpressionFinder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />
@@ -158,6 +164,8 @@
     <Folder Include="Src\Interfaces" />
     <Folder Include="Src\ProjectContent" />
     <Folder Include="Src\Refactoring" />
+    <Folder Include="Src\CSharp" />
+    <Folder Include="Src\VBNet" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

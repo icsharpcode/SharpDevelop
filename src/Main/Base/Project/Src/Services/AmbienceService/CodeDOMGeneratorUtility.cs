@@ -6,12 +6,14 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Collections;
 using System.Text;
 
-namespace ICSharpCode.Core
+using ICSharpCode.Core;
+
+namespace ICSharpCode.SharpDevelop
 {
 	public class CodeDOMGeneratorUtility 
 	{

@@ -2,24 +2,22 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
+//     <version>$Revision: 1751 $</version>
 // </file>
 
 using System;
 using System.Text;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 
-namespace CSharpBinding.Parser
+namespace ICSharpCode.SharpDevelop.Dom.CSharp
 {
 	/// <summary>
-	/// Description of ExpressionFinder.
+	/// Supports getting the expression including context from the cursor position.
 	/// </summary>
-	public class ExpressionFinder : IExpressionFinder
+	public class CSharpExpressionFinder : IExpressionFinder
 	{
 		string fileName;
 		
-		public ExpressionFinder(string fileName)
+		public CSharpExpressionFinder(string fileName)
 		{
 			this.fileName = fileName;
 		}
@@ -35,7 +33,7 @@ namespace CSharpBinding.Parser
 				return new ExpressionResult(expression.Substring(4).TrimStart(), GetCreationContext(), null);
 			}
 			if (IsInAttribute(inText, offset))
-				return new ExpressionResult(expression, ExpressionContext.GetAttribute(ParserService.CurrentProjectContent));
+				return new ExpressionResult(expression, ExpressionContext.GetAttribute(HostCallback.GetCurrentProjectContent()));
 			return new ExpressionResult(expression);
 		}
 		
@@ -96,7 +94,7 @@ namespace CSharpBinding.Parser
 			} else {
 				UnGet();
 				if (ReadIdentifier(GetNextNonWhiteSpace()) == "throw") {
-					return ExpressionContext.TypeDerivingFrom(ParserService.CurrentProjectContent.GetClass("System.Exception"), true);
+					return ExpressionContext.TypeDerivingFrom(HostCallback.GetCurrentProjectContent().GetClass("System.Exception"), true);
 				}
 			}
 			return ExpressionContext.ObjectCreation;
@@ -201,7 +199,11 @@ namespace CSharpBinding.Parser
 		
 		int lastExpressionStartPosition;
 		
-		internal int LastExpressionStartPosition {
+		/// <summary>
+		/// Gets the position in the source string (after filtering out comments)
+		/// where the beginning of last expression was found. 
+		/// </summary>
+		public int LastExpressionStartPosition {
 			get {
 				return lastExpressionStartPosition;
 			}

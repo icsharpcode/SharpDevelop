@@ -6,8 +6,10 @@
 // </file>
 
 using System;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public static class AmbienceService
 	{

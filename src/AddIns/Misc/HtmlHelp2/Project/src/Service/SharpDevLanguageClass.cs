@@ -10,6 +10,7 @@ namespace HtmlHelp2.Environment
 	using System;
 	using System.Collections.Generic;
 	using ICSharpCode.Core;
+	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Project;
 	using MSHelpServices;
 

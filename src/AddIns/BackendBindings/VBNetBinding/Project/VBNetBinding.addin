@@ -10,11 +10,12 @@
 	<Runtime>
 		<Import assembly = "VBNetBinding.dll"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop.Dom"/>
 	</Runtime>
 
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
 		<Class id    = "VBNet"
-		       class = "VBNetBinding.VBNetAmbience"/>
+		       class = "ICSharpCode.SharpDevelop.Dom.VBNet.VBNetAmbience"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">

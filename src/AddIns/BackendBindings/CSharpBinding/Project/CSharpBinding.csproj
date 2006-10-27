@@ -44,7 +44,6 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
-    <Compile Include="Src\CSharpAmbience.cs" />
     <Compile Include="Src\CSharpLanguageBinding.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingStrategy.cs" />
     <Compile Include="Src\FormattingStrategy\DocumentAccessor.cs" />
@@ -52,7 +51,6 @@
     <Compile Include="Src\OptionPanels\BuildOptions.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Parser\ExpressionFinder.cs" />
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Project\CSharpProject.cs" />
     <None Include="CSharpBinding.addin">
@@ -86,7 +84,6 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Src\PrettyPrinter\Gui\" />
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>

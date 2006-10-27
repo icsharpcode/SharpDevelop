@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-using System.ComponentModel;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.ComponentModel;
+
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
-		ICSharpCode.Core.IAmbience Ambience {
+		ICSharpCode.SharpDevelop.Dom.IAmbience Ambience {
 			get;
 		}
 		

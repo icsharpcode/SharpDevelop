@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.CSharp;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 
 namespace CSharpBinding.Parser
@@ -35,7 +36,7 @@ namespace CSharpBinding.Parser
 		
 		public IExpressionFinder CreateExpressionFinder(string fileName)
 		{
-			return new ExpressionFinder(fileName);
+			return new CSharpExpressionFinder(fileName);
 		}
 		
 		public bool CanParse(string fileName)

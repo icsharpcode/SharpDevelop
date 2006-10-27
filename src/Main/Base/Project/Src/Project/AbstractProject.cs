@@ -6,19 +6,15 @@
 // </file>
 
 using System;
-using System.ComponentModel;
-using System.CodeDom.Compiler;
-using System.Diagnostics;
-using System.IO;
-using System.Globalization;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Project
 {

@@ -1,5 +1,6 @@
-﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.1.0.1913
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.1.0.1947
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AddIns", "AddIns", "{14A277EE-7DF1-4529-B639-7D1EF334C1C5}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection

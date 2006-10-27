@@ -122,8 +122,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (supportsExtensionMethods || supportsExtensionProperties) {
 				ArrayList list = new ArrayList();
 				IMethod dummyMethod = new DefaultMethod("dummy", VoidReturnType.Instance, ModifierEnum.Static, DomRegion.Empty, DomRegion.Empty, callingClass);
-				NRefactoryResolver.NRefactoryResolver.AddContentsFromCalling(list, callingClass, dummyMethod);
-				NRefactoryResolver.NRefactoryResolver.AddImportedNamespaceContents(list, callingClass.CompilationUnit, callingClass);
+				CtrlSpaceResolveHelper.AddContentsFromCalling(list, callingClass, dummyMethod);
+				CtrlSpaceResolveHelper.AddImportedNamespaceContents(list, callingClass.CompilationUnit, callingClass);
 				
 				bool searchExtensionsInClasses = language.SearchExtensionsInClasses;
 				foreach (object o in list) {

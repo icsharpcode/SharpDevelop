@@ -6,25 +6,12 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Xml;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Reflection;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.ComponentModel.Design.Serialization;
-using System.Text;
-using System.Text.RegularExpressions;
-
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.IO;
 
 using ICSharpCode.Core;
-using ICSharpCode.FormsDesigner.Services;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.FormsDesigner
 {
