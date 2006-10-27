@@ -5,13 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.CodeCoverage;
-using NUnit.Framework;
 using System;
 using System.IO;
 using System.Resources;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.UnitTesting;
+using NUnit.Framework;
 
 namespace ICSharpCode.CodeCoverage.Tests
 {

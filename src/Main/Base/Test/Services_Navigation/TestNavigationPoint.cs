@@ -8,6 +8,7 @@
 using System;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace NavigationServiceTests
 {

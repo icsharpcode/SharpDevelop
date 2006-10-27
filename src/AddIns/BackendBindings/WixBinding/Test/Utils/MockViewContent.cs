@@ -5,13 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace WixBinding.Tests.Utils
 {

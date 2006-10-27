@@ -9,6 +9,7 @@ using System;
 using NUnit.Framework;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace NavigationServiceTests
 {

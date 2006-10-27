@@ -5,10 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using NUnit.Framework;
-using ICSharpCode.NAntAddIn;
-using ICSharpCode.Core;
 using System;
+using ICSharpCode.SharpDevelop;
+using NUnit.Framework;
 
 namespace ICSharpCode.NAntAddIn.Tests
 {

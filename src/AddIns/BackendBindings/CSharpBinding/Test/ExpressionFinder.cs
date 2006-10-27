@@ -11,6 +11,7 @@ using NUnit.Framework;
 using CSharpBinding.Parser;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.CSharp;
 
 namespace CSharpBinding.Tests
 {
@@ -42,12 +43,12 @@ class Main {
 	}
 }";
 		
-		ExpressionFinder ef;
+		CSharpExpressionFinder ef;
 		
 		[SetUp]
 		public void Init()
 		{
-			ef = new ExpressionFinder("test.cs");
+			ef = new CSharpExpressionFinder("test.cs");
 		}
 		
 		void FindFull(string location, string expectedExpression, ExpressionContext expectedContext)

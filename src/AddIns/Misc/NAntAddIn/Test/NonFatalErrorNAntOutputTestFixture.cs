@@ -8,6 +8,7 @@
 using NUnit.Framework;
 using ICSharpCode.NAntAddIn;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using System;
 
 namespace ICSharpCode.NAntAddIn.Tests
