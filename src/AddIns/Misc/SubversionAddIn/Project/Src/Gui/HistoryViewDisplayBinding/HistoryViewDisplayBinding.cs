@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using ICSharpCode.Core;
 using NSvn.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.Svn
 {

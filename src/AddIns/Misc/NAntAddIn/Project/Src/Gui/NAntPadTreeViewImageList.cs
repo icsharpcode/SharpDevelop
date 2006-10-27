@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
 using System;
 using System.Windows.Forms;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.NAntAddIn.Gui
 {

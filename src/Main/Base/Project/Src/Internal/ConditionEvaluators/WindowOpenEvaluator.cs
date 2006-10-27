@@ -13,7 +13,7 @@ using ICSharpCode.Core;
 
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Tests if a window of a specified type or implementing an interface is open.

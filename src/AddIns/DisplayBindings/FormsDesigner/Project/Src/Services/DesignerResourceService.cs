@@ -17,6 +17,7 @@ using System.Collections.Specialized;
 using System.Drawing.Design;
 using System.ComponentModel.Design;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;

@@ -8,16 +8,14 @@
 // created on 16.11.2002 at 21:14
 
 using System;
-using System.Drawing;
-using System.Windows.Forms;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.Core;
-using ICSharpCode.FiletypeRegisterer;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 
 namespace ICSharpCode.FiletypeRegisterer
 {

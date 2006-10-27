@@ -12,7 +12,7 @@ using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Tests if the current workbench window is a specified type or implements an interface.

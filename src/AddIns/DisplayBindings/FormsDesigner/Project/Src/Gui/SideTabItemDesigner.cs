@@ -22,13 +22,10 @@
 //		Denis ERCHOFF		22/01/2003		BEGIN		A1
 
 using System;
-using System.Windows.Forms;
-using System.Drawing.Design;
 using System.Drawing;
-using System.ComponentModel.Design;
+using System.Drawing.Design;
 
-using ICSharpCode.Core;
-using ICSharpCode.FormsDesigner.Services;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FormsDesigner.Gui

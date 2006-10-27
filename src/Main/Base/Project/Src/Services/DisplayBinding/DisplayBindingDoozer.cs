@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 using ICSharpCode.Core;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Creates DisplayBindingDescriptor objects.

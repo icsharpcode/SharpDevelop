@@ -7,10 +7,12 @@
 
 // created on 07.08.2003 at 13:36
 using System;
-using System.Drawing;
 using System.Collections;
+using System.Drawing;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.FormsDesigner.Gui

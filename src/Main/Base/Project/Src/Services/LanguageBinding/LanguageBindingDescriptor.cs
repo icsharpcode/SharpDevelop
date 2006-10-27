@@ -6,15 +6,10 @@
 // </file>
 
 using System;
-using System.Xml;
-using System.IO;
-using System.Collections;
-using System.Reflection;
-using System.CodeDom.Compiler;
-
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public class LanguageBindingDescriptor
 	{

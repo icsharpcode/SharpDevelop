@@ -8,16 +8,8 @@
 // created on 10/10/2002 at 16:13
 
 using System;
-using System.Drawing;
-using System.Collections;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Windows.Forms;
-using System.Threading;
-using Microsoft.Win32;
-
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
@@ -72,7 +64,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		public void ShowHelpFromKeyword(string helpKeyword)
 		{
-			ICSharpCode.SharpDevelop.HelpProvider.ShowHelpByKeyword(helpKeyword);
+			HelpProvider.ShowHelpByKeyword(helpKeyword);
 		}
 		public void ShowGeneralHelp()
 		{
@@ -80,12 +72,12 @@ namespace ICSharpCode.FormsDesigner.Services
 		}
 		public void ShowHelp()
 		{
-			ICSharpCode.SharpDevelop.HelpProvider.ShowHelp(f1Keyword);
+			HelpProvider.ShowHelp(f1Keyword);
 		}
 		
 		public void ShowHelpFromUrl(string helpURL)
 		{
-			ICSharpCode.Core.FileService.OpenFile("browser://" + helpURL);
+			FileService.OpenFile("browser://" + helpURL);
 		}
 	}
 }

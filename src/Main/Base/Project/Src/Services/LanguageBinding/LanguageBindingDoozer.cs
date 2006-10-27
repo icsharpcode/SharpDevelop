@@ -12,7 +12,7 @@ using System.Diagnostics;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Creates LanguageBindingDescriptor objects for the project service.

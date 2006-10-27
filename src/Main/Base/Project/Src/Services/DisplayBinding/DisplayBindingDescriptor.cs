@@ -6,16 +6,10 @@
 // </file>
 
 using System;
-using System.Xml;
-using System.IO;
-using System.Collections;
-using System.Reflection;
-using System.CodeDom.Compiler;
 using System.Text.RegularExpressions;
+using ICSharpCode.Core;
 
-using ICSharpCode.SharpDevelop.Project;
-
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public class DisplayBindingDescriptor
 	{

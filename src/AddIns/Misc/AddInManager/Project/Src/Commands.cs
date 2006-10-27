@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+#if !STANDALONE
+using ICSharpCode.SharpDevelop;
+#endif
 
 namespace ICSharpCode.AddInManager
 {

@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// This interface extends the IDialogPanel interface with wizard specific

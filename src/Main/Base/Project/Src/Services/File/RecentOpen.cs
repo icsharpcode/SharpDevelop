@@ -6,15 +6,12 @@
 // </file>
 
 using System;
-using System.Xml;
-using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 
+using ICSharpCode.Core;
 
-using ICSharpCode.SharpDevelop.Project;
-
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// This class handles the recent open files and the recent open project files of SharpDevelop

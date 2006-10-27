@@ -13,10 +13,11 @@ using System.Reflection;
 using System.CodeDom.Compiler;
 
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.Core;
 
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// This class handles the installed display bindings

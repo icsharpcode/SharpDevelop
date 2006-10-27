@@ -6,13 +6,10 @@
 // </file>
 
 using System;
-using System.Xml;
-
-
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Tests if a solution is open.

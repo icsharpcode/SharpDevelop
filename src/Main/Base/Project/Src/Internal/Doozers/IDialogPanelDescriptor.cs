@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public interface IDialogPanelDescriptor
 	{

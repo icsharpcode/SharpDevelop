@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Interface for classes that store Navigational information for 

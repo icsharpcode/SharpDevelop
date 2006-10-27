@@ -313,11 +313,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			debugger.ProcessStarted          += debugger_ProcessStarted;
 			debugger.ProcessExited           += debugger_ProcessExited;
 			
-			DebuggerService.BreakPointAdded  += delegate (object sender, BreakpointBookmarkEventArgs e) {
+			DebuggerService.BreakPointAdded  += delegate (object sender, BM.BreakpointBookmarkEventArgs e) {
 				AddBreakpoint(e.BreakpointBookmark);
 			};
 			
-			foreach (BreakpointBookmark b in DebuggerService.Breakpoints) {
+			foreach (BM.BreakpointBookmark b in DebuggerService.Breakpoints) {
 				AddBreakpoint(b);
 			}
 			
@@ -326,7 +326,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		void AddBreakpoint(BreakpointBookmark bookmark)
+		void AddBreakpoint(BM.BreakpointBookmark bookmark)
 		{
 			SourcecodeSegment seg = new SourcecodeSegment(bookmark.FileName, bookmark.LineNumber + 1); 
 			Breakpoint breakpoint = debugger.AddBreakpoint(seg, bookmark.IsEnabled);

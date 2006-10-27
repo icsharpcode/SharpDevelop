@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// This class defines the SharpDevelop display binding interface, it is a factory

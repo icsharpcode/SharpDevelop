@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.CodeDom.Compiler;
+using ICSharpCode.Core;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public class DefaultDialogPanelDescriptor : IDialogPanelDescriptor
 	{

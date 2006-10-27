@@ -16,10 +16,10 @@ using System.Windows.Forms;
 using System.Xml;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using SharpQuery.Collections;
 using SharpQuery.SchemaClass;
-
 using SharpReport;
 using SharpReportCore;
 

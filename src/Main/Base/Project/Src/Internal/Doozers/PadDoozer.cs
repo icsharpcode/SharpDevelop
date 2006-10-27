@@ -7,10 +7,9 @@
 
 using System;
 using System.Collections;
-using System.Reflection;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.Core;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Creates PadDescriptor objects for SharpDevelop pads.

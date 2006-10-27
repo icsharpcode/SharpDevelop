@@ -5,12 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.TextEditor;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.CodeCoverage
 {

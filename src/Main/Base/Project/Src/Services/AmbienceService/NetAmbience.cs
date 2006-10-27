@@ -9,7 +9,8 @@ using System;
 using System.Text;
 
 using ICSharpCode.SharpDevelop.Dom;
-namespace ICSharpCode.Core
+
+namespace ICSharpCode.SharpDevelop
 {
 	public class NetAmbience :  AbstractAmbience
 	{

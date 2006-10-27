@@ -9,7 +9,7 @@ using System;
 using ICSharpCode.SharpDevelop.Project;
 using System.Diagnostics;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public interface IDebugger : IDisposable
 	{

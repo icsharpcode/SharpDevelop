@@ -10,10 +10,9 @@ using System.Collections;
 using System.IO;
 using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Gui;
-
-using ResourceEditor;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ResourceEditor
 {

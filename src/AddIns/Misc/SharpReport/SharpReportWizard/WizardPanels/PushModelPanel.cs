@@ -10,17 +10,14 @@
 using System;
 using System.Data;
 using System.Globalization;
-using System.ComponentModel;
-using System.Collections;
-
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-
 using SharpReport;
-using SharpReportCore;
 using SharpReport.ReportItems;
+using SharpReportCore;
 
 namespace ReportGenerator
 {

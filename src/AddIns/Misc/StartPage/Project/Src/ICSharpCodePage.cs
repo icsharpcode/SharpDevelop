@@ -6,15 +6,15 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Xsl;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.StartPage
 {

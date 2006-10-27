@@ -11,7 +11,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui.TreeGrid;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public class DebuggerGridControl : DynamicList
 	{

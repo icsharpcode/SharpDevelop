@@ -17,7 +17,7 @@ using System.Reflection;
 using System.Xml;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public static class LanguageService
 	{

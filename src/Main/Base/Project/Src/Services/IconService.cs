@@ -6,21 +6,15 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Text;
-using System.Runtime.InteropServices;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Resources;
-using System.Diagnostics;
 using System.Threading;
-using System.Windows.Forms;
-using System.Xml;
 
-namespace ICSharpCode.Core
+using ICSharpCode.Core;
+
+namespace ICSharpCode.SharpDevelop
 {
 	public static class IconService
 	{

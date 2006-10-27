@@ -19,9 +19,10 @@
 
 using System;
 using System.Globalization;
-using ICSharpCode.Core;
-using SharpReportCore; 
+using ICSharpCode.SharpDevelop;
 using SharpReportAddin.Commands;
+using SharpReportCore;
+
 /// <summary>
 /// Displaybinding for SharpReport
 /// </summary>
@@ -30,7 +31,7 @@ using SharpReportAddin.Commands;
 /// 	created on - 11.04.2005 23:36:45
 /// </remarks>
 namespace SharpReportAddin {	
-	public class SharpReportDisplayBinding : object, ICSharpCode.Core.IDisplayBinding {
+	public class SharpReportDisplayBinding : IDisplayBinding {
 		
 		public SharpReportDisplayBinding() {
 		}

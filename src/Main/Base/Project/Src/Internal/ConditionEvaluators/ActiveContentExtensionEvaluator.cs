@@ -9,9 +9,10 @@ using System;
 using System.IO;
 using System.Xml;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Tests the file extension of the file edited in the active window content.

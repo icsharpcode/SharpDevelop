@@ -16,6 +16,7 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace SearchAndReplace
 {

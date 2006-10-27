@@ -7,8 +7,9 @@
 
 using System;
 using System.Collections;
+using ICSharpCode.Core;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Creates debuggers.

@@ -8,12 +8,9 @@
 // created on 04/11/2003 at 16:05
 using System;
 using System.Windows.Forms;
-using System.Xml;
-using System.Collections.Generic;
-using System.Collections;
-using SharpQuery.Gui;
-using SharpQuery.Collections;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using SharpQuery.Collections;
 
 namespace SharpQuery.Gui.TreeView
 {

@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
@@ -18,6 +17,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.FormsDesigner.UndoRedo;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;

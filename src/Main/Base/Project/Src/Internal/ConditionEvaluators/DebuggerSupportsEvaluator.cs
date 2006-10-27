@@ -8,9 +8,10 @@
 using System;
 using System.Xml;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Tests if the debugger supports a certain feature.

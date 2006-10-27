@@ -11,7 +11,7 @@ using System.Collections;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public enum TaskType {
 		Error,

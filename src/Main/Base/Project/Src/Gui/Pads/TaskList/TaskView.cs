@@ -16,7 +16,9 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-namespace ICSharpCode.Core
+using ICSharpCode.Core;
+
+namespace ICSharpCode.SharpDevelop
 {
 	public enum TaskViewCols : int {
 		Icon = 0,
@@ -298,7 +300,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public void UpdateResults(System.Collections.Generic.IEnumerable<ICSharpCode.Core.Task> taskSet)
+		public void UpdateResults(IEnumerable<Task> taskSet)
 		{
 			this.BeginUpdate();
 			this.ClearTasks();

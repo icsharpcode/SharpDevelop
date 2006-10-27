@@ -9,7 +9,9 @@ using System;
 using System.Collections;
 using System.IO;
 
-namespace ICSharpCode.Core
+using ICSharpCode.Core;
+
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Creates path names using a relative to the folder containing the addin file.

@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	public class BreakpointBookmarkEventArgs: EventArgs
 	{

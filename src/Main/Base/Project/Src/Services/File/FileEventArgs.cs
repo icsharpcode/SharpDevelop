@@ -8,7 +8,7 @@
 using System;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public class FileEventArgs : EventArgs
 	{

@@ -11,7 +11,7 @@ using System.IO;
 
 using ICSharpCode.Core;
 
-namespace ICSharpCode.TextEditor.Document
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Description of TextNavigationPoint.

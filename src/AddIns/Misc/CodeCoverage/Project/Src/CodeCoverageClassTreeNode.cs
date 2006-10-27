@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.CodeCoverage
 {

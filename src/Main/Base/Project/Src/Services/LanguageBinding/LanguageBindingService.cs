@@ -10,9 +10,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public static class LanguageBindingService
 	{

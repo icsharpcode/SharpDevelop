@@ -8,9 +8,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 
-namespace ICSharpCode.Core
+using ICSharpCode.Core;
+
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Creates DefaultDialogPanelDescriptor objects that are used in option dialogs.

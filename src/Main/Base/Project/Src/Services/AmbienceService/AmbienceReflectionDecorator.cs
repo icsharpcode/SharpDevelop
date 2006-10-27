@@ -12,7 +12,7 @@ using System.Reflection;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// This class wraps a ILanguageConversion to System.Reflection

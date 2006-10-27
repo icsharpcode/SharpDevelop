@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
@@ -25,7 +25,7 @@ using ITextEditorControlProvider = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Ed
 using ITextAreaToolTipProvider = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextAreaToolTipProvider;
 using ToolTipInfo = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ToolTipInfo;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public static class DebuggerService
 	{
@@ -116,7 +116,7 @@ namespace ICSharpCode.Core
 		
 		static void OnDebugStopped(object sender, EventArgs e)
 		{
-			CurrentLineBookmark.Remove();
+			BM.CurrentLineBookmark.Remove();
 			WorkbenchSingleton.Workbench.WorkbenchLayout.StoreConfiguration();
 			LayoutConfiguration.CurrentLayoutName = oldLayoutConfiguration;
 			if (DebugStopped != null)
@@ -148,36 +148,36 @@ namespace ICSharpCode.Core
 		}
 
 
-		public static event EventHandler<BreakpointBookmarkEventArgs> BreakPointChanged;
-		public static event EventHandler<BreakpointBookmarkEventArgs> BreakPointAdded;
-		public static event EventHandler<BreakpointBookmarkEventArgs> BreakPointRemoved;
+		public static event EventHandler<BM.BreakpointBookmarkEventArgs> BreakPointChanged;
+		public static event EventHandler<BM.BreakpointBookmarkEventArgs> BreakPointAdded;
+		public static event EventHandler<BM.BreakpointBookmarkEventArgs> BreakPointRemoved;
 		
-		static void OnBreakPointChanged(BreakpointBookmarkEventArgs e)
+		static void OnBreakPointChanged(BM.BreakpointBookmarkEventArgs e)
 		{
 			if (BreakPointChanged != null) {
 				BreakPointChanged(null, e);
 			}
 		}
 		
-		static void OnBreakPointAdded(BreakpointBookmarkEventArgs e)
+		static void OnBreakPointAdded(BM.BreakpointBookmarkEventArgs e)
 		{
 			if (BreakPointAdded != null) {
 				BreakPointAdded(null, e);
 			}
 		}
 		
-		static void OnBreakPointRemoved(BreakpointBookmarkEventArgs e)
+		static void OnBreakPointRemoved(BM.BreakpointBookmarkEventArgs e)
 		{
 			if (BreakPointRemoved != null) {
 				BreakPointRemoved(null, e);
 			}
 		}
 		
-		public static IList<BreakpointBookmark> Breakpoints {
+		public static IList<BM.BreakpointBookmark> Breakpoints {
 			get {
-				List<BreakpointBookmark> breakpoints = new List<BreakpointBookmark>();
+				List<BM.BreakpointBookmark> breakpoints = new List<BM.BreakpointBookmark>();
 				foreach (BM.SDBookmark bookmark in BM.BookmarkManager.Bookmarks) {
-					BreakpointBookmark breakpoint = bookmark as BreakpointBookmark;
+					BM.BreakpointBookmark breakpoint = bookmark as BM.BreakpointBookmark;
 					if (breakpoint != null) {
 						breakpoints.Add(breakpoint);
 					}
@@ -188,34 +188,34 @@ namespace ICSharpCode.Core
 		
 		static void BookmarkAdded(object sender, BM.BookmarkEventArgs e)
 		{
-			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
+			BM.BreakpointBookmark bb = e.Bookmark as BM.BreakpointBookmark;
 			if (bb != null) {
 				bb.LineNumberChanged += BookmarkChanged;
-				OnBreakPointAdded(new BreakpointBookmarkEventArgs(bb));
+				OnBreakPointAdded(new BM.BreakpointBookmarkEventArgs(bb));
 			}
 		}
 		
 		static void BookmarkRemoved(object sender, BM.BookmarkEventArgs e)
 		{
-			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
+			BM.BreakpointBookmark bb = e.Bookmark as BM.BreakpointBookmark;
 			if (bb != null) {
 				bb.RemoveMarker();
-				OnBreakPointRemoved(new BreakpointBookmarkEventArgs(bb));
+				OnBreakPointRemoved(new BM.BreakpointBookmarkEventArgs(bb));
 			}
 		}
 		
 		static void BookmarkChanged(object sender, EventArgs e)
 		{
-			BreakpointBookmark bb = sender as BreakpointBookmark;
+			BM.BreakpointBookmark bb = sender as BM.BreakpointBookmark;
 			if (bb != null) {
-				OnBreakPointChanged(new BreakpointBookmarkEventArgs(bb));
+				OnBreakPointChanged(new BM.BreakpointBookmarkEventArgs(bb));
 			}
 		}
 		
 		public static void ToggleBreakpointAt(IDocument document, string fileName, int lineNumber)
 		{
 			foreach (Bookmark m in document.BookmarkManager.Marks) {
-				BreakpointBookmark breakpoint = m as BreakpointBookmark;
+				BM.BreakpointBookmark breakpoint = m as BM.BreakpointBookmark;
 				if (breakpoint != null) {
 					if (breakpoint.LineNumber == lineNumber) {
 						document.BookmarkManager.RemoveMark(m);
@@ -225,7 +225,7 @@ namespace ICSharpCode.Core
 			}
 			foreach (char ch in document.GetText(document.GetLineSegment(lineNumber))) {
 				if (!char.IsWhiteSpace(ch)) {
-					document.BookmarkManager.AddMark(new BreakpointBookmark(fileName, document, lineNumber));
+					document.BookmarkManager.AddMark(new BM.BreakpointBookmark(fileName, document, lineNumber));
 					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, lineNumber));
 					document.CommitUpdate();
 					break;
@@ -263,13 +263,13 @@ namespace ICSharpCode.Core
 		
 		public static void RemoveCurrentLineMarker()
 		{
-			CurrentLineBookmark.Remove();
+			BM.CurrentLineBookmark.Remove();
 		}
 		
 		public static void JumpToCurrentLine(string SourceFullFilename, int StartLine, int StartColumn, int EndLine, int EndColumn)
 		{
 			IViewContent viewContent = FileService.JumpToFilePosition(SourceFullFilename, StartLine - 1, StartColumn - 1);
-			CurrentLineBookmark.SetPosition(viewContent, StartLine, StartColumn, EndLine, EndColumn);
+			BM.CurrentLineBookmark.SetPosition(viewContent, StartLine, StartColumn, EndLine, EndColumn);
 		}
 		
 		static void IconBarMouseDown(AbstractMargin iconBar, Point mousepos, MouseButtons mouseButtons)

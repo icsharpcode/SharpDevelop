@@ -8,7 +8,7 @@
 using System;
 using System.Globalization;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Default implementation for classes that wrap Navigational

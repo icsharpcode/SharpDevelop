@@ -18,7 +18,7 @@ using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	public class CurrentLineBookmark: SDMarkerBookmark
 	{

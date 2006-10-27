@@ -12,13 +12,12 @@ using System.CodeDom.Compiler;
 using System.Collections;
 using System.IO;
 using System.Diagnostics;
-using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop.Bookmarks
 {
-	public class BreakpointBookmark: SDMarkerBookmark
+	public class BreakpointBookmark : SDMarkerBookmark
 	{
 		bool willBeHit = true;
 		

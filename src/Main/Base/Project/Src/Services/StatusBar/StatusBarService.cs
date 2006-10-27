@@ -10,9 +10,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.SharpDevelop
 {
 	public static class StatusBarService
 	{
