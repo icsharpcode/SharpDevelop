@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 using ICSharpCode.Core;
@@ -37,7 +37,7 @@ namespace CSharpBinding
 		/// </summary>
 		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
-			ArrayList completionData = new ArrayList();
+			List<ICompletionData> completionData = new List<ICompletionData>();
 			completionData.Add(new DelegateCompletionData("new " + resolveResult.ResolvedType.Name + "();", 2,
 			                                              "delegate " + resolvedClass.FullyQualifiedName + "\n" + CodeCompletionData.GetDocumentation(resolvedClass.Documentation)));
 			completionData.Add(new DelegateCompletionData("delegate {  };", 3,
@@ -95,7 +95,7 @@ namespace CSharpBinding
 					}
 				}
 			}
-			return (ICompletionData[])completionData.ToArray(typeof(ICompletionData));
+			return completionData.ToArray();
 		}
 		
 		private class DelegateCompletionData : DefaultCompletionData

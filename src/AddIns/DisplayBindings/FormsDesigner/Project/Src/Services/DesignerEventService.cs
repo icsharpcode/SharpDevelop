@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 
@@ -15,7 +15,7 @@ namespace ICSharpCode.FormsDesigner.Services
 	public class DesignerEventService : IDesignerEventService
 	{
 		IDesignerHost activeDesigner = null;
-		ArrayList     designers = new ArrayList();
+		List<IDesignerHost> designers = new List<IDesignerHost>();
 		
 		public void Reset()
 		{

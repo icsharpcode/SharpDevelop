@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
@@ -98,7 +98,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 		{
 			IMenuCommandService menuCommandService = (IMenuCommandService)owner;
 			
-			ArrayList items = new ArrayList();
+			List<ToolStripItem> items = new List<ToolStripItem>();
 				
 			foreach (DesignerVerb verb in menuCommandService.Verbs) {
 				items.Add(new ContextMenuCommand(verb));
@@ -109,7 +109,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 				items.Add(new MenuSeparator());
 			}
 			
-			return (ToolStripItem[])items.ToArray(typeof(ToolStripItem));
+			return items.ToArray();
 		}
 		
 		class ContextMenuCommand : ICSharpCode.Core.MenuCommand

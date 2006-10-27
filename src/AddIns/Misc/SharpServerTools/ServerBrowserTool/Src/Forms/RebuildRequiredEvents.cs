@@ -6,11 +6,10 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace SharpServerTools.Forms
 {
-	
 	/// <summary>
 	/// An IRebuildable can be asked to rebuild its Node tree
 	/// </summary>
@@ -39,9 +38,9 @@ namespace SharpServerTools.Forms
 	/// </summary>
 	public class RebuildRequiredEventArgs: EventArgs
 	{
-		ArrayList rebuildNodes = new ArrayList();
+		List<IRebuildable> rebuildNodes = new List<IRebuildable>();
 		
-		public IEnumerable Nodes {
+		public IEnumerable<IRebuildable> Nodes {
 			get {
 				return rebuildNodes;
 			}
