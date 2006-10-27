@@ -88,18 +88,6 @@ namespace ICSharpCode.Core
 		public abstract string ConvertEnd(IMethod m);
 		public abstract string Convert(IParameter param);
 		public abstract string Convert(IReturnType returnType);
-		
-		protected ArrayList linkArrayList;
-		
-		public ArrayList LinkArrayList {
-			get {
-				return linkArrayList;
-			}
-			set {
-				linkArrayList = value;
-			}
-		}
-		
 		public abstract string WrapAttribute(string attribute);
 		public abstract string WrapComment(string comment);
 		public abstract string GetIntrinsicTypeName(string dotNetTypeName);

@@ -37,9 +37,6 @@ namespace ICSharpCode.Core
 			get {
 				return dialogPanelDescriptors;
 			}
-//			set {
-//				dialogPanelDescriptors = value;
-//			}
 		}
 		
 		AddIn addin;

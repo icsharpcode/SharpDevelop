@@ -6,18 +6,15 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Text;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
-
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
@@ -505,13 +502,13 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
-			ArrayList items = new ArrayList();
+			List<ToolStripItem> items = new List<ToolStripItem>();
 			foreach (PadDescriptor padContent in WorkbenchSingleton.Workbench.PadContentCollection) {
 				if (padContent.Category == Category) {
 					items.Add(new MyMenuItem(padContent));
 				}
 			}
-			return (ToolStripItem[])items.ToArray(typeof(ToolStripItem));
+			return items.ToArray();
 		}
 	}
 }

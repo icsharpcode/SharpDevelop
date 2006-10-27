@@ -221,7 +221,6 @@
     </Compile>
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPad.cs" />
     <Compile Include="Src\Gui\Pads\SideBarView.cs" />
-    <Compile Include="Src\Gui\Pads\TreeViewMemento.cs" />
     <Compile Include="Src\Gui\Workbench\DefaultWorkbench.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -457,12 +456,10 @@
     <Compile Include="Src\TextEditor\Commands\GenerateCodeCommand.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\TextEditor\Commands\ProjectCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\SearchCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\TextAreaContextmenuCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\ToolCommands.cs" />
     <Compile Include="Src\TextEditor\Conditions\TextContentCondition.cs" />
-    <Compile Include="Src\TextEditor\Gui\Dialogs\ExportProjectToHtmlDialog.cs" />
     <Compile Include="Src\TextEditor\Gui\Dialogs\GotoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -472,7 +469,6 @@
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionData.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CommentCompletionDataProvider.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\HtmlDeclarationViewWindow.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\TemplateCompletionDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\InsightWindow\IndexerInsightDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\InsightWindow\MethodInsightDataProvider.cs" />
