@@ -7,10 +7,6 @@
 
 using System;
 using System.Xml;
-using System.Collections;
-using System.Drawing;
-using System.Reflection;
-using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop.Gui.XmlForms 
 {

@@ -7,16 +7,14 @@
 
 // created on 07.08.2003 at 13:46
 using System;
-using System.IO;
+using System.Collections;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Collections;
-using System.Text;
+using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
-using MSjogren.GacTool.FusionNative;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;

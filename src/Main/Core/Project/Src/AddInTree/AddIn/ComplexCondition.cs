@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using System.Text;
 using System.Diagnostics;
+using System.Text;
 using System.Xml;
 
 namespace ICSharpCode.Core

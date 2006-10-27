@@ -6,15 +6,13 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.CodeDom.Compiler;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections;
-using System.Collections.Generic;
+
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {

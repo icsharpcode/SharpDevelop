@@ -10,12 +10,14 @@
 
 
 using System;
-using System.Globalization;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Printing;
-//// Alex: for spooler
+using System.Globalization;
 using System.ServiceProcess;
+using System.Text;
+
+//// Alex: for spooler
+
 	
 /// <summary>
 /// This Class contains Global Icons and Constantes

@@ -7,14 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Security.Permissions;
 using System.Windows.Forms;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.BrowserDisplayBinding;
+
 using HtmlHelp2.Environment;
 using HtmlHelp2.JScriptGlobals;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.BrowserDisplayBinding;
 
 namespace HtmlHelp2
 {

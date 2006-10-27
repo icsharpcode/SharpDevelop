@@ -6,11 +6,11 @@
 // </file>
 
 using System;
-using System.ComponentModel;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Drawing.Design;
 using System.ComponentModel.Design;
+using System.Drawing.Design;
+
 using ICSharpCode.Core;
 
 namespace ICSharpCode.FormsDesigner.Services

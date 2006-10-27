@@ -3,10 +3,8 @@
 
 using System;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Drawing.Printing;
 
-using SharpReportCore;
 /// <summary>
 /// Derived from PrintDocument to have more control about printing
 /// </summary>

@@ -5,15 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.IO;
-using System.Windows.Forms;
 using System.Xml;
+
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.WixBinding
 {

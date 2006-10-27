@@ -7,19 +7,15 @@
 
 using System;
 using System.Collections;
-using System.IO;
 using System.ComponentModel;
 using System.Drawing;
-using System.Reflection;
-using System.Resources;
+using System.IO;
 using System.Windows.Forms;
-using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Project.Dialogs
 {

@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using System;
 using System.Collections;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.XmlEditor
 {

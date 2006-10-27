@@ -7,15 +7,11 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 
-using NoGoop.Controls;
 using NoGoop.ObjBrowser.TreeNodes;
-using NoGoop.Obj;
 using NoGoop.Util;
-using NoGoop.Win32;
 
 namespace NoGoop.ObjBrowser
 {

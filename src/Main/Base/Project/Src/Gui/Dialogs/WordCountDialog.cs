@@ -6,16 +6,14 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Drawing;
-using System.ComponentModel;
-using System.Windows.Forms;
 using System.Collections;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Core;
-
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

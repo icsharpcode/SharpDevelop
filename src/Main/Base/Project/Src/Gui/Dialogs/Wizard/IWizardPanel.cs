@@ -6,11 +6,6 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.CodeDom.Compiler;
-using System.Windows.Forms;
-
-using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop
 {

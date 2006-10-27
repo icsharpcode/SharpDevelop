@@ -6,13 +6,11 @@
 // </file>
 
 using System;
-using System.Collections.Specialized;
-using System.Windows.Forms;
 using System.Drawing;
-using System.Xml;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 {

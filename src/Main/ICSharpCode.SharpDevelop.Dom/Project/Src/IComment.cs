@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {

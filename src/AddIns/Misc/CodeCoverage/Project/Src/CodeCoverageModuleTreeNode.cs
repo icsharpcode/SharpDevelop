@@ -5,11 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.CodeCoverage
 {

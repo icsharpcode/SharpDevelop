@@ -6,17 +6,17 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
-using System.Reflection;
 using System.Collections.Generic;
-using System.Data;
 using System.ComponentModel;
-using SharpQuery.Collections;
+using System.Reflection;
+using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using SharpQuery.SchemaClass;
+using SharpQuery.Collections;
 using SharpQuery.Connection;
 using SharpQuery.Gui.DataView;
+using SharpQuery.SchemaClass;
 
 namespace SharpQuery.Gui.TreeView
 {

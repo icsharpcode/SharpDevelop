@@ -6,12 +6,9 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 
 namespace ICSharpCode.UnitTesting

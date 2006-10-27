@@ -6,12 +6,12 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Xml;
+
 using Microsoft.Build.Framework;
-using Microsoft.Build.Tasks;
 using Microsoft.Build.Utilities;
 using Microsoft.Win32;
 

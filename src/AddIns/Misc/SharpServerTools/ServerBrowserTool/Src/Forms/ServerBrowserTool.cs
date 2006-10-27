@@ -13,11 +13,8 @@
 
 using System;
 using System.Windows.Forms;
-using System.Collections.Generic;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-
 
 namespace SharpServerTools.Forms
 {

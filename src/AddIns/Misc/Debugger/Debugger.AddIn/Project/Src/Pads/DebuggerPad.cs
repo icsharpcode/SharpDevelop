@@ -6,10 +6,8 @@
 // </file>
 
 using System;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Services;
-
 using Debugger;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {

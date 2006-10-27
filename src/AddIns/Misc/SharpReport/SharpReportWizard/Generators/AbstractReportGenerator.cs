@@ -10,15 +10,10 @@
 
 using System;
 using System.Drawing;
-using System.Data;
-using System.Data.OleDb;
-using System.Globalization;
-
 using ICSharpCode.Core;
-	
 using SharpReport;
 using SharpReportCore;
-	
+
 /// <summary>
 /// Abstract Class for all ReportGenerators
 /// </summary>
@@ -27,7 +22,7 @@ using SharpReportCore;
 /// 	created on - 07.09.2005 14:21:07
 /// </remarks>
 /// 
-using System.Windows.Forms;
+
 namespace ReportGenerator {	
 	
 	public class AbstractReportGenerator : IReportGenerator,IDisposable {

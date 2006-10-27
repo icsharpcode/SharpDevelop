@@ -10,14 +10,11 @@
 
 
 using System;
-using System.Drawing;
 using System.ComponentModel;
+using System.Drawing;
 
-using SharpReportCore;
 using SharpReport.Designer;
-	
-using System.Windows.Forms;
-	
+
 /// <summary>
 /// This Function show's the date like
 /// 'Printed : 04.23.2005'

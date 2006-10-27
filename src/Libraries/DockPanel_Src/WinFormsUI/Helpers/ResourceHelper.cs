@@ -12,7 +12,6 @@ using System;
 using System.Drawing;
 using System.Reflection;
 using System.Resources;
-using System.Windows.Forms;
 
 namespace WeifenLuo.WinFormsUI
 {

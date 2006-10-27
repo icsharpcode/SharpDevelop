@@ -7,8 +7,8 @@
 
 using System;
 using System.Collections;
-using System.Drawing;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding

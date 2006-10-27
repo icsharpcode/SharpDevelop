@@ -7,9 +7,6 @@
 
 using System;
 using System.Collections;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Undo;
 using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace

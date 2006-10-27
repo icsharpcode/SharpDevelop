@@ -6,13 +6,12 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.OleDb;
-using SharpQuery.Collections;
-using System.Reflection;
+using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using SharpQuery.Collections;
 using SharpQuery.Connection;
 
 namespace SharpQuery.SchemaClass

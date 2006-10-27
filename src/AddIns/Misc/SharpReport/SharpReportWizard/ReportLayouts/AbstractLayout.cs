@@ -10,10 +10,9 @@
 using System;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.ComponentModel;
 
 using SharpReportCore;
-	
+
 	/// <summary>
 	/// This class is the BaseClass for all Layout's
 	/// </summary>

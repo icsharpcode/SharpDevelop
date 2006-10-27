@@ -8,7 +8,6 @@
  */
 
 using System;
-using SharpReportCore;
 
 namespace ReportGenerator{
 	/// <summary>

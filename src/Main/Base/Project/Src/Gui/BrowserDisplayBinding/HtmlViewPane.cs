@@ -9,9 +9,6 @@ using System;
 using System.Collections;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Drawing.Printing;
-
-using ICSharpCode.SharpDevelop.Internal.Undo;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;

@@ -6,31 +6,15 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting;
-using System.Security;
-using System.Security.Policy;
-using System.Threading;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using Microsoft.Win32;
 using NoGoop.Controls;
-using NoGoop.Debug;
-using NoGoop.Obj;
 using NoGoop.ObjBrowser.Dialogs;
-using NoGoop.ObjBrowser.GuiDesigner;
-using NoGoop.ObjBrowser.TreeNodes;
 using NoGoop.ObjBrowser.Panels;
 using NoGoop.Util;
-using NoGoop.Win32;
 
 namespace NoGoop.ObjBrowser
 {

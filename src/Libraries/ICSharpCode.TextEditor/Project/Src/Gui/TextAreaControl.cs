@@ -6,21 +6,10 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.IO;
 using System.ComponentModel;
 using System.Drawing;
-using System.Threading;
-using System.Drawing.Text;
-using System.Drawing.Drawing2D;
-using System.Drawing.Printing;
-using System.Diagnostics;
 using System.Windows.Forms;
-using System.Runtime.Remoting;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Xml;
-using ICSharpCode.TextEditor.Actions;
+
 using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.TextEditor

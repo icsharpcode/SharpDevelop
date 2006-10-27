@@ -6,9 +6,8 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Reflection;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {

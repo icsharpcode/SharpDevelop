@@ -8,7 +8,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 
 namespace ICSharpCode.SharpDevelop.Project
 {

@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
+using System.Drawing;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using System;
-using System.Drawing;
 
 namespace ICSharpCode.WixBinding
 {

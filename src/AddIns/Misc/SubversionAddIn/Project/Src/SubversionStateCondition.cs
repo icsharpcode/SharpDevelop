@@ -7,12 +7,11 @@
 
 using System;
 using System.IO;
-using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Svn.Commands;
-using NSvn.Core;
 using NSvn.Common;
+using NSvn.Core;
 
 namespace ICSharpCode.Svn
 {

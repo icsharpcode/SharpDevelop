@@ -6,7 +6,6 @@
 // </file>
 
 using System.Drawing;
-using System.Drawing.Text;
 
 namespace ICSharpCode.TextEditor.Util
 {

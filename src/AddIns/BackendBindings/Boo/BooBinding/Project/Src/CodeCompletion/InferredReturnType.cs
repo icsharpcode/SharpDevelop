@@ -6,10 +6,9 @@
 // </file>
 
 using System;
-using ICSharpCode.Core;
+using Boo.Lang.Compiler.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using Boo.Lang.Compiler.Ast;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {

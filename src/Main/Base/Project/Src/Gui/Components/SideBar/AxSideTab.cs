@@ -6,10 +6,10 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui

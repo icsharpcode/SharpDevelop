@@ -7,12 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Runtime.InteropServices;
-
+using Debugger.Interop.MetaData;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
-using Debugger.Interop.MetaData;
 
 namespace Debugger.Wrappers.MetaData
 {

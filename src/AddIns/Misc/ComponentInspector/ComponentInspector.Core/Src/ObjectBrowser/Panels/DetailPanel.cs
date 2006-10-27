@@ -7,15 +7,12 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
 using NoGoop.Controls;
 using NoGoop.ObjBrowser.LinkHelpers;
-using NoGoop.ObjBrowser.TreeNodes;
 using NoGoop.Util;
-using NoGoop.Win32;
 
 namespace NoGoop.ObjBrowser.Panels
 {

@@ -6,10 +6,10 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Drawing;
-using System.Reflection;
 using System.Collections;
+using System.Drawing;
+using System.IO;
+using System.Reflection;
 using System.Xml;
 
 namespace ICSharpCode.FormsDesigner.Gui

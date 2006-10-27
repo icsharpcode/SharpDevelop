@@ -10,9 +10,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
-
-using ICSharpCode.Core;
 
 namespace ICSharpCode.Core
 {

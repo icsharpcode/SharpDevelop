@@ -6,27 +6,13 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 using Debugger;
-
 using ICSharpCode.Core;
-using System.CodeDom.Compiler;
-
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.TreeGrid;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Services;
-using System.Runtime.Remoting;
-using System.Reflection;
-using System.Security.Policy;
-using System.Diagnostics;
 using BM = ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.SharpDevelop.Services

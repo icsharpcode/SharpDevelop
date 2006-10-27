@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {

@@ -10,15 +10,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
 
+using Hornung.ResourceToolkit.Gui;
+using Hornung.ResourceToolkit.Refactoring;
+using Hornung.ResourceToolkit.Resolver;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
-
-using Hornung.ResourceToolkit.Gui;
-using Hornung.ResourceToolkit.Refactoring;
-using Hornung.ResourceToolkit.Resolver;
-using Hornung.ResourceToolkit.ResourceFileContent;
 
 namespace Hornung.ResourceToolkit.Commands
 {

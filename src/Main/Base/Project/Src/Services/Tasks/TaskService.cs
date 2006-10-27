@@ -6,13 +6,13 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop
 {

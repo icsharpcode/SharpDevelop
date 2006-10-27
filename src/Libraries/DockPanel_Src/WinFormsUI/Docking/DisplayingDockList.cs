@@ -10,7 +10,6 @@
 using System;
 using System.Collections;
 using System.Drawing;
-using System.Windows.Forms;
 
 namespace WeifenLuo.WinFormsUI
 {

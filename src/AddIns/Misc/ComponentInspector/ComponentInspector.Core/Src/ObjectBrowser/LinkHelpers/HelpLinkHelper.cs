@@ -7,18 +7,16 @@
 
 using System;
 using System.Collections;
-using System.IO;
 using System.Drawing;
 using System.Globalization;
-using System.Runtime.InteropServices;
-using System.Net;
+using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+
 using NoGoop.Controls;
 using NoGoop.Obj;
-using NoGoop.ObjBrowser;
-using NoGoop.ObjBrowser.TreeNodes;
 using NoGoop.Util;
 using NoGoop.Win32;
 

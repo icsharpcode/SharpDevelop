@@ -9,9 +9,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
-using System.Drawing;
 
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui

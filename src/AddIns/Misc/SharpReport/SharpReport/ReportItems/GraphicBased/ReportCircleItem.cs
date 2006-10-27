@@ -8,12 +8,11 @@
  */
 
 using System;
-using System.Drawing;
 using System.ComponentModel;
+using System.Drawing;
 
-using SharpReportCore;
 using SharpReport.Designer;
-
+using SharpReportCore;
 
 namespace SharpReport.ReportItems{
 	

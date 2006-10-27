@@ -6,13 +6,8 @@
 // </file>
 
 using System;
-using System.Reflection;
 using System.Collections;
-using System.Drawing;
-using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Windows.Forms.Design;
-using ICSharpCode.Core;
 
 namespace ICSharpCode.FormsDesigner.Services
 {

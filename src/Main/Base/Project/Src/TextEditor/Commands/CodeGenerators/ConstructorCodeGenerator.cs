@@ -9,7 +9,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands

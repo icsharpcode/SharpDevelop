@@ -7,8 +7,6 @@
 
 using System;
 using System.IO;
-
-using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;

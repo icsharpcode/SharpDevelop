@@ -11,13 +11,13 @@ namespace HtmlHelp2
 	using System.Drawing;
 	using System.Globalization;
 	using System.Windows.Forms;
+	
+	using HtmlHelp2.Environment;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Gui;
 	using ICSharpCode.SharpDevelop.Project;
-	using HtmlHelp2.Environment;
 	using MSHelpServices;
-
 
 	public class ShowSearchMenuCommand : AbstractMenuCommand
 	{

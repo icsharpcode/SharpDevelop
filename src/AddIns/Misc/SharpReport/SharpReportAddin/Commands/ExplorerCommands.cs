@@ -9,10 +9,9 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.Windows.Forms;
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using SharpReportCore;
+
 /// <summary>
 /// This class'es handles all the commands used by the
 /// <see cref="ReportExplorer"></see>

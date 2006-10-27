@@ -6,17 +6,12 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Drawing;
 using System.Windows.Forms;
-
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.Core;
-
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 {

@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using System.Drawing;
 using System.Diagnostics;
+using System.Drawing;
 
 namespace ICSharpCode.TextEditor.Document
 {

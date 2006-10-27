@@ -12,7 +12,6 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.UnitTesting
 {

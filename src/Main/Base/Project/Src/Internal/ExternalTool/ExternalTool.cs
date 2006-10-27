@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Diagnostics;
 using System.Xml;
 
 namespace ICSharpCode.SharpDevelop.Internal.ExternalTool

@@ -10,11 +10,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using Hornung.ResourceToolkit.ResourceFileContent;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor.Document;
-
-using Hornung.ResourceToolkit.ResourceFileContent;
 
 namespace Hornung.ResourceToolkit.Resolver
 {

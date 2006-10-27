@@ -6,17 +6,15 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Reflection;
-using System.Windows.Forms;
 using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Text;
+using System.Drawing;
+using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using System.Xml;
 
 namespace ICSharpCode.SharpDevelop.Gui.XmlForms 
 {

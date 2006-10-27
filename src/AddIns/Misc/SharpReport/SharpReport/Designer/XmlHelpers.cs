@@ -9,11 +9,7 @@
 
 using System;
 using System.Xml;
-
-using SharpReport;
 using SharpReportCore;
-
-using System.Windows.Forms;
 
 namespace SharpReport.Designer{
 	/// <summary>

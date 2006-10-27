@@ -5,13 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System.IO;
-using System.Collections;
 using System.Collections.Generic;
-using System.Xml;
-
-using ICSharpCode.SharpDevelop.Internal.Templates;
-using ICSharpCode.SharpDevelop.Gui;
+using System.IO;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {

@@ -7,7 +7,6 @@
 
 using System;
 using System.Reflection;
-using System.Xml;
 
 namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {

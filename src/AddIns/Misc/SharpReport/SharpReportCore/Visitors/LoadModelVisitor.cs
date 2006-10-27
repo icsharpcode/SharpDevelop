@@ -12,9 +12,6 @@
 using System;
 using System.Globalization;
 using System.Xml;
-using System.Windows.Forms;
-
-using SharpReportCore;
 
 	/// <summary>
 	/// Fill's the ReportModel from File

@@ -7,11 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Collections;
-using System.Drawing;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;

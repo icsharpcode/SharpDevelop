@@ -6,11 +6,6 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-
-using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {

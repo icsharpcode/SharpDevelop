@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-using System.IO;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.IO;
 using System.Security.Permissions;
 
 namespace ICSharpCode.NRefactory.Visitors

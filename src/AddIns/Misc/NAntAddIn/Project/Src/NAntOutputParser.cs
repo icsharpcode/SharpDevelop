@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.NAntAddIn
 {

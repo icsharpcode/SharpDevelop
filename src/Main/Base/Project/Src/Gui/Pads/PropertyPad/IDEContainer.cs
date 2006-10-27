@@ -6,18 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Drawing;
-using System.Drawing.Design;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
-
-
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

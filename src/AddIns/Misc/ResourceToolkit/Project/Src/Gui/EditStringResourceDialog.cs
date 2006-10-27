@@ -8,10 +8,10 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 using Hornung.ResourceToolkit.ResourceFileContent;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace Hornung.ResourceToolkit.Gui
 {

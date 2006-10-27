@@ -7,10 +7,8 @@
 
 using System;
 using System.ComponentModel;
-using System.Text;
 using System.Globalization;
-using ICSharpCode.Core;
-using ICSharpCode.TextEditor.Document;
+using System.Text;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {

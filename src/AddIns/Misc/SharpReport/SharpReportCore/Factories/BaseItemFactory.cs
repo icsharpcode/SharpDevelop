@@ -12,8 +12,6 @@
 using System;
 using System.Reflection;
 using System.Text;
-using SharpReportCore;
-
 
 /// <summary>
 /// This Factory returns BaseItems, this are BaseClasses implementing

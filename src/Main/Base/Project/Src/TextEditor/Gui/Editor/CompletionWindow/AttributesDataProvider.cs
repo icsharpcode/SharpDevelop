@@ -6,14 +6,8 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Collections.Specialized;
-using System.Windows.Forms;
-
-using ICSharpCode.Core;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor

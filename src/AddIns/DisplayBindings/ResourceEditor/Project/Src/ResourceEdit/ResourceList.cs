@@ -6,21 +6,16 @@
 // </file>
 
 using System;
-using System.IO;
-using System.ComponentModel;
-using System.Windows.Forms;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing.Printing;
+using System.IO;
 using System.Resources;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Undo;
-using System.Drawing.Printing;
 
 namespace ResourceEditor
 {

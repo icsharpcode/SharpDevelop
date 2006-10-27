@@ -6,14 +6,12 @@
 // </file>
 
 using System;
-using System.Reflection;
 using System.CodeDom;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.NRefactory.Visitors
 {

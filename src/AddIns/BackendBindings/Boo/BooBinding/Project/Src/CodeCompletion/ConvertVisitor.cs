@@ -7,12 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using Boo.Lang.Compiler.Steps;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using Boo.Lang.Compiler;
 using AST = Boo.Lang.Compiler.Ast;
-using Boo.Lang.Compiler.IO;
-using Boo.Lang.Compiler.Steps;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {

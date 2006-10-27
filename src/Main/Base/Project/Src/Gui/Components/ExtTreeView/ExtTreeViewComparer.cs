@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop.Gui

@@ -5,17 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
-
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.ExternalTool;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
+using StringPair = System.Collections.Generic.KeyValuePair<System.String, System.String>;
 
 namespace ICSharpCode.WixBinding
 {

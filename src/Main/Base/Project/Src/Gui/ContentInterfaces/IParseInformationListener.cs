@@ -6,9 +6,7 @@
 // </file>
 
 using System;
-using System.Drawing.Printing;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

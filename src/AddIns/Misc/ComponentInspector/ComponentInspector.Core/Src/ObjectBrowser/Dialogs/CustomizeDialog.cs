@@ -6,13 +6,8 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Windows.Forms;
-
-using NoGoop.Controls;
 using NoGoop.ObjBrowser.Panels;
-using NoGoop.ObjBrowser.Types;
-using NoGoop.Util;
 
 namespace NoGoop.ObjBrowser.Dialogs
 {

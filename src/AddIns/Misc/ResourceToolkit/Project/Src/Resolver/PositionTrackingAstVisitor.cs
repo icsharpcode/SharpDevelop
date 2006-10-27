@@ -7,12 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace Hornung.ResourceToolkit.Resolver

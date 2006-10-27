@@ -7,13 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.IO;
-using System.Xml;
-using System.Xml.XPath;
-using System.Xml.Xsl;
+using System.Text;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Xsl;
 
 using ICSharpCode.Core;
 

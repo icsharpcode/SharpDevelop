@@ -8,8 +8,6 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Resources;
-using System.Reflection;
 
 using ICSharpCode.Core;
 

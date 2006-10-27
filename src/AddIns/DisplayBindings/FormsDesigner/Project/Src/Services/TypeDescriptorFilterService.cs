@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 

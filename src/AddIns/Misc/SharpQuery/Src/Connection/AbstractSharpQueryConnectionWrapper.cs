@@ -8,10 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+
 using ICSharpCode.Core;
 using SharpQuery.Collections;
-using SharpQuery.SchemaClass;
 using SharpQuery.Exceptions;
+using SharpQuery.SchemaClass;
 
 namespace SharpQuery.Connection
 {

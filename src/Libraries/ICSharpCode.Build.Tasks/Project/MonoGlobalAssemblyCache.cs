@@ -5,11 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security;
 
 namespace ICSharpCode.Build.Tasks
 {

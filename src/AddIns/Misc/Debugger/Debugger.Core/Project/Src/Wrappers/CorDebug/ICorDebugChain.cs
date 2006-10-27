@@ -8,9 +8,7 @@
 namespace Debugger.Wrappers.CorDebug
 {
 	using System;
-	using System.Collections.Generic;
-	
-	
+
 	public partial class ICorDebugChain
 	{
 		uint index;

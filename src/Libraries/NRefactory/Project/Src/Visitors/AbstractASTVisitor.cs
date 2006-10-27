@@ -10,11 +10,9 @@
 
 namespace ICSharpCode.NRefactory.Visitors {
 	using System;
-	using System.Collections.Generic;
 	using System.Diagnostics;
 	using ICSharpCode.NRefactory.Ast;
-	
-	
+
 	public abstract class AbstractAstVisitor : IAstVisitor {
 		
 		public virtual object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data) {

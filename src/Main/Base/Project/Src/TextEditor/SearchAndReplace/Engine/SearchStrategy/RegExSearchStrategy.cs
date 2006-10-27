@@ -7,9 +7,7 @@
 
 using System;
 using System.Text.RegularExpressions;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Undo;
 
 namespace SearchAndReplace
 {

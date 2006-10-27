@@ -9,12 +9,8 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Drawing;
-using System.Windows.Forms;
-using Microsoft.Win32;
-using NoGoop.Controls;
+
 using NoGoop.Util;
-using NoGoop.Win32;
 
 namespace NoGoop.ObjBrowser
 {

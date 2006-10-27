@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+
 using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Project

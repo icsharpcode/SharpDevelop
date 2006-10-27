@@ -9,15 +9,13 @@ namespace HtmlHelp2
 {
 	using System;
 	using System.Drawing;
-	using System.Reflection;
 	using System.Windows.Forms;
 	using System.Xml;
-	using System.Collections;
+	
+	using HtmlHelp2.Environment;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Gui;
-	using HtmlHelp2.Environment;
-
 
 	public class ShowFavoritesMenuCommand : AbstractMenuCommand
 	{

@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Text;
 
 using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.SharpDevelop.Dom;
 using NR = ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.SharpDevelop.Dom.Refactoring

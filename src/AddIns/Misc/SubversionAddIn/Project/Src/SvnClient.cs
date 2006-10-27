@@ -9,11 +9,10 @@ using System;
 using System.Threading;
 using System.Windows.Forms;
 
-using NSvn.Common;
-using NSvn.Core;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Svn.Gui;
-using ICSharpCode.Core;
+using NSvn.Core;
 
 namespace ICSharpCode.Svn
 {

@@ -7,8 +7,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
-
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger

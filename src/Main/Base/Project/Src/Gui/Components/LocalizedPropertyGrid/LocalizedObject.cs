@@ -9,10 +9,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Globalization;
-using System.Resources;
-using System.Reflection;
-using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

@@ -12,10 +12,8 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 
-
 using NoGoop.ObjBrowser;
 using NoGoop.Util;
-using NoGoop.Win32;
 
 namespace NoGoop.Obj
 {

@@ -10,10 +10,9 @@
 
 
 using System;
+using System.Drawing;
 using System.Globalization;
-using System.ComponentModel;
-using System.Drawing;	
-	
+
 /// <summary>
 /// BaseClass for PageNumbers
 /// </summary>

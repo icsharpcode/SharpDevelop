@@ -6,11 +6,13 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml;
-using System.Collections.Generic;
+
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Document;
+
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 {
 	/// <summary>

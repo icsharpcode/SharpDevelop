@@ -6,12 +6,11 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Collections;
+using System.IO;
 using System.Xml;
-using System.Diagnostics;
+
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {

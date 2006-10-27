@@ -8,8 +8,9 @@
  */
 
 using System;
-using System.Windows.Forms;
 using System.Globalization;
+using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using SharpReportCore;

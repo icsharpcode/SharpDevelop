@@ -12,9 +12,9 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.ComponentModel;
 using System.Drawing.Design;
-using System.Collections;
 
 namespace ICSharpCode.FormsDesigner.Services
 {

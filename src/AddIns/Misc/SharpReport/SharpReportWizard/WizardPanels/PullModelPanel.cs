@@ -8,24 +8,15 @@
  */
 
 using System;
-using System.ComponentModel;
-using System.Globalization;
-using System.Drawing;
-using System.Windows.Forms;
 using System.Data;
-using System.Text;
+using System.Globalization;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-
-using SharpQuery;
 using SharpQuery.Gui.TreeView;
 using SharpQuery.SchemaClass;
-
-
-
-using System.Diagnostics;
 
 namespace ReportGenerator
 {

@@ -6,9 +6,8 @@
 // </file>
 
 using System;
-using System.Resources;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 
 namespace ICSharpCode.Core

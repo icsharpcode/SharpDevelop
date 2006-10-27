@@ -9,13 +9,9 @@
 
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
 
-using SharpReport;
 using SharpReportCore;
-
-
 
 namespace SharpReport.Designer{
 	/// <summary>

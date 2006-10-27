@@ -5,20 +5,19 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.XmlEditor;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml;
+
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.TextEditor.Document;
+using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.WixBinding
 {

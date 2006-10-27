@@ -6,17 +6,14 @@
 // </file>
 
 using System;
-using System.Drawing;
 using System.Collections;
 using System.Collections.Generic;
 
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.InsightWindow;
-
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {

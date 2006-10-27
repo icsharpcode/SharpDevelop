@@ -7,9 +7,9 @@
 
 using System;
 using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Actions;
-	
+using ICSharpCode.TextEditor.Document;
+
 namespace Grunwald.BooBinding
 {
 	public class BooFormattingStrategy : DefaultFormattingStrategy

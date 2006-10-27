@@ -9,7 +9,6 @@
 using System;
 using System.Windows.Forms;
 using SharpReportCore;
-using SharpReport.Designer;
 
  /// <summary>
  /// This Class contains all commands belonging to a ReportItem

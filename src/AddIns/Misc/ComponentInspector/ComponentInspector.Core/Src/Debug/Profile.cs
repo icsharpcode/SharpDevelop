@@ -6,13 +6,10 @@
 // </file>
 
 using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Microsoft.Win32;
-
 using CORDBLib_1_0;
-using NoGoop.Win32;
 using NoGoop.Util;
+using NoGoop.Win32;
 
 namespace NoGoop.Debug
 {

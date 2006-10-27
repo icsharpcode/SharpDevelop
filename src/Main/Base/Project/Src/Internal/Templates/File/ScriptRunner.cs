@@ -6,18 +6,11 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.ComponentModel;
-using System.Drawing;
+using System.CodeDom.Compiler;
+using System.IO;
 using System.Reflection;
-using System.Diagnostics;
-using System.Resources;
-using System.Windows.Forms;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml;
-using System.IO;
-using System.CodeDom.Compiler;
 
 using ICSharpCode.Core;
 

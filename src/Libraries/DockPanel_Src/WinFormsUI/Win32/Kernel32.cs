@@ -9,9 +9,7 @@
 // *****************************************************************************
 
 using System;
-using System.Drawing;
 using System.Runtime.InteropServices;
-using WeifenLuo.WinFormsUI.Win32;
 
 namespace WeifenLuo.WinFormsUI
 {

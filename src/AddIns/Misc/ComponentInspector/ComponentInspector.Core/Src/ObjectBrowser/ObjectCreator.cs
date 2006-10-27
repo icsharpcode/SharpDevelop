@@ -6,8 +6,6 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -18,11 +16,8 @@ using System.Windows.Forms;
 using NoGoop.Controls;
 using NoGoop.Obj;
 using NoGoop.ObjBrowser.Dialogs;
-using NoGoop.ObjBrowser.GuiDesigner;
 using NoGoop.ObjBrowser.Panels;
 using NoGoop.ObjBrowser.TreeNodes;
-using NoGoop.ObjBrowser.Types;
-using NoGoop.Win32;
 using NoGoop.Util;
 
 namespace NoGoop.ObjBrowser

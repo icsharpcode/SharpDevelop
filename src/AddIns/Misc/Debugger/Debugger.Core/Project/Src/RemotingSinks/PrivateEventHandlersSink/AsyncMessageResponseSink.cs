@@ -7,9 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Runtime.Remoting.Messaging;
-using System.Collections;
 using System.Threading;
 
 namespace CustomSinks

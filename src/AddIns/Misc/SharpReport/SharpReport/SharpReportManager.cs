@@ -7,29 +7,16 @@
 
 using System;
 using System.Data;
-using System.Data.OleDb;
-
-using System.Collections;
-
-using System.Xml;
-using System.Windows.Forms;
 using System.Drawing;
-using System.Drawing.Printing;
-using System.Reflection;
+using System.Windows.Forms;
+using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-
 using SharpQuery.Connection;
-
-using SharpReportCore;
-
 using SharpReport.Designer;
-using SharpReport.ReportItems;
 using SharpReport.ReportItems.Functions;
-
-
-using System.Diagnostics;
+using SharpReportCore;
 
 namespace SharpReport{
 	/// <summary>

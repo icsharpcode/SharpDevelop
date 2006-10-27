@@ -14,7 +14,7 @@ using System.Reflection;
 using System.Text;
 
 using SharpReportCore;
-	
+
 	/// <summary>
 	/// Factories used by the Designer
 	/// </summary>

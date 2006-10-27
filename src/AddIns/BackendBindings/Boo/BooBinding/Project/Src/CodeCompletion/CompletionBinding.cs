@@ -6,15 +6,8 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-
-using ICSharpCode.Core;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {

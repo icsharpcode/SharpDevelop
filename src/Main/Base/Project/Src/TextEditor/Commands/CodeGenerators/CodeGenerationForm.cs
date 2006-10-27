@@ -9,9 +9,10 @@ using System;
 using System.Collections;
 using System.Drawing;
 using System.Windows.Forms;
-using ICSharpCode.TextEditor;
-using ICSharpCode.SharpDevelop.Dom;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {

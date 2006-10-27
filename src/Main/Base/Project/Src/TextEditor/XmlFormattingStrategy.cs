@@ -7,18 +7,15 @@
 
 using System;
 using System.Collections;
-using System.Drawing;
 using System.Diagnostics;
 using System.IO;
-using System.Windows.Forms;
 using System.Text;
 using System.Xml;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Actions;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Actions;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor
 {

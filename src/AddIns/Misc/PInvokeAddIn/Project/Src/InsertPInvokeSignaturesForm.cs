@@ -5,18 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.PInvokeAddIn.WebServices;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.TextEditor;
-using System;
-using System.IO;
-using System.Text;
-using System.Windows.Forms;
-using System.Diagnostics;
 
 namespace ICSharpCode.PInvokeAddIn
 {

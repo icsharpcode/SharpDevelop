@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Internal.Undo

@@ -6,11 +6,11 @@
 // </file>
 
 using System;
-using System.IO;
-using System.ComponentModel;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace ICSharpCode.Core

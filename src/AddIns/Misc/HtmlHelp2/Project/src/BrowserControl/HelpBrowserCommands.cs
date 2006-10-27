@@ -6,14 +6,12 @@
 // </file>
 
 using System;
-using System.Drawing;
 using System.Security.Permissions;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.BrowserDisplayBinding;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace HtmlHelp2
 {

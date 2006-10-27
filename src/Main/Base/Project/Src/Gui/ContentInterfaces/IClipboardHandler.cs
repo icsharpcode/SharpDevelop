@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using ICSharpCode.SharpDevelop.Internal.Undo;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

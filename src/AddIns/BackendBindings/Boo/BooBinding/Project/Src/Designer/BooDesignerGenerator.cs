@@ -6,14 +6,14 @@
 // </file>
 
 using System;
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
 using System.CodeDom;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Reflection;
+using System.Text;
+
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace Grunwald.BooBinding.Designer
 {

@@ -8,9 +8,10 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+
 using ICSharpCode.SharpDevelop.Gui;
-using SharpQuery.SchemaClass;
 using SharpQuery.Collections;
+using SharpQuery.SchemaClass;
 
 namespace SharpQuery.Gui.DataView
 {

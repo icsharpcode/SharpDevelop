@@ -10,15 +10,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
-using System.Text.RegularExpressions;
 using System.Drawing;
-using System.Reflection;
 using System.IO;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
-using ICSharpCode.Core;
 
 namespace Plugins.RegExpTk {
 

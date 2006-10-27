@@ -7,9 +7,6 @@
 
 using System;
 using System.Collections;
-using System.Collections.Specialized;
-using System.Drawing;
-using System.Text;
 using System.Xml;
 
 using ICSharpCode.TextEditor.Util;

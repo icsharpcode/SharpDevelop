@@ -6,24 +6,7 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Threading;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Collections;
-using System.ComponentModel;
-using System.Windows.Forms;
-using System.Diagnostics;
-using System.Text;
-using System.Xml;
-using System.Xml.Xsl;
-
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
-using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {

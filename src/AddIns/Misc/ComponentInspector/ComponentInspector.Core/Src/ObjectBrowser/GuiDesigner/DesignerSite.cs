@@ -7,18 +7,12 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 using NoGoop.ObjBrowser.TreeNodes;
-using NoGoop.Win32;
-using NoGoop.Util;
 
 namespace NoGoop.ObjBrowser.GuiDesigner
 {

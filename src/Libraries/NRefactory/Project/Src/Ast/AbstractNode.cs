@@ -6,11 +6,10 @@
 // </file>
 
 using System;
-using System.Text;
-using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Visitors;
+using System.Diagnostics;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.Ast
 {

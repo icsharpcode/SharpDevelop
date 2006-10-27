@@ -7,14 +7,10 @@
 
 // project created on 16.07.2002 at 18:07
 using System;
-using System.Drawing;
-using System.Windows.Forms;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.BrowserDisplayBinding;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.BrowserDisplayBinding;
 
 namespace ICSharpCode.StartPage
 {

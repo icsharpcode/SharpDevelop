@@ -8,11 +8,10 @@
 //  WinFormsUI Library Version 1.0
 // *****************************************************************************
 using System;
-using System.Drawing;
-using System.Windows.Forms;
 using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Runtime.InteropServices;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace WeifenLuo.WinFormsUI
 {

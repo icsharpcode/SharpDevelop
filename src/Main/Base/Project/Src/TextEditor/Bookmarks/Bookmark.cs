@@ -7,11 +7,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 

@@ -7,12 +7,7 @@
 
 using System;
 using System.Windows.Forms;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.ExternalTool;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.WixBinding
 {

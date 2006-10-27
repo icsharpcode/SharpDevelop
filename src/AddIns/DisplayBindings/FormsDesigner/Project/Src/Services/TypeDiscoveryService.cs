@@ -5,17 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Reflection;
-using System.Windows.Forms;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.FormsDesigner.Services
 {

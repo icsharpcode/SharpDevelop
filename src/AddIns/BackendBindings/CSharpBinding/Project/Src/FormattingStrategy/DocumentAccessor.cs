@@ -9,9 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.TextEditor.Document;
 
 namespace CSharpBinding.FormattingStrategy
 {

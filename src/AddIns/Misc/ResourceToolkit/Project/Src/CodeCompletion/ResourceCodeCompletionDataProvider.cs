@@ -7,13 +7,10 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-
 using Hornung.ResourceToolkit.ResourceFileContent;
+using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace Hornung.ResourceToolkit.CodeCompletion
 {

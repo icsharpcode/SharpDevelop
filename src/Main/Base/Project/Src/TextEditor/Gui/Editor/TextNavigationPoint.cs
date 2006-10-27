@@ -9,8 +9,6 @@ using System;
 using System.Drawing;
 using System.IO;
 
-using ICSharpCode.Core;
-
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>

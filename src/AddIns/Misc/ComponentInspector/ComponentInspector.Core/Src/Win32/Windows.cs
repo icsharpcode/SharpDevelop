@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections;
-using System.Text;
-using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
+
 using Microsoft.Win32;
 using NoGoop.Util;
 

@@ -5,14 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.XmlEditor;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
+
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.WixBinding
 {

@@ -6,17 +6,12 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using System.ComponentModel;
-
 
 using ICSharpCode.Core;
-
 using SharpReportCore;
-
-using SharpReport.ReportItems;
-
 
 namespace SharpReport.Designer{
 	/// <summary>

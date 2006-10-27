@@ -5,8 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -17,6 +15,9 @@ using System.Web.Services.Description;
 using System.Web.Services.Discovery;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

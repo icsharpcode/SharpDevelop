@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.Svn
 {

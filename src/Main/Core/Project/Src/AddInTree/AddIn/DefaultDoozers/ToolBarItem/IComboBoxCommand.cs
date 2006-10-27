@@ -6,9 +6,6 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Reflection;
-using System.Windows.Forms;
 
 namespace ICSharpCode.Core
 {

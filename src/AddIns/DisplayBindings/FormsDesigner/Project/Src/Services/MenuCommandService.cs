@@ -6,14 +6,8 @@
 // </file>
 
 using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.Collections;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 

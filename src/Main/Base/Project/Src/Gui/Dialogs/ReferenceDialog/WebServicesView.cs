@@ -5,10 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
 using System;
 using System.Web.Services.Description;
 using System.Windows.Forms;
+
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace Grunwald.BooBinding.CodeCompletion

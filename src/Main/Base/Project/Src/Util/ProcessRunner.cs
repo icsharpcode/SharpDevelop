@@ -5,10 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Util
 {

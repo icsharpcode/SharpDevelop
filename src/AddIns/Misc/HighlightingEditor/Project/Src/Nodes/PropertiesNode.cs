@@ -8,11 +8,10 @@
 using System;
 using System.Collections;
 using System.Windows.Forms;
-using System.Drawing;
 using System.Xml;
 
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 {

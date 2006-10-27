@@ -5,11 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
 using ICSharpCode.Core;
 using ICSharpCode.NAntAddIn.Gui;
-using System;
-using System.IO;
-using System.Windows.Forms;
 
 namespace ICSharpCode.NAntAddIn.Commands
 {

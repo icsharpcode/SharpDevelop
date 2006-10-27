@@ -9,12 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Hornung.ResourceToolkit.Resolver;
+using Hornung.ResourceToolkit.ResourceFileContent;
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-
-using Hornung.ResourceToolkit.Resolver;
-using Hornung.ResourceToolkit.ResourceFileContent;
 
 namespace Hornung.ResourceToolkit
 {

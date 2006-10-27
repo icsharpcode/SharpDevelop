@@ -9,13 +9,7 @@
 
 using System;
 using System.Drawing;
-using System.Xml;
-using System.ComponentModel;
 using System.Windows.Forms;
-using System.Drawing.Printing;
-
-using SharpReportCore;
-
 
 namespace SharpReportCore{
 	/// <summary>

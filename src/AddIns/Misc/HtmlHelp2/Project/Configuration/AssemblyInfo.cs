@@ -6,7 +6,6 @@
 // </file>
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Security.Permissions;
 
 // Information about this assembly is defined by the following

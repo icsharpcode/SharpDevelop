@@ -8,14 +8,9 @@
 namespace HtmlHelp2.Environment
 {
 	using System;
-	using System.Drawing;
-	using System.Diagnostics;
-	using System.Collections;
-	using System.IO;
-	using System.Reflection;
 	using System.Windows.Forms;
 	using System.Xml.Serialization;
-	using ICSharpCode.Core;
+	
 	using ICSharpCode.SharpDevelop.Gui;
 
 	public class HtmlHelp2OptionsPanel : AbstractOptionPanel

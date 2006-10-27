@@ -6,13 +6,6 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Drawing;
-using System.Drawing.Text;
-
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor

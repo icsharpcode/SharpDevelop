@@ -6,22 +6,8 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Threading;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Collections;
 using System.Windows.Forms;
-using System.Diagnostics;
-using System.Text;
-
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Actions;
-
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 namespace SearchAndReplace
 {

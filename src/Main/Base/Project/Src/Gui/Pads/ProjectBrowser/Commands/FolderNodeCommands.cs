@@ -6,17 +6,10 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Threading;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
-using System.Diagnostics;
 
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 

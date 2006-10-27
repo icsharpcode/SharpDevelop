@@ -7,19 +7,13 @@
 
 using System;
 using System.Collections;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
 
 using NoGoop.Obj;
 using NoGoop.ObjBrowser.LinkHelpers;
 using NoGoop.ObjBrowser.Panels;
 using NoGoop.Util;
-using NoGoop.Win32;
 
 namespace NoGoop.ObjBrowser.TreeNodes
 {

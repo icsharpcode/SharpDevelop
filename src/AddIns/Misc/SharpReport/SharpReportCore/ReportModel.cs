@@ -31,7 +31,6 @@ namespace SharpReportCore {
 	
 	using System;
 	using System.Drawing;
-	using SharpReportCore;
 
 	public class ReportModel : object,SharpReportCore.IVisitor,IDisposable{	
 		ReportSettings reportSettings;

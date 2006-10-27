@@ -6,13 +6,9 @@
 // </file>
 
 using System;
-using System.Reflection;
 using System.Collections;
 using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Globalization;
 
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FormsDesigner.Services

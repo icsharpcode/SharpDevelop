@@ -6,14 +6,8 @@
 // </file>
 
 using System;
-using System.Reflection;
-using System.CodeDom.Compiler;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

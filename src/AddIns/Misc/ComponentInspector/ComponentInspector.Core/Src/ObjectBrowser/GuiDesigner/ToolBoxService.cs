@@ -9,13 +9,8 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Diagnostics;
-using System.Drawing;
 using System.Drawing.Design;
 using System.Windows.Forms;
-using System.Windows.Forms.Design;
-using NoGoop.Win32;
-using NoGoop.Util;
 
 namespace NoGoop.ObjBrowser.GuiDesigner
 {

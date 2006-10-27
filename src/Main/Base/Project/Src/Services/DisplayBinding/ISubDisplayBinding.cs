@@ -6,10 +6,6 @@
 // </file>
 
 using System;
-using System.IO;
-
-using ICSharpCode.SharpDevelop.Project;
-
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop

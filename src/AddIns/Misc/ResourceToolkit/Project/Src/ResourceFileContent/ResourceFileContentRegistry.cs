@@ -7,8 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-
 using ICSharpCode.Core;
 
 namespace Hornung.ResourceToolkit.ResourceFileContent

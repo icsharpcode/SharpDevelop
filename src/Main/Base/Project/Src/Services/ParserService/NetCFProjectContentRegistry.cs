@@ -6,11 +6,9 @@
 // </file>
 
 using System;
-using Microsoft.Win32;
 using System.IO;
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Gui;
+using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop
 {

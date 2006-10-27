@@ -10,8 +10,6 @@
 using System;
 using System.ComponentModel;
 
-using System.Xml.Serialization;
-
 /// <summary>
 /// This Class is the BaseClass for <see cref="ReportSection"></see>
 /// </summary>

@@ -6,17 +6,16 @@
 // </file>
 
 using System;
-using System.Reflection;
-using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Threading;
-using System.IO;
 using System.Windows.Forms;
+
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using NSvn.Common;
 using NSvn.Core;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.Svn
 {

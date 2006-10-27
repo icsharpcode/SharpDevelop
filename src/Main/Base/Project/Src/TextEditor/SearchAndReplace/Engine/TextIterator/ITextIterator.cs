@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using System.Collections;
 using ICSharpCode.TextEditor.Document;
+
 namespace SearchAndReplace
 {
 	/// <summary>

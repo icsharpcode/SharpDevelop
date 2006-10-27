@@ -6,10 +6,6 @@
 // </file>
 
 using System;
-using System.Drawing;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Undo;
 
 namespace SearchAndReplace
 {

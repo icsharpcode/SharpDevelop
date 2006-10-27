@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.FormsDesigner;
 using System;
 using System.ComponentModel.Design.Serialization;
+using ICSharpCode.FormsDesigner;
 
 namespace ICSharpCode.WixBinding
 {

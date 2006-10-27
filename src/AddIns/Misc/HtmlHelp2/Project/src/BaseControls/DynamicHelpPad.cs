@@ -12,19 +12,19 @@ namespace HtmlHelp2
 	using System.Collections.Specialized;
 	using System.Drawing;
 	using System.Globalization;
+	using System.Reflection;
 	using System.Security.Permissions;
 	using System.Windows.Forms;
-	using System.Reflection;
+	
+	using HtmlHelp2.Environment;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop;
-	using ICSharpCode.SharpDevelop.Gui;
 	using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 	using ICSharpCode.SharpDevelop.Dom;
+	using ICSharpCode.SharpDevelop.Gui;
 	using ICSharpCode.SharpDevelop.Project;
 	using ICSharpCode.TextEditor;
-	using HtmlHelp2.Environment;
 	using MSHelpServices;
-
 
 	public class ShowDynamicHelpMenuCommand : AbstractMenuCommand
 	{

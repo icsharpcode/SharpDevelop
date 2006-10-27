@@ -6,11 +6,9 @@
 // </file>
 
 using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-using NoGoop.Win32;
 using NoGoop.Util;
 
 namespace NoGoop.ObjBrowser.ActiveX

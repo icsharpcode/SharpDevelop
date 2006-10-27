@@ -7,13 +7,7 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
-using NoGoop.Win32;
-using NoGoop.Util;
 
 namespace NoGoop.Controls
 {

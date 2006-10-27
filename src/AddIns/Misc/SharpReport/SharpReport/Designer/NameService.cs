@@ -10,8 +10,6 @@
 
 using System;
 using System.Globalization;
-using System.ComponentModel;
-
 using SharpReportCore;
 
 /// <summary>

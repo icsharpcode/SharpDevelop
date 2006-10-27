@@ -6,13 +6,11 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Xml;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
+using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.XmlForms

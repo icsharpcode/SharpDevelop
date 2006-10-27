@@ -8,8 +8,8 @@
 // created on 08.08.2003 at 13:02
 using System;
 using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.FormsDesigner.Gui

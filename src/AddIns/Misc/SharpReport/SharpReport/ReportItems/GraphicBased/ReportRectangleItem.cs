@@ -10,14 +10,12 @@
 
 
 using System;
-using System.Drawing;
 using System.ComponentModel;
+using System.Drawing;
 
-using SharpReportCore;
 using SharpReport.Designer;
-using SharpReport.ReportItems;
+using SharpReportCore;
 
-	
 /// <summary>
 /// This Class Draws a Rectangle
 /// All this Graphical Classes derive from <see cref="BaseGraphicItem"></see>

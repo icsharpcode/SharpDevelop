@@ -5,15 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.FormsDesigner;
-using ICSharpCode.FormsDesigner.Gui;
-using ICSharpCode.FormsDesigner.Services;
-using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Drawing.Design;
 using System.IO;
 using System.Reflection;
+
+using ICSharpCode.Core;
+using ICSharpCode.FormsDesigner;
+using ICSharpCode.FormsDesigner.Gui;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WixBinding
 {

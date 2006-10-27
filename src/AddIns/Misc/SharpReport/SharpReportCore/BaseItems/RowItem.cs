@@ -8,11 +8,10 @@
  */
 
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.ComponentModel;
-using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
+
 using SharpReportCore.Exporters;
 
 namespace SharpReportCore{

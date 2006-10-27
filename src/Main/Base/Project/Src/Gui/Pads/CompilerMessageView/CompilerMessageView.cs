@@ -6,20 +6,14 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
+using System.Drawing;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
-using System.Drawing;
-using System.CodeDom.Compiler;
-using System.IO;
-using System.Diagnostics;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

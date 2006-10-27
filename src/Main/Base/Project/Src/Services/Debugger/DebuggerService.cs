@@ -6,23 +6,20 @@
 // </file>
 
 using System;
-using System.Diagnostics;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using System.Drawing;
 using System.Text;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor;
-using System.Drawing;
-using System.Windows.Forms;
+using ICSharpCode.TextEditor.Document;
 using BM = ICSharpCode.SharpDevelop.Bookmarks;
-using ITextEditorControlProvider = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider;
 using ITextAreaToolTipProvider = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextAreaToolTipProvider;
+using ITextEditorControlProvider = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider;
 using ToolTipInfo = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ToolTipInfo;
 
 namespace ICSharpCode.SharpDevelop

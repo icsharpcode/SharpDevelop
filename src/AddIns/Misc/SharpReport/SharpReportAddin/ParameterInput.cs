@@ -11,12 +11,9 @@
 
 using System;
 using System.Data;
-using System.Windows.Forms;
 using SharpQuery.Gui.DataView;
-	
 using SharpReportCore;
 
-	
 /// <summary>
 /// This Form, derived from SharpQuery.SqlParameterInput handles the Input of
 /// Parameter's needed for Query's

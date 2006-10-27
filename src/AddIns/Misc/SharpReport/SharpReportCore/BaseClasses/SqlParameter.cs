@@ -12,9 +12,7 @@ namespace SharpReportCore {
 	using System;
 	using System.Data;
 	using System.Globalization;
-	
-	using SharpReportCore;
-	
+
 	/// <summary>
 	/// According to the definition in
 	/// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/rsrdl/htm/rsp_ref_rdl_elements_qz_629g.asp

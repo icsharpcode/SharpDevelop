@@ -6,15 +6,12 @@
 // </file>
 
 using System;
-using System.Text;
-using System.IO;
-using System.Xml;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
+using System.IO;
+using System.Text;
+using System.Xml;
+
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates

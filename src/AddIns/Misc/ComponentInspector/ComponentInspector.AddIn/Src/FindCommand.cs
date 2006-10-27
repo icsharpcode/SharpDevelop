@@ -5,12 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using NoGoop.ObjBrowser.Dialogs;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop;
 using System;
-using System.Windows.Forms;
+using ICSharpCode.Core;
+using NoGoop.ObjBrowser.Dialogs;
 
 namespace ICSharpCode.ComponentInspector.AddIn
 {

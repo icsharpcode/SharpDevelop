@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using Microsoft.Build.Tasks;
 using Microsoft.Build.Utilities;
 
 namespace ICSharpCode.Build.Tasks

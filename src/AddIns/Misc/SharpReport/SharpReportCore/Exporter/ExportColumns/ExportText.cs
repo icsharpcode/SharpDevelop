@@ -8,7 +8,6 @@
  */
 
 using System;
-using System.Drawing;
 
 namespace SharpReportCore.Exporters {
 	/// <summary>

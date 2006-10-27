@@ -7,11 +7,10 @@
 
 using System;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

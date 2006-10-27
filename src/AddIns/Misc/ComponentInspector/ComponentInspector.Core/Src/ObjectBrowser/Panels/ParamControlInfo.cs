@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -13,13 +12,10 @@ using System.Drawing;
 using System.Reflection;
 using System.Runtime.Remoting;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 
-using NoGoop.Controls;
-using NoGoop.Obj;
+using ICSharpCode.Core;
 using NoGoop.ObjBrowser.TreeNodes;
-using NoGoop.Win32;
 using NoGoop.Util;
 
 namespace NoGoop.ObjBrowser.Panels

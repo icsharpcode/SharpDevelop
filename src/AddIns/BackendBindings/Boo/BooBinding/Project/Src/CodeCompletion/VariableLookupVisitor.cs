@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using Boo.Lang.Compiler.Ast;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using Boo.Lang.Compiler.Ast;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {

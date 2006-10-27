@@ -9,11 +9,10 @@
 //------------------------------------------------------------------------------
 using System;
 using System.Drawing;
-using System.Drawing.Printing;
-using System.ComponentModel;
 using System.Windows.Forms;
 
 using SharpReportCore;
+
 /// <summary>
 /// This class build a TableLayout
 /// </summary>

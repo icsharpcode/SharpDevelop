@@ -6,14 +6,12 @@
 // </file>
 
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Threading;
+using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 

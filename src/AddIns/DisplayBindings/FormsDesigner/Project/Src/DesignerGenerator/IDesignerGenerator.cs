@@ -6,13 +6,11 @@
 // </file>
 
 using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FormsDesigner
 {

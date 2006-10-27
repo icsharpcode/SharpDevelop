@@ -6,18 +6,16 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Xml;
-using System.Collections;
-using System.Drawing;
-using System.Reflection;
-using System.Windows.Forms;
-using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.CodeDom;
 using System.CodeDom.Compiler;
-using System.Text;
-using System.Text.RegularExpressions;
+using System.Collections;
+using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Drawing;
+using System.IO;
+using System.Reflection;
+using System.Windows.Forms;
+using System.Xml;
 
 namespace ICSharpCode.FormsDesigner
 {

@@ -6,17 +6,12 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
-
-using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
+using ICSharpCode.SharpDevelop.Project;
+using StringPair = System.Collections.Generic.KeyValuePair<System.String, System.String>;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {

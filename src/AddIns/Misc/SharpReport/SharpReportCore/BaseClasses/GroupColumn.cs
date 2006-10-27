@@ -10,8 +10,8 @@
 
 namespace SharpReportCore {
 	using System;
-	using System.Data;
 	using System.ComponentModel;
+
 	/// <summary>
 	/// This Class build an Grouping Item
 	/// </summary>

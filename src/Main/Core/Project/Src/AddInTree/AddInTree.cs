@@ -6,11 +6,10 @@
 // </file>
 
 using System;
-using System.Resources;
-using System.IO;
-using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Resources;
 
 namespace ICSharpCode.Core
 {

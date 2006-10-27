@@ -9,13 +9,12 @@
 // *****************************************************************************
 
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Windows.Forms;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
+using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Forms;
 
 namespace WeifenLuo.WinFormsUI
 {

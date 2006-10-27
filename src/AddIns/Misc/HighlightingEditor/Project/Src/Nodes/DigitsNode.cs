@@ -7,9 +7,8 @@
 
 using System;
 using System.Windows.Forms;
-using System.Drawing;
 using System.Xml;
-using ICSharpCode.TextEditor.Document;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 

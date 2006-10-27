@@ -7,13 +7,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-
+using Hornung.ResourceToolkit.ResourceFileContent;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
-
-using Hornung.ResourceToolkit.ResourceFileContent;
 
 namespace Hornung.ResourceToolkit.Resolver
 {

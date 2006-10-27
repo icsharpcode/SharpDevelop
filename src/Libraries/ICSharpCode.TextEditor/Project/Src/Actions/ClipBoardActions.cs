@@ -5,11 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System.Drawing;
-using System.Windows.Forms;
 using System;
-
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.TextEditor.Actions 
 {

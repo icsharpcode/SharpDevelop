@@ -8,10 +8,9 @@
  */
 
 using System;
-using System.Data.OleDb;
 using System.ComponentModel;
-using SharpQuery.SchemaClass;
 using SharpQuery.Collections;
+using SharpQuery.SchemaClass;
 using SharpReportCore;
 
 namespace ReportGenerator

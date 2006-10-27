@@ -11,8 +11,8 @@ namespace HtmlHelp2.Environment
 	using System.Globalization;
 	using System.IO;
 	using System.Windows.Forms;
-	using System.Xml;
 	using System.Xml.Serialization;
+	
 	using ICSharpCode.Core;
 	using MSHelpServices;
 

@@ -8,10 +8,7 @@
  */
 
 using System;
-using System.ComponentModel;
 using System.Windows.Forms;
-
-using SharpReportCore;
 
 namespace SharpReport.Designer{
 	/// <summary>

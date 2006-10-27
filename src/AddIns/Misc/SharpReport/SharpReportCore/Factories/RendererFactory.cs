@@ -10,8 +10,7 @@
 
 using System;
 using System.Reflection;
-using SharpReportCore;
-	
+
 	/// <summary>
 	/// This class is a Factory for all Renderer
 	/// <see cref="RenderFormSheetReport"></see>

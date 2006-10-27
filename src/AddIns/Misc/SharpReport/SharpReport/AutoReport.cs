@@ -12,20 +12,11 @@
 using System;
 using System.Data;
 using System.Drawing;
-using System.Drawing.Printing;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-
-using SharpReport;
-using SharpReport.Designer;
+using SharpReport.ReportItems;
 using SharpReportCore;
 
-using SharpReport.ReportItems;
-	
-using System.Windows.Forms;
-	
-	
 /// <summary>
 /// This Class creates a Report based on the DataSource selected in the Wizard
 /// </summary>

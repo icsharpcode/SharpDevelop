@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using IDocumentLine = ICSharpCode.SharpDevelop.Dom.Refactoring.IDocumentLine;

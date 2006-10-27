@@ -7,8 +7,9 @@
 
 using System;
 using System.ComponentModel;
-using System.Text;
 using System.Reflection;
+using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 

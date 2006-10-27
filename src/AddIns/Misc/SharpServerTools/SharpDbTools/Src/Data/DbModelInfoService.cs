@@ -13,10 +13,11 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Collections.Generic;
 using System.IO;
+
 using ICSharpCode.Core;
 
 namespace SharpDbTools.Data

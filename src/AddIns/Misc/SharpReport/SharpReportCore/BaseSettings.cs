@@ -19,11 +19,10 @@
 //
 // Peter Forstmeier (Peter.Forstmeier@t-online.de)
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.ComponentModel;
 using System.Windows.Forms;
-
 using System.Xml.Serialization;
 
 	/// <summary>

@@ -6,14 +6,6 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Collections;
-using System.Threading;
-using System.Resources;
-using System.Drawing;
-using System.Diagnostics;
-using System.Reflection;
-using System.Xml;
 
 namespace ICSharpCode.SharpDevelop
 {

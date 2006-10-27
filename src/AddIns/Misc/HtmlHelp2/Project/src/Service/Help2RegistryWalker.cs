@@ -10,7 +10,7 @@ namespace HtmlHelp2.Environment
 	using System;
 	using System.Runtime.InteropServices;
 	using System.Windows.Forms;
-	using ICSharpCode.Core;
+	
 	using MSHelpServices;
 
 	public sealed class Help2RegistryWalker

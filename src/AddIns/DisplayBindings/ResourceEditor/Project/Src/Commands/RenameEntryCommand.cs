@@ -6,13 +6,9 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
-using System.IO;
-using System.Drawing;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop;
+
 namespace ResourceEditor
 {
 	class RenameEntryCommand : AbstractMenuCommand

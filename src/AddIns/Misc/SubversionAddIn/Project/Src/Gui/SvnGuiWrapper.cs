@@ -6,12 +6,12 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Text;
 using System.Diagnostics;
+using System.Text;
 using System.Windows.Forms;
-using Microsoft.Win32;
+
 using ICSharpCode.Core;
+using Microsoft.Win32;
 
 namespace ICSharpCode.Svn
 {

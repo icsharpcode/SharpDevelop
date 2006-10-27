@@ -13,9 +13,7 @@
 // \1\2\n\1{\n\1\tEnterCallback(PausedReason.Other, "\3");\n\1\t\n\1\tExitCallback_Continue();\n\1}
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger

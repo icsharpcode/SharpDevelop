@@ -5,10 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using System;
 using System.Collections;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.NAntAddIn
 {

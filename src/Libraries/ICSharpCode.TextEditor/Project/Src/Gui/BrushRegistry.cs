@@ -6,13 +6,9 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
 using System.Collections;
-using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Text;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.TextEditor
 {

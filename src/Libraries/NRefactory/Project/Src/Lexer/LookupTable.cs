@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Globalization;
 
 namespace ICSharpCode.NRefactory.Parser

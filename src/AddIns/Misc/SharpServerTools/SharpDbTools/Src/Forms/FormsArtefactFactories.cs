@@ -6,13 +6,8 @@
  */
 
 using System;
-using System.Collections;
-
-
-using ICSharpCode.Core;
-
 using System.Collections.Generic;
-
+using ICSharpCode.Core;
 
 namespace SharpDbTools.Forms
 {

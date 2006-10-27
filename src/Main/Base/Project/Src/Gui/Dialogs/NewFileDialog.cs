@@ -8,24 +8,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
-using System.ComponentModel;
 using System.Drawing;
-using System.Reflection;
-using System.Diagnostics;
-using System.Resources;
-using System.Windows.Forms;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml;
 using System.IO;
-using System.CodeDom.Compiler;
+using System.Text;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

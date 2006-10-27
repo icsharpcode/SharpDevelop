@@ -6,9 +6,6 @@
 // </file>
 
 using System;
-using System.Diagnostics;
-using System.Collections;
-using System.Globalization;
 
 namespace ICSharpCode.NRefactory.Ast
 {

@@ -6,14 +6,13 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Drawing;
-using System.Windows.Forms;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop;
 
 namespace ResourceEditor
 {

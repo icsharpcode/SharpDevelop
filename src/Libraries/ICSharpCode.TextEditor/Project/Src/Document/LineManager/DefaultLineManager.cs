@@ -6,8 +6,6 @@
 // </file>
 
 using System;
-using System.Diagnostics;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace ICSharpCode.TextEditor.Document

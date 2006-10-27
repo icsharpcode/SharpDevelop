@@ -6,11 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Runtime.InteropServices;
-
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
 

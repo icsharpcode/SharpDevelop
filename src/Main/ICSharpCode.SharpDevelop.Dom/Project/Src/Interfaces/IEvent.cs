@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Reflection;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {

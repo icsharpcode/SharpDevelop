@@ -7,16 +7,10 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
-using System.Drawing;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
 
 using NoGoop.Obj;
-using NoGoop.Util;
-using NoGoop.Win32;
 
 namespace NoGoop.ObjBrowser.TreeNodes
 {

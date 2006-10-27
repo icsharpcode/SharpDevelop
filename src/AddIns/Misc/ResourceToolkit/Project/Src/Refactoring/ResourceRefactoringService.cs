@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
+using Hornung.ResourceToolkit.Resolver;
+using Hornung.ResourceToolkit.ResourceFileContent;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
@@ -17,9 +19,6 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor.Document;
-
-using Hornung.ResourceToolkit.Resolver;
-using Hornung.ResourceToolkit.ResourceFileContent;
 
 namespace Hornung.ResourceToolkit.Refactoring
 {

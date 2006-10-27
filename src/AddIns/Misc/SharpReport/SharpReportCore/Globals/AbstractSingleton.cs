@@ -10,9 +10,7 @@
 
 namespace SharpReportCore {
 	using System;
-	using System.Collections;
-	
-	
+
 	/// <summary>
 	/// This Class act's as Base Class for all Singletons
 	/// </summary>

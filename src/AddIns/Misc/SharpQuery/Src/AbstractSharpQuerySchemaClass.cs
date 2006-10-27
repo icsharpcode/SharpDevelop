@@ -6,12 +6,9 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Data;
 using System.Windows.Forms;
 using SharpQuery.Collections;
 using SharpQuery.Connection;
-using System.ComponentModel;
 
 namespace SharpQuery.SchemaClass
 {

@@ -7,22 +7,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.ComponentModel;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Printing;
 using System.Diagnostics;
-using System.Windows.Forms;
-using System.Threading;
-using System.Runtime.Remoting;
-using System.Runtime.InteropServices;
-using System.Xml;
+using System.Drawing;
+using System.IO;
 using System.Text;
+using System.Windows.Forms;
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Actions;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.TextEditor
 {

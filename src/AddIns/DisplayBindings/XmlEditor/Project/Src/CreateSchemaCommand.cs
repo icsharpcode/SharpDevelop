@@ -5,15 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop;
 using System;
 using System.IO;
-using System.Text;
-using System.Windows.Forms;
-using System.Xml;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.XmlEditor
 {

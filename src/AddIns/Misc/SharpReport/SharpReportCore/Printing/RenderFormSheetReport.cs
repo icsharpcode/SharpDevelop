@@ -20,7 +20,6 @@
 // Peter Forstmeier (Peter.Forstmeier@t-online.de)
 
 using System;
-using System.Drawing;
 using System.Drawing.Printing;
 
 	/// <summary>

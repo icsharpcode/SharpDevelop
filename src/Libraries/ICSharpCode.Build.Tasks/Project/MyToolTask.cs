@@ -7,9 +7,6 @@
 
 using System;
 using System.Globalization;
-using System.IO;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Tasks;
 using Microsoft.Build.Utilities;
 
 namespace ICSharpCode.Build.Tasks

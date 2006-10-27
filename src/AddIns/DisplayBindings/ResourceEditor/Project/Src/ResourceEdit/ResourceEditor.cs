@@ -6,10 +6,9 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
 
 namespace ResourceEditor

@@ -6,17 +6,12 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Collections;
+using System.IO;
 using System.Reflection;
-using System.Windows.Forms;
 using System.Xml;
 
 using ICSharpCode.Core;
-
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.DefaultEditor.Actions;
-using ICSharpCode.TextEditor.Actions;
 using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons

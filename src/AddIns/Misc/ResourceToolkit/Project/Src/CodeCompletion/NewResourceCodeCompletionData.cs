@@ -8,13 +8,13 @@
 using System;
 using System.Globalization;
 using System.Windows.Forms;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.TextEditor;
 
 using Hornung.ResourceToolkit.Gui;
 using Hornung.ResourceToolkit.ResourceFileContent;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.TextEditor;
 
 namespace Hornung.ResourceToolkit.CodeCompletion
 {

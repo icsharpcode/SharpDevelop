@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Diagnostics;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.Svn

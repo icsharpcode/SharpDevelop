@@ -10,11 +10,10 @@
 
 
 using System;
-using System.Xml.Serialization;
-	
 using System.ComponentModel;
 using System.Drawing;
-	
+using System.Xml.Serialization;
+
 /// <summary>
 /// This is the BaseClass for all 
 ///  <see cref="ReportItem"></see> 

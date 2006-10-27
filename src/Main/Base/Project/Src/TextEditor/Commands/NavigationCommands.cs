@@ -6,8 +6,6 @@
 // </file>
 
 using System;
-
-using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands

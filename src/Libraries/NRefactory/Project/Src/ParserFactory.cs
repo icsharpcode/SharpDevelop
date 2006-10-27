@@ -6,9 +6,8 @@
 // </file>
 
 using System;
-using System.Text;
 using System.IO;
-using ICSharpCode.NRefactory.Ast;
+using System.Text;
 
 namespace ICSharpCode.NRefactory
 {

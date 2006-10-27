@@ -8,13 +8,6 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Reflection;
-using System.Collections;
-using System.Runtime.InteropServices;
-
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Util;
-using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 {

@@ -11,16 +11,15 @@ namespace HtmlHelp2
 	using System.Drawing;
 	using System.Security.Permissions;
 	using System.Windows.Forms;
+	
+	using AxMSHelpControls;
+	using HtmlHelp2.Environment;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Gui;
-	using AxMSHelpControls;
 	using MSHelpControls;
-	using MSHelpServices;
-	using HtmlHelp2.Environment;
 	using PrintOptions = MSHelpServices.HxHierarchy_PrintNode_Options;
 	using TSC = MSHelpControls.HxTreeStyleConstant;
-
 
 	public class ShowTocMenuCommand : AbstractMenuCommand
 	{

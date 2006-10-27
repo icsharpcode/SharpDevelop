@@ -6,15 +6,9 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Reflection;
-using System.Windows.Forms;
-using NoGoop.Controls;
 using NoGoop.Obj;
-using NoGoop.ObjBrowser;
 using NoGoop.ObjBrowser.TreeNodes;
-using NoGoop.Util;
-using NoGoop.Win32;
 
 namespace NoGoop.ObjBrowser.LinkHelpers
 {

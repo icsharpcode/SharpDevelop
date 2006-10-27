@@ -8,8 +8,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Diagnostics;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
 

@@ -6,13 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Reflection;
 using System.Windows.Forms;
-using Microsoft.Win32;
-
-using NoGoop.Win32;
-using NoGoop.Util;
 
 namespace NoGoop.Controls
 {

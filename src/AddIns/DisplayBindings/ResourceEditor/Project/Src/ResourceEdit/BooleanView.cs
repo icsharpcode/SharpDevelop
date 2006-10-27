@@ -6,11 +6,8 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
 using System.Drawing;
-
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.Core;
+using System.Windows.Forms;
 
 namespace ResourceEditor
 {

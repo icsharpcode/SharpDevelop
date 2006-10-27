@@ -6,18 +6,12 @@
 // </file>
 
 using System;
-using System.Text.RegularExpressions;
-using System.IO;
-using System.Drawing;
-using System.ComponentModel;
 using System.Windows.Forms;
-
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.TextEditor.Document;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {

@@ -6,10 +6,9 @@
 // </file>
 
 using System;
-using System.Diagnostics;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands

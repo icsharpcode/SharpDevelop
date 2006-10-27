@@ -6,15 +6,15 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Drawing;
-using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.Gui;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop;
 
 namespace SearchAndReplace
 {

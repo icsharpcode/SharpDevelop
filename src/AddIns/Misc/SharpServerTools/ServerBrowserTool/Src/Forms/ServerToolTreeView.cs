@@ -6,12 +6,11 @@
  */
 
 using System;
-using System.Windows.Forms;
 using System.Collections;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace SharpServerTools.Forms
 {

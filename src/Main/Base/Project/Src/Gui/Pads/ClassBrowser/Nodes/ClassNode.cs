@@ -6,13 +6,7 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Windows.Forms;
-using System.Diagnostics;
-using System.Drawing;
-using System.Collections.Generic;
-
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 

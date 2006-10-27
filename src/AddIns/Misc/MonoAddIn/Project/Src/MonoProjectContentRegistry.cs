@@ -7,9 +7,9 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Build.Tasks;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.Build.Tasks;
 
 namespace ICSharpCode.MonoAddIn
 {

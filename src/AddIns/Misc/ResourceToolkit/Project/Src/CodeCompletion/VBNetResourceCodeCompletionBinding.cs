@@ -6,10 +6,8 @@
 // </file>
 
 using System;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 namespace Hornung.ResourceToolkit.CodeCompletion
 {

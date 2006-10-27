@@ -5,14 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Reflection;
-using System.Net;
-using System.Web.Services.Description;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {

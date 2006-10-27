@@ -7,8 +7,9 @@
 
 using System;
 using System.IO;
-using ICSharpCode.Core;
 using System.Windows.Forms;
+
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {

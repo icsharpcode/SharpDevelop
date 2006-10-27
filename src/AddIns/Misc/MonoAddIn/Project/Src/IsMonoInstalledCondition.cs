@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
 using ICSharpCode.Build.Tasks;
 using ICSharpCode.Core;
-using System;
 
 namespace ICSharpCode.MonoAddIn
 {

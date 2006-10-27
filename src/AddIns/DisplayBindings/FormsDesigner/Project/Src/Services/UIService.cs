@@ -6,11 +6,11 @@
 // </file>
 
 using System;
-using System.Drawing;
 using System.Collections;
-using System.Collections.Specialized;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 

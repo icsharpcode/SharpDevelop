@@ -6,12 +6,11 @@
 // </file>
 
 using System;
-using System.Text;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Threading;
+using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.TextEditor

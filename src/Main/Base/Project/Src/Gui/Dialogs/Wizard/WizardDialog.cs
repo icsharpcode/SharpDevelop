@@ -6,14 +6,10 @@
 // </file>
 
 using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
-using System.Xml;
 
 using ICSharpCode.Core;
 

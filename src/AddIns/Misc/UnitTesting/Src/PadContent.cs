@@ -6,8 +6,6 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Reflection;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;

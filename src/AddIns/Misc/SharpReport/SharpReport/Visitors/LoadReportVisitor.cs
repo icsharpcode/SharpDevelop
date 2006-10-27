@@ -17,15 +17,8 @@
 
 using System;
 using System.Xml;
-using System.ComponentModel;
-using System.Globalization;
-
-using SharpReportCore;
-
-using SharpReport.Visitors;
 using SharpReport.Designer;
-using SharpReport.ReportItems;
-
+using SharpReportCore;
 
 namespace SharpReport.Visitors {
 

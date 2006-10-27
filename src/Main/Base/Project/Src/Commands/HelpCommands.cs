@@ -8,7 +8,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Collections;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;

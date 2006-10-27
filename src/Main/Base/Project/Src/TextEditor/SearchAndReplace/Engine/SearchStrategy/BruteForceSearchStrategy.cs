@@ -6,9 +6,6 @@
 // </file>
 
 using System;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Undo;
 using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace

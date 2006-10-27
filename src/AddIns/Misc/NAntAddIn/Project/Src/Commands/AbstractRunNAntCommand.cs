@@ -5,17 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
+using System.ComponentModel;
+using System.IO;
+
 using ICSharpCode.Core;
-using ICSharpCode.NAntAddIn;
 using ICSharpCode.NAntAddIn.Gui;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Util;
-using System;
-using System.ComponentModel;
-using System.IO;
-using System.Windows.Forms;
 
 namespace ICSharpCode.NAntAddIn.Commands
 {

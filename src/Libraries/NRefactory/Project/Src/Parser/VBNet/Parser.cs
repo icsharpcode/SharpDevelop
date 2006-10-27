@@ -1,17 +1,18 @@
 
 #line  1 "VBNET.ATG" 
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Text;
+using System.Reflection;
+
 using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Parser.VB;
 using ASTAttribute = ICSharpCode.NRefactory.Ast.Attribute;
+
 /*
   Parser.frame file for NRefactory.
  */
-using System;
-using System.Reflection;
+
+
 
 namespace ICSharpCode.NRefactory.Parser.VB {
 

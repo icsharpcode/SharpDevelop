@@ -5,10 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using System;
-using System.Windows.Forms;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.ComponentInspector.AddIn
 {

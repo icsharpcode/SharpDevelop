@@ -6,20 +6,11 @@
 // </file>
 
 using System;
-using System.Text;
 using System.IO;
-using System.Threading;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Collections;
-using System.ComponentModel;
-using System.Windows.Forms;
-using System.Diagnostics;
+using System.Text;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-
 using ICSharpCode.SharpDevelop.Project;
 using NSvn.Common;
 using NSvn.Core;

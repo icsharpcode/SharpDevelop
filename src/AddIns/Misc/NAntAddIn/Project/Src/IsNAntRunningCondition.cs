@@ -5,8 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
 using System;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.NAntAddIn
 {

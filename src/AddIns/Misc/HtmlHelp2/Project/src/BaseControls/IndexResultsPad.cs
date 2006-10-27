@@ -11,12 +11,11 @@ namespace HtmlHelp2
 	using System.Collections;
 	using System.Globalization;
 	using System.Windows.Forms;
+	
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Gui;
 	using MSHelpServices;
-	using HtmlHelp2.Environment;
-
 
 	public class ShowIndexResultsMenuCommand : AbstractMenuCommand
 	{

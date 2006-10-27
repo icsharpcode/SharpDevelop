@@ -9,10 +9,8 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.Windows.Forms;
-using ICSharpCode.Core;
 
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.DefaultEditor.Actions;
+using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Actions;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons

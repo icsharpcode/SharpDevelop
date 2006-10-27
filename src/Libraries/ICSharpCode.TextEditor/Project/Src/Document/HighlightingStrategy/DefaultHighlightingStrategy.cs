@@ -6,15 +6,9 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Reflection;
+using System.Drawing;
 using System.Windows.Forms;
-using System.Xml;
-using System.Text;
 
 namespace ICSharpCode.TextEditor.Document
 {

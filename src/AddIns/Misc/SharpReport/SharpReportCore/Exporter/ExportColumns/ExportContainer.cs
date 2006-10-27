@@ -8,7 +8,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+
 namespace SharpReportCore.Exporters
 {
 	/// <summary>

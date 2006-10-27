@@ -7,12 +7,7 @@
 
 using System;
 using System.Windows.Forms;
-
-using ICSharpCode.SharpDevelop.Internal.ExternalTool;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-
 using RadioBinding = System.Collections.Generic.KeyValuePair<ICSharpCode.SharpDevelop.Project.StartAction, System.Windows.Forms.RadioButton>;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels

@@ -7,11 +7,8 @@
 
 using System;
 using System.Diagnostics;
-using System.Drawing;
-
 using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Undo;
-	
+
 namespace ICSharpCode.TextEditor.Undo
 {
 	/// <summary>

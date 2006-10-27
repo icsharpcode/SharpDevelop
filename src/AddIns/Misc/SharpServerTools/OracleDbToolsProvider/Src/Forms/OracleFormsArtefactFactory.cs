@@ -6,15 +6,12 @@
  */
 
 using System;
-using System.Windows.Forms;
 using System.Data;
-
-using SharpDbTools.Forms;
-using SharpDbTools.Data;
-
-using SharpServerTools.Forms;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using SharpDbTools.Data;
+using SharpDbTools.Forms;
 
 namespace SharpDbTools.Oracle.Forms
 {

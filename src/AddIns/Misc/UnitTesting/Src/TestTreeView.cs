@@ -15,7 +15,6 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-
 using NUnit.Core;
 using NUnit.UiKit;
 using NUnit.Util;

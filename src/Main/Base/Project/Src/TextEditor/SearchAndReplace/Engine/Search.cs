@@ -6,10 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Diagnostics;
-
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace SearchAndReplace
 {

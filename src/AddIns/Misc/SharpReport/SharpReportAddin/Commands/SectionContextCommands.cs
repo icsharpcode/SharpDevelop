@@ -7,15 +7,8 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Drawing;
 using System.Windows.Forms;
 
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-
-using SharpReport.ReportItems;
- 
  /// <summary>
  /// this Class contains all commands belonging to a ReportSection
  /// </summary>

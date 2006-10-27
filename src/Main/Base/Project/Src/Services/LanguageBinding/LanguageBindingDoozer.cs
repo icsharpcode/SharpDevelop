@@ -7,10 +7,7 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop
 {

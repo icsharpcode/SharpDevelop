@@ -6,8 +6,9 @@
 // </file>
 
 using System;
-using System.Text;
 using System.Collections.Generic;
+using System.Text;
+
 using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Parser.CSharp

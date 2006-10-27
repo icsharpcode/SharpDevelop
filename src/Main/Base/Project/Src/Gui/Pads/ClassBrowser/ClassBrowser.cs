@@ -6,16 +6,8 @@
 // </file>
 
 using System;
-using System.IO;
-using System.ComponentModel;
-using System.Windows.Forms;
-using System.Drawing;
-using System.Collections;
 using System.Collections.Generic;
-using System.Resources;
-using System.Xml;
-using System.Threading;
-using System.Text;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;

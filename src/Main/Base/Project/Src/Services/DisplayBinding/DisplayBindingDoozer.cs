@@ -7,8 +7,6 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
-
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop

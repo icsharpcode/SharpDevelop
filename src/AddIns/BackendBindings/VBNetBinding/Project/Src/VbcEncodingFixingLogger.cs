@@ -6,11 +6,6 @@
 // </file>
 
 using System;
-using System.IO;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
-using Microsoft.Build.Framework;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace VBNetBinding
 {

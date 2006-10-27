@@ -5,13 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System.IO;
-using System.Drawing;
-using System.Drawing.Text;
-using System.Collections;
 using System.Windows.Forms;
-
-using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels

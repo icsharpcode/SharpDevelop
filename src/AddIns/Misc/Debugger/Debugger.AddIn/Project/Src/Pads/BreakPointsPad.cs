@@ -6,17 +6,9 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
-using System.Drawing;
-using System.CodeDom.Compiler;
-using System.Collections;
-using System.IO;
-using System.Diagnostics;
-using ICSharpCode.Core;
+using Debugger;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Services;
-
-using Debugger;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {

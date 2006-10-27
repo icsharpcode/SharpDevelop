@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using SharpQuery.SchemaClass;
-using SharpQuery.Connection;
 using SharpQuery.Collections;
+using SharpQuery.Connection;
+using SharpQuery.SchemaClass;
 
 namespace SharpQuery.Gui.TreeView
 {

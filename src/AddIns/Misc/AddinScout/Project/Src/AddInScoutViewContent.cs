@@ -6,14 +6,9 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Collections;
 using System.Windows.Forms;
-using System.Drawing;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-
 
 namespace AddInScout
 {

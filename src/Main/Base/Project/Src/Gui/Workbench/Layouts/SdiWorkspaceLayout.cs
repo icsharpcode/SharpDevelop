@@ -6,14 +6,10 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Diagnostics;
-using System.CodeDom.Compiler;
+using System.IO;
 using System.Windows.Forms;
-using System.Reflection;
 
 using ICSharpCode.Core;
 using WeifenLuo.WinFormsUI;

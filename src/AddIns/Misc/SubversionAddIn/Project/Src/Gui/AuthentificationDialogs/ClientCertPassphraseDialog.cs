@@ -7,15 +7,10 @@
 
 using System;
 using System.Reflection;
-using System.Drawing;
-using System.Text;
-using System.Threading;
-using System.IO;
 using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.Gui;
-using NSvn.Common;
-using NSvn.Core;
+
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using NSvn.Core;
 
 namespace ICSharpCode.Svn.Gui
 {

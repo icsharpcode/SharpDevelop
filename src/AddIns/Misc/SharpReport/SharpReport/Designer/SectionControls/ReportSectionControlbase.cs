@@ -8,13 +8,11 @@
  */
 
 using System;
-using System.Globalization;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Forms;
-using System.ComponentModel;
 
 using SharpReportCore;
-using SharpReport.ReportItems;
 
 /// <summary>
 /// BaseControl for <see cref="ReportSection"></see>

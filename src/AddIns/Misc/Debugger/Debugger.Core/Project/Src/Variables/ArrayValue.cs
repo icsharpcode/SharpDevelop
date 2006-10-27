@@ -7,9 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Runtime.InteropServices;
-
 using Debugger.Wrappers.CorDebug;
 
 //TODO: Support for lower bound

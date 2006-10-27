@@ -6,11 +6,12 @@
 // </file>
 
 using System;
-using System.Data.OleDb;
 using System.Data;
+using System.Data.OleDb;
+
 using SharpQuery.Collections;
-using SharpQuery.SchemaClass;
 using SharpQuery.Exceptions;
+using SharpQuery.SchemaClass;
 
 namespace SharpQuery.Connection
 {

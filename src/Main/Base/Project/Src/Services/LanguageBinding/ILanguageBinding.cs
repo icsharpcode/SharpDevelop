@@ -6,10 +6,7 @@
 // </file>
 
 using System;
-using System.CodeDom.Compiler;
 using System.Xml;
-
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Project

@@ -11,8 +11,8 @@ namespace HtmlHelp2
 	
 	using System;
 	using System.Security.Permissions;
-	using ICSharpCode.SharpDevelop.Gui;
 	using ICSharpCode.SharpDevelop.BrowserDisplayBinding;
+	using ICSharpCode.SharpDevelop.Gui;
 	using MSHelpServices;
 
 	public static class ShowHelpBrowser

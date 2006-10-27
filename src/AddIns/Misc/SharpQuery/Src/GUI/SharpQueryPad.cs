@@ -7,11 +7,7 @@
 
 using System;
 using System.Windows.Forms;
-using System.Xml;
-using System.Xml.Serialization;
-using System.IO;
 using ICSharpCode.SharpDevelop.Gui;
-using SharpQuery.Gui;
 using SharpQuery.Gui.TreeView;
 
 //TODO : dans les SharpQueryList faire correspondre les restrictions vec les objets ajoutés

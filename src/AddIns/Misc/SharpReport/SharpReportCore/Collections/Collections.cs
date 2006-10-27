@@ -8,10 +8,8 @@
  */
 
 using System;
-using System.Drawing;
-using System.Globalization;
 using System.Collections.Generic;
-
+using System.Globalization;
 
 namespace SharpReportCore{
 	

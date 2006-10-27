@@ -7,14 +7,12 @@
 
 using System;
 using System.Data;
-using System.Data.OleDb;
 using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.Gui;
-using SharpQuery.SchemaClass;
-using SharpQuery.Collections;
-using System.ComponentModel;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using SharpQuery.Collections;
+using SharpQuery.SchemaClass;
 
 namespace SharpQuery.Gui.DataView
 {

@@ -6,16 +6,11 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.CodeDom;
-using System.Text;
-using Boo.Lang.Compiler;
 using Boo.Lang.Compiler.Ast;
-using Boo.Lang.Compiler.Ast.Visitors;
-using Boo.Lang.Parser;
+using Grunwald.BooBinding.CodeCompletion;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using Grunwald.BooBinding.CodeCompletion;
 
 namespace Grunwald.BooBinding.Designer
 {

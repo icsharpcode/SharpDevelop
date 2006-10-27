@@ -6,11 +6,12 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.IO;
-using System.Collections.Generic;
 using System.Xml;
+
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter

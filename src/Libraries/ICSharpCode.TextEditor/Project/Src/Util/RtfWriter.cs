@@ -6,9 +6,10 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
-using System.Collections.Generic;
+
 using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.TextEditor.Util

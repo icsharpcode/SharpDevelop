@@ -8,8 +8,8 @@
 using System;
 using System.Collections;
 using System.IO;
+
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {

@@ -6,13 +6,7 @@
 // </file>
 
 using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
-using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {

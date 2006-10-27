@@ -6,11 +6,9 @@
 // </file>
 
 using System;
-
-using ICSharpCode.Core;
+using System.Diagnostics;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using System.Diagnostics;
 
 namespace ICSharpCode.SharpDevelop
 {

@@ -7,7 +7,6 @@
 
 using System;
 using System.Xml;
-using System.Diagnostics;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {

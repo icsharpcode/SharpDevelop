@@ -7,15 +7,14 @@
 
 // created on 04.08.2003 at 17:49
 using System;
-using System.Text;
-using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
 
+using ICSharpCode.NRefactory.Visitors;
 using AST = ICSharpCode.NRefactory.Ast;
 using RefParser = ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {

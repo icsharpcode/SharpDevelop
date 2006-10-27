@@ -6,18 +6,14 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Windows.Forms;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
-using System.Resources;
 using System.Drawing;
-using System.Diagnostics;
+using System.IO;
 using System.Reflection;
-using System.Xml;
-
-using ICSharpCode.Core;
+using System.Resources;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace ICSharpCode.Core
 {

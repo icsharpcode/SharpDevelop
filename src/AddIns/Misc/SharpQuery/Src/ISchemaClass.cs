@@ -5,8 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System.Collections;
-using System.Data;
 using System.Windows.Forms;
 using SharpQuery.Collections;
 using SharpQuery.Connection;

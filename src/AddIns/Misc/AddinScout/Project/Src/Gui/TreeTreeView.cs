@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using ICSharpCode.Core;
 using System.Windows.Forms;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
 namespace AddInScout

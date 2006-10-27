@@ -8,17 +8,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 using Boo.Lang.Compiler;
 using Boo.Lang.Compiler.Ast;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.Core;
-using System.Text;
-
-using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.NRefactory.Parser;
 using NRefactoryToBooConverter;
 
 namespace Grunwald.BooBinding

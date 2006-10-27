@@ -5,12 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Dom;
 using System;
-using System.Collections;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.XmlEditor
 {

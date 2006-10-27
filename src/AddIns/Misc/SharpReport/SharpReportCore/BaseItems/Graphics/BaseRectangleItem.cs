@@ -10,11 +10,8 @@
 
 
 using System;
-using System.Collections;
-using System.ComponentModel;
+using System.Drawing;
 
-using System.Drawing;	
-	
 /// <summary>
 /// This class draws a Rectangle
 /// </summary>

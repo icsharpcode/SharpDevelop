@@ -5,13 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Microsoft.Build.Framework;
-using Microsoft.Build.Tasks;
-using Microsoft.Build.Utilities;
 using System;
 using System.Globalization;
-using System.Text;
 using System.IO;
+
+using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks;
 
 namespace ICSharpCode.Build.Tasks
 {

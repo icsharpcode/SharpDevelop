@@ -8,8 +8,7 @@
 using System;
 using System.IO;
 using System.Xml;
-using System.Collections;
-using System.Diagnostics;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 

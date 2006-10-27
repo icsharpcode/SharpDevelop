@@ -11,9 +11,7 @@
 namespace ICSharpCode.NRefactory.Ast {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics;
-	
-	
+
 	public class AddHandlerStatement : Statement {
 		
 		Expression eventExpression;

@@ -7,13 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-
+using Hornung.ResourceToolkit.Gui;
+using Hornung.ResourceToolkit.Refactoring;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
-
-using Hornung.ResourceToolkit.Gui;
-using Hornung.ResourceToolkit.Refactoring;
 
 namespace Hornung.ResourceToolkit.Commands
 {

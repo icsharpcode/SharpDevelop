@@ -7,14 +7,10 @@
 
 using System;
 using System.Drawing;
-using System.Windows.Forms;
-
-using ICSharpCode.Core;
+using Hornung.ResourceToolkit.Resolver;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-
-using Hornung.ResourceToolkit.Resolver;
 
 namespace Hornung.ResourceToolkit.ToolTips
 {

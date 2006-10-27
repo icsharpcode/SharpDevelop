@@ -6,9 +6,6 @@
 // </file>
 
 using System;
-using System.Globalization;
-using System.Resources;
-using System.Reflection;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

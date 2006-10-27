@@ -8,8 +8,6 @@
 using System;
 using System.Windows.Forms;
 
-using ICSharpCode.TextEditor.Document;
-
 namespace ICSharpCode.TextEditor.Actions
 {
 	/// <summary>

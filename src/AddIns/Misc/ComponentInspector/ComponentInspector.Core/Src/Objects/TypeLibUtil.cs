@@ -6,12 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Diagnostics;
-using System.Text;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using Microsoft.Win32;
 using NoGoop.Util;
 using NoGoop.Win32;
 

@@ -10,9 +10,9 @@
 
 
 using System;
-using System.Drawing;
 using System.Collections;
-using System.Windows.Forms;	
+using System.Drawing;
+
 	/// <summary>
 	/// This Class caches all the Font's used in SharpReport.
 	/// The Hashtable is filled during load of an Report

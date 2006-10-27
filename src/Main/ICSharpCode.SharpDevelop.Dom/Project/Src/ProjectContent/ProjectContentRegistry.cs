@@ -13,9 +13,6 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
-
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>

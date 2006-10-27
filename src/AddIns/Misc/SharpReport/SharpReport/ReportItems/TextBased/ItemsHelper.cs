@@ -10,9 +10,9 @@
 
 namespace SharpReport {
 	using System;
-	
-	using SharpReportCore;
 	using SharpReport.Designer;
+	using SharpReportCore;
+
 	/// <summary>
 	/// Helper Class for Report Items
 	/// </summary>

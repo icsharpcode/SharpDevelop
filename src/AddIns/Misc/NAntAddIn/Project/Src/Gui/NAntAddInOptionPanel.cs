@@ -6,16 +6,9 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
-using ICSharpCode.NAntAddIn;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 
 namespace ICSharpCode.NAntAddIn.Gui
 {

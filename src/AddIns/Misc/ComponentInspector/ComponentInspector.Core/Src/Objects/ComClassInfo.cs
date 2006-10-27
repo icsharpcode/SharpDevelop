@@ -9,15 +9,13 @@ using System;
 using System.CodeDom;
 using System.Collections;
 using System.Diagnostics;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using Microsoft.Win32;
 
+using Microsoft.Win32;
 using NoGoop.ObjBrowser;
-using NoGoop.ObjBrowser.LinkHelpers;
 using NoGoop.ObjBrowser.Panels;
-using NoGoop.Win32;
 using NoGoop.Util;
+using NoGoop.Win32;
 
 namespace NoGoop.Obj
 {

@@ -8,15 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Reflection;
-
-using Microsoft.Win32;
+using System.Text;
 
 using ICSharpCode.Core;
-
-using ICSharpCode.SharpDevelop.Gui;
-
+using Microsoft.Win32;
 
 namespace ICSharpCode.FiletypeRegisterer {
 	

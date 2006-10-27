@@ -10,8 +10,6 @@ using System.Data;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Gui;
-using SharpDbTools.Data;
-
 
 namespace SharpDbTools.Forms
 {

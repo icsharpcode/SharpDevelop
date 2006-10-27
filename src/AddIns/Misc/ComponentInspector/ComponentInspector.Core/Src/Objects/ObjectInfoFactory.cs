@@ -6,14 +6,10 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
-using System.Threading;
-using System.Runtime.InteropServices;
 
 using NoGoop.Util;
-using NoGoop.Win32;
 
 namespace NoGoop.Obj
 {

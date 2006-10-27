@@ -10,10 +10,10 @@
 
 
 using System;
-using System.Drawing;	
 using System.ComponentModel;
+using System.Drawing;
 using System.Xml.Serialization;
-	
+
 /// <summary>
 /// This Class is the BaseClass for <see cref="BaseTextItem"></see>
 /// and <see cref="BaseGraphicItem"></see>

@@ -7,16 +7,9 @@
 
 using System;
 using System.Drawing;
-using System.ComponentModel;
 using System.Windows.Forms;
-using System.Resources;
-using System.IO;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
-
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.SharpDevelop.Gui

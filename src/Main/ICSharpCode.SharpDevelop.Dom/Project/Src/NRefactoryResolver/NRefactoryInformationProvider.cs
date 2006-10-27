@@ -6,13 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.PrettyPrinter;
-
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {

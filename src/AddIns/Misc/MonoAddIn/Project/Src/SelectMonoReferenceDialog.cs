@@ -5,17 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
+
 using ICSharpCode.Build.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Collections;
-using System.ComponentModel;
-using System.Windows.Forms;
 
 namespace ICSharpCode.MonoAddIn
 {

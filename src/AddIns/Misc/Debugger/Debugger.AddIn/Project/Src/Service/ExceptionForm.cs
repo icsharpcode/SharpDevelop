@@ -6,9 +6,8 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
-using ICSharpCode.Core;
 using Debugger;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Services
 {

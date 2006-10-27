@@ -6,10 +6,6 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Collections;
-using System.Text;
-using ICSharpCode.TextEditor.Undo;
 
 namespace ICSharpCode.TextEditor.Document
 {

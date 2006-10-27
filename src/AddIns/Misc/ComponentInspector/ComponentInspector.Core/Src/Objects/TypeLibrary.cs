@@ -10,22 +10,19 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+
 using Microsoft.Win32;
-using NoGoop.ObjBrowser;
-using NoGoop.ObjBrowser.LinkHelpers;
-using NoGoop.ObjBrowser.Dialogs;
-using NoGoop.ObjBrowser.Panels;
-using NoGoop.ObjBrowser.TreeNodes;
 using NoGoop.Controls;
+using NoGoop.ObjBrowser;
+using NoGoop.ObjBrowser.Dialogs;
+using NoGoop.ObjBrowser.LinkHelpers;
+using NoGoop.ObjBrowser.Panels;
 using NoGoop.Util;
 using NoGoop.Win32;
 

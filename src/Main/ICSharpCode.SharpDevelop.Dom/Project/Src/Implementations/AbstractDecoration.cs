@@ -6,8 +6,6 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Reflection;
 using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom

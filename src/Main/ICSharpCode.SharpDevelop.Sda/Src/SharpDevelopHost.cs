@@ -7,8 +7,8 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Reflection;
 
 namespace ICSharpCode.SharpDevelop.Sda

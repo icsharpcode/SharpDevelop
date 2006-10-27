@@ -6,15 +6,12 @@
 // </file>
 
 using System;
+using System.Collections;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using System.Collections;
-using System.Threading;
-using System.Resources;
-using System.Drawing;
-using System.Diagnostics;
-using System.Reflection;
 using System.Xml;
+
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop

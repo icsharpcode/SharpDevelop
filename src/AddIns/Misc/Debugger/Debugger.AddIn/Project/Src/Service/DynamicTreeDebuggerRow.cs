@@ -6,13 +6,12 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+
 using Debugger;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.TreeGrid;
 
 namespace ICSharpCode.SharpDevelop.Services

@@ -6,14 +6,9 @@
 // </file>
 
 using System;
-using System.Text;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.NRefactory.Ast;
 using Attribute = ICSharpCode.NRefactory.Ast.Attribute;
 

@@ -8,13 +8,6 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using System.Globalization;
-using System.Resources;
-using System.Reflection;
-using System.Drawing;
-using System.Drawing.Design;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

@@ -6,14 +6,6 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Diagnostics;
-using System.Reflection;
-using System.Windows.Forms;
-
-using NoGoop.Obj;
-using NoGoop.Util;
-using NoGoop.Win32;
 
 namespace NoGoop.ObjBrowser
 {

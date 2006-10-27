@@ -6,11 +6,10 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.ComponentModel;
+using System.Data.Common;
+using System.Windows.Forms;
 
 using SharpDbTools.Data;
 

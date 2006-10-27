@@ -6,10 +6,6 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Collections;
-
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 

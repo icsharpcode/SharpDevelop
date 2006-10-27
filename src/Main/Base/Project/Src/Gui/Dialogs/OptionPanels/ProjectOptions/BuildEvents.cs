@@ -7,11 +7,6 @@
 
 using System;
 using System.IO;
-using System.Windows.Forms;
-
-using ICSharpCode.SharpDevelop.Internal.ExternalTool;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels

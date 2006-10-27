@@ -6,9 +6,6 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace ResourceEditor
 {

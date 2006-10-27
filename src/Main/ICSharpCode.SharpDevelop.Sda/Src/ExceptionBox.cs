@@ -9,9 +9,7 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Globalization;
-using System.Resources;
 using System.Threading;
 using System.Windows.Forms;
 

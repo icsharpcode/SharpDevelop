@@ -6,9 +6,8 @@
 // </file>
 
 using System;
-using SharpQuery.Gui.TreeView;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.Core;
+using SharpQuery.Gui.TreeView;
 
 namespace SharpQuery.Commands
 {

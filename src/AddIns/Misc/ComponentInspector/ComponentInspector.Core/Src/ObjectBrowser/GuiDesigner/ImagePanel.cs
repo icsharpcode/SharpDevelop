@@ -5,21 +5,15 @@
 //	 <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
 using System;
-using System.Collections;
-using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Windows.Forms.Design;
 
+using ICSharpCode.Core;
 using NoGoop.Controls;
 using NoGoop.Obj;
 using NoGoop.ObjBrowser.GuiDesigner;
-using NoGoop.Util;
-using NoGoop.Win32;
 
 namespace NoGoop.ObjBrowser
 {

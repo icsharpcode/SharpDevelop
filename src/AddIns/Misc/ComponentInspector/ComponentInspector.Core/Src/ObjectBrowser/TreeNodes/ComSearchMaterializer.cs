@@ -7,9 +7,6 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
-using NoGoop.Obj;
-using NoGoop.Util;
 
 namespace NoGoop.ObjBrowser.TreeNodes
 {

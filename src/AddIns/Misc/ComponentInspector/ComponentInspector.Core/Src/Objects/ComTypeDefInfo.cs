@@ -6,15 +6,11 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Diagnostics;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using Microsoft.Win32;
 
 using NoGoop.ObjBrowser;
 using NoGoop.ObjBrowser.Panels;
-using NoGoop.Win32;
 using NoGoop.Util;
 
 namespace NoGoop.Obj

@@ -9,7 +9,6 @@ using System;
 using System.ComponentModel;
 using System.IO;
 
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;

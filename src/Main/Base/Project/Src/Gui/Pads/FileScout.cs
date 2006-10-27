@@ -6,18 +6,13 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Text;
-using System.Runtime.InteropServices;
-using System.ComponentModel;
-using System.Windows.Forms;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Collections;
-using System.Reflection;
+using System.Drawing;
+using System.IO;
 using System.Resources;
-using System.Threading;
-using System.Xml;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;

@@ -5,14 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
-using NoGoop.ObjBrowser;
 using System;
 using System.Collections;
 using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
+
+using ICSharpCode.SharpDevelop.Gui;
+using NoGoop.ObjBrowser;
 
 namespace ICSharpCode.ComponentInspector.AddIn
 {

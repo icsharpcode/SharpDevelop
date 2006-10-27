@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
 using System;
 using System.Collections;
+using ICSharpCode.Core;
 
 namespace NoGoop.ObjBrowser
 {

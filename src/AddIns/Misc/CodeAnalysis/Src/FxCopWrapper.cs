@@ -10,8 +10,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Microsoft.Win32;
+
 using ICSharpCode.Core;
+using Microsoft.Win32;
 
 namespace ICSharpCode.CodeAnalysis
 {

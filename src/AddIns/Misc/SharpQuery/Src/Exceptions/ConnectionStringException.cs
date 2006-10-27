@@ -6,9 +6,9 @@
 // </file>
 
 using System;
+using System.Runtime.Serialization;
 using ICSharpCode.Core;
 using SharpQuery.SchemaClass;
-using System.Runtime.Serialization;
 
 namespace SharpQuery.Exceptions
 {

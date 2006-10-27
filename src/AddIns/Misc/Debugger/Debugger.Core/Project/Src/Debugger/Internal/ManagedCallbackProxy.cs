@@ -6,11 +6,7 @@
 // </file>
 
 using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
-
 using Debugger.Wrappers.CorDebug;
 
 // Regular expresion:

@@ -7,12 +7,10 @@
 
 using System;
 using System.Windows.Forms;
-using System.Drawing;
 using System.Xml;
-using ICSharpCode.TextEditor.Document;
-
 
 using ICSharpCode.Core;
+
 namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 {
 	abstract class AbstractNode : TreeNode

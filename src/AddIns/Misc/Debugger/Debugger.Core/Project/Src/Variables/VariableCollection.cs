@@ -9,8 +9,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-using Debugger.Wrappers.CorDebug;
-
 namespace Debugger
 {
 	[Serializable]

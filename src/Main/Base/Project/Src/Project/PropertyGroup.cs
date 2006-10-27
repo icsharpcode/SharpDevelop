@@ -6,9 +6,9 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using System.Collections.Generic;
 using System.Xml;
 
 namespace ICSharpCode.SharpDevelop.Project

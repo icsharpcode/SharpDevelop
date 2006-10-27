@@ -6,13 +6,13 @@
  */
 
 using System;
-using System.Windows.Forms;
-using System.Data.Common;
 using System.ComponentModel;
+using System.Data.Common;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using SharpServerTools.Forms;
 using SharpDbTools.Data;
+using SharpServerTools.Forms;
 
 namespace SharpDbTools.Forms
 {

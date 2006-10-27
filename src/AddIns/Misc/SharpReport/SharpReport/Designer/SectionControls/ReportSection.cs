@@ -8,21 +8,17 @@
  */
 
 using System;
-using System.Globalization;
-using System.Text;
-using System.Reflection;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
 
 using ICSharpCode.Core;
-
-using SharpReportCore;
-
-using SharpReport.ReportItems;
 using SharpReport.Designer;
+using SharpReportCore;
 
 namespace SharpReport{
 	/// <summary>

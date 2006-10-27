@@ -11,9 +11,7 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-using SharpReportAddin;
-	
-	
+
 	/// <summary>
 	/// Thsi class acts as a derived TreeNode for Columns
 	/// </summary>

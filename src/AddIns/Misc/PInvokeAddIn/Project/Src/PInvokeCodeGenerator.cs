@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
 using ICSharpCode.TextEditor.Document;
-using System;
 
 namespace ICSharpCode.PInvokeAddIn
 {

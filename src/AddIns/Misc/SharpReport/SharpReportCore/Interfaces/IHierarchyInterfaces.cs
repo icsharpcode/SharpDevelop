@@ -8,8 +8,6 @@
  */
 //ToDo with NET2.0 change this Interface to the one provided by NET2.0
 using System;
-using System.Collections;
-
 
 namespace SharpReportCore {
 	

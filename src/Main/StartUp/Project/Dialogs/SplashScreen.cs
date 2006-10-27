@@ -7,11 +7,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Windows.Forms;
 using System.Drawing;
-using System.Reflection;
-using System.Resources;
+using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop
 {

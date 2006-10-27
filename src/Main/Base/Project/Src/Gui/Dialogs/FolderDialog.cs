@@ -5,8 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System.Windows.Forms.Design;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui

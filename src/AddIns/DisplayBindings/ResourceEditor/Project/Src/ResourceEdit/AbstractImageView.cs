@@ -7,11 +7,7 @@
 
 using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.Core;
 
 namespace ResourceEditor
 {

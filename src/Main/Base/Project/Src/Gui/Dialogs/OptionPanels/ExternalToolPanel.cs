@@ -6,12 +6,11 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {

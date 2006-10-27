@@ -6,14 +6,10 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Reflection;
 using System.Collections;
+using System.Windows.Forms;
 
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Internal.Templates;
-using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 

@@ -6,9 +6,8 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Collections;
-using System.Diagnostics;
+using System.IO;
 using System.Xml;
 
 using ICSharpCode.Core;

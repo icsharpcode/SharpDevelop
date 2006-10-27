@@ -10,13 +10,12 @@
 
 
 using System;
-using System.Drawing;
 using System.ComponentModel;
+using System.Drawing;
 using System.Xml.Serialization;
 
 using SharpReportCore.Exporters;
-	
-	
+
 /// <summary>
 /// This Class is used for Databased items
 /// </summary>

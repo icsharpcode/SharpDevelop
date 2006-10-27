@@ -6,16 +6,6 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Text;
-using System.Threading;
-using System.Windows.Forms;
-using System.Drawing;
-using System.CodeDom.Compiler;
-using System.IO;
-using System.Diagnostics;
-using ICSharpCode.Core;
-
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

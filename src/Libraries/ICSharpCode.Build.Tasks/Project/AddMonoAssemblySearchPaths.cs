@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 using System;
 using System.Collections.Generic;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 
 namespace ICSharpCode.Build.Tasks
 {

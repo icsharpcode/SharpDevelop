@@ -5,18 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
+using System.Configuration;
+using System.IO;
+using System.Resources;
+using System.Security;
+using System.Security.Policy;
+using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using NoGoop.Controls;
 using NoGoop.ObjBrowser.Dialogs;
 using NoGoop.Util;
-
-using System;
-using System.Configuration;
-using System.IO;
-using System.Security;
-using System.Security.Policy;
-using System.Resources;
-using System.Windows.Forms;
 
 namespace NoGoop.ObjBrowser
 {

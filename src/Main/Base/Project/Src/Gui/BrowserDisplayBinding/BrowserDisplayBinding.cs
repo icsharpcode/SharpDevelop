@@ -6,13 +6,6 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Windows.Forms;
-
-using ICSharpCode.SharpDevelop.Internal.Undo;
-using System.Drawing.Printing;
-
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding

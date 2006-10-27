@@ -8,8 +8,7 @@
 namespace Debugger.Wrappers.CorSym
 {
 	using System;
-	using System.Runtime.InteropServices;
-	
+
 	public partial class ISymUnmanagedVariable
 	{
 		public string Name {

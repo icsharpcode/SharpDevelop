@@ -8,14 +8,13 @@
 using System;
 using System.Collections;
 using System.Drawing;
-using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.Gui;
-using NSvn.Common;
-using NSvn.Core;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using NSvn.Core;
 
 namespace ICSharpCode.Svn
 {

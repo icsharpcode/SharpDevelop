@@ -6,10 +6,8 @@
 // </file>
 
 using System;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace Hornung.ResourceToolkit.Resolver

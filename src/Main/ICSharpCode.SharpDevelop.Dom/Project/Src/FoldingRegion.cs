@@ -6,9 +6,6 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Diagnostics;
-using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {

@@ -6,20 +6,8 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Reflection;
-using System.Collections;
-using System.Collections.Generic;
-
-using ICSharpCode.SharpDevelop.Internal.Templates;
-using ICSharpCode.Core;
-using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui.InsightWindow;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {

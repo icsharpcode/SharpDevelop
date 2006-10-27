@@ -5,8 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Document;
 using System;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.WixBinding
 {

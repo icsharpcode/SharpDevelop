@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using ICSharpCode.SharpDevelop.Project;
 using System.Diagnostics;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop
 {

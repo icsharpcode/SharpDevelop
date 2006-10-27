@@ -9,9 +9,6 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.ExternalTool;
-
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels 
 {
 	public class PropertyGridPanel : AbstractOptionPanel

@@ -12,9 +12,9 @@ namespace ICSharpCode.NRefactory.Visitors {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	
 	using ICSharpCode.NRefactory.Ast;
-	
-	
+
 	/// <summary>
 	/// The AbstractAstTransformer will iterate through the whole AST,
 	/// just like the AbstractAstVisitor. However, the AbstractAstTransformer allows

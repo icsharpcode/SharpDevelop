@@ -13,9 +13,7 @@
 // \1\2\n\1{\n\1\tGetProcessCallbackInterface(\4).\3(\4, \5, \6, \7, \8, \9);\n\1}
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger

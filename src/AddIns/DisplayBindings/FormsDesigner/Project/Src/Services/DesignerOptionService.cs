@@ -6,10 +6,9 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Drawing;
-using System.ComponentModel.Design;
 using System.Windows.Forms.Design;
+
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Gui.OptionPanels;
 

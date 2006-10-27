@@ -9,10 +9,7 @@
 //------------------------------------------------------------------------------
 using System;
 using System.Xml;
-using System.Windows.Forms;
-	
-	
-	
+
 /// <summary>
 /// This class contains some basic methodes to handel Xml related stuff
 /// </summary>

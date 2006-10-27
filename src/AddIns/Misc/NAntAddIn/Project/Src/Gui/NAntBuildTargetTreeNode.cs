@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NAntAddIn;
 using System;
 using System.Drawing;
 using System.Windows.Forms;

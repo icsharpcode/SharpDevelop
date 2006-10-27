@@ -6,14 +6,13 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
-using System.Xml;
 using System.ComponentModel;
-using SharpQuery.SchemaClass;
-using SharpQuery.Collections;
-using System.Collections;
-using SharpQuery.Gui.DataView;
+using System.Windows.Forms;
+
 using ICSharpCode.SharpDevelop.Gui;
+using SharpQuery.Collections;
+using SharpQuery.Gui.DataView;
+using SharpQuery.SchemaClass;
 
 namespace SharpQuery.Gui.TreeView
 {

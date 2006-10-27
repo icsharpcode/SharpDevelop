@@ -6,14 +6,10 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Text;
 using System.Drawing;
-using System.Collections;
-using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
-using MSjogren.GacTool.FusionNative;
-using ICSharpCode.SharpDevelop.Project;
+
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui

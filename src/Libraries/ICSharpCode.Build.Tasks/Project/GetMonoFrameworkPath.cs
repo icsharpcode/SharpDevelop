@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using System;
 
 namespace ICSharpCode.Build.Tasks
 {

@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

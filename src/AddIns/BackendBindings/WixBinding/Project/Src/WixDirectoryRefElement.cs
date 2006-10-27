@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Xml;
 
 namespace ICSharpCode.WixBinding
 {

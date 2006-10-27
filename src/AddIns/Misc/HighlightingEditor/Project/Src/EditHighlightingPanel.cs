@@ -6,20 +6,16 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Schema;
-using System.Text;
 
 using ICSharpCode.Core;
-
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop.Gui;
-
 using ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {

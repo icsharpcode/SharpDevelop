@@ -6,14 +6,12 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Xml;
-using System.ComponentModel;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
+using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
+using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;

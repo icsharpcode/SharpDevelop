@@ -6,17 +6,11 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
 using System.Drawing;
-using System.CodeDom.Compiler;
-using System.Collections;
-using System.IO;
-using System.Diagnostics;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {

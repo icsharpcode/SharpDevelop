@@ -6,10 +6,8 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.Remoting.Channels;
 using System.Collections;
+using System.Runtime.Remoting.Channels;
 
 namespace CustomSinks
 {

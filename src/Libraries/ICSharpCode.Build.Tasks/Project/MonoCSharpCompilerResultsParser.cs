@@ -8,7 +8,6 @@
 using System;
 using System.CodeDom.Compiler;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ICSharpCode.Build.Tasks
