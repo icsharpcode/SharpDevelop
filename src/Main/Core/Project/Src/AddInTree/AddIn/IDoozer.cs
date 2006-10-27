@@ -22,6 +22,6 @@ namespace ICSharpCode.Core
 		/// </summary>
 		bool HandleConditions { get; }
 		
-		object BuildItem(object caller, Codon codon, ArrayList subItems);
+		object BuildItem(object caller, /* AddInTreeNode node, */ Codon codon, ArrayList subItems);
 	}
 }

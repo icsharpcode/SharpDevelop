@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Xml;
@@ -38,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			DialogResult = DialogResult.OK;
 		}
 		
-		void AddOptionPanels(ArrayList dialogPanelDescriptors)
+		void AddOptionPanels(IEnumerable<IDialogPanelDescriptor> dialogPanelDescriptors)
 		{
 			foreach (IDialogPanelDescriptor descriptor in dialogPanelDescriptors) {
 				if (descriptor != null && descriptor.DialogPanel != null && descriptor.DialogPanel.Control != null) { // may be null, if it is only a "path"
@@ -70,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Icon = null;
 			Owner = (Form)WorkbenchSingleton.Workbench;
 			
-			AddOptionPanels(node.BuildChildItems(this));
+			AddOptionPanels(node.BuildChildItems<IDialogPanelDescriptor>(this));
 		}
 	}
 }

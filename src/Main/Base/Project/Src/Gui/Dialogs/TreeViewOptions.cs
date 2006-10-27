@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Xml;
@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		protected GradientHeaderPanel optionsPanelLabel;
 		
-		protected ArrayList OptionPanels          = new ArrayList();
+		protected List<IDialogPanel> OptionPanels = new List<IDialogPanel>();
 		
 		protected Properties properties = null;
 		
@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected void AcceptEvent(object sender, EventArgs e)
 		{
-			foreach (AbstractOptionPanel pane in OptionPanels) {
+			foreach (IDialogPanel pane in OptionPanels) {
 				if (!pane.ReceiveDialogMessage(DialogMessage.OK)) {
 					return;
 				}
@@ -141,6 +141,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			IDialogPanelDescriptor descriptor = node.Tag as IDialogPanelDescriptor;
 			if (descriptor != null && descriptor.DialogPanel != null && descriptor.DialogPanel.Control != null) {
+				if (!OptionPanels.Contains(descriptor.DialogPanel)) {
+					descriptor.DialogPanel.CustomizationObject = this.properties;
+					descriptor.DialogPanel.Control.Dock = DockStyle.Fill;
+					OptionPanels.Add(descriptor.DialogPanel);
+				}
+				
 				descriptor.DialogPanel.ReceiveDialogMessage(DialogMessage.Activated);
 				ControlDictionary["optionControlPanel"].Controls.Clear();
 				RightToLeftConverter.ConvertRecursive(descriptor.DialogPanel.Control);
@@ -157,22 +163,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		protected void AddNodes(object customizer, TreeNodeCollection nodes, ArrayList dialogPanelDescriptors)
+		protected void AddNodes(TreeNodeCollection nodes, IEnumerable<IDialogPanelDescriptor> dialogPanelDescriptors)
 		{
 			nodes.Clear();
 			foreach (IDialogPanelDescriptor descriptor in dialogPanelDescriptors) {
-				if (descriptor.DialogPanel != null) { // may be null, if it is only a "path"
-					descriptor.DialogPanel.CustomizationObject = customizer;
-					descriptor.DialogPanel.Control.Dock = DockStyle.Fill;
-					OptionPanels.Add(descriptor.DialogPanel);
-				}
-				
 				TreeNode newNode = new TreeNode(descriptor.Label);
 				newNode.Tag = descriptor;
 				newNode.NodeFont = plainFont;
 				nodes.Add(newNode);
 				if (descriptor.ChildDialogPanelDescriptors != null) {
-					AddNodes(customizer, newNode.Nodes, descriptor.ChildDialogPanelDescriptors);
+					AddNodes(newNode.Nodes, descriptor.ChildDialogPanelDescriptors);
 				}
 			}
 		}
@@ -222,7 +222,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			InitImageList();
 			
 			if (node != null) {
-				AddNodes(properties, ((TreeView)ControlDictionary["optionsTreeView"]).Nodes, node.BuildChildItems(this));
+				AddNodes(((TreeView)ControlDictionary["optionsTreeView"]).Nodes, node.BuildChildItems<IDialogPanelDescriptor>(this));
 			}
 		}
 		

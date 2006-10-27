@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.CodeDom.Compiler;
 
 namespace ICSharpCode.Core
@@ -15,7 +15,7 @@ namespace ICSharpCode.Core
 	{
 		string       id    = String.Empty;
 		string       label = String.Empty;
-		ArrayList    dialogPanelDescriptors = null;
+		List<IDialogPanelDescriptor> dialogPanelDescriptors = null;
 		IDialogPanel dialogPanel = null;
 		
 		public string ID {
@@ -33,13 +33,13 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public ArrayList ChildDialogPanelDescriptors {
+		public IEnumerable<IDialogPanelDescriptor> ChildDialogPanelDescriptors {
 			get {
 				return dialogPanelDescriptors;
 			}
-			set {
-				dialogPanelDescriptors = value;
-			}
+//			set {
+//				dialogPanelDescriptors = value;
+//			}
 		}
 		
 		AddIn addin;
@@ -67,7 +67,7 @@ namespace ICSharpCode.Core
 			this.label = label;
 		}
 		
-		public DefaultDialogPanelDescriptor(string id, string label, ArrayList dialogPanelDescriptors) : this(id, label)
+		public DefaultDialogPanelDescriptor(string id, string label, List<IDialogPanelDescriptor> dialogPanelDescriptors) : this(id, label)
 		{
 			this.dialogPanelDescriptors = dialogPanelDescriptors;
 		}

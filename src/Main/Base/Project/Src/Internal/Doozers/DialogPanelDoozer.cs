@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace ICSharpCode.Core
@@ -56,7 +57,12 @@ namespace ICSharpCode.Core
 				}
 			}
 			
-			return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label), subItems);
+			List<IDialogPanelDescriptor> newList = new List<IDialogPanelDescriptor>();
+			foreach (IDialogPanelDescriptor d in subItems) {
+				newList.Add(d);
+			}
+			
+			return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label), newList);
 		}
 	}
 }

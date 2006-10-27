@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.Core
 {
@@ -30,9 +30,8 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// The child dialog panels (e.g. for treeviews)
 		/// </summary>
-		ArrayList ChildDialogPanelDescriptors {
+		IEnumerable<IDialogPanelDescriptor> ChildDialogPanelDescriptors {
 			get;
-			set;
 		}
 		
 		/// <value>
@@ -40,7 +39,6 @@ namespace ICSharpCode.Core
 		/// </value>
 		IDialogPanel DialogPanel {
 			get;
-			set;
 		}
 	}
 }

@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 //			tabControl.Alignment = TabAlignment.Left;
 			
 			tabControl.HandleCreated += TabControlHandleCreated;
-			AddOptionPanels(node.BuildChildItems(this));
+			AddOptionPanels(node.BuildChildItems<IDialogPanelDescriptor>(this));
 		}
 		
 		void TabControlHandleCreated(object sender, EventArgs e)
@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			}
 		}
 		
-		void AddOptionPanels(ArrayList dialogPanelDescriptors)
+		void AddOptionPanels(IEnumerable<IDialogPanelDescriptor> dialogPanelDescriptors)
 		{
 			Properties newProperties = new Properties();
 			newProperties.Set("Project", project);

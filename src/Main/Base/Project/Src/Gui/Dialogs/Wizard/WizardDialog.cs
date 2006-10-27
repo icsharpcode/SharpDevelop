@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Xml;
@@ -115,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			finishButton.Enabled = CanFinish;
 		}
 		
-		void AddNodes(object customizer, ArrayList dialogPanelDescriptors)
+		void AddNodes(object customizer, IEnumerable<IDialogPanelDescriptor> dialogPanelDescriptors)
 		{
 			foreach (IDialogPanelDescriptor descriptor in dialogPanelDescriptors) {
 				
@@ -198,7 +199,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Text = title;
 			
 			if (node != null) {
-				AddNodes(customizer, node.BuildChildItems(this));
+				AddNodes(customizer, node.BuildChildItems<IDialogPanelDescriptor>(this));
 			}
 			InitializeComponents();
 			
