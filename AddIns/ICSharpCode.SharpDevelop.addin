@@ -15,8 +15,8 @@
 			<ConditionEvaluator name="ActiveViewContentUntitled" class="ICSharpCode.SharpDevelop.ActiveViewContentUntitledConditionEvaluator"/>
 			<ConditionEvaluator name="ActiveWindowState" class="ICSharpCode.SharpDevelop.ActiveWindowStateConditionEvaluator"/>
 			<ConditionEvaluator name="SolutionOpen" class="ICSharpCode.SharpDevelop.SolutionOpenConditionEvaluator"/>
-			<ConditionEvaluator name="DebuggerSupports" class="ICSharpCode.SharpDevelop.DebuggerSupportsConditionEvaluator"/>
-			<ConditionEvaluator name="IsProcessRunning" class="ICSharpCode.SharpDevelop.IsProcessRunningConditionEvaluator"/>
+			<ConditionEvaluator name="DebuggerSupports" class="ICSharpCode.SharpDevelop.Debugging.DebuggerSupportsConditionEvaluator"/>
+			<ConditionEvaluator name="IsProcessRunning" class="ICSharpCode.SharpDevelop.Debugging.IsProcessRunningConditionEvaluator"/>
 			<ConditionEvaluator name="OpenWindowState" class="ICSharpCode.SharpDevelop.OpenWindowStateConditionEvaluator"/>
 			<ConditionEvaluator name="WindowActive" class="ICSharpCode.SharpDevelop.WindowActiveConditionEvaluator"/>
 			<ConditionEvaluator name="WindowOpen" class="ICSharpCode.SharpDevelop.WindowOpenConditionEvaluator"/>
@@ -38,7 +38,7 @@
 			<Doozer name="SyntaxMode" class="ICSharpCode.SharpDevelop.DefaultEditor.Codons.SyntaxModeDoozer"/>
 			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
 			<Doozer name="CodeCompletionBinding" class="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionBindingDoozer"/>
-			<Doozer name="Debugger" class="ICSharpCode.SharpDevelop.DebuggerDoozer"/>
+			<Doozer name="Debugger" class="ICSharpCode.SharpDevelop.Debugging.DebuggerDoozer"/>
 			<Doozer name="Directory" class="ICSharpCode.SharpDevelop.DirectoryDoozer"/>
 			<Doozer name="TaskBoundAdditionalLogger" class="ICSharpCode.SharpDevelop.Project.TaskBoundAdditionalLoggerDoozer"/>
 		</Import>
@@ -1722,7 +1722,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ToolTips">
-		<Class id = "DefaultDebuggerToolTips" class = "ICSharpCode.SharpDevelop.DebuggerTextAreaToolTipProvider"/>
+		<Class id = "DefaultDebuggerToolTips" class = "ICSharpCode.SharpDevelop.Debugging.DebuggerTextAreaToolTipProvider"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">

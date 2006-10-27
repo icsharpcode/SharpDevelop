@@ -12,7 +12,8 @@ using System.Windows.Forms;
 
 using Debugger;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui.TreeGrid;
+using ICSharpCode.SharpDevelop.Widgets.TreeGrid;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.Services
 {

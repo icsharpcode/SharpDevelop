@@ -10,9 +10,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Gui.TreeGrid;
+using ICSharpCode.SharpDevelop.Widgets.TreeGrid;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Debugging
 {
 	public class DebuggerGridControl : DynamicList
 	{

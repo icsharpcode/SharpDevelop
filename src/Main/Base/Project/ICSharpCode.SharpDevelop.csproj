@@ -618,14 +618,6 @@
     <Compile Include="Src\Gui\Components\StringListEditor.cs" />
     <Compile Include="Src\Project\ConfigurationGuiBinding.cs" />
     <Compile Include="Src\Project\ChooseStorageLocationButton.cs" />
-    <Compile Include="Src\Gui\TreeGrid\CollectionWithEvents.cs" />
-    <Compile Include="Src\Gui\TreeGrid\DynamicList.cs" />
-    <Compile Include="Src\Gui\TreeGrid\DynamicListColumn.cs" />
-    <Compile Include="Src\Gui\TreeGrid\DynamicListItem.cs" />
-    <Compile Include="Src\Gui\TreeGrid\DynamicListRow.cs" />
-    <Compile Include="Src\Gui\TreeGrid\DynamicTreeRow.cs" />
-    <Compile Include="Src\Gui\TreeGrid\ScrollButton.cs" />
-    <Compile Include="Src\Gui\TreeGrid\VerticalScrollContainer.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerGridControl.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\NodeBuilder\NodeBuilders.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\TextCompletionDataProvider.cs" />
@@ -723,7 +715,6 @@
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
     <Folder Include="Src\Gui\Components\AutoHide" />
-    <Folder Include="Src\Gui\TreeGrid" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Content Include="..\..\..\..\AddIns\ICSharpCode.SharpDevelop.addin">
       <Link>ICSharpCode.SharpDevelop.addin</Link>
@@ -736,6 +727,11 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
     <Folder Include="Src\Gui\Dialogs\SolutionConfiguration" />
+    <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

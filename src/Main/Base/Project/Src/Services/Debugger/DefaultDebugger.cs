@@ -10,7 +10,7 @@ using System.Diagnostics;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Debugging
 {
 	public class DefaultDebugger : IDebugger
 	{

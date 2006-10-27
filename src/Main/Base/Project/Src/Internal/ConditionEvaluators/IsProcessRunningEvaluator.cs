@@ -8,7 +8,7 @@
 using System;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Debugging
 {
 	/// <summary>
 	/// Tests the values of DebuggerService.CurrentDebugger.IsDebugging (debugger attached to a process)

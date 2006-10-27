@@ -14,6 +14,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.UnitTesting
 {

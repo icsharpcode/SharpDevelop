@@ -9,8 +9,9 @@ using System;
 using System.Drawing;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Bookmarks;
 
-namespace ICSharpCode.SharpDevelop.Bookmarks
+namespace ICSharpCode.SharpDevelop.Debugging
 {
 	public class BreakpointBookmark : SDMarkerBookmark
 	{

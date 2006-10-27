@@ -9,6 +9,7 @@ using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands

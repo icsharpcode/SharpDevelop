@@ -9,7 +9,7 @@ using System;
 using System.Collections;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Debugging
 {
 	/// <summary>
 	/// Creates debuggers.

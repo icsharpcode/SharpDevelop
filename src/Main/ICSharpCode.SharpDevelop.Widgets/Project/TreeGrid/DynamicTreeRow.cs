@@ -11,7 +11,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
+namespace ICSharpCode.SharpDevelop.Widgets.TreeGrid
 {
 	public class DynamicTreeRow : DynamicListRow
 	{
@@ -330,7 +330,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			protected override CreateParams CreateParams {
 				get {
 					CreateParams p = base.CreateParams;
-					ICSharpCode.TextEditor.Gui.CompletionWindow.AbstractCompletionWindow.AddShadowToWindow(p);
+					DesignHelper.AddShadowToWindow(p);
 					return p;
 				}
 			}

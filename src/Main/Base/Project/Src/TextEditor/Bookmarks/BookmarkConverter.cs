@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				SDBookmark bookmark;
 				switch (v[0]) {
 					case "Breakpoint":
-						bookmark = new BreakpointBookmark(fileName, null, lineNumber);
+						bookmark = new Debugging.BreakpointBookmark(fileName, null, lineNumber);
 						break;
 					default:
 						bookmark = new SDBookmark(fileName, null, lineNumber);
@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			SDBookmark bookmark = value as SDBookmark;
 			if (destinationType == typeof(string) && bookmark != null) {
 				StringBuilder b = new StringBuilder();
-				if (bookmark is BreakpointBookmark) {
+				if (bookmark is Debugging.BreakpointBookmark) {
 					b.Append("Breakpoint");
 				} else {
 					b.Append("Bookmark");

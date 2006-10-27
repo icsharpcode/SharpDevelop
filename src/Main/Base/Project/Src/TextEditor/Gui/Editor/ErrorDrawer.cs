@@ -10,6 +10,7 @@ using System.Drawing;
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {

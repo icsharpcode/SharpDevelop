@@ -8,7 +8,7 @@
 using System;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Debugging
 {
 	/// <summary>
 	/// Tests if the debugger supports a certain feature.

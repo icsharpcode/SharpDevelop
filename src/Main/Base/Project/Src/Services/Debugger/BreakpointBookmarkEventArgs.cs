@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.Bookmarks
+namespace ICSharpCode.SharpDevelop.Debugging
 {
 	public class BreakpointBookmarkEventArgs: EventArgs
 	{

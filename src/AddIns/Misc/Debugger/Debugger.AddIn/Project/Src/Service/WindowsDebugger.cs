@@ -13,11 +13,12 @@ using Debugger;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Debugging;
 using BM = ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.SharpDevelop.Services
 {	
-	public class WindowsDebugger:IDebugger
+	public class WindowsDebugger : IDebugger
 	{
 		bool useRemotingForThreadInterop = false;
 		
@@ -299,11 +300,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			debugger.ProcessStarted          += debugger_ProcessStarted;
 			debugger.ProcessExited           += debugger_ProcessExited;
 			
-			DebuggerService.BreakPointAdded  += delegate (object sender, BM.BreakpointBookmarkEventArgs e) {
+			DebuggerService.BreakPointAdded  += delegate (object sender, BreakpointBookmarkEventArgs e) {
 				AddBreakpoint(e.BreakpointBookmark);
 			};
 			
-			foreach (BM.BreakpointBookmark b in DebuggerService.Breakpoints) {
+			foreach (BreakpointBookmark b in DebuggerService.Breakpoints) {
 				AddBreakpoint(b);
 			}
 			
@@ -312,7 +313,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		void AddBreakpoint(BM.BreakpointBookmark bookmark)
+		void AddBreakpoint(BreakpointBookmark bookmark)
 		{
 			SourcecodeSegment seg = new SourcecodeSegment(bookmark.FileName, bookmark.LineNumber + 1); 
 			Breakpoint breakpoint = debugger.AddBreakpoint(seg, bookmark.IsEnabled);

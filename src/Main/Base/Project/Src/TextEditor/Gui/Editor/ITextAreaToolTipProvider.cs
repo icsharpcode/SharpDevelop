@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.TextEditor;
+using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
@@ -45,9 +46,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// Gets the DebuggerGridControl to be shown as tooltip.
 		/// May be <c>null</c>.
 		/// </summary>
-		public DebuggerGridControl ToolTipControl {
+		public Control ToolTipControl {
 			get {
-				return this.toolTipObject as DebuggerGridControl;
+				return this.toolTipObject as Control;
 			}
 		}
 		
@@ -64,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// Initializes a new instance of the <see cref="ToolTipInfo"/> class.
 		/// </summary>
 		/// <param name="toolTipControl">The DebuggerGridControl to be shown as tooltip.</param>
-		public ToolTipInfo(DebuggerGridControl toolTipControl)
+		public ToolTipInfo(Control toolTipControl)
 		{
 			this.toolTipObject = toolTipControl;
 		}

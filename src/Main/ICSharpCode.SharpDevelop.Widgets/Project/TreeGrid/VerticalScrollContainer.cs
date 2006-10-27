@@ -8,7 +8,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
+namespace ICSharpCode.SharpDevelop.Widgets.TreeGrid
 {
 	public class VerticalScrollContainer : Control
 	{

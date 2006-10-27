@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
+namespace ICSharpCode.SharpDevelop.Widgets.TreeGrid
 {
 	public class CollectionItemEventArgs<T> : EventArgs
 	{
