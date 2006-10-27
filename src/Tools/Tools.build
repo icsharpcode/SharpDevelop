@@ -8,9 +8,6 @@
 		<WixIncFiles Include="wix\inc\*"/>
 		<NUnitFiles Include="NUnit\*"/>
 		<HelpToolFiles Include="Help\*"/>
-		<!-- <ToolProject Include="GacUtil2\GacUtil2.csproj" /> -->
-		<ToolFiles Include="GacUtil2\GacUtil2.exe"/>
-		<ToolFiles Include="GacUtil2\GacUtil2.exe.config"/>
 	</ItemGroup>
 	
 	<Target Name="Build">
@@ -58,8 +55,6 @@
 		<CleanupDirectories Include="..\..\bin\Tools"/>
 		<CleanupDirectories Include="..\..\bin\setup\help"/>
 		<CleanupDirectories Include="..\..\AddIns\Addins"/>
-		
-		<!--<SpecialObjCleanupDirectories Include="..\**\obj\*.FileList.txt"/>-->
 	</ItemGroup>
 	
 	<Target Name="Clean">
