@@ -72,7 +72,6 @@ Icons.16x16.TestRunner.Red                        = BitmapResources-data\Icons.1
 Icons.16x16.TestRunner.Green                      = BitmapResources-data\Icons.16x16.TestRunner.Green.png
 Icons.16x16.TestRunner.Gray                       = BitmapResources-data\Icons.16x16.TestRunner.Gray.png
 ErrorReport                                       = BitmapResources-data\ErrorReport.png
-Icons.16x16.Shell                                 = Icons.16x16.Shell.png
 Icons.16x16.StopProcess                           = BitmapResources-data\Icons.16x16.StopProcess.png
 Icons.16x16.Desktop                               = BitmapResources-data\Icons.16x16.Desktop.png
 Icons.16x16.MyComputer                            = BitmapResources-data\Icons.16x16.MyComputer.png
