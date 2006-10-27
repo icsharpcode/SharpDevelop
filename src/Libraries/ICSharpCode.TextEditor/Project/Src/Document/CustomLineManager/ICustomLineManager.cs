@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace ICSharpCode.TextEditor.Document
@@ -19,7 +19,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// <value>
 		/// Contains all custom lines 
 		/// </value>
-		ArrayList CustomLines {
+		List<CustomLine> CustomLines {
 			get;
 		}
 		

@@ -8,7 +8,7 @@
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -16,7 +16,7 @@ namespace ICSharpCode.XmlEditor
 	///   A collection that stores <see cref='XmlSchemaCompletionData'/> objects.
 	/// </summary>
 	[Serializable()]
-	public class XmlSchemaCompletionDataCollection : CollectionBase {
+	public class XmlSchemaCompletionDataCollection : System.Collections.CollectionBase {
 		
 		/// <summary>
 		///   Initializes a new instance of <see cref='XmlSchemaCompletionDataCollection'/>.
@@ -64,14 +64,14 @@ namespace ICSharpCode.XmlEditor
 		
 		public ICompletionData[] GetNamespaceCompletionData()
 		{
-			ArrayList completionItems = new ArrayList();
+			List<ICompletionData> completionItems = new List<ICompletionData>();
 			
 			foreach (XmlSchemaCompletionData schema in this) {
 				XmlCompletionData completionData = new XmlCompletionData(schema.NamespaceUri, XmlCompletionData.DataType.NamespaceUri);
 				completionItems.Add(completionData);
 			}
 			
-			return (ICompletionData[])completionItems.ToArray(typeof(ICompletionData));
+			return completionItems.ToArray();
 		}
 		
 		/// <summary>
@@ -227,17 +227,17 @@ namespace ICSharpCode.XmlEditor
 		/// <seealso cref='IEnumerator'/>
 		/// <seealso cref='XmlSchemaCompletionDataCollection'/>
 		/// <seealso cref='XmlSchemaCompletionData'/>
-		public class XmlSchemaCompletionDataEnumerator : IEnumerator
+		public class XmlSchemaCompletionDataEnumerator : System.Collections.IEnumerator
 		{
-			IEnumerator baseEnumerator;
-			IEnumerable temp;
+			System.Collections.IEnumerator baseEnumerator;
+			System.Collections.IEnumerable temp;
 			
 			/// <summary>
 			///   Initializes a new instance of <see cref='XmlSchemaCompletionDataEnumerator'/>.
 			/// </summary>
 			public XmlSchemaCompletionDataEnumerator(XmlSchemaCompletionDataCollection mappings)
 			{
-				this.temp = ((IEnumerable)(mappings));
+				this.temp = ((System.Collections.IEnumerable)(mappings));
 				this.baseEnumerator = temp.GetEnumerator();
 			}
 			
@@ -250,7 +250,7 @@ namespace ICSharpCode.XmlEditor
 				}
 			}
 			
-			object IEnumerator.Current {
+			object System.Collections.IEnumerator.Current {
 				get {
 					return baseEnumerator.Current;
 				}

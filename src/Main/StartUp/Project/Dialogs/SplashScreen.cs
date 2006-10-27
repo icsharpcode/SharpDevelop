@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
@@ -20,8 +20,8 @@ namespace ICSharpCode.SharpDevelop
 		public const string VersionText = "Serralongue build " + RevisionClass.Revision;
 		
 		static SplashScreenForm splashScreen;
-		static ArrayList requestedFileList = new ArrayList();
-		static ArrayList parameterList = new ArrayList();
+		static List<string> requestedFileList = new List<string>();
+		static List<string> parameterList = new List<string>();
 		Bitmap bitmap;
 		
 		public static SplashScreenForm SplashScreen {
@@ -73,17 +73,12 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static string[] GetParameterList()
 		{
-			return GetStringArray(parameterList);
+			return parameterList.ToArray();
 		}
 		
 		public static string[] GetRequestedFileList()
 		{
-			return GetStringArray(requestedFileList);
-		}
-		
-		static string[] GetStringArray(ArrayList list)
-		{
-			return (string[])list.ToArray(typeof(string));
+			return requestedFileList.ToArray();
 		}
 		
 		public static void SetCommandLineArgs(string[] args)

@@ -39,14 +39,7 @@ namespace ICSharpCode.TextEditor.Actions
 					position = new Point(lineAbove.Length, position.Y - 1);
 				}
 			}
-//			ArrayList foldings = textArea.Document.FoldingManager.GetFoldingsFromPosition(position.Y, position.X);
-//			foreach (FoldMarker foldMarker in foldings) {
-//				if (foldMarker.IsFolded) {
-//					if (foldMarker.StartLine < position.Y || foldMarker.StartLine == position.Y && foldMarker.StartColumn < position.X) {
-//						position = new Point(foldMarker.StartColumn, foldMarker.StartLine);
-//					}
-//				}
-//			}
+			
 			textArea.Caret.Position = position;
 			textArea.SetDesiredColumn();
 		}

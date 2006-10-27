@@ -6,20 +6,19 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Xml;
-using System.Xml.Schema;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Windows.Forms;
-using System.Reflection;
+using System.Xml;
+using System.Xml.Schema;
 
 namespace ICSharpCode.TextEditor.Document
 {
 	public static class HighlightingDefinitionParser
 	{
-		static ArrayList errors = null;
+		static List<ValidationEventArgs> errors = null;
 
 		public static DefaultHighlightingStrategy Parse(SyntaxMode syntaxMode, XmlReader xmlReader)
 		{
@@ -40,12 +39,6 @@ namespace ICSharpCode.TextEditor.Document
 				settings.ValidationType = ValidationType.Schema;
 				XmlReader validatingReader = XmlReader.Create(xmlReader, settings);
 
-//				XmlValidatingReader validatingReader = new XmlValidatingReader(xmlTextReader);
-				//				Stream shemaStream = Assembly.GetCallingAssembly().GetManifestResourceStream("Resources.Mode.xsd");
-//				validatingReader.Schemas.Add("", new XmlTextReader(shemaStream));
-//				validatingReader.ValidationType = ValidationType.Schema;
-				
-				
 				XmlDocument doc = new XmlDocument();
 				doc.Load(validatingReader);
 				
@@ -112,8 +105,8 @@ namespace ICSharpCode.TextEditor.Document
 		
 		private static void ValidationHandler(object sender, ValidationEventArgs args)
 		{
-			if (errors==null) {
-				errors=new ArrayList();
+			if (errors == null) {
+				errors=new List<ValidationEventArgs>();
 			}
 			errors.Add(args);
 		}
@@ -128,6 +121,5 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			MessageBox.Show(msg.ToString(), "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
 		}
-
 	}
 }

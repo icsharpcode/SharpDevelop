@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace ICSharpCode.TextEditor.Document
@@ -42,7 +42,7 @@ namespace ICSharpCode.TextEditor.Document
 	/// </summary>
 	public class CustomLineManager : ICustomLineManager
 	{
-		ArrayList lines = new ArrayList();
+		List<CustomLine> lines = new List<CustomLine>();
 		
 		/// <summary>
 		/// Creates a new instance of <see cref="CustomLineManager"/>
@@ -55,7 +55,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// <value>
 		/// Contains all custom lines 
 		/// </value>
-		public ArrayList CustomLines {
+		public List<CustomLine> CustomLines {
 			get {
 				return lines;
 			}

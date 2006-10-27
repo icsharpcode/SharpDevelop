@@ -5,19 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Reflection;
-using System.Resources;
-using System.Diagnostics;
 using System.Windows.Forms;
-using System.Xml;
+
+using Microsoft.Win32;
 
 namespace ICSharpCode.Core
 {
@@ -80,14 +75,14 @@ namespace ICSharpCode.Core
 			string   installRoot = NETFrameworkInstallRoot;
 			string[] files       = Directory.GetDirectories(installRoot);
 			
-			ArrayList runtimes = new ArrayList();
+			List<string> runtimes = new List<string>();
 			foreach (string file in files) {
 				string runtime = Path.GetFileName(file);
 				if (runtime.StartsWith("v")) {
 					runtimes.Add(runtime);
 				}
 			}
-			return (string[])runtimes.ToArray(typeof(string));
+			return runtimes.ToArray();
 		}
 		
 		public static string Combine(params string[] paths)

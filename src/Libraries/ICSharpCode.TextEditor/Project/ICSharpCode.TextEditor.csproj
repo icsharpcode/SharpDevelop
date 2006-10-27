@@ -193,7 +193,6 @@
     <EmbeddedResource Include="Resources\Tex-Mode.xshd" />
     <EmbeddedResource Include="Resources\VBNET-Mode.xshd" />
     <EmbeddedResource Include="Resources\XML-Mode.xshd" />
-    <Compile Include="Src\Document\TextBufferStrategy\PieceTableTextBufferStrategy.cs" />
     <Compile Include="Src\Util\FileReader.cs" />
     <EmbeddedResource Include="Resources\Boo.xshd" />
     <Compile Include="Src\Gui\DrawableLine.cs" />

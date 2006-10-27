@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 using System.Drawing;
-using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
@@ -47,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public override bool StorePanelContents()
 		{
-			ArrayList tokens = new ArrayList();
+			List<string> tokens = new List<string>();
 			
 			foreach (ListViewItem item in taskList.Items) {
 				string text = item.Text.Trim();
@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				}
 			}
 			
-			PropertyService.Set("SharpDevelop.TaskListTokens", tokens.ToArray(typeof(string)));
+			PropertyService.Set("SharpDevelop.TaskListTokens", tokens.ToArray());
 			
 			return true;
 		}

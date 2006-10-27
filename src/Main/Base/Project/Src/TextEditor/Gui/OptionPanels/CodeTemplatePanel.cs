@@ -213,9 +213,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			int i = GetCurrentIndex();
 			
 			if (i != -1) {
-				ControlDictionary["templateTextBox"].Text    = ((CodeTemplate)((ListView)ControlDictionary["templateListView"]).SelectedItems[0].Tag).Text;
+				ControlDictionary["templateTextBox"].Text = ((CodeTemplate)((ListView)ControlDictionary["templateListView"]).SelectedItems[0].Tag).Text;
 			} else {
-				ControlDictionary["templateTextBox"].Text    = String.Empty;
+				ControlDictionary["templateTextBox"].Text = String.Empty;
 			}
 			SetEnabledStatus();
 		}
@@ -233,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (CurrentTemplateGroup != null) {
 				CurrentTemplateGroup.Templates.Clear();
 				foreach (ListViewItem item in ((ListView)ControlDictionary["templateListView"]).Items) {
-					CurrentTemplateGroup.Templates.Add(item.Tag);
+					CurrentTemplateGroup.Templates.Add((CodeTemplate)item.Tag);
 				}
 			}
 		}
