@@ -63,11 +63,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			sideBar = new SharpDevelopSideBar();
 			SideTab tab = new SideTab(sideBar, "${res:SharpDevelop.SideBar.GeneralCategory}");
+			tab.DisplayName = StringParser.Parse(tab.Name);
 			
 			sideBar.Tabs.Add(tab);
 			sideBar.ActiveTab = tab;
 			
 			tab = new SideTab(sideBar, "${res:SharpDevelop.SideBar.ClipboardRing}");
+			tab.DisplayName = StringParser.Parse(tab.Name);
 			tab.IsClipboardRing = true;
 			tab.CanBeDeleted = false;
 			tab.CanDragDrop  = false;
@@ -91,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				doc.LoadXml("<SideBarConfig version=\"1.0\"/>");
 				doc.DocumentElement.AppendChild(sideBar.ToXmlElement(doc));
 				
-				FileUtility.ObservedSave(new NamedFileOperationDelegate(doc.Save), 
+				FileUtility.ObservedSave(new NamedFileOperationDelegate(doc.Save),
 				                         Path.Combine(PropertyService.ConfigDirectory, "SideBarConfig.xml"),
 				                         FileErrorPolicy.ProvideAlternative);
 			}

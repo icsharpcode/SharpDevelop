@@ -121,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
 			SideTab selectedSideTab = sideBar.GetTabAt(sideBar.SideBarMousePosition.X, sideBar.SideBarMousePosition.Y);
-			if (MessageBox.Show(StringParser.Parse(ResourceService.GetString("SideBarComponent.ContextMenu.DeleteTabHeaderQuestion"), new string[,] { {"TabHeader", selectedSideTab.Name}}),
+			if (MessageBox.Show(StringParser.Parse(ResourceService.GetString("SideBarComponent.ContextMenu.DeleteTabHeaderQuestion"), new string[,] { {"TabHeader", selectedSideTab.DisplayName}}),
 			                    ResourceService.GetString("Global.QuestionText"), 
 			                    MessageBoxButtons.YesNo, 
 			                    MessageBoxIcon.Question,

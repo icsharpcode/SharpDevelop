@@ -152,6 +152,7 @@ namespace SharpReportAddin{
 				SideTab s;
 				for (int i = SideBarView.sideBar.Tabs.Count -1; i > 0;i -- ) {
 					s = SideBarView.sideBar.Tabs[i];
+					#warning Users can add custom tools to tabs with name of their choice - and they might include "Report" in the name
 					if (s.Name.IndexOf("Report") > 0) {
 						SideBarView.sideBar.Tabs.Remove(s);
 					}

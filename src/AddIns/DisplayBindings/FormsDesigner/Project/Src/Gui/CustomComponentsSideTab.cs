@@ -24,8 +24,10 @@ namespace ICSharpCode.FormsDesigner.Gui
 	public class CustomComponentsSideTab : SideTabDesigner
 	{
 		///<summary>Load an assembly's controls</summary>
-		public CustomComponentsSideTab(SideBarControl sideTab, string name, IToolboxService toolboxService) : base(sideTab,name, toolboxService)
+		public CustomComponentsSideTab(SideBarControl sideTab, string name, IToolboxService toolboxService)
+			: base(sideTab, name, toolboxService)
 		{
+			this.DisplayName = StringParser.Parse(this.Name);
 			ScanProjectAssemblies();
 			ProjectService.EndBuild       += RescanProjectAssemblies;
 			ProjectService.SolutionLoaded += RescanProjectAssemblies;

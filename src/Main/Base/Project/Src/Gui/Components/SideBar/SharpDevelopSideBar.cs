@@ -94,6 +94,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			foreach (TextTemplate template in TextTemplate.TextTemplates) {
 				SideTab tab = new SideTab(this, template.Name);
+				tab.DisplayName = StringParser.Parse(tab.Name);
 				tab.CanSaved  = false;
 				foreach (TextTemplate.Entry entry in template.Entries)  {
 					tab.Items.Add(SideTabItemFactory.CreateSideTabItem(entry.Display, entry.Value));
@@ -284,6 +285,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			foreach (XmlElement sideTabEl in el.ChildNodes) {
 				SideTab tab = new SideTab(this, sideTabEl.GetAttribute("text"));
+				tab.DisplayName = StringParser.Parse(tab.Name);
 				if (tab.Name == el.GetAttribute("activetab")) {
 					ActiveTab = tab;
 				} else {
@@ -300,7 +302,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (sideTabEl.GetAttribute("clipboardring") == "true") {
 					tab.CanBeDeleted = false;
 					tab.CanDragDrop  = false;
-					tab.Name            = "${res:SharpDevelop.SideBar.ClipboardRing}";
+					tab.Name         = "${res:SharpDevelop.SideBar.ClipboardRing}";
+					tab.DisplayName  = StringParser.Parse(tab.Name);
 					tab.IsClipboardRing = true;
 				}
 				Tabs.Add(tab);

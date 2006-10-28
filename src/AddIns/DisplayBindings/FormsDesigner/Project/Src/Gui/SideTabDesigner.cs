@@ -9,6 +9,7 @@ using System;
 using System.Drawing.Design;
 using System.Reflection;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
@@ -19,8 +20,10 @@ namespace ICSharpCode.FormsDesigner.Gui
 		protected bool loadImages = true;
 		IToolboxService toolboxService;
 		
-		protected SideTabDesigner(SideBarControl sideBar, string name, IToolboxService toolboxService) : base(sideBar, name)
+		protected SideTabDesigner(SideBarControl sideBar, string name, IToolboxService toolboxService)
+			: base(sideBar, name)
 		{
+			this.DisplayName = StringParser.Parse(name);
 			this.toolboxService = toolboxService;
 			this.CanSaved = false;
 			

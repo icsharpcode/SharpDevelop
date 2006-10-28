@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 	
 	public class SideTab
 	{
-		string    name;
+		string    name, displayName;
 		bool      canDragDrop  = true;
 		bool      canBeDeleted = true;
 		bool      canBeRenamed = true;
@@ -168,7 +168,13 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			}
 			set {
 				name = value;
+				displayName = value;
 			}
+		}
+		
+		public string DisplayName {
+			get { return displayName; }
+			set { displayName = value; }
 		}
 		
 		public SideTabItemCollection Items  {
@@ -266,14 +272,14 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		
 		public SideTab(SideBarControl sideBar, string name) : this(sideBar.SideTabItemFactory)
 		{
-			this.name = name;
+			this.Name = name;
 			SetCanRename();
 			items.ItemRemoved += OnSideTabItemRemoved;
 		}
 		
 		public SideTab(string name)
 		{
-			this.name = name;
+			this.Name = name;
 			SetCanRename();
 			items.ItemRemoved += OnSideTabItemRemoved;
 		}
@@ -295,12 +301,12 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			switch (sideTabStatus) {
 				case SideTabStatus.Normal:
 					ControlPaint.DrawBorder3D(g, new Rectangle(0, pos.Y, width - 4, font.Height + 4), Border3DStyle.RaisedInner);
-					g.DrawString(name, font, SystemBrushes.ControlText, new RectangleF(1, pos.Y + 1, width - 5, font.Height + 1));
+					g.DrawString(displayName, font, SystemBrushes.ControlText, new RectangleF(1, pos.Y + 1, width - 5, font.Height + 1));
 					
 					break;
 				case SideTabStatus.Selected:
 					ControlPaint.DrawBorder3D(g, new Rectangle(0, pos.Y, width - 4, font.Height + 4), Border3DStyle.Sunken);
-					g.DrawString(name, font, SystemBrushes.ControlText, new RectangleF(1 + 1, pos.Y + 2, width - 5, font.Height + 2));
+					g.DrawString(displayName, font, SystemBrushes.ControlText, new RectangleF(1 + 1, pos.Y + 2, width - 5, font.Height + 2));
 					break;
 				case SideTabStatus.Dragged:
 					Rectangle r = new Rectangle(0, pos.Y, width - 4, font.Height + 4);
@@ -312,7 +318,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 					
 					g.FillRectangle(SystemBrushes.ControlDarkDark, r);
 					
-					g.DrawString(name, font, SystemBrushes.HighlightText, new RectangleF(1 + 1, pos.Y + 2, width - 5, font.Height + 2));
+					g.DrawString(displayName, font, SystemBrushes.HighlightText, new RectangleF(1 + 1, pos.Y + 2, width - 5, font.Height + 2));
 					break;
 			}
 		}
