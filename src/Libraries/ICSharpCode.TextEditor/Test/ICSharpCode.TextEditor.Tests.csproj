@@ -44,6 +44,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="DocumentTests.cs" />
     <Compile Include="BlockCommentTests.cs" />
+    <Compile Include="FoldingManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\ICSharpCode.TextEditor.csproj">

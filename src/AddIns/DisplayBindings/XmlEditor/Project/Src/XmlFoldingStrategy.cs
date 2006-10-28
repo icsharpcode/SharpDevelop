@@ -138,7 +138,7 @@ namespace ICSharpCode.XmlEditor
 			} catch (Exception) {
 				// If the xml is not well formed keep the foldings 
 				// that already exist in the document.
-				return document.FoldingManager.FoldMarker;
+				return new List<FoldMarker>(document.FoldingManager.FoldMarker);
 			}
 
 			return foldMarkers;

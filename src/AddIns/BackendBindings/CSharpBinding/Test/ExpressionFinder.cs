@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using NUnit.Framework;
 using CSharpBinding.Parser;
@@ -48,6 +49,11 @@ class Main {
 		[SetUp]
 		public void Init()
 		{
+			HostCallback.GetParseInformation = ParserService.GetParseInformation;
+			HostCallback.GetCurrentProjectContent = delegate {
+				return ParserService.CurrentProjectContent;
+			};
+			
 			ef = new CSharpExpressionFinder("test.cs");
 		}
 		

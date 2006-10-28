@@ -18,9 +18,9 @@ namespace ICSharpCode.TextEditor.Document
 		IFoldingStrategy    foldingStrategy = null;
 		IDocument document;
 		
-		public List<FoldMarker> FoldMarker {
+		public IList<FoldMarker> FoldMarker {
 			get {
-				return foldMarker;
+				return foldMarker.AsReadOnly();
 			}
 		}
 		
@@ -224,9 +224,13 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public void UpdateFoldings(string fileName, object parseInfo)
 		{
+			UpdateFoldings(foldingStrategy.GenerateFoldMarkers(document, fileName, parseInfo));
+		}
+		
+		public void UpdateFoldings(List<FoldMarker> newFoldings)
+		{
 			int oldFoldingsCount = foldMarker.Count;
 			lock (this) {
-				List<FoldMarker> newFoldings = foldingStrategy.GenerateFoldMarkers(document, fileName, parseInfo);
 				if (newFoldings != null && newFoldings.Count != 0) {
 					newFoldings.Sort();
 					if (foldMarker.Count == newFoldings.Count) {
