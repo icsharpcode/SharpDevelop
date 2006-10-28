@@ -140,6 +140,7 @@
 				<ComponentRef Id="ICSharpCodeNRefactoryDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopDomdll"/>
+				<ComponentRef Id="ICSharpCodeSharpDevelopWidgets"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopSdaFiles"/>
 				<ComponentRef Id="ICSharpCodeTextEditorDll"/>
 				<ComponentRef Id="log4netDll"/>
