@@ -56,10 +56,11 @@ namespace NRefactoryExample
 					    (method.Name.StartsWith("Is") || method.Name.StartsWith("Get")))
 					{
 						// replace the method with a property
-						PropertyDeclaration prop = new PropertyDeclaration(method.Name,
-						                                                   method.TypeReference,
-						                                                   method.Modifier,
-						                                                   method.Attributes);
+						PropertyDeclaration prop = new PropertyDeclaration(method.Modifier,
+						                                                   method.Attributes,
+						                                                   method.Name,
+						                                                   null);
+						prop.TypeReference = method.TypeReference;
 						prop.GetRegion = new PropertyGetRegion(method.Body, null);
 						typeDeclaration.Children[i] = prop;
 					}
