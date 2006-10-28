@@ -138,7 +138,7 @@
 								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Dom.dll" Name="ICDom.DLL" Id="ICSharpCode.SharpDevelop.Dom.dll" LongName="ICSharpCode.SharpDevelop.Dom.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Dom.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Dom.dll" KeyPath="yes" />
 							</Component>
 							<Component Guid="C35A1267-0E57-4DBE-95C7-0CA13E8F3C56" Id="ICSharpCodeSharpDevelopWidgets" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Widgets.dll" Name="ICWidgets.DLL" Id="ICSharpCode.SharpDevelop.Widgets.dll" LongName="ICSharpCode.SharpDevelop.Widgets.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Widgets.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Widgets.dll" KeyPath="yes" />
+								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Widgets.dll" Name="ICWidget.DLL" Id="ICSharpCode.SharpDevelop.Widgets.dll" LongName="ICSharpCode.SharpDevelop.Widgets.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Widgets.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Widgets.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="ICSharpCodeSharpDevelopSdaFiles" Guid="12B16781-2FFE-4E80-A78E-73F1425991BF" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll" Name="ICsda.dll" Id="ICSharpCode.SharpDevelop.Sda.dll" LongName="ICSharpCode.SharpDevelop.Sda.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Sda.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Sda.dll" KeyPath="yes" />
