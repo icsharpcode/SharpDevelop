@@ -1,0 +1,17 @@
+<AddIn name        = "SettingsEditor"
+       author      = "Daniel Grunwald"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Edits project settings">
+	
+	<Runtime>
+		<Import assembly = "SettingsEditor.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id = "SettingsEditor"
+		                insertbefore = "Text"
+		                class = "ICSharpCode.SettingsEditor.SettingsDisplayBinding"
+		                fileNamePattern = "\.settings$"
+		                languagePattern = "^SettingsFiles$"/>
+	</Path>
+</AddIn>
