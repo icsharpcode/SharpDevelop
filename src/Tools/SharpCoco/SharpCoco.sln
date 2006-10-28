@@ -1,0 +1,16 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.1.0.1913
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpCoco", "src\SharpCoco.csproj", "{47D8A4A2-BBD9-4E24-85DC-A287383F7C42}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{47D8A4A2-BBD9-4E24-85DC-A287383F7C42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47D8A4A2-BBD9-4E24-85DC-A287383F7C42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47D8A4A2-BBD9-4E24-85DC-A287383F7C42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47D8A4A2-BBD9-4E24-85DC-A287383F7C42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal
