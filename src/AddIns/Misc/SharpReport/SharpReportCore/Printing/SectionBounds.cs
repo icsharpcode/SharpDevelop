@@ -18,7 +18,7 @@ namespace SharpReportCore{
 	public class SectionBounds{
 		Rectangle reportHeaderRectangle;
 		Rectangle pageHeaderRectangle;
-		Rectangle detailRectangle;
+//		Rectangle detailRectangle;
 		Rectangle pageFooterRectangle;
 		Rectangle reportFooterRectangle;
 		
@@ -143,10 +143,10 @@ namespace SharpReportCore{
 		
 		public Rectangle DetailRectangle {
 			get {
-				return detailRectangle;
-			}
-			set {
-				detailRectangle = value;
+				return new Rectangle(this.pageHeaderRectangle.Left,
+				                     this.pageHeaderRectangle.Bottom,
+				                     this.pageFooterRectangle.Right,
+				                     this.pageFooterRectangle.Top);
 			}
 		}
 		

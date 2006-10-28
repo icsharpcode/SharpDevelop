@@ -1,12 +1,13 @@
 /*
  * Created by SharpDevelop.
- * User: Forstmeier Helmut
+ * User: Forstmeier Peter
  * Date: 16.10.2006
  * Time: 22:15
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -24,7 +25,8 @@ namespace SharpReportCore.ReportViewer
 		private PageSettings pageSettings;
 		private float zoom;
 		private Bitmap bitmap;
-		private List<SinglePage> pages;
+//		private List<SinglePage> pages;
+		private PagesCollection pages;
 		private int pageNumber;
 	
 		private Rectangle PageRectangle () {
@@ -82,16 +84,25 @@ namespace SharpReportCore.ReportViewer
 		private void DrawItems (Graphics gr,ExporterCollection<BaseExportColumn> items) {
 			
 			foreach (SharpReportCore.Exporters.BaseExportColumn ex in items) {
+				
 				if (ex != null) {
 					ExportContainer cont = ex as ExportContainer;
 					if (cont == null) {
 //						System.Console.WriteLine("{0}",ex.GetType());
-						TextDrawer.PaintString(gr,ex.ToString(),ex.StyleDecorator);
+						ExportGraphic eg = ex as ExportGraphic;
+						if (eg != null) {
+							eg.StyleDecorator.DrawGraphic(gr);
+						
+						} else {
+							TextDrawer.PaintString(gr,ex.ToString(),ex.StyleDecorator);
+						}
+						
 					} else {
 						DrawItems(gr,cont.Items);
 					}
 					
 				}
+				
 			}
 		}
 		
@@ -104,13 +115,9 @@ namespace SharpReportCore.ReportViewer
 				// Reset Transform to org. Value
 				
 				gr.ScaleTransform(1F,1F);
-				gr.Clear(Color.Beige);
+				gr.Clear(this.panel2.BackColor);
 				gr.ScaleTransform(this.zoom,this.zoom);
 
-//				if (this.pageSettings != null) {
-//					gr.DrawRectangle(new Pen(Color.Black),
-//					                 this.PageRectangle ());
-//				}
 				DrawItems (gr,page.Items);
 			}
 			System.Console.WriteLine("\tready createBitmap {0}",DateTime.Now);
@@ -129,7 +136,9 @@ namespace SharpReportCore.ReportViewer
 			this.bitmap = this.BuildBitmap(sp);
 		
 			this.toolStripTextBox1.Text = String.Empty;
-			string str = String.Format ("Page {0} of {1}",this.pageNumber +1,this.pages.Count);
+			
+			string str = String.Format (CultureInfo.CurrentCulture,
+			                            "Page {0} of {1}",this.pageNumber +1,this.pages.Count);
 			this.toolStripTextBox1.Text = str;
 			this.Invalidate(true);
 		}
@@ -184,12 +193,13 @@ namespace SharpReportCore.ReportViewer
 				this.AdjustDrawArea();
 			}
 		}
-		
-		
-		public List<SinglePage> Pages {
-			set {
-				pages = value;
-				ShowPages();
+		public void SetPages (PagesCollection pages) {
+			this.pages = pages;
+			this.ShowPages();
+		}
+		public PagesCollection Pages {
+			get {
+				return this.pages;
 			}
 		}
 		

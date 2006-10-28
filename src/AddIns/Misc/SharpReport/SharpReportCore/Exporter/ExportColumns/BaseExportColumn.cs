@@ -26,10 +26,6 @@ namespace SharpReportCore.Exporters
 			this.styleDecorator = new BaseStyleDecorator(Color.White,Color.Black);
 		}
 		
-//		public BaseExportColumn(BaseStyleDecorator styleDecorator)
-//		{
-//			this.styleDecorator = styleDecorator;
-//		}
 		
 		public BaseExportColumn(BaseStyleDecorator itemStyle, bool isContainer)
 		{

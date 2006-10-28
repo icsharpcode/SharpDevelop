@@ -31,7 +31,9 @@ namespace SharpReportCore.Exporters
 		}
 		
 		public void CalculatePageBounds (ReportModel reportModel) {
-			
+			if (reportModel == null) {
+				throw new ArgumentNullException("reportModel");
+			}
 			Graphics graphics = reportModel.ReportSettings.PageSettings.PrinterSettings.CreateMeasurementGraphics();
 			Rectangle rectangle;
 

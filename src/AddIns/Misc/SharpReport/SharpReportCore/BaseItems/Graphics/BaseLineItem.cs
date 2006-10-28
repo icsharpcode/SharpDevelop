@@ -11,7 +11,7 @@
 
 using System;
 using System.Drawing;
-
+using SharpReportCore.Exporters;
 /// <summary>
 /// This Class handles Lines
 /// </summary>
@@ -20,14 +20,40 @@ using System.Drawing;
 /// 	created on - 28.09.2005 23:46:19
 /// </remarks>
 namespace SharpReportCore {
-	public class BaseLineItem : SharpReportCore.BaseGraphicItem {
+	
+	public class BaseLineItem : SharpReportCore.BaseGraphicItem,IExportColumnBuilder {
 		
 		LineShape shape  = new LineShape();
 		
+		#region Constructor
+		
 		public BaseLineItem():base() {
-			
+		
 		}
 		
+		#endregion
+		
+		#region IExportColumnBuilder  implementation
+		
+		public BaseExportColumn CreateExportColumn(Graphics graphics){	
+			BaseStyleDecorator st = this.CreateItemStyle(graphics);
+			ExportGraphic item = new ExportGraphic(st,false);
+			return item;
+		}
+		
+		private BaseStyleDecorator CreateItemStyle (Graphics g) {
+			BaseStyleDecorator style = new BaseStyleDecorator();
+			style.Shape = this.shape;
+			style.Size = this.Size;
+			style.Location = this.Location;
+			style.BackColor = this.BackColor;
+			style.ForeColor = this.ForeColor;
+			style.Thickness = base.Thickness;
+			style.DashStyle = base.DashStyle;
+			return style;
+		}
+		
+		#endregion
 		public override void Render(ReportPageEventArgs rpea) {
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");

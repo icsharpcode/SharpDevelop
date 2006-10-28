@@ -11,15 +11,19 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace SharpReportCore.Exporters
-{
-	public class ExporterCollection<T> : Collection<T>
-	where T : BaseExportColumn {
+namespace SharpReportCore.Exporters{
 	
-	public void AddRange (IEnumerable <T> items){
-		foreach (T item in items) {
-			this.Add (item);
+	public class ExporterCollection<T> : Collection<T>
+		where T : BaseExportColumn {
+		
+		public void AddRange (IEnumerable <T> items){
+			foreach (T item in items) {
+				this.Add (item);
+			}
 		}
 	}
+	public class PagesCollection  :Collection<SinglePage>
+	{
+		
 	}
 }

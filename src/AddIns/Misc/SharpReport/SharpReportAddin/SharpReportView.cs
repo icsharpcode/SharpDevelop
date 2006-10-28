@@ -323,12 +323,12 @@ namespace SharpReportAddin{
 			System.Console.WriteLine("\tsetup pagebuilder{0}",DateTime.Now);
 			SharpReportCore.Exporters.PageBuilder pb = reportManager.CreatePageBuilder (designerControl.ReportModel);
 			System.Console.WriteLine("\tstart createreport{0}",DateTime.Now);
-			pb.CreateReport();
+			pb.BuildExportList();
 			System.Console.WriteLine("\treport created {0}",DateTime.Now);
 			SharpReportCore.Exporters.SinglePage sp= pb.FirstPage;
 			System.Console.WriteLine("\tPages {0} SinglePage : Items {0}",pb.Pages.Count,sp.Items.Count);
 
-			this.reportViewer.Pages = pb.Pages;
+			this.reportViewer.SetPages (pb.Pages);
 		}
 		#endregion
 		

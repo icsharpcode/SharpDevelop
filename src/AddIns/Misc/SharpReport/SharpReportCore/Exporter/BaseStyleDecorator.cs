@@ -9,7 +9,7 @@
 
 using System;
 using System.Drawing;
-
+	using System.Drawing.Drawing2D;
 namespace SharpReportCore.Exporters
 {
 	/// <summary>
@@ -27,6 +27,10 @@ namespace SharpReportCore.Exporters
 		private StringFormat stringFormat;
 		private StringTrimming stringTrimming;
 		private ContentAlignment contentAlignment;
+		
+		private BaseShape shape;
+		private int thickness = 1;
+		private DashStyle dashStyle = DashStyle.Solid;
 		
 		public BaseStyleDecorator():this(Color.White,Color.Black){
 		}
@@ -116,6 +120,37 @@ namespace SharpReportCore.Exporters
 			set {
 				contentAlignment = value;
 			}
+		}
+		
+		public Rectangle DisplayRectangle {
+			get {
+				return new Rectangle(this.location.X,this.location.Y,
+				this.size.Width,this.size.Height);
+			}
+		}
+		
+		public void DrawGraphic (Graphics graphics) {
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
+			
+			this.shape.DrawShape(graphics,
+			                     new BaseLine (this.foreColor,this.dashStyle,this.thickness),
+			                 this.DisplayRectangle);
+		}
+		
+		public BaseShape Shape {
+			get { return shape; }
+			set { shape = value; }
+		}
+		public int Thickness {
+			get { return thickness; }
+			set { thickness = value; }
+		}
+		
+		public DashStyle DashStyle {
+			get { return dashStyle; }
+			set { dashStyle = value; }
 		}
 		
 	}

@@ -154,6 +154,7 @@
       <DependentUpon>ReportViewer.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Exporter\ExporterCollection.cs" />
+    <Compile Include="Exporter\ExportColumns\ExportGraphic.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />

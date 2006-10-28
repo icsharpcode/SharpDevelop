@@ -9,7 +9,6 @@
 namespace SharpReportCore.ReportViewer
 {
 	partial class PreviewControl : System.Windows.Forms.UserControl
-//	partial class PreviewControl : System.Windows.Forms.ScrollableControl
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.

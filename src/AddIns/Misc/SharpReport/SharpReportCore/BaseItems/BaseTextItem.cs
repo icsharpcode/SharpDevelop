@@ -47,23 +47,18 @@ namespace SharpReportCore {
 		
 		#region IExportColumnBuilder  implementation
 		
-//		public IPerformLine CreateExportColumn(Graphics graphics){
+
 		public BaseExportColumn CreateExportColumn(Graphics graphics){	
 			BaseStyleDecorator st = this.CreateItemStyle(graphics);
-//			TextDecorator st = (TextDecorator)this.CreateItemStyle(graphics);
 			ExportText item = new ExportText(st,false);
 			
 			item.Text = this.text;
 			return item;
 		}
 	
-		#endregion
-		
-		#region IExportColumnBuilder implementation
-		
+
 		protected BaseStyleDecorator CreateItemStyle (Graphics g) {
 			BaseStyleDecorator style = new BaseStyleDecorator();
-//			TextStyleDecorator style = new TextStyleDecorator();
 			SizeF measureSizeF = new SizeF ();
 			measureSizeF = g.MeasureString(text,
 			                               this.Font,

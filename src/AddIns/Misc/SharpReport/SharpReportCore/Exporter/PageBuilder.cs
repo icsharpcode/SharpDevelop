@@ -19,17 +19,17 @@ namespace SharpReportCore.Exporters
 	/// </summary>
 	public class PageBuilder
 	{
-		List<SinglePage> pages;
+		SinglePage singlePage;
+		PagesCollection pages;
 		ReportModel reportModel;
 		DataManager dataManager;
 		DataNavigator dataNavigator; 
 		ExportItemsConverter lineItemsConverter;
 		
-		public delegate List <BaseExportColumn> ConverterDelegate (BaseSection s,SinglePage p);
-		
+		internal delegate ExporterCollection<BaseExportColumn> ConverterDelegate (BaseSection s);
 		#region Constructor
 		public PageBuilder () {
-			pages = new List<SinglePage>();
+			pages = new PagesCollection();
 		}
 		
 		public PageBuilder(ReportModel reportModel,DataManager dataManager):this(){
@@ -61,29 +61,40 @@ namespace SharpReportCore.Exporters
 			return sp;
 		}
 	
-		private void BuildReportHeader (SinglePage page) {
-			BaseSection section = this.reportModel.ReportHeader;
+		private void DoConvert (BaseSection section,int offset) {
+			this.lineItemsConverter.Offset = offset;
+			List <BaseExportColumn>list = section.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
+
+			list.ForEach(display);
+			/*
+			if (list.Count > 0) {
+				list.ForEach(delegate(BaseExportColumn item){
+				             	ExportGraphic gr = item as ExportGraphic;
+				             	if (gr != null) {
+				             		System.Console.WriteLine("{0} / {1}",gr.ToString(),gr.StyleDecorator.Shape.ToString());
+				             	}
+				             	
+				             });
+			}
+			*/
+			this.singlePage.Items.AddRange(list);
+		}
+		
+		
+		private void BuildReportHeader () {
 			
-			this.lineItemsConverter.Offset = page.SectionBounds.ReportHeaderRectangle.Top;
-			List <BaseExportColumn>l = section.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
-			page.Items.AddRange(l);
-
+			this.DoConvert (this.reportModel.ReportHeader,
+			                this.singlePage.SectionBounds.PageHeaderRectangle.Top);
 		}
 		
-		private void BuildPageHeader (SinglePage page) {
-			BaseSection section = this.reportModel.PageHeader;
-
-			this.lineItemsConverter.Offset = page.SectionBounds.PageHeaderRectangle.Top;
-//			System.Console.WriteLine("Page Header start at {0} with {1} Items",
-//			                         this.lineItemsConverter.Offset,
-//			                        section.Items.Count);
-			List <BaseExportColumn>l = section.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
-			page.Items.AddRange(l);
+		private void BuildPageHeader () {
+			this.DoConvert (this.reportModel.PageHeader,
+			                this.singlePage.SectionBounds.PageHeaderRectangle.Top);
 		}
 		
 		
 		
-		private void BuildDetails (SinglePage page,Graphics graphics) {
+		private void BuildDetails (Graphics graphics) {
 			
 			bool firstOnPage = true;
 			
@@ -97,16 +108,16 @@ namespace SharpReportCore.Exporters
 			}
 			
 			BaseSection section = this.reportModel.DetailSection;
-			section.SectionOffset = page.SectionBounds.DetailStart.Y;
+			section.SectionOffset = this.singlePage.SectionBounds.DetailStart.Y;
 			do {
 				dataNavigator.Fill(section.Items);
 				
 				if (!firstOnPage) {
-					section.SectionOffset = section.SectionOffset + section.Size.Height  + 2 * page.SectionBounds.Gap;
+					section.SectionOffset = section.SectionOffset + section.Size.Height  + 2 * this.singlePage.SectionBounds.Gap;
 				}
-				
+
 				MeasurementService.FitSectionToItems (section,graphics);
-				List <BaseExportColumn>convertedList = new List<BaseExportColumn>();
+				ExporterCollection<BaseExportColumn> convertedList = new ExporterCollection<BaseExportColumn>();
 				
 				ConverterDelegate converterDelegate;
 				
@@ -116,45 +127,55 @@ namespace SharpReportCore.Exporters
 					converterDelegate = new ConverterDelegate(DoJob);
 				}
 				
-				convertedList = converterDelegate(section,page);
-				
-				page.Items.AddRange(convertedList);
+				convertedList = converterDelegate(section);
+				BaseExportColumn bec = convertedList[0];
+
+
+				System.Console.WriteLine("SB {0} / DR {1} / Fit {2} ",this.singlePage.SectionBounds.DetailRectangle,
+				                        bec.StyleDecorator.DisplayRectangle,
+				                       this.singlePage.SectionBounds.DetailRectangle.Contains(bec.StyleDecorator.DisplayRectangle));
+				if (this.singlePage.SectionBounds.DetailRectangle.Contains(bec.StyleDecorator.DisplayRectangle)) {
+					System.Console.WriteLine("\t fit");
+				} else {
+					System.Console.WriteLine("\t dont fit");
+				}
+				this.singlePage.Items.AddRange(convertedList);
 				firstOnPage = false;
 			}
 			while (dataNavigator.MoveNext());
 			
 		}
 		
-		private List <BaseExportColumn> DoContainerJob (BaseSection section,SinglePage page) {
-			
-			IExportColumnBuilder builder = section.Items[0] as IExportColumnBuilder;
+		private ExporterCollection<BaseExportColumn> DoContainerJob (BaseSection section) {
 			
 			this.lineItemsConverter.Offset = section.SectionOffset;
+			IExportColumnBuilder exportLineBuilder = section.Items[0] as IExportColumnBuilder;
 			
-			if (builder != null) {
-//				System.Console.WriteLine("Create RowList with Location {0} ",this.lineItemsConverter.Offset);
+			if (exportLineBuilder != null) {
 				
 				Graphics g = reportModel.ReportSettings.PageSettings.PrinterSettings.CreateMeasurementGraphics();
-				
-				ExportContainer lineItem = (ExportContainer)builder.CreateExportColumn(g);
-				
+
+				ExportContainer lineItem = this.lineItemsConverter.ConvertToContainer(section.Items[0]);
 				IContainerItem containerItem = section.Items[0] as IContainerItem;
 				
 				// reread
 				this.dataNavigator.Fill(containerItem.Items);
-				List <BaseExportColumn> childList = containerItem.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
 				
-				//Adjust childitems to Location within container
-				if (childList.Count > 0) {
-					childList.ForEach(delegate(BaseExportColumn item){
-					                  	Point p = new Point (lineItem.StyleDecorator.Location.X + item.StyleDecorator.Location.X,
-					                  	                     lineItem.StyleDecorator.Location.Y + item.StyleDecorator.Location.Y);
-					                  	item.StyleDecorator.Location = p;
-					                  });
-				}
-				lineItem.Items.AddRange(childList);
+				List<BaseExportColumn> list = containerItem.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
 
-				List <BaseExportColumn> containerList = new List<BaseExportColumn>();
+				//Adjust childitems to Location within container
+				if (list.Count > 0) {
+					list.ForEach(delegate(BaseExportColumn item){
+					             	Point p = new Point (lineItem.StyleDecorator.Location.X + item.StyleDecorator.Location.X,
+					             	                     item.StyleDecorator.Location.Y);
+					             	item.StyleDecorator.Location = p;
+					             });
+				}
+
+				lineItem.Items.AddRange(list);
+				
+				ExporterCollection<BaseExportColumn> containerList = new ExporterCollection<BaseExportColumn>();
+//				list.ForEach(display);
 				containerList.Add (lineItem);
 				g.Dispose();
 				return containerList;
@@ -164,30 +185,25 @@ namespace SharpReportCore.Exporters
 		
 		
 		
-		private List <BaseExportColumn> DoJob (BaseSection section,SinglePage page) {
+		private ExporterCollection<BaseExportColumn> DoJob (BaseSection section) {
 
 			this.lineItemsConverter.Offset = section.SectionOffset;
-			List <BaseExportColumn>list = section.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
-			/*
-			if (list.Count > 0) {
-				
-				bool istrue = list.TrueForAll(delegate(BaseExportColumn item){
-				                           	if (item.StyleDecorator.Location.Y + item.StyleDecorator.Size.Height > page.SectionBounds.DetailEnds.Y) {
-				                           		return false;
-				                           	}
-				                           	
-				                           	
-//				                           	System.Console.WriteLine("{0} / {1}",
-//				                           	                         item.ItemStyle.Location.Y + item.ItemStyle.Size.Height,
-//				                           	                         page.SectionBounds.DetailEnds.Y);
-				                           	return true;
-				                           });
-			}
-			*/
-			return list;
+			List<BaseExportColumn> list = section.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
+			
+			ExporterCollection<BaseExportColumn> childList = new ExporterCollection<BaseExportColumn>();
+			childList.AddRange(list);
+			return childList;
 		}
 		
 		
+		
+	
+		
+		
+		private void BuildPageFooter () {
+			BaseSection section = this.reportModel.PageFooter;
+			this.DoConvert (this.reportModel.PageFooter,this.singlePage.SectionBounds.PageFooterRectangle.Top);
+		}
 		
 		private void display (IPerformLine li) {
 //			System.Console.WriteLine("\tdisplay {0}",li.ToString());
@@ -195,33 +211,25 @@ namespace SharpReportCore.Exporters
 			if (l != null) {
 				System.Console.WriteLine("\t\t{0} / {1} ",l.StyleDecorator.Location,l.Text);
 			}
-			
 		}
 		
-		
-		private void BuildPageFooter (SinglePage page) {
-			BaseSection section = this.reportModel.PageFooter;
-			                  
-			this.lineItemsConverter.Offset = page.SectionBounds.PageFooterRectangle.Top;
-			List <BaseExportColumn>l = section.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
-			page.Items.AddRange(l);
-		}
-		
-		private void Write (SinglePage page) {
+		private void Write () {
 			this.dataNavigator = this.dataManager.GetNavigator;
 			Graphics graphics = reportModel.ReportSettings.PageSettings.PrinterSettings.CreateMeasurementGraphics();
 			this.lineItemsConverter = new ExportItemsConverter(graphics);
 			if (this.pages.Count == 0) {
-				BuildReportHeader (page);
+				BuildReportHeader ();
 			}
 			
-			BuildPageHeader(page) ;
-			BuildDetails (page,graphics);
-			BuildPageFooter (page);
+			BuildPageHeader() ;
+			BuildDetails (graphics);
+			System.Console.WriteLine("--------");
+			System.Console.WriteLine("{0} / {1} / {2}",this.dataNavigator.Count,this.dataNavigator.CurrentRow,this.dataNavigator.HasMoreData);
+			BuildPageFooter ();
 			graphics.Dispose();
 		}
 		
-		
+		//TODO did we use this method
 		public void AddPage (SinglePage page) {
 			if (page == null) {
 				throw new ArgumentNullException("page");
@@ -230,11 +238,11 @@ namespace SharpReportCore.Exporters
 		}
 		
 		
-		public void CreateReport () {
-			SinglePage page = this.CreateNewPage();
-			page.CalculatePageBounds(this.reportModel);
-			Write(page);
-			this.pages.Add(page);
+		public void BuildExportList () {
+			this.singlePage = this.CreateNewPage();
+			this.singlePage.CalculatePageBounds(this.reportModel);
+			Write();
+			this.pages.Add(this.singlePage);
 		}
 		
 		
@@ -262,7 +270,7 @@ namespace SharpReportCore.Exporters
 			}
 		}
 		
-		public List<SinglePage> Pages {
+		public PagesCollection Pages {
 			get {
 				return pages;
 			}

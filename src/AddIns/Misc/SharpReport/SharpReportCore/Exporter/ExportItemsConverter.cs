@@ -20,19 +20,38 @@ namespace SharpReportCore.Exporters{
 			this.graphics = graphics;
 		}
 		
-		public ExportText ConvertToLineItems (IItemRenderer r) {
-			IExportColumnBuilder lineBuilder = r as IExportColumnBuilder;
-			ExportText lineItem = null;
-			
+		public BaseExportColumn ConvertToLineItems (IItemRenderer itemRenderer) {
+			if (itemRenderer == null) {
+				throw new ArgumentNullException("itemRenderer");
+			}
+	
+			IExportColumnBuilder lineBuilder = itemRenderer as IExportColumnBuilder;
+			BaseExportColumn lineItem = null;
 			if (lineBuilder != null) {
-
-				lineItem = (ExportText)lineBuilder.CreateExportColumn(this.graphics);
+				lineItem = lineBuilder.CreateExportColumn(this.graphics);
 				lineItem.StyleDecorator.Location = new Point(lineItem.StyleDecorator.Location.X,
-				                                  lineItem.StyleDecorator.Location.Y + offset);
+				                                             lineItem.StyleDecorator.Location.Y + offset);
 			} else {
-				System.Console.WriteLine("Can't Convert <{0}> to ILineBuilder",r.Name);
+				System.Console.WriteLine("ConvertToLineItems:Can't Convert <{0}> to ILineBuilder",itemRenderer.Name);
 			}
 			return lineItem;
+		}
+		
+		public ExportContainer ConvertToContainer (IItemRenderer itemRenderer) {
+			if (itemRenderer == null) {
+				throw new ArgumentNullException("itemRenderer");
+			}
+			IExportColumnBuilder lineBuilder = itemRenderer as IExportColumnBuilder;
+	
+			if (lineBuilder != null) {
+				ExportContainer lineItem = (ExportContainer)lineBuilder.CreateExportColumn(this.graphics);
+				lineItem.StyleDecorator.Location = new Point (lineItem.StyleDecorator.Location.X,
+				                                              this.offset);
+				return lineItem;
+			} else {
+				System.Console.WriteLine("ConvertToContainer:Can't Convert <{0}> to ILineBuilder",itemRenderer.Name);
+			}
+			return null;
 		}
 		
 		public int Offset {
