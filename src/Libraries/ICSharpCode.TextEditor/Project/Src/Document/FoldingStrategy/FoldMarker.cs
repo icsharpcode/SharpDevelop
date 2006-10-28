@@ -22,48 +22,69 @@ namespace ICSharpCode.TextEditor.Document
 		string    foldText = "...";
 		FoldType  foldType = FoldType.Unspecified;
 		IDocument document = null;
+		int startLine = -1, startColumn, endLine = -1, endColumn;
+		
+		static void GetPointForOffset(IDocument document, int offset, out int line, out int column)
+		{
+			if (offset < 0) offset = 0;
+			if (offset >= document.TextLength) offset = document.TextLength - 1;
+			line = document.GetLineNumberForOffset(offset);
+			column = offset - document.GetLineSegment(line).Offset;
+		}
 		
 		public FoldType FoldType {
-			get {
-				return foldType;
-			}
-			set {
-				foldType = value;
-			}
+			get { return foldType; }
+			set { foldType = value; }
 		}
 		
 		public int StartLine {
 			get {
-				if (offset > document.TextLength) {
-					return -1;
+				if (startLine < 0) {
+					GetPointForOffset(document, offset, out startLine, out startColumn);
 				}
-				return document.GetLineNumberForOffset(offset);
+				return startLine;
 			}
 		}
 		
 		public int StartColumn {
 			get {
-				if (offset > document.TextLength) {
-					return -1;
+				if (startLine < 0) {
+					GetPointForOffset(document, offset, out startLine, out startColumn);
 				}
-				return offset - document.GetLineSegmentForOffset(offset).Offset ;
+				return startColumn;
 			}
 		}
 		
 		public int EndLine {
 			get {
-				if (offset + length > document.TextLength) {
-					return document.TotalNumberOfLines + 1;
+				if (endLine < 0) {
+					GetPointForOffset(document, offset + length, out endLine, out endColumn);
 				}
-				return document.GetLineNumberForOffset(offset + length);
+				return endLine;
 			}
 		}
+		
 		public int EndColumn {
 			get {
-				if (offset + length > document.TextLength) {
-					return -1;
+				if (endLine < 0) {
+					GetPointForOffset(document, offset + length, out endLine, out endColumn);
 				}
-				return offset + length - document.GetLineSegmentForOffset(offset + length).Offset;
+				return endColumn;
+			}
+		}
+		
+		public override int Offset {
+			get { return base.Offset; }
+			set {
+				base.Offset = value;
+				startLine = -1; endLine = -1;
+			}
+		}
+		public override int Length {
+			get { return base.Length; }
+			set { 
+				base.Length = value;
+				endLine = -1;
 			}
 		}
 		
