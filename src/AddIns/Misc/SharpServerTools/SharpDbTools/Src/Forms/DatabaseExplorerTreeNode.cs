@@ -99,12 +99,8 @@ namespace SharpDbTools.Forms
 			
 			// get the logical name of the new connection
 			
-			string logicalName =  null;			
-			using (GetConnectionLogicalNameDialog dialog = new GetConnectionLogicalNameDialog()) {
-				dialog.ShowDialog();
-				logicalName = dialog.LogicalConnectionName;
-			}
-			if (logicalName.Equals("") || logicalName == null) return;
+			string logicalName = MessageService.ShowInputBox("Connection name", "Please provide the name for your db connection:", "");
+			if (String.IsNullOrEmpty(logicalName)) return;
 			
 			LoggingService.Debug("name received is: " + logicalName);
 			

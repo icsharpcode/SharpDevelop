@@ -40,13 +40,8 @@
     <Compile Include="Src\Forms\DbModelInfoTreeNode.cs" />
     <Compile Include="Src\Forms\FormsArtefactFactories.cs" />
     <Compile Include="Src\Forms\FormsArtefactFactory.cs" />
-    <Compile Include="Src\Forms\GetConnectionLogicalNameDialog.cs" />
-    <Compile Include="Src\Forms\GetConnectionLogicalNameDialog.Designer.cs" />
     <EmbeddedResource Include="Src\Forms\ConnectionStringDefinitionDialog.resx">
       <DependentUpon>ConnectionStringDefinitionDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Src\Forms\GetConnectionLogicalNameDialog.resx">
-      <DependentUpon>GetConnectionLogicalNameDialog.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Src\Data\TableNames.cs" />
     <Compile Include="Src\Data\ColumnNames.cs" />
