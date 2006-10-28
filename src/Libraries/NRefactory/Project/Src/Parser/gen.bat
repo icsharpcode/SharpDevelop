@@ -1,18 +1,23 @@
 @echo off
 
-goto new
+goto old
 
-:new
+
+:old
 echo Generating with #Coco
-cd CSharp
-..\Frames\SharpCoco -namespace ICSharpCode.NRefactory.Parser.CSharp -frames ..\Frames cs.ATG
-del Parser.cs.old >NUL
-cd ..
 
-cd VBNet
-..\Frames\SharpCoco -namespace ICSharpCode.NRefactory.Parser.VB -frames ..\Frames VBNET.ATG
-del Parser.cs.old >NUL
-goto exit
+cd Frames
+
+copy ..\CSharp\cs.ATG
+SharpCoco -namespace ICSharpCode.NRefactory.Parser.CSharp cs.ATG
+move Parser.cs ..\CSharp
+
+copy ..\VBNet\VBNET.ATG
+SharpCoco -trace GIPXA -namespace ICSharpCode.NRefactory.Parser.VB VBNET.ATG
+move Parser.cs ..\VBNet
+
+del cs.ATG
+del VBNET.ATG
 
 :exit
 pause
