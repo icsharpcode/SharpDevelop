@@ -8,7 +8,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Widgets.AutoHide
 {
 	/// <summary>
 	/// AutoHideStatusStripContainer can be used instead of StatusStrip to get a status strip

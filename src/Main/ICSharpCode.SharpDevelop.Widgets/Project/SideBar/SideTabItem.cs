@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 {
 	public enum SideTabItemStatus {
 		Normal,
@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Drag
 	}
 	
-	public class AxSideTabItem
+	public class SideTabItem
 	{
 		string name;
 		object tag;
@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public AxSideTabItem(string name)
+		public SideTabItem(string name)
 		{
 			int idx = name.IndexOf("\n");
 			if (idx > 0) {
@@ -91,19 +91,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}			
 		}
 		
-		public AxSideTabItem(string name, object tag) : this(name)
+		public SideTabItem(string name, object tag) : this(name)
 		{
 			this.tag = tag;
 		}
 		
-		public AxSideTabItem(string name, object tag, Bitmap icon) : this(name, tag)
+		public SideTabItem(string name, object tag, Bitmap icon) : this(name, tag)
 		{
 			this.icon = new Bitmap(icon);
 		}
 		
-		public AxSideTabItem Clone()
+		public SideTabItem Clone()
 		{
-			return (AxSideTabItem)MemberwiseClone();
+			return (SideTabItem)MemberwiseClone();
 		}
 		
 		public virtual void DrawItem(Graphics g, Font f, Rectangle rectangle)

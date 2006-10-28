@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
@@ -60,7 +61,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 					}
 				}
 					
-				foreach (AxSideTab tab in SharpDevelopSideBar.SideBar.Tabs) {
+				foreach (SideTab tab in SharpDevelopSideBar.SideBar.Tabs) {
 					if (!(tab is SideTabDesigner) && !(tab is CustomComponentsSideTab)) {
 						if (tab.Name == ControlDictionary["categoryNameTextBox"].Text) {
 							ShowDuplicateErrorMessage();

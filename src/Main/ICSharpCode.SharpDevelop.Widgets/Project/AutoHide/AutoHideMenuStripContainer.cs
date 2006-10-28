@@ -8,7 +8,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Widgets.AutoHide
 {
 	/// <summary>
 	/// AutoHideMenuStripContainer can be used instead of MenuStrip to get a menu

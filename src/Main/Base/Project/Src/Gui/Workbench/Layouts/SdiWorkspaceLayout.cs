@@ -12,6 +12,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Widgets.AutoHide;
 using WeifenLuo.WinFormsUI;
 
 namespace ICSharpCode.SharpDevelop.Gui

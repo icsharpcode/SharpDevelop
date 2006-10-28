@@ -14,12 +14,13 @@ using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.FormsDesigner.Gui;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.WixBinding
 {
 	public sealed class SetupDialogControlsSideTab : SideTabDesigner
 	{
-		SetupDialogControlsSideTab(AxSideBar sideBar, Category category, IToolboxService toolboxService)
+		SetupDialogControlsSideTab(SideBarControl sideBar, Category category, IToolboxService toolboxService)
 			: base(sideBar, category, toolboxService)
 		{
 		}

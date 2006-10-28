@@ -57,10 +57,18 @@
     <Compile Include="TreeGrid\ScrollButton.cs" />
     <Compile Include="TreeGrid\VerticalScrollContainer.cs" />
     <Compile Include="DesignHelper.cs" />
+    <Compile Include="AutoHide\AutoHideContainer.cs" />
+    <Compile Include="AutoHide\AutoHideMenuStripContainer.cs" />
+    <Compile Include="AutoHide\AutoHideStatusStripContainer.cs" />
+    <Compile Include="SideBar\SideBar.cs" />
+    <Compile Include="SideBar\SideTab.cs" />
+    <Compile Include="SideBar\SideTabItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />
     <Folder Include="TreeGrid" />
+    <Folder Include="AutoHide" />
+    <Folder Include="SideBar" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

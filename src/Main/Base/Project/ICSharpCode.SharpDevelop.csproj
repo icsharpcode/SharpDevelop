@@ -128,11 +128,6 @@
     <Compile Include="Src\Gui\BrowserDisplayBinding\HtmlViewPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Components\SideBar\AxSideBar.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\Components\SideBar\AxSideTab.cs" />
-    <Compile Include="Src\Gui\Components\SideBar\AxSideTabItem.cs" />
     <Compile Include="Src\Gui\Components\SideBar\SharpDevelopSideBar.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -609,9 +604,6 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\FullscreenPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Components\AutoHide\AutoHideMenuStripContainer.cs" />
-    <Compile Include="Src\Gui\Components\AutoHide\AutoHideStatusStripContainer.cs" />
-    <Compile Include="Src\Gui\Components\AutoHide\AutoHideContainer.cs" />
     <Compile Include="Src\Services\RefactoringService\LocalVariableRefactoring.cs" />
     <Compile Include="Src\Services\RefactoringService\FindReferencesAndRenameHelper.cs" />
     <Compile Include="Src\Internal\Doozers\DirectoryDoozer.cs" />
@@ -714,7 +706,6 @@
       <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
-    <Folder Include="Src\Gui\Components\AutoHide" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Content Include="..\..\..\..\AddIns\ICSharpCode.SharpDevelop.addin">
       <Link>ICSharpCode.SharpDevelop.addin</Link>

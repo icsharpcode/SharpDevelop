@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Xml;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -61,12 +62,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void GenerateStandardSideBar()
 		{
 			sideBar = new SharpDevelopSideBar();
-			AxSideTab tab = new AxSideTab(sideBar, "${res:SharpDevelop.SideBar.GeneralCategory}");
+			SideTab tab = new SideTab(sideBar, "${res:SharpDevelop.SideBar.GeneralCategory}");
 			
 			sideBar.Tabs.Add(tab);
 			sideBar.ActiveTab = tab;
 			
-			tab = new AxSideTab(sideBar, "${res:SharpDevelop.SideBar.ClipboardRing}");
+			tab = new SideTab(sideBar, "${res:SharpDevelop.SideBar.ClipboardRing}");
 			tab.IsClipboardRing = true;
 			tab.CanBeDeleted = false;
 			tab.CanDragDrop  = false;

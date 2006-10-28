@@ -17,13 +17,14 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.FormsDesigner
 {
 	public class ToolboxProvider
 	{
 		static ICSharpCode.FormsDesigner.Services.ToolboxService toolboxService = null;
-		public static List<AxSideTab> SideTabs = new List<AxSideTab>();
+		public static List<SideTab> SideTabs = new List<SideTab>();
 		
 		static ComponentLibraryLoader componentLibraryLoader = new ComponentLibraryLoader();
 		
@@ -84,7 +85,7 @@ namespace ICSharpCode.FormsDesigner
 		public static void ReloadSideTabs(bool doInsert)
 		{
 			bool reInsertTabs = false;
-			foreach(AxSideTab tab in SideTabs) {
+			foreach(SideTab tab in SideTabs) {
 				tab.ItemRemoved -= SideTabItemRemoved;
 				tab.ItemsExchanged -= SideTabItemsExchanged;
 				if (SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
@@ -112,7 +113,7 @@ namespace ICSharpCode.FormsDesigner
 			customTab.ItemsExchanged += SideTabItemsExchanged;
 			SideTabs.Add(customTab);
 			if (reInsertTabs) {
-				foreach(AxSideTab tab in SideTabs) {
+				foreach(SideTab tab in SideTabs) {
 					SharpDevelopSideBar.SideBar.Tabs.Add(tab);
 				}
 			}
@@ -121,7 +122,7 @@ namespace ICSharpCode.FormsDesigner
 		static void SelectedToolUsedHandler(object sender, EventArgs e)
 		{
 			LoggingService.Debug("SelectedToolUsedHandler");
-			AxSideTab tab = SharpDevelopSideBar.SideBar.ActiveTab;
+			SideTab tab = SharpDevelopSideBar.SideBar.ActiveTab;
 						
 			// try to add project reference
 			if (sender != null && sender is ICSharpCode.FormsDesigner.Services.ToolboxService) {

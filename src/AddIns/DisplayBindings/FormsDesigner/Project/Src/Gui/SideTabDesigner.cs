@@ -10,15 +10,16 @@ using System.Drawing.Design;
 using System.Reflection;
 
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
-	public class SideTabDesigner : AxSideTab
+	public class SideTabDesigner : SideTab
 	{
 		protected bool loadImages = true;
 		IToolboxService toolboxService;
 		
-		protected SideTabDesigner(AxSideBar sideBar, string name, IToolboxService toolboxService) : base(sideBar, name)
+		protected SideTabDesigner(SideBarControl sideBar, string name, IToolboxService toolboxService) : base(sideBar, name)
 		{
 			this.toolboxService = toolboxService;
 			this.CanSaved = false;
@@ -33,7 +34,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		}
 		
 		///<summary>Load an assembly's controls</summary>
-		public SideTabDesigner(AxSideBar sideBar, Category category, IToolboxService toolboxService) : this(sideBar, category.Name, toolboxService)
+		public SideTabDesigner(SideBarControl sideBar, Category category, IToolboxService toolboxService) : this(sideBar, category.Name, toolboxService)
 		{
 			foreach (ToolComponent component in category.ToolComponents) {
 				if (component.IsEnabled) {
@@ -51,7 +52,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void SelectedTabItemChanged(object sender, EventArgs e)
 		{
-			AxSideTabItem item = (sender as AxSideTab).ChoosedItem;
+			SideTabItem item = (sender as SideTab).ChoosedItem;
 			if (item == null) {
 				toolboxService.SetSelectedToolboxItem(null);
 			} else {

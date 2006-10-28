@@ -21,6 +21,7 @@ using SharpReport;
 using SharpReport.Designer;
 using SharpReportAddin.Commands;
 using SharpReportCore;
+using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace SharpReportAddin{
 	/// <summary>
@@ -37,8 +38,8 @@ namespace SharpReportAddin{
 
 		
 		// SideBar
-		private AxSideTab sideTabItem = null;
-		private AxSideTab sideTabFunctions = null;
+		private SideTab sideTabItem = null;
+		private SideTab sideTabFunctions = null;
 		private Panel panel;
 		
 		private bool disposed;
@@ -148,7 +149,7 @@ namespace SharpReportAddin{
 				SideBarView v = (SideBarView)WorkbenchSingleton.Workbench.GetPad (typeof(SideBarView)).PadContent;
 				SharpDevelopSideBar sb =(SharpDevelopSideBar) v.Control;
 				
-				AxSideTab s;
+				SideTab s;
 				for (int i = SideBarView.sideBar.Tabs.Count -1; i > 0;i -- ) {
 					s = SideBarView.sideBar.Tabs[i];
 					if (s.Name.IndexOf("Report") > 0) {

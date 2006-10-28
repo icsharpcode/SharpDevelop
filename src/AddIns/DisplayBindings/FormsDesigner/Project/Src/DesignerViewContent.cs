@@ -22,6 +22,7 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -335,7 +336,7 @@ namespace ICSharpCode.FormsDesigner
 			if (SharpDevelopSideBar.SideBar.ActiveTab != null && ToolboxProvider.SideTabs.Contains(SharpDevelopSideBar.SideBar.ActiveTab)) {
 				activeTabName = SharpDevelopSideBar.SideBar.ActiveTab.Name;
 			}
-			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
+			foreach(SideTab tab in ToolboxProvider.SideTabs) {
 				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
 					return;
 				}
@@ -577,7 +578,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		void AddSideBars()
 		{
-			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
+			foreach(SideTab tab in ToolboxProvider.SideTabs) {
 				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
 					SharpDevelopSideBar.SideBar.Tabs.Add(tab);
 				}
@@ -591,7 +592,7 @@ namespace ICSharpCode.FormsDesigner
 				return;
 			}
 			
-			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
+			foreach(SideTab tab in ToolboxProvider.SideTabs) {
 				if (activeTabName == tab.Name) {
 					SharpDevelopSideBar.SideBar.ActiveTab = tab;
 					return;

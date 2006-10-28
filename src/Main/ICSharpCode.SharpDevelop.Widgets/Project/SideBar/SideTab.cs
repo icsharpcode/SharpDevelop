@@ -10,9 +10,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using ICSharpCode.Core;
-
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 {
 	public enum SideTabStatus {
 		Normal,
@@ -24,14 +22,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 	public class SideTabEventArgs
 	{
-		AxSideTab tab;
+		SideTab tab;
 		
-		public SideTabEventArgs(AxSideTab tab)
+		public SideTabEventArgs(SideTab tab)
 		{
 			this.tab = tab;
 		}
 		
-		public AxSideTab SideTab {
+		public SideTab SideTab {
 			get {
 				return tab;
 			}
@@ -42,14 +40,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 	public class SideTabItemEventArgs
 	{
-		AxSideTabItem item;
+		SideTabItem item;
 		
-		public SideTabItemEventArgs(AxSideTabItem item)
+		public SideTabItemEventArgs(SideTabItem item)
 		{
 			this.item = item;
 		}
 		
-		public AxSideTabItem Item {
+		public SideTabItem Item {
 			get {
 				return item;
 			}
@@ -60,29 +58,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 	public class SideTabItemExchangeEventArgs
 	{
-		AxSideTabItem item1;
-		AxSideTabItem item2;
+		SideTabItem item1;
+		SideTabItem item2;
 		
-		public SideTabItemExchangeEventArgs(AxSideTabItem item1, AxSideTabItem item2)
+		public SideTabItemExchangeEventArgs(SideTabItem item1, SideTabItem item2)
 		{
 			this.item1 = item1;
 			this.item2 = item2;
 		}
 		
-		public AxSideTabItem Item1 {
+		public SideTabItem Item1 {
 			get {
 				return item1;
 			}
 		}
 		
-		public AxSideTabItem Item2 {
+		public SideTabItem Item2 {
 			get {
 				return item2;
 			}
 		}
 	}
 	
-	public class AxSideTab
+	public class SideTab
 	{
 		string    name;
 		bool      canDragDrop  = true;
@@ -91,8 +89,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		bool      isClipboardRing = false;
 		SideTabItemCollection items = new SideTabItemCollection();
 		SideTabStatus sideTabStatus;
-		AxSideTabItem   selectedItem = null;
-		AxSideTabItem   choosedItem  = null;
+		SideTabItem   selectedItem = null;
+		SideTabItem   choosedItem  = null;
 		
 		ImageList largeImageList = null;
 		ImageList smallImageList = null;
@@ -199,7 +197,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public AxSideTabItem SelectedItem {
+		public SideTabItem SelectedItem {
 			get {
 				return selectedItem;
 			}
@@ -222,7 +220,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		public event EventHandler ChoosedItemChanged;
 		
-		public AxSideTabItem ChoosedItem {
+		public SideTabItem ChoosedItem {
 			get {
 				return choosedItem;
 			}
@@ -257,23 +255,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		protected AxSideTab()
+		protected SideTab()
 		{
 		}
 		
-		public AxSideTab(ISideTabItemFactory sideTabItemFactory)
+		public SideTab(ISideTabItemFactory sideTabItemFactory)
 		{
 			SideTabItemFactory = sideTabItemFactory;
 		}
 		
-		public AxSideTab(AxSideBar sideBar, string name) : this(sideBar.SideTabItemFactory)
+		public SideTab(SideBarControl sideBar, string name) : this(sideBar.SideTabItemFactory)
 		{
 			this.name = name;
 			SetCanRename();
 			items.ItemRemoved += OnSideTabItemRemoved;
 		}
 		
-		public AxSideTab(string name)
+		public SideTab(string name)
 		{
 			this.name = name;
 			SetCanRename();
@@ -297,12 +295,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			switch (sideTabStatus) {
 				case SideTabStatus.Normal:
 					ControlPaint.DrawBorder3D(g, new Rectangle(0, pos.Y, width - 4, font.Height + 4), Border3DStyle.RaisedInner);
-					g.DrawString(StringParser.Parse(name), font, SystemBrushes.ControlText, new RectangleF(1, pos.Y + 1, width - 5, font.Height + 1));
+					g.DrawString(name, font, SystemBrushes.ControlText, new RectangleF(1, pos.Y + 1, width - 5, font.Height + 1));
 					
 					break;
 				case SideTabStatus.Selected:
 					ControlPaint.DrawBorder3D(g, new Rectangle(0, pos.Y, width - 4, font.Height + 4), Border3DStyle.Sunken);
-					g.DrawString(StringParser.Parse(name), font, SystemBrushes.ControlText, new RectangleF(1 + 1, pos.Y + 2, width - 5, font.Height + 2));
+					g.DrawString(name, font, SystemBrushes.ControlText, new RectangleF(1 + 1, pos.Y + 2, width - 5, font.Height + 2));
 					break;
 				case SideTabStatus.Dragged:
 					Rectangle r = new Rectangle(0, pos.Y, width - 4, font.Height + 4);
@@ -314,7 +312,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					
 					g.FillRectangle(SystemBrushes.ControlDarkDark, r);
 					
-					g.DrawString(StringParser.Parse(name), font, SystemBrushes.HighlightText, new RectangleF(1 + 1, pos.Y + 2, width - 5, font.Height + 2));
+					g.DrawString(name, font, SystemBrushes.HighlightText, new RectangleF(1 + 1, pos.Y + 2, width - 5, font.Height + 2));
 					break;
 			}
 		}
@@ -325,10 +323,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public Point GetLocation(AxSideTabItem whichItem)
+		public Point GetLocation(SideTabItem whichItem)
 		{
 			for (int i = 0; i < Items.Count; ++i) {
-				AxSideTabItem item = (AxSideTabItem)Items[i];
+				SideTabItem item = (SideTabItem)Items[i];
 				if (item == whichItem) {
 					return new Point(0, i * 20);
 				}
@@ -336,13 +334,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return new Point(-1, -1);
 		}
 		
-		public AxSideTabItem GetItemAt(int x, int y)
+		public SideTabItem GetItemAt(int x, int y)
 		{
 			int index = ScrollIndex + y / 20;
-			return (index >= 0 && index < Items.Count) ? (AxSideTabItem)Items[index] : null;
+			return (index >= 0 && index < Items.Count) ? (SideTabItem)Items[index] : null;
 		}
 		
-		public AxSideTabItem GetItemAt(Point pos)
+		public SideTabItem GetItemAt(Point pos)
 		{
 			return GetItemAt(pos.X, pos.Y);
 		}
@@ -356,7 +354,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void DrawTabContent(Graphics g, Font f, Rectangle rectangle)
 		{
 			for (int i = 0; i + ScrollIndex < Items.Count; ++i) {
-				AxSideTabItem item = (AxSideTabItem)Items[ScrollIndex + i];
+				SideTabItem item = (SideTabItem)Items[ScrollIndex + i];
 				if (rectangle.Height < i * ItemHeight) {
 					break;
 				}
@@ -372,8 +370,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public void Exchange(int a, int b)
 		{
-			AxSideTabItem itemA = Items[a];
-			AxSideTabItem itemB = Items[b];
+			SideTabItem itemA = Items[a];
+			SideTabItem itemB = Items[b];
 			Items[a] = itemB;
 			Items[b] = itemA;
 			OnExchange(itemA, itemB);
@@ -393,16 +391,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void OnExchange(AxSideTabItem item1, AxSideTabItem item2)
+		void OnExchange(SideTabItem item1, SideTabItem item2)
 		{
 			if (ItemsExchanged != null) {
 				ItemsExchanged(this, new SideTabItemExchangeEventArgs(item1, item2));
 			}
 		}
 
-		public class SideTabItemCollection : ICollection<AxSideTabItem>, IEnumerable<AxSideTabItem>
+		public class SideTabItemCollection : ICollection<SideTabItem>, IEnumerable<SideTabItem>
 		{
-			List<AxSideTabItem> list = new List<AxSideTabItem>();
+			List<SideTabItem> list = new List<SideTabItem>();
 			ISideTabItemFactory sideTabItemFactory = new DefaultSideTabItemFactory();
 			
 			public event SideTabItemEventHandler ItemRemoved;
@@ -420,9 +418,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			{
 			}
 			
-			public AxSideTabItem this[int index] {
+			public SideTabItem this[int index] {
 				get {
-					return (AxSideTabItem)list[index];
+					return (SideTabItem)list[index];
 				}
 				set {
 					list[index] = value;
@@ -457,19 +455,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			public virtual void Add(AxSideTabItem item)
+			public virtual void Add(SideTabItem item)
 			{
 				list.Add(item);
 			}
 						
-			public virtual AxSideTabItem Add(string name, object content)
+			public virtual SideTabItem Add(string name, object content)
 			{
 				return Add(name, content, -1);
 			}
 			
-			public virtual AxSideTabItem Add(string name, object content, int imageIndex)
+			public virtual SideTabItem Add(string name, object content, int imageIndex)
 			{
-				AxSideTabItem item = sideTabItemFactory.CreateSideTabItem(name, imageIndex);
+				SideTabItem item = sideTabItemFactory.CreateSideTabItem(name, imageIndex);
 				item.Tag = content;
 				Add(item);
 				return item;
@@ -480,12 +478,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				list.Clear();
 			}
 			
-			public bool Contains(AxSideTabItem item)
+			public bool Contains(SideTabItem item)
 			{
 				return list.Contains(item);
 			}
 			
-			public IEnumerator<AxSideTabItem> GetEnumerator()
+			public IEnumerator<SideTabItem> GetEnumerator()
 			{
 				return list.GetEnumerator();
 			}
@@ -495,35 +493,35 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return list.GetEnumerator();
 			}
 			
-			public int IndexOf(AxSideTabItem item)
+			public int IndexOf(SideTabItem item)
 			{
 				return list.IndexOf(item);
 			}
 			
 			public void CopyTo(Array dest, int index)
 			{
-				list.CopyTo((AxSideTabItem[])dest, index);
+				list.CopyTo((SideTabItem[])dest, index);
 			}
 			
-			public virtual AxSideTabItem Insert(int index, AxSideTabItem item)
+			public virtual SideTabItem Insert(int index, SideTabItem item)
 			{
 				list.Insert(index, item);
 				return item;
 			}
 			
-			public virtual AxSideTabItem Insert(int index, string name, object content)
+			public virtual SideTabItem Insert(int index, string name, object content)
 			{
 				return Insert(index, name, content, -1);
 			}
 			
-			public virtual AxSideTabItem Insert(int index, string name, object content, int imageIndex)
+			public virtual SideTabItem Insert(int index, string name, object content, int imageIndex)
 			{
-				AxSideTabItem item = sideTabItemFactory.CreateSideTabItem(name, imageIndex);
+				SideTabItem item = sideTabItemFactory.CreateSideTabItem(name, imageIndex);
 				item.Tag = content;
 				return Insert(index, item);
 			}
 			
-			public virtual bool Remove(AxSideTabItem item)
+			public virtual bool Remove(SideTabItem item)
 			{
 				bool r = list.Remove(item);
 				OnItemRemoved(item);
@@ -535,12 +533,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (index < 0 || index >= list.Count) {
 					return;
 				}
-				AxSideTabItem item = this[index];
+				SideTabItem item = this[index];
 				list.Remove(item);
 				OnItemRemoved(item);
 			}
 			
-			void OnItemRemoved(AxSideTabItem item)
+			void OnItemRemoved(SideTabItem item)
 			{
 				if (ItemRemoved != null) {
 					ItemRemoved(this, new SideTabItemEventArgs(item));
@@ -553,7 +551,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			public void CopyTo(AxSideTabItem[] array, int arrayIndex)
+			public void CopyTo(SideTabItem[] array, int arrayIndex)
 			{
 				throw new NotImplementedException();
 			}

@@ -17,13 +17,14 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
 	public class CustomComponentsSideTab : SideTabDesigner
 	{
 		///<summary>Load an assembly's controls</summary>
-		public CustomComponentsSideTab(AxSideBar sideTab, string name, IToolboxService toolboxService) : base(sideTab,name, toolboxService)
+		public CustomComponentsSideTab(SideBarControl sideTab, string name, IToolboxService toolboxService) : base(sideTab,name, toolboxService)
 		{
 			ScanProjectAssemblies();
 			ProjectService.EndBuild       += RescanProjectAssemblies;

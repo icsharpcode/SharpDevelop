@@ -13,6 +13,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using SharpReport.Designer;
 using SharpReportCore;
+using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace SharpReport
 {
@@ -21,8 +22,8 @@ namespace SharpReport
 	/// </summary>
 	public class BuildSideTab{
 		SharpDevelopSideBar	sideBar;
-		AxSideTab sideTab;	
-		AxSideTab sideTabFunctions;
+		SideTab sideTab;	
+		SideTab sideTabFunctions;
 		
 		public BuildSideTab(SharpDevelopSideBar sideBar){
 			this.sideBar = sideBar;
@@ -49,22 +50,22 @@ namespace SharpReport
 			sideBar.Tabs.Add (this.sideTabFunctions);
 		}
 		
-		private AxSideTabItem BuildPointer () {
+		private SideTabItem BuildPointer () {
 			return sideTab.SideTabItemFactory.CreateSideTabItem(ResourceService.GetString("SharpReport.Toolbar.Pointer"),
 			                                                               "pointer",
 			                                                               ResourceService.GetBitmap("Icons.16x16.FormsDesigner.PointerIcon"));
 		}
 		
-		private  void CusomizeSideTab (AxSideTab tab) {
+		private  void CusomizeSideTab (SideTab tab) {
 			tab.CanDragDrop = true;
 			tab.CanSaved = false;
 		}
 		
-		private void AddReportElements (AxSideTab tab) {
+		private void AddReportElements (SideTab tab) {
 
 			Bitmap bitmap = ResourceService.GetIcon("Icons.16.16.SharpReport.Textbox").ToBitmap();
 			
-			AxSideTabItem	t = sideTab.SideTabItemFactory.CreateSideTabItem(ResourceService.GetString("SharpReport.Toolbar.TextBox"),
+			SideTabItem	t = sideTab.SideTabItemFactory.CreateSideTabItem(ResourceService.GetString("SharpReport.Toolbar.TextBox"),
 			                                                               GlobalEnums.ReportItemType.ReportTextItem.ToString(),
 			                                                               bitmap);
 			tab.Items.Add (t);
@@ -115,13 +116,13 @@ namespace SharpReport
 			//
 		}
 		
-		private void AddFunctionElements (AxSideTab tab) {
+		private void AddFunctionElements (SideTab tab) {
 			
 			FunctionFactory ff = new FunctionFactory();
 			string localise = "SharpReport.Toolbar.Functions.";
 			Bitmap functionBitmap = ResourceService.GetIcon("Icons.16x16.SharpReport.Function").ToBitmap();
 		
-			AxSideTabItem	t = sideTab.SideTabItemFactory.CreateSideTabItem(ResourceService.GetString(localise + ff.AvailableTypes[0]) ,
+			SideTabItem	t = sideTab.SideTabItemFactory.CreateSideTabItem(ResourceService.GetString(localise + ff.AvailableTypes[0]) ,
 			                                                               ff.AvailableTypes[0].ToString(),
 			                                                               functionBitmap);
 			

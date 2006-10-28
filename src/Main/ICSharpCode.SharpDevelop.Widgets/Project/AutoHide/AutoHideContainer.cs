@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Widgets.AutoHide
 {
 	public class AutoHideContainer: Panel
 	{

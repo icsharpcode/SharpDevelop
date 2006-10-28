@@ -8,10 +8,11 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class SharpDevelopSideTabItem : AxSideTabItem
+	public class SharpDevelopSideTabItem : SideTabItem
 	{
 		
 		

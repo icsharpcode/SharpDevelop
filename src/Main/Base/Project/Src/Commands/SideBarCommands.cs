@@ -9,6 +9,7 @@ using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
@@ -17,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
-			AxSideTabItem item = sideBar.ActiveTab.ChoosedItem;
+			SideTabItem item = sideBar.ActiveTab.ChoosedItem;
 			if (item != null) {
 				sideBar.StartRenamingOf(item);
 			}
@@ -29,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
-			AxSideTabItem item = sideBar.ActiveTab.ChoosedItem;
+			SideTabItem item = sideBar.ActiveTab.ChoosedItem;
 			if (item != null && MessageBox.Show(StringParser.Parse(ResourceService.GetString("SideBarComponent.ContextMenu.DeleteTabItemQuestion"), new string[,] { {"TabItem", item.Name}}),
 			                    ResourceService.GetString("Global.QuestionText"), 
 			                    MessageBoxButtons.YesNo, 
@@ -46,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
-			AxSideTab tab = new AxSideTab(sideBar, "New Tab");
+			SideTab tab = new SideTab(sideBar, "New Tab");
 			sideBar.Tabs.Add(tab);
 			sideBar.StartRenamingOf(tab);
 			sideBar.DoAddTab = true;
@@ -61,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
 			int index = sideBar.GetTabIndexAt(sideBar.SideBarMousePosition.X, sideBar.SideBarMousePosition.Y);
 			if (index > 0) {
-				AxSideTab tab = sideBar.Tabs[index];
+				SideTab tab = sideBar.Tabs[index];
 				sideBar.Tabs[index] = sideBar.Tabs[index - 1];
 				sideBar.Tabs[index - 1] = tab;
 				sideBar.Refresh();
@@ -75,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
 			int index = sideBar.GetTabIndexAt(sideBar.SideBarMousePosition.X, sideBar.SideBarMousePosition.Y);
 			if (index >= 0 && index < sideBar.Tabs.Count - 1) {
-				AxSideTab tab = sideBar.Tabs[index];
+				SideTab tab = sideBar.Tabs[index];
 				sideBar.Tabs[index] = sideBar.Tabs[index + 1];
 				sideBar.Tabs[index + 1] = tab;
 				sideBar.Refresh();
@@ -91,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
 			int index = sideBar.Tabs.IndexOf(sideBar.ActiveTab);
 			if (index > 0) {
-				AxSideTab tab = sideBar.Tabs[index];
+				SideTab tab = sideBar.Tabs[index];
 				sideBar.Tabs[index] = sideBar.Tabs[index - 1];
 				sideBar.Tabs[index - 1] = tab;
 				sideBar.Refresh();
@@ -106,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
 			int index = sideBar.Tabs.IndexOf(sideBar.ActiveTab);
 			if (index >= 0 && index < sideBar.Tabs.Count - 1) {
-				AxSideTab tab = sideBar.Tabs[index];
+				SideTab tab = sideBar.Tabs[index];
 				sideBar.Tabs[index] = sideBar.Tabs[index + 1];
 				sideBar.Tabs[index + 1] = tab;
 				sideBar.Refresh();
@@ -119,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
-			AxSideTab selectedSideTab = sideBar.GetTabAt(sideBar.SideBarMousePosition.X, sideBar.SideBarMousePosition.Y);
+			SideTab selectedSideTab = sideBar.GetTabAt(sideBar.SideBarMousePosition.X, sideBar.SideBarMousePosition.Y);
 			if (MessageBox.Show(StringParser.Parse(ResourceService.GetString("SideBarComponent.ContextMenu.DeleteTabHeaderQuestion"), new string[,] { {"TabHeader", selectedSideTab.Name}}),
 			                    ResourceService.GetString("Global.QuestionText"), 
 			                    MessageBoxButtons.YesNo, 
