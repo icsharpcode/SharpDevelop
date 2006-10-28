@@ -62,49 +62,49 @@
 
 									http://msdn.microsoft.com/library/en-us/msi/setup/ice69.asp
 								-->
-								<ProgId Id="SD.booprojfile" Description="Boo Project" Icon='"[#prjx.ico]"'>
+								<ProgId Id="SD.booprojfile" Description="Boo Project" Icon="&quot;[#prjx.ico]&quot;">
 									<Extension Id="booproj">
-										<Verb Id="open" Target='"[#SharpDevelop.exe]"' Argument='"%1"'/>
+										<Verb Id="open" Target="&quot;[#SharpDevelop.exe]&quot;" Argument="&quot;%1&quot;" />
 									</Extension>
 								</ProgId>
-								<ProgId Id="SD.cmbxfile" Description="SharpDevelop Combine" Icon='"[#cmbx.ico]"'>
+								<ProgId Id="SD.cmbxfile" Description="SharpDevelop Combine" Icon="&quot;[#cmbx.ico]&quot;">
 									<Extension Id="cmbx">
-										<Verb Id="open" Target='"[#SharpDevelop.exe]"' Argument='"%1"'/>
+										<Verb Id="open" Target="&quot;[#SharpDevelop.exe]&quot;" Argument="&quot;%1&quot;" />
 									</Extension>
 								</ProgId>
-								<ProgId Id="SD.csprojfile" Description="C# Project" Icon='"[#prjx.ico]"'>
+								<ProgId Id="SD.csprojfile" Description="C# Project" Icon="&quot;[#prjx.ico]&quot;">
 									<Extension Id="csproj">
-										<Verb Id="open" Target='"[#SharpDevelop.exe]"' Argument='"%1"'/>
+										<Verb Id="open" Target="&quot;[#SharpDevelop.exe]&quot;" Argument="&quot;%1&quot;" />
 									</Extension>
 								</ProgId>
-								<ProgId Id="SD.prjxfile" Description="SharpDevelop Project" Icon='"[#prjx.ico]"'>
+								<ProgId Id="SD.prjxfile" Description="SharpDevelop Project" Icon="&quot;[#prjx.ico]&quot;">
 									<Extension Id="prjx">
-										<Verb Id="open" Target='"[#SharpDevelop.exe]"' Argument='"%1"'/>
+										<Verb Id="open" Target="&quot;[#SharpDevelop.exe]&quot;" Argument="&quot;%1&quot;" />
 									</Extension>
 								</ProgId>
-								<ProgId Id="SD.sdaddinfile" Description="SharpDevelop Project" Icon='"[#addin.ico]"'>
+								<ProgId Id="SD.sdaddinfile" Description="SharpDevelop Project" Icon="&quot;[#addin.ico]&quot;">
 									<Extension Id="sdaddin">
-										<Verb Id="open" Target='"[#SharpDevelop.exe]"' Argument='"%1"'/>
+										<Verb Id="open" Target="&quot;[#SharpDevelop.exe]&quot;" Argument="&quot;%1&quot;" />
 									</Extension>
-								</ProgId>							
-								<ProgId Id="SD.vbprojfile" Description="VB.NET Project" Icon='"[#prjx.ico]"'>
+								</ProgId>
+								<ProgId Id="SD.vbprojfile" Description="VB.NET Project" Icon="&quot;[#prjx.ico]&quot;">
 									<Extension Id="vbproj">
-										<Verb Id="open" Target='"[#SharpDevelop.exe]"' Argument='"%1"'/>
+										<Verb Id="open" Target="&quot;[#SharpDevelop.exe]&quot;" Argument="&quot;%1&quot;" />
 									</Extension>
 								</ProgId>
-								<ProgId Id="SD.wixprojfile" Description="WiX Project" Icon='"[#prjx.ico]"'>
+								<ProgId Id="SD.wixprojfile" Description="WiX Project" Icon="&quot;[#prjx.ico]&quot;">
 									<Extension Id="wixproj">
-										<Verb Id="open" Target='"[#SharpDevelop.exe]"' Argument='"%1"'/>
+										<Verb Id="open" Target="&quot;[#SharpDevelop.exe]&quot;" Argument="&quot;%1&quot;" />
 									</Extension>
 								</ProgId>
-								<ProgId Id="SD.xfrmfile" Description="SharpDevelop XML Form" Icon='"[#xfrm.ico]"'>
+								<ProgId Id="SD.xfrmfile" Description="SharpDevelop XML Form" Icon="&quot;[#xfrm.ico]&quot;">
 									<Extension Id="xfrm">
-										<Verb Id="open" Target='"[#SharpDevelop.exe]"' Argument='"%1"'/>
+										<Verb Id="open" Target="&quot;[#SharpDevelop.exe]&quot;" Argument="&quot;%1&quot;" />
 									</Extension>
 								</ProgId>
-								<ProgId Id="SD.slnfile" Description="SharpDevelop Solution" Icon='"[#cmbx.ico]"'>
+								<ProgId Id="SD.slnfile" Description="SharpDevelop Solution" Icon="&quot;[#cmbx.ico]&quot;">
 									<Extension Id="sln">
-										<Verb Id="open" Target='"[#SharpDevelop.exe]"' Argument='"%1"'/>
+										<Verb Id="open" Target="&quot;[#SharpDevelop.exe]&quot;" Argument="&quot;%1&quot;" />
 									</Extension>
 								</ProgId>
 							</Component>
@@ -113,7 +113,7 @@
 								<File Source="..\..\bin\SharpDevelop.exe.manifest" Name="sharpdev.man" Id="SharpDevelop.exe.manifest" LongName="SharpDevelop.exe.manifest" />
 							</Component>
 							<Component Id="ICSharpCodeBuildTasksDll" Guid="E94FCC8C-9741-45EF-AFDA-9F9CF02BF3F7" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.Build.Tasks.dll" Name="ICBuild.dll" Id="ICSharpCode.Build.Tasks.dll" LongName="ICSharpCode.Build.Tasks.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Build.Tasks.dll" AssemblyManifest="ICSharpCode.Build.Tasks.dll" KeyPath="yes"/>
+								<File Source="..\..\bin\ICSharpCode.Build.Tasks.dll" Name="ICBuild.dll" Id="ICSharpCode.Build.Tasks.dll" LongName="ICSharpCode.Build.Tasks.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Build.Tasks.dll" AssemblyManifest="ICSharpCode.Build.Tasks.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="BuildTasksTargetFiles" Guid="5BED648E-FF11-4E6A-A966-0901FA915BA8" DiskId="1">
 								<File Source="..\..\bin\SharpDevelop.Build.Common.targets" Name="Common.tgt" Id="SharpDevelop.Build.Common.targets" LongName="SharpDevelop.Build.Common.targets" />
@@ -126,32 +126,35 @@
 								<File Source="..\..\bin\SharpDevelop.CodeAnalysis.targets" Name="analysis.tgt" Id="SharpDevelop.CodeAnalysis.targets" LongName="SharpDevelop.CodeAnalysis.targets" />
 							</Component>
 							<Component Id="ICSharpCodeCoreDll" Guid="DFD67330-0F6D-4069-9B03-90E2BB7B9273" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.Core.dll" Name="ICCore.DLL" Id="ICSharpCode.Core.dll" LongName="ICSharpCode.Core.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Core.dll" AssemblyManifest="ICSharpCode.Core.dll" KeyPath="yes"/>
+								<File Source="..\..\bin\ICSharpCode.Core.dll" Name="ICCore.DLL" Id="ICSharpCode.Core.dll" LongName="ICSharpCode.Core.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Core.dll" AssemblyManifest="ICSharpCode.Core.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="ICSharpCodeNRefactoryDll" Guid="53FE6482-01C2-45DE-9929-A84510CDF39C" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.NRefactory.dll" Name="ICNef.DLL" Id="ICSharpCode.NRefactory.dll" LongName="ICSharpCode.NRefactory.dll" Assembly=".net" AssemblyApplication="ICSharpCode.NRefactory.dll" AssemblyManifest="ICSharpCode.NRefactory.dll" KeyPath="yes"/>
+								<File Source="..\..\bin\ICSharpCode.NRefactory.dll" Name="ICNef.DLL" Id="ICSharpCode.NRefactory.dll" LongName="ICSharpCode.NRefactory.dll" Assembly=".net" AssemblyApplication="ICSharpCode.NRefactory.dll" AssemblyManifest="ICSharpCode.NRefactory.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="ICSharpCodeSharpDevelopDll" Guid="CC2E4AAB-58C0-40B7-B440-1D7F65EED379" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.dll" Name="ICSharp.DLL" Id="ICSharpCode.SharpDevelop.dll" LongName="ICSharpCode.SharpDevelop.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.dll" AssemblyManifest="ICSharpCode.SharpDevelop.dll" KeyPath="yes"/>
+								<File Source="..\..\bin\ICSharpCode.SharpDevelop.dll" Name="ICSharp.DLL" Id="ICSharpCode.SharpDevelop.dll" LongName="ICSharpCode.SharpDevelop.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.dll" AssemblyManifest="ICSharpCode.SharpDevelop.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="ICSharpCodeSharpDevelopDomdll" Guid="3F7DB0E5-6755-419B-85E1-6A52372D25FA" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Dom.dll" Name="ICDom.DLL" Id="ICSharpCode.SharpDevelop.Dom.dll" LongName="ICSharpCode.SharpDevelop.Dom.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Dom.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Dom.dll" KeyPath="yes"/>
+								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Dom.dll" Name="ICDom.DLL" Id="ICSharpCode.SharpDevelop.Dom.dll" LongName="ICSharpCode.SharpDevelop.Dom.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Dom.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Dom.dll" KeyPath="yes" />
+							</Component>
+							<Component Guid="C35A1267-0E57-4DBE-95C7-0CA13E8F3C56" Id="ICSharpCodeSharpDevelopWidgets" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Widgets.dll" Name="ICWidgets.DLL" Id="ICSharpCode.SharpDevelop.Widgets.dll" LongName="ICSharpCode.SharpDevelop.Widgets.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Widgets.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Widgets.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="ICSharpCodeSharpDevelopSdaFiles" Guid="12B16781-2FFE-4E80-A78E-73F1425991BF" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll" Name="ICsda.dll" Id="ICSharpCode.SharpDevelop.Sda.dll" LongName="ICSharpCode.SharpDevelop.Sda.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Sda.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Sda.dll" KeyPath="yes"/>
+								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll" Name="ICsda.dll" Id="ICSharpCode.SharpDevelop.Sda.dll" LongName="ICSharpCode.SharpDevelop.Sda.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Sda.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Sda.dll" KeyPath="yes" />
 								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll.config" Name="ICSda.con" Id="ICSharpCode.SharpDevelop.Sda.dll.config" LongName="ICSharpCode.SharpDevelop.Sda.dll.config" />
 							</Component>
 							<Component Id="ICSharpCodeTextEditorDll" Guid="E67D85A5-A891-4E61-9980-C1F1523C7972" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.TextEditor.dll" Name="ICText.DLL" Id="ICSharpCode.TextEditor.dll" LongName="ICSharpCode.TextEditor.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Sda.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Sda.dll" KeyPath="yes"/>
+								<File Source="..\..\bin\ICSharpCode.TextEditor.dll" Name="ICText.DLL" Id="ICSharpCode.TextEditor.dll" LongName="ICSharpCode.TextEditor.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Sda.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Sda.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="log4netDll" Guid="0CE6ECAC-3C96-419E-9EA9-01F95C2C17BC" DiskId="1">
-								<File Source="..\..\bin\log4net.dll" Name="log4net.dll" Id="log4net.dll" Assembly=".net" AssemblyApplication="log4net.dll" AssemblyManifest="log4net.dll" KeyPath="yes"/>
+								<File Source="..\..\bin\log4net.dll" Name="log4net.dll" Id="log4net.dll" Assembly=".net" AssemblyApplication="log4net.dll" AssemblyManifest="log4net.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="MonoCecilDll" Guid="F714FD47-9E0A-488F-8F44-11C0220721E3" DiskId="1">
-								<File Source="..\..\bin\Mono.Cecil.dll" Name="cecil.DLL" Id="Mono.Cecil.dll" LongName="Mono.Cecil.dll" Assembly=".net" AssemblyApplication="Mono.Cecil.dll" AssemblyManifest="Mono.Cecil.dll" KeyPath="yes"/>
+								<File Source="..\..\bin\Mono.Cecil.dll" Name="cecil.DLL" Id="Mono.Cecil.dll" LongName="Mono.Cecil.dll" Assembly=".net" AssemblyApplication="Mono.Cecil.dll" AssemblyManifest="Mono.Cecil.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="WeifenLuoWinFormsUIDockingDll" Guid="AB160125-2828-434E-8810-BE642A77B0E5" DiskId="1">
-								<File Source="..\..\bin\WeifenLuo.WinFormsUI.Docking.dll" Name="WEIFEN.DLL" Id="WeifenLuo.WinFormsUI.Docking.dll" LongName="WeifenLuo.WinFormsUI.Docking.dll" Assembly=".net" AssemblyApplication="WeifenLuo.WinFormsUI.Docking.dll" AssemblyManifest="WeifenLuo.WinFormsUI.Docking.dll" KeyPath="yes"/>
+								<File Source="..\..\bin\WeifenLuo.WinFormsUI.Docking.dll" Name="WEIFEN.DLL" Id="WeifenLuo.WinFormsUI.Docking.dll" LongName="WeifenLuo.WinFormsUI.Docking.dll" Assembly=".net" AssemblyApplication="WeifenLuo.WinFormsUI.Docking.dll" AssemblyManifest="WeifenLuo.WinFormsUI.Docking.dll" KeyPath="yes" />
 							</Component>
 							<Directory Id="ToolsFolder" Name="Tools">
 								<Directory Id="ComponentInspectorFolder" LongName="ComponentInspector" Name="CompInsp">
@@ -166,7 +169,7 @@
 										<File Source="..\..\bin\Tools\ComponentInspector\ICSharpCode.Core.dll" Name="icscore.dll" Id="ComponentInspector.ICSharpCode.Core.dll" LongName="ICSharpCode.Core.dll" Assembly=".net" AssemblyApplication="ComponentInspector.ICSharpCode.Core.dll" AssemblyManifest="ComponentInspector.ICSharpCode.Core.dll" KeyPath="yes" />
 									</Component>
 									<Component Id="ComponentInspectorLog4NetDll" Guid="56394DB5-3D3A-47ED-B99A-24AB2D0C5E88" DiskId="1">
-										<File Source="..\..\bin\Tools\ComponentInspector\log4net.dll" Name="log4net.dll" Id="ComponentInspector.log4net.dll" Assembly=".net" AssemblyApplication="ComponentInspector.log4net.dll" AssemblyManifest="ComponentInspector.log4net.dll" KeyPath="yes"/>
+										<File Source="..\..\bin\Tools\ComponentInspector\log4net.dll" Name="log4net.dll" Id="ComponentInspector.log4net.dll" Assembly=".net" AssemblyApplication="ComponentInspector.log4net.dll" AssemblyManifest="ComponentInspector.log4net.dll" KeyPath="yes" />
 									</Component>
 								</Directory>
 								<Directory Id="NDocFolder" Name="NDoc">
@@ -288,7 +291,7 @@
 										<File Source="..\..\bin\Tools\Wix\wixca.dll" Name="wixca.dll" Id="wixca.dll" />
 									</Component>
 									<Component Id="WixCaWixLib" Guid="F3328E11-920B-4506-8514-A99C5E6B0E7A" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\wixca.wixlib" Name="wixca.lib" Id="wixca.wixlib" LongName="wixca.wixlib"/>
+										<File Source="..\..\bin\Tools\Wix\wixca.wixlib" Name="wixca.lib" Id="wixca.wixlib" LongName="wixca.wixlib" />
 									</Component>
 									<Component Id="WixCopExe" Guid="9DB7F19E-E737-46FC-A07B-1EEB7C710680" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\WixCop.exe" Name="WixCop.exe" Id="WixCop.exe" Assembly=".net" AssemblyApplication="WixCop.exe" AssemblyManifest="WixCop.exe" KeyPath="yes" />
@@ -393,12 +396,12 @@
 											is empty.
 						
 											http://msdn.microsoft.com/library/en-us/msi/setup/ice30.asp
-	 									-->										
+	 									-->
 										<Component Guid="5EB28F57-9CF9-41E0-9A76-563546BDA355" Id="NUnitCoreGacDll" DiskId="1">
 											<!--
 												Only add NUnit.Core to the GAC if the user 
 												has Admin rights.
-											-->											
+											-->
 											<Condition>Privileged</Condition>
 											<File Source="..\..\bin\Tools\NUnit\nunit.core.dll" Name="nucorg.dll" Id="nunit.core.gac.dll" LongName="nunit.core.dll" Assembly=".net" AssemblyManifest="nunit.core.gac.dll" KeyPath="yes" />
 										</Component>
@@ -406,7 +409,7 @@
 											<!--
 												Only add NUnit.Core to the GAC if the user 
 												has Admin rights.
-											-->											
+											-->
 											<Condition>Privileged</Condition>
 											<File Source="..\..\bin\Tools\NUnit\nunit.framework.dll" Name="nuframg.dll" Id="nunit.framework.gac.dll" LongName="nunit.framework.dll" Assembly=".net" AssemblyManifest="nunit.framework.gac.dll" KeyPath="yes" />
 										</Component>
@@ -643,7 +646,7 @@
 											<File Source="..\..\data\templates\file\CSharp\CSharp.WPFWindow.xft" Name="CSHAR_17.XFT" Id="CSharp.WPFWindow.xft" LongName="CSharp.WPFWindow.xft" />
 										</Component>
 										<Component Guid="16055582-32EE-4418-A06B-488AC5EC79E4" Id="CSharpStructTemplate" DiskId="1">
-											<File Source="..\..\data\templates\file\CSharp\CSharp.Struct.xft" Name="CSSTRUCT.XFT" Id="CSharp.Struct.xft" LongName="CSharp.Struct.xft"/>
+											<File Source="..\..\data\templates\file\CSharp\CSharp.Struct.xft" Name="CSSTRUCT.XFT" Id="CSharp.Struct.xft" LongName="CSharp.Struct.xft" />
 										</Component>
 									</Directory>
 									<Directory Id="MiscFileTemplatesFolder" Name="Misc">
@@ -712,7 +715,7 @@
 											<File Source="..\..\data\templates\project\CSharp\NotifyIconResources.resx" Name="NOTIFY.RES" Id="NotifyIconResources.resx" LongName="NotifyIconResources.resx" />
 										</Component>
 										<Component Guid="7D1DCA03-CB13-4516-B232-028F53B096BF" Id="CSharpWebServiceProjectTemplate" DiskId="1">
-											<File Source="..\..\data\templates\project\CSharp\WebService.xpt" Name="WEBSRVC.XPT" Id="WebService.xpt" LongName="WebService.xpt"/>
+											<File Source="..\..\data\templates\project\CSharp\WebService.xpt" Name="WEBSRVC.XPT" Id="WebService.xpt" LongName="WebService.xpt" />
 										</Component>
 									</Directory>
 									<Directory Id="MiscProjectTemplatesFolder" Name="Misc">
@@ -1072,7 +1075,7 @@
 
 								http://msdn.microsoft.com/library/en-us/msi/setup/ice18.asp
 							-->
-							<CreateFolder/>
+							<CreateFolder />
 						</Component>
 						<Component Id="SharpDevelopAppPathRegistrySetting" Guid="E812C3C9-1753-4535-80B9-BD8BCE7DB1A5">
 							<!-- 
@@ -1080,7 +1083,7 @@
 								user has admin rights. 
 							-->
 							<Condition>Privileged</Condition>
-							<Registry Id="SharpDevelopAppPathRegistryKey" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\SharpDevelop.exe" Root="HKLM" Value="[!SharpDevelop.exe]" Type="string" Action="write"/> 
+							<Registry Id="SharpDevelopAppPathRegistryKey" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\SharpDevelop.exe" Root="HKLM" Value="[!SharpDevelop.exe]" Type="string" Action="write" />
 						</Component>
 					</Directory>
 				</Directory>
@@ -1093,14 +1096,14 @@
 							Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 							http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
 						-->
-						<Registry Id="SharpDevelopExeStartMenuShortcutRegistryKey" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop2"/>
+						<Registry Id="SharpDevelopExeStartMenuShortcutRegistryKey" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop2" />
 						<Shortcut Name="SharpDev" LongName="SharpDevelop" Target="[!SharpDevelop.exe]" Id="SharpDevelopExeStartMenuShortcut" WorkingDirectory="BinFolder" Icon="SharpDevelopIcon.exe" Directory="SharpDevelopProgramMenuFolder" />
 						<Shortcut Name="Website" Target="[!SharpDevelop.url]" Id="SharpDevelopUrlStartMenuShortcut" WorkingDirectory="BinFolder" Directory="SharpDevelopProgramMenuFolder" />
 						<!--
 							Fix ICE64 by adding a remove folder element 
 							http://windowssdk.msdn.microsoft.com/en-us/library/ms704358.aspx
 						-->
-						<RemoveFolder Id="RemoveSharpDevelopProgramMenuFolder" On="uninstall"/>
+						<RemoveFolder Id="RemoveSharpDevelopProgramMenuFolder" On="uninstall" />
 					</Component>
 				</Directory>
 			</Directory>
@@ -1111,7 +1114,7 @@
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
 					-->
-					<Registry Id="SharpDevelopExeDesktopShortcutRegistryKey" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop2"/>
+					<Registry Id="SharpDevelopExeDesktopShortcutRegistryKey" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop2" />
 					<Shortcut Id="SharpDevelopExeDesktopShortcut" Directory="DesktopFolder" Target="[!SharpDevelop.exe]" Name="SharpDev" LongName="SharpDevelop 2.1" Icon="SharpDevelopIcon.exe" WorkingDirectory="BinFolder" />
 				</Component>
 			</Directory>
