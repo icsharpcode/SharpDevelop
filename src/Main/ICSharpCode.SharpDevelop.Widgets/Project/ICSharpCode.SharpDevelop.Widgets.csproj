@@ -63,6 +63,7 @@
     <Compile Include="SideBar\SideBar.cs" />
     <Compile Include="SideBar\SideTab.cs" />
     <Compile Include="SideBar\SideTabItem.cs" />
+    <Compile Include="SpinnerControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />
