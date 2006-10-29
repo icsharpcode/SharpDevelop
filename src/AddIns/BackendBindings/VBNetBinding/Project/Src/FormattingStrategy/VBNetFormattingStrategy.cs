@@ -37,10 +37,10 @@ namespace VBNetBinding.FormattingStrategy
 		{
 			statements = new List<VBStatement>();
 			statements.Add(new VBStatement(@"^if.*?(then|\s+_)$", "^end ?if$", "End If", 1));
-			statements.Add(new VBStatement(@"\bclass\s+\w+$", "^end class$", "End Class", 1));
+			statements.Add(new VBStatement(@"\bclass\s+\w+\s*($|\(\s*Of)", "^end class$", "End Class", 1));
 			statements.Add(new VBStatement(@"\bnamespace\s+\w+(\.\w+)*$", "^end namespace$", "End Namespace", 1));
 			statements.Add(new VBStatement(@"\bmodule\s+\w+$", "^end module$", "End Module", 1));
-			statements.Add(new VBStatement(@"\bstructure\s+\w+$", "^end structure$", "End Structure", 1));
+			statements.Add(new VBStatement(@"\bstructure\s+\w+\s*($|\(\s*Of)", "^end structure$", "End Structure", 1));
 			statements.Add(new VBStatement(@"^while\s+", "^end while$", "End While", 1));
 			statements.Add(new VBStatement(@"^select case", "^end select$", "End Select", 2));
 			statements.Add(new VBStatement(@"(?<!\b(delegate|mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bsub\s+\w+", @"^end\s+sub$", "End Sub", 1));
@@ -55,7 +55,7 @@ namespace VBNetBinding.FormattingStrategy
 			statements.Add(new VBStatement(@"^do\s+.+?$", "^loop$", "Loop", 1));
 			statements.Add(new VBStatement(@"^do$", "^loop .+?$", "Loop While ", 1));
 			statements.Add(new VBStatement(@"\benum\s+\w+$", "^end enum$", "End Enum", 1));
-			interfaceStatement = new VBStatement(@"\binterface\s+\w+$", "^end interface$", "End Interface", 1);
+			interfaceStatement = new VBStatement(@"\binterface\s+\w+\s*($|\(\s*Of)", "^end interface$", "End Interface", 1);
 			statements.Add(interfaceStatement);
 			statements.Add(new VBStatement(@"\busing\s+", "^end using$", "End Using", 1));
 			statements.Add(new VBStatement(@"^#region\s+", "^#end region$", "#End Region", 0));
