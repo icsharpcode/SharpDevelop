@@ -606,7 +606,10 @@ InterfaceMemberDecl
 	{ MemberModifier<mod> }
 	(
 		"Event"
-		(. mod.Check(Modifiers.VBInterfaceEvents); .)
+		(.
+			mod.Check(Modifiers.VBInterfaceEvents);
+			Location startLocation = t.Location;
+		.)
 		Identifier (. name = t.val; .)
 		[ "(" [ FormalParameterList<p> ] ")" ]
 		[ "As" TypeName<out type> ]
@@ -614,11 +617,15 @@ InterfaceMemberDecl
 		(.
 			EventDeclaration ed = new EventDeclaration(type, mod.Modifier, p, attributes, name, null);
 			compilationUnit.AddChild(ed);
+			ed.StartLocation = startLocation;
 			ed.EndLocation = t.EndLocation;
 		.)
 		|
 		"Sub"
-		(. mod.Check(Modifiers.VBInterfaceMethods); .)
+		(.
+			Location startLocation =  t.Location;
+			mod.Check(Modifiers.VBInterfaceMethods);
+		.)
 		Identifier (. name = t.val; .)
 		TypeParameterList<templates>
 		[ "(" [ FormalParameterList<p> ] ")" ]
@@ -626,13 +633,17 @@ InterfaceMemberDecl
 		(.
 			MethodDeclaration md = new MethodDeclaration(name, mod.Modifier, null, p, attributes);
 			md.TypeReference = new TypeReference("", "System.Void");
+			md.StartLocation = startLocation;
 			md.EndLocation = t.EndLocation;
 			md.Templates = templates;
 			compilationUnit.AddChild(md);
 		.)
 		|
 		"Function"
-		(. mod.Check(Modifiers.VBInterfaceMethods); .)
+		(.
+			mod.Check(Modifiers.VBInterfaceMethods);
+			Location startLocation = t.Location;
+		.)
 		Identifier (. name = t.val; .)
 		TypeParameterList<templates>
 		[ "(" [ FormalParameterList<p> ] ")" ]
@@ -646,6 +657,7 @@ InterfaceMemberDecl
 				returnTypeAttributeSection.AttributeTarget = "return";
 				md.Attributes.Add(returnTypeAttributeSection);
 			}
+			md.StartLocation = startLocation;
 			md.EndLocation = t.EndLocation;
 			md.Templates = templates;
 			compilationUnit.AddChild(md);
@@ -653,7 +665,10 @@ InterfaceMemberDecl
 		EOL
 		|
 		"Property"
-		(. mod.Check(Modifiers.VBInterfaceProperties); .)
+		(.
+			Location startLocation = t.Location;
+			mod.Check(Modifiers.VBInterfaceProperties);
+		.)
 		Identifier	(. name = t.val;  .)
 		[ "(" [ FormalParameterList<p> ] ")" ]
 		[ "As" TypeName<out type> ]
@@ -667,6 +682,7 @@ InterfaceMemberDecl
 			PropertyDeclaration pd = new PropertyDeclaration(name, type, mod.Modifier, attributes);
 			pd.Parameters = p;
 			pd.EndLocation = t.EndLocation;
+			pd.StartLocation = startLocation;
 			compilationUnit.AddChild(pd);
 		.)
 	)
