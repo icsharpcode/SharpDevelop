@@ -14,6 +14,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
@@ -153,6 +154,17 @@ namespace VBNetBinding
 			}
 		}
 		
+		IMember GetCurrentMember(SharpDevelopTextAreaControl editor)
+		{
+			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
+			NRefactoryResolver r = new NRefactoryResolver(ParserService.CurrentProjectContent);
+			if (r.Initialize(editor.FileName, caret.Line + 1, caret.Column + 1)) {
+				return r.CallingMember;
+			} else {
+				return null;
+			}
+		}
+		
 		public override bool HandleKeyword(SharpDevelopTextAreaControl editor, string word)
 		{
 			// TODO: Assistance writing Methods/Fields/Properties/Events:
@@ -177,6 +189,14 @@ namespace VBNetBinding
 				case "overrides":
 					editor.ShowCompletionWindow(new OverrideCompletionDataProvider(), ' ');
 					return true;
+				case "return":
+					IMember m = GetCurrentMember(editor);
+					if (m != null) {
+						ProvideContextCompletion(editor, m.ReturnType, ' ');
+						return true;
+					} else {
+						goto default;
+					}
 				case "option":
 					editor.ShowCompletionWindow(new TextCompletionDataProvider("Explicit On",
 					                                                           "Explicit Off",
