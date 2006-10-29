@@ -651,7 +651,6 @@
 									</Directory>
 									<Directory Id="MiscFileTemplatesFolder" Name="Misc">
 										<Component Guid="2BDF0836-B3D9-4B96-8F9F-59477B0C6F21" Id="MiscFileTemplates" DiskId="1">
-											<File Source="..\..\data\templates\file\Misc\EmptyXmlUserControl.xft" Name="EMPTYX_1.XFT" Id="EmptyXmlUserControl.xft" LongName="EmptyXmlUserControl.xft" />
 											<File Source="..\..\data\templates\file\Misc\EmptyHTMLFile.xft" Name="EMPTYH_2.XFT" Id="EmptyHTMLFile.xft" LongName="EmptyHTMLFile.xft" />
 											<File Source="..\..\data\templates\file\Misc\EmptyMsBuildFile.xft" Name="EMPTYM_3.XFT" Id="EmptyMsBuildFile.xft" LongName="EmptyMsBuildFile.xft" />
 											<File Source="..\..\data\templates\file\Misc\EmptyNAntBuildFile.xft" Name="EMPTYN_4.XFT" Id="EmptyNAntBuildFile.xft" LongName="EmptyNAntBuildFile.xft" />
@@ -659,7 +658,6 @@
 											<File Source="..\..\data\templates\file\Misc\EmptySharpReport.xft" Name="EMPTYS_6.XFT" Id="EmptySharpReport.xft" LongName="EmptySharpReport.xft" />
 											<File Source="..\..\data\templates\file\Misc\EmptyTextFile.xft" Name="EMPTYT_7.XFT" Id="EmptyTextFile.xft" LongName="EmptyTextFile.xft" />
 											<File Source="..\..\data\templates\file\Misc\EmptyXMLFile.xft" Name="EMPTYX_8.XFT" Id="EmptyXMLFile.xft" LongName="EmptyXMLFile.xft" />
-											<File Source="..\..\data\templates\file\Misc\EmptyXmlForm.xft" Name="EMPTYX_9.XFT" Id="EmptyXmlForm.xft" LongName="EmptyXmlForm.xft" />
 										</Component>
 									</Directory>
 									<Directory Id="SharpDevelopFileTemplatesFolder" LongName="SharpDevelop" Name="SharpDev">
