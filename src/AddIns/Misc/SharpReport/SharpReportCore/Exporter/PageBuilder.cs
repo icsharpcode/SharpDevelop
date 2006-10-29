@@ -27,7 +27,9 @@ namespace SharpReportCore.Exporters
 		ExportItemsConverter lineItemsConverter;
 		
 		internal delegate ExporterCollection<BaseExportColumn> ConverterDelegate (BaseSection s);
+		
 		#region Constructor
+		
 		public PageBuilder () {
 			pages = new PagesCollection();
 		}
@@ -65,7 +67,7 @@ namespace SharpReportCore.Exporters
 			this.lineItemsConverter.Offset = offset;
 			List <BaseExportColumn>list = section.Items.ConvertAll <BaseExportColumn> (this.lineItemsConverter.ConvertToLineItems);
 
-			list.ForEach(display);
+//			list.ForEach(display);
 			/*
 			if (list.Count > 0) {
 				list.ForEach(delegate(BaseExportColumn item){

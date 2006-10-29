@@ -11,7 +11,7 @@
 
 using System;
 using System.Drawing;
-
+using SharpReportCore.Exporters;
 /// <summary>
 /// This class draws a Rectangle
 /// </summary>
@@ -20,12 +20,26 @@ using System.Drawing;
 /// 	created on - 29.09.2005 11:57:30
 /// </remarks>
 namespace SharpReportCore {	
-	public class BaseRectangleItem : SharpReportCore.BaseGraphicItem {
+	public class BaseRectangleItem : SharpReportCore.BaseGraphicItem,IExportColumnBuilder {
 		
 		RectangleShape shape = new RectangleShape();
 		
+		#region Constructor
+		
 		public BaseRectangleItem() {
 		}
+		
+		#endregion
+		
+		#region IExportColumnBuilder
+		
+		public BaseExportColumn CreateExportColumn(Graphics graphics){
+			BaseStyleDecorator style = base.CreateItemStyle(this.shape);
+			ExportGraphic item = new ExportGraphic(style,false);
+			return item;
+		}
+		
+		#endregion
 		
 		public override void Render(ReportPageEventArgs rpea) {
 			if (rpea == null) {

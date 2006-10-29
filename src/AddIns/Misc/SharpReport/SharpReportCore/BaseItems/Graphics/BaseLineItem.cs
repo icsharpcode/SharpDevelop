@@ -36,23 +36,11 @@ namespace SharpReportCore {
 		#region IExportColumnBuilder  implementation
 		
 		public BaseExportColumn CreateExportColumn(Graphics graphics){	
-			BaseStyleDecorator st = this.CreateItemStyle(graphics);
-			ExportGraphic item = new ExportGraphic(st,false);
+			BaseStyleDecorator style = base.CreateItemStyle(this.shape);
+			ExportGraphic item = new ExportGraphic(style,false);
 			return item;
 		}
-		
-		private BaseStyleDecorator CreateItemStyle (Graphics g) {
-			BaseStyleDecorator style = new BaseStyleDecorator();
-			style.Shape = this.shape;
-			style.Size = this.Size;
-			style.Location = this.Location;
-			style.BackColor = this.BackColor;
-			style.ForeColor = this.ForeColor;
-			style.Thickness = base.Thickness;
-			style.DashStyle = base.DashStyle;
-			return style;
-		}
-		
+	
 		#endregion
 		public override void Render(ReportPageEventArgs rpea) {
 			if (rpea == null) {

@@ -10,6 +10,7 @@
 
 using System;
 using System.Drawing;
+using SharpReportCore.Exporters;
 /// <summary>
 ///This class drwas a Circle
 /// </summary>
@@ -18,13 +19,24 @@ using System.Drawing;
 /// 	created on - 29.09.2005 11:54:19
 /// </remarks>
 namespace SharpReportCore {	
-	public class BaseCircleItem : SharpReportCore.BaseGraphicItem {
+	public class BaseCircleItem : SharpReportCore.BaseGraphicItem,IExportColumnBuilder {
 		
 		EllipseShape shape = new EllipseShape();
+		#region Constructor
 		
 		public BaseCircleItem():base() {
 		}
 		
+		#endregion
+		
+		#region IExportColumnBuilder
+		public BaseExportColumn CreateExportColumn(Graphics graphics){
+			BaseStyleDecorator style = base.CreateItemStyle(this.shape);
+			ExportGraphic item = new ExportGraphic(style,false);
+			return item;
+		}
+		
+		#endregion
 		public override void Render(ReportPageEventArgs rpea) {
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
