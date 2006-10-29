@@ -49,7 +49,6 @@ namespace SharpReportAddin{
 		void InitView() {
 			try {
 				reportManager = new SharpReportManager();
-				
 				panel = new Panel();
 				panel.AutoScroll = true;
 				panel.Dock = DockStyle.Fill;
@@ -88,7 +87,7 @@ namespace SharpReportAddin{
 		
 		#endregion
 		
-			#region Control
+		#region Control
 		
 		private BaseDesignerControl CreateDesignerControl() {
 			BaseDesignerControl ctrl = reportManager.BaseDesignControl;
