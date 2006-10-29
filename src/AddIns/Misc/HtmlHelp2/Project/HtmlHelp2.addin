@@ -51,7 +51,7 @@
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Help">
 		<MenuItem id           = "HtmlHelp2Separator2"
 		          type         = "Separator"
-		          insertafter  = "TipOfTheDay"/>
+		          insertafter  = "Help"/>
 		<MenuItem id           = "TocPadCommand"
 		          insertafter  = "HtmlHelp2Separator2"
 		          label        = "${res:AddIns.HtmlHelp2.Contents}"

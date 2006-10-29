@@ -236,10 +236,8 @@ namespace HtmlHelp2
 			this.dynamicHelpTerms.Clear();
 
 			Type myObject = selectedObject.GetType();
-			if (selectedItem != null)
-			{
-				foreach (Type type in TypeHandling.FindDeclaringType(myObject, selectedItem.Label))
-				{
+			if (selectedItem != null && selectedItem.Label != null) {
+				foreach (Type type in TypeHandling.FindDeclaringType(myObject, selectedItem.Label)) {
 					this.AddToStringCollection(string.Format(CultureInfo.InvariantCulture,
 					                                         "{0}.{1}", type.FullName, selectedItem.Label));
 				}
