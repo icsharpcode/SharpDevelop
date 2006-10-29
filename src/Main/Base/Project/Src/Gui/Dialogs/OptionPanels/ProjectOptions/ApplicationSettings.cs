@@ -69,16 +69,19 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void ApplicationIconComboBoxTextChanged(object sender, EventArgs e)
 		{
-			string applicationIcon = Path.Combine(baseDirectory, Get<ComboBox>("applicationIcon").Text);
-			if (File.Exists(applicationIcon)) {
-				try {
-					Get<PictureBox>("applicationIcon").Image = Image.FromFile(applicationIcon);
-				} catch (OutOfMemoryException) {
+			if(FileUtility.IsValidFileName(Get<ComboBox>("applicationIcon").Text))
+			{
+				string applicationIcon = Path.Combine(baseDirectory, Get<ComboBox>("applicationIcon").Text);
+				if (File.Exists(applicationIcon)) {
+					try {
+						Get<PictureBox>("applicationIcon").Image = Image.FromFile(applicationIcon);
+					} catch (OutOfMemoryException) {
+						Get<PictureBox>("applicationIcon").Image = null;
+						MessageService.ShowErrorFormatted("${res:Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile}", Path.GetFullPath(applicationIcon));
+					}
+				} else {
 					Get<PictureBox>("applicationIcon").Image = null;
-					MessageService.ShowErrorFormatted("${res:Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile}", Path.GetFullPath(applicationIcon));
 				}
-			} else {
-				Get<PictureBox>("applicationIcon").Image = null;
 			}
 		}
 	}
