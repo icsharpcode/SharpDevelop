@@ -33,9 +33,9 @@ namespace SharpReportCore.Exporters {
 			}
 		}
 		
-		public override BaseStyleDecorator StyleDecorator {
+		public new TextStyleDecorator StyleDecorator {
 			get {
-				return base.StyleDecorator;
+				return base.StyleDecorator as TextStyleDecorator;
 			}
 			set {
 				base.StyleDecorator = value;

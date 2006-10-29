@@ -18,6 +18,7 @@ namespace SharpReportCore.Exporters
 	{
 
 		ExporterCollection<BaseExportColumn> items;
+		
 		public ExportContainer():base(){
 			base.IsContainer = true;
 		}
@@ -41,6 +42,5 @@ namespace SharpReportCore.Exporters
 				return items;
 			}
 		}
-		
 	}
 }

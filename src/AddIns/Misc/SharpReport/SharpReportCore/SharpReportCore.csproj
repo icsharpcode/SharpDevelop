@@ -139,7 +139,6 @@
     <Compile Include="Printing\MeasurementService.cs" />
     <Compile Include="Exporter\SinglePage.cs" />
     <Compile Include="Exporter\PageBuilder.cs" />
-    <Compile Include="Exporter\BaseStyleDecorator.cs" />
     <Compile Include="Exporter\ExportItemsConverter.cs" />
     <Compile Include="Exceptions\MissingDataManagerException.cs" />
     <Compile Include="Exporter\ExportColumns\BaseExportColumn.cs" />
@@ -157,6 +156,7 @@
     <Compile Include="Exporter\ExportColumns\ExportGraphic.cs" />
     <Compile Include="Exporter\Decorators\TextStyleDecorator.cs" />
     <Compile Include="Exporter\Decorators\GraphicStyleDecorator.cs" />
+    <Compile Include="Exporter\Decorators\BaseStyleDecorator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />

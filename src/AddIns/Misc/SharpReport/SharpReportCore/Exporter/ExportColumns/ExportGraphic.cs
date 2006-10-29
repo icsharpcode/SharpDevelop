@@ -33,14 +33,11 @@ namespace SharpReportCore.Exporters
 			                 style.DisplayRectangle);
 		}
 		
-//		public override BaseStyleDecorator StyleDecorator {
-//			get {
-//				return base.StyleDecorator as GraphicStyleDecorator;
-//			}
-//			set {
-//				base.StyleDecorator = value;
-//			}
-//		}
-	
+		public new GraphicStyleDecorator StyleDecorator {
+			get{
+				return base.StyleDecorator as GraphicStyleDecorator;
+			}
+		}
+
 	}
 }
