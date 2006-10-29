@@ -136,6 +136,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 				((LocalizedObject)component).InformSetValue(this, component, value);
 			}
 		}
-		
 	}
 }

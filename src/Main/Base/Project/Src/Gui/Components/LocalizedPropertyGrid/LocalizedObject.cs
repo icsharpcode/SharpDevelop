@@ -22,57 +22,61 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		PropertyDescriptorCollection globalizedProps;
 		
-		public string GetClassName()
+		string ICustomTypeDescriptor.GetClassName()
 		{
 			return TypeDescriptor.GetClassName(this,true);
 		}
 
-		public AttributeCollection GetAttributes()
+		AttributeCollection ICustomTypeDescriptor.GetAttributes()
 		{
 			return TypeDescriptor.GetAttributes(this,true);
 		}
 
-		public string GetComponentName()
+		string ICustomTypeDescriptor.GetComponentName()
 		{
 			return TypeDescriptor.GetComponentName(this, true);
 		}
 
-		public TypeConverter GetConverter()
+		TypeConverter ICustomTypeDescriptor.GetConverter()
 		{
 			return TypeDescriptor.GetConverter(this, true);
 		}
 
-		public EventDescriptor GetDefaultEvent() 
+		EventDescriptor ICustomTypeDescriptor.GetDefaultEvent() 
 		{
 			return TypeDescriptor.GetDefaultEvent(this, true);
 		}
 
-		public PropertyDescriptor GetDefaultProperty() 
+		PropertyDescriptor ICustomTypeDescriptor.GetDefaultProperty() 
 		{
 			return TypeDescriptor.GetDefaultProperty(this, true);
 		}
 
-		public object GetEditor(Type editorBaseType) 
+		object ICustomTypeDescriptor.GetEditor(Type editorBaseType) 
 		{
 			return TypeDescriptor.GetEditor(this, editorBaseType, true);
 		}
 
-		public EventDescriptorCollection GetEvents(Attribute[] attributes) 
+		EventDescriptorCollection ICustomTypeDescriptor.GetEvents(Attribute[] attributes) 
 		{
 			return TypeDescriptor.GetEvents(this, attributes, true);
 		}
 
-		public EventDescriptorCollection GetEvents()
+		EventDescriptorCollection ICustomTypeDescriptor.GetEvents()
 		{
 			return TypeDescriptor.GetEvents(this, true);
 		}
 
+		protected virtual void FilterProperties(PropertyDescriptorCollection globalizedProps)
+		{
+		}
+		
 		/// <summary>
 		/// Called to get the properties of a type.
 		/// </summary>
 		/// <param name="attributes"></param>
 		/// <returns></returns>
-		public PropertyDescriptorCollection GetProperties(Attribute[] attributes)
+		PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)
 		{
 			if ( globalizedProps == null) {
 				// Get the collection of properties
@@ -84,11 +88,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				foreach (PropertyDescriptor oProp in baseProps) {
 					globalizedProps.Add(new LocalizedPropertyDescriptor(oProp));
 				}
+				FilterProperties(globalizedProps);
 			}
 			return globalizedProps;
 		}
 
-		public PropertyDescriptorCollection GetProperties()
+		PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties()
 		{
 			// Only do once
 			if (globalizedProps == null) {
@@ -100,11 +105,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				foreach (PropertyDescriptor oProp in baseProps) {
 					globalizedProps.Add(new LocalizedPropertyDescriptor(oProp));
 				}
+				FilterProperties(globalizedProps);
 			}
 			return globalizedProps;
 		}
 
-		public object GetPropertyOwner(PropertyDescriptor pd) 
+		object ICustomTypeDescriptor.GetPropertyOwner(PropertyDescriptor pd) 
 		{
 			return this;
 		}

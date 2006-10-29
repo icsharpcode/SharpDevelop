@@ -39,6 +39,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SettingsEditor.addin">
@@ -54,6 +55,11 @@
       <DependentUpon>SettingsView.cs</DependentUpon>
     </Compile>
     <Compile Include="SettingsView.cs" />
+    <Compile Include="SettingsEntry.cs" />
+    <EmbeddedResource Include="SettingsView.resx">
+      <DependentUpon>SettingsView.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="ProxyPropertyDescriptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
