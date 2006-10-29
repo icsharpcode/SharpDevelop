@@ -862,6 +862,12 @@
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ResourceEditor\ResourceEditor.addin" Name="RESOUR_1.ADD" Id="ResourceEditor.addin" LongName="ResourceEditor.addin" />
 										</Component>
 									</Directory>
+									<Directory Id="SettingsEditorFolder" LongName="SettingsEditor" Name="SetEd">
+										<Component Guid="76B108DB-2F39-42C8-9EAC-8F8C0C27D6C7" Id="SettingsEditorFiles" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\SettingsEditor\SettingsEditor.dll" Name="SETEDT.DLL" Id="SettingsEditor.dll" LongName="SettingsEditor.dll" Assembly=".net" AssemblyApplication="SettingsEditor.dll" AssemblyManifest="SettingsEditor.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\SettingsEditor\SettingsEditor.addin" Name="SETEDT.ADD" Id="SettingsEditor.addin" LongName="SettingsEditor.addin" />
+										</Component>
+									</Directory>
 									<Directory Id="XmlEditorFolder" LongName="XmlEditor" Name="XmlEdit">
 										<Component Guid="BD0B4E5B-CBED-49A0-850C-3EA8DFCF3B17" Id="XmlEditorFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\XmlEditor\XmlEditor.dll" Name="XMLEDI_1.DLL" Id="XmlEditor.dll" LongName="XmlEditor.dll" Assembly=".net" AssemblyApplication="XmlEditor.dll" AssemblyManifest="XmlEditor.dll" KeyPath="yes" />
