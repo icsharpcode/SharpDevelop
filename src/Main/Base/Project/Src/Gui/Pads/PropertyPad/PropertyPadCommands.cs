@@ -17,7 +17,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			try {
 				PropertyPad.Grid.ResetSelectedProperty();
 			} catch (Exception e) {
-				MessageService.ShowError(e, "${res:ICSharpCode.SharpDevelop.Gui.Pads.PropertyPadResetCommand}");
+				MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Gui.Pads.PropertyPadResetCommand}"
+				                         + Environment.NewLine + e.Message);
 			}
 		}
 	}
