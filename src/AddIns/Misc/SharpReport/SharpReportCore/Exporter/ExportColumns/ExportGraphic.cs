@@ -8,13 +8,14 @@
  */
 
 using System;
+using System.Drawing;
 
 namespace SharpReportCore.Exporters
 {
 	/// <summary>
 	/// Description of ExportGraphic.
 	/// </summary>
-	public class ExportGraphic:BaseExportColumn,IPerformLine
+	public class ExportGraphic:BaseExportColumn
 	{
 		public ExportGraphic():base()
 		{
@@ -22,15 +23,24 @@ namespace SharpReportCore.Exporters
 		public ExportGraphic (BaseStyleDecorator itemStyle,bool isContainer):base(itemStyle,isContainer){
 			
 		}
-		
-		public override BaseStyleDecorator StyleDecorator {
-			get {
-				return base.StyleDecorator;
+		public void DrawGraphic (Graphics graphics) {
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
 			}
-			set {
-				base.StyleDecorator = value;
-			}
+			GraphicStyleDecorator style = (GraphicStyleDecorator) base.StyleDecorator;
+			style.Shape.DrawShape(graphics,
+			                     new BaseLine (style.ForeColor,style.DashStyle,style.Thickness),
+			                 style.DisplayRectangle);
 		}
 		
+//		public override BaseStyleDecorator StyleDecorator {
+//			get {
+//				return base.StyleDecorator as GraphicStyleDecorator;
+//			}
+//			set {
+//				base.StyleDecorator = value;
+//			}
+//		}
+	
 	}
 }

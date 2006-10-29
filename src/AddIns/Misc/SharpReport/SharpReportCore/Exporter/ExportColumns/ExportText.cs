@@ -13,7 +13,7 @@ namespace SharpReportCore.Exporters {
 	/// <summary>
 	/// Description of LineItem.
 	/// </summary>
-	public class ExportText :BaseExportColumn,IPerformLine{
+	public class ExportText :BaseExportColumn{
 		string text;
 
 		public ExportText():base(){

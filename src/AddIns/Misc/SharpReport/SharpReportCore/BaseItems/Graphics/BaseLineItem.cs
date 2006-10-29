@@ -36,9 +36,9 @@ namespace SharpReportCore {
 		#region IExportColumnBuilder  implementation
 		
 		public BaseExportColumn CreateExportColumn(Graphics graphics){	
-			BaseStyleDecorator style = base.CreateItemStyle(this.shape);
+			GraphicStyleDecorator style = base.CreateItemStyle(this.shape);
 			ExportGraphic item = new ExportGraphic(style,false);
-			return item;
+			return item as ExportGraphic;
 		}
 	
 		#endregion

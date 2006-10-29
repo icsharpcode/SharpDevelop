@@ -91,10 +91,10 @@ namespace SharpReportCore.ReportViewer
 //						System.Console.WriteLine("{0}",ex.GetType());
 						ExportGraphic eg = ex as ExportGraphic;
 						if (eg != null) {
-							eg.StyleDecorator.DrawGraphic(gr);
+							eg.DrawGraphic(gr);
 						
 						} else {
-							TextDrawer.PaintString(gr,ex.ToString(),ex.StyleDecorator);
+							TextDrawer.PaintString(gr,ex.ToString(),(TextStyleDecorator)ex.StyleDecorator);
 						}
 						
 					} else {

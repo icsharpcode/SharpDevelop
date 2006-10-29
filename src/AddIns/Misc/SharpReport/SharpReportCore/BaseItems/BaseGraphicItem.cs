@@ -31,13 +31,14 @@ namespace SharpReportCore {
 		public BaseGraphicItem():base() {
 		}
 		
-		protected BaseStyleDecorator CreateItemStyle (BaseShape shape) {
-			BaseStyleDecorator style = new BaseStyleDecorator();
+		protected GraphicStyleDecorator CreateItemStyle (BaseShape shape) {
+			GraphicStyleDecorator style = new GraphicStyleDecorator(shape);
+			
 			style.Size = this.Size;
 			style.Location = this.Location;
 			style.BackColor = this.BackColor;
 			style.ForeColor = this.ForeColor;
-			style.Shape = shape;
+			
 			style.Thickness = this.thickness;
 			style.DashStyle = this.dashStyle;
 			return style;

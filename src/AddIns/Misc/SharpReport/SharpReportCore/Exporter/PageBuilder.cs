@@ -206,15 +206,16 @@ namespace SharpReportCore.Exporters
 			BaseSection section = this.reportModel.PageFooter;
 			this.DoConvert (this.reportModel.PageFooter,this.singlePage.SectionBounds.PageFooterRectangle.Top);
 		}
-		
-		private void display (IPerformLine li) {
+		/*
+		private void display (BaseStyleDecorator li) {
+//		private void display (IPerformLine li) {
 //			System.Console.WriteLine("\tdisplay {0}",li.ToString());
-			ExportText l = li as ExportText;
-			if (l != null) {
+//			ExportText l = li as ExportText;
+			if (li != null) {
 				System.Console.WriteLine("\t\t{0} / {1} ",l.StyleDecorator.Location,l.Text);
 			}
 		}
-		
+		*/
 		private void Write () {
 			this.dataNavigator = this.dataManager.GetNavigator;
 			Graphics graphics = reportModel.ReportSettings.PageSettings.PrinterSettings.CreateMeasurementGraphics();

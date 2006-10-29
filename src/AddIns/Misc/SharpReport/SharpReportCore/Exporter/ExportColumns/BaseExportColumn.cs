@@ -15,8 +15,8 @@ namespace SharpReportCore.Exporters
 	/// <summary>
 	/// Description of BaseLineItem.
 	/// </summary>
-	public class BaseExportColumn :IPerformLine
-	{
+	public class BaseExportColumn{
+		
 		BaseStyleDecorator styleDecorator;
 		bool isContainer;
 		

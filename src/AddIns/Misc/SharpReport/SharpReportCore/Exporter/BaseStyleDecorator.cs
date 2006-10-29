@@ -9,7 +9,7 @@
 
 using System;
 using System.Drawing;
-	using System.Drawing.Drawing2D;
+using System.Drawing.Drawing2D;
 namespace SharpReportCore.Exporters
 {
 	/// <summary>
@@ -22,15 +22,6 @@ namespace SharpReportCore.Exporters
 		private Color foreColor;
 		private Point location;
 		private Size size;
-		private Font font;
-		
-		private StringFormat stringFormat;
-		private StringTrimming stringTrimming;
-		private ContentAlignment contentAlignment;
-		
-		private BaseShape shape;
-		private int thickness = 1;
-		private DashStyle dashStyle = DashStyle.Solid;
 		
 		public BaseStyleDecorator():this(Color.White,Color.Black){
 		}
@@ -86,42 +77,8 @@ namespace SharpReportCore.Exporters
 			}
 		}
 		
-		public Font Font {
-			get {
-				return font;
-			}
-			set {
-				font = value;
-			}
-		}
+		
 	
-		public StringFormat StringFormat {
-			get {
-				return stringFormat;
-			}
-			set {
-				stringFormat = value;
-			}
-		}
-		
-		public StringTrimming StringTrimming {
-			get {
-				return stringTrimming;
-			}
-			set {
-				stringTrimming = value;
-			}
-		}
-		
-		public ContentAlignment ContentAlignment {
-			get {
-				return contentAlignment;
-			}
-			set {
-				contentAlignment = value;
-			}
-		}
-		
 		public Rectangle DisplayRectangle {
 			get {
 				return new Rectangle(this.location.X,this.location.Y,
@@ -129,36 +86,6 @@ namespace SharpReportCore.Exporters
 			}
 		}
 		
-		public void DrawGraphic (Graphics graphics) {
-			if (graphics == null) {
-				throw new ArgumentNullException("graphics");
-			}
-			
-			this.shape.DrawShape(graphics,
-			                     new BaseLine (this.foreColor,this.dashStyle,this.thickness),
-			                 this.DisplayRectangle);
-		}
-		
-		public BaseShape Shape {
-			get { return shape; }
-			set { shape = value; }
-		}
-		public int Thickness {
-			get { return thickness; }
-			set { thickness = value; }
-		}
-		
-		public DashStyle DashStyle {
-			get { return dashStyle; }
-			set { dashStyle = value; }
-		}
-		
 	}
-	
-	public class TextDecorator :BaseStyleDecorator
-	{
-		TextDecorator () :base() {
-			
-		}
-	}
+
 }

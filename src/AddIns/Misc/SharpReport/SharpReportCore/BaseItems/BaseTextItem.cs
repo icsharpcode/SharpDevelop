@@ -49,16 +49,15 @@ namespace SharpReportCore {
 		
 
 		public BaseExportColumn CreateExportColumn(Graphics graphics){	
-			BaseStyleDecorator st = this.CreateItemStyle(graphics);
+			TextStyleDecorator st = this.CreateItemStyle(graphics);
 			ExportText item = new ExportText(st,false);
 			
 			item.Text = this.text;
 			return item;
 		}
-	
-
-		protected BaseStyleDecorator CreateItemStyle (Graphics g) {
-			BaseStyleDecorator style = new BaseStyleDecorator();
+		
+		protected TextStyleDecorator CreateItemStyle (Graphics g) {
+			TextStyleDecorator style = new TextStyleDecorator();
 			SizeF measureSizeF = new SizeF ();
 			measureSizeF = g.MeasureString(text,
 			                               this.Font,
@@ -76,10 +75,9 @@ namespace SharpReportCore {
 			style.StringFormat = this.stringFormat;
 			style.StringTrimming = this.stringTrimming;
 			style.ContentAlignment = this.contentAlignment;
-			
 			return style;
 		}
-		
+
 		#endregion
 		
 		protected string FormatOutput(string valueToFormat,string format,

@@ -19,11 +19,11 @@ namespace SharpReportCore
 	public interface IExportColumnBuilder{
 		BaseExportColumn CreateExportColumn (Graphics graphics);
 	}
-	
+	/*
 	public interface IPerformLine{
 		BaseStyleDecorator StyleDecorator {
 			get;set;
 		}
 	}
-	
+	*/
 }

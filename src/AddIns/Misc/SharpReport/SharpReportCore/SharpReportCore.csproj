@@ -155,6 +155,8 @@
     </EmbeddedResource>
     <Compile Include="Exporter\ExporterCollection.cs" />
     <Compile Include="Exporter\ExportColumns\ExportGraphic.cs" />
+    <Compile Include="Exporter\Decorators\TextStyleDecorator.cs" />
+    <Compile Include="Exporter\Decorators\GraphicStyleDecorator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />
@@ -185,6 +187,7 @@
     <Content Include="ReportViewer\Resources\Icons.16x16.Print.png" />
     <Content Include="ReportViewer\Resources\Icons.16x16.BrowserBefore.png" />
     <Content Include="ReportViewer\Resources\Icons.16x16.BrowserAfter.png" />
+    <Folder Include="Exporter\Decorators" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

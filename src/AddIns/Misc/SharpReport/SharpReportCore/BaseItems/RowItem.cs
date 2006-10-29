@@ -58,7 +58,7 @@ namespace SharpReportCore{
 
 		protected BaseStyleDecorator CreateItemStyle (Graphics g) {
 			BaseStyleDecorator style = new BaseStyleDecorator();
-			
+
 			style.BackColor = this.BackColor;
 			style.ForeColor = this.ForeColor;
 			style.Location = this.Location;

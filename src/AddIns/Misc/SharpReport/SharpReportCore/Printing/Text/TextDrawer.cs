@@ -68,7 +68,7 @@ namespace SharpReportCore {
 		}
 		
 		public static void PaintString (Graphics graphics,string text,
-		                                SharpReportCore.Exporters.BaseStyleDecorator decorator) {
+		                                SharpReportCore.Exporters.TextStyleDecorator decorator) {
 			
 //			d.DrawString(gr,
 //			             ex.ToString(),

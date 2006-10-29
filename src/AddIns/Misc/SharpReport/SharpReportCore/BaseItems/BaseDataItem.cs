@@ -65,11 +65,9 @@ namespace SharpReportCore {
 		#endregion
 		
 		#region IExportColumnBuilder  implementation
-//		public new IPerformLine  CreateExportColumn(Graphics graphics)
-		public new BaseExportColumn  CreateExportColumn(Graphics graphics)
-		{
+		public new BaseExportColumn  CreateExportColumn(Graphics graphics){
 			string toPrint = CheckForNullValue();
-			BaseStyleDecorator st = base.CreateItemStyle(graphics);
+			TextStyleDecorator st = base.CreateItemStyle(graphics);
 			ExportText item = new ExportText(st,false);
 			item.Text = base.FormatOutput(toPrint,
 			                              this.FormatString,
