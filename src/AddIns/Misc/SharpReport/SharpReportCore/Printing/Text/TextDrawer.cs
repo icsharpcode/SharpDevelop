@@ -70,15 +70,7 @@ namespace SharpReportCore {
 		public static void PaintString (Graphics graphics,string text,
 		                                SharpReportCore.Exporters.TextStyleDecorator decorator) {
 			
-//			d.DrawString(gr,
-//			             ex.ToString(),
-//			             ex.StyleDecorator.Font,
-//			             new SolidBrush(ex.StyleDecorator.ForeColor),
-//			             new Rectangle(ex.StyleDecorator.Location.X,
-//			                           ex.StyleDecorator.Location.Y,
-//			                           ex.StyleDecorator.Size.Width,
-//			                           ex.StyleDecorator.Size.Height),
-//			             ex.StyleDecorator.StringFormat);
+
 			graphics.DrawString (text,decorator.Font,
 			                     new SolidBrush(decorator.ForeColor),
 			                     new Rectangle(decorator.Location.X,

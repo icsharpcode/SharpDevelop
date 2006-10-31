@@ -25,7 +25,6 @@ namespace SharpReportCore.ReportViewer
 		private PageSettings pageSettings;
 		private float zoom;
 		private Bitmap bitmap;
-//		private List<SinglePage> pages;
 		private PagesCollection pages;
 		private int pageNumber;
 	
@@ -45,13 +44,14 @@ namespace SharpReportCore.ReportViewer
 				this.panel2.ClientSize = new Size((int)(this.pageSettings.PaperSize.Width * this.zoom),
 				                                  (int)(this.pageSettings.PaperSize.Height * this.zoom));
 			}
-			this.toolStripTextBox1.Text = "";
+			
 			
 			if (this.pages != null) {
 				this.bitmap = this.BuildBitmap(pages[this.pageNumber]);
 			
 			}
 			this.Invalidate(true);
+			
 		}
 		
 		
@@ -81,66 +81,68 @@ namespace SharpReportCore.ReportViewer
 			}
 		}
 		
-		private void DrawItems (Graphics gr,ExporterCollection<BaseExportColumn> items) {
+		
+		private void DrawItems (Graphics graphics,ExporterCollection<BaseExportColumn> items) {
 			
-			foreach (SharpReportCore.Exporters.BaseExportColumn ex in items) {
+			foreach (SharpReportCore.Exporters.BaseExportColumn baseExportColumn in items) {
 				
-				if (ex != null) {
-					ExportContainer cont = ex as ExportContainer;
-					if (cont == null) {
-//						System.Console.WriteLine("{0}",ex.GetType());
-						ExportGraphic eg = ex as ExportGraphic;
-						if (eg != null) {
-							eg.DrawGraphic(gr);
-						
-						} else {
-							TextDrawer.PaintString(gr,ex.ToString(),(TextStyleDecorator)ex.StyleDecorator);
-						}
-						
+				if (baseExportColumn != null) {
+					ExportContainer container = baseExportColumn as ExportContainer;
+					if (container == null) {
+						baseExportColumn.DrawItem(graphics);
 					} else {
-						DrawItems(gr,cont.Items);
+						container.DrawItem(graphics);
+						DrawItems(graphics,container.Items);
 					}
 					
 				}
-				
 			}
 		}
 		
 		private Bitmap BuildBitmap (SinglePage page) {
-			System.Console.WriteLine("BuildBitmap(SinglePage)");
-			System.Console.WriteLine("\tstart createBitmap {0}",DateTime.Now);
+			System.Console.WriteLine("BuildBitmap started");
+			System.Diagnostics.Stopwatch s = new System.Diagnostics.Stopwatch();
+			s.Start();
+			
 			Bitmap bm = new Bitmap(this.panel2.ClientSize.Width,this.panel2.ClientSize.Height,System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 			using (Graphics gr = Graphics.FromImage(bm)) {
 
 				// Reset Transform to org. Value
-				
 				gr.ScaleTransform(1F,1F);
 				gr.Clear(this.panel2.BackColor);
 				gr.ScaleTransform(this.zoom,this.zoom);
 
 				DrawItems (gr,page.Items);
 			}
-			System.Console.WriteLine("\tready createBitmap {0}",DateTime.Now);
+			s.Stop();
+			TimeSpan ts = s.Elapsed;
+			System.Console.WriteLine("BuildBitmap finished {0}:{1} Seconds",ts.Seconds,ts.Milliseconds);
+				System.Console.WriteLine("");
 			return bm;
 	
 		}
 		
-		private void ShowPages () {
-			System.Console.WriteLine("ReportViewer:ShowPages {0}",this.pages.Count);
-			this.pageNumber = 0;
-			SinglePage sp = pages[this.pageNumber];
-			
-			if (this.bitmap != null) {
-				this.bitmap.Dispose();
-			}
-			this.bitmap = this.BuildBitmap(sp);
-		
-			this.toolStripTextBox1.Text = String.Empty;
-			
-			string str = String.Format (CultureInfo.CurrentCulture,
+		private void UpdateToolStrip () {
+			string str = String.Empty;
+			if (this.pages != null) {
+				 str = String.Format (CultureInfo.CurrentCulture,
 			                            "Page {0} of {1}",this.pageNumber +1,this.pages.Count);
+				
+			}
 			this.toolStripTextBox1.Text = str;
-			this.Invalidate(true);
+		}
+		
+		private void ShowPages () {
+			if (this.pageNumber < this.pages.Count) {
+				SinglePage sp = pages[this.pageNumber];
+				if (this.bitmap != null) {
+					this.bitmap.Dispose();
+				}
+				this.bitmap = this.BuildBitmap(sp);				
+				this.Invalidate(true);
+				
+			} 
+			this.UpdateToolStrip();
 		}
 		
 		
@@ -160,22 +162,40 @@ namespace SharpReportCore.ReportViewer
 					this.zoom = (float)1.0;
 					break;
 			}
-
+	
 			this.AdjustDrawArea();
 		}
-		void ToolStripTextBox1Click(object sender, System.EventArgs e)
-		{
-			MessageBox.Show ("TextBox Chlicked");
+		
+		
+		private void CheckEnable () {
+			if (this.pageNumber < this.pages.Count -1) {
+				this.ForwardButton.Enabled = true;
+			} else {
+				this.ForwardButton.Enabled = false;
+			}
+			if ((this.pageNumber > 0) ) {
+				this.BackButton.Enabled = true;
+			} else {
+				this.BackButton.Enabled = false;
+			}
+//			this.UpdateToolStrip();
 		}
 		
-		void BackButton(object sender, System.EventArgs e)
-		{
-			MessageBox.Show ("BackButton not implemented");
+		void BackButtonClick(object sender, System.EventArgs e){
+			CheckEnable();
+			if (this.pageNumber > 0) {
+				this.pageNumber --;
+				CheckEnable();
+				this.ShowPages();
+			}
 		}
 		
-		void ForwardButton(object sender, System.EventArgs e)
-		{
-			MessageBox.Show ("´Forward not implemented");
+		void ForwardButtonClick(object sender, System.EventArgs e){
+			if (this.pageNumber < this.pages.Count) {
+				this.pageNumber ++;
+				CheckEnable();
+				this.ShowPages();
+			} 
 		}
 		
 		void PrintButton(object sender, System.EventArgs e)
@@ -195,8 +215,11 @@ namespace SharpReportCore.ReportViewer
 		}
 		public void SetPages (PagesCollection pages) {
 			this.pages = pages;
+			this.pageNumber = 0;
+			this.CheckEnable();
 			this.ShowPages();
 		}
+		
 		public PagesCollection Pages {
 			get {
 				return this.pages;

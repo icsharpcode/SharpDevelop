@@ -36,16 +36,8 @@ namespace SharpReportCore{
 		public RowItem(string tableName){
 			this.tableName = tableName;
 			this.padding = new Padding(5);
-//			this.Items.Added += OnAdded;
 		}
 		
-		/*
-		void OnAdded (object sender, CollectionItemEventArgs<IItemRenderer> e){			
-			System.Console.WriteLine("");
-			System.Console.WriteLine("RowItem:OnAdded did we use this function???");
-		}
-		*/
-		#region overrides
 		
 		#region IExportColumnBuilder  implementation
 		
@@ -68,6 +60,11 @@ namespace SharpReportCore{
 		}
 		
 		#endregion
+		
+		
+		#region overrides
+		
+		
 		
 		protected RectangleF PrepareRectangle () {
 			SizeF measureSize = new SizeF ((SizeF)this.Size);

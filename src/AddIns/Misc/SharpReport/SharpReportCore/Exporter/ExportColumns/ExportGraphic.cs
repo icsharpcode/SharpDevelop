@@ -20,18 +20,27 @@ namespace SharpReportCore.Exporters
 		public ExportGraphic():base()
 		{
 		}
+		
 		public ExportGraphic (BaseStyleDecorator itemStyle,bool isContainer):base(itemStyle,isContainer){
 			
 		}
-		public void DrawGraphic (Graphics graphics) {
+		
+		public override void DrawItem(Graphics graphics){
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
 			}
-			GraphicStyleDecorator style = (GraphicStyleDecorator) base.StyleDecorator;
-			style.Shape.DrawShape(graphics,
-			                     new BaseLine (style.ForeColor,style.DashStyle,style.Thickness),
-			                 style.DisplayRectangle);
+			base.DrawItem(graphics);
+			
+			GraphicStyleDecorator style = base.StyleDecorator as GraphicStyleDecorator;
+			if (style != null) {
+				base.FillShape(graphics,style.Shape);
+				style.Shape.DrawShape(graphics,
+				                      new BaseLine (style.ForeColor,style.DashStyle,style.Thickness),
+				                      style.DisplayRectangle);
+			}
 		}
+		
+	
 		
 		public new GraphicStyleDecorator StyleDecorator {
 			get{

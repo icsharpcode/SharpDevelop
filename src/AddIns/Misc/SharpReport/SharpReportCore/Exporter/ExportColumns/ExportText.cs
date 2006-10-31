@@ -8,6 +8,7 @@
  */
 
 using System;
+using System.Drawing;
 
 namespace SharpReportCore.Exporters {
 	/// <summary>
@@ -15,14 +16,32 @@ namespace SharpReportCore.Exporters {
 	/// </summary>
 	public class ExportText :BaseExportColumn{
 		string text;
-
+		
+		#region Constructors
+		
 		public ExportText():base(){
 		}
 		
-
 		public ExportText (BaseStyleDecorator itemStyle,bool isContainer):base(itemStyle,isContainer){
 			
 		}
+		
+		#endregion
+		
+		#region overrides
+		
+		public override void DrawItem(Graphics graphics){
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
+			base.DrawItem(graphics);
+			base.Decorate(graphics);
+			
+			TextDrawer.PaintString(graphics,
+			                       this.text,this.StyleDecorator);
+		}
+		
+		#endregion
 		
 		public string Text {
 			get {

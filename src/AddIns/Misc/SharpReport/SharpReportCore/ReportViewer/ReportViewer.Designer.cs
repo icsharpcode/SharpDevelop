@@ -40,14 +40,13 @@ namespace SharpReportCore.ReportViewer
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+			this.BackButton = new System.Windows.Forms.ToolStripButton();
+			this.ForwardButton = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
 			this.printToolStripButton = new System.Windows.Forms.ToolStripButton();
-			this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
 			this.panel1.SuspendLayout();
 			this.toolStrip1.SuspendLayout();
 			this.SuspendLayout();
@@ -80,14 +79,13 @@ namespace SharpReportCore.ReportViewer
 			// toolStrip1
 			// 
 			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.toolStripButton1,
-									this.toolStripButton2,
+									this.BackButton,
+									this.ForwardButton,
 									this.toolStripSeparator1,
 									this.toolStripTextBox1,
 									this.toolStripSeparator2,
 									this.toolStripComboBox1,
-									this.printToolStripButton,
-									this.newToolStripButton});
+									this.printToolStripButton});
 			this.toolStrip1.Location = new System.Drawing.Point(5, 5);
 			this.toolStrip1.Margin = new System.Windows.Forms.Padding(0, 0, 0, 3);
 			this.toolStrip1.Name = "toolStrip1";
@@ -96,25 +94,25 @@ namespace SharpReportCore.ReportViewer
 			this.toolStrip1.TabIndex = 4;
 			this.toolStrip1.Text = "toolStrip1";
 			// 
-			// toolStripButton1
+			// BackButton
 			// 
-			this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton1.Name = "toolStripButton1";
-			this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButton1.Text = "toolStripButton1";
-			this.toolStripButton1.Click += new System.EventHandler(this.BackButton);
+			this.BackButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.BackButton.Image = ((System.Drawing.Image)(resources.GetObject("BackButton.Image")));
+			this.BackButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.BackButton.Name = "BackButton";
+			this.BackButton.Size = new System.Drawing.Size(23, 22);
+			this.BackButton.Text = "&Back";
+			this.BackButton.Click += new System.EventHandler(this.BackButtonClick);
 			// 
-			// toolStripButton2
+			// ForwardButton
 			// 
-			this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
-			this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton2.Name = "toolStripButton2";
-			this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButton2.Text = "toolStripButton2";
-			this.toolStripButton2.Click += new System.EventHandler(this.ForwardButton);
+			this.ForwardButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.ForwardButton.Image = ((System.Drawing.Image)(resources.GetObject("ForwardButton.Image")));
+			this.ForwardButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.ForwardButton.Name = "ForwardButton";
+			this.ForwardButton.Size = new System.Drawing.Size(23, 22);
+			this.ForwardButton.Text = "&Forward";
+			this.ForwardButton.Click += new System.EventHandler(this.ForwardButtonClick);
 			// 
 			// toolStripSeparator1
 			// 
@@ -135,6 +133,7 @@ namespace SharpReportCore.ReportViewer
 			// 
 			this.toolStripComboBox1.Name = "toolStripComboBox1";
 			this.toolStripComboBox1.Size = new System.Drawing.Size(80, 25);
+			this.toolStripComboBox1.ToolTipText = "Zoom";
 			this.toolStripComboBox1.SelectedIndexChanged += new System.EventHandler(this.ToolStripComboBox1SelectedIndexChanged);
 			// 
 			// printToolStripButton
@@ -146,14 +145,6 @@ namespace SharpReportCore.ReportViewer
 			this.printToolStripButton.Size = new System.Drawing.Size(23, 22);
 			this.printToolStripButton.Text = "&Print";
 			this.printToolStripButton.Click += new System.EventHandler(this.PrintButton);
-			// 
-			// newToolStripButton
-			// 
-			this.newToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.newToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.newToolStripButton.Name = "newToolStripButton";
-			this.newToolStripButton.Size = new System.Drawing.Size(23, 22);
-			this.newToolStripButton.Text = "&New";
 			// 
 			// PreviewControl
 			// 
@@ -169,15 +160,14 @@ namespace SharpReportCore.ReportViewer
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
-		private System.Windows.Forms.ToolStripButton toolStripButton2;
+		private System.Windows.Forms.ToolStripButton ForwardButton;
 		private System.Windows.Forms.ToolStripButton printToolStripButton;
-		private System.Windows.Forms.ToolStripButton newToolStripButton;
 		private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.ToolStripTextBox toolStripTextBox1;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private System.Windows.Forms.ToolStripButton toolStripButton1;
+		private System.Windows.Forms.ToolStripButton BackButton;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.ToolStrip toolStrip1;
 		
@@ -189,5 +179,7 @@ namespace SharpReportCore.ReportViewer
 		{
 			
 		}
+		
+		
 	}
 }

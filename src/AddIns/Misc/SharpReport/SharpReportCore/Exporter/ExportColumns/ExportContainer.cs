@@ -19,13 +19,25 @@ namespace SharpReportCore.Exporters
 
 		ExporterCollection<BaseExportColumn> items;
 		
+		#region Constructor
+		
 		public ExportContainer():base(){
 			base.IsContainer = true;
 		}
 		
 		public ExportContainer (BaseStyleDecorator itemStyle):base(itemStyle,true){
-			
 		}
+		
+		#endregion
+		
+		#region overrides
+		
+		public override void DrawItem(System.Drawing.Graphics graphics){
+			base.DrawItem(graphics);
+			base.Decorate(graphics);
+		}
+		
+		#endregion
 		
 		public void AddLineItem (BaseExportColumn item) {
 			if (item == null) {

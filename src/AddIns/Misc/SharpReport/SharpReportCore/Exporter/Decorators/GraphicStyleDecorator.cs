@@ -33,6 +33,7 @@ namespace SharpReportCore.Exporters
 			get { return shape; }
 			set { shape = value; }
 		}
+		
 		public int Thickness {
 			get { return thickness; }
 			set { thickness = value; }
@@ -42,7 +43,5 @@ namespace SharpReportCore.Exporters
 			get { return dashStyle; }
 			set { dashStyle = value; }
 		}
-		
-		
 	}
 }
