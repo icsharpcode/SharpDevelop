@@ -24,20 +24,30 @@ namespace ICSharpCode.SharpDevelop.Sda
 		string propertiesName;
 		string configDirectory;
 		string dataDirectory;
+		string resourceAssemblyName = "SharpDevelop";
 		internal List<string> addInDirectories = new List<string>();
 		internal List<string> addInFiles = new List<string>();
+		
+		/// <summary>
+		/// Gets/Sets the name of the assembly to load the BitmapResources
+		/// and English StringResources from.
+		/// </summary>
+		public string ResourceAssemblyName {
+			get { return resourceAssemblyName; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException("value");
+				resourceAssemblyName = value;
+			}
+		}
 		
 		/// <summary>
 		/// Gets/Sets whether the SharpDevelop exception box should be used for
 		/// unhandled exceptions. The default is true.
 		/// </summary>
 		public bool UseSharpDevelopErrorHandler {
-			get {
-				return useSharpDevelopErrorHandler;
-			}
-			set {
-				useSharpDevelopErrorHandler = value;
-			}
+			get { return useSharpDevelopErrorHandler; }
+			set { useSharpDevelopErrorHandler = value; }
 		}
 		
 		/// <summary>
@@ -47,12 +57,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// The default value is true.
 		/// </summary>
 		public bool AllowAddInConfigurationAndExternalAddIns {
-			get {
-				return allowAddInConfigurationAndExternalAddIns;
-			}
-			set {
-				allowAddInConfigurationAndExternalAddIns = value;
-			}
+			get { return allowAddInConfigurationAndExternalAddIns; }
+			set { allowAddInConfigurationAndExternalAddIns = value; }
 		}
 		
 		/// <summary>
@@ -60,12 +66,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// The default is false.
 		/// </summary>
 		public bool AllowUserAddIns {
-			get {
-				return allowUserAddIns;
-			}
-			set {
-				allowUserAddIns = value;
-			}
+			get { return allowUserAddIns; }
+			set { allowUserAddIns = value; }
 		}
 		
 		/// <summary>
@@ -73,9 +75,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// SharpDevelop windows. The default is "SharpDevelop".
 		/// </summary>
 		public string ApplicationName {
-			get {
-				return applicationName;
-			}
+			get { return applicationName; }
 			set {
 				if (value == null)
 					throw new ArgumentNullException("value");
@@ -88,12 +88,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// Use null (default) to use the base directory of the SharpDevelop AppDomain.
 		/// </summary>
 		public string ApplicationRootPath {
-			get {
-				return applicationRootPath;
-			}
-			set {
-				applicationRootPath = value;
-			}
+			get { return applicationRootPath; }
+			set { applicationRootPath = value; }
 		}
 		
 		/// <summary>
@@ -102,12 +98,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// Use null (default) to use "ApplicationData\ApplicationName"
 		/// </summary>
 		public string ConfigDirectory {
-			get {
-				return configDirectory;
-			}
-			set {
-				configDirectory = value;
-			}
+			get { return configDirectory; }
+			set { configDirectory = value; }
 		}
 		
 		/// <summary>
@@ -115,12 +107,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// Use null (default) to use the default path "ApplicationRootPath\data".
 		/// </summary>
 		public string DataDirectory {
-			get {
-				return dataDirectory;
-			}
-			set {
-				dataDirectory = value;
-			}
+			get { return dataDirectory; }
+			set { dataDirectory = value; }
 		}
 		
 		/// <summary>
@@ -128,12 +116,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// Use null (default) to use the default name.
 		/// </summary>
 		public string PropertiesName {
-			get {
-				return propertiesName;
-			}
-			set {
-				propertiesName = value;
-			}
+			get { return propertiesName; }
+			set { propertiesName = value; }
 		}
 		
 		/// <summary>

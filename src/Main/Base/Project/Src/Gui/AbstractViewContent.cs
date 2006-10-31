@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public virtual string TitleName {
 			get {
-				return titleName;
+				return titleName ?? Path.GetFileName(untitledName);
 			}
 			set {
 				titleName = value;

@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			}
 			
 			startup.StartCoreServices();
-			Assembly exe = Assembly.Load("SharpDevelop");
+			Assembly exe = Assembly.Load(properties.ResourceAssemblyName);
 			ResourceService.RegisterNeutralStrings(new ResourceManager("Resources.StringResources", exe));
 			ResourceService.RegisterNeutralImages(new ResourceManager("Resources.BitmapResources", exe));
 			

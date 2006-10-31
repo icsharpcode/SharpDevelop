@@ -21,7 +21,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static ProjectBrowserPad Instance {
 			get {
 				if (instance == null) {
-					WorkbenchSingleton.Workbench.GetPad(typeof(ProjectBrowserPad)).CreatePad();
+					PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(ProjectBrowserPad));
+					if (pad != null) {
+						pad.CreatePad();
+					} else {
+						// Pad is not used (stripped-down SD version, e.g. SharpReport)
+						// Create dummy pad to prevent NullReferenceExceptions
+						instance = new ProjectBrowserPad();
+					}
 				}
 				return instance;
 			}

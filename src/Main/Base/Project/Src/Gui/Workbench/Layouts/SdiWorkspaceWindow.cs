@@ -237,12 +237,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return;
 			}
 			SetToolTipText();
-			string newTitle;
-			if (content.TitleName == null) {
-				newTitle = Path.GetFileName(content.UntitledName);
-			} else {
-				newTitle = content.TitleName;
-			}
+			string newTitle = content.TitleName;
 			
 			if (content.IsDirty) {
 				newTitle += "*";
