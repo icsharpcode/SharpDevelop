@@ -996,18 +996,18 @@
 									</Directory>
 									<Directory Id="SharpReportFolder" LongName="SharpReport" Name="Report">
 										<Component Guid="FCC330AE-1BA6-49AB-8D75-6B056EEBD00D" Id="SharpReportCoreDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\SharpReportCore.dll" Name="SHARPR_1.DLL" Id="SharpReportCore.dll" LongName="SharpReportCore.dll" Assembly=".net" AssemblyApplication="SharpReportCore.dll" AssemblyManifest="SharpReportCore.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\SharpReport\SharpReportCore.dll" Name="SHARPR_1.DLL" Id="SharpReportCore.dll" LongName="SharpReportCore.dll" Assembly=".net" AssemblyApplication="SharpReportCore.dll" AssemblyManifest="SharpReportCore.dll" KeyPath="yes" />
 										</Component>
 										<Component Id="ReportGeneratorDll" Guid="4A37F852-2BBC-40C5-AF32-6DAB8DB5075A" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\ReportGenerator.dll" Name="REPORT_1.DLL" Id="ReportGenerator.dll" LongName="ReportGenerator.dll" Assembly=".net" AssemblyApplication="ReportGenerator.dll" AssemblyManifest="ReportGenerator.dll" KeyPath="yes" />
-											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\ReportGenerator.addin" Name="REPORT_1.ADD" Id="ReportGenerator.addin" LongName="ReportGenerator.addin" />
+											<File Source="..\..\AddIns\SharpReport\ReportGenerator.dll" Name="REPORT_1.DLL" Id="ReportGenerator.dll" LongName="ReportGenerator.dll" Assembly=".net" AssemblyApplication="ReportGenerator.dll" AssemblyManifest="ReportGenerator.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\SharpReport\ReportGenerator.addin" Name="REPORT_1.ADD" Id="ReportGenerator.addin" LongName="ReportGenerator.addin" />
 										</Component>
 										<Component Id="SharpReportDll" Guid="00331644-0A6F-4469-AEE5-2FCEED4F1651" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\SharpReport.dll" Name="SHARPR_2.DLL" Id="SharpReport.dll" LongName="SharpReport.dll" Assembly=".net" AssemblyApplication="SharpReport.dll" AssemblyManifest="SharpReport.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\SharpReport\SharpReport.dll" Name="SHARPR_2.DLL" Id="SharpReport.dll" LongName="SharpReport.dll" Assembly=".net" AssemblyApplication="SharpReport.dll" AssemblyManifest="SharpReport.dll" KeyPath="yes" />
 										</Component>
 										<Component Id="SharpReportAddInDll" Guid="9EC747D8-EA22-4C6B-8694-D7FA8029AE46" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\SharpReportAddin.addin" Name="SHARPR_1.ADD" Id="SharpReportAddin.addin" LongName="SharpReportAddin.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\SharpReport\SharpReportAddin.dll" Name="SHARPR_3.DLL" Id="SharpReportAddin.dll" LongName="SharpReportAddin.dll" Assembly=".net" AssemblyApplication="SharpReportAddin.dll" AssemblyManifest="SharpReportAddin.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\SharpReport\SharpReportAddin.addin" Name="SHARPR_1.ADD" Id="SharpReportAddin.addin" LongName="SharpReportAddin.addin" />
+											<File Source="..\..\AddIns\SharpReport\SharpReportAddin.dll" Name="SHARPR_3.DLL" Id="SharpReportAddin.dll" LongName="SharpReportAddin.dll" Assembly=".net" AssemblyApplication="SharpReportAddin.dll" AssemblyManifest="SharpReportAddin.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="StartPageAddInFolder" LongName="StartPage" Name="StartPg">
