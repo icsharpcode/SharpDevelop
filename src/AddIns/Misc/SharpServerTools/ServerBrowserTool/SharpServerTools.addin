@@ -11,6 +11,7 @@
 		<Import assembly = "SharpDbTools.dll"/>
 		<Import assembly = "ServerBrowserTool.dll"/>
 		<Import assembly="OracleDbToolsProvider.dll"/>
+		<Import assembly="SqlServerDbToolsProvider.dll"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
@@ -25,6 +26,11 @@
 	<Path name = "/SharpServerTools/SharpDbTools/FormsArtefactFactory">
 		<Class id       = "System.Data.OracleClient"
 		     class    = "SharpDbTools.Oracle.Forms.OracleFormsArtefactFactory"/>
+	</Path>
+
+	<Path name = "/SharpServerTools/SharpDbTools/FormsArtefactFactory">
+		<Class id       = "System.Data.SqlClient"
+		     class    = "SharpDbTools.SQLServer.Forms.SQLServerFormsArtefactFactory"/>
 	</Path>
 
 	<Path name = "/SharpServerTools/ServerTool">

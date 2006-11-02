@@ -130,6 +130,9 @@ namespace SharpDbTools.Data
 	
 				connection.Open();
 				DataTable schemaInfo = connection.GetSchema();
+				if (schemaInfo != null) {
+					LoggingService.Debug("retrieved schema info with " + schemaInfo.Rows.Count + " rows");
+				}
 				
 				// clear the DbModelInfo prior to refreshing from the connection
 				modelInfo.ClearMetaData();
@@ -140,9 +143,12 @@ namespace SharpDbTools.Data
 				
 				foreach (DataRow collectionRow in schemaInfo.Rows) {
 					String collectionName = (string)collectionRow[0];
+					LoggingService.Debug("loading metadata for collection: " + collectionName);
 					DataTable nextMetaData = connection.GetSchema(collectionName);
 					modelInfo.Merge(nextMetaData);
 				}
+				LoggingService.Debug("completed load of metadata, committing changes");
+				modelInfo.AcceptChanges();
 				return modelInfo;
 			}
 			catch(Exception e) {
