@@ -150,13 +150,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 						}
 					}
 					if (mscorlibContent == null) {
-						// TODO: switch back to reflection for mscorlib
 						// We're using Cecil now for everything to find bugs in CecilReader faster
-						mscorlibContent = CecilReader.LoadAssembly(MscorlibAssembly.Location, this);
-						//mscorlibContent = new ReflectionProjectContent(MscorlibAssembly);
+						//mscorlibContent = CecilReader.LoadAssembly(MscorlibAssembly.Location, this);
+						
+						// After SD 2.1 Beta 2, we're back to Reflection
+						mscorlibContent = new ReflectionProjectContent(MscorlibAssembly, this);
 						if (time != 0) {
-							LoggingService.Debug("Loaded mscorlib with Cecil in " + (Environment.TickCount - time) + " ms");
-							//LoggingService.Debug("Loaded mscorlib with Reflection in " + (Environment.TickCount - time) + " ms");
+							//LoggingService.Debug("Loaded mscorlib with Cecil in " + (Environment.TickCount - time) + " ms");
+							LoggingService.Debug("Loaded mscorlib with Reflection in " + (Environment.TickCount - time) + " ms");
 						}
 						if (persistence != null) {
 							persistence.SaveProjectContent(mscorlibContent);
@@ -308,22 +309,33 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		static Assembly GetDefaultAssembly(string shortName)
 		{
-			return null; // TODO: remove this line when CecilReader was tested enough and we can use Reflection again for the BCL
-			
-			// These assemblies are already loaded by SharpDevelop, so we don't need to load
-			// them in a separate AppDomain.
+			// These assemblies are already loaded by SharpDevelop, so we
+			// don't need to load them in a separate AppDomain/with Cecil.
 			switch (shortName) {
 				case "System": // System != mscorlib !!!
 					return SystemAssembly;
+				case "System.Xml":
+				case "System.XML":
+					return typeof(XmlReader).Assembly;
 				case "System.Data":
 				case "System.Design":
 				case "System.Drawing":
 				case "System.Web.Services":
 				case "System.Windows.Forms":
-					return Assembly.Load(shortName);
-				case "System.Xml":
-				case "System.XML":
-					return typeof(XmlReader).Assembly;
+				case "System.Web":
+				case "System.ServiceProcess":
+				case "System.Security":
+				case "System.Runtime.Remoting":
+				case "System.Messaging":
+				case "System.Management":
+				case "System.Drawing.Design":
+				case "System.Deployment":
+				case "System.Configuration":
+				case "Microsoft.VisualBasic":
+					// Is not necessarily loaded by Dom-using application, but
+					// is a default .NET assembly and should be loaded with
+					// Reflection.
+					return ReflectionLoader.ReflectionLoadGacAssembly(shortName, false);
 				default:
 					return null;
 			}

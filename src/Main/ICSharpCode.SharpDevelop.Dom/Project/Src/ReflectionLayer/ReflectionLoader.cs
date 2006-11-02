@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return "ReflectionLoader in " + AppDomain.CurrentDomain.FriendlyName;
 		}
 		
-		public Assembly ReflectionLoadGacAssembly(string partialName, bool reflectionOnly)
+		public static Assembly ReflectionLoadGacAssembly(string partialName, bool reflectionOnly)
 		{
 			if (reflectionOnly) {
 				AssemblyName name = GacInterop.FindBestMatchingAssemblyName(partialName);

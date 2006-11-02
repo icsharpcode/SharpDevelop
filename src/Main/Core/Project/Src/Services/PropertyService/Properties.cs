@@ -269,7 +269,7 @@ namespace ICSharpCode.Core
 				TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
 				try {
 					o = c.ConvertFromInvariantString(o.ToString());
-				} catch (NotSupportedException ex) {
+				} catch (Exception ex) {
 					MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
 					o = defaultValue;
 				}
@@ -279,16 +279,25 @@ namespace ICSharpCode.Core
 				Type elementType = typeof(T).GetElementType();
 				Array arr = System.Array.CreateInstance(elementType, list.Count);
 				TypeConverter c = TypeDescriptor.GetConverter(elementType);
-				for (int i = 0; i < arr.Length; ++i) {
-					if (list[i] != null) {
-						arr.SetValue(c.ConvertFromInvariantString(list[i].ToString()), i);
+				try {
+					for (int i = 0; i < arr.Length; ++i) {
+						if (list[i] != null) {
+							arr.SetValue(c.ConvertFromInvariantString(list[i].ToString()), i);
+						}
 					}
+					o = arr;
+				} catch (Exception ex) {
+					MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
+					o = defaultValue;
 				}
-				o = arr;
 				properties[property] = o; // store for future look up
 			} else if (!(o is string) && typeof(T) == typeof(string)) {
 				TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
-				o = c.ConvertToInvariantString(o);
+				if (c.CanConvertTo(typeof(string))) {
+					o = c.ConvertToInvariantString(o);
+				} else {
+					o = o.ToString();
+				}
 			}
 			try {
 				return (T)o;
