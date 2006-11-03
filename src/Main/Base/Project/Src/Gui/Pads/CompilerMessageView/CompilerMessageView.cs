@@ -14,6 +14,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -136,7 +137,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SetWordWrap();
 			myPanel.ResumeLayout(false);
 			SetText(messageCategories[selectedCategory], messageCategories[selectedCategory].Text);
+			ProjectService.SolutionLoaded += SolutionLoaded;
 		}
+
+		void SolutionLoaded(object sender, SolutionEventArgs e)
+		{
+			foreach (MessageViewCategory category in messageCategories)
+			{
+				ClearText(category);
+			}
+		}
+		
 		
 		void SetWordWrap()
 		{
