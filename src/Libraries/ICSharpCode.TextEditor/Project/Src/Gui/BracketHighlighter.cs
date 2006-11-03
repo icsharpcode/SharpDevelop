@@ -79,9 +79,9 @@ namespace ICSharpCode.TextEditor
 			}
 			char word = document.GetCharAt(Math.Max(0, Math.Min(document.TextLength - 1, searchOffset)));
 			
-			Point endP = document.OffsetToPosition(offset);
+			Point endP = document.OffsetToPosition(searchOffset);
 			if (word == opentag) {
-				if (offset < document.TextLength) {
+				if (searchOffset < document.TextLength) {
 					int bracketOffset = TextUtilities.SearchBracketForward(document, searchOffset + 1, opentag, closingtag);
 					if (bracketOffset >= 0) {
 						Point p = document.OffsetToPosition(bracketOffset);
@@ -89,7 +89,7 @@ namespace ICSharpCode.TextEditor
 					}
 				}
 			} else if (word == closingtag) {
-				if (offset > 0) {
+				if (searchOffset > 0) {
 					int bracketOffset = TextUtilities.SearchBracketBackward(document, searchOffset - 1, opentag, closingtag);
 					if (bracketOffset >= 0) {
 						Point p = document.OffsetToPosition(bracketOffset);
