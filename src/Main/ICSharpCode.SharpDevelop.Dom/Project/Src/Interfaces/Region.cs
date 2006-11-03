@@ -85,6 +85,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </remarks>
 		public bool IsInside(int row, int column)
 		{
+			if (IsEmpty)
+				return false;
 			return row >= BeginLine &&
 				(row <= EndLine   || EndLine == -1) &&
 				(row != BeginLine || column >= BeginColumn) &&
