@@ -201,6 +201,7 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\Document\HighlightingStrategy\SpanStack.cs" />
+    <EmbeddedResource Include="Resources\Patch-Mode.xshd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

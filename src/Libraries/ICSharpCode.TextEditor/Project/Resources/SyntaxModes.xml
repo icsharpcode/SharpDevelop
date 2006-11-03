@@ -35,6 +35,10 @@
 	      name       = "JavaScript"
 	      extensions = ".js"/>
 	
+	<Mode file       = "Patch-Mode.xshd"
+	      name       = "Patch"
+	      extensions = ".patch;.diff"/>
+	
 	<Mode file       = "PHP-Mode.xshd"
 	      name       = "PHP"
 	      extensions = ".php"/>

@@ -59,11 +59,13 @@ namespace ICSharpCode.Svn
 			diffTabPage.Controls.Add(diffPanel);
 			mainTab.TabPages.Add(diffTabPage);
 			
+			/*
 			TabPage conflictTabPage = new TabPage("Conflicts");
 			Label todoLabel = new Label();
 			todoLabel.Text = "TODO :)";
 			conflictTabPage.Controls.Add(todoLabel);
 			mainTab.TabPages.Add(conflictTabPage);
+			*/
 			
 			Controls.Add(mainTab);
 			
