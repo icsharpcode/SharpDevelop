@@ -13,11 +13,14 @@ using System.Reflection;
 
 namespace ICSharpCode.SettingsEditor
 {
-	public class ProxyPropertyDescriptor : PropertyDescriptor
+	/// <summary>
+	/// Forwards calls to the ProxyPropertyDescriptor to the base descriptor.
+	/// </summary>
+	public abstract class ProxyPropertyDescriptor : PropertyDescriptor
 	{
 		PropertyDescriptor baseDescriptor;
 		
-		public ProxyPropertyDescriptor(PropertyDescriptor baseDescriptor)
+		protected ProxyPropertyDescriptor(PropertyDescriptor baseDescriptor)
 			: base(baseDescriptor)
 		{
 			this.baseDescriptor = baseDescriptor;

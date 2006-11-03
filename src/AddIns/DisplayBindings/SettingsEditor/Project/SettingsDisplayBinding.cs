@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SettingsEditor
 {
-	public class SettingsDisplayBinding : IDisplayBinding
+	public sealed class SettingsDisplayBinding : IDisplayBinding
 	{
 		public bool CanCreateContentForFile(string fileName)
 		{

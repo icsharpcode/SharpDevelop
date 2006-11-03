@@ -12,14 +12,16 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SettingsEditor
 {
-	/// <summary>
-	/// Description of SettingsView.
-	/// </summary>
-	public partial class SettingsView
+	public partial class SettingsView : UserControl
 	{
+		public event EventHandler SelectionChanged;
+		public event EventHandler SettingsChanged;
+		
 		public SettingsView()
 		{
 			//
@@ -27,35 +29,23 @@ namespace ICSharpCode.SettingsEditor
 			//
 			InitializeComponent();
 			
-			//
-			// TODO: Add constructor code after the InitializeComponent() call.
-			//
+			ScopeColumn.DataSource = Enum.GetValues(typeof(SettingScope));
 		}
 		
-		void GridCellContentClick(object sender, System.Windows.Forms.DataGridViewCellEventArgs e)
+		public void ShowEntries(IList<SettingsEntry> list)
 		{
-			
-		}
-		
-		public void ShowEntries(List<SettingsEntry> list)
-		{
-			grid.AutoGenerateColumns = false;
-			grid.DataSource = list;
-			if (grid.Columns.Count == 0) {
-				grid.Columns.Add("Name", "Name");
-				grid.Columns[0].DataPropertyName = "Name";
-				grid.Columns.Add("Value", "Value");
-				grid.Columns[1].DataPropertyName = "Value";
-				grid.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-				grid.Columns[1].MinimumWidth = 75;
+			foreach (SettingsEntry entry in list) {
+				bindingSource.Add(entry);
 			}
-			grid.AllowUserToAddRows = true;
-			/*foreach (SettingsEntry e in list) {
-				grid.Rows.Add(e.Name,
-				              e.SerializedSettingType,
-				              e.Scope,
-				              e.Value);
-			}*/
+			bindingSource.ListChanged += delegate(object sender, ListChangedEventArgs e) {
+				if (e.NewIndex >= 0 && e.NewIndex < bindingSource.Count) {
+					if (((SettingsEntry)bindingSource[e.NewIndex]).Name != null) {
+						if (SettingsChanged != null) {
+							SettingsChanged(this, e);
+						}
+					}
+				}
+			};
 		}
 		
 		void GridSelectionChanged(object sender, EventArgs e)
@@ -64,25 +54,49 @@ namespace ICSharpCode.SettingsEditor
 				SelectionChanged(this, e);
 		}
 		
-		public List<SettingsEntry> GetSelectedEntries()
+		public IEnumerable<SettingsEntry> GetAllEntries()
 		{
 			List<SettingsEntry> l = new List<SettingsEntry>();
+			foreach (SettingsEntry entry in bindingSource) {
+				if (!string.IsNullOrEmpty(entry.Name)) {
+					l.Add(entry);
+				}
+			}
+			l.Sort(delegate(SettingsEntry a, SettingsEntry b) {
+			       	return a.Name.CompareTo(b.Name);
+			       });
+			return l;
+		}
+		
+		public List<SettingsEntryPropertyGridWrapper> GetSelectedEntriesForPropertyGrid()
+		{
+			List<SettingsEntryPropertyGridWrapper> l
+				= new List<SettingsEntryPropertyGridWrapper>();
 			if (grid.SelectedRows.Count > 0) {
 				foreach (DataGridViewRow row in grid.SelectedRows) {
-					l.Add((SettingsEntry)row.DataBoundItem);
+					if (row.DataBoundItem != null) {
+						l.Add(new SettingsEntryPropertyGridWrapper((SettingsEntry)row.DataBoundItem));
+					}
 				}
 			} else {
 				bool[] rowAdded = new bool[grid.Rows.Count];
 				foreach (DataGridViewCell cell in grid.SelectedCells) {
 					if (rowAdded[cell.RowIndex] == false) {
 						rowAdded[cell.RowIndex] = true;
-						l.Add((SettingsEntry)cell.OwningRow.DataBoundItem);
+						if (cell.OwningRow.DataBoundItem != null) {
+							l.Add(new SettingsEntryPropertyGridWrapper((SettingsEntry)cell.OwningRow.DataBoundItem));
+						}
 					}
 				}
 			}
 			return l;
 		}
 		
-		public event EventHandler SelectionChanged;
+		void BindingSourceAddingNew(object sender, AddingNewEventArgs e)
+		{
+			SettingsEntry entry = new SettingsEntry();
+			entry.Type = typeof(string);
+			e.NewObject = entry;
+		}
 	}
 }

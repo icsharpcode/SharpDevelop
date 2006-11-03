@@ -7,14 +7,15 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 
-using System.Xml;
 using System;
-using System.IO;
 using System.Collections.Generic;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
+using System.IO;
 using System.Windows.Forms;
+using System.Xml;
+using System.Text;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SettingsEditor
 {
@@ -26,7 +27,10 @@ namespace ICSharpCode.SettingsEditor
 		public SettingsViewContent()
 		{
 			view.SelectionChanged += delegate {
-				propertyContainer.SelectedObjects = view.GetSelectedEntries().ToArray();
+				propertyContainer.SelectedObjects = view.GetSelectedEntriesForPropertyGrid().ToArray();
+			};
+			view.SettingsChanged += delegate {
+				IsDirty = true;
 			};
 		}
 		
@@ -40,7 +44,6 @@ namespace ICSharpCode.SettingsEditor
 		{
 			TitleName = Path.GetFileName(filename);
 			FileName = filename;
-			IsDirty = false;
 			
 			try {
 				XmlDocument doc = new XmlDocument();
@@ -56,10 +59,35 @@ namespace ICSharpCode.SettingsEditor
 			} catch (XmlException ex) {
 				MessageService.ShowMessage(ex.Message);
 			}
+			IsDirty = false;
 		}
 		
-		public override void Save()
+		const string XmlNamespace = "http://schemas.microsoft.com/VisualStudio/2004/01/settings";
+		
+		public override void Save(string fileName)
 		{
+			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8)) {
+				writer.Formatting = Formatting.Indented;
+				writer.WriteStartDocument();
+				writer.WriteStartElement("SettingsFile", XmlNamespace);
+				writer.WriteAttributeString("CurrentProfile", "(Default)");
+				
+				writer.WriteStartElement("Profiles");
+				writer.WriteStartElement("Profile");
+				writer.WriteAttributeString("Name", "(Default)");
+				writer.WriteEndElement(); // Profile
+				writer.WriteEndElement(); // Profiles
+				
+				writer.WriteStartElement("Settings");
+				foreach (SettingsEntry e in view.GetAllEntries()) {
+					e.WriteTo(writer);
+				}
+				writer.WriteEndElement(); // Settings
+				
+				writer.WriteEndElement(); // SettingsFile
+				writer.WriteEndDocument();
+			}
+			IsDirty = false;
 		}
 		
 		public PropertyContainer PropertyContainer {

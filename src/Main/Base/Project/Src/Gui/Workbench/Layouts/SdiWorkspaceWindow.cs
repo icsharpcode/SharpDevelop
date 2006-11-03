@@ -81,12 +81,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return viewTabControl.SelectedIndex;
 		}
 		
-		protected override Size DefaultSize {
-			get {
-				return Size.Empty;
-			}
-		}
-		
 		public void SwitchView(int viewNumber)
 		{
 			if (viewTabControl != null) {

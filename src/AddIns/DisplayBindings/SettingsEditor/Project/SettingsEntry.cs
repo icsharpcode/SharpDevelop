@@ -20,10 +20,15 @@ namespace ICSharpCode.SettingsEditor
 		Application, User
 	}
 	
-	public class SettingsEntry : LocalizedObject
+	/// <summary>
+	/// Describes one settings entry. Used for binding to the DataGridView.
+	/// </summary>
+	public sealed class SettingsEntry : INotifyPropertyChanged
 	{
+		public const bool GenerateDefaultValueInCodeDefault = true;
+		
 		string description;
-		bool   generateDefaultValueInCode = true;
+		bool generateDefaultValueInCode = GenerateDefaultValueInCodeDefault;
 		string name;
 		string provider = "";
 		bool roaming;
@@ -39,7 +44,7 @@ namespace ICSharpCode.SettingsEditor
 		{
 			description = element.GetAttribute("Description");
 			if (!bool.TryParse(element.GetAttribute("GenerateDefaultValueInCode"), out generateDefaultValueInCode))
-				generateDefaultValueInCode = true;
+				generateDefaultValueInCode = GenerateDefaultValueInCodeDefault;
 			name = element.GetAttribute("Name");
 			provider = element.GetAttribute("Provider");
 			bool.TryParse(element.GetAttribute("Roaming"), out roaming);
@@ -50,22 +55,61 @@ namespace ICSharpCode.SettingsEditor
 			}
 			type = GetType(element.GetAttribute("Type"));
 			if (type != null && type != typeof(string)) {
-				TypeConverter c = TypeDescriptor.GetConverter(type);
-				SettingsSerializeAs ssa;
-				if (c.CanConvertFrom(typeof(string)) && c.CanConvertTo(typeof(string))) {
-					ssa = SettingsSerializeAs.String;
-				} else {
-					ssa = SettingsSerializeAs.Xml;
-				}
-				SettingsProperty p = new SettingsProperty(name);
-				p.PropertyType = type;
-				p.SerializeAs = ssa;
-				SettingsPropertyValue v = new SettingsPropertyValue(p);
+				SettingsPropertyValue v = GetSettingConverter(type, name);
 				v.SerializedValue = element["Value"].InnerText;
 				this.value = v.PropertyValue;
 			} else {
 				this.value = element["Value"].InnerText;
 			}
+		}
+		
+		static SettingsPropertyValue GetSettingConverter(Type type, string name)
+		{
+			TypeConverter c = TypeDescriptor.GetConverter(type);
+			SettingsSerializeAs ssa;
+			if (c.CanConvertFrom(typeof(string)) && c.CanConvertTo(typeof(string))) {
+				ssa = SettingsSerializeAs.String;
+			} else {
+				ssa = SettingsSerializeAs.Xml;
+			}
+			SettingsProperty p = new SettingsProperty(name);
+			p.PropertyType = type;
+			p.SerializeAs = ssa;
+			return new SettingsPropertyValue(p);
+		}
+		
+		public void WriteTo(XmlWriter writer)
+		{
+			writer.WriteStartElement("Setting");
+			writer.WriteAttributeString("Name", this.Name);
+			writer.WriteAttributeString("Type", this.SerializedSettingType);
+			writer.WriteAttributeString("Scope", this.Scope.ToString());
+			
+			if (!string.IsNullOrEmpty(description)) {
+				writer.WriteAttributeString("Description", description);
+			}
+			if (generateDefaultValueInCode != GenerateDefaultValueInCodeDefault) {
+				writer.WriteAttributeString("GenerateDefaultValueInCode", XmlConvert.ToString(generateDefaultValueInCode));
+			}
+			if (!string.IsNullOrEmpty(provider)) {
+				writer.WriteAttributeString("Provider", provider);
+			}
+			if (scope == SettingScope.User) {
+				writer.WriteAttributeString("Roaming", XmlConvert.ToString(roaming));
+			}
+			
+			writer.WriteStartElement("Value");
+			writer.WriteAttributeString("Profile", "(Default)");
+			if (type != null && type != typeof(string)) {
+				SettingsPropertyValue v = GetSettingConverter(type, name);
+				v.PropertyValue = value;
+				writer.WriteValue(v.SerializedValue);
+			} else {
+				writer.WriteValue((value ?? "").ToString());
+			}
+			writer.WriteEndElement();
+			
+			writer.WriteEndElement(); // Setting
 		}
 		
 		Type GetType(string typeName)
@@ -75,51 +119,63 @@ namespace ICSharpCode.SettingsEditor
 				?? typeof(System.Data.DataRow).Assembly.GetType(typeName, false);
 		}
 		
-		[LocalizedProperty("Description",
-		                   Description="Description of the setting.")]
+		[Browsable(false)]
 		public string Description {
 			get { return description; }
-			set { description = value; }
+			set {
+				description = value;
+				OnPropertyChanged(new PropertyChangedEventArgs("Description"));
+			}
 		}
 		
-		[LocalizedProperty("Generate default value in code",
-		                   Description="Specifies whether the value should be saved as attribute in the generated code.")]
-		[DefaultValue(true)]
+		[Browsable(false)]
 		public bool GenerateDefaultValueInCode {
 			get { return generateDefaultValueInCode; }
-			set { generateDefaultValueInCode = value; }
+			set {
+				generateDefaultValueInCode = value;
+				OnPropertyChanged(new PropertyChangedEventArgs("GenerateDefaultValueInCode"));
+			}
 		}
 		
 		[LocalizedProperty("Name",
 		                   Description="Name of the setting.")]
 		public string Name {
 			get { return name; }
-			set { name = value; }
+			set {
+				if (string.IsNullOrEmpty(value))
+					throw new ArgumentException("The name is invalid.");
+				name = value;
+				OnPropertyChanged(new PropertyChangedEventArgs("Name"));
+			}
 		}
 		
-		[LocalizedProperty("Provider",
-		                   Description="The provider used to manage the setting.")]
+		[Browsable(false)]
 		public string Provider {
 			get { return provider; }
-			set { provider = value; }
+			set {
+				provider = value;
+				OnPropertyChanged(new PropertyChangedEventArgs("Provider"));
+			}
 		}
 		
-		[LocalizedProperty("Roaming",
-		                   Description="Specifies whether changes to the setting are stored in 'Application Data' (Roaming=true) or 'Local Application Data' (Roaming=false)")]
+		[Browsable(false)]
 		public bool Roaming {
 			get { return roaming; }
-			set { roaming = value; }
+			set {
+				roaming = value;
+				OnPropertyChanged(new PropertyChangedEventArgs("Roaming"));
+			}
 		}
 		
-		[LocalizedProperty("Scope",
-		                   Description="Specifies whether the setting is per-application (read-only) or per-user (read/write).")]
 		public SettingScope Scope {
 			get { return scope; }
-			set { scope = value; }
+			set {
+				scope = value;
+				OnPropertyChanged(new PropertyChangedEventArgs("Scope"));
+			}
 		}
 		
-		[LocalizedProperty("SerializedSettingType",
-		                   Description="The type used for the setting in the strongly-typed settings class.")]
+		[Browsable(false)]
 		public string SerializedSettingType {
 			get {
 				if (type != null)
@@ -129,69 +185,34 @@ namespace ICSharpCode.SettingsEditor
 			}
 		}
 		
-		[LocalizedProperty("Value",
-		                   Description="The default value of the setting.")]
 		public object Value {
 			get { return value; }
 			set {
 				if (type == null || type.IsInstanceOfType(value)) {
 					this.value = value;
+					OnPropertyChanged(new PropertyChangedEventArgs("Value"));
 				} else {
 					throw new ArgumentException("Invalid type for property value.");
 				}
 			}
 		}
 		
-		#region Custom property descriptors
-		protected override void FilterProperties(PropertyDescriptorCollection col)
-		{
-			base.FilterProperties(col);
-			PropertyDescriptor oldValue = col["Value"];
-			col.Remove(oldValue);
-			col.Add(new CustomValuePropertyDescriptor(oldValue, type));
-			PropertyDescriptor oldRoaming = col["Roaming"];
-			col.Remove(oldRoaming);
-			col.Add(new RoamingPropertyDescriptor(oldRoaming, this));
-		}
-		
-		class RoamingPropertyDescriptor : ProxyPropertyDescriptor
-		{
-			SettingsEntry entry;
-			
-			public RoamingPropertyDescriptor(PropertyDescriptor baseDescriptor, SettingsEntry entry)
-				: base(baseDescriptor)
-			{
-				this.entry = entry;
-			}
-			
-			public override bool IsReadOnly {
-				get {
-					return entry.Scope == SettingScope.Application; 
-				}
+		[Browsable(false)]
+		public Type Type {
+			get { return type; }
+			set {
+				type = value;
+				OnPropertyChanged(new PropertyChangedEventArgs("Type"));
 			}
 		}
 		
-		class CustomValuePropertyDescriptor : ProxyPropertyDescriptor
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		void OnPropertyChanged(PropertyChangedEventArgs e)
 		{
-			Type newPropertyType;
-			
-			public CustomValuePropertyDescriptor(PropertyDescriptor baseDescriptor, Type newPropertyType)
-				: base(baseDescriptor)
-			{
-				this.newPropertyType = newPropertyType;
-			}
-			
-			public override Type PropertyType {
-				get {
-					return newPropertyType;
-				}
-			}
-			
-			public override object GetEditor(Type editorBaseType)
-			{
-				return TypeDescriptor.GetEditor(newPropertyType, editorBaseType);
+			if (PropertyChanged != null) {
+				PropertyChanged(this, e);
 			}
 		}
-		#endregion
 	}
 }
