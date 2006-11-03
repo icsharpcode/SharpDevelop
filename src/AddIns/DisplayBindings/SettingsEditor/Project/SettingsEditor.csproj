@@ -61,6 +61,8 @@
     </EmbeddedResource>
     <Compile Include="ProxyPropertyDescriptor.cs" />
     <Compile Include="SettingsEntryPropertyGridWrapper.cs" />
+    <Compile Include="ISettingsEntryHost.cs" />
+    <Compile Include="SpecialTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

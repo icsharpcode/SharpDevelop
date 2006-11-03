@@ -394,7 +394,7 @@ namespace ICSharpCode.FormsDesigner
 			viewContent.Document.Insert(offset, CreateEventHandler(edesc, eventMethodName, body, tabs));
 			position = line + GetCursorLineAfterEventHandlerCreation();
 			
-			return false;
+			return true;
 		}
 		
 		protected virtual int GetEventHandlerInsertionLine(IClass c)

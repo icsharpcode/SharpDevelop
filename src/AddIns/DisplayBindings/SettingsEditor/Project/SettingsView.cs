@@ -14,13 +14,44 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.SettingsEditor
 {
-	public partial class SettingsView : UserControl
+	public partial class SettingsView : UserControl, ISettingsEntryHost
 	{
 		public event EventHandler SelectionChanged;
 		public event EventHandler SettingsChanged;
+		
+		static readonly Type[] defaultAvailableTypes = new Type[] {
+			typeof(bool),
+			typeof(byte),
+			typeof(char),
+			typeof(decimal),
+			typeof(double),
+			typeof(float),
+			typeof(int),
+			typeof(long),
+			typeof(sbyte),
+			typeof(short),
+			typeof(string),
+			typeof(System.Collections.Specialized.StringCollection),
+			typeof(System.DateTime),
+			typeof(System.Drawing.Color),
+			typeof(System.Drawing.Font),
+			typeof(System.Drawing.Point),
+			typeof(System.Drawing.Size),
+			typeof(System.Guid),
+			typeof(System.TimeSpan),
+			typeof(uint),
+			typeof(ulong),
+			typeof(ushort)
+		};
+		
+		List<string> typeNames = new List<string>();
+		List<Type> types = new List<Type>();
+		IAmbience ambience;
 		
 		public SettingsView()
 		{
@@ -29,7 +60,19 @@ namespace ICSharpCode.SettingsEditor
 			//
 			InitializeComponent();
 			
+			
+			ambience = AmbienceService.CurrentAmbience;
+			foreach (Type type in defaultAvailableTypes) {
+				types.Add(type);
+				typeNames.Add(ambience.GetIntrinsicTypeName(type.FullName));
+			}
+			foreach (SpecialTypeDescriptor d in SpecialTypeDescriptor.Descriptors) {
+				types.Add(d.type);
+				typeNames.Add(d.name);
+			}
+			
 			ScopeColumn.DataSource = Enum.GetValues(typeof(SettingScope));
+			TypeColumn.DataSource = typeNames;
 		}
 		
 		public void ShowEntries(IList<SettingsEntry> list)
@@ -94,9 +137,37 @@ namespace ICSharpCode.SettingsEditor
 		
 		void BindingSourceAddingNew(object sender, AddingNewEventArgs e)
 		{
-			SettingsEntry entry = new SettingsEntry();
+			SettingsEntry entry = new SettingsEntry(this);
 			entry.Type = typeof(string);
 			e.NewObject = entry;
+		}
+		
+		void GridDataError(object sender, DataGridViewDataErrorEventArgs e)
+		{
+			LoggingService.Debug("Row " + e.RowIndex + ", column " + e.ColumnIndex + ", error " + e.Exception.ToString());
+			if (e.Exception != null) {
+				MessageBox.Show("Error in data entry: " + e.Exception.Message);
+			} else {
+				MessageBox.Show("Error in data entry");
+			}
+		}
+		
+		string ISettingsEntryHost.GetDisplayNameForType(Type type)
+		{
+			foreach (SpecialTypeDescriptor d in SpecialTypeDescriptor.Descriptors) {
+				if (type == d.type)
+					return d.name;
+			}
+			return ambience.GetIntrinsicTypeName(type.FullName);
+		}
+		
+		Type ISettingsEntryHost.GetTypeByDisplayName(string displayName)
+		{
+			for (int i = 0; i < typeNames.Count; i++) {
+				if (typeNames[i] == displayName)
+					return types[i];
+			}
+			return null;
 		}
 	}
 }

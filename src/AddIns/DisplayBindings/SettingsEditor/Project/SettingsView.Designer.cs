@@ -41,6 +41,7 @@ namespace ICSharpCode.SettingsEditor
 			this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
 			this.label1 = new System.Windows.Forms.Label();
 			this.NameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.TypeColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.ScopeColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.ValueColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
@@ -56,6 +57,7 @@ namespace ICSharpCode.SettingsEditor
 			this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
 									this.NameColumn,
+									this.TypeColumn,
 									this.ScopeColumn,
 									this.ValueColumn});
 			this.grid.DataSource = this.bindingSource;
@@ -64,6 +66,7 @@ namespace ICSharpCode.SettingsEditor
 			this.grid.Name = "grid";
 			this.grid.Size = new System.Drawing.Size(480, 321);
 			this.grid.TabIndex = 0;
+			this.grid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.GridDataError);
 			this.grid.SelectionChanged += new System.EventHandler(this.GridSelectionChanged);
 			// 
 			// bindingSource
@@ -84,19 +87,31 @@ namespace ICSharpCode.SettingsEditor
 			// 
 			this.NameColumn.DataPropertyName = "Name";
 			this.NameColumn.HeaderText = "Name";
+			this.NameColumn.MinimumWidth = 50;
 			this.NameColumn.Name = "NameColumn";
 			// 
-			// Scope
+			// TypeColumn
+			// 
+			this.TypeColumn.DataPropertyName = "WrappedSettingType";
+			this.TypeColumn.DropDownWidth = 255;
+			this.TypeColumn.HeaderText = "Type";
+			this.TypeColumn.MinimumWidth = 50;
+			this.TypeColumn.Name = "TypeColumn";
+			// 
+			// ScopeColumn
 			// 
 			this.ScopeColumn.DataPropertyName = "Scope";
+			this.ScopeColumn.DropDownWidth = 80;
 			this.ScopeColumn.HeaderText = "Scope";
+			this.ScopeColumn.MinimumWidth = 30;
 			this.ScopeColumn.Name = "ScopeColumn";
 			// 
 			// ValueColumn
 			// 
 			this.ValueColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.ValueColumn.DataPropertyName = "Value";
+			this.ValueColumn.DataPropertyName = "SerializedValue";
 			this.ValueColumn.HeaderText = "Value";
+			this.ValueColumn.MinimumWidth = 50;
 			this.ValueColumn.Name = "ValueColumn";
 			// 
 			// SettingsView
@@ -112,6 +127,7 @@ namespace ICSharpCode.SettingsEditor
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.DataGridViewComboBoxColumn TypeColumn;
 		private System.Windows.Forms.DataGridViewComboBoxColumn ScopeColumn;
 		private System.Windows.Forms.DataGridViewTextBoxColumn ValueColumn;
 		private System.Windows.Forms.DataGridViewTextBoxColumn NameColumn;

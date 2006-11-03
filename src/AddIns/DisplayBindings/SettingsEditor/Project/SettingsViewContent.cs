@@ -52,7 +52,7 @@ namespace ICSharpCode.SettingsEditor
 				List<SettingsEntry> entries = new List<SettingsEntry>();
 				foreach (XmlNode node in settings.ChildNodes) {
 					if (node is XmlElement) {
-						entries.Add(new SettingsEntry(node as XmlElement));
+						entries.Add(new SettingsEntry(view, node as XmlElement));
 					}
 				}
 				view.ShowEntries(entries);

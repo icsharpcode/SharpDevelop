@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Xml;
 using System.Configuration;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.SettingsEditor
 {
@@ -35,13 +36,28 @@ namespace ICSharpCode.SettingsEditor
 		SettingScope scope = SettingScope.User;
 		Type type;
 		object value;
+		ISettingsEntryHost host;
 		
+		[Obsolete("This constructor is required by the DataGridView, but not used because we " +
+		          "use the BindingSourceAddingNew event. Use the overload specifying a host " +
+		          "argument instead!")]
 		public SettingsEntry()
 		{
+			throw new NotSupportedException();
 		}
 		
-		public SettingsEntry(XmlElement element)
+		public SettingsEntry(ISettingsEntryHost host)
 		{
+			if (host == null)
+				throw new ArgumentNullException("host");
+			this.host = host;
+		}
+		
+		public SettingsEntry(ISettingsEntryHost host, XmlElement element)
+			: this(host)
+		{
+			if (element == null)
+				throw new ArgumentNullException("element");
 			description = element.GetAttribute("Description");
 			if (!bool.TryParse(element.GetAttribute("GenerateDefaultValueInCode"), out generateDefaultValueInCode))
 				generateDefaultValueInCode = GenerateDefaultValueInCodeDefault;
@@ -100,13 +116,7 @@ namespace ICSharpCode.SettingsEditor
 			
 			writer.WriteStartElement("Value");
 			writer.WriteAttributeString("Profile", "(Default)");
-			if (type != null && type != typeof(string)) {
-				SettingsPropertyValue v = GetSettingConverter(type, name);
-				v.PropertyValue = value;
-				writer.WriteValue(v.SerializedValue);
-			} else {
-				writer.WriteValue((value ?? "").ToString());
-			}
+			writer.WriteValue(SerializedValue);
 			writer.WriteEndElement();
 			
 			writer.WriteEndElement(); // Setting
@@ -114,6 +124,11 @@ namespace ICSharpCode.SettingsEditor
 		
 		Type GetType(string typeName)
 		{
+			foreach (SpecialTypeDescriptor d in SpecialTypeDescriptor.Descriptors) {
+				if (string.Equals(typeName, d.name, StringComparison.OrdinalIgnoreCase))
+					return d.type;
+			}
+			
 			return typeof(object).Assembly.GetType(typeName, false)
 				?? typeof(Uri).Assembly.GetType(typeName, false)
 				?? typeof(System.Data.DataRow).Assembly.GetType(typeName, false);
@@ -175,9 +190,85 @@ namespace ICSharpCode.SettingsEditor
 			}
 		}
 		
+		public object Value {
+			get { return this.value; }
+			set {
+				if (type == null || value == null || type.IsInstanceOfType(value)) {
+					this.value = value;
+					cachedSerializedValue = null;
+					OnPropertyChanged(new PropertyChangedEventArgs("Value"));
+					OnPropertyChanged(new PropertyChangedEventArgs("SerializedValue"));
+				} else {
+					throw new ArgumentException("Invalid type for property value.");
+				}
+			}
+		}
+		
+		string cachedSerializedValue;
+		
+		public string SerializedValue {
+			get {
+				if (cachedSerializedValue != null)
+					return cachedSerializedValue;
+				if (type != null && type != typeof(string)) {
+					foreach (SpecialTypeDescriptor d in SpecialTypeDescriptor.Descriptors) {
+						if (type == d.type) {
+							return cachedSerializedValue = d.GetString(value);
+						}
+					}
+					
+					SettingsPropertyValue v = GetSettingConverter(type, name);
+					v.PropertyValue = value;
+					cachedSerializedValue = (v.SerializedValue ?? "").ToString();
+				} else if (value != null) {
+					cachedSerializedValue = value.ToString();
+				} else {
+					cachedSerializedValue = "";
+				}
+				return cachedSerializedValue;
+			}
+			set {
+				if (type != null && type != typeof(string)) {
+					foreach (SpecialTypeDescriptor d in SpecialTypeDescriptor.Descriptors) {
+						if (type == d.type) {
+							this.Value = d.GetValue(value);
+							return;
+						}
+					}
+					
+					SettingsPropertyValue v = GetSettingConverter(type, name);
+					v.SerializedValue = value;
+					this.Value = v.PropertyValue;
+				} else {
+					this.Value = value;
+				}
+			}
+		}
+		
+		public Type Type {
+			get { return type; }
+			set {
+				if (type != value) {
+					string oldValue = this.SerializedValue;
+					this.cachedSerializedValue = null;
+					this.value = null;
+					
+					type = value;
+					OnPropertyChanged(new PropertyChangedEventArgs("Type"));
+					OnPropertyChanged(new PropertyChangedEventArgs("WrappedSettingType"));
+					
+					this.SerializedValue = oldValue;
+				}
+			}
+		}
+		
 		[Browsable(false)]
 		public string SerializedSettingType {
 			get {
+				foreach (SpecialTypeDescriptor d in SpecialTypeDescriptor.Descriptors) {
+					if (type == d.type)
+						return d.name;
+				}
 				if (type != null)
 					return type.FullName;
 				else
@@ -185,24 +276,12 @@ namespace ICSharpCode.SettingsEditor
 			}
 		}
 		
-		public object Value {
-			get { return value; }
-			set {
-				if (type == null || type.IsInstanceOfType(value)) {
-					this.value = value;
-					OnPropertyChanged(new PropertyChangedEventArgs("Value"));
-				} else {
-					throw new ArgumentException("Invalid type for property value.");
-				}
+		public string WrappedSettingType {
+			get {
+				return host.GetDisplayNameForType(type);
 			}
-		}
-		
-		[Browsable(false)]
-		public Type Type {
-			get { return type; }
 			set {
-				type = value;
-				OnPropertyChanged(new PropertyChangedEventArgs("Type"));
+				this.Type = host.GetTypeByDisplayName(value);
 			}
 		}
 		
