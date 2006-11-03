@@ -112,6 +112,10 @@ namespace ICSharpCode.SharpDevelop.Widgets.TreeGrid
 				minimumWidth = Math.Max(minimumWidth, e.ItemWidth);
 			}
 			if (text.Length > 0) {
+				// Prevent GDI exception (forum-12284) when text is very long
+				if (text.Length > short.MaxValue) {
+					text = text.Substring(0, short.MaxValue - 1);
+				}
 				int width = 2 + (int)graphics.MeasureString(text, font, new PointF(0, 0), textFormat).Width;
 				minimumWidth = Math.Max(minimumWidth, width);
 			}

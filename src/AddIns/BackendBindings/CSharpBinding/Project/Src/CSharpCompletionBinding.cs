@@ -324,7 +324,7 @@ namespace CSharpBinding
 		IMember GetCurrentMember(SharpDevelopTextAreaControl editor)
 		{
 			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
-			NRefactoryResolver r = new NRefactoryResolver(ParserService.CurrentProjectContent);
+			NRefactoryResolver r = new NRefactoryResolver(ParserService.CurrentProjectContent, LanguageProperties.CSharp);
 			if (r.Initialize(editor.FileName, caret.Line + 1, caret.Column + 1)) {
 				return r.CallingMember;
 			} else {
@@ -336,7 +336,7 @@ namespace CSharpBinding
 		bool DoCaseCompletion(SharpDevelopTextAreaControl editor)
 		{
 			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
-			NRefactoryResolver r = new NRefactoryResolver(ParserService.CurrentProjectContent);
+			NRefactoryResolver r = new NRefactoryResolver(ParserService.CurrentProjectContent, LanguageProperties.CSharp);
 			if (r.Initialize(editor.FileName, caret.Line + 1, caret.Column + 1)) {
 				AST.INode currentMember = r.ParseCurrentMember(editor.Text);
 				if (currentMember != null) {

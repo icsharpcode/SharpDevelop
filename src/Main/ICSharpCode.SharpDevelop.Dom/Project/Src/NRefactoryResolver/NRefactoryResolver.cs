@@ -82,9 +82,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		public NRefactoryResolver(IProjectContent projectContent)
+		public NRefactoryResolver(IProjectContent projectContent, LanguageProperties languageProperties)
 		{
-			this.languageProperties = projectContent.Language;
+			if (projectContent == null)
+				throw new ArgumentNullException("projectContent");
+			if (languageProperties == null)
+				throw new ArgumentNullException("languageProperties");
+			this.languageProperties = languageProperties;
 			this.projectContent = projectContent;
 			if (languageProperties is LanguageProperties.CSharpProperties) {
 				language = NR.SupportedLanguage.CSharp;
@@ -94,6 +98,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				throw new NotSupportedException("The language " + languageProperties.ToString() + " is not supported in the resolver");
 			}
 		}
+		
+		[Obsolete("Use the IProjectContent, LanguageProperties overload instead to support .cs files inside vb projects or similar.")]
+		public NRefactoryResolver(IProjectContent projectContent)
+			: this(projectContent, projectContent.Language) {}
 		
 		Expression ParseExpression(string expression)
 		{

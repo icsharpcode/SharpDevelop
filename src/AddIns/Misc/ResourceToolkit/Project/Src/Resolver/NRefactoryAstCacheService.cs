@@ -174,7 +174,19 @@ namespace Hornung.ResourceToolkit.Resolver
 				return null;
 			}
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(pc);
+			// HACK: initialize resolver with correct language properties
+			// when file language != project language
+			// see http://community.sharpdevelop.net/forums/thread/12453.aspx
+			
+			// Ideally ParserService should provide a GetResolver overload taking file name and project content
+			// instead of always using the current project content
+			NRefactoryResolver fileResolverWrongProject = ParserService.CreateResolver(fileName) as NRefactoryResolver;
+			NRefactoryResolver resolver;
+			if (fileResolverWrongProject != null) {
+				resolver = new NRefactoryResolver(pc, fileResolverWrongProject.LanguageProperties);
+			} else {
+				resolver = new NRefactoryResolver(pc, LanguageProperties.CSharp);
+			}
 			
 			if (compilationUnit == null) {
 				compilationUnit = GetFullAst(resolver.Language, fileName);

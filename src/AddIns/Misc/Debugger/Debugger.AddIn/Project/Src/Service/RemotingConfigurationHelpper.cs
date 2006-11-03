@@ -27,10 +27,15 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			string path = null;
 			foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
-				string fullFilename = assembly.Location;
-				if (Path.GetFileName(fullFilename).Equals(assemblyName, StringComparison.OrdinalIgnoreCase)) {
-					path = Path.GetDirectoryName(fullFilename);
-					break;
+				try {
+					string fullFilename = assembly.Location;
+					if (Path.GetFileName(fullFilename).Equals(assemblyName, StringComparison.OrdinalIgnoreCase)) {
+						path = Path.GetDirectoryName(fullFilename);
+						break;
+					}
+				} catch (NotSupportedException) {
+					// assembly.Location throws NotSupportedException for assemblies emitted using
+					// Reflection.Emit by custom controls used in the forms designer
 				}
 			}
 			if (path == null) {
@@ -48,10 +53,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			string baseDir = Directory.GetDirectoryRoot(AppDomain.CurrentDomain.BaseDirectory);
 			string relDirs = AppDomain.CurrentDomain.BaseDirectory + ";" + path;
 			AppDomain serverAppDomain = AppDomain.CreateDomain("Debugging server",
-				                                                new Evidence(AppDomain.CurrentDomain.Evidence),
-																baseDir,
-																relDirs,
-																AppDomain.CurrentDomain.ShadowCopyFiles);
+			                                                   new Evidence(AppDomain.CurrentDomain.Evidence),
+			                                                   baseDir,
+			                                                   relDirs,
+			                                                   AppDomain.CurrentDomain.ShadowCopyFiles);
 			serverAppDomain.DoCallBack(new CrossAppDomainDelegate(ConfigureServer));
 		}
 
@@ -64,10 +69,15 @@ namespace ICSharpCode.SharpDevelop.Services
 		Assembly AssemblyResolve(object sender, ResolveEventArgs args)
 		{
 			foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
-				string fullFilename = assembly.Location;
-				if (Path.GetFileNameWithoutExtension(fullFilename).Equals(args.Name, StringComparison.OrdinalIgnoreCase) ||
-					assembly.FullName == args.Name) {
-					return assembly;
+				try {
+					string fullFilename = assembly.Location;
+					if (Path.GetFileNameWithoutExtension(fullFilename).Equals(args.Name, StringComparison.OrdinalIgnoreCase) ||
+					    assembly.FullName == args.Name) {
+						return assembly;
+					}
+				} catch (NotSupportedException) {
+					// assembly.Location throws NotSupportedException for assemblies emitted using
+					// Reflection.Emit by custom controls used in the forms designer
 				}
 			}
 			return null;

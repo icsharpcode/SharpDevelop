@@ -153,9 +153,13 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			// FIX for SD2-716, remove when designer gets its own AppDomain
 			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
-				if (string.Equals(asm.Location, fileName, StringComparison.InvariantCultureIgnoreCase)) {
-					RegisterAssembly(asm);
-					return asm;
+				try {
+					if (string.Equals(asm.Location, fileName, StringComparison.InvariantCultureIgnoreCase)) {
+						RegisterAssembly(asm);
+						return asm;
+					}
+				} catch (NotSupportedException) {
+					// Fixes forum-12823
 				}
 			}
 			

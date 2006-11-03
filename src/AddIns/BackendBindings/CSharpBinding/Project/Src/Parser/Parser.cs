@@ -114,7 +114,7 @@ namespace CSharpBinding.Parser
 		
 		public IResolver CreateResolver()
 		{
-			return new NRefactoryResolver(ParserService.CurrentProjectContent);
+			return new NRefactoryResolver(ParserService.CurrentProjectContent, LanguageProperties.CSharp);
 		}
 		///////// IParser Interface END
 	}

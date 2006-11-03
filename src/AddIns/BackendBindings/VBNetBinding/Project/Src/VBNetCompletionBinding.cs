@@ -157,7 +157,7 @@ namespace VBNetBinding
 		IMember GetCurrentMember(SharpDevelopTextAreaControl editor)
 		{
 			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
-			NRefactoryResolver r = new NRefactoryResolver(ParserService.CurrentProjectContent);
+			NRefactoryResolver r = new NRefactoryResolver(ParserService.CurrentProjectContent, LanguageProperties.VBNet);
 			if (r.Initialize(editor.FileName, caret.Line + 1, caret.Column + 1)) {
 				return r.CallingMember;
 			} else {
