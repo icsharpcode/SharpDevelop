@@ -117,7 +117,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 								}
 								if (showArgumentValues) {
 									try {
-										argValue = f.GetArgumentVariable(i).Value.AsString;
+										argValue = f.GetArgumentVariable(i).ValueProxy.AsString;
 									} catch { }
 								}
 								if (parameterName != null && argValue != null) {

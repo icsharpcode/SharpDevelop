@@ -9,7 +9,7 @@ using System;
 
 namespace Debugger
 {
-	public class NullValue: Value
+	public class NullValue: ValueProxy
 	{
 		public override string AsString { 
 			get {

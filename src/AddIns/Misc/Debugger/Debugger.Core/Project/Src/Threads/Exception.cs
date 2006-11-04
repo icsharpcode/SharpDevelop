@@ -15,7 +15,7 @@ namespace Debugger
 		Process           process;
 		Thread            thread;
 		ICorDebugValue    corValue;
-		Value             runtimeValue;
+		ValueProxy        runtimeValue;
 		ObjectValueClass  runtimeValueException;
 		ExceptionType     exceptionType;
 		SourcecodeSegment location;
@@ -42,9 +42,9 @@ namespace Debugger
 			                            Variable.Flags.Default,
 			                            new IExpirable[] {process.PauseSession},
 			                            new IMutable[] {},
-			                            delegate { return corValue; } ).Value;
+			                            delegate { return corValue; } ).ValueProxy;
 			runtimeValueException = ((ObjectValue)runtimeValue).GetClass("System.Exception");
-			message = runtimeValueException.SubVariables["_message"].Value.AsString;
+			message = runtimeValueException.SubVariables["_message"].ValueProxy.AsString;
 			
 			if (thread.LastFunctionWithLoadedSymbols != null) {
 				location = thread.LastFunctionWithLoadedSymbols.NextStatement;

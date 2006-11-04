@@ -12,15 +12,15 @@ namespace Debugger
 	[Serializable]
 	public class ValueEventArgs : ProcessEventArgs
 	{
-		Value val;
+		ValueProxy val;
 		
-		public Value Value {
+		public ValueProxy ValueProxy {
 			get {
 				return val;
 			}
 		}
 		
-		public ValueEventArgs(Value val): base(val.Process)
+		public ValueEventArgs(ValueProxy val): base(val.Process)
 		{
 			this.val = val;
 		}

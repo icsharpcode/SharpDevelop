@@ -48,7 +48,7 @@ namespace Debugger
 		CorValueGetter corValueGetter;
 		IMutable[] mutateDependencies;
 		
-		protected Value          currentValue;
+		protected ValueProxy     currentValue;
 		protected ICorDebugValue currentCorValue;
 		protected PauseSession   currentCorValuePauseSession;
 		
@@ -89,7 +89,7 @@ namespace Debugger
 			}
 		}
 		
-		public Value Value {
+		public ValueProxy ValueProxy {
 			get {
 				if (currentValue == null) {
 					try {
@@ -265,7 +265,7 @@ namespace Debugger
 			return corValue;
 		}
 		
-		Value CreateValue()
+		ValueProxy CreateValue()
 		{
 			ICorDebugValue corValue = this.CorValue;
 			
@@ -273,7 +273,7 @@ namespace Debugger
 				return new NullValue(this);
 			}
 			
-			CorElementType type = Value.GetCorType(corValue);
+			CorElementType type = ValueProxy.GetCorType(corValue);
 			
 			switch(type) {
 				case CorElementType.BOOLEAN:

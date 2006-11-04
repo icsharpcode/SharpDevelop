@@ -10,7 +10,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public abstract class Value: RemotingObjectBase
+	public abstract class ValueProxy: RemotingObjectBase
 	{
 		Variable variable;
 		
@@ -32,9 +32,9 @@ namespace Debugger
 			}
 		}
 		
-		protected Value FreshValue {
+		protected ValueProxy FreshValue {
 			get {
-				return variable.Value;
+				return variable.ValueProxy;
 			}
 		}
 		
@@ -100,7 +100,7 @@ namespace Debugger
 			}
 		}
 		
-		protected Value(Variable variable)
+		protected ValueProxy(Variable variable)
 		{
 			if (variable == null) throw new ArgumentNullException("variable");
 			this.variable = variable;

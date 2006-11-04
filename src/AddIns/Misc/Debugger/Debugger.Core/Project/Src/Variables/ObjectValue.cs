@@ -11,7 +11,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public class ObjectValue: Value
+	public class ObjectValue: ValueProxy
 	{
 		ObjectValueClass topClass;
 		Variable toStringText;

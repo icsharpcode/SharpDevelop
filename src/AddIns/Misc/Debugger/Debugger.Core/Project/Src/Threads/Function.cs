@@ -404,7 +404,7 @@ namespace Debugger
 			get {
 				// TODO: Should work for static
 				if (!IsStatic) {
-					foreach(Variable var in ThisVariable.Value.SubVariables) {
+					foreach(Variable var in ThisVariable.ValueProxy.SubVariables) {
 						yield return var;
 					}
 				}

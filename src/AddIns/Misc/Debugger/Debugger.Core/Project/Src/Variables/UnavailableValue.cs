@@ -9,7 +9,7 @@ using System;
 
 namespace Debugger
 {
-	public class UnavailableValue: Value
+	public class UnavailableValue: ValueProxy
 	{
 		string message;
 		

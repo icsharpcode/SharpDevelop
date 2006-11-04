@@ -68,7 +68,7 @@ namespace Debugger
 			assembly = LoadAssembly(typeof(DebugeeInteractiveInterpreter).Assembly.Location);
 			Variable interpreterType = Eval.NewString(process, typeof(DebugeeInteractiveInterpreter).FullName);
 			interpreter = Eval.CallFunction(process, typeof(Assembly), "CreateInstance", assembly, new Variable[] {interpreterType});
-			interpreter_localVariable = interpreter.Value.SubVariables["localVariable"];
+			interpreter_localVariable = interpreter.ValueProxy.SubVariables["localVariable"];
 			RunCommand(
 				"import System\n" + 
 				"import System.IO\n" +

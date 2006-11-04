@@ -238,7 +238,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (variable == null) {
 				return null;
 			} else {
-				return variable.Value.AsString;
+				return variable.ValueProxy.AsString;
 			}
 		}
 		

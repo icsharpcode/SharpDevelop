@@ -13,7 +13,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public class ArrayValue: Value
+	public class ArrayValue: ValueProxy
 	{
 		uint[] dimensions;
 		

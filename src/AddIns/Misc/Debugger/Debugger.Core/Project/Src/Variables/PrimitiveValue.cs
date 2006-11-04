@@ -11,7 +11,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public class PrimitiveValue: Value
+	public class PrimitiveValue: ValueProxy
 	{
 		public override string AsString {
 			get {

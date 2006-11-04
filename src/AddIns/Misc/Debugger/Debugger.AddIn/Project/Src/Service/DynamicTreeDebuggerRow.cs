@@ -88,22 +88,22 @@ namespace ICSharpCode.SharpDevelop.Services
 			image = DebuggerIcons.GetImage(variable);
 			this[1].Text = ""; // Icon
 			this[2].Text = variable.Name;
-			if (ShowValuesInHexadecimal && variable.Value is PrimitiveValue && variable.Value.IsInteger) {
-				this[3].Text = String.Format("0x{0:X}", (variable.Value as PrimitiveValue).Primitive);
+			if (ShowValuesInHexadecimal && variable.ValueProxy is PrimitiveValue && variable.ValueProxy.IsInteger) {
+				this[3].Text = String.Format("0x{0:X}", (variable.ValueProxy as PrimitiveValue).Primitive);
 			} else {
-				this[3].Text = variable.Value.AsString;
+				this[3].Text = variable.ValueProxy.AsString;
 			}
-			this[3].AllowLabelEdit = variable.Value is PrimitiveValue &&
-			                         variable.Value.ManagedType != typeof(string) &&
+			this[3].AllowLabelEdit = variable.ValueProxy is PrimitiveValue &&
+			                         variable.ValueProxy.ManagedType != typeof(string) &&
 			                         !ShowValuesInHexadecimal;
-			ObjectValue objValue = variable.Value as ObjectValue;
+			ObjectValue objValue = variable.ValueProxy as ObjectValue;
 			if (objValue != null) {
 				objValue.ToStringText.Changed -= Update;
 				objValue.ToStringText.Changed += Update;
-				this[3].Text = objValue.ToStringText.Value.AsString;
+				this[3].Text = objValue.ToStringText.ValueProxy.AsString;
 			}
 			
-			this.ShowPlus = variable.Value.MayHaveSubVariables;
+			this.ShowPlus = variable.ValueProxy.MayHaveSubVariables;
 			this.ShowMinusWhileExpanded = true;
 			
 			dirty = false;
@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void OnLabelEdited(object sender, DynamicListEventArgs e)
 		{
-			PrimitiveValue val = (PrimitiveValue)variable.Value;
+			PrimitiveValue val = (PrimitiveValue)variable.ValueProxy;
 			string newValue = ((DynamicListItem)sender).Text;
 			try {
 				val.Primitive = newValue;
@@ -191,7 +191,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void Populate()
 		{
-			Fill(this, Variable.Value.SubVariables);
+			Fill(this, Variable.ValueProxy.SubVariables);
 			populated = true;
 		}
 		

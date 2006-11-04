@@ -41,7 +41,7 @@ namespace Debugger
 		
 		public static int GetImageListIndex(Variable variable)
 		{
-			if (variable.Value is ObjectValue) {
+			if (variable.ValueProxy is ObjectValue) {
 				return 0; // Class
 			} else {
 				return 1; // Field

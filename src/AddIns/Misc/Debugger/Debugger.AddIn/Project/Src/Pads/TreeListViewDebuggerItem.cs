@@ -71,18 +71,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			if (this.TreeListView != null) {
 				((DebuggerTreeListView)this.TreeListView).DelayRefresh();
-				Highlight = (Variable.Value.AsString != SubItems[1].Text);
+				Highlight = (Variable.ValueProxy.AsString != SubItems[1].Text);
 			}
 			
 			this.SubItems[0].Text = Variable.Name;
-			this.SubItems[1].Text = Variable.Value.AsString;
-			this.SubItems[2].Text = Variable.Value.Type;
+			this.SubItems[1].Text = Variable.ValueProxy.AsString;
+			this.SubItems[2].Text = Variable.ValueProxy.Type;
 			
 			this.ImageIndex = DebuggerIcons.GetImageListIndex(variable);
 			
 			if (!IsExpanded) {
 				// Show plus sign
-				if (variable.Value.MayHaveSubVariables && Items.Count == 0) {
+				if (variable.ValueProxy.MayHaveSubVariables && Items.Count == 0) {
 					TreeListViewItem dummy = new TreeListViewItem();
 					this.AfterExpand += delegate { dummy.Remove(); };
 					Items.Add(dummy);
@@ -97,8 +97,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (!populated) {
 				Items.Clear();
 				// Do not sort names of array items
-				this.Items.SortOrder = variable.Value is ArrayValue ? SortOrder.None : SortOrder.Ascending;
-				LocalVarPad.AddVariableCollectionToTree(variable.Value.SubVariables, this.Items);
+				this.Items.SortOrder = variable.ValueProxy is ArrayValue ? SortOrder.None : SortOrder.Ascending;
+				LocalVarPad.AddVariableCollectionToTree(variable.ValueProxy.SubVariables, this.Items);
 				populated = true;
 			}
 		}

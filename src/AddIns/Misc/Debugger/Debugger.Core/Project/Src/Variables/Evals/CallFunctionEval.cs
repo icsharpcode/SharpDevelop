@@ -30,7 +30,7 @@ namespace Debugger
 			List<ICorDebugValue> corArgs = new List<ICorDebugValue>();
 			try {
 				if (thisValue != null) {
-					Value val = thisValue.Value;
+					ValueProxy val = thisValue.ValueProxy;
 					if (!(val is ObjectValue)) {
 						throw new EvalSetupException("Can not evaluate on a value which is not an object");
 					}

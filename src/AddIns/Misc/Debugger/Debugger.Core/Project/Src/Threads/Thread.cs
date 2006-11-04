@@ -149,14 +149,14 @@ namespace Debugger
 				if (!HasBeenLoaded) return lastPriority;
 				if (process.IsRunning) return lastPriority;
 
-				Value runTimeValue = RuntimeValue;
+				ValueProxy runTimeValue = RuntimeValue;
 				if (runTimeValue is NullValue) return ThreadPriority.Normal;
-				lastPriority = (ThreadPriority)(int)(runTimeValue["m_Priority"].Value as PrimitiveValue).Primitive;
+				lastPriority = (ThreadPriority)(int)(runTimeValue["m_Priority"].ValueProxy as PrimitiveValue).Primitive;
 				return lastPriority;
 			}
 		}
 
-		public Value RuntimeValue {
+		public ValueProxy RuntimeValue {
 			get {
 				if (!HasBeenLoaded) throw new DebuggerException("Thread has not started jet");
 				process.AssertPaused();
@@ -166,7 +166,7 @@ namespace Debugger
 				                    Variable.Flags.Default,
 				                    new IExpirable[] {process.PauseSession},
 				                    new IMutable[] {},
-				                    delegate { return CorThread.Object;} ).Value;
+				                    delegate { return CorThread.Object;} ).ValueProxy;
 			}
 		}
 
@@ -174,9 +174,9 @@ namespace Debugger
 			get	{
 				if (!HasBeenLoaded) return lastName;
 				if (process.IsRunning) return lastName;
-				Value runtimeVar  = RuntimeValue;
+				ValueProxy runtimeVar  = RuntimeValue;
 				if (runtimeVar is NullValue) return lastName;
-				Value runtimeName = runtimeVar["m_Name"].Value;
+				ValueProxy runtimeName = runtimeVar["m_Name"].ValueProxy;
 				if (runtimeName is NullValue) return string.Empty;
 				lastName = runtimeName.AsString.ToString();
 				return lastName;
