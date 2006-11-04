@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
@@ -85,7 +86,8 @@ namespace ICSharpCode.CodeAnalysis
 			{
 				string[] moreData = (subcategory ?? "").Split('|');
 				BuildError err = engine.CurrentErrorOrWarning;
-				if (Path.GetFileName(file) == "SharpDevelop.CodeAnalysis.targets") {
+				if (FileUtility.IsValidFileName(file) &&
+				    Path.GetFileName(file) == "SharpDevelop.CodeAnalysis.targets") {
 					err.FileName = null;
 				}
 				IProject project = ProjectService.GetProject(engine.CurrentProjectFile);

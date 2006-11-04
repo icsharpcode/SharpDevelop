@@ -371,7 +371,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				if (string.Equals(file, activeTaskName, StringComparison.InvariantCultureIgnoreCase)) {
 					file = "";
-				} else {
+				} else if (FileUtility.IsValidFileName(file)) {
 					bool isShortFileName = file == Path.GetFileNameWithoutExtension(file);
 					if (engine.CurrentProjectFile != null) {
 						file = Path.Combine(Path.GetDirectoryName(engine.CurrentProjectFile), file);
