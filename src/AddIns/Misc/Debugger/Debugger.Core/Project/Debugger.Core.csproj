@@ -377,18 +377,18 @@
     <Compile Include="Src\Debugger\IExpirable.cs" />
     <Compile Include="Src\Variables\Evals\CallFunctionEval.cs" />
     <Compile Include="Src\Variables\Evals\NewStringEval.cs" />
-    <Compile Include="Src\Variables\Variable.cs" />
     <Compile Include="Src\Variables\ObjectValue.cs" />
     <Compile Include="Src\Debugger\Util.cs" />
     <Compile Include="Src\Variables\Evals\NewObjectEval.cs" />
     <Compile Include="Src\Debugger\IMutable.cs" />
     <Compile Include="Src\Debugger\ExceptionEventArgs.cs" />
     <Compile Include="Src\Debugger\Internal\ManagedCallbackSwitch.cs" />
-    <Compile Include="Src\Variables\Variable2.cs" />
     <Compile Include="Src\Variables\ObjectMember.cs" />
     <Compile Include="Src\Variables\MethodArgument.cs" />
     <Compile Include="Src\Variables\LocalVariable.cs" />
     <Compile Include="Src\Variables\ArrayElement.cs" />
+    <Compile Include="Src\Variables\ValueProxy.cs" />
+    <Compile Include="Src\Variables\Variable.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

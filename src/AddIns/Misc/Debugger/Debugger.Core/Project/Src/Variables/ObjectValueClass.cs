@@ -24,7 +24,7 @@ namespace Debugger
 		
 		ICorDebugObjectValue CorObjectValue {
 			get {
-				return objectValue.CorValue.As<ICorDebugObjectValue>();
+				return objectValue.TheValue.CorValue.As<ICorDebugObjectValue>();
 			}
 		}
 		
@@ -60,7 +60,7 @@ namespace Debugger
 		
 		public ObjectValueClass(ObjectValue objectValue, ICorDebugClass corClass)
 		{
-			this.process = objectValue.Process;
+			this.process = objectValue.TheValue.Process;
 			this.objectValue = objectValue;
 			this.module = process.GetModule(corClass.Module);
 			this.corClass = corClass;
@@ -139,8 +139,8 @@ namespace Debugger
 					(field.IsPublic ? ObjectMember.Flags.Public : ObjectMember.Flags.None),
 					new Value(
 						process,
-						new IExpirable[] {this.objectValue.Value},
-						new IMutable[] {this.objectValue.Value},
+						new IExpirable[] {this.objectValue.TheValue},
+						new IMutable[] {this.objectValue.TheValue},
 						delegate { return GetCorValueOfField(field); }
 					)
 				);
@@ -186,10 +186,10 @@ namespace Debugger
 						flags,
 						new CallFunctionEval(
 							process,
-							new IExpirable[] {this.objectValue.Value},
+							new IExpirable[] {this.objectValue.TheValue},
 							new IMutable[] {process.DebugeeState},
 							Module.CorModule.GetFunctionFromToken(method.Token),
-							method.IsStatic ? null : this.objectValue.Value, // this
+							method.IsStatic ? null : this.objectValue.TheValue, // this
 							new Value[] {}
 						)
 					); // args

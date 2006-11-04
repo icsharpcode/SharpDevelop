@@ -68,20 +68,20 @@ namespace Debugger
 		
 		internal ObjectValue(Value @value):base(@value)
 		{
-			topClass = new ObjectValueClass(this, this.CorValue.As<ICorDebugObjectValue>().Class);
+			topClass = new ObjectValueClass(this, TheValue.CorValue.As<ICorDebugObjectValue>().Class);
 			Module module = GetClass("System.Object").Module;
 			ICorDebugFunction corFunction = module.GetMethod("System.Object", "ToString", 0);
-			toStringText = new CallFunctionEval(this.Process,
-			                                    new IExpirable[] {this.Value},
-			                                    new IMutable[] {this.Value},
+			toStringText = new CallFunctionEval(TheValue.Process,
+			                                    new IExpirable[] {this.TheValue},
+			                                    new IMutable[] {this.TheValue},
 			                                    corFunction,
-			                                    this.Value,
+			                                    TheValue,
 			                                    new Value[] {});
 		}
 		
 		internal bool IsCorValueCompatible {
 			get {
-				ObjectValue freshValue = this.FreshValue as ObjectValue;
+				ObjectValue freshValue = TheValue.ValueProxy as ObjectValue;
 				return freshValue != null &&
 				       topClass.Module == freshValue.TopClass.Module &&
 				       topClass.ClassToken == freshValue.TopClass.ClassToken;

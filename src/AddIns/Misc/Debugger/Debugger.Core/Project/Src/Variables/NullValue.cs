@@ -17,12 +17,9 @@ namespace Debugger
 			} 
 		}
 		
-		public override string Type
-		{
-			get
-			{
-				switch (CorType)
-				{
+		public override string Type {
+			get {
+				switch (TheValue.CorType) {
 					case CorElementType.SZARRAY:
 					case CorElementType.ARRAY: return typeof(System.Array).ToString();
 					case CorElementType.OBJECT: return typeof(System.Object).ToString();

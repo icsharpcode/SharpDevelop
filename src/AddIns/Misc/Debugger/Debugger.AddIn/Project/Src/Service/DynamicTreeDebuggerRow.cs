@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			image = DebuggerIcons.GetImage(variable);
 			this[1].Text = ""; // Icon
 			this[2].Text = variable.Name;
-			if (ShowValuesInHexadecimal && variable.ValueProxy is PrimitiveValue && variable.ValueProxy.IsInteger) {
+			if (ShowValuesInHexadecimal && variable.ValueProxy is PrimitiveValue && variable.ValueProxy.TheValue.IsInteger) {
 				this[3].Text = String.Format("0x{0:X}", (variable.ValueProxy as PrimitiveValue).Primitive);
 			} else {
 				this[3].Text = variable.ValueProxy.AsString;

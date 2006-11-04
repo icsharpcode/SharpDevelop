@@ -23,7 +23,7 @@ namespace Debugger
 		
 		protected ICorDebugArrayValue CorArrayValue {
 			get {
-				return this.CorValue.CastTo<ICorDebugArrayValue>();
+				return TheValue.CorValue.CastTo<ICorDebugArrayValue>();
 			}
 		}
 		
@@ -35,7 +35,7 @@ namespace Debugger
 		
 		public string ElementsType { 
 			get {
-				return CorTypeToString(corElementType); 
+				return Value.CorTypeToString(corElementType); 
 			} 
 		}
 		
@@ -72,7 +72,7 @@ namespace Debugger
 		
 		bool IsCorValueCompatible {
 			get {
-				ArrayValue freshValue = this.FreshValue as ArrayValue;
+				ArrayValue freshValue = TheValue.ValueProxy as ArrayValue;
 				return freshValue != null &&
 				       freshValue.ElementsType == this.ElementsType &&
 				       freshValue.Lenght == this.Lenght &&
@@ -119,9 +119,9 @@ namespace Debugger
 				elementName,
 				indices,
 				new Value(
-					Process,
-					new IExpirable[] {this.Value},
-					new IMutable[] {this.Value},
+					TheValue.Process,
+					new IExpirable[] {this.TheValue},
+					new IMutable[] {this.TheValue},
 					delegate { return GetCorValueOfItem(indices); }
 				)
 			);

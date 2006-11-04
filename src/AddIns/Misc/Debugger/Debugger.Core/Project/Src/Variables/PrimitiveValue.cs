@@ -25,10 +25,10 @@ namespace Debugger
 		
 		public object Primitive { 
 			get {
-				if (CorType == CorElementType.STRING) {
-					return (CorValue.CastTo<ICorDebugStringValue>()).String;
+				if (TheValue.CorType == CorElementType.STRING) {
+					return (TheValue.CorValue.CastTo<ICorDebugStringValue>()).String;
 				} else {
-					return (CorValue.CastTo<ICorDebugGenericValue>()).Value;
+					return (TheValue.CorValue.CastTo<ICorDebugGenericValue>()).Value;
 				}
 			}
 			set {
@@ -40,12 +40,12 @@ namespace Debugger
 					throw new NotSupportedException("Can not convert " + value.GetType().ToString() + " to " + ManagedType.ToString());
 				}
 				
-				if (CorType == CorElementType.STRING) {
+				if (TheValue.CorType == CorElementType.STRING) {
 					throw new NotSupportedException();
 				} else {
-					(CorValue.CastTo<ICorDebugGenericValue>()).Value = newValue;
+					(TheValue.CorValue.CastTo<ICorDebugGenericValue>()).Value = newValue;
 				}
-				this.Value.NotifyChange();
+				TheValue.NotifyChange();
 			}
 		}
 
