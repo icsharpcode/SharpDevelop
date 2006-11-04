@@ -27,4 +27,30 @@ namespace ICSharpCode.SharpDevelop.Gui
 			set;
 		}
 	}
+	
+	internal class DummyProgressMonitor : IProgressMonitor
+	{
+		int workDone;
+		string taskName;
+		
+		public int WorkDone {
+			get { return workDone; }
+			set { workDone = value; }
+		}
+		
+		public string TaskName {
+			get { return taskName; }
+			set { taskName = value; }
+		}
+		
+		public void BeginTask(string name, int totalWork)
+		{
+			taskName = name;
+			workDone = 0;
+		}
+		
+		public void Done()
+		{
+		}
+	}
 }

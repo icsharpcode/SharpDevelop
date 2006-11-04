@@ -64,12 +64,15 @@
     <Compile Include="SideBar\SideTab.cs" />
     <Compile Include="SideBar\SideTabItem.cs" />
     <Compile Include="SpinnerControl.cs" />
+    <Compile Include="DesignTimeSupport\DropDownEditor.cs" />
+    <Compile Include="DesignTimeSupport\DropDownEditorListBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />
     <Folder Include="TreeGrid" />
     <Folder Include="AutoHide" />
     <Folder Include="SideBar" />
+    <Folder Include="DesignTimeSupport" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

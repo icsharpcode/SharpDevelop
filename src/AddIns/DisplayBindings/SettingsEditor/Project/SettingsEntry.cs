@@ -8,6 +8,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Xml;
 using System.Configuration;
@@ -70,13 +71,7 @@ namespace ICSharpCode.SettingsEditor
 				scope = SettingScope.User;
 			}
 			type = GetType(element.GetAttribute("Type"));
-			if (type != null && type != typeof(string)) {
-				SettingsPropertyValue v = GetSettingConverter(type, name);
-				v.SerializedValue = element["Value"].InnerText;
-				this.value = v.PropertyValue;
-			} else {
-				this.value = element["Value"].InnerText;
-			}
+			this.SerializedValue = element["Value"].InnerText;
 		}
 		
 		static SettingsPropertyValue GetSettingConverter(Type type, string name)

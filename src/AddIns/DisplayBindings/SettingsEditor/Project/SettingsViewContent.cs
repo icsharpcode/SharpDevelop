@@ -23,6 +23,7 @@ namespace ICSharpCode.SettingsEditor
 	{
 		SettingsView view = new SettingsView();
 		PropertyContainer propertyContainer = new PropertyContainer();
+		SettingsDocument setDoc = new SettingsDocument();
 		
 		public SettingsViewContent()
 		{
@@ -48,43 +49,35 @@ namespace ICSharpCode.SettingsEditor
 			try {
 				XmlDocument doc = new XmlDocument();
 				doc.Load(filename);
-				XmlElement settings = doc.DocumentElement["Settings"];
-				List<SettingsEntry> entries = new List<SettingsEntry>();
-				foreach (XmlNode node in settings.ChildNodes) {
-					if (node is XmlElement) {
-						entries.Add(new SettingsEntry(view, node as XmlElement));
-					}
-				}
-				view.ShowEntries(entries);
+				
+				setDoc = new SettingsDocument(doc.DocumentElement, view);
+				view.ShowEntries(setDoc.Entries);
 			} catch (XmlException ex) {
-				MessageService.ShowMessage(ex.Message);
+				ShowLoadError(ex.Message);
 			}
 			IsDirty = false;
 		}
 		
-		const string XmlNamespace = "http://schemas.microsoft.com/VisualStudio/2004/01/settings";
+		void ShowLoadError(string message)
+		{
+			MessageService.ShowMessage(message);
+			if (this.WorkbenchWindow != null) {
+				this.WorkbenchWindow.CloseWindow(true);
+			}
+		}
+		
 		
 		public override void Save(string fileName)
 		{
 			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8)) {
 				writer.Formatting = Formatting.Indented;
 				writer.WriteStartDocument();
-				writer.WriteStartElement("SettingsFile", XmlNamespace);
-				writer.WriteAttributeString("CurrentProfile", "(Default)");
 				
-				writer.WriteStartElement("Profiles");
-				writer.WriteStartElement("Profile");
-				writer.WriteAttributeString("Name", "(Default)");
-				writer.WriteEndElement(); // Profile
-				writer.WriteEndElement(); // Profiles
+				setDoc.Entries.Clear();
+				setDoc.Entries.AddRange(view.GetAllEntries());
 				
-				writer.WriteStartElement("Settings");
-				foreach (SettingsEntry e in view.GetAllEntries()) {
-					e.WriteTo(writer);
-				}
-				writer.WriteEndElement(); // Settings
+				setDoc.Save(writer);
 				
-				writer.WriteEndElement(); // SettingsFile
 				writer.WriteEndDocument();
 			}
 			IsDirty = false;

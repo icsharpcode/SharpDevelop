@@ -71,6 +71,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			StatusBarService.Initialize();
 			DomHostCallback.Register(); // must be called after StatusBarService.Initialize()
 			ParserService.InitializeParserService();
+			Project.CustomToolsService.Initialize();
 			
 			workbench = new DefaultWorkbench();
 			MessageService.MainForm = workbench;
@@ -122,6 +123,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static bool InvokeRequired {
 			get {
 				return ((Form)workbench).InvokeRequired;
+			}
+		}
+		
+		internal static void AssertMainThread()
+		{
+			if (InvokeRequired) {
+				throw new InvalidOperationException("This operation can be called on the main thread only.");
 			}
 		}
 		

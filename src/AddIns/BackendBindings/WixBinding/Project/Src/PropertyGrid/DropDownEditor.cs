@@ -6,76 +6,31 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using ICSharpCode.SharpDevelop.Widgets.DesignTimeSupport;
 
 namespace ICSharpCode.WixBinding
 {
-	public class DropDownEditor : UITypeEditor
+	public class WixDropDownEditor : DropDownEditor
 	{
-		/// <summary>
-		/// Returns the drop down style.
-		/// </summary>
-		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+		protected override Control CreateDropDownControl(ITypeDescriptorContext context, IWindowsFormsEditorService editorService)
 		{
-			return UITypeEditorEditStyle.DropDown;
+			return new DropDownEditorListBox(editorService, GetDropDownItems(context));
 		}
 		
-		public override bool IsDropDownResizable {
-			get {
-				return false;
-			}
-		}
-		
-		/// <summary>
-		/// Shows the drop down editor control in the drop down so the user
-		/// can change the value.
-		/// </summary>
-		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+		IEnumerable<string> GetDropDownItems(ITypeDescriptorContext context)
 		{
-			IWindowsFormsEditorService editorService = null;
-			
-			if (provider != null) {
-				editorService = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
-			}
-			
-			if (editorService != null) {
-				using (Control control = CreateDropDownControl(context, editorService)) {
-					SetValue(control, value);
-					editorService.DropDownControl(control);
-					value = GetValue(control);
+			if (context != null) {
+				WixXmlAttributePropertyDescriptor propertyDescriptor = context.PropertyDescriptor as WixXmlAttributePropertyDescriptor;
+				if (propertyDescriptor != null && propertyDescriptor.WixXmlAttribute.HasValues) {
+					return propertyDescriptor.WixXmlAttribute.Values;
 				}
 			}
-			
-			return value;
-		}
-		
-		/// <summary>
-		/// Creates the drop down control.
-		/// </summary>
-		protected virtual Control CreateDropDownControl(ITypeDescriptorContext context, IWindowsFormsEditorService editorService)
-		{
-			return new DropDownEditorListBox(context, editorService);
-		}
-		
-		/// <summary>
-		/// Sets the current value in the drop down control.
-		/// </summary>
-		protected virtual void SetValue(Control control, object value)
-		{
-			DropDownEditorListBox listBox = (DropDownEditorListBox)control;
-			listBox.Value = (string)value;
-		}
-		
-		/// <summary>
-		/// Gets the current value from the drop down control.
-		/// </summary>
-		protected virtual object GetValue(Control control)
-		{
-			DropDownEditorListBox listBox = (DropDownEditorListBox)control;
-			return listBox.Value;
+			return new string[0];
 		}
 	}
 }

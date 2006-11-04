@@ -28,6 +28,7 @@
 			<ConditionEvaluator name="CanNavigateForward" class="ICSharpCode.SharpDevelop.CanNavigateForwardConditionEvaluator"/>
 			<ConditionEvaluator name="CompareProjectProperty" class="ICSharpCode.SharpDevelop.CompareProjectPropertyConditionEvaluator"/>
 			
+			<Doozer name="CustomTool" class="ICSharpCode.SharpDevelop.Project.CustomToolDoozer"/>
 			<Doozer name="DialogPanel" class="ICSharpCode.SharpDevelop.DialogPanelDoozer"/>
 			<Doozer name="DisplayBinding" class="ICSharpCode.SharpDevelop.DisplayBindingDoozer"/>
 			<Doozer name="Pad" class="ICSharpCode.SharpDevelop.PadDoozer"/>
@@ -383,6 +384,9 @@
 					<MenuItem id    = "ExcludeFile"
 					          label = "${res:ProjectComponent.ContextMenu.ExcludeFileFromProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.ExcludeFileFromProject"/>
+					<MenuItem id     = "ExecuteCustomTool"
+					          label  = "Execute custom tool"
+					          class  = "ICSharpCode.SharpDevelop.Project.ExecuteCustomToolCommand"/>
 				</Condition>
 				
 				<Condition name = "Ownerstate" ownerstate = "None">

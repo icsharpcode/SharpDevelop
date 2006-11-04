@@ -6,25 +6,31 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-namespace ICSharpCode.WixBinding
+namespace ICSharpCode.SharpDevelop.Widgets.DesignTimeSupport
 {
 	public class DropDownEditorListBox : ListBox
 	{
 		IWindowsFormsEditorService editorService;
 		string dropDownValue = String.Empty;
-		WixXmlAttributePropertyDescriptor propertyDescriptor;
+		IEnumerable<string> dropDownItems;
 		
-		public DropDownEditorListBox(ITypeDescriptorContext context, IWindowsFormsEditorService editorService)
+		public DropDownEditorListBox(IWindowsFormsEditorService editorService, IEnumerable<string> dropDownItems)
 		{
+			if (editorService == null)
+				throw new ArgumentNullException("editorService");
+			if (dropDownItems == null)
+				throw new ArgumentNullException("dropDownItems");
+			
 			this.editorService = editorService;
+			this.dropDownItems = dropDownItems;
+			
 			BorderStyle = BorderStyle.None;
-			if (context != null) {
-				propertyDescriptor = context.PropertyDescriptor as WixXmlAttributePropertyDescriptor;
-			}
+			
 			AddDropDownItems();
 		}
 		
@@ -61,10 +67,8 @@ namespace ICSharpCode.WixBinding
 		
 		void AddDropDownItems()
 		{
-			if (propertyDescriptor != null && propertyDescriptor.WixXmlAttribute.HasValues) {
-				foreach (string item in propertyDescriptor.WixXmlAttribute.Values) {
-					Items.Add(item);
-				}
+			foreach (string item in dropDownItems) {
+				Items.Add(item);
 			}
 		}
 		

@@ -62,4 +62,10 @@
 		
 		<Include id = "SelectAll" item = "/SharpDevelop/Workbench/MainMenu/Edit/SelectAll"/>
 	</Path>
+	
+	<Path name = "/SharpDevelop/CustomTools">
+		<CustomTool id    = "ResXFileCodeGenerator"
+		            class = "ResourceEditor.ResourceCodeGeneratorTool"
+		            fileNamePattern = "\.res(x|ources)$"/>
+	</Path>
 </AddIn>

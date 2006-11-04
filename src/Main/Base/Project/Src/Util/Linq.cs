@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop
@@ -37,6 +38,30 @@ namespace ICSharpCode.SharpDevelop
 				if (filter(element))
 					yield return element;
 			}
+		}
+		
+		/// <summary>
+		/// Returns the elements of type T.
+		/// </summary>
+		public static IEnumerable<T> OfType<T>(IEnumerable input)
+		{
+			foreach (object element in input) {
+				if (element is T)
+					yield return (T)element;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the first element in input for which filter is true.
+		/// Returns default(T) if no element matches the filter.
+		/// </summary>
+		public static T Find<T>(IEnumerable<T> input, Predicate<T> filter)
+		{
+			foreach (T element in input) {
+				if (filter(element))
+					return element;
+			}
+			return default(T);
 		}
 	}
 }

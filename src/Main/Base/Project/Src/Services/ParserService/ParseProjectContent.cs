@@ -157,7 +157,9 @@ namespace ICSharpCode.SharpDevelop
 					UpdateDefaultImports(project.Items.ToArray());
 					break;
 				case ItemType.Compile:
-					ParserService.EnqueueForParsing(e.ProjectItem.FileName);
+					if (System.IO.File.Exists(e.ProjectItem.FileName)) {
+						ParserService.EnqueueForParsing(e.ProjectItem.FileName);
+					}
 					break;
 			}
 		}

@@ -50,6 +50,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.displayCategory = displayCategory;
 		}
 		
+		public void AppendLine(string text)
+		{
+			AppendText(text + Environment.NewLine);
+		}
+		
 		public void AppendText(string text)
 		{
 			lock (textBuilder) {

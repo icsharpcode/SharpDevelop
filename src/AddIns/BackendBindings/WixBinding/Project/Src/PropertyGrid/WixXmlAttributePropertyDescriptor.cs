@@ -118,7 +118,7 @@ namespace ICSharpCode.WixBinding
 					break;
 				case WixXmlAttributeType.Text:
 					if (wixXmlAttribute.HasValues) {
-						attributes.Add(new EditorAttribute(typeof(DropDownEditor), typeof(UITypeEditor)));
+						attributes.Add(new EditorAttribute(typeof(WixDropDownEditor), typeof(UITypeEditor)));
 					}
 					break;
 			}

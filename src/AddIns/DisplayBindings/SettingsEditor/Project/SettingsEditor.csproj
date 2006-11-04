@@ -63,6 +63,7 @@
     <Compile Include="SettingsEntryPropertyGridWrapper.cs" />
     <Compile Include="ISettingsEntryHost.cs" />
     <Compile Include="SpecialTypes.cs" />
+    <Compile Include="SettingsDocument.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

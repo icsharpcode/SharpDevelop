@@ -396,7 +396,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			createdFiles.Add(new KeyValuePair<string, PropertyGroup>(parsedFileName, newfile.CreateMSBuildProperties()));
 		}
 		
-		string GenerateValidClassName(string className)
+		internal static string GenerateValidClassName(string className)
 		{
 			int idx = 0;
 			while (idx < className.Length && className[idx] != '_' && !Char.IsLetter(className[idx])) {
@@ -449,20 +449,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					fileName = Path.GetFullPath(fileName);
 					IProject project = ProjectService.CurrentProject;
 					if (project != null) {
-						string relPath = FileUtility.GetRelativePath(project.Directory, Path.GetDirectoryName(fileName));
-						string[] subdirs = relPath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-						StringBuilder standardNameSpace = new StringBuilder(project.RootNamespace);
-						foreach(string subdir in subdirs) {
-							if (subdir == "." || subdir == ".." || subdir.Length == 0)
-								continue;
-							if (subdir.Equals("src", StringComparison.OrdinalIgnoreCase))
-								continue;
-							if (subdir.Equals("source", StringComparison.OrdinalIgnoreCase))
-								continue;
-							standardNameSpace.Append('.');
-							standardNameSpace.Append(GenerateValidClassName(subdir));
-						}
-						StringParser.Properties["StandardNamespace"] = standardNameSpace.ToString();
+						StringParser.Properties["StandardNamespace"] = CustomToolsService.GetDefaultNamespace(project, fileName);
 					}
 				}
 				StringParser.Properties["FullName"]                 = fileName;

@@ -9,6 +9,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using ICSharpCode.SharpDevelop.Widgets.DesignTimeSupport;
 
 namespace ICSharpCode.WixBinding
 {

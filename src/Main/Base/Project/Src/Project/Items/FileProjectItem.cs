@@ -8,9 +8,12 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-
+using System.Drawing.Design;
+using System.Windows.Forms;
+using System.Windows.Forms.Design;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Widgets.DesignTimeSupport;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -67,12 +70,26 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomTool}",
 		                   Description ="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomTool.Description}")]
+		[Editor(typeof(CustomToolEditor), typeof(UITypeEditor))]
 		public string CustomTool {
 			get {
 				return base.Properties["Generator"];
 			}
 			set {
 				base.Properties["Generator"] = value;
+			}
+		}
+		
+		sealed class CustomToolEditor : DropDownEditor
+		{
+			protected override Control CreateDropDownControl(ITypeDescriptorContext context, IWindowsFormsEditorService editorService)
+			{
+				FileProjectItem item = context.Instance as FileProjectItem;
+				if (item != null) {
+					return new DropDownEditorListBox(editorService, CustomToolsService.GetCompatibleCustomToolNames(item));
+				} else {
+					return new DropDownEditorListBox(editorService, CustomToolsService.GetCustomToolNames());
+				}
 			}
 		}
 		
@@ -84,6 +101,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				base.Properties["CustomToolNamespace"] = value;
+				CustomToolsService.RunCustomTool(this, false);
 			}
 		}
 		

@@ -97,6 +97,7 @@ namespace ICSharpCode.SettingsEditor
 			this.TypeColumn.HeaderText = "Type";
 			this.TypeColumn.MinimumWidth = 50;
 			this.TypeColumn.Name = "TypeColumn";
+			this.TypeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
 			// 
 			// ScopeColumn
 			// 
@@ -105,6 +106,7 @@ namespace ICSharpCode.SettingsEditor
 			this.ScopeColumn.HeaderText = "Scope";
 			this.ScopeColumn.MinimumWidth = 30;
 			this.ScopeColumn.Name = "ScopeColumn";
+			this.ScopeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
 			// 
 			// ValueColumn
 			// 

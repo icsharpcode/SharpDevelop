@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel;
 using System.Reflection;
+using System.Configuration;
 
 namespace ICSharpCode.SettingsEditor
 {
@@ -15,11 +16,13 @@ namespace ICSharpCode.SettingsEditor
 	{
 		internal string name;
 		internal Type type;
+		internal SpecialSetting specialSetting;
 		
-		internal SpecialTypeDescriptor(string name, Type type)
+		internal SpecialTypeDescriptor(string name, Type type, SpecialSetting specialSetting)
 		{
 			this.name = name;
 			this.type = type;
+			this.specialSetting = specialSetting;
 		}
 		
 		public string GetString(object value)
@@ -38,8 +41,12 @@ namespace ICSharpCode.SettingsEditor
 		}
 		
 		internal static readonly SpecialTypeDescriptor[] Descriptors = {
-			new SpecialTypeDescriptor("(Web Service URL)", typeof(WebServiceUrlDummyType)),
-			new SpecialTypeDescriptor("(Connection string)", typeof(ConnectionStringDummyType)),
+			new SpecialTypeDescriptor("(Web Service URL)",
+			                          typeof(WebServiceUrlDummyType),
+			                          SpecialSetting.WebServiceUrl),
+			new SpecialTypeDescriptor("(Connection string)",
+			                          typeof(ConnectionStringDummyType),
+			                          SpecialSetting.ConnectionString)
 		};
 	}
 	
