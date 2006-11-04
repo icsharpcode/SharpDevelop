@@ -45,11 +45,11 @@ namespace Debugger
 				} else {
 					(CorValue.CastTo<ICorDebugGenericValue>()).Value = newValue;
 				}
-				this.Variable.NotifyChange();
+				this.Value.NotifyChange();
 			}
 		}
 
-		internal PrimitiveValue(Variable variable):base(variable)
+		internal PrimitiveValue(Value @value):base(@value)
 		{
 		}
 

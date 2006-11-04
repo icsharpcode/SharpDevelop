@@ -6,23 +6,17 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 
-namespace Debugger 
-{	
-	[Serializable]
-	public class ValueEventArgs : ProcessEventArgs
+using Debugger.Wrappers.CorDebug;
+
+namespace Debugger
+{
+	public class LocalVariable: Variable
 	{
-		Value val;
-		
-		public Value Value {
-			get {
-				return val;
-			}
-		}
-		
-		public ValueEventArgs(Value val): base(val.Process)
+		public LocalVariable(string name, Value @value)
+			:base (name, @value)
 		{
-			this.val = val;
 		}
 	}
 }

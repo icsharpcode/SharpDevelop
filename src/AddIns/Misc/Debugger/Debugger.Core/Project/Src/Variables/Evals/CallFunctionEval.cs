@@ -14,11 +14,16 @@ namespace Debugger
 	class CallFunctionEval: Eval
 	{
 		ICorDebugFunction corFunction;
-		Variable          thisValue;
-		Variable[]        args;
+		Value             thisValue;
+		Value[]           args;
 		
-		public CallFunctionEval(Process process, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies, ICorDebugFunction corFunction, Variable thisValue, Variable[] args)
-			:base(process, name, flags, expireDependencies, mutateDependencies)
+		public CallFunctionEval(Process process,
+		                        IExpirable[] expireDependencies,
+		                        IMutable[] mutateDependencies,
+		                        ICorDebugFunction corFunction,
+		                        Value thisValue,
+		                        Value[] args)
+			:base(process, expireDependencies, mutateDependencies)
 		{
 			this.corFunction = corFunction;
 			this.thisValue = thisValue;
@@ -39,7 +44,7 @@ namespace Debugger
 					}
 					corArgs.Add(thisValue.SoftReference);
 				}
-				foreach(Variable arg in args) {
+				foreach(Value arg in args) {
 					corArgs.Add(arg.SoftReference);
 				}
 			} catch (CannotGetValueException e) {

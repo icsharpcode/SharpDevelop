@@ -12,29 +12,29 @@ namespace Debugger
 {
 	public abstract class ValueProxy: RemotingObjectBase
 	{
-		Variable variable;
+		Value val;
 		
 		public Process Process {
 			get {
-				return variable.Process;
+				return val.Process;
 			}
 		}
 		
-		public Variable Variable {
+		public Value Value {
 			get {
-				return variable;
+				return val;
 			}
 		}
 		
 		internal ICorDebugValue CorValue {
 			get {
-				return variable.CorValue;
+				return val.CorValue;
 			}
 		}
 		
 		protected ValueProxy FreshValue {
 			get {
-				return variable.ValueProxy;
+				return val.ValueProxy;
 			}
 		}
 		
@@ -78,7 +78,7 @@ namespace Debugger
 				#if DEBUG
 				return new VariableCollection(subVars.Name,
 				                              subVars.Value,
-				                              Util.MergeLists(variable.GetDebugInfo(), subVars.SubCollections).ToArray(),
+				                              Util.MergeLists(val.GetDebugInfo(), subVars.SubCollections).ToArray(),
 				                              subVars.Items);
 				#else
 				return subVars;
@@ -100,10 +100,10 @@ namespace Debugger
 			}
 		}
 		
-		protected ValueProxy(Variable variable)
+		protected ValueProxy(Value @value)
 		{
-			if (variable == null) throw new ArgumentNullException("variable");
-			this.variable = variable;
+			if (@value == null) throw new ArgumentNullException("value");
+			this.val = @value;
 		}
 		
 		public override string ToString()

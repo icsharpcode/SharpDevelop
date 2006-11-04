@@ -72,7 +72,7 @@ namespace Debugger
 				return new VariableCollection("Base class",
 				                              "{" + Type + "}",
 				                              SubCollections,
-				                              GetSubVariables(Variable.Flags.Public, Variable.Flags.PublicStatic));
+				                              GetSubVariables(ObjectMember.Flags.Public, ObjectMember.Flags.PublicStatic));
 			}
 		}
 		
@@ -82,15 +82,15 @@ namespace Debugger
 				VariableCollection privateStatic = new VariableCollection("Private static members",
 				                                                          String.Empty,
 				                                                          new VariableCollection[0],
-				                                                          GetSubVariables(Variable.Flags.Static, Variable.Flags.PublicStatic));
+				                                                          GetSubVariables(ObjectMember.Flags.Static, ObjectMember.Flags.PublicStatic));
 				VariableCollection privateInstance = new VariableCollection("Private members",
 				                                                            String.Empty,
 				                                                            privateStatic.IsEmpty? new VariableCollection[0] : new VariableCollection[] {privateStatic},
-					                                                        GetSubVariables(Variable.Flags.None, Variable.Flags.PublicStatic));
+					                                                        GetSubVariables(ObjectMember.Flags.None, ObjectMember.Flags.PublicStatic));
 				VariableCollection publicStatic = new VariableCollection("Static members",
 				                                                         String.Empty,
 					                                                     new VariableCollection[0],
-					                                                     GetSubVariables(Variable.Flags.PublicStatic, Variable.Flags.PublicStatic));
+					                                                     GetSubVariables(ObjectMember.Flags.PublicStatic, ObjectMember.Flags.PublicStatic));
 				if (baseClass != null) {
 					yield return baseClass.SubVariables;
 				}
@@ -103,15 +103,15 @@ namespace Debugger
 			}
 		}
 		
-		IEnumerable<Variable> GetSubVariables(Variable.Flags requiredFlags, Variable.Flags mask) {
-			foreach(Variable var in GetFieldVariables()) {
-				if ((var.VariableFlags & mask) == requiredFlags) {
+		IEnumerable<Variable> GetSubVariables(ObjectMember.Flags requiredFlags, ObjectMember.Flags mask) {
+			foreach(ObjectMember var in GetFieldVariables()) {
+				if ((var.MemberFlags & mask) == requiredFlags) {
 					yield return var;
 				}
 			}
 			
-			foreach(Variable var in GetPropertyVariables()) {
-				if ((var.VariableFlags & mask) == requiredFlags) {
+			foreach(ObjectMember var in GetPropertyVariables()) {
+				if ((var.MemberFlags & mask) == requiredFlags) {
 					yield return var;
 				}
 			}
@@ -128,18 +128,22 @@ namespace Debugger
 			}
 		}
 		
-		public IEnumerable<Variable> GetFieldVariables()
+		public IEnumerable<ObjectMember> GetFieldVariables()
 		{
 			foreach(FieldProps f in Module.MetaData.EnumFields(ClassToken)) {
 				FieldProps field = f; // One per scope/delegate
 				if (field.IsStatic && field.IsLiteral) continue; // Skip field
-				yield return new Variable(process,
-				                          field.Name,
-				                          (field.IsStatic ? Variable.Flags.Static : Variable.Flags.None) |
-				                          (field.IsPublic ? Variable.Flags.Public : Variable.Flags.None),
-				                          new IExpirable[] {this.objectValue.Variable},
-				                          new IMutable[] {this.objectValue.Variable},
-				                          delegate { return GetCorValueOfField(field); });
+				yield return new ObjectMember(
+					field.Name,
+					(field.IsStatic ? ObjectMember.Flags.Static : ObjectMember.Flags.None) |
+					(field.IsPublic ? ObjectMember.Flags.Public : ObjectMember.Flags.None),
+					new Value(
+						process,
+						new IExpirable[] {this.objectValue.Value},
+						new IMutable[] {this.objectValue.Value},
+						delegate { return GetCorValueOfField(field); }
+					)
+				);
 			}
 		}
 		
@@ -170,21 +174,25 @@ namespace Debugger
 			}
 		}
 		
-		public IEnumerable<Variable> GetPropertyVariables()
+		public IEnumerable<ObjectMember> GetPropertyVariables()
 		{
 			foreach(MethodProps m in Methods) {
 				MethodProps method = m; // One per scope/delegate
 				if (method.HasSpecialName && method.Name.StartsWith("get_") && method.Name != "get_Item") {
-					Variable.Flags flags = (method.IsStatic ? Variable.Flags.Static : Variable.Flags.None) |
-					                       (method.IsPublic ? Variable.Flags.Public : Variable.Flags.None);
-					yield return new CallFunctionEval(process,
-					                                  method.Name.Remove(0, 4),
-					                                  flags,
-					                                  new IExpirable[] {this.objectValue.Variable},
-					                                  new IMutable[] {process.DebugeeState},
-					                                  Module.CorModule.GetFunctionFromToken(method.Token),
-					                                  method.IsStatic ? null : this.objectValue.Variable, // this
-					                                  new Variable[] {}); // args
+					ObjectMember.Flags flags = (method.IsStatic ? ObjectMember.Flags.Static : ObjectMember.Flags.None) |
+					                           (method.IsPublic ? ObjectMember.Flags.Public : ObjectMember.Flags.None);
+					yield return new ObjectMember(
+						method.Name.Remove(0, 4),
+						flags,
+						new CallFunctionEval(
+							process,
+							new IExpirable[] {this.objectValue.Value},
+							new IMutable[] {process.DebugeeState},
+							Module.CorModule.GetFunctionFromToken(method.Token),
+							method.IsStatic ? null : this.objectValue.Value, // this
+							new Value[] {}
+						)
+					); // args
 				}
 			}
 		}

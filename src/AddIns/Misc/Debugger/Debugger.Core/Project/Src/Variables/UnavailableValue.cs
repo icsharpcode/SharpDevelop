@@ -25,7 +25,7 @@ namespace Debugger
 			} 
 		}
 		
-		internal UnavailableValue(Variable variable, string message):base(variable)
+		internal UnavailableValue(Value @value, string message):base(@value)
 		{
 			this.message = message;
 		}

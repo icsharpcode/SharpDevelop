@@ -37,12 +37,10 @@ namespace Debugger
 			this.thread = thread;
 			corValue = thread.CorThread.CurrentException;
 			exceptionType = thread.CurrentExceptionType;
-			runtimeValue = new Variable(process,
-			                            "$exception",
-			                            Variable.Flags.Default,
-			                            new IExpirable[] {process.PauseSession},
-			                            new IMutable[] {},
-			                            delegate { return corValue; } ).ValueProxy;
+			runtimeValue = new Value(process,
+			                         new IExpirable[] {process.PauseSession},
+			                         new IMutable[] {},
+			                         delegate { return corValue; } ).ValueProxy;
 			runtimeValueException = ((ObjectValue)runtimeValue).GetClass("System.Exception");
 			message = runtimeValueException.SubVariables["_message"].ValueProxy.AsString;
 			

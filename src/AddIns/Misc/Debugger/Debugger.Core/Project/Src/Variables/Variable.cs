@@ -13,7 +13,12 @@ using Debugger.Wrappers.CorDebug;
 namespace Debugger
 {
 	/// <summary>
-	/// Variable is a container which holds data necessaty to obtain 
+	/// Delegate that is used to get value. This delegate may be called at any time and should never return null.
+	/// </summary>
+	delegate ICorDebugValue CorValueGetter();
+	
+	/// <summary>
+	/// Value is a container which holds data necessaty to obtain 
 	/// the value of a given object even after continue. This level of 
 	/// abstraction is necessary because the type of a value can change 
 	/// (eg for local variable of type object)
@@ -30,21 +35,10 @@ namespace Debugger
 	/// obteined value is still considered up to date. (If continue is
 	/// called and internal value is neutred new copy will be obatined)
 	/// </summary>
-	public class Variable: IExpirable, IMutable
+	public class Value: IExpirable, IMutable
 	{
-		/// <summary>
-		/// Delegate that is used to get value. This delegate may be called at any time and should never return null.
-		/// </summary>
-		public delegate ICorDebugValue CorValueGetter();
-		
-		[Flags] 
-		public enum Flags { Default = Public, None = 0, Public = 1, Static = 2, PublicStatic = Public | Static};
-		
-		
 		protected Process process;
 		
-		string name;
-		Flags flags;
 		CorValueGetter corValueGetter;
 		IMutable[] mutateDependencies;
 		
@@ -60,15 +54,6 @@ namespace Debugger
 		public Process Process {
 			get {
 				return process;
-			}
-		}
-		
-		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
 			}
 		}
 		
@@ -108,27 +93,6 @@ namespace Debugger
 			}
 		}
 		
-		public Flags VariableFlags {
-			get {
-				return flags;
-			}
-			set {
-				flags = value;
-			}
-		}
-		
-		public bool IsStatic {
-			get {
-				return (flags & Flags.Static) != 0;
-			}
-		}
-		
-		public bool IsPublic {
-			get {
-				return (flags & Flags.Public) != 0;
-			}
-		}
-		
 		public ICorDebugValue SoftReference {
 			get {
 				if (this.HasExpired) throw new DebuggerException("CorValue has expired");
@@ -146,17 +110,12 @@ namespace Debugger
 			}
 		}
 		
-		public Variable(Process process, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies, CorValueGetter corValueGetter)
+		internal Value(Process process,
+		               IExpirable[] expireDependencies,
+		               IMutable[] mutateDependencies,
+		               CorValueGetter corValueGetter)
 		{
 			this.process = process;
-			this.name = name;
-			if (name.StartsWith("<") && name.Contains(">") && name != "<Base class>") {
-				string middle = name.TrimStart('<').Split('>')[0]; // Get text between '<' and '>'
-				if (middle != "") {
-					this.name = middle;
-				}
-			}
-			this.flags = flags;
 			
 			foreach(IExpirable exp in expireDependencies) {
 				AddExpireDependency(exp);
@@ -191,7 +150,7 @@ namespace Debugger
 		{
 			if (!isExpired) {
 				isExpired = true;
-				OnExpired(new VariableEventArgs(this));
+				OnExpired(new ValueEventArgs(this));
 				foreach(IMutable mut in mutateDependencies) {
 					mut.Changed -= DependencyChanged;
 				}
@@ -214,7 +173,7 @@ namespace Debugger
 		{
 			ClearCurrentValue();
 			if (!isExpired) {
-				OnChanged(new VariableEventArgs(this));
+				OnChanged(new ValueEventArgs(this));
 			}
 		}
 		
@@ -307,10 +266,10 @@ namespace Debugger
 			}
 		}
 		
-		public bool SetValue(Variable newVariable)
+		public bool SetValue(Value newValue)
 		{
 			ICorDebugValue corValue = this.RawCorValue;
-			ICorDebugValue newCorValue = newVariable.RawCorValue;
+			ICorDebugValue newCorValue = newValue.RawCorValue;
 			if (newCorValue.Type == (uint)CorElementType.BYREF) {
 				newCorValue = newCorValue.As<ICorDebugReferenceValue>().Dereference();
 			}

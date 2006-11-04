@@ -24,8 +24,8 @@ namespace Debugger
 	public class DebugeeInterpreterContext: InterpreterContext
 	{
 		Process process;
-		Variable interpreter;
-		Variable interpreter_localVariable;
+		Value interpreter;
+		Value interpreter_localVariable;
 		
 		public DebugeeInterpreterContext()
 		{
@@ -60,15 +60,15 @@ namespace Debugger
 			process.LogMessage -= OnDebuggerLogMessage;
 			process.LogMessage += OnDebuggerLogMessage;
 			
-			Variable assembly;
+			Value assembly;
 			// Boo.Lang.Interpreter.dll
 			string path = Path.Combine(Path.GetDirectoryName(typeof(InterpreterContext).Assembly.Location), "Boo.Lang.Interpreter.dll");
 			assembly = LoadAssembly(path);
 			// Debugger.BooInterpreter.dll
 			assembly = LoadAssembly(typeof(DebugeeInteractiveInterpreter).Assembly.Location);
-			Variable interpreterType = Eval.NewString(process, typeof(DebugeeInteractiveInterpreter).FullName);
-			interpreter = Eval.CallFunction(process, typeof(Assembly), "CreateInstance", assembly, new Variable[] {interpreterType});
-			interpreter_localVariable = interpreter.ValueProxy.SubVariables["localVariable"];
+			Value interpreterType = Eval.NewString(process, typeof(DebugeeInteractiveInterpreter).FullName);
+			interpreter = Eval.CallFunction(process, typeof(Assembly), "CreateInstance", assembly, new Value[] {interpreterType});
+			interpreter_localVariable = interpreter.ValueProxy.SubVariables["localVariable"].Value;
 			RunCommand(
 				"import System\n" + 
 				"import System.IO\n" +
@@ -79,18 +79,18 @@ namespace Debugger
 			return true;
 		}
 		
-		Variable LoadAssembly(string path)
+		Value LoadAssembly(string path)
 		{
-			Variable assemblyPath = Eval.NewString(process, path);
-			Variable assembly = Eval.CallFunction(process, typeof(Assembly), "LoadFrom", null, new Variable[] {assemblyPath});
+			Value assemblyPath = Eval.NewString(process, path);
+			Value assembly = Eval.CallFunction(process, typeof(Assembly), "LoadFrom", null, new Value[] {assemblyPath});
 			return assembly;
 		}
 		
 		public override void RunCommand(string code)
 		{
 			if (CanLoadInterpreter) {
-				Variable cmd = Eval.NewString(process, code);
-				Eval.CallFunction(process, typeof(InteractiveInterpreter), "LoopEval", interpreter, new Variable[] {cmd});
+				Value cmd = Eval.NewString(process, code);
+				Eval.CallFunction(process, typeof(InteractiveInterpreter), "LoopEval", interpreter, new Value[] {cmd});
 			}
 		}
 		
@@ -102,8 +102,8 @@ namespace Debugger
 		public override string[] SuggestCodeCompletion(string code)
 		{
 			if (CanLoadInterpreter) {
-				Variable cmd = Eval.NewString(process, code);
-				Eval.CallFunction(process, typeof(AbstractInterpreter), "SuggestCodeCompletion", interpreter, new Variable[] {cmd});
+				Value cmd = Eval.NewString(process, code);
+				Eval.CallFunction(process, typeof(AbstractInterpreter), "SuggestCodeCompletion", interpreter, new Value[] {cmd});
 				return null;
 			} else {
 				return null;
@@ -140,7 +140,7 @@ namespace Debugger
 			Stepper stepOut = new Stepper(process.SelectedThread.LastFunction, "Boo interperter");
 			stepOut.StepComplete  += delegate {
 				process.Debugger.MTA2STA.AsyncCall(delegate {
-					if (!interpreter_localVariable.SetValue(localVar)) {
+					if (!interpreter_localVariable.SetValue(localVar.Value)) {
 						PrintLine("Getting of local variable " + name + " failed");
 					}
 					process.Continue();
@@ -158,7 +158,7 @@ namespace Debugger
 				return;
 			}
 			PrintLine("Setting local variable " + name);
-			localVar.SetValue(interpreter_localVariable);
+			localVar.Value.SetValue(interpreter_localVariable);
 		}
 	}
 }

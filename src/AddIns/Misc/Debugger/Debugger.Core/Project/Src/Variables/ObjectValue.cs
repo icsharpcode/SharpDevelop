@@ -14,7 +14,7 @@ namespace Debugger
 	public class ObjectValue: ValueProxy
 	{
 		ObjectValueClass topClass;
-		Variable toStringText;
+		Value toStringText;
 		
 		public override string AsString {
 			get {
@@ -22,7 +22,7 @@ namespace Debugger
 			}
 		}
 		
-		public Variable ToStringText {
+		public Value ToStringText {
 			get {
 				return toStringText;
 			}
@@ -66,19 +66,17 @@ namespace Debugger
 			return false;
 		}
 		
-		internal ObjectValue(Variable variable):base(variable)
+		internal ObjectValue(Value @value):base(@value)
 		{
 			topClass = new ObjectValueClass(this, this.CorValue.As<ICorDebugObjectValue>().Class);
 			Module module = GetClass("System.Object").Module;
 			ICorDebugFunction corFunction = module.GetMethod("System.Object", "ToString", 0);
 			toStringText = new CallFunctionEval(this.Process,
-			                                    "ToString()",
-			                                    Variable.Flags.Default,
-			                                    new IExpirable[] {this.Variable},
-			                                    new IMutable[] {this.Variable},
+			                                    new IExpirable[] {this.Value},
+			                                    new IMutable[] {this.Value},
 			                                    corFunction,
-			                                    this.Variable,
-			                                    new Variable[] {});
+			                                    this.Value,
+			                                    new Value[] {});
 		}
 		
 		internal bool IsCorValueCompatible {

@@ -362,7 +362,7 @@ namespace Debugger
 		IEnumerable<Variable> GetVariables() 
 		{
 			if (!IsStatic) {
-				yield return ThisVariable;
+				yield return new Variable("this", ThisValue);
 			}
 			foreach(Variable var in ArgumentVariables) {
 				yield return var;
@@ -375,14 +375,14 @@ namespace Debugger
 			}
 		}
 		
-		public Variable ThisVariable {
+		public Value ThisValue {
 			get {
-				return new Variable(process,
-				                    "this",
-				                    Variable.Flags.Default,
-				                    new IExpirable[] {this},
-				                    new IMutable[] {},
-				                    delegate { return ThisCorValue; });
+				return new Value(
+					process,
+					new IExpirable[] {this},
+					new IMutable[] {},
+					delegate { return ThisCorValue; }
+				);
 			}
 		}
 		
@@ -404,7 +404,7 @@ namespace Debugger
 			get {
 				// TODO: Should work for static
 				if (!IsStatic) {
-					foreach(Variable var in ThisVariable.ValueProxy.SubVariables) {
+					foreach(Variable var in ThisValue.ValueProxy.SubVariables) {
 						yield return var;
 					}
 				}
@@ -432,14 +432,18 @@ namespace Debugger
 			}
 		}
 		
-		public Variable GetArgumentVariable(int index)
+		public MethodArgument GetArgumentVariable(int index)
 		{
-			return new Variable(process,
-			                    GetParameterName(index),
-			                    Variable.Flags.Default,
-			                    new IExpirable[] {this},
-			                    new IMutable[] {process.DebugeeState},
-			                    delegate { return GetArgumentCorValue(index); } );
+			return new MethodArgument(
+				GetParameterName(index),
+				index,
+				new Value(
+					process,
+					new IExpirable[] {this},
+					new IMutable[] {process.DebugeeState},
+					delegate { return GetArgumentCorValue(index); }
+				)
+			);
 		}
 		
 		ICorDebugValue GetArgumentCorValue(int index)
@@ -455,7 +459,7 @@ namespace Debugger
 			}
 		}
 		
-		public IEnumerable<Variable> ArgumentVariables {
+		public IEnumerable<MethodArgument> ArgumentVariables {
 			get {
 				for (int i = 0; i < ArgumentCount; i++) {
 					yield return GetArgumentVariable(i);
@@ -463,11 +467,11 @@ namespace Debugger
 			}
 		}
 		
-		public IEnumerable<Variable> LocalVariables {
+		public IEnumerable<LocalVariable> LocalVariables {
 			get {
 				if (symMethod != null) { // TODO: Is this needed?
 					ISymUnmanagedScope symRootScope = symMethod.RootScope;
-					foreach(Variable var in GetLocalVariablesInScope(symRootScope)) {
+					foreach(LocalVariable var in GetLocalVariablesInScope(symRootScope)) {
 						if (!var.Name.StartsWith("CS$")) { // TODO: Generalize
 							yield return var;
 						}
@@ -476,26 +480,29 @@ namespace Debugger
 			}
 		}
 		
-		IEnumerable<Variable> GetLocalVariablesInScope(ISymUnmanagedScope symScope)
+		IEnumerable<LocalVariable> GetLocalVariablesInScope(ISymUnmanagedScope symScope)
 		{
 			foreach (ISymUnmanagedVariable symVar in symScope.Locals) {
 				yield return GetLocalVariable(symVar);
 			}
 			foreach(ISymUnmanagedScope childScope in symScope.Children) {
-				foreach(Variable var in GetLocalVariablesInScope(childScope)) {
+				foreach(LocalVariable var in GetLocalVariablesInScope(childScope)) {
 					yield return var;
 				}
 			}
 		}
 		
-		Variable GetLocalVariable(ISymUnmanagedVariable symVar)
+		LocalVariable GetLocalVariable(ISymUnmanagedVariable symVar)
 		{
-			return new Variable(process,
-			                    symVar.Name,
-			                    Variable.Flags.Default,
-			                    new IExpirable[] {this},
-			                    new IMutable[] {process.DebugeeState},
-			                    delegate { return GetCorValueOfLocalVariable(symVar); });
+			return new LocalVariable(
+				symVar.Name,
+				new Value(
+					process,
+					new IExpirable[] {this},
+					new IMutable[] {process.DebugeeState},
+					delegate { return GetCorValueOfLocalVariable(symVar); }
+				)
+			);
 		}
 		
 		ICorDebugValue GetCorValueOfLocalVariable(ISymUnmanagedVariable symVar)

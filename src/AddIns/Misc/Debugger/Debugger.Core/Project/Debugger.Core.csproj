@@ -384,6 +384,11 @@
     <Compile Include="Src\Debugger\IMutable.cs" />
     <Compile Include="Src\Debugger\ExceptionEventArgs.cs" />
     <Compile Include="Src\Debugger\Internal\ManagedCallbackSwitch.cs" />
+    <Compile Include="Src\Variables\Variable2.cs" />
+    <Compile Include="Src\Variables\ObjectMember.cs" />
+    <Compile Include="Src\Variables\MethodArgument.cs" />
+    <Compile Include="Src\Variables\LocalVariable.cs" />
+    <Compile Include="Src\Variables\ArrayElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

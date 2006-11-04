@@ -16,7 +16,7 @@ namespace Debugger
 	/// <summary>
 	/// This class holds information about function evaluation.
 	/// </summary>
-	public abstract partial class Eval: Variable
+	public abstract partial class Eval: Value
 	{
 		protected class EvalSetupException: System.Exception
 		{
@@ -28,6 +28,8 @@ namespace Debugger
 		protected ICorDebugEval corEval;
 		EvalState currentState = EvalState.WaitingForRequest;
 		string    currentErrorMsg;
+		
+		string description = String.Empty;
 		
 		public EvalState State {
 			get {
@@ -50,8 +52,15 @@ namespace Debugger
 			}
 		}
 		
-		protected Eval(Process process, string name, Flags flags, IExpirable[] expireDependencies, IMutable[] mutateDependencies)
-			:base(process, name, flags, expireDependencies, mutateDependencies, null)
+		public string Description {
+			get { return description; }
+			set { description = value; }
+		}
+		
+		protected Eval(Process process,
+		               IExpirable[] expireDependencies,
+		               IMutable[] mutateDependencies)
+			:base(process, expireDependencies, mutateDependencies, null)
 		{
 		}
 		
@@ -75,46 +84,52 @@ namespace Debugger
 		/// <summary>
 		/// Synchronously calls a function and returns its return value
 		/// </summary>
-		public static Variable CallFunction(Process process, Type type, string functionName, Variable thisValue, Variable[] args)
+		public static Value CallFunction(Process process, Type type, string functionName, Value thisValue, Value[] args)
 		{
 			string moduleName = System.IO.Path.GetFileName(type.Assembly.Location);
 			Module module = process.GetModule(moduleName);
 			string containgType = type.FullName;
 			ICorDebugFunction corFunction = module.GetMethod(containgType, functionName, args.Length);
-			return new CallFunctionEval(process,
-			                            "Function call: " + containgType + "." + functionName,
-			                            Variable.Flags.Default,
-			                            new IExpirable[] {},
-			                            new IMutable[] {},
-			                            corFunction,
-			                            thisValue,
-			                            args).EvaluateNow();
+			Eval eval = new CallFunctionEval(
+				process,
+				new IExpirable[] {},
+				new IMutable[] {},
+				corFunction,
+				thisValue,
+				args
+			);
+			eval.Description = "Function call: " + containgType + "." + functionName;
+			return eval.EvaluateNow();
 		}
 		
 		/// <summary>
 		/// Synchronously creates a new string
 		/// </summary>
-		public static Variable NewString(Process process, string textToCreate)
+		public static Value NewString(Process process, string textToCreate)
 		{
-			return new NewStringEval(process,
-			                         "New string: " + textToCreate,
-			                         Variable.Flags.Default,
-			                         new IExpirable[] {},
-			                         new IMutable[] {},
-			                         textToCreate).EvaluateNow();
+			Eval eval = new NewStringEval(
+				process,
+				new IExpirable[] {},
+				new IMutable[] {},
+				textToCreate
+			);
+			eval.Description = "New string: " + textToCreate;
+			return eval.EvaluateNow();
 		}
 		
 		/// <summary>
 		/// Synchronously creates a new object
 		/// </summary>
-		public static Variable NewObject(Process process, ICorDebugClass classToCreate)
+		public static Value NewObject(Process process, ICorDebugClass classToCreate)
 		{
-			return new NewObjectEval(process,
-			                         "New object: " + classToCreate.Token,
-			                         Variable.Flags.Default,
-			                         new IExpirable[] {},
-			                         new IMutable[] {},
-			                         classToCreate).EvaluateNow();
+			Eval eval = new NewObjectEval(
+				process,
+				new IExpirable[] {},
+				new IMutable[] {},
+				classToCreate
+			);
+			eval.Description = "New object: " + classToCreate.Token;
+			return eval.EvaluateNow();
 		}
 		
 		protected override ICorDebugValue RawCorValue {
@@ -182,7 +197,7 @@ namespace Debugger
 		
 		protected abstract void StartEvaluation();
 		
-		public Variable EvaluateNow()
+		public Value EvaluateNow()
 		{
 			while (State == EvalState.WaitingForRequest) {
 				ScheduleEvaluation();

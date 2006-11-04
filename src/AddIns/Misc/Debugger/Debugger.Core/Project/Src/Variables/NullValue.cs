@@ -33,7 +33,7 @@ namespace Debugger
 			}
 		}
 
-		internal unsafe NullValue(Variable variable):base(variable)
+		internal unsafe NullValue(Value @value):base(@value)
 		{
 			
 		}
