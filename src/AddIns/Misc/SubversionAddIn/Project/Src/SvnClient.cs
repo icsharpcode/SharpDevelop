@@ -242,7 +242,7 @@ namespace ICSharpCode.Svn
 		SimpleCredential PasswordPrompt(string realm, string userName, bool maySave)
 		{
 			using (LoginDialog loginDialog = new LoginDialog(realm, userName, maySave)) {
-				if (loginDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (WorkbenchSingleton.SafeThreadFunction<Form, DialogResult>(loginDialog.ShowDialog, WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					return loginDialog.Credential;
 				}
 			}
@@ -252,7 +252,7 @@ namespace ICSharpCode.Svn
 		SslServerTrustCredential SslServerTrustPrompt(string realm, SslFailures failures, SslServerCertificateInfo info, bool maySave)
 		{
 			using (SslServerTrustDialog sslServerTrustDialog = new SslServerTrustDialog(info, failures, maySave)) {
-				if (sslServerTrustDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (WorkbenchSingleton.SafeThreadFunction<Form, DialogResult>(sslServerTrustDialog.ShowDialog, WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					return sslServerTrustDialog.Credential;
 				}
 			}
@@ -262,7 +262,7 @@ namespace ICSharpCode.Svn
 		SslClientCertificatePasswordCredential ClientCertificatePasswordPrompt(string realm, bool maySave)
 		{
 			using (ClientCertPassphraseDialog clientCertPassphraseDialog = new ClientCertPassphraseDialog(realm, maySave)) {
-				if (clientCertPassphraseDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (WorkbenchSingleton.SafeThreadFunction<Form, DialogResult>(clientCertPassphraseDialog.ShowDialog, WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					return clientCertPassphraseDialog.Credential;
 				}
 			}
@@ -272,7 +272,7 @@ namespace ICSharpCode.Svn
 		SslClientCertificateCredential ClientCertificatePrompt(string realm, bool maySave)
 		{
 			using (ClientCertDialog clientCertDialog = new ClientCertDialog(realm, maySave)) {
-				if (clientCertDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (WorkbenchSingleton.SafeThreadFunction<Form, DialogResult>(clientCertDialog.ShowDialog, WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					return clientCertDialog.Credential;
 				}
 			}

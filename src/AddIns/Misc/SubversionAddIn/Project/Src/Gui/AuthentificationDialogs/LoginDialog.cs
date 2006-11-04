@@ -79,6 +79,7 @@ namespace ICSharpCode.Svn.Gui
 			this.Realm    = realm;
 			this.MaySave  = maySave;
 			((CheckBox)ControlDictionary["showPasswordCheckBox"]).CheckedChanged += new EventHandler(ShowPasswordCheckBoxCheckedChanged);
+			((TextBox)ControlDictionary["pwd1TextBox"]).PasswordChar = '*';
 			((TextBox)ControlDictionary["pwd2TextBox"]).PasswordChar = '*';
 			
 			((TextBox)ControlDictionary["pwd1TextBox"]).TextChanged += new EventHandler(PasswordTextChanged);
@@ -94,6 +95,7 @@ namespace ICSharpCode.Svn.Gui
 				((TextBox)ControlDictionary["pwd2TextBox"]).Enabled = false;
 			} else {
 				((TextBox)ControlDictionary["pwd1TextBox"]).PasswordChar = '*';
+				((TextBox)ControlDictionary["pwd2TextBox"]).Enabled = true;
 			}
 		}
 		
