@@ -63,5 +63,10 @@ namespace ICSharpCode.SharpDevelop
 			}
 			return default(T);
 		}
+		
+		public static T[] ToArray<T>(IEnumerable<T> input)
+		{
+			return new List<T>(input).ToArray();
+		}
 	}
 }

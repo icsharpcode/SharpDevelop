@@ -25,7 +25,7 @@ namespace ResourceEditor
 			string inputFilePath = item.FileName;
 			
 			IResourceReader reader;
-			if (Path.GetExtension(inputFilePath) == ".resx") {
+			if (string.Equals(Path.GetExtension(inputFilePath), ".resx", StringComparison.OrdinalIgnoreCase)) {
 				reader = new ResXResourceReader(inputFilePath);
 			} else {
 				reader = new ResourceReader(inputFilePath);
@@ -43,7 +43,7 @@ namespace ResourceEditor
 				context.GetOutputFileName(item, ".Designer"),
 				StronglyTypedResourceBuilder.Create(
 					resources,        // resourceList
-					"Resources",      // baseName
+					Path.GetFileNameWithoutExtension(inputFilePath), // baseName
 					context.OutputNamespace, // generatedCodeNamespace
 					context.OutputNamespace, // resourcesNamespace
 					context.Project.LanguageProperties.CodeDomProvider, // codeProvider

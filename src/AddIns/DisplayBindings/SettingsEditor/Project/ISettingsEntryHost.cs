@@ -14,4 +14,19 @@ namespace ICSharpCode.SettingsEditor
 		string GetDisplayNameForType(Type type);
 		Type GetTypeByDisplayName(string displayName);
 	}
+	
+	sealed class DummySettingsEntryHost : ISettingsEntryHost
+	{
+		public readonly static DummySettingsEntryHost Instance = new DummySettingsEntryHost();
+		
+		public string GetDisplayNameForType(Type type)
+		{
+			return type.AssemblyQualifiedName;
+		}
+		
+		public Type GetTypeByDisplayName(string displayName)
+		{
+			return Type.GetType(displayName);
+		}
+	}
 }

@@ -64,6 +64,7 @@
     <Compile Include="ISettingsEntryHost.cs" />
     <Compile Include="SpecialTypes.cs" />
     <Compile Include="SettingsDocument.cs" />
+    <Compile Include="SettingsCodeGeneratorTool.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

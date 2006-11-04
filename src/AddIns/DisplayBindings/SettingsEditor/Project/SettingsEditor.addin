@@ -14,4 +14,10 @@
 		                fileNamePattern = "\.settings$"
 		                languagePattern = "^SettingsFiles$"/>
 	</Path>
+	
+	<Path name = "/SharpDevelop/CustomTools">
+		<CustomTool id    = "SettingsSingleFileGenerator"
+		            class = "ICSharpCode.SettingsEditor.SettingsCodeGeneratorTool"
+		            fileNamePattern = "\.res(x|ources)$"/>
+	</Path>
 </AddIn>

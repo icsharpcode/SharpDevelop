@@ -150,6 +150,7 @@
     <Compile Include="Src\CSharp\ExpressionFinder.cs" />
     <Compile Include="Src\VBNet\VBNetAmbience.cs" />
     <Compile Include="Src\VBNet\ExpressionFinder.cs" />
+    <Compile Include="Src\EasyCodeDom.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />

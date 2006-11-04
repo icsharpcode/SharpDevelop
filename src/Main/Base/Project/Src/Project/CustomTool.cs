@@ -145,6 +145,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				outputItem.FileName = outputFileName;
 				outputItem.DependentUpon = Path.GetFileName(baseItem.FileName);
 				ProjectService.AddProjectItem(project, outputItem);
+				project.Save();
 				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 			}
 			return outputItem;
@@ -156,17 +157,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			CodeDomProvider provider = project.LanguageProperties.CodeDomProvider;
 			CodeGeneratorOptions options = new CodeDOMGeneratorUtility().CreateCodeGeneratorOptions;
 			
-			NamedFileOperationDelegate method = delegate(string fileName) {
-				using (StreamWriter writer = new StreamWriter(fileName, false, System.Text.Encoding.UTF8)) {
-					if (provider == null) {
-						writer.WriteLine("No CodeDom provider was found for this language.");
-					} else {
-						provider.GenerateCodeFromCompileUnit(ccu, writer, options);
-					}
+			string codeOutput;
+			using (StringWriter writer = new StringWriter()) {
+				if (provider == null) {
+					writer.WriteLine("No CodeDom provider was found for this language.");
+				} else {
+					provider.GenerateCodeFromCompileUnit(ccu, writer, options);
 				}
-			};
-			FileUtility.ObservedSave(method, outputFileName, FileErrorPolicy.Inform);
+				codeOutput = writer.ToString();
+			}
+			
+			FileUtility.ObservedSave(delegate(string fileName) {
+			                         	File.WriteAllText(fileName, codeOutput, Encoding.UTF8);
+			                         },
+			                         outputFileName, FileErrorPolicy.Inform);
 			EnsureOutputFileIsInProject(baseItem, outputFileName);
+			ParserService.EnqueueForParsing(outputFileName, codeOutput);
 		}
 		
 		public void GenerateCodeDomAsync(FileProjectItem baseItem, string outputFileName, Func<CodeCompileUnit> func)

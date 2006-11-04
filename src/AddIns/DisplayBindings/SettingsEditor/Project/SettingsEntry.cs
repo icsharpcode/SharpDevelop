@@ -126,6 +126,7 @@ namespace ICSharpCode.SettingsEditor
 			
 			return typeof(object).Assembly.GetType(typeName, false)
 				?? typeof(Uri).Assembly.GetType(typeName, false)
+				?? typeof(System.Drawing.Font).Assembly.GetType(typeName, false)
 				?? typeof(System.Data.DataRow).Assembly.GetType(typeName, false);
 		}
 		
