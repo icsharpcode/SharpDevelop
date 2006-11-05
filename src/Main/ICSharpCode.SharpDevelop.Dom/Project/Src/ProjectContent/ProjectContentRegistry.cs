@@ -258,7 +258,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				if (pc == null) {
 					pc = new ReflectionProjectContent(assembly, this);
-					persistence.SaveProjectContent(pc);
+					if (persistence != null) {
+						persistence.SaveProjectContent(pc);
+					}
 				}
 			} else {
 				// find real file name for cecil:

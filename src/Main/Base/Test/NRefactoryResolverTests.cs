@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(lastPC);
+			NRefactoryResolver resolver = new NRefactoryResolver(lastPC, LanguageProperties.CSharp);
 			return resolver.Resolve(new ExpressionResult(expression),
 			                        line, 0,
 			                        "a.cs",
@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			AddCompilationUnit(ParseVB("a.vb", program), "a.vb");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(lastPC);
+			NRefactoryResolver resolver = new NRefactoryResolver(lastPC, LanguageProperties.VBNet);
 			return resolver.Resolve(new ExpressionResult(expression),
 			                        line, 0,
 			                        "a.vb",
@@ -651,7 +651,7 @@ namespace Root.Child {
 ";
 			AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(lastPC);
+			NRefactoryResolver resolver = new NRefactoryResolver(lastPC, LanguageProperties.CSharp);
 			ArrayList m = resolver.CtrlSpace(7, 0, "a.cs", program, ExpressionContext.Default);
 			Assert.IsTrue(TypeExists(m, "Beta"), "Meta must exist");
 			Assert.IsTrue(TypeExists(m, "Alpha"), "Alpha must exist");
