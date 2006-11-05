@@ -89,6 +89,12 @@ namespace ICSharpCode.SettingsEditor
 					               Easy.Prim(SettingsManageability.Roaming));
 				}
 				p.Getter.Return(Easy.This.Index(Easy.Prim(entry.Name)).CastTo(entryType));
+//				p.GetStatements.Add(new CodeMethodReturnStatement(
+//					new CodeCastExpression(new CodeTypeReference(entryType),
+//					                       new CodeIndexerExpression(new CodeThisReferenceExpression(),
+//					                                                 new CodePrimitiveExpression(entry.Name))
+//					                      )
+//				));
 				if (entry.Scope == SettingScope.User) {
 					p.Setter.Assign(Easy.This.Index(Easy.Prim(entry.Name)), Easy.Value);
 				}

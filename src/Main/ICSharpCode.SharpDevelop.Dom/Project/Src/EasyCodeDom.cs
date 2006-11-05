@@ -20,6 +20,14 @@ namespace ICSharpCode.EasyCodeDom
 		{
 			return new CodeTypeReference(type.Name);
 		}
+		public static CodeTypeReference TypeRef(string typeName, params string[] typeArguments)
+		{
+			CodeTypeReference tr = new CodeTypeReference(typeName);
+			foreach (string ta in typeArguments) {
+				tr.TypeArguments.Add(ta);
+			}
+			return tr;
+		}
 		
 		/// <summary>
 		/// Gets the EasyExpression for any primitive value that can be expressed as literal.
@@ -41,6 +49,10 @@ namespace ICSharpCode.EasyCodeDom
 		public static EasyExpression Type(CodeTypeReference type)
 		{
 			return new EasyExpression(new CodeTypeReferenceExpression(type));
+		}
+		public static EasyExpression Type(string type)
+		{
+			return Type(new CodeTypeReference(type));
 		}
 		
 		public static EasyExpression TypeOf(Type type)
@@ -66,15 +78,34 @@ namespace ICSharpCode.EasyCodeDom
 			return new EasyExpression(new CodeVariableReferenceExpression(name));
 		}
 		
+		public static EasyExpression Binary(CodeExpression left,
+		                                    CodeBinaryOperatorType op,
+		                                    CodeExpression right)
+		{
+			return new EasyExpression(new CodeBinaryOperatorExpression(left, op, right));
+		}
+		
 		public static EasyExpression This {
 			get {
 				return new EasyExpression(new CodeThisReferenceExpression());
 			}
 		}
 		
+		public static EasyExpression Base {
+			get {
+				return new EasyExpression(new CodeBaseReferenceExpression());
+			}
+		}
+		
 		public static EasyExpression Value {
 			get {
 				return new EasyExpression(new CodePropertySetValueReferenceExpression());
+			}
+		}
+		
+		public static EasyExpression Null {
+			get {
+				return new EasyExpression(new CodePrimitiveExpression(null));
 			}
 		}
 		
@@ -85,7 +116,7 @@ namespace ICSharpCode.EasyCodeDom
 			member.Comments.Add(new CodeCommentStatement("</summary>", true));
 		}
 		
-		internal static CodeAttributeDeclaration AddAttribute(CodeTypeMember member,
+		internal static CodeAttributeDeclaration AddAttribute(CodeAttributeDeclarationCollection col,
 		                                                      CodeTypeReference type,
 		                                                      CodeExpression[] arguments)
 		{
@@ -94,7 +125,7 @@ namespace ICSharpCode.EasyCodeDom
 				attributeArguments[i] = new CodeAttributeArgument(arguments[i]);
 			}
 			CodeAttributeDeclaration cad = new CodeAttributeDeclaration(type, attributeArguments);
-			member.CustomAttributes.Add(cad);
+			col.Add(cad);
 			return cad;
 		}
 	}
@@ -164,6 +195,13 @@ namespace ICSharpCode.EasyCodeDom
 			this.Types.Add(n);
 			return n;
 		}
+		
+		public CodeNamespaceImport AddImport(string nameSpace)
+		{
+			CodeNamespaceImport cni = new CodeNamespaceImport(nameSpace);
+			this.Imports.Add(cni);
+			return cni;
+		}
 	}
 	
 	public class EasyTypeDeclaration : CodeTypeDeclaration
@@ -173,11 +211,11 @@ namespace ICSharpCode.EasyCodeDom
 		
 		public CodeAttributeDeclaration AddAttribute(Type type, params CodeExpression[] arguments)
 		{
-			return Easy.AddAttribute(this, Easy.TypeRef(type), arguments);
+			return Easy.AddAttribute(this.CustomAttributes, Easy.TypeRef(type), arguments);
 		}
 		public CodeAttributeDeclaration AddAttribute(CodeTypeReference type, params CodeExpression[] arguments)
 		{
-			return Easy.AddAttribute(this, type, arguments);
+			return Easy.AddAttribute(this.CustomAttributes, type, arguments);
 		}
 		
 		public EasyField AddField(Type type, string name)
@@ -199,7 +237,9 @@ namespace ICSharpCode.EasyCodeDom
 		{
 			EasyProperty p = new EasyProperty(type, name);
 			this.Members.Add(p);
-			p.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+			if (this.IsInterface == false) {
+				p.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+			}
 			return p;
 		}
 		
@@ -208,6 +248,33 @@ namespace ICSharpCode.EasyCodeDom
 			EasyProperty p = AddProperty(field.Type, name);
 			p.Getter.Return(new CodeVariableReferenceExpression(field.Name));
 			p.Attributes |= field.Attributes & MemberAttributes.Static; // copy static flag
+			return p;
+		}
+		
+		/// <summary>
+		/// Adds a method with return type <c>void</c> and attributes=Public|Final to this type.
+		/// </summary>
+		public EasyMethod AddMethod(string name)
+		{
+			return AddMethod(Easy.TypeRef(typeof(void)), name);
+		}
+		/// <summary>
+		/// Adds a method with return type <paramref name="type"/> and attributes=Public|Final to this type.
+		/// </summary>
+		public EasyMethod AddMethod(Type type, string name)
+		{
+			return AddMethod(Easy.TypeRef(type), name);
+		}
+		/// <summary>
+		/// Adds a method with return type <paramref name="type"/> and attributes=Public|Final to this type.
+		/// </summary>
+		public EasyMethod AddMethod(CodeTypeReference type, string name)
+		{
+			EasyMethod p = new EasyMethod(type, name);
+			this.Members.Add(p);
+			if (this.IsInterface == false) {
+				p.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+			}
 			return p;
 		}
 	}
@@ -219,11 +286,11 @@ namespace ICSharpCode.EasyCodeDom
 		
 		public CodeAttributeDeclaration AddAttribute(Type type, params CodeExpression[] arguments)
 		{
-			return Easy.AddAttribute(this, Easy.TypeRef(type), arguments);
+			return Easy.AddAttribute(this.CustomAttributes, Easy.TypeRef(type), arguments);
 		}
 		public CodeAttributeDeclaration AddAttribute(CodeTypeReference type, params CodeExpression[] arguments)
 		{
-			return Easy.AddAttribute(this, type, arguments);
+			return Easy.AddAttribute(this.CustomAttributes, type, arguments);
 		}
 	}
 	
@@ -245,11 +312,11 @@ namespace ICSharpCode.EasyCodeDom
 		
 		public CodeAttributeDeclaration AddAttribute(Type type, params CodeExpression[] arguments)
 		{
-			return Easy.AddAttribute(this, Easy.TypeRef(type), arguments);
+			return Easy.AddAttribute(this.CustomAttributes, Easy.TypeRef(type), arguments);
 		}
 		public CodeAttributeDeclaration AddAttribute(CodeTypeReference type, params CodeExpression[] arguments)
 		{
-			return Easy.AddAttribute(this, type, arguments);
+			return Easy.AddAttribute(this.CustomAttributes, type, arguments);
 		}
 		
 		public EasyBlock Getter {
@@ -258,6 +325,47 @@ namespace ICSharpCode.EasyCodeDom
 		
 		public EasyBlock Setter {
 			get { return setter; }
+		}
+	}
+	
+	public class EasyMethod : CodeMemberMethod
+	{
+		EasyBlock body;
+		
+		public EasyMethod()
+		{
+			body = new EasyBlock(this.Statements);
+		}
+		
+		public EasyMethod(CodeTypeReference type, string name) : this()
+		{
+			this.ReturnType = type;
+			this.Name = name;
+		}
+		
+		public CodeAttributeDeclaration AddAttribute(Type type, params CodeExpression[] arguments)
+		{
+			return Easy.AddAttribute(this.CustomAttributes, Easy.TypeRef(type), arguments);
+		}
+		public CodeAttributeDeclaration AddAttribute(CodeTypeReference type, params CodeExpression[] arguments)
+		{
+			return Easy.AddAttribute(this.CustomAttributes, type, arguments);
+		}
+		
+		public CodeParameterDeclarationExpression AddParameter(Type type, string name)
+		{
+			return AddParameter(Easy.TypeRef(type), name);
+		}
+		public CodeParameterDeclarationExpression AddParameter(CodeTypeReference type, string name)
+		{
+			CodeParameterDeclarationExpression cpde;
+			cpde = new CodeParameterDeclarationExpression(type, name);
+			this.Parameters.Add(cpde);
+			return cpde;
+		}
+		
+		public EasyBlock Body {
+			get { return body; }
 		}
 	}
 	
@@ -280,6 +388,50 @@ namespace ICSharpCode.EasyCodeDom
 		public CodeAssignStatement Assign(CodeExpression lhs, CodeExpression rhs)
 		{
 			CodeAssignStatement st = new CodeAssignStatement(lhs, rhs);
+			csc.Add(st);
+			return st;
+		}
+		
+		/// <summary>
+		/// Execute one expression as statement.
+		/// </summary>
+		public CodeExpressionStatement Add(CodeExpression expr)
+		{
+			CodeExpressionStatement st = new CodeExpressionStatement(expr);
+			csc.Add(st);
+			return st;
+		}
+		
+		/// <summary>
+		/// Adds the statement.
+		/// </summary>
+		public CodeStatement Add(CodeStatement st)
+		{
+			csc.Add(st);
+			return st;
+		}
+		
+		/// <summary>
+		/// Invoke a method on target as statement.
+		/// </summary>
+		public CodeExpressionStatement InvokeMethod(CodeExpression target, string name, params CodeExpression[] arguments)
+		{
+			return Add(new CodeMethodInvokeExpression(target, name, arguments));
+		}
+		
+		/// <summary>
+		/// Declares a local variable.
+		/// </summary>
+		public CodeVariableDeclarationStatement DeclareVariable(Type type, string name)
+		{
+			return DeclareVariable(Easy.TypeRef(type), name);
+		}
+		/// <summary>
+		/// Declares a local variable.
+		/// </summary>
+		public CodeVariableDeclarationStatement DeclareVariable(CodeTypeReference type, string name)
+		{
+			CodeVariableDeclarationStatement st = new CodeVariableDeclarationStatement(type, name);
 			csc.Add(st);
 			return st;
 		}

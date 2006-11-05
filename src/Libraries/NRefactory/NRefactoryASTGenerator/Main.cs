@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.IO;
 using NRefactoryASTGenerator.Ast;
+using ICSharpCode.EasyCodeDom;
 
 namespace NRefactoryASTGenerator
 {
@@ -41,20 +42,17 @@ namespace NRefactoryASTGenerator
 			}
 			nodeTypes.Sort(delegate(Type a, Type b) { return a.Name.CompareTo(b.Name); });
 			
-			CodeCompileUnit ccu = new CodeCompileUnit();
-			CodeNamespace cns = new CodeNamespace("ICSharpCode.NRefactory.Ast");
-			ccu.Namespaces.Add(cns);
-			cns.Imports.Add(new CodeNamespaceImport("System"));
-			cns.Imports.Add(new CodeNamespaceImport("System.Collections.Generic"));
-			cns.Imports.Add(new CodeNamespaceImport("System.Diagnostics"));
+			EasyCompileUnit ccu = new EasyCompileUnit();
+			EasyNamespace cns = ccu.AddNamespace("ICSharpCode.NRefactory.Ast");
+			cns.AddImport("System");
+			cns.AddImport("System.Collections.Generic");
 			foreach (Type type in nodeTypes) {
 				if (type.GetCustomAttributes(typeof(CustomImplementationAttribute), false).Length == 0) {
-					CodeTypeDeclaration ctd = new CodeTypeDeclaration(type.Name);
+					EasyTypeDeclaration ctd = cns.AddType(type.Name);
 					if (type.IsAbstract) {
 						ctd.TypeAttributes |= TypeAttributes.Abstract;
 					}
 					ctd.BaseTypes.Add(new CodeTypeReference(type.BaseType.Name));
-					cns.Types.Add(ctd);
 					
 					ProcessType(type, ctd);
 					
@@ -97,11 +95,10 @@ namespace NRefactoryASTGenerator
 				File.WriteAllText(directory + "Generated.cs", writer.ToString());
 			}
 			
-			ccu = new CodeCompileUnit();
-			cns = new CodeNamespace("ICSharpCode.NRefactory");
-			ccu.Namespaces.Add(cns);
-			cns.Imports.Add(new CodeNamespaceImport("System"));
-			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Ast"));
+			ccu = new EasyCompileUnit();
+			cns = ccu.AddNamespace("ICSharpCode.NRefactory");
+			cns.AddImport("System");
+			cns.AddImport("ICSharpCode.NRefactory.Ast");
 			cns.Types.Add(CreateAstVisitorInterface(nodeTypes));
 			
 			using (StringWriter writer = new StringWriter()) {
@@ -109,13 +106,12 @@ namespace NRefactoryASTGenerator
 				File.WriteAllText(visitorsDir + "../IAstVisitor.cs", writer.ToString());
 			}
 			
-			ccu = new CodeCompileUnit();
-			cns = new CodeNamespace("ICSharpCode.NRefactory.Visitors");
-			ccu.Namespaces.Add(cns);
-			cns.Imports.Add(new CodeNamespaceImport("System"));
-			cns.Imports.Add(new CodeNamespaceImport("System.Collections.Generic"));
-			cns.Imports.Add(new CodeNamespaceImport("System.Diagnostics"));
-			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Ast"));
+			ccu = new EasyCompileUnit();
+			cns = ccu.AddNamespace("ICSharpCode.NRefactory.Visitors");
+			cns.AddImport("System");
+			cns.AddImport("System.Collections.Generic");
+			cns.AddImport("System.Diagnostics");
+			cns.AddImport("ICSharpCode.NRefactory.Ast");
 			cns.Types.Add(CreateAstVisitorClass(nodeTypes, false));
 			
 			using (StringWriter writer = new StringWriter()) {
@@ -123,13 +119,12 @@ namespace NRefactoryASTGenerator
 				File.WriteAllText(visitorsDir + "AbstractAstVisitor.cs", writer.ToString());
 			}
 			
-			ccu = new CodeCompileUnit();
-			cns = new CodeNamespace("ICSharpCode.NRefactory.Visitors");
-			ccu.Namespaces.Add(cns);
-			cns.Imports.Add(new CodeNamespaceImport("System"));
-			cns.Imports.Add(new CodeNamespaceImport("System.Collections.Generic"));
-			cns.Imports.Add(new CodeNamespaceImport("System.Diagnostics"));
-			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Ast"));
+			ccu = new EasyCompileUnit();
+			cns = ccu.AddNamespace("ICSharpCode.NRefactory.Visitors");
+			cns.AddImport("System");
+			cns.AddImport("System.Collections.Generic");
+			cns.AddImport("System.Diagnostics");
+			cns.AddImport("ICSharpCode.NRefactory.Ast");
 			cns.Types.Add(CreateAstVisitorClass(nodeTypes, true));
 			
 			using (StringWriter writer = new StringWriter()) {
@@ -137,11 +132,10 @@ namespace NRefactoryASTGenerator
 				File.WriteAllText(visitorsDir + "AbstractAstTransformer.cs", writer.ToString());
 			}
 			
-			ccu = new CodeCompileUnit();
-			cns = new CodeNamespace("ICSharpCode.NRefactory.Visitors");
-			ccu.Namespaces.Add(cns);
-			cns.Imports.Add(new CodeNamespaceImport("System"));
-			cns.Imports.Add(new CodeNamespaceImport("ICSharpCode.NRefactory.Ast"));
+			ccu = new EasyCompileUnit();
+			cns = ccu.AddNamespace("ICSharpCode.NRefactory.Visitors");
+			cns.AddImport("System");
+			cns.AddImport("ICSharpCode.NRefactory.Ast");
 			cns.Types.Add(CreateNodeTrackingAstVisitorClass(nodeTypes));
 			
 			using (StringWriter writer = new StringWriter()) {
@@ -154,17 +148,14 @@ namespace NRefactoryASTGenerator
 		
 		static CodeTypeDeclaration CreateAstVisitorInterface(List<Type> nodeTypes)
 		{
-			CodeTypeDeclaration td = new CodeTypeDeclaration("IAstVisitor");
+			EasyTypeDeclaration td = new EasyTypeDeclaration("IAstVisitor");
 			td.IsInterface = true;
 			
 			foreach (Type t in nodeTypes) {
 				if (!t.IsAbstract) {
-					CodeMemberMethod m = new CodeMemberMethod();
-					m.Name = VisitPrefix + t.Name;
-					m.ReturnType = new CodeTypeReference(typeof(object));
-					m.Parameters.Add(new CodeParameterDeclarationExpression(ConvertType(t), GetFieldName(t.Name)));
-					m.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(object)), "data"));
-					td.Members.Add(m);
+					EasyMethod m = td.AddMethod(typeof(object), VisitPrefix + t.Name);
+					m.AddParameter(ConvertType(t), GetFieldName(t.Name));
+					m.AddParameter(typeof(object), "data");
 				}
 			}
 			return td;
@@ -172,30 +163,26 @@ namespace NRefactoryASTGenerator
 		
 		static CodeTypeDeclaration CreateAstVisitorClass(List<Type> nodeTypes, bool transformer)
 		{
-			CodeTypeDeclaration td = new CodeTypeDeclaration(transformer ? "AbstractAstTransformer" : "AbstractAstVisitor");
+			EasyTypeDeclaration td = new EasyTypeDeclaration(transformer ? "AbstractAstTransformer" : "AbstractAstVisitor");
 			td.TypeAttributes = TypeAttributes.Public | TypeAttributes.Abstract;
 			td.BaseTypes.Add(new CodeTypeReference("IAstVisitor"));
 			
 			if (transformer) {
-				string comment = "<summary>\n " +
+				string comment =
 					"The AbstractAstTransformer will iterate through the whole AST,\n " +
 					"just like the AbstractAstVisitor. However, the AbstractAstTransformer allows\n " +
 					"you to modify the AST at the same time: It does not use 'foreach' internally,\n " +
 					"so you can add members to collections of parents of the current node (but\n " +
 					"you cannot insert or delete items as that will make the index used invalid).\n " +
 					"You can use the methods ReplaceCurrentNode and RemoveCurrentNode to replace\n " +
-					"or remove the current node, totally independent from the type of the parent node.\n " +
-					"</summary>";
-				td.Comments.Add(new CodeCommentStatement(comment, true));
+					"or remove the current node, totally independent from the type of the parent node.";
+				Easy.AddSummary(td, comment);
 				
-				CodeMemberField field = new CodeMemberField("Stack", "nodeStack");
-				field.Type.TypeArguments.Add("INode");
-				field.InitExpression = new CodeObjectCreateExpression(field.Type);
-				td.Members.Add(field);
-				
-				CodeExpression nodeStack = new CodeVariableReferenceExpression("nodeStack");
+				EasyField field = td.AddField(Easy.TypeRef("Stack", "INode"), "nodeStack");
+				field.InitExpression = Easy.New(field.Type);
 				
 				/*
+				CodeExpression nodeStack = Easy.Var("nodeStack");
 				CodeMemberProperty p = new CodeMemberProperty();
 				p.Name = "CurrentNode";
 				p.Type = new CodeTypeReference("INode");
@@ -206,49 +193,36 @@ namespace NRefactoryASTGenerator
 				td.Members.Add(p);
 				 */
 				
-				CodeMemberMethod m = new CodeMemberMethod();
-				m.Name = "ReplaceCurrentNode";
-				m.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-				m.Parameters.Add(new CodeParameterDeclarationExpression("INode", "newNode"));
-				m.Statements.Add(new CodeMethodInvokeExpression(nodeStack, "Pop"));
-				m.Statements.Add(new CodeMethodInvokeExpression(nodeStack, "Push",
-				                                                new CodeVariableReferenceExpression("newNode")));
-				td.Members.Add(m);
+				EasyMethod m = td.AddMethod("ReplaceCurrentNode");
+				m.AddParameter(Easy.TypeRef("INode"), "newNode");
+				m.Statements.Add(Easy.Var("nodeStack").InvokeMethod("Pop"));
+				m.Statements.Add(Easy.Var("nodeStack").InvokeMethod("Push", Easy.Var("newNode")));
 				
-				m = new CodeMemberMethod();
-				m.Name = "RemoveCurrentNode";
-				m.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-				m.Statements.Add(new CodeMethodInvokeExpression(nodeStack, "Pop"));
-				m.Statements.Add(new CodeMethodInvokeExpression(nodeStack, "Push",
-				                                                new CodePrimitiveExpression(null)));
-				td.Members.Add(m);
+				m = td.AddMethod("RemoveCurrentNode");
+				m.Statements.Add(Easy.Var("nodeStack").InvokeMethod("Pop"));
+				m.Statements.Add(Easy.Var("nodeStack").InvokeMethod("Push", Easy.Null));
 			}
 			
 			foreach (Type type in nodeTypes) {
 				if (!type.IsAbstract) {
-					CodeMemberMethod m = new CodeMemberMethod();
-					m.Name = VisitPrefix + type.Name;
+					EasyMethod m = td.AddMethod(typeof(object), VisitPrefix + type.Name);
 					m.Attributes = MemberAttributes.Public;
-					m.ReturnType = new CodeTypeReference(typeof(object));
-					m.Parameters.Add(new CodeParameterDeclarationExpression(ConvertType(type), GetFieldName(type.Name)));
-					m.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(object)), "data"));
-					td.Members.Add(m);
+					m.AddParameter(ConvertType(type), GetFieldName(type.Name));
+					m.AddParameter(typeof(object), "data");
 					
 					List<CodeStatement> assertions = new List<CodeStatement>();
-					CodeVariableReferenceExpression var = new CodeVariableReferenceExpression(GetFieldName(type.Name));
+					string varVariableName = GetFieldName(type.Name);
+					EasyExpression var = Easy.Var(varVariableName);
 					assertions.Add(AssertIsNotNull(var));
 					
 					AddFieldVisitCode(m, type, var, assertions, transformer);
 					
 					if (type.GetCustomAttributes(typeof(HasChildrenAttribute), true).Length > 0) {
 						if (transformer) {
-							m.Statements.Add(new CodeSnippetStatement(CreateTransformerLoop(var.VariableName + ".Children", "INode")));
-							m.Statements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(null)));
+							m.Statements.Add(new CodeSnippetStatement(CreateTransformerLoop(varVariableName + ".Children", "INode")));
+							m.Body.Return(Easy.Null);
 						} else {
-							CodeExpression ex = new CodeMethodInvokeExpression(var, "AcceptChildren",
-							                                                   new CodeThisReferenceExpression(),
-							                                                   new CodeVariableReferenceExpression("data"));
-							m.Statements.Add(new CodeMethodReturnStatement(ex));
+							m.Body.Return(var.InvokeMethod("AcceptChildren", Easy.This, Easy.Var("data")));
 						}
 					} else {
 						CodeExpressionStatement lastStatement = null;
@@ -257,9 +231,9 @@ namespace NRefactoryASTGenerator
 						}
 						if (lastStatement != null) {
 							m.Statements.RemoveAt(m.Statements.Count - 1);
-							m.Statements.Add(new CodeMethodReturnStatement(lastStatement.Expression));
+							m.Body.Return(lastStatement.Expression);
 						} else {
-							m.Statements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(null)));
+							m.Body.Return(Easy.Null);
 						}
 					}
 					
@@ -271,7 +245,7 @@ namespace NRefactoryASTGenerator
 			return td;
 		}
 		
-		static void AddFieldVisitCode(CodeMemberMethod m, Type type, CodeVariableReferenceExpression var, List<CodeStatement> assertions, bool transformer)
+		static void AddFieldVisitCode(EasyMethod m, Type type, EasyExpression var, List<CodeStatement> assertions, bool transformer)
 		{
 			if (type != null) {
 				if (type.BaseType != typeof(StatementWithEmbeddedStatement)) {
@@ -288,13 +262,12 @@ namespace NRefactoryASTGenerator
 		
 		static CodeStatement AssertIsNotNull(CodeExpression expr)
 		{
-			CodeExpression bop = new CodeBinaryOperatorExpression(expr,
-			                                                      CodeBinaryOperatorType.IdentityInequality,
-			                                                      new CodePrimitiveExpression(null)
-			                                                     );
-			return new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeTypeReferenceExpression("Debug"),
-			                                                                  "Assert",
-			                                                                  bop));
+			return new CodeExpressionStatement(
+				Easy.Type("Debug").InvokeMethod("Assert",
+				                                Easy.Binary(expr,
+				                                            CodeBinaryOperatorType.IdentityInequality,
+				                                            Easy.Null))
+			);
 		}
 		
 		static string GetCode(CodeExpression ex)
@@ -323,10 +296,10 @@ namespace NRefactoryASTGenerator
 				"\t\t\t}";
 		}
 		
-		static bool AddVisitCode(CodeMemberMethod m, FieldInfo field, CodeVariableReferenceExpression var, List<CodeStatement> assertions, bool transformer)
+		static bool AddVisitCode(EasyMethod m, FieldInfo field, EasyExpression var, List<CodeStatement> assertions, bool transformer)
 		{
-			CodeExpression prop = new CodePropertyReferenceExpression(var, GetPropertyName(field.Name));
-			CodeExpression nodeStack = new CodeVariableReferenceExpression("nodeStack");
+			EasyExpression prop = var.Property(GetPropertyName(field.Name));
+			EasyExpression nodeStack = Easy.Var("nodeStack");
 			if (field.FieldType.FullName.StartsWith("System.Collections.Generic.List")) {
 				Type elType = field.FieldType.GetGenericArguments()[0];
 				if (!typeof(INode).IsAssignableFrom(elType))
@@ -349,17 +322,13 @@ namespace NRefactoryASTGenerator
 				return false;
 			assertions.Add(AssertIsNotNull(prop));
 			if (transformer) {
-				m.Statements.Add(new CodeMethodInvokeExpression(nodeStack, "Push",
-				                                                prop));
+				m.Statements.Add(nodeStack.InvokeMethod("Push", prop));
 			}
-			m.Statements.Add(new CodeMethodInvokeExpression(prop,
-			                                                "AcceptVisitor",
-			                                                new CodeThisReferenceExpression(),
-			                                                new CodeVariableReferenceExpression("data")));
+			m.Statements.Add(prop.InvokeMethod("AcceptVisitor",
+			                                   Easy.This,
+			                                   Easy.Var("data")));
 			if (transformer) {
-				CodeExpression ex = new CodeMethodInvokeExpression(nodeStack, "Pop");
-				ex = new CodeCastExpression(ConvertType(field.FieldType), ex);
-				m.Statements.Add(new CodeAssignStatement(prop, ex));
+				m.Body.Assign(prop, nodeStack.InvokeMethod("Pop").CastTo(ConvertType(field.FieldType)));
 			}
 			return true;
 		}
@@ -394,29 +363,23 @@ namespace NRefactoryASTGenerator
 			//	                     Body);
 		}
 		
-		static void ProcessType(Type type, CodeTypeDeclaration ctd)
+		static void ProcessType(Type type, EasyTypeDeclaration ctd)
 		{
 			foreach (FieldInfo field in type.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.NonPublic)) {
-				CodeMemberField f = new CodeMemberField(ConvertType(field.FieldType), field.Name);
-				f.Attributes = 0;
-				ctd.Members.Add(f);
+				ctd.AddField(ConvertType(field.FieldType), field.Name).Attributes = 0;
 			}
 			foreach (FieldInfo field in type.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.NonPublic)) {
-				CodeMemberProperty p = new CodeMemberProperty();
-				p.Name = GetPropertyName(field.Name);
-				p.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-				p.Type = ConvertType(field.FieldType);
-				p.GetStatements.Add(new CodeMethodReturnStatement(new CodeVariableReferenceExpression(field.Name)));
+				EasyProperty p = ctd.AddProperty(ConvertType(field.FieldType), GetPropertyName(field.Name));
+				p.Getter.Return(Easy.Var(field.Name));
 				CodeExpression ex;
 				if (field.FieldType.IsValueType)
 					ex = new CodePropertySetValueReferenceExpression();
 				else
 					ex = GetDefaultValue("value", field);
-				p.SetStatements.Add(new CodeAssignStatement(new CodeVariableReferenceExpression(field.Name), ex));
+				p.Setter.Assign(Easy.Var(field.Name), ex);
 				if (typeof(INode).IsAssignableFrom(field.FieldType) && typeof(INullable).IsAssignableFrom(field.FieldType)) {
 					p.SetStatements.Add(new CodeSnippetStatement("\t\t\t\tif (!" +field.Name+".IsNull) "+field.Name+".Parent = this;"));
 				}
-				ctd.Members.Add(p);
 			}
 			foreach (ConstructorInfo ctor in type.GetConstructors()) {
 				CodeConstructor c = new CodeConstructor();
@@ -514,7 +477,7 @@ namespace NRefactoryASTGenerator
 		
 		static CodeTypeDeclaration CreateNodeTrackingAstVisitorClass(List<Type> nodeTypes)
 		{
-			CodeTypeDeclaration td = new CodeTypeDeclaration("NodeTrackingAstVisitor");
+			EasyTypeDeclaration td = new EasyTypeDeclaration("NodeTrackingAstVisitor");
 			td.TypeAttributes = TypeAttributes.Public | TypeAttributes.Class | TypeAttributes.Abstract;
 			td.BaseTypes.Add(new CodeTypeReference("AbstractAstVisitor"));
 			
@@ -531,52 +494,45 @@ namespace NRefactoryASTGenerator
 				"</remarks>";
 			td.Comments.Add(new CodeCommentStatement(comment, true));
 			
-			CodeMemberMethod m = new CodeMemberMethod();
-			m.Name = "BeginVisit";
+			EasyMethod m = td.AddMethod("BeginVisit");
 			m.Attributes = MemberAttributes.Family;
-			m.Parameters.Add(new CodeParameterDeclarationExpression("INode", "node"));
-			td.Members.Add(m);
+			m.AddParameter(Easy.TypeRef("INode"), "node");
 			
-			m = new CodeMemberMethod();
-			m.Name = "EndVisit";
+			m = td.AddMethod("EndVisit");
 			m.Attributes = MemberAttributes.Family;
-			m.Parameters.Add(new CodeParameterDeclarationExpression("INode", "node"));
-			td.Members.Add(m);
+			m.AddParameter(Easy.TypeRef("INode"), "node");
 			
 			foreach (Type type in nodeTypes) {
 				if (!type.IsAbstract) {
 					
-					m = new CodeMemberMethod();
-					m.Name = VisitPrefix + type.Name;
+					m = td.AddMethod(typeof(object), VisitPrefix + type.Name);
 					m.Attributes = MemberAttributes.Public | MemberAttributes.Override;
-					m.ReturnType = new CodeTypeReference(typeof(object));
-					m.Parameters.Add(new CodeParameterDeclarationExpression(ConvertType(type), GetFieldName(type.Name)));
-					m.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(object)), "data"));
-					td.Members.Add(m);
+					m.AddParameter(ConvertType(type), GetFieldName(type.Name));
+					m.AddParameter(new CodeTypeReference(typeof(object)), "data");
 					
-					CodeVariableReferenceExpression var = new CodeVariableReferenceExpression(GetFieldName(type.Name));
+					CodeExpression var = Easy.Var(GetFieldName(type.Name));
 					
-					m.Statements.Add(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeThisReferenceExpression(), "BeginVisit"), new CodeExpression[] { var }));
-					m.Statements.Add(new CodeVariableDeclarationStatement(new CodeTypeReference(typeof(object)), "result", new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeThisReferenceExpression(), "TrackedVisit"), new CodeExpression[] { var, new CodeVariableReferenceExpression("data") })));
-					m.Statements.Add(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeThisReferenceExpression(), "EndVisit"), new CodeExpression[] { var }));
-					m.Statements.Add(new CodeMethodReturnStatement(new CodeVariableReferenceExpression("result")));
-					
+//					m.Statements.Add(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeThisReferenceExpression(), "BeginVisit"), new CodeExpression[] { var }));
+//					m.Statements.Add(new CodeVariableDeclarationStatement(new CodeTypeReference(typeof(object)), "result", new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeThisReferenceExpression(), "TrackedVisit"), new CodeExpression[] { var, new CodeVariableReferenceExpression("data") })));
+//					m.Statements.Add(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeThisReferenceExpression(), "EndVisit"), new CodeExpression[] { var }));
+//					m.Statements.Add(new CodeMethodReturnStatement(new CodeVariableReferenceExpression("result")));
+					m.Body.InvokeMethod(Easy.This, "BeginVisit", var);
+					m.Body.DeclareVariable(typeof(object), "result").InitExpression
+						= Easy.This.InvokeMethod("TrackedVisit", var, Easy.Var("data"));
+					m.Body.InvokeMethod(Easy.This, "EndVisit", var);
+					m.Body.Return(Easy.Var("result"));
 				}
 			}
 			
 			foreach (Type type in nodeTypes) {
 				if (!type.IsAbstract) {
 					
-					m = new CodeMemberMethod();
-					m.Name = "TrackedVisit";
+					m = td.AddMethod(typeof(object), "TrackedVisit");
 					m.Attributes = MemberAttributes.Public;
-					m.ReturnType = new CodeTypeReference(typeof(object));
-					m.Parameters.Add(new CodeParameterDeclarationExpression(ConvertType(type), GetFieldName(type.Name)));
-					m.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(object)), "data"));
-					td.Members.Add(m);
+					m.AddParameter(ConvertType(type), GetFieldName(type.Name));
+					m.AddParameter(new CodeTypeReference(typeof(object)), "data");
 					
-					m.Statements.Add(new CodeMethodReturnStatement(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeBaseReferenceExpression(), VisitPrefix + type.Name), new CodeExpression[] { new CodeVariableReferenceExpression(GetFieldName(type.Name)), new CodeVariableReferenceExpression("data") })));
-					
+					m.Body.Return(Easy.Base.InvokeMethod(VisitPrefix + type.Name, Easy.Var(GetFieldName(type.Name)), Easy.Var("data")));
 				}
 			}
 			
