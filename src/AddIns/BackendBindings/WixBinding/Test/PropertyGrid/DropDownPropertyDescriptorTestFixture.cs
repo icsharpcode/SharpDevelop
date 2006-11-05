@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Widgets.DesignTimeSupport;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
@@ -42,7 +43,7 @@ namespace WixBinding.Tests.PropertyGrid
 		[Test]
 		public void EditorAttributeTypeName()
 		{
-			Assert.AreEqual(typeof(DropDownEditor).AssemblyQualifiedName, editorAttribute.EditorTypeName);
+			Assert.AreEqual(typeof(WixDropDownEditor).AssemblyQualifiedName, editorAttribute.EditorTypeName);
 		}
 	}
 }

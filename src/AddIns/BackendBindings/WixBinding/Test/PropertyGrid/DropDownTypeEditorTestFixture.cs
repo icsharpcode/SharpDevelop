@@ -6,6 +6,7 @@
 // </file>
 
 using ICSharpCode.WixBinding;
+using ICSharpCode.SharpDevelop.Widgets.DesignTimeSupport;
 using NUnit.Framework;
 using System;
 using System.Drawing.Design;
@@ -18,7 +19,7 @@ namespace WixBinding.Tests.PropertyGrid
 	[TestFixture]
 	public class DropDownTypeEditorTestFixture
 	{
-		DropDownEditor editor;
+		WixDropDownEditor editor;
 		object newValue;
 		string expectedNewValue;
 		MockServiceProvider mockServiceProvider;
@@ -28,7 +29,7 @@ namespace WixBinding.Tests.PropertyGrid
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			editor = new DropDownEditor();
+			editor = new WixDropDownEditor();
 			
 			// Edit the value.
 			mockServiceProvider = new MockServiceProvider();

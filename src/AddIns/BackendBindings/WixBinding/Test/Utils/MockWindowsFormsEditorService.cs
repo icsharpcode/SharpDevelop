@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Widgets.DesignTimeSupport;
 using ICSharpCode.WixBinding;
 using System;
 using System.Windows.Forms;

@@ -141,7 +141,7 @@
     <Compile Include="Src\PropertyGrid\GuidEditor.cs" />
     <Compile Include="Src\PropertyGrid\GuidEditorListBox.cs" />
     <Compile Include="Src\PropertyGrid\RelativeFileNameEditor.cs" />
-    <Compile Include="Src\PropertyGrid\DropDownEditor.cs" />
+    <Compile Include="Src\PropertyGrid\WixDropDownEditor.cs" />
     <Compile Include="Src\WixPackageFilesDiff.cs" />
     <Compile Include="Src\WixPackageFilesDiffResult.cs" />
     <Compile Include="Src\DirectoryReader.cs" />
