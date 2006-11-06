@@ -24,6 +24,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		//   Anonymous methods are put into new methods
 		//   Simple event handler creation is replaced with AddressOfExpression
 		//   Move Imports-statements out of namespaces
+		//   Parenthesis around Cast expressions remove - these are syntax errors in VB.NET
 		
 		List<INode> nodesToMoveToCompilationUnit = new List<INode>();
 		
@@ -315,6 +316,15 @@ namespace ICSharpCode.NRefactory.Visitors
 			if ((constructorDeclaration.Modifier & (Modifiers.Visibility | Modifiers.Static)) == 0)
 				constructorDeclaration.Modifier |= Modifiers.Private;
 			return base.VisitConstructorDeclaration(constructorDeclaration, data);
+		}
+		
+		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
+		{
+			base.VisitParenthesizedExpression(parenthesizedExpression, data);
+			if (parenthesizedExpression.Expression is CastExpression) {
+				ReplaceCurrentNode(parenthesizedExpression.Expression); // remove parenthesis
+			}
+			return null;
 		}
 	}
 }

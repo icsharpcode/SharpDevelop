@@ -435,5 +435,11 @@ End Class
 		{
 			TestStatement("global::System.String a;", "Dim a As Global.System.String");
 		}
+		
+		[Test]
+		public void TestMethodCallOnCastExpression()
+		{
+			TestStatement("((IDisposable)o).Dispose();", "DirectCast(o, IDisposable).Dispose()");
+		}
 	}
 }
