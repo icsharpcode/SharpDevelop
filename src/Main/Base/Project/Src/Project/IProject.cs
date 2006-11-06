@@ -24,8 +24,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		Module
 	}
 	
-	public interface IProject : ISolutionFolder, IDisposable, IMementoCapable,
-		ICSharpCode.SharpDevelop.Dom.IDomProject
+	public interface IProject
+		: ISolutionFolder, IDisposable, IMementoCapable, ICSharpCode.SharpDevelop.Dom.IDomProject
 	{
 		List<ProjectItem> Items {
 			get;

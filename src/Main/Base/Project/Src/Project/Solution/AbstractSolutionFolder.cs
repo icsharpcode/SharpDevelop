@@ -23,6 +23,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		string                   name     = null;
 		
 		[Browsable(false)]
+		public virtual Solution ParentSolution {
+			get {
+				if (parent != null)
+					return parent.ParentSolution;
+				else
+					return null;
+			}
+		}
+		
+		[Browsable(false)]
 		public string IdGuid {
 			get {
 				return idGuid;

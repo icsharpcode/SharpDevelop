@@ -168,7 +168,7 @@ namespace SearchAndReplace
 			instance = this;
 			
 			resultTreeView.Dock = DockStyle.Fill;
-			resultTreeView.Font = ExtTreeNode.Font;
+			resultTreeView.Font = ExtTreeNode.RegularBigFont;
 			resultTreeView.IsSorted = false;
 			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/SearchResultPanel/Toolbar");
 			toolStrip.Stretch   = true;

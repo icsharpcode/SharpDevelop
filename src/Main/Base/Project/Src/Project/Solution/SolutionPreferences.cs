@@ -11,7 +11,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public class SolutionPreferences : IMementoCapable
+	public sealed class SolutionPreferences : IMementoCapable
 	{
 		Solution solution;
 		Properties properties = new Properties();
@@ -41,9 +41,21 @@ namespace ICSharpCode.SharpDevelop.Project
 				return null;
 			}
 			set {
-				startupProject = (value != null) ? value.IdGuid : "";
+				SetStartupProject((value != null) ? value.IdGuid : "");
 			}
 		}
+		
+		void SetStartupProject(string value)
+		{
+			if (value != startupProject) {
+				startupProject = value;
+				if (StartupProjectChanged != null) {
+					StartupProjectChanged(this, EventArgs.Empty);
+				}
+			}
+		}
+		
+		public event EventHandler StartupProjectChanged;
 		
 		public string ActiveConfiguration {
 			get {
@@ -82,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		void IMementoCapable.SetMemento(Properties memento)
 		{
-			startupProject       = memento.Get("StartupProject", "");
+			SetStartupProject(memento.Get("StartupProject", ""));
 			string configuration = memento.Get("ActiveConfiguration", activeConfiguration);
 			string platform      = memento.Get("ActivePlatform", activePlatform);
 			

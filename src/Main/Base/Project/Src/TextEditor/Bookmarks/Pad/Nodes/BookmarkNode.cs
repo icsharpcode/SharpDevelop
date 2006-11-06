@@ -85,9 +85,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			Graphics g = e.Graphics;
 			float x = e.Bounds.X;
-			DrawText(g, positionText, Brushes.Black, Font, ref x, e.Bounds.Y);
+			DrawText(e, positionText, SystemBrushes.WindowText, RegularBigFont, ref x);
 			
-			spaceSize = g.MeasureString("-", Font,  new PointF(0, 0), StringFormat.GenericTypographic);
+			spaceSize = g.MeasureString("-", RegularBigFont,  new PointF(0, 0), StringFormat.GenericTypographic);
 			
 			if (line != null) {
 				DrawLine(g, line, e.Bounds.Y, x, e.State);
@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 							xPos += DrawDocumentWord(g,
 							                         word.Word,
 							                         new PointF(xPos, yPos),
-							                         word.Bold ? BoldMonospacedFont : MonospacedFont,
+							                         word.Bold ? BoldMonospacedFont : RegularMonospacedFont,
 							                         GetTextColor(state, word.Color)
 							                        );
 							logicalX += word.Word.Length;
@@ -143,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				DrawDocumentWord(g,
 				                 bookmark.Document.GetText(line),
 				                 new PointF(xPos, yPos),
-				                 MonospacedFont,
+				                 RegularMonospacedFont,
 				                 GetTextColor(state, Color.Black)
 				                );
 			}

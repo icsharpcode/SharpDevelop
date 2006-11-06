@@ -301,6 +301,24 @@ namespace ICSharpCode.Core
 				return SystemInformation.MenuFont;
 			}
 		}
+		
+		/// <summary>
+		/// The LoadFont routines provide a safe way to load fonts.
+		/// </summary>
+		/// <param name="baseFont">The existing font from which to create the new font.</param>
+		/// <param name="newStyle">The new style of the font.</param>
+		/// <returns>
+		/// The font to load or the baseFont (if the requested font couldn't be loaded).
+		/// </returns>
+		public static Font LoadFont(Font baseFont, FontStyle newStyle)
+		{
+			try {
+				return new Font(baseFont, newStyle);
+			} catch (Exception ex) {
+				LoggingService.Warn(ex);
+				return baseFont;
+			}
+		}
 		#endregion
 		
 		static Hashtable Load(string fileName)

@@ -221,7 +221,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		#endregion
 		
 		#region Drawing routines
-		protected bool drawDefault      = true;
+		protected bool drawDefault = true;
 		
 		public bool DrawDefault {
 			get {
@@ -232,10 +232,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected virtual void DrawBackground(DrawTreeNodeEventArgs e)
 		{
 			Graphics g = e.Graphics;
-			int width = MeasureItemWidth(e);
+			int width = MeasureItemWidth(e) + 2;
 			Rectangle backRect = new Rectangle(e.Bounds.X, e.Bounds.Y, width, e.Bounds.Height);
 			
-			if ((e.State & TreeNodeStates.Selected) == TreeNodeStates.Selected) {
+			if ((e.State & (TreeNodeStates.Selected | TreeNodeStates.Focused)) == TreeNodeStates.Selected) {
+				g.FillRectangle(SystemBrushes.Control, backRect);
+			} else if ((e.State & TreeNodeStates.Selected) == TreeNodeStates.Selected) {
 				g.FillRectangle(SystemBrushes.Highlight, backRect);
 			} else {
 				g.FillRectangle(SystemBrushes.Window, backRect);
@@ -244,7 +246,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if ((e.State & TreeNodeStates.Focused) == TreeNodeStates.Focused) {
 				backRect.Width--;
 				backRect.Height--;
-				g.DrawRectangle(SystemPens.HighlightText, backRect);
+				using (Pen dottedPen = new Pen(SystemColors.WindowText)) {
+					dottedPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+					g.DrawRectangle(dottedPen, backRect);
+					Color h = SystemColors.Highlight;
+					dottedPen.Color = Color.FromArgb(255 - h.R, 255 - h.G, 255 - h.B);
+					dottedPen.DashOffset = 1;
+					g.DrawRectangle(dottedPen, backRect);
+				}
+				g.DrawLine(SystemPens.WindowText, backRect.Right + 1, backRect.Y, backRect.Right + 1, backRect.Bottom);
 			}
 		}
 		
@@ -266,24 +276,32 @@ namespace ICSharpCode.SharpDevelop.Gui
 		// Helper routines
 		protected int MeasureTextWidth(Graphics g, string text, Font font)
 		{
-			SizeF size = g.MeasureString(text,  font);
+			SizeF size = g.MeasureString(text, font);
 			return (int)size.Width;
 		}
 		
-		protected void DrawText(Graphics g, string text, Brush brush, Font font, ref float x, int y)
+		const TreeNodeStates SelectedAndFocused = TreeNodeStates.Selected | TreeNodeStates.Focused;
+		
+		protected void DrawText(DrawTreeNodeEventArgs e, string text, Brush brush, Font font)
 		{
-			if (IsSelected) {
-				brush = BrushRegistry.GetBrush(SystemColors.HighlightText);
+			float x = e.Bounds.X;
+			DrawText(e, text, brush, font, ref x);
+		}
+		
+		protected void DrawText(DrawTreeNodeEventArgs e, string text, Brush brush, Font font, ref float x)
+		{
+			if ((e.State & SelectedAndFocused) == SelectedAndFocused) {
+				brush = SystemBrushes.HighlightText;
 			}
-			g.DrawString(text, font, brush, new PointF(x, y));
+			e.Graphics.DrawString(text, font, brush, new PointF(x, e.Bounds.Y));
 			
-			SizeF size = g.MeasureString(text,  font);
+			SizeF size = e.Graphics.MeasureString(text, font);
 			x += size.Width;
 		}
 		
 		protected Color GetTextColor(TreeNodeStates state, Color c)
 		{
-			if ((state & TreeNodeStates.Selected) == TreeNodeStates.Selected) {
+			if ((state & SelectedAndFocused) == SelectedAndFocused) {
 				return SystemColors.HighlightText;
 			}
 			return c;
@@ -291,57 +309,67 @@ namespace ICSharpCode.SharpDevelop.Gui
 		#endregion
 		
 		#region fonts
-		static Font font;
-		static Font boldFont;
-		static Font italicFont;
+		static Font regularBigFont, boldBigFont, italicBigFont;
+		static Font boldMonospacedFont, italicMonospacedFont;
+		static Font boldDefaultFont, italicDefaultFont;
 		
-		static Font monospacedFont;
-		static Font boldMonospacedFont;
-		static Font italicMonospacedFont;
-		
+		public static Font RegularMonospacedFont {
+			get {
+				return ResourceService.DefaultMonospacedFont;
+			}
+		}
 		public static Font BoldMonospacedFont {
 			get {
-				return boldMonospacedFont;
+				return boldMonospacedFont
+					?? (boldMonospacedFont = ResourceService.LoadDefaultMonospacedFont(FontStyle.Bold));
 			}
 		}
 		public static Font ItalicMonospacedFont {
 			get {
-				return italicMonospacedFont;
-			}
-		}
-		public static Font MonospacedFont {
-			get {
-				return monospacedFont;
+				return italicMonospacedFont
+					?? (italicMonospacedFont = ResourceService.LoadDefaultMonospacedFont(FontStyle.Italic));
 			}
 		}
 		
-		public static Font Font {
+		public static Font RegularDefaultFont {
 			get {
-				return font;
+				return TreeView.DefaultFont;
 			}
 		}
 		
-		public static Font BoldFont {
+		public static Font BoldDefaultFont {
 			get {
-				return boldFont;
+				return boldDefaultFont
+					?? (boldDefaultFont = ResourceService.LoadFont(RegularDefaultFont, FontStyle.Bold));
 			}
 		}
 		
-		public static Font ItalicFont {
+		public static Font ItalicDefaultFont {
 			get {
-				return italicFont;
+				return italicDefaultFont
+					?? (italicDefaultFont = ResourceService.LoadFont(RegularDefaultFont, FontStyle.Italic));
 			}
 		}
 		
-		static ExtTreeNode()
-		{
-			font                = ResourceService.LoadFont("Tahoma", 9);
-			boldFont            = ResourceService.LoadFont("Tahoma", 9, FontStyle.Bold);
-			italicFont          = ResourceService.LoadFont("Tahoma", 9, FontStyle.Italic);
-			
-			monospacedFont       = ResourceService.DefaultMonospacedFont;
-			boldMonospacedFont   = ResourceService.LoadDefaultMonospacedFont(FontStyle.Bold);
-			italicMonospacedFont = ResourceService.LoadDefaultMonospacedFont(FontStyle.Italic);
+		public static Font RegularBigFont {
+			get {
+				return regularBigFont
+					?? (regularBigFont = ResourceService.LoadFont("Tahoma", 9));
+			}
+		}
+		
+		public static Font BoldBigFont {
+			get {
+				return boldBigFont
+					?? (boldBigFont = ResourceService.LoadFont("Tahoma", 9, FontStyle.Bold));
+			}
+		}
+		
+		public static Font ItalicBigFont {
+			get {
+				return italicBigFont
+					?? (italicBigFont = ResourceService.LoadFont("Tahoma", 9, FontStyle.Italic));
+			}
 		}
 		#endregion
 		

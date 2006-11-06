@@ -111,6 +111,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// Returns the startup project. If no startup project is set in the solution preferences,
+		/// returns any project that is startable.
+		/// </summary>
 		[Browsable(false)]
 		public IProject StartupProject {
 			get {
@@ -166,6 +170,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		#region ISolutionFolderContainer implementations
+		[Browsable(false)]
+		public override Solution ParentSolution {
+			get { return this; }
+		}
+		
 		public override ProjectSection SolutionItems {
 			get {
 				foreach (SolutionFolder folder in Folders) {

@@ -15,6 +15,10 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public interface ISolutionFolderContainer
 	{
+		Solution ParentSolution {
+			get;
+		}
+		
 		List<ProjectSection> Sections {
 			get;
 		}

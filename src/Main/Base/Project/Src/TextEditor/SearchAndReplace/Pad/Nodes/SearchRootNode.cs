@@ -68,13 +68,11 @@ namespace SearchAndReplace
 		
 		protected override int MeasureItemWidth(DrawTreeNodeEventArgs e)
 		{
-			return MeasureTextWidth(e.Graphics, GetText(), BoldFont);
+			return MeasureTextWidth(e.Graphics, GetText(), BoldBigFont);
 		}
 		protected override void DrawForeground(DrawTreeNodeEventArgs e)
 		{
-			Graphics g = e.Graphics;
-			float x = e.Bounds.X;
-			DrawText(g, GetText(), Brushes.Black, BoldFont, ref x, e.Bounds.Y);
+			DrawText(e, GetText(), SystemBrushes.WindowText, BoldBigFont);
 		}
 	}
 }

@@ -352,7 +352,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void ViewSolution(Solution solution)
 		{
 			AbstractProjectBrowserTreeNode solutionNode = new SolutionNode(solution);
-			treeView.Nodes.Clear();
+			treeView.Clear();
 			solutionNode.AddTo(treeView);
 			
 			foreach (object treeObject in solution.Folders) {

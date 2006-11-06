@@ -53,8 +53,8 @@ namespace SearchAndReplace
 		protected override int MeasureItemWidth(DrawTreeNodeEventArgs e)
 		{
 			Graphics g = e.Graphics;
-			int x = MeasureTextWidth(g, fileName, Font);
-			x += MeasureTextWidth(g, occurences, ItalicFont);
+			int x = MeasureTextWidth(g, fileName, RegularBigFont);
+			x += MeasureTextWidth(g, occurences, ItalicBigFont);
 			if (icon != null) {
 				x += icon.Width;
 			}
@@ -66,10 +66,10 @@ namespace SearchAndReplace
 			float x = e.Bounds.X;
 			if (icon != null) {
 				g.DrawImage(icon, x, e.Bounds.Y, icon.Width, icon.Height);
-				x += icon.Width;
+				x += icon.Width + 2;
 			}
-			DrawText(g, fileName, Brushes.Black, Font, ref x, e.Bounds.Y);
-			DrawText(g, occurences, Brushes.Gray,  ItalicFont, ref x, e.Bounds.Y);
+			DrawText(e, fileName, SystemBrushes.WindowText, RegularBigFont, ref x);
+			DrawText(e, occurences, SystemBrushes.GrayText,  ItalicBigFont, ref x);
 		}
 			
 		protected override void Initialize()

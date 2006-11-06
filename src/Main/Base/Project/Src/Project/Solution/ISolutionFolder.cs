@@ -19,6 +19,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			set;
 		}
 		
+		Solution ParentSolution {
+			get;
+		}
+		
 		string TypeGuid {
 			get;
 			set;

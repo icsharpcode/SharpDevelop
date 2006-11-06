@@ -56,8 +56,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		protected override int MeasureItemWidth(DrawTreeNodeEventArgs e)
 		{
 			Graphics g = e.Graphics;
-			int x = MeasureTextWidth(g, fileNameText, Font);
-			x += MeasureTextWidth(g, occurences, ItalicFont);
+			int x = MeasureTextWidth(g, fileNameText, RegularBigFont);
+			x += MeasureTextWidth(g, occurences, ItalicBigFont);
 			if (icon != null) {
 				x += icon.Width;
 			}
@@ -69,10 +69,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			float x = e.Bounds.X;
 			if (icon != null) {
 				g.DrawImage(icon, x, e.Bounds.Y, icon.Width, icon.Height);
-				x += icon.Width;
+				x += icon.Width + 2;
 			}
-			DrawText(g, fileNameText, Brushes.Black, Font, ref x, e.Bounds.Y);
-			DrawText(g, occurences, Brushes.Gray,  ItalicFont, ref x, e.Bounds.Y);
+			DrawText(e, fileNameText, SystemBrushes.WindowText, RegularBigFont, ref x);
+			DrawText(e, occurences, SystemBrushes.GrayText,  ItalicBigFont, ref x);
 		}
 		
 		public void AddMark(SDBookmark mark)
