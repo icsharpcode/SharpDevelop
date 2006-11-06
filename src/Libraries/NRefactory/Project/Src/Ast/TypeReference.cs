@@ -26,8 +26,11 @@ namespace ICSharpCode.NRefactory.Ast
 		List<TypeReference> genericTypes = new List<TypeReference>();
 		bool isGlobal;
 		
+		#region Static primitive type list
 		static Dictionary<string, string> types   = new Dictionary<string, string>();
-		static Dictionary<string, string> vbtypes = new Dictionary<string, string>();
+		static Dictionary<string, string> vbtypes = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+		static Dictionary<string, string> typesReverse   = new Dictionary<string, string>();
+		static Dictionary<string, string> vbtypesReverse = new Dictionary<string, string>();
 		
 		static TypeReference()
 		{
@@ -50,33 +53,74 @@ namespace ICSharpCode.NRefactory.Ast
 			types.Add("void",    "System.Void");
 			
 			// VB.NET types
-			vbtypes.Add("boolean", "System.Boolean");
-			vbtypes.Add("byte",    "System.Byte");
-			vbtypes.Add("sbyte",   "System.SByte");
-			vbtypes.Add("date",	   "System.DateTime");
-			vbtypes.Add("char",    "System.Char");
-			vbtypes.Add("decimal", "System.Decimal");
-			vbtypes.Add("double",  "System.Double");
-			vbtypes.Add("single",  "System.Single");
-			vbtypes.Add("integer", "System.Int32");
-			vbtypes.Add("long",    "System.Int64");
-			vbtypes.Add("uinteger","System.UInt32");
-			vbtypes.Add("ulong",   "System.UInt64");
-			vbtypes.Add("object",  "System.Object");
-			vbtypes.Add("short",   "System.Int16");
-			vbtypes.Add("ushort",  "System.UInt16");
-			vbtypes.Add("string",  "System.String");
+			vbtypes.Add("Boolean", "System.Boolean");
+			vbtypes.Add("Byte",    "System.Byte");
+			vbtypes.Add("SByte",   "System.SByte");
+			vbtypes.Add("Date",	   "System.DateTime");
+			vbtypes.Add("Char",    "System.Char");
+			vbtypes.Add("Decimal", "System.Decimal");
+			vbtypes.Add("Double",  "System.Double");
+			vbtypes.Add("Single",  "System.Single");
+			vbtypes.Add("Integer", "System.Int32");
+			vbtypes.Add("Long",    "System.Int64");
+			vbtypes.Add("UInteger","System.UInt32");
+			vbtypes.Add("ULong",   "System.UInt64");
+			vbtypes.Add("Object",  "System.Object");
+			vbtypes.Add("Short",   "System.Int16");
+			vbtypes.Add("UShort",  "System.UInt16");
+			vbtypes.Add("String",  "System.String");
+			
+			foreach (KeyValuePair<string, string> pair in types) {
+				typesReverse.Add(pair.Value, pair.Key);
+			}
+			foreach (KeyValuePair<string, string> pair in vbtypes) {
+				vbtypesReverse.Add(pair.Value, pair.Key);
+			}
 		}
 		
-		public static IEnumerable<KeyValuePair<string, string>> GetPrimitiveTypesCSharp()
-		{
-			return types;
+		/// <summary>
+		/// Gets a shortname=>full name dictionary of C# types.
+		/// </summary>
+		public static IDictionary<string, string> PrimitiveTypesCSharp {
+			get { return types; }
 		}
 		
-		public static IEnumerable<KeyValuePair<string, string>> GetPrimitiveTypesVB()
-		{
-			return vbtypes;
+		/// <summary>
+		/// Gets a shortname=>full name dictionary of VB types.
+		/// </summary>
+		public static IDictionary<string, string> PrimitiveTypesVB {
+			get { return vbtypes; }
 		}
+		
+		/// <summary>
+		/// Gets a full name=>shortname dictionary of C# types.
+		/// </summary>
+		public static IDictionary<string, string> PrimitiveTypesCSharpReverse {
+			get { return typesReverse; }
+		}
+		
+		/// <summary>
+		/// Gets a full name=>shortname dictionary of VB types.
+		/// </summary>
+		public static IDictionary<string, string> PrimitiveTypesVBReverse {
+			get { return vbtypesReverse; }
+		}
+		
+		
+		static string GetSystemType(string type)
+		{
+			if (types == null) return type;
+			
+			string systemType;
+			if (types.TryGetValue(type, out systemType)) {
+				return systemType;
+			}
+			if (vbtypes.TryGetValue(type, out systemType)) {
+				return systemType;
+			}
+			return type;
+		}
+		#endregion
 		
 		object ICloneable.Clone()
 		{
@@ -213,20 +257,6 @@ namespace ICSharpCode.NRefactory.Ast
 			}
 		}
 		
-		static string GetSystemType(string type)
-		{
-			if (types == null) return type;
-			
-			if (types.ContainsKey(type)) {
-				return types[type];
-			}
-			string lowerType = type.ToLower(CultureInfo.InvariantCulture);
-			if (vbtypes.ContainsKey(lowerType)) {
-				return vbtypes[lowerType];
-			}
-			return type;
-		}
-		
 		public TypeReference(string type)
 		{
 			this.Type = type;
@@ -323,7 +353,7 @@ namespace ICSharpCode.NRefactory.Ast
 			return true;
 		}
 	}
-	
+
 	public class NullTypeReference : TypeReference
 	{
 		static NullTypeReference nullTypeReference = new NullTypeReference();
@@ -347,7 +377,7 @@ namespace ICSharpCode.NRefactory.Ast
 			return String.Format("[NullTypeReference]");
 		}
 	}
-	
+
 	/// <summary>
 	/// We need this special type reference for cases like
 	/// OuterClass(Of T1).InnerClass(Of T2) (in expression or type context)

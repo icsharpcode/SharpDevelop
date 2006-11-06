@@ -14,48 +14,14 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 {
 	public class CSharpAmbience : AbstractAmbience
 	{
-		static string[,] typeConversionList = new string[,] {
-			{"System.Void",    "void"},
-			{"System.Object",  "object"},
-			{"System.Boolean", "bool"},
-			{"System.Byte",    "byte"},
-			{"System.SByte",   "sbyte"},
-			{"System.Char",    "char"},
-			{"System.Enum",    "enum"},
-			{"System.Int16",   "short"},
-			{"System.Int32",   "int"},
-			{"System.Int64",   "long"},
-			{"System.UInt16",  "ushort"},
-			{"System.UInt32",  "uint"},
-			{"System.UInt64",  "ulong"},
-			{"System.Single",  "float"},
-			{"System.Double",  "double"},
-			{"System.Decimal", "decimal"},
-			{"System.String",  "string"}
-		};
-		
-		static Hashtable typeConversionTable = new Hashtable();
-		
-		public static Hashtable TypeConversionTable {
-			get {
-				return typeConversionTable;
-			}
+		public static IDictionary<string, string> TypeConversionTable {
+			get { return ICSharpCode.NRefactory.Ast.TypeReference.PrimitiveTypesCSharpReverse; }
 		}
 		
-		static CSharpAmbience instance;
+		static CSharpAmbience instance = new CSharpAmbience();
 		
 		public static CSharpAmbience Instance {
-			get {
-				if (instance == null) instance = new CSharpAmbience();
-				return instance;
-			}
-		}
-		
-		static CSharpAmbience()
-		{
-			for (int i = 0; i < typeConversionList.GetLength(0); ++i) {
-				typeConversionTable[typeConversionList[i, 0]] = typeConversionList[i, 1];
-			}
+			get { return instance; }
 		}
 		
 		bool ModifierIsSet(ModifierEnum modifier, ModifierEnum query)
@@ -478,8 +444,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			StringBuilder builder = new StringBuilder();
 			
 			string fullName = returnType.FullyQualifiedName;
-			if (fullName != null && typeConversionTable[fullName] != null) {
-				builder.Append(typeConversionTable[fullName].ToString());
+			string shortName;
+			if (fullName != null && TypeConversionTable.TryGetValue(fullName, out shortName)) {
+				builder.Append(shortName);
 			} else {
 				if (UseFullyQualifiedNames) {
 					builder.Append(fullName);
@@ -556,8 +523,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 
 		public override string GetIntrinsicTypeName(string dotNetTypeName)
 		{
-			if (typeConversionTable[dotNetTypeName] != null) {
-				return (string)typeConversionTable[dotNetTypeName];
+			string shortName;
+			if (TypeConversionTable.TryGetValue(dotNetTypeName, out shortName)) {
+				return shortName;
 			}
 			return dotNetTypeName;
 		}

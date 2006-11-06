@@ -441,5 +441,11 @@ End Class
 		{
 			TestStatement("((IDisposable)o).Dispose();", "DirectCast(o, IDisposable).Dispose()");
 		}
+		
+		[Test]
+		public void PrimitiveCast()
+		{
+			TestStatement("a = (int)number;", "a = CInt(number)");
+		}
 	}
 }

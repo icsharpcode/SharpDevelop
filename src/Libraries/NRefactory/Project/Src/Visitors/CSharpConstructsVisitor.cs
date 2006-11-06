@@ -21,9 +21,8 @@ namespace ICSharpCode.NRefactory.Visitors
 		//   i++ / ++i as statement: convert to i += 1
 		//   i-- / --i as statement: convert to i -= 1
 		//   ForStatement -> ForNextStatement when for-loop is simple
-		
-		// The following conversions should be implemented in the future:
 		//   if (Event != null) Event(this, bla); -> RaiseEvent Event(this, bla)
+		//   Casts to value types are marked as conversions
 		
 		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
@@ -200,6 +199,22 @@ namespace ICSharpCode.NRefactory.Visitors
 			                                        start, end,
 			                                        (step == 1) ? null : new PrimitiveExpression(step, step.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)),
 			                                        forStatement.EmbeddedStatement, null));
+		}
+		
+		public override object VisitCastExpression(CastExpression castExpression, object data)
+		{
+			if (castExpression.CastType == CastType.Cast) {
+				//   Casts to value types are marked as conversions
+				// currently only supporting primitive types...
+				string type;
+				if (TypeReference.PrimitiveTypesCSharpReverse.TryGetValue(castExpression.CastTo.SystemType, out type)) {
+					if (type != "object" && type != "string") {
+						// type is value type
+						castExpression.CastType = CastType.Conversion;
+					}
+				}
+			}
+			return base.VisitCastExpression(castExpression, data);
 		}
 	}
 }

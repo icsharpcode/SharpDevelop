@@ -997,16 +997,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			ArrayList result = new ArrayList();
 			if (language == NR.SupportedLanguage.VBNet) {
-				foreach (KeyValuePair<string, string> pair in TypeReference.GetPrimitiveTypesVB()) {
-					string primitive = Char.ToUpper(pair.Key[0]) + pair.Key.Substring(1);
-					if ("System." + primitive != pair.Value) {
-						result.Add(GetPrimitiveClass(pair.Value, primitive));
+				foreach (KeyValuePair<string, string> pair in TypeReference.PrimitiveTypesVB) {
+					if ("System." + pair.Key != pair.Value) {
+						result.Add(GetPrimitiveClass(pair.Value, pair.Key));
 					}
 				}
 				result.Add("Global");
 				result.Add("New");
 			} else {
-				foreach (KeyValuePair<string, string> pair in TypeReference.GetPrimitiveTypesCSharp()) {
+				foreach (KeyValuePair<string, string> pair in TypeReference.PrimitiveTypesCSharp) {
 					result.Add(GetPrimitiveClass(pair.Value, pair.Key));
 				}
 			}

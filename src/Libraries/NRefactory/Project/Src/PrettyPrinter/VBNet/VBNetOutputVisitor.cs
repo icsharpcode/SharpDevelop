@@ -86,46 +86,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		/// <summary>
+		/// Converts type name to primitive type name. Returns null if typeString is not
+		/// a primitive type.
+		/// </summary>
 		static string ConvertTypeString(string typeString)
 		{
-			switch (typeString) {
-				case "System.Boolean":
-					return "Boolean";
-				case "System.String":
-					return "String";
-				case "System.Char":
-					return "Char";
-				case "System.Double":
-					return "Double";
-				case "System.Single":
-					return "Single";
-				case "System.Decimal":
-					return "Decimal";
-				case "System.DateTime":
-					return "Date";
-				case "System.Int64":
-					return "Long";
-				case "System.Int32":
-					return "Integer";
-				case "System.Int16":
-					return "Short";
-				case "System.Byte":
-					return "Byte";
-				case "System.Void":
-					return "Void";
-				case "System.Object":
-					return "Object";
-					
-				case "System.UInt64":
-					return "ULong";
-				case "System.UInt32":
-					return "UInteger";
-				case "System.UInt16":
-					return "UShort";
-				case "System.SByte":
-					return "SByte";
-			}
-			return null;
+			string primitiveType;
+			TypeReference.PrimitiveTypesVBReverse.TryGetValue(typeString, out primitiveType);
+			return primitiveType;
 		}
 
 		public object VisitTypeReference(TypeReference typeReference, object data)

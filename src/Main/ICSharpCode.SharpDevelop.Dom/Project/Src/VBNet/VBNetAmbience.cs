@@ -14,38 +14,14 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 {
 	public class VBNetAmbience :  AbstractAmbience
 	{
-		static string[,] typeConversionList = new string[,] {
-			{"System.String",  "String"},
-			{"System.Single",  "Single"},
-			{"System.Int16",   "Short"},
-			{"System.Void",    "Void"},
-			{"System.Object",  "Object"},
-			{"System.Int64",   "Long"},
-			{"System.Int32",   "Integer"},
-			{"System.Double",  "Double"},
-			{"System.Char",    "Char"},
-			{"System.Boolean", "Boolean"},
-			{"System.Byte",    "Byte"},
-			{"System.Decimal", "Decimal"},
-			{"System.DateTime",  "Date"},
-		};
-		
-		static Hashtable typeConversionTable = new Hashtable();
-		
-		static VBNetAmbience()
-		{
-			for (int i = 0; i < typeConversionList.GetLength(0); ++i) {
-				typeConversionTable[typeConversionList[i, 0]] = typeConversionList[i, 1];
-			}
+		public static IDictionary<string, string> TypeConversionTable {
+			get { return ICSharpCode.NRefactory.Ast.TypeReference.PrimitiveTypesVBReverse; }
 		}
 		
-		static VBNetAmbience instance;
+		static VBNetAmbience instance = new VBNetAmbience();
 		
 		public static VBNetAmbience Instance {
-			get {
-				if (instance == null) instance = new VBNetAmbience();
-				return instance;
-			}
+			get { return instance; }
 		}
 		
 		string GetModifier(IDecoration decoration)
@@ -472,8 +448,9 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			StringBuilder builder = new StringBuilder();
 			
 			string fullName = returnType.FullyQualifiedName;
-			if (fullName != null && typeConversionTable[fullName] != null) {
-				builder.Append(typeConversionTable[fullName].ToString());
+			string shortName;
+			if (fullName != null && TypeConversionTable.TryGetValue(fullName, out shortName)) {
+				builder.Append(shortName);
 			} else {
 				if (UseFullyQualifiedNames) {
 					builder.Append(fullName);
@@ -551,8 +528,9 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public override string GetIntrinsicTypeName(string dotNetTypeName)
 		{
-			if (typeConversionTable[dotNetTypeName] != null) {
-				return (string)typeConversionTable[dotNetTypeName];
+			string shortName;
+			if (TypeConversionTable.TryGetValue(dotNetTypeName, out shortName)) {
+				return shortName;
 			}
 			return dotNetTypeName;
 		}

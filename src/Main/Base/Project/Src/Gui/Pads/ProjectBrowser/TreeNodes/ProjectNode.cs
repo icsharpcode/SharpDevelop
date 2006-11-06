@@ -66,14 +66,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			Tag = project;
 			
-			project.ParentSolution.Preferences.StartupProjectChanged += OnStartupProjectChanged;
-			OnStartupProjectChanged(null, null);
+			if (project.ParentSolution != null) {
+				project.ParentSolution.Preferences.StartupProjectChanged += OnStartupProjectChanged;
+				OnStartupProjectChanged(null, null);
+			}
 		}
 		
 		public override void Dispose()
 		{
 			base.Dispose();
-			project.ParentSolution.Preferences.StartupProjectChanged -= OnStartupProjectChanged;
+			if (project.ParentSolution != null) {
+				project.ParentSolution.Preferences.StartupProjectChanged -= OnStartupProjectChanged;
+			}
 		}
 		
 		bool isStartupProject;
