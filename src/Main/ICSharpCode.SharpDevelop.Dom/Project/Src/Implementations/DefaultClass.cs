@@ -121,6 +121,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public bool IsPartial {
+			get {
+				return (this.Modifiers & ModifierEnum.Partial) == ModifierEnum.Partial;
+			}
+			set {
+				if (value)
+					this.Modifiers |= ModifierEnum.Partial;
+				else
+					this.Modifiers &= ~ModifierEnum.Partial;
+				defaultReturnType = null; // re-create default return type
+			}
+		}
+		
 		public IClass GetCompoundClass()
 		{
 			return this.DefaultReturnType.GetUnderlyingClass() ?? this;

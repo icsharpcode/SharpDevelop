@@ -114,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
-		/// Gets if namespaces can be imported (i.e. Imports System, Dim a As Collections.ArrayList)
+		/// Gets if namespaces are imported (i.e. Imports System, Dim a As Collections.ArrayList)
 		/// </summary>
 		public virtual bool ImportNamespaces {
 			get {
@@ -135,6 +135,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets if classes can be imported (i.e. Imports System.Math)
 		/// </summary>
 		public virtual bool CanImportClasses {
+			get {
+				return false;
+			}
+		}
+		
+		/// <summary>
+		/// Gets if the language allows partial classes where the partial modifier is not
+		/// used on any part.
+		/// </summary>
+		public virtual bool ImplicitPartialClasses {
 			get {
 				return false;
 			}

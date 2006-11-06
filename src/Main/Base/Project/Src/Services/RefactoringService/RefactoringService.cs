@@ -314,7 +314,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			List<string> list = new List<string>();
 			CompoundClass cc = c as CompoundClass;
 			if (cc != null) {
-				foreach (IClass part in cc.Parts) {
+				foreach (IClass part in cc.GetParts()) {
 					string fileName = part.CompilationUnit.FileName;
 					if (fileName != null)
 						list.Add(fileName);

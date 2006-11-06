@@ -15,14 +15,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public class CompoundClass : DefaultClass
 	{
-		List<IClass> parts = new List<IClass>();
+		/// <summary>
+		/// The parts this class is based on.
+		/// Requires manual locking!
+		/// </summary>
+		internal List<IClass> parts = new List<IClass>();
 		
 		/// <summary>
-		/// Gets the parts this class is based on.
+		/// Gets the parts this class is based on. This method is thread-safe and
+		/// returns a copy of the list!
 		/// </summary>
-		public List<IClass> Parts {
-			get {
-				return parts;
+		public IList<IClass> GetParts()
+		{
+			lock (this) {
+				return parts.ToArray();
 			}
 		}
 		
@@ -38,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Re-calculate information from class parts (Modifier, Base classes, Type parameters etc.)
 		/// </summary>
-		public void UpdateInformationFromParts()
+		internal void UpdateInformationFromParts()
 		{
 			// Common for all parts:
 			this.ClassType = parts[0].ClassType;
@@ -47,8 +53,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			ModifierEnum modifier = ModifierEnum.None;
 			const ModifierEnum defaultClassVisibility = ModifierEnum.Internal;
+			
 			this.BaseTypes.Clear();
-			this.TypeParameters.Clear();
 			this.Attributes.Clear();
 			foreach (IClass part in parts) {
 				if ((part.Modifiers & ModifierEnum.VisibilityMask) != defaultClassVisibility) {
@@ -61,9 +67,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 						this.BaseTypes.Add(rt);
 					}
 				}
-				foreach (ITypeParameter typeParam in part.TypeParameters) {
-					this.TypeParameters.Add(typeParam);
-				}
 				foreach (IAttribute attribute in part.Attributes) {
 					this.Attributes.Add(attribute);
 				}
@@ -72,6 +75,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 				modifier |= defaultClassVisibility;
 			}
 			this.Modifiers = modifier;
+		}
+		
+		/// <summary>
+		/// Type parameters are same on all parts
+		/// </summary>
+		public override IList<ITypeParameter> TypeParameters {
+			get {
+				lock (this) {
+					// Locking for the time of getting the reference to the sub-list is sufficient:
+					// Classes used for parts never change, instead the whole part is replaced with
+					// a new IClass instance.
+					return parts[0].TypeParameters;
+				}
+			}
+			set {
+				throw new NotSupportedException();
+			}
 		}
 		
 		/// <summary>
@@ -84,51 +104,61 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override List<IClass> InnerClasses {
 			get {
-				List<IClass> l = new List<IClass>();
-				foreach (IClass part in parts) {
-					l.AddRange(part.InnerClasses);
+				lock (this) {
+					List<IClass> l = new List<IClass>();
+					foreach (IClass part in parts) {
+						l.AddRange(part.InnerClasses);
+					}
+					return l;
 				}
-				return l;
 			}
 		}
 		
 		public override List<IField> Fields {
 			get {
-				List<IField> l = new List<IField>();
-				foreach (IClass part in parts) {
-					l.AddRange(part.Fields);
+				lock (this) {
+					List<IField> l = new List<IField>();
+					foreach (IClass part in parts) {
+						l.AddRange(part.Fields);
+					}
+					return l;
 				}
-				return l;
 			}
 		}
 		
 		public override List<IProperty> Properties {
 			get {
-				List<IProperty> l = new List<IProperty>();
-				foreach (IClass part in parts) {
-					l.AddRange(part.Properties);
+				lock (this) {
+					List<IProperty> l = new List<IProperty>();
+					foreach (IClass part in parts) {
+						l.AddRange(part.Properties);
+					}
+					return l;
 				}
-				return l;
 			}
 		}
 		
 		public override List<IMethod> Methods {
 			get {
-				List<IMethod> l = new List<IMethod>();
-				foreach (IClass part in parts) {
-					l.AddRange(part.Methods);
+				lock (this) {
+					List<IMethod> l = new List<IMethod>();
+					foreach (IClass part in parts) {
+						l.AddRange(part.Methods);
+					}
+					return l;
 				}
-				return l;
 			}
 		}
 		
 		public override List<IEvent> Events {
 			get {
-				List<IEvent> l = new List<IEvent>();
-				foreach (IClass part in parts) {
-					l.AddRange(part.Events);
+				lock (this) {
+					List<IEvent> l = new List<IEvent>();
+					foreach (IClass part in parts) {
+						l.AddRange(part.Events);
+					}
+					return l;
 				}
-				return l;
 			}
 		}
 	}

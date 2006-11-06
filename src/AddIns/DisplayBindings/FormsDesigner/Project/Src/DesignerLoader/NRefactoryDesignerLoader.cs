@@ -127,7 +127,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		string lastTextContent;
 		
-		public static List<IClass> FindFormClassParts(ParseInformation parseInfo, out IClass formClass)
+		public static IList<IClass> FindFormClassParts(ParseInformation parseInfo, out IClass formClass)
 		{
 			#if DEBUG
 			if ((Control.ModifierKeys & (Keys.Alt | Keys.Control)) == (Keys.Alt | Keys.Control)) {
@@ -147,14 +147,11 @@ namespace ICSharpCode.FormsDesigner
 			
 			// Initialize designer for formClass
 			formClass = formClass.GetCompoundClass();
-			List<IClass> parts;
 			if (formClass is CompoundClass) {
-				parts = (formClass as CompoundClass).Parts;
+				return (formClass as CompoundClass).GetParts();
 			} else {
-				parts = new List<IClass>();
-				parts.Add(formClass);
+				return new IClass[] { formClass };
 			}
-			return parts;
 		}
 		
 		// Steps to load the designer:
@@ -173,7 +170,7 @@ namespace ICSharpCode.FormsDesigner
 			ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
 			
 			IClass formClass;
-			List<IClass> parts = FindFormClassParts(parseInfo, out formClass);
+			IList<IClass> parts = FindFormClassParts(parseInfo, out formClass);
 			
 			List<KeyValuePair<string, CompilationUnit>> compilationUnits = new List<KeyValuePair<string, CompilationUnit>>();
 			bool foundInitMethod = false;

@@ -170,11 +170,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return (modifiers & ModifierEnum.New) == ModifierEnum.New;
 			}
 		}
-		public bool IsPartial {
-			get {
-				return (modifiers & ModifierEnum.Partial) == ModifierEnum.Partial;
-			}
-		}
 		public bool IsSynthetic {
 			get {
 				return (modifiers & ModifierEnum.Synthetic) == ModifierEnum.Synthetic;

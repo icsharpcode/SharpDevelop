@@ -66,7 +66,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 					
 					if (node != null) {
 						CompoundClass cc = c as CompoundClass;
-						if (cc != null && cc.Parts.Count > 0) {
+						if (cc != null) {
 							node.Class = cc; // update members after part has been removed
 						} else {
 							path.Nodes.Remove(node);

@@ -339,7 +339,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				IClass currentPart = c;
 				if (c.IsPartial) {
 					CompoundClass cc = c.GetCompoundClass() as CompoundClass;
-					if (cc != null && cc.Parts.Count > 0) {
+					if (cc != null) {
 						partialMode = true;
 						c = cc;
 					}

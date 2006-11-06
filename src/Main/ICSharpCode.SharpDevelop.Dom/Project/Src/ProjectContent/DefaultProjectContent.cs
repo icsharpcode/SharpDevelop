@@ -305,29 +305,44 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected void AddClassToNamespaceListInternal(IClass addClass)
 		{
 			string fullyQualifiedName = addClass.FullyQualifiedName;
-			if (addClass.IsPartial) {
-				LoggingService.Debug("Adding partial class " + addClass.Name + " from " + Path.GetFileName(addClass.CompilationUnit.FileName));
-				CompoundClass compound = GetClassInternal(fullyQualifiedName, addClass.TypeParameters.Count, language) as CompoundClass;
+			IClass existingClass = GetClassInternal(fullyQualifiedName, addClass.TypeParameters.Count, language);
+			if (existingClass != null && existingClass.TypeParameters.Count == addClass.TypeParameters.Count) {
+				//LoggingService.Debug("Adding partial class " + addClass.Name + " from " + Path.GetFileName(addClass.CompilationUnit.FileName));
+				CompoundClass compound = existingClass as CompoundClass;
 				if (compound != null) {
+					// mark the class as partial
+					// (VB allows specifying the 'partial' modifier only on one part)
+					addClass.IsPartial = true;
+					
 					// possibly replace existing class (look for CU with same filename)
 					lock (compound) {
-						for (int i = 0; i < compound.Parts.Count; i++) {
-							if (compound.Parts[i].CompilationUnit.FileName == addClass.CompilationUnit.FileName) {
-								compound.Parts[i] = addClass;
+						for (int i = 0; i < compound.parts.Count; i++) {
+							if (compound.parts[i].CompilationUnit.FileName == addClass.CompilationUnit.FileName) {
+								compound.parts[i] = addClass;
 								compound.UpdateInformationFromParts();
-								LoggingService.Debug("Replaced old part!");
+								//LoggingService.Debug("Replaced old part!");
 								return;
 							}
 						}
-						compound.Parts.Add(addClass);
+						compound.parts.Add(addClass);
 						compound.UpdateInformationFromParts();
 					}
-					LoggingService.Debug("Added new part!");
+					//LoggingService.Debug("Added new part!");
 					return;
-				} else {
-					addClass = new CompoundClass(addClass);
-					LoggingService.Debug("Compound created!");
+				} else if (addClass.IsPartial || language.ImplicitPartialClasses) {
+					// Merge existing non-partial class with addClass
+					
+					// Ensure partial modifier is set everywhere:
+					addClass.IsPartial = true;
+					existingClass.IsPartial = true;
+					
+					addClass = compound = new CompoundClass(addClass);
+					compound.parts.Add(existingClass);
+					compound.UpdateInformationFromParts();
 				}
+			} else if (addClass.IsPartial) {
+				addClass = new CompoundClass(addClass);
+				//LoggingService.Debug("Compound created!");
 			}
 			
 			IClass oldDictionaryClass;
@@ -471,8 +486,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 				CompoundClass compound = GetClassInternal(fullyQualifiedName, @class.TypeParameters.Count, language) as CompoundClass;
 				if (compound == null) return;
 				lock (compound) {
-					compound.Parts.Remove(@class);
-					if (compound.Parts.Count > 0) {
+					compound.parts.Remove(@class);
+					if (compound.parts.Count > 0) {
 						compound.UpdateInformationFromParts();
 						return;
 					} else {

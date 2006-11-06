@@ -70,10 +70,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 
-		bool IsPartial {
-			get;
-		}
-
 		bool IsReadonly {
 			get;
 		}

@@ -236,7 +236,7 @@ namespace Hornung.ResourceToolkit.Resolver
 					if (resourceClass != null) {
 						CompoundClass cc = resourceClass.GetCompoundClass() as CompoundClass;
 						
-						foreach (IClass c in (cc == null ? new IClass[] { resourceClass } : (IEnumerable<IClass>)cc.Parts)) {
+						foreach (IClass c in (cc == null ? new IClass[] { resourceClass } : cc.GetParts())) {
 							if (c.CompilationUnit != null && c.CompilationUnit.FileName != null) {
 								
 								#if DEBUG

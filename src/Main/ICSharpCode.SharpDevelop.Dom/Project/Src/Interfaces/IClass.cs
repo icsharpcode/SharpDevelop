@@ -131,5 +131,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		bool HasExtensionMethods {
 			get;
 		}
+		
+		bool IsPartial {
+			get;
+			set;
+		}
 	}
 }
