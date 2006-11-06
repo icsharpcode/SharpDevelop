@@ -453,6 +453,13 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 					EventDeclaration ed = ConvertMember(e, context);
 					if (explicitImpl) {
 						ed.InterfaceImplementations.Add(new InterfaceImplementation(interfaceReference, ed.Name));
+						
+						if (context.ProjectContent.Language.RequiresAddRemoveRegionInExplicitInterfaceImplementation) {
+							ed.AddRegion = new EventAddRegion(null);
+							ed.AddRegion.Block = CreateNotImplementedBlock();
+							ed.RemoveRegion = new EventRemoveRegion(null);
+							ed.RemoveRegion.Block = CreateNotImplementedBlock();
+						}
 					}
 					ed.Modifier = modifier;
 					nodes.Add(ed);

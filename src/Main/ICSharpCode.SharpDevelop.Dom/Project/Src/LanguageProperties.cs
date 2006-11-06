@@ -170,6 +170,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
+		/// Gets if events explicitly implementing an interface require add {} remove {} regions.
+		/// </summary>
+		public virtual bool RequiresAddRemoveRegionInExplicitInterfaceImplementation {
+			get {
+				return false;
+			}
+		}
+		
+		/// <summary>
 		/// Gets the token that denotes a possible beginning of an indexer expression.
 		/// </summary>
 		public virtual string IndexerExpressionStartToken {
@@ -236,6 +245,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			public override bool SupportsImplicitInterfaceImplementation {
+				get {
+					return true;
+				}
+			}
+			
+			/// <summary>
+			/// Gets if events explicitly implementing an interface require add {} remove {} regions.
+			/// </summary>
+			public override bool RequiresAddRemoveRegionInExplicitInterfaceImplementation {
 				get {
 					return true;
 				}
