@@ -465,10 +465,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			foreach (IClass c in oldUnit.Classes) {
 				bool found = false;
-				foreach (IClass c2 in newUnit.Classes) {
-					if (c.FullyQualifiedName == c2.FullyQualifiedName) {
-						found = true;
-						break;
+				// Partial classes always have to be removed. Otherwise editing the type
+				// arguments of a partial would leave the class registered in the wrong compound
+				// class. See SD2-1149.
+				if (!c.IsPartial) {
+					foreach (IClass c2 in newUnit.Classes) {
+						if (c.FullyQualifiedName == c2.FullyQualifiedName) {
+							found = true;
+							break;
+						}
 					}
 				}
 				if (!found) {
@@ -480,11 +485,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		void RemoveClass(IClass @class)
 		{
 			string fullyQualifiedName = @class.FullyQualifiedName;
+			int typeParameterCount = @class.TypeParameters.Count;
 			if (@class.IsPartial) {
 				// remove a part of a partial class
 				// Use "as" cast to fix SD2-680: the stored class might be a part not marked as partial
-				CompoundClass compound = GetClassInternal(fullyQualifiedName, @class.TypeParameters.Count, language) as CompoundClass;
+				CompoundClass compound = GetClassInternal(fullyQualifiedName, typeParameterCount, language) as CompoundClass;
 				if (compound == null) return;
+				typeParameterCount = compound.TypeParameters.Count;
 				lock (compound) {
 					compound.parts.Remove(@class);
 					if (compound.parts.Count > 0) {
@@ -503,7 +510,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			GenericClassContainer gcc = classInDictionary as GenericClassContainer;
 			if (gcc != null) {
-				gcc.Remove(@class.TypeParameters.Count);
+				gcc.Remove(typeParameterCount);
 				if (gcc.RealClassCount > 0) {
 					return;
 				}
