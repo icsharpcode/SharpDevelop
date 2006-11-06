@@ -11,7 +11,8 @@
 namespace ICSharpCode.NRefactory.Ast {
 	using System;
 	using System.Collections.Generic;
-
+	
+	
 	public class AddHandlerStatement : Statement {
 		
 		Expression eventExpression;
@@ -1596,9 +1597,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			initializer = Expression.Null;
 		}
 		
-		public bool HasAddRegion {
+		public bool HasRemoveRegion {
 			get {
-				return !addRegion.IsNull;
+				return !removeRegion.IsNull;
 			}
 		}
 		
@@ -1608,9 +1609,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public bool HasRemoveRegion {
+		public bool HasAddRegion {
 			get {
-				return !removeRegion.IsNull;
+				return !addRegion.IsNull;
 			}
 		}
 		
@@ -1816,15 +1817,6 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 		
 
-		public TypeReference GetTypeForField(int fieldIndex)
-		{
-			if (!typeReference.IsNull) {
-				return typeReference;
-			}
-			return ((VariableDeclaration)Fields[fieldIndex]).TypeReference;
-		}
-		
-
 		public VariableDeclaration GetVariableDeclaration(string variableName)
 		{
 			foreach (VariableDeclaration variableDeclaration in Fields) {
@@ -1833,6 +1825,15 @@ namespace ICSharpCode.NRefactory.Ast {
 				}
 			}
 			return null;
+		}
+		
+
+		public TypeReference GetTypeForField(int fieldIndex)
+		{
+			if (!typeReference.IsNull) {
+				return typeReference;
+			}
+			return ((VariableDeclaration)Fields[fieldIndex]).TypeReference;
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
@@ -2279,27 +2280,27 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 		
 
+			public IfElseStatement(Expression condition, Statement trueStatement)
+				: this(condition) {
+				this.trueStatement.Add(Statement.CheckNull(trueStatement));
+			}
+		
+
 			public IfElseStatement(Expression condition, Statement trueStatement, Statement falseStatement)
 				: this(condition) {
 				this.trueStatement.Add(Statement.CheckNull(trueStatement));
 				this.falseStatement.Add(Statement.CheckNull(falseStatement));
 			}
 		
-		public bool HasElseIfSections {
-			get {
-				return elseIfSections.Count > 0;
-			}
-		}
-		
-
-			public IfElseStatement(Expression condition, Statement trueStatement)
-				: this(condition) {
-				this.trueStatement.Add(Statement.CheckNull(trueStatement));
-			}
-		
 		public bool HasElseStatements {
 			get {
 				return falseStatement.Count > 0;
+			}
+		}
+		
+		public bool HasElseIfSections {
+			get {
+				return elseIfSections.Count > 0;
 			}
 		}
 		
@@ -2416,15 +2417,15 @@ namespace ICSharpCode.NRefactory.Ast {
 			setRegion = PropertySetRegion.Null;
 		}
 		
-		public bool IsReadOnly {
+		public bool HasSetRegion {
 			get {
-				return HasGetRegion && !HasSetRegion;
+				return !setRegion.IsNull;
 			}
 		}
 		
-		public bool HasGetRegion {
+		public bool IsReadOnly {
 			get {
-				return !getRegion.IsNull;
+				return HasGetRegion && !HasSetRegion;
 			}
 		}
 		
@@ -2434,9 +2435,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public bool HasSetRegion {
+		public bool HasGetRegion {
 			get {
-				return !setRegion.IsNull;
+				return !getRegion.IsNull;
 			}
 		}
 		
@@ -4226,9 +4227,9 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 			Usings = usings;
 		}
 		
-public UsingDeclaration(string @namespace) : this(@namespace, null) {}
-		
 public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
+		
+public UsingDeclaration(string @namespace) : this(@namespace, null) {}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitUsingDeclaration(this, data);

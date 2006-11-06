@@ -359,9 +359,8 @@ namespace ICSharpCode.NRefactory.Ast
 		TypeReference baseType;
 		
 		public TypeReference BaseType {
-			get {
-				return baseType;
-			}
+			get { return baseType; }
+			set { baseType = value; }
 		}
 		
 		public override TypeReference Clone()

@@ -12,9 +12,9 @@ namespace ICSharpCode.NRefactory.Visitors {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	
 	using ICSharpCode.NRefactory.Ast;
-
+	
+	
 	/// <summary>
 	/// The AbstractAstTransformer will iterate through the whole AST,
 	/// just like the AbstractAstVisitor. However, the AbstractAstTransformer allows
@@ -1034,6 +1034,22 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data) {
 			Debug.Assert((innerClassTypeReference != null));
+			Debug.Assert((innerClassTypeReference.GenericTypes != null));
+			Debug.Assert((innerClassTypeReference.BaseType != null));
+			for (int i = 0; i < innerClassTypeReference.GenericTypes.Count; i++) {
+				TypeReference o = innerClassTypeReference.GenericTypes[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (TypeReference)nodeStack.Pop();
+				if (o == null)
+					innerClassTypeReference.GenericTypes.RemoveAt(i--);
+				else
+					innerClassTypeReference.GenericTypes[i] = o;
+			}
+			nodeStack.Push(innerClassTypeReference.BaseType);
+			innerClassTypeReference.BaseType.AcceptVisitor(this, data);
+			innerClassTypeReference.BaseType = ((TypeReference)(nodeStack.Pop()));
 			return null;
 		}
 		
@@ -1748,6 +1764,18 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object VisitTypeReference(TypeReference typeReference, object data) {
 			Debug.Assert((typeReference != null));
+			Debug.Assert((typeReference.GenericTypes != null));
+			for (int i = 0; i < typeReference.GenericTypes.Count; i++) {
+				TypeReference o = typeReference.GenericTypes[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (TypeReference)nodeStack.Pop();
+				if (o == null)
+					typeReference.GenericTypes.RemoveAt(i--);
+				else
+					typeReference.GenericTypes[i] = o;
+			}
 			return null;
 		}
 		

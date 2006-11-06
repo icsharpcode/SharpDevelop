@@ -113,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			}
 		}
 		
-		protected virtual Dictionary<PossibleTypeReference, object> FindPossibleTypeReferences(string extension, string fileContent)
+		protected virtual Dictionary<PossibleTypeReference, object> FindPossibleTypeReferences(string fileContent)
 		{
 			NR.IParser parser = ParseFile(fileContent);
 			if (parser == null) {
@@ -136,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		{
 			IClass @class = cu.Classes.Count == 0 ? null : cu.Classes[0];
 			
-			Dictionary<PossibleTypeReference, object> references = FindPossibleTypeReferences(Path.GetExtension(fileName), fileContent);
+			Dictionary<PossibleTypeReference, object> references = FindPossibleTypeReferences(fileContent);
 			if (references == null) return new IUsing[0];
 			
 			Dictionary<IUsing, object> dict = new Dictionary<IUsing, object>();

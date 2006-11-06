@@ -10,9 +10,11 @@
 
 namespace ICSharpCode.NRefactory.Visitors {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics;
 	using ICSharpCode.NRefactory.Ast;
-
+	
+	
 	public abstract class AbstractAstVisitor : IAstVisitor {
 		
 		public virtual object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data) {
@@ -566,7 +568,13 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data) {
 			Debug.Assert((innerClassTypeReference != null));
-			return null;
+			Debug.Assert((innerClassTypeReference.GenericTypes != null));
+			Debug.Assert((innerClassTypeReference.BaseType != null));
+			foreach (TypeReference o in innerClassTypeReference.GenericTypes) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			return innerClassTypeReference.BaseType.AcceptVisitor(this, data);
 		}
 		
 		public virtual object VisitInterfaceImplementation(InterfaceImplementation interfaceImplementation, object data) {
@@ -952,6 +960,11 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object VisitTypeReference(TypeReference typeReference, object data) {
 			Debug.Assert((typeReference != null));
+			Debug.Assert((typeReference.GenericTypes != null));
+			foreach (TypeReference o in typeReference.GenericTypes) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
 			return null;
 		}
 		

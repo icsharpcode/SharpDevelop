@@ -44,9 +44,16 @@ namespace NRefactoryASTGenerator.Ast
 	}
 	
 	[CustomImplementation]
-	class TypeReference : AbstractNode {}
+	class TypeReference : AbstractNode
+	{
+		List<TypeReference> genericTypes;
+	}
+	
 	[CustomImplementation]
-	class InnerClassTypeReference : TypeReference {}
+	class InnerClassTypeReference : TypeReference 
+	{
+		TypeReference baseType;
+	}
 	
 	class AttributeSection : AbstractNode, INullable
 	{
