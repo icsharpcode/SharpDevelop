@@ -271,6 +271,8 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		// This is an arbitrary limitation built into the .NET Framework.
+		// Windows supports paths up to 32k length.
 		public static int MaxPathLength = 260;
 		
 		/// <summary>

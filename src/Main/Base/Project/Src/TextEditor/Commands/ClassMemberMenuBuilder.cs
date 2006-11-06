@@ -75,12 +75,18 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					list.Add(cmd);
 				} else {
 					if (canGenerateCode) {
-						cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateGetter}", CreateGetter);
-						cmd.Tag = member;
-						list.Add(cmd);
-						cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateProperty}", CreateProperty);
-						cmd.Tag = member;
-						list.Add(cmd);
+						if (member.IsReadonly) {
+							cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateProperty}", CreateGetter);
+							cmd.Tag = member;
+							list.Add(cmd);
+						} else {
+							cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateGetter}", CreateGetter);
+							cmd.Tag = member;
+							list.Add(cmd);
+							cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateProperty}", CreateProperty);
+							cmd.Tag = member;
+							list.Add(cmd);
+						}
 					}
 				}
 			}
