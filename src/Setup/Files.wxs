@@ -627,6 +627,9 @@
 									<Directory Id="CSharpFileTemplatesFolder" Name="CSharp">
 										<Component Guid="178B7A4B-FEE8-432D-A014-256FAA5441BE" Id="CSharpFileTemplates" DiskId="1">
 											<File Source="..\..\data\templates\file\CSharp\FileCategorySortOrder.xml" Name="FILECA_1.XML" Id="CSharpFileCategorySortOrder.xml" LongName="FileCategorySortOrder.xml" />
+											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationElement.xft" Name="CSCONFIG.XFT" Id="CSharp.ConfigurationElement.xft" LongName="CSharp.ConfigurationElement.xft" />
+											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationElementCollection.xft" Name="CSCONFIG.XFT" Id="CSharp.ConfigurationElementCollection.xft" LongName="CSharp.ConfigurationElementCollection.xft" />
+											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationSection.xft" Name="CSCONFIG.XFT" Id="CSharp.ConfigurationSection.xft" LongName="CSharp.ConfigurationSection.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Empty.xft" Name="CSHARP_1.XFT" Id="CSharp.Empty.xft" LongName="CSharp.Empty.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.EmptyClass.xft" Name="CSHARP_2.XFT" Id="CSharp.EmptyClass.xft" LongName="CSharp.EmptyClass.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Forms.Form.xft" Name="CSHARP_3.XFT" Id="CSharp.Forms.Form.xft" LongName="CSharp.Forms.Form.xft" />
