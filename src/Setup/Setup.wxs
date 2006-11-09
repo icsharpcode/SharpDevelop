@@ -234,6 +234,7 @@
 				<ComponentRef Id="CSharpWebServiceProjectTemplate"/>
 				<ComponentRef Id="CSharpNotifyIconProjectTemplate"/>
 				<ComponentRef Id="CSharpStructTemplate"/>
+				<ComponentRef Id="CSharpConfigurationFileTemplates"/>
 				<ComponentRef Id="MiscProjectTemplates"/>
 				<ComponentRef Id="VBNetProjectTemplates"/>
 				<ComponentRef Id="ExampleProjectTemplate"/>

@@ -627,9 +627,6 @@
 									<Directory Id="CSharpFileTemplatesFolder" Name="CSharp">
 										<Component Guid="178B7A4B-FEE8-432D-A014-256FAA5441BE" Id="CSharpFileTemplates" DiskId="1">
 											<File Source="..\..\data\templates\file\CSharp\FileCategorySortOrder.xml" Name="FILECA_1.XML" Id="CSharpFileCategorySortOrder.xml" LongName="FileCategorySortOrder.xml" />
-											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationElement.xft" Name="CSCONFIG.XFT" Id="CSharp.ConfigurationElement.xft" LongName="CSharp.ConfigurationElement.xft" />
-											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationElementCollection.xft" Name="CSCONFIG.XFT" Id="CSharp.ConfigurationElementCollection.xft" LongName="CSharp.ConfigurationElementCollection.xft" />
-											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationSection.xft" Name="CSCONFIG.XFT" Id="CSharp.ConfigurationSection.xft" LongName="CSharp.ConfigurationSection.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Empty.xft" Name="CSHARP_1.XFT" Id="CSharp.Empty.xft" LongName="CSharp.Empty.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.EmptyClass.xft" Name="CSHARP_2.XFT" Id="CSharp.EmptyClass.xft" LongName="CSharp.EmptyClass.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Forms.Form.xft" Name="CSHARP_3.XFT" Id="CSharp.Forms.Form.xft" LongName="CSharp.Forms.Form.xft" />
@@ -650,6 +647,14 @@
 										</Component>
 										<Component Guid="16055582-32EE-4418-A06B-488AC5EC79E4" Id="CSharpStructTemplate" DiskId="1">
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Struct.xft" Name="CSSTRUCT.XFT" Id="CSharp.Struct.xft" LongName="CSharp.Struct.xft" />
+										</Component>
+										<Component Guid="3ffcfcc0-6f9b-11db-9fe1-0800200c9a66" Id="CSharpConfigurationFileTemplates" DiskId="1">
+											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationElement.xft" Name="CSCONFIG.XFT" Id="CSharp.ConfigurationElement.xft" LongName="CSharp.ConfigurationElement.xft" />
+											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationElementCollection.xft" Name="CSCONFIG.XFT" Id="CSharp.ConfigurationElementCollection.xft" LongName="CSharp.ConfigurationElementCollection.xft" />
+											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationSection.xft" Name="CSCONFIG.XFT" Id="CSharp.ConfigurationSection.xft" LongName="CSharp.ConfigurationSection.xft" />
+											<File Source="..\..\data\templates\file\CSharp\ConfigurationElement.cs" Name="CONFELEM.CS" Id="ConfigurationElement.cs" LongName="ConfigurationElement.cs" />
+											<File Source="..\..\data\templates\file\CSharp\ConfigurationElementCollection.cs" Name="CONFECOL.CS" Id="ConfigurationElementCollection.cs" LongName="ConfigurationElementCollection.cs" />
+											<File Source="..\..\data\templates\file\CSharp\ConfigurationSection.cs" Name="CONFSECT.CS" Id="ConfigurationSection.cs" LongName="ConfigurationSection.cs" />
 										</Component>
 									</Directory>
 									<Directory Id="MiscFileTemplatesFolder" Name="Misc">
