@@ -288,7 +288,14 @@ namespace ICSharpCode.Core
 			Dictionary<string, Version> dict = new Dictionary<string, Version>();
 			Dictionary<string, AddIn> addInDict = new Dictionary<string, AddIn>();
 			foreach (string fileName in addInFiles) {
-				AddIn addIn = AddIn.Load(fileName);
+				AddIn addIn;
+				try {
+					addIn = AddIn.Load(fileName);
+				} catch (AddInLoadException ex) {
+					MessageService.ShowError(ex, "Error loading AddIn " + fileName);
+					addIn = new AddIn();
+					addIn.CustomErrorMessage = ex.Message;
+				}
 				if (addIn.Action == AddInAction.CustomError) {
 					list.Add(addIn);
 					continue;

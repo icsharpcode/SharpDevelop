@@ -23,6 +23,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		string fileName = String.Empty;
 		
+		public Solution()
+		{
+			preferences = new SolutionPreferences(this);
+		}
+		
+		#region Enumerate projects/folders
 		public IProject FindProjectContainingFile(string fileName)
 		{
 			IProject currentProject = ProjectService.CurrentProject;
@@ -133,6 +139,23 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public ISolutionFolder GetSolutionFolder(string guid)
+		{
+			foreach (ISolutionFolder solutionFolder in SolutionFolders) {
+				if (solutionFolder.IdGuid == guid) {
+					return solutionFolder;
+				}
+			}
+			return null;
+		}
+		
+		public SolutionFolder CreateFolder(string folderName)
+		{
+			return new SolutionFolder(folderName, folderName, "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}");
+		}
+		#endregion
+		
+		#region Properties
 		[Browsable(false)]
 		public bool HasProjects {
 			get {
@@ -169,6 +192,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		SolutionPreferences preferences;
+		
+		[Browsable(false)]
+		public SolutionPreferences Preferences {
+			get {
+				return preferences;
+			}
+		}
+		#endregion
+		
 		#region ISolutionFolderContainer implementations
 		[Browsable(false)]
 		public override Solution ParentSolution {
@@ -196,30 +229,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#endregion
 		
-		SolutionPreferences preferences;
-		
-		[Browsable(false)]
-		public SolutionPreferences Preferences {
-			get {
-				return preferences;
-			}
-		}
-		
-		public Solution()
-		{
-			preferences = new SolutionPreferences(this);
-		}
-		
-		public ISolutionFolder GetSolutionFolder(string guid)
-		{
-			foreach (ISolutionFolder solutionFolder in SolutionFolders) {
-				if (solutionFolder.IdGuid == guid) {
-					return solutionFolder;
-				}
-			}
-			return null;
-		}
-		
+		#region Save
 		public void Save()
 		{
 			try {
@@ -230,12 +240,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				MessageService.ShowError("Could not save " + fileName + ":\n" + ex.Message + "\n\nEnsure the file is writable.");
 			}
 		}
-		
-		public SolutionFolder CreateFolder(string folderName)
-		{
-			return new SolutionFolder(folderName, folderName, "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}");
-		}
-		
 		
 		public void Save(string fileName)
 		{
@@ -357,7 +361,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				projectSection.Append(Environment.NewLine);
 			}
 		}
+		#endregion
 		
+		#region Read/SetupSolution
 		static Regex versionPattern       = new Regex("Microsoft Visual Studio Solution File, Format Version\\s+(?<Version>.*)", RegexOptions.Compiled);
 		
 		static Regex projectLinePattern   = new Regex("Project\\(\"(?<ProjectGuid>.*)\"\\)\\s+=\\s+\"(?<Title>.*)\",\\s*\"(?<Location>.*)\",\\s*\"(?<Guid>.*)\"", RegexOptions.Compiled);
@@ -501,7 +507,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return true;
 		}
+		#endregion
 		
+		#region Configuration/Platform management
+		#region Section management
 		public ProjectSection GetSolutionConfigurationsSection()
 		{
 			foreach (ProjectSection sec in this.Sections) {
@@ -610,7 +619,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return changed;
 		}
+		#endregion
 		
+		#region GetProjectConfigurationsSection/GetPlatformNames
 		public IList<string> GetConfigurationNames()
 		{
 			List<string> configurationNames = new List<string>();
@@ -632,7 +643,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return platformNames;
 		}
+		#endregion
 		
+		#region Solution - project configuration matching
 		public void ApplySolutionConfigurationAndPlatformToProjects()
 		{
 			foreach (ProjectConfigurationPlatformMatching l in
@@ -696,7 +709,50 @@ namespace ICSharpCode.SharpDevelop.Project
 			GetProjectConfigurationsSection().Items.Add(item);
 			return item;
 		}
+		#endregion
 		
+		#region Configurations management
+		public void RenameSolutionConfiguration(string oldName, string newName)
+		{
+			foreach (string platform in GetPlatformNames()) {
+				foreach (ProjectConfigurationPlatformMatching m
+				         in GetActiveConfigurationsAndPlatformsForProjects(oldName, platform))
+				{
+					if (m.SolutionItem == null)
+						continue;
+					m.SolutionItem.Name = m.Project.IdGuid + "." + newName + "|" + platform + ".Build.0";
+				}
+			}
+			foreach (SolutionItem item in GetSolutionConfigurationsSection().Items) {
+				if (AbstractProject.GetConfigurationNameFromKey(item.Name) == oldName) {
+					item.Name = newName + "|" + AbstractProject.GetPlatformNameFromKey(item.Name);
+					item.Location = item.Name;
+				}
+			}
+		}
+		
+		public void RenameSolutionPlatform(string oldName, string newName)
+		{
+			foreach (string configuration in GetConfigurationNames()) {
+				foreach (ProjectConfigurationPlatformMatching m
+				         in GetActiveConfigurationsAndPlatformsForProjects(configuration, oldName))
+				{
+					if (m.SolutionItem == null)
+						continue;
+					m.SolutionItem.Name = m.Project.IdGuid + "." + configuration + "|" + newName + ".Build.0";
+				}
+			}
+			foreach (SolutionItem item in GetSolutionConfigurationsSection().Items) {
+				if (AbstractProject.GetPlatformNameFromKey(item.Name) == oldName) {
+					item.Name = AbstractProject.GetConfigurationNameFromKey(item.Name) + "|" + newName;
+					item.Location = item.Name;
+				}
+			}
+		}
+		#endregion
+		#endregion
+		
+		#region Load
 		static Solution solutionBeingLoaded;
 		
 		public static Solution SolutionBeingLoaded {
@@ -740,6 +796,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			solutionBeingLoaded = null;
 			return newSolution;
 		}
+		#endregion
 		
 		#region System.IDisposable interface implementation
 		public void Dispose()
@@ -750,9 +807,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		public void RunMSBuild(string target, MSBuildEngineCallback callback, IDictionary<string, string> additionalProperties)
+		public void RunMSBuild(string target, MSBuildEngineCallback callback,
+		                       IDictionary<string, string> additionalProperties)
 		{
-			MSBuildProject.RunMSBuild(FileName, target, preferences.ActiveConfiguration, preferences.ActivePlatform, false, callback, additionalProperties);
+			MSBuildProject.RunMSBuild(FileName, target, preferences.ActiveConfiguration,
+			                          preferences.ActivePlatform, false, callback,
+			                          additionalProperties);
 		}
 		
 		public void Build(MSBuildEngineCallback callback)

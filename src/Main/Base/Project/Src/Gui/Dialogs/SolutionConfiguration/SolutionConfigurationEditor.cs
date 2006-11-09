@@ -26,6 +26,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public SolutionConfigurationEditor()
 		{
 			this.solution = ProjectService.OpenSolution;
+			if (solution == null)
+				throw new Exception("A solution must be opened");
 			
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
@@ -118,7 +120,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (!inUpdate) {
 				inUpdate = true;
 				if (configurationComboBox.SelectedIndex == configurationComboBoxEditIndex) {
-					MessageBox.Show("Edit configurations: Feature not implemented yet.");
+					using (Form dlg = new EditAvailableConfigurationsDialog(solution, false)) {
+						dlg.ShowDialog(this);
+					}
 					SelectElement(configurationComboBox, solution.Preferences.ActiveConfiguration);
 				}
 				UpdateGrid();
@@ -130,7 +134,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (!inUpdate) {
 				inUpdate = true;
 				if (platformComboBox.SelectedIndex == platformComboBoxEditIndex) {
-					MessageBox.Show("Edit platforms: Feature not implemented yet.");
+					using (Form dlg = new EditAvailableConfigurationsDialog(solution, true)) {
+						dlg.ShowDialog(this);
+					}
 					SelectElement(platformComboBox, solution.Preferences.ActivePlatform);
 				}
 				UpdateGrid();

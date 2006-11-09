@@ -678,9 +678,6 @@
       <DependentUpon>SolutionConfigurationEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.cs" />
-    <EmbeddedResource Include="Src\Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.resx">
-      <DependentUpon>SolutionConfigurationEditor.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="Src\TextEditor\Gui\Editor\IncrementalSearch.cs" />
     <EmbeddedResource Include="Resources\IncrementalSearchCursor.cur" />
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
@@ -689,6 +686,10 @@
     <Compile Include="Src\Util\Linq.cs" />
     <Compile Include="Src\Util\DebugTimer.cs" />
     <Compile Include="Src\Project\CustomTool.cs" />
+    <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\EditAvailableConfigurationsDialog.Designer.cs">
+      <DependentUpon>EditAvailableConfigurationsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\EditAvailableConfigurationsDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

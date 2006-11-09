@@ -1359,13 +1359,13 @@
 		<MenuItem id = "Build" label = "${res:XML.MainMenu.BuildMenu}" type="Menu">
 			<ComplexCondition action="Disable">
 				<Or>
-					<And>
+					<!--<And>
 						<Or>
 							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
 							<Condition name = "WindowActive" activewindow="ICSharpCode.FormsDesigner.FormsDesignerViewContent"/>
 						</Or>
 						<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
-					</And>
+					</And>-->
 					<Condition name = "SolutionOpen"/>
 				</Or>
 				<MenuItem id       = "Build"

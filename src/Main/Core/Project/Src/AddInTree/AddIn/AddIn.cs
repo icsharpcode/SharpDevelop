@@ -53,6 +53,8 @@ namespace ICSharpCode.Core
 		
 		/// <summary>
 		/// Gets the message of a custom load error. Used only when AddInAction is set to CustomError.
+		/// Settings this property to a non-null value causes Enabled to be set to false and
+		/// Action to be set to AddInAction.CustomError.
 		/// </summary>
 		public string CustomErrorMessage {
 			get {
@@ -149,7 +151,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		AddIn()
+		internal AddIn()
 		{
 		}
 		
@@ -259,7 +261,7 @@ namespace ICSharpCode.Core
 					return addIn;
 				}
 			} catch (Exception e) {
-				throw new AddInLoadException("Can't load " + fileName + " " + e);
+				throw new AddInLoadException("Can't load " + fileName, e);
 			}
 		}
 	}
