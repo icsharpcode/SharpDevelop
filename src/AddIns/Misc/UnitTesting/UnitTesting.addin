@@ -1,5 +1,5 @@
-﻿<AddIn name        = "UnitTesting-Addin"
-       author      = "Daniel Grunwald"
+﻿<AddIn name        = "Unit Testing Addin"
+       author      = "Matt Ward"
        copyright   = "prj:///doc/copyright.txt"
        description = "Runs NUnit tests inside #Develop">
 	
@@ -8,13 +8,9 @@
 	</Manifest>
 	
 	<Runtime>
-		<!-- NUnit is not in the path, so we need to load it manually -->
-		<Import assembly = "../../../../bin/Tools/NUnit/NUnit.Util.dll"/>
-		<Import assembly = "../../../../bin/Tools/NUnit/NUnit.UIKit.dll"/>
 		<Import assembly = "UnitTesting.dll">
-			<ConditionEvaluator name = "UnitTestable" class = "ICSharpCode.UnitTesting.TestableCondition"/>
-			<ConditionEvaluator name = "UnitRunningTests" class = "ICSharpCode.UnitTesting.RunningTestsCondition"/>
-			<ConditionEvaluator name = "UnitCommonTestCommandsEnabled" class = "ICSharpCode.UnitTesting.UnitCommonTestCommandsEnabledCondition"/>
+			<ConditionEvaluator name = "Testable" class = "ICSharpCode.UnitTesting.TestableCondition"/>
+			<ConditionEvaluator name = "RunningTests" class = "ICSharpCode.UnitTesting.RunningTestsCondition"/>
 		</Import>
 	</Runtime>
 	
@@ -24,7 +20,7 @@
 		     title    = "${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}"
 		     icon     = "PadIcons.NUnitTest"
 		     shortcut = "Control|Alt|T"
-		     class    = "ICSharpCode.UnitTesting.PadContent"/>
+		     class    = "ICSharpCode.UnitTesting.UnitTestsPad"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">
@@ -36,101 +32,110 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/MemberContextMenu">
-		<Condition name = "UnitTestable">
-			<MenuItem id="UnitTestMenu" type="Menu" label="Unit Testing" icon="PadIcons.NUnitTest" insertbefore="MenuBuilder">
-				<Condition name="UnitCommonTestCommandsEnabled" action="Disable">
+		<Condition name = "Testable">
+			<MenuItem id="UnitTestMenu" type="Menu" label="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}" icon="PadIcons.NUnitTest" insertbefore="MenuBuilder">
+				<ComplexCondition action="Disable">
+					<And>
+						<Condition name="SolutionOpen"/>
+						<Not>
+							<Condition name="RunningTests"/>
+						</Not>
+					</And>
 					<MenuItem id    = "RunInPad"
 					          label = "${res:ICSharpCode.UnitTesting.RunInTestPad}"
 					          icon  = "PadIcons.NUnitTest"
 					          class = "ICSharpCode.UnitTesting.RunTestInPadCommand"/>
-				</Condition>
-				<Include id = "CommonTestCommands" path = "/SharpDevelop/Pads/UnitTestingPad/CommonTestCommands"/>
+				</ComplexCondition>
+				<Include id = "CommonTestCommands" path = "/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands"/>
 			</MenuItem>
 		</Condition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/ClassContextMenu">
-		<Condition name = "UnitTestable">
-			<MenuItem id="UnitTestMenu" type="Menu" label="Unit Testing" icon="PadIcons.NUnitTest" insertbefore="MenuBuilder">
-				<Condition name="UnitCommonTestCommandsEnabled" action="Disable">
+		<Condition name = "Testable">
+			<MenuItem id="UnitTestMenu" type="Menu" label="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}" icon="PadIcons.NUnitTest" insertbefore="MenuBuilder">
+				<ComplexCondition action="Disable">
+					<And>
+						<Condition name="SolutionOpen"/>
+						<Not>
+							<Condition name="RunningTests"/>
+						</Not>
+					</And>
 					<MenuItem id    = "RunInPad"
 					          label = "${res:ICSharpCode.UnitTesting.RunInTestPad}"
 					          icon  = "PadIcons.NUnitTest"
 					          class = "ICSharpCode.UnitTesting.RunTestInPadCommand"/>
-				</Condition>
-				<Include id = "CommonTestCommands" path = "/SharpDevelop/Pads/UnitTestingPad/CommonTestCommands"/>
+				</ComplexCondition>
+				<Include id = "CommonTestCommands" path = "/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands"/>
 			</MenuItem>
 		</Condition>
 	</Path>
-	
-	
-	<Path name = "/SharpDevelop/Pads/UnitTestingPad/CommonTestCommands">
-		<Condition name="UnitCommonTestCommandsEnabled" action="Disable">
-			<MenuItem id    = "RunWithDebugger"
-			          label = "${res:ICSharpCode.UnitTesting.RunWithDebugger}"
-			          icon  = "Icons.16x16.RunProgramIcon"
-			          class = "ICSharpCode.UnitTesting.RunTestWithDebuggerCommand"/>
-		</Condition>
-	</Path>
-	
-	<Path name = "/SharpDevelop/Pads/UnitTestingPad/Toolbar">
-		<Condition name = "SolutionOpen" action="Disable">
-			<ToolbarItem id      = "Reload"
-			             icon    = "Icons.16x16.BrowserRefresh"
-			             tooltip = "${res:NUnitPad.NUnitPadContent.RefreshItem}"
-			             class   = "ICSharpCode.UnitTesting.ReloadCommand"/>
-			<ToolbarItem id      = "Unload"
-			             icon    = "Icons.16x16.BrowserCancel"
-			             tooltip = "${res:NUnitPad.NUnitPadContent.CancelItem}"
-			             class   = "ICSharpCode.UnitTesting.UnloadCommand"/>
-			<ToolbarItem id      = "Separator1" type = "Separator"/>
-			<ToolbarItem id      = "AddNUnitReference"
-			             icon    = "Icons.16x16.Reference"
-			             tooltip = "${res:NUnitPad.NUnitPadContent.ReferenceItem}"
-			             class   = "ICSharpCode.UnitTesting.AddNUnitReferenceCommand"/>
-			<ToolbarItem id      = "Separator2" type = "Separator"/>
-		</Condition>
+
+	<Path name = "/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands">
 		<ComplexCondition action="Disable">
 			<And>
 				<Condition name="SolutionOpen"/>
 				<Not>
-					<Condition name="UnitRunningTests"/>
+					<Condition name="RunningTests"/>
+				</Not>
+			</And>
+			<MenuItem id    = "RunWithDebugger"
+			          label = "${res:ICSharpCode.UnitTesting.RunWithDebugger}"
+			          icon  = "Icons.16x16.RunProgramIcon"
+			          class = "ICSharpCode.UnitTesting.RunTestWithDebuggerCommand"/>
+		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/UnitTestsPad/Toolbar">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="SolutionOpen"/>
+				<Not>
+					<Condition name="RunningTests"/>
 				</Not>
 			</And>
 			<ToolbarItem id      = "Run"
 			             icon    = "Icons.16x16.RunProgramIcon"
 			             tooltip = "${res:NUnitPad.NUnitPadContent.RunItem}"
-			             class   = "ICSharpCode.UnitTesting.RunTestsCommand"/>
+			             class   = "ICSharpCode.UnitTesting.RunTestInPadCommand"/>
 		</ComplexCondition>
 		<ComplexCondition action="Disable">
 			<And>
 				<Condition name="SolutionOpen"/>
-				<Condition name="UnitRunningTests"/>
+				<Condition name="RunningTests"/>
 			</And>
 			<ToolbarItem id      = "Stop"
 			             icon    = "Icons.16x16.Debug.StopProcess"
 			             tooltip = "${res:NUnitPad.NUnitPadContent.StopTests}"
 			             class   = "ICSharpCode.UnitTesting.StopTestsCommand"/>
 		</ComplexCondition>
+		<Condition name = "SolutionOpen" action="Disable">
+			<ToolbarItem id      = "Separator2" type = "Separator"/>
+			<ToolbarItem id      = "AddNUnitReference"
+			             icon    = "Icons.16x16.Reference"
+			             tooltip = "${res:NUnitPad.NUnitPadContent.ReferenceItem}"
+			             class   = "ICSharpCode.UnitTesting.AddNUnitReferenceCommand"/>
+		</Condition>
 	</Path>
-	<Path name = "/SharpDevelop/Pads/UnitTestingPad/ContextMenu">
+	
+	<Path name = "/SharpDevelop/Pads/UnitTestsPad/ContextMenu">
 		<ComplexCondition action="Disable">
 			<And>
 				<Condition name="SolutionOpen"/>
 				<Not>
-					<Condition name="UnitRunningTests"/>
+					<Condition name="RunningTests"/>
 				</Not>
 			</And>
 			<MenuItem id    = "Run"
 			          icon  = "Icons.16x16.RunProgramIcon"
 			          label = "${res:NUnitPad.NUnitPadContent.RunTestsContextMenuLabel}"
-			          class = "ICSharpCode.UnitTesting.RunTestsCommand"/>
+			          class = "ICSharpCode.UnitTesting.RunTestInPadCommand"/>
 		</ComplexCondition>
-		<Include id = "CommonTestCommands" path = "/SharpDevelop/Pads/UnitTestingPad/CommonTestCommands"/>
+		<Include id = "CommonTestCommands" path = "/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands"/>
 		<ComplexCondition action="Disable">
 			<And>
 				<Condition name="SolutionOpen"/>
-				<Condition name="UnitRunningTests"/>
+				<Condition name="RunningTests"/>
 			</And>
 			<MenuItem id    = "Stop"
 			          icon  = "Icons.16x16.Debug.StopProcess"
@@ -142,12 +147,12 @@
 			          label = "${res:NUnitPad.NUnitPadContent.GotoDefinitionContextMenuLabel}"
 			          class = "ICSharpCode.UnitTesting.GotoDefinitionCommand"/>
 		</Condition>
-		<MenuItem id="Separator0" type = "Separator"/>
+		<!--<MenuItem id="Separator0" type = "Separator"/>
 		<MenuItem id = "ExpandAll"
 		          label = "${res:MainWindow.Windows.SearchResultPanel.ExpandAll.ToolTip}"
 		          class = "ICSharpCode.UnitTesting.ExpandAllCommand"/>
 		<MenuItem id = "CollapseAll"
 		          label = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
-		          class = "ICSharpCode.UnitTesting.CollapseAllCommand"/>
+		          class = "ICSharpCode.UnitTesting.CollapseAllCommand"/>-->
 	</Path>
 </AddIn>

@@ -28,7 +28,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public static string UnitTestApplicationDirectory {
 			get {
-				return Path.Combine(FileUtility.ApplicationRootPath, "bin/Tools/NUnit");
+				return Path.Combine(FileUtility.ApplicationRootPath, @"bin\Tools\NUnit");
 			}
 		}
 		
@@ -73,8 +73,16 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public string Test;
 		
+		/// <summary>
+		/// File to write test results to.
+		/// </summary>
+		public string Results;
+		
+		IProject project;
+		
 		public void Initialize(IProject project, IClass fixture, IMember test)
 		{
+			this.project = project;
 			Assemblies.Add(project.OutputAssemblyFullPath);
 			if (fixture != null) {
 				Fixture = fixture.FullyQualifiedName;
@@ -82,6 +90,22 @@ namespace ICSharpCode.UnitTesting
 					Test = test.Name;
 				}
 			}
+		}
+		
+		public IProject Project {
+			get {
+				return project;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the full command line to run the unit test application.
+		/// This is the combination of the UnitTestConsoleApplication and
+		/// the command line arguments.
+		/// </summary>
+		public string GetCommandLine()
+		{
+			return String.Concat("\"", UnitTestConsoleApplication, "\" ", GetArguments());
 		}
 		
 		/// <summary>
@@ -108,6 +132,11 @@ namespace ICSharpCode.UnitTesting
 				b.Append(XmlOutputFile);
 				b.Append('"');
 			}
+			if (Results != null) {
+				b.Append(" /results=\"");
+				b.Append(Results);
+				b.Append('"');
+			}
 			if (Fixture != null) {
 				b.Append(" /fixture=\"");
 				b.Append(Fixture);
@@ -121,31 +150,6 @@ namespace ICSharpCode.UnitTesting
 				}
 			}
 			return b.ToString();
-		}
-		
-		public void DisplayResults()
-		{
-			DisplayResults(XmlOutputFile);
-		}
-		
-		public static void DisplayResults(string resultFile)
-		{
-			if (resultFile == null)
-				throw new ArgumentNullException("resultFile");
-			
-			if (!File.Exists(resultFile)) {
-				Task task = new Task("", "No NUnit results file generated: " + resultFile, 0, 0, TaskType.Error);
-				WorkbenchSingleton.SafeThreadAsyncCall(TaskService.Add, task);
-				return;
-			}
-			
-			try {
-				NUnitResults results = new NUnitResults(resultFile);
-				WorkbenchSingleton.SafeThreadAsyncCall(TaskService.AddRange, results.Tasks);
-			} catch (System.Xml.XmlException ex) {
-				Task task = new Task(resultFile, "Invalid NUnit results file: " + ex.Message, ex.LineNumber, ex.LinePosition, TaskType.Error);
-				WorkbenchSingleton.SafeThreadAsyncCall(TaskService.Add, task);
-			}
 		}
 	}
 }

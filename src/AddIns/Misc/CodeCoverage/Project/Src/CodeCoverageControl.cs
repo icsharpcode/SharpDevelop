@@ -302,8 +302,10 @@ namespace ICSharpCode.CodeCoverage
 			treeView.ImageList = CodeCoverageImageList.ImageList;
 			treeView.AfterSelect += CodeCoverageTreeViewAfterSelect;
 			
-			if (CodeCoverageService.Results != null) {
-				AddModules(CodeCoverageService.Results.Modules);
+			if (CodeCoverageService.Results.Length > 0) {
+				foreach (CodeCoverageResults results in CodeCoverageService.Results) {
+					AddModules(results.Modules);
+				}
 			}
 		}
 		

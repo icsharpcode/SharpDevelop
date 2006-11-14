@@ -15,7 +15,7 @@ namespace ICSharpCode.CodeCoverage
 {
 	public class CodeCoverageService
 	{
-		static CodeCoverageResults results;
+		static List<CodeCoverageResults> results = new List<CodeCoverageResults>();
 		static CodeCoverageHighlighter codeCoverageHighlighter = new CodeCoverageHighlighter();
 		
 		CodeCoverageService()
@@ -55,9 +55,9 @@ namespace ICSharpCode.CodeCoverage
 		/// <summary>
 		/// Gets the results from the last code coverage run.
 		/// </summary>
-		public static CodeCoverageResults Results {
+		public static CodeCoverageResults[] Results {
 			get {
-				return results;
+				return results.ToArray();
 			}
 		}
 		
@@ -71,7 +71,7 @@ namespace ICSharpCode.CodeCoverage
 				pad.ClearCodeCoverageResults();
 			}
 			HideCodeCoverage();
-			results = null;
+			results.Clear();
 		}
 		
 		/// <summary>
@@ -80,14 +80,12 @@ namespace ICSharpCode.CodeCoverage
 		/// </summary>
 		public static void ShowResults(CodeCoverageResults results)
 		{
-			CodeCoverageService.results = results;
+			CodeCoverageService.results.Add(results);
 			CodeCoveragePad pad = CodeCoveragePad.Instance;
 			if (pad != null) {
 				pad.ShowResults(results);
 			}
-			if (results != null) {
-				RefreshCodeCoverageHighlights();
-			}
+			RefreshCodeCoverageHighlights();
 		}
 		
 		/// <summary>
@@ -104,10 +102,12 @@ namespace ICSharpCode.CodeCoverage
 		
 		public static void ShowCodeCoverage(TextEditorControl textEditor, string fileName)
 		{
-			List<CodeCoverageSequencePoint> sequencePoints = results.GetSequencePoints(fileName);
-			if (sequencePoints.Count > 0) {
-				codeCoverageHighlighter.AddMarkers(textEditor.Document.MarkerStrategy, sequencePoints);
-				textEditor.Refresh();
+			foreach (CodeCoverageResults results in CodeCoverageService.Results) {
+				List<CodeCoverageSequencePoint> sequencePoints = results.GetSequencePoints(fileName);
+				if (sequencePoints.Count > 0) {
+					codeCoverageHighlighter.AddMarkers(textEditor.Document.MarkerStrategy, sequencePoints);
+					textEditor.Refresh();
+				}
 			}
 		}
 		
@@ -147,7 +147,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		static bool CodeCoverageResultsExist {
 			get {
-				return results != null;
+				return results.Count > 0;
 			}
 		}
 	}

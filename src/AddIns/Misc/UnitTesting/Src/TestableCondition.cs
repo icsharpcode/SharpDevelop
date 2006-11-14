@@ -10,6 +10,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -20,8 +21,9 @@ namespace ICSharpCode.UnitTesting
 	{
 		public static IMember GetMember(object caller)
 		{
-			if (caller is TestTreeView) {
-				return ((TestTreeView)caller).SelectedTestMethod;
+			ITestTreeView testTreeView = caller as ITestTreeView;
+			if (testTreeView != null) {
+				return testTreeView.SelectedMethod;
 			}
 			MemberNode memberNode = caller as MemberNode;
 			if (memberNode != null) {
@@ -37,8 +39,9 @@ namespace ICSharpCode.UnitTesting
 		
 		public static IClass GetClass(object caller)
 		{
-			if (caller is TestTreeView) {
-				return ((TestTreeView)caller).SelectedFixtureClass;
+			ITestTreeView testTreeView = caller as ITestTreeView;
+			if (testTreeView != null) {
+				return testTreeView.SelectedClass;
 			}
 			ClassNode classNode = caller as ClassNode;
 			if (classNode != null) {
@@ -52,33 +55,31 @@ namespace ICSharpCode.UnitTesting
 			return null;
 		}
 		
-		public static ICSharpCode.SharpDevelop.Project.IProject GetProject(object caller)
+		public static IProject GetProject(object caller)
 		{
-			if (caller is TestTreeView) {
-				return ((TestTreeView)caller).SelectedProject;
+			ITestTreeView testTreeView = caller as ITestTreeView;
+			if (testTreeView != null) {
+				return testTreeView.SelectedProject;
 			}
 			IMember m = GetMember(caller);
 			IClass c = (m != null) ? m.DeclaringType : GetClass(caller);
-			return (ICSharpCode.SharpDevelop.Project.IProject)c.ProjectContent.Project;
+			if (c != null && c.ProjectContent != null) {
+				return (IProject)c.ProjectContent.Project;
+			}
+			return null;
 		}
 		
 		public bool IsValid(object caller, Condition condition)
 		{
 			IMember m = GetMember(caller);
-			IClass c = (m != null) ? m.DeclaringType : GetClass(caller);
-			if (c.ProjectContent.Project == null)
-				return false;
-			StringComparer nameComparer = c.ProjectContent.Language.NameComparer;
-			string attributeName = (m != null) ? "Test" : "TestFixture";
-			foreach (IAttribute attribute in (m ?? (IDecoration)c).Attributes) {
-				if (nameComparer.Equals(attribute.Name, attributeName)
-				    || nameComparer.Equals(attribute.Name, attributeName + "Attribute")
-				    || nameComparer.Equals(attribute.Name, "NUnit.Framework." + attributeName + "Attribute"))
-				{
-					return true;
-				}
+			if (m != null) {
+				return TestMethod.IsTestMethod(m);
 			}
-			return false;
+			IClass c = GetClass(caller);
+			if (c == null || c.ProjectContent == null || c.ProjectContent.Project == null) {
+				return false;
+			}
+			return TestClass.IsTestClass(c);
 		}
 	}
 }

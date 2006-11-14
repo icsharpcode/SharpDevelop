@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(e);
 		}
 		
-		IAmbience GetAmbience()
+		protected virtual IAmbience GetAmbience()
 		{
 			IAmbience ambience = AmbienceService.CurrentAmbience;
 			ambience.ConversionFlags = ConversionFlags.None;

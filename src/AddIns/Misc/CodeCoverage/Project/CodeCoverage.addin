@@ -10,8 +10,6 @@
 	
 	<Runtime>
 		<!-- NUnit is not in the path, so we need to load it manually -->
-		<Import assembly = "../../../../bin/Tools/NUnit/NUnit.Util.dll"/>
-		<Import assembly = "../../../../bin/Tools/NUnit/NUnit.UIKit.dll"/>
 		<Import assembly = "$ICSharpCode.UnitTesting/UnitTesting.dll"/>
 		<Import assembly = "CodeCoverage.dll"/>
 	</Runtime>
@@ -57,14 +55,20 @@
 		             class       = "ICSharpCode.CodeCoverage.CodeCoverageOptionsPanel"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Pads/UnitTestingPad/CommonTestCommands">
-		<Condition name="UnitCommonTestCommandsEnabled" action="Disable">
+	<Path name = "/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="SolutionOpen"/>
+				<Not>
+					<Condition name="RunningTests"/>
+				</Not>
+			</And>
 			<MenuItem id          = "RunWithCodeCoverage"
 			          insertafter = "RunWithDebugger"
 			          label       = "${res:ICSharpCode.UnitTesting.RunWithCoverage}"
 			          icon        = "CodeCoverage.Icons.16x16.Run"
 			          class       = "ICSharpCode.CodeCoverage.RunTestWithCodeCoverageCommand"/>
-		</Condition>
+		</ComplexCondition>
 	</Path>
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">

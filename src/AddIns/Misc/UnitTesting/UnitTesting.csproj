@@ -60,15 +60,37 @@
     <Compile Include="Src\UnitTestCommands.cs" />
     <Compile Include="Src\TestableCondition.cs" />
     <Compile Include="Src\RunningTestsCondition.cs" />
-    <Compile Include="Src\PadContent.cs" />
     <Compile Include="Src\TestTreeView.cs" />
     <Compile Include="Src\UnitTestApplicationStartHelper.cs" />
-    <Compile Include="Src\NUnitResults.cs" />
     <Compile Include="Src\RunTestCommands.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\TestProject.cs" />
+    <Compile Include="Src\ITestTreeView.cs" />
+    <Compile Include="Src\TestClass.cs" />
+    <Compile Include="Src\TestMethod.cs" />
+    <Compile Include="Src\TestAttributeName.cs" />
+    <Compile Include="Src\TestTreeNode.cs" />
+    <Compile Include="Src\TestTreeViewImageList.cs" />
+    <Compile Include="Src\TestProjectTreeNode.cs" />
+    <Compile Include="Src\TestNamespaceTreeNode.cs" />
+    <Compile Include="Src\TestClassTreeNode.cs" />
+    <Compile Include="Src\TestMethodTreeNode.cs" />
+    <Compile Include="Src\UnitTestsPad.cs" />
+    <EmbeddedResource Include="Resources\Red.png" />
+    <EmbeddedResource Include="Resources\Green.png" />
+    <EmbeddedResource Include="Resources\Yellow.png" />
+    <EmbeddedResource Include="Resources\Grey.png" />
+    <Compile Include="Src\TestResultsReader.cs" />
+    <Compile Include="Src\TestResult.cs" />
+    <Compile Include="Src\TestResultsMonitor.cs" />
+    <Compile Include="Src\TestFinishedEventArgs.cs" />
+    <Compile Include="Src\TestClassCollection.cs" />
+    <Compile Include="Src\TestMethodCollection.cs" />
+    <Compile Include="Src\TestClassEventArgs.cs" />
+    <Compile Include="Src\TestMethodEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -91,6 +113,11 @@
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <Folder Include="Resources" />
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

@@ -64,7 +64,6 @@ namespace ICSharpCode.CodeCoverage
 		
 		public void ShowResults(CodeCoverageResults results)
 		{
-			codeCoverageControl.Clear();
 			if (results != null) {
 				codeCoverageControl.AddModules(results.Modules);
 			}

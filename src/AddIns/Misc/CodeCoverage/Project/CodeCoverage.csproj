@@ -63,7 +63,6 @@
     <Compile Include="Src\NCoverRunner.cs" />
     <Compile Include="Src\NCoverRunnerSingleton.cs" />
     <Compile Include="Src\NCoverExitEventArgs.cs" />
-    <Compile Include="Src\CodeCoverageException.cs" />
     <Compile Include="Src\CodeCoverageProjectOptionsPanel.cs" />
     <EmbeddedResource Include="Resources\CodeCoverageProjectOptionsPanel.xfrm" />
     <Compile Include="Src\NCoverSettings.cs" />

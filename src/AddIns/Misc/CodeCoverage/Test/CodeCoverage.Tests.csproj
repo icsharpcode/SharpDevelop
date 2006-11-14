@@ -62,12 +62,11 @@
     <Compile Include="CodeCoverageMarkersInvalidStartColumnTestFixture.cs" />
     <Compile Include="CodeCoverageMarkersInvalidEndColumnTestFixture.cs" />
     <Compile Include="NCoverSettingsTestFixture.cs" />
-    <EmbeddedResource Include="Strings.resources" />
+    <None Include="Strings.resources" />
     <Compile Include="ZeroCodeCoverageTreeViewTestFixture.cs" />
     <Compile Include="InvalidSequencePointDataTestFixture.cs" />
     <Compile Include="MethodHasNoNamespaceTestFixture.cs" />
     <Compile Include="DisplayItemTestFixture.cs" />
-    <Compile Include="NUnitResultsTestFixture.cs" />
     <Compile Include="CodeCoverageNamespaceTestFixture.cs" />
     <Compile Include="ClassWithNoNamespaceInTreeViewTestFixture.cs" />
     <Compile Include="ExcludedModuleResultsTestFixture.cs" />

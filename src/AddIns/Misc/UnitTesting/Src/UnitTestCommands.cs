@@ -1,45 +1,27 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.UnitTesting
 {
-	public class ReloadCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			PadContent.Instance.ReloadAssemblyList(null);
-		}
-	}
-	
-	public class UnloadCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			PadContent.Instance.UnloadTests();
-		}
-	}
-	
-	public class RunTestsCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			PadContent.Instance.RunTests();
-		}
-	}
-	
 	public class StopTestsCommand : AbstractMenuCommand
 	{
 		public override void Run()
 		{
-			PadContent.Instance.StopTests();
+			AbstractRunTestCommand runTestCommand = AbstractRunTestCommand.RunningTestCommand;
+			if (runTestCommand != null) {
+				runTestCommand.Stop();
+			}
 		}
 	}
 	
@@ -54,38 +36,41 @@ namespace ICSharpCode.UnitTesting
 		}
 	}
 	
-	public class AddMbUnitReferenceCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			if (ProjectService.CurrentProject != null) {
-				ProjectService.AddProjectItem(ProjectService.CurrentProject, new ReferenceProjectItem(ProjectService.CurrentProject, "MbUnit.Framework"));
-				ProjectService.CurrentProject.Save();
-			}
-		}
-	}
-	
 	public class GotoDefinitionCommand : AbstractMenuCommand
 	{
 		public override void Run()
 		{
-			PadContent.Instance.TreeView.GotoDefinition();
+			ITestTreeView treeView = Owner as ITestTreeView;
+			if (treeView != null) {
+				IMember member = treeView.SelectedMethod;
+				IClass c = treeView.SelectedClass;
+				if (member != null) {
+					GotoMember(member);
+				} else if (c != null) {
+					GotoClass(c);
+				}
+			}
 		}
-	}
-	
-	public class ExpandAllCommand : AbstractMenuCommand
-	{
-		public override void Run()
+		
+		void GotoMember(IMember member)
 		{
-			PadContent.Instance.TreeView.ExpandAll();
+			MemberResolveResult resolveResult = new MemberResolveResult(null, null, member);
+			GotoFilePosition(resolveResult.GetDefinitionPosition());
 		}
-	}
-	
-	public class CollapseAllCommand : AbstractMenuCommand
-	{
-		public override void Run()
+		
+		void GotoClass(IClass c)
 		{
-			PadContent.Instance.TreeView.CollapseAll();
+			TypeResolveResult resolveResult = new TypeResolveResult(null, null, c);
+			GotoFilePosition(resolveResult.GetDefinitionPosition());
+		}
+		
+		void GotoFilePosition(FilePosition filePosition)
+		{
+			if (filePosition.Position.IsEmpty) {
+				FileService.OpenFile(filePosition.FileName);
+			} else {
+				FileService.JumpToFilePosition(filePosition.FileName, filePosition.Line - 1, filePosition.Column - 1);
+			}
 		}
 	}
 }

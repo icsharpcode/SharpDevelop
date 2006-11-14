@@ -1,0 +1,215 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
+// </file>
+
+using ICSharpCode.SharpDevelop.Dom;
+using System;
+using System.Collections.Generic;
+
+namespace UnitTesting.Tests.Utils
+{
+	public class MockMember : IMember
+	{
+		public MockMember()
+		{
+		}
+		
+		public string FullyQualifiedName {
+			get {
+				return String.Empty;
+			}
+		}
+		
+		public DomRegion Region {
+			get {
+				return DomRegion.Empty;
+			}
+		}
+		
+		public string Name {
+			get {
+				return String.Empty;
+			}
+		}
+		
+		public string Namespace {
+			get {
+				return String.Empty;
+			}
+		}
+		
+		public string DotNetName {
+			get {
+				return String.Empty;
+			}
+		}
+		
+		public IReturnType ReturnType {
+			get {
+				return null;
+			}
+			set {
+			}
+		}
+		
+		public IClass DeclaringType {
+			get {
+				return null;
+			}
+		}
+		
+		public ModifierEnum Modifiers {
+			get {
+				return ModifierEnum.None;
+			}
+			set {
+			}
+		}
+		
+		public IList<IAttribute> Attributes {
+			get {
+				return null;
+			}
+		}
+		
+		public string Documentation {
+			get {
+				return String.Empty;
+			}
+		}
+		
+		public bool IsAbstract {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsSealed {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsStatic {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsConst {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsVirtual {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsPublic {
+			get {
+				return true;
+			}
+		}
+		
+		public bool IsProtected {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsPrivate {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsInternal {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsPartial {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsReadonly {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsProtectedAndInternal {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsProtectedOrInternal {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsOverride {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsOverridable {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsNew {
+			get {
+				return false;
+			}
+		}
+		
+		public bool IsSynthetic {
+			get {
+				return false;
+			}
+		}
+		
+		public object UserData {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public bool MustBeShown(IClass callingClass, bool showStatic, bool isClassInInheritanceTree)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int CompareTo(object obj)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object Clone()
+		{
+			throw new NotImplementedException();
+		}
+	}
+}

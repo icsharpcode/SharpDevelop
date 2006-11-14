@@ -1,55 +1,435 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Commands;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
-using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.UnitTesting
 {
 	public abstract class AbstractRunTestCommand : AbstractMenuCommand
 	{
-		public override void Run()
+		static MessageViewCategory testRunnerCategory;
+		static AbstractRunTestCommand runningTestCommand;
+		List<IProject> projects;
+		IProject currentProject;
+		TestResultsMonitor testResultsMonitor;
+		
+		public AbstractRunTestCommand()
 		{
-			IMember m = TestableCondition.GetMember(Owner);
-			IClass c = (m != null) ? m.DeclaringType : TestableCondition.GetClass(Owner);
-			Run(TestableCondition.GetProject(Owner), c, m);
+			testResultsMonitor = new TestResultsMonitor();
+			testResultsMonitor.TestFinished += TestFinished;
 		}
 		
-		public void Run(IProject project, IClass fixture, IMember test)
-		{
-			if (project == null) {
-				throw new ArgumentNullException("project");
+		/// <summary>
+		/// Gets the running test command.
+		/// </summary>
+		public static AbstractRunTestCommand RunningTestCommand {
+			get {
+				return runningTestCommand;
 			}
-			BuildProject build = new BuildProject(project);
-			build.BuildComplete += delegate {
-				if (MSBuildEngine.LastErrorCount == 0) {
-					RunTests(project, fixture, test);
+		}
+		
+		/// <summary>
+		/// Gets whether a test is currently running.
+		/// </summary>
+		public static bool IsRunningTest {
+			get {
+				return runningTestCommand != null;
+			}
+		}
+		
+		public override void Run()
+		{
+			projects = new List<IProject>();
+			
+			IMember m = TestableCondition.GetMember(Owner);
+			IClass c = (m != null) ? m.DeclaringType : TestableCondition.GetClass(Owner);
+			IProject project = TestableCondition.GetProject(Owner);
+			
+			if (project != null) {
+				projects.Add(project);
+			} else if (UnitTestsPad.Instance != null) {
+				projects.AddRange(UnitTestsPad.Instance.TestTreeView.GetProjects());
+			}
+			
+			if (projects.Count > 0) {
+				runningTestCommand = this;
+				try {
+					BeforeRun();
+					if (IsRunningTest) {
+						currentProject = projects[0];
+						Run(currentProject, c, m);
+					}
+				} catch {
+					runningTestCommand = null;
+					throw;
 				}
+			}
+		}
+		
+		public static MessageViewCategory TestRunnerCategory {
+			get {
+				if (testRunnerCategory == null) {
+					testRunnerCategory = new MessageViewCategory("${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}");
+					CompilerMessageView.Instance.AddCategory(testRunnerCategory);
+				}
+				return testRunnerCategory;
+			}
+		}
+		
+		/// <summary>
+		/// Stops running the tests.
+		/// </summary>
+		public void Stop()
+		{
+			runningTestCommand = null;
+			UpdateUnitTestsPadToolbar();
+			
+			projects.Clear();
+			
+			testResultsMonitor.Stop();
+			StopMonitoring();
+
+			OnStop();
+		}
+		
+		/// <summary>
+		/// Called before all tests are run. If multiple projects are
+		/// to be tested this is called only once.
+		/// </summary>
+		protected virtual void OnBeforeRunTests()
+		{
+		}
+
+		protected abstract void RunTests(UnitTestApplicationStartHelper helper);
+		
+		/// <summary>
+		/// Called by derived classes when a single test run
+		/// is finished.
+		/// </summary>
+		protected void TestsFinished()
+		{
+			// Read the rest of the file just in case.
+			testResultsMonitor.Stop();
+			testResultsMonitor.Read();
+			
+			projects.Remove(currentProject);
+			if (projects.Count > 0) {
+				currentProject = projects[0];
+				Run(currentProject, null, null);
+			} else {
+				runningTestCommand = null;
+				UpdateUnitTestsPadToolbar();
+				if (TaskService.SomethingWentWrong && ErrorListPad.ShowAfterBuild) {
+					ShowErrorList();
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Called by derived classes to show a single test result.
+		/// </summary>
+		protected void ShowResult(TestResult result)
+		{
+			if (result.IsFailure || result.IsIgnored) {
+				TaskService.Add(CreateTask(result));
+			}
+			UpdateTestResult(result);
+		}
+		
+		/// <summary>
+		/// Called when the test run should be stopped.
+		/// </summary>
+		protected virtual void OnStop()
+		{
+		}
+		
+		/// <summary>
+		/// Runs the tests after building the project under test.
+		/// </summary>
+		void Run(IProject project, IClass fixture, IMember test)
+		{
+			BuildProjectBeforeTestRun build = new BuildProjectBeforeTestRun(project);
+			build.BuildComplete += delegate {
+				OnBuildComplete(project, fixture, test);
 			};
 			build.Run();
 		}
 		
-		protected abstract void RunTests(IProject project, IClass fixture, IMember test);
+		void ShowUnitTestsPad()
+		{
+			ShowPad(WorkbenchSingleton.Workbench.GetPad(typeof(UnitTestsPad)));
+		}
+		
+		void UpdateUnitTestsPadToolbar()
+		{
+			if (UnitTestsPad.Instance != null) {
+				UnitTestsPad.Instance.UpdateToolbar();
+			}
+		}
+		
+		/// <summary>
+		/// Sets the initial workbench state before starting
+		/// a test run.
+		/// </summary>
+		void BeforeRun()
+		{
+			TaskService.ClearExceptCommentTasks();
+			TestRunnerCategory.ClearText();
+			ShowUnitTestsPad();
+			ShowOutputPad();
+			
+			UpdateUnitTestsPadToolbar();
+			ResetAllTestResults();
+			
+			OnBeforeRunTests();
+		}
+				
+		/// <summary>
+		/// Brings output pad to the front.
+		/// </summary>
+		void ShowOutputPad()
+		{
+			ShowPad(WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)));
+		}
+		
+		Task CreateTask(TestResult result)
+		{
+			TaskType taskType = TaskType.Warning;
+			FileLineReference lineRef = null;
+			string message = String.Empty;
+			
+			if (result.IsFailure) {
+				taskType = TaskType.Error;
+				lineRef = OutputTextLineParser.GetNUnitOutputFileLineReference(result.StackTrace, true);
+				message = GetTestResultMessage(result, "${res:NUnitPad.NUnitPadContent.TestTreeView.TestFailedMessage}");
+			} else if (result.IsIgnored) {
+				message = GetTestResultMessage(result, "${res:NUnitPad.NUnitPadContent.TestTreeView.TestNotExecutedMessage}");
+			}
+			if (lineRef == null) {
+				lineRef = FindTest(result.Name);
+			}
+			if (lineRef != null) {
+				return new Task(Path.GetFullPath(lineRef.FileName),
+				                message, lineRef.Column, lineRef.Line, taskType);				
+			}
+			return new Task(String.Empty, message, 0, 0, taskType);
+		}
+		
+		/// <summary>
+		/// Returns the test result message if there is on otherwise
+		/// uses the string resource to create a message.
+		/// </summary>
+		string GetTestResultMessage(TestResult result, string stringResource)
+		{
+			if (result.Message.Length > 0) {
+				return result.Message;
+			}
+			return StringParser.Parse(stringResource, new string[,] {{"TestCase", result.Name}});
+		}
+		
+		/// <summary>
+		/// Returns the location of the specified test method in the
+		/// project being tested.
+		/// </summary>
+		FileLineReference FindTest(string methodName)
+		{
+			TestProject testProject = GetTestProject(currentProject);
+			if (testProject != null) {
+				TestMethod method = testProject.TestClasses.GetTestMethod(methodName);
+				if (method != null) {
+					MemberResolveResult resolveResult = new MemberResolveResult(null, null, method.Method);
+					FilePosition filePos = resolveResult.GetDefinitionPosition();
+					return new FileLineReference(filePos.FileName, filePos.Line, filePos.Column);
+				}
+			}
+			return null;
+		}
+		
+		void ShowPad(PadDescriptor padDescriptor)
+		{
+			if (padDescriptor != null) {
+				WorkbenchSingleton.SafeThreadAsyncCall(padDescriptor.BringPadToFront);
+			}
+		}
+		
+		void ShowErrorList()
+		{
+			ShowPad(WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)));
+		}
+		
+		/// <summary>
+		/// Runs the test for the project after a successful build.
+		/// </summary>
+		void OnBuildComplete(IProject project, IClass fixture, IMember test)
+		{
+			if (MSBuildEngine.LastErrorCount == 0 && IsRunningTest) {	
+				UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
+				helper.Initialize(project, fixture, test);
+				helper.Results = Path.GetTempFileName();
+				
+				ResetTestResults(project);
+
+				testResultsMonitor.FileName = helper.Results;
+				testResultsMonitor.Start();
+				
+				try {
+					RunTests(helper);
+				} catch {
+					StopMonitoring();
+					throw;
+				}
+			} else {
+				if (IsRunningTest) {
+					Stop();
+				}
+				if (TaskService.SomethingWentWrong && ErrorListPad.ShowAfterBuild) {
+					ShowErrorList();
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Clears the test results in the test tree view for the
+		/// project currently being tested.
+		/// </summary>
+		void ResetTestResults(IProject project)
+		{
+			TestProject testProject = GetTestProject(project);
+			if (testProject != null) {
+				testProject.ResetTestResults();
+			}
+		}
+		
+		/// <summary>
+		/// Clears the test results in the test tree view for all the
+		/// displayed projects.
+		/// </summary>
+		void ResetAllTestResults()
+		{
+			if (UnitTestsPad.Instance != null) {
+				UnitTestsPad.Instance.TestTreeView.ResetTestResults();
+			}
+		}
+		
+		/// <summary>
+		/// Gets the TestProject associated with the specified project
+		/// from the test tree view.
+		/// </summary>
+		TestProject GetTestProject(IProject project)
+		{
+			if (UnitTestsPad.Instance != null) {
+				return UnitTestsPad.Instance.TestTreeView.GetTestProject(project);
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Updates the test result in the test tree view.
+		/// </summary>
+		void UpdateTestResult(TestResult result)
+		{
+			TestProject testProject = GetTestProject(currentProject);
+			if (testProject != null) {
+				testProject.UpdateTestResult(result);
+			}
+		}
+		
+		void StopMonitoring()
+		{
+			try {
+				File.Delete(testResultsMonitor.FileName);
+			} catch { }
+			
+			testResultsMonitor.Dispose();
+		}
+		
+		void TestFinished(object source, TestFinishedEventArgs e)
+		{
+			WorkbenchSingleton.SafeThreadAsyncCall(ShowResult, e.Result);
+		}
 	}
 	
+	/// <summary>
+	/// Custom build command that makes sure errors and warnings
+	/// are not cleared from the Errors list before every build since
+	/// we may be running multiple tests after each other.
+	/// </summary>
+	public class BuildProjectBeforeTestRun : BuildProject
+	{
+		public BuildProjectBeforeTestRun(IProject targetProject)
+			: base(targetProject)
+		{
+		}
+		
+		/// <summary>
+		/// Before a build do not clear the tasks, just save any
+		/// dirty files.
+		/// </summary>
+		public override void BeforeBuild()
+		{
+			SaveAllFiles.SaveAll();
+		}
+		
+		/// <summary>
+		/// After a build do not show the errors list.
+		/// </summary>
+		public override void AfterBuild()
+		{
+		}
+	}
+		
 	public class RunTestInPadCommand : AbstractRunTestCommand
 	{
-		protected override void RunTests(IProject project, IClass fixture, IMember test)
+		ProcessRunner runner;
+		
+		public RunTestInPadCommand()
 		{
-			PadContent.BringToFront();
-			PadContent.Instance.RunTest(project, fixture, test);
+			runner = new ProcessRunner();
+			runner.OutputLineReceived += OutputLineReceived;
+			runner.ProcessExited += ProcessExited;
+		}
+			
+		protected override void RunTests(UnitTestApplicationStartHelper helper)
+		{										
+			TestRunnerCategory.AppendLine(helper.GetCommandLine());
+			runner.Start(UnitTestApplicationStartHelper.UnitTestConsoleApplication, helper.GetArguments());
+		}
+		
+		protected override void OnStop()
+		{
+			runner.Kill();
+		}
+		
+		void OutputLineReceived(object source, LineReceivedEventArgs e)
+		{
+			TestRunnerCategory.AppendLine(e.Line);
+		}
+		
+		void ProcessExited(object source, EventArgs e)
+		{			
+			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
+		}
+		
+		void TestFinished(object source, TestFinishedEventArgs e)
+		{
+			WorkbenchSingleton.SafeThreadAsyncCall(ShowResult, e.Result);
 		}
 	}
 	
@@ -58,44 +438,47 @@ namespace ICSharpCode.UnitTesting
 		public override void Run()
 		{
 			if (DebuggerService.IsDebuggerLoaded && DebuggerService.CurrentDebugger.IsDebugging) {
-				MessageService.ShowMessage("The debugger is currently busy.");
+				if (MessageService.AskQuestion("${res:XML.MainMenu.RunMenu.Compile.StopDebuggingQuestion}",
+					"${res:XML.MainMenu.RunMenu.Compile.StopDebuggingTitle}")) 
+				{
+					DebuggerService.CurrentDebugger.Stop();
+					base.Run();
+				}
 			} else {
 				base.Run();
 			}
 		}
-		
-		static string lastOutputFile;
-		
-		protected override void RunTests(IProject project, IClass fixture, IMember test)
+				
+		protected override void RunTests(UnitTestApplicationStartHelper helper)
 		{
-			ProcessStartInfo startInfo = new ProcessStartInfo(UnitTestApplicationStartHelper.UnitTestConsoleApplication);
-			UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
-			helper.Initialize(project, fixture, test);
-			helper.XmlOutputFile = Path.GetTempFileName();
-			try {
-				File.Delete(helper.XmlOutputFile);
-			} catch {}
-			lastOutputFile = helper.XmlOutputFile;
-			startInfo.Arguments = helper.GetArguments();
-			startInfo.WorkingDirectory = UnitTestApplicationStartHelper.UnitTestApplicationDirectory;
-			LoggingService.Info("Run " + startInfo.FileName + " " + startInfo.Arguments);
+			bool running = false;
 			
-			// register event if it is not already registered
-			DebuggerService.DebugStopped -= DebuggerFinished;
-			DebuggerService.DebugStopped += DebuggerFinished;
-			DebuggerService.CurrentDebugger.Start(startInfo);
+			try {
+				TestRunnerCategory.AppendLine(helper.GetCommandLine());
+				ProcessStartInfo startInfo = new ProcessStartInfo(UnitTestApplicationStartHelper.UnitTestConsoleApplication);
+				startInfo.Arguments = helper.GetArguments();
+				startInfo.WorkingDirectory = UnitTestApplicationStartHelper.UnitTestApplicationDirectory;
+				DebuggerService.DebugStopped += DebuggerFinished;
+				DebuggerService.CurrentDebugger.Start(startInfo);
+				running = true;
+			} finally {
+				if (!running) {
+					DebuggerService.DebugStopped -= DebuggerFinished;
+				}
+			}
 		}
 		
-		static void DebuggerFinished(object sender, EventArgs e)
+		protected override void OnStop()
+		{
+			if (DebuggerService.CurrentDebugger.IsDebugging) {
+				DebuggerService.CurrentDebugger.Stop();
+			}
+		}
+		
+		void DebuggerFinished(object sender, EventArgs e)
 		{
 			DebuggerService.DebugStopped -= DebuggerFinished;
-			if (lastOutputFile != null) {
-				UnitTestApplicationStartHelper.DisplayResults(lastOutputFile);
-				try {
-					File.Delete(lastOutputFile);
-				} catch {}
-				lastOutputFile = null;
-			}
+			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
 		}
 	}
 }

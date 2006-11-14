@@ -25,6 +25,7 @@ namespace ICSharpCode.CodeCoverage
 	{
 		static MessageViewCategory category;
 		static NCoverRunner runner;
+		string ncoverFileName;
 		
 		public RunTestWithCodeCoverageCommand()
 		{
@@ -35,26 +36,31 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		protected override void RunTests(IProject project, IClass fixture, IMember test)
+		protected override void RunTests(UnitTestApplicationStartHelper helper)
 		{
-			if (IsBuildRunning) {
-				throw new CodeCoverageException();
-			}
-			
-			string ncoverFileName = GetNCoverFileName();
+			SetNCoverRunnerProperties(ncoverFileName, helper);
+			RunNCover();
+		}
+		
+		protected override void OnStop()
+		{
+			runner.Stop();
+		}
+		
+		/// <summary>
+		/// Clears the code coverage results on display before running
+		/// a series of tests.
+		/// </summary>
+		protected override void OnBeforeRunTests()
+		{
+			ncoverFileName = GetNCoverFileName();
 			if (ncoverFileName != null) {
-				SetNCoverRunnerProperties(ncoverFileName, project, fixture, test);
-				RunNCover();
+				WorkbenchSingleton.SafeThreadAsyncCall(CodeCoverageService.ClearResults);
 			} else {
 				using (CodeCoverageRunnerNotFoundForm form = new CodeCoverageRunnerNotFoundForm()) {
 					form.ShowDialog();
 				}
-			}
-		}
-		
-		bool IsBuildRunning {
-			get {
-				return runner.IsRunning;
+				Stop();
 			}
 		}
 		
@@ -72,36 +78,18 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		/// <summary>
-		/// Writes a line of text to the output window.
-		/// </summary>
-		void CategoryWriteLine(string message)
-		{
-			Category.AppendText(String.Concat(message, Environment.NewLine));
-		}
-		
-		/// <summary>
-		/// Brings output pad to the front.
-		/// </summary>
-		void ShowOutputPad()
-		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
-		}
-		
 		bool FileNameExists(string fileName)
 		{
 			return fileName.Length > 0 && File.Exists(fileName);
 		}
 		
-		void SetNCoverRunnerProperties(string ncoverFileName, IProject project, IClass fixture, IMember test)
+		void SetNCoverRunnerProperties(string ncoverFileName, UnitTestApplicationStartHelper helper)
 		{
-			string ncoverOutputDirectory = GetNCoverOutputDirectory(project);
-			NCoverSettings settings = GetNCoverSettings(project);
+			string ncoverOutputDirectory = GetNCoverOutputDirectory(helper.Project);
+			NCoverSettings settings = GetNCoverSettings(helper.Project);
 			
-			UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
-			helper.Initialize(project, fixture, test);
 			helper.XmlOutputFile = Path.Combine(ncoverOutputDirectory, "NUnit.Xml");
-			
+		
 			runner.NCoverFileName = ncoverFileName;
 			runner.ProfiledApplicationCommand = UnitTestApplicationStartHelper.UnitTestConsoleApplication;
 			runner.ProfiledApplicationCommandLineArguments = helper.GetArguments();
@@ -114,12 +102,6 @@ namespace ICSharpCode.CodeCoverage
 		
 		void RunNCover()
 		{
-			CodeCoverageService.ClearResults();
-			
-			Category.ClearText();
-			TaskService.ClearExceptCommentTasks();
-			ShowOutputPad();
-			
 			// Remove existing coverage results file.
 			if (File.Exists(runner.CoverageResultsFileName)) {
 				File.Delete(runner.CoverageResultsFileName);
@@ -130,8 +112,8 @@ namespace ICSharpCode.CodeCoverage
 				Directory.CreateDirectory(Path.GetDirectoryName(runner.CoverageResultsFileName));
 			}
 			
-			CategoryWriteLine(StringParser.Parse("${res:ICSharpCode.CodeCoverage.RunningCodeCoverage}"));
-			CategoryWriteLine(runner.CommandLine);
+			Category.AppendLine(StringParser.Parse("${res:ICSharpCode.CodeCoverage.RunningCodeCoverage}"));
+			Category.AppendLine(runner.CommandLine);
 			
 			runner.Start();
 		}
@@ -144,20 +126,14 @@ namespace ICSharpCode.CodeCoverage
 		void NCoverExited(object sender, NCoverExitEventArgs e)
 		{
 			System.Diagnostics.Debug.Assert(e.Error.Length == 0);
-
-			string ncoverOutputDirectory = Path.GetDirectoryName(runner.CoverageResultsFileName);
-			string unitTestResultsFileName = Path.Combine(ncoverOutputDirectory, "NUnit.Xml");
-			UnitTestApplicationStartHelper.DisplayResults(unitTestResultsFileName);
-			DisplayCoverageResults(runner.CoverageResultsFileName);
 			
-			if (TaskService.SomethingWentWrong && ErrorListPad.ShowAfterBuild) {
-				ShowErrorList();
-			}
+			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
+			DisplayCoverageResults(runner.CoverageResultsFileName);
 		}
 		
 		void OutputLineReceived(object sender, LineReceivedEventArgs e)
 		{
-			CategoryWriteLine(e.Line);
+			Category.AppendLine(e.Line);
 		}
 		
 		void DisplayCoverageResults(string fileName)
@@ -193,19 +169,10 @@ namespace ICSharpCode.CodeCoverage
 		/// <summary>
 		/// Returns the default full path to the NCover console application.
 		/// </summary>
-		/// <returns></returns>
 		string GetDefaultNCoverFileName()
 		{
 			string programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 			return Path.Combine(programFilesPath, @"NCover\NCover.Console.exe");
-		}
-		
-		void ShowErrorList()
-		{
-			PadDescriptor padDescriptor = WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad));
-			if (padDescriptor != null) {
-				WorkbenchSingleton.SafeThreadAsyncCall(padDescriptor.BringPadToFront);
-			}
 		}
 		
 		string GetNCoverOutputDirectory(IProject project)
