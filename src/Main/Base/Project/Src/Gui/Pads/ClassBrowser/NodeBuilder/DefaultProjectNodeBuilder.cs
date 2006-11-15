@@ -22,6 +22,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		{
 			ProjectNode prjNode = new ProjectNode(project);
 			prjNode.AddTo(classBrowser);
+			classBrowser.Sort();
 			return prjNode;
 		}
 	}
