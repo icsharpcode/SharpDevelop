@@ -180,7 +180,6 @@ namespace ICSharpCode.UnitTesting
 					return selectedNode.TestProject;
 				}
 				return null;
-
 			}
 		}
 		

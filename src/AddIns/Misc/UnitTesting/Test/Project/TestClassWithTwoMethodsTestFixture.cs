@@ -165,5 +165,23 @@ namespace UnitTesting.Tests.Project
 			TestMethod method = testProject.TestClasses.GetTestMethod("RootNamespace.Tests.MyTestFixture.TestMethod1");
 			Assert.AreSame(testMethod1, method);
 		}
+		
+		[Test]
+		public void FindTestMethodFromUnknownTestMethod()
+		{
+			Assert.IsNull(testProject.TestClasses.GetTestMethod("RootNamespace.Tests.MyTestFixture.UnknownTestMethod"));
+		}
+		
+		[Test]
+		public void FindTestMethodFromUnknownTestClass()
+		{
+			Assert.IsNull(testProject.TestClasses.GetTestMethod("RootNamespace.Tests.UnknownTestFixture.TestMethod1"));
+		}
+		
+		[Test]
+		public void FindTestMethodFromInvalidTestMethodName()
+		{
+			Assert.IsNull(testProject.TestClasses.GetTestMethod(String.Empty));
+		}
 	}
 }

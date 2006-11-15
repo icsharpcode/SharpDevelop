@@ -96,6 +96,25 @@ namespace ICSharpCode.UnitTesting
 			}
 			base.Dispose();
 		}
+		
+		/// <summary>
+		/// Gets whether this namespace node is considered empty. If
+		/// the node has been expanded then the node is empty if it
+		/// has no child nodes. If it has not been expanded then there
+		/// will be a dummy child node or a set of namespace
+		/// nodes but no test class nodes.
+		/// </summary>
+		public bool IsEmpty {
+			get {
+				if (isInitialized) {
+					return Nodes.Count == 0;
+				} else if (dummyNode != null) {
+					return testClasses.Count == 0;
+				} else {
+					return Nodes.Count == 0 && testClasses.Count == 0;
+				}
+			}
+		}
 			
 		/// <summary>
 		/// Adds the test class nodes for this namespace when the
@@ -265,7 +284,7 @@ namespace ICSharpCode.UnitTesting
 			if (e.TestClass.Namespace == fullNamespace) {
 				// Remove test class from our monitored test classes.
 				testClasses.Remove(e.TestClass);
-				
+			
 				// Remove the corresponding tree node.
 				foreach (ExtTreeNode node in Nodes) {
 					TestClassTreeNode classNode = node as TestClassTreeNode;
@@ -289,7 +308,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		void RemoveIfEmpty()
 		{
-			if (Nodes.Count == 0) {
+			if (IsEmpty) {
 				Remove();
 				Dispose();
 				TestNamespaceTreeNode parentNode = Parent as TestNamespaceTreeNode;

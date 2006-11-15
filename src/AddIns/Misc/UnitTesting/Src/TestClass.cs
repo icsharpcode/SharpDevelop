@@ -356,40 +356,6 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Updates the result of this class based on the results of
-		/// its methods.
-		/// </summary>
-		void UpdateResult()
-		{
-			bool failure = false;
-			bool ignored = false;
-			bool notRun = false;
-			foreach (TestMethod method in TestMethods) {
-				switch (method.Result) {
-					case TestResultType.None:
-						notRun = true;
-						break;
-					case TestResultType.Failure:
-						failure = true;
-						break;
-					case TestResultType.Ignored:
-						ignored = true;
-						break;
-				}
-				if (failure) {
-					break;
-				}
-			}
-			if (failure) {
-				Result = TestResultType.Failure;
-			} else if (ignored) {
-				Result = TestResultType.Ignored;
-			} else if (!notRun) {
-				Result = TestResultType.Success;
-			}
-		}
-		
-		/// <summary>
 		/// First tries the last dotted part of the test result name as the
 		/// method name. If there is no matching method the preceding dotted
 		/// part is prefixed to the method name until a match is found. 

@@ -10,6 +10,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
+using UnitTesting.Tests.Utils;
 
 namespace UnitTesting.Tests
 {
@@ -113,6 +114,19 @@ namespace UnitTesting.Tests
 		}
 		
 		[Test]
+		public void TestMethodSpecifiedInInitialize()
+		{
+			MockClass testFixture = new MockClass("TestFixture");
+			MockMethod testMethod = new MockMethod("Test");
+			helper.Initialize(project, testFixture, testMethod);
+			helper.NoLogo = false;
+			helper.ShadowCopy = true;
+			
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /fixture=\"TestFixture\" /testMethodName=\"TestFixture.Test\"";
+			Assert.AreEqual(expectedCommandLine, helper.GetArguments());
+		}
+		
+		[Test]
 		public void FullCommandLine()
 		{
 			helper.Initialize(project, null, null);
@@ -123,6 +137,31 @@ namespace UnitTesting.Tests
 			
 			string expectedFullCommandLine = "\"C:\\SharpDevelop\\bin\\Tools\\NUnit\\nunit-console.exe\" \"C:\\Projects\\MyTests\\MyTests.dll\" /nologo";
 			Assert.AreEqual(expectedFullCommandLine, helper.GetCommandLine());
+		}
+		
+		/// <summary>
+		/// Tests that a space is appended between the items added
+		/// to the UnitTestApplicationStartHelper.Assemblies
+		/// when the command line is generated.
+		/// </summary>
+		[Test]
+		public void SecondAssemblySpecified()
+		{
+			helper.Initialize(project, null, null);
+			helper.Assemblies.Add("SecondAssembly.dll");
+			helper.NoLogo = false;
+			helper.ShadowCopy = true;
+			helper.Results = @"C:\results.txt";
+			
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" \"SecondAssembly.dll\" /results=\"C:\\results.txt\"";
+			Assert.AreEqual(expectedCommandLine, helper.GetArguments());
+		}
+		
+		[Test]
+		public void GetProject()
+		{
+			helper.Initialize(project, null, null);
+			Assert.AreSame(project, helper.Project);
 		}
 	}
 }

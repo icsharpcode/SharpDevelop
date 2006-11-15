@@ -157,6 +157,13 @@ namespace UnitTesting.Tests.Tree
 			Assert.AreSame(expectedTestProject, base.TestTreeView.GetTestProject(project));
 		}
 		
+		[Test]
+		public void GetTestProjectFromUnknownProject()
+		{
+			MSBuildProject project = new MSBuildProject();
+			Assert.IsNull(base.TestTreeView.GetTestProject(project));
+		}
+		
 		/// <summary>
 		/// Tests that an empty project node after being expanded
 		/// will update itself if a new class is added to the project.
@@ -267,6 +274,41 @@ namespace UnitTesting.Tests.Tree
 			Assert.AreEqual(0, testsNamespaceNode.Nodes.Count);
 			projectNode.TestProject.TestClasses.Add(testClass);
 			Assert.AreEqual(0, testsNamespaceNode.Nodes.Count);
+		}
+		
+		/// <summary>
+		/// SD2-1203. The namespace tree nodes were not removing 
+		/// themselves when they were empty if they were not expanded 
+		/// first. This test makes sure this problem  is fixed.
+		/// </summary>
+		[Test]
+		public void EmptyNamespaceNodesRemovedWhenChildNamespaceNodeNotExpanded()
+		{
+			// Expand the project node.
+			TestProjectTreeNode projectNode = (TestProjectTreeNode)base.TestTreeView.Nodes[0];
+			projectNode.Expanding();
+			
+			// Add a new class to a non-empty namespace so it gets
+			// added to a new namespace node.
+			MockClass mockClass = new MockClass("RootNamespace.Tests.MyTestFixture");
+			TestClass testClass = new TestClass(mockClass);
+			projectNode.TestProject.TestClasses.Add(testClass);
+			
+			// Get the root namespace node.
+			TestNamespaceTreeNode rootNamespaceNode = (TestNamespaceTreeNode)projectNode.Nodes[0];
+		
+			// Check that the rootNamespaceNode does not consider itself
+			// empty.
+			Assert.IsFalse(rootNamespaceNode.IsEmpty);
+			
+			// Expand RootNamespace tree node.
+			rootNamespaceNode.Expanding();
+	
+			// Remove the test class from the test project.
+			projectNode.TestProject.TestClasses.Remove(testClass);
+			
+			Assert.AreEqual(0, projectNode.Nodes.Count, 
+				"Namespace nodes should have been removed from project node.");	
 		}
 		
 		/// <summary>
