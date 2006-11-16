@@ -348,6 +348,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
+			public override System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
+				get {
+					return new Microsoft.VisualBasic.VBCodeProvider();
+				}
+			}
+			
 			public override string ToString()
 			{
 				return "[LanguageProperties: VB.NET]";
