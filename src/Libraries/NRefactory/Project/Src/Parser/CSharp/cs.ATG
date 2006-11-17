@@ -2004,8 +2004,8 @@ TypeArgumentList<out List<TypeReference> types, bool canBeUnbound>
 	( IF (canBeUnbound && (la.kind == Tokens.GreaterThan || la.kind == Tokens.Comma))
 		(. types.Add(TypeReference.Null); .)
 		{ "," (. types.Add(TypeReference.Null); .) }
-	| Type<out type> (. types.Add(type); .)
-	  { "," Type<out type> (. types.Add(type); .) }
+	| Type<out type> (. if (type != null) { types.Add(type); } .)
+	  { "," Type<out type> (. if (type != null) { types.Add(type); } .) }
 	)
 	">"
 .

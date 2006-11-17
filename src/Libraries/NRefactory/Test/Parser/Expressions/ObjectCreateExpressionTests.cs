@@ -47,6 +47,23 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsTrue(expr.Arguments[0] is ObjectCreateExpression);
 			CheckSimpleObjectCreateExpression((ObjectCreateExpression)expr.Arguments[0]);
 		}
+		
+		[Test]
+		public void CSharpInvalidTypeArgumentListObjectCreateExpressionTest()
+		{
+			// this test was written because this bug caused the AbstractASTVisitor to crash
+			
+			InvocationExpression expr = ParseUtilCSharp.ParseExpression<InvocationExpression>("WriteLine(new SomeGenericType<int, >())", true);
+			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
+			Assert.AreEqual("WriteLine", ((IdentifierExpression)expr.TargetObject).Identifier);
+			Assert.AreEqual(1, expr.Arguments.Count); // here a second null parameter was added incorrectly
+			
+			Assert.IsTrue(expr.Arguments[0] is ObjectCreateExpression);
+			TypeReference typeRef = ((ObjectCreateExpression)expr.Arguments[0]).CreateType;
+			Assert.AreEqual("SomeGenericType", typeRef.Type);
+			Assert.AreEqual(1, typeRef.GenericTypes.Count);
+			Assert.AreEqual("int", typeRef.GenericTypes[0].Type);
+		}
 		#endregion
 		
 		#region VB.NET
@@ -55,7 +72,23 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			CheckSimpleObjectCreateExpression(ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("New MyObject(1, 2, 3)"));
 		}
-
+		
+		[Test]
+		public void VBNetInvalidTypeArgumentListObjectCreateExpressionTest()
+		{
+			// this test was written because this bug caused the AbstractASTVisitor to crash
+			
+			InvocationExpression expr = ParseUtilVBNet.ParseExpression<InvocationExpression>("WriteLine(New SomeGenericType(Of Integer, )())", true);
+			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
+			Assert.AreEqual("WriteLine", ((IdentifierExpression)expr.TargetObject).Identifier);
+			Assert.AreEqual(1, expr.Arguments.Count); // here a second null parameter was added incorrectly
+			
+			Assert.IsTrue(expr.Arguments[0] is ObjectCreateExpression);
+			TypeReference typeRef = ((ObjectCreateExpression)expr.Arguments[0]).CreateType;
+			Assert.AreEqual("SomeGenericType", typeRef.Type);
+			Assert.AreEqual(1, typeRef.GenericTypes.Count);
+			Assert.AreEqual("Integer", typeRef.GenericTypes[0].Type);
+		}
 		#endregion
 	}
 }
