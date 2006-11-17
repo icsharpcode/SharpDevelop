@@ -10,6 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
+using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Project
 {
@@ -18,14 +19,11 @@ namespace WixBinding.Tests.Project
 	/// </summary>
 	[TestFixture]
 	public class WixInstallerPathTestFixture
-	{	
+	{
 		[Test]
 		public void InstallerFullPath()
 		{
-			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.ProjectName = "Test";
-			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
-			WixProject project = new WixProject(info);
+			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			
 			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\Test.msi", project.InstallerFullPath);
 		}
@@ -33,11 +31,8 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void OutputNameDifferentToProjectName()
 		{
-			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.ProjectName = "Test";
-			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
-			WixProject project = new WixProject(info);
-			project.BaseConfiguration["OutputName"] = "ChangedName";
+			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
+			project.SetProperty("OutputName", "ChangedName");
 			
 			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\ChangedName.msi", project.InstallerFullPath);
 		}

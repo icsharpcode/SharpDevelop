@@ -96,17 +96,12 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 				ReferenceFolderNode referencesNode = new ReferenceFolderNode(Project);
 				referencesNode.AddTo(this);
 				projectContent.ReferencedContentsChanged += delegate { WorkbenchSingleton.SafeThreadAsyncCall(referencesNode.UpdateReferenceNodes); };
-				foreach (ProjectItem item in Project.Items) {
-					switch (item.ItemType) {
-						case ItemType.Reference:
-							break;
-						case ItemType.Compile:
-							ParseInformation parseInformation = ParserService.GetParseInformation(item.FileName);
-							if (parseInformation != null) {
-								InsertParseInformation(parseInformation.BestCompilationUnit as ICompilationUnit);
-							}
-							break;
+				foreach (ProjectItem item in Project.GetItemsOfType(ItemType.Compile)) {
+					ParseInformation parseInformation = ParserService.GetParseInformation(item.FileName);
+					if (parseInformation != null) {
+						InsertParseInformation(parseInformation.BestCompilationUnit as ICompilationUnit);
 					}
+					break;
 				}
 			}
 		}

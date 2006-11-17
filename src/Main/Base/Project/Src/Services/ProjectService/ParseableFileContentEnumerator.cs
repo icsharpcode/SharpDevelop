@@ -66,7 +66,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		bool isOnMainThread;
 		Encoding defaultEncoding;
 		
-		public ParseableFileContentEnumerator(IProject project) : this(project.Items.ToArray()) { }
+		public ParseableFileContentEnumerator(IProject project) : this(Linq.ToArray(project.Items)) { }
 		
 		public ParseableFileContentEnumerator(ProjectItem[] projectItems)
 		{
@@ -82,11 +82,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			// Loading the source files is done asynchronously:
 			// While one file is parsed, the next is already loaded from disk.
-			if (project != null) {
-				string res = project.GetParseableFileContent(fileName);
-				if (res != null)
-					return res;
-			}
 			
 			// load file
 			Encoding tmp = defaultEncoding;

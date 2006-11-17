@@ -17,19 +17,19 @@ namespace UnitTesting.Tests
 	[TestFixture]
 	public class UnitTestCommandLineTests
 	{
-		MSBuildProject project;
+		CompilableProject project;
 		UnitTestApplicationStartHelper helper;
 		
 		[SetUp]
 		public void SetUp()
 		{
-			project = new MSBuildProject();
+			project = new MockCSharpProject();
 			project.FileName = @"C:\Projects\MyTests\MyTests.csproj";
 			project.AssemblyName = "MyTests";
 			project.OutputType = OutputType.Library;
 			helper = new UnitTestApplicationStartHelper();
 		}
-			
+		
 		[Test]
 		public void TestResultsFile()
 		{

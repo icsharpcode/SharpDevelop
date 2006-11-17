@@ -8,7 +8,6 @@
 		<Name>${res:Templates.Project.ClassLibrary.Name}</Name>
 		<Category>C#</Category>
 		<Icon>C#.Project.Library</Icon>
-		<LanguageName>C#</LanguageName>
 		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -18,21 +17,18 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language="C#">
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+		</PropertyGroup>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "Library" />
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
 
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Xml" />
-			</ProjectItems>
-
-			<Files>
-				<File name="MyClass.cs"><![CDATA[${StandardHeader.C#}
+		<Files>
+			<File name="MyClass.cs"><![CDATA[${StandardHeader.C#}
 using System;
 using System.Collections.Generic;
 
@@ -43,11 +39,10 @@ namespace ${StandardNamespace}
 	/// </summary>
 	public class MyClass
 	{
-			
+		
 	}
 }]]></File>
 		<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
-			</Files>
-		</Project>
-	</Combine>
+		</Files>
+	</Project>
 </Template>

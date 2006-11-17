@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template originator   = "Mike Krueger"
           created      = "02/01/2003"
-          lastModified = "02/01/2003">
+          lastModified = "16/09/2006">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -10,7 +10,6 @@
 		<!-- Optional subcategory -->
 		<Subcategory>Windows Applications</Subcategory>
 		<Icon>C#.Project.DOSProject</Icon>
-		<LanguageName>C#</LanguageName>
 		<Description>Example template that tries to use every feature once</Description>
 	</TemplateConfiguration>
 	
@@ -36,11 +35,17 @@
 			<SolutionFolder name = "Nested Sub Folder"/>
 			
 			<Project name = "VBNetProject" directory = "VBNetSubProject" language="VBNet">
-				<!-- you can use the Options node to set properties on the SharpDevelop "IProject". -->
-				<Options OutputType = "WinExe"/>
-				
-				<!-- add a PropertyGroup to the project to set MSBuild properties (not all MSBuild properties are exposed by the "IProject") -->
+				<!-- add a PropertyGroup to the project to set MSBuild properties -->
 				<PropertyGroup>
+					<OutputType>WinExe</OutputType>
+				</PropertyGroup>
+				
+				<!-- you can use the "configuration" and/or "platform" attributes to make all properties in the group configuration/platform-specific -->
+				<PropertyGroup configuration="Debug">
+					<RemoveIntegerChecks>False</RemoveIntegerChecks>
+				</PropertyGroup>
+				
+				<PropertyGroup configuration="Release">
 					<RemoveIntegerChecks>True</RemoveIntegerChecks>
 				</PropertyGroup>
 				
@@ -66,7 +71,7 @@
 				</ProjectItems>
 				
 				<!-- Set the clear attribute to true if you want any imports that are added by default removed. -->
-				<Imports clear="True">
+				<Imports clear="False">
 					<!-- you can import additional MSBuild targets in the Imports-section of the project node -->
 					<Import Project="$(MSBuildBinPath)\Microsoft.WinFX.targets" />
 				</Imports>
@@ -92,9 +97,13 @@ End Class
 	]]></File>
 					<!--
 					   The file element supports these attributes:
-					   language, buildAction, copyToOutputDirectory, dependentUpon, subType
+					   name : the name used for the created file, relative to the project root (required)
+					   buildAction : item type of the MSBuild item to create
+					   src: instead of using the content of the <File>-element as code, read it from a file (relative to the directory containing the .xpt)
+					   binary: use binary="true" to deactivate interpolation of StringParser-expressions and automatic conversion to the user's encoding.
+					           Only valid in combination with src=".."
 					-->
-					<File name="Main.Designer.vb" buildAction="Compile" dependentUpon="Main.vb" subType="Code"><![CDATA[
+					<File name="Main.Designer.vb" buildAction="Compile" DependentUpon="Main.vb" SubType="Code"><![CDATA[
 Partial Class MainForm
 	' This file is required for Windows Forms designer support.
 	' Do not change the contents inside the source code editor. The Forms designer might
@@ -116,8 +125,7 @@ End Class
 		</SolutionFolder>
 		
 		<!-- a project without language uses the language specified in the template header -->
-		<Project name = "${ProjectName}" directory = ".">
-			<Options/>
+		<Project name = "${ProjectName}" directory = "." language = "C#">
 			<ProjectItems>
 				<Reference Include="System" />
 				<Reference Include="System.Data" />
@@ -143,34 +151,7 @@ class MainClass
 		Console.WriteLine("Hello World!");
 	}
 }]]></File>
-			<File name="AssemblyInfo.cs"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-// Information about this assembly is defined by the following
-// attributes.
-//
-// change them to the information which is associated with the assembly
-// you compile.
-
-[assembly: AssemblyTitle("")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// The assembly version has following format :
-//
-// Major.Minor.Build.Revision
-//
-// You can specify all values by your own or you can build default build and revision
-// numbers with the '*' character (the default):
-
-[assembly: AssemblyVersion("1.0.*")]
-
-]]></File>
+				<File name="AssemblyInfo.cs" src="CSharp/DefaultAssemblyInfo.cs"/>
 			</Files>
 		</Project>
 	</Solution>

@@ -5,14 +5,17 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
+
 using System.Collections.Generic;
 using System.IO;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
 	/// <summary>
 	/// This class holds all information the language binding need to create
-	/// a predefined project for their language, if no project template for a 
+	/// a predefined project for their language, if no project template for a
 	/// specific language is avaiable, the language binding shouldn't care about
 	/// this stuff.
 	/// </summary>
@@ -22,20 +25,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string combinePath;
 		string projectBasePath;
 		string outputProjectFileName;
+		Solution solution;
 		
-		public List<string> CreatedProjects  = new List<string>();
-		
-		public ProjectCreateInformation()
-		{
-			SetDefaultCreateProjectOptions();
-		}
-		
-		internal bool CreateProjectWithDefaultOutputPath;
-		
-		internal void SetDefaultCreateProjectOptions()
-		{
-			CreateProjectWithDefaultOutputPath = true;
-		}
+		internal List<string> CreatedProjects = new List<string>();
 		
 		public string OutputProjectFileName {
 			get {
@@ -55,13 +47,16 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		public string BinPath {
+		public string RootNamespace {
 			get {
-				return Path.Combine(combinePath, "bin");
+				return projectName;
+			}
+			set {
+				projectName = value;
 			}
 		}
 		
-		public string CombinePath {
+		public string SolutionPath {
 			get {
 				return combinePath;
 			}
@@ -77,6 +72,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			set {
 				projectBasePath = value;
 			}
+		}
+		
+		public Solution Solution {
+			get { return solution; }
+			set { solution = value; }
 		}
 	}
 }

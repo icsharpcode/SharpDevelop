@@ -17,6 +17,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -30,9 +31,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Hashtable icons        = new Hashtable();
 		bool allowUntitledFiles;
 		string basePath;
-		List<KeyValuePair<string, PropertyGroup>> createdFiles = new List<KeyValuePair<string, PropertyGroup>>();
+		List<KeyValuePair<string, FileDescriptionTemplate>> createdFiles = new List<KeyValuePair<string, FileDescriptionTemplate>>();
 		
-		public List<KeyValuePair<string, PropertyGroup>> CreatedFiles {
+		public List<KeyValuePair<string, FileDescriptionTemplate>> CreatedFiles {
 			get {
 				return createdFiles;
 			}
@@ -393,7 +394,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					window.ViewContent.Save(parsedFileName);
 				}
 			}
-			createdFiles.Add(new KeyValuePair<string, PropertyGroup>(parsedFileName, newfile.CreateMSBuildProperties()));
+			createdFiles.Add(new KeyValuePair<string, FileDescriptionTemplate>(parsedFileName, newfile));
 		}
 		
 		internal static string GenerateValidClassName(string className)

@@ -17,6 +17,30 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 	/// </summary>
 	public static class WebReferenceTestHelper
 	{
+		public static MSBuildBasedProject CreateTestProject(string languageName)
+		{
+			return new TestProject(languageName);
+		}
+		
+		class TestProject : CompilableProject
+		{
+			string languageName;
+			
+			public TestProject(string languageName)
+				: base(new Solution())
+			{
+				this.languageName = languageName;
+			}
+			
+			public override string Language {
+				get { return languageName; }
+			}
+			
+			public override ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
+				get { return ICSharpCode.SharpDevelop.Dom.LanguageProperties.CSharp; }
+			}
+		}
+		
 		public static void InitializeLanguageBindings()
 		{
 			Properties prop = new Properties();

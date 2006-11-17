@@ -8,11 +8,10 @@
 		<Name>${res:Templates.Project.BlankCombine.Name}</Name>
 		<Category>SharpDevelop</Category>
 		<Icon>Icons.32x32.CombineIcon</Icon>
-		<LanguageName/>
 		<Description>${res:Templates.Project.BlankCombine.Description}</Description>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = "."/>
+	<Solution name = "${ProjectName}" directory = "."/>
 	
 </Template>

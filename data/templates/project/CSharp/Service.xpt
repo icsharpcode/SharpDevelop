@@ -9,7 +9,6 @@
 		<Category>C#</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>C#.Project.ServiceProject</Icon>
-		<LanguageName>C#</LanguageName>
 		<Description>${res:Templates.Project.WindowsService.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -19,24 +18,17 @@
 	</Actions>
 
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
-		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options />
+	<Project language = "C#">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Configuration.Install" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.ServiceProcess" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
 
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Configuration.Install" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.ServiceProcess" />
-				<Reference Include="System.Xml" />
-			</ProjectItems>
-
-			<Files>
-				<File name="${ProjectName}.cs"><![CDATA[${StandardHeader.C#}
+		<Files>
+			<File name="${ProjectName}.cs"><![CDATA[${StandardHeader.C#}
 
 using System;
 using System.Collections.Generic;
@@ -140,8 +132,7 @@ namespace ${ProjectName}
 	}
 }
 ]]></File>
-				<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
-			</Files>
-		</Project>
-	</Combine>
+			<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
+		</Files>
+	</Project>
 </Template>

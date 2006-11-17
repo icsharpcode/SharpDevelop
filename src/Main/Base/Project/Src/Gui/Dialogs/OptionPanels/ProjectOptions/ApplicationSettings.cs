@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void RefreshOutputNameTextBox(object sender, EventArgs e)
 		{
-			Get<TextBox>("outputName").Text = Get<TextBox>("assemblyName").Text + MSBuildProject.GetExtension((OutputType)Get<ComboBox>("outputType").SelectedIndex);
+			Get<TextBox>("outputName").Text = Get<TextBox>("assemblyName").Text + CompilableProject.GetExtension((OutputType)Get<ComboBox>("outputType").SelectedIndex);
 		}
 		
 		void ApplicationIconComboBoxTextChanged(object sender, EventArgs e)

@@ -34,7 +34,7 @@ namespace WixBinding.Tests.Gui
 			// Add wix library item.
 			wixLibraryItem = new WixLibraryProjectItem(wixProject);
 			wixLibraryItem.Include = @"..\..\first.wixlib";
-			wixProject.Items.Add(wixLibraryItem);
+			ProjectService.AddProjectItem(wixProject, wixLibraryItem);
 			
 			// Run Initialize on the WixLibraryFolderNode, which is 
 			// equivalent to expanding the node, so it adds it children. Cannot

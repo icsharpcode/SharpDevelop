@@ -28,7 +28,7 @@ namespace UnitTesting.Tests.Tree
 		TreeNodeCollection nodes;
 		DummyParserServiceTestTreeView dummyTreeView;
 		TestTreeView treeView;
-		MSBuildProject project;
+		MSBuildBasedProject project;
 		MockProjectContent projectContent;
 		MockClass testClass;
 		TreeNodeCollection rootChildNodes;
@@ -46,16 +46,16 @@ namespace UnitTesting.Tests.Tree
 		public void SetUp()
 		{
 			// Create a project to display in the test tree view.
-			project = new MSBuildProject();
+			project = new MockCSharpProject();
 			project.Name = "TestProject";
 			nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
 			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
-			project.Items.Add(nunitFrameworkReferenceItem);
+			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
 			List<IProject> projects = new List<IProject>();
 			projects.Add(project);
 			
 			// Add second non-test project.
-			projects.Add(new MSBuildProject());
+			projects.Add(new MockCSharpProject());
 			
 			// Add a test class with a TestFixture attributes.
 			projectContent = new MockProjectContent();
@@ -432,7 +432,7 @@ namespace UnitTesting.Tests.Tree
 		public void TestProjectNUnitReferenceRemoved()
 		{
 			TestProjectTreeNode projectNode = (TestProjectTreeNode)rootNode;
-			projectNode.TestProject.Project.Items.Remove(nunitFrameworkReferenceItem);
+			ProjectService.RemoveProjectItem(projectNode.TestProject.Project, nunitFrameworkReferenceItem);
 			
 			treeView.ProjectReferencesChanged(projectNode.TestProject.Project);
 			
@@ -442,7 +442,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void UnknownProjectHasReferenceRemoved()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			treeView.ProjectReferencesChanged(project);
 			
 			Assert.AreEqual(1, treeView.Nodes.Count);
@@ -451,11 +451,11 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void UnknownProjectHasNUnitReferenceAdded()
 		{
-			project = new MSBuildProject();
+			project = new MockCSharpProject();
 			project.Name = "NewProject";
 			nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
 			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
-			project.Items.Add(nunitFrameworkReferenceItem);
+			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
 			
 			treeView.ProjectReferencesChanged(project);
 			

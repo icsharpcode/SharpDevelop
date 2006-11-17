@@ -73,7 +73,7 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void NullNameComparer()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			MockClass mockClass = new MockClass();
 			MockProjectContent mockProjectContent = new MockProjectContent();
 			mockProjectContent.Project = project;
@@ -82,12 +82,12 @@ namespace UnitTesting.Tests.Project
 			MockMethod mockMethod = new MockMethod();
 			mockMethod.DeclaringType = mockClass;
 			mockMethod.Attributes.Add(new MockAttribute("Test"));
-	
+			
 			Assert.IsFalse(TestMethod.IsTestMethod(mockMethod));
 		}
 		
 		/// <summary>
-		/// Even if the project is null the method should be 
+		/// Even if the project is null the method should be
 		/// flagged as a TestMethod.
 		/// </summary>
 		[Test]
@@ -113,7 +113,7 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void NullLanguage()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			MockClass mockClass = new MockClass();
 			MockProjectContent mockProjectContent = new MockProjectContent();
 			mockProjectContent.Project = project;
@@ -147,7 +147,7 @@ namespace UnitTesting.Tests.Project
 			MockClass mockClass = new MockClass();
 			MockProjectContent mockProjectContent = new MockProjectContent();
 			mockProjectContent.Language = LanguageProperties.None;
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			mockProjectContent.Project = project;
 			mockClass.ProjectContent = mockProjectContent;
 			mockMethod.DeclaringType = mockClass;
@@ -155,7 +155,7 @@ namespace UnitTesting.Tests.Project
 			foreach (MockAttribute attribute in attributes) {
 				mockMethod.Attributes.Add(attribute);
 			}
-		
+			
 			return mockMethod;
 		}
 	}

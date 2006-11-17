@@ -33,11 +33,11 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			AbstractProject project;
+			MSBuildBasedProject project;
 			if (caller is IProject) {
-				project = caller as AbstractProject;
+				project = caller as MSBuildBasedProject;
 			} else {
-				project = ProjectService.CurrentProject as AbstractProject;
+				project = ProjectService.CurrentProject as MSBuildBasedProject;
 			}
 			if (project == null) {
 				return false;

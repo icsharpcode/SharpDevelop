@@ -79,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 			foreach (string path in projectFiles) {
 				conversion.IsVisualBasic = IsVisualBasic(path);
-				IProject newProject = PrjxToSolutionProject.ConvertOldProject(path, conversion);
+				IProject newProject = PrjxToSolutionProject.ConvertOldProject(path, conversion, newSolution);
 				newSolution.AddFolder(newProject);
 			}
 			if (conversion.Resources != null) {

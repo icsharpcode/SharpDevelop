@@ -22,19 +22,19 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class ConfigurationGuiHelper : ICanBeDirty
 	{
-		MSBuildProject project;
+		MSBuildBasedProject project;
 		Dictionary<string, Control> controlDictionary;
 		List<ConfigurationGuiBinding> bindings = new List<ConfigurationGuiBinding>();
 		
-		public ConfigurationGuiHelper(MSBuildProject project, Dictionary<string, Control> controlDictionary)
+		public ConfigurationGuiHelper(MSBuildBasedProject project, Dictionary<string, Control> controlDictionary)
 		{
 			this.project = project;
 			this.controlDictionary = controlDictionary;
-			this.configuration = project.Configuration;
-			this.platform = project.Platform;
+			this.configuration = project.ActiveConfiguration;
+			this.platform = project.ActivePlatform;
 		}
 		
-		public MSBuildProject Project {
+		public MSBuildBasedProject Project {
 			get {
 				return project;
 			}
@@ -46,17 +46,40 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		#region Get/Set properties
+		public T GetProperty<T>(string propertyName, T defaultValue,
+		                        bool treatPropertyValueAsLiteral)
+		{
+			string v;
+			if (treatPropertyValueAsLiteral)
+				v = project.GetProperty(configuration, platform, propertyName);
+			else
+				v = project.GetUnevalatedProperty(configuration, platform, propertyName);
+			return GenericConverter.FromString(v, defaultValue);
+		}
+		
+		public T GetProperty<T>(string propertyName, T defaultValue,
+		                        bool treatPropertyValueAsLiteral,
+		                        out PropertyStorageLocations location)
+		{
+			string v;
+			if (treatPropertyValueAsLiteral)
+				v = project.GetProperty(configuration, platform, propertyName, out location);
+			else
+				v = project.GetUnevalatedProperty(configuration, platform, propertyName, out location);
+			return GenericConverter.FromString(v, defaultValue);
+		}
+		
+		public void SetProperty<T>(string propertyName, T value,
+		                           bool treatPropertyValueAsLiteral,
+		                           PropertyStorageLocations location)
+		{
+			project.SetProperty(configuration, platform, propertyName,
+			                    GenericConverter.ToString(value), location, treatPropertyValueAsLiteral);
+		}
+		#endregion
+		
 		#region Manage bindings
-		public T GetProperty<T>(string property, T defaultValue, out PropertyStorageLocations location)
-		{
-			return project.GetProperty(configuration, platform, property, defaultValue, out location);
-		}
-		
-		public void SetProperty<T>(string property, T value, PropertyStorageLocations location)
-		{
-			project.SetProperty(configuration, platform, property, value, location);
-		}
-		
 		/// <summary>
 		/// Initializes the Property and Project properties on the binding and calls the load method on it.
 		/// Registers the binding so that Save is called on it when Save is called on the ConfigurationGuiHelper.
@@ -590,11 +613,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				List<string> items;
 				configurationComboBox.Items.Clear();
-				items = helper.Project.GetConfigurationNames();
+				items = Linq.ToList(helper.Project.ConfigurationNames);
 				items.Sort();
 				configurationComboBox.Items.AddRange(items.ToArray());
 				platformComboBox.Items.Clear();
-				items = helper.Project.GetPlatformNames();
+				items = Linq.ToList(helper.Project.PlatformNames);
 				items.Sort();
 				platformComboBox.Items.AddRange(items.ToArray());
 				ResetIndex();

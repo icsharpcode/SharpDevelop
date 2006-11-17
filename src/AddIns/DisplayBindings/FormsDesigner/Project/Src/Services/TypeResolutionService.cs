@@ -126,7 +126,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			
 			if (pc.Project != null) {
-				return LoadAssembly(pc.Project.OutputAssemblyFullPath);
+				return LoadAssembly(((IProject)pc.Project).OutputAssemblyFullPath);
 			} else if (pc is ReflectionProjectContent) {
 				ReflectionProjectContent rpc = (ReflectionProjectContent)pc;
 				if (FileUtility.IsBaseDirectory(GacInterop.GacRootPath, rpc.AssemblyLocation))

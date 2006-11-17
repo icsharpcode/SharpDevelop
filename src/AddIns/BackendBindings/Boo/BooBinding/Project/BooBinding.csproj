@@ -57,6 +57,7 @@
       <HintPath>..\..\RequiredLibraries\Boo.Lang.Useful.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Microsoft.Build.Engine" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\BooProject.cs" />

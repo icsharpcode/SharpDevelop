@@ -29,6 +29,7 @@ namespace CSharpBinding.OptionPanels
 			ConfigurationGuiBinding b;
 			
 			b = helper.BindString("conditionalSymbolsTextBox", "DefineConstants");
+			b.TreatPropertyValueAsLiteral = false;
 			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
 			b.CreateLocationButton("conditionalSymbolsTextBox");
 			

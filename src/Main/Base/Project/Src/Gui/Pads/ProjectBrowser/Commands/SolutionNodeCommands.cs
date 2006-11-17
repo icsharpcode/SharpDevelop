@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public static void AddProject(ISolutionFolderNode solutionFolderNode, string fileName)
 		{
-			IProject newProject = LanguageBindingService.LoadProject(fileName, Path.GetFileNameWithoutExtension(fileName));
+			IProject newProject = LanguageBindingService.LoadProject(solutionFolderNode.Solution, fileName, Path.GetFileNameWithoutExtension(fileName));
 			if (newProject != null) {
 				newProject.Location = FileUtility.GetRelativePath(solutionFolderNode.Solution.Directory, fileName);
 				ProjectService.AddProject(solutionFolderNode, newProject);

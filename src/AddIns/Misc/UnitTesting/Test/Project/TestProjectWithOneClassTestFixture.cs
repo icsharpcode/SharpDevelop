@@ -23,7 +23,7 @@ namespace UnitTesting.Tests.Project
 	{
 		TestProject testProject;
 		TestClass testClass;
-		MSBuildProject project;
+		MSBuildBasedProject project;
 		bool resultChangedCalled;
 		MockProjectContent projectContent;
 		List<TestClass> classesAdded;
@@ -37,11 +37,11 @@ namespace UnitTesting.Tests.Project
 			classesRemoved = new List<TestClass>();
 			
 			// Create a project.
-			project = new MSBuildProject();
+			project = new MockCSharpProject();
 			project.Name = "TestProject";
 			ReferenceProjectItem nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
 			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
-			project.Items.Add(nunitFrameworkReferenceItem);
+			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
 			
 			// Add a test class with a TestFixture attributes.
 			projectContent = new MockProjectContent();

@@ -6,9 +6,9 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.SharpDevelopMacro.Name}</Name>
-		<Category>SharpDevelop</Category>
+		<Category>C#</Category>
+		<Subcategory>SharpDevelop</Subcategory>
 		<Icon>C#.Project.ControlLibrary</Icon>
-		<LanguageName>C#</LanguageName>
 		<Description>${res:Templates.Project.SharpDevelopMacro.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -17,24 +17,21 @@
 		<Open filename = "${ProjectName}.addin"/>
 	</Actions>
 	
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language="C#">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "Library" />
-
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.Drawing" />
-				<Reference Include="System.Windows.Forms" />
-				<Reference Include="System.Xml" />
-			</ProjectItems>
-			
-			<Files>
-				<File name="${ProjectName}.addin" copyToOutputDirectory="Always"><![CDATA[<AddIn name        = "${ProjectName}"
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="${ProjectName}.addin" CopyToOutputDirectory="Always"><![CDATA[<AddIn name        = "${ProjectName}"
        author      = "${USER}"
        url         = ""
        description = "TODO: Put description here">
@@ -100,8 +97,7 @@ namespace ${StandardNamespace}
 	}
 }
 ]]></File>
-		<File name="Configuration/AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
-			</Files>
-		</Project>
-	</Combine>
+			<File name="Configuration/AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
+		</Files>
+	</Project>
 </Template>

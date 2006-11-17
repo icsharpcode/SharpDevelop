@@ -33,7 +33,7 @@ namespace WixBinding.Tests.PackageFiles
 			project.Name = "MySetup";
 			FileProjectItem item = new FileProjectItem(project, ItemType.Compile);
 			item.Include = "Setup.wxs";
-			project.Items.Add(item);
+			ProjectService.AddProjectItem(project, item);
 			view = new MockWixPackageFilesView();
 			editor = new WixPackageFilesEditor(view, this, this, this);
 			editor.ShowFiles(project);

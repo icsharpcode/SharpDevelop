@@ -22,8 +22,8 @@ namespace UnitTesting.Tests.Tree
 	public class GetProjectsTestFixture
 	{
 		Solution solution;
-		MSBuildProject project1;
-		MSBuildProject project2;
+		MSBuildBasedProject project1;
+		MSBuildBasedProject project2;
 		IProject[] projects;
 		DummyParserServiceTestTreeView treeView;
 		
@@ -31,18 +31,18 @@ namespace UnitTesting.Tests.Tree
 		public void Init()
 		{
 			solution = new Solution();
-			project1 = new MSBuildProject();
+			project1 = new MockCSharpProject(solution);
 			project1.Name = "A";
 			ReferenceProjectItem refProjectItem = new ReferenceProjectItem(project1);
 			refProjectItem.Include = "NUnit.Framework";
-			project1.Items.Add(refProjectItem);
+			ProjectService.AddProjectItem(project1, refProjectItem);
 			solution.Folders.Add(project1);
 			
-			project2 = new MSBuildProject();
+			project2 = new MockCSharpProject(solution);
 			project2.Name = "Z";
 			refProjectItem = new ReferenceProjectItem(project2);
 			refProjectItem.Include = "NUnit.Framework";
-			project2.Items.Add(refProjectItem);
+			ProjectService.AddProjectItem(project2, refProjectItem);
 			solution.Folders.Add(project2);
 			
 			MockProjectContent projectContent = new MockProjectContent();

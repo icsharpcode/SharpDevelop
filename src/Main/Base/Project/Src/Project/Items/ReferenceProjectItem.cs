@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -18,19 +18,33 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class ReferenceProjectItem : ProjectItem
 	{
-		public override ItemType ItemType {
-			get {
-				return ItemType.Reference;
-			}
+		protected ReferenceProjectItem(IProject project, ItemType itemType)
+			: base(project, itemType)
+		{
+		}
+		
+		public ReferenceProjectItem(IProject project)
+			: base(project, ItemType.Reference)
+		{
+		}
+		
+		public ReferenceProjectItem(IProject project, string include)
+			: base(project, ItemType.Reference, include)
+		{
+		}
+		
+		internal ReferenceProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem buildItem)
+			: base(project, buildItem)
+		{
 		}
 		
 		[Browsable(false)]
 		public string HintPath {
 			get {
-				return Properties["HintPath"];
+				return GetEvaluatedMetadata("HintPath");
 			}
 			set {
-				Properties["HintPath"] = value;
+				SetEvaluatedMetadata("HintPath", value);
 			}
 		}
 		
@@ -39,10 +53,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		                   Description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.SpecificVersion.Description}")]
 		public bool SpecificVersion {
 			get {
-				return Properties.Get("SpecificVersion", true);
+				return GetEvaluatedMetadata("SpecificVersion", true);
 			}
 			set {
-				Properties.Set("SpecificVersion", value);
+				SetEvaluatedMetadata("SpecificVersion", value);
 			}
 		}
 		
@@ -51,10 +65,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		                   Description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy.Description}")]
 		public bool Private {
 			get {
-				return Properties.Get("Private", true);
+				return GetEvaluatedMetadata("Private", true);
 			}
 			set {
-				Properties.Set("Private", value);
+				SetEvaluatedMetadata("Private", value);
 			}
 		}
 		
@@ -145,22 +159,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public ReferenceProjectItem(IProject project) : base(project)
-		{
-		}
-		
-		public ReferenceProjectItem(IProject project, string include) : base(project)
-		{
-			this.Include = include;
-		}
-		
-		public override string ToString()
-		{
-			return String.Format("[ReferenceProjectItem: Include={0}, Properties={1}]",
-			                     Include,
-			                     Properties);
-		}
-		
 		AssemblyName GetAssemblyName(string include)
 		{
 			try {
@@ -170,14 +168,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			} catch (ArgumentException) { }
 			
 			return null;
-		}
-		
-		public override ProjectItem Clone()
-		{
-			ProjectItem n = new ReferenceProjectItem(this.Project);
-			n.Include = this.Include;
-			this.CopyExtraPropertiesTo(n);
-			return n;
 		}
 	}
 }

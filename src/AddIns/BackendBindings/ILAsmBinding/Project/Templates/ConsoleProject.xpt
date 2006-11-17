@@ -8,7 +8,6 @@
 		<Name>${res:Templates.Project.ConsoleProject.Name}</Name>
 		<Category>ILAsm</Category>
 		<Icon>C#.Project.DOSProject</Icon>
-		<LanguageName>ILAsm</LanguageName>
 		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -18,15 +17,9 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
-		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options/>
-			<Files>
-				<File name="MainClass.il"><![CDATA[.assembly HelloWorld
+	<Project language = "ILAsm">
+		<Files>
+			<File name="MainClass.il"><![CDATA[.assembly HelloWorld
 {
 }
 
@@ -44,7 +37,6 @@
 		}
 	}
 }]]></File>
-			</Files>
-		</Project>
-	</Combine>
+		</Files>
+	</Project>
 </Template>

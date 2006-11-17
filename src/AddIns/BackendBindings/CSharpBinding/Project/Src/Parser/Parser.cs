@@ -11,6 +11,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace CSharpBinding.Parser
 {
@@ -44,7 +45,7 @@ namespace CSharpBinding.Parser
 			return Path.GetExtension(fileName).Equals(".CS", StringComparison.OrdinalIgnoreCase);
 		}
 		
-		public bool CanParse(IDomProject project)
+		public bool CanParse(IProject project)
 		{
 			return project.Language == "C#";
 		}

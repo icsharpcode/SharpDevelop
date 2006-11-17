@@ -42,9 +42,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (project != null) {
 				if (editPlatforms) {
-					ShowEntries(project.GetPlatformNames(), project.Platform);
+					ShowEntries(project.PlatformNames, project.ActivePlatform);
 				} else {
-					ShowEntries(project.GetConfigurationNames(), project.Configuration);
+					ShowEntries(project.ConfigurationNames, project.ActiveConfiguration);
 				}
 			} else {
 				if (editPlatforms) {
@@ -147,7 +147,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				MessageService.ShowMessage("Duplicate name.");
 				return false;
 			}
-			if (!FileUtility.IsValidDirectoryName(newName)) {
+			if (!FileUtility.IsValidDirectoryName(newName)
+			    || newName.Contains("'"))
+			{
 				MessageService.ShowMessage("The name was invalid.");
 				return false;
 			}

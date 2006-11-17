@@ -9,7 +9,6 @@
 		<Category>VBNet</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>VBNet.Project.ServiceProject</Icon>
-		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.WindowsService.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -18,31 +17,29 @@
 		<Open filename = "${ProjectName}.vb"/>
 	</Actions>
 	
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "Exe" />
+	<Project language="VBNet">
+		<PropertyGroup>
+			<OutputType>Exe</OutputType>
+		</PropertyGroup>
+		
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Configuration.Install" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.ServiceProcess" />
+			<Reference Include="System.Xml" />
 			
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Configuration.Install" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.ServiceProcess" />
-				<Reference Include="System.Xml" />
-				
-				<Import Include="Microsoft.VisualBasic" />
-				<Import Include="System" />
-				<Import Include="System.Collections" />
-				<Import Include="System.Collections.Generic" />
-				<Import Include="System.Data" />
-				<Import Include="System.Diagnostics" />
-			</ProjectItems>
-				
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Data" />
+			<Import Include="System.Diagnostics" />
+		</ProjectItems>
+			
 
-			<Files>
-				<File name="${ProjectName}.vb"><![CDATA[${StandardHeader.VBNET}
+		<Files>
+			<File name="${ProjectName}.vb"><![CDATA[${StandardHeader.VBNET}
 
 Imports System.ServiceProcess
 
@@ -96,8 +93,7 @@ End Class
 
 ]]></File>
 		<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
-			</Files>
-		</Project>
-	</Combine>	
+		</Files>
+	</Project>
 </Template>
 

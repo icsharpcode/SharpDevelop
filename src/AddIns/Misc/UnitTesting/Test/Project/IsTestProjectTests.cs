@@ -9,6 +9,7 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using System;
+using UnitTesting.Tests.Utils;
 
 namespace UnitTesting.Tests.Project
 {
@@ -22,17 +23,17 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void ProjectWithNoReferences()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			Assert.IsFalse(TestProject.IsTestProject(project));
 		}
 		
 		[Test]
 		public void ProjectWithNUnitFrameworkReference()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			ReferenceProjectItem referenceProjectItem = new ReferenceProjectItem(project);
 			referenceProjectItem.Include = "NUnit.Framework";
-			project.Items.Add(referenceProjectItem);
+			ProjectService.AddProjectItem(project, referenceProjectItem);
 			
 			Assert.IsTrue(TestProject.IsTestProject(project));
 		}
@@ -40,10 +41,10 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void ProjectWithNUnitFrameworkReferenceCaseInsensitive()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			ReferenceProjectItem referenceProjectItem = new ReferenceProjectItem(project);
 			referenceProjectItem.Include = "nunit.framework";
-			project.Items.Add(referenceProjectItem);
+			ProjectService.AddProjectItem(project, referenceProjectItem);
 			
 			Assert.IsTrue(TestProject.IsTestProject(project));
 		}
@@ -51,10 +52,10 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void ProjectWithNUnitFrameworkReferenceSpecificVersion()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			ReferenceProjectItem referenceProjectItem = new ReferenceProjectItem(project);
 			referenceProjectItem.Include = "NUnit.Framework, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77";
-			project.Items.Add(referenceProjectItem);
+			ProjectService.AddProjectItem(project, referenceProjectItem);
 			
 			Assert.IsTrue(TestProject.IsTestProject(project));
 		}
@@ -62,10 +63,12 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void NullReferenceName()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			ReferenceProjectItem referenceProjectItem = new ReferenceProjectItem(project);
 			referenceProjectItem.Include = null;
-			project.Items.Add(referenceProjectItem);
+			
+			// DG: project items without include are now forbidden by MSBuild.
+			ProjectService.AddProjectItem(project, referenceProjectItem);
 			
 			Assert.IsFalse(TestProject.IsTestProject(project));
 		}

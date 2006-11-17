@@ -23,17 +23,14 @@ namespace Grunwald.BooBinding
 			}
 		}
 		
-		public IProject LoadProject(string fileName, string projectName)
+		public IProject LoadProject(IMSBuildEngineProvider provider, string fileName, string projectName)
 		{
-			return new BooProject(fileName, projectName);
+			return new BooProject(provider, fileName, projectName);
 		}
 		
-		public IProject CreateProject(ProjectCreateInformation info, XmlElement projectOptions)
+		public IProject CreateProject(ProjectCreateInformation info)
 		{
-			BooProject p = new BooProject(info);
-			if (projectOptions != null)
-				p.ImportOptions(projectOptions.Attributes);
-			return p;
+			return new BooProject(info);
 		}
 		
 		public LanguageProperties LanguageProperties {

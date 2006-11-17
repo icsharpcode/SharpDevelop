@@ -6,9 +6,9 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.SharpDevelopAddin.Name}</Name>
-		<Category>SharpDevelop</Category>
+		<Category>VBNet</Category>
+		<Subcategory>SharpDevelop</Subcategory>
 		<Icon>VBNet.Project.ControlLibrary</Icon>
-		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.SharpDevelopAddin.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -17,25 +17,23 @@
 		<Open filename = "${ProjectName}.addin"/>
 	</Actions>
 	
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language="VBNet">
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+		</PropertyGroup>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "Library" />
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.Drawing" />
-				<Reference Include="System.Windows.Forms" />
-				<Reference Include="System.Xml" />
-				<Import Include="System" />
-				<Import Include="System.Collections" />
-			    <Import Include="System.Windows.Forms" />			
-			</ProjectItems>
-			<Files>
-				<File name="${ProjectName}.addin" copyToOutputDirectory="Always"><![CDATA[<AddIn name        = "${ProjectName}"
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
+			<Reference Include="System.Xml" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Windows.Forms" />
+		</ProjectItems>
+		<Files>
+			<File name="${ProjectName}.addin" CopyToOutputDirectory="Always"><![CDATA[<AddIn name        = "${ProjectName}"
        author      = "${USER}"
        url         = ""
        description = "TODO: Put description here">
@@ -147,7 +145,6 @@ Public Class TestPad
 End Class
 ]]></File>
 		<File name="Configuration/AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
-			</Files>
-		</Project>
-	</Combine>
+		</Files>
+	</Project>
 </Template>

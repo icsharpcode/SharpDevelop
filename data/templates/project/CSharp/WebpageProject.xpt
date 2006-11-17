@@ -9,7 +9,6 @@
 		<Category>C#</Category>
 		<Subcategory>ASP.NET</Subcategory>
 		<Icon>C#.Project.Form</Icon>
-		<LanguageName>C#</LanguageName>
 		<Description>${res:Templates.Project.WebPage.Description}</Description>
 	</TemplateConfiguration>
 
@@ -19,30 +18,24 @@
 		<Open filename = ".\Default.aspx.cs"/>
 	</Actions>
 
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
-
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "Library" />
-
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.Xml" />
-				<Reference Include="System.Web" />
-				<Reference Include="System.Drawing" />
-				<Reference Include="System.Web.Services" />
-			</ProjectItems>
-			
-			<PropertyGroup>
-				<OutputPath>bin\</OutputPath>
-			</PropertyGroup>
+	<Project language="C#">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+			<Reference Include="System.Web" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Web.Services" />
+		</ProjectItems>
+		
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
 
 	<Files>
 <!--*************************************************************************-->
-		<File name=".\Default.aspx.cs" dependentUpon="Default.aspx"><![CDATA[${StandardHeader.C#}
+		<File name=".\Default.aspx.cs" DependentUpon="Default.aspx"><![CDATA[${StandardHeader.C#}
 
 using System;
 using System.Collections;
@@ -175,7 +168,7 @@ using System.Runtime.CompilerServices;
 %>
 ]]></File>
 <!--*************************************************************************-->
-		<File name=".\Global.asax.cs" dependentUpon="Global.asax">
+		<File name=".\Global.asax.cs" DependentUpon="Global.asax">
 			<![CDATA[
 using System;
 using System.Collections;
@@ -501,7 +494,6 @@ A:hover
 
 ]]></File>
 <!--*************************************************************************-->
-			</Files>
-		</Project>
-	</Combine>
+		</Files>
+	</Project>
 </Template>

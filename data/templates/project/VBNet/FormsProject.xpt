@@ -9,7 +9,6 @@
 		<Category>VBNet</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>VBNet.Project.Form</Icon>
-		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.WindowsApplication.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -19,31 +18,28 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language="VBNet">
+		<PropertyGroup>
+			<OutputType>WinExe</OutputType>
+		</PropertyGroup>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "WinExe" />
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Deployment" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
 			
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Deployment" />
-				<Reference Include="System.Drawing" />
-				<Reference Include="System.Windows.Forms" />
-				
-				<Import Include="Microsoft.VisualBasic" />
-				<Import Include="System" />
-				<Import Include="System.Collections" />
-				<Import Include="System.Collections.Generic" />
-				<Import Include="System.Drawing" />
-				<Import Include="System.Diagnostics" />
-				<Import Include="System.Windows.Forms" />
-			</ProjectItems>
-			
-			<Files>
-				<File name="MainForm.vb">
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Drawing" />
+			<Import Include="System.Diagnostics" />
+			<Import Include="System.Windows.Forms" />
+		</ProjectItems>
+		
+		<Files>
+			<File name="MainForm.vb">
 			<![CDATA[${StandardHeader.VBNET}
 Public Partial Class MainForm
 	Public Sub New()
@@ -56,7 +52,7 @@ Public Partial Class MainForm
 	End Sub
 End Class
 ]]></File>
-				<File name="MainForm.Designer.vb" dependentUpon="MainForm.vb">
+				<File name="MainForm.Designer.vb" DependentUpon="MainForm.vb">
 			<![CDATA[${StandardHeader.VBNET}
 Partial Class MainForm
 	Inherits System.Windows.Forms.Form
@@ -117,7 +113,6 @@ Namespace My
 End Namespace
 ]]></File>
 			<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
-			</Files>
-		</Project>
-	</Combine>	
+		</Files>
+	</Project>
 </Template>

@@ -27,18 +27,17 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MSBuildProject project = new MSBuildProject();
-			project.Language = "C#";
+			MSBuildBasedProject project = WebReferenceTestHelper.CreateTestProject("C#");
 			project.FileName = Path.Combine(projectDirectory, "foo.csproj");
 			project.AppDesignerFolder = "Properties";
 			
 			WebReferencesProjectItem webReferencesItem = new WebReferencesProjectItem(project);
 			webReferencesItem.Include = "Web References\\";
-			project.Items.Add(webReferencesItem);
+			ProjectService.AddProjectItem(project, webReferencesItem);
 									
 			FileProjectItem fileItem = new FileProjectItem(project, ItemType.Folder);
 			fileItem.Include = "MissingFolder\\";
-			project.Items.Add(fileItem);
+			ProjectService.AddProjectItem(project, fileItem);
 			
 			ProjectNode projectNode = new ProjectNode(project);
 

@@ -11,102 +11,97 @@ using System.IO;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public class WebReferenceUrl : ProjectItem
+	public sealed class WebReferenceUrl : ProjectItem
 	{
-		public override ItemType ItemType {
-			get {
-				return ItemType.WebReferenceUrl;
-			}
-		}
-		
 		[ReadOnly(true)]
-		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.UrlBehaviour}", 
-		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.UrlBehaviour.Description}")]
-		public string UrlBehavior {
-			get {
-				return base.Properties["UrlBehavior"];
-			}
-			set {
-				base.Properties["UrlBehavior"] = value;
-			}
-		}
-		
-		[Browsable(false)]
-		public string RelPath {
-			get {
-				return base.Properties["RelPath"];
-			}
-			set {
-				base.Properties["RelPath"] = value;
-			}
-		}
-		
-		[ReadOnly(true)]
-		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.WebReferenceUrl}", 
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.WebReferenceUrl}",
 		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.WebReferenceUrl.Description}")]
 		public string UpdateFromURL {
 			get {
-				return base.Properties["UpdateFromURL"];
+				return GetEvaluatedMetadata("UpdateFromURL");
 			}
 			set {
-				base.Properties["UpdateFromURL"] = value;
+				SetEvaluatedMetadata("UpdateFromURL", value);
 			}
 		}
 		
 		[Browsable(false)]
 		public string ServiceLocationURL {
 			get {
-				return base.Properties["ServiceLocationURL"];
+				return GetEvaluatedMetadata("ServiceLocationURL");
 			}
 			set {
-				base.Properties["ServiceLocationURL"] = value;
+				SetEvaluatedMetadata("ServiceLocationURL", value);
 			}
 		}
 		
 		[Browsable(false)]
 		public string CachedDynamicPropName {
 			get {
-				return base.Properties["CachedDynamicPropName"];
+				return GetEvaluatedMetadata("CachedDynamicPropName");
 			}
 			set {
-				base.Properties["CachedDynamicPropName"] = value;
+				SetEvaluatedMetadata("CachedDynamicPropName", value);
 			}
 		}
 		
 		[Browsable(false)]
 		public string CachedAppSettingsObjectName {
 			get {
-				return base.Properties["CachedAppSettingsObjectName"];
+				return GetEvaluatedMetadata("CachedAppSettingsObjectName");
 			}
 			set {
-				base.Properties["CachedAppSettingsObjectName"] = value;
+				SetEvaluatedMetadata("CachedAppSettingsObjectName", value);
 			}
 		}
 		
 		[Browsable(false)]
 		public string CachedSettingsPropName {
 			get {
-				return base.Properties["CachedSettingsPropName"];
+				return GetEvaluatedMetadata("CachedSettingsPropName");
 			}
 			set {
-				base.Properties["CachedSettingsPropName"] = value;
+				SetEvaluatedMetadata("CachedSettingsPropName", value);
 			}
 		}
 		
 		[Browsable(false)]
 		public string Namespace {
 			get {
-				string ns = base.Properties["Namespace"];
+				string ns = GetEvaluatedMetadata("Namespace");
 				if (ns.Length > 0) {
 					return ns;
-				} 
+				}
 				return Project.RootNamespace;
 			}
 			set {
-				base.Properties["Namespace"] = value;
+				SetEvaluatedMetadata("Namespace", value);
+			}
+		}
+		
+		[Browsable(false)]
+		public string RelPath {
+			get {
+				return GetEvaluatedMetadata("RelPath");
+			}
+			set {
+				SetEvaluatedMetadata("RelPath", value);
+			}
+		}
+		
+		[ReadOnly(true)]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.UrlBehaviour}",
+		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.UrlBehaviour.Description}")]
+		public string UrlBehavior {
+			get {
+				return GetEvaluatedMetadata("UrlBehavior");
+			}
+			set {
+				SetEvaluatedMetadata("UrlBehavior", value);
 			}
 		}
 		
@@ -124,17 +119,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public WebReferenceUrl(IProject project) : base(project)
+		public WebReferenceUrl(IProject project)
+			: base(project, ItemType.WebReferenceUrl)
 		{
 			UrlBehavior = "Static";
 		}
 		
-		public override ProjectItem Clone()
+		public WebReferenceUrl(IProject project, BuildItem buildItem) : base(project, buildItem)
 		{
-			ProjectItem n = new WebReferenceUrl(this.Project);
-			n.Include = this.Include;
-			this.CopyExtraPropertiesTo(n);
-			return n;
+			UrlBehavior = "Static";
 		}
 	}
 }

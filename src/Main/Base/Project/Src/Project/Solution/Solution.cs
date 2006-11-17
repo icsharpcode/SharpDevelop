@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -13,19 +13,33 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using ICSharpCode.Core;
+using MSBuild = Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public class Solution : SolutionFolder, IDisposable
+	public interface IMSBuildEngineProvider
+	{
+		MSBuild.Engine BuildEngine {
+			get;
+		}
+	}
+	
+	public class Solution : SolutionFolder, IDisposable, IMSBuildEngineProvider
 	{
 		// contains <guid>, (IProject/ISolutionFolder) pairs.
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
 		
 		string fileName = String.Empty;
 		
+		MSBuild.Engine buildEngine = MSBuildInternals.CreateEngine();
+		
 		public Solution()
 		{
 			preferences = new SolutionPreferences(this);
+		}
+		
+		public MSBuild.Engine BuildEngine {
+			get { return buildEngine; }
 		}
 		
 		#region Enumerate projects/folders
@@ -469,7 +483,7 @@ namespace ICSharpCode.SharpDevelop.Project
 							SolutionFolder newFolder = SolutionFolder.ReadFolder(sr, title, location, guid);
 							newSolution.AddFolder(newFolder);
 						} else {
-							IProject newProject = LanguageBindingService.LoadProject(location, title, projectGuid);
+							IProject newProject = LanguageBindingService.LoadProject(newSolution, location, title, projectGuid);
 							ReadProjectSections(sr, newProject.ProjectSections);
 							newProject.IdGuid = guid;
 							newSolution.AddFolder(newProject);
@@ -567,7 +581,7 @@ namespace ICSharpCode.SharpDevelop.Project
 								string platform = location.Substring(pos+1);
 								bool found = false;
 								foreach (IProject p in this.Projects) {
-									if (p.GetPlatformNames().Contains(platform)) {
+									if (p.PlatformNames.Contains(platform)) {
 										found = true;
 										break;
 									}
@@ -652,8 +666,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			         GetActiveConfigurationsAndPlatformsForProjects(preferences.ActiveConfiguration,
 			                                                        preferences.ActivePlatform))
 			{
-				l.Project.Configuration = l.Configuration;
-				l.Project.Platform = l.Platform;
+				l.Project.ActiveConfiguration = l.Configuration;
+				if (l.Platform == "Any CPU") {
+					l.Project.ActivePlatform = "AnyCPU";
+				} else {
+					l.Project.ActivePlatform = l.Platform;
+				}
 			}
 		}
 		
@@ -804,35 +822,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (IProject project in Projects) {
 				project.Dispose();
 			}
+			if (buildEngine != null) {
+				buildEngine.UnloadAllProjects();
+				buildEngine = null;
+			}
 		}
 		#endregion
 		
-		public void RunMSBuild(string target, MSBuildEngineCallback callback,
-		                       IDictionary<string, string> additionalProperties)
+		public void StartBuild(BuildOptions options)
 		{
-			MSBuildProject.RunMSBuild(FileName, target, preferences.ActiveConfiguration,
-			                          preferences.ActivePlatform, false, callback,
-			                          additionalProperties);
-		}
-		
-		public void Build(MSBuildEngineCallback callback)
-		{
-			RunMSBuild(null, callback, null);
-		}
-		
-		public void Rebuild(MSBuildEngineCallback callback)
-		{
-			RunMSBuild("Rebuild", callback, null);
-		}
-		
-		public void Clean(MSBuildEngineCallback callback)
-		{
-			RunMSBuild("Clean", callback, null);
-		}
-		
-		public void Publish(MSBuildEngineCallback callback)
-		{
-			RunMSBuild("Publish", callback, null);
+			MSBuildBasedProject.RunMSBuild(this.FileName, options.Target.TargetName,
+			                               this.Preferences.ActiveConfiguration,
+			                               this.Preferences.ActivePlatform,
+			                               false, options.Callback, options.AdditionalProperties);
 		}
 	}
 }

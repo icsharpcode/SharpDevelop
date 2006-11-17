@@ -35,12 +35,12 @@ namespace WixBinding.Tests.Gui
 			// Add wix library item.
 			firstWixLibraryItem = new WixLibraryProjectItem(wixProject);
 			firstWixLibraryItem.Include = "first.wixlib";
-			wixProject.Items.Add(firstWixLibraryItem);
+			ProjectService.AddProjectItem(wixProject, firstWixLibraryItem);
 			
 			// Add another wix library item.
 			secondWixLibraryItem = new WixLibraryProjectItem(wixProject);
 			secondWixLibraryItem.Include = "second.wixlib";
-			wixProject.Items.Add(secondWixLibraryItem);
+			ProjectService.AddProjectItem(wixProject, secondWixLibraryItem);
 			
 			wixLibraryFolderNode = new WixLibraryFolderNode(wixProject);
 		}

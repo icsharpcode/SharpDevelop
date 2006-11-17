@@ -31,12 +31,12 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		protected ArrayList categories   = new ArrayList();
 		protected Hashtable icons        = new Hashtable();
 		
-		protected bool openCombine;
+		protected bool createNewSolution;
 		
-		public NewProjectDialog(bool openCombine)
+		public NewProjectDialog(bool createNewSolution)
 		{
 			StandardHeader.SetHeaders();
-			this.openCombine = openCombine;
+			this.createNewSolution = createNewSolution;
 			InitializeComponents();
 			
 			InitializeTemplates();
@@ -294,8 +294,11 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				}
 				
 				ProjectCreateInformation cinfo = new ProjectCreateInformation();
+				if (!createNewSolution) {
+					cinfo.Solution = ProjectService.OpenSolution;
+				}
 				
-				cinfo.CombinePath     = ProjectLocation;
+				cinfo.SolutionPath     = ProjectLocation;
 				cinfo.ProjectBasePath = ProjectSolution;
 				
 				cinfo.ProjectName     = name;
@@ -304,8 +307,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				if (NewCombineLocation == null || NewCombineLocation.Length == 0) {
 					return;
 				}
-				if (openCombine) {
-					item.Template.OpenCreatedCombine();
+				if (createNewSolution) {
+					ProjectService.LoadSolutionOrProject(NewCombineLocation);
+					item.Template.RunOpenActions(cinfo);
 				}
 				
 				NewProjectLocation = cinfo.CreatedProjects.Count > 0 ? cinfo.CreatedProjects[0] : "";

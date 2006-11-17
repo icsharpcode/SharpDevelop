@@ -88,13 +88,22 @@ namespace ICSharpCode.SharpDevelop
 			return null;
 		}
 		
-		public static IProject LoadProject(string location, string title)
+		public static IProject LoadProject(IMSBuildEngineProvider provider, string location, string title)
 		{
-			return LoadProject(location, title, "{" + new Guid().ToString() + "}");
+			return LoadProject(provider, location, title, "{" + Guid.Empty.ToString() + "}");
 		}
 		
-		public static IProject LoadProject(string location, string title, string projectTypeGuid)
+		public static IProject LoadProject(IMSBuildEngineProvider provider, string location, string title, string projectTypeGuid)
 		{
+			if (provider == null)
+				throw new ArgumentNullException("provider");
+			if (location == null)
+				throw new ArgumentNullException("location");
+			if (title == null)
+				throw new ArgumentNullException("title");
+			if (projectTypeGuid == null)
+				throw new ArgumentNullException("projectTypeGuid");
+			
 			IProject newProject;
 			if (!File.Exists(location)) {
 				newProject = new MissingProject(location, title);
@@ -103,14 +112,18 @@ namespace ICSharpCode.SharpDevelop
 				ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(location);
 				if (binding != null) {
 					try {
-						newProject = binding.LoadProject(location, title);
+						newProject = binding.LoadProject(provider, location, title);
 					} catch (XmlException ex) {
 						MessageService.ShowError("Error loading " + location + ":\n" + ex.Message);
-						newProject = new UnknownProject(location, title);
+						newProject = new UnknownProject(location, title, ex.Message);
+						newProject.TypeGuid = projectTypeGuid;
+					} catch (Microsoft.Build.BuildEngine.InvalidProjectFileException ex) {
+						MessageService.ShowError("Error loading " + location + ":\n" + ex.Message);
+						newProject = new UnknownProject(location, title, ex.Message);
 						newProject.TypeGuid = projectTypeGuid;
 					} catch (UnauthorizedAccessException ex) {
 						MessageService.ShowError("Error loading " + location + ":\n" + ex.Message);
-						newProject = new UnknownProject(location, title);
+						newProject = new UnknownProject(location, title, ex.Message);
 						newProject.TypeGuid = projectTypeGuid;
 					}
 				} else {

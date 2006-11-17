@@ -9,7 +9,6 @@
 		<Category>C#</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>C#.Project.DOSProject</Icon>
-		<LanguageName>C#</LanguageName>
 		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -19,21 +18,14 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
-		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options/>
-
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.Xml" />
-			</ProjectItems>
-			<Files>
-				<File name="Main.cs"><![CDATA[${StandardHeader.C#}
+	<Project language = "C#">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
+		<Files>
+			<File name="Main.cs"><![CDATA[${StandardHeader.C#}
 using System;
 using System.Collections.Generic;
 
@@ -48,7 +40,6 @@ namespace ${StandardNamespace}
 	}
 }]]></File>
 			<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
-			</Files>
-		</Project>
-	</Combine>
+		</Files>
+	</Project>
 </Template>

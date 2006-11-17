@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void StartBuild()
 		{
 			ProjectService.RaiseEventStartBuild();
-			ProjectService.OpenSolution.Build(CallbackMethod);
+			ProjectService.OpenSolution.StartBuild(new BuildOptions(BuildTarget.Build, CallbackMethod));
 		}
 		
 		public override void AfterBuild()
@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void StartBuild()
 		{
 			ProjectService.RaiseEventStartBuild();
-			ProjectService.OpenSolution.Rebuild(CallbackMethod);
+			ProjectService.OpenSolution.StartBuild(new BuildOptions(BuildTarget.Rebuild, CallbackMethod));
 		}
 		
 		public override void AfterBuild()
@@ -97,15 +97,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void StartBuild()
 		{
-			ProjectService.OpenSolution.Clean(CallbackMethod);
-		}
-	}
-	
-	public sealed class Publish : AbstractBuildMenuCommand
-	{
-		public override void StartBuild()
-		{
-			ProjectService.OpenSolution.Publish(CallbackMethod);
+			ProjectService.OpenSolution.StartBuild(new BuildOptions(BuildTarget.Clean, CallbackMethod));
 		}
 	}
 	
@@ -145,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void StartBuild()
 		{
 			ProjectService.RaiseEventStartBuild();
-			this.ProjectToBuild.Build(CallbackMethod, AdditionalProperties);
+			this.ProjectToBuild.StartBuild(new BuildOptions(BuildTarget.Build, CallbackMethod, AdditionalProperties));
 		}
 		
 		public override void AfterBuild()
@@ -162,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void StartBuild()
 		{
 			ProjectService.RaiseEventStartBuild();
-			this.ProjectToBuild.Rebuild(CallbackMethod, AdditionalProperties);
+			this.ProjectToBuild.StartBuild(new BuildOptions(BuildTarget.Rebuild, CallbackMethod, AdditionalProperties));
 		}
 	}
 	
@@ -170,15 +162,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void StartBuild()
 		{
-			this.ProjectToBuild.Clean(CallbackMethod, null);
-		}
-	}
-	
-	public class PublishProject : AbstractProjectBuildMenuCommand
-	{
-		public override void StartBuild()
-		{
-			this.ProjectToBuild.Publish(CallbackMethod, null);
+			this.ProjectToBuild.StartBuild(new BuildOptions(BuildTarget.Clean, CallbackMethod, null));
 		}
 	}
 	
@@ -204,6 +188,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			ToolStripMenuItem item = (ToolStripMenuItem)sender;
 			ProjectService.OpenSolution.Preferences.ActiveConfiguration = item.Text;
 			ProjectService.OpenSolution.ApplySolutionConfigurationAndPlatformToProjects();
+			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 		}
 	}
 	
@@ -215,6 +200,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				sce.ShowDialog();
 				ProjectService.OpenSolution.Save();
 				ProjectService.OpenSolution.ApplySolutionConfigurationAndPlatformToProjects();
+				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 			}
 		}
 	}

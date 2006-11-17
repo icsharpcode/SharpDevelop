@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual IDomProject Project {
+		public virtual object Project {
 			get {
 				return null;
 			}

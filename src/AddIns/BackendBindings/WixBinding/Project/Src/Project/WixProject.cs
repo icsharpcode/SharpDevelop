@@ -13,6 +13,7 @@ using System.IO;
 
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.WixBinding
 {
@@ -25,25 +26,32 @@ namespace ICSharpCode.WixBinding
 		library
 	}
 	
-	public class WixProject : MSBuildProject, IWixPropertyValueProvider
+	public class WixProject : CompilableProject, IWixPropertyValueProvider
 	{
 		public const string DefaultTargetsFile = @"$(WixMSBuildExtensionsPath)\wix.targets";
 		public const string FileNameExtension = ".wixproj";
 		
 		delegate bool IsFileNameMatch(string fileName);
 		
-		public WixProject(string fileName, string projectName)
+		public WixProject(IMSBuildEngineProvider provider, string fileName, string projectName)
+			: base(provider)
 		{
 			Name = projectName;
-			Language = WixLanguageBinding.LanguageName;
-			SetupProject(fileName);
-			IdGuid = BaseConfiguration["ProjectGuid"];
+			LoadProject(fileName);
 		}
 		
 		public WixProject(ProjectCreateInformation info)
+			: base(info.Solution)
 		{
-			Language = WixLanguageBinding.LanguageName;
 			Create(info);
+		}
+		
+		public override string Language {
+			get { return WixLanguageBinding.LanguageName; }
+		}
+		
+		public override ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
+			get { return ICSharpCode.SharpDevelop.Dom.LanguageProperties.None; }
 		}
 		
 		public override void Start(bool withDebugging)
@@ -72,7 +80,7 @@ namespace ICSharpCode.WixBinding
 					return ".msm";
 				case "library":
 					return ".wixlib";
- 				default:
+				default:
 					return ".msi";
 			}
 		}
@@ -80,19 +88,19 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// Adds the ability to creates Wix Library and Wix Object project items.
 		/// </summary>
-		public override ProjectItem CreateProjectItem(string itemType)
+		public override ProjectItem CreateProjectItem(BuildItem item)
 		{
-			switch (itemType) {
-				case "WixLibrary":
-					return new WixLibraryProjectItem(this);
-				case "CompileExtension":
-					return new WixCompilerExtensionProjectItem(this);
-				case "LibExtension":
-					return new WixLibraryExtensionProjectItem(this);
-				case "LinkExtension":
-					return new WixLinkerExtensionProjectItem(this);
+			switch (item.Name) {
+				case WixItemType.LibraryName:
+					return new WixLibraryProjectItem(this, item);
+				case WixItemType.CompileExtensionName:
+					return new WixCompilerExtensionProjectItem(this, item);
+				case WixItemType.LibExtensionName:
+					return new WixLibraryExtensionProjectItem(this, item);
+				case WixItemType.LinkExtensionName:
+					return new WixLinkerExtensionProjectItem(this, item);
 				default:
-					return ProjectItemFactory.CreateProjectItem(this, itemType);
+					return base.CreateProjectItem(item);
 			}
 		}
 		
@@ -102,9 +110,9 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public string InstallerFullPath {
 			get {
-				string outputPath = GetProperty("OutputPath");
-				string outputType = GetProperty("OutputType");
-				string outputName = GetProperty("OutputName");
+				string outputPath = GetProperty("OutputPath") ?? "";
+				string outputType = GetProperty("OutputType") ?? "";
+				string outputName = GetProperty("OutputName") ?? "";
 				string fileName = String.Concat(outputName, GetInstallerExtension(outputType));
 				return Path.Combine(Path.Combine(Directory, outputPath), fileName);
 			}
@@ -119,7 +127,7 @@ namespace ICSharpCode.WixBinding
 				AddWixLibrary(fileName);
 			}
 		}
-				
+		
 		/// <summary>
 		/// Adds a Wix library (.wixlib) to the project.
 		/// </summary>
@@ -131,7 +139,7 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Returns the file project items that are Wix documents based on 
+		/// Returns the file project items that are Wix documents based on
 		/// their filename.
 		/// </summary>
 		public ReadOnlyCollection<FileProjectItem> WixFiles {
@@ -186,7 +194,7 @@ namespace ICSharpCode.WixBinding
 		/// <returns>An empty string if the name cannot be found.</returns>
 		public string GetVariable(string name)
 		{
-			NameValuePairCollection nameValuePairs = new NameValuePairCollection(BaseConfiguration["DefineConstants"]);
+			NameValuePairCollection nameValuePairs = new NameValuePairCollection(GetProperty("DefineConstants"));
 			return WixPropertyParser.Parse(nameValuePairs.GetValue(name), this);
 		}
 		
@@ -207,11 +215,15 @@ namespace ICSharpCode.WixBinding
 		/// Wix project.
 		/// </summary>
 		/// <returns>
-		/// <see langword="true"/> if the file is a WiX source file (.wxs)
-		/// or a WiX include file (.wxi).</returns>
-		public override bool CanCompile(string fileName)
+		/// <c>Compile</c> if the file is a WiX source file (.wxs)
+		/// or a WiX include file (.wxi), otherwise the default implementation
+		/// in MSBuildBasedProject is called.</returns>
+		public override ItemType GetDefaultItemType(string fileName)
 		{
-			return WixDocument.IsWixFileName(fileName);
+			if (WixDocument.IsWixFileName(fileName))
+				return ItemType.Compile;
+			else
+				return base.GetDefaultItemType(fileName);
 		}
 		
 		/// <summary>
@@ -219,31 +231,24 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		protected override void Create(ProjectCreateInformation information)
 		{
-			Name = information.ProjectName;
-			IdGuid = String.Concat("{", Guid.NewGuid().ToString().ToUpperInvariant(), "}");
-			BaseConfiguration["OutputName"] = Name;
-			BaseConfiguration["OutputType"] = "package";
+			base.Create(information);
+			
+			SetProperty("OutputType", "package");
+			
 			string wixToolPath = @"$(SharpDevelopBinPath)\Tools\Wix";
-			BaseConfiguration["WixToolPath"] = wixToolPath;
-			BaseConfiguration.SetIsGuarded("WixToolPath", true);
-			BaseConfiguration["ToolPath"] = "$(WixToolPath)";
-			BaseConfiguration.SetIsGuarded("ToolPath", true);
-			BaseConfiguration["WixMSBuildExtensionsPath"] = wixToolPath;
-			BaseConfiguration["Configuration"] = "Debug";
-			BaseConfiguration.SetIsGuarded("Configuration", true);
+			AddGuardedProperty("WixToolPath", wixToolPath, false);
+			AddGuardedProperty("ToolPath", "$(WixToolPath)", false);
+			AddGuardedProperty("WixMSBuildExtensionsPath", wixToolPath, false);
 			
-			configurations["Debug|*"] = new PropertyGroup();
-			configurations["Debug|*"]["BaseOutputPath"] = @"obj\";
-			configurations["Debug|*"]["IntermediateOutputPath"] = @"obj\Debug\";
-			configurations["Debug|*"]["OutputPath"] = @"bin\Debug\";
-			
-			configurations["Release|*"] = new PropertyGroup();
-			configurations["Release|*"]["BaseOutputPath"] = @"obj\";
-			configurations["Release|*"]["IntermediateOutputPath"] = @"obj\Release\";
-			configurations["Release|*"]["OutputPath"] = @"bin\Release\";
-
-			FileName = Path.GetFullPath(information.OutputProjectFileName);
-			this.Imports.Add(new MSBuildImport(DefaultTargetsFile));
+			this.MSBuildProject.AddNewImport(DefaultTargetsFile, null);
+		}
+		
+		/// <summary>
+		/// AssemblyName must be implemented correctly - used when renaming projects.
+		/// </summary>
+		public override string AssemblyName {
+			get { return GetProperty("OutputName") ?? Name; }
+			set { SetProperty("OutputName", value); }
 		}
 		
 		/// <summary>

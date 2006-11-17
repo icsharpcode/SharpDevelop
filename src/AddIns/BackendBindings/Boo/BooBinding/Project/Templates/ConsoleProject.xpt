@@ -4,7 +4,6 @@
 		<Name>${res:Templates.Project.ConsoleProject.Name}</Name>
 		<Category>Boo</Category>
 		<Icon>Boo.Project.EmptyProject</Icon>
-		<LanguageName>Boo</LanguageName>
 		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -14,27 +13,25 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options/>
+	<Project language="Boo">
+		<PropertyGroup>
+			<OutputType>Exe</OutputType>
+		</PropertyGroup>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options/>
-			
-			<ProjectItems>
-				<Reference Include="System.Data" />
-				<Reference Include="System.Xml" />
-				<Reference Include="Boo.Lang.Useful" />
-			</ProjectItems>
-			
-			<Files>
-				<File name="Program.boo"><![CDATA[namespace ${StandardNamespace}
+		<ProjectItems>
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+			<Reference Include="Boo.Lang.Useful" />
+		</ProjectItems>
+		
+		<Files>
+			<File name="Program.boo"><![CDATA[namespace ${StandardNamespace}
 
 import System
 import System.Collections
 
 print "Hello, World!"
 ]]></File>
-			</Files>
-		</Project>
-	</Combine>
+		</Files>
+	</Project>
 </Template>

@@ -9,7 +9,6 @@
         <Category>C#</Category>
         <Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
         <Icon>C#.Project.Form</Icon>
-        <LanguageName>C#</LanguageName>
         <Description>${res:Templates.Project.SysTrayIcon.Description}</Description>
     </TemplateConfiguration>
     
@@ -18,24 +17,21 @@
         <Open filename = "SysTrayIcon.cs"/>
     </Actions>
     
-    <Combine name = "${ProjectName}" directory = ".">
-        <Options>
-            <StartupProject>${ProjectName}</StartupProject>
-        </Options>
+    <Project language="C#">
+        <ProjectItems>
+            <Reference Include="System" />
+            <Reference Include="System.Data" />
+            <Reference Include="System.Drawing" />
+            <Reference Include="System.Windows.Forms" />
+            <Reference Include="System.Xml" />
+        </ProjectItems>
         
-        <Project name = "${ProjectName}" directory = ".">
-            <Options OutputType = "WinExe" />
-
-            <ProjectItems>
-                <Reference Include="System" />
-                <Reference Include="System.Data" />
-                <Reference Include="System.Drawing" />
-                <Reference Include="System.Windows.Forms" />
-                <Reference Include="System.Xml" />
-            </ProjectItems>
-            
-            <Files>
-        <File name="SysTrayIcon.cs" language="C#"><![CDATA[${StandardHeader.C#}
+        <PropertyGroup>
+            <OutputType>WinExe</OutputType>
+        </PropertyGroup>
+        
+        <Files>
+            <File name="SysTrayIcon.cs" language="C#"><![CDATA[${StandardHeader.C#}
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -116,9 +112,8 @@ namespace ${StandardNamespace}
 }
 ]]>
 </File>
-        <File name="SysTrayIcon.resx" src="NotifyIconResources.resx" buildAction="EmbeddedResource" dependentUpon="SysTrayIcon.cs" />
-        <File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
-            </Files>
-        </Project>
-    </Combine>
+            <File name="SysTrayIcon.resx" src="NotifyIconResources.resx" buildAction="EmbeddedResource" DependentUpon="SysTrayIcon.cs" />
+            <File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
+        </Files>
+    </Project>
 </Template>

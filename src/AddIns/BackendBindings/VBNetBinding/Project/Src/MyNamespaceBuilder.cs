@@ -17,7 +17,7 @@ namespace VBNetBinding
 		/// <summary>
 		/// Builds Visual Basic's "My" namespace for the specified project.
 		/// </summary>
-		public static void BuildNamespace(IProject project, IProjectContent pc)
+		public static void BuildNamespace(VBNetProject project, IProjectContent pc)
 		{
 			ICompilationUnit cu = new DefaultCompilationUnit(pc);
 			//cu.FileName = "GeneratedMyNamespace.vb"; // leave FileName null - fixes SD2-854
@@ -66,7 +66,7 @@ namespace VBNetBinding
 			pc.UpdateCompilationUnit(null, cu, cu.FileName);
 		}
 		
-		static IClass CreateMyApplication(ICompilationUnit cu, IProject project, string ns)
+		static IClass CreateMyApplication(ICompilationUnit cu, VBNetProject project, string ns)
 		{
 			DefaultClass c = new DefaultClass(cu, ns + ".MyApplication");
 			c.ClassType = ClassType.Class;

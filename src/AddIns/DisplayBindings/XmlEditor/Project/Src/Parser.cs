@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -57,7 +58,7 @@ namespace ICSharpCode.XmlEditor
 			return compilationUnit;
 		}
 		
-		public bool CanParse(IDomProject project)
+		public bool CanParse(IProject project)
 		{
 			return false;
 		}

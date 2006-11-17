@@ -59,7 +59,7 @@ namespace ICSharpCode.NAntAddIn.Commands
 				
 				IProject project = ProjectService.CurrentProject;
 				if (project != null) {
-					if (String.Compare(project.Configuration, "debug", true) == 0) {
+					if (String.Compare(project.ActiveConfiguration, "debug", true) == 0) {
 						isDebug = true;
 					}
 				}

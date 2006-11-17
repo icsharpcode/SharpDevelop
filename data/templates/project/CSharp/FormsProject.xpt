@@ -9,7 +9,6 @@
 		<Category>C#</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>C#.Project.Form</Icon>
-		<LanguageName>C#</LanguageName>
 		<Description>${res:Templates.Project.WindowsApplication.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -18,23 +17,20 @@
 		<Open filename = "MainForm.cs"/>
 	</Actions>
 	
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language = "C#">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "WinExe" />
-
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.Drawing" />
-				<Reference Include="System.Windows.Forms" />
-				<Reference Include="System.Xml" />
-			</ProjectItems>
-			
-			<Files>
+		<PropertyGroup>
+			<OutputType>WinExe</OutputType>
+		</PropertyGroup>
+		
+		<Files>
 		<File name="MainForm.cs" language="C#"><![CDATA[${StandardHeader.C#}
 
 using System;
@@ -71,7 +67,7 @@ namespace ${StandardNamespace}
 	}
 }
 ]]></File>
-<File name="MainForm.Designer.cs" dependentUpon="MainForm.cs" language="C#"><![CDATA[${StandardHeader.C#}
+<File name="MainForm.Designer.cs" DependentUpon="MainForm.cs" language="C#"><![CDATA[${StandardHeader.C#}
 namespace ${StandardNamespace}
 {
 	partial class MainForm : System.Windows.Forms.Form
@@ -113,7 +109,6 @@ namespace ${StandardNamespace}
 }
 ]]></File>
 		<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
-			</Files>
-		</Project>
-	</Combine>
+		</Files>
+	</Project>
 </Template>

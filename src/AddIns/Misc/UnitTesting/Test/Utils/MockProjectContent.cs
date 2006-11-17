@@ -14,9 +14,9 @@ namespace UnitTesting.Tests.Utils
 {
 	public class MockProjectContent : IProjectContent
 	{
-		IDomProject project;
 		LanguageProperties language;
 		List<IClass> classes = new List<IClass>();
+		object project;
 		
 		public MockProjectContent()
 		{
@@ -63,7 +63,7 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
-		public IDomProject Project {
+		public object Project {
 			get {
 				return project;
 			}

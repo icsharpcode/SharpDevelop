@@ -38,10 +38,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		protected virtual void CopyProperties(IProject sourceProject, IProject targetProject)
 		{
-			AbstractProject sp = sourceProject as AbstractProject;
-			AbstractProject tp = targetProject as AbstractProject;
+			MSBuildBasedProject sp = sourceProject as MSBuildBasedProject;
+			MSBuildBasedProject tp = targetProject as MSBuildBasedProject;
 			if (sp != null && tp != null) {
-				tp.Configurations.Clear();
+				// TODO: Language converter
+				/*tp.Configurations.Clear();
 				tp.UserConfigurations.Clear();
 				foreach (KeyValuePair<string, PropertyGroup> pair in sp.Configurations) {
 					tp.Configurations.Add(pair.Key, pair.Value.Clone());
@@ -50,16 +51,18 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 					tp.UserConfigurations.Add(pair.Key, pair.Value.Clone());
 				}
 				tp.BaseConfiguration.Merge(sp.BaseConfiguration);
-				tp.UserBaseConfiguration.Merge(sp.UserBaseConfiguration);
+				tp.UserBaseConfiguration.Merge(sp.UserBaseConfiguration);*/
 			}
 		}
 		
 		/// <summary>
 		/// Changes a property in the <paramref name="project"/> by applying a method to its value.
 		/// </summary>
-		protected void FixProperty(AbstractProject project, string propertyName, Converter<string, string> method)
+		protected void FixProperty(MSBuildBasedProject project, string propertyName, Converter<string, string> method)
 		{
-			if (project.BaseConfiguration.IsSet(propertyName))
+			// TODO: Language converter
+			
+			/*if (project.BaseConfiguration.IsSet(propertyName))
 				project.BaseConfiguration[propertyName] = method(project.BaseConfiguration[propertyName]);
 			if (project.UserBaseConfiguration.IsSet(propertyName))
 				project.UserBaseConfiguration[propertyName] = method(project.UserBaseConfiguration[propertyName]);
@@ -70,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			foreach (PropertyGroup pg in project.UserConfigurations.Values) {
 				if (pg.IsSet(propertyName))
 					pg[propertyName] = method(pg[propertyName]);
-			}
+			}*/
 		}
 		
 		protected virtual void FixExtensionOfExtraProperties(FileProjectItem item, string sourceExtension, string targetExtension)
@@ -78,25 +81,33 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			sourceExtension = sourceExtension.ToLowerInvariant();
 			
 			List<KeyValuePair<string, string>> replacements = new List<KeyValuePair<string, string>>();
-			foreach (KeyValuePair<string, string> pair in item.Properties) {
-				if ("Include".Equals(pair.Key, StringComparison.OrdinalIgnoreCase))
+			foreach (string metadataName in item.MetadataNames) {
+				if ("Include".Equals(metadataName, StringComparison.OrdinalIgnoreCase))
 					continue;
-				if (pair.Value.ToLowerInvariant().EndsWith(sourceExtension)) {
-					replacements.Add(pair);
+				string value = item.GetMetadata(metadataName);
+				if (value.ToLowerInvariant().EndsWith(sourceExtension)) {
+					replacements.Add(new KeyValuePair<string, string>(metadataName, value));
 				}
 			}
 			foreach (KeyValuePair<string, string> pair in replacements) {
-				item.Properties[pair.Key] = Path.ChangeExtension(pair.Value, targetExtension);
+				item.SetMetadata(pair.Key, Path.ChangeExtension(pair.Value, targetExtension));
 			}
 		}
 		
 		protected virtual void CopyItems(IProject sourceProject, IProject targetProject)
 		{
+			if (sourceProject == null)
+				throw new ArgumentNullException("sourceProject");
+			if (targetProject == null)
+				throw new ArgumentNullException("targetProject");
+			IProjectItemListProvider targetProjectItems = targetProject as IProjectItemListProvider;
+			if (targetProjectItems == null)
+				throw new ArgumentNullException("targetProjectItems");
 			foreach (ProjectItem item in sourceProject.Items) {
 				FileProjectItem fileItem = item as FileProjectItem;
 				if (fileItem != null && FileUtility.IsBaseDirectory(sourceProject.Directory, fileItem.FileName)) {
 					FileProjectItem targetItem = new FileProjectItem(targetProject, fileItem.ItemType);
-					fileItem.CopyExtraPropertiesTo(targetItem);
+					fileItem.CopyMetadataTo(targetItem);
 					targetItem.Include = fileItem.Include;
 					if (File.Exists(fileItem.FileName)) {
 						if (!Directory.Exists(Path.GetDirectoryName(targetItem.FileName))) {
@@ -104,11 +115,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 						}
 						ConvertFile(fileItem, targetItem);
 					}
-					targetProject.Items.Add(targetItem);
+					targetProjectItems.AddProjectItem(targetItem);
 				} else {
 					// Adding the same item to two projects is only allowed because we will save and reload
 					// the target project.
-					targetProject.Items.Add(item);
+					targetProjectItems.AddProjectItem(item);
 				}
 			}
 		}
@@ -123,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			conversionLog.Append('=', translatedTitle.Length);
 			conversionLog.AppendLine();
 			conversionLog.AppendLine();
-			IProject sourceProject = ProjectService.CurrentProject;
+			MSBuildBasedProject sourceProject = ProjectService.CurrentProject as MSBuildBasedProject;
 			string targetProjectDirectory = sourceProject.Directory + ".ConvertedTo" + TargetLanguageName;
 			if (Directory.Exists(targetProjectDirectory)) {
 				MessageService.ShowMessageFormatted(translatedTitle, "${res:ICSharpCode.SharpDevelop.Commands.Convert.TargetAlreadyExists}", targetProjectDirectory);

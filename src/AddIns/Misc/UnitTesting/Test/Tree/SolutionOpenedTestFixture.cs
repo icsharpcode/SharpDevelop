@@ -24,19 +24,19 @@ namespace UnitTesting.Tests.Tree
 	public class SolutionOpenedTestFixture : UnitTestsPad
 	{
 		Solution solution;
-		MSBuildProject project;
+		MSBuildBasedProject project;
 		MockProjectContent projectContent = new MockProjectContent();
 		
 		[SetUp]
 		public void Init()
 		{
 			solution = new Solution();
-			project = new MSBuildProject();
+			project = new MockCSharpProject();
 			projectContent.Project = project;
 			projectContent.Language = LanguageProperties.None;
 			ReferenceProjectItem refProjectItem = new ReferenceProjectItem(project);
 			refProjectItem.Include = "NUnit.Framework";
-			project.Items.Add(refProjectItem);
+			ProjectService.AddProjectItem(project, refProjectItem);
 			solution.Folders.Add(project);
 			
 			base.SolutionLoaded(solution);
@@ -67,11 +67,11 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void ProjectAdded()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			project.Name = "NewProject";
 			ReferenceProjectItem refProjectItem = new ReferenceProjectItem(project);
 			refProjectItem.Include = "NUnit.Framework";
-			project.Items.Add(refProjectItem);
+			ProjectService.AddProjectItem(project, refProjectItem);
 			
 			base.ProjectAdded(project);
 			
@@ -82,7 +82,7 @@ namespace UnitTesting.Tests.Tree
 		public void ReferenceProjectItemRemoved()
 		{
 			ProjectItem refProjectItem = project.Items[0];
-			project.Items.Remove(refProjectItem);
+			ProjectService.RemoveProjectItem(project, refProjectItem);
 			
 			base.ProjectItemRemoved(refProjectItem);
 			
@@ -92,7 +92,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void ReferenceProjectItemAdded()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			project.Name = "NewProject";
 			
 			base.ProjectAdded(project);
@@ -102,7 +102,7 @@ namespace UnitTesting.Tests.Tree
 			
 			ReferenceProjectItem refProjectItem = new ReferenceProjectItem(project);
 			refProjectItem.Include = "NUnit.Framework";
-			project.Items.Add(refProjectItem);
+			ProjectService.AddProjectItem(project, refProjectItem);
 			
 			base.ProjectItemAdded(refProjectItem);
 			
@@ -114,15 +114,18 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void ReferenceProjectItemAddedTwice()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			project.Name = "NewProject";
 			ReferenceProjectItem refProjectItem = new ReferenceProjectItem(project);
 			refProjectItem.Include = "NUnit.Framework";
-			project.Items.Add(refProjectItem);
+			ProjectService.AddProjectItem(project, refProjectItem);
 			
 			base.ProjectAdded(project);
 			
-			project.Items.Add(refProjectItem);
+			// DG: This call fails now - the same ProjectItem cannot be added twice.
+			// Did you intend to add another reference to NUnit.Framework?
+			// Then add
+			ProjectService.AddProjectItem(project, refProjectItem);
 			
 			base.ProjectItemAdded(refProjectItem);
 
@@ -160,7 +163,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void GetTestProjectFromUnknownProject()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			Assert.IsNull(base.TestTreeView.GetTestProject(project));
 		}
 		
@@ -182,7 +185,7 @@ namespace UnitTesting.Tests.Tree
 			projectNode.TestProject.TestClasses.Add(testClass);
 			
 			Assert.AreEqual(1, projectNode.Nodes.Count,
-				"Project node should have one child node.");
+			                "Project node should have one child node.");
 		}
 		
 		/// <summary>
@@ -220,13 +223,13 @@ namespace UnitTesting.Tests.Tree
 			}
 			
 			Assert.AreEqual(2, parentNamespaceNode.Nodes.Count,
-				"Namespace node should have two child nodes.");
+			                "Namespace node should have two child nodes.");
 			Assert.IsNotNull(namespaceNode, "Namespace node has not been added");
 			Assert.AreEqual("Tests", namespaceNode.Text);
 		}
 		
 		/// <summary>
-		/// Adds a new test class in the non-existant namespace 
+		/// Adds a new test class in the non-existant namespace
 		/// RootNamepace.Tests, expands both these namespace tree nodes
 		/// and then removes the test class from the TestProject.TestClasses
 		/// collection. The test then checks that the two namespace
@@ -259,10 +262,10 @@ namespace UnitTesting.Tests.Tree
 			// Remove the test class from the test project.
 			projectNode.TestProject.TestClasses.Remove(testClass);
 			
-			Assert.AreEqual(0, projectNode.Nodes.Count, 
-				"Namespace nodes should have been removed from project node.");
-		
-			// Make sure the two namespace nodes are properly disposed.			
+			Assert.AreEqual(0, projectNode.Nodes.Count,
+			                "Namespace nodes should have been removed from project node.");
+			
+			// Make sure the two namespace nodes are properly disposed.
 			Assert.IsTrue(testsNamespaceNode.IsDisposed);
 			Assert.IsTrue(rootNamespaceNode.IsDisposed);
 			
@@ -277,8 +280,8 @@ namespace UnitTesting.Tests.Tree
 		}
 		
 		/// <summary>
-		/// SD2-1203. The namespace tree nodes were not removing 
-		/// themselves when they were empty if they were not expanded 
+		/// SD2-1203. The namespace tree nodes were not removing
+		/// themselves when they were empty if they were not expanded
 		/// first. This test makes sure this problem  is fixed.
 		/// </summary>
 		[Test]
@@ -296,19 +299,19 @@ namespace UnitTesting.Tests.Tree
 			
 			// Get the root namespace node.
 			TestNamespaceTreeNode rootNamespaceNode = (TestNamespaceTreeNode)projectNode.Nodes[0];
-		
+			
 			// Check that the rootNamespaceNode does not consider itself
 			// empty.
 			Assert.IsFalse(rootNamespaceNode.IsEmpty);
 			
 			// Expand RootNamespace tree node.
 			rootNamespaceNode.Expanding();
-	
+			
 			// Remove the test class from the test project.
 			projectNode.TestProject.TestClasses.Remove(testClass);
 			
-			Assert.AreEqual(0, projectNode.Nodes.Count, 
-				"Namespace nodes should have been removed from project node.");	
+			Assert.AreEqual(0, projectNode.Nodes.Count,
+			                "Namespace nodes should have been removed from project node.");
 		}
 		
 		/// <summary>

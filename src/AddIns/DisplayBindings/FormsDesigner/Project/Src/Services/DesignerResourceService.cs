@@ -255,10 +255,10 @@ namespace ICSharpCode.FormsDesigner.Services
 			string sourceFileName = null;
 			if (project != null && formFileName != null) {
 				// Try to find the source file name by using the project dependencies first.
-				FileProjectItem sourceItem = project.Items.Find(delegate(ProjectItem item) {
-				                                                	FileProjectItem fpi = item as FileProjectItem;
-				                                                	return fpi != null && fpi.FileName != null && FileUtility.IsEqualFileName(fpi.FileName, formFileName);
-				                                                }) as FileProjectItem;
+				FileProjectItem sourceItem = Linq.Find(project.Items, delegate(ProjectItem item) {
+				                                       	FileProjectItem fpi = item as FileProjectItem;
+				                                       	return fpi != null && fpi.FileName != null && FileUtility.IsEqualFileName(fpi.FileName, formFileName);
+				                                       }) as FileProjectItem;
 				if (sourceItem != null && sourceItem.DependentUpon != null && sourceItem.DependentUpon.Length > 0) {
 					sourceFileName = Path.GetFileNameWithoutExtension(sourceItem.DependentUpon);
 				}

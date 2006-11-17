@@ -162,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			[System.Runtime.InteropServices.DllImport("user32.dll")]
 			static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 			
-			[System.Runtime.InteropServices.DllImport("user32.DLL")]
+			[System.Runtime.InteropServices.DllImport("user32.dll")]
 			static extern IntPtr SetForegroundWindow(IntPtr hWnd);
 			
 			public static bool OpenFilesInPreviousInstance(string[] fileList)

@@ -77,7 +77,7 @@ namespace WixBinding.Tests.Gui
 		WixProject IWixDialogDesigner.Project {
 			get {
 				WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
-				project.BaseConfiguration["DefineConstants"] = "DATADIR=Bitmaps";
+				project.SetProperty("DefineConstants", "DATADIR=Bitmaps");
 				return project;
 			}
 		}

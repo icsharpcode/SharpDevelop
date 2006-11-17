@@ -17,8 +17,6 @@ using Microsoft.Build.Framework;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public delegate void MSBuildEngineCallback(BuildResults results);
-	
 	/// <summary>
 	/// Class responsible for building a project using MSBuild.
 	/// Is called by MSBuildProject.
@@ -190,14 +188,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public void Run(string buildFile, MSBuildEngineCallback callback)
+		public void Run(string buildFile, BuildCallback callback)
 		{
 			Run(buildFile, null, callback);
 		}
 		
 		volatile static bool isRunning = false;
 		
-		public void Run(string buildFile, string[] targets, MSBuildEngineCallback callback)
+		public void Run(string buildFile, string[] targets, BuildCallback callback)
 		{
 			if (isRunning) {
 				BuildResults results = new BuildResults();
@@ -218,9 +216,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			string buildFile;
 			string[] targets;
 			MSBuildEngine engine;
-			MSBuildEngineCallback callback;
+			BuildCallback callback;
 			
-			public ThreadStarter(string buildFile, string[] targets, MSBuildEngine engine, MSBuildEngineCallback callback)
+			public ThreadStarter(string buildFile, string[] targets, MSBuildEngine engine, BuildCallback callback)
 			{
 				engine.currentResults = new BuildResults();
 				this.buildFile = buildFile;
@@ -235,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				BuildResults results = this.engine.currentResults;
 				LoggingService.Debug("Run MSBuild on " + buildFile);
 				
-				Engine engine = new Engine(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
+				Engine engine = MSBuildInternals.CreateEngine();
 				if (this.engine.Configuration != null) {
 					engine.GlobalProperties.SetProperty("Configuration", this.engine.Configuration);
 				}

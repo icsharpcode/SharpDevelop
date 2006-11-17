@@ -12,28 +12,14 @@ namespace ICSharpCode.WixBinding
 {
 	public class WixLibraryProjectItem : ProjectItem
 	{
-		public WixLibraryProjectItem(IProject project) : base(project)
+		public WixLibraryProjectItem(IProject project)
+			: base(project, WixItemType.Library)
 		{
 		}
 		
-		public override ProjectItem Clone()
+		public WixLibraryProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem item)
+			: base(project, item)
 		{
-			ProjectItem n = new WixLibraryProjectItem(Project);
-			n.Include = Include;
-			this.CopyExtraPropertiesTo(n);
-			return n;
-		}
-		
-		public override ItemType ItemType {
-			get {
-				return ItemType.None;
-			}
-		}
-		
-		public override string Tag {
-			get {
-				return "WixLibrary";
-			}
 		}
 	}
 }

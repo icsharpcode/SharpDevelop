@@ -22,18 +22,14 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
-		public IProject LoadProject(string fileName, string projectName)
+		public IProject LoadProject(IMSBuildEngineProvider provider, string fileName, string projectName)
 		{
-			return new WixProject(fileName, projectName);
+			return new WixProject(provider, fileName, projectName);
 		}
 		
-		public IProject CreateProject(ProjectCreateInformation info, XmlElement projectOptions)
+		public IProject CreateProject(ProjectCreateInformation info)
 		{
-			WixProject p = new WixProject(info);
-			if (projectOptions != null) {
-				p.ImportOptions(projectOptions.Attributes);
-			}
-			return p;
+			return new WixProject(info);
 		}
 	}
 }

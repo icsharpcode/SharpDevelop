@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -13,12 +13,6 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class ProjectReferenceProjectItem : ReferenceProjectItem
 	{
-		public override ItemType ItemType {
-			get {
-				return ItemType.ProjectReference;
-			}
-		}
-		
 		IProject referencedProject;
 		
 		[Browsable(false)]
@@ -33,40 +27,35 @@ namespace ICSharpCode.SharpDevelop.Project
 		[ReadOnly(true)]
 		public string ProjectGuid {
 			get {
-				return Properties["Project"];
+				return GetEvaluatedMetadata("Project");
 			}
 			set {
-				Properties["Project"] = value;
+				SetEvaluatedMetadata("Project", value);
 			}
 		}
 		
 		[ReadOnly(true)]
 		public string ProjectName {
 			get {
-				return Properties["Name"];
+				return GetEvaluatedMetadata("Name");
 			}
 			set {
-				Properties["Name"] = value;
+				SetEvaluatedMetadata("Name", value);
 			}
 		}
 		
-		public ProjectReferenceProjectItem(IProject project) : base(project)
+		internal ProjectReferenceProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem buildItem)
+			: base(project, buildItem)
 		{
 		}
 		
-		public ProjectReferenceProjectItem(IProject project, IProject referenceTo) : base(project)
+		public ProjectReferenceProjectItem(IProject project, IProject referenceTo)
+			: base(project, ItemType.ProjectReference)
 		{
-			Include     = FileUtility.GetRelativePath(project.Directory, referenceTo.FileName);
+			this.Include = FileUtility.GetRelativePath(project.Directory, referenceTo.FileName);
 			ProjectGuid = referenceTo.IdGuid;
 			ProjectName = referenceTo.Name;
 			this.referencedProject = referenceTo;
-		}
-		
-		public override string ToString()
-		{
-			return String.Format("[ProjectReferenceProjectItem: Include={0}, Properties={1}]",
-			                     Include,
-			                     Properties);
 		}
 	}
 }

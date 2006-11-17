@@ -4,7 +4,6 @@
 		<Name>${res:Templates.Project.WindowsApplication.Name}</Name>
 		<Category>Boo</Category>
 		<Icon>Boo.Project.Form</Icon>
-		<LanguageName>Boo</LanguageName>
 		<Description>${res:Templates.Project.WindowsApplication.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -12,24 +11,21 @@
 		<Open filename = "MainForm.boo"/>
 	</Actions>
 	
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language = "Boo">
+		<PropertyGroup>
+			<OutputType>WinExe</OutputType>
+		</PropertyGroup>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "WinExe" />
-			
-			<ProjectItems>
-				<Reference Include="System.Data" />
-				<Reference Include="System.Drawing" />
-				<Reference Include="System.Windows.Forms" />
-				<Reference Include="System.Xml" />
-				<Reference Include="Boo.Lang.Useful" />
-			</ProjectItems>
-			
-			<Files>
-				<File name="MainForm.boo"><![CDATA[namespace ${StandardNamespace}
+		<ProjectItems>
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
+			<Reference Include="System.Xml" />
+			<Reference Include="Boo.Lang.Useful" />
+		</ProjectItems>
+		
+		<Files>
+			<File name="MainForm.boo"><![CDATA[namespace ${StandardNamespace}
 
 import System
 import System.Collections
@@ -49,7 +45,7 @@ def Main(argv as (string)):
 	Application.Run(MainForm())
 
 ]]></File>
-<File name="MainForm.Designer.boo" dependentUpon="MainForm.boo"><![CDATA[namespace ${StandardNamespace}
+			<File name="MainForm.Designer.boo" DependentUpon="MainForm.boo"><![CDATA[namespace ${StandardNamespace}
 
 partial class MainForm(System.Windows.Forms.Form):
 	private components as System.ComponentModel.IContainer = null
@@ -70,8 +66,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.Name = 'MainForm'
 
 ]]></File>
-				<File name="AssemblyInfo.boo" src="DefaultAssemblyInfo.boo"/>
-			</Files>
-		</Project>
-	</Combine>
+			<File name="AssemblyInfo.boo" src="DefaultAssemblyInfo.boo"/>
+		</Files>
+	</Project>
 </Template>

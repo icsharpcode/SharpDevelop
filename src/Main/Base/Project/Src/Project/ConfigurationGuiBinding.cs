@@ -15,8 +15,9 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		ConfigurationGuiHelper helper;
 		string property;
+		bool treatPropertyValueAsLiteral = true;
 		
-		public MSBuildProject Project {
+		public MSBuildBasedProject Project {
 			get {
 				return helper.Project;
 			}
@@ -38,6 +39,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			internal set {
 				property = value;
 			}
+		}
+		
+		public bool TreatPropertyValueAsLiteral {
+			get { return treatPropertyValueAsLiteral; }
+			set { treatPropertyValueAsLiteral = value; }
 		}
 		
 		PropertyStorageLocations defaultLocation = PropertyStorageLocations.Base;
@@ -142,10 +148,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (isFirstGet) {
 				isFirstGet = false;
-				return helper.GetProperty(property, defaultValue, out location);
+				return helper.GetProperty(property, defaultValue,
+				                          treatPropertyValueAsLiteral, out location);
 			} else {
-				PropertyStorageLocations tmp;
-				return helper.GetProperty(property, defaultValue, out tmp);
+				return helper.GetProperty(property, defaultValue, treatPropertyValueAsLiteral);
 			}
 		}
 		
@@ -154,7 +160,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (location == PropertyStorageLocations.Unknown) {
 				location = defaultLocation;
 			}
-			helper.SetProperty(property, value, location);
+			helper.SetProperty(property, value, treatPropertyValueAsLiteral, location);
 		}
 		
 		public abstract void Load();

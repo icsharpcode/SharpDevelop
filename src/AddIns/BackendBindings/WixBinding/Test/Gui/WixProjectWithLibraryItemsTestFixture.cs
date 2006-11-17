@@ -36,12 +36,12 @@ namespace WixBinding.Tests.Gui
 			// Add wix library item.
 			firstWixLibraryItem = new WixLibraryProjectItem(wixProject);
 			firstWixLibraryItem.Include = @"..\..\first.wixlib";
-			wixProject.Items.Add(firstWixLibraryItem);
+			ProjectService.AddProjectItem(wixProject, firstWixLibraryItem);
 			
 			// Add another wix library item.
 			secondWixLibraryItem = new WixLibraryProjectItem(wixProject);
 			secondWixLibraryItem.Include = @"..\..\second.wixlib";
-			wixProject.Items.Add(secondWixLibraryItem);
+			ProjectService.AddProjectItem(wixProject, secondWixLibraryItem);
 
 			// Run Initialize on the WixLibraryFolderNode, which is 
 			// equivalent to expanding the node, so it adds it children. Cannot
@@ -84,8 +84,7 @@ namespace WixBinding.Tests.Gui
 		{
 			IProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			WixLibraryProjectItem item = new WixLibraryProjectItem(p);
-			Assert.AreEqual(ItemType.None, item.ItemType);
-			Assert.AreEqual("WixLibrary", item.Tag);
+			Assert.AreEqual(WixItemType.Library, item.ItemType);
 		}
 	}
 }

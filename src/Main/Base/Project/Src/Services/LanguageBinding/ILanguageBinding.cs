@@ -24,13 +24,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
-		IProject LoadProject(string fileName, string projectName);
+		IProject LoadProject(IMSBuildEngineProvider engineProvider, string fileName, string projectName);
 		
 		/// <summary>
 		/// Creates a IProject out of the given ProjetCreateInformation object.
 		/// Each language binding must provide a representation of the project
 		/// it 'controls'.
 		/// </summary>
-		IProject CreateProject(ProjectCreateInformation info, XmlElement projectOptions);
+		IProject CreateProject(ProjectCreateInformation info);
 	}
 }

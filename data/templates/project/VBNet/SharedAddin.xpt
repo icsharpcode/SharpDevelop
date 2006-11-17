@@ -12,7 +12,6 @@
 		<Name>${res:Templates.Project.SharedAddin.Name}</Name>
 		<Category>VBNet</Category>
 		<Icon>VBNet.Project.Library</Icon>
-		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.SharedAddin.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -22,27 +21,21 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language = "VBNet">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Xml" />
+			<Reference Include="System.Data" />
+			<Reference Include="Extensibility" />
+		</ProjectItems>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "Library" />
-
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Xml" />
-				<Reference Include="System.Data" />
-				<Reference Include="Extensibility" />
-			</ProjectItems>
-			
-			<PropertyGroup>
-				<RegisterForComInterop>true</RegisterForComInterop>
-			</PropertyGroup>
-			
-			<Files>
-				<File name="Connect.vb"><![CDATA[${StandardHeader.VBNET}
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+			<RegisterForComInterop>true</RegisterForComInterop>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="Connect.vb"><![CDATA[${StandardHeader.VBNET}
 
 Imports System
 Imports System.Runtime.InteropServices
@@ -112,34 +105,7 @@ Public Class Connect
 	Private ApplicationObject As Object
 	Private AddInInstance As Object
 End Class]]></File>
-		<File name="AssemblyInfo.cs">
-			<![CDATA[Imports System.Reflection
-Imports System.Runtime.CompilerServices
-
-' Information about this assembly is defined by the following
-' attributes.
-' 
-' Change them to the information which is associated with the assembly
-' you compile.
-
-<assembly: AssemblyTitle("")>
-<assembly: AssemblyDescription("")>
-<assembly: AssemblyConfiguration("")>
-<assembly: AssemblyCompany("")>
-<assembly: AssemblyProduct("")>
-<assembly: AssemblyCopyright("")>
-<assembly: AssemblyTrademark("")>
-<assembly: AssemblyCulture("")>
-
-' The assembly version has following format :
-'
-' Major.Minor.Build.Revision
-'
-' You can specify all values by your own or you can build default build and revision
-' numbers with the '*' character (the default):
-
-<assembly: AssemblyVersion("1.0.*")>]]></File>
-			</Files>
-		</Project>
-	</Combine>
+			<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+		</Files>
+	</Project>
 </Template>

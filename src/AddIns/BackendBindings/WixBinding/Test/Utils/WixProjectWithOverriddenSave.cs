@@ -26,7 +26,7 @@ namespace WixBinding.Tests.Utils
 		/// <summary>
 		/// Save method that does nothing.
 		/// </summary>
-		public override void Save()
+		public override void Save(string fileName)
 		{
 			// Do nothing.
 		}

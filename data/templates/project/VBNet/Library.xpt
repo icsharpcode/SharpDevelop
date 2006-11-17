@@ -8,7 +8,6 @@
 		<Name>${res:Templates.Project.ClassLibrary.Name}</Name>
 		<Category>VBNet</Category>
 		<Icon>VBNet.Project.Library</Icon>
-		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -17,38 +16,33 @@
 		<Open filename = "NewClass.vb"/>
 	</Actions>
 
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language="VBNet">
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+		</PropertyGroup>
 		
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+			
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Data" />
+			<Import Include="System.Diagnostics" />
+		</ProjectItems>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "Library" />	
-			
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.Xml" />
-				
-				<Import Include="Microsoft.VisualBasic" />
-				<Import Include="System" />
-				<Import Include="System.Collections" />
-				<Import Include="System.Collections.Generic" />
-				<Import Include="System.Data" />
-				<Import Include="System.Diagnostics" />
-			</ProjectItems>
-			
-			<Files>
-				<File name="NewClass.vb"><![CDATA[${StandardHeader.VBNET}
+		<Files>
+			<File name="NewClass.vb"><![CDATA[${StandardHeader.VBNET}
 
 Public Class NewClass
 	
 End Class
 ]]></File>
-		<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
-			</Files>
-		</Project>
-	</Combine>	
+			<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+		</Files>
+	</Project>
 </Template>
 

@@ -40,6 +40,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
+    <Reference Include="Microsoft.Build.Engine" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />

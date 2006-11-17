@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		SD.WebReference webReference;
 		DiscoveryClientProtocol protocol;
 		ProjectItem webReferencesProjectItem;
-		MSBuildProject project;
+		MSBuildBasedProject project;
 		
 		string name = "localhost";
 		string proxyNamespace = "WebReferenceNamespace";
@@ -36,11 +36,10 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			project = new MSBuildProject();
-			project.Language = "C#";
+			project = WebReferenceTestHelper.CreateTestProject("C#");
 			WebReferencesProjectItem item = new WebReferencesProjectItem(project);
 			item.Include = "Web References\\";
-			project.Items.Add(item);
+			ProjectService.AddProjectItem(project, item);
 			
 			protocol = new DiscoveryClientProtocol();
 			DiscoveryDocumentReference discoveryRef = new DiscoveryDocumentReference();

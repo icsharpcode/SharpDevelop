@@ -9,7 +9,6 @@
 		<Category>VBNet</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>VBNet.Project.ControlLibrary</Icon>
-		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.UserControlLibrary.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -18,33 +17,30 @@
 		<Open filename = "UserControl1.vb"/>
 	</Actions>
 
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language = "VBNet">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
+			<Reference Include="System.Xml" />
+			
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Data" />
+			<Import Include="System.Drawing" />
+			<Import Include="System.Diagnostics" />
+			<Import Include="System.Windows.Forms" />
+		</ProjectItems>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "Library" />
-			
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.Drawing" />
-				<Reference Include="System.Windows.Forms" />
-				<Reference Include="System.Xml" />
-				
-				<Import Include="Microsoft.VisualBasic" />
-				<Import Include="System" />
-				<Import Include="System.Collections" />
-				<Import Include="System.Collections.Generic" />
-				<Import Include="System.Data" />
-				<Import Include="System.Drawing" />
-				<Import Include="System.Diagnostics" />
-				<Import Include="System.Windows.Forms" />
-			</ProjectItems>
-			
-			<Files>
-				<File name="UserControl1.vb"><![CDATA[${StandardHeader.VBNET}
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="UserControl1.vb"><![CDATA[${StandardHeader.VBNET}
 Public Partial Class UserControl1
 	Public Sub New()
 		' The Me.InitializeComponent call is required for Windows Forms designer support.
@@ -56,7 +52,7 @@ Public Partial Class UserControl1
 	End Sub
 End Class
 ]]></File>
-<File name="UserControl1.Designer.vb" dependentUpon="UserControl1.vb"><![CDATA[${StandardHeader.VBNET}
+<File name="UserControl1.Designer.vb" DependentUpon="UserControl1.vb"><![CDATA[${StandardHeader.VBNET}
 Partial Class UserControl1
 	Inherits System.Windows.Forms.UserControl
 	
@@ -93,8 +89,7 @@ Partial Class UserControl1
 End Class
 ]]></File>
 		<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
-			</Files>
-		</Project>
-	</Combine>	
+		</Files>
+	</Project>
 </Template>
 

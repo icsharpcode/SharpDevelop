@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			IProject project = ProjectService.CurrentProject;
+			CompilableProject project = ProjectService.CurrentProject as CompilableProject;
 			if (project == null) {
 				return;
 			}
@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				MessageService.ShowMessage("${res:ProjectComponent.ContextMenu.GenerateDocumentation.ProjectNeedsToBeCompiled}");
 				return;
 			}
-			string xmlDocFile = project.DocumentationFileName;
+			string xmlDocFile = project.DocumentationFileFullPath;
 			if (xmlDocFile == null) {
 				MessageService.ShowMessage("${res:ProjectComponent.ContextMenu.GenerateDocumentation.NeedToEditBuildOptions}");
 				return;

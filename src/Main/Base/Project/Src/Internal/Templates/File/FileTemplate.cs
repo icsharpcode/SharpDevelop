@@ -304,6 +304,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			
 			fileoptions = doc.DocumentElement["AdditionalOptions"];
 			
+			doc.DocumentElement.SetAttribute("fileName", filename); // used for template loading warnings
+			
 			// load the files
 			XmlElement files  = doc.DocumentElement["Files"];
 			XmlNodeList nodes = files.ChildNodes;
@@ -331,6 +333,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			foreach (string file in files) {
 				try {
 					FileTemplates.Add(new FileTemplate(file));
+				} catch (XmlException ex) {
+					MessageService.ShowError("Error loading template file " + file + ":\n" + ex.Message);
+				} catch (TemplateLoadException ex) {
+					MessageService.ShowError("Error loading template file " + file + ":\n" + ex.ToString());
 				} catch(Exception e) {
 					MessageService.ShowError(e, "Error loading template file " + file + ".");
 				}

@@ -243,7 +243,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 		}
 		
-		public static IProject ConvertOldProject(string fileName, Conversion conversion)
+		public static IProject ConvertOldProject(string fileName, Conversion conversion, IMSBuildEngineProvider provider)
 		{
 			string convertedFileName;
 			if (conversion.IsVisualBasic)
@@ -259,7 +259,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				RunConverter(fileReader, convertedFileName + ".user", "CSharp_prjx2csproj_user.xsl", conversion);
 			}
 			
-			return LanguageBindingService.LoadProject(convertedFileName, Conversion.GetProjectName(fileName));
+			return LanguageBindingService.LoadProject(provider, convertedFileName, Conversion.GetProjectName(fileName));
 		}
 		
 		public static void ConvertVSNetProject(string fileName)

@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop
 {

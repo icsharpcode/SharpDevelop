@@ -22,18 +22,14 @@ namespace CSharpBinding
 			}
 		}
 		
-		public IProject LoadProject(string fileName, string projectName)
+		public IProject LoadProject(IMSBuildEngineProvider engineProvider, string fileName, string projectName)
 		{
-			return new CSharpProject(fileName, projectName);
+			return new CSharpProject(engineProvider, fileName, projectName);
 		}
 		
-		public IProject CreateProject(ProjectCreateInformation info, XmlElement projectOptions)
+		public IProject CreateProject(ProjectCreateInformation info)
 		{
-			CSharpProject p = new CSharpProject(info);
-			if (projectOptions != null) {
-				p.ImportOptions(projectOptions.Attributes);
-			}
-			return p;
+			return new CSharpProject(info);
 		}
 	}
 }

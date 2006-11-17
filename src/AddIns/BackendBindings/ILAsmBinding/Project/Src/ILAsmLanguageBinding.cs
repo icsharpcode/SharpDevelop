@@ -22,18 +22,14 @@ namespace ICSharpCode.ILAsmBinding
 			}
 		}
 		
-		public IProject LoadProject(string fileName, string projectName)
+		public IProject LoadProject(IMSBuildEngineProvider provider, string fileName, string projectName)
 		{
-			return new ILAsmProject(fileName, projectName);
+			return new ILAsmProject(provider, fileName, projectName);
 		}
 		
-		public IProject CreateProject(ProjectCreateInformation info, XmlElement projectOptions)
+		public IProject CreateProject(ProjectCreateInformation info)
 		{
-			ILAsmProject p = new ILAsmProject(info);
-			if (projectOptions != null) {
-				p.ImportOptions(projectOptions.Attributes);
-			}
-			return p;
+			return new ILAsmProject(info);
 		}
 	}
 }

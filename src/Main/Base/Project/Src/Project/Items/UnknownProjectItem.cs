@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -12,33 +12,19 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// A project item whose type is not known by SharpDevelop.
 	/// </summary>
-	public class UnknownProjectItem : ProjectItem
+	public sealed class UnknownProjectItem : ProjectItem
 	{
-		string tag;
-		
-		public override string Tag {
-			get {
-				return tag;
-			}
-		}
-		
-		public override ItemType ItemType {
-			get {
-				return ItemType.Unknown;
-			}
-		}
-		
-		public UnknownProjectItem(IProject project, string tag) : base(project)
+		internal UnknownProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem buildItem)
+			: base(project, buildItem)
 		{
-			this.tag = tag;
 		}
 		
-		public override ProjectItem Clone()
+		/// <summary>
+		/// Constructor for internal use in ProjectDescriptor.
+		/// </summary>
+		internal UnknownProjectItem(IProject project, string itemType, string include)
+			: base(project, new ItemType(itemType), include)
 		{
-			ProjectItem n = new UnknownProjectItem(this.Project, this.Tag);
-			n.Include = this.Include;
-			this.CopyExtraPropertiesTo(n);
-			return n;
 		}
 	}
 }

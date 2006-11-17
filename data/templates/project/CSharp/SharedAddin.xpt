@@ -12,7 +12,6 @@
 		<Name>${res:Templates.Project.SharedAddin.Name}</Name>
 		<Category>C#</Category>
 		<Icon>C#.Project.Library</Icon>
-		<LanguageName>C#</LanguageName>
 		<Description>${res:Templates.Project.SharedAddin.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -22,27 +21,21 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language="C#">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Xml" />
+			<Reference Include="System.Data" />
+			<Reference Include="Extensibility" />
+		</ProjectItems>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "Library" />
-
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Xml" />
-				<Reference Include="System.Data" />
-				<Reference Include="Extensibility" />
-			</ProjectItems>
-			
-			<PropertyGroup>
-				<RegisterForComInterop>true</RegisterForComInterop>
-			</PropertyGroup>
-			
-			<Files>
-				<File name="Connect.cs"><![CDATA[${StandardHeader.C#}
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+			<RegisterForComInterop>true</RegisterForComInterop>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="Connect.cs"><![CDATA[${StandardHeader.C#}
 
 namespace ${StandardNamespace}
 {
@@ -90,6 +83,7 @@ namespace ${StandardNamespace}
 
 
 	[GuidAttribute("PLACE-A-VALID-GUID-HERE"), ProgId("${StandardNamespace}.Connect")]
+	[ComVisible(true)]
 	public class Connect : Object, Extensibility.IDTExtensibility2
 	{
 		public Connect()
@@ -122,34 +116,7 @@ namespace ${StandardNamespace}
 		private object addinInstance;
 	}
 }]]></File>
-		<File name="AssemblyInfo.cs">
-			<![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-// Information about this assembly is defined by the following
-// attributes.
-//
-// change them to the information which is associated with the assembly
-// you compile.
-
-[assembly: AssemblyTitle("")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// The assembly version has following format :
-//
-// Major.Minor.Build.Revision
-//
-// You can specify all values by your own or you can build default build and revision
-// numbers with the '*' character (the default):
-
-[assembly: AssemblyVersion("1.0.*")]]]></File>
-			</Files>
-		</Project>
-	</Combine>
+		<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
+		</Files>
+	</Project>
 </Template>

@@ -27,10 +27,12 @@ namespace WixBinding.Tests.PackageFiles
 			p.Name = "MySetup";
 			FileProjectItem item = new FileProjectItem(p, ItemType.Compile);
 			item.Include = "Dialogs.wxs";
-			p.Items.Add(item);
+			ProjectService.AddProjectItem(p, item);
+			
 			item = new FileProjectItem(p, ItemType.Compile);
 			item.Include = "Setup.wxs";
-			p.Items.Add(item);
+			ProjectService.AddProjectItem(p, item);
+			
 			view = new MockWixPackageFilesView();
 			WixPackageFilesEditor editor = new WixPackageFilesEditor(view, this, this);
 			editor.ShowFiles(p);

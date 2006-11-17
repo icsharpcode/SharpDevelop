@@ -27,11 +27,11 @@ namespace UnitTesting.Tests.Project
 		public void Init()
 		{
 			// Create a project to display in the test tree view.
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			project.Name = "TestProject";
 			ReferenceProjectItem nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
 			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
-			project.Items.Add(nunitFrameworkReferenceItem);
+			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
 			
 			// Add a test class with a TestFixture attributes.
 			MockProjectContent projectContent = new MockProjectContent();

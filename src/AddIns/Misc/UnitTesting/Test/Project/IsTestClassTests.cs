@@ -64,7 +64,7 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void NullLanguage()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			MockClass mockClass = new MockClass();
 			MockProjectContent mockProjectContent = new MockProjectContent();
 			mockProjectContent.Project = project;
@@ -76,7 +76,7 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void NullNameComparer()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			MockClass mockClass = new MockClass();
 			MockProjectContent mockProjectContent = new MockProjectContent();
 			mockProjectContent.Project = project;
@@ -103,7 +103,7 @@ namespace UnitTesting.Tests.Project
 			MockClass mockClass = new MockClass();
 			MockProjectContent mockProjectContent = new MockProjectContent();
 			mockProjectContent.Language = LanguageProperties.None;
-			mockProjectContent.Project = new MSBuildProject();
+			mockProjectContent.Project = new MockCSharpProject();
 			mockClass.ProjectContent = mockProjectContent;
 			
 			foreach (MockAttribute attribute in attributes) {

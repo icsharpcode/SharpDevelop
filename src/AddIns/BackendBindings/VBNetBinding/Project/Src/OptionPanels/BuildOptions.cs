@@ -22,6 +22,7 @@ namespace VBNetBinding.OptionPanels
 			ConfigurationGuiBinding b;
 			
 			b = helper.BindString("conditionalSymbolsTextBox", "DefineConstants");
+			b.TreatPropertyValueAsLiteral = false;
 			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
 			b.CreateLocationButton("conditionalSymbolsTextBox");
 			

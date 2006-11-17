@@ -6,7 +6,7 @@
 	
 	<Manifest>
 		<!-- unique name of the AddIn, used when others AddIns want to reference this AddIn -->
-		<Identity name="ICSharpCode.Core.Demo" version = "@EntryAssemblyVersion"/>
+		<Identity name="ICSharpCode.Core.Demo" version = "@../Base.dll"/>
 		<!--
 		others AddIns can specify dependencies like this:
 		<Dependency addin="ICSharpCode.Core.Demo" version="1.0.0.x-1.0.0.y"/>

@@ -12,19 +12,14 @@ namespace ICSharpCode.WixBinding
 {
 	public class WixLinkerExtensionProjectItem : WixExtensionProjectItem
 	{
-		public WixLinkerExtensionProjectItem(IProject project) : base(project)
+		public WixLinkerExtensionProjectItem(IProject project)
+			: base(project, WixItemType.LinkExtension)
 		{
-		}
-				
-		public override string Tag {
-			get {
-				return "LinkExtension";
-			}
 		}
 		
-		protected override ProjectItem CreateNewInstance(IProject project)
+		public WixLinkerExtensionProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem item)
+			: base(project, item)
 		{
-			return new WixLinkerExtensionProjectItem(project);
 		}
 	}
 }

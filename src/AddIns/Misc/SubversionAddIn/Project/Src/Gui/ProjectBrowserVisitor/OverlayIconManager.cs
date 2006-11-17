@@ -127,8 +127,13 @@ namespace ICSharpCode.Svn
 		static void Run(object state)
 		{
 			LoggingService.Debug("SVN: OverlayIconManager Thread started");
-			Thread.Sleep(2); // sleep 1 ms to give main thread time to add more jobs to the queue
+			Thread.Sleep(2); // sleep a tiny bit to give main thread time to add more jobs to the queue
 			while (true) {
+				if (ICSharpCode.SharpDevelop.ParserService.LoadSolutionProjectsThreadRunning) {
+					// run OverlayIconManager much more slowly while solution is being loaded
+					// this prevents the disk from seeking to much
+					Thread.Sleep(50);
+				}
 				AbstractProjectBrowserTreeNode node;
 				lock (queue) {
 					if (queue.Count == 0) {

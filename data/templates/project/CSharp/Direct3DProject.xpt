@@ -9,7 +9,6 @@
 		<Category>C#</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>C#.Project.FullProject</Icon>
-		<LanguageName>C#</LanguageName>
 		<Description>${res:Templates.Project.Direct3DApplication.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -19,26 +18,23 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language = "C#">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
+			<Reference Include="System.Xml" />
+			<Reference Include="Microsoft.DirectX" />
+			<Reference Include="Microsoft.DirectX.Direct3D" />
+		</ProjectItems>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options/>
-			
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.Drawing" />
-				<Reference Include="System.Windows.Forms" />
-				<Reference Include="System.Xml" />
-				<Reference Include="Microsoft.DirectX" />
-				<Reference Include="Microsoft.DirectX.Direct3D" />
-			</ProjectItems>
-			
-			<Files>
-				<File name="MainClass.cs"><![CDATA[using System;
+		<PropertyGroup>
+			<OutputType>WinExe</OutputType>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="MainClass.cs"><![CDATA[using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -171,8 +167,7 @@ namespace ${StandardNamespace}
 	}
 }
 ]]></File>
-			<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
-			</Files>
-		</Project>
-	</Combine>
+		<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
+		</Files>
+	</Project>
 </Template>

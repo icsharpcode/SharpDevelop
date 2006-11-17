@@ -107,7 +107,6 @@
     <Compile Include="Src\MemberLookupHelper.cs" />
     <Compile Include="Src\LanguageProperties.cs" />
     <Compile Include="Src\IResolver.cs" />
-    <Compile Include="Src\IParser.cs" />
     <Compile Include="Src\IExpressionFinder.cs" />
     <Compile Include="Src\Interfaces\ClassType.cs" />
     <Compile Include="Src\Interfaces\IAttribute.cs" />
@@ -129,7 +128,6 @@
     <Compile Include="Src\ProjectContent\DefaultProjectContent.cs" />
     <Compile Include="Src\ProjectContent\IProjectContent.cs" />
     <Compile Include="Src\ProjectContent\ReflectionProjectContent.cs" />
-    <Compile Include="Src\ProjectContent\IDomProject.cs" />
     <Compile Include="Src\LoggingService.cs" />
     <Compile Include="Src\ProjectContent\ProjectContentRegistry.cs" />
     <Compile Include="Src\FusionNative.cs" />

@@ -47,7 +47,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 		[Test]
 		public void NCoverSettingsFileName()
 		{
-			MSBuildProject project = new MSBuildProject();
+			MSBuildBasedProject project = new MSBuildBasedProject(MSBuildInternals.CreateEngine());
 			project.FileName = @"C:\temp\test.csproj";
 			
 			Assert.AreEqual(@"C:\temp\test.NCover.Settings", NCoverSettings.GetFileName(project));

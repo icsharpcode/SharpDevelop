@@ -9,7 +9,6 @@
 		<Category>VBNet</Category>
 		<Subcategory>Mono</Subcategory>
 		<Icon>VBNet.Project.Form</Icon>
-		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.GtkSharpProject.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -18,37 +17,31 @@
 		<Open filename = "MainWindow.vb"/>
 	</Actions>
 	
-	<Solution name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language="VBNet">
+		<PropertyGroup>
+			<OutputType>WinExe</OutputType>
+			<TargetFrameworkVersion>Mono v1.1</TargetFrameworkVersion>
+		</PropertyGroup>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "WinExe"/>
+		<Imports clear="True">
+			<Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.VisualBasic.targets" />
+		</Imports>
+		
+		<ProjectItems>
+			<Reference Include="atk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+			<Reference Include="gdk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+			<Reference Include="glib-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+			<Reference Include="gtk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+			<Reference Include="pango-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+			<Reference Include="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
 
-			<PropertyGroup>
-					<TargetFrameworkVersion>Mono v1.1</TargetFrameworkVersion>
-			</PropertyGroup>
-			
-			<Imports clear="True">
-				<Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.VisualBasic.targets" />
-			</Imports>
-			
-			<ProjectItems>
-				<Reference Include="atk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-				<Reference Include="gdk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-				<Reference Include="glib-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-				<Reference Include="gtk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-				<Reference Include="pango-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-				<Reference Include="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-
-				<Import Include="Microsoft.VisualBasic" />
-				<Import Include="System" />
-				<Import Include="System.Collections" />
-			</ProjectItems>
-			
-			<Files>
-				<File name="MainWindow.vb"><![CDATA[${StandardHeader.VBNET}
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+		</ProjectItems>
+		
+		<Files>
+			<File name="MainWindow.vb"><![CDATA[${StandardHeader.VBNET}
 Imports Gtk
 Imports System
 
@@ -101,7 +94,6 @@ Imports System.Runtime.CompilerServices
 
 <assembly: AssemblyVersion("1.0.*")>
 ]]></File>
-			</Files>
-		</Project>
-	</Solution>
+		</Files>
+	</Project>
 </Template>

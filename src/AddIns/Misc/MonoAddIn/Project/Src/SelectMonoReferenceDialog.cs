@@ -81,8 +81,7 @@ namespace ICSharpCode.MonoAddIn
 					newItem.Tag = new ProjectReferenceProjectItem(configureProject, (IProject)tag);
 					break;
 				case ReferenceType.Gac:
-					ReferenceProjectItem gacReference = new ReferenceProjectItem(configureProject);
-					gacReference.Include = referenceLocation;
+					ReferenceProjectItem gacReference = new ReferenceProjectItem(configureProject, referenceLocation);
 					gacReferences.Add(gacReference);
 					// Add hint path so we can build against Microsoft's Csc too.
 					gacReference.HintPath = FileUtility.GetRelativePath(configureProject.Directory, GetAssemblyLocation(referenceLocation));
@@ -90,8 +89,7 @@ namespace ICSharpCode.MonoAddIn
 					newItem.Tag = gacReference;
 					break;
 				case ReferenceType.Assembly:
-					ReferenceProjectItem assemblyReference = new ReferenceProjectItem(configureProject);
-					assemblyReference.Include = Path.GetFileNameWithoutExtension(referenceLocation);
+					ReferenceProjectItem assemblyReference = new ReferenceProjectItem(configureProject, Path.GetFileNameWithoutExtension(referenceLocation));
 					assemblyReference.HintPath = FileUtility.GetRelativePath(configureProject.Directory, referenceLocation);
 					assemblyReference.SpecificVersion = false;
 					newItem.Tag = assemblyReference;

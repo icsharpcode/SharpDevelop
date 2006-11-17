@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		SD.WebReference webReference;
 		DiscoveryClientProtocol protocol;
 		FileProjectItem proxyFileProjectItem;
-		MSBuildProject project;
+		MSBuildBasedProject project;
 		
 		string name = "localhost";
 		string proxyNamespace = "WebReferenceNamespace";
@@ -37,8 +37,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[ExpectedException(typeof(NotSupportedException))]
 		public void NotSupportedProjectLanguage()
 		{
-			project = new MSBuildProject();
-			project.Language = "Foo";
+			project = WebReferenceTestHelper.CreateTestProject("Foo");
 
 			protocol = new DiscoveryClientProtocol();
 			DiscoveryDocumentReference discoveryRef = new DiscoveryDocumentReference();

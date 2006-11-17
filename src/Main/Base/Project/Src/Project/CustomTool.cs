@@ -139,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public FileProjectItem EnsureOutputFileIsInProject(FileProjectItem baseItem, string outputFileName)
 		{
 			WorkbenchSingleton.AssertMainThread();
-			FileProjectItem outputItem = CustomToolsService.FindProjectItem(project, outputFileName);
+			FileProjectItem outputItem = MSBuildBasedProject.FindProjectItem(project, outputFileName);
 			if (outputItem == null) {
 				outputItem = new FileProjectItem(project, ItemType.Compile);
 				outputItem.FileName = outputFileName;
@@ -328,21 +328,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (solution == null) return;
 			IProject project = solution.FindProjectContainingFile(e.FileName);
 			if (project == null) return;
-			FileProjectItem item = FindProjectItem(project, e.FileName);
+			FileProjectItem item = MSBuildBasedProject.FindProjectItem(project, e.FileName);
 			if (item == null) return;
 			if (!string.IsNullOrEmpty(item.CustomTool)) {
 				RunCustomTool(item, false);
 			}
-		}
-		
-		internal static FileProjectItem FindProjectItem(IProject project, string fileName)
-		{
-			return Linq.Find(Linq.OfType<FileProjectItem>(project.Items),
-			                 delegate(FileProjectItem item) {
-			                 	return FileUtility.IsEqualFileName(item.FileName, fileName);
-			                 });
-			// return project.Items.OfType<FileProjectItem>().Find(
-			//			 item => FileUtility.IsEqualFileName(item.FileName, outputFileName));
 		}
 		
 		public static IEnumerable<string> GetCustomToolNames()

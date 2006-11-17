@@ -16,16 +16,14 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace Grunwald.BooBinding
 {
-	public class BooProject : MSBuildProject
+	public class BooProject : CompilableProject
 	{
 		static bool initialized = false;
 		public static readonly string BooBinPath = Path.GetDirectoryName(typeof(BooProject).Assembly.Location);
 		
 		void Init()
 		{
-			Language = "Boo";
-			LanguageProperties = BooLanguageProperties.Instance;
-			reparseSensitiveProperties.Add("Ducky");
+			reparseCodeSensitiveProperties.Add("Ducky");
 			
 			if (!initialized) {
 				initialized = true;
@@ -33,15 +31,24 @@ namespace Grunwald.BooBinding
 			}
 		}
 		
-		public BooProject(string fileName, string projectName)
+		public override string Language {
+			get { return BooLanguageBinding.LanguageName; }
+		}
+		
+		public override LanguageProperties LanguageProperties {
+			get { return BooLanguageProperties.Instance; }
+		}
+		
+		public BooProject(IMSBuildEngineProvider provider, string fileName, string projectName)
+			: base(provider)
 		{
 			this.Name = projectName;
 			Init();
-			SetupProject(fileName);
-			IdGuid = BaseConfiguration["ProjectGuid"];
+			LoadProject(fileName);
 		}
 		
 		public BooProject(ProjectCreateInformation info)
+			: base(info.Solution)
 		{
 			Init();
 			Create(info);
@@ -57,7 +64,7 @@ namespace Grunwald.BooBinding
 					}
 				}
 			}
-			this.Imports.Add(new MSBuildImport("$(BooBinPath)\\Boo.Microsoft.Build.targets"));
+			this.MSBuildProject.AddNewImport("$(BooBinPath)\\Boo.Microsoft.Build.targets", null);
 		}
 		
 		void AddReference(string assembly)
@@ -66,18 +73,21 @@ namespace Grunwald.BooBinding
 				if (item.ItemType == ItemType.Reference && item.Include == assembly)
 					return;
 			}
-			Items.Add(new ReferenceProjectItem(this, assembly));
+			((IProjectItemListProvider)this).AddProjectItem(new ReferenceProjectItem(this, assembly));
 		}
 		
-		public override bool CanCompile(string fileName)
+		public override ItemType GetDefaultItemType(string fileName)
 		{
-			return string.Equals(Path.GetExtension(fileName), ".boo", StringComparison.OrdinalIgnoreCase);
+			if (string.Equals(Path.GetExtension(fileName), ".boo", StringComparison.OrdinalIgnoreCase))
+				return ItemType.Compile;
+			else
+				return base.GetDefaultItemType(fileName);
 		}
 		
 		internal static IProjectContent BooCompilerPC;
 		internal static IProjectContent BooUsefulPC;
 		
-		public override ParseProjectContent CreateProjectContent()
+		protected override ParseProjectContent CreateProjectContent()
 		{
 			ParseProjectContent pc = base.CreateProjectContent();
 			ReferenceProjectItem systemItem = new ReferenceProjectItem(this, "System");
@@ -108,7 +118,9 @@ namespace Grunwald.BooBinding
 		[Browsable(false)]
 		public bool Ducky {
 			get {
-				return GetProperty("Ducky", false);
+				bool val;
+				bool.TryParse(GetProperty("Ducky"), out val);
+				return val;
 			}
 		}
 	}

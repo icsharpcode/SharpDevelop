@@ -23,18 +23,14 @@ namespace VBNetBinding
 			}
 		}
 		
-		public IProject LoadProject(string fileName, string projectName)
+		public IProject LoadProject(IMSBuildEngineProvider provider, string fileName, string projectName)
 		{
-			return new VBNetProject(fileName, projectName);
+			return new VBNetProject(provider, fileName, projectName);
 		}
 		
-		public IProject CreateProject(ProjectCreateInformation info, XmlElement projectOptions)
+		public IProject CreateProject(ProjectCreateInformation info)
 		{
-			VBNetProject p = new VBNetProject(info);
-			if (projectOptions != null) {
-				p.ImportOptions(projectOptions.Attributes);
-			}
-			return p;
+			return new VBNetProject(info);
 		}
 	}
 }

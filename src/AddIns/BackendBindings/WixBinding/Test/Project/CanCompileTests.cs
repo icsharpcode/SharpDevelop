@@ -9,6 +9,7 @@ using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
 using WixBinding.Tests.Utils;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace WixBinding.Tests.Project
 {
@@ -30,31 +31,31 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void WixSourceFile()
 		{
-			Assert.IsTrue(project.CanCompile("Setup.wxs"));
+			Assert.AreEqual(ItemType.Compile, project.GetDefaultItemType("Setup.wxs"));
 		}
 		
 		[Test]
 		public void UppercaseWixSourceFileExtension()
 		{
-			Assert.IsTrue(project.CanCompile("SETUP.WXS"));
+			Assert.AreEqual(ItemType.Compile, project.GetDefaultItemType("SETUP.WXS"));
 		}
 		
 		[Test]
 		public void WixIncludeFile()
 		{
-			Assert.IsTrue(project.CanCompile("files.wxi"));
+			Assert.AreEqual(ItemType.Compile, project.GetDefaultItemType("files.wxi"));
 		}
 		
 		[Test]
 		public void ResourceFile()
 		{
-			Assert.IsFalse(project.CanCompile("MainForm.resx"));
+			Assert.AreEqual(ItemType.EmbeddedResource, project.GetDefaultItemType("MainForm.resx"));
 		}
 		
 		[Test]
 		public void TextFile()
 		{
-			Assert.IsFalse(project.CanCompile("readme.txt"));
+			Assert.AreEqual(ItemType.None, project.GetDefaultItemType("readme.txt"));
 		}
 	}
 }

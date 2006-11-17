@@ -7,7 +7,6 @@
 		<Category>C#</Category>
 		<Subcategory>Compact Framework</Subcategory>
 		<Icon>C#.Project.Form</Icon>
-		<LanguageName>C#</LanguageName>
 		<Description>${res:Templates.Project.WindowsApplication.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -16,34 +15,29 @@
 		<Open filename = "MainForm.cs"/>
 	</Actions>
 	
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language="C#">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
+			<Reference Include="System.Xml" />
+			<Reference Include="Microsoft.WindowsCE.Forms.dll" />
+		</ProjectItems>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "WinExe" />
-
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.Drawing" />
-				<Reference Include="System.Windows.Forms" />
-				<Reference Include="System.Xml" />
-				<Reference Include="Microsoft.WindowsCE.Forms.dll" />
-			</ProjectItems>
+		<PropertyGroup>
+			<OutputType>WinExe</OutputType>
 			
-			<PropertyGroup>
-				<PlatformFamilyName>PocketPC</PlatformFamilyName>
-				<PlatformID>WinCE</PlatformID>
-				<TargetFrameworkVersion>CF 2.0</TargetFrameworkVersion>
-			</PropertyGroup>
-			
-			<Imports clear="true">
-				<Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets" />
-			</Imports>
-			
-			<Files>
+			<PlatformFamilyName>PocketPC</PlatformFamilyName>
+			<PlatformID>WinCE</PlatformID>
+			<TargetFrameworkVersion>CF 2.0</TargetFrameworkVersion>
+		</PropertyGroup>
+		
+		<Imports clear="true">
+			<Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets" />
+		</Imports>
+		
+		<Files>
 		<File name="MainForm.cs" language="C#"><![CDATA[${StandardHeader.C#}
 
 using System;
@@ -78,7 +72,7 @@ namespace ${StandardNamespace}
 	}
 }
 ]]></File>
-<File name="MainForm.Designer.cs" dependentUpon="MainForm.cs" language="C#"><![CDATA[${StandardHeader.C#}
+<File name="MainForm.Designer.cs" DependentUpon="MainForm.cs" language="C#"><![CDATA[${StandardHeader.C#}
 namespace ${StandardNamespace}
 {
 	partial class MainForm : System.Windows.Forms.Form
@@ -149,7 +143,6 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyVersion("1.0.*")]
 
 ]]></File>
-			</Files>
-		</Project>
-	</Combine>
+		</Files>
+	</Project>
 </Template>

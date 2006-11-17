@@ -195,13 +195,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (ProjectService.OpenSolution != null) {
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
 					foreach (ProjectItem item in project.Items) {
-						switch (item.ItemType) {
-							case ItemType.Compile:
-							case ItemType.Content:
-							case ItemType.EmbeddedResource:
-							case ItemType.None:
-								AddSourceFile(text, lineNumber, item);
-								break;
+						if (ItemType.FileItems.Contains(item.ItemType)) {
+							AddSourceFile(text, lineNumber, item);
 						}
 					}
 				}

@@ -21,11 +21,11 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[Test]
 		public void IsWebReferencesFolder1()
 		{
-			MSBuildProject p = new MSBuildProject();
+			MSBuildBasedProject p = WebReferenceTestHelper.CreateTestProject("C#");
 			p.FileName = "C:\\projects\\test\\foo.csproj";
 			WebReferencesProjectItem item = new WebReferencesProjectItem(p);
 			item.Include = "Web References\\";
-			p.Items.Add(item);
+			ProjectService.AddProjectItem(p, item);
 				
 			Assert.IsTrue(DirectoryNode.IsWebReferencesFolder(p, "C:\\projects\\test\\Web References"));
 		}
@@ -33,11 +33,11 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[Test]
 		public void IsNotWebReferencesFolder1()
 		{
-			MSBuildProject p = new MSBuildProject();
+			MSBuildBasedProject p = WebReferenceTestHelper.CreateTestProject("C#");
 			p.FileName = "C:\\projects\\test\\foo.csproj";
 			WebReferencesProjectItem item = new WebReferencesProjectItem(p);
 			item.Include = "Web References\\";
-			p.Items.Add(item);
+			ProjectService.AddProjectItem(p, item);
 				
 			Assert.IsFalse(DirectoryNode.IsWebReferencesFolder(p, "C:\\projects\\test\\foo"));
 		}

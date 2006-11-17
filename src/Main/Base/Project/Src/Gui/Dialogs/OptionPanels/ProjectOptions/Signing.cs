@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			helper.Saved += delegate {
 				if (Get<CheckBox>("signAssembly").Checked) {
-					helper.SetProperty("AssemblyOriginatorKeyMode", "File", signAssemblyBinding.Location);
+					helper.SetProperty("AssemblyOriginatorKeyMode", "File", true, signAssemblyBinding.Location);
 				}
 			};
 		}

@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				} else {
 					CustomNode unknownNode = new CustomNode();
 					unknownNode.SetIcon("Icons.16x16.Warning");
-					unknownNode.Text = ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.NoBackendForProjectType");
+					unknownNode.Text = StringParser.Parse(((UnknownProject)project).WarningText);
 					unknownNode.AddTo(projectNode);
 				}
 			} else {

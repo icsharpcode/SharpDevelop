@@ -48,14 +48,14 @@ namespace WixBinding.Tests.Project
 			IProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			WixLibraryProjectItem item = new WixLibraryProjectItem(p);
 			item.Include = "test.wixlib";
-			item.Properties.Set<string>("PropertyName", "DefaultValue", "PropertyValue");
+			item.SetEvaluatedMetadata("PropertyName", "PropertyValue");
 			
 			ProjectItem clone = item.Clone();
 			item.Include = "changed.wixlib";
 			
-			item.Properties.Remove("PropertyName");
+			item.RemoveMetadata("PropertyName");
 			
-			Assert.AreEqual("PropertyValue", clone.Properties.Get<string>("PropertyName", "DefaultValue"));
+			Assert.AreEqual("PropertyValue", clone.GetEvaluatedMetadata("PropertyName", "DefaultValue"));
 		}
 	}
 }

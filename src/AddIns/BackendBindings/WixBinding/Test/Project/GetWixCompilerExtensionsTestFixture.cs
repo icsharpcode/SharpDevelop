@@ -32,17 +32,17 @@ namespace WixBinding.Tests.Project
 			WixCompilerExtensionProjectItem compilerItem = new WixCompilerExtensionProjectItem(p);
 			compilerItem.Include = "WixNetFxExtension";
 			compilerItem.ClassName = "Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler";
-			p.Items.Add(compilerItem);
+			ProjectService.AddProjectItem(p, compilerItem);
 			
 			WixLinkerExtensionProjectItem linkerItem = new WixLinkerExtensionProjectItem(p);
 			linkerItem.Include = "LinkerExtension";
 			linkerItem.ClassName = "LinkerExtension.ClassName";
-			p.Items.Add(linkerItem);
+			ProjectService.AddProjectItem(p, linkerItem);
 			
 			WixLibraryExtensionProjectItem libraryItem = new WixLibraryExtensionProjectItem(p);
 			libraryItem.Include = "LibraryExtension";
 			libraryItem.ClassName = "LibraryExtension.ClassName";
-			p.Items.Add(libraryItem);
+			ProjectService.AddProjectItem(p, libraryItem);
 			
 			compilerExtensionItem = p.WixCompilerExtensions[0];
 			libraryExtensionItem = p.WixLibraryExtensions[0];

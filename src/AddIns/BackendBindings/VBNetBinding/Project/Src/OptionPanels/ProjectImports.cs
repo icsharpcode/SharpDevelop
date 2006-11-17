@@ -97,15 +97,12 @@ namespace VBNetBinding.OptionPanels
 			
 			foreach(ImportProjectItem item in imports)
 			{
-				project.Items.Remove(item);
+				ProjectService.RemoveProjectItem(project, item);
 			}
 			
 			foreach(string importedNamespace in Get<ListBox>("imports").Items)
 			{
-				ImportProjectItem importItem = new ImportProjectItem(project);
-				importItem.Include = importedNamespace;
-				project.Items.Add(importItem);
-				
+				ProjectService.AddProjectItem(project, new ImportProjectItem(project, importedNamespace));
 			}
 			return base.StorePanelContents();
 		}

@@ -4,7 +4,6 @@
 		<Name>${res:Templates.Project.ClassLibrary.Name}</Name>
 		<Category>Boo</Category>
 		<Icon>Boo.Project.EmptyProject</Icon>
-		<LanguageName>Boo</LanguageName>
 		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -12,21 +11,18 @@
 		<Open filename = "MyClass.boo"/>
 	</Actions>
 	
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language = "Boo">
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+		</PropertyGroup>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "Library" />
-
-			<ProjectItems>
-				<Reference Include="System.Xml" />
-				<Reference Include="Boo.Lang.Useful" />
-			</ProjectItems>
-
-			<Files>
-				<File name="MyClass.boo"><![CDATA[namespace ${StandardNamespace}
+		<ProjectItems>
+			<Reference Include="System.Xml" />
+			<Reference Include="Boo.Lang.Useful" />
+		</ProjectItems>
+		
+		<Files>
+			<File name="MyClass.boo"><![CDATA[namespace ${StandardNamespace}
 
 import System
 import System.Collections
@@ -38,8 +34,7 @@ class MyClass:
 		pass
 
 ]]></File>
-				<File name="AssemblyInfo.boo" src="DefaultAssemblyInfo.boo"/>
-			</Files>
-		</Project>
-	</Combine>
+			<File name="AssemblyInfo.boo" src="DefaultAssemblyInfo.boo"/>
+		</Files>
+	</Project>
 </Template>

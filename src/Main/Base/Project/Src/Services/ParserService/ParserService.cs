@@ -163,10 +163,12 @@ namespace ICSharpCode.SharpDevelop
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				try {
 					ParseProjectContent newContent = project.CreateProjectContent();
-					lock (projectContents) {
-						projectContents[project] = newContent;
+					if (newContent != null) {
+						lock (projectContents) {
+							projectContents[project] = newContent;
+						}
+						createdContents.Add(newContent);
 					}
-					createdContents.Add(newContent);
 				} catch (Exception e) {
 					MessageService.ShowError(e, "Error while retrieving project contents from " + project);
 				}
@@ -204,12 +206,16 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		#region Reparse projects
+		// queue of projects waiting to reparse references
 		static Queue<ParseProjectContent> reParse1 = new Queue<ParseProjectContent>();
+		
+		// queue of projects waiting to reparse code
 		static Queue<ParseProjectContent> reParse2 = new Queue<ParseProjectContent>();
 		static Thread reParseThread;
 		
 		static void ReparseProjects()
 		{
+			LoggingService.Info("reParse thread started");
 			Thread.Sleep(100); // enable main thread to fill the queues completely
 			bool parsing = false;
 			ParseProjectContent job;
@@ -239,14 +245,17 @@ namespace ICSharpCode.SharpDevelop
 						if (parsing) {
 							StatusBarService.ProgressMonitor.Done();
 						}
+						LoggingService.Info("reParse thread finished all jobs");
 						return;
 					}
 				}
 				
 				// execute job
 				if (parsing) {
+					LoggingService.Info("reparsing code for " + job.Project);
 					job.ReInitialize2();
 				} else {
+					LoggingService.Debug("reloading references for " + job.Project);
 					job.ReInitialize1();
 				}
 			}
@@ -258,12 +267,15 @@ namespace ICSharpCode.SharpDevelop
 			if (pc != null) {
 				lock (reParse1) {
 					if (initReferences && !reParse1.Contains(pc)) {
+						LoggingService.Debug("Enqueue for reinitializing references: " + project);
 						reParse1.Enqueue(pc);
 					}
 					if (parseCode && !reParse2.Contains(pc)) {
+						LoggingService.Debug("Enqueue for reparsing code: " + project);
 						reParse2.Enqueue(pc);
 					}
 					if (reParseThread == null) {
+						LoggingService.Info("Starting reParse thread");
 						reParseThread = new Thread(new ThreadStart(ReparseProjects));
 						reParseThread.Name = "reParse";
 						reParseThread.Priority = ThreadPriority.BelowNormal;
@@ -275,12 +287,15 @@ namespace ICSharpCode.SharpDevelop
 		}
 		#endregion
 		
+		/// <remarks>Can return null.</remarks>
 		internal static IProjectContent CreateProjectContentForAddedProject(IProject project)
 		{
 			lock (projectContents) {
 				ParseProjectContent newContent = project.CreateProjectContent();
-				projectContents[project] = newContent;
-				ThreadPool.QueueUserWorkItem(InitAddedProject, newContent);
+				if (newContent != null) {
+					projectContents[project] = newContent;
+					ThreadPool.QueueUserWorkItem(InitAddedProject, newContent);
+				}
 				return newContent;
 			}
 		}
@@ -550,11 +565,7 @@ namespace ICSharpCode.SharpDevelop
 			ICompilationUnit parserOutput = null;
 			
 			if (fileContent == null) {
-				if (ProjectService.OpenSolution != null) {
-					IProject project = ProjectService.OpenSolution.FindProjectContainingFile(fileName);
-					if (project != null)
-						fileContent = project.GetParseableFileContent(fileName);
-				}
+				fileContent = GetParseableFileContent(fileName);
 			}
 			try {
 				if (fileProjectContent == null) {

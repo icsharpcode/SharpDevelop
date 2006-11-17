@@ -10,6 +10,7 @@ using System.IO;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace VBNetBinding.Parser
 {
@@ -43,7 +44,7 @@ namespace VBNetBinding.Parser
 			return Path.GetExtension(fileName).Equals(".VB", StringComparison.OrdinalIgnoreCase);
 		}
 		
-		public bool CanParse(IDomProject project)
+		public bool CanParse(IProject project)
 		{
 			return project.Language == "VBNet";
 		}
@@ -108,9 +109,8 @@ namespace VBNetBinding.Parser
 			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
 			
 			string rootNamespace = null;
-			ParseProjectContent ppc = projectContent as ParseProjectContent;
-			if (ppc != null) {
-				rootNamespace = ppc.Project.RootNamespace;
+			if (projectContent.Project != null) {
+				rootNamespace = ((IProject)projectContent.Project).RootNamespace;
 			}
 			if (rootNamespace != null && rootNamespace.Length > 0) {
 				foreach (IClass c in visitor.Cu.Classes) {

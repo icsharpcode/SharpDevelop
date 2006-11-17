@@ -246,7 +246,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 					StringParser.Properties["CurCol"]          = "0";
 					StringParser.Properties["CurText"]         = "0";
 					
-					ILanguageBinding binding = ProjectService.CurrentProject == null ? null : LanguageBindingService.GetBindingPerLanguageName(ProjectService.CurrentProject.Language);
 					string targetPath = ProjectService.CurrentProject == null ? null : ProjectService.CurrentProject.OutputAssemblyFullPath;
 					StringParser.Properties["TargetPath"]      = targetPath == null ? String.Empty : targetPath;
 					StringParser.Properties["TargetDir"]       = targetPath == null ? String.Empty : Path.GetDirectoryName(targetPath);

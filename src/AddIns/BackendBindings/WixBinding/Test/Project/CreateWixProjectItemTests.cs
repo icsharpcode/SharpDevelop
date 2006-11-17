@@ -11,6 +11,7 @@ using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
 using WixBinding.Tests.Utils;
+using Microsoft.Build.BuildEngine;
 
 namespace WixBinding.Tests.Project
 {
@@ -24,7 +25,7 @@ namespace WixBinding.Tests.Project
 		public void CreateReferenceProjectItem()
 		{
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
-			ProjectItem item = p.CreateProjectItem("Reference");
+			ProjectItem item = p.CreateProjectItem(new BuildItem("Reference", "DummyInclude"));
 			Assert.IsInstanceOfType(typeof(ReferenceProjectItem), item);
 		}
 		
@@ -32,7 +33,7 @@ namespace WixBinding.Tests.Project
 		public void CreateWixLibraryProjectItem()
 		{
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
-			ProjectItem item = p.CreateProjectItem("WixLibrary");
+			ProjectItem item = p.CreateProjectItem(new BuildItem("WixLibrary", "DummyInclude"));
 			Assert.IsInstanceOfType(typeof(WixLibraryProjectItem), item);
 		}
 		
@@ -40,7 +41,7 @@ namespace WixBinding.Tests.Project
 		public void CreateWixCompilerExtensionProjectItem()
 		{
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
-			ProjectItem item = p.CreateProjectItem("CompileExtension");
+			ProjectItem item = p.CreateProjectItem(new BuildItem("CompileExtension", "DummyInclude"));
 			Assert.IsInstanceOfType(typeof(WixCompilerExtensionProjectItem), item);
 		}
 		
@@ -48,7 +49,7 @@ namespace WixBinding.Tests.Project
 		public void CreateWixLinkerExtensionProjectItem()
 		{
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
-			ProjectItem item = p.CreateProjectItem("LinkExtension");
+			ProjectItem item = p.CreateProjectItem(new BuildItem("LinkExtension", "DummyInclude"));
 			Assert.IsInstanceOfType(typeof(WixLinkerExtensionProjectItem), item);
 		}
 		
@@ -56,7 +57,7 @@ namespace WixBinding.Tests.Project
 		public void CreateWixLibraryExtensionProjectItem()
 		{
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
-			ProjectItem item = p.CreateProjectItem("LibExtension");
+			ProjectItem item = p.CreateProjectItem(new BuildItem("LibExtension", "DummyInclude"));
 			Assert.IsInstanceOfType(typeof(WixLibraryExtensionProjectItem), item);
 		}
 	}

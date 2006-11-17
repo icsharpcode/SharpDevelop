@@ -9,29 +9,40 @@ using System;
 using System.IO;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.ILAsmBinding
 {
-	public class ILAsmProject : MSBuildProject
+	public class ILAsmProject : CompilableProject
 	{
-		public ILAsmProject(string fileName, string projectName)
+		public ILAsmProject(IMSBuildEngineProvider provider, string fileName, string projectName)
+			: base(provider)
 		{
 			this.Name = projectName;
-			Language = "ILAsm";
-			SetupProject(fileName);
-			IdGuid = BaseConfiguration["ProjectGuid"];
+			LoadProject(fileName);
 		}
 		
 		public ILAsmProject(ProjectCreateInformation info)
+			: base(info.Solution)
 		{
-			Language = "ILAsm";
 			Create(info);
-			this.Imports.Add(new MSBuildImport(@"$(SharpDevelopBinPath)\SharpDevelop.Build.MSIL.Targets"));
+			this.MSBuildProject.AddNewImport(@"$(SharpDevelopBinPath)\SharpDevelop.Build.MSIL.Targets", null);
 		}
 		
-		public override bool CanCompile(string fileName)
+		public override string Language {
+			get { return ILAsmLanguageBinding.LanguageName; }
+		}
+		
+		public override LanguageProperties LanguageProperties {
+			get { return LanguageProperties.None; }
+		}
+		
+		public override ItemType GetDefaultItemType(string fileName)
 		{
-			return string.Equals(".il", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase);
+			if (string.Equals(".il", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase))
+				return ItemType.Compile;
+			else
+				return base.GetDefaultItemType(fileName);
 		}
 	}
 }

@@ -39,11 +39,11 @@ namespace WixBinding.Tests.Document
 			FileProjectItem item = new FileProjectItem(p, ItemType.Compile);
 			item.Include = "Setup.wxs";
 			string docFileName = item.FileName;
-			p.Items.Add(item);
+			ProjectService.AddProjectItem(p, item);
 			
 			item = new FileProjectItem(p, ItemType.Compile);
 			item.Include = "Fragment.wxs";
-			p.Items.Add(item);
+			ProjectService.AddProjectItem(p, item);
 
 			WixDocument doc = new WixDocument(p, this);
 			doc.FileName = docFileName;

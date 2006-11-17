@@ -89,6 +89,7 @@
     <Compile Include="Project\TestMethodsInBaseClassTestFixture.cs" />
     <Compile Include="Project\DuplicateClassNameTestFixture.cs" />
     <Compile Include="Project\DuplicateMethodNameTestFixture.cs" />
+    <Compile Include="Utils\MockCSharpProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UnitTesting.csproj">

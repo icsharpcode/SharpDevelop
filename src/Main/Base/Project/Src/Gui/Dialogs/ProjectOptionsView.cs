@@ -131,13 +131,18 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		
 		public override void Save(string fileName)
 		{
-			foreach (IDialogPanelDescriptor pane in descriptors) {
-				ICanBeDirty dirtyable = pane.DialogPanel as ICanBeDirty;
-				if (dirtyable != null) {
-					if (!dirtyable.IsDirty)
-						continue; // skip unchanged panels
+			try {
+				foreach (IDialogPanelDescriptor pane in descriptors) {
+					ICanBeDirty dirtyable = pane.DialogPanel as ICanBeDirty;
+					if (dirtyable != null) {
+						if (!dirtyable.IsDirty)
+							continue; // skip unchanged panels
+					}
+					pane.DialogPanel.ReceiveDialogMessage(DialogMessage.OK);
 				}
-				pane.DialogPanel.ReceiveDialogMessage(DialogMessage.OK);
+			} catch (Exception ex) {
+				MessageService.ShowError(ex, "Error saving project options panel");
+				return;
 			}
 			project.Save();
 		}

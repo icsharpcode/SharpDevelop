@@ -291,10 +291,7 @@
     </Compile>
     <Compile Include="Src\Project\Items\FileProjectItem.cs" />
     <Compile Include="Src\Project\IProject.cs" />
-    <Compile Include="Src\Project\MSBuildProject.cs" />
     <Compile Include="Src\Project\Items\ProjectItem.cs" />
-    <Compile Include="Src\Project\Items\ProjectItemFactory.cs" />
-    <Compile Include="Src\Project\PropertyGroup.cs" />
     <Compile Include="Src\Project\Items\ReferenceProjectItem.cs" />
     <Compile Include="Src\Project\Solution\Solution.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectService.cs" />
@@ -528,7 +525,6 @@
     <Compile Include="Src\TextEditor\CharacterEncodings.cs" />
     <Compile Include="Src\TextEditor\XmlFormattingStrategy.cs" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
-    <Compile Include="Src\Project\AbstractProject.cs" />
     <Compile Include="Src\TextEditor\Commands\NavigationCommands.cs" />
     <Compile Include="Src\Project\MSBuildEngine.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CodeCompletionBinding.cs" />
@@ -682,7 +678,6 @@
     <EmbeddedResource Include="Resources\IncrementalSearchCursor.cur" />
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
     <Compile Include="Src\Gui\Dialogs\SharpDevelopColorDialog.cs" />
-    <Compile Include="Src\Project\MSBuildImport.cs" />
     <Compile Include="Src\Util\Linq.cs" />
     <Compile Include="Src\Util\DebugTimer.cs" />
     <Compile Include="Src\Project\CustomTool.cs" />
@@ -690,6 +685,19 @@
       <DependentUpon>EditAvailableConfigurationsDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\EditAvailableConfigurationsDialog.cs" />
+    <Compile Include="Src\Project\MSBuildBasedProject.cs" />
+    <Compile Include="Src\Project\AbstractProject.cs" />
+    <Compile Include="Src\Project\BuildOptions.cs" />
+    <Compile Include="Src\Project\IParser.cs" />
+    <Compile Include="Src\Project\CompilableProject.cs" />
+    <Compile Include="Src\Project\MSBuildInternals.cs" />
+    <Compile Include="Src\Util\Pair.cs" />
+    <Compile Include="Src\Util\Set.cs" />
+    <Compile Include="Src\Util\ReadOnlyCollectionWrapper.cs" />
+    <Compile Include="Src\Project\Items\ItemType.cs" />
+    <Compile Include="Src\Project\BuildTarget.cs" />
+    <Compile Include="Src\Util\GenericConverter.cs" />
+    <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

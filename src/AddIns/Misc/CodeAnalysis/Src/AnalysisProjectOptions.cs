@@ -303,14 +303,16 @@ namespace ICSharpCode.CodeAnalysis
 			public override void Load()
 			{
 				po.RuleString = Get("");
-				PropertyStorageLocations tmp;
-				po.RuleAssemblies = Helper.GetProperty("CodeAnalysisRuleAssemblies", "", out tmp);
+				po.RuleAssemblies = Helper.GetProperty("CodeAnalysisRuleAssemblies", "", false);
 			}
 			
 			public override bool Save()
 			{
 				Set(po.RuleString);
-				Helper.SetProperty("CodeAnalysisRuleAssemblies", (po.RuleAssemblies == DefaultRuleAssemblies) ? "" : po.RuleAssemblies, Location);
+				Helper.SetProperty("CodeAnalysisRuleAssemblies", 
+				                   (po.RuleAssemblies == DefaultRuleAssemblies) ? "" : po.RuleAssemblies,
+				                   false,
+				                   Location);
 				return true;
 			}
 		}

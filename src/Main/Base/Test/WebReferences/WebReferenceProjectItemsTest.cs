@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		FileProjectItem proxyFileProjectItem;
 		WebReferencesProjectItem webReferencesProjectItem;
 		ReferenceProjectItem webServicesReferenceProjectItem;
-		MSBuildProject project;
+		MSBuildBasedProject project;
 		
 		string name = "localhost";
 		string proxyNamespace = "WebReferenceNamespace";
@@ -41,9 +41,8 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			project = new MSBuildProject();
+			project = WebReferenceTestHelper.CreateTestProject("C#");
 			project.FileName = "C:\\projects\\test\\foo.csproj";
-			project.Language = "C#";
 
 			protocol = new DiscoveryClientProtocol();
 			DiscoveryDocumentReference discoveryRef = new DiscoveryDocumentReference();
@@ -145,13 +144,13 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[Test]
 		public void ReferenceMapFileItemGeneratorProperty()
 		{
-			Assert.AreEqual("MSDiscoCodeGenerator", referenceMapFileProjectItem.Properties["Generator"]);
+			Assert.AreEqual("MSDiscoCodeGenerator", referenceMapFileProjectItem.GetEvaluatedMetadata("Generator"));
 		}
 		
 		[Test]
 		public void ReferenceMapFileItemLastGenOutputProperty()
 		{
-			Assert.AreEqual("Reference.cs", referenceMapFileProjectItem.Properties["LastGenOutput"]);
+			Assert.AreEqual("Reference.cs", referenceMapFileProjectItem.GetEvaluatedMetadata("LastGenOutput"));
 		}
 		
 		[Test]
@@ -163,13 +162,13 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[Test]
 		public void ProxyFileItemAutoGenProperty()
 		{
-			Assert.AreEqual("True", proxyFileProjectItem.Properties["AutoGen"]);
+			Assert.AreEqual("True", proxyFileProjectItem.GetEvaluatedMetadata("AutoGen"));
 		}
 		
 		[Test]
 		public void ProxyFileItemDesignTimeProperty()
 		{
-			Assert.AreEqual("True", proxyFileProjectItem.Properties["DesignTime"]);
+			Assert.AreEqual("True", proxyFileProjectItem.GetEvaluatedMetadata("DesignTime"));
 		}
 		
 		[Test]

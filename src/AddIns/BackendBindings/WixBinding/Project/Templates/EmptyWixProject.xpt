@@ -1,28 +1,20 @@
 ﻿<?xml version="1.0"?>
-<Template originator="Matt Ward">	
+<Template originator="Matt Ward">
 	<TemplateConfiguration>
 		<Name>${res:Templates.File.Wix.WixProject.Name}</Name>
 		<Category>${res:Templates.File.Categories.Setup}</Category>
 		<Icon>Icons.32x32.EmptyProjectIcon</Icon>
-		<LanguageName>Wix</LanguageName>
 		<Description>${res:Templates.File.Wix.WixProject.Description}</Description>
 	</TemplateConfiguration>
-	
 	<!-- Actions -->
 	<Actions>
-		<Open filename = "Setup.wxs"/>
+		<Open filename="Setup.wxs" />
 	</Actions>
-	
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
-		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options/>
-			<Files>
-				<File name="Setup.wxs"><![CDATA[<?xml version="1.0"?>
+	<Project language="Wix">
+		<Files>
+			<File name="Setup.wxs">
+<![CDATA[<?xml version="1.0"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
 	<Product Id="${GUID}"
 		Name=""
@@ -37,8 +29,8 @@
 		/>
 	</Product>
 </Wix>
-]]></File>
-			</Files>
-		</Project>
-	</Combine>
+]]>
+</File>
+		</Files>
+	</Project>
 </Template>

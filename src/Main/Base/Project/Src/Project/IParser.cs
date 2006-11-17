@@ -6,11 +6,17 @@
 // </file>
 
 using System;
+//using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IParser {
-		
+	/// <summary>
+	/// to do: find a better matching namespace - this class is in ICSharpCode.SharpDevelop.dll,
+	/// not in Dom!
+	/// </summary>
+	public interface IParser
+	{
 		string[] LexerTags {
 			get;
 			set;
@@ -33,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets if the parser can parse the specified project.
 		/// Only when no parser for a project is found, the assembly is loaded.
 		/// </summary>
-		bool CanParse(IDomProject project);
+		bool CanParse(IProject project);
 		
 		ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent);
 		

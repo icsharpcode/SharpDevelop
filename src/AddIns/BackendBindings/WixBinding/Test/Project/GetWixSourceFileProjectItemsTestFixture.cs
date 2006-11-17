@@ -31,23 +31,23 @@ namespace WixBinding.Tests.Project
 			
 			FileProjectItem item = new FileProjectItem(p, ItemType.None);
 			item.Include = "readme.txt";
-			p.Items.Add(item);
+			ProjectService.AddProjectItem(p, item);
 			
 			ReferenceProjectItem referenceItem = new ReferenceProjectItem(p);
 			referenceItem.Include = "System.Windows.Forms";
-			p.Items.Add(referenceItem);
+			ProjectService.AddProjectItem(p, referenceItem);
 			
 			item = new FileProjectItem(p, ItemType.Compile);
 			item.Include = "setup.wxs";
-			p.Items.Add(item);
+			ProjectService.AddProjectItem(p, item);
 			
 			item = new FileProjectItem(p, ItemType.Compile);
 			item.Include = "test.wxi";
-			p.Items.Add(item);
+			ProjectService.AddProjectItem(p, item);
 			
 			item = new FileProjectItem(p, ItemType.Compile);
 			item.Include = "dialogs.wxs";
-			p.Items.Add(item);
+			ProjectService.AddProjectItem(p, item);
 			
 			wixFileProjectItemCount = 0;
 			

@@ -12,6 +12,8 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using Microsoft.Build.BuildEngine;
+using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
 {
@@ -72,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						if (!FileUtility.IsBaseDirectory(project.Directory, directoryName))
 							continue;
 						LoggingService.Debug("Searching for child items in " + project.Name);
-						foreach (ProjectItem item in project.Items.ToArray()) {
+						foreach (ProjectItem item in Linq.ToArray(project.Items)) {
 							FileProjectItem fileItem = item as FileProjectItem;
 							if (fileItem == null)
 								continue;
@@ -88,12 +90,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 								} else {
 									newItem.FileName = fileItem.FileName;
 								}
-								fileItem.CopyExtraPropertiesTo(newItem);
+								fileItem.CopyMetadataTo(newItem);
 								if (fileItem.IsLink) {
 									string newVirtualFullName = FileUtility.RenameBaseDirectory(virtualFullName, directoryName, copiedFileName);
-									fileItem.Properties["Link"] = FileUtility.GetRelativePath(node.Project.Directory, newVirtualFullName);
+									fileItem.SetEvaluatedMetadata("Link", FileUtility.GetRelativePath(node.Project.Directory, newVirtualFullName));
 								}
-								node.Project.Items.Add(newItem);
+								ProjectService.AddProjectItem(node.Project, newItem);
 							}
 						}
 					}
@@ -213,9 +215,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 								string fileName = pair.Key;
 								string relFileName = FileUtility.GetRelativePath(node.Project.Directory, fileName);
 								FileNode fileNode = new FileNode(fileName, FileNodeStatus.InProject);
-								FileProjectItem fileProjectItem = new FileProjectItem(node.Project, IncludeFileInProject.GetDefaultItemType(node.Project, fileName));
-								fileProjectItem.Include = relFileName;
-								fileProjectItem.Properties.Set("Link", Path.Combine(node.RelativePath, Path.GetFileName(fileName)));
+								FileProjectItem fileProjectItem = new FileProjectItem(node.Project, node.Project.GetDefaultItemType(fileName), relFileName);
+								fileProjectItem.SetEvaluatedMetadata("Link", Path.Combine(node.RelativePath, Path.GetFileName(fileName)));
 								fileProjectItem.DependentUpon = pair.Value;
 								fileNode.ProjectItem = fileProjectItem;
 								fileNode.AddTo(node);
@@ -286,14 +287,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			using (NewFileDialog nfd = new NewFileDialog(node.Directory)) {
 				if (nfd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					bool additionalProperties = false;
-					foreach (KeyValuePair<string, PropertyGroup> createdFile in nfd.CreatedFiles) {
+					foreach (KeyValuePair<string, FileDescriptionTemplate> createdFile in nfd.CreatedFiles) {
 						FileProjectItem item = CreateNewFile(node, createdFile.Key);
-						if (!FileUtility.IsEqualFileName(node.Directory, Path.GetDirectoryName(createdFile.Key))) {
+						
+						if (createdFile.Value.SetProjectItemProperties(item)) {
 							additionalProperties = true;
-						}
-						if (createdFile.Value.PropertyCount > 0) {
-							additionalProperties = true;
-							item.Properties.Merge(createdFile.Value);
 						}
 					}
 					if (additionalProperties) {

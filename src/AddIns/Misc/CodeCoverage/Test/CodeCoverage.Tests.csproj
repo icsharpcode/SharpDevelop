@@ -45,6 +45,7 @@
       <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Microsoft.Build.Engine" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />

@@ -17,9 +17,9 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace VBNetBinding
 {
-	public class VBNetProject : MSBuildProject
+	public class VBNetProject : CompilableProject
 	{
-		public override void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocations location)
+		/*public override void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocations location)
 		{
 			base.SetProperty(configurationName, platform, property, value, location);
 			if (property == "OutputType") {
@@ -35,7 +35,7 @@ namespace VBNetBinding
 						break;
 				}
 			}
-		}
+		}*/
 		
 		[Browsable(false)]
 		public override IAmbience Ambience {
@@ -44,24 +44,31 @@ namespace VBNetBinding
 			}
 		}
 		
-		public VBNetProject(string fileName, string projectName)
+		public VBNetProject(IMSBuildEngineProvider provider, string fileName, string projectName)
+			: base(provider)
 		{
 			this.Name = projectName;
 			InitVB();
-			SetupProject(fileName);
-			IdGuid = BaseConfiguration["ProjectGuid"];
+			LoadProject(fileName);
 		}
 		
 		public const string DefaultTargetsFile = @"$(MSBuildBinPath)\Microsoft.VisualBasic.Targets";
 		
 		public VBNetProject(ProjectCreateInformation info)
+			: base(info.Solution)
 		{
 			InitVB();
 			Create(info);
-			this.Imports.Add(new MSBuildImport(DefaultTargetsFile));
+			
+			SetProperty("Debug", null, "DefineConstants", "DEBUG=1,TRACE=1",
+			            PropertyStorageLocations.ConfigurationSpecific, true);
+			SetProperty("Release", null, "DefineConstants", "TRACE=1",
+			            PropertyStorageLocations.ConfigurationSpecific, true);
+			
+			this.MSBuildProject.AddNewImport(DefaultTargetsFile, null);
 		}
 		
-		public override ParseProjectContent CreateProjectContent()
+		protected override ParseProjectContent CreateProjectContent()
 		{
 			ParseProjectContent pc = base.CreateProjectContent();
 			ReferenceProjectItem vbRef = new ReferenceProjectItem(this, "Microsoft.VisualBasic");
@@ -74,16 +81,24 @@ namespace VBNetBinding
 		
 		void InitVB()
 		{
-			Language = "VBNet";
-			LanguageProperties = LanguageProperties.VBNet;
-			BuildConstantSeparator = ',';
-			reparseSensitiveProperties.Add("TargetFrameworkVersion");
-			reparseSensitiveProperties.Add("DefineConstants");
+			reparseReferencesSensitiveProperties.Add("TargetFrameworkVersion");
+			reparseCodeSensitiveProperties.Add("DefineConstants");
 		}
 		
-		public override bool CanCompile(string fileName)
+		public override string Language {
+			get { return VBNetLanguageBinding.LanguageName; }
+		}
+		
+		public override LanguageProperties LanguageProperties {
+			get { return LanguageProperties.VBNet; }
+		}
+		
+		public override ItemType GetDefaultItemType(string fileName)
 		{
-			return string.Equals(Path.GetExtension(fileName), ".vb", StringComparison.OrdinalIgnoreCase);
+			if (string.Equals(Path.GetExtension(fileName), ".vb", StringComparison.OrdinalIgnoreCase))
+				return ItemType.Compile;
+			else
+				return base.GetDefaultItemType(fileName);
 		}
 	}
 }

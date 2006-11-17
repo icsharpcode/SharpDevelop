@@ -8,16 +8,13 @@
 		<Name>${res:Templates.Project.EmptyProject.Name}</Name>
 		<Category>C#</Category>
 		<Icon>C#.Project.EmptyProject</Icon>
-		<LanguageName>C#</LanguageName>
 		<Description>${res:Templates.Project.EmptyProject.Description}</Description>
 	</TemplateConfiguration>
 	
-	<Combine name = "${ProjectName}" directory = ".">
-		<Project name = "${ProjectName}" directory = ".">
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Xml" />
-			</ProjectItems>
-		</Project>
-	</Combine>
+	<Project language = "C#">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
+	</Project>
 </Template>

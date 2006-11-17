@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 	{
 		SD.WebReference webReference;
 		DiscoveryClientProtocol protocol;
-		MSBuildProject project;
+		MSBuildBasedProject project;
 		WebReferenceUrl webReferenceUrl;
 		FileProjectItem discoFileProjectItem;
 		FileProjectItem referenceMapFileProjectItem;
@@ -38,16 +38,15 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		string name = "localhost1";
 		string proxyNamespace = "WebReferenceNamespace";
 		string updateFromUrl = "http://localhost/test.asmx";
-				
+		
 		[TestFixtureSetUp]
 		public void SetupFixture()
 		{
-			project = new MSBuildProject();
+			project = WebReferenceTestHelper.CreateTestProject("C#");
 			project.FileName = "C:\\Projects\\Web.csproj";
-			project.Language = "C#";
 			WebReferencesProjectItem item = new WebReferencesProjectItem(project);
 			item.Include = "Web References\\";
-			project.Items.Add(item);
+			ProjectService.AddProjectItem(project, item);
 			
 			protocol = new DiscoveryClientProtocol();
 			DiscoveryDocumentReference discoveryRef = new DiscoveryDocumentReference();
@@ -71,10 +70,10 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			// Change the web reference name.
 			webReference.Name = name;
 			webReferenceUrl = (WebReferenceUrl)WebReferenceTestHelper.GetProjectItem(webReference.Items, ItemType.WebReferenceUrl);
-		
+			
 			discoFileProjectItem = WebReferenceTestHelper.GetFileProjectItem(webReference.Items, "Web References\\localhost1\\test.disco", ItemType.None);
 			referenceMapFileProjectItem = WebReferenceTestHelper.GetFileProjectItem(webReference.Items, "Web References\\localhost1\\Reference.map", ItemType.None);
-			wsdlFileProjectItem = WebReferenceTestHelper.GetFileProjectItem(webReference.Items, "Web References\\localhost1\\test.wsdl", ItemType.None); 
+			wsdlFileProjectItem = WebReferenceTestHelper.GetFileProjectItem(webReference.Items, "Web References\\localhost1\\test.wsdl", ItemType.None);
 			proxyFileProjectItem = WebReferenceTestHelper.GetFileProjectItem(webReference.Items, "Web References\\localhost1\\Reference.cs", ItemType.Compile);
 		}
 		

@@ -28,6 +28,7 @@ namespace WixBinding.Tests.Utils
 		public static WixProject CreateEmptyWixProject()
 		{
 			ProjectCreateInformation info = new ProjectCreateInformation();
+			info.Solution = new Solution();
 			info.ProjectName = "Test";
 			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
 

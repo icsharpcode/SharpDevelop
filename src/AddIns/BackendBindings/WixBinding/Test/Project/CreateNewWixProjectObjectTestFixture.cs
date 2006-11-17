@@ -26,8 +26,10 @@ namespace WixBinding.Tests.Project
 		public void SetUpFixture()
 		{
 			info = new ProjectCreateInformation();
+			info.Solution = new Solution();
 			info.ProjectName = "Test";
 			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
+			info.RootNamespace = "Test";
 
 			project = new WixProject(info);
 		}
@@ -47,79 +49,46 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void OutputName()
 		{
-			Assert.AreEqual(info.ProjectName, project.BaseConfiguration["OutputName"]);
+			Assert.AreEqual(info.ProjectName, project.GetProperty("OutputName"));
 		}
 		
 		[Test]
 		public void OutputType()
 		{
-			Assert.AreEqual(WixOutputType.package.ToString(), project.BaseConfiguration["OutputType"]);
+			Assert.AreEqual(WixOutputType.package.ToString(), project.GetProperty("OutputType"));
 		}
 		
 		[Test]
 		public void Imports()
 		{
-			Assert.IsTrue(project.Imports.Contains(new MSBuildImport(WixProject.DefaultTargetsFile)));
+			Assert.AreEqual(1, project.MSBuildProject.Imports.Count);
+			Microsoft.Build.BuildEngine.Import[] imports = { null };
+			project.MSBuildProject.Imports.CopyTo(imports, 0);
+			Assert.AreEqual(imports[0].ProjectPath, WixProject.DefaultTargetsFile);
 		}
 		
 		[Test]
 		public void WixToolPath()
 		{
-			Assert.AreEqual(@"$(SharpDevelopBinPath)\Tools\Wix", project.BaseConfiguration["WixToolPath"]);
+			Assert.AreEqual(@"$(SharpDevelopBinPath)\Tools\Wix", project.GetUnevalatedProperty("WixToolPath"));
 		}
 		
 		[Test]
 		public void ToolPath()
 		{
-			Assert.AreEqual(@"$(WixToolPath)", project.BaseConfiguration["ToolPath"]);
+			Assert.AreEqual(@"$(WixToolPath)", project.GetUnevalatedProperty("ToolPath"));
 		}
 		
 		[Test]
 		public void WixMSBuildExtensionsPath()
 		{
-			Assert.AreEqual(@"$(SharpDevelopBinPath)\Tools\Wix", project.BaseConfiguration["WixMSBuildExtensionsPath"]);
+			Assert.AreEqual(@"$(SharpDevelopBinPath)\Tools\Wix", project.GetUnevalatedProperty("WixMSBuildExtensionsPath"));
 		}
 		
 		[Test]
 		public void DebugConfiguration()
 		{
-			Assert.AreEqual("Debug", project.BaseConfiguration["Configuration"]);
-		}
-		
-		[Test]
-		public void DebugBaseOutputPath()
-		{
-			Assert.AreEqual(@"obj\", project.Configurations["Debug|*"]["BaseOutputPath"]);
-		}
-		
-		[Test]
-		public void DebugIntermediateOutputPath()
-		{
-			Assert.AreEqual(@"obj\Debug\", project.Configurations["Debug|*"]["IntermediateOutputPath"]);
-		}
-
-		[Test]
-		public void DebugOutputPath()
-		{
-			Assert.AreEqual(@"bin\Debug\", project.Configurations["Debug|*"]["OutputPath"]);
-		}
-				
-		[Test]
-		public void ReleaseBaseOutputPath()
-		{
-			Assert.AreEqual(@"obj\", project.Configurations["Release|*"]["BaseOutputPath"]);
-		}
-		
-		[Test]
-		public void ReleaseIntermediateOutputPath()
-		{
-			Assert.AreEqual(@"obj\Release\", project.Configurations["Release|*"]["IntermediateOutputPath"]);
-		}
-
-		[Test]
-		public void ReleaseOutputPath()
-		{
-			Assert.AreEqual(@"bin\Release\", project.Configurations["Release|*"]["OutputPath"]);
+			Assert.AreEqual("Debug", project.GetProperty("Configuration"));
 		}
 		
 		[Test]

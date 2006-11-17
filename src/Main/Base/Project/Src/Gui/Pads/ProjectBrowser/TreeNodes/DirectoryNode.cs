@@ -62,16 +62,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		WebReferencesFolder
 	}
 	
-	public class DirectoryNodeFactory
+	public static class DirectoryNodeFactory
 	{
-		DirectoryNodeFactory()
-		{
-		}
-		
 		public static DirectoryNode CreateDirectoryNode(TreeNode parent, IProject project, string directory)
 		{
 			DirectoryNode node = new DirectoryNode(directory);
-			if (directory == Path.Combine(project.Directory, project.AppDesignerFolder)) {
+			if (!string.IsNullOrEmpty(project.AppDesignerFolder)
+			    && directory == Path.Combine(project.Directory, project.AppDesignerFolder))
+			{
 				node.SpecialFolder = SpecialFolder.AppDesigner;
 			} else if (DirectoryNode.IsWebReferencesFolder(project, directory)) {
 				node = new WebReferencesFolderNode(directory);
@@ -655,12 +653,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (sourceProject != null) {
 				string sourceDirectory = Path.GetDirectoryName(fileName);
 				bool dependendElementsCopied = false;
-				foreach (ProjectItem item in sourceProject.Items.ToArray()) {
+				foreach (ProjectItem item in Linq.ToArray(sourceProject.Items)) {
 					FileProjectItem fileItem = item as FileProjectItem;
 					if (fileItem == null)
 						continue;
 					if (newItem != null && FileUtility.IsEqualFileName(fileItem.FileName, fileName)) {
-						fileItem.CopyExtraPropertiesTo(newItem);
+						fileItem.CopyMetadataTo(newItem);
 					}
 					if (!string.Equals(fileItem.DependentUpon, shortFileName, StringComparison.OrdinalIgnoreCase))
 						continue;
@@ -700,9 +698,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			} else if (node.IsLink) {
 				string relFileName = FileUtility.GetRelativePath(Project.Directory, node.FileName);
 				FileNode fileNode = new FileNode(node.FileName, FileNodeStatus.InProject);
-				FileProjectItem fileProjectItem = new FileProjectItem(Project, IncludeFileInProject.GetDefaultItemType(Project, node.FileName));
+				FileProjectItem fileProjectItem = new FileProjectItem(Project, Project.GetDefaultItemType(node.FileName));
 				fileProjectItem.Include = relFileName;
-				fileProjectItem.Properties.Set("Link", Path.Combine(RelativePath, Path.GetFileName(node.FileName)));
+				fileProjectItem.SetEvaluatedMetadata("Link", Path.Combine(RelativePath, Path.GetFileName(node.FileName)));
 				fileNode.ProjectItem = fileProjectItem;
 				fileNode.AddTo(this);
 				ProjectService.AddProjectItem(Project, fileProjectItem);

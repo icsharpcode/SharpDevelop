@@ -17,7 +17,7 @@ using Boo.Lang.Compiler.Steps;
 using Boo.Lang.Parser;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-
+using ICSharpCode.SharpDevelop.Project;
 namespace Grunwald.BooBinding.CodeCompletion
 {
 	public class BooParser : IParser
@@ -49,7 +49,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			return string.Equals(Path.GetExtension(fileName), ".boo", StringComparison.InvariantCultureIgnoreCase);
 		}
 		
-		public bool CanParse(IDomProject project)
+		public bool CanParse(IProject project)
 		{
 			return project.Language == BooLanguageBinding.LanguageName;
 		}

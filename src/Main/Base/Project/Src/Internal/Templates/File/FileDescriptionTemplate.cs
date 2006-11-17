@@ -6,11 +6,13 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
@@ -23,25 +25,47 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string content;
 		byte[] contentData;
 		
-		string buildAction;
-		string copyToOutputDirectory;
-		string dependentUpon;
-		string subType;
+		string itemType;
+		Dictionary<string, string> metadata = new Dictionary<string, string>();
 		
 		public bool IsDependentFile {
 			get {
-				return !string.IsNullOrEmpty(dependentUpon);
+				return metadata.ContainsKey("DependentUpon");
 			}
 		}
 		
+		static readonly Set<string> knownAttributes = new Set<string>(
+			"name", "language", "buildAction", "src", "binary"
+		);
+		
 		public FileDescriptionTemplate(XmlElement xml, string hintPath)
 		{
+			TemplateLoadException.AssertAttributeExists(xml, "name");
+			
 			name = xml.GetAttribute("name");
 			language = xml.GetAttribute("language");
-			buildAction = xml.GetAttribute("buildAction");
-			copyToOutputDirectory = xml.GetAttribute("copyToOutputDirectory");
-			dependentUpon = xml.GetAttribute("dependentUpon");
-			subType = xml.GetAttribute("subType");
+			if (xml.HasAttribute("buildAction")) {
+				itemType = xml.GetAttribute("buildAction");
+			}
+			foreach (XmlAttribute attribute in xml.Attributes) {
+				string attributeName = attribute.Name;
+				if (!knownAttributes.Contains(attributeName)) {
+					if (attributeName == "copyToOutputDirectory") {
+						ProjectTemplate.WarnObsoleteAttribute(xml, attributeName, "Use upper-case attribute names for MSBuild metadata values!");
+						attributeName = "CopyToOutputDirectory";
+					}
+					if (attributeName == "dependentUpon") {
+						ProjectTemplate.WarnObsoleteAttribute(xml, attributeName, "Use upper-case attribute names for MSBuild metadata values!");
+						attributeName = "DependentUpon";
+					}
+					if (attributeName == "subType") {
+						ProjectTemplate.WarnObsoleteAttribute(xml, attributeName, "Use upper-case attribute names for MSBuild metadata values!");
+						attributeName = "SubType";
+					}
+					
+					metadata[attributeName] = attribute.Value;
+				}
+			}
 			if (xml.HasAttribute("src")) {
 				string fileName = Path.Combine(hintPath, StringParser.Parse(xml.GetAttribute("src")));
 				try {
@@ -60,21 +84,20 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		}
 		
 		/// <summary>
-		/// Sets MSBuild properties.
+		/// Sets meta data properties.
 		/// </summary>
-		public PropertyGroup CreateMSBuildProperties()
+		/// <returns>Returns <c>true</c> when the projectItem was changed</returns>
+		public bool SetProjectItemProperties(ProjectItem projectItem)
 		{
-			PropertyGroup pg = new PropertyGroup();
-			if (!string.IsNullOrEmpty(copyToOutputDirectory)) {
-				pg.Set("CopyToOutputDirectory", StringParser.Parse(copyToOutputDirectory));
+			if (projectItem == null)
+				throw new ArgumentNullException("projectItem");
+			if (itemType != null) {
+				projectItem.ItemType = new ItemType(itemType);
 			}
-			if (!string.IsNullOrEmpty(dependentUpon)) {
-				pg.Set("DependentUpon", StringParser.Parse(dependentUpon));
+			foreach (KeyValuePair<string, string> pair in metadata) {
+				projectItem.SetMetadata(pair.Key, StringParser.Parse(pair.Value));
 			}
-			if (!string.IsNullOrEmpty(subType)) {
-				pg.Set("SubType", StringParser.Parse(subType));
-			}
-			return pg;
+			return itemType != null && metadata.Count > 0;
 		}
 		
 		public FileDescriptionTemplate(string name, string language, string content)
@@ -105,15 +128,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public byte[] ContentData {
 			get {
 				return contentData;
-			}
-		}
-		
-		public string BuildAction {
-			get {
-				return buildAction ?? "";
-			}
-			set {
-				buildAction = value;
 			}
 		}
 	}

@@ -100,16 +100,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				Solution.ProjectConfigurationPlatformMatching matching;
 				if (!matchingDict.TryGetValue(p, out matching)) {
-					matching = new Solution.ProjectConfigurationPlatformMatching(p, p.Configuration, p.Platform, null);
+					matching = new Solution.ProjectConfigurationPlatformMatching(p, p.ActiveConfiguration, p.ActivePlatform, null);
 				}
 				DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)row.Cells[1];
 				c1.Tag = matching;
-				SetItems(c1.Items, p.GetConfigurationNames());
+				SetItems(c1.Items, p.ConfigurationNames);
 				SelectElement(c1, matching.Configuration);
 				
 				DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell)row.Cells[2];
 				c2.Tag = matching;
-				SetItems(c2.Items, p.GetPlatformNames());
+				SetItems(c2.Items, p.PlatformNames);
 				SelectElement(c2, matching.Platform);
 			}
 			inUpdate = false;

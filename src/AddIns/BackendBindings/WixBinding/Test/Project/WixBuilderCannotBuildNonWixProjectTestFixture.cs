@@ -19,15 +19,15 @@ namespace WixBinding.Tests.Project
 	public class WixBuilderCannotBuildNonWixProjectTestFixture
 	{
 		WixProjectNodeBuilder wixNodeBuilder;
-		MSBuildProject project;
+		MSBuildBasedProject project;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			wixNodeBuilder = new WixProjectNodeBuilder();
-			project = new MSBuildProject();
+			project = new MSBuildBasedProject(MSBuildInternals.CreateEngine());
 			project.IdGuid = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
-			project.FileName = "test.csproj";
+			project.FileName = @"C:\Projects\Test\test.csproj";
 		}
 		
 		[Test]

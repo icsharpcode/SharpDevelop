@@ -10,26 +10,18 @@ using System;
 namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
-	/// Description of ImportProjectItem.
+	/// Project item for default namespace import (e.g in VB)
 	/// </summary>
-	public class ImportProjectItem : ProjectItem
+	public sealed class ImportProjectItem : ProjectItem
 	{
-		public ImportProjectItem(IProject project) : base(project)
+		public ImportProjectItem(IProject project, string include)
+			: base(project, ItemType.Import, include)
 		{
 		}
 		
-		public override ItemType ItemType {
-			get {
-				return ItemType.Import;
-			}
-		}
-		
-		public override ProjectItem Clone()
+		internal ImportProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem buildItem)
+			: base(project, buildItem)
 		{
-			ImportProjectItem n = new ImportProjectItem(this.Project);
-			n.Include = this.Include;
-			this.CopyExtraPropertiesTo(n);
-			return n;
 		}
 	}
 }

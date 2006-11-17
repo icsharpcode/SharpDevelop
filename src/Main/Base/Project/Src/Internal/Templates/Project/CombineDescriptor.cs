@@ -29,15 +29,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			{
 				name = element.GetAttribute("name");
 				foreach (XmlNode node in element.ChildNodes) {
-					if (node != null) {
-						switch (node.Name) {
-							case "Project":
-								projectDescriptors.Add(ProjectDescriptor.CreateProjectDescriptor((XmlElement)node, hintPath));
-								break;
-							case "SolutionFolder":
-								solutionFoldersDescriptors.Add(new SolutionFolderDescriptor((XmlElement)node, hintPath));
-								break;
-						}
+					switch (node.Name) {
+						case "Project":
+							projectDescriptors.Add(new ProjectDescriptor((XmlElement)node, hintPath));
+							break;
+						case "SolutionFolder":
+							solutionFoldersDescriptors.Add(new SolutionFolderDescriptor((XmlElement)node, hintPath));
+							break;
 					}
 				}
 			}
@@ -54,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					IProject newProject = projectDescriptor.CreateProject(projectCreateInformation, defaultLanguage);
 					if (newProject == null)
 						return false;
-					newProject.Location = FileUtility.GetRelativePath(projectCreateInformation.CombinePath, newProject.FileName);
+					newProject.Location = FileUtility.GetRelativePath(projectCreateInformation.SolutionPath, newProject.FileName);
 					parentFolder.AddFolder(newProject);
 					projectCreateInformation.CreatedProjects.Add(newProject.FileName);
 				}
@@ -98,26 +96,28 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public string CreateSolution(ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
 			Solution newSolution = new Solution();
+			projectCreateInformation.Solution = newSolution;
+			
 			string newCombineName = StringParser.Parse(name, new string[,] {
 			                                           	{"ProjectName", projectCreateInformation.ProjectName}
 			                                           });
 			
 			newSolution.Name = newCombineName;
 			
-			string oldCombinePath = projectCreateInformation.CombinePath;
+			string oldCombinePath = projectCreateInformation.SolutionPath;
 			string oldProjectPath = projectCreateInformation.ProjectBasePath;
 			if (relativeDirectory != null && relativeDirectory.Length > 0 && relativeDirectory != ".") {
-				projectCreateInformation.CombinePath     = Path.Combine(projectCreateInformation.CombinePath, relativeDirectory);
-				projectCreateInformation.ProjectBasePath = Path.Combine(projectCreateInformation.CombinePath, relativeDirectory);
-				if (!Directory.Exists(projectCreateInformation.CombinePath)) {
-					Directory.CreateDirectory(projectCreateInformation.CombinePath);
+				projectCreateInformation.SolutionPath     = Path.Combine(projectCreateInformation.SolutionPath, relativeDirectory);
+				projectCreateInformation.ProjectBasePath = Path.Combine(projectCreateInformation.SolutionPath, relativeDirectory);
+				if (!Directory.Exists(projectCreateInformation.SolutionPath)) {
+					Directory.CreateDirectory(projectCreateInformation.SolutionPath);
 				}
 				if (!Directory.Exists(projectCreateInformation.ProjectBasePath)) {
 					Directory.CreateDirectory(projectCreateInformation.ProjectBasePath);
 				}
 			}
 			
-			projectCreateInformation.CombinePath = oldCombinePath;
+			projectCreateInformation.SolutionPath = oldCombinePath;
 			projectCreateInformation.ProjectBasePath = oldProjectPath;
 			
 			if (!mainFolder.AddContents(newSolution, projectCreateInformation, defaultLanguage, newSolution)) {
@@ -125,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				return null;
 			}
 			
-			string combineLocation = Path.Combine(projectCreateInformation.CombinePath, newCombineName + ".sln");
+			string combineLocation = Path.Combine(projectCreateInformation.SolutionPath, newCombineName + ".sln");
 			// Save combine
 			if (File.Exists(combineLocation)) {
 				

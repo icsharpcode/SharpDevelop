@@ -9,7 +9,6 @@
 		<Category>VBNet</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>VBNet.Project.FullProject</Icon>
-		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.Direct3DApplication.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -19,36 +18,33 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
+	<Project language="VBNet">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
+			<Reference Include="System.Xml" />
+			<Reference Include="Microsoft.DirectX" />
+			<Reference Include="Microsoft.DirectX.Direct3D" />
+			
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Drawing" />
+			<Import Include="System.Diagnostics" />
+			<Import Include="System.Windows.Forms" />
+			<Import Include="Microsoft.DirectX" />
+			<Import Include="Microsoft.DirectX.Direct3D" />
+		</ProjectItems>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options OutputType = "WinExe" />
-			
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.Drawing" />
-				<Reference Include="System.Windows.Forms" />
-				<Reference Include="System.Xml" />
-				<Reference Include="Microsoft.DirectX" />
-				<Reference Include="Microsoft.DirectX.Direct3D" />
-				
-				<Import Include="Microsoft.VisualBasic" />
-				<Import Include="System" />
-				<Import Include="System.Collections" />
-				<Import Include="System.Collections.Generic" />
-				<Import Include="System.Drawing" />
-				<Import Include="System.Diagnostics" />
-				<Import Include="System.Windows.Forms" />
-				<Import Include="Microsoft.DirectX" />
-				<Import Include="Microsoft.DirectX.Direct3D" />
-			</ProjectItems>
-			
-			<Files>
-				<File name="MainClass.vb"><![CDATA[${StandardHeader.VBNET}
+		<PropertyGroup>
+			<OutputType>WinExe</OutputType>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="MainClass.vb"><![CDATA[${StandardHeader.VBNET}
 
 ' This is the main class of my Direct3D application
 Public Class MainClass
@@ -155,7 +151,6 @@ Public Class MainClass
 End Class
 ]]></File>
 			<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
-			</Files>
-		</Project>
-	</Combine>
+		</Files>
+	</Project>
 </Template>

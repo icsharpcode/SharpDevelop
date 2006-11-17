@@ -7,24 +7,18 @@
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.EmptyProject.Name}</Name>
 		<Category>VBNet</Category>
-		<LanguageName>VBNet</LanguageName>
 		<Icon>VBNet.Project.EmptyProject</Icon>
 		<Description>${res:Templates.Project.EmptyProject.Description}</Description>
 	</TemplateConfiguration>
 	
-	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
-		<Project name = "${ProjectName}" directory = ".">
-			<ProjectItems>
-				<Reference Include="System" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.Xml" />
-				
-				<Import Include="System" />
-				<Import Include="Microsoft.VisualBasic" />
-			</ProjectItems>
-		</Project>
-	</Combine>
+	<Project language = "VBNet">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+			
+			<Import Include="System" />
+			<Import Include="Microsoft.VisualBasic" />
+		</ProjectItems>
+	</Project>
 </Template>

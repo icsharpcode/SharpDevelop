@@ -29,7 +29,7 @@ namespace UnitTesting.Tests.Tree
 		TreeNodeCollection nodes;
 		DummyParserServiceTestTreeView dummyTreeView;
 		TestTreeView treeView;
-		MSBuildProject project;
+		MSBuildBasedProject project;
 		MockClass testClass;
 		ExtTreeNode testFixtureNode;
 		TreeNodeCollection rootChildNodes;
@@ -42,11 +42,11 @@ namespace UnitTesting.Tests.Tree
 			solution = new Solution();
 			
 			// Create a project to display in the test tree view.
-			project = new MSBuildProject();
+			project = new MockCSharpProject();
 			project.Name = "TestProject";
 			ReferenceProjectItem nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
 			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
-			project.Items.Add(nunitFrameworkReferenceItem);
+			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
 			
 			// Add a test class with a TestFixture attributes.
 			projectContent = new MockProjectContent();

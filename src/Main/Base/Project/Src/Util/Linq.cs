@@ -41,13 +41,24 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Returns the elements of type T.
+		/// Returns the elements of type T inside input by running
+		/// "if (element is T) yield return (T)element;" on each element.
 		/// </summary>
 		public static IEnumerable<T> OfType<T>(IEnumerable input)
 		{
 			foreach (object element in input) {
 				if (element is T)
 					yield return (T)element;
+			}
+		}
+		
+		/// <summary>
+		/// Casts a non-generic enumeration into a generic enumeration.
+		/// </summary>
+		public static IEnumerable<T> CastTo<T>(IEnumerable input)
+		{
+			foreach (object element in input) {
+				yield return (T)element;
 			}
 		}
 		
@@ -64,9 +75,31 @@ namespace ICSharpCode.SharpDevelop
 			return default(T);
 		}
 		
+		public static List<T> ToList<T>(IEnumerable<T> input)
+		{
+			return new List<T>(input);
+		}
+		
 		public static T[] ToArray<T>(IEnumerable<T> input)
 		{
-			return new List<T>(input).ToArray();
+			if (input is ICollection<T>) {
+				ICollection<T> c = (ICollection<T>)input;
+				T[] arr = new T[c.Count];
+				c.CopyTo(arr, 0);
+				return arr;
+			} else {
+				return new List<T>(input).ToArray();
+			}
+		}
+		
+		public static int Count<T>(IEnumerable<T> input)
+		{
+			int count = 0;
+			using (IEnumerator<T> e = input.GetEnumerator()) {
+				while (e.MoveNext())
+					count++;
+			}
+			return count;
 		}
 	}
 }

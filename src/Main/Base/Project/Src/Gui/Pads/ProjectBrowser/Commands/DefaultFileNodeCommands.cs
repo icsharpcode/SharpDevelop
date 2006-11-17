@@ -131,10 +131,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				}
 			}
 			
-			ItemType type = GetDefaultItemType(fileNode.Project, fileNode.FileName);
+			ItemType type = fileNode.Project.GetDefaultItemType(fileNode.FileName);
 			
 			FileProjectItem newItem = new FileProjectItem(fileNode.Project, type);
 			newItem.Include = FileUtility.GetRelativePath(fileNode.Project.Directory, fileNode.FileName);
+			
 			ProjectService.AddProjectItem(fileNode.Project, newItem);
 			
 			fileNode.ProjectItem    = newItem;
@@ -147,27 +148,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			return newItem;
 		}
 		
-		public static ItemType GetDefaultItemType(IProject project, string fileName)
-		{
-			if (project.CanCompile(fileName)) {
-				return ItemType.Compile;
-			} else {
-				switch (Path.GetExtension(fileName).ToLowerInvariant()) {
-					case ".resx":
-					case ".resources":
-						return ItemType.EmbeddedResource;
-						
-						// HACK: This isn't really a solution. :-( Maybe in the near
-						// future we can use the known attributes in the XFT files, too.
-					case ".xaml":
-						return ItemType.Page;
-
-					default:
-						return ItemType.Content;
-				}
-			}
-		}
-		
 		public static void IncludeDirectoryNode(DirectoryNode directoryNode, bool includeSubNodes)
 		{
 			if (directoryNode.Parent is DirectoryNode && !(directoryNode.Parent is ProjectNode)) {
@@ -175,8 +155,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					IncludeDirectoryNode((DirectoryNode)directoryNode.Parent, false);
 				}
 			}
-			FileProjectItem newItem = new FileProjectItem(directoryNode.Project, ItemType.Folder);
-			newItem.Include = FileUtility.GetRelativePath(directoryNode.Project.Directory, directoryNode.Directory);
+			FileProjectItem newItem = new FileProjectItem(
+				directoryNode.Project, ItemType.Folder,
+				FileUtility.GetRelativePath(directoryNode.Project.Directory, directoryNode.Directory)
+			);
 			ProjectService.AddProjectItem(directoryNode.Project, newItem);
 			directoryNode.ProjectItem = newItem;
 			directoryNode.FileNodeStatus = FileNodeStatus.InProject;

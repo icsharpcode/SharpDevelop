@@ -25,7 +25,7 @@ namespace WixBinding.Tests.Document
 		public void SetUpFixture()
 		{
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
-			project.BaseConfiguration["DefineConstants"] = @"DATADIR=Bitmaps;";
+			project.SetProperty("DefineConstants", @"DATADIR=Bitmaps;");
 			document = new WixDocument(project);
 			document.FileName = @"C:\Projects\Setup\Setup.wxs";
 			document.LoadXml(GetWixXml());

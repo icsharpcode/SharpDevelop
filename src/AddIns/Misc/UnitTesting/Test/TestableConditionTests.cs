@@ -74,7 +74,7 @@ namespace UnitTesting.Tests
 		public void GetProjectFromTreeView()
 		{
 			MockTestTreeView mockTreeView = new MockTestTreeView();
-			MSBuildProject project = new MSBuildProject();
+			MSBuildBasedProject project = new MockCSharpProject();
 			mockTreeView.SelectedProject = project;
 			
 			Assert.IsTrue(Object.ReferenceEquals(project, TestableCondition.GetProject(mockTreeView)));
@@ -93,7 +93,7 @@ namespace UnitTesting.Tests
 		public void GetProjectFromMemberNode()
 		{
 			MockMethod mockMethod = new MockMethod();
-			MSBuildProject project = new MSBuildProject();
+			MSBuildBasedProject project = new MockCSharpProject();
 			MockClass mockClass = new MockClass();
 			MockProjectContent mockProjectContent = new MockProjectContent();
 			mockProjectContent.Project = project;
@@ -116,7 +116,7 @@ namespace UnitTesting.Tests
 		[Test]
 		public void GetProjectFromClassNode()
 		{
-			MSBuildProject project = new MSBuildProject();
+			MSBuildBasedProject project = new MockCSharpProject();
 			MockClass mockClass = new MockClass();
 			MockProjectContent mockProjectContent = new MockProjectContent();
 			mockProjectContent.Project = project;
@@ -196,7 +196,7 @@ namespace UnitTesting.Tests
 		[Test]
 		public void IsValidWhenLanguageIsNull()
 		{
-			MSBuildProject project = new MSBuildProject();
+			MSBuildBasedProject project = new MockCSharpProject();
 			MockClass mockClass = new MockClass();
 			MockProjectContent mockProjectContent = new MockProjectContent();
 			mockProjectContent.Project = project;
@@ -214,7 +214,7 @@ namespace UnitTesting.Tests
 		[Test]
 		public void IsValidWhenNameComparerIsNull()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			MockClass mockClass = new MockClass();
 			MockProjectContent mockProjectContent = new MockProjectContent();
 			mockProjectContent.Project = project;
@@ -231,7 +231,7 @@ namespace UnitTesting.Tests
 		{
 			MockMethod mockMethod = new MockMethod();
 			mockMethod.Attributes.Add(new MockAttribute("Test"));
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			MockClass mockClass = new MockClass();
 			MockProjectContent mockProjectContent = new MockProjectContent();
 			mockProjectContent.Project = project;
@@ -247,7 +247,7 @@ namespace UnitTesting.Tests
 		[Test]
 		public void IsValidWhenClassHasTestFixtureAttribute()
 		{
-			MSBuildProject project = new MSBuildProject();
+			IProject project = new MockCSharpProject();
 			MockClass mockClass = new MockClass();
 			mockClass.Attributes.Add(new MockAttribute("TestFixture"));
 			MockProjectContent mockProjectContent = new MockProjectContent();

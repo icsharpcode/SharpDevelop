@@ -33,7 +33,7 @@ namespace ICSharpCode.WixBinding
 			IProject project = Project;
 			WixCompilerExtensionName[] extensions = extensionPicker.GetExtensions();
 			foreach (WixCompilerExtensionName extension in extensions) {
-				project.Items.Add(CreateProjectItem(extension));
+				ProjectService.AddProjectItem(project, CreateProjectItem(extension));
 			}
 			return true;
 		}
@@ -102,7 +102,7 @@ namespace ICSharpCode.WixBinding
 		{
 			IProject project = Project;
 			foreach (ProjectItem item in GetExtensions()) {
-				project.Items.Remove(item);
+				ProjectService.RemoveProjectItem(project, item);
 			}
 		}
 	}

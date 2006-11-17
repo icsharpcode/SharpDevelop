@@ -245,7 +245,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		
-		[System.Runtime.InteropServices.DllImport("User32.dll")]
+		[System.Runtime.InteropServices.DllImport("user32.dll")]
 		public static extern bool LockWindowUpdate(IntPtr hWnd);
 		
 		public void LoadConfiguration()

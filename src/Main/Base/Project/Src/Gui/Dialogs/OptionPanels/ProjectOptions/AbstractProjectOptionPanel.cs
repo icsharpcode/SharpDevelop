@@ -17,11 +17,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	public abstract class AbstractProjectOptionPanel : AbstractOptionPanel, ICanBeDirty
 	{
 		protected ConfigurationGuiHelper helper;
-		protected MSBuildProject project;
+		protected MSBuildBasedProject project;
 		
 		protected void InitializeHelper()
 		{
-			project = (MSBuildProject)((Properties)CustomizationObject).Get("Project");
+			project = (MSBuildBasedProject)((Properties)CustomizationObject).Get("Project");
 			baseDirectory = project.Directory;
 			helper = new ConfigurationGuiHelper(project, this.ControlDictionary);
 		}

@@ -51,7 +51,17 @@ namespace SharpQuery.Commands
 		/// </summary>
 		public override void Run()
 		{
-			(this.sharpQueryNode as SharpQueryNodeDatabaseRoot).BuildsChilds();
+			try {
+				(this.sharpQueryNode as SharpQueryNodeDatabaseRoot).BuildsChilds();
+			} catch (System.IO.FileNotFoundException ex) {
+				if (ex.ToString().Contains("ADODB")) {
+					ICSharpCode.Core.MessageService.ShowError("ADODB is not installed on your computer.\n" +
+					                                          "Please install the .NET Framework SDK; or install " +
+					                                          "the ADODB assembly into the GAC.");
+				} else {
+					throw;
+				}
+			}
 		}
 	}
 

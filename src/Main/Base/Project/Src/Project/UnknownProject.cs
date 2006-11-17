@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -11,15 +11,17 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class UnknownProject : AbstractProject
 	{
-		string typeGuid = "{00000000-0000-0000-0000-000000000000}";
+		string warningText = "${res:ICSharpCode.SharpDevelop.Commands.ProjectBrowser.NoBackendForProjectType}";
 		
-		public override string TypeGuid {
-			get {
-				return typeGuid;
-			}
-			set {
-				typeGuid = value;
-			}
+		public string WarningText {
+			get { return warningText; }
+			set { warningText = value; }
+		}
+		
+		public UnknownProject(string fileName, string title, string warningText)
+			: this(fileName, title)
+		{
+			this.warningText = warningText;
 		}
 		
 		public UnknownProject(string fileName, string title)
@@ -27,6 +29,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			Name     = title;
 			FileName = fileName;
 			IdGuid = "{" + Guid.NewGuid().ToString() + "}";
+			TypeGuid = "{00000000-0000-0000-0000-000000000000}";
 		}
 	}
 }

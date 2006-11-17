@@ -7,7 +7,9 @@
 
 using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
@@ -41,7 +43,19 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	/// </summary>
 	public class ProjectTemplate : IComparable
 	{
-		public static ArrayList ProjectTemplates = new ArrayList();
+		static List<ProjectTemplate> projectTemplates;
+		
+		/// <summary>
+		/// Gets the list of project templates. Not thread-safe!
+		/// </summary>
+		public static ReadOnlyCollection<ProjectTemplate> ProjectTemplates {
+			get {
+				if (projectTemplates == null) {
+					LoadProjectTemplates();
+				}
+				return projectTemplates.AsReadOnly();
+			}
+		}
 		
 		string    originator    = null;
 		string    created       = null;
@@ -156,25 +170,24 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		protected ProjectTemplate(string fileName)
 		{
 			XmlDocument doc = new XmlDocument();
-			try {
-				doc.Load(fileName);
-			} catch (XmlException ex) {
-				MessageService.ShowError("Invalid xml: " + fileName + "\n" + ex.Message);
-				return;
-			}
+			doc.Load(fileName);
+			LoadFromXml(doc.DocumentElement, fileName);
+		}
+		
+		void LoadFromXml(XmlElement templateElement, string xmlFileName)
+		{
+			// required for warning messages for unknown elements
+			templateElement.SetAttribute("fileName", xmlFileName);
 			
-			doc.DocumentElement.SetAttribute("fileName", fileName); // needed for warning messages for unknown elements
-			originator   = doc.DocumentElement.GetAttribute("originator");
-			created      = doc.DocumentElement.GetAttribute("created");
-			lastmodified = doc.DocumentElement.GetAttribute("lastModified");
+			originator   = templateElement.GetAttribute("originator");
+			created      = templateElement.GetAttribute("created");
+			lastmodified = templateElement.GetAttribute("lastModified");
 			
-			string newProjectDialogVisibleAttr  = doc.DocumentElement.GetAttribute("newprojectdialogvisible");
-			if (newProjectDialogVisibleAttr != null && newProjectDialogVisibleAttr.Length != 0) {
-				if (newProjectDialogVisibleAttr.Equals("false", StringComparison.OrdinalIgnoreCase))
-					newProjectDialogVisible = false;
-			}
+			string newProjectDialogVisibleAttr  = templateElement.GetAttribute("newprojectdialogvisible");
+			if (string.Equals(newProjectDialogVisibleAttr, "false", StringComparison.OrdinalIgnoreCase))
+				newProjectDialogVisible = false;
 			
-			XmlElement config = doc.DocumentElement["TemplateConfiguration"];
+			XmlElement config = templateElement["TemplateConfiguration"];
 			
 			if (config["Wizard"] != null) {
 				wizardpath = config["Wizard"].InnerText;
@@ -182,7 +195,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			
 			name         = config["Name"].InnerText;
 			category     = config["Category"].InnerText;
-			languagename = config["LanguageName"].InnerText;
+			
+			if (config["LanguageName"] != null) {
+				languagename = config["LanguageName"].InnerText;
+				WarnObsoleteNode(config["LanguageName"], "use language attribute on the project node instead");
+			}
 			
 			if (config["Subcategory"] != null) {
 				subcategory = config["Subcategory"].InnerText;
@@ -196,67 +213,83 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				icon = config["Icon"].InnerText;
 			}
 			
-			if (doc.DocumentElement["Solution"] != null) {
-				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(doc.DocumentElement["Solution"], Path.GetDirectoryName(fileName));
-			} else if (doc.DocumentElement["Combine"] != null) {
-				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(doc.DocumentElement["Combine"], Path.GetDirectoryName(fileName));
+			string hintPath = Path.GetDirectoryName(xmlFileName);
+			if (templateElement["Solution"] != null) {
+				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(templateElement["Solution"], hintPath);
+			} else if (templateElement["Combine"] != null) {
+				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(templateElement["Combine"], hintPath);
+				WarnObsoleteNode(templateElement["Combine"], "Use <Solution> instead!");
 			}
 			
-			if (doc.DocumentElement["Project"] != null) {
-				projectDescriptor = ProjectDescriptor.CreateProjectDescriptor(doc.DocumentElement["Project"], Path.GetDirectoryName(fileName));
+			if (templateElement["Project"] != null) {
+				projectDescriptor = new ProjectDescriptor(templateElement["Project"], hintPath);
+			}
+			
+			if (combineDescriptor == null && projectDescriptor == null
+			    || combineDescriptor != null && projectDescriptor != null)
+			{
+				throw new TemplateLoadException("Template must contain either Project or Solution node!");
 			}
 			
 			// Read Actions;
-			if (doc.DocumentElement["Actions"] != null) {
-				foreach (XmlElement el in doc.DocumentElement["Actions"]) {
+			if (templateElement["Actions"] != null) {
+				foreach (XmlElement el in templateElement["Actions"]) {
 					actions.Add(new OpenFileAction(el.Attributes["filename"].InnerText));
 				}
 			}
 		}
 		
-		string lastCombine    = null;
-//		string startupProject = null;
-		ProjectCreateInformation projectCreateInformation;
-
-		public ProjectCreateInformation ProjectCreateInformation
+		[Conditional("DEBUG")]
+		internal static void WarnObsoleteNode(XmlElement element, string message)
 		{
-			get {
-				return projectCreateInformation;
-			}
+			MessageService.ShowWarning("Obsolete node <" + element.Name +
+			                           "> used in '" + element.OwnerDocument.DocumentElement.GetAttribute("fileName") +
+			                           "':\n" + message);
 		}
 		
+		[Conditional("DEBUG")]
+		internal static void WarnObsoleteAttribute(XmlElement element, string attribute, string message)
+		{
+			MessageService.ShowWarning("Obsolete attribute <" + element.Name +
+			                           " " + attribute + "=...>" +
+			                           "used in '" + element.OwnerDocument.DocumentElement.GetAttribute("fileName") +
+			                           "':\n" + message);
+		}
+		
+		[Conditional("DEBUG")]
+		internal static void WarnAttributeMissing(XmlElement element, string attribute)
+		{
+			MessageService.ShowWarning("Missing attribute <" + element.Name +
+			                           " " + attribute + "=...>" +
+			                           " in '" + element.OwnerDocument.DocumentElement.GetAttribute("fileName") +
+			                           "'");
+		}
+		
+//		string startupProject = null;
+
 		public string CreateProject(ProjectCreateInformation projectCreateInformation)
 		{
-			this.projectCreateInformation = projectCreateInformation;
-			
 			if (wizardpath != null) {
-				//              TODO: WIZARD
 				Properties customizer = new Properties();
 				customizer.Set("ProjectCreateInformation", projectCreateInformation);
 				customizer.Set("ProjectTemplate", this);
 				WizardDialog wizard = new WizardDialog("Project Wizard", customizer, wizardpath);
-				if (wizard.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-					if (combineDescriptor != null)
-						lastCombine = combineDescriptor.CreateSolution(projectCreateInformation, this.languagename);
-					else if (projectDescriptor != null)
-						lastCombine = projectDescriptor.CreateProject(projectCreateInformation, this.languagename).FileName;
-				} else {
+				if (wizard.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) != DialogResult.OK) {
 					return null;
 				}
-			} else {
-				if (combineDescriptor != null)
-					lastCombine = combineDescriptor.CreateSolution(projectCreateInformation, this.languagename);
-				else if (projectDescriptor != null)
-					lastCombine = projectDescriptor.CreateProject(projectCreateInformation, this.languagename).FileName;
 			}
-			
-			return lastCombine;
+			if (combineDescriptor != null) {
+				return combineDescriptor.CreateSolution(projectCreateInformation, this.languagename);
+			} else if (projectDescriptor != null) {
+				projectCreateInformation.Solution = new Solution();
+				return projectDescriptor.CreateProject(projectCreateInformation, this.languagename).FileName;
+			} else {
+				return null;
+			}
 		}
 		
-		public void OpenCreatedCombine()
+		public void RunOpenActions(ProjectCreateInformation projectCreateInformation)
 		{
-			ProjectService.LoadSolution(lastCombine);
-			
 			foreach (OpenFileAction action in actions) {
 				action.Run(projectCreateInformation);
 			}
@@ -264,8 +297,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public const string TemplatePath = "/SharpDevelop/BackendBindings/Templates";
 		
-		static ProjectTemplate()
+		static void LoadProjectTemplates()
 		{
+			projectTemplates = new List<ProjectTemplate>();
 			string dataTemplateDir = FileUtility.Combine(PropertyService.DataDirectory, "templates", "project");
 			List<string> files = FileUtility.SearchDirectory(dataTemplateDir, "*.xpt");
 			foreach (string templateDirectory in AddInTree.BuildItems(TemplatePath, null, false)) {
@@ -273,12 +307,16 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 			foreach (string fileName in files) {
 				try {
-					ProjectTemplates.Add(new ProjectTemplate(fileName));
+					projectTemplates.Add(new ProjectTemplate(fileName));
+				} catch (XmlException e) {
+					MessageService.ShowError(ResourceService.GetString("Internal.Templates.ProjectTemplate.LoadingError") + "\n(" + fileName + ")\n" + e.Message);
+				} catch (TemplateLoadException e) {
+					MessageService.ShowError(ResourceService.GetString("Internal.Templates.ProjectTemplate.LoadingError") + "\n(" + fileName + ")\n" + e.ToString());
 				} catch (Exception e) {
 					MessageService.ShowError(e, ResourceService.GetString("Internal.Templates.ProjectTemplate.LoadingError") + "\n(" + fileName + ")\n");
 				}
 			}
-			ProjectTemplates.Sort();
+			projectTemplates.Sort();
 		}
 	}
 }

@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		SD.WebReference webReference;
 		DiscoveryClientProtocol protocol;
 		ReferenceProjectItem webServicesReferenceProjectItem;
-		MSBuildProject project;
+		MSBuildBasedProject project;
 		
 		string name = "localhost";
 		string proxyNamespace = "WebReferenceNamespace";
@@ -36,12 +36,11 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			project = new MSBuildProject();
+			project = WebReferenceTestHelper.CreateTestProject("C#");
 			project.FileName = "C:\\projects\\test\\foo.csproj";
-			project.Language = "C#";
 			
 			ReferenceProjectItem referenceItem = new ReferenceProjectItem(project, "System.Web.Services");
-			project.Items.Add(referenceItem);
+			ProjectService.AddProjectItem(project, referenceItem);
 			
 			protocol = new DiscoveryClientProtocol();
 			DiscoveryDocumentReference discoveryRef = new DiscoveryDocumentReference();
@@ -70,9 +69,9 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[Test]
 		public void WebServicesReferenceDoesNotExist1()
 		{
-			MSBuildProject project = new MSBuildProject();
+			MSBuildBasedProject project = WebReferenceTestHelper.CreateTestProject("C#");
 			ReferenceProjectItem referenceItem = new ReferenceProjectItem(project, "System.Windows.Forms");
-			project.Items.Add(referenceItem);
+			ProjectService.AddProjectItem(project, referenceItem);
 			
 			Assert.IsFalse(SD.WebReference.ProjectContainsWebServicesReference(project));
 		}
@@ -80,9 +79,9 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[Test]
 		public void WebServicesReferenceExists1()
 		{
-			MSBuildProject project = new MSBuildProject();
+			MSBuildBasedProject project = WebReferenceTestHelper.CreateTestProject("C#");
 			ReferenceProjectItem referenceItem = new ReferenceProjectItem(project, "system.web.services");
-			project.Items.Add(referenceItem);
+			ProjectService.AddProjectItem(project, referenceItem);
 			
 			Assert.IsTrue(SD.WebReference.ProjectContainsWebServicesReference(project));
 		}
@@ -90,9 +89,9 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[Test]
 		public void WebServicesReferenceExists2()
 		{
-			MSBuildProject project = new MSBuildProject();
+			MSBuildBasedProject project = WebReferenceTestHelper.CreateTestProject("C#");
 			ReferenceProjectItem referenceItem = new ReferenceProjectItem(project, "System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
-			project.Items.Add(referenceItem);
+			ProjectService.AddProjectItem(project, referenceItem);
 			
 			Assert.IsTrue(SD.WebReference.ProjectContainsWebServicesReference(project));
 		}
