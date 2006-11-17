@@ -21,7 +21,7 @@
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-<File name="${Path}/${FileNameWithoutExtension}.Designer.vb" dependentUpon="${FileName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
+<File name="${Path}/${FileNameWithoutExtension}.Designer.vb" DependentUpon="${FileName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
 Partial Class ${ClassName}
 	Inherits System.Windows.Forms.UserControl
 	

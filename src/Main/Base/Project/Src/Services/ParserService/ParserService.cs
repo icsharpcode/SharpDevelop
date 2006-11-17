@@ -564,9 +564,6 @@ namespace ICSharpCode.SharpDevelop
 			
 			ICompilationUnit parserOutput = null;
 			
-			if (fileContent == null) {
-				fileContent = GetParseableFileContent(fileName);
-			}
 			try {
 				if (fileProjectContent == null) {
 					// GetProjectContent is expensive because it compares all file names, so

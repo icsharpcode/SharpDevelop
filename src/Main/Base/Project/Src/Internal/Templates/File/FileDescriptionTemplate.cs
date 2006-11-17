@@ -86,7 +86,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		/// <summary>
 		/// Sets meta data properties.
 		/// </summary>
-		/// <returns>Returns <c>true</c> when the projectItem was changed</returns>
+		/// <returns>Returns <c>true</c> when the projectItem was changed
+		/// (in ItemType or MetaData)</returns>
 		public bool SetProjectItemProperties(ProjectItem projectItem)
 		{
 			if (projectItem == null)
@@ -97,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			foreach (KeyValuePair<string, string> pair in metadata) {
 				projectItem.SetMetadata(pair.Key, StringParser.Parse(pair.Value));
 			}
-			return itemType != null && metadata.Count > 0;
+			return itemType != null || metadata.Count > 0;
 		}
 		
 		public FileDescriptionTemplate(string name, string language, string content)

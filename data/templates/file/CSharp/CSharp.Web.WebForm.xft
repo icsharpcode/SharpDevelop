@@ -21,7 +21,7 @@
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-		<File name="${Path}/${FileName}.cs" dependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
+		<File name="${Path}/${FileName}.cs" DependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
 
 using System;
 using System.Collections;

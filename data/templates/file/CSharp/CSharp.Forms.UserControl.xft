@@ -23,7 +23,7 @@
 	 -->
 	<Files>
 		<!-- Designer file must come first, so the design tab is shown correctly -->
-<File name="${Path}/${FileNameWithoutExtension}.Designer.cs" dependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
+<File name="${Path}/${FileNameWithoutExtension}.Designer.cs" DependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
 namespace ${StandardNamespace}
 {
 	partial class ${ClassName} : System.Windows.Forms.UserControl

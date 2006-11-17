@@ -32,7 +32,7 @@
 
   </Grid>
 </PageFunction>]]></File>
-		<File name="${FullName}.cs" language="C#" dependentUpon="${FileName}" subType="Code"><![CDATA[using System;
+		<File name="${FullName}.cs" language="C#" DependentUpon="${FileName}" SubType="Code"><![CDATA[using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;

@@ -21,7 +21,7 @@
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-		<File name="${Path}/${FileNameWithoutExtension}.cs" dependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
+		<File name="${Path}/${FileNameWithoutExtension}.cs" DependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
 
 using System;
 using System.Web.Services;
