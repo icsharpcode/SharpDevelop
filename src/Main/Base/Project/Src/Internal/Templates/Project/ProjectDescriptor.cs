@@ -172,9 +172,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			
 			foreach (XmlElement propertyElement in ChildElements(propertyGroupElement)) {
 				ProjectProperty p = new ProjectProperty(propertyElement.Name,
-				                                        propertyElement.Value,
+				                                        propertyElement.InnerText,
 				                                        configuration, platform, storageLocation);
-				if (string.Equals(propertyGroupElement.GetAttribute("escapeValue"), "true", StringComparison.OrdinalIgnoreCase)) {
+				if (string.Equals(propertyGroupElement.GetAttribute("escapeValue"), "false", StringComparison.OrdinalIgnoreCase)) {
 					p.ValueIsLiteral = false;
 				} else {
 					p.ValueIsLiteral = true;

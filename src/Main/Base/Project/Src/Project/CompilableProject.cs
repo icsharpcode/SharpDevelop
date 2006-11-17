@@ -299,7 +299,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		protected override void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
+		protected override void OnPropertyChanged(ProjectPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged(e);
 			if (reparseReferencesSensitiveProperties.Contains(e.PropertyName)) {

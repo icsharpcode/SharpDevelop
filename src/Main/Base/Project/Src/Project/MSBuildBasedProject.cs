@@ -332,9 +332,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region SetProperty
-		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		public event EventHandler<ProjectPropertyChangedEventArgs> PropertyChanged;
 		
-		protected virtual void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
+		protected virtual void OnPropertyChanged(ProjectPropertyChangedEventArgs e)
 		{
 			if (PropertyChanged != null) {
 				PropertyChanged(this, e);
@@ -509,14 +509,23 @@ namespace ICSharpCode.SharpDevelop.Project
 				                                      out existingPropertyGroup,
 				                                      out oldLocation);
 			}
+			ProjectPropertyChangedEventArgs args;
+			args = new ProjectPropertyChangedEventArgs(propertyName);
+			args.Configuration = configuration;
+			args.Platform = platform;
+			args.Location = location;
+			
 			if (newValue == null) {
 				if (existingPropertyGroup != null && existingProperty != null) {
+					args.OldValue = existingProperty.Value;
+					
 					existingPropertyGroup.RemoveProperty(existingProperty);
 					if (existingPropertyGroup.Count == 0) {
 						project.RemovePropertyGroup(existingPropertyGroup);
 					}
 				}
 			} else if (existingPropertyGroup != null && existingProperty != null) {
+				args.OldValue = existingProperty.Value;
 				project.SetProperty(propertyName, newValue,
 				                    existingPropertyGroup.Condition,
 				                    propertyInsertionPosition,
@@ -527,7 +536,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				                    propertyInsertionPosition,
 				                    treatPropertyValueAsLiteral);
 			}
-			OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+			OnPropertyChanged(args);
 		}
 		
 		/// <summary>

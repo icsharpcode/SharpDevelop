@@ -19,23 +19,26 @@ namespace VBNetBinding
 {
 	public class VBNetProject : CompilableProject
 	{
-		/*public override void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocations location)
+		protected override void OnPropertyChanged(ProjectPropertyChangedEventArgs e)
 		{
-			base.SetProperty(configurationName, platform, property, value, location);
-			if (property == "OutputType") {
+			base.OnPropertyChanged(e);
+			if (e.PropertyName == "OutputType") {
 				switch (this.OutputType) {
 					case OutputType.WinExe:
-						base.SetProperty(configurationName, platform, "MyType", "WindowsForms", location);
+						SetProperty(e.Configuration, e.Platform,
+						            "MyType", "WindowsForms", e.Location, true);
 						break;
 					case OutputType.Exe:
-						base.SetProperty(configurationName, platform, "MyType", "Console", location);
+						SetProperty(e.Configuration, e.Platform,
+						            "MyType", "Console", e.Location, true);
 						break;
 					default:
-						base.SetProperty(configurationName, platform, "MyType", "Windows", location);
+						SetProperty(e.Configuration, e.Platform,
+						            "MyType", "Windows", e.Location, true);
 						break;
 				}
 			}
-		}*/
+		}
 		
 		[Browsable(false)]
 		public override IAmbience Ambience {
