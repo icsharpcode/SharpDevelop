@@ -251,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 							break;
 						}
 					} else {
-						if (extendedTargets.Equals(import.EvaluatedProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
+						if (extendedTargets.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
 							//import.ProjectPath = defaultTargets;
 							MSBuildInternals.SetImportProjectPath(project.MSBuildProject, import, defaultTargets);
 							break;
