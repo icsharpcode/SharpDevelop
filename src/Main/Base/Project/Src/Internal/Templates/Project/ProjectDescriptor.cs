@@ -294,6 +294,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					foreach (Import projectImport in projectImports) {
 						((MSBuildBasedProject)project).MSBuildProject.AddNewImport(projectImport.Key, projectImport.Value);
 					}
+					((MSBuildBasedProject)project).CreateItemsListFromMSBuild();
 				}
 				
 				if (projectProperties.Count > 0) {
@@ -359,6 +360,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					project.Save();
 				}
 				
+				projectCreateInformation.CreatedProjects.Add(project.FileName);
 				return project;
 			}
 			finally

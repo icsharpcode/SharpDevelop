@@ -8,13 +8,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using MSBuild = Microsoft.Build.BuildEngine;
-using StringPair = ICSharpCode.SharpDevelop.Pair<string, string>;
+using StringPair = ICSharpCode.SharpDevelop.Pair<System.String, System.String>;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -48,6 +49,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the underlying MSBuild project.
 		/// </summary>
+		[Browsable(false)]
 		public MSBuild.Project MSBuildProject {
 			get { return project; }
 		}
@@ -80,9 +82,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				case "Resource":
 				case "Content":
 				case "Folder":
-				case "BootstrapperFile":
-				case "ApplicationDefinition":
-				case "Page":
 					return new FileProjectItem(this, item);
 					
 				case "WebReferenceUrl":
@@ -92,12 +91,29 @@ namespace ICSharpCode.SharpDevelop.Project
 					return new WebReferencesProjectItem(this, item);
 					
 				default:
-					return base.CreateProjectItem(item);
+					if (this.AvailableFileItemTypes.Contains(new ItemType(item.Name))
+					    || SafeFileExists(this.Directory, item.Include))
+					{
+						return new FileProjectItem(this, item);
+					} else {
+						return base.CreateProjectItem(item);
+					}
+			}
+		}
+		
+		static bool SafeFileExists(string directory, string fileName)
+		{
+			try {
+				return File.Exists(Path.Combine(directory, fileName));
+			} catch (Exception) {
+				return false;
 			}
 		}
 		
 		protected virtual void Create(ProjectCreateInformation information)
 		{
+			InitializeMSBuildProject();
+			
 			Name = information.ProjectName;
 			FileName = information.OutputProjectFileName;
 			
@@ -127,6 +143,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			MSBuild.BuildPropertyGroup newGroup = project.AddNewPropertyGroup(false);
 			newGroup.AddNewProperty(name, value, treatValueAsLiteral).Condition = " '$(" + name + ")' == '' ";
+		}
+		
+		/// <summary>
+		/// Adds an MSBuild import to the project, refreshes the list of available item names
+		/// and recreates the project items.
+		/// </summary>
+		protected void AddImport(string projectFile, string condition)
+		{
+			project.AddNewImport(projectFile, condition);
+			CreateItemsListFromMSBuild();
 		}
 		
 		#region Get Property
@@ -586,6 +612,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region IProjectItemListProvider interface
 		List<ProjectItem> items = new List<ProjectItem>();
 		ReadOnlyCollection<ProjectItem> itemsReadOnly;
+		ICollection<ItemType> availableFileItemTypes = ItemType.DefaultFileItems;
 		
 		public override ReadOnlyCollection<ProjectItem> Items {
 			get {
@@ -593,12 +620,32 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		void CreateItemsListFromMSBuild()
+		/// <summary>
+		/// Gets the list of available file item types.
+		/// </summary>
+		public override ICollection<ItemType> AvailableFileItemTypes {
+			get {
+				return availableFileItemTypes;
+			}
+		}
+		
+		/// <summary>
+		/// re-creates the list of project items and the list of available item types
+		/// </summary>
+		internal void CreateItemsListFromMSBuild()
 		{
 			foreach (ProjectItem item in items) {
 				item.Dispose();
 			}
 			items.Clear();
+			
+			Set<ItemType> availableFileItemTypes = new Set<ItemType>();
+			availableFileItemTypes.AddRange(ItemType.DefaultFileItems);
+			foreach (MSBuild.BuildItem item in project.GetEvaluatedItemsByName("AvailableItemName")) {
+				availableFileItemTypes.Add(new ItemType(item.Include));
+			}
+			this.availableFileItemTypes = availableFileItemTypes.AsReadOnly();
+			
 			foreach (MSBuild.BuildItem item in project.EvaluatedItems) {
 				if (item.IsImported) continue;
 				
@@ -625,8 +672,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				if (g[0].Name == "Reference")
 					continue;
-				if (ItemType.FileItems.Contains(new ItemType(g[0].Name))) {
-					if (ItemType.FileItems.Contains(item.ItemType)) {
+				if (ItemType.DefaultFileItems.Contains(new ItemType(g[0].Name))) {
+					if (ItemType.DefaultFileItems.Contains(item.ItemType)) {
 						MSBuildInternals.AddItemToGroup(g, item);
 						return;
 					} else {
@@ -724,15 +771,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Loading
 		protected bool isLoading;
 		
+		void InitializeMSBuildProject()
+		{
+			project.GlobalProperties.SetProperty("BuildingInsideVisualStudio", "true");
+			foreach (KeyValuePair<string, string> pair in MSBuildEngine.MSBuildProperties) {
+				project.GlobalProperties.SetProperty(pair.Key, pair.Value, true);
+			}
+		}
+		
 		protected virtual void LoadProject(string fileName)
 		{
 			isLoading = true;
 			try {
 				this.FileName = fileName;
 				
-				foreach (KeyValuePair<string, string> pair in MSBuildEngine.MSBuildProperties) {
-					project.GlobalProperties.SetProperty(pair.Key, pair.Value, true);
-				}
+				InitializeMSBuildProject();
 				
 				project.Load(fileName);
 				this.ActiveConfiguration = GetProperty("Configuration") ?? this.ActiveConfiguration;

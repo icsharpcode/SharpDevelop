@@ -40,6 +40,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		ItemType GetDefaultItemType(string fileName);
 		
 		/// <summary>
+		/// Gets the list of available file item types.
+		/// </summary>
+		ICollection<ItemType> AvailableFileItemTypes {
+			get;
+		}
+		
+		/// <summary>
 		/// Gets a list of project sections stored in the solution file for this project.
 		/// </summary>
 		List<ProjectSection> ProjectSections {

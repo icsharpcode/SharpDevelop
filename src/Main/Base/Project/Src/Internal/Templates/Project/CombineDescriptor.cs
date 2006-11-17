@@ -54,7 +54,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						return false;
 					newProject.Location = FileUtility.GetRelativePath(projectCreateInformation.SolutionPath, newProject.FileName);
 					parentFolder.AddFolder(newProject);
-					projectCreateInformation.CreatedProjects.Add(newProject.FileName);
 				}
 				return true;
 			}

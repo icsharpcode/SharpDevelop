@@ -68,7 +68,7 @@ namespace VBNetBinding
 			SetProperty("Release", null, "DefineConstants", "TRACE=1",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
 			
-			this.MSBuildProject.AddNewImport(DefaultTargetsFile, null);
+			this.AddImport(DefaultTargetsFile, null);
 		}
 		
 		protected override ParseProjectContent CreateProjectContent()

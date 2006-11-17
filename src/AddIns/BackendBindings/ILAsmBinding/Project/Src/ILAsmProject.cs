@@ -26,7 +26,7 @@ namespace ICSharpCode.ILAsmBinding
 			: base(info.Solution)
 		{
 			Create(info);
-			this.MSBuildProject.AddNewImport(@"$(SharpDevelopBinPath)\SharpDevelop.Build.MSIL.Targets", null);
+			this.AddImport(@"$(SharpDevelopBinPath)\SharpDevelop.Build.MSIL.Targets", null);
 		}
 		
 		public override string Language {

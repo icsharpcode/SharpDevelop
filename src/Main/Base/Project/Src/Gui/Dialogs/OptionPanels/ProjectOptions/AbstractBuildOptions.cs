@@ -247,13 +247,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					if (needExtensions) {
 						if (defaultTargets.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
 							//import.ProjectPath = extendedTargets;
-							MSBuildInternals.SetImportProjectPath(project.MSBuildProject, import, extendedTargets);
+							MSBuildInternals.SetImportProjectPath(project, import, extendedTargets);
 							break;
 						}
 					} else {
 						if (extendedTargets.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
 							//import.ProjectPath = defaultTargets;
-							MSBuildInternals.SetImportProjectPath(project.MSBuildProject, import, defaultTargets);
+							MSBuildInternals.SetImportProjectPath(project, import, defaultTargets);
 							break;
 						}
 					}

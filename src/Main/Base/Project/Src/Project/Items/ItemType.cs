@@ -40,10 +40,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets a collection of item types that are used for files.
 		/// </summary>
-		public static readonly ReadOnlyCollectionWrapper<ItemType> FileItems
-			= new Set<ItemType>(Compile, EmbeddedResource, None, Content,
-			                    ApplicationDefinition, Page, BootstrapperFile
-			                   ).AsReadOnly();
+		public static readonly ReadOnlyCollectionWrapper<ItemType> DefaultFileItems
+			= new Set<ItemType>(Compile, EmbeddedResource, None, Content).AsReadOnly();
 		
 		public static readonly ItemType Resource = new ItemType("Resource");
 		public static readonly ItemType Folder = new ItemType("Folder");

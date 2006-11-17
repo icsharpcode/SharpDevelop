@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		public static void AddItemToGroup(MSBuild.BuildItemGroup group, ProjectItem item)
+		internal static void AddItemToGroup(MSBuild.BuildItemGroup group, ProjectItem item)
 		{
 			if (group == null)
 				throw new ArgumentNullException("group");
@@ -191,7 +191,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// WARNING: EvaluateCondition might add a temporary property group and remove it again,
 		/// which invalidates enumerators over the list of property groups!
 		/// </summary>
-		public static bool EvaluateCondition(MSBuild.Project project,
+		internal static bool EvaluateCondition(MSBuild.Project project,
 		                                     string condition)
 		{
 			const string propertyName = "MSBuildInternalsEvaluateConditionDummyPropertyName";
@@ -236,16 +236,24 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Note: this methods causes the project to recreate all imports, so existing import
 		/// instances might not be affected.
 		/// </summary>
-		public static void SetImportProjectPath(MSBuild.Project project, MSBuild.Import import,
+		public static void SetImportProjectPath(MSBuildBasedProject project, MSBuild.Import import,
 		                                        string newRawPath)
 		{
+			if (project == null)
+				throw new ArgumentNullException("project");
+			if (import == null)
+				throw new ArgumentNullException("import");
+			if (newRawPath == null)
+				throw new ArgumentNullException("newRawPath");
+			
 			XmlAttribute a = (XmlAttribute)typeof(MSBuild.Import).InvokeMember(
 				"ProjectPathAttribute",
 				BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
 				null, import, null
 			);
 			a.Value = newRawPath;
-			EndXmlManipulation(project);
+			EndXmlManipulation(project.MSBuildProject);
+			project.CreateItemsListFromMSBuild();
 		}
 		
 		public static IEnumerable<string> GetCustomMetadataNames(MSBuild.BuildItem item)

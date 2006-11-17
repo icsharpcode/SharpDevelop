@@ -240,7 +240,7 @@ namespace ICSharpCode.WixBinding
 			AddGuardedProperty("ToolPath", "$(WixToolPath)", false);
 			AddGuardedProperty("WixMSBuildExtensionsPath", wixToolPath, false);
 			
-			this.MSBuildProject.AddNewImport(DefaultTargetsFile, null);
+			this.AddImport(DefaultTargetsFile, null);
 		}
 		
 		/// <summary>

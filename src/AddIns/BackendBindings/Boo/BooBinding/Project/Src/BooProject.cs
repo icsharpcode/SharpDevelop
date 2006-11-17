@@ -64,7 +64,7 @@ namespace Grunwald.BooBinding
 					}
 				}
 			}
-			this.MSBuildProject.AddNewImport("$(BooBinPath)\\Boo.Microsoft.Build.targets", null);
+			this.AddImport("$(BooBinPath)\\Boo.Microsoft.Build.targets", null);
 		}
 		
 		void AddReference(string assembly)

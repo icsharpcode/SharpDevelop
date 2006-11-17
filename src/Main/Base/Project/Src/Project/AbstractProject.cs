@@ -7,10 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Collections.ObjectModel;
-using System.IO;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -42,6 +43,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region IDisposable implementation
 		bool isDisposed;
 		
+		[Browsable(false)]
 		public bool IsDisposed {
 			get { return isDisposed; }
 		}
@@ -198,12 +200,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public virtual ICollection<string> ConfigurationNames {
 			get {
 				return new string[] { "Debug", "Release" };
 			}
 		}
 		
+		[Browsable(false)]
 		public virtual ICollection<string> PlatformNames {
 			get {
 				return new string[] { "AnyCPU" };
@@ -222,6 +226,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
+		/// <summary>
+		/// Gets the list of available file item types.
+		/// </summary>
+		public virtual ICollection<ItemType> AvailableFileItemTypes {
+			get {
+				return ItemType.DefaultFileItems;
+			}
+		}
+		
+		[Browsable(false)]
 		public virtual ReadOnlyCollection<ProjectItem> Items {
 			get {
 				return new ReadOnlyCollection<ProjectItem>(new ProjectItem[0]);

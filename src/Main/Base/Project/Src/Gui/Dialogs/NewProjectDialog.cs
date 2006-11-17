@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -27,9 +28,11 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 	{
 		protected Container components = new System.ComponentModel.Container();
 		
-		protected ArrayList alltemplates = new ArrayList();
-		protected ArrayList categories   = new ArrayList();
-		protected Hashtable icons        = new Hashtable();
+		protected List<TemplateItem> alltemplates = new List<TemplateItem>();
+		protected List<Category> categories = new List<Category>();
+		
+		// icon resource name => image index
+		protected Dictionary<string, int> icons = new Dictionary<string, int>();
 		
 		protected bool createNewSolution;
 		
@@ -48,10 +51,6 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			Icon = null;
 		}
 		
-		public NewProjectDialog()
-		{
-		}
-		
 		protected virtual void InitializeView()
 		{
 			ImageList smalllist = new ImageList();
@@ -68,10 +67,10 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			
 			// load the icons and set their index from the image list in the hashtable
 			int i = 0;
-			Hashtable tmp = new Hashtable(icons);
+			Dictionary<string, int> tmp = new Dictionary<string, int>(icons);
 			
-			foreach (DictionaryEntry entry in icons) {
-				Bitmap bitmap = IconService.GetBitmap(entry.Key.ToString());
+			foreach (KeyValuePair<string, int> entry in icons) {
+				Bitmap bitmap = IconService.GetBitmap(entry.Key);
 				if (bitmap != null) {
 					smalllist.Images.Add(bitmap);
 					imglist.Images.Add(bitmap);
@@ -87,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				if (item.Template.Icon == null) {
 					item.ImageIndex = 0;
 				} else {
-					item.ImageIndex = (int)icons[item.Template.Icon];
+					item.ImageIndex = icons[item.Template.Icon];
 				}
 			}
 			
@@ -100,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			SelectLastSelectedCategoryNode(((TreeView)ControlDictionary["categoryTreeView"]).Nodes, PropertyService.Get("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
 		}
 		
-		void InsertCategories(TreeNode node, ArrayList catarray)
+		void InsertCategories(TreeNode node, IEnumerable<Category> catarray)
 		{
 			foreach (Category cat in catarray) {
 				if (node == null) {
@@ -145,6 +144,10 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		protected virtual void InitializeTemplates()
 		{
 			foreach (ProjectTemplate template in ProjectTemplate.ProjectTemplates) {
+				if (template.ProjectDescriptor == null && createNewSolution == false) {
+					// Do not show solution template when added a new project to existing solution
+					continue;
+				}
 				TemplateItem titem = new TemplateItem(template);
 				if (titem.Template.Icon != null) {
 					icons[titem.Template.Icon] = 0; // "create template icon"
@@ -409,9 +412,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		/// </summary>
 		public class Category : TreeNode, ICategory
 		{
-			ArrayList categories = new ArrayList();
-			ArrayList templates  = new ArrayList();
-			int sortOrder        = TemplateCategorySortOrderFile.UndefinedSortOrder;
+			List<Category> categories = new List<Category>();
+			List<TemplateItem> templates  = new List<TemplateItem>();
+			int sortOrder = TemplateCategorySortOrderFile.UndefinedSortOrder;
 			
 			public Category(string name) : this(name, TemplateCategorySortOrderFile.UndefinedSortOrder)
 			{
@@ -432,12 +435,12 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					sortOrder = value;
 				}
 			}
-			public ArrayList Categories {
+			public List<Category> Categories {
 				get {
 					return categories;
 				}
 			}
-			public ArrayList Templates {
+			public List<TemplateItem> Templates {
 				get {
 					return templates;
 				}
