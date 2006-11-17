@@ -38,14 +38,12 @@
 		<String id="vbc" text = "vbc"/>
 	</Path>
 	
-	<!--
 	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalLoggers">
 		<TaskBoundAdditionalLogger
 			id = "VbcEncodingFixingLogger"
 			taskname = "vbc"
 			class = "VBNetBinding.VbcEncodingFixingLogger"/>
 	</Path>
-	-->
 	
 	<Path name = "/Workspace/Parser">
 		<Parser id    = "VBNet" 

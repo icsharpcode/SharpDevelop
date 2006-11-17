@@ -6,10 +6,16 @@
 // </file>
 
 using System;
+using System.Text;
+using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.Framework;
+using System.IO;
 
 namespace VBNetBinding
 {
-	/*
+	/// <summary>
+	/// Fixes SD2-995 : Special characters not correctly encoded for languages others than English
+	/// </summary>
 	public class VbcEncodingFixingLogger : IMSBuildAdditionalLogger
 	{
 		public ILogger CreateLogger(MSBuildEngine engine)
@@ -49,7 +55,6 @@ namespace VBNetBinding
 			public void Initialize(IEventSource eventSource)
 			{
 				this.eventSource = eventSource;
-				engine.MessageView.AppendText("Running FxCop on " + Path.GetFileNameWithoutExtension(engine.CurrentProjectFile) + "\r\n");
 				eventSource.ErrorRaised += OnError;
 				eventSource.WarningRaised += OnWarning;
 			}
@@ -76,16 +81,13 @@ namespace VBNetBinding
 			void FixMessage()
 			{
 				engine.CurrentErrorOrWarning.ErrorText = FixEncoding(engine.CurrentErrorOrWarning.ErrorText);
-				//engine.CurrentErrorOrWarning.FileName = FixEncoding(engine.CurrentErrorOrWarning.FileName);
+				engine.CurrentErrorOrWarning.FileName = FixEncoding(engine.CurrentErrorOrWarning.FileName);
 			}
-			
-			TODO: Fix SD2-995
 			
 			static string FixEncoding(string encoding)
 			{
-				return encoding;
+				return Encoding.Default.GetString(Encoding.GetEncoding(850).GetBytes(encoding));
 			}
 		}
 	}
-	*/
 }
