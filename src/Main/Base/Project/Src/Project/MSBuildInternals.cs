@@ -196,8 +196,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			const string propertyName = "MSBuildInternalsEvaluateConditionDummyPropertyName";
 			MSBuild.BuildPropertyGroup pGroup = project.AddNewPropertyGroup(true);
-			pGroup.Condition = condition;
-			pGroup.AddNewProperty(propertyName, "ConditionTrue");
+			pGroup.AddNewProperty(propertyName, "ConditionFalse");
+			pGroup.AddNewProperty(propertyName, "ConditionTrue").Condition = condition;
 			bool result = project.GetEvaluatedProperty(propertyName) == "ConditionTrue";
 			project.RemovePropertyGroup(pGroup);
 			return result;
