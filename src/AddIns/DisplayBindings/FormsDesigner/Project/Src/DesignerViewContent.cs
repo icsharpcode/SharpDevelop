@@ -36,7 +36,9 @@ namespace ICSharpCode.FormsDesigner
 		Panel p = new Panel();
 		DesignSurface designSurface;
 		bool disposing;
-		string activeTabName = String.Empty;
+		
+		// Switch to the Windows Forms tab by default.
+		string activeTabName = "Windows Forms";
 		
 		IDesignerLoaderProvider loaderProvider;
 		IDesignerGenerator generator;
