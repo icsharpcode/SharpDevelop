@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			Build build = new Build();
 			build.BuildComplete += delegate {
-				if (MSBuildEngine.LastErrorCount == 0) {
+				if (build.LastBuildResults.ErrorCount == 0) {
 					IProject startupProject = ProjectService.OpenSolution.StartupProject;
 					if (startupProject != null) {
 						startupProject.Start(withDebugger);

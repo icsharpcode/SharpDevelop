@@ -64,6 +64,7 @@
     <Compile Include="Src\Internal\Undo\IUndoableOperation.cs" />
     <Compile Include="Src\Internal\Undo\UndoQueue.cs" />
     <Compile Include="Src\Internal\Undo\UndoStack.cs" />
+    <Compile Include="Src\Project\MSBuildEngineWorker.cs" />
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />

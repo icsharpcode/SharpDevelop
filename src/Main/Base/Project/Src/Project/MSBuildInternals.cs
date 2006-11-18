@@ -192,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// which invalidates enumerators over the list of property groups!
 		/// </summary>
 		internal static bool EvaluateCondition(MSBuild.Project project,
-		                                     string condition)
+		                                       string condition)
 		{
 			const string propertyName = "MSBuildInternalsEvaluateConditionDummyPropertyName";
 			MSBuild.BuildPropertyGroup pGroup = project.AddNewPropertyGroup(true);

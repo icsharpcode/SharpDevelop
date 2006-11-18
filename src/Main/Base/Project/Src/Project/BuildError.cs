@@ -11,15 +11,25 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
+	[Serializable]
 	public class BuildError
 	{
 		public BuildError()
 		{
-			this.line = 0;
-			this.column = 0;
+			this.line = -1;
+			this.column = -1;
 			this.errorCode = string.Empty;
 			this.errorText = string.Empty;
 			this.fileName = string.Empty;
+		}
+		
+		public BuildError(string fileName, string errorText)
+		{
+			this.line = -1;
+			this.column = -1;
+			this.errorCode = string.Empty;
+			this.errorText = errorText;
+			this.fileName = fileName;
 		}
 		
 		public BuildError(string fileName, int line, int column, string errorCode, string errorText)
@@ -37,6 +47,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		string fileName;
 		int line;
 		bool warning;
+		[NonSerialized]
 		object tag;
 		string contextMenuAddInTreeEntry;
 		
@@ -94,6 +105,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// Allows to store any object with this error. An object might be attached by a custom
+		/// MSBuild logger and later read by the context menu command.
+		/// </summary>
+		/// <remarks>The Tag property is [NonSerialized], which shouldn't be a problem
+		/// because both custom loggers and context menu commands are guaranteed to run
+		/// in the main AppDomain.</remarks>
 		public object Tag {
 			get {
 				return tag;

@@ -737,34 +737,19 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Building
 		public override void StartBuild(BuildOptions options)
 		{
-			RunMSBuild(this.FileName, options.Target.TargetName,
-			           this.ActiveConfiguration, this.ActivePlatform,
-			           true, options.Callback, options.AdditionalProperties);
+			RunMSBuild(this.ParentSolution, this,
+			           this.ActiveConfiguration, this.ActivePlatform, options);
 		}
 		
-		internal static void RunMSBuild(string fileName, string target, string configuration, string platform, bool isSingleProject, BuildCallback callback, IDictionary<string, string> additionalProperties)
+		internal static void RunMSBuild(Solution solution, IProject project,
+		                                string configuration, string platform, BuildOptions options)
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 			MSBuildEngine engine = new MSBuildEngine();
-			if (isSingleProject) {
-				string dir = ProjectService.OpenSolution.Directory;
-				if (!dir.EndsWith("/") && !dir.EndsWith("\\"))
-					dir += Path.DirectorySeparatorChar;
-				engine.AdditionalProperties.Add("SolutionDir", dir);
-			}
-			if (additionalProperties != null) {
-				foreach (KeyValuePair<string, string> pair in additionalProperties) {
-					engine.AdditionalProperties.Add(pair.Key, pair.Value);
-				}
-			}
 			engine.Configuration = configuration;
 			engine.Platform = platform;
 			engine.MessageView = TaskService.BuildMessageViewCategory;
-			if (target == null) {
-				engine.Run(fileName, callback);
-			} else {
-				engine.Run(fileName, new string[] { target }, callback);
-			}
+			engine.Run(solution, project, options);
 		}
 		#endregion
 		

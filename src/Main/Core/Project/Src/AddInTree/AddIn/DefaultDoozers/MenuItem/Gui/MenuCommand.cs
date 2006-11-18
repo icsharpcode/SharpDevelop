@@ -153,7 +153,9 @@ namespace ICSharpCode.Core
 		{
 			if (codon != null) {
 				if (Image == null && codon.Properties.Contains("icon")) {
-					Image = ResourceService.GetBitmap(codon.Properties["icon"]);
+					try {
+						Image = ResourceService.GetBitmap(codon.Properties["icon"]);
+					} catch (ResourceNotFoundException) {}
 				}
 				Visible = GetVisible();
 			}

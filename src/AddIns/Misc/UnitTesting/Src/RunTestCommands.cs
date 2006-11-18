@@ -167,7 +167,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			BuildProjectBeforeTestRun build = new BuildProjectBeforeTestRun(project);
 			build.BuildComplete += delegate {
-				OnBuildComplete(project, fixture, test);
+				OnBuildComplete(build.LastBuildResults, project, fixture, test);
 			};
 			build.Run();
 		}
@@ -277,9 +277,9 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Runs the test for the project after a successful build.
 		/// </summary>
-		void OnBuildComplete(IProject project, IClass fixture, IMember test)
+		void OnBuildComplete(BuildResults results, IProject project, IClass fixture, IMember test)
 		{
-			if (MSBuildEngine.LastErrorCount == 0 && IsRunningTest) {	
+			if (results.ErrorCount == 0 && IsRunningTest) {	
 				UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
 				helper.Initialize(project, fixture, test);
 				helper.Results = Path.GetTempFileName();

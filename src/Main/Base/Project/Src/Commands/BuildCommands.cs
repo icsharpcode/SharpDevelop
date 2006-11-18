@@ -48,13 +48,20 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				BeforeBuild();
 				StartBuild();
 			} else {
-				MSBuildEngine.AddNoSingleFileCompilationError();
+				AddNoSingleFileCompilationError();
 			}
+		}
+		
+		BuildResults lastBuildResults;
+		
+		public BuildResults LastBuildResults {
+			get { return lastBuildResults; }
 		}
 		
 		protected void CallbackMethod(BuildResults results)
 		{
-			MSBuildEngine.ShowResults(results);
+			lastBuildResults = results;
+			ShowResults(results);
 			AfterBuild();
 			if (BuildComplete != null)
 				BuildComplete(this, EventArgs.Empty);
@@ -63,6 +70,35 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public abstract void StartBuild();
 		
 		public event EventHandler BuildComplete;
+		
+		
+		
+		public static void ShowResults(BuildResults results)
+		{
+			if (results != null) {
+				TaskService.InUpdate = true;
+				foreach (BuildError error in results.Errors) {
+					TaskService.Add(new Task(error));
+				}
+				TaskService.InUpdate = false;
+				if (results.Errors.Count > 0 && ErrorListPad.ShowAfterBuild) {
+					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Notifies the user that #develp's internal MSBuildEngine
+		/// implementation only supports compiling solutions and projects;
+		/// it does not allow compiling individual files.
+		/// </summary>
+		/// <remarks>Adds a message to the <see cref="TaskService"/> and
+		/// shows the <see cref="ErrorListPad"/>.</remarks>
+		public static void AddNoSingleFileCompilationError()
+		{
+			TaskService.Add(new Task(null, StringParser.Parse("${res:BackendBindings.ExecutionManager.NoSingleFileCompilation}"), 0, 0, TaskType.Error));
+			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+		}
 	}
 	
 	public sealed class Build : AbstractBuildMenuCommand

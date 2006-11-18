@@ -18,18 +18,18 @@ namespace VBNetBinding
 	/// </summary>
 	public class VbcEncodingFixingLogger : IMSBuildAdditionalLogger
 	{
-		public ILogger CreateLogger(MSBuildEngine engine)
+		public ILogger CreateLogger(MSBuildEngineWorker engineWorker)
 		{
-			return new VbcLoggerImpl(engine);
+			return new VbcLoggerImpl(engineWorker);
 		}
 		
 		private class VbcLoggerImpl : ILogger
 		{
-			MSBuildEngine engine;
+			MSBuildEngineWorker engineWorker;
 			
-			public VbcLoggerImpl(MSBuildEngine engine)
+			public VbcLoggerImpl(MSBuildEngineWorker engineWorker)
 			{
-				this.engine = engine;
+				this.engineWorker = engineWorker;
 			}
 			
 			public LoggerVerbosity Verbosity {
@@ -80,8 +80,8 @@ namespace VBNetBinding
 			
 			void FixMessage()
 			{
-				engine.CurrentErrorOrWarning.ErrorText = FixEncoding(engine.CurrentErrorOrWarning.ErrorText);
-				engine.CurrentErrorOrWarning.FileName = FixEncoding(engine.CurrentErrorOrWarning.FileName);
+				engineWorker.CurrentErrorOrWarning.ErrorText = FixEncoding(engineWorker.CurrentErrorOrWarning.ErrorText);
+				engineWorker.CurrentErrorOrWarning.FileName = FixEncoding(engineWorker.CurrentErrorOrWarning.FileName);
 			}
 			
 			static string FixEncoding(string encoding)

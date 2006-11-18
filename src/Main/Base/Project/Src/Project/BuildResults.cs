@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -29,21 +30,54 @@ namespace ICSharpCode.SharpDevelop.Project
 	public class BuildResults
 	{
 		List<BuildError> errors = new List<BuildError>();
+		ReadOnlyCollection<BuildError> readOnlyErrors;
 		BuildResultCode result;
+		int errorCount, warningCount;
 		
-		public List<BuildError> Errors {
+		/// <summary>
+		/// Adds a build error/warning to the results.
+		/// This method is thread-safe.
+		/// </summary>
+		public void Add(BuildError error)
+		{
+			if (error == null)
+				throw new ArgumentNullException("error");
+			lock (errors) {
+				readOnlyErrors = null;
+				errors.Add(error);
+				if (error.IsWarning)
+					warningCount++;
+				else
+					errorCount++;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the list of build errors or warnings.
+		/// This property is thread-safe.
+		/// </summary>
+		public ReadOnlyCollection<BuildError> Errors {
 			get {
-				return errors;
+				lock (errors) {
+					if (readOnlyErrors == null) {
+						readOnlyErrors = Array.AsReadOnly(errors.ToArray());
+					}
+					return readOnlyErrors;
+				}
 			}
 		}
 		
 		public BuildResultCode Result {
-			get {
-				return result;
-			}
-			set {
-				result = value;
-			}
+			get { return result; }
+			set { result = value; }
+		}
+		
+		public int ErrorCount {
+			get { return errorCount; }
+		}
+		
+		public int WarningCount {
+			get { return warningCount; }
 		}
 	}
 }

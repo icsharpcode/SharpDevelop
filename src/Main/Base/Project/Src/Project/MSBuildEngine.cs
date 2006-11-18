@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -17,18 +18,21 @@ using Microsoft.Build.Framework;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
+	// let Project refer to the class, not to the namespace
+	using Project = Microsoft.Build.BuildEngine.Project;
+	
 	/// <summary>
 	/// Class responsible for building a project using MSBuild.
 	/// Is called by MSBuildProject.
 	/// </summary>
-	public class MSBuildEngine
+	public sealed class MSBuildEngine
 	{
 		/// <summary>
 		/// Gets a list of the task names that cause a "Compiling ..." log message.
 		/// You can add items to this list by putting strings into
 		/// "/SharpDevelop/MSBuildEngine/CompileTaskNames".
 		/// </summary>
-		public static readonly List<string> CompileTaskNames;
+		public static readonly ICollection<string> CompileTaskNames;
 		
 		/// <summary>
 		/// Gets a list where addins can add additional properties for use in MsBuild.
@@ -51,10 +55,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static MSBuildEngine()
 		{
-			CompileTaskNames = AddInTree.BuildItems<string>("/SharpDevelop/MSBuildEngine/CompileTaskNames", null, false);
-			for (int i = 0; i < CompileTaskNames.Count; i++) {
-				CompileTaskNames[i] = CompileTaskNames[i].ToLowerInvariant();
-			}
+			CompileTaskNames = new Set<string>(
+				AddInTree.BuildItems<string>("/SharpDevelop/MSBuildEngine/CompileTaskNames", null, false),
+				StringComparer.OrdinalIgnoreCase
+			);
 			AdditionalTargetFiles = AddInTree.BuildItems<string>("/SharpDevelop/MSBuildEngine/AdditionalTargetFiles", null, false);
 			AdditionalMSBuildLoggers = AddInTree.BuildItems<IMSBuildAdditionalLogger>("/SharpDevelop/MSBuildEngine/AdditionalLoggers", null, false);
 			
@@ -62,46 +66,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			MSBuildProperties.Add("SharpDevelopBinPath", Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location));
 		}
 		
-		#region relocated from ICSharpCode.SharpDevelop.Project.Commands.Build in BuildCommands.cs
-		public static int LastErrorCount;
-		public static int LastWarningCount;
-		
-		public static void ShowResults(BuildResults results)
-		{
-			if (results != null) {
-				LastErrorCount = 0;
-				LastWarningCount = 0;
-				TaskService.InUpdate = true;
-				foreach (BuildError error in results.Errors) {
-					TaskService.Add(new Task(error));
-					if (error.IsWarning)
-						LastWarningCount++;
-					else
-						LastErrorCount++;
-				}
-				TaskService.InUpdate = false;
-				if (results.Errors.Count > 0 && ErrorListPad.ShowAfterBuild) {
-					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Notifies the user that #develp's internal MSBuildEngine
-		/// implementation only supports compiling solutions and projects;
-		/// it does not allow compiling individual files.
-		/// </summary>
-		/// <remarks>Adds a message to the <see cref="TaskService"/> and
-		/// shows the <see cref="ErrorListPad"/>.</remarks>
-		public static void AddNoSingleFileCompilationError()
-		{
-			LastErrorCount = 1;
-			LastWarningCount = 0;
-			TaskService.Add(new Task(null, StringParser.Parse("${res:BackendBindings.ExecutionManager.NoSingleFileCompilation}"), 0, 0, TaskType.Error));
-			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
-		}
-		#endregion
-		
+		#region Properties
 		MessageViewCategory messageView;
 		
 		/// <summary>
@@ -113,14 +78,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				messageView = value;
-			}
-		}
-		
-		SortedList<string, string> additionalProperties = new SortedList<string, string>();
-		
-		public IDictionary<string, string> AdditionalProperties {
-			get {
-				return additionalProperties;
 			}
 		}
 		
@@ -153,279 +110,538 @@ namespace ICSharpCode.SharpDevelop.Project
 				platform = value;
 			}
 		}
-		
-		BuildError currentErrorOrWarning;
-		
-		/// <summary>
-		/// Gets the last build error/warning created by the default
-		/// SharpDevelop logger.
-		/// </summary>
-		public BuildError CurrentErrorOrWarning {
-			get {
-				return currentErrorOrWarning;
-			}
-		}
-		
-		Stack<string> projectFiles = new Stack<string>();
-		
-		/// <summary>
-		/// Gets the name of the currently building project file.
-		/// </summary>
-		public string CurrentProjectFile {
-			get {
-				if (projectFiles.Count == 0)
-					return null;
-				else
-					return projectFiles.Peek();
-			}
-		}
-		
-		BuildResults currentResults;
-		
-		public BuildResults CurrentResults {
-			get {
-				return currentResults;
-			}
-		}
-		
-		public void Run(string buildFile, BuildCallback callback)
-		{
-			Run(buildFile, null, callback);
-		}
+		#endregion
 		
 		volatile static bool isRunning = false;
 		
-		public void Run(string buildFile, string[] targets, BuildCallback callback)
+		public void Run(Solution solution, IProject project, BuildOptions options)
 		{
 			if (isRunning) {
 				BuildResults results = new BuildResults();
 				results.Result = BuildResultCode.MSBuildAlreadyRunning;
-				results.Errors.Add(new BuildError(null, 0, 0, null, ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning")));
-				callback(results);
+				results.Add(new BuildError(null, ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning")));
+				if (options.Callback != null) {
+					options.Callback(results);
+				}
 			} else {
 				isRunning = true;
-				Thread thread = new Thread(new ThreadStarter(buildFile, targets, this, callback).Run);
-				thread.Name = "MSBuildEngine";
+				Thread thread = new Thread(new BuildRun(solution, project, options, this).RunMainBuild);
+				thread.Name = "MSBuildEngine main worker";
 				thread.SetApartmentState(ApartmentState.STA);
 				thread.Start();
 			}
 		}
 		
-		class ThreadStarter
+		internal sealed class BuildRun
 		{
-			string buildFile;
-			string[] targets;
-			MSBuildEngine engine;
-			BuildCallback callback;
+			Solution solution;
+			IProject project;
+			BuildOptions options;
+			MSBuildEngine parentEngine;
+			internal BuildResults currentResults = new BuildResults();
+			List<ProjectToBuild> projectsToBuild = new List<ProjectToBuild>();
 			
-			public ThreadStarter(string buildFile, string[] targets, MSBuildEngine engine, BuildCallback callback)
+			public BuildRun(Solution solution, IProject project, BuildOptions options, MSBuildEngine parentEngine)
 			{
-				engine.currentResults = new BuildResults();
-				this.buildFile = buildFile;
-				this.targets = targets;
-				this.engine = engine;
-				this.callback = callback;
+				this.solution = solution;
+				this.project = project;
+				this.options = options;
+				this.parentEngine = parentEngine;
 			}
 			
+			#region Main Build
 			[STAThread]
-			public void Run()
+			internal void RunMainBuild()
 			{
-				BuildResults results = this.engine.currentResults;
-				LoggingService.Debug("Run MSBuild on " + buildFile);
+				try {
+					PrepareBuild();
+				} catch (Exception ex) {
+					MessageService.ShowError(ex);
+				}
+				StartWorkerBuild();
+			}
+			
+			void Finish()
+			{
+				LoggingService.Debug("MSBuild finished");
+				MSBuildEngine.isRunning = false;
+				if (currentResults.Result == BuildResultCode.None) {
+					currentResults.Result = BuildResultCode.Success;
+				}
+				if (currentResults.Result == BuildResultCode.Success) {
+					parentEngine.MessageView.AppendLine("${res:MainWindow.CompilerMessages.BuildFinished}");
+					StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildFinished}");
+				} else {
+					parentEngine.MessageView.AppendLine("${res:MainWindow.CompilerMessages.BuildFailed}");
+					StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildFailed}");
+				}
+				if (options.Callback != null) {
+					WorkbenchSingleton.MainForm.BeginInvoke(options.Callback, currentResults);
+				}
+			}
+			
+			void PrepareBuild()
+			{
+				parentEngine.MessageView.AppendLine("${res:MainWindow.CompilerMessages.BuildStarted}");
 				
+				if (project == null) {
+					LoggingService.Debug("Parsing solution file " + solution.FileName);
+					
+					Engine engine = CreateEngine();
+					if (parentEngine.Configuration != null) {
+						engine.GlobalProperties.SetProperty("Configuration", parentEngine.Configuration);
+					}
+					if (parentEngine.Platform != null) {
+						engine.GlobalProperties.SetProperty("Platform", parentEngine.Platform);
+					}
+					Project solutionProject = LoadProject(engine, solution.FileName);
+					if (solutionProject == null) {
+						Finish();
+						return;
+					}
+					if (!ParseSolution(solutionProject)) {
+						Finish();
+						return;
+					}
+				} else {
+					if (ParseMSBuildProject(project) == null) {
+						Finish();
+						return;
+					}
+				}
+				SortProjectsToBuild();
+			}
+			#endregion
+			
+			#region Worker build
+			int workerCount;
+			int maxWorkerCount;
+			
+			/// <summary>
+			/// Runs the first worker on this thread and creates new threads if required
+			/// </summary>
+			void StartWorkerBuild()
+			{
+				workerCount = 1;
+				// one build worker thread is maximum - MSBuild sets the working directory
+				// and thus cannot run multiple times in the same process
+				maxWorkerCount = 1;
+				RunWorkerBuild();
+			}
+			
+			// Reuse worker objects: improves performance because MSBuild can cache Xml documents
+			Queue<MSBuildEngineWorker> unusedWorkers = new Queue<MSBuildEngineWorker>();
+			
+			/// <summary>
+			/// Runs one worker thread
+			/// </summary>
+			[STAThread]
+			void RunWorkerBuild()
+			{
+				LoggingService.Debug("Build Worker thread started");
+				MSBuildEngineWorker worker = null;
+				try {
+					lock (projectsToBuild) {
+						if (unusedWorkers.Count > 0)
+							worker = unusedWorkers.Dequeue();
+					}
+					if (worker == null) {
+						worker = new MSBuildEngineWorker(parentEngine, this);
+					}
+					while (RunWorkerInternal(worker));
+				} catch (Exception ex) {
+					MessageService.ShowError(ex);
+				} finally {
+					bool wasLastWorker;
+					lock (projectsToBuild) {
+						workerCount--;
+						wasLastWorker = workerCount == 0;
+						if (worker != null) {
+							unusedWorkers.Enqueue(worker);
+						}
+					}
+					LoggingService.Debug("Build Worker thread finished");
+					if (wasLastWorker) {
+						Finish();
+					}
+				}
+			}
+			
+			int lastUniqueWorkerID;
+			
+			/// <summary>
+			/// Find available work and run it on the specified worker.
+			/// </summary>
+			bool RunWorkerInternal(MSBuildEngineWorker worker)
+			{
+				ProjectToBuild nextFreeProject = null;
+				lock (projectsToBuild) {
+					foreach (ProjectToBuild ptb in projectsToBuild) {
+						if (ptb.buildStarted == false && ptb.DependenciesSatisfied()) {
+							if (nextFreeProject == null) {
+								nextFreeProject = ptb;
+								
+								// all workers busy, don't look if there is more work available
+								if (workerCount == maxWorkerCount)
+									break;
+							} else {
+								// free workers available + additional work available:
+								// start a new worker
+								LoggingService.Debug("Starting a new worker");
+								workerCount++;
+								Thread thread = new Thread(RunWorkerBuild);
+								thread.Name = "MSBuildEngine worker " + (++lastUniqueWorkerID);
+								thread.SetApartmentState(ApartmentState.STA);
+								thread.Start();
+								
+								// start at most one additional worker, the new worker can
+								// start more threads if desired
+								break;
+							}
+						}
+					}
+					if (nextFreeProject == null) {
+						// nothing to do for this worker thread
+						return false;
+					}
+					// now build nextFreeProject
+					nextFreeProject.buildStarted = true;
+				} // end lock
+				
+				StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildVerb} " + Path.GetFileNameWithoutExtension(nextFreeProject.file) + "...");
+				
+				// run the build:
+				if (worker.Build(nextFreeProject)) {
+					// build successful: mark it as finished
+					lock (projectsToBuild) {
+						nextFreeProject.buildFinished = true;
+					}
+				}
+				return true;
+			}
+			#endregion
+			
+			#region Managing the output lock
+			/// <summary>
+			/// Queue of output text to write when lock is released.
+			/// 
+			/// Also serves as object to ensure access to outputLockIsAquired is thread-safe.
+			/// </summary>
+			Queue<string> queuedOutputText = new Queue<string>();
+			volatile bool outputLockIsAquired;
+			
+			internal bool TryAquireOutputLock()
+			{
+				lock (queuedOutputText) {
+					if (outputLockIsAquired) {
+						return false;
+					} else {
+						outputLockIsAquired = true;
+						return true;
+					}
+				}
+			}
+			
+			internal void ReleaseOutputLock()
+			{
+				lock (queuedOutputText) {
+					outputLockIsAquired = false;
+					while (queuedOutputText.Count > 0) {
+						parentEngine.MessageView.AppendText(queuedOutputText.Dequeue());
+					}
+				}
+			}
+			
+			internal void EnqueueTextForAppendWhenOutputLockIsReleased(string text)
+			{
+				lock (queuedOutputText) {
+					if (outputLockIsAquired) {
+						queuedOutputText.Enqueue(text);
+					} else {
+						parentEngine.MessageView.AppendText(text);
+					}
+				}
+			}
+			#endregion
+			
+			#region CreateEngine / LoadProject
+			internal Engine CreateEngine()
+			{
 				Engine engine = MSBuildInternals.CreateEngine();
-				if (this.engine.Configuration != null) {
-					engine.GlobalProperties.SetProperty("Configuration", this.engine.Configuration);
-				}
-				if (this.engine.Platform != null) {
-					engine.GlobalProperties.SetProperty("Platform", this.engine.Platform);
-				}
 				foreach (KeyValuePair<string, string> entry in MSBuildProperties) {
 					engine.GlobalProperties.SetProperty(entry.Key, entry.Value);
 				}
-				foreach (KeyValuePair<string, string> entry in this.engine.additionalProperties) {
-					engine.GlobalProperties.SetProperty(entry.Key, entry.Value);
+				if (options.AdditionalProperties != null) {
+					foreach (KeyValuePair<string, string> entry in options.AdditionalProperties) {
+						engine.GlobalProperties.SetProperty(entry.Key, entry.Value);
+					}
 				}
+				engine.GlobalProperties.SetProperty("SolutionDir", EnsureBackslash(solution.Directory));
+				engine.GlobalProperties.SetProperty("SolutionExt", ".sln");
+				engine.GlobalProperties.SetProperty("SolutionFileName", Path.GetFileName(solution.FileName));
+				engine.GlobalProperties.SetProperty("SolutionPath", solution.FileName);
 				
-				SharpDevelopLogger logger = new SharpDevelopLogger(this.engine);
-				engine.RegisterLogger(logger);
-				foreach (IMSBuildAdditionalLogger loggerProvider in MSBuildEngine.AdditionalMSBuildLoggers) {
-					engine.RegisterLogger(loggerProvider.CreateLogger(this.engine));
-				}
-				
-				Microsoft.Build.BuildEngine.Project project = engine.CreateNewProject();
+				return engine;
+			}
+			
+			static string EnsureBackslash(string path)
+			{
+				if (path.EndsWith("\\"))
+					return path;
+				else
+					return path + "\\";
+			}
+			
+			internal Project LoadProject(Engine engine, string fileName)
+			{
+				Project project = engine.CreateNewProject();
 				try {
-					project.Load(buildFile);
-					
-					foreach (string targetFile in AdditionalTargetFiles) {
-						project.AddNewImport(targetFile, null);
-					}
-					
-					if (engine.BuildProject(project, targets))
-						results.Result = BuildResultCode.Success;
-					else
-						results.Result = BuildResultCode.Error;
+					project.Load(fileName);
+					return project;
 				} catch (ArgumentException ex) {
-					results.Result = BuildResultCode.BuildFileError;
-					results.Errors.Add(new BuildError(null, -1, -1, "", ex.Message));
+					currentResults.Result = BuildResultCode.BuildFileError;
+					currentResults.Add(new BuildError("", ex.Message));
 				} catch (InvalidProjectFileException ex) {
-					results.Result = BuildResultCode.BuildFileError;
-					results.Errors.Add(new BuildError(ex.ProjectFile, ex.LineNumber, ex.ColumnNumber, ex.ErrorCode, ex.Message));
+					currentResults.Result = BuildResultCode.BuildFileError;
+					currentResults.Add(new BuildError(ex.ProjectFile, ex.LineNumber, ex.ColumnNumber, ex.ErrorCode, ex.Message));
 				}
-				
-				logger.FlushCurrentError();
-				
-				LoggingService.Debug("MSBuild finished");
-				MSBuildEngine.isRunning = false;
-				if (callback != null) {
-					WorkbenchSingleton.MainForm.BeginInvoke(callback, results);
-				}
-				engine.UnloadAllProjects();
-				this.engine.currentResults = null;
-			}
-		}
-		
-		class SharpDevelopLogger : ILogger
-		{
-			MSBuildEngine engine;
-			BuildResults results;
-			
-			public SharpDevelopLogger(MSBuildEngine engine)
-			{
-				this.engine = engine;
-				this.results = engine.currentResults;
-			}
-			
-			void AppendText(string text)
-			{
-				engine.MessageView.AppendText(text + "\r\n");
-			}
-			
-			internal void FlushCurrentError()
-			{
-				if (engine.currentErrorOrWarning != null) {
-					AppendText(engine.currentErrorOrWarning.ToString());
-					engine.currentErrorOrWarning = null;
-				}
-			}
-			
-			void OnBuildStarted(object sender, BuildStartedEventArgs e)
-			{
-				AppendText("${res:MainWindow.CompilerMessages.BuildStarted}");
-			}
-			
-			void OnBuildFinished(object sender, BuildFinishedEventArgs e)
-			{
-				if (e.Succeeded) {
-					AppendText("${res:MainWindow.CompilerMessages.BuildFinished}");
-					StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildFinished}");
-				} else {
-					AppendText("${res:MainWindow.CompilerMessages.BuildFailed}");
-					StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildFailed}");
-				}
-			}
-			
-			void OnProjectStarted(object sender, ProjectStartedEventArgs e)
-			{
-				engine.projectFiles.Push(e.ProjectFile);
-				StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildVerb} " + Path.GetFileNameWithoutExtension(e.ProjectFile) + "...");
-			}
-			
-			void OnProjectFinished(object sender, ProjectFinishedEventArgs e)
-			{
-				FlushCurrentError();
-				engine.projectFiles.Pop();
-				if (engine.projectFiles.Count > 0) {
-					StatusBarService.SetMessage("${res:MainWindow.CompilerMessages.BuildVerb} " + Path.GetFileNameWithoutExtension(engine.CurrentProjectFile) + "...");
-				}
-			}
-			
-			string activeTaskName;
-			
-			void OnTaskStarted(object sender, TaskStartedEventArgs e)
-			{
-				activeTaskName = e.TaskName;
-				if (CompileTaskNames.Contains(e.TaskName.ToLowerInvariant())) {
-					AppendText("${res:MainWindow.CompilerMessages.CompileVerb} " + Path.GetFileNameWithoutExtension(e.ProjectFile));
-				}
-			}
-			
-			void OnTaskFinished(object sender, TaskFinishedEventArgs e)
-			{
-				FlushCurrentError();
-			}
-			
-			void OnError(object sender, BuildErrorEventArgs e)
-			{
-				AppendError(e.File, e.LineNumber, e.ColumnNumber, e.Code, e.Message, false);
-			}
-			
-			void OnWarning(object sender, BuildWarningEventArgs e)
-			{
-				AppendError(e.File, e.LineNumber, e.ColumnNumber, e.Code, e.Message, true);
-			}
-			
-			void AppendError(string file, int lineNumber, int columnNumber, string code, string message, bool isWarning)
-			{
-				if (string.Equals(file, activeTaskName, StringComparison.InvariantCultureIgnoreCase)) {
-					file = "";
-				} else if (FileUtility.IsValidFileName(file)) {
-					bool isShortFileName = file == Path.GetFileNameWithoutExtension(file);
-					if (engine.CurrentProjectFile != null) {
-						file = Path.Combine(Path.GetDirectoryName(engine.CurrentProjectFile), file);
-					}
-					if (isShortFileName && !File.Exists(file)) {
-						file = "";
-					}
-				}
-				FlushCurrentError();
-				BuildError error = new BuildError(file, lineNumber, columnNumber, code, message);
-				error.IsWarning = isWarning;
-				results.Errors.Add(error);
-				engine.currentErrorOrWarning = error;
-			}
-			
-			#region ILogger interface implementation
-			LoggerVerbosity verbosity = LoggerVerbosity.Minimal;
-			
-			public LoggerVerbosity Verbosity {
-				get {
-					return verbosity;
-				}
-				set {
-					verbosity = value;
-				}
-			}
-			
-			string parameters;
-			
-			public string Parameters {
-				get {
-					return parameters;
-				}
-				set {
-					parameters = value;
-				}
-			}
-			
-			public void Initialize(IEventSource eventSource)
-			{
-				eventSource.BuildStarted    += new BuildStartedEventHandler(OnBuildStarted);
-				eventSource.BuildFinished   += new BuildFinishedEventHandler(OnBuildFinished);
-				eventSource.ProjectStarted  += new ProjectStartedEventHandler(OnProjectStarted);
-				eventSource.ProjectFinished += new ProjectFinishedEventHandler(OnProjectFinished);
-				eventSource.TaskStarted     += new TaskStartedEventHandler(OnTaskStarted);
-				eventSource.TaskFinished    += new TaskFinishedEventHandler(OnTaskFinished);
-				
-				eventSource.ErrorRaised     += new BuildErrorEventHandler(OnError);
-				eventSource.WarningRaised   += new BuildWarningEventHandler(OnWarning);
-			}
-			
-			public void Shutdown()
-			{
-				
+				return null;
 			}
 			#endregion
+			
+			#region ParseSolution
+			bool ParseSolution(Project solution)
+			{
+				// get the build target to call
+				Target mainBuildTarget = solution.Targets[options.Target.TargetName];
+				if (mainBuildTarget == null) {
+					currentResults.Result = BuildResultCode.BuildFileError;
+					currentResults.Add(new BuildError(this.solution.FileName, "Target '" + options.Target + "' not supported by solution."));
+					return false;
+				}
+				// example of mainBuildTarget:
+				//  <Target Name="Build" Condition="'$(CurrentSolutionConfigurationContents)' != ''">
+				//    <CallTarget Targets="Main\ICSharpCode_SharpDevelop;Main\ICSharpCode_Core;Main\StartUp;Tools" RunEachTargetSeparately="true" />
+				//  </Target>
+				List<BuildTask> mainBuildTargetTasks = Linq.ToList(Linq.CastTo<BuildTask>(mainBuildTarget));
+				if (mainBuildTargetTasks.Count != 1
+				    || mainBuildTargetTasks[0].Name != "CallTarget")
+				{
+					return InvalidTarget(mainBuildTarget);
+				}
+				
+				List<Target> solutionTargets = new List<Target>();
+				foreach (string solutionTargetName in mainBuildTargetTasks[0].GetParameterValue("Targets").Split(';'))
+				{
+					Target target = solution.Targets[solutionTargetName];
+					if (target != null) {
+						solutionTargets.Add(target);
+					}
+				}
+				
+				// dictionary for fast lookup of ProjectToBuild elements
+				Dictionary<string, ProjectToBuild> projectsToBuildDict = new Dictionary<string, ProjectToBuild>();
+				
+				// now look through targets that took like this:
+				//  <Target Name="Main\ICSharpCode_Core" Condition="'$(CurrentSolutionConfigurationContents)' != ''">
+				//    <MSBuild Projects="Main\Core\Project\ICSharpCode.Core.csproj" Properties="Configuration=Debug; Platform=AnyCPU; BuildingSolutionFile=true; CurrentSolutionConfigurationContents=$(CurrentSolutionConfigurationContents); SolutionDir=$(SolutionDir); SolutionExt=$(SolutionExt); SolutionFileName=$(SolutionFileName); SolutionName=$(SolutionName); SolutionPath=$(SolutionPath)" Condition=" ('$(Configuration)' == 'Debug') and ('$(Platform)' == 'Any CPU') " />
+				//    <MSBuild Projects="Main\Core\Project\ICSharpCode.Core.csproj" Properties="Configuration=Release; Platform=AnyCPU; BuildingSolutionFile=true; CurrentSolutionConfigurationContents=$(CurrentSolutionConfigurationContents); SolutionDir=$(SolutionDir); SolutionExt=$(SolutionExt); SolutionFileName=$(SolutionFileName); SolutionName=$(SolutionName); SolutionPath=$(SolutionPath)" Condition=" ('$(Configuration)' == 'Release') and ('$(Platform)' == 'Any CPU') " />
+				//  </Target>
+				// and add those targets to the "projectsToBuild" list.
+				foreach (Target target in solutionTargets) {
+					List<BuildTask> tasks = Linq.ToList(Linq.CastTo<BuildTask>(target));
+					if (tasks.Count == 0) {
+						return InvalidTarget(target);
+					}
+					
+					// find task to run when this target is executed
+					BuildTask bestTask = null;
+					foreach (BuildTask task in tasks) {
+						if (task.Name != "MSBuild") {
+							return InvalidTarget(target);
+						}
+						if (MSBuildInternals.EvaluateCondition(solution, task.Condition)) {
+							bestTask = task;
+						}
+					}
+					if (bestTask == null) {
+						LoggingService.Warn("No matching condition for solution target " + target.Name);
+						bestTask = tasks[0];
+					}
+					
+					// create projectToBuild entry and add it to list and dictionary
+					string projectFileName = Path.Combine(this.solution.Directory, bestTask.GetParameterValue("Projects"));
+					ProjectToBuild projectToBuild = new ProjectToBuild(Path.GetFullPath(projectFileName),
+					                                                   bestTask.GetParameterValue("Targets"));
+					
+					// get project configuration and platform from properties section
+					string propertiesString = bestTask.GetParameterValue("Properties");
+					Match match = Regex.Match(propertiesString, @"\bConfiguration=([^;]+);");
+					if (match.Success) {
+						projectToBuild.configuration = match.Groups[1].Value;
+					} else {
+						projectToBuild.configuration = parentEngine.Configuration;
+					}
+					match = Regex.Match(propertiesString, @"\bPlatform=([^;]+);");
+					if (match.Success) {
+						projectToBuild.platform = match.Groups[1].Value;
+					} else {
+						projectToBuild.platform = parentEngine.Platform;
+						if (projectToBuild.platform == "Any CPU") {
+							projectToBuild.platform = "AnyCPU";
+						}
+					}
+					
+					projectsToBuild.Add(projectToBuild);
+					projectsToBuildDict[target.Name] = projectToBuild;
+				}
+				
+				// now create dependencies between projectsToBuild
+				foreach (Target target in solutionTargets) {
+					ProjectToBuild p1;
+					if (!projectsToBuildDict.TryGetValue(target.Name, out p1))
+						continue;
+					foreach (string dependency in target.DependsOnTargets.Split(';')) {
+						ProjectToBuild p2;
+						if (!projectsToBuildDict.TryGetValue(dependency, out p2))
+							continue;
+						p1.dependencies.Add(p2);
+					}
+				}
+				return true;
+			}
+			
+			/// <summary>
+			/// Adds an error message that the specified target is invalid and returns false.
+			/// </summary>
+			bool InvalidTarget(Target target)
+			{
+				currentResults.Result = BuildResultCode.BuildFileError;
+				currentResults.Add(new BuildError(this.solution.FileName, "Solution target '" + target.Name + "' is invalid."));
+				return false;
+			}
+			#endregion
+			
+			#region ParseMSBuildProject
+			Dictionary<IProject, ProjectToBuild> parseMSBuildProjectProjectsToBuildDict = new Dictionary<IProject, ProjectToBuild>();
+			
+			/// <summary>
+			/// Adds a ProjectToBuild item for the project and it's project references.
+			/// Returns the added item, or null if an error occured.
+			/// </summary>
+			ProjectToBuild ParseMSBuildProject(IProject project)
+			{
+				ProjectToBuild ptb;
+				if (parseMSBuildProjectProjectsToBuildDict.TryGetValue(project, out ptb)) {
+					// only add each project once, reuse existing ProjectToBuild
+					return ptb;
+				}
+				ptb = new ProjectToBuild(project.FileName, options.Target.TargetName);
+				ptb.configuration = parentEngine.Configuration;
+				ptb.platform = parentEngine.Platform;
+				
+				projectsToBuild.Add(ptb);
+				parseMSBuildProjectProjectsToBuildDict[project] = ptb;
+				
+				foreach (ProjectItem item in project.GetItemsOfType(ItemType.ProjectReference)) {
+					ProjectReferenceProjectItem prpi = item as ProjectReferenceProjectItem;
+					if (prpi != null && prpi.ReferencedProject != null) {
+						ProjectToBuild referencedProject = ParseMSBuildProject(prpi.ReferencedProject);
+						if (referencedProject == null)
+							return null;
+						ptb.dependencies.Add(referencedProject);
+					}
+				}
+				
+				return ptb;
+			}
+			#endregion
+			
+			#region SortProjectsToBuild
+			/// <summary>
+			/// Recursively count dependencies and sort projects (most important first).
+			/// This decreases the number of waiting workers on multi-processor builds
+			/// </summary>
+			void SortProjectsToBuild()
+			{
+				// count:
+				try {
+					foreach (ProjectToBuild ptb in projectsToBuild) {
+						projectsToBuild.ForEach(delegate(ProjectToBuild p) { p.visitFlag = 0; });
+						ptb.dependencies.ForEach(IncrementRequiredByCount);
+					}
+				} catch (DependencyCycleException) {
+					currentResults.Add(new BuildError(null, "Dependency cycle detected, cannot build!"));
+					return;
+				}
+				// sort by requiredByCount, decreasing
+				projectsToBuild.Sort(delegate (ProjectToBuild a, ProjectToBuild b) {
+				                     	return -a.requiredByCount.CompareTo(b.requiredByCount);
+				                     });
+			}
+			
+			/// <summary>
+			/// Recursively increment requiredByCount on ptb and all its dependencies
+			/// </summary>
+			static void IncrementRequiredByCount(ProjectToBuild ptb)
+			{
+				if (ptb.visitFlag == 1) {
+					return;
+				}
+				if (ptb.visitFlag == -1) {
+					throw new DependencyCycleException();
+				}
+				ptb.visitFlag = -1;
+				ptb.requiredByCount++;
+				ptb.dependencies.ForEach(IncrementRequiredByCount);
+				ptb.visitFlag = 1;
+			}
+			
+			class DependencyCycleException : Exception {}
+			#endregion
+		}
+		
+		/// <summary>
+		/// node used for project dependency graph
+		/// </summary>
+		internal class ProjectToBuild
+		{
+			// information required to build the project
+			internal string file;
+			internal string targets;
+			internal string configuration, platform;
+			
+			internal List<ProjectToBuild> dependencies = new List<ProjectToBuild>();
+			
+			internal bool DependenciesSatisfied()
+			{
+				return dependencies.TrueForAll(delegate(ProjectToBuild p) { return p.buildFinished; });
+			}
+			
+			/// <summary>
+			/// Number of projects that are directly or indirectly dependent on this project.
+			/// Used in SortProjectsToBuild step.
+			/// </summary>
+			internal int requiredByCount;
+			
+			/// <summary>
+			/// Mark already visited nodes. 0 = not visited, -1 = visiting, 1 = visited
+			/// Used in SortProjectsToBuild step.
+			/// </summary>
+			internal int visitFlag;
+			
+			// build status. Three possible values:
+			//   buildStarted=buildFinished=false       => build not yet started
+			//   buildStarted=true, buildFinished=false => build running
+			//   buildStarted=buildFinished=true        => build finished
+			internal bool buildStarted;
+			internal bool buildFinished;
+			
+			public ProjectToBuild(string file, string targets)
+			{
+				this.file = file;
+				this.targets = targets;
+			}
 		}
 	}
 }

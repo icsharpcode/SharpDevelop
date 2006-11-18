@@ -831,10 +831,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void StartBuild(BuildOptions options)
 		{
-			MSBuildBasedProject.RunMSBuild(this.FileName, options.Target.TargetName,
+			MSBuildBasedProject.RunMSBuild(this, null,
 			                               this.Preferences.ActiveConfiguration,
 			                               this.Preferences.ActivePlatform,
-			                               false, options.Callback, options.AdditionalProperties);
+			                               options);
 		}
 	}
 }

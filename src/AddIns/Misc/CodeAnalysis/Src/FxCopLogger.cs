@@ -17,18 +17,18 @@ namespace ICSharpCode.CodeAnalysis
 {
 	public class FxCopLogger : IMSBuildAdditionalLogger
 	{
-		public ILogger CreateLogger(MSBuildEngine engine)
+		public ILogger CreateLogger(MSBuildEngineWorker engineWorker)
 		{
-			return new FxCopLoggerImpl(engine);
+			return new FxCopLoggerImpl(engineWorker);
 		}
 		
 		private class FxCopLoggerImpl : ILogger
 		{
-			MSBuildEngine engine;
+			MSBuildEngineWorker engineWorker;
 			
-			public FxCopLoggerImpl(MSBuildEngine engine)
+			public FxCopLoggerImpl(MSBuildEngineWorker engineWorker)
 			{
-				this.engine = engine;
+				this.engineWorker = engineWorker;
 			}
 			
 			public LoggerVerbosity Verbosity {
@@ -54,7 +54,7 @@ namespace ICSharpCode.CodeAnalysis
 			public void Initialize(IEventSource eventSource)
 			{
 				this.eventSource = eventSource;
-				engine.MessageView.AppendText("${res:ICSharpCode.CodeAnalysis.RunningFxCopOn} " + Path.GetFileNameWithoutExtension(engine.CurrentProjectFile) + "\r\n");
+				engineWorker.OutputText("${res:ICSharpCode.CodeAnalysis.RunningFxCopOn} " + Path.GetFileNameWithoutExtension(engineWorker.CurrentProjectFile) + "\r\n");
 				eventSource.ErrorRaised += OnError;
 				eventSource.WarningRaised += OnWarning;
 			}
@@ -85,12 +85,12 @@ namespace ICSharpCode.CodeAnalysis
 			                 string category, string checkId, string subcategory)
 			{
 				string[] moreData = (subcategory ?? "").Split('|');
-				BuildError err = engine.CurrentErrorOrWarning;
+				BuildError err = engineWorker.CurrentErrorOrWarning;
 				if (FileUtility.IsValidFileName(file) &&
 				    Path.GetFileName(file) == "SharpDevelop.CodeAnalysis.targets") {
 					err.FileName = null;
 				}
-				IProject project = ProjectService.GetProject(engine.CurrentProjectFile);
+				IProject project = ProjectService.GetProject(engineWorker.CurrentProjectFile);
 				if (project != null) {
 					IProjectContent pc = ParserService.GetProjectContent(project);
 					if (pc != null) {

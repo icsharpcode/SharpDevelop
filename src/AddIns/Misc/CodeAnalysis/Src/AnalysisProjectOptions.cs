@@ -295,6 +295,7 @@ namespace ICSharpCode.CodeAnalysis
 			public ConfigBinding(AnalysisProjectOptions po)
 			{
 				this.po = po;
+				this.TreatPropertyValueAsLiteral = false;
 				po.OptionChanged += delegate {
 					Helper.IsDirty = true;
 				};

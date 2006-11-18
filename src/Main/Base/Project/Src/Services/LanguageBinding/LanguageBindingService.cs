@@ -112,6 +112,9 @@ namespace ICSharpCode.SharpDevelop
 				ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(location);
 				if (binding != null) {
 					try {
+						location = Path.GetFullPath(location);
+					} catch (Exception) {}
+					try {
 						newProject = binding.LoadProject(provider, location, title);
 					} catch (XmlException ex) {
 						MessageService.ShowError("Error loading " + location + ":\n" + ex.Message);
