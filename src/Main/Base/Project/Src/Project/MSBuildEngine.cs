@@ -381,6 +381,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				engine.GlobalProperties.SetProperty("SolutionFileName", Path.GetFileName(solution.FileName));
 				engine.GlobalProperties.SetProperty("SolutionPath", solution.FileName);
 				
+				engine.GlobalProperties.SetProperty("BuildingInsideVisualStudio", "true");
+				
 				return engine;
 			}
 			
@@ -397,6 +399,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				Project project = engine.CreateNewProject();
 				try {
 					project.Load(fileName);
+					
+					// When we set BuildingInsideVisualStudio, MSBuild tries to build all projects
+					// every time because in Visual Studio, the host compiler does the change detection
+					// We override the property '_ComputeNonExistentFileProperty' which is responsible
+					// for recompiling each time - our _ComputeNonExistentFileProperty does nothing,
+					// which re-enables the MSBuild's usual change detection
+					project.Targets.AddNewTarget("_ComputeNonExistentFileProperty");
+					
 					return project;
 				} catch (ArgumentException ex) {
 					currentResults.Result = BuildResultCode.BuildFileError;
