@@ -341,10 +341,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				globalSection.Append(Environment.NewLine);
 			}
 			
-			// we need to specify UTF8 because MsBuild needs the BOM
+			// we need to specify UTF8 because MSBuild needs the BOM
 			using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.UTF8)) {
 				sw.WriteLine();
 				sw.WriteLine("Microsoft Visual Studio Solution File, Format Version 9.00");
+				sw.WriteLine("# Visual Studio 2005");
 				sw.WriteLine("# SharpDevelop " + RevisionClass.FullVersion);
 				sw.Write(projectSection.ToString());
 				
