@@ -36,6 +36,7 @@ namespace SearchAndReplace
 		{
 			this.taskLabel = new System.Windows.Forms.Label();
 			this.progressBar = new System.Windows.Forms.ProgressBar();
+			this.cancelButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// taskLabel
@@ -49,19 +50,32 @@ namespace SearchAndReplace
 			// 
 			// progressBar
 			// 
-			this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
+			this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 									| System.Windows.Forms.AnchorStyles.Right)));
 			this.progressBar.Location = new System.Drawing.Point(12, 58);
 			this.progressBar.Name = "progressBar";
-			this.progressBar.Size = new System.Drawing.Size(311, 27);
+			this.progressBar.Size = new System.Drawing.Size(235, 22);
 			this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
 			this.progressBar.TabIndex = 1;
 			// 
+			// cancelButton
+			// 
+			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.cancelButton.Location = new System.Drawing.Point(253, 58);
+			this.cancelButton.Name = "cancelButton";
+			this.cancelButton.Size = new System.Drawing.Size(75, 23);
+			this.cancelButton.TabIndex = 2;
+			this.cancelButton.Text = "button1";
+			this.cancelButton.UseVisualStyleBackColor = true;
+			this.cancelButton.Click += new System.EventHandler(this.CancelButtonClick);
+			// 
 			// AsynchronousWaitDialogForm
 			// 
-			this.ClientSize = new System.Drawing.Size(336, 97);
+			this.CancelButton = this.cancelButton;
+			this.ClientSize = new System.Drawing.Size(336, 87);
 			this.ControlBox = false;
+			this.Controls.Add(this.cancelButton);
 			this.Controls.Add(this.progressBar);
 			this.Controls.Add(this.taskLabel);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -70,6 +84,7 @@ namespace SearchAndReplace
 			this.Text = "AsynchronousWaitDialog";
 			this.ResumeLayout(false);
 		}
+		internal System.Windows.Forms.Button cancelButton;
 		internal System.Windows.Forms.ProgressBar progressBar;
 		internal System.Windows.Forms.Label taskLabel;
 	}

@@ -19,6 +19,12 @@ namespace SearchAndReplace
 		internal AsynchronousWaitDialogForm()
 		{
 			InitializeComponent();
+			cancelButton.Text = ResourceService.GetString("Global.CancelButtonText");
+		}
+		
+		void CancelButtonClick(object sender, System.EventArgs e)
+		{
+			cancelButton.Enabled = false;
 		}
 	}
 	
@@ -40,13 +46,15 @@ namespace SearchAndReplace
 		/// </summary>
 		public const int ShowWaitDialogDelay = 500;
 		
+		readonly object lockObject = new object();
 		bool disposed;
 		AsynchronousWaitDialogForm dlg;
-		object lockObject = new object();
 		volatile int totalWork;
 		volatile string titleName;
 		volatile string taskName;
 		volatile int workDone;
+		volatile bool cancelled;
+		volatile bool allowCancel;
 		
 		/// <summary>
 		/// Shows a wait dialog.
@@ -92,6 +100,7 @@ namespace SearchAndReplace
 					return;
 				dlg = new AsynchronousWaitDialogForm();
 				dlg.Text = StringParser.Parse(titleName);
+				dlg.cancelButton.Click += delegate { cancelled = true; };
 				UpdateTask();
 				dlg.CreateControl();
 				IntPtr h = dlg.Handle; // force handle creation
@@ -171,6 +180,7 @@ namespace SearchAndReplace
 				totalWork = 0;
 			
 			lock (lockObject) {
+				this.allowCancel = allowCancel;
 				this.totalWork = totalWork;
 				this.taskName = name;
 				if (dlg != null && disposed == false) {
@@ -193,6 +203,13 @@ namespace SearchAndReplace
 			int totalWork = this.totalWork;
 			
 			dlg.taskLabel.Text = StringParser.Parse(taskName);
+			if (allowCancel) {
+				dlg.cancelButton.Visible = true;
+				dlg.progressBar.Width = dlg.cancelButton.Left - 8 - dlg.progressBar.Left;
+			} else {
+				dlg.cancelButton.Visible = false;
+				dlg.progressBar.Width = dlg.cancelButton.Right - dlg.progressBar.Left;
+			}
 			
 			if (totalWork > 0) {
 				if (dlg.progressBar.Value > totalWork) {
@@ -237,7 +254,7 @@ namespace SearchAndReplace
 		
 		public bool IsCancelled {
 			get {
-				return false;
+				return cancelled;
 			}
 		}
 	}
