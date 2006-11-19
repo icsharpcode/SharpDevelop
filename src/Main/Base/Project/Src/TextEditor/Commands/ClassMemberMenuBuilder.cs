@@ -202,7 +202,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			} else {
 				memberName = member.Name;
 			}
-			FindReferencesAndRenameHelper.ShowAsSearchResults("References to " + memberName, RefactoringService.FindReferences(member, null));
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferencesCommand}"))
+			{
+				FindReferencesAndRenameHelper.ShowAsSearchResults("References to " + memberName, 
+				                                                  RefactoringService.FindReferences(member, monitor));
+			}
 		}
 	}
 }

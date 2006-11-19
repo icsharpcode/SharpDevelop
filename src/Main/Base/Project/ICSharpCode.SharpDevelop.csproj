@@ -511,6 +511,10 @@
     <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchReplaceInFilesManager.cs" />
     <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchReplaceManager.cs" />
     <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchReplaceUtilities.cs" />
+    <Compile Include="Src\TextEditor\SearchAndReplace\Gui\AsynchronousWaitDialog.cs" />
+    <Compile Include="Src\TextEditor\SearchAndReplace\Gui\AsynchronousWaitDialog.Designer.cs">
+      <DependentUpon>AsynchronousWaitDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\TextEditor\SearchAndReplace\Gui\SearchAndReplaceDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -679,6 +683,9 @@
     <Compile Include="Src\TextEditor\Gui\Editor\IncrementalSearch.cs" />
     <EmbeddedResource Include="Resources\IncrementalSearchCursor.cur" />
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
+    <EmbeddedResource Include="Src\TextEditor\SearchAndReplace\Gui\AsynchronousWaitDialog.resx">
+      <DependentUpon>AsynchronousWaitDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Include="Src\Gui\Dialogs\SharpDevelopColorDialog.cs" />
     <Compile Include="Src\Util\Linq.cs" />
     <Compile Include="Src\Util\DebugTimer.cs" />

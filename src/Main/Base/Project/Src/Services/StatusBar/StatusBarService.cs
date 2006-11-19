@@ -48,16 +48,6 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public static bool CancelEnabled {
-			get {
-				return statusBar != null && statusBar.CancelEnabled;
-			}
-			set {
-				System.Diagnostics.Debug.Assert(statusBar != null);
-				statusBar.CancelEnabled = value;
-			}
-		}
-		
 		public static void SetCaretPosition(int x, int y, int charOffset)
 		{
 			statusBar.CursorStatusBarPanel.Text = StringParser.Parse("${res:StatusBarService.CursorStatusBarPanelText}", 

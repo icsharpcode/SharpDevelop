@@ -270,8 +270,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IClass c = (IClass)item.Tag;
-			FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}", new string[,] {{ "Name", c.Name }}),
-			                                                  RefactoringService.FindReferences(c, null));
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferencesCommand}"))
+			{
+				FindReferencesAndRenameHelper.ShowAsSearchResults(
+					StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
+					                   new string[,] {{ "Name", c.Name }}),
+					RefactoringService.FindReferences(c, monitor)
+				);
+			}
 		}
 	}
 }

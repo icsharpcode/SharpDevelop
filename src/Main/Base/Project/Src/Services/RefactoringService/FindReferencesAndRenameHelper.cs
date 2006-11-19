@@ -27,7 +27,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameClassText}", c.Name);
 			if (!FindReferencesAndRenameHelper.CheckName(newName, c.Name)) return;
 			
-			RenameClass(c, newName);
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.Rename}"))
+			{
+				RenameClass(c, newName);
+			}
 		}
 		
 		public static void RenameClass(IClass c, string newName)
@@ -92,9 +95,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static bool RenameMember(IMember member, string newName)
 		{
-			List<Reference> list = RefactoringService.FindReferences(member, null);
-			if (list == null) return false;
-			FindReferencesAndRenameHelper.RenameReferences(list, newName);
+			List<Reference> list;
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.Rename}"))
+			{
+				list = RefactoringService.FindReferences(member, monitor);
+				if (list == null) return false;
+				FindReferencesAndRenameHelper.RenameReferences(list, newName);
+			}
 			
 			if (member is IField) {
 				IProperty property = FindProperty((IField)member);
@@ -102,9 +109,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					string newPropertyName = member.DeclaringType.ProjectContent.Language.CodeGenerator.GetPropertyName(newName);
 					if (newPropertyName != newName && newPropertyName != property.Name) {
 						if (MessageService.AskQuestionFormatted("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameFieldAndProperty}", property.FullyQualifiedName, newPropertyName)) {
-							list = RefactoringService.FindReferences(property, null);
-							if (list != null) {
-								FindReferencesAndRenameHelper.RenameReferences(list, newPropertyName);
+							using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.Rename}"))
+							{
+								list = RefactoringService.FindReferences(property, monitor);
+								if (list != null) {
+									FindReferencesAndRenameHelper.RenameReferences(list, newPropertyName);
+								}
 							}
 						}
 					}

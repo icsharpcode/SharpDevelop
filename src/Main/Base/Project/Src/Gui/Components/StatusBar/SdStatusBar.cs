@@ -35,17 +35,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		bool cancelEnabled;
-		
-		public bool CancelEnabled {
-			get {
-				return cancelEnabled;
-			}
-			set {
-				cancelEnabled = value;
-			}
-		}
-		
 		public SdStatusBar()
 		{
 			
@@ -133,7 +122,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		// Progress Monitor implementation
 		int totalWork;
 		
-		public void BeginTask(string name, int totalWork)
+		public void BeginTask(string name, int totalWork, bool allowCancel)
 		{
 			taskName = name;
 			this.totalWork = totalWork;
@@ -202,6 +191,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void SetTaskName()
 		{
 			jobNamePanel.Text = StringParser.Parse(taskName);
+		}
+		
+		bool showingDialog;
+		
+		public bool ShowingDialog {
+			get { return showingDialog; }
+			set { showingDialog = value; }
+		}
+		
+		public bool IsCancelled {
+			get { return false; }
 		}
 	}
 }

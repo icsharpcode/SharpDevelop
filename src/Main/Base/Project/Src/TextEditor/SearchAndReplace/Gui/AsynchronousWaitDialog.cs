@@ -9,64 +9,236 @@ using System;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.Core;
 
 namespace SearchAndReplace
 {
+	internal sealed partial class AsynchronousWaitDialogForm
+	{
+		internal AsynchronousWaitDialogForm()
+		{
+			InitializeComponent();
+		}
+	}
+	
 	/// <summary>
-	/// Shows an wait dialog on a separate thread if the action takes longer than 200ms.
+	/// Shows an wait dialog on a separate thread if the action takes longer than 500ms.
 	/// Usage:
-	/// using (AsynchronousWaitDialog.ShowWaitDialog()) {
+	/// using (AsynchronousWaitDialog.ShowWaitDialog("title")) {
 	///   long_running_action();
 	/// }
+	/// or:
+	/// using (IProgressMonitor monitor = AsynchronousWaitDialog.ShowWaitDialog("title")) {
+	///   long_running_action(monitor);
+	/// }
 	/// </summary>
-	public sealed partial class AsynchronousWaitDialog
+	public sealed class AsynchronousWaitDialog : IProgressMonitor, IDisposable
 	{
-		class WaitHandle : IDisposable
+		/// <summary>
+		/// Delay until the wait dialog becomes visible, in ms.
+		/// </summary>
+		public const int ShowWaitDialogDelay = 500;
+		
+		bool disposed;
+		AsynchronousWaitDialogForm dlg;
+		object lockObject = new object();
+		volatile int totalWork;
+		volatile string titleName;
+		volatile string taskName;
+		volatile int workDone;
+		
+		/// <summary>
+		/// Shows a wait dialog.
+		/// </summary>
+		/// <param name="titleName">Title of the wait dialog</param>
+		/// <param name="taskName">Name of the current task</param>
+		/// <returns>WaitHandle object - you can use it to access the wait dialog's properties.
+		/// To close the wait dialog, call Dispose() on the WaitHandle</returns>
+		public static AsynchronousWaitDialog ShowWaitDialog(string titleName)
 		{
-			bool disposed;
-			AsynchronousWaitDialog dlg;
+			if (titleName == null)
+				throw new ArgumentNullException("titleName");
+			AsynchronousWaitDialog h = new AsynchronousWaitDialog(titleName);
+			h.Start();
+			return h;
+		}
+		
+		private AsynchronousWaitDialog(string titleName)
+		{
+			this.titleName = titleName;
+			Done(); // set default values for titleName
+		}
+		
+		#region Start waiting thread
+		/// <summary>
+		/// Start waiting thread
+		/// </summary>
+		internal void Start()
+		{
+			Thread newThread = new Thread(Run);
+			newThread.Name = "AsynchronousWaitDialog thread";
+			newThread.Start();
 			
-			[STAThread]
-			public void Run()
-			{
-				Thread.Sleep(500);
-				lock (this) {
-					if (disposed)
-						return;
-					dlg = new AsynchronousWaitDialog();
-					dlg.CreateControl();
-				}
+			Thread.Sleep(0); // allow new thread to start
+		}
+		
+		[STAThread]
+		void Run()
+		{
+			Thread.Sleep(ShowWaitDialogDelay);
+			lock (lockObject) {
+				if (disposed)
+					return;
+				dlg = new AsynchronousWaitDialogForm();
+				dlg.Text = StringParser.Parse(titleName);
+				UpdateTask();
+				dlg.CreateControl();
+				IntPtr h = dlg.Handle; // force handle creation
+			}
+			if (showingDialog) {
+				Application.Run();
+			} else {
 				Application.Run(dlg);
 			}
-			
-			public void Dispose()
-			{
-				lock (this) {
-					disposed = true;
-					if (dlg != null) {
-						dlg.BeginInvoke(new MethodInvoker(dlg.Close));
+		}
+		#endregion
+		
+		/// <summary>
+		/// Closes the wait dialog.
+		/// </summary>
+		public void Dispose()
+		{
+			lock (lockObject) {
+				if (disposed) return;
+				disposed = true;
+				if (dlg != null) {
+					dlg.BeginInvoke(new MethodInvoker(DisposeInvoked));
+				}
+			}
+		}
+		
+		void DisposeInvoked()
+		{
+			dlg.Dispose();
+			Application.ExitThread();
+		}
+		
+		public int WorkDone {
+			get {
+				return workDone;
+			}
+			set {
+				if (workDone != value) {
+					lock (lockObject) {
+						workDone = value;
+						if (dlg != null && disposed == false) {
+							dlg.BeginInvoke(new MethodInvoker(UpdateProgress));
+						}
 					}
 				}
 			}
 		}
 		
-		public static IDisposable ShowWaitDialog()
-		{
-			WaitHandle h = new WaitHandle();
-			Thread thread = new Thread(h.Run);
-			thread.Name = "AsynchronousWaitDialog thread";
-			thread.Start();
-			
-			Thread.Sleep(0); // allow new thread to start
-			return h;
+		public string TaskName {
+			get {
+				lock (lockObject) {
+					return taskName;
+				}
+			}
+			set {
+				if (taskName != value) {
+					lock (lockObject) {
+						taskName = value;
+						if (dlg != null && disposed == false) {
+							dlg.BeginInvoke(new MethodInvoker(UpdateTask));
+						}
+					}
+				}
+			}
 		}
 		
-		private AsynchronousWaitDialog()
+		/// <summary>
+		/// Begins a new task with the specified name and total amount of work.
+		/// </summary>
+		/// <param name="name">Name of the task. Use null to display "please wait..." message</param>
+		/// <param name="totalWork">Total amount of work in work units. Use 0 for unknown amount of work.</param>
+		public void BeginTask(string name, int totalWork, bool allowCancel)
 		{
-			//
-			// The InitializeComponent() call is required for Windows Forms designer support.
-			//
-			InitializeComponent();
+			if (name == null)
+				name = "${res:Global.PleaseWait}";
+			if (totalWork < 0)
+				totalWork = 0;
+			
+			lock (lockObject) {
+				this.totalWork = totalWork;
+				this.taskName = name;
+				if (dlg != null && disposed == false) {
+					dlg.BeginInvoke(new MethodInvoker(UpdateTask));
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Resets the task to a generic "please wait" with marquee progress bar.
+		/// </summary>
+		public void Done()
+		{
+			workDone = 0;
+			BeginTask(null, 0, false);
+		}
+		
+		void UpdateTask()
+		{
+			int totalWork = this.totalWork;
+			
+			dlg.taskLabel.Text = StringParser.Parse(taskName);
+			
+			if (totalWork > 0) {
+				if (dlg.progressBar.Value > totalWork) {
+					dlg.progressBar.Value = 0;
+				}
+				dlg.progressBar.Maximum = totalWork + 1;
+				dlg.progressBar.Style = ProgressBarStyle.Continuous;
+			} else {
+				dlg.progressBar.Style = ProgressBarStyle.Marquee;
+			}
+			UpdateProgress();
+		}
+		
+		void UpdateProgress()
+		{
+			int workDone = this.workDone;
+			if (workDone < 0) workDone = 0;
+			if (workDone > dlg.progressBar.Maximum)
+				workDone = dlg.progressBar.Maximum;
+			dlg.progressBar.Value = workDone;
+		}
+		
+		bool showingDialog;
+		
+		public bool ShowingDialog {
+			get { return showingDialog; }
+			set {
+				if (showingDialog != value) {
+					showingDialog = value;
+					lock (lockObject) {
+						if (dlg != null && disposed == false) {
+							if (value) {
+								dlg.BeginInvoke(new MethodInvoker(dlg.Hide));
+							} else {
+								dlg.BeginInvoke(new MethodInvoker(dlg.Show));
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		public bool IsCancelled {
+			get {
+				return false;
+			}
 		}
 	}
 }

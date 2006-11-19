@@ -184,7 +184,7 @@ namespace ICSharpCode.SharpDevelop
 					MessageService.ShowError(e, "Error while initializing project references:" + newContent);
 				}
 			}
-			StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount);
+			StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount, false);
 			foreach (ParseProjectContent newContent in createdContents) {
 				if (abortLoadSolutionProjectsThread) break;
 				try {
@@ -200,7 +200,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			ParseProjectContent newContent = (ParseProjectContent)state;
 			newContent.Initialize1();
-			StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", newContent.GetInitializationWorkAmount());
+			StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", newContent.GetInitializationWorkAmount(), false);
 			newContent.Initialize2();
 			StatusBarService.ProgressMonitor.Done();
 		}
@@ -235,7 +235,7 @@ namespace ICSharpCode.SharpDevelop
 							foreach (ParseProjectContent ppc in reParse2) {
 								workAmount += ppc.GetInitializationWorkAmount();
 							}
-							StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount);
+							StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount, false);
 						}
 						parsing = true;
 						job = reParse2.Dequeue();

@@ -94,7 +94,10 @@ namespace SearchAndReplace
 					FindNextInSelection();
 				}
 			} else {
-				SearchReplaceManager.FindNext();
+				using (AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				{
+					SearchReplaceManager.FindNext();
+				}
 			}
 			Focus();
 		}
@@ -107,7 +110,10 @@ namespace SearchAndReplace
 					RunAllInSelection(0);
 				}
 			} else {
-				SearchInFilesManager.FindAll();
+				using (AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				{
+					SearchInFilesManager.FindAll();
+				}
 			}
 		}
 		
@@ -119,7 +125,10 @@ namespace SearchAndReplace
 					RunAllInSelection(1);
 				}
 			} else {
-				SearchReplaceManager.MarkAll();
+				using (AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				{
+					SearchReplaceManager.MarkAll();
+				}
 			}
 		}
 		
@@ -131,7 +140,10 @@ namespace SearchAndReplace
 					RunAllInSelection(2);
 				}
 			} else {
-				SearchReplaceManager.ReplaceAll();
+				using (AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				{
+					SearchReplaceManager.ReplaceAll();
+				}
 			}
 		}
 		
@@ -143,7 +155,10 @@ namespace SearchAndReplace
 					ReplaceInSelection();
 				}
 			} else {
-				SearchReplaceManager.Replace();
+				using (AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				{
+					SearchReplaceManager.Replace();
+				}
 			}
 			Focus();
 		}
@@ -440,7 +455,7 @@ namespace SearchAndReplace
 		}
 		
 		/// <summary>
-		/// Enables the various find, bookmark and replace buttons 
+		/// Enables the various find, bookmark and replace buttons
 		/// depending on whether any find string has been entered. The buttons
 		/// are disabled otherwise.
 		/// </summary>

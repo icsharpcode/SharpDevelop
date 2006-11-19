@@ -183,6 +183,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			         });
 		}
 		
+		/// <summary>
+		/// Gets/Sets the progress monitor this tool can report progress to. This property can never be null.
+		/// </summary>
 		public IProgressMonitor ProgressMonitor {
 			get { return progressMonitor; }
 			set {

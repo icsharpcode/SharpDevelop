@@ -122,21 +122,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 			base.OnClosed(e);
 		}
 		
-		Hashtable visibleEntries = new Hashtable();
+		Dictionary<string, object> visibleEntries = new Dictionary<string, object>();
 		double bestPriority;
 		ListViewItem bestItem;
 		
 		void TextBoxTextChanged(object sender, EventArgs e)
 		{
 			string text = textBox.Text.Trim();
+			listView.BeginUpdate();
 			listView.Items.Clear();
 			visibleEntries.Clear();
 			bestItem = null;
-			if (text.Length == 0)
+			if (text.Length == 0) {
+				listView.EndUpdate();
 				return;
-			if (text.Length == 1 && !char.IsDigit(text, 0))
+			}
+			if (text.Length == 1 && !char.IsDigit(text, 0)) {
+				listView.EndUpdate();
 				return;
-			listView.BeginUpdate();
+			}
 			int dotPos = text.IndexOf('.');
 			int commaPos = text.IndexOf(',');
 			if (commaPos < 0) {

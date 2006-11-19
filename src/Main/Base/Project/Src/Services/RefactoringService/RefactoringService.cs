@@ -126,7 +126,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		                                         IProgressMonitor progressMonitor)
 		{
 			if (ParserService.LoadSolutionProjectsThreadRunning) {
+				progressMonitor.ShowingDialog = true;
 				MessageService.ShowMessage("${res:SharpDevelop.Refactoring.LoadSolutionProjectsThreadRunning}");
+				progressMonitor.ShowingDialog = false;
 				return null;
 			}
 			List<ProjectItem> files;
@@ -141,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			List<Reference> references = new List<Reference>();
 			try {
 				if (progressMonitor != null) {
-					progressMonitor.BeginTask("${res:SharpDevelop.Refactoring.FindingReferences}", files.Count);
+					progressMonitor.BeginTask("${res:SharpDevelop.Refactoring.FindingReferences}", files.Count, true);
 				}
 				#if DEBUG
 				if (System.Windows.Forms.Control.ModifierKeys == System.Windows.Forms.Keys.Control) {
@@ -151,6 +153,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				while (enumerator.MoveNext()) {
 					if (progressMonitor != null) {
 						progressMonitor.WorkDone = enumerator.Index;
+						if (progressMonitor.IsCancelled) {
+							return null;
+						}
 					}
 					
 					AddReferences(references, ownerClass, member, isLocal, enumerator.CurrentFileName, enumerator.CurrentFileContent);

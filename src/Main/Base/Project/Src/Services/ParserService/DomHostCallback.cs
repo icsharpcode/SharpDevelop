@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop
 			HostCallback.BeginAssemblyLoad = delegate(string shortName) {
 				StatusBarService.ProgressMonitor.BeginTask(
 					StringParser.Parse("${res:ICSharpCode.SharpDevelop.LoadingFile}", new string[,] {{"Filename", shortName}}),
-					100
+					100, false
 				);
 			};
 			HostCallback.FinishAssemblyLoad = StatusBarService.ProgressMonitor.Done;

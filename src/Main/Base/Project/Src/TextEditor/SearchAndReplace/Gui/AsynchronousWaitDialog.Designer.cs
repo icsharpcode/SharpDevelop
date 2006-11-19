@@ -6,7 +6,7 @@
 // </file>
 namespace SearchAndReplace
 {
-	partial class AsynchronousWaitDialog : System.Windows.Forms.Form
+	partial class AsynchronousWaitDialogForm : System.Windows.Forms.Form
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.
@@ -34,41 +34,43 @@ namespace SearchAndReplace
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.label1 = new System.Windows.Forms.Label();
-			this.progressBar1 = new System.Windows.Forms.ProgressBar();
+			this.taskLabel = new System.Windows.Forms.Label();
+			this.progressBar = new System.Windows.Forms.ProgressBar();
 			this.SuspendLayout();
 			// 
-			// label1
+			// taskLabel
 			// 
-			this.label1.Location = new System.Drawing.Point(93, 23);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(100, 23);
-			this.label1.TabIndex = 0;
-			this.label1.Text = "Please wait...";
+			this.taskLabel.Location = new System.Drawing.Point(12, 9);
+			this.taskLabel.Name = "taskLabel";
+			this.taskLabel.Size = new System.Drawing.Size(311, 46);
+			this.taskLabel.TabIndex = 0;
+			this.taskLabel.Text = "Please wait...";
+			this.taskLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
-			// progressBar1
+			// progressBar
 			// 
-			this.progressBar1.Location = new System.Drawing.Point(12, 49);
-			this.progressBar1.Name = "progressBar1";
-			this.progressBar1.Size = new System.Drawing.Size(264, 23);
-			this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-			this.progressBar1.TabIndex = 1;
+			this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.progressBar.Location = new System.Drawing.Point(12, 58);
+			this.progressBar.Name = "progressBar";
+			this.progressBar.Size = new System.Drawing.Size(311, 27);
+			this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+			this.progressBar.TabIndex = 1;
 			// 
-			// AsynchronousWaitDialog
+			// AsynchronousWaitDialogForm
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(288, 84);
+			this.ClientSize = new System.Drawing.Size(336, 97);
 			this.ControlBox = false;
-			this.Controls.Add(this.progressBar1);
-			this.Controls.Add(this.label1);
+			this.Controls.Add(this.progressBar);
+			this.Controls.Add(this.taskLabel);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-			this.Name = "AsynchronousWaitDialog";
+			this.Name = "AsynchronousWaitDialogForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "AsynchronousWaitDialog";
 			this.ResumeLayout(false);
 		}
-		private System.Windows.Forms.ProgressBar progressBar1;
-		private System.Windows.Forms.Label label1;
+		internal System.Windows.Forms.ProgressBar progressBar;
+		internal System.Windows.Forms.Label taskLabel;
 	}
 }
