@@ -55,14 +55,6 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// Adds a new component element to this directory element.
 		/// </summary>
-		public WixComponentElement AddComponent()
-		{
-			return AddComponent(String.Empty);
-		}
-		
-		/// <summary>
-		/// Adds a new component element to this directory element.
-		/// </summary>
 		public WixComponentElement AddComponent(string id)
 		{
 			WixComponentElement componentElement = new WixComponentElement((WixDocument)OwnerDocument);

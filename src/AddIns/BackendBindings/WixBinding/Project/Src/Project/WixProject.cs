@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.BuildEngine;
@@ -50,8 +51,8 @@ namespace ICSharpCode.WixBinding
 			get { return WixLanguageBinding.LanguageName; }
 		}
 		
-		public override ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
-			get { return ICSharpCode.SharpDevelop.Dom.LanguageProperties.None; }
+		public override LanguageProperties LanguageProperties {
+			get { return LanguageProperties.None; }
 		}
 		
 		public override void Start(bool withDebugging)
@@ -110,9 +111,9 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public string InstallerFullPath {
 			get {
-				string outputPath = GetProperty("OutputPath") ?? "";
-				string outputType = GetProperty("OutputType") ?? "";
-				string outputName = GetProperty("OutputName") ?? "";
+				string outputPath = GetProperty("OutputPath") ?? String.Empty;
+				string outputType = GetProperty("OutputType") ?? String.Empty;
+				string outputName = GetProperty("OutputName") ?? String.Empty;
 				string fileName = String.Concat(outputName, GetInstallerExtension(outputType));
 				return Path.Combine(Path.Combine(Directory, outputPath), fileName);
 			}
@@ -194,7 +195,8 @@ namespace ICSharpCode.WixBinding
 		/// <returns>An empty string if the name cannot be found.</returns>
 		public string GetVariable(string name)
 		{
-			NameValuePairCollection nameValuePairs = new NameValuePairCollection(GetProperty("DefineConstants"));
+			string constants = GetProperty("DefineConstants") ?? String.Empty;
+			NameValuePairCollection nameValuePairs = new NameValuePairCollection(constants);
 			return WixPropertyParser.Parse(nameValuePairs.GetValue(name), this);
 		}
 		

@@ -29,7 +29,15 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			wixProject = WixBindingTestsHelper.CreateEmptyWixProject();
+			WixBindingTestsHelper.InitMSBuildEngine();
+			
+			// create the project.
+			ProjectCreateInformation info = new ProjectCreateInformation();
+			info.Solution = new Solution();
+			info.ProjectName = "Test";
+			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
+
+			wixProject = new WixProjectWithOverriddenSave(info);
 			
 			// Add wix library item.
 			wixLibraryItem = new WixLibraryProjectItem(wixProject);

@@ -45,6 +45,7 @@ namespace WixBinding.Tests.Gui
 		Color errorDialogTextBackColour;
 		
 		bool hasErrors;
+		bool hasErrorsAtStart;
 
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -55,6 +56,8 @@ namespace WixBinding.Tests.Gui
 			wixDocumentFileName = @"C:\Projects\Test\setup.wxs";
 			using (SetupDialogListView control = new SetupDialogListView()) {
 				control.AddDialogs(wixDocumentFileName, new ReadOnlyCollection<string>(dialogs));
+				
+				hasErrorsAtStart = control.HasErrors;
 				XmlException xmlEx = new XmlException("Error occurred", null, 10, 5);
 				control.AddError(wixDocumentFileName, xmlEx);
 				Exception ex = new Exception("Error");
@@ -196,6 +199,11 @@ namespace WixBinding.Tests.Gui
 		{
 			Assert.IsTrue(hasErrors, "SetupDialogListView.HasErrors should be true");
 		}
-
+		
+		[Test]
+		public void HasErrorsAtStart()
+		{
+			Assert.IsFalse(hasErrorsAtStart, "SetupDialogListView.HasErrors should be false at the start");
+		}
 	}
 }

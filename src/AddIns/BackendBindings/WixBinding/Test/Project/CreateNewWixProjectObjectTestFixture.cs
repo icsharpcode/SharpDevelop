@@ -5,11 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
-using System;
+using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Project
 {
@@ -25,6 +27,8 @@ namespace WixBinding.Tests.Project
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			WixBindingTestsHelper.InitMSBuildEngine();
+			
 			info = new ProjectCreateInformation();
 			info.Solution = new Solution();
 			info.ProjectName = "Test";
@@ -95,6 +99,24 @@ namespace WixBinding.Tests.Project
 		public void FileName()
 		{
 			Assert.AreEqual(info.OutputProjectFileName, project.FileName);
+		}
+		
+		[Test]
+		public void AssemblyName()
+		{
+			Assert.AreEqual("Test", project.AssemblyName);
+		}
+		
+		[Test]
+		public void UnknownProperty()
+		{
+			Assert.IsNull(project.GetValue("UnknownMSBuildProperty"));
+		}
+		
+		[Test]
+		public void ProjectLanguageProperties()
+		{
+			Assert.AreEqual(LanguageProperties.None, project.LanguageProperties);
 		}
 	}
 }
