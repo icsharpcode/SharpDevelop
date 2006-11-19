@@ -7,6 +7,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <RootNamespace>SharpDevelop.Setup</RootNamespace>
     <ProjectGuid>{FFC0F136-2F91-4F2E-8D8B-DD435F01A7E6}</ProjectGuid>
+    <OutputName>SharpDevelop</OutputName>
     <OutputPath>bin\</OutputPath>
     <WarningLevel>0</WarningLevel>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>

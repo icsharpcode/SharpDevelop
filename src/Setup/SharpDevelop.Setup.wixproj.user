@@ -1,9 +1,8 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <SetupProductBuildVersion>2035</SetupProductBuildVersion>
-    <SetupProductCodeGuid>91D535F9-0EB3-4C12-BE79-3DC17D4EA9A8</SetupProductCodeGuid>
-    <SetupPackageCodeGuid>9D95DFA7-F496-4482-9830-059797D3D678</SetupPackageCodeGuid>
-    <OutputName>SharpDevelop2_2.1.0.$(SetupProductBuildVersion)</OutputName>
-    <DefineConstants>PACKAGECODEGUID=$(SetupPackageCodeGuid);PRODUCTCODEGUID=$(SetupProductCodeGuid);PRODUCTBUILDVERSION=$(SetupProductBuildVersion)</DefineConstants>
+    <SetupProductBuildVersion>1</SetupProductBuildVersion>
+    <SetupProductCodeGuid>A0AB2551-A579-42D3-9A90-D6424B3AC2CD</SetupProductCodeGuid>
+    <SetupPackageCodeGuid>DFC87BE9-A5A6-434D-97BA-F34BB1C1C1A7</SetupPackageCodeGuid>
+   <DefineConstants>PACKAGECODEGUID=$(SetupPackageCodeGuid);PRODUCTCODEGUID=$(SetupProductCodeGuid);PRODUCTBUILDVERSION=$(SetupProductBuildVersion)</DefineConstants>
   </PropertyGroup>
 </Project>

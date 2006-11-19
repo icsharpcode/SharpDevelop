@@ -3,7 +3,6 @@
     <SetupProductBuildVersion>$INSERTPRODUCTBUILDVERSION$</SetupProductBuildVersion>
     <SetupProductCodeGuid>$INSERTPRODUCTCODEGUID$</SetupProductCodeGuid>
     <SetupPackageCodeGuid>$INSERTPACKAGECODEGUID$</SetupPackageCodeGuid>
-    <OutputName>SharpDevelop2_2.1.0.$(SetupProductBuildVersion)</OutputName>
     <DefineConstants>PACKAGECODEGUID=$(SetupPackageCodeGuid);PRODUCTCODEGUID=$(SetupProductCodeGuid);PRODUCTBUILDVERSION=$(SetupProductBuildVersion)</DefineConstants>
   </PropertyGroup>
 </Project>
