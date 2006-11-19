@@ -63,14 +63,7 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void NullReferenceName()
 		{
-			IProject project = new MockCSharpProject();
-			ReferenceProjectItem referenceProjectItem = new ReferenceProjectItem(project);
-			referenceProjectItem.Include = null;
-			
-			// DG: project items without include are now forbidden by MSBuild.
-			ProjectService.AddProjectItem(project, referenceProjectItem);
-			
-			Assert.IsFalse(TestProject.IsTestProject(project));
+			Assert.IsFalse(TestProject.IsTestFrameworkReference(null));
 		}
 		
 		[Test]

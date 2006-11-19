@@ -122,9 +122,9 @@ namespace UnitTesting.Tests.Tree
 			
 			base.ProjectAdded(project);
 			
-			// DG: This call fails now - the same ProjectItem cannot be added twice.
-			// Did you intend to add another reference to NUnit.Framework?
-			// Then add
+			// Add a second NUnit.Framework reference.
+			refProjectItem = new ReferenceProjectItem(project);
+			refProjectItem.Include = "NUnit.Framework";
 			ProjectService.AddProjectItem(project, refProjectItem);
 			
 			base.ProjectItemAdded(refProjectItem);
