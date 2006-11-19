@@ -170,8 +170,12 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			// take out the inserted methods
 			parentForm.LocationChanged -= new EventHandler(ParentFormLocationChanged);
 			
-			control.ActiveTextAreaControl.VScrollBar.ValueChanged     -= new EventHandler(ParentFormLocationChanged);
-			control.ActiveTextAreaControl.HScrollBar.ValueChanged     -= new EventHandler(ParentFormLocationChanged);
+			if (control.ActiveTextAreaControl.VScrollBar != null) {
+				control.ActiveTextAreaControl.VScrollBar.ValueChanged -= new EventHandler(ParentFormLocationChanged);
+			}
+			if (control.ActiveTextAreaControl.HScrollBar != null) {
+				control.ActiveTextAreaControl.HScrollBar.ValueChanged -= new EventHandler(ParentFormLocationChanged);
+			}
 			
 			control.ActiveTextAreaControl.TextArea.LostFocus          -= new EventHandler(this.TextEditorLostFocus);
 			control.ActiveTextAreaControl.Caret.PositionChanged       -= new EventHandler(CaretOffsetChanged);
