@@ -27,6 +27,11 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public sealed class MSBuildEngine
 	{
+		const string CompileTaskNamesPath = "/SharpDevelop/MSBuildEngine/CompileTaskNames";
+		const string AdditionalTargetFilesPath = "/SharpDevelop/MSBuildEngine/AdditionalTargetFiles";
+		const string AdditionalLoggersPath = "/SharpDevelop/MSBuildEngine/AdditionalLoggers";
+		const string AdditionalPropertiesPath = "/SharpDevelop/MSBuildEngine/AdditionalProperties";
+		
 		/// <summary>
 		/// Gets a list of the task names that cause a "Compiling ..." log message.
 		/// You can add items to this list by putting strings into
@@ -56,11 +61,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		static MSBuildEngine()
 		{
 			CompileTaskNames = new Set<string>(
-				AddInTree.BuildItems<string>("/SharpDevelop/MSBuildEngine/CompileTaskNames", null, false),
+				AddInTree.BuildItems<string>(CompileTaskNamesPath, null, false),
 				StringComparer.OrdinalIgnoreCase
 			);
-			AdditionalTargetFiles = AddInTree.BuildItems<string>("/SharpDevelop/MSBuildEngine/AdditionalTargetFiles", null, false);
-			AdditionalMSBuildLoggers = AddInTree.BuildItems<IMSBuildAdditionalLogger>("/SharpDevelop/MSBuildEngine/AdditionalLoggers", null, false);
+			AdditionalTargetFiles = AddInTree.BuildItems<string>(AdditionalTargetFilesPath, null, false);
+			AdditionalMSBuildLoggers = AddInTree.BuildItems<IMSBuildAdditionalLogger>(AdditionalLoggersPath, null, false);
 			
 			MSBuildProperties = new SortedList<string, string>();
 			MSBuildProperties.Add("SharpDevelopBinPath", Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location));
@@ -370,6 +375,18 @@ namespace ICSharpCode.SharpDevelop.Project
 				Engine engine = MSBuildInternals.CreateEngine();
 				foreach (KeyValuePair<string, string> entry in MSBuildProperties) {
 					engine.GlobalProperties.SetProperty(entry.Key, entry.Value);
+				}
+				// re-load these properties from AddInTree every time because "text" might contain
+				// SharpDevelop properties resolved by the StringParser (e.g. ${property:FxCopPath})
+				AddInTreeNode node = AddInTree.GetTreeNode(AdditionalPropertiesPath, false);
+				if (node != null) {
+					foreach (Codon codon in node.Codons) {
+						object item = codon.BuildItem(null, new System.Collections.ArrayList());
+						if (item != null) {
+							bool escapeValue = !codon.Properties.Get("text", "").Contains("$(");
+							engine.GlobalProperties.SetProperty(codon.Id, item.ToString(), escapeValue);
+						}
+					}
 				}
 				if (options.AdditionalProperties != null) {
 					foreach (KeyValuePair<string, string> entry in options.AdditionalProperties) {

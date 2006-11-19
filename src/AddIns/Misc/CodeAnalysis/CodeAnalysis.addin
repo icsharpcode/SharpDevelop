@@ -15,6 +15,10 @@
 		<String id="CodeAnalysis" text = "$(SharpDevelopBinPath)/SharpDevelop.CodeAnalysis.targets"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalProperties">
+		<String id="FxCopDir" text = "${property:CodeAnalysis.FxCopPath}"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
 		<DialogPanel id          = "CodeAnalysis"
 		             label       = "${res:ICSharpCode.CodeAnalysis}"
