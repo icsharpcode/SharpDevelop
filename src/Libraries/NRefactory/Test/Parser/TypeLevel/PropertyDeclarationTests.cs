@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.IO;
 using ICSharpCode.NRefactory.Ast;
 using NUnit.Framework;
 
@@ -49,6 +50,37 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(!pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
+		}
+		
+		void CSharpPropertyRegionTest(bool parseMethodBodies)
+		{
+			const string code = "class T {\n\tint Prop {\n\t\tget { return f; }\n\t\tset { f = value; }\n\t}\n}\n";
+			int line2Pos = code.IndexOf("\tint Prop");
+			int line3Pos = code.IndexOf("\t\tget");
+			int line4Pos = code.IndexOf("\t\tset");
+			
+			IParser p = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(code));
+			p.ParseMethodBodies = parseMethodBodies;
+			p.Parse();
+			PropertyDeclaration pd = (PropertyDeclaration)p.CompilationUnit.Children[0].Children[0];
+			Assert.AreEqual(new Location(code.IndexOf("{\n\t\tget") - line2Pos + 1, 2), pd.BodyStart);
+			Assert.AreEqual(new Location(3, 5), pd.BodyEnd);
+			Assert.AreEqual(new Location(code.IndexOf("{ return") - line3Pos + 1, 3), pd.GetRegion.Block.StartLocation);
+			Assert.AreEqual(new Location(code.IndexOf("}\n\t\tset") + 1 - line3Pos + 1, 3), pd.GetRegion.Block.EndLocation);
+			Assert.AreEqual(new Location(code.IndexOf("{ f =") - line4Pos + 1, 4), pd.SetRegion.Block.StartLocation);
+			Assert.AreEqual(new Location(code.IndexOf("}\n\t}") + 1 - line4Pos + 1, 4), pd.SetRegion.Block.EndLocation);
+		}
+		
+		[Test]
+		public void CSharpPropertyRegionTest()
+		{
+			CSharpPropertyRegionTest(true);
+		}
+		
+		[Test]
+		public void CSharpPropertyRegionTestSkipParseMethodBodies()
+		{
+			CSharpPropertyRegionTest(false);
 		}
 		
 		[Test]

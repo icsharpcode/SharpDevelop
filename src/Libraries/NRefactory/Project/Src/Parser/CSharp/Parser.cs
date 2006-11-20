@@ -2476,7 +2476,7 @@ out Statement stmt) {
 
 #line  1205 "cs.ATG" 
 		BlockStatement blockStmt = new BlockStatement();
-		blockStmt.StartLocation = t.EndLocation;
+		blockStmt.StartLocation = t.Location;
 		compilationUnit.BlockStart(blockStmt);
 		if (!ParseMethodBodies) lexer.SkipCurrentBlock(0);
 		

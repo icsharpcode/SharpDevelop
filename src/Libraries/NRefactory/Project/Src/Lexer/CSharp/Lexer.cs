@@ -825,7 +825,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						break;
 					case '}':
 						if (--braceCount < 0) {
-							curToken = new Token(Tokens.CloseCurlyBrace, Col, Line);
+							curToken = new Token(Tokens.CloseCurlyBrace, Col - 1, Line);
 							return;
 						}
 						break;

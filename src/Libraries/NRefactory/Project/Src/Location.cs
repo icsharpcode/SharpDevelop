@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory
 	/// <summary>
 	/// A line/column position.
 	/// </summary>
-	public struct Location : IComparable<Location>
+	public struct Location : IComparable<Location>, IEquatable<Location>
 	{
 		public static readonly Location Empty = new Location(-1, -1);
 		
@@ -62,6 +62,11 @@ namespace ICSharpCode.NRefactory
 		{
 			if (!(obj is Location)) return false;
 			return (Location)obj == this;
+		}
+		
+		public bool Equals(Location other)
+		{
+			return this == other;
 		}
 		
 		public static bool operator ==(Location a, Location b)

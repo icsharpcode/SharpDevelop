@@ -1203,7 +1203,7 @@ VariableDeclarator<List<VariableDeclaration> fieldDeclaration>
 Block<out Statement stmt> /* not BlockStatement because of EmbeddedStatement */
 =
 	"{" (. BlockStatement blockStmt = new BlockStatement();
-	       blockStmt.StartLocation = t.EndLocation;
+	       blockStmt.StartLocation = t.Location;
 	       compilationUnit.BlockStart(blockStmt);
 	       if (!ParseMethodBodies) lexer.SkipCurrentBlock(0);
 	    .)

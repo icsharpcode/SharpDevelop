@@ -212,6 +212,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "End Sub");
 		}
 		
+		/*
 		[Test, Ignore("NRefactory cannot guess the anonymous method's return type")]
 		public void AnonymousMethodInVarDeclaration()
 		{
@@ -223,6 +224,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "\tReturn argument * 2\n" +
 			           "End Function");
 		}
+		*/
 		
 		[Test]
 		public void RegisterEvent()
