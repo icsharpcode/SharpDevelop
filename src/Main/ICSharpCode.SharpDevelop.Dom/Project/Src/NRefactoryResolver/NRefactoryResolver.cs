@@ -1028,7 +1028,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			callingMember = GetCurrentMember();
 			if (callingMember != null) {
 				CompilationUnit parsedCu = ParseCurrentMemberAsCompilationUnit(fileContent);
-				if (cu != null) {
+				if (parsedCu != null) {
 					lookupTableVisitor.VisitCompilationUnit(parsedCu, null);
 				}
 			}

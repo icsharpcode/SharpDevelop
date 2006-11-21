@@ -123,7 +123,7 @@ namespace ICSharpCode.TextEditor.Document
 		{
 			int brackets = -1;
 			// first try "quick find" - find the matching bracket if there is no string/comment in the way
-			for (int i = offset; i > 0; --i) {
+			for (int i = offset; i >= 0; --i) {
 				char ch = document.GetCharAt(i);
 				if (ch == openBracket) {
 					++brackets;
