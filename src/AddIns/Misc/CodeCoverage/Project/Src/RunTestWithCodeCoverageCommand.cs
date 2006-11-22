@@ -87,9 +87,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			string ncoverOutputDirectory = GetNCoverOutputDirectory(helper.Project);
 			NCoverSettings settings = GetNCoverSettings(helper.Project);
-			
-			helper.XmlOutputFile = Path.Combine(ncoverOutputDirectory, "NUnit.Xml");
-		
+					
 			runner.NCoverFileName = ncoverFileName;
 			runner.ProfiledApplicationCommand = UnitTestApplicationStartHelper.UnitTestConsoleApplication;
 			runner.ProfiledApplicationCommandLineArguments = helper.GetArguments();
