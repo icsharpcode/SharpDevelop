@@ -53,13 +53,13 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void OutputName()
 		{
-			Assert.AreEqual(info.ProjectName, project.GetProperty("OutputName"));
+			Assert.AreEqual(info.ProjectName, project.GetEvaluatedProperty("OutputName"));
 		}
 		
 		[Test]
 		public void OutputType()
 		{
-			Assert.AreEqual(WixOutputType.package.ToString(), project.GetProperty("OutputType"));
+			Assert.AreEqual(WixOutputType.package.ToString(), project.GetEvaluatedProperty("OutputType"));
 		}
 		
 		[Test]
@@ -92,7 +92,7 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void DebugConfiguration()
 		{
-			Assert.AreEqual("Debug", project.GetProperty("Configuration"));
+			Assert.AreEqual("Debug", project.GetEvaluatedProperty("Configuration"));
 		}
 		
 		[Test]
