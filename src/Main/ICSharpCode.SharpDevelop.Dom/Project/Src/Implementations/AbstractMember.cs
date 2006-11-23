@@ -6,13 +6,17 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	public abstract class AbstractMember : AbstractNamedEntity, IMember
 	{
 		IReturnType returnType;
-		DomRegion     region;
+		DomRegion region;
+		DomRegion bodyRegion;
+		List<ExplicitInterfaceImplementation> interfaceImplementations;
+		IReturnType declaringTypeReference;
 		
 		public virtual DomRegion Region {
 			get {
@@ -23,12 +27,39 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public virtual DomRegion BodyRegion {
+			get {
+				return bodyRegion;
+			}
+			protected set {
+				bodyRegion = value;
+			}
+		}
+		
 		public virtual IReturnType ReturnType {
 			get {
 				return returnType;
 			}
 			set {
 				returnType = value;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the declaring type reference (declaring type incl. type arguments)
+		/// </summary>
+		public virtual IReturnType DeclaringTypeReference {
+			get {
+				return declaringTypeReference ?? this.DeclaringType.DefaultReturnType;
+			}
+			set {
+				declaringTypeReference = value;
+			}
+		}
+		
+		public IList<ExplicitInterfaceImplementation> InterfaceImplementations {
+			get {
+				return interfaceImplementations ?? (interfaceImplementations = new List<ExplicitInterfaceImplementation>());
 			}
 		}
 		

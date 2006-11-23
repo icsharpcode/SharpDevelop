@@ -431,68 +431,140 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				return member.DeclaringType.FullyQualifiedName;
 		}
 		
-		public void ImplementInterface(IReturnType interf, IDocument document, bool explicitImpl, ModifierEnum implModifier, IClass targetClass)
+		public virtual void ImplementInterface(IReturnType interf, IDocument document, bool explicitImpl, IClass targetClass)
 		{
 			List<AbstractNode> nodes = new List<AbstractNode>();
-			ImplementInterface(nodes, interf, explicitImpl, implModifier, targetClass);
+			ImplementInterface(nodes, interf, explicitImpl, targetClass);
 			InsertCodeAtEnd(targetClass.Region, document, nodes.ToArray());
+		}
+		
+		static bool InterfaceMemberAlreadyImplementedParametersAreIdentical(IMember a, IMember b)
+		{
+			if (a is IMethodOrProperty && b is IMethodOrProperty) {
+				return DiffUtility.Compare(((IMethodOrProperty)a).Parameters,
+				                           ((IMethodOrProperty)b).Parameters) == 0;
+			} else {
+				return true;
+			}
+		}
+		
+		static T CloneAndAddExplicitImpl<T>(T member, IClass targetClass)
+			where T : class, IMember
+		{
+			T copy = (T)member.Clone();
+			copy.DeclaringTypeReference = targetClass.DefaultReturnType;
+			copy.InterfaceImplementations.Add(new ExplicitInterfaceImplementation(member.DeclaringTypeReference, member.Name));
+			return copy;
+		}
+		
+		static bool InterfaceMemberAlreadyImplemented<T>(IEnumerable<T> existingMembers, T interfaceMember,
+		                                                 out bool requireAlternativeImplementation)
+			where T : class, IMember
+		{
+			IReturnType interf = interfaceMember.DeclaringTypeReference;
+			requireAlternativeImplementation = false;
+			foreach (T existing in existingMembers) {
+				StringComparer nameComparer = existing.DeclaringType.ProjectContent.Language.NameComparer;
+				
+				// if existing has same name as interfaceMember, and for methods the parameter list must also be identical:
+				if (nameComparer.Equals(existing.Name, interfaceMember.Name)) {
+					if (InterfaceMemberAlreadyImplementedParametersAreIdentical(existing, interfaceMember)) {
+						// implicit implementation found
+						if (object.Equals(existing.ReturnType, interfaceMember.ReturnType)) {
+							return true;
+						} else {
+							requireAlternativeImplementation = true;
+						}
+					}
+				} else {
+					foreach (ExplicitInterfaceImplementation eii in existing.InterfaceImplementations) {
+						if (object.Equals(eii.InterfaceReference, interf) && nameComparer.Equals(eii.MemberName, interfaceMember.Name)) {
+							if (InterfaceMemberAlreadyImplementedParametersAreIdentical(existing, interfaceMember)) {
+								// explicit implementation found
+								if (object.Equals(existing.ReturnType, interfaceMember.ReturnType)) {
+									return true;
+								} else {
+									requireAlternativeImplementation = true;
+								}
+							}
+						}
+					}
+				}
+			}
+			return false;
+		}
+		
+		static InterfaceImplementation CreateInterfaceImplementation(IMember interfaceMember, ClassFinder context)
+		{
+			return new InterfaceImplementation(ConvertType(interfaceMember.DeclaringTypeReference, context), interfaceMember.Name);
 		}
 		
 		/// <summary>
 		/// Adds the methods implementing the <paramref name="interf"/> to the list
 		/// <paramref name="nodes"/>.
 		/// </summary>
-		public virtual void ImplementInterface(IList<AbstractNode> nodes, IReturnType interf, bool explicitImpl, ModifierEnum implModifier, IClass targetClass)
+		public virtual void ImplementInterface(IList<AbstractNode> nodes, IReturnType interf, bool explicitImpl, IClass targetClass)
 		{
 			ClassFinder context = new ClassFinder(targetClass, targetClass.Region.BeginLine + 1, 0);
-			TypeReference interfaceReference = ConvertType(interf, context);
-			Modifiers modifier = ConvertModifier(implModifier, context);
+			Modifiers implicitImplModifier = ConvertModifier(ModifierEnum.Public, context);
+			Modifiers explicitImplModifier = ConvertModifier(context.Language.ExplicitInterfaceImplementationIsPrivateScope ? ModifierEnum.None : ModifierEnum.Public, context);
 			List<IEvent> targetClassEvents = targetClass.DefaultReturnType.GetEvents();
+			bool requireAlternativeImplementation;
 			foreach (IEvent e in interf.GetEvents()) {
-				if (targetClassEvents.Find(delegate(IEvent te) { return e.Name == te.Name; }) == null) {
+				if (!InterfaceMemberAlreadyImplemented(targetClassEvents, e, out requireAlternativeImplementation)) {
 					EventDeclaration ed = ConvertMember(e, context);
-					if (explicitImpl) {
-						ed.InterfaceImplementations.Add(new InterfaceImplementation(interfaceReference, ed.Name));
+					if (explicitImpl || requireAlternativeImplementation) {
+						ed.InterfaceImplementations.Add(CreateInterfaceImplementation(e, context));
 						
-						if (context.ProjectContent.Language.RequiresAddRemoveRegionInExplicitInterfaceImplementation) {
+						if (context.Language.RequiresAddRemoveRegionInExplicitInterfaceImplementation) {
 							ed.AddRegion = new EventAddRegion(null);
 							ed.AddRegion.Block = CreateNotImplementedBlock();
 							ed.RemoveRegion = new EventRemoveRegion(null);
 							ed.RemoveRegion.Block = CreateNotImplementedBlock();
 						}
+						
+						targetClassEvents.Add(CloneAndAddExplicitImpl(e, targetClass));
+						ed.Modifier = explicitImplModifier;
+					} else {
+						targetClassEvents.Add(e);
+						ed.Modifier = implicitImplModifier;
 					}
-					ed.Modifier = modifier;
 					nodes.Add(ed);
 				}
 			}
 			List<IProperty> targetClassProperties = targetClass.DefaultReturnType.GetProperties();
 			foreach (IProperty p in interf.GetProperties()) {
-				if (targetClassProperties.Find(delegate(IProperty tp) { return p.Name == tp.Name; }) == null) {
+				if (!InterfaceMemberAlreadyImplemented(targetClassProperties, p, out requireAlternativeImplementation)) {
 					AttributedNode pd = ConvertMember(p, context);
-					if (explicitImpl) {
-						InterfaceImplementation impl = new InterfaceImplementation(interfaceReference, p.Name);
+					if (explicitImpl || requireAlternativeImplementation) {
+						InterfaceImplementation impl = CreateInterfaceImplementation(p, context);
 						if (pd is IndexerDeclaration) {
 							((IndexerDeclaration)pd).InterfaceImplementations.Add(impl);
 						} else {
 							((PropertyDeclaration)pd).InterfaceImplementations.Add(impl);
 						}
+						targetClassProperties.Add(CloneAndAddExplicitImpl(p, targetClass));
+						pd.Modifier = explicitImplModifier;
+					} else {
+						targetClassProperties.Add(p);
+						pd.Modifier = implicitImplModifier;
 					}
-					pd.Modifier = modifier;
 					nodes.Add(pd);
 				}
 			}
 			List<IMethod> targetClassMethods = targetClass.DefaultReturnType.GetMethods();
 			foreach (IMethod m in interf.GetMethods()) {
-				if (targetClassMethods.Find(delegate(IMethod mp) {
-				                            	return m.Name == mp.Name && DiffUtility.Compare(m.Parameters, mp.Parameters) == 0;
-				                            }) == null)
-				{
+				if (!InterfaceMemberAlreadyImplemented(targetClassMethods, m, out requireAlternativeImplementation)) {
 					MethodDeclaration md = ConvertMember(m, context) as MethodDeclaration;
 					if (md != null) {
-						if (explicitImpl) {
-							md.InterfaceImplementations.Add(new InterfaceImplementation(interfaceReference, md.Name));
+						if (explicitImpl || requireAlternativeImplementation) {
+							md.InterfaceImplementations.Add(CreateInterfaceImplementation(m, context));
+							targetClassMethods.Add(CloneAndAddExplicitImpl(m, targetClass));
+							md.Modifier = explicitImplModifier;
+						} else {
+							targetClassMethods.Add(m);
+							md.Modifier = implicitImplModifier;
 						}
-						md.Modifier = modifier;
 						nodes.Add(md);
 					}
 				}

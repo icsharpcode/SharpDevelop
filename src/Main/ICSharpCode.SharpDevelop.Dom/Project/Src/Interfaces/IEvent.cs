@@ -11,10 +11,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public interface IEvent : IMember
 	{
-		DomRegion BodyRegion {
-			get;
-		}
-		
 		IMethod AddMethod {
 			get;
 		}

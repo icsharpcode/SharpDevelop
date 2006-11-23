@@ -31,7 +31,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		IReturnType SearchType(string partialTypeName, int typeParameterCount);
+		/// <summary>
+		/// Returns a collection of possible types that could be meant when using this Import
+		/// to search the type.
+		/// Types with the incorrect type parameter count might be returned, but for each
+		/// same using entry or alias entry at most one (the best matching) type should be returned.
+		/// </summary>
+		/// <returns>An IEnumerable with zero or more non-null return types.</returns>
+		IEnumerable<IReturnType> SearchType(string partialTypeName, int typeParameterCount);
+		
 		string SearchNamespace(string partialNamespaceName);
 	}
 }

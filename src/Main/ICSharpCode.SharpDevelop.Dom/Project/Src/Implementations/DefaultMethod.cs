@@ -49,8 +49,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class DefaultMethod : AbstractMember, IMethod
 	{
-		DomRegion bodyRegion;
-		
 		IList<IParameter> parameters = null;
 		IList<ITypeParameter> typeParameters = null;
 		
@@ -72,6 +70,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			p.typeParameters = this.typeParameters;
 			p.documentationTag = DocumentationTag;
 			p.isExtensionMethod = this.isExtensionMethod;
+			foreach (ExplicitInterfaceImplementation eii in InterfaceImplementations) {
+				p.InterfaceImplementations.Add(eii.Clone());
+			}
 			return p;
 		}
 		
@@ -107,12 +108,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 					documentationTag = b.ToString();
 				}
 				return documentationTag;
-			}
-		}
-		
-		public virtual DomRegion BodyRegion {
-			get {
-				return bodyRegion;
 			}
 		}
 		
@@ -154,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			this.ReturnType = type;
 			this.Region     = region;
-			this.bodyRegion = bodyRegion;
+			this.BodyRegion = bodyRegion;
 			Modifiers = m;
 		}
 		

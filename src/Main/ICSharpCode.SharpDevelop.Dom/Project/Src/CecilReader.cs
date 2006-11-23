@@ -328,7 +328,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 						m.Modifiers = TranslateModifiers(method);
 					}
 					AddParameters(m, method.Parameters);
+					AddExplicitInterfaceImplementations(method.Overrides, m);
 					Methods.Add(m);
+				}
+			}
+			
+			void AddExplicitInterfaceImplementations(OverrideCollection overrides, IMember targetMember)
+			{
+				foreach (MethodReference overrideRef in overrides) {
+					if (overrideRef.Name == targetMember.Name && targetMember.IsPublic) {
+						continue; // is like implicit interface implementation / normal override
+					}
+					targetMember.InterfaceImplementations.Add(new ExplicitInterfaceImplementation(
+						CreateType(this.ProjectContent, targetMember, overrideRef.DeclaringType),
+						overrideRef.Name
+					));
 				}
 			}
 			

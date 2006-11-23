@@ -11,7 +11,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public class DefaultEvent : AbstractMember, IEvent
 	{
-		DomRegion bodyRegion;
 		IMethod  addMethod;
 		IMethod  removeMethod;
 		IMethod  raiseMethod;
@@ -22,18 +21,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual DomRegion BodyRegion {
-			get {
-				return bodyRegion;
-			}
-			protected set {
-				bodyRegion = value;
-			}
-		}
-		
 		public override IMember Clone()
 		{
-			return new DefaultEvent(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
+			DefaultEvent de = new DefaultEvent(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
+			foreach (ExplicitInterfaceImplementation eii in InterfaceImplementations) {
+				de.InterfaceImplementations.Add(eii.Clone());
+			}
+			return de;
 		}
 		
 		public DefaultEvent(IClass declaringType, string name) : base(declaringType, name)
@@ -44,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			this.ReturnType = type;
 			this.Region     = region;
-			this.bodyRegion = bodyRegion;
+			this.BodyRegion = bodyRegion;
 			Modifiers       = (ModifierEnum)m;
 			if (Modifiers == ModifierEnum.None) {
 				Modifiers = ModifierEnum.Private;

@@ -170,6 +170,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
+		/// Gets if the language enforces that explicit interface implementations are uncallable except through
+		/// the interface itself.
+		/// If this property is false, code generators may assume that multiple explicit interface implementations
+		/// with conflicting return types are invalid unless they are renamed.
+		/// </summary>
+		public virtual bool ExplicitInterfaceImplementationIsPrivateScope {
+			get {
+				return false;
+			}
+		}
+		
+		/// <summary>
 		/// Gets if events explicitly implementing an interface require add {} remove {} regions.
 		/// </summary>
 		public virtual bool RequiresAddRemoveRegionInExplicitInterfaceImplementation {
@@ -245,6 +257,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			public override bool SupportsImplicitInterfaceImplementation {
+				get {
+					return true;
+				}
+			}
+			
+			public override bool ExplicitInterfaceImplementationIsPrivateScope {
 				get {
 					return true;
 				}

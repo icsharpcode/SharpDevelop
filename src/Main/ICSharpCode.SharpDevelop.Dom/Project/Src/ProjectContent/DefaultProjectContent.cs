@@ -811,8 +811,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				// Combine name with usings
 				foreach (IUsing u in request.CurrentCompilationUnit.Usings) {
 					if (u != null) {
-						IReturnType r = u.SearchType(name, request.TypeParameterCount);
-						if (r != null) {
+						foreach (IReturnType r in u.SearchType(name, request.TypeParameterCount)) {
 							if (r.TypeParameterCount == request.TypeParameterCount) {
 								return new SearchTypeResult(r, u);
 							} else {
@@ -823,8 +822,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			if (defaultImports != null) {
-				IReturnType r = defaultImports.SearchType(name, request.TypeParameterCount);
-				if (r != null) {
+				foreach (IReturnType r in defaultImports.SearchType(name, request.TypeParameterCount)) {
 					if (r.TypeParameterCount == request.TypeParameterCount) {
 						return new SearchTypeResult(r, defaultImports);
 					} else {

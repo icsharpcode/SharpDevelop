@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						StringComparer comparer = m.DeclaringType.ProjectContent.Language.NameComparer;
 						foreach (IMethod oldMethod in c.Methods) {
 							if (comparer.Equals(oldMethod.Name, m.Name)) {
-								if (m.IsStatic == oldMethod.IsStatic) {
+								if (m.IsStatic == oldMethod.IsStatic && object.Equals(m.ReturnType, oldMethod.ReturnType)) {
 									if (DiffUtility.Compare(oldMethod.Parameters, m.Parameters) == 0) {
 										ok = false;
 										break;
@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						StringComparer comparer = p.DeclaringType.ProjectContent.Language.NameComparer;
 						foreach (IProperty oldProperty in c.Properties) {
 							if (comparer.Equals(oldProperty.Name, p.Name)) {
-								if (p.IsStatic == oldProperty.IsStatic) {
+								if (p.IsStatic == oldProperty.IsStatic && object.Equals(p.ReturnType, oldProperty.ReturnType)) {
 									if (DiffUtility.Compare(oldProperty.Parameters, p.Parameters) == 0) {
 										ok = false;
 										break;

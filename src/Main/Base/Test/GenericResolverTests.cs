@@ -187,7 +187,7 @@ class DerivedClass<A,B> : BaseClass<B,A> {
 		
 		#region CodeCompletion inside generic classes
 		const string genericClass = @"using System;
-public class GenericClass<T> where T : IDisposable
+public class GenericClass<T> where T : IDisposable {
 	void Method<G>(T par1, G par2) where G : IConvertible, IFormattable {
 		T var1; G var2;
 		

@@ -174,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			return b.ToString();
 		}
 		
-		void AddImplementInterfaceCommandItems(List<ToolStripItem> subItems, IClass c, bool explicitImpl, ModifierEnum modifier)
+		void AddImplementInterfaceCommandItems(List<ToolStripItem> subItems, IClass c, bool explicitImpl)
 		{
 			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
 			IAmbience ambience = AmbienceService.CurrentAmbience;
@@ -186,7 +186,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					EventHandler eh = delegate {
 						TextEditorDocument d = new TextEditorDocument(GetDocument(c));
 						if (d != null)
-							codeGen.ImplementInterface(rtCopy, d, explicitImpl, modifier, c);
+							codeGen.ImplementInterface(rtCopy, d, explicitImpl, c);
 						ParserService.ParseCurrentViewContent();
 					};
 					subItems.Add(new MenuCommand(ambience.Convert(interf), eh));
@@ -200,16 +200,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			if (codeGen == null) return;
 			List<ToolStripItem> subItems = new List<ToolStripItem>();
 			if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
-				AddImplementInterfaceCommandItems(subItems, c, false, ModifierEnum.Public);
+				AddImplementInterfaceCommandItems(subItems, c, false);
 				if (subItems.Count > 0) {
 					list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceImplicit}", subItems.ToArray()));
 					subItems = new List<ToolStripItem>();
 				}
-				
-				AddImplementInterfaceCommandItems(subItems, c, true, ModifierEnum.None);
-			} else {
-				AddImplementInterfaceCommandItems(subItems, c, true, ModifierEnum.Public);
 			}
+			AddImplementInterfaceCommandItems(subItems, c, true);
+			
 			if (subItems.Count > 0) {
 				if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
 					list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}", subItems.ToArray()));

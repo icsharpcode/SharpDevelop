@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			foreach (ClassWrapper w in items) {
 				codeGen.ImplementInterface(nodes, w.ClassType,
 				                           !currentClass.ProjectContent.Language.SupportsImplicitInterfaceImplementation,
-				                           ModifierEnum.Public, currentClass);
+				                           currentClass);
 			}
 		}
 		

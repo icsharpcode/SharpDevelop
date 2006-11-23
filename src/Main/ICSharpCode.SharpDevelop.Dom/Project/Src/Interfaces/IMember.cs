@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -13,6 +14,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		string FullyQualifiedName {
 			get;
+		}
+		
+		/// <summary>
+		/// Gets/Sets the declaring type reference (declaring type incl. type arguments).
+		/// If set to null, the getter returns the default type reference to the <see cref="DeclaringType"/>.
+		/// </summary>
+		IReturnType DeclaringTypeReference {
+			get;
+			set;
 		}
 		
 		/// <summary>
@@ -37,6 +47,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IReturnType ReturnType {
 			get;
 			set;
+		}
+		
+		DomRegion BodyRegion {
+			get;
+		}
+		
+		IList<ExplicitInterfaceImplementation> InterfaceImplementations {
+			get;
 		}
 	}
 }

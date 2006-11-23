@@ -12,10 +12,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public interface IMethodOrProperty : IMember
 	{
-		DomRegion BodyRegion {
-			get;
-		}
-		
 		IList<IParameter> Parameters {
 			get;
 		}

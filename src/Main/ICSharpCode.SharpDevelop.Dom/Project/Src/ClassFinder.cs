@@ -32,6 +32,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public LanguageProperties Language {
+			get {
+				return projectContent.Language;
+			}
+		}
+		
 		public ClassFinder(string fileName, string fileContent, int offset)
 		{
 			caretLine = 0;

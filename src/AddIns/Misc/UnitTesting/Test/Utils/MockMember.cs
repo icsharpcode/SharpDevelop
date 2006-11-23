@@ -211,5 +211,26 @@ namespace UnitTesting.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public IReturnType DeclaringTypeReference {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public DomRegion BodyRegion {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IList<ExplicitInterfaceImplementation> InterfaceImplementations {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

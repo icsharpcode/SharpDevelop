@@ -92,7 +92,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return null;
 		}
 		
-		public IReturnType SearchType(string partialTypeName, int typeParameterCount)
+		/// <summary>
+		/// Returns a collection of possible types that could be meant when using this Import
+		/// to search the type.
+		/// Types with the incorrect type parameter count might be returned, but for each
+		/// same using entry or alias entry at most one (the best matching) type should be returned.
+		/// </summary>
+		public IEnumerable<IReturnType> SearchType(string partialTypeName, int typeParameterCount)
 		{
 			if (HasAliases) {
 				foreach (KeyValuePair<string, IReturnType> entry in aliases) {
@@ -100,14 +106,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if (projectContent.Language.NameComparer.Equals(partialTypeName, aliasString)) {
 						if (entry.Value.IsDefaultReturnType && entry.Value.GetUnderlyingClass() == null)
 							continue; // type not found, maybe entry was a namespace
-						return entry.Value;
+						yield return entry.Value;
 					}
 					if (partialTypeName.Length > aliasString.Length) {
 						if (projectContent.Language.NameComparer.Equals(partialTypeName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
 							string className = entry.Value.FullyQualifiedName + partialTypeName.Remove(0, aliasString.Length);
 							IClass c = projectContent.GetClass(className, typeParameterCount);
 							if (c != null) {
-								return c.DefaultReturnType;
+								yield return c.DefaultReturnType;
 							}
 						}
 					}
@@ -117,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (string str in usings) {
 					IClass c = projectContent.GetClass(str + "." + partialTypeName, typeParameterCount);
 					if (c != null) {
-						return c.DefaultReturnType;
+						yield return c.DefaultReturnType;
 					}
 				}
 			} else {
@@ -135,12 +141,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if (c != null) {
 						c = projectContent.GetClass(str + "." + partialTypeName, typeParameterCount);
 						if (c != null) {
-							return c.DefaultReturnType;
+							yield return c.DefaultReturnType;
 						}
 					}
 				}
 			}
-			return null;
 		}
 		
 		public override string ToString()

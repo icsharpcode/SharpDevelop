@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 8;
+		public const short FileVersion = 9;
 		
 		ProjectContentRegistry registry;
 		string cacheDirectory;
@@ -221,10 +221,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			ReflectionProjectContent pc;
 			
+			// for writing:
 			readonly BinaryWriter writer;
 			readonly Dictionary<ClassNameTypeCountPair, int> classIndices = new Dictionary<ClassNameTypeCountPair, int>();
 			readonly Dictionary<string, int> stringDict = new Dictionary<string, int>();
 			
+			// for reading:
 			readonly BinaryReader reader;
 			IReturnType[] types;
 			string[] stringArray;
@@ -494,16 +496,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 						}
 					}
 					foreach (IField f in c.Fields) {
-						AddStrings(stringList, f);
-						AddExternalType(f.ReturnType, externalTypes, classCount);
+						CreateExternalTypeListMember(externalTypes, stringList, classCount, f);
 					}
 					foreach (IEvent f in c.Events) {
-						AddStrings(stringList, f);
-						AddExternalType(f.ReturnType, externalTypes, classCount);
+						CreateExternalTypeListMember(externalTypes, stringList, classCount, f);
 					}
 					foreach (IProperty p in c.Properties) {
-						AddStrings(stringList, p);
-						AddExternalType(p.ReturnType, externalTypes, classCount);
+						CreateExternalTypeListMember(externalTypes, stringList, classCount, p);
 						foreach (IParameter parameter in p.Parameters) {
 							AddString(stringList, parameter.Name);
 							AddStrings(stringList, parameter.Attributes);
@@ -511,8 +510,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						}
 					}
 					foreach (IMethod m in c.Methods) {
-						AddStrings(stringList, m);
-						AddExternalType(m.ReturnType, externalTypes, classCount);
+						CreateExternalTypeListMember(externalTypes, stringList, classCount, m);
 						foreach (IParameter parameter in m.Parameters) {
 							AddString(stringList, parameter.Name);
 							AddStrings(stringList, parameter.Attributes);
@@ -528,10 +526,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			void AddStrings(List<string> stringList, IMember member)
+			void CreateExternalTypeListMember(List<ClassNameTypeCountPair> externalTypes,
+			                                  List<string> stringList, int classCount,
+			                                  IMember member)
 			{
 				AddString(stringList, member.Name);
 				AddStrings(stringList, member.Attributes);
+				foreach (ExplicitInterfaceImplementation eii in member.InterfaceImplementations) {
+					AddString(stringList, eii.MemberName);
+					AddExternalType(eii.InterfaceReference, externalTypes, classCount);
+				}
+				AddExternalType(member.ReturnType, externalTypes, classCount);
 			}
 			
 			void AddString(List<string> stringList, string text)
@@ -657,6 +662,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				WriteString(m.Name);
 				writer.Write((int)m.Modifiers);
 				WriteAttributes(m.Attributes);
+				writer.Write((ushort)m.InterfaceImplementations.Count);
+				foreach (ExplicitInterfaceImplementation iee in m.InterfaceImplementations) {
+					WriteType(iee.InterfaceReference);
+					WriteString(iee.MemberName);
+				}
 				if (!(m is IMethod)) {
 					// method must store ReturnType AFTER Template definitions
 					WriteType(m.ReturnType);
@@ -668,6 +678,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				// name is already read by the method that calls the member constructor
 				m.Modifiers = (ModifierEnum)reader.ReadInt32();
 				ReadAttributes(m);
+				int interfaceImplCount = reader.ReadUInt16();
+				for (int i = 0; i < interfaceImplCount; i++) {
+					m.InterfaceImplementations.Add(new ExplicitInterfaceImplementation(ReadType(), ReadString()));
+				}
 				if (!(m is IMethod)) {
 					m.ReturnType = ReadType();
 				}

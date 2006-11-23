@@ -83,6 +83,7 @@
     <Compile Include="Src\Implementations\ProxyReturnType.cs" />
     <Compile Include="Src\Implementations\SearchClassReturnType.cs" />
     <Compile Include="Src\Implementations\SystemTypes.cs" />
+    <Compile Include="Src\Interfaces\ExplicitInterfaceImplementation.cs" />
     <Compile Include="Src\NRefactoryResolver\NRefactoryASTConvertVisitor.cs" />
     <Compile Include="Src\NRefactoryResolver\NRefactoryInformationProvider.cs" />
     <Compile Include="Src\NRefactoryResolver\NRefactoryResolver.cs" />

@@ -38,6 +38,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
 			visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
+			Assert.AreEqual(0, p.Errors.Count, "Parse error preparing compilation unit");
 			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			foreach (IClass c in visitor.Cu.Classes) {
 				pc.AddClassToNamespaceList(c);
@@ -64,6 +65,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
 			visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
+			Assert.AreEqual(0, p.Errors.Count, "Parse error preparing compilation unit");
 			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			foreach (IClass c in visitor.Cu.Classes) {
 				pc.AddClassToNamespaceList(c);

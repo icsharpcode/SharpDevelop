@@ -162,6 +162,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			for (int i = 0; i < l.Count; ++i) {
 				if (CheckReturnType(l[i].ReturnType) || CheckParameters(l[i].Parameters)) {
 					l[i] = (IMethod)l[i].Clone();
+					if (l[i].DeclaringType == baseType.GetUnderlyingClass()) {
+						l[i].DeclaringTypeReference = this;
+					}
 					l[i].ReturnType = TranslateType(l[i].ReturnType);
 					for (int j = 0; j < l[i].Parameters.Count; ++j) {
 						l[i].Parameters[j].ReturnType = TranslateType(l[i].Parameters[j].ReturnType);
@@ -177,6 +180,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			for (int i = 0; i < l.Count; ++i) {
 				if (CheckReturnType(l[i].ReturnType) || CheckParameters(l[i].Parameters)) {
 					l[i] = (IProperty)l[i].Clone();
+					if (l[i].DeclaringType == baseType.GetUnderlyingClass()) {
+						l[i].DeclaringTypeReference = this;
+					}
 					l[i].ReturnType = TranslateType(l[i].ReturnType);
 					for (int j = 0; j < l[i].Parameters.Count; ++j) {
 						l[i].Parameters[j].ReturnType = TranslateType(l[i].Parameters[j].ReturnType);
@@ -192,6 +198,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			for (int i = 0; i < l.Count; ++i) {
 				if (CheckReturnType(l[i].ReturnType)) {
 					l[i] = (IField)l[i].Clone();
+					if (l[i].DeclaringType == baseType.GetUnderlyingClass()) {
+						l[i].DeclaringTypeReference = this;
+					}
 					l[i].ReturnType = TranslateType(l[i].ReturnType);
 				}
 			}
@@ -204,6 +213,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			for (int i = 0; i < l.Count; ++i) {
 				if (CheckReturnType(l[i].ReturnType)) {
 					l[i] = (IEvent)l[i].Clone();
+					if (l[i].DeclaringType == baseType.GetUnderlyingClass()) {
+						l[i].DeclaringTypeReference = this;
+					}
 					l[i].ReturnType = TranslateType(l[i].ReturnType);
 				}
 			}
