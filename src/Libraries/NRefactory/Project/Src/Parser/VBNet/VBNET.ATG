@@ -2414,25 +2414,31 @@ EmbeddedStatement<out Statement statement>
 	| /* 10.11 */
 	"Stop" (. statement = new StopStatement(); .)
 	| /* 10.8.1 */
-	"If" Expr<out expr> [ "Then" ] 
+	"If" (. Location ifStartLocation = t.Location; .) Expr<out expr> [ "Then" ] 
 	(	
-		IF (IsEndStmtAhead()) "End" (. statement = new IfElseStatement(expr, new EndStatement()); .) 
+		IF (IsEndStmtAhead()) "End" (. statement = new IfElseStatement(expr, new EndStatement()); statement.StartLocation = ifStartLocation; statement.EndLocation = t.Location; .) 
 		|
 		/* multiline if statement */
 		EndOfStmt Block<out embeddedStatement>
 		(.
 			IfElseStatement ifStatement = new IfElseStatement(expr, embeddedStatement);
+			ifStatement.StartLocation = ifStartLocation;
+			Location elseIfStart;
 		.)
 		{
 			(
-				IF(IsElseIf()) "Else" "If"
-				| "ElseIf"
+				IF(IsElseIf()) "Else" (. elseIfStart = t.Location; .)  "If"
+				| "ElseIf" (. elseIfStart = t.Location; .)
 			)
 			(. Expression condition = null; Statement block = null; .)
 			Expr<out condition> [ "Then"] EndOfStmt
 			Block<out block>
 			(.
-				ifStatement.ElseIfSections.Add(new ElseIfSection(condition, block));
+				ElseIfSection elseIfSection = new ElseIfSection(condition, block);
+				elseIfSection.StartLocation = elseIfStart;
+				elseIfSection.EndLocation = t.Location;
+				elseIfSection.Parent = ifStatement;
+				ifStatement.ElseIfSections.Add(elseIfSection);
 			.)
 		}
 		[
@@ -2443,12 +2449,14 @@ EmbeddedStatement<out Statement statement>
 			.)
 		] "End" "If"
 		(.
+			ifStatement.EndLocation = t.Location;
 			statement = ifStatement;
 		.)
 		| /* singleline if statement */
 		EmbeddedStatement<out embeddedStatement>
 		(.
 			IfElseStatement ifStatement = new IfElseStatement(expr, embeddedStatement);
+			ifStatement.StartLocation = ifStartLocation;
 		.)
 		{ ":" EmbeddedStatement<out embeddedStatement> (. ifStatement.TrueStatement.Add(embeddedStatement); .) }
 		[
@@ -2461,7 +2469,7 @@ EmbeddedStatement<out Statement statement>
 				(. ifStatement.FalseStatement.Add(embeddedStatement); .)
 			}
 		]
-		(. statement = ifStatement; .)
+		(. ifStatement.EndLocation = ifStartLocation; statement = ifStatement; .)
 	)
 	| /* 10.8.2 */
 	"Select" [ "Case" ] Expr<out expr> EndOfStmt

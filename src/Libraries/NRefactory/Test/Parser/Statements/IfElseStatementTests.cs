@@ -80,6 +80,24 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			
 			Assert.IsTrue(ifElseStatement.TrueStatement[0] is BlockStatement, "Statement was: " + ifElseStatement.TrueStatement[0]);
 		}
+		
+		// test for SD2-1201
+		[Test]
+		public void VBNetIfStatementLocationTest()
+		{
+			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN\n" +
+			                                                                                 "DoIt()\n" +
+			                                                                                 "ElseIf False Then\n" +
+			                                                                                 "DoIt()\n" +
+			                                                                                 "End If");
+			Assert.AreEqual(3, (ifElseStatement.StartLocation).Y);
+			Assert.AreEqual(7, (ifElseStatement.EndLocation).Y);
+			Assert.AreEqual(5, (ifElseStatement.ElseIfSections[0].StartLocation).Y);
+			Assert.AreEqual(6, (ifElseStatement.ElseIfSections[0].EndLocation).Y);
+			Assert.IsNotNull(ifElseStatement.ElseIfSections[0].Parent);
+			
+		}
+		
 		[Test]
 		public void VBNetElseIfStatementTest()
 		{
