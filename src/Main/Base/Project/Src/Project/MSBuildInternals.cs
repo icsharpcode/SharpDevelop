@@ -246,17 +246,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (newRawPath == null)
 				throw new ArgumentNullException("newRawPath");
 			
-			XmlAttribute a = (XmlAttribute)typeof(MSBuild.Import).InvokeMember(
-				"ProjectPathAttribute",
-				BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
-				null, import, null
-			);
-			a.Value = newRawPath;
-			EndXmlManipulation(project.MSBuildProject);
+			lock (project.SyncRoot) {
+				XmlAttribute a = (XmlAttribute)typeof(MSBuild.Import).InvokeMember(
+					"ProjectPathAttribute",
+					BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+					null, import, null
+				);
+				a.Value = newRawPath;
+				EndXmlManipulation(project.MSBuildProject);
+			}
 			project.CreateItemsListFromMSBuild();
 		}
 		
-		public static IEnumerable<string> GetCustomMetadataNames(MSBuild.BuildItem item)
+		/// <summary>
+		/// Gets an array containing all custom metadata names.
+		/// </summary>
+		public static string[] GetCustomMetadataNames(MSBuild.BuildItem item)
 		{
 			ArrayList a = (ArrayList)typeof(MSBuild.BuildItem).InvokeMember(
 				"GetAllCustomMetadataNames",

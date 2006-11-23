@@ -158,13 +158,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Get Property
 		/// <summary>
 		/// Retrieves the evaluated property '<paramref name="propertyName"/>' from the
-		/// active configuration/platform.
+		/// active configuration/platform. This method can retrieve any MSBuild property, including those
+		/// defined in imported .target files.
 		/// </summary>
 		/// <param name="propertyName">The name of the MSBuild property to read.</param>
 		/// <returns>The evaluated value of the property, or null if the property doesn't exist</returns>
-		public string GetProperty(string propertyName)
+		public string GetEvaluatedProperty(string propertyName)
 		{
-			return project.GetEvaluatedProperty(propertyName);
+			lock (SyncRoot) {
+				return project.GetEvaluatedProperty(propertyName);
+			}
 		}
 		
 		MSBuild.Project evaluatingTempProject;
@@ -195,13 +198,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		public string GetProperty(string configuration, string platform, string propertyName,
 		                          out PropertyStorageLocations location)
 		{
-			MSBuild.BuildPropertyGroup group;
-			MSBuild.BuildProperty prop = FindPropertyObject(configuration, platform, propertyName,
-			                                                out group, out location);
-			if (prop == null)
-				return null;
-			else
-				return prop.FinalValue;
+			lock (SyncRoot) {
+				MSBuild.BuildPropertyGroup group;
+				MSBuild.BuildProperty prop = FindPropertyObject(configuration, platform, propertyName,
+				                                                out group, out location);
+				if (prop == null)
+					return null;
+				else
+					return prop.FinalValue;
+			}
 		}
 		
 		/// <summary>
@@ -243,13 +248,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		                                    string propertyName,
 		                                    out PropertyStorageLocations location)
 		{
-			MSBuild.BuildPropertyGroup group;
-			MSBuild.BuildProperty prop = FindPropertyObject(configuration, platform, propertyName,
-			                                                out group, out location);
-			if (prop == null)
-				return null;
-			else
-				return prop.Value;
+			lock (SyncRoot) {
+				MSBuild.BuildPropertyGroup group;
+				MSBuild.BuildProperty prop = FindPropertyObject(configuration, platform, propertyName,
+				                                                out group, out location);
+				if (prop == null)
+					return null;
+				else
+					return prop.Value;
+			}
 		}
 		
 		/// <summary>
@@ -429,6 +436,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		                        PropertyStorageLocations location,
 		                        bool treatPropertyValueAsLiteral)
 		{
+			ProjectPropertyChangedEventArgs args;
+			lock (SyncRoot) {
+				args = SetPropertyInternal(configuration, platform, propertyName, newValue, location, treatPropertyValueAsLiteral);
+			}
+			OnPropertyChanged(args);
+		}
+		
+		ProjectPropertyChangedEventArgs SetPropertyInternal(string configuration, string platform,
+		                                                    string propertyName, string newValue,
+		                                                    PropertyStorageLocations location,
+		                                                    bool treatPropertyValueAsLiteral)
+		{
 			PropertyStorageLocations oldLocation;
 			MSBuild.BuildPropertyGroup existingPropertyGroup;
 			MSBuild.BuildProperty existingProperty = FindPropertyObject(configuration, platform,
@@ -562,7 +581,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				                    propertyInsertionPosition,
 				                    treatPropertyValueAsLiteral);
 			}
-			OnPropertyChanged(args);
+			return args;
 		}
 		
 		/// <summary>
@@ -611,17 +630,29 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region IProjectItemListProvider interface
 		List<ProjectItem> items = new List<ProjectItem>();
-		ReadOnlyCollection<ProjectItem> itemsReadOnly;
-		ICollection<ItemType> availableFileItemTypes = ItemType.DefaultFileItems;
+		volatile ReadOnlyCollection<ProjectItem> itemsReadOnly;
+		volatile ICollection<ItemType> availableFileItemTypes = ItemType.DefaultFileItems;
 		
+		/// <summary>
+		/// Gets the list of items in the project. This member is thread-safe.
+		/// The returned collection is guaranteed not to change - adding new items or removing existing items
+		/// will create a new collection.
+		/// </summary>
 		public override ReadOnlyCollection<ProjectItem> Items {
 			get {
-				return itemsReadOnly ?? (itemsReadOnly = items.AsReadOnly());
+				ReadOnlyCollection<ProjectItem> c = itemsReadOnly;
+				if (c == null) {
+					lock (SyncRoot) {
+						c = Array.AsReadOnly(items.ToArray());
+					}
+					itemsReadOnly = c;
+				}
+				return c;
 			}
 		}
 		
 		/// <summary>
-		/// Gets the list of available file item types.
+		/// Gets the list of available file item types. This member is thread-safe.
 		/// </summary>
 		public override ICollection<ItemType> AvailableFileItemTypes {
 			get {
@@ -634,22 +665,27 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		internal void CreateItemsListFromMSBuild()
 		{
-			foreach (ProjectItem item in items) {
-				item.Dispose();
-			}
-			items.Clear();
+			WorkbenchSingleton.AssertMainThread();
 			
-			Set<ItemType> availableFileItemTypes = new Set<ItemType>();
-			availableFileItemTypes.AddRange(ItemType.DefaultFileItems);
-			foreach (MSBuild.BuildItem item in project.GetEvaluatedItemsByName("AvailableItemName")) {
-				availableFileItemTypes.Add(new ItemType(item.Include));
-			}
-			this.availableFileItemTypes = availableFileItemTypes.AsReadOnly();
-			
-			foreach (MSBuild.BuildItem item in project.EvaluatedItems) {
-				if (item.IsImported) continue;
+			lock (SyncRoot) {
+				foreach (ProjectItem item in items) {
+					item.Dispose();
+				}
+				items.Clear();
+				itemsReadOnly = null; // remove readonly variant of item list - will regenerate on next Items call
 				
-				items.Add(CreateProjectItem(item));
+				Set<ItemType> availableFileItemTypes = new Set<ItemType>();
+				availableFileItemTypes.AddRange(ItemType.DefaultFileItems);
+				foreach (MSBuild.BuildItem item in project.GetEvaluatedItemsByName("AvailableItemName")) {
+					availableFileItemTypes.Add(new ItemType(item.Include));
+				}
+				this.availableFileItemTypes = availableFileItemTypes.AsReadOnly();
+				
+				foreach (MSBuild.BuildItem item in project.EvaluatedItems) {
+					if (item.IsImported) continue;
+					
+					items.Add(CreateProjectItem(item));
+				}
 			}
 		}
 		
@@ -662,30 +698,35 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (item.IsAddedToProject)
 				throw new ArgumentException("item is already added to project", "item");
 			
-			items.Add(item);
-			foreach (MSBuild.BuildItemGroup g in project.ItemGroups) {
-				if (g.IsImported || !string.IsNullOrEmpty(g.Condition) || g.Count == 0)
-					continue;
-				if (g[0].Name == item.ItemType.ItemName) {
+			WorkbenchSingleton.AssertMainThread();
+			
+			lock (SyncRoot) {
+				items.Add(item);
+				itemsReadOnly = null; // remove readonly variant of item list - will regenerate on next Items call
+				foreach (MSBuild.BuildItemGroup g in project.ItemGroups) {
+					if (g.IsImported || !string.IsNullOrEmpty(g.Condition) || g.Count == 0)
+						continue;
+					if (g[0].Name == item.ItemType.ItemName) {
+						MSBuildInternals.AddItemToGroup(g, item);
+						return;
+					}
+					if (g[0].Name == "Reference")
+						continue;
+					if (ItemType.DefaultFileItems.Contains(new ItemType(g[0].Name))) {
+						if (ItemType.DefaultFileItems.Contains(item.ItemType)) {
+							MSBuildInternals.AddItemToGroup(g, item);
+							return;
+						} else {
+							continue;
+						}
+					}
+					
 					MSBuildInternals.AddItemToGroup(g, item);
 					return;
 				}
-				if (g[0].Name == "Reference")
-					continue;
-				if (ItemType.DefaultFileItems.Contains(new ItemType(g[0].Name))) {
-					if (ItemType.DefaultFileItems.Contains(item.ItemType)) {
-						MSBuildInternals.AddItemToGroup(g, item);
-						return;
-					} else {
-						continue;
-					}
-				}
-				
-				MSBuildInternals.AddItemToGroup(g, item);
-				return;
+				MSBuild.BuildItemGroup newGroup = project.AddNewItemGroup();
+				MSBuildInternals.AddItemToGroup(newGroup, item);
 			}
-			MSBuild.BuildItemGroup newGroup = project.AddNewItemGroup();
-			MSBuildInternals.AddItemToGroup(newGroup, item);
 		}
 		
 		bool IProjectItemListProvider.RemoveProjectItem(ProjectItem item)
@@ -697,39 +738,24 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!item.IsAddedToProject)
 				return false;
 			
-			if (items.Remove(item)) {
-				project.RemoveItem(item.BuildItem);
-				item.BuildItem = null; // make the item free again
-				return true;
-			} else {
-				throw new InvalidOperationException("Expected that the item is added to this project!");
+			WorkbenchSingleton.AssertMainThread();
+			
+			lock (SyncRoot) {
+				if (items.Remove(item)) {
+					itemsReadOnly = null; // remove readonly variant of item list - will regenerate on next Items call
+					project.RemoveItem(item.BuildItem);
+					item.BuildItem = null; // make the item free again
+					return true;
+				} else {
+					throw new InvalidOperationException("Expected that the item is added to this project!");
+				}
 			}
-		}
-		
-		public override bool IsFileInProject(string fileName)
-		{
-			return FindProjectItem(this, fileName) != null;
-		}
-		
-		public FileProjectItem FindFile(string fileName)
-		{
-			return FindProjectItem(this, fileName);
-		}
-		
-		internal static FileProjectItem FindProjectItem(IProject project, string fileName)
-		{
-			return Linq.Find(Linq.OfType<FileProjectItem>(project.Items),
-			                 delegate(FileProjectItem item) {
-			                 	return FileUtility.IsEqualFileName(item.FileName, fileName);
-			                 });
-			// return project.Items.OfType<FileProjectItem>().Find(
-			//			 item => FileUtility.IsEqualFileName(item.FileName, outputFileName));
 		}
 		#endregion
 		
 		#region Wrapped MSBuild Properties
 		public override string AppDesignerFolder {
-			get { return GetProperty("AppDesignerFolder"); }
+			get { return GetEvaluatedProperty("AppDesignerFolder"); }
 			set { SetProperty("AppDesignerFolder", value); }
 		}
 		#endregion
@@ -773,12 +799,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				InitializeMSBuildProject();
 				
 				project.Load(fileName);
-				this.ActiveConfiguration = GetProperty("Configuration") ?? this.ActiveConfiguration;
-				this.ActivePlatform = GetProperty("Platform") ?? this.ActivePlatform;
+				this.ActiveConfiguration = GetEvaluatedProperty("Configuration") ?? this.ActiveConfiguration;
+				this.ActivePlatform = GetEvaluatedProperty("Platform") ?? this.ActivePlatform;
 				
 				CreateItemsListFromMSBuild();
 				LoadConfigurationPlatformNamesFromMSBuild();
-				IdGuid = GetProperty("ProjectGuid");
+				IdGuid = GetEvaluatedProperty("ProjectGuid");
 			} finally {
 				isLoading = false;
 			}
@@ -788,7 +814,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Saving
 		public override void Save(string fileName)
 		{
-			project.Save(fileName);
+			lock (SyncRoot) {
+				project.Save(fileName);
+			}
 		}
 		#endregion
 		
@@ -796,8 +824,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected override void OnActiveConfigurationChanged(EventArgs e)
 		{
 			if (!isLoading) {
-				project.GlobalProperties.SetProperty("Configuration", this.ActiveConfiguration, true);
-				CreateItemsListFromMSBuild();
+				lock (SyncRoot) {
+					project.GlobalProperties.SetProperty("Configuration", this.ActiveConfiguration, true);
+					CreateItemsListFromMSBuild();
+				}
 			}
 			base.OnActiveConfigurationChanged(e);
 		}
@@ -805,8 +835,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected override void OnActivePlatformChanged(EventArgs e)
 		{
 			if (!isLoading) {
-				project.GlobalProperties.SetProperty("Platform", this.ActivePlatform, true);
-				CreateItemsListFromMSBuild();
+				lock (SyncRoot) {
+					project.GlobalProperties.SetProperty("Platform", this.ActivePlatform, true);
+					CreateItemsListFromMSBuild();
+				}
 			}
 			base.OnActivePlatformChanged(e);
 		}

@@ -122,10 +122,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static bool InvokeRequired {
 			get {
-				return ((Form)workbench).InvokeRequired;
+				if (workbench == null)
+					return false; // unit test mode, don't crash
+				else
+					return ((Form)workbench).InvokeRequired;
 			}
 		}
 		
+		/// <summary>
+		/// Throws an exception if the current thread is not the main thread.
+		/// </summary>
 		internal static void AssertMainThread()
 		{
 			if (InvokeRequired) {

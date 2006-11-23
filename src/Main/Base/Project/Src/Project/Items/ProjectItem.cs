@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	public abstract class ProjectItem : LocalizedObject, IDisposable, ICloneable
 	{
 		IProject project;
-		string fileNameCache;
+		volatile string fileNameCache;
 		
 		// either use: (bound mode)
 		BuildItem buildItem;
@@ -59,6 +59,26 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.virtualItemType = itemType;
 			this.virtualInclude = include ?? "";
 			this.virtualMetadata = new Dictionary<string, string>();
+		}
+		
+		[Browsable(false)]
+		public IProject Project {
+			get {
+				return project;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the object used for synchronization. This is project.SyncRoot for items inside a project; or
+		/// virtualMetadata for items without project.
+		/// </summary>
+		object SyncRoot {
+			get {
+				if (project != null)
+					return project.SyncRoot;
+				else
+					return virtualMetadata;
+			}
 		}
 		
 		/// <summary>
@@ -92,52 +112,55 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public IProject Project {
-			get {
-				return project;
-			}
-		}
-		
-		[Browsable(false)]
 		public ItemType ItemType {
 			get {
-				if (buildItem != null)
-					return new ItemType(buildItem.Name);
-				else
-					return virtualItemType;
+				lock (SyncRoot) {
+					if (buildItem != null)
+						return new ItemType(buildItem.Name);
+					else
+						return virtualItemType;
+				}
 			}
 			set {
-				if (buildItem != null)
-					buildItem.Name = value.ToString();
-				else
-					virtualItemType = value;
+				lock (SyncRoot) {
+					if (buildItem != null)
+						buildItem.Name = value.ToString();
+					else
+						virtualItemType = value;
+				}
 			}
 		}
 		
 		[Browsable(false)]
 		public string Include {
 			get {
-				if (buildItem != null)
-					return buildItem.Include;
-				else
-					return virtualInclude;
+				lock (SyncRoot) {
+					if (buildItem != null)
+						return buildItem.Include;
+					else
+						return virtualInclude;
+				}
 			}
 			set {
-				if (buildItem != null)
-					buildItem.Include = value;
-				else
-					virtualInclude = value ?? "";
-				fileNameCache = null;
+				lock (SyncRoot) {
+					if (buildItem != null)
+						buildItem.Include = value;
+					else
+						virtualInclude = value ?? "";
+					fileNameCache = null;
+				}
 			}
 		}
 		
 		#region Metadata access
 		public bool HasMetadata(string metadataName)
 		{
-			if (buildItem != null)
-				return buildItem.HasMetadata(metadataName);
-			else
-				return virtualMetadata.ContainsKey(metadataName);
+			lock (SyncRoot) {
+				if (buildItem != null)
+					return buildItem.HasMetadata(metadataName);
+				else
+					return virtualMetadata.ContainsKey(metadataName);
+			}
 		}
 		
 		/// <summary>
@@ -146,15 +169,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public string GetEvaluatedMetadata(string metadataName)
 		{
-			if (buildItem != null) {
-				return buildItem.GetEvaluatedMetadata(metadataName) ?? "";
-			} else {
-				string val;
-				virtualMetadata.TryGetValue(metadataName, out val);
-				if (val == null)
-					return "";
-				else
-					return MSBuildInternals.Unescape(val);
+			lock (SyncRoot) {
+				if (buildItem != null) {
+					return buildItem.GetEvaluatedMetadata(metadataName) ?? "";
+				} else {
+					string val;
+					virtualMetadata.TryGetValue(metadataName, out val);
+					if (val == null)
+						return "";
+					else
+						return MSBuildInternals.Unescape(val);
+				}
 			}
 		}
 		
@@ -173,12 +198,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public string GetMetadata(string metadataName)
 		{
-			if (buildItem != null) {
-				return buildItem.GetMetadata(metadataName) ?? "";
-			} else {
-				string val;
-				virtualMetadata.TryGetValue(metadataName, out val);
-				return val ?? "";
+			lock (SyncRoot) {
+				if (buildItem != null) {
+					return buildItem.GetMetadata(metadataName) ?? "";
+				} else {
+					string val;
+					virtualMetadata.TryGetValue(metadataName, out val);
+					return val ?? "";
+				}
 			}
 		}
 		
@@ -192,10 +219,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (string.IsNullOrEmpty(value)) {
 				RemoveMetadata(metadataName);
 			} else {
-				if (buildItem != null)
-					buildItem.SetMetadata(metadataName, value, true);
-				else
-					virtualMetadata[metadataName] = MSBuildInternals.Escape(value);
+				lock (SyncRoot) {
+					if (buildItem != null)
+						buildItem.SetMetadata(metadataName, value, true);
+					else
+						virtualMetadata[metadataName] = MSBuildInternals.Escape(value);
+				}
 			}
 		}
 		
@@ -217,10 +246,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (string.IsNullOrEmpty(value)) {
 				RemoveMetadata(metadataName);
 			} else {
-				if (buildItem != null)
-					buildItem.SetMetadata(metadataName, value);
-				else
-					virtualMetadata[metadataName] = value;
+				lock (SyncRoot) {
+					if (buildItem != null)
+						buildItem.SetMetadata(metadataName, value);
+					else
+						virtualMetadata[metadataName] = value;
+				}
 			}
 		}
 		
@@ -229,22 +260,27 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public void RemoveMetadata(string metadataName)
 		{
-			if (buildItem != null)
-				buildItem.RemoveMetadata(metadataName);
-			else
-				virtualMetadata.Remove(metadataName);
+			lock (SyncRoot) {
+				if (buildItem != null)
+					buildItem.RemoveMetadata(metadataName);
+				else
+					virtualMetadata.Remove(metadataName);
+			}
 		}
 		
 		/// <summary>
-		/// Gets the names of all existing meta data items on this project item.
+		/// Gets the names of all existing meta data items on this project item. The resulting collection
+		/// is a copy that will not be affected by future changes to the project item.
 		/// </summary>
 		[Browsable(false)]
 		public IEnumerable<string> MetadataNames {
 			get {
-				if (buildItem != null)
-					return MSBuildInternals.GetCustomMetadataNames(buildItem);
-				else
-					return virtualMetadata.Keys;
+				lock (SyncRoot) {
+					if (buildItem != null)
+						return MSBuildInternals.GetCustomMetadataNames(buildItem);
+					else
+						return Linq.ToArray(virtualMetadata.Keys);
+				}
 			}
 		}
 		#endregion
@@ -254,11 +290,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public virtual void CopyMetadataTo(ProjectItem targetItem)
 		{
-			if (this.buildItem != null && targetItem.buildItem != null) {
-				this.buildItem.CopyCustomMetadataTo(targetItem.buildItem);
-			} else {
-				foreach (string name in this.MetadataNames) {
-					targetItem.SetMetadata(name, this.GetMetadata(name));
+			lock (SyncRoot) {
+				lock (targetItem.SyncRoot) {
+					if (this.buildItem != null && targetItem.buildItem != null) {
+						this.buildItem.CopyCustomMetadataTo(targetItem.buildItem);
+					} else {
+						foreach (string name in this.MetadataNames) {
+							targetItem.SetMetadata(name, this.GetMetadata(name));
+						}
+					}
 				}
 			}
 		}
@@ -285,14 +325,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		BuildItem CloneBuildItem()
 		{
-			if (buildItem != null) {
-				return buildItem.Clone();
-			} else {
-				BuildItem dummyItem = new BuildItem(this.ItemType.ToString(), this.Include);
-				foreach (string name in this.MetadataNames) {
-					dummyItem.SetMetadata(name, this.GetMetadata(name));
+			lock (SyncRoot) {
+				if (buildItem != null) {
+					return buildItem.Clone();
+				} else {
+					BuildItem dummyItem = new BuildItem(this.ItemType.ToString(), this.Include);
+					foreach (string name in this.MetadataNames) {
+						dummyItem.SetMetadata(name, this.GetMetadata(name));
+					}
+					return dummyItem;
 				}
-				return dummyItem;
 			}
 		}
 		
@@ -307,9 +349,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (project == null) {
 					throw new NotSupportedException("Not supported for items without project.");
 				}
-				if (fileNameCache == null)
-					fileNameCache = Path.Combine(project.Directory, this.Include);
-				return fileNameCache;
+				string fileName = this.fileNameCache;
+				if (fileName == null) {
+					lock (SyncRoot) {
+						fileName = Path.Combine(project.Directory, this.Include);
+						fileNameCache = fileName;
+					}
+				}
+				return fileName;
 			}
 			set {
 				if (project == null) {

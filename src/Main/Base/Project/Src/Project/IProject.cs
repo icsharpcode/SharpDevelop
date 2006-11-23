@@ -17,12 +17,15 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
 	/// Base interface for projects.
+	/// Thread-safe members lock on the SyncRoot. Non-thread-safe members may only be called from the main thread.
 	/// </summary>
 	public interface IProject
 		: ISolutionFolder, IDisposable, IMementoCapable, ICanBeDirty
 	{
 		/// <summary>
-		/// Gets a list of items in the project.
+		/// Gets the list of items in the project. This member is thread-safe.
+		/// The returned collection is guaranteed not to change - adding new items or removing existing items
+		/// will create a new collection.
 		/// </summary>
 		ReadOnlyCollection<ProjectItem> Items {
 			get;
@@ -30,6 +33,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Gets all items in the project that have the specified item type.
+		/// This member is thread-safe.
 		/// </summary>
 		IEnumerable<ProjectItem> GetItemsOfType(ItemType type);
 		
@@ -40,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		ItemType GetDefaultItemType(string fileName);
 		
 		/// <summary>
-		/// Gets the list of available file item types.
+		/// Gets the list of available file item types. This member is thread-safe.
 		/// </summary>
 		ICollection<ItemType> AvailableFileItemTypes {
 			get;
@@ -53,10 +57,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
+		/// <summary>
+		/// Gets the language properties used for this project. This member is thread-safe.
+		/// </summary>
 		ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
 			get;
 		}
 		
+		/// <summary>
+		/// Gets the ambience used for the project. This member is thread-safe.
+		/// </summary>
 		ICSharpCode.SharpDevelop.Dom.IAmbience Ambience {
 			get;
 		}
@@ -64,6 +74,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the name of the project file.
 		/// (Full file name, example: @"D:\Serralongue\SharpDevelop\samples\CustomPad\CustomPad.csproj")
+		/// 
+		/// Only the getter is thread-safe.
 		/// </summary>
 		string FileName {
 			get;
@@ -73,6 +85,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the directory of the project file.
 		/// This is equivalent to Path.GetDirectoryName(project.FileName);
 		/// (Example: @"D:\Serralongue\SharpDevelop\samples\CustomPad")
+		/// 
+		/// This member is thread-safe.
 		/// </summary>
 		string Directory {
 			get;
@@ -155,10 +169,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		void Save();
 		
 		/// <summary>
-		/// Returns true, if a specific file (given by it's name)
-		/// is inside this project.
+		/// Returns true, if a specific file (given by it's name) is inside this project.
+		/// This member is thread-safe.
 		/// </summary>
+		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
 		bool IsFileInProject(string fileName);
+		
+		/// <summary>
+		/// Returns the project item for a specific file; or null if the file is not found in the project.
+		/// This member is thread-safe.
+		/// </summary>
+		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
+		FileProjectItem FindFile(string fileName);
 		
 		/// <summary>
 		/// Gets if the project can be started.

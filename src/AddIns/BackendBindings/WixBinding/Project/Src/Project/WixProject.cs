@@ -111,9 +111,9 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public string InstallerFullPath {
 			get {
-				string outputPath = GetProperty("OutputPath") ?? String.Empty;
-				string outputType = GetProperty("OutputType") ?? String.Empty;
-				string outputName = GetProperty("OutputName") ?? String.Empty;
+				string outputPath = GetEvaluatedProperty("OutputPath") ?? String.Empty;
+				string outputType = GetEvaluatedProperty("OutputType") ?? String.Empty;
+				string outputName = GetEvaluatedProperty("OutputName") ?? String.Empty;
 				string fileName = String.Concat(outputName, GetInstallerExtension(outputType));
 				return Path.Combine(Path.Combine(Directory, outputPath), fileName);
 			}
@@ -195,7 +195,7 @@ namespace ICSharpCode.WixBinding
 		/// <returns>An empty string if the name cannot be found.</returns>
 		public string GetVariable(string name)
 		{
-			string constants = GetProperty("DefineConstants") ?? String.Empty;
+			string constants = GetEvaluatedProperty("DefineConstants") ?? String.Empty;
 			NameValuePairCollection nameValuePairs = new NameValuePairCollection(constants);
 			return WixPropertyParser.Parse(nameValuePairs.GetValue(name), this);
 		}
@@ -249,7 +249,7 @@ namespace ICSharpCode.WixBinding
 		/// AssemblyName must be implemented correctly - used when renaming projects.
 		/// </summary>
 		public override string AssemblyName {
-			get { return GetProperty("OutputName") ?? Name; }
+			get { return GetEvaluatedProperty("OutputName") ?? Name; }
 			set { SetProperty("OutputName", value); }
 		}
 		

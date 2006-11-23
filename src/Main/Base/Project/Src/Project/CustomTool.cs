@@ -139,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public FileProjectItem EnsureOutputFileIsInProject(FileProjectItem baseItem, string outputFileName)
 		{
 			WorkbenchSingleton.AssertMainThread();
-			FileProjectItem outputItem = MSBuildBasedProject.FindProjectItem(project, outputFileName);
+			FileProjectItem outputItem = project.FindFile(outputFileName);
 			if (outputItem == null) {
 				outputItem = new FileProjectItem(project, ItemType.Compile);
 				outputItem.FileName = outputFileName;
@@ -331,7 +331,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (solution == null) return;
 			IProject project = solution.FindProjectContainingFile(e.FileName);
 			if (project == null) return;
-			FileProjectItem item = MSBuildBasedProject.FindProjectItem(project, e.FileName);
+			FileProjectItem item = project.FindFile(e.FileName);
 			if (item == null) return;
 			if (!string.IsNullOrEmpty(item.CustomTool)) {
 				RunCustomTool(item, false);

@@ -52,6 +52,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void Dispose()
 		{
+			WorkbenchSingleton.AssertMainThread();
+			
 			isDisposed = true;
 			if (Disposed != null) {
 				Disposed(this, EventArgs.Empty);
@@ -68,6 +70,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public virtual Properties CreateMemento()
 		{
+			WorkbenchSingleton.AssertMainThread();
+			
 			Properties properties = new Properties();
 			properties.Set("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(this).ToArray());
 			List<string> files = new List<string>();
@@ -85,6 +89,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void SetMemento(Properties memento)
 		{
+			WorkbenchSingleton.AssertMainThread();
+			
 			foreach (ICSharpCode.SharpDevelop.Bookmarks.SDBookmark mark in memento.Get("bookmarks", new ICSharpCode.SharpDevelop.Bookmarks.SDBookmark[0])) {
 				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.AddMark(mark);
 			}
@@ -95,32 +101,51 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Filename / Directory
-		string fileName;
+		volatile string fileName;
 		string cachedDirectoryName;
 		
+		/// <summary>
+		/// Gets the name of the project file.
+		/// (Full file name, example: @"D:\Serralongue\SharpDevelop\samples\CustomPad\CustomPad.csproj")
+		/// 
+		/// Only the getter is thread-safe.
+		/// </summary>
 		[ReadOnly(true)]
 		public string FileName {
 			get {
 				return fileName ?? "";
 			}
 			set {
+				WorkbenchSingleton.AssertMainThread();
 				Debug.Assert(Path.IsPathRooted(value));
-				fileName = value;
-				cachedDirectoryName = null;
+				
+				lock (SyncRoot) { // locking still required for Directory
+					fileName = value;
+					cachedDirectoryName = null;
+				}
 			}
 		}
 		
+		/// <summary>
+		/// Gets the directory of the project file.
+		/// This is equivalent to Path.GetDirectoryName(project.FileName);
+		/// (Example: @"D:\Serralongue\SharpDevelop\samples\CustomPad")
+		/// 
+		/// This member is thread-safe.
+		/// </summary>
 		[Browsable(false)]
 		public string Directory {
 			get {
-				if (cachedDirectoryName == null) {
-					try {
-						cachedDirectoryName = Path.GetDirectoryName(this.FileName);
-					} catch (Exception) {
-						cachedDirectoryName = "";
+				lock (SyncRoot) {
+					if (cachedDirectoryName == null) {
+						try {
+							cachedDirectoryName = Path.GetDirectoryName(this.FileName);
+						} catch (Exception) {
+							cachedDirectoryName = "";
+						}
 					}
+					return cachedDirectoryName;
 				}
-				return cachedDirectoryName;
 			}
 		}
 		#endregion
@@ -131,6 +156,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public List<ProjectSection> ProjectSections {
 			get {
+				WorkbenchSingleton.AssertMainThread();
 				return projectSections;
 			}
 		}
@@ -158,9 +184,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		[ReadOnly(true)]
 		[LocalizedProperty("${res:Dialog.ProjectOptions.Configuration}")]
-		public virtual string ActiveConfiguration {
+		public string ActiveConfiguration {
 			get { return activeConfiguration; }
 			set {
+				WorkbenchSingleton.AssertMainThread();
+				
 				if (activeConfiguration != value) {
 					activeConfiguration = value;
 					
@@ -180,9 +208,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		[ReadOnly(true)]
 		[LocalizedProperty("${res:Dialog.ProjectOptions.Platform}")]
-		public virtual string ActivePlatform {
+		public string ActivePlatform {
 			get { return activePlatform; }
 			set {
+				WorkbenchSingleton.AssertMainThread();
+				
 				if (activePlatform != value) {
 					activePlatform = value;
 					
@@ -227,7 +257,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		/// <summary>
-		/// Gets the list of available file item types.
+		/// Gets the list of available file item types. This member is thread-safe.
 		/// </summary>
 		public virtual ICollection<ItemType> AvailableFileItemTypes {
 			get {
@@ -235,6 +265,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// Gets the list of items in the project. This member is thread-safe.
+		/// The returned collection is guaranteed not to change - adding new items or removing existing items
+		/// will create a new collection.
+		/// </summary>
 		[Browsable(false)]
 		public virtual ReadOnlyCollection<ProjectItem> Items {
 			get {
@@ -242,6 +277,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// Gets all items in the project that have the specified item type.
+		/// This member is thread-safe.
+		/// </summary>
 		public virtual IEnumerable<ProjectItem> GetItemsOfType(ItemType itemType)
 		{
 			foreach (ProjectItem item in this.Items) {
@@ -312,9 +351,31 @@ namespace ICSharpCode.SharpDevelop.Project
 			throw new NotSupportedException();
 		}
 		
-		public virtual bool IsFileInProject(string fileName)
+		/// <summary>
+		/// Returns true, if a specific file (given by it's name) is inside this project.
+		/// This member is thread-safe.
+		/// </summary>
+		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
+		public bool IsFileInProject(string fileName)
 		{
-			return false;
+			return FindFile(fileName) != null;
+		}
+		
+		/// <summary>
+		/// Returns the project item for a specific file; or null if the file is not found in the project.
+		/// This member is thread-safe.
+		/// </summary>
+		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
+		public FileProjectItem FindFile(string fileName)
+		{
+			lock (SyncRoot) {
+				return Linq.Find(Linq.OfType<FileProjectItem>(this.Items),
+				                 delegate(FileProjectItem item) {
+				                 	return FileUtility.IsEqualFileName(item.FileName, fileName);
+				                 });
+				// return this.Items.OfType<FileProjectItem>().Find(
+				//			 item => FileUtility.IsEqualFileName(item.FileName, outputFileName));
+			}
 		}
 		
 		ParseProjectContent IProject.CreateProjectContent()

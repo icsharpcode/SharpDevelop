@@ -97,9 +97,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public string IntermediateOutputFullPath {
 			get {
-				string outputPath = GetProperty("IntermediateOutputPath");
+				string outputPath = GetEvaluatedProperty("IntermediateOutputPath");
 				if (string.IsNullOrEmpty(outputPath)) {
-					outputPath = GetProperty("BaseIntermediateOutputPath");
+					outputPath = GetEvaluatedProperty("BaseIntermediateOutputPath");
 					if (string.IsNullOrEmpty(outputPath)) {
 						outputPath = "obj";
 					}
@@ -116,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public string DocumentationFileFullPath {
 			get {
-				string file = GetProperty("DocumentationFile");
+				string file = GetEvaluatedProperty("DocumentationFile");
 				if (string.IsNullOrEmpty(file))
 					return null;
 				return Path.Combine(Directory, file);
@@ -134,18 +134,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		public override string AssemblyName {
-			get { return GetProperty("AssemblyName") ?? Name; }
+			get { return GetEvaluatedProperty("AssemblyName") ?? Name; }
 			set { SetProperty("AssemblyName", value); }
 		}
 		
 		public override string RootNamespace {
-			get { return GetProperty("RootNamespace") ?? ""; }
+			get { return GetEvaluatedProperty("RootNamespace") ?? ""; }
 			set { SetProperty("RootNamespace", value); }
 		}
 		
 		public override string OutputAssemblyFullPath {
 			get {
-				string outputPath = GetProperty("OutputPath") ?? "";
+				string outputPath = GetEvaluatedProperty("OutputPath") ?? "";
 				return Path.Combine(Path.Combine(Directory, outputPath), AssemblyName + GetExtension(OutputType));
 			}
 		}
@@ -154,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public OutputType OutputType {
 			get {
 				try {
-					return (OutputType)Enum.Parse(typeof(OutputType), GetProperty("OutputType") ?? "Exe");
+					return (OutputType)Enum.Parse(typeof(OutputType), GetEvaluatedProperty("OutputType") ?? "Exe");
 				} catch (ArgumentException) {
 					return OutputType.Exe;
 				}
@@ -233,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public string StartProgram {
 			get {
-				return GetProperty("StartProgram") ?? "";
+				return GetEvaluatedProperty("StartProgram") ?? "";
 			}
 			set {
 				SetProperty("StartProgram", string.IsNullOrEmpty(value) ? null : value);
@@ -243,7 +243,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public string StartUrl {
 			get {
-				return GetProperty("StartURL") ?? "";
+				return GetEvaluatedProperty("StartURL") ?? "";
 			}
 			set {
 				SetProperty("StartURL", string.IsNullOrEmpty(value) ? null : value);
@@ -254,7 +254,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public StartAction StartAction {
 			get {
 				try {
-					return (StartAction)Enum.Parse(typeof(StartAction), GetProperty("StartAction") ?? "Project");
+					return (StartAction)Enum.Parse(typeof(StartAction), GetEvaluatedProperty("StartAction") ?? "Project");
 				} catch (ArgumentException) {
 					return StartAction.Project;
 				}
@@ -267,7 +267,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public string StartArguments {
 			get {
-				return GetProperty("StartArguments") ?? "";
+				return GetEvaluatedProperty("StartArguments") ?? "";
 			}
 			set {
 				SetProperty("StartArguments", string.IsNullOrEmpty(value) ? null : value);
@@ -277,7 +277,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public string StartWorkingDirectory {
 			get {
-				return GetProperty("StartWorkingDirectory") ?? "";
+				return GetEvaluatedProperty("StartWorkingDirectory") ?? "";
 			}
 			set {
 				SetProperty("StartWorkingDirectory", string.IsNullOrEmpty(value) ? null : value);

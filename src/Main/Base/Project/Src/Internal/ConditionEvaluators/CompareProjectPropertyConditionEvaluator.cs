@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop
 			else
 				comparisonType = (StringComparison)Enum.Parse(typeof(StringComparison), comparisonTypeText);
 			
-			return string.Equals(project.GetProperty(StringParser.Parse(condition.Properties["property"])),
+			return string.Equals(project.GetEvaluatedProperty(StringParser.Parse(condition.Properties["property"])),
 			                     StringParser.Parse(condition.Properties["equals"]),
 			                     comparisonType);
 		}

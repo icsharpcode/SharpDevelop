@@ -119,7 +119,7 @@ namespace Grunwald.BooBinding
 		public bool Ducky {
 			get {
 				bool val;
-				bool.TryParse(GetProperty("Ducky"), out val);
+				bool.TryParse(GetEvaluatedProperty("Ducky"), out val);
 				return val;
 			}
 		}
