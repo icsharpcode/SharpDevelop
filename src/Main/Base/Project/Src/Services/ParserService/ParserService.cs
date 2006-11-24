@@ -43,7 +43,6 @@ namespace ICSharpCode.SharpDevelop
 				#endif
 				Directory.CreateDirectory(domPersistencePath);
 				defaultProjectContentRegistry.ActivatePersistence(domPersistencePath);
-				
 				ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 			}
 		}
@@ -221,6 +220,15 @@ namespace ICSharpCode.SharpDevelop
 		{
 			LoggingService.Info("reParse thread started");
 			Thread.Sleep(100); // enable main thread to fill the queues completely
+			try {
+				ReparseProjectsInternal();
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
+		}
+		
+		static void ReparseProjectsInternal()
+		{
 			bool parsing = false;
 			ParseProjectContent job;
 			

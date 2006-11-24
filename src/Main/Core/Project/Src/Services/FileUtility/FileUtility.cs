@@ -52,6 +52,9 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// Gets the installation root of the .NET Framework (@"C:\Windows\Microsoft.NET\Framework\")
+		/// </summary>
 		public static string NETFrameworkInstallRoot {
 			get {
 				using (RegistryKey installRootKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\.NETFramework")) {
@@ -61,28 +64,30 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// Gets the Windows Vista SDK installation root. If the Vista SDK is not installed, the
+		/// .NET 2.0 SDK installation root is returned. If both are not installed, an empty string is returned.
+		/// </summary>
 		public static string NetSdkInstallRoot {
 			get {
-				using (RegistryKey installRootKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\.NETFramework")) {
-					object o = installRootKey.GetValue("sdkInstallRootv2.0");
-					return o == null ? String.Empty : o.ToString();
+				string val = String.Empty;
+				RegistryKey sdkRootKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v6.0");
+				if (sdkRootKey != null) {
+					object o = sdkRootKey.GetValue("InstallationFolder");
+					val = o == null ? String.Empty : o.ToString();
+					sdkRootKey.Close();
 				}
-			}
-		}
-		
-		public static string[] GetAvailableRuntimeVersions()
-		{
-			string   installRoot = NETFrameworkInstallRoot;
-			string[] files       = Directory.GetDirectories(installRoot);
-			
-			List<string> runtimes = new List<string>();
-			foreach (string file in files) {
-				string runtime = Path.GetFileName(file);
-				if (runtime.StartsWith("v")) {
-					runtimes.Add(runtime);
+				
+				if (val.Length == 0) {
+					RegistryKey installRootKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\.NETFramework");
+					if (installRootKey != null) {
+						object o = installRootKey.GetValue("sdkInstallRootv2.0");
+						val = o == null ? String.Empty : o.ToString();
+						installRootKey.Close();
+					}
 				}
+				return val;
 			}
-			return runtimes.ToArray();
 		}
 		
 		public static string Combine(params string[] paths)

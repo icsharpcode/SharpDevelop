@@ -267,14 +267,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (File.Exists(itemFileName)) {
 					pc = CecilReader.LoadAssembly(itemFileName, this);
 				} else {
-					AssemblyName asmName = GacInterop.FindBestMatchingAssemblyName(itemInclude);
-					if (asmName != null) {
+					GacAssemblyName asmName = GacInterop.FindBestMatchingAssemblyName(itemInclude);
+					if (persistence != null && asmName != null) {
+						//LoggingService.Debug("Looking up in DOM cache: " + asmName.FullName);
+						pc = persistence.LoadProjectContentByAssemblyName(asmName.FullName);
+					}
+					if (pc == null && asmName != null) {
 						string subPath = Path.Combine(asmName.Name, GetVersion__Token(asmName));
 						subPath = Path.Combine(subPath, asmName.Name + ".dll");
 						foreach (string dir in Directory.GetDirectories(GacInterop.GacRootPath, "GAC*")) {
 							itemFileName = Path.Combine(dir, subPath);
 							if (File.Exists(itemFileName)) {
 								pc = CecilReader.LoadAssembly(itemFileName, this);
+								if (persistence != null) {
+									persistence.SaveProjectContent(pc);
+								}
 								break;
 							}
 						}
@@ -287,13 +294,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return pc;
 		}
 		
-		static string GetVersion__Token(AssemblyName asmName)
+		static string GetVersion__Token(GacAssemblyName asmName)
 		{
 			StringBuilder b = new StringBuilder(asmName.Version.ToString());
 			b.Append("__");
-			foreach (byte by in asmName.GetPublicKeyToken()) {
-				b.Append(by.ToString("x2"));
-			}
+			b.Append(asmName.PublicKey);
 			return b.ToString();
 		}
 		

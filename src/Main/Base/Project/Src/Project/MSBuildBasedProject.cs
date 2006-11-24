@@ -820,9 +820,24 @@ namespace ICSharpCode.SharpDevelop.Project
 				this.ActiveConfiguration = GetEvaluatedProperty("Configuration") ?? this.ActiveConfiguration;
 				this.ActivePlatform = GetEvaluatedProperty("Platform") ?? this.ActivePlatform;
 				
+				// Some projects do not specify default configuration/platform, so we have to set
+				// Configuration and Platform in the global properties to be sure these properties exist
+				project.GlobalProperties.SetProperty("Configuration", this.ActiveConfiguration, true);
+				project.GlobalProperties.SetProperty("Platform", this.ActivePlatform, true);
+				
 				CreateItemsListFromMSBuild();
 				LoadConfigurationPlatformNamesFromMSBuild();
+				
 				IdGuid = GetEvaluatedProperty("ProjectGuid");
+				if (IdGuid == null) {
+					// Fix projects that have nb GUID
+					IdGuid = Guid.NewGuid().ToString();
+					SetPropertyInternal(null, null, "ProjectGuid", IdGuid, PropertyStorageLocations.Base, true);
+					try {
+						// save fixed project
+						project.Save(fileName);
+					} catch {}
+				}
 			} finally {
 				isLoading = false;
 			}
