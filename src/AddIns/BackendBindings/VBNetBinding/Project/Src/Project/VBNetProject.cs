@@ -26,15 +26,15 @@ namespace VBNetBinding
 				switch (this.OutputType) {
 					case OutputType.WinExe:
 						SetProperty(e.Configuration, e.Platform,
-						            "MyType", "WindowsForms", e.Location, true);
+						            "MyType", "WindowsForms", e.NewLocation, true);
 						break;
 					case OutputType.Exe:
 						SetProperty(e.Configuration, e.Platform,
-						            "MyType", "Console", e.Location, true);
+						            "MyType", "Console", e.NewLocation, true);
 						break;
 					default:
 						SetProperty(e.Configuration, e.Platform,
-						            "MyType", "Windows", e.Location, true);
+						            "MyType", "Windows", e.NewLocation, true);
 						break;
 				}
 			}

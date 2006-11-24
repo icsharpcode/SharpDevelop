@@ -392,6 +392,18 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void FunctionWithoutImplicitReturn()
+		{
+			TestMember("Public Function run(i As Integer) As Integer\n" +
+			           " Return 0\n" +
+			           "End Function",
+			           "public int run(int i)\n" +
+			           "{\n" +
+			           "\treturn 0;\n" +
+			           "}");
+		}
+		
+		[Test]
 		public void FunctionWithImplicitReturn()
 		{
 			TestMember("Public Function run(i As Integer) As Integer\n" +
@@ -418,6 +430,25 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "\t\t" + VBNetConstructsConvertVisitor.FunctionReturnValueName + " += i;\n" +
 			           "\t}\n" +
 			           "\treturn " + VBNetConstructsConvertVisitor.FunctionReturnValueName + ";\n" +
+			           "}");
+		}
+		
+		[Test]
+		public void FunctionWithImplicitReturn2b()
+		{
+			const string ReturnValueName = VBNetConstructsConvertVisitor.FunctionReturnValueName;
+			TestMember("Public Function run(i As Integer) As Integer\n" +
+			           " While something\n" +
+			           "   run = run + run(i - 1)\n" +
+			           " End While\n" +
+			           "End Function",
+			           "public int run(int i)\n" +
+			           "{\n" +
+			           "\tint " + ReturnValueName + " = 0;\n" +
+			           "\twhile (something) {\n" +
+			           "\t\t" + ReturnValueName + " = " + ReturnValueName + " + run(i - 1);\n" +
+			           "\t}\n" +
+			           "\treturn " + ReturnValueName + ";\n" +
 			           "}");
 		}
 		

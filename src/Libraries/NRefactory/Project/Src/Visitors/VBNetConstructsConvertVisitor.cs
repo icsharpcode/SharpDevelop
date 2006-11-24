@@ -223,28 +223,31 @@ namespace ICSharpCode.NRefactory.Visitors
 					methodDeclaration.Body.Children.RemoveAt(methodDeclaration.Body.Children.Count - 1);
 					methodDeclaration.Body.AddChild(rs);
 				} else {
-					methodDeclaration.Body.AcceptVisitor(new ReturnStatementForFunctionAssignment(methodDeclaration.Name), null);
-					Expression init;
-					switch (methodDeclaration.TypeReference.SystemType) {
-						case "System.Int16":
-						case "System.Int32":
-						case "System.Int64":
-						case "System.Byte":
-						case "System.UInt16":
-						case "System.UInt32":
-						case "System.UInt64":
-							init = new PrimitiveExpression(0, "0");
-							break;
-						case "System.Boolean":
-							init = new PrimitiveExpression(false, "false");
-							break;
-						default:
-							init = new PrimitiveExpression(null, "null");
-							break;
+					ReturnStatementForFunctionAssignment visitor = new ReturnStatementForFunctionAssignment(methodDeclaration.Name);
+					methodDeclaration.Body.AcceptVisitor(visitor, null);
+					if (visitor.replacementCount > 0) {
+						Expression init;
+						switch (methodDeclaration.TypeReference.SystemType) {
+							case "System.Int16":
+							case "System.Int32":
+							case "System.Int64":
+							case "System.Byte":
+							case "System.UInt16":
+							case "System.UInt32":
+							case "System.UInt64":
+								init = new PrimitiveExpression(0, "0");
+								break;
+							case "System.Boolean":
+								init = new PrimitiveExpression(false, "false");
+								break;
+							default:
+								init = new PrimitiveExpression(null, "null");
+								break;
+						}
+						methodDeclaration.Body.Children.Insert(0, new LocalVariableDeclaration(new VariableDeclaration(FunctionReturnValueName, init, methodDeclaration.TypeReference)));
+						methodDeclaration.Body.Children[0].Parent = methodDeclaration.Body;
+						methodDeclaration.Body.AddChild(new ReturnStatement(new IdentifierExpression(FunctionReturnValueName)));
 					}
-					methodDeclaration.Body.Children.Insert(0, new LocalVariableDeclaration(new VariableDeclaration(FunctionReturnValueName, init, methodDeclaration.TypeReference)));
-					methodDeclaration.Body.Children[0].Parent = methodDeclaration.Body;
-					methodDeclaration.Body.AddChild(new ReturnStatement(new IdentifierExpression(FunctionReturnValueName)));
 				}
 			}
 			
@@ -273,21 +276,22 @@ namespace ICSharpCode.NRefactory.Visitors
 		class ReturnStatementForFunctionAssignment : AbstractAstTransformer
 		{
 			string functionName;
+			internal int replacementCount = 0;
 			
 			public ReturnStatementForFunctionAssignment(string functionName)
 			{
 				this.functionName = functionName;
 			}
 			
-			public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
+			public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 			{
-				IdentifierExpression ident = assignmentExpression.Left as IdentifierExpression;
-				if (ident != null) {
-					if (ident.Identifier.Equals(functionName, StringComparison.InvariantCultureIgnoreCase)) {
-						ident.Identifier = FunctionReturnValueName;
+				if (identifierExpression.Identifier.Equals(functionName, StringComparison.InvariantCultureIgnoreCase)) {
+					if (!(identifierExpression.Parent is AddressOfExpression) && !(identifierExpression.Parent is InvocationExpression)) {
+						identifierExpression.Identifier = FunctionReturnValueName;
+						replacementCount++;
 					}
 				}
-				return base.VisitAssignmentExpression(assignmentExpression, data);
+				return base.VisitIdentifierExpression(identifierExpression, data);
 			}
 		}
 		#endregion

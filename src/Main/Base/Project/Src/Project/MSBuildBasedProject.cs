@@ -440,7 +440,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			lock (SyncRoot) {
 				args = SetPropertyInternal(configuration, platform, propertyName, newValue, location, treatPropertyValueAsLiteral);
 			}
-			OnPropertyChanged(args);
+			if (args.NewValue != args.OldValue || args.NewLocation != args.OldLocation) {
+				OnPropertyChanged(args);
+			}
 		}
 		
 		ProjectPropertyChangedEventArgs SetPropertyInternal(string configuration, string platform,
@@ -558,7 +560,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			args = new ProjectPropertyChangedEventArgs(propertyName);
 			args.Configuration = configuration;
 			args.Platform = platform;
-			args.Location = location;
+			args.NewLocation = location;
+			args.OldLocation = oldLocation;
+			if (newValue != null) {
+				args.NewValue = treatPropertyValueAsLiteral ? MSBuildInternals.Escape(newValue) : newValue;
+			}
 			
 			if (newValue == null) {
 				if (existingPropertyGroup != null && existingProperty != null) {
