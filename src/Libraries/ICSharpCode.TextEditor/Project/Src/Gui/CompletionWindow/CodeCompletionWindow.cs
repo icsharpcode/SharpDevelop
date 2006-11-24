@@ -8,6 +8,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 {
@@ -17,6 +18,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		CodeCompletionListView   codeCompletionListView;
 		VScrollBar    vScrollBar = new VScrollBar();
 		ICompletionDataProvider dataProvider;
+		IDocument document;
 		
 		int                      startOffset;
 		int                      endOffset;
@@ -38,6 +40,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		{
 			this.dataProvider = completionDataProvider;
 			this.completionData = completionData;
+			this.document = control.Document;
 			
 			workingScreen = Screen.GetWorkingArea(Location);
 			startOffset = control.ActiveTextAreaControl.Caret.Offset + 1;
@@ -87,6 +90,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 			
 			vScrollBar.ValueChanged += VScrollBarValueChanged;
+			document.DocumentAboutToBeChanged += DocumentAboutToBeChanged;
 		}
 		
 		bool inScrollUpdate;
@@ -164,16 +168,31 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		{
 			switch (dataProvider.ProcessKey(ch)) {
 				case CompletionDataProviderKeyResult.BeforeStartKey:
-					// increment start + end and process as normal char
+					// increment start+end, then process as normal char
 					++startOffset;
-					goto case CompletionDataProviderKeyResult.NormalKey;
-				case CompletionDataProviderKeyResult.NormalKey:
 					++endOffset;
+					return base.ProcessKeyEvent(ch);
+				case CompletionDataProviderKeyResult.NormalKey:
+					// just process normally
 					return base.ProcessKeyEvent(ch);
 				case CompletionDataProviderKeyResult.InsertionKey:
 					return InsertSelectedItem(ch);
 				default:
 					throw new InvalidOperationException("Invalid return value of dataProvider.ProcessKey");
+			}
+		}
+		
+		void DocumentAboutToBeChanged(object sender, DocumentEventArgs e)
+		{
+			// => startOffset test required so that this startOffset/endOffset are not incremented again
+			//    for BeforeStartKey characters
+			if (e.Offset >= startOffset && e.Offset <= endOffset) {
+				if (e.Length > 0) { // length of removed region
+					endOffset -= e.Length;
+				}
+				if (!string.IsNullOrEmpty(e.Text)) {
+					endOffset += e.Text.Length;
+				}
 			}
 		}
 		
@@ -197,20 +216,6 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 			
 			switch (keyData) {
-				case Keys.Back:
-					--endOffset;
-					if (endOffset < startOffset) {
-						Close();
-					}
-					return false;
-				case Keys.Delete:
-					if (control.ActiveTextAreaControl.Caret.Offset <= endOffset) {
-						--endOffset;
-					}
-					if (endOffset < startOffset) {
-						Close();
-					}
-					return false;
 				case Keys.Home:
 					codeCompletionListView.SelectIndex(0);
 					return true;
@@ -247,18 +252,25 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			control.ActiveTextAreaControl.TextArea.Focus();
 		}
 		
-		protected override void OnClosed(EventArgs e)
+		protected override void Dispose(bool disposing)
 		{
-			base.OnClosed(e);
-			Dispose();
-			codeCompletionListView.Dispose();
-			codeCompletionListView = null;
-			declarationViewWindow.Dispose();
-			declarationViewWindow = null;
+			if (disposing) {
+				document.DocumentAboutToBeChanged -= DocumentAboutToBeChanged;
+				if (codeCompletionListView != null) {
+					codeCompletionListView.Dispose();
+					codeCompletionListView = null;
+				}
+				if (declarationViewWindow != null) {
+					declarationViewWindow.Dispose();
+					declarationViewWindow = null;
+				}
+			}
+			base.Dispose(disposing);
 		}
 		
 		bool InsertSelectedItem(char ch)
 		{
+			document.DocumentAboutToBeChanged -= DocumentAboutToBeChanged;
 			ICompletionData data = codeCompletionListView.SelectedCompletionData;
 			bool result = false;
 			if (data != null) {

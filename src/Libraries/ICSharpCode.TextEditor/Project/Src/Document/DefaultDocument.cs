@@ -42,7 +42,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// The indentation from the line above will be
 		/// taken to indent the curent line
 		/// </summary>
-		Auto, 
+		Auto,
 		
 		/// <summary>
 		/// Inteligent, context sensitive indentation will occur
@@ -91,7 +91,7 @@ namespace ICSharpCode.TextEditor.Document
 	/// The default <see cref="IDocument"/> implementation.
 	/// </summary>
 	internal class DefaultDocument : IDocument
-	{	
+	{
 		bool readOnly = false;
 		
 		ILineManager          lineTrackingStrategy = null;
@@ -334,7 +334,7 @@ namespace ICSharpCode.TextEditor.Document
 //		{
 //			return lineTrackingStrategy.GetVisibleColumn(logicalLine, logicalColumn);
 //		}
-//		
+//
 		public int GetNextVisibleLineAbove(int lineNumber, int lineCount)
 		{
 			return lineTrackingStrategy.GetNextVisibleLineAbove(lineNumber, lineCount);
@@ -365,7 +365,7 @@ namespace ICSharpCode.TextEditor.Document
 		{
 			for (int i = 0; i < list.Count; ++i) {
 				ISegment fm = list[i];
-			
+				
 				if (e.Offset <= fm.Offset && fm.Offset <= e.Offset + e.Length ||
 				    e.Offset <= fm.Offset + fm.Length && fm.Offset + fm.Length <= e.Offset + e.Length) {
 					list.RemoveAt(i);
@@ -415,7 +415,7 @@ namespace ICSharpCode.TextEditor.Document
 		List<TextAreaUpdate> updateQueue = new List<TextAreaUpdate>();
 		
 		public List<TextAreaUpdate> UpdateQueue {
-			get { 
+			get {
 				return updateQueue;
 			}
 		}
