@@ -349,6 +349,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			IProject project;
 			if (binding != null) {
 				project = LanguageBindingService.LoadProject(solution, fileName, solution.Name);
+				if (project is UnknownProject) {
+					if (((UnknownProject)project).WarningDisplayedToUser == false) {
+						((UnknownProject)project).ShowWarningMessageBox();
+					}
+					return;
+				}
 			} else {
 				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new string[,] {{"FileName", fileName}}));
 				return;

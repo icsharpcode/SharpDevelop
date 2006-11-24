@@ -117,16 +117,13 @@ namespace ICSharpCode.SharpDevelop
 					try {
 						newProject = binding.LoadProject(provider, location, title);
 					} catch (XmlException ex) {
-						MessageService.ShowError("Error loading " + location + ":\n" + ex.Message);
-						newProject = new UnknownProject(location, title, ex.Message);
+						newProject = new UnknownProject(location, title, ex.Message, true);
 						newProject.TypeGuid = projectTypeGuid;
 					} catch (Microsoft.Build.BuildEngine.InvalidProjectFileException ex) {
-						MessageService.ShowError("Error loading " + location + ":\n" + ex.Message);
-						newProject = new UnknownProject(location, title, ex.Message);
+						newProject = new UnknownProject(location, title, ex.Message, true);
 						newProject.TypeGuid = projectTypeGuid;
 					} catch (UnauthorizedAccessException ex) {
-						MessageService.ShowError("Error loading " + location + ":\n" + ex.Message);
-						newProject = new UnknownProject(location, title, ex.Message);
+						newProject = new UnknownProject(location, title, ex.Message, true);
 						newProject.TypeGuid = projectTypeGuid;
 					}
 				} else {

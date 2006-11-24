@@ -798,7 +798,19 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				InitializeMSBuildProject();
 				
-				project.Load(fileName);
+				try {
+					project.Load(fileName);
+				} catch (MSBuild.InvalidProjectFileException ex) {
+					LoggingService.Warn(ex);
+					if (ex.ErrorCode == "MSB4075") {
+						// "The project file must be opened in VS IDE and converted to latest version
+						// before it can be build by MSBuild."
+						Converter.PrjxToSolutionProject.ConvertVSNetProject(fileName);
+						project.Load(fileName);
+					} else {
+						throw;
+					}
+				}
 				this.ActiveConfiguration = GetEvaluatedProperty("Configuration") ?? this.ActiveConfiguration;
 				this.ActivePlatform = GetEvaluatedProperty("Platform") ?? this.ActivePlatform;
 				
