@@ -653,7 +653,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (sourceProject != null) {
 				string sourceDirectory = Path.GetDirectoryName(fileName);
 				bool dependendElementsCopied = false;
-				foreach (ProjectItem item in Linq.ToArray(sourceProject.Items)) {
+				foreach (ProjectItem item in sourceProject.Items) {
 					FileProjectItem fileItem = item as FileProjectItem;
 					if (fileItem == null)
 						continue;

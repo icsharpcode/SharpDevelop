@@ -94,6 +94,9 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static int Count<T>(IEnumerable<T> input)
 		{
+			if (input is ICollection<T>) {
+				return ((ICollection<T>)input).Count;
+			}
 			int count = 0;
 			using (IEnumerator<T> e = input.GetEnumerator()) {
 				while (e.MoveNext())

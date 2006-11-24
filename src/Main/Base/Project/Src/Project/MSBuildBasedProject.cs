@@ -92,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					
 				default:
 					if (this.AvailableFileItemTypes.Contains(new ItemType(item.Name))
-					    || SafeFileExists(this.Directory, item.Include))
+					    || SafeFileExists(this.Directory, item.FinalItemSpec))
 					{
 						return new FileProjectItem(this, item);
 					} else {

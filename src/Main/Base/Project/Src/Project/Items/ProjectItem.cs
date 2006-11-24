@@ -136,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				lock (SyncRoot) {
 					if (buildItem != null)
-						return buildItem.Include;
+						return buildItem.FinalItemSpec;
 					else
 						return virtualInclude;
 				}
@@ -144,7 +144,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			set {
 				lock (SyncRoot) {
 					if (buildItem != null)
-						buildItem.Include = value;
+						buildItem.Include = MSBuildInternals.Escape(value);
 					else
 						virtualInclude = value ?? "";
 					fileNameCache = null;

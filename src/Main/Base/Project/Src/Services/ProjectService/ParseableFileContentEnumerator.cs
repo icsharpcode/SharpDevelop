@@ -62,17 +62,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
-		ProjectItem[] projectItems;
+		IList<ProjectItem> projectItems;
 		bool isOnMainThread;
 		Encoding defaultEncoding;
 		
-		public ParseableFileContentEnumerator(IProject project) : this(Linq.ToArray(project.Items)) { }
+		public ParseableFileContentEnumerator(IProject project) : this(project.Items) { }
 		
-		public ParseableFileContentEnumerator(ProjectItem[] projectItems)
+		public ParseableFileContentEnumerator(IList<ProjectItem> projectItems)
 		{
 			isOnMainThread = !WorkbenchSingleton.InvokeRequired;
 			this.projectItems = projectItems;
-			if (projectItems.Length > 0) {
+			if (projectItems.Count > 0) {
 				nextItem = projectItems[0];
 			}
 			defaultEncoding = ParserService.DefaultFileEncoding;
@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public int ItemCount {
 			get {
-				return projectItems.Length;
+				return projectItems.Count;
 			}
 		}
 		
@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public bool MoveNext()
 		{
 			ProjectItem item = nextItem;
-			nextItem = (++index < projectItems.Length) ? projectItems[index] : null;
+			nextItem = (++index < projectItems.Count) ? projectItems[index] : null;
 			if (item == null) return false;
 			if (item.ItemType != ItemType.Compile)
 				return MoveNext();

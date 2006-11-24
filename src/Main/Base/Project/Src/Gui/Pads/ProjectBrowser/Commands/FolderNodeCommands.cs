@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						if (!FileUtility.IsBaseDirectory(project.Directory, directoryName))
 							continue;
 						LoggingService.Debug("Searching for child items in " + project.Name);
-						foreach (ProjectItem item in Linq.ToArray(project.Items)) {
+						foreach (ProjectItem item in project.Items) {
 							FileProjectItem fileItem = item as FileProjectItem;
 							if (fileItem == null)
 								continue;

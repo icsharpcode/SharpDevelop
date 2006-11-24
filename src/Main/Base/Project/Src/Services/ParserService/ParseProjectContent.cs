@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		internal void Initialize1()
 		{
-			ProjectItem[] items = Linq.ToArray(project.Items);
+			ICollection<ProjectItem> items = project.Items;
 			ProjectService.ProjectItemAdded   += OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved += OnProjectItemRemoved;
 			UpdateDefaultImports(items);
@@ -148,7 +148,7 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 			if (e.ProjectItem.ItemType == ItemType.Import) {
-				UpdateDefaultImports(Linq.ToArray(project.Items));
+				UpdateDefaultImports(project.Items);
 			} else if (e.ProjectItem.ItemType == ItemType.Compile) {
 				if (System.IO.File.Exists(e.ProjectItem.FileName)) {
 					ParserService.EnqueueForParsing(e.ProjectItem.FileName);
@@ -176,7 +176,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 			
 			if (e.ProjectItem.ItemType == ItemType.Import) {
-				UpdateDefaultImports(Linq.ToArray(project.Items));
+				UpdateDefaultImports(project.Items);
 			} else if (e.ProjectItem.ItemType == ItemType.Compile) {
 				ParserService.ClearParseInformation(e.ProjectItem.FileName);
 			}
@@ -184,7 +184,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		int languageDefaultImportCount = -1;
 		
-		void UpdateDefaultImports(ProjectItem[] items)
+		void UpdateDefaultImports(ICollection<ProjectItem> items)
 		{
 			if (languageDefaultImportCount < 0) {
 				languageDefaultImportCount = (DefaultImports != null) ? DefaultImports.Usings.Count : 0;
@@ -208,7 +208,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		internal int GetInitializationWorkAmount()
 		{
-			return Linq.Count(project.Items);
+			return project.Items.Count;
 		}
 		
 		internal void ReInitialize2()

@@ -111,6 +111,10 @@ namespace ICSharpCode.SharpDevelop
 				projectContents.Clear();
 				parsings.Clear();
 			}
+			lock (parseQueue) {
+				parseQueue.Clear();
+			}
+			lastUpdateHash.Clear();
 		}
 		
 		static Thread loadSolutionProjectsThread;
