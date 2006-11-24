@@ -55,17 +55,19 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			codeCompletionListView.Click  += new EventHandler(CodeCompletionListViewClick);
 			Controls.Add(codeCompletionListView);
 			
-			if (completionData.Length > 10) {
+			const int MaxListLength = 10;
+			if (completionData.Length > MaxListLength) {
 				vScrollBar.Dock = DockStyle.Right;
 				vScrollBar.Minimum = 0;
-				vScrollBar.Maximum = completionData.Length - 8;
+				vScrollBar.Maximum = completionData.Length - 1;
 				vScrollBar.SmallChange = 1;
-				vScrollBar.LargeChange = 3;
+				vScrollBar.LargeChange = MaxListLength;
 				codeCompletionListView.FirstItemChanged += new EventHandler(CodeCompletionListViewFirstItemChanged);
 				Controls.Add(vScrollBar);
 			}
 			
-			this.drawingSize = new Size(codeCompletionListView.ItemHeight * 10, codeCompletionListView.ItemHeight * Math.Min(10, completionData.Length));
+			this.drawingSize = new Size(codeCompletionListView.ItemHeight * 10,
+			                            codeCompletionListView.ItemHeight * Math.Min(MaxListLength, completionData.Length));
 			SetLocation();
 			
 			if (declarationViewWindow == null) {
@@ -84,12 +86,27 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				CaretOffsetChanged(this, EventArgs.Empty);
 			}
 			
-			vScrollBar.Scroll += new ScrollEventHandler(DoScroll);
+			vScrollBar.ValueChanged += VScrollBarValueChanged;
 		}
+		
+		bool inScrollUpdate;
 		
 		void CodeCompletionListViewFirstItemChanged(object sender, EventArgs e)
 		{
+			if (inScrollUpdate) return;
+			inScrollUpdate = true;
 			vScrollBar.Value = Math.Min(vScrollBar.Maximum, codeCompletionListView.FirstItem);
+			inScrollUpdate = false;
+		}
+		
+		void VScrollBarValueChanged(object sender, EventArgs e)
+		{
+			if (inScrollUpdate) return;
+			inScrollUpdate = true;
+			codeCompletionListView.FirstItem = vScrollBar.Value;
+			codeCompletionListView.Refresh();
+			control.ActiveTextAreaControl.TextArea.Focus();
+			inScrollUpdate = false;
 		}
 		
 		void SetDeclarationViewLocation()
@@ -120,19 +137,18 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		public void HandleMouseWheel(MouseEventArgs e)
 		{
 			int MAX_DELTA  = 120; // basically it's constant now, but could be changed later by MS
-			int multiplier = Math.Abs(e.Delta) / MAX_DELTA;
+			int multiplier = e.Delta / MAX_DELTA;
+			multiplier *= System.Windows.Forms.SystemInformation.MouseWheelScrollLines * vScrollBar.SmallChange;
 			
 			int newValue;
 			if (System.Windows.Forms.SystemInformation.MouseWheelScrollLines > 0) {
-				newValue = this.vScrollBar.Value - (control.TextEditorProperties.MouseWheelScrollDown ? 1 : -1) * Math.Sign(e.Delta) * System.Windows.Forms.SystemInformation.MouseWheelScrollLines * vScrollBar.SmallChange * multiplier;
+				newValue = this.vScrollBar.Value - (control.TextEditorProperties.MouseWheelScrollDown ? 1 : -1) * multiplier;
 			} else {
-				newValue = this.vScrollBar.Value - (control.TextEditorProperties.MouseWheelScrollDown ? 1 : -1) * Math.Sign(e.Delta) * vScrollBar.LargeChange;
+				newValue = this.vScrollBar.Value - (control.TextEditorProperties.MouseWheelScrollDown ? 1 : -1) * multiplier;
 			}
-			vScrollBar.Value = Math.Max(vScrollBar.Minimum, Math.Min(vScrollBar.Maximum, newValue));
-			DoScroll(this, null);
+			vScrollBar.Value = Math.Max(vScrollBar.Minimum, Math.Min(vScrollBar.Maximum - vScrollBar.LargeChange + 1, newValue));
 		}
 
-		
 		void CodeCompletionListViewSelectedItemChanged(object sender, EventArgs e)
 		{
 			ICompletionData data = codeCompletionListView.SelectedCompletionData;
@@ -172,13 +188,6 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			} else {
 				codeCompletionListView.SelectItemWithStart(control.Document.GetText(startOffset, offset - startOffset));
 			}
-		}
-		
-		protected void DoScroll(object sender, ScrollEventArgs sea)
-		{
-			codeCompletionListView.FirstItem = vScrollBar.Value;
-			codeCompletionListView.Refresh();
-			control.ActiveTextAreaControl.TextArea.Focus();
 		}
 		
 		protected override bool ProcessTextAreaKey(Keys keyData)
