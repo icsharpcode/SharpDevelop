@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 108, 1591 
+
 namespace Debugger.Interop.CorDebug
 {
     using System;
@@ -24,3 +26,5 @@ namespace Debugger.Interop.CorDebug
         void GetOffset(out uint pnOffset);
     }
 }
+
+#pragma warning restore 108, 1591

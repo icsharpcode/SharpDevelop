@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 108, 1591 
+
 namespace Debugger.Interop.CorSym
 {
     using System;
@@ -38,3 +40,5 @@ namespace Debugger.Interop.CorSym
         void GetSequencePoints([In] uint cPoints, out uint pcPoints, [Out, MarshalAs(UnmanagedType.LPArray)] uint[] offsets, [Out, MarshalAs(UnmanagedType.LPArray)] ISymUnmanagedDocument[] documents, [Out, MarshalAs(UnmanagedType.LPArray)] uint[] lines, [Out, MarshalAs(UnmanagedType.LPArray)] uint[] columns, [Out, MarshalAs(UnmanagedType.LPArray)] uint[] endLines, [Out, MarshalAs(UnmanagedType.LPArray)] uint[] endColumns);
     }
 }
+
+#pragma warning restore 108, 1591

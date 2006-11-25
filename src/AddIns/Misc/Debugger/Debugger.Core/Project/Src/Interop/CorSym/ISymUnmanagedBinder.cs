@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 108, 1591 
+
 namespace Debugger.Interop.CorSym
 {
     using System;
@@ -22,3 +24,5 @@ namespace Debugger.Interop.CorSym
         ISymUnmanagedReader GetReaderFromStream([In, MarshalAs(UnmanagedType.IUnknown)] object importer, [In, MarshalAs(UnmanagedType.Interface)] IStream pstream);
     }
 }
+
+#pragma warning restore 108, 1591

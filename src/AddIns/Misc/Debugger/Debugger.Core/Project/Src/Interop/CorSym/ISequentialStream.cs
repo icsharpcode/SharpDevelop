@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 108, 1591 
+
 namespace Debugger.Interop.CorSym
 {
     using System;
@@ -20,3 +22,5 @@ namespace Debugger.Interop.CorSym
         void RemoteWrite([In] ref byte pv, [In] uint cb, out uint pcbWritten);
     }
 }
+
+#pragma warning restore 108, 1591

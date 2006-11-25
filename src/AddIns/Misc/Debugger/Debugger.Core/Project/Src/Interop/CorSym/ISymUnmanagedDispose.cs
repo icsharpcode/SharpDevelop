@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 108, 1591 
+
 namespace Debugger.Interop.CorSym
 {
     using System;
@@ -18,3 +20,5 @@ namespace Debugger.Interop.CorSym
         void Destroy();
     }
 }
+
+#pragma warning restore 108, 1591

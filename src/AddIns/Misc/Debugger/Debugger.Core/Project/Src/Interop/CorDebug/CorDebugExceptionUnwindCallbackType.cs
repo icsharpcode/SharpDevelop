@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 108, 1591 
+
 namespace Debugger.Wrappers.CorDebug
 {
     using System;
@@ -16,3 +18,5 @@ namespace Debugger.Wrappers.CorDebug
         DEBUG_EXCEPTION_UNWIND_BEGIN = 1
     }
 }
+
+#pragma warning restore 108, 1591 

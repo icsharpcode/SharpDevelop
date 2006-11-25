@@ -229,7 +229,7 @@ namespace Debugger
 		/// <summary>
 		/// Returns null on error.
 		/// 
-		/// 'ILStart <= ILOffset <= ILEnd' and this range includes at least
+		/// 'ILStart &lt;= ILOffset &lt;= ILEnd' and this range includes at least
 		/// the returned area of source code. (May incude some extra compiler generated IL too)
 		/// </summary>
 		SourcecodeSegment GetSegmentForOffet(uint offset)

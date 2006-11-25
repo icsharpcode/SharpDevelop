@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 108, 1591 
+
 namespace Debugger.Interop.CorDebug
 {
     using System;
@@ -70,3 +72,5 @@ namespace Debugger.Interop.CorDebug
         REGISTER_X86_FPSTACK_7 = 0x10
     }
 }
+
+#pragma warning restore 108, 1591

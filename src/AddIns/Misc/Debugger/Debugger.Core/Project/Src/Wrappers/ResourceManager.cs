@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 1591
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -106,3 +108,5 @@ namespace Debugger.Wrappers
 		}
 	}
 }
+
+#pragma warning restore 1591

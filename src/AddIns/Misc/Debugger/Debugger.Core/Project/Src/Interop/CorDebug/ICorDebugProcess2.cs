@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 108, 1591 
+
 namespace Debugger.Interop.CorDebug
 {
     using System;
@@ -30,3 +32,5 @@ namespace Debugger.Interop.CorDebug
         void GetReferenceValueFromGCHandle([In, ComAliasName("Debugger.Interop.CorDebug.UINT_PTR")] uint handle, [MarshalAs(UnmanagedType.Interface)] out ICorDebugReferenceValue pOutValue);
     }
 }
+
+#pragma warning restore 108, 1591

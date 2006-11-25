@@ -20,11 +20,13 @@ namespace WrapperGenerator
 	{
 		CodeGenerator codeGenerator;
 		string header;
+		string footer;
 		
-		public FileGenerator(CodeGenerator codeGenerator, string header)
+		public FileGenerator(CodeGenerator codeGenerator, string header, string footer)
 		{
 			this.codeGenerator = codeGenerator;
 			this.header = header;
+			this.footer = footer;
 		}
 		
 		public string SaveFiles(string saveDirectory)
@@ -42,6 +44,7 @@ namespace WrapperGenerator
 				TextWriter textWriter = new StreamWriter(Path.Combine(saveDirectory, className + ".cs"));
 				textWriter.Write(header);
 				textWriter.Write(code);
+				textWriter.Write(footer);
 				textWriter.Close();
 			}
 			

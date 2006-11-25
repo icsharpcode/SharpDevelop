@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 108, 1591 
+
 namespace Debugger.Interop.CorDebug
 {
     using System;
@@ -68,3 +70,5 @@ namespace Debugger.Interop.CorDebug
         void BreakpointSetError([In] IntPtr pAppDomain, [In] IntPtr pThread, [In] IntPtr pBreakpoint, [In] uint dwError);
     }
 }
+
+#pragma warning restore 108, 1591

@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 108, 1591 
+
 namespace Debugger.Interop.CorDebug
 {
     using System.Runtime.InteropServices;
@@ -14,3 +16,5 @@ namespace Debugger.Interop.CorDebug
     {
     }
 }
+
+#pragma warning restore 108, 1591

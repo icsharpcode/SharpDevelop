@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 108, 1591 
+
 namespace Debugger.Interop.MetaData
 {
     using System;
@@ -140,3 +142,5 @@ namespace Debugger.Interop.MetaData
         void IsGlobal([In] uint pd, out int pbGlobal);
     }
 }
+
+#pragma warning restore 108, 1591

@@ -22,7 +22,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
-    <NoWarn>108</NoWarn>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -65,8 +64,6 @@
     <Compile Include="Src\Modules\Module.cs" />
     <Compile Include="Src\Modules\ModuleEventArgs.cs" />
     <Compile Include="Src\Modules\Process-Modules.cs" />
-    <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\AsyncMessageResponseSink.cs" />
-    <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\MyProxy.cs" />
     <Compile Include="Src\Debugger\Internal\RemotingObjectBase.cs" />
     <Compile Include="Src\Threads\Exception.cs" />
     <Compile Include="Src\Threads\ExceptionType.cs" />
@@ -78,13 +75,6 @@
     <Compile Include="Src\Threads\SourcecodeSegment.cs" />
     <Compile Include="Src\Threads\Thread.cs" />
     <Compile Include="Src\Threads\ThreadEventArgs.cs" />
-    <Compile Include="Src\RemotingSinks\InvokeOnSTASink\InvokeOnSTAServerChannelSinkProvider.cs" />
-    <Compile Include="Src\RemotingSinks\InvokeOnSTASink\InvokeOnSTAClientChannelSink.cs" />
-    <Compile Include="Src\RemotingSinks\InvokeOnSTASink\InvokeOnSTAClientChannelSinkProvider.cs" />
-    <Compile Include="Src\RemotingSinks\InvokeOnSTASink\InvokeOnSTAServerChannelSink.cs" />
-    <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\PrivateEventHandlersClientChannelSinkProvider.cs" />
-    <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\EventForwarder.cs" />
-    <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\PrivateEventHandlersClientChannelSink.cs" />
     <Compile Include="Src\Debugger\Process-StateControl.cs" />
     <Compile Include="Src\Interop\CorDebug\_COR_IL_MAP.cs" />
     <Compile Include="Src\Interop\CorDebug\_COR_VERSION.cs" />

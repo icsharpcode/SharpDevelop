@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 108, 1591 
+
 namespace Debugger.Interop.MetaData
 {
     using System;
@@ -17,3 +19,5 @@ namespace Debugger.Interop.MetaData
         public uint ulOffset;
     }
 }
+
+#pragma warning restore 108, 1591

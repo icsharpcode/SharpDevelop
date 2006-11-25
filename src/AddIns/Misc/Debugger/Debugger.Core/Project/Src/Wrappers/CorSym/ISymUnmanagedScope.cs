@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 1591
+
 namespace Debugger.Wrappers.CorSym
 {
 	using System;
@@ -43,3 +45,5 @@ namespace Debugger.Wrappers.CorSym
 		}
 	}
 }
+
+#pragma warning restore 1591

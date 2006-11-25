@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 1591
+
 namespace Debugger.Wrappers.CorDebug
 {
 	using System;
@@ -20,3 +22,5 @@ namespace Debugger.Wrappers.CorDebug
 		}
 	}
 }
+
+#pragma warning restore 1591

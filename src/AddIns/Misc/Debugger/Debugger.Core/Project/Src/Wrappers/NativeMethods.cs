@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 1591
+
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -26,3 +28,5 @@ namespace Debugger
 		public static extern int GetRequestedRuntimeVersion(string exeFilename, [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pVersion, Int32 cchBuffer, out Int32 dwLength);
 	}
 }
+
+#pragma warning restore 1591
