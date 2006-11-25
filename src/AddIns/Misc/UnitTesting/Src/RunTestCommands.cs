@@ -61,6 +61,7 @@ namespace ICSharpCode.UnitTesting
 			IMember m = TestableCondition.GetMember(Owner);
 			IClass c = (m != null) ? m.DeclaringType : TestableCondition.GetClass(Owner);
 			IProject project = TestableCondition.GetProject(Owner);
+			string namespaceFilter = TestableCondition.GetNamespace(Owner);
 			
 			if (project != null) {
 				projects.Add(project);
@@ -74,7 +75,7 @@ namespace ICSharpCode.UnitTesting
 					BeforeRun();
 					if (IsRunningTest) {
 						currentProject = projects[0];
-						Run(currentProject, c, m);
+						Run(currentProject, namespaceFilter, c, m);
 					}
 				} catch {
 					runningTestCommand = null;
@@ -132,7 +133,7 @@ namespace ICSharpCode.UnitTesting
 			projects.Remove(currentProject);
 			if (projects.Count > 0) {
 				currentProject = projects[0];
-				Run(currentProject, null, null);
+				Run(currentProject, null, null, null);
 			} else {
 				runningTestCommand = null;
 				UpdateUnitTestsPadToolbar();
@@ -163,11 +164,11 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Runs the tests after building the project under test.
 		/// </summary>
-		void Run(IProject project, IClass fixture, IMember test)
+		void Run(IProject project, string namespaceFilter, IClass fixture, IMember test)
 		{
 			BuildProjectBeforeTestRun build = new BuildProjectBeforeTestRun(project);
 			build.BuildComplete += delegate {
-				OnBuildComplete(build.LastBuildResults, project, fixture, test);
+				OnBuildComplete(build.LastBuildResults, project, namespaceFilter, fixture, test);
 			};
 			build.Run();
 		}
@@ -277,11 +278,11 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Runs the test for the project after a successful build.
 		/// </summary>
-		void OnBuildComplete(BuildResults results, IProject project, IClass fixture, IMember test)
+		void OnBuildComplete(BuildResults results, IProject project, string namespaceFilter, IClass fixture, IMember test)
 		{
 			if (results.ErrorCount == 0 && IsRunningTest) {	
 				UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
-				helper.Initialize(project, fixture, test);
+				helper.Initialize(project, namespaceFilter, fixture, test);
 				helper.Results = Path.GetTempFileName();
 				
 				ResetTestResults(project);

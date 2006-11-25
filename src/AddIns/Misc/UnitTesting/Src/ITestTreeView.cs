@@ -28,5 +28,10 @@ namespace ICSharpCode.UnitTesting
 		/// in the test tree view.
 		/// </summary>
 		IProject SelectedProject {get;}
+		
+		/// <summary>
+		/// Gets the namespace for the selected namespace node.
+		/// </summary>
+		string SelectedNamespace {get;}
 	}
 }

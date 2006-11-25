@@ -44,6 +44,12 @@ namespace UnitTesting.Tests
 		}
 		
 		[Test]
+		public void GetNamespaceFromNullOwner()
+		{
+			Assert.IsNull(TestableCondition.GetNamespace(null));
+		}
+		
+		[Test]
 		public void IsValidFromNullOwner()
 		{
 			TestableCondition testableCondition = new TestableCondition();
@@ -78,6 +84,17 @@ namespace UnitTesting.Tests
 			mockTreeView.SelectedProject = project;
 			
 			Assert.IsTrue(Object.ReferenceEquals(project, TestableCondition.GetProject(mockTreeView)));
+		}
+		
+		[Test]
+		public void GetNamespaceFromTreeView()
+		{
+			MockTestTreeView mockTreeView = new MockTestTreeView();
+			MSBuildBasedProject project = new MockCSharpProject();
+			mockTreeView.SelectedProject = project;
+			mockTreeView.SelectedNamespace = "MyProject.Tests";
+			
+			Assert.AreEqual("MyProject.Tests", TestableCondition.GetNamespace(mockTreeView));
 		}
 		
 		[Test]

@@ -17,6 +17,7 @@ namespace UnitTesting.Tests
 		IMember selectedMethod;
 		IClass selectedClass;
 		IProject selectedProject;
+		string selectedNamespace;
 		
 		public MockTestTreeView()
 		{
@@ -46,6 +47,15 @@ namespace UnitTesting.Tests
 			}
 			set {
 				selectedProject = value;
+			}
+		}
+		
+		public string SelectedNamespace {
+			get {
+				return selectedNamespace;
+			}
+			set {
+				selectedNamespace = value;
 			}
 		}
 	}

@@ -69,6 +69,18 @@ namespace ICSharpCode.UnitTesting
 			return null;
 		}
 		
+		/// <summary>
+		/// Returns the namespace selected if any.
+		/// </summary>
+		public static string GetNamespace(object caller)
+		{
+			ITestTreeView testTreeView = caller as ITestTreeView;
+			if (testTreeView != null) {
+				return testTreeView.SelectedNamespace;
+			}
+			return null;
+		}
+		
 		public bool IsValid(object caller, Condition condition)
 		{
 			IMember m = GetMember(caller);

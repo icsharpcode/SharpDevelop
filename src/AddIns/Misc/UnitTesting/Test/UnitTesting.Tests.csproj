@@ -37,6 +37,14 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit-console">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit-console.exe</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="nunit.core">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit.core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="nunit.framework">
@@ -47,7 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="NamespaceFilterTests.cs" />
     <Compile Include="TestableConditionTests.cs" />
+    <Compile Include="Utils\MockTestCase.cs" />
     <Compile Include="Utils\MockTestTreeView.cs" />
     <Compile Include="Utils\MockMember.cs" />
     <Compile Include="Utils\MockClass.cs" />

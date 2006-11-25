@@ -127,6 +127,17 @@ namespace UnitTesting.Tests
 		}
 		
 		[Test]
+		public void TestNamespaceSpecifiedInInitialize()
+		{
+			helper.Initialize(project, "Project.MyTests");
+			helper.NoLogo = false;
+			helper.ShadowCopy = true;
+			
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /namespaceFilter=\"Project.MyTests\"";
+			Assert.AreEqual(expectedCommandLine, helper.GetArguments());
+		}
+		
+		[Test]
 		public void FullCommandLine()
 		{
 			helper.Initialize(project, null, null);

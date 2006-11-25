@@ -115,6 +115,17 @@ namespace ICSharpCode.UnitTesting
 				}
 			}
 		}
+		
+		/// <summary>
+		/// Gets the full namespace of this tree node. This includes any
+		/// parent namespaces prefixed to the namespace associated
+		/// with this tree node.
+		/// </summary>
+		public string FullNamespace {
+			get {
+				return fullNamespace;
+			}
+		}
 			
 		/// <summary>
 		/// Adds the test class nodes for this namespace when the

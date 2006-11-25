@@ -173,6 +173,24 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
+		/// <summary>
+		/// If a namespace node is selected then the fully qualified namespace 
+		/// for this node is returned (i.e. includes the parent namespace prefixed
+		/// to it). For all other nodes this returns null.
+		/// </summary>
+		public string SelectedNamespace {
+			get {
+				TestNamespaceTreeNode selectedNode = SelectedNode as TestNamespaceTreeNode;
+				if (selectedNode != null) {
+					return selectedNode.FullNamespace;
+				}
+				return null;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the selected test project.
+		/// </summary>
 		public TestProject SelectedTestProject {
 			get {
 				TestTreeNode selectedNode = SelectedNode as TestTreeNode;

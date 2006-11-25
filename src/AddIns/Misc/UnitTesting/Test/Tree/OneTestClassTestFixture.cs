@@ -145,6 +145,27 @@ namespace UnitTesting.Tests.Tree
 		}
 		
 		[Test]
+		public void SelectedNamespaceWhenNoNodeSelected()
+		{
+			treeView.SelectedNode = null;
+			Assert.IsNull(treeView.SelectedNamespace);
+		}
+		
+		[Test]
+		public void SelectedRootNamespaceNode()
+		{
+			treeView.SelectedNode = rootNamespaceNode;
+			Assert.AreEqual("RootNamespace", treeView.SelectedNamespace);
+		}
+		
+		[Test]
+		public void SelectedTestsNamespaceNode()
+		{
+			treeView.SelectedNode = testsNamespaceNode;
+			Assert.AreEqual("RootNamespace.Tests", treeView.SelectedNamespace);
+		}
+		
+		[Test]
 		public void SelectedProject()
 		{
 			treeView.SelectedNode = rootNode;
@@ -182,6 +203,13 @@ namespace UnitTesting.Tests.Tree
 		}
 		
 		[Test]
+		public void RootNamespaceNodeFullNamespace()
+		{
+			TestNamespaceTreeNode node = (TestNamespaceTreeNode)rootNamespaceNode;
+			Assert.AreEqual("RootNamespace", node.FullNamespace);
+		}
+		
+		[Test]
 		public void RootNamespaceNodeIsTestNamespaceNode()
 		{
 			Assert.IsInstanceOfType(typeof(TestNamespaceTreeNode), rootNamespaceNode);
@@ -197,6 +225,13 @@ namespace UnitTesting.Tests.Tree
 		public void TestsNamespaceNodeText()
 		{
 			Assert.AreEqual("Tests", testsNamespaceNode.Text);
+		}
+		
+		[Test]
+		public void TestsNamespaceNodeFullNamespace()
+		{
+			TestNamespaceTreeNode node = (TestNamespaceTreeNode)testsNamespaceNode;
+			Assert.AreEqual("RootNamespace.Tests", node.FullNamespace);
 		}
 		
 		[Test]

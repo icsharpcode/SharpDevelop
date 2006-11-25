@@ -78,12 +78,31 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public string Results;
 		
-		IProject project;
+		/// <summary>
+		/// The namespace that tests need to be a part of if they are to 
+		/// be run.
+		/// </summary>
+		public string NamespaceFilter;
 		
+		IProject project;
+
 		public void Initialize(IProject project, IClass fixture, IMember test)
+		{
+			Initialize(project, null, fixture, test);
+		}
+		
+		public void Initialize(IProject project, string namespaceFilter)
+		{
+			Initialize(project, namespaceFilter, null, null);
+		}
+		
+		public void Initialize(IProject project, string namespaceFilter, IClass fixture, IMember test)
 		{
 			this.project = project;
 			Assemblies.Add(project.OutputAssemblyFullPath);
+			if (namespaceFilter != null) {
+				NamespaceFilter = namespaceFilter;
+			}
 			if (fixture != null) {
 				Fixture = fixture.FullyQualifiedName;
 				if (test != null) {
@@ -135,6 +154,11 @@ namespace ICSharpCode.UnitTesting
 			if (Results != null) {
 				b.Append(" /results=\"");
 				b.Append(Results);
+				b.Append('"');
+			}
+			if (NamespaceFilter != null) {
+				b.Append(" /namespaceFilter=\"");
+				b.Append(NamespaceFilter);
 				b.Append('"');
 			}
 			if (Fixture != null) {
