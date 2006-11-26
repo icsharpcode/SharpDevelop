@@ -10,7 +10,10 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
+
 using SharpDbTools.Data;
+
 using SharpServerTools.Forms;
 
 namespace SharpDbTools.Forms
@@ -35,6 +38,8 @@ namespace SharpDbTools.Forms
 			ToolStripMenuItem saveMetadataMenuItem =
 				new ToolStripMenuItem("Save All");
 			saveMetadataMenuItem.Click += new EventHandler(SaveDbModelInfoClickHandler);
+			
+
 			
 			
 			cMenu.Items.AddRange(new ToolStripMenuItem[] 

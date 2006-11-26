@@ -11,6 +11,8 @@ using System.Data.Common;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
+
 using SharpDbTools.Data;
 using SharpServerTools.Forms;
 
@@ -56,12 +58,15 @@ namespace SharpDbTools.Forms
 				new ToolStripMenuItem("Load Metadata from File");
 			loadMetadataFromFileMenuItem.Click += new EventHandler(LoadMetadataFromFileClickHandler);
 			
+			ToolStripMenuItem openSQLToolMenuItem = new ToolStripMenuItem("Open SQL Tool");	
+			openSQLToolMenuItem.Click += new EventHandler(OpenSQLToolClickHandler);
 			
 			cMenu.Items.AddRange(new ToolStripMenuItem[] 
 			                     {
 			                     	setConnectionStringMenuItem,
 			                     	loadMetadataFromConnectionMenuItem,
-			                     	loadMetadataFromFileMenuItem
+			                     	loadMetadataFromFileMenuItem,
+			                     	openSQLToolMenuItem
 			                     });
 	
 			this.ContextMenuStrip = cMenu;
@@ -168,7 +173,7 @@ namespace SharpDbTools.Forms
 		
 		private void SetConnectionStringOnDbModelInfoClickHandler(object sender, EventArgs e)
 		{
-			string connectionLogicalName = this.Text;
+			string connectionLogicalName = (string)this.Tag;
 			LoggingService.Debug("add connection string clicked for item with name: " + connectionLogicalName);
 			
 			// use the ConnectionStringDefinitionDialog to get a connection string and invariant name
@@ -211,6 +216,12 @@ namespace SharpDbTools.Forms
 			this.ContextMenuStrip.Enabled = false;
 			timer.Start();
 			this.backgroundWorker.RunWorkerAsync(logicalConnectionName);
+		}
+		
+		private void OpenSQLToolClickHandler(object sender, EventArgs e)
+		{
+			SQLToolViewContent sqlToolViewContent = new SQLToolViewContent((string)this.Tag);
+			WorkbenchSingleton.Workbench.ShowView(sqlToolViewContent);
 		}
 		
 		private void TimerClick(object sender, EventArgs eventArgs)

@@ -29,9 +29,16 @@ namespace SharpDbTools.Forms
 		{
 			this.logicalConnectionName = logicalConnectionName;
 			NodeAwareContextMenuStrip cMenu = new NodeAwareContextMenuStrip(this);
+			
 			ToolStripMenuItem invokeDescriberMenuItem = new ToolStripMenuItem("Describe");
 			invokeDescriberMenuItem.Click += new EventHandler(DescribeTableClickHandler);
-			cMenu.Items.Add(invokeDescriberMenuItem);
+			
+
+			
+			cMenu.Items.AddRange(new ToolStripMenuItem[] 
+			                     {
+			                     	invokeDescriberMenuItem
+			                     });
 			this.ContextMenuStrip = cMenu;
 		}
 		
