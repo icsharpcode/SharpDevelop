@@ -16,7 +16,8 @@ using ICSharpCode.Core;
 namespace SharpDbTools.Forms
 {
 	/// <summary>
-	/// Description of SQLEditorQueryTool.
+	/// A generic sql query tool utilising the #D TextEditor and SharpDbTools DbModelInfo framework
+	/// for metadata management
 	/// </summary>
 	public partial class SQLTool
 	{
