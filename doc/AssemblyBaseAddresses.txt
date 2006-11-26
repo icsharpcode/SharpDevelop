@@ -64,5 +64,6 @@ CodeAnalysis:			0x8000000 - 0x8021000
 IconEditor:			0x8080000 - 0x80a1000
 IconEditor.AddIn:		0x8100000 - 0x810c000
 SharpDbTools:			0x8180000 - 0x819e000
+ICSharpCode.SD.Widgets:		0x8240000 - 0x827c000
 
-Next free address:		0x8240000
+Next free address:		0x08300000
