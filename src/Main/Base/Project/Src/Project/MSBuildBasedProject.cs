@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		protected virtual void Create(ProjectCreateInformation information)
 		{
-			InitializeMSBuildProject();
+			InitializeMSBuildProject(project);
 			
 			Name = information.ProjectName;
 			FileName = information.OutputProjectFileName;
@@ -788,7 +788,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Loading
 		protected bool isLoading;
 		
-		void InitializeMSBuildProject()
+		internal static void InitializeMSBuildProject(MSBuild.Project project)
 		{
 			project.GlobalProperties.SetProperty("BuildingInsideVisualStudio", "true");
 			foreach (KeyValuePair<string, string> pair in MSBuildEngine.MSBuildProperties) {
@@ -802,7 +802,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			try {
 				this.FileName = fileName;
 				
-				InitializeMSBuildProject();
+				InitializeMSBuildProject(project);
 				
 				try {
 					project.Load(fileName);

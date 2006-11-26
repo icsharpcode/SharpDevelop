@@ -119,11 +119,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (tempProject != null && tempProject != baseProject) {
 				tempProject.ParentEngine.UnloadAllProjects();
 			}
-			MSBuild.Engine engine = CreateEngine();
-			tempProject = engine.CreateNewProject();
-			tempProject.LoadXml(baseProject.Xml);
-			tempProject.SetProperty("Configuration", configuration);
-			tempProject.SetProperty("Platform", platform);
+			try {
+				MSBuild.Engine engine = CreateEngine();
+				tempProject = engine.CreateNewProject();
+				MSBuildBasedProject.InitializeMSBuildProject(tempProject);
+				tempProject.LoadXml(baseProject.Xml);
+				tempProject.SetProperty("Configuration", configuration);
+				tempProject.SetProperty("Platform", platform);
+			} catch (Exception ex) {
+				ICSharpCode.Core.MessageService.ShowWarning(ex.ToString());
+				tempProject = baseProject;
+			}
 		}
 		
 		internal static PropertyStorageLocations GetLocationFromCondition(string condition)

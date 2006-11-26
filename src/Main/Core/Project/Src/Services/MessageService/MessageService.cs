@@ -81,20 +81,17 @@ namespace ICSharpCode.Core
 			}
 			
 			if (MessageService.MainForm == null) {
-				// let's try this; don't know if it's threadsafe?  I expect
-				// that MainForm.InvokeRequired can be assumed to be false
-				// if MainForm doesn't exist yet...
-				MessageBox.Show(StringParser.Parse(msg), StringParser.Parse("SharpDevelop: ${res:Global.ErrorText}"), MessageBoxButtons.OK, MessageBoxIcon.Error);			
+				MessageBox.Show(StringParser.Parse(msg), StringParser.Parse("SharpDevelop: ${res:Global.ErrorText}"), MessageBoxButtons.OK, MessageBoxIcon.Error);
 			} else {
-			
-			MethodInvoker showError = delegate {
-				MessageBox.Show(MessageService.MainForm, StringParser.Parse(msg), StringParser.Parse("${res:Global.ErrorText}"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-			};
-			if (MessageService.MainForm.InvokeRequired) {
-				MessageService.MainForm.BeginInvoke(showError);;
-			} else {
-				showError();
-			}
+				
+				MethodInvoker showError = delegate {
+					MessageBox.Show(MessageService.MainForm, StringParser.Parse(msg), StringParser.Parse("${res:Global.ErrorText}"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+				};
+				if (MessageService.MainForm.InvokeRequired) {
+					MessageService.MainForm.BeginInvoke(showError);
+				} else {
+					showError();
+				}
 			}
 		}
 		
@@ -102,13 +99,25 @@ namespace ICSharpCode.Core
 		{
 			message = StringParser.Parse(message);
 			LoggingService.Warn(message);
-			MessageBox.Show(MessageService.MainForm,
-			                message,
-			                StringParser.Parse("${res:Global.WarningText}"),
-			                MessageBoxButtons.OK,
-			                MessageBoxIcon.Warning,
-			                MessageBoxDefaultButton.Button1,
-			                GetOptions(message, message));
+			
+			string caption = StringParser.Parse("${res:Global.WarningText}");
+			if (MessageService.MainForm == null) {
+				MessageBox.Show(message, caption,
+				                MessageBoxButtons.OK, MessageBoxIcon.Warning,
+				                MessageBoxDefaultButton.Button1, GetOptions(message, caption));
+			} else {
+				MethodInvoker showWarning = delegate {
+					MessageBox.Show(MessageService.MainForm,
+					                message, caption,
+					                MessageBoxButtons.OK, MessageBoxIcon.Warning,
+					                MessageBoxDefaultButton.Button1, GetOptions(message, caption));
+				};
+				if (MessageService.MainForm.InvokeRequired) {
+					MessageService.MainForm.BeginInvoke(showWarning);
+				} else {
+					showWarning();
+				}
+			}
 		}
 		
 		public static void ShowWarningFormatted(string formatstring, params string[] formatitems)
