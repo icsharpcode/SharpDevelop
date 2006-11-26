@@ -2,7 +2,7 @@
 <Template author="Justin Dearing" version="1.0">
 	<Config
 		name		= "${res:Templates.File.ConfigurationSection.Name}"
-		icon		= "C#.File.Form"
+		icon		= "C#.File.NewClass"
 		category	= "C#"
 		defaultname = "Class${Number}.cs"
 		language	= "C#"/>
