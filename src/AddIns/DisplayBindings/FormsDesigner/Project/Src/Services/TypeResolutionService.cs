@@ -106,23 +106,35 @@ namespace ICSharpCode.FormsDesigner.Services
 			this.formSourceFileName = formSourceFileName;
 		}
 		
+		static readonly Dictionary<IProjectContent, object> projectContentsCurrentlyLoadingAssembly = new Dictionary<IProjectContent, object>();
+		
 		/// <summary>
 		/// Loads the assembly represented by the project content. Returns null on failure.
 		/// </summary>
 		public static Assembly LoadAssembly(IProjectContent pc)
 		{
-			// load dependencies of current assembly
-			foreach (IProjectContent rpc in pc.ReferencedContents) {
-				if (rpc is ParseProjectContent) {
-					LoadAssembly(rpc);
-				} else if (rpc is ReflectionProjectContent) {
-					ReflectionProjectContent rrpc = (ReflectionProjectContent)rpc;
-					if (rrpc.AssemblyFullName != typeof(object).FullName
-					    && !FileUtility.IsBaseDirectory(GacInterop.GacRootPath, rrpc.AssemblyLocation))
-					{
+			// prevent StackOverflow when project contents have cyclic dependencies
+			// Very popular example of cyclic dependency: System <-> System.Xml (yes, really!)
+			if (projectContentsCurrentlyLoadingAssembly.ContainsKey(pc))
+				return null;
+			projectContentsCurrentlyLoadingAssembly.Add(pc, null);
+			
+			try {
+				// load dependencies of current assembly
+				foreach (IProjectContent rpc in pc.ReferencedContents) {
+					if (rpc is ParseProjectContent) {
 						LoadAssembly(rpc);
+					} else if (rpc is ReflectionProjectContent) {
+						ReflectionProjectContent rrpc = (ReflectionProjectContent)rpc;
+						if (rrpc.AssemblyFullName != typeof(object).FullName
+						    && !FileUtility.IsBaseDirectory(GacInterop.GacRootPath, rrpc.AssemblyLocation))
+						{
+							LoadAssembly(rpc);
+						}
 					}
 				}
+			} finally {
+				projectContentsCurrentlyLoadingAssembly.Remove(pc);
 			}
 			
 			if (pc.Project != null) {

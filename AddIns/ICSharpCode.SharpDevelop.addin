@@ -2207,13 +2207,13 @@
 				<Condition name = "ProjectActive" activeproject="C#"/>
 				<Condition name = "ProjectActive" activeproject="VBNet"/>
 			</Or>
-			<Condition name = "CompareProjectProperty" property = "TargetFrameworkVersion" equals = "v1.0">
+			<Condition name = "CompareProjectProperty" property = "SharpDevelopTargetFrameworkVersion" equals = "v1.0">
 				<ProjectContentRegistry id="Net10" class="ICSharpCode.SharpDevelop.Net10ProjectContentRegistry"/>
 			</Condition>
-			<Condition name = "CompareProjectProperty" property = "TargetFrameworkVersion" equals = "v1.1">
+			<Condition name = "CompareProjectProperty" property = "SharpDevelopTargetFrameworkVersion" equals = "v1.1">
 				<ProjectContentRegistry id="Net11" class="ICSharpCode.SharpDevelop.Net11ProjectContentRegistry"/>
 			</Condition>
-			<Condition name = "CompareProjectProperty" property = "TargetFrameworkVersion" equals = "CF 2.0">
+			<Condition name = "CompareProjectProperty" property = "SharpDevelopTargetFrameworkVersion" equals = "CF 2.0">
 				<ProjectContentRegistry id="NetCF20" class="ICSharpCode.SharpDevelop.NetCF20ProjectContentRegistry"/>
 			</Condition>
 		</ComplexCondition>

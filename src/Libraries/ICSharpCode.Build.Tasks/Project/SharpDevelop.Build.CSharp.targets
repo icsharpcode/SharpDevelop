@@ -1,6 +1,14 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<!-- This file can be used to compile C# applications against other .NET Framework versions -->
 	
+	<PropertyGroup>
+		<!--
+			Save original target framework version because we'll need to change it
+			to work around a problem in Microsoft's C# targets
+ 		-->
+		<SharpDevelopTargetFrameworkVersion>$(TargetFrameworkVersion)</SharpDevelopTargetFrameworkVersion>
+	</PropertyGroup>
+	
 	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v1.0' ">
 		<CscToolPath>$(SystemRoot)\Microsoft.NET\Framework\v1.0.3705</CscToolPath>
 		<SharpDevelopUse1xCompiler>true</SharpDevelopUse1xCompiler>
