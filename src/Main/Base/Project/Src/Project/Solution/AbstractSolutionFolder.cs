@@ -29,6 +29,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// All members lock on this object, but if you manipulate underlying structures
 		/// (such as the MSBuild project for MSBuildBasedProjects) directly, you will have to lock on this object.
 		/// </summary>
+		[Browsable(false)]
 		public object SyncRoot {
 			get { return syncRoot; }
 		}

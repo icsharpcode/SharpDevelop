@@ -259,6 +259,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the list of available file item types. This member is thread-safe.
 		/// </summary>
+		[Browsable(false)]
 		public virtual ICollection<ItemType> AvailableFileItemTypes {
 			get {
 				return ItemType.DefaultFileItems;

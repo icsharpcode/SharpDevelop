@@ -88,11 +88,11 @@ namespace ICSharpCode.Core
 							case "Not":
 								condition = NegatedCondition.Read(reader);
 								goto exit;
-							case "Condition":
-								condition = Condition.Read(reader);
-								goto exit;
+							default:
+								throw new AddInLoadException("Invalid element name '" + reader.LocalName
+								                             + "', the first entry in a ComplexCondition " +
+								                             "must be <And>, <Or> or <Not>");
 						}
-						break;
 				}
 			}
 		exit:
@@ -127,6 +127,10 @@ namespace ICSharpCode.Core
 							case "Condition":
 								conditions.Add(Condition.Read(reader));
 								break;
+							default:
+								throw new AddInLoadException("Invalid element name '" + reader.LocalName
+								                             + "', entries in a <" + endElement + "> " +
+								                             "must be <And>, <Or>, <Not> or <Condition>");
 						}
 						break;
 				}

@@ -91,6 +91,9 @@ namespace ICSharpCode.FormsDesigner
 			this.generator = generator;
 			p.BackColor    = Color.White;
 			p.RightToLeft = RightToLeft.No;
+			// Make sure auto-scaling is based on the correct font.
+			// This is required on Vista, I don't know why it works correctly in XP
+			p.Font = Control.DefaultFont;
 			
 			this.viewContent             = viewContent;
 			this.textAreaControlProvider = viewContent as ITextEditorControlProvider;
