@@ -7,11 +7,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
+
 using Hornung.ResourceToolkit.Gui;
 using Hornung.ResourceToolkit.Refactoring;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
+using SearchAndReplace;
 
 namespace Hornung.ResourceToolkit.Commands
 {
@@ -22,8 +25,12 @@ namespace Hornung.ResourceToolkit.Commands
 	{
 		public override void Run()
 		{
-			FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:Hornung.ResourceToolkit.ReferencesToMissingKeys}"),
-			                                                  ResourceRefactoringService.FindReferencesToMissingKeys());
+			// Allow the menu to close
+			Application.DoEvents();
+			using(AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:Hornung.ResourceToolkit.FindMissingResourceKeys}")) {
+				FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:Hornung.ResourceToolkit.ReferencesToMissingKeys}"),
+				                                                  ResourceRefactoringService.FindReferencesToMissingKeys(monitor));
+			}
 		}
 	}
 	
@@ -34,7 +41,13 @@ namespace Hornung.ResourceToolkit.Commands
 	{
 		public override void Run()
 		{
-			ICollection<ResourceItem> unusedKeys = ResourceRefactoringService.FindUnusedKeys();
+			ICollection<ResourceItem> unusedKeys;
+			
+			// Allow the menu to close
+			Application.DoEvents();
+			using(AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:Hornung.ResourceToolkit.FindUnusedResourceKeys}")) {
+				unusedKeys = ResourceRefactoringService.FindUnusedKeys(monitor);
+			}
 			
 			if (unusedKeys == null) {
 				return;

@@ -19,6 +19,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor.Document;
+using SearchAndReplace;
 
 namespace Hornung.ResourceToolkit.Refactoring
 {
@@ -33,10 +34,11 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// </summary>
 		/// <param name="resourceFileName">The name of the resource file that contains the resource key to find.</param>
 		/// <param name="key">The resource key to find.</param>
+		/// <param name="monitor">An object implementing <see cref="IProgressMonitor"/> to report the progress of the operation. Can be <c>null</c>.</param>
 		/// <returns>A list of references to this resource.</returns>
-		public static List<Reference> FindReferences(string resourceFileName, string key)
+		public static List<Reference> FindReferences(string resourceFileName, string key, IProgressMonitor monitor)
 		{
-			return FindReferences(new SpecificResourceReferenceFinder(resourceFileName, key));
+			return FindReferences(new SpecificResourceReferenceFinder(resourceFileName, key), monitor);
 		}
 		
 		/// <summary>
@@ -44,15 +46,18 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// <see cref="IResourceReferenceFinder"/> object.
 		/// </summary>
 		/// <param name="finder">The <see cref="IResourceReferenceFinder"/> to use to find resource references.</param>
+		/// <param name="monitor">An object implementing <see cref="IProgressMonitor"/> to report the progress of the operation. Can be <c>null</c>.</param>
 		/// <returns>A list of references to resources.</returns>
-		public static List<Reference> FindReferences(IResourceReferenceFinder finder)
+		public static List<Reference> FindReferences(IResourceReferenceFinder finder, IProgressMonitor monitor)
 		{
 			if (finder == null) {
 				throw new ArgumentNullException("finder");
 			}
 			
 			if (ParserService.LoadSolutionProjectsThreadRunning) {
+				if (monitor != null) monitor.ShowingDialog = true;
 				MessageService.ShowMessage("${res:SharpDevelop.Refactoring.LoadSolutionProjectsThreadRunning}");
+				if (monitor != null) monitor.ShowingDialog = false;
 				return null;
 			}
 			
@@ -64,7 +69,17 @@ namespace Hornung.ResourceToolkit.Refactoring
 				
 				NRefactoryAstCacheService.EnableCache();
 				
-				foreach (string fileName in GetPossibleFiles()) {
+				ICollection<string> files = GetPossibleFiles();
+				
+				if (monitor != null) {
+					monitor.BeginTask("${res:SharpDevelop.Refactoring.FindingReferences}", files.Count, true);
+				}
+				
+				foreach (string fileName in files) {
+					
+					if (monitor != null && monitor.IsCancelled) {
+						return null;
+					}
 					
 					IDocument doc = null;
 					try {
@@ -75,11 +90,13 @@ namespace Hornung.ResourceToolkit.Refactoring
 					} catch (FileNotFoundException) {
 					}
 					if (doc == null) {
+						if (monitor != null) ++monitor.WorkDone;
 						continue;
 					}
 					
 					string fileContent = doc.TextContent;
 					if (String.IsNullOrEmpty(fileContent)) {
+						if (monitor != null) ++monitor.WorkDone;
 						continue;
 					}
 					
@@ -104,7 +121,9 @@ namespace Hornung.ResourceToolkit.Refactoring
 								}
 								
 								if (keyPos < pos) {
+									if (monitor != null) monitor.ShowingDialog = true;
 									MessageService.ShowWarning("ResourceToolkit: The key '"+rrr.Key+"' could not be located at the resolved position in the file '"+fileName+"'.");
+									if (monitor != null) monitor.ShowingDialog = false;
 								} else {
 									references.Add(new Reference(fileName, keyPos, keyString.Length, keyString, rrr));
 								}
@@ -114,12 +133,14 @@ namespace Hornung.ResourceToolkit.Refactoring
 						
 					}
 					
+					if (monitor != null) ++monitor.WorkDone;
 				}
 				
 				LoggingService.Info("ResourceToolkit: FindReferences finished in "+(DateTime.UtcNow - startTime).TotalSeconds.ToString(System.Globalization.CultureInfo.CurrentCulture)+"s");
 				
 			} finally {
 				NRefactoryAstCacheService.DisableCache();
+				if (monitor != null) monitor.Done();
 			}
 			
 			return references;
@@ -128,19 +149,21 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// <summary>
 		/// Finds all references to resources (except the definitions).
 		/// </summary>
+		/// <param name="monitor">An object implementing <see cref="IProgressMonitor"/> to report the progress of the operation. Can be <c>null</c>.</param>
 		/// <returns>A list of references to resources.</returns>
-		public static List<Reference> FindAllReferences()
+		public static List<Reference> FindAllReferences(IProgressMonitor monitor)
 		{
-			return FindReferences(new AnyResourceReferenceFinder());
+			return FindReferences(new AnyResourceReferenceFinder(), monitor);
 		}
 		
 		/// <summary>
 		/// Finds all references to missing resource keys.
 		/// </summary>
+		/// <param name="monitor">An object implementing <see cref="IProgressMonitor"/> to report the progress of the operation. Can be <c>null</c>.</param>
 		/// <returns>A list of all references to missing resource keys.</returns>
-		public static List<Reference> FindReferencesToMissingKeys()
+		public static List<Reference> FindReferencesToMissingKeys(IProgressMonitor monitor)
 		{
-			List<Reference> references = FindAllReferences();
+			List<Reference> references = FindAllReferences(monitor);
 			if (references == null) {
 				return null;
 			}
@@ -169,15 +192,19 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// Finds all unused resource keys in all resource files that are referenced
 		/// in code at least once in the whole solution.
 		/// </summary>
+		/// <param name="monitor">An object implementing <see cref="IProgressMonitor"/> to report the progress of the operation. Can be <c>null</c>.</param>
 		/// <returns>A collection of <see cref="ResourceItem"/> classes that represent the unused resource keys.</returns>
-		public static ICollection<ResourceItem> FindUnusedKeys()
+		public static ICollection<ResourceItem> FindUnusedKeys(IProgressMonitor monitor)
 		{
-			List<Reference> references = FindAllReferences();
+			List<Reference> references = FindAllReferences(monitor);
 			if (references == null) {
 				return null;
 			}
 			
-			DateTime startTime = DateTime.UtcNow;
+			if (monitor != null) {
+				monitor.BeginTask(null, 0, false);
+			}
+			
 			List<ResourceItem> unused = new List<ResourceItem>();
 			
 			// Get a list of all referenced resource files.
@@ -195,7 +222,9 @@ namespace Hornung.ResourceToolkit.Refactoring
 						referencedKeys[fileName].Add(rrr.Key);
 					}
 				} else {
+					if (monitor != null) monitor.ShowingDialog = true;
 					MessageService.ShowWarning("Found a resource reference that could not be resolved."+Environment.NewLine+(reference.FileName ?? "<null>")+":"+reference.Offset+Environment.NewLine+"Expression: "+(reference.Expression ?? "<null>"));
+					if (monitor != null) monitor.ShowingDialog = false;
 				}
 			}
 			
@@ -211,7 +240,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 				}
 			}
 			
-			LoggingService.Info("ResourceToolkit: FindUnusedKeys finished in "+(DateTime.UtcNow - startTime).TotalSeconds.ToString(System.Globalization.CultureInfo.CurrentCulture)+"s");
+			if (monitor != null) monitor.Done();
 			
 			return unused.AsReadOnly();
 		}
@@ -220,7 +249,8 @@ namespace Hornung.ResourceToolkit.Refactoring
 		
 		/// <summary>
 		/// Renames all references to a resource including the definition.
-		/// Asks the user for a new name.
+		/// Asks the user for a new name and shows a progress dialog during
+		/// the operation.
 		/// </summary>
 		/// <param name="rrr">The resource to be renamed.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "ICSharpCode.Core.MessageService.ShowInputBox(System.String,System.String,System.String)")]
@@ -228,7 +258,9 @@ namespace Hornung.ResourceToolkit.Refactoring
 		{
 			string newKey = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:Hornung.ResourceToolkit.RenameResourceText}", rrr.Key);
 			if (!String.IsNullOrEmpty(newKey) && !newKey.Equals(rrr.Key)) {
-				Rename(rrr, newKey);
+				using(AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.Rename}")) {
+					Rename(rrr, newKey, monitor);
+				}
 			}
 		}
 		
@@ -237,17 +269,24 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// </summary>
 		/// <param name="rrr">The resource to be renamed.</param>
 		/// <param name="newKey">The new name of the resource key.</param>
-		public static void Rename(ResourceResolveResult rrr, string newKey)
+		/// <param name="monitor">An object implementing <see cref="IProgressMonitor"/> to report the progress of the operation. Can be <c>null</c>.</param>
+		public static void Rename(ResourceResolveResult rrr, string newKey, IProgressMonitor monitor)
 		{
 			// Prevent duplicate key names
 			if (rrr.ResourceFileContent.ContainsKey(newKey)) {
+				if (monitor != null) monitor.ShowingDialog = true;
 				MessageService.ShowWarning("${res:Hornung.ResourceToolkit.EditStringResourceDialog.DuplicateKey}");
+				if (monitor != null) monitor.ShowingDialog = false;
 				return;
 			}
 			
-			List<Reference> references = FindReferences(rrr.FileName, rrr.Key);
+			List<Reference> references = FindReferences(rrr.FileName, rrr.Key, monitor);
 			if (references == null) {
 				return;
+			}
+			
+			if (monitor != null) {
+				monitor.BeginTask(null, 0, false);
 			}
 			
 			// rename references
@@ -258,7 +297,9 @@ namespace Hornung.ResourceToolkit.Refactoring
 			if (rrr.ResourceFileContent.ContainsKey(rrr.Key)) {
 				rrr.ResourceFileContent.RenameKey(rrr.Key, newKey);
 			} else {
+				if (monitor != null) monitor.ShowingDialog = true;
 				MessageService.ShowWarning("${res:Hornung.ResourceToolkit.RenameKeyDefinitionNotFoundWarning}");
+				if (monitor != null) monitor.ShowingDialog = false;
 			}
 			
 			// rename definitions in localized resource files
@@ -267,6 +308,8 @@ namespace Hornung.ResourceToolkit.Refactoring
 					entry.Value.RenameKey(rrr.Key, newKey);
 				}
 			}
+			
+			if (monitor != null) monitor.Done();
 		}
 		
 		// ********************************************************************************************************************************
