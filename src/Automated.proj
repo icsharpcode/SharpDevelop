@@ -1,0 +1,119 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="go">
+	<!-- This file is called by the build server. -->
+	<!-- Expected properties:
+		ArtefactsOutputDir : full path of directory to write the build artefacts to.
+		TestReportsDir     : full path of directory to write CC.net report files to
+	-->
+	
+	<PropertyGroup>
+		<ProjectDir Condition=" '$(ProjectDir)' == '' ">$(MSBuildProjectDirectory)\..</ProjectDir>
+		
+		<SharpDevelopSrc>$(ProjectDir)\src</SharpDevelopSrc>
+		<SharpDevelopBin>$(ProjectDir)\bin</SharpDevelopBin>
+		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
+		<ArtefactPrefix>SharpDevelop_2.1.0.</ArtefactPrefix>
+		<NUnitToolPath>$(MSBuildProjectDirectory)\Tools\NUnit</NUnitToolPath>
+		
+		<!-- we cannot use <MSBuild> to build a solution because -->
+		<!-- A) passing properties to a solution called with <MSBuild> doesn't make the
+			properties available for the projects inside the solution 
+			(but this works using the command line) -->
+		<!-- B) The Wix task assembly is locked if we do not use a separate MSBuild process -->
+		<MSBuildExecutable>&quot;$(MSBuildBinPath)\msbuild.exe&quot;</MSBuildExecutable>
+		<BuildProperties>/p:Configuration=Release</BuildProperties>
+		<BuildProperties>$(BuildProperties) &quot;/p:SharpDevelopBinPath=$(SharpDevelopBin)&quot;</BuildProperties>
+		<BuildProperties>$(BuildProperties) &quot;/p:BooBinPath=$(SharpDevelopSrc)\AddIns\BackendBindings\Boo\RequiredLibraries&quot;</BuildProperties>
+	</PropertyGroup>
+	
+	<Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets"/>
+	
+	<Target Name="go">
+		<Error Text="ArtefactsOutputDir not set" Condition="'$(ArtefactsOutputDir)' == ''"/>
+		<Error Text="TestReportsDir not set" Condition="'$(TestReportsDir)' == ''"/>
+		
+		<Message Text="ArtefactPrefix=$(ArtefactPrefix)" Importance="high"/>
+		<Message Text="ArtefactsOutputDir=$(ArtefactsOutputDir)" Importance="high"/>
+		<Message Text="BuildProperties=$(BuildProperties)" Importance="high"/>
+		
+		<CallTarget Targets="cleanunittests"/>
+		<CallTarget Targets="cleantask"/>
+		<CallTarget Targets="build"/>
+		<CallTarget Targets="createsetup"/>
+		<CallTarget Targets="buildunittests"/>
+		<CallTarget Targets="rununittests"/>
+		<CallTarget Targets="cleanunittests"/>
+		<CallTarget Targets="cleantask"/>
+		<CallTarget Targets="zipsource"/>
+	</Target>
+	
+	<Target Name="build">
+		<MSBuild Projects="$(SharpDevelopSrc)\Tools\Tools.build"
+		         Targets="PrepareRelease"
+		         Properties="Configuration=Release"/>
+		
+		<!-- read content of REVISION into $(BuildNumer) -->
+		<ReadLinesFromFile File="$(ProjectDir)\REVISION">
+			<Output TaskParameter="Lines" ItemName="REVISIONLines"/>
+		</ReadLinesFromFile>
+		<CreateProperty Value="@(REVISIONLines)">
+			<Output TaskParameter="Value" PropertyName="BuildNumber"/>
+		</CreateProperty>
+		<Message Importance="high" Text="BuildNumber=$(BuildNumber)"/>
+		
+		<Copy SourceFiles="$(ProjectDir)\REVISION"
+		      DestinationFolder="$(ArtefactsOutputDir)"/>
+		
+		<Exec WorkingDirectory="$(SharpDevelopSrc)"
+		      Command="$(MSBuildExecutable) SharpDevelop.sln $(BuildProperties)"/>
+	</Target>
+	
+	<Target Name="buildunittests">
+		<Exec WorkingDirectory="$(SharpDevelopSrc)"
+		      Command="$(MSBuildExecutable) SharpDevelop.Tests.sln $(BuildProperties)"/>
+	</Target>
+	
+	<Target Name="rununittests">
+		<CreateItem Include="$(SharpDevelopBin)\UnitTests\*.Tests.dll">
+			<Output TaskParameter="Include" ItemName="UnitTestAssemblies"/>
+		</CreateItem>
+		
+		<!-- the %() portion is important; otherwise a single NUnit-console process is used for all tests -->
+		<NUnit Assemblies="@(UnitTestAssemblies)"
+		       OutputXmlFile="$(TestReportsDir)\%(UnitTestAssemblies.FileName).xml"
+		       WorkingDirectory="$(SharpDevelopBin)\UnitTests"
+		       ToolPath="$(NUnitToolPath)"/>
+	</Target>
+	
+	<Target Name="cleanunittests">
+		<Exec WorkingDirectory="$(SharpDevelopSrc)"
+		      Command="$(MSBuildExecutable) SharpDevelop.Tests.sln /t:Clean $(BuildProperties)"/>
+	</Target>
+	
+	<Target Name="createsetup">
+		<Exec WorkingDirectory="$(SharpDevelopSrc)\Tools\UpdateSetupInfo\bin\"
+		      Command="UpdateSetupInfo.exe"/>
+		
+		<Exec WorkingDirectory="$(SharpDevelopSrc)\Setup"
+		      Command="$(MSBuildExecutable) SharpDevelop.Setup.sln $(BuildProperties)"/>
+		
+		<Move SourceFiles="$(SharpDevelopSrc)\setup\bin\SharpDevelop.msi"
+		      DestinationFiles="$(ArtefactsOutputDir)\$(ArtefactPrefix)$(BuildNumber).msi"/>
+	</Target>
+	
+	<Target Name="zipsource">
+		<CreateItem Include="$(ProjectDir)\**"
+		            Exclude="$(ProjectDir)\**\.svn\**;$(ProjectDir)\**\obj\**">
+			<Output TaskParameter="Include" ItemName="FileToZip"/>
+		</CreateItem>
+		<Message Importance="high" Text="Creating ZIP file $(ArtefactPrefix)$(BuildNumber)_Source.zip"/>
+		<Zip Files="@(FileToZip)"
+		     ZipLevel="6"
+		     WorkingDirectory="$(ProjectDir)"
+		     ZipFileName="$(ArtefactsOutputDir)\$(ArtefactPrefix)$(BuildNumber)_Source.zip"/>
+	</Target>
+	
+	<Target Name="cleantask">
+		<Exec WorkingDirectory="$(SharpDevelopSrc)"
+		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
+	</Target>
+</Project>
