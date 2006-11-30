@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
-<!-- Syntaxdefinition for VB.NET Beta Cycle, v0.1 Rev 1 by Christian Holm -->
-<!-- compliant with SharpDevelop v0.65ST2 -->
+<!-- Syntaxdefinition for VB.NET, v0.1 Rev 1 by Christian Holm -->
 <!-- Updated 2005 by Daniel Grunwald for VB.NET 2.0 -->
 
 <SyntaxDefinition name = "VBNET" extensions = ".vb">
@@ -31,7 +30,12 @@
 		    </Span>
 -->
 			<Span name = "PREPROCESSORDIRECTIVE" rule = "PreprocessorSet" bold = "false" italic = "false" color = "Maroon" stopateol = "true">
-				<Begin>#</Begin>
+				<Begin startofline="true">#</Begin>
+			</Span>
+			
+			<Span name = "DATELITERAL" bold = "false" italic = "false" color = "Blue" stopateol = "true">
+				<Begin startofline="false">#</Begin>
+				<End>#</End>
 			</Span>
 			
 			<Span name = "LINECOMMENT" bold = "false" italic = "false" color = "Green" stopateol = "true">

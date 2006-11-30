@@ -10,21 +10,22 @@ using System.Xml;
 
 namespace ICSharpCode.TextEditor.Document
 {
-	public class Span
+	public sealed class Span
 	{
 		bool        stopEOL;
 		HighlightColor color;
-		HighlightColor beginColor = null;
-		HighlightColor endColor = null;
-		char[]      begin = null;
-		char[]      end   = null;
-		string      name  = null;
-		string      rule  = null;
-		HighlightRuleSet ruleSet = null;
-		bool        noEscapeSequences = false;
-		bool		ignoreCase = false;
-		bool        isBeginSingleWord = false;
-		bool        isEndSingleWord = false;
+		HighlightColor beginColor;
+		HighlightColor endColor;
+		char[]      begin;
+		char[]      end;
+		string      name;
+		string      rule;
+		HighlightRuleSet ruleSet;
+		bool noEscapeSequences;
+		bool ignoreCase;
+		bool isBeginSingleWord;
+		bool? isBeginStartOfLine;
+		bool isEndSingleWord;
 		
 		internal HighlightRuleSet RuleSet {
 			get {
@@ -47,6 +48,12 @@ namespace ICSharpCode.TextEditor.Document
 		public bool StopEOL {
 			get {
 				return stopEOL;
+			}
+		}
+		
+		public bool? IsBeginStartOfLine {
+			get {
+				return isBeginStartOfLine;
 			}
 		}
 		
@@ -137,7 +144,9 @@ namespace ICSharpCode.TextEditor.Document
 			if (span["Begin"].HasAttribute("singleword")) {
 				this.isBeginSingleWord = Boolean.Parse(span["Begin"].GetAttribute("singleword"));
 			}
-			
+			if (span["Begin"].HasAttribute("startofline")) {
+				this.isBeginStartOfLine = Boolean.Parse(span["Begin"].GetAttribute("startofline"));
+			}
 			
 			if (span["End"] != null) {
 				end  = span["End"].InnerText.ToCharArray();

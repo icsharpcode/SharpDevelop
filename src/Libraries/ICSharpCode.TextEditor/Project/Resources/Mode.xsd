@@ -95,6 +95,7 @@
 		<xsd:simpleContent>
             <xsd:extension base="xsd:string">
 		        <xsd:attribute name="singleword" type="xsd:boolean" />
+		        <xsd:attribute name="startofline" type="xsd:boolean" />
             	<!-- The default rendering style for the Begin symbol. If not specified
 					 the defaul rendering style for the span will be used. -->
 		        <xsd:attribute name="bold" type="xsd:boolean" />

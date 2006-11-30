@@ -466,6 +466,7 @@
     <Compile Include="Src\TextEditor\Gui\Editor\InsightWindow\MethodInsightDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ErrorDrawer.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ITextAreaControlProvider.cs" />
+    <Compile Include="Src\TextEditor\Gui\Editor\NRefactoryCodeCompletionBinding.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ParserFoldingStrategy.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\QuickClassBrowserPanel.cs">
       <SubType>UserControl</SubType>

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
@@ -22,9 +23,10 @@ using VBTokens = ICSharpCode.NRefactory.Parser.VB.Tokens;
 
 namespace VBNetBinding
 {
-	public class VBNetCompletionBinding : DefaultCodeCompletionBinding
+	public class VBNetCompletionBinding : NRefactoryCodeCompletionBinding
 	{
 		public VBNetCompletionBinding()
+			: base(SupportedLanguage.VBNet)
 		{
 			// Don't use indexer insight for '[', VB uses '(' for indexer access
 			this.EnableIndexerInsight = false;
@@ -32,137 +34,16 @@ namespace VBNetBinding
 		
 		public override bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
 		{
-			VBNetBinding.Parser.ExpressionFinder ef = new VBNetBinding.Parser.ExpressionFinder();
-			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
-			
-			if(ch == '(' && EnableMethodInsight && CodeCompletionOptions.InsightEnabled)
-			{
+			if(ch == '(' && EnableMethodInsight && CodeCompletionOptions.InsightEnabled) {
 				editor.ShowInsightWindow(new MethodInsightDataProvider());
 				return true;
-			}
-			else if(ch == ',' && CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled)
-			{
-				// Show MethodInsightWindow or IndexerInsightWindow
-				string documentText = editor.Text;
-				int oldCursor = cursor;
-				string textWithoutComments = ef.FilterComments(documentText, ref cursor);
-				int commentLength = oldCursor - cursor;
-				if (textWithoutComments != null) {
-					Stack<ResolveResult> parameters = new Stack<ResolveResult>();
-					char c = '\0';
-					while (cursor > 0) {
-						while (--cursor > 0 &&
-						       ((c = textWithoutComments[cursor]) == ',' ||
-						        char.IsWhiteSpace(c)));
-						if (c == '(')
-						{
-							ShowInsight(editor, new MethodInsightDataProvider(cursor + commentLength, true), parameters, ch);
-							return true;
-						}
-						else if (c == '[')
-						{
-							ShowInsight(editor, new IndexerInsightDataProvider(cursor + commentLength, true), parameters, ch);
-							return true;
-						}
-						string expr = ef.FindExpressionInternal(textWithoutComments, cursor);
-						if (expr == null || expr.Length == 0)
-						{
-							break;
-						}
-						parameters.Push(ParserService.Resolve(new ExpressionResult(expr),
-						                                      editor.ActiveTextAreaControl.Caret.Line + 1,
-						                                      editor.ActiveTextAreaControl.Caret.Column + 1,
-						                                      editor.FileName,
-						                                      documentText));
-						cursor = ef.LastExpressionStartPosition;
-					}
-				}
+			} else if(ch == ',' && CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled) {
+				if (InsightRefreshOnComma(editor, ch))
+					return true;
 			} else if (ch == '\n') {
-				TryDeclarationTypeInference(editor, editor.Document.GetLineSegmentForOffset(cursor));
+				TryDeclarationTypeInference(editor, editor.Document.GetLineSegmentForOffset(editor.ActiveTextAreaControl.Caret.Offset));
 			}
 			return base.HandleKeyPress(editor, ch);
-		}
-		
-		void ProvideContextCompletion(SharpDevelopTextAreaControl editor, IReturnType expected, char charTyped)
-		{
-			IClass c = expected.GetUnderlyingClass();
-			if (c == null) return;
-			if (c.ClassType == ClassType.Enum) {
-				CtrlSpaceCompletionDataProvider cdp = new CtrlSpaceCompletionDataProvider();
-				cdp.ForceNewExpression = true;
-				CachedCompletionDataProvider cache = new CachedCompletionDataProvider(cdp);
-				cache.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, charTyped);
-				ICompletionData[] completionData = cache.CompletionData;
-				Array.Sort(completionData);
-				for (int i = 0; i < completionData.Length; i++) {
-					CodeCompletionData ccd = completionData[i] as CodeCompletionData;
-					if (ccd != null && ccd.Class != null) {
-						if (ccd.Class.FullyQualifiedName == expected.FullyQualifiedName) {
-							cache.DefaultIndex = i;
-							break;
-						}
-					}
-				}
-				if (cache.DefaultIndex >= 0) {
-					editor.ShowCompletionWindow(cache, charTyped);
-				}
-			}
-		}
-		
-		void ShowInsight(SharpDevelopTextAreaControl editor, MethodInsightDataProvider dp, Stack<ResolveResult> parameters, char charTyped)
-		{
-			int paramCount = parameters.Count;
-			dp.SetupDataProvider(editor.FileName, editor.ActiveTextAreaControl.TextArea);
-			List<IMethodOrProperty> methods = dp.Methods;
-			if (methods.Count == 0) return;
-			bool overloadIsSure;
-			if (methods.Count == 1) {
-				overloadIsSure = true;
-				dp.DefaultIndex = 0;
-			} else {
-				IReturnType[] parameterTypes = new IReturnType[paramCount + 1];
-				for (int i = 0; i < paramCount; i++) {
-					ResolveResult rr = parameters.Pop();
-					if (rr != null) {
-						parameterTypes[i] = rr.ResolvedType;
-					}
-				}
-				IReturnType[][] tmp;
-				int[] ranking = MemberLookupHelper.RankOverloads(methods, parameterTypes, true, out overloadIsSure, out tmp);
-				bool multipleBest = false;
-				int bestRanking = -1;
-				int best = 0;
-				for (int i = 0; i < ranking.Length; i++) {
-					if (ranking[i] > bestRanking) {
-						bestRanking = ranking[i];
-						best = i;
-						multipleBest = false;
-					} else if (ranking[i] == bestRanking) {
-						multipleBest = true;
-					}
-				}
-				if (multipleBest) overloadIsSure = false;
-				dp.DefaultIndex = best;
-			}
-			editor.ShowInsightWindow(dp);
-			if (overloadIsSure) {
-				IMethodOrProperty method = methods[dp.DefaultIndex];
-				if (paramCount < method.Parameters.Count) {
-					IParameter param = method.Parameters[paramCount];
-					ProvideContextCompletion(editor, param.ReturnType, charTyped);
-				}
-			}
-		}
-		
-		IMember GetCurrentMember(SharpDevelopTextAreaControl editor)
-		{
-			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
-			NRefactoryResolver r = new NRefactoryResolver(ParserService.CurrentProjectContent, LanguageProperties.VBNet);
-			if (r.Initialize(editor.FileName, caret.Line + 1, caret.Column + 1)) {
-				return r.CallingMember;
-			} else {
-				return null;
-			}
 		}
 		
 		public override bool HandleKeyword(SharpDevelopTextAreaControl editor, string word)

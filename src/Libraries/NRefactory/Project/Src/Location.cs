@@ -25,21 +25,23 @@ namespace ICSharpCode.NRefactory
 		int x, y;
 		
 		public int X {
-			get {
-				return x;
-			}
-			set {
-				x = value;
-			}
+			get { return x; }
+			set { x = value; }
 		}
 		
 		public int Y {
-			get {
-				return y;
-			}
-			set {
-				y = value;
-			}
+			get { return y; }
+			set { y = value; }
+		}
+		
+		public int Line {
+			get { return y; }
+			set { y = value; }
+		}
+		
+		public int Column {
+			get { return x; }
+			set { x = value; }
 		}
 		
 		public bool IsEmpty {
