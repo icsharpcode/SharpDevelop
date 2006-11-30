@@ -25,6 +25,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string combinePath;
 		string projectBasePath;
 		string outputProjectFileName;
+		string rootNamespace;
 		Solution solution;
 		
 		internal List<string> CreatedProjects = new List<string>();
@@ -49,10 +50,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public string RootNamespace {
 			get {
-				return projectName;
+				return rootNamespace;
 			}
 			set {
-				projectName = value;
+				rootNamespace = value;
 			}
 		}
 		
