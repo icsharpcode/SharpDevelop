@@ -446,7 +446,7 @@ namespace ICSharpCode.SharpDevelop
 						}
 						int hash = text.GetHashCode();
 						if (!lastUpdateHash.ContainsKey(fileName) || lastUpdateHash[fileName] != hash) {
-							parseInformation = ParseFile(fileName, text, !viewContent.IsUntitled, true);
+							parseInformation = ParseFile(fileName, text, !viewContent.IsUntitled);
 							lastUpdateHash[fileName] = hash;
 							updated = true;
 						}
@@ -465,7 +465,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			string text = ((IEditable)viewContent).Text;
 			ParseInformation parseInformation = ParseFile(viewContent.IsUntitled ? viewContent.UntitledName : viewContent.FileName,
-			                                              text, !viewContent.IsUntitled, true);
+			                                              text, !viewContent.IsUntitled);
 			if (parseInformation != null && viewContent is IParseInformationListener) {
 				((IParseInformationListener)viewContent).ParseInformationUpdated(parseInformation);
 			}
@@ -493,7 +493,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static ParseInformation ParseFile(string fileName, string fileContent)
 		{
-			return ParseFile(fileName, fileContent, true, true);
+			return ParseFile(fileName, fileContent, true);
 		}
 		
 		static IProjectContent GetProjectContent(string fileName)
@@ -560,12 +560,12 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public static ParseInformation ParseFile(string fileName, string fileContent, bool updateCommentTags, bool fireUpdate)
+		public static ParseInformation ParseFile(string fileName, string fileContent, bool updateCommentTags)
 		{
-			return ParseFile(null, fileName, fileContent, updateCommentTags, fireUpdate);
+			return ParseFile(null, fileName, fileContent, updateCommentTags);
 		}
 		
-		public static ParseInformation ParseFile(IProjectContent fileProjectContent, string fileName, string fileContent, bool updateCommentTags, bool fireUpdate)
+		public static ParseInformation ParseFile(IProjectContent fileProjectContent, string fileName, string fileContent, bool updateCommentTags)
 		{
 			if (fileName == null) throw new ArgumentNullException("fileName");
 			
@@ -603,14 +603,14 @@ namespace ICSharpCode.SharpDevelop
 				if (updateCommentTags) {
 					TaskService.UpdateCommentTags(fileName, parserOutput.TagComments);
 				}
-				return UpdateParseInformation(parserOutput, fileName, updateCommentTags, fireUpdate);
+				return UpdateParseInformation(parserOutput, fileName, updateCommentTags);
 			} catch (Exception e) {
 				MessageService.ShowError(e);
 			}
 			return null;
 		}
 		
-		public static ParseInformation UpdateParseInformation(ICompilationUnit parserOutput, string fileName, bool updateCommentTags, bool fireEvent)
+		public static ParseInformation UpdateParseInformation(ICompilationUnit parserOutput, string fileName, bool updateCommentTags)
 		{
 			if (!parsings.ContainsKey(fileName)) {
 				parsings[fileName] = new ParseInformation();
@@ -618,12 +618,10 @@ namespace ICSharpCode.SharpDevelop
 			
 			ParseInformation parseInformation = parsings[fileName];
 			
-			if (fireEvent) {
-				try {
-					OnParseInformationUpdated(new ParseInformationEventArgs(fileName, parseInformation, parserOutput));
-				} catch (Exception e) {
-					MessageService.ShowError(e);
-				}
+			try {
+				OnParseInformationUpdated(new ParseInformationEventArgs(fileName, parseInformation, parserOutput));
+			} catch (Exception e) {
+				MessageService.ShowError(e);
 			}
 			
 			if (parserOutput.ErrorsDuringCompile) {

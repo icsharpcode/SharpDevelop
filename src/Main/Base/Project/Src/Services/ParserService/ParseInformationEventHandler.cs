@@ -24,11 +24,20 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		/// <summary>
+		/// Gets the parse information. The new compilation unit has not yet been added to the parse information
+		/// (but will be immediately after the event was executed, be careful when invoking back to the main thread),
+		/// you can use this property to get the previous compilation unit.
+		/// </summary>
 		public ParseInformation ParseInformation {
 			get {
 				return parseInformation;
 			}
 		}
+		
+		/// <summary>
+		/// The new compilation unit.
+		/// </summary>
 		public ICompilationUnit CompilationUnit {
 			get {
 				return compilationUnit;

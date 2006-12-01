@@ -210,10 +210,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				Project.Save();
 			} else if (MessageService.AskQuestion(GetQuestionText("${res:ProjectComponent.ContextMenu.Delete.Question}"))) {
 				FileService.RemoveFile(FileName, false);
-				if (IsLink) {
-					// we need to manually remove the link
-					Commands.ExcludeFileFromProject.ExcludeFileNode(this);
-				}
 				Project.Save();
 			}
 		}

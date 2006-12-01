@@ -304,7 +304,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			// get new initialize components
 			string content = viewContent.Document.TextContent;
-			ParseInformation info = ParserService.ParseFile(viewContent.TextEditorControl.FileName, content, false, true);
+			ParseInformation info = ParserService.ParseFile(viewContent.TextEditorControl.FileName, content, false);
 			ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
 			foreach (IClass c in cu.Classes) {
 				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
@@ -329,7 +329,7 @@ namespace ICSharpCode.FormsDesigner
 								document = tecp.TextEditorControl.Document;
 								designerContent = document.TextContent;
 							}
-							ParserService.ParseFile(designerFile, designerContent, false, true);
+							ParserService.ParseFile(designerFile, designerContent, false);
 							initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
 						}
 						using (StringReader r = new StringReader(designerContent)) {

@@ -199,6 +199,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			
+			// It is possible that a class or member does not have a name (when parsing incomplete class definitions)
+			// - in that case, we cannot find references.
+			if (searchedText.Length == 0) {
+				return;
+			}
+			
 			int pos = -1;
 			int exprPos;
 			IExpressionFinder expressionFinder = null;

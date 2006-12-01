@@ -466,7 +466,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
 				if (parseInfo == null) {
 					parseInfo = ParserService.ParseFile(fileName,
-					                                    textAreaControl.Document.TextContent, false, false);
+					                                    textAreaControl.Document.TextContent, false);
 				}
 				textAreaControl.Document.FoldingManager.UpdateFoldings(fileName, parseInfo);
 				UpdateClassMemberBookmarks(parseInfo);

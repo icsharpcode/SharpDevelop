@@ -106,14 +106,15 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		}
 		
 		List<ICompilationUnit[]> pending = new List<ICompilationUnit[]> ();
+		
+		// running on main thread, invoked by the parser thread when a compilation unit changed
 		void UpdateThread()
 		{
 			lock (pending) {
 				foreach (ICompilationUnit[] units in pending) {
+					ICompilationUnit nonNullUnit = units[1] ?? units[0];
 					foreach (TreeNode node in classBrowserTreeView.Nodes) {
 						AbstractProjectNode prjNode = node as AbstractProjectNode;
-						ICompilationUnit nonNullUnit = units[1] ?? units[0];
-						IProject project = (IProject)nonNullUnit.ProjectContent.Project;
 						if (prjNode != null && prjNode.Project.IsFileInProject(nonNullUnit.FileName)) {
 							prjNode.UpdateParseInformation(units[0], units[1]);
 						}
@@ -126,7 +127,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		public void ParserServiceParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
 			lock (pending) {
-				pending.Add(new ICompilationUnit[] { e.ParseInformation.BestCompilationUnit as ICompilationUnit, e.CompilationUnit});
+				pending.Add(new ICompilationUnit[] { e.ParseInformation.MostRecentCompilationUnit as ICompilationUnit, e.CompilationUnit});
 			}
 			WorkbenchSingleton.SafeThreadAsyncCall(UpdateThread);
 		}
