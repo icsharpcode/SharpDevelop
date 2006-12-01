@@ -16,6 +16,8 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.Project.Commands;
+using MSBuild = Microsoft.Build.BuildEngine;
+using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
@@ -24,10 +26,26 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 	/// </summary>
 	public abstract class LanguageConverter : AbstractMenuCommand
 	{
-		protected abstract IProject CreateProject(string targetProjectDirectory, IProject sourceProject);
 		protected virtual void AfterConversion(IProject targetProject) {}
 		
 		public abstract string TargetLanguageName { get; }
+		
+		protected virtual IProject CreateProject(string targetProjectDirectory, IProject sourceProject)
+		{
+			ProjectCreateInformation info = new ProjectCreateInformation();
+			info.Solution = sourceProject.ParentSolution;
+			info.ProjectBasePath = targetProjectDirectory;
+			info.ProjectName = sourceProject.Name + ".Converted";
+			info.RootNamespace = sourceProject.RootNamespace;
+			
+			LanguageBindingDescriptor descriptor = LanguageBindingService.GetCodonPerLanguageName(TargetLanguageName);
+			if (descriptor == null || descriptor.Binding == null)
+				throw new InvalidOperationException("Cannot get Language Binding for " + TargetLanguageName);
+			
+			info.OutputProjectFileName = Path.Combine(targetProjectDirectory, info.ProjectName + descriptor.ProjectFileExtension);
+			
+			return descriptor.Binding.CreateProject(info);
+		}
 		
 		protected virtual void ConvertFile(FileProjectItem sourceItem, FileProjectItem targetItem)
 		{
@@ -41,39 +59,36 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			MSBuildBasedProject sp = sourceProject as MSBuildBasedProject;
 			MSBuildBasedProject tp = targetProject as MSBuildBasedProject;
 			if (sp != null && tp != null) {
-				// TODO: Language converter
-				/*tp.Configurations.Clear();
-				tp.UserConfigurations.Clear();
-				foreach (KeyValuePair<string, PropertyGroup> pair in sp.Configurations) {
-					tp.Configurations.Add(pair.Key, pair.Value.Clone());
+				lock (sp.SyncRoot) {
+					lock (tp.SyncRoot) {
+						tp.MSBuildProject.RemoveAllPropertyGroups();
+						foreach (MSBuild.BuildPropertyGroup spg in sp.MSBuildProject.PropertyGroups) {
+							if (spg.IsImported) continue;
+							MSBuild.BuildPropertyGroup tpg = tp.MSBuildProject.AddNewPropertyGroup(false);
+							tpg.Condition = spg.Condition;
+							foreach (MSBuild.BuildProperty sprop in spg) {
+								MSBuild.BuildProperty tprop = tpg.AddNewProperty(sprop.Name, sprop.Value);
+								tprop.Condition = sprop.Condition;
+							}
+						}
+						
+						// use the newly created IdGuid instead of the copied one
+						tp.SetProperty(MSBuildBasedProject.ProjectGuidPropertyName, tp.IdGuid);
+					}
 				}
-				foreach (KeyValuePair<string, PropertyGroup> pair in sp.UserConfigurations) {
-					tp.UserConfigurations.Add(pair.Key, pair.Value.Clone());
-				}
-				tp.BaseConfiguration.Merge(sp.BaseConfiguration);
-				tp.UserBaseConfiguration.Merge(sp.UserBaseConfiguration);*/
 			}
 		}
 		
 		/// <summary>
-		/// Changes a property in the <paramref name="project"/> by applying a method to its value.
+		/// Changes all instances of a property in the <paramref name="project"/> by applying a method to its value.
 		/// </summary>
 		protected void FixProperty(MSBuildBasedProject project, string propertyName, Converter<string, string> method)
 		{
-			// TODO: Language converter
-			
-			/*if (project.BaseConfiguration.IsSet(propertyName))
-				project.BaseConfiguration[propertyName] = method(project.BaseConfiguration[propertyName]);
-			if (project.UserBaseConfiguration.IsSet(propertyName))
-				project.UserBaseConfiguration[propertyName] = method(project.UserBaseConfiguration[propertyName]);
-			foreach (PropertyGroup pg in project.Configurations.Values) {
-				if (pg.IsSet(propertyName))
-					pg[propertyName] = method(pg[propertyName]);
+			lock (project.SyncRoot) {
+				foreach (MSBuild.BuildProperty p in project.GetAllProperties(propertyName)) {
+					p.Value = method(p.Value);
+				}
 			}
-			foreach (PropertyGroup pg in project.UserConfigurations.Values) {
-				if (pg.IsSet(propertyName))
-					pg[propertyName] = method(pg[propertyName]);
-			}*/
 		}
 		
 		protected virtual void FixExtensionOfExtraProperties(FileProjectItem item, string sourceExtension, string targetExtension)
@@ -117,9 +132,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 					}
 					targetProjectItems.AddProjectItem(targetItem);
 				} else {
-					// Adding the same item to two projects is only allowed because we will save and reload
-					// the target project.
-					targetProjectItems.AddProjectItem(item);
+					targetProjectItems.AddProjectItem(item.CloneFor(targetProject));
 				}
 			}
 		}
@@ -174,7 +187,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 		}
 	}
-	
+
 	public abstract class NRefactoryLanguageConverter : LanguageConverter
 	{
 		protected abstract void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials);

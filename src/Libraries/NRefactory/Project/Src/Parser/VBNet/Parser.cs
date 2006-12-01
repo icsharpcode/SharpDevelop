@@ -148,10 +148,10 @@ out u);
 	}
 
 	void GlobalAttributeSection() {
+		Expect(27);
 
 #line  2029 "VBNET.ATG" 
 		Location startPos = t.Location; 
-		Expect(27);
 		if (la.kind == 49) {
 			lexer.NextToken();
 		} else if (la.kind == 121) {

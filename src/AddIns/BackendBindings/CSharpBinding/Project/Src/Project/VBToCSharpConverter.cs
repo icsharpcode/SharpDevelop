@@ -44,14 +44,5 @@ namespace CSharpBinding
 			PreprocessingDirective.VBToCSharp(specials);
 			compilationUnit.AcceptVisitor(new VBNetToCSharpConvertVisitor(), null);
 		}
-		
-		protected override IProject CreateProject(string targetProjectDirectory, IProject sourceProject)
-		{
-			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.ProjectBasePath = targetProjectDirectory;
-			info.ProjectName = sourceProject.Name;
-			info.OutputProjectFileName = Path.Combine(targetProjectDirectory, Path.GetFileNameWithoutExtension(sourceProject.FileName) + ".csproj");
-			return new CSharpProject(info);
-		}
 	}
 }

@@ -39,9 +39,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public static void AddProject(ISolutionFolderNode solutionFolderNode, string fileName)
 		{
-			IProject newProject = LanguageBindingService.LoadProject(solutionFolderNode.Solution, fileName, Path.GetFileNameWithoutExtension(fileName));
+			AddProject(solutionFolderNode, LanguageBindingService.LoadProject(solutionFolderNode.Solution, fileName, Path.GetFileNameWithoutExtension(fileName)));
+		}
+		
+		public static void AddProject(ISolutionFolderNode solutionFolderNode, IProject newProject)
+		{
 			if (newProject != null) {
-				newProject.Location = FileUtility.GetRelativePath(solutionFolderNode.Solution.Directory, fileName);
+				newProject.Location = FileUtility.GetRelativePath(solutionFolderNode.Solution.Directory, newProject.FileName);
 				ProjectService.AddProject(solutionFolderNode, newProject);
 				NodeBuilders.AddProjectNode((TreeNode)solutionFolderNode, newProject).EnsureVisible();
 				solutionFolderNode.Solution.ApplySolutionConfigurationAndPlatformToProjects();

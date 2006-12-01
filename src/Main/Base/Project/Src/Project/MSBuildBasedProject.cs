@@ -119,13 +119,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			IdGuid = "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
 			MSBuild.BuildPropertyGroup group = project.AddNewPropertyGroup(false);
-			group.AddNewProperty("ProjectGuid", IdGuid, true);
+			group.AddNewProperty(ProjectGuidPropertyName, IdGuid, true);
 			group.AddNewProperty("Configuration", "Debug", true).Condition = " '$(Configuration)' == '' ";
 			group.AddNewProperty("Platform", "AnyCPU", true).Condition = " '$(Platform)' == '' ";
 			
 			this.ActiveConfiguration = "Debug";
 			this.ActivePlatform = "AnyCPU";
 		}
+		
+		public const string ProjectGuidPropertyName = "ProjectGuid";
 		
 		/// <summary>
 		/// Adds a guarded property:
@@ -828,11 +830,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				CreateItemsListFromMSBuild();
 				LoadConfigurationPlatformNamesFromMSBuild();
 				
-				IdGuid = GetEvaluatedProperty("ProjectGuid");
+				IdGuid = GetEvaluatedProperty(ProjectGuidPropertyName);
 				if (IdGuid == null) {
 					// Fix projects that have nb GUID
 					IdGuid = Guid.NewGuid().ToString();
-					SetPropertyInternal(null, null, "ProjectGuid", IdGuid, PropertyStorageLocations.Base, true);
+					SetPropertyInternal(null, null, ProjectGuidPropertyName, IdGuid, PropertyStorageLocations.Base, true);
 					try {
 						// save fixed project
 						project.Save(fileName);

@@ -35,11 +35,7 @@ namespace Grunwald.BooBinding
 			errors.Clear();
 			warnings.Clear();
 			
-			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.ProjectBasePath = targetProjectDirectory;
-			info.ProjectName = sourceProject.Name;
-			info.OutputProjectFileName = Path.Combine(targetProjectDirectory, Path.GetFileNameWithoutExtension(sourceProject.FileName) + ".booproj");
-			return new BooProject(info);
+			return base.CreateProject(targetProjectDirectory, sourceProject);
 		}
 		
 		protected override void ConvertFile(FileProjectItem sourceItem, FileProjectItem targetItem)

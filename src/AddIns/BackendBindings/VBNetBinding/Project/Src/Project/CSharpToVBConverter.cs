@@ -44,14 +44,5 @@ namespace VBNetBinding
 			FixProperty((VBNetProject)targetProject, "DefineConstants",
 			            delegate(string v) { return v.Replace(';', ','); });
 		}
-		
-		protected override IProject CreateProject(string targetProjectDirectory, IProject sourceProject)
-		{
-			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.ProjectBasePath = targetProjectDirectory;
-			info.ProjectName = sourceProject.Name;
-			info.OutputProjectFileName = Path.Combine(targetProjectDirectory, Path.GetFileNameWithoutExtension(sourceProject.FileName) + ".vbproj");
-			return new VBNetProject(info);
-		}
 	}
 }

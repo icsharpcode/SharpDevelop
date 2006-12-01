@@ -312,15 +312,28 @@ namespace ICSharpCode.SharpDevelop.Project
 		public virtual ProjectItem Clone()
 		{
 			if (this.Project != null) {
-				// use CreateProjectItem to ensure the clone has the same class
-				//  (derived from ProjectItem)
-				ProjectItem copy = this.Project.CreateProjectItem(CloneBuildItem());
-				// remove reference to cloned item, leaving an unbound project item
-				copy.BuildItem = null;
-				return copy;
+				return CloneFor(this.Project);
 			} else {
 				throw new NotSupportedException();
 			}
+		}
+		
+		/// <summary>
+		/// Clones this project item by cloning the underlying
+		/// MSBuild item and creating a new project item in the target project for it.
+		/// </summary>
+		public ProjectItem CloneFor(IProject targetProject)
+		{
+			if (targetProject == null)
+				throw new ArgumentNullException("project");
+			
+			// use CreateProjectItem to ensure the clone has the same class
+			//  (derived from ProjectItem)
+			ProjectItem copy = targetProject.CreateProjectItem(CloneBuildItem());
+			// remove reference to cloned item, leaving an unbound project item
+			copy.BuildItem = null;
+			return copy;
+			
 		}
 		
 		BuildItem CloneBuildItem()

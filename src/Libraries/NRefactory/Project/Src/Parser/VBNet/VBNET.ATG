@@ -2026,8 +2026,8 @@ TypeArgumentList<List<TypeReference> typeArguments>
 .
 
 GlobalAttributeSection =
-	(. Location startPos = t.Location; .)
-	"<" ("Assembly" | "Module")
+	"<" (. Location startPos = t.Location; .)
+	("Assembly" | "Module")
 		(.  string attributeTarget = t.val.ToLower(System.Globalization.CultureInfo.InvariantCulture);
 			List<ASTAttribute> attributes = new List<ASTAttribute>();
 			ASTAttribute attribute;
