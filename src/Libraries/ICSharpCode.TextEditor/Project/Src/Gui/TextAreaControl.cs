@@ -351,6 +351,9 @@ namespace ICSharpCode.TextEditor
 		
 		int scrollMarginHeight  = 3;
 		
+		/// <summary>
+		/// Ensure that <paramref name="line"/> is visible.
+		/// </summary>
 		public void ScrollTo(int line)
 		{
 			line = Math.Max(0, Math.Min(Document.TotalNumberOfLines - 1, line));
@@ -374,6 +377,32 @@ namespace ICSharpCode.TextEditor
 					}
 					VScrollBarValueChanged(this, EventArgs.Empty);
 				}
+			}
+		}
+		
+		/// <summary>
+		/// Scroll so that the specified line is centered.
+		/// </summary>
+		/// <param name="line">Line to center view on</param>
+		/// <param name="treshold">If this action would cause scrolling by less than or equal to
+		/// <paramref name="treshold"/> lines in any direction, don't scroll.
+		/// Use -1 to always center the view.</param>
+		public void CenterViewOn(int line, int treshold)
+		{
+			line = Math.Max(0, Math.Min(Document.TotalNumberOfLines - 1, line));
+			// convert line to visible line:
+			line = Document.GetVisibleLine(line);
+			// subtract half the visible line count
+			line -= textArea.TextView.VisibleLineCount / 2;
+			
+			int curLineMin = textArea.TextView.FirstPhysicalLine;
+			if (textArea.TextView.LineHeightRemainder > 0) {
+				curLineMin ++;
+			}
+			if (Math.Abs(curLineMin - line) > treshold) {
+				// scroll:
+				this.vScrollBar.Value =  Math.Max(0, Math.Min(this.vScrollBar.Maximum, (line - scrollMarginHeight + 3) * textArea.TextView.FontHeight)) ;
+				VScrollBarValueChanged(this, EventArgs.Empty);
 			}
 		}
 		

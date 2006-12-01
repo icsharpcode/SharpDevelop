@@ -283,13 +283,6 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public static void OnJumpedToFilePosition(string fileName)
-		{
-			if (JumpedToFilePosition != null) {
-				JumpedToFilePosition(null, new FileEventArgs(fileName, false));
-			}
-		}
-		
 		public static event EventHandler<FileRenamingEventArgs> FileRenaming;
 		public static event EventHandler<FileRenameEventArgs> FileRenamed;
 		
@@ -298,7 +291,5 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static event EventHandler<FileCancelEventArgs> FileReplacing;
 		public static event EventHandler<FileEventArgs> FileReplaced;
-		
-		public static event EventHandler<FileEventArgs> JumpedToFilePosition;
 	}
 }

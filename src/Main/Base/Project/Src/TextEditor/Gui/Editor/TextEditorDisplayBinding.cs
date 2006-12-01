@@ -442,6 +442,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		#region IPositionable implementation
 		public void JumpTo(int line, int column)
 		{
+			textAreaControl.ActiveTextAreaControl.CenterViewOn(
+				line, (int)(0.3 * textAreaControl.ActiveTextAreaControl.TextArea.TextView.VisibleLineCount));
 			textAreaControl.ActiveTextAreaControl.JumpTo(line, column);
 		}
 		
