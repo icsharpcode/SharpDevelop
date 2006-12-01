@@ -5,7 +5,7 @@
 	<Digits name="Digits" bold="false" italic="false" color="DarkBlue" />
 	
 	<RuleSets>
-		<RuleSet ignorecase="false" noescapesequences="true">
+		<RuleSet ignorecase="false">
 			<Delimiters>&amp;&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 			
 			<Span name = "LINECOMMENT" bold = "false" italic = "true" color = "Gray" stopateol = "true">
@@ -82,13 +82,13 @@
 			
 		</RuleSet>
 
-		<RuleSet name="CSharp" reference = "C#" ignorecase="false" noescapesequences="true">
+		<RuleSet name="CSharp" reference = "C#" ignorecase="false">
 		</RuleSet>
 		
-		<RuleSet name="ParamList" reference = "C#" ignorecase="false" noescapesequences="true">
+		<RuleSet name="ParamList" reference = "C#" ignorecase="false">
 		</RuleSet>
 		
-		<RuleSet name="RuleDefinition" ignorecase="false" noescapesequences="true">
+		<RuleSet name="RuleDefinition" ignorecase="false">
 			
 		</RuleSet>
 

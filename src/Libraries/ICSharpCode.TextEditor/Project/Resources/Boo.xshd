@@ -27,7 +27,7 @@
 		<RuleSet ignorecase="false" >
 			<Delimiters>&amp;&lt;&gt;~!@$%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 
-			<Span name="DocLineComment" noescapesequences="true" stopateol="false" bold="false" italic="false" color="Green">
+			<Span name="DocLineComment" stopateol="false" bold="false" italic="false" color="Green">
 				<Begin >"""</Begin>
 				<End >"""</End>
 			</Span>
@@ -45,17 +45,17 @@
 				<End >*/</End>
 			</Span>
 
-			<Span name="String" rule="str formatting" stopateol="true" bold="false" italic="false" color="Blue" >
+			<Span name="String" rule="str formatting" stopateol="true" bold="false" italic="false" color="Blue" escapecharacter="\">
 				<Begin >"</Begin>
 				<End >"</End>
 			</Span>
 
-			<Span name="MultiLineString" noescapesequences="true" rule="str formatting" stopateol="false" bold="false" italic="false" color="Blue" >
+			<Span name="MultiLineString" rule="str formatting" stopateol="false" bold="false" italic="false" color="Blue" >
 				<Begin >"""</Begin>
 				<End >"""</End>
 			</Span>
 
-			<Span name="Char" stopateol="true" bold="false" italic="false" color="Blue" >
+			<Span name="Char" stopateol="true" bold="false" italic="false" color="Blue" escapecharacter="\">
 				<Begin >'</Begin>
 				<End >'</End>
 			</Span>

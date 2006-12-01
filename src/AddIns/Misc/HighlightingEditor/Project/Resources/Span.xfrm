@@ -1,183 +1,185 @@
 <Components version="1.0">
   <System.Windows.Forms.UserControl>
     <Name value="highlightingOptionPanel" />
-    <DockPadding value="" />
     <ClientSize value="{Width=312, Height=408}" />
     <Controls>
+      <System.Windows.Forms.TextBox>
+        <Name value="escCharTextBox" />
+        <TabIndex value="20" />
+        <MaxLength value="1" />
+        <Size value="100, 20" />
+        <Location value="128, 267" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="label1" />
+        <Location value="0, 267" />
+        <Text value="${res:Dialog.HighlightingEditor.Span.EscChar}" />
+        <TextAlign value="MiddleLeft" />
+        <Size value="128, 23" />
+        <TabIndex value="19" />
+      </System.Windows.Forms.Label>
       <System.Windows.Forms.Button>
         <Name value="chgCont" />
-        <Location value="{X=216,Y=208}" />
-        <ClientSize value="{Width=88, Height=23}" />
+        <Location value="216, 208" />
         <Text value="${res:Dialog.HighlightingEditor.Change}" />
+        <Size value="88, 23" />
         <TabIndex value="18" />
       </System.Windows.Forms.Button>
       <System.Windows.Forms.Label>
         <Name value="samCont" />
+        <Location value="216, 144" />
         <Text value="${res:Dialog.HighlightingEditor.Span.ContCol}" />
         <TextAlign value="MiddleCenter" />
+        <Size value="88, 40" />
         <TabIndex value="16" />
-        <ClientSize value="{Width=88, Height=40}" />
-        <Location value="{X=216,Y=144}" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.Button>
         <Name value="chgEnd" />
-        <Location value="{X=112,Y=208}" />
-        <ClientSize value="{Width=88, Height=23}" />
+        <Location value="112, 208" />
         <Text value="${res:Dialog.HighlightingEditor.Change}" />
+        <Size value="88, 23" />
         <TabIndex value="15" />
       </System.Windows.Forms.Button>
       <System.Windows.Forms.CheckBox>
         <Name value="useEnd" />
-        <Location value="{X=112,Y=184}" />
-        <ClientSize value="{Width=88, Height=24}" />
+        <Location value="112, 184" />
         <Text value="${res:Dialog.HighlightingEditor.Span.Use}" />
         <TabIndex value="14" />
+        <Size value="88, 24" />
       </System.Windows.Forms.CheckBox>
       <System.Windows.Forms.Label>
         <Name value="samEnd" />
+        <Location value="112, 144" />
         <Text value="${res:Dialog.HighlightingEditor.Span.EndCol}" />
         <TextAlign value="MiddleCenter" />
+        <Size value="88, 40" />
         <TabIndex value="13" />
-        <ClientSize value="{Width=88, Height=40}" />
-        <Location value="{X=112,Y=144}" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.Button>
         <Name value="chgBegin" />
-        <Location value="{X=8,Y=208}" />
-        <ClientSize value="{Width=88, Height=23}" />
+        <Location value="8, 208" />
         <Text value="${res:Dialog.HighlightingEditor.Change}" />
+        <Size value="88, 23" />
         <TabIndex value="12" />
       </System.Windows.Forms.Button>
       <System.Windows.Forms.CheckBox>
         <Name value="useBegin" />
-        <Location value="{X=8,Y=184}" />
-        <ClientSize value="{Width=88, Height=24}" />
+        <Location value="8, 184" />
         <Text value="${res:Dialog.HighlightingEditor.Span.Use}" />
         <TabIndex value="11" />
+        <Size value="88, 24" />
       </System.Windows.Forms.CheckBox>
       <System.Windows.Forms.Label>
         <Name value="samBegin" />
+        <Location value="8, 144" />
         <Text value="${res:Dialog.HighlightingEditor.Span.BeginCol}" />
         <TextAlign value="MiddleCenter" />
+        <Size value="88, 40" />
         <TabIndex value="10" />
-        <ClientSize value="{Width=88, Height=40}" />
-        <Location value="{X=8,Y=144}" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.Label>
         <Name value="label7" />
+        <Location value="0, 112" />
         <Text value="${res:Dialog.HighlightingEditor.Span.Colors}" />
+        <Size value="280, 16" />
         <TabIndex value="9" />
-        <ClientSize value="{Width=280, Height=16}" />
-        <Location value="{X=0,Y=112}" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.ComboBox>
         <Name value="ruleBox" />
+        <Size value="184, 21" />
         <TabIndex value="8" />
-        <Location value="{X=128,Y=80}" />
-        <ClientSize value="{Width=180, Height=21}" />
         <Text value="comboBox" />
+        <Location value="128, 80" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
-        <Name value="label3" />
+        <Name value="label3wjej" />
+        <Location value="0, 83" />
         <Text value="${res:Dialog.HighlightingEditor.Span.Ruleset}" />
+        <Size value="128, 16" />
         <TabIndex value="6" />
-        <ClientSize value="{Width=128, Height=16}" />
-        <Location value="{X=0,Y=83}" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.CheckBox>
         <Name value="stopEolBox" />
-        <Location value="{X=0,Y=248}" />
-        <ClientSize value="{Width=312, Height=16}" />
+        <Location value="0, 248" />
         <Text value="${res:Dialog.HighlightingEditor.Span.StopEol}" />
-        <Anchor value="Top, Left, Right" />
         <TabIndex value="5" />
+        <Size value="312, 16" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.CheckBox>
       <System.Windows.Forms.TextBox>
         <Name value="beginBox" />
-        <Anchor value="Top, Left, Right" />
         <TabIndex value="4" />
-        <Location value="{X=128,Y=27}" />
-        <ClientSize value="{Width=180, Height=17}" />
-        <Text value="" />
+        <Size value="184, 20" />
+        <Location value="128, 27" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.TextBox>
       <System.Windows.Forms.Label>
-        <Name value="label3" />
+        <Name value="label3qgae" />
+        <Location value="0, 30" />
         <Text value="${res:Dialog.HighlightingEditor.Span.Begin}" />
+        <Size value="128, 16" />
         <TabIndex value="3" />
-        <ClientSize value="{Width=128, Height=16}" />
-        <Location value="{X=0,Y=30}" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.TextBox>
         <Name value="nameBox" />
-        <Anchor value="Top, Left, Right" />
         <TabIndex value="2" />
-        <Location value="{X=128,Y=0}" />
-        <ClientSize value="{Width=180, Height=17}" />
-        <Text value="" />
+        <Size value="184, 20" />
+        <Location value="128, 0" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.TextBox>
       <System.Windows.Forms.Label>
-        <Name value="label3" />
+        <Name value="label3wr" />
+        <Location value="0, 3" />
         <Text value="${res:Dialog.HighlightingEditor.Span.Name}" />
+        <Size value="128, 16" />
         <TabIndex value="1" />
-        <ClientSize value="{Width=128, Height=16}" />
-        <Location value="{X=0,Y=3}" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.Panel>
         <Name value="panel" />
-        <Location value="{X=0,Y=304}" />
-        <ClientSize value="{Width=312, Height=104}" />
-        <DockPadding value="" />
-        <Anchor value="Top, Bottom, Left, Right" />
+        <Location value="0, 304" />
         <TabIndex value="0" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <Size value="312, 104" />
         <Controls>
           <System.Windows.Forms.Label>
             <Name value="explLabel" />
+            <Location value="16, 24" />
             <Text value="${res:Dialog.HighlightingEditor.Span.Explanation}" />
             <Anchor value="Top, Bottom, Left, Right" />
+            <Size value="280, 80" />
             <TabIndex value="2" />
-            <ClientSize value="{Width=280, Height=80}" />
-            <Location value="{X=16,Y=24}" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.Label>
             <Name value="label" />
+            <Location value="0, 0" />
             <Text value="${res:Dialog.HighlightingEditor.Explanation}" />
+            <Size value="96, 16" />
             <TabIndex value="0" />
-            <ClientSize value="{Width=96, Height=16}" />
-            <Location value="{X=0,Y=0}" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.Label>
             <Name value="label2" />
+            <Location value="0, 8" />
             <Anchor value="Top, Left, Right" />
+            <Size value="302, 0" />
             <TabIndex value="1" />
-            <ClientSize value="{Width=302, Height=0}" />
-            <Location value="{X=0,Y=8}" />
             <BorderStyle value="Fixed3D" />
           </System.Windows.Forms.Label>
         </Controls>
       </System.Windows.Forms.Panel>
       <System.Windows.Forms.TextBox>
         <Name value="endBox" />
-        <Anchor value="Top, Left, Right" />
         <TabIndex value="4" />
-        <Location value="{X=128,Y=51}" />
-        <ClientSize value="{Width=180, Height=17}" />
-        <Text value="" />
+        <Size value="184, 20" />
+        <Location value="128, 51" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.TextBox>
       <System.Windows.Forms.Label>
-        <Name value="label3" />
+        <Name value="label3b" />
+        <Location value="0, 54" />
         <Text value="${res:Dialog.HighlightingEditor.Span.End}" />
+        <Size value="128, 16" />
         <TabIndex value="3" />
-        <ClientSize value="{Width=128, Height=16}" />
-        <Location value="{X=0,Y=54}" />
       </System.Windows.Forms.Label>
-      <System.Windows.Forms.CheckBox>
-        <Name value="noEscBox" />
-        <Location value="{X=0,Y=272}" />
-        <ClientSize value="{Width=312, Height=16}" />
-        <Text value="${res:Dialog.HighlightingEditor.Span.NoEscSeq}" />
-        <Anchor value="Top, Left, Right" />
-        <TabIndex value="5" />
-      </System.Windows.Forms.CheckBox>
     </Controls>
   </System.Windows.Forms.UserControl>
 </Components>

@@ -6,7 +6,7 @@
 	<Digits   name = "Digits" bold = "false" italic = "false" color = "Black"/>
 	
 	<RuleSets>
-		<RuleSet ignorecase = "false" noescapesequences="true">
+		<RuleSet ignorecase = "false">
 		  	<Delimiters>&amp;~!@%^*()-+=|\#/{}[]:;"'&lt;&gt; , .?</Delimiters>
 			
 			<Span name = "LineComment" bold = "false" italic = "true" color = "SlateGray" stopateol = "true">
@@ -62,7 +62,7 @@
 	 	 	</KeyWords>
 		</RuleSet>
 		
-		<RuleSet name = "MathMode" ignorecase = "false" noescapesequences="true">
+		<RuleSet name = "MathMode" ignorecase = "false">
 		  	<Delimiters>&amp;~!@%^*()-+=|\#/{}[]:;"'&lt;&gt; , .?</Delimiters>
 			
 			

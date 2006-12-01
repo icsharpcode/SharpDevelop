@@ -20,7 +20,7 @@ namespace ICSharpCode.TextEditor.Document
 		LookupTable prevMarkers;
 		LookupTable nextMarkers;
 		IHighlightingStrategy highlighter = null;
-		bool noEscapeSequences = false;
+		char escapeCharacter;
 		
 		bool ignoreCase = false;
 		string name     = null;
@@ -68,9 +68,9 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		public bool NoEscapeSequences {
+		public char EscapeCharacter {
 			get {
-				return noEscapeSequences;
+				return escapeCharacter;
 			}
 		}
 		
@@ -110,8 +110,8 @@ namespace ICSharpCode.TextEditor.Document
 				Name = el.Attributes["name"].InnerText;
 			}
 			
-			if (el.Attributes["noescapesequences"] != null) {
-				noEscapeSequences = Boolean.Parse(el.Attributes["noescapesequences"].InnerText);
+			if (el.HasAttribute("escapecharacter")) {
+				escapeCharacter = el.GetAttribute("escapecharacter")[0];
 			}
 			
 			if (el.Attributes["reference"] != null) {

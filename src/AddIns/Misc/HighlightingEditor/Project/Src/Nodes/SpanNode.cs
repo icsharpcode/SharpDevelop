@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		string      end   = "";
 		string      name  = "";
 		string      rule  = "";
-		bool        noEscapeSequences = false;
+		char        escapeCharacter;
 		
 		public SpanNode(XmlElement el)
 		{
@@ -40,12 +40,16 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 				rule = el.Attributes["rule"].InnerText;
 			}
 			
-			if (el.Attributes["noescapesequences"] != null) {
-				noEscapeSequences = Boolean.Parse(el.Attributes["noescapesequences"].InnerText);
+			if (el.Attributes["escapecharacter"] != null) {
+				escapeCharacter = el.Attributes["escapecharacter"].Value[0];
 			}
 			
 			name    = el.Attributes["name"].InnerText;
-			stopEOL = Boolean.Parse(el.Attributes["stopateol"].InnerText);
+			if (el.HasAttribute("stopateol")) {
+				stopEOL = Boolean.Parse(el.Attributes["stopateol"].InnerText);
+			} else {
+				stopEOL = true;
+			}
 			begin   = el["Begin"].InnerText;
 			beginColor = new EditorHighlightColor(el["Begin"]);
 			
@@ -62,8 +66,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		{
 			writer.WriteStartElement("Span");
 			writer.WriteAttributeString("name", name);
-			if (noEscapeSequences)
-				writer.WriteAttributeString("noescapesequences", "true");
+			if (escapeCharacter != '\0')
+				writer.WriteAttributeString("escapecharacter", escapeCharacter.ToString());
 			if (rule != "")
 				writer.WriteAttributeString("rule", rule);
 			writer.WriteAttributeString("stopateol", stopEOL.ToString().ToLowerInvariant());
@@ -179,15 +183,10 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			}
 		}
 		
-		public bool NoEscapeSequences {
-			get {
-				return noEscapeSequences;
-			}
-			set {
-				noEscapeSequences = value;
-			}
+		public char EscapeCharacter {
+			get { return escapeCharacter; }
+			set { escapeCharacter = value; }
 		}
-
 	}
 	
 	class SpanOptionPanel : NodeOptionPanel {
@@ -204,7 +203,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		private System.Windows.Forms.Label samBegin;
 		private System.Windows.Forms.Label samEnd;
 		private System.Windows.Forms.Label samCont;
-		private System.Windows.Forms.CheckBox noEscBox;
+		private System.Windows.Forms.TextBox escCharTextBox;
 		private System.Windows.Forms.CheckBox stopEolBox;
 		
 		public SpanOptionPanel(SpanNode parent) : base(parent)
@@ -227,7 +226,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			samCont  = (Label)ControlDictionary["samCont"];
 
 			stopEolBox = (CheckBox)ControlDictionary["stopEolBox"];
-			noEscBox   = (CheckBox)ControlDictionary["noEscBox"];
+			escCharTextBox   = (TextBox)ControlDictionary["escCharTextBox"];
 
 			this.chgBegin.Click += new EventHandler(chgBeginClick);
 			this.chgCont.Click  += new EventHandler(chgContClick);
@@ -249,7 +248,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			node.Begin = beginBox.Text;
 			node.End = endBox.Text;
 			node.StopEOL = stopEolBox.Checked;
-			node.NoEscapeSequences = noEscBox.Checked;
+			node.EscapeCharacter = escCharTextBox.TextLength > 0 ? escCharTextBox.Text[0] : '\0';
 			node.Rule = ruleBox.Text;
 			
 			node.Color = color;
@@ -287,7 +286,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			beginBox.Text = node.Begin;
 			endBox.Text = node.End;
 			stopEolBox.Checked = node.StopEOL;
-			noEscBox.Checked = node.NoEscapeSequences;
+			escCharTextBox.Text = (node.EscapeCharacter == '\0') ? "" : node.EscapeCharacter.ToString();
 			
 			color = node.Color;
 			beginColor = node.BeginColor;

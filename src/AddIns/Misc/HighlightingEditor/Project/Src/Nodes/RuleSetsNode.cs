@@ -92,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 						return;
 				}
 				
-				RuleSetNode rsn = new RuleSetNode(box.TextBox.Text, "&<>~!@%^*()-+=|\\#/{}[]:;\"' ,	.?", "", false, false);
+				RuleSetNode rsn = new RuleSetNode(box.TextBox.Text, "&<>~!@%^*()-+=|\\#/{}[]:;\"' ,	.?", "", '\0', false);
 				ListViewItem lv = new ListViewItem(box.TextBox.Text);
 				lv.Tag = rsn;
 				parent.Nodes.Add(rsn);

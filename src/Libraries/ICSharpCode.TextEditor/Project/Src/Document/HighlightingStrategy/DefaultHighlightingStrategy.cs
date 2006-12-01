@@ -500,20 +500,42 @@ namespace ICSharpCode.TextEditor.Document
 						}
 						++currentOffset;
 						break;
-					case '\\': // handle escape chars
-						if ((activeRuleSet != null && activeRuleSet.NoEscapeSequences) ||
-						    (activeSpan != null && activeSpan.NoEscapeSequences)) {
-							goto default;
-						}
-						++currentLength;
-						if (i + 1 < currentLine.Length) {
-							++currentLength;
-						}
-						PushCurWord(document, ref markNext, words);
-						++i;
-						continue;
 					default:
 						{
+							// handle escape characters
+							char escapeCharacter = '\0';
+							if (activeSpan != null && activeSpan.EscapeCharacter != '\0') {
+								escapeCharacter = activeSpan.EscapeCharacter;
+							} else if (activeRuleSet != null) {
+								escapeCharacter = activeRuleSet.EscapeCharacter;
+							}
+							if (escapeCharacter != '\0' && escapeCharacter == ch) {
+								// we found the escape character
+								if (activeSpan != null && activeSpan.End != null && activeSpan.End.Length == 1
+								    && escapeCharacter == activeSpan.End[0])
+								{
+									// the escape character is a end-doubling escape character
+									// it may count as escape only when the next character is the escape, too
+									if (i + 1 < currentLine.Length) {
+										if (document.GetCharAt(currentLine.Offset + i + 1) == escapeCharacter) {
+											currentLength += 2;
+											PushCurWord(document, ref markNext, words);
+											++i;
+											continue;
+										}
+									}
+								} else {
+									// this is a normal \-style escape
+									++currentLength;
+									if (i + 1 < currentLine.Length) {
+										++currentLength;
+									}
+									PushCurWord(document, ref markNext, words);
+									++i;
+									continue;
+								}
+							}
+							
 							// highlight digits
 							if (!inSpan && (Char.IsDigit(ch) || (ch == '.' && i + 1 < currentLine.Length && Char.IsDigit(document.GetCharAt(currentLine.Offset + i + 1)))) && currentLength == 0) {
 								bool ishex = false;
@@ -594,7 +616,7 @@ namespace ICSharpCode.TextEditor.Document
 
 							// Check for SPAN ENDs
 							if (inSpan) {
-								if (activeSpan.End != null && !activeSpan.End.Equals("")) {
+								if (activeSpan.End != null && activeSpan.End.Length > 0) {
 									if (currentLine.MatchExpr(activeSpan.End, i, document, activeSpan.IgnoreCase)) {
 										PushCurWord(document, ref markNext, words);
 										string regex = currentLine.GetRegString(activeSpan.End, i, document);

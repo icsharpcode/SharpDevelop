@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 {
 	class RuleSetNode : AbstractNode
 	{
-		bool noEscapeSequences = false;
+		char escapeCharacter;
 		bool ignoreCase   = false;
 		bool isRoot       = false;
 		string name       = String.Empty;
@@ -46,8 +46,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 				isRoot = true;
 			}
 			
-			if (el.Attributes["noescapesequences"] != null) {
-				noEscapeSequences = Boolean.Parse(el.Attributes["noescapesequences"].InnerText);
+			if (el.Attributes["escapecharacter"] != null) {
+				escapeCharacter = el.Attributes["escapecharacter"].InnerText[0];
 			}
 			
 			if (el.Attributes["reference"] != null) {
@@ -73,13 +73,13 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			
 		}
 		
-		public RuleSetNode(string Name, string Delim, string Ref, bool noEsc, bool noCase)
+		public RuleSetNode(string Name, string Delim, string Ref, char escChar, bool noCase)
 		{
 			name = Name;
 			Text = Name;
 			delimiters = Delim;
 			reference = Ref;
-			noEscapeSequences = noEsc;
+			escapeCharacter = escChar;
 			ignoreCase = noCase;
 			
 			keywordNode = new KeywordListsNode(null);
@@ -110,8 +110,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 				writer.WriteAttributeString("reference", reference);
 			} else {
 				writer.WriteAttributeString("ignorecase", ignoreCase.ToString().ToLowerInvariant());
-				if (noEscapeSequences)
-					writer.WriteAttributeString("noescapesequences", "true");
+				if (escapeCharacter != '\0')
+					writer.WriteAttributeString("escapecharacter", escapeCharacter.ToString());
 				if (delimiters != "")
 					writer.WriteElementString("Delimiters", delimiters);
 				spansNode.WriteXml(writer);
@@ -131,13 +131,9 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			}
 		}
 		
-		public bool NoEscapeSequences {
-			get {
-				return noEscapeSequences;
-			}
-			set {
-				noEscapeSequences = value;
-			}
+		public char EscapeCharacter {
+			get { return escapeCharacter; }
+			set { escapeCharacter = value; }
 		}
 		
 		public bool IgnoreCase {
@@ -178,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 	class RuleSetOptionPanel : NodeOptionPanel
 	{
 		private System.Windows.Forms.CheckBox igcaseBox;
-		private System.Windows.Forms.CheckBox noEscBox;
+		private System.Windows.Forms.TextBox escCharTextBox;
 		private System.Windows.Forms.TextBox refBox;
 		private System.Windows.Forms.TextBox delimBox;
 		private System.Windows.Forms.TextBox nameBox;
@@ -192,7 +188,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			delimBox = (TextBox)ControlDictionary["delimBox"];
 			
 			igcaseBox = (CheckBox)ControlDictionary["igcaseBox"];
-			noEscBox  = (CheckBox)ControlDictionary["noEscBox"];
+			escCharTextBox  = (TextBox)ControlDictionary["escCharTextBox"];
 		}
 		
 		public override void StoreSettings()
@@ -201,7 +197,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			if (!node.IsRoot) node.Name = nameBox.Text;
 			node.Reference = refBox.Text;
 			node.Delimiters = delimBox.Text;
-			node.NoEscapeSequences = noEscBox.Checked;
+			node.EscapeCharacter = (escCharTextBox.TextLength == 0) ? '\0' : escCharTextBox.Text[0];
 			node.IgnoreCase = igcaseBox.Checked;
 		}
 		
@@ -219,7 +215,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			refBox.Text = node.Reference;
 			delimBox.Text = node.Delimiters;
 			
-			noEscBox.Checked = node.NoEscapeSequences;
+			escCharTextBox.Text = (node.EscapeCharacter == '\0') ? "" : node.EscapeCharacter.ToString();
 			igcaseBox.Checked = node.IgnoreCase;
 		}
 		

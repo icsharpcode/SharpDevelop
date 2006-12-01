@@ -116,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 			
 			foreach(string str in uCol) {
-				SchemeNode node = LoadFile(new XmlTextReader(str), true);
+				SchemeNode node = LoadFile(new XmlTextReader(str), true, Path.GetFileNameWithoutExtension(str));
 				if (node == null) continue;
 				userList.Items.Add(new HighlightItem(null, str, node));
 			}
@@ -125,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			modeProvider = new ResourceSyntaxModeProvider();
 			
 			foreach(SyntaxMode mode in modeProvider.SyntaxModes) {
-				SchemeNode node = LoadFile(modeProvider.GetSyntaxModeFile(mode), false);
+				SchemeNode node = LoadFile(modeProvider.GetSyntaxModeFile(mode), false, mode.Name);
 				if (node == null) continue;
 				builtinList.Items.Add(new HighlightItem(mode, null, node));
 			}
@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			modeProvider = new ICSharpCode.SharpDevelop.DefaultEditor.Codons.AddInTreeSyntaxModeProvider();
 			
 			foreach(SyntaxMode mode in modeProvider.SyntaxModes) {
-				SchemeNode node = LoadFile(modeProvider.GetSyntaxModeFile(mode), false);
+				SchemeNode node = LoadFile(modeProvider.GetSyntaxModeFile(mode), false, mode.Name);
 				if (node == null) continue;
 				builtinList.Items.Add(new HighlightItem(mode, null, node));
 			}
@@ -163,7 +163,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					fs.Write(item.Node.Content);
 				}
 				
-				SchemeNode newNode = LoadFile(new XmlTextReader(newname), true);
+				SchemeNode newNode = LoadFile(new XmlTextReader(newname), true, Path.GetFileNameWithoutExtension(newname));
 				if (newNode == null) throw new Exception();
 				
 				userList.Items.Add(new HighlightItem(null, newname, newNode));
@@ -223,8 +223,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		List<ValidationEventArgs> errors = new List<ValidationEventArgs>();
 		
-		private SchemeNode LoadFile(XmlTextReader reader, bool userList)
+		private SchemeNode LoadFile(XmlTextReader reader, bool userList, string name)
 		{
+			errors.Clear();
 			try {
 				XmlValidatingReader validatingReader = new XmlValidatingReader(reader);
 				Stream schemaStream = typeof(SyntaxMode).Assembly.GetManifestResourceStream("ICSharpCode.TextEditor.Resources.Mode.xsd");
@@ -236,14 +237,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				doc.Load(validatingReader);
 				
 				if (errors.Count != 0) {
-					ReportErrors();
+					ReportErrors(name);
 					return null;
 				} else {
 					return new SchemeNode(doc.DocumentElement, userList);
 				}
 			} catch (Exception e) {
 
-				MessageService.ShowError(e, "${res:Dialog.Options.TextEditorOptions.EditHighlighting.LoadError}");
+				MessageService.ShowError(e, name + ": ${res:Dialog.Options.TextEditorOptions.EditHighlighting.LoadError}");
 				return null;
 			} finally {
 				reader.Close();
@@ -256,13 +257,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			errors.Add(args);
 		}
 
-		private void ReportErrors()
+		private void ReportErrors(string name)
 		{
 			StringBuilder msg = new StringBuilder();
+			msg.Append(name);
+			msg.Append(": ");
 			msg.Append(ResourceService.GetString("Dialog.Options.TextEditorOptions.EditHighlighting.LoadError") + "\n\n");
 			foreach(ValidationEventArgs args in errors) {
-				msg.Append(args.Message);
-				msg.Append(Console.Out.NewLine);
+				msg.AppendLine(args.Message);
 			}
 			
 			MessageService.ShowWarning(msg.ToString());

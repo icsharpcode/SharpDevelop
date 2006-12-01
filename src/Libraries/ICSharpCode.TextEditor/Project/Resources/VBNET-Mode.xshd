@@ -16,7 +16,7 @@
 		
 			<Delimiters>~!@%^*()-+=|\#/{}[]:;"'&lt;&gt;,.?</Delimiters>
 			
-			<Span name = "STRING" bold = "false" italic = "false" color = "Black" stopateol = "true">
+			<Span name = "STRING" bold = "false" italic = "false" color = "Black" stopateol = "true" escapecharacter='"'>
 				<Begin>"</Begin>
 				<End>"</End>
 			</Span>

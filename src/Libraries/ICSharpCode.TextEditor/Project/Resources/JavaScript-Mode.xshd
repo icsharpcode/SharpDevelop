@@ -22,12 +22,12 @@
 				<End>*/</End>
 			</Span>
 			
-			<Span name ="String" bold ="false" italic ="false" color ="Sienna" stopateol ="false">
+			<Span name ="String" bold ="false" italic ="false" color ="Sienna" stopateol ="false" escapecharacter="\">
 				<Begin>&quot;</Begin>
 				<End>&quot;</End>
 			</Span>
 	
-			<Span name = "Character" bold = "false" italic = "false" color = "Sienna" stopateol = "true">
+			<Span name = "Character" bold = "false" italic = "false" color = "Sienna" stopateol = "true" escapecharacter="\">
 				<Begin>&apos;</Begin>
 				<End>&apos;</End>
 			</Span>

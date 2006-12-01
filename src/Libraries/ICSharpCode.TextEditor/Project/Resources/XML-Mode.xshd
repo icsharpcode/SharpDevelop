@@ -8,7 +8,7 @@
 	</Properties>
 	<Digits name="Digits" bold="false" italic="false" color="DarkBlue" />
 	<RuleSets>
-		<RuleSet ignorecase="false" noescapesequences="true">
+		<RuleSet ignorecase="false">
 			<!-- It is not necessary to define span-delimiting characters as delimiters -->
 			<Delimiters></Delimiters>
 
@@ -38,7 +38,7 @@
 			</Span>
 		</RuleSet>
 
-		<RuleSet name="XmlTagSet" ignorecase="false" noescapesequences="true">
+		<RuleSet name="XmlTagSet" ignorecase="false">
 			<Delimiters>/=</Delimiters>
 			<Span name="String" bold="false" italic="false" color="Blue" stopateol="true">
 				<Begin>&quot;</Begin>

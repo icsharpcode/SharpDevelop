@@ -26,17 +26,17 @@
 				<End>*/</End>
 			</Span>
 			
-			<Span name ="STRING" bold ="false" italic ="false" color ="Magenta" stopateol ="true">
+			<Span name ="STRING" bold ="false" italic ="false" color ="Magenta" stopateol ="true" escapecharacter="\">
 				<Begin>"</Begin>
 				<End>"</End>
 			</Span>
 			
-			<Span name ="MORELINEDSTRING" bold ="false" italic ="false" color ="Magenta" stopateol ="false">
+			<Span name ="MORELINEDSTRING" bold ="false" italic ="false" color ="Magenta" stopateol ="false" escapecharacter="\">
 				<Begin>@@"</Begin>
 				<End>"</End>
 			</Span>
 			
-			<Span name ="CHAR" bold ="false" italic ="false" color ="Magenta" stopateol ="true">
+			<Span name ="CHAR" bold ="false" italic ="false" color ="Magenta" stopateol ="true" escapecharacter="\">
 				<Begin>'</Begin>
 				<End>'</End>
 			</Span>

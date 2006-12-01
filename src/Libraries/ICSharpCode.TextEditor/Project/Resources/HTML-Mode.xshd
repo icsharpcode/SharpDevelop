@@ -7,7 +7,7 @@
 	<Digits   name = "Digits"   bold = "false" italic = "false" color = "DarkBlue"/>
 
 	<RuleSets>
-		<RuleSet ignorecase = "true" noescapesequences="true">
+		<RuleSet ignorecase = "true">
 			<!-- It is not necessary to define span-delimiting characters as delimiters -->
 			<Delimiters></Delimiters>
 		
@@ -49,7 +49,7 @@
 		
 		<RuleSet name="JavaScriptSet" reference="JavaScript" />
 		
-		<RuleSet name="EntityReferenceSet" ignorecase="false" noescapesequences="true">
+		<RuleSet name="EntityReferenceSet" ignorecase="false">
 			<KeyWords name = "Entities" bold="false" italic="false" color="Green">
 			    <Key word = "aacute" />
 			    <Key word = "agrave" />
@@ -94,7 +94,7 @@
 			</KeyWords>		
 		</RuleSet>
 		
-		<RuleSet name="HtmlTagSet" ignorecase="false" noescapesequences="true">
+		<RuleSet name="HtmlTagSet" ignorecase="false">
 			<Delimiters>/=</Delimiters>
 			
 			<Span name="String" bold="false" italic="false" color="Blue" stopateol="true">
