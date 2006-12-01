@@ -26,8 +26,6 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 	/// </summary>
 	public class NewProjectDialog : BaseSharpDevelopForm
 	{
-		protected Container components = new System.ComponentModel.Container();
-		
 		protected List<TemplateItem> alltemplates = new List<TemplateItem>();
 		protected List<Category> categories = new List<Category>();
 		

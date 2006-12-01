@@ -1,13 +1,11 @@
 <?xml version="1.0"?>
-<Template originator   = "Markus Palme"
-          created      = "15/04/2002"
-          lastModified = "07/20/2005">
+<Template originator   = "Daniel Grunwald">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.WindowsApplication.Name}</Name>
 		<Category>VBNet</Category>
-		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
+		<Subcategory>Compact Framework</Subcategory>
 		<Icon>VBNet.Project.Form</Icon>
 		<Description>${res:Templates.Project.WindowsApplication.Description}</Description>
 	</TemplateConfiguration>
@@ -21,15 +19,26 @@
 	<Project language="VBNet">
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
+			
+			<PlatformFamilyName>PocketPC</PlatformFamilyName>
+			<PlatformID>WinCE</PlatformID>
+			<TargetFrameworkVersion>CF 2.0</TargetFrameworkVersion>
+			
+			<StartupObject>${StandardNamespace}.MainForm</StartupObject>
 		</PropertyGroup>
+		
+		<Imports clear="true">
+			<Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.VisualBasic.targets" />
+		</Imports>
 		
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />
 			<Reference Include="System.Drawing" />
 			<Reference Include="System.Windows.Forms" />
-			<Reference Include="System.Xml" />
-			
+            <Reference Include="System.Xml" />
+			<Reference Include="Microsoft.WindowsCE.Forms.dll" />
+            
 			<Import Include="Microsoft.VisualBasic" />
 			<Import Include="System" />
 			<Import Include="System.Collections" />
@@ -85,33 +94,12 @@ Partial Class MainForm
 		'
 		'MainForm
 		'
-		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
+		Me.ClientSize = New System.Drawing.Size(238, 295)
 		Me.Name = "MainForm"
 		Me.Text = "${ProjectName}"
 	End Sub
 End Class
-]]></File>
-<File name="Program.vb">
-			<![CDATA[${StandardHeader.VBNET}
-
-Imports Microsoft.VisualBasic.ApplicationServices
-
-Namespace My
-	' This file controls the behaviour of the application.
-	Partial Class MyApplication
-		Public Sub New()
-			MyBase.New(AuthenticationMode.Windows)
-			Me.IsSingleInstance = False
-			Me.EnableVisualStyles = True
-			Me.SaveMySettingsOnExit = False ' MySettings are not supported in SharpDevelop.
-			Me.ShutDownStyle = ShutdownMode.AfterMainFormCloses
-		End Sub
-		
-		Protected Overrides Sub OnCreateMainForm()
-			Me.MainForm = My.Forms.MainForm
-		End Sub
-	End Class
-End Namespace
 ]]></File>
 			<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
 		</Files>

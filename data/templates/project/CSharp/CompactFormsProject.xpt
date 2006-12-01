@@ -106,7 +106,7 @@ namespace ${StandardNamespace}
 			// 
 			// MainForm
 			// 
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.ClientSize = new System.Drawing.Size(238, 295);
 			this.Text = "${ProjectName}";
 			this.Name = "MainForm";

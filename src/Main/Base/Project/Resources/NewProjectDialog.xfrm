@@ -202,7 +202,6 @@
                 <ImageIndex value="-1" />
                 <Dock value="Fill" />
                 <TabIndex value="1" />
-                <Scrollable value="False" />
                 <Location value="{X=0,Y=23}" />
                 <SelectedImageIndex value="-1" />
                 <Size value="{Width=174, Height=224}" />
