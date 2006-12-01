@@ -12,6 +12,8 @@ using System.Text;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -45,34 +47,14 @@ namespace ICSharpCode.FormsDesigner
 			return b.ToString();
 		}
 		
-		protected static string GenerateParams(EventDescriptor edesc)
+		protected string GenerateParams(EventDescriptor edesc)
 		{
-			System.Type type =  edesc.EventType;
-			MethodInfo mInfo = type.GetMethod("Invoke");
-			string param = "";
-			IAmbience csa = null;
-			try {
-				csa = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/VBNet", null);
-			} catch (TreePathNotFoundException) {
-				LoggingService.Warn("VB ambience not found");
+			VBNetOutputVisitor v = new VBNetOutputVisitor();
+			MethodDeclaration md = ConvertDescriptorToNRefactory(edesc, "name");
+			if (md != null) {
+				v.AppendCommaSeparatedList(md.Parameters);
 			}
-			
-			for (int i = 0; i < mInfo.GetParameters().Length; ++i)  {
-				ParameterInfo pInfo  = mInfo.GetParameters()[i];
-				
-				param += pInfo.Name;
-				param += " As ";
-				
-				string typeStr = pInfo.ParameterType.ToString();
-				if (csa != null) {
-					typeStr = csa.GetIntrinsicTypeName(typeStr);
-				}
-				param += typeStr;
-				if (i + 1 < mInfo.GetParameters().Length) {
-					param += ", ";
-				}
-			}
-			return param;
+			return v.Text;
 		}
 	}
 }

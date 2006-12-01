@@ -21,6 +21,7 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor.Document;
+using ReflectionLayer = ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -395,6 +396,32 @@ namespace ICSharpCode.FormsDesigner
 			position = line + GetCursorLineAfterEventHandlerCreation();
 			
 			return true;
+		}
+		
+		/// <summary>
+		/// Gets a method implementing the signature specified by the event descriptor
+		/// </summary>
+		protected IMethod ConvertDescriptorToDom(EventDescriptor edesc, string methodName)
+		{
+			MethodInfo mInfo = edesc.EventType.GetMethod("Invoke");
+			DefaultMethod m = new DefaultMethod(completeClass, methodName);
+			m.ReturnType = ReflectionLayer.ReflectionReturnType.Create(m, mInfo.ReturnType, false);
+			foreach (ParameterInfo pInfo in mInfo.GetParameters()) {
+				m.Parameters.Add(new ReflectionLayer.ReflectionParameter(pInfo, m));
+			}
+			return m;
+		}
+		
+		/// <summary>
+		/// Gets a method implementing the signature specified by the event descriptor
+		/// </summary>
+		protected ICSharpCode.NRefactory.Ast.MethodDeclaration
+			ConvertDescriptorToNRefactory(EventDescriptor edesc, string methodName)
+		{
+			return ICSharpCode.SharpDevelop.Dom.Refactoring.CodeGenerator.ConvertMember(
+				ConvertDescriptorToDom(edesc, methodName),
+				new ClassFinder(c, c.BodyRegion.BeginLine + 1, 1)
+			) as ICSharpCode.NRefactory.Ast.MethodDeclaration;
 		}
 		
 		protected virtual int GetEventHandlerInsertionLine(IClass c)

@@ -13,6 +13,8 @@ using System.Text;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -68,35 +70,14 @@ namespace ICSharpCode.FormsDesigner
 			return r.BeginLine + 2;
 		}
 		
-		protected static string GenerateParams(EventDescriptor edesc, bool paramNames)
+		protected string GenerateParams(EventDescriptor edesc, bool paramNames)
 		{
-			System.Type type =  edesc.EventType;
-			MethodInfo mInfo = type.GetMethod("Invoke");
-			string param = "";
-			IAmbience csa = null;
-			try {
-				csa = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/C#", null);
-			} catch (TreePathNotFoundException) {
-				LoggingService.Warn("C# ambience not found");
+			CSharpOutputVisitor v = new CSharpOutputVisitor();
+			MethodDeclaration md = ConvertDescriptorToNRefactory(edesc, "name");
+			if (md != null) {
+				v.AppendCommaSeparatedList(md.Parameters);
 			}
-			
-			for (int i = 0; i < mInfo.GetParameters().Length; ++i)  {
-				ParameterInfo pInfo  = mInfo.GetParameters()[i];
-				
-				string typeStr = pInfo.ParameterType.ToString();
-				if (csa != null) {
-					typeStr = csa.GetIntrinsicTypeName(typeStr);
-				}
-				param += typeStr;
-				if (paramNames == true) {
-					param += " ";
-					param += pInfo.Name;
-				}
-				if (i + 1 < mInfo.GetParameters().Length) {
-					param += ", ";
-				}
-			}
-			return param;
+			return v.Text;
 		}
 	}
 }

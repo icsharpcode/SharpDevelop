@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {
-	internal static class ReflectionReturnType
+	public static class ReflectionReturnType
 	{
 		public static bool IsDefaultType(Type type)
 		{

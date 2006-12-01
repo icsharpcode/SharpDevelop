@@ -2472,11 +2472,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		void AppendCommaSeparatedList(IList list)
+		public void AppendCommaSeparatedList<T>(ICollection<T> list) where T : class, INode
 		{
 			if (list != null) {
-				for (int i = 0; i < list.Count; ++i) {
-					nodeTracker.TrackedVisit(((INode)list[i]), null);
+				int i = 0;
+				foreach (T node in list) {
+					nodeTracker.TrackedVisit(node, null);
 					if (i + 1 < list.Count) {
 						PrintFormattedComma();
 					}
@@ -2484,6 +2485,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.NewLine();
 						outputFormatter.Indent();
 					}
+					i++;
 				}
 			}
 		}

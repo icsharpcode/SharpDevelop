@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {
-	internal class ReflectionParameter : DefaultParameter
+	public class ReflectionParameter : DefaultParameter
 	{
 		public ReflectionParameter(ParameterInfo parameterInfo, IMember member) : base(parameterInfo.Name)
 		{
