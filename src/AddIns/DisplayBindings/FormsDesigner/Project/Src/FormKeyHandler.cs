@@ -96,6 +96,12 @@ namespace ICSharpCode.FormsDesigner
 			
 			CommandWrapper commandWrapper = (CommandWrapper)keyTable[keyPressed];
 			if (commandWrapper != null) {
+				if (commandWrapper.CommandID == MenuCommands.Delete) {
+					// Check Delete menu is enabled.
+					if (!formDesigner.EnableDelete) {
+						return false;
+					}
+				}
 				LoggingService.Debug("Run menu command: " + commandWrapper.CommandID);
 				Control ctl = WorkbenchSingleton.ActiveControl;
 				

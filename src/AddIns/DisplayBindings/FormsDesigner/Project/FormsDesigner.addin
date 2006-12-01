@@ -53,18 +53,22 @@
 		<MenuItem id = "Cut"
 		          label = "${res:XML.MainMenu.EditMenu.Cut}"
 		          icon = "Icons.16x16.CutIcon"
+		          loadclasslazy = "false"
 		          class = "ICSharpCode.SharpDevelop.Commands.Cut"/>
 		<MenuItem id = "Copy"
 		          label = "${res:XML.MainMenu.EditMenu.Copy}"
 		          icon = "Icons.16x16.CopyIcon"
+		          loadclasslazy = "false"
 		          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
 		<MenuItem id = "Paste"
 		          label = "${res:XML.MainMenu.EditMenu.Paste}"
 		          icon = "Icons.16x16.PasteIcon"
+		          loadclasslazy = "false"
 		          class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
 		<MenuItem id = "Delete"
 		          label = "${res:XML.MainMenu.EditMenu.Delete}"
 		          icon = "Icons.16x16.DeleteIcon"
+		          loadclasslazy = "false"
 		          class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
 		<MenuItem id = "PropertySeparator" type = "Separator"/>
 		<MenuItem id          = "ShowProperties"
