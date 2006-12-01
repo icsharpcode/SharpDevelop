@@ -356,11 +356,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			return this.Clone();
 		}
 		
+		/// <summary>
+		/// Gets/Sets the full path of the file represented by "Include".
+		/// For ProjectItems that are not assigned to any project, the getter returns the value of Include
+		/// and the setter throws a NotSupportedException.
+		/// </summary>
 		[Browsable(false)]
 		public virtual string FileName {
 			get {
 				if (project == null) {
-					throw new NotSupportedException("Not supported for items without project.");
+					return this.Include;
 				}
 				string fileName = this.fileNameCache;
 				if (fileName == null) {

@@ -57,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					string correctFileName = Path.Combine(Path.GetDirectoryName(c.CompilationUnit.FileName),
 					                                      c.Name + Path.GetExtension(c.CompilationUnit.FileName));
 					if (FileUtility.IsValidFileName(correctFileName)
+					    && Path.IsPathRooted(correctFileName)
 					    && !File.Exists(correctFileName))
 					{
 						if (c.CompilationUnit.Classes.Count == 1) {
