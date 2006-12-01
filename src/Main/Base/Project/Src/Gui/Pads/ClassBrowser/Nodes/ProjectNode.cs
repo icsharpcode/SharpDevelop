@@ -101,7 +101,6 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 					if (parseInformation != null) {
 						InsertParseInformation(parseInformation.BestCompilationUnit as ICompilationUnit);
 					}
-					break;
 				}
 			}
 		}
