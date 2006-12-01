@@ -22,22 +22,29 @@ namespace XmlEditor.Tests.Tree
 		XmlDocument doc;
 		XmlElement initialElementSelected;
 		bool initialIsElementSelected;
+		XmlNode documentElement;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			doc = new XmlDocument();
-			doc.LoadXml("<test/>");
-			using (XmlTreeViewControl treeView = new XmlTreeViewControl()) {
-				treeView.DocumentElement = doc.DocumentElement;
+			using (XmlTreeViewContainerControl treeViewContainer = new XmlTreeViewContainerControl()) {
+				
+				XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(new XmlSchemaCompletionDataCollection(), null, String.Empty);
+				treeViewContainer.LoadXml("<test/>", completionDataProvider);
+				
+				doc = treeViewContainer.Document;
+				XmlTreeViewControl treeView = treeViewContainer.TreeView;
+				
+				treeViewContainer.DocumentElement = doc.DocumentElement;
 				initialElementSelected = treeView.SelectedElement;
 				initialIsElementSelected = treeView.IsElementSelected;
 				
 				// Set the document element again to make sure the existing node 
 				// is removed.
 				doc.LoadXml("<root/>");
-				treeView.DocumentElement = null;
-				treeView.DocumentElement = doc.DocumentElement;
+				treeViewContainer.DocumentElement = null;
+				treeViewContainer.DocumentElement = doc.DocumentElement;
+				documentElement = treeViewContainer.DocumentElement;
 				
 				rootNode = (XmlElementTreeNode)treeView.Nodes[0];
 				nodeCount = treeView.Nodes.Count;
@@ -84,6 +91,12 @@ namespace XmlEditor.Tests.Tree
 		public void RootXmlElement()
 		{
 			Assert.IsTrue(Object.ReferenceEquals(rootNode.XmlElement, doc.DocumentElement));
+		}
+		
+		[Test]
+		public void DocumentElement()
+		{
+			Assert.AreSame(doc.DocumentElement, documentElement);
 		}
 	}
 }

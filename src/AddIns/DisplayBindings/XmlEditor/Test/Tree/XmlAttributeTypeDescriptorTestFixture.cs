@@ -46,5 +46,32 @@ namespace XmlEditor.Tests.Tree
 		{
 			Assert.IsTrue(Object.ReferenceEquals(typeDescriptor, typeDescriptor.GetPropertyOwner(null)));
 		}
+		
+		[Test]
+		public void ComponentName()
+		{
+			Assert.IsNull(typeDescriptor.GetComponentName());
+		}
+		
+		[Test]
+		public void DefaultEvent()
+		{
+			Assert.IsNull(typeDescriptor.GetDefaultEvent());
+		}
+		
+		[Test]
+		public void Events()
+		{
+			Assert.IsNull(typeDescriptor.GetEvents());
+			Assert.IsNull(typeDescriptor.GetEvents(new Attribute[0]));
+		}
+		
+		[Test]
+		public void NullAttributesCollection()
+		{
+			XmlAttributeTypeDescriptor typeDescriptor = new XmlAttributeTypeDescriptor(null);
+			PropertyDescriptorCollection properties = typeDescriptor.GetProperties();
+			Assert.AreEqual(0, properties.Count);
+		}
 	}
 }

@@ -93,5 +93,13 @@ namespace XmlEditor.Tests.Tree
 			Assert.AreEqual("new value", (String)firstAttributePropertyDescriptor.GetValue(null));
 			Assert.AreEqual("new value", firstAttribute.Value);
 		}
+		
+		[Test]
+		public void ResetValueDoesNothing()
+		{
+			firstAttributePropertyDescriptor.SetValue(null, "new value");
+			firstAttributePropertyDescriptor.ResetValue(null);
+			Assert.AreEqual("new value", firstAttribute.Value);
+		}
 	}
 }

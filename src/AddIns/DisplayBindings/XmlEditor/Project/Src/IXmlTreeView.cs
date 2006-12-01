@@ -104,5 +104,40 @@ namespace ICSharpCode.XmlEditor
 		/// element.
 		/// </summary>
 		void InsertElementAfter(XmlElement element);
+		
+		/// <summary>
+		/// Removes the specified element from the tree.
+		/// </summary>
+		void RemoveElement(XmlElement element);
+		
+		/// <summary>
+		/// Appends a new child text node to the currently selected
+		/// element.
+		/// </summary>
+		void AppendChildTextNode(XmlText textNode);
+		
+		/// <summary>
+		/// Inserts a new child text node before the currently
+		/// selected node.
+		/// </summary>
+		void InsertTextNodeBefore(XmlText textNode);
+		
+		/// <summary>
+		/// Inserts a new child text node after the currently
+		/// selected node.
+		/// </summary>
+		void InsertTextNodeAfter(XmlText textNode);
+		
+		/// <summary>
+		/// Removes the currently selected text node.
+		/// </summary>
+		void RemoveTextNode(XmlText textNode);
+		
+		/// <summary>
+		/// Informs the xml tree view that the text node
+		/// has changed and the corresponding tree node
+		/// needs to be updated.
+		/// </summary>
+		void UpdateTextNode(XmlText textNode);
 	}
 }

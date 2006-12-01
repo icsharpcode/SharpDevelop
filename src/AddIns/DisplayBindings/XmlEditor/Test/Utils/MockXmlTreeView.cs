@@ -32,6 +32,12 @@ namespace XmlEditor.Tests.Utils
 		List<XmlElement> childElementsAdded = new List<XmlElement>();
 		List<XmlElement> elementsInsertedBefore = new List<XmlElement>();
 		List<XmlElement> elementsInsertedAfter = new List<XmlElement>();
+		List<XmlElement> elementsRemoved = new List<XmlElement>();
+		List<XmlText> childTextNodesAdded = new List<XmlText>();
+		List<XmlText> textNodesInsertedBefore = new List<XmlText>();
+		List<XmlText> textNodesInsertedAfter = new List<XmlText>();
+		List<XmlText> textNodesRemoved = new List<XmlText>();
+		List<XmlText> textNodesUpdated = new List<XmlText>();
 		
 		public MockXmlTreeView()
 		{
@@ -134,7 +140,37 @@ namespace XmlEditor.Tests.Utils
 		{
 			elementsInsertedAfter.Add(element);
 		}
+		
+		public void RemoveElement(XmlElement element)
+		{
+			elementsRemoved.Add(element);
+		}
 
+		public void AppendChildTextNode(XmlText textNode)
+		{
+			childTextNodesAdded.Add(textNode);
+		}
+		
+		public void InsertTextNodeBefore(XmlText textNode)
+		{
+			textNodesInsertedBefore.Add(textNode);
+		}
+		
+		public void InsertTextNodeAfter(XmlText textNode)
+		{
+			textNodesInsertedAfter.Add(textNode);
+		}
+		
+		public void RemoveTextNode(XmlText textNode)
+		{
+			textNodesRemoved.Add(textNode);
+		}
+		
+		public void UpdateTextNode(XmlText textNode)
+		{
+			textNodesUpdated.Add(textNode);
+		}
+		
 		public string TextContent {
 			get {
 				return textContentDisplayed;
@@ -259,6 +295,66 @@ namespace XmlEditor.Tests.Utils
 		public List<XmlElement> ElementsInsertedAfter {
 			get {
 				return elementsInsertedAfter;
+			}
+		}
+				
+		/// <summary>
+		/// Returns the elements removed via the RemoveElement
+		/// method.
+		/// </summary>
+		public List<XmlElement> ElementsRemoved {
+			get {
+				return elementsRemoved;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the text nodes added via the AppendChildTextNode
+		/// method.
+		/// </summary>
+		public List<XmlText> ChildTextNodesAdded {
+			get {
+				return childTextNodesAdded;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the text nodes that were inserted via the
+		/// InsertTextNodeBefore method.
+		/// </summary>
+		public List<XmlText> TextNodesInsertedBefore {
+			get {
+				return textNodesInsertedBefore;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the text nodes that were inserted via the
+		/// InsertTextNodeAfter method.
+		/// </summary>
+		public List<XmlText> TextNodesInsertedAfter {
+			get {
+				return textNodesInsertedAfter;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the text nodes that were removed via the
+		/// RemoveTextNode method.
+		/// </summary>
+		public List<XmlText> TextNodesRemoved {
+			get {
+				return textNodesRemoved;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the text nodes that were updated via the
+		/// UpdateTextNode method.
+		/// </summary>
+		public List<XmlText> TextNodesUpdated {
+			get {
+				return textNodesUpdated;
 			}
 		}
 	}

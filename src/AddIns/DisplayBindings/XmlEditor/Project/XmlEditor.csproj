@@ -54,6 +54,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\AddChildTextNodeCommand.cs" />
+    <Compile Include="Src\IAddAttributeDialog.cs" />
+    <Compile Include="Src\IAddElementDialog.cs" />
+    <Compile Include="Src\InsertTextNodeAfterCommand.cs" />
+    <Compile Include="Src\InsertTextNodeBeforeCommand.cs" />
+    <Compile Include="Src\RemoveElementCommand.cs" />
+    <Compile Include="Src\RemoveTextNodeCommand.cs" />
     <Compile Include="Src\XmlEditorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

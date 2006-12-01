@@ -55,5 +55,13 @@ namespace XmlEditor.Tests.Tree
 			XmlTextTreeNode node = new XmlTextTreeNode(text);
 			Assert.AreEqual("Test...", node.Text);
 		}
+		
+		[Test]
+		public void EmptyLines()
+		{
+			XmlText text = doc.CreateTextNode("\r\n\r\n\r\n");
+			XmlTextTreeNode node = new XmlTextTreeNode(text);
+			Assert.AreEqual(String.Empty, node.Text);
+		}
 	}
 }

@@ -74,6 +74,17 @@ namespace XmlEditor.Tests.Tree
 			Assert.IsFalse(mockXmlTreeView.IsDirty);
 		}
 		
+		/// <summary>
+		/// Check that the Xml tree editor calls the XmlTreeView's
+		/// UpdateTextNode method.
+		/// </summary>
+		[Test]
+		public void TreeNodeTextUpdated()
+		{
+			Assert.AreEqual(1, mockXmlTreeView.TextNodesUpdated.Count);
+			Assert.AreEqual(textNode, mockXmlTreeView.TextNodesUpdated[0]);
+		}
+		
 		protected override string GetXml()
 		{
 			return "<root>text</root>";

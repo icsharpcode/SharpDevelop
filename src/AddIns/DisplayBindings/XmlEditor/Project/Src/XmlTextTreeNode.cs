@@ -22,13 +22,22 @@ namespace ICSharpCode.XmlEditor
 			this.xmlText = xmlText;
 			ImageKey = XmlTextTreeNodeImageKey;
 			SelectedImageKey = ImageKey;
-			Text = GetDisplayText(xmlText.InnerText);
+			Update();
 		}
 		
 		public XmlText XmlText {
 			get {
 				return xmlText;
 			}
+		}
+		
+		/// <summary>
+		/// Updates the display text based on changes in the
+		/// XmlText associated with this node.
+		/// </summary>
+		public void Update()
+		{
+			Text = GetDisplayText(xmlText.InnerText);
 		}
 		
 		/// <summary>

@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.XmlEditor
 {
-	public class AddAttributeDialog : BaseSharpDevelopForm
+	public class AddAttributeDialog : BaseSharpDevelopForm, IAddAttributeDialog
 	{
 		ListBox attributesListBox;
 		Button okButton;

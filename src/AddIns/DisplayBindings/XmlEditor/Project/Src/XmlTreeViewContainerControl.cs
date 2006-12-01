@@ -33,7 +33,8 @@ namespace ICSharpCode.XmlEditor
 			Nothing             = 0,
 			ElementSelected     = 1,
 			RootElementSelected = 2,
-			AttributeSelected   = 4
+			AttributeSelected   = 4,
+			TextNodeSelected    = 8
 		}
 		
 		public event EventHandler DirtyChanged;
@@ -44,6 +45,9 @@ namespace ICSharpCode.XmlEditor
 			InitImages();
 		}
 		
+		/// <summary>
+		/// Gets the current XmlTreeViewContainerControlState.
+		/// </summary>
 		public Enum InternalState {
 			get {
 				XmlTreeViewContainerControlState state = XmlTreeViewContainerControlState.Nothing;
@@ -55,6 +59,9 @@ namespace ICSharpCode.XmlEditor
 				}
 				if (SelectedAttribute != null) {
 					state |= XmlTreeViewContainerControlState.AttributeSelected;
+				}
+				if (SelectedTextNode != null) {
+					state = XmlTreeViewContainerControlState.TextNodeSelected;
 				}
 				return state;
 			}
@@ -248,7 +255,7 @@ namespace ICSharpCode.XmlEditor
 		/// <returns>The attributes selected by the user.</returns>
 		public string[] SelectNewAttributes(string[] attributes)
 		{
-			using (AddAttributeDialog addAttributeDialog = new AddAttributeDialog(attributes)) {
+			using (IAddAttributeDialog addAttributeDialog = CreateAddAttributeDialog(attributes)) {
 				if (addAttributeDialog.ShowDialog() == DialogResult.OK) {
 					return addAttributeDialog.AttributeNames;
 				}
@@ -273,7 +280,7 @@ namespace ICSharpCode.XmlEditor
 		/// <returns>The elements selected by the user.</returns>
 		public string[] SelectNewElements(string[] elements)
 		{
-			using (AddElementDialog addElementDialog = new AddElementDialog(elements)) {
+			using (IAddElementDialog addElementDialog = CreateAddElementDialog(elements)) {
 				if (addElementDialog.ShowDialog() == DialogResult.OK) {
 					return addElementDialog.ElementNames;
 				}
@@ -332,6 +339,100 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
+		/// Removes the selected element.
+		/// </summary>
+		public void RemoveElement()
+		{
+			editor.RemoveElement();
+		}
+		
+		/// <summary>
+		/// Removes the specified element from the tree.
+		/// </summary>
+		public void RemoveElement(XmlElement element)
+		{
+			xmlElementTreeView.RemoveElement(element);
+		}
+		
+		/// <summary>
+		/// Appends a new text node to the currently selected
+		/// element.
+		/// </summary>
+		public void AppendChildTextNode(XmlText textNode)
+		{
+			xmlElementTreeView.AppendChildTextNode(textNode);			
+		}
+		
+		/// <summary>
+		/// Appends a new text node to the currently selected
+		/// element.
+		/// </summary>		
+		public void AppendChildTextNode()
+		{
+			editor.AddChildTextNode();
+		}
+		
+		/// <summary>
+		/// Inserts a new text node before the currently selected
+		/// node.
+		/// </summary>
+		public void InsertTextNodeBefore()
+		{
+			editor.InsertTextNodeBefore();
+		}
+		
+		/// <summary>
+		/// Inserts a new text node before the currently selected
+		/// node.
+		/// </summary>
+		public void InsertTextNodeBefore(XmlText textNode)
+		{
+			xmlElementTreeView.InsertTextNodeBefore(textNode);
+		}
+		
+		/// <summary>
+		/// Inserts a new text node after the currently selected
+		/// node.
+		/// </summary>
+		public void InsertTextNodeAfter()
+		{
+			editor.InsertTextNodeAfter();
+		}
+		
+		/// <summary>
+		/// Inserts a new text node after the currently selected
+		/// node.
+		/// </summary>
+		public void InsertTextNodeAfter(XmlText textNode)
+		{
+			xmlElementTreeView.InsertTextNodeAfter(textNode);
+		}
+		
+		/// <summary>
+		/// Removes the currently selected text node.
+		/// </summary>
+		public void RemoveTextNode()
+		{
+			editor.RemoveTextNode();
+		}
+		
+		/// <summary>
+		/// Removes the currently selected text node.
+		/// </summary>
+		public void RemoveTextNode(XmlText textNode)
+		{
+			xmlElementTreeView.RemoveTextNode(textNode);
+		}
+		
+		/// <summary>
+		/// Updates the corresponding tree node's text.
+		/// </summary>
+		public void UpdateTextNode(XmlText textNode)
+		{
+			xmlElementTreeView.UpdateTextNode(textNode);
+		}
+		
+		/// <summary>
 		/// Disposes resources used by the control.
 		/// </summary>
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -343,6 +444,26 @@ namespace ICSharpCode.XmlEditor
 				}
 			}
 			base.Dispose(disposing);
+		}
+		
+		/// <summary>
+		/// Creates a new AddElementDialog.
+		/// </summary>
+		/// <param name="elementNames">The element names to be listed in the
+		/// dialog.</param>
+		protected virtual IAddElementDialog CreateAddElementDialog(string[] elementNames)
+		{
+			return new AddElementDialog(elementNames);
+		}
+		
+		/// <summary>
+		/// Creates a new AddAttributeDialog.
+		/// </summary>
+		/// <param name="attributeNames">The attribute names to be listed in the
+		/// dialog.</param>
+		protected virtual IAddAttributeDialog CreateAddAttributeDialog(string[] attributeNames)
+		{
+			return new AddAttributeDialog(attributeNames);
 		}
 		
 		#region Forms Designer generated code
@@ -462,22 +583,22 @@ namespace ICSharpCode.XmlEditor
 		#endregion
 
 		/// <summary>
-		/// Creates an image list that will be used for the XmlTreeViewControl.
+		/// This method is protected only so we can easily test
+		/// what happens when this method is called. Triggering
+		/// a TextChanged event is difficult to do from unit tests.
+		/// You can trigger it it by setting the textBox's Rtf property.
 		/// </summary>
-		void InitImages()
+		protected void TextBoxTextChanged(object sender, EventArgs e)
 		{
-			if (components == null) {
-				components = new Container();
-			}
-			ImageList images = new ImageList(components);
-			Image xmlElementImage = Image.FromStream(GetType().Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlElementTreeNodeIcon.png"));
-			images.Images.Add(XmlElementTreeNode.XmlElementTreeNodeImageKey, xmlElementImage);
-			Image xmlTextImage = Image.FromStream(GetType().Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlTextTreeNodeIcon.png"));
-			images.Images.Add(XmlTextTreeNode.XmlTextTreeNodeImageKey, xmlTextImage);
-			xmlElementTreeView.ImageList = images;
+			bool previousIsDirty = dirty;
+			editor.TextContentChanged();
+			OnXmlChanged(previousIsDirty);
 		}
 		
-		void XmlElementTreeViewAfterSelect(object sender, TreeViewEventArgs e)
+		/// <summary>
+		/// This method is protected so we can test it.
+		/// </summary>
+		protected void XmlElementTreeViewAfterSelect(object sender, TreeViewEventArgs e)
 		{
 			if (xmlElementTreeView.IsTextNodeSelected) {
 				editor.SelectedTextNodeChanged();
@@ -486,19 +607,33 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		void TextBoxTextChanged(object sender, EventArgs e)
-		{
-			bool previousIsDirty = dirty;
-			editor.TextContentChanged();
-			OnXmlChanged(previousIsDirty);
-		}
-		
-		void AttributesGridPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+		/// <summary>
+		/// This method is protected so we can test it.
+		/// </summary>
+		protected void AttributesGridPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
 			bool previousIsDirty = dirty;
 			editor.AttributeValueChanged();
 			OnXmlChanged(previousIsDirty);
 		}
+				
+		/// <summary>
+		/// Creates an image list that will be used for the XmlTreeViewControl.
+		/// </summary>
+		void InitImages()
+		{
+			if (components == null) {
+				components = new Container();
+			}
+			ImageList images = new ImageList(components);
+			Image xmlElementImage = Image.FromStream(typeof(XmlTreeViewContainerControl).Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlElementTreeNodeIcon.png"));
+			images.Images.Add(XmlElementTreeNode.XmlElementTreeNodeImageKey, xmlElementImage);
+			Image xmlTextImage = Image.FromStream(typeof(XmlTreeViewContainerControl).Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlTextTreeNodeIcon.png"));
+			images.Images.Add(XmlTextTreeNode.XmlTextTreeNodeImageKey, xmlTextImage);
+			xmlElementTreeView.ImageList = images;
+		}
+		
+
 		
 		/// <summary>
 		/// Raises the dirty changed event if the dirty flag has changed.
@@ -545,9 +680,6 @@ namespace ICSharpCode.XmlEditor
 		/// Gets or sets whether the text node text box is visible.
 		/// </summary>
 		bool IsTextBoxVisible {
-			get {
-				return textBoxVisible;
-			}
 			set {
 				textBoxVisible = value;
 				if (value) {

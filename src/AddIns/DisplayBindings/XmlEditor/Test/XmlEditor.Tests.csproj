@@ -70,6 +70,21 @@
     <Compile Include="Paths\TwoElementPathTestFixture.cs" />
     <Compile Include="Schema\NestedChoiceTestFixture.cs" />
     <Compile Include="Schema\ChildElementAttributesTestFixture.cs" />
+    <Compile Include="Tree\AddChildTextNodeTestFixture.cs" />
+    <Compile Include="Tree\InsertTextNodeAfterTestFixture.cs" />
+    <Compile Include="Tree\InsertTextNodeBeforeTestFixture.cs" />
+    <Compile Include="Tree\MenuCommandsTestFixture.cs" />
+    <Compile Include="Tree\MouseDownTestFixture.cs" />
+    <Compile Include="Tree\OwnerStatusTestFixture.cs" />
+    <Compile Include="Tree\RemoveElementsFromTreeControlTestFixture.cs" />
+    <Compile Include="Tree\RemoveElementTestFixture.cs" />
+    <Compile Include="Tree\RemoveTextNodesFromTreeControlTestFixture.cs" />
+    <Compile Include="Tree\RemoveTextNodeTestFixture.cs" />
+    <Compile Include="Tree\XmlTreeViewContainerTestFixture.cs" />
+    <Compile Include="Utils\DerivedXmlTreeView.cs" />
+    <Compile Include="Utils\DerivedXmlTreeViewContainerControl.cs" />
+    <Compile Include="Utils\MockAddAttributeDialog.cs" />
+    <Compile Include="Utils\MockAddElementDialog.cs" />
     <Compile Include="Utils\ResourceManager.cs" />
     <Compile Include="Schema\XhtmlStrictSchemaTestFixture.cs" />
     <Compile Include="Schema\XsdSchemaTestFixture.cs" />
@@ -143,6 +158,7 @@
     <Compile Include="Tree\InsertElementBeforeTestFixture.cs" />
     <Compile Include="Tree\AddElementsToTreeControlTestFixture.cs" />
     <Compile Include="Tree\InsertElementAfterTestFixture.cs" />
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Schema\" />

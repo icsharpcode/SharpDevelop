@@ -23,40 +23,44 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void SetUpFixture()
 		{
-			doc = new XmlDocument();
-			doc.LoadXml("<root/>");
-			using (XmlTreeViewControl treeView = new XmlTreeViewControl()) {
-				treeView.DocumentElement = doc.DocumentElement;
+			using (XmlTreeViewContainerControl treeViewContainer = new XmlTreeViewContainerControl()) {
+				XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(new XmlSchemaCompletionDataCollection(), null, String.Empty);
+				treeViewContainer.LoadXml("<root/>", completionDataProvider);
+				
+				doc = treeViewContainer.Document;
+				XmlTreeViewControl treeView = treeViewContainer.TreeView;
+				
+				//treeView.DocumentElement = doc.DocumentElement;
 				rootNode = (XmlElementTreeNode)treeView.Nodes[0];
 
 				// No node selected in treeview - adding a child 
 				// node should do nothing.
 				treeView.SelectedNode = null;
 				XmlElement testElement = doc.CreateElement("test");
-				treeView.AppendChildElement(testElement);
+				treeViewContainer.AppendChildElement(testElement);
 				
 				treeView.SelectedNode = rootNode;
 				XmlElement childElement = doc.CreateElement("child");
-				treeView.AppendChildElement(childElement);
+				treeViewContainer.AppendChildElement(childElement);
 				
 				// No node selected in treeview - inserting a node 
 				// node should do nothing.
 				treeView.SelectedNode = null;
-				treeView.AppendChildElement(testElement);
+				treeViewContainer.AppendChildElement(testElement);
 
 				XmlElementTreeNode childNode = (XmlElementTreeNode)rootNode.Nodes[0];
 				treeView.SelectedNode = childNode;
 				XmlElement beforeElement = doc.CreateElement("before");
-				treeView.InsertElementBefore(beforeElement);	
+				treeViewContainer.InsertElementBefore(beforeElement);	
 				
 				// No node selected in treeview - inserting a node 
 				// node should do nothing.
 				treeView.SelectedNode = null;
-				treeView.AppendChildElement(testElement);
+				treeViewContainer.AppendChildElement(testElement);
 
 				treeView.SelectedNode = childNode;
 				XmlElement afterElement = doc.CreateElement("after");
-				treeView.InsertElementAfter(afterElement);			
+				treeViewContainer.InsertElementAfter(afterElement);	
 			}
 		}
 				

@@ -131,6 +131,7 @@ namespace ICSharpCode.XmlEditor
 			if (textNode != null) {
 				view.IsDirty = true;
 				textNode.Value = view.TextContent;
+				view.UpdateTextNode(textNode);
 			}
 		}
 		
@@ -196,6 +197,94 @@ namespace ICSharpCode.XmlEditor
 							view.InsertElementAfter(newElement);
 						}
 					}
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Removes the currently selected element.
+		/// </summary>
+		public void RemoveElement()
+		{
+			XmlElement selectedElement = view.SelectedElement;
+			if (selectedElement != null) {
+				XmlNode parentNode = selectedElement.ParentNode;
+				parentNode.RemoveChild(selectedElement);
+				view.IsDirty = true;
+				view.RemoveElement(selectedElement);
+			}
+		}
+		
+		/// <summary>
+		/// Removes the currently select text node.
+		/// </summary>
+		public void RemoveTextNode()
+		{
+			XmlText textNode = view.SelectedTextNode;
+			if (textNode != null) {
+				XmlNode parentNode = textNode.ParentNode;
+				parentNode.RemoveChild(textNode);
+				view.IsDirty = true;
+				view.RemoveTextNode(textNode);
+			}
+		}
+		
+		/// <summary>
+		/// Adds a child text node to the current selected element.
+		/// </summary>
+		public void AddChildTextNode()
+		{
+			XmlElement selectedElement = view.SelectedElement;
+			if (selectedElement != null) {
+				XmlText textNode = document.CreateTextNode(String.Empty);
+				selectedElement.AppendChild(textNode);
+				view.IsDirty = true;
+				view.AppendChildTextNode(textNode);
+			}
+		}
+		
+		/// <summary>
+		/// Inserts a text node before the currently selected node.
+		/// </summary>
+		public void InsertTextNodeBefore()
+		{
+			// Get the currently selected text node or element.
+			XmlNode selectedNode = view.SelectedTextNode;
+			if (selectedNode == null) {
+				selectedNode = view.SelectedElement;
+			}
+
+			// Insert the text node before the selected node.
+			if (selectedNode != null) {
+				XmlElement parentElement = selectedNode.ParentNode as XmlElement;
+				if (parentElement != null) {
+					XmlText textNode = document.CreateTextNode(String.Empty);
+					parentElement.InsertBefore(textNode, selectedNode);
+					view.IsDirty = true;
+					view.InsertTextNodeBefore(textNode);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Inserts a text node after the currently selected node.
+		/// </summary>
+		public void InsertTextNodeAfter()
+		{
+			// Get the currently selected text node or element.
+			XmlNode selectedNode = view.SelectedTextNode;
+			if (selectedNode == null) {
+				selectedNode = view.SelectedElement;
+			}
+
+			// Insert the text node after the selected node.
+			if (selectedNode != null) {
+				XmlElement parentElement = selectedNode.ParentNode as XmlElement;
+				if (parentElement != null) {
+					XmlText textNode = document.CreateTextNode(String.Empty);
+					parentElement.InsertAfter(textNode, selectedNode);
+					view.IsDirty = true;
+					view.InsertTextNodeAfter(textNode);
 				}
 			}
 		}

@@ -211,11 +211,48 @@
 			<MenuItem id = "InsertElementAfter"
 				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertElementAfterMenuLabel}"
 				class = "ICSharpCode.XmlEditor.InsertElementAfterCommand"/>
-		</ComplexCondition>	
+		</ComplexCondition>
 		<Condition name = "Ownerstate" ownerstate = "ElementSelected" action = "Disable">
 			<MenuItem id = "AddChildElement"
 				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddChildElementMenuLabel}"
 				class = "ICSharpCode.XmlEditor.AddChildElementCommand"/>
-		</Condition>		
+		</Condition>
+		<ComplexCondition action = "Disable">
+			<Or>
+				<Condition name = "Ownerstate" ownerstate = "TextNodeSelected"/>
+				<And>
+					<Condition name = "Ownerstate" ownerstate = "ElementSelected"/>
+					<Not>
+						<Condition name = "Ownerstate" ownerstate = "RootElementSelected"/>
+					</Not>
+				</And>
+			</Or>
+			<MenuItem id = "TextNodeCommandsSeparator" type = "Separator"/>
+			<MenuItem id = "InsertTextNodeBefore"
+				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertTextNodeBeforeMenuLabel}"
+				class = "ICSharpCode.XmlEditor.InsertTextNodeBeforeCommand"/>
+			<MenuItem id = "InsertTextNodeAfter"
+				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertTextNodeAfterMenuLabel}"
+				class = "ICSharpCode.XmlEditor.InsertTextNodeAfterCommand"/>
+		</ComplexCondition>		
+		<Condition name = "Ownerstate" ownerstate = "ElementSelected" action = "Disable">
+			<MenuItem id = "AddChildTextNode"
+				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddChildTextNodeAfterMenuLabel}"
+				class = "ICSharpCode.XmlEditor.AddChildTextNodeCommand"/>			
+		</Condition>
+		<Condition name = "Ownerstate" ownerstate = "TextNodeSelected" action = "Exclude">
+			<MenuItem id = "RemoveTextNodeSeparator" type = "Separator"/>
+			<MenuItem id = "RemoveTextNode"
+				label = "${res:XML.MainMenu.EditMenu.Delete}"
+				icon = "Icons.16x16.DeleteIcon"
+				class = "ICSharpCode.XmlEditor.RemoveTextNodeCommand"/>
+		</Condition>
+		<Condition name = "Ownerstate" ownerstate = "ElementSelected" action = "Exclude">
+			<MenuItem id = "RemoveElementSeparator" type = "Separator"/>
+			<MenuItem id = "RemoveElement"
+				label = "${res:XML.MainMenu.EditMenu.Delete}"
+				icon = "Icons.16x16.DeleteIcon"
+				class = "ICSharpCode.XmlEditor.RemoveElementCommand"/>
+		</Condition>
 	</Path>
 </AddIn>

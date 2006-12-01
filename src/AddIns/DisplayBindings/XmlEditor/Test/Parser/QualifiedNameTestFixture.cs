@@ -8,6 +8,7 @@
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using System;
+using System.Xml;
 
 namespace XmlEditor.Tests.Parser
 {
@@ -60,6 +61,15 @@ namespace XmlEditor.Tests.Parser
 			QualifiedName name2 = null; 
 			
 			Assert.IsFalse(name1 == name2, "Should not be the same.");
-		}			
+		}		
+		
+		[Test]
+		public void HashCodeTest()
+		{
+			QualifiedName name1 = new QualifiedName("foo", "http://foo.com", "f");
+			XmlQualifiedName xmlQualifiedName = new XmlQualifiedName("foo", "http://foo.com");
+
+			Assert.AreEqual(name1.GetHashCode(), xmlQualifiedName.GetHashCode());
+		}
 	}
 }
