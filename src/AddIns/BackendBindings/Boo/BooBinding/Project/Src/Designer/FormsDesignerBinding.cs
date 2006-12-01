@@ -37,7 +37,7 @@ namespace Grunwald.BooBinding.Designer
 				if (fileName == null)
 					return false;
 				if (Path.GetExtension(fileName).Equals(".boo", StringComparison.InvariantCultureIgnoreCase)) {
-					ParseInformation info = ParserService.ParseFile(fileName, textAreaControlProvider.TextEditorControl.Document.TextContent, false, true);
+					ParseInformation info = ParserService.ParseFile(fileName, textAreaControlProvider.TextEditorControl.Document.TextContent, false);
 					if (FormsDesignerSecondaryDisplayBinding.IsDesignable(info))
 						return true;
 				}

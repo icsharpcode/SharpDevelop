@@ -106,7 +106,7 @@ namespace Grunwald.BooBinding.Designer
 		{
 			lastTextContent = TextContent;
 			
-			ParseInformation parseInfo = ParserService.ParseFile(textEditorControl.FileName, textEditorControl.Text, false, true);
+			ParseInformation parseInfo = ParserService.ParseFile(textEditorControl.FileName, textEditorControl.Text, false);
 			// ensure that there are no syntax errors in the file:
 			Module mainModule = Parse(textEditorControl.FileName, lastTextContent);
 			
@@ -136,7 +136,7 @@ namespace Grunwald.BooBinding.Designer
 				parsedModule = Parse(fileName, fileContent);
 				
 				// Update list of fields in designer file. Fixes SD2-973.
-				ParserService.ParseFile(fileName, fileContent, false, true);
+				ParserService.ParseFile(fileName, fileContent, false);
 			}
 			
 			foreach (IField f in formClass.Fields) {
