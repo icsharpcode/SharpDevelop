@@ -292,7 +292,14 @@ namespace ICSharpCode.Core
 				try {
 					addIn = AddIn.Load(fileName);
 				} catch (AddInLoadException ex) {
-					MessageService.ShowError(ex, "Error loading AddIn " + fileName);
+					LoggingService.Error(ex);
+					if (ex.InnerException != null) {
+						MessageService.ShowError("Error loading AddIn " + fileName + ":\n"
+						                         + ex.InnerException.Message);
+					} else {
+						MessageService.ShowError("Error loading AddIn " + fileName + ":\n"
+						                         + ex.Message);
+					}
 					addIn = new AddIn();
 					addIn.CustomErrorMessage = ex.Message;
 				}
