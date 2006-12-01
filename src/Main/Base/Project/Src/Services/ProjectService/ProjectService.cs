@@ -220,6 +220,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Removes a project item from the project, raising the ProjectItemRemoved event.
 		/// Make sure you call project.Save() after removing items!
+		/// No action (not even raising the event) is taken when the item was already removed form the project.
 		/// </summary>
 		public static void RemoveProjectItem(IProject project, ProjectItem item)
 		{
@@ -227,10 +228,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (item == null)    throw new ArgumentNullException("item");
 			IProjectItemListProvider provider = project as IProjectItemListProvider;
 			if (provider != null) {
-				if (!provider.RemoveProjectItem(item)) {
-					throw new ArgumentException("The item was not found in the project!");
+				if (provider.RemoveProjectItem(item)) {
+					OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
 				}
-				OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
 			}
 		}
 		

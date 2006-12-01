@@ -36,8 +36,6 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		
 		public override void UpdateParseInformation(ICompilationUnit oldUnit, ICompilationUnit unit)
 		{
-			LoggingService.Debug("UpdateParseInformation: old=" + oldUnit + " new=" + unit);
-			
 			Dictionary<string, IClass> classDictionary      = new Dictionary<string, IClass>();
 			Dictionary<string, bool>   wasUpdatedDictionary = new Dictionary<string, bool>();
 			

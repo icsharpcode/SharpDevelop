@@ -206,10 +206,16 @@ namespace ICSharpCode.SharpDevelop.Project
 					Project.Save();
 				}
 			} else if (!File.Exists(FileName)) {
-				FileService.RemoveFile(FileName, false);
+				// exclude this node, then remove it
+				Commands.ExcludeFileFromProject.ExcludeFileNode(this);
+				this.Remove();
 				Project.Save();
 			} else if (MessageService.AskQuestion(GetQuestionText("${res:ProjectComponent.ContextMenu.Delete.Question}"))) {
 				FileService.RemoveFile(FileName, false);
+				if (IsLink) {
+					// we need to manually remove the link
+					Commands.ExcludeFileFromProject.ExcludeFileNode(this);
+				}
 				Project.Save();
 			}
 		}
