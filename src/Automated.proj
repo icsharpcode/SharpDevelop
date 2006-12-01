@@ -36,13 +36,19 @@
 		<Message Text="BuildProperties=$(BuildProperties)" Importance="high"/>
 		
 		<CallTarget Targets="cleanunittests"/>
-		<CallTarget Targets="cleantask"/>
+		
+		<Exec WorkingDirectory="$(SharpDevelopSrc)"
+		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
+		
 		<CallTarget Targets="build"/>
 		<CallTarget Targets="createsetup"/>
 		<CallTarget Targets="buildunittests"/>
 		<CallTarget Targets="rununittests"/>
 		<CallTarget Targets="cleanunittests"/>
-		<CallTarget Targets="cleantask"/>
+		
+		<Exec WorkingDirectory="$(SharpDevelopSrc)"
+		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
+		
 		<CallTarget Targets="zipsource"/>
 	</Target>
 	
@@ -110,10 +116,5 @@
 		     ZipLevel="6"
 		     WorkingDirectory="$(ProjectDir)"
 		     ZipFileName="$(ArtefactsOutputDir)\$(ArtefactPrefix)$(BuildNumber)_Source.zip"/>
-	</Target>
-	
-	<Target Name="cleantask">
-		<Exec WorkingDirectory="$(SharpDevelopSrc)"
-		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
 	</Target>
 </Project>
