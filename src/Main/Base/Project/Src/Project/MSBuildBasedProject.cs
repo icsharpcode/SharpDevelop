@@ -713,6 +713,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					items.Add(CreateProjectItem(item));
 				}
 			}
+			ClearFindFileCache();
 		}
 		
 		void IProjectItemListProvider.AddProjectItem(ProjectItem item)

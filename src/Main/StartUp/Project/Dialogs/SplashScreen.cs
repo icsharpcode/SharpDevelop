@@ -25,6 +25,9 @@ namespace ICSharpCode.SharpDevelop
 			get {
 				return splashScreen;
 			}
+			set {
+				splashScreen = value;
+			}
 		}
 		
 		public SplashScreenForm()

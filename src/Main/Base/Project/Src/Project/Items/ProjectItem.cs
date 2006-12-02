@@ -95,6 +95,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		internal BuildItem BuildItem {
 			get { return buildItem; }
 			set {
+				if (project is AbstractProject) {
+					((AbstractProject)project).ClearFindFileCache();
+				}
+				
 				if (value != null) {
 					virtualMetadata = null;
 					virtualItemType = default(ItemType);
@@ -143,6 +147,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				lock (SyncRoot) {
+					if (project is AbstractProject) {
+						((AbstractProject)project).ClearFindFileCache();
+					}
+					
 					if (buildItem != null)
 						buildItem.Include = MSBuildInternals.Escape(value);
 					else
@@ -371,6 +379,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (fileName == null) {
 					lock (SyncRoot) {
 						fileName = Path.Combine(project.Directory, this.Include);
+						try {
+							if (Path.IsPathRooted(fileName)) {
+								fileName = Path.GetFullPath(fileName);
+							}
+						} catch {}
 						fileNameCache = fileName;
 					}
 				}

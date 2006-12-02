@@ -131,6 +131,7 @@ namespace ICSharpCode.SharpDevelop
 				host.BeforeRunWorkbench += delegate {
 					if (SplashScreenForm.SplashScreen != null) {
 						SplashScreenForm.SplashScreen.BeginInvoke(new MethodInvoker(SplashScreenForm.SplashScreen.Dispose));
+						SplashScreenForm.SplashScreen = null;
 					}
 				};
 				

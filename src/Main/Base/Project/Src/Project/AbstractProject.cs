@@ -362,6 +362,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			return FindFile(fileName) != null;
 		}
 		
+		Dictionary<string, FileProjectItem> findFileCache;
+		
+		internal protected void ClearFindFileCache()
+		{
+			lock (SyncRoot) {
+				findFileCache = null;
+			}
+		}
+		
 		/// <summary>
 		/// Returns the project item for a specific file; or null if the file is not found in the project.
 		/// This member is thread-safe.
@@ -370,12 +379,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		public FileProjectItem FindFile(string fileName)
 		{
 			lock (SyncRoot) {
-				return Linq.Find(Linq.OfType<FileProjectItem>(this.Items),
-				                 delegate(FileProjectItem item) {
-				                 	return FileUtility.IsEqualFileName(item.FileName, fileName);
-				                 });
-				// return this.Items.OfType<FileProjectItem>().Find(
-				//			 item => FileUtility.IsEqualFileName(item.FileName, outputFileName));
+				if (findFileCache == null) {
+					findFileCache = new Dictionary<string, FileProjectItem>(StringComparer.InvariantCultureIgnoreCase);
+					foreach (ProjectItem item in this.Items) {
+						FileProjectItem fileItem = item as FileProjectItem;
+						if (fileItem != null) {
+							findFileCache[item.FileName] = fileItem;
+						}
+					}
+				}
+				try {
+					fileName = Path.GetFullPath(fileName);
+				} catch {}
+				FileProjectItem outputItem;
+				findFileCache.TryGetValue(fileName, out outputItem);
+				return outputItem;
 			}
 		}
 		
