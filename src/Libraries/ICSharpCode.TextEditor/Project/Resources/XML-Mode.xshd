@@ -12,7 +12,7 @@
 			<!-- It is not necessary to define span-delimiting characters as delimiters -->
 			<Delimiters></Delimiters>
 
-			<Span name="Comment" bold="false" italic="false" color="DarkSlateGray" stopateol="false">
+			<Span name="Comment" bold="false" italic="false" color="Green" stopateol="false">
 				<Begin>&lt;!--</Begin>
 				<End>--&gt;</End>
 			</Span>
