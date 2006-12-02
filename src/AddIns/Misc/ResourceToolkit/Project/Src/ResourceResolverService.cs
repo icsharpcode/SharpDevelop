@@ -50,12 +50,13 @@ namespace Hornung.ResourceToolkit
 		/// Attempts to resolve a reference to a resource using all registered resolvers.
 		/// </summary>
 		/// <param name="editor">The text editor for which a resource resolution attempt should be performed.</param>
+		/// <param name="charTyped">The character that has been typed at the caret position but is not yet in the buffer (this is used when invoked from code completion), or <c>null</c>.</param>
 		/// <returns>A <see cref="ResourceResolveResult"/> that describes which resource is referenced by the expression at the caret in the specified editor, or <c>null</c> if all registered resolvers return <c>null</c>.</returns>
-		public static ResourceResolveResult Resolve(TextEditorControl editor)
+		public static ResourceResolveResult Resolve(TextEditorControl editor, char? charTyped)
 		{
 			ResourceResolveResult result;
 			foreach (IResourceResolver resolver in Resolvers) {
-				if ((result = resolver.Resolve(editor)) != null) {
+				if ((result = resolver.Resolve(editor, charTyped)) != null) {
 					return result;
 				}
 			}
@@ -69,12 +70,13 @@ namespace Hornung.ResourceToolkit
 		/// <param name="document">The document that contains the expression to be resolved.</param>
 		/// <param name="caretLine">The 0-based line in the file that contains the expression to be resolved.</param>
 		/// <param name="caretColumn">The 0-based column position of the expression to be resolved.</param>
+		/// <param name="charTyped">The character that has been typed at the caret position but is not yet in the buffer (this is used when invoked from code completion), or <c>null</c>.</param>
 		/// <returns>A <see cref="ResourceResolveResult"/> that describes which resource is referenced by the expression at the caret in the specified editor, or <c>null</c> if all registered resolvers return <c>null</c>.</returns>
-		public static ResourceResolveResult Resolve(string fileName, IDocument document, int caretLine, int caretColumn)
+		public static ResourceResolveResult Resolve(string fileName, IDocument document, int caretLine, int caretColumn, char? charTyped)
 		{
 			ResourceResolveResult result;
 			foreach (IResourceResolver resolver in Resolvers) {
-				if ((result = resolver.Resolve(fileName, document, caretLine, caretColumn)) != null) {
+				if ((result = resolver.Resolve(fileName, document, caretLine, caretColumn, charTyped)) != null) {
 					return result;
 				}
 			}

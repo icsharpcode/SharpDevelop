@@ -28,7 +28,7 @@ namespace Hornung.ResourceToolkit.ToolTips
 				return null;
 			}
 			
-			ResourceResolveResult result = ResourceResolverService.Resolve(textArea.MotherTextEditorControl.FileName, doc, logicPos.Y, logicPos.X);
+			ResourceResolveResult result = ResourceResolverService.Resolve(textArea.MotherTextEditorControl.FileName, doc, logicPos.Y, logicPos.X, null);
 			
 			if (result != null && result.ResourceFileContent != null) {
 				return new ToolTipInfo(ResourceResolverService.FormatResourceDescription(result.ResourceFileContent, result.Key));

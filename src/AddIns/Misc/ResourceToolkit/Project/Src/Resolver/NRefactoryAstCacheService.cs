@@ -119,6 +119,24 @@ namespace Hornung.ResourceToolkit.Resolver
 		// ********************************************************************************************************************************
 		
 		/// <summary>
+		/// Parses an expression with NRefactory.
+		/// </summary>
+		/// <param name="fileName">The file name of the source code file that contains the expression.</param>
+		/// <param name="expression">The expression to parse.</param>
+		/// <returns>The parsed expression or <c>null</c> if the expression cannot be parsed or the language of the source code file is not supported.</returns>
+		public static Expression ParseExpression(string fileName, string expression)
+		{
+			SupportedLanguage? l = NRefactoryResourceResolver.GetFileLanguage(fileName);
+			if (l == null) {
+				return null;
+			}
+			
+			using (ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(l.Value, new System.IO.StringReader(expression))) {
+				return p.ParseExpression();
+			}
+		}
+		
+		/// <summary>
 		/// Resolves an expression using low-level NRefactoryResolver methods and making
 		/// use of the cache if possible.
 		/// </summary>
@@ -131,13 +149,9 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <returns>A ResolveResult or <c>null</c> if the expression cannot be resolved.</returns>
 		public static ResolveResult ResolveLowLevel(string fileName, int caretLine, int caretColumn, CompilationUnit compilationUnit, string expression, ExpressionContext context)
 		{
-			using (ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(NRefactoryResourceResolver.GetFileLanguage(fileName).Value, new System.IO.StringReader(expression))) {
-				Expression expr = p.ParseExpression();
-				if (expr == null) {
-					return null;
-				}
-				return ResolveLowLevel(fileName, caretLine, caretColumn, compilationUnit, expression, expr, context);
-			}
+			Expression expr = ParseExpression(fileName, expression);
+			if (expr == null) return null;
+			return ResolveLowLevel(fileName, caretLine, caretColumn, compilationUnit, expression, expr, context);
 		}
 		
 		/// <summary>
@@ -216,7 +230,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			
 			if (resolver.CallingMember != null) {
 				
-				// Cache member->node mappings to improves performance
+				// Cache member->node mappings to improve performance
 				// (if cache is enabled)
 				INode memberNode;
 				if (!CacheEnabled || !cachedMemberMappings.TryGetValue(resolver.CallingMember, out memberNode)) {
@@ -237,6 +251,28 @@ namespace Hornung.ResourceToolkit.Resolver
 			}
 			
 			return resolver.ResolveInternal(expression, context);
+		}
+		
+		/// <summary>
+		/// Resolves the next outer expression of the specified expression
+		/// using low-level NRefactoryResolver methods and making
+		/// use of the cache if possible.
+		/// </summary>
+		/// <param name="expressionResult">The ExpressionResult that contains the expression to be resolved. The contained expression will be set to the next outer expression or <c>null</c> if there is no such expression.</param>
+		/// <param name="caretLine">The 0-based line number of the expression.</param>
+		/// <param name="caretColumn">The 0-based column number of the expression.</param>
+		/// <param name="fileName">The file name of the source code file that contains the expression to be resolved.</param>
+		/// <param name="expressionFinder">The ExpressionFinder for this source code file.</param>
+		/// <returns>A ResolveResult or <c>null</c> if the outer expression cannot be resolved or if the specified expression is the outermost expression.</returns>
+		public static ResolveResult ResolveNextOuterExpression(ref ExpressionResult expressionResult, int caretLine, int caretColumn, string fileName, IExpressionFinder expressionFinder)
+		{
+			if (!String.IsNullOrEmpty(expressionResult.Expression = expressionFinder.RemoveLastPart(expressionResult.Expression))) {
+				Expression nextExpression;
+				if ((nextExpression = ParseExpression(fileName, expressionResult.Expression)) != null) {
+					return ResolveLowLevel(fileName, caretLine + 1, caretColumn + 1, null, expressionResult.Expression, nextExpression, expressionResult.Context);
+				}
+			}
+			return null;
 		}
 	}
 }

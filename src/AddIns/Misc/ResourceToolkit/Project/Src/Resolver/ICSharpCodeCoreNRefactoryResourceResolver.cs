@@ -31,8 +31,10 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <param name="caretColumn">The column where the expression is located.</param>
 		/// <param name="fileName">The name of the source file where the expression is located.</param>
 		/// <param name="fileContent">The content of the source file where the expression is located.</param>
+		/// <param name="expressionFinder">The ExpressionFinder for the file.</param>
+		/// <param name="charTyped">The character that has been typed at the caret position but is not yet in the buffer (this is used when invoked from code completion), or <c>null</c>.</param>
 		/// <returns>A ResourceResolveResult describing the referenced resource, or <c>null</c>, if this expression does not reference a resource using the ICSharpCode.Core.ResourceService class.</returns>
-		public ResourceResolveResult Resolve(ExpressionResult expressionResult, Expression expr, ResolveResult resolveResult, int caretLine, int caretColumn, string fileName, string fileContent)
+		public ResourceResolveResult Resolve(ExpressionResult expressionResult, Expression expr, ResolveResult resolveResult, int caretLine, int caretColumn, string fileName, string fileContent, IExpressionFinder expressionFinder, char? charTyped)
 		{
 			IMember member = null;
 			
@@ -41,12 +43,30 @@ namespace Hornung.ResourceToolkit.Resolver
 			// has already been typed.
 			MemberResolveResult mrr = resolveResult as MemberResolveResult;
 			if (mrr != null) {
-				member = mrr.ResolvedMember;
+				
+				// If it is a MemberResolveResult, this indicates that
+				// the complete expression is already in the buffer.
+				// So we only assign the member if Resolve is not invoked
+				// from code completion to prevent the code completion window
+				// from opening when typing something like:
+				// ResourceService.GetString(...)[
+				if (charTyped == null) {
+					member = mrr.ResolvedMember;
+				}
+				
 			} else {
+				
 				MethodResolveResult methrr = resolveResult as MethodResolveResult;
 				if (methrr != null) {
-					member = methrr.GetMethodIfSingleOverload();
+					
+					// If it is a MethodResolveResult, the expression is incomplete.
+					// Accept only if '(' has been typed.
+					if (charTyped == '(') {
+						member = methrr.GetMethodIfSingleOverload();
+					}
+					
 				}
+				
 			}
 			
 			if (member is IMethod &&

@@ -27,15 +27,17 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <param name="document">The document that contains the expression to be resolved.</param>
 		/// <param name="caretLine">The 1-based line in the file that contains the expression to be resolved.</param>
 		/// <param name="caretColumn">The 1-based column position of the expression to be resolved.</param>
+		/// <param name="charTyped">The character that has been typed at the caret position but is not yet in the buffer (this is used when invoked from code completion), or <c>null</c>.</param>
 		/// <returns>A <see cref="ResourceResolveResult"/> that describes which resource is referenced by the expression at the specified position in the specified file, or <c>null</c> if that expression does not reference a (known) resource.</returns>
-		ResourceResolveResult Resolve(string fileName, IDocument document, int caretLine, int caretColumn);
+		ResourceResolveResult Resolve(string fileName, IDocument document, int caretLine, int caretColumn, char? charTyped);
 		
 		/// <summary>
 		/// Attempts to resolve a reference to a resource.
 		/// </summary>
 		/// <param name="editor">The text editor for which a resource resolution attempt should be performed.</param>
+		/// <param name="charTyped">The character that has been typed at the caret position but is not yet in the buffer (this is used when invoked from code completion), or <c>null</c>.</param>
 		/// <returns>A <see cref="ResourceResolveResult"/> that describes which resource is referenced by the expression at the caret in the specified editor, or <c>null</c> if that expression does not reference a (known) resource.</returns>
-		ResourceResolveResult Resolve(TextEditorControl editor);
+		ResourceResolveResult Resolve(TextEditorControl editor, char? charTyped);
 		
 		/// <summary>
 		/// Determines whether this resolver supports resolving resources in the given file.

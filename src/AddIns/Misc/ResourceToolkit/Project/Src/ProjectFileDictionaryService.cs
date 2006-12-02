@@ -55,7 +55,9 @@ namespace Hornung.ResourceToolkit
 				
 			}
 			
+			#if DEBUG
 			LoggingService.Debug("ResourceToolkit: ProjectFileDictionary: Could not determine project for file '"+(fileName ?? "<null>")+"'.");
+			#endif
 			
 			return ProjectService.CurrentProject;
 		}

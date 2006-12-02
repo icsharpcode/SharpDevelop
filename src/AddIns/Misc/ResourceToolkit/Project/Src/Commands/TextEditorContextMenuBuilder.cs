@@ -34,7 +34,7 @@ namespace Hornung.ResourceToolkit.Commands
 				return new ToolStripItem[0];
 			}
 			
-			ResourceResolveResult result = ResourceResolverService.Resolve(editor);
+			ResourceResolveResult result = ResourceResolverService.Resolve(editor, null);
 			if (result != null && result.ResourceFileContent != null && result.Key != null) {
 				
 				List<ToolStripItem> items = new List<ToolStripItem>();

@@ -91,9 +91,16 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <param name="caretLine">The 0-based line in the file that contains the expression to be resolved.</param>
 		/// <param name="caretColumn">The 0-based column position of the expression to be resolved.</param>
 		/// <param name="caretOffset">The offset of the position of the expression to be resolved.</param>
+		/// <param name="charTyped">The character that has been typed at the caret position but is not yet in the buffer (this is used when invoked from code completion), or <c>null</c>.</param>
 		/// <returns>A <see cref="ResourceResolveResult"/> that describes which resource is referenced by the expression at the specified position in the specified file, or <c>null</c> if that expression does not reference a (known) resource.</returns>
-		protected override ResourceResolveResult Resolve(string fileName, IDocument document, int caretLine, int caretColumn, int caretOffset)
+		protected override ResourceResolveResult Resolve(string fileName, IDocument document, int caretLine, int caretColumn, int caretOffset, char? charTyped)
 		{
+			// If Resolve is invoked from code completion,
+			// we are only interested in the ':' character of '${res:'.
+			if (charTyped != null && charTyped != ':') {
+				return null;
+			}
+			
 			// Find $ character to the left of the caret.
 			caretOffset += 1;
 			char ch;

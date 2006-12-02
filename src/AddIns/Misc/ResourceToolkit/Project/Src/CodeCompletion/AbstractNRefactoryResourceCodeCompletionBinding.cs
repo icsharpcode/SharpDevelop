@@ -23,7 +23,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 			
 			if (this.CompletionPossible(editor, ch)) {
 				
-				ResourceResolveResult result = ResourceResolverService.Resolve(editor);
+				ResourceResolveResult result = ResourceResolverService.Resolve(editor, ch);
 				if (result != null) {
 					if (result.ResourceFileContent != null) {
 						editor.ShowCompletionWindow(new ResourceCodeCompletionDataProvider(result.ResourceFileContent, this.OutputVisitor, result.CallingClass != null ? result.CallingClass.Name+"." : null), ch);

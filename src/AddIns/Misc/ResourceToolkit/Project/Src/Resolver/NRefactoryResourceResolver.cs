@@ -102,8 +102,9 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <param name="caretLine">The 0-based line in the file that contains the expression to be resolved.</param>
 		/// <param name="caretColumn">The 0-based column position of the expression to be resolved.</param>
 		/// <param name="caretOffset">The offset of the position of the expression to be resolved.</param>
+		/// <param name="charTyped">The character that has been typed at the caret position but is not yet in the buffer (this is used when invoked from code completion), or <c>null</c>.</param>
 		/// <returns>A <see cref="ResourceResolveResult"/> that describes which resource is referenced by the expression at the specified position in the specified file, or <c>null</c> if that expression does not reference a (known) resource.</returns>
-		protected override ResourceResolveResult Resolve(string fileName, IDocument document, int caretLine, int caretColumn, int caretOffset)
+		protected override ResourceResolveResult Resolve(string fileName, IDocument document, int caretLine, int caretColumn, int caretOffset, char? charTyped)
 		{
 			IExpressionFinder ef = ParserService.GetExpressionFinder(fileName);
 			if (ef == null) {
@@ -124,38 +125,13 @@ namespace Hornung.ResourceToolkit.Resolver
 			
 			if (result.Expression != null) {
 				
-				ResourceResolveResult rrr = null;
+				Expression expr = NRefactoryAstCacheService.ParseExpression(fileName, result.Expression);
 				
-				SupportedLanguage? language = GetFileLanguage(fileName);
-				if (language == null) {
+				if (expr == null) {
 					return null;
 				}
 				
-				// The resolve routine needs the member which contains the actual member being referenced.
-				// If a complete expression is given, the expression needs to be reduced to
-				// the member reference.
-				Expression fullExpr = null;
-				while (result.Expression != null && result.Expression.Length > 0) {
-					Expression expr = null;
-					using(ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser(language.Value, new StringReader(result.Expression))) {
-						if (parser != null) {
-							expr = parser.ParseExpression();
-						}
-					}
-					
-					if (expr == null) {
-						break;
-					}
-					if (fullExpr == null) {
-						fullExpr = expr;
-					}
-					if ((rrr = TryResolve(result, expr, fullExpr, caretLine, caretColumn, fileName, document.TextContent)) != null) {
-						break;
-					}
-					result.Expression = ef.RemoveLastPart(result.Expression);
-				}
-				
-				return rrr;
+				return TryResolve(result, expr, caretLine, caretColumn, fileName, document.TextContent, ef, charTyped);
 				
 			}
 			
@@ -168,14 +144,14 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// Tries to resolve the resource reference using all available
 		/// NRefactory resource resolvers.
 		/// </summary>
-		static ResourceResolveResult TryResolve(ExpressionResult result, Expression expr, Expression fullExpr, int caretLine, int caretColumn, string fileName, string fileContent)
+		static ResourceResolveResult TryResolve(ExpressionResult result, Expression expr, int caretLine, int caretColumn, string fileName, string fileContent, IExpressionFinder expressionFinder, char? charTyped)
 		{
 			ResolveResult rr = NRefactoryAstCacheService.ResolveLowLevel(fileName, caretLine+1, caretColumn+1, null, result.Expression, expr, result.Context);
 			if (rr != null) {
 				
 				ResourceResolveResult rrr;
 				foreach (INRefactoryResourceResolver resolver in Resolvers) {
-					if ((rrr = resolver.Resolve(result, fullExpr, rr, caretLine, caretColumn, fileName, fileContent)) != null) {
+					if ((rrr = resolver.Resolve(result, expr, rr, caretLine, caretColumn, fileName, fileContent, expressionFinder, charTyped)) != null) {
 						return rrr;
 					}
 				}

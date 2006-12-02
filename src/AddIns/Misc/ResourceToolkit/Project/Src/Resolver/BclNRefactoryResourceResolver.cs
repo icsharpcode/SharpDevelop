@@ -35,31 +35,131 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <param name="caretColumn">The column where the expression is located.</param>
 		/// <param name="fileName">The name of the source file where the expression is located.</param>
 		/// <param name="fileContent">The content of the source file where the expression is located.</param>
+		/// <param name="expressionFinder">The ExpressionFinder for the file.</param>
+		/// <param name="charTyped">The character that has been typed at the caret position but is not yet in the buffer (this is used when invoked from code completion), or <c>null</c>.</param>
 		/// <returns>A ResourceResolveResult describing the referenced resource, or <c>null</c>, if this expression does not reference a resource using the standard .NET framework classes.</returns>
-		public ResourceResolveResult Resolve(ExpressionResult expressionResult, Expression expr, ResolveResult resolveResult, int caretLine, int caretColumn, string fileName, string fileContent)
+		public ResourceResolveResult Resolve(ExpressionResult expressionResult, Expression expr, ResolveResult resolveResult, int caretLine, int caretColumn, string fileName, string fileContent, IExpressionFinder expressionFinder, char? charTyped)
 		{
-			IResourceFileContent rfc = null;
+			/*
+			 * We need to catch the following cases here:
+			 * 
+			 * Something.GetString(
+			 * Something.GetString("...")
+			 * Something[
+			 * Something["..."]
+			 * 
+			 */
 			
-			MemberResolveResult mrr = resolveResult as MemberResolveResult;
-			if (mrr != null) {
-				rfc = ResolveResourceFileContent(mrr.ResolvedMember);
-			} else {
+			if (charTyped == '(') {
 				
-				LocalResolveResult lrr = resolveResult as LocalResolveResult;
-				if (lrr != null) {
-					if (!lrr.IsParameter) {
-						rfc = ResolveResourceFileContent(lrr.Field);
+				// Something.GetString
+				// This is a MethodResolveResult and we need the reference to "Something",
+				// which is the next outer expression.
+				// This is only valid when invoked from code completion
+				// and the method invocation character ('(' in C# and VB)
+				// has been typed.
+				
+				// This code is also reused when reducing a complete InvocationExpression
+				// (MemberResolveResult) to the method reference by passing '(' as
+				// charTyped explicitly.
+				
+				MethodResolveResult methrr = resolveResult as MethodResolveResult;
+				if (methrr != null) {
+					if ((methrr.Name == "GetString" || methrr.Name == "GetObject" || methrr.Name == "GetStream") &&
+					    (resolveResult = NRefactoryAstCacheService.ResolveNextOuterExpression(ref expressionResult, caretLine, caretColumn, fileName, expressionFinder)) != null) {
+						
+						return ResolveResource(resolveResult, expr);
+						
+					} else {
+						
+						return null;
+						
 					}
 				}
 				
 			}
 			
+			// Do not use "else if" here.
+			// '(' is also the IndexerExpressionStartToken for VB,
+			// so the "else" block further down might still apply.
 			
-			if (rfc != null) {
-				string key = GetKeyFromExpression(expr);
+			if (charTyped == null) {
 				
-				// TODO: Add information about return type (of the resource, if present).
-				return new ResourceResolveResult(resolveResult.CallingClass, resolveResult.CallingMember, null, rfc, key);
+				// A MemberResolveResult with a complete expression
+				// must only be considered a valid resource reference
+				// when Resolve is not invoked from code completion
+				// (i.e. charTyped == null) because this indicates
+				// that the resource reference is already before the typed character
+				// and we are not interested in the following expression.
+				// This may happen when typing something like:
+				// Something.GetString("...")[
+				
+				MemberResolveResult mrr = resolveResult as MemberResolveResult;
+				if (mrr != null) {
+					
+					if (mrr.ResolvedMember is IMethod &&
+					    (mrr.ResolvedMember.Name == "GetString" || mrr.ResolvedMember.Name == "GetObject" || mrr.ResolvedMember.Name == "GetStream")) {
+						
+						// Something.GetString("...")
+						// This is a MemberResolveResult and we need the reference to "Something".
+						// The expression finder may only remove the string literal, so
+						// we have to call Resolve again in this case to resolve
+						// the method reference.
+						
+						if ((resolveResult = NRefactoryAstCacheService.ResolveNextOuterExpression(ref expressionResult, caretLine, caretColumn, fileName, expressionFinder)) != null) {
+							
+							if (resolveResult is MethodResolveResult) {
+								return this.Resolve(expressionResult, expr, resolveResult, caretLine, caretColumn, fileName, fileContent, expressionFinder, '(');
+							} else {
+								return ResolveResource(resolveResult, expr);
+							}
+							
+						} else {
+							
+							return null;
+							
+						}
+						
+					} else if (expr is IndexerExpression &&
+					           IsResourceManager(mrr.ResolvedMember.DeclaringType.DefaultReturnType, fileName)) {
+						
+						// Something["..."] is an IndexerExpression.
+						// We need the reference to Something and this is
+						// the next outer expression.
+						
+						if ((resolveResult = NRefactoryAstCacheService.ResolveNextOuterExpression(ref expressionResult, caretLine, caretColumn, fileName, expressionFinder)) != null) {
+							return ResolveResource(resolveResult, expr);
+						} else {
+							return null;
+						}
+						
+					}
+					
+				}
+				
+			} else {
+				
+				// This request is triggered from code completion.
+				// The only case that has not been caught above is:
+				// Something[
+				// The reference to "Something" is already in this expression.
+				// So we have to test the trigger character against the
+				// indexer expression start token of the file's language.
+				
+				LanguageProperties lp = NRefactoryResourceResolver.GetLanguagePropertiesForFile(fileName);
+				if (lp != null &&
+				    !String.IsNullOrEmpty(lp.IndexerExpressionStartToken) &&
+				    lp.IndexerExpressionStartToken[0] == charTyped) {
+					
+					#if DEBUG
+					LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver: Indexer expression start typed, ResolveResult: "+resolveResult.ToString());
+					LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver: -> Expression: "+expr.ToString());
+					#endif
+					
+					return ResolveResource(resolveResult, expr);
+					
+				}
+				
 			}
 			
 			return null;
@@ -86,6 +186,44 @@ namespace Hornung.ResourceToolkit.Resolver
 		}
 		
 		#endregion
+		
+		/// <summary>
+		/// Tries to find a resource reference in the specified expression.
+		/// </summary>
+		/// <param name="resolveResult">The ResolveResult that describes the referenced member.</param>
+		/// <param name="expr">The AST representation of the full expression.</param>
+		/// <returns>
+		/// The ResourceResolveResult describing the referenced resource, if successful, 
+		/// or a null reference, if the referenced member is not a resource manager 
+		/// or if the resource file cannot be determined.
+		/// </returns>
+		static ResourceResolveResult ResolveResource(ResolveResult resolveResult, Expression expr)
+		{
+			IResourceFileContent rfc = null;
+			
+			MemberResolveResult mrr = resolveResult as MemberResolveResult;
+			if (mrr != null) {
+				rfc = ResolveResourceFileContent(mrr.ResolvedMember);
+			} else {
+				
+				LocalResolveResult lrr = resolveResult as LocalResolveResult;
+				if (lrr != null) {
+					if (!lrr.IsParameter) {
+						rfc = ResolveResourceFileContent(lrr.Field);
+					}
+				}
+				
+			}
+			
+			if (rfc != null) {
+				string key = GetKeyFromExpression(expr);
+				
+				// TODO: Add information about return type (of the resource, if present).
+				return new ResourceResolveResult(resolveResult.CallingClass, resolveResult.CallingMember, null, rfc, key);
+			}
+			
+			return null;
+		}
 		
 		/// <summary>
 		/// Tries to determine the resource file content which is referenced by the
@@ -149,6 +287,8 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// Determines if the specified type is a ResourceManager type that can
 		/// be handled by this resolver.
 		/// </summary>
+		/// <param name="type">The type that will be checked if it is a ResourceManager.</param>
+		/// <param name="sourceFileName">The name of the source code file where the reference to this type occurs.</param>
 		static bool IsResourceManager(IReturnType type, string sourceFileName)
 		{
 			IProject p = ProjectFileDictionaryService.GetProjectForFile(sourceFileName);
@@ -163,13 +303,13 @@ namespace Hornung.ResourceToolkit.Resolver
 				return false;
 			}
 			
-			IClass resourceManager = pc.GetClass("System.Resources.ResourceManager");
-			if (resourceManager == null) {
+			IClass c = type.GetUnderlyingClass();
+			if (c == null) {
 				return false;
 			}
 			
-			IClass c = type.GetUnderlyingClass();
-			if (c == null) {
+			IClass resourceManager = pc.GetClass("System.Resources.ResourceManager");
+			if (resourceManager == null) {
 				return false;
 			}
 			

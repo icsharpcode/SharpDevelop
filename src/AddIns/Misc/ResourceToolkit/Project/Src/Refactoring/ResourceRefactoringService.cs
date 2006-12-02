@@ -104,7 +104,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 					while ((pos = finder.GetNextPossibleOffset(fileName, fileContent, pos)) >= 0) {
 						
 						Point docPos = doc.OffsetToPosition(pos);
-						ResourceResolveResult rrr = ResourceResolverService.Resolve(fileName, doc, docPos.Y, docPos.X);
+						ResourceResolveResult rrr = ResourceResolverService.Resolve(fileName, doc, docPos.Y, docPos.X, null);
 						
 						if (rrr != null && rrr.ResourceFileContent != null && rrr.Key != null) {
 							if (finder.IsReferenceToResource(rrr)) {
