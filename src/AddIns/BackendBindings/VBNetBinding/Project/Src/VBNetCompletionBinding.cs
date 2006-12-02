@@ -46,6 +46,13 @@ namespace VBNetBinding
 			return base.HandleKeyPress(editor, ch);
 		}
 		
+		bool IsInComment(SharpDevelopTextAreaControl editor)
+		{
+			VBExpressionFinder ef = new VBExpressionFinder();
+			int cursor = editor.ActiveTextAreaControl.Caret.Offset - 1;
+			return ef.FilterComments(editor.Document.GetText(0, cursor + 1), ref cursor) == null;
+		}
+		
 		public override bool HandleKeyword(SharpDevelopTextAreaControl editor, string word)
 		{
 			// TODO: Assistance writing Methods/Fields/Properties/Events:
@@ -53,24 +60,31 @@ namespace VBNetBinding
 			// and possible return types.
 			switch (word.ToLowerInvariant()) {
 				case "imports":
+					if (IsInComment(editor)) return false;
 					editor.ShowCompletionWindow(new CodeCompletionDataProvider(new ExpressionResult("Global", ExpressionContext.Importable)), ' ');
 					return true;
 				case "as":
+					if (IsInComment(editor)) return false;
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Type), ' ');
 					return true;
 				case "new":
+					if (IsInComment(editor)) return false;
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.ObjectCreation), ' ');
 					return true;
 				case "inherits":
+					if (IsInComment(editor)) return false;
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Type), ' ');
 					return true;
 				case "implements":
+					if (IsInComment(editor)) return false;
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Interface), ' ');
 					return true;
 				case "overrides":
+					if (IsInComment(editor)) return false;
 					editor.ShowCompletionWindow(new OverrideCompletionDataProvider(), ' ');
 					return true;
 				case "return":
+					if (IsInComment(editor)) return false;
 					IMember m = GetCurrentMember(editor);
 					if (m != null) {
 						ProvideContextCompletion(editor, m.ReturnType, ' ');
@@ -79,6 +93,7 @@ namespace VBNetBinding
 						goto default;
 					}
 				case "option":
+					if (IsInComment(editor)) return false;
 					editor.ShowCompletionWindow(new TextCompletionDataProvider("Explicit On",
 					                                                           "Explicit Off",
 					                                                           "Strict On",

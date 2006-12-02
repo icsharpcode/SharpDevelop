@@ -163,6 +163,7 @@ namespace CSharpBinding
 			switch (word) {
 				case "using":
 					if (IsInComment(editor)) return false;
+					
 					// TODO: check if we are inside class/namespace
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Namespace), ' ');
 					return true;
@@ -178,8 +179,10 @@ namespace CSharpBinding
 				case "new":
 					return ShowNewCompletion(editor);
 				case "case":
+					if (IsInComment(editor)) return false;
 					return DoCaseCompletion(editor);
 				case "return":
+					if (IsInComment(editor)) return false;
 					IMember m = GetCurrentMember(editor);
 					if (m != null) {
 						return ProvideContextCompletion(editor, m.ReturnType, ' ');
