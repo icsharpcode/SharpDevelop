@@ -668,11 +668,32 @@ namespace ICSharpCode.SharpDevelop.Project
 			                                                        preferences.ActivePlatform))
 			{
 				l.Project.ActiveConfiguration = l.Configuration;
-				if (l.Platform == "Any CPU") {
-					l.Project.ActivePlatform = "AnyCPU";
-				} else {
-					l.Project.ActivePlatform = l.Platform;
-				}
+				l.Project.ActivePlatform = FixPlatformNameForProject(l.Platform);
+			}
+		}
+		
+		/// <summary>
+		/// This is a special case in MSBuild we need to take care of.
+		/// </summary>
+		static string FixPlatformNameForProject(string platformName)
+		{
+			if (platformName == "Any CPU") {
+				return "AnyCPU";
+			} else {
+				return platformName;
+			}
+		}
+		
+		/// <summary>
+		/// This is a special case in MSBuild we need to take care of.
+		/// Opposite of FixPlatformNameForProject
+		/// </summary>
+		static string FixPlatformNameForSolution(string platformName)
+		{
+			if (platformName == "AnyCPU") {
+				return "Any CPU";
+			} else {
+				return platformName;
 			}
 		}
 		
@@ -690,6 +711,50 @@ namespace ICSharpCode.SharpDevelop.Project
 				this.Platform = platform;
 				this.SolutionItem = solutionItem;
 			}
+			
+			public void SetSolutionConfigurationPlatform(ProjectSection section, string newConfiguration, string newPlatform)
+			{
+				if (this.SolutionItem == null)
+					return;
+				string oldName = this.SolutionItem.Name;
+				this.SolutionItem.Name = this.Project.IdGuid + "." + newConfiguration + "|" + newPlatform + ".Build.0";
+				string newName = this.SolutionItem.Name;
+				if (StripBuild0(ref oldName) && StripBuild0(ref newName)) {
+					oldName += ".ActiveCfg";
+					newName += ".ActiveCfg";
+					foreach (SolutionItem item in section.Items) {
+						if (item.Name == oldName)
+							item.Name = newName;
+					}
+				}
+			}
+			
+			public void SetProjectConfigurationPlatform(ProjectSection section, string newConfiguration, string newPlatform)
+			{
+				this.Configuration = newConfiguration;
+				this.Platform = newPlatform;
+				if (this.SolutionItem == null)
+					return;
+				this.SolutionItem.Location = newConfiguration + "|" + newPlatform;
+				string thisName = this.SolutionItem.Name;
+				if (StripBuild0(ref thisName)) {
+					thisName += ".ActiveCfg";
+					foreach (SolutionItem item in section.Items) {
+						if (item.Name == thisName)
+							item.Location = this.SolutionItem.Location;
+					}
+				}
+			}
+			
+			internal static bool StripBuild0(ref string s)
+			{
+				if (s.EndsWith(".Build.0")) {
+					s = s.Substring(0, s.Length - ".Build.0".Length);
+					return true;
+				} else {
+					return false;
+				}
+			}
 		}
 		
 		internal List<ProjectConfigurationPlatformMatching>
@@ -697,7 +762,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			List<ProjectConfigurationPlatformMatching> results = new List<ProjectConfigurationPlatformMatching>();
 			ProjectSection prjSec = GetProjectConfigurationsSection();
-			Dictionary<string, SolutionItem> dict = new Dictionary<string, SolutionItem>();
+			Dictionary<string, SolutionItem> dict = new Dictionary<string, SolutionItem>(StringComparer.InvariantCultureIgnoreCase);
 			foreach (SolutionItem item in prjSec.Items) {
 				dict[item.Name] = item;
 			}
@@ -721,25 +786,25 @@ namespace ICSharpCode.SharpDevelop.Project
 			return results;
 		}
 		
-		internal SolutionItem CreateMatchingItem(string solutionConfiguration, string solutionPlatform, IProject project)
+		internal SolutionItem CreateMatchingItem(string solutionConfiguration, string solutionPlatform, IProject project, string initialLocation)
 		{
 			SolutionItem item = new SolutionItem(project.IdGuid + "." + solutionConfiguration + "|"
-			                                     + solutionPlatform + ".Build.0", "");
+			                                     + solutionPlatform + ".Build.0", initialLocation);
 			GetProjectConfigurationsSection().Items.Add(item);
+			GetProjectConfigurationsSection().Items.Add(new SolutionItem(project.IdGuid + "." + solutionConfiguration + "|"
+			                                                             + solutionPlatform + ".ActiveCfg", initialLocation));
 			return item;
 		}
 		#endregion
 		
-		#region Configurations management
+		#region Rename Solution Configuration/Platform
 		public void RenameSolutionConfiguration(string oldName, string newName)
 		{
 			foreach (string platform in GetPlatformNames()) {
 				foreach (ProjectConfigurationPlatformMatching m
 				         in GetActiveConfigurationsAndPlatformsForProjects(oldName, platform))
 				{
-					if (m.SolutionItem == null)
-						continue;
-					m.SolutionItem.Name = m.Project.IdGuid + "." + newName + "|" + platform + ".Build.0";
+					m.SetSolutionConfigurationPlatform(GetProjectConfigurationsSection(), newName, platform);
 				}
 			}
 			foreach (SolutionItem item in GetSolutionConfigurationsSection().Items) {
@@ -756,9 +821,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (ProjectConfigurationPlatformMatching m
 				         in GetActiveConfigurationsAndPlatformsForProjects(configuration, oldName))
 				{
-					if (m.SolutionItem == null)
-						continue;
-					m.SolutionItem.Name = m.Project.IdGuid + "." + configuration + "|" + newName + ".Build.0";
+					m.SetSolutionConfigurationPlatform(GetProjectConfigurationsSection(), configuration, newName);
 				}
 			}
 			foreach (SolutionItem item in GetSolutionConfigurationsSection().Items) {
@@ -767,6 +830,218 @@ namespace ICSharpCode.SharpDevelop.Project
 					item.Location = item.Name;
 				}
 			}
+		}
+		#endregion
+		
+		#region Rename Project Configuration/Platform
+		public bool RenameProjectConfiguration(IProject project, string oldName, string newName)
+		{
+			IProjectAllowChangeConfigurations pacc = project as IProjectAllowChangeConfigurations;
+			if (pacc == null)
+				return false;
+			if (!pacc.RenameProjectConfiguration(oldName, newName))
+				return false;
+			// project configuration was renamed successfully, adjust solution:
+			foreach (SolutionItem item in GetProjectConfigurationsSection().Items) {
+				if (item.Name.ToLowerInvariant().StartsWith(project.IdGuid.ToLowerInvariant())) {
+					if (AbstractProject.GetConfigurationNameFromKey(item.Location) == oldName) {
+						item.Location = newName + "|" + AbstractProject.GetPlatformNameFromKey(item.Location);
+					}
+				}
+			}
+			return true;
+		}
+		
+		public bool RenameProjectPlatform(IProject project, string oldName, string newName)
+		{
+			IProjectAllowChangeConfigurations pacc = project as IProjectAllowChangeConfigurations;
+			if (pacc == null)
+				return false;
+			if (!pacc.RenameProjectPlatform(FixPlatformNameForProject(oldName), FixPlatformNameForProject(newName)))
+				return false;
+			// project configuration was renamed successfully, adjust solution:
+			foreach (SolutionItem item in GetProjectConfigurationsSection().Items) {
+				if (item.Name.ToLowerInvariant().StartsWith(project.IdGuid.ToLowerInvariant())) {
+					if (AbstractProject.GetPlatformNameFromKey(item.Location) == oldName) {
+						item.Location = AbstractProject.GetConfigurationNameFromKey(item.Location) + "|" + newName;
+					}
+				}
+			}
+			return true;
+		}
+		#endregion
+		
+		#region Add Solution Configuration/Platform
+		/// <summary>
+		/// Creates a new solution configuration.
+		/// </summary>
+		/// <param name="newName">Name of the new configuration</param>
+		/// <param name="copyFrom">Name of existing configuration to copy values from, or null</param>
+		/// <param name="createInProjects">true to also create the new configuration in all projects</param>
+		public void AddSolutionConfiguration(string newName, string copyFrom, bool createInProjects)
+		{
+			foreach (string platform in this.GetPlatformNames()) {
+				AddSolutionConfigurationPlatform(newName, platform, copyFrom, createInProjects, false);
+			}
+		}
+		
+		public void AddSolutionPlatform(string newName, string copyFrom, bool createInProjects)
+		{
+			foreach (string configuration in this.GetConfigurationNames()) {
+				AddSolutionConfigurationPlatform(configuration, newName, copyFrom, createInProjects, true);
+			}
+		}
+		
+		void AddSolutionConfigurationPlatform(string newConfiguration, string newPlatform,
+		                                      string copyFrom, bool createInProjects, bool addPlatform)
+		{
+			List<ProjectConfigurationPlatformMatching> matchings;
+			if (string.IsNullOrEmpty(copyFrom)) {
+				matchings = new List<ProjectConfigurationPlatformMatching>();
+			} else {
+				if (addPlatform) {
+					matchings = GetActiveConfigurationsAndPlatformsForProjects(newConfiguration, copyFrom);
+				} else {
+					matchings = GetActiveConfigurationsAndPlatformsForProjects(copyFrom, newPlatform);
+				}
+			}
+			GetSolutionConfigurationsSection().Items.Add(new SolutionItem(newConfiguration + "|" + newPlatform,
+			                                                              newConfiguration + "|" + newPlatform));
+			foreach (IProject project in this.Projects) {
+				// get old project configuration and platform
+				string projectConfiguration, projectPlatform;
+				
+				ProjectConfigurationPlatformMatching matching = matchings.Find(
+					delegate(ProjectConfigurationPlatformMatching m) { return m.Project == project; });
+				if (matching != null) {
+					projectConfiguration = matching.Configuration;
+					projectPlatform = matching.Platform;
+				} else {
+					projectConfiguration = Linq.ToArray(project.ConfigurationNames)[0];
+					projectPlatform = FixPlatformNameForSolution(Linq.ToArray(project.PlatformNames)[0]);
+				}
+				if (createInProjects) {
+					ICollection<string> existingInProject = addPlatform ? project.PlatformNames : project.ConfigurationNames;
+					if (existingInProject.Contains(addPlatform ? newPlatform : newConfiguration)) {
+						// target platform/configuration already exists, so reference it
+						if (addPlatform) {
+							projectPlatform = newPlatform;
+						} else {
+							projectConfiguration = newConfiguration;
+						}
+					} else {
+						// create in project
+						IProjectAllowChangeConfigurations pacc = project as IProjectAllowChangeConfigurations;
+						if (pacc != null) {
+							if (addPlatform) {
+								if (pacc.AddProjectPlatform(FixPlatformNameForProject(newPlatform),
+								                            FixPlatformNameForProject(projectPlatform))) {
+									projectPlatform = newPlatform;
+								}
+							} else {
+								if (pacc.AddProjectConfiguration(newConfiguration, projectConfiguration)) {
+									projectConfiguration = newConfiguration;
+								}
+							}
+						}
+					}
+				}
+				
+				// create item combining solution configuration with project configuration
+				CreateMatchingItem(newConfiguration, newPlatform, project, projectConfiguration + "|" + projectPlatform);
+			}
+		}
+		#endregion
+		
+		#region Remove Solution Configuration/Platform
+		/// <summary>
+		/// Gets the configuration|platform name from a conf item, e.g.
+		/// "Release|Any CPU" from
+		/// "{7115F3A9-781C-4A95-90AE-B5AB53C4C588}.Release|Any CPU.Build.0"
+		/// </summary>
+		static string GetKeyFromProjectConfItem(string name)
+		{
+			int pos = name.IndexOf('.');
+			if (pos < 0) return null;
+			name = name.Substring(pos + 1);
+			if (!ProjectConfigurationPlatformMatching.StripBuild0(ref name)) {
+				pos = name.LastIndexOf('.');
+				if (pos < 0) return null;
+				name = name.Substring(0, pos);
+			}
+			return name;
+		}
+		
+		public void RemoveSolutionConfiguration(string name)
+		{
+			GetSolutionConfigurationsSection().Items.RemoveAll(
+				delegate(SolutionItem item) {
+					return AbstractProject.GetConfigurationNameFromKey(item.Name) == name;
+				});
+			GetProjectConfigurationsSection().Items.RemoveAll(
+				delegate(SolutionItem item) {
+					return AbstractProject.GetConfigurationNameFromKey(GetKeyFromProjectConfItem(item.Name)) == name;
+				});
+		}
+		
+		public void RemoveSolutionPlatform(string name)
+		{
+			GetSolutionConfigurationsSection().Items.RemoveAll(
+				delegate(SolutionItem item) {
+					return AbstractProject.GetPlatformNameFromKey(item.Name) == name;
+				});
+			GetProjectConfigurationsSection().Items.RemoveAll(
+				delegate(SolutionItem item) {
+					return AbstractProject.GetPlatformNameFromKey(GetKeyFromProjectConfItem(item.Name)) == name;
+				});
+		}
+		#endregion
+		
+		#region Remove Project Configuration/Platform
+		public bool RemoveProjectConfiguration(IProject project, string name)
+		{
+			IProjectAllowChangeConfigurations pacc = project as IProjectAllowChangeConfigurations;
+			if (pacc == null)
+				return false;
+			if (!pacc.RemoveProjectConfiguration(name))
+				return false;
+			string otherConfigurationName = "other";
+			foreach (string configName in project.ConfigurationNames) {
+				otherConfigurationName = configName;
+			}
+			// project configuration was removed successfully, adjust solution:
+			foreach (SolutionItem item in GetProjectConfigurationsSection().Items) {
+				if (item.Name.ToLowerInvariant().StartsWith(project.IdGuid.ToLowerInvariant())) {
+					if (AbstractProject.GetConfigurationNameFromKey(item.Location) == name) {
+						// removed configuration was in use here, replace with other configuration
+						item.Location = otherConfigurationName + "|" + AbstractProject.GetPlatformNameFromKey(item.Location);
+					}
+				}
+			}
+			return true;
+		}
+		
+		public bool RemoveProjectPlatform(IProject project, string name)
+		{
+			IProjectAllowChangeConfigurations pacc = project as IProjectAllowChangeConfigurations;
+			if (pacc == null)
+				return false;
+			if (!pacc.RemoveProjectPlatform(name))
+				return false;
+			string otherPlatformName = "other";
+			foreach (string platformName in project.PlatformNames) {
+				otherPlatformName = platformName;
+			}
+			// project configuration was removed successfully, adjust solution:
+			foreach (SolutionItem item in GetProjectConfigurationsSection().Items) {
+				if (item.Name.ToLowerInvariant().StartsWith(project.IdGuid.ToLowerInvariant())) {
+					if (AbstractProject.GetPlatformNameFromKey(item.Location) == name) {
+						// removed configuration was in use here, replace with other configuration
+						item.Location = AbstractProject.GetConfigurationNameFromKey(item.Location) + "|" + otherPlatformName;
+					}
+				}
+			}
+			return true;
 		}
 		#endregion
 		#endregion

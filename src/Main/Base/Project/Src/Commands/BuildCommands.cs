@@ -234,7 +234,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			using (SolutionConfigurationEditor sce = new SolutionConfigurationEditor()) {
 				sce.ShowDialog();
-				ProjectService.OpenSolution.Save();
+				ProjectService.SaveSolution();
 				ProjectService.OpenSolution.ApplySolutionConfigurationAndPlatformToProjects();
 				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 			}

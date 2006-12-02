@@ -110,6 +110,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Controls.Add(this.listBox);
 			this.MinimumSize = new System.Drawing.Size(230, 165);
 			this.Name = "EditAvailableConfigurationsDialog";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "EditAvailableConfigurationsDialog";
 			this.ResumeLayout(false);

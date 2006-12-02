@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// A project that is based on an MSBuild project file.
 	/// </summary>
-	public class MSBuildBasedProject : AbstractProject, IProjectItemListProvider
+	public class MSBuildBasedProject : AbstractProject, IProjectItemListProvider, IProjectAllowChangeConfigurations
 	{
 		/// <summary>
 		/// The underlying MSBuild project.
@@ -61,6 +61,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			MSBuildInternals.EnsureCorrectTempProject(project, null, null, ref evaluatingTempProject);
 		}
 		
+		#region CreateProjectItem
 		/// <summary>
 		/// Creates a new projectItem for the passed itemType
 		/// </summary>
@@ -109,7 +110,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				return false;
 			}
 		}
+		#endregion
 		
+		#region Create new project
 		protected virtual void Create(ProjectCreateInformation information)
 		{
 			InitializeMSBuildProject(project);
@@ -156,6 +159,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			project.AddNewImport(projectFile, condition);
 			CreateItemsListFromMSBuild();
 		}
+		#endregion
 		
 		#region Get Property
 		/// <summary>
@@ -610,7 +614,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Creates an MSBuild condition string.
-		/// configuration and platform may be only if they are not required (as specified by the
+		/// At most one of configuration and platform can be null.
+		/// </summary>
+		static string CreateCondition(string configuration, string platform)
+		{
+			if (configuration == null)
+				return CreateCondition(configuration, platform, PropertyStorageLocations.PlatformSpecific);
+			else if (platform == null)
+				return CreateCondition(configuration, platform, PropertyStorageLocations.ConfigurationSpecific);
+			else
+				return CreateCondition(configuration, platform, PropertyStorageLocations.ConfigurationAndPlatformSpecific);
+		}
+		
+		/// <summary>
+		/// Creates an MSBuild condition string.
+		/// configuration and platform may be only <c>null</c> if they are not required (as specified by the
 		/// storage location), otherwise an ArgumentNullException is thrown.
 		/// </summary>
 		static string CreateCondition(string configuration, string platform, PropertyStorageLocations location)
@@ -944,6 +962,206 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			this.configurationNames = configurationNames.AsReadOnly();
 			this.platformNames      = platformNames.AsReadOnly();
+		}
+		#endregion
+		
+		#region IProjectAllowChangeConfigurations interface implementation
+		bool IProjectAllowChangeConfigurations.RenameProjectConfiguration(string oldName, string newName)
+		{
+			lock (SyncRoot) {
+				foreach (MSBuild.BuildPropertyGroup g in project.PropertyGroups) {
+					if (g.IsImported) {
+						continue;
+					}
+					MSBuild.BuildProperty prop = MSBuildInternals.GetProperty(g, "Configuration");
+					if (prop != null && prop.Value == oldName) {
+						prop.Value = newName;
+					}
+					
+					string gConfiguration, gPlatform;
+					MSBuildInternals.GetConfigurationAndPlatformFromCondition(g.Condition,
+					                                                          out gConfiguration,
+					                                                          out gPlatform);
+					if (gConfiguration == oldName) {
+						g.Condition = CreateCondition(newName, gPlatform);
+					}
+				}
+				LoadConfigurationPlatformNamesFromMSBuild();
+				return true;
+			}
+		}
+		
+		bool IProjectAllowChangeConfigurations.RenameProjectPlatform(string oldName, string newName)
+		{
+			lock (SyncRoot) {
+				foreach (MSBuild.BuildPropertyGroup g in project.PropertyGroups) {
+					if (g.IsImported) {
+						continue;
+					}
+					MSBuild.BuildProperty prop = MSBuildInternals.GetProperty(g, "Platform");
+					if (prop != null && prop.Value == oldName) {
+						prop.Value = newName;
+					}
+					
+					string gConfiguration, gPlatform;
+					MSBuildInternals.GetConfigurationAndPlatformFromCondition(g.Condition,
+					                                                          out gConfiguration,
+					                                                          out gPlatform);
+					if (gPlatform == oldName) {
+						g.Condition = CreateCondition(gConfiguration, newName);
+					}
+				}
+				LoadConfigurationPlatformNamesFromMSBuild();
+				return true;
+			}
+		}
+		
+		bool IProjectAllowChangeConfigurations.AddProjectConfiguration(string newName, string copyFrom)
+		{
+			lock (SyncRoot) {
+				bool copiedGroup = false;
+				if (copyFrom != null) {
+					foreach (MSBuild.BuildPropertyGroup g
+					         in Linq.ToList(Linq.CastTo<MSBuild.BuildPropertyGroup>(project.PropertyGroups)))
+					{
+						if (g.IsImported) {
+							continue;
+						}
+						
+						string gConfiguration, gPlatform;
+						MSBuildInternals.GetConfigurationAndPlatformFromCondition(g.Condition,
+						                                                          out gConfiguration,
+						                                                          out gPlatform);
+						if (gConfiguration == copyFrom) {
+							CopyProperties(g, newName, gPlatform);
+							copiedGroup = true;
+						}
+					}
+				}
+				if (!copiedGroup) {
+					project.AddNewPropertyGroup(false).Condition = CreateCondition(newName, null);
+				}
+				LoadConfigurationPlatformNamesFromMSBuild();
+				return true;
+			}
+		}
+		
+		bool IProjectAllowChangeConfigurations.AddProjectPlatform(string newName, string copyFrom)
+		{
+			lock (SyncRoot) {
+				bool copiedGroup = false;
+				if (copyFrom != null) {
+					foreach (MSBuild.BuildPropertyGroup g
+					         in Linq.ToList(Linq.CastTo<MSBuild.BuildPropertyGroup>(project.PropertyGroups)))
+					{
+						if (g.IsImported) {
+							continue;
+						}
+						
+						string gConfiguration, gPlatform;
+						MSBuildInternals.GetConfigurationAndPlatformFromCondition(g.Condition,
+						                                                          out gConfiguration,
+						                                                          out gPlatform);
+						if (gPlatform == copyFrom) {
+							CopyProperties(g, gConfiguration, newName);
+							copiedGroup = true;
+						}
+					}
+				}
+				if (!copiedGroup) {
+					project.AddNewPropertyGroup(false).Condition = CreateCondition(null, newName);
+				}
+				LoadConfigurationPlatformNamesFromMSBuild();
+				return true;
+			}
+		}
+		
+		/// <summary>
+		/// copy properties from g into a new property group for newConfiguration and newPlatform
+		/// </summary>
+		void CopyProperties(MSBuild.BuildPropertyGroup g, string newConfiguration, string newPlatform)
+		{
+			MSBuild.BuildPropertyGroup ng = project.AddNewPropertyGroup(false);
+			ng.Condition = CreateCondition(newConfiguration, newPlatform);
+			foreach (MSBuild.BuildProperty p in g) {
+				ng.AddNewProperty(p.Name, p.Value);
+			}
+		}
+		
+		bool IProjectAllowChangeConfigurations.RemoveProjectConfiguration(string name)
+		{
+			lock (SyncRoot) {
+				string otherConfigurationName = null;
+				foreach (string configName in this.ConfigurationNames) {
+					if (configName != name) {
+						otherConfigurationName = name;
+						break;
+					}
+				}
+				if (otherConfigurationName == null) {
+					throw new InvalidOperationException("cannot remove the last configuration");
+				}
+				foreach (MSBuild.BuildPropertyGroup g
+				         in Linq.ToList(Linq.CastTo<MSBuild.BuildPropertyGroup>(project.PropertyGroups)))
+				{
+					if (g.IsImported) {
+						continue;
+					}
+					
+					MSBuild.BuildProperty prop = MSBuildInternals.GetProperty(g, "Configuration");
+					if (prop != null && prop.Value == name) {
+						prop.Value = otherConfigurationName;
+					}
+					
+					string gConfiguration, gPlatform;
+					MSBuildInternals.GetConfigurationAndPlatformFromCondition(g.Condition,
+					                                                          out gConfiguration,
+					                                                          out gPlatform);
+					if (gConfiguration == name) {
+						project.RemovePropertyGroup(g);
+					}
+				}
+				LoadConfigurationPlatformNamesFromMSBuild();
+				return true;
+			}
+		}
+		
+		bool IProjectAllowChangeConfigurations.RemoveProjectPlatform(string name)
+		{
+			lock (SyncRoot) {
+				string otherPlatformName = null;
+				foreach (string platformName in this.PlatformNames) {
+					if (platformName != name) {
+						otherPlatformName = name;
+						break;
+					}
+				}
+				if (otherPlatformName == null) {
+					throw new InvalidOperationException("cannot remove the last platform");
+				}
+				foreach (MSBuild.BuildPropertyGroup g
+				         in Linq.ToList(Linq.CastTo<MSBuild.BuildPropertyGroup>(project.PropertyGroups)))
+				{
+					if (g.IsImported) {
+						continue;
+					}
+					
+					MSBuild.BuildProperty prop = MSBuildInternals.GetProperty(g, "Platform");
+					if (prop != null && prop.Value == name) {
+						prop.Value = otherPlatformName;
+					}
+					
+					string gConfiguration, gPlatform;
+					MSBuildInternals.GetConfigurationAndPlatformFromCondition(g.Condition,
+					                                                          out gConfiguration,
+					                                                          out gPlatform);
+					if (gPlatform == name) {
+						project.RemovePropertyGroup(g);
+					}
+				}
+				LoadConfigurationPlatformNamesFromMSBuild();
+				return true;
+			}
 		}
 		#endregion
 	}

@@ -18,6 +18,8 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// Base interface for projects.
 	/// Thread-safe members lock on the SyncRoot. Non-thread-safe members may only be called from the main thread.
+	/// 
+	/// When you implement IProject, you should also implement IProjectItemListProvider and IProjectAllowChangeConfigurations
 	/// </summary>
 	public interface IProject
 		: ISolutionFolder, IDisposable, IMementoCapable, ICanBeDirty
@@ -215,6 +217,8 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// Interface for adding and removing items from a project. Not part of the IProject
 	/// interface because in nearly all cases, ProjectService.Add/RemoveProjectItem should
 	/// be used instead!
+	/// So IProject implementors should implement this interface, but only the SharpDevelop methods
+	/// ProjectService.AddProjectItem and RemoveProjectItem may call the interface members.
 	/// </summary>
 	public interface IProjectItemListProvider
 	{
@@ -234,5 +238,20 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Removes an entry from the Items-collection
 		/// </summary>
 		bool RemoveProjectItem(ProjectItem item);
+	}
+	
+	/// <summary>
+	/// Interface for changing project or solution configuration.
+	/// IProject implementors should implement this interface, but only the SharpDevelop methods
+	/// Solution.RenameProjectPlatform etc. may call the interface members.
+	/// </summary>
+	public interface IProjectAllowChangeConfigurations
+	{
+		bool RenameProjectConfiguration(string oldName, string newName);
+		bool RenameProjectPlatform(string oldName, string newName);
+		bool AddProjectConfiguration(string newName, string copyFrom);
+		bool AddProjectPlatform(string newName, string copyFrom);
+		bool RemoveProjectConfiguration(string name);
+		bool RemoveProjectPlatform(string name);
 	}
 }

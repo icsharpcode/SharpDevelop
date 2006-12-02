@@ -21,12 +21,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 		IProject project;
 		bool editPlatforms;
 		
+		private EditAvailableConfigurationsDialog()
+		{
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
+			
+			foreach (Control ctl in this.Controls) {
+				ctl.Text = StringParser.Parse(ctl.Text);
+			}
+		}
+		
 		public EditAvailableConfigurationsDialog(Solution solution, bool editPlatforms)
 			: this()
 		{
 			this.solution = solution;
 			this.editPlatforms = editPlatforms;
 			InitList();
+			
+			if (editPlatforms)
+				this.Text = "Edit Solution Platforms";
+			else
+				this.Text = "Edit Solution Configurations";
 		}
 		
 		public EditAvailableConfigurationsDialog(IProject project, bool editPlatforms)
@@ -36,6 +53,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.solution = project.ParentSolution;
 			this.editPlatforms = editPlatforms;
 			InitList();
+			
+			if (editPlatforms)
+				this.Text = "Edit Project Platforms";
+			else
+				this.Text = "Edit Project Configurations";
 		}
 		
 		void InitList()
@@ -66,18 +88,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listBox.SelectedIndex = Math.Max(Array.IndexOf(array, activeItem), 0);
 		}
 		
-		private EditAvailableConfigurationsDialog()
-		{
-			//
-			// The InitializeComponent() call is required for Windows Forms designer support.
-			//
-			InitializeComponent();
-			
-			foreach (Control ctl in this.Controls) {
-				ctl.Text = StringParser.Parse(ctl.Text);
-			}
-		}
-		
 		void RemoveButtonClick(object sender, EventArgs e)
 		{
 			if (listBox.Items.Count == 1) {
@@ -92,23 +102,33 @@ namespace ICSharpCode.SharpDevelop.Gui
 				} else {
 					Remove(solution, name, editPlatforms);
 				}
+				InitList();
 			}
 		}
 		
 		static void Remove(IProject project, string name, bool isPlatform)
 		{
-			throw new NotImplementedException();
+			if (isPlatform) {
+				project.ParentSolution.RemoveProjectPlatform(project, name);
+			} else {
+				project.ParentSolution.RemoveProjectConfiguration(project, name);
+			}
 		}
 		
 		static void Remove(Solution solution, string name, bool isPlatform)
 		{
-			throw new NotImplementedException();
+			if (isPlatform) {
+				solution.RemoveSolutionPlatform(name);
+			} else {
+				solution.RemoveSolutionConfiguration(name);
+			}
 		}
 		
 		void RenameButtonClick(object sender, EventArgs e)
 		{
 			string oldName = listBox.SelectedItem.ToString();
-			string newName = MessageService.ShowInputBox("Rename", "Enter the new name:", oldName);
+			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}",
+			                                             "Enter the new name:", oldName);
 			if (string.IsNullOrEmpty(newName) || newName == oldName)
 				return;
 			if (!EnsureCorrectName(ref newName))
@@ -118,8 +138,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else {
 				if (editPlatforms) {
 					solution.RenameSolutionPlatform(oldName, newName);
+					if (solution.Preferences.ActivePlatform == oldName) {
+						solution.Preferences.ActivePlatform = newName;
+					}
 				} else {
 					solution.RenameSolutionConfiguration(oldName, newName);
+					if (solution.Preferences.ActiveConfiguration == oldName) {
+						solution.Preferences.ActiveConfiguration = newName;
+					}
 				}
 				// Solution platform name => project platform name
 				foreach (IProject p in solution.Projects) {
@@ -131,11 +157,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void Rename(IProject project, string oldName, string newName)
 		{
-		}
-		
-		void AddButtonClick(object sender, EventArgs e)
-		{
-			throw new NotImplementedException();
+			if (editPlatforms) {
+				if (project.PlatformNames.Contains(newName))
+					return;
+				solution.RenameProjectPlatform(project, oldName, newName);
+			} else {
+				if (project.ConfigurationNames.Contains(newName))
+					return;
+				solution.RenameProjectConfiguration(project, oldName, newName);
+			}
 		}
 		
 		bool EnsureCorrectName(ref string newName)
@@ -143,17 +173,70 @@ namespace ICSharpCode.SharpDevelop.Gui
 			newName = newName.Trim();
 			if (editPlatforms && string.Equals(newName, "AnyCPU", StringComparison.InvariantCultureIgnoreCase))
 				newName = "Any CPU";
-			if (listBox.Items.Contains(newName)) {
-				MessageService.ShowMessage("Duplicate name.");
-				return false;
+			foreach (string item in listBox.Items) {
+				if (string.Equals(item, newName, StringComparison.InvariantCultureIgnoreCase)) {
+					MessageService.ShowMessage("Duplicate name.");
+					return false;
+				}
 			}
-			if (!FileUtility.IsValidDirectoryName(newName)
+			if (MSBuildInternals.Escape(newName) != newName
+			    || !FileUtility.IsValidDirectoryName(newName)
 			    || newName.Contains("'"))
 			{
 				MessageService.ShowMessage("The name was invalid.");
 				return false;
 			}
 			return true;
+		}
+		
+		void AddButtonClick(object sender, EventArgs e)
+		{
+			IEnumerable<string> availableSourceItems;
+			if (project != null) {
+				if (editPlatforms) {
+					availableSourceItems = project.PlatformNames;
+				} else {
+					availableSourceItems = project.ConfigurationNames;
+				}
+			} else {
+				if (editPlatforms) {
+					availableSourceItems = solution.GetPlatformNames();
+				} else {
+					availableSourceItems = solution.GetConfigurationNames();
+				}
+			}
+			
+			using (AddNewConfigurationDialog dlg = new AddNewConfigurationDialog
+			       (project == null, editPlatforms,
+			        availableSourceItems,
+			        delegate (string name) { return EnsureCorrectName(ref name); }
+			       ))
+			{
+				if (dlg.ShowDialog(this) == DialogResult.OK) {
+					string newName = dlg.NewName;
+					// fix up the new name
+					if (!EnsureCorrectName(ref newName))
+						return;
+					
+					if (project != null) {
+						IProjectAllowChangeConfigurations pacc = project as IProjectAllowChangeConfigurations;
+						if (pacc != null) {
+							if (editPlatforms) {
+								pacc.AddProjectPlatform(newName, dlg.CopyFrom);
+							} else {
+								pacc.AddProjectConfiguration(newName, dlg.CopyFrom);
+							}
+						}
+					} else {
+						if (editPlatforms) {
+							solution.AddSolutionPlatform(newName, dlg.CopyFrom, dlg.CreateInAllProjects);
+						} else {
+							solution.AddSolutionConfiguration(newName, dlg.CopyFrom, dlg.CreateInAllProjects);
+						}
+					}
+					InitList();
+				}
+			}
 		}
 	}
 }

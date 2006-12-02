@@ -38,17 +38,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			label1.Text = StringParser.Parse(label1.Text);
 			label2.Text = StringParser.Parse(label2.Text);
 			okButton.Text = StringParser.Parse(okButton.Text);
-			//cancelButton.Text = StringParser.Parse(cancelButton.Text);
+			projectNameColumn.HeaderText = StringParser.Parse(projectNameColumn.HeaderText);
+			configurationColumn.HeaderText = StringParser.Parse(configurationColumn.HeaderText);
+			platformColumn.HeaderText = StringParser.Parse(platformColumn.HeaderText);
 			
 			inUpdate = true;
-			
-			SetItems(configurationComboBox.Items, solution.GetConfigurationNames());
-			SetItems(platformComboBox.Items, solution.GetPlatformNames());
-			SelectElement(configurationComboBox, solution.Preferences.ActiveConfiguration);
-			SelectElement(platformComboBox, solution.Preferences.ActivePlatform);
-			
-			configurationComboBoxEditIndex = configurationComboBox.Items.Add("<Edit>");
-			platformComboBoxEditIndex      = platformComboBox.Items.Add("<Edit>");
+			UpdateAvailableSolutionConfigurationPlatforms();
 			
 			foreach (IProject p in solution.Projects) {
 				DataGridViewRow row = grid.Rows[grid.Rows.Add()];
@@ -57,6 +52,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			
 			UpdateGrid();
+		}
+		
+		void UpdateAvailableSolutionConfigurationPlatforms()
+		{
+			SetItems(configurationComboBox.Items, solution.GetConfigurationNames());
+			SetItems(platformComboBox.Items, solution.GetPlatformNames());
+			SelectElement(configurationComboBox, solution.Preferences.ActiveConfiguration);
+			SelectElement(platformComboBox, solution.Preferences.ActivePlatform);
+			
+			configurationComboBoxEditIndex = configurationComboBox.Items.Add("<Edit>");
+			platformComboBoxEditIndex      = platformComboBox.Items.Add("<Edit>");
 		}
 		
 		void SetItems(IList items, IEnumerable<string> elements)
@@ -79,6 +85,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			} else {
 				box.Value = itemName;
+			}
+		}
+		
+		sealed class EditTag
+		{
+			public static readonly EditTag Instance = new EditTag();
+			
+			public override string ToString()
+			{
+				return "<Edit>";
 			}
 		}
 		
@@ -106,11 +122,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 				c1.Tag = matching;
 				SetItems(c1.Items, p.ConfigurationNames);
 				SelectElement(c1, matching.Configuration);
+				c1.Items.Add(EditTag.Instance);
 				
 				DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell)row.Cells[2];
 				c2.Tag = matching;
 				SetItems(c2.Items, p.PlatformNames);
 				SelectElement(c2, matching.Platform);
+				c2.Items.Add(EditTag.Instance);
 			}
 			inUpdate = false;
 		}
@@ -123,7 +141,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					using (Form dlg = new EditAvailableConfigurationsDialog(solution, false)) {
 						dlg.ShowDialog(this);
 					}
-					SelectElement(configurationComboBox, solution.Preferences.ActiveConfiguration);
+					UpdateAvailableSolutionConfigurationPlatforms();
 				}
 				UpdateGrid();
 			}
@@ -137,7 +155,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					using (Form dlg = new EditAvailableConfigurationsDialog(solution, true)) {
 						dlg.ShowDialog(this);
 					}
-					SelectElement(platformComboBox, solution.Preferences.ActivePlatform);
+					UpdateAvailableSolutionConfigurationPlatforms();
 				}
 				UpdateGrid();
 			}
@@ -160,13 +178,72 @@ namespace ICSharpCode.SharpDevelop.Gui
 					} else {
 						matching.Platform = cell.Value.ToString();
 					}
+					if (matching.Platform == "AnyCPU") {
+						matching.Platform = "Any CPU";
+					}
 					
 					if (matching.SolutionItem == null) {
 						matching.SolutionItem = solution.CreateMatchingItem(configurationComboBox.Text,
 						                                                    platformComboBox.Text,
-						                                                    matching.Project);
+						                                                    matching.Project, "");
 					}
-					matching.SolutionItem.Location = matching.Configuration + "|" + matching.Platform;
+					matching.SetProjectConfigurationPlatform(solution.GetProjectConfigurationsSection(),
+					                                         matching.Configuration, matching.Platform);
+				}
+			}
+		}
+		
+		ComboBox gridEditingControl;
+		
+		public ComboBox GridEditingControl {
+			get { return gridEditingControl; }
+			set {
+				if (gridEditingControl == value) return;
+				if (gridEditingControl != null) {
+					gridEditingControl.SelectedIndexChanged -= GridEditingControlSelectedIndexChanged;
+				}
+				gridEditingControl = value;
+				if (gridEditingControl != null) {
+					gridEditingControl.SelectedIndexChanged += GridEditingControlSelectedIndexChanged;
+				}
+			}
+		}
+		
+		void GridEditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+		{
+			GridEditingControl = e.Control as ComboBox;
+		}
+		
+		void GridEditingControlSelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (gridEditingControl.SelectedItem == EditTag.Instance) {
+				DataGridViewComboBoxCell cell = grid.CurrentCell as DataGridViewComboBoxCell;
+				if (cell == null) return;
+				Solution.ProjectConfigurationPlatformMatching matching = cell.Tag as Solution.ProjectConfigurationPlatformMatching;
+				if (matching != null) {
+					inUpdate = true;
+					using (Form dlg = new EditAvailableConfigurationsDialog(matching.Project,
+					                                                        cell.ColumnIndex != configurationColumn.Index))
+					{
+						dlg.ShowDialog(this);
+					}
+					
+					grid.EndEdit();
+					
+					inUpdate = true;
+					
+					// end edit to allow updating the grid
+					grid.EndEdit();
+					
+					// we need to change the current cell because otherwise UpdateGrid cannot change the
+					// list of combobox items in this cell
+					grid.CurrentCell = grid.Rows[cell.RowIndex].Cells[0];
+					
+					// remove cell.Value because otherwise the grid view crashes in UpdateGrid
+					cell.Value = null;
+					
+					UpdateAvailableSolutionConfigurationPlatforms();
+					UpdateGrid();
 				}
 			}
 		}

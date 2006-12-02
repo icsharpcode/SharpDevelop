@@ -41,11 +41,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.configurationComboBox = new System.Windows.Forms.ComboBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.grid = new System.Windows.Forms.DataGridView();
-			this.panel2 = new System.Windows.Forms.Panel();
-			this.okButton = new System.Windows.Forms.Button();
 			this.projectNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.configurationColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.platformColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
+			this.panel2 = new System.Windows.Forms.Panel();
+			this.okButton = new System.Windows.Forms.Button();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
 			this.panel2.SuspendLayout();
@@ -79,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(64, 23);
 			this.label2.TabIndex = 2;
-			this.label2.Text = "Platform:";
+			this.label2.Text = "${res:Dialog.ProjectOptions.Platform}:";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// configurationComboBox
@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(138, 23);
 			this.label1.TabIndex = 0;
-			this.label1.Text = "Solution configuration:";
+			this.label1.Text = "${res:Dialog.Options.CombineOptions.Configurations.SolutionConfiguration}";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// grid
@@ -119,6 +119,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.grid.TabIndex = 1;
 			this.grid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.GridCellValueChanged);
 			this.grid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.GridDataError);
+			this.grid.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.GridEditingControlShowing);
+			// 
+			// projectNameColumn
+			// 
+			this.projectNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+			this.projectNameColumn.HeaderText = "${res:Dialog.SelectReferenceDialog.ProjectReferencePanel.NameHeader}";
+			this.projectNameColumn.Name = "projectNameColumn";
+			this.projectNameColumn.ReadOnly = true;
+			// 
+			// configurationColumn
+			// 
+			this.configurationColumn.HeaderText = "${res:Dialog.Options.CombineOptions.Configurations.ConfigurationColumnHeader}";
+			this.configurationColumn.Name = "configurationColumn";
+			// 
+			// platformColumn
+			// 
+			this.platformColumn.HeaderText = "${res:Dialog.Options.CombineOptions.Configurations.PlatformColumnHeader}";
+			this.platformColumn.Name = "platformColumn";
 			// 
 			// panel2
 			// 
@@ -140,23 +158,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.okButton.Text = "${res:Global.OKButtonText}";
 			this.okButton.UseVisualStyleBackColor = true;
 			// 
-			// projectNameColumn
-			// 
-			this.projectNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.projectNameColumn.HeaderText = "Project Name";
-			this.projectNameColumn.Name = "projectNameColumn";
-			this.projectNameColumn.ReadOnly = true;
-			// 
-			// configurationColumn
-			// 
-			this.configurationColumn.HeaderText = "Configuration";
-			this.configurationColumn.Name = "configurationColumn";
-			// 
-			// platformColumn
-			// 
-			this.platformColumn.HeaderText = "Platform";
-			this.platformColumn.Name = "platformColumn";
-			// 
 			// SolutionConfigurationEditor
 			// 
 			this.AcceptButton = this.okButton;
@@ -168,7 +169,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Controls.Add(this.panel1);
 			this.MinimumSize = new System.Drawing.Size(457, 145);
 			this.Name = "SolutionConfigurationEditor";
-			this.Text = "Configuration Editor";
+			this.ShowInTaskbar = false;
+			this.Text = "${res:Dialog.Options.CombineOptions.Configurations.ConfigurationEditor}";
 			this.panel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
 			this.panel2.ResumeLayout(false);
