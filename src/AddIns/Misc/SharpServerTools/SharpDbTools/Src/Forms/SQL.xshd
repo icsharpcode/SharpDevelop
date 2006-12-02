@@ -1,0 +1,165 @@
+<?xml version = "1.0"?>
+<!-- Thanks to Troy@ebswift.com -->
+
+<SyntaxDefinition name = "SQL" extensions = ".sql">
+
+	<Environment> 
+		<Default      color = "SystemColors.WindowText" bgcolor="SystemColors.Window"/>
+		<VRuler       color = "Blue"/>
+		<Selection    bgcolor = "LightBlue"/>
+		<LineNumbers  color = "Teal" bgcolor = "SystemColors.Window"/>
+		<InvalidLines color = "Red"/>
+		<EOLMarkers   color = "White"/>
+		<SpaceMarkers color = "#E0E0E5"/>
+		<TabMarkers   color = "#E0E0E5"/>
+		<CaretMarker  color = "Yellow"/>
+		<FoldLine     color = "#808080" bgcolor="Black"/>
+		<FoldMarker   color = "#808080" bgcolor="White"/>
+	</Environment>
+	
+	<Properties>
+		<Property name="LineComment" value="--"/>
+	</Properties>
+	
+	<Digits name = "Digits" bold = "false" italic = "false" color = "DarkBlue"/>
+
+	<RuleSets>
+		<RuleSet ignorecase = "true">
+			
+			<Delimiters>=!&gt;&lt;+-/*%&amp;|^~.}{,;][?:()</Delimiters>
+			
+			<Span name ="LineComment" bold ="false" italic ="true" color ="DarkGreen" stopateol ="true">
+				<Begin>--</Begin>
+			</Span>
+			
+			<Span name ="BlockComment" bold ="false" italic ="false" color ="DarkGreen" stopateol ="false">
+				<Begin>/*</Begin>
+				<End>*/</End>
+			</Span>
+			
+			<Span name ="String" bold ="false" italic ="false" color ="Sienna" stopateol ="false">
+				<Begin>&quot;</Begin>
+				<End>&quot;</End>
+			</Span>
+				
+			<Span name = "Character" bold = "false" italic = "false" color = "Sienna" stopateol = "true">
+				<Begin>&apos;</Begin>
+				<End>&apos;</End>
+			</Span>
+			
+			<KeyWords name ="SqlKeywords" bold="false" italic = "false" color = "Blue">
+				<Key word = "from" />
+				<Key word = "where" />
+				<Key word = "in" />
+				<Key word = "on" />
+				<Key word = "exists" />
+				<Key word = "or" />
+				<Key word = "and" />
+				<Key word = "not" />
+				<Key word = "null" />
+				<Key word = "having" />
+				<Key word = "group" />
+				<Key word = "by" />
+				<Key word = "order" />
+				
+				
+				<Key word = "into" />
+				<Key word = "values" />
+				<Key word = "set" />	
+				<Key word = "inner" />	
+				<Key word = "outer" />	
+				<Key word = "join" />	
+				<Key word = "union" />
+				<Key word = "desc" />
+				<Key word = "asc" />
+			</KeyWords>
+			
+			<KeyWords name ="SqlActionWords" bold="false" italic = "false" color = "Blue">
+				<Key word = "select" />
+				<Key word = "update" />
+				<Key word = "use" />
+				<Key word = "insert" />
+				<Key word = "create" />
+				<Key word = "drop" />
+				<Key word = "delete" />
+				<Key word = "truncate" />
+				<Key word = "alter" />
+				<Key word = "add" />				
+			</KeyWords>
+			
+			<KeyWords name ="SqlTypes" bold="false" italic = "false" color = "DarkRed">
+				<Key word = "varchar" />
+				<Key word = "nvarchar" />
+				<Key word = "char" />
+				<Key word = "nchar" />
+				<Key word = "int" />
+				<Key word = "text" />
+				<Key word = "ntext" />
+				<Key word = "double" />
+				<Key word = "money" />
+				<Key word = "bit" />
+			</KeyWords>
+			
+			<KeyWords name ="SqlObjects" bold="false" italic = "false" color = "DarkRed">
+				<Key word = "table" />
+				<Key word = "proc" />
+				<Key word = "procedure" />
+				<Key word = "function" />
+				<Key word = "view" />
+				<Key word = "trigger" />
+				<Key word = "index" />
+				<Key word = "database" />							
+			</KeyWords>
+			
+			<KeyWords name ="TSql" bold="false" italic = "false" color = "DarkBlue">
+				<Key word = "IF" />
+				<Key word = "ELSE" />
+				<Key word = "CASE" />
+				<Key word = "RETURN" />
+				<Key word = "END" />
+				<Key word = "DECLARE" />
+
+        <Key word = "SWITCH" />
+        <Key word = "END" />
+
+        <Key word = "BEGIN" />
+				<Key word = "CASE" />
+				<Key word = "WHEN" />
+				<Key word = "END" />
+			</KeyWords>
+			
+			<KeyWords name ="Punctuation" bold="false" italic = "false" color = "DarkSlateGray">
+				<Key word = "(" />
+				<Key word = ")" />				
+			</KeyWords>
+			
+			<KeyWords name ="Operators" bold="false" italic = "false" color = "DarkSlateGray">
+				<Key word = "&lt;" />
+				<Key word = "&gt;" />
+				<Key word = "=" />				
+			</KeyWords>
+			
+			<KeyWords name ="Functions" bold="false" italic = "false" color = "DarkRed">
+				<Key word = "substring" />
+				<Key word = "upper" />
+				<Key word = "lower" />
+				<Key word = "reverse" />
+				<Key word = "avg" />
+				<Key word = "min" />
+				<Key word = "max" />
+				<Key word = "replace" />
+				<Key word = "ltrim" />
+				<Key word = "rtrim" />
+				<Key word = "cast" />
+				
+			</KeyWords>
+
+			
+			
+			
+			
+				
+		</RuleSet>
+	</RuleSets>
+</SyntaxDefinition>
+

@@ -37,13 +37,13 @@ namespace SharpDbTools.Forms
 			this.sqlToolTabControl = new System.Windows.Forms.TabControl();
 			this.editorTab = new System.Windows.Forms.TabPage();
 			this.resultTab = new System.Windows.Forms.TabPage();
-			this.messageTab = new System.Windows.Forms.TabPage();
 			this.resultDataGridView = new System.Windows.Forms.DataGridView();
+			this.messageTab = new System.Windows.Forms.TabPage();
 			this.messageTextBox = new System.Windows.Forms.TextBox();
 			this.sqlToolTabControl.SuspendLayout();
 			this.resultTab.SuspendLayout();
-			this.messageTab.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.resultDataGridView)).BeginInit();
+			this.messageTab.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// sqlToolTabControl
@@ -57,7 +57,6 @@ namespace SharpDbTools.Forms
 			this.sqlToolTabControl.SelectedIndex = 0;
 			this.sqlToolTabControl.Size = new System.Drawing.Size(885, 522);
 			this.sqlToolTabControl.TabIndex = 0;
-			this.sqlToolTabControl.UseWaitCursor = true;
 			// 
 			// editorTab
 			// 
@@ -68,7 +67,6 @@ namespace SharpDbTools.Forms
 			this.editorTab.TabIndex = 0;
 			this.editorTab.Text = "Editor";
 			this.editorTab.UseVisualStyleBackColor = true;
-			this.editorTab.UseWaitCursor = true;
 			// 
 			// resultTab
 			// 
@@ -80,7 +78,15 @@ namespace SharpDbTools.Forms
 			this.resultTab.TabIndex = 1;
 			this.resultTab.Text = "Results";
 			this.resultTab.UseVisualStyleBackColor = true;
-			this.resultTab.UseWaitCursor = true;
+			// 
+			// resultDataGridView
+			// 
+			this.resultDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.resultDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.resultDataGridView.Location = new System.Drawing.Point(3, 3);
+			this.resultDataGridView.Name = "resultDataGridView";
+			this.resultDataGridView.Size = new System.Drawing.Size(871, 488);
+			this.resultDataGridView.TabIndex = 0;
 			// 
 			// messageTab
 			// 
@@ -92,23 +98,13 @@ namespace SharpDbTools.Forms
 			this.messageTab.TabIndex = 2;
 			this.messageTab.Text = "Messages";
 			this.messageTab.UseVisualStyleBackColor = true;
-			this.messageTab.UseWaitCursor = true;
 			// 
-			// dataGridView1
-			// 
-			this.resultDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.resultDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.resultDataGridView.Location = new System.Drawing.Point(3, 3);
-			this.resultDataGridView.Name = "resultDataGridView";
-			this.resultDataGridView.Size = new System.Drawing.Size(871, 488);
-			this.resultDataGridView.TabIndex = 0;
-			// 
-			// textBox1
+			// messageTextBox
 			// 
 			this.messageTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.messageTextBox.Location = new System.Drawing.Point(3, 3);
 			this.messageTextBox.Multiline = true;
-			this.messageTextBox.Name = "messages";
+			this.messageTextBox.Name = "messageTextBox";
 			this.messageTextBox.Size = new System.Drawing.Size(871, 488);
 			this.messageTextBox.TabIndex = 0;
 			// 
@@ -121,9 +117,9 @@ namespace SharpDbTools.Forms
 			this.Size = new System.Drawing.Size(885, 522);
 			this.sqlToolTabControl.ResumeLayout(false);
 			this.resultTab.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.resultDataGridView)).EndInit();
 			this.messageTab.ResumeLayout(false);
 			this.messageTab.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.resultDataGridView)).EndInit();
 			this.ResumeLayout(false);
 		}
 		private System.Windows.Forms.TextBox messageTextBox;

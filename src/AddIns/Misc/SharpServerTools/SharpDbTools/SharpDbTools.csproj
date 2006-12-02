@@ -57,6 +57,7 @@
     <Compile Include="Src\Data\DbModelInfoService.cs" />
     <Compile Include="Src\Data\DbProvidersService.cs" />
     <Compile Include="Src\Forms\TableTreeNode.cs" />
+    <None Include="Src\Forms\SQL.xshd" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />
