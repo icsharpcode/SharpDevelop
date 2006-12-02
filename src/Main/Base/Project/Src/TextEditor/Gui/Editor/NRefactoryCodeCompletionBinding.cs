@@ -89,11 +89,21 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			List<ResolveResult> rr = new List<ResolveResult>();
 			int offset = LocationToOffset(editor, call.start);
 			string documentText = editor.Text;
+			int newOffset;
 			foreach (Location loc in call.commas) {
-				int newOffset = LocationToOffset(editor, loc);
+				newOffset = LocationToOffset(editor, loc);
 				if (newOffset < 0) break;
 				string text = editor.Document.GetText(offset+1,newOffset-(offset+1));
 				rr.Add(ParserService.Resolve(new ExpressionResult(text), loc.Line, loc.Column, editor.FileName, documentText));
+			}
+			// the last argument is between the last comma and the caret position
+			newOffset = editor.ActiveTextAreaControl.Caret.Offset;
+			if (offset < newOffset) {
+				string text = editor.Document.GetText(offset+1,newOffset-(offset+1));
+				rr.Add(ParserService.Resolve(new ExpressionResult(text),
+				                             editor.ActiveTextAreaControl.Caret.Line + 1,
+				                             editor.ActiveTextAreaControl.Caret.Column + 1,
+				                             editor.FileName, documentText));
 			}
 			return rr;
 		}
