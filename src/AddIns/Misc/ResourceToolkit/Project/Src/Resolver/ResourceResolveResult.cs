@@ -17,15 +17,27 @@ namespace Hornung.ResourceToolkit.Resolver
 	public class ResourceResolveResult : ResolveResult
 	{
 		
-		IResourceFileContent resourceFileContent;
+		ResourceSetReference resourceSetReference;
 		string key;
 		
 		/// <summary>
-		/// Gets the <see cref="IResourceFileContent" /> of the resource being referenced.
+		/// Gets the <see cref="ResourceSetReference"/> that describes the resource set being referenced.
+		/// </summary>
+		public ResourceSetReference ResourceSetReference {
+			get { return this.resourceSetReference; }
+		}
+		
+		/// <summary>
+		/// Gets the <see cref="IResourceFileContent"/> for the referenced resource set.
+		/// May be <c>null</c>.
 		/// </summary>
 		public IResourceFileContent ResourceFileContent {
 			get {
-				return this.resourceFileContent;
+				if (this.ResourceSetReference == null ||
+				    this.ResourceSetReference.FileName == null) {
+					return null;
+				}
+				return this.ResourceSetReference.ResourceFileContent;
 			}
 		}
 		
@@ -33,29 +45,27 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// Gets the resource key being referenced. May be null if the key is unknown/not yet typed.
 		/// </summary>
 		public string Key {
-			get {
-				return this.key;
-			}
+			get { return this.key; }
 		}
 		
 		/// <summary>
 		/// Gets the resource file name that contains the resource being referenced.
-		/// Only valid if both <see cref="ResourceFileContent"/> and <see cref="Key"/> are not <c>null</c>.
+		/// Only valid if <see cref="ResourceSetReference"/> is not <c>null</c>
+		/// and the <see cref="ResourceSetReference"/> contains a valid file name.
 		/// </summary>
 		public string FileName {
 			get {
 				
-				if (this.ResourceFileContent == null || this.Key == null) {
-					return null;
-				}
-				
 				IMultiResourceFileContent mrfc = this.ResourceFileContent as IMultiResourceFileContent;
-				if (mrfc != null) {
+				if (mrfc != null && this.Key != null) {
 					return mrfc.GetFileNameForKey(this.Key);
-				} else {
+				} else if (this.ResourceFileContent != null) {
 					return this.ResourceFileContent.FileName;
+				} else if (this.ResourceSetReference != null) {
+					return this.ResourceSetReference.FileName;
 				}
 				
+				return null;
 			}
 		}
 		
@@ -65,12 +75,12 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <param name="callingClass">The class that contains the reference to the resource.</param>
 		/// <param name="callingMember">The member that contains the reference to the resource.</param>
 		/// <param name="returnType">The type of the resource being referenced.</param>
-		/// <param name="resourceFileContent">The <see cref="IResourceFileContent"/> that contains the resource being referenced.</param>
+		/// <param name="resourceSetReference">The <see cref="ResourceSetReference"/> that describes the resource set being referenced.</param>
 		/// <param name="key">The resource key being referenced.</param>
-		public ResourceResolveResult(IClass callingClass, IMember callingMember, IReturnType returnType, IResourceFileContent resourceFileContent, string key)
+		public ResourceResolveResult(IClass callingClass, IMember callingMember, IReturnType returnType, ResourceSetReference resourceSetReference, string key)
 			: base(callingClass, callingMember, returnType)
 		{
-			this.resourceFileContent = resourceFileContent;
+			this.resourceSetReference = resourceSetReference;
 			this.key = key;
 		}
 		

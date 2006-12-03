@@ -78,31 +78,9 @@ namespace Hornung.ResourceToolkit.Resolver
 				#endif
 				
 				string key = GetKeyFromExpression(expr);
-				string localResourceFileName = ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreLocalResourceFileName(fileName);
-				string hostResourceFileName = ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreHostResourceFileName(fileName);
-				IResourceFileContent content = null;
 				
-				// Merge the local and host resource file contents if available.
-				
-				if (!String.IsNullOrEmpty(localResourceFileName)) {
-					content = ResourceFileContentRegistry.GetResourceFileContent(localResourceFileName);
-				}
-				
-				if (!String.IsNullOrEmpty(hostResourceFileName)) {
-					if (content == null) {
-						content = ResourceFileContentRegistry.GetResourceFileContent(hostResourceFileName);
-					} else {
-						IResourceFileContent hostContent = ResourceFileContentRegistry.GetResourceFileContent(hostResourceFileName);
-						if (hostContent != null) {
-							content = new MergedResourceFileContent(content, new IResourceFileContent[] { hostContent });
-						}
-					}
-				}
-				
-				if (content != null) {
-					// TODO: Add information about return type (of the resource, if present).
-					return new ResourceResolveResult(resolveResult.CallingClass, resolveResult.CallingMember, null, content, key);
-				}
+				// TODO: Add information about return type (of the resource, if present).
+				return new ResourceResolveResult(resolveResult.CallingClass, resolveResult.CallingMember, null, ICSharpCodeCoreResourceResolver.ResolveICSharpCodeCoreResourceSet(key, fileName), key);
 				
 			}
 			

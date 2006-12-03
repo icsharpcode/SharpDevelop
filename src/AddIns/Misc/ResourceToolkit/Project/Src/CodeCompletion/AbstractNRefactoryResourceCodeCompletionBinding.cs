@@ -7,6 +7,7 @@
 
 using System;
 using Hornung.ResourceToolkit.Resolver;
+using Hornung.ResourceToolkit.ResourceFileContent;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
@@ -25,8 +26,21 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 				
 				ResourceResolveResult result = ResourceResolverService.Resolve(editor, ch);
 				if (result != null) {
-					if (result.ResourceFileContent != null) {
-						editor.ShowCompletionWindow(new ResourceCodeCompletionDataProvider(result.ResourceFileContent, this.OutputVisitor, result.CallingClass != null ? result.CallingClass.Name+"." : null), ch);
+					IResourceFileContent content;
+					if ((content = result.ResourceFileContent) != null) {
+						
+						// If the resolved resource set is the local ICSharpCode.Core resource set
+						// (this may happen through the ICSharpCodeCoreNRefactoryResourceResolver),
+						// we will have to merge in the host resource set (if available)
+						// for the code completion window.
+						if (result.ResourceSetReference.ResourceSetName == ICSharpCodeCoreResourceResolver.ICSharpCodeCoreLocalResourceSetName) {
+							IResourceFileContent hostContent = ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreHostResourceSet(editor.FileName).ResourceFileContent;
+							if (hostContent != null) {
+								content = new MergedResourceFileContent(content, new IResourceFileContent[] { hostContent });
+							}
+						}
+						
+						editor.ShowCompletionWindow(new ResourceCodeCompletionDataProvider(content, this.OutputVisitor, result.CallingClass != null ? result.CallingClass.Name+"." : null), ch);
 						return true;
 					}
 				}

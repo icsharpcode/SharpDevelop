@@ -25,7 +25,7 @@ namespace Hornung.ResourceToolkit.Gui
 			IFilterHost<ResourceItem> host = ((ToolBarCheckBox)this.Owner).Caller as IFilterHost<ResourceItem>;
 			if (host != null) {
 				if (this.IsChecked) {
-					this.icSharpCodeCoreHostResourceFileName = ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreHostResourceFileName(null);
+					this.icSharpCodeCoreHostResourceFileName = ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreHostResourceSet(null).FileName;
 					host.RegisterFilter(this);
 				} else {
 					host.UnregisterFilter(this);

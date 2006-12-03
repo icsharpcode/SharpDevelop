@@ -27,20 +27,17 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 				
 				if (editor.ActiveTextAreaControl.Caret.Offset >= 5 && editor.Document.GetText(editor.ActiveTextAreaControl.Caret.Offset-5, 5) == "${res") {
 					
-					IResourceFileContent content = null;
-					string localFile = ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreLocalResourceFileName(editor.FileName);
-					if (localFile != null) {
-						#if DEBUG
-						LoggingService.Debug("ResourceToolkit: Found local ICSharpCode.Core resource file: "+localFile);
-						#endif
-						content = ResourceFileContentRegistry.GetResourceFileContent(localFile);
+					IResourceFileContent content = ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreLocalResourceSet(editor.FileName).ResourceFileContent;
+					#if DEBUG
+					if (content != null) {
+						LoggingService.Debug("ResourceToolkit: Found local ICSharpCode.Core resource file: "+content.FileName);
 					}
+					#endif
 					
-					IResourceFileContent hostContent;
-					string hostFile = ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreHostResourceFileName(editor.FileName);
-					if (hostFile != null && (hostContent = ResourceFileContentRegistry.GetResourceFileContent(hostFile)) != null) {
+					IResourceFileContent hostContent = ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreHostResourceSet(editor.FileName).ResourceFileContent;
+					if (hostContent != null) {
 						#if DEBUG
-						LoggingService.Debug("ResourceToolkit: Found host ICSharpCode.Core resource file: "+hostFile);
+						LoggingService.Debug("ResourceToolkit: Found host ICSharpCode.Core resource file: "+hostContent.FileName);
 						#endif
 						if (content != null) {
 							content = new MergedResourceFileContent(content, new IResourceFileContent[] { hostContent });
@@ -60,8 +57,8 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 				
 				// Provide ${res: as code completion
 				// in an ICSharpCode.Core application
-				if (ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreHostResourceFileName(editor.FileName) != null ||
-				    ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreLocalResourceFileName(editor.FileName) != null) {
+				if (ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreHostResourceSet(editor.FileName).ResourceFileContent != null ||
+				    ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreLocalResourceSet(editor.FileName).ResourceFileContent != null) {
 					
 					editor.ShowCompletionWindow(new ICSharpCodeCoreTagCompletionDataProvider(), ch);
 					return true;

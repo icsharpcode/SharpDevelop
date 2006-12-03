@@ -70,6 +70,7 @@
     <Compile Include="Src\Resolver\PositionTrackingAstVisitor.cs" />
     <Compile Include="Src\Resolver\PropertyFieldAssociationVisitor.cs" />
     <Compile Include="Src\Resolver\ResourceResolveResult.cs" />
+    <Compile Include="Src\Resolver\ResourceSetReference.cs" />
     <Compile Include="Src\ResourceFileContent\DefaultBclResourceFileContentFactory.cs" />
     <Compile Include="Src\ResourceFileContent\DefaultFileLocalizedResourcesFinder.cs" />
     <Compile Include="Src\ResourceFileContent\ILocalizedResourcesFinder.cs" />

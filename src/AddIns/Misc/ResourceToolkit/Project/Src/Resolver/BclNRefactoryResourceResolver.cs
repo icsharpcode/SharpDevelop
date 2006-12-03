@@ -167,13 +167,13 @@ namespace Hornung.ResourceToolkit.Resolver
 		
 		// ********************************************************************************************************************************
 		
-		#region ResourceFileContent mapping cache
+		#region ResourceSetReference mapping cache
 		
-		static Dictionary<IMember, IResourceFileContent> cachedResourceFileContentMappings;
+		static Dictionary<IMember, ResourceSetReference> cachedResourceSetReferenceMappings;
 		
 		static BclNRefactoryResourceResolver()
 		{
-			cachedResourceFileContentMappings = new Dictionary<IMember, IResourceFileContent>(new MemberEqualityComparer());
+			cachedResourceSetReferenceMappings = new Dictionary<IMember, ResourceSetReference>(new MemberEqualityComparer());
 			NRefactoryAstCacheService.CacheEnabledChanged += NRefactoryCacheEnabledChanged;
 		}
 		
@@ -181,7 +181,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		{
 			if (!NRefactoryAstCacheService.CacheEnabled) {
 				// Clear cache when disabled.
-				cachedResourceFileContentMappings.Clear();
+				cachedResourceSetReferenceMappings.Clear();
 			}
 		}
 		
@@ -199,48 +199,48 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// </returns>
 		static ResourceResolveResult ResolveResource(ResolveResult resolveResult, Expression expr)
 		{
-			IResourceFileContent rfc = null;
+			ResourceSetReference rsr = null;
 			
 			MemberResolveResult mrr = resolveResult as MemberResolveResult;
 			if (mrr != null) {
-				rfc = ResolveResourceFileContent(mrr.ResolvedMember);
+				rsr = ResolveResourceSet(mrr.ResolvedMember);
 			} else {
 				
 				LocalResolveResult lrr = resolveResult as LocalResolveResult;
 				if (lrr != null) {
 					if (!lrr.IsParameter) {
-						rfc = ResolveResourceFileContent(lrr.Field);
+						rsr = ResolveResourceSet(lrr.Field);
 					}
 				}
 				
 			}
 			
-			if (rfc != null) {
+			if (rsr != null) {
 				string key = GetKeyFromExpression(expr);
 				
 				// TODO: Add information about return type (of the resource, if present).
-				return new ResourceResolveResult(resolveResult.CallingClass, resolveResult.CallingMember, null, rfc, key);
+				return new ResourceResolveResult(resolveResult.CallingClass, resolveResult.CallingMember, null, rsr, key);
 			}
 			
 			return null;
 		}
 		
 		/// <summary>
-		/// Tries to determine the resource file content which is referenced by the
+		/// Tries to determine the resource set which is referenced by the
 		/// resource manager which is assigned to the specified member.
 		/// </summary>
 		/// <returns>
-		/// The IResourceFileContent, if successful, or a null reference, if the
+		/// The ResourceSetReference, if successful, or a null reference, if the
 		/// specified member is not a resource manager or if the
 		/// resource file cannot be determined.
 		/// </returns>
-		static IResourceFileContent ResolveResourceFileContent(IMember member)
+		static ResourceSetReference ResolveResourceSet(IMember member)
 		{
 			if (member != null && member.ReturnType != null &&
 			    member.DeclaringType != null && member.DeclaringType.CompilationUnit != null) {
 				
-				IResourceFileContent content;
-				if (!NRefactoryAstCacheService.CacheEnabled || !cachedResourceFileContentMappings.TryGetValue(member, out content)) {
+				ResourceSetReference rsr;
+				if (!NRefactoryAstCacheService.CacheEnabled || !cachedResourceSetReferenceMappings.TryGetValue(member, out rsr)) {
 					
 					string declaringFileName = member.DeclaringType.CompilationUnit.FileName;
 					if (declaringFileName != null) {
@@ -256,15 +256,15 @@ namespace Hornung.ResourceToolkit.Resolver
 								
 								ResourceManagerInitializationFindVisitor visitor = new ResourceManagerInitializationFindVisitor(member);
 								cu.AcceptVisitor(visitor, null);
-								if (visitor.FoundFileName != null) {
+								if (visitor.FoundResourceSet != null) {
 									
-									content = ResourceFileContentRegistry.GetResourceFileContent(visitor.FoundFileName);
+									rsr = visitor.FoundResourceSet;
 									
-									if (NRefactoryAstCacheService.CacheEnabled && content != null) {
-										cachedResourceFileContentMappings.Add(member, content);
+									if (NRefactoryAstCacheService.CacheEnabled) {
+										cachedResourceSetReferenceMappings.Add(member, rsr);
 									}
 									
-									return content;
+									return rsr;
 									
 								}
 								
@@ -277,7 +277,7 @@ namespace Hornung.ResourceToolkit.Resolver
 					
 				}
 				
-				return content;
+				return rsr;
 				
 			}
 			return null;
@@ -336,14 +336,14 @@ namespace Hornung.ResourceToolkit.Resolver
 			
 			CompilationUnit compilationUnit;
 			
-			string foundFileName;
+			ResourceSetReference foundResourceSet;
 			
 			/// <summary>
-			/// Gets the resource file name which the resource manager accesses, or a null reference if the file could not be determined or does not exist.
+			/// Gets the resource set which the resource manager accesses, or a null reference if the resource set could not be determined.
 			/// </summary>
-			public string FoundFileName {
+			public ResourceSetReference FoundResourceSet {
 				get {
-					return this.foundFileName;
+					return this.foundResourceSet;
 				}
 			}
 			
@@ -439,7 +439,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			
 			public override object TrackedVisit(AssignmentExpression assignmentExpression, object data)
 			{
-				if (this.FoundFileName == null &&	// skip if already found to improve performance
+				if (this.FoundResourceSet == null &&	// skip if already found to improve performance
 				    assignmentExpression.Op == AssignmentOperatorType.Assign && this.PositionAvailable &&
 				    (!this.isLocalVariable || this.resourceManagerMember.Region.IsInside(this.CurrentNodeStartLocation.Y, this.CurrentNodeStartLocation.X))	// skip if local variable is out of scope
 				   ) {
@@ -582,14 +582,14 @@ namespace Hornung.ResourceToolkit.Resolver
 									LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found string parameter: '"+pValue+"'");
 									#endif
 									
-									string fileName = NRefactoryResourceResolver.GetResourceFileNameByResourceName(this.resourceManagerMember.DeclaringType.CompilationUnit.FileName, pValue);
-									if (fileName != null) {
-										#if DEBUG
-										LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found resource file: "+fileName);
-										#endif
-										this.foundFileName = fileName;
-										break;
+									this.foundResourceSet = NRefactoryResourceResolver.GetResourceSetReference(this.resourceManagerMember.DeclaringType.CompilationUnit.FileName, pValue);
+									#if DEBUG
+									if (this.foundResourceSet.FileName != null) {
+										LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found resource file: "+this.foundResourceSet.FileName);
 									}
+									#endif
+									
+									break;
 									
 								}
 								
@@ -606,14 +606,14 @@ namespace Hornung.ResourceToolkit.Resolver
 									LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found typeof(...) parameter, type: '"+trr.ResolvedType.ToString()+"'");
 									#endif
 									
-									string fileName = NRefactoryResourceResolver.GetResourceFileNameByResourceName(this.resourceManagerMember.DeclaringType.CompilationUnit.FileName, trr.ResolvedType.FullyQualifiedName);
-									if (fileName != null) {
-										#if DEBUG
-										LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found resource file: "+fileName);
-										#endif
-										this.foundFileName = fileName;
-										break;
+									this.foundResourceSet = NRefactoryResourceResolver.GetResourceSetReference(this.resourceManagerMember.DeclaringType.CompilationUnit.FileName, trr.ResolvedType.FullyQualifiedName);
+									#if DEBUG
+									if (this.foundResourceSet.FileName != null) {
+										LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found resource file: "+this.foundResourceSet.FileName);
 									}
+									#endif
+									
+									break;
 									
 								}
 							}

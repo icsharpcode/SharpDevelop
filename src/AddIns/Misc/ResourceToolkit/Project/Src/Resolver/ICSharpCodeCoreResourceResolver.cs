@@ -126,65 +126,59 @@ namespace Hornung.ResourceToolkit.Resolver
 				#endif
 			}
 			
-			string resourceFile = ResolveICSharpCodeCoreResourceFileName(key == null ? null : key.ToString(), fileName);
+			ResourceSetReference resource = ResolveICSharpCodeCoreResourceSet(key == null ? null : key.ToString(), fileName);
 			
-			if (resourceFile != null) {
-				// TODO: Add information about callingClass, callingMember, returnType
-				return new ResourceResolveResult(null, null, null, ResourceFileContentRegistry.GetResourceFileContent(resourceFile), key == null ? null : key.ToString());
-			} else {
+			#if DEBUG
+			if (resource.FileName == null) {
 				LoggingService.Info("ResourceToolkit: ICSharpCodeCoreResourceResolver: Could not find the ICSharpCode.Core resource file name for the source file '"+fileName+"', key '"+(key == null ? "<null>" : key.ToString())+"'.");
 			}
+			#endif
 			
-			return null;
+			// TODO: Add information about callingClass, callingMember, returnType
+			return new ResourceResolveResult(null, null, null, resource, key == null ? null : key.ToString());
 		}
 		
 		// ********************************************************************************************************************************
 		
 		/// <summary>
-		/// Tries to find the name of the resource file which serves as source for
+		/// Tries to find the resource set which serves as source for
 		/// the resources accessed by the ICSharpCode.Core.
 		/// </summary>
 		/// <param name="key">The resource key to look for. May be null.</param>
 		/// <param name="sourceFileName">The name of the source code file that contains the reference to the resource.</param>
-		static string ResolveICSharpCodeCoreResourceFileName(string key, string sourceFileName)
+		public static ResourceSetReference ResolveICSharpCodeCoreResourceSet(string key, string sourceFileName)
 		{
 			
 			// As there is no easy way to find out the actual location of the resources
 			// based on the source code, we just look in some standard directories.
 			
-			// Local file (SD addin or standalone application with standard directory structure)
-			string localFile = GetICSharpCodeCoreLocalResourceFileName(sourceFileName);
+			// Local set (SD addin or standalone application with standard directory structure)
+			ResourceSetReference local = GetICSharpCodeCoreLocalResourceSet(sourceFileName);
 			
-			// Prefer local file, especially if the key is there.
-			if (localFile != null) {
+			// Prefer local set, especially if the key is there.
+			if (local.ResourceFileContent != null) {
 				if (key != null) {
-					IResourceFileContent localContent = ResourceFileContentRegistry.GetResourceFileContent(localFile);
-					if (localContent != null) {
-						if (localContent.ContainsKey(key)) {
-							return localFile;
-						}
+					if (local.ResourceFileContent.ContainsKey(key)) {
+						return local;
 					}
 				} else {
-					return localFile;
+					return local;
 				}
 			}
 			
-			// Resource file of the host application
-			string hostFile = GetICSharpCodeCoreHostResourceFileName(sourceFileName);
+			// Resource set of the host application
+			ResourceSetReference host = GetICSharpCodeCoreHostResourceSet(sourceFileName);
 			if (key != null) {
-				if (hostFile != null) {
-					IResourceFileContent hostContent = ResourceFileContentRegistry.GetResourceFileContent(hostFile);
-					if (hostContent != null) {
-						if (hostContent.ContainsKey(key)) {
-							return hostFile;
-						}
+				if (host.ResourceFileContent != null) {
+					if (host.ResourceFileContent.ContainsKey(key)) {
+						return host;
 					}
 				}
 			}
 			
 			// Use local file also if the key is not there
 			// (allows adding of a new key)
-			return localFile == null ? hostFile : localFile;
+			return local.ResourceFileContent == null ? host : local;
 		}
 		
 		/// <summary>
@@ -203,43 +197,63 @@ namespace Hornung.ResourceToolkit.Resolver
 		}
 		
 		/// <summary>
-		/// Tries to find the local string resource file used for ICSharpCode.Core resource access.
+		/// Gets a dummy resource set name used to represent the ICSharpCode.Core
+		/// resource set of the local application.
 		/// </summary>
-		/// <param name="sourceFileName">The name of the source code file which to find the ICSharpCode.Core resource file for.</param>
-		public static string GetICSharpCodeCoreLocalResourceFileName(string sourceFileName)
+		public const string ICSharpCodeCoreLocalResourceSetName = "[ICSharpCodeCoreLocalResourceSet]";
+		
+		/// <summary>
+		/// Gets a dummy resource set name used to represent the ICSharpCode.Core
+		/// resource set of the host application.
+		/// </summary>
+		public const string ICSharpCodeCoreHostResourceSetName = "[ICSharpCodeCoreHostResourceSet]";
+		
+		static readonly ResourceSetReference EmptyLocalResourceSetReference = new ResourceSetReference(ICSharpCodeCoreLocalResourceSetName, null);
+		static readonly ResourceSetReference EmptyHostResourceSetReference = new ResourceSetReference(ICSharpCodeCoreHostResourceSetName, null);
+		
+		/// <summary>
+		/// Tries to find the local string resource set used for ICSharpCode.Core resource access.
+		/// </summary>
+		/// <param name="sourceFileName">The name of the source code file which to find the ICSharpCode.Core resource set for.</param>
+		/// <returns>A <see cref="ResourceSetReference"/> that describes the referenced resource set. The contained file name may be <c>null</c> if the file cannot be determined.</returns>
+		public static ResourceSetReference GetICSharpCodeCoreLocalResourceSet(string sourceFileName)
 		{
 			IProject project = ProjectFileDictionaryService.GetProjectForFile(sourceFileName);
 			if (project == null || String.IsNullOrEmpty(project.Directory)) {
-				return null;
+				return EmptyLocalResourceSetReference;
 			}
 			
-			string localFile = null;
+			string localFile;
+			ResourceSetReference local = null;
 			
-			if (!NRefactoryAstCacheService.CacheEnabled || !cachedLocalResourceFiles.TryGetValue(project, out localFile)) {
+			if (!NRefactoryAstCacheService.CacheEnabled || !cachedLocalResourceSets.TryGetValue(project, out local)) {
 				foreach (string relativePath in AddInTree.BuildItems<string>("/AddIns/ResourceToolkit/ICSharpCodeCoreResourceResolver/LocalResourcesLocations", null, false)) {
 					if ((localFile = FindICSharpCodeCoreResourceFile(Path.GetFullPath(Path.Combine(project.Directory, relativePath)))) != null) {
+						local = new ResourceSetReference(ICSharpCodeCoreLocalResourceSetName, localFile);
 						if (NRefactoryAstCacheService.CacheEnabled) {
-							cachedLocalResourceFiles.Add(project, localFile);
+							cachedLocalResourceSets.Add(project, local);
 						}
 						break;
 					}
 				}
 			}
 			
-			return localFile;
+			return local ?? EmptyLocalResourceSetReference;
 		}
 		
 		/// <summary>
-		/// Tries to find the string resource file of the host application for ICSharpCode.Core resource access.
+		/// Tries to find the string resource set of the host application for ICSharpCode.Core resource access.
 		/// </summary>
-		/// <param name="sourceFileName">The name of the source code file which to find the ICSharpCode.Core resource file for.</param>
-		public static string GetICSharpCodeCoreHostResourceFileName(string sourceFileName)
+		/// <param name="sourceFileName">The name of the source code file which to find the ICSharpCode.Core resource set for.</param>
+		/// <returns>A <see cref="ResourceSetReference"/> that describes the referenced resource set. The contained file name may be <c>null</c> if the file cannot be determined.</returns>
+		public static ResourceSetReference GetICSharpCodeCoreHostResourceSet(string sourceFileName)
 		{
 			IProject project = ProjectFileDictionaryService.GetProjectForFile(sourceFileName);
-			string hostFile = null;
+			ResourceSetReference host = null;
+			string hostFile;
 			
 			if (project == null ||
-			    !NRefactoryAstCacheService.CacheEnabled || !cachedHostResourceFiles.TryGetValue(project, out hostFile)) {
+			    !NRefactoryAstCacheService.CacheEnabled || !cachedHostResourceSets.TryGetValue(project, out host)) {
 				
 				// Get SD directory using the reference to ICSharpCode.Core
 				string coreAssemblyFullPath = GetICSharpCodeCoreFullPath(project);
@@ -256,7 +270,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				}
 				
 				if (coreAssemblyFullPath == null) {
-					return null;
+					return EmptyHostResourceSetReference;
 				}
 				
 				#if DEBUG
@@ -265,8 +279,9 @@ namespace Hornung.ResourceToolkit.Resolver
 				
 				foreach (string relativePath in AddInTree.BuildItems<string>("/AddIns/ResourceToolkit/ICSharpCodeCoreResourceResolver/HostResourcesLocations", null, false)) {
 					if ((hostFile = FindICSharpCodeCoreResourceFile(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(coreAssemblyFullPath), relativePath)))) != null) {
+						host = new ResourceSetReference(ICSharpCodeCoreHostResourceSetName, hostFile);
 						if (NRefactoryAstCacheService.CacheEnabled && project != null) {
-							cachedHostResourceFiles.Add(project, hostFile);
+							cachedHostResourceSets.Add(project, host);
 						}
 						break;
 					}
@@ -274,7 +289,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				
 			}
 			
-			return hostFile;
+			return host ?? EmptyHostResourceSetReference;
 		}
 		
 		static string GetICSharpCodeCoreFullPath(IProject sourceProject)
@@ -317,15 +332,15 @@ namespace Hornung.ResourceToolkit.Resolver
 			return coreAssemblyFullPath;
 		}
 		
-		#region ICSharpCode.Core resource file mapping cache
+		#region ICSharpCode.Core resource set mapping cache
 		
-		static Dictionary<IProject, string> cachedLocalResourceFiles;
-		static Dictionary<IProject, string> cachedHostResourceFiles;
+		static Dictionary<IProject, ResourceSetReference> cachedLocalResourceSets;
+		static Dictionary<IProject, ResourceSetReference> cachedHostResourceSets;
 		
 		static ICSharpCodeCoreResourceResolver()
 		{
-			cachedLocalResourceFiles = new Dictionary<IProject, string>();
-			cachedHostResourceFiles = new Dictionary<IProject, string>();
+			cachedLocalResourceSets = new Dictionary<IProject, ResourceSetReference>();
+			cachedHostResourceSets = new Dictionary<IProject, ResourceSetReference>();
 			NRefactoryAstCacheService.CacheEnabledChanged += NRefactoryCacheEnabledChanged;
 		}
 		
@@ -333,8 +348,8 @@ namespace Hornung.ResourceToolkit.Resolver
 		{
 			if (!NRefactoryAstCacheService.CacheEnabled) {
 				// Clear cache when disabled.
-				cachedLocalResourceFiles.Clear();
-				cachedHostResourceFiles.Clear();
+				cachedLocalResourceSets.Clear();
+				cachedHostResourceSets.Clear();
 			}
 		}
 		

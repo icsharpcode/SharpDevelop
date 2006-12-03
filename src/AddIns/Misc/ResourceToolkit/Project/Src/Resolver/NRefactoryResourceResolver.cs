@@ -168,9 +168,9 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// </summary>
 		/// <param name="sourceFileName">The name of the source code file which the reference occurs in.</param>
 		/// <param name="resourceName">The manifest resource name to find the resource file for.</param>
-		/// <returns>The name of the file that contains the resources with the specified manifest resource name, or <c>null</c> if the file name cannot be determined.</returns>
+		/// <returns>A <see cref="ResourceSetReference"/> with the specified resource set name and the name of the file that contains the resources with the specified manifest resource name, or <c>null</c> if the file name cannot be determined.</returns>
 		/// <exception cref="ArgumentNullException">The <paramref name="resourceName"/> parameter is <c>null</c>.</exception>
-		public static string GetResourceFileNameByResourceName(string sourceFileName, string resourceName)
+		public static ResourceSetReference GetResourceSetReference(string sourceFileName, string resourceName)
 		{
 			if (resourceName == null) {
 				throw new ArgumentNullException("resourceName");
@@ -186,7 +186,7 @@ namespace Hornung.ResourceToolkit.Resolver
 					
 					// Look for a resource file in the project with the exact name.
 					if ((fileName = FindResourceFileName(Path.Combine(p.Directory, resourceName.Substring(p.RootNamespace.Length+1).Replace('.', Path.DirectorySeparatorChar)))) != null) {
-						return fileName;
+						return new ResourceSetReference(resourceName, fileName);
 					}
 					
 				}
@@ -248,7 +248,7 @@ namespace Hornung.ResourceToolkit.Resolver
 									// over localized resource file
 									IResourceFileContent rfc = ResourceFileContentRegistry.GetResourceFileContent(fileName);
 									if (rfc.Culture.Equals(CultureInfo.InvariantCulture)) {
-										return fileName;
+										return new ResourceSetReference(resourceName, fileName);
 									}
 								}
 								
@@ -259,20 +259,22 @@ namespace Hornung.ResourceToolkit.Resolver
 					// Fall back to any found resource file
 					// if no culture-invariant resource file was found
 					if (fileName != null) {
-						return fileName;
+						return new ResourceSetReference(resourceName, fileName);
 					}
 					
 					// Find resource files with the same name as the source file
 					// and in the same directory.
 					if ((fileName = FindResourceFileName(possibleSourceFile)) != null) {
-						return fileName;
+						return new ResourceSetReference(resourceName, fileName);
 					}
 					
 				}
 				
 			} else {
 				
-				LoggingService.Info("ResourceToolkit: NRefactoryResourceResolver.GetResourceFileNameByResourceName could not determine the project for the source file '"+(sourceFileName ?? "<null>")+"'.");
+				#if DEBUG
+				LoggingService.Info("ResourceToolkit: NRefactoryResourceResolver.GetResourceSetReference could not determine the project for the source file '"+(sourceFileName ?? "<null>")+"'.");
+				#endif
 				
 				if (sourceFileName != null) {
 					
@@ -286,14 +288,14 @@ namespace Hornung.ResourceToolkit.Resolver
 					while (true) {
 						
 						#if DEBUG
-						LoggingService.Debug("ResourceToolkit: NRefactoryResourceResolver.GetResourceFileNameByResourceName: looking for a resource file like '"+Path.Combine(directory, resourcePart)+"'");
+						LoggingService.Debug("ResourceToolkit: NRefactoryResourceResolver.GetResourceSetReference: looking for a resource file like '"+Path.Combine(directory, resourcePart)+"'");
 						#endif
 						
 						if ((fileName = FindResourceFileName(Path.Combine(directory, resourcePart.Replace('.', Path.DirectorySeparatorChar)))) != null) {
-							return fileName;
+							return new ResourceSetReference(resourceName, fileName);
 						}
 						if ((fileName = FindResourceFileName(Path.Combine(directory, resourcePart))) != null) {
-							return fileName;
+							return new ResourceSetReference(resourceName, fileName);
 						}
 						
 						if (resourcePart.Contains(".")) {
@@ -308,9 +310,11 @@ namespace Hornung.ResourceToolkit.Resolver
 				
 			}
 			
-			LoggingService.Info("ResourceToolkit: NRefactoryResourceResolver.GetResourceFileNameByResourceName is unable to find a suitable resource file for '"+resourceName+"'");
+			#if DEBUG
+			LoggingService.Info("ResourceToolkit: NRefactoryResourceResolver.GetResourceSetReference is unable to find a suitable resource file for '"+resourceName+"'");
+			#endif
 			
-			return null;
+			return new ResourceSetReference(resourceName, null);
 		}
 		
 		// ********************************************************************************************************************************
