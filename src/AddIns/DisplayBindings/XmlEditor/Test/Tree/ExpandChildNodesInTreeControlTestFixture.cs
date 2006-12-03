@@ -39,7 +39,7 @@ namespace XmlEditor.Tests.Tree
 			doc = new XmlDocument();
 			doc.LoadXml("<root><firstChild><secondChild/></firstChild><textChild>some text</textChild></root>");
 			using (XmlTreeViewControl treeView = new XmlTreeViewControl()) {
-				treeView.DocumentElement = doc.DocumentElement;
+				treeView.Document = doc;
 				treeView.SelectedNode = treeView.Nodes[0];
 				rootNodeElement = treeView.SelectedElement;
 				isRootElementSelected = treeView.IsElementSelected;

@@ -54,13 +54,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\AddChildCommentCommand.cs" />
     <Compile Include="Src\AddChildTextNodeCommand.cs" />
     <Compile Include="Src\IAddAttributeDialog.cs" />
     <Compile Include="Src\IAddElementDialog.cs" />
+    <Compile Include="Src\InsertCommentAfterCommand.cs" />
+    <Compile Include="Src\InsertCommentBeforeCommand.cs" />
     <Compile Include="Src\InsertTextNodeAfterCommand.cs" />
     <Compile Include="Src\InsertTextNodeBeforeCommand.cs" />
+    <Compile Include="Src\RemoveCommentCommand.cs" />
     <Compile Include="Src\RemoveElementCommand.cs" />
     <Compile Include="Src\RemoveTextNodeCommand.cs" />
+    <Compile Include="Src\XmlCharacterDataTreeNode.cs" />
+    <Compile Include="Src\XmlCommentTreeNode.cs" />
     <Compile Include="Src\XmlEditorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -102,6 +108,7 @@
     <EmbeddedResource Include="Resources\XmlSchemasPanel.xfrm" />
     <EmbeddedResource Include="Resources\SelectXmlSchema.xfrm" />
     <EmbeddedResource Include="Resources\XmlEditorOptionsPanel.xfrm" />
+    <EmbeddedResource Include="Resources\XmlCommentTreeNodeIcon.png" />
     <None Include="XmlEditor.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

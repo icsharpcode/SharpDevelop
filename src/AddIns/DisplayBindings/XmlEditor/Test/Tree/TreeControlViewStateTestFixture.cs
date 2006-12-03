@@ -29,7 +29,7 @@ namespace XmlEditor.Tests.Tree
 			
 			// Save view state.
 			using (XmlTreeViewControl treeView = new XmlTreeViewControl()) {
-				treeView.DocumentElement = doc.DocumentElement;
+				treeView.Document = doc;
 				ExtTreeNode node = (ExtTreeNode)treeView.Nodes[0];
 				node.Expanding();
 				expectedSavedViewState = ExtTreeView.GetViewStateString(treeView);
@@ -38,7 +38,7 @@ namespace XmlEditor.Tests.Tree
 			
 			// Load view state.
 			using (XmlTreeViewControl treeView = new XmlTreeViewControl()) {
-				treeView.DocumentElement = doc.DocumentElement;
+				treeView.Document = doc;
 				ExtTreeNode node = (ExtTreeNode)treeView.Nodes[0];
 				node.Expanding();
 				treeView.RestoreViewState(restoredProperties);				

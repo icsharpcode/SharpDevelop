@@ -27,19 +27,19 @@ namespace XmlEditor.Tests.Tree
 			base.InitFixture();
 			
 			// User selects text node and alters its text.
-			textNode = (XmlText)mockXmlTreeView.DocumentElement.FirstChild;
+			textNode = (XmlText)mockXmlTreeView.Document.DocumentElement.FirstChild;
 			mockXmlTreeView.SelectedTextNode = textNode;
-			editor.SelectedTextNodeChanged();
-			mockXmlTreeView.TextContentDisplayed = "new value";
+			editor.SelectedNodeChanged();
+			mockXmlTreeView.TextContent = "new value";
 			editor.TextContentChanged();
 			
 			// The user then selects another element and then switches
 			// back to the text node.
-			mockXmlTreeView.SelectedElement = mockXmlTreeView.DocumentElement;
-			editor.SelectedElementChanged();
-			mockXmlTreeView.TextContentDisplayed = String.Empty;
+			mockXmlTreeView.SelectedElement = mockXmlTreeView.Document.DocumentElement;
+			editor.SelectedNodeChanged();
+			mockXmlTreeView.TextContent = String.Empty;
 			mockXmlTreeView.SelectedTextNode = textNode;
-			editor.SelectedTextNodeChanged();
+			editor.SelectedNodeChanged();
 		}
 		
 		[Test]
@@ -51,7 +51,7 @@ namespace XmlEditor.Tests.Tree
 		[Test]
 		public void TextContentDisplayed()
 		{
-			Assert.AreEqual("new value", mockXmlTreeView.TextContentDisplayed);
+			Assert.AreEqual("new value", mockXmlTreeView.TextContent);
 		}
 		
 		[Test]
@@ -85,9 +85,33 @@ namespace XmlEditor.Tests.Tree
 			Assert.AreEqual(textNode, mockXmlTreeView.TextNodesUpdated[0]);
 		}
 		
+		[Test]
+		public void TextContentClearedAfterElementSelected()
+		{
+			mockXmlTreeView.SelectedTextNode = null;
+			mockXmlTreeView.ShowTextContent("Test");
+			mockXmlTreeView.SelectedElement = mockXmlTreeView.Document.DocumentElement;
+			editor.SelectedNodeChanged();
+			Assert.AreEqual(String.Empty, mockXmlTreeView.TextContent);
+		}
+		
+		[Test]
+		public void AttributesClearedAfterTextNodeSelected()
+		{
+			mockXmlTreeView.SelectedTextNode = null;
+			mockXmlTreeView.SelectedElement = mockXmlTreeView.Document.DocumentElement;
+			editor.SelectedNodeChanged();
+			Assert.IsTrue(mockXmlTreeView.AttributesDisplayed.Count > 0);
+			
+			mockXmlTreeView.SelectedElement = null;
+			mockXmlTreeView.SelectedTextNode = textNode;
+			editor.SelectedNodeChanged();
+			Assert.IsFalse(mockXmlTreeView.AttributesDisplayed.Count > 0);
+		}
+		
 		protected override string GetXml()
 		{
-			return "<root>text</root>";
+			return "<root a='b'>text</root>";
 		}
 	}
 }

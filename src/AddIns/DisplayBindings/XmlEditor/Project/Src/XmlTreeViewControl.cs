@@ -24,7 +24,7 @@ namespace ICSharpCode.XmlEditor
 	{			
 		const string ViewStatePropertyName = "XmlTreeViewControl.ViewState";
 
-		XmlElement documentElement;
+		XmlDocument document;
 
 		enum InsertionMode {
 			Before = 0,
@@ -36,20 +36,20 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Gets or sets the root element currently being displayed.
+		/// Gets or sets the xml document currently being displayed.
 		/// </summary>
 		[Browsable(false)]
-		public XmlElement DocumentElement {
+		public XmlDocument Document {
 			get {
-				return documentElement;
+				return document;
 			}
 			set {
-				documentElement = value;
+				document = value;
 				
 				// Update display.
 				BeginUpdate();
 				try {
-					ShowDocumentElement();
+					ShowDocument();
 				} finally {
 					EndUpdate();
 				}
@@ -87,7 +87,19 @@ namespace ICSharpCode.XmlEditor
 				if (xmlTextTreeNode != null) {
 					return xmlTextTreeNode.XmlText;
 				}
-
+				return null;
+			}
+		}
+				
+		/// <summary>
+		/// Gets the selected comment node in the tree.
+		/// </summary>
+		public XmlComment SelectedComment {
+			get {				
+				XmlCommentTreeNode commentTreeNode = SelectedNode as XmlCommentTreeNode;
+				if (commentTreeNode != null) {
+					return commentTreeNode.XmlComment;
+				}
 				return null;
 			}
 		}
@@ -166,15 +178,9 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void RemoveElement(XmlElement element)
 		{
-			XmlElementTreeNode selectedElementTreeNode = SelectedNode as XmlElementTreeNode;
-			if (selectedElementTreeNode != null && selectedElementTreeNode.XmlElement == element) {
-				// Remove selected tree node.
-				selectedElementTreeNode.Remove();
-			} else {
-				XmlElementTreeNode elementTreeNode = FindElementNode(element, Nodes);
-				if (elementTreeNode != null) {
-					elementTreeNode.Remove();
-				}
+			XmlElementTreeNode node = FindElement(element);
+			if (node != null) {
+				node.Remove();
 			}
 		}
 		
@@ -183,14 +189,9 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void RemoveTextNode(XmlText textNode)
 		{
-			XmlTextTreeNode selectedTextTreeNode = SelectedNode as XmlTextTreeNode;
-			if (selectedTextTreeNode != null && selectedTextTreeNode.XmlText == textNode) {
-				selectedTextTreeNode.Remove();
-			} else {
-				XmlTextTreeNode textTreeNode = FindTextNode(textNode, Nodes);
-				if (textTreeNode != null) {
-					textTreeNode.Remove();
-				}
+			XmlTextTreeNode node = FindTextNode(textNode);
+			if (node != null) {
+				node.Remove();
 			}
 		}
 		
@@ -218,15 +219,64 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void UpdateTextNode(XmlText textNode)
 		{
-			XmlTextTreeNode selectedTextTreeNode = SelectedNode as XmlTextTreeNode;
-			if (selectedTextTreeNode != null && selectedTextTreeNode.XmlText == textNode) {
-				selectedTextTreeNode.Update();
-			} else {
-				XmlTextTreeNode textTreeNode = FindTextNode(textNode, Nodes);
-				if (textTreeNode != null) {
-					textTreeNode.Update();
-				}
+			XmlTextTreeNode node = FindTextNode(textNode);
+			if (node != null) {
+				node.Update();
 			}
+		}
+				
+		/// <summary>
+		/// Updates the corresponding tree node's text based on 
+		/// the comment's value.
+		/// </summary>
+		public void UpdateComment(XmlComment comment)
+		{
+			XmlCommentTreeNode node = FindComment(comment);
+			if (node != null) {
+				node.Update();
+			}
+		}
+		
+		/// <summary>
+		/// Appends a new child comment node to the currently selected element.
+		/// </summary>
+		public void AppendChildComment(XmlComment comment)
+		{
+			XmlElementTreeNode selectedNode = SelectedElementNode;
+			if (selectedNode != null) {
+				XmlCommentTreeNode newNode = new XmlCommentTreeNode(comment);
+				newNode.AddTo(selectedNode);
+				selectedNode.Expand();
+			}
+		}
+		
+		/// <summary>
+		/// Removes the specified comment from the tree.
+		/// </summary>
+		public void RemoveComment(XmlComment comment)
+		{
+			XmlCommentTreeNode node = FindComment(comment);
+			if (node != null) {
+				node.Remove();
+			}
+		}
+		
+		/// <summary>
+		/// Inserts a comment node before the currently selected
+		/// node.
+		/// </summary>
+		public void InsertCommentBefore(XmlComment comment)
+		{
+			InsertComment(comment, InsertionMode.Before);
+		}
+		
+		/// <summary>
+		/// Inserts a comment node after the currently selected
+		/// node.
+		/// </summary>
+		public void InsertCommentAfter(XmlComment comment)
+		{
+			InsertComment(comment, InsertionMode.After);
 		}
 		
 		/// <summary>
@@ -246,12 +296,22 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Displays the document in the xml tree.
 		/// </summary>
-		void ShowDocumentElement()
+		void ShowDocument()
 		{
 			Nodes.Clear();
-			if (documentElement != null) {
-				XmlElementTreeNode node = new XmlElementTreeNode(documentElement);
-				node.AddTo(this);
+			if (document != null) {
+				foreach (XmlNode node in document.ChildNodes) {
+					switch (node.NodeType) {
+						case XmlNodeType.Element:
+							XmlElementTreeNode elementNode = new XmlElementTreeNode((XmlElement)node);
+							elementNode.AddTo(this);
+							break;
+						case XmlNodeType.Comment:
+							XmlCommentTreeNode commentNode = new XmlCommentTreeNode((XmlComment)node);
+							commentNode.AddTo(this);
+							break;
+					}
+				}
 			}
 		}
 		
@@ -270,7 +330,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void InsertElement(XmlElement element, InsertionMode insertionMode)
 		{
-			XmlElementTreeNode selectedNode = SelectedElementNode;
+			ExtTreeNode selectedNode = (ExtTreeNode)SelectedNode;
 			if (selectedNode != null) {
 				XmlElementTreeNode parentNode = (XmlElementTreeNode)selectedNode.Parent;
 				XmlElementTreeNode newNode = new XmlElementTreeNode(element);
@@ -301,10 +361,37 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
+		/// Inserts a new comment node either before or after the 
+		/// currently selected node.
+		/// </summary>
+		void InsertComment(XmlComment comment, InsertionMode insertionMode)
+		{
+			ExtTreeNode selectedNode = (ExtTreeNode)SelectedNode;
+			if (selectedNode != null) {
+				ExtTreeNode parentNode = (ExtTreeNode)selectedNode.Parent;
+				XmlCommentTreeNode newNode = new XmlCommentTreeNode(comment);
+				int index = 0;
+				if (parentNode != null) {
+					index = parentNode.Nodes.IndexOf(selectedNode);
+				} else {
+					index = Nodes.IndexOf(selectedNode);
+				}
+				if (insertionMode == InsertionMode.After) {
+					index++;
+				}
+				if (parentNode != null) {
+					newNode.Insert(index, parentNode);
+				} else {
+					newNode.Insert(index, this);
+				}
+			}
+		}
+		
+		/// <summary>
 		/// Looks at all the nodes in the tree view and returns the
 		/// tree node that represents the specified element.
 		/// </summary>
-		XmlElementTreeNode FindElementNode(XmlElement element, TreeNodeCollection nodes)
+		XmlElementTreeNode FindElement(XmlElement element, TreeNodeCollection nodes)
 		{
 			foreach (ExtTreeNode node in nodes) {
 				XmlElementTreeNode elementTreeNode = node as XmlElementTreeNode;
@@ -314,13 +401,26 @@ namespace ICSharpCode.XmlEditor
 					}
 					
 					// Look for a match in the element's child nodes.
-					XmlElementTreeNode childElementTreeNode = FindElementNode(element, elementTreeNode.Nodes);
+					XmlElementTreeNode childElementTreeNode = FindElement(element, elementTreeNode.Nodes);
 					if (childElementTreeNode != null) {
 						return childElementTreeNode;
 					}
 				}
 			}
 			return null;
+		}
+		
+		/// <summary>
+		/// Finds the corresponding XmlElementTreeNode.
+		/// </summary>
+		XmlElementTreeNode FindElement(XmlElement element)
+		{
+			XmlElementTreeNode selectedElementTreeNode = SelectedNode as XmlElementTreeNode;
+			if (selectedElementTreeNode != null && selectedElementTreeNode.XmlElement == element) {
+				return selectedElementTreeNode;
+			} else {
+				return FindElement(element, Nodes);
+			}
 		}
 		
 		/// <summary>
@@ -344,6 +444,55 @@ namespace ICSharpCode.XmlEditor
 				}
 			}
 			return null;
+		}
+		
+		/// <summary>
+		/// Finds the specified text node in the tree.
+		/// </summary>
+		XmlTextTreeNode FindTextNode(XmlText textNode)
+		{
+			XmlTextTreeNode selectedTextTreeNode = SelectedNode as XmlTextTreeNode;
+			if (selectedTextTreeNode != null && selectedTextTreeNode.XmlText == textNode) {
+				return selectedTextTreeNode;
+			} else {
+				return FindTextNode(textNode, Nodes);
+			}
+		}
+		
+		/// <summary>
+		/// Looks at all the nodes in the tree view and returns the
+		/// tree node that represents the specified comment node.
+		/// </summary>
+		XmlCommentTreeNode FindComment(XmlComment comment, TreeNodeCollection nodes)
+		{
+			foreach (ExtTreeNode node in nodes) {
+				XmlCommentTreeNode commentTreeNode = node as XmlCommentTreeNode;
+				if (commentTreeNode != null) {
+					if (commentTreeNode.XmlComment == comment) {
+						return commentTreeNode;
+					}
+				} else {
+					// Look for a match in the node's child nodes.
+					XmlCommentTreeNode childCommentTreeNode = FindComment(comment, node.Nodes);
+					if (childCommentTreeNode != null) {
+						return childCommentTreeNode;
+					}
+				}
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Locates the specified comment in the tree.
+		/// </summary>
+		XmlCommentTreeNode FindComment(XmlComment comment)
+		{
+			XmlCommentTreeNode selectedCommentTreeNode = SelectedNode as XmlCommentTreeNode;
+			if (selectedCommentTreeNode != null && selectedCommentTreeNode.XmlComment == comment) {
+				return selectedCommentTreeNode;
+			} else {
+				return FindComment(comment, Nodes);
+			}
 		}
 	}
 }

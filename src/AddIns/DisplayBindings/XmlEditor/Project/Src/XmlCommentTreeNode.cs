@@ -12,29 +12,29 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
-	/// Represents an XmlText node in the tree.
+	/// Represents an xml comment in the tree.
 	/// </summary>
-	public class XmlTextTreeNode : XmlCharacterDataTreeNode
+	public class XmlCommentTreeNode : XmlCharacterDataTreeNode
 	{
-		public const string XmlTextTreeNodeImageKey = "XmlTextTreeNodeImage";
+		public const string XmlCommentTreeNodeImageKey = "XmlCommentTreeNodeImage";
+
+		XmlComment comment;
 		
-		XmlText xmlText;
-		
-		public XmlTextTreeNode(XmlText xmlText)
-			: base(xmlText)
+		public XmlCommentTreeNode(XmlComment comment)
+			: base(comment)
 		{
-			this.xmlText = xmlText;
-			ImageKey = XmlTextTreeNodeImageKey;
+			this.comment = comment;
+			ImageKey = XmlCommentTreeNodeImageKey;
 			SelectedImageKey = ImageKey;
 			Update();
 		}
 		
 		/// <summary>
-		/// Gets the XmlText associated with this tree node.
+		/// Gets the XmlComment associated with this tree node.
 		/// </summary>
-		public XmlText XmlText {
+		public XmlComment XmlComment {
 			get {
-				return xmlText;
+				return comment;
 			}
 		}
 	}

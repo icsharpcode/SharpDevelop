@@ -35,16 +35,16 @@ namespace XmlEditor.Tests.Tree
 				doc = treeViewContainer.Document;
 				XmlTreeViewControl treeView = treeViewContainer.TreeView;
 				
-				treeViewContainer.DocumentElement = doc.DocumentElement;
+				treeViewContainer.Document = doc;
 				initialElementSelected = treeView.SelectedElement;
 				initialIsElementSelected = treeView.IsElementSelected;
 				
 				// Set the document element again to make sure the existing node 
 				// is removed.
 				doc.LoadXml("<root/>");
-				treeViewContainer.DocumentElement = null;
-				treeViewContainer.DocumentElement = doc.DocumentElement;
-				documentElement = treeViewContainer.DocumentElement;
+				treeViewContainer.Document = null;
+				treeViewContainer.Document = doc;
+				documentElement = treeViewContainer.Document.DocumentElement;
 				
 				rootNode = (XmlElementTreeNode)treeView.Nodes[0];
 				nodeCount = treeView.Nodes.Count;

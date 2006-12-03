@@ -267,8 +267,7 @@ namespace XmlEditor.Tests.Tree
 			XmlText newTextNode = doc.CreateTextNode(String.Empty);
 			treeView.AppendChildTextNode(newTextNode);
 			
-			XmlText textNode = bodyElement.SelectSingleNode("text()") as XmlText;
-			Assert.IsNull(textNode);
+			Assert.IsFalse(treeViewContainer.IsDirty);
 		}
 		
 		/// <summary>
@@ -395,6 +394,97 @@ namespace XmlEditor.Tests.Tree
 
 			Assert.IsFalse(bodyElement.HasChildNodes);
 			Assert.AreEqual(0, bodyTreeNode.Nodes.Count);
+		}
+		
+		[Test]
+		public void AddChildCommentNodeWithNullOwner()
+		{
+			AddChildCommentCommand command = new AddChildCommentCommand();
+			command.Run();
+		}
+		
+		[Test]
+		public void AddChildCommentNode()
+		{
+			treeView.SelectedNode = bodyTreeNode;
+			AddChildCommentCommand command = new AddChildCommentCommand();
+			command.Owner = treeViewContainer;
+			command.Run();
+			
+			XmlComment comment = bodyElement.SelectSingleNode("comment()") as XmlComment;
+			Assert.IsTrue(bodyElement.HasChildNodes);
+			Assert.IsNotNull(comment, "Expected a new comment node to be appended.");
+			
+			XmlCommentTreeNode treeNode = bodyTreeNode.Nodes[0] as XmlCommentTreeNode;
+			Assert.IsNotNull(treeNode);
+		}
+		
+		[Test]
+		public void RemoveCommentWithNullOwner()
+		{
+			RemoveCommentCommand command = new RemoveCommentCommand();
+			command.Run();
+		}
+		
+		[Test]
+		public void RemoveComment()
+		{
+			AddChildCommentNode();
+			
+			treeView.SelectedNode = bodyTreeNode.Nodes[0];
+
+			RemoveCommentCommand command = new RemoveCommentCommand();
+			command.Owner = treeViewContainer;
+			command.Run();
+
+			Assert.IsFalse(bodyElement.HasChildNodes);
+			Assert.AreEqual(0, bodyTreeNode.Nodes.Count);
+		}
+		
+		[Test]
+		public void InsertCommentBeforeWithNullOwner()
+		{
+			InsertCommentBeforeCommand command = new InsertCommentBeforeCommand();
+			command.Run();
+		}
+		
+		[Test]
+		public void InsertCommentAfterWithNullOwner()
+		{
+			InsertCommentAfterCommand command = new InsertCommentAfterCommand();
+			command.Run();
+		}
+		
+		[Test]
+		public void InsertCommentBefore()
+		{
+			treeView.SelectedNode = bodyTreeNode;
+			InsertCommentBeforeCommand command = new InsertCommentBeforeCommand();
+			command.Owner = treeViewContainer;
+			command.Run();
+			
+			XmlComment comment = bodyElement.PreviousSibling as XmlComment;
+			Assert.IsNotNull(comment, "Expected a new comment node to be inserted.");
+			
+			XmlCommentTreeNode treeNode = bodyTreeNode.PrevNode as XmlCommentTreeNode;
+			Assert.IsNotNull(treeNode);
+			Assert.AreSame(comment, treeNode.XmlComment);
+		}
+		
+		[Test]
+		public void InsertCommentAfter()
+		{
+			treeView.SelectedNode = bodyTreeNode;
+			InsertCommentAfterCommand command = new InsertCommentAfterCommand();
+			command.Owner = treeViewContainer;
+			command.Run();
+			
+			XmlComment comment = bodyElement.NextSibling as XmlComment;
+			Assert.IsNotNull(comment, "Expected a new comment node to be inserted.");
+			
+			XmlCommentTreeNode treeNode = bodyTreeNode.NextNode as XmlCommentTreeNode;
+			Assert.IsNotNull(treeNode);
+			Assert.AreSame(comment, treeNode.XmlComment);
 		}
 	}
 }

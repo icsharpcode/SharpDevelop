@@ -27,6 +27,7 @@ namespace XmlEditor.Tests.Tree
 		XmlElementTreeNode bodyTreeNode;
 		XmlElementTreeNode paraTreeNode;
 		XmlTextTreeNode textTreeNode;
+		XmlCommentTreeNode commentTreeNode;
 		
 		[SetUp]
 		public void Init()
@@ -38,11 +39,12 @@ namespace XmlEditor.Tests.Tree
 			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
 			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(schemas, xhtmlSchema, String.Empty);
 			
-			treeViewContainer.LoadXml("<html><body class='a'><p>Text</p></body></html>", provider);
+			treeViewContainer.LoadXml("<!-- comment --><html><body class='a'><p>Text</p></body></html>", provider);
 			doc = treeViewContainer.Document;
 			treeView = treeViewContainer.TreeView;
 			
-			htmlTreeNode = (XmlElementTreeNode)treeView.Nodes[0];
+			commentTreeNode = (XmlCommentTreeNode)treeView.Nodes[0];
+			htmlTreeNode = (XmlElementTreeNode)treeView.Nodes[1];
 			htmlTreeNode.Expanding();
 			
 			bodyTreeNode = (XmlElementTreeNode)htmlTreeNode.Nodes[0];
@@ -114,6 +116,16 @@ namespace XmlEditor.Tests.Tree
 			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlState.TextNodeSelected, 
 				treeViewContainer.InternalState,
 				"OwnerState should be TextNodeSelected.");
+		}
+		
+		[Test]
+		public void CommentNodeSelected()
+		{
+			treeView.SelectedNode = commentTreeNode;
+			
+			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlState.CommentSelected, 
+				treeViewContainer.InternalState,
+				"OwnerState should be CommentSelected.");
 		}
 	}
 }

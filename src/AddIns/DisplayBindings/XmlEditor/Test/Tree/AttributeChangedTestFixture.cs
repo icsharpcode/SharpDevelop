@@ -23,9 +23,9 @@ namespace XmlEditor.Tests.Tree
 		public void SetUpFixture()
 		{
 			base.InitFixture();
-			mockXmlTreeView.SelectedElement = mockXmlTreeView.DocumentElement;
-			editor.SelectedElementChanged();
-			XmlAttribute attribute = mockXmlTreeView.DocumentElement.Attributes["first"];
+			mockXmlTreeView.SelectedElement = mockXmlTreeView.Document.DocumentElement;
+			editor.SelectedNodeChanged();
+			XmlAttribute attribute = mockXmlTreeView.Document.DocumentElement.Attributes["first"];
 			attribute.Value = "new value";
 			editor.AttributeValueChanged();
 		}

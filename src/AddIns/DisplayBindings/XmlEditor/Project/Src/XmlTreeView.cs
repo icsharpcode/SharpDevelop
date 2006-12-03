@@ -86,15 +86,6 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		public XmlElement DocumentElement {
-			get {
-				return treeViewContainer.TreeView.DocumentElement;
-			}
-			set {
-				treeViewContainer.DocumentElement = value;
-			}
-		}
-		
 		void TreeViewContainerDirtyChanged(object source, EventArgs e)
 		{
 			if (!ignoreDirtyChange) {

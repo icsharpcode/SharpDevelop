@@ -32,7 +32,7 @@ namespace XmlEditor.Tests.Tree
 			mockXmlTreeView.SelectedNewElementsToReturn.Add("h1");
 			mockXmlTreeView.SelectedNewElementsToReturn.Add("p");
 
-			editor.AddChildElement();
+			editor.AppendChildElement();
 		}
 		
 		[Test]
@@ -46,7 +46,7 @@ namespace XmlEditor.Tests.Tree
 		{
 			mockXmlTreeView.SelectedElement = null;
 			mockXmlTreeView.IsSelectNewElementsCalled = false;
-			editor.AddChildElement();
+			editor.AppendChildElement();
 			Assert.IsFalse(mockXmlTreeView.IsSelectNewElementsCalled);
 		}
 		
@@ -61,7 +61,7 @@ namespace XmlEditor.Tests.Tree
 		{
 			mockXmlTreeView.SelectedNewElementsToReturn.Clear();
 			mockXmlTreeView.IsDirty = false;
-			editor.AddChildElement();
+			editor.AppendChildElement();
 			Assert.IsFalse(mockXmlTreeView.IsDirty);
 		}
 		

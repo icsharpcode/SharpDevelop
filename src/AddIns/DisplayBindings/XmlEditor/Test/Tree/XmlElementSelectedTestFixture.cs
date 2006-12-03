@@ -24,8 +24,8 @@ namespace XmlEditor.Tests.Tree
 		public void SetUpFixture()
 		{
 			base.InitFixture();
-			mockXmlTreeView.SelectedElement = mockXmlTreeView.DocumentElement;
-			editor.SelectedElementChanged();
+			mockXmlTreeView.SelectedElement = mockXmlTreeView.Document.DocumentElement;
+			editor.SelectedNodeChanged();
 		}
 		
 		[Test]
@@ -50,8 +50,19 @@ namespace XmlEditor.Tests.Tree
 		public void NoElementSelected()
 		{
 			mockXmlTreeView.SelectedElement = null;
-			editor.SelectedElementChanged();
+			editor.SelectedNodeChanged();
 			Assert.AreEqual(0, mockXmlTreeView.AttributesDisplayed.Count);
+		}
+		
+		/// <summary>
+		/// When the node has changed the text content should
+		/// not have been updated otherwise the TextBox control
+		/// may be on top instead of the attributes grid.
+		/// </summary>
+		[Test]
+		public void ShowTextContentNotCalled()
+		{
+			Assert.IsFalse(mockXmlTreeView.IsShowTextContentCalled);
 		}
 		
 		protected override string GetXml()

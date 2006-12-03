@@ -29,7 +29,7 @@ namespace XmlEditor.Tests.Tree
 			base.InitFixture();
 			paragraphElement = (XmlElement)editor.Document.SelectSingleNode("/html/body/p");
 			mockXmlTreeView.SelectedElement = paragraphElement;
-			editor.AddChildTextNode();
+			editor.AppendChildTextNode();
 		}
 		
 		[Test]
@@ -56,7 +56,7 @@ namespace XmlEditor.Tests.Tree
 		{
 			mockXmlTreeView.SelectedElement = null;
 			mockXmlTreeView.IsDirty = false;
-			editor.AddChildTextNode();
+			editor.AppendChildTextNode();
 			Assert.IsFalse(mockXmlTreeView.IsDirty);
 		}
 		

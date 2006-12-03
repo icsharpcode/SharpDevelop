@@ -25,13 +25,13 @@ namespace XmlEditor.Tests.Tree
 		[Test]
 		public void RootElementAdded()
 		{
-			Assert.AreEqual("root", mockXmlTreeView.DocumentElement.Name);
+			Assert.AreEqual("root", mockXmlTreeView.Document.DocumentElement.Name);
 		}
 		
 		[Test]
 		public void RootElementInDocument()
 		{
-			Assert.IsTrue(Object.ReferenceEquals(editor.Document.DocumentElement, mockXmlTreeView.DocumentElement));
+			Assert.IsTrue(Object.ReferenceEquals(editor.Document.DocumentElement, mockXmlTreeView.Document.DocumentElement));
 		}
 				
 		protected override string GetXml()

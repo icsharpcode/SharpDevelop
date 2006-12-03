@@ -26,9 +26,9 @@ namespace ICSharpCode.XmlEditor
 		bool IsDirty {get; set;}
 		
 		/// <summary>
-		/// Gets or sets the xml document element.
+		/// Gets or sets the xml document.
 		/// </summary>
-		XmlElement DocumentElement {get; set;}
+		XmlDocument Document {get; set;}
 		
 		/// <summary>
 		/// Gets the xml element selected.
@@ -51,9 +51,11 @@ namespace ICSharpCode.XmlEditor
 		void ShowTextContent(string text);
 		
 		/// <summary>
-		/// Gets the text content currently on display.
+		/// Gets or sets the text content currently on display. The
+		/// text content will not be displayed unless 
+		/// ShowTextContent has been called.
 		/// </summary>
-		string TextContent {get;}
+		string TextContent {get; set;}
 		
 		/// <summary>
 		/// Gets the xml element text node.
@@ -139,5 +141,38 @@ namespace ICSharpCode.XmlEditor
 		/// needs to be updated.
 		/// </summary>
 		void UpdateTextNode(XmlText textNode);
+		
+		/// <summary>
+		/// Gets the currently selected comment node.
+		/// </summary>
+		XmlComment SelectedComment {get;}
+		
+		/// <summary>
+		/// Informs the xml tree view that the comment node
+		/// has changed and the corresponding tree node
+		/// needs to be updated.
+		/// </summary>
+		void UpdateComment(XmlComment comment);
+		
+		/// <summary>
+		/// Appends a new child comment to the currently selected
+		/// element.
+		/// </summary>
+		void AppendChildComment(XmlComment comment);
+		
+		/// <summary>
+		/// Removes the specified comment node from the view.
+		/// </summary>
+		void RemoveComment(XmlComment comment);
+		
+		/// <summary>
+		/// Inserts the comment before the currently selected node.
+		/// </summary>
+		void InsertCommentBefore(XmlComment comment);
+		
+		/// <summary>
+		/// Inserts the comment after the currently selected node.
+		/// </summary>
+		void InsertCommentAfter(XmlComment comment);
 	}
 }

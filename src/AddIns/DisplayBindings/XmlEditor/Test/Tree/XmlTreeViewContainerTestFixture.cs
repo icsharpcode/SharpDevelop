@@ -248,7 +248,6 @@ namespace XmlEditor.Tests.Tree
 			Assert.AreEqual("New value", textTreeNode.Text);
 		}
 		
-		
 		/// <summary>
 		/// Check that the DirtyChanged event is not fired
 		/// </summary>
@@ -324,6 +323,43 @@ namespace XmlEditor.Tests.Tree
 			
 			Assert.IsNotNull(attributesGrid.SelectedGridItem);
 			Assert.AreEqual("id", attributesGrid.SelectedGridItem.Label);
+		}
+		
+		[Test]
+		public void XmlElementTreeNodeImageKey()
+		{
+			Assert.IsTrue(treeView.ImageList.Images.ContainsKey(XmlTextTreeNode.XmlTextTreeNodeImageKey));
+		}
+		
+		[Test]
+		public void XmlTextTreeNodeImageKey()
+		{
+			Assert.IsTrue(treeView.ImageList.Images.ContainsKey(XmlElementTreeNode.XmlElementTreeNodeImageKey));
+		}
+		
+		[Test]
+		public void XmlCommentTreeNodeImageKey()
+		{
+			Assert.IsTrue(treeView.ImageList.Images.ContainsKey(XmlCommentTreeNode.XmlCommentTreeNodeImageKey));
+		}
+		
+		/// <summary>
+		/// Checks that setting the TextContent property updates
+		/// the text in the text box.
+		/// </summary>
+		[Test]
+		public void TextBoxChanged()
+		{
+			treeViewContainer.TextContent = "Test";
+			Assert.AreEqual("Test", textBox.Text);
+		}
+		
+		[Test]
+		public void DocumentMatches()
+		{
+			XmlDocument doc = new XmlDocument();
+			treeView.Document = doc;
+			Assert.AreSame(doc, treeView.Document);
 		}
 		
 		void TreeViewContainerDirtyChanged(object source, EventArgs e)

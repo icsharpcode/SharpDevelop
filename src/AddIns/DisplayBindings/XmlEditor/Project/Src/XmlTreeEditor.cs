@@ -37,8 +37,7 @@ namespace ICSharpCode.XmlEditor
 			try {
 				document = new XmlDocument();
 				document.LoadXml(xml);
-				XmlElement documentElement = document.DocumentElement;
-				view.DocumentElement = documentElement;
+				view.Document = document;
 			} catch (XmlException ex) {
 				view.ShowXmlIsNotWellFormedMessage(ex);
 			}
@@ -54,28 +53,25 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// The selected xml element in the view has changed.
+		/// The selected tree node in the view has changed.
 		/// </summary>
-		public void SelectedElementChanged()
+		public void SelectedNodeChanged()
 		{
 			XmlElement selectedElement = view.SelectedElement;
-			if (selectedElement != null) {
+			XmlText selectedTextNode = view.SelectedTextNode;
+			XmlComment selectedComment = view.SelectedComment;
+			if (selectedTextNode != null) {
+				view.ClearAttributes();
+				view.ShowTextContent(selectedTextNode.InnerText);
+			} else if (selectedElement != null) {
+				view.TextContent = String.Empty;
 				view.ShowAttributes(selectedElement.Attributes);
+			} else if (selectedComment != null) {
+				view.ClearAttributes();
+				view.ShowTextContent(selectedComment.InnerText);
 			} else {
 				view.ClearAttributes();
-			}
-		}
-		
-		/// <summary>
-		/// The selected xml text node in the view has changed.
-		/// </summary>
-		public void SelectedTextNodeChanged()
-		{
-			XmlText selectedTextNode = view.SelectedTextNode;
-			if (selectedTextNode != null) {
-				view.ShowTextContent(selectedTextNode.InnerText);
-			} else {
-				view.ShowTextContent(String.Empty);
+				view.TextContent = String.Empty;
 			}
 		}
 		
@@ -128,17 +124,22 @@ namespace ICSharpCode.XmlEditor
 		public void TextContentChanged()
 		{
 			XmlText textNode = view.SelectedTextNode;
+			XmlComment comment = view.SelectedComment;
 			if (textNode != null) {
 				view.IsDirty = true;
-				textNode.Value = view.TextContent;
+				textNode.InnerText = view.TextContent;
 				view.UpdateTextNode(textNode);
+			} else if (comment != null) {
+				view.IsDirty = true;
+				comment.InnerText = view.TextContent;
+				view.UpdateComment(comment);
 			}
 		}
 		
 		/// <summary>
 		/// Adds a new child element to the selected element.
 		/// </summary>
-		public void AddChildElement()
+		public void AppendChildElement()
 		{
 			XmlElement selectedElement = view.SelectedElement;
 			if (selectedElement != null) {
@@ -160,19 +161,24 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void InsertElementBefore()
 		{
-			XmlElement selectedElement = view.SelectedElement;
-			if (selectedElement != null) {
-				XmlElement parentElement = selectedElement.ParentNode as XmlElement;
-				if (parentElement != null) {
-					string[] elementNames = GetChildElements(parentElement);
-					string[] selectedElementNames = view.SelectNewElements(elementNames);
-					if (selectedElementNames.Length > 0) {
-						view.IsDirty = true;
-						foreach (string elementName in selectedElementNames) {
-							XmlElement newElement = document.CreateElement(elementName, parentElement.NamespaceURI);
-							parentElement.InsertBefore(newElement, selectedElement);
-							view.InsertElementBefore(newElement);
-						}
+			XmlElement parentElement = null;
+			XmlNode selectedNode = view.SelectedElement;
+			if (selectedNode == null) {
+				selectedNode = view.SelectedComment;
+			}
+			if (selectedNode != null) {
+				parentElement = selectedNode.ParentNode as XmlElement;
+			}
+			
+			if (parentElement != null) {
+				string[] elementNames = GetChildElements(parentElement);
+				string[] selectedElementNames = view.SelectNewElements(elementNames);
+				if (selectedElementNames.Length > 0) {
+					view.IsDirty = true;
+					foreach (string elementName in selectedElementNames) {
+						XmlElement newElement = document.CreateElement(elementName, parentElement.NamespaceURI);
+						parentElement.InsertBefore(newElement, selectedNode);
+						view.InsertElementBefore(newElement);
 					}
 				}
 			}
@@ -183,19 +189,24 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void InsertElementAfter()
 		{
-			XmlElement selectedElement = view.SelectedElement;
-			if (selectedElement != null) {
-				XmlElement parentElement = selectedElement.ParentNode as XmlElement;
-				if (parentElement != null) {
-					string[] elementNames = GetChildElements(parentElement);
-					string[] selectedElementNames = view.SelectNewElements(elementNames);
-					if (selectedElementNames.Length > 0) {
-						view.IsDirty = true;
-						foreach (string elementName in selectedElementNames) {
-							XmlElement newElement = document.CreateElement(elementName, parentElement.NamespaceURI);
-							parentElement.InsertAfter(newElement, selectedElement);
-							view.InsertElementAfter(newElement);
-						}
+			XmlElement parentElement = null;
+			XmlNode selectedNode = view.SelectedElement;
+			if (selectedNode == null) {
+				selectedNode = view.SelectedComment;
+			}
+			if (selectedNode != null) {
+				parentElement = selectedNode.ParentNode as XmlElement;
+			}
+			
+			if (parentElement != null) {
+				string[] elementNames = GetChildElements(parentElement);
+				string[] selectedElementNames = view.SelectNewElements(elementNames);
+				if (selectedElementNames.Length > 0) {
+					view.IsDirty = true;
+					foreach (string elementName in selectedElementNames) {
+						XmlElement newElement = document.CreateElement(elementName, parentElement.NamespaceURI);
+						parentElement.InsertAfter(newElement, selectedNode);
+						view.InsertElementAfter(newElement);
 					}
 				}
 			}
@@ -232,7 +243,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Adds a child text node to the current selected element.
 		/// </summary>
-		public void AddChildTextNode()
+		public void AppendChildTextNode()
 		{
 			XmlElement selectedElement = view.SelectedElement;
 			if (selectedElement != null) {
@@ -249,10 +260,7 @@ namespace ICSharpCode.XmlEditor
 		public void InsertTextNodeBefore()
 		{
 			// Get the currently selected text node or element.
-			XmlNode selectedNode = view.SelectedTextNode;
-			if (selectedNode == null) {
-				selectedNode = view.SelectedElement;
-			}
+			XmlNode selectedNode = GetSelectedCommentOrElementOrTextNode();
 
 			// Insert the text node before the selected node.
 			if (selectedNode != null) {
@@ -272,10 +280,7 @@ namespace ICSharpCode.XmlEditor
 		public void InsertTextNodeAfter()
 		{
 			// Get the currently selected text node or element.
-			XmlNode selectedNode = view.SelectedTextNode;
-			if (selectedNode == null) {
-				selectedNode = view.SelectedElement;
-			}
+			XmlNode selectedNode = GetSelectedCommentOrElementOrTextNode();
 
 			// Insert the text node after the selected node.
 			if (selectedNode != null) {
@@ -286,6 +291,64 @@ namespace ICSharpCode.XmlEditor
 					view.IsDirty = true;
 					view.InsertTextNodeAfter(textNode);
 				}
+			}
+		}
+		
+		/// <summary>
+		/// Adds a child comment node to the current selected element.
+		/// </summary>
+		public void AppendChildComment()
+		{
+			XmlElement selectedElement = view.SelectedElement;
+			if (selectedElement != null) {
+				XmlComment comment = document.CreateComment(String.Empty);
+				selectedElement.AppendChild(comment);
+				view.IsDirty = true;
+				view.AppendChildComment(comment);
+			}
+		}
+		
+		/// <summary>
+		/// Removes the currently select comment.
+		/// </summary>
+		public void RemoveComment()
+		{
+			XmlComment comment = view.SelectedComment;
+			if (comment != null) {
+				XmlNode parentNode = comment.ParentNode;
+				parentNode.RemoveChild(comment);
+				view.IsDirty = true;
+				view.RemoveComment(comment);
+			}
+		}
+		
+		/// <summary>
+		/// Inserts a comment before the selected node.
+		/// </summary>
+		public void InsertCommentBefore()
+		{
+			XmlNode node = GetSelectedCommentOrElementOrTextNode();
+			if (node != null) {
+				XmlNode parentNode = node.ParentNode;
+				XmlComment comment = document.CreateComment(String.Empty);
+				parentNode.InsertBefore(comment, node);
+				view.IsDirty = true;
+				view.InsertCommentBefore(comment);
+			}
+		}
+		
+		/// <summary>
+		/// Inserts a comment after the selected node.
+		/// </summary>
+		public void InsertCommentAfter()
+		{
+			XmlNode node = GetSelectedCommentOrElementOrTextNode();
+			if (node != null) {
+				XmlNode parentNode = node.ParentNode;
+				XmlComment comment = document.CreateComment(String.Empty);
+				parentNode.InsertAfter(comment, node);
+				view.IsDirty = true;
+				view.InsertCommentAfter(comment);
 			}
 		}
 		
@@ -347,6 +410,31 @@ namespace ICSharpCode.XmlEditor
 				}
 			}
 			return elements.ToArray();	
+		}
+		
+		/// <summary>
+		/// Gets the current comment or element or text node
+		/// from the view.
+		/// </summary>
+		XmlNode GetSelectedCommentOrElementOrTextNode()
+		{
+			XmlNode node = view.SelectedComment;
+			if (node != null) {
+				return node;
+			}
+			return GetSelectedElementOrTextNode();
+		}
+		
+		/// <summary>
+		/// Gets the currently selected element or text node.
+		/// </summary>
+		XmlNode GetSelectedElementOrTextNode()
+		{
+			XmlNode node = view.SelectedTextNode;
+			if (node != null) {
+				return node;
+			}
+			return view.SelectedElement;
 		}
 	}
 }

@@ -34,7 +34,8 @@ namespace ICSharpCode.XmlEditor
 			ElementSelected     = 1,
 			RootElementSelected = 2,
 			AttributeSelected   = 4,
-			TextNodeSelected    = 8
+			TextNodeSelected    = 8,
+			CommentSelected     = 16
 		}
 		
 		public event EventHandler DirtyChanged;
@@ -53,7 +54,7 @@ namespace ICSharpCode.XmlEditor
 				XmlTreeViewContainerControlState state = XmlTreeViewContainerControlState.Nothing;
 				if (SelectedElement != null) {
 					state |= XmlTreeViewContainerControlState.ElementSelected;
-					if (SelectedElement == DocumentElement) {
+					if (SelectedElement == Document.DocumentElement) {
 						state |= XmlTreeViewContainerControlState.RootElementSelected;
 					}
 				}
@@ -63,10 +64,17 @@ namespace ICSharpCode.XmlEditor
 				if (SelectedTextNode != null) {
 					state = XmlTreeViewContainerControlState.TextNodeSelected;
 				}
+				if (SelectedComment != null) {
+					state = XmlTreeViewContainerControlState.CommentSelected;
+				}
 				return state;
 			}
 		}
 		
+		/// <summary>
+		/// Gets the property grid that displays attributes for the
+		/// selected xml element.
+		/// </summary>
 		public PropertyGrid AttributesGrid {
 			get {
 				return attributesGrid;
@@ -121,6 +129,9 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		/// <summary>
+		/// Gets the XmlTreeView in the container.
+		/// </summary>
 		public XmlTreeViewControl TreeView {
 			get {
 				return xmlElementTreeView;
@@ -133,16 +144,7 @@ namespace ICSharpCode.XmlEditor
 			ErrorMessage = ex.Message;
 			IsErrorMessageTextBoxVisible = true;
 		}
-		
-		public XmlElement DocumentElement {
-			get {
-				return xmlElementTreeView.DocumentElement;
-			}
-			set {
-				xmlElementTreeView.DocumentElement = value;
-			}
-		}
-		
+	
 		/// <summary>
 		/// Displays the specified xml as a tree.
 		/// </summary>
@@ -162,11 +164,15 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Gets the xml document created from the loaded Xml.
+		/// Gets or sets the xml document to be shown in this
+		/// container control.
 		/// </summary>
 		public XmlDocument Document {
 			get {
 				return editor.Document;
+			}
+			set {
+				xmlElementTreeView.Document = value;
 			}
 		}
 		
@@ -198,11 +204,15 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Gets the text node text currently on display.
+		/// Gets or sets the text of the text node or 
+		/// comment node currently on display.
 		/// </summary>
 		public string TextContent {
 			get {
 				return textBox.Text;
+			}
+			set {
+				textBox.Text = value;
 			}
 		}
 		
@@ -216,11 +226,20 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Gets the element text node currently selected.
+		/// Gets the text node currently selected.
 		/// </summary>
 		public XmlText SelectedTextNode {
 			get {
 				return xmlElementTreeView.SelectedTextNode;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the comment node currently selected.
+		/// </summary>
+		public XmlComment SelectedComment {
+			get {
+				return xmlElementTreeView.SelectedComment;
 			}
 		}
 		
@@ -301,7 +320,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void AddChildElement()
 		{
-			editor.AddChildElement();
+			editor.AppendChildElement();
 		}
 		
 		/// <summary>
@@ -369,7 +388,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>		
 		public void AppendChildTextNode()
 		{
-			editor.AddChildTextNode();
+			editor.AppendChildTextNode();
 		}
 		
 		/// <summary>
@@ -430,6 +449,80 @@ namespace ICSharpCode.XmlEditor
 		public void UpdateTextNode(XmlText textNode)
 		{
 			xmlElementTreeView.UpdateTextNode(textNode);
+		}
+		
+		/// <summary>
+		/// Updates the corresponding tree node's text.
+		/// </summary>
+		public void UpdateComment(XmlComment comment)
+		{
+			xmlElementTreeView.UpdateComment(comment);
+		}
+		
+		/// <summary>
+		/// Appends a new child comment node to the currently selected
+		/// element.
+		/// </summary>
+		public void AppendChildComment(XmlComment comment)
+		{
+			xmlElementTreeView.AppendChildComment(comment);
+		}
+		
+		/// <summary>
+		/// Appends a new child comment node to the currently selected
+		/// element.
+		/// </summary>
+		public void AppendChildComment()
+		{
+			editor.AppendChildComment();
+		}
+		
+		/// <summary>
+		/// Removes the selected comment node from the tree.
+		/// </summary>
+		public void RemoveComment()
+		{
+			editor.RemoveComment();
+		}
+		
+		/// <summary>
+		/// Removes the specified xml comment from the tree.
+		/// </summary>
+		public void RemoveComment(XmlComment comment)
+		{
+			xmlElementTreeView.RemoveComment(comment);
+		}
+		
+		/// <summary>
+		/// Inserts the comment before the currently selected node.
+		/// </summary>
+		public void InsertCommentBefore(XmlComment comment)
+		{
+			xmlElementTreeView.InsertCommentBefore(comment);
+		}
+		
+		/// <summary>
+		/// Inserts a comment before the currently selected node.
+		/// </summary>
+		public void InsertCommentBefore()
+		{
+			editor.InsertCommentBefore();
+		}
+		
+		/// <summary>
+		/// Inserts the comment after the currently selected node.
+		/// </summary>
+		public void InsertCommentAfter(XmlComment comment)
+		{
+			xmlElementTreeView.InsertCommentAfter(comment);
+		}
+		
+		/// <summary>
+		/// Inserts a comment after the currently selected node.
+		/// </summary>
+		public void InsertCommentAfter()
+		{
+			editor.InsertCommentAfter();
 		}
 		
 		/// <summary>
@@ -518,7 +611,6 @@ namespace ICSharpCode.XmlEditor
 			this.xmlElementTreeView.AllowDrop = true;
 			this.xmlElementTreeView.CanClearSelection = true;
 			this.xmlElementTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.xmlElementTreeView.DocumentElement = null;
 			this.xmlElementTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
 			this.xmlElementTreeView.HideSelection = false;
 			this.xmlElementTreeView.ImageIndex = 0;
@@ -600,11 +692,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		protected void XmlElementTreeViewAfterSelect(object sender, TreeViewEventArgs e)
 		{
-			if (xmlElementTreeView.IsTextNodeSelected) {
-				editor.SelectedTextNodeChanged();
-			} else {
-				editor.SelectedElementChanged();
-			}
+			editor.SelectedNodeChanged();
 		}
 		
 		/// <summary>
@@ -630,10 +718,10 @@ namespace ICSharpCode.XmlEditor
 			images.Images.Add(XmlElementTreeNode.XmlElementTreeNodeImageKey, xmlElementImage);
 			Image xmlTextImage = Image.FromStream(typeof(XmlTreeViewContainerControl).Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlTextTreeNodeIcon.png"));
 			images.Images.Add(XmlTextTreeNode.XmlTextTreeNodeImageKey, xmlTextImage);
+			Image xmlCommentImage = Image.FromStream(typeof(XmlTreeViewContainerControl).Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlCommentTreeNodeIcon.png"));
+			images.Images.Add(XmlCommentTreeNode.XmlCommentTreeNodeImageKey, xmlCommentImage);
 			xmlElementTreeView.ImageList = images;
 		}
-		
-
 		
 		/// <summary>
 		/// Raises the dirty changed event if the dirty flag has changed.

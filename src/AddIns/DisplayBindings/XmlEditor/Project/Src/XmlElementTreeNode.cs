@@ -11,6 +11,9 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.XmlEditor
 {
+	/// <summary>
+	/// Represents an XmlElement in the Xml Tree.
+	/// </summary>
 	public class XmlElementTreeNode : ExtTreeNode
 	{
 		public const string XmlElementTreeNodeImageKey = "XmlElementTreeNodeImage";
@@ -49,11 +52,15 @@ namespace ICSharpCode.XmlEditor
 			foreach (XmlNode childNode in element.ChildNodes) {
 				XmlElement childElement = childNode as XmlElement;
 				XmlText text = childNode as XmlText;
+				XmlComment comment = childNode as XmlComment;
 				if (childElement != null) {
 					XmlElementTreeNode treeNode = new XmlElementTreeNode(childElement);
 					treeNode.AddTo(this);
 				} else if (text != null) {
 					XmlTextTreeNode treeNode = new XmlTextTreeNode(text);
+					treeNode.AddTo(this);
+				} else if (comment != null) {
+					XmlCommentTreeNode treeNode = new XmlCommentTreeNode(comment);
 					treeNode.AddTo(this);
 				}
 			}

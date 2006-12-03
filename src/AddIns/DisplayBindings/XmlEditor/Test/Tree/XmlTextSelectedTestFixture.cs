@@ -23,22 +23,22 @@ namespace XmlEditor.Tests.Tree
 		public void SetUpFixture()
 		{
 			base.InitFixture();
-			mockXmlTreeView.SelectedTextNode = (XmlText)mockXmlTreeView.DocumentElement.FirstChild;
-			editor.SelectedTextNodeChanged();
+			mockXmlTreeView.SelectedTextNode = (XmlText)mockXmlTreeView.Document.DocumentElement.FirstChild;
+			editor.SelectedNodeChanged();
 		}
 		
 		[Test]
 		public void IsViewShowingText()
 		{
-			Assert.AreEqual("text here", mockXmlTreeView.TextContentDisplayed);
+			Assert.AreEqual("text here", mockXmlTreeView.TextContent);
 		}
 		
 		[Test]
 		public void TextNodeNotSelected()
 		{
 			mockXmlTreeView.SelectedTextNode = null;
-			editor.SelectedTextNodeChanged();
-			Assert.AreEqual(String.Empty, mockXmlTreeView.TextContentDisplayed);
+			editor.SelectedNodeChanged();
+			Assert.AreEqual(String.Empty, mockXmlTreeView.TextContent);
 		}
 	
 		protected override string GetXml()

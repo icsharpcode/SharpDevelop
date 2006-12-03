@@ -31,7 +31,7 @@ namespace XmlEditor.Tests.Tree
 			mockXmlTreeView.SelectedElement = bodyElement;
 
 			editor.AddAttribute();
-			editor.AddChildElement();
+			editor.AppendChildElement();
 		}
 		
 		/// <summary>

@@ -199,12 +199,15 @@
 
 	<Path name = "/AddIns/XmlEditor/XmlTree/ContextMenu">
 		<ComplexCondition action = "Disable">
-			<And>
-				<Condition name = "Ownerstate" ownerstate = "ElementSelected"/>
-				<Not>
-					<Condition name = "Ownerstate" ownerstate = "RootElementSelected"/>
-				</Not>
-			</And>
+			<Or>
+				<Condition name = "Ownerstate" ownerstate = "CommentSelected"/>
+				<And>
+					<Condition name = "Ownerstate" ownerstate = "ElementSelected"/>
+					<Not>
+						<Condition name = "Ownerstate" ownerstate = "RootElementSelected"/>
+					</Not>
+				</And>
+			</Or>
 			<MenuItem id = "InsertElementBefore"
 				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertElementBeforeMenuLabel}"
 				class = "ICSharpCode.XmlEditor.InsertElementBeforeCommand"/>
@@ -220,6 +223,7 @@
 		<ComplexCondition action = "Disable">
 			<Or>
 				<Condition name = "Ownerstate" ownerstate = "TextNodeSelected"/>
+				<Condition name = "Ownerstate" ownerstate = "CommentSelected"/>
 				<And>
 					<Condition name = "Ownerstate" ownerstate = "ElementSelected"/>
 					<Not>
@@ -239,6 +243,32 @@
 			<MenuItem id = "AddChildTextNode"
 				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddChildTextNodeAfterMenuLabel}"
 				class = "ICSharpCode.XmlEditor.AddChildTextNodeCommand"/>			
+		</Condition>
+		<ComplexCondition action = "Disable">
+			<Or>
+				<Condition name = "Ownerstate" ownerstate = "TextNodeSelected"/>
+				<Condition name = "Ownerstate" ownerstate = "ElementSelected"/>
+				<Condition name = "Ownerstate" ownerstate = "CommentSelected"/>
+			</Or>
+			<MenuItem id = "CommentNodeCommandsSeparator" type = "Separator"/>
+			<MenuItem id = "InsertCommentBefore"
+				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertCommentBeforeMenuLabel}"
+				class = "ICSharpCode.XmlEditor.InsertCommentBeforeCommand"/>
+			<MenuItem id = "InsertCommentAfter"
+				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertCommentAfterMenuLabel}"
+				class = "ICSharpCode.XmlEditor.InsertCommentAfterCommand"/>
+		</ComplexCondition>
+		<Condition name = "Ownerstate" ownerstate = "ElementSelected" action = "Disable">
+			<MenuItem id = "AddChildCommentNode"
+				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddChildCommentMenuLabel}"
+				class = "ICSharpCode.XmlEditor.AddChildCommentCommand"/>			
+		</Condition>
+		<Condition name = "Ownerstate" ownerstate = "CommentSelected" action = "Exclude">
+			<MenuItem id = "RemoveCommentSeparator" type = "Separator"/>
+			<MenuItem id = "RemoveComment"
+				label = "${res:XML.MainMenu.EditMenu.Delete}"
+				icon = "Icons.16x16.DeleteIcon"
+				class = "ICSharpCode.XmlEditor.RemoveCommentCommand"/>
 		</Condition>
 		<Condition name = "Ownerstate" ownerstate = "TextNodeSelected" action = "Exclude">
 			<MenuItem id = "RemoveTextNodeSeparator" type = "Separator"/>

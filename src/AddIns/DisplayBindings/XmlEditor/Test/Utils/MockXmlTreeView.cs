@@ -16,10 +16,11 @@ namespace XmlEditor.Tests.Utils
 	{
 		bool notWellFormedMessageDisplayed;
 		XmlException notWellFormedException;
-		XmlElement documentElement;
+		XmlDocument document;
 		XmlElement selectedElement;
 		List<XmlAttribute> attributesDisplayed = new List<XmlAttribute>();
 		string textContentDisplayed;
+		bool showTextContentCalled;
 		XmlText selectedTextNode;
 		bool dirty;
 		bool selectNewAttributesCalled = false;
@@ -38,6 +39,12 @@ namespace XmlEditor.Tests.Utils
 		List<XmlText> textNodesInsertedAfter = new List<XmlText>();
 		List<XmlText> textNodesRemoved = new List<XmlText>();
 		List<XmlText> textNodesUpdated = new List<XmlText>();
+		XmlComment selectedCommentNode;
+		List<XmlComment> commentNodesUpdated = new List<XmlComment>();
+		List<XmlComment> childCommentNodesAdded = new List<XmlComment>();
+		List<XmlComment> commentNodesRemoved = new List<XmlComment>();
+		List<XmlComment> commentNodesInsertedBefore = new List<XmlComment>();
+		List<XmlComment> commentNodesInsertedAfter = new List<XmlComment>();
 		
 		public MockXmlTreeView()
 		{
@@ -58,12 +65,12 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
-		public XmlElement DocumentElement {
+		public XmlDocument Document {
 			get {
-				return documentElement;
+				return document;
 			}
 			set {
-				documentElement = value;
+				document = value;
 			}
 		}
 		
@@ -84,6 +91,15 @@ namespace XmlEditor.Tests.Utils
 				selectedTextNode = value;
 			}
 		}
+		
+		public XmlComment SelectedComment {
+			get {
+				return selectedCommentNode;
+			}
+			set {
+				selectedCommentNode = value;
+			}
+		}
 
 		public void ShowAttributes(XmlAttributeCollection attributes)
 		{
@@ -100,6 +116,7 @@ namespace XmlEditor.Tests.Utils
 		
 		public void ShowTextContent(string text)
 		{
+			showTextContentCalled = true;
 			textContentDisplayed = text;
 		}
 				
@@ -171,19 +188,32 @@ namespace XmlEditor.Tests.Utils
 			textNodesUpdated.Add(textNode);
 		}
 		
+		public void UpdateComment(XmlComment comment)
+		{
+			commentNodesUpdated.Add(comment);
+		}
+		
+		public void AppendChildComment(XmlComment comment)
+		{
+			childCommentNodesAdded.Add(comment);
+		}
+		
+		public void RemoveComment(XmlComment comment)
+		{
+			commentNodesRemoved.Add(comment);
+		}
+		
+		public void InsertCommentBefore(XmlComment comment)
+		{
+			commentNodesInsertedBefore.Add(comment);
+		}
+		
+		public void InsertCommentAfter(XmlComment comment)
+		{
+			commentNodesInsertedAfter.Add(comment);
+		}
+		
 		public string TextContent {
-			get {
-				return textContentDisplayed;
-			}
-		}
-		
-		public List<XmlAttribute> AttributesDisplayed {
-			get {
-				return attributesDisplayed;
-			}
-		}
-		
-		public string TextContentDisplayed {
 			get {
 				return textContentDisplayed;
 			}
@@ -192,6 +222,12 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
+		public List<XmlAttribute> AttributesDisplayed {
+			get {
+				return attributesDisplayed;
+			}
+		}
+	
 		public bool IsXmlNotWellFormedMessageDisplayed {
 			get {
 				return notWellFormedMessageDisplayed;
@@ -355,6 +391,66 @@ namespace XmlEditor.Tests.Utils
 		public List<XmlText> TextNodesUpdated {
 			get {
 				return textNodesUpdated;
+			}
+		}
+		
+		/// <summary>
+		/// Returns a flag indicating whether the ShowTextContent
+		/// method was called.
+		/// </summary>
+		public bool IsShowTextContentCalled {
+			get {
+				return showTextContentCalled;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the comment nodes that were updated via the
+		/// UpdateCommentNode method.
+		/// </summary>
+		public List<XmlComment> CommentNodesUpdated {
+			get {
+				return commentNodesUpdated;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the comment nodes that were added via the
+		/// AddChildComment method.
+		/// </summary>
+		public List<XmlComment> ChildCommentNodesAdded {
+			get {
+				return childCommentNodesAdded;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the comment nodes that were removed via the
+		/// RemoveComment method.
+		/// </summary>
+		public List<XmlComment> CommentNodesRemoved {
+			get {
+				return commentNodesRemoved;
+			}
+		}
+				
+		/// <summary>
+		/// Returns the comment nodes that were inserted via the
+		/// InsertCommentBefore method.
+		/// </summary>
+		public List<XmlComment> CommentNodesInsertedBefore {
+			get {
+				return commentNodesInsertedBefore;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the comment nodes that were inserted via the
+		/// InsertCommentAfter method.
+		/// </summary>
+		public List<XmlComment> CommentNodesInsertedAfter {
+			get {
+				return commentNodesInsertedAfter;
 			}
 		}
 	}

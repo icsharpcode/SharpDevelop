@@ -77,6 +77,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			parentNode.Nodes.Insert(index, this);
 		}
 		
+		public void Insert(int index, TreeView view)
+		{
+			internalParent = null;
+			view.Nodes.Insert(index, this);
+		}
+		
 		void AddTo(TreeNodeCollection nodes)
 		{
 			nodes.Add(this);
