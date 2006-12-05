@@ -28,6 +28,7 @@ namespace ICSharpCode.XmlEditor
 			this.schemaCompletionDataItems = schemaCompletionDataItems;
 			this.defaultSchemaCompletionData = defaultSchemaCompletionData;
 			this.defaultNamespacePrefix = defaultNamespacePrefix;
+			DefaultIndex = 0;
 		}
 		
 		public override ImageList ImageList {

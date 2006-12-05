@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Completion\FirstCompletionListItemSelectedTestFixture.cs" />
     <Compile Include="Schema\SingleElementSchemaTestFixture.cs" />
     <Compile Include="Schema\ElementWithAttributeSchemaTestFixture.cs" />
     <Compile Include="Schema\NestedElementSchemaTestFixture.cs" />
@@ -164,6 +165,7 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Completion" />
     <Folder Include="Schema\" />
     <Folder Include="Parser\" />
     <Folder Include="Paths\" />

@@ -82,6 +82,11 @@ namespace ICSharpCode.XmlEditor
 			declarationViewWindow.ShowDeclarationViewWindow();
 			control.Focus();
 			CodeCompletionListViewSelectedItemChanged(this, EventArgs.Empty);
+						
+			if (completionDataProvider.DefaultIndex >= 0) {
+				codeCompletionListView.SelectIndex(completionDataProvider.DefaultIndex);
+			}
+			
 			if (completionDataProvider.PreSelection != null) {
 				CaretOffsetChanged(this, EventArgs.Empty);
 			}
