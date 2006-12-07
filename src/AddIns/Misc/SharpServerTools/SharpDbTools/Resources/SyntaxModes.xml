@@ -1,0 +1,5 @@
+<SyntaxModes version="1.0">
+	<Mode file       = "SQL.xshd"
+	      name       = "SQL"
+	      extensions = ".sql"/>	
+</SyntaxModes>

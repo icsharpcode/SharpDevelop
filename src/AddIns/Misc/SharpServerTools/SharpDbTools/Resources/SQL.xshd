@@ -152,13 +152,7 @@
 				<Key word = "rtrim" />
 				<Key word = "cast" />
 				
-			</KeyWords>
-
-			
-			
-			
-			
-				
+			</KeyWords>			
 		</RuleSet>
 	</RuleSets>
 </SyntaxDefinition>

@@ -37,6 +37,7 @@
     <Compile Include="Src\Forms\SQLTool.Designer.cs">
       <DependentUpon>SQLTool.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Forms\SQLToolResourceSyntaxModeProvider.cs" />
     <Compile Include="Src\Forms\SQLToolViewContent.cs" />
     <Compile Include="Src\Forms\TableDescribeViewContent.cs" />
     <Compile Include="Src\Forms\ConnectionStringDefinitionDialog.cs" />
@@ -57,9 +58,11 @@
     <Compile Include="Src\Data\DbModelInfoService.cs" />
     <Compile Include="Src\Data\DbProvidersService.cs" />
     <Compile Include="Src\Forms\TableTreeNode.cs" />
-    <None Include="Src\Forms\SQL.xshd" />
+    <EmbeddedResource Include="Resources\SQL.xshd" />
+    <EmbeddedResource Include="Resources\SyntaxModes.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Resources" />
     <Folder Include="Src" />
     <Folder Include="Src\Configuration" />
     <Folder Include="Src\Data" />

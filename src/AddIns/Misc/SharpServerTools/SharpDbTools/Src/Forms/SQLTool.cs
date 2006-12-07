@@ -45,13 +45,17 @@ namespace SharpDbTools.Forms
 			
 			sqlEditorControl = new TextEditorControl();
 			sqlEditorControl.Dock = DockStyle.Fill;
-			//sqlEditorControl.SetHighlighting("SQL");
+
+			// set up the highlighting manager for generic SQL
 			
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-			ICSharpCode.TextEditor.Document.FileSyntaxModeProvider provider = new ICSharpCode.TextEditor.Document.FileSyntaxModeProvider(appPath);
+			SQLToolResourceSyntaxModeProvider provider = new SQLToolResourceSyntaxModeProvider();
 			ICSharpCode.TextEditor.Document.HighlightingManager.Manager.AddSyntaxModeFileProvider(provider);
 			sqlEditorControl.Document.HighlightingStrategy = 
 				ICSharpCode.TextEditor.Document.HighlightingManager.Manager.FindHighlighter("SQL");
+			
+			// setup the SQLTool in the tab control
+			
 			this.editorTab.Controls.Add(sqlEditorControl);
 			
 			// add context behaviour to the editor control
