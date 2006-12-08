@@ -25,6 +25,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		internal Dictionary<string, IProjectContent> contents = new Dictionary<string, IProjectContent>(StringComparer.InvariantCultureIgnoreCase);
 		
 		/// <summary>
+		/// Redirects short names to long names. Used to redirect .NET libraries to the chosen .NET version
+		/// </summary>
+		protected Dictionary<string, string> redirectedAssemblyNames = new Dictionary<string, string>();
+		
+		/// <summary>
 		/// Disposes all project contents stored in this registry.
 		/// </summary>
 		public virtual void Dispose()
@@ -167,6 +172,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					contents["mscorlib"] = mscorlibContent;
 					contents[mscorlibContent.AssemblyFullName] = mscorlibContent;
 					contents[mscorlibContent.AssemblyLocation] = mscorlibContent;
+					lock (redirectedAssemblyNames) {
+						redirectedAssemblyNames.Add("mscorlib", mscorlibContent.AssemblyFullName);
+					}
 					return mscorlibContent;
 				}
 			}
@@ -186,6 +194,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public virtual IProjectContent GetExistingProjectContent(string itemInclude, string itemFileName)
 		{
+			if (itemFileName == itemInclude) {
+				string shortName = itemInclude;
+				int pos = shortName.IndexOf(',');
+				if (pos > 0)
+					shortName = shortName.Substring(0, pos);
+				
+				// redirect all references to .NET default assemblies to the .NET version this registry uses
+				lock (redirectedAssemblyNames) {
+					if (redirectedAssemblyNames.ContainsKey(shortName)) {
+						itemFileName = redirectedAssemblyNames[shortName];
+						itemInclude = shortName;
+					}
+				}
+			}
 			lock (contents) {
 				if (contents.ContainsKey(itemFileName)) {
 					return contents[itemFileName];
@@ -200,11 +222,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public virtual IProjectContent GetProjectContentForReference(string itemInclude, string itemFileName)
 		{
 			lock (contents) {
-				if (contents.ContainsKey(itemFileName)) {
-					return contents[itemFileName];
-				}
-				if (contents.ContainsKey(itemInclude)) {
-					return contents[itemInclude];
+				IProjectContent pc = GetExistingProjectContent(itemInclude, itemFileName);
+				if (pc != null) {
+					return pc;
 				}
 				
 				LoggingService.Debug("Loading PC for " + itemInclude);
@@ -219,7 +239,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				int time = Environment.TickCount;
 				#endif
 				
-				IProjectContent pc = null;
 				try {
 					pc = LoadProjectContent(itemInclude, itemFileName);
 				} catch (Exception ex) {
@@ -260,6 +279,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 					pc = new ReflectionProjectContent(assembly, this);
 					if (persistence != null) {
 						persistence.SaveProjectContent(pc);
+					}
+				}
+				if (pc != null) {
+					// add default .NET assemblies to redirected assemblies (both when loaded from persistence
+					// and when loaded using Reflection)
+					lock (redirectedAssemblyNames) {
+						redirectedAssemblyNames.Add(shortName, pc.AssemblyFullName);
 					}
 				}
 			} else {

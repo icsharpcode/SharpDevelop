@@ -32,10 +32,14 @@ namespace ICSharpCode.SharpDevelop
 			return null;
 		}
 		
+		
 		protected override IProjectContent LoadProjectContent(string itemInclude, string itemFileName)
 		{
 			if (File.Exists(itemFileName)) {
-				return ParserService.DefaultProjectContentRegistry.GetProjectContentForReference(itemInclude, itemFileName);
+				// we cannot reuse project contents from the default registry because they would
+				// reference the wrong mscorlib version, causing code-completion problems
+				// when a CF application references a CF library
+				return base.LoadProjectContent(itemInclude, itemFileName);
 			}
 			string netPath = GetInstallFolder();
 			if (!string.IsNullOrEmpty(netPath) && File.Exists(Path.Combine(netPath, "mscorlib.dll"))) {
@@ -45,10 +49,18 @@ namespace ICSharpCode.SharpDevelop
 					shortName = shortName.Substring(0, pos);
 				
 				if (File.Exists(Path.Combine(netPath, shortName + ".dll"))) {
-					return CecilReader.LoadAssembly(Path.Combine(netPath, shortName + ".dll"), this);
+					ReflectionProjectContent rpc = CecilReader.LoadAssembly(Path.Combine(netPath, shortName + ".dll"), this);
+					if (rpc != null) {
+						redirectedAssemblyNames.Add(shortName, rpc.AssemblyFullName);
+					}
+					return rpc;
 				} else if (File.Exists(Path.Combine(netPath, shortName))) {
 					// perhaps shortName includes file extension
-					return CecilReader.LoadAssembly(Path.Combine(netPath, shortName), this);
+					ReflectionProjectContent rpc = CecilReader.LoadAssembly(Path.Combine(netPath, shortName), this);
+					if (rpc != null) {
+						redirectedAssemblyNames.Add(Path.GetFileNameWithoutExtension(shortName), rpc.AssemblyFullName);
+					}
+					return rpc;
 				}
 			} else {
 				string message = "Warning: .NET Compact Framework SDK is not installed." + Environment.NewLine;
@@ -56,7 +68,7 @@ namespace ICSharpCode.SharpDevelop
 					TaskService.BuildMessageViewCategory.AppendText(message);
 				}
 			}
-			return ParserService.DefaultProjectContentRegistry.GetProjectContentForReference(itemInclude, itemFileName);
+			return base.LoadProjectContent(itemInclude, itemFileName);
 		}
 	}
 }
