@@ -99,6 +99,24 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				WorkbenchSingleton.MainForm.Activated += GotFocusEvent;
 			}
 			
+			public static bool DetectExternalChangesOption {
+				get {
+					return PropertyService.Get("SharpDevelop.FileChangeWatcher.DetectExternalChanges", true);
+				}
+				set {
+					PropertyService.Set("SharpDevelop.FileChangeWatcher.DetectExternalChanges", value);
+				}
+			}
+			
+			public static bool AutoLoadExternalChangesOption {
+				get {
+					return PropertyService.Get("SharpDevelop.FileChangeWatcher.AutoLoadExternalChanges", true);
+				}
+				set {
+					PropertyService.Set("SharpDevelop.FileChangeWatcher.AutoLoadExternalChanges", value);
+				}
+			}
+			
 			public void Dispose()
 			{
 				WorkbenchSingleton.MainForm.Activated -= GotFocusEvent;
@@ -117,6 +135,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			public void SetWatcher(string fileName)
 			{
 				this.fileName = fileName;
+				if (DetectExternalChangesOption == false)
+					return;
 				try {
 					if (this.watcher == null) {
 						this.watcher = new FileSystemWatcher();
@@ -139,10 +159,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			void OnFileChangedEvent(object sender, FileSystemEventArgs e)
 			{
-				if(e.ChangeType != WatcherChangeTypes.Deleted) {
+				if (e.ChangeType != WatcherChangeTypes.Deleted) {
 					wasChangedExternally = true;
 					if (ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench.IsActiveWindow) {
-						GotFocusEvent(this, EventArgs.Empty);
+						// delay showing message a bit, prevents showing two messages
+						// when the file changes twice in quick succession
+						WorkbenchSingleton.SafeThreadAsyncCall(GotFocusEvent, this, EventArgs.Empty);
 					}
 				}
 			}
@@ -153,11 +175,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					wasChangedExternally = false;
 					
 					string message = StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}", new string[,] {{"File", Path.GetFullPath(fileName)}});
-					if (viewContent.IsDirty == false ||
-					    MessageBox.Show(message,
-					                    StringParser.Parse("${res:MainWindow.DialogName}"),
-					                    MessageBoxButtons.YesNo,
-					                    MessageBoxIcon.Question) == DialogResult.Yes)
+					if ((AutoLoadExternalChangesOption && viewContent.IsDirty == false)
+					    || MessageBox.Show(message,
+					                       StringParser.Parse("${res:MainWindow.DialogName}"),
+					                       MessageBoxButtons.YesNo,
+					                       MessageBoxIcon.Question) == DialogResult.Yes)
 					{
 						viewContent.Load(fileName);
 					} else {
