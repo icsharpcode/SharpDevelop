@@ -554,7 +554,7 @@ namespace ICSharpCode.TextEditor
 			
 			if (TextEditorProperties.UseCustomLine == true) {
 				if (SelectionManager.HasSomethingSelected) {
-					if (Document.CustomLineManager.IsReadOnly(SelectionManager.SelectionCollection[0], false))
+					if (SelectionManager.SelectionIsReadonly)
 						return;
 				} else if (Document.CustomLineManager.IsReadOnly(Caret.Line, false) == true)
 					return;
@@ -615,7 +615,7 @@ namespace ICSharpCode.TextEditor
 			if (keyData == Keys.Back || keyData == Keys.Delete || keyData == Keys.Enter) {
 				if (TextEditorProperties.UseCustomLine == true) {
 					if (SelectionManager.HasSomethingSelected) {
-						if (Document.CustomLineManager.IsReadOnly(SelectionManager.SelectionCollection[0], false))
+						if (SelectionManager.SelectionIsReadonly)
 							return true;
 					} else {
 						int curLineNr   = Document.GetLineNumberForOffset(Caret.Offset);
@@ -690,7 +690,7 @@ namespace ICSharpCode.TextEditor
 					return false;
 				if (TextEditorProperties.UseCustomLine == true) {
 					if (SelectionManager.HasSomethingSelected == true) {
-						if (Document.CustomLineManager.IsReadOnly(SelectionManager.SelectionCollection[0], false))
+						if (SelectionManager.SelectionIsReadonly)
 							return false;
 					}
 					if (Document.CustomLineManager.IsReadOnly(Caret.Line, false) == true)

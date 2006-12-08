@@ -52,8 +52,8 @@ namespace ICSharpCode.TextEditor
 		{
 			textArea.Document.Insert(offset, str);
 			
-			textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, 
-			                                                            textArea.Document.OffsetToPosition(offset), 
+			textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document,
+			                                                            textArea.Document.OffsetToPosition(offset),
 			                                                            textArea.Document.OffsetToPosition(offset + str.Length)));
 			textArea.Caret.Position = textArea.Document.OffsetToPosition(offset + str.Length);
 			textArea.Refresh();
@@ -68,12 +68,24 @@ namespace ICSharpCode.TextEditor
 				textArea.BeginUpdate();
 				try {
 					int offset = textArea.Caret.Offset;
+					if (textArea.TextEditorProperties.UseCustomLine
+					    && textArea.Document.CustomLineManager.IsReadOnly(textArea.Caret.Line, false))
+					{
+						// prevent dragging text into readonly section
+						return;
+					}
 					if (e.Data.GetDataPresent(typeof(DefaultSelection))) {
 						ISelection sel = (ISelection)e.Data.GetData(typeof(DefaultSelection));
 						if (sel.ContainsPosition(textArea.Caret.Position)) {
 							return;
 						}
 						if (GetDragDropEffect(e) == DragDropEffects.Move) {
+							if (textArea.TextEditorProperties.UseCustomLine
+							    && textArea.Document.CustomLineManager.IsReadOnly(sel, false))
+							{
+								// prevent dragging text out of readonly section
+								return;
+							}
 							int len = sel.Length;
 							textArea.Document.Remove(sel.Offset, len);
 							if (sel.Offset < offset) {

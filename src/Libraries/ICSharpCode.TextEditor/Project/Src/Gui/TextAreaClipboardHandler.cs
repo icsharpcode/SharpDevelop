@@ -111,6 +111,13 @@ namespace ICSharpCode.TextEditor
 		
 		public void Cut(object sender, EventArgs e)
 		{
+			if (textArea.TextEditorProperties.UseCustomLine == true) {
+				if (textArea.SelectionManager.HasSomethingSelected) {
+					if (textArea.SelectionManager.SelectionIsReadonly)
+						return;
+				} else if (textArea.Document.CustomLineManager.IsReadOnly(textArea.Caret.Line, false) == true)
+					return;
+			}
 			if (CopyTextToClipboard(textArea.SelectionManager.SelectedText)) {
 				// Remove text
 				textArea.BeginUpdate();
@@ -147,6 +154,13 @@ namespace ICSharpCode.TextEditor
 		
 		public void Paste(object sender, EventArgs e)
 		{
+			if (textArea.TextEditorProperties.UseCustomLine == true) {
+				if (textArea.SelectionManager.HasSomethingSelected) {
+					if (textArea.SelectionManager.SelectionIsReadonly)
+						return;
+				} else if (textArea.Document.CustomLineManager.IsReadOnly(textArea.Caret.Line, false) == true)
+					return;
+			}
 			// Clipboard.GetDataObject may throw an exception...
 			for (int i = 0;; i++) {
 				try {
