@@ -414,6 +414,21 @@
 											<File Source="..\..\bin\Tools\NUnit\nunit.framework.dll" Name="nuframg.dll" Id="nunit.framework.gac.dll" LongName="nunit.framework.dll" Assembly=".net" AssemblyManifest="nunit.framework.gac.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
+									<Directory Id="Net_1.1" Name="Net-1.1">
+										<Component Guid="68CCA177-12B4-4EDE-9912-D60845D8CC06" Id="NUnitConsoleRunnerDllNetv11" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit-console-runner.dll" Name="nucrun2.dll" Id="Net_1.1.nunit_console_runner.dll" LongName="nunit-console-runner.dll" AssemblyApplication="Net_1.1.nunit_console_runner.dll" AssemblyManifest="Net_1.1.nunit_console_runner.dll" Assembly=".net" KeyPath="yes" />
+										</Component>
+										<Component Guid="5B5D5C28-416C-4EF1-9476-CD120A1AC1B0" Id="NUnitConsoleNetv11Files" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit-console.exe" Name="nucons2.exe" Id="Net_1.1.nunit_console.exe" LongName="nunit-console.exe" AssemblyApplication="Net_1.1.nunit_console.exe" AssemblyManifest="Net_1.1.nunit_console.exe" Assembly=".net" KeyPath="yes" />
+											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit-console.exe.config" Name="nucons2.con" Id="Net_1.1.nunit_console.exe1.config" LongName="nunit-console.exe.config" />
+										</Component>
+										<Component Guid="1615EFF3-D86A-4F7E-A1C7-4417EB420002" Id="NUnitCoreDllNetv11" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.core.dll" Name="nucore2.dll" Id="Net_1.1.nunit.core.dll" LongName="nunit.core.dll" Assembly=".net" AssemblyApplication="Net_1.1.nunit.core.dll" AssemblyManifest="Net_1.1.nunit.core.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="3D66D8B1-5C03-404B-882B-105715A598CD" Id="NUnitUtilDllNetv11" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.util.dll" Name="nuutil2.dll" Id="Net_1.1.nunit.util.dll" LongName="nunit.util.dll" Assembly=".net" AssemblyApplication="Net_1.1.nunit.util.dll" AssemblyManifest="Net_1.1.nunit.util.dll" KeyPath="yes" />
+										</Component>
+									</Directory>
 								</Directory>
 							</Directory>
 						</Directory>
@@ -650,8 +665,8 @@
 										</Component>
 										<Component Guid="3ffcfcc0-6f9b-11db-9fe1-0800200c9a66" Id="CSharpConfigurationFileTemplates" DiskId="1">
 											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationElement.xft" Name="CSCONFIG.XFT" Id="CSharp.ConfigurationElement.xft" LongName="CSharp.ConfigurationElement.xft" />
-											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationElementCollection.xft" Name="CSCONFIG.XFT" Id="CSharp.ConfigurationElementCollection.xft" LongName="CSharp.ConfigurationElementCollection.xft" />
-											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationSection.xft" Name="CSCONFIG.XFT" Id="CSharp.ConfigurationSection.xft" LongName="CSharp.ConfigurationSection.xft" />
+											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationElementCollection.xft" Name="CSCONCOL.XFT" Id="CSharp.ConfigurationElementCollection.xft" LongName="CSharp.ConfigurationElementCollection.xft" />
+											<File Source="..\..\data\templates\file\CSharp\CSharp.ConfigurationSection.xft" Name="CSCONSEC.XFT" Id="CSharp.ConfigurationSection.xft" LongName="CSharp.ConfigurationSection.xft" />
 											<File Source="..\..\data\templates\file\CSharp\ConfigurationElement.cs" Name="CONFELEM.CS" Id="ConfigurationElement.cs" LongName="ConfigurationElement.cs" />
 											<File Source="..\..\data\templates\file\CSharp\ConfigurationElementCollection.cs" Name="CONFECOL.CS" Id="ConfigurationElementCollection.cs" LongName="ConfigurationElementCollection.cs" />
 											<File Source="..\..\data\templates\file\CSharp\ConfigurationSection.cs" Name="CONFSECT.CS" Id="ConfigurationSection.cs" LongName="ConfigurationSection.cs" />

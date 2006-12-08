@@ -96,7 +96,6 @@ namespace ICSharpCode.UnitTesting
 		{
 			string text = ReadTextAdded();
 			if (text != null) {
-				Console.WriteLine(text);
 				TestResult[] results = testResultsReader.Read(text);
 				OnTestResultsReceived(results);
 			}

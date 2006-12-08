@@ -23,6 +23,8 @@ namespace ICSharpCode.UnitTesting
 	/// </summary>
 	public class UnitTestApplicationStartHelper
 	{
+		public const string TargetFrameworkVersionNet11 = "v1.1";
+
 		/// <summary>
 		/// returns full/path/to/Tools/NUnit
 		/// </summary>
@@ -33,11 +35,29 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
+		/// returns full/path/to/Tools/NUnit that runs under .NET 1.1.
+		/// </summary>
+		public static string UnitTestApplicationDirectoryNet11 {
+			get {
+				return Path.Combine(UnitTestApplicationDirectory, "Net-1.1");
+			}
+		}
+
+		/// <summary>
 		/// returns full/path/to/Tools/NUnit/nunit-console.exe
 		/// </summary>
 		public static string UnitTestConsoleApplication {
 			get {
 				return Path.Combine(UnitTestApplicationDirectory, "nunit-console.exe");
+			}
+		}
+		
+		/// <summary>
+		/// returns full/path/to/Tools/NUnit/nunit-console.exe that runs under .NET 1.1.
+		/// </summary>
+		public static string UnitTestConsoleApplicationNet11 {
+			get {
+				return Path.Combine(UnitTestApplicationDirectoryNet11, "nunit-console.exe");
 			}
 		}
 		
@@ -118,13 +138,44 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
+		/// Gets the Unit Test console application filename based on the
+		/// target framework specified in the project.
+		/// </summary>
+		/// <remarks>Deliberately using the unevaluated property since the
+		/// SharpDevelop build targets file changes the target version to
+		/// v1.0 if it is v1.1.</remarks>
+		public static string GetUnitTestConsoleApplication(string targetFrameworkVersion)
+		{
+			switch (targetFrameworkVersion) {
+				case TargetFrameworkVersionNet11:
+					return UnitTestConsoleApplicationNet11;
+				default:
+					return UnitTestConsoleApplication;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the Unit Test console application filename based on the
+		/// target framework specified in the project.
+		/// </summary>
+		/// <remarks>Deliberately using the unevaluated property since the
+		/// SharpDevelop build targets file changes the target version to
+		/// v1.0 if it is v1.1.</remarks>
+		public string GetUnitTestConsoleApplication()
+		{
+			MSBuildBasedProject msbuildBasedProject = (MSBuildBasedProject)project;
+			string targetFrameworkVersion = msbuildBasedProject.GetUnevalatedProperty("TargetFrameworkVersion");
+			return GetUnitTestConsoleApplication(targetFrameworkVersion);
+		}
+		
+		/// <summary>
 		/// Gets the full command line to run the unit test application.
 		/// This is the combination of the UnitTestConsoleApplication and
 		/// the command line arguments.
 		/// </summary>
 		public string GetCommandLine()
 		{
-			return String.Concat("\"", UnitTestConsoleApplication, "\" ", GetArguments());
+			return String.Concat("\"", GetUnitTestConsoleApplication(), "\" ", GetArguments());
 		}
 		
 		/// <summary>

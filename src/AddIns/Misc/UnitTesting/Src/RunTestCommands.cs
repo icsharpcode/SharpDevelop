@@ -129,6 +129,7 @@ namespace ICSharpCode.UnitTesting
 			// Read the rest of the file just in case.
 			testResultsMonitor.Stop();
 			testResultsMonitor.Read();
+			StopMonitoring();
 			
 			projects.Remove(currentProject);
 			if (projects.Count > 0) {
@@ -410,12 +411,17 @@ namespace ICSharpCode.UnitTesting
 		protected override void RunTests(UnitTestApplicationStartHelper helper)
 		{										
 			TestRunnerCategory.AppendLine(helper.GetCommandLine());
-			runner.Start(UnitTestApplicationStartHelper.UnitTestConsoleApplication, helper.GetArguments());
+			runner.Start(helper.GetUnitTestConsoleApplication(), helper.GetArguments());
 		}
 		
 		protected override void OnStop()
 		{
 			runner.Kill();
+		}
+		
+		protected ProcessRunner GetProcessRunner()
+		{
+			return runner;
 		}
 		
 		void OutputLineReceived(object source, LineReceivedEventArgs e)

@@ -6,7 +6,9 @@
 		<WixDocFiles Include="wix\doc\*"/>
 		<WixLibFiles Include="wix\lib\*"/>
 		<WixIncFiles Include="wix\inc\*"/>
-		<NUnitFiles Include="NUnit\*"/>
+		<NUnitFiles Include="NUnit\*.dll;NUnit\*.exe"/>
+		<NUnitConfigFileNetv11 Include="NUnit\nunit-console-netv11.exe.config"/>
+		<NUnitConfigFile Include="NUnit\nunit-console.exe.config"/>
 		<HelpToolFiles Include="Help\*"/>
 	</ItemGroup>
 	
@@ -18,6 +20,9 @@
 		<Copy SourceFiles="@(WixIncFiles)" DestinationFolder="..\..\bin\Tools\Wix\inc"/>
 		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib"/>
 		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit"/>
+		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit\Net-1.1"/>
+		<Copy SourceFiles="@(NUnitConfigFileNetv11)" DestinationFiles="@(NUnitConfigFileNetv11->'..\..\bin\Tools\NUnit\Net-1.1\nunit-console.exe.config')"/>
+		<Copy SourceFiles="@(NUnitConfigFile)" DestinationFolder="..\..\bin\Tools\NUnit"/>
 		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools"/>
 		
 		<!--
