@@ -82,11 +82,6 @@ namespace ResourceEditor
 			resourceEditor.Dispose();
 		}
 		
-		public override void Save()
-		{
-			Save(FileName);
-		}
-		
 		public override void Load(string filename)
 		{
 			resourceEditor.ResourceList.LoadFile(filename);
