@@ -76,8 +76,7 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public TextMarker(int offset, int length, TextMarkerType textMarkerType, Color color)
 		{
-			if (length < 1)
-				throw new ArgumentOutOfRangeException("length", length, "length must be >= 1");
+			if (length < 1) length = 1;
 			this.offset          = offset;
 			this.length          = length;
 			this.textMarkerType  = textMarkerType;
@@ -86,8 +85,7 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public TextMarker(int offset, int length, TextMarkerType textMarkerType, Color color, Color foreColor)
 		{
-			if (length < 1)
-				throw new ArgumentOutOfRangeException("length", length, "length must be >= 1");
+			if (length < 1) length = 1;
 			this.offset          = offset;
 			this.length          = length;
 			this.textMarkerType  = textMarkerType;

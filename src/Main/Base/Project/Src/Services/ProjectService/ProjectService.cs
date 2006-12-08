@@ -262,6 +262,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				} else {
 					(openSolution.Preferences as IMementoCapable).SetMemento(new Properties());
 				}
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
+			try {
 				ApplyConfigurationAndReadPreferences();
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);

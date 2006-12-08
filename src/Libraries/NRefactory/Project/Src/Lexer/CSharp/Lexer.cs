@@ -776,21 +776,44 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				}
 			} else {
 				specialTracker.StartComment(CommentType.Block, new Location(Col, Line));
+				
+				// sc* = special comment handling (TO DO markers)
+				string scTag = null; // is set to non-null value when we are inside a comment marker
+				StringBuilder scCurWord = new StringBuilder(); // current word, (scTag == null) or comment (when scTag != null)
+				Location scStartLocation = Location.Empty;
+				
 				while ((nextChar = ReaderRead()) != -1) {
 					char ch = (char)nextChar;
 					
 					if (HandleLineEnd(ch)) {
+						if (scTag != null) {
+							this.TagComments.Add(new TagComment(scTag, scCurWord.ToString(), scStartLocation, new Location(Col, Line)));
+							scTag = null;
+						}
+						scCurWord.Length = 0;
 						specialTracker.AddString(Environment.NewLine);
 						continue;
 					}
 					
 					// End of multiline comment reached ?
 					if (ch == '*' && ReaderPeek() == '/') {
+						if (scTag != null) {
+							this.TagComments.Add(new TagComment(scTag, scCurWord.ToString(), scStartLocation, new Location(Col, Line)));
+						}
 						ReaderRead();
 						specialTracker.FinishComment(new Location(Col, Line));
 						return;
 					}
 					specialTracker.AddChar(ch);
+					if (scTag != null || IsIdentifierPart(ch)) {
+						scCurWord.Append(ch);
+					} else {
+						if (specialCommentHash != null && specialCommentHash.ContainsKey(scCurWord.ToString())) {
+							scTag = scCurWord.ToString();
+							scStartLocation = new Location(Col, Line);
+						}
+						scCurWord.Length = 0;
+					}
 				}
 				specialTracker.FinishComment(new Location(Col, Line));
 			}
