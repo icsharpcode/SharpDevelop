@@ -225,7 +225,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			targetFrameworkBinding = helper.BindStringEnum("targetFrameworkComboBox", TargetFrameworkProperty,
 			                                               "",
 			                                               new StringPair("", "Default (.NET 2.0)"),
-			                                               new StringPair("v1.0", ".NET Framework 1.0"),
+			                                               // We do not support .NET 1.0 anymore - compiling would still work,
+			                                               // but debugging, unit testing etc. are not supported.
+			                                               //new StringPair("v1.0", ".NET Framework 1.0"),
 			                                               new StringPair("v1.1", ".NET Framework 1.1"),
 			                                               new StringPair("v2.0", ".NET Framework 2.0"),
 			                                               new StringPair("CF 1.0", "Compact Framework 1.0"),
