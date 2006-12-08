@@ -752,6 +752,26 @@ class TestClass {
 			LocalResolveResult lr = Resolve<LocalResolveResult>(program, "a", 5);
 			Assert.AreEqual("System.Collections.ArrayList", lr.ResolvedType.FullyQualifiedName, "a");
 		}
+		
+		[Test]
+		public void ResolveNamespaceSD2_863()
+		{
+			string program = @"using System;
+namespace A.C { class D {} }
+namespace A.B.C { class D {} }
+namespace A.B {
+	class TestClass {
+		void Test() {
+			
+		}
+	}
+}
+";
+			NamespaceResolveResult nrr = Resolve<NamespaceResolveResult>(program, "C", 7);
+			Assert.AreEqual("A.B.C", nrr.Name, "nrr.Name");
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "C.D", 7);
+			Assert.AreEqual("A.B.C.D", trr.ResolvedClass.FullyQualifiedName, "trr.ResolvedClass.FullyQualifiedName");
+		}
 		#endregion
 		
 		#region Import class tests

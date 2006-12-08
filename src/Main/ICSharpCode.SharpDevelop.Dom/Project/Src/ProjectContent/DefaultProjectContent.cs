@@ -737,22 +737,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			if (curType != null) {
-				// Try parent namespaces of the current class
+				// Try relative to current namespace and relative to parent namespaces
 				string fullname = curType.Namespace;
-				if (fullname != null && fullname.Length > 0) {
-					string[] namespaces = fullname.Split('.');
-					StringBuilder curnamespace = new StringBuilder();
-					for (int i = 0; i < namespaces.Length; ++i) {
-						curnamespace.Append(namespaces[i]);
-						curnamespace.Append('.');
-						
-						curnamespace.Append(name);
-						string nameSpace = curnamespace.ToString();
-						if (NamespaceExists(nameSpace)) {
-							return nameSpace;
-						}
-						// remove class name again to try next namespace
-						curnamespace.Length -= name.Length;
+				while (fullname != null && fullname.Length > 0) {
+					string nameSpace = fullname + '.' + name;
+					if (NamespaceExists(nameSpace)) {
+						return nameSpace;
+					}
+					
+					int pos = fullname.LastIndexOf('.');
+					if (pos < 0) {
+						fullname = null;
+					} else {
+						fullname = fullname.Substring(0, pos);
 					}
 				}
 			}
