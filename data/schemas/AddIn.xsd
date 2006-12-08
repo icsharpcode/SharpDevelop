@@ -2,11 +2,6 @@
 <!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ivo Kovacka (Kovacka) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.icsharpcode.net/2005/addin" xmlns="http://www.icsharpcode.net/2005/addin">
 	<xs:complexType name="AddIn">
-		<xs:attribute name="name" type="xs:string" use="required" />
-		<xs:attribute name="author" type="xs:string" use="required" />
-		<xs:attribute name="copyright" type="xs:string" use="optional" />
-		<xs:attribute name="url" type="xs:anyURI" use="optional" />
-		<xs:attribute name="description" type="xs:string" use="optional" />
 		<xs:choice minOccurs="1" maxOccurs="unbounded">
 			<xs:element name="BitmapResources">
 				<xs:complexType>
@@ -58,6 +53,11 @@
 				</xs:complexType>
 			</xs:element>
 		</xs:choice>
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="author" type="xs:string" use="required" />
+		<xs:attribute name="copyright" type="xs:string" use="optional" />
+		<xs:attribute name="url" type="xs:anyURI" use="optional" />
+		<xs:attribute name="description" type="xs:string" use="optional" />
 	</xs:complexType>
 	<xs:element name="AddIn" type="AddIn" />
 	<xs:complexType name="AddInReference">
@@ -65,11 +65,11 @@
 		<xs:attribute name="version" type="xs:string" use="optional" />
 	</xs:complexType>
 	<xs:complexType name="Import">
-		<xs:attribute name="assembly" type="xs:string" use="required" />
 		<xs:choice maxOccurs="unbounded">
 			<xs:element name="Doozer" type="CustomDoozerOrCondition" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="ConditionEvaluator" type="CustomDoozerOrCondition" minOccurs="0" maxOccurs="unbounded" />
 		</xs:choice>
+		<xs:attribute name="assembly" type="xs:string" use="required" />
 	</xs:complexType>
 	<xs:complexType name="CustomDoozerOrCondition">
 		<xs:attribute name="name" type="xs:string" use="required" />
@@ -82,6 +82,7 @@
 			<!-- !!! INSERT DOOZER LIST !!! -->
 			<xs:element ref="Class" />
 			<xs:element ref="CodeCompletionBinding" />
+			<xs:element ref="CustomTool" />
 			<xs:element ref="Debugger" />
 			<xs:element ref="DialogPanel" />
 			<xs:element ref="Directory" />
@@ -94,7 +95,7 @@
 			<xs:element ref="MenuItem" />
 			<xs:element ref="Pad" />
 			<xs:element ref="Parser" />
-			<xs:element ref="Registry" />
+			<xs:element ref="ProjectContentRegistry" />
 			<xs:element ref="SchemeExtension" />
 			<xs:element ref="String" />
 			<xs:element ref="SyntaxMode" />
@@ -105,31 +106,33 @@
 	</xs:complexType>
 	<xs:element name="Path" type="Path" />
 	<xs:complexType name="Condition">
-		<xs:extension base="Path">
-			<xs:attribute name="action" use="optional">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="Exclude" />
-						<xs:enumeration value="Disable" />
-						<xs:enumeration value="Nothing" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<!-- !!! INSERT CONDITION ATTRIBUTES !!! -->
-			<xs:attribute name="activeextension" type="xs:string" use="optional" />
-			<xs:attribute name="activeproject" type="xs:string" use="optional" />
-			<xs:attribute name="activewindow" type="xs:string" use="optional" />
-			<xs:attribute name="comparisonType" type="xs:string" use="optional" />
-			<xs:attribute name="debuggersupports" type="xs:string" use="optional" />
-			<xs:attribute name="equals" type="xs:string" use="optional" />
-			<xs:attribute name="openwindow" type="xs:string" use="optional" />
-			<xs:attribute name="options" type="xs:string" use="optional" />
-			<xs:attribute name="property" type="xs:string" use="optional" />
-			<xs:attribute name="string" type="xs:string" use="optional" />
-			<xs:attribute name="supports" type="xs:string" use="optional" />
-			<xs:attribute name="textcontent" type="xs:string" use="optional" />
-			<xs:attribute name="urlRegex" type="xs:string" use="optional" />
-		</xs:extension>
+		<xs:complexContent>
+			<xs:extension base="Path">
+				<xs:attribute name="action" use="optional">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="Exclude" />
+							<xs:enumeration value="Disable" />
+							<xs:enumeration value="Nothing" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+				<!-- !!! INSERT CONDITION ATTRIBUTES !!! -->
+				<xs:attribute name="activeextension" type="xs:string" use="optional" />
+				<xs:attribute name="activeproject" type="xs:string" use="optional" />
+				<xs:attribute name="activewindow" type="xs:string" use="optional" />
+				<xs:attribute name="comparisonType" type="xs:string" use="optional" />
+				<xs:attribute name="debuggersupports" type="xs:string" use="optional" />
+				<xs:attribute name="equals" type="xs:string" use="optional" />
+				<xs:attribute name="openwindow" type="xs:string" use="optional" />
+				<xs:attribute name="options" type="xs:string" use="optional" />
+				<xs:attribute name="property" type="xs:string" use="optional" />
+				<xs:attribute name="string" type="xs:string" use="optional" />
+				<xs:attribute name="supports" type="xs:string" use="optional" />
+				<xs:attribute name="textcontent" type="xs:string" use="optional" />
+				<xs:attribute name="urlRegex" type="xs:string" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Condition" type="Condition">
 		<xs:annotation>
@@ -139,15 +142,6 @@
 		</xs:annotation>
 	</xs:element>
 	<xs:complexType name="ComplexCondition">
-		<xs:attribute name="action" use="optional">
-			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="Exclude" />
-					<xs:enumeration value="Disable" />
-					<xs:enumeration value="Nothing" />
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
 		<xs:choice maxOccurs="unbounded">
 			<xs:element ref="And" />
 			<xs:element ref="Or" />
@@ -155,6 +149,7 @@
 			<!-- !!! INSERT DOOZER LIST !!! -->
 			<xs:element ref="Class" />
 			<xs:element ref="CodeCompletionBinding" />
+			<xs:element ref="CustomTool" />
 			<xs:element ref="Debugger" />
 			<xs:element ref="DialogPanel" />
 			<xs:element ref="Directory" />
@@ -167,13 +162,22 @@
 			<xs:element ref="MenuItem" />
 			<xs:element ref="Pad" />
 			<xs:element ref="Parser" />
-			<xs:element ref="Registry" />
+			<xs:element ref="ProjectContentRegistry" />
 			<xs:element ref="SchemeExtension" />
 			<xs:element ref="String" />
 			<xs:element ref="SyntaxMode" />
 			<xs:element ref="TaskBoundAdditionalLogger" />
 			<xs:element ref="ToolbarItem" />
 		</xs:choice>
+		<xs:attribute name="action" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Exclude" />
+					<xs:enumeration value="Disable" />
+					<xs:enumeration value="Nothing" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:element name="ComplexCondition" type="ComplexCondition">
 		<xs:annotation>
@@ -264,6 +268,41 @@
 		<xs:annotation>
 			<xs:documentation>
 			Creates code completion bindings that manage code completion for one language.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="CustomTool">
+		<xs:complexContent>
+			<xs:extension base="AbstractCodon">
+				<xs:attribute name="id" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			ID used to identify the custom tool.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="class" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Name of the ICustomTool class.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="fileNamePattern" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Regular expression that specifies the file names for which the custom tool
+			can be used. Example: "\.res(x|ources)$"
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CustomTool" type="CustomTool">
+		<xs:annotation>
+			<xs:documentation>
+			Creates CustomToolDescriptor objects.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -386,17 +425,17 @@
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="type" use="optional">
+					<xs:annotation>
+						<xs:documentation>
+			Type of the display binding (either "Primary" or "Secondary"). Default: "Primary".
+			</xs:documentation>
+					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
 							<xs:enumeration value="Primary" />
 							<xs:enumeration value="Secondary" />
 						</xs:restriction>
 					</xs:simpleType>
-					<xs:annotation>
-						<xs:documentation>
-			Type of the display binding (either "Primary" or "Secondary"). Default: "Primary".
-			</xs:documentation>
-					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="fileNamePattern" use="optional" type="xs:string">
 					<xs:annotation>
@@ -609,6 +648,14 @@
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="type" use="optional">
+					<xs:annotation>
+						<xs:documentation>
+			This attribute must be one of these values:
+			Separator, CheckBox, Item=Command, Menu (=with subitems),
+			Builder (=class implementing ISubmenuBuilder).
+			Default: Command.
+			</xs:documentation>
+					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
 							<xs:enumeration value="Separator" />
@@ -619,14 +666,6 @@
 							<xs:enumeration value="Builder" />
 						</xs:restriction>
 					</xs:simpleType>
-					<xs:annotation>
-						<xs:documentation>
-			This attribute must be one of these values:
-			Separator, CheckBox, Item=Command, Menu (=with subitems),
-			Builder (=class implementing ISubmenuBuilder).
-			Default: Command.
-			</xs:documentation>
-					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="loadclasslazy" use="optional" type="xs:string">
 					<xs:annotation>
@@ -765,7 +804,7 @@
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:complexType name="Registry">
+	<xs:complexType name="ProjectContentRegistry">
 		<xs:complexContent>
 			<xs:extension base="AbstractCodon">
 				<xs:attribute name="class" use="optional" type="xs:string">
@@ -778,10 +817,10 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:element name="Registry" type="Registry">
+	<xs:element name="ProjectContentRegistry" type="ProjectContentRegistry">
 		<xs:annotation>
 			<xs:documentation>
-			Creates RegistryDescriptor objects for the parsing service.
+			Creates ProjectContentRegistryDescriptor objects for the parsing service.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -920,6 +959,12 @@
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="type" use="optional">
+					<xs:annotation>
+						<xs:documentation>
+			This attribute must be one of these values:
+			Separator, CheckBox, Item, ComboBox, DropDownButton
+			</xs:documentation>
+					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
 							<xs:enumeration value="Separator" />
@@ -929,12 +974,6 @@
 							<xs:enumeration value="DropDownButton" />
 						</xs:restriction>
 					</xs:simpleType>
-					<xs:annotation>
-						<xs:documentation>
-			This attribute must be one of these values:
-			Separator, CheckBox, Item, ComboBox, DropDownButton
-			</xs:documentation>
-					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="loadclasslazy" use="optional" type="xs:string">
 					<xs:annotation>

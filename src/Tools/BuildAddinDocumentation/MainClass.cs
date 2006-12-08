@@ -164,7 +164,7 @@ namespace BuildAddinDocumentation
 					foreach (string child in doozer["children"].GetAttribute("childTypes").Split(';')) {
 						CreateChild(choice, "element").SetAttribute("ref", child);
 					}
-                    CreateChild(choice, "element").SetAttribute("ref", "Include");
+					CreateChild(choice, "element").SetAttribute("ref", "Include");
 				}
 				foreach (XmlElement doozerChild in doozer) {
 					if (doozerChild.Name != "attribute")
@@ -175,7 +175,13 @@ namespace BuildAddinDocumentation
 						e4.SetAttribute("use", "required");
 					else
 						e4.SetAttribute("use", "optional");
+					
 					XmlElement e5, e6;
+					
+					e5 = CreateChild(e4, "annotation");
+					e6 = CreateChild(e5, "documentation");
+					e6.InnerXml = XmlToHtml(doozerChild.InnerXml).Replace("    ", "\t");
+					
 					if (!doozerChild.HasAttribute("enum")) {
 						e4.SetAttribute("type", "xs:string");
 					} else {
@@ -186,9 +192,6 @@ namespace BuildAddinDocumentation
 							CreateChild(e6, "enumeration").SetAttribute("value", val);
 						}
 					}
-					e5 = CreateChild(e4, "annotation");
-					e6 = CreateChild(e5, "documentation");
-					e6.InnerXml = XmlToHtml(doozerChild.InnerXml).Replace("    ", "\t");
 				}
 				e = CreateChild(doc.DocumentElement, "element");
 				e.SetAttribute("name", doozer.GetAttribute("shortname"));
