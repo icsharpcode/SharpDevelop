@@ -127,7 +127,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		string lastTextContent;
 		
-		public static IList<IClass> FindFormClassParts(ParseInformation parseInfo, out IClass formClass)
+		public static IList<IClass> FindFormClassParts(ParseInformation parseInfo, out IClass formClass, out bool isFirstClassInFile)
 		{
 			#if DEBUG
 			if ((Control.ModifierKeys & (Keys.Alt | Keys.Control)) == (Keys.Alt | Keys.Control)) {
@@ -136,11 +136,13 @@ namespace ICSharpCode.FormsDesigner
 			#endif
 			
 			formClass = null;
+			isFirstClassInFile = true;
 			foreach (IClass c in parseInfo.BestCompilationUnit.Classes) {
 				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
 					formClass = c;
 					break;
 				}
+				isFirstClassInFile = false;
 			}
 			if (formClass == null)
 				throw new FormsDesignerLoadException("No class derived from Form or UserControl was found.");
@@ -170,7 +172,8 @@ namespace ICSharpCode.FormsDesigner
 			ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
 			
 			IClass formClass;
-			IList<IClass> parts = FindFormClassParts(parseInfo, out formClass);
+			bool isFirstClassInFile;
+			IList<IClass> parts = FindFormClassParts(parseInfo, out formClass, out isFirstClassInFile);
 			
 			List<KeyValuePair<string, CompilationUnit>> compilationUnits = new List<KeyValuePair<string, CompilationUnit>>();
 			bool foundInitMethod = false;
@@ -243,8 +246,15 @@ namespace ICSharpCode.FormsDesigner
 			#endif
 			
 			LoggingService.Debug("NRefactoryDesignerLoader.Parse() finished");
+			
+			if (!isFirstClassInFile) {
+				MessageService.ShowWarning("The form must be the first class in the file in order for form resources be compiled correctly.\n" +
+				                           "Please move other classes below the form class definition or move them to other files.");
+			}
+			
 			return visitor.codeCompileUnit;
 		}
+		
 		
 		/// <summary>
 		/// Fix type names and remove unused methods.

@@ -111,7 +111,8 @@ namespace Grunwald.BooBinding.Designer
 			Module mainModule = Parse(textEditorControl.FileName, lastTextContent);
 			
 			IClass formClass;
-			IList<IClass> parts = NRefactoryDesignerLoader.FindFormClassParts(parseInfo, out formClass);
+			bool isFirstClassInFile;
+			IList<IClass> parts = NRefactoryDesignerLoader.FindFormClassParts(parseInfo, out formClass, out isFirstClassInFile);
 			
 			IMethod initMethod = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(formClass);
 			
