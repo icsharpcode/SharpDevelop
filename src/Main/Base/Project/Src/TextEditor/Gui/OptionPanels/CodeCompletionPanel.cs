@@ -17,8 +17,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.CodeCompletionOptionPanel.xfrm"));
 			
+			EnableCodeCompletionSettingsGroupBox();
 			Get<CheckBox>("codeCompletionEnabled").CheckedChanged += delegate(object sender, EventArgs e) {
-				ControlDictionary["groupBox"].Enabled = Get<CheckBox>("codeCompletionEnabled").Checked;
+				EnableCodeCompletionSettingsGroupBox();
 			};
 			Get<CheckBox>("codeCompletionEnabled").Checked = CodeCompletionOptions.EnableCodeCompletion;
 			
@@ -63,6 +64,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			CodeCompletionOptions.InsightEnabled = Get<CheckBox>("useInsight").Checked;
 			CodeCompletionOptions.InsightRefreshOnComma = Get<CheckBox>("refreshInsightOnComma").Checked;
 			return base.StorePanelContents();
+		}
+		
+		void EnableCodeCompletionSettingsGroupBox()
+		{
+			ControlDictionary["groupBox"].Enabled = Get<CheckBox>("codeCompletionEnabled").Checked;
 		}
 	}
 }
