@@ -64,7 +64,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		#region Show error functions
 		public void ShowError(Exception ex)
 		{
-			MessageService.ShowError(ex);
+			MessageService.ShowError(ex.ToString());
 		}
 		
 		public void ShowError(string message)
@@ -74,7 +74,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		public void ShowError(Exception ex, string message)
 		{
-			MessageService.ShowError(ex, message);
+			MessageService.ShowError(message + Environment.NewLine + ex.ToString());
 		}
 		#endregion
 		
