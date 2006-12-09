@@ -94,9 +94,9 @@ namespace SearchAndReplace
 					FindNextInSelection();
 				}
 			} else {
-				using (AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search"))
 				{
-					SearchReplaceManager.FindNext();
+					SearchReplaceManager.FindNext(monitor);
 				}
 			}
 			Focus();
@@ -110,9 +110,9 @@ namespace SearchAndReplace
 					RunAllInSelection(0);
 				}
 			} else {
-				using (AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search"))
 				{
-					SearchInFilesManager.FindAll();
+					SearchInFilesManager.FindAll(monitor);
 				}
 			}
 		}
@@ -125,9 +125,9 @@ namespace SearchAndReplace
 					RunAllInSelection(1);
 				}
 			} else {
-				using (AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search"))
 				{
-					SearchReplaceManager.MarkAll();
+					SearchReplaceManager.MarkAll(monitor);
 				}
 			}
 		}
@@ -140,9 +140,9 @@ namespace SearchAndReplace
 					RunAllInSelection(2);
 				}
 			} else {
-				using (AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search"))
 				{
-					SearchReplaceManager.ReplaceAll();
+					SearchReplaceManager.ReplaceAll(monitor);
 				}
 			}
 		}
@@ -155,9 +155,9 @@ namespace SearchAndReplace
 					ReplaceInSelection();
 				}
 			} else {
-				using (AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search"))
 				{
-					SearchReplaceManager.Replace();
+					SearchReplaceManager.Replace(monitor);
 				}
 			}
 			Focus();
@@ -311,9 +311,9 @@ namespace SearchAndReplace
 				ignoreSelectionChanges = true;
 				if (findFirst) {
 					findFirst = false;
-					SearchReplaceManager.FindFirstInSelection(startOffset, endOffset - startOffset);
+					SearchReplaceManager.FindFirstInSelection(startOffset, endOffset - startOffset, null);
 				} else {
-					findFirst = !SearchReplaceManager.FindNextInSelection();
+					findFirst = !SearchReplaceManager.FindNextInSelection(null);
 					if (findFirst) {
 						SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
 					}
@@ -409,6 +409,8 @@ namespace SearchAndReplace
 		/// </summary>
 		void RunAllInSelection(int action)
 		{
+			const IProgressMonitor monitor = null;
+			
 			int startOffset = Math.Min(selection.Offset, selection.EndOffset);
 			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
 			
@@ -418,11 +420,11 @@ namespace SearchAndReplace
 			try {
 				ignoreSelectionChanges = true;
 				if (action == 0)
-					SearchInFilesManager.FindAll(startOffset, endOffset - startOffset);
+					SearchInFilesManager.FindAll(startOffset, endOffset - startOffset, monitor);
 				else if (action == 1)
-					SearchReplaceManager.MarkAll(startOffset, endOffset - startOffset);
+					SearchReplaceManager.MarkAll(startOffset, endOffset - startOffset, monitor);
 				else if (action == 2)
-					SearchReplaceManager.ReplaceAll(startOffset, endOffset - startOffset);
+					SearchReplaceManager.ReplaceAll(startOffset, endOffset - startOffset, monitor);
 				SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
 			} finally {
 				ignoreSelectionChanges = false;
@@ -442,9 +444,9 @@ namespace SearchAndReplace
 				ignoreSelectionChanges = true;
 				if (findFirst) {
 					findFirst = false;
-					SearchReplaceManager.ReplaceFirstInSelection(startOffset, endOffset - startOffset);
+					SearchReplaceManager.ReplaceFirstInSelection(startOffset, endOffset - startOffset, null);
 				} else {
-					findFirst = !SearchReplaceManager.ReplaceNextInSelection();
+					findFirst = !SearchReplaceManager.ReplaceNextInSelection(null);
 					if (findFirst) {
 						SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
 					}

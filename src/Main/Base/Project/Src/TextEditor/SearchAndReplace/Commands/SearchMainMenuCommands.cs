@@ -43,7 +43,7 @@ namespace SearchAndReplace
 		public override void Run()
 		{
 			if (SearchOptions.CurrentFindPattern.Length > 0) {
-				SearchReplaceManager.FindNext();
+				SearchReplaceManager.FindNext(null);
 			} else {
 				Find find = new Find();
 				find.Run();
@@ -96,7 +96,7 @@ namespace SearchAndReplace
 				if (SearchOptions.DocumentIteratorType == DocumentIteratorType.CurrentSelection) {
 					SearchOptions.DocumentIteratorType = DocumentIteratorType.CurrentDocument;
 				}
-				SearchReplaceManager.FindNext();
+				SearchReplaceManager.FindNext(null);
 			}
 		}
 	}

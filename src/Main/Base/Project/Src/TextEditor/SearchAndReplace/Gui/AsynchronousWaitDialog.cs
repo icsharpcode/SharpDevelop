@@ -244,7 +244,12 @@ namespace SearchAndReplace
 							if (value) {
 								dlg.BeginInvoke(new MethodInvoker(dlg.Hide));
 							} else {
-								dlg.BeginInvoke(new MethodInvoker(dlg.Show));
+								dlg.BeginInvoke(new MethodInvoker(delegate {
+								                                  	Thread.Sleep(100);
+								                                  	if (showingDialog) {
+								                                  		dlg.Show();
+								                                  	}
+								                                  }));
 							}
 						}
 					}

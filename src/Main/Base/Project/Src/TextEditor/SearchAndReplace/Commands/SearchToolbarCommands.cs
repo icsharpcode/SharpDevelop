@@ -44,7 +44,7 @@ namespace SearchAndReplace
 				LoggingService.Debug("FindComboBox.CommitSearch()");
 				SearchOptions.DocumentIteratorType = DocumentIteratorType.CurrentDocument;
 				SearchOptions.FindPattern = comboBox.Text;
-				SearchReplaceManager.FindNext();
+				SearchReplaceManager.FindNext(null);
 				comboBox.Focus();
 			}
 		}

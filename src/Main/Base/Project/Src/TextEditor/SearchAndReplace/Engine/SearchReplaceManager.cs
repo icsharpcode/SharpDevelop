@@ -35,7 +35,7 @@ namespace SearchAndReplace
 			find.DocumentIterator = SearchReplaceUtilities.CreateDocumentIterator(SearchOptions.DocumentIteratorType);
 		}
 		
-		public static void Replace()
+		public static void Replace(IProgressMonitor monitor)
 		{
 			SetSearchOptions();
 			if (lastResult != null && WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
@@ -59,18 +59,18 @@ namespace SearchAndReplace
 					}
 				}
 			}
-			FindNext();
+			FindNext(monitor);
 		}
 		
 		static TextSelection textSelection;
 		
-		public static void ReplaceFirstInSelection(int offset, int length)
+		public static void ReplaceFirstInSelection(int offset, int length, IProgressMonitor monitor)
 		{
 			SetSearchOptions();
-			FindFirstInSelection(offset, length);
+			FindFirstInSelection(offset, length, monitor);
 		}
 		
-		public static bool ReplaceNextInSelection()
+		public static bool ReplaceNextInSelection(IProgressMonitor monitor)
 		{
 			if (lastResult != null && WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
 				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
@@ -95,10 +95,10 @@ namespace SearchAndReplace
 					}
 				}
 			}
-			return FindNextInSelection();
+			return FindNextInSelection(monitor);
 		}
 		
-		public static void MarkAll()
+		public static void MarkAll(IProgressMonitor monitor)
 		{
 			SetSearchOptions();
 			ClearSelection();
@@ -120,10 +120,10 @@ namespace SearchAndReplace
 			foreach (TextEditorControl ctl in textAreas) {
 				ctl.Refresh();
 			}
-			ShowMarkDoneMessage(count);
+			ShowMarkDoneMessage(count, monitor);
 		}
 		
-		public static void MarkAll(int offset, int length)
+		public static void MarkAll(int offset, int length, IProgressMonitor monitor)
 		{
 			SetSearchOptions();
 			find.Reset();
@@ -145,7 +145,7 @@ namespace SearchAndReplace
 			foreach (TextEditorControl ctl in textAreas) {
 				ctl.Refresh();
 			}
-			ShowMarkDoneMessage(count);
+			ShowMarkDoneMessage(count, monitor);
 		}
 		
 		static void MarkResult(List<TextEditorControl> textAreas, SearchResult result)
@@ -164,25 +164,29 @@ namespace SearchAndReplace
 			}
 		}
 		
-		static void ShowMarkDoneMessage(int count)
+		static void ShowMarkDoneMessage(int count, IProgressMonitor monitor)
 		{
 			if (count == 0) {
-				ShowNotFoundMessage();
+				ShowNotFoundMessage(monitor);
 			} else {
+				if (monitor != null) monitor.ShowingDialog = true;
 				MessageService.ShowMessage("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.MarkAllDone}", "${res:Global.FinishedCaptionText}");
+				if (monitor != null) monitor.ShowingDialog = false;
 			}
 		}
 		
-		static void ShowReplaceDoneMessage(int count)
+		static void ShowReplaceDoneMessage(int count, IProgressMonitor monitor)
 		{
 			if (count == 0) {
-				ShowNotFoundMessage();
+				ShowNotFoundMessage(monitor);
 			} else {
+				if (monitor != null) monitor.ShowingDialog = true;
 				MessageService.ShowMessage("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone}", "${res:Global.FinishedCaptionText}");
+				if (monitor != null) monitor.ShowingDialog = false;
 			}
 		}
 		
-		public static void ReplaceAll()
+		public static void ReplaceAll(IProgressMonitor monitor)
 		{
 			SetSearchOptions();
 			ClearSelection();
@@ -202,7 +206,7 @@ namespace SearchAndReplace
 							ta.Refresh();
 						}
 					}
-					ShowReplaceDoneMessage(count);
+					ShowReplaceDoneMessage(count, monitor);
 					find.Reset();
 					return;
 				} else {
@@ -230,7 +234,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public static void ReplaceAll(int offset, int length)
+		public static void ReplaceAll(int offset, int length, IProgressMonitor monitor)
 		{
 			SetSearchOptions();
 			find.Reset();
@@ -241,7 +245,7 @@ namespace SearchAndReplace
 			for (int count = 0;; count++) {
 				SearchResult result = find.FindNext(offset, length);
 				if (result == null) {
-					ShowReplaceDoneMessage(count);
+					ShowReplaceDoneMessage(count, monitor);
 					return;
 				}
 				
@@ -260,7 +264,8 @@ namespace SearchAndReplace
 		}
 		
 		static SearchResult lastResult = null;
-		public static void FindNext()
+		
+		public static void FindNext(IProgressMonitor monitor)
 		{
 			SetSearchOptions();
 			if (find == null ||
@@ -279,7 +284,7 @@ namespace SearchAndReplace
 			while (textArea == null) {
 				SearchResult result = find.FindNext();
 				if (result == null) {
-					ShowNotFoundMessage();
+					ShowNotFoundMessage(monitor);
 					find.Reset();
 					lastResult = null;
 					return;
@@ -302,7 +307,7 @@ namespace SearchAndReplace
 		
 		static bool foundAtLeastOneItem = false;
 
-		public static void FindFirstInSelection(int offset, int length)
+		public static void FindFirstInSelection(int offset, int length, IProgressMonitor monitor)
 		{
 			foundAtLeastOneItem = false;
 			textSelection = null;
@@ -321,17 +326,17 @@ namespace SearchAndReplace
 			}
 			
 			textSelection = new TextSelection(offset, length);
-			FindNextInSelection();
+			FindNextInSelection(monitor);
 		}
 
-		public static bool FindNextInSelection()
+		public static bool FindNextInSelection(IProgressMonitor monitor)
 		{
 			TextEditorControl textArea = null;
 			while (textArea == null) {
 				SearchResult result = find.FindNext(textSelection.Offset, textSelection.Length);
 				if (result == null) {
 					if (!foundAtLeastOneItem) {
-						ShowNotFoundMessage();
+						ShowNotFoundMessage(monitor);
 					}
 					find.Reset();
 					lastResult = null;
@@ -354,13 +359,15 @@ namespace SearchAndReplace
 			return true;
 		}
 		
-		static void ShowNotFoundMessage()
+		static void ShowNotFoundMessage(IProgressMonitor monitor)
 		{
+			if (monitor != null) monitor.ShowingDialog = true;
 			MessageBox.Show((Form)WorkbenchSingleton.Workbench,
 			                ResourceService.GetString("Dialog.NewProject.SearchReplace.SearchStringNotFound"),
 			                ResourceService.GetString("Dialog.NewProject.SearchReplace.SearchStringNotFound.Title"),
 			                MessageBoxButtons.OK,
 			                MessageBoxIcon.Information);
+			if (monitor != null) monitor.ShowingDialog = false;
 		}
 		
 		static TextEditorControl OpenTextArea(string fileName)

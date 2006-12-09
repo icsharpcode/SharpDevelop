@@ -69,7 +69,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public static void FindAll()
+		public static void FindAll(IProgressMonitor monitor)
 		{
 			if (!InitializeSearchInFiles()) {
 				return;
@@ -86,7 +86,7 @@ namespace SearchAndReplace
 			FinishSearchInFiles(results);
 		}
 		
-		public static void FindAll(int offset, int length)
+		public static void FindAll(int offset, int length, IProgressMonitor monitor)
 		{
 			if (!InitializeSearchInFiles()) {
 				return;
