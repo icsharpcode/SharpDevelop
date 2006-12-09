@@ -371,8 +371,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			string parsedFileName = StringParser.Parse(newfile.Name);
 			// Parse twice so that tags used in included standard header are parsed
 			string parsedContent = StringParser.Parse(StringParser.Parse(content));
-			if (parsedFileName.StartsWith("/") || parsedFileName.StartsWith("\\"))
+			
+			// when newFile.Name is "${Path}/${FileName}", there might be a useless '/' in front of the file name
+			// if the file is created when no project is opened. So we remove single '/' or '\', but not double
+			// '\\' (project is saved on network share).
+			if (parsedFileName.StartsWith("/") && !parsedFileName.StartsWith("//")
+			    || parsedFileName.StartsWith("\\") && !parsedFileName.StartsWith("\\\\"))
+			{
 				parsedFileName = parsedFileName.Substring(1);
+			}
+			
 			if (newfile.IsDependentFile && Path.IsPathRooted(parsedFileName)) {
 				Directory.CreateDirectory(Path.GetDirectoryName(parsedFileName));
 				if (binaryContent != null)
