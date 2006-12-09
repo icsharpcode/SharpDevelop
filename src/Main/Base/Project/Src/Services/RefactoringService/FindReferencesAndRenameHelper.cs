@@ -72,9 +72,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			ProvidedDocumentInformation documentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(fileName);
 			int offset = documentInformation.CreateDocument().PositionToOffset(new Point(region.BeginColumn - 1, region.BeginLine - 1));
 			string text = documentInformation.TextBuffer.GetText(offset, Math.Min(name.Length + 30, documentInformation.TextBuffer.Length - offset - 1));
-			int offsetChange = text.IndexOf(name);
-			if (offsetChange < 0)
-				return;
+			int offsetChange = -1;
+			do {
+				offsetChange = text.IndexOf(name, offsetChange + 1);
+				if (offsetChange < 0 || offsetChange >= text.Length)
+					return;
+			} while (offsetChange + name.Length < text.Length
+			         && char.IsLetterOrDigit(text[offsetChange + name.Length]));
 			offset += offsetChange;
 			foreach (Reference r in list) {
 				if (r.Offset == offset)
