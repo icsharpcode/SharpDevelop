@@ -40,6 +40,5 @@ namespace ICSharpCode.CodeCoverage
 			}
 			base.OnAfterSelect(e);
 		}
-		
 	}
 }

@@ -20,6 +20,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		public CodeCoverageNamespaceTreeNode(string namespacePrefix, string name, List<CodeCoverageMethod> methods) : base(name, methods, CodeCoverageImageListIndex.Namespace)
 		{
+			sortOrder = 1;
 			this.namespacePrefix = namespacePrefix;
 		}
 		
@@ -40,6 +41,9 @@ namespace ICSharpCode.CodeCoverage
 				CodeCoverageClassTreeNode classNode = new CodeCoverageClassTreeNode(className, CodeCoverageMethod.GetMethods(Methods, fullNamespace, className));
 				classNode.AddTo(this);
 			}
+			
+			// Sort nodes added.
+			SortChildNodes();
 		}
 	}
 }

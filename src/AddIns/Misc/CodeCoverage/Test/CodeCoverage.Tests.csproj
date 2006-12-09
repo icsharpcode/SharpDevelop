@@ -51,6 +51,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CodeCoverageResultsTestFixture.cs" />
     <Compile Include="CodeCoverageTreeViewTestFixture.cs" />
+    <Compile Include="DerivedCodeCoverageTreeView.cs" />
     <Compile Include="ModuleVisitedSequencePointsTestFixture.cs" />
     <Compile Include="AddCodeCoverageMarkersTestFixture.cs" />
     <Compile Include="MockDocument.cs" />
@@ -64,6 +65,8 @@
     <Compile Include="CodeCoverageMarkersInvalidEndColumnTestFixture.cs" />
     <Compile Include="NCoverSettingsTestFixture.cs" />
     <None Include="Strings.resources" />
+    <Compile Include="TreeViewAfterSelectTestFixture.cs" />
+    <Compile Include="TreeViewSortingTestFixture.cs" />
     <Compile Include="ZeroCodeCoverageTreeViewTestFixture.cs" />
     <Compile Include="InvalidSequencePointDataTestFixture.cs" />
     <Compile Include="MethodHasNoNamespaceTestFixture.cs" />

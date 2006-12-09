@@ -34,6 +34,9 @@ namespace ICSharpCode.CodeCoverage
 				CodeCoverageMethodTreeNode node = new CodeCoverageMethodTreeNode(method);
 				node.AddTo(this);
 			}
+			
+			// Sort nodes.
+			SortChildNodes();
 		}
 	}
 }

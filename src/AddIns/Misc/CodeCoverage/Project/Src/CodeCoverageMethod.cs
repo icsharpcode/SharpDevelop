@@ -191,20 +191,6 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		/// <summary>
-		/// Gets only those methods whose namespaces exactly match the specified string.
-		/// </summary>
-		public static List<CodeCoverageMethod> GetMethods(List<CodeCoverageMethod> methods, string ns)
-		{
-			List<CodeCoverageMethod> matchedMethods = new List<CodeCoverageMethod>();
-			foreach (CodeCoverageMethod method in methods) {
-				if (method.ClassNamespace == ns) {
-					matchedMethods.Add(method);
-				}
-			}
-			return matchedMethods;
-		}
-		
-		/// <summary>
 		/// Gets only those methods for the specified class.
 		/// </summary>
 		public static List<CodeCoverageMethod> GetMethods(List<CodeCoverageMethod> methods, string ns, string className)

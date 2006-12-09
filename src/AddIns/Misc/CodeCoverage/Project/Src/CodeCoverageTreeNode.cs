@@ -33,6 +33,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		public CodeCoverageTreeNode(string name, CodeCoverageImageListIndex index, int visitedCount, int notVisitedCount)
 		{
+			sortOrder = 10;
 			this.visitedCount = visitedCount;
 			this.notVisitedCount = notVisitedCount;
 			
@@ -62,6 +63,25 @@ namespace ICSharpCode.CodeCoverage
 				notVisitedCount = value;
 				SetText();
 			}
+		}
+		
+		/// <summary>
+		/// Gets the string to use when sorting the code coverage tree node. 
+		/// </summary>
+		public override string CompareString {
+			get { 
+				return Name;
+			}
+		}
+		
+		/// <summary>
+		/// Sorts the child nodes of this node. This sort is not
+		/// recursive so it only sorts the immediate children.
+		/// </summary>
+		protected void SortChildNodes()
+		{
+			ExtTreeView treeView = (ExtTreeView)TreeView;
+			treeView.SortNodes(Nodes, false);
 		}
 		
 		static string GetPercentage(int visitedCount, int totalCount)

@@ -99,6 +99,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 		{
 			fooTestMethodTreeNode.VisitedCount = 1;
 			Assert.AreEqual(CodeCoverageImageListIndex.Method, (CodeCoverageImageListIndex)(fooTestMethodTreeNode.ImageIndex));
+			Assert.AreEqual(1, fooTestMethodTreeNode.VisitedCount);
 		}
 
 		[Test]
@@ -107,6 +108,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 			fooTestMethodTreeNode.NotVisitedCount = 0;
 			fooTestMethodTreeNode.VisitedCount = 2;
 			Assert.AreEqual(Color.Empty, fooTestMethodTreeNode.ForeColor);
+			Assert.AreEqual(0, fooTestMethodTreeNode.NotVisitedCount);
 		}
 	}
 }

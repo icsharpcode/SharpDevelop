@@ -10,6 +10,10 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.CodeCoverage
 {
+	/// <summary>
+	/// Represents an assembly in the code coverage tree view. NCover 
+	/// refers to it as a module. 
+	/// </summary>
 	public class CodeCoverageModuleTreeNode : CodeCoverageTreeNode
 	{
 		CodeCoverageModule module;
@@ -36,7 +40,9 @@ namespace ICSharpCode.CodeCoverage
 				CodeCoverageClassTreeNode classNode = new CodeCoverageClassTreeNode(className, CodeCoverageMethod.GetMethods(module.Methods, String.Empty, className));
 				classNode.AddTo(this);
 			}
-
+			
+			// Sort these nodes.
+			SortChildNodes();
 		}
 	}
 }
