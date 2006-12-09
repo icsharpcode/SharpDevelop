@@ -86,12 +86,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static IEnumerable<IProjectContent> AllProjectContentsWithReferences {
 			get {
-				foreach (IProjectContent pc in AllProjectContents) {
-					yield return pc;
-				}
-				foreach (IProjectContent pc in defaultProjectContentRegistry.GetLoadedProjectContents()) {
-					yield return pc;
-				}
+				return Linq.Distinct(Linq.Concat(AllProjectContents, defaultProjectContentRegistry.GetLoadedProjectContents()));
 			}
 		}
 		

@@ -56,6 +56,13 @@ namespace ICSharpCode.FormsDesigner.Gui
 						continue;
 				}
 				foreach (IClass c in pc.Classes) {
+					if (!c.Methods.Exists(delegate (IMethod method) {
+					                      	return method.IsConstructor && method.IsPublic && method.Parameters.Count == 0;
+					                      }))
+					{
+						// do not include classes that don't have a public parameterless constructor
+						continue;
+					}
 					foreach (IClass subClass in c.ClassInheritanceTree) {
 						if (subClass.FullyQualifiedName == "System.Windows.Forms.Form") {
 							break; // is not a design component

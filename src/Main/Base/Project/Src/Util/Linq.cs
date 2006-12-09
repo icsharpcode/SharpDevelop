@@ -104,5 +104,41 @@ namespace ICSharpCode.SharpDevelop
 			}
 			return count;
 		}
+		
+		/// <summary>
+		/// Concatenates the specified enumerables.
+		/// </summary>
+		public static IEnumerable<T> Concat<T>(params IEnumerable<T>[] inputs)
+		{
+			return Concat(inputs as IEnumerable<IEnumerable<T>>);
+		}
+		
+		/// <summary>
+		/// Concatenates the specified enumerables.
+		/// </summary>
+		public static IEnumerable<T> Concat<T>(IEnumerable<IEnumerable<T>> inputs)
+		{
+			foreach (IEnumerable<T> input in inputs) {
+				foreach (T element in input) {
+					yield return element;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Outputs distinct elements only, filtering all duplicates.
+		/// </summary>
+		public static IEnumerable<T> Distinct<T>(IEnumerable<T> input)
+		{
+			// store elements already seen
+			Dictionary<T, object> elements = new Dictionary<T, object>();
+			
+			foreach (T element in input) {
+				if (!elements.ContainsKey(element)) {
+					elements.Add(element, null);
+					yield return element;
+				}
+			}
+		}
 	}
 }
