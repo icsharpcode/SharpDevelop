@@ -21,17 +21,24 @@ namespace UnitTesting.Tests.Tree
 	/// a new solution is opened.
 	/// </summary>
 	[TestFixture]
-	public class SolutionOpenedTestFixture : UnitTestsPad
+	public class SolutionOpenedTestFixture
 	{
+		DerivedUnitTestsPad pad;
 		Solution solution;
 		MSBuildBasedProject project;
-		MockProjectContent projectContent = new MockProjectContent();
+		
+		[TestFixtureSetUp]
+		public void SetUpFixture()
+		{
+			pad = new DerivedUnitTestsPad();
+		}
 		
 		[SetUp]
 		public void Init()
 		{
 			solution = new Solution();
 			project = new MockCSharpProject();
+			MockProjectContent projectContent = pad.ProjectContent;
 			projectContent.Project = project;
 			projectContent.Language = LanguageProperties.None;
 			ReferenceProjectItem refProjectItem = new ReferenceProjectItem(project);
@@ -39,29 +46,37 @@ namespace UnitTesting.Tests.Tree
 			ProjectService.AddProjectItem(project, refProjectItem);
 			solution.Folders.Add(project);
 			
-			base.SolutionLoaded(solution);
+			pad.CallSolutionLoaded(solution);
+		}
+		
+		[TestFixtureTearDown]
+		public void TearDownFixture()
+		{
+			if (pad != null) {
+				pad.Dispose();
+			}
 		}
 		
 		[Test]
 		public void TestTreeHasNodes()
 		{
-			Assert.AreEqual(1, base.TestTreeView.Nodes.Count);
+			Assert.AreEqual(1, pad.TestTreeView.Nodes.Count);
 		}
 		
 		[Test]
 		public void CloseSolution()
 		{
-			base.SolutionClosed();
+			pad.CallSolutionClosed();
 			
-			Assert.AreEqual(0, base.TestTreeView.Nodes.Count);
+			Assert.AreEqual(0, pad.TestTreeView.Nodes.Count);
 		}
 		
 		[Test]
 		public void SolutionFolderRemoved()
 		{
-			base.SolutionFolderRemoved(project);
+			pad.CallSolutionFolderRemoved(project);
 			
-			Assert.AreEqual(0, base.TestTreeView.Nodes.Count);
+			Assert.AreEqual(0, pad.TestTreeView.Nodes.Count);
 		}
 		
 		[Test]
@@ -73,9 +88,9 @@ namespace UnitTesting.Tests.Tree
 			refProjectItem.Include = "NUnit.Framework";
 			ProjectService.AddProjectItem(project, refProjectItem);
 			
-			base.ProjectAdded(project);
+			pad.CallProjectAdded(project);
 			
-			Assert.AreEqual(2, base.TestTreeView.Nodes.Count);
+			Assert.AreEqual(2, pad.TestTreeView.Nodes.Count);
 		}
 		
 		[Test]
@@ -84,9 +99,9 @@ namespace UnitTesting.Tests.Tree
 			ProjectItem refProjectItem = project.Items[0];
 			ProjectService.RemoveProjectItem(project, refProjectItem);
 			
-			base.ProjectItemRemoved(refProjectItem);
+			pad.CallProjectItemRemoved(refProjectItem);
 			
-			Assert.AreEqual(0, base.TestTreeView.Nodes.Count);
+			Assert.AreEqual(0, pad.TestTreeView.Nodes.Count);
 		}
 		
 		[Test]
@@ -95,20 +110,20 @@ namespace UnitTesting.Tests.Tree
 			IProject project = new MockCSharpProject();
 			project.Name = "NewProject";
 			
-			base.ProjectAdded(project);
+			pad.CallProjectAdded(project);
 			
 			// Project should not be added at first.
-			Assert.AreEqual(1, base.TestTreeView.Nodes.Count);
+			Assert.AreEqual(1, pad.TestTreeView.Nodes.Count);
 			
 			ReferenceProjectItem refProjectItem = new ReferenceProjectItem(project);
 			refProjectItem.Include = "NUnit.Framework";
 			ProjectService.AddProjectItem(project, refProjectItem);
 			
-			base.ProjectItemAdded(refProjectItem);
+			pad.CallProjectItemAdded(refProjectItem);
 			
 			// Project should be added since it has a reference to
 			// NUnit.
-			Assert.AreEqual(2, base.TestTreeView.Nodes.Count);
+			Assert.AreEqual(2, pad.TestTreeView.Nodes.Count);
 		}
 		
 		[Test]
@@ -120,32 +135,32 @@ namespace UnitTesting.Tests.Tree
 			refProjectItem.Include = "NUnit.Framework";
 			ProjectService.AddProjectItem(project, refProjectItem);
 			
-			base.ProjectAdded(project);
+			pad.CallProjectAdded(project);
 			
 			// Add a second NUnit.Framework reference.
 			refProjectItem = new ReferenceProjectItem(project);
 			refProjectItem.Include = "NUnit.Framework";
 			ProjectService.AddProjectItem(project, refProjectItem);
 			
-			base.ProjectItemAdded(refProjectItem);
+			pad.CallProjectItemAdded(refProjectItem);
 
-			Assert.AreEqual(2, base.TestTreeView.Nodes.Count);
+			Assert.AreEqual(2, pad.TestTreeView.Nodes.Count);
 		}
 		
 		[Test]
 		public void ParserInfoUpdated()
 		{
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
+			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(pad.ProjectContent);
 			MockClass mockClass = new MockClass("MyTestFixture");
 			mockClass.Attributes.Add(new MockAttribute("TestFixture"));
-			mockClass.ProjectContent = projectContent;
+			mockClass.ProjectContent = pad.ProjectContent;
 			mockClass.SetCompoundClass(mockClass);
 			newUnit.Classes.Add(mockClass);
 
-			ExtTreeNode rootNode = (ExtTreeNode)base.TestTreeView.Nodes[0];
+			ExtTreeNode rootNode = (ExtTreeNode)pad.TestTreeView.Nodes[0];
 			rootNode.Expanding();
 
-			base.UpdateParseInfo(null, newUnit);
+			pad.CallUpdateParseInfo(null, newUnit);
 			
 			Assert.AreEqual(1, rootNode.Nodes.Count);
 			Assert.AreEqual("MyTestFixture", rootNode.Nodes[0].Text);
@@ -154,17 +169,17 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void GetTestProjectFromProject()
 		{
-			TestProjectTreeNode projectNode = (TestProjectTreeNode)base.TestTreeView.Nodes[0];
+			TestProjectTreeNode projectNode = (TestProjectTreeNode)pad.TestTreeView.Nodes[0];
 			TestProject expectedTestProject = projectNode.TestProject;
 			
-			Assert.AreSame(expectedTestProject, base.TestTreeView.GetTestProject(project));
+			Assert.AreSame(expectedTestProject, pad.TestTreeView.GetTestProject(project));
 		}
 		
 		[Test]
 		public void GetTestProjectFromUnknownProject()
 		{
 			IProject project = new MockCSharpProject();
-			Assert.IsNull(base.TestTreeView.GetTestProject(project));
+			Assert.IsNull(pad.TestTreeView.GetTestProject(project));
 		}
 		
 		/// <summary>
@@ -175,7 +190,7 @@ namespace UnitTesting.Tests.Tree
 		public void ClassNodeAddedAfterProjectNodeExpanded()
 		{
 			// Expand the project node.
-			TestProjectTreeNode projectNode = (TestProjectTreeNode)base.TestTreeView.Nodes[0];
+			TestProjectTreeNode projectNode = (TestProjectTreeNode)pad.TestTreeView.Nodes[0];
 			projectNode.Expanding();
 			
 			// Add a new class to a non-empty namespace so it gets
@@ -203,7 +218,7 @@ namespace UnitTesting.Tests.Tree
 			ClassNodeAddedAfterProjectNodeExpanded();
 			
 			// Expand the namespace node.
-			TestProjectTreeNode projectNode = (TestProjectTreeNode)base.TestTreeView.Nodes[0];
+			TestProjectTreeNode projectNode = (TestProjectTreeNode)pad.TestTreeView.Nodes[0];
 			TestNamespaceTreeNode parentNamespaceNode = (TestNamespaceTreeNode)projectNode.Nodes[0];
 			parentNamespaceNode.Expanding();
 			
@@ -239,7 +254,7 @@ namespace UnitTesting.Tests.Tree
 		public void EmptyNamespaceNodesRemoved()
 		{
 			// Expand the project node.
-			TestProjectTreeNode projectNode = (TestProjectTreeNode)base.TestTreeView.Nodes[0];
+			TestProjectTreeNode projectNode = (TestProjectTreeNode)pad.TestTreeView.Nodes[0];
 			projectNode.Expanding();
 			
 			// Add a new class to a non-empty namespace so it gets
@@ -288,7 +303,7 @@ namespace UnitTesting.Tests.Tree
 		public void EmptyNamespaceNodesRemovedWhenChildNamespaceNodeNotExpanded()
 		{
 			// Expand the project node.
-			TestProjectTreeNode projectNode = (TestProjectTreeNode)base.TestTreeView.Nodes[0];
+			TestProjectTreeNode projectNode = (TestProjectTreeNode)pad.TestTreeView.Nodes[0];
 			projectNode.Expanding();
 			
 			// Add a new class to a non-empty namespace so it gets
@@ -314,35 +329,16 @@ namespace UnitTesting.Tests.Tree
 			                "Namespace nodes should have been removed from project node.");
 		}
 		
-		/// <summary>
-		/// Returns a dummy toolstrip so the UnitTestsPad can be
-		/// tested. If the default method is called the AddInTree
-		/// is referenced which is not available during testing.
-		/// </summary>
-		protected override ToolStrip CreateToolStrip(string name)
+		[Test]
+		public void IsParserLoadingSolutionCalled()
 		{
-			return new ToolStrip();
+			Assert.IsTrue(pad.IsParserLoadingSolutionCalled);
 		}
 		
-		/// <summary>
-		/// Returns a dummy ContextMenuStrip so the UnitTestsPad can be
-		/// tested. If the default method is called the AddInTree
-		/// is referenced which is not available during testing.
-		/// </summary>
-		protected override ContextMenuStrip CreateContextMenu(string name)
+		[Test]
+		public void GetOpenSolutionCalled()
 		{
-			return new ContextMenuStrip();
-		}
-		
-		/// <summary>
-		/// Returns a dummy tree view where we can mock the
-		/// IProjectContent that will be used by the TestTreeView.
-		/// </summary>
-		protected override TestTreeView CreateTestTreeView()
-		{
-			DummyParserServiceTestTreeView treeView = new DummyParserServiceTestTreeView();
-			treeView.AddProjectContentForProject(projectContent);
-			return treeView;
+			Assert.IsTrue(pad.GetOpenSolutionCalled);
 		}
 	}
 }

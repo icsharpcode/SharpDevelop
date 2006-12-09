@@ -41,13 +41,21 @@ namespace ICSharpCode.UnitTesting
 			toolStrip.GripStyle = ToolStripGripStyle.Hidden;
 			panel.Controls.Add(toolStrip);
 
+			// Add the load solution projects thread ended handler before
+			// we try to display the open solution so the event does not
+			// get missed.
+			ParserService.LoadSolutionProjectsThreadEnded += LoadSolutionProjectsThreadEnded;
+			OnAddedLoadSolutionProjectsThreadEndedHandler();
+
 			// Display currently open solution.
-			Solution openSolution = ProjectService.OpenSolution;
-			if (openSolution != null) {
-				SolutionLoaded(openSolution);
+
+			if (!IsParserLoadingSolution) {
+				Solution openSolution = GetOpenSolution();
+				if (openSolution != null) {
+					SolutionLoaded(openSolution);
+				}
 			}
 			
-			ParserService.LoadSolutionProjectsThreadEnded += LoadSolutionProjectsThreadEnded;
 			ParserService.ParseInformationUpdated += ParseInformationUpdated;
 			ProjectService.SolutionClosed += SolutionClosed;
 			ProjectService.SolutionFolderRemoved += SolutionFolderRemoved;
@@ -161,24 +169,65 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
+		/// <summary>
+		/// Protected method so we can test this method.
+		/// </summary>
 		protected void UpdateParseInfo(ICompilationUnit oldUnit, ICompilationUnit newUnit)
 		{
 			treeView.UpdateParseInfo(oldUnit, newUnit);
 		}
 		
+		/// <summary>
+		/// Virtual method so we can override this method and return
+		/// a dummy toolstrip when testing.
+		/// </summary>
 		protected virtual ToolStrip CreateToolStrip(string name)
 		{
 			return ToolbarService.CreateToolStrip(treeView, "/SharpDevelop/Pads/UnitTestsPad/Toolbar");
 		}
 		
+		/// <summary>
+		/// Virtual method so we can override this method and return
+		/// a dummy ContextMenuStrip when testing.
+		/// </summary>
 		protected virtual ContextMenuStrip CreateContextMenu(string name)
 		{
 			return MenuService.CreateContextMenu(treeView, "/SharpDevelop/Pads/UnitTestsPad/ContextMenu");
 		}
 		
+		/// <summary>
+		/// Virtual method so we can override this method and return
+		/// a dummy TestTreeView when testing.
+		/// </summary>
 		protected virtual TestTreeView CreateTestTreeView()
 		{
 			return new TestTreeView();
+		}
+		
+		/// <summary>
+		/// Gets the currently open solution.
+		/// </summary>
+		protected virtual Solution GetOpenSolution()
+		{
+			return ProjectService.OpenSolution;
+		}
+		
+		/// <summary>
+		/// Determines whether the parser is currently still loading the
+		/// solution.
+		/// </summary>
+		protected virtual bool IsParserLoadingSolution {
+			get {
+				return ParserService.LoadSolutionProjectsThreadRunning;
+			}
+		}
+		
+		/// <summary>
+		/// Indicates that an event handler for the ParserService's 
+		/// LoadSolutionProjectsThreadEnded event has been added
+		/// </summary>
+		protected virtual void OnAddedLoadSolutionProjectsThreadEndedHandler()
+		{
 		}
 		
 		void SolutionClosed(object source, EventArgs e)
