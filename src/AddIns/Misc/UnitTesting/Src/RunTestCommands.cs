@@ -192,8 +192,13 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		void BeforeRun()
 		{
+			TaskService.BuildMessageViewCategory.ClearText();
+			TaskService.InUpdate = true;
 			TaskService.ClearExceptCommentTasks();
-			TestRunnerCategory.ClearText();
+			TaskService.InUpdate = false;
+			
+			TestRunnerCategory.ClearText();			
+			
 			ShowUnitTestsPad();
 			ShowOutputPad();
 			
