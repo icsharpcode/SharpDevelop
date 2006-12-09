@@ -324,10 +324,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public void ShowInsightWindow(IInsightDataProvider insightDataProvider)
 		{
 			if (insightWindow == null || insightWindow.IsDisposed) {
-				insightWindow = new InsightWindow(((Form)WorkbenchSingleton.Workbench), this, FileName);
+				insightWindow = new InsightWindow(((Form)WorkbenchSingleton.Workbench), this);
 				insightWindow.Closed += new EventHandler(CloseInsightWindow);
 			}
-			insightWindow.AddInsightDataProvider(insightDataProvider);
+			insightWindow.AddInsightDataProvider(insightDataProvider, this.FileName);
 			insightWindow.ShowInsightWindow();
 		}
 		

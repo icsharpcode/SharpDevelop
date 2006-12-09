@@ -44,7 +44,7 @@ namespace ICSharpCode.XmlEditor
 			return codeCompletionWindow;
 		}
 		
-		CodeCompletionWindow(ICompletionDataProvider completionDataProvider, Form parentForm, TextEditorControl control, string fileName, bool showDeclarationWindow) : base(parentForm, control, fileName)
+		CodeCompletionWindow(ICompletionDataProvider completionDataProvider, Form parentForm, TextEditorControl control, string fileName, bool showDeclarationWindow) : base(parentForm, control)
 		{
 			this.showDeclarationWindow = showDeclarationWindow;
 		

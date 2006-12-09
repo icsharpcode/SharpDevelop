@@ -17,18 +17,16 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 	public abstract class AbstractCompletionWindow : System.Windows.Forms.Form
 	{
 		protected TextEditorControl control;
-		protected string            fileName;
 		protected Size              drawingSize;
 		Rectangle workingScreen;
 		Form parentForm;
 		
-		protected AbstractCompletionWindow(Form parentForm, TextEditorControl control, string fileName)
+		protected AbstractCompletionWindow(Form parentForm, TextEditorControl control)
 		{
 			workingScreen = Screen.GetWorkingArea(parentForm);
 //			SetStyle(ControlStyles.Selectable, false);
 			this.parentForm = parentForm;
 			this.control  = control;
-			this.fileName = fileName;
 			
 			SetLocation();
 			StartPosition   = FormStartPosition.Manual;

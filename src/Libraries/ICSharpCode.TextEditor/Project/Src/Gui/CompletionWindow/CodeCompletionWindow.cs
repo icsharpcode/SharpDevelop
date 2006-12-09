@@ -31,12 +31,12 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			if (completionData == null || completionData.Length == 0) {
 				return null;
 			}
-			CodeCompletionWindow codeCompletionWindow = new CodeCompletionWindow(completionDataProvider, completionData, parent, control, fileName);
+			CodeCompletionWindow codeCompletionWindow = new CodeCompletionWindow(completionDataProvider, completionData, parent, control);
 			codeCompletionWindow.ShowCompletionWindow();
 			return codeCompletionWindow;
 		}
 		
-		CodeCompletionWindow(ICompletionDataProvider completionDataProvider, ICompletionData[] completionData, Form parentForm, TextEditorControl control, string fileName) : base(parentForm, control, fileName)
+		CodeCompletionWindow(ICompletionDataProvider completionDataProvider, ICompletionData[] completionData, Form parentForm, TextEditorControl control) : base(parentForm, control)
 		{
 			this.dataProvider = completionDataProvider;
 			this.completionData = completionData;
