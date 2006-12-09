@@ -26,6 +26,7 @@ namespace UnitTesting.Tests.Tree
 		DerivedUnitTestsPad pad;
 		Solution solution;
 		MSBuildBasedProject project;
+		MockProjectContent projectContent;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -36,9 +37,10 @@ namespace UnitTesting.Tests.Tree
 		[SetUp]
 		public void Init()
 		{
+			projectContent = new MockProjectContent();
+			pad.ProjectContent = projectContent;
 			solution = new Solution();
 			project = new MockCSharpProject();
-			MockProjectContent projectContent = pad.ProjectContent;
 			projectContent.Project = project;
 			projectContent.Language = LanguageProperties.None;
 			ReferenceProjectItem refProjectItem = new ReferenceProjectItem(project);
@@ -339,6 +341,34 @@ namespace UnitTesting.Tests.Tree
 		public void GetOpenSolutionCalled()
 		{
 			Assert.IsTrue(pad.GetOpenSolutionCalled);
+		}
+		
+		/// <summary>
+		/// Tests that a null solution clears the test tree.
+		/// </summary>
+		[Test]
+		public void NullSolution()
+		{
+			pad.CallSolutionLoaded(null);
+			Assert.AreEqual(0, pad.TestTreeView.Nodes.Count);
+		}
+		
+		/// <summary>
+		/// If the user opens another solution before the parser thread
+		/// has finished we can sometimes get into a state where the 
+		/// first solution is being loaded into the test tree view but
+		/// its project content has been removed since the parser is working
+		/// on the next solution that was opened. In this case the test
+		/// tree view should ignore any project's that have null project
+		/// contents.
+		/// </summary>
+		[Test]
+		public void NullProjectContent()
+		{
+			DummyParserServiceTestTreeView tree = (DummyParserServiceTestTreeView)pad.TestTreeView;
+			tree.ProjectContentForProject = null;
+			
+			pad.CallSolutionLoaded(solution);
 		}
 	}
 }

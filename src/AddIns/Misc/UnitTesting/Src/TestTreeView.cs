@@ -83,12 +83,15 @@ namespace ICSharpCode.UnitTesting
 			if (TestProject.IsTestProject(project)) {
 				if (GetProjectTreeNode(project) == null) {
 					// Add a new tree node.
-					TestProject testProject = new TestProject(project, GetProjectContent(project));
-					TestProjectTreeNode node = new TestProjectTreeNode(testProject);
-					node.AddTo(this);
-					
-					// Sort the nodes.
-					SortNodes(Nodes, true);
+					IProjectContent projectContent = GetProjectContent(project);
+					if (projectContent != null) {
+						TestProject testProject = new TestProject(project, projectContent);
+						TestProjectTreeNode node = new TestProjectTreeNode(testProject);
+						node.AddTo(this);
+						
+						// Sort the nodes.
+						SortNodes(Nodes, true);
+					}
 				}
 			}
 		}

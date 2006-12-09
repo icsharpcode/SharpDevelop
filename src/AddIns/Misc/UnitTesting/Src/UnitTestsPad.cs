@@ -115,7 +115,11 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		protected void SolutionLoaded(Solution solution)
 		{
-			treeView.AddSolution(solution);
+			if (solution != null) {
+				treeView.AddSolution(solution);
+			} else {
+				treeView.Clear();
+			}
 		}
 		
 		/// <summary>

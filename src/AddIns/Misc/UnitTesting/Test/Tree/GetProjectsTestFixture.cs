@@ -49,7 +49,7 @@ namespace UnitTesting.Tests.Tree
 			projectContent.Project = project1;
 			
 			treeView = new DummyParserServiceTestTreeView();
-			treeView.AddProjectContentForProject(projectContent);
+			treeView.ProjectContentForProject = projectContent;
 			treeView.AddSolution(solution);
 			projects = treeView.GetProjects();
 		}

@@ -26,6 +26,7 @@ namespace UnitTesting.Tests.Utils
 		Solution openSolution;
 		bool loadSolutionProjectsThreadEndedHandled;
 		bool addedLoadSolutionProjectsThreadEndedHandler;
+		DummyParserServiceTestTreeView treeView = new DummyParserServiceTestTreeView();
 
 		public DerivedUnitTestsPad(Solution openSolution)
 		{
@@ -43,6 +44,10 @@ namespace UnitTesting.Tests.Utils
 		public MockProjectContent ProjectContent {
 			get {
 				return projectContent;
+			}
+			set {
+				projectContent = value;
+				treeView.ProjectContentForProject = projectContent;
 			}
 		}
 		
@@ -130,8 +135,6 @@ namespace UnitTesting.Tests.Utils
 		/// </summary>
 		protected override TestTreeView CreateTestTreeView()
 		{
-			DummyParserServiceTestTreeView treeView = new DummyParserServiceTestTreeView();
-			treeView.AddProjectContentForProject(projectContent);
 			return treeView;
 		}
 		

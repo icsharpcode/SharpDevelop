@@ -20,9 +20,17 @@ namespace UnitTesting.Tests.Utils
 	{
 		IProjectContent projectContent;
 		
-		public void AddProjectContentForProject(IProjectContent projectContent)
-		{
-			this.projectContent = projectContent;
+		/// <summary>
+		/// Gets or sets the project content that will be returned from the
+		/// GetProjectContent method.
+		/// </summary>
+		public IProjectContent ProjectContentForProject {
+			get {
+				return projectContent;
+			}
+			set {
+				projectContent = value;
+			}
 		}
 		
 		public override IProjectContent GetProjectContent(IProject project)

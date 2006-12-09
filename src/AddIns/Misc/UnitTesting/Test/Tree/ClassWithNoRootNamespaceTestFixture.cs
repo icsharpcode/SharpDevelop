@@ -58,7 +58,7 @@ namespace UnitTesting.Tests.Tree
 						
 			// Init mock project content to be returned.
 			dummyTreeView = new DummyParserServiceTestTreeView();
-			dummyTreeView.AddProjectContentForProject(projectContent);
+			dummyTreeView.ProjectContentForProject = projectContent;
 			
 			// Load the projects into the test tree view.
 			treeView = dummyTreeView as TestTreeView;
