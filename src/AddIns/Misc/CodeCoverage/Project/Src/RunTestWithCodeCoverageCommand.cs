@@ -55,6 +55,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			ncoverFileName = GetNCoverFileName();
 			if (ncoverFileName != null) {
+				WorkbenchSingleton.SafeThreadAsyncCall(Category.ClearText);
 				WorkbenchSingleton.SafeThreadAsyncCall(CodeCoverageService.ClearResults);
 			} else {
 				using (CodeCoverageRunnerNotFoundForm form = new CodeCoverageRunnerNotFoundForm()) {
