@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			if (descriptor == null || descriptor.Binding == null)
 				throw new InvalidOperationException("Cannot get Language Binding for " + TargetLanguageName);
 			
-			info.OutputProjectFileName = Path.Combine(targetProjectDirectory, info.ProjectName + descriptor.ProjectFileExtension);
+			info.OutputProjectFileName = Path.GetFullPath(Path.Combine(targetProjectDirectory, info.ProjectName + descriptor.ProjectFileExtension));
 			
 			return descriptor.Binding.CreateProject(info);
 		}

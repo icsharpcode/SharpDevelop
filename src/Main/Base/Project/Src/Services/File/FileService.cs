@@ -108,6 +108,12 @@ namespace ICSharpCode.SharpDevelop
 			return GetOpenFile(fileName);
 		}
 		
+		/// <summary>
+		/// Opens a new unsaved file.
+		/// </summary>
+		/// <param name="defaultName">The (unsaved) name of the to open</param>
+		/// <param name="language">Name of the language used to choose the display binding.</param>
+		/// <param name="content">Content of the file to create</param>
 		public static IWorkbenchWindow NewFile(string defaultName, string language, string content)
 		{
 			IDisplayBinding binding = DisplayBindingService.GetBindingPerLanguageName(language);

@@ -477,7 +477,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						string guid         = match.Result("${Guid}");
 						
 						if (!FileUtility.IsUrl(location)) {
-							location = Path.Combine(solutionDirectory, location);
+							location = Path.GetFullPath(Path.Combine(solutionDirectory, location));
 						}
 						
 						if (projectGuid == FolderGuid) {

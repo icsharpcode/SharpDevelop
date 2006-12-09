@@ -68,17 +68,19 @@ namespace ICSharpCode.TextEditor
 		
 		public override void HandleMouseDown(Point mousePos, MouseButtons mouseButtons)
 		{
+			int clickedVisibleLine = (mousePos.Y + textArea.VirtualTop.Y) / textArea.TextView.FontHeight;
+			int lineNumber = textArea.Document.GetFirstLogicalLine(clickedVisibleLine);
+			
+			if ((mouseButtons & MouseButtons.Right) == MouseButtons.Right) {
+				if (textArea.Caret.Line != lineNumber) {
+					textArea.Caret.Line = lineNumber;
+				}
+			}
+			
 			List<Bookmark> marks = textArea.Document.BookmarkManager.Marks;
 			int oldCount = marks.Count;
 			foreach (Bookmark mark in marks) {
-				int lineNumber = textArea.Document.GetVisibleLine(mark.LineNumber);
-				int fontHeight = textArea.TextView.FontHeight;
-				int yPos = lineNumber * fontHeight - textArea.VirtualTop.Y;
-				if (mousePos.Y >= yPos && mousePos.Y < yPos + fontHeight) {
-					if (lineNumber == textArea.Document.GetVisibleLine(mark.LineNumber - 1)) {
-						// marker is inside folded region, it cannot be clicked
-						continue;
-					}
+				if (mark.LineNumber == lineNumber) {
 					mark.Click(textArea, new MouseEventArgs(mouseButtons, 1, mousePos.X, mousePos.Y, 0));
 					if (oldCount != marks.Count) {
 						textArea.UpdateLine(lineNumber);
@@ -239,7 +241,7 @@ namespace ICSharpCode.TextEditor
 			} else if(regionTop > top && regionTop < bottom) {
 				// Region's top edge inside line.
 				return true;
-			} 
+			}
 			return false;
 		}
 	}

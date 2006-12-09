@@ -231,7 +231,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				string newProjectName = StringParser.Parse(name, new string[,] {
 				                                           	{"ProjectName", projectCreateInformation.ProjectName}
 				                                           });
-				string projectLocation = FileUtility.Combine(projectCreateInformation.ProjectBasePath, newProjectName + LanguageBindingService.GetProjectFileExtension(language));
+				string projectLocation = Path.GetFullPath(Path.Combine(projectCreateInformation.ProjectBasePath,
+				                                                       newProjectName + LanguageBindingService.GetProjectFileExtension(language)));
 				
 				
 				StringBuilder standardNamespace = new StringBuilder();
