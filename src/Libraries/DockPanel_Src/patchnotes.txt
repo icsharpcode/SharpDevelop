@@ -8,19 +8,11 @@ Patch #1:
  Committed in revision 1147.
 
 Patch #2:
+	Fixed CREATESTRUCT, MDICREATESTRUCT and WINDOWPOS P/Invoke structure declarations:
+           use IntPtr instead of int - we have to use a pointer-size integers here for 64-bit systems
+ Committed in revision 1335.
+
+Patch #3:
 	Activate the autohide pad explicitly  - in DockContentHandler.cs
 	(DockContentHandler.Activate())  
-	
-Index: WinFormsUI/Docking/DockContentHandler.cs
-===================================================================
---- WinFormsUI/Docking/DockContentHandler.cs	(revision 1839)
-+++ WinFormsUI/Docking/DockContentHandler.cs	(working copy)
-@@ -608,6 +608,9 @@
- 					Form.Activate();
- 				else if (!Form.ContainsFocus)
- 				{
-+					if (DockHelper.IsDockStateAutoHide(DockState) && DockPanel.ActiveAutoHideContent != Content)
-+						DockPanel.ActiveAutoHideContent = Content;
-+
- 					if (Contains(ActiveWindowHandle))
- 						User32.SetFocus(ActiveWindowHandle);
+ Committed in revision 1840.
