@@ -299,6 +299,10 @@
 				<ComponentRef Id="SharpReportDll"/>
 				<ComponentRef Id="ReportGeneratorDll"/>
 				<ComponentRef Id="SharpReportAddInDll"/>
+				<ComponentRef Id="OracleDbToolsProviderDll"/>
+				<ComponentRef Id="ServerBrowserToolDll"/>
+				<ComponentRef Id="SharpDbToolsDll"/>
+				<ComponentRef Id="SQLServerDbToolsProviderDll"/>
 				<ComponentRef Id="StartPageAddInFiles"/>
 				<ComponentRef Id="SubversionAddInDll"/>
 				<ComponentRef Id="SubversionUtilsDll"/>
