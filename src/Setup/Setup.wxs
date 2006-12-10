@@ -34,13 +34,22 @@
 				IncludeMinimum="no"/>
 		</Upgrade>
 		
-		<!-- Conditions to be satisfied before the installer begins.-->
+		<!-- 
+			Conditions to be satisfied before the installer begins.
+			Note that we are using "Installed OR" in the conditions so
+			so they never block the user from repairing, patching, or 
+			uninstalling the package after it has been installed. 
+
+			For	example the user could do something odd like uninstall .NET 2.0
+ 			and then run the msi to uninstall SharpDevelop. Without the 
+			"Installed OR" this would not be allowed.
+		-->
 		<!-- 
 			Check for .NET 2.0 
 			http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msinetassemblysupport.asp
 		-->
 		<Condition Message="This setup requires the .NET Framework 2.0 or higher.">
-			MsiNetAssemblySupport &gt;= "2.0.50727"
+			Installed OR MsiNetAssemblySupport &gt;= "2.0.50727"
 		</Condition>
 		
 		<!-- 
@@ -48,7 +57,7 @@
 			http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/operating_system_property_values.asp		
 		-->
 		<Condition Message="The operating system you are using is not supported by SharpDevelop (95/98/ME/NT3.x/NT4.x).">
-			VersionNT &gt;= 500
+			Installed OR VersionNT &gt;= 500
 		</Condition>
 		
 		<!-- 
