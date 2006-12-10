@@ -289,6 +289,15 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		public static void FireFileCreated(string fileName)
+		{
+			if (FileCreated != null) {
+				FileCreated(null, new FileEventArgs(fileName, false));
+			}
+		}
+		
+		public static event EventHandler<FileEventArgs> FileCreated;
+		
 		public static event EventHandler<FileRenamingEventArgs> FileRenaming;
 		public static event EventHandler<FileRenameEventArgs> FileRenamed;
 		

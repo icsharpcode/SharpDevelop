@@ -26,6 +26,7 @@ namespace ICSharpCode.Svn.Commands
 		{
 			FileService.FileRemoving += FileRemoving;
 			FileService.FileRenaming += FileRenaming;
+			FileService.FileCreated += FileCreated;
 			
 			FileUtility.FileSaved += new FileNameEventHandler(FileSaved);
 			AbstractProjectBrowserTreeNode.AfterNodeInitialize += TreeNodeInitialized;
@@ -70,6 +71,29 @@ namespace ICSharpCode.Svn.Commands
 				}
 			} catch (Exception ex) {
 				MessageService.ShowError("File added exception: " + ex);
+			}
+		}
+		
+		void FileCreated(object sender, FileEventArgs e)
+		{
+			if (!Path.IsPathRooted(e.FileName)) return;
+			
+			string fullName = Path.GetFullPath(e.FileName);
+			if (!CanBeVersionControlledFile(fullName)) return;
+			if (e.IsDirectory) return;
+			if (!AddInOptions.AutomaticallyAddFiles) return;
+			try {
+				Status status = SvnClient.Instance.Client.SingleStatus(fullName);
+				switch (status.TextStatus) {
+					case StatusKind.Unversioned:
+					case StatusKind.Deleted:
+						if (SvnClient.Instance.Client.IsIgnored(fullName))
+							return;
+						SvnClient.Instance.Client.Add(fullName, Recurse.None);
+						break;
+				}
+			} catch (Exception ex) {
+				MessageService.ShowError("File add exception: " + ex);
 			}
 		}
 		
@@ -148,10 +172,10 @@ namespace ICSharpCode.Svn.Commands
 						return; // nothing to do
 					case StatusKind.Normal:
 					case StatusKind.Modified:
+					case StatusKind.Replaced:
 						// rename without problem
 						break;
 					case StatusKind.Added:
-					case StatusKind.Replaced:
 						if (status.Copied) {
 							MessageService.ShowError("The file was moved/copied and cannot be renamed without losing it's history.");
 							e.Cancel = true;

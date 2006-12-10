@@ -181,7 +181,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					                       MessageBoxButtons.YesNo,
 					                       MessageBoxIcon.Question) == DialogResult.Yes)
 					{
-						viewContent.Load(fileName);
+						if (File.Exists(fileName)) {
+							viewContent.Load(fileName);
+						}
 					} else {
 						viewContent.IsDirty = true;
 					}
