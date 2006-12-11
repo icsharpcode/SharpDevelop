@@ -186,7 +186,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 				r.Close();
 			}
 			if (changedLines > 1)
-				document.UndoStack.UndoLast(changedLines);
+				document.UndoStack.CombineLast(changedLines);
 		}
 		#endregion
 	}

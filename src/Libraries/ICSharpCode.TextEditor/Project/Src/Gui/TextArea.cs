@@ -738,7 +738,7 @@ namespace ICSharpCode.TextEditor
 			++Caret.Column;
 			
 			if (removedText) {
-				Document.UndoStack.UndoLast(2);
+				Document.UndoStack.CombineLast(2);
 			}
 			
 			if (!updating) {
@@ -780,7 +780,7 @@ namespace ICSharpCode.TextEditor
 					Caret.Position = Document.OffsetToPosition(oldOffset + str.Length);
 				}
 				if (removedText) {
-					Document.UndoStack.UndoLast(2);
+					Document.UndoStack.CombineLast(2);
 				}
 				if (oldLine != Caret.Line) {
 					UpdateToEnd(oldLine);

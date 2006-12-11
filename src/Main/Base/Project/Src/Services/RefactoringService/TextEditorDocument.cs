@@ -105,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			int undoCount = actionCount;
 			actionCount = undoableActionCountStack.Pop();
-			doc.UndoStack.UndoLast(undoCount);
+			doc.UndoStack.CombineLast(undoCount);
 		}
 		
 		public void UpdateView()

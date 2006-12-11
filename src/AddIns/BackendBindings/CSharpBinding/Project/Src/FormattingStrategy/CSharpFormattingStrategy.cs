@@ -51,7 +51,7 @@ namespace CSharpBinding.FormattingStrategy
 			r.Reformat(acc, set);
 			
 			if (acc.ChangedLines > 0)
-				textArea.Document.UndoStack.UndoLast(2);
+				textArea.Document.UndoStack.CombineLast(2);
 			
 			string t = acc.Text;
 			if (t.Length == 0) {
@@ -100,7 +100,7 @@ namespace CSharpBinding.FormattingStrategy
 			}
 			
 			if (acc.ChangedLines > 0)
-				textArea.Document.UndoStack.UndoLast(acc.ChangedLines);
+				textArea.Document.UndoStack.CombineLast(acc.ChangedLines);
 		}
 		#endregion
 		
@@ -450,7 +450,7 @@ namespace CSharpBinding.FormattingStrategy
 								}
 								//// adding curline text if present
 								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation.ToString() + "/// " + curLineText);
-								textArea.Document.UndoStack.UndoLast(2);
+								textArea.Document.UndoStack.CombineLast(2);
 								return indentation.Length + 4 /*+ curLineText.Length*/;
 							}
 							
@@ -459,7 +459,7 @@ namespace CSharpBinding.FormattingStrategy
 								                         "\" +");
 								curLine = textArea.Document.GetLineSegment(lineNr);
 								textArea.Document.Insert(curLine.Offset, "\"");
-								textArea.Document.UndoStack.UndoLast(3);
+								textArea.Document.UndoStack.CombineLast(3);
 								addCursorOffset = 1;
 							}
 						}

@@ -102,7 +102,7 @@ namespace ICSharpCode.WixBinding
 				totalInsertedCharacters += insertedCharacterCount;
 			}
 			if (redoCount > 0) {
-				textArea.Document.UndoStack.UndoLast(redoCount);
+				textArea.Document.UndoStack.CombineLast(redoCount);
 			}
 			
 			return totalInsertedCharacters;

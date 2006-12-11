@@ -115,7 +115,7 @@ namespace ICSharpCode.TextEditor.Document
 				}
 			}
 			if (redocounter > 0) {
-				textArea.Document.UndoStack.UndoLast(redocounter);
+				textArea.Document.UndoStack.CombineLast(redocounter);
 			}
 		}
 		

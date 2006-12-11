@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Undo
 	/// This class stacks the last x operations from the undostack and makes
 	/// one undo/redo operation from it.
 	/// </summary>
-	public class UndoQueue : IUndoableOperation
+	internal class UndoQueue : IUndoableOperation
 	{
 		List<IUndoableOperation> undolist = new List<IUndoableOperation>();
 		

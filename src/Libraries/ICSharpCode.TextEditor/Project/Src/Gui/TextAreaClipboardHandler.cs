@@ -184,7 +184,7 @@ namespace ICSharpCode.TextEditor
 								textArea.InsertString(text);
 							}
 							if (redocounter > 0) {
-								textArea.Document.UndoStack.UndoLast(redocounter + 1); // redo the whole operation
+								textArea.Document.UndoStack.CombineLast(redocounter + 1); // redo the whole operation
 							}
 						}
 					}

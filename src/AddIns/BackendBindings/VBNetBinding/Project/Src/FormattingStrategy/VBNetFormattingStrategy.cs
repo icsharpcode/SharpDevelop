@@ -359,7 +359,7 @@ namespace VBNetBinding.FormattingStrategy
 								}
 								
 								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation + curLineText.Trim());
-								textArea.Document.UndoStack.UndoLast(undoCount + 1);
+								textArea.Document.UndoStack.CombineLast(undoCount + 1);
 								return indentation.Length;
 							}
 						}
@@ -376,7 +376,7 @@ namespace VBNetBinding.FormattingStrategy
 							if (IsElseConstruct(lineAboveText))
 								SmartIndentLine(textArea, lineNr - 1);
 							int result = SmartIndentLine(textArea, lineNr) + 1;
-							textArea.Document.UndoStack.UndoLast(undoCount + 3);
+							textArea.Document.UndoStack.CombineLast(undoCount + 3);
 							return result;
 						} else {
 							textArea.Document.Insert(lineAbove.Offset + lineAbove.Length,
@@ -384,7 +384,7 @@ namespace VBNetBinding.FormattingStrategy
 							if (IsElseConstruct(lineAboveText))
 								SmartIndentLine(textArea, lineNr - 1);
 							int result = SmartIndentLine(textArea, lineNr);
-							textArea.Document.UndoStack.UndoLast(undoCount + 2);
+							textArea.Document.UndoStack.CombineLast(undoCount + 2);
 							return result;
 						}
 					}
@@ -399,7 +399,7 @@ namespace VBNetBinding.FormattingStrategy
 						}
 						if (IsElseConstruct(lineAboveText))
 							SmartIndentLine(textArea, lineNr - 1);
-						textArea.Document.UndoStack.UndoLast(undoCount);
+						textArea.Document.UndoStack.CombineLast(undoCount);
 						return indent.Length;
 					}
 				}

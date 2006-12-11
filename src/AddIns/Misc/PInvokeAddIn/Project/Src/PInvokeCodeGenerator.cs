@@ -56,7 +56,7 @@ namespace ICSharpCode.PInvokeAddIn
 				}
 				
 				if (numOperations > 0) {
-					textArea.Document.UndoStack.UndoLast(numOperations);
+					textArea.Document.UndoStack.CombineLast(numOperations);
 				}
 				
 			} finally {

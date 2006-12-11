@@ -29,19 +29,13 @@ namespace ICSharpCode.TextEditor.Undo
 		public event EventHandler ActionRedone;
 		
 		/// <summary>
+		/// Gets/Sets if changes to the document are protocolled by the undo stack.
+		/// Used internally to disable the undo stack temporarily while undoing an action.
 		/// </summary>
-		public bool AcceptChanges = true;
+		internal bool AcceptChanges = true;
 		
 		/// <summary>
-		/// This property is EXCLUSIVELY for the UndoQueue class, don't USE it
-		/// </summary>
-		internal Stack<IUndoableOperation> _UndoStack {
-			get {
-				return undostack;
-			}
-		}
-		
-		/// <summary>
+		/// Gets if there are actions on the undo stack.
 		/// </summary>
 		public bool CanUndo {
 			get {
@@ -50,6 +44,7 @@ namespace ICSharpCode.TextEditor.Undo
 		}
 		
 		/// <summary>
+		/// Gets if there are actions on the redo stack.
 		/// </summary>
 		public bool CanRedo {
 			get {
@@ -58,12 +53,36 @@ namespace ICSharpCode.TextEditor.Undo
 		}
 		
 		/// <summary>
+		/// Gets the number of actions on the undo stack.
+		/// </summary>
+		public int UndoItemCount {
+			get {
+				return undostack.Count;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the number of actions on the redo stack.
+		/// </summary>
+		public int RedoItemCount {
+			get {
+				return redostack.Count;
+			}
+		}
+		
+		/// <summary>
 		/// You call this method to pool the last x operations from the undo stack
 		/// to make 1 operation from it.
 		/// </summary>
+		public void CombineLast(int actionCount)
+		{
+			undostack.Push(new UndoQueue(undostack, actionCount));
+		}
+		
+		[Obsolete("Use CombineLast(int x) instead!")]
 		public void UndoLast(int x)
 		{
-			undostack.Push(new UndoQueue(this, x));
+			CombineLast(x);
 		}
 		
 		/// <summary>
@@ -96,7 +115,7 @@ namespace ICSharpCode.TextEditor.Undo
 		/// Call this method to push an UndoableOperation on the undostack, the redostack
 		/// will be cleared, if you use this method.
 		/// </summary>
-		public void Push(IUndoableOperation operation) 
+		public void Push(IUndoableOperation operation)
 		{
 			if (operation == null) {
 				throw new ArgumentNullException("UndoStack.Push(UndoableOperation operation) : operation can't be null");
@@ -106,7 +125,7 @@ namespace ICSharpCode.TextEditor.Undo
 				undostack.Push(operation);
 				if (TextEditorControl != null) {
 					undostack.Push(new UndoableSetCaretPosition(this, TextEditorControl.ActiveTextAreaControl.Caret.Position));
-					UndoLast(2);
+					CombineLast(2);
 				}
 				ClearRedoStack();
 			}
@@ -121,6 +140,7 @@ namespace ICSharpCode.TextEditor.Undo
 		}
 		
 		/// <summary>
+		/// Clears both the undo and redo stack.
 		/// </summary>
 		public void ClearAll()
 		{

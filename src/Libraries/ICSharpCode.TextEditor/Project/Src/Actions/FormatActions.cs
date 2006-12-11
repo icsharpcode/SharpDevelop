@@ -72,7 +72,7 @@ namespace ICSharpCode.TextEditor.Actions
 				}
 			}
 			if (redocounter > 0) {
-				document.UndoStack.UndoLast(redocounter); // redo the whole operation (not the single deletes)
+				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 	}
@@ -94,7 +94,7 @@ namespace ICSharpCode.TextEditor.Actions
 				}
 			}
 			if (redocounter > 0) {
-				document.UndoStack.UndoLast(redocounter); // redo the whole operation (not the single deletes)
+				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 	}
@@ -192,7 +192,7 @@ namespace ICSharpCode.TextEditor.Actions
 			}
 			
 			if (redocounter > 0) {
-				document.UndoStack.UndoLast(redocounter); // redo the whole operation (not the single deletes)
+				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 	}
@@ -215,7 +215,7 @@ namespace ICSharpCode.TextEditor.Actions
 			}
 			
 			if (redocounter > 0) {
-				document.UndoStack.UndoLast(redocounter); // redo the whole operation (not the single deletes)
+				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 	}

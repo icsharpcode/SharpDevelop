@@ -97,7 +97,7 @@ namespace ICSharpCode.TextEditor
 					textArea.SelectionManager.ClearSelection();
 					InsertString(offset, (string)e.Data.GetData(typeof(string)));
 					if (two) {
-						textArea.Document.UndoStack.UndoLast(2);
+						textArea.Document.UndoStack.CombineLast(2);
 					}
 					textArea.Document.UpdateQueue.Clear();
 					textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));

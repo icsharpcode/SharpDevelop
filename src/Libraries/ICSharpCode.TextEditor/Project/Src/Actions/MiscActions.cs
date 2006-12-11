@@ -59,7 +59,7 @@ namespace ICSharpCode.TextEditor.Actions
 			}
 			
 			if (redocounter > 0) {
-				document.UndoStack.UndoLast(redocounter); // redo the whole operation (not the single deletes)
+				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 		
@@ -176,7 +176,7 @@ namespace ICSharpCode.TextEditor.Actions
 			}
 			
 			if (redocounter > 0) {
-				document.UndoStack.UndoLast(redocounter); // redo the whole operation (not the single deletes)
+				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 		
@@ -264,7 +264,7 @@ namespace ICSharpCode.TextEditor.Actions
 			}
 			
 			if (redocounter > 0) {
-				document.UndoStack.UndoLast(redocounter); // redo the whole operation (not the single deletes)
+				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 		
@@ -287,7 +287,7 @@ namespace ICSharpCode.TextEditor.Actions
 			}
 			
 			if (redocounter > 0) {
-				document.UndoStack.UndoLast(redocounter); // redo the whole operation (not the single deletes)
+				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 		
@@ -477,14 +477,14 @@ namespace ICSharpCode.TextEditor.Actions
 		{
 			document.Insert(offsetEnd, commentEnd);
 			document.Insert(offsetStart, commentStart);
-			document.UndoStack.UndoLast(2);
+			document.UndoStack.CombineLast(2);
 		}
 		
 		void RemoveComment(IDocument document, BlockCommentRegion commentRegion)
 		{
 			document.Remove(commentRegion.EndOffset, commentRegion.CommentEnd.Length);
 			document.Remove(commentRegion.StartOffset, commentRegion.CommentStart.Length);
-			document.UndoStack.UndoLast(2);
+			document.UndoStack.CombineLast(2);
 		}
 	}
 	

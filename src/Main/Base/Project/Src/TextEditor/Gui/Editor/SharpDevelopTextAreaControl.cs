@@ -369,6 +369,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public void InsertTemplate(CodeTemplate template)
 		{
 			string selectedText = String.Empty;
+			int undoActionCount = Document.UndoStack.UndoItemCount;
+			Console.WriteLine("undoActionCount before " + undoActionCount);
 			if (base.ActiveTextAreaControl.TextArea.SelectionManager.HasSomethingSelected) {
 				selectedText = base.ActiveTextAreaControl.TextArea.SelectionManager.SelectedText;
 				ActiveTextAreaControl.TextArea.Caret.Position = ActiveTextAreaControl.TextArea.SelectionManager.SelectionCollection[0].StartPosition;
@@ -397,7 +399,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			IndentStyle save1 = TextEditorProperties.IndentStyle;
 			TextEditorProperties.IndentStyle = IndentStyle.Smart;
 			Console.WriteLine("Indent between {0} and {1}", beginLine, endLine);
+			
 			Document.FormattingStrategy.IndentLines(ActiveTextAreaControl.TextArea, beginLine, endLine);
+			
+			Console.WriteLine("UndoItemCount after " + Document.UndoStack.UndoItemCount);
+			Document.UndoStack.CombineLast(Document.UndoStack.UndoItemCount - undoActionCount);
 			EndUpdate();
 			Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
 			Document.CommitUpdate();
