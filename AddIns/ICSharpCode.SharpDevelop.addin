@@ -1565,8 +1565,8 @@
 		</MenuItem>	 <!-- end WINDOW menu -->
 		
 		<MenuItem id = "Help" label = "${res:XML.MainMenu.HelpMenu}" type="Menu">
-			<MenuItem id = "DynamicHelp"
-			          label = "${res:XML.MainMenu.HelpMenu.DynamicHelp}"
+			<MenuItem id = "ContextHelp"
+			          label = "${res:XML.MainMenu.HelpMenu.ContextHelp}"
 			          icon = "Icons.16x16.HelpIcon"
 			          shortcut = "F1"
 			          class = "ICSharpCode.SharpDevelop.Commands.ShowSensitiveHelp"/>
@@ -1598,9 +1598,7 @@
 				<MenuItem id = "IntegratedProjects" label = "Integrated Projects" type="Menu">
 					<MenuItem id = "DockManager Control" label = "DockPanel Suite" icon = "Icons.16x16.WebSearchIcon" link = "http://sourceforge.net/projects/dockpanelsuite/" />
 					<MenuItem id = "NUnit" label = "NUnit" icon = "PadIcons.NUnitTest" link = "http://www.nunit.org/" />
-					<MenuItem id = "MbUnit" label = "MbUnit" icon = "PadIcons.MbUnitTest" link = "http://www.mbunit.org/" />
-					<!--<MenuItem id = "WiX" label = "WiX" icon = "Icons.16x16.WebSearchIcon" link = "http://sourceforge.net/projects/wix/" />-->
-					<MenuItem id = "NAnt" label = "NAnt" icon = "NAntAddIn.Icons.16x16.NAntPad" link = "http://nant.sourceforge.net/" />
+					<MenuItem id = "WiX" label = "WiX" icon = "Icons.16x16.WebSearchIcon" link = "http://sourceforge.net/projects/wix/" />
 					<MenuItem id = "NDoc" label = "NDoc" icon = "Icons.16x16.WebSearchIcon" link = "http://ndoc.sourceforge.net/" />
 					<MenuItem id = "#ZipLib" label = "#ZipLib" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SharpZipLib/" />
 				</MenuItem>
