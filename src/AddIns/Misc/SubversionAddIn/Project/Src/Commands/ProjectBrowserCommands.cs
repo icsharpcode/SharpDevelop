@@ -1,11 +1,12 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="none" email=""/>
+//     <owner name="Daniel Grunwald" email=""/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -33,12 +34,12 @@ namespace ICSharpCode.Svn.Commands
 			}
 		}
 		
-		protected void Callback()
+		protected ProjectWatcher WatchProjects()
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(CallbackInvoked);
+			return new ProjectWatcher(ProjectService.OpenSolution);
 		}
 		
-		void CallbackInvoked()
+		static void CallbackInvoked()
 		{
 			SubversionStateCondition.ResetCache();
 			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
@@ -48,13 +49,98 @@ namespace ICSharpCode.Svn.Commands
 		}
 		
 		protected abstract void Run(string filename);
+		
+		struct ProjectEntry
+		{
+			string fileName;
+			long size;
+			DateTime writeTime;
+			
+			public ProjectEntry(FileInfo file)
+			{
+				fileName = file.FullName;
+				if (file.Exists) {
+					size = file.Length;
+					writeTime = file.LastWriteTime;
+				} else {
+					size = -1;
+					writeTime = DateTime.MinValue;
+				}
+			}
+			
+			public bool HasFileChanged()
+			{
+				FileInfo file = new FileInfo(fileName);
+				long newSize;
+				DateTime newWriteTime;
+				if (file.Exists) {
+					newSize = file.Length;
+					newWriteTime = file.LastWriteTime;
+				} else {
+					newSize = -1;
+					newWriteTime = DateTime.MinValue;
+				}
+				return size != newSize || writeTime != newWriteTime;
+			}
+		}
+		
+		/// <summary>
+		/// Remembers a list of file sizes and last write times. If a project
+		/// changed during the operation, suggest that the user reloads the solution.
+		/// </summary>
+		protected sealed class ProjectWatcher
+		{
+			List<ProjectEntry> list = new List<ProjectEntry>();
+			Solution solution;
+			
+			internal ProjectWatcher(Solution solution)
+			{
+				this.solution = solution;
+				if (AddInOptions.AutomaticallyReloadProject && solution != null)
+				{
+					list.Add(new ProjectEntry(new FileInfo(solution.FileName)));
+					foreach (IProject p in solution.Projects) {
+						list.Add(new ProjectEntry(new FileInfo(p.FileName)));
+					}
+				}
+			}
+			
+			public void Callback()
+			{
+				WorkbenchSingleton.SafeThreadAsyncCall(CallbackInvoked);
+			}
+			
+			void CallbackInvoked()
+			{
+				SubversionCommand.CallbackInvoked();
+				if (ProjectService.OpenSolution != solution)
+					return;
+				if (!list.TrueForAll(delegate (ProjectEntry pe) {
+				                     	return !pe.HasFileChanged();
+				                     }))
+				{
+					// if at least one project was changed:
+					if (MessageService.ShowCustomDialog(
+						MessageService.DefaultMessageBoxTitle,
+						"SharpDevelop detected that the version control operation changed " +
+						"project files.\n" +
+						"You should reload the solution.",
+						0, 1,
+						"Reload solution", "Keep old solution open")
+					    == 0)
+					{
+						ProjectService.LoadSolution(solution.FileName);
+					}
+				}
+			}
+		}
 	}
 	
 	public class UpdateCommand : SubversionCommand
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.Update(filename, Callback);
+			SvnGuiWrapper.Update(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -62,7 +148,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.UpdateToRevision(filename, Callback);
+			SvnGuiWrapper.UpdateToRevision(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -70,7 +156,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.Revert(filename, Callback);
+			SvnGuiWrapper.Revert(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -86,7 +172,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.ApplyPatch(filename, null);
+			SvnGuiWrapper.ApplyPatch(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -94,7 +180,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.Commit(filename, Callback);
+			SvnGuiWrapper.Commit(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -102,7 +188,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.Add(filename, Callback);
+			SvnGuiWrapper.Add(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -110,7 +196,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.Ignore(filename, Callback);
+			SvnGuiWrapper.Ignore(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -118,7 +204,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.Blame(filename, Callback);
+			SvnGuiWrapper.Blame(filename, null);
 		}
 	}
 	
@@ -128,6 +214,7 @@ namespace ICSharpCode.Svn.Commands
 		{
 			PropertyDictionary pd = SvnClient.Instance.Client.PropGet("svn:ignore", Path.GetDirectoryName(filename), Revision.Working, Recurse.None);
 			if (pd != null) {
+				ProjectWatcher watcher = WatchProjects();
 				string shortFileName = Path.GetFileName(filename);
 				foreach (Property p in pd.Values) {
 					StringBuilder b = new StringBuilder();
@@ -143,7 +230,7 @@ namespace ICSharpCode.Svn.Commands
 					                                  Path.GetDirectoryName(filename), Recurse.None);
 				}
 				MessageService.ShowMessage(shortFileName + " was removed from the ignore list.");
-				Callback();
+				watcher.Callback();
 			}
 		}
 	}
@@ -176,7 +263,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.Diff(filename, Callback);
+			SvnGuiWrapper.Diff(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -184,7 +271,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.ConflictEditor(filename, Callback);
+			SvnGuiWrapper.ConflictEditor(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -192,7 +279,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.ResolveConflict(filename, Callback);
+			SvnGuiWrapper.ResolveConflict(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -200,7 +287,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.ShowLog(filename, Callback);
+			SvnGuiWrapper.ShowLog(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -208,7 +295,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.Cleanup(filename, Callback);
+			SvnGuiWrapper.Cleanup(filename, null);
 		}
 	}
 	
@@ -216,7 +303,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.RepoBrowser(filename, Callback);
+			SvnGuiWrapper.RepoBrowser(filename, null);
 		}
 	}
 	
@@ -224,7 +311,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.RepoStatus(filename, Callback);
+			SvnGuiWrapper.RepoStatus(filename, null);
 		}
 	}
 	
@@ -232,7 +319,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.RevisionGraph(filename, Callback);
+			SvnGuiWrapper.RevisionGraph(filename, null);
 		}
 	}
 	
@@ -240,7 +327,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.Branch(filename, Callback);
+			SvnGuiWrapper.Branch(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -248,7 +335,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.Switch(filename, Callback);
+			SvnGuiWrapper.Switch(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -256,7 +343,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.Merge(filename, Callback);
+			SvnGuiWrapper.Merge(filename, WatchProjects().Callback);
 		}
 	}
 	
@@ -264,7 +351,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.Export(filename, Callback);
+			SvnGuiWrapper.Export(filename, null);
 		}
 	}
 	
@@ -272,7 +359,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			SvnGuiWrapper.Relocate(filename, Callback);
+			SvnGuiWrapper.Relocate(filename, WatchProjects().Callback);
 		}
 	}
 }

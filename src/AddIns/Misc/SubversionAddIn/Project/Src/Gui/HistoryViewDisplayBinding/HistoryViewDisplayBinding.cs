@@ -62,6 +62,9 @@ namespace ICSharpCode.Svn
 		
 		public bool CanAttachTo(ICSharpCode.SharpDevelop.Gui.IViewContent content)
 		{
+			if (!AddInOptions.UseHistoryDisplayBinding) {
+				return false;
+			}
 			if (content.IsUntitled || content.FileName == null || !File.Exists(content.FileName)) {
 				return false;
 			}

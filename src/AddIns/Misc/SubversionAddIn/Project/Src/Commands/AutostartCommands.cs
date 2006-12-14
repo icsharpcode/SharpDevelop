@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="none" email=""/>
+//     <owner name="Daniel Grunwald" email=""/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -18,9 +18,10 @@ using NSvn.Core;
 namespace ICSharpCode.Svn.Commands
 {
 	/// <summary>
-	/// Description of AutostartCommands.
+	/// Registers event handlers for file added, removed, renamed etc. and
+	/// executes the appropriate Subversion commands.
 	/// </summary>
-	public class RegisterEventsCommand : AbstractCommand
+	public sealed class RegisterEventsCommand : AbstractCommand
 	{
 		public override void Run()
 		{
@@ -62,26 +63,14 @@ namespace ICSharpCode.Svn.Commands
 			SubversionStateCondition.ResetCache();
 		}
 		
-		void FileAdded(object sender, FileEventArgs e)
-		{
-			try {
-				if (AddInOptions.AutomaticallyAddFiles) {
-					if (!CanBeVersionControlledFile(e.FileName)) return;
-					SvnClient.Instance.Client.Add(Path.GetFullPath(e.FileName), Recurse.None);
-				}
-			} catch (Exception ex) {
-				MessageService.ShowError("File added exception: " + ex);
-			}
-		}
-		
 		void FileCreated(object sender, FileEventArgs e)
 		{
+			if (!AddInOptions.AutomaticallyAddFiles) return;
 			if (!Path.IsPathRooted(e.FileName)) return;
 			
 			string fullName = Path.GetFullPath(e.FileName);
 			if (!CanBeVersionControlledFile(fullName)) return;
 			if (e.IsDirectory) return;
-			if (!AddInOptions.AutomaticallyAddFiles) return;
 			try {
 				Status status = SvnClient.Instance.Client.SingleStatus(fullName);
 				switch (status.TextStatus) {
@@ -162,6 +151,7 @@ namespace ICSharpCode.Svn.Commands
 		void FileRenaming(object sender, FileRenamingEventArgs e)
 		{
 			if (e.Cancel) return;
+			if (!AddInOptions.AutomaticallyRenameFiles) return;
 			string fullSource = Path.GetFullPath(e.SourceFile);
 			if (!CanBeVersionControlledFile(fullSource)) return;
 			try {
@@ -201,7 +191,7 @@ namespace ICSharpCode.Svn.Commands
 			}
 		}
 		
-		class AutoAddAfterRenameHelper
+		sealed class AutoAddAfterRenameHelper
 		{
 			FileRenamingEventArgs args;
 			

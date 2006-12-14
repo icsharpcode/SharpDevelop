@@ -4,51 +4,47 @@
     <ClientSize value="{Width=296, Height=240}" />
     <Controls>
       <System.Windows.Forms.CheckBox>
+        <Name value="useHistoryDisplayBindingCheckBox" />
+        <Location value="8, 135" />
+        <Text value="Add &amp;history tab to version-controlled files" />
+        <TabIndex value="6" />
+        <Size value="280, 24" />
+        <UseVisualStyleBackColor value="True" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="autoRenameFilesCheckBox" />
+        <Location value="8, 63" />
+        <Text value="&amp;Keep history for renamed files (rename in Subversion)" />
+        <TabIndex value="5" />
+        <Size value="280, 24" />
+        <Anchor value="Top, Left, Right" />
+        <UseVisualStyleBackColor value="True" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
         <Name value="autoDeleteFilesCheckBox" />
-        <Location value="{X=8,Y=172}" />
-        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Location value="8, 33" />
         <Text value="Automatically &amp;delete removed files" />
         <TabIndex value="3" />
-        <Size value="{Width=280, Height=24}" />
+        <Size value="280, 24" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.CheckBox>
       <System.Windows.Forms.CheckBox>
         <Name value="autoReloadProjectCheckBox" />
-        <Location value="{X=8,Y=192}" />
-        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Location value="8, 105" />
         <Text value="&amp;Re-load project after projectfile change" />
         <TabIndex value="4" />
-        <Size value="{Width=280, Height=24}" />
+        <Size value="280, 24" />
         <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.CheckBox>
       <System.Windows.Forms.CheckBox>
         <Name value="autoAddFilesCheckBox" />
-        <Location value="{X=8,Y=152}" />
-        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Location value="8, 3" />
         <Text value="Automatically &amp;add new files" />
         <TabIndex value="2" />
-        <Size value="{Width=280, Height=24}" />
+        <Size value="280, 24" />
         <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.CheckBox>
-      <System.Windows.Forms.TextBox>
-        <Name value="logMessageTextBox" />
-        <TabIndex value="1" />
-        <Multiline value="True" />
-        <AcceptsReturn value="True" />
-        <WordWrap value="False" />
-        <Anchor value="Top, Left, Right" />
-        <Size value="{Width=280, Height=112}" />
-        <AcceptsTab value="True" />
-        <Location value="{X=8,Y=32}" />
-      </System.Windows.Forms.TextBox>
-      <System.Windows.Forms.Label>
-        <Name value="label1" />
-        <Location value="{X=8,Y=8}" />
-        <Text value="&amp;Standard commit message:" />
-        <TextAlign value="BottomLeft" />
-        <Size value="{Width=280, Height=23}" />
-        <TabIndex value="0" />
-        <Anchor value="Top, Left, Right" />
-      </System.Windows.Forms.Label>
     </Controls>
   </System.Windows.Forms.UserControl>
 </Components>

@@ -135,12 +135,12 @@
 					          icon  = "Svn.CreatePatch"
 					          class = "ICSharpCode.Svn.Commands.CreatePatchCommand"/>
 				</Condition>
-				<Condition name = "SubversionState" state = "Modified;Normal" item = "Folder">
+				<!--<Condition name = "SubversionState" state = "Modified;Normal" item = "Folder">
 					<MenuItem id = "SvnApplyPatch"
 					          label = "Apply patch..."
 					          icon  = "Svn.ApplyPatch"
 					          class = "ICSharpCode.Svn.Commands.ApplyPatchCommand"/>
-				</Condition>
+				</Condition>-->
 				<MenuItem id = "Sep4" type = "Separator"/>
 				<MenuItem id = "SvnHelp"
 				          label = "Help"

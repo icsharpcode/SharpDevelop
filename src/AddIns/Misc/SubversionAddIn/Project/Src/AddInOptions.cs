@@ -22,17 +22,6 @@ namespace ICSharpCode.Svn
 		}
 		
 		#region Properties
-		public static string DefaultLogMessage {
-			get {
-				return properties.Get("DefaultLogMessage",
-				                      "# All lines starting with a # will be ignored" + Environment.NewLine +
-				                      "# This template can be modified by using the 'Tools->IDE Options->Source Control->Subversion' panel");
-			}
-			set {
-				properties.Set("DefaultLogMessage", value);
-			}
-		}
-		
 		public static bool AutomaticallyAddFiles {
 			get {
 				return properties.Get("AutomaticallyAddFiles", true);
@@ -51,12 +40,30 @@ namespace ICSharpCode.Svn
 			}
 		}
 		
+		public static bool AutomaticallyRenameFiles {
+			get {
+				return properties.Get("AutomaticallyRenameFiles", true);
+			}
+			set {
+				properties.Set("AutomaticallyRenameFiles", value);
+			}
+		}
+		
 		public static bool AutomaticallyReloadProject {
 			get {
 				return properties.Get("AutomaticallyReloadProject", true);
 			}
 			set {
 				properties.Set("AutomaticallyReloadProject", value);
+			}
+		}
+		
+		public static bool UseHistoryDisplayBinding {
+			get {
+				return properties.Get("UseHistoryDisplayBinding", true);
+			}
+			set {
+				properties.Set("UseHistoryDisplayBinding", value);
 			}
 		}
 		#endregion
