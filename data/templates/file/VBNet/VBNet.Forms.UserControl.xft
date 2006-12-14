@@ -23,8 +23,6 @@
 	<Files>
 <File name="${Path}/${FileNameWithoutExtension}.Designer.vb" DependentUpon="${FileName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
 Partial Class ${ClassName}
-	Inherits System.Windows.Forms.UserControl
-	
 	''' <summary>
 	''' Designer variable used to keep track of non-visual components.
 	''' </summary>
@@ -59,6 +57,8 @@ End Class
 ]]></File>
 		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
 Public Partial Class ${ClassName}
+	Inherits System.Windows.Forms.UserControl
+	
 	Public Sub New()
 		' The Me.InitializeComponent call is required for Windows Forms designer support.
 		Me.InitializeComponent()
@@ -73,4 +73,5 @@ End Class
 	
 	<AdditionalOptions/>
 </Template>
+
 

@@ -50,7 +50,7 @@ namespace ${StandardNamespace}
 	/// <summary>
 	/// Description of MainForm.
 	/// </summary>
-	public partial class MainForm
+	public partial class MainForm : Form
 	{
 		[STAThread]
 		public static void Main(string[] args)
@@ -75,7 +75,7 @@ namespace ${StandardNamespace}
 <File name="MainForm.Designer.cs" DependentUpon="MainForm.cs" language="C#"><![CDATA[${StandardHeader.C#}
 namespace ${StandardNamespace}
 {
-	partial class MainForm : System.Windows.Forms.Form
+	partial class MainForm
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.

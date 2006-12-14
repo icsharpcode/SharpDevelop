@@ -26,7 +26,7 @@
 <File name="${Path}/${FileNameWithoutExtension}.Designer.cs" DependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
 namespace ${StandardNamespace}
 {
-	partial class ${ClassName} : System.Windows.Forms.UserControl
+	partial class ${ClassName}
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.
@@ -75,7 +75,7 @@ namespace ${StandardNamespace}
 	/// <summary>
 	/// Description of ${ClassName}.
 	/// </summary>
-	public partial class ${ClassName}
+	public partial class ${ClassName} : UserControl
 	{
 		public ${ClassName}()
 		{
@@ -95,4 +95,5 @@ namespace ${StandardNamespace}
 	
 	<AdditionalOptions/>
 </Template>
+
 
