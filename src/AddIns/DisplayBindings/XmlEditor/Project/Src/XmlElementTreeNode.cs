@@ -17,6 +17,7 @@ namespace ICSharpCode.XmlEditor
 	public class XmlElementTreeNode : ExtTreeNode
 	{
 		public const string XmlElementTreeNodeImageKey = "XmlElementTreeNodeImage";
+		public const string XmlElementTreeNodeGhostImageKey = "XmlElementTreeNodeGhostImage";
 		
 		XmlElement element;
 		
@@ -41,7 +42,25 @@ namespace ICSharpCode.XmlEditor
 			get {
 				return element;
 			}
-		}	
+		}
+		
+		/// <summary>
+		/// Gets or sets whether to show the ghost image which is 
+		/// displayed when cutting the node.
+		/// </summary>
+		public bool ShowGhostImage {
+			get {
+				return ImageKey == XmlElementTreeNodeGhostImageKey;
+			}
+			set {
+				if (value) {
+					ImageKey = XmlElementTreeNodeGhostImageKey;
+				} else {
+					ImageKey = XmlElementTreeNodeImageKey;
+				}
+				SelectedImageKey = ImageKey;
+			}
+		}
 		
 		/// <summary>
 		/// Adds child elements to this tree node.

@@ -350,47 +350,12 @@ namespace XmlEditor.Tests.Tree
 			Assert.AreEqual(String.Empty, insertedTextNode.Value);
 		}
 		
-		/// <summary>
-		/// Expect nothing to happen since the ICommand.Owner is not 
-		/// set.
-		/// </summary>
-		[Test]
-		public void RemoveElementCommandWithNullOwner()
-		{
-			RemoveElementCommand command = new RemoveElementCommand();
-			command.Run();
-		}
-		
-		[Test]
-		public void RemoveRootElementUsingCommand()
-		{
-			treeView.SelectedNode = treeView.Nodes[0];
-
-			RemoveElementCommand command = new RemoveElementCommand();
-			command.Owner = treeViewContainer;
-			command.Run();	
-			
-			Assert.AreEqual(0, treeView.Nodes.Count);
-			Assert.IsTrue(treeViewContainer.IsDirty);
-		}
-	
-		[Test]
-		public void RemoveTextNodeWithNullOwner()
-		{
-			RemoveTextNodeCommand command = new RemoveTextNodeCommand();
-			command.Run();
-		}
-		
 		[Test]
 		public void RemoveTextNode()
 		{
 			AddChildTextNode();
-			
 			treeView.SelectedNode = bodyTreeNode.Nodes[0];
-
-			RemoveTextNodeCommand command = new RemoveTextNodeCommand();
-			command.Owner = treeViewContainer;
-			command.Run();
+			treeViewContainer.Delete();
 
 			Assert.IsFalse(bodyElement.HasChildNodes);
 			Assert.AreEqual(0, bodyTreeNode.Nodes.Count);
@@ -419,23 +384,15 @@ namespace XmlEditor.Tests.Tree
 			Assert.IsNotNull(treeNode);
 		}
 		
-		[Test]
-		public void RemoveCommentWithNullOwner()
-		{
-			RemoveCommentCommand command = new RemoveCommentCommand();
-			command.Run();
-		}
-		
+		/// <summary>
+		/// Removes the selected comment using the delete command.
+		/// </summary>
 		[Test]
 		public void RemoveComment()
 		{
 			AddChildCommentNode();
-			
 			treeView.SelectedNode = bodyTreeNode.Nodes[0];
-
-			RemoveCommentCommand command = new RemoveCommentCommand();
-			command.Owner = treeViewContainer;
-			command.Run();
+			treeViewContainer.Delete();
 
 			Assert.IsFalse(bodyElement.HasChildNodes);
 			Assert.AreEqual(0, bodyTreeNode.Nodes.Count);

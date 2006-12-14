@@ -31,6 +31,11 @@ namespace ICSharpCode.XmlEditor
 		XmlDocument Document {get; set;}
 		
 		/// <summary>
+		/// Gets the selected node in the tree.
+		/// </summary>
+		XmlNode SelectedNode {get;}
+		
+		/// <summary>
 		/// Gets the xml element selected.
 		/// </summary>
 		XmlElement SelectedElement {get;}
@@ -111,6 +116,19 @@ namespace ICSharpCode.XmlEditor
 		/// Removes the specified element from the tree.
 		/// </summary>
 		void RemoveElement(XmlElement element);
+		
+		/// <summary>
+		/// Informs the view that the specified node has been selected
+		/// to be cut from the tree. The view can then update its display
+		/// to inform the user that the node has been cut.
+		/// </summary>
+		void ShowCut(XmlNode node);
+		
+		/// <summary>
+		/// Informs the view that the visual indication of the cut should
+		/// be cleared.
+		/// </summary>
+		void HideCut(XmlNode node);
 		
 		/// <summary>
 		/// Appends a new child text node to the currently selected

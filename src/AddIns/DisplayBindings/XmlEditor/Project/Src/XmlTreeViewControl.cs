@@ -31,6 +31,11 @@ namespace ICSharpCode.XmlEditor
 			After = 1
 		}
 		
+		/// <summary>
+		/// Raised when the delete key is pressed.
+		/// </summary>
+		public event EventHandler DeleteKeyPressed;
+		
 		public XmlTreeViewControl()
 		{
 		}
@@ -280,6 +285,24 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
+		/// Updates the image so the corresponding tree node shows that
+		/// it is in the process of being cut.
+		/// </summary>
+		public void ShowCut(XmlNode node)
+		{
+			ShowCut(node, true);
+		}
+		
+		/// <summary>
+		/// Updates the image so the corresponding tree node no longer
+		/// shows it is in the process of being cut.
+		/// </summary>
+		public void HideCut(XmlNode node)
+		{
+			ShowCut(node, false);
+		}
+		
+		/// <summary>
 		/// If no node is selected after a mouse click then we make 
 		/// sure the AfterSelect event is fired. Standard behaviour is
 		/// for the AfterSelect event not to be fired when the user
@@ -291,6 +314,17 @@ namespace ICSharpCode.XmlEditor
 			if (SelectedNode == null) {
 				this.OnAfterSelect(new TreeViewEventArgs(null, TreeViewAction.ByMouse));
 			}
+		}
+		
+		/// <summary>
+		/// Raises the DeleteKeyPressed event.
+		/// </summary>
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			if (keyData == Keys.Delete && DeleteKeyPressed != null) {
+				DeleteKeyPressed(this, new EventArgs());
+			}
+			return base.ProcessCmdKey(ref msg, keyData);
 		}
 
 		/// <summary>
@@ -492,6 +526,52 @@ namespace ICSharpCode.XmlEditor
 				return selectedCommentTreeNode;
 			} else {
 				return FindComment(comment, Nodes);
+			}
+		}
+		
+		/// <summary>
+		/// Shows the corresponding tree node with the ghosted image 
+		/// that indicates it is being cut.
+		/// </summary>
+		void ShowCutElement(XmlElement element, bool showGhostImage)
+		{
+			XmlElementTreeNode node = FindElement(element);
+			node.ShowGhostImage = showGhostImage;
+		}
+		
+		/// <summary>
+		/// Shows the corresponding tree node with the ghosted image 
+		/// that indicates it is being cut.
+		/// </summary>
+		void ShowCutTextNode(XmlText textNode, bool showGhostImage)
+		{
+			XmlTextTreeNode node = FindTextNode(textNode);
+			node.ShowGhostImage = showGhostImage;
+		}
+				
+		/// <summary>
+		/// Shows the corresponding tree node with the ghosted image 
+		/// that indicates it is being cut.
+		/// </summary>
+		void ShowCutComment(XmlComment comment, bool showGhostImage)
+		{
+			XmlCommentTreeNode node = FindComment(comment);
+			node.ShowGhostImage = showGhostImage;
+		}
+		
+		/// <summary>
+		/// Shows the cut node with a ghost image.
+		/// </summary>
+		/// <param name="showGhostImage">True if the node should be
+		/// shown with the ghost image.</param>
+		void ShowCut(XmlNode node, bool showGhostImage)
+		{
+			if (node is XmlElement) {
+				ShowCutElement((XmlElement)node, showGhostImage);
+			} else if (node is XmlText) {
+				ShowCutTextNode((XmlText)node, showGhostImage);
+			} else if (node is XmlComment) {
+				ShowCutComment((XmlComment)node, showGhostImage);
 			}
 		}
 	}

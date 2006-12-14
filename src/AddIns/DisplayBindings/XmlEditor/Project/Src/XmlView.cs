@@ -23,6 +23,7 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Actions;
 using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.XmlEditor
@@ -42,23 +43,39 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static readonly string CategoryName = "XML";
 
-		XmlEditorControl xmlEditor = new XmlEditorControl();
+		/// <summary>
+		/// Edit actions addin tree path for the xml editor control.
+		/// </summary>
+		static readonly string editActionsPath = "/AddIns/XmlEditor/EditActions";
+		
+		/// <summary>
+		/// Right click menu addin tree path for the xml editor control.
+		/// </summary>
+		static readonly string contextMenuPath = "/SharpDevelop/ViewContent/XmlEditor/ContextMenu";
+
+		XmlEditorControl xmlEditor;
 		TextEditorDisplayBindingWrapper.FileChangeWatcher watcher;
 		static MessageViewCategory category;
 		string stylesheetFileName;
 		XmlTreeView xmlTreeView;
-				
-		public XmlView()
-		{
-			xmlEditor.Dock = DockStyle.Fill;
 			
-			xmlEditor.SchemaCompletionDataItems = XmlSchemaManager.SchemaCompletionDataItems;
-			xmlEditor.Document.DocumentChanged += DocumentChanged;
-
+		/// <summary>
+		/// Creates an XmlView that is used by SharpDevelop to provide an
+		/// XML editor.
+		/// </summary>
+		public XmlView()
+			: this(new SharpDevelopTextEditorProperties(), XmlSchemaManager.SchemaCompletionDataItems)
+		{
+			watcher = new TextEditorDisplayBindingWrapper.FileChangeWatcher(this);
+			
+			xmlEditor.AddEditActions(GetEditActions());
+			xmlEditor.TextAreaContextMenuStrip = MenuService.CreateContextMenu(xmlEditor, contextMenuPath);
+			
+			// Add event handlers so we can update the status bar when
+			// the cursor position changes.
 			xmlEditor.ActiveTextAreaControl.Caret.CaretModeChanged += CaretModeChanged;
 			xmlEditor.ActiveTextAreaControl.Caret.PositionChanged += CaretChanged;
 			xmlEditor.ActiveTextAreaControl.Enter += CaretUpdate;
-			watcher = new TextEditorDisplayBindingWrapper.FileChangeWatcher(this);
 			
 			// Listen for changes to the xml editor properties.
 			XmlEditorAddInOptions.PropertyChanged += PropertyChanged;
@@ -67,6 +84,21 @@ namespace ICSharpCode.XmlEditor
 
 			xmlTreeView = new XmlTreeView(this);
 			SecondaryViewContents.Add(xmlTreeView);
+		}
+		
+		/// <summary>
+		/// Creates an XmlView that is independent of SharpDevelop. This
+		/// constructor does rely on SharpDevelop being available and is
+		/// only used for testing the XmlView.
+		/// </summary>
+		public XmlView(ITextEditorProperties textEditorProperties, XmlSchemaCompletionDataCollection schemas)
+		{
+			xmlEditor = new XmlEditorControl();
+			xmlEditor.Dock = DockStyle.Fill;
+			
+			xmlEditor.TextEditorProperties = textEditorProperties;
+			xmlEditor.SchemaCompletionDataItems = schemas;
+			xmlEditor.Document.DocumentChanged += DocumentChanged;
 		}
 
 		/// <summary>
@@ -296,12 +328,12 @@ namespace ICSharpCode.XmlEditor
 		public override void Dispose()
 		{
 			base.Dispose();
-			watcher.Dispose();
-			
-			XmlEditorAddInOptions.PropertyChanged -= PropertyChanged;
-			XmlSchemaManager.UserSchemaAdded -= new EventHandler(UserSchemaAdded);
-			XmlSchemaManager.UserSchemaRemoved -= new EventHandler(UserSchemaRemoved);
-			
+			if (watcher != null) {
+				watcher.Dispose();
+				XmlEditorAddInOptions.PropertyChanged -= PropertyChanged;
+				XmlSchemaManager.UserSchemaAdded -= new EventHandler(UserSchemaAdded);
+				XmlSchemaManager.UserSchemaRemoved -= new EventHandler(UserSchemaRemoved);
+			}
 			xmlEditor.Dispose();
 		}
 		
@@ -1241,6 +1273,14 @@ namespace ICSharpCode.XmlEditor
 				}
 			}
 			return schemas.ToArray();
+		}
+		
+		/// <summary>
+		/// Gets the edit actions for the xml editor from the addin tree.
+		/// </summary>
+		IEditAction[] GetEditActions()
+		{
+			return (IEditAction[])(AddInTree.BuildItems(editActionsPath, this, false).ToArray(typeof(IEditAction)));
 		}
 	}
 }

@@ -25,5 +25,11 @@ namespace XmlEditor.Tests.Utils
 		{
 			base.OnMouseDown(e);
 		}
+		
+		public void CallProcessCmdKey(Keys keys)
+		{
+			Message msg = new Message();
+			base.ProcessCmdKey(ref msg, keys);
+		}
 	}
 }

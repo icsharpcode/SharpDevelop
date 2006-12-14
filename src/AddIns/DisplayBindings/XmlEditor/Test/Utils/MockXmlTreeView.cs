@@ -45,7 +45,10 @@ namespace XmlEditor.Tests.Utils
 		List<XmlComment> commentNodesRemoved = new List<XmlComment>();
 		List<XmlComment> commentNodesInsertedBefore = new List<XmlComment>();
 		List<XmlComment> commentNodesInsertedAfter = new List<XmlComment>();
-		
+		XmlNode selectedNode;
+		List<XmlNode> cutNodes = new List<XmlNode>();
+		List<XmlNode> hiddenCutNodes = new List<XmlNode>();
+			
 		public MockXmlTreeView()
 		{
 		}
@@ -80,6 +83,7 @@ namespace XmlEditor.Tests.Utils
 			}
 			set {
 				selectedElement = value;
+				selectedNode = value;
 			}
 		}
 		
@@ -89,6 +93,7 @@ namespace XmlEditor.Tests.Utils
 			}
 			set {
 				selectedTextNode = value;
+				selectedNode = value;
 			}
 		}
 		
@@ -98,6 +103,16 @@ namespace XmlEditor.Tests.Utils
 			}
 			set {
 				selectedCommentNode = value;
+				selectedNode = value;
+			}
+		}
+		
+		public XmlNode SelectedNode {
+			get {
+				return selectedNode;
+			}
+			set {
+				selectedNode = value;
 			}
 		}
 
@@ -211,6 +226,16 @@ namespace XmlEditor.Tests.Utils
 		public void InsertCommentAfter(XmlComment comment)
 		{
 			commentNodesInsertedAfter.Add(comment);
+		}
+		
+		public void ShowCut(XmlNode node)
+		{
+			cutNodes.Add(node);
+		}
+		
+		public void HideCut(XmlNode node)
+		{
+			hiddenCutNodes.Add(node);
 		}
 		
 		public string TextContent {
@@ -451,6 +476,26 @@ namespace XmlEditor.Tests.Utils
 		public List<XmlComment> CommentNodesInsertedAfter {
 			get {
 				return commentNodesInsertedAfter;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the nodes that used when informing the view
+		/// that a particular node was about to be cut.
+		/// </summary>
+		public List<XmlNode> CutNodes {
+			get {
+				return cutNodes;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the nodes where the cut has been hidden via
+		/// the HideCut method.
+		/// </summary>
+		public List<XmlNode> HiddenCutNodes {
+			get {
+				return hiddenCutNodes;
 			}
 		}
 	}

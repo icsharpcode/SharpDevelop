@@ -17,6 +17,7 @@ namespace ICSharpCode.XmlEditor
 	public class XmlTextTreeNode : XmlCharacterDataTreeNode
 	{
 		public const string XmlTextTreeNodeImageKey = "XmlTextTreeNodeImage";
+		public const string XmlTextTreeNodeGhostImageKey = "XmlTextTreeNodeGhostImage";
 		
 		XmlText xmlText;
 		
@@ -35,6 +36,24 @@ namespace ICSharpCode.XmlEditor
 		public XmlText XmlText {
 			get {
 				return xmlText;
+			}
+		}
+		
+		/// <summary>
+		/// Gets or sets whether to show the ghost image which is 
+		/// displayed when cutting the node.
+		/// </summary>
+		public bool ShowGhostImage {
+			get {
+				return ImageKey == XmlTextTreeNodeGhostImageKey;
+			}
+			set {
+				if (value) {
+					ImageKey = XmlTextTreeNodeGhostImageKey;
+				} else {
+					ImageKey = XmlTextTreeNodeImageKey;
+				}
+				SelectedImageKey = ImageKey;
 			}
 		}
 	}

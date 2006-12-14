@@ -101,6 +101,16 @@ namespace XmlEditor.Tests.Utils
 		}
 		
 		/// <summary>
+		/// Allows us to call the XmlTreeViewContainer's 
+		/// XmlElementTreeViewDeleteKeyPressed method to fake the user 
+		/// pressing the delete key in the xml tree view control.
+		/// </summary>
+		public void CallXmlElementTreeViewDeleteKeyPressed()
+		{
+			base.XmlElementTreeViewDeleteKeyPressed(this, new EventArgs());
+		}
+		
+		/// <summary>
 		/// Returns a new MockAddElementDialog for testing.
 		/// </summary>
 		protected override IAddElementDialog CreateAddElementDialog(string[] elementNames)

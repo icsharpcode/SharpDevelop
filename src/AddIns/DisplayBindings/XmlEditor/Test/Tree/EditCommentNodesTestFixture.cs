@@ -113,7 +113,8 @@ namespace XmlEditor.Tests.Tree
 		public void RemoveComment()
 		{
 			mockXmlTreeView.SelectedComment = rootComment;
-			editor.RemoveComment();
+			mockXmlTreeView.SelectedNode = rootComment;
+			editor.Delete();
 			
 			Assert.AreEqual(1, mockXmlTreeView.CommentNodesRemoved.Count);
 			Assert.AreSame(rootComment, mockXmlTreeView.CommentNodesRemoved[0]);
@@ -126,7 +127,8 @@ namespace XmlEditor.Tests.Tree
 		public void RemoveCommentWhenNoNodeSelected()
 		{
 			mockXmlTreeView.SelectedComment = null;
-			editor.RemoveComment();
+			mockXmlTreeView.SelectedNode = null;
+			editor.Delete();
 			
 			Assert.IsFalse(mockXmlTreeView.IsDirty);
 		}

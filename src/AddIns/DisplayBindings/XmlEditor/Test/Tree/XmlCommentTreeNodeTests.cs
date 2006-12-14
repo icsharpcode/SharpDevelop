@@ -58,5 +58,21 @@ namespace XmlEditor.Tests.Tree
 			XmlCommentTreeNode node = new XmlCommentTreeNode(comment);
 			Assert.AreSame(comment, node.XmlComment);
 		}
+		
+		[Test]
+		public void GhostImage()
+		{
+			XmlComment comment = doc.CreateComment(String.Empty);
+			XmlCommentTreeNode node = new XmlCommentTreeNode(comment);
+
+			Assert.IsFalse(node.ShowGhostImage);
+			
+			node.ShowGhostImage = false;
+			Assert.AreEqual(XmlCommentTreeNode.XmlCommentTreeNodeImageKey, node.ImageKey);
+		
+			node.ShowGhostImage = true;
+			Assert.IsTrue(node.ShowGhostImage);
+			Assert.AreEqual(XmlCommentTreeNode.XmlCommentTreeNodeGhostImageKey, node.ImageKey);
+		}
 	}
 }

@@ -277,5 +277,16 @@ namespace XmlEditor.Tests.Tree
 			Assert.AreEqual("new", node.Text);
 			Assert.AreEqual(element, node.XmlElement);
 		}
+		
+		/// <summary>
+		/// Tests that when a comment node is selected the tree view container
+		/// returns this from the SelectedNode property.
+		/// </summary>
+		[Test]
+		public void SelectedNodeWhenCommentNodeSelected()
+		{
+			treeView.SelectedNode = childCommentTreeNode;
+			Assert.AreEqual(childCommentTreeNode.XmlComment, treeViewContainer.SelectedNode);
+		}
 	}
 }

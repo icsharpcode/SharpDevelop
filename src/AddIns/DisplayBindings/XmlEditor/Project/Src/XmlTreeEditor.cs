@@ -22,6 +22,8 @@ namespace ICSharpCode.XmlEditor
 		IXmlTreeView view;
 		XmlDocument document;
 		XmlCompletionDataProvider completionDataProvider;
+		XmlNode copiedNode;
+		XmlNode cutNode;
 		
 		public XmlTreeEditor(IXmlTreeView view, XmlCompletionDataProvider completionDataProvider)
 		{
@@ -149,8 +151,7 @@ namespace ICSharpCode.XmlEditor
 					view.IsDirty = true;
 					foreach (string elementName in selectedElementNames) {
 						XmlElement newElement = document.CreateElement(elementName, selectedElement.NamespaceURI);
-						selectedElement.AppendChild(newElement);
-						view.AppendChildElement(newElement);
+						AppendChildElement(selectedElement, newElement);
 					}
 				}
 			}
@@ -213,45 +214,11 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Removes the currently selected element.
-		/// </summary>
-		public void RemoveElement()
-		{
-			XmlElement selectedElement = view.SelectedElement;
-			if (selectedElement != null) {
-				XmlNode parentNode = selectedElement.ParentNode;
-				parentNode.RemoveChild(selectedElement);
-				view.IsDirty = true;
-				view.RemoveElement(selectedElement);
-			}
-		}
-		
-		/// <summary>
-		/// Removes the currently select text node.
-		/// </summary>
-		public void RemoveTextNode()
-		{
-			XmlText textNode = view.SelectedTextNode;
-			if (textNode != null) {
-				XmlNode parentNode = textNode.ParentNode;
-				parentNode.RemoveChild(textNode);
-				view.IsDirty = true;
-				view.RemoveTextNode(textNode);
-			}
-		}
-		
-		/// <summary>
 		/// Adds a child text node to the current selected element.
 		/// </summary>
 		public void AppendChildTextNode()
 		{
-			XmlElement selectedElement = view.SelectedElement;
-			if (selectedElement != null) {
-				XmlText textNode = document.CreateTextNode(String.Empty);
-				selectedElement.AppendChild(textNode);
-				view.IsDirty = true;
-				view.AppendChildTextNode(textNode);
-			}
+			AppendChildTextNode(document.CreateTextNode(String.Empty));
 		}
 		
 		/// <summary>
@@ -299,27 +266,8 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void AppendChildComment()
 		{
-			XmlElement selectedElement = view.SelectedElement;
-			if (selectedElement != null) {
-				XmlComment comment = document.CreateComment(String.Empty);
-				selectedElement.AppendChild(comment);
-				view.IsDirty = true;
-				view.AppendChildComment(comment);
-			}
-		}
-		
-		/// <summary>
-		/// Removes the currently select comment.
-		/// </summary>
-		public void RemoveComment()
-		{
-			XmlComment comment = view.SelectedComment;
-			if (comment != null) {
-				XmlNode parentNode = comment.ParentNode;
-				parentNode.RemoveChild(comment);
-				view.IsDirty = true;
-				view.RemoveComment(comment);
-			}
+			XmlComment comment = document.CreateComment(String.Empty);
+			AppendChildComment(comment);
 		}
 		
 		/// <summary>
@@ -349,6 +297,105 @@ namespace ICSharpCode.XmlEditor
 				parentNode.InsertAfter(comment, node);
 				view.IsDirty = true;
 				view.InsertCommentAfter(comment);
+			}
+		}
+		
+		/// <summary>
+		/// Deletes the selected tree node from the xml document.
+		/// </summary>
+		public void Delete()
+		{
+			XmlNode selectedNode = view.SelectedNode;
+			XmlElement selectedElement = selectedNode as XmlElement;
+			XmlComment selectedComment = selectedNode as XmlComment;
+			XmlText selectedText = selectedNode as XmlText;
+			if (selectedElement != null) {
+				RemoveElement(selectedElement);
+			} else if (selectedComment != null) {
+				RemoveComment(selectedComment);
+			} else if (selectedText != null) {
+				RemoveTextNode(selectedText);
+			}
+		}
+		
+		/// <summary>
+		/// Copies the selected node.
+		/// </summary>
+		public void Copy()
+		{
+			copiedNode = view.SelectedNode;
+			if (cutNode != null) {
+				view.HideCut(cutNode);
+			}
+		}
+		
+		/// <summary>
+		/// Pastes the copied or cut node as a child of the selected node.
+		/// </summary>
+		public void Paste()
+		{
+			if (IsPasteEnabled) {
+				if (copiedNode != null) {
+					AppendChildCopy(copiedNode);
+				} else {
+					CutAndPasteNode(cutNode);
+				}
+			}
+		}
+				
+		/// <summary>
+		/// Cuts the selected node.
+		/// </summary>
+		public void Cut()
+		{
+			cutNode = view.SelectedNode;
+			if (cutNode != null) {
+				view.ShowCut(cutNode);
+			}
+			copiedNode = null;
+		}
+		
+		/// <summary>
+		/// Gets whether the cut method is enabled.
+		/// </summary>
+		public bool IsCutEnabled {
+			get {
+				XmlNode selectedNode = view.SelectedNode;
+				return selectedNode != null && document.DocumentElement != selectedNode;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether the copy method is enabled.
+		/// </summary>
+		public bool IsCopyEnabled {
+			get {
+				return view.SelectedNode != null;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether the paste method is enabled.
+		/// </summary>
+		public bool IsPasteEnabled {
+			get {
+				XmlNode destinationNode = view.SelectedNode;
+				if (destinationNode != null) {
+					XmlNode sourceNode = copiedNode ?? cutNode;
+					if (sourceNode != null) {
+						return GetPasteEnabled(sourceNode, destinationNode);
+					}
+				}
+				return false;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether the delete method is enabled.
+		/// </summary>
+		public bool IsDeleteEnabled {
+			get {
+				return view.SelectedNode != null;
 			}
 		}
 		
@@ -435,6 +482,167 @@ namespace ICSharpCode.XmlEditor
 				return node;
 			}
 			return view.SelectedElement;
+		}
+		
+		/// <summary>
+		/// Appends the specified element as a child to the selected element.
+		/// </summary>
+		void AppendChildElement(XmlElement element)
+		{
+			AppendChildElement(view.SelectedElement, element);
+		}
+		
+		/// <summary>
+		/// Appends the specified element as a child to the selected element.
+		/// </summary>
+		void AppendChildElement(XmlElement selectedElement, XmlElement element)
+		{
+			selectedElement.AppendChild(element);
+			view.AppendChildElement(element);
+			view.IsDirty = true;
+		}
+		
+		/// <summary>
+		/// Removes the specified element from the document.
+		/// </summary>
+		void RemoveElement(XmlElement element)
+		{
+			XmlNode parentNode = element.ParentNode;
+			parentNode.RemoveChild(element);
+			view.IsDirty = true;
+			view.RemoveElement(element);
+		}
+		
+		/// <summary>
+		/// Removes the specified comment from the document.
+		/// </summary>
+		void RemoveComment(XmlComment comment)
+		{
+			XmlNode parentNode = comment.ParentNode;
+			parentNode.RemoveChild(comment);
+			view.IsDirty = true;
+			view.RemoveComment(comment);
+		}
+		
+		/// <summary>
+		/// Removes the specified text node from the document.
+		/// </summary>
+		void RemoveTextNode(XmlText textNode)
+		{
+			XmlNode parentNode = textNode.ParentNode;
+			parentNode.RemoveChild(textNode);
+			view.IsDirty = true;
+			view.RemoveTextNode(textNode);
+		}
+		
+		/// <summary>
+		/// Gets whether the source node can be pasted as a child
+		/// node of the destination node.
+		/// </summary>
+		static bool GetPasteEnabled(XmlNode source, XmlNode destination)
+		{
+			if (source is XmlElement || source is XmlText || source is XmlComment) {
+				return destination is XmlElement;
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// Takes a copy of the node and appends it to the selected
+		/// node.
+		/// </summary>
+		void AppendChildCopy(XmlNode nodeToCopy)
+		{
+			if (nodeToCopy is XmlElement) {
+				XmlElement copy = (XmlElement)nodeToCopy.CloneNode(true);
+				AppendChildElement(copy);
+			} else if (nodeToCopy is XmlText) {
+				XmlText copy = (XmlText)nodeToCopy.CloneNode(true);
+				AppendChildTextNode(copy);
+			} else if (nodeToCopy is XmlComment) {
+				XmlComment copy = (XmlComment)nodeToCopy.CloneNode(true);
+				AppendChildComment(copy);
+			}
+		}
+		
+		/// <summary>
+		/// Appends the specified text node to the currently selected element.
+		/// </summary>
+		void AppendChildTextNode(XmlText textNode)
+		{
+			XmlElement selectedElement = view.SelectedElement;
+			if (selectedElement != null) {
+				selectedElement.AppendChild(textNode);
+				view.IsDirty = true;
+				view.AppendChildTextNode(textNode);
+			}
+		}
+		
+		/// <summary>
+		/// Cuts from the tree and pastes it to the currently selected node.
+		/// </summary>
+		void CutAndPasteNode(XmlNode node)
+		{
+			XmlElement cutElement = node as XmlElement;
+			XmlText cutTextNode = node as XmlText;
+			XmlComment cutCommentNode = node as XmlComment;
+			if (cutElement != null) {
+				CutAndPasteElement(cutElement);
+			} else if (cutTextNode != null) {
+				CutAndPasteTextNode(cutTextNode);
+			} else if (cutCommentNode != null) {
+				CutAndPasteComment(cutCommentNode);
+			}
+			cutNode = null;
+		}
+		
+		/// <summary>
+		/// Cuts the element from the document and pastes it as a child
+		/// of the selected element.
+		/// </summary>
+		void CutAndPasteElement(XmlElement element)
+		{
+			if (element != view.SelectedElement) {
+				view.RemoveElement(element);
+				AppendChildElement(element);
+			} else {
+				// Pasting to the same cut element so just 
+				// change the tree icon back to the uncut state.
+				view.HideCut(element);
+			}
+		}
+		
+		/// <summary>
+		/// Cuts the text node from the document and appends it as a child
+		/// of the currently selected element.
+		/// </summary>
+		void CutAndPasteTextNode(XmlText text)
+		{
+			view.RemoveTextNode(text);
+			AppendChildTextNode(text);
+		}
+		
+		/// <summary>
+		/// Appends the specified comment to the currently selected element.
+		/// </summary>
+		void AppendChildComment(XmlComment comment)
+		{
+			XmlElement selectedElement = view.SelectedElement;
+			if (selectedElement != null) {
+				selectedElement.AppendChild(comment);
+				view.IsDirty = true;
+				view.AppendChildComment(comment);
+			}
+		}
+		
+		/// <summary>
+		/// Cuts the comment node from the document and appends it as a child
+		/// of the currently selected element.
+		/// </summary>
+		void CutAndPasteComment(XmlComment comment)
+		{
+			view.RemoveComment(comment);
+			AppendChildComment(comment);
 		}
 	}
 }

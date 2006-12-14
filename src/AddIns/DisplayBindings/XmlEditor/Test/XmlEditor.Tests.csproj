@@ -72,6 +72,7 @@
     <Compile Include="Schema\NestedChoiceTestFixture.cs" />
     <Compile Include="Schema\ChildElementAttributesTestFixture.cs" />
     <Compile Include="Tree\AddChildTextNodeTestFixture.cs" />
+    <Compile Include="Tree\DeleteTreeNodeWithDeleteKeyTestFixture.cs" />
     <Compile Include="Tree\EditCommentNodesInTreeControlTestFixture.cs" />
     <Compile Include="Tree\EditCommentNodesTestFixture.cs" />
     <Compile Include="Tree\InsertTextNodeAfterTestFixture.cs" />
@@ -79,11 +80,14 @@
     <Compile Include="Tree\MenuCommandsTestFixture.cs" />
     <Compile Include="Tree\MouseDownTestFixture.cs" />
     <Compile Include="Tree\OwnerStatusTestFixture.cs" />
+    <Compile Include="Tree\PasteInTreeControlTestFixture.cs" />
+    <Compile Include="Tree\PasteTestFixture.cs" />
     <Compile Include="Tree\RemoveElementsFromTreeControlTestFixture.cs" />
     <Compile Include="Tree\RemoveElementTestFixture.cs" />
     <Compile Include="Tree\RemoveTextNodesFromTreeControlTestFixture.cs" />
     <Compile Include="Tree\RemoveTextNodeTestFixture.cs" />
     <Compile Include="Tree\XmlCommentTreeNodeTests.cs" />
+    <Compile Include="Tree\XmlTreeViewClipboardHandlerTestFixture.cs" />
     <Compile Include="Tree\XmlTreeViewContainerTestFixture.cs" />
     <Compile Include="Utils\DerivedXmlTreeView.cs" />
     <Compile Include="Utils\DerivedXmlTreeViewContainerControl.cs" />

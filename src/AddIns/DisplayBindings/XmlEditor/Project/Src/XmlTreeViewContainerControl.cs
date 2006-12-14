@@ -12,6 +12,8 @@ using System.Windows.Forms;
 using System.Xml;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -20,7 +22,7 @@ namespace ICSharpCode.XmlEditor
 	/// attributes property grid in a split container. This is separate from
 	/// the XmlTreeView class so we can use the forms designer to design this control.
 	/// </summary>
-	public class XmlTreeViewContainerControl : System.Windows.Forms.UserControl, IXmlTreeView, IOwnerState
+	public class XmlTreeViewContainerControl : System.Windows.Forms.UserControl, IXmlTreeView, IOwnerState, IClipboardHandler
 	{
 		XmlTreeEditor editor;
 		bool dirty;
@@ -217,6 +219,26 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
+		/// Gets the currently selected node based on what is selected in 
+		/// the tree. This does not return the selected attribute.
+		/// </summary>
+		public XmlNode SelectedNode {
+			get {
+				XmlElement selectedElement = SelectedElement;
+				if (selectedElement != null) {
+					return selectedElement;
+				}
+				
+				XmlText selectedTextNode = SelectedTextNode;
+				if (selectedTextNode != null) {
+					return selectedTextNode;
+				}
+				
+				return SelectedComment;
+			}
+		}
+		
+		/// <summary>
 		/// Gets the element currently selected.
 		/// </summary>
 		public XmlElement SelectedElement {
@@ -358,14 +380,6 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Removes the selected element.
-		/// </summary>
-		public void RemoveElement()
-		{
-			editor.RemoveElement();
-		}
-		
-		/// <summary>
 		/// Removes the specified element from the tree.
 		/// </summary>
 		public void RemoveElement(XmlElement element)
@@ -430,14 +444,6 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Removes the currently selected text node.
 		/// </summary>
-		public void RemoveTextNode()
-		{
-			editor.RemoveTextNode();
-		}
-		
-		/// <summary>
-		/// Removes the currently selected text node.
-		/// </summary>
 		public void RemoveTextNode(XmlText textNode)
 		{
 			xmlElementTreeView.RemoveTextNode(textNode);
@@ -475,14 +481,6 @@ namespace ICSharpCode.XmlEditor
 		public void AppendChildComment()
 		{
 			editor.AppendChildComment();
-		}
-		
-		/// <summary>
-		/// Removes the selected comment node from the tree.
-		/// </summary>
-		public void RemoveComment()
-		{
-			editor.RemoveComment();
 		}
 		
 		/// <summary>
@@ -526,6 +524,113 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
+		/// Updates the view to show that the specified node is going
+		/// to be cut.
+		/// </summary>
+		public void ShowCut(XmlNode node)
+		{
+			xmlElementTreeView.ShowCut(node);
+		}
+		
+		/// <summary>
+		/// Updates the view so that the specified node is not displayed
+		/// as being cut.
+		/// </summary>
+		public void HideCut(XmlNode node)
+		{
+			xmlElementTreeView.HideCut(node);
+		}
+
+		#region IClipboardHandler implementation
+
+		/// <summary>
+		/// Gets whether cutting is enabled.
+		/// </summary>
+		public bool EnableCut {
+			get {
+				return editor.IsCutEnabled;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether copying is enabled.
+		/// </summary>
+		public bool EnableCopy {
+			get {
+				return editor.IsCopyEnabled;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether pasting is enabled.
+		/// </summary>
+		public bool EnablePaste {
+			get {
+				return editor.IsPasteEnabled;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether deleting is enabled.
+		/// </summary>
+		public bool EnableDelete {
+			get {
+				return editor.IsDeleteEnabled;
+			}
+		}
+		
+		/// <summary>
+		/// Currently not possible to select all tree nodes so this
+		/// always returns false.
+		/// </summary>
+		public bool EnableSelectAll {
+			get {
+				return false;
+			}
+		}
+		
+		/// <summary>
+		/// Cuts the selected tree node.
+		/// </summary>
+		public void Cut()
+		{
+			editor.Cut();
+		}
+		
+		/// <summary>
+		/// Copies the selected tree node.
+		/// </summary>
+		public void Copy()
+		{
+			editor.Copy();
+		}
+		
+		/// <summary>
+		/// Pastes the selected tree node.
+		/// </summary>
+		public void Paste()
+		{
+			editor.Paste();
+		}
+		
+		/// <summary>
+		/// Deletes the selected tree node.
+		/// </summary>
+		public void Delete()
+		{
+			editor.Delete();
+		}
+		
+		/// <summary>
+		/// Selects all tree nodes. Currently not supported.
+		/// </summary>
+		public void SelectAll()
+		{
+		}
+		
+		#endregion
+		
+		/// <summary>
 		/// Disposes resources used by the control.
 		/// </summary>
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -557,6 +662,14 @@ namespace ICSharpCode.XmlEditor
 		protected virtual IAddAttributeDialog CreateAddAttributeDialog(string[] attributeNames)
 		{
 			return new AddAttributeDialog(attributeNames);
+		}
+		
+		/// <summary>
+		/// Deletes the selected node.
+		/// </summary>
+		protected void XmlElementTreeViewDeleteKeyPressed(object source, EventArgs e)
+		{
+			Delete();
 		}
 		
 		#region Forms Designer generated code
@@ -611,6 +724,7 @@ namespace ICSharpCode.XmlEditor
 			this.xmlElementTreeView.AllowDrop = true;
 			this.xmlElementTreeView.CanClearSelection = true;
 			this.xmlElementTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.xmlElementTreeView.Document = null;
 			this.xmlElementTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
 			this.xmlElementTreeView.HideSelection = false;
 			this.xmlElementTreeView.ImageIndex = 0;
@@ -622,6 +736,7 @@ namespace ICSharpCode.XmlEditor
 			this.xmlElementTreeView.Size = new System.Drawing.Size(185, 326);
 			this.xmlElementTreeView.TabIndex = 0;
 			this.xmlElementTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.XmlElementTreeViewAfterSelect);
+			this.xmlElementTreeView.DeleteKeyPressed += new System.EventHandler(this.XmlElementTreeViewDeleteKeyPressed);
 			// 
 			// attributesGrid
 			// 
@@ -714,12 +829,22 @@ namespace ICSharpCode.XmlEditor
 				components = new Container();
 			}
 			ImageList images = new ImageList(components);
+			
+			// Add xml element tree node images.
 			Image xmlElementImage = Image.FromStream(typeof(XmlTreeViewContainerControl).Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlElementTreeNodeIcon.png"));
 			images.Images.Add(XmlElementTreeNode.XmlElementTreeNodeImageKey, xmlElementImage);
+			images.Images.Add(XmlElementTreeNode.XmlElementTreeNodeGhostImageKey, IconService.GetGhostBitmap(new Bitmap(xmlElementImage)));
+			
+			// Add text tree node images.
 			Image xmlTextImage = Image.FromStream(typeof(XmlTreeViewContainerControl).Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlTextTreeNodeIcon.png"));
 			images.Images.Add(XmlTextTreeNode.XmlTextTreeNodeImageKey, xmlTextImage);
+			images.Images.Add(XmlTextTreeNode.XmlTextTreeNodeGhostImageKey, IconService.GetGhostBitmap(new Bitmap(xmlTextImage)));
+			
+			// Add comment tree node images.
 			Image xmlCommentImage = Image.FromStream(typeof(XmlTreeViewContainerControl).Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlCommentTreeNodeIcon.png"));
 			images.Images.Add(XmlCommentTreeNode.XmlCommentTreeNodeImageKey, xmlCommentImage);
+			images.Images.Add(XmlCommentTreeNode.XmlCommentTreeNodeGhostImageKey, IconService.GetGhostBitmap(new Bitmap(xmlCommentImage)));
+
 			xmlElementTreeView.ImageList = images;
 		}
 		

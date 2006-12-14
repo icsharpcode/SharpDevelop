@@ -31,8 +31,9 @@ namespace XmlEditor.Tests.Tree
 			paragraphElement = (XmlElement)editor.Document.SelectSingleNode("/html/body/p");
 			XmlText textNode = (XmlText)paragraphElement.FirstChild;
 			mockXmlTreeView.SelectedTextNode = textNode;
+			mockXmlTreeView.SelectedNode = textNode;
 
-			editor.RemoveTextNode();
+			editor.Delete();
 		}
 		
 		[Test]
@@ -51,7 +52,8 @@ namespace XmlEditor.Tests.Tree
 		{
 			mockXmlTreeView.IsDirty = false;
 			mockXmlTreeView.SelectedTextNode = null;
-			editor.RemoveTextNode();
+			mockXmlTreeView.SelectedNode = null;
+			editor.Delete();
 			
 			Assert.IsFalse(mockXmlTreeView.IsDirty);
 		}

@@ -23,12 +23,12 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class XmlEditorControl : ICSharpCode.TextEditor.TextEditorControl
 	{
-		static readonly string editActionsPath       = "/AddIns/XmlEditor/EditActions";
-		static readonly string contextMenuPath       = "/SharpDevelop/ViewContent/XmlEditor/ContextMenu";
 		CodeCompletionWindow codeCompletionWindow;
 		XmlSchemaCompletionDataCollection schemaCompletionDataItems = new XmlSchemaCompletionDataCollection();
 		XmlSchemaCompletionData defaultSchemaCompletionData = null;
 		string defaultNamespacePrefix = String.Empty;
+		ContextMenuStrip contextMenuStrip;
+		TextAreaControl primaryTextAreaControl;
 		
 		public XmlEditorControl()
 		{
@@ -37,13 +37,10 @@ namespace ICSharpCode.XmlEditor
 			
 			Document.HighlightingStrategy = HighlightingManager.Manager.FindHighlighter("XML");
 			Document.FoldingManager.FoldingStrategy = new XmlFoldingStrategy();
-			TextEditorProperties = new SharpDevelopTextEditorProperties();
 			
 			Document.BookmarkManager.Factory = new SDBookmarkFactory(Document.BookmarkManager);
 			Document.BookmarkManager.Added   += new ICSharpCode.TextEditor.Document.BookmarkEventHandler(BookmarkAdded);
 			Document.BookmarkManager.Removed += new ICSharpCode.TextEditor.Document.BookmarkEventHandler(BookmarkRemoved);
-			
-			GenerateEditActions();
 		}
 		
 		/// <summary>
@@ -83,7 +80,6 @@ namespace ICSharpCode.XmlEditor
 			get {
 				return defaultSchemaCompletionData;
 			}
-			
 			set {
 				defaultSchemaCompletionData = value;
 			}
@@ -103,12 +99,43 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		/// <summary>
+		/// Adds edit actions to the xml editor.
+		/// </summary>
+		public void AddEditActions(IEditAction[] actions)
+		{
+			foreach (IEditAction action in actions) {
+				foreach (Keys key in action.Keys) {
+					editactions[key] = action;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Gets or sets the right click menu associated with the
+		/// xml editor.
+		/// </summary>
+		public ContextMenuStrip TextAreaContextMenuStrip {
+			get {
+				return contextMenuStrip;
+			}
+			set {
+				contextMenuStrip = value;
+				if (primaryTextAreaControl != null) {
+					primaryTextAreaControl.ContextMenuStrip = value;
+				}
+			}
+		}
+		
 		protected override void InitializeTextAreaControl(TextAreaControl newControl)
 		{
 			base.InitializeTextAreaControl(newControl);
+			
+			primaryTextAreaControl = newControl;
+		
 			newControl.TextArea.KeyEventHandler += new ICSharpCode.TextEditor.KeyEventHandler(HandleKeyPress);
 
-			newControl.ContextMenuStrip = MenuService.CreateContextMenu(this, contextMenuPath);
+			newControl.ContextMenuStrip = contextMenuStrip;
 			newControl.SelectionManager.SelectionChanged += new EventHandler(SelectionChanged);
 			newControl.Document.DocumentChanged += new DocumentEventHandler(DocumentChanged);
 			newControl.TextArea.ClipboardHandler.CopyText += new CopyTextEventHandler(ClipboardHandlerCopyText);
@@ -198,17 +225,6 @@ namespace ICSharpCode.XmlEditor
 				
 				if (codeCompletionWindow != null) {
 					codeCompletionWindow.Closed += new EventHandler(CodeCompletionWindowClosed);
-				}
-			}
-		}
-		
-		void GenerateEditActions()
-		{
-			IEditAction[] actions = (IEditAction[])(AddInTree.BuildItems(editActionsPath, this, false).ToArray(typeof(IEditAction)));
-			
-			foreach (IEditAction action in actions) {
-				foreach (Keys key in action.Keys) {
-					editactions[key] = action;
 				}
 			}
 		}

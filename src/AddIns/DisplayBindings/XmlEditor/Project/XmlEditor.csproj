@@ -62,9 +62,6 @@
     <Compile Include="Src\InsertCommentBeforeCommand.cs" />
     <Compile Include="Src\InsertTextNodeAfterCommand.cs" />
     <Compile Include="Src\InsertTextNodeBeforeCommand.cs" />
-    <Compile Include="Src\RemoveCommentCommand.cs" />
-    <Compile Include="Src\RemoveElementCommand.cs" />
-    <Compile Include="Src\RemoveTextNodeCommand.cs" />
     <Compile Include="Src\XmlCharacterDataTreeNode.cs" />
     <Compile Include="Src\XmlCommentTreeNode.cs" />
     <Compile Include="Src\XmlEditorControl.cs">

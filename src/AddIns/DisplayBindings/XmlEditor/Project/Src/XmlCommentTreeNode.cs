@@ -17,6 +17,7 @@ namespace ICSharpCode.XmlEditor
 	public class XmlCommentTreeNode : XmlCharacterDataTreeNode
 	{
 		public const string XmlCommentTreeNodeImageKey = "XmlCommentTreeNodeImage";
+		public const string XmlCommentTreeNodeGhostImageKey = "XmlCommentTreeNodeGhostImage";
 
 		XmlComment comment;
 		
@@ -35,6 +36,24 @@ namespace ICSharpCode.XmlEditor
 		public XmlComment XmlComment {
 			get {
 				return comment;
+			}
+		}
+		
+		/// <summary>
+		/// Gets or sets whether to show the ghost image which is 
+		/// displayed when cutting the node.
+		/// </summary>
+		public bool ShowGhostImage {
+			get {
+				return ImageKey == XmlCommentTreeNodeGhostImageKey;
+			}
+			set {
+				if (value) {
+					ImageKey = XmlCommentTreeNodeGhostImageKey;
+				} else {
+					ImageKey = XmlCommentTreeNodeImageKey;
+				}
+				SelectedImageKey = ImageKey;
 			}
 		}
 	}

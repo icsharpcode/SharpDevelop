@@ -17,19 +17,29 @@ namespace ICSharpCode.XmlEditor
 	/// <summary>
 	/// The secondary view content that displays the XML document as a tree view. 
 	/// </summary>
-	public class XmlTreeView : AbstractSecondaryViewContent
+	public class XmlTreeView : AbstractSecondaryViewContent, IClipboardHandler
 	{
 		XmlTreeViewContainerControl treeViewContainer = new XmlTreeViewContainerControl();
 		XmlView xmlView;
 		bool disposed;
 		bool ignoreDirtyChange;
 		
-		public XmlTreeView(XmlView xmlView)
+		public XmlTreeView(XmlView xmlView) : this(xmlView, null, null)
+		{
+			treeViewContainer.AttributesGrid.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/AttributesGrid/ContextMenu");
+			treeViewContainer.TreeView.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/ContextMenu");
+		}
+		
+		/// <summary>
+		/// Creates an XmlTreeView with the specified context menu strips.
+		/// This constructor is only used to test the XmlTreeView class.
+		/// </summary>
+		public XmlTreeView(XmlView xmlView, ContextMenuStrip attributesGridContextMenuStrip, ContextMenuStrip treeViewContextMenuStrip)
 		{
 			this.xmlView = xmlView;
 			treeViewContainer.DirtyChanged += TreeViewContainerDirtyChanged;
-			treeViewContainer.AttributesGrid.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/AttributesGrid/ContextMenu");
-			treeViewContainer.TreeView.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/ContextMenu");
+			treeViewContainer.AttributesGrid.ContextMenuStrip = attributesGridContextMenuStrip;
+			treeViewContainer.TreeView.ContextMenuStrip = treeViewContextMenuStrip;
 		}
 		
 		public override Control Control {
@@ -85,6 +95,94 @@ namespace ICSharpCode.XmlEditor
 				}
 			}
 		}
+		
+		#region IClipboardHandler implementation
+		
+		/// <summary>
+		/// Gets whether the edit menu's cut command should be enabled.
+		/// </summary>
+		public bool EnableCut {
+			get {
+				return treeViewContainer.EnableCut;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether the edit menu's copy command should be enabled.
+		/// </summary>
+		public bool EnableCopy {
+			get {
+				return treeViewContainer.EnableCopy;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether the edit menu's paste command should be enabled.
+		/// </summary>
+		public bool EnablePaste {
+			get {
+				return treeViewContainer.EnablePaste;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether the edit menu's delete command should be enabled.
+		/// </summary>
+		public bool EnableDelete {
+			get {
+				return treeViewContainer.EnableDelete;
+			}
+		}
+		
+		/// <summary>
+		/// Always returns false.
+		/// </summary>
+		public bool EnableSelectAll {
+			get {
+				return false;
+			}
+		}
+		
+		/// <summary>
+		/// Cuts the selected tree node.
+		/// </summary>
+		public void Cut()
+		{
+			treeViewContainer.Cut();
+		}
+		
+		/// <summary>
+		/// Copies the selected tree node.
+		/// </summary>
+		public void Copy()
+		{
+			treeViewContainer.Copy();
+		}
+		
+		/// <summary>
+		/// Pastes the copied or cut node as a child of the selected tree node.
+		/// </summary>
+		public void Paste()
+		{
+			treeViewContainer.Paste();
+		}
+		
+		/// <summary>
+		/// Deletes the selected tree node.
+		/// </summary>
+		public void Delete()
+		{
+			treeViewContainer.Delete();
+		}
+		
+		/// <summary>
+		/// Select all is not currently supported.
+		/// </summary>
+		public void SelectAll()
+		{
+		}
+		
+		#endregion
 		
 		void TreeViewContainerDirtyChanged(object source, EventArgs e)
 		{

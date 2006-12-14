@@ -328,19 +328,37 @@ namespace XmlEditor.Tests.Tree
 		[Test]
 		public void XmlElementTreeNodeImageKey()
 		{
-			Assert.IsTrue(treeView.ImageList.Images.ContainsKey(XmlTextTreeNode.XmlTextTreeNodeImageKey));
+			Assert.IsTrue(treeView.ImageList.Images.ContainsKey(XmlElementTreeNode.XmlElementTreeNodeGhostImageKey));
+		}
+		
+		[Test]
+		public void XmlElementTreeNodeGhostImageKey()
+		{
+			Assert.IsTrue(treeView.ImageList.Images.ContainsKey(XmlElementTreeNode.XmlElementTreeNodeGhostImageKey));
 		}
 		
 		[Test]
 		public void XmlTextTreeNodeImageKey()
 		{
-			Assert.IsTrue(treeView.ImageList.Images.ContainsKey(XmlElementTreeNode.XmlElementTreeNodeImageKey));
+			Assert.IsTrue(treeView.ImageList.Images.ContainsKey(XmlTextTreeNode.XmlTextTreeNodeImageKey));
+		}
+		
+		[Test]
+		public void XmlTextTreeNodeGhostImageKey()
+		{
+			Assert.IsTrue(treeView.ImageList.Images.ContainsKey(XmlTextTreeNode.XmlTextTreeNodeGhostImageKey));
 		}
 		
 		[Test]
 		public void XmlCommentTreeNodeImageKey()
 		{
 			Assert.IsTrue(treeView.ImageList.Images.ContainsKey(XmlCommentTreeNode.XmlCommentTreeNodeImageKey));
+		}
+		
+		[Test]
+		public void XmlCommentTreeNodeGhostImageKey()
+		{
+			Assert.IsTrue(treeView.ImageList.Images.ContainsKey(XmlCommentTreeNode.XmlCommentTreeNodeGhostImageKey));
 		}
 		
 		/// <summary>
@@ -360,6 +378,36 @@ namespace XmlEditor.Tests.Tree
 			XmlDocument doc = new XmlDocument();
 			treeView.Document = doc;
 			Assert.AreSame(doc, treeView.Document);
+		}
+		
+		/// <summary>
+		/// Tests that when a text node is selected the tree view container
+		/// returns this from the SelectedNode property.
+		/// </summary>
+		[Test]
+		public void SelectedNodeWhenTextNodeSelected()
+		{
+			treeView.SelectedNode = textTreeNode;
+			Assert.AreEqual(textTreeNode.XmlText, treeViewContainer.SelectedNode);
+		}
+		
+		/// <summary>
+		/// Here we make sure the tree view delete key pressed handler 
+		/// removes the selected node.
+		/// </summary>
+		[Test]
+		public void DeleteTextNode()
+		{
+			treeView.SelectedNode = textTreeNode;
+			
+			// Sanity check that the html tree node has a text node child.
+			Assert.IsNotNull(htmlTreeNode.XmlElement.SelectSingleNode("text()"));
+			
+			// Call the delete key handler. This is usually called when
+			// the delete key is pressed in the xml tree view control.
+			treeViewContainer.CallXmlElementTreeViewDeleteKeyPressed();
+		
+			Assert.IsNull(htmlTreeNode.XmlElement.SelectSingleNode("text()"));
 		}
 		
 		void TreeViewContainerDirtyChanged(object source, EventArgs e)

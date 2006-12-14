@@ -63,5 +63,21 @@ namespace XmlEditor.Tests.Tree
 			XmlTextTreeNode node = new XmlTextTreeNode(text);
 			Assert.AreEqual(String.Empty, node.Text);
 		}
+		
+		[Test]
+		public void GhostImage()
+		{
+			XmlText text = doc.CreateTextNode("\r\n\r\n\r\n");
+			XmlTextTreeNode node = new XmlTextTreeNode(text);
+
+			Assert.IsFalse(node.ShowGhostImage);
+			
+			node.ShowGhostImage = false;
+			Assert.AreEqual(XmlTextTreeNode.XmlTextTreeNodeImageKey, node.ImageKey);
+		
+			node.ShowGhostImage = true;
+			Assert.IsTrue(node.ShowGhostImage);
+			Assert.AreEqual(XmlTextTreeNode.XmlTextTreeNodeGhostImageKey, node.ImageKey);
+		}
 	}
 }
