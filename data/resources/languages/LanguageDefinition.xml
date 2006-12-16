@@ -21,7 +21,7 @@
 	<!--<Languages name="Lithuanian"                    code="lt"       page=""  icon="lithuania.png" />-->
 	<Languages name="Norwegian"                     code="no"       page=""  icon="norway.png" />
 	<Languages name="Polish"                        code="pl"       page=""  icon="poland.png" />
-	<!--<Languages name="Portuguese"                    code="pt"       page=""  icon="portugal.png" />-->
+	<Languages name="Portuguese"                    code="pt"       page=""  icon="portugal.png" />
 	<Languages name="Romanian"                      code="ro"       page=""  icon="romania.png" />
 	<!--<Languages name="Russian"                       code="ru"       page=""  icon="russia.png" />-->
 	<!--<Languages name="Serbian"                       code="sr"       page=""  icon="serbia.png" />-->
