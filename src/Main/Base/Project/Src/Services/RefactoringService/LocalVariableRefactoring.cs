@@ -17,8 +17,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public override void Run()
 		{
 			LocalResolveResult local = (LocalResolveResult)Owner;
-			List<Reference> list = RefactoringService.FindReferences(local, null);
-			FindReferencesAndRenameHelper.ShowAsSearchResults("References to " + local.Field.Name, list);
+			FindReferencesAndRenameHelper.ShowAsSearchResults(
+				StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
+				                   new string[,] {{ "Name", local.Field.Name }}),
+				RefactoringService.FindReferences(local, null)
+			);
 		}
 	}
 	

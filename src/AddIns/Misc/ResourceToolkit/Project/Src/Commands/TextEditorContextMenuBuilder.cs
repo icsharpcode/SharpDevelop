@@ -129,7 +129,7 @@ namespace Hornung.ResourceToolkit.Commands
 			
 			// Allow the menu to close
 			Application.DoEvents();
-			using(AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog(ResourceService.GetString("SharpDevelop.Refactoring.FindReferencesCommand").Replace("&", null))) {
+			using(AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog(ResourceService.GetString("SharpDevelop.Refactoring.FindReferences"))) {
 				FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:Hornung.ResourceToolkit.ReferencesToResource}", new string[,] { {"ResourceFileName", System.IO.Path.GetFileName(result.FileName)}, {"ResourceKey", result.Key} }),
 				                                                  ResourceRefactoringService.FindReferences(result.FileName, result.Key, monitor));
 			}

@@ -187,7 +187,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					results.Add(res);
 				}
 			}
-			SearchInFilesManager.ShowSearchResults("Overrides of " + member.Name, results);
+			SearchInFilesManager.ShowSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.OverridesOf}",
+			                                                          new string[,] {{ "Name", member.Name }}),
+			                                       results);
 		}
 		
 		void FindReferences(object sender, EventArgs e)
@@ -202,9 +204,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			} else {
 				memberName = member.Name;
 			}
-			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferencesCommand}"))
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
 			{
-				FindReferencesAndRenameHelper.ShowAsSearchResults("References to " + memberName, 
+				FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
+				                                                                     new string[,] {{ "Name", memberName }}),
 				                                                  RefactoringService.FindReferences(member, monitor));
 			}
 		}

@@ -23,14 +23,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (registry == null)
 				throw new ArgumentNullException("registry");
 			LoggingService.Info("Cecil: Load from " + fileName);
-			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-				AssemblyDefinition asm = AssemblyFactory.GetAssembly(fs);
-				List<AssemblyName> referencedAssemblies = new List<AssemblyName>();
-				foreach (AssemblyNameReference anr in asm.MainModule.AssemblyReferences) {
-					referencedAssemblies.Add(new AssemblyName(anr.FullName));
-				}
-				return new CecilProjectContent(asm.Name.FullName, fileName, referencedAssemblies.ToArray(), asm.MainModule.Types, registry);
+			AssemblyDefinition asm = AssemblyFactory.GetAssembly(fileName);
+			List<AssemblyName> referencedAssemblies = new List<AssemblyName>();
+			foreach (AssemblyNameReference anr in asm.MainModule.AssemblyReferences) {
+				referencedAssemblies.Add(new AssemblyName(anr.FullName));
 			}
+			return new CecilProjectContent(asm.Name.FullName, fileName, referencedAssemblies.ToArray(), asm.MainModule.Types, registry);
 		}
 		
 		static void AddAttributes(IProjectContent pc, IList<IAttribute> list, CustomAttributeCollection attributes)
