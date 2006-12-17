@@ -43,6 +43,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				c = bookmark.Class;
 			}
 			
+			ParserService.ParseCurrentViewContent();
+			c = c.ProjectContent.GetClass(c.FullyQualifiedName, c.TypeParameters.Count);
+			if (c == null) {
+				return new ToolStripMenuItem[0];
+			}
+			
 			LanguageProperties language = c.ProjectContent.Language;
 			
 			List<ToolStripItem> list = new List<ToolStripItem>();

@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop
 {
 	public class SplashScreenForm : Form
 	{
-		public const string VersionText = "Serralongue build " + RevisionClass.Revision;
+		public const string VersionText = "SharpDevelop " + RevisionClass.FullVersion;
 		
 		static SplashScreenForm splashScreen;
 		static List<string> requestedFileList = new List<string>();
