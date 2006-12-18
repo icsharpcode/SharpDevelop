@@ -85,7 +85,7 @@ namespace ICSharpCode.Svn
 		bool Test(Condition condition, string fileName)
 		{
 			string[] allowedStatus = condition.Properties["state"].Split(';');
-			if (allowedStatus.Length == 0) {
+			if (allowedStatus.Length == 0 || (allowedStatus.Length == 1 && allowedStatus[0].Length == 0)) {
 				return true;
 			}
 			string status;

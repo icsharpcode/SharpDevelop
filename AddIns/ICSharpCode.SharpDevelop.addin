@@ -1405,7 +1405,7 @@
 					<MenuItem id = "ConfigurationBuilder" type = "Builder" class = "ICSharpCode.SharpDevelop.Project.Commands.SetConfigurationMenuBuilder"/>
 				</MenuItem>
 				<MenuItem id = "EditConfigurations"
-				          label = "Edit configurations/platforms"
+				          label = "${res:XML.MainMenu.BuildMenu.EditConfigurationsPlatforms}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.EditConfigurationsCommand"/>
 			</ComplexCondition>
 		</MenuItem> <!-- end BUILD menu -->

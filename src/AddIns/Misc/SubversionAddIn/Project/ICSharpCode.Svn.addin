@@ -35,26 +35,26 @@
 			
 			<Condition name = "SubversionState" state = "Modified;Added;Replaced">
 				<MenuItem id = "SvnCommit"
-				          label = "Commit..."
+				          label = "${res:AddIns.Subversion.Commit}..."
 				          icon  = "Svn.Commit"
 				          class = "ICSharpCode.Svn.Commands.CommitCommand"/>
 			</Condition>
 			<Condition name = "SubversionState" state = "Modified;Conflicted;Added;Replaced">
 				<Condition name = "SubversionState" state = "Modified" item = "File">
 					<MenuItem id = "SvnDiff"
-					          label = "Diff"
+					          label = "${res:AddIns.Subversion.Diff}"
 					          class = "ICSharpCode.Svn.Commands.DiffCommand"/>
 				</Condition>
 				<Condition name = "SubversionState" state = "Conflicted" item = "File">
 					<MenuItem id = "SvnEditConflicts"
-					          label = "Edit conflicts"
+					          label = "${res:AddIns.Subversion.EditConflicts}"
 					          class = "ICSharpCode.Svn.Commands.EditConflictsCommand"/>
 					<MenuItem id = "SvnResolveConflicts"
-					          label = "Mark conflicts as resolved..."
+					          label = "${res:AddIns.Subversion.MarkConflictsAsResolved}"
 					          class = "ICSharpCode.Svn.Commands.ResolveConflictsCommand"/>
 				</Condition>
 				<MenuItem id = "SvnRevert"
-				          label = "Revert..."
+				          label = "${res:AddIns.Subversion.Revert}"
 				          icon = "Icons.16x16.UndoIcon"
 				          class = "ICSharpCode.Svn.Commands.RevertCommand"/>
 			</Condition>
@@ -65,13 +65,13 @@
 						<Condition name = "SubversionState" state = "Unversioned;Ignored"/>
 					</Not>
 					<MenuItem id = "SvnRepoBrowser"
-					          label = "Repo-browser"
+					          label = "${res:AddIns.Subversion.RepositoryBrowser}"
 					          class = "ICSharpCode.Svn.Commands.RepoBrowserCommand"/>
 					<MenuItem id = "SvnRepoStatus"
-					          label = "Check for modifications"
+					          label = "${res:AddIns.Subversion.CheckForModifications}"
 					          class = "ICSharpCode.Svn.Commands.RepoStatusCommand"/>
 					<MenuItem id = "SvnRevisionGraph"
-					          label = "Revision graph"
+					          label = "${res:AddIns.Subversion.RevisionGraph}"
 					          class = "ICSharpCode.Svn.Commands.RevisionGraphCommand"/>
 					<MenuItem id = "Sep1" type = "Separator"/>
 					<MenuItem id = "SvnUpdate"
@@ -79,31 +79,31 @@
 					          icon  = "Svn.Update"
 					          class = "ICSharpCode.Svn.Commands.UpdateCommand"/>
 					<MenuItem id = "SvnUpdateToRev"
-					          label = "Update to revision..."
+					          label = "${res:AddIns.Subversion.UpdateToRevision}..."
 					          icon  = "Svn.Update"
 					          class = "ICSharpCode.Svn.Commands.UpdateToRevisionCommand"/>
 					<MenuItem id = "SvnShowLog"
-					          label = "Show Log"
+					          label = "${res:AddIns.Subversion.ShowLog}"
 					          class = "ICSharpCode.Svn.Commands.ShowLogCommand"/>
 					<MenuItem id = "SvnCleanup"
-					          label = "Clean up"
+					          label = "${res:AddIns.Subversion.CleanUp}"
 					          class = "ICSharpCode.Svn.Commands.CleanupCommand"/>
 					<MenuItem id = "Sep2" type = "Separator"/>
 					<MenuItem id = "SvnBranch"
-					          label = "Branch/tag..."
+					          label = "${res:AddIns.Subversion.BranchOrTag}..."
 					          class = "ICSharpCode.Svn.Commands.BranchCommand"/>
 					<MenuItem id = "SvnSwitch"
-					          label = "Switch..."
+					          label = "${res:AddIns.Subversion.Switch}..."
 					          class = "ICSharpCode.Svn.Commands.SwitchCommand"/>
 					<MenuItem id = "SvnMerge"
-					          label = "Merge..."
+					          label = "${res:AddIns.Subversion.Merge}..."
 					          class = "ICSharpCode.Svn.Commands.MergeCommand"/>
-					<Condition name = "SubversionState" item = "File">
+					<Condition name = "SubversionState" item = "Folder">
 						<MenuItem id = "SvnExport"
-						          label = "Export..."
+						          label = "${res:AddIns.Subversion.Export}..."
 						          class = "ICSharpCode.Svn.Commands.ExportWorkingCopyCommand"/>
 						<MenuItem id = "SvnRelocate"
-						          label = "Relocate..."
+						          label = "${res:AddIns.Subversion.Relocate}..."
 						          class = "ICSharpCode.Svn.Commands.RelocateCommand"/>
 					</Condition>
 					<MenuItem id = "Sep3" type = "Separator"/>
@@ -111,27 +111,27 @@
 				
 				<Condition name = "SubversionState" state = "Unversioned;Ignored">
 					<MenuItem id = "SvnAdd"
-					          label = "Add..."
+					          label = "${res:Global.AddButtonText}..."
 					          class = "ICSharpCode.Svn.Commands.AddCommand"/>
 				</Condition>
 				<Condition name = "SubversionState" state = "Unversioned">
 					<MenuItem id = "SvnIgnore"
-					          label = "Add to ignore list"
+					          label = "${res:AddIns.Subversion.AddToIgnoreList}"
 					          class = "ICSharpCode.Svn.Commands.IgnoreCommand"/>
 				</Condition>
 				<Condition name = "SubversionState" state = "Ignored">
 					<MenuItem id = "SvnIgnore"
-					          label = "Remove from ignore list"
+					          label = "${res:AddIns.Subversion.RemoveFromIgnoreList}"
 					          class = "ICSharpCode.Svn.Commands.UnignoreCommand"/>
 				</Condition>
 				<Condition name = "SubversionState" state = "Modified;Normal" item = "File">
 					<MenuItem id = "SvnBlame"
-					          label = "Blame..."
+					          label = "${res:AddIns.Subversion.Blame}..."
 					          class = "ICSharpCode.Svn.Commands.BlameCommand"/>
 				</Condition>
 				<Condition name = "SubversionState" state = "Modified;Conflicted;Added;Replaced">
 					<MenuItem id = "SvnCreatePatch"
-					          label = "Create patch..."
+					          label = "${res:AddIns.Subversion.CreatePatch}..."
 					          icon  = "Svn.CreatePatch"
 					          class = "ICSharpCode.Svn.Commands.CreatePatchCommand"/>
 				</Condition>
@@ -143,14 +143,14 @@
 				</Condition>-->
 				<MenuItem id = "Sep4" type = "Separator"/>
 				<MenuItem id = "SvnHelp"
-				          label = "Help"
+				          label = "${res:MainWindow.Windows.HelpScoutLabel}"
 				          icon = "Icons.16x16.HelpIcon"
 				          class = "ICSharpCode.Svn.Commands.HelpCommand"/>
 				<MenuItem id = "SvnSettings"
-				          label = "Settings"
+				          label = "${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.SettingsGroupBox}"
 				          class = "ICSharpCode.Svn.Commands.SettingsCommand"/>
 				<MenuItem id = "SvnAbout"
-				          label = "About"
+				          label = "${res:ComponentInspector.AboutDialog.Title}"
 				          class = "ICSharpCode.Svn.Commands.AboutCommand"/>
 			</MenuItem>
 		</Condition>
@@ -172,14 +172,10 @@
 		<Include id = "SubversionInclude" path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SubversionItem"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
-		<DialogPanel id    = "Subversion Options"
-		             label = "Subversion Options">
-			<DialogPanel id = "SubversionOptionsPanel"
-			             label = "Subversion Options"
-			             class = "ICSharpCode.Svn.Gui.SubversionOptionsPanel"/>
-		</DialogPanel>
-	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/Tools">
+		<DialogPanel id = "SubversionOptionsPanel"
+		             label = "${res:AddIns.Subversion.Options.Title}"
+		             class = "ICSharpCode.Svn.Gui.SubversionOptionsPanel"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
@@ -188,11 +184,11 @@
 		          insertbefore = "LastSeparator"
 		          type="Menu">
 			<MenuItem id = "SvnExport"
-			          label = "Export"
+			          label = "${res:AddIns.Subversion.Export}..."
 			          icon  = "Svn.Export"
 			          class = "ICSharpCode.Svn.Commands.ExportCommand"/>
 			<MenuItem id = "SvnCheckout"
-			          label = "Checkout"
+			          label = "${res:AddIns.Subversion.Checkout}..."
 			          icon  = "Svn.Checkout"
 			          class = "ICSharpCode.Svn.Commands.CheckoutCommand"/>
 		</MenuItem>

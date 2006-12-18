@@ -20,7 +20,7 @@ namespace ICSharpCode.Svn
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.Svn.Resources.TortoiseSvnNotFoundForm.xfrm"));
 		
-			((Label)ControlDictionary["messageLabel"]).Text = StringParser.Parse("TortoiseSVN needs to be installed to execute this action.");
+			((Label)ControlDictionary["messageLabel"]).Text = StringParser.Parse("${res:AddIns.Subversion.TortoiseSVNRequired}");
 			((PictureBox)ControlDictionary["iconPictureBox"]).Image = ResourceService.GetBitmap("Icons.32x32.Information");
 			((LinkLabel)ControlDictionary["linkLabel"]).Click += LinkLabelClicked;
 		}

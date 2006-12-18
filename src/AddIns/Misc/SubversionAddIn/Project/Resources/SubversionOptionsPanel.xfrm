@@ -6,7 +6,7 @@
       <System.Windows.Forms.CheckBox>
         <Name value="useHistoryDisplayBindingCheckBox" />
         <Location value="8, 135" />
-        <Text value="Add &amp;history tab to version-controlled files" />
+        <Text value="${res:AddIns.Subversion.Options.UseHistoryDisplayBinding}" />
         <TabIndex value="6" />
         <Size value="280, 24" />
         <UseVisualStyleBackColor value="True" />
@@ -15,7 +15,7 @@
       <System.Windows.Forms.CheckBox>
         <Name value="autoRenameFilesCheckBox" />
         <Location value="8, 63" />
-        <Text value="&amp;Keep history for renamed files (rename in Subversion)" />
+        <Text value="${res:AddIns.Subversion.Options.RenameInsideSubversion}" />
         <TabIndex value="5" />
         <Size value="280, 24" />
         <Anchor value="Top, Left, Right" />
@@ -24,7 +24,7 @@
       <System.Windows.Forms.CheckBox>
         <Name value="autoDeleteFilesCheckBox" />
         <Location value="8, 33" />
-        <Text value="Automatically &amp;delete removed files" />
+        <Text value="${res:AddIns.Subversion.Options.AutoDelete}" />
         <TabIndex value="3" />
         <Size value="280, 24" />
         <Anchor value="Top, Left, Right" />
@@ -32,7 +32,7 @@
       <System.Windows.Forms.CheckBox>
         <Name value="autoReloadProjectCheckBox" />
         <Location value="8, 105" />
-        <Text value="&amp;Re-load project after projectfile change" />
+        <Text value="${res:AddIns.Subversion.Options.ReloadProjectAfterChanges}" />
         <TabIndex value="4" />
         <Size value="280, 24" />
         <Anchor value="Top, Left, Right" />
@@ -40,7 +40,7 @@
       <System.Windows.Forms.CheckBox>
         <Name value="autoAddFilesCheckBox" />
         <Location value="8, 3" />
-        <Text value="Automatically &amp;add new files" />
+        <Text value="${res:AddIns.Subversion.Options.AutoAdd}" />
         <TabIndex value="2" />
         <Size value="280, 24" />
         <Anchor value="Top, Left, Right" />
