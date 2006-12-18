@@ -53,6 +53,9 @@ namespace ICSharpCode.UnitTesting
 			foreach (TestClass c in TestProject.GetTestClasses(String.Empty)) {
 				AddClassNode(c);
 			}
+			
+			// Sort the nodes.
+			SortChildNodes();
 		}
 		
 		/// <summary>
@@ -72,12 +75,14 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (e.TestClass.Namespace == String.Empty) {
 				AddClassNode(e.TestClass);
+				SortChildNodes();
 			} else if (isInitialized) {
 				// Check that we have a namespace node for this class.
 				if (!NamespaceNodeExists(e.TestClass.RootNamespace)) {
 					// Add a new namespace node.
 					TestNamespaceTreeNode node = new TestNamespaceTreeNode(TestProject, e.TestClass.RootNamespace);
 					node.AddTo(this);
+					SortChildNodes();
 				}
 			}
 		}

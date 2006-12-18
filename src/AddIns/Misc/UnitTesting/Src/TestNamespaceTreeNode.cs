@@ -142,6 +142,9 @@ namespace ICSharpCode.UnitTesting
 				TestClassTreeNode classNode = new TestClassTreeNode(TestProject, c);
 				classNode.AddTo(this);
 			}
+			
+			// Sort the nodes.
+			SortChildNodes();
 		}
 		
 		/// <summary>
@@ -265,6 +268,9 @@ namespace ICSharpCode.UnitTesting
 				// Add a new tree node.
 				TestClassTreeNode classNode = new TestClassTreeNode(TestProject, e.TestClass);
 				classNode.AddTo(this);
+				
+				// Sort the nodes.
+				SortChildNodes();
 			} else if (isInitialized && NamespaceStartsWith(e.TestClass.Namespace)) {
 				// Check if there is a child namespace node for the class.
 				string childNamespace = TestClass.GetChildNamespace(e.TestClass.Namespace, fullNamespace);
@@ -272,6 +278,9 @@ namespace ICSharpCode.UnitTesting
 					// Add a new namespace node.
 					TestNamespaceTreeNode node = new TestNamespaceTreeNode(TestProject, fullNamespace, childNamespace);
 					node.AddTo(this);
+					
+					// Sort the nodes.
+					SortChildNodes();
 				}
 			}
 		}

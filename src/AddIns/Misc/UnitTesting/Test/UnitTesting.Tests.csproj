@@ -57,6 +57,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="NamespaceFilterTests.cs" />
     <Compile Include="TestableConditionTests.cs" />
+    <Compile Include="Tree\TreeNodeSortingTestFixture.cs" />
     <Compile Include="Tree\OpenUnitTestsPadWithSolutionOpenTestFixture.cs" />
     <Compile Include="Utils\DerivedUnitTestsPad.cs" />
     <Compile Include="Utils\MockTestCase.cs" />

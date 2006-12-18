@@ -83,6 +83,7 @@ namespace ICSharpCode.UnitTesting
 		void TestMethodAdded(object source, TestMethodEventArgs e)
 		{
 			AddTestMethodTreeNode(e.TestMethod);
+			SortChildNodes();
 		}
 		
 		/// <summary>

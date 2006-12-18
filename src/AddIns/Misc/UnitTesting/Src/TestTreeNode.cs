@@ -92,5 +92,15 @@ namespace ICSharpCode.UnitTesting
 			}
 			return false;
 		}
+		
+		/// <summary>
+		/// Sorts the immediate child nodes of this node. The sort
+		/// is not done recursively.
+		/// </summary>
+		protected void SortChildNodes()
+		{
+			ExtTreeView treeView = (ExtTreeView)TreeView;
+			treeView.SortNodes(Nodes, false);
+		}
 	}
 }
