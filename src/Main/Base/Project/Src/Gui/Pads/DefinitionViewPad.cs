@@ -11,6 +11,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -93,10 +94,36 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (pos.Equals(oldPosition)) return;
 			oldPosition = pos;
 			if (pos.FileName != ctl.FileName)
-				ctl.LoadFile(pos.FileName, true, true); // TODO: get AutoDetectEncoding from settings
+				LoadFile(pos.FileName);
 			ctl.ActiveTextAreaControl.ScrollTo(int.MaxValue); // scroll completely down
 			ctl.ActiveTextAreaControl.Caret.Line = pos.Line - 1;
 			ctl.ActiveTextAreaControl.ScrollToCaret(); // scroll up to search position
+		}
+		
+		/// <summary>
+		/// Loads the file from the corresponding text editor window if it is
+		/// open otherwise the file is loaded from the file system.
+		/// </summary>
+		void LoadFile(string fileName)
+		{
+			// Get currently open text editor that matches the filename.
+			TextEditorControl openTextEditor = null;
+			IWorkbenchWindow window = FileService.GetOpenFile(fileName);
+			if (window != null) {
+				ITextEditorControlProvider provider = window.ActiveViewContent as ITextEditorControlProvider;
+				if (provider != null) {
+					openTextEditor = provider.TextEditorControl;
+				}
+			}
+		
+			// Load the text into the definition view's text editor.
+			if (openTextEditor != null) {
+				ctl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
+				ctl.Text = openTextEditor.Text;
+				ctl.FileName = fileName;
+			} else {
+				ctl.LoadFile(fileName, true, true); // TODO: get AutoDetectEncoding from settings
+			}
 		}
 		
 		/// <summary>
