@@ -117,6 +117,9 @@ namespace ICSharpCode.FormsDesigner
 					SharpDevelopSideBar.SideBar.Tabs.Add(tab);
 				}
 			}
+			
+			// Clear selected toolbox item after reloading the tabs.
+			toolboxService.SetSelectedToolboxItem(null);
 		}
 		
 		static void SelectedToolUsedHandler(object sender, EventArgs e)
