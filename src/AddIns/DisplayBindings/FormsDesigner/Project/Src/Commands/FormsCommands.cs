@@ -42,7 +42,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 		}
 		public override void Run()
 		{
-		
+			
 			try {
 				FormsDesignerViewContent formDesigner = FormDesigner;
 				if (formDesigner != null && CanExecuteCommand(formDesigner.Host)) {
@@ -53,11 +53,22 @@ namespace ICSharpCode.FormsDesigner.Commands
 				MessageService.ShowError(e);
 			}
 		}
+
+		internal virtual void CommandCallBack(object sender, EventArgs e)
+		{
+			this.Run();
+		}
 	}
-	
-	public class ViewCode : AbstractMenuCommand
+
+	public class ViewCode : AbstractFormsDesignerCommand
 	{
-		 FormsDesignerViewContent FormDesigner {
+		public override CommandID CommandID {
+			get {
+				return StandardCommands.ViewCode;
+			}
+		}
+
+		FormsDesignerViewContent FormDesigner {
 			get {
 				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 				if (window == null) {
@@ -66,6 +77,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 				return window.ActiveViewContent as FormsDesignerViewContent;
 			}
 		}
+		
 		public override void Run()
 		{
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
@@ -76,13 +88,18 @@ namespace ICSharpCode.FormsDesigner.Commands
 			FormsDesignerViewContent formDesigner = FormDesigner;
 			if (formDesigner != null) {
 				formDesigner.ShowSourceCode();
-				
 			}
 		}
 	}
-	
-	public class ShowProperties : AbstractMenuCommand
+
+	public class ShowProperties : AbstractFormsDesignerCommand
 	{
+		public override CommandID CommandID {
+			get {
+				return StandardCommands.PropertiesWindow;
+			}
+		}
+
 		public override void Run()
 		{
 			PadDescriptor padContent = WorkbenchSingleton.Workbench.GetPad(typeof(ICSharpCode.SharpDevelop.Gui.PropertyPad));
@@ -99,7 +116,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 			IMenuCommandService menuCommandService = (IMenuCommandService)owner;
 			
 			List<ToolStripItem> items = new List<ToolStripItem>();
-				
+			
 			foreach (DesignerVerb verb in menuCommandService.Verbs) {
 				items.Add(new ContextMenuCommand(verb));
 			}
@@ -136,7 +153,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 		}
 	}
 	
-#region Align Commands	
+	#region Align Commands
 	public class AlignToGrid : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
@@ -199,9 +216,9 @@ namespace ICSharpCode.FormsDesigner.Commands
 			}
 		}
 	}
-#endregion
+	#endregion
 
-#region Make Same Size Commands
+	#region Make Same Size Commands
 	public class SizeToGrid : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
@@ -237,9 +254,9 @@ namespace ICSharpCode.FormsDesigner.Commands
 			}
 		}
 	}
-#endregion
+	#endregion
 
-#region Horizontal Spacing Commands	
+	#region Horizontal Spacing Commands
 	public class HorizSpaceMakeEqual : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
@@ -281,9 +298,9 @@ namespace ICSharpCode.FormsDesigner.Commands
 			}
 		}
 	}
-#endregion
+	#endregion
 	
-#region Vertical Spacing Commands
+	#region Vertical Spacing Commands
 	public class VertSpaceMakeEqual : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
@@ -326,9 +343,9 @@ namespace ICSharpCode.FormsDesigner.Commands
 			}
 		}
 	}
-#endregion
+	#endregion
 
-#region Center Commands	
+	#region Center Commands
 	public class CenterHorizontally : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
@@ -345,9 +362,9 @@ namespace ICSharpCode.FormsDesigner.Commands
 			}
 		}
 	}
-#endregion
+	#endregion
 	
-#region Order Commands
+	#region Order Commands
 	public class SendToBack : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
@@ -365,9 +382,9 @@ namespace ICSharpCode.FormsDesigner.Commands
 			}
 		}
 	}
-#endregion
+	#endregion
 
-#region Tray Commands	
+	#region Tray Commands
 	
 	public class LineUpIcons : AbstractFormsDesignerCommand
 	{
@@ -418,9 +435,9 @@ namespace ICSharpCode.FormsDesigner.Commands
 		{
 		}
 	}
-#endregion
+	#endregion
 
-#region Global Commands	
+	#region Global Commands
 	public class LockControls : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
@@ -469,5 +486,5 @@ namespace ICSharpCode.FormsDesigner.Commands
 			}
 		}
 	}
-#endregion
+	#endregion
 }
