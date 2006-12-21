@@ -14,7 +14,7 @@
 	
 	<!-- Template Content -->
 	<Project language = "Wix">
-		<PropertyGroup>
+		<PropertyGroup escapeValue="false">
 			<DefineConstants>DATADIR=$(SharpDevelopBinPath)\..\data\resources\InstallerBitmaps</DefineConstants>
 		</PropertyGroup>
 		<Files>
