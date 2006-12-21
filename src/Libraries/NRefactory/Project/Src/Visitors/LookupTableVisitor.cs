@@ -135,28 +135,40 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitForNextStatement(ForNextStatement forNextStatement, object data)
 		{
 			// uses LocalVariableDeclaration, we just have to put the end location on the stack
-			endLocationStack.Push(forNextStatement.EmbeddedStatement.EndLocation);
-			base.VisitForNextStatement(forNextStatement, data);
-			endLocationStack.Pop();
-			return null;
+			if (forNextStatement.EmbeddedStatement.EndLocation.IsEmpty) {
+				return base.VisitForNextStatement(forNextStatement, data);
+			} else {
+				endLocationStack.Push(forNextStatement.EmbeddedStatement.EndLocation);
+				base.VisitForNextStatement(forNextStatement, data);
+				endLocationStack.Pop();
+				return null;
+			}
 		}
 		
 		public override object VisitForStatement(ForStatement forStatement, object data)
 		{
 			// uses LocalVariableDeclaration, we just have to put the end location on the stack
-			endLocationStack.Push(forStatement.EmbeddedStatement.EndLocation);
-			base.VisitForStatement(forStatement, data);
-			endLocationStack.Pop();
-			return null;
+			if (forStatement.EmbeddedStatement.EndLocation.IsEmpty) {
+				return base.VisitForStatement(forStatement, data);
+			} else {
+				endLocationStack.Push(forStatement.EmbeddedStatement.EndLocation);
+				base.VisitForStatement(forStatement, data);
+				endLocationStack.Pop();
+				return null;
+			}
 		}
 		
 		public override object VisitUsingStatement(UsingStatement usingStatement, object data)
 		{
 			// uses LocalVariableDeclaration, we just have to put the end location on the stack
-			endLocationStack.Push(usingStatement.EmbeddedStatement.EndLocation);
-			base.VisitUsingStatement(usingStatement, data);
-			endLocationStack.Pop();
-			return null;
+			if (usingStatement.EmbeddedStatement.EndLocation.IsEmpty) {
+				return base.VisitUsingStatement(usingStatement, data);
+			} else {
+				endLocationStack.Push(usingStatement.EmbeddedStatement.EndLocation);
+				base.VisitUsingStatement(usingStatement, data);
+				endLocationStack.Pop();
+				return null;
+			}
 		}
 		
 		public override object VisitForeachStatement(ForeachStatement foreachStatement, object data)
