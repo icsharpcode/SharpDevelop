@@ -14,7 +14,7 @@
     
     <!-- Actions -->
     <Actions>
-        <Open filename = "SysTrayIcon.cs"/>
+        <Open filename = "NotificationIcon.cs"/>
     </Actions>
     
     <Project language="C#">
@@ -31,7 +31,7 @@
         </PropertyGroup>
         
         <Files>
-            <File name="SysTrayIcon.cs" language="C#"><![CDATA[${StandardHeader.C#}
+            <File name="NotificationIcon.cs" language="C#"><![CDATA[${StandardHeader.C#}
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -40,21 +40,21 @@ using System.Windows.Forms;
 
 namespace ${StandardNamespace}
 {
-	public sealed class SysTrayIcon
+	public sealed class NotificationIcon
 	{
-		private System.Windows.Forms.NotifyIcon trayIcon;
-		private System.Windows.Forms.ContextMenu sysTrayMenu;
+		private NotifyIcon notifyIcon;
+		private ContextMenu notificationMenu;
 		
 		#region Initialize icon and menu
-		public SysTrayIcon()
+		public NotificationIcon()
 		{
-			trayIcon = new NotifyIcon();
-			sysTrayMenu = new ContextMenu(InitializeMenu());
+			notifyIcon = new NotifyIcon();
+			notificationMenu = new ContextMenu(InitializeMenu());
 			
-			trayIcon.DoubleClick += TrayIconDoubleClick;
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SysTrayIcon));
-			trayIcon.Icon = (Icon)resources.GetObject("$this.Icon");
-			trayIcon.ContextMenu = sysTrayMenu;
+			notifyIcon.DoubleClick += IconDoubleClick;
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NotificationIcon));
+			notifyIcon.Icon = (Icon)resources.GetObject("$this.Icon");
+			notifyIcon.ContextMenu = notificationMenu;
 		}
 		
 		private MenuItem[] InitializeMenu()
@@ -80,13 +80,13 @@ namespace ${StandardNamespace}
 			// Please use a unique name for the mutex to prevent conflicts with other programs
 			using (Mutex mtx = new Mutex(true, "${StandardNamespace}", out isFirstInstance)) {
 				if (isFirstInstance) {
-					SysTrayIcon sysTrayIcon = new SysTrayIcon();
-					sysTrayIcon.trayIcon.Visible = true;
+					NotificationIcon notificationIcon = new NotificationIcon();
+					notificationIcon.notifyIcon.Visible = true;
 					Application.Run();
-					sysTrayIcon.trayIcon.Dispose();
+					notificationIcon.notifyIcon.Dispose();
 				} else {
 					// The application is already running
-					
+					// TODO: Display message box or change focus to existing application instance
 				}
 			} // releases the Mutex
 		}
@@ -103,7 +103,7 @@ namespace ${StandardNamespace}
 			Application.Exit();
 		}
 		
-		private void TrayIconDoubleClick(object sender, EventArgs e)
+		private void IconDoubleClick(object sender, EventArgs e)
 		{
 			MessageBox.Show("The icon was double clicked");
 		}
@@ -112,7 +112,7 @@ namespace ${StandardNamespace}
 }
 ]]>
 </File>
-            <File name="SysTrayIcon.resx" src="NotifyIconResources.resx" buildAction="EmbeddedResource" DependentUpon="SysTrayIcon.cs" />
+            <File name="NotificationIcon.resx" src="NotifyIconResources.resx" buildAction="EmbeddedResource" DependentUpon="NotificationIcon.cs" />
             <File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
         </Files>
     </Project>
