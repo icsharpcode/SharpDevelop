@@ -395,7 +395,7 @@ namespace NRefactoryToBooConverter
 		{
 			return new B.BinaryExpression(GetLexicalInfo(typeOfIsExpression), B.BinaryOperatorType.TypeTest,
 			                              ConvertExpression(typeOfIsExpression.Expression),
-			                              MakeReferenceExpression(typeOfIsExpression.TypeReference));
+			                              new B.TypeofExpression(GetLexicalInfo(typeOfIsExpression), ConvertTypeReference(typeOfIsExpression.TypeReference)));
 		}
 		
 		public object VisitAddressOfExpression(AddressOfExpression addressOfExpression, object data)
