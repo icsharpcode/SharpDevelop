@@ -772,6 +772,27 @@ namespace A.B {
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "C.D", 7);
 			Assert.AreEqual("A.B.C.D", trr.ResolvedClass.FullyQualifiedName, "trr.ResolvedClass.FullyQualifiedName");
 		}
+		
+		[Test]
+		public void LoopVariableScopeTest()
+		{
+			string program = @"using System;
+class TestClass {
+	void Test() {
+		for (int i = 0; i < 10; i++) {
+			
+		}
+		for (long i = 0; i < 10; i++) {
+			
+		}
+	}
+}
+";
+			LocalResolveResult lr = Resolve<LocalResolveResult>(program, "i", 5);
+			Assert.AreEqual("System.Int32", lr.ResolvedType.FullyQualifiedName);
+			lr = Resolve<LocalResolveResult>(program, "i", 8);
+			Assert.AreEqual("System.Int64", lr.ResolvedType.FullyQualifiedName);
+		}
 		#endregion
 		
 		#region Import class tests

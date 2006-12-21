@@ -94,13 +94,19 @@ namespace ICSharpCode.NRefactory.Visitors
 			return base.VisitWithStatement(withStatement, data);
 		}
 		
-		Stack<BlockStatement> blockStack = new Stack<BlockStatement>();
+		Stack<Location> endLocationStack = new Stack<Location>();
+		
+		Location CurrentEndLocation {
+			get {
+				return (endLocationStack.Count == 0) ? Location.Empty : endLocationStack.Peek();
+			}
+		}
 		
 		public override object VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
-			blockStack.Push(blockStatement);
+			endLocationStack.Push(blockStatement.EndLocation);
 			base.VisitBlockStatement(blockStatement, data);
-			blockStack.Pop();
+			endLocationStack.Pop();
 			return null;
 		}
 		
@@ -112,7 +118,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				AddVariable(localVariableDeclaration.GetTypeForVariable(i),
 				            varDecl.Name,
 				            localVariableDeclaration.StartLocation,
-				            (blockStack.Count == 0) ? new Location(-1, -1) : blockStack.Peek().EndLocation,
+				            CurrentEndLocation,
 				            (localVariableDeclaration.Modifier & Modifiers.Const) == Modifiers.Const);
 			}
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
@@ -126,8 +132,32 @@ namespace ICSharpCode.NRefactory.Visitors
 			return base.VisitAnonymousMethodExpression(anonymousMethodExpression, data);
 		}
 		
-		// ForStatement and UsingStatement use a LocalVariableDeclaration,
-		// so they don't need to be visited separately
+		public override object VisitForNextStatement(ForNextStatement forNextStatement, object data)
+		{
+			// uses LocalVariableDeclaration, we just have to put the end location on the stack
+			endLocationStack.Push(forNextStatement.EmbeddedStatement.EndLocation);
+			base.VisitForNextStatement(forNextStatement, data);
+			endLocationStack.Pop();
+			return null;
+		}
+		
+		public override object VisitForStatement(ForStatement forStatement, object data)
+		{
+			// uses LocalVariableDeclaration, we just have to put the end location on the stack
+			endLocationStack.Push(forStatement.EmbeddedStatement.EndLocation);
+			base.VisitForStatement(forStatement, data);
+			endLocationStack.Pop();
+			return null;
+		}
+		
+		public override object VisitUsingStatement(UsingStatement usingStatement, object data)
+		{
+			// uses LocalVariableDeclaration, we just have to put the end location on the stack
+			endLocationStack.Push(usingStatement.EmbeddedStatement.EndLocation);
+			base.VisitUsingStatement(usingStatement, data);
+			endLocationStack.Pop();
+			return null;
+		}
 		
 		public override object VisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
@@ -145,8 +175,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 			return foreachStatement.EmbeddedStatement.AcceptVisitor(this, data);
 		}
-		
-		
 		
 		public override object VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
 		{
