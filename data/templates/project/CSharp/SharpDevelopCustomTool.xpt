@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<Template originator   = "Daniel Grunwald">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>Custom Tool</Name>
+		<Category>C#</Category>
+		<Subcategory>SharpDevelop</Subcategory>
+		<Icon>C#.Project.ControlLibrary</Icon>
+		<Description>A custom tool that implements a code generator transforming a source file into an output file whenever the source is changed inside SharpDevelop</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "${ProjectName}.addin"/>
+	</Actions>
+	
+	<Project language="C#">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
+		
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="${ProjectName}.addin" CopyToOutputDirectory="Always"><![CDATA[<AddIn name        = "${ProjectName}"
+       author      = "${USER}"
+       url         = ""
+       description = "TODO: Put description here">
+	
+	<Runtime>
+		<Import assembly = "${ProjectName}.dll"/>
+	</Runtime>
+	
+	<!-- make SharpDevelop look for file templates in your AddIn's directory -->
+	<Path name = "/SharpDevelop/BackendBindings/Templates">
+		<Directory id = "${ProjectName}Template" path = "." />
+	</Path>
+	
+	<Path name = "/SharpDevelop/CustomTools">
+		<!--
+			Register the custom tool.
+			id: ID used to identify the custom tool. This ID will be used in project files to reference your generator.
+			class: fully qualified name of a class in your assembly that implements ICustomTool
+			fileNamePattern: a regular expression. For file names matched by this regex, SharpDevelop will display
+			                 your custom tool in the drop down box of the property grid when a file with that extension
+			                 is selected.
+		-->
+		<CustomTool id    = "${ProjectName}Generator"
+		            class = "${StandardNamespace}.${ProjectName}Tool"
+		            fileNamePattern = "\.xml$"/>
+	</Path>
+</AddIn>
+]]></File>
+		<File name="${ProjectName}Tool.cs">
+			<![CDATA[${StandardHeader.C#}
+
+using System;
+using System.IO;
+using System.CodeDom;
+using System.Xml;
+using ICSharpCode.EasyCodeDom; // defined in ICSharpCode.SharpDevelop.Dom.dll
+using ICSharpCode.SharpDevelop.Project; // defined in ICSharpCode.SharpDevelop.dll
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of CustomTool.
+	/// </summary>
+	public class ${ProjectName}Tool : ICustomTool
+	{
+		/// <summary>
+		/// Called by SharpDevelop when your tool has to generate code.
+		/// </summary>
+		/// <param name="item">
+		/// The file for which your tool should generate code.
+		/// </param>
+		public void GenerateCode(FileProjectItem item, CustomToolContext context)
+		{
+			// make SharpDevelop generate a name for the output file
+			string outputFileName = context.GetOutputFileName(item, ".Generated");
+			// if item.FileName is "C:\somedir\SomeName.xml" and is inside a C# project,
+			// the output name will be "C:\somedir\SomeName.Generated.cs".
+			// context.GetOutputFileName will always append the extension for compilable files in
+			// the current project type, so if you want to always output xml, you could use
+			// string outputFileName = Path.ChangeExtension(item.FileName, ".Generated.xml");
+			
+			// now read the input file:
+			XmlDocument doc = new XmlDocument();
+			doc.Load(item.FileName);
+			
+			// and generate the code using System.CodeDom:
+			CodeCompileUnit ccu = GenerateCode(doc, context.OutputNamespace, Path.GetFileNameWithoutExtension(item.FileName));
+			
+			// Finally save our generated CodeDom compile unit. SharpDevelop will take care of generating
+			// the code using the correct CodeDomProvider for the project type. This means code-generating
+			// custom tools are completely language-independent
+			context.WriteCodeDomToFile(item, outputFileName, ccu);
+			// If you don't want to generate code, you'll have to write the output file yourself and then use
+			// context.EnsureOutputFileIsInProject to add the generated file to the project if it isn't already
+			// part of it.
+		}
+		
+		CodeCompileUnit GenerateCode(XmlDocument doc, string targetNamespace, string className)
+		{
+			// This method does the actual code generation.
+			
+			// This sample accepts an object graph as XmlDocument and outputs a class with a static method
+			// constructing that object graph.
+			
+			// We'll use ICSharpCode.EasyCodeDom for code generation. This is a small wrapper around CodeDom
+			// that provides convenience methods that create new objects and add them to the parent simultaniously.
+			// This makes the generation code much more concise.
+			// EasyCodeDom classes derive from the System.CodeDom types or have an implicit conversion operator, so
+			// use can use EasyCodeDom objects whereever CodeDom is expected.
+			EasyCompileUnit ccu = new EasyCompileUnit();
+			EasyTypeDeclaration generatedClass = ccu.AddNamespace(targetNamespace).AddType(className);
+			EasyMethod m = generatedClass.AddMethod("Create");
+			m.ReturnType = Easy.TypeRef(doc.DocumentElement.Name);
+			m.Attributes = MemberAttributes.Static | MemberAttributes.Public;
+			
+			// now generate code. helper variables will be named "v#"
+			int helperVariableCounter = 0;
+			string rootVariableName = GenerateCodeForObject(m.Body, doc.DocumentElement, ref helperVariableCounter);
+			
+			// generate "return v0;"
+			m.Body.Return(Easy.Var(rootVariableName));
+			
+			return ccu;
+		}
+		
+		string GenerateCodeForObject(EasyBlock block, XmlElement objectElement, ref int helperVariableCounter)
+		{
+			// generate code to create the object represented by "objectElement" and add it to the block
+			
+			// generate "VarType v#;"
+			CodeVariableDeclarationStatement varDecl;
+			varDecl = block.DeclareVariable(Easy.TypeRef(objectElement.Name), "v" + helperVariableCounter);
+			helperVariableCounter += 1;
+			
+			// generate "VarType v# = new VarType();"
+			varDecl.InitExpression = Easy.New(Easy.TypeRef(objectElement.Name));
+			
+			// translate XML attribute to assignments to properties
+			foreach (XmlAttribute attribute in objectElement.Attributes) {
+				// generate 'v#.attributeName = "attributeValue";'
+				// attribute.Value is a string, thus Easy.Prim creates a string literal.
+				// This simple code generator does not support using other types for attributes.
+				block.Assign(Easy.Var(varDecl.Name).Property(attribute.Name),
+				             Easy.Prim(attribute.Value));
+			}
+			
+			foreach (XmlNode collectionNode in objectElement.ChildNodes) {
+				XmlElement collectionElement = collectionNode as XmlElement;
+				if (collectionElement != null) {
+					foreach (XmlNode itemNode in collectionElement.ChildNodes) {
+						XmlElement itemElement = itemNode as XmlElement;
+						if (itemElement != null) {
+							// add the object represented by "itemElement" to the collection represented by
+							// "collectionElement".
+							
+							// generate code to create child object
+							string childVariableName = GenerateCodeForObject(block, itemElement, ref helperVariableCounter);
+							
+							// generate 'v#.collectionName.Add(v##)'
+							block.InvokeMethod(Easy.Var(varDecl.Name).Property(collectionElement.Name),
+							                   "Add",
+							                   Easy.Var(childVariableName));
+						}
+					}
+				}
+			}
+			
+			return varDecl.Name;
+		}
+	}
+}
+
+]]></File>
+			<File name="FileTemplate.xft" src="SharpDevelopCustomToolTemplate.xft.xml" binary="true" CopyToOutputDirectory="Always"/>
+			<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
+		</Files>
+	</Project>
+</Template>
