@@ -32,41 +32,5 @@ namespace Debugger
 				throw new DebuggerException("Unknown value type");
 			}
 		}
-		
-//		public bool MayHaveSubVariables {
-//			get {
-//				#if DEBUG
-//					if (IsNull)      return true;
-//					if (IsArray)     return true;
-//					if (IsObject)    return true;
-//					if (IsPrimitive) return true;
-//				#else
-//					if (IsNull)      return false;
-//					if (IsArray)     return true;
-//					if (IsObject)    return true;
-//					if (IsPrimitive) return false;
-//				#endif
-//				throw new DebuggerException("Unknown value type");
-//			}
-//		}
-//		
-//		public VariableCollection SubVariables {
-//			get {
-//				VariableCollection subVars = null;
-//				if (IsNull)      subVars = new VariableCollection(new Variable[] {});
-//				if (IsArray)     subVars = new VariableCollection(GetArrayElements());
-//				if (IsObject)    subVars = this.ObjectSubVariables;
-//				if (IsPrimitive) subVars = new VariableCollection(new Variable[] {});
-//				if (subVars == null) throw new DebuggerException("Unknown value type");
-//				#if DEBUG
-//					return new VariableCollection(subVars.Name,
-//					                              subVars.Value,
-//					                              Util.MergeLists(this.GetDebugInfo(), subVars.SubCollections).ToArray(),
-//					                              subVars.Items);
-//				#else
-//					return subVars;
-//				#endif
-//			}
-//		}
 	}
 }

@@ -89,42 +89,5 @@ namespace Debugger
 				}
 			}
 		}
-		
-//		public VariableCollection ObjectSubVariables {
-//			get {
-//				return new VariableCollection(String.Empty,
-//				                              String.Empty,
-//				                              GetSubCollections(this.Type),
-//				                              GetSubVariables(this.Type, BindingFlags.Public | BindingFlags.Instance));
-//			}
-//		}
-		
-//		IEnumerable<VariableCollection> GetSubCollections(DebugType type)
-//		{
-//			if (type.BaseType != null) {
-//				yield return new VariableCollection("Base class",
-//				                                    "{" + type.BaseType.Name + "}",
-//				                                    GetSubCollections(type.BaseType),
-//				                                    GetSubVariables(type.BaseType, BindingFlags.Public | BindingFlags.Instance));
-//			}
-//			VariableCollection privateStatic = new VariableCollection("Private static members",
-//			                                                          String.Empty,
-//			                                                          new VariableCollection[0],
-//			                                                          GetSubVariables(type, BindingFlags.NonPublic | BindingFlags.Static));
-//			VariableCollection privateInstance = new VariableCollection("Private members",
-//			                                                            String.Empty,
-//			                                                            privateStatic.IsEmpty ? new VariableCollection[0] : new VariableCollection[] {privateStatic},
-//				                                                        GetSubVariables(type, BindingFlags.NonPublic | BindingFlags.Instance));
-//			if (!privateInstance.IsEmpty) {
-//				yield return privateInstance;
-//			}
-//			VariableCollection publicStatic = new VariableCollection("Static members",
-//			                                                         String.Empty,
-//				                                                     new VariableCollection[0],
-//				                                                     GetSubVariables(type, BindingFlags.Public | BindingFlags.Static));
-//			if (!publicStatic.IsEmpty) {
-//				yield return publicStatic;
-//			}
-//		}
 	}
 }
