@@ -621,6 +621,7 @@
 									<File Source="..\..\data\resources\StringResources.pt-br.resources" Name="STRIN_13.RES" Id="StringResources.pt_br.resources" LongName="StringResources.pt-br.resources" />
 									<File Source="..\..\data\resources\StringResources.ro.resources" Name="STRIN_14.RES" Id="StringResources.ro.resources" LongName="StringResources.ro.resources" />
 									<File Source="..\..\data\resources\StringResources.se.resources" Name="STRIN_15.RES" Id="StringResources.se.resources" LongName="StringResources.se.resources" />
+									<File Source="..\..\data\resources\StringResources.pt.resources" Name="STRIN_16.RES" Id="StringResources.pt.resources" LongName="StringResources.pt.resources" />
 								</Component>
 							</Directory>
 							<Directory Id="SchemasFolder" Name="schemas">
@@ -759,6 +760,7 @@
 											<File Source="..\..\data\templates\project\VBNet\Service.xpt" Name="Service.xpt" Id="VBNetService.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\SharedAddin.xpt" Name="SHARED_1.XPT" Id="VBNetSharedAddin.xpt" LongName="SharedAddin.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\SharpDevelopAddin.xpt" Name="SHARPD_4.XPT" Id="VBNetSharpDevelopAddin.xpt" LongName="SharpDevelopAddin.xpt" />
+											<File Source="..\..\data\templates\project\VBNet\CompactFormsProject.xpt" Name="COMPAC_1.XPT" Id="CompactFormsProject.xpt" LongName="CompactFormsProject.xpt" />
 										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">
