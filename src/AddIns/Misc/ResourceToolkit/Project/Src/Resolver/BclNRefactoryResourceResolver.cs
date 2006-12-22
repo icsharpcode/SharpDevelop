@@ -308,7 +308,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				return false;
 			}
 			
-			IClass resourceManager = pc.GetClass("System.Resources.ResourceManager");
+			IClass resourceManager = pc.GetClass("System.Resources.ResourceManager", 0);
 			if (resourceManager == null) {
 				return false;
 			}

@@ -117,7 +117,7 @@ namespace VBNetBinding
 			public override List<IProperty> Properties {
 				get {
 					List<IProperty> properties = new List<IProperty>();
-					IClass formClass = this.ProjectContent.GetClass("System.Windows.Forms.Form");
+					IClass formClass = this.ProjectContent.GetClass("System.Windows.Forms.Form", 0);
 					if (formClass == null)
 						return properties;
 					foreach (IClass c in this.ProjectContent.Classes) {

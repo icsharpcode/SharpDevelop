@@ -207,7 +207,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				IProjectContent pc = ParserService.GetProjectContent(p);
 				if (pc != null) {
 					
-					IClass resourceClass = pc.GetClass(resourceName);
+					IClass resourceClass = pc.GetClass(resourceName, 0);
 					
 					if (resourceClass != null) {
 						CompoundClass cc = resourceClass.GetCompoundClass() as CompoundClass;

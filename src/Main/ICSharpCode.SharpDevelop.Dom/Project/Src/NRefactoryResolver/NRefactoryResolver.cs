@@ -815,7 +815,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public IClass GetClass(string fullName)
 		{
-			return projectContent.GetClass(fullName);
+			return projectContent.GetClass(fullName, 0);
 		}
 		
 		/// <remarks>
@@ -1009,7 +1009,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IClass GetPrimitiveClass(string systemType, string newName)
 		{
-			IClass c = projectContent.GetClass(systemType);
+			IClass c = projectContent.GetClass(systemType, 0);
 			DefaultClass c2 = new DefaultClass(c.CompilationUnit, newName);
 			c2.ClassType = c.ClassType;
 			c2.Modifiers = c.Modifiers;

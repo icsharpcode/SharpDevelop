@@ -492,7 +492,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (t == null) {
 				if (reference.Type != reference.SystemType) {
 					// keyword-type like void, int, string etc.
-					IClass c = projectContent.GetClass(reference.SystemType);
+					IClass c = projectContent.GetClass(reference.SystemType, 0);
 					if (c != null)
 						t = c.DefaultReturnType;
 					else

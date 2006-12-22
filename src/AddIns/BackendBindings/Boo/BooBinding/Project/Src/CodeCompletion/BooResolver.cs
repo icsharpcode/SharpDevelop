@@ -230,7 +230,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (rt != null && rt.GetUnderlyingClass() != null)
 					return new TypeResolveResult(callingClass, callingMember, rt);
 				if (BooProject.BooCompilerPC != null) {
-					IClass c = BooProject.BooCompilerPC.GetClass("Boo.Lang." + char.ToUpper(name[0]) + name.Substring(1) + "Attribute");
+					IClass c = BooProject.BooCompilerPC.GetClass("Boo.Lang." + char.ToUpper(name[0]) + name.Substring(1) + "Attribute", 0);
 					if (c != null)
 						return new TypeResolveResult(callingClass, callingMember, c);
 				}
@@ -244,7 +244,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					// this could be a macro
 					if (BooProject.BooCompilerPC != null) {
 						string name = ((AST.ReferenceExpression)expr).Name;
-						IClass c = BooProject.BooCompilerPC.GetClass("Boo.Lang." + char.ToUpper(name[0]) + name.Substring(1) + "Macro");
+						IClass c = BooProject.BooCompilerPC.GetClass("Boo.Lang." + char.ToUpper(name[0]) + name.Substring(1) + "Macro", 0);
 						if (c != null)
 							return new TypeResolveResult(callingClass, callingMember, c);
 					}
@@ -276,7 +276,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		#region CtrlSpace
 		static IClass GetPrimitiveClass(IProjectContent pc, string systemType, string newName)
 		{
-			IClass c = pc.GetClass(systemType);
+			IClass c = pc.GetClass(systemType, 0);
 			if (c == null) {
 				LoggingService.Warn("Could not find " + systemType);
 				return null;

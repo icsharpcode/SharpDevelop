@@ -22,9 +22,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			_projectContent = projectContent;
 		}
 		
-		public bool HasField(string fullTypeName, string fieldName)
+		public bool HasField(string fullTypeName, int typeParameterCount, string fieldName)
 		{
-			IClass c = _projectContent.GetClass(fullTypeName);
+			IClass c = _projectContent.GetClass(fullTypeName, typeParameterCount);
 			if (c == null)
 				return false;
 			foreach (IField field in c.DefaultReturnType.GetFields()) {

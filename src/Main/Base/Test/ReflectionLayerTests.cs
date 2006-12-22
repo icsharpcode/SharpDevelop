@@ -25,8 +25,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void InheritanceTest()
 		{
-			IClass c = pc.GetClass("System.SystemException");
-			IClass c2 = pc.GetClass("System.Exception");
+			IClass c = pc.GetClass("System.SystemException", 0);
+			IClass c2 = pc.GetClass("System.Exception", 0);
 			Assert.IsNotNull(c, "c is null");
 			Assert.IsNotNull(c2, "c2 is null");
 			//Assert.AreEqual(3, c.BaseTypes.Count); // Inherited interfaces are not reported by Cecil
@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void ParameterComparisonTest()
 		{
-			DefaultParameter p1 = new DefaultParameter("a", pc.GetClass("System.String").DefaultReturnType, DomRegion.Empty);
+			DefaultParameter p1 = new DefaultParameter("a", pc.GetClass("System.String", 0).DefaultReturnType, DomRegion.Empty);
 			DefaultParameter p2 = new DefaultParameter("b", new GetClassReturnType(pc, "System.String", 0), DomRegion.Empty);
 			IList<IParameter> a1 = new List<IParameter>();
 			IList<IParameter> a2 = new List<IParameter>();
@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void GenericDocumentationTagNamesTest()
 		{
-			DefaultClass c = (DefaultClass)pc.GetClass("System.Collections.Generic.List");
+			DefaultClass c = (DefaultClass)pc.GetClass("System.Collections.Generic.List", 1);
 			Assert.AreEqual("T:System.Collections.Generic.List`1",
 			                c.DocumentationTag);
 			Assert.AreEqual("M:System.Collections.Generic.List`1.Add(`0)",
@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void InnerClassReferenceTest()
 		{
-			IClass c = pc.GetClass("System.Environment");
+			IClass c = pc.GetClass("System.Environment", 0);
 			Assert.IsNotNull(c, "System.Environment not found");
 			IReturnType rt = GetMethod(c, "GetFolderPath").Parameters[0].ReturnType;
 			Assert.IsNotNull(rt, "ReturnType is null");
@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void InnerClassesTest()
 		{
-			IClass c = pc.GetClass("System.Environment.SpecialFolder");
+			IClass c = pc.GetClass("System.Environment.SpecialFolder", 0);
 			Assert.IsNotNull(c, "c is null");
 			Assert.AreEqual("System.Environment.SpecialFolder", c.FullyQualifiedName);
 		}
@@ -108,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void VoidTest()
 		{
-			IClass c = pc.GetClass("System.Void");
+			IClass c = pc.GetClass("System.Void", 0);
 			Assert.IsNotNull(c, "System.Void not found");
 			Assert.AreSame(c.DefaultReturnType, VoidReturnType.Instance, "VoidReturnType.Instance is c.DefaultReturnType");
 		}

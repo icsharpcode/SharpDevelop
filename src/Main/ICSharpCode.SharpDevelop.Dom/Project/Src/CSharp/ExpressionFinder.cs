@@ -94,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			} else {
 				UnGet();
 				if (ReadIdentifier(GetNextNonWhiteSpace()) == "throw") {
-					return ExpressionContext.TypeDerivingFrom(HostCallback.GetCurrentProjectContent().GetClass("System.Exception"), true);
+					return ExpressionContext.TypeDerivingFrom(HostCallback.GetCurrentProjectContent().GetClass("System.Exception", 0), true);
 				}
 			}
 			return ExpressionContext.ObjectCreation;

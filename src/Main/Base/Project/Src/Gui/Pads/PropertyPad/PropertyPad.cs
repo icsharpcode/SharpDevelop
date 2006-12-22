@@ -325,7 +325,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (gridItem != null) {
 				Type component = gridItem.PropertyDescriptor.ComponentType;
 				if (component != null) {
-					ICSharpCode.SharpDevelop.Dom.IClass c = ParserService.CurrentProjectContent.GetClass(component.FullName);
+					ICSharpCode.SharpDevelop.Dom.IClass c = ParserService.CurrentProjectContent.GetClass(component.FullName, 0);
 					if (c != null) {
 						foreach (ICSharpCode.SharpDevelop.Dom.IProperty p in c.DefaultReturnType.GetProperties()) {
 							if (gridItem.PropertyDescriptor.Name == p.Name) {

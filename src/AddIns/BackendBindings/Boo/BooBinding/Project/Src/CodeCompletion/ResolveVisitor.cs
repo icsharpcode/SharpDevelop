@@ -282,7 +282,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					MakeNamespaceResult(combinedName);
 					return;
 				}
-				IClass c = projectContent.GetClass(combinedName);
+				IClass c = projectContent.GetClass(combinedName, 0);
 				if (c != null) {
 					MakeTypeResult(c);
 					return;

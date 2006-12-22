@@ -330,9 +330,11 @@ namespace ICSharpCode.FormsDesigner.Services
 						// find assembly containing type by using SharpDevelop.Dom
 						IClass foundClass;
 						if (name.Contains("`")) {
-							foundClass = pc.GetClass(name.Substring(0, name.IndexOf('`')).Replace('+', '.'));
+							int typeParameterCount;
+							int.TryParse(name.Substring(name.IndexOf('`') + 1), out typeParameterCount);
+							foundClass = pc.GetClass(name.Substring(0, name.IndexOf('`')).Replace('+', '.'), typeParameterCount);
 						} else {
-							foundClass = pc.GetClass(name.Replace('+', '.'));
+							foundClass = pc.GetClass(name.Replace('+', '.'), 0);
 						}
 						if (foundClass != null) {
 							Assembly assembly = LoadAssembly(foundClass.ProjectContent);

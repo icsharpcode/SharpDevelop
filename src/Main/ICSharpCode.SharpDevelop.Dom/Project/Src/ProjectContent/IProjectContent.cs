@@ -67,7 +67,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		void RemoveCompilationUnit(ICompilationUnit oldUnit);
 		void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName);
 		
-		IClass GetClass(string typeName);
 		IClass GetClass(string typeName, int typeParameterCount);
 		bool NamespaceExists(string name);
 		ArrayList GetNamespaceContents(string nameSpace);

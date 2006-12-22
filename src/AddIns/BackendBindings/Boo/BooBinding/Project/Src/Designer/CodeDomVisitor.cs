@@ -381,7 +381,7 @@ namespace Grunwald.BooBinding.Designer
 		
 		public override void OnReferenceExpression(ReferenceExpression node)
 		{
-			if (pc.GetClass(node.Name) != null) {
+			if (pc.GetClass(node.Name, 0) != null) {
 				_expression = new CodeTypeReferenceExpression(node.Name);
 			} else if (pc.NamespaceExists(node.Name)) {
 				_expression = new CodeTypeReferenceExpression(node.Name);
@@ -421,7 +421,7 @@ namespace Grunwald.BooBinding.Designer
 			_fieldReferenceType = null;
 			
 			string combinedName = parentName + "." + name;
-			if (pc.GetClass(combinedName) != null)
+			if (pc.GetClass(combinedName, 0) != null)
 				return new CodeTypeReferenceExpression(combinedName);
 			else if (pc.NamespaceExists(combinedName))
 				return new CodeTypeReferenceExpression(combinedName);

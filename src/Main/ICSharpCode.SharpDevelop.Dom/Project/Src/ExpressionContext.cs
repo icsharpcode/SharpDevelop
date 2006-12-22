@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// object creation.</remarks>
 		public static ExpressionContext GetAttribute(IProjectContent projectContent)
 		{
-			return new TypeExpressionContext(projectContent.GetClass("System.Attribute"), false, true);
+			return new TypeExpressionContext(projectContent.GetClass("System.Attribute", 0), false, true);
 		}
 		
 		/// <summary>Context expects a type name which has special base type</summary>

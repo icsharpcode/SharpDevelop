@@ -136,7 +136,7 @@ namespace ICSharpCode.FormsDesigner
 						// Check current project has the custom component first.
 						IProjectContent currentProjectContent = ParserService.CurrentProjectContent;
 						if (currentProjectContent != null) {
-							if (currentProjectContent.GetClass(selectedItem.TypeName) == null) {
+							if (currentProjectContent.GetClass(selectedItem.TypeName, 0) == null) {
 								// Check other projects in the solution.
 								LoggingService.Debug("Checking other projects in the solution.");
 								IProject projectContainingType = FindProjectContainingType(selectedItem.TypeName);
@@ -224,7 +224,7 @@ namespace ICSharpCode.FormsDesigner
 				if (project != currentProject) {
 					IProjectContent projectContent = ParserService.GetProjectContent(project);
 					if (projectContent != null) {
-						if (projectContent.GetClass(type) != null) {
+						if (projectContent.GetClass(type, 0) != null) {
 							LoggingService.Debug("Found project containing type: " + project.FileName);
 							return project;
 						}

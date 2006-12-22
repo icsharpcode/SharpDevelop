@@ -148,8 +148,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 		public void GetCommonType()
 		{
 			IReturnType res = MemberLookupHelper.GetCommonType(msc,
-			                                                   swf.GetClass("System.Windows.Forms.ToolStripButton").DefaultReturnType,
-			                                                   swf.GetClass("System.Windows.Forms.ToolStripSeparator").DefaultReturnType);
+			                                                   swf.GetClass("System.Windows.Forms.ToolStripButton", 0).DefaultReturnType,
+			                                                   swf.GetClass("System.Windows.Forms.ToolStripSeparator", 0).DefaultReturnType);
 			Assert.AreEqual("System.Windows.Forms.ToolStripItem", res.FullyQualifiedName);
 		}
 		
@@ -273,7 +273,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		GenericReturnType CreateTWithDisposableConstraint()
 		{
 			GenericReturnType rt = CreateT();
-			rt.TypeParameter.Constraints.Add(msc.GetClass("System.IDisposable").DefaultReturnType);
+			rt.TypeParameter.Constraints.Add(msc.GetClass("System.IDisposable", 0).DefaultReturnType);
 			return rt;
 		}
 		
@@ -302,10 +302,10 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void DisposableClassIsApplicableOnDisposableT()
 		{
-			Assert.IsFalse(MemberLookupHelper.ConversionExists(msc.GetClass("System.CharEnumerator").DefaultReturnType,
+			Assert.IsFalse(MemberLookupHelper.ConversionExists(msc.GetClass("System.CharEnumerator", 0).DefaultReturnType,
 			                                                   CreateTWithDisposableConstraint()));
 			
-			Assert.IsTrue(MemberLookupHelper.IsApplicable(msc.GetClass("System.CharEnumerator").DefaultReturnType,
+			Assert.IsTrue(MemberLookupHelper.IsApplicable(msc.GetClass("System.CharEnumerator", 0).DefaultReturnType,
 			                                              CreateTWithDisposableConstraint()));
 		}
 		

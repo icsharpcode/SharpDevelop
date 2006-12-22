@@ -219,7 +219,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (c == null)
 					return false;
 				if (BooProject.BooCompilerPC != null) {
-					return c.IsTypeInInheritanceTree(BooProject.BooCompilerPC.GetClass("Boo.Lang.Compiler.AbstractAstAttribute"));
+					return c.IsTypeInInheritanceTree(BooProject.BooCompilerPC.GetClass("Boo.Lang.Compiler.AbstractAstAttribute", 0));
 				} else {
 					foreach (IReturnType baseType in c.BaseTypes) {
 						if (baseType.FullyQualifiedName == "Boo.Lang.Compiler.AbstractAstAttribute")

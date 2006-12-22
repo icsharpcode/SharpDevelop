@@ -43,10 +43,10 @@ namespace CSharpBinding
 							context = ExpressionContext.Default;
 							break;
 						case "using":
-							context = ExpressionContext.TypeDerivingFrom(ParserService.CurrentProjectContent.GetClass("System.IDisposable"), false);
+							context = ExpressionContext.TypeDerivingFrom(ParserService.CurrentProjectContent.GetClass("System.IDisposable", 0), false);
 							break;
 						case "catch":
-							context = ExpressionContext.TypeDerivingFrom(ParserService.CurrentProjectContent.GetClass("System.Exception"), false);
+							context = ExpressionContext.TypeDerivingFrom(ParserService.CurrentProjectContent.GetClass("System.Exception", 0), false);
 							break;
 						case "foreach":
 						case "typeof":
@@ -88,7 +88,7 @@ namespace CSharpBinding
 						ResolveResult resolveResult = ParserService.Resolve(result, editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1, editor.FileName, documentText);
 						if (resolveResult != null && resolveResult.ResolvedType != null) {
 							IClass underlyingClass = resolveResult.ResolvedType.GetUnderlyingClass();
-							if (underlyingClass != null && underlyingClass.IsTypeInInheritanceTree(ParserService.CurrentProjectContent.GetClass("System.MulticastDelegate"))) {
+							if (underlyingClass != null && underlyingClass.IsTypeInInheritanceTree(ParserService.CurrentProjectContent.GetClass("System.MulticastDelegate", 0))) {
 								EventHandlerCompletitionDataProvider eventHandlerProvider = new EventHandlerCompletitionDataProvider(result.Expression, resolveResult);
 								eventHandlerProvider.InsertSpace = true;
 								editor.ShowCompletionWindow(eventHandlerProvider, ch);
