@@ -1032,6 +1032,14 @@
 											<File Source="..\..\AddIns\SharpReport\SharpReportAddin.addin" Name="SHARPR_1.ADD" Id="SharpReportAddin.addin" LongName="SharpReportAddin.addin" />
 											<File Source="..\..\AddIns\SharpReport\SharpReportAddin.dll" Name="SHARPR_3.DLL" Id="SharpReportAddin.dll" LongName="SharpReportAddin.dll" Assembly=".net" AssemblyApplication="SharpReportAddin.dll" AssemblyManifest="SharpReportAddin.dll" KeyPath="yes" />
 										</Component>
+										<Component Guid="2ADD2FE1-C2FA-428E-896A-E1F119408A3D" Id="PdfSharpDll" DiskId="1">
+											<File Source="..\..\AddIns\SharpReport\PdfSharp.dll" Name="PdfSharp.dll" Id="PdfSharp.dll" Assembly=".net" AssemblyApplication="PdfSharp.dll" AssemblyManifest="PdfSharp.dll" KeyPath="yes" LongName="PdfSharp.dll" />
+										</Component>
+										<Directory Id="PdfSharpResources" Name="de">
+											<Component Guid="DA561136-80BF-464C-8C30-CCFFEFF926B5" Id="PdfSharpDeResources" DiskId="1">
+												<File Source="..\..\AddIns\SharpReport\de\PdfSharp.resources.dll" Name="PDFSHA_1.DLL" Id="PdfSharp.resources.dll" LongName="PdfSharp.resources.dll" AssemblyApplication="PdfSharp.resources.dll" AssemblyManifest="PdfSharp.resources.dll" Assembly=".net" KeyPath="yes" />
+											</Component>
+										</Directory>
 									</Directory>
 									<Directory Id="StartPageAddInFolder" LongName="StartPage" Name="StartPg">
 										<Component Guid="220967E5-D5AA-4207-9757-79599222D5CF" Id="StartPageAddInFiles" DiskId="1">

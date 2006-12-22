@@ -298,6 +298,8 @@
 				<ComponentRef Id="SharpReportCoreDll"/>
 				<ComponentRef Id="SharpReportDll"/>
 				<ComponentRef Id="ReportGeneratorDll"/>
+				<ComponentRef Id="PdfSharpDll"/>
+				<ComponentRef Id="PdfSharpDeResources"/>
 				<ComponentRef Id="SharpReportAddInDll"/>
 				<ComponentRef Id="OracleDbToolsProviderDll"/>
 				<ComponentRef Id="ServerBrowserToolDll"/>
