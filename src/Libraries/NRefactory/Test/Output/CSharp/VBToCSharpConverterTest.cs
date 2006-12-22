@@ -598,5 +598,16 @@ static int static_Test2_j = 0;");
 		{
 			TestStatement("CType(obj, IDisposable).Dispose()", "((IDisposable)obj).Dispose();");
 		}
+		
+		[Test]
+		public void ArrayCreationUpperBound()
+		{
+			TestStatement("Dim i As String() = New String(1) {}",
+			              "string[] i = new string[2];");
+			TestStatement("Dim i As String() = New String(1) {\"0\", \"1\"}",
+			              "string[] i = new string[2] {\"0\", \"1\"};");
+			TestStatement("Dim i As String(,) = New String(5, 5) {}",
+			              "string[,] i = new string[6, 6];");
+		}
 	}
 }

@@ -224,7 +224,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "\tReturn argument * 2\n" +
 			           "End Function");
 		}
-		*/
+		 */
 		
 		[Test]
 		public void RegisterEvent()
@@ -448,6 +448,17 @@ End Class
 		public void PrimitiveCast()
 		{
 			TestStatement("a = (int)number;", "a = CInt(number)");
+		}
+		
+		[Test]
+		public void ArrayCreationUpperBound()
+		{
+			TestStatement("string[] i = new string[2];",
+			              "Dim i As String() = New String(1) {}");
+			TestStatement("string[] i = new string[2] { \"0\", \"1\" };",
+			              "Dim i As String() = New String(1) {\"0\", \"1\"}");
+			TestStatement("string[,] i = new string[6, 6];",
+			              "Dim i As String(,) = New String(5, 5) {}");
 		}
 	}
 }

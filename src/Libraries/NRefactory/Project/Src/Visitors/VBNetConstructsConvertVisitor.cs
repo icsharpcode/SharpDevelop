@@ -26,6 +26,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		//   IIF(cond, true, false) => ConditionalExpression
 		//   Built-in methods => Prefix with class name
 		//   Function A() \n A = SomeValue \n End Function -> convert to return statement
+		//   Array creation => add 1 to upper bound to get array length
 		
 		Dictionary<string, string> usings;
 		List<UsingDeclaration> addedUsings;
@@ -455,6 +456,17 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 			}
 			return base.VisitUsingStatement(usingStatement, data);
+		}
+		
+		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
+		{
+			for (int i = 0; i < arrayCreateExpression.Arguments.Count; i++) {
+				arrayCreateExpression.Arguments[i] = Expression.AddInteger(arrayCreateExpression.Arguments[i], 1);
+			}
+			if (arrayCreateExpression.ArrayInitializer.CreateExpressions.Count == 0) {
+				arrayCreateExpression.ArrayInitializer = null;
+			}
+			return base.VisitArrayCreateExpression(arrayCreateExpression, data);
 		}
 	}
 }
