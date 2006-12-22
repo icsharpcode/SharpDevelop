@@ -7,30 +7,30 @@
 		so the third digit must be the Subversion revision. 
 	-->
 	<Product Id="$(var.PRODUCTCODEGUID)"
-		Name="SharpDevelop 2.1 Beta 3"
+		Name="SharpDevelop 3.0 Alpha"
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
 		UpgradeCode="A1F371B6-4218-4F60-B01E-C996DF461B10"
-		Version="2.1.$(var.PRODUCTBUILDVERSION)">
+		Version="3.0.$(var.PRODUCTBUILDVERSION)">
 		
 		<Package Id="$(var.PACKAGECODEGUID)"
-			Description="SharpDevelop 2.1.0.$(var.PRODUCTBUILDVERSION)"
+			Description="SharpDevelop 3.0.0.$(var.PRODUCTBUILDVERSION)"
 			InstallerVersion="300"
 			Compressed="yes"/>
 		
 		<!-- Upgrade information -->
 		<Upgrade Id="A1F371B6-4218-4F60-B01E-C996DF461B10">
 			<!-- Checks for older versions -->
-			<UpgradeVersion Minimum="2.1.0"
+			<UpgradeVersion Minimum="3.0.0"
 				IncludeMinimum="yes"
-				Maximum="2.1.$(var.PRODUCTBUILDVERSION)"
+				Maximum="3.0.$(var.PRODUCTBUILDVERSION)"
 				IncludeMaximum="no" 
 				Property="PREVIOUSVERSIONFOUND"/>
 			<!-- Checks for newer versions -->
 			<UpgradeVersion OnlyDetect="yes"
 				Property="NEWERVERSIONFOUND"
-        		Minimum="2.1.$(var.PRODUCTBUILDVERSION)"
+        		Minimum="3.0.$(var.PRODUCTBUILDVERSION)"
 				IncludeMinimum="no"/>
 		</Upgrade>
 		
