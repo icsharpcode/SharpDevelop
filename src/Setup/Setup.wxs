@@ -289,7 +289,6 @@
 				<ComponentRef Id="HighlightingEditorFiles"/>
 				<ComponentRef Id="HtmlHelp2Files"/>
 				<ComponentRef Id="MonoAddInFiles"/>
-				<ComponentRef Id="NAntAddInFiles"/>
 				<ComponentRef Id="PInvokeAddInFiles"/>
 				<ComponentRef Id="RegExToolkitFiles"/>
 				<ComponentRef Id="ResourceToolkitFiles"/>

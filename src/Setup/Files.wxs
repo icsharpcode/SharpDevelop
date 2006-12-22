@@ -983,12 +983,6 @@
 											<File Source="..\..\AddIns\AddIns\Misc\MonoAddIn\MonoAddIn.dll" Name="MONOAD_1.DLL" Id="MonoAddIn.dll" LongName="MonoAddIn.dll" Assembly=".net" AssemblyApplication="MonoAddIn.dll" AssemblyManifest="MonoAddIn.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
-									<Directory Id="NAntAddInFolder" LongName="NAntAddIn" Name="NAnt">
-										<Component Guid="36B5B3BF-49CD-4EFA-B749-136F4ECD6492" Id="NAntAddInFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\NAntAddIn\NAnt.addin" Name="NAnt.add" Id="NAnt.addin" LongName="NAnt.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\NAntAddIn\NAntAddIn.dll" Name="NANTAD_1.DLL" Id="NAntAddIn.dll" LongName="NAntAddIn.dll" Assembly=".net" AssemblyApplication="NAntAddIn.dll" AssemblyManifest="NAntAddIn.dll" KeyPath="yes" />
-										</Component>
-									</Directory>
 									<Directory Id="PInvokeAddInFolder" LongName="PInvokeAddIn" Name="PInvoke">
 										<Component Guid="09DC988A-373E-4147-BA35-AF6BF0047B1A" Id="PInvokeAddInFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\PInvokeAddIn\signatures.xml" Name="SIGNAT_1.XML" Id="signatures.xml" LongName="signatures.xml" />
