@@ -53,12 +53,9 @@ namespace Debugger.Wrappers.CorSym
 		
 		public bool Is<T>() where T: class
 		{
-			try {
-				CastTo<T>();
-				return true;
-			} catch {
-				return false;
-			}
+			System.Reflection.ConstructorInfo ctor = typeof(T).GetConstructors()[0];
+			System.Type paramType = ctor.GetParameters()[0].ParameterType;
+			return paramType.IsInstanceOfType(this.WrappedObject);
 		}
 		
 		public T As<T>() where T: class

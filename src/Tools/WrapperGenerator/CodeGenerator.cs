@@ -31,12 +31,18 @@ namespace WrapperGenerator
 @"		" + "\r\n" +
 @"		public bool Is<T>() where T: class" + "\r\n" +
 @"		{" + "\r\n" +
-@"			try {" + "\r\n" +
-@"				CastTo<T>();" + "\r\n" +
-@"				return true;" + "\r\n" +
-@"			} catch {" + "\r\n" +
-@"				return false;" + "\r\n" +
-@"			}" + "\r\n" +
+			
+//@"			try {" + "\r\n" +
+//@"				CastTo<T>();" + "\r\n" +
+//@"				return true;" + "\r\n" +
+//@"			} catch {" + "\r\n" +
+//@"				return false;" + "\r\n" +
+//@"			}" + "\r\n" +
+			
+@"			System.Reflection.ConstructorInfo ctor = typeof(T).GetConstructors()[0];" + "\r\n" +
+@"			System.Type paramType = ctor.GetParameters()[0].ParameterType;" + "\r\n" +
+@"			return paramType.IsInstanceOfType(this.WrappedObject);" + "\r\n" +
+			
 @"		}" + "\r\n" +
 @"		" + "\r\n" +
 @"		public T As<T>() where T: class" + "\r\n" +
