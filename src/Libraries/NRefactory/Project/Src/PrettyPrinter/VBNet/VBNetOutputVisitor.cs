@@ -1159,7 +1159,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 			}
 			
-			if (declareDeclaration.TypeReference.IsNull) {
+			bool isVoid = declareDeclaration.TypeReference.IsNull || declareDeclaration.TypeReference.SystemType == "System.Void";
+			if (isVoid) {
 				outputFormatter.PrintToken(Tokens.Sub);
 			} else {
 				outputFormatter.PrintToken(Tokens.Function);
@@ -1185,7 +1186,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			AppendCommaSeparatedList(declareDeclaration.Parameters);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
-			if (!declareDeclaration.TypeReference.IsNull) {
+			if (!isVoid) {
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();

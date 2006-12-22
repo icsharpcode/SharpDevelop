@@ -1378,8 +1378,6 @@ VariableDeclaratorPartAfterIdentifier<List<VariableDeclaration> fieldDeclaration
 				if(type.RankSpecifier != null) {
 					Error("array rank only allowed one time");
 				} else {
-					for (int i = 0; i < dimension.Count; i++)
-						dimension[i] = Expression.AddInteger(dimension[i], 1);
 					if (rank == null) {
 						type.RankSpecifier = new int[] { dimension.Count - 1 };
 					} else {

@@ -133,6 +133,11 @@ namespace ICSharpCode.NRefactory.Visitors
 			if ((method.Modifier & Modifiers.Visibility) == 0)
 				method.Modifier |= Modifiers.Public;
 			method.Modifier |= Modifiers.Extern | Modifiers.Static;
+			
+			if (method.TypeReference.IsNull) {
+				method.TypeReference = new TypeReference("System.Void");
+			}
+			
 			Attribute att = new Attribute("DllImport", null, null);
 			att.PositionalArguments.Add(CreateStringLiteral(declareDeclaration.Library));
 			if (declareDeclaration.Alias.Length > 0) {

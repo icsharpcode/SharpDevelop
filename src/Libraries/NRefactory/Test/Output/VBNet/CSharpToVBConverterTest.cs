@@ -265,6 +265,14 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void PInvokeSub()
+		{
+			TestMember("[DllImport(\"kernel32\", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]\n" +
+			           "private static extern void Sleep(long dwMilliseconds);",
+			           "Private Declare Ansi Sub Sleep Lib \"kernel32\" (ByVal dwMilliseconds As Long)");
+		}
+		
+		[Test]
 		public void Constructor()
 		{
 			TestMember("public tmp1() : base(1) { }",
