@@ -39,17 +39,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override bool Equals(object o)
+		public override bool Equals(IReturnType o)
 		{
 			GetClassReturnType rt = o as GetClassReturnType;
-			if (rt == null) {
-				IReturnType rt2 = o as IReturnType;
-				if (rt2 != null && rt2.IsDefaultReturnType)
-					return rt2.FullyQualifiedName == fullName && rt2.TypeParameterCount == this.TypeParameterCount;
-				else
-					return false;
+			if (rt != null) {
+				return fullName == rt.fullName && typeParameterCount == rt.typeParameterCount && content == rt.content;
 			}
-			return fullName == rt.fullName && typeParameterCount == rt.typeParameterCount && content == rt.content;
+			return base.Equals(o);
 		}
 		
 		public override int GetHashCode()

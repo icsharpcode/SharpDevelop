@@ -16,6 +16,9 @@ using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.SharpDevelop;
 
 namespace VBNetBinding
 {
@@ -32,10 +35,11 @@ namespace VBNetBinding
 			ConvertFile(sourceItem, targetItem, ".cs", ".vb", SupportedLanguage.CSharp, new VBNetOutputVisitor());
 		}
 		
-		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials)
+		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials, FileProjectItem sourceItem)
 		{
 			PreprocessingDirective.CSharpToVB(specials);
-			compilationUnit.AcceptVisitor(new CSharpToVBNetConvertVisitor(), null);
+			IProjectContent pc = ParserService.GetProjectContent(sourceItem.Project) ?? ParserService.CurrentProjectContent;
+			compilationUnit.AcceptVisitor(new CSharpToVBNetConvertVisitor(pc, sourceItem.FileName), null);
 		}
 		
 		protected override void CopyProperties(IProject sourceProject, IProject targetProject)

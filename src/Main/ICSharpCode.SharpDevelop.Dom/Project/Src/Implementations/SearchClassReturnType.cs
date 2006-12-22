@@ -41,13 +41,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				shortName = name.Substring(pos + 1);
 		}
 		
-		public override int TypeParameterCount {
-			get {
-				return typeParameterCount;
-			}
-		}
-		
-		public override bool Equals(object o)
+		public override bool Equals(IReturnType o)
 		{
 			SearchClassReturnType rt = o as SearchClassReturnType;
 			if (rt != null) {
@@ -61,11 +55,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return true;
 				}
 			}
-			IReturnType rt2 = o as IReturnType;
-			if (rt2 != null && rt2.IsDefaultReturnType)
-				return rt2.FullyQualifiedName == this.FullyQualifiedName && rt2.TypeParameterCount == this.TypeParameterCount;
-			else
-				return false;
+			return base.Equals(o);
 		}
 		
 		public override int GetHashCode()
@@ -161,12 +151,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return name;
 				}
 				return tmp;
-			}
-		}
-		
-		public override bool IsDefaultReturnType {
-			get {
-				return true;
 			}
 		}
 		

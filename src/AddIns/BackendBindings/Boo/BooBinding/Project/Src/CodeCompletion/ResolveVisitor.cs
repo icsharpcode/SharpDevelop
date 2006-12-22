@@ -605,7 +605,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (node.ReturnType != null) {
 				amrt.MethodReturnType = ConvertType(node.ReturnType);
 			} else {
-				amrt.MethodReturnType = new InferredReturnType(node.Body, resolver.CallingClass,
+				amrt.MethodReturnType = new BooInferredReturnType(node.Body, resolver.CallingClass,
 				                                               node.ContainsAnnotation("inline"));
 			}
 			ConvertVisitor.AddParameters(node.Parameters, amrt.MethodParameters, resolver.CallingMember, resolver.CallingClass ?? new DefaultClass(resolver.CompilationUnit, "__Dummy"));

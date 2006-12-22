@@ -12,45 +12,27 @@ using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Visitors
 {
-	public class LocalLookupVariable
+	public sealed class LocalLookupVariable
 	{
-		TypeReference typeRef;
-		Location startPos;
-		Location endPos;
-		bool  isConst;
+		public readonly TypeReference TypeRef;
+		public readonly Location StartPos;
+		public readonly Location EndPos;
+		public readonly bool IsConst;
+		public readonly bool IsLoopVariable;
+		public readonly Expression Initializer;
 		
-		public TypeReference TypeRef {
-			get {
-				return typeRef;
-			}
-		}
-		public Location StartPos {
-			get {
-				return startPos;
-			}
-		}
-		public Location EndPos {
-			get {
-				return endPos;
-			}
-		}
-		
-		public bool IsConst {
-			get {
-				return isConst;
-			}
-		}
-		
-		public LocalLookupVariable(TypeReference typeRef, Location startPos, Location endPos, bool isConst)
+		public LocalLookupVariable(TypeReference typeRef, Location startPos, Location endPos, bool isConst, bool isLoopVariable, Expression initializer)
 		{
-			this.typeRef = typeRef;
-			this.startPos = startPos;
-			this.endPos = endPos;
-			this.isConst = isConst;
+			this.TypeRef = typeRef;
+			this.StartPos = startPos;
+			this.EndPos = endPos;
+			this.IsConst = isConst;
+			this.IsLoopVariable = isLoopVariable;
+			this.Initializer = initializer;
 		}
 	}
 	
-	public class LookupTableVisitor : AbstractAstVisitor
+	public sealed class LookupTableVisitor : AbstractAstVisitor
 	{
 		Dictionary<string, List<LocalLookupVariable>> variables;
 		
@@ -74,7 +56,9 @@ namespace ICSharpCode.NRefactory.Visitors
 			variables = new Dictionary<string, List<LocalLookupVariable>>(nameComparer);
 		}
 		
-		public void AddVariable(TypeReference typeRef, string name, Location startPos, Location endPos, bool isConst)
+		public void AddVariable(TypeReference typeRef, string name,
+		                        Location startPos, Location endPos, bool isConst,
+		                        bool isLoopVariable, Expression initializer)
 		{
 			if (name == null || name.Length == 0) {
 				return;
@@ -85,7 +69,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			} else {
 				list = (List<LocalLookupVariable>)variables[name];
 			}
-			list.Add(new LocalLookupVariable(typeRef, startPos, endPos, isConst));
+			list.Add(new LocalLookupVariable(typeRef, startPos, endPos, isConst, isLoopVariable, initializer));
 		}
 		
 		public override object VisitWithStatement(WithStatement withStatement, object data)
@@ -119,7 +103,8 @@ namespace ICSharpCode.NRefactory.Visitors
 				            varDecl.Name,
 				            localVariableDeclaration.StartLocation,
 				            CurrentEndLocation,
-				            (localVariableDeclaration.Modifier & Modifiers.Const) == Modifiers.Const);
+				            (localVariableDeclaration.Modifier & Modifiers.Const) == Modifiers.Const,
+				            false, varDecl.Initializer);
 			}
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 		}
@@ -127,9 +112,36 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			foreach (ParameterDeclarationExpression p in anonymousMethodExpression.Parameters) {
-				AddVariable(p.TypeReference, p.ParameterName, anonymousMethodExpression.StartLocation, anonymousMethodExpression.EndLocation, false);
+				AddVariable(p.TypeReference, p.ParameterName,
+				            anonymousMethodExpression.StartLocation, anonymousMethodExpression.EndLocation,
+				            false, false, null);
 			}
 			return base.VisitAnonymousMethodExpression(anonymousMethodExpression, data);
+		}
+		
+		public override object VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
+		{
+			foreach (ParameterDeclarationExpression p in lambdaExpression.Parameters) {
+				AddVariable(p.TypeReference, p.ParameterName,
+				            lambdaExpression.StartLocation, lambdaExpression.EndLocation,
+				            false, false, null);
+			}
+			return base.VisitLambdaExpression(lambdaExpression, data);
+		}
+		
+		public override object VisitQueryExpressionFromGenerator(QueryExpressionFromGenerator queryExpressionFromGenerator, object data)
+		{
+			if (queryExpressionFromGenerator.Parent != null) {
+				// find parent QueryExpression
+				QueryExpression parentExpression = queryExpressionFromGenerator.Parent.Parent as QueryExpression;
+				
+				if (parentExpression != null) {
+					AddVariable(null, queryExpressionFromGenerator.Identifier,
+					            parentExpression.StartLocation, parentExpression.EndLocation,
+					            false, true, queryExpressionFromGenerator.InExpression);
+				}
+			}
+			return base.VisitQueryExpressionFromGenerator(queryExpressionFromGenerator, data);
 		}
 		
 		public override object VisitForNextStatement(ForNextStatement forNextStatement, object data)
@@ -177,7 +189,8 @@ namespace ICSharpCode.NRefactory.Visitors
 			            foreachStatement.VariableName,
 			            foreachStatement.StartLocation,
 			            foreachStatement.EndLocation,
-			            false);
+			            false, true,
+			            foreachStatement.Expression);
 			
 			if (foreachStatement.Expression != null) {
 				foreachStatement.Expression.AcceptVisitor(this, data);
@@ -204,7 +217,7 @@ namespace ICSharpCode.NRefactory.Visitors
 							            catchClause.VariableName,
 							            catchClause.StatementBlock.StartLocation,
 							            catchClause.StatementBlock.EndLocation,
-							            false);
+							            false, false, null);
 						}
 						catchClause.StatementBlock.AcceptVisitor(this, data);
 					}

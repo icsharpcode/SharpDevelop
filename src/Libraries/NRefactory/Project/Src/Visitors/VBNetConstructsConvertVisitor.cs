@@ -17,7 +17,7 @@ namespace ICSharpCode.NRefactory.Visitors
 	/// <summary>
 	/// Converts special VB constructs to use more general AST classes.
 	/// </summary>
-	public class VBNetConstructsConvertVisitor : AbstractAstTransformer
+	public class VBNetConstructsConvertVisitor : ConvertVisitorBase
 	{
 		// The following conversions are implemented:
 		//   MyBase.New() and MyClass.New() calls inside the constructor are converted to :base() and :this()
@@ -26,6 +26,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		//   IIF(cond, true, false) => ConditionalExpression
 		//   Built-in methods => Prefix with class name
 		//   Function A() \n A = SomeValue \n End Function -> convert to return statement
+		//   Comparison with empty string literal ->
 		
 		Dictionary<string, string> usings;
 		List<UsingDeclaration> addedUsings;
@@ -326,29 +327,10 @@ namespace ICSharpCode.NRefactory.Visitors
 					from = p.ParameterName;
 					p.ParameterName = "Value";
 				}
-				propertyDeclaration.SetRegion.AcceptVisitor(new RenameIdentifierVisitor(from, "value"), null);
+				propertyDeclaration.SetRegion.AcceptVisitor(new RenameIdentifierVisitor(from, "value", StringComparer.InvariantCultureIgnoreCase), null);
 			}
 			
 			return base.VisitPropertyDeclaration(propertyDeclaration, data);
-		}
-		
-		class RenameIdentifierVisitor : AbstractAstVisitor
-		{
-			string from, to;
-			
-			public RenameIdentifierVisitor(string from, string to)
-			{
-				this.from = from;
-				this.to = to;
-			}
-			
-			public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
-			{
-				if (string.Equals(identifierExpression.Identifier, from, StringComparison.InvariantCultureIgnoreCase)) {
-					identifierExpression.Identifier = to;
-				}
-				return base.VisitIdentifierExpression(identifierExpression, data);
-			}
 		}
 		
 		static volatile Dictionary<string, Expression> constantTable;
@@ -455,6 +437,46 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 			}
 			return base.VisitUsingStatement(usingStatement, data);
+		}
+		
+		bool IsEmptyStringLiteral(Expression expression)
+		{
+			PrimitiveExpression pe = expression as PrimitiveExpression;
+			if (pe != null) {
+				return (pe.Value as string) == "";
+			} else {
+				return false;
+			}
+		}
+		
+		Expression CallStringIsNullOrEmpty(Expression stringVariable)
+		{
+			List<Expression> arguments = new List<Expression>();
+			arguments.Add(stringVariable);
+			return new InvocationExpression(
+				new FieldReferenceExpression(new TypeReferenceExpression("System.String"), "IsNullOrEmpty"),
+				arguments);
+		}
+		
+		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
+		{
+			base.VisitBinaryOperatorExpression(binaryOperatorExpression, data);
+			if (IsEmptyStringLiteral(binaryOperatorExpression.Right)) {
+				if (binaryOperatorExpression.Op == BinaryOperatorType.Equality) {
+					ReplaceCurrentNode(CallStringIsNullOrEmpty(binaryOperatorExpression.Left));
+				} else if (binaryOperatorExpression.Op == BinaryOperatorType.InEquality) {
+					ReplaceCurrentNode(new UnaryOperatorExpression(CallStringIsNullOrEmpty(binaryOperatorExpression.Left),
+					                                               UnaryOperatorType.Not));
+				}
+			} else if (IsEmptyStringLiteral(binaryOperatorExpression.Left)) {
+				if (binaryOperatorExpression.Op == BinaryOperatorType.Equality) {
+					ReplaceCurrentNode(CallStringIsNullOrEmpty(binaryOperatorExpression.Right));
+				} else if (binaryOperatorExpression.Op == BinaryOperatorType.InEquality) {
+					ReplaceCurrentNode(new UnaryOperatorExpression(CallStringIsNullOrEmpty(binaryOperatorExpression.Right),
+					                                               UnaryOperatorType.Not));
+				}
+			}
+			return null;
 		}
 	}
 }

@@ -77,7 +77,6 @@
     <Compile Include="Src\Designer\FormsDesignerBinding.cs" />
     <Compile Include="Src\Designer\CodeDomVisitor.cs" />
     <Compile Include="Src\BooCodeGenerator.cs" />
-    <Compile Include="Src\CodeCompletion\ElementReturnType.cs" />
     <Compile Include="Src\FormattingStrategy.cs" />
     <Compile Include="Src\ConvertProject.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />

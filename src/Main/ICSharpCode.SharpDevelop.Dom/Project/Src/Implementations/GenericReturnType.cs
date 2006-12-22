@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// <summary>
 	/// GenericReturnType is a reference to a type parameter.
 	/// </summary>
-	public sealed class GenericReturnType : ProxyReturnType
+	public sealed class GenericReturnType : DecoratingReturnType
 	{
 		ITypeParameter typeParameter;
 		
@@ -23,12 +23,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override bool Equals(object o)
+		public override bool Equals(IReturnType rt)
 		{
-			IReturnType rt = o as IReturnType;
 			if (rt == null || !rt.IsGenericReturnType)
 				return false;
 			return typeParameter.Equals(rt.CastToGenericReturnType().typeParameter);
+		}
+		
+		public override T CastToDecoratingReturnType<T>()
+		{
+			if (typeof(T) == typeof(GenericReturnType)) {
+				return (T)(object)this;
+			} else {
+				return null;
+			}
 		}
 		
 		public override int GetHashCode()
@@ -106,35 +114,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override string ToString()
 		{
 			return String.Format("[GenericReturnType: {0}]", typeParameter);
-		}
-		
-		public override bool IsDefaultReturnType {
-			get {
-				return false;
-			}
-		}
-		
-		public override bool IsArrayReturnType {
-			get {
-				return false;
-			}
-		}
-		
-		public override bool IsConstructedReturnType {
-			get {
-				return false;
-			}
-		}
-		
-		public override bool IsGenericReturnType {
-			get {
-				return true;
-			}
-		}
-		
-		public override ICSharpCode.SharpDevelop.Dom.GenericReturnType CastToGenericReturnType()
-		{
-			return this;
 		}
 	}
 }

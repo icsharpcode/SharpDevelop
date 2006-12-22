@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {
@@ -15,9 +16,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	/// </summary>
 	public interface IOutputAstVisitor : IAstVisitor
 	{
-		NodeTracker NodeTracker {
-			get;
-		}
+		event Action<INode> BeforeNodeVisit;
+		event Action<INode> AfterNodeVisit;
 		
 		string Text {
 			get;
@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			get;
 		}
 		
-		object Options {
+		AbstractPrettyPrintOptions Options {
 			get;
 			set;
 		}

@@ -164,7 +164,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			// now add the extension method if it fits the type
-			if (MemberLookupHelper.ConversionExists(resolvedType, ext.Parameters[0].ReturnType)) {
+			if (MemberLookupHelper.IsApplicable(resolvedType, ext.Parameters[0].ReturnType)) {
 				IMethod method = ext as IMethod;
 				if (method != null && method.TypeParameters.Count > 0) {
 					IReturnType[] typeArguments = new IReturnType[method.TypeParameters.Count];

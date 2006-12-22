@@ -172,7 +172,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					ResolveResult.AddExtensions(language, list, result.CallingClass, result.ContainingType);
 					foreach (IMethodOrProperty mp in list) {
 						if (language.NameComparer.Equals(mp.Name, result.Name) && mp is IMethod) {
-							IMethod m = (IMethod)mp.Clone();
+							DefaultMethod m = (DefaultMethod)mp.Clone();
+							// for the insight window, remove first parameter and mark the
+							// method as normal - this is required to show the list of
+							// parameters the method expects.
+							m.IsExtensionMethod = false;
 							m.Parameters.RemoveAt(0);
 							methods.Add(m);
 						}

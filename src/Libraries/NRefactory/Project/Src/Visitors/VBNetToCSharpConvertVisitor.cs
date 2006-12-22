@@ -20,7 +20,8 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
 			base.VisitCompilationUnit(compilationUnit, data);
-			compilationUnit.AcceptVisitor(new ToCSharpConvertVisitor(), data);
+			ToCSharpConvertVisitor v = new ToCSharpConvertVisitor();
+			compilationUnit.AcceptVisitor(v, data);
 			return null;
 		}
 	}

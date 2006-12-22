@@ -63,8 +63,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (HasAliases) {
 				foreach (KeyValuePair<string, IReturnType> entry in aliases) {
-					if (!entry.Value.IsDefaultReturnType)
-						continue;
 					string aliasString = entry.Key;
 					string nsName;
 					if (projectContent.Language.NameComparer.Equals(partialNamespaceName, aliasString)) {
@@ -104,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (KeyValuePair<string, IReturnType> entry in aliases) {
 					string aliasString = entry.Key;
 					if (projectContent.Language.NameComparer.Equals(partialTypeName, aliasString)) {
-						if (entry.Value.IsDefaultReturnType && entry.Value.GetUnderlyingClass() == null)
+						if (entry.Value.GetUnderlyingClass() == null)
 							continue; // type not found, maybe entry was a namespace
 						yield return entry.Value;
 					}

@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.Visitors
 	/// <summary>
 	/// Converts special C# constructs to use more general AST classes.
 	/// </summary>
-	public class CSharpConstructsVisitor : AbstractAstTransformer
+	public class CSharpConstructsVisitor : ConvertVisitorBase
 	{
 		// The following conversions are implemented:
 		//   a == null -> a Is Nothing
@@ -69,16 +69,14 @@ namespace ICSharpCode.NRefactory.Visitors
 			return base.VisitExpressionStatement(expressionStatement, data);
 		}
 		
-		
 		public override object VisitIfElseStatement(IfElseStatement ifElseStatement, object data)
 		{
-			base.VisitIfElseStatement(ifElseStatement, data);
 			BinaryOperatorExpression boe = ifElseStatement.Condition as BinaryOperatorExpression;
 			if (ifElseStatement.ElseIfSections.Count == 0
 			    && ifElseStatement.FalseStatement.Count == 0
 			    && ifElseStatement.TrueStatement.Count == 1
 			    && boe != null
-			    && boe.Op == BinaryOperatorType.ReferenceInequality
+			    && boe.Op == BinaryOperatorType.InEquality
 			    && (IsNullLiteralExpression(boe.Left) || IsNullLiteralExpression(boe.Right))
 			   )
 			{
@@ -102,7 +100,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					}
 				}
 			}
-			return null;
+			return base.VisitIfElseStatement(ifElseStatement, data);
 		}
 		
 		public override object VisitForStatement(ForStatement forStatement, object data)

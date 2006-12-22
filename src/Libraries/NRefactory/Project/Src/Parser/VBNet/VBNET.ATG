@@ -1435,14 +1435,14 @@ VariableInitializer<out Expression initializerExpression>
 		initializerExpression = null;
 	.) =
 	Expr<out initializerExpression>
-	| ArrayInitializer<out initializerExpression>
+	| CollectionInitializer<out initializerExpression>
 	.
 
 /* 9.6.3.4 */
-ArrayInitializer<out Expression outExpr>
+CollectionInitializer<out Expression outExpr>
 	(.
 		Expression expr = null;
-		ArrayInitializerExpression initializer = new ArrayInitializerExpression();
+		CollectionInitializerExpression initializer = new CollectionInitializerExpression();
 	.) =
 	"{"
 	[
@@ -1588,7 +1588,9 @@ SimpleNonInvocationExpression<out Expression pexpr>
 		|	"False"											(.pexpr = new PrimitiveExpression(false, "false"); .)
 		|	"Nothing"											(.pexpr = new PrimitiveExpression(null, "null");  .)
 		|	/* 11.4.2 */ "(" Expr<out expr> ")" 				(. pexpr = new ParenthesizedExpression(expr); .)
-		|	/* 11.4.4 */ Identifier					(. pexpr = new IdentifierExpression(t.val); .)
+		|	/* 11.4.4 */ Identifier
+				(. pexpr = new IdentifierExpression(t.val); .)
+				(. pexpr.StartLocation = t.Location; pexpr.EndLocation = t.EndLocation; .)
 		|	(. string val = String.Empty; .)
 			( PrimitiveTypeName<out val> | "Object" (. val = "Object"; .) )
 			"." (. t.val = ""; .) Identifier (. pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); .)
@@ -1844,10 +1846,10 @@ ObjectCreateExpression<out Expression oce>
 	["(" NormalOrReDimArgumentList<out arguments, out canBeNormal, out canBeReDim> ")"
 		[ IF (la.kind == Tokens.OpenParenthesis)
 			ArrayTypeModifiers<out dimensions>
-			ArrayInitializer<out initializer>
-		|	ArrayInitializer<out initializer>
+			CollectionInitializer<out initializer>
+		|	CollectionInitializer<out initializer>
 		]
-		(. if (canBeReDim && !canBeNormal && initializer == null) initializer = new ArrayInitializerExpression(); .)
+		(. if (canBeReDim && !canBeNormal && initializer == null) initializer = new CollectionInitializerExpression(); .)
 	]
 	(.
 		if (type == null) type = new TypeReference("Object"); // fallback type on parser errors
@@ -1857,7 +1859,7 @@ ObjectCreateExpression<out Expression oce>
 			if (dimensions == null) dimensions = new ArrayList();
 			dimensions.Insert(0, (arguments == null) ? 0 : Math.Max(arguments.Count - 1, 0));
 			type.RankSpecifier = (int[])dimensions.ToArray(typeof(int));
-			ArrayCreateExpression ace = new ArrayCreateExpression(type, initializer as ArrayInitializerExpression);
+			ArrayCreateExpression ace = new ArrayCreateExpression(type, initializer as CollectionInitializerExpression);
 			ace.Arguments = arguments;
 			oce = ace;
 		}

@@ -446,6 +446,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass c  = GetCurrentClass();
 			
 			DefaultMethod method = new DefaultMethod(methodDeclaration.Name, null, ConvertModifier(methodDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			method.IsExtensionMethod = methodDeclaration.IsExtensionMethod;
 			method.Documentation = GetDocumentation(region.BeginLine, methodDeclaration.Attributes);
 			ConvertTemplates(methodDeclaration.Templates, method);
 			method.ReturnType = CreateReturnType(methodDeclaration.TypeReference, method);

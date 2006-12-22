@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string @namespace;
 		string dotnetName;
 		
-		public override bool Equals(object obj)
+		public override bool Equals(IReturnType obj)
 		{
 			CombinedReturnType combined = obj as CombinedReturnType;
 			if (combined == null) return false;

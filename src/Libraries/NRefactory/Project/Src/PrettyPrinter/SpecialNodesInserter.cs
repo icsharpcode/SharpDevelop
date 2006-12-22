@@ -122,8 +122,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public static SpecialNodesInserter Install(IEnumerable<ISpecial> specials, IOutputAstVisitor outputVisitor)
 		{
 			SpecialNodesInserter sni = new SpecialNodesInserter(specials, new SpecialOutputVisitor(outputVisitor.OutputFormatter));
-			outputVisitor.NodeTracker.NodeVisiting += sni.AcceptNodeStart;
-			outputVisitor.NodeTracker.NodeVisited  += sni.AcceptNodeEnd;
+			outputVisitor.BeforeNodeVisit += sni.AcceptNodeStart;
+			outputVisitor.AfterNodeVisit  += sni.AcceptNodeEnd;
 			return sni;
 		}
 	}

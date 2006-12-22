@@ -455,7 +455,9 @@ namespace NRefactoryToBooConverter
 		{
 			if (!arrayCreateExpression.ArrayInitializer.IsNull) {
 				B.ArrayLiteralExpression ale = ConvertArrayLiteralExpression(arrayCreateExpression.ArrayInitializer);
-				ale.Type = (B.ArrayTypeReference)ConvertTypeReference(arrayCreateExpression.CreateType);
+				if (!arrayCreateExpression.IsImplicitlyTyped) {
+					ale.Type = (B.ArrayTypeReference)ConvertTypeReference(arrayCreateExpression.CreateType);
+				}
 				return ale;
 			}
 			string builtInName = (arrayCreateExpression.Arguments.Count > 1) ? "matrix" : "array";
@@ -477,12 +479,12 @@ namespace NRefactoryToBooConverter
 			return mie;
 		}
 		
-		public object VisitArrayInitializerExpression(ArrayInitializerExpression aie, object data)
+		public object VisitCollectionInitializerExpression(CollectionInitializerExpression aie, object data)
 		{
 			return ConvertArrayLiteralExpression(aie);
 		}
 		
-		B.ArrayLiteralExpression ConvertArrayLiteralExpression(ArrayInitializerExpression aie)
+		B.ArrayLiteralExpression ConvertArrayLiteralExpression(CollectionInitializerExpression aie)
 		{
 			B.ArrayLiteralExpression dims = new B.ArrayLiteralExpression(GetLexicalInfo(aie));
 			ConvertExpressions(aie.CreateExpressions, dims.Items);
@@ -505,6 +507,20 @@ namespace NRefactoryToBooConverter
 			cbe.EndSourceLocation = GetLocation(anonymousMethodExpression.EndLocation);
 			cbe.Body = ConvertBlock(anonymousMethodExpression.Body);
 			ConvertParameters(anonymousMethodExpression.Parameters, cbe.Parameters);
+			return cbe;
+		}
+		
+		public object VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
+		{
+			B.CallableBlockExpression cbe = new B.CallableBlockExpression(GetLexicalInfo(lambdaExpression));
+			cbe.EndSourceLocation = GetLocation(lambdaExpression.EndLocation);
+			if (lambdaExpression.StatementBody.IsNull) {
+				cbe.Body = new B.Block();
+				cbe.Body.Add(new B.ReturnStatement(ConvertExpression(lambdaExpression.ExpressionBody)));
+			} else {
+				cbe.Body = ConvertBlock(lambdaExpression.StatementBody);
+			}
+			ConvertParameters(lambdaExpression.Parameters, cbe.Parameters);
 			return cbe;
 		}
 		

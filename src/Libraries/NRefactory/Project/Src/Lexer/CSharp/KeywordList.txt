@@ -73,6 +73,7 @@ ShiftLeftAssign = "<<="
 #Removed because of generics
 #ShiftRightAssign = ">>="
 Pointer = "->"
+LambdaArrow = "=>"
 
 # Keywordlist
 "abstract"
@@ -153,7 +154,27 @@ Pointer = "->"
 "volatile"
 "while"
 
+# Context dependent keywords.
+"partial"
+"where"
+"get"
+"set"
+"add"
+"remove"
+"yield"
+"select"
+"group"
+"by"
+"into"
+"from"
+"ascending"
+"descending"
+"orderby"
+
 #Sets
+
+# When changing IdentifierTokens, ensure you also change the "Identifier" production in cs.ATG
+IdentifierTokens(Identifier, "partial", "where", "get", "set", "add", "remove", "yield", "select", "group", "by", "into", "from", "ascending", "descending", "orderby")
 
 OverloadableUnaryOp("+", "!", "~", "++", "--", "true", "false")
 OverloadableBinaryOp("+", "-", "*", "/", "%", "&", "|", "^", "<<", "==", "!=", ">", "<", ">=", "<=")
@@ -161,7 +182,7 @@ OverloadableBinaryOp("+", "-", "*", "/", "%", "&", "|", "^", "<<", "==", "!=", "
 TypeKW("char", "bool", "object", "string", "sbyte", "byte", "short", "ushort", "int", "uint", "long", "ulong", "float", "double", "decimal")
 UnaryHead("+", "-", "!", "~", "*", "++", "--", "&")
 AssnStartOp("+", "-", "!", "~", "*")
-CastFollower(Identifier, Literal, "(", "new", "this", "base", "null", "checked", "unchecked", "typeof", "sizeof", "delegate", @OverloadableUnaryOp)
+CastFollower(IdentifierTokens, Literal, "(", "new", "this", "base", "null", "checked", "unchecked", "typeof", "sizeof", "delegate", @OverloadableUnaryOp)
 AssgnOps("=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "<<=")
 UnaryOp("+", "-", "!", "~", "*", "++", "--", "&")
 TypeDeclarationKW("class", "interface", "struct", "enum", "delegate")

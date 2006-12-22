@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.Ast
 {
 	public abstract class Expression : AbstractNode, INullable
 	{
-		public static NullExpression Null {
+		public static Expression Null {
 			get {
 				return NullExpression.Instance;
 			}
@@ -77,24 +77,14 @@ namespace ICSharpCode.NRefactory.Ast
 		}
 	}
 	
-	public class NullExpression : Expression
+	internal sealed class NullExpression : Expression
 	{
-		static NullExpression nullExpression = new NullExpression();
+		internal static readonly NullExpression Instance = new NullExpression();
 		
 		public override bool IsNull {
 			get {
 				return true;
 			}
-		}
-		
-		public static NullExpression Instance {
-			get {
-				return nullExpression;
-			}
-		}
-		
-		NullExpression()
-		{
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data)

@@ -211,8 +211,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 							case 2:
 								// the old member is better
 								ranking[i] = score - 1;
-								// this is not really correct, normally we would need to
-								// compare the member with other members
+								// this is not really correct, we would need to compare the member with other members
+								// but this works as we're mostly interested in the best overload only
 								break;
 						}
 					}
@@ -503,7 +503,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return ok;
 		}
 		
-		static bool IsApplicable(IReturnType argument, IReturnType expected)
+		public static bool IsApplicable(IReturnType argument, IReturnType expected)
 		{
 			if (argument == null) // TODO: Use NullReturnType instead of no return type
 				return true; // "null" can be passed for any argument
@@ -513,8 +513,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 						return false;
 					}
 				}
+				return true;
+			} else {
+				return ConversionExists(argument, expected);
 			}
-			return ConversionExists(argument, expected);
 		}
 		#endregion
 		
@@ -564,13 +566,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (toIsDefault && to.FullyQualifiedName == "System.Object") {
 				return true; // from any type to object
 			}
-			if (toIsDefault && (fromIsDefault || from.IsArrayReturnType)) {
-				IClass c1 = from.GetUnderlyingClass();
-				IClass c2 = to.GetUnderlyingClass();
-				if (c1 != null && c1.IsTypeInInheritanceTree(c2)) {
-					return true;
+			
+			if ((toIsDefault || to.IsConstructedReturnType)
+			    && (fromIsDefault || from.IsArrayReturnType || from.IsConstructedReturnType))
+			{
+				foreach (IReturnType baseTypeOfFrom in GetTypeInheritanceTree(from)) {
+					if (IsConstructedConversionToGenericReturnType(baseTypeOfFrom, to))
+						return true;
 				}
 			}
+			
 			if (from.IsArrayReturnType && to.IsArrayReturnType) {
 				ArrayReturnType fromArt = from.CastToArrayReturnType();
 				ArrayReturnType toArt   = to.CastToArrayReturnType();
@@ -580,24 +585,35 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			if (from.IsConstructedReturnType && to.IsConstructedReturnType) {
-				if (from.FullyQualifiedName == to.FullyQualifiedName) {
-					IList<IReturnType> fromTypeArguments = from.CastToConstructedReturnType().TypeArguments;
-					IList<IReturnType> toTypeArguments = to.CastToConstructedReturnType().TypeArguments;
-					if (fromTypeArguments.Count == toTypeArguments.Count) {
-						for (int i = 0; i < fromTypeArguments.Count; i++) {
-							if (fromTypeArguments[i] == toTypeArguments[i])
-								continue;
-							if (object.Equals(fromTypeArguments[i], toTypeArguments[i]))
-								continue;
-							if (!(toTypeArguments[i].IsGenericReturnType))
-								return false;
-						}
-						return true;
+			return false;
+		}
+		
+		static bool IsConstructedConversionToGenericReturnType(IReturnType from, IReturnType to)
+		{
+			if (from.Equals(to))
+				return true;
+			
+			if (to.IsGenericReturnType) {
+				foreach (IReturnType constraintType in to.CastToGenericReturnType().TypeParameter.Constraints) {
+					if (!ConversionExists(from, constraintType)) {
+						return false;
 					}
 				}
+				return true;
 			}
 			
+			// for conversions like from IEnumerable<string> to IEnumerable<T>, where T is a GenericReturnType
+			ConstructedReturnType cFrom = from.CastToConstructedReturnType();
+			ConstructedReturnType cTo   = to.CastToConstructedReturnType();
+			if (cFrom != null && cTo != null) {
+				if (cFrom.FullyQualifiedName == cTo.FullyQualifiedName && cFrom.TypeArguments.Count == cTo.TypeArguments.Count) {
+					for (int i = 0; i < cFrom.TypeArguments.Count; i++) {
+						if (!IsConstructedConversionToGenericReturnType(cFrom.TypeArguments[i], cTo.TypeArguments[i]))
+							return false;
+					}
+					return true;
+				}
+			}
 			return false;
 		}
 		#endregion
@@ -719,22 +735,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (b == null) return a;
 			if (ConversionExists(a, b))
 				return b;
-			if (ConversionExists(b, a))
-				return a;
-			IClass c = a.GetUnderlyingClass();
-			if (c != null) {
-				foreach (IClass baseClass in c.ClassInheritanceTree) {
-					IReturnType baseType = baseClass.DefaultReturnType;
-					if (baseClass.TypeParameters.Count > 0) {
-						IReturnType[] typeArguments = new IReturnType[baseClass.TypeParameters.Count];
-						for (int i = 0; i < typeArguments.Length; i++) {
-							typeArguments[i] = GetTypeParameterPassedToBaseClass(a, baseClass, i);
-						}
-						baseType = new ConstructedReturnType(baseType, typeArguments);
-					}
-					if (ConversionExists(b, baseType))
-						return baseType;
-				}
+			//if (ConversionExists(b, a)) - not required because the first baseTypeOfA is a
+			//	return a;
+			foreach (IReturnType baseTypeOfA in GetTypeInheritanceTree(a)) {
+				if (ConversionExists(b, baseTypeOfA))
+					return baseTypeOfA;
 			}
 			return projectContent.SystemTypes.Object;
 		}
@@ -746,31 +751,90 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		public static IReturnType GetTypeParameterPassedToBaseClass(IReturnType parentType, IClass baseClass, int baseClassTypeParameterIndex)
 		{
-			if (!parentType.IsConstructedReturnType)
-				return null;
-			ConstructedReturnType returnType = parentType.CastToConstructedReturnType();
-			IClass c = returnType.GetUnderlyingClass();
-			if (c == null) return null;
-			if (baseClass.CompareTo(c) == 0) {
-				if (baseClassTypeParameterIndex >= returnType.TypeArguments.Count)
-					return null;
-				return returnType.TypeArguments[baseClassTypeParameterIndex];
-			}
-			foreach (IReturnType baseType in c.BaseTypes) {
-				if (baseClass.CompareTo(baseType.GetUnderlyingClass()) == 0) {
-					if (!baseType.IsConstructedReturnType)
-						return null;
-					ConstructedReturnType baseTypeCRT = baseType.CastToConstructedReturnType();
-					if (baseClassTypeParameterIndex >= baseTypeCRT.TypeArguments.Count)
-						return null;
-					IReturnType result = baseTypeCRT.TypeArguments[baseClassTypeParameterIndex];
-					if (returnType.TypeArguments != null) {
-						result = ConstructedReturnType.TranslateType(result, returnType.TypeArguments, false);
+			foreach (IReturnType rt in GetTypeInheritanceTree(parentType)) {
+				ConstructedReturnType crt = rt.CastToConstructedReturnType();
+				if (crt != null && baseClass.CompareTo(rt.GetUnderlyingClass()) == 0) {
+					if (baseClassTypeParameterIndex < crt.TypeArguments.Count) {
+						return crt.TypeArguments[baseClassTypeParameterIndex];
 					}
-					return result;
 				}
 			}
 			return null;
+		}
+		
+		/// <summary>
+		/// Translates typeToTranslate using the type arguments from parentType;
+		/// </summary>
+		static IReturnType TranslateIfRequired(IReturnType parentType, IReturnType typeToTranslate)
+		{
+			if (typeToTranslate == null)
+				return null;
+			ConstructedReturnType parentConstructedType = parentType.CastToConstructedReturnType();
+			if (parentConstructedType != null) {
+				return ConstructedReturnType.TranslateType(typeToTranslate, parentConstructedType.TypeArguments, false);
+			} else {
+				return typeToTranslate;
+			}
+		}
+		
+		/// <summary>
+		/// Gets all types the specified type inherits from (all classes and interfaces).
+		/// Unlike the class inheritance tree, this method takes care of type arguments and calculates the type
+		/// arguments that are passed to base classes.
+		/// </summary>
+		public static IEnumerable<IReturnType> GetTypeInheritanceTree(IReturnType typeToListInheritanceTreeFor)
+		{
+			if (typeToListInheritanceTreeFor == null)
+				throw new ArgumentNullException("typeToListInheritanceTreeFor");
+			
+			IClass classToListInheritanceTreeFor = typeToListInheritanceTreeFor.GetUnderlyingClass();
+			if (classToListInheritanceTreeFor == null)
+				return new IReturnType[0];
+			
+			if (typeToListInheritanceTreeFor.IsArrayReturnType) {
+				IReturnType elementType = typeToListInheritanceTreeFor.CastToArrayReturnType().ArrayElementType;
+				List<IReturnType> resultList = new List<IReturnType>();
+				resultList.Add(typeToListInheritanceTreeFor);
+				resultList.AddRange(GetTypeInheritanceTree(
+					new ConstructedReturnType(
+						classToListInheritanceTreeFor.ProjectContent.GetClass("System.Collections.Generic.IList", 1).DefaultReturnType,
+						new IReturnType[] { elementType }
+					)
+				));
+				resultList.Add(classToListInheritanceTreeFor.ProjectContent.GetClass("System.Collections.IList", 0).DefaultReturnType);
+				resultList.Add(classToListInheritanceTreeFor.ProjectContent.GetClass("System.Collections.ICollection", 0).DefaultReturnType);
+				// non-generic IEnumerable is already added by generic IEnumerable
+				return resultList;
+			}
+			
+			List<IReturnType> visitedList = new List<IReturnType>();
+			Queue<IReturnType> typesToVisit = new Queue<IReturnType>();
+			bool enqueuedLastBaseType = false;
+			
+			IReturnType currentType = typeToListInheritanceTreeFor;
+			IClass currentClass = classToListInheritanceTreeFor;
+			IReturnType nextType;
+			do {
+				if (currentClass != null) {
+					if (!visitedList.Contains(currentType)) {
+						visitedList.Add(currentType);
+						foreach (IReturnType type in currentClass.BaseTypes) {
+							typesToVisit.Enqueue(TranslateIfRequired(currentType, type));
+						}
+					}
+				}
+				if (typesToVisit.Count > 0) {
+					nextType = typesToVisit.Dequeue();
+				} else {
+					nextType = enqueuedLastBaseType ? null : DefaultClass.GetBaseTypeByClassType(classToListInheritanceTreeFor);
+					enqueuedLastBaseType = true;
+				}
+				if (nextType != null) {
+					currentType = nextType;
+					currentClass = nextType.GetUnderlyingClass();
+				}
+			} while (nextType != null);
+			return visitedList;
 		}
 	}
 }

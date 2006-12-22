@@ -78,7 +78,7 @@ sub write_keywordfile
 	print DAT "\n";
 	print DAT "namespace " . $properties{'Namespace'} . "\n";
 	print DAT "{\n";
-	print DAT "\tpublic class Keywords\n";
+	print DAT "\tpublic static class Keywords\n";
 	print DAT "\t{\n";
 	print DAT "\t\tstatic readonly string[] keywordList = {\n";
 	if ($properties{'UpperCaseKeywords'} eq "True") {
@@ -209,6 +209,14 @@ sub write_tokensfile {
 		print DAT "\t\t\t}\n";
 		print DAT "\t\t\treturn bitArray;\n";
 		print DAT "\t\t}\n";
+		print DAT "\t\tstatic BitArray NewSet(BitArray existing, params int[] values)\n";
+		print DAT "\t\t{\n";
+		print DAT "\t\t\tBitArray bitArray = new BitArray(existing);\n";
+		print DAT "\t\t\tforeach (int val in values) {\n";
+		print DAT "\t\t\tbitArray[val] = true;\n";
+		print DAT "\t\t\t}\n";
+		print DAT "\t\t\treturn bitArray;\n";
+		print DAT "\t\t}\n";
 		for ($i=0; $i <= $#sets; $i++) {
 			print DAT "\t\tpublic static BitArray ". $sets[$i] . " = NewSet(";
 			print_list($i);
@@ -266,10 +274,10 @@ sub write_unittests {
 	print DAT "\t{\n";
 	print DAT "\t\tILexer GenerateLexer(StringReader sr)\n";
 	print DAT "\t\t{\n";
-	print DAT "\t\t\treturn ParserFactory.CreateLexer(SupportedLanguages.CSharp, sr);\n";
+	print DAT "\t\t\treturn ParserFactory.CreateLexer(SupportedLanguage.CSharp, sr);\n";
 	print DAT "\t\t}\n\n";
 
-	for ($i=0; $i < $#special_values; $i++) {
+	for ($i=0; $i <= $#special_values; $i++) {
 	
 		print DAT "\t\t[Test]\n";
 		print DAT "\t\tpublic void Test" . $special_chars[$i] ."()\n";

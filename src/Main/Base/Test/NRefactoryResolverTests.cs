@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			ResolveResult rr = Resolve(program, expression, line);
 			Assert.IsNotNull(rr, "Resolve returned null");
-			Assert.IsTrue(rr is T, "result is " + typeof(T).Name);
+			Assert.AreEqual(typeof(T), rr.GetType());
 			return (T)rr;
 		}
 		
@@ -114,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			ResolveResult rr = ResolveVB(program, expression, line);
 			Assert.IsNotNull(rr, "Resolve returned null");
-			Assert.IsTrue(rr is T, "result is " + typeof(T).Name);
+			Assert.AreEqual(typeof(T), rr.GetType());
 			return (T)rr;
 		}
 		#endregion
@@ -204,50 +204,6 @@ End Module
 		#endregion
 		
 		#region Simple Tests
-		const string arrayListConflictProgram = @"using System.Collections;
-class A {
-	void Test() {
-		
-	}
-	
-	ArrayList arrayList;
-	public ArrayList ArrayList {
-		get {
-			return arrayList;
-		}
-	}
-}
-";
-		
-		[Test]
-		public void PropertyTypeConflictTest()
-		{
-			ResolveResult result = Resolve<MemberResolveResult>(arrayListConflictProgram, "arrayList", 4);
-			Assert.AreEqual("System.Collections.ArrayList", result.ResolvedType.FullyQualifiedName);
-		}
-		
-		[Test]
-		public void PropertyTypeConflictCompletionResultTest()
-		{
-			ResolveResult result = Resolve(arrayListConflictProgram, "ArrayList", 4);
-			// CC should offer both static and non-static results
-			ArrayList list = result.GetCompletionData(lastPC);
-			bool ok = false;
-			foreach (object o in list) {
-				IMethod method = o as IMethod;
-				if (method != null && method.Name == "AddRange")
-					ok = true;
-			}
-			Assert.IsTrue(ok, "AddRange should exist");
-			ok = false;
-			foreach (object o in list) {
-				IMethod method = o as IMethod;
-				if (method != null && method.Name == "Adapter")
-					ok = true;
-			}
-			Assert.IsTrue(ok, "Adapter should exist");
-		}
-		
 		[Test]
 		public void InheritedInterfaceResolveTest()
 		{
@@ -615,6 +571,23 @@ class TestClass {
 			lr = Resolve<LocalResolveResult>(program, "i", 8);
 			Assert.AreEqual("System.Int64", lr.ResolvedType.FullyQualifiedName);
 		}
+		
+		[Test]
+		public void ShortMaxValueTest()
+		{
+			string program = @"using System;
+class TestClass {
+	void Test() {
+		
+	}
+}
+";
+			ResolveResult rr = Resolve<MemberResolveResult>(program, "short.MaxValue", 4);
+			Assert.AreEqual("System.Int16", rr.ResolvedType.FullyQualifiedName);
+			
+			rr = Resolve<ResolveResult>(program, "(short.MaxValue)", 4);
+			Assert.AreEqual("System.Int16", rr.ResolvedType.FullyQualifiedName);
+		}
 		#endregion
 		
 		#region Import namespace tests
@@ -931,6 +904,50 @@ class B {
 		#endregion
 		
 		#region MixedType tests
+		const string arrayListMixedTypeProgram = @"using System.Collections;
+class A {
+	void Test() {
+		
+	}
+	
+	ArrayList arrayList;
+	public ArrayList ArrayList {
+		get {
+			return arrayList;
+		}
+	}
+}
+";
+		
+		[Test]
+		public void PropertyTypeConflictTest()
+		{
+			ResolveResult result = Resolve<MemberResolveResult>(arrayListMixedTypeProgram, "arrayList", 4);
+			Assert.AreEqual("System.Collections.ArrayList", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void PropertyTypeConflictCompletionResultTest()
+		{
+			ResolveResult result = Resolve(arrayListMixedTypeProgram, "ArrayList", 4);
+			// CC should offer both static and non-static results
+			ArrayList list = result.GetCompletionData(lastPC);
+			bool ok = false;
+			foreach (object o in list) {
+				IMethod method = o as IMethod;
+				if (method != null && method.Name == "AddRange")
+					ok = true;
+			}
+			Assert.IsTrue(ok, "AddRange should exist");
+			ok = false;
+			foreach (object o in list) {
+				IMethod method = o as IMethod;
+				if (method != null && method.Name == "Adapter")
+					ok = true;
+			}
+			Assert.IsTrue(ok, "Adapter should exist");
+		}
+		
 		const string mixedTypeTestProgram = @"using System;
 class A {
 	void TestMethod() {

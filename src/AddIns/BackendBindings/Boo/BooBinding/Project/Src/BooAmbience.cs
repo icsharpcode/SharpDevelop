@@ -418,6 +418,10 @@ namespace Grunwald.BooBinding
 		public override string Convert(IMethod m)
 		{
 			StringBuilder builder = new StringBuilder();
+			if (ShowModifiers && m.IsExtensionMethod) {
+				builder.Append("[Extension] ");
+			}
+			
 			builder.Append(Convert(m.Modifiers));
 			
 			if (ShowModifiers) {

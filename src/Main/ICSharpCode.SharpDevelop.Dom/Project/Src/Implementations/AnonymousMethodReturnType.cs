@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// <summary>
 	/// The return type of anonymous method expressions or lambda expressions.
 	/// </summary>
-	public sealed class AnonymousMethodReturnType : ProxyReturnType
+	public sealed class AnonymousMethodReturnType : DecoratingReturnType
 	{
 		IReturnType returnType;
 		IList<IParameter> parameters = new List<IParameter>();
@@ -23,6 +23,28 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public AnonymousMethodReturnType(ICompilationUnit cu)
 		{
 			this.cu = cu;
+		}
+		
+		public override bool Equals(IReturnType other)
+		{
+			if (other == null) return false;
+			AnonymousMethodReturnType o = other.CastToDecoratingReturnType<AnonymousMethodReturnType>();
+			if (o == null) return false;
+			return this.FullyQualifiedName == o.FullyQualifiedName;
+		}
+		
+		public override int GetHashCode()
+		{
+			return this.FullyQualifiedName.GetHashCode();
+		}
+		
+		public override T CastToDecoratingReturnType<T>()
+		{
+			if (typeof(T) == typeof(AnonymousMethodReturnType)) {
+				return (T)(object)this;
+			} else {
+				return null;
+			}
 		}
 		
 		/// <summary>
@@ -47,12 +69,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			set {
 				if (value == null) throw new ArgumentNullException("value");
 				parameters = value;
-			}
-		}
-		
-		public override bool IsDefaultReturnType {
-			get {
-				return false;
 			}
 		}
 		

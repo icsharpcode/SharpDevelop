@@ -360,28 +360,28 @@ namespace Hornung.ResourceToolkit.Resolver
 				}
 			}
 			
-			public override object TrackedVisit(CompilationUnit compilationUnit, object data)
+			public override object TrackedVisitCompilationUnit(CompilationUnit compilationUnit, object data)
 			{
 				this.compilationUnit = compilationUnit;
-				return base.TrackedVisit(compilationUnit, data);
+				return base.TrackedVisitCompilationUnit(compilationUnit, data);
 			}
 			
-			public override object TrackedVisit(LocalVariableDeclaration localVariableDeclaration, object data)
+			public override object TrackedVisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 			{
-				return base.TrackedVisit(localVariableDeclaration, localVariableDeclaration);
+				return base.TrackedVisitLocalVariableDeclaration(localVariableDeclaration, localVariableDeclaration);
 			}
 			
-			public override object TrackedVisit(FieldDeclaration fieldDeclaration, object data)
+			public override object TrackedVisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 			{
-				return base.TrackedVisit(fieldDeclaration, fieldDeclaration);
+				return base.TrackedVisitFieldDeclaration(fieldDeclaration, fieldDeclaration);
 			}
 			
-			public override object TrackedVisit(VariableDeclaration variableDeclaration, object data)
+			public override object TrackedVisitVariableDeclaration(VariableDeclaration variableDeclaration, object data)
 			{
 				// Resolving anything here only makes sense
 				// if this declaration actually has an initializer.
 				if (variableDeclaration.Initializer.IsNull) {
-					return base.TrackedVisit(variableDeclaration, data);
+					return base.TrackedVisitVariableDeclaration(variableDeclaration, data);
 				}
 				
 				LocalVariableDeclaration localVariableDeclaration = data as LocalVariableDeclaration;
@@ -434,10 +434,10 @@ namespace Hornung.ResourceToolkit.Resolver
 					}
 				}
 				
-				return base.TrackedVisit(variableDeclaration, data);
+				return base.TrackedVisitVariableDeclaration(variableDeclaration, data);
 			}
 			
-			public override object TrackedVisit(AssignmentExpression assignmentExpression, object data)
+			public override object TrackedVisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 			{
 				if (this.FoundResourceSet == null &&	// skip if already found to improve performance
 				    assignmentExpression.Op == AssignmentOperatorType.Assign && this.PositionAvailable &&
@@ -512,7 +512,7 @@ namespace Hornung.ResourceToolkit.Resolver
 					}
 					
 				}
-				return base.TrackedVisit(assignmentExpression, data);
+				return base.TrackedVisitAssignmentExpression(assignmentExpression, data);
 			}
 			
 			/// <summary>
@@ -544,7 +544,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				}
 			}
 			
-			public override object TrackedVisit(ObjectCreateExpression objectCreateExpression, object data)
+			public override object TrackedVisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 			{
 				if (data as bool? ?? false) {
 					
@@ -624,7 +624,7 @@ namespace Hornung.ResourceToolkit.Resolver
 					
 				}
 				
-				return base.TrackedVisit(objectCreateExpression, data);
+				return base.TrackedVisitObjectCreateExpression(objectCreateExpression, data);
 			}
 			
 		}

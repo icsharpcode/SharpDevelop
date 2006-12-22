@@ -14,8 +14,10 @@ namespace ICSharpCode.NRefactory
 		bool HasField(string fullTypeName, string fieldName);
 	}
 	
-	class DummyEnvironmentInformationProvider : IEnvironmentInformationProvider
+	sealed class DummyEnvironmentInformationProvider : IEnvironmentInformationProvider
 	{
+		internal static readonly IEnvironmentInformationProvider Instance = new DummyEnvironmentInformationProvider();
+		
 		public bool HasField(string fullTypeName, string fieldName)
 		{
 			return false;

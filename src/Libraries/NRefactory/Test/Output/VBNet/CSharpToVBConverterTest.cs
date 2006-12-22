@@ -24,7 +24,8 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(input));
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
-			parser.CompilationUnit.AcceptVisitor(new CSharpToVBNetConvertVisitor(), null);
+			parser.CompilationUnit.AcceptVisitor(new CSharpConstructsVisitor(), null);
+			parser.CompilationUnit.AcceptVisitor(new ToVBNetConvertVisitor(), null);
 			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
 			outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
@@ -224,7 +225,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "\tReturn argument * 2\n" +
 			           "End Function");
 		}
-		*/
+		 */
 		
 		[Test]
 		public void RegisterEvent()
@@ -448,6 +449,16 @@ End Class
 		public void PrimitiveCast()
 		{
 			TestStatement("a = (int)number;", "a = CInt(number)");
+		}
+		
+		[Test]
+		public void CaseConflictingMethod()
+		{
+			TestMember("void T(int v) { int V = v; M(V, v); }",
+			           "Private Sub T(ByVal v__1 As Integer)\n" +
+			           "\tDim V__2 As Integer = v__1\n" +
+			           "\tM(V__2, v__1)\n" +
+			           "End Sub");
 		}
 	}
 }

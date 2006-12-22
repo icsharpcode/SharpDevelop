@@ -598,5 +598,15 @@ static int static_Test2_j = 0;");
 		{
 			TestStatement("CType(obj, IDisposable).Dispose()", "((IDisposable)obj).Dispose();");
 		}
+		
+		[Test]
+		public void ComparisonWithEmptyStringLiteral()
+		{
+			TestStatement("If a = \"\" Then Return", "if (string.IsNullOrEmpty(a)) return; ");
+			TestStatement("If a <> \"\" Then Return", "if (!string.IsNullOrEmpty(a)) return; ");
+			
+			TestStatement("If \"\" = a Then Return", "if (string.IsNullOrEmpty(a)) return; ");
+			TestStatement("If \"\" <> a Then Return", "if (!string.IsNullOrEmpty(a)) return; ");
+		}
 	}
 }

@@ -14,6 +14,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
@@ -36,7 +37,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 				
 				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
 				PreprocessingDirective.CSharpToVB(specials);
-				new CSharpToVBNetConvertVisitor().VisitCompilationUnit(p.CompilationUnit, null);
+				IAstVisitor v = new CSharpToVBNetConvertVisitor(ParserService.CurrentProjectContent,
+				                                                window.ViewContent.FileName);
+				v.VisitCompilationUnit(p.CompilationUnit, null);
 				using (SpecialNodesInserter.Install(specials, vbv)) {
 					vbv.VisitCompilationUnit(p.CompilationUnit, null);
 				}

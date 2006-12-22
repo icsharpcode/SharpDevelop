@@ -5,8 +5,8 @@
        description = "Provides tooltips and code completion for resource entries to simplify working with localizable resources using the standard .NET framework classes or ICSharpCode.Core.">
 	
 	<Manifest>
-		<Identity name="Hornung.ResourceToolkit" version="@Hornung.ResourceToolkit.dll" />
-		<Dependency addin="SharpDevelop" version="2.1.0.1751-2.1"/>
+		<Identity name="Hornung.ResourceToolkit"/>
+		<Dependency addin="SharpDevelop"/>
 	</Manifest>
 	
 	<Runtime>

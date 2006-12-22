@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 							string s = ReadIdent(ch);
 							int keyWordToken = Keywords.GetToken(s);
 							if (keyWordToken >= 0) {
-								return new Token(keyWordToken, x, y);
+								return new Token(keyWordToken, x, y, s);
 							}
 							return new Token(Tokens.Identifier, x, y, s);
 						} else if (Char.IsDigit(ch)) {
@@ -617,6 +617,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						case '=':
 							ReaderRead();
 							return new Token(Tokens.Equal, x, y);
+						case '>':
+							ReaderRead();
+							return new Token(Tokens.LambdaArrow, x, y);
 					}
 					return new Token(Tokens.Assign, x, y);
 				case '<':

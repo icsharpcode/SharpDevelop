@@ -59,7 +59,7 @@ namespace CSharpEditor
 		/// SharpDevelop itself uses internal names of the kind "[randomId]/Class1.cs" to support
 		/// code-completion in unsaved files.
 		/// </summary>
-		public const string DummyFileName = "edited.cs";
+		public const string DummyFileName = "edited.vb";
 		
 		public MainForm()
 		{
@@ -68,17 +68,16 @@ namespace CSharpEditor
 			//
 			InitializeComponent();
 			
-			textEditorControl1.Text = @"using System;
-using System.Collections.Generic;
-class MainClass
-{
-	static void Main(string[] args)
-	{
-		
-	}
-}
+			textEditorControl1.Text = @"Imports System
+
+Class A
+ Sub B
+  Dim x As String
+  
+ End Sub
+End Class
 ";
-			textEditorControl1.SetHighlighting("C#");
+			textEditorControl1.SetHighlighting("VB");
 			textEditorControl1.ShowEOLMarkers = false;
 			CodeCompletionKeyHandler.Attach(this, textEditorControl1);
 			HostCallbackImplementation.Register(this);
@@ -92,7 +91,7 @@ class MainClass
 			                                            "CSharpCodeCompletion"));
 			
 			myProjectContent = new Dom.DefaultProjectContent();
-			myProjectContent.Language = Dom.LanguageProperties.CSharp;
+			myProjectContent.Language = Dom.LanguageProperties.VBNet;
 		}
 		
 		protected override void OnLoad(EventArgs e)
@@ -114,7 +113,7 @@ class MainClass
 			ParseStep();
 			
 			string[] referencedAssemblies = {
-				"System", "System.Data", "System.Drawing", "System.Xml", "System.Windows.Forms"
+				"System", "System.Data", "System.Drawing", "System.Xml", "System.Windows.Forms", "Microsoft.VisualBasic"
 			};
 			foreach (string assemblyName in referencedAssemblies) {
 				{ // block for anonymous method
@@ -141,7 +140,7 @@ class MainClass
 			                         }));
 			TextReader textReader = new StringReader(code);
 			Dom.ICompilationUnit newCompilationUnit;
-			using (NRefactory.IParser p = NRefactory.ParserFactory.CreateParser(NRefactory.SupportedLanguage.CSharp, textReader)) {
+			using (NRefactory.IParser p = NRefactory.ParserFactory.CreateParser(NRefactory.SupportedLanguage.VBNet, textReader)) {
 				p.Parse();
 				newCompilationUnit = ConvertCompilationUnit(p.CompilationUnit);
 			}

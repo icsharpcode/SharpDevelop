@@ -358,4 +358,12 @@ namespace ICSharpCode.NRefactory.Ast
 		CompareBinary,
 		CompareText
 	}
+	
+	/// <summary>
+	/// Specifies the ordering direction of a QueryExpressionOrdering node.
+	/// </summary>
+	public enum QueryExpressionOrderingDirection
+	{
+		None, Ascending, Descending
+	}
 }

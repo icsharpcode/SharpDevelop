@@ -190,7 +190,8 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 
 	public abstract class NRefactoryLanguageConverter : LanguageConverter
 	{
-		protected abstract void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials);
+		protected abstract void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials,
+		                                   FileProjectItem sourceItem);
 		
 		protected void ConvertFile(FileProjectItem sourceItem, FileProjectItem targetItem,
 		                           string sourceExtension, string targetExtension,
@@ -214,7 +215,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				
 				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
 				
-				ConvertAst(p.CompilationUnit, specials);
+				ConvertAst(p.CompilationUnit, specials, sourceItem);
 				
 				using (SpecialNodesInserter.Install(specials, outputVisitor)) {
 					outputVisitor.VisitCompilationUnit(p.CompilationUnit, null);

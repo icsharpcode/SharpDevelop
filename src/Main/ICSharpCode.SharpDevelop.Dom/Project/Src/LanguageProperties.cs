@@ -87,9 +87,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// (first parameter = instance parameter)
 		/// </summary>
 		public virtual bool SupportsExtensionMethods {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		/// <summary>
@@ -97,9 +95,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// (first parameter = instance parameter)
 		/// </summary>
 		public virtual bool SupportsExtensionProperties {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		/// <summary>
@@ -108,36 +104,28 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// (returns false). This property has no effect if the language doesn't support
 		/// </summary>
 		public virtual bool SearchExtensionsInClasses {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		/// <summary>
 		/// Gets if namespaces are imported (i.e. Imports System, Dim a As Collections.ArrayList)
 		/// </summary>
 		public virtual bool ImportNamespaces {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		/// <summary>
 		/// Gets if modules are imported with their namespace (i.e. Microsoft.VisualBasic.Randomize()).
 		/// </summary>
 		public virtual bool ImportModules {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		/// <summary>
 		/// Gets if classes can be imported (i.e. Imports System.Math)
 		/// </summary>
 		public virtual bool CanImportClasses {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		/// <summary>
@@ -145,9 +133,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// used on any part.
 		/// </summary>
 		public virtual bool ImplicitPartialClasses {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		/// <summary>
@@ -155,18 +141,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Used for Boo, which creates instances like this: 'self.Size = Size(10, 20)'
 		/// </summary>
 		public virtual bool AllowObjectConstructionOutsideContext {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		/// <summary>
 		/// Gets if the language supports implicit interface implementations.
 		/// </summary>
 		public virtual bool SupportsImplicitInterfaceImplementation {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		/// <summary>
@@ -176,27 +158,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// with conflicting return types are invalid unless they are renamed.
 		/// </summary>
 		public virtual bool ExplicitInterfaceImplementationIsPrivateScope {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		/// <summary>
 		/// Gets if events explicitly implementing an interface require add {} remove {} regions.
 		/// </summary>
 		public virtual bool RequiresAddRemoveRegionInExplicitInterfaceImplementation {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		/// <summary>
 		/// Gets the token that denotes a possible beginning of an indexer expression.
 		/// </summary>
 		public virtual string IndexerExpressionStartToken {
-			get {
-				return "[";
-			}
+			get { return "["; }
 		}
 		
 		public virtual bool IsClassWithImplicitlyStaticMembers(IClass c)
@@ -257,24 +233,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			public override bool SupportsImplicitInterfaceImplementation {
-				get {
-					return true;
-				}
+				get { return true; }
 			}
 			
 			public override bool ExplicitInterfaceImplementationIsPrivateScope {
-				get {
-					return true;
-				}
+				get { return true; }
 			}
 			
 			/// <summary>
 			/// Gets if events explicitly implementing an interface require add {} remove {} regions.
 			/// </summary>
 			public override bool RequiresAddRemoveRegionInExplicitInterfaceImplementation {
-				get {
-					return true;
-				}
+				get { return true; }
+			}
+			
+			public override bool SupportsExtensionMethods {
+				get { return true; }
+			}
+			
+			public override bool SearchExtensionsInClasses {
+				get { return true; }
 			}
 			
 			public override string ToString()

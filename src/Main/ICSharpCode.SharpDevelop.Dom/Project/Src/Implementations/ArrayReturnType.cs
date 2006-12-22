@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// The element type is only used as return type for the indexer; all methods and fields
 	/// are retrieved from System.Array.
 	/// </summary>
-	public sealed class ArrayReturnType : ProxyReturnType
+	public sealed class ArrayReturnType : DecoratingReturnType
 	{
 		IReturnType elementType;
 		int dimensions;
@@ -42,9 +42,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.dimensions = dimensions;
 		}
 		
-		public override bool Equals(object o)
+		public override bool Equals(IReturnType rt)
 		{
-			IReturnType rt = o as IReturnType;
 			if (rt == null || !rt.IsArrayReturnType) return false;
 			ArrayReturnType art = rt.CastToArrayReturnType();
 			if (art.ArrayDimensions != dimensions) return false;
@@ -55,6 +54,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			unchecked {
 				return 2 * elementType.GetHashCode() + 27 * dimensions;
+			}
+		}
+		
+		public override T CastToDecoratingReturnType<T>()
+		{
+			if (typeof(T) == typeof(ArrayReturnType)) {
+				return (T)(object)this;
+			} else {
+				return null;
 			}
 		}
 		
@@ -135,35 +143,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override string ToString()
 		{
 			return String.Format("[ArrayReturnType: {0}, dimensions={1}]", elementType, AppendArrayString(""));
-		}
-		
-		public override bool IsDefaultReturnType {
-			get {
-				return false;
-			}
-		}
-		
-		public override bool IsArrayReturnType {
-			get {
-				return true;
-			}
-		}
-		
-		public override ArrayReturnType CastToArrayReturnType()
-		{
-			return this;
-		}
-		
-		public override bool IsConstructedReturnType {
-			get {
-				return false;
-			}
-		}
-		
-		public override bool IsGenericReturnType {
-			get {
-				return false;
-			}
 		}
 	}
 }

@@ -92,7 +92,7 @@ namespace CSharpEditor
 			//	new DefaultCompletionData("Text", "Description", 1)
 			//};
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(mainForm.myProjectContent);
+			NRefactoryResolver resolver = new NRefactoryResolver(mainForm.myProjectContent, mainForm.myProjectContent.Language);
 			Dom.ResolveResult rr = resolver.Resolve(FindExpression(textArea),
 			                                        textArea.Caret.Line,
 			                                        textArea.Caret.Column,
@@ -115,8 +115,8 @@ namespace CSharpEditor
 		/// </summary>
 		Dom.ExpressionResult FindExpression(TextArea textArea)
 		{
-			Dom.CSharp.CSharpExpressionFinder finder;
-			finder = new Dom.CSharp.CSharpExpressionFinder(MainForm.DummyFileName);
+			Dom.VBNet.VBExpressionFinder finder;
+			finder = new Dom.VBNet.VBExpressionFinder();
 			return finder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset);
 		}
 		

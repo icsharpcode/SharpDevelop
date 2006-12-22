@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.Core;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
@@ -27,20 +28,35 @@ namespace ICSharpCode.SharpDevelop.Tests
 			swf = r.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms");
 		}
 		
-		public IReturnType DictionaryRT {
+		IReturnType DictionaryRT {
 			get {
 				return new GetClassReturnType(msc, "System.Collections.Generic.Dictionary", 2);
 			}
 		}
 		
-		public IClass EnumerableClass {
+		IClass EnumerableClass {
 			get {
 				return msc.GetClass("System.Collections.Generic.IEnumerable", 1);
 			}
 		}
 		
+		ConstructedReturnType EnumerableOf(IReturnType element)
+		{
+			return new ConstructedReturnType(EnumerableClass.DefaultReturnType, new IReturnType[] { element });
+		}
+		
+		ConstructedReturnType IListOf(IReturnType element)
+		{
+			return new ConstructedReturnType(msc.GetClass("System.Collections.Generic.IList", 1).DefaultReturnType, new IReturnType[] { element });
+		}
+		
+		ConstructedReturnType ListOf(IReturnType element)
+		{
+			return new ConstructedReturnType(msc.GetClass("System.Collections.Generic.List", 1).DefaultReturnType, new IReturnType[] { element });
+		}
+		
 		[Test]
-		public void TypeParameterPassedToBaseClassTest()
+		public void TypeParameterPassedToBaseClassTestDictionary()
 		{
 			IReturnType[] stringInt = { msc.SystemTypes.String, msc.SystemTypes.Int32 };
 			IReturnType rrt = new ConstructedReturnType(DictionaryRT, stringInt);
@@ -49,6 +65,74 @@ namespace ICSharpCode.SharpDevelop.Tests
 			ConstructedReturnType resc = res.CastToConstructedReturnType();
 			Assert.AreEqual("System.String", resc.TypeArguments[0].FullyQualifiedName);
 			Assert.AreEqual("System.Int32", resc.TypeArguments[1].FullyQualifiedName);
+		}
+		
+		[Test]
+		public void TypeParameterPassedToBaseClassTestString()
+		{
+			IReturnType res = MemberLookupHelper.GetTypeParameterPassedToBaseClass(msc.SystemTypes.String, EnumerableClass, 0);
+			Assert.AreEqual("System.Char", res.FullyQualifiedName);
+		}
+		
+		DefaultClass CreateClassDerivingFromListOfString()
+		{
+			DefaultProjectContent dpc = new DefaultProjectContent();
+			dpc.ReferencedContents.Add(msc);
+			DefaultCompilationUnit cu = new DefaultCompilationUnit(dpc);
+			cu.Usings.Add(new DefaultUsing(dpc, new DomRegion(1,1, 5,5)));
+			cu.Usings[0].Usings.Add("System.Collections.Generic");
+			
+			DefaultClass listDerivingClass = new DefaultClass(cu, "DerivesFromList");
+			cu.Classes.Add(listDerivingClass);
+			listDerivingClass.BaseTypes.Add(new ConstructedReturnType(new SearchClassReturnType(dpc, listDerivingClass, 3, 1,
+			                                                                                    "List", 1),
+			                                                          new IReturnType[] {
+			                                                          	new GetClassReturnType(dpc, "System.String", 0)
+			                                                          }));
+			
+			return listDerivingClass;
+		}
+		
+		DefaultClass CreateGenericClassDerivingFromList()
+		{
+			DefaultProjectContent dpc = new DefaultProjectContent();
+			dpc.ReferencedContents.Add(msc);
+			DefaultCompilationUnit cu = new DefaultCompilationUnit(dpc);
+			cu.Usings.Add(new DefaultUsing(dpc, new DomRegion(1,1, 5,5)));
+			cu.Usings[0].Usings.Add("System.Collections.Generic");
+			
+			DefaultClass listDerivingClass = new DefaultClass(cu, "DerivesFromList");
+			cu.Classes.Add(listDerivingClass);
+			listDerivingClass.TypeParameters.Add(new DefaultTypeParameter(listDerivingClass, "T", 0));
+			listDerivingClass.BaseTypes.Add(new ConstructedReturnType(new SearchClassReturnType(dpc, listDerivingClass, 3, 1,
+			                                                                                    "List", 1),
+			                                                          new IReturnType[] {
+			                                                          	new GenericReturnType(listDerivingClass.TypeParameters[0])
+			                                                          }));
+			return listDerivingClass;
+		}
+		
+		[Test]
+		public void TypeParameterPassedToBaseClassTestClassDerivingFromList()
+		{
+			DefaultClass listDerivingClass = CreateClassDerivingFromListOfString();
+			
+			IReturnType res = MemberLookupHelper.GetTypeParameterPassedToBaseClass(listDerivingClass.DefaultReturnType,
+			                                                                       EnumerableClass, 0);
+			Assert.AreEqual("System.String", res.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void TypeParameterPassedToBaseClassTestGenericClassDerivingFromList()
+		{
+			DefaultClass listDerivingClass = CreateGenericClassDerivingFromList();
+			
+			ConstructedReturnType testType = new ConstructedReturnType(listDerivingClass.DefaultReturnType,
+			                                                           new IReturnType[] { msc.SystemTypes.String });
+			
+			IReturnType res = MemberLookupHelper.GetTypeParameterPassedToBaseClass(testType,
+			                                                                       EnumerableClass, 0);
+			Assert.AreEqual("System.String", res.FullyQualifiedName);
 		}
 		
 		[Test]
@@ -67,6 +151,183 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                                                   swf.GetClass("System.Windows.Forms.ToolStripButton").DefaultReturnType,
 			                                                   swf.GetClass("System.Windows.Forms.ToolStripSeparator").DefaultReturnType);
 			Assert.AreEqual("System.Windows.Forms.ToolStripItem", res.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void GetTypeInheritanceTreeOfClassDerivingFromListOfString()
+		{
+			List<string> results = new List<IReturnType>(
+				MemberLookupHelper.GetTypeInheritanceTree(CreateClassDerivingFromListOfString().DefaultReturnType)
+			).ConvertAll<string>(delegate (IReturnType rt) { return rt.DotNetName; });
+			
+			results.Sort(); // order is not guaranteed, so sort for the unit test
+			
+			Assert.AreEqual("DerivesFromList;" +
+			                "System.Collections.Generic.ICollection{System.String};" +
+			                "System.Collections.Generic.IEnumerable{System.String};" +
+			                "System.Collections.Generic.IList{System.String};" +
+			                "System.Collections.Generic.List{System.String};" +
+			                "System.Collections.ICollection;" +
+			                "System.Collections.IEnumerable;" +
+			                "System.Collections.IList;" +
+			                "System.Object",
+			                string.Join(";", results.ToArray()));
+		}
+		
+		[Test]
+		public void GetTypeInheritanceTreeOfStringArray()
+		{
+			List<string> results = new List<IReturnType>(
+				MemberLookupHelper.GetTypeInheritanceTree(new ArrayReturnType(msc, msc.SystemTypes.String, 1))
+			).ConvertAll<string>(delegate (IReturnType rt) { return rt.DotNetName; });
+			
+			results.Sort(); // order is not guaranteed, so sort for the unit test
+			
+			Assert.AreEqual("System.Collections.Generic.ICollection{System.String};" +
+			                "System.Collections.Generic.IEnumerable{System.String};" +
+			                "System.Collections.Generic.IList{System.String};" +
+			                "System.Collections.ICollection;" +
+			                "System.Collections.IEnumerable;" +
+			                "System.Collections.IList;" +
+			                "System.Object;" +
+			                "System.String[]",
+			                string.Join(";", results.ToArray()));
+		}
+		
+		[Test]
+		public void ConversionExistsFromStringArrayToObjectArray()
+		{
+			Assert.IsTrue(MemberLookupHelper.ConversionExists(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
+			                                                  new ArrayReturnType(msc, msc.SystemTypes.Object, 1)));
+		}
+		
+		[Test]
+		public void NoConversionExistsFromObjectArrayToStringArray()
+		{
+			Assert.IsFalse(MemberLookupHelper.ConversionExists(new ArrayReturnType(msc, msc.SystemTypes.Object, 1),
+			                                                   new ArrayReturnType(msc, msc.SystemTypes.String, 1)));
+		}
+		
+		[Test]
+		public void ConversionExistsFromStringArrayToStringEnumerable()
+		{
+			Assert.IsTrue(MemberLookupHelper.ConversionExists(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
+			                                                  EnumerableOf(msc.SystemTypes.String)));
+		}
+		
+		[Test]
+		public void NoConversionExistsFromStringEnumerableToObjectEnumerable()
+		{
+			Assert.IsFalse(MemberLookupHelper.ConversionExists(EnumerableOf(msc.SystemTypes.String),
+			                                                   EnumerableOf(msc.SystemTypes.Object)));
+		}
+		
+		[Test]
+		public void ConversionExistsFromStringIListToStringEnumerable()
+		{
+			Assert.IsTrue(MemberLookupHelper.ConversionExists(IListOf(msc.SystemTypes.String),
+			                                                  EnumerableOf(msc.SystemTypes.String)));
+		}
+		
+		[Test]
+		public void NoConversionExistsFromStringIListToIntEnumerable()
+		{
+			Assert.IsFalse(MemberLookupHelper.ConversionExists(IListOf(msc.SystemTypes.String),
+			                                                   EnumerableOf(msc.SystemTypes.Int32)));
+		}
+		
+		[Test]
+		public void ConversionExistsFromStringListToStringEnumerable()
+		{
+			Assert.IsTrue(MemberLookupHelper.ConversionExists(ListOf(msc.SystemTypes.String),
+			                                                  EnumerableOf(msc.SystemTypes.String)));
+		}
+		
+		[Test]
+		public void ConversionExistsFromClassDerivingFromListOfStringToStringEnumerable()
+		{
+			Assert.IsTrue(MemberLookupHelper.ConversionExists(CreateClassDerivingFromListOfString().DefaultReturnType,
+			                                                  EnumerableOf(msc.SystemTypes.String)));
+		}
+		
+		[Test]
+		public void ConversionExistsFromClassDerivingFromListOfStringToListOfString()
+		{
+			Assert.IsTrue(MemberLookupHelper.ConversionExists(CreateClassDerivingFromListOfString().DefaultReturnType,
+			                                                  ListOf(msc.SystemTypes.String)));
+		}
+		
+		GenericReturnType CreateT()
+		{
+			DefaultProjectContent dpc = new DefaultProjectContent();
+			dpc.ReferencedContents.Add(msc);
+			DefaultCompilationUnit cu = new DefaultCompilationUnit(dpc);
+			DefaultClass c = new DefaultClass(cu, "DummyClass");
+			cu.Classes.Add(c);
+			DefaultMethod m = new DefaultMethod(c, "DummyMethod");
+			c.Methods.Add(m);
+			m.TypeParameters.Add(new DefaultTypeParameter(m, "T", 0));
+			return new GenericReturnType(m.TypeParameters[0]);
+		}
+		
+		GenericReturnType CreateTWithDisposableConstraint()
+		{
+			GenericReturnType rt = CreateT();
+			rt.TypeParameter.Constraints.Add(msc.GetClass("System.IDisposable").DefaultReturnType);
+			return rt;
+		}
+		
+		[Test]
+		public void StringIsApplicableOnT()
+		{
+			// no conversion exists
+			Assert.IsFalse(MemberLookupHelper.ConversionExists(msc.SystemTypes.String,
+			                                                   CreateT()));
+			
+			// but it is applicable
+			Assert.IsTrue(MemberLookupHelper.IsApplicable(msc.SystemTypes.String,
+			                                              CreateT()));
+		}
+		
+		[Test]
+		public void NoConversionExistsFromStringToDisposableT()
+		{
+			Assert.IsFalse(MemberLookupHelper.IsApplicable(msc.SystemTypes.String,
+			                                               CreateTWithDisposableConstraint()));
+			
+			Assert.IsFalse(MemberLookupHelper.ConversionExists(msc.SystemTypes.String,
+			                                                   CreateTWithDisposableConstraint()));
+		}
+		
+		[Test]
+		public void DisposableClassIsApplicableOnDisposableT()
+		{
+			Assert.IsFalse(MemberLookupHelper.ConversionExists(msc.GetClass("System.CharEnumerator").DefaultReturnType,
+			                                                   CreateTWithDisposableConstraint()));
+			
+			Assert.IsTrue(MemberLookupHelper.IsApplicable(msc.GetClass("System.CharEnumerator").DefaultReturnType,
+			                                              CreateTWithDisposableConstraint()));
+		}
+		
+		[Test]
+		public void ConversionExistsFromListOfStringToListOfT()
+		{
+			Assert.IsTrue(MemberLookupHelper.ConversionExists(ListOf(msc.SystemTypes.String),
+			                                                  ListOf(CreateT())));
+		}
+		
+		[Test]
+		public void ConversionExistsFromListOfStringToIEnumerableOfT()
+		{
+			Assert.IsTrue(MemberLookupHelper.ConversionExists(ListOf(msc.SystemTypes.String),
+			                                                  EnumerableOf(CreateT())));
+		}
+		
+		[Test]
+		public void ConversionExistsFromArrayOfStringToIListOfT()
+		{
+			Assert.IsTrue(MemberLookupHelper.ConversionExists(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
+			                                                  IListOf(CreateT())));
 		}
 	}
 }

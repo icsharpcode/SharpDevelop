@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
@@ -31,6 +32,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return NullReturnType.Instance;
 			} else {
 				return resolver.ProjectContent.SystemTypes.CreatePrimitive(primitiveExpression.Value.GetType());
+			}
+		}
+		
+		public override object VisitQueryExpression(QueryExpression queryExpression, object data)
+		{
+			IReturnType type = queryExpression.SelectOrGroupClause.AcceptVisitor(this, data) as IReturnType;
+			if (type != null) {
+				return new ConstructedReturnType(
+					new GetClassReturnType(resolver.ProjectContent, "System.Collections.Generic.IEnumerable", 1),
+					new IReturnType[] { type }
+				);
+			} else {
+				return null;
 			}
 		}
 		
@@ -230,11 +244,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (identifierExpression == null) {
 				return null;
 			}
-			IClass c = resolver.SearchClass(identifierExpression.Identifier);
+			IClass c = resolver.SearchClass(identifierExpression.Identifier, identifierExpression.StartLocation);
 			if (c != null) {
 				return c.DefaultReturnType;
 			}
-			return resolver.DynamicLookup(identifierExpression.Identifier);
+			return resolver.DynamicLookup(identifierExpression.Identifier, identifierExpression.StartLocation);
 		}
 		
 		public override object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
@@ -325,12 +339,71 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			return CreateReturnType(objectCreateExpression.CreateType);
+			if (objectCreateExpression.IsAnonymousType) {
+				return CreateAnonymousTypeClass(objectCreateExpression.ObjectInitializer).DefaultReturnType;
+			} else {
+				return CreateReturnType(objectCreateExpression.CreateType);
+			}
+		}
+		
+		DefaultClass CreateAnonymousTypeClass(CollectionInitializerExpression initializer)
+		{
+			List<IReturnType> fieldTypes = new List<IReturnType>();
+			List<string> fieldNames = new List<string>();
+			
+			foreach (Expression expr in initializer.CreateExpressions) {
+				if (expr is AssignmentExpression) {
+					// use right part only
+					fieldTypes.Add( ((AssignmentExpression)expr).Right.AcceptVisitor(this, null) as IReturnType );
+				} else {
+					fieldTypes.Add( expr.AcceptVisitor(this, null) as IReturnType );
+				}
+				
+				fieldNames.Add(GetAnonymousTypeFieldName(expr));
+			}
+			
+			StringBuilder nameBuilder = new StringBuilder();
+			nameBuilder.Append('{');
+			for (int i = 0; i < fieldTypes.Count; i++) {
+				if (i > 0) nameBuilder.Append(", ");
+				nameBuilder.Append(fieldNames[i]);
+				nameBuilder.Append(" : ");
+				if (fieldTypes[i] != null) {
+					nameBuilder.Append(fieldTypes[i].DotNetName);
+				}
+			}
+			nameBuilder.Append('}');
+			
+			DefaultClass c = new DefaultClass(new DefaultCompilationUnit(resolver.ProjectContent), nameBuilder.ToString());
+			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Synthetic | ModifierEnum.Sealed;
+			for (int i = 0; i < fieldTypes.Count; i++) {
+				c.Fields.Add(new DefaultField(fieldTypes[i], fieldNames[i], ModifierEnum.Public | ModifierEnum.Synthetic, DomRegion.Empty, c));
+			}
+			return c;
+		}
+		
+		static string GetAnonymousTypeFieldName(Expression expr)
+		{
+			if (expr is FieldReferenceExpression) {
+				return ((FieldReferenceExpression)expr).FieldName;
+			}
+			if (expr is AssignmentExpression) {
+				expr = ((AssignmentExpression)expr).Left; // use left side if it is an IdentifierExpression
+			}
+			if (expr is IdentifierExpression) {
+				return ((IdentifierExpression)expr).Identifier;
+			} else {
+				return "?";
+			}
 		}
 		
 		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			return CreateReturnType(arrayCreateExpression.CreateType);
+			if (arrayCreateExpression.IsImplicitlyTyped) {
+				return arrayCreateExpression.ArrayInitializer.AcceptVisitor(this, data);
+			} else {
+				return CreateReturnType(arrayCreateExpression.CreateType);
+			}
 		}
 		
 		public override object VisitTypeOfIsExpression(TypeOfIsExpression typeOfIsExpression, object data)
@@ -352,10 +425,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return amrt;
 		}
 		
-		public override object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
+		public override object VisitCollectionInitializerExpression(CollectionInitializerExpression collectionInitializerExpression, object data)
 		{
-			// no calls allowed !!!
-			return null;
+			// used for implicitly typed arrays
+			if (collectionInitializerExpression.CreateExpressions.Count == 0)
+				return null;
+			IReturnType combinedRT = collectionInitializerExpression.CreateExpressions[0].AcceptVisitor(this, data) as IReturnType;
+			for (int i = 1; i < collectionInitializerExpression.CreateExpressions.Count; i++) {
+				IReturnType rt = collectionInitializerExpression.CreateExpressions[i].AcceptVisitor(this, data) as IReturnType;
+				combinedRT = MemberLookupHelper.GetCommonType(resolver.ProjectContent, combinedRT, rt);
+			}
+			return new ArrayReturnType(resolver.ProjectContent, combinedRT, 1);
 		}
 		
 		IReturnType CreateReturnType(TypeReference reference)

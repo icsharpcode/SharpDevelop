@@ -39,7 +39,7 @@ namespace CSharpBinding
 			            delegate(string v) { return v.Replace(',', ';'); });
 		}
 		
-		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials)
+		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials, FileProjectItem sourceItem)
 		{
 			PreprocessingDirective.VBToCSharp(specials);
 			compilationUnit.AcceptVisitor(new VBNetToCSharpConvertVisitor(), null);

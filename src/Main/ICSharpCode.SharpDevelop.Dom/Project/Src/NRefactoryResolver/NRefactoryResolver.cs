@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
@@ -99,19 +100,36 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		[Obsolete("Use the IProjectContent, LanguageProperties overload instead to support .cs files inside vb projects or similar.")]
-		public NRefactoryResolver(IProjectContent projectContent)
-			: this(projectContent, projectContent.Language) {}
-		
 		Expression ParseExpression(string expression)
 		{
 			Expression expr = SpecialConstructs(expression);
 			if (expr == null) {
 				using (NR.IParser p = NR.ParserFactory.CreateParser(language, new System.IO.StringReader(expression))) {
 					expr = p.ParseExpression();
+					if (expr != null) {
+						expr.AcceptVisitor(new SetAllNodePoints(new NR.Location(caretColumn, caretLine),
+						                                        new NR.Location(caretColumn + 1, caretLine)), null);
+					}
 				}
 			}
 			return expr;
+		}
+		
+		sealed class SetAllNodePoints : NodeTrackingAstVisitor
+		{
+			readonly NR.Location start, end;
+			
+			public SetAllNodePoints(ICSharpCode.NRefactory.Location start, ICSharpCode.NRefactory.Location end)
+			{
+				this.start = start;
+				this.end = end;
+			}
+			
+			protected override void BeginVisit(INode node)
+			{
+				node.StartLocation = start;
+				node.EndLocation = end;
+			}
 		}
 		
 		string GetFixedExpression(ExpressionResult expressionResult)
@@ -189,7 +207,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			if (expressionResult.Context.IsAttributeContext) {
-				return ResolveAttribute(expr);
+				return ResolveAttribute(expr, new NR.Location(caretColumn, caretLineNumber));
 			}
 			
 			RunLookupTableVisitor(fileContent);
@@ -297,28 +315,28 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		IClass GetAttribute(string name)
+		IClass GetAttribute(string name, NR.Location position)
 		{
 			if (name == null)
 				return null;
-			IClass c = SearchClass(name);
+			IClass c = SearchClass(name, position);
 			if (c != null) {
 				if (c.IsTypeInInheritanceTree(c.ProjectContent.SystemTypes.Attribute.GetUnderlyingClass()))
 					return c;
 			}
-			return SearchClass(name + "Attribute");
+			return SearchClass(name + "Attribute", position);
 		}
 		
-		ResolveResult ResolveAttribute(Expression expr)
+		ResolveResult ResolveAttribute(Expression expr, NR.Location position)
 		{
 			string attributeName = GetAttributeName(expr);
-			IClass c = GetAttribute(attributeName);
+			IClass c = GetAttribute(attributeName, position);
 			if (c != null) {
 				return new TypeResolveResult(callingClass, callingMember, c);
 			} else if (expr is InvocationExpression) {
 				InvocationExpression ie = (InvocationExpression)expr;
 				attributeName = GetAttributeName(ie.TargetObject);
-				c = GetAttribute(attributeName);
+				c = GetAttribute(attributeName, position);
 				if (c != null) {
 					List<IMethod> ctors = new List<IMethod>();
 					foreach (IMethod m in c.Methods) {
@@ -387,7 +405,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						return result;
 				}
 			} else if (expr is IdentifierExpression) {
-				ResolveResult result = ResolveIdentifier(((IdentifierExpression)expr).Identifier, context);
+				ResolveResult result = ResolveIdentifier(((IdentifierExpression)expr).Identifier, expr.StartLocation, context);
 				if (result != null)
 					return result;
 			} else if (expr is TypeReferenceExpression) {
@@ -566,15 +584,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		}
 		
 		#region Resolve Identifier
-		ResolveResult ResolveIdentifier(string identifier, ExpressionContext context)
+		ResolveResult ResolveIdentifier(string identifier, NR.Location position, ExpressionContext context)
 		{
-			ResolveResult result = ResolveIdentifierInternal(identifier);
+			ResolveResult result = ResolveIdentifierInternal(identifier, position);
 			if (result is TypeResolveResult)
 				return result;
 			
 			ResolveResult result2 = null;
 			
-			IReturnType t = SearchType(identifier);
+			IReturnType t = SearchType(identifier, position);
 			if (t != null) {
 				result2 = new TypeResolveResult(callingClass, callingMember, t);
 			} else {
@@ -611,10 +629,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return f;
 		}
 		
-		ResolveResult ResolveIdentifierInternal(string identifier)
+		ResolveResult ResolveIdentifierInternal(string identifier, NR.Location position)
 		{
 			if (callingMember != null) { // LocalResolveResult requires callingMember to be set
-				LocalLookupVariable var = SearchVariable(identifier);
+				LocalLookupVariable var = SearchVariable(identifier, position);
 				if (var != null) {
 					return new LocalResolveResult(callingMember, CreateLocalVariableField(var, identifier));
 				}
@@ -625,7 +643,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				if (IsSameName(identifier, "value")) {
 					IProperty property = callingMember as IProperty;
-					if (property != null && property.SetterRegion.IsInside(caretLine, caretColumn)) {
+					if (property != null && property.SetterRegion.IsInside(position.Line, position.Column)) {
 						IField field = new DefaultField.ParameterField(property.ReturnType, "value", property.Region, callingClass);
 						return new LocalResolveResult(callingMember, field);
 					}
@@ -642,7 +660,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			// try if there exists a static member in outer classes named typeName
-			List<IClass> classes = cu.GetOuterClasses(caretLine, caretColumn);
+			List<IClass> classes = cu.GetOuterClasses(position.Line, position.Column);
 			foreach (IClass c in classes) {
 				IMember member = GetMember(c.DefaultReturnType, identifier);
 				if (member != null && member.IsStatic) {
@@ -650,7 +668,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			
-			string namespaceName = SearchNamespace(identifier);
+			string namespaceName = SearchNamespace(identifier, position);
 			if (namespaceName != null && namespaceName.Length > 0) {
 				return new NamespaceResolveResult(callingClass, callingMember, namespaceName);
 			}
@@ -790,9 +808,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// <remarks>
 		/// use the usings to find the correct name of a namespace
 		/// </remarks>
-		public string SearchNamespace(string name)
+		public string SearchNamespace(string name, NR.Location position)
 		{
-			return projectContent.SearchNamespace(name, callingClass, cu, caretLine, caretColumn);
+			return projectContent.SearchNamespace(name, callingClass, cu, position.Line, position.Column);
 		}
 		
 		public IClass GetClass(string fullName)
@@ -803,15 +821,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// <remarks>
 		/// use the usings and the name of the namespace to find a class
 		/// </remarks>
-		public IClass SearchClass(string name)
+		public IClass SearchClass(string name, NR.Location position)
 		{
-			IReturnType t = SearchType(name);
+			IReturnType t = SearchType(name, position);
 			return (t != null) ? t.GetUnderlyingClass() : null;
 		}
 		
-		public IReturnType SearchType(string name)
+		public IReturnType SearchType(string name, NR.Location position)
 		{
-			return projectContent.SearchType(new SearchTypeRequest(name, 0, callingClass, cu, caretLine, caretColumn)).Result;
+			Debug.Assert(!position.IsEmpty);
+			return projectContent.SearchType(new SearchTypeRequest(name, 0, callingClass, cu, position.Line, position.Column)).Result;
 		}
 		
 		#region Helper for TypeVisitor
@@ -928,9 +947,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// <remarks>
 		/// does the dynamic lookup for the identifier
 		/// </remarks>
-		public IReturnType DynamicLookup(string identifier)
+		public IReturnType DynamicLookup(string identifier, NR.Location position)
 		{
-			ResolveResult rr = ResolveIdentifierInternal(identifier);
+			ResolveResult rr = ResolveIdentifierInternal(identifier, position);
 			if (rr is NamespaceResolveResult) {
 				return new TypeVisitor.NamespaceReturnType((rr as NamespaceResolveResult).Name);
 			}
@@ -956,10 +975,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (v == null) {
 				return null;
 			}
-			return TypeVisitor.CreateReturnType(v.TypeRef, this);
+			
+			if (v.TypeRef == null || v.TypeRef.Type == "var") {
+				if (v.IsLoopVariable) {
+					return new ElementReturnType(this.projectContent,
+					                             new InferredReturnType(v.Initializer, this));
+				} else {
+					return new InferredReturnType(v.Initializer, this);
+				}
+			} else {
+				return TypeVisitor.CreateReturnType(v.TypeRef, this);
+			}
 		}
 		
-		LocalLookupVariable SearchVariable(string name)
+		LocalLookupVariable SearchVariable(string name, NR.Location position)
 		{
 			if (lookupTableVisitor == null || !lookupTableVisitor.Variables.ContainsKey(name))
 				return null;
@@ -969,7 +998,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			foreach (LocalLookupVariable v in variables) {
-				if (IsInside(new NR.Location(caretColumn, caretLine), v.StartPos, v.EndPos)) {
+				if (IsInside(position, v.StartPos, v.EndPos)) {
 					return v;
 				}
 			}

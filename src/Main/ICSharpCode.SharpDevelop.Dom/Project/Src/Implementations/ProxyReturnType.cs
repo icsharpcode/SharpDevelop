@@ -19,6 +19,30 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		public sealed override bool Equals(object obj)
+		{
+			if (obj == this)
+				return true;
+			else
+				return Equals(obj as IReturnType);
+		}
+		
+		public virtual bool Equals(IReturnType other)
+		{
+			IReturnType baseType = BaseType;
+			bool tmp = (baseType != null && TryEnter()) ? baseType.Equals(other) : false;
+			busy = false;
+			return tmp;
+		}
+		
+		public override int GetHashCode()
+		{
+			IReturnType baseType = BaseType;
+			int tmp = (baseType != null && TryEnter()) ? baseType.GetHashCode() : 0;
+			busy = false;
+			return tmp;
+		}
+		
 		// Required to prevent stack overflow on inferrence cycles
 		bool busy = false;
 		
@@ -133,64 +157,52 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual bool IsArrayReturnType {
-			get {
-				IReturnType baseType = BaseType;
-				bool tmp = (baseType != null && TryEnter()) ? baseType.IsArrayReturnType : false;
-				busy = false;
-				return tmp;
-			}
+		public bool IsDecoratingReturnType<T>() where T : DecoratingReturnType
+		{
+			return CastToDecoratingReturnType<T>() != null;
 		}
-		public virtual ArrayReturnType CastToArrayReturnType()
+		
+		public virtual T CastToDecoratingReturnType<T>() where T : DecoratingReturnType
 		{
 			IReturnType baseType = BaseType;
-			ArrayReturnType temp;
+			T temp;
 			if (baseType != null && TryEnter())
-				temp = baseType.CastToArrayReturnType();
+				temp = baseType.CastToDecoratingReturnType<T>();
 			else
-				throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
+				temp = null;
 			busy = false;
 			return temp;
 		}
 		
-		public virtual bool IsGenericReturnType {
+		
+		public bool IsArrayReturnType {
 			get {
-				IReturnType baseType = BaseType;
-				bool tmp = (baseType != null && TryEnter()) ? baseType.IsGenericReturnType : false;
-				busy = false;
-				return tmp;
+				return IsDecoratingReturnType<ArrayReturnType>();
 			}
 		}
-		public virtual GenericReturnType CastToGenericReturnType()
+		public ArrayReturnType CastToArrayReturnType()
 		{
-			IReturnType baseType = BaseType;
-			GenericReturnType temp;
-			if (baseType != null && TryEnter())
-				temp = baseType.CastToGenericReturnType();
-			else
-				throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
-			busy = false;
-			return temp;
+			return CastToDecoratingReturnType<ArrayReturnType>();
 		}
 		
-		public virtual bool IsConstructedReturnType {
+		public bool IsGenericReturnType {
 			get {
-				IReturnType baseType = BaseType;
-				bool tmp = (baseType != null && TryEnter()) ? baseType.IsConstructedReturnType : false;
-				busy = false;
-				return tmp;
+				return IsDecoratingReturnType<GenericReturnType>();
 			}
 		}
-		public virtual ConstructedReturnType CastToConstructedReturnType()
+		public GenericReturnType CastToGenericReturnType()
 		{
-			IReturnType baseType = BaseType;
-			ConstructedReturnType temp;
-			if (baseType != null && TryEnter())
-				temp = baseType.CastToConstructedReturnType();
-			else
-				throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
-			busy = false;
-			return temp;
+			return CastToDecoratingReturnType<GenericReturnType>();
+		}
+		
+		public bool IsConstructedReturnType {
+			get {
+				return IsDecoratingReturnType<ConstructedReturnType>();
+			}
+		}
+		public ConstructedReturnType CastToConstructedReturnType()
+		{
+			return CastToDecoratingReturnType<ConstructedReturnType>();
 		}
 	}
 }

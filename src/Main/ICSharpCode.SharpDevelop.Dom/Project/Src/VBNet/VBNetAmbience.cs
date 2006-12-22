@@ -372,7 +372,11 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		public override string Convert(IMethod m)
 		{
 			StringBuilder builder = new StringBuilder();
-			builder.Append(Convert(m.Modifiers));
+			if (ShowModifiers && m.IsExtensionMethod) {
+				builder.Append("<Extension> ");
+			}
+			
+			builder.Append(Convert(m.Modifiers)); // show visibility
 			
 			if (ShowModifiers) {
 				builder.Append(GetModifier(m));

@@ -27,11 +27,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override bool Equals(object o)
+		public virtual bool Equals(IReturnType other)
 		{
-			IReturnType rt = o as IReturnType;
-			if (rt == null) return false;
-			return rt.IsDefaultReturnType && this.FullyQualifiedName == rt.FullyQualifiedName && this.TypeParameterCount == rt.TypeParameterCount;
+			if (other == null)
+				return false;
+			return other.IsDefaultReturnType && this.FullyQualifiedName == other.FullyQualifiedName && this.TypeParameterCount == other.TypeParameterCount;
+		}
+		
+		public sealed override bool Equals(object o)
+		{
+			return Equals(o as IReturnType);
 		}
 		
 		public override int GetHashCode()
@@ -92,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		public virtual ArrayReturnType CastToArrayReturnType()
 		{
-			throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
+			return null;
 		}
 		
 		public virtual bool IsGenericReturnType {
@@ -102,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		public virtual GenericReturnType CastToGenericReturnType()
 		{
-			throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
+			return null;
 		}
 		
 		public virtual bool IsConstructedReturnType {
@@ -112,7 +117,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		public virtual ConstructedReturnType CastToConstructedReturnType()
 		{
-			throw new InvalidCastException("Cannot cast " + ToString() + " to expected type.");
+			return null;
+		}
+		
+		public bool IsDecoratingReturnType<T>() where T : DecoratingReturnType
+		{
+			return false;
+		}
+		
+		public T CastToDecoratingReturnType<T>() where T : DecoratingReturnType
+		{
+			return null;
 		}
 	}
 }

@@ -24,13 +24,13 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		TypeDeclaration currentTypeDeclaration = null;
 		
-		IEnvironmentInformationProvider environmentInformationProvider = new DummyEnvironmentInformationProvider();
+		IEnvironmentInformationProvider environmentInformationProvider = DummyEnvironmentInformationProvider.Instance;
 		
 		public IEnvironmentInformationProvider EnvironmentInformationProvider {
-			get {
-				return environmentInformationProvider;
-			}
+			get { return environmentInformationProvider; }
 			set {
+				if (value == null)
+					throw new ArgumentNullException("value");
 				environmentInformationProvider = value;
 			}
 		}
@@ -70,7 +70,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 		}
 		
-		// FIXME: map all modifiers correctly
 		static MemberAttributes ConvMemberAttributes(Modifiers modifier)
 		{
 			MemberAttributes attr = (MemberAttributes)0;
@@ -131,7 +130,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			namespaceDeclarations.Pop();
 			codeCompileUnit.Namespaces.Add(currentNamespace);
 			
-			// TODO : Nested namespaces allowed in CodeDOM ? Doesn't seem so :(
+			// Nested namespaces are not allowed in CodeDOM
 			return null;
 		}
 		
@@ -538,7 +537,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					break;
 					
 				case BinaryOperatorType.ExclusiveOr:
-					// TODO ExclusiveOr
+					// CodeDom doesn't support ExclusiveOr
 					op = CodeBinaryOperatorType.BitwiseAnd;
 					break;
 			}

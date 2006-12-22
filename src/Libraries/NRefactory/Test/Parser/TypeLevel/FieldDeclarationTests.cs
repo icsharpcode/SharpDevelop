@@ -47,7 +47,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(2, fd.Fields.Count);
 			
 			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
+			Assert.IsFalse(((VariableDeclaration)fd.Fields[0]).TypeReference.IsArrayType);
 			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[1]).TypeReference.Type);
+			Assert.IsFalse(((VariableDeclaration)fd.Fields[1]).TypeReference.IsArrayType);
 		}
 		
 		[Test]

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Ast;
 
@@ -20,6 +21,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public Parser(ILexer lexer) : base(lexer)
 		{
 			this.lexer = (Lexer)lexer;
+			// due to anonymous methods, we always need a compilation unit, so
+			// create it in the constructor
+			compilationUnit = new CompilationUnit();
 		}
 		
 		StringBuilder qualidentBuilder = new StringBuilder();
@@ -76,7 +80,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			if (!IsTypeKWForTypeCast(ref pt)) {
 				return false;
 			}
-			if (pt.kind == Tokens.Question)
+			if (pt.kind == Tokens.Question) // TODO: check if IsTypeKWForTypeCast doesn't already to this
 				pt = lexer.Peek();
 			return pt.kind == Tokens.CloseParenthesis;
 		}
@@ -97,8 +101,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		/* !!! Proceeds from current peek position !!! */
 		bool IsTypeNameOrKWForTypeCast(ref Token pt)
 		{
-			if (IsTypeKWForTypeCast(ref pt))
-				return true;
+			if (Tokens.TypeKW[pt.kind] || pt.kind == Tokens.Void)
+				return IsTypeKWForTypeCast(ref pt);
 			else
 				return IsTypeNameForTypeCast(ref pt);
 		}
@@ -108,14 +112,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		bool IsTypeNameForTypeCast(ref Token pt)
 		{
 			// ident
-			if (pt.kind != Tokens.Identifier) {
+			if (!IsIdentifierToken(pt)) {
 				return false;
 			}
 			pt = Peek();
 			// "::" ident
 			if (pt.kind == Tokens.DoubleColon) {
 				pt = Peek();
-				if (pt.kind != Tokens.Identifier) {
+				if (!IsIdentifierToken(pt)) {
 					return false;
 				}
 				pt = Peek();
@@ -172,18 +176,49 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			return Tokens.CastFollower[pt.kind] || (Tokens.TypeKW[pt.kind] && lexer.Peek().kind == Tokens.Dot);
 		}
 		// END IsTypeCast
+		
+		// ( { [TypeNameOrKWForTypeCast] ident "," } )
+		bool IsLambdaExpression()
+		{
+			if (la.kind != Tokens.OpenParenthesis) {
+				return false;
+			}
+			StartPeek();
+			Token pt = Peek();
+			while (pt.kind != Tokens.CloseParenthesis) {
+				if (!IsTypeNameOrKWForTypeCast(ref pt)) {
+					return false;
+				}
+				if (IsIdentifierToken(pt)) {
+					// make ident optional: if implicitly typed lambda arguments are used, IsTypeNameForTypeCast
+					// has already accepted the identifier
+					pt = Peek();
+				}
+				if (pt.kind == Tokens.CloseParenthesis) {
+					break;
+				}
+				// require comma between parameters:
+				if (pt.kind == Tokens.Comma) {
+					pt = Peek();
+				} else {
+					return false;
+				}
+			}
+			pt = Peek();
+			return pt.kind == Tokens.LambdaArrow;
+		}
 
 		/* Checks whether the next sequences of tokens is a qualident *
 		 * and returns the qualident string                           */
 		/* !!! Proceeds from current peek position !!! */
 		bool IsQualident(ref Token pt, out string qualident)
 		{
-			if (pt.kind == Tokens.Identifier) {
+			if (IsIdentifierToken(pt)) {
 				qualidentBuilder.Length = 0; qualidentBuilder.Append(pt.val);
 				pt = Peek();
 				while (pt.kind == Tokens.Dot || pt.kind == Tokens.DoubleColon) {
 					pt = Peek();
-					if (pt.kind != Tokens.Identifier) {
+					if (!IsIdentifierToken(pt)) {
 						qualident = String.Empty;
 						return false;
 					}
@@ -248,7 +283,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		/* True, if ident is followed by "=" */
 		bool IdentAndAsgn ()
 		{
-			return la.kind == Tokens.Identifier && Peek(1).kind == Tokens.Assign;
+			return IsIdentifierToken(la) && Peek(1).kind == Tokens.Assign;
+		}
+		
+		bool IdentAndDoubleColon ()
+		{
+			return IsIdentifierToken(la) && Peek(1).kind == Tokens.DoubleColon;
 		}
 
 		bool IsAssignment () { return IdentAndAsgn(); }
@@ -256,7 +296,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		/* True, if ident is followed by ",", "=", "[" or ";" */
 		bool IsVarDecl () {
 			int peek = Peek(1).kind;
-			return la.kind == Tokens.Identifier &&
+			return IsIdentifierToken(la) &&
 				(peek == Tokens.Comma || peek == Tokens.Assign || peek == Tokens.Semicolon || peek == Tokens.OpenSquareBracket);
 		}
 
@@ -281,19 +321,19 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 
 		/* True, if "." is followed by an ident */
 		bool DotAndIdent () {
-			return la.kind == Tokens.Dot && Peek(1).kind == Tokens.Identifier;
+			return la.kind == Tokens.Dot && IsIdentifierToken(Peek(1));
 		}
 
 		/* True, if ident is followed by ":" */
 		bool IdentAndColon () {
-			return la.kind == Tokens.Identifier && Peek(1).kind == Tokens.Colon;
+			return IsIdentifierToken(la) && Peek(1).kind == Tokens.Colon;
 		}
 
 		bool IsLabel () { return IdentAndColon(); }
 
 		/* True, if ident is followed by "(" */
 		bool IdentAndLPar () {
-			return la.kind == Tokens.Identifier && Peek(1).kind == Tokens.OpenParenthesis;
+			return IsIdentifierToken(la) && Peek(1).kind == Tokens.OpenParenthesis;
 		}
 
 		/* True, if "catch" is followed by "(" */
@@ -306,7 +346,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		bool IsGlobalAttrTarget () {
 			Token pt = Peek(1);
 			return la.kind == Tokens.OpenSquareBracket &&
-				pt.kind == Tokens.Identifier && pt.val == "assembly";
+				IsIdentifierToken(pt) && pt.val == "assembly";
 		}
 
 		/* True, if "[" is followed by "," or "]" */
@@ -357,7 +397,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			
 			StartPeek();
 			Token pt = la;
-			return IsTypeNameOrKWForTypeCast(ref pt) && pt.kind == Tokens.Identifier;
+			return IsTypeNameOrKWForTypeCast(ref pt) && IsIdentifierToken(pt);
 		}
 
 		/* True if lookahead is type parameters (<...>) followed by the specified token */
@@ -383,34 +423,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			return false;
 		}
 
-		/* True, if lookahead ident is "where" */
-		bool IdentIsWhere () {
-			return la.kind == Tokens.Identifier && la.val == "where";
-		}
-
-		/* True, if lookahead ident is "get" */
-		bool IdentIsGet () {
-			return la.kind == Tokens.Identifier && la.val == "get";
-		}
-
-		/* True, if lookahead ident is "set" */
-		bool IdentIsSet () {
-			return la.kind == Tokens.Identifier && la.val == "set";
-		}
-
-		/* True, if lookahead ident is "add" */
-		bool IdentIsAdd () {
-			return la.kind == Tokens.Identifier && la.val == "add";
-		}
-
-		/* True, if lookahead ident is "remove" */
-		bool IdentIsRemove () {
-			return la.kind == Tokens.Identifier && la.val == "remove";
-		}
-
 		/* True, if lookahead ident is "yield" and than follows a break or return */
 		bool IsYieldStatement () {
-			return la.kind == Tokens.Identifier && la.val == "yield" && (Peek(1).kind == Tokens.Return || Peek(1).kind == Tokens.Break);
+			return la.kind == Tokens.Yield && (Peek(1).kind == Tokens.Return || Peek(1).kind == Tokens.Break);
 		}
 
 		/* True, if lookahead is a local attribute target specifier, *
@@ -421,7 +436,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			string val = la.val;
 
 			return (cur == Tokens.Event || cur == Tokens.Return ||
-			        (cur == Tokens.Identifier &&
+			        (Tokens.IdentifierTokens[cur] &&
 			         (val == "field" || val == "method"   || val == "module" ||
 			          val == "param" || val == "property" || val == "type"))) &&
 				Peek(1).kind == Tokens.Colon;
@@ -488,6 +503,31 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				return true;
 			} else {
 				return false;
+			}
+		}
+		
+		bool StartOfQueryExpression()
+		{
+			return la.kind == Tokens.From && IsIdentifierToken(Peek(1));
+		}
+		
+		static bool IsIdentifierToken(Token tk)
+		{
+			return Tokens.IdentifierTokens[tk.kind];
+		}
+		
+		/// <summary>
+		/// Adds a child item to a collection stored in the parent node.
+		/// Also set's the item's parent to <paramref name="parent"/>.
+		/// Does nothing if item is null.
+		/// </summary>
+		static void SafeAdd<T>(INode parent, List<T> list, T item) where T : class, INode
+		{
+			Debug.Assert(parent != null);
+			Debug.Assert((parent is INullable) ? !(parent as INullable).IsNull : true);
+			if (item != null) {
+				list.Add(item);
+				item.Parent = parent;
 			}
 		}
 	}

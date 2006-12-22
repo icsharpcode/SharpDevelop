@@ -17,10 +17,11 @@ namespace ICSharpCode.NRefactory.Visitors
 	/// Not all elements are converted here, most simple elements (e.g. ConditionalExpression)
 	/// are converted in the output visitor.
 	/// </summary>
-	public class ToVBNetConvertVisitor : AbstractAstTransformer
+	public class ToVBNetConvertVisitor : ConvertVisitorBase
 	{
 		// The following conversions are implemented:
 		//   Conflicting field/property names -> m_field
+		//   Conflicting variable names inside methods
 		//   Anonymous methods are put into new methods
 		//   Simple event handler creation is replaced with AddressOfExpression
 		//   Move Imports-statements out of namespaces
@@ -218,6 +219,9 @@ namespace ICSharpCode.NRefactory.Visitors
 					}
 				}
 			}
+			
+			ToVBNetRenameConflictingVariablesVisitor.RenameConflicting(methodDeclaration);
+			
 			return null;
 		}
 		
@@ -300,7 +304,11 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			if (!IsClassType(ClassType.Interface) && (propertyDeclaration.Modifier & Modifiers.Visibility) == 0)
 				propertyDeclaration.Modifier |= Modifiers.Private;
-			return base.VisitPropertyDeclaration(propertyDeclaration, data);
+			base.VisitPropertyDeclaration(propertyDeclaration, data);
+			
+			ToVBNetRenameConflictingVariablesVisitor.RenameConflicting(propertyDeclaration);
+			
+			return null;
 		}
 		
 		public override object VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
@@ -315,7 +323,11 @@ namespace ICSharpCode.NRefactory.Visitors
 			// make constructor private if visiblity is not set (unless constructor is static)
 			if ((constructorDeclaration.Modifier & (Modifiers.Visibility | Modifiers.Static)) == 0)
 				constructorDeclaration.Modifier |= Modifiers.Private;
-			return base.VisitConstructorDeclaration(constructorDeclaration, data);
+			base.VisitConstructorDeclaration(constructorDeclaration, data);
+			
+			ToVBNetRenameConflictingVariablesVisitor.RenameConflicting(constructorDeclaration);
+			
+			return null;
 		}
 		
 		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)

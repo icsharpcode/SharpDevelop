@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CodeConverterTests.cs" />
     <Compile Include="NRefactoryResolverTests.cs" />
     <Compile Include="ReflectionLayerTests.cs" />
     <Compile Include="GenericResolverTests.cs" />

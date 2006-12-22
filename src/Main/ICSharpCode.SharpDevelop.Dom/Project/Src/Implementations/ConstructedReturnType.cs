@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// collection.
 	/// Example: List&lt;string&gt;
 	/// </summary>
-	public sealed class ConstructedReturnType : ProxyReturnType
+	public sealed class ConstructedReturnType : DecoratingReturnType
 	{
 		// Return types that should be substituted for the generic types
 		// If a substitution is unknown (type could not be resolved), the list
@@ -42,11 +42,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.baseType = baseType;
 		}
 		
-		public override bool Equals(object o)
+		public override T CastToDecoratingReturnType<T>()
 		{
-			IReturnType rt = o as IReturnType;
-			if (rt == null) return false;
-			return this.DotNetName == rt.DotNetName;
+			if (typeof(T) == typeof(ConstructedReturnType)) {
+				return (T)(object)this;
+			} else {
+				return null;
+			}
+		}
+		
+		public override bool Equals(IReturnType rt)
+		{
+			return rt != null
+				&& rt.IsConstructedReturnType
+				&& this.DotNetName == rt.DotNetName;
 		}
 		
 		public override int GetHashCode()
@@ -234,35 +243,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			return r + ">]";
-		}
-		
-		public override bool IsDefaultReturnType {
-			get {
-				return false;
-			}
-		}
-		
-		public override bool IsArrayReturnType {
-			get {
-				return false;
-			}
-		}
-		
-		public override bool IsConstructedReturnType {
-			get {
-				return true;
-			}
-		}
-		
-		public override ConstructedReturnType CastToConstructedReturnType()
-		{
-			return this;
-		}
-		
-		public override bool IsGenericReturnType {
-			get {
-				return false;
-			}
 		}
 	}
 }

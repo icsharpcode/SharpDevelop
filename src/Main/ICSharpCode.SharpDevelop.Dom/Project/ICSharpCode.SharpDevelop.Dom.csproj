@@ -65,6 +65,7 @@
     <Compile Include="Src\Implementations\CombinedReturnType.cs" />
     <Compile Include="Src\Implementations\CompoundClass.cs" />
     <Compile Include="Src\Implementations\ConstructedReturnType.cs" />
+    <Compile Include="Src\Implementations\DecoratingReturnType.cs" />
     <Compile Include="Src\Implementations\DefaultAttribute.cs" />
     <Compile Include="Src\Implementations\DefaultClass.cs" />
     <Compile Include="Src\Implementations\DefaultComment.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Src\Implementations\DefaultReturnType.cs" />
     <Compile Include="Src\Implementations\DefaultTypeParameter.cs" />
     <Compile Include="Src\Implementations\DefaultUsing.cs" />
+    <Compile Include="Src\Implementations\ElementReturnType.cs" />
     <Compile Include="Src\Implementations\GenericReturnType.cs" />
     <Compile Include="Src\Implementations\GetClassReturnType.cs" />
     <Compile Include="Src\Implementations\NullReturnType.cs" />
@@ -84,6 +86,8 @@
     <Compile Include="Src\Implementations\SearchClassReturnType.cs" />
     <Compile Include="Src\Implementations\SystemTypes.cs" />
     <Compile Include="Src\Interfaces\ExplicitInterfaceImplementation.cs" />
+    <Compile Include="Src\NRefactoryResolver\CSharpToVBNetConvertVisitor.cs" />
+    <Compile Include="Src\NRefactoryResolver\InferredReturnType.cs" />
     <Compile Include="Src\NRefactoryResolver\NRefactoryASTConvertVisitor.cs" />
     <Compile Include="Src\NRefactoryResolver\NRefactoryInformationProvider.cs" />
     <Compile Include="Src\NRefactoryResolver\NRefactoryResolver.cs" />

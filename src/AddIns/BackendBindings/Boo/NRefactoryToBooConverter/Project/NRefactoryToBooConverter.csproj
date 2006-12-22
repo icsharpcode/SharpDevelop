@@ -54,6 +54,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="ConvertVisitor.cs" />
+    <Compile Include="ConvertVisitorLINQ.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ConvertVisitorGlobal.cs" />
     <Compile Include="ConvertVisitorTypeMembers.cs" />

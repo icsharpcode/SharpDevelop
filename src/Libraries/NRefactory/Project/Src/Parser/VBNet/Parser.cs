@@ -3202,18 +3202,18 @@ la.kind == Tokens.OpenParenthesis) {
 					ArrayTypeModifiers(
 #line  1846 "VBNET.ATG" 
 out dimensions);
-					ArrayInitializer(
+					CollectionInitializer(
 #line  1847 "VBNET.ATG" 
 out initializer);
 				} else {
-					ArrayInitializer(
+					CollectionInitializer(
 #line  1848 "VBNET.ATG" 
 out initializer);
 				}
 			}
 
 #line  1850 "VBNET.ATG" 
-			if (canBeReDim && !canBeNormal && initializer == null) initializer = new ArrayInitializerExpression(); 
+			if (canBeReDim && !canBeNormal && initializer == null) initializer = new CollectionInitializerExpression(); 
 		}
 
 #line  1853 "VBNET.ATG" 
@@ -3224,7 +3224,7 @@ out initializer);
 			if (dimensions == null) dimensions = new ArrayList();
 			dimensions.Insert(0, (arguments == null) ? 0 : Math.Max(arguments.Count - 1, 0));
 			type.RankSpecifier = (int[])dimensions.ToArray(typeof(int));
-			ArrayCreateExpression ace = new ArrayCreateExpression(type, initializer as ArrayInitializerExpression);
+			ArrayCreateExpression ace = new ArrayCreateExpression(type, initializer as CollectionInitializerExpression);
 			ace.Arguments = arguments;
 			oce = ace;
 		}
@@ -3243,7 +3243,7 @@ out Expression initializerExpression) {
 #line  1437 "VBNET.ATG" 
 out initializerExpression);
 		} else if (la.kind == 22) {
-			ArrayInitializer(
+			CollectionInitializer(
 #line  1438 "VBNET.ATG" 
 out initializerExpression);
 		} else SynErr(236);
@@ -3292,13 +3292,13 @@ out expr);
 		}
 	}
 
-	void ArrayInitializer(
+	void CollectionInitializer(
 #line  1442 "VBNET.ATG" 
 out Expression outExpr) {
 
 #line  1444 "VBNET.ATG" 
 		Expression expr = null;
-		ArrayInitializerExpression initializer = new ArrayInitializerExpression();
+		CollectionInitializerExpression initializer = new CollectionInitializerExpression();
 		
 		Expect(22);
 		if (StartOf(28)) {

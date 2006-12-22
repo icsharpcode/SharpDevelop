@@ -15,14 +15,14 @@ namespace Grunwald.BooBinding.CodeCompletion
 	/// <summary>
 	/// Return type that is inferred from an expression.
 	/// </summary>
-	public class InferredReturnType : ProxyReturnType
+	public class BooInferredReturnType : ProxyReturnType
 	{
 		Expression expression;
 		Block block;
 		IReturnType cachedType;
 		IClass context;
 		
-		public InferredReturnType(Expression expression, IClass context)
+		public BooInferredReturnType(Expression expression, IClass context)
 		{
 			if (expression == null) throw new ArgumentNullException("expression");
 			this.context = context;
@@ -31,7 +31,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		bool useLastStatementIfNoReturnStatement;
 		
-		public InferredReturnType(Block block, IClass context, bool useLastStatementIfNoReturnStatement)
+		public BooInferredReturnType(Block block, IClass context, bool useLastStatementIfNoReturnStatement)
 		{
 			if (block == null) throw new ArgumentNullException("block");
 			this.useLastStatementIfNoReturnStatement = useLastStatementIfNoReturnStatement;
@@ -70,8 +70,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 		class GetReturnTypeVisitor : DepthFirstVisitor
 		{
 			IClass context;
-			InferredReturnType parentReturnType;
-			public GetReturnTypeVisitor(InferredReturnType parentReturnType)
+			BooInferredReturnType parentReturnType;
+			public GetReturnTypeVisitor(BooInferredReturnType parentReturnType)
 			{
 				this.context = parentReturnType.context;
 				this.parentReturnType = parentReturnType;

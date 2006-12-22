@@ -132,8 +132,8 @@ namespace ICSharpCode.SharpDevelop
 			if (ShowModifiers) {
 				if (property.IsIndexer)
 					builder.Append("Indexer ");
-					else
-				builder.Append("Property ");
+				else
+					builder.Append("Property ");
 			}
 			
 			if (UseFullyQualifiedNames) {
@@ -184,6 +184,9 @@ namespace ICSharpCode.SharpDevelop
 		{
 			StringBuilder builder = new StringBuilder();
 			if (ShowModifiers) {
+				if (m.IsExtensionMethod) {
+					builder.Append("[Extension] ");
+				}
 				builder.Append("Method ");
 			}
 			

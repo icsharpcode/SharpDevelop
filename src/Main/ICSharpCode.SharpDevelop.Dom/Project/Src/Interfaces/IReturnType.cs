@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// Such a reference can be direct (DefaultReturnType), lazy (SearchClassReturnType) or
 	/// returns types that stand for special references (e.g. ArrayReturnType)
 	/// </summary>
-	public interface IReturnType
+	public interface IReturnType : IEquatable<IReturnType>
 	{
 		/// <summary>
 		/// Gets the fully qualified name of the class the return type is pointing to.
@@ -104,6 +104,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// False for ArrayReturnType, SpecificReturnType etc.
 		/// </returns>
 		bool IsDefaultReturnType { get; }
+		
+		/// <summary>
+		/// Gets if the cast to the specified decorating return type would be valid.
+		/// </summary>
+		bool IsDecoratingReturnType<T>() where T : DecoratingReturnType;
+		
+		/// <summary>
+		/// Casts this return type to the decorating return type specified as type parameter.
+		/// This methods casts correctly even when the return type is wrapped by a ProxyReturnType.
+		/// When the cast is invalid, <c>null</c> is returned.
+		/// </summary>
+		T CastToDecoratingReturnType<T>() where T : DecoratingReturnType;
 		
 		bool IsArrayReturnType { get; }
 		ArrayReturnType CastToArrayReturnType();

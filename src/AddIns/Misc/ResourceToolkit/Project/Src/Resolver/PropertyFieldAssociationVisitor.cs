@@ -68,7 +68,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			base.EndVisit(node);
 		}
 		
-		public override object TrackedVisit(PropertyDeclaration propertyDeclaration, object data)
+		public override object TrackedVisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			
 			if (this.memberToFind is IProperty) {
@@ -88,10 +88,10 @@ namespace Hornung.ResourceToolkit.Resolver
 				
 			}
 			
-			return base.TrackedVisit(propertyDeclaration, data);
+			return base.TrackedVisitPropertyDeclaration(propertyDeclaration, data);
 		}
 		
-		public override object TrackedVisit(ReturnStatement returnStatement, object data)
+		public override object TrackedVisitReturnStatement(ReturnStatement returnStatement, object data)
 		{
 			// If we are in a property get region,
 			// this may be the statement where the field value is returned.
@@ -162,10 +162,10 @@ namespace Hornung.ResourceToolkit.Resolver
 				
 			}
 			
-			return base.TrackedVisit(returnStatement, data);
+			return base.TrackedVisitReturnStatement(returnStatement, data);
 		}
 		
-		public override object TrackedVisit(AssignmentExpression assignmentExpression, object data)
+		public override object TrackedVisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			// If we are in a property set region,
 			// this may be the statement where the field value is assigned.
@@ -221,7 +221,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				
 			}
 			
-			return base.TrackedVisit(assignmentExpression, data);
+			return base.TrackedVisitAssignmentExpression(assignmentExpression, data);
 		}
 		
 		// ********************************************************************************************************************************

@@ -42,6 +42,16 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		}
 		
 		[Test]
+		public void TestYieldAsIdentifier()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("yield"));
+			Token t = lexer.NextToken();
+			Assert.AreEqual(Tokens.Yield, t.kind);
+			Assert.IsTrue(Tokens.IdentifierTokens[t.kind]);
+			Assert.AreEqual("yield", t.val);
+		}
+		
+		[Test]
 		public void TestSkippedEmptyBlock()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("{}+"));

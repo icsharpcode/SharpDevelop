@@ -7,6 +7,8 @@
 
 using System;
 using System.CodeDom;
+using System.Reflection;
+using ICSharpCode.EasyCodeDom;
 
 namespace NRefactoryASTGenerator
 {
@@ -132,33 +134,27 @@ namespace NRefactoryASTGenerator
 				ctd.Members.Add(prop);
 			}
 			if (implementation != NullableImplementation.Abstract) {
-				CodeTypeDeclaration newType = new CodeTypeDeclaration("Null" + ctd.Name);
+				EasyTypeDeclaration newType = new EasyTypeDeclaration("Null" + ctd.Name);
+				newType.TypeAttributes = TypeAttributes.Class | TypeAttributes.NotPublic | TypeAttributes.Sealed;
 				newType.BaseTypes.Add(new CodeTypeReference(ctd.Name));
 				cns.Types.Add(newType);
 				
 				System.Reflection.ConstructorInfo baseCtor = MainClass.GetBaseCtor(type);
-				CodeConstructor ctor = new CodeConstructor();
-				ctor.Attributes = MemberAttributes.Private;
 				if (baseCtor != null) {
+					CodeConstructor ctor = new CodeConstructor();
+					ctor.Attributes = MemberAttributes.Private;
 					foreach (object o in baseCtor.GetParameters()) {
 						ctor.BaseConstructorArgs.Add(new CodePrimitiveExpression(null));
 					}
+					newType.Members.Add(ctor);
 				}
-				newType.Members.Add(ctor);
 				
-				CodeMemberField field = new CodeMemberField(newType.Name, "instance");
-				field.Attributes = MemberAttributes.Static;
+				CodeMemberField field = new CodeMemberField(newType.Name, "Instance");
+				field.Attributes = MemberAttributes.Static | MemberAttributes.Assembly;
 				field.InitExpression = new CodeObjectCreateExpression(new CodeTypeReference(newType.Name));
 				newType.Members.Add(field);
 				
 				CodeMemberProperty prop = new CodeMemberProperty();
-				prop.Name = "Instance";
-				prop.Type = new CodeTypeReference(newType.Name);
-				prop.Attributes = MemberAttributes.Public | MemberAttributes.Static;
-				prop.GetStatements.Add(new CodeMethodReturnStatement(new CodeVariableReferenceExpression("instance")));
-				newType.Members.Add(prop);
-				
-				prop = new CodeMemberProperty();
 				prop.Name = "IsNull";
 				prop.Type = new CodeTypeReference(typeof(bool));
 				prop.Attributes = MemberAttributes.Public | MemberAttributes.Override;

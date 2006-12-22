@@ -178,7 +178,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (expr.ContainsAnnotation("DomReturnType")) {
 				returnType = (IReturnType)expr["DomReturnType"];
 			} else {
-				returnType = new InferredReturnType(expr, resolver.CallingClass);
+				returnType = new BooInferredReturnType(expr, resolver.CallingClass);
 				expr.Annotate("DomReturnType", returnType);
 			}
 			if (useElementType)
@@ -219,9 +219,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return;
 			if (elementReturnType)
 				results.Add(name, new ElementReturnType(resolver.ProjectContent,
-				                                        new InferredReturnType(expr, resolver.CallingClass)));
+				                                        new BooInferredReturnType(expr, resolver.CallingClass)));
 			else
-				results.Add(name, new InferredReturnType(expr, resolver.CallingClass));
+				results.Add(name, new BooInferredReturnType(expr, resolver.CallingClass));
 		}
 		
 		private void Add(string name, TypeReference reference)

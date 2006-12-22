@@ -278,7 +278,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			if (field.Type == null) {
 				if (field.Initializer != null)
-					return new InferredReturnType(field.Initializer, OuterClass);
+					return new BooInferredReturnType(field.Initializer, OuterClass);
 				else
 					return GetDefaultReturnType(_cu.ProjectContent);
 			} else {
@@ -288,13 +288,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 		IReturnType CreateReturnType(AST.Method node, IMethod method)
 		{
 			if (node.ReturnType == null)
-				return new InferredReturnType(node.Body, OuterClass, false);
+				return new BooInferredReturnType(node.Body, OuterClass, false);
 			return CreateReturnType(node.ReturnType, method);
 		}
 		IReturnType CreateReturnType(AST.Property property)
 		{
 			if (property.Type == null && property.Getter != null && property.Getter.Body != null)
-				return new InferredReturnType(property.Getter.Body, OuterClass, false);
+				return new BooInferredReturnType(property.Getter.Body, OuterClass, false);
 			return CreateReturnType(property.Type);
 		}
 		

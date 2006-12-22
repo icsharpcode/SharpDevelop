@@ -44,7 +44,7 @@ namespace NRefactoryASTGenerator.Ast
 	enum ConstructorInitializerType { None }
 	
 	[ImplementNullable]
-	class ConstructorInitializer : AbstractNode
+	class ConstructorInitializer : AbstractNode, INullable
 	{
 		ConstructorInitializerType constructorInitializerType;
 		List<Expression>           arguments;
@@ -149,6 +149,7 @@ namespace NRefactoryASTGenerator.Ast
 		List<string>     handlesClause;
 		List<InterfaceImplementation> interfaceImplementations;
 		List<TemplateDefinition> templates;
+		bool isExtensionMethod;
 		
 		public MethodDeclaration(string name, Modifiers modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : base(modifier, attributes, name, parameters) {}
 	}

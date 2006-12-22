@@ -7,23 +7,24 @@
 
 using System;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
 	public class NRefactoryInformationProvider : IEnvironmentInformationProvider
 	{
-		IProjectContent pc;
-		IClass callingClass;
+		IProjectContent _projectContent;
 		
-		public NRefactoryInformationProvider(IProjectContent pc, IClass callingClass)
+		public NRefactoryInformationProvider(IProjectContent projectContent)
 		{
-			this.pc = pc;
-			this.callingClass = callingClass;
+			if (projectContent == null)
+				throw new ArgumentNullException("projectContent");
+			_projectContent = projectContent;
 		}
 		
 		public bool HasField(string fullTypeName, string fieldName)
 		{
-			IClass c = pc.GetClass(fullTypeName);
+			IClass c = _projectContent.GetClass(fullTypeName);
 			if (c == null)
 				return false;
 			foreach (IField field in c.DefaultReturnType.GetFields()) {

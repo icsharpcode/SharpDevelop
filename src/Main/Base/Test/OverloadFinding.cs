@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			string[] overloads = {"<T>(T a)", "(int a)"};
 			Test("(1)", 1, overloads);
-			Test("(short.MaxValue)", 1, overloads);
+			Test("(short.MaxValue)", 0, overloads);
 			Test("(long.MaxValue)", 0, overloads);
 		}
 		

@@ -81,10 +81,10 @@ namespace Hornung.ResourceToolkit.Resolver
 		
 		private CompilationUnit compilationUnit;
 		
-		public override object TrackedVisit(CompilationUnit compilationUnit, object data)
+		public override object TrackedVisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
 			this.compilationUnit = compilationUnit;
-			return base.TrackedVisit(compilationUnit, data);
+			return base.TrackedVisitCompilationUnit(compilationUnit, data);
 		}
 		
 		// ********************************************************************************************************************************

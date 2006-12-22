@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public static readonly NullReturnType Instance = new NullReturnType();
 		
-		public override bool Equals(object o)
+		public override bool Equals(IReturnType o)
 		{
 			return o is NullReturnType;
 		}

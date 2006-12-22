@@ -406,6 +406,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			builder.Append("(");
 			if (IncludeHTMLMarkup) builder.Append("<br>");
 			
+			if (m.IsExtensionMethod) builder.Append("this ");
+			
 			for (int i = 0; i < m.Parameters.Count; ++i) {
 				if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
 				builder.Append(Convert(m.Parameters[i]));

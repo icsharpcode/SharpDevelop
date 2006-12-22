@@ -239,7 +239,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static XmlDoc Load(string fileName, string cachePath)
 		{
-			LoggingService.Debug("Loading XmlDoc for " + fileName);
+			//LoggingService.Debug("Loading XmlDoc for " + fileName);
 			Directory.CreateDirectory(cachePath);
 			string cacheName = cachePath + "/" + Path.GetFileNameWithoutExtension(fileName)
 				+ "." + fileName.GetHashCode().ToString("x") + ".dat";
@@ -247,7 +247,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (File.Exists(cacheName)) {
 				doc = new XmlDoc();
 				if (doc.LoadFromBinary(cacheName, File.GetLastWriteTimeUtc(fileName))) {
-					LoggingService.Debug("XmlDoc: Load from cache successful");
+					//LoggingService.Debug("XmlDoc: Load from cache successful");
 					return doc;
 				} else {
 					doc.Dispose();
@@ -262,17 +262,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 					doc = Load(xmlReader);
 				}
 			} catch (XmlException ex) {
-				LoggingService.Warn("Error loading XmlDoc", ex);
+				LoggingService.Warn("Error loading XmlDoc " + fileName, ex);
 				return new XmlDoc();
 			}
 			
 			if (doc.xmlDescription.Count > cacheLength * 2) {
-				LoggingService.Debug("XmlDoc: Creating cache");
+				LoggingService.Debug("XmlDoc: Creating cache for " + fileName);
 				DateTime date = File.GetLastWriteTimeUtc(fileName);
 				try {
 					doc.Save(cacheName, date);
 				} catch (Exception ex) {
-					LoggingService.Error("Cannot write to cache file", ex);
+					LoggingService.Error("Cannot write to cache file " + cacheName, ex);
 					return doc;
 				}
 				doc.Dispose();

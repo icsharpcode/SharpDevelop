@@ -317,7 +317,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if (typesToVisit.Count > 0) {
 						nextType = typesToVisit.Dequeue();
 					} else {
-						nextType = enqueuedLastBaseType ? null : GetBaseTypeByClassType();
+						nextType = enqueuedLastBaseType ? null : GetBaseTypeByClassType(this);
 						enqueuedLastBaseType = true;
 					}
 					if (nextType != null) {
@@ -357,28 +357,28 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 				}
 				if (cachedBaseType == null) {
-					return GetBaseTypeByClassType();
+					return GetBaseTypeByClassType(this);
 				} else {
 					return cachedBaseType;
 				}
 			}
 		}
 		
-		IReturnType GetBaseTypeByClassType()
+		internal static IReturnType GetBaseTypeByClassType(IClass c)
 		{
-			switch (ClassType) {
+			switch (c.ClassType) {
 				case ClassType.Class:
 				case ClassType.Interface:
-					if (FullyQualifiedName != "System.Object") {
-						return this.ProjectContent.SystemTypes.Object;
+					if (c.FullyQualifiedName != "System.Object") {
+						return c.ProjectContent.SystemTypes.Object;
 					}
 					break;
 				case ClassType.Enum:
-					return this.ProjectContent.SystemTypes.Enum;
+					return c.ProjectContent.SystemTypes.Enum;
 				case ClassType.Delegate:
-					return this.ProjectContent.SystemTypes.Delegate;
+					return c.ProjectContent.SystemTypes.Delegate;
 				case ClassType.Struct:
-					return this.ProjectContent.SystemTypes.ValueType;
+					return c.ProjectContent.SystemTypes.ValueType;
 			}
 			return null;
 		}
@@ -390,20 +390,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if (baseClass != null && baseClass.ClassType == this.ClassType)
 						return baseClass;
 				}
-				switch (ClassType) {
-					case ClassType.Class:
-						if (FullyQualifiedName != "System.Object") {
-							return this.ProjectContent.SystemTypes.Object.GetUnderlyingClass();
-						}
-						break;
-					case ClassType.Enum:
-						return this.ProjectContent.SystemTypes.Enum.GetUnderlyingClass();
-					case ClassType.Delegate:
-						return this.ProjectContent.SystemTypes.Delegate.GetUnderlyingClass();
-					case ClassType.Struct:
-						return this.ProjectContent.SystemTypes.ValueType.GetUnderlyingClass();
-				}
-				return null;
+				IReturnType defaultBaseType = GetBaseTypeByClassType(this);
+				if (defaultBaseType != null)
+					return defaultBaseType.GetUnderlyingClass();
+				else
+					return null;
 			}
 		}
 		
