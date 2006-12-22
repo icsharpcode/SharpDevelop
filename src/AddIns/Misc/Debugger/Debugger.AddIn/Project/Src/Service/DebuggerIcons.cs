@@ -34,14 +34,14 @@ namespace Debugger
 			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.Property"));
 		}
 		
-		public static Image GetImage(Variable variable)
+		public static Image GetImage(Value val)
 		{
-			return imageList.Images[GetImageListIndex(variable)];
+			return imageList.Images[GetImageListIndex(val)];
 		}
 		
-		public static int GetImageListIndex(Variable variable)
+		public static int GetImageListIndex(Value val)
 		{
-			if (variable.ValueProxy is ObjectValue) {
+			if (val.IsObject) {
 				return 0; // Class
 			} else {
 				return 1; // Field

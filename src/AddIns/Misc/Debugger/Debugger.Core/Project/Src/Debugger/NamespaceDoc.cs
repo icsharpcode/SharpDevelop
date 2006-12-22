@@ -2,21 +2,22 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
-//     <version>$Revision$</version>
+//     <version>$Revision: 1965 $</version>
 // </file>
 
 using System;
-using System.Collections.Generic;
+using System.Text;
+using System.Threading;
 
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public class LocalVariable: Variable
+	/// <summary>
+	/// <para> This library provides features for debugging managed applications. </para>
+	/// </summary>
+	class NamespaceDoc
 	{
-		public LocalVariable(string name, Value @value)
-			:base (name, @value)
-		{
-		}
+		
 	}
 }

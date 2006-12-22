@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace Debugger
+namespace Debugger.Wrappers.MetaData
 {
 	enum CorTokenType: uint
 	{

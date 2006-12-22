@@ -5,11 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 1591
+
 using System;
 
 namespace Debugger.Wrappers.MetaData
 {
-	struct ParamProps
+	public struct ParamProps
 	{
 		public uint Token;
 		public string Name;
@@ -18,3 +20,5 @@ namespace Debugger.Wrappers.MetaData
 		public uint Flags;
 	}
 }
+
+#pragma warning restore 1591

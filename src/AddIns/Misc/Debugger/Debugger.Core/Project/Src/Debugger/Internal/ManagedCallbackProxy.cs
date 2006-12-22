@@ -7,6 +7,8 @@
 
 using System;
 using System.Windows.Forms;
+
+using Debugger.Interop;
 using Debugger.Wrappers.CorDebug;
 
 // Regular expresion:

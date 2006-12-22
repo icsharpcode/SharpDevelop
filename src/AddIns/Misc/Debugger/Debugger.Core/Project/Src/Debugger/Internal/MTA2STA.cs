@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace Debugger
+namespace Debugger.Interop
 {
 	public delegate T MethodInvokerWithReturnValue<T>();
 	
@@ -204,7 +204,7 @@ namespace Debugger
 		/// <returns>Return value of the called function</returns>
 		public static object InvokeMethod(object targetObject, string functionName, object[] functionParameters)
 		{
-			MethodInfo method;
+			System.Reflection.MethodInfo method;
 			if (targetObject is Type) {
 				method = ((Type)targetObject).GetMethod(functionName);
 			} else {

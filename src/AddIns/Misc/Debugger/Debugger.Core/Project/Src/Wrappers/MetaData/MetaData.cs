@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 1591
+
 using System;
 using System.Collections.Generic;
 using Debugger.Interop.MetaData;
@@ -13,7 +15,10 @@ using Debugger.Wrappers.CorSym;
 
 namespace Debugger.Wrappers.MetaData
 {
-	class MetaData: IDisposable
+	/// <summary>
+	/// Wrapper for the unmanaged metadata API
+	/// </summary>
+	public class MetaData: IDisposable
 	{
 		IMetaDataImport metaData;
 		
@@ -166,10 +171,6 @@ namespace Debugger.Wrappers.MetaData
 					                        out methodProps.ImplFlags);
 				});
 			
-			methodProps.Signature = null;
-			//methodProps.Signature = new SignatureStream(pSigBlob, sigBlobSize);
-			//Marshal.FreeCoTaskMem(pSigBlob);
-			
 			return methodProps;
 		}
 		
@@ -229,16 +230,7 @@ namespace Debugger.Wrappers.MetaData
 			metaData.FindTypeDefByName(typeName, enclosingClassToken, out typeDefToken);
 			return GetTypeDefProps(typeDefToken);
 		}
-		
-		public MethodProps GetMethod(string type, string name, int paramCount)
-		{
-			TypeDefProps typeDefProps = FindTypeDefByName(type, 0);
-			foreach(MethodProps method in EnumMethodsWithName(typeDefProps.Token, name)) {
-				if (GetParamCount(method.Token) == paramCount) {
-					return method;
-				}
-			}
-			throw new DebuggerException("Not found");
-		}
 	}
 }
+
+#pragma warning restore 1591

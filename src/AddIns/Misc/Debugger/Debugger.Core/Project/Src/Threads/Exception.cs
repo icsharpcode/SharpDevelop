@@ -15,8 +15,6 @@ namespace Debugger
 		Process           process;
 		Thread            thread;
 		ICorDebugValue    corValue;
-		ValueProxy        runtimeValue;
-		ObjectValueClass  runtimeValueException;
 		ExceptionType     exceptionType;
 		SourcecodeSegment location;
 		DateTime          creationTime;
@@ -37,12 +35,11 @@ namespace Debugger
 			this.thread = thread;
 			corValue = thread.CorThread.CurrentException;
 			exceptionType = thread.CurrentExceptionType;
-			runtimeValue = new Value(process,
-			                         new IExpirable[] {process.PauseSession},
-			                         new IMutable[] {},
-			                         delegate { return corValue; } ).ValueProxy;
-			runtimeValueException = ((ObjectValue)runtimeValue).GetClass("System.Exception");
-			message = runtimeValueException.SubVariables["_message"].ValueProxy.AsString;
+			Value runtimeValue = new Value(process,
+			                               new IExpirable[] {process.PauseSession},
+			                               new IMutable[] {},
+			                               delegate { return corValue; } );
+			message = runtimeValue.GetMember("_message").AsString;
 			
 			if (thread.LastFunctionWithLoadedSymbols != null) {
 				location = thread.LastFunctionWithLoadedSymbols.NextStatement;
@@ -65,7 +62,7 @@ namespace Debugger
 				callstackItems++;
 			}
 			
-			type = runtimeValue.Type;
+			type = runtimeValue.Type.Name;
 		}
 		
 		public string Type {

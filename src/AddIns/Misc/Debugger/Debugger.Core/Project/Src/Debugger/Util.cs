@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace Debugger
 {
-	public static class Util
+	static class Util
 	{
 		public static List<T> MergeLists<T>(T a, IEnumerable<T> b)
 		{

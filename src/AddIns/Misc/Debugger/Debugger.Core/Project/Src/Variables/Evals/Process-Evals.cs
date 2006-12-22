@@ -25,7 +25,7 @@ namespace Debugger
 		
 		internal Eval GetEval(ICorDebugEval corEval)
 		{
-			return activeEvals.Find(delegate (Eval eval) {return eval.CorEval == corEval;});
+			return activeEvals.Find(delegate (Eval eval) {return eval.IsCorEval(corEval);});
 		}
 		
 		/// <summary>

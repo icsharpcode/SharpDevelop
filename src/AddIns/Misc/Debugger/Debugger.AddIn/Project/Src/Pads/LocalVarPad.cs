@@ -97,24 +97,24 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.EndUpdate();
 		}
 		
-		delegate void AddVariableMethod(Variable variable);
+		//delegate void AddVariableMethod(NamedValue val);
 		
-		public static void AddVariableCollectionToTree(VariableCollection varCollection, TreeListViewItemCollection tree)
+		public static void AddVariableCollectionToTree(NamedValueCollection collection, TreeListViewItemCollection tree)
 		{
-			foreach(VariableCollection sub in varCollection.SubCollections) {
-				VariableCollection subCollection = sub;
-				TreeListViewItem subMenu = new TreeListViewItem("<" + subCollection.Name + ">", 0);
-				subMenu.SubItems.Add(subCollection.Value);
-				tree.Add(subMenu);
-				TreeListViewItem.TreeListViewItemHanlder populate = null;
-				populate = delegate {
-					AddVariableCollectionToTree(subCollection, subMenu.Items);
-					subMenu.AfterExpand -= populate;
-				};
-				subMenu.AfterExpand += populate;
-			}
-			foreach(Variable variable in varCollection.Items) {
-				tree.Add(new TreeListViewDebuggerItem(variable));
+//			foreach(VariableCollection sub in varCollection.SubCollections) {
+//				VariableCollection subCollection = sub;
+//				TreeListViewItem subMenu = new TreeListViewItem("<" + subCollection.Name + ">", 0);
+//				subMenu.SubItems.Add(subCollection.Value);
+//				tree.Add(subMenu);
+//				TreeListViewItem.TreeListViewItemHanlder populate = null;
+//				populate = delegate {
+//					AddVariableCollectionToTree(subCollection, subMenu.Items);
+//					subMenu.AfterExpand -= populate;
+//				};
+//				subMenu.AfterExpand += populate;
+//			}
+			foreach(NamedValue val in collection) {
+				tree.Add(new TreeListViewDebuggerItem(val));
 			}
 		}
 		

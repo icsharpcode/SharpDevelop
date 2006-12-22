@@ -25,17 +25,17 @@ namespace ICSharpCode.SharpDevelop.Services
 		// 2 = text
 		// 3 = value
 		
-		Variable variable;
+		NamedValue val;
 		Image image;
 		bool populated = false;
 		bool dirty = true;
 		
-		public Variable Variable {
+		public NamedValue Value {
 			get {
-				return variable;
+				return val;
 			}
 			set {
-				variable = value;
+				val = value;
 			}
 		}
 		
@@ -52,18 +52,18 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 		}
 		
-		public DynamicTreeDebuggerRow(Variable variable)
+		public DynamicTreeDebuggerRow(NamedValue val)
 		{
-			if (variable == null) throw new ArgumentNullException("variable");
+			if (val == null) throw new ArgumentNullException("val");
 			
-			this.variable = variable;
+			this.val = val;
 			this.Shown += delegate {
-				this.variable.Changed += Update;
+				this.val.Changed += Update;
 				dirty = true;
 				DoInPausedState( delegate { Update(); } );
 			};
 			this.Hidden += delegate {
-				this.variable.Changed -= Update;
+				this.val.Changed -= Update;
 			};
 			
 			DebuggerGridControl.AddColumns(this.ChildColumns);
@@ -85,25 +85,22 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			if (!dirty) return;
 			
-			image = DebuggerIcons.GetImage(variable);
+			image = DebuggerIcons.GetImage(val);
 			this[1].Text = ""; // Icon
-			this[2].Text = variable.Name;
-			if (ShowValuesInHexadecimal && variable.ValueProxy is PrimitiveValue && variable.ValueProxy.TheValue.IsInteger) {
-				this[3].Text = String.Format("0x{0:X}", (variable.ValueProxy as PrimitiveValue).Primitive);
+			this[2].Text = val.Name;
+			if (ShowValuesInHexadecimal && val.IsPrimitive && val.IsInteger) {
+				this[3].Text = String.Format("0x{0:X}", val.PrimitiveValue);
 			} else {
-				this[3].Text = variable.ValueProxy.AsString;
+				this[3].Text = val.AsString;
 			}
-			this[3].AllowLabelEdit = variable.ValueProxy is PrimitiveValue &&
-			                         variable.ValueProxy.ManagedType != typeof(string) &&
-			                         !ShowValuesInHexadecimal;
-			ObjectValue objValue = variable.ValueProxy as ObjectValue;
-			if (objValue != null) {
-				objValue.ToStringText.Changed -= Update;
-				objValue.ToStringText.Changed += Update;
-				this[3].Text = objValue.ToStringText.ValueProxy.AsString;
+			this[3].AllowLabelEdit = val.IsInteger && !ShowValuesInHexadecimal;
+			if (val.IsObject) {
+				val.ObjectToString.Changed -= Update;
+				val.ObjectToString.Changed += Update;
+				this[3].Text = val.ObjectToString.AsString;
 			}
 			
-			this.ShowPlus = variable.ValueProxy.MayHaveSubVariables;
+			this.ShowPlus = val.IsObject || val.IsArray;
 			this.ShowMinusWhileExpanded = true;
 			
 			dirty = false;
@@ -118,13 +115,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void OnLabelEdited(object sender, DynamicListEventArgs e)
 		{
-			PrimitiveValue val = (PrimitiveValue)variable.ValueProxy;
 			string newValue = ((DynamicListItem)sender).Text;
 			try {
-				val.Primitive = newValue;
+				val.PrimitiveValue = newValue;
 			} catch (NotSupportedException) {
 				string format = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CannotSetValue.BadFormat");
-				string msg = String.Format(format, newValue, val.ManagedType.ToString());
+				string msg = String.Format(format, newValue, val.Type.ManagedType.ToString());
 				MessageService.ShowMessage(msg ,"${res:MainWindow.Windows.Debug.LocalVariables.CannotSetValue.Title}");
 			} catch (COMException) {
 				// COMException (0x80131330): Cannot perfrom SetValue on non-leaf frames.
@@ -177,48 +173,49 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void DoInPausedState(MethodInvoker action)
 		{
-			if (Variable.Process.IsPaused) {
+			if (val.Process.IsPaused) {
 				action();
 			} else {
 				EventHandler<ProcessEventArgs> onDebuggingPaused = null;
 				onDebuggingPaused = delegate {
 					action();
-					Variable.Process.DebuggingPaused -= onDebuggingPaused;
+					val.Process.DebuggingPaused -= onDebuggingPaused;
 				};
-				Variable.Process.DebuggingPaused += onDebuggingPaused;
+				val.Process.DebuggingPaused += onDebuggingPaused;
 			}
 		}
 		
 		void Populate()
 		{
-			Fill(this, Variable.ValueProxy.SubVariables);
+			if (val.IsArray)  Fill(this, val.GetArrayElements());
+			if (val.IsObject) Fill(this, val.GetMembers());
 			populated = true;
 		}
 		
-		static void Fill(DynamicTreeRow row, VariableCollection collection)
+		static void Fill(DynamicTreeRow row, NamedValueCollection collection)
 		{
 			row.ChildRows.Clear();
-			foreach(VariableCollection sub in collection.SubCollections) {
-				VariableCollection subCollection = sub;
-				
-				DynamicTreeRow subMenu = new DynamicTreeRow();
-				DebuggerGridControl.AddColumns(subMenu.ChildColumns);
-				subMenu[2].Text = subCollection.Name;
-				subMenu[3].Text = subCollection.Value;
-				subMenu.ShowMinusWhileExpanded = true;
-				subMenu.ShowPlus = !subCollection.IsEmpty;
-				
-				EventHandler<DynamicListEventArgs> populate = null;
-				populate = delegate {
-					Fill(subMenu, subCollection);
-					subMenu.Expanding -= populate;
-				};
-				subMenu.Expanding += populate;
-				
-				row.ChildRows.Add(subMenu);
-			}
-			foreach(Variable variable in collection.Items) {
-				row.ChildRows.Add(new DynamicTreeDebuggerRow(variable));
+//			foreach(VariableCollection sub in collection.SubCollections) {
+//				VariableCollection subCollection = sub;
+//				
+//				DynamicTreeRow subMenu = new DynamicTreeRow();
+//				DebuggerGridControl.AddColumns(subMenu.ChildColumns);
+//				subMenu[2].Text = subCollection.Name;
+//				subMenu[3].Text = subCollection.Value;
+//				subMenu.ShowMinusWhileExpanded = true;
+//				subMenu.ShowPlus = !subCollection.IsEmpty;
+//				
+//				EventHandler<DynamicListEventArgs> populate = null;
+//				populate = delegate {
+//					Fill(subMenu, subCollection);
+//					subMenu.Expanding -= populate;
+//				};
+//				subMenu.Expanding += populate;
+//				
+//				row.ChildRows.Add(subMenu);
+//			}
+			foreach(NamedValue val in collection) {
+				row.ChildRows.Add(new DynamicTreeDebuggerRow(val));
 			}
 		}
 	}

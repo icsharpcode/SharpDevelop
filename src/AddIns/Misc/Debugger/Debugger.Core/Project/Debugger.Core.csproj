@@ -18,21 +18,19 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>PdbOnly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>108</NoWarn>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
@@ -171,18 +169,6 @@
     <Compile Include="Src\Interop\CorDebug\tagSTATSTG.cs" />
     <Compile Include="Src\Interop\MetaData\IMetaDataImport.cs" />
     <Compile Include="Src\Interop\MetaData\COR_FIELD_OFFSET.cs" />
-    <Compile Include="Src\Variables\Evals\Eval.cs" />
-    <Compile Include="Src\Variables\Evals\EvalEventArgs.cs" />
-    <Compile Include="Src\Variables\Evals\Process-Evals.cs" />
-    <Compile Include="Src\Variables\ArrayValue.cs" />
-    <Compile Include="Src\Variables\NullValue.cs" />
-    <Compile Include="Src\Variables\ObjectValueClass.cs" />
-    <Compile Include="Src\Variables\PrimitiveValue.cs" />
-    <Compile Include="Src\Variables\SignatureStream.cs" />
-    <Compile Include="Src\Variables\UnavailableValue.cs" />
-    <Compile Include="Src\Variables\Value.cs" />
-    <Compile Include="Src\Variables\ValueEventArgs.cs" />
-    <Compile Include="Src\Variables\VariableCollection.cs" />
     <Compile Include="Src\Threads\Stepper.cs" />
     <Compile Include="Src\Threads\StepperEventArgs.cs" />
     <Compile Include="Src\Interop\CorSym\_FILETIME.cs" />
@@ -363,22 +349,39 @@
     <Compile Include="Src\Threads\FrameID.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugChain.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugFrame.cs" />
-    <Compile Include="Src\Variables\VariableEventArgs.cs" />
     <Compile Include="Src\Debugger\IExpirable.cs" />
-    <Compile Include="Src\Variables\Evals\CallFunctionEval.cs" />
-    <Compile Include="Src\Variables\Evals\NewStringEval.cs" />
-    <Compile Include="Src\Variables\ObjectValue.cs" />
     <Compile Include="Src\Debugger\Util.cs" />
-    <Compile Include="Src\Variables\Evals\NewObjectEval.cs" />
     <Compile Include="Src\Debugger\IMutable.cs" />
     <Compile Include="Src\Debugger\ExceptionEventArgs.cs" />
     <Compile Include="Src\Debugger\Internal\ManagedCallbackSwitch.cs" />
-    <Compile Include="Src\Variables\ObjectMember.cs" />
-    <Compile Include="Src\Variables\MethodArgument.cs" />
-    <Compile Include="Src\Variables\LocalVariable.cs" />
-    <Compile Include="Src\Variables\ArrayElement.cs" />
-    <Compile Include="Src\Variables\ValueProxy.cs" />
-    <Compile Include="Src\Variables\Variable.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\ICorDebugArrayValue.cs" />
+    <Compile Include="Src\Variables\Evals\Eval.cs" />
+    <Compile Include="Src\Variables\Evals\EvalEventArgs.cs" />
+    <Compile Include="Src\Variables\Evals\Process-Evals.cs" />
+    <Compile Include="Src\Variables\Types\BindingFlags.cs" />
+    <Compile Include="Src\Variables\Types\DebugType.cs" />
+    <Compile Include="Src\Variables\Types\FieldInfo.cs" />
+    <Compile Include="Src\Variables\Values\Value.cs" />
+    <Compile Include="Src\Variables\Values\Value-Array.cs" />
+    <Compile Include="Src\Variables\Values\Value-Common.cs" />
+    <Compile Include="Src\Variables\Values\ValueEventArgs.cs" />
+    <Compile Include="Src\Variables\Values\Value-Object.cs" />
+    <Compile Include="Src\Variables\Values\Value-Primitive.cs" />
+    <Compile Include="Src\Variables\Variables\ArrayElement.cs" />
+    <Compile Include="Src\Variables\Variables\LocalVariable.cs" />
+    <Compile Include="Src\Variables\Variables\MethodArgument.cs" />
+    <Compile Include="Src\Variables\Variables\Variable.cs" />
+    <Compile Include="Src\Variables\Variables\VariableCollection.cs" />
+    <Compile Include="Src\Variables\Variables\VariableEventArgs.cs" />
+    <Compile Include="Src\Variables\Types\MethodInfo.cs" />
+    <Compile Include="Src\Variables\Types\MemberInfo.cs" />
+    <Compile Include="Src\Variables\Types\PropertyInfo.cs" />
+    <Compile Include="Src\Variables\Variables\MemberVariable.cs" />
+    <Compile Include="Src\Variables\Values\Value-Helpers.cs" />
+    <Compile Include="Src\Variables\Types\DebugType-Helpers.cs" />
+    <Compile Include="Src\Debugger\NamespaceDoc.cs" />
+    <Compile Include="Src\Variables\Values\NamedValue.cs" />
+    <Compile Include="Src\Variables\Values\NamedValueCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />
@@ -391,6 +394,11 @@
     <Folder Include="Src\Wrappers\MetaData" />
     <Folder Include="docs" />
     <Content Include="docs\Stepping.txt" />
+    <Folder Include="Src\Variables" />
+    <Folder Include="Src\Variables\Evals" />
+    <Folder Include="Src\Variables\Types" />
+    <Folder Include="Src\Variables\Values" />
+    <Folder Include="Src\Variables\Variables" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

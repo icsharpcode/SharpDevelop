@@ -149,9 +149,9 @@ namespace Debugger
 				if (!HasBeenLoaded) return lastPriority;
 				if (process.IsRunning) return lastPriority;
 
-				ValueProxy runTimeValue = RuntimeValue.ValueProxy;
-				if (runTimeValue is NullValue) return ThreadPriority.Normal;
-				lastPriority = (ThreadPriority)(int)(runTimeValue["m_Priority"].ValueProxy as PrimitiveValue).Primitive;
+				Value runTimeValue = RuntimeValue;
+				if (runTimeValue.IsNull) return ThreadPriority.Normal;
+				lastPriority = (ThreadPriority)(int)runTimeValue.GetMember("m_Priority").PrimitiveValue;
 				return lastPriority;
 			}
 		}
@@ -174,10 +174,10 @@ namespace Debugger
 			get	{
 				if (!HasBeenLoaded) return lastName;
 				if (process.IsRunning) return lastName;
-				ValueProxy runtimeVar  = RuntimeValue.ValueProxy;
-				if (runtimeVar is NullValue) return lastName;
-				ValueProxy runtimeName = runtimeVar["m_Name"].ValueProxy;
-				if (runtimeName is NullValue) return string.Empty;
+				Value runtimeValue  = RuntimeValue;
+				if (runtimeValue.IsNull) return lastName;
+				Value runtimeName = runtimeValue.GetMember("m_Name");
+				if (runtimeName.IsNull) return string.Empty;
 				lastName = runtimeName.AsString.ToString();
 				return lastName;
 			}

@@ -67,8 +67,8 @@ namespace Debugger
 			// Debugger.BooInterpreter.dll
 			assembly = LoadAssembly(typeof(DebugeeInteractiveInterpreter).Assembly.Location);
 			Value interpreterType = Eval.NewString(process, typeof(DebugeeInteractiveInterpreter).FullName);
-			interpreter = Eval.CallFunction(process, typeof(Assembly), "CreateInstance", assembly, new Value[] {interpreterType});
-			interpreter_localVariable = interpreter.ValueProxy.SubVariables["localVariable"].Value;
+			interpreter = Eval.InvokeMethod(process, typeof(Assembly), "CreateInstance", assembly, new Value[] {interpreterType});
+			interpreter_localVariable = interpreter.GetMember("localVariable");
 			RunCommand(
 				"import System\n" + 
 				"import System.IO\n" +
@@ -82,7 +82,7 @@ namespace Debugger
 		Value LoadAssembly(string path)
 		{
 			Value assemblyPath = Eval.NewString(process, path);
-			Value assembly = Eval.CallFunction(process, typeof(Assembly), "LoadFrom", null, new Value[] {assemblyPath});
+			Value assembly = Eval.InvokeMethod(process, typeof(Assembly), "LoadFrom", null, new Value[] {assemblyPath});
 			return assembly;
 		}
 		
@@ -90,7 +90,7 @@ namespace Debugger
 		{
 			if (CanLoadInterpreter) {
 				Value cmd = Eval.NewString(process, code);
-				Eval.CallFunction(process, typeof(InteractiveInterpreter), "LoopEval", interpreter, new Value[] {cmd});
+				Eval.InvokeMethod(process, typeof(InteractiveInterpreter), "LoopEval", interpreter, new Value[] {cmd});
 			}
 		}
 		
@@ -103,7 +103,7 @@ namespace Debugger
 		{
 			if (CanLoadInterpreter) {
 				Value cmd = Eval.NewString(process, code);
-				Eval.CallFunction(process, typeof(AbstractInterpreter), "SuggestCodeCompletion", interpreter, new Value[] {cmd});
+				Eval.InvokeMethod(process, typeof(AbstractInterpreter), "SuggestCodeCompletion", interpreter, new Value[] {cmd});
 				return null;
 			} else {
 				return null;
@@ -129,7 +129,7 @@ namespace Debugger
 		
 		void BeforeGetValue(string name)
 		{
-			Variable localVar;
+			NamedValue localVar;
 			try {
 				localVar = process.LocalVariables[name];
 			} catch (DebuggerException) {
@@ -140,7 +140,7 @@ namespace Debugger
 			Stepper stepOut = new Stepper(process.SelectedThread.LastFunction, "Boo interperter");
 			stepOut.StepComplete  += delegate {
 				process.Debugger.MTA2STA.AsyncCall(delegate {
-					if (!interpreter_localVariable.SetValue(localVar.Value)) {
+					if (!interpreter_localVariable.SetValue(localVar)) {
 						PrintLine("Getting of local variable " + name + " failed");
 					}
 					process.Continue();
@@ -151,14 +151,14 @@ namespace Debugger
 		
 		void BeforeSetValue(string name)
 		{
-			Variable localVar;
+			NamedValue localVar;
 			try {
 				localVar = process.LocalVariables[name];
 			} catch (DebuggerException) {
 				return;
 			}
 			PrintLine("Setting local variable " + name);
-			localVar.Value.SetValue(interpreter_localVariable);
+			localVar.SetValue(interpreter_localVariable);
 		}
 	}
 }

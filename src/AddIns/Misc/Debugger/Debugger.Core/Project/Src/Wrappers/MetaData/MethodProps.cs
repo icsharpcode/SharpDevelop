@@ -5,11 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+#pragma warning disable 1591
+
 using System;
 
 namespace Debugger.Wrappers.MetaData
 {
-	struct MethodProps
+	public struct MethodProps
 	{
 		public uint Token;
 		public string Name;
@@ -17,7 +19,6 @@ namespace Debugger.Wrappers.MetaData
 		public uint Flags;
 		public uint ImplFlags;
 		public uint CodeRVA;
-		public SignatureStream Signature;
 		
 		public bool IsStatic {
 			get {
@@ -38,3 +39,5 @@ namespace Debugger.Wrappers.MetaData
 		}
 	}
 }
+
+#pragma warning restore 1591

@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace Debugger
+namespace Debugger.Wrappers.MetaData
 {
-	[System.Flags()] enum ClassFieldAttribute: uint
+	[System.Flags()]
+	enum ClassFieldAttribute: uint
 	{
 		// member access mask - Use this mask to retrieve accessibility information.
 		fdFieldAccessMask           =   0x0007,

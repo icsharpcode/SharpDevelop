@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
+using Debugger.Interop;
+
 namespace Debugger.Wrappers
 {
 	class TrackedObjectMetaData

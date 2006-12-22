@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
@@ -19,6 +21,8 @@ namespace Debugger
 		
 		Thread selectedThread;
 		PauseSession pauseSession;
+		
+		Dictionary<object, DebugType> debugTypeCache = new Dictionary<object, DebugType>();
 		
 		bool hasExpired = false;
 		
@@ -239,14 +243,24 @@ namespace Debugger
 			}
 		}
 		
-		public VariableCollection LocalVariables { 
+		public NamedValueCollection LocalVariables { 
 			get {
 				if (SelectedFunction == null || IsRunning) {
-					return VariableCollection.Empty;
+					return NamedValueCollection.Empty;
 				} else {
 					return SelectedFunction.Variables;
 				}
 			}
+		}
+		
+		internal DebugType GetDebugType(ICorDebugType corType)
+		{
+			DebugType type;
+			if (!debugTypeCache.TryGetValue(corType.WrappedObject, out type)) {
+				type = new DebugType(this, corType);
+				debugTypeCache.Add(corType.WrappedObject, type);
+			}
+			return type;
 		}
 	}
 }

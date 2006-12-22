@@ -11,9 +11,9 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Debugger
+namespace Debugger.Interop
 {        
-	internal static class NativeMethods
+	public static class NativeMethods
 	{
 		[DllImport("kernel32.dll")]
 		public static extern bool CloseHandle(IntPtr handle);

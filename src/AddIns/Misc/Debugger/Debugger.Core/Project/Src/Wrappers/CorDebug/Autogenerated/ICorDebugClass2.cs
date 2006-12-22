@@ -98,13 +98,29 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public ICorDebugType GetParameterizedType(uint elementType, uint nTypeArgs, ref ICorDebugType ppTypeArgs)
+		public ICorDebugType GetParameterizedType(uint elementType, uint nTypeArgs, ICorDebugType[] ppTypeArgs)
 		{
 			ICorDebugType ppType;
-			Debugger.Interop.CorDebug.ICorDebugType ref_ppTypeArgs = ppTypeArgs.WrappedObject;
+			Debugger.Interop.CorDebug.ICorDebugType[] array_ppTypeArgs = new Debugger.Interop.CorDebug.ICorDebugType[ppTypeArgs.Length];
+			for (int i = 0; (i < ppTypeArgs.Length); i = (i + 1))
+			{
+				if ((ppTypeArgs[i] != null))
+				{
+					array_ppTypeArgs[i] = ppTypeArgs[i].WrappedObject;
+				}
+			}
 			Debugger.Interop.CorDebug.ICorDebugType out_ppType;
-			this.WrappedObject.GetParameterizedType(elementType, nTypeArgs, ref ref_ppTypeArgs, out out_ppType);
-			ppTypeArgs = ICorDebugType.Wrap(ref_ppTypeArgs);
+			this.WrappedObject.GetParameterizedType(elementType, nTypeArgs, array_ppTypeArgs, out out_ppType);
+			for (int i = 0; (i < ppTypeArgs.Length); i = (i + 1))
+			{
+				if ((array_ppTypeArgs[i] != null))
+				{
+					ppTypeArgs[i] = ICorDebugType.Wrap(array_ppTypeArgs[i]);
+				} else
+				{
+					ppTypeArgs[i] = null;
+				}
+			}
 			ppType = ICorDebugType.Wrap(out_ppType);
 			return ppType;
 		}

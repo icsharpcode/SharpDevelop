@@ -15,13 +15,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class TreeListViewDebuggerItem: TreeListViewItem
 	{
-		Variable variable;
+		NamedValue val;
 		bool populated = false;
 		bool dirty = true;
 		
-		public Variable Variable {
+		public NamedValue Value {
 			get {
-				return variable;
+				return val;
 			}
 		}
 		
@@ -51,12 +51,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		public TreeListViewDebuggerItem(Variable variable)
+		public TreeListViewDebuggerItem(NamedValue val)
 		{
-			this.variable = variable;
+			this.val = val;
 			
-			variable.Changed += delegate { dirty = true; Update(); };
-			variable.Expired += delegate { this.Remove(); };
+			val.Changed += delegate { dirty = true; Update(); };
+			val.Expired += delegate { this.Remove(); };
 			
 			SubItems.Add("");
 			SubItems.Add("");
@@ -71,18 +71,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			if (this.TreeListView != null) {
 				((DebuggerTreeListView)this.TreeListView).DelayRefresh();
-				Highlight = (Variable.ValueProxy.AsString != SubItems[1].Text);
+				Highlight = (val.AsString != SubItems[1].Text);
 			}
 			
-			this.SubItems[0].Text = Variable.Name;
-			this.SubItems[1].Text = Variable.ValueProxy.AsString;
-			this.SubItems[2].Text = Variable.ValueProxy.Type;
+			this.SubItems[0].Text = val.Name;
+			this.SubItems[1].Text = val.AsString;
+			this.SubItems[2].Text = val.IsNull ? String.Empty : val.Type.Name;
 			
-			this.ImageIndex = DebuggerIcons.GetImageListIndex(variable);
+			this.ImageIndex = DebuggerIcons.GetImageListIndex(val);
 			
 			if (!IsExpanded) {
 				// Show plus sign
-				if (variable.ValueProxy.MayHaveSubVariables && Items.Count == 0) {
+				if ((val.IsObject || val.IsArray) && Items.Count == 0) {
 					TreeListViewItem dummy = new TreeListViewItem();
 					this.AfterExpand += delegate { dummy.Remove(); };
 					Items.Add(dummy);
@@ -96,9 +96,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			if (!populated) {
 				Items.Clear();
-				// Do not sort names of array items
-				this.Items.SortOrder = variable.ValueProxy is ArrayValue ? SortOrder.None : SortOrder.Ascending;
-				LocalVarPad.AddVariableCollectionToTree(variable.ValueProxy.SubVariables, this.Items);
+				if (val.IsArray) {
+					// Do not sort names of array items
+					this.Items.SortOrder = SortOrder.None;
+					LocalVarPad.AddVariableCollectionToTree(val.GetArrayElements(), this.Items);
+				} else if (val.IsObject) {
+					this.Items.SortOrder = SortOrder.Ascending;
+					LocalVarPad.AddVariableCollectionToTree(val.GetMembers(), this.Items);
+				}
 				populated = true;
 			}
 		}

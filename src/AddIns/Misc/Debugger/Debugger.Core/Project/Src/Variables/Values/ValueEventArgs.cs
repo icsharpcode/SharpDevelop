@@ -9,17 +9,22 @@ using System;
 
 namespace Debugger 
 {	
+	/// <summary>
+	/// Provides data for events related to <see cref="Debugger.Value"/> class
+	/// </summary>
 	[Serializable]
 	public class ValueEventArgs : ProcessEventArgs
 	{
 		Value val;
 		
+		/// <summary> The value that caused the event </summary>
 		public Value Value {
 			get {
 				return val;
 			}
 		}
 		
+		/// <summary> Initializes a new instance of the class </summary>
 		public ValueEventArgs(Value val): base(val.Process)
 		{
 			this.val = val;

@@ -211,11 +211,11 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// Gets variable of given name.
 		/// Returns null if unsuccessful.
 		/// </summary>
-		public Variable GetVariableFromName(string variableName)
+		public NamedValue GetVariableFromName(string variableName)
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning) return null;
 			
-			VariableCollection collection = debuggedProcess.LocalVariables;
+			NamedValueCollection collection = debuggedProcess.LocalVariables;
 			
 			if (collection == null) return null;
 			
@@ -233,12 +233,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public string GetValueAsString(string variableName)
 		{
-			Variable variable = GetVariableFromName(variableName);
+			NamedValue val = GetVariableFromName(variableName);
 			
-			if (variable == null) {
+			if (val == null) {
 				return null;
 			} else {
-				return variable.ValueProxy.AsString;
+				return val.AsString;
 			}
 		}
 		
@@ -248,12 +248,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public DebuggerGridControl GetTooltipControl(string variableName)
 		{
-			Variable variable = GetVariableFromName(variableName.Trim());
+			NamedValue val = GetVariableFromName(variableName.Trim());
 			
-			if (variable == null) {
+			if (val == null) {
 				return null;
 			} else {
-				return new DebuggerGridControl(new DynamicTreeDebuggerRow(variable));
+				return new DebuggerGridControl(new DynamicTreeDebuggerRow(val));
 			}
 		}
 		

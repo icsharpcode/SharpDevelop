@@ -15,6 +15,10 @@ using Debugger.Wrappers.MetaData;
 
 namespace Debugger
 {
+	/// <summary>
+	/// A function (or also a method or frame) which is being executed on
+	/// some thread. Use to obtain arguments or local variables.
+	/// </summary>
 	public class Function: RemotingObjectBase, IExpirable
 	{	
 		Process process;
@@ -32,68 +36,74 @@ namespace Debugger
 		
 		MethodProps methodProps;
 		
+		/// <summary> The process in which this function is executed </summary>
 		public Process Process {
 			get {
 				return process;
 			}
 		}
 
+		/// <summary> The name of the function (eg "ToString") </summary>
 		public string Name { 
 			get { 
 				return methodProps.Name;
 			} 
 		}
 		
+		/// <summary> Metadata token of the function </summary>
 		public uint Token {
 			get {
 				return methodProps.Token;
 			}
 		}
 		
+		/// <summary> A module in which the function is defined </summary>
 		public Module Module { 
 			get { 
 				return module; 
 			} 
 		}
 		
+		/// <summary> A thread in which the function is executed </summary>
 		public Thread Thread {
 			get {
 				return thread;
 			}
 		}
-
+		
+		/// <summary> True if the function is static </summary>
 		public bool IsStatic {
 			get {
 				return methodProps.IsStatic;
 			}
 		}
 		
+		/// <summary> True if the function has symbols defined. 
+		/// (That is has accesss to the .pdb file) </summary>
 		public bool HasSymbols {
 			get {
 				return GetSegmentForOffet(0) != null;
 			}
 		}
-
-		internal ICorDebugClass ContaingClass {
+		
+		/// <summary> The class that defines this function </summary>
+		internal ICorDebugClass ContaingClass { // TODO: Use DebugType
 			get {
 				return corFunction.Class;
 			}
 		}
 		
-		/// <summary>
-		/// True if function stepped out and is not longer valid.
-		/// </summary>
+		/// <summary> True if function stepped out and is not longer valid. </summary>
 		public bool HasExpired {
 			get {
 				return steppedOut || Module.Unloaded;
 			}
 		}
 		
-		/// <summary>
-		/// Occurs when function expires and is no longer usable
-		/// </summary>
+		/// <summary> Occurs when function expires and is no longer usable </summary>
 		public event EventHandler Expired;
 		
+		/// <summary> Is called when function expires and is no longer usable </summary>
 		internal protected virtual void OnExpired(EventArgs e)
 		{
 			if (!steppedOut) {
@@ -124,6 +134,7 @@ namespace Debugger
 			process.TraceMessage("Function " + this.ToString() + " created");
 		}
 		
+		/// <summary> Returns diagnostic description of the frame </summary>
 		public override string ToString()
 		{
 			return methodProps.Name + "(" + frameID.ToString() + ")";
@@ -174,16 +185,19 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary> Step into next instruction </summary>
 		public void StepInto()
 		{
 			Step(true);
-		}		
-
+		}
+		
+		/// <summary> Step over next instruction </summary>
 		public void StepOver()
 		{
 			Step(false);
 		}
-
+		
+		/// <summary> Step out of the function </summary>
 		public void StepOut()
 		{
 			new Stepper(this, "Function step out").StepOut();
@@ -313,11 +327,19 @@ namespace Debugger
 			return null;
 		}
 		
+		/// <summary>
+		/// Determine whether the instrustion pointer can be set to given location
+		/// </summary>
+		/// <returns> Best possible location. Null is not possible. </returns>
 		public SourcecodeSegment CanSetIP(string filename, int line, int column)
 		{
 			return SetIP(true, filename, line, column);
 		}
-			
+		
+		/// <summary>
+		/// Set the instrustion pointer to given location
+		/// </summary>
+		/// <returns> Best possible location. Null is not possible. </returns>
 		public SourcecodeSegment SetIP(string filename, int line, int column)
 		{
 			return SetIP(false, filename, line, column);
@@ -353,31 +375,40 @@ namespace Debugger
 			}
 		}
 		
-		public VariableCollection Variables {
+		/// <summary>
+		/// Gets all variables in the lexical scope of the function. 
+		/// That is, arguments, local variables and varables of the containing class.
+		/// </summary>
+		public NamedValueCollection Variables {
 			get {
-				return new VariableCollection(GetVariables());
+				return new NamedValueCollection(GetVariables());
 			}
 		}
 		
-		IEnumerable<Variable> GetVariables() 
+		IEnumerable<NamedValue> GetVariables() 
 		{
 			if (!IsStatic) {
-				yield return new Variable("this", ThisValue);
+				yield return ThisValue;
 			}
-			foreach(Variable var in ArgumentVariables) {
-				yield return var;
+			foreach(NamedValue namedValue in Arguments) {
+				yield return namedValue;
 			}
-			foreach(Variable var in LocalVariables) {
-				yield return var;
+			foreach(NamedValue namedValue in LocalVariables) {
+				yield return namedValue;
 			}
-			foreach(Variable var in ContaingClassVariables) {
-				yield return var;
+			foreach(NamedValue namedValue in ContaingClassVariables) {
+				yield return namedValue;
 			}
 		}
 		
-		public Value ThisValue {
+		/// <summary> 
+		/// Gets the instance of the class asociated with the current frame.
+		/// That is, 'this' in C#.
+		/// </summary>
+		public NamedValue ThisValue {
 			get {
-				return new Value(
+				return new NamedValue(
+					"this",
 					process,
 					new IExpirable[] {this},
 					new IMutable[] {},
@@ -400,17 +431,22 @@ namespace Debugger
 			}
 		}
 		
-		public IEnumerable<Variable> ContaingClassVariables {
+		/// <summary>
+		/// Gets all accessible members of the class that defines this function.
+		/// </summary>
+		public NamedValueCollection ContaingClassVariables {
 			get {
 				// TODO: Should work for static
 				if (!IsStatic) {
-					foreach(Variable var in ThisValue.ValueProxy.SubVariables) {
-						yield return var;
-					}
+					return ThisValue.GetMembers();
+				} else {
+					return NamedValueCollection.Empty;
 				}
 			}
 		}
 		
+		/// <summary> Gets the name of given parameter </summary>
+		/// <param name="index"> Zero-based index </param>
 		public string GetParameterName(int index)
 		{
 			// index = 0 is return parameter
@@ -421,6 +457,7 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary> Total number of arguments (excluding implicit 'this' argument) </summary>
 		public int ArgumentCount {
 			get {
 				ICorDebugValueEnum argumentEnum = CorILFrame.EnumerateArguments();
@@ -432,17 +469,17 @@ namespace Debugger
 			}
 		}
 		
-		public MethodArgument GetArgumentVariable(int index)
+		/// <summary> Gets argument with a given index </summary>
+		/// <param name="index"> Zero-based index </param>
+		public MethodArgument GetArgument(int index)
 		{
 			return new MethodArgument(
 				GetParameterName(index),
 				index,
-				new Value(
-					process,
-					new IExpirable[] {this},
-					new IMutable[] {process.DebugeeState},
-					delegate { return GetArgumentCorValue(index); }
-				)
+				process,
+				new IExpirable[] {this},
+				new IMutable[] {process.DebugeeState},
+				delegate { return GetArgumentCorValue(index); }
 			);
 		}
 		
@@ -459,14 +496,22 @@ namespace Debugger
 			}
 		}
 		
-		public IEnumerable<MethodArgument> ArgumentVariables {
+		/// <summary> Gets all arguments of the function. </summary>
+		public NamedValueCollection Arguments {
+			get {
+				return new NamedValueCollection(ArgumentsEnum);
+			}
+		}
+		
+		IEnumerable<NamedValue> ArgumentsEnum {
 			get {
 				for (int i = 0; i < ArgumentCount; i++) {
-					yield return GetArgumentVariable(i);
+					yield return GetArgument(i);
 				}
 			}
 		}
 		
+		/// <summary> Gets all local variables of the function. </summary>
 		public IEnumerable<LocalVariable> LocalVariables {
 			get {
 				if (symMethod != null) { // TODO: Is this needed?
@@ -496,12 +541,10 @@ namespace Debugger
 		{
 			return new LocalVariable(
 				symVar.Name,
-				new Value(
-					process,
-					new IExpirable[] {this},
-					new IMutable[] {process.DebugeeState},
-					delegate { return GetCorValueOfLocalVariable(symVar); }
-				)
+				process,
+				new IExpirable[] {this},
+				new IMutable[] {process.DebugeeState},
+				delegate { return GetCorValueOfLocalVariable(symVar); }
 			);
 		}
 		
