@@ -227,7 +227,7 @@ namespace Debugger
 			}
 		}
 		
-		internal void TraceMessage(string message)
+		public void TraceMessage(string message)
 		{
 			System.Diagnostics.Debug.WriteLine("Debugger:" + message);
 			debugger.OnDebuggerTraceMessage(new MessageEventArgs(this, message));

@@ -69,6 +69,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (!dirty) return;
 			if (!IsVisible) return;
 			
+			DateTime startTime = Debugger.Util.HighPrecisionTimer.Now;
+			
 			if (this.TreeListView != null) {
 				((DebuggerTreeListView)this.TreeListView).DelayRefresh();
 				Highlight = (val.AsString != SubItems[1].Text);
@@ -90,6 +92,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			
 			dirty = false;
+			
+			TimeSpan totalTime = Debugger.Util.HighPrecisionTimer.Now - startTime;
+			//val.Process.TraceMessage("Local Variables Pad item updated: " + val.Name + " (" + totalTime.TotalMilliseconds + " ms)");
 		}
 		
 		public void BeforeExpand()

@@ -345,7 +345,6 @@
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugChain.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugFrame.cs" />
     <Compile Include="Src\Debugger\IExpirable.cs" />
-    <Compile Include="Src\Debugger\Util.cs" />
     <Compile Include="Src\Debugger\IMutable.cs" />
     <Compile Include="Src\Debugger\ExceptionEventArgs.cs" />
     <Compile Include="Src\Debugger\Internal\ManagedCallbackSwitch.cs" />
@@ -379,6 +378,8 @@
     <Compile Include="Src\Interop\Enums\CorElementType.cs" />
     <Compile Include="Src\Interop\Enums\CorMethodAttr.cs" />
     <Compile Include="Src\Interop\Enums\CorTokenType.cs" />
+    <Compile Include="Src\Util\HighPrecisionTimer.cs" />
+    <Compile Include="Src\Util\Lists.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />
@@ -397,6 +398,7 @@
     <Folder Include="Src\Variables\Variables" />
     <Content Include="Src\Stepping.txt" />
     <Folder Include="Src\Interop\Enums" />
+    <Folder Include="Src\Util" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

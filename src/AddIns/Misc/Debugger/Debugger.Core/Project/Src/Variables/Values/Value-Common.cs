@@ -25,11 +25,7 @@ namespace Debugger
 		/// <summary> Gets a string representation of the value </summary>
 		public string AsString {
 			get {
-				if (IsNull)      return "<null reference>";
-				if (IsArray)     return "{" + this.Type.Name + "}";
-				if (IsObject)    return "{" + this.Type.Name + "}";
-				if (IsPrimitive) return PrimitiveValue != null ? PrimitiveValue.ToString() : String.Empty;
-				throw new DebuggerException("Unknown value type");
+				return Cache.AsString;
 			}
 		}
 	}

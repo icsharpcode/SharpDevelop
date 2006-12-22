@@ -27,10 +27,10 @@ namespace Debugger
 		Module module;
 		TypeDefProps classProps;
 		
-		// Cache
-		List<FieldInfo> fields;
-		List<MethodInfo> methods;
-		List<PropertyInfo> properties;
+		// Members of the type; empty lists if not applicable
+		List<FieldInfo>    fields = new List<FieldInfo>();
+		List<MethodInfo>   methods = new List<MethodInfo>();
+		List<PropertyInfo> properties = new List<PropertyInfo>();
 		
 		void AssertClassOrValueType()
 		{
@@ -180,9 +180,9 @@ namespace Debugger
 				this.corClass = corType.Class;
 				this.module = process.GetModule(corClass.Module);
 				this.classProps = module.MetaData.GetTypeDefProps(corClass.Token);
+				
+				LoadType();
 			}
-			
-			process.TraceMessage("Created type " + this.Name);
 		}
 		
 		/// <summary>
@@ -214,66 +214,43 @@ namespace Debugger
 			       this.IsSubclassOf(objectInstance.Type);
 		}
 		
-		List<FieldInfo> GetAllFields()
+		void LoadType()
 		{
-			AssertClassOrValueType();
+			DateTime startTime = Util.HighPrecisionTimer.Now;
 			
-			// Build cache
-			if (fields == null) {
-				process.TraceMessage("Loading fields for type " + this.Name);
-				fields = new List<FieldInfo>();
-				foreach(FieldProps field in module.MetaData.EnumFields(this.MetadataToken)) {
-					// TODO: Why?
-					if (field.IsStatic && field.IsLiteral) continue; // Skip static literals
-					fields.Add(new FieldInfo(this, field));
-				};
+			// Load fields
+			foreach(FieldProps field in module.MetaData.EnumFields(this.MetadataToken)) {
+				if (field.IsStatic && field.IsLiteral) continue; // Skip static literals TODO: Why?
+				fields.Add(new FieldInfo(this, field));
+			};
+			
+			// Load methods
+			foreach(MethodProps m in module.MetaData.EnumMethods(this.MetadataToken)) {
+				methods.Add(new MethodInfo(this, m));
 			}
-			return fields;
-		}
-		
-		List<MethodInfo> GetAllMethods()
-		{
-			AssertClassOrValueType();
 			
-			// Build cache
-			if (methods == null) {
-				process.TraceMessage("Loading methods for type " + this.Name);
-				methods = new List<MethodInfo>();
-				foreach(MethodProps m in module.MetaData.EnumMethods(this.MetadataToken)) {
-					methods.Add(new MethodInfo(this, m));
+			// Load properties
+			// TODO: Handle indexers ("get_Item") in other code
+			// Collect data
+			Dictionary<string, MethodInfo> accessors = new Dictionary<string, MethodInfo>();
+			Dictionary<string, object> propertyNames = new Dictionary<string, object>();
+			foreach(MethodInfo method in methods) {
+				if (method.IsSpecialName && (method.Name.StartsWith("get_") || method.Name.StartsWith("set_"))) {
+					accessors.Add(method.Name, method);
+					propertyNames[method.Name.Remove(0,4)] = null;
 				}
 			}
-			return methods;
-		}
-		
-		// TODO: Handle indexers ("get_Item") in other code
-		List<PropertyInfo> GetAllProperties()
-		{
-			AssertClassOrValueType();
-			
-			// Build cache
-			if (properties == null) {
-				process.TraceMessage("Loading properties for type " + this.Name);
-				properties = new List<PropertyInfo>();
-				// Collect data
-				Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
-				Dictionary<string, object> names = new Dictionary<string, object>();
-				foreach(MethodInfo method in GetAllMethods()) {
-					if (method.IsSpecialName && (method.Name.StartsWith("get_") || method.Name.StartsWith("set_"))) {
-						methods.Add(method.Name, method);
-						names.Add(method.Name.Remove(0,4), null);
-					}
-				}
-				// Pair up getters and setters
-				foreach(KeyValuePair<string, object> kvp in names) {
-					MethodInfo getter = null;
-					MethodInfo setter = null;
-					methods.TryGetValue("get_" + kvp.Key, out getter);
-					methods.TryGetValue("set_" + kvp.Key, out setter);
-					properties.Add(new PropertyInfo(this, getter, setter));
-				}
+			// Pair up getters and setters
+			foreach(KeyValuePair<string, object> kvp in propertyNames) {
+				MethodInfo getter = null;
+				MethodInfo setter = null;
+				accessors.TryGetValue("get_" + kvp.Key, out getter);
+				accessors.TryGetValue("set_" + kvp.Key, out setter);
+				properties.Add(new PropertyInfo(this, getter, setter));
 			}
-			return properties;
+			
+			TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
+			process.TraceMessage("Loaded type " + this.Name + " (" + totalTime.TotalMilliseconds + " ms)");
 		}
 		
 		/// <summary> Return all public fields.</summary>
@@ -285,11 +262,7 @@ namespace Debugger
 		/// <summary> Return all fields satisfing binding flags.</summary>
 		public IList<FieldInfo> GetFields(BindingFlags bindingFlags)
 		{
-			if (IsClass || IsValueType) {
-				return FilterMemberInfo(GetAllFields(), bindingFlags);
-			} else {
-				return new List<FieldInfo>();
-			}
+			return FilterMemberInfo(fields, bindingFlags);
 		}
 		
 		/// <summary> Return all public methods.</summary>
@@ -301,11 +274,7 @@ namespace Debugger
 		/// <summary> Return all methods satisfing binding flags.</summary>
 		public IList<MethodInfo> GetMethods(BindingFlags bindingFlags)
 		{
-			if (IsClass || IsValueType) {
-				return FilterMemberInfo(GetAllMethods(), bindingFlags);
-			} else {
-				return new List<MethodInfo>();
-			}
+			return FilterMemberInfo(methods, bindingFlags);
 		}
 		
 		/// <summary> Return all public properties.</summary>
@@ -317,11 +286,7 @@ namespace Debugger
 		/// <summary> Return all properties satisfing binding flags.</summary>
 		public IList<PropertyInfo> GetProperties(BindingFlags bindingFlags)
 		{
-			if (IsClass || IsValueType) {
-				return FilterMemberInfo(GetAllProperties(), bindingFlags);
-			} else {
-				return new List<PropertyInfo>();
-			}
+			return FilterMemberInfo(properties, bindingFlags);
 		}
 		
 		/// <summary> Compares two types </summary>
