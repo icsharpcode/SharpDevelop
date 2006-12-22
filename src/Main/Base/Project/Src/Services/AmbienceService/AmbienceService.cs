@@ -8,18 +8,37 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.SharpDevelop
 {
 	public static class AmbienceService
 	{
-		static readonly string ambienceProperty       = "SharpDevelop.UI.CurrentAmbience";
-		static readonly string codeGenerationProperty = "SharpDevelop.UI.CodeGenerationOptions";
+		const string ambienceProperty       = "SharpDevelop.UI.CurrentAmbience";
+		const string codeGenerationProperty = "SharpDevelop.UI.CodeGenerationOptions";
+		const string textEditorProperty     = "ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties";
+		
+		static AmbienceService()
+		{
+			PropertyService.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
+			ApplyCodeGenerationPropertiesToNRefactory();
+		}
 		
 		public static Properties CodeGenerationProperties {
 			get {
 				return PropertyService.Get(codeGenerationProperty, new Properties());
 			}
+		}
+		
+		static void ApplyCodeGenerationPropertiesToNRefactory()
+		{
+			Properties p = CodeGenerationProperties;
+			LanguageProperties.CSharp.CodeGenerator.Options.EmptyLinesBetweenMembers = p.Get("BlankLinesBetweenMembers", true);
+			LanguageProperties.CSharp.CodeGenerator.Options.BracesOnSameLine = p.Get("StartBlockOnSameLine", true);
+			
+			System.CodeDom.Compiler.CodeGeneratorOptions cdo = new CodeDOMGeneratorUtility().CreateCodeGeneratorOptions;
+			LanguageProperties.CSharp.CodeGenerator.Options.IndentString = cdo.IndentString;
 		}
 		
 		public static bool GenerateDocumentComments {
@@ -90,13 +109,10 @@ namespace ICSharpCode.SharpDevelop
 				defaultAmbience = null;
 				OnAmbienceChanged(EventArgs.Empty);
 			}
+			if (e.Key == codeGenerationProperty || e.Key == textEditorProperty) {
+				ApplyCodeGenerationPropertiesToNRefactory();
+			}
 		}
-		
-		static AmbienceService()
-		{
-			PropertyService.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
-		}
-		
 		
 		static void OnAmbienceChanged(EventArgs e)
 		{

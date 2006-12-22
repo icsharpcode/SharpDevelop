@@ -243,6 +243,12 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		}
 		#endregion
 		
+		readonly CodeGeneratorOptions options = new CodeGeneratorOptions();
+		
+		public CodeGeneratorOptions Options {
+			get { return options; }
+		}
+		
 		#region Code generation / insertion
 		public virtual void InsertCodeAfter(IMember member, IDocument document, params AbstractNode[] nodes)
 		{
@@ -258,13 +264,13 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		public virtual void InsertCodeAtEnd(DomRegion region, IDocument document, params AbstractNode[] nodes)
 		{
 			InsertCodeAfter(region.EndLine - 1, document,
-			                GetIndentation(document, region.BeginLine) + '\t', nodes);
+			                GetIndentation(document, region.BeginLine) + options.IndentString, nodes);
 		}
 		
 		public virtual void InsertCodeInClass(IClass c, IDocument document, int targetLine, params AbstractNode[] nodes)
 		{
 			InsertCodeAfter(targetLine, document,
-			                GetIndentation(document, c.Region.BeginLine) + '\t', false, nodes);
+			                GetIndentation(document, c.Region.BeginLine) + options.IndentString, false, nodes);
 		}
 		
 		protected string GetIndentation(IDocument document, int line)
@@ -291,8 +297,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			IDocumentLine lineSegment = document.GetLine(insertLine + 1);
 			StringBuilder b = new StringBuilder();
 			for (int i = 0; i < nodes.Length; i++) {
-				if (startWithEmptyLine || i > 0)
-					b.AppendLine(indentation);
+				if (options.EmptyLinesBetweenMembers) {
+					if (startWithEmptyLine || i > 0) {
+						b.AppendLine(indentation);
+					}
+				}
 				b.Append(GenerateCode(nodes[i], indentation));
 			}
 			document.Insert(lineSegment.Offset, b.ToString());

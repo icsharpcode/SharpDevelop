@@ -41,13 +41,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public object Options {
-			get {
-				return prettyPrintOptions;
-			}
-			set {
-				prettyPrintOptions = value as VBNetPrettyPrintOptions;
-			}
+		AbstractPrettyPrintOptions IOutputAstVisitor.Options {
+			get { return prettyPrintOptions; }
+		}
+		
+		public VBNetPrettyPrintOptions Options {
+			get { return prettyPrintOptions; }
 		}
 		
 		public NodeTracker NodeTracker {

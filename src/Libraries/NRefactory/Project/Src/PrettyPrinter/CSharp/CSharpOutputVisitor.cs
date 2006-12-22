@@ -39,13 +39,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public object Options {
-			get {
-				return prettyPrintOptions;
-			}
-			set {
-				prettyPrintOptions = value as PrettyPrintOptions;
-			}
+		AbstractPrettyPrintOptions IOutputAstVisitor.Options {
+			get { return prettyPrintOptions; }
+		}
+		
+		public PrettyPrintOptions Options {
+			get { return prettyPrintOptions; }
 		}
 		
 		public IOutputFormatter OutputFormatter {

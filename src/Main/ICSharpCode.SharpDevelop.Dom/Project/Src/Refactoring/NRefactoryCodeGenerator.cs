@@ -38,11 +38,31 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 	
 	public class CSharpCodeGenerator : NRefactoryCodeGenerator
 	{
-		public static readonly CSharpCodeGenerator Instance = new CSharpCodeGenerator();
+		internal static readonly CSharpCodeGenerator Instance = new CSharpCodeGenerator();
 		
 		public override IOutputAstVisitor CreateOutputVisitor()
 		{
-			return new CSharpOutputVisitor();
+			CSharpOutputVisitor v = new CSharpOutputVisitor();
+			PrettyPrintOptions pOpt = v.Options;
+			
+			BraceStyle braceStyle;
+			if (this.Options.BracesOnSameLine) {
+				braceStyle = BraceStyle.EndOfLine;
+			} else {
+				braceStyle = BraceStyle.NextLine;
+			}
+			pOpt.StatementBraceStyle = braceStyle;
+			pOpt.EventAddBraceStyle = braceStyle;
+			pOpt.EventRemoveBraceStyle = braceStyle;
+			pOpt.PropertyBraceStyle = braceStyle;
+			pOpt.PropertyGetBraceStyle = braceStyle;
+			pOpt.PropertySetBraceStyle = braceStyle;
+			
+			pOpt.IndentationChar = this.Options.IndentString[0];
+			pOpt.IndentSize = this.Options.IndentString.Length;
+			pOpt.TabSize = this.Options.IndentString.Length;
+			
+			return v;
 		}
 		
 		/// <summary>
@@ -100,17 +120,24 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 					}
 				}
 			}
-			InsertCodeAfter(insertionLine, document, beginLineIndentation + '\t', nodes);
+			InsertCodeAfter(insertionLine, document, beginLineIndentation + this.Options.IndentString, nodes);
 		}
 	}
 	
 	public class VBNetCodeGenerator : NRefactoryCodeGenerator
 	{
-		public static readonly VBNetCodeGenerator Instance = new VBNetCodeGenerator();
+		internal static readonly VBNetCodeGenerator Instance = new VBNetCodeGenerator();
 		
 		public override IOutputAstVisitor CreateOutputVisitor()
 		{
-			return new VBNetOutputVisitor();
+			VBNetOutputVisitor v = new VBNetOutputVisitor();
+			VBNetPrettyPrintOptions pOpt = v.Options;
+			
+			pOpt.IndentationChar = this.Options.IndentString[0];
+			pOpt.IndentSize = this.Options.IndentString.Length;
+			pOpt.TabSize = this.Options.IndentString.Length;
+			
+			return v;
 		}
 		
 		public override PropertyDeclaration CreateProperty(IField field, bool createGetter, bool createSetter)
