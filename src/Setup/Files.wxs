@@ -5,7 +5,7 @@
 			<!-- SharpDevelop installation directory and files -->
 			<Directory Id="ProgramFilesFolder" Name="PFiles">
 				<Directory Id="SharpDevelopFolder" Name="SDevelop" LongName="SharpDevelop">
-					<Directory Id="INSTALLDIR" Name="2.1">
+					<Directory Id="INSTALLDIR" Name="3.0">
 						<Directory Id="BinFolder" Name="bin">
 							<Component Id="SharpDevelopExe" Guid="F632C62C-A4DD-4507-9678-C7DCFF4DBC8C" DiskId="1">
 								<File Id="SharpDevelop.exe" Name="SharpDev.exe" LongName="SharpDevelop.exe" Source="..\..\bin\SharpDevelop.exe" Assembly=".net" AssemblyApplication="SharpDevelop.exe" AssemblyManifest="SharpDevelop.exe" KeyPath="yes">
@@ -1134,13 +1134,13 @@
 			</Directory>
 			<!-- SharpDevelop Start menu folder -->
 			<Directory Id="ProgramMenuFolder" Name="PMenu" LongName="Programs">
-				<Directory Id="SharpDevelopProgramMenuFolder" Name="SharpDev" LongName="SharpDevelop 2.1">
+				<Directory Id="SharpDevelopProgramMenuFolder" Name="SharpDev" LongName="SharpDevelop 3.0">
 					<Component Id="SharpDevelopProgramMenuItems" Guid="AB3D8418-BD70-4EB8-8659-8ED3CEC83FEC">
 						<!-- 
 							Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 							http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
 						-->
-						<Registry Id="SharpDevelopExeStartMenuShortcutRegistryKey" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop2" />
+						<Registry Id="SharpDevelopExeStartMenuShortcutRegistryKey" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop3" />
 						<Shortcut Name="SharpDev" LongName="SharpDevelop" Target="[!SharpDevelop.exe]" Id="SharpDevelopExeStartMenuShortcut" WorkingDirectory="BinFolder" Icon="SharpDevelopIcon.exe" Directory="SharpDevelopProgramMenuFolder" />
 						<Shortcut Name="Website" Target="[!SharpDevelop.url]" Id="SharpDevelopUrlStartMenuShortcut" WorkingDirectory="BinFolder" Directory="SharpDevelopProgramMenuFolder" />
 						<!--
@@ -1158,8 +1158,8 @@
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
 					-->
-					<Registry Id="SharpDevelopExeDesktopShortcutRegistryKey" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop2" />
-					<Shortcut Id="SharpDevelopExeDesktopShortcut" Directory="DesktopFolder" Target="[!SharpDevelop.exe]" Name="SharpDev" LongName="SharpDevelop 2.1" Icon="SharpDevelopIcon.exe" WorkingDirectory="BinFolder" />
+					<Registry Id="SharpDevelopExeDesktopShortcutRegistryKey" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop3" />
+					<Shortcut Id="SharpDevelopExeDesktopShortcut" Directory="DesktopFolder" Target="[!SharpDevelop.exe]" Name="SharpDev" LongName="SharpDevelop 3.0" Icon="SharpDevelopIcon.exe" WorkingDirectory="BinFolder" />
 				</Component>
 			</Directory>
 		</DirectoryRef>
