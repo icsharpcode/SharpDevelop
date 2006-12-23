@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ClassDiagram Zoom="1">
+  <ClassItem X="40" Y="1270" Width="424.9121" Type="ClassDiagram.ClassCanvas" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+    <Events Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="1360" Width="339.4419" Type="ClassDiagram.CanvasItemEventArgs" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="1460" Width="100" Type="ClassDiagram.TestEnum" Collapsed="True" />
+  <ClassItem X="40" Y="890" Width="423.999" Type="ClassDiagram.ClassCanvasItem" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="1550" Width="105.853" Type="ClassDiagram.TestInterface" Collapsed="True" />
+  <ClassItem X="40" Y="1640" Width="175.7578" Type="ClassDiagram.TestClass_Long_Title" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+    <Events Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="980" Width="296.833" Type="ClassDiagram.DelegateCanvasItem" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="1730" Width="345.1782" Type="ClassDiagram.TestDelegate" Collapsed="True">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="1820" Width="620.538" Type="ClassDiagram.InteractiveHeaderedItem" Collapsed="True">
+    <Methods Collapsed="False" />
+    <Events Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="380" Y="980" Width="294.1689" Type="ClassDiagram.InterfaceCanvasItem" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="710" Y="980" Width="265.1865" Type="ClassDiagram.StructCanvasItem" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="1020" Y="980" Width="265.1972" Type="ClassDiagram.EnumCanvasItem" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="270" Y="220" Width="181.5639" Type="ClassDiagram.SmallButtonShape" Collapsed="True">
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="1920" Width="172.1215" Type="ClassDiagram.Shapes" Collapsed="True">
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="270" Y="310" Width="146.2543" Type="ClassDiagram.PlusShape" Collapsed="True">
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="460" Y="310" Width="146.2543" Type="ClassDiagram.MinusShape" Collapsed="True">
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="130" Width="186.7793" Type="ClassDiagram.InheritanceShape" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="270" Y="130" Width="133.0791" Type="ClassDiagram.SmallIconShape" Collapsed="True">
+    <Properties Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="40" Width="315.417" Type="ClassDiagram.VectorShape" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="720" Y="130" Width="228.9853" Type="ClassDiagram.CollapseShape" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="720" Y="220" Width="146.2543" Type="ClassDiagram.ExpandShape" Collapsed="True">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="990" Y="130" Width="278.7485" Type="ClassDiagram.MethodShape" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="990" Y="220" Width="146.2543" Type="ClassDiagram.FieldShape" Collapsed="True">
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="1310" Y="130" Width="165.3916" Type="ClassDiagram.EventShape" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="1510" Y="130" Width="228.9853" Type="ClassDiagram.CollapseExpandShape" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="510" Width="186.1455" Type="ClassDiagram.RouteInheritanceShape" Collapsed="True">
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="420" Width="210.2778" Type="ClassDiagram.RouteShape" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="1780" Y="130" Width="146.2543" Type="ClassDiagram.PropertyShape" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="1360" Y="890" Width="288.8676" Type="ClassDiagram.NoteCanvasItem" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="1080" Width="309.4282" Type="ClassDiagram.RectangleDecorator" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+    <Events Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="2010" Width="206.1635" Type="ClassDiagram.IMouseInteractable" Collapsed="True">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="2090" Width="144.686" Type="ClassDiagram.IInteractiveDrawable" Collapsed="True" />
+  <ClassItem X="40" Y="2190" Width="143.8159" Type="ClassDiagram.IHitTestable" Collapsed="True">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="610" Width="315.0732" Type="ClassDiagram.ValueChangedEventArgs" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="700" Width="320.2402" Type="ClassDiagram.ValueChangingEventArgs" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="800" Width="423.6176" Type="ClassDiagram.CanvasItem" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+    <Events Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="1170" Width="268.9839" Type="ClassDiagram.FocusDecorator" Collapsed="True">
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="2270" Width="130.2968" Type="ClassDiagram.SizeGripPositions" Collapsed="True" />
+  <ClassItem X="40" Y="2370" Width="334.9355" Type="ClassDiagram.SizeGripEventArgs" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="350" Y="1170" Width="362.9834" Type="ClassDiagram.SizeGripDecorator" Collapsed="True">
+    <Properties Collapsed="False" />
+    <Methods Collapsed="False" />
+    <Fields Collapsed="False" />
+    <Events Collapsed="False" />
+  </ClassItem>
+</ClassDiagram>

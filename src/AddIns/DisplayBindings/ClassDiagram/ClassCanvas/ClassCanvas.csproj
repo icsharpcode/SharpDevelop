@@ -1,0 +1,108 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ClassCanvas</RootNamespace>
+    <AssemblyName>ClassCanvas</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{08F772A1-F0BE-433E-8B37-F6522953DB05}</ProjectGuid>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <CodeAnalysisRules>-Microsoft.Design#CA1063</CodeAnalysisRules>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
+    <OutputPath>bin\Release\</OutputPath>
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ClassCanvas.cs" />
+    <Compile Include="ClassCanvas.Designer.cs">
+      <DependentUpon>ClassCanvas.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ClassCanvasItem.cs" />
+    <Compile Include="DelegateCanvasItem.cs" />
+    <Compile Include="InteractiveHeaderedItem.cs" />
+    <Compile Include="InterfaceCanvasItem.cs" />
+    <Compile Include="StructCanvasItem.cs" />
+    <Compile Include="EnumCanvasItem.cs" />
+    <Compile Include="Shapes\SmallButtonShape.cs" />
+    <Compile Include="Shapes\Shapes.cs" />
+    <Compile Include="Shapes\PlusShape.cs" />
+    <Compile Include="Shapes\MinusShape.cs" />
+    <Compile Include="Shapes\InheritanceShape.cs" />
+    <Compile Include="Shapes\SmallIconShape.cs" />
+    <Compile Include="Shapes\VectorShape.cs" />
+    <Compile Include="Shapes\CollapseShape.cs" />
+    <Compile Include="Shapes\ExpandShape.cs" />
+    <Compile Include="Shapes\MethodShape.cs" />
+    <Compile Include="Shapes\FieldShape.cs" />
+    <Compile Include="Shapes\EventShape.cs" />
+    <Compile Include="Shapes\CollapseExpandShape.cs" />
+    <Compile Include="Shapes\RouteInheritanceShape.cs" />
+    <Compile Include="Shapes\RouteShape.cs" />
+    <Compile Include="Shapes\PropertyShape.cs" />
+    <Compile Include="NoteCanvasItem.cs" />
+    <EmbeddedResource Include="ClassCanvas.resx">
+      <DependentUpon>ClassCanvas.Designer.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="RectangleDecorator.cs" />
+    <Compile Include="IMouseInteractable.cs" />
+    <Compile Include="IInteractiveDrawable.cs" />
+    <Compile Include="IHitTestable.cs" />
+    <Compile Include="CanvasItem.cs" />
+    <Compile Include="Decorators\FocusDecorator.cs" />
+    <Compile Include="Decorators\SizeGripDecorator.cs" />
+    <Content Include="ClassCanvas.cd" />
+    <Content Include="ClassCanvas.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Shapes" />
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\DiagramRouter\Diagrams.csproj">
+      <Project>{0991423A-DBF6-4C89-B365-A1DF1EB32E42}</Project>
+      <Name>Diagrams</Name>
+    </ProjectReference>
+    <Folder Include="Decorators" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

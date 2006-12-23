@@ -897,6 +897,21 @@
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\XmlEditor\XmlEditor.addin" Name="XMLEDI_1.ADD" Id="XmlEditor.addin" LongName="XmlEditor.addin" />
 										</Component>
 									</Directory>
+									<Directory Id="ClassDiagram" Name="ClassDia" LongName="ClassDiagram">
+										<Directory Id="Resources" Name="Resource" LongName="Resources">
+											<Component Guid="75152D8C-5D9A-4728-AB18-62637C785A7D" Id="ClassDiagramResources" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Resources\Bitmaps.resources" Name="BITMAPS.RES" Id="Bitmaps.resources" LongName="Bitmaps.resources" />
+											</Component>
+										</Directory>
+										<Component Guid="3939D17D-14A9-46F3-B568-05682BA10FB4" Id="ClassDiagramFiles" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassCanvas.dll" Name="CLASSC_1.DLL" Id="ClassCanvas.dll" LongName="ClassCanvas.dll" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin.addin" Name="CLASSD_1.ADD" Id="ClassDiagramAddin.addin" LongName="ClassDiagramAddin.addin" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin.dll" Name="CLASSD_1.DLL" Id="ClassDiagramAddin.dll" LongName="ClassDiagramAddin.dll" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassEditor.dll" Name="CLASSE_1.DLL" Id="ClassEditor.dll" LongName="ClassEditor.dll" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Diagrams.dll" Name="Diagrams.dll" Id="Diagrams.dll" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\TreeListView.dll" Name="TREELI_1.DLL" Id="ClassDiagram.TreeListView.dll" LongName="TreeListView.dll" />
+										</Component>
+									</Directory>
 								</Directory>
 								<Directory Id="MiscAddInsFolder" Name="Misc">
 									<Directory Id="AddInManagerFolder" LongName="AddInManager" Name="AddMan">

@@ -275,6 +275,8 @@
 				<ComponentRef Id="IconEditorExe"/>
 				<ComponentRef Id="ResourceEditorFiles"/>
 				<ComponentRef Id="SettingsEditorFiles"/>
+				<ComponentRef Id="ClassDiagramResources"/>
+				<ComponentRef Id="ClassDiagramFiles"/>
 				<ComponentRef Id="XmlEditorFiles"/>
 				<ComponentRef Id="AddInManagerFiles"/>
 				<ComponentRef Id="AddInManagerSharpZipLibDll"/>

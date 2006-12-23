@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AddIn name        = "Class Diagram"
+       author      = "Itai Bar-Haim"
+       url         = "http://sdclassdiagram.sf.net"
+       description = "Shows a visual class diagram of the project.">
+	
+	<Manifest>
+		<Identity name="ClassDiagram" version="@ClassDiagramAddin.dll"/>
+		<Dependency addin="SharpDevelop" version="3.0"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="ClassDiagramAddin.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
+		<MenuItem id    = "ShowClassDiagram"
+		          label = "Show Class Diagram"
+		          class = "ClassDiagramAddin.ShowClassDiagramCommand"
+		          icon  = "ClassDiagram.ShowClassDiagram"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/ViewContent/ClassDiagram/Toolbar">
+		<ToolbarItem id      = "AutoArrangeDiagram"
+		             tooltip = "Auto Arrange"
+		             class   = "ClassDiagramAddin.AutoArrangeDiagramCommand"
+		             icon    = "ClassDiagram.AutoArrange"/>
+		
+		<ToolbarItem id      = "ExpandAll"
+		             tooltip = "Expand All"
+		             class   = "ClassDiagramAddin.ExpandAllCommand"
+		             icon    = "ClassDiagram.ExpandAll"/>
+		
+		<ToolbarItem id      = "CollapseAll"
+		             tooltip = "Collapse All"
+		             class   = "ClassDiagramAddin.CollapseAllCommand"
+		             icon    = "ClassDiagram.CollapseAll"/>
+		
+		<ToolbarItem id      = "MatchAllWidths"
+		             tooltip = "Match All Widths"
+		             class   = "ClassDiagramAddin.MatchAllWidthsCommand"
+		             icon    = "ClassDiagram.MatchWidth" />
+		
+		<ToolbarItem id      = "ShrinkAllWidths"
+		             tooltip = "Shrink All Widths"
+		             class   = "ClassDiagramAddin.ShrinkAllWidthsCommand"
+		             icon    = "ClassDiagram.ShrinkWidth" />
+	
+		<ToolbarItem id      = "Zoom"
+		             type    = "ComboBox"
+		             tooltip = "Zoom" 
+		             class   = "ClassDiagramAddin.SetDiagramZoomCommand"/>
+	
+	</Path>
+	
+	<Path name="/SharpDevelop/ViewContent/ClassDiagram/ContextMenu">
+		<MenuItem id    = "AddItem"
+		          label = "Add"
+		          type  = "Menu">
+			
+			<MenuItem id = "AddClassItem"
+			          label = "Class"
+			          class = "ClassDiagramAddin.AddClassCommand"/>
+			
+			<MenuItem id = "AddAbstractClassItem"
+			          label = "Abstract Class"
+			          class = "ClassDiagramAddin.AddAbstractClassCommand"/>
+			
+			<MenuItem id = "AddInterfaceItem"
+			          label = "Interface"
+			          class = "ClassDiagramAddin.AddInterfaceCommand"/>
+			
+			<MenuItem id = "AddDelegateItem"
+			          label = "Delegate"
+			          class = "ClassDiagramAddin.AddDelegateCommand"/>
+			
+			<MenuItem id = "AddEnumItem"
+			          label = "Enum"
+			          class = "ClassDiagramAddin.AddEnumCommand"/>
+			
+			<MenuItem id = "AddNoteItem"
+			          label = "Note"
+			          class = "ClassDiagramAddin.AddNoteCommand"/>
+		</MenuItem>
+		
+		<MenuItem type = "Separator" />
+		
+		<MenuItem id    = "AutoArrangeDiagram"
+		          label = "Auto Arrange"
+		          class = "ClassDiagramAddin.AutoArrangeDiagramCommand"
+		          icon  = "ClassDiagram.AutoArrange"/>
+		
+		<MenuItem id    = "ExpandAll"
+		          label = "Expand All"
+		          class = "ClassDiagramAddin.ExpandAllCommand"
+		          icon  = "ClassDiagram.ExpandAll"/>
+		
+		<MenuItem id    = "CollapseAll"
+		          label = "Collapse All"
+		          class = "ClassDiagramAddin.CollapseAllCommand"
+		          icon  = "ClassDiagram.CollapseAll"/>
+		
+		<MenuItem id    = "MatchAllWidths"
+		          label = "Match All Widths"
+		          class = "ClassDiagramAddin.MatchAllWidthsCommand"
+		          icon  = "ClassDiagram.MatchWidth" />
+		
+		<MenuItem id    = "ShrinkAllWidths"
+		          label = "Shrink All Widths"
+		          class = "ClassDiagramAddin.ShrinkAllWidthsCommand"
+		          icon  = "ClassDiagram.ShrinkWidth" />
+
+		<MenuItem type = "Separator" />
+	
+		<MenuItem id = "SaveAsImage"
+		          label = "Save to Bitmap"
+		          class = "ClassDiagramAddin.SaveToBitmapCommand" />
+	</Path>
+	
+	<Path name = "/Workspace/Icons">
+		<!-- CD -->
+		<Icon id         = "CDFile"
+		      extensions = ".cd"
+		      resource   = "ClassDiagram.ShowClassDiagram"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id   = "ClassDiagramFileFilter"
+		            name = "Class Diagrams (*.cd)"
+		            extensions   = "*.cd"
+		            insertbefore = "Boo"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id    = "ClassDiagram"
+		                class = "ClassDiagramAddin.ClassDiagramDisplayBinding"
+		                insertbefore    = "Text"
+		                fileNamePattern = "\.(cd)$"
+		                languagePattern = "^ClassDiagramFiles$"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "ClassEditorPad" 
+		     category = "Tools"
+		     title    = "Class Editor"
+		     class    = "ClassDiagramAddin.ClassEditorPad"
+		     icon     = "ClassDiagram.ClassEditor" />
+	</Path>
+	
+	<BitmapResources file="Resources\Bitmaps.resources" />
+</AddIn>
