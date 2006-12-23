@@ -7,18 +7,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.SharpDevelop.Internal.Templates;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Project.Converter;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project.Converter;
 
 namespace VBNetBinding
 {

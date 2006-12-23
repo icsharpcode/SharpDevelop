@@ -11,6 +11,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
@@ -18,6 +19,7 @@ using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.Project.Commands;
 using MSBuild = Microsoft.Build.BuildEngine;
 using ICSharpCode.SharpDevelop.Internal.Templates;
+using AsynchronousWaitDialog = SearchAndReplace.AsynchronousWaitDialog;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
@@ -109,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 		}
 		
-		protected virtual void CopyItems(IProject sourceProject, IProject targetProject)
+		protected virtual void CopyItems(IProject sourceProject, IProject targetProject, IProgressMonitor monitor)
 		{
 			if (sourceProject == null)
 				throw new ArgumentNullException("sourceProject");
@@ -118,7 +120,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			IProjectItemListProvider targetProjectItems = targetProject as IProjectItemListProvider;
 			if (targetProjectItems == null)
 				throw new ArgumentNullException("targetProjectItems");
-			foreach (ProjectItem item in sourceProject.Items) {
+			
+			ICollection<ProjectItem> sourceItems = sourceProject.Items;
+			monitor.BeginTask("Converting", sourceItems.Count, true);
+			int workDone = 0;
+			foreach (ProjectItem item in sourceItems) {
 				FileProjectItem fileItem = item as FileProjectItem;
 				if (fileItem != null && FileUtility.IsBaseDirectory(sourceProject.Directory, fileItem.FileName)) {
 					FileProjectItem targetItem = new FileProjectItem(targetProject, fileItem.ItemType);
@@ -134,7 +140,12 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				} else {
 					targetProjectItems.AddProjectItem(item.CloneFor(targetProject));
 				}
+				if (monitor.IsCancelled) {
+					return;
+				}
+				monitor.WorkDone = ++workDone;
 			}
+			monitor.Done();
 		}
 		
 		protected StringBuilder conversionLog;
@@ -158,16 +169,23 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			conversionLog.Append(ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.Convert.TargetDirectory")).Append(": ");
 			conversionLog.AppendLine(targetProjectDirectory);
 			
-			Directory.CreateDirectory(targetProjectDirectory);
-			IProject targetProject = CreateProject(targetProjectDirectory, sourceProject);
-			CopyProperties(sourceProject, targetProject);
-			conversionLog.AppendLine();
-			CopyItems(sourceProject, targetProject);
-			conversionLog.AppendLine();
-			AfterConversion(targetProject);
-			conversionLog.AppendLine(ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.Convert.ConversionComplete"));
-			targetProject.Save();
-			targetProject.Dispose();
+			IProject targetProject;
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog(translatedTitle)) {
+				Directory.CreateDirectory(targetProjectDirectory);
+				targetProject = CreateProject(targetProjectDirectory, sourceProject);
+				CopyProperties(sourceProject, targetProject);
+				conversionLog.AppendLine();
+				CopyItems(sourceProject, targetProject, monitor);
+				if (monitor.IsCancelled) {
+					return;
+				}
+				conversionLog.AppendLine();
+				AfterConversion(targetProject);
+				conversionLog.AppendLine(ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.Convert.ConversionComplete"));
+				targetProject.Save();
+				targetProject.Dispose();
+			}
+			
 			TreeNode node = ProjectBrowserPad.Instance.SelectedNode;
 			if (node == null) {
 				node = ProjectBrowserPad.Instance.SolutionNode;

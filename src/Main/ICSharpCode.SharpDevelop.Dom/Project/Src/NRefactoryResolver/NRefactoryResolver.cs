@@ -619,10 +619,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return new MixedResolveResult(result, result2);
 		}
 		
-		IField CreateLocalVariableField(LocalLookupVariable var, string identifier)
+		IField CreateLocalVariableField(LocalLookupVariable var)
 		{
 			IReturnType type = GetVariableType(var);
-			IField f = new DefaultField.LocalVariableField(type, identifier, new DomRegion(var.StartPos, var.EndPos), callingClass);
+			IField f = new DefaultField.LocalVariableField(type, var.Name, new DomRegion(var.StartPos, var.EndPos), callingClass);
 			if (var.IsConst) {
 				f.Modifiers |= ModifierEnum.Const;
 			}
@@ -634,7 +634,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (callingMember != null) { // LocalResolveResult requires callingMember to be set
 				LocalLookupVariable var = SearchVariable(identifier, position);
 				if (var != null) {
-					return new LocalResolveResult(callingMember, CreateLocalVariableField(var, identifier));
+					return new LocalResolveResult(callingMember, CreateLocalVariableField(var));
 				}
 				IParameter para = SearchMethodParameter(identifier);
 				if (para != null) {
@@ -726,14 +726,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			foreach (IMethod method in type.GetMethods()) {
 				if (IsSameName(identifier, method.Name))
-					return new MethodResolveResult(callingClass, callingMember, type, identifier);
+					return new MethodResolveResult(callingClass, callingMember, type, method.Name);
 			}
 			if (languageProperties.SupportsExtensionMethods && callingClass != null) {
 				ArrayList list = new ArrayList();
 				ResolveResult.AddExtensions(languageProperties, list, callingClass, type);
 				foreach (IMethodOrProperty mp in list) {
 					if (mp is IMethod && IsSameName(mp.Name, identifier)) {
-						return new MethodResolveResult(callingClass, callingMember, type, identifier);
+						return new MethodResolveResult(callingClass, callingMember, type, mp.Name);
 					}
 				}
 			}
@@ -829,8 +829,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public IReturnType SearchType(string name, NR.Location position)
 		{
-			Debug.Assert(!position.IsEmpty);
-			return projectContent.SearchType(new SearchTypeRequest(name, 0, callingClass, cu, position.Line, position.Column)).Result;
+			if (position.IsEmpty)
+				return projectContent.SearchType(new SearchTypeRequest(name, 0, callingClass, cu, caretLine, caretColumn)).Result;
+			else
+				return projectContent.SearchType(new SearchTypeRequest(name, 0, callingClass, cu, position.Line, position.Column)).Result;
 		}
 		
 		#region Helper for TypeVisitor
@@ -1069,7 +1071,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					foreach (LocalLookupVariable v in pair.Value) {
 						if (IsInside(new NR.Location(caretColumn, caretLine), v.StartPos, v.EndPos)) {
 							// convert to a field for display
-							result.Add(CreateLocalVariableField(v, pair.Key));
+							result.Add(CreateLocalVariableField(v));
 							break;
 						}
 					}

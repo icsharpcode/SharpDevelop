@@ -703,7 +703,7 @@ EnumMemberDecl<out FieldDeclaration f>
 		f = new FieldDeclaration(attributes);
 		varDecl = new VariableDeclaration(t.val);
 		f.Fields.Add(varDecl);
-		f.StartLocation = t.Location;
+		f.StartLocation = varDecl.StartLocation = t.Location;
 	.)
 	[ "=" Expr<out expr> (. varDecl.Initializer = expr; .) ]
 	EOL
@@ -1320,13 +1320,15 @@ ConstantDeclarator<List<VariableDeclaration> constantDeclaration>
 		Expression expr = null;
 		TypeReference type = null;
 		string name = String.Empty;
+		Location location;
 	.) =
-	Identifier				(. name = t.val; .)
+	Identifier				(. name = t.val; location = t.Location; .)
 	["As" TypeName<out type> ]
 	"=" Expr<out expr>
 	(.
 		VariableDeclaration f = new VariableDeclaration(name, expr);
 		f.TypeReference = type;
+		f.StartLocation = location;
 		constantDeclaration.Add(f);
 	.)
 .
@@ -1344,6 +1346,7 @@ VariableDeclaratorPartAfterIdentifier<List<VariableDeclaration> fieldDeclaration
 		TypeReference type = null;
 		ArrayList rank = null;
 		List<Expression> dimension = null;
+		Location startLocation = t.Location;
 	.) =
 	[ IF(IsSize() && !IsDims()) ArrayInitializationModifier<out dimension> ]
 	[ IF(IsDims())              ArrayNameModifier<out rank> ]
@@ -1398,7 +1401,12 @@ VariableDeclaratorPartAfterIdentifier<List<VariableDeclaration> fieldDeclaration
 		.)
 		[ "=" VariableInitializer<out expr> ]
 	)
-	(. fieldDeclaration.Add(new VariableDeclaration(name, expr, type)); .)
+	(.
+		VariableDeclaration varDecl = new VariableDeclaration(name, expr, type);
+		varDecl.StartLocation = startLocation;
+		varDecl.EndLocation = t.Location;
+		fieldDeclaration.Add(varDecl);
+	.)
 .
 
 /* 6.8 */
@@ -2396,12 +2404,10 @@ EmbeddedStatement<out Statement statement>
 	(.
 		ReDimStatement reDimStatement = new ReDimStatement(isPreserve);
 		statement = reDimStatement;
-		InvocationExpression redimClause = expr as InvocationExpression;
-		if (redimClause != null) { reDimStatement.ReDimClauses.Add(redimClause); }
+		SafeAdd(reDimStatement, reDimStatement.ReDimClauses, expr as InvocationExpression);
 	.)
 	{ "," ReDimClause<out expr>
-		(. redimClause = expr as InvocationExpression; .)
-		(. if (redimClause != null) { reDimStatement.ReDimClauses.Add(redimClause); } .)
+		(. SafeAdd(reDimStatement, reDimStatement.ReDimClauses, expr as InvocationExpression); .)
 	}
 	| /* 10.12.2 */
 	"Erase"	

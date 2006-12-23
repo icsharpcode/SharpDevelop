@@ -40,11 +40,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (!methodDeclaration.Body.IsNull) {
 				if (_resolver.Initialize(_fileName, methodDeclaration.Body.StartLocation.Y, methodDeclaration.Body.StartLocation.X)) {
 					_resolver.RunLookupTableVisitor(methodDeclaration);
-				} else {
-					LoggingService.Warn("Resolver initialization failed");
 				}
 			}
 			return base.VisitMethodDeclaration(methodDeclaration, data);
+		}
+		
+		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
+		{
+			if (_resolver.Initialize(_fileName, propertyDeclaration.BodyStart.Y, propertyDeclaration.BodyStart.X)) {
+				_resolver.RunLookupTableVisitor(propertyDeclaration);
+			}
+			return base.VisitPropertyDeclaration(propertyDeclaration, data);
 		}
 		
 		public override object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)

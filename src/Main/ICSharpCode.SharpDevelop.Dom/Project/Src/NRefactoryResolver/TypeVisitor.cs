@@ -150,6 +150,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (methods.Count == 0 && resolver.Language == SupportedLanguage.VBNet)
 					return GetVisualBasicIndexer(invocationExpression);
 				return FindOverload(methods, typeParameters, invocationExpression.Arguments, null);
+			} else {
+				// this could be a nested indexer access
+				if (resolver.Language == SupportedLanguage.VBNet)
+					return GetVisualBasicIndexer(invocationExpression);
 			}
 			return null;
 		}

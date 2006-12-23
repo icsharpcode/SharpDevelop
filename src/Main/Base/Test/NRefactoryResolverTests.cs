@@ -362,11 +362,29 @@ class A {
 	}
 }
 ";
-			ResolveResult result = Resolve<LocalResolveResult>(program, "eh(this, new ResolveEventArgs())", 5);
-			Assert.AreEqual("eh", (result as LocalResolveResult).Field.Name);
+			LocalResolveResult result = Resolve<LocalResolveResult>(program, "eh(this, new ResolveEventArgs())", 5);
+			Assert.AreEqual("eh", result.Field.Name);
 			
-			result = Resolve<MemberResolveResult>(program, "eh(this, new ResolveEventArgs()).GetType(\"bla\")", 5);
-			Assert.AreEqual("System.Reflection.Module.GetType", (result as MemberResolveResult).ResolvedMember.FullyQualifiedName);
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "eh(this, new ResolveEventArgs()).GetType(\"bla\")", 5);
+			Assert.AreEqual("System.Reflection.Module.GetType", mrr.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void DelegateReturnedFromMethodCallTest()
+		{
+			string program = @"using System;
+class A {
+	void Method() {
+		
+	}
+	abstract Predicate<string> GetHandler();
+}
+";
+			ResolveResult result = Resolve<MemberResolveResult>(program, "GetHandler()(abc)", 4);
+			Assert.AreEqual("System.Boolean", result.ResolvedType.FullyQualifiedName);
+			
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "GetHandler()(abc).ToString()", 4);
+			Assert.AreEqual("System.Boolean.ToString", mrr.ResolvedMember.FullyQualifiedName);
 		}
 		
 		[Test]
@@ -587,6 +605,24 @@ class TestClass {
 			
 			rr = Resolve<ResolveResult>(program, "(short.MaxValue)", 4);
 			Assert.AreEqual("System.Int16", rr.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void VBNetArrayReturnedFromMethodTest()
+		{
+			string program = @"Module Main
+	Sub Main()
+		
+	End Sub
+	Function F() As String()
+	End Function
+End Module
+";
+			MemberResolveResult result = ResolveVB<MemberResolveResult>(program, "F()(0)", 3);
+			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
+			Assert.IsFalse(result.ResolvedType.IsArrayReturnType);
+			Assert.IsInstanceOfType(typeof(IProperty), result.ResolvedMember);
+			Assert.IsTrue((result.ResolvedMember as IProperty).IsIndexer);
 		}
 		#endregion
 		

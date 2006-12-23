@@ -35,7 +35,7 @@ namespace SearchAndReplace
 	///   long_running_action();
 	/// }
 	/// or:
-	/// using (IProgressMonitor monitor = AsynchronousWaitDialog.ShowWaitDialog("title")) {
+	/// using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("title")) {
 	///   long_running_action(monitor);
 	/// }
 	/// </summary>

@@ -1034,7 +1034,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitReDimStatement(ReDimStatement reDimStatement, object data)
 		{
-			NotSupported(reDimStatement);
+			if (!reDimStatement.IsPreserve) {
+				NotSupported(reDimStatement);
+				return null;
+			}
+			foreach (InvocationExpression ie in reDimStatement.ReDimClauses) {
+				outputFormatter.PrintText("Array.Resize(ref ");
+				ie.TargetObject.AcceptVisitor(this, data);
+				outputFormatter.PrintText(", ");
+				for (int i = 0; i < ie.Arguments.Count; i++) {
+					if (i > 0) outputFormatter.PrintText(", ");
+					Expression.AddInteger(ie.Arguments[i], 1).AcceptVisitor(this, data);
+				}
+				outputFormatter.PrintText(")");
+				outputFormatter.PrintToken(Tokens.Semicolon);
+			}
 			return null;
 		}
 		
@@ -2081,6 +2095,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.Assign);
 					break;
 				case AssignmentOperatorType.Add:
+				case AssignmentOperatorType.ConcatString:
 					outputFormatter.PrintToken(Tokens.PlusAssign);
 					break;
 				case AssignmentOperatorType.Subtract:

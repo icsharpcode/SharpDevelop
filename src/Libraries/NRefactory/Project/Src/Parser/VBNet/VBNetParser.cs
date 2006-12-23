@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Ast;
 
@@ -243,6 +244,21 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		{
 			if (!(expr is PrimitiveExpression) || (expr as PrimitiveExpression).StringValue != "0")
 				Error("lower bound of array must be zero");
+		}
+		
+		/// <summary>
+		/// Adds a child item to a collection stored in the parent node.
+		/// Also set's the item's parent to <paramref name="parent"/>.
+		/// Does nothing if item is null.
+		/// </summary>
+		static void SafeAdd<T>(INode parent, List<T> list, T item) where T : class, INode
+		{
+			Debug.Assert(parent != null);
+			Debug.Assert((parent is INullable) ? !(parent as INullable).IsNull : true);
+			if (item != null) {
+				list.Add(item);
+				item.Parent = parent;
+			}
 		}
 	}
 }

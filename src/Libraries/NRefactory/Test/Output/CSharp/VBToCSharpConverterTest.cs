@@ -24,7 +24,8 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(input));
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
-			parser.CompilationUnit.AcceptVisitor(new VBNetToCSharpConvertVisitor(), null);
+			parser.CompilationUnit.AcceptVisitor(new VBNetConstructsConvertVisitor(), null);
+			parser.CompilationUnit.AcceptVisitor(new ToCSharpConvertVisitor(), null);
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
 			outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
@@ -303,6 +304,9 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("x = \"Hello \" & \"World\"",
 			              "x = \"Hello \" + \"World\";");
+			
+			TestStatement("x &= \"Hello\"",
+			              "x += \"Hello\";");
 		}
 		
 		[Test]

@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		
 		void TestProgramVB2CS(string sourceCode, string expectedOutput)
 		{
-			TestProgram(SupportedLanguage.CSharp, sourceCode, expectedOutput);
+			TestProgram(SupportedLanguage.VBNet, sourceCode, expectedOutput);
 		}
 		
 		void TestProgram(SupportedLanguage sourceLanguage, string sourceCode, string expectedOutput)
@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 				CSharpToVBNetConvertVisitor convertVisitor = new CSharpToVBNetConvertVisitor(pc, visitor.Cu.FileName);
 				parser.CompilationUnit.AcceptVisitor(convertVisitor, null);
 			} else {
-				VBNetToCSharpConvertVisitor convertVisitor = new VBNetToCSharpConvertVisitor();
+				VBNetToCSharpConvertVisitor convertVisitor = new VBNetToCSharpConvertVisitor(pc, visitor.Cu.FileName);
 				parser.CompilationUnit.AcceptVisitor(convertVisitor, null);
 			}
 			
@@ -123,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 
 			                 "using System;\n" +
 			                 "using Microsoft.VisualBasic;\n" +
-			                 "class MyClassName {\n" +
+			                 "class MyClassName\n{\n" +
 			                 IndentAllLines(expectedCode) +
 			                 "}");
 		}
@@ -137,6 +137,16 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                "Private Sub T()\n" +
 			                IndentAllLines(expectedCode) +
 			                "End Sub");
+		}
+		
+		void TestStatementsVB2CS(string sourceCode, string expectedCode)
+		{
+			TestMemberVB2CS("Private Sub T()\n" +
+			                IndentAllLines(sourceCode) +
+			                "End Sub",
+			                "private void T()\n{\n" +
+			                IndentAllLines(expectedCode) +
+			                "}");
 		}
 		#endregion
 		
@@ -193,6 +203,51 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                    "Dim b As String = \"4\"\n" +
 			                    "If a = b Then\n" +
 			                    "End If");
+		}
+		
+		[Test]
+		public void FixVBCasing()
+		{
+			TestStatementsVB2CS("Dim obj as iDisposable\n" +
+			                    "Obj.dispose()",
+			                    "IDisposable obj;\n" +
+			                    "obj.Dispose();");
+		}
+		
+		[Test]
+		public void FixVBCasingAndAddMethodCallParenthesis()
+		{
+			TestStatementsVB2CS("Dim i as Integer = appdomain.getcurrentthreadid",
+			                    "int i = AppDomain.GetCurrentThreadId();");
+		}
+		
+		[Test]
+		public void IndexerExpression()
+		{
+			TestStatementsVB2CS("Dim i(10) as Integer\n" +
+			                    "Dim i2 As Integer = i(4)",
+			                    "int[] i = new int[11];\n" +
+			                    "int i2 = i[4];");
+			TestStatementsVB2CS("Dim s as string = appdomain.currentdomain.GetAssemblies()(1).location",
+			                    "string s = AppDomain.CurrentDomain.GetAssemblies()[1].Location;");
+		}
+		
+		[Test]
+		public void Redim()
+		{
+			TestStatementsVB2CS("Dim i(10) as Integer\n" +
+			                    "Redim i(20)",
+			                    "int[] i = new int[11];\n" +
+			                    "i = new int[21];");
+		}
+		
+		[Test]
+		public void RedimPreserve()
+		{
+			TestStatementsVB2CS("Dim i(10) as Integer\n" +
+			                    "Redim Preserve i(20)",
+			                    "int[] i = new int[11];\n" +
+			                    "Array.Resize(ref i, 21);");
 		}
 	}
 }

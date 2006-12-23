@@ -14,6 +14,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
@@ -34,12 +35,14 @@ namespace ICSharpCode.SharpDevelop.Commands
 				ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor output = new ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor();
 				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
 				PreprocessingDirective.VBToCSharp(specials);
-				new VBNetToCSharpConvertVisitor().VisitCompilationUnit(p.CompilationUnit, null);
+				IAstVisitor v = new VBNetToCSharpConvertVisitor(ParserService.CurrentProjectContent,
+				                                                window.ViewContent.FileName);
+				v.VisitCompilationUnit(p.CompilationUnit, null);
 				using (SpecialNodesInserter.Install(specials, output)) {
 					output.VisitCompilationUnit(p.CompilationUnit, null);
 				}
 				
-				FileService.NewFile("Generated.CS", "C#", output.Text);
+				FileService.NewFile("Generated.cs", "C#", output.Text);
 			}
 		}
 	}

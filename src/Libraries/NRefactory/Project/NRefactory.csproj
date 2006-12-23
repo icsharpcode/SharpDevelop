@@ -104,7 +104,6 @@
     <Compile Include="Src\Visitors\ToVBNetConvertVisitor.cs" />
     <Compile Include="Src\Visitors\ToVBNetRenameConflictingVariables.cs" />
     <Compile Include="Src\Visitors\VBNetConstructsConvertVisitor.cs" />
-    <Compile Include="Src\Visitors\VBNetToCSharpConvertVisitor.cs" />
     <Compile Include="Src\EnvironmentInformationProvider.cs" />
     <Compile Include="Src\IAstVisitor.cs" />
     <Compile Include="Src\ParserFactory.cs" />

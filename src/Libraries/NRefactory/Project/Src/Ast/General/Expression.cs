@@ -30,8 +30,8 @@ namespace ICSharpCode.NRefactory.Ast
 		
 		/// <summary>
 		/// Returns the existing expression plus the specified integer value.
-		/// WARNING: This method modifies <paramref name="expr"/> and possibly returns <paramref name="expr"/>
-		/// again, but it might also create a new expression around <paramref name="expr"/>.
+		/// The old <paramref name="expr"/> object is not modified, but might be a subobject on the new expression
+		/// (and thus its parent property is modified).
 		/// </summary>
 		public static Expression AddInteger(Expression expr, int value)
 		{
@@ -42,6 +42,9 @@ namespace ICSharpCode.NRefactory.Ast
 			}
 			BinaryOperatorExpression boe = expr as BinaryOperatorExpression;
 			if (boe != null && boe.Op == BinaryOperatorType.Add) {
+				// clone boe:
+				boe = new BinaryOperatorExpression(boe.Left, boe.Op, boe.Right);
+				
 				boe.Right = AddInteger(boe.Right, value);
 				if (boe.Right is PrimitiveExpression && ((PrimitiveExpression)boe.Right).Value is int) {
 					int newVal = (int)((PrimitiveExpression)boe.Right).Value;
@@ -60,6 +63,10 @@ namespace ICSharpCode.NRefactory.Ast
 					int newVal = (int)pe.Value - value;
 					if (newVal == 0)
 						return boe.Left;
+					
+					// clone boe:
+					boe = new BinaryOperatorExpression(boe.Left, boe.Op, boe.Right);
+					
 					if (newVal < 0) {
 						newVal = -newVal;
 						boe.Op = BinaryOperatorType.Add;

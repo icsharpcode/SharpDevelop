@@ -7,13 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
 
@@ -42,7 +41,8 @@ namespace CSharpBinding
 		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials, FileProjectItem sourceItem)
 		{
 			PreprocessingDirective.VBToCSharp(specials);
-			compilationUnit.AcceptVisitor(new VBNetToCSharpConvertVisitor(), null);
+			IProjectContent pc = ParserService.GetProjectContent(sourceItem.Project) ?? ParserService.CurrentProjectContent;
+			compilationUnit.AcceptVisitor(new VBNetToCSharpConvertVisitor(pc, sourceItem.FileName), null);
 		}
 	}
 }

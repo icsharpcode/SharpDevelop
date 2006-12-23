@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					vbv.VisitCompilationUnit(p.CompilationUnit, null);
 				}
 				
-				FileService.NewFile("Generated.VB", "VBNET", vbv.Text);
+				FileService.NewFile("Generated.vb", "VBNET", vbv.Text);
 			}
 		}
 	}

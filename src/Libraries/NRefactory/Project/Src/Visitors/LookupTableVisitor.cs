@@ -14,6 +14,7 @@ namespace ICSharpCode.NRefactory.Visitors
 {
 	public sealed class LocalLookupVariable
 	{
+		public readonly string Name;
 		public readonly TypeReference TypeRef;
 		public readonly Location StartPos;
 		public readonly Location EndPos;
@@ -21,8 +22,9 @@ namespace ICSharpCode.NRefactory.Visitors
 		public readonly bool IsLoopVariable;
 		public readonly Expression Initializer;
 		
-		public LocalLookupVariable(TypeReference typeRef, Location startPos, Location endPos, bool isConst, bool isLoopVariable, Expression initializer)
+		public LocalLookupVariable(string name, TypeReference typeRef, Location startPos, Location endPos, bool isConst, bool isLoopVariable, Expression initializer)
 		{
+			this.Name = name;
 			this.TypeRef = typeRef;
 			this.StartPos = startPos;
 			this.EndPos = endPos;
@@ -69,7 +71,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			} else {
 				list = (List<LocalLookupVariable>)variables[name];
 			}
-			list.Add(new LocalLookupVariable(typeRef, startPos, endPos, isConst, isLoopVariable, initializer));
+			list.Add(new LocalLookupVariable(name, typeRef, startPos, endPos, isConst, isLoopVariable, initializer));
 		}
 		
 		public override object VisitWithStatement(WithStatement withStatement, object data)
