@@ -41,7 +41,6 @@ namespace Debugger
 				if (Expired != null) {
 					Expired(this, new ProcessEventArgs(this));
 				}
-				exited.Set();
 				debugger.RemoveProcess(this);
 			}
 		}
@@ -161,7 +160,6 @@ namespace Debugger
 			pauseSession.NotifyHasExpired();
 			pauseSession = null;
 			OnDebuggingResumed();
-			pausedHandle.Reset();
 			
 			corProcess.Continue(0);
 		}

@@ -42,7 +42,18 @@ namespace Debugger.Interop
 			}
 		}
 		
-		void PerformAllCalls()
+		/// <summary>
+		/// Wait until a call a made
+		/// </summary>
+		public void WaitForCall()
+		{
+			pendingCallsNotEmpty.WaitOne();
+		}
+		
+		/// <summary>
+		/// Performs all waiting calls on the current thread
+		/// </summary>
+		public void PerformAllCalls()
 		{
 			while (true) {
 				MethodInvoker nextMethod;
@@ -90,14 +101,6 @@ namespace Debugger.Interop
 					return i;
 				}
 			}
-		}
-		
-		/// <summary>
-		/// Performs all waiting calls on the current thread
-		/// </summary>
-		public void Pulse()
-		{
-			PerformAllCalls();
 		}
 		
 		/// <summary>

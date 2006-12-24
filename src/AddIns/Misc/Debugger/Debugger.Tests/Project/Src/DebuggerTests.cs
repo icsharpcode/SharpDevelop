@@ -55,10 +55,10 @@ namespace Debugger.Tests
 		[TearDown]
 		public void TearDown()
 		{
-//			foreach(Process process in debugger.Processes) {
-//				process.Terminate();
-//				process.WaitForExit();
-//			}
+			while(debugger.Processes.Count > 0) {
+				debugger.Processes[0].Terminate();
+				debugger.Processes[0].WaitForExit();
+			}
 		}
 		
 		void StartProgram(string programName)

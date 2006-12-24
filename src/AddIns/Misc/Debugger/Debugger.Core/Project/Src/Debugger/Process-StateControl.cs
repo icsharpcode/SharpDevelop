@@ -13,8 +13,6 @@ namespace Debugger
 	public partial class Process
 	{
 		bool pauseOnHandledException = false;
-		ManualResetEvent exited = new ManualResetEvent(false);
-		ManualResetEvent pausedHandle = new ManualResetEvent(false);
 		
 		DebugeeState debugeeState;
 		
@@ -125,10 +123,6 @@ namespace Debugger
 					this.Continue();
 				}
 			}
-			// Debugger state is unknown after calling OnDebuggingPaused (it may be resumed)
-			if (IsPaused) {
-				pausedHandle.Set();
-			}
 		}
 		
 		/// <summary>
@@ -137,9 +131,11 @@ namespace Debugger
 		/// </summary>
 		public void WaitForPause()
 		{
-			if (debugger.MTA2STA.SoftWait(PausedHandle, exited) == 1) {
-				throw new DebuggerException("Process exited before pausing");
+			while(this.IsRunning && !this.HasExpired) {
+				debugger.MTA2STA.WaitForCall();
+				debugger.MTA2STA.PerformAllCalls();
 			}
+			if (this.HasExpired) throw new DebuggerException("Process exited before pausing");
 		}
 		
 		/// <summary>
@@ -147,15 +143,9 @@ namespace Debugger
 		/// </summary>
 		public void WaitForExit()
 		{
-			debugger.MTA2STA.SoftWait(exited);
-		}
-		
-		/// <summary>
-		/// Wait handle, which will be set as long as the debugger is paused
-		/// </summary>
-		public WaitHandle PausedHandle {
-			get {
-				return pausedHandle;
+			while(!this.HasExpired) {
+				debugger.MTA2STA.WaitForCall();
+				debugger.MTA2STA.PerformAllCalls();
 			}
 		}
 		
