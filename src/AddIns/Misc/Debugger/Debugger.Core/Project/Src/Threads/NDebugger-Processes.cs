@@ -17,9 +17,6 @@ namespace Debugger
 	{
 		List<Process> processCollection = new List<Process>();
 		
-		// Is set as long as the process count is zero
-		internal ManualResetEvent noProcessesHandle = new ManualResetEvent(true);
-
 		public event EventHandler<ProcessEventArgs> ProcessStarted;
 		public event EventHandler<ProcessEventArgs> ProcessExited;
 		
@@ -43,14 +40,12 @@ namespace Debugger
 		{
 			processCollection.Add(process);
 			OnProcessStarted(process);
-			noProcessesHandle.Reset();
 		}
 
 		internal void RemoveProcess(Process process)
 		{
 			processCollection.Remove(process);
 			OnProcessExited(process);
-			// noProcessesHandle is set in NDebugger.TerminateDebugger
 			if (processCollection.Count == 0) {
 				// Exit callback and then terminate the debugger
 				this.MTA2STA.AsyncCall( delegate { this.TerminateDebugger(); } );

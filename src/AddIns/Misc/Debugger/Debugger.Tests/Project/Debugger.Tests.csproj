@@ -63,10 +63,6 @@
   <ItemGroup>
     <Folder Include="Src" />
     <Folder Include="Configuration" />
-    <ProjectReference Include="..\..\Debugger.AddIn\Project\Debugger.AddIn.csproj">
-      <Project>{EC06F96A-AEEC-49D6-B03D-AB87C6EB674C}</Project>
-      <Name>Debugger.AddIn</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Debugger.Core\Project\Debugger.Core.csproj">
       <Project>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</Project>
       <Name>Debugger.Core</Name>

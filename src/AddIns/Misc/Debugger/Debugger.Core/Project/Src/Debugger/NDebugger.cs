@@ -119,8 +119,6 @@ namespace Debugger
 			Wrappers.ResourceManager.TraceMessagesEnabled = false;
 			
 			TraceMessage("Tracked COM objects released");
-			
-			noProcessesHandle.Set();
 		}
 		
 		/// <summary>

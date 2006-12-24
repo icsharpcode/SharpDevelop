@@ -13,7 +13,8 @@ namespace Debugger
 	public partial class Process
 	{
 		bool pauseOnHandledException = false;
-		internal ManualResetEvent pausedHandle = new ManualResetEvent(false);
+		ManualResetEvent exited = new ManualResetEvent(false);
+		ManualResetEvent pausedHandle = new ManualResetEvent(false);
 		
 		DebugeeState debugeeState;
 		
@@ -136,17 +137,17 @@ namespace Debugger
 		/// </summary>
 		public void WaitForPause()
 		{
-			if (debugger.MTA2STA.SoftWait(PausedHandle, debugger.noProcessesHandle) == 1) {
+			if (debugger.MTA2STA.SoftWait(PausedHandle, exited) == 1) {
 				throw new DebuggerException("Process exited before pausing");
 			}
 		}
 		
 		/// <summary>
-		/// Waits until all debugged precesses exit. Returns imideately if there are no running processes.
+		/// Waits until the precesses exits.
 		/// </summary>
-		public void WaitForPrecessExit()
+		public void WaitForExit()
 		{
-			debugger.MTA2STA.SoftWait(debugger.noProcessesHandle);
+			debugger.MTA2STA.SoftWait(exited);
 		}
 		
 		/// <summary>

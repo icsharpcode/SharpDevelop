@@ -18,41 +18,61 @@ namespace Debugger
 	{
 		internal static NamedValueCollection Empty = new NamedValueCollection(new NamedValue[0]);
 		
-		Dictionary<string, List<NamedValue>> collection = new Dictionary<string, List<NamedValue>>();
+		List<NamedValue> list = new List<NamedValue>();
+		Dictionary<string, List<NamedValue>> hashtable = new Dictionary<string, List<NamedValue>>();
 		
 		IEnumerator<NamedValue> IEnumerable<NamedValue>.GetEnumerator()
 		{
-			foreach(KeyValuePair<string, List<NamedValue>> kvp in collection) {
-				foreach(NamedValue namedValue in kvp.Value) {
-					yield return namedValue;
-				}
+			foreach(NamedValue namedValue in list) {
+				yield return namedValue;
 			}
 		}
 		
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return ((IEnumerable<NamedValue>)this).GetEnumerator();
+			foreach(NamedValue namedValue in list) {
+				yield return namedValue;
+			}
 		}
 		
 		internal NamedValueCollection(IEnumerable<NamedValue> namedValues)
 		{
 			foreach(NamedValue namedValue in namedValues) {
 				string name = namedValue.Name;
-				if (collection.ContainsKey(name)) {
-					collection[name].Add(namedValue);
+				if (hashtable.ContainsKey(name)) {
+					hashtable[name].Add(namedValue);
 				} else {
-					collection[name] = new List<NamedValue>(new NamedValue[] {namedValue});
+					hashtable[name] = new List<NamedValue>(new NamedValue[] {namedValue});
 				}
+				list.Add(namedValue);
+			}
+		}
+		
+		/// <summary>
+		/// Gets number of <see cref="Debugger.NamedValue">named values</see> contained in the collection
+		/// </summary>
+		public int Count {
+			get {
+				return list.Count;
+			}
+		}
+		
+		/// <summary>
+		/// Gets a value by index
+		/// </summary>
+		public NamedValue this[int i] {
+			get {
+				return list[i];
 			}
 		}
 		
 		/// <summary>
 		/// Gets a value by its name.
 		/// </summary>
-		public virtual NamedValue this[string variableName] {
+		public NamedValue this[string variableName] {
 			get {
-				if (collection.ContainsKey(variableName)) {
-					foreach(NamedValue namedValue in collection[variableName]) {
+				if (hashtable.ContainsKey(variableName)) {
+					foreach(NamedValue namedValue in hashtable[variableName]) {
 						return namedValue;
 					}
 				}

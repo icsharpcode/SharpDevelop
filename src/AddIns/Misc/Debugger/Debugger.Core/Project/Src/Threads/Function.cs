@@ -512,7 +512,13 @@ namespace Debugger
 		}
 		
 		/// <summary> Gets all local variables of the function. </summary>
-		public IEnumerable<LocalVariable> LocalVariables {
+		public NamedValueCollection LocalVariables {
+			get {
+				return new NamedValueCollection(LocalVariablesEnum);
+			}
+		}
+		
+		IEnumerable<NamedValue> LocalVariablesEnum {
 			get {
 				if (symMethod != null) { // TODO: Is this needed?
 					ISymUnmanagedScope symRootScope = symMethod.RootScope;
