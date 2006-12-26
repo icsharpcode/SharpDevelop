@@ -14,8 +14,9 @@ namespace Debugger
 {
 	/// <summary>
 	/// Represents a type in a debugee. That is, a class, array, value type or a primitive type.
-	/// <para> This class mimics the <see cref="System.Type"/> class. </para>
+	/// This class mimics the <see cref="System.Type"/> class.
 	/// </summary>
+	/// <remarks> If two types are identical, the references to DebugType will also be identical </remarks>
 	public partial class DebugType: DebuggerObject
 	{
 		Process process;
@@ -35,6 +36,9 @@ namespace Debugger
 		List<FieldInfo>    fields = new List<FieldInfo>();
 		List<MethodInfo>   methods = new List<MethodInfo>();
 		List<PropertyInfo> properties = new List<PropertyInfo>();
+		
+		// Stores all DebugType instances. FullName is the key
+		static Dictionary<string, List<DebugType>> loadedTypes = new Dictionary<string, List<DebugType>>();
 		
 		void AssertClassOrValueType()
 		{
@@ -213,7 +217,7 @@ namespace Debugger
 			}
 		}
 		
-		internal DebugType(Process process, ICorDebugType corType)
+		DebugType(Process process, ICorDebugType corType)
 		{
 			if (corType == null) throw new ArgumentNullException("corType");
 			
@@ -225,8 +229,6 @@ namespace Debugger
 				this.corClass = corType.Class;
 				this.module = process.GetModule(corClass.Module);
 				this.classProps = module.MetaData.GetTypeDefProps(corClass.Token);
-				
-				LoadType();
 			}
 			
 			if (this.IsClass || this.IsValueType || this.IsArray) {
@@ -238,12 +240,41 @@ namespace Debugger
 			this.fullName = GetFullName();
 		}
 		
-		/// <summary>
-		/// Obtains instance of DebugType using process cache
-		/// </summary>
+		/// <summary> Obtains instance of DebugType. Same types will return identical instance. </summary>
 		static internal DebugType Create(Process process, ICorDebugType corType)
 		{
-			return process.GetDebugType(corType);
+			DateTime startTime = Util.HighPrecisionTimer.Now;
+			
+			DebugType type = new DebugType(process, corType);
+			
+			// Get types with matching names from cache
+			List<DebugType> typesWithMatchingName;
+			if (!loadedTypes.TryGetValue(type.FullName, out typesWithMatchingName)) {
+				// No types with such name - create a new list
+				typesWithMatchingName = new List<DebugType>(1);
+				loadedTypes.Add(type.FullName, typesWithMatchingName);
+			}
+			
+			// Try to find the type
+			foreach(DebugType loadedType in typesWithMatchingName) {
+				if (loadedType.Equals(type)) {
+					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
+					//process.TraceMessage("Type " + type.FullName + " was loaded already (" + totalTime.TotalMilliseconds + " ms)");
+					return loadedType; // Type was loaded before
+				}
+			}
+			
+			// The type is not in the cache, finish loading it and add it to the cache
+			if (type.IsClass || type.IsValueType) {
+				type.LoadMemberInfo();
+			}
+			typesWithMatchingName.Add(type);
+			type.Process.Expired += delegate { typesWithMatchingName.Remove(type); };
+			
+			TimeSpan totalTime2 = Util.HighPrecisionTimer.Now - startTime;
+			process.TraceMessage("Loaded type " + type.FullName + " (" + totalTime2.TotalMilliseconds + " ms)");
+			
+			return type;
 		}
 		
 		string GetFullName()
@@ -269,31 +300,8 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Determines whether the current type is sublass of 
-		/// the the given type. That is, it derives from the given type. </summary>
-		/// <remarks> Returns false if the given type is same as the current type </remarks>
-		public bool IsSubclassOf(DebugType superType)
+		void LoadMemberInfo()
 		{
-			DebugType type = this.BaseType;
-			while (type != null) {
-				if (type.Equals(superType)) return true;
-				type = type.BaseType;
-			}
-			return false;
-		}
-		
-		/// <summary> Determines whether the given object is instance of the
-		/// current type or can be implicitly cast to it </summary>
-		public bool IsInstanceOfType(Value objectInstance)
-		{
-			return objectInstance.Type.Equals(this) ||
-			       objectInstance.Type.IsSubclassOf(this);
-		}
-		
-		void LoadType()
-		{
-			DateTime startTime = Util.HighPrecisionTimer.Now;
-			
 			// Load fields
 			foreach(FieldProps field in module.MetaData.EnumFields(this.MetadataToken)) {
 				if (field.IsStatic && field.IsLiteral) continue; // Skip static literals TODO: Why?
@@ -324,9 +332,27 @@ namespace Debugger
 				accessors.TryGetValue("set_" + kvp.Key, out setter);
 				properties.Add(new PropertyInfo(this, getter, setter));
 			}
-			
-			TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
-			process.TraceMessage("Loaded type " + this.FullName + " (" + totalTime.TotalMilliseconds + " ms)");
+		}
+		
+		/// <summary> Determines whether the current type is sublass of 
+		/// the the given type. That is, it derives from the given type. </summary>
+		/// <remarks> Returns false if the given type is same as the current type </remarks>
+		public bool IsSubclassOf(DebugType superType)
+		{
+			DebugType type = this.BaseType;
+			while (type != null) {
+				if (type.Equals(superType)) return true;
+				type = type.BaseType;
+			}
+			return false;
+		}
+		
+		/// <summary> Determines whether the given object is instance of the
+		/// current type or can be implicitly cast to it </summary>
+		public bool IsInstanceOfType(Value objectInstance)
+		{
+			return objectInstance.Type.Equals(this) ||
+			       objectInstance.Type.IsSubclassOf(this);
 		}
 		
 		/// <summary> Return all public fields.</summary>
@@ -369,9 +395,11 @@ namespace Debugger
 		public override bool Equals(object obj)
 		{
 			DebugType other = obj as DebugType;
-			if (other != null) {
+			if (other != null && this.Process == other.Process) {
 				if (this.IsArray) {
-					throw new NotImplementedException(); // TODO
+					return other.IsArray &&
+					       other.GetArrayRank() == this.GetArrayRank() &&
+					       other.GetElementType().Equals(this.GetElementType());
 				}
 				if (this.IsPrimitive) {
 					return other.IsPrimitive &&
