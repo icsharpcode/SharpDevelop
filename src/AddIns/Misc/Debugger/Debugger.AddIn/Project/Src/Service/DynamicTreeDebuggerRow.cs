@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -17,7 +18,7 @@ using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
-	public class DynamicTreeDebuggerRow:DynamicTreeRow
+	public class DynamicTreeDebuggerRow: DynamicTreeRow
 	{
 		// Columns:
 		// 0 = plus sign
@@ -28,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		NamedValue val;
 		Image image;
 		bool populated = false;
-		bool dirty = true;
+		bool visible = true;
 		
 		public NamedValue Value {
 			get {
@@ -39,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		public bool ShowValuesInHexadecimal {
+		public static bool ShowValuesInHexadecimal {
 			get {
 				return ((WindowsDebugger)DebuggerService.CurrentDebugger).Properties.Get("ShowValuesInHexadecimal", false);
 			}
@@ -57,13 +58,13 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (val == null) throw new ArgumentNullException("val");
 			
 			this.val = val;
+			this.val.Changed += delegate { Update(); };
 			this.Shown += delegate {
-				this.val.Changed += Update;
-				dirty = true;
+				visible = true;
 				DoInPausedState( delegate { Update(); } );
 			};
 			this.Hidden += delegate {
-				this.val.Changed -= Update;
+				visible = false;
 			};
 			
 			DebuggerGridControl.AddColumns(this.ChildColumns);
@@ -75,20 +76,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			Update();
 		}
 		
-		void Update(object sender, ProcessEventArgs e)
-		{
-			dirty = true;
-			Update();
-		}
-		
 		void Update()
 		{
-			if (!dirty) return;
+			if (!visible) return;
 			
 			image = DebuggerIcons.GetImage(val);
 			this[1].Text = ""; // Icon
 			this[2].Text = val.Name;
-			if (ShowValuesInHexadecimal && val.IsPrimitive && val.IsInteger) {
+			if (ShowValuesInHexadecimal && val.IsInteger) {
 				this[3].Text = String.Format("0x{0:X}", val.PrimitiveValue);
 			} else {
 				this[3].Text = val.AsString;
@@ -97,8 +92,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			this.ShowPlus = val.IsObject || val.IsArray;
 			this.ShowMinusWhileExpanded = true;
-			
-			dirty = false;
 		}
 		
 		void OnIconPaint(object sender, ItemPaintEventArgs e)
@@ -182,36 +175,74 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void Populate()
 		{
-			if (val.IsArray)  Fill(this, val.GetArrayElements());
-			if (val.IsObject) Fill(this, val.GetMembers());
+			this.ChildRows.Clear();
+			if (val.IsArray) {
+				AddCollection(this, val.GetArrayElements());
+			}
+			if (val.IsObject) {
+				AddObjectRows(this, val.Type);
+			}
 			populated = true;
 		}
 		
-		static void Fill(DynamicTreeRow row, NamedValueCollection collection)
+		void AddObjectRows(DynamicTreeRow tree, DebugType type)
 		{
-			row.ChildRows.Clear();
-//			foreach(VariableCollection sub in collection.SubCollections) {
-//				VariableCollection subCollection = sub;
-//				
-//				DynamicTreeRow subMenu = new DynamicTreeRow();
-//				DebuggerGridControl.AddColumns(subMenu.ChildColumns);
-//				subMenu[2].Text = subCollection.Name;
-//				subMenu[3].Text = subCollection.Value;
-//				subMenu.ShowMinusWhileExpanded = true;
-//				subMenu.ShowPlus = !subCollection.IsEmpty;
-//				
-//				EventHandler<DynamicListEventArgs> populate = null;
-//				populate = delegate {
-//					Fill(subMenu, subCollection);
-//					subMenu.Expanding -= populate;
-//				};
-//				subMenu.Expanding += populate;
-//				
-//				row.ChildRows.Add(subMenu);
-//			}
-			foreach(NamedValue val in collection) {
-				row.ChildRows.Add(new DynamicTreeDebuggerRow(val));
+			NamedValueCollection publicInstance  = val.GetMembers(type, BindingFlags.Public | BindingFlags.Instance);
+			NamedValueCollection publicStatic    = val.GetMembers(type, BindingFlags.Public | BindingFlags.Static);
+			NamedValueCollection privateInstance = val.GetMembers(type, BindingFlags.NonPublic | BindingFlags.Instance);
+			NamedValueCollection privateStatic   = val.GetMembers(type, BindingFlags.NonPublic | BindingFlags.Static);
+			
+			if (type.BaseType != null) {
+				tree.ChildRows.Add(MakeMenu("Base class", type.BaseType.FullName,
+				                            delegate(DynamicTreeRow t) { AddObjectRows(t, type.BaseType); } ));
 			}
+			
+			if (publicStatic.Count > 0) {
+				tree.ChildRows.Add(MakeMenu("Static members", String.Empty,
+				                            delegate(DynamicTreeRow t) { AddCollection(t, publicStatic); } ));
+			}
+			
+			if (privateInstance.Count > 0 || privateStatic.Count > 0) {
+				tree.ChildRows.Add(MakeMenu(
+					"Non-public members", String.Empty,
+					delegate(DynamicTreeRow t) {
+						if (privateStatic.Count > 0) {
+							t.ChildRows.Add(MakeMenu("Static members", String.Empty,
+							                         delegate(DynamicTreeRow t2) { AddCollection(t2, privateStatic); } ));
+						}
+						AddCollection(t, privateInstance);
+					}));
+			}
+			
+			AddCollection(this, publicInstance);
+		}
+		
+		void AddCollection(DynamicTreeRow tree, NamedValueCollection collection)
+		{
+			foreach(NamedValue val in collection) {
+				tree.ChildRows.Add(new DynamicTreeDebuggerRow(val));
+			}
+		}
+		
+		delegate void PopulateMenu(DynamicTreeRow row);
+		
+		DynamicTreeRow MakeMenu(string name, string text, PopulateMenu populate)
+		{
+			DynamicTreeRow menu = new DynamicTreeRow();
+			DebuggerGridControl.AddColumns(menu.ChildColumns);
+			menu[2].Text = name;
+			menu[3].Text = text;
+			menu.ShowMinusWhileExpanded = true;
+			
+			bool populated = false;
+			menu.Expanding += delegate {
+				if (!populated) {
+					populate(menu);
+					populated = true;
+				}
+			};
+			
+			return menu;
 		}
 	}
 }
