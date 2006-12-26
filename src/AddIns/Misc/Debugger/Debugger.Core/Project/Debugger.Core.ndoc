@@ -1,0 +1,19 @@
+<project SchemaVersion="1.3">
+    <assemblies>
+        <assembly location=".\..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\Debugger.Core.dll" documentation=".\..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\Debugger.Core.xml" />
+    </assemblies>
+    <documenters>
+        <documenter name="MSDN">
+            <property name="OutputDirectory" value=".\docs\" />
+            <property name="HtmlHelpName" value="Managed Debugger" />
+            <property name="Title" value="Managed Debugger (by David Srbecky)" />
+            <property name="OutputTarget" value="HtmlHelp" />
+            <property name="DocumentInheritedFrameworkMembers" value="False" />
+            <property name="SkipNamespacesWithoutSummaries" value="True" />
+            <property name="FeedbackEmailAddress" value="dsrbecky@gmail.com" />
+            <property name="UseNamespaceDocSummaries" value="True" />
+            <property name="IncludeDefaultThreadSafety" value="False" />
+            <property name="CleanIntermediates" value="True" />
+        </documenter>
+    </documenters>
+</project>
