@@ -21,11 +21,15 @@ namespace Debugger
 		Process process;
 		ICorDebugType corType;
 		CorElementType corElementType;
+		string fullName;
 		
-		// Class/ValueType specific data
+		// Class/ValueType specific
 		ICorDebugClass corClass;
 		Module module;
 		TypeDefProps classProps;
+		
+		// Class/ValueType/Array/Ref/Ptr specific
+		List<DebugType>    typeArguments = new List<DebugType>();
 		
 		// Members of the type; empty lists if not applicable
 		List<FieldInfo>    fields = new List<FieldInfo>();
@@ -74,21 +78,42 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Returns a string describing the type </summary>
-		public string Name { 
+		/// <summary> Returns a string describing the type including the namespace
+		/// and generic arguments but excluding the assembly name. </summary>
+		public string FullName { 
 			get {
-				// TODO: Improve
-				if(IsClass || IsValueType) {
-					return classProps.Name;
-				} else {
-					System.Type managedType = this.ManagedType;
-					if (managedType != null) {
-						return managedType.ToString();
-					} else {
-						return "<unknown>";
-					}
-				}
+				return fullName;
 			} 
+		}
+		
+		/// <summary> Returns the number of dimensions of an array </summary>
+		/// <remarks> Throws <see cref="System.ArgumentException"/> if type is not array </remarks>
+		public int GetArrayRank()
+		{
+			if (IsArray) {
+				return (int)corType.Rank;
+			} else {
+				throw new ArgumentException("Type is not array");
+			}
+		}
+		
+		/// <summary> Returns true if the type has an element type. 
+		/// (ie array, reference or pointer) </summary>
+		public bool HasElementType {
+			get {
+				return IsArray;
+			}
+		}
+		
+		/// <summary> Returns an element type for array, reference or pointer. 
+		/// Retuns null otherwise. (Secificaly, returns null for generic types) </summary>
+		public DebugType GetElementType()
+		{
+			if (HasElementType) {
+				return typeArguments[0];
+			} else {
+				return null;
+			}
 		}
 		
 		/// <summary> Gets a value indicating whether the type is an array </summary>
@@ -96,6 +121,26 @@ namespace Debugger
 			get {
 				return this.corElementType == CorElementType.ARRAY ||
 				       this.corElementType == CorElementType.SZARRAY;
+			}
+		}
+		
+		/// <summary> Gets a value indicating whether the immediate type is generic.  
+		/// Arrays, references and pointers are never generic types. </summary>
+		public bool IsGenericType {
+			get {
+				return (IsClass || IsValueType) &&
+				       typeArguments.Count > 0;
+			}
+		}
+		
+		/// <summary> Returns generics arguments for a type or an emtpy 
+		/// array for non-generic types. </summary>
+		public DebugType[] GetGenericArguments()
+		{
+			if (IsGenericType) {
+				return typeArguments.ToArray();
+			} else {
+				return new DebugType[] {};
 			}
 		}
 		
@@ -183,6 +228,14 @@ namespace Debugger
 				
 				LoadType();
 			}
+			
+			if (this.IsClass || this.IsValueType || this.IsArray) {
+				foreach(ICorDebugType t in corType.EnumerateTypeParameters().Enumerator) {
+					typeArguments.Add(DebugType.Create(process, t));
+				}
+			}
+			
+			this.fullName = GetFullName();
 		}
 		
 		/// <summary>
@@ -191,6 +244,29 @@ namespace Debugger
 		static internal DebugType Create(Process process, ICorDebugType corType)
 		{
 			return process.GetDebugType(corType);
+		}
+		
+		string GetFullName()
+		{
+			if (IsArray) {
+				return GetElementType().FullName + "[" + new String(',', GetArrayRank() - 1) + "]";
+			} else if (IsClass || IsValueType) {
+				if (IsGenericType) {
+					List<string> argNames = new List<string>();
+					foreach(DebugType arg in GetGenericArguments()) {
+						argNames.Add(arg.FullName);
+					}
+					// Remove generic parameter count at the end
+					string className = classProps.Name.Substring(0, classProps.Name.LastIndexOf('`'));
+					return className + "<" + String.Join(",", argNames.ToArray()) + ">";
+				} else {
+					return classProps.Name;
+				}
+			} else if (IsPrimitive) {
+				return this.ManagedType.ToString();
+			} else {
+				throw new DebuggerException("Unknown type");
+			}
 		}
 		
 		/// <summary> Determines whether the current type is sublass of 
@@ -250,7 +326,7 @@ namespace Debugger
 			}
 			
 			TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
-			process.TraceMessage("Loaded type " + this.Name + " (" + totalTime.TotalMilliseconds + " ms)");
+			process.TraceMessage("Loaded type " + this.FullName + " (" + totalTime.TotalMilliseconds + " ms)");
 		}
 		
 		/// <summary> Return all public fields.</summary>

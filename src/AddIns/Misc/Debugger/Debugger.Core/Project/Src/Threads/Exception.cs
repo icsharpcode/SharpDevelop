@@ -62,7 +62,7 @@ namespace Debugger
 				callstackItems++;
 			}
 			
-			type = runtimeValue.Type.Name;
+			type = runtimeValue.Type.FullName;
 		}
 		
 		public string Type {

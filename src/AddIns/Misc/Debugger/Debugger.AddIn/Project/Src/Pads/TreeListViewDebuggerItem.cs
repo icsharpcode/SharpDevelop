@@ -78,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			this.SubItems[0].Text = val.Name;
 			this.SubItems[1].Text = val.AsString;
-			this.SubItems[2].Text = val.IsNull ? String.Empty : val.Type.Name;
+			this.SubItems[2].Text = val.IsNull ? String.Empty : val.Type.FullName;
 			
 			this.ImageIndex = DebuggerIcons.GetImageListIndex(val);
 			

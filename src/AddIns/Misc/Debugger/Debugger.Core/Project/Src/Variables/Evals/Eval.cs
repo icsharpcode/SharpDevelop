@@ -111,7 +111,7 @@ namespace Debugger
 		{
 			return new Eval(
 				method.Process,
-				"Function call: " + method.DeclaringType.Name + "." + method.Name,
+				"Function call: " + method.DeclaringType.FullName + "." + method.Name,
 				delegate(ICorDebugEval corEval) { StartMethodInvoke(corEval, method, thisValue, args); }
 			);
 		}

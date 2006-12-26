@@ -438,7 +438,7 @@ namespace Debugger.Tests
 			NamedValue array = process.SelectedFunction.LocalVariables["array"];
 			Assert.AreEqual("array", array.Name);
 			Assert.IsTrue(array.IsArray);
-			Assert.AreEqual("{System.Int32[5]}", array.AsString);
+			Assert.AreEqual("{System.Int32[]}", array.AsString);
 			NamedValueCollection elements = array.GetArrayElements();
 			Assert.AreEqual(5, elements.Count);
 			for(int i = 0; i < 5; i++) {
@@ -461,7 +461,7 @@ namespace Debugger.Tests
 			Assert.AreEqual("val", local.Name);
 			Assert.IsTrue(local.IsObject);
 			Assert.AreEqual("{Debugger.Tests.TestPrograms.ObjectValue}", local.AsString);
-			Assert.AreEqual("Debugger.Tests.TestPrograms.ObjectValue", local.Type.Name);
+			Assert.AreEqual("Debugger.Tests.TestPrograms.ObjectValue", local.Type.FullName);
 			NamedValueCollection subVars = local.GetMembers(null, Debugger.BindingFlags.All);
 			Assert.IsTrue(subVars["privateField"].IsPrimitive);
 			Assert.IsTrue(subVars["publicFiled"].IsPrimitive);
@@ -470,7 +470,7 @@ namespace Debugger.Tests
 			Assert.IsTrue(((MemberValue)subVars["publicFiled"]).MemberInfo.IsPublic);
 			Assert.IsTrue(((MemberValue)subVars["PublicProperty"]).MemberInfo.IsPublic);
 			DebugType baseClass = local.Type.BaseType;
-			Assert.AreEqual("Debugger.Tests.TestPrograms.BaseClass", baseClass.Name);
+			Assert.AreEqual("Debugger.Tests.TestPrograms.BaseClass", baseClass.FullName);
 			Assert.AreEqual("private", subVars["privateField"].AsString);
 			
 			process.Continue();

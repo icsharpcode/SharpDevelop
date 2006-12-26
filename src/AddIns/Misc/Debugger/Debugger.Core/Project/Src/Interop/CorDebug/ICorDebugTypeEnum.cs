@@ -25,7 +25,7 @@ namespace Debugger.Interop.CorDebug
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out] IntPtr values, out uint pceltFetched);
+        void Next([In] uint celt, [Out, MarshalAs(UnmanagedType.LPArray)] ICorDebugType[] values, out uint pceltFetched);
     }
 }
 

@@ -82,7 +82,7 @@ namespace Debugger
 		ICorDebugValue GetCorValue(Value objectInstance)
 		{
 			if (!DeclaringType.IsInstanceOfType(objectInstance)) {
-				throw new CannotGetValueException("Object is not of type " + DeclaringType.Name);
+				throw new CannotGetValueException("Object is not of type " + DeclaringType.FullName);
 			}
 			
 			// Current frame is used to resolve context specific static values (eg. ThreadStatic)

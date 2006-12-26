@@ -77,8 +77,8 @@ namespace Debugger
 					
 					// AsString representation
 					if (IsNull)      cache.AsString = "<null>";
-					if (IsArray)     cache.AsString = "{" + this.Type.Name + "}";
-					if (IsObject)    cache.AsString = "{" + this.Type.Name + "}";
+					if (IsArray)     cache.AsString = "{" + this.Type.FullName + "}";
+					if (IsObject)    cache.AsString = "{" + this.Type.FullName + "}";
 					//if (IsObject)    cache.AsString = Eval.InvokeMethod(Process, typeof(object), "ToString", this, new Value[] {}).AsString;
 					if (IsPrimitive) cache.AsString = PrimitiveValue != null ? PrimitiveValue.ToString() : String.Empty;
 					

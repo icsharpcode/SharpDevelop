@@ -124,10 +124,28 @@ namespace Debugger.Wrappers.CorDebug
 			}
 		}
 		
-		public uint Next(uint celt, System.IntPtr values)
+		public uint Next(uint celt, ICorDebugType[] values)
 		{
 			uint pceltFetched;
-			this.WrappedObject.Next(celt, values, out pceltFetched);
+			Debugger.Interop.CorDebug.ICorDebugType[] array_values = new Debugger.Interop.CorDebug.ICorDebugType[values.Length];
+			for (int i = 0; (i < values.Length); i = (i + 1))
+			{
+				if ((values[i] != null))
+				{
+					array_values[i] = values[i].WrappedObject;
+				}
+			}
+			this.WrappedObject.Next(celt, array_values, out pceltFetched);
+			for (int i = 0; (i < values.Length); i = (i + 1))
+			{
+				if ((array_values[i] != null))
+				{
+					values[i] = ICorDebugType.Wrap(array_values[i]);
+				} else
+				{
+					values[i] = null;
+				}
+			}
 			return pceltFetched;
 		}
 	}
