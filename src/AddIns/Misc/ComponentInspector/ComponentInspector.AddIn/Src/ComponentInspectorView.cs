@@ -7,6 +7,7 @@
 
 using System;
 using System.Windows.Forms;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using NoGoop.ObjBrowser;
 
@@ -75,7 +76,7 @@ namespace ICSharpCode.ComponentInspector.AddIn
 		
 		public override string TitleName {
 			get {
-				return "${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}";
+				return StringParser.Parse("${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}");
 			}
 			set {
 			}
