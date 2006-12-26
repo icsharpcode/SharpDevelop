@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Debugger.Core.Debugger
+namespace Debugger
 {
 	/// <summary>
 	/// A base class for all classes declared by the debugger
