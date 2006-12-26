@@ -200,7 +200,7 @@ namespace Debugger
 		{
 			DebugType type = this.BaseType;
 			while (type != null) {
-				if (this.Equals(type)) return true;
+				if (type.Equals(superType)) return true;
 				type = type.BaseType;
 			}
 			return false;
@@ -210,8 +210,8 @@ namespace Debugger
 		/// current type or can be implicitly cast to it </summary>
 		public bool IsInstanceOfType(Value objectInstance)
 		{
-			return this.Equals(objectInstance.Type) ||
-			       this.IsSubclassOf(objectInstance.Type);
+			return objectInstance.Type.Equals(this) ||
+			       objectInstance.Type.IsSubclassOf(this);
 		}
 		
 		void LoadType()
@@ -292,8 +292,24 @@ namespace Debugger
 		/// <summary> Compares two types </summary>
 		public override bool Equals(object obj)
 		{
-			return obj is DebugType &&
-			       ((DebugType)obj).CorType == this.CorType;
+			DebugType other = obj as DebugType;
+			if (other != null) {
+				if (this.IsArray) {
+					throw new NotImplementedException(); // TODO
+				}
+				if (this.IsPrimitive) {
+					return other.IsPrimitive &&
+					       other.corElementType == this.corElementType;
+				}
+				if (this.IsClass || this.IsValueType) {
+					return (other.IsClass || other.IsValueType) &&
+					       other.Module == this.Module &&
+					       other.MetadataToken == this.MetadataToken;
+				}
+				throw new DebuggerException("Unknown type");
+			} else {
+				return false;
+			}
 		}
 		
 		/// <summary> Get hash code of the object </summary>

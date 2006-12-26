@@ -12,7 +12,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public enum EvalState {WaitingForRequest, EvaluationScheduled, Evaluating, EvaluatedSuccessfully, EvaluatedException, EvaluatedNoResult, EvaluatedError};
+	public enum EvalState {EvaluationScheduled, Evaluating, EvaluatedSuccessfully, EvaluatedException, EvaluatedNoResult, EvaluatedError};
 	
 	/// <summary>
 	/// This class holds information about function evaluation.
@@ -29,14 +29,13 @@ namespace Debugger
 		}
 		
 		Process process;
-		Value val;
-		string description;
+		Value   result;
+		string  description;
 		EvaluationInvoker evaluationInvoker;
 		
-		EvalState      state = EvalState.WaitingForRequest;
+		EvalState      state = EvalState.EvaluationScheduled;
 		ICorDebugEval  corEval;
 		string         errorMsg;
-		ICorDebugValue result;
 		
 		public Process Process {
 			get {
@@ -46,7 +45,15 @@ namespace Debugger
 		
 		public Value Result {
 			get {
-				return val;
+				switch(this.State) {
+					case EvalState.EvaluationScheduled:   throw new CannotGetValueException("Evaluation pending");
+					case EvalState.Evaluating:            throw new CannotGetValueException("Evaluating...");
+					case EvalState.EvaluatedSuccessfully: return result;
+					case EvalState.EvaluatedException:    return result;
+					case EvalState.EvaluatedNoResult:     throw new CannotGetValueException("No return value");
+					case EvalState.EvaluatedError:        throw new CannotGetValueException(errorMsg);
+					default: throw new DebuggerException("Unknown state");
+				}
 			}
 		}
 		
@@ -73,50 +80,19 @@ namespace Debugger
 		
 		Eval(Process process,
 		     string description,
-		     IExpirable[] expireDependencies,
-		     IMutable[] mutateDependencies,
 		     EvaluationInvoker evaluationInvoker)
 		{
 			this.process = process;
 			this.description = description;
-			this.val = new Value(process,
-			                     expireDependencies,
-			                     mutateDependencies,
-			                     delegate { return GetCorValue(); });
-			this.val.Changed += delegate { SetState(EvalState.WaitingForRequest, null, null); };
 			this.evaluationInvoker = evaluationInvoker;
+			
+			process.ScheduleEval(this);
+			process.Debugger.MTA2STA.AsyncCall(delegate { process.StartEvaluation(); });
 		}
 		
 		internal bool IsCorEval(ICorDebugEval corEval)
 		{
 			return this.corEval == corEval;
-		}
-		
-		public ICorDebugValue GetCorValue()
-		{
-			switch(this.State) {
-				case EvalState.WaitingForRequest:     RequestEvaluation(); goto case EvalState.EvaluationScheduled;
-				case EvalState.EvaluationScheduled:   throw new CannotGetValueException("Evaluation pending");
-				case EvalState.Evaluating:            throw new CannotGetValueException("Evaluating...");
-				case EvalState.EvaluatedSuccessfully: return result;
-				case EvalState.EvaluatedException:    return result;
-				case EvalState.EvaluatedNoResult:     throw new CannotGetValueException("No return value");
-				case EvalState.EvaluatedError:        throw new CannotGetValueException(errorMsg);
-				default: throw new DebuggerException("Unknown state");
-			}
-		}
-		
-		void SetState(EvalState state, string errorMsg, ICorDebugValue result)
-		{
-			this.state    = state;
-			this.errorMsg = errorMsg;
-			this.result   = result;
-		}
-		
-		void ChangeState(EvalState state, string errorMsg, ICorDebugValue result)
-		{
-			SetState(state, errorMsg, result);
-			this.Result.NotifyChange();
 		}
 		
 		/// <summary> Synchronously calls a function and returns its return value </summary>
@@ -133,15 +109,9 @@ namespace Debugger
 		
 		public static Eval AsyncInvokeMethod(MethodInfo method, Value thisValue, Value[] args)
 		{
-//			string moduleName = System.IO.Path.GetFileName(type.Assembly.Location);
-//			Module module = process.GetModule(moduleName);
-//			string containgType = type.FullName;
-//			ICorDebugFunction corFunction = module.GetMethod(containgType, functionName, args.Length);
 			return new Eval(
 				method.Process,
 				"Function call: " + method.DeclaringType.Name + "." + method.Name,
-				new IExpirable[] {}, // TODO
-				new IMutable[] {},
 				delegate(ICorDebugEval corEval) { StartMethodInvoke(corEval, method, thisValue, args); }
 			);
 		}
@@ -180,8 +150,6 @@ namespace Debugger
 			return new Eval(
 				process,
 				"New string: " + textToCreate,
-				new IExpirable[] {},
-				new IMutable[] {},
 				delegate(ICorDebugEval corEval) { corEval.NewString(textToCreate); }
 			);
 		}
@@ -196,20 +164,8 @@ namespace Debugger
 			return new Eval(
 				process,
 				"New object: " + classToCreate.Token,
-				new IExpirable[] {},
-				new IMutable[] {},
 				delegate(ICorDebugEval corEval) { corEval.NewObjectNoConstructor(classToCreate); }
 			);
-		}
-		
-		
-		public void RequestEvaluation()
-		{
-			if (Evaluated || State == EvalState.WaitingForRequest) {
-				process.ScheduleEval(this);
-				process.Debugger.MTA2STA.AsyncCall(delegate { process.StartEvaluation(); });
-				ChangeState(EvalState.EvaluationScheduled, null, null);
-			}
 		}
 		
 		/// <returns>True if setup was successful</returns>
@@ -243,19 +199,21 @@ namespace Debugger
 					}
 				}
 				
-				ChangeState(EvalState.Evaluating, null, null);
+				state = EvalState.Evaluating;
 				return true;
 			} catch (EvalSetupException e) {
-				ChangeState(EvalState.EvaluatedError, e.Message, null);
+				state = EvalState.EvaluatedError;
+				errorMsg = e.Message;
 				return false;
 			}
 		}
 		
 		public Value EvaluateNow()
 		{
-			while (State == EvalState.WaitingForRequest) {
-				RequestEvaluation();
-				process.WaitForPause();
+			while (!Evaluated) {
+				if (process.IsPaused) { 
+					process.StartEvaluation();
+				}
 				process.WaitForPause();
 			}
 			return this.Result;
@@ -266,13 +224,17 @@ namespace Debugger
 			// Eval result should be ICorDebugHandleValue so it should survive Continue()
 			
 			if (corEval.Result == null) {
-				ChangeState(EvalState.EvaluatedNoResult, null, null);
+				state = EvalState.EvaluatedNoResult;
 			} else {
 				if (successful) {
-					ChangeState(EvalState.EvaluatedSuccessfully, null, corEval.Result);
+					state = EvalState.EvaluatedSuccessfully;
 				} else {
-					ChangeState(EvalState.EvaluatedException, null, corEval.Result);
+					state = EvalState.EvaluatedException;
 				}
+				result = new Value(process,
+				                   new IExpirable[] {},
+				                   new IMutable[] {},
+				                   delegate { return corEval.Result; });
 			}
 		}
 	}

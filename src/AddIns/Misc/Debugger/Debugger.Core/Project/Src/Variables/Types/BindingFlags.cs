@@ -19,13 +19,13 @@ namespace Debugger
 	[Flags]
 	public enum BindingFlags {
 		/// Return instance (ie non-static members) members
-		Instance,
+		Instance = 1,
 		/// Return static members
-		Static,
+		Static = 2,
 		/// Return public members
-		Public,
+		Public = 4,
 		/// Return members which are not public
-		NonPublic,
+		NonPublic = 8,
 		/// Return all members
 		All = Instance | Static | Public | NonPublic
 	};

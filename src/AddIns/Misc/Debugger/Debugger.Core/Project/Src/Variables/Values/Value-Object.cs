@@ -31,17 +31,6 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Returns a text which is produced by calling object.ToString() </summary>
-		public Value ObjectToString {
-			get {
-				return Eval.AsyncInvokeMethod(
-					MethodInfo.GetFromName(Process, typeof(object), "ToString", 0),
-					this,
-					null
-				).Result;
-			}
-		}
-		
 		/// <summary>
 		/// Get a field or property of an object with a given name.
 		/// </summary>

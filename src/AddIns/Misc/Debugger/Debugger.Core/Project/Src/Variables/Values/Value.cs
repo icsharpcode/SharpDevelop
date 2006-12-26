@@ -76,14 +76,15 @@ namespace Debugger
 					cache.Type = DebugType.Create(process, RawCorValue.As<ICorDebugValue2>().ExactType);
 					
 					// AsString representation
-					if (IsNull)      cache.AsString = "<null reference>";
+					if (IsNull)      cache.AsString = "<null>";
 					if (IsArray)     cache.AsString = "{" + this.Type.Name + "}";
 					if (IsObject)    cache.AsString = "{" + this.Type.Name + "}";
+					//if (IsObject)    cache.AsString = Eval.InvokeMethod(Process, typeof(object), "ToString", this, new Value[] {}).AsString;
 					if (IsPrimitive) cache.AsString = PrimitiveValue != null ? PrimitiveValue.ToString() : String.Empty;
-				
 					
 					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
-					process.TraceMessage("Obtained value: " + cache.AsString + " (" + totalTime.TotalMilliseconds + " ms)");
+					string name = this is NamedValue ? ((NamedValue)this).Name + " = " : String.Empty;
+					process.TraceMessage("Obtained value: " + name + cache.AsString + " (" + totalTime.TotalMilliseconds + " ms)");
 				}
 				return cache;
 			}

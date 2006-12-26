@@ -94,11 +94,6 @@ namespace ICSharpCode.SharpDevelop.Services
 				this[3].Text = val.AsString;
 			}
 			this[3].AllowLabelEdit = val.IsInteger && !ShowValuesInHexadecimal;
-			if (val.IsObject) {
-				val.ObjectToString.Changed -= Update;
-				val.ObjectToString.Changed += Update;
-				this[3].Text = val.ObjectToString.AsString;
-			}
 			
 			this.ShowPlus = val.IsObject || val.IsArray;
 			this.ShowMinusWhileExpanded = true;
