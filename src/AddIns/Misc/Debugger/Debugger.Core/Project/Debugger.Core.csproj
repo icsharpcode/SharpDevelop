@@ -49,6 +49,7 @@
     <Compile Include="Src\Debugger\DebuggerEvents\DebuggerEventArgs.cs" />
     <Compile Include="Src\Debugger\DebuggerEvents\MessageEventArgs.cs" />
     <Compile Include="Src\Debugger\DebuggerEvents\PausedReason.cs" />
+    <Compile Include="Src\Debugger\DebuggerObject.cs" />
     <Compile Include="Src\Debugger\Exceptions.cs" />
     <Compile Include="Src\Debugger\Internal\ManagedCallback.cs" />
     <Compile Include="Src\Debugger\Internal\ManagedCallbackProxy.cs" />
@@ -57,7 +58,6 @@
     <Compile Include="Src\Modules\Module.cs" />
     <Compile Include="Src\Modules\ModuleEventArgs.cs" />
     <Compile Include="Src\Modules\Process-Modules.cs" />
-    <Compile Include="Src\Debugger\Internal\RemotingObjectBase.cs" />
     <Compile Include="Src\Threads\Exception.cs" />
     <Compile Include="Src\Threads\ExceptionType.cs" />
     <Compile Include="Src\Threads\Function.cs" />

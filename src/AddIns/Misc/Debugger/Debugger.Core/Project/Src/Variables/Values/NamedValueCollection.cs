@@ -14,7 +14,7 @@ namespace Debugger
 	/// <summary>
 	/// An enumerable collection of values accessible by name.
 	/// </summary>
-	public class NamedValueCollection: RemotingObjectBase, IEnumerable<NamedValue>, IEnumerable
+	public class NamedValueCollection: DebuggerObject, IEnumerable<NamedValue>, IEnumerable
 	{
 		internal static NamedValueCollection Empty = new NamedValueCollection(new NamedValue[0]);
 		

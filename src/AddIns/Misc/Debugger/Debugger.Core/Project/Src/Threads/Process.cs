@@ -12,7 +12,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class Process: RemotingObjectBase, IExpirable
+	public partial class Process: DebuggerObject, IExpirable
 	{
 		NDebugger debugger;
 		

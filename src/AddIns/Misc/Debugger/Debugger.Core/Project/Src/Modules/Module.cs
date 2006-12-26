@@ -12,7 +12,7 @@ using Debugger.Wrappers.MetaData;
 
 namespace Debugger
 {
-	public class Module: RemotingObjectBase, IDisposable
+	public class Module: DebuggerObject, IDisposable
 	{
 		Process process;
 		

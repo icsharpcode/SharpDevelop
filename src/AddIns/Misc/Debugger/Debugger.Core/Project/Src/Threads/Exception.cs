@@ -10,7 +10,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {	
-	public class Exception: RemotingObjectBase
+	public class Exception: DebuggerObject
 	{
 		Process           process;
 		Thread            thread;

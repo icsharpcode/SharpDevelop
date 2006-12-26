@@ -10,7 +10,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public class Breakpoint: RemotingObjectBase
+	public class Breakpoint: DebuggerObject
 	{
 		NDebugger debugger;
 

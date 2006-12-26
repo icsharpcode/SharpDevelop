@@ -19,7 +19,7 @@ namespace Debugger
 	/// A function (or also a method or frame) which is being executed on
 	/// some thread. Use to obtain arguments or local variables.
 	/// </summary>
-	public class Function: RemotingObjectBase, IExpirable
+	public class Function: DebuggerObject, IExpirable
 	{	
 		Process process;
 		

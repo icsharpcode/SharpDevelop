@@ -16,7 +16,7 @@ namespace Debugger
 	/// Represents a type in a debugee. That is, a class, array, value type or a primitive type.
 	/// <para> This class mimics the <see cref="System.Type"/> class. </para>
 	/// </summary>
-	public partial class DebugType: RemotingObjectBase
+	public partial class DebugType: DebuggerObject
 	{
 		Process process;
 		ICorDebugType corType;

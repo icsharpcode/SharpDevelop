@@ -17,7 +17,7 @@ namespace Debugger
 	/// <summary>
 	/// This class holds information about function evaluation.
 	/// </summary>
-	public class Eval: RemotingObjectBase
+	public class Eval: DebuggerObject
 	{
 		delegate void EvaluationInvoker(ICorDebugEval corEval);
 		

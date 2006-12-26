@@ -15,7 +15,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class Thread: RemotingObjectBase, IExpirable
+	public partial class Thread: DebuggerObject, IExpirable
 	{
 		Process process;
 

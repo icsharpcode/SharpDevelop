@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
-//     <version>$Revision: 2023 $</version>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
@@ -16,7 +16,7 @@ namespace Debugger
 	/// Provides information about a member of some class
 	/// (eg. a field or a method).
 	/// </summary>
-	public abstract class MemberInfo: RemotingObjectBase
+	public abstract class MemberInfo: DebuggerObject
 	{
 		DebugType declaringType;
 		
