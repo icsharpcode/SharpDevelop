@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+# SharpDevelop 2.1.0.2192
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.XamlDom", "WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj", "{88DA149F-21B2-48AB-82C4-28FB6BDFD783}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.XamlDom.Tests", "WpfDesign.XamlDom\Tests\WpfDesign.XamlDom.Tests.csproj", "{BD62F5BC-115F-4339-8B5B-96C7A21DC67E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88DA149F-21B2-48AB-82C4-28FB6BDFD783}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88DA149F-21B2-48AB-82C4-28FB6BDFD783}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88DA149F-21B2-48AB-82C4-28FB6BDFD783}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88DA149F-21B2-48AB-82C4-28FB6BDFD783}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD62F5BC-115F-4339-8B5B-96C7A21DC67E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD62F5BC-115F-4339-8B5B-96C7A21DC67E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD62F5BC-115F-4339-8B5B-96C7A21DC67E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD62F5BC-115F-4339-8B5B-96C7A21DC67E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal
