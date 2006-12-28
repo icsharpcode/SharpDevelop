@@ -1,0 +1,29 @@
+﻿<Window x:Class="StandaloneDesigner.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="StandaloneDesigner" Height="500" Width="600"
+>
+	<TabControl TabStripPlacement="Bottom" Name="tabControl" SelectionChanged="tabControlSelectionChanged">
+		<TabItem Header="Code">
+			<TextBox Name="CodeTextBox" AcceptsReturn="True" xml:space="preserve">
+				<![CDATA[
+        <Border xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" BorderThickness="10">
+          <StackPanel>
+            <Canvas Height="50" Background="White"></Canvas>
+            <Button>Button 1</Button>
+            <Button>Button 2</Button>
+            <Canvas Height="50"></Canvas>
+          </StackPanel>
+        </Border>
+        ]]>
+			</TextBox>
+		</TabItem>
+		<TabItem Header="Design" Name="designTab">
+			<designer:DesignSurface
+				xmlns:designer="clr-namespace:ICSharpCode.WpfDesign.Designer;assembly=ICSharpCode.WpfDesign.Designer"
+				Name="designSurface">
+			</designer:DesignSurface>
+		</TabItem>
+	</TabControl>
+</Window>

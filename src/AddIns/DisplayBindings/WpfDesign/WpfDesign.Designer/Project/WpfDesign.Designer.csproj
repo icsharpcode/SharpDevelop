@@ -1,16 +1,17 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{BD62F5BC-115F-4339-8B5B-96C7A21DC67E}</ProjectGuid>
+    <ProjectGuid>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>ICSharpCode.WpfDesign.XamlDom.Tests</RootNamespace>
-    <AssemblyName>ICSharpCode.WpfDesign.XamlDom.Tests</AssemblyName>
-    <OutputPath>..\..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <RootNamespace>ICSharpCode.WpfDesign.Designer</RootNamespace>
+    <AssemblyName>ICSharpCode.WpfDesign.Designer</AssemblyName>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
+    <DocumentationFile>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,41 +35,48 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="PresentationCore">
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="PresentationFramework">
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.WinFX.targets" />
   <ItemGroup>
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>GlobalAssemblyInfo.cs</Link>
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="ExampleClass.cs" />
-    <Compile Include="ExampleClassContainer.cs" />
-    <Compile Include="SamplesTests.cs" />
-    <Compile Include="SimpleLoadTests.cs" />
-    <Compile Include="TestHelper.cs" />
-    <Compile Include="WhitespaceTests.cs" />
-    <Compile Include="XamlTypeFinderTests.cs" />
-    <None Include="app.config" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Controls\SingleVisualChildElement.cs" />
+    <Compile Include="DesignPanel.cs" />
+    <Compile Include="HashSet.cs" />
+    <Compile Include="Services\DesignServiceContainer.cs" />
+    <Compile Include="Services\SelectionService.cs" />
+    <Compile Include="Services\VisualDesignService.cs" />
+    <Compile Include="XamlDesignSite.cs" />
+    <Compile Include="DesignSurface.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Project\WpfDesign.XamlDom.csproj">
+    <Folder Include="Configuration" />
+    <Folder Include="Controls" />
+    <Folder Include="Services" />
+    <ProjectReference Include="..\..\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">
       <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
       <Name>WpfDesign.XamlDom</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\WpfDesign\Project\WpfDesign.csproj">
+      <Project>{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}</Project>
+      <Name>WpfDesign</Name>
+      <SpecificVersion>False</SpecificVersion>
     </ProjectReference>
   </ItemGroup>
 </Project>

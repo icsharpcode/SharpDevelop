@@ -115,12 +115,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		internal override void AddValue(object collectionInstance, XamlPropertyValue newElement)
 		{
-			_propertyDescriptor.PropertyType.InvokeMember(
-				"Add", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
-				null, collectionInstance,
-				new object[] {
-					newElement.GetValueFor(null)
-				}, CultureInfo.InvariantCulture);
+			CollectionSupport.AddToCollection(_propertyDescriptor.PropertyType, collectionInstance, newElement);
 		}
 	}
 	
@@ -134,6 +129,22 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				|| typeof(IAddChild).IsAssignableFrom(type);
 		}
 		
-		//public static
+		public static void AddToCollection(Type collectionType, object collectionInstance, XamlPropertyValue newElement)
+		{
+			IAddChild addChild = collectionInstance as IAddChild;
+			if (addChild != null) {
+				if (newElement is XamlTextValue) {
+					addChild.AddText((string)newElement.GetValueFor(null));
+				} else {
+					addChild.AddChild(newElement.GetValueFor(null));
+				}
+			} else {
+				collectionType.InvokeMember(
+					"Add", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
+					null, collectionInstance,
+					new object[] { newElement.GetValueFor(null) },
+					CultureInfo.InvariantCulture);
+			}
+		}
 	}
 }

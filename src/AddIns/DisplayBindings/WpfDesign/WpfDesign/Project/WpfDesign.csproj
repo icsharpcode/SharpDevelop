@@ -1,16 +1,21 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{BD62F5BC-115F-4339-8B5B-96C7A21DC67E}</ProjectGuid>
+    <ProjectGuid>{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>ICSharpCode.WpfDesign.XamlDom.Tests</RootNamespace>
-    <AssemblyName>ICSharpCode.WpfDesign.XamlDom.Tests</AssemblyName>
-    <OutputPath>..\..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <RootNamespace>ICSharpCode.WpfDesign</RootNamespace>
+    <AssemblyName>ICSharpCode.WpfDesign</AssemblyName>
+    <DocumentationFile>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.xml</DocumentationFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\..\..\Main\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,11 +39,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="PresentationCore">
       <Private>False</Private>
     </Reference>
@@ -53,22 +53,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>GlobalAssemblyInfo.cs</Link>
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="ExampleClass.cs" />
-    <Compile Include="ExampleClassContainer.cs" />
-    <Compile Include="SamplesTests.cs" />
-    <Compile Include="SimpleLoadTests.cs" />
-    <Compile Include="TestHelper.cs" />
-    <Compile Include="WhitespaceTests.cs" />
-    <Compile Include="XamlTypeFinderTests.cs" />
-    <None Include="app.config" />
+    <Compile Include="ComponentEventArgs.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="DesignerException.cs" />
+    <Compile Include="DefaultServiceProvider.cs" />
+    <Compile Include="DesignSite.cs" />
+    <Compile Include="Services.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Project\WpfDesign.XamlDom.csproj">
-      <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
-      <Name>WpfDesign.XamlDom</Name>
-    </ProjectReference>
+    <Folder Include="Configuration" />
   </ItemGroup>
 </Project>

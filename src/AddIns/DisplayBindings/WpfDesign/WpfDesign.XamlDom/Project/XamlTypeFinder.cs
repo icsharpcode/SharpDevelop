@@ -94,7 +94,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				assembly = name.Substring("assembly=".Length);
 			}
 			XamlNamespace ns = new XamlNamespace();
-			ns.ClrNamespaces.Add(new AssemblyNamespaceMapping(LoadAssembly(assembly), namespaceName));
+			Assembly asm = LoadAssembly(assembly);
+			if (asm != null) {
+				ns.ClrNamespaces.Add(new AssemblyNamespaceMapping(asm, namespaceName));
+			}
 			return ns;
 		}
 		
