@@ -123,6 +123,8 @@ namespace ICSharpCode.WpfDesign
 		
 		/// <summary>
 		/// Gets the collection of selected components.
+		/// This is a copy of the actual selected components collection, the returned copy
+		/// of the collection will not reflect future changes to the selection.
 		/// </summary>
 		ICollection<object> SelectedComponents { get; }
 		
@@ -143,6 +145,31 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>Gets the count of selected objects.</summary>
 		/// <returns>The number of selected objects.</returns>
 		int SelectionCount { get; }
+	}
+	#endregion
+	
+	#region IComponentService
+	/// <summary>Supports adding and removing components</summary>
+	public interface IComponentService
+	{
+		/// <summary>
+		/// Gets the site of an existing, registered component.
+		/// </summary>
+		/// <returns>
+		/// The site of the component, or null if the component is not registered.
+		/// </returns>
+		DesignSite GetSite(object component);
+		
+		/// <summary>Registers a component for usage in the designer.</summary>
+		DesignSite RegisterComponentForDesigner(object component);
+		
+		// /// <summary>Unregisters a component from usage in the designer.</summary>
+		// void UnregisterComponentFromDesigner(DesignSite site);
+		
+		/// <summary>Event raised whenever a component is registered</summary>
+		event EventHandler<SiteEventArgs> ComponentRegistered;
+		/// <summary>Event raised whenever a component is unregistered</summary>
+		event EventHandler<SiteEventArgs> ComponentUnregistered;
 	}
 	#endregion
 }

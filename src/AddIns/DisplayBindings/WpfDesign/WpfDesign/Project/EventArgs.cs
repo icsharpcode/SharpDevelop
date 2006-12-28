@@ -13,23 +13,23 @@ namespace ICSharpCode.WpfDesign
 	/// <summary>
 	/// Event arguments specifying a component as parameter.
 	/// </summary>
-	public class ComponentEventArgs : EventArgs
+	public class SiteEventArgs : EventArgs
 	{
-		readonly object _component;
+		readonly DesignSite _site;
 
 		/// <summary>
 		/// Creates a new ComponentEventArgs instance.
 		/// </summary>
-		public ComponentEventArgs(object component)
+		public SiteEventArgs(DesignSite site)
 		{
-			_component = component;
+			_site = site;
 		}
 		
 		/// <summary>
 		/// The component affected by the event.
 		/// </summary>
-		public object Component {
-			get { return _component; }
+		public DesignSite Site {
+			get { return _site; }
 		}
 	}
 	

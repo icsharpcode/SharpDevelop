@@ -13,7 +13,10 @@
             <Canvas Height="50" Background="White"></Canvas>
             <Button>Button 1</Button>
             <Button>Button 2</Button>
-            <Canvas Height="50"></Canvas>
+            <TabControl Width="300" Height="300">
+                <TabItem Header="Page 1" />
+                <TabItem Header="Page 2"><Button>button on page 2</Button></TabItem>
+            </TabControl>
           </StackPanel>
         </Border>
         ]]>

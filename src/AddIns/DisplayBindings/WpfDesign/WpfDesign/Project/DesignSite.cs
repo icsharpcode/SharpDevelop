@@ -7,18 +7,29 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace ICSharpCode.WpfDesign
 {
 	/// <summary>
 	/// The DesignSite connects a component with the service system and the designers.
 	/// </summary>
+	/// <remarks>
+	/// About the Cider extension system:
+	/// http://blogs.msdn.com/jnak/archive/2006/04/24/580393.aspx
+	/// http://blogs.msdn.com/jnak/archive/2006/08/04/687166.aspx
+	/// </remarks>
 	public abstract class DesignSite : IServiceProvider
 	{
 		/// <summary>
 		/// Gets the component this DesignSite was created for.
 		/// </summary>
 		public abstract object Component { get; }
+		
+		/// <summary>
+		/// Gets the view used for the component.
+		/// </summary>
+		public abstract UIElement View { get; }
 		
 		DefaultServiceProvider _defaultServiceProvider;
 		

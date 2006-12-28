@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,6 +21,7 @@ namespace StandaloneDesigner
 		
 		void tabControlSelectionChanged(object sender, RoutedEventArgs e)
 		{
+			if (e.Source != tabControl) return;
 			if (tabControl.SelectedItem == designTab) {
 				designSurface.LoadDesigner(new XmlTextReader(new StringReader(CodeTextBox.Text)));
 			} else {

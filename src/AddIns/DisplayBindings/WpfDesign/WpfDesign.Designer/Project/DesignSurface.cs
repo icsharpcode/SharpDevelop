@@ -22,7 +22,8 @@ namespace ICSharpCode.WpfDesign.Designer
 	/// </summary>
 	public sealed class DesignSurface : SingleVisualChildElement
 	{
-		readonly DefaultServiceProvider _defaultServiceProvider;
+		readonly DefaultServiceProvider _services;
+		readonly DefaultComponentService _componentService;
 		readonly ScrollViewer _scrollViewer;
 		readonly DesignPanel _designPanel;
 		
@@ -32,13 +33,16 @@ namespace ICSharpCode.WpfDesign.Designer
 		public DesignSurface()
 		{
 			DesignServiceContainer serviceContainer = new DesignServiceContainer();
+			_services = new DefaultServiceProvider(serviceContainer);
+			
 			serviceContainer.AddService(typeof(IVisualDesignService), new DefaultVisualDesignService());
 			serviceContainer.AddService(typeof(ISelectionService), new DefaultSelectionService());
-			
-			_defaultServiceProvider = new DefaultServiceProvider(serviceContainer);
+			serviceContainer.AddService(typeof(IToolService), new DefaultToolService());
+			_componentService = new DefaultComponentService(this);
+			serviceContainer.AddService(typeof(IComponentService), _componentService);
 			
 			_scrollViewer = new ScrollViewer();
-			_designPanel = new DesignPanel();
+			_designPanel = new DesignPanel(_services);
 			_scrollViewer.Content = _designPanel;
 			this.VisualChild = _scrollViewer;
 		}
@@ -46,8 +50,8 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// <summary>
 		/// Gets the service provider.
 		/// </summary>
-		public DefaultServiceProvider DefaultServiceProvider {
-			get { return _defaultServiceProvider; }
+		public DefaultServiceProvider Services {
+			get { return _services; }
 		}
 		
 		/// <summary>
@@ -68,9 +72,20 @@ namespace ICSharpCode.WpfDesign.Designer
 			InitializeDesigner(XamlParser.Parse(xamlReader));
 		}
 		
+		/// <summary>
+		/// Saves the designer content into the specified XmlWriter.
+		/// </summary>
+		public void SaveDesigner(XmlWriter writer)
+		{
+			_currentDocument.Save(writer);
+		}
+		
+		XamlDocument _currentDocument;
+		
 		void InitializeDesigner(XamlDocument document)
 		{
-			DesignSite rootSite = new XamlDesignSite(document.RootElement, this);
+			_currentDocument = document;
+			DesignSite rootSite = _componentService.RegisterXamlComponentRecursive(document.RootElement);
 			_designPanel.DesignedElement = DefaultVisualDesignService.CreateUIElementFor(rootSite);
 		}
 		
@@ -79,10 +94,11 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// </summary>
 		public void UnloadDesigner()
 		{
+			_currentDocument = null;
 			UIElement designedElement = this.DesignedElement;
 			if (designedElement != null) {
+				_componentService.UnregisterAllComponents();
 				_designPanel.DesignedElement = null;
-				
 			}
 		}
 	}

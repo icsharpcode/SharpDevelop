@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Windows;
 using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.WpfDesign.Designer
@@ -27,9 +28,15 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 		}
 		
+		public override UIElement View {
+			get {
+				return null;
+			}
+		}
+		
 		public override object GetService(Type serviceType)
 		{
-			return designSurface.DefaultServiceProvider.GetService(serviceType);
+			return designSurface.Services.GetService(serviceType);
 		}
 	}
 }

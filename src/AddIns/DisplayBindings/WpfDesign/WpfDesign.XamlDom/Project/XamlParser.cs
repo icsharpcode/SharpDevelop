@@ -124,8 +124,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			XamlPropertyInfo defaultProperty = GetDefaultProperty(elementType);
 			XamlPropertyValue setDefaultValueTo = null;
 			object defaultPropertyValue = null;
+			XamlProperty defaultCollectionProperty = null;
+			
 			if (defaultProperty != null && defaultProperty.IsCollection && !element.IsEmpty) {
 				defaultPropertyValue = defaultProperty.GetValue(instance);
+				obj.AddProperty(defaultCollectionProperty = new XamlProperty(obj, defaultProperty, null));
 			}
 			
 			foreach (XmlNode childNode in element.ChildNodes) {
@@ -145,6 +148,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (childValue != null) {
 					if (defaultProperty != null && defaultProperty.IsCollection) {
 						defaultProperty.AddValue(defaultPropertyValue, childValue);
+						defaultCollectionProperty.AddCollectionElement(childValue);
 					} else {
 						if (setDefaultValueTo != null)
 							throw new XamlLoadException("default property may have only one value assigned");
@@ -164,6 +168,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					throw new XamlLoadException("This element does not have a default value, cannot assign to it");
 				}
 				defaultProperty.SetValue(instance, setDefaultValueTo.GetValueFor(defaultProperty));
+				obj.AddProperty(new XamlProperty(obj, defaultProperty, setDefaultValueTo));
 			}
 			
 			if (iSupportInitializeInstance != null) {
@@ -216,7 +221,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			MethodInfo getMethod = elementType.GetMethod("Get" + propertyName, BindingFlags.Public | BindingFlags.Static);
 			MethodInfo setMethod = elementType.GetMethod("Set" + propertyName, BindingFlags.Public | BindingFlags.Static);
 			if (getMethod != null && setMethod != null) {
-				return new XamlAttachedPropertyInfo(getMethod, setMethod);
+				return new XamlAttachedPropertyInfo(getMethod, setMethod, propertyName);
 			}
 			return null;
 		}
@@ -283,12 +288,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			bool valueWasSet = false;
 			
 			object collectionInstance = null;
+			XamlProperty collectionProperty = null;
 			if (propertyInfo.IsCollection) {
 				if (defaultProperty.FullyQualifiedName == propertyInfo.FullyQualifiedName) {
 					collectionInstance = defaultPropertyValue;
 				} else {
 					collectionInstance = propertyInfo.GetValue(obj.Instance);
 				}
+				obj.AddProperty(collectionProperty = new XamlProperty(obj, propertyInfo, null));
 			}
 			
 			XmlSpace oldXmlSpace = currentXmlSpace;
@@ -301,6 +308,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (childValue != null) {
 					if (propertyInfo.IsCollection) {
 						propertyInfo.AddValue(collectionInstance, childValue);
+						collectionProperty.AddCollectionElement(childValue);
 					} else {
 						if (valueWasSet)
 							throw new XamlLoadException("non-collection property may have only one child element");

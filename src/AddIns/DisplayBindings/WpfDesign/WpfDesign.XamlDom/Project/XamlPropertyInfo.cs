@@ -23,7 +23,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public abstract object GetValue(object instance);
 		public abstract void SetValue(object instance, object value);
 		public abstract TypeConverter TypeConverter { get; }
+		public abstract string Name { get; }
 		public abstract string FullyQualifiedName { get; }
+		public abstract bool IsAttached { get; }
 		public abstract bool IsCollection { get; }
 		internal abstract void AddValue(object collectionInstance, XamlPropertyValue newElement);
 	}
@@ -32,11 +34,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	{
 		MethodInfo _getMethod;
 		MethodInfo _setMethod;
+		string _name;
 		
-		public XamlAttachedPropertyInfo(MethodInfo getMethod, MethodInfo setMethod)
+		public XamlAttachedPropertyInfo(MethodInfo getMethod, MethodInfo setMethod, string name)
 		{
 			this._getMethod = getMethod;
 			this._setMethod = setMethod;
+			this._name = name;
 		}
 		
 		public override TypeConverter TypeConverter {
@@ -47,14 +51,20 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		public override string FullyQualifiedName {
 			get {
-				return _getMethod.DeclaringType.FullName + "." + _getMethod.Name;
+				return _getMethod.DeclaringType.FullName + "." + _name;
 			}
 		}
 		
+		public override string Name {
+			get { return _name; }
+		}
+		
+		public override bool IsAttached {
+			get { return true; }
+		}
+		
 		public override bool IsCollection {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		public override object GetValue(object instance)
@@ -105,6 +115,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get {
 				return _propertyDescriptor.ComponentType.FullName + "." + _propertyDescriptor.Name;
 			}
+		}
+		
+		public override string Name {
+			get { return _propertyDescriptor.Name; }
+		}
+		
+		public override bool IsAttached {
+			get { return false; }
 		}
 		
 		public override bool IsCollection {

@@ -81,5 +81,25 @@ namespace ICSharpCode.WpfDesign
 				return GetServiceChecked<ISelectionService>();
 			}
 		}
+		
+		/// <summary>
+		/// Gets the <see cref="IToolService"/>.
+		/// This service is guaranteed to always exist -> this property will never return null.
+		/// </summary>
+		public IToolService Tool {
+			get {
+				return GetServiceChecked<IToolService>();
+			}
+		}
+		
+		/// <summary>
+		/// Gets the <see cref="IComponentService"/>.
+		/// This service is guaranteed to always exist -> this property will never return null.
+		/// </summary>
+		public IComponentService Component {
+			get {
+				return GetServiceChecked<IComponentService>();
+			}
+		}
 	}
 }

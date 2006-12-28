@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Xml;
@@ -20,6 +21,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		XamlObject parentObject;
 		XamlPropertyInfo propertyInfo;
 		XamlPropertyValue propertyValue;
+		List<XamlPropertyValue> collectionElements = new List<XamlPropertyValue>();
 		
 		internal XamlProperty(XamlObject parentObject, XamlPropertyInfo propertyInfo, XamlPropertyValue propertyValue)
 		{
@@ -33,6 +35,36 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public XamlObject ParentObject {
 			get { return parentObject; }
+		}
+		
+		/// <summary>
+		/// Gets the property name.
+		/// </summary>
+		public string PropertyName {
+			get { return propertyInfo.Name; }
+		}
+		
+		/// <summary>
+		/// Gets the value of the property. Can be null if the property is a collection property.
+		/// </summary>
+		public XamlPropertyValue PropertyValue {
+			get { return propertyValue; }
+		}
+		
+		/// <summary>
+		/// Gets the collection elements of the property. Is empty if the property is not a collection.
+		/// </summary>
+		public IList<XamlPropertyValue> CollectionElements {
+			get { return collectionElements.AsReadOnly(); }
+		}
+		
+		/// <summary>
+		/// used internally by the XamlParser.
+		/// Add a collection element that already is part of the XML DOM.
+		/// </summary>
+		internal void AddCollectionElement(XamlPropertyValue val)
+		{
+			collectionElements.Add(val);
 		}
 		
 		/*public bool IsAttributeSyntax {
@@ -60,6 +92,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// </summary>
 	public abstract class XamlPropertyValue
 	{
+		/// <summary>
+		/// used internally by the XamlParser.
+		/// </summary>
 		internal abstract object GetValueFor(XamlPropertyInfo targetProperty);
 	}
 	
