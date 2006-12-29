@@ -19,6 +19,14 @@ namespace ICSharpCode.WpfDesign
 		readonly ServiceContainer _services = new ServiceContainer();
 		
 		/// <summary>
+		/// Creates a new DesignContext instance.
+		/// </summary>
+		protected DesignContext()
+		{
+			_services.AddService(typeof(Extensions.ExtensionManager), new Extensions.ExtensionManager(this));
+		}
+		
+		/// <summary>
 		/// Gets the <see cref="ServiceContainer"/>.
 		/// </summary>
 		public ServiceContainer Services {

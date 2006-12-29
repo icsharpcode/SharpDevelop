@@ -58,7 +58,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Controls\SingleVisualChildElement.cs" />
     <Compile Include="DesignPanel.cs" />
-    <Compile Include="HashSet.cs" />
+    <Compile Include="Extensions\TabItemClickableExtension.cs" />
     <Compile Include="Linq.cs" />
     <Compile Include="ServiceRequiredException.cs" />
     <Compile Include="Services\SelectionService.cs" />
@@ -72,6 +72,7 @@
   <ItemGroup>
     <Folder Include="Configuration" />
     <Folder Include="Controls" />
+    <Folder Include="Extensions" />
     <Folder Include="Xaml" />
     <Folder Include="Services" />
     <ProjectReference Include="..\..\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">

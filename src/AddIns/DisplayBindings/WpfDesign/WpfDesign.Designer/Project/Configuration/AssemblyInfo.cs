@@ -7,6 +7,7 @@ using System.Resources;
 using System.Globalization;
 using System.Windows;
 using System.Runtime.InteropServices;
+using ICSharpCode.WpfDesign.Extensions;
 
 #endregion
 

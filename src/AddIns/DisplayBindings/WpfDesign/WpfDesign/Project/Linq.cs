@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.WpfDesign.Designer
+namespace ICSharpCode.WpfDesign
 {
 	// Static helpers that should become extension methods in the future
 	static class Linq

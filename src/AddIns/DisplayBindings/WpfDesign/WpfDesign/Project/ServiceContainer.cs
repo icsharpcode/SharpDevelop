@@ -18,7 +18,8 @@ namespace ICSharpCode.WpfDesign
 	/// </summary>
 	public sealed class ServiceContainer : IServiceProvider
 	{
-		Dictionary<Type, object> _services = new Dictionary<Type, object>();
+		readonly Dictionary<Type, object> _services = new Dictionary<Type, object>();
+		readonly Dictionary<Type, Delegate> _waitingSubscribers = new Dictionary<Type, Delegate>();
 		
 		/// <summary>
 		/// Adds a new service to the container.
@@ -37,6 +38,12 @@ namespace ICSharpCode.WpfDesign
 				throw new ArgumentNullException("serviceInstance");
 			
 			_services.Add(serviceInterface, serviceInstance);
+			
+			Delegate subscriber;
+			if (_waitingSubscribers.TryGetValue(serviceInterface, out subscriber)) {
+				_waitingSubscribers.Remove(serviceInterface);
+				subscriber.DynamicInvoke(serviceInstance);
+			}
 		}
 		
 		/// <summary>
@@ -50,7 +57,7 @@ namespace ICSharpCode.WpfDesign
 		}
 		
 		/// <summary>
-		/// Gets the service object of the specified type.
+		/// Gets the service object of the type T.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
 		public T GetService<T>() where T : class
@@ -58,7 +65,28 @@ namespace ICSharpCode.WpfDesign
 			return (T)GetService(typeof(T));
 		}
 		
-		T GetServiceChecked<T>() where T : class
+		/// <summary>
+		/// Subscribes to the service of type T.
+		/// serviceAvailableAction will be called after the service gets available. If the service is already available,
+		/// the action will be called immediately.
+		/// </summary>
+		public void Subscribe<T>(Action<T> serviceAvailableAction) where T : class
+		{
+			T service = GetService<T>();
+			if (service != null) {
+				serviceAvailableAction(service);
+			} else {
+				Type serviceInterface = typeof(T);
+				Delegate existingSubscriber;
+				if (_waitingSubscribers.TryGetValue(serviceInterface, out existingSubscriber)) {
+					_waitingSubscribers[serviceInterface] = Delegate.Combine(existingSubscriber, serviceAvailableAction);
+				} else {
+					_waitingSubscribers[serviceInterface] = serviceAvailableAction;
+				}
+			}
+		}
+		
+		T GetServiceOrThrowException<T>() where T : class
 		{
 			T service = (T)GetService(typeof(T));
 			if (service == null) {
@@ -69,31 +97,41 @@ namespace ICSharpCode.WpfDesign
 		
 		/// <summary>
 		/// Gets the <see cref="ISelectionService"/>.
-		/// This service is guaranteed to always exist -> this property will never return null.
+		/// Throws an exception if the service is not found.
 		/// </summary>
 		public ISelectionService Selection {
 			get {
-				return GetServiceChecked<ISelectionService>();
+				return GetServiceOrThrowException<ISelectionService>();
 			}
 		}
 		
 		/// <summary>
 		/// Gets the <see cref="IToolService"/>.
-		/// This service is guaranteed to always exist -> this property will never return null.
+		/// Throws an exception if the service is not found.
 		/// </summary>
 		public IToolService Tool {
 			get {
-				return GetServiceChecked<IToolService>();
+				return GetServiceOrThrowException<IToolService>();
 			}
 		}
 		
 		/// <summary>
 		/// Gets the <see cref="IComponentService"/>.
-		/// This service is guaranteed to always exist -> this property will never return null.
+		/// Throws an exception if the service is not found.
 		/// </summary>
 		public IComponentService Component {
 			get {
-				return GetServiceChecked<IComponentService>();
+				return GetServiceOrThrowException<IComponentService>();
+			}
+		}
+		
+		/// <summary>
+		/// Gets the <see cref="ExtensionManager"/>.
+		/// Throws an exception if the service is not found.
+		/// </summary>
+		public Extensions.ExtensionManager ExtensionManager {
+			get {
+				return GetServiceOrThrowException<Extensions.ExtensionManager>();
 			}
 		}
 	}

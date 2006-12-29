@@ -30,6 +30,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			_componentService = new XamlComponentService(this);
 			this.Services.AddService(typeof(IComponentService), _componentService);
 			
+			// register extensions from this assembly:
+			this.Services.ExtensionManager.RegisterAssembly(typeof(XamlDesignContext).Assembly);
+			
 			_rootItem = _componentService.RegisterXamlComponentRecursive(doc.RootElement);
 		}
 		

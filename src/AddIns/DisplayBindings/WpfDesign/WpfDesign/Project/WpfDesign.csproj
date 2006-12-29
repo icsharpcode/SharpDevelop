@@ -16,6 +16,8 @@
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <CodeAnalysisRules>-Microsoft.Globalization#CA1303</CodeAnalysisRules>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -59,7 +61,14 @@
     <Compile Include="EventArgs.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="DesignerException.cs" />
+    <Compile Include="Extensions\BehaviorExtension.cs" />
     <Compile Include="Extensions\Extension.cs" />
+    <Compile Include="Extensions\ExtensionForAttribute.cs" />
+    <Compile Include="Extensions\ExtensionManager.cs" />
+    <Compile Include="Extensions\ExtensionServer.cs" />
+    <Compile Include="Extensions\ExtensionServerAttribute.cs" />
+    <Compile Include="HashSet.cs" />
+    <Compile Include="Linq.cs" />
     <Compile Include="ServiceContainer.cs" />
     <Compile Include="DesignItem.cs" />
     <Compile Include="Services.cs" />

@@ -50,11 +50,11 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		public void OnMouseDown(IDesignPanel designPanel, MouseButtonEventArgs e)
 		{
 			e.Handled = true;
-			new SelectionTask().Start(designPanel, e);
+			new SelectionGesture().Start(designPanel, e);
 		}
 	}
 	
-	abstract class TaskBase
+	abstract class MouseGestureBase
 	{
 		protected IDesignPanel designPanel;
 		bool isStarted;
@@ -120,7 +120,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		protected virtual void OnStopped() {}
 	}
 	
-	sealed class SelectionTask : TaskBase
+	sealed class SelectionGesture : MouseGestureBase
 	{
 		protected override void OnStarted(MouseButtonEventArgs e)
 		{

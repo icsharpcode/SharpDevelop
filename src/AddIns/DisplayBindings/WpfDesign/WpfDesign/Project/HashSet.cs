@@ -11,7 +11,7 @@ using System.Text;
 using System.Collections;
 using System.Collections.Specialized;
 
-namespace ICSharpCode.WpfDesign.Designer
+namespace ICSharpCode.WpfDesign
 {
 	/// <summary>
 	/// Represents a set of items. The set does not preserve the order of items and does not allow items to
@@ -19,12 +19,16 @@ namespace ICSharpCode.WpfDesign.Designer
 	/// It supports collection change notifications and is cloned by sharing the underlying
 	/// data structure and delaying the actual copy until the next change.
 	/// </summary>
-	sealed class HashSet<T> : ICollection<T>, ICollection, ICloneable, INotifyCollectionChanged
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+	public sealed class HashSet<T> : ICollection<T>, ICollection, ICloneable, INotifyCollectionChanged
 		where T : class
 	{
 		Dictionary<T, object> _dict;
 		bool _copyOnWrite;
 		
+		/// <summary>
+		/// This event is raised whenever the collection changes.
+		/// </summary>
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 		
 		/// <summary>
@@ -65,7 +69,10 @@ namespace ICSharpCode.WpfDesign.Designer
 				return true;
 			}
 		}
-
+		
+		/// <summary>
+		/// Adds a list of items to the set. This is equivalent to calling <see cref="Add"/> for each item in <paramref name="items"/>.
+		/// </summary>
 		public void AddRange(IEnumerable<T> items)
 		{
 			foreach (T item in items) {
@@ -147,6 +154,9 @@ namespace ICSharpCode.WpfDesign.Designer
 		}
 
 		#region IEnumerable Members
+		/// <summary>
+		/// Gets an enumerator to enumerate the items in the set.
+		/// </summary>
 		public IEnumerator<T> GetEnumerator()
 		{
 			return _dict.Keys.GetEnumerator();
