@@ -58,7 +58,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		public void LoadDesigner(XmlReader xamlReader)
 		{
 			UnloadDesigner();
-			InitializeDesigner(new Xaml.XamlDesignContext(XamlDom.XamlParser.Parse(xamlReader)));
+			InitializeDesigner(new Xaml.XamlDesignContext(xamlReader));
 		}
 		
 		/// <summary>

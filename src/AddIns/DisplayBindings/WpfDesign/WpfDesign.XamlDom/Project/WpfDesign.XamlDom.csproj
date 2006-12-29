@@ -63,6 +63,7 @@
     <Compile Include="XamlLoadException.cs" />
     <Compile Include="XamlObject.cs" />
     <Compile Include="XamlParser.cs" />
+    <Compile Include="XamlParserSettings.cs" />
     <Compile Include="XamlProperty.cs" />
     <Compile Include="XamlPropertyInfo.cs" />
     <Compile Include="XamlTypeFinder.cs" />

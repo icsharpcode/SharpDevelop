@@ -77,10 +77,17 @@ namespace ICSharpCode.WpfDesign.Designer
 			if (!_isInInputAction) {
 				Debug.WriteLine("DesignPanel.PreviewMouseDown Source=" + e.Source.GetType().Name + " OriginalSource=" + e.OriginalSource.GetType().Name);
 				DesignItem site = FindDesignedElementForOriginalSource(e.OriginalSource);
+				InputHandlingLayer itemLayer = InputHandlingLayer.None;
 				if (site != null) {
 					Debug.WriteLine(" Found designed element: " + site.Component.GetType().Name);
+					IProvideComponentInputHandlingLayer layerProvider = site.GetBehavior<IProvideComponentInputHandlingLayer>();
+					if (layerProvider != null) {
+						itemLayer = layerProvider.InputLayer;
+					}
 				}
-				ToolService.CurrentTool.OnMouseDown(this, e);
+				if (ToolService.CurrentTool.InputLayer > itemLayer) {
+					ToolService.CurrentTool.OnMouseDown(this, e);
+				}
 			}
 		}
 		

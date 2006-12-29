@@ -42,6 +42,17 @@ namespace ICSharpCode.WpfDesign
 	}
 	
 	/// <summary>
+	/// Interface for behavior extensions that specifies the input layer of the extended component.
+	/// </summary>
+	public interface IProvideComponentInputHandlingLayer
+	{
+		/// <summary>
+		/// Gets the input handling layer of the component.
+		/// </summary>
+		InputHandlingLayer InputLayer { get; }
+	}
+	
+	/// <summary>
 	/// Describes a tool that can handle input on the design surface.
 	/// Modelled after the description on http://urbanpotato.net/Default.aspx/document/2300
 	/// </summary>

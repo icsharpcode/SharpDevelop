@@ -28,7 +28,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			Debug.WriteLine("Load using own XamlParser:");
 			ExampleClass.nextUniqueIndex = 0;
 			TestHelperLog.logBuilder = new StringBuilder();
-			XamlDocument doc = XamlParser.Parse(new XmlTextReader(new StringReader(xaml)));
+			XamlDocument doc = XamlParser.Parse(new StringReader(xaml));
 			Assert.IsNotNull(doc, "doc is null");
 			object ownResult = doc.RootInstance;
 			string ownLog = TestHelperLog.logBuilder.ToString();

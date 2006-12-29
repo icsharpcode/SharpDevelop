@@ -108,5 +108,35 @@ namespace ICSharpCode.WpfDesign
 			}
 		}
 		#endregion
+		
+		#region Manage behavior
+		Dictionary<Type, object> _behaviorObjects = new Dictionary<Type, object>();
+		
+		/// <summary>
+		/// Adds a bevahior extension object to this design item.
+		/// </summary>
+		public void AddBehavior(Type bevahiorInterface, object behaviorImplementation)
+		{
+			if (bevahiorInterface == null)
+				throw new ArgumentNullException("bevahiorInterface");
+			if (behaviorImplementation == null)
+				throw new ArgumentNullException("behaviorImplementation");
+			
+			_behaviorObjects.Add(bevahiorInterface, behaviorImplementation);
+		}
+		
+		/// <summary>
+		/// Gets a bevahior extension object from the design item.
+		/// </summary>
+		/// <returns>The behavior object, or null if it was not found.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+		public T GetBehavior<T>() where T : class
+		{
+			object obj;
+			_behaviorObjects.TryGetValue(typeof(T), out obj);
+			return (T)obj;
+		}
+		#endregion
 	}
 }

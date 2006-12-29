@@ -13,11 +13,21 @@ using ICSharpCode.WpfDesign.Extensions;
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	/// <summary>
-	/// Makes the TabItem clickable.
+	/// Makes TabItems clickable.
 	/// </summary>
 	[ExtensionFor(typeof(TabItem))]
-	public sealed class TabItemClickableExtension : BehaviorExtension
+	public sealed class TabItemClickableExtension : BehaviorExtension, IProvideComponentInputHandlingLayer
 	{
+		/// <summary/>
+		protected override void OnInitialized()
+		{
+			this.ExtendedItem.AddBehavior(typeof(IProvideComponentInputHandlingLayer), this);
+		}
 		
+		InputHandlingLayer IProvideComponentInputHandlingLayer.InputLayer {
+			get {
+				return InputHandlingLayer.ComponentHigh;
+			}
+		}
 	}
 }

@@ -26,11 +26,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public static XamlDocument Parse(Stream stream)
 		{
-			if (stream == null)
-				throw new ArgumentNullException("stream");
-			XmlDocument doc = new XmlDocument();
-			doc.Load(stream);
-			return Parse(doc);
+			return Parse(stream, new XamlParserSettings());
 		}
 		
 		/// <summary>
@@ -38,11 +34,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public static XamlDocument Parse(TextReader reader)
 		{
-			if (reader == null)
-				throw new ArgumentNullException("reader");
-			XmlDocument doc = new XmlDocument();
-			doc.Load(reader);
-			return Parse(doc);
+			return Parse(reader, new XamlParserSettings());
 		}
 		
 		/// <summary>
@@ -50,38 +42,70 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public static XamlDocument Parse(XmlReader reader)
 		{
+			return Parse(reader, new XamlParserSettings());
+		}
+		
+		/// <summary>
+		/// Parses a XAML document using a stream.
+		/// </summary>
+		public static XamlDocument Parse(Stream stream, XamlParserSettings settings)
+		{
+			if (stream == null)
+				throw new ArgumentNullException("stream");
+			XmlDocument doc = new XmlDocument();
+			doc.Load(stream);
+			return Parse(doc, settings);
+		}
+		
+		/// <summary>
+		/// Parses a XAML document using a TextReader.
+		/// </summary>
+		public static XamlDocument Parse(TextReader reader, XamlParserSettings settings)
+		{
 			if (reader == null)
 				throw new ArgumentNullException("reader");
 			XmlDocument doc = new XmlDocument();
 			doc.Load(reader);
-			return Parse(doc);
+			return Parse(doc, settings);
+		}
+		
+		/// <summary>
+		/// Parses a XAML document using an XmlReader.
+		/// </summary>
+		public static XamlDocument Parse(XmlReader reader, XamlParserSettings settings)
+		{
+			if (reader == null)
+				throw new ArgumentNullException("reader");
+			XmlDocument doc = new XmlDocument();
+			doc.Load(reader);
+			return Parse(doc, settings);
 		}
 		
 		/// <summary>
 		/// Creates a XAML document from an existing XmlDocument.
 		/// </summary>
-		internal static XamlDocument Parse(XmlDocument document)
+		internal static XamlDocument Parse(XmlDocument document, XamlParserSettings settings)
 		{
+			if (settings == null)
+				throw new ArgumentNullException("settings");
 			if (document == null)
 				throw new ArgumentNullException("document");
 			XamlParser p = new XamlParser();
+			p.settings = settings;
 			p.document = new XamlDocument(document);
 			p.document.ParseComplete(p.ParseObject(document.DocumentElement));
 			return p.document;
 		}
 		#endregion
 		
-		XamlDocument document;
-		XamlTypeFinder typeFinder;
+		private XamlParser() { }
 		
-		private XamlParser()
-		{
-			typeFinder = XamlTypeFinder.CreateWpfTypeFinder();
-		}
+		XamlDocument document;
+		XamlParserSettings settings;
 		
 		Type FindType(string namespaceUri, string localName)
 		{
-			Type elementType = typeFinder.GetType(namespaceUri, localName);
+			Type elementType = settings.TypeFinder.GetType(namespaceUri, localName);
 			if (elementType == null)
 				throw new XamlLoadException("Cannot find type " + localName + " in " + namespaceUri);
 			return elementType;
@@ -95,12 +119,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return attribute.OwnerElement.NamespaceURI;
 		}
 		
+		readonly static object[] emptyObjectArray = new object[0];
 		XmlSpace currentXmlSpace = XmlSpace.None;
 		
 		XamlObject ParseObject(XmlElement element)
 		{
 			Type elementType = FindType(element.NamespaceURI, element.LocalName);
-			object instance = Activator.CreateInstance(elementType);
+			//object instance = Activator.CreateInstance(elementType);
+			object instance = settings.CreateInstanceCallback(elementType, emptyObjectArray);
+			
 			XamlObject obj = new XamlObject(document, element, elementType, instance);
 			
 			ISupportInitialize iSupportInitializeInstance = instance as ISupportInitialize;

@@ -51,6 +51,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 		
 		/// <summary>
 		/// Is called after the ExtendedItem was set.
+		/// Override this method to register your behavior with the item.
 		/// </summary>
 		protected virtual void OnInitialized()
 		{

@@ -83,6 +83,16 @@ namespace ICSharpCode.WpfDesign.Extensions
 			}
 			return result;
 		}
+		
+		/// <summary>
+		/// Gets all the types of all extensions that are applied to the specified item type.
+		/// </summary>
+		public IEnumerable<Type> GetExtensionTypes(Type extendedItemType)
+		{
+			foreach (ExtensionEntry entry in GetExtensionEntries(extendedItemType)) {
+				yield return entry.ExtensionType;
+			}
+		}
 		#endregion
 		
 		#region Create Extensions

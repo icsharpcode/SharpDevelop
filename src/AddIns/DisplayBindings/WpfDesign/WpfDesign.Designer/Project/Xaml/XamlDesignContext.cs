@@ -6,8 +6,10 @@
 // </file>
 
 using System;
+using System.Xml;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
+using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
@@ -17,11 +19,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		readonly XamlDesignItem _rootItem;
 		readonly XamlComponentService _componentService;
 		
-		public XamlDesignContext(XamlDocument doc)
+		public XamlDesignContext(XmlReader xamlReader)
 		{
-			if (doc == null)
-				throw new ArgumentNullException("doc");
-			this._doc = doc;
+			if (xamlReader == null)
+				throw new ArgumentNullException("xamlReader");
 			
 			this.Services.AddService(typeof(IVisualDesignService), new DefaultVisualDesignService());
 			this.Services.AddService(typeof(ISelectionService), new DefaultSelectionService());
@@ -33,7 +34,21 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			// register extensions from this assembly:
 			this.Services.ExtensionManager.RegisterAssembly(typeof(XamlDesignContext).Assembly);
 			
-			_rootItem = _componentService.RegisterXamlComponentRecursive(doc.RootElement);
+			XamlParserSettings xamlParseSettings = new XamlParserSettings();
+			xamlParseSettings.CreateInstanceCallback = OnXamlParserCreateInstance;
+			_doc = XamlParser.Parse(xamlReader, xamlParseSettings);
+			_rootItem = _componentService.RegisterXamlComponentRecursive(_doc.RootElement);
+		}
+		
+		object OnXamlParserCreateInstance(Type instanceType, object[] arguments)
+		{
+			foreach (Type extensionType in this.Services.ExtensionManager.GetExtensionTypes(instanceType)) {
+				if (typeof(CustomInstanceFactory).IsAssignableFrom(extensionType)) {
+					CustomInstanceFactory factory = (CustomInstanceFactory)Activator.CreateInstance(extensionType);
+					return factory.CreateInstance(instanceType, arguments);
+				}
+			}
+			return CustomInstanceFactory.DefaultInstanceFactory.CreateInstance(instanceType, arguments);
 		}
 		
 		public override void Save(System.Xml.XmlWriter writer)
