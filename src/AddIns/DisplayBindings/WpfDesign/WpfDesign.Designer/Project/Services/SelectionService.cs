@@ -17,19 +17,19 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	/// </summary>
 	sealed class DefaultSelectionService : ISelectionService
 	{
-		HashSet<object> _selectedComponents = new HashSet<object>();
-		object _primarySelection;
+		HashSet<DesignItem> _selectedComponents = new HashSet<DesignItem>();
+		DesignItem _primarySelection;
 		
-		public bool IsComponentSelected(object component)
+		public bool IsComponentSelected(DesignItem component)
 		{
 			return _selectedComponents.Contains(component);
 		}
 		
-		public ICollection<object> SelectedComponents {
+		public ICollection<DesignItem> SelectedItems {
 			get { return _selectedComponents.Clone(); }
 		}
 		
-		public object PrimarySelection
+		public DesignItem PrimarySelection
 		{
 			get { return _primarySelection; }
 		}
@@ -40,24 +40,24 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		}
 		
 		public event EventHandler SelectionChanging;
-		public event EventHandler<ComponentCollectionEventArgs> SelectionChanged;
+		public event EventHandler<DesignItemCollectionEventArgs> SelectionChanged;
 		public event EventHandler PrimarySelectionChanging;
 		public event EventHandler PrimarySelectionChanged;
 		
-		public void SetSelectedComponents(ICollection<object> components)
+		public void SetSelectedComponents(ICollection<DesignItem> components)
 		{
 			SetSelectedComponents(components, SelectionTypes.Auto);
 		}
 		
-		public void SetSelectedComponents(ICollection<object> components, SelectionTypes selectionType)
+		public void SetSelectedComponents(ICollection<DesignItem> components, SelectionTypes selectionType)
 		{
 			if (components == null)
-				components = new object[0];
+				components = new DesignItem[0];
 			
 			if (SelectionChanging != null)
 				SelectionChanging(this, EventArgs.Empty);
 			
-			object newPrimarySelection = _primarySelection;
+			DesignItem newPrimarySelection = _primarySelection;
 			
 			if (selectionType == SelectionTypes.Auto) {
 				if (Keyboard.Modifiers == ModifierKeys.Control)
@@ -71,7 +71,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if ((selectionType & SelectionTypes.Primary) == SelectionTypes.Primary) {
 				// change primary selection to first new component
 				newPrimarySelection = null;
-				foreach (object obj in components) {
+				foreach (DesignItem obj in components) {
 					newPrimarySelection = obj;
 					break;
 				}
@@ -84,18 +84,18 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				}
 			}
 			
-			HashSet<object> componentsToNotifyOfSelectionChange = new HashSet<object>();
+			HashSet<DesignItem> componentsToNotifyOfSelectionChange = new HashSet<DesignItem>();
 			switch (selectionType) {
 				case SelectionTypes.Add:
 					// add to selection and notify if required
-					foreach (object obj in components) {
+					foreach (DesignItem obj in components) {
 						if (_selectedComponents.Add(obj))
 							componentsToNotifyOfSelectionChange.Add(obj);
 					}
 					break;
 				case SelectionTypes.Remove:
 					// remove from selection and notify if required
-					foreach (object obj in components) {
+					foreach (DesignItem obj in components) {
 						if (_selectedComponents.Remove(obj))
 							componentsToNotifyOfSelectionChange.Add(obj);
 					}
@@ -105,7 +105,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					componentsToNotifyOfSelectionChange.AddRange(_selectedComponents);
 					// set _selectedCompontents to new components
 					_selectedComponents.Clear();
-					foreach (object obj in components) {
+					foreach (DesignItem obj in components) {
 						_selectedComponents.Add(obj);
 						// notify the new components
 						componentsToNotifyOfSelectionChange.Add(obj);
@@ -113,7 +113,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					break;
 				case SelectionTypes.Toggle:
 					// toggle selection and notify
-					foreach (object obj in components) {
+					foreach (DesignItem obj in components) {
 						if (_selectedComponents.Contains(obj)) {
 							_selectedComponents.Remove(obj);
 						} else {
@@ -132,7 +132,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if (!IsComponentSelected(newPrimarySelection)) {
 				// primary selection is not selected anymore - change primary selection to any other selected component
 				newPrimarySelection = null;
-				foreach (object obj in _selectedComponents) {
+				foreach (DesignItem obj in _selectedComponents) {
 					newPrimarySelection = obj;
 					break;
 				}
@@ -151,17 +151,8 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				}
 			}
 			
-			// Notify the components that changed selection state:
-			/*
-			foreach (object obj in componentsToNotifyOfSelectionChange) {
-				DesignSite objSite = DesignSite.GetSite(obj as DependencyObject);
-				if (objSite != null)
-					objSite.Notify(this, null);
-			}
-			*/
-			
 			if (SelectionChanged != null) {
-				SelectionChanged(this, new ComponentCollectionEventArgs(componentsToNotifyOfSelectionChange));
+				SelectionChanged(this, new DesignItemCollectionEventArgs(componentsToNotifyOfSelectionChange));
 			}
 		}
 	}

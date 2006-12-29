@@ -60,12 +60,13 @@
     <Compile Include="DesignPanel.cs" />
     <Compile Include="HashSet.cs" />
     <Compile Include="Linq.cs" />
+    <Compile Include="ServiceRequiredException.cs" />
     <Compile Include="Services\ComponentService.cs" />
     <Compile Include="Services\DesignServiceContainer.cs" />
     <Compile Include="Services\SelectionService.cs" />
     <Compile Include="Services\ToolService.cs" />
     <Compile Include="Services\VisualDesignService.cs" />
-    <Compile Include="XamlDesignSite.cs" />
+    <Compile Include="XamlDesignItem.cs" />
     <Compile Include="DesignSurface.cs" />
   </ItemGroup>
   <ItemGroup>

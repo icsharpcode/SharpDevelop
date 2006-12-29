@@ -11,12 +11,13 @@ using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
-	sealed class XamlDesignSite : DesignSite
+	sealed class XamlDesignItem : DesignItem
 	{
 		readonly XamlObject xamlObject;
 		readonly DesignSurface designSurface;
+		UIElement _view;
 		
-		public XamlDesignSite(XamlObject xamlObject, DesignSurface designSurface)
+		public XamlDesignItem(XamlObject xamlObject, DesignSurface designSurface)
 		{
 			this.xamlObject = xamlObject;
 			this.designSurface = designSurface;
@@ -30,8 +31,16 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		public override UIElement View {
 			get {
-				return null;
+				if (_view != null)
+					return _view;
+				else
+					return this.Component as UIElement;
 			}
+		}
+		
+		internal void SetView(UIElement newView)
+		{
+			_view = newView;
 		}
 		
 		public override object GetService(Type serviceType)

@@ -63,16 +63,6 @@ namespace ICSharpCode.WpfDesign
 		}
 		
 		/// <summary>
-		/// Gets the <see cref="IVisualDesignService"/>.
-		/// This service is guaranteed to always exist -> this property will never return null.
-		/// </summary>
-		public IVisualDesignService VisualDesign {
-			get {
-				return GetServiceChecked<IVisualDesignService>();
-			}
-		}
-		
-		/// <summary>
 		/// Gets the <see cref="ISelectionService"/>.
 		/// This service is guaranteed to always exist -> this property will never return null.
 		/// </summary>

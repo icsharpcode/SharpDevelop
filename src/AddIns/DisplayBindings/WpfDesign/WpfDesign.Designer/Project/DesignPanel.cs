@@ -65,7 +65,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			base.OnPreviewMouseDown(e);
 			if (!_isInInputAction) {
 				Debug.WriteLine("DesignPanel.PreviewMouseDown Source=" + e.Source.GetType().Name + " OriginalSource=" + e.OriginalSource.GetType().Name);
-				DesignSite site = FindDesignedElementForOriginalSource(e.OriginalSource);
+				DesignItem site = FindDesignedElementForOriginalSource(e.OriginalSource);
 				if (site != null) {
 					Debug.WriteLine(" Found designed element: " + site.Component.GetType().Name);
 				}
@@ -73,11 +73,11 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 		}
 		
-		public DesignSite FindDesignedElementForOriginalSource(object originalSource)
+		public DesignItem FindDesignedElementForOriginalSource(object originalSource)
 		{
 			if (originalSource == null)
 				return null;
-			DesignSite site = _services.Component.GetSite(originalSource);
+			DesignItem site = _services.Component.GetDesignItem(originalSource);
 			if (site != null)
 				return site;
 			if (originalSource == _innerDesignPanel)

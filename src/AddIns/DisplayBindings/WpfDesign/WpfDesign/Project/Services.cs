@@ -46,7 +46,7 @@ namespace ICSharpCode.WpfDesign
 		/// <see cref="IVisualDesignObjectWrapper"/>,
 		/// or returns null to use the component itself as UIElement.
 		/// </returns>
-		UIElement CreateWrapper(DesignSite site);
+		UIElement CreateWrapper(DesignItem site);
 	}
 	
 	/// <summary>
@@ -58,7 +58,7 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Gets the design site this object was wrapping.
 		/// </summary>
-		DesignSite WrappedSite { get; }
+		DesignItem WrappedSite { get; }
 	}
 	#endregion
 	
@@ -109,7 +109,7 @@ namespace ICSharpCode.WpfDesign
 		event EventHandler SelectionChanging;
 		
 		/// <summary>Occurs after the current selection has changed.</summary>
-		event EventHandler<ComponentCollectionEventArgs> SelectionChanged;
+		event EventHandler<DesignItemCollectionEventArgs> SelectionChanged;
 		
 		/// <summary>Occurs when the primary selection is about to change.</summary>
 		event EventHandler PrimarySelectionChanging;
@@ -119,28 +119,28 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Gets if the specified component is selected.
 		/// </summary>
-		bool IsComponentSelected(object component);
+		bool IsComponentSelected(DesignItem component);
 		
 		/// <summary>
 		/// Gets the collection of selected components.
 		/// This is a copy of the actual selected components collection, the returned copy
 		/// of the collection will not reflect future changes to the selection.
 		/// </summary>
-		ICollection<object> SelectedComponents { get; }
+		ICollection<DesignItem> SelectedItems { get; }
 		
 		/// <summary>
 		/// Replaces the current selection with the specified selection.
 		/// </summary>
-		void SetSelectedComponents(ICollection<object> components);
+		void SetSelectedComponents(ICollection<DesignItem> components);
 		
 		/// <summary>
 		/// Modifies the current selection using the specified components and selectionType.
 		/// </summary>
-		void SetSelectedComponents(ICollection<object> components, SelectionTypes selectionType);
+		void SetSelectedComponents(ICollection<DesignItem> components, SelectionTypes selectionType);
 		
 		/// <summary>Gets the object that is currently the primary selected object.</summary>
 		/// <returns>The object that is currently the primary selected object.</returns>
-		object PrimarySelection { get; }
+		DesignItem PrimarySelection { get; }
 		
 		/// <summary>Gets the count of selected objects.</summary>
 		/// <returns>The number of selected objects.</returns>
@@ -158,18 +158,18 @@ namespace ICSharpCode.WpfDesign
 		/// <returns>
 		/// The site of the component, or null if the component is not registered.
 		/// </returns>
-		DesignSite GetSite(object component);
+		DesignItem GetDesignItem(object component);
 		
 		/// <summary>Registers a component for usage in the designer.</summary>
-		DesignSite RegisterComponentForDesigner(object component);
+		DesignItem RegisterComponentForDesigner(object component);
 		
 		// /// <summary>Unregisters a component from usage in the designer.</summary>
 		// void UnregisterComponentFromDesigner(DesignSite site);
 		
 		/// <summary>Event raised whenever a component is registered</summary>
-		event EventHandler<SiteEventArgs> ComponentRegistered;
+		event EventHandler<DesignItemEventArgs> ComponentRegistered;
 		/// <summary>Event raised whenever a component is unregistered</summary>
-		event EventHandler<SiteEventArgs> ComponentUnregistered;
+		event EventHandler<DesignItemEventArgs> ComponentUnregistered;
 	}
 	#endregion
 }

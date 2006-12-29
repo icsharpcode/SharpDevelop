@@ -85,8 +85,10 @@ namespace ICSharpCode.WpfDesign.Designer
 		void InitializeDesigner(XamlDocument document)
 		{
 			_currentDocument = document;
-			DesignSite rootSite = _componentService.RegisterXamlComponentRecursive(document.RootElement);
-			_designPanel.DesignedElement = DefaultVisualDesignService.CreateUIElementFor(rootSite);
+			XamlDesignItem rootSite = _componentService.RegisterXamlComponentRecursive(document.RootElement);
+			UIElement rootUI = DefaultVisualDesignService.CreateUIElementFor(rootSite);
+			rootSite.SetView(rootUI);
+			_designPanel.DesignedElement = rootUI;
 		}
 		
 		/// <summary>

@@ -14,7 +14,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 {
 	sealed class DefaultVisualDesignService : IVisualDesignService
 	{
-		public UIElement CreateWrapper(DesignSite site)
+		public UIElement CreateWrapper(DesignItem site)
 		{
 			if (site == null)
 				throw new ArgumentNullException("site");
@@ -27,9 +27,12 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				return new FallbackObjectWrapper(site);
 		}
 		
-		internal static UIElement CreateUIElementFor(DesignSite site)
+		internal static UIElement CreateUIElementFor(DesignItem site)
 		{
-			UIElement element = site.Services.VisualDesign.CreateWrapper(site);
+			IVisualDesignService service = site.Services.GetService<IVisualDesignService>();
+			if (service == null)
+				throw new ServiceRequiredException(typeof(IVisualDesignService));
+			UIElement element = service.CreateWrapper(site);
 			if (element != null) {
 				if (!(element is IVisualDesignObjectWrapper)) {
 					throw new DesignerException("IVisualDesignService.CreateWrapper must return null or UIElement implementing IVisualDesignObjectWrapper");
@@ -46,9 +49,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	
 	sealed class FallbackObjectWrapper : ContentControl, IVisualDesignObjectWrapper
 	{
-		DesignSite _site;
+		DesignItem _site;
 		
-		public FallbackObjectWrapper(DesignSite site)
+		public FallbackObjectWrapper(DesignItem site)
 		{
 			this._site = site;
 			
@@ -59,7 +62,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			this.Content = site.Component;
 		}
 		
-		public DesignSite WrappedSite {
+		public DesignItem WrappedSite {
 			get { return _site; }
 		}
 	}

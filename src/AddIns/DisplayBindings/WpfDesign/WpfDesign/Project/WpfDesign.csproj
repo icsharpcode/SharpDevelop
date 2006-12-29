@@ -59,7 +59,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="DesignerException.cs" />
     <Compile Include="DefaultServiceProvider.cs" />
-    <Compile Include="DesignSite.cs" />
+    <Compile Include="DesignItem.cs" />
     <Compile Include="Services.cs" />
     <Compile Include="Tools.cs" />
   </ItemGroup>

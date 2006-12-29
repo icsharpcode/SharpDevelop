@@ -105,7 +105,7 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Finds the designed element for the specified original source.
 		/// </summary>
-		DesignSite FindDesignedElementForOriginalSource(object originalSource);
+		DesignItem FindDesignedElementForOriginalSource(object originalSource);
 		
 		
 		// The following members were missing in <see cref="IInputElement"/>, but of course

@@ -12,14 +12,15 @@ using System.Windows;
 namespace ICSharpCode.WpfDesign
 {
 	/// <summary>
-	/// The DesignSite connects a component with the service system and the designers.
+	/// The DesignItem connects a component with the service system and the designers.
+	/// Equivalent to Cider's ModelItem.
 	/// </summary>
 	/// <remarks>
 	/// About the Cider extension system:
 	/// http://blogs.msdn.com/jnak/archive/2006/04/24/580393.aspx
 	/// http://blogs.msdn.com/jnak/archive/2006/08/04/687166.aspx
 	/// </remarks>
-	public abstract class DesignSite : IServiceProvider
+	public abstract class DesignItem : IServiceProvider
 	{
 		/// <summary>
 		/// Gets the component this DesignSite was created for.

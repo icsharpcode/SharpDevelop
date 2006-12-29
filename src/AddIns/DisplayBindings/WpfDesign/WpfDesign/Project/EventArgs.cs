@@ -13,46 +13,46 @@ namespace ICSharpCode.WpfDesign
 	/// <summary>
 	/// Event arguments specifying a component as parameter.
 	/// </summary>
-	public class SiteEventArgs : EventArgs
+	public class DesignItemEventArgs : EventArgs
 	{
-		readonly DesignSite _site;
+		readonly DesignItem _item;
 
 		/// <summary>
 		/// Creates a new ComponentEventArgs instance.
 		/// </summary>
-		public SiteEventArgs(DesignSite site)
+		public DesignItemEventArgs(DesignItem item)
 		{
-			_site = site;
+			_item = item;
 		}
 		
 		/// <summary>
 		/// The component affected by the event.
 		/// </summary>
-		public DesignSite Site {
-			get { return _site; }
+		public DesignItem Item {
+			get { return _item; }
 		}
 	}
 	
 	/// <summary>
 	/// Event arguments specifying a component as parameter.
 	/// </summary>
-	public class ComponentCollectionEventArgs : EventArgs
+	public class DesignItemCollectionEventArgs : EventArgs
 	{
-		readonly ICollection<object> _components;
+		readonly ICollection<DesignItem> _items;
 
 		/// <summary>
 		/// Creates a new ComponentCollectionEventArgs instance.
 		/// </summary>
-		public ComponentCollectionEventArgs(ICollection<object> components)
+		public DesignItemCollectionEventArgs(ICollection<DesignItem> items)
 		{
-			_components = components;
+			_items = items;
 		}
 		
 		/// <summary>
 		/// The components affected by the event.
 		/// </summary>
-		public ICollection<object> Components {
-			get { return _components; }
+		public ICollection<DesignItem> Items {
+			get { return _items; }
 		}
 	}
 }

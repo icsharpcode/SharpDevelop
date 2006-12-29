@@ -20,21 +20,21 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			this._surface = surface;
 		}
 		
-		public event EventHandler<SiteEventArgs> ComponentRegistered;
-		public event EventHandler<SiteEventArgs> ComponentUnregistered;
+		public event EventHandler<DesignItemEventArgs> ComponentRegistered;
+		public event EventHandler<DesignItemEventArgs> ComponentUnregistered;
 		
-		Dictionary<object, XamlDesignSite> _sites = new Dictionary<object, XamlDesignSite>();
+		Dictionary<object, XamlDesignItem> _sites = new Dictionary<object, XamlDesignItem>();
 		
-		public DesignSite GetSite(object component)
+		public DesignItem GetDesignItem(object component)
 		{
 			if (component == null)
 				throw new ArgumentNullException("component");
-			XamlDesignSite site;
+			XamlDesignItem site;
 			_sites.TryGetValue(component, out site);
 			return site;
 		}
 		
-		public DesignSite RegisterComponentForDesigner(object component)
+		public DesignItem RegisterComponentForDesigner(object component)
 		{
 			if (component == null)
 				throw new ArgumentNullException("component");
@@ -44,7 +44,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		/// <summary>
 		/// currently for use by UnregisterAllComponents only because it doesn't update the XAML
 		/// </summary>
-		void UnregisterComponentFromDesigner(DesignSite site)
+		void UnregisterComponentFromDesigner(DesignItem site)
 		{
 			if (site == null)
 				throw new ArgumentNullException("site");
@@ -53,14 +53,14 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				throw new ArgumentException("The site was not registered here!");
 			
 			if (ComponentUnregistered != null) {
-				ComponentUnregistered(this, new SiteEventArgs(site));
+				ComponentUnregistered(this, new DesignItemEventArgs(site));
 			}
 		}
 		
 		/// <summary>
 		/// registers components from an existing XAML tree
 		/// </summary>
-		internal XamlDesignSite RegisterXamlComponentRecursive(XamlObject obj)
+		internal XamlDesignItem RegisterXamlComponentRecursive(XamlObject obj)
 		{
 			if (obj == null) return null;
 			
@@ -71,10 +71,10 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				}
 			}
 			
-			XamlDesignSite site = new XamlDesignSite(obj, _surface);
+			XamlDesignItem site = new XamlDesignItem(obj, _surface);
 			_sites.Add(site.Component, site);
 			if (ComponentRegistered != null) {
-				ComponentRegistered(this, new SiteEventArgs(site));
+				ComponentRegistered(this, new DesignItemEventArgs(site));
 			}
 			return site;
 		}
