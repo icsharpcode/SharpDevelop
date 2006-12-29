@@ -13,42 +13,41 @@ using ICSharpCode.XmlEditor;
 namespace XmlEditor.Tests.Utils
 {
 	/// <summary>
-	/// Mocks the AddElementDialog so we can test the
+	/// Mocks the AddXmlNodeDialog so we can test the
 	/// XmlTreeViewContainerControl class when it displays
-	/// the AddElementDialog.
+	/// the AddElementDialog or the AddAttributeDialog.
 	/// </summary>
-	public class MockAddElementDialog : IAddElementDialog
+	public class MockAddXmlNodeDialog : IAddXmlNodeDialog
 	{
 		DialogResult dialogResult = DialogResult.OK;
-		List<string> elementNames = new List<string>();
+		List<string> names = new List<string>();
 		
 		/// <summary>
-		/// Specifies the element names to return from the 
-		/// IAddElementDialog.ElementNames property.
+		/// Specifies the names to return from the 
+		/// IAddXmlNodeDialog.GetNames method.
 		/// </summary>
-		public void SetElementNamesToReturn(string[] names)
+		public void SetNamesToReturn(string[] names)
 		{
-			elementNames.Clear();
+			this.names.Clear();
 			foreach (string name in names) {
-				elementNames.Add(name);
+				this.names.Add(name);
 			}
 		}
 		
 		/// <summary>
 		/// Specifies the dialog result to return from the
-		/// IAddElementDialog.ShowDialog method.
+		/// IAddXmlNodeDialog.ShowDialog method.
 		/// </summary>
 		public void SetDialogResult(DialogResult result)
 		{
 			dialogResult = result;
 		}
 		
-		#region IAddElementDialog implementation
+		#region IAddXmlNodeDialog implementation
 		
-		public string[] ElementNames {
-			get {
-				return elementNames.ToArray();
-			}
+		public string[] GetNames()
+		{
+			return names.ToArray();
 		}
 		
 		public DialogResult ShowDialog()

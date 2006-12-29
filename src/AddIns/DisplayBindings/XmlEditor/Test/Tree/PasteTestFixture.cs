@@ -349,6 +349,17 @@ namespace XmlEditor.Tests.Tree
 			Assert.IsNull(bodyElement.SelectSingleNode("p"));
 		}
 		
+		[Test]
+		public void CopyThenPasteToUnsupportedNode()
+		{
+			XmlNode node = editor.Document.CreateProcessingInstruction("a", "b");
+			mockXmlTreeView.SelectedNode = node;
+			editor.Copy();
+			mockXmlTreeView.SelectedElement = rootElement;
+			
+			Assert.IsFalse(editor.IsPasteEnabled);
+		}
+		
 		/// <summary>
 		/// Returns the xhtml strict schema as the default schema.
 		/// </summary>

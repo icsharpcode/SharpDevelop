@@ -111,23 +111,39 @@ namespace XmlEditor.Tests.Utils
 		}
 		
 		/// <summary>
-		/// Returns a new MockAddElementDialog for testing.
+		/// Calls the XmlTreeViewContainer's CreateAddAttributeDialog method.
 		/// </summary>
-		protected override IAddElementDialog CreateAddElementDialog(string[] elementNames)
+		public IAddXmlNodeDialog CallCreateAddAttributeDialog(string[] names)
 		{
-			MockAddElementDialog dialog = new MockAddElementDialog();
-			dialog.SetElementNamesToReturn(addElementDialogElementNamesReturned.ToArray());
+			return base.CreateAddAttributeDialog(names);
+		}
+		
+		/// <summary>
+		/// Calls the XmlTreeViewContainer's CreateAddElementDialog method.
+		/// </summary>
+		public IAddXmlNodeDialog CallCreateAddElementDialog(string[] names)
+		{
+			return base.CreateAddElementDialog(names);
+		}
+		
+		/// <summary>
+		/// Returns a new MockAddXmlNodeDialog for testing.
+		/// </summary>
+		protected override IAddXmlNodeDialog CreateAddElementDialog(string[] elementNames)
+		{
+			MockAddXmlNodeDialog dialog = new MockAddXmlNodeDialog();
+			dialog.SetNamesToReturn(addElementDialogElementNamesReturned.ToArray());
 			dialog.SetDialogResult(addElementDialogResult);
 			return dialog;
 		}
 		
 		/// <summary>
-		/// Returns a new MockAddAttributeDialog for testing.
+		/// Returns a new MockAddXmlNodeDialog for testing.
 		/// </summary>
-		protected override IAddAttributeDialog CreateAddAttributeDialog(string[] attributeNames)
+		protected override IAddXmlNodeDialog CreateAddAttributeDialog(string[] attributeNames)
 		{
-			MockAddAttributeDialog dialog = new MockAddAttributeDialog();
-			dialog.SetAttributeNamesToReturn(addAttributeDialogAttributeNamesReturned.ToArray());
+			MockAddXmlNodeDialog dialog = new MockAddXmlNodeDialog();
+			dialog.SetNamesToReturn(addAttributeDialogAttributeNamesReturned.ToArray());
 			dialog.SetDialogResult(addAttributeDialogResult);
 			return dialog;
 		}

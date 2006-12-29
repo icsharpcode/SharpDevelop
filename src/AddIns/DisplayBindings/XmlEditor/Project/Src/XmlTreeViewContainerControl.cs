@@ -296,9 +296,9 @@ namespace ICSharpCode.XmlEditor
 		/// <returns>The attributes selected by the user.</returns>
 		public string[] SelectNewAttributes(string[] attributes)
 		{
-			using (IAddAttributeDialog addAttributeDialog = CreateAddAttributeDialog(attributes)) {
+			using (IAddXmlNodeDialog addAttributeDialog = CreateAddAttributeDialog(attributes)) {
 				if (addAttributeDialog.ShowDialog() == DialogResult.OK) {
-					return addAttributeDialog.AttributeNames;
+					return addAttributeDialog.GetNames();
 				}
 				return new string[0];
 			}
@@ -321,9 +321,9 @@ namespace ICSharpCode.XmlEditor
 		/// <returns>The elements selected by the user.</returns>
 		public string[] SelectNewElements(string[] elements)
 		{
-			using (IAddElementDialog addElementDialog = CreateAddElementDialog(elements)) {
+			using (IAddXmlNodeDialog addElementDialog = CreateAddElementDialog(elements)) {
 				if (addElementDialog.ShowDialog() == DialogResult.OK) {
-					return addElementDialog.ElementNames;
+					return addElementDialog.GetNames();
 				}
 				return new string[0];
 			}
@@ -649,9 +649,12 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		/// <param name="elementNames">The element names to be listed in the
 		/// dialog.</param>
-		protected virtual IAddElementDialog CreateAddElementDialog(string[] elementNames)
+		protected virtual IAddXmlNodeDialog CreateAddElementDialog(string[] elementNames)
 		{
-			return new AddElementDialog(elementNames);
+			AddXmlNodeDialog dialog = new AddXmlNodeDialog(elementNames);
+			dialog.Text = StringParser.Parse("${res:ICSharpCode.XmlEditor.AddElementDialog.Title}");
+			dialog.CustomNameLabelText = StringParser.Parse("${res:ICSharpCode.XmlEditor.AddElementDialog.CustomElementLabel}");
+			return dialog;
 		}
 		
 		/// <summary>
@@ -659,9 +662,12 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		/// <param name="attributeNames">The attribute names to be listed in the
 		/// dialog.</param>
-		protected virtual IAddAttributeDialog CreateAddAttributeDialog(string[] attributeNames)
+		protected virtual IAddXmlNodeDialog CreateAddAttributeDialog(string[] attributeNames)
 		{
-			return new AddAttributeDialog(attributeNames);
+			AddXmlNodeDialog dialog = new AddXmlNodeDialog(attributeNames);
+			dialog.Text = StringParser.Parse("${res:ICSharpCode.XmlEditor.AddAttributeDialog.Title}");
+			dialog.CustomNameLabelText = StringParser.Parse("${res:ICSharpCode.XmlEditor.AddAttributeDialog.CustomAttributeLabel}");
+			return dialog;
 		}
 		
 		/// <summary>

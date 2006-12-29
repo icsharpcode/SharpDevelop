@@ -5,22 +5,23 @@
 //     <version>$Revision$</version>
 // </file>
 
+
 using System;
 using System.Windows.Forms;
 
 namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
-	/// Interface for the AddAttributeDialog.
+	/// Interface for the AddXmlNodeDialog.
 	/// </summary>
-	public interface IAddAttributeDialog : IDisposable
+	public interface IAddXmlNodeDialog : IDisposable
 	{
 		/// <summary>
-		/// The attribute names that should be added. These are the
-		/// attribute names that the user selected in the dialog when
+		/// The names that should be added. These are the
+		/// names that the user selected in the dialog when
 		/// it was closed.
 		/// </summary>
-		string[] AttributeNames {get;}
+		string[] GetNames();
 		
 		/// <summary>
 		/// Shows the dialog.
