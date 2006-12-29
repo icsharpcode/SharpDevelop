@@ -46,7 +46,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		
 		public void SetSelectedComponents(ICollection<DesignItem> components)
 		{
-			SetSelectedComponents(components, SelectionTypes.Auto);
+			SetSelectedComponents(components, SelectionTypes.Replace);
 		}
 		
 		public void SetSelectedComponents(ICollection<DesignItem> components, SelectionTypes selectionType)

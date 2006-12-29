@@ -48,7 +48,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// </summary>
 		public UIElement DesignedElement {
 			get {
-				return _designPanel.DesignedElement;
+				return _designPanel.Child;
 			}
 		}
 		
@@ -71,9 +71,11 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		void InitializeDesigner(DesignContext context)
 		{
+			context.Services.AddService(typeof(IDesignPanel), _designPanel);
+			
 			_designContext = context;
 			_designPanel.Context = context;
-			_designPanel.DesignedElement = context.RootItem.View;
+			_designPanel.Child = context.RootItem.View;
 		}
 		
 		/// <summary>
@@ -83,7 +85,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
 			_designContext = null;
 			_designPanel.Context = null;
-			_designPanel.DesignedElement = null;
+			_designPanel.Child = null;
 		}
 	}
 }

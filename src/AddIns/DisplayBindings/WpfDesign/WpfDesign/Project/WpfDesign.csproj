@@ -57,17 +57,23 @@
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Adorners\AdornerPanel.cs" />
+    <Compile Include="Adorners\AdornerProvider.cs" />
+    <Compile Include="Adorners\AdornerProviderClasses.cs" />
+    <Compile Include="Adorners\Placement.cs" />
     <Compile Include="DesignContext.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="DesignerException.cs" />
     <Compile Include="Extensions\BehaviorExtension.cs" />
     <Compile Include="Extensions\CustomInstanceFactory.cs" />
+    <Compile Include="Extensions\DefaultExtension.cs" />
     <Compile Include="Extensions\Extension.cs" />
     <Compile Include="Extensions\ExtensionForAttribute.cs" />
     <Compile Include="Extensions\ExtensionManager.cs" />
     <Compile Include="Extensions\ExtensionServer.cs" />
     <Compile Include="Extensions\ExtensionServerAttribute.cs" />
+    <Compile Include="Extensions\SelectionExtensionServer.cs" />
     <Compile Include="HashSet.cs" />
     <Compile Include="Linq.cs" />
     <Compile Include="ServiceContainer.cs" />
@@ -78,5 +84,6 @@
   <ItemGroup>
     <Folder Include="Configuration" />
     <Folder Include="Extensions" />
+    <Folder Include="Adorners" />
   </ItemGroup>
 </Project>

@@ -33,7 +33,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		}
 		
 		/// <summary>
-		/// Gets the visual child the design surfaces uses to display itself.
+		/// Gets the visual child.
 		/// </summary>
 		protected override Visual GetVisualChild(int index)
 		{
@@ -44,7 +44,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		}
 		
 		/// <summary>
-		/// Gets the number of visual children the design surface has.
+		/// Gets the number of visual children.
 		/// </summary>
 		protected override int VisualChildrenCount {
 			get { return _visualChild != null ? 1 : 0; }

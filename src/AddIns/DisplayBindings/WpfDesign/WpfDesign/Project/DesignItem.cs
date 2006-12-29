@@ -71,40 +71,54 @@ namespace ICSharpCode.WpfDesign
 			}
 		}
 		
-		internal void SetExtensionServers(ExtensionServer[] extensionServers)
+		internal void SetExtensionServers(ExtensionManager extensionManager, ExtensionServer[] extensionServers)
 		{
 			Debug.Assert(_extensionServers == null);
 			Debug.Assert(extensionServers != null);
 			
 			_extensionServers = extensionServers;
 			_extensionServerIsApplied = new bool[extensionServers.Length];
-		}
-		
-		internal void ApplyExtensions(ExtensionManager extensionManager)
-		{
-			Debug.Assert(_extensionServers != null);
+			
 			for (int i = 0; i < _extensionServers.Length; i++) {
 				bool shouldApply = _extensionServers[i].ShouldApplyExtensions(this);
 				if (shouldApply != _extensionServerIsApplied[i]) {
-					ExtensionServer server = _extensionServers[i];
-					if (shouldApply) {
-						// add extensions
-						foreach (Extension ext in extensionManager.CreateExtensions(server, this)) {
-							_extensions.Add(new ExtensionEntry(ext, server));
-						}
-					} else {
-						// remove extensions
-						_extensions.RemoveAll(
-							delegate (ExtensionEntry entry) {
-								if (entry.Server == server) {
-									server.RemoveExtension(entry.Extension);
-									return true;
-								} else {
-									return false;
-								}
-							});
+					_extensionServerIsApplied[i] = shouldApply;
+					ApplyUnapplyExtensionServer(extensionManager, shouldApply, _extensionServers[i]);
+				}
+			}
+		}
+		
+		internal void ReapplyExtensionServer(ExtensionManager extensionManager, ExtensionServer server)
+		{
+			for (int i = 0; i < _extensionServers.Length; i++) {
+				if (_extensionServers[i] == server) {
+					bool shouldApply = server.ShouldApplyExtensions(this);
+					if (shouldApply != _extensionServerIsApplied[i]) {
+						_extensionServerIsApplied[i] = shouldApply;
+						ApplyUnapplyExtensionServer(extensionManager, shouldApply, server);
 					}
 				}
+			}
+		}
+		
+		private void ApplyUnapplyExtensionServer(ExtensionManager extensionManager, bool shouldApply, ExtensionServer server)
+		{
+			if (shouldApply) {
+				// add extensions
+				foreach (Extension ext in extensionManager.CreateExtensions(server, this)) {
+					_extensions.Add(new ExtensionEntry(ext, server));
+				}
+			} else {
+				// remove extensions
+				_extensions.RemoveAll(
+					delegate (ExtensionEntry entry) {
+						if (entry.Server == server) {
+							server.RemoveExtension(entry.Extension);
+							return true;
+						} else {
+							return false;
+						}
+					});
 			}
 		}
 		#endregion

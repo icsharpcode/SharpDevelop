@@ -10,9 +10,7 @@ using System.Windows.Input;
 
 namespace ICSharpCode.WpfDesign.Designer.Services
 {
-	/// <summary>
-	/// See <see cref="IToolService"/> for description.
-	/// </summary>
+	// See IToolService for description.
 	sealed class DefaultToolService : IToolService
 	{
 		PointerTool _pointerTool;
@@ -57,11 +55,13 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	abstract class MouseGestureBase
 	{
 		protected IDesignPanel designPanel;
+		protected ServiceContainer services;
 		bool isStarted;
 		
 		public void Start(IDesignPanel designPanel, MouseButtonEventArgs e)
 		{
 			this.designPanel = designPanel;
+			this.services = designPanel.Context.Services;
 			isStarted = true;
 			designPanel.StartInputAction();
 			RegisterEvents();
@@ -125,6 +125,12 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		protected override void OnStarted(MouseButtonEventArgs e)
 		{
 			base.OnStarted(e);
+			DesignItem item = designPanel.FindDesignedElementForOriginalSource(e.OriginalSource);
+			if (item != null) {
+				services.Selection.SetSelectedComponents(new DesignItem[] { item }, SelectionTypes.Auto);
+			} else {
+				services.Selection.SetSelectedComponents(new DesignItem[] { }, SelectionTypes.Auto);
+			}
 		}
 		
 		protected override void OnStopped()

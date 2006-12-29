@@ -32,8 +32,17 @@ namespace ICSharpCode.WpfDesign.Extensions
 		
 		void OnComponentRegistered(object sender, DesignItemEventArgs e)
 		{
-			e.Item.SetExtensionServers(GetExtensionServersForItem(e.Item));
-			e.Item.ApplyExtensions(this);
+			e.Item.SetExtensionServers(this, GetExtensionServersForItem(e.Item));
+		}
+		
+		/// <summary>
+		/// Re-applies extensions from the ExtensionServer to the specified design items.
+		/// </summary>
+		public void ReapplyExtensions(IEnumerable<DesignItem> items, ExtensionServer server)
+		{
+			foreach (DesignItem item in items) {
+				item.ReapplyExtensionServer(this, server);
+			}
 		}
 		
 		#region Manage ExtensionEntries
@@ -173,10 +182,11 @@ namespace ICSharpCode.WpfDesign.Extensions
 		{
 			Debug.Assert(extensionType != null);
 			
-			foreach (ExtensionServerAttribute esa in extensionType.GetCustomAttributes(typeof(ExtensionServerAttribute), true)) {
-				return GetExtensionServer(esa);
-			}
-			throw new DesignerException("Extension types must have a [ExtensionServer] attribute.");
+			object[] extensionServerAttributes = extensionType.GetCustomAttributes(typeof(ExtensionServerAttribute), true);
+			if (extensionServerAttributes.Length != 1)
+				throw new DesignerException("Extension types must have exactly one [ExtensionServer] attribute.");
+			
+			return GetExtensionServer((ExtensionServerAttribute)extensionServerAttributes[0]);
 		}
 		
 		/// <summary>

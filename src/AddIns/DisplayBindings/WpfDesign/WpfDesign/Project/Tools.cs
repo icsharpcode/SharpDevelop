@@ -6,8 +6,10 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Input;
 using System.Windows;
+using ICSharpCode.WpfDesign.Adorners;
 
 namespace ICSharpCode.WpfDesign
 {
@@ -118,6 +120,10 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		DesignItem FindDesignedElementForOriginalSource(object originalSource);
 		
+		/// <summary>
+		/// Gets the list of adorners displayed on the design panel.
+		/// </summary>
+		ICollection<AdornerPanel> Adorners { get; }
 		
 		// The following members were missing in <see cref="IInputElement"/>, but of course
 		// are supported on the DesignPanel:

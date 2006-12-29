@@ -11,42 +11,106 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Collections.Generic;
 using System.Windows.Threading;
 using ICSharpCode.WpfDesign.Designer.Controls;
+using ICSharpCode.WpfDesign.Adorners;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
-	sealed class DesignPanel : SingleVisualChildElement, IDesignPanel
+	sealed class DesignPanel : Decorator, IDesignPanel
 	{
-		sealed class InnerDesignPanel : SingleVisualChildElement
+		/// <summary>
+		/// this element is always hit (unless HitTestVisible is set to false)
+		/// </summary>
+		sealed class EatAllHitTestRequests : UIElement
 		{
-			internal void SetElement(UIElement element)
+			protected override GeometryHitTestResult HitTestCore(GeometryHitTestParameters hitTestParameters)
 			{
-				this.VisualChild = element;
+				return new GeometryHitTestResult(this, IntersectionDetail.FullyContains);
+			}
+			
+			protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
+			{
+				return new PointHitTestResult(this, hitTestParameters.HitPoint);
 			}
 		}
 		
 		DesignContext _context;
-		InnerDesignPanel _innerDesignPanel;
-		UIElement _designedElement;
+		EatAllHitTestRequests _eatAllHitTestRequests;
+		AdornerLayer _adornerLayer;
 		
 		public DesignPanel()
 		{
 			this.Focusable = true;
-			
-			_innerDesignPanel = new InnerDesignPanel();
-			this.VisualChild = _innerDesignPanel;
+			_eatAllHitTestRequests = new EatAllHitTestRequests();
+			_eatAllHitTestRequests.IsHitTestVisible = false;
+			_adornerLayer = new AdornerLayer(this);
 		}
 		
-		public UIElement DesignedElement {
-			get {
-				return _designedElement;
-			}
+		#region Visual Child Management
+		public override UIElement Child {
+			get { return base.Child; }
 			set {
-				_designedElement = value;
-				_innerDesignPanel.SetElement(value);
+				if (base.Child == value)
+					return;
+				if (value == null) {
+					// Child is being set from some value to null
+					
+					// remove _adornerLayer and _eatAllHitTestRequests
+					RemoveVisualChild(_adornerLayer);
+					RemoveVisualChild(_eatAllHitTestRequests);
+				} else if (base.Child == null) {
+					// Child is being set from null to some value
+					AddVisualChild(_adornerLayer);
+					AddVisualChild(_eatAllHitTestRequests);
+				}
+				base.Child = value;
 			}
 		}
+		
+		protected override Visual GetVisualChild(int index)
+		{
+			if (base.Child != null) {
+				if (index == 0)
+					return base.Child;
+				else if (index == 1)
+					return _eatAllHitTestRequests;
+				else if (index == 2)
+					return _adornerLayer;
+			}
+			return base.GetVisualChild(index);
+		}
+		
+		protected override int VisualChildrenCount {
+			get {
+				if (base.Child != null)
+					return 3;
+				else
+					return base.VisualChildrenCount;
+			}
+		}
+		
+		protected override Size MeasureOverride(Size constraint)
+		{
+			Size result = base.MeasureOverride(constraint);
+			if (this.Child != null) {
+				_adornerLayer.Measure(constraint);
+				_eatAllHitTestRequests.Measure(constraint);
+			}
+			return result;
+		}
+		
+		protected override Size ArrangeOverride(Size arrangeSize)
+		{
+			Size result = base.ArrangeOverride(arrangeSize);
+			if (this.Child != null) {
+				_adornerLayer.Arrange(new Rect(new Point(0, 0), arrangeSize));
+				_eatAllHitTestRequests.Arrange(new Rect(new Point(0, 0), arrangeSize));
+			}
+			return result;
+		}
+		#endregion
 		
 		/// <summary>
 		/// Gets/Sets the design context.
@@ -59,16 +123,6 @@ namespace ICSharpCode.WpfDesign.Designer
 		private IToolService ToolService {
 			[DebuggerStepThrough]
 			get { return _context.Services.Tool; }
-		}
-		
-		protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
-		{
-			return new PointHitTestResult(this, hitTestParameters.HitPoint);
-		}
-		
-		protected override GeometryHitTestResult HitTestCore(GeometryHitTestParameters hitTestParameters)
-		{
-			return new GeometryHitTestResult(this, IntersectionDetail.NotCalculated);
 		}
 		
 		protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
@@ -98,7 +152,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			DesignItem site = _context.Services.Component.GetDesignItem(originalSource);
 			if (site != null)
 				return site;
-			if (originalSource == _innerDesignPanel)
+			if (originalSource == this)
 				return null;
 			DependencyObject dObj = originalSource as DependencyObject;
 			if (dObj == null)
@@ -128,14 +182,20 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
 			if (_isInInputAction) throw new InvalidOperationException();
 			_isInInputAction = true;
-			_innerDesignPanel.IsHitTestVisible = false;
+			_eatAllHitTestRequests.IsHitTestVisible = true;
 		}
 		
 		void IDesignPanel.StopInputAction()
 		{
 			if (!_isInInputAction) throw new InvalidOperationException();
 			_isInInputAction = false;
-			_innerDesignPanel.IsHitTestVisible = true;
+			_eatAllHitTestRequests.IsHitTestVisible = false;
+		}
+		
+		public ICollection<AdornerPanel> Adorners {
+			get {
+				return _adornerLayer.Adorners;
+			}
 		}
 	}
 	
