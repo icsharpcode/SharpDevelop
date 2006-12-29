@@ -87,9 +87,9 @@ namespace ICSharpCode.WpfDesign
 	public interface IDesignPanel : IInputElement
 	{
 		/// <summary>
-		/// Gets the service provider used by the DesignPanel.
+		/// Gets the design context used by the DesignPanel.
 		/// </summary>
-		DefaultServiceProvider Services { get; }
+		DesignContext Context { get; }
 		
 		/// <summary>
 		/// Starts an input action. This prevents components and tools from getting input events,

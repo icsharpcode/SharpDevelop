@@ -26,14 +26,12 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 		}
 		
-		DefaultServiceProvider _services;
+		DesignContext _context;
 		InnerDesignPanel _innerDesignPanel;
 		UIElement _designedElement;
 		
-		public DesignPanel(DefaultServiceProvider services)
+		public DesignPanel()
 		{
-			this._services = services;
-			
 			this.Focusable = true;
 			
 			_innerDesignPanel = new InnerDesignPanel();
@@ -48,6 +46,19 @@ namespace ICSharpCode.WpfDesign.Designer
 				_designedElement = value;
 				_innerDesignPanel.SetElement(value);
 			}
+		}
+		
+		/// <summary>
+		/// Gets/Sets the design context.
+		/// </summary>
+		public DesignContext Context {
+			get { return _context; }
+			set { _context = value; }
+		}
+		
+		private IToolService ToolService {
+			[DebuggerStepThrough]
+			get { return _context.Services.Tool; }
 		}
 		
 		protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
@@ -69,7 +80,7 @@ namespace ICSharpCode.WpfDesign.Designer
 				if (site != null) {
 					Debug.WriteLine(" Found designed element: " + site.Component.GetType().Name);
 				}
-				_services.Tool.CurrentTool.OnMouseDown(this, e);
+				ToolService.CurrentTool.OnMouseDown(this, e);
 			}
 		}
 		
@@ -77,7 +88,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
 			if (originalSource == null)
 				return null;
-			DesignItem site = _services.Component.GetDesignItem(originalSource);
+			DesignItem site = _context.Services.Component.GetDesignItem(originalSource);
 			if (site != null)
 				return site;
 			if (originalSource == _innerDesignPanel)
@@ -103,16 +114,6 @@ namespace ICSharpCode.WpfDesign.Designer
 				}
 			}
 		}
-		
-		#region IDesignPanel implementation
-		public UIElement DesignPanelUI {
-			get { return this; }
-		}
-		
-		public DefaultServiceProvider Services {
-			get { return _services; }
-		}
-		#endregion
 		
 		bool _isInInputAction;
 		

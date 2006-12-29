@@ -9,15 +9,15 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.WpfDesign.XamlDom;
 
-namespace ICSharpCode.WpfDesign.Designer.Services
+namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
-	sealed class DefaultComponentService : IComponentService
+	sealed class XamlComponentService : IComponentService
 	{
-		readonly DesignSurface _surface;
+		readonly XamlDesignContext _context;
 		
-		public DefaultComponentService(DesignSurface surface)
+		public XamlComponentService(XamlDesignContext context)
 		{
-			this._surface = surface;
+			this._context = context;
 		}
 		
 		public event EventHandler<DesignItemEventArgs> ComponentRegistered;
@@ -71,7 +71,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				}
 			}
 			
-			XamlDesignItem site = new XamlDesignItem(obj, _surface);
+			XamlDesignItem site = new XamlDesignItem(obj, _context);
 			_sites.Add(site.Component, site);
 			if (ComponentRegistered != null) {
 				ComponentRegistered(this, new DesignItemEventArgs(site));

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 
 namespace ICSharpCode.WpfDesign
@@ -20,7 +21,7 @@ namespace ICSharpCode.WpfDesign
 	/// http://blogs.msdn.com/jnak/archive/2006/04/24/580393.aspx
 	/// http://blogs.msdn.com/jnak/archive/2006/08/04/687166.aspx
 	/// </remarks>
-	public abstract class DesignItem : IServiceProvider
+	public abstract class DesignItem
 	{
 		/// <summary>
 		/// Gets the component this DesignSite was created for.
@@ -32,23 +33,17 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public abstract UIElement View { get; }
 		
-		DefaultServiceProvider _defaultServiceProvider;
+		/// <summary>
+		/// Gets the design context.
+		/// </summary>
+		public abstract DesignContext Context { get; }
 		
 		/// <summary>
 		/// Gets an instance that provides convenience properties for the most-used designers.
 		/// </summary>
-		public DefaultServiceProvider Services {
-			get {
-				if (_defaultServiceProvider == null) {
-					_defaultServiceProvider = new DefaultServiceProvider(this);
-				}
-				return _defaultServiceProvider;
-			}
+		public ServiceContainer Services {
+			[DebuggerStepThrough]
+			get { return this.Context.Services; }
 		}
-		
-		/// <summary>
-		/// Gets the service with the specified type.
-		/// </summary>
-		public abstract object GetService(Type serviceType);
 	}
 }

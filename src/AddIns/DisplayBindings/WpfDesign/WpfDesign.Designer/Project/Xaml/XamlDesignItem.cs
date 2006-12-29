@@ -9,23 +9,23 @@ using System;
 using System.Windows;
 using ICSharpCode.WpfDesign.XamlDom;
 
-namespace ICSharpCode.WpfDesign.Designer
+namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
 	sealed class XamlDesignItem : DesignItem
 	{
-		readonly XamlObject xamlObject;
-		readonly DesignSurface designSurface;
+		readonly XamlObject _xamlObject;
+		readonly XamlDesignContext _designContext;
 		UIElement _view;
 		
-		public XamlDesignItem(XamlObject xamlObject, DesignSurface designSurface)
+		public XamlDesignItem(XamlObject xamlObject, XamlDesignContext designContext)
 		{
-			this.xamlObject = xamlObject;
-			this.designSurface = designSurface;
+			this._xamlObject = xamlObject;
+			this._designContext = designContext;
 		}
 		
 		public override object Component {
 			get {
-				return xamlObject.Instance;
+				return _xamlObject.Instance;
 			}
 		}
 		
@@ -43,9 +43,8 @@ namespace ICSharpCode.WpfDesign.Designer
 			_view = newView;
 		}
 		
-		public override object GetService(Type serviceType)
-		{
-			return designSurface.Services.GetService(serviceType);
+		public override DesignContext Context {
+			get { return _designContext; }
 		}
 	}
 }

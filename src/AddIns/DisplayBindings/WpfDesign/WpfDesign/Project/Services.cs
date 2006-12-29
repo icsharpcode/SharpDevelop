@@ -11,27 +11,6 @@ using System.Windows;
 
 namespace ICSharpCode.WpfDesign
 {
-	#region IServiceContainer
-	/// <summary>
-	/// The <see cref="IServiceContainer"/> is a built-in service that manages the list of services.
-	/// You can only add services to it, removing or replacing services is not supported because
-	/// many designers depend on keeping their services available.
-	/// </summary>
-	public interface IServiceContainer : IServiceProvider
-	{
-		/// <summary>
-		/// Adds a new service to the container.
-		/// </summary>
-		/// <param name="serviceInterface">
-		/// The type of the service interface to use as a key for the service.
-		/// </param>
-		/// <param name="serviceInstance">
-		/// The service instance implementing that interface.
-		/// </param>
-		void AddService(Type serviceInterface, object serviceInstance);
-	}
-	#endregion
-	
 	#region IVisualDesignService
 	/// <summary>
 	/// A service that can visualize non-UIElement objects on a design surface.
