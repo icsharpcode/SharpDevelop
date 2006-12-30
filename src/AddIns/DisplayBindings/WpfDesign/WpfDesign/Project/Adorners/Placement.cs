@@ -45,10 +45,61 @@ namespace ICSharpCode.WpfDesign.Adorners
 	/// </summary>
 	public sealed class RelativePlacement : Placement
 	{
+		/// <summary>
+		/// Creates a new RelativePlacement instance. The default instance is a adorner with zero size, you
+		/// have to set some properties to define the placement.
+		/// </summary>
+		public RelativePlacement()
+		{
+		}
+		
+		/// <summary>
+		/// Creates a new RelativePlacement instance from the specified horizontal and vertical alignments.
+		/// </summary>
+		public RelativePlacement(HorizontalAlignment horizontal, VerticalAlignment vertical)
+		{
+			switch (horizontal) {
+				case HorizontalAlignment.Left:
+					widthRelativeToDesiredWidth = 1;
+					xRelativeToAdornerWidth = -1;
+					break;
+				case HorizontalAlignment.Right:
+					widthRelativeToDesiredWidth = 1;
+					xRelativeToContentWidth = 1;
+					break;
+				case HorizontalAlignment.Center:
+					widthRelativeToDesiredWidth = 1;
+					xRelativeToContentWidth = 0.5;
+					xRelativeToAdornerWidth = -0.5;
+					break;
+				case HorizontalAlignment.Stretch:
+					widthRelativeToContentWidth = 1;
+					break;
+			}
+			switch (vertical) {
+				case VerticalAlignment.Top:
+					heightRelativeToDesiredHeight = 1;
+					yRelativeToAdornerHeight = -1;
+					break;
+				case VerticalAlignment.Bottom:
+					heightRelativeToDesiredHeight = 1;
+					yRelativeToContentHeight = 1;
+					break;
+				case VerticalAlignment.Center:
+					heightRelativeToDesiredHeight = 1;
+					yRelativeToContentHeight = 0.5;
+					yRelativeToAdornerHeight = -0.5;
+					break;
+				case VerticalAlignment.Stretch:
+					heightRelativeToContentHeight = 1;
+					break;
+			}
+		}
+		
 		double widthRelativeToDesiredWidth, heightRelativeToDesiredHeight;
 		
 		/// <summary>
-		/// Gets/Sets the width of the adorner relative to the desired adorner width.
+		/// Gets/Sets the width of the adorner as factor relative to the desired adorner width.
 		/// </summary>
 		public double WidthRelativeToDesiredWidth {
 			get { return widthRelativeToDesiredWidth; }
@@ -56,7 +107,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 		}
 		
 		/// <summary>
-		/// Gets/Sets the height of the adorner relative to the desired adorner height.
+		/// Gets/Sets the height of the adorner as factor relative to the desired adorner height.
 		/// </summary>
 		public double HeightRelativeToDesiredHeight {
 			get { return heightRelativeToDesiredHeight; }
@@ -66,7 +117,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 		double widthRelativeToContentWidth, heightRelativeToContentHeight;
 		
 		/// <summary>
-		/// Gets/Sets the width of the adorner relative to the width of the adorned item.
+		/// Gets/Sets the width of the adorner as factor relative to the width of the adorned item.
 		/// </summary>
 		public double WidthRelativeToContentWidth {
 			get { return widthRelativeToContentWidth; }
@@ -74,7 +125,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 		}
 		
 		/// <summary>
-		/// Gets/Sets the height of the adorner relative to the height of the adorned item.
+		/// Gets/Sets the height of the adorner as factor relative to the height of the adorned item.
 		/// </summary>
 		public double HeightRelativeToContentHeight {
 			get { return heightRelativeToContentHeight; }
@@ -101,14 +152,12 @@ namespace ICSharpCode.WpfDesign.Adorners
 		
 		Size CalculateSize(UIElement adorner, Size adornedElementSize)
 		{
-			Size size = new Size(widthOffset, heightOffset);
-			if (widthRelativeToDesiredWidth != 0 || heightRelativeToDesiredHeight != 0) {
-				size.Width += widthRelativeToDesiredWidth * adorner.DesiredSize.Width;
-				size.Height += heightRelativeToDesiredHeight * adorner.DesiredSize.Height;
-			}
-			size.Width += widthRelativeToContentWidth * adornedElementSize.Width;
-			size.Height += heightRelativeToContentHeight * adornedElementSize.Height;
-			return size;
+			return new Size(widthOffset
+			                + widthRelativeToDesiredWidth * adorner.DesiredSize.Width
+			                + widthRelativeToContentWidth * adornedElementSize.Width,
+			                heightOffset
+			                + heightRelativeToDesiredHeight * adorner.DesiredSize.Height
+			                + heightRelativeToContentHeight * adornedElementSize.Height);
 		}
 		
 		double xOffset, yOffset;
@@ -129,9 +178,50 @@ namespace ICSharpCode.WpfDesign.Adorners
 			set { yOffset = value; }
 		}
 		
+		double xRelativeToAdornerWidth, yRelativeToAdornerHeight;
+		
+		/// <summary>
+		/// Gets/Sets the left border of the adorner element as factor relative to the width of the adorner.
+		/// </summary>
+		public double XRelativeToAdornerWidth {
+			get { return xRelativeToAdornerWidth; }
+			set { xRelativeToAdornerWidth = value; }
+		}
+		
+		/// <summary>
+		/// Gets/Sets the top border of the adorner element as factor relative to the height of the adorner.
+		/// </summary>
+		public double YRelativeToAdornerHeight {
+			get { return yRelativeToAdornerHeight; }
+			set { yRelativeToAdornerHeight = value; }
+		}
+		
+		double xRelativeToContentWidth, yRelativeToContentHeight;
+		
+		/// <summary>
+		/// Gets/Sets the left border of the adorner element as factor relative to the width of the adorned content.
+		/// </summary>
+		public double XRelativeToContentWidth {
+			get { return xRelativeToContentWidth; }
+			set { xRelativeToContentWidth = value; }
+		}
+		
+		/// <summary>
+		/// Gets/Sets the top border of the adorner element as factor relative to the height of the adorned content.
+		/// </summary>
+		public double YRelativeToContentHeight {
+			get { return yRelativeToContentHeight; }
+			set { yRelativeToContentHeight = value; }
+		}
+		
 		Point CalculatePosition(Size adornedElementSize, Size adornerSize)
 		{
-			return new Point(xOffset, yOffset);
+			return new Point(xOffset
+			                 + xRelativeToAdornerWidth * adornerSize.Width
+			                 + xRelativeToContentWidth * adornedElementSize.Width,
+			                 yOffset
+			                 + yRelativeToAdornerHeight * adornerSize.Height
+			                 + yRelativeToContentHeight * adornedElementSize.Height);
 		}
 		
 		/// <summary>
@@ -143,7 +233,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 			adorner.Arrange(new Rect(CalculatePosition(adornedElementSize, adornerSize), adornerSize));
 		}
 	}
-
+	
 	/// <summary>
 	/// Describes the space in which an adorner is placed.
 	/// </summary>
@@ -161,33 +251,5 @@ namespace ICSharpCode.WpfDesign.Adorners
 		/// The adorner is not affected by transforms of designed controls.
 		/// </summary>
 		Designer
-	}
-
-	/// <summary>
-	/// The possible layers where adorners can be placed.
-	/// </summary>
-	public enum AdornerZLayer
-	{
-		/// <summary>
-		/// This layer is below the other adorner layers.
-		/// </summary>
-		Low,
-		/// <summary>
-		/// This layer is for normal background adorners.
-		/// </summary>
-		Normal,
-		/// <summary>
-		/// This layer is for selection adorners
-		/// </summary>
-		Selection,
-		/// <summary>
-		/// This layer is for primary selection adorners
-		/// </summary>
-		PrimarySelection,
-		/// <summary>
-		/// This layer is above the other layers.
-		/// It is used for temporary drawings, e.g. the selection frame while selecting multiple controls with the mouse.
-		/// </summary>
-		High
 	}
 }

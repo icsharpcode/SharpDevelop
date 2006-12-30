@@ -38,6 +38,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		{
 			if (component == null)
 				throw new ArgumentNullException("component");
+			
 			throw new NotImplementedException();
 		}
 		

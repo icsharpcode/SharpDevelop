@@ -35,12 +35,28 @@ namespace ICSharpCode.WpfDesign
 		public abstract DesignContext Context { get; }
 		
 		/// <summary>
+		/// Gets the parent design item.
+		/// </summary>
+		public abstract DesignItem Parent { get; }
+		
+		/// <summary>
+		/// Gets properties set on the design item.
+		/// </summary>
+		public abstract DesignItemPropertyCollection Properties { get; }
+		
+		/// <summary>
 		/// Gets an instance that provides convenience properties for the most-used designers.
 		/// </summary>
 		public ServiceContainer Services {
 			[DebuggerStepThrough]
 			get { return this.Context.Services; }
 		}
+		
+		/// <summary>
+		/// Opens a new change group used to batch several changes. ChangeGroups work as transactions and
+		/// are used to support the Undo/Redo system.
+		/// </summary>
+		public abstract ChangeGroup OpenGroup(string changeGroupTitle);
 		
 		#region Extensions support
 		private struct ExtensionEntry

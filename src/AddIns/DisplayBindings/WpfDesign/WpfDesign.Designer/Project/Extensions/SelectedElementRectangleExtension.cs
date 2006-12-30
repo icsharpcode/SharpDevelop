@@ -26,23 +26,25 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		/// </summary>
 		public SelectedElementRectangleExtension()
 		{
-			Rectangle r = new Rectangle();
-			r.SnapsToDevicePixels = true;
-			r.Stroke = Brushes.Black;
-			r.StrokeDashCap = PenLineCap.Square;
-			r.StrokeDashArray = new DoubleCollection(new double[] { 0, 2 });
-			r.IsHitTestVisible = false;
+			Rectangle selectionRect = new Rectangle();
+			selectionRect.SnapsToDevicePixels = true;
+			selectionRect.Stroke = Brushes.White;
+			selectionRect.IsHitTestVisible = false;
 			
-			RelativePlacement placement = new RelativePlacement();
-			placement.WidthRelativeToContentWidth = 1;
-			placement.HeightRelativeToContentHeight = 1;
+			Rectangle dottedRect = new Rectangle();
+			dottedRect.SnapsToDevicePixels = true;
+			dottedRect.Stroke = Brushes.Black;
+			dottedRect.StrokeDashCap = PenLineCap.Square;
+			dottedRect.StrokeDashArray = new DoubleCollection(new double[] { 0, 2 });
+			dottedRect.IsHitTestVisible = false;
+			
+			RelativePlacement placement = new RelativePlacement(HorizontalAlignment.Stretch, VerticalAlignment.Stretch);
+			placement.XOffset = -1;
+			placement.YOffset = -1;
 			placement.WidthOffset = 2;
 			placement.HeightOffset = 2;
 			
-			placement.XOffset = -1;
-			placement.YOffset = -1;
-			
-			this.AddAdorner(r, placement);
+			this.AddAdorners(placement, selectionRect, dottedRect);
 		}
 	}
 }

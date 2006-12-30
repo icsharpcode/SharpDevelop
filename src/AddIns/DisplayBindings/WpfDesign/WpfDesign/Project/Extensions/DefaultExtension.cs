@@ -7,6 +7,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace ICSharpCode.WpfDesign.Extensions
 {
@@ -101,6 +102,21 @@ namespace ICSharpCode.WpfDesign.Extensions
 			Debug.Assert(extension is DefaultExtension);
 			
 			((DefaultExtension)extension).CallOnRemove();
+		}
+		
+		/// <summary>
+		/// This event is raised when ShouldApplyExtensions is invalidated for a set of items.
+		/// </summary>
+		public override event EventHandler<DesignItemCollectionEventArgs> ShouldApplyExtensionsInvalidated;
+		
+		/// <summary>
+		/// Raise the ShouldApplyExtensionsInvalidated event for the specified set of design items.
+		/// </summary>
+		protected void ReapplyExtensions(ICollection<DesignItem> items)
+		{
+			if (ShouldApplyExtensionsInvalidated != null) {
+				ShouldApplyExtensionsInvalidated(this, new DesignItemCollectionEventArgs(items));
+			}
 		}
 		
 		internal sealed class Permanent : DefaultExtensionServer

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Text;
 using System.Xml;
 
@@ -21,13 +22,33 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		XamlObject parentObject;
 		XamlPropertyInfo propertyInfo;
 		XamlPropertyValue propertyValue;
-		List<XamlPropertyValue> collectionElements = new List<XamlPropertyValue>();
+		List<XamlPropertyValue> collectionElements;
+		bool _isCollection;
 		
+		static readonly IList<XamlPropertyValue> emptyCollectionElementsArray = new XamlPropertyValue[0];
+		
+		// for use by parser only
 		internal XamlProperty(XamlObject parentObject, XamlPropertyInfo propertyInfo, XamlPropertyValue propertyValue)
 		{
 			this.parentObject = parentObject;
 			this.propertyInfo = propertyInfo;
+			
 			this.propertyValue = propertyValue;
+			if (propertyValue != null) {
+				propertyValue.ParentProperty = this;
+			} else {
+				if (propertyInfo.IsCollection) {
+					_isCollection = true;
+					collectionElements = new List<XamlPropertyValue>();
+				}
+			}
+		}
+		
+		internal XamlProperty(XamlObject parentObject, XamlPropertyInfo propertyInfo)
+		{
+			this.parentObject = parentObject;
+			this.propertyInfo = propertyInfo;
+			_isCollection = propertyInfo.IsCollection;
 		}
 		
 		/// <summary>
@@ -52,19 +73,54 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		/// <summary>
+		/// Gets if the property is a collection property.
+		/// </summary>
+		public bool IsCollection {
+			get { return _isCollection; }
+		}
+		
+		/// <summary>
 		/// Gets the collection elements of the property. Is empty if the property is not a collection.
 		/// </summary>
 		public IList<XamlPropertyValue> CollectionElements {
-			get { return collectionElements.AsReadOnly(); }
+			get { return collectionElements != null ? collectionElements.AsReadOnly() : emptyCollectionElementsArray; }
+		}
+		
+		/// <summary>
+		/// Gets if the property is set.
+		/// </summary>
+		public bool IsSet {
+			get { return propertyValue != null || collectionElements != null; }
+		}
+		
+		/// <summary>
+		/// Resets the properties value.
+		/// </summary>
+		public void Reset()
+		{
+			throw new NotImplementedException();
 		}
 		
 		/// <summary>
 		/// used internally by the XamlParser.
 		/// Add a collection element that already is part of the XML DOM.
 		/// </summary>
-		internal void AddCollectionElement(XamlPropertyValue val)
+		internal void ParserAddCollectionElement(XamlPropertyValue val)
 		{
 			collectionElements.Add(val);
+			val.ParentProperty = this;
+		}
+		
+		/// <summary>
+		/// Gets/Sets the value of the property on the instance without updating the XAML document.
+		/// </summary>
+		public object ValueOnInstance {
+			get{
+				return propertyInfo.GetValue(parentObject.Instance);
+			}
+			set {
+				propertyInfo.SetValue(parentObject.Instance, value);
+			}
 		}
 		
 		/*public bool IsAttributeSyntax {
@@ -96,6 +152,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// used internally by the XamlParser.
 		/// </summary>
 		internal abstract object GetValueFor(XamlPropertyInfo targetProperty);
+		
+		XamlProperty _parentProperty;
+		
+		/// <summary>
+		/// Gets the parent property that this value is assigned to.
+		/// </summary>
+		public XamlProperty ParentProperty {
+			get { return _parentProperty; }
+			internal set { _parentProperty = value; }
+		}
 	}
 	
 	/// <summary>

@@ -74,5 +74,10 @@ namespace ICSharpCode.WpfDesign.Extensions
 		/// Is called by the ExtensionManager.
 		/// </summary>
 		public abstract void RemoveExtension(Extension extension);
+		
+		/// <summary>
+		/// This event is raised when ShouldApplyExtensions is invalidated for a set of items.
+		/// </summary>
+		public abstract event EventHandler<DesignItemCollectionEventArgs> ShouldApplyExtensionsInvalidated;
 	}
 }

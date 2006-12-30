@@ -140,7 +140,8 @@ namespace ICSharpCode.WpfDesign.Designer
 			base.OnPreviewMouseDown(e);
 			if (!_isInInputAction) {
 				Debug.WriteLine("DesignPanel.PreviewMouseDown Source=" + e.Source.GetType().Name + " OriginalSource=" + e.OriginalSource.GetType().Name);
-				DesignItem site = FindDesignedElementForOriginalSource(e.OriginalSource);
+				object topMostHitSource = null;
+				DesignItem site = FindDesignedElementForOriginalSource(e.OriginalSource, ref topMostHitSource);
 				InputHandlingLayer itemLayer = InputHandlingLayer.None;
 				if (site != null) {
 					Debug.WriteLine(" Found designed element: " + site.Component.GetType().Name);
@@ -148,6 +149,8 @@ namespace ICSharpCode.WpfDesign.Designer
 					if (layerProvider != null) {
 						itemLayer = layerProvider.InputLayer;
 					}
+				} else if (topMostHitSource == _adornerLayer) {
+					itemLayer = InputHandlingLayer.Adorners;
 				}
 				if (ToolService.CurrentTool.InputLayer > itemLayer) {
 					ToolService.CurrentTool.OnMouseDown(this, e);
@@ -155,7 +158,11 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 		}
 		
-		public DesignItem FindDesignedElementForOriginalSource(object originalSource)
+		// find a DesignItem for the clicked originalSource. This walks up the visual tree until it finds a designed item
+		// or the design surface itself.
+		// topMostSource is set to the element directly below the one that caused the tree walk to abort.
+		// For hits on the adorner layer, the method will return null and set topMostSource to _adornerLayer.
+		DesignItem FindDesignedElementForOriginalSource(object originalSource, ref object topMostSource)
 		{
 			if (originalSource == null)
 				return null;
@@ -164,10 +171,17 @@ namespace ICSharpCode.WpfDesign.Designer
 				return site;
 			if (originalSource == this)
 				return null;
+			topMostSource = originalSource;
 			DependencyObject dObj = originalSource as DependencyObject;
 			if (dObj == null)
 				return null;
-			return FindDesignedElementForOriginalSource(VisualTreeHelper.GetParent(dObj));
+			return FindDesignedElementForOriginalSource(VisualTreeHelper.GetParent(dObj), ref topMostSource);
+		}
+		
+		public DesignItem FindDesignedElementForOriginalSource(object originalSource)
+		{
+			object topMostSource = null;
+			return FindDesignedElementForOriginalSource(originalSource, ref topMostSource);
 		}
 		
 		/// <summary>

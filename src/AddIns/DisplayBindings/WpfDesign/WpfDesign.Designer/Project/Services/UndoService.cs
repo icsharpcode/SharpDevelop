@@ -1,0 +1,247 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+
+namespace ICSharpCode.WpfDesign.Designer.Services
+{
+	#region ITransactionItem
+	interface ITransactionItem
+	{
+		void Do();
+		void Undo();
+		
+		string Title { get; set; }
+	}
+	#endregion
+	
+	#region UndoTransaction
+	/// <summary>
+	/// Supports ChangeGroup transactions and undo behavior.
+	/// </summary>
+	sealed class UndoTransaction : ChangeGroup, ITransactionItem
+	{
+		public enum TransactionState
+		{
+			Open,
+			Completed,
+			Undone,
+			Failed
+		}
+		
+		TransactionState _state;
+		
+		public TransactionState State
+		{
+			get { return _state; }
+		}
+		
+		List<ITransactionItem> items = new List<ITransactionItem>();
+		
+		public void Execute(ITransactionItem item)
+		{
+			AssertState(TransactionState.Open);
+			item.Do();
+			items.Add(item);
+		}
+		
+		private void AssertState(TransactionState expectedState)
+		{
+			if (_state != expectedState)
+				throw new InvalidOperationException("Expected state " + expectedState + ", but state is " + _state);
+		}
+		
+		public event EventHandler Committed;
+		public event EventHandler RolledBack;
+		
+		public override void Commit()
+		{
+			AssertState(TransactionState.Open);
+			_state = TransactionState.Completed;
+			if (Committed != null)
+				Committed(this, EventArgs.Empty);
+		}
+		
+		public override void Abort()
+		{
+			AssertState(TransactionState.Open);
+			_state = TransactionState.Failed;
+			InternalRollback();
+			if (RolledBack != null)
+				RolledBack(this, EventArgs.Empty);
+		}
+		
+		public void Undo()
+		{
+			AssertState(TransactionState.Completed);
+			_state = TransactionState.Undone;
+			InternalRollback();
+		}
+		
+		void InternalRollback()
+		{
+			try {
+				for (int i = items.Count - 1; i >= 0; i--) {
+					items[i].Undo();
+				}
+			} catch {
+				_state = TransactionState.Failed;
+				throw;
+			}
+		}
+		
+		public void Redo()
+		{
+			AssertState(TransactionState.Undone);
+			try {
+				for (int i = 0; i < items.Count; i--) {
+					items[i].Do();
+				}
+			} catch {
+				_state = TransactionState.Failed;
+				try {
+					InternalRollback();
+				} catch (Exception ex) {
+					Debug.WriteLine("Exception rolling back after Redo error:\n" + ex.ToString());
+				}
+				throw;
+			}
+		}
+		
+		void ITransactionItem.Do()
+		{
+			if (_state != TransactionState.Completed) {
+				Redo();
+			}
+		}
+		
+		protected override void Disposed()
+		{
+			if (_state == TransactionState.Open) {
+				try {
+					Abort();
+				} catch (Exception ex) {
+					Debug.WriteLine("Exception rolling back after failure:\n" + ex.ToString());
+				}
+			}
+		}
+	}
+	#endregion
+	
+	#region UndoService
+	/// <summary>
+	/// Service supporting Undo/Redo actions on the design surface.
+	/// </summary>
+	public sealed class UndoService
+	{
+		Stack<UndoTransaction> _transactionStack = new Stack<UndoTransaction>();
+		Stack<ITransactionItem> _undoStack = new Stack<ITransactionItem>();
+		Stack<ITransactionItem> _redoStack = new Stack<ITransactionItem>();
+		
+		UndoTransaction CurrentTransaction {
+			get {
+				if (_transactionStack.Count == 0)
+					return null;
+				else
+					return _transactionStack.Peek();
+			}
+		}
+		
+		internal UndoTransaction StartTransaction()
+		{
+			UndoTransaction t = new UndoTransaction();
+			t.Committed += TransactionFinished;
+			t.RolledBack += TransactionFinished;
+			t.Committed += delegate(object sender, EventArgs e) {
+				Execute((UndoTransaction)sender);
+			};
+			return t;
+		}
+		
+		void TransactionFinished(object sender, EventArgs e)
+		{
+			if (sender != _transactionStack.Pop()) {
+				throw new Exception("Invalid transaction finish, nested transactions must finish first");
+			}
+		}
+		
+		internal void Execute(ITransactionItem item)
+		{
+			if (_transactionStack.Count == 0) {
+				item.Do();
+				_undoStack.Push(item);
+				_redoStack.Clear();
+			} else {
+				_transactionStack.Peek().Execute(item);
+			}
+		}
+		
+		/// <summary>
+		/// Gets if undo actions are available.
+		/// </summary>
+		public bool CanUndo {
+			get { return _undoStack.Count > 0; }
+		}
+		
+		/// <summary>
+		/// Undoes the last action.
+		/// </summary>
+		public void Undo()
+		{
+			if (!CanUndo)
+				throw new InvalidOperationException("Cannot Undo: undo stack is empty");
+			if (_transactionStack.Count != 0)
+				throw new InvalidOperationException("Cannot Undo while transaction is running");
+			ITransactionItem item = _undoStack.Pop();
+			try {
+				item.Undo();
+				_redoStack.Push(item);
+			} catch {
+				// state might be invalid now, clear stacks to prevent getting more inconsistencies
+				Clear();
+				throw;
+			}
+		}
+		
+		/// <summary>
+		/// Gets if there are redo actions available.
+		/// </summary>
+		public bool CanRedo { get { return _redoStack.Count > 0; } }
+		
+		/// <summary>
+		/// Redoes a previously undone action.
+		/// </summary>
+		public void Redo()
+		{
+			if (!CanRedo)
+				throw new InvalidOperationException("Cannot Redo: redo stack is empty");
+			if (_transactionStack.Count != 0)
+				throw new InvalidOperationException("Cannot Redo while transaction is running");
+			ITransactionItem item = _redoStack.Pop();
+			try {
+				item.Do();
+				_undoStack.Push(item);
+			} catch {
+				// state might be invalid now, clear stacks to prevent getting more inconsistencies
+				Clear();
+				throw;
+			}
+		}
+		
+		/// <summary>
+		/// Clears saved actions (both undo and redo stack).
+		/// </summary>
+		public void Clear()
+		{
+			_undoStack.Clear();
+			_redoStack.Clear();
+		}
+	}
+	#endregion
+}

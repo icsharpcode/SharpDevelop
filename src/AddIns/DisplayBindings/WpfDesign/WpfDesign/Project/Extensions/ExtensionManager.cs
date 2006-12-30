@@ -38,7 +38,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 		/// <summary>
 		/// Re-applies extensions from the ExtensionServer to the specified design items.
 		/// </summary>
-		public void ReapplyExtensions(IEnumerable<DesignItem> items, ExtensionServer server)
+		void ReapplyExtensions(IEnumerable<DesignItem> items, ExtensionServer server)
 		{
 			foreach (DesignItem item in items) {
 				item.ReapplyExtensionServer(this, server);
@@ -203,6 +203,9 @@ namespace ICSharpCode.WpfDesign.Extensions
 			server = (ExtensionServer)Activator.CreateInstance(extensionServerType);
 			server.InitializeExtensionServer(_context);
 			_extensionServers[extensionServerType] = server;
+			server.ShouldApplyExtensionsInvalidated += delegate(object sender, DesignItemCollectionEventArgs e) {
+				ReapplyExtensions(e.Items, (ExtensionServer)sender);
+			};
 			return server;
 		}
 		#endregion

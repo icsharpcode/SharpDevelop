@@ -13,12 +13,18 @@ using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
-	sealed class XamlDesignContext : DesignContext
+	/// <summary>
+	/// The design context implementation used when editing XAML.
+	/// </summary>
+	public sealed class XamlDesignContext : DesignContext
 	{
 		readonly XamlDocument _doc;
 		readonly XamlDesignItem _rootItem;
-		readonly XamlComponentService _componentService;
+		internal readonly XamlComponentService _componentService;
 		
+		/// <summary>
+		/// Creates a new XamlDesignContext instance.
+		/// </summary>
 		public XamlDesignContext(XmlReader xamlReader)
 		{
 			if (xamlReader == null)
@@ -27,6 +33,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			this.Services.AddService(typeof(IVisualDesignService), new DefaultVisualDesignService());
 			this.Services.AddService(typeof(ISelectionService), new DefaultSelectionService());
 			this.Services.AddService(typeof(IToolService), new DefaultToolService());
+			this.Services.AddService(typeof(UndoService), new UndoService());
 			
 			_componentService = new XamlComponentService(this);
 			this.Services.AddService(typeof(IComponentService), _componentService);
@@ -51,11 +58,17 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			return CustomInstanceFactory.DefaultInstanceFactory.CreateInstance(instanceType, arguments);
 		}
 		
+		/// <summary>
+		/// Saves the XAML DOM into the XML writer.
+		/// </summary>
 		public override void Save(System.Xml.XmlWriter writer)
 		{
 			_doc.Save(writer);
 		}
 		
+		/// <summary>
+		/// Gets the root item being designed.
+		/// </summary>
 		public override DesignItem RootItem {
 			get { return _rootItem; }
 		}

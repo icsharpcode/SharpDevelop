@@ -61,7 +61,9 @@
     <Compile Include="Adorners\AdornerProvider.cs" />
     <Compile Include="Adorners\AdornerProviderClasses.cs" />
     <Compile Include="Adorners\Placement.cs" />
+    <Compile Include="ChangeGroup.cs" />
     <Compile Include="DesignContext.cs" />
+    <Compile Include="DesignItemProperty.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="DesignerException.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="Extensions\ExtensionManager.cs" />
     <Compile Include="Extensions\ExtensionServer.cs" />
     <Compile Include="Extensions\ExtensionServerAttribute.cs" />
+    <Compile Include="Extensions\LogicalExtensionServers.cs" />
     <Compile Include="Extensions\SelectionExtensionServer.cs" />
     <Compile Include="HashSet.cs" />
     <Compile Include="Linq.cs" />

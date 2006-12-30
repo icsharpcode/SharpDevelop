@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Xml;
 
 namespace ICSharpCode.WpfDesign.XamlDom
@@ -73,6 +74,28 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get {
 				return properties.AsReadOnly();
 			}
+		}
+		
+		/// <summary>
+		/// Finds the specified property, or creates it if it doesn't exist.
+		/// </summary>
+		public XamlProperty FindOrCreateProperty(string propertyName)
+		{
+			if (propertyName == null)
+				throw new ArgumentNullException("propertyName");
+			
+			foreach (XamlProperty p in properties) {
+				if (p.PropertyName == propertyName)
+					return p;
+			}
+			PropertyDescriptorCollection propertyDescriptors = TypeDescriptor.GetProperties(elementType);
+			PropertyDescriptor propertyInfo = propertyDescriptors[propertyName];
+			if (propertyInfo == null) {
+				throw new ArgumentException("The property '" + propertyName + "' doesn't exist on " + elementType.FullName, "propertyName");
+			}
+			XamlProperty newProperty = new XamlProperty(this, new XamlNormalPropertyInfo(propertyInfo));
+			properties.Add(newProperty);
+			return newProperty;
 		}
 	}
 }

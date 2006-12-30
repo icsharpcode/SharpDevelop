@@ -59,5 +59,10 @@ namespace ICSharpCode.WpfDesign.Extensions
 		{
 			throw new NotImplementedException();
 		}
+		
+		// since the event is never raised, we don't have to store the event handlers
+		public override event EventHandler<DesignItemCollectionEventArgs> ShouldApplyExtensionsInvalidated {
+			add {} remove {}
+		}
 	}
 }

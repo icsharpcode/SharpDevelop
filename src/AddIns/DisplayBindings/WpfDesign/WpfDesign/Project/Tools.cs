@@ -38,6 +38,10 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		ComponentHigh,
 		/// <summary>
+		/// This value is used for mouse input on the adorner layer.
+		/// </summary>
+		Adorners,
+		/// <summary>
 		/// This layer is higher than all other layers.
 		/// </summary>
 		Highest
@@ -131,7 +135,7 @@ namespace ICSharpCode.WpfDesign
 		/// Used for temporary drawings that are not attached to any element, e.g. the selection frame.
 		/// </summary>
 		Canvas MarkerCanvas { get; }
-		*/
+		 */
 		
 		// The following members were missing in <see cref="IInputElement"/>, but of course
 		// are supported on the DesignPanel:
