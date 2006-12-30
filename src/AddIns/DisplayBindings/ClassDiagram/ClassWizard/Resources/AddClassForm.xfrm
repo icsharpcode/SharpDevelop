@@ -1,0 +1,215 @@
+<Components version="1.0">
+  <System.Windows.Forms.Form>
+    <Name value="AddClassForm" />
+    <MinimumSize value="365, 342" />
+    <ControlBox value="False" />
+    <Text value="Add New Class" />
+    <ClientSize value="{Width=357, Height=308}" />
+    <Controls>
+      <System.Windows.Forms.CheckBox>
+        <Name value="isSealedCheckBox" />
+        <Location value="232, 194" />
+        <Text value="Sealed" />
+        <TabIndex value="15" />
+        <Size value="61, 20" />
+        <UseVisualStyleBackColor value="True" />
+        <Anchor value="Bottom, Left" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="isStaticCheckBox" />
+        <Location value="165, 193" />
+        <Text value="Static" />
+        <TabIndex value="8" />
+        <Size value="61, 20" />
+        <UseVisualStyleBackColor value="True" />
+        <Anchor value="Bottom, Left" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="isAbstractCheckBox" />
+        <Location value="84, 193" />
+        <Text value="Abstract" />
+        <TabIndex value="7" />
+        <Size value="75, 20" />
+        <UseVisualStyleBackColor value="True" />
+        <Anchor value="Bottom, Left" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.ComboBox>
+        <Name value="namespaceComboBox" />
+        <Size value="261, 21" />
+        <TabIndex value="0" />
+        <Sorted value="True" />
+        <FormattingEnabled value="True" />
+        <Location value="84, 11" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.Label>
+        <Name value="label5" />
+        <Location value="12, 14" />
+        <Text value="Namespace:" />
+        <Size value="67, 13" />
+        <AutoSize value="True" />
+        <TabIndex value="14" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.CheckBox>
+        <Name value="isPartialCheckBox" />
+        <Location value="299, 193" />
+        <Text value="Partial" />
+        <TabIndex value="9" />
+        <Size value="61, 20" />
+        <UseVisualStyleBackColor value="True" />
+        <Anchor value="Bottom, Left" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.ComboBox>
+        <Name value="visibilityComboBox" />
+        <Size value="123, 21" />
+        <TabIndex value="6" />
+        <FormattingEnabled value="True" />
+        <DropDownStyle value="DropDownList" />
+        <Location value="84, 166" />
+        <Anchor value="Bottom, Left" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.Label>
+        <Name value="label4" />
+        <Location value="8, 169" />
+        <Text value="Visibility:" />
+        <Anchor value="Bottom, Left" />
+        <Size value="46, 13" />
+        <AutoSize value="True" />
+        <TabIndex value="11" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Button>
+        <Name value="selectInterfacesButton" />
+        <Location value="320, 141" />
+        <Text value="..." />
+        <Anchor value="Bottom, Right" />
+        <UseVisualStyleBackColor value="True" />
+        <Size value="25, 19" />
+        <TabIndex value="5" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.ListBox>
+        <Name value="implementedInterfacesListBox" />
+        <Size value="230, 69" />
+        <TabIndex value="4" />
+        <HorizontalScrollbar value="True" />
+        <FormattingEnabled value="True" />
+        <Location value="84, 90" />
+        <Anchor value="Top, Bottom, Left, Right" />
+      </System.Windows.Forms.ListBox>
+      <System.Windows.Forms.Button>
+        <Name value="selectClassButton" />
+        <Location value="319, 64" />
+        <Text value="..." />
+        <Anchor value="Top, Right" />
+        <UseVisualStyleBackColor value="True" />
+        <Size value="25, 19" />
+        <TabIndex value="3" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.TextBox>
+        <Name value="inheritFromTextBox" />
+        <TabIndex value="2" />
+        <Size value="230, 20" />
+        <Location value="84, 64" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Button>
+        <Name value="browseButton" />
+        <Location value="320, 221" />
+        <Text value="..." />
+        <Anchor value="Bottom, Right" />
+        <UseVisualStyleBackColor value="True" />
+        <Size value="25, 19" />
+        <TabIndex value="11" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.ComboBox>
+        <Name value="existingFilesComboBox" />
+        <Size value="214, 21" />
+        <TabIndex value="12" />
+        <Sorted value="True" />
+        <FormattingEnabled value="True" />
+        <DropDownStyle value="DropDownList" />
+        <Location value="131, 246" />
+        <Anchor value="Bottom, Left, Right" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.RadioButton>
+        <Name value="addToFileRadioButton" />
+        <Location value="8, 247" />
+        <Text value="Add to existing file:" />
+        <Anchor value="Bottom, Left" />
+        <UseVisualStyleBackColor value="True" />
+        <Size value="113, 17" />
+        <AutoSize value="True" />
+        <TabIndex value="10" />
+      </System.Windows.Forms.RadioButton>
+      <System.Windows.Forms.TextBox>
+        <Name value="newFileNameTextBox" />
+        <TabIndex value="10" />
+        <Size value="183, 20" />
+        <Location value="131, 220" />
+        <Anchor value="Bottom, Left, Right" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.RadioButton>
+        <Name value="createNewFileRadioButton" />
+        <TabStop value="True" />
+        <Location value="8, 221" />
+        <Checked value="True" />
+        <Text value="Create in new file:" />
+        <Anchor value="Bottom, Left" />
+        <UseVisualStyleBackColor value="True" />
+        <Size value="109, 17" />
+        <AutoSize value="True" />
+        <TabIndex value="8" />
+      </System.Windows.Forms.RadioButton>
+      <System.Windows.Forms.Button>
+        <Name value="cancelButton" />
+        <DialogResult value="Cancel" />
+        <Location value="270, 273" />
+        <Text value="Cancel" />
+        <Anchor value="Bottom, Right" />
+        <UseVisualStyleBackColor value="True" />
+        <Size value="75, 23" />
+        <TabIndex value="14" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="okButton" />
+        <DialogResult value="OK" />
+        <Location value="189, 273" />
+        <Text value="OK" />
+        <Anchor value="Bottom, Right" />
+        <UseVisualStyleBackColor value="True" />
+        <Size value="75, 23" />
+        <TabIndex value="13" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Label>
+        <Name value="label3" />
+        <Location value="12, 90" />
+        <Text value="Implements:" />
+        <Size value="63, 13" />
+        <AutoSize value="True" />
+        <TabIndex value="5" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Label>
+        <Name value="label2" />
+        <Location value="12, 67" />
+        <Text value="Inherit from:" />
+        <Size value="62, 13" />
+        <AutoSize value="True" />
+        <TabIndex value="3" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Label>
+        <Name value="label1" />
+        <Location value="12, 41" />
+        <Text value="Class Name:" />
+        <Size value="66, 13" />
+        <AutoSize value="True" />
+        <TabIndex value="1" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.TextBox>
+        <Name value="classNameTextBox" />
+        <TabIndex value="1" />
+        <Size value="261, 20" />
+        <Location value="84, 38" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.TextBox>
+    </Controls>
+  </System.Windows.Forms.Form>
+</Components>

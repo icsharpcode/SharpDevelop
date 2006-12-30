@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AddIn name        = "ClassWizard"
+       author      = "Itai Bar-Haim"
+       url         = ""
+       description = "Visually add new classes to the project.">
+	
+	<Manifest>
+		<Identity name="ClassWizard" version="@ClassWizard.dll"/>
+		<Dependency addin="SharpDevelop" version="2.1"/>
+	</Manifest>
+	
+	<Runtime>
+	    <Import assembly = "ClassWizard.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Project/ProjectAddMenu">
+		<Condition name = "ProjectActive" activeproject="*">
+			<MenuItem type = "Separator"/>
+			<MenuItem id    = "NewClass"
+			          label = "Class"
+			          class = "ClassWizard.AddNewClassCommand"/>
+		</Condition>
+	</Path>
+	
+</AddIn>
