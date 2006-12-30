@@ -24,45 +24,56 @@ namespace ICSharpCode.WpfDesign.Adorners
 		/// </summary>
 		public static readonly DependencyProperty PlacementProperty = DependencyProperty.RegisterAttached(
 			"Placement", typeof(Placement), typeof(AdornerPanel),
-			new FrameworkPropertyMetadata(new Placement(), FrameworkPropertyMetadataOptions.AffectsParentMeasure)
+			new FrameworkPropertyMetadata(Placement.FillContent, FrameworkPropertyMetadataOptions.AffectsParentMeasure)
 		);
 		
 		/// <summary>
-		/// Gets the placement of the specified adorner visual.
+		/// Gets the placement of the specified adorner.
 		/// </summary>
-		public static Placement GetPlacement(Visual visual)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
+		public static Placement GetPlacement(UIElement adorner)
 		{
-			if (visual == null)
-				throw new ArgumentNullException("visual");
-			return (Placement)visual.GetValue(PlacementProperty);
+			if (adorner == null)
+				throw new ArgumentNullException("adorner");
+			return (Placement)adorner.GetValue(PlacementProperty);
 		}
 		
 		/// <summary>
-		/// Sets the placement of the specified adorner visual.
+		/// Sets the placement of the specified adorner.
 		/// </summary>
-		public static void SetPlacement(Visual visual, Placement placement)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
+		public static void SetPlacement(UIElement adorner, Placement placement)
 		{
-			if (visual == null)
-				throw new ArgumentNullException("visual");
+			if (adorner == null)
+				throw new ArgumentNullException("adorner");
 			if (placement == null)
 				throw new ArgumentNullException("placement");
-			visual.SetValue(PlacementProperty, placement);
+			adorner.SetValue(PlacementProperty, placement);
 		}
 		#endregion
 		
 		UIElement _adornedElement;
 		AdornerOrder _Order = AdornerOrder.Content;
 		
+		/// <summary>
+		/// Gets/Sets the element adorned by this AdornerPanel.
+		/// Do not change this property after the panel was added to an AdornerLayer!
+		/// </summary>
 		public UIElement AdornedElement {
 			get { return _adornedElement; }
 			set { _adornedElement = value; }
 		}
 		
+		/// <summary>
+		/// Gets/Sets the order used to display the AdornerPanel relative to other AdornerPanels.
+		/// Do not change this property after the panel was added to an AdornerLayer!
+		/// </summary>
 		public AdornerOrder Order {
 			get { return _Order; }
 			set { _Order = value; }
 		}
 		
+		/// <summary/>
 		protected override Size MeasureOverride(Size availableSize)
 		{
 			if (this.AdornedElement != null) {
@@ -78,37 +89,57 @@ namespace ICSharpCode.WpfDesign.Adorners
 			}
 		}
 		
+		/// <summary/>
 		protected override Size ArrangeOverride(Size finalSize)
 		{
 			foreach (UIElement element in base.InternalChildren) {
-				element.Arrange(new Rect(finalSize));
+				GetPlacement(element).Arrange(this, element, finalSize);
 			}
 			return finalSize;
 		}
 		
-		private IEnumerable<DependencyObject> VisualChildren {
+		private DependencyObject[] VisualChildren {
 			get {
 				int count = VisualTreeHelper.GetChildrenCount(this);
-				for (int i = 0; i < count; i++) {
-					yield return VisualTreeHelper.GetChild(this, i);
+				DependencyObject[] children = new DependencyObject[count];
+				for (int i = 0; i < children.Length; i++) {
+					children[i] = VisualTreeHelper.GetChild(this, i);
 				}
+				return children;
 			}
 		}
 	}
 	
+	/// <summary>
+	/// Describes where an Adorner is positioned on the Z-Layer.
+	/// </summary>
 	public struct AdornerOrder : IComparable<AdornerOrder>
 	{
+		/// <summary>
+		/// The adorner is in the background layer.
+		/// </summary>
 		public static readonly AdornerOrder Background = new AdornerOrder(100);
+		
+		/// <summary>
+		/// The adorner is in the content layer.
+		/// </summary>
 		public static readonly AdornerOrder Content = new AdornerOrder(200);
+		
+		/// <summary>
+		/// The adorner is in the foreground layer.
+		/// </summary>
 		public static readonly AdornerOrder Foreground = new AdornerOrder(300);
 		
 		int i;
 		
-		public AdornerOrder(int i)
+		internal AdornerOrder(int i)
 		{
 			this.i = i;
 		}
 		
+		/// <summary>
+		/// Compares the <see cref="AdornerOrder"/> to another AdornerOrder.
+		/// </summary>
 		public int CompareTo(AdornerOrder other)
 		{
 			return i.CompareTo(other.i);

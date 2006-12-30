@@ -33,9 +33,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			r.StrokeDashArray = new DoubleCollection(new double[] { 0, 2 });
 			r.IsHitTestVisible = false;
 			
-			Placement placement = new Placement();
+			RelativePlacement placement = new RelativePlacement();
 			placement.WidthRelativeToContentWidth = 1;
 			placement.HeightRelativeToContentHeight = 1;
+			placement.WidthOffset = 2;
+			placement.HeightOffset = 2;
+			
+			placement.XOffset = -1;
+			placement.YOffset = -1;
 			
 			this.AddAdorner(r, placement);
 		}

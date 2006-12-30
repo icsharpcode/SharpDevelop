@@ -75,7 +75,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 		/// <summary>
 		/// Creates a new AdornerProvider instance.
 		/// </summary>
-		public AdornerProvider()
+		protected AdornerProvider()
 		{
 			_adorners = new AdornerPanelCollection(this);
 		}

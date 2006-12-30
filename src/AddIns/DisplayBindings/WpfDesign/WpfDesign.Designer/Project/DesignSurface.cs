@@ -86,6 +86,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			_designContext = null;
 			_designPanel.Context = null;
 			_designPanel.Child = null;
+			_designPanel.Adorners.Clear();
 		}
 	}
 }

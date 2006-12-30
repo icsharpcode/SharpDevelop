@@ -89,12 +89,31 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		AdornerPanelCollection _adorners;
 		readonly UIElement _designPanel;
 		
+		#if DEBUG
+		int _totalAdornerCount;
+		#endif
+		
+		
 		internal AdornerLayer(UIElement designPanel)
 		{
 			this._designPanel = designPanel;
 			
+			this.LayoutUpdated += OnLayoutUpdated;
+			
 			_adorners = new AdornerPanelCollection(this);
-			ClearAdorners();
+		}
+		
+		void OnLayoutUpdated(object sender, EventArgs e)
+		{
+			UpdateAllAdorners(false);
+//			Debug.WriteLine("Adorner LayoutUpdated. AdornedElements=" + _dict.Count +
+//			                ", visible adorners=" + VisualChildrenCount + ", total adorners=" + (_totalAdornerCount));
+		}
+		
+		protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+		{
+			base.OnRenderSizeChanged(sizeInfo);
+			UpdateAllAdorners(true);
 		}
 		
 		internal AdornerPanelCollection Adorners {
@@ -106,22 +125,32 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		sealed class AdornerInfo
 		{
 			internal readonly List<AdornerPanel> adorners = new List<AdornerPanel>();
+			internal bool isVisible;
 		}
 		
 		// adorned element => AdornerInfo
-		Dictionary<UIElement, AdornerInfo> _dict;
+		Dictionary<UIElement, AdornerInfo> _dict = new Dictionary<UIElement, AdornerInfo>();
 		
 		void ClearAdorners()
 		{
+			if (_dict.Count == 0)
+				return; // already empty
+			
 			this.Children.Clear();
 			_dict = new Dictionary<UIElement, AdornerInfo>();
+			
+			#if DEBUG
+			_totalAdornerCount = 0;
+			Debug.WriteLine("AdornerLayer cleared.");
+			#endif
 		}
 		
-		AdornerInfo GetAdornerInfo(UIElement adornedElement)
+		AdornerInfo GetOrCreateAdornerInfo(UIElement adornedElement)
 		{
 			AdornerInfo info;
 			if (!_dict.TryGetValue(adornedElement, out info)) {
 				info = _dict[adornedElement] = new AdornerInfo();
+				info.isVisible = adornedElement.IsDescendantOf(_designPanel);
 			}
 			return info;
 		}
@@ -138,8 +167,19 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			if (adornerPanel.AdornedElement == null)
 				throw new DesignerException("adornerPanel.AdornedElement must be set");
 			
-			GetAdornerInfo(adornerPanel.AdornedElement).adorners.Add(adornerPanel);
+			AdornerInfo info = GetOrCreateAdornerInfo(adornerPanel.AdornedElement);
+			info.adorners.Add(adornerPanel);
 			
+			if (info.isVisible) {
+				AddAdornerToChildren(adornerPanel);
+			}
+			
+			Debug.WriteLine("Adorner added. AdornedElements=" + _dict.Count +
+			                ", visible adorners=" + VisualChildrenCount + ", total adorners=" + (++_totalAdornerCount));
+		}
+		
+		void AddAdornerToChildren(AdornerPanel adornerPanel)
+		{
 			UIElementCollection children = this.Children;
 			int i = 0;
 			for (i = 0; i < children.Count; i++) {
@@ -149,8 +189,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				}
 			}
 			children.Insert(i, adornerPanel);
-			
-			this.InvalidateMeasure();
 		}
 		
 		protected override Size MeasureOverride(Size availableSize)
@@ -166,7 +204,9 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		{
 			foreach (AdornerPanel adorner in this.Children) {
 				adorner.Arrange(new Rect(new Point(0, 0), adorner.DesiredSize));
-				adorner.RenderTransform = (Transform)adorner.AdornedElement.TransformToAncestor(_designPanel);
+				if (adorner.AdornedElement.IsDescendantOf(_designPanel)) {
+					adorner.RenderTransform = (Transform)adorner.AdornedElement.TransformToAncestor(_designPanel);
+				}
 			}
 			return finalSize;
 		}
@@ -181,10 +221,57 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				return false;
 			
 			if (info.adorners.Remove(adornerPanel)) {
-				this.Children.Remove(adornerPanel);
+				if (info.isVisible) {
+					this.Children.Remove(adornerPanel);
+				}
+				
+				if (info.adorners.Count == 0) {
+					_dict.Remove(adornerPanel.AdornedElement);
+				}
+				
+				Debug.WriteLine("Adorner removed. AdornedElements=" + _dict.Count +
+				                ", visible adorners=" + VisualChildrenCount + ", total adorners=" + (--_totalAdornerCount));
+				
 				return true;
 			} else {
 				return false;
+			}
+		}
+		
+		public void UpdateAdornersForElement(UIElement element, bool forceInvalidate)
+		{
+			AdornerInfo info = GetExistingAdornerInfo(element);
+			if (info != null) {
+				UpdateAdornersForElement(element, info, forceInvalidate);
+			}
+		}
+		
+		void UpdateAdornersForElement(UIElement element, AdornerInfo info, bool forceInvalidate)
+		{
+			if (element.IsDescendantOf(_designPanel)) {
+				if (!info.isVisible) {
+					info.isVisible = true;
+					// make adorners visible:
+					info.adorners.ForEach(AddAdornerToChildren);
+				}
+				if (forceInvalidate) {
+					foreach (AdornerPanel p in info.adorners) {
+						p.InvalidateMeasure();
+					}
+				}
+			} else {
+				if (info.isVisible) {
+					info.isVisible = false;
+					// make adorners invisible:
+					info.adorners.ForEach(this.Children.Remove);
+				}
+			}
+		}
+		
+		void UpdateAllAdorners(bool forceInvalidate)
+		{
+			foreach (KeyValuePair<UIElement, AdornerInfo> pair in _dict) {
+				UpdateAdornersForElement(pair.Key, pair.Value, forceInvalidate);
 			}
 		}
 	}

@@ -18,18 +18,33 @@ namespace ICSharpCode.WpfDesign.Adorners
 	/// <summary>
 	/// Defines how a design-time adorner is placed.
 	/// </summary>
-	public class Placement
+	public abstract class Placement
 	{
-		PlacementSpace space = PlacementSpace.Render;
+		/// <summary>
+		/// A placement instance that places the adorner above the content, using the same bounds as the content.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+		public static readonly Placement FillContent = new FillContentPlacement();
 		
 		/// <summary>
-		/// Gets/Sets the space in which the adorner is placed.
+		/// Arranges the adorner element on the specified adorner panel.
 		/// </summary>
-		public PlacementSpace Space {
-			get { return space; }
-			set { space = value; }
-		}
+		public abstract void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize);
 		
+		sealed class FillContentPlacement : Placement
+		{
+			public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
+			{
+				adorner.Arrange(new Rect(adornedElementSize));
+			}
+		}
+	}
+	
+	/// <summary>
+	/// Placement class providing properties for different kinds of relative placements.
+	/// </summary>
+	public sealed class RelativePlacement : Placement
+	{
 		double widthRelativeToDesiredWidth, heightRelativeToDesiredHeight;
 		
 		/// <summary>
@@ -84,23 +99,51 @@ namespace ICSharpCode.WpfDesign.Adorners
 			set { heightOffset = value; }
 		}
 		
-		Size CalculateSize(Visual adornerVisual, UIElement adornedElement)
+		Size CalculateSize(UIElement adorner, Size adornedElementSize)
 		{
 			Size size = new Size(widthOffset, heightOffset);
 			if (widthRelativeToDesiredWidth != 0 || heightRelativeToDesiredHeight != 0) {
-				UIElement adornerElement = adornerVisual as UIElement;
-				if (adornerElement == null) {
-					throw new DesignerException("Cannot calculate the size relative to the adorner's desired size if the adorner is not an UIElement.");
-				}
-				size.Width += widthRelativeToDesiredWidth * adornerElement.DesiredSize.Width;
-				size.Height += heightRelativeToDesiredHeight * adornerElement.DesiredSize.Height;
+				size.Width += widthRelativeToDesiredWidth * adorner.DesiredSize.Width;
+				size.Height += heightRelativeToDesiredHeight * adorner.DesiredSize.Height;
 			}
-			size.Width += widthRelativeToContentWidth * adornedElement.RenderSize.Width;
-			size.Height += heightRelativeToContentHeight * adornedElement.RenderSize.Height;
+			size.Width += widthRelativeToContentWidth * adornedElementSize.Width;
+			size.Height += heightRelativeToContentHeight * adornedElementSize.Height;
 			return size;
 		}
+		
+		double xOffset, yOffset;
+		
+		/// <summary>
+		/// Gets/Sets an offset that is added to the adorner position.
+		/// </summary>
+		public double XOffset {
+			get { return xOffset; }
+			set { xOffset = value; }
+		}
+		
+		/// <summary>
+		/// Gets/Sets an offset that is added to the adorner position.
+		/// </summary>
+		public double YOffset {
+			get { return yOffset; }
+			set { yOffset = value; }
+		}
+		
+		Point CalculatePosition(Size adornedElementSize, Size adornerSize)
+		{
+			return new Point(xOffset, yOffset);
+		}
+		
+		/// <summary>
+		/// Arranges the adorner element on the specified adorner panel.
+		/// </summary>
+		public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
+		{
+			Size adornerSize = CalculateSize(adorner, adornedElementSize);
+			adorner.Arrange(new Rect(CalculatePosition(adornedElementSize, adornerSize), adornerSize));
+		}
 	}
-	
+
 	/// <summary>
 	/// Describes the space in which an adorner is placed.
 	/// </summary>
@@ -119,7 +162,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 		/// </summary>
 		Designer
 	}
-	
+
 	/// <summary>
 	/// The possible layers where adorners can be placed.
 	/// </summary>
