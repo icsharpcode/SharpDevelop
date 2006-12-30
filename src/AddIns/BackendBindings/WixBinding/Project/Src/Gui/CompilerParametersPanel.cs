@@ -34,9 +34,11 @@ namespace ICSharpCode.WixBinding
 			ConnectBrowseFolder("intermediateOutputPathBrowseButton", "intermediateOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
 			
 			b = helper.BindString("wixToolPathTextBox", "WixToolPath");
+			b.TreatPropertyValueAsLiteral = false;
 			ConnectBrowseFolder("wixToolPathBrowseButton", "wixToolPathTextBox", String.Empty);
 			
 			b = helper.BindString("wixMSBuildExtensionsPathTextBox", "WixMSBuildExtensionsPath");
+			b.TreatPropertyValueAsLiteral = false;
 			ConnectBrowseFolder("wixMSBuildExtensionsPathBrowseButton", "wixMSBuildExtensionsPathTextBox", String.Empty);
 
 			// Add the extension picker in manually since the anchoring does not
