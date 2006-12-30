@@ -75,6 +75,8 @@ namespace ClassDiagram
 		LinkedListNode<CanvasItemData> hoverItemNode;
 		LinkedList<CanvasItemData> itemsList = new LinkedList<CanvasItemData>();
 		Dictionary<CanvasItem, CanvasItemData> itemsData = new Dictionary<CanvasItem, CanvasItemData>();
+		Dictionary<IClass, CanvasItemData> classesToData = new Dictionary<IClass, CanvasItemData>();
+				
 		DiagramRouter diagramRouter = new DiagramRouter();
 		
 		float zoom = 1.0f;
@@ -381,9 +383,14 @@ namespace ClassDiagram
 		
 		public void AddCanvasItem (CanvasItem item)
 		{
+			diagramRouter.AddItem(item);
+			CanvasItemData itemData = new CanvasItemData(item, SizeGripMouseEntered, SizeGripMouseLeft);
+			itemsData[item] = itemData;
+
 			ClassCanvasItem classItem = item as ClassCanvasItem;
 			if (classItem != null)
 			{
+				classesToData.Add(classItem.RepresentedClassType, itemData);
 				foreach (CanvasItemData ci in itemsList)
 				{
 					ClassCanvasItem cci = ci.Item as ClassCanvasItem;
@@ -401,10 +408,6 @@ namespace ClassDiagram
 				}
 			}
 
-			diagramRouter.AddItem(item);
-			CanvasItemData itemData = new CanvasItemData(item, SizeGripMouseEntered, SizeGripMouseLeft);
-			itemsData[item] = itemData;
-			
 			itemsList.AddLast(itemData);
 			item.RedrawNeeded += HandleRedraw;
 			item.LayoutChanged += HandleItemLayoutChange;
@@ -426,6 +429,12 @@ namespace ClassDiagram
 				diagramRouter.RemoveRoute(r);
 
 			diagramRouter.RemoveItem (item);
+
+			ClassCanvasItem classItem = item as ClassCanvasItem;
+			if (classItem != null)
+			{
+				classesToData.Remove (classItem.RepresentedClassType);
+			}
 			
 			LayoutChanged(this, EventArgs.Empty);
 		}
@@ -444,14 +453,16 @@ namespace ClassDiagram
 		
 		public bool Contains (IClass ct)
 		{
-			foreach (CanvasItemData ci in itemsList)
+			return classesToData.ContainsKey(ct);
+			/*
+ 			foreach (CanvasItemData ci in itemsList)
 			{
 				ClassCanvasItem cci = ci.Item as ClassCanvasItem;
 				if (cci != null)
 					if (cci.RepresentedClassType.Equals(ct)) return true;
-			}
+			}*/
 			
-			return false;
+			//return false;
 		}
 		
 		public void AutoArrange ()
