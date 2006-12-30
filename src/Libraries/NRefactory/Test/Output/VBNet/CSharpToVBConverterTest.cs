@@ -266,6 +266,14 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void PInvokeSub()
+		{
+			TestMember("[DllImport(\"kernel32\", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]\n" +
+			           "private static extern void Sleep(long dwMilliseconds);",
+			           "Private Declare Ansi Sub Sleep Lib \"kernel32\" (ByVal dwMilliseconds As Long)");
+		}
+		
+		[Test]
 		public void Constructor()
 		{
 			TestMember("public tmp1() : base(1) { }",
@@ -459,6 +467,17 @@ End Class
 			           "\tDim V__2 As Integer = v__1\n" +
 			           "\tM(V__2, v__1)\n" +
 			           "End Sub");
+		}
+		
+		[Test]
+		public void ArrayCreationUpperBound()
+		{
+			TestStatement("string[] i = new string[2];",
+			              "Dim i As String() = New String(1) {}");
+			TestStatement("string[] i = new string[2] { \"0\", \"1\" };",
+			              "Dim i As String() = New String(1) {\"0\", \"1\"}");
+			TestStatement("string[,] i = new string[6, 6];",
+			              "Dim i As String(,) = New String(5, 5) {}");
 		}
 	}
 }

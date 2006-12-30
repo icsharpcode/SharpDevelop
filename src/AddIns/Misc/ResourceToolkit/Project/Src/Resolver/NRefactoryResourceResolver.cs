@@ -184,9 +184,40 @@ namespace Hornung.ResourceToolkit.Resolver
 				
 				if (resourceName.StartsWith(p.RootNamespace, StringComparison.InvariantCultureIgnoreCase)) {
 					
-					// Look for a resource file in the project with the exact name.
-					if ((fileName = FindResourceFileName(Path.Combine(p.Directory, resourceName.Substring(p.RootNamespace.Length+1).Replace('.', Path.DirectorySeparatorChar)))) != null) {
-						return new ResourceSetReference(resourceName, fileName);
+					if (p.Language == "VBNet") {
+						
+						// SD2-1239
+						// The VB MSBuild tasks do not use the folder names 
+						// in the manifest resource names.
+						// We have to look in all folders of the project
+						// for a file with the specified resource name.
+						
+						// Need to add a dummy extension so that FindResourceFileName
+						// does not remove parts of the actual file name when it
+						// contains a dot.
+						string fileNameWithDummyExtension = String.Concat(resourceName.Substring(p.RootNamespace.Length+1), ".x");
+						
+						// Search in the project root folder
+						// (this folder is not specified explicitly in
+						// the MSBuild project)
+						if ((fileName = FindResourceFileName(Path.Combine(p.Directory, fileNameWithDummyExtension))) != null) {
+							return new ResourceSetReference(resourceName, fileName);
+						}
+						
+						// Search in all project folders
+						foreach (ProjectItem folder in p.GetItemsOfType(ItemType.Folder)) {
+							if ((fileName = FindResourceFileName(Path.Combine(folder.FileName, fileNameWithDummyExtension))) != null) {
+								return new ResourceSetReference(resourceName, fileName);
+							}
+						}
+						
+					} else {
+						
+						// Look for a resource file in the project with the exact name.
+						if ((fileName = FindResourceFileName(Path.Combine(p.Directory, resourceName.Substring(p.RootNamespace.Length+1).Replace('.', Path.DirectorySeparatorChar)))) != null) {
+							return new ResourceSetReference(resourceName, fileName);
+						}
+						
 					}
 					
 				}

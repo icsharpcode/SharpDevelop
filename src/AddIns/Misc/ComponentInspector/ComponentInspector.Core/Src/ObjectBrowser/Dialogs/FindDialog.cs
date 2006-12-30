@@ -598,9 +598,12 @@ namespace NoGoop.ObjBrowser.Dialogs
 			// Materialize can sometimes take a while
 			Cursor save = Cursor.Current;
 			Cursor.Current = Cursors.WaitCursor;
-			((ISearchMaterializer)_foundList.SelectedItems[0].Tag).PointToNode();
+			ISearchMaterializer searchMaterializer = _foundList.SelectedItems[0].Tag as ISearchMaterializer;
+			if (searchMaterializer != null) {
+				searchMaterializer.PointToNode();
+				Close();
+			}
 			Cursor.Current = save;
-			Close();
 		}
 
 		protected void LayoutHandler(object sender, LayoutEventArgs e)

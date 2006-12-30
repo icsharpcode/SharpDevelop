@@ -56,8 +56,8 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddChildCommentCommand.cs" />
     <Compile Include="Src\AddChildTextNodeCommand.cs" />
-    <Compile Include="Src\IAddAttributeDialog.cs" />
-    <Compile Include="Src\IAddElementDialog.cs" />
+    <Compile Include="Src\AddXmlNodeDialog.cs" />
+    <Compile Include="Src\IAddXmlNodeDialog.cs" />
     <Compile Include="Src\InsertCommentAfterCommand.cs" />
     <Compile Include="Src\InsertCommentBeforeCommand.cs" />
     <Compile Include="Src\InsertTextNodeAfterCommand.cs" />
@@ -138,12 +138,8 @@
     <Compile Include="Src\XmlAttributePropertyDescriptor.cs" />
     <Compile Include="Src\XmlAttributeTypeDescriptor.cs" />
     <Compile Include="Src\XmlEncoder.cs" />
-    <EmbeddedResource Include="Resources\AddAttributeDialog.xfrm" />
-    <Compile Include="Src\AddAttributeDialog.cs" />
     <Compile Include="Src\AddAttributeCommand.cs" />
     <Compile Include="Src\RemoveAttributeCommand.cs" />
-    <EmbeddedResource Include="Resources\AddElementDialog.xfrm" />
-    <Compile Include="Src\AddElementDialog.cs" />
     <Compile Include="Src\AddChildElementCommand.cs" />
     <Compile Include="Src\InsertElementBeforeCommand.cs" />
     <Compile Include="Src\InsertElementAfterCommand.cs" />

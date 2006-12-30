@@ -57,12 +57,25 @@ namespace ICSharpCode.FormsDesigner.Gui
 			}
 		}
 		
-		void FillComponents(Assembly assembly, string loadPath)
+		void BeginFillComponentsList()
 		{
 			componentListView.BeginUpdate();
 			componentListView.Items.Clear();
 			componentListView.Controls.Clear();
-			
+		}
+		
+		void EndFillComponentsList(Assembly lastAssembly)
+		{
+			if (componentListView.Items.Count == 0) {
+				if (componentListView.Controls.Count == 0) {
+					ClearComponentsList(StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.NoComponentsFound}", new string[,] {{"Name", lastAssembly.FullName}}));
+				}
+			}
+			componentListView.EndUpdate();
+		}
+		
+		void AddComponentsToList(Assembly assembly, string loadPath)
+		{
 			if (assembly != null) {
 				Hashtable images = new Hashtable();
 				ImageList il = new ImageList();
@@ -125,13 +138,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 				} catch (Exception e) {
 					ClearComponentsList(e.Message);
 				}
-				if (componentListView.Items.Count == 0) {
-					if (componentListView.Controls.Count == 0) {
-						ClearComponentsList(StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.NoComponentsFound}", new string[,] {{"Name", assembly.FullName}}));
-					}
-				}
 			}
-			componentListView.EndUpdate();
 		}
 		
 		void gacListViewSelectedIndexChanged(object sender, System.EventArgs e)
@@ -140,8 +147,11 @@ namespace ICSharpCode.FormsDesigner.Gui
 				string assemblyName = ((ListView)ControlDictionary["gacListView"]).SelectedItems[0].Tag.ToString();
 				try {
 					Assembly asm = Assembly.Load(assemblyName);
-					FillComponents(asm, null);
+					BeginFillComponentsList();
+					AddComponentsToList(asm, null);
+					EndFillComponentsList(asm);
 				} catch (Exception ex) {
+					EndFillComponentsList(null);
 					ClearComponentsList(ex.Message);
 				}
 			} else {
@@ -164,18 +174,27 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void loadButtonClick(object sender, System.EventArgs e)
 		{
-			if (!System.IO.File.Exists(ControlDictionary["fileNameTextBox"].Text)) {
-				MessageService.ShowWarning("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.EnterValidFilename}");
-				return;
-			}
-			
+			BeginFillComponentsList();
 			try {
-				string assemblyFileName = ControlDictionary["fileNameTextBox"].Text;
-				Assembly asm = Assembly.LoadFrom(assemblyFileName);
-				FillComponents(asm, Path.GetDirectoryName(assemblyFileName));
+				string assemblyFileNames = ControlDictionary["fileNameTextBox"].Text;
+				Assembly lastAssembly = null;
+				foreach (string assemblyFileName in assemblyFileNames.Split(';')) {
+					if (!System.IO.File.Exists(assemblyFileName)) {
+						EndFillComponentsList(null);
+						ClearComponentsList(assemblyFileName + " was not found.");
+						MessageService.ShowWarning("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.EnterValidFilename}");
+						return;
+					}
+					
+					Assembly asm = Assembly.LoadFrom(assemblyFileName);
+					lastAssembly = asm;
+					AddComponentsToList(asm, Path.GetDirectoryName(assemblyFileName));
+				}
+				EndFillComponentsList(lastAssembly);
 			} catch {
+				EndFillComponentsList(null);
 				MessageService.ShowWarning("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.FileIsNotAssembly}");
-				FillComponents(null, null);
+				ClearComponentsList(null);
 			}
 		}
 		
@@ -195,11 +214,11 @@ namespace ICSharpCode.FormsDesigner.Gui
 				fdiag.AddExtension    = true;
 				
 				fdiag.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.AssemblyFiles}|*.dll;*.exe|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-				fdiag.Multiselect     = false;
+				fdiag.Multiselect     = true;
 				fdiag.CheckFileExists = true;
 				
 				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-					ControlDictionary["fileNameTextBox"].Text = fdiag.FileName;
+					ControlDictionary["fileNameTextBox"].Text = string.Join(";", fdiag.FileNames);
 				}
 			}
 		}

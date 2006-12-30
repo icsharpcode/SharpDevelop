@@ -13,8 +13,8 @@ using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
-namespace ICSharpCode.SharpDevelop.Gui {
-	
+namespace ICSharpCode.SharpDevelop.Gui 
+{
 	public class EditHighlightingDialog : BaseSharpDevelopForm
 	{
 		private System.Windows.Forms.Button acceptBtn;
@@ -61,6 +61,15 @@ namespace ICSharpCode.SharpDevelop.Gui {
 			nodeTree.SelectedNode = topNode;
 		}
 		
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing) {
+				nodeTree.Nodes.Clear();
+				optionPanel.Controls.Clear();
+			}
+			base.Dispose(disposing);
+		}
+		
 		void cancelClick(object sender, EventArgs e)
 		{
 			if (currentPanel != null) {
@@ -68,9 +77,7 @@ namespace ICSharpCode.SharpDevelop.Gui {
 				optionPanel.Controls.Clear();
 			}
 			nodeTree.Nodes.Clear();
-			
 			DialogResult = DialogResult.Cancel;
-			
 		}
 		
 		void acceptClick(object sender, EventArgs e)
@@ -81,12 +88,9 @@ namespace ICSharpCode.SharpDevelop.Gui {
 				}
 				currentPanel.StoreSettings();
 				currentPanel.ParentNode.UpdateNodeText();
-				
 				optionPanel.Controls.Clear();
 			}
-			
 			nodeTree.Nodes.Clear();
-			
 			DialogResult = DialogResult.OK;
 		}
 				
@@ -102,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Gui {
 			                                        new Rectangle(0, 0, Width, Height));
 			}
 			
-			public GradientLabel() : base()
+			public GradientLabel()
 			{
 				UseMnemonic = false;
 			}
@@ -110,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Gui {
 		
 		private NodeOptionPanel currentPanel;
 		
-		void NodeTreeBeforeSelect(object sender, System.Windows.Forms.TreeViewCancelEventArgs e)
+		void NodeTreeBeforeSelect(object sender, TreeViewCancelEventArgs e)
 		{
 			if (currentPanel != null) {
 				if (!currentPanel.ValidateSettings()) {
@@ -120,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Gui {
 			}
 		}
 		
-		void NodeTreeAfterSelect(object sender, System.Windows.Forms.TreeViewEventArgs e)
+		void NodeTreeAfterSelect(object sender, TreeViewEventArgs e)
 		{
 			if (currentPanel != null) {
 				currentPanel.StoreSettings();
@@ -136,9 +140,6 @@ namespace ICSharpCode.SharpDevelop.Gui {
 			}
 			
 			gradientLabel.Text = " " + e.Node.Text;
-			
 		}
-		
 	}
-	
 }

@@ -29,7 +29,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		AbstractPrettyPrintOptions Options {
 			get;
-			set;
 		}
 		IOutputFormatter OutputFormatter {
 			get;

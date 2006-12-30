@@ -9,6 +9,7 @@ using System;
 using System.Windows.Forms;
 using System.Xml;
 
+using ICSharpCode.Core;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -33,6 +34,15 @@ namespace XmlEditor.Tests.Tree
 		bool dirtyChanged;
 		XmlElementTreeNode htmlTreeNode;
 		XmlTextTreeNode textTreeNode;
+		
+		[TestFixtureSetUp]
+		public void SetUpFixture()
+		{
+			// Need to initialize the properties service.
+			if (!PropertyService.Initialized) {
+				PropertyService.InitializeService(String.Empty, String.Empty, String.Empty);
+			}
+		}
 		
 		[SetUp]
 		public void Init()
@@ -408,6 +418,26 @@ namespace XmlEditor.Tests.Tree
 			treeViewContainer.CallXmlElementTreeViewDeleteKeyPressed();
 		
 			Assert.IsNull(htmlTreeNode.XmlElement.SelectSingleNode("text()"));
+		}
+		
+		[Test]
+		public void CreateAddAttributeDialog()
+		{
+			AddXmlNodeDialog dialog = (AddXmlNodeDialog)treeViewContainer.CallCreateAddAttributeDialog(new string[0]);
+			Panel bottomPanel = (Panel)dialog.Controls["bottomPanel"];
+			Label customNameTextBoxLabel = (Label)bottomPanel.Controls["customNameTextBoxLabel"];
+			Assert.AreEqual(StringParser.Parse("${res:ICSharpCode.XmlEditor.AddAttributeDialog.Title}"), dialog.Text);
+			Assert.AreEqual(StringParser.Parse("${res:ICSharpCode.XmlEditor.AddAttributeDialog.CustomAttributeLabel}"), customNameTextBoxLabel.Text);
+		}
+		
+		[Test]
+		public void CreateAddElementeDialog()
+		{
+			AddXmlNodeDialog dialog = (AddXmlNodeDialog)treeViewContainer.CallCreateAddElementDialog(new string[0]);
+			Panel bottomPanel = (Panel)dialog.Controls["bottomPanel"];
+			Label customNameTextBoxLabel = (Label)bottomPanel.Controls["customNameTextBoxLabel"];
+			Assert.AreEqual(StringParser.Parse("${res:ICSharpCode.XmlEditor.AddElementDialog.Title}"), dialog.Text);
+			Assert.AreEqual(StringParser.Parse("${res:ICSharpCode.XmlEditor.AddElementDialog.CustomElementLabel}"), customNameTextBoxLabel.Text);
 		}
 		
 		void TreeViewContainerDirtyChanged(object source, EventArgs e)

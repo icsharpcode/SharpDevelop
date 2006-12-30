@@ -26,6 +26,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		//   Simple event handler creation is replaced with AddressOfExpression
 		//   Move Imports-statements out of namespaces
 		//   Parenthesis around Cast expressions remove - these are syntax errors in VB.NET
+		//   Decrease array creation size - VB specifies upper bound instead of array length
 		
 		List<INode> nodesToMoveToCompilationUnit = new List<INode>();
 		
@@ -337,6 +338,14 @@ namespace ICSharpCode.NRefactory.Visitors
 				ReplaceCurrentNode(parenthesizedExpression.Expression); // remove parenthesis
 			}
 			return null;
+		}
+		
+		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
+		{
+			for (int i = 0; i < arrayCreateExpression.Arguments.Count; i++) {
+				arrayCreateExpression.Arguments[i] = Expression.AddInteger(arrayCreateExpression.Arguments[i], -1);
+			}
+			return base.VisitArrayCreateExpression(arrayCreateExpression, data);
 		}
 	}
 }

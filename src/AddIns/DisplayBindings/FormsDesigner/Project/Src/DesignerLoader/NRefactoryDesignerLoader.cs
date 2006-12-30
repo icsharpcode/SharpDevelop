@@ -175,6 +175,21 @@ namespace ICSharpCode.FormsDesigner
 			bool isFirstClassInFile;
 			IList<IClass> parts = FindFormClassParts(parseInfo, out formClass, out isFirstClassInFile);
 			
+			const string missingReferenceMessage = "Your project is missing a reference to '${Name}' - please add it using 'Project > Add Reference'.";
+			
+			if (formClass.ProjectContent.GetClass("System.Drawing.Point", 0) == null) {
+				throw new FormsDesignerLoadException(
+					StringParser.Parse(
+						missingReferenceMessage, new string[,] {{ "Name" , "System.Drawing"}}
+					));
+			}
+			if (formClass.ProjectContent.GetClass("System.Windows.Forms.Form", 0) == null) {
+				throw new FormsDesignerLoadException(
+					StringParser.Parse(
+						missingReferenceMessage, new string[,] {{ "Name" , "System.Windows.Forms"}}
+					));
+			}
+			
 			List<KeyValuePair<string, CompilationUnit>> compilationUnits = new List<KeyValuePair<string, CompilationUnit>>();
 			bool foundInitMethod = false;
 			foreach (IClass part in parts) {

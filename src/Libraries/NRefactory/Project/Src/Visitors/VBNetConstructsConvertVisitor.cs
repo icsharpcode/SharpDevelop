@@ -26,6 +26,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		//   IIF(cond, true, false) => ConditionalExpression
 		//   Built-in methods => Prefix with class name
 		//   Function A() \n A = SomeValue \n End Function -> convert to return statement
+		//   Array creation => add 1 to upper bound to get array length
 		//   Comparison with empty string literal ->
 		
 		Dictionary<string, string> usings;
@@ -133,6 +134,11 @@ namespace ICSharpCode.NRefactory.Visitors
 			if ((method.Modifier & Modifiers.Visibility) == 0)
 				method.Modifier |= Modifiers.Public;
 			method.Modifier |= Modifiers.Extern | Modifiers.Static;
+			
+			if (method.TypeReference.IsNull) {
+				method.TypeReference = new TypeReference("System.Void");
+			}
+			
 			Attribute att = new Attribute("DllImport", null, null);
 			att.PositionalArguments.Add(CreateStringLiteral(declareDeclaration.Library));
 			if (declareDeclaration.Alias.Length > 0) {
@@ -437,6 +443,17 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 			}
 			return base.VisitUsingStatement(usingStatement, data);
+		}
+		
+		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
+		{
+			for (int i = 0; i < arrayCreateExpression.Arguments.Count; i++) {
+				arrayCreateExpression.Arguments[i] = Expression.AddInteger(arrayCreateExpression.Arguments[i], 1);
+			}
+			if (arrayCreateExpression.ArrayInitializer.CreateExpressions.Count == 0) {
+				arrayCreateExpression.ArrayInitializer = null;
+			}
+			return base.VisitArrayCreateExpression(arrayCreateExpression, data);
 		}
 		
 		bool IsEmptyStringLiteral(Expression expression)

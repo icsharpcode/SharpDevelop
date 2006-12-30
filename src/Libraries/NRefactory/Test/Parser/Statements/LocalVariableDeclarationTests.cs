@@ -234,7 +234,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			ArrayCreateExpression ace = (ArrayCreateExpression)lvd.Variables[0].Initializer;
 			Assert.AreEqual(new int[] { 0 } , ace.CreateType.RankSpecifier);
 			Assert.AreEqual(1, ace.Arguments.Count);
-			Assert.AreEqual(11, ((PrimitiveExpression)ace.Arguments[0]).Value);
+			Assert.AreEqual(10, ((PrimitiveExpression)ace.Arguments[0]).Value);
 		}
 		
 		[Test]
@@ -250,7 +250,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			ArrayCreateExpression ace = (ArrayCreateExpression)lvd.Variables[0].Initializer;
 			Assert.AreEqual(new int[] { 0 } , ace.CreateType.RankSpecifier);
 			Assert.AreEqual(1, ace.Arguments.Count);
-			Assert.AreEqual(11, ((PrimitiveExpression)ace.Arguments[0]).Value);
+			Assert.AreEqual(10, ((PrimitiveExpression)ace.Arguments[0]).Value);
 		}
 		
 		[Test]
@@ -276,7 +276,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			ArrayCreateExpression ace = (ArrayCreateExpression)lvd.Variables[0].Initializer;
 			Assert.AreEqual(new int[] {0, 0}, ace.CreateType.RankSpecifier);
 			Assert.AreEqual(1, ace.Arguments.Count);
-			Assert.AreEqual(11, ((PrimitiveExpression)ace.Arguments[0]).Value);
+			Assert.AreEqual(10, ((PrimitiveExpression)ace.Arguments[0]).Value);
 		}
 		
 		[Test]

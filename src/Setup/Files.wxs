@@ -621,6 +621,7 @@
 									<File Source="..\..\data\resources\StringResources.pt-br.resources" Name="STRIN_13.RES" Id="StringResources.pt_br.resources" LongName="StringResources.pt-br.resources" />
 									<File Source="..\..\data\resources\StringResources.ro.resources" Name="STRIN_14.RES" Id="StringResources.ro.resources" LongName="StringResources.ro.resources" />
 									<File Source="..\..\data\resources\StringResources.se.resources" Name="STRIN_15.RES" Id="StringResources.se.resources" LongName="StringResources.se.resources" />
+									<File Source="..\..\data\resources\StringResources.pt.resources" Name="STRIN_16.RES" Id="StringResources.pt.resources" LongName="StringResources.pt.resources" />
 								</Component>
 							</Directory>
 							<Directory Id="SchemasFolder" Name="schemas">
@@ -730,6 +731,8 @@
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopMacro.xpt" Name="SHARPD_2.XPT" Id="CSharpSharpDevelopMacro.xpt" LongName="SharpDevelopMacro.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\WebpageProject.xpt" Name="WEBPAG_1.XPT" Id="CSharpWebpageProject.xpt" LongName="WebpageProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\WPFApplication.xpt" Name="WPFAPP_1.XPT" Id="CSharpWPFApplication.xpt" LongName="WPFApplication.xpt" />
+											<File Source="..\..\data\templates\project\CSharp\SharpDevelopCustomTool.xpt" Name="SHARPD_3.XPT" Id="SharpDevelopCustomTool.xpt" LongName="SharpDevelopCustomTool.xpt" />
+											<File Source="..\..\data\templates\project\CSharp\SharpDevelopCustomToolTemplate.xft.xml" Name="SHARPD_1.XML" Id="SharpDevelopCustomToolTemplate.xft.xml" LongName="SharpDevelopCustomToolTemplate.xft.xml" />
 										</Component>
 										<Component Guid="2EBDC2FE-A2C9-4023-BC86-0E688B5897A3" Id="CSharpNotifyIconProjectTemplate" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\NotifyIcon.xpt" Name="NOTIFY.XPT" Id="NotifyIcon.xpt" LongName="NotifyIcon.xpt" />
@@ -759,6 +762,7 @@
 											<File Source="..\..\data\templates\project\VBNet\Service.xpt" Name="Service.xpt" Id="VBNetService.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\SharedAddin.xpt" Name="SHARED_1.XPT" Id="VBNetSharedAddin.xpt" LongName="SharedAddin.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\SharpDevelopAddin.xpt" Name="SHARPD_4.XPT" Id="VBNetSharpDevelopAddin.xpt" LongName="SharpDevelopAddin.xpt" />
+											<File Source="..\..\data\templates\project\VBNet\CompactFormsProject.xpt" Name="COMPAC_1.XPT" Id="CompactFormsProject.xpt" LongName="CompactFormsProject.xpt" />
 										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">

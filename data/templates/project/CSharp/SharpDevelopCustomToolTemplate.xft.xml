@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Template author="-" version="1.0">
+	<Config
+		name        = "CustomTool Template"
+		icon        = "Icons.32x32.XMLFileIcon"
+		category    = "${res:Templates.File.Categories.Misc}"
+		defaultname = "CustomToolTemplate${Number}.xml"
+		language    = "XML"/>
+	
+	<Description>A file template for ${ProjectName}</Description>
+	
+	<Files>
+		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0"?>
+<Form Text = "Form title">
+	<Controls>
+		<Button Text = "Click me"/>
+		<Panel>
+			<Controls>
+				<Label Text = "A Label"/>
+				<Button Text = "Another button"/>
+			</Controls>
+		</Panel>
+	</Controls>
+</Form>]]>
+		</File>
+	</Files>
+</Template>
