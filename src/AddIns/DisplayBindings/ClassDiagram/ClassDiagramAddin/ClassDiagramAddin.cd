@@ -1,63 +1,72 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <ClassDiagram Zoom="1">
-  <ClassItem X="40" Y="230" Width="393.7436" Type="ClassDiagramAddin.ClassDiagramViewContent" Collapsed="True">
+  <ClassItem X="40" Y="1280" Width="210.6208" Type="ClassDiagramAddin.ShowClassDiagramCommand" Collapsed="False">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="1410" Width="358.321" Type="ClassDiagramAddin.ClassDiagramDisplayBinding" Collapsed="False">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="300" Y="520" Width="189.2326" Type="ClassDiagramAddin.ExpandAllCommand" Collapsed="False">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="530" Y="520" Width="189.2326" Type="ClassDiagramAddin.CollapseAllCommand" Collapsed="False">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="760" Y="520" Width="189.2326" Type="ClassDiagramAddin.MatchAllWidthsCommand" Collapsed="False">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="990" Y="520" Width="190.3717" Type="ClassDiagramAddin.ShrinkAllWidthsCommand" Collapsed="False">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="1760" Width="299.0026" Type="ClassDiagramAddin.SetDiagramZoomCommand" Collapsed="False">
     <Properties Collapsed="False" />
     <Methods Collapsed="False" />
     <Fields Collapsed="False" />
   </ClassItem>
-  <ClassItem X="40" Y="320" Width="325.708" Type="ClassDiagramAddin.ClassEditorPad" Collapsed="True">
+  <ClassItem X="1220" Y="520" Width="189.2326" Type="ClassDiagramAddin.AddClassCommand" Collapsed="False">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="1450" Y="520" Width="201.1139" Type="ClassDiagramAddin.AddAbstractClassCommand" Collapsed="False">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="1690" Y="520" Width="189.2326" Type="ClassDiagramAddin.AddInterfaceCommand" Collapsed="False">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="1920" Y="520" Width="189.2326" Type="ClassDiagramAddin.AddDelegateCommand" Collapsed="False">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="2140" Y="520" Width="189.2326" Type="ClassDiagramAddin.AddEnumCommand" Collapsed="False">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="2370" Y="520" Width="189.2326" Type="ClassDiagramAddin.AddNoteCommand" Collapsed="False">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="520" Width="217.9308" Type="ClassDiagramAddin.AutoArrangeDiagramCommand" Collapsed="False">
+    <Methods Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="380" Width="211.5392" Type="ClassDiagramAddin.ClassDiagramAddinCommand" Collapsed="False">
+    <Properties Collapsed="False" />
+  </ClassItem>
+  <ClassItem X="40" Y="2830" Width="337.508" Type="ClassDiagramAddin.ClassEditorPad" Collapsed="False">
     <Properties Collapsed="False" />
     <Methods Collapsed="False" />
     <Fields Collapsed="False" />
   </ClassItem>
-  <ClassItem X="40" Y="130" Width="189.4326" Type="ClassDiagramAddin.SaveToBitmapCommand" Collapsed="True">
-    <Methods Collapsed="False" />
-  </ClassItem>
-  <ClassItem X="40" Y="420" Width="193.8208" Type="ClassDiagramAddin.ShowClassDiagramCommand" Collapsed="True">
-    <Methods Collapsed="False" />
-  </ClassItem>
-  <ClassItem X="40" Y="510" Width="346.521" Type="ClassDiagramAddin.ClassDiagramDisplayBinding" Collapsed="True">
-    <Methods Collapsed="False" />
-  </ClassItem>
-  <ClassItem X="40" Y="40" Width="194.7392" Type="ClassDiagramAddin.ClassDiagramAddinCommand" Collapsed="True">
-    <Properties Collapsed="False" />
-  </ClassItem>
-  <ClassItem X="270" Y="130" Width="201.1308" Type="ClassDiagramAddin.AutoArrangeDiagramCommand" Collapsed="True">
-    <Methods Collapsed="False" />
-  </ClassItem>
-  <ClassItem X="510" Y="130" Width="189.4326" Type="ClassDiagramAddin.ExpandAllCommand" Collapsed="True">
-    <Methods Collapsed="False" />
-  </ClassItem>
-  <ClassItem X="740" Y="130" Width="189.4326" Type="ClassDiagramAddin.CollapseAllCommand" Collapsed="True">
-    <Methods Collapsed="False" />
-  </ClassItem>
-  <ClassItem X="970" Y="130" Width="189.4326" Type="ClassDiagramAddin.MatchAllWidthsCommand" Collapsed="True">
-    <Methods Collapsed="False" />
-  </ClassItem>
-  <ClassItem X="1200" Y="130" Width="189.4326" Type="ClassDiagramAddin.ShrinkAllWidthsCommand" Collapsed="True">
-    <Methods Collapsed="False" />
-  </ClassItem>
-  <ClassItem X="40" Y="610" Width="287.2026" Type="ClassDiagramAddin.SetDiagramZoomCommand" Collapsed="True">
+  <ClassItem X="40" Y="3420" Width="405.5436" Type="ClassDiagramAddin.ClassDiagramViewContent" Collapsed="False">
     <Properties Collapsed="False" />
     <Methods Collapsed="False" />
     <Fields Collapsed="False" />
   </ClassItem>
-  <ClassItem X="1430" Y="130" Width="189.4326" Type="ClassDiagramAddin.AddClassCommand" Collapsed="True">
-    <Methods Collapsed="False" />
+  <ClassItem X="40" Y="3770" Width="152.4088" Type="ClassDiagramAddin.ClassDiagramData" Collapsed="False">
+    <Fields Collapsed="False" />
   </ClassItem>
-  <ClassItem X="1660" Y="130" Width="189.4326" Type="ClassDiagramAddin.AddAbstractClassCommand" Collapsed="True">
-    <Methods Collapsed="False" />
+  <ClassItem X="190" Y="3770" Width="150.5075" Type="ClassDiagramAddin.ClassDiagramItem" Collapsed="False">
+    <Fields Collapsed="False" />
   </ClassItem>
-  <ClassItem X="1890" Y="130" Width="189.4326" Type="ClassDiagramAddin.AddInterfaceCommand" Collapsed="True">
-    <Methods Collapsed="False" />
+  <ClassItem X="360" Y="3770" Width="173.2653" Type="ClassDiagramAddin.TypedItem" Collapsed="False">
+    <Fields Collapsed="False" />
   </ClassItem>
-  <ClassItem X="2120" Y="130" Width="189.4326" Type="ClassDiagramAddin.AddDelegateCommand" Collapsed="True">
-    <Methods Collapsed="False" />
-  </ClassItem>
-  <ClassItem X="2350" Y="130" Width="189.4326" Type="ClassDiagramAddin.AddEnumCommand" Collapsed="True">
-    <Methods Collapsed="False" />
-  </ClassItem>
-  <ClassItem X="2580" Y="130" Width="189.4326" Type="ClassDiagramAddin.AddNoteCommand" Collapsed="True">
-    <Methods Collapsed="False" />
+  <ClassItem X="560" Y="3770" Width="129.9679" Type="ClassDiagramAddin.NoteItem" Collapsed="False">
+    <Fields Collapsed="False" />
   </ClassItem>
 </ClassDiagram>

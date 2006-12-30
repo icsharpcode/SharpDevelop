@@ -1,11 +1,13 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Itai Bar-Haim" email=""/>
-//     <version>$Revision$</version>
-// </file>
-
+/*
+ * Created by SharpDevelop.
+ * User: itai
+ * Date: 23/09/2006
+ * Time: 12:18
+ * 
+ * To change this template use Tools | Options | Coding | Edit Standard Headers.
+ */
 using System;
+using System.IO;
 using System.Windows.Forms;
 
 using ClassDiagram;
@@ -23,7 +25,7 @@ namespace ClassDiagramAddin
 		public override void Run()
 		{
 			IProject p = ProjectService.CurrentProject;
-			string filename = p.Directory+System.IO.Path.DirectorySeparatorChar+p.Name+".cd";
+			string filename = Path.Combine(p.Directory, p.Name+".cd");
 			if (p == null) return;
 			/*if (p.IsFileInProject(filename))
 			{
@@ -50,8 +52,6 @@ namespace ClassDiagramAddin
 				classcanvas.AutoArrange();
 				classcanvas.WriteToXml().Save(filename);
 				FileProjectItem fpi = new FileProjectItem(p, ItemType.Content);
-				fpi.BuildAction = "Content";
-				//fpi.BuildAction = FileProjectItem.FileBuildAction.Content;
 				fpi.FileName = filename;
 				ProjectService.AddProjectItem(p, fpi);
 				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
