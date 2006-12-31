@@ -45,6 +45,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		#endregion
 		
+		internal XmlElement XmlElement {
+			get { return element; }
+		}
+		
+		internal override void AddNodeTo(XamlProperty property)
+		{
+			property.AddChildNodeToProperty(element);
+		}
+		
 		/// <summary>
 		/// Gets the XamlDocument where this XamlObject is declared in.
 		/// </summary>
@@ -74,6 +83,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get {
 				return properties.AsReadOnly();
 			}
+		}
+		
+		internal override void RemoveNodeFromParent()
+		{
+			element.ParentNode.RemoveChild(element);
 		}
 		
 		/// <summary>

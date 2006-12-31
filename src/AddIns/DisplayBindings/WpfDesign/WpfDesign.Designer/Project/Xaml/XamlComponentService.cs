@@ -8,11 +8,29 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.WpfDesign.XamlDom;
+using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
 	sealed class XamlComponentService : IComponentService
 	{
+		#region IdentityEqualityComparer
+		sealed class IdentityEqualityComparer : IEqualityComparer<object>
+		{
+			internal static readonly IdentityEqualityComparer Instance = new IdentityEqualityComparer();
+			
+			int IEqualityComparer<object>.GetHashCode(object obj)
+			{
+				return obj.GetHashCode();
+			}
+			
+			bool IEqualityComparer<object>.Equals(object x, object y)
+			{
+				return x == y;
+			}
+		}
+		#endregion
+		
 		readonly XamlDesignContext _context;
 		
 		public XamlComponentService(XamlDesignContext context)
@@ -23,7 +41,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		public event EventHandler<DesignItemEventArgs> ComponentRegistered;
 		public event EventHandler<DesignItemEventArgs> ComponentUnregistered;
 		
-		Dictionary<object, XamlDesignItem> _sites = new Dictionary<object, XamlDesignItem>();
+		Dictionary<object, XamlDesignItem> _sites = new Dictionary<object, XamlDesignItem>(IdentityEqualityComparer.Instance);
 		
 		public DesignItem GetDesignItem(object component)
 		{
@@ -36,10 +54,15 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public DesignItem RegisterComponentForDesigner(object component)
 		{
-			if (component == null)
-				throw new ArgumentNullException("component");
+			if (component == null) {
+				component = new NullExtension();
+			} else if (component is Type) {
+				component = new TypeExtension((Type)component);
+			}
 			
-			throw new NotImplementedException();
+			XamlDesignItem item = new XamlDesignItem(_context.Document.CreateObject(component), _context);
+			_sites.Add(component, item);
+			return item;
 		}
 		
 		/// <summary>

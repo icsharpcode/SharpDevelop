@@ -23,6 +23,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public abstract object GetValue(object instance);
 		public abstract void SetValue(object instance, object value);
 		public abstract TypeConverter TypeConverter { get; }
+		public abstract Type TargetType { get; }
 		public abstract string Name { get; }
 		public abstract string FullyQualifiedName { get; }
 		public abstract bool IsAttached { get; }
@@ -53,6 +54,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get {
 				return _getMethod.DeclaringType.FullName + "." + _name;
 			}
+		}
+		
+		public override Type TargetType {
+			get { return _getMethod.DeclaringType; }
 		}
 		
 		public override string Name {
@@ -100,6 +105,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public override void SetValue(object instance, object value)
 		{
 			_propertyDescriptor.SetValue(instance, value);
+		}
+		
+		public override Type TargetType {
+			get { return _propertyDescriptor.ComponentType; }
 		}
 		
 		public override TypeConverter TypeConverter {

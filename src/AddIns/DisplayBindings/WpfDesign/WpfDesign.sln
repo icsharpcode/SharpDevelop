@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandaloneDesigner", "Stand
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign", "WpfDesign\Project\WpfDesign.csproj", "{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.Designer.Tests", "WpfDesign.Designer\Tests\WpfDesign.Designer.Tests.csproj", "{943DBBB3-E84E-4CF4-917C-C05AFA8743C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,5 +40,9 @@ Global
 		{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{943DBBB3-E84E-4CF4-917C-C05AFA8743C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{943DBBB3-E84E-4CF4-917C-C05AFA8743C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{943DBBB3-E84E-4CF4-917C-C05AFA8743C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{943DBBB3-E84E-4CF4-917C-C05AFA8743C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -22,6 +22,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		readonly XamlDesignItem _rootItem;
 		internal readonly XamlComponentService _componentService;
 		
+		internal XamlDocument Document {
+			get { return _doc; }
+		}
+		
 		/// <summary>
 		/// Creates a new XamlDesignContext instance.
 		/// </summary>

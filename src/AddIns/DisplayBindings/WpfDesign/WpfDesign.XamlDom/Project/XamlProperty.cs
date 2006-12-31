@@ -22,6 +22,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		XamlObject parentObject;
 		XamlPropertyInfo propertyInfo;
 		XamlPropertyValue propertyValue;
+		
 		List<XamlPropertyValue> collectionElements;
 		bool _isCollection;
 		
@@ -66,10 +67,45 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		/// <summary>
+		/// Gets the type the property is declared on.
+		/// </summary>
+		public Type PropertyTargetType {
+			get { return propertyInfo.TargetType; }
+		}
+		
+		/// <summary>
 		/// Gets the value of the property. Can be null if the property is a collection property.
 		/// </summary>
 		public XamlPropertyValue PropertyValue {
 			get { return propertyValue; }
+			set {
+				if (IsCollection)
+					throw new InvalidOperationException();
+				
+				Reset();
+				propertyValue = value;
+				propertyValue.AddNodeTo(this);
+				propertyValue.ParentProperty = this;
+			}
+		}
+		
+		XmlElement _propertyElement;
+		
+		internal void ParserSetPropertyElement(XmlElement propertyElement)
+		{
+			_propertyElement = propertyElement;
+		}
+		
+		internal void AddChildNodeToProperty(XmlNode newChildNode)
+		{
+			if (_propertyElement == null) {
+				_propertyElement = parentObject.OwnerDocument.XmlDocument.CreateElement(
+					this.PropertyTargetType.Name + "." + this.PropertyName,
+					parentObject.OwnerDocument.GetNamespaceFor(this.PropertyTargetType)
+				);
+				parentObject.XmlElement.InsertBefore(_propertyElement, parentObject.XmlElement.FirstChild);
+			}
+			_propertyElement.AppendChild(newChildNode);
 		}
 		
 		/// <summary>
@@ -98,7 +134,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public void Reset()
 		{
-			throw new NotImplementedException();
+			if (propertyValue != null) {
+				propertyValue.RemoveNodeFromParent();
+				propertyValue.ParentProperty = null;
+				propertyValue = null;
+			}
+			if (_propertyElement != null) {
+				_propertyElement.ParentNode.RemoveChild(_propertyElement);
+				_propertyElement = null;
+			}
 		}
 		
 		/// <summary>
@@ -162,6 +206,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get { return _parentProperty; }
 			internal set { _parentProperty = value; }
 		}
+		
+		internal abstract void RemoveNodeFromParent();
+		
+		internal abstract void AddNodeTo(XamlProperty property);
 	}
 	
 	/// <summary>
@@ -172,10 +220,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		XmlAttribute attribute;
 		XmlText textNode;
 		XmlSpace xmlSpace;
+		string textValue;
 		
 		internal XamlTextValue(XmlAttribute attribute)
 		{
 			this.attribute = attribute;
+		}
+		
+		internal XamlTextValue(string textValue)
+		{
+			this.textValue = textValue;
 		}
 		
 		internal XamlTextValue(XmlText textNode, XmlSpace xmlSpace)
@@ -191,12 +245,19 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get {
 				if (attribute != null)
 					return attribute.Value;
+				else if (textValue != null)
+					return textValue;
 				else
 					return NormalizeWhitespace(textNode.Value);
 			}
 			set {
+				if (value == null)
+					throw new ArgumentNullException("value");
+				
 				if (attribute != null)
 					attribute.Value = value;
+				else if (textValue != null)
+					textValue = value;
 				else
 					textNode.Value = value;
 			}
@@ -234,6 +295,27 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return converter.ConvertFromInvariantString(this.Text);
 			} else {
 				return this.Text;
+			}
+		}
+		
+		internal override void RemoveNodeFromParent()
+		{
+			if (attribute != null)
+				attribute.OwnerElement.RemoveAttribute(attribute.Name);
+			else if (textNode != null)
+				textNode.ParentNode.RemoveChild(textNode);
+		}
+		
+		internal override void AddNodeTo(XamlProperty property)
+		{
+			if (attribute != null) {
+				property.ParentObject.XmlElement.Attributes.Append(attribute);
+			} else if (textValue != null) {
+				property.ParentObject.XmlElement.SetAttribute(property.PropertyName, textValue);
+				attribute = property.ParentObject.XmlElement.GetAttributeNode(property.PropertyName);
+				textValue = null;
+			} else {
+				property.AddChildNodeToProperty(textNode);
 			}
 		}
 	}

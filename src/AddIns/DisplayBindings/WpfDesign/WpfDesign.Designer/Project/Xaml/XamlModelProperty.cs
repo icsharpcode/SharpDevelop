@@ -67,14 +67,18 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		{
 			XamlComponentService componentService = _designItem.ComponentService;
 			
-			DesignItem designItem = componentService.GetDesignItem(value);
+			XamlDesignItem designItem = (XamlDesignItem)componentService.GetDesignItem(value);
 			if (designItem != null) {
 				if (designItem.Parent != null)
 					throw new DesignerException("Cannot set value to design item that already has a parent");
+				_property.PropertyValue = designItem.XamlObject;
 			} else {
-				designItem = componentService.RegisterComponentForDesigner(value);
+				XamlPropertyValue val = _property.ParentObject.OwnerDocument.CreatePropertyValue(value, _property);
+				designItem = componentService.RegisterXamlComponentRecursive(val as XamlObject);
+				_property.PropertyValue = val;
 			}
 			
+			_property.ValueOnInstance = value;
 		}
 		
 		public override void Reset()

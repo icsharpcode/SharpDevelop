@@ -7,6 +7,7 @@
 
 using System;
 using System.Xml;
+using System.ComponentModel;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -17,6 +18,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	{
 		XmlDocument _xmlDoc;
 		XamlObject _rootElement;
+		
+		XamlTypeFinder _typeFinder;
+		
+		internal XmlDocument XmlDocument {
+			get { return _xmlDoc; }
+		}
 		
 		/// <summary>
 		/// Gets the root xaml object.
@@ -45,9 +52,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// <summary>
 		/// Internal constructor, used by XamlParser.
 		/// </summary>
-		internal XamlDocument(XmlDocument xmlDoc)
+		internal XamlDocument(XmlDocument xmlDoc, XamlTypeFinder typeFinder)
 		{
 			this._xmlDoc = xmlDoc;
+			this._typeFinder = typeFinder;
 		}
 		
 		/// <summary>
@@ -56,6 +64,44 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		internal void ParseComplete(XamlObject rootElement)
 		{
 			this._rootElement = rootElement;
+		}
+		
+		/// <summary>
+		/// Create an XamlObject from the instance.
+		/// </summary>
+		public XamlObject CreateObject(object instance)
+		{
+			return (XamlObject)CreatePropertyValue(instance, null);
+		}
+		
+		/// <summary>
+		/// Create a XamlPropertyValue for the specified value instance.
+		/// </summary>
+		public XamlPropertyValue CreatePropertyValue(object instance, XamlProperty forProperty)
+		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+			
+			Type elementType = instance.GetType();
+			TypeConverter c = TypeDescriptor.GetConverter(instance);
+			bool hasStringConverter = c.CanConvertTo(typeof(string)) && c.CanConvertFrom(typeof(string));
+			
+			if (forProperty != null && hasStringConverter) {
+				return new XamlTextValue(c.ConvertToInvariantString(instance));
+			}
+			
+			
+			XmlElement xml = _xmlDoc.CreateElement(elementType.Name, GetNamespaceFor(elementType));
+			
+			if (hasStringConverter) {
+				xml.InnerText = c.ConvertToInvariantString(instance);
+			}
+			return new XamlObject(this, xml, elementType, instance);
+		}
+		
+		internal string GetNamespaceFor(Type type)
+		{
+			return _typeFinder.GetXmlNamespaceFor(type.Assembly, type.Namespace);
 		}
 	}
 }

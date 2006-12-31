@@ -2,6 +2,9 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:src="clr-namespace:ICSharpCode.WpfDesign.Designer"
 >
+	<!--
+		This file contains the default styles used by the Controls in ICSharpCode.WpfDesign.Designer.Controls
+	-->
 	
 	<Style TargetType="{x:Type src:Controls.ResizeThumb}">
 		<Setter Property="Template">

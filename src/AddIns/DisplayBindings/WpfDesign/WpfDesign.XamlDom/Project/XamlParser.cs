@@ -92,7 +92,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				throw new ArgumentNullException("document");
 			XamlParser p = new XamlParser();
 			p.settings = settings;
-			p.document = new XamlDocument(document);
+			p.document = new XamlDocument(document, settings.TypeFinder);
 			p.document.ParseComplete(p.ParseObject(document.DocumentElement));
 			return p.document;
 		}
@@ -125,8 +125,41 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		XamlObject ParseObject(XmlElement element)
 		{
 			Type elementType = FindType(element.NamespaceURI, element.LocalName);
-			//object instance = Activator.CreateInstance(elementType);
-			object instance = settings.CreateInstanceCallback(elementType, emptyObjectArray);
+			
+			XmlSpace oldXmlSpace = currentXmlSpace;
+			if (element.HasAttribute("xml:space")) {
+				currentXmlSpace = (XmlSpace)Enum.Parse(typeof(XmlSpace), element.GetAttribute("xml:space"), true);
+			}
+			
+			XamlPropertyInfo defaultProperty = GetDefaultProperty(elementType);
+			
+			XamlTextValue initializeFromTextValueInsteadOfConstructor = null;
+			
+			if (defaultProperty == null) {
+				int numberOfTextNodes = 0;
+				bool onlyTextNodes = true;
+				foreach (XmlNode childNode in element.ChildNodes) {
+					if (childNode.NodeType == XmlNodeType.Text) {
+						numberOfTextNodes++;
+					} else if (childNode.NodeType == XmlNodeType.Element) {
+						onlyTextNodes = false;
+					}
+				}
+				if (onlyTextNodes && numberOfTextNodes == 1) {
+					foreach (XmlNode childNode in element.ChildNodes) {
+						if (childNode.NodeType == XmlNodeType.Text) {
+							initializeFromTextValueInsteadOfConstructor = (XamlTextValue)ParseValue(childNode);
+						}
+					}
+				}
+			}
+			
+			object instance;
+			if (initializeFromTextValueInsteadOfConstructor != null) {
+				instance = TypeDescriptor.GetConverter(elementType).ConvertFromInvariantString(initializeFromTextValueInsteadOfConstructor.Text);
+			} else {
+				instance = settings.CreateInstanceCallback(elementType, emptyObjectArray);
+			}
 			
 			XamlObject obj = new XamlObject(document, element, elementType, instance);
 			
@@ -135,12 +168,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				iSupportInitializeInstance.BeginInit();
 			}
 			
-			XmlSpace oldXmlSpace = currentXmlSpace;
 			foreach (XmlAttribute attribute in element.Attributes) {
 				if (attribute.NamespaceURI == XamlConstants.XmlnsNamespace)
 					continue;
 				if (attribute.Name == "xml:space") {
-					currentXmlSpace = (XmlSpace)Enum.Parse(typeof(XmlSpace), attribute.Value, true);
 					continue;
 				}
 				if (GetAttributeNamespace(attribute) == XamlConstants.XamlNamespace)
@@ -148,7 +179,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				ParseObjectAttribute(obj, attribute);
 			}
 			
-			XamlPropertyInfo defaultProperty = GetDefaultProperty(elementType);
 			XamlPropertyValue setDefaultValueTo = null;
 			object defaultPropertyValue = null;
 			XamlProperty defaultCollectionProperty = null;
@@ -171,6 +201,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						continue;
 					}
 				}
+				if (initializeFromTextValueInsteadOfConstructor != null)
+					continue;
 				XamlPropertyValue childValue = ParseValue(childNode);
 				if (childValue != null) {
 					if (defaultProperty != null && defaultProperty.IsCollection) {
