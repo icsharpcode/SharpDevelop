@@ -52,6 +52,8 @@ namespace CSharpEditor
 		internal Dom.ICompilationUnit lastCompilationUnit;
 		Thread parserThread;
 		
+		public static bool IsVisualBasic = false;
+		
 		/// <summary>
 		/// Many SharpDevelop.Dom methods take a file name, which is really just a unique identifier
 		/// for a file - Dom methods don't try to access code files on disk, so the file does not have
@@ -59,7 +61,9 @@ namespace CSharpEditor
 		/// SharpDevelop itself uses internal names of the kind "[randomId]/Class1.cs" to support
 		/// code-completion in unsaved files.
 		/// </summary>
-		public const string DummyFileName = "edited.vb";
+		public const string DummyFileName = "edited.cs";
+		
+		static readonly Dom.LanguageProperties CurrentLanguageProperties = Dom.LanguageProperties.CSharp;
 		
 		public MainForm()
 		{
@@ -68,16 +72,29 @@ namespace CSharpEditor
 			//
 			InitializeComponent();
 			
-			textEditorControl1.Text = @"Imports System
-
+			if (IsVisualBasic) {
+				textEditorControl1.Text = @"
 Class A
  Sub B
-  Dim x As String
+  Dim xx As String
   
  End Sub
 End Class
 ";
-			textEditorControl1.SetHighlighting("VB");
+				textEditorControl1.SetHighlighting("VBNET");
+			} else {
+				textEditorControl1.Text = @"using System;
+class A
+{
+ void B()
+ {
+  string x;
+  
+ }
+}
+";
+				textEditorControl1.SetHighlighting("C#");
+			}
 			textEditorControl1.ShowEOLMarkers = false;
 			CodeCompletionKeyHandler.Attach(this, textEditorControl1);
 			HostCallbackImplementation.Register(this);
@@ -91,7 +108,7 @@ End Class
 			                                            "CSharpCodeCompletion"));
 			
 			myProjectContent = new Dom.DefaultProjectContent();
-			myProjectContent.Language = Dom.LanguageProperties.VBNet;
+			myProjectContent.Language = CurrentLanguageProperties;
 		}
 		
 		protected override void OnLoad(EventArgs e)
@@ -116,11 +133,17 @@ End Class
 				"System", "System.Data", "System.Drawing", "System.Xml", "System.Windows.Forms", "Microsoft.VisualBasic"
 			};
 			foreach (string assemblyName in referencedAssemblies) {
-				{ // block for anonymous method
+				{ // block for anonymous method (capture assemblyNameCopy correctly)
 					string assemblyNameCopy = assemblyName;
 					BeginInvoke(new MethodInvoker(delegate { parserThreadLabel.Text = "Loading " + assemblyNameCopy + "..."; }));
 				}
 				myProjectContent.AddReferencedContent(pcRegistry.GetProjectContentForReference(assemblyName, assemblyName));
+			}
+			if (IsVisualBasic) {
+				myProjectContent.DefaultImports = new Dom.DefaultUsing(myProjectContent);
+				myProjectContent.DefaultImports.Usings.Add("System");
+				myProjectContent.DefaultImports.Usings.Add("System.Text");
+				myProjectContent.DefaultImports.Usings.Add("Microsoft.VisualBasic");
 			}
 			BeginInvoke(new MethodInvoker(delegate { parserThreadLabel.Text = "Ready"; }));
 			
@@ -140,7 +163,12 @@ End Class
 			                         }));
 			TextReader textReader = new StringReader(code);
 			Dom.ICompilationUnit newCompilationUnit;
-			using (NRefactory.IParser p = NRefactory.ParserFactory.CreateParser(NRefactory.SupportedLanguage.VBNet, textReader)) {
+			NRefactory.SupportedLanguage supportedLanguage;
+			if (IsVisualBasic)
+				supportedLanguage = NRefactory.SupportedLanguage.VBNet;
+			else
+				supportedLanguage = NRefactory.SupportedLanguage.CSharp;
+			using (NRefactory.IParser p = NRefactory.ParserFactory.CreateParser(supportedLanguage, textReader)) {
 				p.Parse();
 				newCompilationUnit = ConvertCompilationUnit(p.CompilationUnit);
 			}

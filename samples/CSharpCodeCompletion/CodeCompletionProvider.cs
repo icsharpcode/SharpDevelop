@@ -115,9 +115,13 @@ namespace CSharpEditor
 		/// </summary>
 		Dom.ExpressionResult FindExpression(TextArea textArea)
 		{
-			Dom.VBNet.VBExpressionFinder finder;
-			finder = new Dom.VBNet.VBExpressionFinder();
-			return finder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset);
+			Dom.IExpressionFinder finder;
+			if (MainForm.IsVisualBasic) {
+				finder = new Dom.VBNet.VBExpressionFinder();
+			} else {
+				finder = new Dom.CSharp.CSharpExpressionFinder(MainForm.DummyFileName);
+			}
+			return finder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset - 1);
 		}
 		
 		void AddCompletionData(List<ICompletionData> resultList, ArrayList completionData)
