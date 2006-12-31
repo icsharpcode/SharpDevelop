@@ -20,7 +20,7 @@ namespace ICSharpCode.TextEditor
 	/// </summary>
 	public class TextAreaMouseHandler
 	{
-        TextArea  textArea;
+		TextArea  textArea;
 		bool      doubleclick = false;
 		int       selbegin;
 		int       selend;
@@ -91,48 +91,50 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		void ShowHiddenCursor()
+		void ShowHiddenCursor(bool forceShow)
 		{
-			if (TextArea.HiddenMouseCursor) {
-				Cursor.Show();
-				TextArea.HiddenMouseCursor = false;
+			if (textArea.HiddenMouseCursor) {
+				if (textArea.MouseCursorHidePosition != Cursor.Position) {
+					Cursor.Show();
+					textArea.HiddenMouseCursor = false;
+				}
 			}
 		}
 		
 		void TextAreaLostFocus(object sender, EventArgs e)
 		{
-			ShowHiddenCursor();
+			ShowHiddenCursor(true);
 		}
 		void OnMouseLeave(object sender, EventArgs e)
 		{
-			ShowHiddenCursor();
+			ShowHiddenCursor(true);
 			gotmousedown = false;
 			mousedownpos = nilPoint;
 		}
 		
 		void OnMouseUp(object sender, MouseEventArgs e)
 		{
-            textArea.SelectionManager.selectFrom.where = WhereFrom.None;
+			textArea.SelectionManager.selectFrom.where = WhereFrom.None;
 			gotmousedown = false;
 			mousedownpos = nilPoint;
 		}
 		
 		void TextAreaClick(object sender, EventArgs e)
 		{
-            Point mousepos;
-            mousepos = textArea.mousepos;
-            
-            if (dodragdrop)
-            {
+			Point mousepos;
+			mousepos = textArea.mousepos;
+			
+			if (dodragdrop)
+			{
 				return;
 			}
 
-            if (clickedOnSelectedText && textArea.TextView.DrawingPosition.Contains(mousepos.X, mousepos.Y))
-            {
+			if (clickedOnSelectedText && textArea.TextView.DrawingPosition.Contains(mousepos.X, mousepos.Y))
+			{
 				textArea.SelectionManager.ClearSelection();
 
-                Point clickPosition = textArea.TextView.GetLogicalPosition(mousepos.X - textArea.TextView.DrawingPosition.X,
-                                                                           mousepos.Y - textArea.TextView.DrawingPosition.Y);
+				Point clickPosition = textArea.TextView.GetLogicalPosition(mousepos.X - textArea.TextView.DrawingPosition.X,
+				                                                           mousepos.Y - textArea.TextView.DrawingPosition.Y);
 				textArea.Caret.Position = clickPosition;
 				textArea.SetDesiredColumn();
 			}
@@ -141,34 +143,33 @@ namespace ICSharpCode.TextEditor
 		
 		void TextAreaMouseMove(object sender, MouseEventArgs e)
 		{
-            Point mousepos;
-            mousepos = textArea.mousepos;
+			Point mousepos = textArea.mousepos;
 
-            // honour the starting selection strategy
-            switch (textArea.SelectionManager.selectFrom.where)
-            {
-                case WhereFrom.Gutter:
-                    //moveGutter(sender, e);
-                    ExtendSelectionToMouse();
-                    break;
+			// honour the starting selection strategy
+			switch (textArea.SelectionManager.selectFrom.where)
+			{
+				case WhereFrom.Gutter:
+					//moveGutter(sender, e);
+					ExtendSelectionToMouse();
+					break;
 
-                case WhereFrom.TArea:
-                    break;
+				case WhereFrom.TArea:
+					break;
 
-            }
-            ShowHiddenCursor();
+			}
+			ShowHiddenCursor(false);
 			if (dodragdrop) {
 				dodragdrop = false;
 				return;
 			}
 			
 			doubleclick = false;
-            textArea.mousepos = new Point(e.X, e.Y);
+			textArea.mousepos = new Point(e.X, e.Y);
 			
 			if (clickedOnSelectedText) {
-                if (Math.Abs(mousedownpos.X - mousepos.X) >= SystemInformation.DragSize.Width / 2 ||
-                    Math.Abs(mousedownpos.Y - mousepos.Y) >= SystemInformation.DragSize.Height / 2)
-                {
+				if (Math.Abs(mousedownpos.X - mousepos.X) >= SystemInformation.DragSize.Width / 2 ||
+				    Math.Abs(mousedownpos.Y - mousepos.Y) >= SystemInformation.DragSize.Height / 2)
+				{
 					clickedOnSelectedText = false;
 					ISelection selection = textArea.SelectionManager.GetSelectionAt(textArea.Caret.Offset);
 					if (selection != null) {
@@ -187,8 +188,8 @@ namespace ICSharpCode.TextEditor
 			}
 			
 			if (e.Button == MouseButtons.Left) {
-                if (gotmousedown && textArea.SelectionManager.selectFrom.where == WhereFrom.TArea)
-                {
+				if (gotmousedown && textArea.SelectionManager.selectFrom.where == WhereFrom.TArea)
+				{
 					ExtendSelectionToMouse();
 				}
 			}
@@ -196,31 +197,31 @@ namespace ICSharpCode.TextEditor
 		
 		void ExtendSelectionToMouse()
 		{
-            Point mousepos;
-            mousepos = textArea.mousepos;
-            Point realmousepos = textArea.TextView.GetLogicalPosition(Math.Max(0, mousepos.X - textArea.TextView.DrawingPosition.X),
-                                                                      mousepos.Y - textArea.TextView.DrawingPosition.Y);
+			Point mousepos;
+			mousepos = textArea.mousepos;
+			Point realmousepos = textArea.TextView.GetLogicalPosition(Math.Max(0, mousepos.X - textArea.TextView.DrawingPosition.X),
+			                                                          mousepos.Y - textArea.TextView.DrawingPosition.Y);
 			int y = realmousepos.Y;
 			realmousepos = textArea.Caret.ValidatePosition(realmousepos);
 			Point oldPos = textArea.Caret.Position;
-            if (oldPos == realmousepos && textArea.SelectionManager.selectFrom.where != WhereFrom.Gutter)
-            {
+			if (oldPos == realmousepos && textArea.SelectionManager.selectFrom.where != WhereFrom.Gutter)
+			{
 				return;
 			}
 
-            if (textArea.SelectionManager.selectFrom.where == WhereFrom.Gutter)
-                if(realmousepos.Y < textArea.SelectionManager.selectionStart.Y) {
-                    // the selection is from the gutter and it has moved above the startpoint
-                    textArea.Caret.Position = new Point(0, realmousepos.Y);
-                } else {
-                    if(realmousepos.Y == textArea.SelectionManager.selectionStart.Y) {
-                        textArea.Caret.Position = textArea.SelectionManager.NextValidPosition(realmousepos.Y);
-                    } else {
-                        textArea.Caret.Position = textArea.SelectionManager.NextValidPosition(realmousepos.Y);
-                    }
-                }
-            else
-    			textArea.Caret.Position = realmousepos;
+			if (textArea.SelectionManager.selectFrom.where == WhereFrom.Gutter)
+				if(realmousepos.Y < textArea.SelectionManager.selectionStart.Y) {
+				// the selection is from the gutter and it has moved above the startpoint
+				textArea.Caret.Position = new Point(0, realmousepos.Y);
+			} else {
+				if(realmousepos.Y == textArea.SelectionManager.selectionStart.Y) {
+					textArea.Caret.Position = textArea.SelectionManager.NextValidPosition(realmousepos.Y);
+				} else {
+					textArea.Caret.Position = textArea.SelectionManager.NextValidPosition(realmousepos.Y);
+				}
+			}
+			else
+				textArea.Caret.Position = realmousepos;
 
 			if (minSelection != nilPoint && textArea.SelectionManager.SelectionCollection.Count > 0) {
 				// Extend selection when selection was started with double-click
@@ -248,14 +249,14 @@ namespace ICSharpCode.TextEditor
 		
 		void DoubleClickSelectionExtend()
 		{
-            Point mousepos;
-            mousepos = textArea.mousepos;
-            
-            textArea.SelectionManager.ClearSelection();
-            if (textArea.TextView.DrawingPosition.Contains(mousepos.X, mousepos.Y))
-            {
-                FoldMarker marker = textArea.TextView.GetFoldMarkerFromPosition(mousepos.X - textArea.TextView.DrawingPosition.X,
-                                                                                mousepos.Y - textArea.TextView.DrawingPosition.Y);
+			Point mousepos;
+			mousepos = textArea.mousepos;
+			
+			textArea.SelectionManager.ClearSelection();
+			if (textArea.TextView.DrawingPosition.Contains(mousepos.X, mousepos.Y))
+			{
+				FoldMarker marker = textArea.TextView.GetFoldMarkerFromPosition(mousepos.X - textArea.TextView.DrawingPosition.X,
+				                                                                mousepos.Y - textArea.TextView.DrawingPosition.Y);
 				if (marker != null && marker.IsFolded) {
 					marker.IsFolded = false;
 					textArea.MotherTextAreaControl.AdjustScrollBars();
@@ -292,11 +293,11 @@ namespace ICSharpCode.TextEditor
 		DateTime lastTime = DateTime.Now;
 		void OnMouseDown(object sender, MouseEventArgs e)
 		{
-            Point mousepos;
-            mousepos = textArea.mousepos;
+			Point mousepos;
+			mousepos = textArea.mousepos;
 
-            if (dodragdrop)
-            {
+			if (dodragdrop)
+			{
 				return;
 			}
 			
@@ -307,7 +308,7 @@ namespace ICSharpCode.TextEditor
 			
 			if (textArea.TextView.DrawingPosition.Contains(mousepos.X, mousepos.Y)) {
 				gotmousedown = true;
-                textArea.SelectionManager.selectFrom.where = WhereFrom.TArea;
+				textArea.SelectionManager.selectFrom.where = WhereFrom.TArea;
 				button = e.Button;
 				
 				if (button == MouseButtons.Left && (DateTime.Now - lastTime).Milliseconds < SystemInformation.DoubleClickTime) {
@@ -362,7 +363,7 @@ namespace ICSharpCode.TextEditor
 								textArea.SetDesiredColumn();
 							}
 						}
-                    }
+					}
 				} else if (button == MouseButtons.Right) {
 					// Rightclick sets the cursor to the click position unless
 					// the previous selection was clicked

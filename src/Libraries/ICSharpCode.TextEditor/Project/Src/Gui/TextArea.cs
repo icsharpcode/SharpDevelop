@@ -29,7 +29,12 @@ namespace ICSharpCode.TextEditor
 	[ToolboxItem(false)]
 	public class TextArea : Control
 	{
-		public static bool HiddenMouseCursor = false;
+		internal bool HiddenMouseCursor = false;
+		/// <summary>
+		/// The position where the mouse cursor was when it was hidden. Sometimes the text editor gets MouseMove
+		/// events when typing text even if the mouse is not moved.
+		/// </summary>
+		internal Point MouseCursorHidePosition;
 		
 		Point virtualTop        = new Point(0, 0);
 		TextAreaControl         motherTextAreaControl;
@@ -565,8 +570,11 @@ namespace ICSharpCode.TextEditor
 			}
 			
 			if (!HiddenMouseCursor && TextEditorProperties.HideMouseCursor) {
-				HiddenMouseCursor = true;
-				Cursor.Hide();
+				if (this.ClientRectangle.Contains(PointToClient(Cursor.Position))) {
+					MouseCursorHidePosition = Cursor.Position;
+					HiddenMouseCursor = true;
+					Cursor.Hide();
+				}
 			}
 			CloseToolTip();
 			
