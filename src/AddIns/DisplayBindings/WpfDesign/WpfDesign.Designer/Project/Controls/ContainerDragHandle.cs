@@ -13,7 +13,6 @@ using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Extensions;
-using ICSharpCode.WpfDesign.Designer.Controls;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
 {
