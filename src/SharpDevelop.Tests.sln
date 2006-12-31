@@ -1,6 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.1.0.2027
+# Visual Studio 2005
+# SharpDevelop 2.1.0.2192
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AddIns", "AddIns", "{14A277EE-7DF1-4529-B639-7D1EF334C1C5}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
@@ -52,8 +53,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactoryToBooConverter.Tests", "AddIns\BackendBindings\Boo\NRefactoryToBooConverter\Test\NRefactoryToBooConverter.Tests.csproj", "{C9DE556D-325C-4544-B29F-16A9EB7C9830}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactoryToBooConverter", "AddIns\BackendBindings\Boo\NRefactoryToBooConverter\Project\NRefactoryToBooConverter.csproj", "{DBCF20A1-BA13-4582-BFA9-74DE4D987B73}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpBinding.Tests", "AddIns\BackendBindings\CSharpBinding\Test\CSharpBinding.Tests.csproj", "{4D0DFCB0-F6FB-469D-AA6F-C7F1D5FD5DE7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpBinding", "AddIns\BackendBindings\CSharpBinding\Project\CSharpBinding.csproj", "{1F1AC7CD-D154-45BB-8EAF-804CA8055F5A}"
 EndProject
@@ -281,7 +280,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1F1AC7CD-D154-45BB-8EAF-804CA8055F5A} = {14A277EE-7DF1-4529-B639-7D1EF334C1C5}
-		{4D0DFCB0-F6FB-469D-AA6F-C7F1D5FD5DE7} = {14A277EE-7DF1-4529-B639-7D1EF334C1C5}
 		{DBCF20A1-BA13-4582-BFA9-74DE4D987B73} = {14A277EE-7DF1-4529-B639-7D1EF334C1C5}
 		{C9DE556D-325C-4544-B29F-16A9EB7C9830} = {14A277EE-7DF1-4529-B639-7D1EF334C1C5}
 		{6604365C-C702-4C10-9BA8-637F1E3D4D0D} = {14A277EE-7DF1-4529-B639-7D1EF334C1C5}
