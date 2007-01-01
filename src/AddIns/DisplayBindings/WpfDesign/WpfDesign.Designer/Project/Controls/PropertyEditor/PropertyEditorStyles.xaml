@@ -10,7 +10,12 @@
 					<Border Name="border"
 					        Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
 					        CornerRadius="10" Margin="1">
-						<Expander Name="expander" Header="{TemplateBinding Header}">
+						<Expander Name="expander" IsExpanded="{TemplateBinding IsExpanded}">
+							<Expander.Header>
+								<ContentControl Name="header" FontWeight="Bold" 
+								                Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+								                Content="{TemplateBinding Header}"/>
+							</Expander.Header>
 							<Border Margin="10 0 2 2">
 								<ContentPresenter/>
 							</Border>
@@ -21,6 +26,8 @@
 						<Trigger SourceName="expander" Property="IsExpanded" Value="True">
 							<Setter TargetName="border" Property="Background"
 							        Value="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"/>
+							<Setter TargetName="header" Property="Foreground"
+							        Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>
@@ -29,6 +36,38 @@
 	</Style>
 	
 	<Style TargetType="{x:Type src:PropertyGridView}">
-		
+	
+	</Style>
+	
+	<Style TargetType="{x:Type src:DependencyPropertyDotButton}">
+		<Setter Property="Background" Value="Transparent"/>
+		<Setter Property="Padding" Value="2"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type src:DependencyPropertyDotButton}">
+					<Border
+						BorderBrush="{TemplateBinding Border.BorderBrush}"
+						BorderThickness="{TemplateBinding Border.BorderThickness}"
+						Background="{TemplateBinding Panel.Background}"
+						SnapsToDevicePixels="True"
+						Padding="{TemplateBinding Control.Padding}">
+						<Border Name="hoverBorder" Width="12" Height="12"
+						        BorderThickness="2" BorderBrush="Transparent" CornerRadius="2">
+							<Rectangle Name="rectangle"
+							           Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
+							           Fill="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+						</Border>
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter TargetName="hoverBorder" Property="BorderBrush" Value="#808080FF"/>
+						</Trigger>
+						<Trigger Property="Checked" Value="False">
+							<Setter TargetName="rectangle" Property="Fill" Value="Transparent"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
 	</Style>
 </ResourceDictionary>

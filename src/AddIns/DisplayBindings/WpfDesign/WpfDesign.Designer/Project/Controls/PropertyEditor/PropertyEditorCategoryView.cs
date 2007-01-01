@@ -14,7 +14,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 	/// <summary>
 	/// Control used to view a property grid category.
 	/// </summary>
-	public sealed class PropertyEditorCategoryView : HeaderedContentControl
+	public sealed class PropertyEditorCategoryView : Expander
 	{
 		static PropertyEditorCategoryView()
 		{
