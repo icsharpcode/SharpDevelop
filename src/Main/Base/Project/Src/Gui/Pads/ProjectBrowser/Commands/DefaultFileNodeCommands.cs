@@ -77,6 +77,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				directoryNode.ProjectItem = null;
 			}
 			directoryNode.FileNodeStatus = FileNodeStatus.None;
+			if (directoryNode.Parent is ExtTreeNode) {
+				((ExtTreeNode)directoryNode.Parent).UpdateVisibility();
+			}
 		}
 		
 		public override void Run()
