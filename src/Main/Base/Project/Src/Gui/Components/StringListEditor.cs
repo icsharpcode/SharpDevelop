@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -281,14 +282,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void BrowseButtonClick(object sender, EventArgs e)
 		{
-			FolderDialog fdiag = new FolderDialog();
-			if (fdiag.DisplayDialog("${res:Dialog.ProjectOptions.SelectFolderTitle}") == DialogResult.OK) {
-				string path = fdiag.Path;
-				if (!path.EndsWith("\\") && !path.EndsWith("/"))
-					path += "\\";
-				editTextBox.Text = path;
-				if (autoAddAfterBrowse) {
-					AddButtonClick(null, null);
+			using (FolderBrowserDialog fdiag = FileService.CreateFolderBrowserDialog("${res:Dialog.ProjectOptions.SelectFolderTitle}")) {
+				if (fdiag.ShowDialog() == DialogResult.OK) {
+					string path = fdiag.SelectedPath;
+					if (!path.EndsWith("\\") && !path.EndsWith("/"))
+						path += "\\";
+					editTextBox.Text = path;
+					if (autoAddAfterBrowse) {
+						AddButtonClick(null, null);
+					}
 				}
 			}
 		}

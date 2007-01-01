@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Xml;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WixBinding
@@ -255,10 +256,11 @@ namespace ICSharpCode.WixBinding
 			TreeNode selectedNode = packageFilesTreeView.SelectedNode;
 			
 			// Allow the user to select a directory.
-			FolderDialog dialog = new FolderDialog();
-			if (dialog.DisplayDialog("${res:ICSharpCode.WixBinding.PackageFilesView.AddDirectoryDialog.Title}") == DialogResult.OK) {
-				packageFilesTreeView.SelectedNode = selectedNode;
-				editor.AddDirectory(dialog.Path);
+			using (FolderBrowserDialog dialog = FileService.CreateFolderBrowserDialog("${res:ICSharpCode.WixBinding.PackageFilesView.AddDirectoryDialog.Title}")) {
+				if (dialog.ShowDialog() == DialogResult.OK) {
+					packageFilesTreeView.SelectedNode = selectedNode;
+					editor.AddDirectory(dialog.SelectedPath);
+				}
 			}
 		}
 		

@@ -8,6 +8,7 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.TextEditor;
@@ -79,10 +80,12 @@ namespace SearchAndReplace
 		
 		void LookInBrowseButtonClicked(object sender, EventArgs e)
 		{
-			FolderDialog dlg = new FolderDialog();
-			if (dlg.DisplayDialog("${res:Dialog.NewProject.SearchReplace.LookIn.SelectDirectory}") == DialogResult.OK) {
-				Get<ComboBox>("lookIn").SelectedIndex = customDirectoryIndex;
-				Get<ComboBox>("lookIn").Text = dlg.Path;
+			ComboBox lookinComboBox = Get<ComboBox>("lookIn");
+			using (FolderBrowserDialog dlg = FileService.CreateFolderBrowserDialog("${res:Dialog.NewProject.SearchReplace.LookIn.SelectDirectory}", lookinComboBox.Text)) {
+				if (dlg.ShowDialog() == DialogResult.OK) {
+					lookinComboBox.SelectedIndex = customDirectoryIndex;
+					lookinComboBox.Text = dlg.SelectedPath;
+				}
 			}
 		}
 		
