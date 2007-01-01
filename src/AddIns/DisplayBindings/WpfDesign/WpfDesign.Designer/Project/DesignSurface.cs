@@ -8,10 +8,8 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Markup;
 using System.Xml;
-using ICSharpCode.WpfDesign.Designer.Services;
+
 using ICSharpCode.WpfDesign.Designer.Controls;
 
 namespace ICSharpCode.WpfDesign.Designer
@@ -33,6 +31,8 @@ namespace ICSharpCode.WpfDesign.Designer
 			_scrollViewer = new ScrollViewer();
 			_designPanel = new DesignPanel();
 			_scrollViewer.Content = _designPanel;
+			_scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
+			_scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
 			this.VisualChild = _scrollViewer;
 		}
 		

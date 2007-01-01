@@ -6,9 +6,8 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 namespace ICSharpCode.WpfDesign

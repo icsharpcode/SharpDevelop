@@ -58,6 +58,9 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Controls\AdornerLayer.cs" />
     <Compile Include="Controls\ContainerDragHandle.cs" />
+    <Compile Include="Controls\PropertyEditor\PropertyEditor.cs" />
+    <Compile Include="Controls\PropertyEditor\PropertyEditorCategoryView.cs" />
+    <Compile Include="Controls\PropertyEditor\PropertyGridView.cs" />
     <Compile Include="Controls\ResizeThumb.cs" />
     <Compile Include="Controls\SingleVisualChildElement.cs" />
     <Compile Include="Controls\WindowClone.cs" />
@@ -82,6 +85,7 @@
   <ItemGroup>
     <Folder Include="Configuration" />
     <Folder Include="Controls" />
+    <Folder Include="Controls\PropertyEditor" />
     <Folder Include="Extensions" />
     <Folder Include="themes" />
     <Folder Include="Xaml" />
@@ -95,6 +99,11 @@
       <Name>WpfDesign</Name>
       <SpecificVersion>False</SpecificVersion>
     </ProjectReference>
+    <Page Include="Controls\PropertyEditor\PropertyEditor.xaml">
+      <DependentUpon>PropertyEditor.cs</DependentUpon>
+    </Page>
+    <Page Include="Controls\PropertyEditor\PropertyEditorStyles.xaml" />
+    <Page Include="Controls\ControlStyles.xaml" />
     <Page Include="themes\generic.xaml" />
   </ItemGroup>
 </Project>

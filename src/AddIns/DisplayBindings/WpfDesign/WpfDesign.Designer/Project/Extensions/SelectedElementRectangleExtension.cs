@@ -6,12 +6,12 @@
 // </file>
 
 using System;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
+
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Extensions;
-using ICSharpCode.WpfDesign.Designer.Controls;
-using System.Windows;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {

@@ -79,6 +79,10 @@
     <Compile Include="Extensions\SelectionExtensionServer.cs" />
     <Compile Include="HashSet.cs" />
     <Compile Include="Linq.cs" />
+    <Compile Include="PropertyEditor\DesignItemDataProperty.cs" />
+    <Compile Include="PropertyEditor\DesignItemDataSource.cs" />
+    <Compile Include="PropertyEditor\IPropertyEditorDataSource.cs" />
+    <Compile Include="PropertyEditor\MultiSelectionDataSource.cs" />
     <Compile Include="ServiceContainer.cs" />
     <Compile Include="DesignItem.cs" />
     <Compile Include="Services.cs" />
@@ -88,5 +92,6 @@
     <Folder Include="Configuration" />
     <Folder Include="Extensions" />
     <Folder Include="Adorners" />
+    <Folder Include="PropertyEditor" />
   </ItemGroup>
 </Project>

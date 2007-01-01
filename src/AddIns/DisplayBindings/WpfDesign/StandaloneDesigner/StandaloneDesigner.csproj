@@ -48,6 +48,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="StrangeDataSource.cs" />
     <Compile Include="Window1.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>Window1.xaml</DependentUpon>
@@ -56,6 +57,10 @@
     <ProjectReference Include="..\WpfDesign.Designer\Project\WpfDesign.Designer.csproj">
       <Project>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</Project>
       <Name>WpfDesign.Designer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WpfDesign\Project\WpfDesign.csproj">
+      <Project>{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}</Project>
+      <Name>WpfDesign</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -6,25 +6,46 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
-	sealed class XamlModelProperty : DesignItemProperty
+	sealed class XamlModelProperty : DesignItemProperty, IEquatable<XamlModelProperty>
 	{
 		readonly XamlDesignItem _designItem;
 		readonly XamlProperty _property;
 		
 		public XamlModelProperty(XamlDesignItem designItem, XamlProperty property)
 		{
+			Debug.Assert(designItem != null);
+			Debug.Assert(property != null);
+			
 			this._designItem = designItem;
 			this._property = property;
 		}
 		
+		public override bool Equals(object obj)
+		{
+			return Equals(obj as XamlModelProperty);
+		}
+		
+		public bool Equals(XamlModelProperty other)
+		{
+			return this._designItem == other._designItem && this._property == other._property;
+		}
+		
+		public override int GetHashCode()
+		{
+			return _designItem.GetHashCode() ^ _property.GetHashCode();
+		}
+		
+		public override string Name {
+			get { return _property.PropertyName; }
+		}
+		
 		public override bool IsCollection {
-			get {
-				return _property.IsCollection;
-			}
+			get { return _property.IsCollection; }
 		}
 		
 		public override System.Collections.Generic.IList<DesignItem> CollectionElements {

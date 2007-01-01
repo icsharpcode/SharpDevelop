@@ -6,15 +6,16 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
-using System.Collections.Generic;
 using System.Windows.Threading;
-using ICSharpCode.WpfDesign.Designer.Controls;
+
 using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Designer.Controls;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -44,6 +45,10 @@ namespace ICSharpCode.WpfDesign.Designer
 		public DesignPanel()
 		{
 			this.Focusable = true;
+			this.VerticalAlignment = VerticalAlignment.Top;
+			this.HorizontalAlignment = HorizontalAlignment.Left;
+			this.Margin = new Thickness(10);
+			
 			_eatAllHitTestRequests = new EatAllHitTestRequests();
 			_eatAllHitTestRequests.IsHitTestVisible = false;
 			_adornerLayer = new AdornerLayer(this);

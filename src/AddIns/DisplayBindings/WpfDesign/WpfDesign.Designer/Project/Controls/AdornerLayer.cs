@@ -6,11 +6,12 @@
 // </file>
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+
 using ICSharpCode.WpfDesign.Adorners;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
@@ -89,7 +90,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		AdornerPanelCollection _adorners;
 		readonly UIElement _designPanel;
 		
-		#if DEBUG
+		#if DEBUG_ADORNERLAYER
 		int _totalAdornerCount;
 		#endif
 		
@@ -139,7 +140,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			this.Children.Clear();
 			_dict = new Dictionary<UIElement, AdornerInfo>();
 			
-			#if DEBUG
+			#if DEBUG_ADORNERLAYER
 			_totalAdornerCount = 0;
 			Debug.WriteLine("AdornerLayer cleared.");
 			#endif
@@ -174,8 +175,10 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				AddAdornerToChildren(adornerPanel);
 			}
 			
+			#if DEBUG_ADORNERLAYER
 			Debug.WriteLine("Adorner added. AdornedElements=" + _dict.Count +
 			                ", visible adorners=" + VisualChildrenCount + ", total adorners=" + (++_totalAdornerCount));
+			#endif
 		}
 		
 		void AddAdornerToChildren(AdornerPanel adornerPanel)
@@ -229,8 +232,10 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 					_dict.Remove(adornerPanel.AdornedElement);
 				}
 				
+				#if DEBUG_ADORNERLAYER
 				Debug.WriteLine("Adorner removed. AdornedElements=" + _dict.Count +
 				                ", visible adorners=" + VisualChildrenCount + ", total adorners=" + (--_totalAdornerCount));
+				#endif
 				
 				return true;
 			} else {

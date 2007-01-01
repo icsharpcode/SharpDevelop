@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using System.Xml;
 using System.ComponentModel;
+using System.Xml;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {

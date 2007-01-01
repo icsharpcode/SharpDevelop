@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Collections.ObjectModel;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {

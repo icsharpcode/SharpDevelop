@@ -7,8 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
+
 using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign
@@ -17,7 +19,7 @@ namespace ICSharpCode.WpfDesign
 	/// The DesignItem connects a component with the service system and the designers.
 	/// Equivalent to Cider's ModelItem.
 	/// </summary>
-	public abstract class DesignItem
+	public abstract class DesignItem : INotifyPropertyChanged
 	{
 		/// <summary>
 		/// Gets the component this DesignSite was created for.
@@ -43,6 +45,16 @@ namespace ICSharpCode.WpfDesign
 		/// Gets properties set on the design item.
 		/// </summary>
 		public abstract DesignItemPropertyCollection Properties { get; }
+		
+		/// <summary>
+		/// Gets/Sets the name of the design item.
+		/// </summary>
+		public abstract string Name { get; set; }
+		
+		/// <summary>
+		/// Is raised when the name of the design item changes.
+		/// </summary>
+		public abstract event EventHandler NameChanged;
 		
 		/// <summary>
 		/// Gets an instance that provides convenience properties for the most-used designers.
@@ -168,5 +180,20 @@ namespace ICSharpCode.WpfDesign
 			return (T)obj;
 		}
 		#endregion
+		
+		/// <summary>
+		/// This event is raised whenever a model property on the DesignItem changes.
+		/// </summary>
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		/// <summary>
+		/// Raises the <see cref="PropertyChanged"/> event.
+		/// </summary>
+		protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
+		{
+			if (PropertyChanged != null) {
+				PropertyChanged(this, e);
+			}
+		}
 	}
 }

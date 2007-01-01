@@ -19,5 +19,15 @@ namespace ICSharpCode.WpfDesign.Designer
 			collection.CopyTo(arr, 0);
 			return arr;
 		}
+		
+		/// <summary>
+		/// Returns a sorted copy of the collection.
+		/// </summary>
+		public static ICollection<T> Sort<T>(ICollection<T> collection, Comparison<T> comparison)
+		{
+			T[] arr = ToArray(collection);
+			Array.Sort(arr, comparison);
+			return arr;
+		}
 	}
 }

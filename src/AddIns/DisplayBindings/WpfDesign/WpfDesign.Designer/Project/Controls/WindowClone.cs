@@ -7,15 +7,13 @@
 
 using System;
 using System.ComponentModel;
-using System.Windows.Controls;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Shapes;
-using System.Windows.Input;
-using System.Windows.Controls.Primitives;
-using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Extensions;
 using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+
+using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
 {

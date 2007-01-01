@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Windows;
 using System.Windows.Controls;
 using ICSharpCode.WpfDesign.Extensions;
 

@@ -21,6 +21,11 @@ namespace ICSharpCode.WpfDesign
 	public abstract class DesignItemProperty
 	{
 		/// <summary>
+		/// Gets the property name.
+		/// </summary>
+		public abstract string Name { get; }
+		
+		/// <summary>
 		/// Gets if the property represents a collection.
 		/// </summary>
 		public abstract bool IsCollection { get; }

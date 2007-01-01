@@ -35,7 +35,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public override System.Collections.Generic.IEnumerator<DesignItemProperty> GetEnumerator()
 		{
-			throw new NotImplementedException();
+			yield break;
 		}
 	}
 }

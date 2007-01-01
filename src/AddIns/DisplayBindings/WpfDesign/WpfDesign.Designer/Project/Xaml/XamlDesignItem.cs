@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Windows;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
@@ -40,6 +41,19 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			get {
 				return _xamlObject.Instance;
 			}
+		}
+		
+		public override string Name {
+			get { return null; }
+			set { throw new NotImplementedException(); }
+		}
+		
+		/// <summary>
+		/// Is raised when the name of the design item changes.
+		/// </summary>
+		public override event EventHandler NameChanged {
+			add { Debug.WriteLine("Add event handler to " + this.Component.GetType().Name); }
+			remove { Debug.WriteLine("Remove event handler from " + this.Component.GetType().Name); }
 		}
 		
 		public override DesignItem Parent {
