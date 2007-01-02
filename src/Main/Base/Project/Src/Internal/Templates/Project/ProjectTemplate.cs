@@ -282,7 +282,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				return combineDescriptor.CreateSolution(projectCreateInformation, this.languagename);
 			} else if (projectDescriptor != null) {
 				projectCreateInformation.Solution = new Solution();
-				return projectDescriptor.CreateProject(projectCreateInformation, this.languagename).FileName;
+				IProject project = projectDescriptor.CreateProject(projectCreateInformation, this.languagename);
+				if (project != null)
+					return project.FileName;
+				else
+					return null;
 			} else {
 				return null;
 			}
