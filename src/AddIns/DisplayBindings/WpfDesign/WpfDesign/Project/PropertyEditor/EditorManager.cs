@@ -63,7 +63,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		{
 			Type returnType = property.ReturnType;
 			if (returnType.IsEnum) {
-				return typeof(EnumEditor);
+				return typeof(StandardValuesComboBoxEditor);
 			} else if (returnType == typeof(bool)) {
 				return typeof(BooleanEditor);
 			} else {

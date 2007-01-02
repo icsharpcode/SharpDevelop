@@ -18,14 +18,17 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 	/// <summary>
 	/// Type editor used to edit enum properties.
 	/// </summary>
-	sealed class EnumEditor : ComboBox
+	sealed class StandardValuesComboBoxEditor : ComboBox
 	{
 		/// <summary>
 		/// Creates a new EnumEditor instance.
 		/// </summary>
-		public EnumEditor(IPropertyEditorDataProperty property)
+		public StandardValuesComboBoxEditor(IPropertyEditorDataProperty property)
 		{
-			
+			foreach (object o in property.TypeConverter.GetStandardValues()) {
+				this.Items.Add(o);
+			}
+			SetBinding(ComboBox.SelectedItemProperty, PropertyEditorBindingHelper.CreateBinding(this, property));
 		}
 	}
 }

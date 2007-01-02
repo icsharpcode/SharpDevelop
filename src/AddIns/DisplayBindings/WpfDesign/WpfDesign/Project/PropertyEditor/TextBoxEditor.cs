@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 
 namespace ICSharpCode.WpfDesign.PropertyEditor
 {
@@ -21,6 +22,8 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 	/// </summary>
 	sealed class TextBoxEditor : TextBox
 	{
+		BindingExpressionBase bindingResult;
+		
 		/// <summary>
 		/// Creates a new TextBoxEditor instance.
 		/// </summary>
@@ -28,7 +31,20 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		{
 			Binding b = PropertyEditorBindingHelper.CreateBinding(this, property);
 			b.Converter = new ToStringConverter(property.TypeConverter);
-			SetBinding(TextProperty, b);
+			bindingResult = SetBinding(TextProperty, b);
+		}
+		
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if (!e.Handled && e.Key == Key.Enter) {
+				string oldText = this.Text;
+				bindingResult.UpdateSource();
+				if (this.Text != oldText) {
+					this.SelectAll();
+				}
+				e.Handled = true;
+			}
 		}
 		
 		sealed class ToStringConverter : IValueConverter
