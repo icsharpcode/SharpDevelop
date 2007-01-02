@@ -32,13 +32,20 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		static void ApplyCodeGenerationPropertiesToNRefactory()
-		{
-			Properties p = CodeGenerationProperties;
-			LanguageProperties.CSharp.CodeGenerator.Options.EmptyLinesBetweenMembers = p.Get("BlankLinesBetweenMembers", true);
-			LanguageProperties.CSharp.CodeGenerator.Options.BracesOnSameLine = p.Get("StartBlockOnSameLine", true);
-			
+		{			
+			CodeGeneratorOptions csharpOptions = LanguageProperties.CSharp.CodeGenerator.Options;
+			CodeGeneratorOptions vbOptions = LanguageProperties.VBNet.CodeGenerator.Options;
 			System.CodeDom.Compiler.CodeGeneratorOptions cdo = new CodeDOMGeneratorUtility().CreateCodeGeneratorOptions;
-			LanguageProperties.CSharp.CodeGenerator.Options.IndentString = cdo.IndentString;
+			
+			csharpOptions.EmptyLinesBetweenMembers = cdo.BlankLinesBetweenMembers;
+			vbOptions.EmptyLinesBetweenMembers = cdo.BlankLinesBetweenMembers;
+			
+			bool startBlockOnSameLine = CodeGenerationProperties.Get("StartBlockOnSameLine", true);
+			csharpOptions.BracesOnSameLine = startBlockOnSameLine;
+			vbOptions.BracesOnSameLine = startBlockOnSameLine;
+			
+			csharpOptions.IndentString = cdo.IndentString;
+			vbOptions.IndentString = cdo.IndentString;
 		}
 		
 		public static bool GenerateDocumentComments {
