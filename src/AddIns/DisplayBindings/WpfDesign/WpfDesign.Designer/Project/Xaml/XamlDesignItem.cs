@@ -5,6 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+// enable this define to test that event handlers are removed correctly
+//#define EventHandlerDebugging
+
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -48,12 +51,24 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			set { throw new NotImplementedException(); }
 		}
 		
+		#if EventHandlerDebugging
+		static int totalEventHandlerCount;
+		#endif
+		
 		/// <summary>
 		/// Is raised when the name of the design item changes.
 		/// </summary>
 		public override event EventHandler NameChanged {
-			add { Debug.WriteLine("Add event handler to " + this.Component.GetType().Name); }
-			remove { Debug.WriteLine("Remove event handler from " + this.Component.GetType().Name); }
+			add {
+				#if EventHandlerDebugging
+				Debug.WriteLine("Add event handler to " + this.Component.GetType().Name + " (handler count=" + (++totalEventHandlerCount) + ")");
+				#endif
+			}
+			remove {
+				#if EventHandlerDebugging
+				Debug.WriteLine("Remove event handler from " + this.Component.GetType().Name + " (handler count=" + (--totalEventHandlerCount) + ")");
+				#endif
+			}
 		}
 		
 		public override DesignItem Parent {

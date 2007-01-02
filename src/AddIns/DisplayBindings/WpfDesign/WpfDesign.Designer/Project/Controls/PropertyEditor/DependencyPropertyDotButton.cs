@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -18,14 +20,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 	/// </summary>
 	public class DependencyPropertyDotButton : ButtonBase
 	{
-		/*
-		/// <summary>
-		/// Dependency property for <see cref="DataProperty"/>.
-		/// </summary>
-		public static readonly DependencyProperty DataPropertyProperty
-			= DependencyProperty.Register("DataProperty", typeof(IPropertyEditorDataProperty), typeof(DependencyPropertyDotButton));
-		 */
-		
 		/// <summary>
 		/// Dependency property for <see cref="Checked"/>.
 		/// </summary>
@@ -33,21 +27,56 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			= DependencyProperty.Register("Checked", typeof(bool), typeof(DependencyPropertyDotButton),
 			                              new FrameworkPropertyMetadata(false));
 		
-		
 		static DependencyPropertyDotButton()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(DependencyPropertyDotButton), new FrameworkPropertyMetadata(typeof(DependencyPropertyDotButton)));
 		}
 		
-		/*
 		/// <summary>
-		/// Gets/Sets the property the button is used for.
+		/// Creates a new DependencyPropertyDotButton instance.
 		/// </summary>
-		public IPropertyEditorDataProperty DataProperty {
-			get { return (IPropertyEditorDataProperty)GetValue(DataPropertyProperty); }
-			set { SetValue(DataPropertyProperty, value); }
+		public DependencyPropertyDotButton()
+		{
 		}
-		 */
+		
+		IPropertyEditorDataProperty property;
+		
+		bool isIsSetChangedEventHandlerAttached;
+		
+		/// <summary>
+		/// Creates a new DependencyPropertyDotButton instance that binds its Checked property to the
+		/// data properties IsSet property.
+		/// </summary>
+		public DependencyPropertyDotButton(IPropertyEditorDataProperty property)
+		{
+			if (property == null)
+				throw new ArgumentNullException("property");
+			this.property = property;
+			
+			this.Loaded += delegate {
+				if (!isIsSetChangedEventHandlerAttached) {
+					isIsSetChangedEventHandlerAttached = true;
+					this.property.IsSetChanged += OnIsSetChanged;
+					OnIsSetChanged(null, null);
+				}
+			};
+			this.Unloaded += delegate {
+				if (isIsSetChangedEventHandlerAttached) {
+					isIsSetChangedEventHandlerAttached = false;
+					this.property.IsSetChanged -= OnIsSetChanged;
+				}
+			};
+			OnIsSetChanged(null, null);
+		}
+		
+		/// <summary>
+		/// Creates the context menu on-demand.
+		/// </summary>
+		protected override void OnContextMenuOpening(ContextMenuEventArgs e)
+		{
+			ContextMenu = CreateContextMenu();
+			base.OnContextMenuOpening(e);
+		}
 		
 		/// <summary>
 		/// Gets/Sets if the button looks checked.
@@ -57,15 +86,48 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			set { SetValue(CheckedProperty, value); }
 		}
 		
+		void OnIsSetChanged(object sender, EventArgs e)
+		{
+			this.Checked = property.IsSet;
+		}
+		
 		/// <summary>
 		/// Fires the Click event and opens the context menu.
 		/// </summary>
 		protected override void OnClick()
 		{
 			base.OnClick();
-			if (ContextMenu != null) {
-				ContextMenu.IsOpen = true;
+			ContextMenu = CreateContextMenu();
+			ContextMenu.IsOpen = true;
+		}
+		
+		internal ContextMenu CreateContextMenu()
+		{
+			ContextMenu contextMenu = new ContextMenu();
+			if (property.IsSet) {
+				contextMenu.Items.Add(CreateMenuItem("_Reset", OnResetClick));
+			} else {
+				contextMenu.Items.Add(CreateMenuItem("_Copy to local", OnCopyToLocalClick));
 			}
+			return contextMenu;
+		}
+		
+		MenuItem CreateMenuItem(string title, RoutedEventHandler handler)
+		{
+			MenuItem item = new MenuItem();
+			item.Header = title;
+			item.Click += handler;
+			return item;
+		}
+		
+		void OnResetClick(object sender, RoutedEventArgs e)
+		{
+			property.IsSet = false;
+		}
+		
+		void OnCopyToLocalClick(object sender, RoutedEventArgs e)
+		{
+			property.IsSet = true;
 		}
 	}
 }

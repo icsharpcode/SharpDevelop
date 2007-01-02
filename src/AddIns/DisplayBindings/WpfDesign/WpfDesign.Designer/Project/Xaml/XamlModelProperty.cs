@@ -5,6 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+// Turn this on to ensure event handlers on model properties are removed correctly:
+#define EventHandlerDebugging
+
 using System;
 using System.Diagnostics;
 using ICSharpCode.WpfDesign.XamlDom;
@@ -48,6 +51,18 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			get { return _property.IsCollection; }
 		}
 		
+		public override Type ReturnType {
+			get { return _property.ReturnType; }
+		}
+		
+		public override Type DeclaringType {
+			get { return _property.PropertyTargetType; }
+		}
+		
+		public override System.ComponentModel.TypeConverter TypeConverter {
+			get { return _property.TypeConverter; }
+		}
+		
 		public override System.Collections.Generic.IList<DesignItem> CollectionElements {
 			get {
 				throw new NotImplementedException();
@@ -69,23 +84,65 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 		}
 		
-		public override object ValueOnInstance {
-			get {
-				return _property.ValueOnInstance;
+		public override event EventHandler ValueChanged {
+			add {
+				#if EventHandlerDebugging
+				if (ValueChangedEventHandlers == 0) {
+					Debug.WriteLine("ValueChangedEventHandlers is now > 0");
+				}
+				ValueChangedEventHandlers++;
+				#endif
+				_property.ValueChanged += value;
 			}
-			set {
-				_property.ValueOnInstance = value;
+			remove {
+				#if EventHandlerDebugging
+				ValueChangedEventHandlers--;
+				if (ValueChangedEventHandlers == 0) {
+					Debug.WriteLine("ValueChangedEventHandlers reached 0");
+				}
+				#endif
+				_property.ValueChanged -= value;
 			}
 		}
 		
+		public override object ValueOnInstance {
+			get { return _property.ValueOnInstance; }
+			set { _property.ValueOnInstance = value; }
+		}
+		
 		public override bool IsSet {
-			get {
-				return _property.IsSet;
+			get { return _property.IsSet; }
+		}
+		
+		#if EventHandlerDebugging
+		static int IsSetChangedEventHandlers, ValueChangedEventHandlers;
+		#endif
+		
+		public override event EventHandler IsSetChanged {
+			add {
+				#if EventHandlerDebugging
+				if (IsSetChangedEventHandlers == 0) {
+					Debug.WriteLine("IsSetChangedEventHandlers is now > 0");
+				}
+				IsSetChangedEventHandlers++;
+				#endif
+				_property.IsSetChanged += value;
+			}
+			remove {
+				#if EventHandlerDebugging
+				IsSetChangedEventHandlers--;
+				if (IsSetChangedEventHandlers == 0) {
+					Debug.WriteLine("IsSetChangedEventHandlers reached 0");
+				}
+				#endif
+				_property.IsSetChanged -= value;
 			}
 		}
 		
 		public override void SetValue(object value)
 		{
+			_property.ValueOnInstance = value;
+			
 			XamlComponentService componentService = _designItem.ComponentService;
 			
 			XamlDesignItem designItem = (XamlDesignItem)componentService.GetDesignItem(value);
@@ -98,8 +155,6 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				designItem = componentService.RegisterXamlComponentRecursive(val as XamlObject);
 				_property.PropertyValue = val;
 			}
-			
-			_property.ValueOnInstance = value;
 		}
 		
 		public override void Reset()

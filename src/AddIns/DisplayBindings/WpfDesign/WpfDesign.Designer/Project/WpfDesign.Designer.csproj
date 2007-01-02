@@ -62,8 +62,10 @@
     <Compile Include="Controls\PropertyEditor\PropertyEditor.cs" />
     <Compile Include="Controls\PropertyEditor\PropertyEditorCategoryView.cs" />
     <Compile Include="Controls\PropertyEditor\PropertyGridView.cs" />
+    <Compile Include="Controls\PropertyEditor\PropertyNameTextBlock.cs" />
     <Compile Include="Controls\ResizeThumb.cs" />
     <Compile Include="Controls\SingleVisualChildElement.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor.cs" />
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="DesignPanel.cs" />
     <Compile Include="Extensions\SelectedElementRectangleExtension.cs" />
@@ -86,6 +88,7 @@
   <ItemGroup>
     <Folder Include="Configuration" />
     <Folder Include="Controls" />
+    <Folder Include="Controls\TypeEditors" />
     <Folder Include="Controls\PropertyEditor" />
     <Folder Include="Extensions" />
     <Folder Include="themes" />

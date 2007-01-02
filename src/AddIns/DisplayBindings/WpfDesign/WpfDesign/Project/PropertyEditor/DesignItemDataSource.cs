@@ -54,6 +54,12 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			return item.GetBehavior<IPropertyEditorDataSource>() ?? new DesignItemDataSource(item);
 		}
 		
+		/// <summary>
+		/// Gets the design item for which this DesignItemDataSource was created.
+		/// </summary>
+		public DesignItem DesignItem {
+			get { return item; }
+		}
 		
 		/// <summary>See <see cref="IPropertyEditorDataSource"/></summary>
 		public string Name {

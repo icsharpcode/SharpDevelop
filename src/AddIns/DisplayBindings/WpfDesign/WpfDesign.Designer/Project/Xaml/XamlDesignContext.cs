@@ -10,6 +10,7 @@ using System.Xml;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Extensions;
+using ICSharpCode.WpfDesign.PropertyEditor;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
@@ -42,8 +43,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			_componentService = new XamlComponentService(this);
 			this.Services.AddService(typeof(IComponentService), _componentService);
 			
+			EditorManager propertyGridEditorManager = new EditorManager();
+			this.Services.AddService(typeof(EditorManager), propertyGridEditorManager);
+			
 			// register extensions from this assembly:
 			this.Services.ExtensionManager.RegisterAssembly(typeof(XamlDesignContext).Assembly);
+			propertyGridEditorManager.RegisterAssembly(typeof(XamlDesignContext).Assembly);
 			
 			XamlParserSettings xamlParseSettings = new XamlParserSettings();
 			xamlParseSettings.CreateInstanceCallback = OnXamlParserCreateInstance;

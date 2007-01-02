@@ -51,10 +51,6 @@ namespace ICSharpCode.WpfDesign.Designer
 				Debug.WriteLine(ex.ToString());
 				throw;
 			}
-			PropertyEditorCategoryView v = new PropertyEditorCategoryView();
-			v.Header = "Titel";
-			v.Content = "Inhalt";
-			contentStackPanel.Children.Add(v);
 		}
 		
 		/// <summary>
@@ -66,7 +62,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		}
 		
 		/// <summary>
-		/// Is raised when the object being edited changes.
+		/// Is raised when the value of the <see cref="EditedObject"/> property changes.
 		/// </summary>
 		public event EventHandler EditedObjectChanged;
 		
@@ -101,6 +97,9 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			List<PropertyEditorCategoryView> categories = new List<PropertyEditorCategoryView>();
 			foreach (IPropertyEditorDataProperty p in Linq.Sort(dataSource.Properties, ComparePropertyNames)) {
+				if (p.Name == "Name") {
+					continue;
+				}
 				PropertyEditorCategoryView cv = GetOrCreateCategory(categories, p.Category);
 				PropertyGridView grid = (PropertyGridView)cv.Content;
 				grid.AddProperty(p);
@@ -120,7 +119,9 @@ namespace ICSharpCode.WpfDesign.Designer
 			return p1.Name.CompareTo(p2.Name);
 		}
 		
-		static PropertyEditorCategoryView GetOrCreateCategory(List<PropertyEditorCategoryView> categories, string category)
+		HashSet<string> expandedCategories = new HashSet<string>();
+		
+		PropertyEditorCategoryView GetOrCreateCategory(List<PropertyEditorCategoryView> categories, string category)
 		{
 			foreach (PropertyEditorCategoryView c in categories) {
 				if (c.Header.ToString() == category)
@@ -129,6 +130,13 @@ namespace ICSharpCode.WpfDesign.Designer
 			PropertyEditorCategoryView newCategory = new PropertyEditorCategoryView();
 			newCategory.Header = category;
 			newCategory.Content = new PropertyGridView();
+			newCategory.IsExpanded = expandedCategories.Contains(category);
+			newCategory.Expanded += delegate {
+				expandedCategories.Add(category);
+			};
+			newCategory.Collapsed += delegate {
+				expandedCategories.Remove(category);
+			};
 			categories.Add(newCategory);
 			return newCategory;
 		}

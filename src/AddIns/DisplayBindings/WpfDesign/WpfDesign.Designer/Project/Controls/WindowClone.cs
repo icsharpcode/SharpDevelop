@@ -119,7 +119,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 	}
 	
 	/// <summary>
-	/// A <see cref="CustomInstanceFactory"/> for <see cref="Window"/>.
+	/// A <see cref="CustomInstanceFactory"/> for <see cref="Window"/>
+	/// (and derived classes, unless they specify their own <see cref="CustomInstanceFactory"/>).
 	/// </summary>
 	[ExtensionFor(typeof(Window))]
 	public class WindowCloneExtension : CustomInstanceFactory
@@ -130,7 +131,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		public override object CreateInstance(Type type, params object[] arguments)
 		{
 			Debug.Assert(arguments.Length == 0);
-			Debug.Assert(type == typeof(Window));
 			return new WindowClone();
 		}
 	}

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 
 namespace ICSharpCode.WpfDesign
@@ -26,6 +27,23 @@ namespace ICSharpCode.WpfDesign
 		public abstract string Name { get; }
 		
 		/// <summary>
+		/// Gets the return type of the property.
+		/// </summary>
+		public abstract Type ReturnType { get; }
+		
+		/// <summary>
+		/// Gets the type that declares the property.
+		/// </summary>
+		public abstract Type DeclaringType { get; }
+		
+		/// <summary>
+		/// Gets the type converter used to convert property values to/from string.
+		/// </summary>
+		public virtual TypeConverter TypeConverter {
+			get { return TypeDescriptor.GetConverter(this.ReturnType); }
+		}
+		
+		/// <summary>
 		/// Gets if the property represents a collection.
 		/// </summary>
 		public abstract bool IsCollection { get; }
@@ -36,9 +54,15 @@ namespace ICSharpCode.WpfDesign
 		public abstract IList<DesignItem> CollectionElements { get; }
 		
 		/// <summary>
-		/// Gets the value of the property. This property returns null if the value is not set.
+		/// Gets the value of the property. This property returns null if the value is not set,
+		/// or if the value is set to a primitive value.
 		/// </summary>
 		public abstract DesignItem Value { get; }
+		
+		/// <summary>
+		/// Is raised when the value of the property changes (by calling <see cref="SetValue"/> or <see cref="Reset"/>).
+		/// </summary>
+		public abstract event EventHandler ValueChanged;
 		
 		/// <summary>
 		/// Gets/Sets the value of the property on the designed instance.
@@ -56,6 +80,11 @@ namespace ICSharpCode.WpfDesign
 		/// Gets if the property is set on the design item.
 		/// </summary>
 		public abstract bool IsSet { get; }
+		
+		/// <summary>
+		/// Occurs when the value of the IsSet property changes.
+		/// </summary>
+		public abstract event EventHandler IsSetChanged;
 		
 		/// <summary>
 		/// Resets the property value to the default, possibly removing it from the list of properties.

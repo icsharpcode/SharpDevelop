@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Markup;
 using System.Xml;
 
@@ -280,7 +281,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			MethodInfo getMethod = elementType.GetMethod("Get" + propertyName, BindingFlags.Public | BindingFlags.Static);
 			MethodInfo setMethod = elementType.GetMethod("Set" + propertyName, BindingFlags.Public | BindingFlags.Static);
 			if (getMethod != null && setMethod != null) {
-				return new XamlAttachedPropertyInfo(getMethod, setMethod, propertyName);
+				FieldInfo field = elementType.GetField(propertyName + "Property", BindingFlags.Public | BindingFlags.Static);
+				if (field != null && field.FieldType == typeof(DependencyProperty)) {
+					return new XamlDependencyPropertyInfo((DependencyProperty)field.GetValue(null), true);
+				}
 			}
 			return null;
 		}

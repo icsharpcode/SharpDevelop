@@ -74,6 +74,20 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		/// <summary>
+		/// Gets the return type of the property.
+		/// </summary>
+		public Type ReturnType {
+			get { return propertyInfo.ReturnType; }
+		}
+				
+		/// <summary>
+		/// Gets the type converter used to convert property values to/from string.
+		/// </summary>
+		public TypeConverter TypeConverter {
+			get { return propertyInfo.TypeConverter; }
+		}
+		
+		/// <summary>
 		/// Gets the value of the property. Can be null if the property is a collection property.
 		/// </summary>
 		public XamlPropertyValue PropertyValue {
@@ -82,10 +96,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (IsCollection)
 					throw new InvalidOperationException();
 				
-				Reset();
+				bool wasSet = this.IsSet;
+				
+				ResetInternal();
 				propertyValue = value;
 				propertyValue.AddNodeTo(this);
 				propertyValue.ParentProperty = this;
+				
+				if (!wasSet) {
+					if (IsSetChanged != null) {
+						IsSetChanged(this, EventArgs.Empty);
+					}
+				}
+				if (ValueChanged != null) {
+					ValueChanged(this, EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -130,9 +155,35 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		/// <summary>
+		/// Occurs when the value of the IsSet property has changed.
+		/// </summary>
+		public event EventHandler IsSetChanged;
+		
+		/// <summary>
+		/// Occurs when the value of the property has changed.
+		/// </summary>
+		public event EventHandler ValueChanged;
+		
+		/// <summary>
 		/// Resets the properties value.
 		/// </summary>
 		public void Reset()
+		{
+			if (IsSet) {
+				propertyInfo.ResetValue(parentObject.Instance);
+				
+				ResetInternal();
+				
+				if (IsSetChanged != null) {
+					IsSetChanged(this, EventArgs.Empty);
+				}
+				if (ValueChanged != null) {
+					ValueChanged(this, EventArgs.Empty);
+				}
+			}
+		}
+		
+		void ResetInternal()
 		{
 			if (propertyValue != null) {
 				propertyValue.RemoveNodeFromParent();

@@ -7,6 +7,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Windows;
 
 namespace ICSharpCode.WpfDesign.PropertyEditor
 {
@@ -43,6 +44,10 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			get { return "Description for " + property.Name; }
 		}
 		
+		public System.ComponentModel.TypeConverter TypeConverter {
+			get { return property.TypeConverter; }
+		}
+		
 		public bool IsSet {
 			get {
 				return property.IsSet;
@@ -59,6 +64,11 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			}
 		}
 		
+		public event EventHandler IsSetChanged {
+			add    { property.IsSetChanged += value; }
+			remove { property.IsSetChanged -= value; }
+		}
+		
 		public object Value {
 			get {
 				return property.ValueOnInstance;
@@ -66,6 +76,25 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			set {
 				property.SetValue(value);
 			}
+		}
+		
+		public event EventHandler ValueChanged {
+			add { property.ValueChanged += value; }
+			remove { property.ValueChanged -= value; }
+		}
+		
+		/// <summary>
+		/// Gets the type of the property value.
+		/// </summary>
+		public Type ReturnType {
+			get { return property.ReturnType; }
+		}
+		
+		/// <summary>
+		/// Gets the type that declares the property.
+		/// </summary>
+		public Type DeclaringType {
+			get { return property.DeclaringType; }
 		}
 		
 		public bool CanUseCustomExpression {
@@ -77,6 +106,19 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		public void SetCustomExpression(string expression)
 		{
 			throw new NotImplementedException();
+		}
+		
+		/// <summary>
+		/// Creates a UIElement that can edit the property value.
+		/// </summary>
+		public UIElement CreateEditor()
+		{
+			EditorManager manager = ownerDataSource.DesignItem.Services.GetService<EditorManager>();
+			if (manager != null) {
+				return manager.CreateEditor(this);
+			} else {
+				return new FallbackEditor(this);
+			}
 		}
 	}
 }

@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Media;
+using System.Windows;
+
 namespace ICSharpCode.WpfDesign.PropertyEditor
 {
 	/// <summary>
@@ -20,6 +22,11 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// Gets/Sets the name of the item. Returns null when the item does not support having a name.
 		/// </summary>
 		string Name { get; set; }
+		
+		/// <summary>
+		/// Is raised whenever the Name property changes value.
+		/// </summary>
+		event EventHandler NameChanged;
 		
 		/// <summary>
 		/// Gets the type of the item (for display only).
@@ -63,6 +70,21 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		string Name { get; }
 		
 		/// <summary>
+		/// Gets the type of the property value.
+		/// </summary>
+		Type ReturnType { get; }
+		
+		/// <summary>
+		/// Gets the type that declares the property.
+		/// </summary>
+		Type DeclaringType { get; }
+		
+		/// <summary>
+		/// Gets the type converter used to convert property values to/from string.
+		/// </summary>
+		TypeConverter TypeConverter { get; }
+		
+		/// <summary>
 		/// Gets the description of the property.
 		/// </summary>
 		string Description { get; }
@@ -75,9 +97,19 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		bool IsSet { get; set; }
 		
 		/// <summary>
+		/// Is raised when the IsSet property has changed.
+		/// </summary>
+		event EventHandler IsSetChanged;
+		
+		/// <summary>
 		/// Gets/Sets the value of the property.
 		/// </summary>
 		object Value { get; set; }
+		
+		/// <summary>
+		/// Is raised when the Value property has changed.
+		/// </summary>
+		event EventHandler ValueChanged;
 		
 		/// <summary>
 		/// Gets if using a custom expression is supported.
@@ -88,5 +120,10 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// Sets a custom expression.
 		/// </summary>
 		void SetCustomExpression(string expression);
+		
+		/// <summary>
+		/// Creates a UIElement that can edit the property value.
+		/// </summary>
+		UIElement CreateEditor();
 	}
 }
