@@ -75,6 +75,18 @@ namespace ICSharpCode.SharpDevelop
 			return default(T);
 		}
 		
+		/// <summary>
+		/// Gets if any element in the input matches the filter.
+		/// </summary>
+		public static bool Exists<T>(IEnumerable<T> input, Predicate<T> filter)
+		{
+			foreach (T element in input) {
+				if (filter(element))
+					return true;
+			}
+			return false;
+		}
+		
 		public static List<T> ToList<T>(IEnumerable<T> input)
 		{
 			return new List<T>(input);

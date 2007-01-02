@@ -120,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			Name = information.ProjectName;
 			FileName = information.OutputProjectFileName;
 			
-			IdGuid = "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
+			base.IdGuid = "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
 			MSBuild.BuildPropertyGroup group = project.AddNewPropertyGroup(false);
 			group.AddNewProperty(ProjectGuidPropertyName, IdGuid, true);
 			group.AddNewProperty("Configuration", "Debug", true).Condition = " '$(Configuration)' == '' ";
@@ -130,6 +130,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.ActivePlatform = "AnyCPU";
 		}
 		
+		/// <summary>
+		/// The MSBuild property used to store the project's IdGuid.
+		/// The IdGuid is only stored in the project file to make multiple solutions use the same
+		/// GUID for the project when the project is added to multiple solutions. However, the actual
+		/// GUID used for the project in the solution can differ from the GUID in the project file -
+		/// SharpDevelop does not try to correct mismatches but simply always use the value from the solution.
+		/// SharpDevelop creates a new GUID for the solution when the project GUID cannot be used because it
+		/// would conflict with another project. This happens when one project is created by copying another project.
+		/// </summary>
 		public const string ProjectGuidPropertyName = "ProjectGuid";
 		
 		/// <summary>
@@ -849,18 +858,25 @@ namespace ICSharpCode.SharpDevelop.Project
 				CreateItemsListFromMSBuild();
 				LoadConfigurationPlatformNamesFromMSBuild();
 				
-				IdGuid = GetEvaluatedProperty(ProjectGuidPropertyName);
-				if (IdGuid == null) {
-					// Fix projects that have nb GUID
-					IdGuid = Guid.NewGuid().ToString();
-					SetPropertyInternal(null, null, ProjectGuidPropertyName, IdGuid, PropertyStorageLocations.Base, true);
-					try {
-						// save fixed project
-						project.Save(fileName);
-					} catch {}
-				}
+				base.IdGuid = GetEvaluatedProperty(ProjectGuidPropertyName);
 			} finally {
 				isLoading = false;
+			}
+		}
+		
+		[Browsable(false)]
+		public override string IdGuid {
+			get { return base.IdGuid; }
+			set {
+				if (base.IdGuid == null) {
+					// Save the GUID in the project if the project does not yet have a GUID.
+					SetPropertyInternal(null, null, ProjectGuidPropertyName, value, PropertyStorageLocations.Base, true);
+					try {
+						// save fixed project
+						project.Save(this.FileName);
+					} catch {}
+				}
+				base.IdGuid = value;
 			}
 		}
 		#endregion

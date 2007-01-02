@@ -196,6 +196,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void AddProject(ISolutionFolderNode solutionFolderNode, IProject newProject)
 		{
+			if (Linq.Exists(solutionFolderNode.Solution.SolutionFolders,
+			                delegate (ISolutionFolder folder) {
+			                	return string.Equals(folder.IdGuid, newProject.IdGuid, StringComparison.OrdinalIgnoreCase);
+			                }))
+			{
+				LoggingService.Warn("ProjectService.AddProject: Duplicate IdGuid detected");
+				newProject.IdGuid = Guid.NewGuid().ToString().ToUpperInvariant();
+			}
 			solutionFolderNode.Container.AddFolder(newProject);
 			ParserService.CreateProjectContentForAddedProject(newProject);
 			solutionFolderNode.Solution.FixSolutionConfiguration(new IProject[] { newProject });
