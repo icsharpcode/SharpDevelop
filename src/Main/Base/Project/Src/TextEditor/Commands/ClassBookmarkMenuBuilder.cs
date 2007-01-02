@@ -31,6 +31,43 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	/// </summary>
 	public class ClassBookmarkMenuBuilder : ISubmenuBuilder
 	{
+		/// <summary>
+		/// Gets a specific part of the compound class.
+		/// </summary>
+		static IClass GetPart(IClass possibleCompound, string fileName)
+		{
+			CompoundClass compound = possibleCompound as CompoundClass;
+			if (compound == null)
+				return possibleCompound;
+			
+			IList<IClass> parts = compound.GetParts();
+			if (!string.IsNullOrEmpty(fileName)) {
+				// get the part with the requested file name
+				foreach (IClass part in parts) {
+					if (FileUtility.IsEqualFileName(fileName, part.CompilationUnit.FileName))
+						return part;
+				}
+			}
+			
+			// Fallback: get the part with the shortest file name.
+			// This should prefer non-designer files over designer files.
+			IClass preferredClass = parts[0];
+			for (int i = 1; i < parts.Count; i++) {
+				if (parts[i].CompilationUnit.FileName.Length < preferredClass.CompilationUnit.FileName.Length)
+					preferredClass = parts[i];
+			}
+			return preferredClass;
+		}
+		
+		static IClass GetCurrentPart(IClass possibleCompound)
+		{
+			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			if (window != null)
+				return GetPart(possibleCompound, window.ViewContent.FileName);
+			else
+				return GetPart(possibleCompound, null);
+		}
+		
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
 			MenuCommand cmd;
@@ -45,9 +82,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			ParserService.ParseCurrentViewContent();
 			c = c.ProjectContent.GetClass(c.FullyQualifiedName, c.TypeParameters.Count);
+			c = GetCurrentPart(c);
 			if (c == null) {
 				return new ToolStripMenuItem[0];
 			}
+			
+			
 			
 			LanguageProperties language = c.ProjectContent.Language;
 			
