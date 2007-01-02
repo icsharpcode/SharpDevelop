@@ -209,7 +209,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void SetText(string value)
 		{
-			textAreaControl.Document.TextContent = value;
+			textAreaControl.Document.Replace(0, textAreaControl.Document.TextLength, value);
 		}
 		
 		public string Text {
