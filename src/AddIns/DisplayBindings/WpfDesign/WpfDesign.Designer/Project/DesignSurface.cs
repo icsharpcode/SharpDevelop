@@ -44,15 +44,6 @@ namespace ICSharpCode.WpfDesign.Designer
 		}
 		
 		/// <summary>
-		/// Gets the designed element.
-		/// </summary>
-		public UIElement DesignedElement {
-			get {
-				return _designPanel.Child;
-			}
-		}
-		
-		/// <summary>
 		/// Initializes the designer content from the specified XmlReader.
 		/// </summary>
 		public void LoadDesigner(XmlReader xamlReader)
@@ -75,7 +66,10 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			_designContext = context;
 			_designPanel.Context = context;
-			_designPanel.Child = context.RootItem.View;
+			Border designPanelBorder = new Border();
+			designPanelBorder.Padding = new Thickness(10);
+			_designPanel.Child = designPanelBorder;
+			designPanelBorder.Child = context.RootItem.View;
 		}
 		
 		/// <summary>
@@ -87,6 +81,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			_designPanel.Context = null;
 			_designPanel.Child = null;
 			_designPanel.Adorners.Clear();
+			_designPanel.MarkerCanvas.Children.Clear();
 		}
 	}
 }

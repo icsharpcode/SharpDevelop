@@ -7,57 +7,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Input;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Input;
+
 using ICSharpCode.WpfDesign.Adorners;
 
 namespace ICSharpCode.WpfDesign
 {
-	/// <summary>
-	/// Describes the layer of input handling.
-	/// When multiple actions are possible, that with the highest layer will be used.
-	/// </summary>
-	public enum InputHandlingLayer
-	{
-		/// <summary>
-		/// No layer specified. This layer is lower than all other layers.
-		/// </summary>
-		None,
-		/// <summary>
-		/// Layer used for passing the input to the component.
-		/// Normally never receives actions because there is always a <see cref="Tool"/>.
-		/// </summary>
-		Component,
-		/// <summary>
-		/// Layer used for tools.
-		/// </summary>
-		Tool,
-		/// <summary>
-		/// Layer used for certain components that should get input, for example scroll thumbs
-		/// in user-defined ScrollViewers and the headers inside a TabControl.
-		/// </summary>
-		ComponentHigh,
-		/// <summary>
-		/// This value is used for mouse input on the adorner layer.
-		/// </summary>
-		Adorners,
-		/// <summary>
-		/// This layer is higher than all other layers.
-		/// </summary>
-		Highest
-	}
-	
-	/// <summary>
-	/// Interface for behavior extensions that specifies the input layer of the extended component.
-	/// </summary>
-	public interface IProvideComponentInputHandlingLayer
-	{
-		/// <summary>
-		/// Gets the input handling layer of the component.
-		/// </summary>
-		InputHandlingLayer InputLayer { get; }
-	}
-	
 	/// <summary>
 	/// Describes a tool that can handle input on the design surface.
 	/// Modelled after the description on http://urbanpotato.net/Default.aspx/document/2300
@@ -65,19 +23,19 @@ namespace ICSharpCode.WpfDesign
 	public interface ITool
 	{
 		/// <summary>
-		/// Gets the input handling layer of the tool.
-		/// </summary>
-		InputHandlingLayer InputLayer { get; }
-		
-		/// <summary>
 		/// Gets the cursor used by the tool.
 		/// </summary>
 		Cursor Cursor { get; }
 		
 		/// <summary>
-		/// Notifies the tool of the MouseDown event.
+		/// Activates the tool, attaching its event handlers to the design panel.
 		/// </summary>
-		void OnMouseDown(IDesignPanel designPanel, MouseButtonEventArgs e);
+		void Activate(IDesignPanel designPanel);
+		
+		/// <summary>
+		/// Deactivates the tool, detaching its event handlers from the design panel.
+		/// </summary>
+		void Deactivate(IDesignPanel designPanel);
 	}
 	
 	/// <summary>
@@ -109,35 +67,32 @@ namespace ICSharpCode.WpfDesign
 		DesignContext Context { get; }
 		
 		/// <summary>
-		/// Starts an input action. This prevents components and tools from getting input events,
-		/// leaving input handling to event handlers attached to the design panel.
+		/// Gets/Sets if the design content is visible for hit-testing purposes.
 		/// </summary>
-		void StartInputAction();
+		bool IsContentHitTestVisible { get; set; }
 		
 		/// <summary>
-		/// Stops an input action. This reenables input handling of
+		/// Gets/Sets if the adorner layer is visible for hit-testing purposes.
 		/// </summary>
-		void StopInputAction();
-		
-		/// <summary>
-		/// Finds the designed element for the specified original source.
-		/// </summary>
-		DesignItem FindDesignedElementForOriginalSource(object originalSource);
+		bool IsAdornerLayerHitTestVisible { get; set; }
 		
 		/// <summary>
 		/// Gets the list of adorners displayed on the design panel.
 		/// </summary>
 		ICollection<AdornerPanel> Adorners { get; }
 		
-		/*
 		/// <summary>
 		/// A canvas that is on top of the design surface and all adorners.
 		/// Used for temporary drawings that are not attached to any element, e.g. the selection frame.
 		/// </summary>
 		Canvas MarkerCanvas { get; }
-		 */
 		
-		// The following members were missing in <see cref="IInputElement"/>, but of course
+		/// <summary>
+		/// Performs a hit test on the design surface.
+		/// </summary>
+		DesignPanelHitTestResult HitTest(MouseEventArgs e, bool testAdorners, bool testDesignSurface);
+		
+		// The following members were missing in <see cref="IInputElement"/>, but
 		// are supported on the DesignPanel:
 		
 		/// <summary>

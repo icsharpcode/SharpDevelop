@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 
 namespace ICSharpCode.WpfDesign.Designer
@@ -16,6 +17,13 @@ namespace ICSharpCode.WpfDesign.Designer
 		public static T[] ToArray<T>(ICollection<T> collection)
 		{
 			T[] arr = new T[collection.Count];
+			collection.CopyTo(arr, 0);
+			return arr;
+		}
+		
+		public static PropertyDescriptor[] ToArray(PropertyDescriptorCollection collection)
+		{
+			PropertyDescriptor[] arr = new PropertyDescriptor[collection.Count];
 			collection.CopyTo(arr, 0);
 			return arr;
 		}

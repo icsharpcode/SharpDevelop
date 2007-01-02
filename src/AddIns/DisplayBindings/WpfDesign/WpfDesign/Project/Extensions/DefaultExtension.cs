@@ -95,13 +95,11 @@ namespace ICSharpCode.WpfDesign.Extensions
 		/// <summary>
 		/// Calls OnRemove() on the DefaultExtension.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]
 		public override void RemoveExtension(Extension extension)
 		{
-			Debug.Assert(extension != null);
-			Debug.Assert(extension is DefaultExtension);
-			
-			((DefaultExtension)extension).CallOnRemove();
+			DefaultExtension defaultExtension = extension as DefaultExtension;
+			Debug.Assert(defaultExtension != null);
+			defaultExtension.CallOnRemove();
 		}
 		
 		/// <summary>

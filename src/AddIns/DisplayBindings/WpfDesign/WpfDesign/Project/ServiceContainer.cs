@@ -69,7 +69,7 @@ namespace ICSharpCode.WpfDesign
 		/// serviceAvailableAction will be called after the service gets available. If the service is already available,
 		/// the action will be called immediately.
 		/// </summary>
-		public void Subscribe<T>(Action<T> serviceAvailableAction) where T : class
+		public void RunWhenAvailable<T>(Action<T> serviceAvailableAction) where T : class
 		{
 			T service = GetService<T>();
 			if (service != null) {
@@ -121,6 +121,16 @@ namespace ICSharpCode.WpfDesign
 		public IComponentService Component {
 			get {
 				return GetServiceOrThrowException<IComponentService>();
+			}
+		}
+		
+		/// <summary>
+		/// Gets the <see cref="ViewService"/>.
+		/// Throws an exception if the service is not found.
+		/// </summary>
+		public ViewService View {
+			get {
+				return GetServiceOrThrowException<ViewService>();
 			}
 		}
 		

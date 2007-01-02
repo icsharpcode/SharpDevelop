@@ -21,6 +21,9 @@
 						<Trigger Property="IsEnabled" Value="False">
 							<Setter TargetName="thumbRectangle" Property="Fill" Value="Gray"/>
 						</Trigger>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter TargetName="thumbRectangle" Property="Fill" Value="White"/>
+						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>
 			</Setter.Value>

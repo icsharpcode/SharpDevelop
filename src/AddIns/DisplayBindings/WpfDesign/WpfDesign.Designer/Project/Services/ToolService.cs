@@ -15,10 +15,16 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	{
 		PointerTool _pointerTool;
 		ITool _currentTool;
+		IDesignPanel _designPanel;
 		
-		public DefaultToolService()
+		public DefaultToolService(DesignContext context)
 		{
 			_currentTool = _pointerTool = new PointerTool();
+			context.Services.RunWhenAvailable<IDesignPanel>(
+				delegate(IDesignPanel designPanel) {
+					_designPanel = designPanel;
+					_currentTool.Activate(designPanel);
+				});
 		}
 		
 		public ITool PointerTool {
@@ -30,30 +36,53 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			set {
 				if (value == null)
 					throw new ArgumentNullException("value");
+				if (_currentTool == value) return;
+				_currentTool.Deactivate(_designPanel);
 				_currentTool = value;
+				_currentTool.Activate(_designPanel);
 			}
 		}
 	}
 	
 	sealed class PointerTool : ITool
 	{
-		public InputHandlingLayer InputLayer {
-			get { return InputHandlingLayer.Tool; }
-		}
-		
 		public Cursor Cursor {
-			get { return Cursors.Arrow; }
+			get { return null; }
 		}
 		
-		public void OnMouseDown(IDesignPanel designPanel, MouseButtonEventArgs e)
+		public void Activate(IDesignPanel designPanel)
 		{
-			e.Handled = true;
-			new SelectionGesture().Start(designPanel, e);
+			designPanel.MouseDown += OnMouseDown;
+		}
+		
+		public void Deactivate(IDesignPanel designPanel)
+		{
+			designPanel.MouseDown -= OnMouseDown;
+		}
+		
+		void OnMouseDown(object sender, MouseButtonEventArgs e)
+		{
+			if (e.ChangedButton == MouseButton.Left && MouseGestureBase.IsOnlyButtonPressed(e, MouseButton.Left)) {
+				e.Handled = true;
+				new SelectionGesture().Start((IDesignPanel)sender, e);
+			}
 		}
 	}
 	
 	abstract class MouseGestureBase
 	{
+		/// <summary>
+		/// Checks if <paramref name="button"/> is the only button that is currently pressed.
+		/// </summary>
+		internal static bool IsOnlyButtonPressed(MouseEventArgs e, MouseButton button)
+		{
+			return e.LeftButton == (button == MouseButton.Left ? MouseButtonState.Pressed : MouseButtonState.Released)
+				&& e.MiddleButton == (button == MouseButton.Middle ? MouseButtonState.Pressed : MouseButtonState.Released)
+				&& e.RightButton == (button == MouseButton.Right ? MouseButtonState.Pressed : MouseButtonState.Released)
+				&& e.XButton1 == (button == MouseButton.XButton1 ? MouseButtonState.Pressed : MouseButtonState.Released)
+				&& e.XButton2 == (button == MouseButton.XButton2 ? MouseButtonState.Pressed : MouseButtonState.Released);
+		}
+		
 		protected IDesignPanel designPanel;
 		protected ServiceContainer services;
 		bool isStarted;
@@ -63,7 +92,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			this.designPanel = designPanel;
 			this.services = designPanel.Context.Services;
 			isStarted = true;
-			designPanel.StartInputAction();
+			designPanel.IsAdornerLayerHitTestVisible = false;
 			RegisterEvents();
 			if (designPanel.CaptureMouse()) {
 				OnStarted(e);
@@ -112,7 +141,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			isStarted = false;
 			designPanel.ReleaseMouseCapture();
 			UnRegisterEvents();
-			designPanel.StopInputAction();
+			designPanel.IsAdornerLayerHitTestVisible = true;
 			OnStopped();
 		}
 		
@@ -125,11 +154,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		protected override void OnStarted(MouseButtonEventArgs e)
 		{
 			base.OnStarted(e);
-			DesignItem item = designPanel.FindDesignedElementForOriginalSource(e.OriginalSource);
-			if (item != null) {
-				services.Selection.SetSelectedComponents(new DesignItem[] { item }, SelectionTypes.Auto);
-			} else {
-				services.Selection.SetSelectedComponents(new DesignItem[] { }, SelectionTypes.Auto);
+			DesignPanelHitTestResult result = designPanel.HitTest(e, false, true);
+			if (result.ModelHit != null) {
+				services.Selection.SetSelectedComponents(new DesignItem[] { result.ModelHit }, SelectionTypes.Auto);
 			}
 		}
 		

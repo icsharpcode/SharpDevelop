@@ -142,7 +142,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 		{
 			if (!isVisible) return;
 			
-			item.AdornedElement = this.ExtendedItem.View;
+			item.SetAdornedElement(this.ExtendedItem.View, this.ExtendedItem);;
 			
 			IDesignPanel avs = Services.GetService<IDesignPanel>();
 			avs.Adorners.Add(item);

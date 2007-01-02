@@ -20,6 +20,30 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 	public static class PropertyEditorBindingHelper
 	{
 		/// <summary>
+		/// Registers a value changed event handler for the data property that gets unregistered when the
+		/// editor FrameworkElement is unloaded.
+		/// </summary>
+		public static void AddValueChangedEventHandler(FrameworkElement editor, IPropertyEditorDataProperty dataProperty, EventHandler handler)
+		{
+			if (editor == null)
+				throw new ArgumentNullException("editor");
+			if (dataProperty == null)
+				throw new ArgumentNullException("dataProperty");
+			if (handler == null)
+				throw new ArgumentNullException("handler");
+			
+			editor.Loaded += delegate {
+				dataProperty.ValueChanged += handler;
+			};
+			editor.Unloaded += delegate {
+				dataProperty.ValueChanged -= handler;
+			};
+			if (editor.IsLoaded) {
+				dataProperty.ValueChanged += handler;
+			}
+		}
+		
+		/// <summary>
 		/// Binds editor.property to dataProperty.Value.
 		/// </summary>
 		public static Binding CreateBinding(FrameworkElement editor, IPropertyEditorDataProperty dataProperty)

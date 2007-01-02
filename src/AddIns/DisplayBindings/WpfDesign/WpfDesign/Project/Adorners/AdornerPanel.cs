@@ -53,15 +53,37 @@ namespace ICSharpCode.WpfDesign.Adorners
 		#endregion
 		
 		UIElement _adornedElement;
+		DesignItem _adornedDesignItem;
 		AdornerOrder _Order = AdornerOrder.Content;
 		
+		
 		/// <summary>
-		/// Gets/Sets the element adorned by this AdornerPanel.
-		/// Do not change this property after the panel was added to an AdornerLayer!
+		/// Gets the element adorned by this AdornerPanel.
 		/// </summary>
 		public UIElement AdornedElement {
 			get { return _adornedElement; }
-			set { _adornedElement = value; }
+		}
+		
+		/// <summary>
+		/// Gets the design item adorned by this AdornerPanel.
+		/// </summary>
+		public DesignItem AdornedDesignItem {
+			get { return _adornedDesignItem; }
+		}
+		
+		/// <summary>
+		/// Sets the AdornedElement and AdornedDesignItem properties.
+		/// This method can be called only once.
+		/// </summary>
+		public void SetAdornedElement(UIElement adornedElement, DesignItem adornedDesignItem)
+		{
+			if (adornedElement == null)
+				throw new ArgumentNullException("adornedElement");
+			if (_adornedElement != null)
+				throw new InvalidOperationException("AdornedElement is already set.");
+			
+			_adornedElement = adornedElement;
+			_adornedDesignItem = adornedDesignItem;
 		}
 		
 		/// <summary>
@@ -113,7 +135,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 	/// <summary>
 	/// Describes where an Adorner is positioned on the Z-Layer.
 	/// </summary>
-	public struct AdornerOrder : IComparable<AdornerOrder>
+	public struct AdornerOrder : IComparable<AdornerOrder>, IEquatable<AdornerOrder>
 	{
 		/// <summary>
 		/// The adorner is in the background layer.
@@ -137,12 +159,43 @@ namespace ICSharpCode.WpfDesign.Adorners
 			this.i = i;
 		}
 		
+		/// <summary/>
+		public override int GetHashCode()
+		{
+			return i.GetHashCode();
+		}
+		
+		/// <summary/>
+		public override bool Equals(object obj)
+		{
+			if (!(obj is AdornerOrder)) return false;
+			return this == (AdornerOrder)obj;
+		}
+		
+		/// <summary/>
+		public bool Equals(AdornerOrder other)
+		{
+			return i == other.i;
+		}
+		
 		/// <summary>
 		/// Compares the <see cref="AdornerOrder"/> to another AdornerOrder.
 		/// </summary>
 		public int CompareTo(AdornerOrder other)
 		{
 			return i.CompareTo(other.i);
+		}
+		
+		/// <summary/>
+		public static bool operator ==(AdornerOrder leftHandSide, AdornerOrder rightHandSide)
+		{
+			return leftHandSide.i == rightHandSide.i;
+		}
+		
+		/// <summary/>
+		public static bool operator !=(AdornerOrder leftHandSide, AdornerOrder rightHandSide)
+		{
+			return leftHandSide.i != rightHandSide.i;
 		}
 	}
 }

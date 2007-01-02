@@ -64,12 +64,14 @@
     <Compile Include="ChangeGroup.cs" />
     <Compile Include="DesignContext.cs" />
     <Compile Include="DesignItemProperty.cs" />
+    <Compile Include="DesignPanelHitTestResult.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="DesignerException.cs" />
     <Compile Include="Extensions\BehaviorExtension.cs" />
     <Compile Include="Extensions\CustomInstanceFactory.cs" />
     <Compile Include="Extensions\DefaultExtension.cs" />
+    <Compile Include="Extensions\DefaultInitializer.cs" />
     <Compile Include="Extensions\Extension.cs" />
     <Compile Include="Extensions\ExtensionForAttribute.cs" />
     <Compile Include="Extensions\ExtensionManager.cs" />

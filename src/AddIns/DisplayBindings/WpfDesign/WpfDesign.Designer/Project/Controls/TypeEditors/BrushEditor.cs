@@ -22,14 +22,31 @@ namespace ICSharpCode.WpfDesign.Designer.Controls.TypeEditors
 	[TypeEditor(typeof(Brush))]
 	public sealed class BrushEditor : Border
 	{
+		readonly IPropertyEditorDataProperty property;
+		
 		/// <summary>
 		/// Creates a new BooleanEditor instance.
 		/// </summary>
 		public BrushEditor(IPropertyEditorDataProperty property)
 		{
-			this.BorderBrush = Brushes.Black;
+			this.property = property;
+			this.SnapsToDevicePixels = true;
 			this.BorderThickness = new Thickness(1);
-			SetBinding(BackgroundProperty, PropertyEditorBindingHelper.CreateBinding(this, property));
+			PropertyEditorBindingHelper.AddValueChangedEventHandler(this, property, OnValueChanged);
+			OnValueChanged(null, null);
+		}
+		
+		void OnValueChanged(object sender, EventArgs e)
+		{
+			Brush val = property.Value as Brush;
+			this.Background = val;
+			if (val == null) {
+				this.BorderBrush = null;
+			} else if (property.IsSet) {
+				this.BorderBrush = Brushes.Black;
+			} else {
+				this.BorderBrush = Brushes.Gray;
+			}
 		}
 	}
 }

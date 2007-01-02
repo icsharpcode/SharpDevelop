@@ -35,10 +35,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			if (xamlReader == null)
 				throw new ArgumentNullException("xamlReader");
 			
-			this.Services.AddService(typeof(IVisualDesignService), new DefaultVisualDesignService());
 			this.Services.AddService(typeof(ISelectionService), new DefaultSelectionService());
-			this.Services.AddService(typeof(IToolService), new DefaultToolService());
+			this.Services.AddService(typeof(IToolService), new DefaultToolService(this));
 			this.Services.AddService(typeof(UndoService), new UndoService());
+			this.Services.AddService(typeof(ViewService), new DefaultViewService(this));
 			
 			_componentService = new XamlComponentService(this);
 			this.Services.AddService(typeof(IComponentService), _componentService);

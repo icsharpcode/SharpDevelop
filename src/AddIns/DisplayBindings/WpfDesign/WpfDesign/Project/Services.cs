@@ -11,36 +11,6 @@ using System.Windows;
 
 namespace ICSharpCode.WpfDesign
 {
-	#region IVisualDesignService
-	/// <summary>
-	/// A service that can visualize non-UIElement objects on a design surface.
-	/// </summary>
-	public interface IVisualDesignService
-	{
-		/// <summary>
-		/// Create an UIElement for visualizing the object specified by the design site.
-		/// </summary>
-		/// <returns>
-		/// Returns either an UIElement instance that also implements
-		/// <see cref="IVisualDesignObjectWrapper"/>,
-		/// or returns null to use the component itself as UIElement.
-		/// </returns>
-		UIElement CreateWrapper(DesignItem site);
-	}
-	
-	/// <summary>
-	/// Interface used by the <see cref="IVisualDesignService"/> for UIElements that
-	/// are inside the design surfaced but used only to represent a non-UIElement entity.
-	/// </summary>
-	public interface IVisualDesignObjectWrapper
-	{
-		/// <summary>
-		/// Gets the design site this object was wrapping.
-		/// </summary>
-		DesignItem WrappedSite { get; }
-	}
-	#endregion
-	
 	#region ISelectionService
 	/// <summary>
 	/// Defines the type how a selection can be changed.
@@ -149,6 +119,31 @@ namespace ICSharpCode.WpfDesign
 		event EventHandler<DesignItemEventArgs> ComponentRegistered;
 		/// <summary>Event raised whenever a component is unregistered</summary>
 		event EventHandler<DesignItemEventArgs> ComponentUnregistered;
+	}
+	#endregion
+	
+	#region IViewService
+	/// <summary>
+	/// Service for getting the view for a model or the model for a view.
+	/// </summary>
+	public abstract class ViewService
+	{
+		/// <summary>
+		/// Gets the model represented by the specified view element.
+		/// </summary>
+		public abstract DesignItem GetModel(DependencyObject view);
+		
+		/// <summary>
+		/// Gets the view for the specified model item.
+		/// This is equivalent to using <c>model.View</c>.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+		public DependencyObject GetView(DesignItem model)
+		{
+			if (model == null)
+				throw new ArgumentNullException("model");
+			return model.View;
+		}
 	}
 	#endregion
 }

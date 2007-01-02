@@ -24,7 +24,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 			Debug.Assert(context != null);
 			this._context = context;
 			
-			context.Services.Subscribe<IComponentService>(
+			context.Services.RunWhenAvailable<IComponentService>(
 				delegate(IComponentService componentService) {
 					componentService.ComponentRegistered += OnComponentRegistered;
 				});

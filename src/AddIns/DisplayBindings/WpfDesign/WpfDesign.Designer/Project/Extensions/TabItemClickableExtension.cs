@@ -15,18 +15,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// Makes TabItems clickable.
 	/// </summary>
 	[ExtensionFor(typeof(TabItem))]
-	public sealed class TabItemClickableExtension : BehaviorExtension, IProvideComponentInputHandlingLayer
+	[ExtensionServer(typeof(PrimarySelectionExtensionServer))]
+	public sealed class TabItemClickableExtension : DefaultExtension
 	{
 		/// <summary/>
 		protected override void OnInitialized()
 		{
-			this.ExtendedItem.AddBehavior(typeof(IProvideComponentInputHandlingLayer), this);
-		}
-		
-		InputHandlingLayer IProvideComponentInputHandlingLayer.InputLayer {
-			get {
-				return InputHandlingLayer.ComponentHigh;
-			}
+			TabItem tabItem = (TabItem)this.ExtendedItem.Component;
+			tabItem.BringIntoView();
 		}
 	}
 }

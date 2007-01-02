@@ -21,6 +21,7 @@ namespace ICSharpCode.WpfDesign.Designer
 {
 	sealed class DesignPanel : Decorator, IDesignPanel
 	{
+		#region Hit Testing
 		/// <summary>
 		/// this element is always hit (unless HitTestVisible is set to false)
 		/// </summary>
@@ -37,6 +38,93 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 		}
 		
+		// Like VisualTreeHelper.HitTest(Visual,Point); but allows using a filter callback.
+		static PointHitTestResult RunHitTest(Visual reference, Point point, HitTestFilterCallback filterCallback)
+		{
+			HitTestResult result = null;
+			VisualTreeHelper.HitTest(reference, filterCallback,
+			                         delegate (HitTestResult resultParameter) {
+			                         	result = resultParameter;
+			                         	return HitTestResultBehavior.Stop;
+			                         },
+			                         new PointHitTestParameters(point));
+			return result as PointHitTestResult;
+		}
+		
+		static HitTestFilterBehavior FilterHitTestInvisibleElements(DependencyObject potentialHitTestTarget)
+		{
+			UIElement element = potentialHitTestTarget as UIElement;
+			if (element != null) {
+				if (!(element.IsHitTestVisible && element.Visibility == Visibility.Visible)) {
+					return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
+				}
+			}
+			return HitTestFilterBehavior.Continue;
+		}
+		
+		DesignPanelHitTestResult _lastHitTestResult;
+		
+		/// <summary>
+		/// Performs a custom hit testing lookup for the specified mouse event args.
+		/// </summary>
+		public DesignPanelHitTestResult HitTest(MouseEventArgs e, bool testAdorners, bool testDesignSurface)
+		{
+			_lastHitTestResult = CustomHitTestInternal(e.GetPosition(this), testAdorners, testDesignSurface);
+			return _lastHitTestResult;
+		}
+		
+		DesignPanelHitTestResult CustomHitTestInternal(Point mousePosition, bool testAdorners, bool testDesignSurface)
+		{
+			if (mousePosition.X < 0 || mousePosition.Y < 0 || mousePosition.X > this.RenderSize.Width || mousePosition.Y > this.RenderSize.Height) {
+				return DesignPanelHitTestResult.NoHit;
+			}
+			// First try hit-testing on the adorner layer.
+			
+			PointHitTestResult result;
+			DesignPanelHitTestResult customResult;
+			
+			if (testAdorners) {
+				result = RunHitTest(_adornerLayer, mousePosition, FilterHitTestInvisibleElements);
+				if (result != null && result.VisualHit != null) {
+					if (result.VisualHit == _lastHitTestResult.VisualHit)
+						return _lastHitTestResult;
+					customResult = new DesignPanelHitTestResult(result.VisualHit);
+					DependencyObject obj = result.VisualHit;
+					while (obj != null && obj != _adornerLayer) {
+						AdornerPanel adorner = obj as AdornerPanel;
+						if (adorner != null) {
+							customResult.AdornerHit = adorner;
+						}
+						obj = VisualTreeHelper.GetParent(obj);
+					}
+					return customResult;
+				}
+			}
+			
+			if (testDesignSurface) {
+				result = RunHitTest(this.Child, mousePosition, FilterHitTestInvisibleElements);
+				if (result != null && result.VisualHit != null) {
+					customResult = new DesignPanelHitTestResult(result.VisualHit);
+					
+					ViewService viewService = _context.Services.View;
+					DependencyObject obj = result.VisualHit;
+					while (obj != null) {
+						if ((customResult.ModelHit = viewService.GetModel(obj)) != null)
+							break;
+						obj = VisualTreeHelper.GetParent(obj);
+					}
+					if (customResult.ModelHit == null)
+					{
+						customResult.ModelHit = _context.RootItem;
+					}
+					return customResult;
+				}
+			}
+			return DesignPanelHitTestResult.NoHit;
+		}
+		#endregion
+		
+		#region Fields + Constructor
 		DesignContext _context;
 		readonly EatAllHitTestRequests _eatAllHitTestRequests;
 		readonly AdornerLayer _adornerLayer;
@@ -47,14 +135,51 @@ namespace ICSharpCode.WpfDesign.Designer
 			this.Focusable = true;
 			this.VerticalAlignment = VerticalAlignment.Top;
 			this.HorizontalAlignment = HorizontalAlignment.Left;
-			this.Margin = new Thickness(10);
 			
 			_eatAllHitTestRequests = new EatAllHitTestRequests();
-			_eatAllHitTestRequests.IsHitTestVisible = false;
 			_adornerLayer = new AdornerLayer(this);
 			_markerCanvas = new Canvas();
 			_markerCanvas.IsHitTestVisible = false;
 		}
+		#endregion
+		
+		#region Properties
+		
+		/// <summary>
+		/// Gets/Sets the design context.
+		/// </summary>
+		public DesignContext Context {
+			get { return _context; }
+			set { _context = value; }
+		}
+		
+		public ICollection<AdornerPanel> Adorners {
+			get {
+				return _adornerLayer.Adorners;
+			}
+		}
+		
+		public Canvas MarkerCanvas {
+			get { return _markerCanvas; }
+		}
+		
+		/// <summary>
+		/// Gets/Sets if the design content is visible for hit-testing purposes.
+		/// </summary>
+		public bool IsContentHitTestVisible {
+			get { return !_eatAllHitTestRequests.IsHitTestVisible; }
+			set { _eatAllHitTestRequests.IsHitTestVisible = !value; }
+		}
+		
+		/// <summary>
+		/// Gets/Sets if the adorner layer is visible for hit-testing purposes.
+		/// </summary>
+		public bool IsAdornerLayerHitTestVisible {
+			get { return _adornerLayer.IsHitTestVisible; }
+			set { _adornerLayer.IsHitTestVisible = value; }
+		}
+		
+		#endregion
 		
 		#region Visual Child Management
 		public override UIElement Child {
@@ -127,110 +252,16 @@ namespace ICSharpCode.WpfDesign.Designer
 		}
 		#endregion
 		
-		/// <summary>
-		/// Gets/Sets the design context.
-		/// </summary>
-		public DesignContext Context {
-			get { return _context; }
-			set { _context = value; }
-		}
-		
-		private IToolService ToolService {
-			[DebuggerStepThrough]
-			get { return _context.Services.Tool; }
-		}
-		
-		protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
+		protected override void OnQueryCursor(QueryCursorEventArgs e)
 		{
-			base.OnPreviewMouseDown(e);
-			if (!_isInInputAction) {
-				Debug.WriteLine("DesignPanel.PreviewMouseDown Source=" + e.Source.GetType().Name + " OriginalSource=" + e.OriginalSource.GetType().Name);
-				object topMostHitSource = null;
-				DesignItem site = FindDesignedElementForOriginalSource(e.OriginalSource, ref topMostHitSource);
-				InputHandlingLayer itemLayer = InputHandlingLayer.None;
-				if (site != null) {
-					Debug.WriteLine(" Found designed element: " + site.Component.GetType().Name);
-					IProvideComponentInputHandlingLayer layerProvider = site.GetBehavior<IProvideComponentInputHandlingLayer>();
-					if (layerProvider != null) {
-						itemLayer = layerProvider.InputLayer;
-					}
-				} else if (topMostHitSource == _adornerLayer) {
-					itemLayer = InputHandlingLayer.Adorners;
-				}
-				if (ToolService.CurrentTool.InputLayer > itemLayer) {
-					ToolService.CurrentTool.OnMouseDown(this, e);
-				}
-			}
-		}
-		
-		// find a DesignItem for the clicked originalSource. This walks up the visual tree until it finds a designed item
-		// or the design surface itself.
-		// topMostSource is set to the element directly below the one that caused the tree walk to abort.
-		// For hits on the adorner layer, the method will return null and set topMostSource to _adornerLayer.
-		DesignItem FindDesignedElementForOriginalSource(object originalSource, ref object topMostSource)
-		{
-			if (originalSource == null)
-				return null;
-			DesignItem site = _context.Services.Component.GetDesignItem(originalSource);
-			if (site != null)
-				return site;
-			if (originalSource == this)
-				return null;
-			topMostSource = originalSource;
-			DependencyObject dObj = originalSource as DependencyObject;
-			if (dObj == null)
-				return null;
-			return FindDesignedElementForOriginalSource(VisualTreeHelper.GetParent(dObj), ref topMostSource);
-		}
-		
-		public DesignItem FindDesignedElementForOriginalSource(object originalSource)
-		{
-			object topMostSource = null;
-			return FindDesignedElementForOriginalSource(originalSource, ref topMostSource);
-		}
-		
-		/// <summary>
-		/// prevent designed controls from getting the keyboard focus
-		/// </summary>
-		protected override void OnPreviewGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
-		{
-			if (e.NewFocus != this) {
-				if (e.NewFocus is TabItem) {
-					Dispatcher.BeginInvoke(DispatcherPriority.Normal,
-					                       new Action(delegate { Focus(); }));
-				} else {
+			base.OnQueryCursor(e);
+			if (_context != null) {
+				Cursor cursor = _context.Services.Tool.CurrentTool.Cursor;
+				if (cursor != null) {
+					e.Cursor = cursor;
 					e.Handled = true;
-					Focus();
 				}
 			}
-		}
-		
-		bool _isInInputAction;
-		
-		void IDesignPanel.StartInputAction()
-		{
-			if (_isInInputAction) throw new InvalidOperationException();
-			_isInInputAction = true;
-			_eatAllHitTestRequests.IsHitTestVisible = true;
-		}
-		
-		void IDesignPanel.StopInputAction()
-		{
-			if (!_isInInputAction) throw new InvalidOperationException();
-			_isInInputAction = false;
-			_eatAllHitTestRequests.IsHitTestVisible = false;
-		}
-		
-		public ICollection<AdornerPanel> Adorners {
-			get {
-				return _adornerLayer.Adorners;
-			}
-		}
-		
-		public Canvas MarkerCanvas {
-			get { return _markerCanvas; }
 		}
 	}
-	
-	internal delegate void Action();
 }

@@ -61,6 +61,9 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// </summary>
 		public static Type GetFallbackEditorType(IPropertyEditorDataProperty property)
 		{
+			if (property == null)
+				throw new ArgumentNullException("property");
+			
 			Type returnType = property.ReturnType;
 			if (returnType.IsEnum) {
 				return typeof(StandardValuesComboBoxEditor);

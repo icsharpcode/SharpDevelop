@@ -20,7 +20,7 @@
         Title="WindowTitle"
         BorderThickness="10" Width="400" Height="300">
 	<StackPanel>
-		<Canvas Height="50" Background="White"></Canvas>
+		<Canvas Height="50"></Canvas>
 		<Button>Button 1</Button>
 		<Button>Button 2</Button>
 		<TabControl Width="300" MinHeight="100">

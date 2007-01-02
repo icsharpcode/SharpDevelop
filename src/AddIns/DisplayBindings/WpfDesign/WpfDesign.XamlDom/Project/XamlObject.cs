@@ -102,7 +102,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (p.PropertyName == propertyName)
 					return p;
 			}
-			PropertyDescriptorCollection propertyDescriptors = TypeDescriptor.GetProperties(elementType);
+			PropertyDescriptorCollection propertyDescriptors = TypeDescriptor.GetProperties(instance);
 			PropertyDescriptor propertyInfo = propertyDescriptors[propertyName];
 			if (propertyInfo == null) {
 				throw new ArgumentException("The property '" + propertyName + "' doesn't exist on " + elementType.FullName, "propertyName");

@@ -256,17 +256,22 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		static XamlPropertyInfo GetDefaultProperty(Type elementType)
 		{
 			foreach (ContentPropertyAttribute cpa in elementType.GetCustomAttributes(typeof(ContentPropertyAttribute), true)) {
-				return FindProperty(elementType, cpa.Name);
+				return FindProperty(null, elementType, cpa.Name);
 			}
 			return null;
 		}
 		
-		static XamlPropertyInfo FindProperty(Type elementType, string propertyName)
+		static XamlPropertyInfo FindProperty(object elementInstance, Type propertyType, string propertyName)
 		{
-			PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(elementType);
+			PropertyDescriptorCollection properties;
+			if (elementInstance != null) {
+				properties = TypeDescriptor.GetProperties(elementInstance);
+			} else {
+				properties = TypeDescriptor.GetProperties(propertyType);
+			}
 			PropertyDescriptor propertyInfo = properties[propertyName];
 			if (propertyInfo == null) {
-				XamlPropertyInfo pi = TryFindAttachedProperty(elementType, propertyName);
+				XamlPropertyInfo pi = TryFindAttachedProperty(propertyType, propertyName);
 				if (pi != null) {
 					return pi;
 				} else {
@@ -299,22 +304,22 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 		
-		XamlPropertyInfo GetPropertyInfo(Type elementType, XmlAttribute attribute)
+		XamlPropertyInfo GetPropertyInfo(object elementInstance, Type elementType, XmlAttribute attribute)
 		{
 			if (attribute.LocalName.Contains(".")) {
-				return GetPropertyInfo(elementType, GetAttributeNamespace(attribute), attribute.LocalName);
+				return GetPropertyInfo(elementInstance, elementType, GetAttributeNamespace(attribute), attribute.LocalName);
 			} else {
-				return FindProperty(elementType, attribute.LocalName);
+				return FindProperty(elementInstance, elementType, attribute.LocalName);
 			}
 		}
 		
-		XamlPropertyInfo GetPropertyInfo(Type elementType, string xmlNamespace, string localName)
+		XamlPropertyInfo GetPropertyInfo(object elementInstance, Type elementType, string xmlNamespace, string localName)
 		{
 			string typeName, propertyName;
 			SplitQualifiedIdentifier(localName, out typeName, out propertyName);
 			Type propertyType = FindType(xmlNamespace, typeName);
 			if (elementType == propertyType || propertyType.IsAssignableFrom(elementType)) {
-				return FindProperty(propertyType, propertyName);
+				return FindProperty(elementInstance, propertyType, propertyName);
 			} else {
 				// This is an attached property
 				return FindAttachedProperty(propertyType, propertyName);
@@ -331,7 +336,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		void ParseObjectAttribute(XamlObject obj, XmlAttribute attribute)
 		{
-			XamlPropertyInfo propertyInfo = GetPropertyInfo(obj.ElementType, attribute);
+			XamlPropertyInfo propertyInfo = GetPropertyInfo(obj.Instance, obj.ElementType, attribute);
 			XamlTextValue textValue = new XamlTextValue(attribute);
 			propertyInfo.SetValue(obj.Instance, textValue.GetValueFor(propertyInfo));
 			obj.AddProperty(new XamlProperty(obj, propertyInfo, textValue));
@@ -347,7 +352,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			Debug.Assert(element.LocalName.Contains("."));
 			// this is a element property syntax
 			
-			XamlPropertyInfo propertyInfo = GetPropertyInfo(obj.ElementType, element.NamespaceURI, element.LocalName);
+			XamlPropertyInfo propertyInfo = GetPropertyInfo(obj.Instance, obj.ElementType, element.NamespaceURI, element.LocalName);
 			bool valueWasSet = false;
 			
 			object collectionInstance = null;
