@@ -79,12 +79,19 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public Type ReturnType {
 			get { return propertyInfo.ReturnType; }
 		}
-				
+		
 		/// <summary>
 		/// Gets the type converter used to convert property values to/from string.
 		/// </summary>
 		public TypeConverter TypeConverter {
 			get { return propertyInfo.TypeConverter; }
+		}
+		
+		/// <summary>
+		/// Gets the category of the property.
+		/// </summary>
+		public string Category {
+			get { return propertyInfo.Category; }
 		}
 		
 		/// <summary>

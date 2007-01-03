@@ -38,6 +38,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			this.Services.AddService(typeof(ISelectionService), new DefaultSelectionService());
 			this.Services.AddService(typeof(IToolService), new DefaultToolService(this));
 			this.Services.AddService(typeof(UndoService), new UndoService());
+			this.Services.AddService(typeof(IErrorService), new DefaultErrorService());
 			this.Services.AddService(typeof(ViewService), new DefaultViewService(this));
 			
 			_componentService = new XamlComponentService(this);

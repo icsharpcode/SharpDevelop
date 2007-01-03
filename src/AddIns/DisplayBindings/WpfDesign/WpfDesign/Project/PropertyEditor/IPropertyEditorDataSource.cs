@@ -47,6 +47,11 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// Gets if adding attached properties is supported.
 		/// </summary>
 		bool CanAddAttachedProperties { get; }
+		
+		/// <summary>
+		/// Gets the service container attached to this data source.
+		/// </summary>
+		ServiceContainer Services { get; }
 	}
 	
 	/// <summary>
@@ -100,6 +105,11 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// Is raised when the IsSet property has changed.
 		/// </summary>
 		event EventHandler IsSetChanged;
+		
+		/// <summary>
+		/// Gets if the property value is ambiguous.
+		/// </summary>
+		bool IsAmbiguous { get; }
 		
 		/// <summary>
 		/// Gets/Sets the value of the property.

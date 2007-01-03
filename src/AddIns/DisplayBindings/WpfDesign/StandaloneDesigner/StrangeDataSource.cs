@@ -63,5 +63,11 @@ namespace StandaloneDesigner
 				return false;
 			}
 		}
+		
+		public ICSharpCode.WpfDesign.ServiceContainer Services {
+			get {
+				return null;
+			}
+		}
 	}
 }

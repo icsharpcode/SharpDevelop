@@ -32,6 +32,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public abstract string FullyQualifiedName { get; }
 		public abstract bool IsAttached { get; }
 		public abstract bool IsCollection { get; }
+		public abstract string Category { get; }
 		internal abstract void AddValue(object collectionInstance, XamlPropertyValue newElement);
 	}
 	
@@ -69,6 +70,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		public override string Name {
 			get { return property.Name; }
+		}
+		
+		public override string Category {
+			get { return "Misc"; }
 		}
 		
 		public override bool IsAttached {
@@ -130,6 +135,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		public override Type TargetType {
 			get { return _propertyDescriptor.ComponentType; }
+		}
+		
+		public override string Category {
+			get { return _propertyDescriptor.Category; }
 		}
 		
 		public override TypeConverter TypeConverter {

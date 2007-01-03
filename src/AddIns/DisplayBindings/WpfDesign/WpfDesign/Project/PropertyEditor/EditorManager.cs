@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows;
@@ -28,7 +29,12 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// </summary>
 		public UIElement CreateEditor(IPropertyEditorDataProperty property)
 		{
-			return (UIElement)Activator.CreateInstance(GetEditorType(property), property);
+			try {
+				return (UIElement)Activator.CreateInstance(GetEditorType(property), property);
+			} catch (Exception ex) {
+				Debug.WriteLine(ex.ToString());
+				throw;
+			}
 		}
 		
 		/// <summary>

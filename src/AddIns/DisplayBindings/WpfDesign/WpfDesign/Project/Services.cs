@@ -146,4 +146,17 @@ namespace ICSharpCode.WpfDesign
 		}
 	}
 	#endregion
+
+	#region IErrorService
+	/// <summary>
+	/// Service for showing error UI.
+	/// </summary>
+	public interface IErrorService
+	{
+		/// <summary>
+		/// Shows an error tool tip.
+		/// </summary>
+		void ShowErrorTooltip(FrameworkElement attachTo, UIElement errorElement);
+	}
+	#endregion
 }

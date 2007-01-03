@@ -59,6 +59,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			get { return _property.PropertyTargetType; }
 		}
 		
+		public override string Category {
+			get { return _property.Category; }
+		}
+		
 		public override System.ComponentModel.TypeConverter TypeConverter {
 			get { return _property.TypeConverter; }
 		}

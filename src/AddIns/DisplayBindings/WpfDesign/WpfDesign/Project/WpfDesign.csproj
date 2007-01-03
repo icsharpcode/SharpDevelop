@@ -82,6 +82,7 @@
     <Compile Include="HashSet.cs" />
     <Compile Include="Linq.cs" />
     <Compile Include="PropertyEditor\BooleanEditor.cs" />
+    <Compile Include="PropertyEditor\MultiSelectionDataProperty.cs" />
     <Compile Include="PropertyEditor\StandardValuesComboBoxEditor.cs" />
     <Compile Include="PropertyEditor\DesignItemDataProperty.cs" />
     <Compile Include="PropertyEditor\DesignItemDataSource.cs" />

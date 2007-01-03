@@ -37,6 +37,11 @@ namespace ICSharpCode.WpfDesign
 		public abstract Type DeclaringType { get; }
 		
 		/// <summary>
+		/// Gets the category of the property.
+		/// </summary>
+		public abstract string Category { get; }
+		
+		/// <summary>
 		/// Gets the type converter used to convert property values to/from string.
 		/// </summary>
 		public virtual TypeConverter TypeConverter {

@@ -33,7 +33,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		}
 		
 		public string Category {
-			get { return "Misc"; }
+			get { return property.Category; }
 		}
 		
 		public string Name {
@@ -67,6 +67,10 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		public event EventHandler IsSetChanged {
 			add    { property.IsSetChanged += value; }
 			remove { property.IsSetChanged -= value; }
+		}
+		
+		public bool IsAmbiguous {
+			get { return false; }
 		}
 		
 		public object Value {
@@ -113,7 +117,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// </summary>
 		public UIElement CreateEditor()
 		{
-			EditorManager manager = ownerDataSource.DesignItem.Services.GetService<EditorManager>();
+			EditorManager manager = ownerDataSource.Services.GetService<EditorManager>();
 			if (manager != null) {
 				return manager.CreateEditor(this);
 			} else {

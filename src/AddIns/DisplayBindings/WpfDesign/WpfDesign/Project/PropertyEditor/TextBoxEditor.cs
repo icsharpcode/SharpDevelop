@@ -12,7 +12,9 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
+using System.Windows.Threading;
 using System.Windows.Input;
 
 namespace ICSharpCode.WpfDesign.PropertyEditor
@@ -22,48 +24,115 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 	/// </summary>
 	sealed class TextBoxEditor : TextBox
 	{
-		BindingExpressionBase bindingResult;
+		readonly IPropertyEditorDataProperty property;
+		bool isDirty;
+		bool hasError;
 		
 		/// <summary>
 		/// Creates a new TextBoxEditor instance.
 		/// </summary>
 		public TextBoxEditor(IPropertyEditorDataProperty property)
 		{
-			Binding b = PropertyEditorBindingHelper.CreateBinding(this, property);
-			b.Converter = new ToStringConverter(property.TypeConverter);
-			bindingResult = SetBinding(TextProperty, b);
+			this.property = property;
+			UpdateFromSource();
+			PropertyEditorBindingHelper.AddValueChangedEventHandler(this, property, delegate { UpdateFromSource(); });
+		}
+		
+		void UpdateFromSource()
+		{
+			if (property.IsAmbiguous) {
+				this.Text = "";
+				this.Background = SystemColors.ControlBrush;
+			} else {
+				this.Text = property.TypeConverter.ConvertToInvariantString(property.Value);
+			}
+			hasError = false;
+			isDirty = false;
+			if (property.IsSet) {
+				this.Foreground = SystemColors.WindowTextBrush;
+			} else {
+				this.Foreground = SystemColors.GrayTextBrush;
+			}
+		}
+		
+		void SaveValueToSource()
+		{
+			isDirty = false;
+			hasError = false;
+			try {
+				property.Value = property.TypeConverter.ConvertFromInvariantString(this.Text);
+			} catch (Exception) {
+				hasError = true;
+				throw;
+			}
+		}
+		
+		static UIElement DescribeError(Exception ex)
+		{
+			return new TextBlock(new Run(ex.Message));
+		}
+		
+		static void ShowError(ServiceContainer serviceContainer, FrameworkElement control, UIElement errorDescription)
+		{
+			IErrorService errorService = null;
+			if (serviceContainer != null)
+				errorService = serviceContainer.GetService<IErrorService>();
+			
+			if (errorService != null) {
+				errorService.ShowErrorTooltip(control, errorDescription);
+			}
+		}
+		
+		protected override void OnTextChanged(TextChangedEventArgs e)
+		{
+			isDirty = true;
+			this.Background = SystemColors.WindowBrush;
+			this.Foreground = SystemColors.WindowTextBrush;
+			base.OnTextChanged(e);
+		}
+		
+		protected override void OnLostFocus(RoutedEventArgs e)
+		{
+			if (isDirty) {
+				try {
+					SaveValueToSource();
+				} catch (Exception ex) {
+					Dispatcher.BeginInvoke(
+						DispatcherPriority.Normal, new Action<Exception>(
+							delegate (Exception exception) {
+								if (Focus()) {
+									ShowError(property.OwnerDataSource.Services, this, DescribeError(exception));
+								}
+							}), ex);
+				}
+			} else if (hasError) {
+				UpdateFromSource();
+			}
+			base.OnLostFocus(e);
 		}
 		
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
-			if (!e.Handled && e.Key == Key.Enter) {
+			if (e.Handled) return;
+			if (e.Key == Key.Enter) {
 				string oldText = this.Text;
-				bindingResult.UpdateSource();
+				try {
+					SaveValueToSource();
+				} catch (Exception ex) {
+					ShowError(property.OwnerDataSource.Services, this, DescribeError(ex));
+				}
 				if (this.Text != oldText) {
 					this.SelectAll();
 				}
 				e.Handled = true;
-			}
-		}
-		
-		sealed class ToStringConverter : IValueConverter
-		{
-			readonly TypeConverter converter;
-			
-			public ToStringConverter(TypeConverter converter)
-			{
-				this.converter = converter;
-			}
-			
-			public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-			{
-				return converter.ConvertToString(null, culture, value);
-			}
-			
-			public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-			{
-				return converter.ConvertFromString(null, culture, (string)value);
+			} else if (e.Key == Key.Escape) {
+				string oldText = this.Text;
+				UpdateFromSource();
+				if (this.Text != oldText) {
+					this.SelectAll();
+				}
+				e.Handled = true;
 			}
 		}
 	}

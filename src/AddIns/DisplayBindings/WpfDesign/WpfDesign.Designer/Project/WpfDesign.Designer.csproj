@@ -58,6 +58,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Controls\AdornerLayer.cs" />
     <Compile Include="Controls\ContainerDragHandle.cs" />
+    <Compile Include="Controls\ErrorBalloon.cs" />
     <Compile Include="Controls\PropertyEditor\DependencyPropertyDotButton.cs" />
     <Compile Include="Controls\PropertyEditor\PropertyEditor.cs" />
     <Compile Include="Controls\PropertyEditor\PropertyEditorCategoryView.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Extensions\TopLeftGrabHandle.cs" />
     <Compile Include="Linq.cs" />
     <Compile Include="ServiceRequiredException.cs" />
+    <Compile Include="Services\ErrorService.cs" />
     <Compile Include="Services\SelectionService.cs" />
     <Compile Include="Services\ToolService.cs" />
     <Compile Include="Services\UndoService.cs" />

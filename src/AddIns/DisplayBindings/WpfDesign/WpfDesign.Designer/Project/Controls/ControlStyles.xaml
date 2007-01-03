@@ -88,5 +88,48 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
+	
+	<Style TargetType="{x:Type src:ErrorBalloon}">
+		<Setter Property="WindowStyle" Value="None"/>
+		<Setter Property="AllowsTransparency" Value="True"/>
+		<Setter Property="SizeToContent" Value="WidthAndHeight"/>
+		<Setter Property="ShowInTaskbar" Value="False"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="src:ErrorBalloon">
+					<Grid x:Name="LayoutRoot">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<Rectangle RadiusX="10" RadiusY="10" Margin="12,36,4,4">
+							<Rectangle.Fill>
+								<SolidColorBrush Color="#41626262"/>
+							</Rectangle.Fill>
+						</Rectangle>
+						<Border
+							Margin="8,32,8,8"
+							Background="{DynamicResource {x:Static SystemColors.InfoBrushKey}}"
+							BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+							BorderThickness="1,1,1,1" CornerRadius="10,10,10,10" Padding="10,10,10,10">
+							<Border
+								BorderBrush="{TemplateBinding Border.BorderBrush}"
+								BorderThickness="{TemplateBinding Border.BorderThickness}"
+								Background="{TemplateBinding Panel.Background}">
+								<AdornerDecorator>
+									<ContentPresenter
+										ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+										Content="{TemplateBinding ContentControl.Content}" />
+								</AdornerDecorator>
+							</Border>
+						</Border>
+						<Path Fill="{DynamicResource {x:Static SystemColors.InfoBrushKey}}"
+						      Stretch="Fill" HorizontalAlignment="Left" Margin="34.75,9.25,0,0" VerticalAlignment="Top" Width="15.25" Height="24.5" Data="M34.75,33.75 L40.5,9.25 50,33.5 z"/>
+						<Path Stretch="Fill" Stroke="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+						      HorizontalAlignment="Left" Margin="34.5,9.25,0,0" VerticalAlignment="Top" Width="16" Height="24" Data="M35,32.75 L40.5,9.25 50,32.75"/>
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 
 </ResourceDictionary>

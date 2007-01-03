@@ -21,8 +21,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		/// <summary/>
 		protected override void OnInitialized()
 		{
+			// When tab item becomes primary selection, make it the active tab page in its parent tab control.
 			TabItem tabItem = (TabItem)this.ExtendedItem.Component;
-			tabItem.BringIntoView();
+			TabControl tabControl = tabItem.Parent as TabControl;
+			if (tabControl != null) {
+				tabControl.SelectedItem = tabItem;
+			}
 		}
 	}
 }

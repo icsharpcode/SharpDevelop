@@ -55,6 +55,27 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		}
 		
 		/// <summary>
+		/// Gets a data source for the specified design item.
+		/// This tries to get an existing data source instance (as behavior), or constructs a new
+		/// DesignItemDataSource instance if that fails.
+		/// </summary>
+		public static IPropertyEditorDataSource GetDataSourceForDesignItems(ICollection<DesignItem> items)
+		{
+			IPropertyEditorDataSource[] sources = new IPropertyEditorDataSource[items.Count];
+			DesignContext context = null;
+			int i = 0;
+			foreach (DesignItem item in items) {
+				if (context == null)
+					context = item.Context;
+				else if (context != item.Context)
+					throw new DesignerException("All specified items must use the same design context!");
+				
+				sources[i++] = GetDataSourceForDesignItem(item);
+			}
+			return MultiSelectionDataSource.CreateDataSource(context != null ? context.Services : null, sources);
+		}
+		
+		/// <summary>
 		/// Gets the design item for which this DesignItemDataSource was created.
 		/// </summary>
 		public DesignItem DesignItem {
@@ -89,7 +110,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		
 		/// <summary>See <see cref="IPropertyEditorDataSource"/></summary>
 		public ICollection<IPropertyEditorDataProperty> Properties {
-			get { return properties; }
+			get { return properties.AsReadOnly(); }
 		}
 		
 		/// <summary>See <see cref="IPropertyEditorDataSource"/></summary>
@@ -97,6 +118,11 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			get {
 				return item.Component is DependencyObject;
 			}
+		}
+		
+		/// <summary>See <see cref="IPropertyEditorDataSource"/></summary>
+		public ServiceContainer Services {
+			get { return item.Services; }
 		}
 	}
 }
