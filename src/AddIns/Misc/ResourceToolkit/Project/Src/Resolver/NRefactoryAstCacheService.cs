@@ -123,8 +123,10 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// </summary>
 		/// <param name="fileName">The file name of the source code file that contains the expression.</param>
 		/// <param name="expression">The expression to parse.</param>
+		/// <param name="caretLine">The 1-based line number of the expression.</param>
+		/// <param name="caretColumn">The 1-based column number of the expression.</param>
 		/// <returns>The parsed expression or <c>null</c> if the expression cannot be parsed or the language of the source code file is not supported.</returns>
-		public static Expression ParseExpression(string fileName, string expression)
+		public static Expression ParseExpression(string fileName, string expression, int caretLine, int caretColumn)
 		{
 			SupportedLanguage? l = NRefactoryResourceResolver.GetFileLanguage(fileName);
 			if (l == null) {
@@ -132,7 +134,32 @@ namespace Hornung.ResourceToolkit.Resolver
 			}
 			
 			using (ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(l.Value, new System.IO.StringReader(expression))) {
-				return p.ParseExpression();
+				Expression expr = p.ParseExpression();
+				if (expr != null) {
+					expr.AcceptVisitor(new SetAllNodePointsAstVisitor(new Location(caretColumn, caretLine), new Location(caretColumn + 1, caretLine)), null);
+				}
+				return expr;
+			}
+		}
+		
+		/// <summary>
+		/// An AST visitor that sets the start and end location of all visited nodes
+		/// to the values passed to the constructor.
+		/// </summary>
+		sealed class SetAllNodePointsAstVisitor : ICSharpCode.NRefactory.Visitors.NodeTrackingAstVisitor
+		{
+			readonly Location start, end;
+			
+			public SetAllNodePointsAstVisitor(Location start, Location end)
+			{
+				this.start = start;
+				this.end = end;
+			}
+			
+			protected override void BeginVisit(INode node)
+			{
+				node.StartLocation = start;
+				node.EndLocation = end;
 			}
 		}
 		
@@ -149,7 +176,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <returns>A ResolveResult or <c>null</c> if the expression cannot be resolved.</returns>
 		public static ResolveResult ResolveLowLevel(string fileName, int caretLine, int caretColumn, CompilationUnit compilationUnit, string expression, ExpressionContext context)
 		{
-			Expression expr = ParseExpression(fileName, expression);
+			Expression expr = ParseExpression(fileName, expression, caretLine, caretColumn);
 			if (expr == null) return null;
 			return ResolveLowLevel(fileName, caretLine, caretColumn, compilationUnit, expression, expr, context);
 		}
@@ -268,7 +295,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		{
 			if (!String.IsNullOrEmpty(expressionResult.Expression = expressionFinder.RemoveLastPart(expressionResult.Expression))) {
 				Expression nextExpression;
-				if ((nextExpression = ParseExpression(fileName, expressionResult.Expression)) != null) {
+				if ((nextExpression = ParseExpression(fileName, expressionResult.Expression, caretLine + 1, caretColumn + 1)) != null) {
 					return ResolveLowLevel(fileName, caretLine + 1, caretColumn + 1, null, expressionResult.Expression, nextExpression, expressionResult.Context);
 				}
 			}

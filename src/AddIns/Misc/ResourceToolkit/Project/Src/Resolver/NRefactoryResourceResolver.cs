@@ -125,7 +125,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			
 			if (result.Expression != null) {
 				
-				Expression expr = NRefactoryAstCacheService.ParseExpression(fileName, result.Expression);
+				Expression expr = NRefactoryAstCacheService.ParseExpression(fileName, result.Expression, caretLine + 1, caretColumn + 1);
 				
 				if (expr == null) {
 					return null;

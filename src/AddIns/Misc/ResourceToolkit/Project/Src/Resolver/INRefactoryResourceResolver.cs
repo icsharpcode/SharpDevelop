@@ -26,8 +26,8 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <param name="expressionResult">The ExpressionResult for the expression.</param>
 		/// <param name="expr">The AST representation of the full expression.</param>
 		/// <param name="resolveResult">SharpDevelop's ResolveResult for the expression.</param>
-		/// <param name="caretLine">The line where the expression is located.</param>
-		/// <param name="caretColumn">The column where the expression is located.</param>
+		/// <param name="caretLine">The 0-based line where the expression is located.</param>
+		/// <param name="caretColumn">The 0-based column where the expression is located.</param>
 		/// <param name="fileName">The name of the source file where the expression is located.</param>
 		/// <param name="fileContent">The content of the source file where the expression is located.</param>
 		/// <param name="expressionFinder">The ExpressionFinder for the file.</param>
