@@ -6,7 +6,7 @@
 	
 	<Manifest>
 		<Identity name="ClassWizard" version="@ClassWizard.dll"/>
-		<Dependency addin="SharpDevelop" version="2.1"/>
+		<Dependency addin="SharpDevelop" version="3.0"/>
 	</Manifest>
 	
 	<Runtime>
