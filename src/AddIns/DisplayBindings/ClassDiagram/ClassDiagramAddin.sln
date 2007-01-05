@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-# SharpDevelop 2.1.0.2192
+# SharpDevelop 3.0.0.2264
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassDiagramAddin", "ClassDiagramAddin\ClassDiagramAddin.csproj", "{5A1354DF-4989-4BB4-BC6B-D627C2E9FA13}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassCanvas", "ClassCanvas\ClassCanvas.csproj", "{08F772A1-F0BE-433E-8B37-F6522953DB05}"
@@ -31,6 +31,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Core", "..\..\..\Main\Core\Project\ICSharpCode.Core.csproj", "{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassDiagramApp", "ClassDiagramApp\ClassDiagramApp.csproj", "{709D6ACE-4921-4DF6-831A-E74E3EFAA742}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassWizard", "ClassWizard\ClassWizard.csproj", "{8C59E80D-C4E4-4F36-9AD8-47C40F6E58B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,6 +108,10 @@ Global
 		{709D6ACE-4921-4DF6-831A-E74E3EFAA742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{709D6ACE-4921-4DF6-831A-E74E3EFAA742}.Release|Any CPU.Build.0 = Release|Any CPU
 		{709D6ACE-4921-4DF6-831A-E74E3EFAA742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C59E80D-C4E4-4F36-9AD8-47C40F6E58B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C59E80D-C4E4-4F36-9AD8-47C40F6E58B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C59E80D-C4E4-4F36-9AD8-47C40F6E58B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C59E80D-C4E4-4F36-9AD8-47C40F6E58B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {7C408F87-A95D-4EEF-B20D-A15200F42640}
