@@ -9,10 +9,12 @@
 
 using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor;
@@ -34,6 +36,9 @@ namespace ClassDiagramAddin
 		public ClassEditorPad()
 		{
 			editor.MemberActivated += EditorMemberActivated;
+			editor.MemberModified += EditorMemberModified;
+			editor.ParameterActivated += EditorParameterActivated;
+			editor.ParameterModified += EditorParameterModified;
 		}
 		
 		private void EditorMemberActivated (object sender, IMemberEventArgs e)
@@ -42,7 +47,73 @@ namespace ClassDiagramAddin
 			FileService.JumpToFilePosition(compUnit.FileName,
 			                               e.Member.Region.BeginLine - 1,
 			                               e.Member.Region.BeginColumn - 1);
-
+		}
+		
+		private void EditorParameterActivated (object sender, IParameterEventArgs e)
+		{
+			ICompilationUnit compUnit = e.Method.DeclaringType.CompilationUnit;
+			FileService.JumpToFilePosition(compUnit.FileName,
+			                               e.Parameter.Region.BeginLine - 1,
+			                               e.Parameter.Region.BeginColumn - 1);
+		}
+		
+		private void EditorMemberModified (object sender, IMemberModificationEventArgs e)
+		{
+			switch (e.Modification)
+			{
+				case Modification.Name:
+					DialogResult dr = MessageBox.Show("Rename all occurances?", "Rename Member", MessageBoxButtons.YesNoCancel);
+					if (dr == DialogResult.Cancel) e.Cancel = true;
+					else if (dr == DialogResult.Yes)
+					{
+						FindReferencesAndRenameHelper.RenameMember(e.Member, e.NewValue);
+					}
+					else
+					{
+						// TODO - place local renameing code here.
+					}
+					break;
+				case Modification.Type:
+					// TODO - place type replacment code here.
+					break;
+				case Modification.Modifier:
+					// TODO - place visibility replacment code here.
+					break;
+				case Modification.Summary:
+					// TODO - place summary replacment code here.
+					break;
+			}
+		}
+		
+		private void EditorParameterModified (object sender, IParameterModificationEventArgs e)
+		{
+			switch (e.Modification)
+			{
+				case Modification.Name:
+					DialogResult dr = MessageBox.Show("Rename all occurances?", "Rename Parameter", MessageBoxButtons.YesNoCancel);
+					if (dr == DialogResult.Cancel) e.Cancel = true;
+					else if (dr == DialogResult.Yes)
+					{
+						ResolveResult local = new LocalResolveResult(e.Method, new DefaultField.ParameterField(e.Parameter.ReturnType, e.Parameter.Name, e.Parameter.Region, e.Method.DeclaringType));
+						List<Reference> list = RefactoringService.FindReferences(local, null);
+						if (list == null) return;
+						FindReferencesAndRenameHelper.RenameReferences(list, e.NewValue);
+					}
+					else
+					{
+						// TODO - place local renameing code here.
+					}
+					break;
+				case Modification.Type:
+					// TODO - place type replacment code here.
+					break;
+				case Modification.Modifier:
+					// TODO - place visibility replacment code here.
+					break;
+				case Modification.Summary:
+					// TODO - place summary replacment code here.
+					break;
+			}
 		}
 		
 		/// <summary>

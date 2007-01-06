@@ -80,6 +80,7 @@
     <Compile Include="Decorators\SizeGripDecorator.cs" />
     <Content Include="ClassCanvas.cd" />
     <Content Include="ClassCanvas.cd" />
+    <None Include="ClassDiagramAddin.sln" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Shapes" />
