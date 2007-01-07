@@ -33,6 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Forms.TextEditor\SQLTextEditorControl.cs" />
     <Compile Include="Src\Forms\SQLTool.cs" />
     <Compile Include="Src\Forms\SQLTool.Designer.cs">
       <DependentUpon>SQLTool.cs</DependentUpon>
@@ -67,6 +68,7 @@
     <Folder Include="Src\Configuration" />
     <Folder Include="Src\Data" />
     <Folder Include="Src\Forms" />
+    <Folder Include="Src\Forms.TextEditor" />
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
       <Name>ICSharpCode.TextEditor</Name>

@@ -51,8 +51,9 @@ namespace SharpDbTools.Forms
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 			SQLToolResourceSyntaxModeProvider provider = new SQLToolResourceSyntaxModeProvider();
 			ICSharpCode.TextEditor.Document.HighlightingManager.Manager.AddSyntaxModeFileProvider(provider);
+			// this loads the SQL.xshd file that is compiled as a resource - written by Troy@ebswift.com
 			sqlEditorControl.Document.HighlightingStrategy = 
-				ICSharpCode.TextEditor.Document.HighlightingManager.Manager.FindHighlighter("SQL");
+				ICSharpCode.TextEditor.Document.HighlightingManager.Manager.FindHighlighter("SQL"); 
 			
 			// setup the SQLTool in the tab control
 			
@@ -83,10 +84,7 @@ namespace SharpDbTools.Forms
 			this.backgroundWorker = new BackgroundWorker();
 			backgroundWorker.DoWork += DispatchSQL;
 			backgroundWorker.RunWorkerCompleted += DispatchSQLComplete;
-			backgroundWorker.RunWorkerAsync();
-			
-			// TODO: hand off the execution of the query to a background thread...
-			
+			backgroundWorker.RunWorkerAsync();			
 		}
 				
 		private void DispatchSQL(object sender, DoWorkEventArgs e)
@@ -118,6 +116,7 @@ namespace SharpDbTools.Forms
 				LoggingService.Debug("getting sql command");
 				command.CommandText = this.lastSQL;
 				LoggingService.Debug("dispatching sql: " + command.CommandText);
+				DispatchSQLStarting();
 				DbDataReader reader = command.ExecuteReader();
 				LoggingService.Debug("received ResultSet, showing in SQLTool...");
 				this.SetDataGridViewContent(reader);
@@ -145,7 +144,14 @@ namespace SharpDbTools.Forms
 				AppendMessageContentCallback c = new AppendMessageContentCallback(AppendMessageContent);
 				this.Invoke(c, new object[] { msg });
 			} else {
+//				string currentText = this.messageTextBox.Text;
+//				this.messageTextBox.Clear;
+//				// Font font = this.messageTextBox.Font;
+//				// redisplay currentText using a modified Font with grey colour
+//				// then reset Font back to original
+//				// TODO: implement Font colour changes
 				this.messageTextBox.AppendText(msg);
+				this.messageTextBox.AppendText("\n");
 				this.sqlToolTabControl.SelectTab(this.messageTab);
 			}
 		}
@@ -169,8 +175,40 @@ namespace SharpDbTools.Forms
 			}
 		}
 		
+		private void DispatchSQLStarting()
+		{
+			if (this.InvokeRequired) {
+				MethodInvoker c = new MethodInvoker(DispatchSQLStarting);
+				this.Invoke(c, new object[] {});
+			} else {
+				this.queryToolStripProgressBar.Visible = true;
+				this.progressTimer.Enabled = true;
+			}
+		}
+		
+		void ProgressTimerTick(object sender, System.EventArgs e)
+		{
+			// insert calls under Invoke to doPerform on statusStrip.progressBar
+			if (this.InvokeRequired) {
+				EventHandler handler = new EventHandler(ProgressTimerTick);
+				this.Invoke(handler, new object[] {sender, e});
+			} else {
+				if (this.queryToolStripProgressBar.Value >= this.queryToolStripProgressBar.Maximum) 
+					this.queryToolStripProgressBar.Value = 0;
+				this.queryToolStripProgressBar.PerformStep();
+			}
+			
+		}
+
 		public void DispatchSQLComplete(object sender, RunWorkerCompletedEventArgs args)
 		{
+			if (this.InvokeRequired) {
+				RunWorkerCompletedEventHandler c = new RunWorkerCompletedEventHandler(DispatchSQLComplete);
+				this.Invoke(c, new object[] {sender, args});
+			} else {
+				this.progressTimer.Enabled = false;
+				this.queryToolStripProgressBar.Visible = false;
+			}
 		}
 	}
 }

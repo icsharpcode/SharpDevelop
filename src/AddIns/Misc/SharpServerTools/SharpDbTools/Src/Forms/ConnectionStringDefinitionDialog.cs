@@ -135,7 +135,7 @@ namespace SharpDbTools.Forms
 			testConnectionBackgroundWorker = new ConnectionTestBackgroundWorker(dbTypeName);
 			testConnectionBackgroundWorker.WorkerSupportsCancellation = false;
 			progressTimer.Enabled = true;
-			testConnectionBackgroundWorker.DoWork += 
+			testConnectionBackgroundWorker.DoWork += // TODO: This may result in duplicate bindings
 				new DoWorkEventHandler(this.TestConnectionBackgroundWorkerDoWork);
 			testConnectionBackgroundWorker.RunWorkerCompleted += 
 				new RunWorkerCompletedEventHandler(TestConnectionRunWorkerComplete);
