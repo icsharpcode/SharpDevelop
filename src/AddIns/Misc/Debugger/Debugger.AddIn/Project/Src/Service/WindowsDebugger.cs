@@ -451,5 +451,20 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 			}
 		}
+		
+		public static void DoInPausedState(MethodInvoker action)
+		{
+			Debugger.Process process = ((WindowsDebugger)DebuggerService.CurrentDebugger).DebuggedProcess;
+			if (process.IsPaused) {
+				action();
+			} else {
+				EventHandler<ProcessEventArgs> onDebuggingPaused = null;
+				onDebuggingPaused = delegate {
+					action();
+					process.DebuggingPaused -= onDebuggingPaused;
+				};
+				process.DebuggingPaused += onDebuggingPaused;
+			}
+		}
 	}
 }

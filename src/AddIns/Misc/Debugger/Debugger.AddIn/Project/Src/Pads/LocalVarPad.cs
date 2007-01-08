@@ -7,8 +7,10 @@
 
 using System;
 using System.Windows.Forms;
-using Debugger;
+
 using ICSharpCode.Core;
+
+using Debugger;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -51,17 +53,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			RedrawContent();
 		}
 		
-		static string privateMembersName, staticMembersName, privateStaticMembersName;
-		
 		public override void RedrawContent()
 		{
 			name.Text = ResourceService.GetString("Global.Name");
 			val.Text  = ResourceService.GetString("Dialog.HighlightingEditor.Properties.Value");
 			type.Text = ResourceService.GetString("ResourceEditor.ResourceEdit.TypeColumn");
-			
-			privateMembersName = StringParser.Parse("<${res:MainWindow.Windows.Debug.LocalVariables.PrivateMembers}>");
-			staticMembersName = StringParser.Parse("<${res:MainWindow.Windows.Debug.LocalVariables.StaticMembers}>");
-			privateStaticMembersName = StringParser.Parse("<${res:MainWindow.Windows.Debug.LocalVariables.PrivateStaticMembers}>");
 		}
 		
 		// This is a walkarond for a visual issue
@@ -92,38 +88,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.BeginUpdate();
 			localVarList.Items.Clear();
 			if (debuggedProcess != null) {
-				AddVariableCollectionToTree(debuggedProcess.LocalVariables, localVarList.Items);
+				foreach(NamedValue val in debuggedProcess.LocalVariables) {
+					localVarList.Items.Add(new TreeListViewDebuggerItem(val));
+				}
 			}
 			localVarList.EndUpdate();
-		}
-		
-		//delegate void AddVariableMethod(NamedValue val);
-		
-		public static void AddVariableCollectionToTree(NamedValueCollection collection, TreeListViewItemCollection tree)
-		{
-//			foreach(VariableCollection sub in varCollection.SubCollections) {
-//				VariableCollection subCollection = sub;
-//				TreeListViewItem subMenu = new TreeListViewItem("<" + subCollection.Name + ">", 0);
-//				subMenu.SubItems.Add(subCollection.Value);
-//				tree.Add(subMenu);
-//				TreeListViewItem.TreeListViewItemHanlder populate = null;
-//				populate = delegate {
-//					AddVariableCollectionToTree(subCollection, subMenu.Items);
-//					subMenu.AfterExpand -= populate;
-//				};
-//				subMenu.AfterExpand += populate;
-//			}
-			foreach(NamedValue val in collection) {
-				tree.Add(new TreeListViewDebuggerItem(val));
-			}
 		}
 		
 		void localVarList_BeforeExpand(object sender, TreeListViewCancelEventArgs e)
 		{
 			if (debuggedProcess.IsPaused) {
-				if (e.Item is TreeListViewDebuggerItem) {
-					((TreeListViewDebuggerItem)e.Item).BeforeExpand();
-				}
+				((TreeListViewDebuggerItem)e.Item).Populate();
 			} else {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.LocalVariables.CannotExploreVariablesWhileRunning}");
 				e.Cancel = true;
@@ -138,9 +113,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		static void UpdateSubTree(TreeListViewItem tree)
 		{
 			foreach(TreeListViewItem item in tree.Items) {
-				if (item is TreeListViewDebuggerItem) {
-					((TreeListViewDebuggerItem)item).Update();
-				}
+				((TreeListViewDebuggerItem)item).Update();
 				if (item.IsExpanded) UpdateSubTree(item);
 			}
 		}

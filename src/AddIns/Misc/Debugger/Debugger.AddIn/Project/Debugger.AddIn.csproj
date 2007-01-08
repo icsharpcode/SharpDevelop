@@ -67,6 +67,11 @@
     <Compile Include="Src\Pads\CallStackPad.Menu.cs" />
     <Compile Include="Src\Pads\RunningThreadsPad.Menu.cs" />
     <Compile Include="Src\Pads\DebuggerTreeListView.cs" />
+    <Compile Include="Src\Variables\BaseTypeItem.cs" />
+    <Compile Include="Src\Variables\FixedItem.cs" />
+    <Compile Include="Src\Variables\ListItem.cs" />
+    <Compile Include="Src\Variables\ListItemEventArgs.cs" />
+    <Compile Include="Src\Variables\ValueItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Client.config">
@@ -115,6 +120,9 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\Variables" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <Import Project="PostBuildEvent.proj" />

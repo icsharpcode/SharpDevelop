@@ -15,48 +15,39 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class TreeListViewDebuggerItem: TreeListViewItem
 	{
-		NamedValue val;
+		ListItem listItem;
+		
 		bool populated = false;
-		bool dirty = true;
 		
-		public NamedValue Value {
+		public ListItem ListItem {
 			get {
-				return val;
-			}
-		}
-		
-		public bool Highlight {
-			set {
-				if (value) {
-					if (SubItems[1].ForeColor != Color.Blue) { // smart update
-						SubItems[1].ForeColor = Color.Blue;
-						SubItems[1].Font = new Font(SubItems[1].Font, FontStyle.Bold);
-					}
-				} else {
-					if (SubItems[1].ForeColor != Color.Black) { // smart update
-						SubItems[1].ForeColor = Color.Black;
-						SubItems[1].Font = new Font(SubItems[1].Font, FontStyle.Regular);
-					}
-				}
+				return listItem;
 			}
 		}
 		
 		bool IsVisible {
 			get {
-				if (this.Parent == null) return true;
-				foreach(TreeListViewItem parent in this.ParentsInHierarch) {
-					if (!parent.IsExpanded) return false;
+				if (this.Parent == null) {
+					return true;
+				} else {
+					foreach(TreeListViewItem parent in this.ParentsInHierarch) {
+						if (!parent.IsExpanded) return false;
+					}
+					return true;
 				}
-				return true;
 			}
 		}
 		
-		public TreeListViewDebuggerItem(NamedValue val)
+		public TreeListViewDebuggerItem(NamedValue val): this(new ValueItem(val))
 		{
-			this.val = val;
 			
-			val.Changed += delegate { dirty = true; Update(); };
-			val.Expired += delegate { this.Remove(); };
+		}
+		
+		public TreeListViewDebuggerItem(ListItem listItem)
+		{
+			this.listItem = listItem;
+			
+			listItem.Changed += delegate { Update(); };
 			
 			SubItems.Add("");
 			SubItems.Add("");
@@ -66,48 +57,29 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public void Update()
 		{
-			if (!dirty) return;
 			if (!IsVisible) return;
-			
-			DateTime startTime = Debugger.Util.HighPrecisionTimer.Now;
 			
 			if (this.TreeListView != null) {
 				((DebuggerTreeListView)this.TreeListView).DelayRefresh();
-				Highlight = (val.AsString != SubItems[1].Text);
 			}
 			
-			this.SubItems[0].Text = val.Name;
-			this.SubItems[1].Text = val.AsString;
-			this.SubItems[2].Text = val.IsNull ? String.Empty : val.Type.FullName;
+			this.ImageIndex = listItem.ImageIndex;
+			this.SubItems[0].Text = listItem.Name;
+			this.SubItems[1].Text = listItem.Text;
+			this.SubItems[2].Text = listItem.Type;
 			
-			this.ImageIndex = DebuggerIcons.GetImageListIndex(val);
-			
-			if (!IsExpanded) {
-				// Show plus sign
-				if ((val.IsObject || val.IsArray) && Items.Count == 0) {
-					TreeListViewItem dummy = new TreeListViewItem();
-					this.AfterExpand += delegate { dummy.Remove(); };
-					Items.Add(dummy);
-				}
+			if (!IsExpanded && !populated && listItem.HasSubItems) {
+				Items.Add(new TreeListViewItem()); // Show plus sign
 			}
-			
-			dirty = false;
-			
-			TimeSpan totalTime = Debugger.Util.HighPrecisionTimer.Now - startTime;
-			//val.Process.TraceMessage("Local Variables Pad item updated: " + val.Name + " (" + totalTime.TotalMilliseconds + " ms)");
 		}
 		
-		public void BeforeExpand()
+		public void Populate()
 		{
 			if (!populated) {
 				Items.Clear();
-				if (val.IsArray) {
-					// Do not sort names of array items
-					this.Items.SortOrder = SortOrder.None;
-					LocalVarPad.AddVariableCollectionToTree(val.GetArrayElements(), this.Items);
-				} else if (val.IsObject) {
-					this.Items.SortOrder = SortOrder.Ascending;
-					LocalVarPad.AddVariableCollectionToTree(val.GetMembers(), this.Items);
+				this.Items.SortOrder = SortOrder.None;
+				foreach(ListItem subItem in listItem.SubItems) {
+					Items.Add(new TreeListViewDebuggerItem(subItem));
 				}
 				populated = true;
 			}
