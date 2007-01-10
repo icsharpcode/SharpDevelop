@@ -69,11 +69,12 @@ namespace Debugger
 				if (cache == null || (cache.PauseSession != process.PauseSession && !cache.RawCorValue.Is<ICorDebugHandleValue>())) {
 					DateTime startTime = Util.HighPrecisionTimer.Now;
 					
-					cache = new ValueCache();
-					cache.PauseSession = process.PauseSession;
-					cache.RawCorValue = corValueGetter();
-					cache.CorValue = DereferenceUnbox(RawCorValue);
-					cache.Type = DebugType.Create(process, RawCorValue.As<ICorDebugValue2>().ExactType);
+					ValueCache newCache = new ValueCache();
+					newCache.PauseSession = process.PauseSession;
+					newCache.RawCorValue = corValueGetter();
+					newCache.CorValue = DereferenceUnbox(newCache.RawCorValue);
+					newCache.Type = DebugType.Create(process, newCache.RawCorValue.As<ICorDebugValue2>().ExactType);
+					cache = newCache;
 					
 					// AsString representation
 					if (IsNull)      cache.AsString = "<null>";

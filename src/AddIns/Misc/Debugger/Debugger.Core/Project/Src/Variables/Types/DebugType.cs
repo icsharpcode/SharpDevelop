@@ -288,8 +288,13 @@ namespace Debugger
 					foreach(DebugType arg in GetGenericArguments()) {
 						argNames.Add(arg.FullName);
 					}
+					string className = classProps.Name;
 					// Remove generic parameter count at the end
-					string className = classProps.Name.Substring(0, classProps.Name.LastIndexOf('`'));
+					// '`' might be missing in nested generic classes
+					int index = className.LastIndexOf('`');
+					if (index != -1) {
+						className = className.Substring(0, index);
+					}
 					return className + "<" + String.Join(",", argNames.ToArray()) + ">";
 				} else {
 					return classProps.Name;

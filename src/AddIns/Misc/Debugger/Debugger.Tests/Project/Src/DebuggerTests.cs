@@ -377,5 +377,17 @@ namespace Debugger.Tests
 			process.Continue();
 			process.WaitForExit();
 		}
+		
+		[Test]
+		public void GenericDictionary()
+		{
+			StartTest("GenericDictionary");
+			WaitForPause(PausedReason.Break, null);
+			ObjectDump("dict", process.SelectedFunction.LocalVariables["dict"]);
+			ObjectDump("dict members", process.SelectedFunction.LocalVariables["dict"].GetMembers(null, BindingFlags.All));
+			
+			process.Continue();
+			process.WaitForExit();
+		}
 	}
 }
