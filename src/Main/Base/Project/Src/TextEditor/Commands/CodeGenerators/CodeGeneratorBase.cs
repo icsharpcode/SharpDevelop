@@ -20,12 +20,22 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	public abstract class CodeGeneratorBase
 	{
 		ArrayList content = new ArrayList();
-		protected IClass currentClass;
+		
 		protected ICSharpCode.SharpDevelop.Dom.Refactoring.CodeGenerator codeGen;
 		protected ClassFinder classFinderContext;
 		
+		// This is the compound class created from the class selected 
+		// when the code generator was created.
+		protected IClass currentClass;
+
+		// This is class that was selected when the code generator was 
+		// created and will be the class that the generated code is inserted 
+		// into.
+		IClass selectedClass;
+		
 		public void Initialize(IClass currentClass)
 		{
+			selectedClass = currentClass;
 			this.currentClass = currentClass.GetCompoundClass();
 			this.codeGen = currentClass.ProjectContent.Language.CodeGenerator;
 			this.classFinderContext = new ClassFinder(currentClass, currentClass.Region.BeginLine + 1, 0);
@@ -71,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			List<AbstractNode> nodes = new List<AbstractNode>();
 			GenerateCode(nodes, items);
-			codeGen.InsertCodeInClass(currentClass, new TextEditorDocument(textArea.Document), textArea.Caret.Line, nodes.ToArray());
+			codeGen.InsertCodeInClass(selectedClass, new TextEditorDocument(textArea.Document), textArea.Caret.Line, nodes.ToArray());
 			ParserService.ParseCurrentViewContent();
 		}
 		
