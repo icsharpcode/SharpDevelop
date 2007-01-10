@@ -398,5 +398,14 @@ namespace Debugger.Tests
 			process.Continue();
 			process.WaitForExit();
 		}
+		
+		[Test]
+		public void ExceptionCustom()
+		{
+			StartTest("ExceptionCustom");
+			WaitForPause(PausedReason.Exception, null);
+			process.Continue();
+			process.WaitForExit();
+		}
 	}
 }

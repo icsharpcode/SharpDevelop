@@ -41,6 +41,7 @@
     <Compile Include="Src\DebuggerTests.cs" />
     <Compile Include="Src\DebuggerTestsBase.cs" />
     <Compile Include="Src\TestPrograms\Exception.cs" />
+    <Compile Include="Src\TestPrograms\ExceptionCustom.cs" />
     <Compile Include="Src\TestPrograms\GenericDictionary.cs" />
     <EmbeddedResource Include="Src\TestPrograms\*.cs" />
     <EmbeddedResource Include="Src\TestPrograms\*.xml" />

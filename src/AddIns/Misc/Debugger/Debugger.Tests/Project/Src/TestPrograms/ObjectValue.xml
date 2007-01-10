@@ -24,7 +24,7 @@
     </ObjectDump>
     <ObjectDump name="val members">
       <NamedValueCollection>
-        <Count>3</Count>
+        <Count>5</Count>
         <Items>
           <MemberValue>
             <MemberInfo>
@@ -100,6 +100,58 @@
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue>private</PrimitiveValue>
+            <HasExpired>False</HasExpired>
+            <Type>System.String</Type>
+          </MemberValue>
+          <MemberValue>
+            <MemberInfo>
+              <FieldInfo>
+                <IsLiteral>False</IsLiteral>
+                <IsPrivate>False</IsPrivate>
+                <IsPublic>True</IsPublic>
+                <IsStatic>False</IsStatic>
+                <Name>basePublic</Name>
+                <DeclaringType>Debugger.Tests.TestPrograms.BaseClass</DeclaringType>
+                <Module>ObjectValue.exe</Module>
+              </FieldInfo>
+            </MemberInfo>
+            <Name>basePublic</Name>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>False</IsNull>
+            <AsString>a</AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>True</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue>a</PrimitiveValue>
+            <HasExpired>False</HasExpired>
+            <Type>System.String</Type>
+          </MemberValue>
+          <MemberValue>
+            <MemberInfo>
+              <FieldInfo>
+                <IsLiteral>False</IsLiteral>
+                <IsPrivate>True</IsPrivate>
+                <IsPublic>False</IsPublic>
+                <IsStatic>False</IsStatic>
+                <Name>basePrivate</Name>
+                <DeclaringType>Debugger.Tests.TestPrograms.BaseClass</DeclaringType>
+                <Module>ObjectValue.exe</Module>
+              </FieldInfo>
+            </MemberInfo>
+            <Name>basePrivate</Name>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>False</IsNull>
+            <AsString>b</AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>True</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue>b</PrimitiveValue>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
           </MemberValue>
@@ -127,7 +179,7 @@
     </ObjectDump>
     <ObjectDump name="val members">
       <NamedValueCollection>
-        <Count>3</Count>
+        <Count>5</Count>
         <Items>
           <MemberValue>
             <MemberInfo>
@@ -203,6 +255,58 @@
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue>new private</PrimitiveValue>
+            <HasExpired>False</HasExpired>
+            <Type>System.String</Type>
+          </MemberValue>
+          <MemberValue>
+            <MemberInfo>
+              <FieldInfo>
+                <IsLiteral>False</IsLiteral>
+                <IsPrivate>False</IsPrivate>
+                <IsPublic>True</IsPublic>
+                <IsStatic>False</IsStatic>
+                <Name>basePublic</Name>
+                <DeclaringType>Debugger.Tests.TestPrograms.BaseClass</DeclaringType>
+                <Module>ObjectValue.exe</Module>
+              </FieldInfo>
+            </MemberInfo>
+            <Name>basePublic</Name>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>False</IsNull>
+            <AsString>a</AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>True</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue>a</PrimitiveValue>
+            <HasExpired>False</HasExpired>
+            <Type>System.String</Type>
+          </MemberValue>
+          <MemberValue>
+            <MemberInfo>
+              <FieldInfo>
+                <IsLiteral>False</IsLiteral>
+                <IsPrivate>True</IsPrivate>
+                <IsPublic>False</IsPublic>
+                <IsStatic>False</IsStatic>
+                <Name>basePrivate</Name>
+                <DeclaringType>Debugger.Tests.TestPrograms.BaseClass</DeclaringType>
+                <Module>ObjectValue.exe</Module>
+              </FieldInfo>
+            </MemberInfo>
+            <Name>basePrivate</Name>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>False</IsNull>
+            <AsString>b</AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>True</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue>b</PrimitiveValue>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
           </MemberValue>

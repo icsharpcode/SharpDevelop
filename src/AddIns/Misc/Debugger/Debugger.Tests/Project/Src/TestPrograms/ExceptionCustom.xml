@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test name="ExceptionCustom">
+    <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">ExceptionCustom.exe</ModuleLoaded>
+    <DebuggingPaused>Exception</DebuggingPaused>
+    <ExceptionThrown>test</ExceptionThrown>
+    <ProcessExited />
+  </Test>
+</DebuggerTests>

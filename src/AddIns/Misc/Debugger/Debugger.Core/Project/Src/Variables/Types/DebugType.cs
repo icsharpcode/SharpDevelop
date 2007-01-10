@@ -211,7 +211,7 @@ namespace Debugger
 			get {
 				ICorDebugType baseType = corType.Base;
 				if (baseType != null) {
-					return new DebugType(process, baseType);
+					return Create(process, baseType);
 				} else {
 					return null;
 				}

@@ -11,7 +11,8 @@ namespace Debugger.Tests.TestPrograms
 {
 	public class BaseClass
 	{
-		
+		public string basePublic = "a";
+		string basePrivate = "b";
 	}
 	
 	public class ObjectValue: BaseClass
