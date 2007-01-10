@@ -22,11 +22,6 @@
         <Type>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</Type>
       </LocalVariable>
     </ObjectDump>
-    <DebuggingPaused>EvalComplete</DebuggingPaused>
-    <DebuggingPaused>EvalComplete</DebuggingPaused>
-    <DebuggingPaused>EvalComplete</DebuggingPaused>
-    <DebuggingPaused>EvalComplete</DebuggingPaused>
-    <DebuggingPaused>EvalComplete</DebuggingPaused>
     <ObjectDump name="dict members">
       <NamedValueCollection>
         <Count>16</Count>
@@ -445,6 +440,11 @@
         </Items>
       </NamedValueCollection>
     </ObjectDump>
+    <DebuggingPaused>EvalComplete</DebuggingPaused>
+    <DebuggingPaused>EvalComplete</DebuggingPaused>
+    <DebuggingPaused>EvalComplete</DebuggingPaused>
+    <DebuggingPaused>EvalComplete</DebuggingPaused>
+    <DebuggingPaused>EvalComplete</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>

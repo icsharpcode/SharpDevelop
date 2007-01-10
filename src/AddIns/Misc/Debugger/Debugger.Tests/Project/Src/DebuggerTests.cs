@@ -389,5 +389,14 @@ namespace Debugger.Tests
 			process.Continue();
 			process.WaitForExit();
 		}
+		
+		[Test]
+		public void Exception()
+		{
+			StartTest("Exception");
+			WaitForPause(PausedReason.Exception, null);
+			process.Continue();
+			process.WaitForExit();
+		}
 	}
 }

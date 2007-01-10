@@ -105,6 +105,9 @@ namespace Debugger.Tests
 //			process.DebuggingResumed += delegate(object sender, ProcessEventArgs e) {
 //				LogEvent("DebuggingResumed", e.Process.PausedReason.ToString());
 //			};
+			process.ExceptionThrown += delegate(object sender, ExceptionEventArgs e) {
+				LogEvent("ExceptionThrown", e.Exception.Message);
+			};
 			process.Expired += delegate(object sender, EventArgs e) {
 				LogEvent("ProcessExited", null);
 			};

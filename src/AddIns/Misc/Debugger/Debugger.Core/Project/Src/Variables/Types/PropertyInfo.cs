@@ -87,15 +87,18 @@ namespace Debugger
 		public MemberValue GetValue(Value objectInstance, Value[] parameters)
 		{
 			if (getMethod == null) throw new CannotGetValueException("Property does not have a get method");
+			parameters = parameters ?? new Value[0];
 			
-			Value returnedValue = getMethod.Invoke(objectInstance, parameters ?? new Value[0]);
+			List<Value> dependencies = new List<Value>();
+			dependencies.Add(objectInstance);
+			dependencies.AddRange(parameters);
 			
 			return new MemberValue(
 				this,
 				this.Process,
-				new IExpirable[] {returnedValue},
-				new IMutable[] {returnedValue},
-				delegate { return returnedValue.CorValue; }
+				dependencies.ToArray(),
+				dependencies.ToArray(),
+				delegate { return getMethod.Invoke(objectInstance, parameters).CorValue; }
 			);
 		}
 		

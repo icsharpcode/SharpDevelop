@@ -70,8 +70,8 @@ namespace Debugger
 					DateTime startTime = Util.HighPrecisionTimer.Now;
 					
 					ValueCache newCache = new ValueCache();
-					newCache.PauseSession = process.PauseSession;
 					newCache.RawCorValue = corValueGetter();
+					newCache.PauseSession = process.PauseSession;
 					newCache.CorValue = DereferenceUnbox(newCache.RawCorValue);
 					newCache.Type = DebugType.Create(process, newCache.RawCorValue.As<ICorDebugValue2>().ExactType);
 					cache = newCache;

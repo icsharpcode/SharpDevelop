@@ -22,7 +22,6 @@
         <Type>Debugger.Tests.TestPrograms.ObjectValue</Type>
       </LocalVariable>
     </ObjectDump>
-    <DebuggingPaused>EvalComplete</DebuggingPaused>
     <ObjectDump name="val members">
       <NamedValueCollection>
         <Count>3</Count>
@@ -107,6 +106,7 @@
         </Items>
       </NamedValueCollection>
     </ObjectDump>
+    <DebuggingPaused>EvalComplete</DebuggingPaused>
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="val">
       <LocalVariable>
@@ -125,7 +125,6 @@
         <Type>Debugger.Tests.TestPrograms.ObjectValue</Type>
       </LocalVariable>
     </ObjectDump>
-    <DebuggingPaused>EvalComplete</DebuggingPaused>
     <ObjectDump name="val members">
       <NamedValueCollection>
         <Count>3</Count>
@@ -210,6 +209,7 @@
         </Items>
       </NamedValueCollection>
     </ObjectDump>
+    <DebuggingPaused>EvalComplete</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>
