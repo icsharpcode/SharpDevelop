@@ -412,6 +412,7 @@ namespace Debugger
 		/// </summary>
 		public NamedValue ThisValue {
 			get {
+				if (IsStatic) throw new DebuggerException("Static method does not have 'this'.");
 				return new NamedValue(
 					"this",
 					process,
@@ -424,7 +425,6 @@ namespace Debugger
 		
 		ICorDebugValue ThisCorValue {
 			get {
-				if (IsStatic) throw new DebuggerException("Static method does not have 'this'.");
 				if (this.HasExpired) throw new CannotGetValueException("Function has expired");
 				try {
 					return CorILFrame.GetArgument(0);

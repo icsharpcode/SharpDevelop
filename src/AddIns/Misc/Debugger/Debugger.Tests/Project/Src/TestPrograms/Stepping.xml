@@ -14,24 +14,7 @@
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=16,4 End=16,40</NextStatement>
-        <ThisValue>
-          <NamedValue>
-            <Name>this</Name>
-            <IsArray exception="Static method does not have 'this'." />
-            <ArrayLenght exception="Value is not an array" />
-            <ArrayRank exception="Value is not an array" />
-            <ArrayDimensions exception="Value is not an array" />
-            <IsNull>True</IsNull>
-            <AsString>
-            </AsString>
-            <IsObject>False</IsObject>
-            <IsPrimitive>False</IsPrimitive>
-            <IsInteger>False</IsInteger>
-            <PrimitiveValue exception="Value is not a primitive type" />
-            <HasExpired>False</HasExpired>
-            <Type>null</Type>
-          </NamedValue>
-        </ThisValue>
+        <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
           <NamedValueCollection>
             <Count>0</Count>
@@ -62,24 +45,7 @@
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=17,4 End=17,44</NextStatement>
-        <ThisValue>
-          <NamedValue>
-            <Name>this</Name>
-            <IsArray exception="Static method does not have 'this'." />
-            <ArrayLenght exception="Value is not an array" />
-            <ArrayRank exception="Value is not an array" />
-            <ArrayDimensions exception="Value is not an array" />
-            <IsNull>True</IsNull>
-            <AsString>
-            </AsString>
-            <IsObject>False</IsObject>
-            <IsPrimitive>False</IsPrimitive>
-            <IsInteger>False</IsInteger>
-            <PrimitiveValue exception="Value is not a primitive type" />
-            <HasExpired>False</HasExpired>
-            <Type>null</Type>
-          </NamedValue>
-        </ThisValue>
+        <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
           <NamedValueCollection>
             <Count>0</Count>
@@ -113,24 +79,7 @@
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=18,4 End=18,10</NextStatement>
-        <ThisValue>
-          <NamedValue>
-            <Name>this</Name>
-            <IsArray exception="Static method does not have 'this'." />
-            <ArrayLenght exception="Value is not an array" />
-            <ArrayRank exception="Value is not an array" />
-            <ArrayDimensions exception="Value is not an array" />
-            <IsNull>True</IsNull>
-            <AsString>
-            </AsString>
-            <IsObject>False</IsObject>
-            <IsPrimitive>False</IsPrimitive>
-            <IsInteger>False</IsInteger>
-            <PrimitiveValue exception="Value is not a primitive type" />
-            <HasExpired>False</HasExpired>
-            <Type>null</Type>
-          </NamedValue>
-        </ThisValue>
+        <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
           <NamedValueCollection>
             <Count>0</Count>
@@ -161,24 +110,7 @@
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=23,3 End=23,4</NextStatement>
-        <ThisValue>
-          <NamedValue>
-            <Name>this</Name>
-            <IsArray exception="Static method does not have 'this'." />
-            <ArrayLenght exception="Value is not an array" />
-            <ArrayRank exception="Value is not an array" />
-            <ArrayDimensions exception="Value is not an array" />
-            <IsNull>True</IsNull>
-            <AsString>
-            </AsString>
-            <IsObject>False</IsObject>
-            <IsPrimitive>False</IsPrimitive>
-            <IsInteger>False</IsInteger>
-            <PrimitiveValue exception="Value is not a primitive type" />
-            <HasExpired>False</HasExpired>
-            <Type>null</Type>
-          </NamedValue>
-        </ThisValue>
+        <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
           <NamedValueCollection>
             <Count>0</Count>
@@ -209,24 +141,7 @@
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=24,4 End=24,44</NextStatement>
-        <ThisValue>
-          <NamedValue>
-            <Name>this</Name>
-            <IsArray exception="Static method does not have 'this'." />
-            <ArrayLenght exception="Value is not an array" />
-            <ArrayRank exception="Value is not an array" />
-            <ArrayDimensions exception="Value is not an array" />
-            <IsNull>True</IsNull>
-            <AsString>
-            </AsString>
-            <IsObject>False</IsObject>
-            <IsPrimitive>False</IsPrimitive>
-            <IsInteger>False</IsInteger>
-            <PrimitiveValue exception="Value is not a primitive type" />
-            <HasExpired>False</HasExpired>
-            <Type>null</Type>
-          </NamedValue>
-        </ThisValue>
+        <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
           <NamedValueCollection>
             <Count>0</Count>
@@ -258,24 +173,7 @@
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=25,4 End=25,44</NextStatement>
-        <ThisValue>
-          <NamedValue>
-            <Name>this</Name>
-            <IsArray exception="Static method does not have 'this'." />
-            <ArrayLenght exception="Value is not an array" />
-            <ArrayRank exception="Value is not an array" />
-            <ArrayDimensions exception="Value is not an array" />
-            <IsNull>True</IsNull>
-            <AsString>
-            </AsString>
-            <IsObject>False</IsObject>
-            <IsPrimitive>False</IsPrimitive>
-            <IsInteger>False</IsInteger>
-            <PrimitiveValue exception="Value is not a primitive type" />
-            <HasExpired>False</HasExpired>
-            <Type>null</Type>
-          </NamedValue>
-        </ThisValue>
+        <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
           <NamedValueCollection>
             <Count>0</Count>
@@ -308,24 +206,7 @@
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=18,4 End=18,10</NextStatement>
-        <ThisValue>
-          <NamedValue>
-            <Name>this</Name>
-            <IsArray exception="Static method does not have 'this'." />
-            <ArrayLenght exception="Value is not an array" />
-            <ArrayRank exception="Value is not an array" />
-            <ArrayDimensions exception="Value is not an array" />
-            <IsNull>True</IsNull>
-            <AsString>
-            </AsString>
-            <IsObject>False</IsObject>
-            <IsPrimitive>False</IsPrimitive>
-            <IsInteger>False</IsInteger>
-            <PrimitiveValue exception="Value is not a primitive type" />
-            <HasExpired>False</HasExpired>
-            <Type>null</Type>
-          </NamedValue>
-        </ThisValue>
+        <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
           <NamedValueCollection>
             <Count>0</Count>
@@ -356,24 +237,7 @@
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=19,4 End=19,11</NextStatement>
-        <ThisValue>
-          <NamedValue>
-            <Name>this</Name>
-            <IsArray exception="Static method does not have 'this'." />
-            <ArrayLenght exception="Value is not an array" />
-            <ArrayRank exception="Value is not an array" />
-            <ArrayDimensions exception="Value is not an array" />
-            <IsNull>True</IsNull>
-            <AsString>
-            </AsString>
-            <IsObject>False</IsObject>
-            <IsPrimitive>False</IsPrimitive>
-            <IsInteger>False</IsInteger>
-            <PrimitiveValue exception="Value is not a primitive type" />
-            <HasExpired>False</HasExpired>
-            <Type>null</Type>
-          </NamedValue>
-        </ThisValue>
+        <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
           <NamedValueCollection>
             <Count>0</Count>
@@ -405,24 +269,7 @@
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=20,3 End=20,4</NextStatement>
-        <ThisValue>
-          <NamedValue>
-            <Name>this</Name>
-            <IsArray exception="Static method does not have 'this'." />
-            <ArrayLenght exception="Value is not an array" />
-            <ArrayRank exception="Value is not an array" />
-            <ArrayDimensions exception="Value is not an array" />
-            <IsNull>True</IsNull>
-            <AsString>
-            </AsString>
-            <IsObject>False</IsObject>
-            <IsPrimitive>False</IsPrimitive>
-            <IsInteger>False</IsInteger>
-            <PrimitiveValue exception="Value is not a primitive type" />
-            <HasExpired>False</HasExpired>
-            <Type>null</Type>
-          </NamedValue>
-        </ThisValue>
+        <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
           <NamedValueCollection>
             <Count>0</Count>
