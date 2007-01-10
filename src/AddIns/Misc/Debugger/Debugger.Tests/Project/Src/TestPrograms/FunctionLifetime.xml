@@ -1,0 +1,340 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test name="FunctionLifetime">
+    <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">FunctionLifetime.exe</ModuleLoaded>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="Function">
+      <Function>
+        <Name>Function</Name>
+        <Module>FunctionLifetime.exe</Module>
+        <IsStatic>True</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <NextStatement>Start=22,4 End=22,40</NextStatement>
+        <ThisValue>
+          <NamedValue>
+            <Name>this</Name>
+            <IsArray exception="Static method does not have 'this'." />
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>True</IsNull>
+            <AsString>
+            </AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue exception="Value is not a primitive type" />
+            <HasExpired>False</HasExpired>
+            <Type>null</Type>
+          </NamedValue>
+        </ThisValue>
+        <ContaingClassVariables>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount>1</ArgumentCount>
+        <Arguments>
+          <NamedValueCollection>
+            <Count>1</Count>
+            <Items>
+              <MethodArgument>
+                <Index>0</Index>
+                <Name>i</Name>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </MethodArgument>
+            </Items>
+          </NamedValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="Function">
+      <Function>
+        <Name>Function</Name>
+        <Module>FunctionLifetime.exe</Module>
+        <IsStatic>True</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <NextStatement>Start=23,4 End=23,18</NextStatement>
+        <ThisValue>
+          <NamedValue>
+            <Name>this</Name>
+            <IsArray exception="Static method does not have 'this'." />
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>True</IsNull>
+            <AsString>
+            </AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue exception="Value is not a primitive type" />
+            <HasExpired>False</HasExpired>
+            <Type>null</Type>
+          </NamedValue>
+        </ThisValue>
+        <ContaingClassVariables>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount>1</ArgumentCount>
+        <Arguments>
+          <NamedValueCollection>
+            <Count>1</Count>
+            <Items>
+              <MethodArgument>
+                <Index>0</Index>
+                <Name>i</Name>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </MethodArgument>
+            </Items>
+          </NamedValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <ObjectDump name="SubFunction">
+      <Function>
+        <Name>SubFunction</Name>
+        <Module>FunctionLifetime.exe</Module>
+        <IsStatic>True</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <NextStatement>Start=29,4 End=29,40</NextStatement>
+        <ThisValue>
+          <NamedValue>
+            <Name>this</Name>
+            <IsArray exception="Static method does not have 'this'." />
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>True</IsNull>
+            <AsString>
+            </AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue exception="Value is not a primitive type" />
+            <HasExpired>False</HasExpired>
+            <Type>null</Type>
+          </NamedValue>
+        </ThisValue>
+        <ContaingClassVariables>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount>0</ArgumentCount>
+        <Arguments>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="Function">
+      <Function>
+        <Name>Function</Name>
+        <Module>FunctionLifetime.exe</Module>
+        <IsStatic>True</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <NextStatement>Start=24,4 End=24,40</NextStatement>
+        <ThisValue>
+          <NamedValue>
+            <Name>this</Name>
+            <IsArray exception="Static method does not have 'this'." />
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>True</IsNull>
+            <AsString>
+            </AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue exception="Value is not a primitive type" />
+            <HasExpired>False</HasExpired>
+            <Type>null</Type>
+          </NamedValue>
+        </ThisValue>
+        <ContaingClassVariables>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount>1</ArgumentCount>
+        <Arguments>
+          <NamedValueCollection>
+            <Count>1</Count>
+            <Items>
+              <MethodArgument>
+                <Index>0</Index>
+                <Name>i</Name>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </MethodArgument>
+            </Items>
+          </NamedValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="Main">
+      <Function>
+        <Name>Main</Name>
+        <Module>FunctionLifetime.exe</Module>
+        <IsStatic>True</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <NextStatement>Start=17,4 End=17,40</NextStatement>
+        <ThisValue>
+          <NamedValue>
+            <Name>this</Name>
+            <IsArray exception="Static method does not have 'this'." />
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>True</IsNull>
+            <AsString>
+            </AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue exception="Value is not a primitive type" />
+            <HasExpired>False</HasExpired>
+            <Type>null</Type>
+          </NamedValue>
+        </ThisValue>
+        <ContaingClassVariables>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount>0</ArgumentCount>
+        <Arguments>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <ObjectDump name="Function">
+      <Function>
+        <Name>Function</Name>
+        <Module>FunctionLifetime.exe</Module>
+        <IsStatic>True</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>True</HasExpired>
+        <NextStatement exception="Function has expired" />
+        <ThisValue>
+          <NamedValue>
+            <Name>this</Name>
+            <IsArray exception="Value has expired" />
+            <ArrayLenght exception="Value has expired" />
+            <ArrayRank exception="Value has expired" />
+            <ArrayDimensions exception="Value has expired" />
+            <IsNull exception="Value has expired" />
+            <AsString exception="Value has expired" />
+            <IsObject exception="Value has expired" />
+            <IsPrimitive exception="Value has expired" />
+            <IsInteger exception="Value has expired" />
+            <PrimitiveValue exception="Value has expired" />
+            <HasExpired>True</HasExpired>
+            <Type exception="Value has expired" />
+          </NamedValue>
+        </ThisValue>
+        <ContaingClassVariables>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount exception="Function has expired" />
+        <Arguments exception="Function has expired" />
+        <LocalVariables>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <ProcessExited />
+  </Test>
+</DebuggerTests>

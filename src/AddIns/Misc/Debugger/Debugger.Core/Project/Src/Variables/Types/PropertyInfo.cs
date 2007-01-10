@@ -43,6 +43,7 @@ namespace Debugger
 		
 		/// <summary> Gets the metadata token associated with getter (or setter)
 		/// of this property </summary>
+		[Debugger.Tests.Ignore]
 		public override uint MetadataToken {
 			get {
 				return (getMethod ?? setMethod).MetadataToken;

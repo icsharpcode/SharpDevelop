@@ -23,6 +23,7 @@ namespace Debugger
 		
 		public event EventHandler<StepperEventArgs> StepComplete;
 		
+		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
 				return function.Process;

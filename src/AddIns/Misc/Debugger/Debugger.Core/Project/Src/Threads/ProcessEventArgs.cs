@@ -13,7 +13,8 @@ namespace Debugger
 	public class ProcessEventArgs: DebuggerEventArgs
 	{
 		Process process;
-
+		
+		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
 				return process;

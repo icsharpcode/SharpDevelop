@@ -20,12 +20,14 @@ namespace Debugger
 		bool enabled = true;
 		ICorDebugFunctionBreakpoint corBreakpoint;
 		
+		[Debugger.Tests.Ignore]
 		public NDebugger Debugger {
 			get {
 				return debugger;
 			}
 		}
 		
+		[Debugger.Tests.SummaryOnly]
 		public SourcecodeSegment SourcecodeSegment {
 			get {
 				return sourcecodeSegment;

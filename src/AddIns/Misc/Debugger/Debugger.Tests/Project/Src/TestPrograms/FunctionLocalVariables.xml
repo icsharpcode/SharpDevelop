@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test name="FunctionLocalVariables">
+    <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">FunctionLocalVariables.exe</ModuleLoaded>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="SelectedFunction">
+      <Function>
+        <Name>Main</Name>
+        <Module>FunctionLocalVariables.exe</Module>
+        <IsStatic>True</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <NextStatement>Start=23,4 End=23,40</NextStatement>
+        <ThisValue>
+          <NamedValue>
+            <Name>this</Name>
+            <IsArray exception="Static method does not have 'this'." />
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>True</IsNull>
+            <AsString>
+            </AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue exception="Value is not a primitive type" />
+            <HasExpired>False</HasExpired>
+            <Type>null</Type>
+          </NamedValue>
+        </ThisValue>
+        <ContaingClassVariables>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount>0</ArgumentCount>
+        <Arguments>
+          <NamedValueCollection>
+            <Count>0</Count>
+            <Items />
+          </NamedValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <NamedValueCollection>
+            <Count>5</Count>
+            <Items>
+              <LocalVariable>
+                <Name>i</Name>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsNull>False</IsNull>
+                <AsString>0</AsString>
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>0</PrimitiveValue>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </LocalVariable>
+              <LocalVariable>
+                <Name>s</Name>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsNull>False</IsNull>
+                <AsString>S</AsString>
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue>S</PrimitiveValue>
+                <HasExpired>False</HasExpired>
+                <Type>System.String</Type>
+              </LocalVariable>
+              <LocalVariable>
+                <Name>args</Name>
+                <IsArray>True</IsArray>
+                <ArrayLenght>1</ArrayLenght>
+                <ArrayRank>1</ArrayRank>
+                <ArrayDimensions>System.UInt32[]</ArrayDimensions>
+                <IsNull>False</IsNull>
+                <AsString>{System.String[]}</AsString>
+                <IsObject>False</IsObject>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue exception="Value is not a primitive type" />
+                <HasExpired>False</HasExpired>
+                <Type>System.String[]</Type>
+              </LocalVariable>
+              <LocalVariable>
+                <Name>n</Name>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsNull>True</IsNull>
+                <AsString>&lt;null&gt;</AsString>
+                <IsObject>False</IsObject>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue exception="Value is not a primitive type" />
+                <HasExpired>False</HasExpired>
+                <Type>System.Object</Type>
+              </LocalVariable>
+              <LocalVariable>
+                <Name>o</Name>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsNull>False</IsNull>
+                <AsString>{System.Object}</AsString>
+                <IsObject>True</IsObject>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue exception="Value is not a primitive type" />
+                <HasExpired>False</HasExpired>
+                <Type>System.Object</Type>
+              </LocalVariable>
+            </Items>
+          </NamedValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <ProcessExited />
+  </Test>
+</DebuggerTests>

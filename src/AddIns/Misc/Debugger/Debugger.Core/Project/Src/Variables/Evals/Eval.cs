@@ -37,6 +37,7 @@ namespace Debugger
 		ICorDebugEval  corEval;
 		string         errorMsg;
 		
+		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
 				return process;

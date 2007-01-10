@@ -203,5 +203,10 @@ namespace Debugger
 			ilOffset = (int)symMethod.GetOffset(symDoc, validLine, 0);
 			return true;
 		}
+		
+		public override string ToString()
+		{
+			return string.Format("Start={0},{1} End={2},{3}", this.startLine, this.startColumn, this.endLine, this.endColumn);
+		}
 	}
 }

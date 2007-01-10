@@ -50,6 +50,7 @@ namespace Debugger
 		}
 		
 		/// <summary> Gets the metadata token associated with this method </summary>
+		[Debugger.Tests.Ignore]
 		public override uint MetadataToken {
 			get {
 				return methodProps.Token;

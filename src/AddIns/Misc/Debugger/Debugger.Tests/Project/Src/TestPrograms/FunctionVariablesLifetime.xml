@@ -1,0 +1,414 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test name="FunctionVariablesLifetime">
+    <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">FunctionVariablesLifetime.exe</ModuleLoaded>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="argument">
+      <MethodArgument>
+        <Index>0</Index>
+        <Name>argument</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>1</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>1</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </MethodArgument>
+    </ObjectDump>
+    <ObjectDump name="local">
+      <LocalVariable>
+        <Name>local</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>2</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>2</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </LocalVariable>
+    </ObjectDump>
+    <ObjectDump name="@class">
+      <MemberValue>
+        <MemberInfo>
+          <FieldInfo>
+            <IsLiteral>False</IsLiteral>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsStatic>False</IsStatic>
+            <Name>class</Name>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionVariablesLifetime</DeclaringType>
+            <Module>FunctionVariablesLifetime.exe</Module>
+          </FieldInfo>
+        </MemberInfo>
+        <Name>class</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>3</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>3</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </MemberValue>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="argument">
+      <MethodArgument>
+        <Index>0</Index>
+        <Name>argument</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>1</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>1</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </MethodArgument>
+    </ObjectDump>
+    <ObjectDump name="local">
+      <LocalVariable>
+        <Name>local</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>2</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>2</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </LocalVariable>
+    </ObjectDump>
+    <ObjectDump name="@class">
+      <MemberValue>
+        <MemberInfo>
+          <FieldInfo>
+            <IsLiteral>False</IsLiteral>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsStatic>False</IsStatic>
+            <Name>class</Name>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionVariablesLifetime</DeclaringType>
+            <Module>FunctionVariablesLifetime.exe</Module>
+          </FieldInfo>
+        </MemberInfo>
+        <Name>class</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>3</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>3</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </MemberValue>
+    </ObjectDump>
+    <ObjectDump name="localInSubFunction">
+      <LocalVariable>
+        <Name>localInSubFunction</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>4</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>4</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </LocalVariable>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="argument">
+      <MethodArgument>
+        <Index>0</Index>
+        <Name>argument</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>1</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>1</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </MethodArgument>
+    </ObjectDump>
+    <ObjectDump name="local">
+      <LocalVariable>
+        <Name>local</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>2</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>2</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </LocalVariable>
+    </ObjectDump>
+    <ObjectDump name="@class">
+      <MemberValue>
+        <MemberInfo>
+          <FieldInfo>
+            <IsLiteral>False</IsLiteral>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsStatic>False</IsStatic>
+            <Name>class</Name>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionVariablesLifetime</DeclaringType>
+            <Module>FunctionVariablesLifetime.exe</Module>
+          </FieldInfo>
+        </MemberInfo>
+        <Name>class</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>3</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>3</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </MemberValue>
+    </ObjectDump>
+    <ObjectDump name="localInSubFunction">
+      <LocalVariable>
+        <Name>localInSubFunction</Name>
+        <IsArray exception="Value has expired" />
+        <ArrayLenght exception="Value has expired" />
+        <ArrayRank exception="Value has expired" />
+        <ArrayDimensions exception="Value has expired" />
+        <IsNull exception="Value has expired" />
+        <AsString exception="Value has expired" />
+        <IsObject exception="Value has expired" />
+        <IsPrimitive exception="Value has expired" />
+        <IsInteger exception="Value has expired" />
+        <PrimitiveValue exception="Value has expired" />
+        <HasExpired>True</HasExpired>
+        <Type exception="Value has expired" />
+      </LocalVariable>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="argument">
+      <MethodArgument>
+        <Index>0</Index>
+        <Name>argument</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>1</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>1</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </MethodArgument>
+    </ObjectDump>
+    <ObjectDump name="local">
+      <LocalVariable>
+        <Name>local</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>2</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>2</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </LocalVariable>
+    </ObjectDump>
+    <ObjectDump name="@class">
+      <MemberValue>
+        <MemberInfo>
+          <FieldInfo>
+            <IsLiteral>False</IsLiteral>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsStatic>False</IsStatic>
+            <Name>class</Name>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionVariablesLifetime</DeclaringType>
+            <Module>FunctionVariablesLifetime.exe</Module>
+          </FieldInfo>
+        </MemberInfo>
+        <Name>class</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>3</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>3</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </MemberValue>
+    </ObjectDump>
+    <ObjectDump name="localInSubFunction">
+      <LocalVariable>
+        <Name>localInSubFunction</Name>
+        <IsArray exception="Value has expired" />
+        <ArrayLenght exception="Value has expired" />
+        <ArrayRank exception="Value has expired" />
+        <ArrayDimensions exception="Value has expired" />
+        <IsNull exception="Value has expired" />
+        <AsString exception="Value has expired" />
+        <IsObject exception="Value has expired" />
+        <IsPrimitive exception="Value has expired" />
+        <IsInteger exception="Value has expired" />
+        <PrimitiveValue exception="Value has expired" />
+        <HasExpired>True</HasExpired>
+        <Type exception="Value has expired" />
+      </LocalVariable>
+    </ObjectDump>
+    <ObjectDump name="localInSubFunction(new)">
+      <LocalVariable>
+        <Name>localInSubFunction</Name>
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsNull>False</IsNull>
+        <AsString>4</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>4</PrimitiveValue>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </LocalVariable>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="argument">
+      <MethodArgument>
+        <Index>0</Index>
+        <Name>argument</Name>
+        <IsArray exception="Value has expired" />
+        <ArrayLenght exception="Value has expired" />
+        <ArrayRank exception="Value has expired" />
+        <ArrayDimensions exception="Value has expired" />
+        <IsNull exception="Value has expired" />
+        <AsString exception="Value has expired" />
+        <IsObject exception="Value has expired" />
+        <IsPrimitive exception="Value has expired" />
+        <IsInteger exception="Value has expired" />
+        <PrimitiveValue exception="Value has expired" />
+        <HasExpired>True</HasExpired>
+        <Type exception="Value has expired" />
+      </MethodArgument>
+    </ObjectDump>
+    <ObjectDump name="local">
+      <LocalVariable>
+        <Name>local</Name>
+        <IsArray exception="Value has expired" />
+        <ArrayLenght exception="Value has expired" />
+        <ArrayRank exception="Value has expired" />
+        <ArrayDimensions exception="Value has expired" />
+        <IsNull exception="Value has expired" />
+        <AsString exception="Value has expired" />
+        <IsObject exception="Value has expired" />
+        <IsPrimitive exception="Value has expired" />
+        <IsInteger exception="Value has expired" />
+        <PrimitiveValue exception="Value has expired" />
+        <HasExpired>True</HasExpired>
+        <Type exception="Value has expired" />
+      </LocalVariable>
+    </ObjectDump>
+    <ObjectDump name="@class">
+      <MemberValue>
+        <MemberInfo>
+          <FieldInfo>
+            <IsLiteral>False</IsLiteral>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsStatic>False</IsStatic>
+            <Name>class</Name>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionVariablesLifetime</DeclaringType>
+            <Module>FunctionVariablesLifetime.exe</Module>
+          </FieldInfo>
+        </MemberInfo>
+        <Name>class</Name>
+        <IsArray exception="Value has expired" />
+        <ArrayLenght exception="Value has expired" />
+        <ArrayRank exception="Value has expired" />
+        <ArrayDimensions exception="Value has expired" />
+        <IsNull exception="Value has expired" />
+        <AsString exception="Value has expired" />
+        <IsObject exception="Value has expired" />
+        <IsPrimitive exception="Value has expired" />
+        <IsInteger exception="Value has expired" />
+        <PrimitiveValue exception="Value has expired" />
+        <HasExpired>True</HasExpired>
+        <Type exception="Value has expired" />
+      </MemberValue>
+    </ObjectDump>
+    <ObjectDump name="localInSubFunction">
+      <LocalVariable>
+        <Name>localInSubFunction</Name>
+        <IsArray exception="Value has expired" />
+        <ArrayLenght exception="Value has expired" />
+        <ArrayRank exception="Value has expired" />
+        <ArrayDimensions exception="Value has expired" />
+        <IsNull exception="Value has expired" />
+        <AsString exception="Value has expired" />
+        <IsObject exception="Value has expired" />
+        <IsPrimitive exception="Value has expired" />
+        <IsInteger exception="Value has expired" />
+        <PrimitiveValue exception="Value has expired" />
+        <HasExpired>True</HasExpired>
+        <Type exception="Value has expired" />
+      </LocalVariable>
+    </ObjectDump>
+    <ProcessExited />
+  </Test>
+</DebuggerTests>

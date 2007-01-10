@@ -48,6 +48,7 @@ namespace Debugger
 		}
 		
 		/// <summary> Gets the process in which the type was loaded </summary>
+		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
 				return process;
@@ -420,6 +421,11 @@ namespace Debugger
 		public override int GetHashCode()
 		{
 			return base.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("{0}", this.fullName);
 		}
 	}
 }

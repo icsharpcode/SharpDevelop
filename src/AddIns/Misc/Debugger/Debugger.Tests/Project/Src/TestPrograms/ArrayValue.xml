@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test name="ArrayValue">
+    <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">ArrayValue.exe</ModuleLoaded>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="array">
+      <LocalVariable>
+        <Name>array</Name>
+        <IsArray>True</IsArray>
+        <ArrayLenght>5</ArrayLenght>
+        <ArrayRank>1</ArrayRank>
+        <ArrayDimensions>System.UInt32[]</ArrayDimensions>
+        <IsNull>False</IsNull>
+        <AsString>{System.Int32[]}</AsString>
+        <IsObject>False</IsObject>
+        <IsPrimitive>False</IsPrimitive>
+        <IsInteger>False</IsInteger>
+        <PrimitiveValue exception="Value is not a primitive type" />
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32[]</Type>
+      </LocalVariable>
+    </ObjectDump>
+    <ObjectDump name="array elements">
+      <NamedValueCollection>
+        <Count>5</Count>
+        <Items>
+          <ArrayElement>
+            <Indicies>System.UInt32[]</Indicies>
+            <Name>[0]</Name>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>False</IsNull>
+            <AsString>0</AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>True</IsPrimitive>
+            <IsInteger>True</IsInteger>
+            <PrimitiveValue>0</PrimitiveValue>
+            <HasExpired>False</HasExpired>
+            <Type>System.Int32</Type>
+          </ArrayElement>
+          <ArrayElement>
+            <Indicies>System.UInt32[]</Indicies>
+            <Name>[1]</Name>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>False</IsNull>
+            <AsString>1</AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>True</IsPrimitive>
+            <IsInteger>True</IsInteger>
+            <PrimitiveValue>1</PrimitiveValue>
+            <HasExpired>False</HasExpired>
+            <Type>System.Int32</Type>
+          </ArrayElement>
+          <ArrayElement>
+            <Indicies>System.UInt32[]</Indicies>
+            <Name>[2]</Name>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>False</IsNull>
+            <AsString>2</AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>True</IsPrimitive>
+            <IsInteger>True</IsInteger>
+            <PrimitiveValue>2</PrimitiveValue>
+            <HasExpired>False</HasExpired>
+            <Type>System.Int32</Type>
+          </ArrayElement>
+          <ArrayElement>
+            <Indicies>System.UInt32[]</Indicies>
+            <Name>[3]</Name>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>False</IsNull>
+            <AsString>3</AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>True</IsPrimitive>
+            <IsInteger>True</IsInteger>
+            <PrimitiveValue>3</PrimitiveValue>
+            <HasExpired>False</HasExpired>
+            <Type>System.Int32</Type>
+          </ArrayElement>
+          <ArrayElement>
+            <Indicies>System.UInt32[]</Indicies>
+            <Name>[4]</Name>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>False</IsNull>
+            <AsString>4</AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>True</IsPrimitive>
+            <IsInteger>True</IsInteger>
+            <PrimitiveValue>4</PrimitiveValue>
+            <HasExpired>False</HasExpired>
+            <Type>System.Int32</Type>
+          </ArrayElement>
+        </Items>
+      </NamedValueCollection>
+    </ObjectDump>
+    <ProcessExited />
+  </Test>
+</DebuggerTests>

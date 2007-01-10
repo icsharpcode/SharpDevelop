@@ -45,6 +45,7 @@ namespace Debugger
 			}
 		}
 		
+		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
 				return process;
@@ -60,13 +61,15 @@ namespace Debugger
 				OnStateChanged();
 			}
 		}
-
+		
+		[Debugger.Tests.Ignore]
 		public uint ID { 
 			get{ 
 				return id; 
 			} 
 		}
 		
+		[Debugger.Tests.Ignore]
 		public ExceptionType CurrentExceptionType {
 			get {
 				return currentExceptionType;
@@ -82,7 +85,7 @@ namespace Debugger
 			}
 		}
 		
-		public ICorDebugThread CorThread {
+		internal ICorDebugThread CorThread {
 			get {
 				if (nativeThreadExited) {
 					throw new DebuggerException("Native thread has exited");
@@ -169,9 +172,9 @@ namespace Debugger
 				);
 			}
 		}
-
+		
 		public string Name {
-			get	{
+			get {
 				if (!HasBeenLoaded) return lastName;
 				if (process.IsRunning) return lastName;
 				Value runtimeValue  = RuntimeValue;
@@ -238,7 +241,13 @@ namespace Debugger
 			}
 		}
 		
-		public IEnumerable<Function> Callstack {
+		public IList<Function> Callstack {
+			get {
+				return new List<Function>(CallstackEnum).AsReadOnly();
+			}
+		}
+		
+		IEnumerable<Function> CallstackEnum {
 			get {
 				process.AssertPaused();
 				
@@ -348,6 +357,7 @@ namespace Debugger
 			}
 		}
 		
+		[Debugger.Tests.SummaryOnly]
 		public Function SelectedFunction {
 			get {
 				return selectedFunction;
@@ -361,9 +371,10 @@ namespace Debugger
 			}
 		}
 		
+		[Debugger.Tests.SummaryOnly]
 		public Function LastFunctionWithLoadedSymbols {
 			get {
-				foreach (Function function in Callstack) {
+				foreach (Function function in CallstackEnum) {
 					if (function.HasSymbols) {
 						return function;
 					}
@@ -376,9 +387,10 @@ namespace Debugger
 		/// Returns the most recent function on callstack.
 		/// Returns null if callstack is empty.
 		/// </summary>
+		[Debugger.Tests.SummaryOnly]
 		public Function LastFunction {
 			get {
-				foreach(Function function in Callstack) {
+				foreach(Function function in CallstackEnum) {
 					return function;
 				}
 				return null;
@@ -388,6 +400,7 @@ namespace Debugger
 		/// <summary>
 		/// Returns the first function that was called on thread
 		/// </summary>
+		[Debugger.Tests.SummaryOnly]
 		public Function FirstFunction {
 			get {
 				Function first = null;

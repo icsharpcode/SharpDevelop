@@ -1,0 +1,303 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test name="Callstack">
+    <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">Callstack.exe</ModuleLoaded>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="Callstack">
+      <ReadOnlyCollection_x0060_1>
+        <Count>3</Count>
+        <Items>
+          <Function>
+            <Name>Sub2</Name>
+            <Module>Callstack.exe</Module>
+            <IsStatic>True</IsStatic>
+            <HasSymbols>True</HasSymbols>
+            <HasExpired>False</HasExpired>
+            <NextStatement>Start=26,4 End=26,40</NextStatement>
+            <ThisValue>
+              <NamedValue>
+                <Name>this</Name>
+                <IsArray exception="Static method does not have 'this'." />
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsNull>True</IsNull>
+                <AsString>
+                </AsString>
+                <IsObject>False</IsObject>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue exception="Value is not a primitive type" />
+                <HasExpired>False</HasExpired>
+                <Type>null</Type>
+              </NamedValue>
+            </ThisValue>
+            <ContaingClassVariables>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </ContaingClassVariables>
+            <ArgumentCount>0</ArgumentCount>
+            <Arguments>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </Arguments>
+            <LocalVariables>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </LocalVariables>
+          </Function>
+          <Function>
+            <Name>Sub1</Name>
+            <Module>Callstack.exe</Module>
+            <IsStatic>True</IsStatic>
+            <HasSymbols>True</HasSymbols>
+            <HasExpired>False</HasExpired>
+            <NextStatement>Start=21,4 End=21,11</NextStatement>
+            <ThisValue>
+              <NamedValue>
+                <Name>this</Name>
+                <IsArray exception="Static method does not have 'this'." />
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsNull>True</IsNull>
+                <AsString>
+                </AsString>
+                <IsObject>False</IsObject>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue exception="Value is not a primitive type" />
+                <HasExpired>False</HasExpired>
+                <Type>null</Type>
+              </NamedValue>
+            </ThisValue>
+            <ContaingClassVariables>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </ContaingClassVariables>
+            <ArgumentCount>0</ArgumentCount>
+            <Arguments>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </Arguments>
+            <LocalVariables>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </LocalVariables>
+          </Function>
+          <Function>
+            <Name>Main</Name>
+            <Module>Callstack.exe</Module>
+            <IsStatic>True</IsStatic>
+            <HasSymbols>True</HasSymbols>
+            <HasExpired>False</HasExpired>
+            <NextStatement>Start=16,4 End=16,11</NextStatement>
+            <ThisValue>
+              <NamedValue>
+                <Name>this</Name>
+                <IsArray exception="Static method does not have 'this'." />
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsNull>True</IsNull>
+                <AsString>
+                </AsString>
+                <IsObject>False</IsObject>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue exception="Value is not a primitive type" />
+                <HasExpired>False</HasExpired>
+                <Type>null</Type>
+              </NamedValue>
+            </ThisValue>
+            <ContaingClassVariables>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </ContaingClassVariables>
+            <ArgumentCount>0</ArgumentCount>
+            <Arguments>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </Arguments>
+            <LocalVariables>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </LocalVariables>
+          </Function>
+        </Items>
+      </ReadOnlyCollection_x0060_1>
+    </ObjectDump>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <ObjectDump name="Callstack">
+      <ReadOnlyCollection_x0060_1>
+        <Count>2</Count>
+        <Items>
+          <Function>
+            <Name>Sub1</Name>
+            <Module>Callstack.exe</Module>
+            <IsStatic>True</IsStatic>
+            <HasSymbols>True</HasSymbols>
+            <HasExpired>False</HasExpired>
+            <NextStatement>Start=21,4 End=21,11</NextStatement>
+            <ThisValue>
+              <NamedValue>
+                <Name>this</Name>
+                <IsArray exception="Static method does not have 'this'." />
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsNull>True</IsNull>
+                <AsString>
+                </AsString>
+                <IsObject>False</IsObject>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue exception="Value is not a primitive type" />
+                <HasExpired>False</HasExpired>
+                <Type>null</Type>
+              </NamedValue>
+            </ThisValue>
+            <ContaingClassVariables>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </ContaingClassVariables>
+            <ArgumentCount>0</ArgumentCount>
+            <Arguments>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </Arguments>
+            <LocalVariables>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </LocalVariables>
+          </Function>
+          <Function>
+            <Name>Main</Name>
+            <Module>Callstack.exe</Module>
+            <IsStatic>True</IsStatic>
+            <HasSymbols>True</HasSymbols>
+            <HasExpired>False</HasExpired>
+            <NextStatement>Start=16,4 End=16,11</NextStatement>
+            <ThisValue>
+              <NamedValue>
+                <Name>this</Name>
+                <IsArray exception="Static method does not have 'this'." />
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsNull>True</IsNull>
+                <AsString>
+                </AsString>
+                <IsObject>False</IsObject>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue exception="Value is not a primitive type" />
+                <HasExpired>False</HasExpired>
+                <Type>null</Type>
+              </NamedValue>
+            </ThisValue>
+            <ContaingClassVariables>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </ContaingClassVariables>
+            <ArgumentCount>0</ArgumentCount>
+            <Arguments>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </Arguments>
+            <LocalVariables>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </LocalVariables>
+          </Function>
+        </Items>
+      </ReadOnlyCollection_x0060_1>
+    </ObjectDump>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <ObjectDump name="Callstack">
+      <ReadOnlyCollection_x0060_1>
+        <Count>1</Count>
+        <Items>
+          <Function>
+            <Name>Main</Name>
+            <Module>Callstack.exe</Module>
+            <IsStatic>True</IsStatic>
+            <HasSymbols>True</HasSymbols>
+            <HasExpired>False</HasExpired>
+            <NextStatement>Start=16,4 End=16,11</NextStatement>
+            <ThisValue>
+              <NamedValue>
+                <Name>this</Name>
+                <IsArray exception="Static method does not have 'this'." />
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsNull>True</IsNull>
+                <AsString>
+                </AsString>
+                <IsObject>False</IsObject>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue exception="Value is not a primitive type" />
+                <HasExpired>False</HasExpired>
+                <Type>null</Type>
+              </NamedValue>
+            </ThisValue>
+            <ContaingClassVariables>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </ContaingClassVariables>
+            <ArgumentCount>0</ArgumentCount>
+            <Arguments>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </Arguments>
+            <LocalVariables>
+              <NamedValueCollection>
+                <Count>0</Count>
+                <Items />
+              </NamedValueCollection>
+            </LocalVariables>
+          </Function>
+        </Items>
+      </ReadOnlyCollection_x0060_1>
+    </ObjectDump>
+    <ProcessExited />
+  </Test>
+</DebuggerTests>

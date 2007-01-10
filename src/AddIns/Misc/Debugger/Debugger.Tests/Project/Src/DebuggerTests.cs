@@ -20,112 +20,28 @@ using System.Threading;
 
 namespace Debugger.Tests
 {
-	/// <summary>
-	/// This class contains methods that test the debugger
-	/// </summary>
 	[TestFixture]
-	public class DebuggerTests
+	public class DebuggerTests: DebuggerTestsBase
 	{
-		NDebugger debugger;
-		string assemblyFilename;
-		string assemblyDir;
-		string symbolsFilename;
-		
-		Process process;
-		string log;
-		string lastLogMessage;
-		
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
-		{
-			assemblyFilename = Assembly.GetExecutingAssembly().Location;
-			assemblyDir = Path.GetDirectoryName(assemblyFilename);
-			symbolsFilename = Path.Combine(assemblyDir, Path.GetFileNameWithoutExtension(assemblyFilename) + ".pdb");
-			
-			debugger = new NDebugger();
-			debugger.MTA2STA.CallMethod = CallMethod.Manual;
-		}
-		
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown()
-		{
-			
-		}
-		
-		[TearDown]
-		public void TearDown()
-		{
-			while(debugger.Processes.Count > 0) {
-				debugger.Processes[0].Terminate();
-				debugger.Processes[0].WaitForExit();
-			}
-		}
-		
-		void StartProgram(string programName)
-		{
-			StartProgram(assemblyFilename, programName);
-		}
-		
-		void StartProgram(string exeFilename, string programName)
-		{
-			log = "";
-			lastLogMessage = null;
-			process = debugger.Start(exeFilename, Path.GetDirectoryName(exeFilename), programName);
-			process.LogMessage += delegate(object sender, MessageEventArgs e) {
-				log += e.Message;
-				lastLogMessage = e.Message;
-			};
-		}
-		
-		void WaitForPause(PausedReason expectedReason)
-		{
-			process.WaitForPause();
-			Assert.AreEqual(true, process.IsPaused);
-			Assert.AreEqual(expectedReason, process.PausedReason);
-		}	
-		
-		void WaitForPause(PausedReason expectedReason, string expectedLastLogMessage)
-		{
-			WaitForPause(expectedReason);
-			if (expectedLastLogMessage != null) expectedLastLogMessage += "\r\n";
-			Assert.AreEqual(expectedLastLogMessage, lastLogMessage);
-		}
-		
-		
 		[Test]
 		public void SimpleProgram()
 		{
-			StartProgram("SimpleProgram");
+			StartTest("SimpleProgram");
 			process.WaitForExit();
 		}
 		
 		[Test]
 		public void HelloWorld()
 		{
-			StartProgram("HelloWorld");
+			StartTest("HelloWorld");
 			process.WaitForExit();
-			Assert.AreEqual("Hello world!\r\n", log);
 		}
 		
 		[Test]
 		public void Break()
 		{
-			StartProgram("Break");
+			StartTest("Break");
 			WaitForPause(PausedReason.Break, null);
-			
-			process.Continue();
-			process.WaitForExit();
-		}
-		
-		[Test]
-		public void Symbols()
-		{
-			Assert.AreEqual("debugger.tests.exe", Path.GetFileName(assemblyFilename).ToLower());
-			Assert.IsTrue(File.Exists(symbolsFilename), "Symbols file not found (.pdb)");
-			
-			StartProgram("Symbols");
-			WaitForPause(PausedReason.Break, null);
-			Assert.AreEqual(true, process.GetModule(Path.GetFileName(assemblyFilename)).SymbolsLoaded, "Module symbols not loaded");
 			
 			process.Continue();
 			process.WaitForExit();
@@ -134,13 +50,12 @@ namespace Debugger.Tests
 		[Test]
 		public void Breakpoint()
 		{
-			Breakpoint b = debugger.AddBreakpoint(@"F:\SharpDevelopTrunk\src\AddIns\Misc\Debugger\Debugger.Tests\Project\Src\TestPrograms\Breakpoint.cs", 18);
+			Breakpoint breakpoint = debugger.AddBreakpoint(@"F:\SharpDevelopTrunk\src\AddIns\Misc\Debugger\Debugger.Tests\Project\Src\TestPrograms\Breakpoint.cs", 18);
 			
-			StartProgram("Breakpoint");
+			StartTest("Breakpoint");
 			WaitForPause(PausedReason.Break, null);
-			Assert.AreEqual(true, b.Enabled);
-			Assert.AreEqual(true, b.HadBeenSet, "Breakpoint is not set");
-			Assert.AreEqual(18, b.SourcecodeSegment.StartLine);
+			
+			ObjectDump(breakpoint);
 			
 			process.Continue();
 			WaitForPause(PausedReason.Breakpoint, "Mark 1");
@@ -150,83 +65,65 @@ namespace Debugger.Tests
 			
 			process.Continue();
 			process.WaitForExit();
-			Assert.AreEqual("Mark 1\r\nMark 2\r\n", log);
+			
+			ObjectDump(breakpoint);
 		}
 		
-		[Test]
-		public void FileRelease()
-		{
-			Assert.IsTrue(File.Exists(assemblyFilename), "Assembly file not found");
-			Assert.IsTrue(File.Exists(symbolsFilename), "Symbols file not found (.pdb)");
-			
-			string tempPath = Path.Combine(Path.GetTempPath(), Path.Combine("DebeggerTest", new Random().Next().ToString()));
-			Directory.CreateDirectory(tempPath);
-			
-			string newAssemblyFilename = Path.Combine(tempPath, Path.GetFileName(assemblyFilename));
-			string newSymbolsFilename = Path.Combine(tempPath, Path.GetFileName(symbolsFilename));
-			
-			File.Copy(assemblyFilename, newAssemblyFilename);
-			File.Copy(symbolsFilename, newSymbolsFilename);
-			
-			Assert.IsTrue(File.Exists(newAssemblyFilename), "Assembly file copying failed");
-			Assert.IsTrue(File.Exists(newSymbolsFilename), "Symbols file copying failed");
-			
-			StartProgram(newAssemblyFilename, "FileRelease");
-			process.WaitForExit();
-			
-			try {
-				File.Delete(newAssemblyFilename);
-			} catch (System.Exception e) {
-				Assert.Fail("Assembly file not released\n" + e.ToString());
-			}
-			
-			try {
-				File.Delete(newSymbolsFilename);
-			} catch (System.Exception e) {
-				Assert.Fail("Symbols file not released\n" + e.ToString());
-			}
-		}
-		
-		[Test]
-		public void DebuggeeKilled()
-		{
-			StartProgram("DebuggeeKilled");
-			WaitForPause(PausedReason.Break);
-			Assert.AreNotEqual(null, lastLogMessage);
-			System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(int.Parse(lastLogMessage));
-			p.Kill();
-			process.WaitForExit();
-		}
+//		[Test]
+//		public void FileRelease()
+//		{
+//			
+//		}
+				
+//		[Test]
+//		public void DebuggeeKilled()
+//		{
+//			StartTest("DebuggeeKilled");
+//			WaitForPause(PausedReason.Break);
+//			Assert.AreNotEqual(null, lastLogMessage);
+//			System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(int.Parse(lastLogMessage));
+//			p.Kill();
+//			process.WaitForExit();
+//		}
 		
 		[Test]
 		public void Stepping()
 		{
-			StartProgram("Stepping");
+			StartTest("Stepping");
 			WaitForPause(PausedReason.Break, null);
+			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepOver(); // Debugger.Break
 			WaitForPause(PausedReason.StepComplete, null);
+			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepOver(); // Debug.WriteLine 1
 			WaitForPause(PausedReason.StepComplete, "1");
+			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepInto(); // Method Sub
 			WaitForPause(PausedReason.StepComplete, "1");
+			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepInto(); // '{'
 			WaitForPause(PausedReason.StepComplete, "1");
+			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepInto(); // Debug.WriteLine 2
 			WaitForPause(PausedReason.StepComplete, "2");
+			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepOut(); // Method Sub
 			WaitForPause(PausedReason.StepComplete, "4");
+			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepOver(); // Method Sub
 			WaitForPause(PausedReason.StepComplete, "4");
+			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepOver(); // Method Sub2
 			WaitForPause(PausedReason.StepComplete, "5");
+			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.Continue();
 			process.WaitForExit();
@@ -235,25 +132,17 @@ namespace Debugger.Tests
 		[Test]
 		public void Callstack()
 		{
-			List<Function> callstack;
-			
-			StartProgram("Callstack");
+			StartTest("Callstack");
 			WaitForPause(PausedReason.Break, null);
-			callstack = new List<Function>(process.SelectedThread.Callstack);
-			Assert.AreEqual("Sub2", callstack[0].Name);
-			Assert.AreEqual("Sub1", callstack[1].Name);
-			Assert.AreEqual("Main", callstack[2].Name);
+			ObjectDump("Callstack", process.SelectedThread.Callstack);
 			
 			process.StepOut();
 			WaitForPause(PausedReason.StepComplete, null);
-			callstack = new List<Function>(process.SelectedThread.Callstack);
-			Assert.AreEqual("Sub1", callstack[0].Name);
-			Assert.AreEqual("Main", callstack[1].Name);
+			ObjectDump("Callstack", process.SelectedThread.Callstack);
 			
 			process.StepOut();
 			WaitForPause(PausedReason.StepComplete, null);
-			callstack = new List<Function>(process.SelectedThread.Callstack);
-			Assert.AreEqual("Main", callstack[0].Name);
+			ObjectDump("Callstack", process.SelectedThread.Callstack);
 			
 			process.Continue();
 			process.WaitForExit();
@@ -262,46 +151,13 @@ namespace Debugger.Tests
 		[Test]
 		public void FunctionArgumentVariables()
 		{
-			StartProgram("FunctionArgumentVariables");
+			StartTest("FunctionArgumentVariables");
 			WaitForPause(PausedReason.Break, null);
 			
-			for(int i = 0; i < 2; i++) {
-				NamedValueCollection args;
-				
+			for(int i = 0; i < 6; i++) {
 				process.Continue();
 				WaitForPause(PausedReason.Break, null);
-				args = process.SelectedFunction.Arguments;
-				NamedValue args_i = args["i"];
-				NamedValue args_s = args["s"];
-				NamedValue args_args = args["args"];
-				// names
-				Assert.AreEqual("i", args_i.Name);
-				Assert.AreEqual("s", args_s.Name);
-				Assert.AreEqual("args", args_args.Name);
-				// types
-				Assert.IsTrue(args_i.IsPrimitive);
-				Assert.IsTrue(args_s.IsPrimitive);
-				Assert.IsTrue(args_args.IsArray);
-				// values
-				Assert.AreEqual("0", args_i.AsString);
-				Assert.AreEqual("S", args_s.AsString);
-				Assert.AreEqual(0, args_args.ArrayLenght);
-				
-				process.Continue();
-				WaitForPause(PausedReason.Break, null);
-				args = process.SelectedFunction.Arguments;
-				// values
-				Assert.AreEqual("1", args["i"].AsString);
-				Assert.AreEqual("S", args["s"].AsString);
-				Assert.AreEqual(1, args["args"].ArrayLenght);
-				
-				process.Continue();
-				WaitForPause(PausedReason.Break, null);
-				args = process.SelectedFunction.Arguments;
-				// values
-				Assert.AreEqual("2", args["i"].AsString);
-				Assert.IsTrue(args["s"].IsNull);
-				Assert.AreEqual(2, args["args"].ArrayLenght);
+				ObjectDump("SelectedFunction", process.SelectedFunction);
 			}
 			
 			process.Continue();
@@ -311,21 +167,9 @@ namespace Debugger.Tests
 		[Test]
 		public void FunctionLocalVariables()
 		{
-			StartProgram("FunctionLocalVariables");
+			StartTest("FunctionLocalVariables");
 			WaitForPause(PausedReason.Break, null);
-			NamedValueCollection vars = process.SelectedFunction.LocalVariables;
-			// types
-			Assert.IsTrue(vars["i"].IsPrimitive);
-			Assert.IsTrue(vars["s"].IsPrimitive);
-			Assert.IsTrue(vars["args"].IsArray);
-			Assert.IsTrue(vars["n"].IsNull);
-			Assert.IsTrue(vars["o"].IsObject);
-			// values
-			Assert.AreEqual("0", vars["i"].AsString);
-			Assert.AreEqual("S", vars["s"].AsString);
-			Assert.AreEqual(1, vars["args"].ArrayLenght);
-			Assert.IsTrue(vars["n"].IsNull);
-			Assert.AreEqual("{System.Object}", vars["o"].AsString);
+			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.Continue();
 			process.WaitForExit();
@@ -336,30 +180,25 @@ namespace Debugger.Tests
 		{
 			Function function;
 			
-			StartProgram("FunctionLifetime");
+			StartTest("FunctionLifetime");
 			WaitForPause(PausedReason.Break, null);
 			function = process.SelectedFunction;
-			Assert.IsNotNull(function);
-			Assert.AreEqual("Function", function.Name);
-			Assert.AreEqual(false, function.HasExpired);
-			Assert.AreEqual("1", function.GetArgument(0).AsString);
+			ObjectDump("Function", function);
 			
 			process.Continue(); // Go to the SubFunction
 			WaitForPause(PausedReason.Break, null);
-			Assert.AreEqual("SubFunction", process.SelectedFunction.Name);
-			Assert.AreEqual(false, function.HasExpired);
-			Assert.AreEqual("1", function.GetArgument(0).AsString);
+			ObjectDump("Function", function);
+			ObjectDump("SubFunction", process.SelectedFunction);
 			
 			process.Continue(); // Go back to Function
 			WaitForPause(PausedReason.Break, null);
-			Assert.AreEqual("Function", process.SelectedFunction.Name);
-			Assert.AreEqual(false, function.HasExpired);
-			Assert.AreEqual("1", function.GetArgument(0).AsString);
+			Assert.AreEqual(function, process.SelectedFunction);
+			ObjectDump("Function", function);
 			
 			process.Continue(); // Setp out of function
 			WaitForPause(PausedReason.Break, null);
-			Assert.AreEqual("Main", process.SelectedFunction.Name);
-			Assert.AreEqual(true, function.HasExpired);
+			ObjectDump("Main", process.SelectedFunction);
+			ObjectDump("Function", function);
 			
 			process.Continue();
 			process.WaitForExit();
@@ -368,63 +207,50 @@ namespace Debugger.Tests
 		[Test]
 		public void FunctionVariablesLifetime()
 		{
-			Function function = null;
 			NamedValue argument = null;
 			NamedValue local    = null;
 			NamedValue localInSubFunction = null;
 			NamedValue @class   = null;
 			
-			StartProgram("FunctionVariablesLifetime"); // 1 - Enter program
+			StartTest("FunctionVariablesLifetime"); // 1 - Enter program
 			WaitForPause(PausedReason.Break, null);
-			function = process.SelectedFunction;
-			Assert.IsNotNull(function);
-			Assert.AreEqual("Function", function.Name);
-			argument = function.GetArgument(0);
-			local = function.LocalVariables["local"];
-			@class = function.ContaingClassVariables["class"];
-			Assert.IsNotNull(argument);
-			Assert.IsNotNull(local);
-			Assert.IsNotNull(@class);
-			Assert.AreEqual("argument", argument.Name);
-			Assert.AreEqual("local", local.Name);
-			Assert.AreEqual("class", @class.Name);
-			Assert.AreEqual("1", argument.AsString);
-			Assert.AreEqual("2", local.AsString);
-			Assert.AreEqual("3", @class.AsString);
+			argument = process.SelectedFunction.GetArgument(0);
+			local = process.SelectedFunction.LocalVariables["local"];
+			@class = process.SelectedFunction.ContaingClassVariables["class"];
+			ObjectDump("argument", argument);
+			ObjectDump("local", local);
+			ObjectDump("@class", @class);
 			
 			process.Continue(); // 2 - Go to the SubFunction
 			WaitForPause(PausedReason.Break, null);
-			Assert.AreEqual("1", argument.AsString);
-			Assert.AreEqual("2", local.AsString);
-			Assert.AreEqual("3", @class.AsString);
-			// Check localInSubFunction variable
 			localInSubFunction = process.SelectedFunction.LocalVariables["localInSubFunction"];
-			Assert.AreEqual("4", localInSubFunction.AsString);
+			ObjectDump("argument", argument);
+			ObjectDump("local", local);
+			ObjectDump("@class", @class);
+			ObjectDump("localInSubFunction", @localInSubFunction);
 			
 			process.Continue(); // 3 - Go back to Function
 			WaitForPause(PausedReason.Break, null);
-			Assert.AreEqual("1", argument.AsString);
-			Assert.AreEqual("2", local.AsString);
-			Assert.AreEqual("3", @class.AsString);
-			// localInSubFunction should be dead now
-			Assert.IsTrue(localInSubFunction.HasExpired);
+			ObjectDump("argument", argument);
+			ObjectDump("local", local);
+			ObjectDump("@class", @class);
+			ObjectDump("localInSubFunction", @localInSubFunction);
 			
 			process.Continue(); // 4 - Go to the SubFunction
 			WaitForPause(PausedReason.Break, null);
-			Assert.AreEqual("1", argument.AsString);
-			Assert.AreEqual("2", local.AsString);
-			Assert.AreEqual("3", @class.AsString);
-			// localInSubFunction should be still dead...
-			Assert.IsTrue(localInSubFunction.HasExpired);
-			// ... , but we should able to get new one
+			ObjectDump("argument", argument);
+			ObjectDump("local", local);
+			ObjectDump("@class", @class);
+			ObjectDump("localInSubFunction", @localInSubFunction);
 			localInSubFunction = process.SelectedFunction.LocalVariables["localInSubFunction"];
-			Assert.AreEqual("4", localInSubFunction.AsString);
+			ObjectDump("localInSubFunction(new)", @localInSubFunction);
 			
 			process.Continue(); // 5 - Setp out of both functions
 			WaitForPause(PausedReason.Break, null);
-			Assert.IsTrue(argument.HasExpired);
-			Assert.IsTrue(local.HasExpired);
-			Assert.IsTrue(@class.HasExpired);
+			ObjectDump("argument", argument);
+			ObjectDump("local", local);
+			ObjectDump("@class", @class);
+			ObjectDump("localInSubFunction", @localInSubFunction);
 			
 			process.Continue();
 			process.WaitForExit();
@@ -433,18 +259,11 @@ namespace Debugger.Tests
 		[Test]
 		public void ArrayValue()
 		{
-			StartProgram("ArrayValue");
+			StartTest("ArrayValue");
 			WaitForPause(PausedReason.Break, null);
 			NamedValue array = process.SelectedFunction.LocalVariables["array"];
-			Assert.AreEqual("array", array.Name);
-			Assert.IsTrue(array.IsArray);
-			Assert.AreEqual("{System.Int32[]}", array.AsString);
-			NamedValueCollection elements = array.GetArrayElements();
-			Assert.AreEqual(5, elements.Count);
-			for(int i = 0; i < 5; i++) {
-				Assert.AreEqual("[" + i.ToString() + "]", elements[i].Name);
-				Assert.AreEqual(i.ToString(), elements[i].AsString);
-			}
+			ObjectDump("array", array);
+			ObjectDump("array elements", array.GetArrayElements());
 			
 			process.Continue();
 			process.WaitForExit();
@@ -453,29 +272,19 @@ namespace Debugger.Tests
 		[Test]
 		public void ObjectValue()
 		{
-			NamedValue local = null;
+			NamedValue val = null;
 			
-			StartProgram("ObjectValue");
+			StartTest("ObjectValue");
 			WaitForPause(PausedReason.Break, null);
-			local = process.SelectedFunction.LocalVariables["val"];
-			Assert.AreEqual("val", local.Name);
-			Assert.IsTrue(local.IsObject);
-			Assert.AreEqual("{Debugger.Tests.TestPrograms.ObjectValue}", local.AsString);
-			Assert.AreEqual("Debugger.Tests.TestPrograms.ObjectValue", local.Type.FullName);
-			NamedValueCollection subVars = local.GetMembers(null, Debugger.BindingFlags.All);
-			Assert.IsTrue(subVars["privateField"].IsPrimitive);
-			Assert.IsTrue(subVars["publicFiled"].IsPrimitive);
-			Assert.IsTrue(subVars["PublicProperty"].IsPrimitive);
-			Assert.IsTrue(((MemberValue)subVars["privateField"]).MemberInfo.IsPrivate);
-			Assert.IsTrue(((MemberValue)subVars["publicFiled"]).MemberInfo.IsPublic);
-			Assert.IsTrue(((MemberValue)subVars["PublicProperty"]).MemberInfo.IsPublic);
-			DebugType baseClass = local.Type.BaseType;
-			Assert.AreEqual("Debugger.Tests.TestPrograms.BaseClass", baseClass.FullName);
-			Assert.AreEqual("private", subVars["privateField"].AsString);
+			val = process.SelectedFunction.LocalVariables["val"];
+			ObjectDump("val", val);
+			ObjectDump("val members", val.GetMembers(null, Debugger.BindingFlags.All));
+			//ObjectDump("typeof(val)", val.Type);
 			
 			process.Continue();
 			WaitForPause(PausedReason.Break, null);
-			Assert.AreEqual("new private", subVars["privateField"].AsString);
+			ObjectDump("val", val);
+			ObjectDump("val members", val.GetMembers(null, Debugger.BindingFlags.All));
 			
 			process.Continue();
 			process.WaitForExit();
@@ -555,7 +364,7 @@ namespace Debugger.Tests
 		[Test]
 		public void SetIP()
 		{
-			StartProgram("SetIP");
+			StartTest("SetIP");
 			WaitForPause(PausedReason.Break, "1");
 			
 			Assert.IsNotNull(process.SelectedFunction.CanSetIP("SetIP.cs", 16, 0));

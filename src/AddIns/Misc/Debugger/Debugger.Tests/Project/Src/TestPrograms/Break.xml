@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test name="Break">
+    <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">Break.exe</ModuleLoaded>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ProcessExited />
+  </Test>
+</DebuggerTests>

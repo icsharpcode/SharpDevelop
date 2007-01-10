@@ -24,6 +24,7 @@ namespace Debugger
 		ISymUnmanagedReader symReader;
 		MetaData metaData;
 		
+		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
 				return process;
@@ -146,6 +147,11 @@ namespace Debugger
 			}
 			
 			unloaded = true;
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("{0}", this.Filename);
 		}
 	}
 }

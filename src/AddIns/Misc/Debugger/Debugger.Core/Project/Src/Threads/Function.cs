@@ -37,6 +37,7 @@ namespace Debugger
 		MethodProps methodProps;
 		
 		/// <summary> The process in which this function is executed </summary>
+		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
 				return process;
@@ -51,6 +52,7 @@ namespace Debugger
 		}
 		
 		/// <summary> Metadata token of the function </summary>
+		[Debugger.Tests.Ignore]
 		public uint Token {
 			get {
 				return methodProps.Token;
@@ -58,13 +60,15 @@ namespace Debugger
 		}
 		
 		/// <summary> A module in which the function is defined </summary>
-		public Module Module { 
+		[Debugger.Tests.SummaryOnly]
+		public Module Module {
 			get { 
 				return module; 
 			} 
 		}
 		
 		/// <summary> A thread in which the function is executed </summary>
+		[Debugger.Tests.Ignore]
 		public Thread Thread {
 			get {
 				return thread;
@@ -379,6 +383,7 @@ namespace Debugger
 		/// Gets all variables in the lexical scope of the function. 
 		/// That is, arguments, local variables and varables of the containing class.
 		/// </summary>
+		[Debugger.Tests.Ignore] // Accessible though others
 		public NamedValueCollection Variables {
 			get {
 				return new NamedValueCollection(GetVariables());

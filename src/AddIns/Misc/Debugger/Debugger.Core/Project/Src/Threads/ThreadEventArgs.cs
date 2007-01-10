@@ -14,6 +14,7 @@ namespace Debugger
 	{
 		Thread thread;
 		
+		[Debugger.Tests.Ignore]
 		public Thread Thread {
 			get {
 				return thread;

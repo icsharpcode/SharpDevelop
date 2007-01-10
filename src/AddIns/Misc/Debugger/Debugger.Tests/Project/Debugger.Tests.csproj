@@ -1,6 +1,6 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>Debugger.Tests</RootNamespace>
     <AssemblyName>Debugger.Tests</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -20,7 +20,6 @@
     <BaseAddress>4194304</BaseAddress>
     <FileAlignment>4096</FileAlignment>
     <DebugSymbols>true</DebugSymbols>
-    <StartupObject>Debugger.Tests.TestProgram</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -40,25 +39,9 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\DebuggerTests.cs" />
-    <Compile Include="Src\TestPrograms\SimpleProgram.cs" />
-    <Compile Include="Src\TestProgram.cs" />
-    <Compile Include="Src\TestPrograms\HelloWorld.cs" />
-    <Compile Include="Src\TestPrograms\Breakpoint.cs" />
-    <Compile Include="Src\TestPrograms\Symbols.cs" />
-    <Compile Include="Src\TestPrograms\Break.cs" />
-    <Compile Include="Src\TestPrograms\FileRelease.cs" />
-    <Compile Include="Src\TestPrograms\Stepping.cs" />
-    <Compile Include="Src\TestPrograms\Callstack.cs" />
-    <Compile Include="Src\TestPrograms\FunctionArgumentVariables.cs" />
-    <Compile Include="Src\TestPrograms\FunctionLocalVariables.cs" />
-    <Compile Include="Src\TestPrograms\FunctionLifetime.cs" />
-    <Compile Include="Src\TestPrograms\FunctionVariablesLifetime.cs" />
-    <Compile Include="Src\TestPrograms\ObjectValue.cs" />
-    <Compile Include="Src\TestPrograms\PropertyVariable.cs" />
-    <Compile Include="Src\TestPrograms\PropertyVariableForm.cs" />
-    <Compile Include="Src\TestPrograms\SetIP.cs" />
-    <Compile Include="Src\TestPrograms\ArrayValue.cs" />
-    <Compile Include="Src\TestPrograms\DebuggeeKilled.cs" />
+    <Compile Include="Src\DebuggerTestsBase.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\*.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\*.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />

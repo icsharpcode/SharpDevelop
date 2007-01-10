@@ -91,6 +91,7 @@ namespace Debugger
 		}
 		
 		/// <summary> The process that owns the value </summary>
+		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
 				return process;
@@ -211,6 +212,7 @@ namespace Debugger
 		}
 		
 		/// <summary> Returns the <see cref="Debugger.DebugType"/> of the value </summary>
+		[Debugger.Tests.SummaryOnly]
 		public DebugType Type {
 			get {
 				return Cache.Type;

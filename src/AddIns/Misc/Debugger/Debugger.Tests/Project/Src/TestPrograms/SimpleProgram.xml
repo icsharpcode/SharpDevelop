@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test name="SimpleProgram">
+    <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">SimpleProgram.exe</ModuleLoaded>
+    <ProcessExited />
+  </Test>
+</DebuggerTests>

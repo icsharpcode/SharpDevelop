@@ -26,6 +26,7 @@ namespace Debugger
 		Process process;
 		bool pauseProcessInsteadOfContinue;
 		
+		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
 				return process;

@@ -48,6 +48,7 @@ namespace Debugger
 		}
 		
 		/// <summary> Gets the metadata token associated with this field </summary>
+		[Debugger.Tests.Ignore]
 		public override uint MetadataToken {
 			get {
 				return fieldProps.Token;

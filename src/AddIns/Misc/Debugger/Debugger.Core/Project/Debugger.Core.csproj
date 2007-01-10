@@ -201,6 +201,8 @@
     <Compile Include="Src\Modules\Module.cs" />
     <Compile Include="Src\Modules\ModuleEventArgs.cs" />
     <Compile Include="Src\Modules\Process-Modules.cs" />
+    <Compile Include="Src\Tests\IgnoreAttribute.cs" />
+    <Compile Include="Src\Tests\SummaryOnlyAttribute.cs" />
     <Compile Include="Src\Threads\Exception.cs" />
     <Compile Include="Src\Threads\ExceptionType.cs" />
     <Compile Include="Src\Threads\FrameID.cs" />
@@ -395,6 +397,7 @@
     <Folder Include="Src\Interop\Enums" />
     <Folder Include="Src\Interop\MetaData" />
     <Folder Include="Src\Modules" />
+    <Folder Include="Src\Tests" />
     <Folder Include="Src\Threads" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Variables" />
