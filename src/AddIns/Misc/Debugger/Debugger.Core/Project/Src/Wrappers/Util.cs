@@ -18,10 +18,10 @@ namespace Debugger.Wrappers
 	{
 		public static string GetString(UnmanagedStringGetter getter)
 		{
-			return GetString(getter, 64);
+			return GetString(getter, 64, true);
 		}
 		
-		public static string GetString(UnmanagedStringGetter getter, uint defaultLenght)
+		public static string GetString(UnmanagedStringGetter getter, uint defaultLenght, bool trim)
 		{
 			string managedString;
 			IntPtr unmanagedString;
@@ -40,6 +40,11 @@ namespace Debugger.Wrappers
 			
 			// Return managed string and free unmanaged memory
 			managedString = Marshal.PtrToStringUni(unmanagedString, (int)exactLenght);
+			//Console.WriteLine("Marshaled string from COM: \"" + managedString + "\" lenght=" + managedString.Length + " arrayLenght=" + exactLenght);
+			// The API might or might not include terminating null at the end
+			if (trim) {
+				managedString = managedString.TrimEnd('\0');
+			}
 			Marshal.FreeHGlobal(unmanagedString);
 			return managedString;
 		}

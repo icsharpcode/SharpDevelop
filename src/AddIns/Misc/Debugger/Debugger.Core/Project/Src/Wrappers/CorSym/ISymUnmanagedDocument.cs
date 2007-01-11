@@ -16,7 +16,7 @@ namespace Debugger.Wrappers.CorSym
 	{
 		public string URL {
 			get {
-				return Util.GetString(GetURL, 0);
+				return Util.GetString(GetURL, 256, true);
 			}
 		}
 	}

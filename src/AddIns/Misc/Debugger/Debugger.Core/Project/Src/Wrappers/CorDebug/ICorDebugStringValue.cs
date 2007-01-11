@@ -16,7 +16,7 @@ namespace Debugger.Wrappers.CorDebug
 	{
 		public string String {
 			get {
-				return Util.GetString(GetString);
+				return Util.GetString(GetString, 64, false);
 			}
 		}
 	}
