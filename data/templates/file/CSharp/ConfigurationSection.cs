@@ -11,8 +11,7 @@ namespace ${StandardNamespace}
 public class ${ClassName}Section : ConfigurationSection
 	{
 		/// <summary>
-		/// Collection of tables (auctually views) to generate 
-		/// reports from.
+		/// Collection of <c>${ClassName}Element(s)</c> 
 		/// </summary>
 		[ConfigurationProperty("customSection", IsDefaultCollection = true)]
 		public ${ClassName}Collection ${ClassName}
