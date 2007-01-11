@@ -226,10 +226,12 @@
 				<ComponentRef Id="WixCaDll"/>
 				<ComponentRef Id="WixCaWixLib"/>
 				<ComponentRef Id="WixCopExe"/>
+				<ComponentRef Id="WixMMCExtensionDll"/>
 				<ComponentRef Id="WixNetFxExtensionDll"/>
 				<ComponentRef Id="WixTasksDll"/>
 				<ComponentRef Id="WixUiWixLib"/>
 				<ComponentRef Id="WixLocalisationFiles"/>
+				<ComponentRef Id="WixUIhuhuWxl"/>
 				<ComponentRef Id="NUnitCoreExtensionsDll"/>
 				<ComponentRef Id="NUnitUiKitDll"/>
 				<ComponentRef Id="NUnitUtilDll"/>

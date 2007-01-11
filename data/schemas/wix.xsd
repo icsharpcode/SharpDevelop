@@ -156,6 +156,7 @@
                     <xs:element ref="Group"/>
                     <xs:element ref="Icon"/>
                     <xs:element ref="Media"/>
+                    <xs:element ref="PatchCertificates"/>
                     <xs:element ref="Property"/>
                     <xs:element ref="PropertyRef"/>
                     <xs:element ref="SFPCatalog"/>
@@ -458,6 +459,7 @@
                     <xs:element ref="Icon"/>
                     <xs:element ref="IgnoreModularization"/>
                     <xs:element ref="Media"/>
+                    <xs:element ref="PatchCertificates"/>
                     <xs:element ref="Property"/>
                     <xs:element ref="PropertyRef"/>
                     <xs:element ref="SFPCatalog"/>
@@ -1139,10 +1141,26 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="PatchCertificates">
+        <xs:annotation>
+            <xs:documentation>
+                Identifies the possible signer certificates used to digitally sign patches.
+            </xs:documentation>
+            <xs:appinfo>
+                <xse:msiRef table="MsiPatchCertificate" />
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element ref="DigitalCertificate" />
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="DigitalCertificate">
         <xs:annotation>
             <xs:documentation>
-                Adds a digital certificate
+                Adds a digital certificate.
             </xs:documentation>
             <xs:appinfo>
                 <xse:msiRef table="MsiDigitalCertificate" />
@@ -7212,7 +7230,25 @@
             </xs:attribute>
         </xs:complexType>
     </xs:element>
-    
+
+    <xs:element name="HttpHeader">
+        <xs:annotation>
+            <xs:documentation>Custom HTTP Header definition for IIS resources such as WebSite and WebVirtualDir.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="Name" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Name of the custom HTTP Header.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Value" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Value for the custom HTTP Header.  This attribute may be set via a formatted Property (e.g. [MyProperty]).</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="MimeMap">
         <xs:annotation><xs:documentation>MimeMap definition for IIS resources.</xs:documentation></xs:annotation>
         <xs:complexType>
@@ -7361,21 +7397,69 @@
     <xs:element name="Certificate">
         <xs:annotation>
             <xs:documentation>
-                SSL Certificates.
+                Used to install and unintall certificates.
             </xs:documentation>
             <xs:appinfo>
                 <xse:seeAlso ref="CertificateRef"/>
             </xs:appinfo>
         </xs:annotation>
         <xs:complexType>
-            <xs:attribute name="Id" use="required" type="xs:string"/>
+            <xs:attribute name="Id" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        Unique identifier for this certificate in the installation package.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Name" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        Name of the certificate that will be installed or uninstalled in the specified store.
+                        This attribute may be set via a formatted Property (e.g. [MyProperty]).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
             <xs:attribute name="StoreName" use="required">
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
-                        <xs:enumeration value="ca"/>
-                        <xs:enumeration value="my"/>
+                        <xs:enumeration value="ca">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Contains the certificates of certificate authorities that the user trusts to issue certificates to others. Certificates in these stores are normally supplied with the operating system or by the user's network administrator.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="my">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Use the "personal" value instead.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="personal">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Contains personal certificates. These certificates will usually have an associated private key. This store is often
+                                    referred to as the "MY" certificate store.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
                         <xs:enumeration value="request"/>
-                        <xs:enumeration value="root"/>
+                        <xs:enumeration value="root">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Contains the certificates of certificate authorities that the user trusts to issue certificates to others. Certificates in these stores are normally supplied with the operating system or by the user's network administrator. Certificates in this store are typically self-signed.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="otherPeople">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Contains the certificates of those that the user normally sends enveloped messages to or receives signed messages from.
+                                    See <a href="http://msdn2.microsoft.com/en-us/library/aa388160.aspx">MSDN documentation</a> for more information.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
                     </xs:restriction>
                 </xs:simpleType>
             </xs:attribute>
@@ -7388,18 +7472,50 @@
                 </xs:simpleType>
             </xs:attribute>
             <xs:attribute name="Overwrite" type="YesNoType"/>
-            <xs:attribute name="Request" type="YesNoType"/>
-            <xs:attribute name="BinaryKey" type="xs:string"/>
-            <xs:attribute name="CertificatePath" type="xs:string"/>
-            <xs:attribute name="PFXPassword" type="xs:string"/>
+            <xs:attribute name="Request" type="YesNoType">
+                <xs:annotation>
+                    <xs:documentation>
+                        This attribute controls whether the CertificatePath attribute is a path to a certificate file (Request=&apos;no&apos;) or the
+                        certificate authority to request the certificate from  (Request=&apos;yes&apos;).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="BinaryKey" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        Reference to a Binary element that will store the certificate as a stream inside the package.  This attribute cannot be specified with
+                        the CertificatePath attribute.
+                    </xs:documentation>
+                    <xs:appinfo>
+                        <xse:seeAlso ref="Binary"/>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="CertificatePath" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        If the Request attribute is "no" then this attribute is the path to the certificate file outside of the package.
+                        If the Request attribute is "yes" then this atribute is the certificate authority to request the certificate from.
+                        This attribute may be set via a formatted Property (e.g. [MyProperty]).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="PFXPassword" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        If the Binary stream or path to the file outside of the package is a password protected PFX file, the password for that
+                        PFX must be specified here.  This attribute may be set via a formatted Property (e.g. [MyProperty]).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
-    
+
     <xs:element name="CertificateRef">
         <xs:annotation>
             <xs:documentation>
-                Associates a certificate with the parent WebApplication.  The Certificate element must be
-                in the same Component as the parent WebApplication.
+                Associates a certificate with the parent WebSite.  The Certificate element should be
+                in the same Component as the parent WebSite.
             </xs:documentation>
             <xs:appinfo>
                 <xse:seeAlso ref="Certificate"/>
@@ -7410,12 +7526,6 @@
                 <xs:annotation>
                     <xs:documentation>
                         The identifier of the referenced Certificate.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="Permissions" use="required" type="xs:integer">
-                <xs:annotation>
-                    <xs:documentation>
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
@@ -7473,7 +7583,6 @@
         <xs:annotation><xs:documentation>Defines properties for a web application. These properties can be used for more than one application defined in a web site, directory, or vroot, by defining this element in a common location and referring to it by setting the WebApplication attribute of the WebSite, WebDir, and WebVirtualDir elements.</xs:documentation></xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element ref="CertificateRef" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="WebApplicationExtension" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
             <xs:attribute name="Id" use="required" type="xs:string"/>
@@ -7569,6 +7678,7 @@
                 <xs:element ref="WebApplication" minOccurs="0"/>
                 <xs:element ref="WebError" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="WebVirtualDir" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="HttpHeader" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="MimeMap" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
             <xs:attribute name="Id" use="required" type="xs:string"/>
@@ -7630,6 +7740,8 @@
                 <xs:element ref="WebAddress" maxOccurs="unbounded"/>
                 <xs:element ref="WebApplication" minOccurs="0"/>
                 <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element ref="CertificateRef"/>
+                    <xs:element ref="HttpHeader"/>
                     <xs:element ref="WebDir"/>
                     <xs:element ref="WebError"/>
                     <xs:element ref="WebFilter"/>
