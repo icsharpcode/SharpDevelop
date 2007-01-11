@@ -98,7 +98,7 @@ namespace Debugger
 				this.Process,
 				dependencies.ToArray(),
 				dependencies.ToArray(),
-				delegate { return getMethod.Invoke(objectInstance, parameters).CorValue; }
+				delegate { return getMethod.Invoke(objectInstance, parameters).RawCorValue; }
 			);
 		}
 		

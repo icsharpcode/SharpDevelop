@@ -213,16 +213,10 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public NamedValue GetVariableFromName(string variableName)
 		{
-			if (debuggedProcess == null || debuggedProcess.IsRunning) return null;
-			
-			NamedValueCollection collection = debuggedProcess.LocalVariables;
-			
-			if (collection == null) return null;
-			
-			try {
-				return collection[variableName];
-			} catch (DebuggerException) {
+			if (debuggedProcess == null || debuggedProcess.IsRunning) { 
 				return null;
+			} else {
+				return debuggedProcess.GetValue(variableName);
 			}
 		}
 		

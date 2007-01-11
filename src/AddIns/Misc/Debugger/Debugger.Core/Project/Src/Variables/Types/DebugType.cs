@@ -36,6 +36,7 @@ namespace Debugger
 		List<FieldInfo>    fields = new List<FieldInfo>();
 		List<MethodInfo>   methods = new List<MethodInfo>();
 		List<PropertyInfo> properties = new List<PropertyInfo>();
+		List<MemberInfo>   members = new List<MemberInfo>(); // All combined
 		
 		// Stores all DebugType instances. FullName is the key
 		static Dictionary<string, List<DebugType>> loadedTypes = new Dictionary<string, List<DebugType>>();
@@ -326,7 +327,9 @@ namespace Debugger
 			Dictionary<string, object> propertyNames = new Dictionary<string, object>();
 			foreach(MethodInfo method in methods) {
 				if (method.IsSpecialName && (method.Name.StartsWith("get_") || method.Name.StartsWith("set_"))) {
-					accessors.Add(method.Name, method);
+					// There can be many get_Items
+					// TODO: This returns only last, return all
+					accessors[method.Name] = method;
 					propertyNames[method.Name.Remove(0,4)] = null;
 				}
 			}
@@ -337,6 +340,17 @@ namespace Debugger
 				accessors.TryGetValue("get_" + kvp.Key, out getter);
 				accessors.TryGetValue("set_" + kvp.Key, out setter);
 				properties.Add(new PropertyInfo(this, getter, setter));
+			}
+			
+			// Make a combined collection
+			foreach(FieldInfo field in fields) {
+				members.Add(field);
+			}
+			foreach(MemberInfo method in methods) {
+				members.Add(method);
+			}
+			foreach(PropertyInfo property in properties) {
+				members.Add(property);
 			}
 		}
 		
@@ -395,6 +409,24 @@ namespace Debugger
 		public IList<PropertyInfo> GetProperties(BindingFlags bindingFlags)
 		{
 			return FilterMemberInfo(properties, bindingFlags);
+		}
+		
+		/// <summary> Return all members that have spefied name and satisfy binding flags </summary>
+		public IList<MemberInfo> GetMember(string name, BindingFlags bindingFlags)
+		{
+			return FilterMemberInfo(FilterMemberInfo(members, name), bindingFlags);
+		}
+		
+		/// <summary> Return all public members.</summary>
+		public IList<MemberInfo> GetMembers()
+		{
+			return GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+		}
+		
+		/// <summary> Return all members satisfing binding flags.</summary>
+		public IList<MemberInfo> GetMembers(BindingFlags bindingFlags)
+		{
+			return FilterMemberInfo(members, bindingFlags);
 		}
 		
 		/// <summary> Compares two types </summary>

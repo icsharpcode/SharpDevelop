@@ -14,7 +14,18 @@ namespace Debugger
 {
 	public partial class DebugType
 	{
-		IList<T> FilterMemberInfo<T>(List<T> input, BindingFlags bindingFlags) where T:MemberInfo
+		IList<T> FilterMemberInfo<T>(IList<T> input, string name) where T:MemberInfo
+		{
+			List<T> filtered = new List<T>();
+			foreach(T memberInfo in input) {
+				if (memberInfo.Name == name) {
+					filtered.Add(memberInfo);
+				}
+			}
+			return filtered.AsReadOnly();
+		}
+		
+		IList<T> FilterMemberInfo<T>(IList<T> input, BindingFlags bindingFlags) where T:MemberInfo
 		{
 			List<T> filtered = new List<T>();
 			foreach(T memberInfo in input) {
@@ -23,7 +34,7 @@ namespace Debugger
 					
 					if (memberInfo.IsPrivate && ((bindingFlags & BindingFlags.NonPublic) != 0) ||
 					    memberInfo.IsPublic  && ((bindingFlags & BindingFlags.Public)    != 0)) {
-					
+						
 						filtered.Add(memberInfo);
 					}
 				}
@@ -75,6 +86,21 @@ namespace Debugger
 			// TypeDef - Localy defined
 			if ((superToken & 0xFF000000) == 0x02000000) {
 				return currModule.CorModule.GetClassFromToken(superToken);
+			}
+			
+			// TypeSpec - generic class whith 'which'
+			if ((superToken & 0xFF000000) == 0x1B000000) {
+				// Walkaround - fake 'object' type
+				string fullTypeName = "System.Object";
+				
+				foreach (Module superModule in process.Modules) {
+					try	{
+						uint token = superModule.MetaData.FindTypeDefByName(fullTypeName, 0).Token;
+						return superModule.CorModule.GetClassFromToken(token);
+					} catch {
+						continue;
+					}
+				}
 			}
 			
 			// TypeRef - Referencing to external assembly

@@ -107,6 +107,12 @@ namespace Debugger
 			}
 		}
 		
+		internal ICorDebugValue RawCorValue {
+			get {
+				return Cache.RawCorValue;
+			}
+		}
+		
 		internal ICorDebugValue CorValue {
 			get {
 				return Cache.CorValue;
@@ -120,12 +126,6 @@ namespace Debugger
 					return (CorElementType)0;
 				}
 				return (CorElementType)corValue.Type;
-			}
-		}
-		
-		ICorDebugValue RawCorValue {
-			get {
-				return Cache.RawCorValue;
 			}
 		}
 		

@@ -49,6 +49,15 @@ namespace Debugger
 		}
 		
 		/// <summary>
+		/// Gets a value indicating whether the collection contains a
+		/// value with a given name
+		/// </summary>
+		public bool Contains(string name)
+		{
+			return hashtable.ContainsKey(name);
+		}
+		
+		/// <summary>
 		/// Gets number of <see cref="Debugger.NamedValue">named values</see> contained in the collection
 		/// </summary>
 		public int Count {

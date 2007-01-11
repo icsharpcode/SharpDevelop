@@ -249,5 +249,16 @@ namespace Debugger
 				}
 			}
 		}
+		
+		/// <summary> Gets value of given name which is accessible from selected function </summary>
+		/// <returns> Null if not found </returns>
+		public NamedValue GetValue(string name)
+		{
+			if (SelectedFunction == null || IsRunning) {
+				return null;
+			} else {
+				return SelectedFunction.GetValue(name);
+			}
+		}
 	}
 }

@@ -379,6 +379,25 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary> Gets value of given name which is accessible from this function </summary>
+		/// <returns> Null if not found </returns>
+		public NamedValue GetValue(string name)
+		{
+			if (name == "this") {
+				return ThisValue;
+			}
+			if (Arguments.Contains(name)) {
+				return Arguments[name];
+			}
+			if (LocalVariables.Contains(name)) {
+				return LocalVariables[name];
+			}
+			if (ContaingClassVariables.Contains(name)) {
+				return ContaingClassVariables[name];
+			}
+			return null;
+		}
+		
 		/// <summary>
 		/// Gets all variables in the lexical scope of the function. 
 		/// That is, arguments, local variables and varables of the containing class.
@@ -406,6 +425,8 @@ namespace Debugger
 			}
 		}
 		
+		NamedValue thisValueCache;
+		
 		/// <summary> 
 		/// Gets the instance of the class asociated with the current frame.
 		/// That is, 'this' in C#.
@@ -413,13 +434,16 @@ namespace Debugger
 		public NamedValue ThisValue {
 			get {
 				if (IsStatic) throw new DebuggerException("Static method does not have 'this'.");
-				return new NamedValue(
-					"this",
-					process,
-					new IExpirable[] {this},
-					new IMutable[] {},
-					delegate { return ThisCorValue; }
-				);
+				if (thisValueCache == null) {
+					thisValueCache = new NamedValue(
+						"this",
+						process,
+						new IExpirable[] {this},
+						new IMutable[] {},
+						delegate { return ThisCorValue; }
+					);
+				}
+				return thisValueCache;
 			}
 		}
 		
@@ -501,10 +525,20 @@ namespace Debugger
 			}
 		}
 		
+		NamedValueCollection argumentsCache;
+		
 		/// <summary> Gets all arguments of the function. </summary>
 		public NamedValueCollection Arguments {
 			get {
-				return new NamedValueCollection(ArgumentsEnum);
+				if (argumentsCache == null) {
+					DateTime startTime = Util.HighPrecisionTimer.Now;
+					
+					argumentsCache = new NamedValueCollection(ArgumentsEnum);
+					
+					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
+					process.TraceMessage("Loaded Arguments for " + this.ToString() + " (" + totalTime.TotalMilliseconds + " ms)");
+				}
+				return argumentsCache;
 			}
 		}
 		
@@ -516,10 +550,20 @@ namespace Debugger
 			}
 		}
 		
+		NamedValueCollection localVariablesCache;
+		
 		/// <summary> Gets all local variables of the function. </summary>
 		public NamedValueCollection LocalVariables {
 			get {
-				return new NamedValueCollection(LocalVariablesEnum);
+				if (localVariablesCache == null) {
+					DateTime startTime = Util.HighPrecisionTimer.Now;
+					
+					localVariablesCache = new NamedValueCollection(LocalVariablesEnum);
+					
+					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
+					process.TraceMessage("Loaded LocalVariables for " + this.ToString() + " (" + totalTime.TotalMilliseconds + " ms)");
+				}
+				return localVariablesCache;
 			}
 		}
 		
