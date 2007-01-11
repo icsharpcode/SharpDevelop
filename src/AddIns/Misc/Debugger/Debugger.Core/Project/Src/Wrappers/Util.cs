@@ -39,7 +39,7 @@ namespace Debugger.Wrappers
 			}
 			
 			// Return managed string and free unmanaged memory
-			managedString = Marshal.PtrToStringUni(unmanagedString);
+			managedString = Marshal.PtrToStringUni(unmanagedString, (int)exactLenght);
 			Marshal.FreeHGlobal(unmanagedString);
 			return managedString;
 		}
