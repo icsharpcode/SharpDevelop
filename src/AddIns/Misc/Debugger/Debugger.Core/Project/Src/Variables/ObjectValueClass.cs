@@ -210,6 +210,21 @@ namespace Debugger
 				return currModule.CorModule.GetClassFromToken(superToken);
 			}
 			
+			// TypeSpec - generic class whith 'which'
+			if ((superToken & 0xFF000000) == 0x1B000000) {
+				// Walkaround - fake 'object' type
+				string fullTypeName = "System.Object";
+				
+				foreach (Module superModule in process.Modules) {
+					try	{
+						uint token = superModule.MetaData.FindTypeDefByName(fullTypeName, 0).Token;
+						return superModule.CorModule.GetClassFromToken(token);
+					} catch {
+						continue;
+					}
+				}
+			}
+			
 			// TypeRef - Referencing to external assembly
 			if ((superToken & 0xFF000000) == 0x01000000) {
 				string fullTypeName = currModule.MetaData.GetTypeRefProps(superToken).Name;
