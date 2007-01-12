@@ -62,10 +62,15 @@ namespace Debugger.Tests
 		[TearDown]
 		public virtual void TearDown()
 		{
-			while(debugger.Processes.Count > 0) {
-				debugger.Processes[0].Terminate();
-				debugger.Processes[0].WaitForExit();
-			}
+			
+		}
+		
+		protected void CheckXmlOutput()
+		{
+//			while(debugger.Processes.Count > 0) {
+//				debugger.Processes[0].Terminate();
+//				debugger.Processes[0].WaitForExit();
+//			}
 			string path = Path.GetTempPath();
 			path = Path.Combine(path, "SharpDevelop");
 			path = Path.Combine(path, "DebuggerTestResults");
@@ -125,23 +130,11 @@ namespace Debugger.Tests
 			return eventNode;
 		}
 		
-		protected void WaitForPause(PausedReason expectedReason)
+		protected void WaitForPause()
 		{
 			process.WaitForPause();
 			Assert.AreEqual(true, process.IsPaused);
-			Assert.AreEqual(expectedReason, process.PausedReason);
 		}	
-		
-		protected void WaitForPause(PausedReason expectedReason, string expectedLastLogMessage)
-		{
-			WaitForPause(expectedReason);
-			if (expectedLastLogMessage != null) expectedLastLogMessage += "\r\n";
-			Assert.AreEqual(expectedLastLogMessage, lastLogMessage);
-			
-//			snapshotNode = testDoc.CreateElement("Snapshot");
-//			snapshotNode.SetAttribute("id", (shapshotID++).ToString());
-//			testNode.AppendChild(snapshotNode);
-		}
 		
 		public void ObjectDump(object obj)
 		{

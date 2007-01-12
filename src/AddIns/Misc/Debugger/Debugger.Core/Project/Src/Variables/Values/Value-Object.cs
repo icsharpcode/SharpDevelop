@@ -40,10 +40,10 @@ namespace Debugger
 			while (currentType != null) {
 				foreach(MemberInfo memberInfo in currentType.GetMember(name, BindingFlags.All)) {
 					if (memberInfo is FieldInfo) {
-						((FieldInfo)memberInfo).GetValue(this);
+						return ((FieldInfo)memberInfo).GetValue(this);
 					}
 					if (memberInfo is PropertyInfo) {
-						((PropertyInfo)memberInfo).GetValue(this);
+						return ((PropertyInfo)memberInfo).GetValue(this);
 					}
 				}
 				currentType = currentType.BaseType;

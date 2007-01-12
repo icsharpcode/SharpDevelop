@@ -225,7 +225,29 @@
           </NamedValueCollection>
         </ContaingClassVariables>
         <ArgumentCount exception="Function has expired" />
-        <Arguments exception="Function has expired" />
+        <Arguments>
+          <NamedValueCollection>
+            <Count>1</Count>
+            <Items>
+              <MethodArgument>
+                <Index>0</Index>
+                <Name>i</Name>
+                <IsArray exception="Value has expired" />
+                <ArrayLenght exception="Value has expired" />
+                <ArrayRank exception="Value has expired" />
+                <ArrayDimensions exception="Value has expired" />
+                <IsNull exception="Value has expired" />
+                <AsString exception="Value has expired" />
+                <IsObject exception="Value has expired" />
+                <IsPrimitive exception="Value has expired" />
+                <IsInteger exception="Value has expired" />
+                <PrimitiveValue exception="Value has expired" />
+                <HasExpired>True</HasExpired>
+                <Type exception="Value has expired" />
+              </MethodArgument>
+            </Items>
+          </NamedValueCollection>
+        </Arguments>
         <LocalVariables>
           <NamedValueCollection>
             <Count>0</Count>

@@ -28,6 +28,7 @@ namespace Debugger.Tests
 		{
 			StartTest("SimpleProgram");
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		[Test]
@@ -35,16 +36,18 @@ namespace Debugger.Tests
 		{
 			StartTest("HelloWorld");
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		[Test]
 		public void Break()
 		{
 			StartTest("Break");
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			
 			process.Continue();
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		[Test]
@@ -53,20 +56,21 @@ namespace Debugger.Tests
 			Breakpoint breakpoint = debugger.AddBreakpoint(@"F:\SharpDevelopTrunk\src\AddIns\Misc\Debugger\Debugger.Tests\Project\Src\TestPrograms\Breakpoint.cs", 18);
 			
 			StartTest("Breakpoint");
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			
 			ObjectDump(breakpoint);
 			
 			process.Continue();
-			WaitForPause(PausedReason.Breakpoint, "Mark 1");
+			WaitForPause();
 			
 			process.Continue();
-			WaitForPause(PausedReason.Break, "Mark 2");
+			WaitForPause();
 			
 			process.Continue();
 			process.WaitForExit();
 			
 			ObjectDump(breakpoint);
+			CheckXmlOutput();
 		}
 		
 //		[Test]
@@ -79,7 +83,7 @@ namespace Debugger.Tests
 //		public void DebuggeeKilled()
 //		{
 //			StartTest("DebuggeeKilled");
-//			WaitForPause(PausedReason.Break);
+//			WaitForPause();
 //			Assert.AreNotEqual(null, lastLogMessage);
 //			System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(int.Parse(lastLogMessage));
 //			p.Kill();
@@ -90,89 +94,93 @@ namespace Debugger.Tests
 		public void Stepping()
 		{
 			StartTest("Stepping");
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepOver(); // Debugger.Break
-			WaitForPause(PausedReason.StepComplete, null);
+			WaitForPause();
 			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepOver(); // Debug.WriteLine 1
-			WaitForPause(PausedReason.StepComplete, "1");
+			WaitForPause();
 			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepInto(); // Method Sub
-			WaitForPause(PausedReason.StepComplete, "1");
+			WaitForPause();
 			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepInto(); // '{'
-			WaitForPause(PausedReason.StepComplete, "1");
+			WaitForPause();
 			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepInto(); // Debug.WriteLine 2
-			WaitForPause(PausedReason.StepComplete, "2");
+			WaitForPause();
 			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepOut(); // Method Sub
-			WaitForPause(PausedReason.StepComplete, "4");
+			WaitForPause();
 			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepOver(); // Method Sub
-			WaitForPause(PausedReason.StepComplete, "4");
+			WaitForPause();
 			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.StepOver(); // Method Sub2
-			WaitForPause(PausedReason.StepComplete, "5");
+			WaitForPause();
 			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.Continue();
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		[Test]
 		public void Callstack()
 		{
 			StartTest("Callstack");
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			ObjectDump("Callstack", process.SelectedThread.Callstack);
 			
 			process.StepOut();
-			WaitForPause(PausedReason.StepComplete, null);
+			WaitForPause();
 			ObjectDump("Callstack", process.SelectedThread.Callstack);
 			
 			process.StepOut();
-			WaitForPause(PausedReason.StepComplete, null);
+			WaitForPause();
 			ObjectDump("Callstack", process.SelectedThread.Callstack);
 			
 			process.Continue();
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		[Test]
 		public void FunctionArgumentVariables()
 		{
 			StartTest("FunctionArgumentVariables");
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			
 			for(int i = 0; i < 6; i++) {
 				process.Continue();
-				WaitForPause(PausedReason.Break, null);
+				WaitForPause();
 				ObjectDump("SelectedFunction", process.SelectedFunction);
 			}
 			
 			process.Continue();
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		[Test]
 		public void FunctionLocalVariables()
 		{
 			StartTest("FunctionLocalVariables");
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			ObjectDump("SelectedFunction", process.SelectedFunction);
 			
 			process.Continue();
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		[Test]
@@ -181,27 +189,28 @@ namespace Debugger.Tests
 			Function function;
 			
 			StartTest("FunctionLifetime");
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			function = process.SelectedFunction;
 			ObjectDump("Function", function);
 			
 			process.Continue(); // Go to the SubFunction
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			ObjectDump("Function", function);
 			ObjectDump("SubFunction", process.SelectedFunction);
 			
 			process.Continue(); // Go back to Function
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			Assert.AreEqual(function, process.SelectedFunction);
 			ObjectDump("Function", function);
 			
 			process.Continue(); // Setp out of function
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			ObjectDump("Main", process.SelectedFunction);
 			ObjectDump("Function", function);
 			
 			process.Continue();
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		[Test]
@@ -213,7 +222,7 @@ namespace Debugger.Tests
 			NamedValue @class   = null;
 			
 			StartTest("FunctionVariablesLifetime"); // 1 - Enter program
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			argument = process.SelectedFunction.GetArgument(0);
 			local = process.SelectedFunction.LocalVariables["local"];
 			@class = process.SelectedFunction.ContaingClassVariables["class"];
@@ -222,7 +231,7 @@ namespace Debugger.Tests
 			ObjectDump("@class", @class);
 			
 			process.Continue(); // 2 - Go to the SubFunction
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			localInSubFunction = process.SelectedFunction.LocalVariables["localInSubFunction"];
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
@@ -230,14 +239,14 @@ namespace Debugger.Tests
 			ObjectDump("localInSubFunction", @localInSubFunction);
 			
 			process.Continue(); // 3 - Go back to Function
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			ObjectDump("localInSubFunction", @localInSubFunction);
 			
 			process.Continue(); // 4 - Go to the SubFunction
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
@@ -246,7 +255,7 @@ namespace Debugger.Tests
 			ObjectDump("localInSubFunction(new)", @localInSubFunction);
 			
 			process.Continue(); // 5 - Setp out of both functions
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
@@ -254,19 +263,21 @@ namespace Debugger.Tests
 			
 			process.Continue();
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		[Test]
 		public void ArrayValue()
 		{
 			StartTest("ArrayValue");
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			NamedValue array = process.SelectedFunction.LocalVariables["array"];
 			ObjectDump("array", array);
 			ObjectDump("array elements", array.GetArrayElements());
 			
 			process.Continue();
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		[Test]
@@ -275,19 +286,20 @@ namespace Debugger.Tests
 			NamedValue val = null;
 			
 			StartTest("ObjectValue");
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			val = process.SelectedFunction.LocalVariables["val"];
 			ObjectDump("val", val);
 			ObjectDump("val members", val.GetMembers(null, Debugger.BindingFlags.All));
 			//ObjectDump("typeof(val)", val.Type);
 			
 			process.Continue();
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			ObjectDump("val", val);
 			ObjectDump("val members", val.GetMembers(null, Debugger.BindingFlags.All));
 			
 			process.Continue();
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		/*
@@ -295,27 +307,27 @@ namespace Debugger.Tests
 		public void PropertyVariable()
 		{
 			StartProgram("PropertyVariable");
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			NamedValueCollection props = process.SelectedFunction.LocalVariables["var"].GetMembers(null, Debugger.BindingFlags.All);
 			
 			Assert.AreEqual(typeof(UnavailableValue), props["PrivateProperty"].Value.GetType());
 			process.StartEvaluation();
-			WaitForPause(PausedReason.EvalComplete, null);
+			WaitForPause();
 			Assert.AreEqual("private", props["PrivateProperty"].AsString);
 			
 			Assert.AreEqual(typeof(UnavailableValue), props["PublicProperty"].Value.GetType());
 			process.StartEvaluation();
-			WaitForPause(PausedReason.EvalComplete, null);
+			WaitForPause();
 			Assert.AreEqual("public", props["PublicProperty"].AsString);
 			
 			Assert.AreEqual(typeof(UnavailableValue), props["ExceptionProperty"].Value.GetType());
 			process.StartEvaluation();
-			WaitForPause(PausedReason.EvalComplete, null);
+			WaitForPause();
 			Assert.AreEqual(typeof(UnavailableValue), props["ExceptionProperty"].Value.GetType());
 			
 			Assert.AreEqual(typeof(UnavailableValue), props["StaticProperty"].Value.GetType());
 			process.StartEvaluation();
-			WaitForPause(PausedReason.EvalComplete, null);
+			WaitForPause();
 			Assert.AreEqual("static", props["StaticProperty"].AsString);
 			
 			process.Continue();
@@ -323,6 +335,7 @@ namespace Debugger.Tests
 			
 			process.Continue();
 			process.WaitForPrecessExit();
+			CheckXmlOutput();
 		}
 		*/
 		
@@ -333,7 +346,7 @@ namespace Debugger.Tests
 			Variable local = null;
 			
 			StartProgram("PropertyVariableForm");
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			foreach(Variable var in process.SelectedFunction.LocalVariables) {
 				local = var;
 			}
@@ -343,21 +356,22 @@ namespace Debugger.Tests
 			foreach(Variable var in local.Value.SubVariables) {
 				Assert.AreEqual(typeof(UnavailableValue), var.Value.GetType(), "Variable name: " + var.Name);
 				process.StartEvaluation();
-				WaitForPause(PausedReason.EvalComplete, null);
+				WaitForPause();
 				Assert.AreNotEqual(null, var.Value.AsString, "Variable name: " + var.Name);
 			}
 			
 			process.Continue();
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			
 			foreach(Variable var in local.Value.SubVariables) {
 				Assert.AreEqual(typeof(UnavailableValue), var.Value.GetType(), "Variable name: " + var.Name);
 			}
 			process.StartEvaluation();
-			WaitForPause(PausedReason.EvalComplete, null);
+			WaitForPause();
 			
 			process.Continue();
 			process.WaitForPrecessExit();
+			CheckXmlOutput();
 		}
 		*/
 		
@@ -365,47 +379,51 @@ namespace Debugger.Tests
 		public void SetIP()
 		{
 			StartTest("SetIP");
-			WaitForPause(PausedReason.Break, "1");
+			WaitForPause();
 			
 			Assert.IsNotNull(process.SelectedFunction.CanSetIP("SetIP.cs", 16, 0));
 			Assert.IsNull(process.SelectedFunction.CanSetIP("SetIP.cs", 100, 0));
 			process.SelectedFunction.SetIP("SetIP.cs", 16, 0);
 			process.Continue();
-			WaitForPause(PausedReason.Break, "1");
+			WaitForPause();
 			Assert.AreEqual("1\r\n1\r\n", log);
 			
 			process.Continue();
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		[Test]
 		public void GenericDictionary()
 		{
 			StartTest("GenericDictionary");
-			WaitForPause(PausedReason.Break, null);
+			WaitForPause();
 			ObjectDump("dict", process.SelectedFunction.LocalVariables["dict"]);
 			ObjectDump("dict members", process.SelectedFunction.LocalVariables["dict"].GetMembers(null, BindingFlags.All));
 			
 			process.Continue();
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		[Test]
 		public void Exception()
 		{
 			StartTest("Exception");
-			WaitForPause(PausedReason.Exception, null);
+			WaitForPause();
 			process.Continue();
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 		
 		[Test]
 		public void ExceptionCustom()
 		{
 			StartTest("ExceptionCustom");
-			WaitForPause(PausedReason.Exception, null);
+			WaitForPause();
 			process.Continue();
 			process.WaitForExit();
+			CheckXmlOutput();
 		}
 	}
 }
