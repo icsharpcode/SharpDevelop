@@ -14,10 +14,13 @@ using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor;
+using ICSharpCode.NRefactory.Ast;
 
 using ClassDiagram;
 
@@ -39,6 +42,7 @@ namespace ClassDiagramAddin
 			editor.MemberModified += EditorMemberModified;
 			editor.ParameterActivated += EditorParameterActivated;
 			editor.ParameterModified += EditorParameterModified;
+			editor.ClassMemberAdded += EditorClassMemberAdded;
 		}
 		
 		private void EditorMemberActivated (object sender, IMemberEventArgs e)
@@ -55,6 +59,40 @@ namespace ClassDiagramAddin
 			FileService.JumpToFilePosition(compUnit.FileName,
 			                               e.Parameter.Region.BeginLine - 1,
 			                               e.Parameter.Region.BeginColumn - 1);
+		}
+		
+		private void EditorClassMemberAdded (object sender, IMemberEventArgs e)
+		{
+			AbstractNode memberDom = null;
+			
+			DomRegion cRegion = e.Member.DeclaringType.BodyRegion;
+			if (cRegion.IsEmpty) cRegion = e.Member.DeclaringType.Region;
+			
+			memberDom = CodeGenerator.ConvertMember(e.Member, new ClassFinder(e.Member.DeclaringType, cRegion.BeginLine + 1, 1));
+			
+			IProject proj = ProjectService.CurrentProject;
+			IViewContent vc = FileService.OpenFile(e.Member.DeclaringType.CompilationUnit.FileName).ViewContent;
+			if (vc == null) return;
+			IDocument doc = GetDocument(vc);
+
+			if (e.Member.DeclaringType is CompoundClass)
+			{
+				foreach (IClass c in ((CompoundClass)e.Member.DeclaringType).GetParts())
+				{
+					System.Diagnostics.Debug.WriteLine(c.Name+": " +c.Modifiers.ToString());
+				}
+			}
+			proj.LanguageProperties.CodeGenerator.InsertCodeAtEnd(cRegion, doc, memberDom);
+		}
+		
+		private static IDocument GetDocument(IViewContent viewContent)
+		{
+			ITextEditorControlProvider provider1 = viewContent as ITextEditorControlProvider;
+			if (provider1 == null)
+			{
+				return null;
+			}
+			return new TextEditorDocument (provider1.TextEditorControl.Document);
 		}
 		
 		private void EditorMemberModified (object sender, IMemberModificationEventArgs e)

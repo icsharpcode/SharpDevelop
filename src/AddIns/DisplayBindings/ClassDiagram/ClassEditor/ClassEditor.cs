@@ -19,6 +19,7 @@ using System.Xml.XPath;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor;
@@ -48,6 +49,8 @@ namespace ClassDiagram
 		
 		public event EventHandler<IMemberModificationEventArgs> MemberModified = delegate {};
 		public event EventHandler<IParameterModificationEventArgs> ParameterModified = delegate {};
+		
+		public event EventHandler<IMemberEventArgs> ClassMemberAdded = delegate {};
 		
 		TreeListViewItem editedItem = null;
 		
@@ -115,25 +118,32 @@ namespace ClassDiagram
 		{
 			if (membersList.SelectedItems.Count == 0) return;
 			
-			if (addMemberItems.ContainsValue(membersList.SelectedItems[0]))
+			TreeListViewItem item = membersList.SelectedItems[0];
+			
+			if (addMemberItems.ContainsValue(item))
 			{
-				
+				/*				IAmbience ambience = GetAmbience();
+				item.SubItems.Add(ambience.Convert(VoidReturnType.Instance));
+				item.SubItems.Add(ModifierEnum.Public.ToString());
+				item.SubItems.Add("");
+				item.Text = "[method name]";
+				item.BeginEdit(0);*/
 			}
-			else if (addParameterItems.ContainsValue(membersList.SelectedItems[0]))
+			else if (addParameterItems.ContainsValue(item))
 			{
 				
 			}
 			else
 			{
-				IMember itemMember = membersList.SelectedItems[0].Tag as IMember;
-				IParameter itemParameter = membersList.SelectedItems[0].Tag as IParameter;
+				IMember itemMember = item.Tag as IMember;
+				IParameter itemParameter = item.Tag as IParameter;
 				if (itemMember != null)
 				{
 					MemberActivated(this, new IMemberEventArgs(itemMember));
 				}
 				else if (itemParameter != null)
 				{
-					IMethod method = membersList.SelectedItems[0].Parent.Tag as IMethod;
+					IMethod method = item.Parent.Tag as IMethod;
 					if (method != null)
 						ParameterActivated(this, new IParameterEventArgs(method, itemParameter));
 				}
@@ -143,67 +153,59 @@ namespace ClassDiagram
 		private void BeforeEdit(object sender, TreeListViewBeforeLabelEditEventArgs e)
 		{
 			editedItem = membersList.SelectedItems[0];
-			if (addMemberItems.ContainsValue(editedItem))
+
+			IMember itemMember = editedItem.Tag as IMember;
+			IParameter itemParameter = editedItem.Tag as IParameter;
+			if (itemMember != null)
 			{
-				e.Cancel = true;
-			}
-			else if (addParameterItems.ContainsValue(editedItem))
-			{
-				e.Cancel = true;
-			}
-			else
-			{
-				IMember itemMember = editedItem.Tag as IMember;
-				IParameter itemParameter = editedItem.Tag as IParameter;
-				if (itemMember != null)
+				if (e.ColumnIndex == nameCol.Index)
 				{
-					if (e.ColumnIndex == nameCol.Index)
-					{
-					}
-					else if (e.ColumnIndex == typeCol.Index)
-					{
-					}
-					else if (e.ColumnIndex == modifierCol.Index)
-					{
-						e.Editor = visibilityModifierEditor;
-					}
-					else if (e.ColumnIndex == summaryCol.Index)
-					{
-					}
-					else
-					{
-						e.Cancel = true;
-					}
 				}
-				else if (itemParameter != null)
+				else if (e.ColumnIndex == typeCol.Index)
 				{
-					if (e.ColumnIndex == nameCol.Index)
-					{
-					}
-					else if (e.ColumnIndex == typeCol.Index)
-					{
-					}
-					else if (e.ColumnIndex == modifierCol.Index)
-					{
-						e.Editor = parameterModifierEditor;
-					}
-					else if (e.ColumnIndex == summaryCol.Index)
-					{
-					}
-					else
-					{
-						e.Cancel = true;
-					}
+				}
+				else if (e.ColumnIndex == modifierCol.Index)
+				{
+					e.Editor = visibilityModifierEditor;
+				}
+				else if (e.ColumnIndex == summaryCol.Index)
+				{
 				}
 				else
 				{
 					e.Cancel = true;
 				}
 			}
+			else if (itemParameter != null)
+			{
+				if (e.ColumnIndex == nameCol.Index)
+				{
+				}
+				else if (e.ColumnIndex == typeCol.Index)
+				{
+				}
+				else if (e.ColumnIndex == modifierCol.Index)
+				{
+					e.Editor = parameterModifierEditor;
+				}
+				else if (e.ColumnIndex == summaryCol.Index)
+				{
+				}
+				else
+				{
+					e.Cancel = true;
+				}
+			}
+
+			if (addParameterItems.ContainsValue(editedItem))
+			{
+				e.Cancel = true;
+			}
 		}
 		
 		private void AfterEdit (object sender, TreeListViewLabelEditEventArgs e)
 		{
+			IProjectContent pc = ProjectService.CurrentProject.CreateProjectContent();
 			Modification modification = Modification.None;
 			if (e.ColumnIndex == nameCol.Index)
 			{
@@ -226,48 +228,86 @@ namespace ClassDiagram
 				e.Cancel = true;
 			}
 			
-			if (!e.Cancel)
+			if (e.Cancel) return;
+
+			IMember member = null;
+			
+			if (addMemberItems.ContainsValue(editedItem))
 			{
-				IMember member = editedItem.Tag as IMember;
-				IParameter parameter = editedItem.Tag as IParameter;
-				if (member != null)
+				Type parentGroupType = editedItem.Parent.Tag as Type;
+				if (parentGroupType == typeof(IMethod))
 				{
-					IMemberModificationEventArgs mmea = new IMemberModificationEventArgs(member, modification, e.Label);
-					MemberModified(this, mmea);
-					e.Cancel = mmea.Cancel;
+					member = new DefaultMethod(currClass, e.Label);
+					member.ReturnType = pc.SystemTypes.Void;
 				}
-				else if (parameter != null)
+				else if (parentGroupType == typeof(IField))
 				{
-					IMethod method = editedItem.Parent.Tag as IMethod;
-					if (method == null)
-					{
-						e.Cancel = true;
-					}
+					member = new DefaultField(currClass, e.Label);
+					if (currClass.ClassType == ClassType.Enum)
+						member.ReturnType = pc.SystemTypes.Int32;
 					else
-					{
-						IParameterModificationEventArgs pmea = new IParameterModificationEventArgs(method, parameter, modification, e.Label);
-						ParameterModified(this, pmea);
-						e.Cancel = pmea.Cancel;
-					}
+						member.ReturnType = pc.SystemTypes.Object;
 				}
-				else
+				else if (parentGroupType == typeof(IProperty))
+				{
+					member = new DefaultProperty(currClass, e.Label);
+					member.ReturnType = pc.SystemTypes.Object;
+				}
+				else if (parentGroupType == typeof(IEvent))
+				{
+					member = new DefaultEvent(currClass, e.Label);
+					member.ReturnType = pc.SystemTypes.CreatePrimitive(typeof(EventHandler));
+				}
+
+				ConvertAddItemToMemberItem(editedItem, member, GetAmbience());
+				AddAddItem(parentGroupType, editedItem.Parent);
+				
+				IReturnType memberType = VoidReturnType.Instance;
+				
+				IMemberEventArgs memberargs = new IMemberEventArgs(member);
+				ClassMemberAdded(this, memberargs);
+				return;
+			}
+			
+			member = editedItem.Tag as IMember;
+			IParameter parameter = editedItem.Tag as IParameter;
+			if (member != null)
+			{
+				IMemberModificationEventArgs mmea = new IMemberModificationEventArgs(member, modification, e.Label);
+				MemberModified(this, mmea);
+				e.Cancel = mmea.Cancel;
+			}
+			else if (parameter != null)
+			{
+				IMethod method = editedItem.Parent.Tag as IMethod;
+				if (method == null)
 				{
 					e.Cancel = true;
 				}
+				else
+				{
+					IParameterModificationEventArgs pmea = new IParameterModificationEventArgs(method, parameter, modification, e.Label);
+					ParameterModified(this, pmea);
+					e.Cancel = pmea.Cancel;
+				}
+			}
+			else
+			{
+				e.Cancel = true;
 			}
 		}
 		
 		private void SetClassGroups (IClass classType)
 		{
-			AddGroup<IMethod>("Methods", "method", classType.Methods);
-			AddGroup<IProperty>("Properties", "property", classType.Properties);
-			AddGroup<IField>("Fields", "field", classType.Fields);
-			AddGroup<IEvent>("Events", "event", classType.Events);
+			AddGroup<IMethod>("Methods", classType.Methods);
+			AddGroup<IProperty>("Properties", classType.Properties);
+			AddGroup<IField>("Fields", classType.Fields);
+			AddGroup<IEvent>("Events", classType.Events);
 		}
 
 		private void SetEnumGroups (IClass classType)
 		{
-			AddGroup<IField>("Fields", "field", classType.Fields);
+			AddGroup<IField>("Fields", classType.Fields);
 		}
 		
 		private void SetDelegateGroups (IClass classType)
@@ -286,7 +326,7 @@ namespace ClassDiagram
 			membersList.EndUpdate();
 		}
 		
-		private TreeListViewItem AddGroup<MT>(string title, string type, ICollection<MT> members) where MT : IMember
+		private TreeListViewItem AddGroup<MT>(string title, ICollection<MT> members) where MT : IMember
 		{
 			if (members == null) return null;
 			
@@ -294,76 +334,105 @@ namespace ClassDiagram
 			group.ForeColor = Color.Gray;
 			group.Font = new Font(group.Font, FontStyle.Bold);
 			group.Items.Sortable = false;
+			group.Tag = typeof(MT);
+			
+			IAmbience ambience = GetAmbience();
 			
 			if (members.Count != 0)
 			{
 				foreach (IMember member in members)
 				{
+					TreeListViewItem memberItem = CreateMemberItem(member, ambience);
+
+					IMethod methodMember = memberItem.Tag as IMethod;
 					
-					IMethod methodMember = member as IMethod;
-					IEvent eventMember = member as IEvent;
-					IProperty propertyMember = member as IProperty;
-					IField fieldMember = member as IField;
-					
-					int icon = -1;
-					try
-					{
-						icon = ClassBrowserIconService.GetIcon(member);
-					}
-					catch {}
-					
-					IAmbience ambience = GetAmbience();
-					string memberName = "";
-					
-					if (methodMember != null)
-					{
-						if (methodMember.IsConstructor)
-						{
-							if (methodMember.DeclaringType != null)
-							{
-								memberName = methodMember.DeclaringType.Name;
-							}
-							else
-							{
-								memberName = methodMember.Name;
-							}
-						}
-						else
-						{
-							memberName = methodMember.Name;
-						}
-					}
-					if (eventMember != null)
-					{
-						memberName = eventMember.Name;
-					}
-					if (propertyMember != null) memberName = ambience.Convert(propertyMember);
-					if (fieldMember != null) memberName = ambience.Convert(fieldMember);
-					
-					TreeListViewItem memberItem = new TreeListViewItem(memberName, icon);
-					memberItem.Items.Sortable = false;
-					memberItem.Items.SortOrder = SortOrder.None;
-					memberItem.Tag = member;
 					group.Items.Add(memberItem);
 					
 					if (methodMember != null)
 						FillParams (memberItem, methodMember);
 					
+					
 					memberItem.SubItems.Add(ambience.Convert(member.ReturnType));
 					memberItem.SubItems.Add(member.Modifiers.ToString());
-					
 					memberItem.SubItems.Add(GetSummary(member));
 				}
 			}
 			
-			TreeListViewItem addNewMember = new TreeListViewItem(String.Format("<add {0}>", type));
-			addNewMember.ForeColor = Color.Gray;
-			group.Items.Add(addNewMember);
-			
-			addMemberItems[typeof(MT)] = addNewMember;
+			AddAddItem(typeof(MT), group);
 			
 			membersList.Items.Add(group);
 			return group;
+		}
+		
+		private TreeListViewItem CreateMemberItem(IMember member, IAmbience ambience)
+		{
+			IMethod methodMember = member as IMethod;
+			IEvent eventMember = member as IEvent;
+			IProperty propertyMember = member as IProperty;
+			IField fieldMember = member as IField;
+			
+			int icon = -1;
+			try
+			{
+				icon = ClassBrowserIconService.GetIcon(member);
+			}
+			catch {}
+			
+			string memberName = "";
+			
+			if (methodMember != null)
+			{
+				if (methodMember.IsConstructor)
+				{
+					if (methodMember.DeclaringType != null)
+					{
+						memberName = methodMember.DeclaringType.Name;
+					}
+					else
+					{
+						memberName = methodMember.Name;
+					}
+				}
+				else
+				{
+					memberName = methodMember.Name;
+				}
+			}
+			if (eventMember != null)
+			{
+				memberName = eventMember.Name;
+			}
+			if (propertyMember != null) memberName = ambience.Convert(propertyMember);
+			if (fieldMember != null) memberName = ambience.Convert(fieldMember);
+			
+			TreeListViewItem memberItem = new TreeListViewItem(memberName, icon);
+			memberItem.Items.Sortable = false;
+			memberItem.Items.SortOrder = SortOrder.None;
+			memberItem.Tag = member;
+			return memberItem;
+		}
+		
+		private void AddAddItem(Type memberType, TreeListViewItem group)
+		{
+			string str = "";
+			
+			if (memberType == typeof(IMethod)) str = "<add method>";
+			else if (memberType == typeof(IEvent)) str = "<add event>";
+			else if (memberType == typeof(IProperty)) str = "<add property>";
+			else if (memberType == typeof(IField)) str = "<add field>";
+			
+			TreeListViewItem addNewMember = new TreeListViewItem(str);
+			addNewMember.ForeColor = SystemColors.GrayText;
+			group.Items.Add(addNewMember);
+			addMemberItems[memberType] = addNewMember;
+		}
+		
+		private void ConvertAddItemToMemberItem(TreeListViewItem addItem, IMember member, IAmbience ambience)
+		{
+			addItem.ForeColor = SystemColors.ControlText;
+			addItem.SubItems.Add(ambience.Convert(member.ReturnType));
+			addItem.SubItems.Add(member.Modifiers.ToString());
+			addItem.SubItems.Add(GetSummary(member));
 		}
 		
 		private string GetSummary (IDecoration decoration)
@@ -433,128 +502,5 @@ namespace ClassDiagram
 		}
 	}
 
-	public class IMemberEventArgs : EventArgs
-	{
-		IMember member;
-		public IMemberEventArgs (IMember member)
-		{
-			this.member = member;
-		}
-		
-		public IMember Member
-		{
-			get { return member; }
-		}
-	}
-	
-	
-	public class IParameterEventArgs : EventArgs
-	{
-		IParameter parameter;
-		IMethod method;
-		public IParameterEventArgs (IMethod method, IParameter parameter)
-		{
-			this.method = method;
-			this.parameter = parameter;
-		}
-		
-		public IParameter Parameter
-		{
-			get { return parameter; }
-		}
-		
-		public IMethod Method
-		{
-			get { return method; }
-		}
-	}
-	
 	public enum Modification { None, Name, Type, Modifier, Summary }
-
-	public class IMemberModificationEventArgs : IMemberEventArgs
-	{
-		Modification modification;
-		string newValue;
-		
-		bool cancel = false;
-		
-		public IMemberModificationEventArgs(IMember member, Modification modification, string newValue)
-			: base (member)
-		{
-			this.modification = modification;
-			this.newValue = newValue;
-		}
-		
-		public Modification Modification
-		{
-			get { return modification; }
-		}
-		
-		public string NewValue
-		{
-			get { return newValue; }
-		}
-		
-		public bool Cancel
-		{
-			get { return cancel; }
-			set { cancel = value; }
-		}
-	}
-	
-	public class IParameterModificationEventArgs : IParameterEventArgs
-	{
-		Modification modification;
-		string newValue;
-		
-		bool cancel = false;
-		
-		public IParameterModificationEventArgs(IMethod method, IParameter parameter, Modification modification, string newValue)
-			: base (method, parameter)
-		{
-			this.modification = modification;
-			this.newValue = newValue;
-		}
-		
-		public Modification Modification
-		{
-			get { return modification; }
-		}
-		
-		public string NewValue
-		{
-			get { return newValue; }
-		}
-		
-		public bool Cancel
-		{
-			get { return cancel; }
-			set { cancel = value; }
-		}
-	}
-	
-	internal class VisibilityModifiersEditor : ComboBox
-	{
-		public VisibilityModifiersEditor()
-		{
-			this.DropDownStyle = ComboBoxStyle.DropDownList;
-			Items.Add(ICSharpCode.NRefactory.Ast.Modifiers.Public);
-			Items.Add(ICSharpCode.NRefactory.Ast.Modifiers.Private);
-			Items.Add(ICSharpCode.NRefactory.Ast.Modifiers.Protected);
-			Items.Add(ICSharpCode.NRefactory.Ast.Modifiers.Internal);
-		}
-	}
-	
-	internal class ParameterModifiersEditor : ComboBox
-	{
-		public ParameterModifiersEditor()
-		{
-			this.DropDownStyle = ComboBoxStyle.DropDownList;
-			Items.Add(ParameterModifiers.In);
-			Items.Add(ParameterModifiers.Out);
-			Items.Add(ParameterModifiers.Ref);
-			Items.Add(ParameterModifiers.Params);
-			Items.Add(ParameterModifiers.Optional);
-		}
-	}
 }

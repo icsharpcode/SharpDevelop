@@ -39,6 +39,9 @@
       <DependentUpon>ClassEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MemberEventArgs.cs" />
+    <Compile Include="ParameterEventArgs.cs" />
+    <Compile Include="MemberDataEditors.cs" />
     <EmbeddedResource Include="ClassEditor.resx">
       <DependentUpon>ClassEditor.cs</DependentUpon>
     </EmbeddedResource>
