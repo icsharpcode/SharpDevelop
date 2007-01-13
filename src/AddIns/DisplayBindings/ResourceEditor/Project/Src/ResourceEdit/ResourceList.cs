@@ -16,6 +16,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Internal.Undo;
+using ICSharpCode.SharpDevelop.Widgets.ListViewSorting;
 
 namespace ResourceEditor
 {
@@ -36,6 +37,8 @@ namespace ResourceEditor
 		UndoStack undoStack = null;
 		bool writeProtected = false;
 		int editListViewItemIndex = -1;
+		
+		ListViewItemSorter sorter;
 		
 		public event EventHandler Changed;
 		
@@ -97,7 +100,6 @@ namespace ResourceEditor
 			View          = View.Details;
 			GridLines     = true;
 			LabelEdit     = true;
-			Sorting       = SortOrder.Ascending;
 			Dock          = DockStyle.Fill;
 			HideSelection = false;
 			
@@ -111,7 +113,35 @@ namespace ResourceEditor
 			images.Images.Add(ResourceService.GetIcon("Icons.16x16.ResourceEditor.obj"));
 			SmallImageList = images;
 			
+			// Set up sorting:
+			// User can sort the list by name and by type,
+			// whereas sorting by type also implicitly sorts by name.
+			IListViewItemComparer textComparer = new ListViewTextColumnComparer();
+			IListViewItemComparer typeNameComparer = new ListViewMultipleColumnsComparer(textComparer, 1, textComparer, 0);
+			sorter = new ListViewItemSorter(this,
+			                                new IListViewItemComparer[] {
+			                                	textComparer,
+			                                	typeNameComparer,
+			                                	null
+			                                });
+			sorter.SortColumnIndex = 0;
+			sorter.SortOrder = SortOrder.Ascending;
+			
 			ContextMenuStrip = MenuService.CreateContextMenu(editor, "/SharpDevelop/ResourceEditor/ResourceList/ContextMenu");
+		}
+		
+		protected override void Dispose(bool disposing)
+		{
+			try {
+				if (disposing) {
+					if (sorter != null) {
+						sorter.Dispose();
+						sorter = null;
+					}
+				}
+			} finally {
+				base.Dispose(disposing);
+			}
 		}
 		
 		public void LoadFile(string filename)
@@ -208,6 +238,8 @@ namespace ResourceEditor
 		public void InitializeListView()
 		{
 			BeginUpdate();
+			// Suspend sorting to improve performance
+			ListViewItemSorter = null;
 			Items.Clear();
 			
 			foreach (KeyValuePair<string, ResourceItem> entry in resources) {
@@ -219,6 +251,8 @@ namespace ResourceEditor
 				ListViewItem lv = new ListViewItem(new String[] {item.Name, type, tmp}, item.ImageIndex);
 				Items.Add(lv);
 			}
+			
+			ListViewItemSorter = sorter;
 			EndUpdate();
 		}
 		
