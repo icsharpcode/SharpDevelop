@@ -6,10 +6,12 @@
 // </file>
 
 using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
+using MSBuild = Microsoft.Build.BuildEngine;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
 
@@ -82,15 +84,36 @@ namespace WixBinding.Tests.Project
 		}
 		
 		[Test]
+		public void WixToolPathCondition()
+		{
+			MSBuild.BuildProperty property = GetMSBuildProperty("WixToolPath");
+			Assert.AreEqual(" '$(WixToolPath)' == '' ", property.Condition);
+		}
+		
+		[Test]
 		public void ToolPath()
 		{
 			Assert.AreEqual(@"$(WixToolPath)", project.GetUnevalatedProperty("ToolPath"));
 		}
 		
 		[Test]
+		public void ToolPathHasNoCondition()
+		{
+			MSBuild.BuildProperty property = GetMSBuildProperty("ToolPath");
+			Assert.IsTrue(String.IsNullOrEmpty(property.Condition), "ToolPath should not have a condition: " + property.Condition);
+		}
+		
+		[Test]
 		public void WixMSBuildExtensionsPath()
 		{
 			Assert.AreEqual(@"$(SharpDevelopBinPath)\Tools\Wix", project.GetUnevalatedProperty("WixMSBuildExtensionsPath"));
+		}
+		
+		[Test]
+		public void WixMSBuildExtensionsPathCondition()
+		{
+			MSBuild.BuildProperty property = GetMSBuildProperty("WixMSBuildExtensionsPath");
+			Assert.AreEqual(" '$(WixMSBuildExtensionsPath)' == '' ", property.Condition);
 		}
 		
 		[Test]
@@ -121,6 +144,23 @@ namespace WixBinding.Tests.Project
 		public void ProjectLanguageProperties()
 		{
 			Assert.AreEqual(LanguageProperties.None, project.LanguageProperties);
+		}
+		
+		/// <summary>
+		/// Gets the MSBuild build property with the specified name from the WixProject.
+		/// </summary>
+		MSBuild.BuildProperty GetMSBuildProperty(string name)
+		{
+			MSBuild.Project msbuildProject = project.MSBuildProject;
+			foreach (MSBuild.BuildPropertyGroup g in Linq.ToList(Linq.CastTo<MSBuild.BuildPropertyGroup>(msbuildProject.PropertyGroups))) {
+				if (!g.IsImported) {
+					MSBuild.BuildProperty property = MSBuildInternals.GetProperty(g, name);
+					if (property != null) {
+						return property;
+					}
+				}
+			}
+			return null;
 		}
 	}
 }

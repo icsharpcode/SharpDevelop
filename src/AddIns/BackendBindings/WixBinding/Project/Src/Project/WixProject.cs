@@ -239,7 +239,7 @@ namespace ICSharpCode.WixBinding
 			
 			string wixToolPath = @"$(SharpDevelopBinPath)\Tools\Wix";
 			AddGuardedProperty("WixToolPath", wixToolPath, false);
-			AddGuardedProperty("ToolPath", "$(WixToolPath)", false);
+			SetProperty("ToolPath", "$(WixToolPath)", false);
 			AddGuardedProperty("WixMSBuildExtensionsPath", wixToolPath, false);
 			
 			this.AddImport(DefaultTargetsFile, null);
