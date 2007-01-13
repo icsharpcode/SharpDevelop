@@ -71,6 +71,19 @@ namespace WixBinding.Tests.Document
 			Assert.AreEqual(expectedFileName, binaries.GetBinaryFileName("Dialog"));
 		}
 		
+		/// <summary>
+		/// SD2-1267 - If you open a single WiX file (.wxs) without opening 
+		/// a WiX project you are unable to design its WiX dialog. 
+		/// </summary>
+		[Test]
+		public void GetBinaryFileNameWhenWixDocNotInProject()
+		{
+			WixDocument doc = new WixDocument();
+			WixBinaries binaries = new WixBinaries(doc, this);
+			
+			Assert.IsNull(binaries.GetBinaryFileName("UnknownId"));
+		}
+		
 		public TextReader Create(string fileName)
 		{
 			fileName = Path.GetFileName(fileName);
