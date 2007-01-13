@@ -66,11 +66,13 @@ namespace WixBinding.Tests.Project
 		public void Imports()
 		{
 			Assert.AreEqual(2, project.MSBuildProject.Imports.Count);
-			Microsoft.Build.BuildEngine.Import[] imports = { null, null };
+			Microsoft.Build.BuildEngine.Import[] imports = {null, null};
 			project.MSBuildProject.Imports.CopyTo(imports, 0);
 			
-			Assert.AreEqual(imports[0].ProjectPath, WixProject.DefaultTargetsFile);
-			Assert.AreEqual(imports[1].ProjectPath, @"$(MSBuildBinPath)\Microsoft.Common.targets");
+			string[] paths = new string[] {imports[0].ProjectPath, imports[1].ProjectPath};
+			
+			Assert.Contains(WixProject.DefaultTargetsFile, paths);
+			Assert.Contains(@"$(MSBuildBinPath)\Microsoft.Common.targets", paths);
 		}
 		
 		[Test]
