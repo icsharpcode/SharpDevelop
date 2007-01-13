@@ -34,6 +34,7 @@
 	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
 		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
 		<String id="light" text = "light"/>
+		<String id="lit" text = "lit"/>
 	</Path>
 	
 	<!-- WiX project and file templates -->

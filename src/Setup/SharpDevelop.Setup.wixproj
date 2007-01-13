@@ -39,6 +39,5 @@
       <Class>Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler</Class>
     </LinkExtension>
   </ItemGroup>
-  <Import Project="$(MSBuildProjectFullPath).user" />
   <Import Project="$(WixMSBuildExtensionsPath)\wix.targets" />
 </Project>
