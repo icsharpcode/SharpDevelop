@@ -202,7 +202,7 @@ namespace ICSharpCode.StartPage
 			
 			StaticStyleSheet = startPageLocation + "/Layout/default.css";
 			MetaAuthor = "Christoph Wille - christophw@alphasierrapapa.com";
-			MetaCopyright = "(c) 2001-2006 AlphaSierraPapa";
+			MetaCopyright = "(c) 2001-2007 AlphaSierraPapa";
 
 			ShowLeftMenu = false;
 			ShowRightBox = false;

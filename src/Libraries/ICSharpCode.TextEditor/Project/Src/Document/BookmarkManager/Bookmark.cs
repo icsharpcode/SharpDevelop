@@ -111,11 +111,13 @@ namespace ICSharpCode.TextEditor.Document
 			this.isEnabled  = isEnabled;
 		}
 		
-		public virtual void Click(SWF.Control parent, SWF.MouseEventArgs e)
+		public virtual bool Click(SWF.Control parent, SWF.MouseEventArgs e)
 		{
 			if (e.Button == SWF.MouseButtons.Left && CanToggle) {
 				document.BookmarkManager.RemoveMark(this);
+				return true;
 			}
+			return false;
 		}
 		
 		public virtual void Draw(IconBarMargin margin, Graphics g, Point p)
