@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Font Name="Microsoft Sans Serif" Size="8.25" />
+  <Class Name="Aga.Controls.Tree.NodeControls.NodeStateIcon" Collapsed="true">
+    <Position X="2.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Tree\NodeControls\NodeStateIcon.cs</FileName>
+      <HashCode>ABAAAAAAAAQAQAAAAAAAAAAAAAAAAAAAQIAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Aga.Controls.Tree.NodeControls.BindableControl" Collapsed="true">
+    <Position X="2.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Tree\NodeControls\BindableControl.cs</FileName>
+      <HashCode>EAAAAAAAIAAACgAEAQAAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Aga.Controls.Tree.NodeControls.NodeCheckBox" Collapsed="true">
+    <Position X="0.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Tree\NodeControls\NodeCheckBox.cs</FileName>
+      <HashCode>AAEABAAAAAACgkQCAAAAAAigAgAAEGABAAAIAAIAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Aga.Controls.Tree.NodeControls.NodeControl" Collapsed="true">
+    <Position X="2" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Tree\NodeControls\NodeControl.cs</FileName>
+      <HashCode>QAAAAAAggAgAgsIAAAhAQAAwAAAAEAAAAEAIAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+  </Class>
+  <Class Name="Aga.Controls.Tree.NodeControls.NodeIcon" Collapsed="true">
+    <Position X="2.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Tree\NodeControls\NodeIcon.cs</FileName>
+      <HashCode>ABAAAAAAAAAAAgAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Aga.Controls.Tree.NodeControls.NodePlusMinus" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Tree\NodeControls\NodePlusMinus.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAEAgAAAAMCAAAAAIACAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Aga.Controls.Tree.NodeControls.BaseTextControl" Collapsed="true">
+    <Position X="4.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Tree\NodeControls\BaseTextControl.cs</FileName>
+      <HashCode>AAAAIABQACAAAgAAAAAAAQA8AACBAAAQAAAAAAACAEA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Aga.Controls.Tree.NodeControls.NodeTextBox" Collapsed="true">
+    <Position X="2.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Tree\NodeControls\NodeTextBox.cs</FileName>
+      <HashCode>QQQAhAAAADAMgIAAABAAAAAAAgEAAAAAAAAAAIAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Aga.Controls.Tree.NodeControls.EditableControl" Collapsed="true">
+    <Position X="4.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Tree\NodeControls\EditableControl.cs</FileName>
+      <HashCode>QQAgBAAACCgkAMAABAEEkADAEAAUEAAABAGoAAIAAQA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Aga.Controls.Tree.NodeControls.NodeComboBox" Collapsed="true">
+    <Position X="4.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Tree\NodeControls\NodeComboBox.cs</FileName>
+      <HashCode>wQACAAAAAAAMAABAAAAAAABAAAAAAAABAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Aga.Controls.Tree.NodeControls.NodeNumericUpDown" Collapsed="true">
+    <Position X="6.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Tree\NodeControls\NodeNumericUpDown.cs</FileName>
+      <HashCode>wQAAAACAAAAEAIBAIAAQIAAAAAAAAAABAAAIAAAAAII=</HashCode>
+    </TypeIdentifier>
+  </Class>
+</ClassDiagram>
