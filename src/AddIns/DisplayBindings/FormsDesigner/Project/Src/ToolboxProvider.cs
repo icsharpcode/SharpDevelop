@@ -26,8 +26,10 @@ namespace ICSharpCode.FormsDesigner
 		static ICSharpCode.FormsDesigner.Services.ToolboxService toolboxService = null;
 		public static List<SideTab> SideTabs = new List<SideTab>();
 		
-		static ComponentLibraryLoader componentLibraryLoader = new ComponentLibraryLoader();
+		static CustomComponentsSideTab customTab;
 		
+		static ComponentLibraryLoader componentLibraryLoader = new ComponentLibraryLoader();
+
 		public static ComponentLibraryLoader ComponentLibraryLoader {
 			get {
 				return componentLibraryLoader;
@@ -90,7 +92,7 @@ namespace ICSharpCode.FormsDesigner
 				tab.ItemsExchanged -= SideTabItemsExchanged;
 				if (SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
 					SharpDevelopSideBar.SideBar.Tabs.Remove(tab);
-					reInsertTabs = true;;
+					reInsertTabs = true;
 				}
 			}
 			reInsertTabs &= doInsert;
@@ -108,7 +110,10 @@ namespace ICSharpCode.FormsDesigner
 					}
 				}
 			}
-			SideTabDesigner customTab = new CustomComponentsSideTab(SharpDevelopSideBar.SideBar, ResourceService.GetString("ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CustomComponents"), toolboxService);
+			if (customTab != null) {
+				customTab.Dispose();
+			}
+			customTab = new CustomComponentsSideTab(SharpDevelopSideBar.SideBar, ResourceService.GetString("ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CustomComponents"), toolboxService);
 			customTab.ItemRemoved += SideTabItemRemoved;
 			customTab.ItemsExchanged += SideTabItemsExchanged;
 			SideTabs.Add(customTab);

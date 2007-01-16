@@ -21,16 +21,29 @@ using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
-	public class CustomComponentsSideTab : SideTabDesigner
+	public class CustomComponentsSideTab : SideTabDesigner, IDisposable
 	{
+		bool disposed;
+		
 		///<summary>Load an assembly's controls</summary>
 		public CustomComponentsSideTab(SideBarControl sideTab, string name, IToolboxService toolboxService)
 			: base(sideTab, name, toolboxService)
 		{
 			this.DisplayName = StringParser.Parse(this.Name);
 			ScanProjectAssemblies();
-			ProjectService.EndBuild       += RescanProjectAssemblies;
-			ProjectService.SolutionLoaded += RescanProjectAssemblies;
+			ProjectService.EndBuild         += RescanProjectAssemblies;
+			ProjectService.SolutionLoaded   += RescanProjectAssemblies;
+			ProjectService.ProjectItemAdded += ProjectItemAdded;
+		}
+		
+		public void Dispose()
+		{
+			if (!disposed) {
+				disposed = true;
+				ProjectService.EndBuild         -= RescanProjectAssemblies;
+				ProjectService.SolutionLoaded   -= RescanProjectAssemblies;
+				ProjectService.ProjectItemAdded -= ProjectItemAdded;
+			}
 		}
 		
 		void RescanProjectAssemblies(object sender, EventArgs e)
@@ -39,6 +52,13 @@ namespace ICSharpCode.FormsDesigner.Gui
 			AddDefaultItem();
 			ScanProjectAssemblies();
 			SharpDevelopSideBar.SideBar.Refresh();
+		}
+		
+		void ProjectItemAdded(object sender, ProjectItemEventArgs e)
+		{
+			if (e.ProjectItem is ReferenceProjectItem) {
+				RescanProjectAssemblies(sender, e);
+			}
 		}
 		
 		void ScanProjectAssemblies()
