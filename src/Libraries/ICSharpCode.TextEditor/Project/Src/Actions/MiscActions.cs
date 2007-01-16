@@ -440,8 +440,10 @@ namespace ICSharpCode.TextEditor.Actions
 				commentEndOffset += selectionStartOffset;
 			}
 			
-			// Find start of comment before selected text.
+			// Find start of comment before or partially inside the 
+			// selected text.
 			
+			int commentEndBeforeStartOffset = -1;
 			if (commentStartOffset == -1) {
 				int offset = selectionEndOffset + commentStart.Length - 1;
 				if (offset > document.TextLength) {
@@ -449,9 +451,17 @@ namespace ICSharpCode.TextEditor.Actions
 				}
 				string text = document.GetText(0, offset);
 				commentStartOffset = text.LastIndexOf(commentStart);
+				if (commentStartOffset >= 0) {
+					// Find end of comment before comment start.
+					commentEndBeforeStartOffset = text.IndexOf(commentEnd, commentStartOffset, selectionStartOffset - commentStartOffset);
+					if (commentEndBeforeStartOffset > commentStartOffset) {
+						commentStartOffset = -1;
+					}
+				}
 			}
 			
-			// Find end of comment after selected text.
+			// Find end of comment after or partially after the
+			// selected text.
 			
 			if (commentEndOffset == -1) {
 				int offset = selectionStartOffset + 1 - commentEnd.Length;
@@ -460,7 +470,7 @@ namespace ICSharpCode.TextEditor.Actions
 				}
 				string text = document.GetText(offset, document.TextLength - offset);
 				commentEndOffset = text.IndexOf(commentEnd);
-				if (commentEndOffset >= 0) {
+				if (commentEndOffset >= 0) {	
 					commentEndOffset += offset;
 				}
 			}

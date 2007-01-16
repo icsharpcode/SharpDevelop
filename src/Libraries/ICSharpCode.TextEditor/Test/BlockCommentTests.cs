@@ -143,5 +143,22 @@ namespace ICSharpCode.TextEditor.Tests
 			BlockCommentRegion commentRegion = ToggleBlockComment.FindSelectedCommentRegion(document, commentStart, commentEnd, selectionStartOffset, selectionEndOffset);
 			Assert.IsNull(commentRegion);
 		}
+		
+		[Test]
+		public void TwoExistingBlockComments()
+		{
+			document.TextContent = "<a>\r\n" +
+									"<!--<b></b>-->\r\n" +
+									"\t<c></c>\r\n" +
+									"<!--<d></d>-->\r\n" +
+									"</a>";
+			
+			string selectedText = "<c></c>";
+			int selectionStartOffset = document.TextContent.IndexOf(selectedText);
+			int selectionEndOffset = selectionStartOffset + selectedText.Length;
+			
+			BlockCommentRegion commentRegion = ToggleBlockComment.FindSelectedCommentRegion(document, commentStart, commentEnd, selectionStartOffset, selectionEndOffset);
+			Assert.IsNull(commentRegion);
+		}
 	}
 }
