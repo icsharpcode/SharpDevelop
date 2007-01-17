@@ -87,6 +87,21 @@ namespace SearchAndReplace
 			return new DocumentFactory().CreateFromTextBuffer(textBuffer);
 		}		
 		
+		public override bool Equals(object obj)
+		{
+			ProvidedDocumentInformation info = obj as ProvidedDocumentInformation;
+			if (info == null) {
+				return false;
+			}
+			return this.fileName == info.fileName && 
+				this.textAreaControl == info.textAreaControl;
+		}
+		
+		public override int GetHashCode()
+		{
+			return fileName.GetHashCode();
+		}
+		
 		public ProvidedDocumentInformation(IDocument document, string fileName, int currentOffset)
 		{
 			this.document      = document;
