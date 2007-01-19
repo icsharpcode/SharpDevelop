@@ -463,7 +463,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (reference.IsArrayType) {
 				for (int i = reference.RankSpecifier.Length - 1; i >= 0; --i) {
-					t = new ArrayReturnType(pc, t, reference.RankSpecifier[i] + 1);
+					int dimensions = reference.RankSpecifier[i] + 1;
+					if (dimensions > 0) {
+						t = new ArrayReturnType(pc, t, dimensions);
+					}
 				}
 			}
 			return t;
