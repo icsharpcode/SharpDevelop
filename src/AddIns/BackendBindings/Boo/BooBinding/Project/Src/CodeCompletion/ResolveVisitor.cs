@@ -73,12 +73,18 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		void MakeTypeResult(IClass c)
 		{
-			resolveResult = new TypeResolveResult(callingClass, resolver.CallingMember, c);
+			if (c != null)
+				resolveResult = new TypeResolveResult(callingClass, resolver.CallingMember, c);
+			else
+				ClearResult();
 		}
 		
 		void MakeTypeResult(IReturnType rt)
 		{
-			resolveResult = new TypeResolveResult(callingClass, resolver.CallingMember, rt);
+			if (rt != null)
+				resolveResult = new TypeResolveResult(callingClass, resolver.CallingMember, rt);
+			else
+				ClearResult();
 		}
 		
 		void MakeMethodResult(IReturnType type, string methodName)
@@ -262,7 +268,11 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 			IReturnType rt = projectContent.SearchType(new SearchTypeRequest(name.ToString(), typeArguments.Count, callingClass,
 			                                                                 cu, resolver.CaretLine, resolver.CaretColumn)).Result;
-			return new ConstructedReturnType(rt, typeArguments);
+			if (rt != null) {
+				return new ConstructedReturnType(rt, typeArguments);
+			} else {
+				return null;
+			}
 		}
 		#endregion
 		

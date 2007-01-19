@@ -244,6 +244,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 					rt = new BooResolver.DuckClass(new DefaultCompilationUnit(projectContent)).DefaultReturnType;
 				else if (BooAmbience.ReverseTypeConversionTable.ContainsKey(name))
 					rt = new GetClassReturnType(projectContent, BooAmbience.ReverseTypeConversionTable[name], typeParameterCount);
+				else if (callingClass == null)
+					rt = new GetClassReturnType(projectContent, name, typeParameterCount);
 				else
 					rt = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn,
 					                               name, typeParameterCount);
