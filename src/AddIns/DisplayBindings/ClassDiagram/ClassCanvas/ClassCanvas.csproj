@@ -41,16 +41,22 @@
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="ClassCanvas.cs" />
-    <Compile Include="ClassCanvas.Designer.cs">
+    <Compile Include="Decorators\RectangleDecorator.cs" />
+    <Compile Include="Interactivity\IHitTestable.cs" />
+    <Compile Include="Interactivity\IInteractiveDrawable.cs" />
+    <Compile Include="Interactivity\IMouseInteractable.cs" />
+    <Compile Include="Interactivity\InteractiveHeaderedItem.cs" />
+    <Compile Include="Src\CanvasItem.cs" />
+    <Compile Include="Src\ClassCanvas.cs" />
+    <Compile Include="Src\ClassCanvas.Designer.cs">
       <DependentUpon>ClassCanvas.cs</DependentUpon>
     </Compile>
-    <Compile Include="ClassCanvasItem.cs" />
-    <Compile Include="DelegateCanvasItem.cs" />
-    <Compile Include="InteractiveHeaderedItem.cs" />
-    <Compile Include="InterfaceCanvasItem.cs" />
-    <Compile Include="StructCanvasItem.cs" />
-    <Compile Include="EnumCanvasItem.cs" />
+    <Compile Include="Src\ClassCanvasItem.cs" />
+    <Compile Include="Src\DelegateCanvasItem.cs" />
+    <Compile Include="Src\EnumCanvasItem.cs" />
+    <Compile Include="Src\InterfaceCanvasItem.cs" />
+    <Compile Include="Src\NoteCanvasItem.cs" />
+    <Compile Include="Src\StructCanvasItem.cs" />
     <Compile Include="Shapes\SmallButtonShape.cs" />
     <Compile Include="Shapes\Shapes.cs" />
     <Compile Include="Shapes\PlusShape.cs" />
@@ -67,15 +73,9 @@
     <Compile Include="Shapes\RouteInheritanceShape.cs" />
     <Compile Include="Shapes\RouteShape.cs" />
     <Compile Include="Shapes\PropertyShape.cs" />
-    <Compile Include="NoteCanvasItem.cs" />
-    <EmbeddedResource Include="ClassCanvas.resx">
+    <EmbeddedResource Include="Src\ClassCanvas.resx">
       <DependentUpon>ClassCanvas.Designer.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Include="RectangleDecorator.cs" />
-    <Compile Include="IMouseInteractable.cs" />
-    <Compile Include="IInteractiveDrawable.cs" />
-    <Compile Include="IHitTestable.cs" />
-    <Compile Include="CanvasItem.cs" />
     <Compile Include="Decorators\FocusDecorator.cs" />
     <Compile Include="Decorators\SizeGripDecorator.cs" />
     <Content Include="ClassCanvas.cd" />
@@ -83,6 +83,8 @@
     <None Include="ClassDiagramAddin.sln" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Interactivity" />
+    <Folder Include="Src" />
     <Folder Include="Shapes" />
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>

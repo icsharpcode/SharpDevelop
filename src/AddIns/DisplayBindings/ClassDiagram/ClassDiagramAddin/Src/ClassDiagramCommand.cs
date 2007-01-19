@@ -68,13 +68,41 @@ namespace ClassDiagramAddin
 		}
 	}
 	
+	public class ZoomInCommand : ClassDiagramAddinCommand
+	{
+		public override void Run()
+		{
+			Canvas.Zoom *= 1.1f;
+		}
+	}
+	
+	public class ZoomOutCommand : ClassDiagramAddinCommand
+	{
+		public override void Run()
+		{
+			Canvas.Zoom *= 0.9f;
+		}
+	}
+	
 	public class SetDiagramZoomCommand : AbstractComboBoxCommand
 	{
+		bool dontModifyCanvas;
+
+		private void CanvasZoomChanged (object sender, EventArgs e)
+		{
+			dontModifyCanvas = true;
+			comboBox.Text = Canvas.Zoom.ToString() + "%"; 
+			dontModifyCanvas = false;
+		}
+		
 		protected ClassCanvas Canvas
 		{
 			get
 			{
-				return (ClassCanvas)((ToolBarComboBox)this.Owner).Owner.Parent;
+				ToolStrip ts = ((ToolBarComboBox)this.Owner).Owner;
+				if (ts != null)
+					return (ClassCanvas)ts.Parent;
+				return null;
 			}
 		}
 		
@@ -85,6 +113,7 @@ namespace ClassDiagramAddin
 		
 		private void ComboBoxTextChanged(object sender, EventArgs e)
 		{
+			if (dontModifyCanvas) return;
 			float zoomPercent = 100.0f;
 			string s = comboBox.Text.Trim().Trim('%');
 			if (float.TryParse (s, out zoomPercent))
@@ -100,20 +129,14 @@ namespace ClassDiagramAddin
 			ToolBarComboBox box1 = (ToolBarComboBox) this.Owner;
 			comboBox = box1.ComboBox;
 			comboBox.DropDownStyle = ComboBoxStyle.DropDown;
-			comboBox.Items.Add("10%");
-			comboBox.Items.Add("25%");
-			comboBox.Items.Add("50%");
-			comboBox.Items.Add("75%");
-			comboBox.Items.Add("100%");
-			comboBox.Items.Add("125%");
-			comboBox.Items.Add("150%");
-			comboBox.Items.Add("175%");
-			comboBox.Items.Add("200%");
-			comboBox.Items.Add("250%");
-			comboBox.Items.Add("300%");
-			comboBox.Items.Add("350%");
-			comboBox.Items.Add("400%");
-			comboBox.TextChanged += new EventHandler(this.ComboBoxTextChanged);
+			comboBox.Items.AddRange(new object[] {"10%", "25%", "50%", "75%",
+			                        	"100%", "125%", "150%", "175%", "200%",
+			                        	"250%", "300%", "350%", "400%"});
+			
+			ClassCanvas canvas = Canvas;
+			if (canvas != null)
+				canvas.ZoomChanged += CanvasZoomChanged;
+			comboBox.TextChanged += ComboBoxTextChanged;
 		}
 
 		ComboBox comboBox;

@@ -33,6 +33,11 @@ namespace ClassDiagram
 			get { return Color.Plum; }
 		}
 		
+		protected override bool RoundedCorners
+		{
+			get { return false; }
+		}
+		
 		protected override IDrawableRectangle InitContent()
 		{
 			fields.Border = 5;

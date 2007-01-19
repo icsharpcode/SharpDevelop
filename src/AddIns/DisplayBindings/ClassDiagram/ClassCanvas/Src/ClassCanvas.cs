@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Itai Bar-Haim" email=""/>
-//     <version>$Revision$</version>
+//     <version>$Revision: 2231 $</version>
 // </file>
 
 using System;
@@ -61,6 +61,13 @@ namespace ClassDiagram
 				}
 			}
 			
+			bool justGainedFocus;
+			public bool JustGainedFocus
+			{
+				get { return justGainedFocus; }
+				set { justGainedFocus = value; }
+			}
+			
 			FocusDecorator focusDecorator;
 			SizeGripDecorator sizeGripDecorator;
 			
@@ -79,6 +86,7 @@ namespace ClassDiagram
 				
 		DiagramRouter diagramRouter = new DiagramRouter();
 		
+		public event EventHandler ZoomChanged = delegate { };
 		float zoom = 1.0f;
 		bool ctrlDown;
 		bool holdRedraw;
@@ -104,6 +112,7 @@ namespace ClassDiagram
 				zoom = value;
 				pictureBox1.Invalidate();
 				LayoutChanged (this, EventArgs.Empty);
+				ZoomChanged(this, EventArgs.Empty);
 			}
 		}
 		
@@ -244,7 +253,39 @@ namespace ClassDiagram
 			lastMouseClickPosition = pos;
 			LinkedListNode<CanvasItemData> itemNode = FindCanvasItemNode(pos);
 			if (itemNode != null)
+			{
 				itemNode.Value.Item.HandleMouseClick(pos);
+				if (itemNode.Value.Focused)
+				{
+					if (itemNode.Value.JustGainedFocus)
+					{
+						itemNode.Value.JustGainedFocus = false;
+					}
+					else if (itemNode.Value.Item.StartEditing())
+					{
+						Control ec = itemNode.Value.Item.GetEditingControl();
+						if (ec != null)
+						{
+							//TODO - refactor this damn thing... why couldn't they make the "Scale" scale the font as well?
+							ec.Scale(new SizeF(zoom, zoom));
+							Font ecf = ec.Font;
+							ec.Font = new Font(ecf.FontFamily,
+							                   ecf.Size * zoom,
+							                   ecf.Style, ec.Font.Unit,
+							                   ecf.GdiCharSet, ec.Font.GdiVerticalFont);
+							ec.Hide();
+							ec.VisibleChanged += delegate { if (!ec.Visible) ec.Font = ecf; };
+							panel1.Controls.Add(ec);
+							ec.Top -= panel1.VerticalScroll.Value;
+							ec.Left -= panel1.HorizontalScroll.Value;
+							ec.Show();
+							panel1.Controls.SetChildIndex(ec, 0);
+							this.ActiveControl = ec;
+							ec.Focus();
+						}
+					}
+				}
+			}
 		}
 		
 		private void PictureBox1MouseDown (object sender, MouseEventArgs e)
@@ -257,16 +298,24 @@ namespace ClassDiagram
 			if (!ctrlDown)
 			{
 				foreach (CanvasItemData item in itemsList)
-					item.Focused = false;
+				{
+					item.Item.StopEditing();
+					if (itemNode == null || item != itemNode.Value)
+						item.Focused = false;
+				}
 			}
 			
 			if (itemNode != null)
 			{
-				itemNode.Value.Focused = true;
+				if (!itemNode.Value.Focused)
+				{
+					itemNode.Value.JustGainedFocus = true;
+					itemNode.Value.Focused = true;
+					itemsList.Remove(itemNode);
+					itemsList.AddLast(itemNode);
+					CanvasItemSelected (this, new CanvasItemEventArgs (itemNode.Value.Item));
+				}
 				itemNode.Value.Item.HandleMouseDown(pos);
-				itemsList.Remove(itemNode);
-				itemsList.AddLast(itemNode);
-				CanvasItemSelected (this, new CanvasItemEventArgs (itemNode.Value.Item));
 			}
 			HoldRedraw = false;
 		}

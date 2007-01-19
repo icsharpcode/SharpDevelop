@@ -20,6 +20,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
 using System.Globalization;
+using System.Windows.Forms;
 
 namespace ClassDiagram
 {
@@ -27,9 +28,13 @@ namespace ClassDiagram
 	public class NoteCanvasItem : CanvasItem
 	{
 		private string note = "<Text editing not implemented yet.>";
+		private TextBox editBox = new TextBox();
 		
 		public NoteCanvasItem()
 		{
+			editBox.BackColor = Color.LightYellow;
+			editBox.BorderStyle = BorderStyle.None;
+			editBox.Multiline = true;
 		}
 		
 		public string Note
@@ -62,6 +67,29 @@ namespace ClassDiagram
 			return (pos.X > X && pos.Y > Y && pos.X < X + ActualWidth && pos.Y < Y + ActualHeight);
 		}
 		
+		public override Control GetEditingControl()
+		{
+			editBox.Width = (int) Width - 8;
+			editBox.Height = (int) Height - 8;
+			editBox.Left = (int) AbsoluteX + 4;
+			editBox.Top = (int) AbsoluteY + 4;
+			return editBox;
+		}
+		
+		public override bool StartEditing()
+		{
+			editBox.Text = note;
+			return true;
+		}
+		
+		public override void StopEditing()
+		{
+			note = editBox.Text;
+			if (editBox.Parent != null)
+				editBox.Parent.Controls.Remove(editBox);
+		}
+		
+		#region Storage
 		protected override XmlElement CreateXmlElement(XmlDocument doc)
 		{
 			return doc.CreateElement("Note");
@@ -80,7 +108,9 @@ namespace ClassDiagram
 			Height = float.Parse(navigator.GetAttribute("Height", ""), CultureInfo.InvariantCulture);
 			Note = navigator.GetAttribute("Note", "");
 		}
+		#endregion
 		
+		#region Geometry
 		public override float Width
 		{
 			set { base.Width = Math.Max (value, 40.0f); }
@@ -90,5 +120,6 @@ namespace ClassDiagram
 		{
 			set { base.Height = Math.Max (value, 40.0f); }
 		}
+		#endregion
 	}
 }

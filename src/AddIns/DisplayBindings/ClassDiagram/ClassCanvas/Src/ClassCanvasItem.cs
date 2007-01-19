@@ -34,8 +34,6 @@ namespace ClassDiagram
 		InteractiveHeaderedItem classItemHeaderedContent;
 		DrawableItemsStack classItemContainer = new DrawableItemsStack();
 
-		const int radius = 20;
-
 		#region Graphics related variables
 		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
@@ -46,8 +44,8 @@ namespace ClassDiagram
 		public static readonly Font GroupTitleFont = new Font (FontFamily.GenericSansSerif, 11, FontStyle.Regular, GraphicsUnit.Pixel);
 
 		LinearGradientBrush grad;
-		
 		GraphicsPath shadowpath;
+		DrawableRectangle containingShape;
 		
 		#endregion
 
@@ -65,6 +63,8 @@ namespace ClassDiagram
 		
 		DrawableRectangle titlesBackgroundCollapsed;
 		DrawableRectangle titlesBackgroundExpanded;
+		
+		const int radius = 20;
 		
 		protected override bool AllowHeightModifications()
 		{
@@ -105,15 +105,29 @@ namespace ClassDiagram
 
 			classItemContainer.Container = this;
 			classItemContainer.Add(classItemHeaderedContent);
-			classItemContainer.Add(new DrawableRectangle(null, Pens.Gray, radius, radius, radius, radius));
+			Pen outlinePen = GetClassOutlinePen();
+			if (RoundedCorners)
+				containingShape = new DrawableRectangle(null, outlinePen, radius, radius, radius, radius);
+			else
+				containingShape = new DrawableRectangle(null, outlinePen, 0, 0, 0, 0);
+			
+			classItemContainer.Add(containingShape);
 			classItemContainer.OrientationAxis = Axis.Z;
 			
 			grad = new LinearGradientBrush(
 				new PointF(0, 0), new PointF(1, 0),
 				TitleBackground, Color.White);
 			
-			titlesBackgroundCollapsed = new DrawableRectangle(grad, null, radius, radius, radius, radius);
-			titlesBackgroundExpanded = new DrawableRectangle(grad, null, radius, radius, 1, 1);
+			if (RoundedCorners)
+			{
+				titlesBackgroundCollapsed = new DrawableRectangle(grad, null, radius, radius, radius, radius);
+				titlesBackgroundExpanded = new DrawableRectangle(grad, null, radius, radius, 0, 0);
+			}
+			else
+			{
+				titlesBackgroundCollapsed = new DrawableRectangle(grad, null, 0, 0, 0, 0);
+				titlesBackgroundExpanded = new DrawableRectangle(grad, null, 0, 0, 0, 0);
+			}
 
 			titles.Border = 5;
 			
@@ -133,6 +147,29 @@ namespace ClassDiagram
 		}
 		
 		#endregion
+		
+		private Pen GetClassOutlinePen()
+		{
+			Pen pen = new Pen(Color.Gray);
+			
+			if (classtype.IsAbstract)
+			{
+				pen.DashStyle = DashStyle.Dash;
+			}
+			
+			if (classtype.IsSealed)
+			{
+				pen.Width = 3;
+			}
+			
+			if (classtype.IsStatic)
+			{
+				pen.DashStyle = DashStyle.Dash;
+				pen.Width = 3;
+			}
+			
+			return pen;
+		}
 		
 		public override bool IsVResizable
 		{
@@ -178,6 +215,10 @@ namespace ClassDiagram
 			get { return Brushes.AliceBlue;}
 		}
 
+		protected virtual bool RoundedCorners
+		{
+			get { return true; }
+		}
 		#endregion
 		
 		#region Preparations
@@ -403,10 +444,24 @@ namespace ClassDiagram
 			ActualHeight = classItemContainer.GetAbsoluteContentHeight();
 
 			shadowpath = new GraphicsPath();
-			shadowpath.AddArc(ActualWidth-radius + 4, 3, radius, radius, 300, 60);
-			shadowpath.AddArc(ActualWidth-radius + 4, ActualHeight-radius + 3, radius, radius, 0, 90);
-			shadowpath.AddArc(4, ActualHeight-radius + 3, radius, radius, 90, 45);
-			shadowpath.AddArc(ActualWidth-radius, ActualHeight-radius, radius, radius, 90, -90);
+			if (RoundedCorners)
+			{
+				shadowpath.AddArc(ActualWidth-radius + 4, 3, radius, radius, 300, 60);
+				shadowpath.AddArc(ActualWidth-radius + 4, ActualHeight-radius + 3, radius, radius, 0, 90);
+				shadowpath.AddArc(4, ActualHeight-radius + 3, radius, radius, 90, 45);
+				shadowpath.AddArc(ActualWidth-radius, ActualHeight-radius, radius, radius, 90, -90);
+			}
+			else
+			{
+				shadowpath.AddPolygon(new PointF[] {
+				                      	new PointF(ActualWidth, 3),
+				                      	new PointF(ActualWidth + 4, 3),
+				                      	new PointF(ActualWidth + 4, ActualHeight + 3),
+				                      	new PointF(4, ActualHeight + 3),
+				                      	new PointF(4, ActualHeight),
+				                      	new PointF(ActualWidth, ActualHeight)
+				                      });
+			}
 			shadowpath.CloseFigure();
 		}
 		

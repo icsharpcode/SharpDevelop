@@ -204,7 +204,7 @@ namespace ClassDiagram
 		{
 			get { return x; }
 		}
-	
+		
 		public virtual float AbsoluteY
 		{
 			get { return y; }
@@ -237,13 +237,13 @@ namespace ClassDiagram
 		public virtual float Border
 		{
 			get { return 0; }
-			set { }	
+			set { }
 		}
 		
 		public virtual float Padding
 		{
 			get { return 0; }
-			set { }	
+			set { }
 		}
 		
 		public virtual IRectangle Container
@@ -339,6 +339,10 @@ namespace ClassDiagram
 		
 		#endregion
 		
+		public virtual System.Windows.Forms.Control GetEditingControl() { return null; }
+		public virtual bool StartEditing() { return false; }
+		public virtual void StopEditing() {}
+		
 		#region Mouse Events
 		
 		#region Dragging Variables
@@ -413,20 +417,27 @@ namespace ClassDiagram
 		
 		#endregion
 		
+		#region Interactivity
 		private void HandleDecoratorRedrawRequest (object sender, EventArgs args)
 		{
 			EmitRedrawNeeded();
 		}
 
-		#region User Interaction
-		
 		public virtual bool HitTest(PointF pos)
 		{
+			return HitTest(pos, true);
+		}
+		
+		public virtual bool HitTest(PointF pos, bool includeDecorators)
+		{
 			bool ret = (pos.X > X && pos.Y > Y && pos.X < X + ActualWidth && pos.Y < Y + ActualHeight);
-			foreach (RectangleDecorator decorator in decorators)
+			if (includeDecorators)
 			{
-				if (decorator.Active)
-					ret |= decorator.HitTest(pos);
+				foreach (RectangleDecorator decorator in decorators)
+				{
+					if (decorator.Active)
+						ret |= decorator.HitTest(pos);
+				}
 			}
 			return ret;
 		}
@@ -447,7 +458,7 @@ namespace ClassDiagram
 		{
 			throw new NotImplementedException();
 		}
-	
+		
 		#region Storage
 		
 		protected virtual XmlElement CreateXmlElement(XmlDocument doc)
@@ -459,7 +470,7 @@ namespace ClassDiagram
 		{
 			element.SetAttribute("X", X.ToString(CultureInfo.InvariantCulture));
 			element.SetAttribute("Y", Y.ToString(CultureInfo.InvariantCulture));
-			element.SetAttribute("Width", Width.ToString(CultureInfo.InvariantCulture));			
+			element.SetAttribute("Width", Width.ToString(CultureInfo.InvariantCulture));
 		}
 		
 		public virtual void WriteToXml(XmlDocument document)
@@ -483,7 +494,7 @@ namespace ClassDiagram
 			get { return false; }
 			set {}
 		}
-	
+		
 		public event EventHandler WidthChanged = delegate {};
 		public event EventHandler HeightChanged = delegate {};
 		public event EventHandler ActualWidthChanged = delegate {};

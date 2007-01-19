@@ -346,6 +346,47 @@ namespace System.Windows.Forms
 			catch{}
 			return(false);
 		}
+		
+		/// <summary>
+		/// Insert an item in the specified index.
+		/// </summary>
+		/// <remarks>
+		/// This method works only if no comparer or no sort order is defined.
+		/// </remarks>
+		/// <param name="item">The item to insert.</param>
+		/// <param name="index">The position in which to insert the item.</param>
+		public virtual void Insert(TreeListViewItem item, int index)
+		{
+			if (this.Sortable && this.Comparer != null && this.Comparer.SortOrder != SortOrder.None)
+			{
+				Add (item);
+				return;
+			}
+			
+			if(TreeListView != null)
+				if(TreeListView.InvokeRequired)
+					throw(new Exception("Invoke required"));
+			// Do not add the item if the collection owns a TreeListView recursively
+			// and the item already owns a TreeListView
+			if(TreeListView != null && item.ListView != null)
+				throw(new Exception("The Item is already in a TreeListView"));
+			if(index < 0) return;
+			if(Parent != null) item.SetParent(Parent);
+			item.Items.Comparer = this.Comparer;
+			// Insert in the ListView
+
+			ListView listview = (ListView) TreeListView;
+			listview.Items.Insert(index, (ListViewItem) item);
+			if(item.IsExpanded) item.Expand();
+			item.SetIndentation();
+			
+			// Insert in this collection
+			List.Insert(index, item);
+			OnItemAdded(new TreeListViewEventArgs(item, TreeListViewAction.Unknown));
+			if(Count == 1 && TreeListView != null && Parent != null)
+				if(Parent.Visible) Parent.Redraw();
+		}
+		
 		/// <summary>
 		/// Adds an item in the collection and in the TreeListView
 		/// </summary>

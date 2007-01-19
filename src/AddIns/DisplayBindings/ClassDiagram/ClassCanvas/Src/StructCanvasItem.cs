@@ -22,7 +22,7 @@ namespace ClassDiagram
 	public class StructCanvasItem : ClassCanvasItem
 	{
 		public StructCanvasItem (IClass ct) : base (ct) {}
-		
+		/*
 		protected override Color TitleBackground
 		{
 			get { return Color.Wheat;}
@@ -31,6 +31,12 @@ namespace ClassDiagram
 		protected override Brush InnerTitlesBackground
 		{
 			get { return Brushes.PapayaWhip;}
+		}
+		*/
+		
+		protected override bool RoundedCorners
+		{
+			get { return false; }
 		}
 	}
 }
