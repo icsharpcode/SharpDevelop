@@ -7,9 +7,9 @@ using System.Configuration;
 namespace ${StandardNamespace}
 {
 	/// <summary>
-	/// Description of ${ClassName}.
+	/// A collection of ${ClassName}Element(s).
 	/// </summary>
-	public sealed class ${ClassName}Collection : ConfigurationElementCollection
+	public class ${ClassName}Collection : ConfigurationElementCollection
 	{
 		#region Properties
 

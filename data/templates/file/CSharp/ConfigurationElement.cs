@@ -5,6 +5,10 @@ using System.Configuration;
 
 namespace ${StandardNamespace}
 {
+	/// <summary>
+	/// Represents a single XML tag inside a ConfigurationSection
+	/// or a ConfigurationElementCollection.
+	/// </summary>
 	public sealed class ${ClassName}Element : ConfigurationElement
 	{
 		/// <summary>
