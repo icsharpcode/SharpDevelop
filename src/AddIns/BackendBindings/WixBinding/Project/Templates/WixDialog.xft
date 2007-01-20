@@ -13,7 +13,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
 	<Fragment>
 		<UI>
-			<Dialog Id="NewDialog" Width="370" Height="270" Title="New Dialog">
+			<Dialog Id="${ClassName}" Width="370" Height="270" Title="${FileNameWithoutExtension}">
 			</Dialog>
 		</UI>
 	</Fragment>
