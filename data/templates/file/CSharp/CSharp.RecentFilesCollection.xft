@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<Template author="Justin Dearing" version="1.0">
+	<Config
+		name		= "${res:Templates.File.RecentFilesCollection.Name}"
+		icon		= "C#.File.NewClass"
+		category	= "C#"
+		defaultname	= "Class${Number}.cs"
+		language	= "C#"/>
+	<Description>${res:Templates.File.RecentFilesCollection.Description}</Description>  
+	<!--
+	Special new file templates:
+		${StandardNamespace}			-> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}				-> Full generated path name
+		${FileName}				-> File name with extension
+		${FileNameWithoutExtension}		-> File name without extension
+		${Extension}				-> Extension in the form ".cs"
+		${Path}					-> Full path of the file
+		${ClassName}				-> Class name (generally FileNameWithoutExtension w/o 'bad' characters)
+	-->
+	<Files>
+		<File name="${Path}/RecentFileElement.cs" language="C#" src="RecentFileElement.cs" />
+		<File name="${Path}/RecentFilesCollection.cs" language="C#" src="RecentFilesCollection.cs" />
+	</Files>
+	<AdditionalOptions/>
+</Template>
