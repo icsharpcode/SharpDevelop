@@ -159,5 +159,11 @@ namespace UnitTesting.Tests.Utils
 				ReferencedContentsChanged(this, new EventArgs());
 			}
 		}
+		
+		public bool IsUpToDate {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
