@@ -466,7 +466,7 @@ namespace Aga.Controls.Tree
 			return Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
 		}
 
-		internal void FullUpdate()
+		public void FullUpdate()
 		{
 			_rowLayout.ClearCache();
 			CreateRowMap();
@@ -475,7 +475,7 @@ namespace Aga.Controls.Tree
 			_needFullUpdate = false;
 		}
 
-		internal void UpdateView()
+		public void UpdateView()
 		{
 			if (!_suspendUpdate)
 				Invalidate(false);
@@ -648,7 +648,7 @@ namespace Aga.Controls.Tree
 			return node == _root;
 		}
 
-		private void UpdateSelection()
+		public void UpdateSelection()
 		{
 			bool flag = false;
 

@@ -10,7 +10,7 @@ using System.Security.Permissions;
 namespace Aga.Controls.Tree
 {
 	[Serializable]
-	public sealed class TreeNodeAdv: ISerializable
+	public class TreeNodeAdv: ISerializable
 	{
 		#region NodeCollection
 		//TODO: use one common Parent-Children collection
@@ -61,12 +61,12 @@ namespace Aga.Controls.Tree
 		#endregion
 
 		private Collection<TreeNodeAdv> _nodes;
-		private ReadOnlyCollection<TreeNodeAdv> _children;
+		private Collection<TreeNodeAdv> _children;
 
 		#region Properties
 
 		private TreeViewAdv _tree;
-		internal TreeViewAdv Tree
+		public TreeViewAdv Tree
 		{
 			get { return _tree; }
 		}
@@ -121,14 +121,14 @@ namespace Aga.Controls.Tree
 		public bool IsLeaf
 		{
 			get { return _isLeaf; }
-			internal set { _isLeaf = value; }
+			set { _isLeaf = value; }
 		}
 
 		private bool _isExpandedOnce;
 		public bool IsExpandedOnce
 		{
 			get { return _isExpandedOnce; }
-			internal set { _isExpandedOnce = value; }
+			set { _isExpandedOnce = value; }
 		}
 
 		private bool _isExpanded;
@@ -217,6 +217,7 @@ namespace Aga.Controls.Tree
 		public object Tag
 		{
 			get { return _tag; }
+			set { _tag = value; }
 		}
 
 		internal Collection<TreeNodeAdv> Nodes
@@ -224,7 +225,7 @@ namespace Aga.Controls.Tree
 			get { return _nodes; }
 		}
 
-		public ReadOnlyCollection<TreeNodeAdv> Children
+		public Collection<TreeNodeAdv> Children
 		{
 			get
 			{
@@ -238,12 +239,12 @@ namespace Aga.Controls.Tree
 		{
 		}
 
-		internal TreeNodeAdv(TreeViewAdv tree, object tag)
+		public TreeNodeAdv(TreeViewAdv tree, object tag)
 		{
 			_row = -1;
 			_tree = tree;
 			_nodes = new NodeCollection(this);
-			_children = new ReadOnlyCollection<TreeNodeAdv>(_nodes);
+			_children = _nodes;
 			_tag = tag;
 		}
 

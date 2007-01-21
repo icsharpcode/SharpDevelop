@@ -58,7 +58,6 @@
     </EmbeddedResource>
     <Compile Include="Src\Service\DynamicTreeDebuggerRow.cs" />
     <Compile Include="Src\Service\SetCurrentStatementCommand.cs" />
-    <Compile Include="Src\Pads\TreeListViewDebuggerItem.cs" />
     <Compile Include="Src\Service\DebuggerIcons.cs" />
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
@@ -66,11 +65,12 @@
     <Compile Include="Src\Pads\DebuggerPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.Menu.cs" />
     <Compile Include="Src\Pads\RunningThreadsPad.Menu.cs" />
-    <Compile Include="Src\Pads\DebuggerTreeListView.cs" />
     <Compile Include="Src\Variables\BaseTypeItem.cs" />
     <Compile Include="Src\Variables\FixedItem.cs" />
     <Compile Include="Src\Variables\ListItem.cs" />
     <Compile Include="Src\Variables\ListItemEventArgs.cs" />
+    <Compile Include="Src\Variables\FunctionItem.cs" />
+    <Compile Include="Src\Variables\TreeViewNode.cs" />
     <Compile Include="Src\Variables\ValueItem.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -104,11 +104,6 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </ProjectReference>
-    <ProjectReference Include="..\..\TreeListView\Project\TreeListView.csproj">
-      <Project>{B08385CD-F0CC-488C-B4F4-EEB34B6D2688}</Project>
-      <Name>TreeListView</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <Content Include="PostBuildEvent.proj" />
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
@@ -123,6 +118,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Variables" />
+    <ProjectReference Include="..\..\..\..\..\Libraries\TreeViewAdv\Aga.Controls\Aga.Controls.csproj">
+      <Project>{E73BB233-D88B-44A7-A98F-D71EE158381D}</Project>
+      <Name>Aga.Controls</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <Import Project="PostBuildEvent.proj" />

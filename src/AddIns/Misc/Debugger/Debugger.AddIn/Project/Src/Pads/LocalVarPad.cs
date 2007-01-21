@@ -6,9 +6,13 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+
+using Aga.Controls.Tree;
+using Aga.Controls.Tree.NodeControls;
 
 using Debugger;
 
@@ -16,12 +20,52 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class LocalVarPad : DebuggerPad
 	{
-		DebuggerTreeListView localVarList;
+		class ItemIcon: NodeIcon {
+			protected override System.Drawing.Image GetIcon(TreeNodeAdv node)
+			{
+				return ((TreeViewNode)node).Icon;
+			}
+		}
+		
+		class ItemName: NodeTextBox {
+			protected override bool CanEdit(TreeNodeAdv node)
+			{
+				return false;
+			}
+			public override object GetValue(TreeNodeAdv node)
+			{
+				return ((TreeViewNode)node).Name;
+			}
+		}
+		
+		class ItemText: NodeTextBox {
+			protected override bool CanEdit(TreeNodeAdv node)
+			{
+				return ((TreeViewNode)node).CanEditText;
+			}
+			public override object GetValue(TreeNodeAdv node)
+			{
+				return ((TreeViewNode)node).Text;
+			}
+		}
+		
+		class ItemType: NodeTextBox {
+			protected override bool CanEdit(TreeNodeAdv node)
+			{
+				return false;
+			}
+			public override object GetValue(TreeNodeAdv node)
+			{
+				return ((TreeViewNode)node).Type;
+			}
+		}
+		
+		TreeViewAdv localVarList;
 		Debugger.Process debuggedProcess;
 		
-		ColumnHeader name = new ColumnHeader();
-		ColumnHeader val  = new ColumnHeader();
-		ColumnHeader type = new ColumnHeader();
+		TreeColumn nameColumn = new TreeColumn();
+		TreeColumn valColumn  = new TreeColumn();
+		TreeColumn typeColumn = new TreeColumn();
 		
 		public override Control Control {
 			get {
@@ -31,39 +75,53 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override void InitializeComponents()
 		{
-			//iconsService = (ClassBrowserIconsService)ServiceManager.Services.GetService(typeof(ClassBrowserIconsService));
-			localVarList = new DebuggerTreeListView();
-			localVarList.SmallImageList = DebuggerIcons.ImageList;
-			localVarList.ShowPlusMinus = true;
-			localVarList.FullRowSelect = true;
-			localVarList.Dock = DockStyle.Fill;
-			localVarList.Sorting = SortOrder.Ascending;
-			//localVarList.GridLines  = false;
-			//localVarList.Activation = ItemActivation.OneClick;
-			localVarList.Columns.AddRange(new ColumnHeader[] {name, val, type} );
-			name.Width = 250;
-			val.Width = 300;
-			type.Width = 250;
-			localVarList.Visible = false;
-			localVarList.SizeChanged += new EventHandler(localVarList_SizeChanged);
-			localVarList.BeforeExpand += new TreeListViewCancelEventHandler(localVarList_BeforeExpand);
-			localVarList.AfterExpand += new TreeListViewEventHandler(localVarList_AfterExpand);
+			localVarList = new TreeViewAdv();
+			localVarList.Columns.Add(nameColumn);
+			localVarList.Columns.Add(valColumn);
+			localVarList.Columns.Add(typeColumn);
+			localVarList.UseColumns = true;
+			localVarList.SelectionMode = TreeSelectionMode.Single;
+			localVarList.LoadOnDemand = true;
+			localVarList.VisibleChanged += delegate { if (localVarList.Visible) RefreshPad(); };
+			localVarList.SizeChanged += delegate { RefreshPad(); };
 			
+			localVarList.Expanding += delegate(object sender, TreeViewAdvEventArgs e) {
+				if (e.Node is TreeViewNode) ((TreeViewNode)e.Node).OnExpanding();
+			};
+			localVarList.Expanded += delegate(object sender, TreeViewAdvEventArgs e) {
+				if (e.Node is TreeViewNode) ((TreeViewNode)e.Node).OnExpanded();
+			};
+			localVarList.Collapsed += delegate(object sender, TreeViewAdvEventArgs e) {
+				if (e.Node is TreeViewNode) ((TreeViewNode)e.Node).OnCollapsed();
+			};
+			
+			NodeIcon iconControl = new ItemIcon();
+			iconControl.ParentColumn = nameColumn;
+			localVarList.NodeControls.Add(iconControl);
+			
+			NodeTextBox nameControl = new ItemName();
+			nameControl.ParentColumn = nameColumn;
+			localVarList.NodeControls.Add(nameControl);
+			
+			NodeTextBox textControl = new ItemText();
+			textControl.ParentColumn = valColumn;
+			localVarList.NodeControls.Add(textControl);
+			
+			NodeTextBox typeControl = new ItemType();
+			typeControl.ParentColumn = typeColumn;
+			localVarList.NodeControls.Add(typeControl);
 			
 			RedrawContent();
 		}
 		
 		public override void RedrawContent()
 		{
-			name.Text = ResourceService.GetString("Global.Name");
-			val.Text  = ResourceService.GetString("Dialog.HighlightingEditor.Properties.Value");
-			type.Text = ResourceService.GetString("ResourceEditor.ResourceEdit.TypeColumn");
-		}
-		
-		// This is a walkarond for a visual issue
-		void localVarList_SizeChanged(object sender, EventArgs e)
-		{
-			localVarList.Visible = true;
+			nameColumn.Header = ResourceService.GetString("Global.Name");
+			nameColumn.Width = 250;
+			valColumn.Header  = ResourceService.GetString("Dialog.HighlightingEditor.Properties.Value");
+			valColumn.Width = 300;
+			typeColumn.Header = ResourceService.GetString("ResourceEditor.ResourceEdit.TypeColumn");
+			typeColumn.Width = 250;
 		}
 		
 		protected override void SelectProcess(Debugger.Process process)
@@ -85,37 +143,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RefreshPad()
 		{
-			localVarList.BeginUpdate();
-			localVarList.Items.Clear();
-			if (debuggedProcess != null) {
-				foreach(NamedValue val in debuggedProcess.LocalVariables) {
-					localVarList.Items.Add(new TreeListViewDebuggerItem(val));
-				}
-			}
-			localVarList.EndUpdate();
-		}
-		
-		void localVarList_BeforeExpand(object sender, TreeListViewCancelEventArgs e)
-		{
-			if (debuggedProcess.IsPaused) {
-				((TreeListViewDebuggerItem)e.Item).Populate();
+			DateTime start = Debugger.Util.HighPrecisionTimer.Now;
+			if (debuggedProcess != null && debuggedProcess.SelectedFunction != null) {
+				TreeViewNode.UpdateNodes(localVarList, localVarList.Root.Children, new FunctionItem(debuggedProcess.SelectedFunction).SubItems);
 			} else {
-				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.LocalVariables.CannotExploreVariablesWhileRunning}");
-				e.Cancel = true;
+				TreeViewNode.UpdateNodes(localVarList, localVarList.Root.Children, new ListItem[0]);
 			}
-		}
-		
-		void localVarList_AfterExpand(object sender, TreeListViewEventArgs e)
-		{
-			UpdateSubTree(e.Item);
-		}
-		
-		static void UpdateSubTree(TreeListViewItem tree)
-		{
-			foreach(TreeListViewItem item in tree.Items) {
-				((TreeListViewDebuggerItem)item).Update();
-				if (item.IsExpanded) UpdateSubTree(item);
-			}
+			DateTime end = Debugger.Util.HighPrecisionTimer.Now;
+			LoggingService.InfoFormatted("Local Variables pad refreshed ({0} ms)", (end - start).TotalMilliseconds);
 		}
 	}
 }
