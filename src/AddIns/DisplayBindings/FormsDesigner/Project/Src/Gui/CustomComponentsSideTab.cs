@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
@@ -61,11 +62,20 @@ namespace ICSharpCode.FormsDesigner.Gui
 			}
 		}
 		
+		/// <summary>
+		/// Gets the list of project contents of all open projects plus the referenced project contents.
+		/// </summary>
+		static IEnumerable<IProjectContent> AllProjectContentsWithReferences {
+			get {
+				return Linq.Distinct(Linq.Concat(ParserService.AllProjectContents, ParserService.DefaultProjectContentRegistry.GetLoadedProjectContents()));
+			}
+		}
+		
 		void ScanProjectAssemblies()
 		{
 			// custom user controls don't need custom images
 			loadImages = false;
-			foreach (IProjectContent pc in ParserService.AllProjectContentsWithReferences) {
+			foreach (IProjectContent pc in AllProjectContentsWithReferences) {
 				if (pc.Project == null) {
 					ReflectionProjectContent rpc = pc as ReflectionProjectContent;
 					if (rpc == null)

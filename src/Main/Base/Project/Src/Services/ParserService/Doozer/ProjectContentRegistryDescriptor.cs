@@ -27,6 +27,10 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		public bool IsRegistryLoaded {
+			get { return registry != null; }
+		}
+		
 		public bool UseRegistryForProject(IProject project)
 		{
 			return codon.GetFailedAction(project) == ConditionFailedAction.Nothing;

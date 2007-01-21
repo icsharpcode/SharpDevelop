@@ -24,7 +24,7 @@ namespace ICSharpCode.Svn
 		
 		public override string TabPageText {
 			get {
-				return "History"; // TODO: Translate
+				return "${res:AddIns.Subversion.History}";
 			}
 		}
 		#endregion

@@ -47,6 +47,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		DateTime assemblyFileLastWriteTime;
+		
+		/// <summary>
+		/// Gets if the project content is representing the current version of the assembly.
+		/// This property always returns true for ParseProjectContents but might return false
+		/// for ReflectionProjectContent/CecilProjectContent if the file was changed.
+		/// </summary>
+		public override bool IsUpToDate {
+			get {
+				DateTime newWriteTime;
+				try {
+					newWriteTime = File.GetLastWriteTimeUtc(assemblyLocation);
+				} catch (Exception ex) {
+					LoggingService.Warn(ex);
+					return true;
+				}
+				return assemblyFileLastWriteTime == newWriteTime;
+			}
+		}
+		
 		public ReflectionProjectContent(Assembly assembly, ProjectContentRegistry registry)
 			: this(assembly, assembly.Location, registry)
 		{
@@ -78,6 +98,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.referencedAssemblies = referencedAssemblies;
 			this.assemblyLocation = assemblyLocation;
 			this.assemblyCompilationUnit = new DefaultCompilationUnit(this);
+			
+			try {
+				assemblyFileLastWriteTime = File.GetLastWriteTimeUtc(assemblyLocation);
+			} catch (Exception ex) {
+				LoggingService.Warn(ex);
+			}
 			
 			string fileName = LookupLocalizedXmlDoc(assemblyLocation);
 			// Not found -> look in runtime directory.
