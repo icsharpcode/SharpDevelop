@@ -187,7 +187,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		protected virtual ToolStrip CreateToolStrip(string name)
 		{
-			return ToolbarService.CreateToolStrip(treeView, "/SharpDevelop/Pads/UnitTestsPad/Toolbar");
+			return ToolbarService.CreateToolStrip(treeView, name);
 		}
 		
 		/// <summary>
@@ -196,7 +196,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		protected virtual ContextMenuStrip CreateContextMenu(string name)
 		{
-			return MenuService.CreateContextMenu(treeView, "/SharpDevelop/Pads/UnitTestsPad/ContextMenu");
+			return MenuService.CreateContextMenu(treeView, name);
 		}
 		
 		/// <summary>

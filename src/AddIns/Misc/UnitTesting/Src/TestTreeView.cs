@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -252,6 +253,21 @@ namespace ICSharpCode.UnitTesting
 				}
 			} else {
 				RemoveProjectNode(projectNode);
+			}
+		}
+		
+		/// <summary>
+		/// A tree node has been selected. Here we make sure the tree node
+		/// uses the context menu strip that the tree view is using. This 
+		/// ensures that if the user brings up the context menu using a keyboard
+		/// shortcut (Shift+F10) then it appears over the node rather than in 
+		/// the middle of the Unit Tests window.
+		/// </summary>
+		protected override void OnBeforeSelect(TreeViewCancelEventArgs e)
+		{
+			TreeNode node = e.Node;
+			if (node.ContextMenuStrip == null) {
+				node.ContextMenuStrip = ContextMenuStrip;
 			}
 		}
 		

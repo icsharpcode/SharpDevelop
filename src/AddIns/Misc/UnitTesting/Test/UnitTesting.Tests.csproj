@@ -45,20 +45,22 @@
       <HintPath>..\..\..\..\Tools\NUnit\nunit.core.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="NamespaceFilterTests.cs" />
     <Compile Include="TestableConditionTests.cs" />
+    <Compile Include="Tree\TreeNodeContextMenuTestFixture.cs" />
     <Compile Include="Tree\TreeNodeSortingTestFixture.cs" />
     <Compile Include="Tree\OpenUnitTestsPadWithSolutionOpenTestFixture.cs" />
+    <Compile Include="Utils\DerivedTestTreeView.cs" />
     <Compile Include="Utils\DerivedUnitTestsPad.cs" />
     <Compile Include="Utils\MockTestCase.cs" />
     <Compile Include="Utils\MockTestTreeView.cs" />
