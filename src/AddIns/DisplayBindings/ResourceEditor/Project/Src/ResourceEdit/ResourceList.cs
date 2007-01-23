@@ -146,6 +146,8 @@ namespace ResourceEditor
 		
 		public void LoadFile(string filename, Stream stream)
 		{
+			resources.Clear();
+			metadata.Clear();
 			switch (Path.GetExtension(filename).ToLowerInvariant()) {
 				case ".resx":
 					ResXResourceReader rx = new ResXResourceReader(stream);
@@ -163,7 +165,6 @@ namespace ResourceEditor
 					rx.Close();
 					break;
 				case ".resources":
-					//// new file will fail here - so we have to ignore exception(s)
 					ResourceReader rr=null;
 					try {
 						rr = new ResourceReader(stream);
@@ -172,7 +173,6 @@ namespace ResourceEditor
 								resources.Add(entry.Key.ToString(), new ResourceItem(entry.Key.ToString(), entry.Value));
 						}
 					}
-					catch {}
 					finally {
 						if (rr != null) {
 							rr.Close();
